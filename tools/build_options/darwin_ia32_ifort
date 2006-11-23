@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+#  Ed Hill
+#
+#  tested on faulks, 20030818
+#
+#  Build options for the intel 9 fortran compiler on MAC OS X
+#  On Mac PoweBookPro OSX 10.4.8 with standard ifort
+
+CC=icc
+FC=ifort
+F90C=ifort
+F90FIXEDFORMAT='-fixed -Tf' 
+DEFINES='-DWORDLENGTH=4'
+LINK='ifort'
+CPP='cpp  -traditional -P'
+INCLUDEDIRS='/sw/include'
+INCLUDES='-I/sw/include'
+LIBS='-L/sw/lib -lnetcdf'
+#ph none of these work yet
+#ph probably need to rebuild netcdf under ifort
+###FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) _ ## X"
+###FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
+
+#  Note that the -mp switch is for ieee "maintain precision" and is
+#  roughly equivalent to -ieee
+if test "x$IEEE" = x ; then
+    FOPTIM='-O3 -align'
+    F90OPTIM='-O3'
+#P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
+#P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+    F90FLAGS='-r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+else
+    FOPTIM='-O0 -noalign'
+    F90OPTIM='-O0 -g'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -xN -pc64 -convert big_endian -assume byterecl'
+   #FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+fi
+
+
+
