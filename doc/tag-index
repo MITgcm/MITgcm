@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.747 2006/11/20 20:06:43 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.748 2006/11/23 00:06:21 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o profiles: fix for multithreaded case
 
 o diagnostics: rename few diags:
   s/'PRESSURE'/'RCENTER '/g
