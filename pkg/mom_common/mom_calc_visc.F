@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.23 2006/07/07 18:52:10 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.24 2006/11/23 09:49:36 mlosch Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -214,6 +214,7 @@ C     == Local variables ==
       IF ( calcLeith .OR. calcSmag ) THEN
        STOP 'calcLeith or calcSmag not implemented for ADJOINT'
       ENDIF
+#endif
       DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
           viscAh_D(i,j)=viscAhD
@@ -238,9 +239,6 @@ c
           viscA4_ZLthD(i,j)= 0. _d 0
         ENDDO
       ENDDO
-#endif
-
-
 
 C     - Viscosity
       IF (useVariableViscosity) THEN
