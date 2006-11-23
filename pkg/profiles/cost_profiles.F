@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.10 2006/10/25 22:19:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.11 2006/11/23 00:04:55 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -47,8 +47,10 @@ C     ========= Local variables =======================
       _RL prof_data1D(NLEVELMAX), prof_weights1D(NLEVELMAX)
 c     == end of interface ==
  
-      DO bi = myBxLo(myThid), myBxHi(myThid)
-       DO bj = myByLo(myThid), myByHi(myThid)
+        _BEGIN_MASTER( mythid )
+
+      DO bj=1,nSy
+       DO bi=1,nSx
 
         do num_file=1,NFILESPROFMAX
          fid=fiddata(num_file,bi,bj)
@@ -126,6 +128,9 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
 
        ENDDO
       ENDDO
+
+      _END_MASTER( mythid )
+
 C===========================================================
 
 #endif

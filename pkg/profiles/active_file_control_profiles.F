@@ -225,7 +225,6 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
       endif
 
-      _BARRIER
 
 #endif /* ALLOW_PROFILES */
 
@@ -457,7 +456,6 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
       endif
 
-      _BARRIER
 
 #endif /* ALLOW_PROFILES */
 

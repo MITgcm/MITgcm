@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.7 2006/10/25 01:15:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.8 2006/11/23 00:04:55 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -51,8 +51,10 @@ c     == end of interface ==
       optimcycle = 0
 #endif
 
-      DO bi = myBxLo(myThid), myBxHi(myThid)
-      DO bj = myByLo(myThid), myByHi(myThid)
+        _BEGIN_MASTER( mythid )
+
+      DO bj=1,nSy
+       DO bi=1,nSx
 
       do num_file=1,NFILESPROFMAX
       do prof_num=1,NOBSGLOB
@@ -82,8 +84,10 @@ c     == end of interface ==
       endif !if (ProfNo(num_file,bi,bj).NE.0) then
       enddo !do prof_num...
       enddo !do num_file=1,NFILESPROFMAX
+       ENDDO
       ENDDO
-      ENDDO
+
+        _END_MASTER( mythid )
 
 #endif
 
