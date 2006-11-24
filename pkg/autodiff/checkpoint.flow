@@ -2,10 +2,10 @@
 C----------------------------------------
 C subroutine  read_pickup
 C----------------------------------------
-CADJ SUBROUTINE read_pickup  INPUT  = 1,2
-CADJ SUBROUTINE read_pickup  OUTPUT =
-CADJ SUBROUTINE read_pickup  DEPEND = 1,2
-CADJ SUBROUTINE read_pickup  REQUIRED
+cphCADJ SUBROUTINE read_pickup  INPUT  = 1,2
+cphCADJ SUBROUTINE read_pickup  OUTPUT =
+cphCADJ SUBROUTINE read_pickup  DEPEND = 1,2
+cphCADJ SUBROUTINE read_pickup  REQUIRED
 
 C----------------------------------------
 C subroutine  do_write_pickup
