@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.40 2006/11/08 20:28:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.41 2006/11/27 20:26:10 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -116,12 +116,15 @@ C       Print the basic statistics of model state variables
      &       statsTemp, myThid)
         CALL MON_PRINTSTATS_RL(Nr,salt,'_salt',
      &       maskC,hFacC,rA ,drF,myThid)
+        IF ( nSx.EQ.1 .AND. nSy.EQ.1 .AND. fluidIsWater ) THEN
         CALL MON_PRINTSTATS_RL(1,theta(1-olx,1-oly,1,1,1),'_sst',
      &       maskC,hFacC,rA ,drF,myThid)
         CALL MON_PRINTSTATS_RL(1,salt(1-olx,1-oly,1,1,1),'_sss',
      &       maskC,hFacC,rA ,drF,myThid)
+        ENDIF
 
 C       Print the basic statistics of external forcing
+        IF ( fluidIsWater ) THEN
         CALL MON_SET_PREF('extforcing',myThid)
         CALL MON_PRINTSTATS_RL(1,Qnet,'_qnet',
      &       maskH,maskH,rA ,drF,myThid)
@@ -133,6 +136,7 @@ C       Print the basic statistics of external forcing
      &       maskW,hFacW,rAw,drF,myThid)
         CALL MON_PRINTSTATS_RL(1,fv,'_fv',
      &       maskS,hFacS,rAs,drF,myThid)
+        ENDIF
 
 C       Print the numerical stablility parameters for current state
         CALL MON_SET_PREF('advcfl',myThid)
