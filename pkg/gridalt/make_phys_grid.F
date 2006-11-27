@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.7 2006/07/06 13:47:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.8 2006/11/27 16:09:55 molod Exp $
 C $Name:  $
 
        subroutine make_phys_grid(drF,hfacC,im1,im2,jm1,jm2,Nr,
@@ -56,26 +56,29 @@ c
 c Require 12 (or 15) levels near the surface (300 mb worth) for fizhi. 
 c   the dp's are in the dptry arrays:
        integer ntry,ntry10,ntry40
-       data ntry10 /12/
-       data ntry40 /15/
-       _RL dptry(15),dptry10(12),dptry40(15) 
+       parameter (ntry10 = 12)
+       parameter (ntry40 = 12)
+       _RL dptry(15),dptry10(ntry10),dptry40(ntry40)
+       _RL bot_thick,bot_thick40
        _RL dptry_accum(15)
        data dptry10/300.000,600.000,1000.000,1400.000,1700.000,2500.000,
      .            2500.000,2500.000,2500.000,5000.000,5000.000,5000.000/
-       data dptry40/300.000,600.000,1000.000,1400.000,1700.000,
-     .            2500.000,2500.000,2500.000,2500.000,2500.000,2500.000,
-     .            2500.000,2500.000,2500.000,2500.000/
+       data dptry40/300.000,600.000, 800.000, 800.000,1250.000,
+     .            1250.000,2500.000,2500.000,2500.000,2500.000,2500.000,
+     .            2500.000/
+       data bot_thick40/20000.000/
        _RL deltap, dpstar_accum
        integer nlbotmax, nstart, nlevs, nlphys, ndone
-       integer nextra
 c
        if( (Nr.eq.10) .or. (Nr.eq.20) ) then
         ntry = ntry10
+        bot_thick = bot_thick40
         do L = 1,ntry
          dptry(L) = dptry10(L)
         enddo
-       elseif(Nr.eq.40) then
+       elseif((Nr.eq.40).or.(Nr.eq.46)) then
         ntry = ntry40
+        bot_thick = bot_thick40
         do L = 1,ntry
          dptry(L) = dptry40(L)
         enddo
@@ -83,8 +86,6 @@ c
         print *,' Dont know how to make fizhi grid '
         stop
        endif
-c
-       nextra = ntry
 c
        do L = 1,Nr
         do j = j1,j2
@@ -102,7 +103,7 @@ c    the sum of drF, ie, the maximum dynamics grid layers possible)
        dpstar_accum = 0.
        do L = 1,Nr
         dpstar_accum = dpstar_accum + drF(L)
-        if(dpstar_accum.le.30000.) nlevs = nlevs+1
+        if(dpstar_accum.le.bot_thick) nlevs = nlevs+1
        enddo
        numlevphys = Nr - nlevs + ntry + 1
 c
