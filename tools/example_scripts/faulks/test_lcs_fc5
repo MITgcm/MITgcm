@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs_fc5,v 1.9 2006/11/20 20:14:14 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs_fc5,v 1.10 2006/11/27 17:43:42 jmc Exp $
 
 #  Ed Hill
 
@@ -28,7 +28,7 @@ echo "  done"
 echo -n "Downloading the MITgcm code from CVS pserver..."
 cd $tdir
 export CVSROOT='/u/gcmpack'
-cvs co MITgcm > /dev/null 2>&1
+cvs co -P MITgcm > /dev/null 2>&1
 echo "  done"
 cd MITgcm/verification
 

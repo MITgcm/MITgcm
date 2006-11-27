@@ -31,7 +31,7 @@ if test -e $TDIR ; then
 fi
 mkdir $TDIR
 cd $TDIR
-cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co MITgcm > /dev/null 2>&1
+cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null 2>&1
 #  cvs co MITgcm
 /usr/bin/find $TDIR -type d | xargs chmod g+rxs
 /usr/bin/find $TDIR -type f | xargs chmod g+r
