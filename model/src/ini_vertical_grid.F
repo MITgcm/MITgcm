@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.15 2006/10/17 18:52:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.16 2006/11/28 22:49:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -36,6 +36,17 @@ C     msgBuf   :: Informational/error meesage buffer
 CEOP
 
       _BEGIN_MASTER(myThid)
+
+C--   Set factors required for mixing pressure and meters as vertical coordinate.
+C     rkSign is a "sign" parameter which is used where the orientation of the vertical
+C     coordinate (pressure or meters) relative to the vertical index (K) is important.
+C     rkSign = -1 applies when K and the coordinate are in the opposite sense.
+C     rkSign =  1 applies when K and the coordinate are in the same sense.
+      rkSign       = -1. _d 0
+      gravitySign  = -1. _d 0
+      IF ( usingPCoords ) THEN
+         gravitySign = 1. _d 0
+      ENDIF
 
       IF (setCenterDr) THEN
 C-- Interface at middle between 2 centers :
@@ -102,7 +113,6 @@ C--
 
 C-    Calculate reciprol vertical grid spacing :
       DO K=1,Nr
-       saFac(K)  = 1. _d 0
        recip_drC(K)   = 1. _d 0/drC(K)
        recip_drF(K)   = 1. _d 0/drF(K)
       ENDDO
