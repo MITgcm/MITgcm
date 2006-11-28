@@ -1,0 +1,35 @@
+# Set-ups to compile the netcdf library with gfortran and g95.
+# Compatible with build options files darwin_ia32_gfortan and darwin_ia32_g95.
+# Tested on MacBookPro.
+ 
+wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-3.6.0-p1.tar.gz
+tar -xzvf netcdf-3.6.0-p1.tar.gz
+cd netcdf-3.6.0-p1/src
+
+###### GFORTRAN
+
+export FLIBS=-L/usr/local/lib/
+export FC=gfortran
+export FC90=gfortran
+export FFLAGS='-fsecond-underscore'
+export F90FLAGS='-fsecond-underscore'
+export CPPFLAGS='-Df2cFortran'
+
+./configure --prefix=../gfortran
+make
+make check
+make install
+
+###### GFORTRAN
+
+export FC=g95
+export FC90=g95
+export FFLAGS='-O2'
+export F90FLAGS='-O2'
+export CPPFLAGS='-Df2cFortran'
+
+./configure --prefix=../g95
+make
+make check
+make install
+
