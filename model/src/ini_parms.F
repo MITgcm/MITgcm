@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.187 2006/07/13 02:58:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.188 2006/11/28 22:47:13 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -18,29 +18,28 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
+c#include "GRID.h"
 #include "EOS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     myThid - Number of this instance of INI_PARMS
+C     myThid :: Number of this instance of INI_PARMS
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     dxSpacing, dySpacing - Default spacing in X and Y.
-C                            Units are that of coordinate system
-C                            i.e. cartesian => metres
-C                                  s. polar => degrees
-C     deltaTtracer :: Timestep for tracer equations ( s )
-C     forcing_In_AB :: flag to put all forcings (Temp,Salt,Tracers,Momentum) 
-C                      contribution in (or out of) Adams-Bashforth time stepping.
-C     goptCount - Used to count the nuber of grid options
-C                 (only one is allowed! )
-C     msgBuf    - Informational/error meesage buffer
-C     errIO     - IO error flag
-C     iUnit - Work variable for IO unit number
-C     record - Work variable for IO buffer
-C     K, I, J - Loop counters
-C     xxxDefault - Default value for variable xxx
+C     dxSpacing, dySpacing :: Default spacing in X and Y.
+C                          :: Units are that of coordinate system
+C                          :: i.e. cartesian => metres
+C                          ::       s. polar => degrees
+C     deltaTtracer  :: Timestep for tracer equations ( s )
+C     forcing_In_AB :: flag to put all forcings (Temp,Salt,Tracers,Momentum)
+C                   :: contribution in (or out of) Adams-Bashforth time stepping.
+C     goptCount  :: Used to count the nuber of grid options (only one is allowed!)
+C     msgBuf     :: Informational/error meesage buffer
+C     errIO      :: IO error flag
+C     iUnit      :: Work variable for IO unit number
+C     record     :: Work variable for IO buffer
+C     K, I, J    :: Loop counters
+C     xxxDefault :: Default value for variable xxx
       _RL  dxSpacing
       _RL  dySpacing
       _RL deltaTtracer
@@ -62,20 +61,20 @@ C     dependency.
       _RL hFacMinDrDefault
       _RL delRDefault(Nr)
       _RS rkFacDefault
-      _RL tracerDefault
 C     zCoordInputData :: Variables used to select between different coordinate systems.
-C     pCoordInputData :: The vertical coordinate system in the rest of the model is 
-C     rCoordInputData :: written in terms of r. In the model "data" file input data can
-C     coordsSet       :: be interms of z, p or r.
+C     pCoordInputData :: The vertical coordinate system in the rest of the model is
+C     rCoordInputData :: written in terms of r. In the model "data" file input data
+C     coordsSet       :: can be interms of z, p or r.
 C                     :: e.g. delZ or delP or delR for the vertical grid spacing.
 C                     :: The following rules apply:
 C                     :: All parameters must use the same vertical coordinate system.
 C                     ::  e.g. delZ and viscAz is legal but
 C                     ::       delZ and viscAr is an error.
-C                     :: Similarly specifyinh delZ and delP is an error.
-C                     :: zCoord..., pCoord..., rCoord... are used to flag when z, p or r are
-C                     :: used. coordsSet counts how many vertical coordinate systems have been
-C                        used to specify variables. coordsSet > 1 is an error.
+C                     :: Similarly specifying delZ and delP is an error.
+C                     :: zCoord..., pCoord..., rCoord... are used to flag when
+C                     :: z, p or r are used.
+C                     :: coordsSet counts how many vertical coordinate systems have
+C                     :: been used to specify variables. coordsSet > 1 is an error.
 C
 
       LOGICAL zCoordInputData
@@ -85,20 +84,14 @@ C
       LOGICAL diffKrSet
 
 C     Variables which have vertical coordinate system dependency.
-C     delZ      :: Vertical grid spacing ( m  ).
-C     delP      :: Vertical grid spacing ( Pa ).
-C     viscAz    :: Eddy viscosity coeff. for mixing of
-C                 momentum vertically ( m^2/s )
-C     viscAp    :: Eddy viscosity coeff. for mixing of
-C                 momentum vertically ( Pa^2/s )
-C     diffKzT   :: Laplacian diffusion coeff. for mixing of
-C                 heat vertically ( m^2/s )
-C     diffKpT   :: Laplacian diffusion coeff. for mixing of
-C                 heat vertically ( Pa^2/s )
-C     diffKzS   :: Laplacian diffusion coeff. for mixing of
-C                 salt vertically ( m^2/s )
-C     diffKpS   :: Laplacian diffusion coeff. for mixing of
-C                 salt vertically ( Pa^2/s )
+C     delZ    :: Vertical grid spacing ( m  ).
+C     delP    :: Vertical grid spacing ( Pa ).
+C     viscAz  :: Eddy viscosity coeff. for mixing of momentum vertically ( m^2/s )
+C     viscAp  :: Eddy viscosity coeff. for mixing of momentum vertically ( Pa^2/s )
+C     diffKzT :: Laplacian diffusion coeff. for mixing of heat vertically ( m^2/s )
+C     diffKpT :: Laplacian diffusion coeff. for mixing of heat vertically ( Pa^2/s )
+C     diffKzS :: Laplacian diffusion coeff. for mixing of salt vertically ( m^2/s )
+C     diffKpS :: Laplacian diffusion coeff. for mixing of salt vertically ( Pa^2/s )
       _RL delZ(Nr)
       _RL delP(Nr)
       _RL viscAz
@@ -117,6 +110,8 @@ C     trac_EvPrRn :: tracer conc. in Rain & Evap (old passive tracer code)
 C     saltDiffusion :: diffusion of salinity    on/off (flag not used)
 C     tempDiffusion :: diffusion of temperature on/off (flag not used)
 C     zonal_filt_lat :: Moved to package "zonal_filt"
+C     gravitySign :: direction of gravity relative to R direction
+C                 :: (removed from namelist and set according to z/p coordinate)
 C     viscAstrain  :: replaced by standard viscosity coeff & useStrainTensionVisc
 C     viscAtension :: replaced by standard viscosity coeff & useStrainTensionVisc
 C     useAnisotropicViscAgridMax :: Changed to be default behavior.  Can
@@ -134,7 +129,7 @@ C                 or that have moved to a different input file and/or namelist.
       LOGICAL tempDiffusion, saltDiffusion
       INTEGER tracerAdvScheme
       _RL trac_EvPrRn
-      _RL zonal_filt_lat
+      _RL zonal_filt_lat, gravitySign
       _RL viscAstrain, viscAtension
       LOGICAL useAnisotropicViscAGridMax
 C-
@@ -148,7 +143,7 @@ C-
 C--   Continuous equation parameters
       NAMELIST /PARM01/
      & gravitySign, nh_Am2,
-     & gravity, gBaro, rhonil, tAlpha, sBeta, 
+     & gravity, gBaro, rhonil, tAlpha, sBeta,
      & f0, beta, omega, rotationPeriod,
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
@@ -163,7 +158,8 @@ C--   Continuous equation parameters
      & viscAz,  cosPower, viscAstrain, viscAtension,
      & diffKhT, diffKzT, diffK4T,
      & diffKhS, diffKzS, diffK4S,
-     & tRef, sRef, eosType, integr_GeoPot, selectFindRoSurf,
+     & tRef, sRef, tRefFile, sRefFile, rhoRefFile,
+     & eosType, integr_GeoPot, selectFindRoSurf,
      & atm_Cp, atm_Rd, atm_Rq,
      & no_slip_sides, sideDragFactor,
      & no_slip_bottom, bottomDragLinear, bottomDragQuadratic,
@@ -197,46 +193,46 @@ C--   Continuous equation parameters
      & useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & zonal_filt_lat,
-     & inAdExact,
+     & inAdExact, smoothAbsFuncRange,
      & balanceEmPmR, balanceQnet, balancePrintMean
-     & , smoothAbsFuncRange
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
-     & cg2dMaxIters, cg2dChkResFreq, cg2dTargetResidual, 
+     & cg2dMaxIters, cg2dChkResFreq, cg2dTargetResidual,
      & cg2dTargetResWunit, cg2dpcOffDFac, cg2dPreCondFreq,
      & cg3dMaxIters, cg3dChkResFreq, cg3dTargetResidual
 
 C--   Time stepping parammeters
       NAMELIST /PARM03/
      & nIter0, nTimeSteps, nEndIter, pickupSuff,
-     & deltaT, deltaTClock, deltaTmom, 
+     & deltaT, deltaTClock, deltaTmom,
      & deltaTtracer, dTtracerLev, deltaTfreesurf,
-     & forcing_In_AB, momForcingOutAB, tracForcingOutAB, 
+     & forcing_In_AB, momForcingOutAB, tracForcingOutAB,
      & momDissip_In_AB, doAB_onGtGs,
-     & abEps, alph_AB, beta_AB, startFromPickupAB2, 
+     & abEps, alph_AB, beta_AB, startFromPickupAB2,
      & tauCD, rCD,
      & baseTime, startTime, endTime, chkPtFreq,
      & dumpFreq, dumpInitAndLast, adjDumpFreq, taveFreq, tave_lastIter,
-     & diagFreq, monitorFreq, adjMonitorFreq, pChkPtFreq, cAdjFreq, 
-     & outputTypesInclusive, 
-     & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax, 
+     & diagFreq, monitorFreq, adjMonitorFreq, pChkPtFreq, cAdjFreq,
+     & outputTypesInclusive,
+     & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax,
      & tauThetaClimRelax3Dim, tauSaltClimRelax3Dim, tauTr1ClimRelax,
      & periodicExternalForcing, externForcingPeriod, externForcingCycle,
      & calendarDumps
 
 C--   Gridding parameters
       NAMELIST /PARM04/
-     & usingCartesianGrid, dxSpacing, dySpacing, delX, delY, delZ,
+     & usingCartesianGrid, usingCylindricalGrid,
+     & dxSpacing, dySpacing, delX, delY, delXFile, delYFile,
      & usingSphericalPolarGrid, phiMin, thetaMin, rSphere,
-     & usingCurvilinearGrid, usingCylindricalGrid,
-     & delP, delR, rkFac, Ro_SeaLevel, groundAtK1, delRc,
-     & delXFile, delYFile, horizGridFile
+     & usingCurvilinearGrid, horizGridFile,
+     & Ro_SeaLevel, delZ, delP, delR, delRc, delRFile, delRcFile,
+     & rkFac, groundAtK1
 
 C--   Input files
       NAMELIST /PARM05/
-     & bathyFile, topoFile, shelfIceFile, 
-     & hydrogThetaFile, hydrogSaltFile, 
+     & bathyFile, topoFile, shelfIceFile,
+     & hydrogThetaFile, hydrogSaltFile,
      & zonalWindFile, meridWindFile,
      & thetaClimFile, saltClimFile,
      & surfQfile, surfQnetFile, surfQswFile, EmPmRfile, saltFluxFile,
@@ -254,7 +250,7 @@ C
 C     Defaults values for input parameters
       CALL SET_DEFAULTS(
      O   viscArDefault, diffKrTDefault, diffKrSDefault,
-     O   hFacMinDrDefault, delRdefault, rkFacDefault,
+     O   hFacMinDrDefault, delRDefault, rkFacDefault,
      I   myThid )
 
 C--   Initialise "which vertical coordinate system used" flags.
@@ -293,13 +289,13 @@ C--   Open the parameter file
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'Unable to open model parameter'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'file "data"'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
@@ -317,31 +313,31 @@ C--   Open the parameter file
       CLOSE(modelDataUnit)
 
 C--   Report contents of model parameter file
-      WRITE(msgBuf,'(A)') 
-     &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') '// Model parameter file "data"'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// Model parameter file "data"'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       iUnit = scrUnit2
       REWIND(iUnit)
       DO WHILE ( .TRUE. )
        READ(UNIT=iUnit,FMT='(A)',END=2001) RECORD
        IL = MAX(ILNBLNK(RECORD),1)
        WRITE(msgBuf,'(A,A)') '>',RECORD(:IL)
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
       ENDDO
  2001 CONTINUE
       CLOSE(iUnit)
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
 
 C--   Read settings from model parameter file "data".
@@ -385,27 +381,27 @@ C--   Set default "physical" parameters
 C--   z,p,r coord input switching.
       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM01'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1) 
+     &                    SQUEEZE_RIGHT, myThid )
       READ(UNIT=iUnit,NML=PARM01) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'Error reading numerical model '
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'parameter file "data"'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'Problem in namelist PARM01'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM01 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1) 
+     &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 
 C-    set the type of vertical coordinate and type of fluid 
@@ -426,7 +422,7 @@ C     according to buoyancyRelation
       ELSE
         WRITE(msgBuf,'(2A)') 'S/R INI_PARMS:',
      &      ' Bad value of buoyancyRelation '
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
 
@@ -436,11 +432,11 @@ C-     No barotropic solver selected => use implicitFreeSurface as default
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: No request for barotropic solver'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: => Use implicitFreeSurface as default'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                     SQUEEZE_RIGHT, myThid )
         implicitFreeSurface = .TRUE.
       ENDIF
       IF ( implicitFreeSurface ) freeSurfFac = 1.D0
@@ -450,7 +446,7 @@ C-     No barotropic solver selected => use implicitFreeSurface as default
       IF ( rhoConstFresh .EQ. UNSET_RL ) rhoConstFresh=rhoConst
       IF ( omega .EQ. UNSET_RL ) THEN
         omega = 0. _d 0
-        IF ( rotationPeriod .NE. 0. _d 0 ) 
+        IF ( rotationPeriod .NE. 0. _d 0 )
      &  omega = 2.D0 * PI / rotationPeriod
       ELSEIF ( omega .EQ. 0. _d 0 ) THEN
         rotationPeriod = 0. _d 0
@@ -462,25 +458,11 @@ C-     No barotropic solver selected => use implicitFreeSurface as default
       ELSE
         atm_kappa = atm_Rd / atm_Cp
       ENDIF
-C-    set default vertical profile for temperature: tRef
-      tracerDefault = 20.
-      IF ( fluidIsAir ) tracerDefault = 300.
-      DO k=1,Nr
-        IF (tRef(k).EQ.UNSET_RL) tRef(k) = tracerDefault
-        tracerDefault = tRef(k)
-      ENDDO
-C-    set default vertical profile for salinity/water-vapour: sRef
-      tracerDefault = 30.
-      IF ( fluidIsAir ) tracerDefault = 0.
-      DO k=1,Nr
-        IF (sRef(k).EQ.UNSET_RL) sRef(k) = tracerDefault
-        tracerDefault = sRef(k)
-      ENDDO
 C--   Non-hydrostatic/quasi-hydrostatic
       IF (nonHydrostatic.AND.quasiHydrostatic) THEN
        WRITE(msgBuf,'(A)')
      &   'Illegal: both nonHydrostatic = quasiHydrostatic = TRUE'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
 C--  Advection and Forcing for Temp and salt
@@ -519,7 +501,7 @@ C--   z,p,r coord input switching.
       ELSEIF ( diffKrT.NE.diffKrTDefault ) THEN
        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
      &    'diffKrNrT and diffKrT (or Kp,Kz) in input file data'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
 
@@ -540,7 +522,7 @@ C--   z,p,r coord input switching.
       ELSEIF ( diffKrS.NE.diffKrSDefault ) THEN
        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
      &    'diffKrNrS and diffKrS (or Kp,Kz) in input file data'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
 
@@ -560,7 +542,7 @@ C--   z,p,r coord input switching.
         WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: To use ivdc_kappa you must enable implicit',
      &  ' vertical diffusion.'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
 
@@ -571,13 +553,13 @@ C--   z,p,r coord input switching.
       IF ( coordsSet .GT. 1 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: Cannot mix z, p and r in the input data.'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
       IF ( rhoConst .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: rhoConst must be greater than 0.'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
        recip_rhoConst = 1.D0 / rhoConst
@@ -585,7 +567,7 @@ C--   z,p,r coord input switching.
       IF ( rhoNil .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: rhoNil must be greater than 0.'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
        recip_rhoNil = 1.D0 / rhoNil
@@ -593,7 +575,7 @@ C--   z,p,r coord input switching.
       IF ( HeatCapacity_Cp .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: HeatCapacity_Cp must be greater than 0.'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
        recip_Cp = 1.D0 / HeatCapacity_Cp
@@ -601,7 +583,7 @@ C--   z,p,r coord input switching.
       IF ( gravity .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: gravity must be greater than 0.'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
        recip_gravity = 1.D0 / gravity
@@ -621,101 +603,101 @@ C     Check for retired parameters still being used
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: Paramater "zonal_filt_lat" is',
      &  ' no longer allowed in file "data".'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: Paramater "zonal_filt_lat" is',
      &  ' now read from file "data.zonfilt".'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( gravitySign .NE. UNSET_RL ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: "gravitySign" is set according to vertical ',
      &  ' coordinate and is no longer allowed in file "data".'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( tracerAdvScheme .NE. UNSET_I ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "tracerAdvScheme" ',
      &  '(old passive tracer code) is no longer allowed in file "data"'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( trac_EvPrRn .NE. UNSET_RL ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "trac_EvPrRn" ',
      &  '(old passive tracer code) is no longer allowed in file "data"'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( .NOT. tempDiffusion ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "tempDiffusion" ',
      &  'is no longer allowed in file "data"'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: to turn off diffusion',
      &  ' => set diffusivity to zero'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( .NOT. saltDiffusion ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "saltDiffusion" ',
      &  'is no longer allowed in file "data"'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: to turn off diffusion',
      &  ' => set diffusivity to zero'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( viscAstrain .NE. UNSET_RL ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: "viscAstrain" ',
      &  'is no longer allowed in file "data"'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: to use Strain & Tension',
      &  ' formulation => set useStrainTensionVisc to TRUE'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( viscAtension .NE. UNSET_RL ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: "viscAtension" ',
      &  'is no longer allowed in file "data"'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: to use Strain & Tension',
      &  ' formulation => set useStrainTensionVisc to TRUE'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF (useAnisotropicViscAgridMax .NEQV. .TRUE. ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: "useAnisotropicViscAgridMax" ',
      &  'is not allowed in "data" substitute useAreaViscLength=true'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 
 C--   Elliptic solver parameters
       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM02'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1) 
+     &                    SQUEEZE_RIGHT, myThid )
       READ(UNIT=iUnit,NML=PARM02) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'Error reading numerical model '
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'parameter file "data".'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'Problem in namelist PARM02'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM02 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1) 
+     &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 
 C--   Time stepping parameters
@@ -725,55 +707,55 @@ C--   Time stepping parameters
       forcing_In_AB     = .TRUE.
       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM03'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1) 
+     &                    SQUEEZE_RIGHT, myThid )
       READ(UNIT=iUnit,NML=PARM03) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'Error reading numerical model '
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'parameter file "data"'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'Problem in namelist PARM03'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM03 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1) 
+     &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 C     Check for retired parameters still being used
       IF ( tauThetaClimRelax3Dim .NE. UNSET_RL ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "tauThetaClimRelax3Dim" ',
      &  'is no longer allowed in file "data"'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: 3-dim. relaxation code',
      & ' has moved to separate pkg/rbcs.'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( tauSaltClimRelax3Dim .NE. UNSET_RL ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "tauSaltClimRelax3Dim" ',
      &  'is no longer allowed in file "data"'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: 3-dim. relaxation code',
      & ' has moved to separate pkg/rbcs.'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( calendarDumps ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "calendarDumps" ',
      &  'is no longer allowed in file "data"'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: calendarDumps',
      & ' has moved to "data.cal"'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 
 C     Process "timestepping" params
@@ -782,7 +764,7 @@ C     o Time step size
      &     deltaTtracer .NE. 0. .AND. dTtracerLev(1) .NE. 0. ) THEN
         WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: deltaTtracer & dTtracerLev(1) not equal'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSEIF ( dTtracerLev(1) .NE. 0. ) THEN
         deltaTtracer = dTtracerLev(1)
@@ -807,35 +789,35 @@ C it is better to set deltaTreesurf=deltaTtracer
        IF ( externForcingCycle*externForcingPeriod .EQ. 0. ) THEN
         WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: externForcingCycle,externForcingPeriod =0'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R INI_PARMS'
        ENDIF
        IF ( INT(externForcingCycle/externForcingPeriod) .NE.
      &          externForcingCycle/externForcingPeriod ) THEN
         WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: externForcingCycle <> N*externForcingPeriod'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R INI_PARMS'
        ENDIF
        IF ( externForcingCycle.lt.externForcingPeriod ) THEN
         WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: externForcingCycle < externForcingPeriod'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R INI_PARMS'
        ENDIF
        IF ( externForcingPeriod.lt.deltaTclock ) THEN
         WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: externForcingPeriod < deltaTclock'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R INI_PARMS'
        ENDIF
       ENDIF
 C     o Adams-Bashforth time stepping:
-      IF ( momForcingOutAB  .EQ. UNSET_I ) THEN 
+      IF ( momForcingOutAB  .EQ. UNSET_I ) THEN
         momForcingOutAB  = 1
         IF ( forcing_In_AB ) momForcingOutAB  = 0
       ENDIF
-      IF ( tracForcingOutAB .EQ. UNSET_I ) THEN 
+      IF ( tracForcingOutAB .EQ. UNSET_I ) THEN
         tracForcingOutAB = 1
         IF ( forcing_In_AB ) tracForcingOutAB = 0
       ENDIF
@@ -847,7 +829,7 @@ C     o Convection frequency
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: You have enabled both ivdc_kappa and',
      &  ' convective adjustment.'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
       IF (useCDscheme) THEN
@@ -909,30 +891,30 @@ C     o Consistent?
       IF ( startTime .NE. baseTime+deltaTClock*float(nIter0) ) THEN
        WRITE(msgBuf,'(A)')
      & 'S/R INI_PARMS: startTime, baseTime and nIter0 are inconsistent'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      & 'S/R INI_PARMS: Perhaps more than two were set at once'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
       IF ( nEndIter .NE. nIter0+nTimeSteps ) THEN
        WRITE(msgBuf,'(A)')
      & 'S/R INI_PARMS: nIter0, nTimeSteps and nEndIter are inconsistent'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      & 'S/R INI_PARMS: Perhaps more than two were set at once'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
-      IF ( nTimeSteps .NE. NINT((endTime-startTime)/deltaTClock) )
-     & THEN
-        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS: both endTime and nTimeSteps have been set'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS: but are inconsistent'
-        CALL PRINT_ERROR( msgBuf , 1)
-        STOP 'ABNORMAL END: S/R INI_PARMS'
+      IF ( nTimeSteps .NE. NINT((endTime-startTime)/deltaTClock)
+     &   ) THEN
+       WRITE(msgBuf,'(A)')
+     & 'S/R INI_PARMS: both endTime and nTimeSteps have been set'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     & 'S/R INI_PARMS: but are inconsistent'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
 
 C     o Monitor (should also add CPP flag for monitor?)
@@ -958,32 +940,31 @@ C     In cartesian coords distances are in metres
        delR(K) = UNSET_RL
       ENDDO
 C     In spherical polar distances are in degrees
-      recip_rSphere  = 1.D0/rSphere
       dxSpacing = UNSET_RL
       dySpacing = UNSET_RL
       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM04'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1) 
+     &                    SQUEEZE_RIGHT, myThid )
       READ(UNIT=iUnit,NML=PARM04,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'Error reading numerical model '
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'parameter file "data"'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'Problem in namelist PARM04'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM04 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1) 
+     &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 
 C     Check for retired parameters still being used
@@ -992,14 +973,14 @@ C     Check for retired parameters still being used
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: "rkFac" has been replaced by -rkSign ',
      &  ' and is no longer allowed in file "data".'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
       IF ( groundAtK1 ) THEN
 c      nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: "groundAtK1" is set according to vertical ',
      &  ' coordinate and is no longer allowed in file "data".'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 
 C     X coordinate : Check for multiple definitions
@@ -1008,10 +989,10 @@ C     X coordinate : Check for multiple definitions
       IF ( dxSpacing .NE. UNSET_RL ) goptCount = goptCount + 1
       IF ( delXFile  .NE. ' ' )      goptCount = goptCount + 1
       IF ( goptCount.GT.1 ) THEN
-         WRITE(msgBuf,'(A,A)') 'Too many specifications for delX:',
+       WRITE(msgBuf,'(A,A)') 'Too many specifications for delX:',
      &   'Specify only one of delX, dxSpacing or delXfile'
-        CALL PRINT_ERROR( msgBuf , 1)
-        STOP 'ABNORMAL END: S/R INI_PARMS'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
       IF ( dxSpacing .NE. UNSET_RL ) THEN
        DO i=1,Nx
@@ -1024,10 +1005,10 @@ C     Y coordinate : Check for multiple definitions
       IF ( dySpacing .NE. UNSET_RL ) goptCount = goptCount + 1
       IF ( delYFile  .NE. ' ' )      goptCount = goptCount + 1
       IF ( goptCount.GT.1 ) THEN
-         WRITE(msgBuf,'(A,A)') 'Too many specifications for delY:',
+       WRITE(msgBuf,'(A,A)') 'Too many specifications for delY:',
      &   'Specify only one of delY, dySpacing or delYfile'
-        CALL PRINT_ERROR( msgBuf , 1)
-        STOP 'ABNORMAL END: S/R INI_PARMS'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
       IF ( dySpacing .NE. UNSET_RL ) THEN
        DO j=1,Ny
@@ -1035,8 +1016,8 @@ C     Y coordinate : Check for multiple definitions
        ENDDO
       ENDIF
 C
-      IF ( rSphere .NE. 0 ) THEN
-       recip_rSphere = 1.D0/rSphere
+      IF ( rSphere .NE. 0. ) THEN
+       recip_rSphere = 1. _d 0/rSphere
       ELSE
        recip_rSphere = 0.
       ENDIF
@@ -1049,7 +1030,7 @@ C--   Check for conflicting grid definitions.
       IF ( goptCount .GT. 1 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: More than one coordinate system requested'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
       IF ( goptCount .LT. 1 ) THEN
@@ -1057,11 +1038,11 @@ C-     No horizontal grid is specified => use Cartesian grid as default:
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: No horizontal grid requested'
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: => Use Cartesian Grid as default'
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                     SQUEEZE_RIGHT, myThid )
        usingCartesianGrid = .TRUE.
       ENDIF
 C--   Make metric term & Coriolis settings consistent with underlying grid.
@@ -1075,7 +1056,7 @@ C--   Make metric term & Coriolis settings consistent with underlying grid.
        useBetaPlaneF = .TRUE.
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; Cylinder OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                     SQUEEZE_RIGHT, myThid )
       ENDIF
       IF ( usingCurvilinearGrid ) THEN
        metricTerms   = .FALSE.
@@ -1095,82 +1076,120 @@ C     note: done later (once domain size is known) if using CartesianGrid
       ENDIF
 C--   set cell Center depth and put Interface at the middle between 2 C
       setCenterDr = .FALSE.
-      IF (delRc(1).NE.UNSET_RL) setCenterDr=.TRUE.
       DO K=1,Nr+1
-        IF (delRc(K).EQ.UNSET_RL) setCenterDr = .FALSE.
+       IF ( delRc(K).EQ.UNSET_RL ) THEN
+        IF ( setCenterDr ) THEN
+         WRITE(msgBuf,'(A,I4)')
+     &        'S/R INI_PARMS: No value for delRc at K =', K
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R INI_PARMS'
+        ENDIF
+       ELSE
+        IF ( k.EQ.1 ) setCenterDr = .TRUE.
+        IF ( .NOT.setCenterDr ) THEN
+         WRITE(msgBuf,'(A,I4)')
+     &        'S/R INI_PARMS: No value for delRc at K <', K
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R INI_PARMS'
+        ENDIF
+       ENDIF
       ENDDO
+      IF ( setCenterDr ) rCoordInputData = .TRUE.
 C--   p, z, r coord parameters
+      setInterFDr = .FALSE.
       DO K = 1, Nr
        IF ( delZ(K) .NE. UNSET_RL ) zCoordInputData = .TRUE.
        IF ( delP(K) .NE. UNSET_RL ) pCoordInputData = .TRUE.
        IF ( delR(K) .NE. UNSET_RL ) rCoordInputData = .TRUE.
        IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delZ(K)
        IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delP(K)
-       IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delRDefault(K)
-       IF (.NOT.setCenterDr .AND. delR(K).EQ.delRDefault(K) ) THEN
+       IF ( delR(K) .EQ. UNSET_RL ) THEN
+        IF ( setInterFDr ) THEN
          WRITE(msgBuf,'(A,I4)')
-     &  'S/R INI_PARMS: No value for delZ/delP/delR at K = ',K
-         CALL PRINT_ERROR( msgBuf , 1)
+     &        'S/R INI_PARMS: No value for delZ/delP/delR at K =', K
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R INI_PARMS'
-       ELSEIF ( setCenterDr .AND. delR(K).NE.delRDefault(K) ) THEN
-         WRITE(msgBuf,'(2A,I4)') 'S/R INI_PARMS:',
-     &    ' Cannot specify both delRc and delZ/delP/delR at K=', K
-         CALL PRINT_ERROR( msgBuf , 1)
+        ENDIF
+       ELSE
+        IF ( k.EQ.1 ) setInterFDr = .TRUE.
+        IF ( .NOT.setInterFDr ) THEN
+         WRITE(msgBuf,'(A,I4)')
+     &        'S/R INI_PARMS: No value for delZ/delP/delR at K <', K
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R INI_PARMS'
+        ENDIF
        ENDIF
       ENDDO
 C     Check for multiple coordinate systems
-      CoordsSet = 0
+      coordsSet = 0
       IF ( zCoordInputData ) coordsSet = coordsSet + 1
       IF ( pCoordInputData ) coordsSet = coordsSet + 1
       IF ( rCoordInputData ) coordsSet = coordsSet + 1
       IF ( coordsSet .GT. 1 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: Cannot mix z, p and r in the input data.'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
+C-    Check for double definition (file & namelist)
+      IF ( delRcFile.NE.' ' ) THEN
+        IF ( setCenterDr ) THEN
+          WRITE(msgBuf,'(A)')
+     &         'S/R INI_PARMS: Cannot set both delRc and delRcFile'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R INI_PARMS'
+        ENDIF
+        setCenterDr = .TRUE.
+      ENDIF
+      IF ( delRFile.NE.' ' ) THEN
+        IF ( setInterFDr ) THEN
+          WRITE(msgBuf,'(A)')
+     &         'S/R INI_PARMS: Cannot set both delR and delRFile'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R INI_PARMS'
+        ENDIF
+        setInterFDr = .TRUE.
+      ENDIF
+c     IF ( setInterFDr .AND. setCenterDr ) THEN
+c       WRITE(msgBuf,'(2A)') 'S/R INI_PARMS:',
+c    &    ' Cannot specify both delRc and delZ/delP/delR'
+c       CALL PRINT_ERROR( msgBuf, myThid )
+c       STOP 'ABNORMAL END: S/R INI_PARMS'
+c     ENDIF
 
 C--   Input files
       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM05'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1) 
+     &                    SQUEEZE_RIGHT, myThid )
       READ(UNIT=iUnit,NML=PARM05) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'Error reading numerical model '
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'parameter file "data"'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'Problem in namelist PARM05'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM05 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1) 
+     &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 
 C--   Set factors required for mixing pressure and meters as vertical coordinate.
-C     rkSign is a "sign" parameter which is used where the orientation of the vertical
-C     coordinate (pressure or meters) relative to the vertical index (K) is important.
-C     rkSign = -1 applies when K and the coordinate are in the opposite sense.
-C     rkSign =  1 applies when K and the coordinate are in the same sense.
 C     horiVertRatio is a parameter that maps horizontal units to vertical units.
 C     It is used in certain special cases where lateral and vertical terms are
 C     being combined and a single frame of reference is needed.
-      rkSign       = -1. _d 0
       horiVertRatio = 1. _d 0
-      gravitySign  = -1. _d 0
       IF ( usingPCoords ) THEN
-         gravitySign = 1. _d 0
          horiVertRatio = Gravity * rhoConst
       ENDIF
       convertEmP2rUnit = rhoConstFresh*recip_rhoConst*horiVertRatio
-      recip_horiVertRatio = 1./horiVertRatio
+      recip_horiVertRatio = 1. _d 0/horiVertRatio
 
 c-- gradually replacing debugMode by debugLevel
       IF ( debugMode ) debugLevel = debLevB
@@ -1191,10 +1210,10 @@ C--   Stop if they were
       IF ( nRetired .GT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'Error reading parameter file "data"'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &  'some out of date parameters were found in the namelist'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
 

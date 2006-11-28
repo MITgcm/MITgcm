@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.30 2006/10/17 18:20:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.31 2006/11/28 22:47:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,6 +29,7 @@ C     !USES:
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     myThid  :: my Thread Id number
       INTEGER myThid
 CEOP
 
@@ -37,7 +38,7 @@ C     === Functions ====
       EXTERNAL MASTER_CPU_IO
 
 C     !LOCAL VARIABLES:
-C     msgBuf - Used for informational I/O.
+C     msgBuf  :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_MNC
       INTEGER i
@@ -45,6 +46,11 @@ C     msgBuf - Used for informational I/O.
 
 C     load grid spacing (vector) from files
       CALL LOAD_GRID_SPACING( myThid )
+
+C     Set up reference vertical profile (vector) for state variables
+C jmc: this call will not stay here but will move to S/R INITIALISE_FIXED
+C      (a better place) once anelatic initialisation is cleaned-up.
+      CALL INI_REFERENCE_STATE( myThid )
 
 C     Set up vertical grid and coordinate system
       CALL INI_VERTICAL_GRID( myThid )
@@ -56,14 +62,14 @@ C     can be fitted into this design. In this case custom metric terms
 C     also need adding to account for the projections of velocity
 C     vectors onto these grids.  The structure used here also makes it
 C     possible to implement less regular grid mappings. In particular:
-C      o Schemes which leave out blocks of the domain that are   
-C        all land could be supported.                            
-C      o Multi-level schemes such as icosohedral or cubic        
-C        grid projectedions onto a sphere can also be fitted     
-C       within the strategy we use.                             
-C        Both of the above also require modifying the support    
-C        routines that map computational blocks to simulation    
-C        domain blocks.                                          
+C      o Schemes which leave out blocks of the domain that are
+C        all land could be supported.
+C      o Multi-level schemes such as icosohedral or cubic
+C        grid projectedions onto a sphere can also be fitted
+C       within the strategy we use.
+C        Both of the above also require modifying the support
+C        routines that map computational blocks to simulation
+C        domain blocks.
 
 C     Set up horizontal grid and coordinate system
       IF ( usingCartesianGrid ) THEN

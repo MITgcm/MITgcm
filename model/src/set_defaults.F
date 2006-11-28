@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.117 2006/07/13 02:58:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.118 2006/11/28 22:47:13 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -21,7 +21,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 Cml#include "EOS.h"
-#include "GRID.h"
+c#include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid - Number of this instance of INI_PARMS
@@ -39,7 +39,9 @@ C     K, I, J - Loop counters
 CEOP
 
 C--   Grid parameters
-C     Vertical gridding
+C-    Vertical gridding
+      delRFile            = ' '
+      delRcFile           = ' '
       rkFacDefault        = 1. _d 0
       horiVertRatio       = 1. _d 0
       Ro_SeaLevel         = 0.
@@ -49,8 +51,12 @@ C     Vertical gridding
       DO k=1,Nr+1
        delRc(k)           = UNSET_RL
       ENDDO
+C-    vertical profile
+      tRefFile            = ' '
+      sRefFile            = ' '
+      rhoRefFile          = ' '
 
-C     Horizontal gridding
+C-    Horizontal gridding
       delXFile            = ' '
       delYFile            = ' '
       horizGridFile       = ' '
@@ -76,7 +82,6 @@ C     Coriolis map:
       useBetaPlaneF       = .FALSE.
       useSphereF          = .TRUE.
       use3dCoriolis       = .TRUE.
-
 
 C--   Set default "physical" parameters
       nh_Am2              = 1. _d 0
