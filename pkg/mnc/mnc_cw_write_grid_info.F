@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.9 2004/09/22 21:19:44 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.10 2006/11/28 20:23:56 jmc Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -45,7 +45,6 @@ C     Create MNC definitions for GRID.h variables
       CALL MNC_CW_ADD_VNAME('rF', '-_-_--__I__-', 0,0, myThid)
       CALL MNC_CW_ADD_VNAME('drC', '-_-_--__C__-', 0,0, myThid)
       CALL MNC_CW_ADD_VNAME('drF', '-_-_--__C__-', 0,0, myThid)
-      CALL MNC_CW_ADD_VNAME('saFac', '-_-_--__C__-', 0,0, myThid)
 
       CALL MNC_CW_ADD_VNAME('xC', 'Cen_xy_Hn__-__-', 3,4, myThid)
       CALL MNC_CW_ADD_VNAME('yC', 'Cen_xy_Hn__-__-', 3,4, myThid)
@@ -79,8 +78,6 @@ C     Create MNC definitions for GRID.h variables
      &     'r cell center separation',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('drF','description',
      &     'r cell face separation',myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('saFac','description',
-     &     'shallow atmosphere factor',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('xC','description',
      &     'x of cell center',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('yC','description',
@@ -134,7 +131,6 @@ C     Write the GRID.h variables
       CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'rF',rF,myThid)
       CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'drC',drC,myThid)
       CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'drF',drF,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'saFac',saFac,myThid)
       CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'xC',xC,myThid)
       CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'yC',yC,myThid)
       CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'xG',xG,myThid)
