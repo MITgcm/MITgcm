@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.7 2005/12/16 21:07:53 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.8 2006/11/28 21:16:03 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -172,7 +172,7 @@ c.........................................................
 cdiags
 c         WRITE(0,*)'xguess ',xguess
 cdiags
-          do 100 inewton = 1, inewtonmax
+          do inewton = 1, inewtonmax
 c set some common combinations of parameters used in
 c the iterative [H+] solvers
             x2=x*x
@@ -229,7 +229,7 @@ c           write(0,*)'inewton, x, deltax ',inewton, x, deltax
 c           write(6,*)
 cdiags
 
- 100      end do
+          end do
 c end of newton-raphson method
 c....................................................
         else 
@@ -238,7 +238,7 @@ C BRACKET AND BISECTION METHOD
 c....................................................
 c (ii) If first step use Bracket and Bisection method
 c      with fixed, large number of iterations
-          do 200 ibrack = 1, ibrackmax
+          do ibrack = 1, ibrackmax
             do hstep = 1,3
               if(hstep .eq. 1)x = xhi
               if(hstep .eq. 2)x = xlo 
@@ -287,7 +287,7 @@ cdiags
 c write value of x to check convergence....
 c           WRITE(0,*)'bracket-bisection iteration ',ibrack, xmid
 cdiags
- 200      end do
+          end do
 c last iteration gives value
           x = xmid
 c end of bracket and bisection method

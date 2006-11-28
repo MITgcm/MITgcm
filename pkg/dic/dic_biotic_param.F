@@ -41,6 +41,9 @@ C remin power law coeff
 C critical depth (m)
        zcrit = 50.0
        nlev=10
+#ifdef AD_SAFE
+       nlev=nR
+#endif
 ccritical oxygen level (mol m-3)
        O2crit = 4.0d-3
 C set stoichiometric ratios

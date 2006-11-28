@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.8 2005/12/16 21:07:53 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.9 2006/11/28 21:16:03 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -23,8 +23,6 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DIC_BIOTIC.h"
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
 
 C     == Routine arguments ==                
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
@@ -34,6 +32,9 @@ C     myThid - Instance number for this innvocation of CALC_GT
       _RL  fe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER myIter,myThid
+#ifdef AD_SAFE
+      _RL thx, thy, theps
+#endif
 CEndOfInterface
 
 #ifdef ALLOW_FE
@@ -71,7 +72,17 @@ C   Ligand,FeL,Fe calculation
               FeL = ligand_tot-lig
               freefe(i,j,k,bi,bj) = fe (i,j,k,bi,bj)-FeL
 #ifdef MINFE
+#ifdef AD_SAFE
+              thx=freefe(i,j,k,bi,bj)
+              thy=freefemax
+              theps=1.d-8
+              freefe(i,j,k,bi,bj) =
+     &                 ( 1.d0 - tanh((thx-thy)/theps) ) * thx/2 +
+     &                 ( 1.d0 + tanh((thx-thy)/theps) ) * thy/2
+
+#else
               freefe(i,j,k,bi,bj) = min(freefe(i,j,k,bi,bj),freefemax)
+#endif
               fe(i,j,k,bi,bj) = FeL+freefe(i,j,k,bi,bj)
 #endif
           END IF  

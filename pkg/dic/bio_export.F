@@ -55,7 +55,13 @@ C  i,j,k                  :: loop indices
        INTEGER I,J,k
       _RL sfac(1-OLy:sNy+OLy)
       _RL lit, atten
+      _RL nutlimit
+#ifdef AD_SAFE
+      _RL thx, thy, theps
+#endif
 CEOP
+
+
 #ifndef READ_PAR
         call insol(myTime,sfac,bj)
 #endif
@@ -81,14 +87,25 @@ C$TAF STORE lit = bio_export
              if (lit.lt.0.d0.or.lit.gt.150) then
                  print*,'QQ lit', lit
              endif
+
+#ifdef ALLOW_FE
+#ifdef AD_SAFE
+             thx = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4)
+             thy = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+KFE)
+             theps = 1.d-6
+             nutlimit= ( 1.d0 - tanh((thx-thy)/theps) ) * thx/2 + 
+     &                 ( 1.d0 + tanh((thx-thy)/theps) ) * thy/2
+#else
+             nutlimit=   min(PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4),
+     &                        PTR_FE(i,j,k)/(PTR_FE(i,j,k)+KFE) )
+#endif
+#else
+             nutlimit=    PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4)
+#endif
+
              bioac(i,j,k)=alpha(i,j,bi,bj)*
      &                    lit/(lit+lit0)*maskC(i,j,k,bi,bj)*
-#ifdef ALLOW_FE
-     &                    min(PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4),
-     &                        PTR_FE(i,j,k)/(PTR_FE(i,j,k)+KFE) ) 
-#else
-     &                    PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4)
-#endif
+     &                    nutlimit
             ENDDO
           ENDDO
         ENDDO

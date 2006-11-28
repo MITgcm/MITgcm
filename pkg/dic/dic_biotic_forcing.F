@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.11 2005/12/16 21:07:53 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.12 2006/11/28 21:16:03 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -122,7 +122,7 @@ CEOP
        ENDDO
 
 c carbon air-sea interaction
-       CALL DIC_SURFFORCING( PTR_DIC, SURC,
+       CALL DIC_SURFFORCING( PTR_DIC, PTR_ALK, PTR_PO4, SURC,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 
@@ -164,7 +164,7 @@ c code following methid by Karsten Friis
          nCALCITEstep = 3600
          IF(myIter .lt. (nIter0+5) .or.
      &               mod(myIter,nCALCITEstep) .eq. 0)THEN
-           CALL CALCITE_SATURATION(
+           CALL CALCITE_SATURATION(PTR_DIC, PTR_ALK, PTR_PO4,
      I                    bi,bj,imin,imax,jmin,jmax,
      I                    myIter,myTime,myThid)
         ENDIF

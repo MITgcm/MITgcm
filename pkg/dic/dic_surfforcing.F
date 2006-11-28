@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.11 2006/09/12 19:58:02 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.12 2006/11/28 21:16:03 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -9,7 +9,7 @@ CBOP
 C !ROUTINE: DIC_SURFFORCING
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE DIC_SURFFORCING( PTR_CO2 , GDC, 
+      SUBROUTINE DIC_SURFFORCING( PTR_CO2 , PTR_ALK, PTR_PO4, GDC, 
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
@@ -26,10 +26,6 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "FFIELDS.h"
 #include "DIC_ABIOTIC.h"
-#ifdef DIC_BIOTIC
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -39,6 +35,8 @@ c  PTR_CO2              :: DIC tracer field
       INTEGER myIter, myThid
       _RL myTime
       _RL  PTR_CO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER iMin,iMax,jMin,jMax, bi, bj
 
 C !OUTPUT PARAMETERS: ===================================================
@@ -80,9 +78,9 @@ C determine inorganic carbon chem coefficients
 
 #ifdef DIC_BIOTIC
 cQQQQ check ptracer numbers
-             surfalk(i,j) = PTRACER(i,j,klev,bi,bj,2)
+             surfalk(i,j) = PTR_ALK(i,j,klev)
      &                          * maskC(i,j,kLev,bi,bj)
-             surfphos(i,j)  = PTRACER(i,j,klev,bi,bj,3)
+             surfphos(i,j)  = PTR_PO4(i,j,klev)
      &                          * maskC(i,j,kLev,bi,bj)
 #else
              surfalk(i,j) = 2.366595 * salt(i,j,kLev,bi,bj)/gsm_s

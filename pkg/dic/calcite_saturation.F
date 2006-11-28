@@ -5,7 +5,7 @@ CBOP
 C !ROUTINE: CAR_FLUX
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE CALCITE_SATURATION(
+      SUBROUTINE CALCITE_SATURATION(PTR_DIC, PTR_ALK, PTR_PO4,
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
@@ -21,16 +21,16 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "DIC_BIOTIC.h"
 #include "DIC_ABIOTIC.h"
-#ifdef ALLOW_PTRACERS
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
 C  myIter               :: current timestep
 C  myTime               :: current time
 C  bioac                :: biological productivity
+       _RL  PTR_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+       _RL  PTR_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+       _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+
       INTEGER myIter
       _RL myTime
       INTEGER myThid
@@ -86,9 +86,9 @@ c determine calcite saturation state
 
 c 30 micromol = 0.03 mol m-3
              silicaTEST = 0.03d0
-             po4local = Ptracer(i,j,k,bi,bj,3)
-             diclocal = Ptracer(i,j,k,bi,bj,1)
-             alklocal = Ptracer(i,j,k,bi,bj,2)
+             po4local = PTR_PO4(i,j,k)
+             diclocal = PTR_DIC(i,j,k)
+             alklocal = PTR_ALK(i,j,k)
 c            pHlocal = pHlast(i,j,k,bi,bj)
              pHlocal = 7.9d0
 
