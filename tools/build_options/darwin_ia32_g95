@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_g95,v 1.1 2006/11/28 19:01:36 dfer Exp $
+#
+# cc-compiler is available only with the Apple Developer Tools, 
+# so make sure that those are installed 
+#
+
+CPP='/usr/bin/cpp -traditional -P -xassembler-with-cpp'
+FC=g95
+LINK=g95
+NOOPTFLAGS='-O0'
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+#EH3 MAKEDEPEND='${TOOLSDIR}/xmakedepend'
+#EH3 MAKEDEPEND=makedepend
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_TERMINATORM'
+INCLUDES='-I/Users/davidferreira/Documents/netcdf-3.6.1/g95/include'
+LIBS='-L/Users/davidferreira/Documents/netcdf-3.6.1/g95/lib'
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS='-Wunused -Wuninitialized'
+    FOPTIM='-O3 -funroll-loops'
+#   FOPTIM='-O3 -malign-double -funroll-loops'
+else
+    FFLAGS='-Wunused -ffloat-store'
+    FOPTIM='-O0'
+fi
+

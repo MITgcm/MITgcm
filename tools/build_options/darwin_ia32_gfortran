@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.1 2006/11/28 19:01:36 dfer Exp $
+#
+# cc-compiler is available only with the Apple Developer Tools, 
+# so make sure that those are installed 
+#
+
+CPP='/usr/bin/cpp -traditional -P -xassembler-with-cpp'
+FC=gfortran
+LINK=gfortran
+NOOPTFLAGS='-O0'
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+#EH3 MAKEDEPEND='${TOOLSDIR}/xmakedepend'
+#EH3 MAKEDEPEND=makedepend
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_TERMINATOR'
+INCLUDES='-I/Users/davidferreira/Documents/netcdf-3.6.1/gfortran/include'
+LIBS='-L/Users/davidferreira/Documents/netcdf-3.6.1/gfortran/lib'
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+#   FFLAGS='-Wunused -Wuninitialized -fsecond-underscore'
+    FFLAGS='-Wunused -Wuninitialized'
+    FOPTIM='-O3 -funroll-loops'
+#   FOPTIM='-O3 -malign-double -funroll-loops'
+else
+    FFLAGS='-Wunused -ffloat-store -fsecond-underscore'
+    FOPTIM='-O0'
+fi
+
+
