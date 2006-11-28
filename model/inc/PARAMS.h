@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.190 2006/09/06 15:01:55 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.191 2006/11/28 22:44:44 jmc Exp $
 C $Name:  $
 C
 
@@ -49,9 +49,14 @@ C     Checkpoint data
 
 C--   COMMON /PARM_C/ Character valued parameters used by the model.
 C     checkPtSuff :: List of checkpoint file suffices
+C     tRefFile      :: File containing reference Potential Temperat.  tRef (1.D)
+C     sRefFile      :: File containing reference salinity/spec.humid. sRef (1.D)
+C     rhoRefFile    :: File containing reference density profile rhoRef (1.D)
+C     delRFile      :: File containing vertical grid spacing delR  (1.D array)
+C     delRcFile     :: File containing vertical grid spacing delRc (1.D array)
 C     delXFile      :: File containing X-spacing grid definition (1.D array)
 C     delYFile      :: File containing Y-spacing grid definition (1.D array)
-C     horizGridFile :: File containing horizontal-grid definition 
+C     horizGridFile :: File containing horizontal-grid definition
 C                        (only when using curvilinear_grid)
 C     bathyFile   :: File containing bathymetry. If not defined bathymetry
 C                   is taken from inline function.
@@ -84,6 +89,8 @@ C     eosType         :: choose the equation of state:
 C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
 C     the_run_name    :: string identifying the name of the model "run"
       COMMON /PARM_C/ checkPtSuff,
+     &                tRefFile, sRefFile, rhoRefFile,
+     &                delRFile, delRcFile,
      &                delXFile, delYFile, horizGridFile,
      &                bathyFile, topoFile, shelfIceFile,
      &                hydrogThetaFile, hydrogSaltFile,
@@ -99,6 +106,11 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                mdsioLocalDir,
      &                the_run_name
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
+      CHARACTER*(MAX_LEN_FNAM) tRefFile
+      CHARACTER*(MAX_LEN_FNAM) sRefFile
+      CHARACTER*(MAX_LEN_FNAM) rhoRefFile
+      CHARACTER*(MAX_LEN_FNAM) delRFile
+      CHARACTER*(MAX_LEN_FNAM) delRcFile
       CHARACTER*(MAX_LEN_FNAM) delXFile
       CHARACTER*(MAX_LEN_FNAM) delYFile
       CHARACTER*(MAX_LEN_FNAM) horizGridFile
@@ -290,7 +302,8 @@ C     fluidIsWater     :: Set to indicate that the fluid major constituent
 C                        is water
 C     useDynP_inEos_Zc :: use the dynamical pressure in EOS (with Z-coord.)
 C                         this requires specific code for restart & exchange
-C     setCenterDr    :: set cell Center depth and put Interface at the middle
+C     setInterFDr    :: set Interface depth (put cell-Center at the middle)
+C     setCenterDr    :: set cell-Center depth (put Interface at the middle)
 C     nonHydrostatic :: Using non-hydrostatic terms
 C     quasiHydrostatic :: Using non-hydrostatic terms in hydrostatic algorithm
 C     globalFiles    :: Selects between "global" and "tiled" files
@@ -314,6 +327,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
 
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid, usingCylindricalGrid,
+     & setInterFDr, setCenterDr,
      & no_slip_sides,no_slip_bottom,
      & momViscosity, momAdvection, momForcing, useCoriolis,
      & momPressureForcing, vectorInvariantMomentum,
@@ -338,7 +352,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
      & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax,
      & periodicExternalForcing,
      & fluidIsAir, fluidIsWater,
-     & usingPCoords, usingZCoords, useDynP_inEos_Zc, setCenterDr,
+     & usingPCoords, usingZCoords, useDynP_inEos_Zc,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, useOldFreezing,
      & usePickupBeforeC35, usePickupBeforeC54, startFromPickupAB2,
@@ -352,6 +366,8 @@ C     balancePrintMean:: print substracted global means to STDOUT
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingCylindricalGrid
       LOGICAL usingCurvilinearGrid
+      LOGICAL setInterFDr
+      LOGICAL setCenterDr
       LOGICAL useNHMTerms
       LOGICAL no_slip_sides
       LOGICAL no_slip_bottom
@@ -411,7 +427,6 @@ C     balancePrintMean:: print substracted global means to STDOUT
       LOGICAL usingPCoords
       LOGICAL usingZCoords
       LOGICAL useDynP_inEos_Zc
-      LOGICAL setCenterDr
       LOGICAL nonHydrostatic
       LOGICAL quasiHydrostatic
       LOGICAL globalFiles
@@ -462,11 +477,13 @@ C     gravity   :: Accel. due to gravity ( m/s^2 )
 C     recip_gravity and its inverse
 C     gBaro     :: Accel. due to gravity used in barotropic equation ( m/s^2 )
 C     rhoNil    :: Reference density for the linear equation of state
-C     rhoConst  :: Vertically constant reference density 
+C     rhoConst  :: Vertically constant reference density
+C     rhoFacC   :: normalized (by rhoConst) reference density at cell-Center
+C     rhoFacF   :: normalized (by rhoConst) reference density at cell-interFace
 C     rhoConstFresh :: Constant reference density for fresh water (rain)
 C     tRef      :: reference vertical profile for potential temperature
-C     sRef      :: reference vertical profile for salinity/specific humidity 
-C     phiRef    :: reference potential (pressure/rho, geopotential) profile 
+C     sRef      :: reference vertical profile for salinity/specific humidity
+C     phiRef    :: reference potential (pressure/rho, geopotential) profile
 C     dBdrRef   :: vertical gradient of reference boyancy  [(m/s/r)^2)]:
 C               :: z-coord: = N^2_ref = Brunt-Vaissala frequency [s^-2]
 C               :: p-coord: = -(d.alpha/dp)_ref          [(m^2.s/kg)^2]
@@ -475,7 +492,7 @@ C     thetaMin  :: Longitude of western most cell face (this
 C                 is an "inert" parameter but it is included
 C                 to make geographical references simple.)
 C     rSphere   :: Radius of sphere for a spherical polar grid ( m ).
-C     recip_RSphere  :: Reciprocal radius of sphere ( m ).
+C     recip_rSphere  :: Reciprocal radius of sphere ( m ).
 C     f0        :: Reference coriolis parameter ( 1/s )
 C                 ( Southern edge f for beta plane )
 C     beta      :: df/dy ( s^-1.m^-1 )
@@ -640,8 +657,9 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
-     & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil,
-     & recip_rhoConst, rhoConst,
+     & gravity, recip_Gravity, gBaro,
+     & rhonil, recip_rhonil, rhoConst, recip_rhoConst,
+     & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF,
      & rhoConstFresh, convertEmP2rUnit, tRef, sRef, phiRef, dBdrRef,
      & baseTime, startTime, endTime,
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
@@ -656,7 +674,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & horiVertRatio, recip_horiVertRatio,
      & ivdc_kappa, Ro_SeaLevel,
      & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
-     & smoothAbsFuncRange, 
+     & smoothAbsFuncRange,
      & tCylIn, tCylOut
 
       _RL cg2dTargetResidual
@@ -676,7 +694,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL phiMin
       _RL thetaMin
       _RL rSphere
-      _RL recip_RSphere
+      _RL recip_rSphere
       _RL f0
       _RL freeSurfFac
       _RL implicSurfPress
@@ -727,10 +745,10 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL gravity
       _RL recip_gravity
       _RL gBaro
-      _RL rhonil
-      _RL recip_rhonil
-      _RL rhoConst
-      _RL recip_rhoConst
+      _RL rhonil,        recip_rhonil
+      _RL rhoConst,      recip_rhoConst
+      _RL rhoFacC(Nr),   recip_rhoFacC(Nr)
+      _RL rhoFacF(Nr+1), recip_rhoFacF(Nr+1)
       _RL rhoConstFresh
       _RL convertEmP2rUnit
       _RL tRef(Nr)
@@ -849,7 +867,7 @@ C Logical flags for selecting packages
      &        useCAL, useEXF, useEBM, useGrdchk, useECCO,
      &        useSHAP_FILT, useZONAL_FILT, useFLT,
      &        usePTRACERS, useGCHEM, useRBCS, useOffLine, useMATRIX,
-     &        useSBO, useSEAICE, useShelfIce, 
+     &        useSBO, useSEAICE, useShelfIce,
      &        useThSIce, useATM2D, useBulkForce,
      &        usefizhi, usegridalt, useDiagnostics, useMNC, useREGRID,
      &        useRunClock, useEMBED_FILES, useMYPACKAGE
