@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.188 2006/11/28 22:47:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.189 2006/11/29 20:43:20 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -225,7 +225,7 @@ C--   Gridding parameters
      & usingCartesianGrid, usingCylindricalGrid,
      & dxSpacing, dySpacing, delX, delY, delXFile, delYFile,
      & usingSphericalPolarGrid, phiMin, thetaMin, rSphere,
-     & usingCurvilinearGrid, horizGridFile,
+     & usingCurvilinearGrid, horizGridFile, deepAtmosphere,
      & Ro_SeaLevel, delZ, delP, delR, delRc, delRFile, delRcFile,
      & rkFac, groundAtK1
 

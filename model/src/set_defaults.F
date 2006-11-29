@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.118 2006/11/28 22:47:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.119 2006/11/29 20:43:20 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -60,6 +60,7 @@ C-    Horizontal gridding
       delXFile            = ' '
       delYFile            = ' '
       horizGridFile       = ' '
+      deepAtmosphere      = .FALSE.
 C     In cartesian coords distances are in metres
       usingCartesianGrid  = .FALSE.
       DO i=1,Nx
