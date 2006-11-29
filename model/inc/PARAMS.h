@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.191 2006/11/28 22:44:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.192 2006/11/29 20:42:09 jmc Exp $
 C $Name:  $
 C
 
@@ -225,6 +225,8 @@ C                          coordinate frame.
 C     usingSphericalPolarGrid :: If TRUE grid generation will be in a 
 C                               spherical polar frame.
 C     usingCylindricalGrid :: If TRUE grid generation will be Cylindrical
+C     usingCurvilinearGrid :: If TRUE, use a curvilinear grid (to be provided)
+C     deepAtmosphere :: deep model (drop the shallow-atmosphere approximation)
 C     no_slip_sides :: Impose "no-slip" at lateral boundaries.
 C     no_slip_bottom :: Impose "no-slip" at bottom boundary.
 C     momViscosity  :: Flag which turns momentum friction terms on and off.
@@ -327,7 +329,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
 
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid, usingCylindricalGrid,
-     & setInterFDr, setCenterDr,
+     & deepAtmosphere, setInterFDr, setCenterDr,
      & no_slip_sides,no_slip_bottom,
      & momViscosity, momAdvection, momForcing, useCoriolis,
      & momPressureForcing, vectorInvariantMomentum,
@@ -366,6 +368,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingCylindricalGrid
       LOGICAL usingCurvilinearGrid
+      LOGICAL deepAtmosphere
       LOGICAL setInterFDr
       LOGICAL setCenterDr
       LOGICAL useNHMTerms
