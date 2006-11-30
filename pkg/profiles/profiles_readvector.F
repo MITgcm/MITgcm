@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.6 2006/10/25 01:15:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.7 2006/11/30 23:22:06 heimbach Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -32,6 +32,8 @@ C ==================== Routine Variables ==========================
 
       integer vec_start(2),vec_count(2)
       _RL vec_tmp1(1000*NLEVELMAX),vec_tmp2(1000*NLEVELMAX)
+      character*(max_len_mbuf) msgbuf
+
 c--   == end of interface ==
 
 
@@ -55,8 +57,12 @@ c implies that a forward loop is calling
       profiles_maxind_buff(bi,bj)=min(tmpprofno,irec+999)
       endif
 
-      print*,"buffer readvector",profiles_minind_buff(bi,bj),
-     & profiles_maxind_buff(bi,bj),irec,profNo(fNb,bi,bj),tmpprofno
+      write(msgbuf,'(a,5I9)')
+     &   'buffer readvector ',
+     &   profiles_minind_buff(bi,bj), profiles_maxind_buff(bi,bj),
+     &   irec, profNo(fNb,bi,bj), tmpprofno
+      call print_message(
+     &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid) 
 
       vec_start(1)=1
       vec_start(2)=profiles_minind_buff(bi,bj)

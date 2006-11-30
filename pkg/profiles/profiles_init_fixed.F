@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.7 2006/10/25 01:15:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.8 2006/11/30 23:22:06 heimbach Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -44,6 +44,7 @@ C ==================== Routine Variables ==========================
 
 c     == external functions ==
       integer ILNBLNK
+      character*(max_len_mbuf) msgbuf
 
 c--   == end of interface ==
 
@@ -66,10 +67,18 @@ c remplacer par une boucle ensuite :
 
       IL  = ILNBLNK( profilesfiles(num_file) )
       if (IL.NE.0) then
-      write(profilesfile(1:80),'(1a)') 
-     & profilesfiles(num_file)(1:IL)
+        write(profilesfile(1:80),'(1a)') 
+     &     profilesfiles(num_file)(1:IL)
+        write(msgbuf,'(a,X,i3,X,a)')
+     &     'Profiles num_file is ', num_file, profilesfile(1:80)
+        call print_message(
+     &     msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
       else
-      write(profilesfile(1:80),'(1a)') ' '
+        write(profilesfile(1:80),'(1a)') ' '
+        write(msgbuf,'(a,X,i3,X,a)')
+     &     'Profiles num_file is ', num_file, ' empty '
+        call print_message(
+     &     msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
       endif
 
       IL  = ILNBLNK( profilesfile )
@@ -80,6 +89,10 @@ c open data files and read the position vectors
 C===========================================================
 
       write(fnamedatanc(1:80),'(2a)') profilesfile(1:IL),'.nc'
+      write(msgbuf,'(a,X,i3,X,a)')
+     &   'Opening num_file ', num_file, fnamedatanc(1:80)
+      call print_message(
+     &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
       err = NF_OPEN(fnamedatanc, 0, fiddata(num_file,bi,bj))
 
 c1)  read the number of profiles :
@@ -89,11 +102,17 @@ cgf      err = NF_OPEN(filename, 0, fid)
       err = NF_INQ_DIMLEN(fid, dimid, ProfNo(num_file,bi,bj) )
       err = NF_INQ_DIMID(fid,'iDEPTH', dimid )
       if (err.NE.NF_NOERR) then
-      err = NF_INQ_DIMID(fid,'Z', dimid )
+        err = NF_INQ_DIMID(fid,'Z', dimid )
+      else
+        STOP 'ERROR reading profile file in profiles_init_fixed'
       endif
       err = NF_INQ_DIMLEN(fid, dimid, ProfDepthNo(num_file,bi,bj) )
-      print*,"fid num_file ProfNo ProfDepthNo(num_file,bi,bj)",
-     &fid,num_file,ProfNo(num_file,bi,bj),ProfDepthNo(num_file,bi,bj) 
+      write(msgbuf,'(a,X,4i9)')
+     &   ' fid, num_file, ProfNo, ProfDepthNo ', 
+     &   fid, num_file, ProfNo(num_file,bi,bj),
+     &   ProfDepthNo(num_file,bi,bj)
+      call print_message(
+     &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
 
 c2) read the dates and positions :
       err = NF_INQ_VARID(fid,'depth', varid1a )
