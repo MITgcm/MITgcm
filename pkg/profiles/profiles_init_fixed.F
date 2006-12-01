@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.8 2006/11/30 23:22:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.9 2006/12/01 00:00:47 heimbach Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -103,8 +103,6 @@ cgf      err = NF_OPEN(filename, 0, fid)
       err = NF_INQ_DIMID(fid,'iDEPTH', dimid )
       if (err.NE.NF_NOERR) then
         err = NF_INQ_DIMID(fid,'Z', dimid )
-      else
-        STOP 'ERROR reading profile file in profiles_init_fixed'
       endif
       err = NF_INQ_DIMLEN(fid, dimid, ProfDepthNo(num_file,bi,bj) )
       write(msgbuf,'(a,X,4i9)')
