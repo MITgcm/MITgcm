@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_x.F,v 1.9 2006/06/19 14:40:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_x.F,v 1.10 2006/12/05 22:25:41 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -58,7 +58,7 @@ C  Rjm,Rj,Rjp           :: differences at i-1,i,i+1
 C  uLoc                 :: velocity [m/s], zonal component
       INTEGER i,j
       _RL Cr,Rjm,Rj,Rjp
-      _RL uLoc
+      _RL uLoc, uCFL
 C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
 CEOP
@@ -70,8 +70,8 @@ CEOP
        DO i=1-Olx+2,sNx+Olx-1
 
         uLoc = uFld(i,j)
-c       uLoc = uTrans(i,j)*recip_dyG(i,j,bi,bj)
-c    &       *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
+        uCFL = ABS( uLoc*deltaTloc
+     &                  *recip_dxC(i,j,bi,bj)*recip_deepFacC(k) )
         Rjp=(tracer(i+1,j)-tracer( i ,j))*maskLocW(i+1,j)
         Rj =(tracer( i ,j)-tracer(i-1,j))*maskLocW( i ,j)
         Rjm=(tracer(i-1,j)-tracer(i-2,j))*maskLocW(i-1,j)
@@ -92,11 +92,8 @@ c    &       *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
         Cr=Limiter(Cr)
         uT(i,j) =
      &   uTrans(i,j)*(Tracer(i,j)+Tracer(i-1,j))*0.5 _d 0
-     &   -0.5*(
-     &        (1-Cr)*ABS(uTrans(i,j))
-     &        +uTrans(i,j)*uLoc*deltaTloc
-     &         *recip_dxC(i,j,bi,bj)*Cr
-     &        )*Rj
+     &   -ABS(uTrans(i,j))*((1.-Cr)+uCFL*Cr)
+     &                    *Rj*0.5 _d 0
        ENDDO
       ENDDO
 

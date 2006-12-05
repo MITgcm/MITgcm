@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.11 2006/06/19 14:40:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.12 2006/12/05 22:25:41 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -63,7 +63,7 @@ C  Rjm,Rj,Rjp         :: differences at i-1,i,i+1
 C  wLoc               :: velocity, vertical component
       INTEGER i,j,kp1,km1,km2
       _RL Cr,Rjm,Rj,Rjp
-      _RL wLoc
+      _RL wLoc, wCFL
 C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
 CEOP
@@ -83,7 +83,7 @@ CEOP
         DO i=1-Olx,sNx+Olx
 
          wLoc = wFld(i,j)
-c        wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
+         wCFL = ABS( wLoc*dTarg*recip_drC(k) )
          Rjp=(tracer(i,j,kp1)-tracer(i,j,k))
      &        *maskC(i,j,kp1,bi,bj)
          Rj= (tracer(i,j,k)  -tracer(i,j,kM1))
@@ -107,10 +107,8 @@ c        wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
          wT(i,j) = maskC(i,j,kM1,bi,bj)*(
      &     rTrans(i,j)*
      &        (tracer(i,j,k)+tracer(i,j,kM1))*0.5 _d 0
-     &    +(ABS(rTrans(i,j))*(1-Cr)
-     &      +rTrans(i,j)*wLoc*dTarg*recip_drC(k)
-     &                  *Cr
-     &     )*Rj*0.5 _d 0                )
+     &    +ABS(rTrans(i,j))*((1.-Cr)+wCFL*Cr)
+     &                     *Rj*0.5 _d 0 )
         ENDDO
        ENDDO
       ENDIF

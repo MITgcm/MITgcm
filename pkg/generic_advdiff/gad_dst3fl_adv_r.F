@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.8 2006/06/19 14:40:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.9 2006/12/05 22:25:41 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -53,7 +53,7 @@ C  km1               :: =max( k-1 , 1 )
 C  wLoc              :: velocity, vertical component
 C  wCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j,kp1,km1,km2
-      _RL Rjm,Rj,Rjp,cfl,d0,d1
+      _RL Rjm,Rj,Rjp,wCFL,d0,d1
       _RL psiP,psiM,thetaP,thetaM
       _RL wLoc
       _RL thetaMax
@@ -73,10 +73,9 @@ C  wCFL              :: Courant-Friedrich-Levy number
      &         *maskC(i,j,km1,bi,bj)
 
         wLoc = wFld(i,j)
-c       wLoc = rTrans(i,j)*recip_rA(i,j,bi,bj)
-        cfl=abs(wLoc*dTarg*recip_drC(k))
-        d0=(2. _d 0 -cfl)*(1. _d 0 -cfl)*oneSixth
-        d1=(1. _d 0 -cfl*cfl)*oneSixth
+        wCFL = ABS(wLoc*dTarg*recip_drC(k))
+        d0=(2. _d 0 -wCFL)*(1. _d 0 -wCFL)*oneSixth
+        d1=(1. _d 0 -wCFL*wCFL)*oneSixth
 
 C-      the old version: can produce overflow, division by zero,
 C       and is wrong for tracer with low concentration:
@@ -101,15 +100,15 @@ C-      prevent |thetaP,M| to reach too big value:
 
         psiP=d0+d1*thetaP
         psiP=MAX(0. _d 0,MIN(MIN(1. _d 0,psiP),
-     &                       thetaP*(1. _d 0 -cfl)/(cfl+1. _d -20) ))
+     &                       thetaP*(1. _d 0 -wCFL)/(wCFL+1. _d -20) ))
         psiM=d0+d1*thetaM
         psiM=MAX(0. _d 0,MIN(MIN(1. _d 0,psiM),
-     &                       thetaM*(1. _d 0 -cfl)/(cfl+1. _d -20) ))
+     &                       thetaM*(1. _d 0 -wCFL)/(wCFL+1. _d -20) ))
 
         wT(i,j)=
-     &   0.5*(rTrans(i,j)+abs(rTrans(i,j)))
+     &   0.5*(rTrans(i,j)+ABS(rTrans(i,j)))
      &      *( tracer(i,j, k ) + psiM*Rj )
-     &  +0.5*(rTrans(i,j)-abs(rTrans(i,j)))
+     &  +0.5*(rTrans(i,j)-ABS(rTrans(i,j)))
      &      *( tracer(i,j,km1) - psiP*Rj )
 
        ENDDO
