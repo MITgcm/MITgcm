@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.21 2006/10/17 18:52:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.22 2006/12/05 05:25:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -116,6 +116,7 @@ C     aV3d: Ar/dR
            myNorm = MAX(ABS(aW3d(I,J,K,bi,bj)),myNorm)
           ENDDO
          ENDDO
+C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
          DO J=1,sNy+1
           DO I=1,sNx
            faceArea = _dxG(I,J,bi,bj)*drF(K)
@@ -141,11 +142,12 @@ C     aV3d: Ar/dR
           DO I=1,sNx
            faceArea = _rA(I,J,bi,bj)*maskC(I,J, K ,bi,bj)
      &                              *maskC(I,J,K-1,bi,bj)
+     &                              *deepFac2F(k)
            theRecip_Dr = recip_drC(K)
-c          theRecip_Dr = 
+c          theRecip_Dr =
 caja &      drF(K  )*_hFacC(i,j,k  ,bi,bj)*0.5
 caja &     +drF(K-1)*_hFacC(i,j,k-1,bi,bj)*0.5
-c          IF ( theRecip_Dr .NE. 0. ) 
+c          IF ( theRecip_Dr .NE. 0. )
 c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
            aV3d(I,J,K,bi,bj) = faceArea*theRecip_Dr*tmpFac
            myNorm = MAX(ABS(aV3d(I,J,K,bi,bj)),myNorm)
@@ -198,16 +200,19 @@ c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
       ELSE
        myNorm = 1. _d 0
       ENDIF
+
       _BEGIN_MASTER( myThid )
+C-- set global parameter in common block:
        cg3dNorm = myNorm
 CcnhDebugStarts
-       WRITE(msgBuf,'(A,E40.25)') '// CG3D normalisation factor = '
-     &                , cg3dNorm
+       WRITE(msgBuf,'(2A,1PE23.16)') 'INI_CG3D: ',
+     &      'CG3D normalisation factor = ', cg3dNorm
        CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
        WRITE(msgBuf,*) '                               '
        CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 CcnhDebugEnds
       _END_MASTER( myThid )
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C-    Set solver main diagonal term
@@ -235,7 +240,7 @@ C-    Add free-surface source term
            IF ( ks.LE.Nr ) THEN
              aC3d(I,J,ks,bi,bj) = aC3d(I,J,ks,bi,bj)
      &         -freeSurfFac*recip_Bo(I,J,bi,bj)
-     &          *rA(I,J,bi,bj)/deltaTMom/deltaTfreesurf
+     &          *rA(I,J,bi,bj)*deepFac2F(ks)/deltaTMom/deltaTfreesurf
            ENDIF
          ENDDO
         ENDDO

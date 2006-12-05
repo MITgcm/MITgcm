@@ -1,5 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.34 2006/07/13 21:32:38 jmc Exp $
-C     !DESCRIPTION: \bv
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.35 2006/12/05 05:25:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -147,11 +146,11 @@ C-    note: assume fluid @ smaller k than bottom: does not work in p-coordinate 
            ENDIF
 c          IF (momViscosity) THEN
 #ifdef NONLIN_FRSURF
-           rThickC_C(i,j) = 
+           rThickC_C(i,j) =
      &          drF(k-1)*MAX( h0FacC(i,j,k-1,bi,bj)-halfRS, zeroRS )
      &        + drF( k )*MIN( h0FacC(i,j,k  ,bi,bj), halfRS )
 #else
-           rThickC_C(i,j) = 
+           rThickC_C(i,j) =
      &          drF(k-1)*MAX( _hFacC(i,j,k-1,bi,bj)-halfRS, zeroRS )
      &        + drF( k )*MIN( _hFacC(i,j,k  ,bi,bj), halfRS )
 #endif
@@ -163,8 +162,12 @@ c          IF (momViscosity) THEN
      &        + drF( k )*MIN( _hFacS(i,j, k ,bi,bj), halfRS )
 C     W-Cell Western face area:
            xA(i,j) = _dyG(i,j,bi,bj)*rThickC_W(i,j)
+c    &                              *deepFacF(k)
 C     W-Cell Southern face area:
            yA(i,j) = _dxG(i,j,bi,bj)*rThickC_S(i,j)
+c    &                              *deepFacF(k)
+C deep-model: xA,yA is only used for viscous flux, in terms like: xA/dxC,yA/dyC.
+C this gives deepFacF*recip_deepFacF => cancel each other (and therefore omitted)
 c          ENDIF
          ENDDO
         ENDDO
@@ -180,7 +183,7 @@ C     Zonal flux d/dx W
      &              (wVel(i,j,k,bi,bj)-wVel(i-1,j,k,bi,bj))
      &              *_recip_dxC(i,j,bi,bj)*xA(i,j)
 #ifdef COSINEMETH_III
-     &              *sqcosFacU(j,bi,bj)
+     &              *sqCosFacU(j,bi,bj)
 #endif
            ENDDO
           ENDDO
@@ -216,6 +219,7 @@ C     ... add difference of meridional fluxes and divide by volume
             del2w(i,j) = ( del2w(i,j)
      &                    +(flx_NS(i,j+1)-flx_NS(i,j))
      &                   )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
+     &                    *recip_deepFac2F(k)
            ENDDO
           ENDDO
 C-- No-slip BCs impose a drag at walls...
@@ -290,17 +294,21 @@ C     Interpolate vert viscosity to center of tracer-cell (level k):
      &          - viscLoc*( wVel(i,j,kp1,bi,bj)*wOverRide
      &                     -wVel(i,j, k ,bi,bj) )*rkSign
      &                   *recip_drF(k)*rA(i,j,bi,bj)
+     &                   *deepFac2C(k)*rhoFacC(k)
 cOld &                   *recip_drF(k)
            ENDDO
           ENDDO
 C     Tendency is minus divergence of viscous fluxes:
+C     anelastic: vert.visc.flx is scaled by rhoFac but hor.visc.fluxes are not
           DO j=jMin,jMax
            DO i=iMin,iMax
              gwDiss(i,j) =
      &        -(   ( flx_EW(i+1,j)-flx_EW(i,j) )
      &           + ( flx_NS(i,j+1)-flx_NS(i,j) )
      &           + ( flx_Dn(i,j)-flxDisUp(i,j) )*rkSign
+     &                                          *recip_rhoFacF(k)
      &         )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
+     &          *recip_deepFac2F(k)
 cOld         gwDiss(i,j) =
 cOld &        -(
 cOld &          +_recip_dxF(i,j,bi,bj)*( flx_EW(i+1,j)-flx_EW(i,j) )
@@ -339,8 +347,10 @@ C Advective Flux on Western face
 C     transport through Western face area:
              uTrans = (
      &          drF(k-1)*_hFacW(i,j,k-1,bi,bj)*uVel(i,j,k-1,bi,bj)
+     &                  *rhoFacC(k-1)
      &        + drF( k )*_hFacW(i,j, k ,bi,bj)*uVel(i,j, k ,bi,bj)
-     &                )*halfRL*_dyG(i,j,bi,bj)
+     &                  *rhoFacC(k)
+     &                )*halfRL*_dyG(i,j,bi,bj)*deepFacF(k)
 cOld &                )*halfRL
              flx_EW(i,j)=
      &         uTrans*(wVel(i,j,k,bi,bj)+wVel(i-1,j,k,bi,bj))*halfRL
@@ -352,8 +362,10 @@ C Advective Flux on Southern face
 C     transport through Southern face area:
              vTrans = (
      &          drF(k-1)*_hFacS(i,j,k-1,bi,bj)*vVel(i,j,k-1,bi,bj)
+     &                  *rhoFacC(k-1)
      &         +drF( k )*_hFacS(i,j, k ,bi,bj)*vVel(i,j, k ,bi,bj)
-     &                )*halfRL*_dxG(i,j,bi,bj)
+     &                  *rhoFacC(k)
+     &                )*halfRL*_dxG(i,j,bi,bj)*deepFacF(k)
 cOld &                )*halfRL
              flx_NS(i,j)=
      &         vTrans*(wVel(i,j,k,bi,bj)+wVel(i,j-1,k,bi,bj))*halfRL
@@ -365,12 +377,17 @@ C Advective Flux on Lower face of W-Cell (= at tracer-cell center, level k)
              tmp_WbarZ = halfRL*( wVel(i,j, k ,bi,bj)
      &                           +wVel(i,j,kp1,bi,bj)*wOverRide )
 C     transport through Lower face area:
-             rTrans = tmp_WbarZ*rA(i,j,bi,bj)
+             rTrans = halfRL*
+     &              ( wVel(i,j, k ,bi,bj)*deepFac2F( k )*rhoFacF( k )
+     &               +wVel(i,j,kp1,bi,bj)*deepFac2F(kp1)*rhoFacF(kp1)
+     &                                   *wOverRide
+     &              )*rA(i,j,bi,bj)
              flx_Dn(i,j) = rTrans*tmp_WbarZ
 cOld         flx_Dn(i,j) = tmp_WbarZ*tmp_WbarZ
            ENDDO
           ENDDO
 C     Tendency is minus divergence of advective fluxes:
+C     anelastic: all transports & advect. fluxes are scaled by rhoFac
           DO j=jMin,jMax
            DO i=iMin,iMax
              gW(i,j,k,bi,bj) =
@@ -378,6 +395,7 @@ C     Tendency is minus divergence of advective fluxes:
      &           + ( flx_NS(i,j+1)-flx_NS(i,j) )
      &           + ( flx_Dn(i,j)-flxAdvUp(i,j) )*rkSign
      &         )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
+     &          *recip_deepFac2F(k)*recip_rhoFacF(k)
 cOld         gW(i,j,k,bi,bj) =
 cOld &        -(
 cOld &          +_recip_dxF(i,j,bi,bj)*( flx_EW(i+1,j)-flx_EW(i,j) )

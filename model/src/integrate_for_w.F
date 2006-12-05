@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.10 2005/12/08 15:44:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.11 2006/12/05 05:25:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,14 +6,14 @@ C $Name:  $
 CBOP
 C     !ROUTINE: INTEGRATE_FOR_W
 C     !INTERFACE:
-      SUBROUTINE INTEGRATE_FOR_W( 
+      SUBROUTINE INTEGRATE_FOR_W(
      I        bi,bj,k,uFld,vFld,
      O        wFld,
      I        myThid)
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INTEGRATE_FOR_W                            
+C     | SUBROUTINE INTEGRATE_FOR_W
 C     | o Integrate for vertical velocity.
 C     *==========================================================*
 C     \ev
@@ -46,15 +46,15 @@ C     uTrans, vTrans :: Temps. for volume transports
 CEOP
 
 C--   Calculate velocity field "volume transports" through
-C     tracer cell faces.
+C     tracer cell faces (anelastic: scaled as a mass transport).
       DO j=1,sNy+1
         DO i=1,sNx+1
-          uTrans(i,j) = uFld(i,j,k,bi,bj)*
-     &     _dyG(i,j,bi,bj)
-     &     *drF(k)*_hFacW(i,j,k,bi,bj)
-          vTrans(i,j) = vFld(i,j,k,bi,bj)*
-     &     _dxG(i,j,bi,bj)
-     &     *drF(k)*_hFacS(i,j,k,bi,bj)
+          uTrans(i,j) = uFld(i,j,k,bi,bj)
+     &                *_dyG(i,j,bi,bj)*deepFacC(k)*rhoFacC(k)
+     &                *drF(k)*_hFacW(i,j,k,bi,bj)
+          vTrans(i,j) = vFld(i,j,k,bi,bj)
+     &                *_dxG(i,j,bi,bj)*deepFacC(k)*rhoFacC(k)
+     &                *drF(k)*_hFacS(i,j,k,bi,bj)
         ENDDO
       ENDDO
 
@@ -62,31 +62,33 @@ C--   Calculate vertical "volume transport" through face k
 C     between tracer cell k-1 & k
       IF (rigidLid) THEN
 C-  o Rigid-Lid case: zero at lower and upper boundaries
-        IF (k.eq.1) THEN
+        IF (k.EQ.1) THEN
           DO j=1,sNy
            DO i=1,sNx
              wFld(i,j,k,bi,bj) = 0.
            ENDDO
           ENDDO
-        ELSEIF (k.eq.Nr) THEN
+        ELSEIF (k.EQ.Nr) THEN
           DO j=1,sNy
            DO i=1,sNx
-             wFld(i,j,k,bi,bj) = 
+             wFld(i,j,k,bi,bj) =
      &                -( uTrans(i+1,j)-uTrans(i,j)
      &                  +vTrans(i,j+1)-vTrans(i,j)
-     &                 )*recip_rA(i,j,bi,bj) 
-     &          *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+     &                 )*recip_rA(i,j,bi,bj)
+     &         *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+     &         *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO
           ENDDO
         ELSE
           DO j=1,sNy
            DO i=1,sNx
-             wFld(i,j,k,bi,bj) = 
-     &        ( wFld(i,j,k+1,bi,bj)
+             wFld(i,j,k,bi,bj) =
+     &        ( wFld(i,j,k+1,bi,bj)*deepFac2F(k+1)*rhoFacF(k+1)
      &                -( uTrans(i+1,j)-uTrans(i,j)
      &                  +vTrans(i,j+1)-vTrans(i,j)
-     &                 )*recip_rA(i,j,bi,bj) 
-     &         )*maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+     &                 )*recip_rA(i,j,bi,bj)
+     &        )*maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+     &         *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO
           ENDDO
         ENDIF
@@ -94,55 +96,58 @@ C-  o Rigid-Lid case: zero at lower and upper boundaries
       ELSEIF (select_rStar .NE. 0) THEN
 # ifndef DISABLE_RSTAR_CODE
 C-  o rStar case: zero under-ground and at r_lower boundary
-C     can be non-zero at surface (useRealFreshWaterFlux)
-        IF (k.eq.Nr) THEN
+C     can be non-zero at surface (useRealFreshWaterFlux).
+C note: not implemented neither for anelastic nor deep-model.
+        IF (k.EQ.Nr) THEN
           DO j=1,sNy
            DO i=1,sNx
-             wFld(i,j,k,bi,bj) = 
+             wFld(i,j,k,bi,bj) =
      &        (       -( uTrans(i+1,j)-uTrans(i,j)
      &                  +vTrans(i,j+1)-vTrans(i,j)
-     &                 )*recip_rA(i,j,bi,bj) 
+     &                 )*recip_rA(i,j,bi,bj)
      &          - rStarDhCDt(i,j,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
-     &         )*maskC(i,j,k,bi,bj)
+     &        )*maskC(i,j,k,bi,bj)
            ENDDO
           ENDDO
         ELSE
           DO j=1,sNy
            DO i=1,sNx
-             wFld(i,j,k,bi,bj) = 
+             wFld(i,j,k,bi,bj) =
      &        ( wFld(i,j,k+1,bi,bj)
      &                -( uTrans(i+1,j)-uTrans(i,j)
      &                  +vTrans(i,j+1)-vTrans(i,j)
-     &                 )*recip_rA(i,j,bi,bj) 
+     &                 )*recip_rA(i,j,bi,bj)
      &          - rStarDhCDt(i,j,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
-     &         )*maskC(i,j,k,bi,bj)
+     &        )*maskC(i,j,k,bi,bj)
            ENDDO
           ENDDO
         ENDIF
 # endif /* DISABLE_RSTAR_CODE */
 #endif /* NONLIN_FRSURF */
       ELSE
-C-  o Free Surface case (r-Coordinate): 
+C-  o Free Surface case (r-Coordinate):
 C      non zero at surface ; zero under-ground and at r_lower boundary
-        IF (k.eq.Nr) THEN
+        IF (k.EQ.Nr) THEN
           DO j=1,sNy
            DO i=1,sNx
-             wFld(i,j,k,bi,bj) = 
-     &                -( uTrans(i+1,j)-uTrans(i,j)
-     &                  +vTrans(i,j+1)-vTrans(i,j)
-     &                 )*recip_rA(i,j,bi,bj) 
-     &          *maskC(i,j,k,bi,bj)
+             wFld(i,j,k,bi,bj) =
+     &              -( uTrans(i+1,j)-uTrans(i,j)
+     &                +vTrans(i,j+1)-vTrans(i,j)
+     &               )*recip_rA(i,j,bi,bj)
+     &         *maskC(i,j,k,bi,bj)
+     &         *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO
           ENDDO
         ELSE
           DO j=1,sNy
            DO i=1,sNx
-             wFld(i,j,k,bi,bj) = 
-     &        ( wFld(i,j,k+1,bi,bj)
-     &                -( uTrans(i+1,j)-uTrans(i,j)
-     &                  +vTrans(i,j+1)-vTrans(i,j)
-     &                 )*recip_rA(i,j,bi,bj) 
-     &         )*maskC(i,j,k,bi,bj)
+             wFld(i,j,k,bi,bj) =
+     &        ( wFld(i,j,k+1,bi,bj)*deepFac2F(k+1)*rhoFacF(k+1)
+     &              -( uTrans(i+1,j)-uTrans(i,j)
+     &                +vTrans(i,j+1)-vTrans(i,j)
+     &               )*recip_rA(i,j,bi,bj)
+     &        )*maskC(i,j,k,bi,bj)
+     &         *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO
           ENDDO
         ENDIF

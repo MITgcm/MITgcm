@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.44 2006/10/17 18:52:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.45 2006/12/05 05:25:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,23 +39,20 @@ C     myThid - Thread no. that called this routine.
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     xG, yG - Global coordinate location.
-C     zG
-C     iG, jG - Global coordinate index
-C     bi,bj  - Loop counters
+C     bi,bj  :: tile indices
+C     I,J,K  :: Loop counters
 C     faceArea - Temporary used to hold cell face areas.
-C     I,J,K
 C     myNorm - Work variable used in calculating normalisation factor
-C     sumArea - Work variable used to compute the total Domain Area 
+C     sumArea - Work variable used to compute the total Domain Area
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
-      INTEGER I,  J, K
+      INTEGER I, J, K, ks
       _RL     faceArea
       _RS     myNorm
-      _RL     aC, aCw, aCs
+      _RS     aC, aCw, aCs
 CEOP
 
-C--   Initialize arrays in common blocs (CG2D.h) ; not really necessary 
+C--   Initialize arrays in common blocs (CG2D.h) ; not really necessary
 C     but safer when EXCH do not fill all the overlap regions.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -63,6 +60,7 @@ C     but safer when EXCH do not fill all the overlap regions.
          DO I=1-OLx,sNx+OLx
           aW2d(I,J,bi,bj) = 0. _d 0
           aS2d(I,J,bi,bj) = 0. _d 0
+          aC2d(I,J,bi,bj) = 0. _d 0
           pW(I,J,bi,bj) = 0. _d 0
           pS(I,J,bi,bj) = 0. _d 0
           pC(I,J,bi,bj) = 0. _d 0
@@ -93,16 +91,17 @@ C     aS2d: integral in Z Ay/dY
         DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
+C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
            faceArea = _dyG(I,J,bi,bj)*drF(K)
      &               *_hFacW(I,J,K,bi,bj)
-           aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj) + 
-     &      implicSurfPress*implicDiv2DFlow
-     &           *faceArea*recip_dxC(I,J,bi,bj)
+           aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj)
+     &              + implicSurfPress*implicDiv2DFlow
+     &               *faceArea*recip_dxC(I,J,bi,bj)
            faceArea = _dxG(I,J,bi,bj)*drF(K)
      &               *_hFacS(I,J,K,bi,bj)
-           aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj) + 
-     &      implicSurfPress*implicDiv2DFlow
-     &           *faceArea*recip_dyC(I,J,bi,bj)
+           aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj)
+     &              + implicSurfPress*implicDiv2DFlow
+     &               *faceArea*recip_dyC(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -146,7 +145,7 @@ C     aS2d: integral in Z Ay/dY
         ENDDO
        ENDDO
       ENDDO
-      
+
 C--   Update overlap regions
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.1' , 1, myThid )
@@ -189,7 +188,7 @@ CcnhDebugStarts
        CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       _END_MASTER( myThid )
 CcnhDebugEnds
-     
+
 C--   Initialise preconditioner
 C     Note. 20th May 1998
 C           I made a weird discovery! In the model paper we argue
@@ -208,24 +207,25 @@ C           defaults to 0.51 but can be set at runtime.
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
          DO I=1,sNx
+          ks = ksurfC(I,J,bi,bj)
           pC(I,J,bi,bj) = 1. _d 0
           aC = -(
      &     aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
      &    +aS2d(I,J,bi,bj) + aS2d(I  ,J+1,bi,bj)
-     &    +freeSurfFac*myNorm*recip_Bo(I,J,bi,bj)* 
-     &     rA(I,J,bi,bj)/deltaTMom/deltaTfreesurf
+     &    +freeSurfFac*myNorm*recip_Bo(I,J,bi,bj)*deepFac2F(ks)
+     &                *rA(I,J,bi,bj)/deltaTMom/deltaTfreesurf
      &    )
           aCs = -(
      &     aW2d(I,J-1,bi,bj) + aW2d(I+1,J-1,bi,bj)
      &    +aS2d(I,J-1,bi,bj) + aS2d(I  ,J  ,bi,bj)
-     &    +freeSurfFac*myNorm*recip_Bo(I,J-1,bi,bj)* 
-     &     rA(I,J-1,bi,bj)/deltaTMom/deltaTfreesurf
+     &    +freeSurfFac*myNorm*recip_Bo(I,J-1,bi,bj)*deepFac2F(ks)
+     &                *rA(I,J-1,bi,bj)/deltaTMom/deltaTfreesurf
      &    )
           aCw = -(
      &     aW2d(I-1,J,bi,bj) + aW2d(I  ,J  ,bi,bj)
      &    +aS2d(I-1,J,bi,bj) + aS2d(I-1,J+1,bi,bj)
-     &    +freeSurfFac*myNorm*recip_Bo(I-1,J,bi,bj)* 
-     &     rA(I-1,J,bi,bj)/deltaTMom/deltaTfreesurf
+     &    +freeSurfFac*myNorm*recip_Bo(I-1,J,bi,bj)*deepFac2F(ks)
+     &                *rA(I-1,J,bi,bj)/deltaTMom/deltaTfreesurf
      &    )
           IF ( aC .EQ. 0. ) THEN
             pC(I,J,bi,bj) = 1. _d 0
@@ -235,7 +235,7 @@ C           defaults to 0.51 but can be set at runtime.
           IF ( aC + aCw .EQ. 0. ) THEN
            pW(I,J,bi,bj) = 0.
           ELSE
-           pW(I,J,bi,bj) = 
+           pW(I,J,bi,bj) =
      &     -aW2d(I  ,J  ,bi,bj)/((cg2dpcOffDFac *(aCw+aC))**2 )
           ENDIF
           IF ( aC + aCs .EQ. 0. ) THEN
@@ -244,6 +244,8 @@ C           defaults to 0.51 but can be set at runtime.
            pS(I,J,bi,bj) =
      &     -aS2d(I  ,J  ,bi,bj)/((cg2dpcOffDFac *(aCs+aC))**2 )
           ENDIF
+C-    store solver main diagonal :
+          aC2d(I,J,bi,bj) = aC
 C         pC(I,J,bi,bj) = 1.
 C         pW(I,J,bi,bj) = 0.
 C         pS(I,J,bi,bj) = 0.

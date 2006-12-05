@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.8 2005/12/08 15:44:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.9 2006/12/05 05:25:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,15 +6,15 @@ C $Name:  $
 CBOP
 C     !ROUTINE: CALC_GRAD_PHI_HYD
 C     !INTERFACE:
-      SUBROUTINE CALC_GRAD_PHI_HYD( 
+      SUBROUTINE CALC_GRAD_PHI_HYD(
      I                       k, bi, bj, iMin,iMax, jMin,jMax,
      I                       phiHydC, alphRho, tFld, sFld,
      O                       dPhiHydX, dPhiHydY,
      I                       myTime, myIter, myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R CALC_GRAD_PHI_HYD                                    
-C     | o Calculate the gradient of Hydrostatic potential anomaly 
+C     | S/R CALC_GRAD_PHI_HYD
+C     | o Calculate the gradient of Hydrostatic potential anomaly
 C     *==========================================================*
 C     \ev
 
@@ -30,19 +30,18 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     bi,bj      :: tile index            
+C     bi,bj      :: tile index
 C     iMin,iMax,jMin,jMax :: Loop counters
-C     phiHydC    :: Hydrostatic Potential anomaly 
+C     phiHydC    :: Hydrostatic Potential anomaly
 C                  (atmos: =Geopotential ; ocean-z: =Pressure/rho)
 C     alphRho    :: Density (z-coord) or specific volume (p-coord)
 C     tFld       :: Potential temp.
-C     sFld       :: Salinity 
+C     sFld       :: Salinity
 C     dPhiHydX,Y :: Gradient (X & Y directions) of Hyd. Potential
 C     myTime :: Current time
 C     myIter :: Current iteration number
 C     myThid :: Instance number for this call of the routine.
       INTEGER k, bi,bj, iMin,iMax, jMin,jMax
-c     _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL phiHydC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL alphRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -70,7 +69,7 @@ CEOP
       IF (select_rStar.GE.2 .AND. nonlinFreeSurf.GE.4 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 C-    Integral of b.dr = rStarFac * Integral of b.dr* :
-C      and will add later (select_rStar=2) the contribution of 
+C      and will add later (select_rStar=2) the contribution of
 C      the slope of the r* coordinate.
        IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
 C-     Consistent with Phi'= Integr[ theta'.dPi ] :
@@ -96,8 +95,8 @@ C-     Consistent with Phi'= Integr[ theta'.dPi ] :
         DO j=jMin-1,jMax
          DO i=iMin-1,iMax
           IF (Ro_surf(i,j,bi,bj).EQ.rC(k)) THEN
-           factPI=atm_Cp*( ((etaH(i,j,bi,bj)+rC(k))/atm_Po)**atm_kappa  
-     &                    -(                 rC(k) /atm_Po)**atm_kappa 
+           factPI=atm_Cp*( ((etaH(i,j,bi,bj)+rC(k))/atm_Po)**atm_kappa
+     &                    -(                 rC(k) /atm_Po)**atm_kappa
      &                  )
            varLoc(i,j) = factPI*alphRho(i,j)
           ELSEIF (Ro_surf(i,j,bi,bj).NE.0. _d 0) THEN
@@ -142,10 +141,10 @@ C-     Consistent with Phi'= Integr[ theta'.dPi ] :
 C--   Zonal & Meridional gradient of potential anomaly
       DO j=jMin,jMax
        DO i=iMin,iMax
-        dPhiHydX(i,j) = _recip_dxC(i,j,bi,bj)
-     &                *( varLoc(i,j)-varLoc(i-1,j) )
-        dPhiHydY(i,j) = _recip_dyC(i,j,bi,bj)
-     &                *( varLoc(i,j)-varLoc(i,j-1) )
+        dPhiHydX(i,j) = _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+     &                *( varLoc(i,j)-varLoc(i-1,j) )*recip_rhoFacC(k)
+        dPhiHydY(i,j) = _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+     &                *( varLoc(i,j)-varLoc(i,j-1) )*recip_rhoFacC(k)
        ENDDO
       ENDDO
 
@@ -153,7 +152,7 @@ C--   Zonal & Meridional gradient of potential anomaly
       IF (select_rStar.GE.2 .AND. nonlinFreeSurf.GE.1 ) THEN
        IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
 C--    z* coordinate slope term: rho'/rho0 * Grad_r(g.z)
-        factorZ = gravity*recip_rhoConst*0.5 _d 0
+        factorZ = gravity*recip_rhoConst*recip_rhoFacC(k)*0.5 _d 0
         DO j=jMin-1,jMax
          DO i=iMin-1,iMax
           varLoc(i,j) = etaH(i,j,bi,bj)
@@ -165,11 +164,11 @@ C--    z* coordinate slope term: rho'/rho0 * Grad_r(g.z)
           dPhiHydX(i,j) = dPhiHydX(i,j)
      &     +factorZ*(alphRho(i-1,j)+alphRho(i,j))
      &             *(varLoc(i,j)-varLoc(i-1,j))
-     &             *recip_dxC(i,j,bi,bj)
+     &             *recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
           dPhiHydY(i,j) = dPhiHydY(i,j)
      &     +factorZ*(alphRho(i,j-1)+alphRho(i,j))
      &             *(varLoc(i,j)-varLoc(i,j-1))
-     &             *recip_dyC(i,j,bi,bj)   
+     &             *recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
          ENDDO
         ENDDO
        ELSEIF (buoyancyRelation .EQ. 'OCEANICP' ) THEN
@@ -180,11 +179,11 @@ C--    p* coordinate slope term: alpha' * Grad_r( p )
           dPhiHydX(i,j) = dPhiHydX(i,j)
      &     +factorP*(alphRho(i-1,j)+alphRho(i,j))
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i-1,j,bi,bj))
-     &             *rC(k)*recip_dxC(i,j,bi,bj)   
+     &             *rC(k)*recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
           dPhiHydY(i,j) = dPhiHydY(i,j)
      &     +factorP*(alphRho(i,j-1)+alphRho(i,j))
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i,j-1,bi,bj))
-     &             *rC(k)*recip_dyC(i,j,bi,bj)   
+     &             *rC(k)*recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
          ENDDO
         ENDDO
        ELSEIF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
@@ -196,11 +195,11 @@ C--    p* coordinate slope term: alpha' * Grad_r( p )
           dPhiHydX(i,j) = dPhiHydX(i,j)
      &     +factorP*(alphRho(i-1,j)+alphRho(i,j))
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i-1,j,bi,bj))
-     &             *rC(k)*recip_dxC(i,j,bi,bj)   
+     &             *rC(k)*recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
           dPhiHydY(i,j) = dPhiHydY(i,j)
      &     +factorP*(alphRho(i,j-1)+alphRho(i,j))
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i,j-1,bi,bj))
-     &             *rC(k)*recip_dyC(i,j,bi,bj)   
+     &             *rC(k)*recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
          ENDDO
         ENDDO
        ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.44 2005/11/04 01:19:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.45 2006/12/05 05:25:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: CG2D
 C     !INTERFACE:
-      SUBROUTINE CG2D(  
+      SUBROUTINE CG2D(
      I                cg2d_b,
      U                cg2d_x,
      O                firstResidual,
@@ -15,26 +15,26 @@ C     !INTERFACE:
      I                myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE CG2D                                           
-C     | o Two-dimensional grid problem conjugate-gradient         
-C     |   inverter (with preconditioner).                         
+C     | SUBROUTINE CG2D
+C     | o Two-dimensional grid problem conjugate-gradient
+C     |   inverter (with preconditioner).
 C     *==========================================================*
-C     | Con. grad is an iterative procedure for solving Ax = b.   
-C     | It requires the A be symmetric.                           
-C     | This implementation assumes A is a five-diagonal          
-C     | matrix of the form that arises in the discrete            
-C     | representation of the del^2 operator in a                 
-C     | two-dimensional space.                                    
-C     | Notes:                                                    
-C     | ======                                                    
-C     | This implementation can support shared-memory              
-C     | multi-threaded execution. In order to do this COMMON       
-C     | blocks are used for many of the arrays - even ones that    
-C     | are only used for intermedaite results. This design is     
-C     | OK if you want to all the threads to collaborate on        
-C     | solving the same problem. On the other hand if you want    
-C     | the threads to solve several different problems            
-C     | concurrently this implementation will not work.           
+C     | Con. grad is an iterative procedure for solving Ax = b.
+C     | It requires the A be symmetric.
+C     | This implementation assumes A is a five-diagonal
+C     | matrix of the form that arises in the discrete
+C     | representation of the del^2 operator in a
+C     | two-dimensional space.
+C     | Notes:
+C     | ======
+C     | This implementation can support shared-memory
+C     | multi-threaded execution. In order to do this COMMON
+C     | blocks are used for many of the arrays - even ones that
+C     | are only used for intermedaite results. This design is
+C     | OK if you want to all the threads to collaborate on
+C     | solving the same problem. On the other hand if you want
+C     | the threads to solve several different problems
+C     | concurrently this implementation will not work.
 C     *==========================================================*
 C     \ev
 
@@ -44,19 +44,19 @@ C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
 #include "CG2D.h"
+#include "GRID.h"
 #include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid    - Thread on which I am working.
-C     cg2d_b    - The source term or "right hand side"
-C     cg2d_x    - The solution
-C     firstResidual - the initial residual before any iterations
-C     lastResidual  - the actual residual reached
-C     numIters  - Entry: the maximum number of iterations allowed
-C                 Exit:  the actual number of iterations used
+C     myThid    :: Thread on which I am working.
+C     cg2d_b    :: The source term or "right hand side"
+C     cg2d_x    :: The solution
+C     firstResidual :: the initial residual before any iterations
+C     lastResidual  :: the actual residual reached
+C     numIters  :: Entry: the maximum number of iterations allowed
+C                  Exit:  the actual number of iterations used
       _RL  cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  firstResidual
@@ -66,24 +66,24 @@ C                 Exit:  the actual number of iterations used
 
 C     !LOCAL VARIABLES:
 C     === Local variables ====
-C     actualIts      - Number of iterations taken
-C     actualResidual - residual
-C     bi          - Block index in X and Y.
-C     bj
-C     eta_qrN     - Used in computing search directions
+C     actualIts      :: Number of iterations taken
+C     actualResidual :: residual
+C     bi, bj     :: Block index in X and Y.
+C     eta_qrN    :: Used in computing search directions
 C     eta_qrNM1     suffix N and NM1 denote current and
 C     cgBeta        previous iterations respectively.
-C     alpha  
-C     sumRHS      - Sum of right-hand-side. Sometimes this is a
+C     alpha
+C     sumRHS     :: Sum of right-hand-side. Sometimes this is a
 C                   useful debuggin/trouble shooting diagnostic.
 C                   For neumann problems sumRHS needs to be ~0.
 C                   or they converge at a non-zero residual.
-C     err         - Measure of residual of Ax - b, usually the norm.
-C     I, J, N     - Loop counters ( N counts CG iterations )
+C     err        :: Measure of residual of Ax - b, usually the norm.
+C     I, J, it2d :: Loop counters ( it2d counts CG iterations )
       INTEGER actualIts
       _RL    actualResidual
-      INTEGER bi, bj              
+      INTEGER bi, bj
       INTEGER I, J, it2d
+      INTEGER ks
       _RL    err,errTile
       _RL    eta_qrN,eta_qrNtile
       _RL    eta_qrNM1
@@ -131,7 +131,6 @@ C     _GLOBAL_MAX_R8( rhsMax, myThid )
       rhsMax=1.
 #else
       _GLOBAL_MAX_R8( rhsMax, myThid )
-Catm  rhsMax=1.
 #endif
       rhsNorm = 1. _d 0
       IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax
@@ -166,6 +165,7 @@ C--   Initial residual calculation
         errTile    = 0. _d 0
         DO J=1,sNy
          DO I=1,sNx
+          ks = ksurfC(I,J,bi,bj)
           cg2d_s(I,J,bi,bj) = 0.
           cg2d_r(I,J,bi,bj) = cg2d_b(I,J,bi,bj) -
      &    (aW2d(I  ,J  ,bi,bj)*cg2d_x(I-1,J  ,bi,bj)
@@ -176,13 +176,13 @@ C--   Initial residual calculation
      &    -aW2d(I+1,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J+1,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
-     &    -freeSurfFac*_rA(i,j,bi,bj)*recip_Bo(i,j,bi,bj)* 
-     &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTfreesurf*cg2dNorm
+     &    -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)*recip_Bo(i,j,bi,bj)
+     &                        *cg2d_x(I  ,J  ,bi,bj)
+     &                        /deltaTMom/deltaTfreesurf*cg2dNorm
+c    &    +aC2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
      &    )
-          errTile        = errTile        + 
-     &     cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
-          sumRHStile        = sumRHStile        +
-     &     cg2d_b(I,J,bi,bj)
+          errTile    = errTile + cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
+          sumRHStile = sumRHStile + cg2d_b(I,J,bi,bj)
          ENDDO
         ENDDO
         sumRHS = sumRHS + sumRHStile
@@ -209,15 +209,14 @@ C     _EXCH_XY_R8( cg2d_s, myThid )
 
        IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
-        write(standardmessageunit,'(A,1P2E22.14)')
-     &  ' cg2d: Sum(rhs),rhsMax = ',
-     &                                  sumRHS,rhsMax 
+        WRITE(standardmessageunit,'(A,1P2E22.14)')
+     &  ' cg2d: Sum(rhs),rhsMax = ', sumRHS,rhsMax
         _END_MASTER( myThid )
        ENDIF
 C     _BARRIER
 c     _BEGIN_MASTER( myThid )
-c      WRITE(standardmessageunit,'(A,I6,1PE30.14)') 
-c    & ' CG2D iters, err = ', 
+c      WRITE(standardmessageunit,'(A,I6,1PE30.14)')
+c    & ' CG2D iters, err = ',
 c    & actualIts, actualResidual
 c     _END_MASTER( myThid )
       firstResidual=actualResidual
@@ -239,7 +238,7 @@ C--    conjugate direction vector "s".
          eta_qrNtile = 0. _d 0
          DO J=1,sNy
           DO I=1,sNx
-           cg2d_q(I,J,bi,bj) = 
+           cg2d_q(I,J,bi,bj) =
      &      pC(I  ,J  ,bi,bj)*cg2d_r(I  ,J  ,bi,bj)
      &     +pW(I  ,J  ,bi,bj)*cg2d_r(I-1,J  ,bi,bj)
      &     +pW(I+1,J  ,bi,bj)*cg2d_r(I+1,J  ,bi,bj)
@@ -294,7 +293,8 @@ C==    q = A.s
          alphaTile = 0. _d 0
          DO J=1,sNy
           DO I=1,sNx
-           cg2d_q(I,J,bi,bj) = 
+           ks = ksurfC(I,J,bi,bj)
+           cg2d_q(I,J,bi,bj) =
      &     aW2d(I  ,J  ,bi,bj)*cg2d_s(I-1,J  ,bi,bj)
      &    +aW2d(I+1,J  ,bi,bj)*cg2d_s(I+1,J  ,bi,bj)
      &    +aS2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J-1,bi,bj)
@@ -303,8 +303,10 @@ C==    q = A.s
      &    -aW2d(I+1,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J+1,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
-     &    -freeSurfFac*_rA(i,j,bi,bj)*recip_Bo(i,j,bi,bj)* 
-     &     cg2d_s(I  ,J  ,bi,bj)/deltaTMom/deltaTfreesurf*cg2dNorm
+     &    -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)*recip_Bo(i,j,bi,bj)
+     &                        *cg2d_s(I  ,J  ,bi,bj)
+     &                        /deltaTMom/deltaTfreesurf*cg2dNorm
+c    &    +aC2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
           alphaTile = alphaTile+cg2d_s(I,J,bi,bj)*cg2d_q(I,J,bi,bj)
           ENDDO
          ENDDO
@@ -319,7 +321,7 @@ CcnhDebugEnds
 CcnhDebugStarts
 C      WRITE(*,*) ' CG2D: Iteration ',it2d-1,' alpha= ',alpha
 CcnhDebugEnds
-     
+
 C==    Update solution and residual vectors
 C      Now compute "interior" points.
        err = 0. _d 0
@@ -369,7 +371,7 @@ C     The following exchange was moved up to solve_for_pressure
 C     for compatibility with TAMC.
 C     _EXCH_XY_R8(cg2d_x, myThid )
 c     _BEGIN_MASTER( myThid )
-c      WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 
+c      WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ',
 c    & actualIts, actualResidual
 c     _END_MASTER( myThid )
 
@@ -393,7 +395,7 @@ C    &    -aW2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
 C    &    -aW2d(I+1,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
 C    &    -aS2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
 C    &    -aS2d(I  ,J+1,bi,bj)*cg2d_x(I  ,J  ,bi,bj))
-C         err            = err            + 
+C         err            = err            +
 C    &     cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
 C        ENDDO
 C       ENDDO

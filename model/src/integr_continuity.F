@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.17 2006/07/22 03:53:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.18 2006/12/05 05:25:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,7 +53,7 @@ C     i,j,k  :: Loop counters
 C     uTrans :: Volume transports ( uVel.xA )
 C     vTrans :: Volume transports ( vVel.yA )
 C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
-      INTEGER i,j,k
+      INTEGER i,j,k, ks
       _RL uTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL vTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL hDivFlow(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -79,11 +79,14 @@ C-    Initialise
       DO k=1,Nr
 
 C-    Calculate velocity field "volume transports" through tracer cell faces
+C     anelastic: uTrans,vTrans are scaled by rhoFacC (~ mass transport).
         DO j=1,sNy+1
          DO i=1,sNx+1
           uTrans(i,j) = uFld(i,j,k,bi,bj)*_dyG(i,j,bi,bj)
+     &                 *deepFacC(k)*rhoFacC(k)
      &                 *drF(k)*_hFacW(i,j,k,bi,bj)
           vTrans(i,j) = vFld(i,j,k,bi,bj)*_dxG(i,j,bi,bj)
+     &                 *deepFacC(k)*rhoFacC(k)
      &                 *drF(k)*_hFacS(i,j,k,bi,bj)
          ENDDO
         ENDDO
@@ -101,6 +104,8 @@ C-    End DO k=1,Nr
       ENDDO
 
 C------------------------------------
+C note: deep-model not implemented for P-coordinate + realFreshWaterFlux ;
+C       anelastic: always assumes that rhoFacF(1) = 1
        facEmP = 0.
        IF (useRealFreshWaterFlux) facEmP = convertEmP2rUnit
        IF ( myTime.EQ.startTime .AND. myTime.NE.baseTime
@@ -121,14 +126,17 @@ C     and was not in old pickup-file ; try to use etaN & etaH instead.
           DO i=1,sNx
             PmEpR(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)
      &                       + hDivFlow(i,j)*recip_rA(i,j,bi,bj)
+     &                                      *recip_deepFac2F(1)
             PmEpR(i,j,bi,bj) = PmEpR(i,j,bi,bj)/convertEmP2rUnit
           ENDDO
          ENDDO
        ELSEIF ( myTime.EQ.startTime ) THEN
          DO j=1,sNy
           DO i=1,sNx
+            ks = ksurfC(I,J,bi,bj)
             PmEpR(i,j,bi,bj) = 0. _d 0
             dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
+     &                                         *recip_deepFac2F(ks)
           ENDDO
          ENDDO
        ELSE
@@ -141,7 +149,9 @@ C       (e.g., if using KPP) => set over full index range
          ENDDO
          DO j=1,sNy
           DO i=1,sNx
+            ks = ksurfC(I,J,bi,bj)
             dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
+     &                                         *recip_deepFac2F(ks)
      &                           -facEmP*EmPmR(i,j,bi,bj)
           ENDDO
          ENDDO

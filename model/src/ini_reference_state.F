@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_reference_state.F,v 1.1 2006/11/28 22:47:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_reference_state.F,v 1.2 2006/12/05 05:25:08 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -188,7 +188,7 @@ C-    read from file:
      &                      SQUEEZE_RIGHT , myThid)
       ENDIF
 
-C--   Set refrence state density ratio between layer k and top layer
+C--   Initialise density factor for anelastic formulation:
       DO k=1,Nr
         rhoFacC(k) = 1. _d 0
         recip_rhoFacC(k) = 1. _d 0
@@ -198,20 +198,27 @@ C--   Set refrence state density ratio between layer k and top layer
         recip_rhoFacF(k) = 1. _d 0
       ENDDO
 
-      IF ( rhoRefFile .NE. ' ' ) THEN
+      IF ( usingZCoords .AND. rhoRefFile .NE. ' ' ) THEN
+C--   anelastic formulation : set density factor from reference density profile
+C       surface-interface rho-factor has to be 1:
+        rhoFacF(1)   = 1. _d 0
+C       rhoFac(k) = density ratio between layer k and top interface
         DO k=1,Nr
-          rhoFacC(k)=rhoRef(k)/rhoConst
-          recip_rhoFacC(k)=1. _d 0/rhoFacC(k)
+          rhoFacC(k) = rhoRef(k)/rhoConst
         ENDDO
-        rhoFacF(1)=rhoFacC(1)
-C       The first layer ratio has to be 1 both for C and F
         DO k=2,Nr
-          rhoFacF(k)=(rhoFacC(k-1)*delR(k)+rhoFacC(k)*delR(k-1))
-     &                                        /(delR(k)+delR(k-1))
-          recip_rhoFacF(k)=1. _d 0/rhoFacF(k)
+          rhoFacF(k) = (rhoFacC(k-1)*delR(k)+rhoFacC(k)*delR(k-1))
+     &               / (delR(k)+delR(k-1))
         ENDDO
-        rhoFacF(Nr+1)=2*rhoFacC(Nr)-rhoFacF(Nr)
-        recip_rhoFacF(Nr+1)=1. _d 0/rhoFacF(Nr+1)
+C       extrapolate down to the bottom:
+        rhoFacF(Nr+1)= 2. _d 0*rhoFacC(Nr) - rhoFacF(Nr)
+C-      set reciprocal rho-factor:
+        DO k=1,Nr
+          recip_rhoFacC(k) = 1. _d 0/rhoFacC(k)
+        ENDDO
+        DO k=1,Nr+1
+          recip_rhoFacF(k) = 1. _d 0/rhoFacF(k)
+        ENDDO
       ENDIF
 
       _END_MASTER(myThid)

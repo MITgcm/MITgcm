@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.92 2006/08/13 21:25:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.93 2006/12/05 05:25:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -43,7 +43,6 @@ C     I,J,K  :: Loop counters.
 C     bi,bj  :: Tile loop counters.
 C     xcoord :: Temps. for building lists of values for uni-dimensionally
 C     ycoord :: varying parameters.
-C     zcoord ::
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER                  I,J,K
       INTEGER                  bi, bj
@@ -85,7 +84,7 @@ C     zcoord ::
       CALL WRITE_0D_L( fluidIsAir,   INDEX_NONE,
      & 'fluidIsAir  =', '  /* fluid major constituent is Air */')
       CALL WRITE_0D_L( fluidIsWater, INDEX_NONE,
-     & 'fluidIsWater=', '  /* fuild major constituent is Water */')
+     & 'fluidIsWater=', '  /* fluid major constituent is Water */')
       CALL WRITE_0D_L( usingPCoords, INDEX_NONE,
      & 'usingPCoords =', '  /* use p (or p*) vertical coordinate */')
       CALL WRITE_0D_L( usingZCoords, INDEX_NONE,
@@ -213,6 +212,10 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
      &'   /* Reference density ( kg/m^3 ) */')
       CALL WRITE_0D_R8( rhoConst, INDEX_NONE,'rhoConst =',
      &'   /* Reference density ( kg/m^3 ) */')
+      CALL WRITE_1D_R8( rhoFacC, Nr,   INDEX_K,'rhoFacC = ',
+     &  ' /* normalized Reference density @ cell-Center (-) */')
+      CALL WRITE_1D_R8( rhoFacF, Nr+1, INDEX_K,'rhoFacF = ',
+     &  ' /* normalized Reference density @ W-Interface (-) */')
       CALL WRITE_0D_R8( rhoConstFresh, INDEX_NONE,'rhoConstFresh =',
      &'   /* Reference density ( kg/m^3 ) */')
       CALL WRITE_0D_R8( gravity, INDEX_NONE,'gravity =',
@@ -518,17 +521,22 @@ c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
      &                    SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L( usingCartesianGrid, INDEX_NONE,
      & 'usingCartesianGrid =',
-     &'   /* Cartesian coordinates flag ( True / False ) */')
-      CALL WRITE_0D_L( usingSphericalPolarGrid, INDEX_NONE,
-     & 'usingSphericalPolarGrid =',
-     &'   /* Spherical coordinates flag ( True / False ) */')
+     & ' /* Cartesian coordinates flag ( True/False ) */')
       CALL WRITE_0D_L( usingCylindricalGrid, INDEX_NONE,
      & 'usingCylindricalGrid =',
-     &'   /* Spherical coordinates flag ( True / False ) */')
+     & ' /* Cylindrical coordinates flag ( True/False ) */')
+      CALL WRITE_0D_L( usingSphericalPolarGrid, INDEX_NONE,
+     & 'usingSphericalPolarGrid =',
+     & ' /* Spherical coordinates flag ( True/False ) */')
+      CALL WRITE_0D_L( usingCurvilinearGrid, INDEX_NONE,
+     & 'usingCurvilinearGrid =',
+     & ' /* Curvilinear coordinates flag ( True/False ) */')
       CALL WRITE_0D_R8( Ro_SeaLevel, INDEX_NONE,'Ro_SeaLevel =',
-     &'   /* r(1) ( units of r ) */')
+     & ' /* r(1) ( units of r ) */')
       CALL WRITE_0D_R8( rkSign, INDEX_NONE,'rkSign =',
      &'   /* index orientation relative to vertical coordinate */')
+      CALL WRITE_0D_R8( gravitySign, INDEX_NONE,'gravitySign =',
+     &  ' /* gravity orientation relative to vertical coordinate */')
       CALL WRITE_0D_R8( horiVertRatio, INDEX_NONE,'horiVertRatio =',
      &'   /* Ratio on units : Horiz - Vertical */')
 c     CALL WRITE_1D_R8( delZ,Nr, INDEX_K,'delZ = ',
@@ -550,7 +558,9 @@ c    &'   /* W spacing ( units of r ) */')
       CALL WRITE_0D_R8( thetaMin, INDEX_NONE,'thetaMin = ',
      &'   /* West edge ( ignored - cartesian, degrees - spherical ) */')
       CALL WRITE_0D_R8( rSphere, INDEX_NONE,'rSphere = ',
-     &'   /* Radius ( ignored - cartesian, m - spherical ) */')
+     &  ' /* Radius ( ignored - cartesian, m - spherical ) */')
+      CALL WRITE_0D_L(deepAtmosphere,INDEX_NONE, 'deepAtmosphere =',
+     &  ' /* Deep/Shallow Atmosphere flag (True/False) */')
       DO bi=1,nSx
        DO I=1,sNx
         xcoord((bi-1)*sNx+I) = xC(I,1,bi,1)
@@ -575,6 +585,10 @@ c    &'   /* W spacing ( units of r ) */')
       ENDDO
       CALL WRITE_1D_R8( rcoord, Nr+1, INDEX_K,'rF = ',
      &'   /* W-Interf. R coordinate (  units of r ) */')
+      CALL WRITE_1D_R8( deepFacC, Nr, INDEX_K,'deepFacC = ',
+     &  ' /* deep-model grid factor @ cell-Center (-) */')
+      CALL WRITE_1D_R8( deepFacF, Nr+1, INDEX_K,'deepFacF = ',
+     &  ' /* deep-model grid factor @ W-Interface (-) */')
       CALL WRITE_1D_R8( dBdrRef, Nr, INDEX_K,'dBdrRef = ',
      & ' /* Vertical gradient of reference boyancy [(m/s/r)^2)] */')
 

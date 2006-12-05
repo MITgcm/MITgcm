@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.57 2006/06/14 15:30:14 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.58 2006/12/05 05:25:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,9 +11,9 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE SOLVE_FOR_PRESSURE                             
-C     | o Controls inversion of two and/or three-dimensional      
-C     |   elliptic problems for the pressure field.               
+C     | SUBROUTINE SOLVE_FOR_PRESSURE
+C     | o Controls inversion of two and/or three-dimensional
+C     |   elliptic problems for the pressure field.
 C     *==========================================================*
 C     \ev
 
@@ -45,9 +45,9 @@ C     === Functions ====
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid - Thread number for this instance of SOLVE_FOR_PRESSURE
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: Thread number for this instance of SOLVE_FOR_PRESSURE
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -61,11 +61,11 @@ C     == Local variables ==
       _RL tmpFac
       _RL sumEmP, tileEmP
       LOGICAL putPmEinXvector
-      INTEGER numIters
+      INTEGER numIters, ks
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_NONHYDROSTATIC
-      INTEGER ks, kp1
-      _RL     maskKp1
+      INTEGER kp1
+      _RL     wFacKm, wFacKp
       LOGICAL zeroPsNH
 #endif
 CEOP
@@ -105,6 +105,15 @@ c       zeroPsNH = .FALSE.
         zeroPsNH = exactConserv
 #endif
 
+C deepAtmosphere & useRealFreshWaterFlux: only valid if deepFac2F(ksurf)=1
+C anelastic (always Z-coordinate):
+C     1) assume that rhoFacF(1)=1 (and ksurf == 1);
+C        (this reduces the number of lines of code to modify)
+C     2) (a) 2-D continuity eq. compute div. of mass transport (<- add rhoFac)
+C        (b) gradient of surf.Press in momentum eq. (<- add 1/rhoFac)
+C       => 2 factors cancel in elliptic eq. for Phi_s ,
+C       but 1rst factor(a) remains in RHS cg2d_b.
+
 C--   Initialise the Vector solution with etaN + deltaT*Global_mean_PmE
 C     instead of simply etaN ; This can speed-up the solver convergence in
 C     the case where |Global_mean_PmE| is large.
@@ -126,11 +135,11 @@ C--   Save previous solution & Initialise Vector solution and source term :
         ENDDO
         IF (useRealFreshWaterFlux) THEN
          tmpFac = freeSurfFac*convertEmP2rUnit
-         IF (exactConserv) 
+         IF (exactConserv)
      &        tmpFac = freeSurfFac*convertEmP2rUnit*implicDiv2DFlow
          DO j=1,sNy
           DO i=1,sNx
-           cg2d_b(i,j,bi,bj) = 
+           cg2d_b(i,j,bi,bj) =
      &       tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)/deltaTMom
           ENDDO
          ENDDO
@@ -164,13 +173,15 @@ C--   Save previous solution & Initialise Vector solution and source term :
            ENDDO
           ENDDO
         ENDIF
+C- RHS: similar to the divergence of the vertically integrated mass transport:
+C       del_i { Sum_k [ rhoFac.(dr.hFac).(dy.deepFac).(u*) ] }  / deltaT
         DO K=Nr,1,-1
          DO j=1,sNy+1
           DO i=1,sNx+1
-           uf(i,j) = _dyG(i,j,bi,bj)
-     &      *drF(k)*_hFacW(i,j,k,bi,bj)
-           vf(i,j) = _dxG(i,j,bi,bj)
-     &      *drF(k)*_hFacS(i,j,k,bi,bj)
+           uf(i,j) = _dyG(i,j,bi,bj)*deepFacC(k)
+     &               *drF(k)*_hFacW(i,j,k,bi,bj)*rhoFacC(k)
+           vf(i,j) = _dxG(i,j,bi,bj)*deepFacC(k)
+     &               *drF(k)*_hFacS(i,j,k,bi,bj)*rhoFacC(k)
           ENDDO
          ENDDO
          CALL CALC_DIV_GHAT(
@@ -192,10 +203,12 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
            ks = ksurfC(i,j,bi,bj)
            IF ( ks.LE.Nr ) THEN
             cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
-     &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+     &         /deltaTMom/deltaTfreesurf
      &         * etaH(i,j,bi,bj)
             cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
-     &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+     &         /deltaTMom/deltaTfreesurf
      &         * etaH(i,j,bi,bj)
            ENDIF
           ENDDO
@@ -206,11 +219,13 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
            ks = ksurfC(i,j,bi,bj)
            IF ( ks.LE.Nr ) THEN
             cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
-     &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+     &         /deltaTMom/deltaTfreesurf
      &         *( etaN(i,j,bi,bj)
      &           +phi_nh(i,j,ks,bi,bj)*horiVertRatio/gravity )
             cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
-     &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+     &         /deltaTMom/deltaTfreesurf
      &         *( etaN(i,j,bi,bj)
      &           +phi_nh(i,j,ks,bi,bj)*horiVertRatio/gravity )
            ENDIF
@@ -222,16 +237,20 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
 #endif /* ALLOW_NONHYDROSTATIC */
          DO j=1,sNy
           DO i=1,sNx
+           ks = ksurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
-     &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+     &         /deltaTMom/deltaTfreesurf
      &         * etaH(i,j,bi,bj)
           ENDDO
          ENDDO
         ELSE
          DO j=1,sNy
           DO i=1,sNx
+           ks = ksurfC(i,j,bi,bj)
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
-     &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
+     &         /deltaTMom/deltaTfreesurf
      &         * etaN(i,j,bi,bj)
           ENDDO
          ENDDO
@@ -378,27 +397,27 @@ C Western boundary
          ENDIF
 #endif /* ALLOW_OBCS */
 
-         IF ( usingZCoords ) THEN 
+         IF ( usingZCoords ) THEN
 C-       Z coordinate: assume surface @ level k=1
-           tmpFac = freeSurfFac
+           tmpFac = freeSurfFac*deepFac2F(1)
          ELSE
 C-       Other than Z coordinate: no assumption on surface level index
-           tmpFac = 0. 
+           tmpFac = 0.
            DO j=1,sNy
             DO i=1,sNx
               ks = ksurfC(i,j,bi,bj)
               IF ( ks.LE.Nr ) THEN
                cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
      &              +freeSurfFac*etaN(i,j,bi,bj)/deltaTfreesurf
-     &                          *_rA(i,j,bi,bj)/deltaTmom
+     &                  *_rA(i,j,bi,bj)*deepFac2F(ks)/deltaTmom
               ENDIF
             ENDDO
            ENDDO
          ENDIF
          K=1
          kp1 = MIN(k+1,Nr)
-         maskKp1 = 1.
-         IF (k.GE.Nr) maskKp1 = 0.
+         wFacKp = deepFac2F(kp1)*rhoFacF(kp1)
+         IF (k.GE.Nr) wFacKp = 0.
          DO j=1,sNy
           DO i=1,sNx
             cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
@@ -407,14 +426,17 @@ C-       Other than Z coordinate: no assumption on surface level index
      &       +drF(K)*dxG(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
      &       -drF(K)*dxG(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)*vf(i, j )
      &       +( tmpFac*etaN(i,j,bi,bj)/deltaTfreesurf
-     &         -wVel(i,j,kp1,bi,bj)*maskKp1
+     &         -wVel(i,j,kp1,bi,bj)*wFacKp
      &        )*_rA(i,j,bi,bj)/deltaTmom
           ENDDO
          ENDDO
          DO K=2,Nr
           kp1 = MIN(k+1,Nr)
-          maskKp1 = 1.
-          IF (k.GE.Nr) maskKp1 = 0.
+C-       deepFac & rhoFac cancel with the ones in uf[=del_i(Phi)/dx],vf ;
+C        both appear in wVel term, but at 2 different levels
+          wFacKm = deepFac2F( k )*rhoFacF( k )
+          wFacKp = deepFac2F(kp1)*rhoFacF(kp1)
+          IF (k.GE.Nr) wFacKp = 0.
           DO j=1,sNy
            DO i=1,sNx
             cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
@@ -422,8 +444,8 @@ C-       Other than Z coordinate: no assumption on surface level index
      &       -drF(K)*dyG( i ,j,bi,bj)*_hFacW( i ,j,k,bi,bj)*uf( i ,j)
      &       +drF(K)*dxG(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
      &       -drF(K)*dxG(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)*vf(i, j )
-     &       +( wVel(i,j,k  ,bi,bj)*maskC(i,j,k-1,bi,bj)
-     &         -wVel(i,j,kp1,bi,bj)*maskKp1
+     &       +( wVel(i,j, k ,bi,bj)*wFacKm*maskC(i,j,k-1,bi,bj)
+     &         -wVel(i,j,kp1,bi,bj)*wFacKp
      &        )*_rA(i,j,bi,bj)/deltaTmom
 
            ENDDO

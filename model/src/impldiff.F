@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.25 2005/09/11 20:54:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.26 2006/12/05 05:25:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -103,7 +103,9 @@ C--   Old aLower
        DO j=jMin,jMax
         DO i=iMin,iMax
           a(i,j,k) = -deltaTX(k)*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
+     &               *recip_deepFac2C(k)*recip_rhoFacC(k)
      &               *KappaRX(i,j, k )*recip_drC( k )
+     &               *deepFac2F(k)*rhoFacF(k)
           IF (recip_hFac(i,j,k-1,bi,bj).EQ.0.) a(i,j,k)=0.
         ENDDO
        ENDDO
@@ -114,7 +116,9 @@ C--   Old aUpper
        DO j=jMin,jMax
         DO i=iMin,iMax
           c(i,j,k) = -deltaTX(k)*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
+     &               *recip_deepFac2C(k)*recip_rhoFacC(k)
      &               *KappaRX(i,j,k+1)*recip_drC(k+1)
+     &               *deepFac2F(k+1)*rhoFacF(k+1)
           IF (recip_hFac(i,j,k+1,bi,bj).EQ.0.) c(i,j,k)=0.
         ENDDO
        ENDDO
@@ -241,7 +245,7 @@ C         otherwise counter is not incremented !!
             DO j=1,sNy
              DO i=1,sNx
                df(i,j) =
-     &             -rA(i,j,bi,bj)
+     &             -rA(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
      &            * KappaRX(i,j,k)*recip_drC(k)
      &            * (gXnm1(i,j,k,bi,bj) - gXnm1(i,j,k-1,bi,bj))*rkSign
              ENDDO
@@ -250,7 +254,7 @@ C         otherwise counter is not incremented !!
             DO j=1,sNy
              DO i=1,sNx+1
                df(i,j) =
-     &             -rAw(i,j,bi,bj)
+     &             -rAw(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
      &            * KappaRX(i,j,k)*recip_drC(k)
      &            * (gXnm1(i,j,k,bi,bj) - gXnm1(i,j,k-1,bi,bj))*rkSign
      &            * _maskW(i,j,k,bi,bj)
@@ -261,7 +265,7 @@ C         otherwise counter is not incremented !!
             DO j=1,sNy+1
              DO i=1,sNx
                df(i,j) =
-     &             -rAs(i,j,bi,bj)
+     &             -rAs(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
      &            * KappaRX(i,j,k)*recip_drC(k)
      &            * (gXnm1(i,j,k,bi,bj) - gXnm1(i,j,k-1,bi,bj))*rkSign
      &            * _maskS(i,j,k,bi,bj)
