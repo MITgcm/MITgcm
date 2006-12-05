@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.30 2006/12/05 05:24:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.31 2006/12/05 19:27:07 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -841,83 +841,160 @@ cph)
         write(cfname,'(A,i4.4)') 'costfunction',optimcycle
         open(unit=ifc,file=cfname)
       
-        write(ifc,'(A,2D22.15)') 'fc =', fc, 0.
-        write(ifc,'(A,2D22.15)') 'f_temp =', f_temp, no_temp
-        write(ifc,'(A,2D22.15)') 'f_salt =', f_salt, no_salt
-        write(ifc,'(A,2D22.15)') 'f_temp0 =', f_temp0, no_temp0
-        write(ifc,'(A,2D22.15)') 'f_salt0 =', f_salt0, no_salt0
-        write(ifc,'(A,2D22.15)') 'f_temp0smoo =', f_temp0smoo, no_temp0
-        write(ifc,'(A,2D22.15)') 'f_salt0smoo =', f_salt0smoo, no_salt0
-        write(ifc,'(A,2D22.15)') 'f_tauu =', f_tauu, no_tauu
-        write(ifc,'(A,2D22.15)') 'f_tauum =', f_tauum, no_tauum
-        write(ifc,'(A,2D22.15)') 'f_tauusmoo =', f_tauusmoo, no_tauu
-        write(ifc,'(A,2D22.15)') 'f_tauv =', f_tauv, no_tauv
-        write(ifc,'(A,2D22.15)') 'f_tauvm =', f_tauvm, no_tauvm
-        write(ifc,'(A,2D22.15)') 'f_tauvsmoo =', f_tauvsmoo, no_tauv
-        write(ifc,'(A,2D22.15)') 'f_hflux =', f_hflux, no_hflux
-        write(ifc,'(A,2D22.15)') 'f_hfluxm =', f_hfluxm, no_hfluxm
-        write(ifc,'(A,2D22.15)') 'f_hfluxmm =', f_hfluxmm, no_hfluxmm
-        write(ifc,'(A,2D22.15)') 'f_hfluxmm2 =', f_hfluxmm2, mult_hfluxmm
-        write(ifc,'(A,2D22.15)') 'f_hfluxsmoo =', f_hfluxsmoo, no_hflux
-        write(ifc,'(A,2D22.15)') 'f_sflux =', f_sflux, no_sflux
-        write(ifc,'(A,2D22.15)') 'f_sfluxm =', f_sfluxm, no_sfluxm
-        write(ifc,'(A,2D22.15)') 'f_sfluxmm =', f_sfluxmm, no_sfluxmm
-        write(ifc,'(A,2D22.15)') 'f_sfluxmm2 =', f_sfluxmm2, mult_sfluxmm
-        write(ifc,'(A,2D22.15)') 'f_sfluxsmoo =', f_sfluxsmoo, no_sflux
-        write(ifc,'(A,2D22.15)') 'f_uwind  =', f_uwind, no_uwind
-        write(ifc,'(A,2D22.15)') 'f_vwind  =', f_vwind, no_vwind
-        write(ifc,'(A,2D22.15)') 'f_atemp  =', f_atemp, no_atemp
-        write(ifc,'(A,2D22.15)') 'f_aqh    =', f_aqh, no_aqh
-        write(ifc,'(A,2D22.15)') 'f_precip =', f_precip, no_precip
-        write(ifc,'(A,2D22.15)') 'f_swflux =', f_swflux, no_swflux
-        write(ifc,'(A,2D22.15)') 'f_swdown =', f_swdown, no_swdown
-        write(ifc,'(A,2D22.15)') 'f_uwindm   =', f_uwindm, no_uwindm
-        write(ifc,'(A,2D22.15)') 'f_vwindm   =', f_vwindm, no_vwindm
-        write(ifc,'(A,2D22.15)') 'f_atempm   =', f_atempm, no_atempm
-        write(ifc,'(A,2D22.15)') 'f_aqhm     =', f_aqhm, no_aqhm
-        write(ifc,'(A,2D22.15)') 'f_precipm  =', f_precipm, no_precipm
-        write(ifc,'(A,2D22.15)') 'f_swfluxm  =', f_swfluxm, no_swfluxm
-        write(ifc,'(A,2D22.15)') 'f_swdownm  =', f_swdownm, no_swdownm
-        write(ifc,'(A,2D22.15)') 'f_uwindsmoo  =', f_uwindsmoo, no_uwind
-        write(ifc,'(A,2D22.15)') 'f_vwindsmoo  =', f_vwindsmoo, no_vwind
-        write(ifc,'(A,2D22.15)') 'f_atempsmoo  =', f_atempsmoo, no_atemp
-        write(ifc,'(A,2D22.15)') 'f_aqhsmoo    =', f_aqhsmoo, no_aqh
-        write(ifc,'(A,2D22.15)') 'f_precipsmoo =', f_precipsmoo, no_precip
-        write(ifc,'(A,2D22.15)') 'f_swfluxsmoo =', f_swfluxsmoo, no_swflux
-        write(ifc,'(A,2D22.15)') 'f_swdownsmoo =', f_swdownsmoo, no_swdown
-        write(ifc,'(A,2D22.15)') 'f_ssh =', f_ssh, no_ssh
-        write(ifc,'(A,2D22.15)') 'f_tp  =', f_tp, no_tp
-        write(ifc,'(A,2D22.15)') 'f_ers =', f_ers, no_ers
-        write(ifc,'(A,2D22.15)') 'f_gfo =', f_gfo, no_gfo
-        write(ifc,'(A,2D22.15)') 'f_sst =', f_sst, no_sst
-        write(ifc,'(A,2D22.15)') 'f_tmi =', f_tmi, no_tmi
-        write(ifc,'(A,2D22.15)') 'f_sss =', f_sss, no_sss
-        write(ifc,'(A,2D22.15)') 'f_atl =', f_atl, no_atl
-        write(ifc,'(A,2D22.15)') 'f_ctdt =', f_ctdt, no_ctdt
-        write(ifc,'(A,2D22.15)') 'f_ctds =', f_ctds, no_ctds
-        write(ifc,'(A,2D22.15)') 'f_ctdtclim =', f_ctdtclim, no_ctdtclim
-        write(ifc,'(A,2D22.15)') 'f_ctdsclim =', f_ctdsclim, no_ctdsclim
-        write(ifc,'(A,2D22.15)') 'f_xbt =', f_xbt, no_xbt
-        write(ifc,'(A,2D22.15)') 'f_argot =', f_argot, no_argot
-        write(ifc,'(A,2D22.15)') 'f_argos =', f_argos, no_argos
-        write(ifc,'(A,2D22.15)') 'objf_hmean =', objf_hmean, no_hmean
-        write(ifc,'(A,2D22.15)') 'f_drifter =', f_drifter, no_drifter
-        write(ifc,'(A,2D22.15)') 'f_sdrift =', f_sdrift, no_sdrift
-        write(ifc,'(A,2D22.15)') 'f_tdrift =', f_tdrift, no_tdrift
-        write(ifc,'(A,2D22.15)') 'f_wdrift =', f_wdrift, no_wdrift
-        write(ifc,'(A,2D22.15)') 'f_scatx =', f_scatx, no_scatx
-        write(ifc,'(A,2D22.15)') 'f_scaty =', f_scaty, no_scaty
-        write(ifc,'(A,2D22.15)') 'f_scatxm =', f_scatxm, no_scatxm
-        write(ifc,'(A,2D22.15)') 'f_scatym =', f_scatym, no_scatym
-        write(ifc,'(A,2D22.15)') 'f_obcsn =', f_obcsn, no_obcsn
-        write(ifc,'(A,2D22.15)') 'f_obcss =', f_obcss, no_obcss
-        write(ifc,'(A,2D22.15)') 'f_obcsw =', f_obcsw, no_obcsw
-        write(ifc,'(A,2D22.15)') 'f_obcse =', f_obcse, no_obcse
-        write(ifc,'(A,2D22.15)') 'f_ageos =', f_ageos, no_ageos
-        write(ifc,'(A,2D22.15)') 'f_kapgm =', f_kapgm, no_kapgm
-        write(ifc,'(A,2D22.15)') 'f_diffkr =', f_diffkr, no_diffkr
-        write(ifc,'(A,2D22.15)') 'f_ini_fin =', f_ini_fin, no_ini_fin
-        write(ifc,'(A,2D22.15)') 'f_eddytau =', f_eddytau, no_eddytau
+        write(ifc,'(A,2D22.15)') 
+     &       'fc =', fc, 0.
+        write(ifc,'(A,2D22.15)') 
+     &       'f_temp =', f_temp, no_temp
+        write(ifc,'(A,2D22.15)') 
+     &       'f_salt =', f_salt, no_salt
+        write(ifc,'(A,2D22.15)') 
+     &       'f_temp0 =', f_temp0, no_temp0
+        write(ifc,'(A,2D22.15)') 
+     &       'f_salt0 =', f_salt0, no_salt0
+        write(ifc,'(A,2D22.15)') 
+     &       'f_temp0smoo =', f_temp0smoo, no_temp0
+        write(ifc,'(A,2D22.15)') 
+     &       'f_salt0smoo =', f_salt0smoo, no_salt0
+        write(ifc,'(A,2D22.15)') 
+     &       'f_tauu =', f_tauu, no_tauu
+        write(ifc,'(A,2D22.15)') 
+     &       'f_tauum =', f_tauum, no_tauum
+        write(ifc,'(A,2D22.15)') 
+     &       'f_tauusmoo =', f_tauusmoo, no_tauu
+        write(ifc,'(A,2D22.15)') 
+     &       'f_tauv =', f_tauv, no_tauv
+        write(ifc,'(A,2D22.15)') 
+     &       'f_tauvm =', f_tauvm, no_tauvm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_tauvsmoo =', f_tauvsmoo, no_tauv
+        write(ifc,'(A,2D22.15)') 
+     &       'f_hflux =', f_hflux, no_hflux
+        write(ifc,'(A,2D22.15)') 
+     &       'f_hfluxm =', f_hfluxm, no_hfluxm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_hfluxmm =', f_hfluxmm, no_hfluxmm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_hfluxmm2 =', f_hfluxmm2, mult_hfluxmm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_hfluxsmoo =', f_hfluxsmoo, no_hflux
+        write(ifc,'(A,2D22.15)') 
+     &       'f_sflux =', f_sflux, no_sflux
+        write(ifc,'(A,2D22.15)') 
+     &       'f_sfluxm =', f_sfluxm, no_sfluxm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_sfluxmm =', f_sfluxmm, no_sfluxmm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_sfluxmm2 =', f_sfluxmm2, mult_sfluxmm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_sfluxsmoo =', f_sfluxsmoo, no_sflux
+        write(ifc,'(A,2D22.15)') 
+     &       'f_uwind  =', f_uwind, no_uwind
+        write(ifc,'(A,2D22.15)') 
+     &       'f_vwind  =', f_vwind, no_vwind
+        write(ifc,'(A,2D22.15)') 
+     &       'f_atemp  =', f_atemp, no_atemp
+        write(ifc,'(A,2D22.15)') 
+     &       'f_aqh    =', f_aqh, no_aqh
+        write(ifc,'(A,2D22.15)') 
+     &       'f_precip =', f_precip, no_precip
+        write(ifc,'(A,2D22.15)') 
+     &       'f_swflux =', f_swflux, no_swflux
+        write(ifc,'(A,2D22.15)') 
+     &       'f_swdown =', f_swdown, no_swdown
+        write(ifc,'(A,2D22.15)') 
+     &       'f_uwindm   =', f_uwindm, no_uwindm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_vwindm   =', f_vwindm, no_vwindm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_atempm   =', f_atempm, no_atempm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_aqhm     =', f_aqhm, no_aqhm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_precipm  =', f_precipm, no_precipm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_swfluxm  =', f_swfluxm, no_swfluxm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_swdownm  =', f_swdownm, no_swdownm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_uwindsmoo  =', f_uwindsmoo, no_uwind
+        write(ifc,'(A,2D22.15)') 
+     &       'f_vwindsmoo  =', f_vwindsmoo, no_vwind
+        write(ifc,'(A,2D22.15)') 
+     &       'f_atempsmoo  =', f_atempsmoo, no_atemp
+        write(ifc,'(A,2D22.15)') 
+     &       'f_aqhsmoo    =', f_aqhsmoo, no_aqh
+        write(ifc,'(A,2D22.15)') 
+     &       'f_precipsmoo =', f_precipsmoo, no_precip
+        write(ifc,'(A,2D22.15)') 
+     &       'f_swfluxsmoo =', f_swfluxsmoo, no_swflux
+        write(ifc,'(A,2D22.15)') 
+     &       'f_swdownsmoo =', f_swdownsmoo, no_swdown
+        write(ifc,'(A,2D22.15)') 
+     &       'f_ssh =', f_ssh, no_ssh
+        write(ifc,'(A,2D22.15)') 
+     &       'f_tp  =', f_tp, no_tp
+        write(ifc,'(A,2D22.15)') 
+     &       'f_ers =', f_ers, no_ers
+        write(ifc,'(A,2D22.15)') 
+     &       'f_gfo =', f_gfo, no_gfo
+        write(ifc,'(A,2D22.15)') 
+     &       'f_sst =', f_sst, no_sst
+        write(ifc,'(A,2D22.15)') 
+     &       'f_tmi =', f_tmi, no_tmi
+        write(ifc,'(A,2D22.15)') 
+     &       'f_sss =', f_sss, no_sss
+        write(ifc,'(A,2D22.15)') 
+     &       'f_atl =', f_atl, no_atl
+        write(ifc,'(A,2D22.15)') 
+     &       'f_ctdt =', f_ctdt, no_ctdt
+        write(ifc,'(A,2D22.15)') 
+     &       'f_ctds =', f_ctds, no_ctds
+        write(ifc,'(A,2D22.15)') 
+     &       'f_ctdtclim =', f_ctdtclim, no_ctdtclim
+        write(ifc,'(A,2D22.15)') 
+     &       'f_ctdsclim =', f_ctdsclim, no_ctdsclim
+        write(ifc,'(A,2D22.15)') 
+     &       'f_xbt =', f_xbt, no_xbt
+        write(ifc,'(A,2D22.15)') 
+     &       'f_argot =', f_argot, no_argot
+        write(ifc,'(A,2D22.15)') 
+     &       'f_argos =', f_argos, no_argos
+        write(ifc,'(A,2D22.15)') 
+     &       'objf_hmean =', objf_hmean, no_hmean
+        write(ifc,'(A,2D22.15)') 
+     &       'f_drifter =', f_drifter, no_drifter
+        write(ifc,'(A,2D22.15)') 
+     &       'f_sdrift =', f_sdrift, no_sdrift
+        write(ifc,'(A,2D22.15)') 
+     &       'f_tdrift =', f_tdrift, no_tdrift
+        write(ifc,'(A,2D22.15)') 
+     &       'f_wdrift =', f_wdrift, no_wdrift
+        write(ifc,'(A,2D22.15)') 
+     &       'f_scatx =', f_scatx, no_scatx
+        write(ifc,'(A,2D22.15)') 
+     &       'f_scaty =', f_scaty, no_scaty
+        write(ifc,'(A,2D22.15)') 
+     &       'f_scatxm =', f_scatxm, no_scatxm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_scatym =', f_scatym, no_scatym
+        write(ifc,'(A,2D22.15)') 
+     &       'f_obcsn =', f_obcsn, no_obcsn
+        write(ifc,'(A,2D22.15)') 
+     &       'f_obcss =', f_obcss, no_obcss
+        write(ifc,'(A,2D22.15)') 
+     &       'f_obcsw =', f_obcsw, no_obcsw
+        write(ifc,'(A,2D22.15)') 
+     &       'f_obcse =', f_obcse, no_obcse
+        write(ifc,'(A,2D22.15)') 
+     &       'f_ageos =', f_ageos, no_ageos
+        write(ifc,'(A,2D22.15)') 
+     &       'f_kapgm =', f_kapgm, no_kapgm
+        write(ifc,'(A,2D22.15)') 
+     &       'f_diffkr =', f_diffkr, no_diffkr
+        write(ifc,'(A,2D22.15)') 
+     &       'f_ini_fin =', f_ini_fin, no_ini_fin
+        write(ifc,'(A,2D22.15)') 
+     &       'f_eddytau =', f_eddytau, no_eddytau
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -939,9 +1016,9 @@ cph)
       call cost_trans_merid( mythid )
       call cost_trans_zonal( mythid )
 
-      taveFreq   = 0.
-      dumpFreq   = 0.
-      pChkptFreq = 0.
+      taveFreq    = 0.
+      dumpFreq    = 0.
+      pChkptFreq  = 0.
       monitorFreq = 0.
       useDiagnostics = .FALSE.
       useSBO         = .FALSE.
