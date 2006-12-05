@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.32 2006/07/23 23:32:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.33 2006/12/05 05:18:03 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -345,7 +345,6 @@ C     recip_Rcol  - Inverse of cell center column thickness (1/r_unit)
 C     recip_hFacC - Inverse of cell open-depth f[X,Y,Z] ( dimensionless ).
 C     recip_hFacW   rhFacC center, rhFacW west, rhFacS south.
 C     recip_hFacS   Note: This is precomputed here because it involves division.
-C     saFac  - Shallow atmosphere factor (dimensionless scale factor).
 C     xC     - X-coordinate of center of cell f[X,Y]. The units of xc, yc
 C              depend on the grid. They are not used in differencing or
 C              averaging but are just a convient quantity for I/O,
@@ -362,6 +361,10 @@ C                    orthogonal coordinate frames (with appropriate
 C                    metric terms).
 C     rC     - R-coordinate of center of cell f[Z] (units of r).
 C     rF     - R-coordinate of face of cell f[Z] (units of r).
+C     deepFacC  :: deep-model grid factor (fct of vertical only) for dx,dy
+C     deepFacF     at level-center (deepFacC)  and level interface (deepFacF)
+C     deepFac2C :: deep-model grid factor (fct of vertical only) for area dx*dy
+C     deepFac2F    at level-center (deepFac2C) and level interface (deepFac2F)
 C     tanPhiAtU - tan of the latitude at U point. Used for spherical polar 
 C                 metric term in U equation.
 C     tanPhiAtV - tan of the latitude at V point. Used for spherical polar 
@@ -377,8 +380,10 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       INTEGER klowC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /GRID_R/
-     &  cosfacU,cosfacV,sqCosfacU,sqCosfacV,
+     &  cosFacU, cosFacV, sqCosFacU, sqCosFacV,
      &  gravitySign, rkSign, globalArea,
+     &  deepFacC, deepFac2C, recip_deepFacC, recip_deepFac2C,
+     &  deepFacF, deepFac2F, recip_deepFacF, recip_deepFac2F,
      &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,
      &  R_low,Ro_surf,hFacC,hFacW,hFacS,
 #ifdef ALLOW_DEPTH_CONTROL
@@ -388,7 +393,6 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
      &  recip_dyC,recip_dyF,recip_dyG,recip_dyU,
      &  recip_Rcol,
      &  recip_hFacC,recip_hFacW,recip_hFacS,
-     &  saFac,
      &  xC,yC,rA,rAw,rAs,rAz,xG,yG,
      &  maskH, maskC,maskW,maskS,
      &  recip_rA,recip_rAw,recip_rAs,recip_rAz,
@@ -396,13 +400,21 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
      &  drC,drF,recip_drC,recip_drF,rC,rF,
      &  xC0, yC0,
      &  fCori, fCoriG, fCoriCos
-      _RL cosfacU(1-Oly:sNy+Oly,nSx,nSy)
-      _RL cosfacV(1-Oly:sNy+Oly,nSx,nSy)
-      _RL sqCosfacU(1-Oly:sNy+Oly,nSx,nSy)
-      _RL sqCosfacV(1-Oly:sNy+Oly,nSx,nSy)
+      _RL cosFacU(1-Oly:sNy+Oly,nSx,nSy)
+      _RL cosFacV(1-Oly:sNy+Oly,nSx,nSy)
+      _RL sqCosFacU(1-Oly:sNy+Oly,nSx,nSy)
+      _RL sqCosFacV(1-Oly:sNy+Oly,nSx,nSy)
       _RL gravitySign
       _RL rkSign
       _RL globalArea
+      _RL deepFacC (Nr)
+      _RL deepFac2C(Nr)
+      _RL deepFacF (Nr+1)
+      _RL deepFac2F(Nr+1)
+      _RL recip_deepFacC (Nr)
+      _RL recip_deepFac2C(Nr)
+      _RL recip_deepFacF (Nr+1)
+      _RL recip_deepFac2F(Nr+1)
       _RS dxC            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxF            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxG            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -455,7 +467,6 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS drF            (1:Nr)
       _RS recip_drC      (1:Nr)
       _RS recip_drF      (1:Nr)
-      _RS saFac          (1:Nr)
       _RS rC             (1:Nr)
       _RS rF             (1:Nr+1)
       _RS xC0
