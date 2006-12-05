@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.42 2006/07/18 03:23:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.43 2006/12/05 05:26:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -411,9 +411,10 @@ C         in corner region) but safer to keep them.
         IF ( S_edge ) THEN
          DO j=1-Oly,0
           DO i=iMinUpd,iMaxUpd
-           localTij(i,j)=localTij(i,j)-dTtracerLev(k)*
-     &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &       *recip_rA(i,j,bi,bj)
+           localTij(i,j) = localTij(i,j)
+     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i+1,j)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
      &        )
@@ -423,9 +424,10 @@ C         in corner region) but safer to keep them.
         IF ( N_edge ) THEN
          DO j=sNy+1,sNy+Oly
           DO i=iMinUpd,iMaxUpd
-           localTij(i,j)=localTij(i,j)-dTtracerLev(k)*
-     &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &       *recip_rA(i,j,bi,bj)
+           localTij(i,j) = localTij(i,j)
+     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i+1,j)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
      &        )
@@ -441,9 +443,10 @@ C      do not only update the overlap
         IF ( interiorOnly .AND. N_edge ) jMaxUpd = sNy
         DO j=jMinUpd,jMaxUpd
          DO i=1-Olx+1,sNx+Olx-1
-           localTij(i,j)=localTij(i,j)-dTtracerLev(k)*
-     &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &       *recip_rA(i,j,bi,bj)
+           localTij(i,j) = localTij(i,j)
+     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i+1,j)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
      &        )
@@ -575,9 +578,10 @@ C         in corner region) but safer to keep them.
         IF ( W_edge ) THEN
          DO j=jMinUpd,jMaxUpd
           DO i=1-Olx,0
-           localTij(i,j)=localTij(i,j)-dTtracerLev(k)*
-     &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &       *recip_rA(i,j,bi,bj)
+           localTij(i,j) = localTij(i,j)
+     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i,j+1)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
      &        )
@@ -587,9 +591,10 @@ C         in corner region) but safer to keep them.
         IF ( E_edge ) THEN
          DO j=jMinUpd,jMaxUpd
           DO i=sNx+1,sNx+Olx
-           localTij(i,j)=localTij(i,j)-dTtracerLev(k)*
-     &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &       *recip_rA(i,j,bi,bj)
+           localTij(i,j) = localTij(i,j)
+     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i,j+1)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
      &        )
@@ -605,9 +610,10 @@ C      do not only update the overlap
         IF ( interiorOnly .AND. E_edge ) iMaxUpd = sNx
         DO j=1-Oly+1,sNy+Oly-1
          DO i=iMinUpd,iMaxUpd
-           localTij(i,j)=localTij(i,j)-dTtracerLev(k)*
-     &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &       *recip_rA(i,j,bi,bj)
+           localTij(i,j) = localTij(i,j)
+     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i,j+1)-af(i,j)
      &         -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
      &        )
@@ -655,11 +661,11 @@ C-    explicit advection is done ; store tendency in gTracer:
         ENDDO
       ELSE
 C-    horizontal advection done; store intermediate result in 3D array:
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         localTijk(i,j,k)=localTij(i,j)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          localTijk(i,j,k)=localTij(i,j)
+         ENDDO
         ENDDO
-       ENDDO
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -743,6 +749,7 @@ C- Interior interface :
            rTransKp1(i,j) = kp1Msk*rTrans(i,j)
            wFld(i,j)   = wVel(i,j,k,bi,bj)
            rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
+     &                 *deepFac2F(k)*rhoFacF(k)
      &                 *maskC(i,j,k-1,bi,bj)
            fVerT(i,j,kUp) = 0.
           ENDDO
@@ -798,12 +805,13 @@ CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 C--   Divergence of vertical fluxes
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          localTij(i,j)=localTijk(i,j,k)-dTtracerLev(k)*
-     &     _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &     *recip_rA(i,j,bi,bj)
-     &     *( fVerT(i,j,kDown)-fVerT(i,j,kUp)
-     &       -tracer(i,j,k,bi,bj)*(rTransKp1(i,j)-rTrans(i,j))
-     &      )*rkSign
+          localTij(i,j) = localTijk(i,j,k)
+     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
+     &       *( fVerT(i,j,kDown)-fVerT(i,j,kUp)
+     &         -tracer(i,j,k,bi,bj)*(rTransKp1(i,j)-rTrans(i,j))
+     &        )*rkSign
           gTracer(i,j,k,bi,bj)=
      &     (localTij(i,j)-tracer(i,j,k,bi,bj))/dTtracerLev(k)
          ENDDO

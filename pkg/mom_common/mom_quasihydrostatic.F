@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_quasihydrostatic.F,v 1.2 2006/07/13 03:02:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_quasihydrostatic.F,v 1.3 2006/12/05 05:27:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -79,7 +79,7 @@ c     scalingFactor=gravitySign*recip_gravity
      &         +uFld(i+1,j,k,bi,bj)*uFld(i+1,j,k,bi,bj))
      &       + (vFld(i, j ,k,bi,bj)*vFld(i, j ,k,bi,bj)
      &         +vFld(i,j+1,k,bi,bj)*vFld(i,j+1,k,bi,bj))
-     &     )* 0.5 _d 0 * recip_rSphere
+     &     )* 0.5 _d 0 * recip_rSphere*recip_deepFacC(k)
         ENDDO
        ENDDO
       ENDIF

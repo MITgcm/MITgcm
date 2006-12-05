@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_metric_sphere.F,v 1.4 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_metric_sphere.F,v 1.5 2006/12/05 05:30:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -11,7 +11,7 @@ C !INTERFACE: ==========================================================
      I        bi,bj,k,
      I        uFld, vFld,
      O        uMetricTerms,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the zonal metric term due to sphericity:
@@ -48,8 +48,8 @@ CEOP
 
       DO j=1-Olx,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx
-         uMetricTerms(i,j) = 
-     &    uFld(i,j)*recip_RSphere
+         uMetricTerms(i,j) =
+     &    uFld(i,j)*recip_rSphere*recip_deepFacC(k)
      &    *0.25*( vFld(i,j  )+vFld(i-1,j  )
      &           +vFld(i,j+1)+vFld(i-1,j+1)
      &          )*_tanPhiAtU(i,j,bi,bj)

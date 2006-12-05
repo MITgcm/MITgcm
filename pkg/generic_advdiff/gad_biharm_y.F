@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_biharm_y.F,v 1.3 2004/12/16 22:29:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_biharm_y.F,v 1.4 2006/12/05 05:26:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: GAD_BIHARM_Y
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_BIHARM_Y( 
+      SUBROUTINE GAD_BIHARM_Y(
      I           bi,bj,k,
      I           yA,del2T,diffK4,
      O           dfy,
@@ -53,15 +53,15 @@ c      dfy(i,1-Oly) = 0.
 c     ENDDO
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx,sNx+Olx
-c        dfy(i,j) = diffK4
-         dfy(i,j) = dfy(i,j) + diffK4
-     &    *yA(i,j)
-     &    *(del2T(i,j)-del2T(i,j-1))*_recip_dyC(i,j,bi,bj)
+c        dfy(i,j) = diffK4*yA(i,j)
+         dfy(i,j) = dfy(i,j) + diffK4*yA(i,j)
+     &    *_recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+     &    *(del2T(i,j)-del2T(i,j-1))
 #ifdef ISOTROPIC_COS_SCALING
 #ifdef COSINEMETH_III
      &    *sqCosFacV(j,bi,bj)
 #else
-     &    *CosFacV(j,bi,bj)
+     &    *cosFacV(j,bi,bj)
 #endif
 #endif
        ENDDO

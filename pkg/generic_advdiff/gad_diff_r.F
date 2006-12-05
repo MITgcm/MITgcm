@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_r.F,v 1.5 2005/06/22 00:27:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_r.F,v 1.6 2006/12/05 05:26:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: GAD_DIFF_R
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_DIFF_R( 
+      SUBROUTINE GAD_DIFF_R(
      I           bi,bj,k,
      I           KappaR,
      I           tracer,
@@ -49,9 +49,9 @@ C  km1                  :: =k+1 for k<Nr, =Nr for k>-Nr
       INTEGER i,j,km1
 CEOP
 
-      km1=max(1,k-1)
+      km1=MAX(1,k-1)
 
-      IF (k.eq.1 .OR. k.gt.Nr) THEN
+      IF (k.EQ.1 .OR. k.GT.Nr) THEN
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          dfr(i,j) = 0.
@@ -60,10 +60,10 @@ CEOP
       ELSE
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         dfr(i,j) =
-     &    -_rA(i,j,bi,bj)
-     &     *KappaR(i,j)*recip_drC(k)
-     &     *(Tracer(i,j,k,bi,bj)-Tracer(i,j,km1,bi,bj))*rkSign
+         dfr(i,j) = -KappaR(i,j)
+     &            *_rA(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
+     &            *recip_drC(k)
+     &            *(tracer(i,j,k,bi,bj)-tracer(i,j,km1,bi,bj))*rkSign
         ENDDO
        ENDDO
       ENDIF

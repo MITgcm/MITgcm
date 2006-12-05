@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.42 2006/11/19 22:04:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.43 2006/12/05 05:26:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -289,9 +289,10 @@ C *note* should update GMREDI_XTRANSPORT to set df  *aja*
         ENDIF
       ENDIF
 #endif
+C     anelastic: advect.fluxes are scaled by rhoFac but hor.diff. flx are not
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        fZon(i,j) = fZon(i,j) + df(i,j)
+        fZon(i,j) = fZon(i,j) + df(i,j)*rhoFacC(k)
        ENDDO
       ENDDO
 
@@ -397,9 +398,10 @@ C *note* should update GMREDI_YTRANSPORT to set df  *aja*
         ENDIF
       ENDIF
 #endif
+C     anelastic: advect.fluxes are scaled by rhoFac but hor.diff. flx are not
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        fMer(i,j) = fMer(i,j) + df(i,j)
+        fMer(i,j) = fMer(i,j) + df(i,j)*rhoFacC(k)
        ENDDO
       ENDDO
 
@@ -558,17 +560,20 @@ C-    Set non local KPP transport term (ghat):
        ENDIF
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         fVerT(i,j,kUp) = fVerT(i,j,kUp) + df(i,j)*maskUp(i,j)
+         fVerT(i,j,kUp) = fVerT(i,j,kUp)
+     &                  + df(i,j)*maskUp(i,j)*rhoFacF(k)
         ENDDO
        ENDDO
       ENDIF
 #endif
 
 C--   Divergence of fluxes
+C     Anelastic: scale vertical fluxes by rhoFac and leave Horizontal fluxes unchanged
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx,sNx+Olx-1
         gTracer(i,j,k,bi,bj)=gTracer(i,j,k,bi,bj)
-     &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)*recip_rA(i,j,bi,bj)
+     &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &   *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
      &   *( (fZon(i+1,j)-fZon(i,j))
      &     +(fMer(i,j+1)-fMer(i,j))
      &     +(fVerT(i,j,kDown)-fVerT(i,j,kUp))*rkSign

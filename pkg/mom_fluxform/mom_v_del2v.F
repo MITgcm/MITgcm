@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_del2v.F,v 1.6 2006/04/05 15:43:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_del2v.F,v 1.7 2006/12/05 05:30:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -53,8 +53,10 @@ C     Zonal flux d/dx V
      &   *_recip_dxV(i,j,bi,bj)
      &   *(vFld(i,j)-vFld(i-1,j))
 #ifdef COSINEMETH_III
-     &   *sqcosFacV(J,bi,bj)
+     &   *sqCosFacV(J,bi,bj)
 #endif
+c    &   *deepFacC(k)        ! dyU scaling factor
+c    &   *recip_deepFacC(k)  ! recip_dxV scaling factor
        ENDDO
       ENDDO
 
@@ -66,16 +68,19 @@ C     Meridional flux d/dy V
      &   *_recip_dyF(i,j,bi,bj)
      &   *(vFld(i,j+1)-vFld(i,j))
 #if (defined (ISOTROPIC_COS_SCALING) && defined (COSINEMETH_III))
-     &   *sqcosFacU(J,bi,bj)
+     &   *sqCosFacU(J,bi,bj)
 #endif
+c    &   *deepFacC(k)        ! dxF scaling factor
+c    &   *recip_deepFacC(k)  ! recip_dyF scaling factor
        ENDDO
       ENDDO
 
 C     del^2 V
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
-        del2v(i,j) = recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
-     &  *recip_rAs(i,j,bi,bj)
+        del2v(i,j) =
+     &   recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
+     &  *recip_rAs(i,j,bi,bj)*recip_deepFac2C(k)
      &  *( fZon(i+1,j)    - fZon(i, j )
      &    +fMer( i ,j)    - fMer(i,j-1)
      &   )*_maskS(i,j,k,bi,bj)
@@ -90,13 +95,13 @@ C-- No-slip BCs impose a drag at walls...
         hFacZClosedE = _hFacS(i,j,k,bi,bj) - hFacZ(i+1,j)
         del2v(i,j) = del2v(i,j)
      &  -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &  *recip_rAs(i,j,bi,bj)
+     &   *recip_rAs(i,j,bi,bj)*recip_deepFac2C(k)
      &   *( hFacZClosedW*dyU( i ,j,bi,bj)
      &      *_recip_dxV( i ,j,bi,bj)
      &     +hFacZClosedE*dyU(i+1,j,bi,bj)
      &      *_recip_dxV(i+1,j,bi,bj)
      &    )*drF(k)*2.*vFld(i,j)
-     &      *_maskS(i,j,k,bi,bj)
+     &     *_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
       ENDIF

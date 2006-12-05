@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_y.F,v 1.3 2001/09/21 13:11:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_y.F,v 1.4 2006/12/05 05:26:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: GAD_DIFF_Y
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_DIFF_Y( 
+      SUBROUTINE GAD_DIFF_Y(
      I           bi,bj,k,
      I           yA, diffKh,
      I           tracer,
@@ -54,10 +54,10 @@ CEOP
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx,sNx+Olx
         dfy(i,j) = -diffKh*yA(i,j)
-     &      *_recip_dyC(i,j,bi,bj)
-     &      *(Tracer(i,j)-Tracer(i,j-1))
+     &           *_recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+     &           *(tracer(i,j)-tracer(i,j-1))
 #ifdef ISOTROPIC_COS_SCALING
-     &      *CosFacV(j,bi,bj)
+     &           *cosFacV(j,bi,bj)
 #endif
        ENDDO
       ENDDO

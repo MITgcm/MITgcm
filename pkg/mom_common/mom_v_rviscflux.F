@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_rviscflux.F,v 1.3 2005/07/30 22:02:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_rviscflux.F,v 1.4 2006/12/05 05:27:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -59,7 +59,7 @@ C     - Vertical viscous flux
         DO i=1-Olx,sNx+Olx-1
           rViscFluxV(i,j) =
      &     -KappaRV(i,j,k)
-     &     *rAs(i,j,bi,bj)
+     &     *rAs(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
      &     *( vFld(i,j,k,bi,bj)-vFld(i,j,k-1,bi,bj)
      &      )*rkSign*recip_drC(k)
      &     *_maskS(i,j,k,bi,bj)

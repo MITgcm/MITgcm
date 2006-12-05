@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_del2u.F,v 1.6 2006/04/05 15:43:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_del2u.F,v 1.7 2006/12/05 05:30:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -22,7 +22,6 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -55,8 +54,10 @@ C     Zonal flux d/dx U
      &   *_recip_dxF(i,j,bi,bj)
      &   *(uFld(i+1,j)-uFld(i,j))
 #ifdef COSINEMETH_III
-     &   *sqcosFacU(J,bi,bj)
+     &   *sqCosFacU(J,bi,bj)
 #endif
+c    &   *deepFacC(k)        ! dyF scaling factor
+c    &   *recip_deepFacC(k)  ! recip_dxF scaling factor
        ENDDO
       ENDDO
 
@@ -68,8 +69,10 @@ C     Meridional flux d/dy U
      &   *_recip_dyU(i,j,bi,bj)
      &   *(uFld(i,j)-uFld(i,j-1))
 #if (defined (ISOTROPIC_COS_SCALING) && defined (COSINEMETH_III))
-     &   *sqcosFacV(J,bi,bj)
+     &   *sqCosFacV(J,bi,bj)
 #endif
+c    &   *deepFacC(k)        ! dxV scaling factor
+c    &   *recip_deepFacC(k)  ! recip_dyU scaling factor
        ENDDO
       ENDDO
 
@@ -77,8 +80,8 @@ C     del^2 U
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
         del2u(i,j) =
-     &  recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
-     &  *recip_rAw(i,j,bi,bj)
+     &   recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
+     &  *recip_rAw(i,j,bi,bj)*recip_deepFac2C(k)
      &  *( fZon(i,j  )    - fZon(i-1,j)
      &    +fMer(i,j+1)    - fMer(i  ,j)
      &   )*_maskW(i,j,k,bi,bj)
@@ -92,8 +95,8 @@ C-- No-slip BCs impose a drag at walls...
         hFacZClosedS = _hFacW(i,j,k,bi,bj) - hFacZ(i,j)
         hFacZClosedN = _hFacW(i,j,k,bi,bj) - hFacZ(i,j+1)
         del2u(i,j) = del2u(i,j)
-     &  - _recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &   *recip_rAw(i,j,bi,bj)
+     &  -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &   *recip_rAw(i,j,bi,bj)*recip_deepFac2C(k)
      &   *( hFacZClosedS*dxV(i, j ,bi,bj)
      &     *_recip_dyU(i, j ,bi,bj)
      &     +hFacZClosedN*dxV(i,j+1,bi,bj)

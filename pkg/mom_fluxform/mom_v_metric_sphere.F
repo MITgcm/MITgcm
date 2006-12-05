@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_metric_sphere.F,v 1.4 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_metric_sphere.F,v 1.5 2006/12/05 05:30:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -11,7 +11,7 @@ C !INTERFACE: ==========================================================
      I        bi,bj,k,
      I        uFld,
      O        vMetricTerms,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the meridional metric term due to sphericity:
@@ -29,7 +29,7 @@ C !USES: ===============================================================`
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
-C  uFld                 :: zonal flow 
+C  uFld                 :: zonal flow
 C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -46,7 +46,7 @@ CEOP
 
       DO j=1-Olx+1,sNy+Oly
        DO i=1-Olx,sNx+Olx-1
-         vMetricTerms(i,j) = -recip_RSphere
+         vMetricTerms(i,j) = -recip_rSphere*recip_deepFacC(k)
      &    *0.25*( uFld(i,j  )+uFld(i+1,j  )
      &           +uFld(i,j-1)+uFld(i+1,j-1)
      &          )

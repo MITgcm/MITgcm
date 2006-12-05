@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.38 2006/11/23 00:45:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.39 2006/12/05 05:30:38 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -40,7 +40,7 @@ C !INTERFACE: ==========================================================
 
 C !DESCRIPTION:
 C Calculates all the horizontal accelerations except for the implicit surface
-C pressure gradient and implciit vertical viscosity.
+C pressure gradient and implicit vertical viscosity.
 
 C !USES: ===============================================================
 C     == Global variables ==
@@ -249,10 +249,10 @@ C---- Calculate common quantities used in both U and V equations
 C     Calculate tracer cell face open areas
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        xA(i,j) = _dyG(i,j,bi,bj)
-     &   *drF(k)*_hFacW(i,j,k,bi,bj)
-        yA(i,j) = _dxG(i,j,bi,bj)
-     &   *drF(k)*_hFacS(i,j,k,bi,bj)
+        xA(i,j) = _dyG(i,j,bi,bj)*deepFacC(k)
+     &          *drF(k)*_hFacW(i,j,k,bi,bj)
+        yA(i,j) = _dxG(i,j,bi,bj)*deepFacC(k)
+     &          *drF(k)*_hFacS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
@@ -265,10 +265,11 @@ C     Make local copies of horizontal flow field
       ENDDO
 
 C     Calculate velocity field "volume transports" through tracer cell faces.
+C     anelastic: transports are scaled by rhoFacC (~ mass transport)
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        uTrans(i,j) = uFld(i,j)*xA(i,j)
-        vTrans(i,j) = vFld(i,j)*yA(i,j)
+        uTrans(i,j) = uFld(i,j)*xA(i,j)*rhoFacC(k)
+        vTrans(i,j) = vFld(i,j)*yA(i,j)*rhoFacC(k)
        ENDDO
       ENDDO
 
@@ -304,11 +305,11 @@ C-    Calculate vertical transports above U & V points (West & South face):
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
 #  ifndef DISABLE_RSTAR_CODE
-CADJ STORE dwtransc(:,:,bi,bj) = 
+CADJ STORE dwtransc(:,:,bi,bj) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE dwtransu(:,:,bi,bj) = 
+CADJ STORE dwtransu(:,:,bi,bj) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE dwtransv(:,:,bi,bj) = 
+CADJ STORE dwtransv(:,:,bi,bj) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #  endif
 # endif /* NONLIN_FRSURF */
@@ -374,11 +375,11 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &      ( 0.5 _d 0*(rA(i,j,bi,bj)+rA(i-1,j,bi,bj)) )
 #else
      &     -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &     *recip_rAw(i,j,bi,bj)
+     &     *recip_rAw(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
 #endif
-     &    *( ( fZon(i,j  )     - fZon(i-1,j) )*uDudxFac
-     &      +( fMer(i,j+1)     - fMer(i,  j) )*vDudyFac
-     &      +(fVerU(i,j,kDown) - fVerU(i,j,kUp))*rkSign*rVelDudrFac
+     &     *( ( fZon(i,j  )     - fZon(i-1,j) )*uDudxFac
+     &       +( fMer(i,j+1)     - fMer(i,  j) )*vDudyFac
+     &       +(fVerU(i,j,kDown) - fVerU(i,j,kUp))*rkSign*rVelDudrFac
      &     )
          ENDDO
         ENDDO
@@ -448,6 +449,7 @@ C     Eddy component of vertical flux (interior component only) -> fVrUp & fVrDw
        ENDIF
 
 C--   Tendency is minus divergence of the fluxes
+C     anelastic: hor.visc.fluxes are not scaled by rhoFac (by vert.visc.flx is)
         DO j=jMin,jMax
          DO i=iMin,iMax
           guDiss(i,j) =
@@ -456,11 +458,12 @@ C--   Tendency is minus divergence of the fluxes
      &      ( 0.5 _d 0*(rA(i,j,bi,bj)+rA(i-1,j,bi,bj)) )
 #else
      &     -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &     *recip_rAw(i,j,bi,bj)
+     &     *recip_rAw(i,j,bi,bj)*recip_deepFac2C(k)
 #endif
-     &    *( ( fZon(i,j  ) - fZon(i-1,j) )*AhDudxFac
-     &      +( fMer(i,j+1) - fMer(i,  j) )*AhDudyFac
-     &      +( fVrDw(i,j)  - fVrUp(i,j) )*rkSign*ArDudrFac
+     &     *( ( fZon(i,j  ) - fZon(i-1,j) )*AhDudxFac
+     &       +( fMer(i,j+1) - fMer(i,  j) )*AhDudyFac
+     &       +( fVrDw(i,j)  - fVrUp(i,j)  )*rkSign*ArDudrFac
+     &                                     *recip_rhoFacC(k)
      &     )
          ENDDO
         ENDDO
@@ -577,11 +580,11 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &      ( 0.5 _d 0*(_rA(i,j,bi,bj)+_rA(i,j-1,bi,bj)) )
 #else
      &     -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &      *recip_rAs(i,j,bi,bj)
+     &     *recip_rAs(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
 #endif
-     &    *( ( fZon(i+1,j)     - fZon(i,j  ) )*uDvdxFac
-     &      +( fMer(i,  j)     - fMer(i,j-1) )*vDvdyFac
-     &      +(fVerV(i,j,kDown) - fVerV(i,j,kUp))*rkSign*rVelDvdrFac
+     &     *( ( fZon(i+1,j)     - fZon(i,j  ) )*uDvdxFac
+     &       +( fMer(i,  j)     - fMer(i,j-1) )*vDvdyFac
+     &       +(fVerV(i,j,kDown) - fVerV(i,j,kUp))*rkSign*rVelDvdrFac
      &     )
          ENDDO
         ENDDO
@@ -650,6 +653,7 @@ C     Eddy component of vertical flux (interior component only) -> fVrUp & fVrDw
        ENDIF
 
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
+C     anelastic: hor.visc.fluxes are not scaled by rhoFac (by vert.visc.flx is)
         DO j=jMin,jMax
          DO i=iMin,iMax
           gvDiss(i,j) =
@@ -658,11 +662,12 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &      ( 0.5 _d 0*(_rA(i,j,bi,bj)+_rA(i,j-1,bi,bj)) )
 #else
      &     -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &      *recip_rAs(i,j,bi,bj)
+     &      *recip_rAs(i,j,bi,bj)*recip_deepFac2C(k)
 #endif
-     &    *( ( fZon(i+1,j)  - fZon(i,j  ) )*AhDvdxFac
-     &      +( fMer(i,  j)  - fMer(i,j-1) )*AhDvdyFac
-     &      +( fVrDw(i,j)   - fVrUp(i,j) )*rkSign*ArDvdrFac
+     &     *( ( fZon(i+1,j)  - fZon(i,j  ) )*AhDvdxFac
+     &       +( fMer(i,  j)  - fMer(i,j-1) )*AhDvdyFac
+     &       +( fVrDw(i,j)   - fVrUp(i,j) )*rkSign*ArDvdrFac
+     &                                     *recip_rhoFacC(k)
      &     )
          ENDDO
         ENDDO

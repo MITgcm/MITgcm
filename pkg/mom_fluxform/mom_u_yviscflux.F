@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_yviscflux.F,v 1.6 2005/09/26 15:27:11 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_yviscflux.F,v 1.7 2006/12/05 05:30:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -12,7 +12,7 @@ C !INTERFACE: ==========================================================
      I        uFld, del2u, hFacZ,
      O        yViscFluxU,
      I        viscAh_Z,viscA4_Z,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the area integrated meridional viscous fluxes of U:
@@ -55,21 +55,23 @@ C     - Laplacian  and bi-harmonic terms
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx,sNx+Olx
         yViscFluxU(i,j) =
-     &     _dxV(i,j,bi,bj)*drF(k)*hFacZ(i,j)
+     &    _dxV(i,j,bi,bj)*drF(k)*hFacZ(i,j)
      &     *(
-     &       -viscAh_Z(i,j)*(uFld(i,j)-uFld(i,j-1))
+     &       -viscAh_Z(i,j)*( uFld(i,j)-uFld(i,j-1) )
 #ifdef ISOTROPIC_COS_SCALING
      &       *cosFacV(J,bi,bj)
 #endif
-     &       +viscA4_Z(i,j)*(del2u(i,j)       -del2u(i,j-1)       )
+     &       +viscA4_Z(i,j)*(del2u(i,j)-del2u(i,j-1))
 #ifdef ISOTROPIC_COS_SCALING
 #ifdef COSINEMETH_III
-     &      *sqcosFacV(J,bi,bj)
+     &       *sqCosFacV(J,bi,bj)
 #else
-     &      *cosFacV(J,bi,bj)
+     &       *cosFacV(J,bi,bj)
 #endif
 #endif
      &      )*_recip_dyU(i,j,bi,bj)
+c    &       *deepFacC(k)        ! dxV scaling factor
+c    &       *recip_deepFacC(k)  ! recip_dyU scaling factor
        ENDDO
       ENDDO
 

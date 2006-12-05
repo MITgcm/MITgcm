@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_x.F,v 1.3 2001/09/21 13:11:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_x.F,v 1.4 2006/12/05 05:26:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: GAD_DIFF_X
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_DIFF_X( 
+      SUBROUTINE GAD_DIFF_X(
      I           bi,bj,k,
      I           xA, diffKh,
      I           tracer,
@@ -52,9 +52,9 @@ CEOP
        dfx(1-Olx,j)=0.
        DO i=1-Olx+1,sNx+Olx
         dfx(i,j) = -diffKh*xA(i,j)
-     &      *_recip_dxC(i,j,bi,bj)
-     &      *(Tracer(i,j)-Tracer(i-1,j))
-     &      *CosFacU(j,bi,bj)
+     &      *_recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+     &      *(tracer(i,j)-tracer(i-1,j))
+     &      *cosFacU(j,bi,bj)
        ENDDO
       ENDDO
 

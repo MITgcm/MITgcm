@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_del2.F,v 1.3 2004/09/24 16:55:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_del2.F,v 1.4 2006/12/05 05:26:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: GAD_DEL2
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_DEL2( 
+      SUBROUTINE GAD_DEL2(
      I           bi,bj,k,
      I           dTdx,dTdy,
      O           del2,
@@ -42,8 +42,6 @@ C  del2                 :: Laplacian of tracer
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
       INTEGER i,j
-c     _RL dfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL dfy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 C--   Initialise to zero.
@@ -57,9 +55,8 @@ C     Difference of zonal fluxes & meridional fluxes
 C      and divide by grid-cell volume
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx,sNx+Olx-1
-        del2(i,j)=recip_rA(i,j,bi,bj)
-     &           *recip_drF(k)
-     &           *_recip_hFacC(i,j,k,bi,bj)
+        del2(i,j)=recip_rA(i,j,bi,bj)*recip_deepFacC(k)
+     &           *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
      &           *( ( dTdx(i+1,j)-dTdx(i,j) )
      &             +( dTdy(i,j+1)-dTdy(i,j) )
      &            )

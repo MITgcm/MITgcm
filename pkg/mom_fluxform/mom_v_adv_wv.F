@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_adv_wv.F,v 1.9 2005/11/04 01:31:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_adv_wv.F,v 1.10 2006/12/05 05:30:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -77,25 +77,27 @@ C     (linear) Free-surface correction at k=1
 
       ELSE
 
-C     Vertical advection - interior ; assume vFld & wFld are masked 
+C     Vertical advection - interior ; assume vFld & wFld are masked
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx+1,sNx+Olx
         advectiveFluxWV(i,j) = rTrans(i,j)*
-     &   0.5 _d 0*( vFld(i,j,k,bi,bj)+vFld(i,j,k-1,bi,bj) ) 
+     &   0.5 _d 0*( vFld(i,j,k,bi,bj)+vFld(i,j,k-1,bi,bj) )
        ENDDO
       ENDDO
 
       IF ( select_rStar.EQ.0 .AND. .NOT.rigidLid ) THEN
+c    &                       .AND. usingPCoords ) THEN
 C     (linear) Free-surface correction at k>1
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
           advectiveFluxWV(i,j) = advectiveFluxWV(i,j)
      &     +0.25*(
      &          wFld(i, j ,k,bi,bj)*rA(i, j ,bi,bj)*
-     &          (maskC(i,j,k,bi,bj) - maskC(i,j,k-1,bi,bj))
+     &          (maskC(i, j ,k,bi,bj)-maskC(i, j ,k-1,bi,bj))
      &         +wFld(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)*
      &          (maskC(i,j-1,k,bi,bj)-maskC(i,j-1,k-1,bi,bj))
-     &           )*vFld(i,j,k,bi,bj)
+     &           )*deepFac2F(k)*rhoFacF(k)
+     &            *vFld(i,j,k,bi,bj)
          ENDDO
         ENDDO
 C- endif NOT rigidLid

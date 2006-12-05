@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_adv_wu.F,v 1.9 2005/11/04 01:31:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_adv_wu.F,v 1.10 2006/12/05 05:30:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -11,7 +11,7 @@ C !INTERFACE: ==========================================================
      I        bi,bj,k,
      I        uFld,wFld,rTrans,
      O        advectiveFluxWU,
-     I        myThid)
+     I        myThid )
 
 C !DESCRIPTION:
 C Calculates the vertical advective flux of zonal momentum:
@@ -52,7 +52,7 @@ CEOP
      &     useRealFreshWaterFlux .AND. usingPCoords ) THEN
        DO j=1-Oly+1,sNy+Oly
         DO i=1-Olx+1,sNx+Olx
-         advectiveFluxWU(i,j) = rTrans(i,j)*uFld(i,j,k-1,bi,bj) 
+         advectiveFluxWU(i,j) = rTrans(i,j)*uFld(i,j,k-1,bi,bj)
         ENDDO
        ENDDO
 
@@ -70,13 +70,13 @@ C     (linear) Free-surface correction at k=1
 
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx+1,sNx+Olx
-        advectiveFluxWU(i,j) = rTrans(i,j)*uFld(i,j,k,bi,bj) 
+        advectiveFluxWU(i,j) = rTrans(i,j)*uFld(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
       ELSE
 
-C     Vertical advection - interior ; assume uFld & wFld are masked  
+C     Vertical advection - interior ; assume uFld & wFld are masked
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx+1,sNx+Olx
         advectiveFluxWU(i,j) = rTrans(i,j)*
@@ -85,16 +85,18 @@ C     Vertical advection - interior ; assume uFld & wFld are masked
       ENDDO
 
       IF ( select_rStar.EQ.0 .AND. .NOT.rigidLid ) THEN
+c    &                       .AND. usingPCoords ) THEN
 C     (linear) Free-surface correction at k>1
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
           advectiveFluxWU(i,j) = advectiveFluxWU(i,j)
      &     +0.25*(
      &          wFld(i, j ,k,bi,bj)*rA(i, j ,bi,bj)*
-     &          (maskC(i,j,k,bi,bj) - maskC(i,j,k-1,bi,bj))
+     &          (maskC( i ,j,k,bi,bj)-maskC( i ,j,k-1,bi,bj))
      &         +wFld(i-1,j,k,bi,bj)*rA(i-1,j,bi,bj)*
      &          (maskC(i-1,j,k,bi,bj)-maskC(i-1,j,k-1,bi,bj))
-     &           )*uFld(i,j,k,bi,bj)
+     &           )*deepFac2F(k)*rhoFacF(k)
+     &            *uFld(i,j,k,bi,bj)
          ENDDO
         ENDDO
 C- endif NOT rigidLid

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_metric_nh.F,v 1.1 2006/03/30 19:37:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_metric_nh.F,v 1.2 2006/12/05 05:27:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -53,7 +53,7 @@ CEOP
 
       DO j=1-Olx,sNy+Oly
        DO i=1-Olx+1,sNx+Olx
-         uMetricTerms(i,j) = uFld(i,j)*recip_RSphere
+         uMetricTerms(i,j) = uFld(i,j)*recip_rSphere*recip_deepFacC(k)
      &    *0.25*(wVelBottomOverride*
      &            (wFld(i-1,j,kp1,bi,bj)+wFld(i,j,kp1,bi,bj))
      &            +wFld(i-1,j, k ,bi,bj)+wFld(i,j, k ,bi,bj)
