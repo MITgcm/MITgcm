@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.29 2006/12/01 06:43:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.30 2006/12/05 05:24:34 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -923,8 +923,8 @@ cph)
        do num_var=1,NVARMAX
         if (no_profiles(num_file,num_var).GT.0) then
          IL  = ILNBLNK( profilesfiles(num_file) )
-         write(ifc,'(2A,2D22.15)') profilesfiles(num_file)(1:IL), 
-     &    prof_names(num_var), ' = ', 
+         write(ifc,'(3A,2D22.15)') 
+     &    profilesfiles(num_file)(1:IL), prof_names(num_var), ' = ',
      &    f_profiles(num_file,num_var), 
      &    no_profiles(num_file,num_var)
         endif
