@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.751 2006/12/05 05:32:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.752 2006/12/05 22:15:47 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o CG2D: use pre-computed solver main-diagonal (stored in common block);
+  this affects truncation error ; generate new output file for exp. which
+  fails: exp4(12d), fizhi-cs-aqualev20(12d), front_relax(10d),
+    global_ocean.90x40x15(10d), global_ocean.cs32x15(10d).thsice(11d).viscA4(10d),
+    ideal_2D_oce(10d), internal_wave(09d), isomip.htd(11d), matrix_example(07d),
+    MLAdjust(4x11d,12d), natl_box(11d), rotating_tank(12d),
+    tutorial_global_oce_in_p(10d), tutorial_plume_on_slope(11d),
+    vermix(12d).ggl90(12d).my82(11d).opps(12d).pp81(11d)
 o start implementation of deep-atmosphere and anelastic formulation
 o verification: remove 2nd copy of input files and use script "prepare_run"
   to make a symbolic link to the 1rst copy (reduce downloaded size by ~81.M)
