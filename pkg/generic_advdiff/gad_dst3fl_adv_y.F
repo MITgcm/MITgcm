@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.11 2006/06/19 14:40:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.12 2006/12/05 22:21:50 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -34,7 +34,7 @@ C     == Routine arguments ==
 C     == Local variables ==
 C     vLoc    :: velocity [m/s], meridional component
       INTEGER i,j
-      _RL Rjm,Rj,Rjp,cfl,d0,d1,psiP,psiM,thetaP,thetaM
+      _RL Rjm,Rj,Rjp,vCFL,d0,d1,psiP,psiM,thetaP,thetaM
       _RL vLoc
       _RL thetaMax
       PARAMETER( thetaMax = 1.D+20 )
@@ -51,11 +51,10 @@ C     vLoc    :: velocity [m/s], meridional component
         Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskLocS(i,j-1)
 
         vLoc = vFld(i,j)
-c       vLoc = vTrans(i,j)*recip_dxG(i,j,bi,bj)
-c    &       *recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
-        cfl=abs(vLoc*deltaTloc*recip_dyC(i,j,bi,bj))
-        d0=(2. _d 0 -cfl)*(1. _d 0 -cfl)*oneSixth
-        d1=(1. _d 0 -cfl*cfl)*oneSixth
+        vCFL = ABS( vLoc*deltaTloc
+     &                  *recip_dyC(i,j,bi,bj)*recip_deepFacC(k) )
+        d0=(2. _d 0 -vCFL)*(1. _d 0 -vCFL)*oneSixth
+        d1=(1. _d 0 -vCFL*vCFL)*oneSixth
 
 C-      the old version: can produce overflow, division by zero,
 c       and is wrong for tracer with low concentration:
@@ -79,16 +78,16 @@ C-      prevent |thetaP,M| to reach too big value:
         ENDIF
 
         psiP=d0+d1*thetaP
-        psiP=MAX(0. _d 0, MIN(MIN(1. _d 0,psiP),
-     &                        thetaP*(1. _d 0 -cfl)/(cfl+1. _d -20) ))
+        psiP=MAX(0. _d 0,MIN(MIN(1. _d 0,psiP),
+     &                       thetaP*(1. _d 0 -vCFL)/(vCFL+1. _d -20) ))
         psiM=d0+d1*thetaM
-        psiM=MAX(0. _d 0, MIN(MIN(1. _d 0,psiM),
-     &                        thetaM*(1. _d 0 -cfl)/(cfl+1. _d -20) ))
+        psiM=MAX(0. _d 0,MIN(MIN(1. _d 0,psiM),
+     &                       thetaM*(1. _d 0 -vCFL)/(vCFL+1. _d -20) ))
 
         vT(i,j)=
-     &   0.5*(vTrans(i,j)+abs(vTrans(i,j)))
+     &   0.5*(vTrans(i,j)+ABS(vTrans(i,j)))
      &      *( Tracer(i,j-1) + psiP*Rj )
-     &  +0.5*(vTrans(i,j)-abs(vTrans(i,j)))
+     &  +0.5*(vTrans(i,j)-ABS(vTrans(i,j)))
      &      *( Tracer(i, j ) - psiM*Rj )
 
        ENDDO

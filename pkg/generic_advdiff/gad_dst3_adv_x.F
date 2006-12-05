@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_x.F,v 1.10 2006/10/22 01:08:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_x.F,v 1.11 2006/12/05 22:21:50 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -53,10 +53,10 @@ C     == Local variables ==
 C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
 C  uLoc              :: velocity [m/s], zonal component
-C  cfl               :: Courant-Friedrich-Levy number
+C  uCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j
       _RL uLoc
-      _RL Rjm,Rj,Rjp,cfl,d0,d1
+      _RL Rjm,Rj,Rjp,uCFL,d0,d1
 #ifdef OLD_DST3_FORMULATION
       _RL psiP,psiM,thetaP,thetaM
       _RL smallNo
@@ -79,11 +79,10 @@ c     _RL Rjjm,Rjjp
         Rjm=(tracer(i-1,j)-tracer(i-2,j))*maskLocW(i-1,j)
 
         uLoc = uFld(i,j)
-c       uLoc = uTrans(i,j)*recip_dyG(i,j,bi,bj)
-c    &       *recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
-        cfl=ABS(uLoc*deltaTloc*recip_dxC(i,j,bi,bj))
-        d0=(2.-cfl)*(1.-cfl)*oneSixth
-        d1=(1.-cfl*cfl)*oneSixth
+        uCFL = ABS( uLoc*deltaTloc
+     &                  *recip_dxC(i,j,bi,bj)*recip_deepFacC(k) )
+        d0=(2.-uCFL)*(1.-uCFL)*oneSixth
+        d1=(1.-uCFL*uCFL)*oneSixth
 #ifdef OLD_DST3_FORMULATION
         IF ( ABS(Rj).LT.smallNo .OR.
      &       ABS(Rjm).LT.smallNo ) THEN
