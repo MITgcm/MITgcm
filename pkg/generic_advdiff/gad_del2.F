@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_del2.F,v 1.4 2006/12/05 05:26:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_del2.F,v 1.5 2006/12/05 22:20:06 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -55,7 +55,7 @@ C     Difference of zonal fluxes & meridional fluxes
 C      and divide by grid-cell volume
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx,sNx+Olx-1
-        del2(i,j)=recip_rA(i,j,bi,bj)*recip_deepFacC(k)
+        del2(i,j)=recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &           *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
      &           *( ( dTdx(i+1,j)-dTdx(i,j) )
      &             +( dTdy(i,j+1)-dTdy(i,j) )
