@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.45 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.46 2006/12/05 19:34:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -45,8 +45,8 @@ C     === Global data ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CG2D.h"
-#include "GRID.h"
-#include "SURFACE.h"
+c#include "GRID.h"
+c#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -83,7 +83,7 @@ C     I, J, it2d :: Loop counters ( it2d counts CG iterations )
       _RL    actualResidual
       INTEGER bi, bj
       INTEGER I, J, it2d
-      INTEGER ks
+c     INTEGER ks
       _RL    err,errTile
       _RL    eta_qrN,eta_qrNtile
       _RL    eta_qrNM1
@@ -165,22 +165,23 @@ C--   Initial residual calculation
         errTile    = 0. _d 0
         DO J=1,sNy
          DO I=1,sNx
-          ks = ksurfC(I,J,bi,bj)
+c         ks = ksurfC(I,J,bi,bj)
           cg2d_s(I,J,bi,bj) = 0.
           cg2d_r(I,J,bi,bj) = cg2d_b(I,J,bi,bj) -
      &    (aW2d(I  ,J  ,bi,bj)*cg2d_x(I-1,J  ,bi,bj)
      &    +aW2d(I+1,J  ,bi,bj)*cg2d_x(I+1,J  ,bi,bj)
      &    +aS2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J-1,bi,bj)
      &    +aS2d(I  ,J+1,bi,bj)*cg2d_x(I  ,J+1,bi,bj)
-     &    -aW2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
-     &    -aW2d(I+1,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
-     &    -aS2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
-     &    -aS2d(I  ,J+1,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
-     &    -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)*recip_Bo(i,j,bi,bj)
-     &                        *cg2d_x(I  ,J  ,bi,bj)
-     &                        /deltaTMom/deltaTfreesurf*cg2dNorm
-c    &    +aC2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
+     &    +aC2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
      &    )
+c    &    -aW2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
+c    &    -aW2d(I+1,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
+c    &    -aS2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
+c    &    -aS2d(I  ,J+1,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
+c    &    -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)*recip_Bo(i,j,bi,bj)
+c    &                        *cg2d_x(I  ,J  ,bi,bj)
+c    &                        /deltaTMom/deltaTfreesurf*cg2dNorm
+c    &    )
           errTile    = errTile + cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
           sumRHStile = sumRHStile + cg2d_b(I,J,bi,bj)
          ENDDO
@@ -293,20 +294,20 @@ C==    q = A.s
          alphaTile = 0. _d 0
          DO J=1,sNy
           DO I=1,sNx
-           ks = ksurfC(I,J,bi,bj)
+c          ks = ksurfC(I,J,bi,bj)
            cg2d_q(I,J,bi,bj) =
      &     aW2d(I  ,J  ,bi,bj)*cg2d_s(I-1,J  ,bi,bj)
      &    +aW2d(I+1,J  ,bi,bj)*cg2d_s(I+1,J  ,bi,bj)
      &    +aS2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J-1,bi,bj)
      &    +aS2d(I  ,J+1,bi,bj)*cg2d_s(I  ,J+1,bi,bj)
-     &    -aW2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
-     &    -aW2d(I+1,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
-     &    -aS2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
-     &    -aS2d(I  ,J+1,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
-     &    -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)*recip_Bo(i,j,bi,bj)
-     &                        *cg2d_s(I  ,J  ,bi,bj)
-     &                        /deltaTMom/deltaTfreesurf*cg2dNorm
-c    &    +aC2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
+     &    +aC2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
+c    &    -aW2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
+c    &    -aW2d(I+1,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
+c    &    -aS2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
+c    &    -aS2d(I  ,J+1,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
+c    &    -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)*recip_Bo(i,j,bi,bj)
+c    &                        *cg2d_s(I  ,J  ,bi,bj)
+c    &                        /deltaTMom/deltaTfreesurf*cg2dNorm
           alphaTile = alphaTile+cg2d_s(I,J,bi,bj)*cg2d_q(I,J,bi,bj)
           ENDDO
          ENDDO
