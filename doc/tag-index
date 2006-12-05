@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.750 2006/11/24 00:13:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.751 2006/12/05 05:32:59 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o start implementation of deep-atmosphere and anelastic formulation
 o verification: remove 2nd copy of input files and use script "prepare_run"
   to make a symbolic link to the 1rst copy (reduce downloaded size by ~81.M)
 o mom_common/vecinv/fluxform: fix a few initialisation isssues
