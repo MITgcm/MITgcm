@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.1 2004/07/06 18:40:32 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.2 2006/12/06 18:28:45 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -47,32 +47,32 @@ C     == Local variables ==
       _RL Width,d0,d0hat,x,Xcenter,Fz,zt,Rit
 
 c     Total depth
-      Dmax = 600
+      Dmax = 600. _d 0
 c     width of flow transition
-      delh=5.0
+      delh=5. _d 0
 c     total depth of active layer
-      Dinf=300.0
+      Dinf=300. _d 0
 c     g' of inflow
-      dTemp=(2.0/rhonil)/(2.0e-4)
+      dTemp=(2. _d 0/rhonil)/(2. _d -4)
       gp_inflow=Talpha*gravity*dTemp
 c     Deformation radius
       Lrho=sqrt(gp_inflow*Dinf)/f0
 c     dimensional width 
-      Width=100.0e3
+      Width=100. _d 3
 c     nondimensional width
       Width=Width/Lrho
 c      print *,'Width=',Width
 c     coordinate of center of embayment
-      Xcenter = 1700.0e3
+      Xcenter = 1700. _d 3
 c     Critical Richardson number 
-      Rit = 1.0/3.0
+      Rit = 1. _d 0/3. _d 0
 c      Ttarget=-5.0e6
 c      areaCh=Width*Lrho*Dmax
 c      relaxtime=180000.0
 c      relaxConst=1.0/(areaCh*relaxtime)
 
 
-      z(1) = -delR(1)/2.0
+      z(1) = -delR(1)/2. _d 0
       do j=2,nr
 Caja NOTE: This gives the depths of W points, not U,V,T,S,p points
 C          USe instead drC but requires different indexing. See documentation
@@ -81,8 +81,8 @@ C          in AJAs head
       enddo
 
 c     ramptime for velocity
-      rampTime2 = 4*44567.0
-      rexpt=1.0/exp(futureTime/rampTime2)
+      rampTime2 = 4. _d 0*44567. _d 0
+      rexpt=1. _d 0/exp(futureTime/rampTime2)
 
 C     Eastern OB
       IF (useOrlanskiEast) THEN
@@ -145,8 +145,8 @@ C         Northern OB, template for forcing
         DO K=1,Nr
           DO I=1-Olx,sNx+Olx
 c Make center of embayment x=0
-           x=(xC(I,1,bi,bj)-Xcenter)/Lrho +Width/2.0
-           if ((x.ge.0).and.(x.le.Width)) then
+           x=(xC(I,1,bi,bj)-Xcenter)/Lrho +Width/2. _d 0
+           if ((x.ge.0.).and.(x.le.Width)) then
             hinit=Dinf*(exp(-x)) - Dmax
 c      if (k.eq.5) then
 c      print *,'x=',x,'  xC',xC(I,1,bi,bj),'  I=',I
@@ -158,10 +158,10 @@ c      endif
 
             zt=(z(k) + Dmax - (hinit + Dmax))/(hinit+Dmax)
             if (zt.ge.(Rit/(2-Rit))) then
-            Fz=1.0
+            Fz=1.
             else 
             if (zt.ge.(-Rit/(2+Rit))) then
-            Fz=1.0/Rit*zt/(zt+1.0) + 1.0/2.0
+            Fz=1. _d 0/Rit*zt/(zt+1. _d 0) + 0.5 _d 0
             else
             Fz=0
             endif
@@ -171,17 +171,17 @@ c        print *,'z(k)',z(k),'zt',zt,'Fz',Fz
 c	endif
             OBNv(I,K,bi,bj)=0. 
      &     -  sqrt(gp_inflow*Dinf)*exp(-x)
-     & *(1-Fz)
+     & *(1. _d 0-Fz)
 c           if ((x.ge.0).and.(x.le.Width)) then
 c           if (k.eq.5) then
 c       print *,'V=',OBNv(I,K,bi,bj)
 c           endif
 c           endif
             OBNu(I,K,bi,bj)=0.
-           if (tRef(K).le. (-dTemp*(1.0 - Fz))) then
+           if (tRef(K).le. (-dTemp*(1. _d 0 - Fz))) then
            OBNt(I,K,bi,bj) = tRef(K)
            else
-           OBNt(I,K,bi,bj) = -dTemp*(1.0 - Fz)
+           OBNt(I,K,bi,bj) = -dTemp*(1. _d 0 - Fz)
            endif
 c           if ((x.ge.0).and.(x.le.Width)) then
 c       print *,'T=',OBNt(I,K,bi,bj)
@@ -189,7 +189,7 @@ c	    endif
 c            OBNt(I,K,bi,bj)=tRef(K)
 c     & - dTemp
 c     & *(1.0 - Fz)
-            OBNs(I,K,bi,bj)=sRef(K) + 1.0*(1.0 - Fz)
+            OBNs(I,K,bi,bj)=sRef(K) + 1. _d 0*(1. _d 0 - Fz)
 #ifdef ALLOW_NONHYDROSTATIC
             OBNw(I,K,bi,bj)=0.
 #endif
