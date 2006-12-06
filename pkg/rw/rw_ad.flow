@@ -6,30 +6,6 @@ CADJ SUBROUTINE set_write_global_fld    INPUT  = 1
 CADJ SUBROUTINE set_write_global_fld    OUTPUT =
 
 C----------------------------------------
-C subroutine  read_fld_xy_rs
-C----------------------------------------
-cphCADJ SUBROUTINE read_fld_xy_rs   INPUT  = 1,2,  4,5
-cphCADJ SUBROUTINE read_fld_xy_rs   OUTPUT =     3
-
-C----------------------------------------
-C subroutine  read_fld_xy_rl
-C----------------------------------------
-cphCADJ SUBROUTINE read_fld_xy_rl   INPUT  = 1,2,  4,5
-cphCADJ SUBROUTINE read_fld_xy_rl   OUTPUT =     3
-
-C----------------------------------------
-C subroutine  read_fld_xyz_rs
-C----------------------------------------
-cphCADJ SUBROUTINE read_fld_xyz_rs  INPUT  = 1,2,  4,5
-cphCADJ SUBROUTINE read_fld_xyz_rs  OUTPUT =     3
-
-C----------------------------------------
-C subroutine  read_fld_xyz_rl
-C----------------------------------------
-cphCADJ SUBROUTINE read_fld_xyz_rl  INPUT  = 1,2,  4,5
-cphCADJ SUBROUTINE read_fld_xyz_rl  OUTPUT =     3
-
-C----------------------------------------
 C subroutine  write_fld_xy_rs
 C----------------------------------------
 CADJ SUBROUTINE write_fld_xy_rs   INPUT  = 1,2,3,4,5
@@ -72,36 +48,6 @@ CADJ SUBROUTINE set_write_global_rec  INPUT  = 1
 CADJ SUBROUTINE set_write_global_rec  OUTPUT =
 
 C----------------------------------------
-C subroutine  read_rec_xy_rs
-C----------------------------------------
-cphCADJ SUBROUTINE read_rec_xy_rs   INPUT  = 1,  3,4,5
-cphCADJ SUBROUTINE read_rec_xy_rs   OUTPUT =   2
-
-C----------------------------------------
-C subroutine  read_rec_xy_rl
-C----------------------------------------
-cphCADJ SUBROUTINE read_rec_xy_rl   INPUT  = 1,  3,4,5
-cphCADJ SUBROUTINE read_rec_xy_rl   OUTPUT =   2
-
-C----------------------------------------
-C subroutine  read_rec_xyz_rs
-C----------------------------------------
-cphCADJ SUBROUTINE read_rec_xyz_rs  INPUT  = 1,  3,4,5
-cphCADJ SUBROUTINE read_rec_xyz_rs  OUTPUT =   2
-
-C----------------------------------------
-C subroutine  read_rec_xyz_rl
-C----------------------------------------
-cphCADJ SUBROUTINE read_rec_xyz_rl  INPUT  = 1,  3,4,5
-cphCADJ SUBROUTINE read_rec_xyz_rl  OUTPUT =   2
-
-C----------------------------------------
-C subroutine  write_rec_xy_rs
-C----------------------------------------
-CADJ SUBROUTINE write_rec_xy_rs   INPUT  = 1,2,3,4,5
-CADJ SUBROUTINE write_rec_xy_rs   OUTPUT =
-
-C----------------------------------------
 C subroutine  write_rec_xy_rl
 C----------------------------------------
 CADJ SUBROUTINE write_rec_xy_rl   INPUT  = 1,2,3,4,5
@@ -118,17 +64,4 @@ C subroutine  write_rec_xyz_rl
 C----------------------------------------
 CADJ SUBROUTINE write_rec_xyz_rl  INPUT  = 1,2,3,4,5
 CADJ SUBROUTINE write_rec_xyz_rl  OUTPUT =
-
-C----------------------------------------
-C subroutine  read_rec_3d_rs
-C----------------------------------------
-cphCADJ SUBROUTINE read_rec_3d_rs  INPUT  = 1,  3,4,5
-cphCADJ SUBROUTINE read_rec_3d_rs  OUTPUT =   2
-
-C----------------------------------------
-C subroutine  read_rec_3d_rl
-C----------------------------------------
-cphCADJ SUBROUTINE read_rec_3d_rl  INPUT  = 1,  3,4,5
-cphCADJ SUBROUTINE read_rec_3d_rl  OUTPUT =   2
-
 
