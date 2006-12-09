@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.14 2006/06/09 00:04:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.15 2006/12/09 20:15:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -147,7 +147,7 @@ C--    Write model fields
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  HEFF, 6, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  AREA, 7, myIt,myThid)
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
-       IF ( xSEAICEuseEVP ) THEN
+       IF ( SEAICEuseEVP ) THEN
           CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
      &         seaice_sigma1,  22, myIt,myThid)
           CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
