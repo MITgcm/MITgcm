@@ -24,6 +24,9 @@ c              heimbach@mit.edu: totally re-organized exf_set_...
 c              replaced all routines by one generic routine
 c              5-Aug-2003: added USE_EXF_INTERPOLATION for arbitrary
 c                          input grid capability
+c     11-Dec-2006 added time-mean and monthly-mean climatology options
+c        genperiod=0 means input file is one time-constant field
+c        genperiod=-12 means input file contains 12 monthly means
 
 c     ==================================================================
 c     SUBROUTINE exf_set_gen
@@ -92,18 +95,41 @@ c     == end of interface ==
 cph(
 cph-exf-print         if (genfile .EQ. hfluxfile)  year0 = 3000
 cph)
+
+         if ( genperiod .eq. 0 ) then
+c     genperiod=0 means input file is one time-constant field
+            count0 = 1
+            count1 = 1
+
+         elseif ( genperiod .eq. -12 ) then
+c     genperiod=-12 means input file contains 12 monthly means
+c     record numbers are assumed 1 to 12 corresponding to
+c     Jan. through Dec.
+            call cal_GetMonthsRec(
+     O           fac, first, changed,
+     O           count0, count1,
+     I           mytime, myiter, mythid
+     &           )
+
+         elseif ( genperiod .lt. 0 ) then
+            print *, 'genperiod is out of range'
+            STOP 'ABNORMAL END: S/R EXF_GETFFIELDREC'
+
+         else
 c     get record numbers and interpolation factor for gen
-         call exf_GetFFieldRec(
-     I        genstartdate, genperiod
-     I        , genstartdate1, genstartdate2
-     I        , useExfYearlyFields
-     O        , fac, first, changed
-     O        , count0, count1, year0, year1
-     I        , mytime, myiter, mythid
-     &        )
+            call exf_GetFFieldRec(
+     I           genstartdate, genperiod
+     I           , genstartdate1, genstartdate2
+     I           , useExfYearlyFields
+     O           , fac, first, changed
+     O           , count0, count1, year0, year1
+     I           , mytime, myiter, mythid
+     &           )
+
+         endif
 
          if ( first ) then
-            if (useExfYearlyFields) then
+            if (useExfYearlyFields.and.genperiod.gt.0) then
 C     Complete filename with YR or _YEAR extension
                il = ilnblnk( genfile )
                if (twoDigitYear) then
@@ -121,6 +147,8 @@ C     Complete filename with YR or _YEAR extension
             else
                genfile0 = genfile
             endif
+
+
 #ifdef USE_EXF_INTERPOLATION
             call exf_interp( genfile0, exf_iprec
      &           , gen1, count0, gen_xout, gen_yout
@@ -144,7 +172,7 @@ C     Complete filename with YR or _YEAR extension
          if (( first ) .or. ( changed )) then
             call exf_SwapFFields( gen0, gen1, mythid )
             
-            if (useExfYearlyFields) then
+            if (useExfYearlyFields.and.genperiod.gt.0) then
 C     Complete filename with YR or _YEAR extension
                il = ilnblnk( genfile )
                if (twoDigitYear) then

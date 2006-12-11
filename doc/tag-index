@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.752 2006/12/05 22:15:47 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.753 2006/12/11 16:19:19 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
-
+o pkg/exf: moved exf_init_runoff.F to exf_init.F and exf_set_gen.F
+  changed exf_set_gen.F so that
+    genperiod=0 means input file is one time-constant field and
+    genperiod=-12 means input file contains 12 monthly means
 o CG2D: use pre-computed solver main-diagonal (stored in common block);
   this affects truncation error ; generate new output file for exp. which
   fails: exp4(12d), fizhi-cs-aqualev20(12d), front_relax(10d),

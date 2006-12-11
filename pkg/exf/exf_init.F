@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.11 2006/10/12 21:34:59 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.12 2006/12/11 16:19:19 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -110,7 +110,9 @@ c     == end of interface ==
 #endif
 
 #if (defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE))
-      call exf_init_runoff   ( mythid )
+      call exf_init_gen (
+     &     runoffconst, runoff, runoff0, runoff1, 
+     &     runoff0file, mythid )
 #endif
 
 c     Initialize climatological fields

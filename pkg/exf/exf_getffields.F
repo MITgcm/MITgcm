@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.33 2006/10/27 05:16:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.34 2006/12/11 16:19:19 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -138,7 +138,7 @@ c     Zonal and meridional wind.
 #endif /* ALLOW_ATM_WIND */
 
 c     Atmospheric heat flux.
-      call exf_set_gen  ( 
+      call exf_set_gen  (
      &     hfluxfile, hfluxstartdate, hfluxperiod, 
      &     hfluxstartdate1, hfluxstartdate2,
      &     exf_inscal_hflux,
@@ -151,7 +151,7 @@ c     Atmospheric heat flux.
      &     mytime, myiter, mythid )
 
 c     Salt flux.
-      call exf_set_gen  ( 
+      call exf_set_gen  (
      &     sfluxfile, sfluxstartdate, sfluxperiod, 
      &     sfluxstartdate1, sfluxstartdate2,
      &     exf_inscal_sflux,
@@ -244,7 +244,7 @@ c     Snow.
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
 c     Net short wave radiative flux.
-      call exf_set_gen  ( 
+      call exf_set_gen  (
      &     swfluxfile, swfluxstartdate, swfluxperiod, 
      &     swfluxstartdate1, swfluxstartdate2,
      &     exf_inscal_swflux,
@@ -259,7 +259,7 @@ c     Net short wave radiative flux.
 
 #ifdef EXF_READ_EVAP
 c     Evaporation
-      call exf_set_gen  ( 
+      call exf_set_gen  (
      &     evapfile, evapstartdate, evapperiod, 
      &     evapstartdate1, evapstartdate2,
      &     exf_inscal_evap,
@@ -275,7 +275,7 @@ c     Evaporation
 #ifdef ALLOW_DOWNWARD_RADIATION
 
 c     Downward shortwave radiation.
-      call exf_set_gen  ( 
+      call exf_set_gen  (
      &     swdownfile, swdownstartdate, swdownperiod, 
      &     swdownstartdate1, swdownstartdate2,
      &     exf_inscal_swdown,
@@ -288,7 +288,7 @@ c     Downward shortwave radiation.
      &     mytime, myiter, mythid )
 
 c     Downward longwave radiation.
-      call exf_set_gen  ( 
+      call exf_set_gen  (
      &     lwdownfile, lwdownstartdate, lwdownperiod, 
      &     lwdownstartdate1, lwdownstartdate2,
      &     exf_inscal_lwdown,
@@ -304,7 +304,7 @@ c     Downward longwave radiation.
 
 #ifdef ATMOSPHERIC_LOADING
 c     Atmos. pressure forcing
-      call exf_set_gen  ( 
+      call exf_set_gen  (
      &     apressurefile, apressurestartdate, apressureperiod, 
      &     apressurestartdate1, apressurestartdate2,
      &     exf_inscal_apressure,
@@ -318,10 +318,26 @@ c     Atmos. pressure forcing
      &     mytime, myiter, mythid )
 #endif
 
+#if (defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE))
+c     Runoff
+      call exf_set_gen  (
+     &     runofffile, runoffstartdate, runoffperiod, 
+     &     runoffstartdate1, runoffstartdate2,
+     &     exf_inscal_runoff,
+     &     runoff_exfremo_intercept, runoff_exfremo_slope,
+     &     runoff, runoff0, runoff1, runoffmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     runoff_lon0, runoff_lon_inc, runoff_lat0,
+     &     runoff_lat_inc, runoff_nlon, runoff_nlat, xC, yC,
+     &     interp_method,
+#endif
+     &     mytime, myiter, mythid )
+#endif
+
 c-- Control variables for atmos. state
 
 #ifdef ALLOW_ATEMP_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_atemp_file, xx_atempstartdate, xx_atempperiod,
      &     maskc, atemp, xx_atemp0, xx_atemp1, xx_atemp_dummy,
      &     xx_atemp_remo_intercept, xx_atemp_remo_slope,
@@ -329,7 +345,7 @@ c-- Control variables for atmos. state
 #endif
 
 #ifdef ALLOW_AQH_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_aqh_file, xx_aqhstartdate, xx_aqhperiod,
      &     maskc, aqh, xx_aqh0, xx_aqh1, xx_aqh_dummy,
      &     xx_aqh_remo_intercept, xx_aqh_remo_slope,
@@ -337,7 +353,7 @@ c-- Control variables for atmos. state
 #endif
 
 #ifdef ALLOW_PRECIP_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_precip_file, xx_precipstartdate, xx_precipperiod,
      &     maskc, precip, xx_precip0, xx_precip1, xx_precip_dummy,
      &     xx_precip_remo_intercept, xx_precip_remo_slope,
@@ -345,7 +361,7 @@ c-- Control variables for atmos. state
 #endif
 
 #ifdef ALLOW_SWFLUX_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_swflux_file, xx_swfluxstartdate, xx_swfluxperiod,
      &     maskc, swflux, xx_swflux0, xx_swflux1, xx_swflux_dummy,
      &     xx_swflux_remo_intercept, xx_swflux_remo_slope,
@@ -353,7 +369,7 @@ c-- Control variables for atmos. state
 #endif
 
 #ifdef ALLOW_SWDOWN_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_swdown_file, xx_swdownstartdate, xx_swdownperiod,
      &     maskc, swdown, xx_swdown0, xx_swdown1, xx_swdown_dummy,
      &     xx_swdown_remo_intercept, xx_swdown_remo_slope,
@@ -361,7 +377,7 @@ c-- Control variables for atmos. state
 #endif
 
 #ifdef ALLOW_LWFLUX_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_lwflux_file, xx_lwfluxstartdate, xx_lwfluxperiod,
      &     maskc, lwflux, xx_lwflux0, xx_lwflux1, xx_lwflux_dummy,
      &     xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
@@ -369,7 +385,7 @@ c-- Control variables for atmos. state
 #endif
 
 #ifdef ALLOW_LWDOWN_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_lwdown_file, xx_lwdownstartdate, xx_lwdownperiod,
      &     maskc, lwdown, xx_lwdown0, xx_lwdown1, xx_lwdown_dummy,
      &     xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
@@ -377,7 +393,7 @@ c-- Control variables for atmos. state
 #endif
 
 #ifdef ALLOW_EVAP_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_evap_file, xx_evapstartdate, xx_evapperiod,
      &     maskc, evap, xx_evap0, xx_evap1, xx_evap_dummy,
      &     xx_evap_remo_intercept, xx_evap_remo_slope,
@@ -385,7 +401,7 @@ c-- Control variables for atmos. state
 #endif
 
 #ifdef ALLOW_SNOWPRECIP_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_snowprecip_file, xx_snowprecipstartdate, 
      &     xx_snowprecipperiod,
      &     maskc, snowprecip, xx_snowprecip0, xx_snowprecip1, 
@@ -395,7 +411,7 @@ c-- Control variables for atmos. state
 #endif
 
 #ifdef ALLOW_APRESSURE_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_apressure_file, xx_apressurestartdate, 
      &     xx_apressureperiod,
      &     maskc, apressure, xx_apressure0, xx_apressure1, 
@@ -419,5 +435,15 @@ c-- Control variables for atmos. state
      &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
      &     mytime, myiter, mythid )
 #endif /* ALLOW_VWIND_CONTROL */
+
+cdm transferred from exf_init_runoff.F
+cdm functionality needs to be checked before turning on
+cdm #ifdef ALLOW_RUNOFF_CONTROL
+cdm       call ctrl_get_gen ( 
+cdm      &     xx_runoff_file, xx_runoffstartdate, xx_runoffperiod,
+cdm      &     maskc, runoff, xx_runoff0, xx_runoff1, xx_runoff_dummy,
+cdm      &     xx_runoff_remo_intercept, xx_runoff_remo_slope,
+cdm      &     0., 0., mythid )
+cdm #endif
 
       end
