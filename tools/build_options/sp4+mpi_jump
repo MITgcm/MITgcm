@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4+mpi_jump,v 1.1 2006/12/11 14:15:36 mlosch Exp $
+#
+#  tested on jump.fz-juelich.de, mlosch
+#  uname -a: AIX j36 3 5 00223C3B4C00
+#  using the following invocation:
+#    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/sp4+mpi_jump
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_AIX -DWORDLENGTH=4 -DNML_TERMINATOR'
+HAVE_CLOC='true'
+HAVE_SETRLSTK='true'
+HAVE_STAT='true'
+MPI='true'
+
+INCLUDES='-I/usr/lpp/ppe.poe/include/thread64 -I/opt/rsct/lapi/include64 -I/usr/lpp/ssp/css/aix52/include64 -I/opt/rsct/lapi/include -I/usr/local/include'
+#INCLUDES='-I/usr/lpp/ppe.poe/include/thread64 -I/usr/local/include'
+CPP='/lib/cpp -P'
+CC='mpcc_r -q64'
+FC='mpxlf95_r -q64'
+LINK='mpxlf95_r -q64'
+#LIBS='-lmass'
+LIBS='-lmass -lesslsmp'
+FFLAGS='-qfixed=132' 
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-O3 -Q -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+    CFLAGS='-O3 -Q -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+else
+    #  Try to follow IEEE-754
+    FOPTIM='-O3 -qstrict -Q -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+    CFLAGS='-O3 -qstrict -Q -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+fi
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
