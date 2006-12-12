@@ -5,7 +5,7 @@ CBOP
 C !ROUTINE: PHOS_FLUX
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE PHOS_FLUX( bioac, pflux,
+      SUBROUTINE PHOS_FLUX( bioac, pflux, exportflux,
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
@@ -35,6 +35,7 @@ C  bioac                :: biological productivity
 C !OUTPUT PARAMETERS: ===================================================
 C  pflux               :: changes to PO4 due to flux and reminerlization
       _RL  pflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL exportflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER imin, imax, jmin, jmax, bi, bj
 
 #ifdef ALLOW_PTRACERS
@@ -86,6 +87,7 @@ c no flux to ocean bottom
               endif
               pflux(i,j,ko)=pflux(i,j,ko) +
      &          ( (Flux_u-Flux_l)/(drF(ko)*hFacC(i,j,ko,bi,bj)) ) 
+              exportflux(i,j,ko)=exportflux(i,j,ko)+Flux_u
             else
 c if no layer below initial layer, remineralize in place
                if (ko.eq.k+1) pflux(i,j,k)=pflux(i,j,k)

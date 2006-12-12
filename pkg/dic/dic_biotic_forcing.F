@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.12 2006/11/28 21:16:03 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.13 2006/12/12 22:37:28 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -84,6 +84,7 @@ c  freefe                 :: iron not bound to ligand
       _RL  CAR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  bioac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  pflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  exportflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  cflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_FE
       _RL  GFE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -112,6 +113,7 @@ CEOP
            BIO_kar(i,j,k)=0.d0
            bioac(i,j,k)=0.d0
            pflux(i,j,k)=0.d0
+           exportflux(i,j,k)=0.d0
            cflux(i,j,k)=0.d0
 #ifdef ALLOW_FE
            GFE(i,j,k)=0.d0
@@ -153,7 +155,7 @@ c biological activity
      I           myIter,myTime,myThid)
 
 c flux of po4 from layers with biological activity
-       CALL PHOS_FLUX( bioac, pflux,
+       CALL PHOS_FLUX( bioac, pflux, exportflux,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 
@@ -261,6 +263,8 @@ c save averages
      &                           OmegaC(i,j,k,bi,bj)*deltaTclock
             pfluxave(i,j,k,bi,bj)= pfluxave(i,j,k,bi,bj) +
      &                           pflux(i,j,k)*deltaTclock
+            epfluxave(i,j,k,bi,bj)= epfluxave(i,j,k,bi,bj) +
+     &                           exportflux(i,j,k)*deltaTclock
             cfluxave(i,j,k,bi,bj)= cfluxave(i,j,k,bi,bj) +
      &                           cflux(i,j,k)*deltaTclock
             if (k.eq.1) then

@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/pkg/dic/dic_mnc_init.F,v 1.2 2005/08/18 18:24:29 stephd Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/dic/dic_mnc_init.F,v 1.3 2006/12/12 22:37:28 stephd Exp $
 C$Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -90,6 +90,13 @@ CEOP
       CALL MNC_CW_ADD_VATTR_TEXT(
      &     'dic_pflux_ave','units','--', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('dic_pflux_ave','description',
+     &     '', myThid)
+
+      CALL MNC_CW_ADD_VNAME(
+     &     'dic_epflux_ave', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT(
+     &     'dic_epflux_ave','units','--', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('dic_epflux_ave','description',
      &     '', myThid)
 
       CALL MNC_CW_ADD_VNAME(
