@@ -20,3 +20,4 @@ genmake_ad_optfile
 genmake_optfile
 genmake_warnings
 mnc_test_*
+*.mod
