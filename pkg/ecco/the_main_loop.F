@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.46 2006/11/03 23:51:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.47 2006/12/13 21:59:50 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -261,8 +261,10 @@ cph because we only have active file handling to real available.
 
       CALL TIMER_START('ECCO SPIN-UP', mythid)
 
+#ifdef ALLOW_CAL
 c--   Get the current date.
       call CAL_TIMESTAMP( myiter, mytime, mydate, mythid )
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
@@ -596,6 +598,9 @@ C--     Step forward fields and calculate time tendency terms.
 # ifdef EXACT_CONSERV
 cphCADJ STORE empmr              = comlev1, key = ikey_dynamics
 cphCADJ STORE pmepr              = comlev1, key = ikey_dynamics
+# endif
+# ifdef ALLOW_PTRACERS
+CADJ STORE ptracer               = comlev1, key = ikey_dynamics
 # endif
 # ifdef NONLIN_FRSURF
 cph-test
