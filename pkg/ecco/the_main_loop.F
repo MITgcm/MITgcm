@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.47 2006/12/13 21:59:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.48 2006/12/13 22:31:19 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -418,6 +418,8 @@ c--
 # ifdef ALLOW_PTRACERS
 CADJ INIT comlev1_bibj_ptracers = COMMON,
 CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*PTRACERS_num
+CADJ INIT comlev1_bibj_k_ptracers = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*PTRACERS_num*nr
 # endif /* ALLOW_PTRACERS */
 c--
 cph Now also needed by seaice
