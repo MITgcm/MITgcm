@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.158 2006/11/23 05:23:05 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.159 2006/12/13 02:24:53 cnh Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2458,6 +2458,7 @@ lib: libmitgcmuv.a
 
 libmitgcmuv.a: \$(OBJFILES)
 	ar rcv libmitgcmuv.a \$(OBJFILES)
+	ar d   libmitgcmuv.a main.o
 
 links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(SPECIAL_FILES)
 
@@ -2540,9 +2541,7 @@ cat >>$MAKEFILE <<EOF
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 .$FS.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
-.F90.$FS90:
-	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
-.$FS90.o:
+.F90.o:   
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$<
 .c.o:
 	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) -c \$<
