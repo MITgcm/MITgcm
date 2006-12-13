@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.6 2006/10/15 14:08:10 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.7 2006/12/13 18:37:21 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -69,9 +69,6 @@ C     case of nThreads > 1. Stop if it isnt.
      &'EXF_INTERP_READ: nThreads > 1 needs EXF_IREAD_USE_GLOBAL_POINTER'
       ENDIF
 #endif
-C check input arguments
-       if ( .NOT. (filePrec .EQ. 32) )
-     &     stop 'stop in exf_interp.F: value of filePrec not allowed'
 
 C read in input data
 #ifdef ALLOW_USE_MPI
