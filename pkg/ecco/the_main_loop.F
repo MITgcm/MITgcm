@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.48 2006/12/13 22:31:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.49 2006/12/14 22:31:18 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -597,6 +597,7 @@ C--     Step forward fields and calculate time tendency terms.
        CALL TIMER_STOP ('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',mythid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE surfaceforcingtice    = comlev1, key = ikey_dynamics
 # ifdef EXACT_CONSERV
 cphCADJ STORE empmr              = comlev1, key = ikey_dynamics
 cphCADJ STORE pmepr              = comlev1, key = ikey_dynamics
@@ -605,7 +606,6 @@ cphCADJ STORE pmepr              = comlev1, key = ikey_dynamics
 CADJ STORE ptracer               = comlev1, key = ikey_dynamics
 # endif
 # ifdef NONLIN_FRSURF
-cph-test
 CADJ STORE hFacC              = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -619,9 +619,9 @@ CADJ STORE hFacC              = comlev1, key = ikey_dynamics
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE EmPmR    = comlev1, key = ikey_dynamics
+CADJ STORE EmPmR              = comlev1, key = ikey_dynamics
 # ifdef EXACT_CONSERV
-CADJ STORE pmepr    = comlev1, key = ikey_dynamics
+CADJ STORE pmepr              = comlev1, key = ikey_dynamics
 # endif
 #endif
 #endif

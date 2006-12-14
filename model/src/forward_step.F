@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.145 2006/08/24 01:15:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.146 2006/12/14 22:31:18 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -235,6 +235,9 @@ CADJ STORE vvel               = comlev1, key = ikey_dynamics
 # ifdef EXACT_CONSERV
 cphCADJ STORE empmr              = comlev1, key = ikey_dynamics
 cphCADJ STORE pmepr              = comlev1, key = ikey_dynamics
+# endif
+# ifdef ALLOW_PTRACERS
+CADJ STORE ptracer               = comlev1, key = ikey_dynamics
 # endif
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 cph-test

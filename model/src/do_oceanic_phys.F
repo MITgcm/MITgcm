@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.33 2006/11/08 16:01:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.34 2006/12/14 22:31:18 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -144,16 +144,21 @@ C     under sea-ice may not be "exactly" at the freezing point by the time
 C     theta is dumped or time-averaged.
       IF ( useSEAICE ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fu, fv              = comlev1, key = ikey_dynamics
-CADJ STORE qnet,qsw            = comlev1, key = ikey_dynamics
-CADJ STORE aqh,precip,swdown   = comlev1, key = ikey_dynamics
-CADJ STORE theta               = comlev1, key = ikey_dynamics
-# ifdef EXF_READ_EVAP
+CADJ STORE atemp,aqh,precip    = comlev1, key = ikey_dynamics
+CADJ STORE swdown,lwdown       = comlev1, key = ikey_dynamics
+cphCADJ STORE theta               = comlev1, key = ikey_dynamics
+cph# ifdef EXF_READ_EVAP
 CADJ STORE evap                = comlev1, key = ikey_dynamics
-# endif
+cph# endif
 cph# ifdef SEAICE_ALLOW_DYNAMICS
 CADJ STORE uvel,vvel           = comlev1, key = ikey_dynamics
 cph# endif
+# ifdef SEAICE_CGRID
+CADJ STORE fu, fv              = comlev1, key = ikey_dynamics
+CADJ STORE siceload            = comlev1, key = ikey_dynamics
+CADJ STORE seaicemasku         = comlev1, key = ikey_dynamics
+CADJ STORE seaicemaskv         = comlev1, key = ikey_dynamics
+# endif
 #endif
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB )
