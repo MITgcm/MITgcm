@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.49 2006/12/14 22:31:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.50 2006/12/14 23:23:55 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -440,6 +440,9 @@ c--
 # ifdef ALLOW_SEAICE
 #  ifdef SEAICE_ALLOW_DYNAMICS
 CADJ INIT comlev1_lsr = COMMON,nchklev_1*2
+#  endif
+#  ifdef SEAICE_ALLOW_EVP
+CADJ INIT comlev1_evp = COMMON,nchklev_1
 #  endif
 #  ifdef SEAICE_MULTILEVEL
 CADJ INIT comlev1_multdim 

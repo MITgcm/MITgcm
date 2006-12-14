@@ -22,6 +22,11 @@ CADJ STORE etan          = comlev1, key = ikey_dynamics
 CADJ STORE dwatn         = comlev1, key = ikey_dynamics
 CADJ STORE seaicemasku,seaicemaskv = comlev1, key = ikey_dynamics
 #  endif
+#  ifdef SEAICE_ALLOW_EVP
+CADJ STORE seaice_sigma1  = comlev1, key = ikey_dynamics
+CADJ STORE seaice_sigma2  = comlev1, key = ikey_dynamics
+CADJ STORE seaice_sigma12 = comlev1, key = ikey_dynamics
+#  endif
 # endif
 #ifdef ALLOW_COST_ICE
 CADJ STORE objf_ice      = comlev1, key = ikey_dynamics

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.1 2006/03/20 21:36:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.2 2006/12/14 23:23:55 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -104,13 +104,19 @@ C     use u/vIceC as work arrays: copy previous time step to u/vIceC
 C
 C     start of the main time loop
       DO iEVPstep = 1, nEVPstep
+C
 #ifdef ALLOW_AUTODIFF_TAMC
-CML CADJ STORE uice = comlev1_evp, 
-CML CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
-CML CADJ STORE vice = comlev1_evp, 
-CML CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ STORE uicec          = comlev1_evp, 
+CADJ &     key = ikey_dynamics + (iEVPstep-1)*nchklev_1
+CADJ STORE vicec          = comlev1_evp, 
+CADJ &     key = ikey_dynamics + (iEVPstep-1)*nchklev_1
+CADJ STORE seaice_sigma1  = comlev1_evp, 
+CADJ &     key = ikey_dynamics + (iEVPstep-1)*nchklev_1
+CADJ STORE seaice_sigma2  = comlev1_evp, 
+CADJ &     key = ikey_dynamics + (iEVPstep-1)*nchklev_1
+CADJ STORE seaice_sigma12 = comlev1_evp, 
+CADJ &     key = ikey_dynamics + (iEVPstep-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
-
 C
 C     first calculate strain rates and bulk moduli/viscosities
 C     
