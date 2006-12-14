@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.12 2006/11/01 09:49:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.13 2006/12/14 08:36:20 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -530,6 +530,16 @@ C---   end bi,bj loops
        ENDDO
       ENDDO
 
+CML#ifdef ALLOW_THSICE
+CML      IF ( useThSice ) THEN
+CMLC--   Exchange fields 
+CML      _EXCH_XY_R8( iceMask, myThid )
+CML      _EXCH_XY_R8( iceHeight, myThid )
+CML      _EXCH_XY_R8( snowHeight, myThid )
+CML      _EXCH_XY_R8( Qice1, myThid )
+CML      _EXCH_XY_R8( Qice2, myThid )
+CML      ENDIF
+CML#endif /* ALLOW_THSICE */
 #else
       STOP 'SEAICEmultiDimAdvection not yet implemented for adjoint'
 #endif /* ndef ALLOW_AUTODIFF_TAMC */

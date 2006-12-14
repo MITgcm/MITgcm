@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.36 2006/11/01 09:49:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.37 2006/12/14 08:36:20 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -134,7 +134,7 @@ C--   called from DO_OCEANIC_PHYSICS
 #endif /* ALLOW_THSICE */
 C     NOW DO GROWTH
 C     MUST CALL GROWTH ONLY AFTER CALLING ADVECTION
-       CALL GROWTH( myTime, myIter, myThid )
+       CALL SEAICE_GROWTH( myTime, myIter, myThid )
 #ifdef ALLOW_THSICE
       ENDIF
 #endif /* ALLOW_THSICE */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.23 2006/11/22 22:20:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.24 2006/12/14 08:36:19 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -32,10 +32,6 @@ C     HSNOW - effective snow thickness in m
 C             at center of grid, i.e., tracer point
 C             note: for non-zero AREA, actual snow
 C                thickness is HEFF / AREA
-C     FICE  - thermodynamic ice growth rate over sea ice in W/m^2
-C             >0 causes ice growth, <0 causes snow and sea ice melt
-C     FO    - thermodynamic ice growth rate over open water in W/m^2
-C             >0 causes ice growth, <0 causes snow and sea ice melt
 C \ev
 CEOP
       COMMON/SEAICE_DYNVARS_1/AREA
@@ -90,7 +86,6 @@ CEOP
 #endif
       COMMON/OFL/YNEG
       COMMON/RIV/RIVER
-      COMMON/SALT_WATER/SEAICE_SALT
       _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 #ifdef SEAICE_CGRID
       _RL seaiceMaskU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -100,7 +95,6 @@ CEOP
 #endif /* SEAICE_CGRID */
       _RL YNEG       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL RIVER      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL SEAICE_SALT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
 #ifdef SEAICE_MULTILEVEL
       INTEGER MULTDIM
@@ -136,22 +130,12 @@ C                      /divided by Delta
       COMMON/MIX/TMIX,TICE
       COMMON/GWATXY/GWATX,GWATY
       COMMON/WIND/WINDX,WINDY
-      COMMON/RATE/FHEFF,FICE,FO,HCORR
-      COMMON/QFLUX/QNETO,QNETI,QSWO,QSWI
       _RL TMIX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL TICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL GWATX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL GWATY      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL WINDX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL WINDY      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL FHEFF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL FICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL FO         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL HCORR      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL QNETO      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL QNETI      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL QSWO       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL QSWI       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
       COMMON/COUNT/ICOUNT
       COMMON/DAY/IDELT
