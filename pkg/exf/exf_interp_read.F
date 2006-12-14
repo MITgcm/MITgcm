@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.8 2006/12/14 08:17:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.9 2006/12/14 22:15:27 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -32,12 +32,14 @@ C     in an ifdef because it won't go through g77 and I'm not
 C     currently sure what TAF would do with this.
       COMMON /EXF_IOPTR/ glPtr
       REAL*4, POINTER :: glPtr(:,:)
+      COMMON /EXF_IOPTR8/ glPtr8
+      REAL*8, POINTER :: glPtr8(:,:)
 #endif
 
 C subroutine variables
       character*(*) infile
       integer       filePrec, irecord, nx_in, ny_in
-      real*4        arrayin(-1:nx_in+2 ,      -1:ny_in+2)
+      real*4        arrayin( -1:nx_in+2 , -1:ny_in+2 )
       integer       mythid
 
 C Functions
@@ -54,8 +56,10 @@ C local variables
       integer  i, j, k, l, js, bi, bj, sp, interp_unit
 #ifdef EXF_IREAD_USE_GLOBAL_POINTER
       real*4, target ::   global(nx_in,ny_in)
+      real*8, target ::   global8(nx_in,ny_in)
 #else
       real*4   global(nx_in,ny_in)
+      real*8   global8(nx_in,ny_in)
 #endif
 
       _BARRIER
@@ -69,9 +73,6 @@ C     case of nThreads > 1. Stop if it isnt.
      &'EXF_INTERP_READ: nThreads > 1 needs EXF_IREAD_USE_GLOBAL_POINTER'
       ENDIF
 #endif
-C check input arguments
-      IF ( .NOT. (filePrec .EQ. 32) )
-     &     STOP 'stop in exf_interp.F: value of filePrec not allowed'
 
 C read in input data
 #ifdef ALLOW_USE_MPI
@@ -87,14 +88,30 @@ C master thread of process 0, only, opens a global file
          length_of_rec=MDS_RECLEN( filePrec, nx_in*ny_in, mythid )
          open(interp_unit,file=infile,status='old',access='direct',
      &        recl=length_of_rec)
-         read(interp_unit,rec=irecord)
-     &        ((global(i,j),i=1,nx_in),j=1,ny_in)
+         IF ( filePrec .EQ. 32 ) THEN
+            read(interp_unit,rec=irecord)
+     &           ((global(i,j),i=1,nx_in),j=1,ny_in)
+#ifdef _BYTESWAPIO
+            call MDS_BYTESWAPR4(nx_in*ny_in,global)
+#endif /* _BYTESWAPIO */
+         ELSE
+            read(interp_unit,rec=irecord)
+     &           ((global8(i,j),i=1,nx_in),j=1,ny_in)
+#ifdef _BYTESWAPIO
+            call MDS_BYTESWAPR8(nx_in*ny_in,global8)
+#endif /* _BYTESWAPIO */
+         ENDIF
          close(interp_unit)
         ENDIF
 
 C broadcast to all processes
-        call MPI_BCAST(global,nx_in*ny_in,MPI_REAL,
-     &       0,MPI_COMM_MODEL,ierr)
+        IF ( filePrec .EQ. 32 ) THEN
+           call MPI_BCAST(global,nx_in*ny_in,MPI_REAL,
+     &          0,MPI_COMM_MODEL,ierr)
+        ELSE
+           call MPI_BCAST(global8,nx_in*ny_in,MPI_DOUBLE_PRECISION,
+     &          0,MPI_COMM_MODEL,ierr)
+        ENDIF
        else
 #endif /* ALLOW_USE_MPI */
 
@@ -102,34 +119,61 @@ C broadcast to all processes
         length_of_rec=MDS_RECLEN( filePrec, nx_in*ny_in, mythid )
         open(interp_unit,file=infile,status='old',access='direct',
      &       recl=length_of_rec)
-        read(interp_unit,rec=irecord) global
+        IF ( filePrec .EQ. 32 ) THEN
+           read(interp_unit,rec=irecord) global
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR4(nx_in*ny_in,global)
+#endif /* _BYTESWAPIO */
+        ELSE
+           read(interp_unit,rec=irecord) global8
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR8(nx_in*ny_in,global8)
+#endif /* _BYTESWAPIO */
+        ENDIF
         close(interp_unit)
 
 #ifdef ALLOW_USE_MPI
        endif
 #endif /* ALLOW_USE_MPI */
 #ifdef EXF_IREAD_USE_GLOBAL_POINTER
-       glPtr => global
+       IF ( filePrec .EQ. 32 ) THEN
+          glPtr => global
+       ELSE
+          glPtr8 => global8
+       ENDIF
 #endif
       _END_MASTER( myThid )
       _BARRIER
-#ifdef EXF_IREAD_USE_GLOBAL_POINTER
-       do j=1,ny_in
-        do i=1,nx_in
-         arrayin(i,j)=glPtr(i,j)
-        enddo
-       enddo
-#else
-       do j=1,ny_in
-        do i=1,nx_in
-         arrayin(i,j)=global(i,j)
-        enddo
-       enddo
-#endif
 
-#ifdef _BYTESWAPIO
-       call MDS_BYTESWAPR4((nx_in+4)*(ny_in+4), arrayin )
-#endif /* _BYTESWAPIO */
+#ifdef EXF_IREAD_USE_GLOBAL_POINTER
+      IF ( filePrec .EQ. 32 ) THEN
+         do j=1,ny_in
+            do i=1,nx_in
+               arrayin(i,j)=glPtr(i,j)
+            enddo
+         enddo
+      ELSE
+         do j=1,ny_in
+            do i=1,nx_in
+               arrayin(i,j)=glPtr8(i,j)
+            enddo
+         enddo
+      ENDIF
+#else
+      IF ( filePrec .EQ. 32 ) THEN
+         do j=1,ny_in
+            do i=1,nx_in
+               arrayin(i,j)=global(i,j)
+            enddo
+         enddo
+      ELSE
+         do j=1,ny_in
+            do i=1,nx_in
+               arrayin(i,j)=global8(i,j)
+            enddo
+         enddo
+      ENDIF
+#endif
 
       RETURN
       END
