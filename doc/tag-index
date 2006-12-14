@@ -1,8 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.754 2006/12/14 08:23:13 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.755 2006/12/14 08:39:57 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: overhaul of thermodynamics
+ - growth.F and groatb.F are replaced by new routine seaice_growth.F
+ - budget.F is replaced by two new routines seaice_budget_ocean/ice.F
+ - move a few global fields out of SEAICE.h into seaice_growth.F and
+   make them 2D (FICE/QNETO/ ...)
+ - remove FO (it is the same as QNETO)
+ - introduce a few local fields to avoid modifying external fields such
+   as atemp, etc.
+
 checkpoint58s_post
 o pkg/exf: moved exf_init_runoff.F to exf_init.F and exf_set_gen.F
   changed exf_set_gen.F so that
