@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.3 2006/12/15 15:04:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.4 2006/12/15 15:48:23 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -109,7 +109,6 @@ C     HEAT OF FUSION OF SNOW (J/m^3)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 c
-cph(
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
@@ -153,8 +152,6 @@ CADJ &                         key = iicekey, byte = isbyte
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj, 
@@ -447,14 +444,16 @@ C Now add in precip over open water directly into ocean as negative salt
 
 C Now melt snow if there is residual heat left in surface level
 C Note that units of YNEG and SEAICE_SALT are m of ice
-          IF( RESID_HEAT(I,J)      .GT.ZERO
-     &        .AND.HSNOW(I,J,bi,bj).GT.ZERO ) THEN
+cph( very sensitive bit here by JZ
+          IF( RESID_HEAT(I,J) .GT. ZERO
+     &        .AND. HSNOW(I,J,bi,bj) .GT. ZERO ) THEN
            GHEFF(I,J)       = MIN( HSNOW(I,J,bi,bj)/SDF/ICE_DENS,
      &                             RESID_HEAT(I,J) )
            YNEG(I,J,bi,bj)  = YNEG(I,J,bi,bj)+GHEFF(I,J)
            HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)-GHEFF(I,J)*SDF*ICE_DENS
            SEAICE_SALT(I,J) = SEAICE_SALT(I,J)-GHEFF(I,J)
           ENDIF
+cph)
 
 C NOW GET FRESH WATER FLUX
           EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
