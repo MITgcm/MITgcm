@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.1 2006/12/14 08:36:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.2 2006/12/15 14:35:44 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -52,7 +52,7 @@ C     === Local variables ===
 C     i,j - Loop counters
       INTEGER i, j
       INTEGER ITER
-      _RL  QS1, C1, C2, C3, C4, C5, TB, D1, D1W, D1I, D3
+      _RL  QS1, C1, C2, C3, C4, C5, TB, D1, D1I, D3
       _RL  TMELT, TMELTP, XKI, XKS, HCUT, ASNOW, XIO
 C     effective conductivity of combined ice and snow
       _RL  effConduct
@@ -88,8 +88,6 @@ C FREEZING TEMPERATURE OF SEAWATER
       TB=271.2 _d +00
 C SENSIBLE HEAT CONSTANT
       D1=SEAICE_sensHeat
-C WATER LATENT HEAT CONSTANT
-      D1W=SEAICE_latentWater
 C ICE LATENT HEAT CONSTANT
       D1I=SEAICE_latentIce
 C STEFAN BOLTZMAN CONSTANT TIMES 0.97 EMISSIVITY
@@ -133,8 +131,8 @@ C NOW DECIDE ON ALBEDO
         IF(tsurfLoc(I,J).GT.TMELTP) ALB(I,J)=SEAICE_wetIceAlb
         ASNOW=SEAICE_drySnowAlb
         IF(tsurfLoc(I,J).GT.TMELTP) ASNOW=SEAICE_wetSnowAlb
-cdm For albedo computation, actual rather than effective snow thickness
-cdm must be used.  Mininimum AREA(I,J,3,bi,bj) is A22 from groatb.F
+C     For albedo computation, actual rather than effective snow thickness
+c     must be used. 
         IF(hSnwLoc(I,J).GT.HCUT) THEN
          ALB(I,J)=ASNOW
         ELSE
