@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.1 2006/12/14 08:36:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.2 2006/12/15 14:36:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -49,8 +49,7 @@ C     i,j - Loop counters
       INTEGER i, j
 #ifndef SEAICE_EXTERNAL_FLUXES
       INTEGER ITER
-      _RL  QS1, C1, C2, C3, C4, C5, TB, D1, D1W, D1I, D3
-      _RL  TMELT, TMELTP, XKI, XKS, HCUT, ASNOW, XIO
+      _RL  QS1, TB, D1, D1W, D3, TMELT
 C     effective conductivity of combined ice and snow
       _RL  effConduct
 C     specific humidity at ice surface
@@ -73,33 +72,16 @@ C     auxiliary variable
 C NOW DEFINE ASSORTED CONSTANTS
 C SATURATION VAPOR PRESSURE CONSTANT
       QS1=0.622 _d +00/1013.0 _d +00
-C MAYKUTS CONSTANTS FOR SAT. VAP. PRESSURE TEMP. POLYNOMIAL
-      C1=2.7798202 _d -06
-      C2=-2.6913393 _d -03
-      C3=0.97920849 _d +00
-      C4=-158.63779 _d +00
-      C5=9653.1925 _d +00
 C FREEZING TEMPERATURE OF SEAWATER
       TB=271.2 _d +00
 C SENSIBLE HEAT CONSTANT
       D1=SEAICE_sensHeat
 C WATER LATENT HEAT CONSTANT
       D1W=SEAICE_latentWater
-C ICE LATENT HEAT CONSTANT
-      D1I=SEAICE_latentIce
 C STEFAN BOLTZMAN CONSTANT TIMES 0.97 EMISSIVITY
       D3=SEAICE_emissivity
 C MELTING TEMPERATURE OF ICE
       TMELT=273.16 _d +00
-      TMELTP=273.159 _d +00
-C ICE CONDUCTIVITY
-      XKI=SEAICE_iceConduct
-C SNOW CONDUCTIVITY
-      XKS=SEAICE_snowConduct
-C CUTOFF SNOW THICKNESS
-      HCUT=SEAICE_snowThick
-C PENETRATION SHORTWAVE RADIATION FACTOR
-      XIO=SEAICE_shortwave
 
       DO J=1,sNy
        DO I=1,sNx
