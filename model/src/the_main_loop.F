@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.78 2006/09/06 15:30:25 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.79 2006/12/15 18:02:17 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -362,6 +362,9 @@ c--
 #ifdef ALLOW_SEAICE
 # ifdef SEAICE_ALLOW_DYNAMICS
 CADJ INIT comlev1_lsr = COMMON,nchklev_1*2
+# endif
+# ifdef SEAICE_ALLOW_EVP
+CADJ INIT comlev1_evp = COMMON,nchklev_1
 # endif
 #endif /* ALLOW_SEAICE */
 c--
