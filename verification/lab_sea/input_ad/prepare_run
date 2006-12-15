@@ -1,0 +1,30 @@
+#! /usr/bin/env bash
+
+#  $Header: /u/gcmpack/MITgcm/verification/lab_sea/input_ad/prepare_run,v 1.1 2006/12/15 18:12:00 heimbach Exp $
+#  $Name:  $
+ 
+#- in order to save disc space, take *.1979 files
+#- from this dir:
+fromDir="../input"
+
+fileList=`( cd $fromDir ; echo *1979 )`
+
+#echo 'fileList=' $fileList
+
+#- and do a symbolic link in the current directory 
+#   (if the file does not already exist)
+if test -d $fromDir ; then
+  lnkList='files:'
+  for xx in $fileList
+  do
+    if test -r ${fromDir}/$xx ; then 
+      if test ! -r $xx ; then 
+        lnkList=${lnkList}" "$xx
+        ln -sf ${fromDir}/$xx .
+      fi
+    fi
+  done
+  echo ' link' $lnkList "from dir:" $fromDir
+else
+  echo " Error:" $fromDir "not a directory"
+fi

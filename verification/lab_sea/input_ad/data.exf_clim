@@ -1,0 +1,21 @@
+# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input_ad/Attic/data.exf_clim,v 1.1 2006/12/15 18:11:59 heimbach Exp $
+#
+# *********************************
+# External Forcing Climatology Data
+# *********************************
+ &EXF_CLIM_NML
+#
+ climsststartdate1  = 19781216,
+ climsststartdate2  = 180000,
+ climsstperiod      = 2635200.0,
+#
+ climsssstartdate1  = 19781216,
+ climsssstartdate2  = 180000,
+ climsssperiod      = 2635200.0,
+#
+ climsstfile        = ' ',
+ climsssfile        = 'SSS_monthly.labsea1979',
+#
+ exf_clim_iprec     = 32,
+ exf_clim_yftype    = 'RL',
+ &
