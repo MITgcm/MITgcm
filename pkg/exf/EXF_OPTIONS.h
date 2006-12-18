@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.7 2006/01/02 21:17:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.8 2006/12/18 22:28:22 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -54,6 +54,8 @@ c       If defined, river and glacier runoff can be read-in from files.
 c
 c   >>> ATMOSPHERIC_LOADING <<<
 c       If defined, atmospheric pressure can be read-in from files.
+c   WARNING: this flag is set (define/undef) in CPP_OPTIONS.h 
+c            and cannot be changed here (in EXF_OPTIONS)
 c
 c   >>> ALLOW_CLIMSST_RELAXATION <<<
 c       Allow the relaxation to a monthly climatology of sea surface
