@@ -44,7 +44,6 @@
  diffKzT=1.46e-5,
  diffKhS=0.0,
  diffKzS=1.46e-5,
- rotationPeriod=86400.,
  beta=1.E-11,
  tAlpha=2.E-4,
  sBeta =7.4E-4,
@@ -64,10 +63,8 @@
  allowFreezing=.FALSE.,
  HeatCapacity_Cp = 3986.D0
  gravity         = 9.8156,
- gBaro           = 9.8156,
  rhoNil          = 1027.D0
  useCDscheme=.TRUE.,
- useNHMTerms=.TRUE.,
  inAdExact=.TRUE.,
  &
 
