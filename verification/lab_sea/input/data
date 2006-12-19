@@ -12,13 +12,7 @@
 #   diffKzT         - Vertical temperature diffusivity                  (m^2/s)
 #   diffKhS         - Horizontal salt diffusivity                       (m^2/s)
 #   diffKzS         - Vertical salt diffusivity                         (m^2/s)
-#   f0              - Reference coriolis parameter,
-#                     south edge of f on beta plane                       (1/s)
-#   beta            - df/dy                                         (s^-1.m^-1)
-#   tAlpha          - Linear EOS thermal expansion coefficient           (1/oC)
-#   sBeta           - Linear EOS haline contraction coefficient         (1/ppt)
 #   gravity         - Acceleration due to gravity                       (m/s^2)
-#   gBaro           - Accel. due to gravity used in barotropic equation (m/s^2)
 #   rigidLid        - Set to true to use rigid lid
 #   implicitFreeSurface - Set to true to use implicit free surface
 #   eosType         - Flag for linear or polynomial equation of state
@@ -44,10 +38,6 @@
  diffKzT=1.46e-5,
  diffKhS=0.0,
  diffKzS=1.46e-5,
- rotationPeriod=86400.,
- beta=1.E-11,
- tAlpha=2.E-4,
- sBeta =7.4E-4,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  eosType='JMD95Z',
@@ -62,12 +52,10 @@
 #- not safe to use globalFiles in multi-processors runs; set instead useSingleCpuIO
  useSingleCpuIO=.TRUE.,
  allowFreezing=.FALSE.,
- HeatCapacity_Cp = 3986.D0
+ HeatCapacity_Cp = 3986.D0,
  gravity         = 9.8156,
- gBaro           = 9.8156,
- rhoNil          = 1027.D0
+ rhoNil          = 1027.D0,
  useCDscheme=.TRUE.,
- useNHMTerms=.TRUE.,
  &
 
 # Elliptic solver parameters
@@ -77,7 +65,7 @@
 #
  &PARM02
  cg2dMaxIters=500,
- cg2dTargetResidual=1.D-8
+ cg2dTargetResidual=1.E-12,
  &
 
 # Time stepping parameters
@@ -111,30 +99,27 @@
  tauSaltClimRelax = 4142330.,
  tauThetaClimRelax = 0.,
  monitorFreq=1.,
-#forcing_In_AB = .FALSE.
- tracForcingOutAB=1,
+ forcing_In_AB = .FALSE.,
  &
 
 # Gridding parameters
 #
 #   usingSphericalPolarGrid - On/Off flag for spherical polar coordinates
-#   usingCartesianGrid      - On/Off flag for selecting cartesian coordinates
 #   delX                    - Zonal grid spacing         (degrees)
 #   delY                    - Meridional grid spacing    (degrees)
 #   delZ                    - Vertical grid spacing      (m)
 #   phiMin                  - Southern boundary latitude (degrees)
 #
  &PARM04
- usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.TRUE.,
  delX=20*2.E0,
  delY=16*2.E0,
  delZ= 10., 10., 15., 20., 20., 25., 35., 50., 75.,
        100., 150., 200., 275., 350., 415., 450.,
-       500., 500., 500., 500., 500., 500., 500.
+       500., 500., 500., 500., 500., 500., 500.,
  phimin=46.,
  thetamin=280.,
- rSphere         = 6371.D3
+ rSphere         = 6371.D3,
  &
 
 # Input datasets
