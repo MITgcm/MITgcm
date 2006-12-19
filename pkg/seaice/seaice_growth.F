@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.5 2006/12/19 16:00:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.6 2006/12/19 18:57:10 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -69,7 +69,9 @@ C
       _RL HCORR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     SEAICE_SALT contains m of ice melted (<0) or created (>0)
       _RL SEAICE_SALT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-C     actual ice thickness
+C     actual ice thickness with upper and lower limit
+      _RL hIceLoc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
       _RL HICE   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
 C     actual snow thickness
       _RL hSnwLoc(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
@@ -161,7 +163,11 @@ CADJ &                         key = iicekey, byte = isbyte
          DO I=1,sNx
 cph need to adjoint-store AREA again before using it in further init.
 cph (all these initialisations involving AREA are nasty "non-linear")
+C     COMPUTE ACTUAL ICE THICKNESS AND PUT MINIMUM/MAXIMUM 
+C     ON ICE THICKNESS FOR BUDGET COMPUTATION
           HICE(I,J)    = HEFF(I,J,2,bi,bj)/areaLoc(I,J)
+          HICE(I,J)    = MAX(HICE(I,J),0.05 _d +00) 
+          HICE(I,J)    = MIN(HICE(I,J),9.0 _d +00)
           hSnwLoc(I,J) = HSNOW(I,J,bi,bj)/areaLoc(I,J)
          ENDDO
         ENDDO

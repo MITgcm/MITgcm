@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.2 2006/12/15 14:35:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.3 2006/12/19 18:57:09 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -32,7 +32,7 @@ C     === Routine arguments ===
 C     INPUT:
 C     UG      :: thermal wind of atmosphere
 C     TSURF   :: surface temperature of ice in Kelvin, updated
-C     hIce    :: (actual) ice thickness 
+C     hIce    :: (actual) ice thickness with upper and lower limit
 C     hSnwLoc :: actual snow thickness
 C     bi,bj   :: loop indices
 C     OUTPUT:
@@ -61,8 +61,6 @@ C     specific humidity at ice surface
 C     powers of temperature
       _RL  t1, t2, t3, t4
 
-C     actual ice thickness with upper and lower limit
-      _RL hIceLoc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     local copies of global variables
       _RL tsurfLoc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL atempLoc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -116,14 +114,6 @@ C     Is this necessary?
        ENDDO
       ENDDO
 
-C COME HERE IF ICE COVER                              
-C FIRST PUT MINIMUM ON ICE THICKNESS               
-      DO J=1,sNy
-       DO I=1,sNx
-        hIceLoc(I,J)=MAX(hIce(I,J),0.05 _d +00) 
-        hIceLoc(I,J)=MIN(hIceLoc(I,J),9.0 _d +00)
-       ENDDO
-      ENDDO
 C NOW DECIDE ON ALBEDO                       
       DO J=1,sNy
        DO I=1,sNx
@@ -152,7 +142,7 @@ C NO SW PENETRATION WITH SNOW
         ELSE
 C SW PENETRATION UNDER ICE
          A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
-     &        *(ONE-XIO*EXP(-1.5 _d 0*hIceLoc(I,J)))
+     &        *(ONE-XIO*EXP(-1.5 _d 0*hice(I,J)))
      &        +lwdownLoc(I,J)*0.97 _d 0
      &        +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
         ENDIF
@@ -169,7 +159,7 @@ cdm iterative solver for ice growth rate
 cdm inputs:  TSURF    ice temperature
 cdm          UG       forcing
 cdm          hSnwLoc  snow thickness
-cdm          hIceLoc  ice thickness
+cdm          hice  ice thickness
 cdm outputs: A2 is needed for netHeatFlux, which is ice growth rate
 cdm          TSURF
       DO ITER=1,IMAX_TICE
@@ -183,11 +173,11 @@ cdm          TSURF
          qhIce=QS1*(C1*t4+C2*t3 +C3*t2+C4*t1+C5)
          A2(I,J)=-D1*UG(I,J)*t1-D1I*UG(I,J)*qhIce-D3*t4
          effConduct=
-     &        XKS/(hSnwLoc(I,J)/hIceLoc(I,J)+XKS/XKI)/hIceLoc(I,J)
+     &        XKS/(hSnwLoc(I,J)/hice(I,J)+XKS/XKI)/hice(I,J)
 C     These two formulations give different results than
 C     original formulation. Bummer!
-C         effConduct= 1. _d 0 / ( hSnwLoc(I,J)/XKS + hIceLoc(I,J)/XKI )
-C         effConduct= XKS*XKI / ( hSnwLoc(I,J)*XKI + hIceLoc(I,J)*XKS )
+C         effConduct= 1. _d 0 / ( hSnwLoc(I,J)/XKS + hice(I,J)/XKI )
+C         effConduct= XKS*XKI / ( hSnwLoc(I,J)*XKI + hice(I,J)*XKS )
          A3(I,J)=4.0 _d +00*D3*t3 + effConduct + D1*UG(I,J)
 #ifdef SEAICE_VARIABLE_FREEZING_POINT
          TB = -0.0575 _d 0*salt(I,J,1,bi,bj) + 0.0901 _d 0 
@@ -229,7 +219,7 @@ C NO SW PENETRATION WITH SNOW
         ELSE
 C SW PENETRATION UNDER ICE
          SWHeatFlux(I,J)=-(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
-     &        *XIO*EXP(-1.5 _d 0*hIceLoc(I,J))
+     &        *XIO*EXP(-1.5 _d 0*hice(I,J))
         ENDIF
        ENDDO
       ENDDO
