@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.4 2006/12/15 15:48:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.5 2006/12/19 16:00:39 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -232,7 +232,7 @@ CADJ &                           key = ilockey, byte = isbyte
           ENDDO
          ENDDO
          CALL SEAICE_BUDGET_ICE(
-     I        UG, HICE, hSnwLoc, 
+     I        UG, HICEP, hSnwLoc, 
      U        TICE, 
      O        FICE, QSWI, 
      I        bi, bj)
