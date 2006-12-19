@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.16 2006/03/22 14:55:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.17 2006/12/19 00:14:47 jmc Exp $
+C $Name:  $
 
 C     /==========================================================\
 C     | SEAICE_OPTIONS.h                                         |
@@ -73,12 +74,12 @@ C     option defined the parameter SEAICE_freeze has no effect.
 C--   By default the seaice model is discretized on a B-Grid (for 
 C     historical reasons). Define the following flag to use a new
 C     (not thoroughly) test version on a C-grid
-#undef SEAICE_CGRID
+#define SEAICE_CGRID
 
 C--   Only for the C-grid version it is possible to enable EVP code by
 C     defining the following flag
 #ifdef SEAICE_CGRID
-#undef SEAICE_ALLOW_EVP
+#define SEAICE_ALLOW_EVP
 #endif /* SEAICE_CGRID */
 
 #endif /* SEAICE_OPTIONS_H */
