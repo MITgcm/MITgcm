@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.756 2006/12/15 18:58:13 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.757 2006/12/20 12:27:02 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix multi-category seaice:
+ - change cpp flag SEAICE_MULTILEVEL to more meaningful name: 
+   SEAICE_MULTICATEGORY
+ - fix short wave heat flux
 o Initial check-in of lab_sea adjoint
   (very similar to natl_box_adjoint/code_seaice)
   * used C-grid and EVP solver
