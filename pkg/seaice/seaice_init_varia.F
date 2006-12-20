@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.1 2006/10/22 01:11:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.2 2006/12/20 12:25:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -128,11 +128,11 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           TICE(I,J,bi,bj)=273.0 _d 0
-#ifdef SEAICE_MULTILEVEL
+#ifdef SEAICE_MULTICATEGORY
           DO k=1,MULTDIM
            TICES(I,J,k,bi,bj)=273.0 _d 0
           ENDDO
-#endif
+#endif /* SEAICE_MULTICATEGORY */
           UICEC      (I,J,bi,bj)=ZERO
           VICEC      (I,J,bi,bj)=ZERO
           DAIRN      (I,J,bi,bj)=ZERO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.15 2006/12/09 20:15:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.16 2006/12/20 12:25:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -39,7 +39,7 @@ C--    Going to do some IO. Make everyone except master thread wait.
 
 C--    Read ice model fields
        WRITE(fn,'(A,I10.10)') 'pickup_seaice.',nIter0
-#ifdef SEAICE_MULTILEVEL
+#ifdef SEAICE_MULTICATEGORY
        CALL MDSREADFIELD
      &      ( fn, precFloat64, 'RL', MULTDIM, TICES, 1, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, YNEG , 8, myThid )
@@ -58,7 +58,7 @@ C--    Read ice model fields
      &       seaice_sigma12, 24, myThid )
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
-#else /* SEAICE_MULTILEVEL */
+#else /* SEAICE_MULTICATEGORY */
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, TICE , 1, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, YNEG , 2, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, HSNOW, 3, myThid )
@@ -76,7 +76,7 @@ C--    Read ice model fields
      &       seaice_sigma12, 18, myThid )
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
-#endif /* SEAICE_MULTILEVEL */
+#endif /* SEAICE_MULTICATEGORY */
 
        _END_MASTER( myThid )
        _BARRIER
@@ -137,7 +137,7 @@ C--    Write model fields
        ELSE
         WRITE(fn,'(A,A)') 'pickup_seaice.',checkPtSuff(nCheckLev)
        ENDIF
-#ifdef SEAICE_MULTILEVEL
+#ifdef SEAICE_MULTICATEGORY
        CALL MDSWRITEFIELD
      &      (fn,prec,lgf,'RL', MULTDIM,  TICES,1, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,  YNEG, 8, myIt,myThid)
@@ -156,7 +156,7 @@ C--    Write model fields
      &         seaice_sigma12, 24, myIt,myThid)
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
-#else /* SEAICE_MULTILEVEL */
+#else /* SEAICE_MULTICATEGORY */
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,  TICE, 1, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,  YNEG, 2, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, HSNOW, 3, myIt,myThid)
@@ -174,7 +174,7 @@ C--    Write model fields
      &         seaice_sigma12, 18, myIt,myThid)
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
-#endif /* SEAICE_MULTILEVEL */
+#endif /* SEAICE_MULTICATEGORY */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.6 2006/12/19 18:57:10 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.7 2006/12/20 12:25:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -79,14 +79,15 @@ C     wind speed
       _RL UG     (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL SPEED_SQ
 C     local copy of AREA
-      _RL areaLoc(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL areaLoc
 
-#ifdef SEAICE_MULTILEVEL
+#ifdef SEAICE_MULTICATEGORY
       INTEGER it
       INTEGER ilockey
       _RL RK
       _RL HICEP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL FICEP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL QSWIP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
 #endif
 
       if ( buoyancyRelation .eq. 'OCEANICP' ) then
@@ -136,11 +137,11 @@ CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-          areaLoc(I,J)     = MAX(A22,AREA(I,J,2,bi,bj))
           FHEFF(I,J)       = 0.0 _d 0
           FICE (I,J)       = 0.0 _d 0
-#ifdef SEAICE_MULTILEVEL
+#ifdef SEAICE_MULTICATEGORY
           FICEP(I,J)       = 0.0 _d 0
+          QSWIP(I,J)       = 0.0 _d 0
 #endif
           FHEFF(I,J)       = 0.0 _d 0
           FICE (I,J)       = 0.0 _d 0
@@ -161,14 +162,13 @@ CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         DO J=1,sNy
          DO I=1,sNx
-cph need to adjoint-store AREA again before using it in further init.
-cph (all these initialisations involving AREA are nasty "non-linear")
 C     COMPUTE ACTUAL ICE THICKNESS AND PUT MINIMUM/MAXIMUM 
 C     ON ICE THICKNESS FOR BUDGET COMPUTATION
-          HICE(I,J)    = HEFF(I,J,2,bi,bj)/areaLoc(I,J)
+          areaLoc      = MAX(A22,AREA(I,J,2,bi,bj))
+          HICE(I,J)    = HEFF(I,J,2,bi,bj)/areaLoc
           HICE(I,J)    = MAX(HICE(I,J),0.05 _d +00) 
           HICE(I,J)    = MIN(HICE(I,J),9.0 _d +00)
-          hSnwLoc(I,J) = HSNOW(I,J,bi,bj)/areaLoc(I,J)
+          hSnwLoc(I,J) = HSNOW(I,J,bi,bj)/areaLoc
          ENDDO
         ENDDO
 
@@ -208,7 +208,7 @@ cphCADJ STORE uwind  = comlev1, key = ikey_dynamics
 cphCADJ STORE vwind  = comlev1, key = ikey_dynamics
 c
 CADJ STORE tice   = comlev1, key = ikey_dynamics
-# ifdef SEAICE_MULTILEVEL
+# ifdef SEAICE_MULTICATEGORY
 CADJ STORE tices  = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -222,46 +222,43 @@ C FIRST DO OPEN WATER
      I       bi, bj)
 
 C NOW DO ICE
-#ifdef SEAICE_MULTILEVEL
-C--  Start loop over muli-levels
+#ifdef SEAICE_MULTICATEGORY
+C--  Start loop over muli-categories
         DO IT=1,MULTDIM
 #ifdef ALLOW_AUTODIFF_TAMC
          ilockey = (iicekey-1)*MULTDIM + IT
 CADJ STORE tices(:,:,it,bi,bj) = comlev1_multdim, 
 CADJ &                           key = ilockey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
+         RK=REAL(IT)
          DO J=1,sNy
           DO I=1,sNx
-           RK=IT*1.0
-           HICEP(I,J)=(HICE(I,J)/7.0 _d 0)*((2.0 _d 0*RK)-1.0 _d 0)
+           HICEP(I,J)=(HICE(I,J)/MULTDIM)*((2.0 _d 0*RK)-1.0 _d 0)
            TICE(I,J,bi,bj)=TICES(I,J,IT,bi,bj)
           ENDDO
          ENDDO
          CALL SEAICE_BUDGET_ICE(
      I        UG, HICEP, hSnwLoc, 
      U        TICE, 
-     O        FICE, QSWI, 
+     O        FICEP, QSWIP, 
      I        bi, bj)
          DO J=1,sNy
           DO I=1,sNx
-           FICEP(I,J)=(FICE(I,J)/7.0 _d 0)+FICEP(I,J)
-           TICES(I,J,IT,bi,bj)=TICE(I,J,bi,bj)
+C     average surface heat fluxes/growth rates
+           FICE (I,J)          = FICE(I,J) + FICEP(I,J)/MULTDIM
+           QSWI (I,J)          = QSWI(I,J) + QSWIP(I,J)/MULTDIM
+           TICES(I,J,IT,bi,bj) = TICE(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO
-C--  End loop over muli-levels
-        DO J=1,sNy
-         DO I=1,sNx
-          FICE(I,J)=FICEP(I,J)
-         ENDDO
-        ENDDO
-#else  /* SEAICE_MULTILEVEL */
+C--  End loop over multi-categories
+#else  /* SEAICE_MULTICATEGORY */
         CALL SEAICE_BUDGET_ICE(
      I       UG, HICE, hSnwLoc, 
      U       TICE, 
      O       FICE, QSWI, 
      I       bi, bj)
-#endif /* SEAICE_MULTILEVEL */
+#endif /* SEAICE_MULTICATEGORY */
      
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj)= comlev1_bibj, 

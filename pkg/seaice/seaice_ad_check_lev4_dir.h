@@ -3,7 +3,7 @@ CADJ STORE heff     = tapelev4, key = ilev_4
 CADJ STORE hsnow    = tapelev4, key = ilev_4
 CADJ STORE tice     = tapelev4, key = ilev_4
 CADJ STORE runoff   = tapelev4, key = ilev_4
-# ifdef SEAICE_MULTILEVEL
+# ifdef SEAICE_MULTICATEGORY
 CADJ STORE tices    = tapelev4, key = ilev_4
 # endif
 # ifdef SEAICE_ALLOW_DYNAMICS

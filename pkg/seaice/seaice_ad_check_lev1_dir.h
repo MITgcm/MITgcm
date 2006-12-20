@@ -11,7 +11,7 @@ CADJ STORE area          = comlev1, key = ikey_dynamics
 CADJ STORE heff          = comlev1, key = ikey_dynamics
 CADJ STORE hsnow         = comlev1, key = ikey_dynamics
 CADJ STORE tice          = comlev1, key = ikey_dynamics
-# ifdef SEAICE_MULTILEVEL
+# ifdef SEAICE_MULTICATEGORY
 CADJ STORE tices         = comlev1, key = ikey_dynamics
 # endif
 # ifdef SEAICE_ALLOW_DYNAMICS
