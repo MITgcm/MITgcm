@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.8 2006/12/20 20:49:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.9 2006/12/21 10:50:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -477,19 +477,16 @@ C     freezing, add precip as snow
           ELSE
 C     add precip as rain, water converted into equivalent m of 
 C     ice by 1/ICE_DENS. 
-C     Sign issue? frWtrIce (>0 for more ice)
-C     has the opposite sign of precip (>0 for downward flux of water)
+C     Do not get confused by the sign: 
+C     precip   > 0 for downward flux of fresh water
+C     frWtrIce > 0 for more ice (corresponds to an upward "fresh water flux"),
+C     so that here the rain is added *as if* it is melted ice (which is not 
+C     true, but just a trick; physically the rain just runs as water 
+C     through the ice into the ocean)
            frWtrIce(I,J) = frWtrIce(I,J)
      &            -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*
      &            SEAICE_deltaTtherm/ICE_DENS
           ENDIF
-
-C     now add in precip over open water directly into ocean as negative salt
-C     Sign issue? frWtrIce (>0 for more ice)
-C     has the opposite sign of precip (>0 for downward flux of water)
-          frWtrIce(I,J) = frWtrIce(I,J)
-     &         -PRECIP(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
-     &         *SEAICE_deltaTtherm/ICE_DENS
 
 C     Now melt snow if there is residual heat left in surface level
 C     Note that units of YNEG and frWtrIce are m of ice
@@ -506,9 +503,10 @@ cph)
 
 C NOW GET FRESH WATER FLUX
           EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
-     &         EVAP(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
-     &         -RUNOFF(I,J,bi,bj)
-     &         +frWtrIce(I,J)*ICE_DENS/SEAICE_deltaTtherm
+     &         ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
+     &         * ( ONE - AREA(I,J,2,bi,bj) )
+     &         - RUNOFF(I,J,bi,bj)
+     &         + frWtrIce(I,J)*ICE_DENS/SEAICE_deltaTtherm
      &         )
 
 C NOW GET TOTAL QNET AND QSW
