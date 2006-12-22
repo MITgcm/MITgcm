@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.2 2006/12/14 23:23:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.3 2006/12/22 11:52:21 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -54,6 +54,10 @@ C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
       
       INTEGER i, j, bi, bj
       INTEGER nEVPstep, iEVPstep
+      INTEGER ikeyloc
+#ifndef ALLOW_AUTODIFF_TAMC
+      integer nEVPstepMax
+#endif
 
       _RL SINWAT, COSWAT
       _RL TEMPVAR, ecc2, recip_evp_tau
@@ -76,46 +80,43 @@ C     inverse relaxation/damping time scale
       recip_evp_tau = 0. _d 0
       IF ( SEAICE_elasticParm .GT. 0. )
      &     recip_evp_tau = 1./(SEAICE_deltaTdyn*SEAICE_elasticParm)
+#ifndef ALLOW_AUTODIFF_TAMC
+      nEVPstepMax = nEVPstep
+#endif
 
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
 C     save last external time step (useless, but consistent with 
 C     VP-solver)
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
           uIce (I,J,2,bi,bj) = uIce(I,J,1,bi,bj)
           vIce (I,J,2,bi,bj) = vIce(I,J,1,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
 C     use u/vIceC as work arrays: copy previous time step to u/vIceC
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
           uIceC(I,J,bi,bj)   = uIce(I,J,1,bi,bj)
           vIceC(I,J,bi,bj)   = vIce(I,J,1,bi,bj)
          ENDDO
         ENDDO
-       ENDDO   
-      ENDDO   
+       ENDDO
+      ENDDO
 C
 C     start of the main time loop
-      DO iEVPstep = 1, nEVPstep
+      DO iEVPstep = 1, nEVPstepMax
+       IF (iEVPstep.LE.nEVPstep) THEN
 C
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uicec          = comlev1_evp, 
-CADJ &     key = ikey_dynamics + (iEVPstep-1)*nchklev_1
-CADJ STORE vicec          = comlev1_evp, 
-CADJ &     key = ikey_dynamics + (iEVPstep-1)*nchklev_1
-CADJ STORE seaice_sigma1  = comlev1_evp, 
-CADJ &     key = ikey_dynamics + (iEVPstep-1)*nchklev_1
-CADJ STORE seaice_sigma2  = comlev1_evp, 
-CADJ &     key = ikey_dynamics + (iEVPstep-1)*nchklev_1
-CADJ STORE seaice_sigma12 = comlev1_evp, 
-CADJ &     key = ikey_dynamics + (iEVPstep-1)*nchklev_1
+        ikeyloc = iEVPstep + 
+     &      (ikey_dynamics-1)*nEVPstepMax
+CADJ STORE uicec  = comlev1_evp,
+CADJ &     key = ikeyloc, byte = isbyte
+CADJ STORE vicec  = comlev1_evp,
+CADJ &     key = ikeyloc, byte = isbyte
+CADJ STORE seaice_sigma1  = comlev1_evp,
+CADJ &     key = ikeyloc, byte = isbyte
+CADJ STORE seaice_sigma2  = comlev1_evp,
+CADJ &     key = ikeyloc, byte = isbyte
+CADJ STORE seaice_sigma12 = comlev1_evp,
+CADJ &     key = ikeyloc, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
 C     first calculate strain rates and bulk moduli/viscosities
@@ -283,8 +284,9 @@ C
        _EXCH_XY_R8( seaice_sigma1 , myThid )
        _EXCH_XY_R8( seaice_sigma2 , myThid )
        _EXCH_XY_R8( seaice_sigma12, myThid )
-      CALL EXCH_UV_XY_RL(uIceC,vIceC,.TRUE.,myThid)
+       CALL EXCH_UV_XY_RL(uIceC,vIceC,.TRUE.,myThid)
 
+       ENDIF
 C     end of the main time loop
       ENDDO 
 

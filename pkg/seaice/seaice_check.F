@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.14 2006/11/01 09:49:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.15 2006/12/22 11:52:21 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -16,6 +16,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE.h"
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of SEAICE_CHECK
@@ -103,6 +104,23 @@ C     At present this option is hardwired for pkg/exf.
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 #endif /* SEAICE_EXTERNAL_FLUXES */
+
+#ifdef SEAICE_ALLOW_EVP
+# ifdef ALLOW_AUTODIFF_TAMC
+      IF ( INT(SEAICE_deltaTdyn/SEAICE_deltaTevp).GT.nEVPstepMax ) THEN
+         WRITE(msgBuf,'(A)')
+     &        'SEAICE_ALLOW_EVP: need to set nEVPstepMax to >= nEVPstep'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid )
+         WRITE(msgBuf,'(A,I4)')
+     &        'nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) = ',
+     &        INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+# endif
+#endif
 
       return
       end
