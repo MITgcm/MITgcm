@@ -79,6 +79,10 @@ CADJ STORE apressure0    = tapelev2, key = ilev_2
 CADJ STORE apressure1    = tapelev2, key = ilev_2
 CADJ STORE siceload      = tapelev2, key = ilev_2
 # endif
+# ifdef ALLOW_RUNOFF
+CADJ STORE runoff0       = tapelev2, key = ilev_2
+CADJ STORE runoff1       = tapelev2, key = ilev_2
+# endif
 
 # ifdef ALLOW_HFLUX_CONTROL
 CADJ STORE xx_hflux0     = tapelev2, key = ilev_2
