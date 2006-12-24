@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.27 2006/12/23 00:18:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.28 2006/12/24 20:45:08 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -148,7 +148,7 @@ C--   KGEO    Level used as a proxy for geostrophic velocity.
 #ifdef ALLOW_AUTODIFF_TAMC
       integer iicekey
       integer nEVPstepMax
-      parameter ( nEVPstepMax=20 )
+      parameter ( nEVPstepMax=60 )
 #endif
 
 CEH3 ;;; Local Variables: ***
