@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.759 2006/12/21 10:50:56 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.760 2006/12/24 22:30:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics: change vertical interpolation to be safer, and more
+   flexible (define p-levels to interpolate to in data.diagnostics);
+  add argument to S/R DIAGNOSTICS_GET_POINTERS to catch the right 
+   diagnostic pointer.
 o pkg/seaice: more cleaning up of seaice_growth, added many comments
 o pkg/exf: put runoff0 and runoff into the appropriate common block
 o fix multi-category seaice:
