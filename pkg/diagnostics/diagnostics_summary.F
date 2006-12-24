@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.4 2006/06/05 18:17:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.5 2006/12/24 20:20:59 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -97,10 +97,17 @@ C     write a summary diagnostics state:
          WRITE(dUnit,'(I4,A,I4,A,2F17.6,A,I4)')
      &    nfields(ld), '  |',nActive(ld), '  |',
      &    freq(ld), phase(ld), ' |', nlevels(ld)
-         DO k1=1,nlevels(ld),50
-          k2 = MIN(nlevels(ld),k1+49)
-          WRITE(dUnit,'(A,50I4)')' levels:',(nint(levs(k,ld)),k=k1,k2)
-         ENDDO
+         IF ( fflags(ld)(2:2).EQ.'P' ) THEN
+          DO k1=1,nlevels(ld),10
+           k2 = MIN(nlevels(ld),k1+9)
+           WRITE(dUnit,'(A,1P10E10.3)')' interp:', (levs(k,ld),k=k1,k2)
+          ENDDO
+         ELSE
+          DO k1=1,nlevels(ld),25
+           k2 = MIN(nlevels(ld),k1+24)
+           WRITE(dUnit,'(A,25I4)')' levels:',(NINT(levs(k,ld)),k=k1,k2)
+          ENDDO
+         ENDIF
          WRITE(dUnit,'(A)') ccFlds
          DO md=1,nActive(ld)
            WRITE(msgBuf,'(I5,3A,2(I5,A),I4,A)')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.18 2006/06/05 18:15:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.19 2006/12/24 20:20:59 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -255,7 +255,7 @@ C-     Only lists with non-empty file name (iLen>0) are considered
               WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
      &         'Exceed Max.Num. of Levels numLevels=', numLevels
               CALL PRINT_ERROR( msgBuf , myThid )
-              WRITE(msgBuf,'(2A,I3,A,F3.0)') 'DIAGNOSTICS_READPARMS: ',
+              WRITE(msgBuf,'(2A,I3,A,F8.0)') 'DIAGNOSTICS_READPARMS: ',
      &         'when trying to add level(k=', k, ' )=', levels(k,l)
               CALL PRINT_ERROR( msgBuf , myThid )
               WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_READPARMS: ',
@@ -464,6 +464,12 @@ C     Echo History List Data Structure
         IF ( nlevels(n).EQ.-1 ) THEN
           WRITE(msgBuf,'(A,A)') ' Levels:    ','will be set later'
           CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+        ELSEIF ( fflags(n)(2:2).EQ.'P' ) THEN
+         DO l=1,nlevels(n),10
+          m = MIN(nlevels(n),l+9)
+          WRITE(msgBuf,'(A,1P10E10.3)')' interp:  ', (levs(k,n),k=l,m)
+          CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+         ENDDO
         ELSE
          DO l=1,nlevels(n),20
           m = MIN(nlevels(n),l+19)
@@ -472,9 +478,9 @@ C     Echo History List Data Structure
          ENDDO
         ENDIF
         DO nf = 1,nfields(n),10
-        m = MIN(nfields(n),nf+9)
-        WRITE(msgBuf,*) 'Fields:   ',(' ',flds(l,n),l=nf,m)
-        CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+          m = MIN(nfields(n),nf+9)
+          WRITE(msgBuf,'(21A)') 'Fields:   ',(' ',flds(l,n),l=nf,m)
+          CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
         ENDDO
       ENDDO
       WRITE(msgBuf,'(A)')
