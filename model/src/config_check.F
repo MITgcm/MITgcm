@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.39 2006/06/20 20:57:37 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.40 2006/12/24 20:03:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -66,8 +66,8 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
 #endif
 
 #ifndef ALLOW_NONHYDROSTATIC
-      IF (use3Dsolver) THEN 
-        WRITE(msgBuf,'(A)') 
+      IF (use3Dsolver) THEN
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: #undef ALLOW_NONHYDROSTATIC and'
         CALL PRINT_ERROR( msgBuf , myThid)
        IF ( implicitIntGravWave ) WRITE(msgBuf,'(A)')
@@ -92,8 +92,8 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
 #endif
 
 #ifndef INCLUDE_IMPLVERTADV_CODE
-      IF ( momImplVertAdv ) THEN 
-        WRITE(msgBuf,'(A)') 
+      IF ( momImplVertAdv ) THEN
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: #undef INCLUDE_IMPLVERTADV_CODE'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -101,8 +101,8 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
-      IF ( tempImplVertAdv ) THEN 
-        WRITE(msgBuf,'(A)') 
+      IF ( tempImplVertAdv ) THEN
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: #undef INCLUDE_IMPLVERTADV_CODE'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -110,8 +110,8 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
-      IF ( saltImplVertAdv ) THEN 
-        WRITE(msgBuf,'(A)') 
+      IF ( saltImplVertAdv ) THEN
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: #undef INCLUDE_IMPLVERTADV_CODE'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -120,9 +120,9 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
       IF ( dTtracerLev(1).NE.dTtracerLev(Nr) .AND. implicitDiffusion
-     &     .AND. ( saltStepping .OR. tempStepping .OR. usePTRACERS ) 
+     &     .AND. ( saltStepping .OR. tempStepping .OR. usePTRACERS )
      &   ) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: #undef INCLUDE_IMPLVERTADV_CODE'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
@@ -133,8 +133,8 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
 #endif
 
 #ifndef EXACT_CONSERV
-      IF (exactConserv) THEN 
-        WRITE(msgBuf,'(A)') 
+      IF (exactConserv) THEN
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: #undef EXACT_CONSERV and'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -145,8 +145,8 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
 #endif
 
 #ifndef NONLIN_FRSURF
-      IF (nonlinFreeSurf.NE.0) THEN 
-        WRITE(msgBuf,'(A)') 
+      IF (nonlinFreeSurf.NE.0) THEN
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: #undef NONLIN_FRSURF and'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -158,7 +158,7 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
 
 #ifndef NONLIN_FRSURF
       IF (select_rStar .NE. 0) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: rStar is part of NonLin-FS '
         CALL PRINT_ERROR( msgBuf, myThid)
         WRITE(msgBuf,'(A)')
@@ -169,7 +169,7 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
 #endif /* NONLIN_FRSURF */
 
 #ifdef USE_NATURAL_BCS
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: USE_NATURAL_BCS option has been replaced'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -296,6 +296,34 @@ C-  check parameter consistency :
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
+C-    Deep-Atmosphere & Anelastic limitations:
+      IF ( deepAtmosphere .AND.
+     &     useRealFreshWaterFlux .AND. usingPCoords ) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: Deep-Atmosphere not yet implemented with',
+     &  ' real-Fresh-Water option in P-coordinate'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+      IF ( select_rStar.NE.0 .AND.
+     &        ( deepAtmosphere .OR.
+     &          usingZCoords.AND.rhoRefFile .NE. ' ' ) ) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: Deep-Atmosphere or Anelastic',
+     &  ' not yet implemented with rStar'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+      IF ( vectorInvariantMomentum .AND.
+     &        ( deepAtmosphere .OR.
+     &          usingZCoords.AND.rhoRefFile .NE. ' ' ) ) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: Deep-Atmosphere or Anelastic',
+     &  ' not yet implemented in Vector-Invariant momentum code'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
       IF ( rigidLid .AND. implicitFreeSurface ) THEN
         WRITE(msgBuf,'(A,A)')
      &  'CONFIG_CHECK: Cannot select both implicitFreeSurface',
@@ -305,7 +333,7 @@ C-  check parameter consistency :
       ENDIF
 
       IF (rigidLid .AND. exactConserv) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: exactConserv not compatible with'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -315,7 +343,7 @@ C-  check parameter consistency :
       ENDIF
 
       IF (rigidLid .AND. useRealFreshWaterFlux) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: useRealFreshWaterFlux not compatible with'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -336,7 +364,7 @@ C-  check parameter consistency :
       ENDIF
 
       IF (nonlinFreeSurf.NE.0 .AND. .NOT.exactConserv) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: nonlinFreeSurf cannot be used'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -346,7 +374,7 @@ C-  check parameter consistency :
       ENDIF
 
       IF (select_rStar.NE.0 .AND. .NOT.exactConserv) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: r* Coordinate cannot be used'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -357,7 +385,7 @@ C-  check parameter consistency :
 
 C- note : not implemented in checkpoint48b but it's done now (since 01-28-03)
 c     IF (select_rStar.GT.0 .AND. useOBCS ) THEN
-c       WRITE(msgBuf,'(A)') 
+c       WRITE(msgBuf,'(A)')
 c    &   'CONFIG_CHECK: r* Coordinate not yet implemented'
 c       CALL PRINT_ERROR( msgBuf , 1)
 c       WRITE(msgBuf,'(A)')
@@ -368,7 +396,7 @@ c     ENDIF
 
 c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
       IF (nonlinFreeSurf.NE.0 .AND. use3Dsolver) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: nonlinFreeSurf not yet implemented'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -377,9 +405,9 @@ c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
-      IF ( nonlinFreeSurf.NE.0 .AND. 
+      IF ( nonlinFreeSurf.NE.0 .AND.
      &     deltaTfreesurf.NE.dTtracerLev(1) ) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: WARNING: nonlinFreeSurf might cause problems'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
@@ -392,7 +420,7 @@ c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
       IF ( useRealFreshWaterFlux .AND. exactConserv
      &     .AND. implicDiv2DFlow.EQ.0. _d 0
      &     .AND. startTime.NE.baseTime .AND. usePickupBeforeC54 ) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: RealFreshWaterFlux+implicSurfP=0+exactConserv:'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -401,7 +429,7 @@ c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
-      IF ( useRealFreshWaterFlux .AND. .NOT.exactConserv 
+      IF ( useRealFreshWaterFlux .AND. .NOT.exactConserv
      &     .AND. implicDiv2DFlow.NE.1. ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: **WARNNING** ',
      &   'RealFreshWater & implicDiv2DFlow < 1'
@@ -416,7 +444,7 @@ c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
 #ifdef EXACT_CONSERV
       IF (useRealFreshWaterFlux .AND. .NOT.exactConserv
      &            .AND. buoyancyRelation.EQ.'OCEANICP' ) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: RealFreshWaterFlux with OCEANICP'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
@@ -427,7 +455,7 @@ c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
 #else
       IF (useRealFreshWaterFlux
      &            .AND. buoyancyRelation.EQ.'OCEANICP' ) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: E-P effects on wVel are not included'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
@@ -439,18 +467,18 @@ c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
 #endif /* EXACT_CONSERV */
 
       IF (.NOT.useCDscheme .AND. (tauCD.NE.0. .OR. rCD.NE.-1.) ) THEN
-C- jmc: since useCDscheme is a new [04-13-03] flag (default=F), 
-C       put this WARNING to stress that even if CD-scheme parameters 
-C       (tauCD,rCD) are set, CD-scheme is not used without useCDscheme=T 
+C- jmc: since useCDscheme is a new [04-13-03] flag (default=F),
+C       put this WARNING to stress that even if CD-scheme parameters
+C       (tauCD,rCD) are set, CD-scheme is not used without useCDscheme=T
 C-    and STOP if using mom_fluxform (following Chris advise).
 C- jmc: but ultimately, this block can/will be removed.
        IF (.NOT.vectorInvariantMomentum.AND.momStepping) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: CD-scheme is OFF but params(tauCD,rCD) are set'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(2A)')
      &   'CONFIG_CHECK: to turn ON CD-scheme: => "useCDscheme=.TRUE."',
-     &   ' in "data", namelist PARM01' 
+     &   ' in "data", namelist PARM01'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
        ENDIF
@@ -460,7 +488,7 @@ C- jmc: but ultimately, this block can/will be removed.
      &                    SQUEEZE_RIGHT , myThid)
         WRITE(msgBuf,'(2A)')
      &   'CONFIG_CHECK: to turn ON CD-scheme: => "useCDscheme=.TRUE."',
-     &   ' in "data", namelist PARM01' 
+     &   ' in "data", namelist PARM01'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
       ENDIF
@@ -472,7 +500,7 @@ C- jmc: but ultimately, this block can/will be removed.
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
-      IF ( momForcingOutAB.NE.0 .AND. momForcingOutAB.NE.1 ) THEN 
+      IF ( momForcingOutAB.NE.0 .AND. momForcingOutAB.NE.1 ) THEN
         WRITE(msgBuf,'(A,I10,A)') 'CONFIG_CHECK: momForcingOutAB=',
      &                             momForcingOutAB, ' not allowed'
         CALL PRINT_ERROR( msgBuf , myThid)
@@ -481,7 +509,7 @@ C- jmc: but ultimately, this block can/will be removed.
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
-      IF ( tracForcingOutAB.NE.0 .AND. tracForcingOutAB.NE.1 ) THEN 
+      IF ( tracForcingOutAB.NE.0 .AND. tracForcingOutAB.NE.1 ) THEN
         WRITE(msgBuf,'(A,I10,A)') 'CONFIG_CHECK: tracForcingOutAB=',
      &                             tracForcingOutAB, ' not allowed'
         CALL PRINT_ERROR( msgBuf , myThid)
