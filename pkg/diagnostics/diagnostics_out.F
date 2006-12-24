@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.29 2006/06/05 18:17:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.30 2006/12/24 20:15:42 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -26,11 +26,12 @@ C     !USES:
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
 
+      INTEGER NrMax
 #ifdef ALLOW_FIZHI
 #include "fizhi_SIZE.h"
+      PARAMETER( NrMax = Nr+Nrphys )
 #else
-      INTEGER Nrphys
-      PARAMETER (Nrphys=0)
+      PARAMETER( NrMax = Nr )
 #endif
 
 
@@ -56,13 +57,13 @@ C     im    :: counter-mate pointer to storage array
       INTEGER md, ndId, ip, im
       INTEGER mate, mVec
       CHARACTER*8 parms1
-      _RL qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+Nrphys,nSx,nSy)
+      _RL qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
       _RL undef, getcon
+      _RL tmpLev
       EXTERNAL getcon
       INTEGER ILNBLNK
       EXTERNAL ILNBLNK
       INTEGER ilen
-      INTEGER nlevsout
 
       INTEGER ioUnit
       CHARACTER*(MAX_LEN_FNAM) fn
@@ -71,6 +72,7 @@ C     im    :: counter-mate pointer to storage array
 #ifdef ALLOW_MDSIO
       LOGICAL glf
       INTEGER nRec
+      INTEGER prec
 #endif
 #ifdef ALLOW_MNC
       INTEGER ii
@@ -84,7 +86,7 @@ C     im    :: counter-mate pointer to storage array
       CHARACTER*(NLEN) dn_blnk
 #ifdef DIAG_MNC_COORD_NEEDSWORK
       CHARACTER*(5) ctmp
-      _RS ztmp(Nr+Nrphys)
+      _RS ztmp(NrMax)
 #endif
 #endif /*  ALLOW_MNC  */
 
@@ -286,43 +288,50 @@ C-        diagnostics is not empty :
               ENDIF
             ENDIF
 
-            DO bj = myByLo(myThid), myByHi(myThid)
-             DO bi = myBxLo(myThid), myBxHi(myThid)
-              DO k = 1,nlevels(listId)
-                CALL GETDIAG(
-     I                       levs(k,listId),undef,
-     O                       qtmp1(1-OLx,1-OLy,k,bi,bj),
-     I                       ndId,mate,ip,im,bi,bj,myThid)
+            IF ( fflags(listId)(2:2).EQ.'P' ) THEN
+C-       get all the levels (for vertical interpolation)
+              DO bj = myByLo(myThid), myByHi(myThid)
+               DO bi = myBxLo(myThid), myBxHi(myThid)
+                DO k = 1,kdiag(ndId)
+                  tmpLev = k
+                  CALL GETDIAG(
+     I                         tmpLev,undef,
+     O                         qtmp1(1-OLx,1-OLy,k,bi,bj),
+     I                         ndId,mate,ip,im,bi,bj,myThid)
+                ENDDO
+               ENDDO
               ENDDO
-             ENDDO
-            ENDDO
+            ELSE
+C-       get only selected levels:
+              DO bj = myByLo(myThid), myByHi(myThid)
+               DO bi = myBxLo(myThid), myBxHi(myThid)
+                DO k = 1,nlevels(listId)
+                  CALL GETDIAG(
+     I                         levs(k,listId),undef,
+     O                         qtmp1(1-OLx,1-OLy,k,bi,bj),
+     I                         ndId,mate,ip,im,bi,bj,myThid)
+                ENDDO
+               ENDDO
+              ENDDO
+            ENDIF
 
 C-        end of empty diag / not empty block
           ENDIF
-
-          nlevsout = nlevels(listId)
 
 C-----------------------------------------------------------------------
 C         Check to see if we need to interpolate before output
 C-----------------------------------------------------------------------
           IF ( fflags(listId)(2:2).EQ.'P' ) THEN
 C-        Do vertical interpolation:
-c          IF ( fluidIsAir ) THEN
+           IF ( fluidIsAir ) THEN
 C jmc: for now, this can only work in an atmospheric set-up (fluidIsAir);
-C      find some problems with 5-levels AIM => use it only with FIZHI
-           IF ( useFIZHI ) THEN
             CALL DIAGNOSTICS_INTERP_VERT(
-     I                     listId, md, ndId, ip, im,
-     U                     nlevsout,
+     I                     listId, md, ndId, ip, im, lm,
      U                     qtmp1,
-     I                     undef,
-     I                     myTime, myIter, myThid )
+     I                     undef, myTime, myIter, myThid )
            ELSE
              WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_OUT: ',
-     &         'INTERP_VERT not safe in this config'
-             CALL PRINT_ERROR( msgBuf , myThid )
-             WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_OUT: ',
-     &         ' for list l=', listId, ', filename: ', fnames(listId)
+     &         'INTERP_VERT not allowed in this config'
              CALL PRINT_ERROR( msgBuf , myThid )
              STOP 'ABNORMAL END: S/R DIAGNOSTICS_OUT'
            ENDIF
@@ -333,19 +342,13 @@ C         Prepare for mdsio optionality
           IF (diag_mdsio) THEN
             glf = globalFiles
             nRec = lm + (md-1)*averageCycle(listId)
-            IF (fflags(listId)(1:1) .EQ. 'R') THEN
-C             Force it to be 32-bit precision
-              CALL MDSWRITEFIELD_NEW(fn,precFloat32,glf,.FALSE.,
-     &             'RL',Nr+Nrphys,nlevsout,qtmp1,nRec,myIter,myThid)
-            ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
-C             Force it to be 64-bit precision
-              CALL MDSWRITEFIELD_NEW(fn,precFloat64,glf,.FALSE.,
-     &             'RL',Nr+Nrphys,nlevsout,qtmp1,nRec,myIter,myThid)
-            ELSE
-C             This is the old default behavior
-              CALL MDSWRITEFIELD_NEW(fn,writeBinaryPrec,glf,.FALSE.,
-     &             'RL',Nr+Nrphys,nlevsout,qtmp1,nRec,myIter,myThid)
-            ENDIF
+C           default precision for output files
+            prec = writeBinaryPrec
+C           fFlag(1)=R(or D): force it to be 32-bit(or 64) precision
+            IF ( fflags(listId)(1:1).EQ.'R' ) prec = precFloat32
+            IF ( fflags(listId)(1:1).EQ.'D' ) prec = precFloat64
+            CALL MDSWRITEFIELD_NEW(fn,prec,glf,.FALSE.,'RL',
+     &              NrMax,nlevels(listId),qtmp1,nRec,myIter,myThid)
           ENDIF
 #endif /*  ALLOW_MDSIO  */
 
@@ -396,22 +399,22 @@ C           XY dimensions
             ENDIF
 
 C           Z is special since it varies
-            WRITE(dn(3),'(a,i6.6)') 'Zd', nlevsout
+            WRITE(dn(3),'(a,i6.6)') 'Zd', nlevels(listId)
             IF ( (gdiag(ndId)(10:10) .EQ. 'R')
      &           .AND. (gdiag(ndId)(9:9) .EQ. 'M') ) THEN
-              WRITE(dn(3),'(a,i6.6)') 'Zmd', nlevsout
+              WRITE(dn(3),'(a,i6.6)') 'Zmd', nlevels(listId)
             ENDIF
             IF ( (gdiag(ndId)(10:10) .EQ. 'R')
      &           .AND. (gdiag(ndId)(9:9) .EQ. 'L') ) THEN
-              WRITE(dn(3),'(a,i6.6)') 'Zld', nlevsout
+              WRITE(dn(3),'(a,i6.6)') 'Zld', nlevels(listId)
             ENDIF
             IF ( (gdiag(ndId)(10:10) .EQ. 'R')
      &           .AND. (gdiag(ndId)(9:9) .EQ. 'U') ) THEN
-              WRITE(dn(3),'(a,i6.6)') 'Zud', nlevsout
+              WRITE(dn(3),'(a,i6.6)') 'Zud', nlevels(listId)
             ENDIF
-            dim(3) = Nr+Nrphys
+            dim(3) = NrMax
             ib(3)  = 1
-            ie(3)  = nlevsout
+            ie(3)  = nlevels(listId)
 
 C           Time dimension
             dn(4)(1:1) = 'T'
