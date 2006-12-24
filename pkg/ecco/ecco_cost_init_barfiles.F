@@ -335,7 +335,7 @@ c--   Save sfluxbar on file.
       write(adfnamesfluxbar,'(3a,i10.10)')
      &     yadprefix, sfluxbarfile(1:ilps), '.', optimcycle
 
-      do irec = 1, 1
+      do irec = 1, nyearsrec
 c        call active_write_xy( fnamesfluxbar, tmpfld2d, irec,
 c     &                        optimcycle, mythid, xx_sflux_mean_dummy )
 #ifndef ALLOW_TANGENTLINEAR_RUN

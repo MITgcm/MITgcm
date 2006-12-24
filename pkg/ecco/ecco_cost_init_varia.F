@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.6 2006/07/07 22:53:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.7 2006/12/24 14:23:44 heimbach Exp $
 
 #include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -83,7 +83,6 @@ c--   Initialize the tiled cost function contributions.
           objf_hfluxmm(bi,bj)  = 0. _d 0
           objf_sflux(bi,bj)    = 0. _d 0
           objf_sfluxm(bi,bj)   = 0. _d 0
-          objf_sfluxmm(bi,bj)  = 0. _d 0
           objf_tauu(bi,bj)     = 0. _d 0
           objf_tauum(bi,bj)    = 0. _d 0
           objf_tauv(bi,bj)     = 0. _d 0
@@ -260,6 +259,7 @@ c--   Initialise the "global" parts of the cost function.
       _BEGIN_MASTER( mythid )
         objf_obcsvol = 0. _d 0
         objf_hmean   = 0. _d 0
+        objf_sfluxmm = 0. _d 0
         num_obcsvol = 0. _d 0
         num_hmean   = 0. _d 0
       _END_MASTER( mythid )

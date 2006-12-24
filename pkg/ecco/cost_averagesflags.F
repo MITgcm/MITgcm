@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesflags.F,v 1.3 2006/07/07 22:53:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesflags.F,v 1.4 2006/12/24 14:23:44 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -279,12 +279,12 @@ c--   So the cases are mutually exclusive.
 
 c--   Determine sum1year and yearrec explicitly.
       if ( last .or. endofyear ) then
-        if ( (mydate(1)/10000)*100 .eq. 
-     &        (modelstartdate(1)/10000)*100 ) then
+        if (  int(mydate(1)/10000) .eq. 
+     &        int(modelstartdate(1)/10000) ) then
           call cal_CopyDate( modelstartdate, targetdate, mythid )
           yearrec  = 1
         else
-          targetdate1 = (mydate(1)/10000)*100+1
+          targetdate1 = int(mydate(1)/10000)*10000+101
           targetdate2 = 0
           call cal_FullDate( targetdate1, targetdate2, targetdate,
      &                       mythid )

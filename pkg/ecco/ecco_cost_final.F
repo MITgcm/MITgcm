@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.31 2006/12/05 19:27:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.32 2006/12/24 14:23:44 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -365,7 +365,6 @@ c--   Sum up all contributions.
           f_hfluxsmoo = f_hfluxsmoo + objf_hfluxsmoo(bi,bj)   
           f_sflux = f_sflux + objf_sflux(bi,bj)  
           f_sfluxm = f_sfluxm + objf_sfluxm(bi,bj)  
-          f_sfluxmm = f_sfluxmm + objf_sfluxmm(bi,bj)  
           f_sfluxsmoo = f_sfluxsmoo + objf_sfluxsmoo(bi,bj)   
           f_uwind  = f_uwind + objf_uwind(bi,bj)
           f_vwind  = f_vwind + objf_vwind(bi,bj)
@@ -519,7 +518,6 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_hfluxsmoo , myThid )
       _GLOBAL_SUM_R8( f_sflux , myThid )
       _GLOBAL_SUM_R8( f_sfluxm , myThid )
-      _GLOBAL_SUM_R8( f_sfluxmm , myThid )
       _GLOBAL_SUM_R8( f_sfluxsmoo , myThid )
       _GLOBAL_SUM_R8( f_uwind , myThid )
       _GLOBAL_SUM_R8( f_vwind , myThid )
@@ -822,9 +820,9 @@ c--   Each process has calculated the global part for itself.
      &        /(wmean_hflux*wmean_hflux)
         endif
 cph(
-cph        f_sfluxmm2 = mult_sfluxmm
-cph     &       *f_sfluxmm*f_sfluxmm
-cph     &       /(wmean_sflux*wmean_sflux)
+cph this is from annual mean misfits;
+cph simple sums and squares needed to be taken at annual intervals
+        f_sfluxmm  = f_sfluxmm + objf_sfluxmm
         f_sfluxmm2 = mult_sfluxmm*f_sfluxmm
 cph)
         fc = fc + f_hfluxmm2 + f_sfluxmm2

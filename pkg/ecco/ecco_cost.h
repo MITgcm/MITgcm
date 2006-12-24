@@ -386,7 +386,7 @@ c                  function contributions.
       _RL  objf_hfluxsmoo  (nsx,nsy)
       _RL  objf_sflux  (nsx,nsy)
       _RL  objf_sfluxm (nsx,nsy)
-      _RL  objf_sfluxmm(nsx,nsy)
+      _RL  objf_sfluxmm
       _RL  objf_sfluxsmoo  (nsx,nsy)
       _RL  objf_tauu   (nsx,nsy)
       _RL  objf_tauum  (nsx,nsy)
