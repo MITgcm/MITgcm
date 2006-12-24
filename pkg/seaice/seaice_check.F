@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.15 2006/12/22 11:52:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.16 2006/12/24 22:22:55 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -26,6 +26,8 @@ C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
+      _BEGIN_MASTER(myThid)
+
 C--   ALLOW_SEAICE
       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: #define ALLOW_SEAICE'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -35,16 +37,16 @@ C--   SEAICE needs forcing_In_AB FALSE
       IF (tracForcingOutAB.NE.1) THEN
          WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &         ' Need T,S forcing out of AB (tracForcingOutAB=1)'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
-C--   SEAICEadvSnow doees one work with LAD = 2 
-      IF (SEAICEadvSnow .AND. SEAICEadvSchSnow .EQ. 2 
+C--   SEAICEadvSnow doees one work with LAD = 2
+      IF (SEAICEadvSnow .AND. SEAICEadvSchSnow .EQ. 2
      &     .AND. LAD .EQ. 1) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      & ' 2nd order snow advection does not work with Leap frog (LAD==1)'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
@@ -53,8 +55,7 @@ C--   SEAICE_ALLOW_DYNAMICS and SEAICEuseDYNAMICS
       IF (SEAICEuseDYNAMICS) THEN
          WRITE(msgBuf,'(A)')
      &        'SEAICE_ALLOW_DYNAMICS needed for SEAICEuseDYNAMICS'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif
@@ -65,29 +66,25 @@ C     At present this option is hardwired for pkg/exf.
 #ifndef ALLOW_EXF
          WRITE(msgBuf,'(A)')
      &        'need to define ALLOW_EXF'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #else /* ALLOW_EXF */
 #ifndef ALLOW_ATM_TEMP
          WRITE(msgBuf,'(A)')
      &        'need to define pkg/exf ALLOW_ATM_TEMP'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 #ifndef ALLOW_DOWNWARD_RADIATION
          WRITE(msgBuf,'(A)')
      &        'need to define pkg/exf ALLOW_DOWNWARD_RADIATION'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 #if !defined(EXF_READ_EVAP) && !defined(ALLOW_BULKFORMULAE)
          WRITE(msgBuf,'(A)')
      &     'need to set EXF_READ_EVAP or ALLOW_BULKFORMULAE in pkg/exf '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 #endif /* ALLOW_EXF */
@@ -99,8 +96,7 @@ C     At present this option is hardwired for pkg/exf.
 #ifndef ALLOW_EXF
          WRITE(msgBuf,'(A)')
      &        'need to define ALLOW_EXF'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 #endif /* SEAICE_EXTERNAL_FLUXES */
@@ -110,17 +106,17 @@ C     At present this option is hardwired for pkg/exf.
       IF ( INT(SEAICE_deltaTdyn/SEAICE_deltaTevp).GT.nEVPstepMax ) THEN
          WRITE(msgBuf,'(A)')
      &        'SEAICE_ALLOW_EVP: need to set nEVPstepMax to >= nEVPstep'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
+         CALL PRINT_ERROR( msgBuf, myThid )
          WRITE(msgBuf,'(A,I4)')
      &        'nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) = ',
      &        INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 # endif
 #endif
 
-      return
-      end
+      _END_MASTER(myThid)
+
+      RETURN
+      END
