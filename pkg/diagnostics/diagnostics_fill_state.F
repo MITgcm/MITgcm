@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.33 2006/11/19 22:03:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.34 2006/12/24 20:07:02 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -315,7 +315,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
             DO j = 1,sNy
              DO i = 1,sNx
               tmpMk(i,j,k,bi,bj) = tmp1k(i,j,bi,bj)
-     &                      + drF(k)*hFacC(i,j,k,bi,bj)*0.5 _d 0
+     &               + (rF(k)-rC(k))*hFacC(i,j,k,bi,bj)
+C         above: more general (setInterFDr/setCenterDr) than line below
+c    &                      + drF(k)*hFacC(i,j,k,bi,bj)*0.5 _d 0
               tmp1k(i,j,bi,bj) =   tmp1k(i,j,bi,bj)
      &                      + drF(k)*hFacC(i,j,k,bi,bj)
              ENDDO
