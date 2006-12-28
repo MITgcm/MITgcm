@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.93 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.94 2006/12/28 01:48:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,6 +36,10 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     myThid ::  Number of this instance of CONFIG_SUMMARY
       INTEGER myThid
 CEOP
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
 C     msgBuf :: Temp. for building output string.
@@ -172,7 +176,6 @@ C     ycoord :: varying parameters.
      &'   /* Depth scale for Bryan and Lewis 1979 ( m ) */')
       CALL WRITE_0D_R8( diffKrBL79Ho, INDEX_NONE,'diffKrBL79Ho =',
      &'   /* Turning depth for Bryan and Lewis 1979 ( m ) */')
-c     WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
       WRITE(msgBuf,'(4A)') 'Equation of State : ',
      &                     'eosType = ', eosType, ' ;'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -642,6 +645,20 @@ C     Grid along selected grid lines
 
       CALL WRITE_0D_R8( globalArea, INDEX_NONE, 'globalArea =',
      & ' /* Integrated horizontal Area (m^2) */')
+
+      I = ILNBLNK(the_run_name)
+      IF ( I.GT.0 ) THEN
+        WRITE(msgBuf,'(4A)') 'the_run_name = ',
+     &                    '/* Name of this simulation */'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(14X,3A)') "'", the_run_name(1:I), "'"
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A)') '    ;'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
 
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
