@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.3 2006/05/25 18:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.4 2006/12/28 15:27:10 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -151,7 +151,7 @@ C--   surface fluxes:
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'EXFpreci'
-      diagTitle = 'evaporation, > 0 decreases salinity'
+      diagTitle = 'precipitation, > 0 decreases salinity'
       diagUnits = 'm/s             '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
