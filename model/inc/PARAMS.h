@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.192 2006/11/29 20:42:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.193 2006/12/28 01:46:30 jmc Exp $
 C $Name:  $
 C
 
@@ -137,7 +137,7 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) lambdaThetaFile
       CHARACTER*(MAX_LEN_FNAM) lambdaSaltFile
       CHARACTER*(MAX_LEN_FNAM) mdsioLocalDir
-      CHARACTER*(MAX_LEN_FNAM) the_run_name
+      CHARACTER*(MAX_LEN_PREC/2) the_run_name
       CHARACTER*(6) eosType
       CHARACTER*(10) pickupSuff
 
