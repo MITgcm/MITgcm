@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.119 2006/11/29 20:43:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.120 2006/12/28 01:47:16 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -316,6 +316,7 @@ C--   Input files
       lambdaThetaFile = ' '
       lambdaSaltFile  = ' '
       mdsioLocalDir   = ' '
+      the_run_name    = ' '
 
       RETURN
       END
