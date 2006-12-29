@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.35 2006/12/15 18:02:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.36 2006/12/29 00:20:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -118,7 +118,7 @@ C--   dummy statement to end declaration part
       IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_ENTER('DO_OCEANIC_PHYS',myThid)
 #endif
- 
+
       doDiagsRho = 0
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics .AND. fluidIsWater ) THEN
@@ -216,17 +216,17 @@ CADJ STORE theta = comlev1, key = ikey_dynamics
 #ifdef ALLOW_OCN_COMPON_INTERF
 C--    Apply imported data (from coupled interface) to forcing fields
 C jmc: do not know precisely where to put this call (bf or af thSIce ?)
-       IF ( useCoupler ) THEN
+      IF ( useCoupler ) THEN
          CALL OCN_APPLY_IMPORT( .TRUE., myTime, myIter, myThid )
-       ENDIF
+      ENDIF
 #endif /* ALLOW_OCN_COMPON_INTERF */
 
 #ifdef ALLOW_BALANCE_FLUXES
-C     balance fluxes 
-       IF ( balanceEmPmR )
+C     balance fluxes
+      IF ( balanceEmPmR )
      &        CALL REMOVE_MEAN_RS( 1, EmPmR, maskH, maskH, rA, drF,
      &        'EmPmR', myTime, myThid )
-       IF ( balanceQnet )
+      IF ( balanceQnet )
      &        CALL REMOVE_MEAN_RS( 1, Qnet,  maskH, maskH, rA, drF,
      &        'Qnet ', myTime, myThid )
 #endif /* ALLOW_BALANCE_FLUXES */
@@ -253,6 +253,10 @@ CHPF$ INDEPENDENT
           itdkey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
+#else  /* ALLOW_AUTODIFF_TAMC */
+C     if fluid is not water, by-pass find_rho, gmredi, surfaceForcing 
+C     and all vertical mixing schemes, but keep OBCS_CALC
+        IF ( fluidIsWater ) THEN
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set up work arrays with valid (i.e. not NaN) values
@@ -322,7 +326,7 @@ CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB ) 
+        IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_MSG('ENTERING UPWARD K LOOP',myThid)
 #endif
 
@@ -339,11 +343,10 @@ cph Needed for rhok, rhokm1, in the case useGMREDI.
 
 C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
-c         IF ( k.GT.1 .AND. (useGMRedi.OR.ivdc_kappa.NE.0.) ) THEN
           IF ( useGMRedi .OR. (k.GT.1 .AND. ivdc_kappa.NE.0.)
      &                   .OR. doDiagsRho.GE.1 ) THEN
 #ifdef ALLOW_DEBUG
-            IF ( debugLevel .GE. debLevB ) 
+            IF ( debugLevel .GE. debLevB )
      &       CALL DEBUG_CALL('FIND_RHO',myThid)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -368,7 +371,7 @@ CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      I        myThid )
             ENDIF
 #ifdef ALLOW_DEBUG
-            IF ( debugLevel .GE. debLevB ) 
+            IF ( debugLevel .GE. debLevB )
      &       CALL DEBUG_CALL('GRAD_SIGMA',myThid)
 #endif
 cph Avoid variable aliasing for adjoint !!!
@@ -394,7 +397,7 @@ C--       Implicit Vertical Diffusion for Convection
 c ==> should use sigmaR !!!
           IF (k.GT.1 .AND. ivdc_kappa.NE.0.) THEN
 #ifdef ALLOW_DEBUG
-            IF ( debugLevel .GE. debLevB ) 
+            IF ( debugLevel .GE. debLevB )
      &       CALL DEBUG_CALL('CALC_IVDC',myThid)
 #endif
             CALL CALC_IVDC(
@@ -415,34 +418,16 @@ C--     end of diagnostic k loop (Nr:1)
         ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
-c       IF ( useDiagnostics .AND. 
-c    &       (useGMRedi .OR. ivdc_kappa.NE.0.) ) THEN
         IF ( doDiagsRho.GE.1 ) THEN
           CALL DIAGNOSTICS_FILL (sigmaR, 'DRHODR  ', 0, Nr,
      &         2, bi, bj, myThid)
         ENDIF
 #endif
 
-#ifdef  ALLOW_OBCS
-C--     Calculate future values on open boundaries
-        IF (useOBCS) THEN
-#ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB ) 
-     &     CALL DEBUG_CALL('OBCS_CALC',myThid)
-#endif
-          CALL OBCS_CALC( bi, bj, myTime+deltaTclock, myIter+1,
-     I            uVel, vVel, wVel, theta, salt,
-     I            myThid )
-        ENDIF
-#endif  /* ALLOW_OBCS */
-
-#ifndef ALLOW_AUTODIFF_TAMC
-        IF ( fluidIsWater ) THEN
-#endif
 C--     Determines forcing terms based on external fields
 C       relaxation terms, etc.
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB ) 
+        IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -459,12 +444,9 @@ CADJ STORE recip_hFacC(:,:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 # endif
 #endif
-         CALL EXTERNAL_FORCING_SURF(
+        CALL EXTERNAL_FORCING_SURF(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
-        ENDIF
-#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef EXACT_CONSERV
 cph-test
@@ -504,7 +486,7 @@ CADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
         IF (useGMRedi) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB ) 
+          IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_CALL('GMREDI_CALC_TENSOR',myThid)
 #endif
           CALL GMREDI_CALC_TENSOR(
@@ -526,7 +508,7 @@ C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
 C--     Compute KPP mixing coefficients
         IF (useKPP) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB ) 
+          IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_CALL('KPP_CALC',myThid)
 #endif
           CALL KPP_CALC(
@@ -544,7 +526,7 @@ C--     Compute KPP mixing coefficients
 C--     Compute PP81 mixing coefficients
         IF (usePP81) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB ) 
+          IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_CALL('PP81_CALC',myThid)
 #endif
           CALL PP81_CALC(
@@ -556,7 +538,7 @@ C--     Compute PP81 mixing coefficients
 C--     Compute MY82 mixing coefficients
         IF (useMY82) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB ) 
+          IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_CALL('MY82_CALC',myThid)
 #endif
           CALL MY82_CALC(
@@ -568,7 +550,7 @@ C--     Compute MY82 mixing coefficients
 C--     Compute GGL90 mixing coefficients
         IF (useGGL90) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB ) 
+          IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_CALL('GGL90_CALC',myThid)
 #endif
           CALL GGL90_CALC(
@@ -577,7 +559,7 @@ C--     Compute GGL90 mixing coefficients
 #endif /* ALLOW_GGL90 */
 
 #ifdef ALLOW_TIMEAVE
-        IF ( taveFreq.GT. 0. _d 0 .AND. fluidIsWater ) THEN
+        IF ( taveFreq.GT. 0. _d 0 ) THEN
           CALL TIMEAVE_SURF_FLUX( bi, bj, myTime, myIter, myThid)
         ENDIF
         IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
@@ -585,6 +567,24 @@ C--     Compute GGL90 mixing coefficients
      I                           Nr, deltaTclock, bi, bj, myThid)
         ENDIF
 #endif /* ALLOW_TIMEAVE */
+
+#ifndef ALLOW_AUTODIFF_TAMC
+C---  if fluid Is Water: end
+        ENDIF
+#endif
+
+#ifdef  ALLOW_OBCS
+C--     Calculate future values on open boundaries
+        IF (useOBCS) THEN
+#ifdef ALLOW_DEBUG
+          IF ( debugLevel .GE. debLevB )
+     &     CALL DEBUG_CALL('OBCS_CALC',myThid)
+#endif
+          CALL OBCS_CALC( bi, bj, myTime+deltaTclock, myIter+1,
+     I            uVel, vVel, wVel, theta, salt,
+     I            myThid )
+        ENDIF
+#endif  /* ALLOW_OBCS */
 
 C--   end bi,bj loops.
        ENDDO
