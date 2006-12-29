@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.30 2006/12/24 20:15:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.31 2006/12/29 05:43:56 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -337,8 +337,10 @@ C jmc: for now, this can only work in an atmospheric set-up (fluidIsAir);
            ENDIF
           ENDIF
 
+C--    Ready to write field "md", element "lm" in averageCycle(listId)
+
 #ifdef ALLOW_MDSIO
-C         Prepare for mdsio optionality
+C-        write to binary file, using MDSIO pkg:
           IF (diag_mdsio) THEN
             glf = globalFiles
             nRec = lm + (md-1)*averageCycle(listId)
@@ -347,8 +349,11 @@ C           default precision for output files
 C           fFlag(1)=R(or D): force it to be 32-bit(or 64) precision
             IF ( fflags(listId)(1:1).EQ.'R' ) prec = precFloat32
             IF ( fflags(listId)(1:1).EQ.'D' ) prec = precFloat64
-            CALL MDSWRITEFIELD_NEW(fn,prec,glf,.FALSE.,'RL',
-     &              NrMax,nlevels(listId),qtmp1,nRec,myIter,myThid)
+c           CALL MDS_WRITE_FIELD(fn,prec,glf,.FALSE.,'RL',
+c    &              NrMax,nlevels(listId),qtmp1,nRec,myIter,myThid)
+C         a hack not to write meta files now:
+            CALL MDS_WRITE_FIELD(fn,prec,glf,.FALSE.,'RL',
+     &              NrMax,nlevels(listId),qtmp1,-nRec,myIter,myThid)
           ENDIF
 #endif /*  ALLOW_MDSIO  */
 
@@ -464,6 +469,20 @@ C           &             0.0 _d 0,myThid)
 C--     end of Processing Fld # md
         ENDIF
       ENDDO
+
+#ifdef ALLOW_MDSIO
+      IF (diag_mdsio) THEN
+C-    Note: temporary: since it's a pain to add more arguments to
+C     all MDSIO S/R, uses instead this specific S/R to write only
+C     meta files but with more informations in it.
+            glf = globalFiles
+            nRec = nfields(listId)*averageCycle(listId)
+            CALL MDS_WR_METAFILES(fn, prec, glf, .FALSE.,
+     &              0, 0, nlevels(listId), ' ',
+     &              nfields(listId), flds(1,listId), 1, myTime,
+     &              nRec, myIter, myThid)
+      ENDIF
+#endif /*  ALLOW_MDSIO  */
 
       RETURN
       END
