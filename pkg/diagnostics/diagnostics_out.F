@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.31 2006/12/29 05:43:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.32 2006/12/29 23:57:15 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -34,7 +34,6 @@ C     !USES:
       PARAMETER( NrMax = Nr )
 #endif
 
-
 C     !INPUT PARAMETERS:
 C     listId  :: Diagnostics list number being written
 C     myIter  :: current iteration number
@@ -52,12 +51,19 @@ C     ndId  :: diagnostics  Id number (in available diagnostics list)
 C     mate  :: counter mate Id number (in available diagnostics list)
 C     ip    :: diagnostics  pointer to storage array
 C     im    :: counter-mate pointer to storage array
+C
+C--   COMMON /LOCAL_DIAGNOSTICS_OUT/ local common block (for multi-threaded)
+C     qtmp1 :: thread-shared temporary array (needs to be in common block):
+C              to write a diagnostic field to file, copy it first from (big)
+C              diagnostic storage qdiag into it.
+      COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
+      _RL qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
+
       INTEGER i, j, k, lm
       INTEGER bi, bj
       INTEGER md, ndId, ip, im
       INTEGER mate, mVec
       CHARACTER*8 parms1
-      _RL qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
       _RL undef, getcon
       _RL tmpLev
       EXTERNAL getcon
@@ -475,7 +481,6 @@ C--     end of Processing Fld # md
 C-    Note: temporary: since it's a pain to add more arguments to
 C     all MDSIO S/R, uses instead this specific S/R to write only
 C     meta files but with more informations in it.
-            glf = globalFiles
             nRec = nfields(listId)*averageCycle(listId)
             CALL MDS_WR_METAFILES(fn, prec, glf, .FALSE.,
      &              0, 0, nlevels(listId), ' ',
