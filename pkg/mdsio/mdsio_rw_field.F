@@ -1,0 +1,215 @@
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_rw_field.F,v 1.1 2006/12/29 05:50:48 jmc Exp $
+C $Name:  $
+
+#include "MDSIO_OPTIONS.h"
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MDSREADFIELD(
+     I   fName,
+     I   filePrec,
+     I   arrType,
+     I   nNz,
+     O   arr,
+     I   irecord,
+     I   myThid )
+C
+C Arguments:
+C
+C fName     (string)  :: base name for file to written
+C filePrec  (integer) :: number of bits per word in file (32 or 64)
+C arrType   (char(2)) :: declaration of "arr": either "RS" or "RL"
+C nNz       (integer) :: size of third dimension: normally either 1 or Nr
+C arr       ( RS/RL ) :: array to write, arr(:,:,nNz,:,:)
+C irecord   (integer) :: record number to read
+C myThid    (integer) :: thread identifier
+C
+C Routine now calls MDS_READ_FIELD, just a way to add 2 extra arguments
+C to the argument list. The 1rst new argument is to make the difference between
+C the vertical dimension (3rd dimension) of the output array and the number 
+C of levels to read in. This routine assumes they are the same.
+C The 2nd new argument (useCurrentDir=.FALSE.) allows to read files from
+C the "mdsioLocalDir" directory (if it is set).
+
+      IMPLICIT NONE
+C Global variables / COMMON blocks
+#include "SIZE.h"
+c #include "EEPARAMS.h"
+
+C Routine arguments
+      CHARACTER*(*) fName
+      INTEGER filePrec
+      CHARACTER*(2) arrType
+      INTEGER nNz
+      Real    arr(*)
+      INTEGER irecord
+      INTEGER myThid
+C     ------------------------------------------------------------------
+      CALL MDS_READ_FIELD(
+     I                     fName, filePrec, .FALSE., arrType, nNz, nNz,
+     O                     arr,
+     I                     irecord, myThid )
+C     ------------------------------------------------------------------
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MDSREADFIELD_LOC(
+     I   fName,
+     I   filePrec,
+     I   arrType,
+     I   nNz,
+     O   arr,
+     I   irecord,
+     I   myThid )
+C
+C Arguments:
+C
+C fName     (string)  :: base name for file to write
+C filePrec  (integer) :: number of bits per word in file (32 or 64)
+C arrType   (char(2)) :: declaration of "arr": either "RS" or "RL"
+C nNz       (integer) :: size of third dimension: normally either 1 or Nr
+C arr       ( RS/RL ) :: array to write, arr(:,:,nNz,:,:)
+C irecord   (integer) :: record number to read
+C myThid    (integer) :: thread identifier
+C
+C Routine now calls MDS_READ_FIELD, just a way to add 2 extra arguments
+C to the argument list. The 1rst new argument is to make the difference between
+C the vertical dimension (3rd dimension) of the output array and the number 
+C of levels to read in. This routine assumes they are the same.
+C The 2nd new argument (useCurrentDir=.FALSE.) forces to ignore the
+C "mdsioLocalDir" parameter and to always read from the current directory.
+
+      IMPLICIT NONE
+C Global variables / COMMON blocks
+#include "SIZE.h"
+c #include "EEPARAMS.h"
+
+C Routine arguments
+      CHARACTER*(*) fName
+      INTEGER filePrec
+      CHARACTER*(2) arrType
+      INTEGER nNz
+      Real    arr(*)
+      INTEGER irecord
+      INTEGER myThid
+C     ------------------------------------------------------------------
+      CALL MDS_READ_FIELD(
+     I                     fName, filePrec, .TRUE., arrType, nNz, nNz,
+     O                     arr,
+     I                     irecord, myThid )
+C     ------------------------------------------------------------------
+      RETURN
+      END
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MDSWRITEFIELD(
+     I   fName,
+     I   filePrec,
+     I   globalFile,
+     I   arrType,
+     I   nNz,
+     I   arr,
+     I   irecord,
+     I   myIter,
+     I   myThid )
+C
+C Arguments:
+C
+C fName     (string)  :: base name for file to write
+C filePrec  (integer) :: number of bits per word in file (32 or 64)
+C globalFile (logical):: selects between writing a global or tiled file
+C arrType   (char(2)) :: declaration of "arr": either "RS" or "RL"
+C nNz       (integer) :: size of third dimension: normally either 1 or Nr
+C arr       ( RS/RL ) :: array to write, arr(:,:,nNzdim,:,:)
+C irecord   (integer) :: record number to write
+C myIter    (integer) :: time step number
+C myThid    (integer) :: thread identifier
+C
+C Routine now calls MDS_WRITE_FIELD, just a way to add 2 extra arguments
+C to the argument list. The 1rst new argument is to make the difference between
+C the vertical dimension (3rd dimension) of an array and the number of levels
+C the output routine should process. This routine assumes they are the same.
+C The 2nd new argument (useCurrentDir=.FALSE.) allows to write files to
+C the "mdsioLocalDir" directory (if it is set).
+
+      IMPLICIT NONE
+C Global variables / common blocks
+#include "SIZE.h"
+c #include "EEPARAMS.h"
+
+C Routine arguments
+      CHARACTER*(*) fName
+      INTEGER filePrec
+      LOGICAL globalFile
+      CHARACTER*(2) arrType
+      INTEGER nNz
+      _RL     arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz,nSx,nSy)
+      INTEGER irecord
+      INTEGER myIter
+      INTEGER myThid
+C     ------------------------------------------------------------------
+      CALL MDS_WRITE_FIELD(
+     I                      fName, filePrec, globalFile, .FALSE.,
+     I                      arrType, nNz, nNz, arr, irecord,
+     I                      myIter, myThid )
+C     ------------------------------------------------------------------
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MDSWRITEFIELD_LOC(
+     I   fName,
+     I   filePrec,
+     I   globalFile,
+     I   arrType,
+     I   nNz,
+     I   arr,
+     I   irecord,
+     I   myIter,
+     I   myThid )
+C
+C Arguments:
+C
+C fName     (string)  :: base name for file to write
+C filePrec  (integer) :: number of bits per word in file (32 or 64)
+C globalFile (logical):: selects between writing a global or tiled file
+C arrType   (char(2)) :: declaration of "arr": either "RS" or "RL"
+C nNz       (integer) :: size of third dimension: normally either 1 or Nr
+C arr       ( RS/RL ) :: array to write, arr(:,:,nNzdim,:,:)
+C irecord   (integer) :: record number to write
+C myIter    (integer) :: time step number
+C myThid    (integer) :: thread identifier
+C
+C Routine now calls mdswritefield_new, just a way to add 2 extra arguments
+C to the argument list. The 1rst new argument is to make the difference between
+C the vertical dimension (3rd dimension) of an array and the number of levels
+C the output routine should process. This routine assumes they are the same.
+C The 2nd new argument (useCurrentDir=.TRUE.) forces to ignore the
+C "mdsioLocalDir" parameter and to always write to the current directory.
+
+      implicit none
+C Global variables / common blocks
+#include "SIZE.h"
+c #include "EEPARAMS.h"
+
+C Routine arguments
+      CHARACTER*(*) fName
+      INTEGER filePrec
+      LOGICAL globalFile
+      CHARACTER*(2) arrType
+      INTEGER nNz
+      _RL     arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz,nSx,nSy)
+      INTEGER irecord
+      INTEGER myIter
+      INTEGER myThid
+C     ------------------------------------------------------------------
+      CALL MDS_WRITE_FIELD(
+     I                      fName, filePrec, globalFile, .TRUE.,
+     I                      arrType, nNz, nNz, arr, irecord,
+     I                      myIter, myThid )
+C     ------------------------------------------------------------------
+      RETURN
+      END
