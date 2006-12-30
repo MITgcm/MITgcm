@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.760 2006/12/24 22:30:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.761 2006/12/30 00:18:09 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics: fix multi-threaded output (when singleCpuIO=F)
+o pkg/mdsio:
+ - clean-up mdsio_readfield.F & mdsio_writefield_new.F and
+   move to new files: mdsio_read_field.F (S/R MDS_READ_FIELD) &
+   mdsio_write_field.F (S/R MDS_WRITE_FIELD);
+ - fix multi-threaded singleCpuIO option in MDS_WRITE_FIELD
+ - collect old S/R  in one file: mdsio_rw_field.F (now just a call to
+   either MDS_READ_FIELD or MDS_WRITE_FIELD )
+ - new S/R (to replace MDSWRITEMETA), which allows to write more
+   informations (variable names, time ...) to meta files.
+ - modify rdmds.m to give back the meta file content.
 o pkg/diagnostics: change vertical interpolation to be safer, and more
    flexible (define p-levels to interpolate to in data.diagnostics);
   add argument to S/R DIAGNOSTICS_GET_POINTERS to catch the right 
