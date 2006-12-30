@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.761 2006/12/30 00:18:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.762 2006/12/30 22:15:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58t_post
 o pkg/diagnostics: fix multi-threaded output (when singleCpuIO=F)
 o pkg/mdsio:
  - clean-up mdsio_readfield.F & mdsio_writefield_new.F and
