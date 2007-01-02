@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.189 2006/11/29 20:43:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.190 2007/01/02 20:42:08 dfer Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -170,8 +170,8 @@ C--   Continuous equation parameters
      & saltDiffusion, saltAdvection, saltForcing,
      & implicSurfPress, implicDiv2DFlow,
      & implicitFreeSurface, rigidLid, freeSurfFac, hFacMin, hFacMinDz,
-     & exactConserv,uniformLin_PhiSurf,nonlinFreeSurf,hFacInf,hFacSup,
-     & select_rStar,
+     & exactConserv, linFSConserveTr, uniformLin_PhiSurf,
+     & nonlinFreeSurf, hFacInf, hFacSup, select_rStar,
      & implicitIntGravWave, staggerTimeStep,
      & tempStepping, saltStepping, momStepping,
      & implicitDiffusion, implicitViscosity,

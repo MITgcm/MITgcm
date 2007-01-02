@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.40 2006/12/24 20:03:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.41 2007/01/02 20:42:08 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -338,6 +338,16 @@ C-    Deep-Atmosphere & Anelastic limitations:
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: rigidLid (meaningless in that case)'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+      IF ( linFSConserveTr .AND. nonlinFreeSurf.NE.0 ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: Cannot select both a Nonlinear Free Surf.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: and Tracer Correction of Lin. Free Surf.'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF

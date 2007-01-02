@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.94 2006/12/28 01:48:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.95 2007/01/02 20:42:08 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -250,6 +250,9 @@ C     ycoord :: varying parameters.
       CALL WRITE_0D_L( exactConserv, INDEX_NONE,
      &'exactConserv =',
      &'   /* Exact Volume Conservation on/off flag*/')
+      CALL WRITE_0D_L( linFSConserveTr, INDEX_NONE,
+     &'linFSConserveTr =',
+     &'   /* Tracer correction for Lin Free Surface on/off flag*/')
       CALL WRITE_0D_L( uniformLin_PhiSurf, INDEX_NONE,
      &'uniformLin_PhiSurf =',
      &'   /* use uniform Bo_surf on/off flag*/')
