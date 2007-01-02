@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.193 2006/12/28 01:46:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.194 2007/01/02 20:52:07 dfer Exp $
 C $Name:  $
 C
 
@@ -257,6 +257,8 @@ C     useStrainTensionVisc:: Set to true to use Strain-Tension viscous terms
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implicit free surface
 C     exactConserv        :: Set to true to conserve exactly the total Volume
+C     linFSConserveTr     :: Set to true to correct source/sink of tracer
+C                            at the surface due to Linear Free Surface 
 C     uniformLin_PhiSurf  :: Set to true to use a uniform Bo_surf in the
 C                           linear relation Phi_surf = Bo_surf*eta
 C     use3Dsolver   :: set to true to use 3-D pressure solver
@@ -338,7 +340,8 @@ C     balancePrintMean:: print substracted global means to STDOUT
      & useRealFreshWaterFlux,
      & useFullLeith, useStrainTensionVisc,
      & useAreaViscLength,
-     & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
+     & rigidLid, implicitFreeSurface, exactConserv, linFSConserveTr,
+     & uniformLin_PhiSurf,
      & use3Dsolver, implicitIntGravWave, staggerTimeStep,
      & momStepping, tempStepping, saltStepping,
      & metricTerms, useNHMTerms,
@@ -391,6 +394,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
       LOGICAL exactConserv
+      LOGICAL linFSConserveTr
       LOGICAL uniformLin_PhiSurf
       LOGICAL use3Dsolver
       LOGICAL implicitIntGravWave
