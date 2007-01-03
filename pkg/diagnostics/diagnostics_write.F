@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.29 2006/06/05 18:17:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.30 2007/01/03 00:29:59 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -44,7 +44,7 @@ c ===============
         myItM1 = myIter - 1
 
 C***********************************************************************
-C***   Check to see IF its time for Diagnostic Output                ***
+C***   Check to see if its time for Diagnostic Output                ***
 C***********************************************************************
 
         write2file = .FALSE.
@@ -80,14 +80,15 @@ C       state-variable time-step:
      I                          myTime, myIter, myThid )
           ENDIF
 #endif /* ALLOW_CAL */
-          IF ( dump2fileNow .OR.
-     &        (myTime.EQ.endTime .AND. dumpAtLast) ) THEN
+          IF ( dumpAtLast .AND. myTime.EQ.endTime
+     &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
+          IF ( dump2fileNow ) THEN
             write2file = .TRUE.
             CALL DIAGNOSTICS_OUT(n,wrIter,wrTime,myThid)
           ENDIF
         ENDDO
 
-C---   Check to see IF its time for Statistics Diag. Output
+C---   Check to see if its time for Statistics Diag. Output
 
         DO n = 1,diagSt_nbLists
           freqSec = diagSt_freq(n)
@@ -114,8 +115,9 @@ C       state-variable time-step:
            dump2fileNow = alarm2(tagname)
           ENDIF
 #endif
-          IF ( dump2fileNow .OR.
-     &        (myTime.EQ.endTime .AND. dumpAtLast) ) THEN
+          IF ( dumpAtLast .AND. myTime.EQ.endTime
+     &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
+          IF ( dump2fileNow ) THEN
             write2file = .TRUE.
             CALL DIAGSTATS_OUTPUT(n,wrTime,wrIter,myThid)
           ENDIF
@@ -154,9 +156,9 @@ C--     Clear storage space:
      I                          myTime, myIter, myThid )
           ENDIF
 #endif /* ALLOW_CAL */
-          IF ( dump2fileNow .OR.
-     &        (myTime.EQ.endTime .AND. dumpAtLast)
-     &       ) CALL DIAGNOSTICS_CLEAR(n,myThid)
+          IF ( dumpAtLast .AND. myTime.EQ.endTime
+     &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
+          IF ( dump2fileNow ) CALL DIAGNOSTICS_CLEAR(n,myThid)
         ENDDO
 
         DO n = 1,diagSt_nbLists
@@ -172,9 +174,9 @@ C--     Clear storage space:
            dump2fileNow = alarm2(tagname)
           ENDIF
 #endif
-          IF ( dump2fileNow .OR.
-     &        (myTime.EQ.endTime .AND. dumpAtLast)
-     &       ) CALL DIAGSTATS_CLEAR( n, myThid )
+          IF ( dumpAtLast .AND. myTime.EQ.endTime
+     &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
+          IF ( dump2fileNow ) CALL DIAGSTATS_CLEAR( n, myThid )
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
