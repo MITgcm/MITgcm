@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.39 2006/06/28 21:24:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.40 2007/01/05 01:29:31 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -237,6 +237,7 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -299,6 +300,17 @@ C     Add heat in top-layer
          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
      &     +surfaceForcingT(i,j,bi,bj)
      &     *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+
+      IF (linFSConserveTr) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+          IF (kLev .EQ. ksurfC(i,j,bi,bj)) THEN
+            gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
+     &        +TsurfCor*recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+          ENDIF
         ENDDO
        ENDDO
       ENDIF
@@ -381,6 +393,7 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -436,6 +449,17 @@ C     Add fresh-water in top-layer
          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
      &     +surfaceForcingS(i,j,bi,bj)
      &     *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+
+      IF (linFSConserveTr) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+          IF (kLev .EQ. ksurfC(i,j,bi,bj)) THEN
+            gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+     &        +SsurfCor*recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+          ENDIF
         ENDDO
        ENDDO
       ENDIF
