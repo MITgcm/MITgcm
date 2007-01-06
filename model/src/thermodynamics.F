@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.111 2007/01/05 20:26:09 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.112 2007/01/06 22:30:17 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -192,12 +192,10 @@ C--   HPF directive to help TAMC
 CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifndef ALLOW_AUTODIFF_TAMC
 C-- Compute correction at the surface for Lin Free Surf.
       IF (linFSConserveTr) 
      &   CALL CALC_WSURF_TR(theta,salt,wVel,
      &                      myIter,myTime,myThid)
-#endif /* ndef ALLOW_AUTODIFF_TAMC */
 
       DO bj=myByLo(myThid),myByHi(myThid)
 

@@ -12,6 +12,7 @@ calc_ivdc.f
 calc_phi_hyd.f
 calc_surf_dr.f
 calc_viscosity.f	
+calc_wsurf_tr.f
 cg2d_nsa.f
 convective_adjustment.f
 convective_adjustment_ini.f

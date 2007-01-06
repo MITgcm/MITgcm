@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.36 2006/12/29 00:20:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.37 2007/01/06 22:30:17 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -146,7 +146,7 @@ C     theta is dumped or time-averaged.
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE atemp,aqh,precip    = comlev1, key = ikey_dynamics
 CADJ STORE swdown,lwdown       = comlev1, key = ikey_dynamics
-cphCADJ STORE theta               = comlev1, key = ikey_dynamics
+CADJ STORE theta               = comlev1, key = ikey_dynamics
 cph# ifdef EXF_READ_EVAP
 CADJ STORE evap                = comlev1, key = ikey_dynamics
 cph# endif
@@ -155,9 +155,11 @@ CADJ STORE uvel,vvel           = comlev1, key = ikey_dynamics
 cph# endif
 # ifdef SEAICE_CGRID
 CADJ STORE fu, fv              = comlev1, key = ikey_dynamics
-CADJ STORE siceload            = comlev1, key = ikey_dynamics
 CADJ STORE seaicemasku         = comlev1, key = ikey_dynamics
 CADJ STORE seaicemaskv         = comlev1, key = ikey_dynamics
+#  ifdef ATMOSPHERIC_LOADING
+CADJ STORE siceload            = comlev1, key = ikey_dynamics
+#  endif
 # endif
 #endif
 #ifdef ALLOW_DEBUG
