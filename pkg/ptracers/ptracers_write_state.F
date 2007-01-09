@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.16 2006/10/26 00:29:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.17 2007/01/09 22:27:12 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -11,8 +11,7 @@ C     !INTERFACE:
      I     myIter, myTime, myThid )
 
 C     !DESCRIPTION:
-C     Calculates tendancy for passive tracers and integrates forward in
-C     time.
+C     dump to files current passive tracer state
 
 C     !USES:
       IMPLICIT NONE

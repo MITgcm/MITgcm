@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_debug.F,v 1.4 2005/12/15 01:12:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_debug.F,v 1.5 2007/01/09 22:27:12 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -11,8 +11,7 @@ C !INTERFACE: ==========================================================
      I                           myThid )
 
 C !DESCRIPTION:
-C     Calculates tendancy for passive tracers and integrates forward
-C     in time.
+C     print passive tracers stats
 
 C !USES: ===============================================================
       IMPLICIT NONE

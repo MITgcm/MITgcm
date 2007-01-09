@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_convect.F,v 1.3 2004/07/13 16:47:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_convect.F,v 1.4 2007/01/09 22:27:12 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -10,8 +10,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_CONVECT( bi,bj,k,weightA,weightB,myThid )
 
 C !DESCRIPTION:
-C     Calculates tendancy for passive tracers and integrates forward
-C     in time.
+C     do passive tracers convection
 
 C !USES: ===============================================================
       IMPLICIT NONE
