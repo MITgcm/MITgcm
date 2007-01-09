@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.762 2006/12/30 22:15:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.763 2007/01/09 13:36:19 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: fix a bug in the flooding algorithm: turn off the snow machine
+o pkg/thsice: fix reading mnc-pickups
 
 checkpoint58t_post
 o pkg/diagnostics: fix multi-threaded output (when singleCpuIO=F)
@@ -21,7 +24,7 @@ o pkg/diagnostics: change vertical interpolation to be safer, and more
   add argument to S/R DIAGNOSTICS_GET_POINTERS to catch the right 
    diagnostic pointer.
 o pkg/seaice: more cleaning up of seaice_growth, added many comments
-o pkg/exf: put runoff0 and runoff into the appropriate common block
+o pkg/exf: put runoff0 and runoff1 into the appropriate common block
 o fix multi-category seaice:
  - change cpp flag SEAICE_MULTILEVEL to more meaningful name: 
    SEAICE_MULTICATEGORY
