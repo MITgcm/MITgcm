@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.33 2006/09/02 21:31:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.34 2007/01/09 23:27:43 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-C- note: default is to use "new" grid files (OLD_GRID_IO undef)
-C   but can still use (on 1 cpu, with MDSIO) OLD_GRID_IO and EXCH2 independently
-#undef OLD_GRID_IO
 
 CBOP
 C     !ROUTINE: INI_CURVILINEAR_GRID
