@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.10 2005/12/19 19:11:28 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.11 2007/01/09 22:26:03 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -13,7 +13,7 @@ C !INTERFACE: ==========================================================
      I                            myIter,myTime,myThid )
 
 C !DESCRIPTION:
-C     Adds sources and sinks of passive tracers to the tendancy arrays
+C     Adds sources and sinks of passive tracers to the tendency arrays
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -33,7 +33,7 @@ C  bi,bj                :: tile indices
 C  iMin iMax jMin jMax  :: working range of tile for applying forcing
 C  k                    :: vertical level number
 C  iTracer              :: tracer number
-C  gPtracer             :: the tendancy array
+C  gPtracer             :: the tendency array
 C  myIter               :: time-step number
 C  myTime               :: model time
 C  myThid               :: thread number
@@ -45,7 +45,7 @@ C  myThid               :: thread number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  gPtracer		:: updates tendancy array
+C  gPtracer		:: updates tendency array
 
 #ifdef ALLOW_PTRACERS
 
@@ -65,8 +65,8 @@ CEOP
 C--   Surface forcing term is surfaceForcingPtr, previously computed
 C     by PTRACERS_FORCING because it is needed by KPP_TRANSPORT_PTR.
 
-#ifdef ALLOW_GCHEM 
-      IF ( useGCHEM ) 
+#ifdef ALLOW_GCHEM
+      IF ( useGCHEM )
      &     CALL GCHEM_ADD_TENDENCY(
      I                        bi,bj,iMin,iMax,jMin,jMax,k,
      I                        iTracer,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.43 2006/12/05 05:26:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.44 2007/01/09 22:28:20 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -17,7 +17,7 @@ C !INTERFACE: ==========================================================
      I     bi,bj, myTime,myIter,myThid)
 
 C !DESCRIPTION:
-C Calculates the tendancy of a tracer due to advection.
+C Calculates the tendency of a tracer due to advection.
 C It uses the multi-dimensional method given in \ref{sect:multiDimAdvection}
 C and can only be used for the non-linear advection schemes such as the
 C direct-space-time method and flux-limiters.
@@ -33,7 +33,7 @@ C      - \Delta t \partial_r (w\theta^{(n+2/3)}) + \theta^{(n)} \partial_r w$}
 C \item{$G_\theta = ( \theta^{(n+3/3)} - \theta^{(n)} )/\Delta t$}
 C \end{itemize}
 C
-C The tendancy (output) is over-written by this routine.
+C The tendency (output) is over-written by this routine.
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -80,7 +80,7 @@ C  myThid            :: thread number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  gTracer           :: tendancy array
+C  gTracer           :: tendency array
       _RL gTracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
 C !LOCAL VARIABLES: ====================================================

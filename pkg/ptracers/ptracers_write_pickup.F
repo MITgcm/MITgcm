@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.2 2006/10/26 00:29:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.3 2007/01/09 22:26:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -97,7 +97,7 @@ C       step since we're saving the gPtrNm1 variable first
         ENDIF
         prec = precFloat64
 
-C       Write fields & tendancies (needed for AB) as consecutive
+C       Write fields & tendencies (needed for AB) as consecutive
 C       records, one tracer after the other, for all available tracers.
 C       note: this allow to restart from a pickup with a different
 C       number of tracers, with read_pickup reading only the tracers

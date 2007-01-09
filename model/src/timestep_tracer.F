@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.12 2004/12/04 00:12:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.13 2007/01/09 22:24:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -40,7 +40,7 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C-    Extrapolate tendancies to mid-time level (n+1/2)
+C-    Extrapolate tendencies to mid-time level (n+1/2)
       DO j=jMin,jMax
        DO i=iMin,iMax
          gTracer(i,j,k,bi,bj)=tracer(i,j,k,bi,bj)

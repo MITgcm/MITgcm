@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_gterm_blocking_exchanges.F,v 1.3 2004/11/02 19:09:55 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_gterm_blocking_exchanges.F,v 1.4 2007/01/09 22:26:03 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -10,7 +10,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_GTERM_BLOCKING_EXCH( myThid )
 
 C !DESCRIPTION:
-C     Exchange data to update overlaps for passive tracer tendancies
+C     Exchange data to update overlaps for passive tracer tendencies
 
 C !USES: ===============================================================
       IMPLICIT NONE

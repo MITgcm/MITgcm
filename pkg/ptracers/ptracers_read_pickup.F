@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.2 2006/10/26 00:29:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.3 2007/01/09 22:26:03 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -76,7 +76,7 @@ C       Read fields as consecutive records
       _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
         ENDDO
 
-C       Read historical tendancies as consecutive records
+C       Read historical tendencies as consecutive records
         DO iTracer=1,PTRACERS_num
           iRec = iTracer + PTRACERS_num
           CALL READ_REC_3D_RL( fn, prec, Nr,
@@ -93,7 +93,7 @@ C       Read historical tendancies as consecutive records
         ENDDO
 
       ELSE
-C       Read fields & tendancies (needed for AB) as consecutive records,
+C       Read fields & tendencies (needed for AB) as consecutive records,
 C       one tracer after the other, only for tracers "InUse".  Note:
 C       this allow to restart from a pickup with a different number of
 C       tracers, with write_pickup dumping all of them (PTRACERS_num).
