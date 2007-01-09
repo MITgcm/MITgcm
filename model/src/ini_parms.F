@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.190 2007/01/02 20:42:08 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.191 2007/01/09 20:08:03 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -116,6 +116,8 @@ C     viscAstrain  :: replaced by standard viscosity coeff & useStrainTensionVis
 C     viscAtension :: replaced by standard viscosity coeff & useStrainTensionVisc
 C     useAnisotropicViscAgridMax :: Changed to be default behavior.  Can
 C                 use old method by setting useAreaViscLength=.true.
+C     usePickupBeforeC35 :: to restart from old-pickup files (generated with code
+C                   from before checkpoint-35, Feb 08, 2001): disabled (Jan 2007)
 C Namelist PARM03:
 C     tauThetaClimRelax3Dim :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
 C     tauSaltClimRelax3Dim  :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
@@ -131,7 +133,8 @@ C                 or that have moved to a different input file and/or namelist.
       _RL trac_EvPrRn
       _RL zonal_filt_lat, gravitySign
       _RL viscAstrain, viscAtension
-      LOGICAL useAnisotropicViscAGridMax
+      LOGICAL useAnisotropicViscAgridMax
+      LOGICAL usePickupBeforeC35
 C-
       _RL tauThetaClimRelax3Dim, tauSaltClimRelax3Dim
       LOGICAL calendarDumps
@@ -148,7 +151,7 @@ C--   Continuous equation parameters
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC4leith,
-     & useFullLeith, useAnisotropicViscAGridMax, useStrainTensionVisc,
+     & useFullLeith, useAnisotropicViscAgridMax, useStrainTensionVisc,
      & useAreaViscLength,
      & viscC2leithD, viscC4leithD, viscC2Smag, viscC4Smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
@@ -270,6 +273,7 @@ C--   Initialise retired parameters to unlikely value
       viscAstrain     = UNSET_RL
       viscAtension    = UNSET_RL
       useAnisotropicViscAgridMax=.TRUE.
+      usePickupBeforeC35    = .FALSE.
       tauThetaClimRelax3Dim = UNSET_RL
       tauSaltClimRelax3Dim  = UNSET_RL
       calendarDumps   = .FALSE.
@@ -666,11 +670,18 @@ C     Check for retired parameters still being used
      &  ' formulation => set useStrainTensionVisc to TRUE'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
-      IF (useAnisotropicViscAgridMax .NEQV. .TRUE. ) THEN
+      IF ( .NOT.useAnisotropicViscAgridMax ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: "useAnisotropicViscAgridMax" ',
      &  'is not allowed in "data" substitute useAreaViscLength=true'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( usePickupBeforeC35 ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: "usePickupBeforeC35" ',
+     &  'is no longer supported & not longer allowed in file "data"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 

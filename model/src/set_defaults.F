@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.121 2007/01/02 20:42:08 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.122 2007/01/09 20:08:03 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -170,7 +170,6 @@ Cml      sBeta               = 7.4 _d -4
       allowFreezing       = .FALSE.
       useOldFreezing      = .FALSE.
       ivdc_kappa          = 0. _d 0
-      usePickupBeforeC35    = .FALSE.
       usePickupBeforeC54    = .FALSE.
       debugMode             = .FALSE.
       tempAdvScheme       = 2

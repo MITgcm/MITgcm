@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.51 2006/07/29 21:02:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.52 2007/01/09 20:08:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -185,18 +185,14 @@ C--   Initialize variable data for packages
 #endif
       CALL PACKAGES_INIT_VARIABLES( myThid )
 
-#ifndef ALLOW_AUTODIFF_TAMC
-      IF ( usePickupBeforeC35 ) THEN
-C-- IMPORTANT : Need to activate the following call to restart from 
-C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
-      IF ( startTime .NE. baseTime ) THEN
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('THE_CORRECTION_STEP',myThid)
-#endif
-       CALL THE_CORRECTION_STEP(startTime, nIter0, myThid)
-      ENDIF
-      ENDIF
-#endif
+c#ifndef ALLOW_AUTODIFF_TAMC
+c     IF ( usePickupBeforeC35 .AND. startTime .NE. baseTime ) THEN
+C-- IMPORTANT : Need to activate the following call to restart from a pickup
+C     file written by MITgcmUV_checkpoint34 (Feb-08, 2001) or earlier.
+C-  Disable this option on Jan-09, 2007.
+c      CALL THE_CORRECTION_STEP(startTime, nIter0, myThid)
+c     ENDIF
+c#endif
 
 C--   Initial conditions are convectively adjusted (for historical reasons)
       IF ( startTime .EQ. baseTime .AND. cAdjFreq .NE. 0. ) THEN

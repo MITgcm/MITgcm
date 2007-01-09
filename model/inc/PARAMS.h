@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.194 2007/01/02 20:52:07 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.195 2007/01/09 20:07:07 jmc Exp $
 C $Name:  $
 C
 
@@ -289,8 +289,10 @@ C     useMultiDimAdvec  :: True if multi-dim advection is used at least once
 C     momDissip_In_AB   :: if False, put Dissipation tendency contribution
 C                          out off Adams-Bashforth time stepping.
 C     doAB_onGtGs       :: if the Adams-Bashforth time stepping is used, always
-C                          apply AB on tracer tendencies (rather than on Tracer) 
-C     startFromPickupAB2 :: with AB-3 code, start from an AB-2 pickup 
+C                          apply AB on tracer tendencies (rather than on Tracer)
+C     startFromPickupAB2 :: with AB-3 code, start from an AB-2 pickup
+C     usePickupBeforeC54 :: start from old-pickup files, generated with code from
+C                           before checkpoint-54a, Jul 06, 2004.
 C     doThetaClimRelax :: Set true if relaxation to temperature
 C                        climatology is required.
 C     doSaltClimRelax  :: Set true if relaxation to salinity
@@ -360,7 +362,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
      & usingPCoords, usingZCoords, useDynP_inEos_Zc,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, useOldFreezing,
-     & usePickupBeforeC35, usePickupBeforeC54, startFromPickupAB2,
+     & usePickupBeforeC54, startFromPickupAB2,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
      & outputTypesInclusive, dumpInitAndLast, debugMode,
@@ -440,7 +442,6 @@ C     balancePrintMean:: print substracted global means to STDOUT
       LOGICAL useSingleCpuIO
       LOGICAL allowFreezing
       LOGICAL useOldFreezing
-      LOGICAL usePickupBeforeC35
       LOGICAL usePickupBeforeC54
       LOGICAL startFromPickupAB2
       LOGICAL dumpInitAndLast
