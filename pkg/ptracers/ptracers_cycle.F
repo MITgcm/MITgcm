@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_cycle.F,v 1.3 2005/04/15 14:23:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_cycle.F,v 1.4 2007/01/09 21:52:02 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: PTRACERS_CYCLE
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE PTRACERS_CYCLE(bi,bj,k,myIter,myTime,myThid)
+      SUBROUTINE PTRACERS_CYCLE(bi,bj,myTime,myIter,myThid)
 
 C !DESCRIPTION:
 C     Cycle time-stepping arrays
@@ -21,13 +21,12 @@ C !USES: ===============================================================
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
-C  k                    :: vertical level number
-C  myIter               :: time-step number
 C  myTime               :: model time
+C  myIter               :: time-step number
 C  myThid               :: thread number
-      INTEGER bi,bj,k
-      INTEGER myIter
+      INTEGER bi,bj
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -45,7 +44,7 @@ C Loop over passive tracers
 
 C Cycle time-stepping arrays
       CALL CYCLE_TRACER(
-     I           bi,bj,k,
+     I           bi,bj,
      U           pTracer(1-Olx,1-Oly,1,1,1,iTracer),
      U           gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I           myTime,myIter,myThid )

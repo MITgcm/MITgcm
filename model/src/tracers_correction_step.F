@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.12 2006/06/05 17:16:36 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.13 2007/01/09 21:50:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,35 +52,28 @@ C     == Local variables
       INTEGER iMin,iMax
       INTEGER jMin,jMax
       INTEGER bi,bj
-      INTEGER k
 
 CEOP
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-C--     Loop over all layers, top to bottom
-        DO K=1,Nr
-
-C-        Update tracer fields:  T(n) = T**
-          IF (tempStepping)
+C-      Update tracer fields:  T(n) = T**
+        IF (tempStepping)
      &      CALL CYCLE_TRACER(
-     I           bi,bj,K,
+     I           bi,bj,
      U           theta,gT,
      I           myTime,myIter,myThid )
-          IF (saltStepping)
+        IF (saltStepping)
      &      CALL CYCLE_TRACER(
-     I           bi,bj,k,
+     I           bi,bj,
      U           salt,gS,
      I           myTime,myIter,myThid )
 #ifdef ALLOW_PTRACERS
-C-        Update passive tracer fields:  T(n) = T**
-          IF (usePTRACERS)
-     &      CALL PTRACERS_CYCLE(bi,bj,k,myIter,myTime,myThid)
+C-      Update passive tracer fields:  T(n) = T**
+        IF (usePTRACERS)
+     &      CALL PTRACERS_CYCLE(bi,bj,myTime,myIter,myThid)
 #endif /* ALLOW_PTRACERS */
-
-C--     End DO K=1,Nr
-        ENDDO
 
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( implicitIntGravWave ) THEN
