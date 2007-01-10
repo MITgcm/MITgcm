@@ -1,4 +1,5 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.3 2006/06/03 21:36:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.4 2007/01/10 21:44:38 jmc Exp $
+C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
@@ -18,11 +19,11 @@ c     ==================================================================
 
 c     == global variables ==
 
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
+c #include "DYNVARS.h"
+c #include "GRID.h"
 
 #include "exf_param.h"
 #include "exf_fields.h"
@@ -41,21 +42,16 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi,bj
-      integer i,j,k
+      integer i,j
 
       _RL     ustmp
-      _RL     ustar
+c     _RL     ustar
+c     _RL       tmp1, tmp2, tmp3, tmp4, tmp5
 
 c     == external functions ==
 
       integer  ilnblnk
       external ilnblnk
-
-      _RL       tmp1
-      _RL       tmp2
-      _RL       tmp3
-      _RL       tmp4
-      _RL       tmp5
 
 c     == end of interface ==
 
@@ -64,7 +60,6 @@ c--   Use atmospheric state to compute surface fluxes.
 c     Loop over tiles.
       do bj = mybylo(mythid),mybyhi(mythid)
        do bi = mybxlo(mythid),mybxhi(mythid)
-        k = 1
         do j = 1,sny
          do i = 1,snx
 c
@@ -94,42 +89,41 @@ c             given wind stresses inverting relationship for neutral
 c             drag coeff. cdn.
 c             The inversion is based on linear and quadratic form of
 c             cdn(umps); ustar can be directly computed from stress;
+C-   no need for wind-stress inversion since everything
+C    (ustar, ... etc ...) is derived directly from wind-stress
 
-          ustmp = ustress(i,j,bi,bj)*ustress(i,j,bi,bj) + 
-     &         vstress(i,j,bi,bj)*vstress(i,j,bi,bj)
-          if ( ustmp .ne. 0. _d 0 ) then
-             ustar = sqrt(ustmp/atmrho)
-             cw(i,j,bi,bj) = ustress(i,j,bi,bj)/sqrt(ustmp)
-             sw(i,j,bi,bj) = vstress(i,j,bi,bj)/sqrt(ustmp)
-          else
-             ustar            = 0. _d 0
-             cw(i,j,bi,bj)    = 0. _d 0
-             sw(i,j,bi,bj)    = 0. _d 0
-          endif
-      
-          if ( ustar .eq. 0. _d 0 ) then
-             us(i,j,bi,bj) = 0. _d 0
-          else if ( ustar .lt. ustofu11 ) then
-             tmp1 = -cquadrag_2/cquadrag_1/2
-             tmp2 = sqrt(tmp1*tmp1 + ustar*ustar/cquadrag_1)
-             us(i,j,bi,bj) = sqrt(tmp1 + tmp2)
-          else
-             tmp3 = clindrag_2/clindrag_1/3
-             tmp4 = ustar*ustar/clindrag_1/2 - tmp3**3
-             tmp5 = sqrt(ustar*ustar/clindrag_1*
-     &            (ustar*ustar/clindrag_1/4 - tmp3**3))
-             us(i,j,bi,bj)   = (tmp4 + tmp5)**(1/3) +
-     &            tmp3**2 * (tmp4 + tmp5)**(-1/3) - tmp3
-          endif
-          uwind(i,j,bi,bj) = us(i,j,bi,bj)*cw(i,j,bi,bj)
-          vwind(i,j,bi,bj) = us(i,j,bi,bj)*sw(i,j,bi,bj)
+c         ustmp = ustress(i,j,bi,bj)*ustress(i,j,bi,bj) +
+c    &         vstress(i,j,bi,bj)*vstress(i,j,bi,bj)
+c         if ( ustmp .ne. 0. _d 0 ) then
+c            ustar = sqrt(ustmp/atmrho)
+c            cw(i,j,bi,bj) = ustress(i,j,bi,bj)/sqrt(ustmp)
+c            sw(i,j,bi,bj) = vstress(i,j,bi,bj)/sqrt(ustmp)
+c         else
+c            ustar            = 0. _d 0
+c            cw(i,j,bi,bj)    = 0. _d 0
+c            sw(i,j,bi,bj)    = 0. _d 0
+c         endif
 c
+c         if ( ustar .eq. 0. _d 0 ) then
+c            us(i,j,bi,bj) = 0. _d 0
+c         else if ( ustar .lt. ustofu11 ) then
+c            tmp1 = -cquadrag_2/cquadrag_1/2
+c            tmp2 = sqrt(tmp1*tmp1 + ustar*ustar/cquadrag_1)
+c            us(i,j,bi,bj) = sqrt(tmp1 + tmp2)
+c         else
+c            tmp3 = clindrag_2/clindrag_1/3
+c            tmp4 = ustar*ustar/clindrag_1/2 - tmp3**3
+c            tmp5 = sqrt(ustar*ustar/clindrag_1*
+c    &            (ustar*ustar/clindrag_1/4 - tmp3**3))
+c            us(i,j,bi,bj)   = (tmp4 + tmp5)**(1/3) +
+c    &            tmp3**2 * (tmp4 + tmp5)**(-1/3) - tmp3
+c         endif
 #endif /* ifndef ALLOW_ATM_WIND */
 
 c--   set lower limit
           sh(i,j,bi,bj)    = max(us(i,j,bi,bj),umin)
 
-c--   if wspeed available, overwrite sh, 
+c--   if wspeed available, overwrite sh,
 c--   otherwise fill wspeed array for later use
           if ( wspeedfile .NE. ' ' ) then
              us(i,j,bi,bj) = wspeed(i,j,bi,bj)

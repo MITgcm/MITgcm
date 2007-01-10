@@ -1,4 +1,5 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.12 2006/05/25 18:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.13 2007/01/10 21:44:38 jmc Exp $
+C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
@@ -115,7 +116,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "GRID.h"
+c #include "GRID.h"
 
 #include "exf_param.h"
 #include "exf_fields.h"
@@ -171,7 +172,6 @@ c     == local variables ==
 #endif
 #endif /* ALLOW_ATM_TEMP */
 
-      _RL     hfl
       _RL     tmpbulk
 
 c     == external functions ==
@@ -249,12 +249,18 @@ c             deltap : potential temperature diff (K)
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 #endif
+#ifdef ALLOW_ATM_WIND
              tmpbulk= exf_BulkCdn(sh(i,j,bi,bj))
              rdn    = sqrt(tmpbulk)
              ustar  = rdn*sh(i,j,bi,bj)
+#else /* ifndef ALLOW_ATM_WIND */
+             tau   = sqrt(ustress(i,j,bi,bj)*ustress(i,j,bi,bj)
+     &                   +vstress(i,j,bi,bj)*vstress(i,j,bi,bj))
+             ustar = sqrt(tau/atmrho)
+#endif /* ifndef ALLOW_ATM_WIND */
              tmpbulk= exf_BulkRhn(stable)
-             tstar  = tmpbulk*deltap 
-             qstar  = cdalton*delq 
+             tstar  = tmpbulk*deltap
+             qstar  = cdalton*delq
 
              do iter = 1,niter_bulk
 
@@ -284,6 +290,7 @@ CADJ STORE us(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
                   hqol   = huol*hq/hu
 
 c                 Evaluate all stability functions assuming hq = ht.
+#ifdef ALLOW_ATM_WIND
                   xsq    = max(sqrt(abs(exf_one - 16.*huol)),exf_one)
                    x     = sqrt(xsq)
                   psimh  = -psim_fac*huol*stable +
@@ -291,13 +298,13 @@ c                 Evaluate all stability functions assuming hq = ht.
      &                     (log((exf_one + x*(exf_two + x))*
      &                     (exf_one + xsq)/8.) - exf_two*atan(x) +
      &                     pi*exf_half)
+#endif /* ALLOW_ATM_WIND */
                   xsq    = max(sqrt(abs(exf_one - 16.*htol)),exf_one)
                   psixh  = -psim_fac*htol*stable + (exf_one - stable)*
      &                     exf_two*log((exf_one + xsq)/exf_two)
 
+#ifdef ALLOW_ATM_WIND
 c                 Shift wind speed using old coefficient
-ccc                  rd   = rdn/(exf_one + rdn/karman*
-ccc     &                 (log(hu/zref) - psimh) )
                   rd     = rdn/(exf_one - rdn/karman*psimh )
                   shn    = sh(i,j,bi,bj)*rd/rdn
                   uzn    = max(shn, umin)
@@ -310,21 +317,23 @@ c                 and neutral stability.
 
 c                 Shift all coefficients to the measurement height
 c                 and stability.
-c                 rd = rdn/(exf_one + rdn/karman*(log(hu/zref) - psimh))
                   rd     = rdn/(exf_one - rdn/karman*psimh)
+#endif /* ALLOW_ATM_WIND */
                   tmpbulk= exf_BulkRhn(stable)
-                  rh     = tmpbulk/( exf_one + 
+                  rh     = tmpbulk/( exf_one +
      &                               tmpbulk/karman*(aln - psixh) )
-                  re     = cdalton/( exf_one + 
+                  re     = cdalton/( exf_one +
      &                               cdalton/karman*(aln - psixh) )
 
 c                 Update ustar, tstar, qstar using updated, shifted
 c                 coefficients.
-                  ustar  = rd*sh(i,j,bi,bj)
-                  qstar  = re*delq 
+                  qstar  = re*delq
                   tstar  = rh*deltap
+#ifdef ALLOW_ATM_WIND
+                  ustar  = rd*sh(i,j,bi,bj)
                   tau    = atmrho*ustar**2
                   tau    = tau*us(i,j,bi,bj)/sh(i,j,bi,bj)
+#endif /* ALLOW_ATM_WIND */
 
                 enddo
 
@@ -336,7 +345,6 @@ CADJ STORE tau    = comlev1_exf_1, key = ikey_1
 CADJ STORE cw(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 CADJ STORE sw(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 #endif
-
                 hs(i,j,bi,bj)      = atmcp*tau*tstar/ustar
                 hl(i,j,bi,bj)      = flamb*tau*qstar/ustar
 #ifndef EXF_READ_EVAP
@@ -344,11 +352,15 @@ cdm             evap(i,j,bi,bj)    = tau*qstar/ustar
 cdm !!! need to change sign and to convert from kg/m^2/s to m/s !!!
                 evap(i,j,bi,bj)    = -recip_rhonil*tau*qstar/ustar
 #endif
+#ifdef ALLOW_ATM_WIND
                 ustress(i,j,bi,bj) = tau*cw(i,j,bi,bj)
                 vstress(i,j,bi,bj) = tau*sw(i,j,bi,bj)
+#endif /* ALLOW_ATM_WIND */
               else
+#ifdef ALLOW_ATM_WIND
                 ustress(i,j,bi,bj) = 0. _d 0
                 vstress(i,j,bi,bj) = 0. _d 0
+#endif /* ALLOW_ATM_WIND */
                 hflux  (i,j,bi,bj) = 0. _d 0
                 hs(i,j,bi,bj)      = 0. _d 0
                 hl(i,j,bi,bj)      = 0. _d 0
@@ -370,4 +382,5 @@ cdm !!! need to change sign and to convert from kg/m^2/s to m/s !!!
 
 #endif /* ALLOW_BULKFORMULAE */
 
+      return
       end
