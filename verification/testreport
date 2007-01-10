@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.88 2006/08/29 00:18:35 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.89 2007/01/10 22:50:09 jmc Exp $
 #  $Name:  $
 #
 
@@ -15,11 +15,13 @@ usage()
     echo "  (-mpi)                   compile and run using MPI"
     echo "  (-ieee|-noieee)          if possible, use IEEE compiler flags"
     echo "                             (DEF=\"-ieee\")"
-    echo "  (-optfile=|-of=)STRING   list of optfiles to use"
+    echo "  (-of=|-optfile=)STRING   list of optfiles to use"
     echo "  (-a|-addr) STRING        list of email recipients"
     echo "                             (DEF=\"edhill@mitgcm.org\")"
     echo "  (-t|-tdir) STRING        list of group and/or exp. dirs to test"
     echo "                             (recognized groups: basic, tutorials)"
+    echo "                             (DEF=\"\" which test all)"
+    echo "  (-skd|-skipdir) STRING   list of exp. dirs to skip"
     echo "                             (DEF=\"\" which test all)"
     echo "  (-b|-bash) STRING        preferred location of a \"bash\" or"
     echo "                             Bourne-compatible \"sh\" shell"
@@ -31,15 +33,15 @@ usage()
     echo "                             (DEF=\"make\")"
     echo "  (-odir) STRING           used to build output directory name"
     echo "                             (DEF=\"hostname\")"
-    echo "  (-ptracers|-ptr) STRING  specify which ptracers to test"
+    echo "  (-ptr|-ptracers) STRING  specify which ptracers to test"
     echo "                             (DEF=\"1 2 3 4 5\")"
     echo "  (-j) JOBS                use \"make -j JOBS\" for parallel builds"
     echo "  (-clean)                 *ONLY* run \"make CLEAN\""
-    echo "  (-quick|-q)              same as \"-nogenmake -noclean -nodepend\""
-    echo "  (-nogenmake|-ng)         skip the genmake stage"
-    echo "  (-noclean|-nc)           skip the \"make clean\" stage"
-    echo "  (-nodepend|-nd)          skip the \"make depend\" stage"
-    echo "  (-deldir|-dd)            on success, delete the output directory"
+    echo "  (-q|-quick)              same as \"-nogenmake -noclean -nodepend\""
+    echo "  (-ng|-nogenmake)         skip the genmake stage"
+    echo "  (-nc|-noclean)           skip the \"make clean\" stage"
+    echo "  (-nd|-nodepend)          skip the \"make depend\" stage"
+    echo "  (-dd|-deldir)            on success, delete the output directory"
     echo
     echo "and where STRING can be a whitespace-delimited list"
     echo "such as:"
@@ -651,25 +653,6 @@ formatresults()
     
 }
 
-show_help()
-{
-    cat - << EOF
-$0 [-help] [-quick] [-verbose] dir1 [dir2] [...]
-
- -help|-h      Show this help message
- -quiet     Reduce the amount of output
- -verbose   Produce copious amounts of output
- -debug     Produce even more output which will mean nothing to most
- -force     Do "make CLEAN" before compiling. This forces a complete rebuild.
- -clean     Do "make CLEAN" after compiling and testing.
- -cleanup   Aggresively removes all model output, executables and object files
-            and then exits. Use with care.
-
-Normal usage:
- $0 *       Configure, compile, run and analyze in all experiment directories
-EOF
-}
-
 scandirs()
 {
     if [ $# -eq 1 ]; then
@@ -709,6 +692,7 @@ BASH=
 OPTFILE=NONE
 ADDRESSES=
 TESTDIRS=
+SKIPDIRS=
 MPACKDIR="../tools/mpack-1.6"
 HAVE_MPACK=
 MPACK="$MPACKDIR/mpack"
@@ -763,6 +747,11 @@ for ac_option ; do
             ac_prev=TESTDIRS ;;
         -tdir=* | --tdir=*)
             TESTDIRS=$ac_optarg ;;
+
+	-skipdir | --skipdir | -skd | --skd)
+            ac_prev=SKIPDIRS ;;
+        -skipdir=* | --skipdir=*)
+            SKIPDIRS=$ac_optarg ;;
 
 	-bash | --bash | -b | --b)
             ac_prev=BASH ;;
@@ -844,9 +833,9 @@ fi
 
 if test "x$TESTDIRS" = x ; then
     if test "x$ADM" = xt ; then
-	TESTDIRS=`scandirs results_ad`
+	LIST=`scandirs results_ad`
     else
-	TESTDIRS=`scandirs results`
+	LIST=`scandirs results`
     fi
 else
     #- expand group of experiments:
@@ -863,19 +852,28 @@ else
 	*)	 LIST=${LIST}" "$xx ;;
       esac
     done 
-    #echo 'LIST='${LIST}'<'
-    #- remove duplicate and non-directory:
-    TESTDIRS=" "
-    for xx in $LIST
-    do
+fi
+#echo 'LIST='${LIST}'<'
+#- skip dirs, remove duplicate and non-directory:
+TESTDIRS=" "
+count=0
+for xx in $LIST
+do
+    yy=`echo $SKIPDIRS | grep -c $xx`
+    if test $yy = 0 ; then
 	if test -d $xx ; then
 	    yy=`echo $TESTDIRS | grep -c $xx`
 	    if test $yy = 0 ; then TESTDIRS=${TESTDIRS}" "$xx ; fi
-	else
-	    echo " -- skip \"$xx\" : not a directory !"
+	else count=1 ;
+	    echo ""; echo -n " -- skip \"$xx\" (not a directory !)"
 	fi
-    done 
-fi
+    else
+        if test $count = 1 ; then echo -n ", \"$xx\""
+	else count=1 ; echo "" ;  echo -n " skip: \"$xx\""
+	fi
+    fi
+done 
+if test $count = 1 ; then echo "" ; echo -n " ... " ; fi
 #echo 'TESTDIRS='${TESTDIRS}'<'
 
 if test "x$OPTFILE" = xNONE -a "x$MITGCM_OF" != x ; then
