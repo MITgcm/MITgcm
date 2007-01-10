@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.122 2007/01/09 20:08:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.123 2007/01/10 23:49:44 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -175,6 +175,7 @@ Cml      sBeta               = 7.4 _d -4
       tempAdvScheme       = 2
       saltAdvScheme       = 2
       multiDimAdvection   = .TRUE.
+      useMultiDimAdvec    = .FALSE.
       useCDscheme         = .FALSE.
       useEnergyConservingCoriolis = .FALSE.
       useJamartWetPoints  = .FALSE.

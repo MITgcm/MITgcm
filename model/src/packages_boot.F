@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.37 2006/10/17 18:52:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.38 2007/01/10 23:49:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -86,7 +86,7 @@ CEOP
       WRITE(msgBuf,'(A)') ' PACKAGES_BOOT: opening data.pkg'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid )
-    
+
 
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.pkg', 'PACKAGES_BOOT',
@@ -140,7 +140,7 @@ C--   Read parameters from open data file
 
 C--   Close the open data file
       CLOSE(iUnit)
- 
+
 C--   packages with hard-coded switch
 #ifdef ALLOW_EXF
       useEXF = .TRUE.
@@ -148,6 +148,9 @@ C--   packages with hard-coded switch
 #ifdef ALLOW_CAL
       useCAL = .TRUE.
 #endif
+
+C--   packages with an implied switch
+      useGAD = tempStepping .OR. saltStepping .OR. usePTRACERS
 
       _END_MASTER(myThid)
 
