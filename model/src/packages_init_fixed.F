@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.56 2006/11/09 16:38:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.57 2007/01/10 23:51:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -111,7 +111,7 @@ C-    needs to call DIAGNOSTICS_INIT_EARLY before all package-diag-init calls
 
 #ifdef ALLOW_GENERIC_ADVDIFF
 C--   Initialize fixed params for GAD
-      CALL GAD_INIT( myThid )
+      CALL GAD_INIT_FIXED( myThid )
 #endif
 
 #ifdef ALLOW_MOM_COMMON

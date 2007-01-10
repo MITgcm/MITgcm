@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.11 2006/10/17 19:00:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.1 2007/01/10 23:51:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: GAD_INIT
+C     !ROUTINE: GAD_INIT_FIXED
 C     !INTERFACE:
-      SUBROUTINE GAD_INIT( myThid )
+      SUBROUTINE GAD_INIT_FIXED( myThid )
 C     !DESCRIPTION:
 C     Routine to initialize Generic Advection/Diffusion variables and
 C     constants.
@@ -21,7 +21,7 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid -  Number of this instance of GAD_INIT
+C     myThid -  Number of this instance of GAD_INIT_FIXED
       INTEGER myThid
 CEOP
 
@@ -49,7 +49,6 @@ C-- Set Temp & Salt multi-Dim Advec. flag according to advection scheme used
       ENDIF
 
 C-- Set general multi-Dim Advec. flag when at least 1 tracer use multi-Dim Advec.
-      useMultiDimAdvec = .FALSE.
       useMultiDimAdvec = useMultiDimAdvec.OR.tempMultiDimAdvec
       useMultiDimAdvec = useMultiDimAdvec.OR.saltMultiDimAdvec
 
@@ -164,13 +163,13 @@ C-    multi-dim-advection on CS-grid requires to double the size of Olx,Oly
         ENDIF
         IF ( Olx.LT.minOlSize .OR. Oly.LT.minOlSize ) THEN
           WRITE(msgBuf,'(A)')
-     &     'GAD_INIT: Multi-Dim Advection with 5-points stencil'
+     &     'GAD_INIT_FIXED: Multi-Dim Advection with 5-points stencil'
           CALL PRINT_ERROR( msgBuf , myThid)
           WRITE(msgBuf,'(A,I2)')
-     &     'GAD_INIT: advection scheme needs at least Olx,Oly=',
+     &     'GAD_INIT_FIXED: advection scheme needs at least Olx,Oly=',
      &      minOlSize
           CALL PRINT_ERROR( msgBuf , myThid)
-          STOP 'ABNORMAL END: S/R GAD_INIT'
+          STOP 'ABNORMAL END: S/R GAD_INIT_FIXED'
         ENDIF
       ENDIF
 
