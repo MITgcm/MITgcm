@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.112 2007/01/06 22:30:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.113 2007/01/10 19:01:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD_OPTIONS.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_GMREDI
@@ -78,14 +81,14 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
-#include "GAD.h"
+# include "GAD.h"
 #endif
 #ifdef ALLOW_PTRACERS
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS.h"
 #endif
 #ifdef ALLOW_TIMEAVE
-#include "TIMEAVE_STATV.h"
+# include "TIMEAVE_STATV.h"
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -193,9 +196,9 @@ CHPF$ INDEPENDENT
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-- Compute correction at the surface for Lin Free Surf.
-      IF (linFSConserveTr) 
+      IF (linFSConserveTr)
      &   CALL CALC_WSURF_TR(theta,salt,wVel,
-     &                      myIter,myTime,myThid)
+     &                      myTime,myIter,myThid)
 
       DO bj=myByLo(myThid),myByHi(myThid)
 
