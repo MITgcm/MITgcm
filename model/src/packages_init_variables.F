@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.56 2006/10/22 01:11:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.57 2007/01/10 23:46:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,8 +48,6 @@ C       |-- CTRL_MAP_INI_ECCO
 C       |-- CTRL_MAP_INI
 C       |
 C       |-- EXF_INIT
-C       |
-C       |-- INI_FORCING
 C       |
 C       |-- EBM_INI_VARS
 C       |
@@ -191,7 +189,7 @@ cph#endif
 # ifndef ALLOW_AUTODIFF_TAMC
          IF (useGCHEM) THEN
 # endif
-          CALL GCHEM_INIT_VARI( mythid )
+          CALL GCHEM_INIT_VARI( myThid )
 # ifndef ALLOW_AUTODIFF_TAMC
          ENDIF
 # endif
@@ -205,18 +203,18 @@ cph#endif
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('LAND_INI_VARS',myThid)
 #endif
-      IF ( useLAND ) CALL LAND_INI_VARS( mythid )
+      IF ( useLAND ) CALL LAND_INI_VARS( myThid )
 #endif
 
 #ifdef ALLOW_AUTODIFF
 CADJ STORE theta = tapelev_init, key = 1
 c--   Initialise auxiliary xx_ fields
-      CALL CTRL_INIT_VARIABLES ( mythid )
+      CALL CTRL_INIT_VARIABLES ( myThid )
 c--   Map the control variables onto the model state.
 # ifdef ALLOW_ECCO
-      CALL CTRL_MAP_INI_ECCO( mythid )
+      CALL CTRL_MAP_INI_ECCO( myThid )
 # else
-      CALL CTRL_MAP_INI( mythid )
+      CALL CTRL_MAP_INI( myThid )
 # endif
       _BARRIER
 #endif
@@ -225,31 +223,26 @@ c--   Map the control variables onto the model state.
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('EXF_INIT',myThid)
 #endif
-      CALL EXF_INIT( mythid )
+      CALL EXF_INIT( myThid )
 #endif
-
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('INI_FORCING',myThid)
-#endif
-      CALL INI_FORCING( mythid )
 
 #ifdef ALLOW_EBM
 # ifdef ALLOW_AUTODIFF
 CADJ STORE theta = tapelev_init, key = 1
 # endif
-      IF (useEBM) CALL EBM_INI_VARS( mythid )
+      IF (useEBM) CALL EBM_INI_VARS( myThid )
 #endif
 
 #ifdef ALLOW_COST
 c--   Initialise the cost function.
 ceh3 needs an IF ( useCOST ) THEN
-      CALL COST_INIT_VARIA( mythid )
+      CALL COST_INIT_VARIA( myThid )
       _BARRIER
 #endif
 
 #ifdef ALLOW_PROFILES
 c--   Initialise the cost function.
-      CALL PROFILES_INIT_VARIA( mythid )
+      CALL PROFILES_INIT_VARIA( myThid )
       _BARRIER
 #endif
 
@@ -262,21 +255,21 @@ C--   Open boundaries data
 #endif
 
 #ifdef ALLOW_BULK_FORCE
-      IF (useBulkForce) CALL BULKF_INIT_VARIA( mythid)
+      IF (useBulkForce) CALL BULKF_INIT_VARIA( myThid)
 #endif
 
 #ifdef ALLOW_THSICE
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('THSICE_INI_VARS',myThid)
 #endif
-      IF (useThSIce) CALL THSICE_INI_VARS( mythid)
+      IF (useThSIce) CALL THSICE_INI_VARS( myThid)
 #endif
 
 #ifdef COMPONENT_MODULE
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('CPL_INI_VARS',myThid)
 #endif
-      IF (useCoupler) CALL CPL_INI_VARS( mythid )
+      IF (useCoupler) CALL CPL_INI_VARS( myThid )
 #endif
 
 #ifdef ALLOW_ATM2D
@@ -291,7 +284,7 @@ C Initialize FIZHI state variables
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('FIZHI_INIT_VARS',myThid)
 #endif
-      IF (useFIZHI) CALL FIZHI_INIT_VARS( mythid )
+      IF (useFIZHI) CALL FIZHI_INIT_VARS( myThid )
 #endif
 
 #ifdef ALLOW_MATRIX

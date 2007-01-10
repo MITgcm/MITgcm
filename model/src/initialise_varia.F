@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.52 2007/01/09 20:08:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.53 2007/01/10 23:46:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,6 +40,8 @@ C       |-- INI_DYNVARS
 C       |-- INI_NH_VARS
 C       |
 C       |-- INI_FIELDS
+C       |
+C       |-- INI_FORCING
 C       |
 C       |-- INI_AUTODIFF
 C       |
@@ -171,6 +173,12 @@ C     stored files.
       IF (debugMode) CALL DEBUG_CALL('INI_FIELDS',myThid)
 #endif
       CALL INI_FIELDS( myThid )
+
+C--   Initialise model forcing fields.
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_FORCING',myThid)
+#endif
+      CALL INI_FORCING( myThid )
       _BARRIER
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -318,9 +326,9 @@ C--   end bi,bj loop.
 
 #ifdef ALLOW_GRIDALT
         if (useGRIDALT) then
-         CALL TIMER_START('GRIDALT_UPDATE  [INITIALISE_VARIA]',mythid)
+         CALL TIMER_START('GRIDALT_UPDATE  [INITIALISE_VARIA]',myThid)
          CALL GRIDALT_UPDATE(myThid)
-         CALL TIMER_STOP ('GRIDALT_UPDATE  [INITIALISE_VARIA]',mythid)
+         CALL TIMER_STOP ('GRIDALT_UPDATE  [INITIALISE_VARIA]',myThid)
         endif
 #endif
 
