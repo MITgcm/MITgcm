@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.763 2007/01/09 13:36:19 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.764 2007/01/11 00:29:41 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o move call to INI_FORCING from PACKAGES_INIT_VARIABLES to INITIALISE_VARIA.
+o testreport: add option "-skipdir" to skip some test.
+o exf: when input wind-stress (#undef ALLOW_ATM_WIND), by-pass turbulent 
+  momentum calculation.
+o gad_advection: fix vertAdvecScheme (if different from advectionScheme)
+o some cleaning: usePickupBeforeC35 no longer supported ; remove this option.
+  remove checkpoint.F and the_correction_step.F (no longer used);
+  do the k loop inside CYCLE_TRACER (supposed to be more efficient).
+o add option (linFSConserveTr) to correct for tracer source/sink due to 
+  Linear Free surface
 o pkg/seaice: fix a bug in the flooding algorithm: turn off the snow machine
 o pkg/thsice: fix reading mnc-pickups
 
