@@ -1,0 +1,31 @@
+#!/bin/csh
+#PBS -N fizhiT3
+#PBS -l ncpus=24
+#PBS -l walltime=08:00:00
+#PBS -j oe
+#PBS -o /nobackup2b/molod/fizhi-cs-32x32x46-newres/input/stdout
+########PBS -q normal
+#PBS -V
+
+echo 'start'
+#----------------------------------------------
+set namPBS=fizhiT3
+set runDir=/nobackup2b/molod/fizhi-cs-32x32x46-newres/input
+set executable=/nobackup2b/molod/fizhi-cs-32x32x46-newres/build/mitgcmuv
+#-------------------
+cd $runDir
+
+#------
+limit stacksize unlimited
+module list
+module purge
+module load modules scsl.1.5.0.0 intel-comp.8.1.024 mpt.1.12.0.0
+#------
+
+set its=`egrep 'nIter0' data | sed 's/ nIter0=//'| sed 's/,$//'`
+
+#-------------------
+ mpirun -np 24 $executable
+#-------------------
+
+exit

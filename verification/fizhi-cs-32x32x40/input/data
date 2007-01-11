@@ -1,0 +1,99 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=295.1, 295.3, 295.4, 295.6, 295.8, 296.0, 296.2, 296.4, 296.6, 296.8,
+      297.0, 297.3, 297.5, 297.7, 298.0, 298.3, 298.5, 298.8, 299.1, 299.5,
+      299.8, 300.1, 300.5, 300.9, 301.5, 302.3, 303.4, 304.9, 306.8, 309.4,
+      312.9, 317.8, 324.7, 336.1, 352.6, 373.4, 401.2, 441.6, 511.0, 699.5,
+#tRef=295.2, 295.5, 295.9, 296.3, 296.7, 297.1, 297.6, 298.1, 298.7, 299.3,
+#     300.0, 300.7, 301.9, 304.1, 308.0, 315.1, 329.5, 362.3, 419.2, 573.8,
+#tRef=295.3, 296.1, 296.9, 297.9, 299.0, 300.3, 302.8, 311.0, 343.9, 470.7,
+ sRef=40*0.0,
+#sRef=1.0E-3,5.0E-4,1.E-4,5*1.E-6,1.E-8,1.E-9,
+ viscAr=0.E1,
+ viscAh=0.E6,
+ viscA4=0.E17,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ diffKhT=0.E3,
+ diffKrT=0.,
+ diffK4T=0.E17,
+ diffKrS=0.E2,
+ diffKhS=0.E3,
+ diffK4S=0.E17,
+ buoyancyRelation='ATMOSPHERIC',
+ eosType='IDEALGAS',
+ atm_Rq=0.6078,
+#Integr_GeoPot=2,
+ rotationPeriod=86400.,
+ gravity=9.81,
+ rhonil=1.0,
+ rhoConst=1.0,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ uniformLin_PhiSurf=.FALSE.,
+ staggerTimeStep=.TRUE.,
+ nonHydrostatic=.FALSE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ hFacMin=0.5,
+ nonlinFreeSurf=4,
+ select_rStar=2,
+ saltAdvScheme=2,
+ vectorInvariantMomentum=.TRUE.,
+#- here are the new things:
+ useAbsVorticity=.TRUE.,
+ SadournyCoriolis=.TRUE.,
+ selectKEscheme=3,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+#cg2dTargetResidual=1.E-12,
+ cg2dTargetResWunit=1.E-17,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+ nTimeSteps=6,
+#endTime=864000.0,
+ deltaT=120.0,
+ forcing_In_AB=.FALSE.,
+ abEps=0.1,
+ cAdjFreq=0.,
+ pChkptFreq=0.0,
+ ChkptFreq=0.0,
+ dumpFreq=0.0,
+ dumpInitAndLast=.FALSE.,
+ monitorFreq=864000.,
+ taveFreq=0.0,
+ tave_lastiter=1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.FALSE.,
+ usingSphericalPolarGrid=.FALSE.,
+ usingCurvilinearGrid=.TRUE.,
+ horizGridFile='dxC1_dXYa',
+#delR=40*0.25325E4,
+#Ro_SeaLevel=1.013E5,
+ delR=40*0.25E4,
+ Ro_SeaLevel=1.E5,
+ rSphere=6371.E3,
+ &
+
+# Input datasets
+ &PARM05
+ topoFile='top19232.data',
+ uVelInitFile='uVel_cs2-32x40.d19930110z06.bin',
+ vVelInitFile='vVel_cs2-32x40.d19930110z06.bin',
+ hydrogThetaFile='TH_cs2-32x40.d19930110z06.bin',
+ hydrogSaltFile='SHwet_cs32x40.d19930110z06.bin',
+ &

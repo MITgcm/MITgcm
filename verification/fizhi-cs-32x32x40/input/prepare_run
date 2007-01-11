@@ -1,0 +1,21 @@
+#! /usr/bin/env bash
+
+#  $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-32x32x40/input/prepare_run,v 1.1 2007/01/11 17:56:27 molod Exp $
+#  $Name:  $
+ 
+#  Figure out which veg file we need (how many tiles)
+#- do a symbolic link in the current directory 
+#   (if the file does not already exist)
+  if test ! -r veg19232.data ; then 
+   sNx=`cat ../code/SIZE.h | grep 'sNx =' | cut -d= -f2 | cut -d, -f1`
+   if test $sNx = '32' ; then 
+    vegfile=../input/veg19232.6tile.data
+    ln -sf $vegfile veg19232.data
+   elif test $sNx = '16' ; then
+    vegfile=../input/veg19232.24tile.data
+    ln -sf $vegfile veg19232.data
+   else
+    echo 'Error: No veg tile dataset!'
+   fi
+  fi
+  echo ' using' $vegfile
