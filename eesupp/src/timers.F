@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.25 2006/10/12 20:27:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.26 2007/01/11 17:44:18 molod Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -111,7 +111,7 @@ C     maxTimers :: Total numer of timer allowed
 C     maxString :: Max length of a timer name
       INTEGER maxTimers
       INTEGER maxString
-      PARAMETER ( maxTimers = 40 )
+      PARAMETER ( maxTimers = 50 )
       PARAMETER ( maxString = 80 )
 C     timerStarts :: Timer counters for each timer and each thread
 C     timerStops 
@@ -909,7 +909,7 @@ CCE107 Initialization of common block for PAPI timers
       BLOCK DATA setpapivalues
 #include "EEPARAMS.h"
       INTEGER maxTimers
-      PARAMETER (maxTimers = 40)
+      PARAMETER (maxTimers = 50)
       INTEGER nmaxevents
       PARAMETER (nmaxevents = 18)
       INTEGER size
@@ -997,7 +997,7 @@ CCE107 Initialization of common block for PCL summary performance
       BLOCK DATA setpcls
 #include "EEPARAMS.h"
       INTEGER maxTimers
-      PARAMETER (maxTimers = 40)
+      PARAMETER (maxTimers = 50)
       INTEGER nmaxevents
       PARAMETER (nmaxevents = 61)
       INTEGER size
