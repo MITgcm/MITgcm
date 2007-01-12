@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.764 2007/01/11 00:29:41 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.765 2007/01/12 19:18:24 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58u_post
+o new test-exp: fizhi-cs-32x32x40 (40 levels) to replace the 10 levels.
 o move call to INI_FORCING from PACKAGES_INIT_VARIABLES to INITIALISE_VARIA.
 o testreport: add option "-skipdir" to skip some test.
 o exf: when input wind-stress (#undef ALLOW_ATM_WIND), by-pass turbulent 
