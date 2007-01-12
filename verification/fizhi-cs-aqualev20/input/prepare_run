@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/input/prepare_run,v 1.2 2006/11/27 17:00:37 molod Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/input/prepare_run,v 1.3 2007/01/12 16:44:25 molod Exp $
 #  $Name:  $
  
 #- in order to save disc space, take *.bin files
 #- from this dir:
-fromDir="../../fizhi-cs-32x32x10/input"
+fromDir="../../fizhi-cs-32x32x40/input"
 
 fileList=`( cd $fromDir ; ls data.gcmo3 TSMo3.v02.gra tile00?.mitgrid )`
 
