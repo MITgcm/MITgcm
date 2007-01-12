@@ -71,7 +71,7 @@
  ChkptFreq=0.0,
  dumpFreq=0.0,
  dumpInitAndLast=.FALSE.,
- monitorFreq=864000.,
+ monitorFreq=120.,
  taveFreq=0.0,
  tave_lastiter=1.,
  &
