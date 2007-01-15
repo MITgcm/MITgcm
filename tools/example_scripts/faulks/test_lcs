@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs,v 1.4 2007/01/15 01:13:28 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_lcs,v 1.5 2007/01/15 03:22:41 edhill Exp $
 
 #  Ed Hill
 
@@ -95,8 +95,8 @@ echo "  done"
 new_dir='MITgcm_g77'
 test -e $new_dir  &&  rm -rf $new_dir
 mkdir $new_dir
-(
-  cd $new_dir
+
+  pushd $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
   cd verification
@@ -108,13 +108,13 @@ mkdir $new_dir
   echo "======================"
   echo
   $comm | tail -100
-)
+  popd
 
 new_dir='MITgcm_ifort'
 test -e $new_dir  &&  rm -rf $new_dir
 mkdir $new_dir
-(
-  cd $new_dir
+
+  pushd $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
   cd verification
@@ -123,13 +123,13 @@ mkdir $new_dir
   echo "======================"
   echo
   $comm | tail -100
-)
+  popd
 
 new_dir='MITgcm_pgi'
 test -e $new_dir  &&  rm -rf $new_dir
 mkdir $new_dir
-(
-  cd $new_dir
+
+  pushd $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
   export PGI=/usr/local/pkg/pgi/pgi-5.2-fc3
@@ -139,13 +139,13 @@ mkdir $new_dir
   echo "======================"
   echo
   $comm | tail -100
-)
+  popd
 
 new_dir='MITgcm_adm'
 test -e $new_dir  &&  rm -rf $new_dir
 mkdir $new_dir
-(
-  cd $new_dir
+
+  pushd $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
   cd verification
@@ -157,5 +157,6 @@ mkdir $new_dir
   echo "======================"
   echo
   $comm | tail -100
-)
+  popd
+
 
