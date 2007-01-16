@@ -9,10 +9,11 @@
  f0=0.,
  beta=0.,
  tAlpha=0.,
+ sBeta= 0.,
  momStepping=.FALSE.,
  hFacMin=0.1,
  tempAdvScheme=77,
- saltAdvScheme=20,
+ saltAdvScheme=81,
  readBinaryPrec=64,
  writeBinaryPrec=64,
  &
@@ -48,4 +49,5 @@
  bathyFile='bathy_slope.bin',
  uVelInitFile='Uvel.bin',
  hydrogThetaFile='Tini_G.bin',
+ hydrogSaltFile ='Tini_G.bin',
  &
