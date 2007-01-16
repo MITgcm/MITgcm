@@ -30,3 +30,4 @@ gad_init_varia.f
 gad_u3_adv_r.f
 gad_u3_adv_x.f
 gad_u3_adv_y.f
+gad_som_exchanges.f
