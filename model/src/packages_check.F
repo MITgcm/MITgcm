@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.37 2006/09/06 15:30:25 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.38 2007/01/16 04:40:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -43,6 +43,10 @@ CEOP
       IF (useRunClock) CALL RUNCLOCK_CHECK( myThid )
 #else
       IF (useRunClock) CALL PACKAGES_CHECK_ERROR('RUNCLOCK', myThid)
+#endif
+
+#ifdef ALLOW_GENERIC_ADVDIFF
+      IF (useGAD) CALL GAD_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_KPP

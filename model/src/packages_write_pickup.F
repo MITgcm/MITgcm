@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.24 2006/10/25 20:42:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.25 2007/01/16 04:40:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,6 +63,14 @@ C     Create suffix to pass on to package pickup routines
       ELSE
         WRITE(fn,'(A)') checkPtSuff(nCheckLev)
       ENDIF
+
+#ifdef ALLOW_GENERIC_ADVDIFF
+C     Write restart file for 2nd-Order moment (active) Tracers
+      IF ( useGAD ) THEN
+        CALL GAD_WRITE_PICKUP(
+     I                 fn, myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
 #ifdef ALLOW_CD_CODE
       IF (useCDscheme) THEN

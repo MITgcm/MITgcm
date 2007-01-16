@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.113 2007/01/10 19:01:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.114 2007/01/16 04:40:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,6 +82,7 @@ C     == Global variables ===
 #include "GRID.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
+# include "GAD_SOM_VARS.h"
 #endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
@@ -180,7 +181,7 @@ C                      index into fVerTerm.
 CEOP
 
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB ) 
+         IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_ENTER('THERMODYNAMICS',myThid)
 #endif
 
@@ -341,9 +342,25 @@ C to be able to exclude this scheme to avoid excessive storage and
 C recomputation. It *is* differentiable, if you need it.
 C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
-        IF (tempMultiDimAdvec) THEN
+#ifdef GAD_ALLOW_SOM_ADVECT
+        IF ( tempSOM_Advection ) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB ) 
+          IF ( debugLevel .GE. debLevB )
+     &     CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
+#endif
+          CALL GAD_SOM_ADVECT(
+     I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
+     I             GAD_TEMPERATURE,
+     I             uVel, vVel, wVel, theta,
+     U             som_T,
+     O             gT,
+     I             bi,bj,myTime,myIter,myThid)
+        ELSEIF (tempMultiDimAdvec) THEN
+#else /* GAD_ALLOW_SOM_ADVECT */
+        IF (tempMultiDimAdvec) THEN
+#endif /* GAD_ALLOW_SOM_ADVECT */
+#ifdef ALLOW_DEBUG
+          IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 #endif
           CALL GAD_ADVECTION(
@@ -353,9 +370,25 @@ C disable this section of code.
      O             gT,
      I             bi,bj,myTime,myIter,myThid)
         ENDIF
-        IF (saltMultiDimAdvec) THEN
+#ifdef GAD_ALLOW_SOM_ADVECT
+        IF ( saltSOM_Advection ) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB ) 
+          IF ( debugLevel .GE. debLevB )
+     &     CALL DEBUG_CALL('GAD_SOM_ADVECT',myThid)
+#endif
+          CALL GAD_SOM_ADVECT(
+     I             saltImplVertAdv, saltAdvScheme, saltVertAdvScheme,
+     I             GAD_SALINITY,
+     I             uVel, vVel, wVel, salt,
+     U             som_S,
+     O             gS,
+     I             bi,bj,myTime,myIter,myThid)
+        ELSEIF (saltMultiDimAdvec) THEN
+#else /* GAD_ALLOW_SOM_ADVECT */
+        IF (saltMultiDimAdvec) THEN
+#endif /* GAD_ALLOW_SOM_ADVECT */
+#ifdef ALLOW_DEBUG
+          IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 #endif
           CALL GAD_ADVECTION(
@@ -372,7 +405,7 @@ C of whether multiDimAdvection is set or not.
 #ifdef ALLOW_PTRACERS
         IF ( usePTRACERS ) THEN
 #ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB ) 
+          IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_CALL('PTRACERS_ADVECTION',myThid)
 #endif
          CALL PTRACERS_ADVECTION( bi,bj,myIter,myTime,myThid )
@@ -381,7 +414,7 @@ C of whether multiDimAdvection is set or not.
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB ) 
+        IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_MSG('ENTERING DOWNWARD K LOOP',myThid)
 #endif
 

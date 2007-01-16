@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.21 2006/03/30 02:20:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.22 2007/01/16 04:40:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,8 +25,11 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD.h"
+#endif
 #ifdef ALLOW_CD_CODE
-#include "CD_CODE_VARS.h"
+# include "CD_CODE_VARS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -38,16 +41,6 @@ CEOP
       IF ( .NOT.useOffLine ) THEN
 C-    Apply Exchanges on dynamics state variable, except in Off-Line mode
 
-c     _EXCH_XYZ_R8( Gu , myThid )
-c     _EXCH_XYZ_R8( Gv , myThid )
-c     _EXCH_XYZ_R8( Gt , myThid )
-c     _EXCH_XYZ_R8( Gs , myThid )
-c     _EXCH_XYZ_R8( gUNm1 , myThid )
-c     _EXCH_XYZ_R8( gVNm1 , myThid )
-c     _EXCH_XYZ_R8( gTNm1 , myThid )
-c     _EXCH_XYZ_R8( gSNm1 , myThid )
-c     _EXCH_XYZ_R8( uVel , myThid )
-c     _EXCH_XYZ_R8( vVel , myThid )
       IF ( .NOT.staggerTimeStep .OR. .NOT.useMultiDimAdvec ) THEN
        CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
        IF ( .NOT.implicitIntGravWave )
@@ -59,6 +52,11 @@ c    & _EXCH_XY_R8( etaN , myThid )
        _EXCH_XYZ_R8( theta, myThid )
        _EXCH_XYZ_R8( salt , myThid )
       ENDIF
+
+#ifdef ALLOW_GENERIC_ADVDIFF
+      IF ( tempSOM_Advection .OR. saltSOM_Advection )
+     &  CALL GAD_SOM_EXCHANGES( myThid )
+#endif
 
 #ifdef ALLOW_CD_CODE
 c     _EXCH_XYZ_R8( guCD , myThid )
