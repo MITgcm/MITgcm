@@ -11,7 +11,7 @@
  beta=0.,
  tAlpha=0.,
  momStepping=.FALSE.,
- tempAdvScheme=33,
+ tempAdvScheme=80,
  saltAdvScheme=33,
  &
 
