@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.14 2005/11/06 22:14:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.15 2007/01/16 04:38:34 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -52,6 +52,18 @@ C ENUM_DST3_FLUX_LIMIT :: 3-DST flux limited
       INTEGER ENUM_DST3_FLUX_LIMIT
       PARAMETER(ENUM_DST3_FLUX_LIMIT=33)
 
+C ENUM_SOM_PRATHER :: 2nd Order-Moment Advection Scheme, Prather, 1986
+      INTEGER ENUM_SOM_PRATHER
+      PARAMETER(ENUM_SOM_PRATHER=80)
+
+C ENUM_SOM_LIMITER :: 2nd Order-Moment Advection Scheme, Prather Limiter
+      INTEGER ENUM_SOM_LIMITER
+      PARAMETER(ENUM_SOM_LIMITER=81)
+
+C nSOM :: number of 1rst & 2nd Order-Moments: 1+1 (1D), 2+3 (2D), 3+6 (3D)
+      INTEGER nSOM
+      PARAMETER( nSOM = 3+6 )
+
 C oneSixth :: Third/fourth order interpolation factor
       _RL oneSixth
       PARAMETER(oneSixth=1.D0/6.D0)
@@ -73,6 +85,8 @@ C GAD_TR1 :: passive tracer 1
 CEOP
 
 C--   COMMON /GAD_PARM_L/ Logical parameters for GAD pkg routines
+C tempSOM_Advection :: set to T if using 2nd-Order Moment advection for Temp
+C saltSOM_Advection :: set to T if using 2nd-Order Moment advection for Salt
 C tempMultiDimAdvec :: set to T if using multi-dim advection for Temp
 C saltMultiDimAdvec :: set to T if using multi-dim advection for Salt
 C AdamsBashforthGt  :: apply Adams-Bashforth extrapolation on T tendency (=Gt)
@@ -81,6 +95,8 @@ C AdamsBashforth_T  :: apply Adams-Bashforth extrapolation on Pot.Temp.
 C AdamsBashforth_S  :: apply Adams-Bashforth extrapolation on Salinity
 C tempStartAB       :: start this run (or restart) without previous gT/Temp
 C saltStartAB       :: start this run (or restart) without previous gS/Salt
+      LOGICAL tempSOM_Advection
+      LOGICAL saltSOM_Advection
       LOGICAL tempMultiDimAdvec
       LOGICAL saltMultiDimAdvec
       LOGICAL AdamsBashforthGt
@@ -90,6 +106,7 @@ C saltStartAB       :: start this run (or restart) without previous gS/Salt
       LOGICAL tempStartAB
       LOGICAL saltStartAB
       COMMON /GAD_PARM_L/
+     & tempSOM_Advection, saltSOM_Advection,
      & tempMultiDimAdvec, saltMultiDimAdvec,
      & AdamsBashforthGt, AdamsBashforthGs,
      & AdamsBashforth_T, AdamsBashforth_S,
