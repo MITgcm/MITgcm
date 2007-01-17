@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.58 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.59 2007/01/17 17:50:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -222,12 +222,12 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
      &         /deltaTMom/deltaTfreesurf
      &         *( etaN(i,j,bi,bj)
-     &           +phi_nh(i,j,ks,bi,bj)*horiVertRatio/gravity )
+     &           +phi_nh(i,j,ks,bi,bj)*recip_Bo(i,j,bi,bj) )
             cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
      &       -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)
      &         /deltaTMom/deltaTfreesurf
      &         *( etaN(i,j,bi,bj)
-     &           +phi_nh(i,j,ks,bi,bj)*horiVertRatio/gravity )
+     &           +phi_nh(i,j,ks,bi,bj)*recip_Bo(i,j,bi,bj) )
            ENDIF
           ENDDO
          ENDDO
