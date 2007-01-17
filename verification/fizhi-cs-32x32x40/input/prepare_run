@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-32x32x40/input/prepare_run,v 1.1 2007/01/11 17:56:27 molod Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-32x32x40/input/prepare_run,v 1.2 2007/01/17 23:25:17 jmc Exp $
 #  $Name:  $
  
 #  Figure out which veg file we need (how many tiles)
@@ -11,11 +11,12 @@
    if test $sNx = '32' ; then 
     vegfile=../input/veg19232.6tile.data
     ln -sf $vegfile veg19232.data
+    echo ' using' $vegfile
    elif test $sNx = '16' ; then
     vegfile=../input/veg19232.24tile.data
     ln -sf $vegfile veg19232.data
+    echo ' using' $vegfile
    else
     echo 'Error: No veg tile dataset!'
    fi
   fi
-  echo ' using' $vegfile
