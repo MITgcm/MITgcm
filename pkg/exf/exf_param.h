@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.27 2006/10/12 21:34:59 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.28 2007/01/18 23:44:43 dimitri Exp $
 c
 c
 c     ==================================================================
@@ -46,6 +46,9 @@ c     in conjunction with thsice/seaice)
       _RL     ocean_emissivity
       _RL     ice_emissivity
       _RL     snow_emissivity
+
+c     Drag coefficient scaling factor
+      _RL     exf_scal_BulkCdn
 
 c     Maximum absolute windstress, used to reset unreastically high
 c     data values
@@ -330,6 +333,7 @@ C                           instead of _YEAR for useExfYearlyFields
      &                     repeatPeriod,      exf_monFreq,
      &                     exf_albedo,        ocean_emissivity,
      &                     ice_emissivity,    snow_emissivity,
+     &                     exf_scal_BulkCdn,
      &                     hfluxperiod,       hfluxstartdate,
      &                     atempperiod,       atempstartdate,
      &                     aqhperiod,         aqhstartdate,

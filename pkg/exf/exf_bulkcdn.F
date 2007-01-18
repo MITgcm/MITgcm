@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulkcdn.F,v 1.5 2003/10/09 04:19:19 edhill Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulkcdn.F,v 1.6 2007/01/18 23:44:43 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -38,13 +38,15 @@ c     == global variables ==
 
 #include "SIZE.h"
 #include "exf_constants.h"
+#include "exf_param.h"
 
 c     == function arguments ==
       _RL umps
 
 c     == end of interface ==
 
-      exf_BulkCdn = cdrag_1/umps + cdrag_2 + cdrag_3*umps
+      exf_BulkCdn = exf_scal_BulkCdn *
+     &     ( cdrag_1/umps + cdrag_2 + cdrag_3*umps )
 
 #else
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.35 2006/10/16 15:39:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.36 2007/01/18 23:44:43 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -72,6 +72,7 @@ c     Surface flux data.
       namelist /exf_nml/
      &      windstressmax,       repeatPeriod,   exf_albedo,   
      &   ocean_emissivity,     ice_emissivity, snow_emissivity,
+     &   exf_scal_BulkCdn,
      &    hfluxstartdate1,    hfluxstartdate2,   hfluxperiod,
      &    atempstartdate1,    atempstartdate2,   atempperiod,
      &      aqhstartdate1,      aqhstartdate2,     aqhperiod,
@@ -330,6 +331,8 @@ c--   an earlier setting of 5.5 = ocean_emissivity*stefanBoltzmann
       ocean_emissivity   = 5.50D-8/5.670D-8
       ice_emissivity     = 0.98 _d 0
       snow_emissivity    = 0.98 _d 0
+
+      exf_scal_BulkCdn   = 1.00 _d 0
 
 c     Data files.
       hfluxfile          = ' '
