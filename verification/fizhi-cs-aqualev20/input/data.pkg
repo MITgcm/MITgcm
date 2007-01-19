@@ -1,8 +1,0 @@
-# Packages
- &PACKAGES
- useFIZHI=.TRUE.,
- useGRIDALT=.TRUE.,
- useSHAP_FILT=.TRUE.,
- useDIAGNOSTICS=.TRUE.,
- useMNC=.TRUE.,
- &
