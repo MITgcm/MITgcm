@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.43 2006/12/05 05:26:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.44 2007/01/20 21:20:11 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -238,6 +238,10 @@ cph with limiters in forward, but without limiters in reverse.
      I           uTrans, uFld, maskW(1-Olx,1-Oly,k,bi,bj), locABT,
      O           af, myThid )
          ENDIF
+        ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
+          CALL GAD_OS7MP_ADV_X( bi,bj,k, dTtracerLev(k),
+     I            uTrans, uFld, maskW(1-Olx,1-Oly,k,bi,bj), locABT,
+     O            af, myThid )
         ELSE
          STOP 'GAD_CALC_RHS: Bad advectionScheme (X)'
         ENDIF
@@ -347,6 +351,10 @@ cph with limiters in forward, but without limiters in reverse.
      I           vTrans, vFld, maskS(1-Olx,1-Oly,k,bi,bj), locABT,
      O           af, myThid )
          ENDIF
+        ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
+          CALL GAD_OS7MP_ADV_Y( bi,bj,k, dTtracerLev(k),
+     I            vTrans, vFld, maskS(1-Olx,1-Oly,k,bi,bj), locABT,
+     O            af, myThid )
         ELSE
           STOP 'GAD_CALC_RHS: Bad advectionScheme (Y)'
         ENDIF
@@ -458,6 +466,10 @@ cph with limiters in forward, but without limiters in reverse.
      I         dTtracerLev(k),rTrans,wFld,TracAB(1-Olx,1-Oly,1,bi,bj),
      O         af, myThid )
           ENDIF
+        ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
+           CALL GAD_OS7MP_ADV_R( bi,bj,k,
+     I         dTtracerLev(k),rTrans,wFld,TracAB(1-Olx,1-Oly,1,bi,bj),
+     O         af, myThid )
         ELSE
           STOP 'GAD_CALC_RHS: Bad vertAdvecScheme (R)'
         ENDIF

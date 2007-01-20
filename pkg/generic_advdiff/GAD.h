@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.15 2007/01/16 04:38:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.16 2007/01/20 21:20:11 adcroft Exp $
 C $Name:  $
 
 CBOP
@@ -51,6 +51,10 @@ C ENUM_DST3 :: 3rd Order Direst Space and Time
 C ENUM_DST3_FLUX_LIMIT :: 3-DST flux limited
       INTEGER ENUM_DST3_FLUX_LIMIT
       PARAMETER(ENUM_DST3_FLUX_LIMIT=33)
+
+C ENUM_OS7MP :: 7th Order One Step method with Monotonicity Preserving Limiter
+      INTEGER ENUM_OS7MP
+      PARAMETER(ENUM_OS7MP=7)
 
 C ENUM_SOM_PRATHER :: 2nd Order-Moment Advection Scheme, Prather, 1986
       INTEGER ENUM_SOM_PRATHER

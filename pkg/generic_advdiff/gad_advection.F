@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.45 2007/01/10 18:53:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.46 2007/01/20 21:20:11 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -383,6 +383,10 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
           CALL GAD_DST3FL_ADV_X(    bi,bj,k, dTtracerLev(k),
      I                              uTrans, uFld, maskLocW, localTij,
      O                              af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
+          CALL GAD_OS7MP_ADV_X(     bi,bj,k, dTtracerLev(k),
+     I                              uTrans, uFld, maskLocW, localTij,
+     O                              af, myThid )
         ELSE
          STOP 'GAD_ADVECTION: adv. scheme incompatibale with multi-dim'
         ENDIF
@@ -548,6 +552,10 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           CALL GAD_DST3FL_ADV_Y(    bi,bj,k, dTtracerLev(k),
+     I                              vTrans, vFld, maskLocS, localTij,
+     O                              af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
+          CALL GAD_OS7MP_ADV_Y(     bi,bj,k, dTtracerLev(k),
      I                              vTrans, vFld, maskLocS, localTij,
      O                              af, myThid )
         ELSE
@@ -786,6 +794,10 @@ C-    Compute vertical advective flux in the interior:
      O                               fVerT(1-Olx,1-Oly,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
            CALL GAD_DST3FL_ADV_R(    bi,bj,k, dTtracerLev(k),
+     I                               rTrans, wFld, localTijk,
+     O                               fVerT(1-Olx,1-Oly,kUp), myThid )
+         ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
+           CALL GAD_OS7MP_ADV_R(     bi,bj,k, dTtracerLev(k),
      I                               rTrans, wFld, localTijk,
      O                               fVerT(1-Olx,1-Oly,kUp), myThid )
          ELSE

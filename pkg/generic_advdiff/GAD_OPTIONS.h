@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.7 2007/01/16 04:38:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.8 2007/01/20 21:20:11 adcroft Exp $
 C $Name:  $
 
 CBOP
@@ -44,7 +44,7 @@ C We can disable it here using CPP because run-time flags are insufficient.
 C This enable the use of 2nd-Order Moment advection scheme (Prather, 1986)
 C due to large memory space (10 times more / tracer) requirement,
 C by default, this part of the code is not compiled.
-#undef GAD_ALLOW_SOM_ADVECT
+#define GAD_ALLOW_SOM_ADVECT
 
 #else
 
