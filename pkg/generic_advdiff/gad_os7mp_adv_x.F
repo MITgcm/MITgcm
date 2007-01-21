@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_x.F,v 1.1 2007/01/20 21:20:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_x.F,v 1.2 2007/01/21 17:25:31 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -120,13 +120,15 @@ C        7th order correction [i+2 i+1 i i-1 i-2 i-3 i-4]
          Phi = Phi - Msk * Fac * Del
 
          DelIp = ( Qip - Qi ) * MskI
-         Phi = sign(1.,Phi)*sign(1.,DelIp)*abs(Phi+Eps)/abs(DelIp+Eps)
+         Phi = sign(1. _d 0,Phi)*sign(1. _d 0,DelIp)
+     &        *abs(Phi+Eps)/abs(DelIp+Eps)
 
          DelI = ( Qi - Qim ) * MskIm
-         rp1h =sign(1.,DelI)*sign(1.,DelIp)*abs(DelI+Eps)/abs(DelIp+Eps)
+         rp1h =sign(1. _d 0,DelI)*sign(1. _d 0,DelIp)
+     &        *abs(DelI+Eps)/abs(DelIp+Eps)
 
 C        TVD limiter
-!        Phi = max(0., min( 2./(1-cfl), Phi, 2.*rp1h/cfl ) )
+!        Phi = max(0. _d 0, min( 2./(1-cfl), Phi, 2.*rp1h/cfl ) )
 
 C        MP limiter
          d2   = ( ( Qip + Qim ) - 2.*Qi  ) * MskI * MskIm
@@ -136,19 +138,21 @@ C        MP limiter
          B = 4.*d2p1 - d2
          C = d2
          D = d2p1;
-         dp1h = max(min(A,B,C,D),0.)+min(max(A,B,C,D),0.)
+         dp1h = max(min(A,B,C,D),0. _d 0)+min(max(A,B,C,D),0. _d 0)
          A = 4.*d2m1 - d2
          B = 4.*d2 - d2m1
          C = d2m1
          D = d2;
-         dm1h = max(min(A,B,C,D),0.)+min(max(A,B,C,D),0.)
+         dm1h = max(min(A,B,C,D),0. _d 0)+min(max(A,B,C,D),0. _d 0)
          qMD = 0.5*( ( Qi + Qip ) - dp1h )
          qUL = Qi + (1.-cfl)/cfl*( Qi-Qim )
          qLC = Qi + 0.5*( 1.+dm1h/(Qi-Qim+Eps) )*(qUL-Qi)
          PhiMD = 2./(1.-cfl)*(qMD-Qi+Eps)/(Qip-Qi+Eps)
          PhiLC = 2.*rp1h/cfl*(qLC-Qi+Eps)/(qUL-Qi+Eps)
-         PhiMin = max(min(0.,PhiMD),min(0.,2.*rp1h/cfl,PhiLC))
-         PhiMax = min(max(2./(1.-cfl),PhiMD),max(0.,2.*rp1h/cfl,PhiLC))
+         PhiMin = max(min(0. _d 0,PhiMD),
+     &        min(0. _d 0,2.*rp1h/cfl,PhiLC))
+         PhiMax = min(max(2. _d 0/(1.-cfl),PhiMD),
+     &        max(0. _d 0,2.*rp1h/cfl,PhiLC))
          Phi = max(PhiMin,min(Phi,PhiMax))
 
          Psi = Phi * 0.5 * (1. - cfl)
