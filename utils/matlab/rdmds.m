@@ -63,7 +63,7 @@ function [AA,iters,MM] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.18 2006/12/29 04:33:16 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.19 2007/01/22 19:00:31 molod Exp $
 
 AA=[];
 iters=[];
@@ -177,7 +177,8 @@ if j > 0, %- to comment out this block: "if j < 0" (since j is always > 0)
   elseif ind1 > 0,
     Mj=M(ind1:ind2); ind=findstr(Mj,'['); Mj=Mj(1+ind:end);
 %   add it-number from Mj to M2 (if different):
-    if isempty(findstr(M2,Mj)), M2=[M2(1:end-1),strtrim(Mj)]; end
+%   if isempty(findstr(M2,Mj)), M2=[M2(1:end-1),strtrim(Mj)]; end
+    if isempty(findstr(M2,Mj)), M2=[M2(1:end-1) Mj]; end
   end
  end
 %  save modifications:
@@ -236,7 +237,8 @@ while keepgoing > 0,
 % Remove comments of form //
   line=[line ' //']; ind=findstr(line,'//'); line=line(1:ind(1)-1);
 % Add to total string
-  allstr=[allstr,strtrim(line),' '];
+  allstr=[allstr line];
+% allstr=[allstr,strtrim(line),' ']
  end
 end
 
