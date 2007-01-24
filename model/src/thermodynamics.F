@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.114 2007/01/16 04:40:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.115 2007/01/24 08:06:25 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -325,7 +325,7 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-# ifdef ALLOW_DEPTH_CONTROL
+# if ((defined ALLOW_DEPTH_CONTROL) || (defined NONLIN_FRSURF))
 CADJ STORE gtnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE gsnm1(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 # endif
@@ -562,7 +562,8 @@ C
 #ifdef ALLOW_AUTODIFF_TAMC 
 CADJ STORE gTnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-CADJ STORE fvert(:,:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gt(:,:,:,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE fvert(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL CALC_GT(
@@ -595,6 +596,7 @@ CADJ STORE fvert(:,:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE gSnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
+CADJ STORE gs(:,:,:,bi,bj)    = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE fvers(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
