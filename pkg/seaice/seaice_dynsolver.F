@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.13 2006/12/14 23:23:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.14 2007/01/25 01:41:44 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -221,8 +221,8 @@ C--   NOW SET UP ICE PRESSURE AND VISCOSITIES
       IF ( SEAICEuseDYNAMICS ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
-cphCADJ STORE uice = comlev1, key=ikey_dynamics
-cphCADJ STORE vice = comlev1, key=ikey_dynamics
+CADJ STORE uice = comlev1, key=ikey_dynamics
+CADJ STORE vice = comlev1, key=ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef SEAICE_ALLOW_EVP
