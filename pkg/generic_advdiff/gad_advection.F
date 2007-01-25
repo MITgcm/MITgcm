@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.46 2007/01/20 21:20:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.47 2007/01/25 16:59:08 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -383,10 +383,12 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
           CALL GAD_DST3FL_ADV_X(    bi,bj,k, dTtracerLev(k),
      I                              uTrans, uFld, maskLocW, localTij,
      O                              af, myThid )
+#ifndef ALLOW_AUTODIFF_TAMC
         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_X(     bi,bj,k, dTtracerLev(k),
      I                              uTrans, uFld, maskLocW, localTij,
      O                              af, myThid )
+#endif
         ELSE
          STOP 'GAD_ADVECTION: adv. scheme incompatibale with multi-dim'
         ENDIF
@@ -554,10 +556,12 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
           CALL GAD_DST3FL_ADV_Y(    bi,bj,k, dTtracerLev(k),
      I                              vTrans, vFld, maskLocS, localTij,
      O                              af, myThid )
+#ifndef ALLOW_AUTODIFF_TAMC
         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_Y(     bi,bj,k, dTtracerLev(k),
      I                              vTrans, vFld, maskLocS, localTij,
      O                              af, myThid )
+#endif
         ELSE
          STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
         ENDIF
@@ -796,10 +800,12 @@ C-    Compute vertical advective flux in the interior:
            CALL GAD_DST3FL_ADV_R(    bi,bj,k, dTtracerLev(k),
      I                               rTrans, wFld, localTijk,
      O                               fVerT(1-Olx,1-Oly,kUp), myThid )
+#ifndef ALLOW_AUTODIFF_TAMC
          ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R(     bi,bj,k, dTtracerLev(k),
      I                               rTrans, wFld, localTijk,
      O                               fVerT(1-Olx,1-Oly,kUp), myThid )
+#endif
          ELSE
           STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
          ENDIF
