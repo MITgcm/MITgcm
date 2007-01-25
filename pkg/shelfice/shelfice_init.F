@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_init.F,v 1.3 2006/08/14 16:52:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_init.F,v 1.4 2007/01/25 21:39:25 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -40,7 +40,7 @@ C-----------------------------------------------------------------------
          DO I = 1-OLx, sNx+OLx
           kTopC(i,j,bi,bj) = 0
           DO K = Nr, 1, -1
-           IF ( hFacC(I,J,K,bi,bj) .NE. 0. _d 0 ) 
+           IF ( maskC(I,J,K,bi,bj) .NE. 0. _d 0 )
      &          kTopC(I,J,bi,bj) = K
           ENDDO
           shelficeLoadAnomaly   (i,j,bi,bj) = 0. _d 0
@@ -53,14 +53,15 @@ C-----------------------------------------------------------------------
        ENDDO
       ENDDO
       IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
-       _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XY_RS( SHELFICEloadAnomalyFile, ' ', 
+C-    must wait for initialisation to be finished before master loads from file
+       _BARRIER
+       CALL READ_FLD_XY_RS( SHELFICEloadAnomalyFile, ' ',
      &      shelficeLoadAnomaly, 0, myThid )
-       _END_MASTER(myThid)
+C-    EXCH call implicitly contains Barrier: no need for an other one.
        _EXCH_XY_R4( shelficeLoadAnomaly, myThid )
       ENDIF
 
 #endif /* ALLOW_SHELFICE */
 
-      return
-      end
+      RETURN
+      END

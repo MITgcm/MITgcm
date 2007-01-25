@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.4 2006/08/14 16:52:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.5 2007/01/25 21:39:25 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -45,13 +45,15 @@ CEOP
      &     SHELFICElatentHeat, SHELFICEHeatCapacity_Cp,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
      &     SHELFICEthetaSurface,
-     &     useISOMIPTD, no_slip_shelfice, SHELFICEboundaryLayer, 
+     &     useISOMIPTD, no_slip_shelfice, SHELFICEboundaryLayer,
      &     SHELFICEwriteState,
      &     SHELFICE_dumpFreq,
      &     SHELFICE_taveFreq,
      &     SHELFICE_tave_mnc,
      &     SHELFICE_dump_mnc,
      &     SHELFICEloadAnomalyFile
+
+      _BEGIN_MASTER(myThid)
 
 C This routine has been called by the main model so we set our
 C internal flag to indicate we are in business
@@ -84,10 +86,9 @@ C Set defaults values for parameters in SHELFICE.h
 #endif
 
 C Open and read the data.shelfice file
-      _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)') ' SHELFICE_READPARMS: opening data.shelfice'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-     &                   SQUEEZE_RIGHT , 1)
+     &                   SQUEEZE_RIGHT, myThid )
       CALL OPEN_COPY_DATA_FILE(
      I                   'data.shelfice', 'SHELFICE_READPARMS',
      O                   iUnit,
@@ -96,20 +97,16 @@ C Open and read the data.shelfice file
       WRITE(msgBuf,'(A)')
      &  ' SHELFICE_READPARMS: finished reading data.shelfice'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-     &                   SQUEEZE_RIGHT , 1)
+     &                   SQUEEZE_RIGHT, myThid )
 
 C Close the open data file
       CLOSE(iUnit)
-      _END_MASTER(myThid)
 
-C Everyone else must wait for the parameters to be loaded
-      _BARRIER
-
-C Now set-up any remaining parameters that result from the input parameters 
+C Now set-up any remaining parameters that result from the input parameters
       IF ( SHELFICElatentHeat .NE. 0. _d 0 )
      &     recip_SHELFICElatentHeat = 1. _d 0/SHELFICElatentHeat
       IF ( SHELFICEsaltTransCoeff .EQ. UNSET_RL )
-     &     SHELFICEsaltTransCoeff = 
+     &     SHELFICEsaltTransCoeff =
      &     5.05 _d -3 *SHELFICEheatTransCoeff
 
 C-    Set Output type flags :
@@ -123,6 +120,10 @@ C-    Set Output type flags :
      &       .AND. SHELFICE_dump_mnc ) SHELFICE_dump_mdsio = .FALSE.
       ENDIF
 #endif
+
+      _END_MASTER(myThid)
+C Everyone else must wait for the parameters to be loaded
+      _BARRIER
 
 #ifdef ALLOW_MNC
 C     Initialize MNC variable information for SHELFICE
