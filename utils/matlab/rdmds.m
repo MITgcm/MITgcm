@@ -63,7 +63,7 @@ function [AA,iters,MM] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.19 2007/01/22 19:00:31 molod Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.20 2007/01/26 22:36:34 jmc Exp $
 
 AA=[];
 iters=[];
@@ -177,8 +177,8 @@ if j > 0, %- to comment out this block: "if j < 0" (since j is always > 0)
   elseif ind1 > 0,
     Mj=M(ind1:ind2); ind=findstr(Mj,'['); Mj=Mj(1+ind:end);
 %   add it-number from Mj to M2 (if different):
-%   if isempty(findstr(M2,Mj)), M2=[M2(1:end-1),strtrim(Mj)]; end
-    if isempty(findstr(M2,Mj)), M2=[M2(1:end-1) Mj]; end
+    if isempty(findstr(M2,Mj)), M2=[deblank(M2(1:end-1)),Mj]; end
+%   if isempty(findstr(M2,Mj)), M2=[M2(1:end-1) Mj]; end
   end
  end
 %  save modifications:
@@ -235,10 +235,11 @@ while keepgoing > 0,
     line=line(ind(1)+1:end);
   end
 % Remove comments of form //
-  line=[line ' //']; ind=findstr(line,'//'); line=line(1:ind(1)-1);
-% Add to total string
-  allstr=[allstr line];
-% allstr=[allstr,strtrim(line),' ']
+  line=[line,' //']; ind=findstr(line,'//'); line=line(1:ind(1)-1);
+% Add to total string (without starting & ending blanks)
+  while line(1:1) == ' ', line=line(2:end); end
+  allstr=[allstr,deblank(line),' '];
+% allstr=[allstr line];
  end
 end
 
@@ -251,7 +252,8 @@ if size(ind1) ~= size(ind2)
  error('The /* ... */ comments are not properly paired')
 end
 while size(ind1,2) > 0
- allstr=[allstr(1:ind1(1)-1) allstr(ind2(1)+3:end)];
+ allstr=[deblank(allstr(1:ind1(1)-1)) allstr(ind2(1)+2:end)];
+%allstr=[allstr(1:ind1(1)-1) allstr(ind2(1)+3:end)];
  ind1=findstr(allstr,'/*'); ind2=findstr(allstr,'*/');
 end
 
