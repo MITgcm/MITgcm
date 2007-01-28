@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_output.F,v 1.1 2006/08/04 22:13:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_output.F,v 1.2 2007/01/28 18:13:36 dfer Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -119,10 +119,10 @@ C--   fluxes (2-D map):
           ELSE
             pf(1:1) = 'R'
           ENDIF
-          DO k = 1,80
+          DO k = 1,MAX_LEN_MBUF
             fmnc(k:k) = ' '
           ENDDO
-          WRITE(fmnc,'(a)') 'land'
+          fmnc(1:13) = 'land_snapshot'
 
           CALL MNC_CW_SET_UDIM(fmnc, -1, myThid)
           CALL MNC_CW_RL_W_S('D',fmnc,0,0,'T', myTime, myThid)
