@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.136 2006/07/07 20:10:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.137 2007/01/30 03:18:13 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -316,18 +316,6 @@ cph)
           phiSurfY(i,j)  = 0. _d 0
           guDissip(i,j)  = 0. _d 0
           gvDissip(i,j)  = 0. _d 0
-#ifdef ALLOW_AUTODIFF_TAMC
-cph(
-c--   need some re-initialisation here to break dependencies
-cph)
-# ifdef NONLIN_FRSURF
-#  ifndef DISABLE_RSTAR_CODE
-          dWtransC(i,j,bi,bj)  = 0. _d 0
-          dWtransU(i,j,bi,bj)  = 0. _d 0
-          dWtransV(i,j,bi,bj)  = 0. _d 0
-#  endif
-# endif /* NONLIN_FRSURF */
-#endif /* ALLOW_AUTODIFF_TAMC */
          ENDDO
         ENDDO
 
@@ -425,14 +413,6 @@ CADJ STORE gunm1(:,:,k,bi,bj)
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE gvnm1(:,:,k,bi,bj) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-#  ifndef DISABLE_RSTAR_CODE
-CADJ STORE dwtransc(:,:,bi,bj) 
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dwtransu(:,:,bi,bj) 
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dwtransv(:,:,bi,bj) 
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-#  endif
 #  ifdef ALLOW_CD_CODE
 CADJ STORE unm1(:,:,k,bi,bj) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -475,19 +455,6 @@ C        and step forward storing the result in gU, gV, etc...
          IF ( momStepping ) THEN
            IF (.NOT. vectorInvariantMomentum) THEN
 #ifdef ALLOW_MOM_FLUXFORM
-C
-# ifdef ALLOW_AUTODIFF_TAMC 
-#  ifdef NONLIN_FRSURF
-#   ifndef DISABLE_RSTAR_CODE
-CADJ STORE dwtransc(:,:,bi,bj) 
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dwtransu(:,:,bi,bj) 
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dwtransv(:,:,bi,bj) 
-CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
-#   endif
-#  endif
-# endif /* ALLOW_AUTODIFF_TAMC */
 C
               CALL MOM_FLUXFORM(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_surf_dr.F,v 1.5 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_surf_dr.F,v 1.6 2007/01/30 03:18:13 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,6 +25,10 @@ C     == Global variables
 c #include "DYNVARS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -46,14 +50,37 @@ CEOP
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)  
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          idynkey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_OBCS
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hfac_surfc(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
+CADJ STORE hfac_surfs(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
+CADJ STORE hfac_surfw(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
+# endif /* ALLOW_AUTODIFF_TAMC */
 C-- Apply OBC to hFac_surfW,S before updating hFacW,S
-        IF (useOBCS) CALL OBCS_APPLY_SURF_DR(
+        IF (useOBCS) THEN
+         CALL OBCS_APPLY_SURF_DR(
      I                    bi, bj, ksurfC, ksurfW, ksurfS,
      U                    hFac_surfC, hFac_surfW, hFac_surfS,
      I                    myThid )
+        ENDIF
 #endif /* ALLOW_OBCS */
 
 C-- Update the fractional thickness "hFacC" of the surface level ksurfC :
