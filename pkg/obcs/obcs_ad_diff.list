@@ -1,6 +1,8 @@
 obcs_apply_eta.f
 obcs_apply_sloc.f
 obcs_apply_tloc.f
+obcs_apply_r_star.f
+obcs_apply_surf_dr.f
 obcs_apply_ts.f	
 obcs_apply_uv.f	
 obcs_apply_w.f

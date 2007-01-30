@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_r_star.F,v 1.1 2003/01/30 00:05:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_r_star.F,v 1.2 2007/01/30 03:18:51 heimbach Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -31,6 +31,7 @@ C     == Routine Arguments ==
 
 #ifdef ALLOW_OBCS
 #ifdef NONLIN_FRSURF
+#ifndef DISABLE_RSTAR_CODE
 
 C     == Local variables ==
       INTEGER i,j
@@ -87,6 +88,7 @@ C  Western boundary
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#endif /* DISABLE_RSTAR_CODE */
 #endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS */
       RETURN
