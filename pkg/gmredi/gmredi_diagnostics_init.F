@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.3 2006/02/15 03:52:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.4 2007/01/30 15:17:52 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -121,16 +121,30 @@ c     IF ( useDiagnotics ) THEN
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
         diagName  = 'GM_KuzTz'
-        diagTitle = 'Redi Off-diagonal Tempetature flux: X component'
+        diagTitle = 'Redi Off-diagonal Temperature flux: X component'
         diagUnits = 'degC.m^3/s      '
         WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
         diagName  = 'GM_KvzTz'
-        diagTitle = 'Redi Off-diagonal Tempetature flux: Y component'
+        diagTitle = 'Redi Off-diagonal Temperature flux: Y component'
         diagUnits = 'degC.m^3/s      '
         WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'MR      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'GM_ubT  '
+        diagTitle = 'Zonal Mass-Weight Bolus Transp of Pot Temp'
+        diagUnits = 'degC.m^3/s      '
+        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'GM_vbT  '
+        diagTitle = 'Meridional Mass-Weight Bolus Transp of Pot Temp'
+        diagUnits = 'degC.m^3/s      '
+        WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
