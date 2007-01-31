@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.159 2006/12/13 02:24:53 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.160 2007/01/31 21:28:10 ce107 Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -601,6 +601,8 @@ Usage: "$0" [OPTIONS]
 
     -gsl | --gsl
           Use GSL to control floating point rounding and precision
+    -devel | --devel
+          Add additional warning and debugging flags for development
 
     -mpi | --mpi
           Include MPI header files and link to MPI libraries
@@ -983,6 +985,21 @@ EOF
 	if test "x$RET_COMPILE" = x0 ; then
 	    LIBS="$LIBS -lnetcdf"
 	    HAVE_NETCDF=t
+	else
+	# try again with "-lnetcdff" added to the libs
+	    echo "try again with added '-lnetcdff -lnetcdf'" > genmake_tnc.log
+	    echo "cat genmake_tnc.F | $CPP $DEFINES $INCLUDES > genmake_tnc.$FS \ " >> genmake_tnc.log
+	    echo " &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS \ " >> genmake_tnc.log
+	    echo " &&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf" >> genmake_tnc.log
+	    cat genmake_tnc.F | $CPP $DEFINES $INCLUDES > genmake_tnc.$FS 2>/dev/null  \
+		&&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
+		&&  $LINK $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.o $LIBS -lnetcdff -lnetcdf >> genmake_tnc.log 2>&1
+	    RET_COMPILE=$?
+	    cat genmake_tnc.log >> genmake_warnings
+	    if test "x$RET_COMPILE" = x0 ; then
+		LIBS="$LIBS -lnetcdff -lnetcdf"
+		HAVE_NETCDF=t
+	    fi
 	fi
     fi
     rm -f genmake_tnc*
@@ -1036,6 +1053,7 @@ PAPI=
 PCL=
 HPMT=
 GSL=
+DEVEL=
 HAVE_TEST_L=
 
 # DEFINES checked by test compilation or command-line
@@ -1094,7 +1112,7 @@ TAMC_EXTRA=
 
 #  The following state can be set directly by command-line switches
 gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE"
-gm_s2="FC CPP IEEE TS PAPIS PCLS PAPI PCL HPMT GSL MPI JAM DUMPSTATE STANDARDDIRS"
+gm_s2="FC CPP IEEE TS PAPIS PCLS PAPI PCL HPMT GSL DEVEL MPI JAM DUMPSTATE STANDARDDIRS"
 
 #  The following state is not directly set by command-line switches
 gm_s3="LN S64 KPP LINK PACKAGES MAKEDEPEND PDEPEND PDEFAULT INCLUDES FFLAGS FOPTIM "
@@ -1291,6 +1309,9 @@ for ac_option in "$@" ; do
 
         -gsl | --gsl)
 	    GSL=true ;;
+
+        -devel | --devel)
+	    DEVEL=true ;;
 
 	-mpi | --mpi)
 	    MPI=true ;;
