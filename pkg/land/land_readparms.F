@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.11 2006/08/13 22:54:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.12 2007/01/31 23:02:06 dfer Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -103,7 +103,7 @@ C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
      &    land_rhoLiqW,
      &    land_rhoSnow, land_Lfreez,
      &    land_hMaxSnow, diffKsnow, timeSnowAge, hNewSnowAge,
-     &    albColdSnow, albWarmSnow, albOldSnow, hAlbSnow
+     &    albColdSnow, albWarmSnow, tempSnowAlbL, albOldSnow, hAlbSnow
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -153,6 +153,7 @@ C-    snow parameters:
       hNewSnowAge   = 2. _d -3
       albColdSnow   = 0.85 _d 0
       albWarmSnow   = 0.70 _d 0
+      tempSnowAlbL  = -10. _d 0
       albOldSnow    = 0.55 _d 0
       hAlbSnow      = 0.30 _d 0
 C-    layer thickness:
@@ -389,6 +390,8 @@ C- namelist LAND_PHYS_PAR:
      &   ' /* albedo of cold (=dry) new snow */')
        CALL WRITE_0D_R8(albWarmSnow,INDEX_NONE,'albWarmSnow =',
      &   ' /* albedo of warm (=wet) new snow */')
+       CALL WRITE_0D_R8(tempSnowAlbL,INDEX_NONE,'tempSnowAlbL =',
+     &   ' /* Temp. transition from ColdSnow to WarmSnow Alb. (oC) */')
        CALL WRITE_0D_R8(albOldSnow, INDEX_NONE,'albOldSnow =',
      &   ' /* albedo of old snow (snowAge >35.d)*/')
        CALL WRITE_0D_R8(hAlbSnow, INDEX_NONE,'hAlbSnow =',

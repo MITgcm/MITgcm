@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_albedo.F,v 1.1 2004/03/11 14:41:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_albedo.F,v 1.2 2007/01/31 23:02:06 dfer Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -69,11 +69,15 @@ C       snow age  (units = days):
 
 C--------------------------------------------
 C--- taken from thsice/thsice_albedo.F :
-C-    New snow: (linear) transition between -10.oC and 0.oC
+C-    New snow: (linear) transition between tempSnowAlbL (oC) and 0.oC
 C      from cold/dry snow albedo to warm/wet snow albedo
-           albSnow = albColdSnow
-     &      + (albWarmSnow - albColdSnow)
-     &       *MAX( 0. _d 0, 1. _d 0 + MIN(Tsf/10. _d 0, 0. _d 0) )
+           IF ( tempSnowAlbL.LT.0. _d 0 ) THEN
+               albSnow = albColdSnow
+     &         + (albWarmSnow - albColdSnow)
+     &         *MAX( 0. _d 0, MIN(1. _d 0 - Tsf/tempSnowAlbL, 1. _d 0) )
+           ELSE
+               albSnow = albColdSnow
+           ENDIF
 C-    albedo of snow is function of snow-age
            albSnow = albOldSnow
      &       +(albSnow-albOldSnow)*exp(-0.2 _d 0*ageSnow)
