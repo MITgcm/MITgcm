@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.32 2006/12/29 23:57:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.33 2007/01/31 21:47:55 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -27,12 +27,7 @@ C     !USES:
 #include "DIAGNOSTICS.h"
 
       INTEGER NrMax
-#ifdef ALLOW_FIZHI
-#include "fizhi_SIZE.h"
-      PARAMETER( NrMax = Nr+Nrphys )
-#else
-      PARAMETER( NrMax = Nr )
-#endif
+      PARAMETER( NrMax = numLevels )
 
 C     !INPUT PARAMETERS:
 C     listId  :: Diagnostics list number being written

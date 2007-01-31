@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.11 2006/10/23 16:29:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.12 2007/01/31 21:47:55 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -175,20 +175,9 @@ C--   Check for multiple definition of the same diagnostic name
 
 C--   Check that number of levels to write (in data.diagnostics) does not
 C     exceeds max size: nlevs=max(Nr,NrPhys)
-C-  note: a better place would be in DIAGNOSTICS_CHECK but prefer to do it
-C         here where nlevs is defined.
-      DO n=1,nlists
-        IF ( nlevels(n).GT.nlevs ) THEN
-          WRITE(msgBuf,'(3A,I3,2A)') 'DIAGNOSTICS_SET_LEVELS: ',
-     &       'Ask for too many levels',
-     &       ' in list n=', n, ', filename: ', fnames(n)
-          CALL PRINT_ERROR( msgBuf , myThid )
-          WRITE(msgBuf,'(2A,I4,A,I4)') 'DIAGNOSTICS_SET_LEVELS: ',
-     &       ' number of lev= ', nlevels(n), ' exceeds Max=',nlevs
-          CALL PRINT_ERROR( msgBuf , myThid )
-          STOP 'ABNORMAL END: S/R DIAGNOSTICS_SET_LEVELS'
-        ENDIF
-      ENDDO
+C   note: max size of array to write has been changed to "numLevels",
+C         so that this checking is no longer usefull since nlevels
+C         cannot be larger than "numLevels" anyway.
 
       _END_MASTER( myThid )
 
