@@ -1,38 +1,35 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.2 2007/01/31 21:43:34 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_g95,v 1.1 2007/01/31 21:43:34 ce107 Exp $
 #  $Name:  $
 #
-# Build options for Fedore Core 3 x86-64 Opteron
-# tested on (Linux batsi 2.6.10-1.766_FC3smp #1 SMP Wed Feb 9 23:17:48 EST 2005 x86_64 x86_64 x86_64 GNU/Linux) system 20051802
-#
 
-CC=pathcc
-FC=pathf90
-LD=pathf90
+FC=g95
+F90C=g95
+CC=gcc
 DEFINES='-DWORDLENGTH=4'
-CPP='cpp -traditional -P'
-MAKEDEPEND=/usr/X11R6/bin/makedepend
-NOOPTFLAGS='-O0 -m64 -g -fPIC'
-NOOPTFILES=''
+CPP='cpp  -traditional -P'
+NOOPTFLAGS='-O0'
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-m64 -convert big_endian -fPIC -ffortran-bounds-check -trapuv -g'
+    FFLAGS='-g -Wall -Wextra -fbounds-check -ftrace=full -finteger=-99999 -flogical=false -freal=nan'
 else
-    FFLAGS='-m64 -convert big_endian -fPIC'
+    FFLAGS=''
 fi
+
+#  "warning: -Wuninitialized is not supported without -O"
+FFLAGS="$FFLAGS -fendian=big -fimplicit-none"
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FOPTIM='-Ofast' # -funsafe-math-optimizations'
+    FOPTIM='-O3 -funroll-loops -ffast-math'
 else
     #  Try to follow IEEE-754
-    FOPTIM='-Ofast -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+    FOPTIM='-O0'
 fi
-
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -m64 -fPIC'
+CFLAGS=$FOPTIM
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
@@ -68,4 +65,3 @@ elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDES='-I/usr/local/include'
     LIBS='-L/usr/local/lib64'
 fi
-

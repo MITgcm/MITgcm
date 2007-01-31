@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.2 2007/01/31 21:43:34 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pathf90,v 1.1 2007/01/31 21:43:35 ce107 Exp $
 #  $Name:  $
 #
 # Build options for Fedore Core 3 x86-64 Opteron
@@ -13,18 +13,18 @@ LD=pathf90
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
 MAKEDEPEND=/usr/X11R6/bin/makedepend
-NOOPTFLAGS='-O0 -m64 -g -fPIC'
+NOOPTFLAGS='-O0 -m32 -g -fPIC'
 NOOPTFILES=''
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-m64 -convert big_endian -fPIC -ffortran-bounds-check -trapuv -g'
+    FFLAGS='-m32 -convert big_endian -fPIC -ffortran-bounds-check -trapuv -g'
 else
-    FFLAGS='-m64 -convert big_endian -fPIC'
+    FFLAGS='-m32 -convert big_endian -fPIC'
 fi
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FOPTIM='-Ofast' # -funsafe-math-optimizations'
+    FOPTIM='-Ofast -LNO:fusion=2 -funsafe-math-optimizations'
 else
     #  Try to follow IEEE-754
     FOPTIM='-Ofast -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
@@ -32,7 +32,7 @@ fi
 
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -m64 -fPIC'
+CFLAGS='-O3 -m32 -fPIC'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"

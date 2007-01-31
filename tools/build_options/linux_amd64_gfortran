@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.1 2006/07/09 22:37:54 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.2 2007/01/31 21:43:34 ce107 Exp $
 #  $Name:  $
 #
 
@@ -15,31 +15,55 @@
 
 
 FC=gfortran
+F90C=gfortran
 CC=gcc
-DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_TERMINATOR'
-# CPP='gcc -E -traditional -P -'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
 CPP='cpp  -traditional -P'
 NOOPTFLAGS='-O0'
 
-if test "x$IEEE" = x ; then
-    #  No need for IEEE-754
-    #  "warning: -Wuninitialized is not supported without -O"
-    FFLAGS='-Wunused'
-    FOPTIM='-O3 -funroll-loops'
+if test "x$DEVEL" != x ; then
+    FFLAGS='-g -Wall -W -ffpe-trap=invalid,zero,overflow -fbounds-check'
 else
-    #  Try to follow IEEE-754
-    has_sse2=f
-    grep flags /proc/cpuinfo | grep sse2 > /dev/null 2>&1  &&  has_sse2=t
-    if test "x$has_sse2" = xt ; then
-	FFLAGS='-Wunused -mfpmath=sse -msse -msse2'
-    else
-	FFLAGS='-Wunused -ffloat-store'
-    fi
-    #  echo 'FFLAGS="'$FFLAGS'"'
-    FOPTIM='-O0 -malign-double'
+    FFLAGS=''
 fi
 
-if test -d /usr/include/netcdf-3 ; then
+# Requires gfortran from 2006 onwards for -fconvert=big-endian
+FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-O3 -funroll-loops -ffast-math'
+else
+    #  Try to follow IEEE-754
+    FOPTIM='-O0'
+fi
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS=$FOPTIM
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIR="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBDIR="${NETCDF_ROOT}/lib"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIR="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBDIR="${NETCDF_HOME}/lib"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIR="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBDIR="${NETCDF_LIB}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIR="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBDIR="${NETCDF_LIBDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif test -d /usr/include/netcdf-3 ; then
     INCLUDES='-I/usr/include/netcdf-3'
     LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
 elif test -d /usr/include/netcdf ; then
@@ -47,5 +71,7 @@ elif test -d /usr/include/netcdf ; then
 elif test -d /usr/local/netcdf ; then
     INCLUDES='-I/usr/local/netcdf/include'
     LIBS='-L/usr/local/netcdf/lib'
+elif test -d /usr/local/include/netcdf.inc ; then
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib64'
 fi
-
