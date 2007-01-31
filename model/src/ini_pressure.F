@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.9 2006/08/04 00:45:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.10 2007/01/31 22:26:56 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -10,12 +10,12 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE INI_PRESSURE
-C     | o initialise the pressure field consistently with 
+C     | o initialise the pressure field consistently with
 C     |   temperature and salinity
-C     |   - needs to be called after ini_theta, ini_salt, and 
+C     |   - needs to be called after ini_theta, ini_salt, and
 C     |     ini_psurf
 C     |   - does not include surface pressure loading, because
-C     |     that is only available until after 
+C     |     that is only available until after
 C     |     CALL packages_init_variables
 C     *==========================================================*
 C     \ev
@@ -38,10 +38,10 @@ C     myThid -  Number of this instance of INI_PRESSURE
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     dPhiHydX,Y :: Gradient (X & Y directions) of Hyd. Potential
-C     bi,bj  - Loop counters
-C     I,J,K
+C     bi,bj      :: tile indices
+C     i,j,k      :: Loop counters
       INTEGER bi, bj
-      INTEGER  I,  J, K
+      INTEGER  i,  j, k
       INTEGER  iMin, iMax, jMin, jMax, npiter
       _RL PhiHydF (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL PhiHydC (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -49,6 +49,7 @@ C     I,J,K
       _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL oldPhi  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL count, rmspp, rmsppold
+      _RL sumTile, rmsTile
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -91,16 +92,18 @@ C     iterate pressure p = integral of (g*rho(p)*dz)
        DO npiter= 1, 15
         rmsppold = rmspp
         rmspp    = 0. _d 0
-        count    = 0.
+        count    = 0. _d 0
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
+          rmsTile = 0. _d 0
+          sumTile = 0. _d 0
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
              phiHydF(i,j) = 0. _d 0
-            ENDDO
            ENDDO
+          ENDDO
           DO k = 1, Nr
-C     for each level save old pressure and compute new pressure 
+C     for each level save old pressure and compute new pressure
            DO j=jMin,jMax
             DO i=iMin,iMax
              oldPhi(i,j) = totPhiHyd(i,j,k,bi,bj)
@@ -113,15 +116,18 @@ C     for each level save old pressure and compute new pressure
      O          phiHydC, dPhiHydX, dPhiHydY,
      I          startTime, nIter0, myThid)
 C     compute convergence criterion
-           DO j=jMin,jMax
-            DO i=iMin,iMax
-             rmspp = rmspp
+           DO j=1,sNy
+            DO i=1,sNx
+             rmsTile = rmsTile
      &            + (totPhiHyd(i,j,k,bi,bj)-oldPhi(i,j))**2
-             count = count + maskC(i,j,k,bi,bj)
+     &             * maskC(i,j,k,bi,bj)
+             sumTile = sumTile + maskC(i,j,k,bi,bj)
             ENDDO
            ENDDO
 C --      end k loop
           ENDDO
+          rmspp = rmspp + rmsTile
+          count = count + sumTile
          ENDDO
         ENDDO
 Cml        WRITE(msgBuf,'(I10.10)') npiter
@@ -132,11 +138,11 @@ Cml        CALL WRITE_FLD_XYZ_RL( 'PINI.',msgBuf,pressure,npiter,myThid)
         IF ( count .EQ. 0. ) THEN
            rmspp = 0. _d 0
         ELSE
-           rmspp = sqrt(rmspp/count)
+           rmspp = SQRT(rmspp/count)
         ENDIF
         _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(a,i2,a,e20.13)')
-     &       'Iteration ', npiter, ', RMS-difference = ', rmspp
+        WRITE(msgBuf,'(A,I4,A,1PE20.12)')
+     &       'Iteration', npiter, ', RMS-difference =', rmspp
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT , myThid)
         _END_MASTER( myThid )
@@ -145,7 +151,7 @@ C --   end npiter loop
        ENDDO
 C     print some diagnostics	
        _BEGIN_MASTER( myThid )
-       IF ( rmspp .ne. 0. ) THEN
+       IF ( rmspp .NE. 0. ) THEN
         IF ( rmspp .EQ. rmsppold ) THEN
          WRITE(msgBuf,'(A)')
      &      'Initial hydrostatic pressure did not converge perfectly,'
