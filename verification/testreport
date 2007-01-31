@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.89 2007/01/10 22:50:09 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.90 2007/01/31 21:28:34 ce107 Exp $
 #  $Name:  $
 #
 
@@ -37,11 +37,14 @@ usage()
     echo "                             (DEF=\"1 2 3 4 5\")"
     echo "  (-j) JOBS                use \"make -j JOBS\" for parallel builds"
     echo "  (-clean)                 *ONLY* run \"make CLEAN\""
-    echo "  (-q|-quick)              same as \"-nogenmake -noclean -nodepend\""
-    echo "  (-ng|-nogenmake)         skip the genmake stage"
-    echo "  (-nc|-noclean)           skip the \"make clean\" stage"
-    echo "  (-nd|-nodepend)          skip the \"make depend\" stage"
-    echo "  (-dd|-deldir)            on success, delete the output directory"
+    echo "  (-quick|-q)              same as \"-nogenmake -noclean -nodepend\""
+    echo "  (-nogenmake|-ng)         skip the genmake stage"
+    echo "  (-noclean|-nc)           skip the \"make clean\" stage"
+    echo "  (-nodepend|-nd)          skip the \"make depend\" stage"
+    echo "  (-deldir|-dd)            on success, delete the output directory"
+    echo "  (-ts)                    provide timing information per timestep"
+    echo "  (-papis)                 provide MFlop/s per timestep using PAPI"
+    echo "  (-pcls)                  provide MFlop/s per timestep using PCL"
     echo
     echo "and where STRING can be a whitespace-delimited list"
     echo "such as:"
@@ -317,6 +320,16 @@ genmakemodel()
 	    fi
 	    if test "x$MPI" = xt ; then
 		command="$command -mpi"
+	    fi
+	    if test "x$TS" = xt ; then
+		command="$command -ts"
+	    fi
+	    if test "x$PAPIS" = xt ; then
+		command="$command -papis"
+	    else 
+	    if test "x$PCLS" = xt ; then
+		command="$command -pcls"
+	    fi
 	    fi
 	    printf 'genmake ... ' 1>&2
 	    $command > make.log 2>&1
@@ -810,6 +823,12 @@ for ac_option ; do
 	-quiet) verbose=0 ;;
 
 	-deldir | -dd) DELDIR=t ;;
+
+	-ts) TS=t;;
+
+	-papis) PAPIS=t;;
+
+	-pcls) PCL=t;;
 
         -*)
             echo "Error: unrecognized option: "$ac_option
