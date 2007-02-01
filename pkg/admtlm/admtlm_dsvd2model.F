@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd2model.F,v 1.3 2006/04/27 12:49:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd2model.F,v 1.4 2007/02/01 02:01:25 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -146,7 +146,7 @@ c--   Assign file names.
       call ctrl_set_fname(xx_tr1_file, fname_tr1, mythid)
       call ctrl_set_fname(xx_sst_file, fname_sst, mythid)
       call ctrl_set_fname(xx_sss_file, fname_sss, mythid)
-      call ctrl_set_fname(xx_hfacc_file, fname_hfacc, mythid)
+      call ctrl_set_fname(xx_depth_file, fname_depth, mythid)
       call ctrl_set_fname(xx_efluxy_file, fname_efluxy, mythid)
       call ctrl_set_fname(xx_efluxp_file, fname_efluxp, mythid)
       call ctrl_set_fname(xx_bottomdrag_file, fname_bottomdrag, mythid)
@@ -499,19 +499,13 @@ c----------------------------------------------------------------------
      &         weighttype, nwetcglobal, mythid)
 #endif
 
-#ifdef ALLOW_HFACC_CONTROL
+#ifdef ALLOW_DEPTH_CONTROL
           ivartype    = 20
           write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "whfacc"
-# ifdef ALLOW_HFACC3D_CONTROL
-          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
-     &         fname_hfacc(ictrlgrad), "maskCtrlC",
-     &         wunit, nwetcglobal, mythid)
-# else
+          write(weighttype(1:80),'(a)') "wdepth"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
-     &         fname_hfacc(ictrlgrad), "maskCtrlC",
+     &         fname_depth(ictrlgrad), "maskCtrlC",
      &         weighttype, weighttype, nwetcglobal, mythid)
-# endif
 #endif
 
 #ifdef ALLOW_EFLUXY0_CONTROL
