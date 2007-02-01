@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/Attic/sbo_diags.F,v 1.8 2006/05/22 14:25:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/Attic/sbo_diags.F,v 1.9 2007/02/01 17:14:48 heimbach Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -63,7 +63,7 @@ C-----------------------------------------------------------------
 
       fName        = 'SBO_DIAG'
       narr         = 15
-      irecord      = myCurrentTime/deltaTClock
+      irecord      = (myCurrentTime-starttime)/deltaTClock
 
       CALL SBO_WRITEVECTOR(
      I   fName,
