@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_PARAMS.h,v 1.7 2007/01/31 23:02:07 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_PARAMS.h,v 1.8 2007/02/02 14:47:04 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAND
@@ -79,7 +79,8 @@ C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
      &    land_rhoLiqW,
      &    land_rhoSnow, land_Lfreez, recip_Lfreez,
      &    land_hMaxSnow, diffKsnow, timeSnowAge, hNewSnowAge,
-     &    albColdSnow, albWarmSnow, tempSnowAlbL, albOldSnow, hAlbSnow
+     &    albColdSnow, albWarmSnow, tempSnowAlbL,
+     &    albOldSnow, hAlbSnow
 
       _RL land_deltaT, land_taveFreq, land_diagFreq, land_monFreq
       _RL land_grdLambda, land_heatCs, land_CpWater
@@ -87,7 +88,8 @@ C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
       _RL land_rhoLiqW
       _RL land_rhoSnow, land_Lfreez, recip_Lfreez
       _RL land_hMaxSnow, diffKsnow, timeSnowAge, hNewSnowAge
-      _RL albColdSnow, albWarmSnow, tempSnowAlbL, albOldSnow, hAlbSnow
+      _RL albColdSnow, albWarmSnow, tempSnowAlbL
+      _RL albOldSnow, hAlbSnow
 
 C--   COMMON /LAND_GRID_R/: layer dependent parameters
 C     land_dzF        :: layer thickness
