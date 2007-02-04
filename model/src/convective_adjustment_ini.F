@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.19 2005/06/22 00:25:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.20 2007/02/04 21:12:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,14 +8,13 @@ CBOP
 C     !ROUTINE: CONVECTIVE_ADJUSTMENT_INI
 C     !INTERFACE:
       SUBROUTINE CONVECTIVE_ADJUSTMENT_INI(
-     I       bi, bj, iMin, iMax, jMin, jMax,
-     I       myTime, myIter, myThid )
+     I                      bi, bj, myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE CONVECTIVE_ADJUSTMENT_INI                      
-C     | o Driver for vertical mixing or similar parameterization       
+C     | SUBROUTINE CONVECTIVE_ADJUSTMENT_INI
+C     | o Driver for vertical mixing or similar parameterization
 C     *==========================================================*
-C     | Same prognostic code logic as S/R CONVECTIVE_ADJUSTMENT,  
+C     | Same prognostic code logic as S/R CONVECTIVE_ADJUSTMENT,
 C     | but different time history behavior in forward-reverse
 C     | adjoint operation.
 C     *==========================================================*
@@ -31,7 +30,7 @@ C     == Global data ==
 #include "GRID.h"
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
-#endif 
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
@@ -41,12 +40,12 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi,bj,iMin,iMax,jMin,jMax,K - Loop counters
-C     myTime - Current time in simulation
-C     myIter - Current iteration in simulation
-C     myThid - Thread number of this instance of S/R CONVECT
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
-      _RL myTime
+C     bi,bj  :: tile indices
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration in simulation
+C     myThid :: Thread number of this instance of S/R CONVECT
+      INTEGER bi,bj
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
@@ -54,9 +53,11 @@ C     myThid - Thread number of this instance of S/R CONVECT
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     iMin,iMax,jMin,jMax :: computation domain
 C     i,j,k        :: Loop counters
 C     rhoKm1, rhoK :: Density at adjacent levels (ref. to same level)
 C     ConvectCount :: Convection freq. counter
+      INTEGER iMin,iMax,jMin,jMax
       INTEGER i, j, K, kTop, kBottom, kDir, deltaK
       _RL rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoK  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -68,6 +69,12 @@ CEOP
 C--   Check to see if should convect now
       IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,deltaTClock)
      &   ) THEN
+
+C--   Define computation domain
+        iMin=1-Olx
+        iMax=sNx+Olx
+        jMin=1-Oly
+        jMax=sNy+Oly
 
 C--   Initialise counters
         kTop    = 0
@@ -116,9 +123,9 @@ C--       Loop over all *interior* layers
 
 #ifdef ALLOW_AUTODIFF_TAMC
             kkey = (ikey-1)*Nr + k
-CADJ STORE theta(:,:,k-1,bi,bj) = tapelev_ini_bibj_k, 
+CADJ STORE theta(:,:,k-1,bi,bj) = tapelev_ini_bibj_k,
 CADJ &     key=kkey, byte=isbyte
-CADJ STORE salt (:,:,k-1,bi,bj) = tapelev_ini_bibj_k, 
+CADJ STORE salt (:,:,k-1,bi,bj) = tapelev_ini_bibj_k,
 CADJ &     key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
@@ -130,9 +137,9 @@ C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
 
 C-          Density of K layer (below W(K)) reference to K-1 T-level.
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,k,bi,bj) = tapelev_ini_bibj_k, 
+CADJ STORE theta(:,:,k,bi,bj) = tapelev_ini_bibj_k,
 CADJ &     key = kkey, byte = isbyte
-CADJ STORE salt (:,:,k,bi,bj) = tapelev_ini_bibj_k, 
+CADJ STORE salt (:,:,k,bi,bj) = tapelev_ini_bibj_k,
 CADJ &     key = kkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FIND_RHO(
@@ -179,7 +186,7 @@ C-          Convectively mix passive tracers across interface K
 
 C--       End DO K=1,Nr
           ENDDO
-       
+
 C--   End IF (DIFFERENT_MULTIPLE)
       ENDIF
 

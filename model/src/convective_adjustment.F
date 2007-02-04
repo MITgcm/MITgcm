@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.29 2005/09/15 14:55:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.30 2007/02/04 21:12:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,12 +8,11 @@ CBOP
 C     !ROUTINE: CONVECTIVE_ADJUSTMENT
 C     !INTERFACE:
       SUBROUTINE CONVECTIVE_ADJUSTMENT(
-     I       bi, bj, iMin, iMax, jMin, jMax,
-     I       myTime, myIter, myThid )
+     I                      bi, bj, myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE CONVECTIVE_ADJUSTMENT                          
-C     | o Driver for vertical mixing or similar parameterization       
+C     | SUBROUTINE CONVECTIVE_ADJUSTMENT
+C     | o Driver for vertical mixing or similar parameterization
 C     *==========================================================*
 C     \ev
 
@@ -27,7 +26,7 @@ C     == Global data ==
 #include "GRID.h"
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
-#endif 
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
@@ -37,12 +36,12 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi,bj,iMin,iMax,jMin,jMax,K - Loop counters
-C     myTime - Current time in simulation
-C     myIter - Current iteration in simulation
-C     myThid - Thread number of this instance of S/R CONVECT
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
-      _RL myTime
+C     bi,bj  :: tile indices
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration in simulation
+C     myThid :: My Thread Id number
+      INTEGER bi,bj
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
@@ -50,8 +49,11 @@ C     myThid - Thread number of this instance of S/R CONVECT
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     iMin,iMax,jMin,jMax :: computation domain
+C     i,j,K        :: Loop counters
 C     rhoKm1, rhoK :: Density at adjacent levels (common ref. level)
 C     ConvectCount :: Convection mixing freq. counter.
+      INTEGER iMin,iMax,jMin,jMax
       INTEGER i, j, K, kTop, kBottom, kDir, deltaK
       _RL rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoK  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -64,6 +66,16 @@ C--   Check to see if should convect now
       IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,deltaTClock)
      &   ) THEN
 
+C--   Define computation domain
+c       iMin = 1
+c       iMax = sNx
+c       jMin = 1
+c       jMax = sNy
+        iMin=1-Olx
+        iMax=sNx+Olx
+        jMin=1-Oly
+        jMax=sNy+Oly
+
 C--   Initialise counters
         kTop    = 0
         kBottom = 0
@@ -74,7 +86,7 @@ C-      Initialisation of Convection Counter
         DO K=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           ConvectCount(i,j,k) = 0.
+           ConvectCount(i,j,K) = 0.
           ENDDO
          ENDDO
         ENDDO
@@ -170,15 +182,15 @@ C-          Convectively mix passive tracers across interface K
 
 C--       End DO K=1,Nr
           ENDDO
-       
-#ifdef ALLOW_TIMEAVE 
+
+#ifdef ALLOW_TIMEAVE
           IF (myIter.NE.nIter0 .AND. taveFreq.GT.0.) THEN
             CALL TIMEAVE_CUMUL_1T(ConvectCountTave, ConvectCount,
      I                            Nr, deltaTclock, bi, bj, myThid)
           ENDIF
 #endif /* ALLOW_TIMEAVE */
 
-#ifdef ALLOW_DIAGNOSTICS 
+#ifdef ALLOW_DIAGNOSTICS
           IF ( myIter.NE.nIter0 .AND. useDiagnostics ) THEN
             CALL DIAGNOSTICS_FILL( ConvectCount, 'CONVADJ ',
      I                             0, Nr, 2, bi, bj, myThid )
