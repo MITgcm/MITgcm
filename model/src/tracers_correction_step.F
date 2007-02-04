@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.13 2007/01/09 21:50:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.14 2007/02/04 21:13:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -132,8 +132,7 @@ C--     Convectively adjust new fields to be statically stable
         IF ( cAdjFreq .NE. 0. ) THEN
 #endif /* ALLOW_OPPS */
          CALL CONVECTIVE_ADJUSTMENT(
-     I        bi, bj, iMin, iMax, jMin, jMax,
-     I        myTime, myIter, myThid )
+     I        bi, bj, myTime, myIter, myThid )
         ENDIF
 
 #ifdef ALLOW_MATRIX
