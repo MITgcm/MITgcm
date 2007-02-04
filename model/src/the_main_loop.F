@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.79 2006/12/15 18:02:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.80 2007/02/04 21:07:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -208,24 +208,6 @@ C--   Set initial conditions (variable arrays)
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
       CALL INITIALISE_VARIA( mythid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
-
-#ifdef ALLOW_MONITOR
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('MONITOR',myThid)
-#endif
-C--   Check status of solution (statistics, cfl, etc...)
-c     CALL TIMER_START('MONITOR             [THE_MAIN_LOOP]', mythid)
-      CALL MONITOR( myIter, myTime, myThid )
-c     CALL TIMER_STOP ('MONITOR             [THE_MAIN_LOOP]', mythid)
-#endif /* ALLOW_MONITOR */
-
-C--   Do IO if needed (Dump for start state).
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
-#endif
-c     CALL TIMER_START('DO_THE_MODEL_IO     [THE_MAIN_LOOP]', mythid)
-      CALL DO_THE_MODEL_IO( myTime, myIter, mythid )
-c     CALL TIMER_STOP ('DO_THE_MODEL_IO     [THE_MAIN_LOOP]', mythid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
       CALL TIMER_STOP ('ADJOINT SPIN-UP', mythid)

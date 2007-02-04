@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.51 2006/12/22 11:14:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.52 2007/02/04 21:07:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -280,31 +280,6 @@ C--   Set initial conditions (variable arrays)
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
       CALL INITIALISE_VARIA( mythid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
-
-#ifdef ALLOW_MONITOR
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('MONITOR',myThid)
-#endif
-C--   Check status of solution (statistics, cfl, etc...)
-      CALL TIMER_START('MONITOR             [THE_MAIN_LOOP]', mythid)
-      CALL MONITOR( myIter, myTime, myThid )
-      CALL TIMER_STOP ('MONITOR             [THE_MAIN_LOOP]', mythid)
-#endif /* ALLOW_MONITOR */
-
-C--   Do IO if needed (Dump for start state).
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
-#endif
-
-#ifdef ALLOW_OFFLINE
-      CALL TIMER_START('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
-      CALL OFFLINE_MODEL_IO( myTime, myIter, myThid )
-      CALL TIMER_STOP ('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
-#else
-      CALL TIMER_START('DO_THE_MODEL_IO     [THE_MAIN_LOOP]', mythid)
-      CALL DO_THE_MODEL_IO( myTime, myIter, mythid )
-      CALL TIMER_STOP ('DO_THE_MODEL_IO     [THE_MAIN_LOOP]', mythid)
-#endif
 
       call timer_stop ('ECCO SPIN-UP', mythid)
       _BARRIER

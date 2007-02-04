@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.53 2007/01/10 23:46:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.54 2007/02/04 21:07:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,6 +64,10 @@ C       |
 C       |-- PTRACERS_STATVARS
 C       |
 C       |-- STATE_SUMMARY
+C       |
+C       |-- MONITOR
+C       |
+C       |-- DO_THE_MODEL_IO
 
 C     !USES:
       IMPLICIT NONE
@@ -86,7 +90,7 @@ C     == Routine arguments ==
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER bi,bj
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -207,20 +211,14 @@ C--   Initial conditions are convectively adjusted (for historical reasons)
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('CONVECTIVE_ADJUSTMENT_INI',myThid)
 #endif
-CADJ loop = parallel 
+CADJ loop = parallel
         DO bj = myByLo(myThid), myByHi(myThid)
 CADJ loop = parallel
          DO bi = myBxLo(myThid), myBxHi(myThid)
-           iMin=1-Olx
-           iMax=sNx+Olx
-           jMin=1-Oly
-           jMax=sNy+Oly
            CALL CONVECTIVE_ADJUSTMENT_INI(
-     I       bi, bj, iMin, iMax, jMin, jMax,
-     I       startTime, nIter0, myThid )
+     I                     bi, bj, startTime, nIter0, myThid )
          ENDDO
         ENDDO
-        _BARRIER
       ENDIF
 
 #ifdef NONLIN_FRSURF
@@ -340,6 +338,20 @@ C--   Finally summarise the model state
       IF (debugMode) CALL DEBUG_CALL('STATE_SUMMARY',myThid)
 #endif
       CALL STATE_SUMMARY( myThid )
+
+#ifdef ALLOW_MONITOR
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('MONITOR',myThid)
+#endif
+C--   Check status of initial state (statistics, cfl, etc...)
+      CALL MONITOR( nIter0, startTime, myThid )
+#endif /* ALLOW_MONITOR */
+
+C--   Dump initial state to files
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
+#endif
+      CALL DO_THE_MODEL_IO( startTime, nIter0, myThid )
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('INITIALISE_VARIA',myThid)
