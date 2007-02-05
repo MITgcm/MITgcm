@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_quasihydrostatic.F,v 1.3 2006/12/05 05:27:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_quasihydrostatic.F,v 1.4 2007/02/05 03:16:23 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -47,6 +47,9 @@ C  effectiveBuoy :: Density anomaly
 C !LOCAL VARIABLES: ====================================================
 C  i,j           :: loop indices
 C  scalingFactor :: scaling factor (from acceleration to density)
+      INTEGER iMin,iMax,jMin,jMax
+      PARAMETER( iMin = 0 , iMax = sNx+1 )
+      PARAMETER( jMin = 0 , jMax = sNy+1 )
       INTEGER i,j
       _RL scalingFactor
 CEOP
@@ -56,8 +59,8 @@ C-    to reproduce old (wrong) results:
 c     scalingFactor=gravitySign*recip_gravity
 
       IF ( use3dCoriolis ) THEN
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx,sNx+Olx-1
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          effectiveBuoy(i,j)=effectiveBuoy(i,j)
      &    +scalingFactor*
      &     fCoriCos(i,j,bi,bj)*
@@ -71,8 +74,8 @@ c     scalingFactor=gravitySign*recip_gravity
       ENDIF
 
       IF ( useNHMTerms ) THEN
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx,sNx+Olx-1
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          effectiveBuoy(i,j)=effectiveBuoy(i,j)
      &    +scalingFactor*
      &     (   (uFld( i ,j,k,bi,bj)*uFld( i ,j,k,bi,bj)
