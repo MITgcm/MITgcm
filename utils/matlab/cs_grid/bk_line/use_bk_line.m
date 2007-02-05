@@ -1,5 +1,5 @@
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/use_bk_line.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/use_bk_line.m,v 1.2 2007/02/05 05:24:33 jmc Exp $
 % $Name:  $
 
 % input: krd, kfac, jprt
@@ -22,11 +22,20 @@ end
 
 if krd > 1,
  Rac='grid_files/';
- bk_lineF='isoLat_cs32_59';
-
-%- load broken lines :
+ if krd == 2,
+   bk_lineF='isoLat_cs32_59';
+%- load broken lines (iso-lat) :
 % bkl_Ylat, bkl_Npts, bkl_Flg, bkl_IJuv, bkl_Xsg, bkl_Ysg, bkl_Zon
- load([Rac,bk_lineF]);
+   load([Rac,bk_lineF]);
+ end
+ if krd == 3,
+   bk_lineF='bkl_AB_cs32';
+%- load broken line (great-circle arc AB):
+% ab_Npts, ab_Flg, ab_IJuv, ab_Xsg, ab_Ysg
+   load([Rac,bk_lineF]);
+   bkl_Ylat=0; bkl_Npts=ab_Npts; 
+   bkl_Flg=ab_Flg'; bkl_IJuv=ab_IJuv'; bkl_Xsg=ab_Xsg'; bkl_Ysg=ab_Ysg';
+ end
 
  ufac=rem(bkl_Flg,2) ; vfac=fix(bkl_Flg/2) ;
 
@@ -82,7 +91,8 @@ end ; end
 
 %-- make a graphe :
 yax=zeros(ydim+2,1);yax(2:ydim+1)=ylat;
-yax(1)=2*ylat(1)-ylat(2); yax(2+ydim)=2*ylat(ydim)-ylat(ydim-1);
+if krd ==3, yax=[-10 0 10];
+else yax(1)=2*ylat(1)-ylat(2); yax(2+ydim)=2*ylat(ydim)-ylat(ydim-1); end
 zax=[0:nr];
 %---
 ccp=[10:20:90]; cc=[-ccp(end:-1:1) 0 ccp];

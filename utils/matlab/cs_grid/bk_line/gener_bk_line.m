@@ -1,7 +1,7 @@
 % main script to generate broken lines that folows the cubic grid
 % and stay close as possible to a given latitude
 %-----------------------
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gener_bk_line.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gener_bk_line.m,v 1.2 2007/02/05 05:24:33 jmc Exp $
 % $Name:  $
 
 %- load definition of the grid (needs to be done at the 1rst call):
@@ -30,13 +30,13 @@ nc=size(xcs,2) ; ncp=nc+1 ;
  ylat=-87:3:87;
 if ydim > 1,  ydim=length(ylat); end
  savNpts=zeros(ydim,1);
- savFlg=zeros(6*nc,ydim);
- savIuv=zeros(6*nc,ydim); savJuv=zeros(6*nc,ydim);
- savXsg=zeros(6*nc,ydim); savYsg=zeros(6*nc,ydim);
+ savFlg=zeros(6*ncp,ydim);
+ savIuv=zeros(6*ncp,ydim); savJuv=zeros(6*ncp,ydim);
+ savXsg=zeros(6*ncp,ydim); savYsg=zeros(6*ncp,ydim);
 
 kplot=zeros(ydim,1);
-%kplot(1:1:ydim)=1;
-kplot(1)=1;
+kplot(1:ydim)=1;
+%kplot(1)=1;
 nf1=1; nf2=6; %- allow to treat only few faces (debug) : n=nf1:nf2,
 
 %------------------------------
@@ -79,9 +79,10 @@ fprintf('dyImx,dyJmx = %7.3f %7.3f ; ==> select dylat= %9.6f \n', ...
 %-- illustrate with a 2.D plot :
 if max(kplot) > 0,
  face_color=zeros(7,3); lineThick=3*ones(7);
- face_color(1:6,3)=1; 
- face_color(3,:)=[0 1 0]; face_color(6,:)=face_color(3,:);
- face_color(7,:)=[1 0 0]; lineThick(7)=2;
+ face_color(1,:)=[1 0 0]; face_color(4,:)=face_color(1,:);
+ face_color(2,:)=[0 1 0]; face_color(5,:)=face_color(2,:);
+ face_color(3,:)=[0 0 1]; face_color(6,:)=face_color(3,:);
+ face_color(7,:)=[1 0 1]; lineThick(7)=2;
 
  figure(1); clf;
  %subplot(212);
@@ -108,19 +109,21 @@ for jl=1:ydim,
 % 1rst step : fort each "yl" and for each face;
 % find the broken-line closest to yl, starting from the West side = min(x)
 
-nMx6t=zeros(6,1);
-savI=zeros(nc*6,6); savJ=zeros(nc*6,6); savF=zeros(nc*6,6);
-isav=zeros(nc*6,6); jsav=zeros(nc*6,6); xsav=zeros(nc*6,6);
-
-find_bk_line
-%- for n=nf1:nf2, 
+%nMx6t=zeros(6,1);
+%savI=zeros(nc*6,6); savJ=zeros(nc*6,6); savF=zeros(nc*6,6);
+%isav=zeros(nc*6,6); jsav=zeros(nc*6,6); xsav=zeros(nc*6,6);
+%find_bk_line
+[savI,savJ,savF,isav,jsav,xsav,nMx6t] = ...
+find_bk_line( nf1,nf2,nc,ydim,yl,dylat,XYout,xMid,xx1,xx2,yy2,xcs,ycs );
 
 %--------------------------------------
 %- define "segments" = continuous part of the broken line :
 
- ncut=zeros(6,1); icut=zeros(nc,6,6); xcut=zeros(nc,4,6); ycut=zeros(nc,4,6);
-
-clean_bk_line
+%ncut=zeros(6,1); icut=zeros(nc,6,6); xcut=zeros(nc,4,6); ycut=zeros(nc,4,6);
+%clean_bk_line
+[ncut,icut,xcut,ycut,misfit,xyfit] = ....
+clean_bk_line( nf1,nf2,nc,ydim,yl,dylat,xMid,xx1,xx2,yy2, ...
+               savI,savJ,savF,isav,jsav,xsav,nMx6t );
 
 %-- plot the results:
 if kplot(jl) == 2 | ( max(kplot) > 0 & misfit > 0 ) , 
@@ -152,18 +155,57 @@ if misfit > 0,
 end
 
 %--------------------------------------
-%- output : put together the 6 faces & save to a file (if kwr =1) :
+%- output : put together the pieces of bk-lines from the 6 faces :
 
-save_bk_line 
+%save_bk_line 
+[svNpts,svFlg,svIuv,svJuv,svXsg,svYsg]= ...
+save_bk_line( nf1,nf2,nc,ydim,yl,dylat,XYout,xMid,xx1,yy2,yy2, ...
+              savI,savJ,savF,isav,jsav,xsav,ncut,icut,xcut,ycut );
+%- easier to debug this way:
+savNpts(jl)=svNpts;
+savFlg(:,jl)=svFlg;
+savIuv(:,jl)=svIuv;
+savJuv(:,jl)=svJuv;
+savXsg(:,jl)=svXsg;
+savYsg(:,jl)=svYsg;
 
-if kplot(jl) > 0 | ( max(kplot) > 0 &  misfit > 0 ),
+%-- check that this broken-line is different from any previous one :
+check_bk_line( nc,ydim,jl,ylat,savNpts,savFlg,savIuv,savJuv,savXsg,savYsg );
+
+if kplot(jl) == 1 | ( max(kplot) > 0 &  misfit > 0 ),
  titr=sprintf('nMx6t= %i %i %i %i %i %i ;  yLat= %8.3f',nMx6t,yl);
  title(titr);
  if lineThick(7) > 0,
-  nPts = savNpts(jl)+1;
-  P0=plot(savXsg(1:nPts,jl),savYsg(1:nPts,jl));
- %set(P0,'Color',face_color(7,:),'LineWidth',lineThick(7),'LineStyle','.');
-  set(P0,'Color',face_color(7,:),'LineWidth',lineThick(7),'LineStyle','-');
+   clear Pu ict
+   np=1; ict(1)=0;
+   sNp = savNpts(jl)+1;
+   xloc=savXsg(1:sNp,jl);
+   yloc=savYsg(1:sNp,jl);
+   ddMx=0; % ddMx=dylat/cos(yl*pi/180);
+   if ddMx > 0,
+    dd=abs(xloc(2:sNp)-xloc(1:sNp-1));
+    fprintf(' np, Max(dd) : %i %8.3f\n',np,max(dd(:)) );
+    while max(dd(:)) > ddMx,
+     [I]=find(dd==max(dd(:)));
+     ict(np+1)=I(1);
+     xloc(I+1:sNp+1)=xloc(I:sNp);
+     yloc(I+1:sNp+1)=yloc(I:sNp);
+     sNp=sNp+1; np=np+1;
+     dec=xloc(I+2)-180;
+     xloc(I+1)=dec+rem(xloc(I+1)-dec+360,360);
+     for j=1:np-1, if ict(j) > I, ict(j)=ict(j)+1; end; end
+     dd=abs(xloc(2:sNp)-xloc(1:sNp-1));
+     for j=2:np, dd(ict(j))=0; end
+     fprintf(' np, Max(dd) : %i %8.3f\n',np,max(dd(:)) );
+     if np > 10, dd=0; end
+    end
+   end
+   ict(np+1)=sNp;
+   for j=1:np,
+     Pu(j)=plot(xloc(1+ict(j):ict(j+1)),yloc(1+ict(j):ict(j+1)));
+   end
+  %Pu=plot(savXsg(1:nPts,jl),savYsg(1:nPts,jl));
+   set(Pu,'Color',face_color(7,:),'LineWidth',lineThick(7),'LineStyle','-');
 end ; end
 
 if misfit > 0, 
@@ -184,7 +226,6 @@ if ydim > 1 & kwr == 1,
 %- write smaller arrays : reduce size from nc*6 to Max(savNpts) :
   
   mxNpt=1+max(savNpts);
-  bkl_Npts=savNpts ; mxNpt=1+max(savNpts);
   bkl_Flg=zeros(mxNpt,ydim);
   bkl_Iuv=zeros(mxNpt,ydim); bkl_Juv=zeros(mxNpt,ydim);
   bkl_Xsg=zeros(mxNpt,ydim); bkl_Ysg=zeros(mxNpt,ydim);

@@ -1,9 +1,12 @@
+function [svNpts,svFlg,svIuv,svJuv,svXsg,svYsg]=save_bk_line( ...
+         nf1,nf2,nc,ydim,yl,dylat,XYout,xMid,xx0,yy0,yy1, ...
+         savI,savJ,savF,isav,jsav,xsav,ncut,icut,xcut,ycut);
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/save_bk_line.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/save_bk_line.m,v 1.2 2007/02/05 05:24:33 jmc Exp $
 % $Name:  $
 
 %--------------------------------------
-%- output : put together the 6 faces & save to a file (if kwr =1) :
+%- output : put together the pieces of bk-lines from the 6 faces :
 
 %- output arrays:
 % ylat=-87:3:87;
@@ -12,6 +15,12 @@
 % savFlg=zeros(6*nc,ydim);
 % savIuv=zeros(6*nc,ydim); savJuv=zeros(6*nc,ydim);
 % savXsg=zeros(6*nc,ydim); savYsg=zeros(6*nc,ydim);
+  ncp=nc+1;
+  svNpts=zeros(1,1);
+  svFlg=zeros(6*ncp,1);
+  svIuv=zeros(6*ncp,1); svJuv=zeros(6*ncp,1);
+  svXsg=zeros(6*ncp,1); svYsg=zeros(6*ncp,1);
+  svXx1=zeros(6*ncp,1); svYy1=zeros(6*ncp,1);
 
 ii=0; misfit=0;
 for n=nf1:nf2, for in=1:ncut(n),
@@ -27,12 +36,15 @@ for ns=1:nSegm,
   Xmn=min(x2loc); ii=find(x2loc==Xmn);
   n=ninv(ii); in=jinv(ii);
   if it == 0,
-   savXsg(1,jl)=xcut(in,3,n); 
-   savYsg(1,jl)=ycut(in,3,n); 
+   svXx1(1)=xcut(in,3,n); 
+   svYy1(1)=ycut(in,3,n); 
+   svXsg(1)=xx0(isav(icut(in,3,n),n),jsav(icut(in,3,n),n),n);
+   svYsg(1)=yy0(isav(icut(in,3,n),n),jsav(icut(in,3,n),n),n);
+   if ydim > 1, svXsg(1)=svXx1(1); end
   else
-   if savXsg(it+1,jl) ~= xcut(in,3,n) | savYsg(it+1,jl) ~= ycut(in,3,n),
+   if svXx1(it+1) ~= xcut(in,3,n) | svYy1(it+1) ~= ycut(in,3,n),
     fprintf('=> conection Pb: previous Seg end= %8.3f %8.3f \n', ...
-            savXsg(it+1,jl),savYsg(it+1,jl) );
+            svXx1(it+1),svYy1(it+1) );
     fprintf(['  next Seg: ns= %i ; n,in,icut= %i %i %i %i ;', ...
              ' X,Y= %8.3f %8.3f \n'], ...
             ns,n,in,icut(in,3,n),icut(in,4,n),xcut(in,3,n),ycut(in,3,n));
@@ -41,33 +53,20 @@ for ns=1:nSegm,
   end
   for i=icut(in,3,n):icut(in,4,n)-1,
    it = it + 1;
-   savFlg(it,jl)=savF(i,n);
-   savIuv(it,jl)=savI(i,n)+nc*(n-1);
-   savJuv(it,jl)=savJ(i,n);
-   savXsg(it+1,jl)=xsav(i+1,n);
-   savYsg(it+1,jl)=yy2(isav(i+1,n),jsav(i+1,n),n);
+   svFlg(it)=savF(i,n);
+   svIuv(it)=savI(i,n)+nc*(n-1);
+   svJuv(it)=savJ(i,n);
+%- a hack to distinguish between for isolat / great-circle cases:
+   svXx1(it+1)=xsav(i+1,n);
+   svYy1(it+1)=yy1(isav(i+1,n),jsav(i+1,n),n);
+   svXsg(it+1)=xx0(isav(i+1,n),jsav(i+1,n),n);
+   svYsg(it+1) =yy0(isav(i+1,n),jsav(i+1,n),n);
+%  if ydim > 1, svXsg(it+1)=svXx1(it+1); end
+   
   end
   x2loc(ii)=XYout;
 end
- savNpts(jl)=it;
-
-%------------------------------------------------------
-if jl > 1 & ydim < 6*nc,
-%-- check that this broken-line is different from any previous one :
- jdif=ones(ydim,1);
- for j=1:jl-1,
-  if savNpts(j)==it, 
-   jdif(j)= max(abs(savXsg(1:it+1,j)-savXsg(1:it+1,jl))) ;
-   jdif(j)= jdif(j)+max(abs(savYsg(1:it+1,j)-savYsg(1:it+1,jl))) ;
-  end
- end
- [JJ]=find(jdif == 0);
- if length(JJ) ~= 0, 
-   fprintf('WARNING => line identical to Ylat=');
-   for j=1:length(JJ), fprintf(' %8.3f,',ylat(JJ(j))); end ; fprintf('\n');
- end
-end
-%------------------------------------------------------
+ svNpts=it;
 
 %--------------------------------------------------------------------
 return

@@ -1,10 +1,19 @@
-
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/find_bk_line.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
-% $Name:  $
-
-%--------------------------------------
+function [savI,savJ,savF,isav,jsav,xsav,nMx6t]=find_bk_line( ...
+         nf1,nf2,nc,ydim,yl,dylat,XYout,xMid,xx1,xx2,yy2,xcs,ycs);
 % 1rst step : fort each "yl" and for each face;
 % find the broken-line closest to yl, starting from the West side = min(x)
+%--------------------------------------
+
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/find_bk_line.m,v 1.2 2007/02/05 05:24:33 jmc Exp $
+% $Name:  $
+
+if yl == 1, fprintf( ...
+ '--- find_bk_line: nf1,nf2,nc,ydim,yl= %i %i %i %i %8.3f\n', ...
+                    nf1,nf2,nc,ydim,yl); end
+ncp=nc+1;
+nMx6t=zeros(6,1);
+savI=zeros(nc*6,6); savJ=zeros(nc*6,6); savF=zeros(nc*6,6);
+isav=zeros(nc*6,6); jsav=zeros(nc*6,6); xsav=zeros(nc*6,6);
 
 for n=nf1:nf2, 
  
@@ -89,7 +98,7 @@ if Ntloc > 0,
 %- save the 1rstpoint :
   if nMx6t(n) == 0,
    nMx6t(n) = 1 ; isav(1,n)=i0 ; jsav(1,n) = j0 ;
-   xsav(1,n) = x0 ; if n == 4, xsav(1,n)=xx1(i0,j0,n) ; end
+   xsav(1,n) = x0 ; if xMid(n) ~= 0, xsav(1,n)=xx1(i0,j0,n) ; end
 
   else
 %- save the next point :
@@ -110,7 +119,7 @@ if Ntloc > 0,
       abs(yy2(i1,j1,n)-yl) > dylat/2, savF(is,n)=0 ; end 
 
 %- if jump in xx1 => cut and add 1 point :
-   if n == 4 & xx1(i1,j1,n) < xx1(i0,j0,n),
+   if xMid(n) ~= 0 &  xx1(i1,j1,n) < xx1(i0,j0,n),
     savF(is+1,n)=savF(is,n); savF(is,n)=0; is=1+is; 
     isav(is,n)=i0 ; jsav(is,n)=j0 ; xsav(is,n)=xx1(i0,j0,n)-360;
     savI(is,n)=ii ; savJ(is,n)=jj ;
@@ -126,9 +135,9 @@ if Ntloc > 0,
    if dirUV < 0, savF(is,n)=-savF(is,n) ; end
 %  if yCenter <= yMid, savF(is,n)=-savF(is,n) ; end
 %  if ydim == 1 & dirUV*(yCenter - yPmid) <= 0 , 
-   if dirUV*(yCenter - yPmid) <= 0 , 
-    fprintf('- Sign - : n,is,i0,i1,j0,j1= %i %i %i %i %i %i ', ...
-     ' ;  dirUV= %e \n', n,is,i0,i1,j0,j1,dirUV);
+   if dirUV*(yCenter - yPmid) < 0 , 
+    fprintf(['- Sign - : n,is,i0,i1,j0,j1= %i %i %i %i %i %i ', ...
+     ' ;  dirUV= %e \n'], n,is,i0,i1,j0,j1,dirUV);
     fprintf('           %8.3f %8.3f %8.3f %8.3f \n', ...
                          xsav(is,n),xx1(i1,j1,n),xPmid,xCenter);
     fprintf('           %8.3f %8.3f %8.3f %8.3f \n', ...

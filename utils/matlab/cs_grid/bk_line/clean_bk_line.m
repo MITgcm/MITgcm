@@ -1,10 +1,13 @@
+function [ncut,icut,xcut,ycut,misfit,xyfit]=clean_bk_line( ...
+         nf1,nf2,nc,ydim,yl,dylat,xMid,xx1,xx2,yy2, ...
+         savI,savJ,savF,isav,jsav,xsav,nMx6t)
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/clean_bk_line.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/clean_bk_line.m,v 1.2 2007/02/05 05:24:33 jmc Exp $
 % $Name:  $
 
 %- define "segments" = continuous part of the line : --> i,x,y_cut(:,1:2,:)
 
-% ncut=zeros(6,1); icut=zeros(nc,4,6); xcut=zeros(nc,4,6); ycut=zeros(nc,4,6);
+ncut=zeros(6,1); icut=zeros(nc,6,6); xcut=zeros(nc,4,6); ycut=zeros(nc,4,6);
 
 %- cut unused part of the line :
 for n=nf1:nf2, if nMx6t(n) > 1,
@@ -26,7 +29,7 @@ end; end ;
 %========================================================================
 %- detect fork and try to remove 1 branche : fill in icut(:,3:4,:)
 
-misfit=0;
+misfit=0; xyfit = 0;
 for n=nf1:nf2,
  for in=1:ncut(n),
 %-------------------------------------------------------------------------
@@ -177,7 +180,7 @@ for n=nf1:nf2,
 
 end; end ; %- for n, for in=1:ncut(n)
 
-if misfit > 0, return ; end
+if misfit > 0, error(['misfit (',int2str(misfit),') in starting point']) ; end
 
 %=========================================================================
 
@@ -251,7 +254,7 @@ for n=nf1:nf2,
 
 end; end ; %- for n, for in=1:ncut(n)
 
-if misfit > 0, return ; end
+if misfit > 0, error(['misfit (',int2str(misfit),') in ending point']) ; end
 
 %-- this part is not necessary :
 misfit=0;
@@ -300,7 +303,7 @@ for n=nf1:nf2,
 
 end; end ; %- for n, for in=1:ncut(n)
 
-if misfit > 0, return ; end
+if misfit > 0, error(['misfit (',int2str(misfit),') in connection']) ; end
 
 %=========================================================================
 
