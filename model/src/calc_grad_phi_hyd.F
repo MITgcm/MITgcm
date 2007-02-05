@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.9 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.10 2007/02/05 03:22:44 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -73,15 +73,15 @@ C      and will add later (select_rStar=2) the contribution of
 C      the slope of the r* coordinate.
        IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
 C-     Consistent with Phi'= Integr[ theta'.dPi ] :
-        DO j=jMin-1,jMax
-         DO i=iMin-1,iMax
+        DO j=jMin,jMax
+         DO i=iMin,iMax
           varLoc(i,j) = phiHydC(i,j)*rStarFacC(i,j,bi,bj)**atm_kappa
      &                + phi0surf(i,j,bi,bj)
          ENDDO
         ENDDO
        ELSE
-        DO j=jMin-1,jMax
-         DO i=iMin-1,iMax
+        DO j=jMin,jMax
+         DO i=iMin,iMax
           varLoc(i,j) = phiHydC(i,j)*rStarFacC(i,j,bi,bj)
      &                + phi0surf(i,j,bi,bj)
          ENDDO
@@ -92,8 +92,8 @@ C-    Integral of b.dr but scaled to correspond to a fixed r-level (=r*)
 C      no contribution of the slope of the r* coordinate (select_rStar=1)
        IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
 C-     Consistent with Phi'= Integr[ theta'.dPi ] :
-        DO j=jMin-1,jMax
-         DO i=iMin-1,iMax
+        DO j=jMin,jMax
+         DO i=iMin,iMax
           IF (Ro_surf(i,j,bi,bj).EQ.rC(k)) THEN
            factPI=atm_Cp*( ((etaH(i,j,bi,bj)+rC(k))/atm_Po)**atm_kappa
      &                    -(                 rC(k) /atm_Po)**atm_kappa
@@ -109,8 +109,8 @@ C-     Consistent with Phi'= Integr[ theta'.dPi ] :
          ENDDO
         ENDDO
        ELSE
-        DO j=jMin-1,jMax
-         DO i=iMin-1,iMax
+        DO j=jMin,jMax
+         DO i=iMin,iMax
           IF (Ro_surf(i,j,bi,bj).EQ.rC(k)) THEN
            WRITE(msgBuf,'(3A)') 'CALC_GRAD_PHI_HYD: ',
      &      'Problem when Ro_surf=rC',
@@ -131,8 +131,8 @@ C-     Consistent with Phi'= Integr[ theta'.dPi ] :
 #else /* NONLIN_FRSURF */
       IF (.TRUE.) THEN
 #endif /* NONLIN_FRSURF */
-       DO j=jMin-1,jMax
-        DO i=iMin-1,iMax
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          varLoc(i,j) = phiHydC(i,j)+phi0surf(i,j,bi,bj)
         ENDDO
        ENDDO
@@ -140,9 +140,13 @@ C-     Consistent with Phi'= Integr[ theta'.dPi ] :
 
 C--   Zonal & Meridional gradient of potential anomaly
       DO j=jMin,jMax
-       DO i=iMin,iMax
+       DO i=iMin+1,iMax
         dPhiHydX(i,j) = _recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
      &                *( varLoc(i,j)-varLoc(i-1,j) )*recip_rhoFacC(k)
+       ENDDO
+      ENDDO
+      DO j=jMin+1,jMax
+       DO i=iMin,iMax
         dPhiHydY(i,j) = _recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
      &                *( varLoc(i,j)-varLoc(i,j-1) )*recip_rhoFacC(k)
        ENDDO
@@ -153,18 +157,22 @@ C--   Zonal & Meridional gradient of potential anomaly
        IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
 C--    z* coordinate slope term: rho'/rho0 * Grad_r(g.z)
         factorZ = gravity*recip_rhoConst*recip_rhoFacC(k)*0.5 _d 0
-        DO j=jMin-1,jMax
-         DO i=iMin-1,iMax
+        DO j=jMin,jMax
+         DO i=iMin,iMax
           varLoc(i,j) = etaH(i,j,bi,bj)
      &                *(1. _d 0 + rC(k)*recip_Rcol(i,j,bi,bj))
          ENDDO
         ENDDO
         DO j=jMin,jMax
-         DO i=iMin,iMax
+         DO i=iMin+1,iMax
           dPhiHydX(i,j) = dPhiHydX(i,j)
      &     +factorZ*(alphRho(i-1,j)+alphRho(i,j))
      &             *(varLoc(i,j)-varLoc(i-1,j))
      &             *recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+         ENDDO
+        ENDDO
+        DO j=jMin+1,jMax
+         DO i=iMin,iMax
           dPhiHydY(i,j) = dPhiHydY(i,j)
      &     +factorZ*(alphRho(i,j-1)+alphRho(i,j))
      &             *(varLoc(i,j)-varLoc(i,j-1))
@@ -175,11 +183,15 @@ C--    z* coordinate slope term: rho'/rho0 * Grad_r(g.z)
 C--    p* coordinate slope term: alpha' * Grad_r( p )
         factorP = 0.5 _d 0
         DO j=jMin,jMax
-         DO i=iMin,iMax
+         DO i=iMin+1,iMax
           dPhiHydX(i,j) = dPhiHydX(i,j)
      &     +factorP*(alphRho(i-1,j)+alphRho(i,j))
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i-1,j,bi,bj))
      &             *rC(k)*recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+         ENDDO
+        ENDDO
+        DO j=jMin+1,jMax
+         DO i=iMin,iMax
           dPhiHydY(i,j) = dPhiHydY(i,j)
      &     +factorP*(alphRho(i,j-1)+alphRho(i,j))
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i,j-1,bi,bj))
@@ -191,11 +203,15 @@ C--    p* coordinate slope term: alpha' * Grad_r( p )
         conv_theta2T = (rC(k)/atm_Po)**atm_kappa
         factorP = (atm_Rd/rC(k))*conv_theta2T*0.5 _d 0
         DO j=jMin,jMax
-         DO i=iMin,iMax
+         DO i=iMin+1,iMax
           dPhiHydX(i,j) = dPhiHydX(i,j)
      &     +factorP*(alphRho(i-1,j)+alphRho(i,j))
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i-1,j,bi,bj))
      &             *rC(k)*recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+         ENDDO
+        ENDDO
+        DO j=jMin+1,jMax
+         DO i=iMin,iMax
           dPhiHydY(i,j) = dPhiHydY(i,j)
      &     +factorP*(alphRho(i,j-1)+alphRho(i,j))
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i,j-1,bi,bj))
