@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.34 2006/12/24 20:07:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.35 2007/02/05 03:14:26 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -337,7 +337,7 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO K=1,Nr
             DO j = 1,sNy
-             DO i = 1,sNx
+             DO i = 1,sNx+1
                tmpMk(i,j,K,bi,bj) = -uVel(i,j,K,bi,bj)*
      .                    *86400./dTtracerLev(1)
              ENDDO
@@ -352,7 +352,7 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO K=1,Nr
-            DO j = 1,sNy
+            DO j = 1,sNy+1
              DO i = 1,sNx
                tmpMk(i,j,K,bi,bj) = -vVel(i,j,K,bi,bj)
      .                    *86400./dTtracerLev(1)
@@ -486,7 +486,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO K=1,Nr
             DO j = 1,sNy
-              DO i = 1,sNx
+              DO i = 1,sNx+1
                 tmpMk(i,j,K,bi,bj)
      &               = uVel(i,j,K,bi,bj)*hFacW(i,j,K,bi,bj)
               ENDDO
@@ -501,7 +501,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO K=1,Nr
-            DO j = 1,sNy
+            DO j = 1,sNy+1
               DO i = 1,sNx
                 tmpMk(i,j,K,bi,bj)
      &               = vVel(i,j,K,bi,bj)*hFacS(i,j,K,bi,bj)
@@ -630,7 +630,7 @@ C       this means that diag fill is called from inside the bi-bj loop
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO K=1,Nr
             DO j = 1,sNy
-             DO i = 1,sNx
+             DO i = 1,sNx+1
                tmpMk(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)
      .                    *86400./dTtracerLev(1)
              ENDDO
@@ -645,7 +645,7 @@ C       this means that diag fill is called from inside the bi-bj loop
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO K=1,Nr
-            DO j = 1,sNy
+            DO j = 1,sNy+1
              DO i = 1,sNx
                tmpMk(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)
      .                    *86400./dTtracerLev(1)
