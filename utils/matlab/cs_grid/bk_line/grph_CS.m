@@ -1,6 +1,7 @@
 function [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
-% [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift[,cbV,AxBx]) : produce a flat plot of the
-%  cube_sphere "var" keeping the initial grid (no interpolation, use "surf")
+% [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift[,cbV,AxBx,kEnv]) : 
+% produce a flat plot of the cube_sphere field "var",
+%  keeping the initial grid (no interpolation, use "surf")
 % xcs,ycs,xcg,ycg = center + corner grid point coordinates
 % c1 < c2 = min & max for the color graph
 % c1 > c2 = scale with min,max of the field, + c1/100 and + c2/100
@@ -11,8 +12,9 @@ function [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 % kEnv = 0 : standard ; =odd : do not draw the mesh ; >1 : no min,Max written.
 % AxBx = do axis(AxBx) to zoom in Box "AxBx" ; only if shift=-1,0 ;
 %-----------------------
+
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.2 2007/02/06 17:43:55 jmc Exp $
 % $Name:  $
 
 if nargin < 9, cbV=0 ; end
@@ -59,11 +61,16 @@ else
 end
 %---
 nbsf = 0 ; ic = 0 ; jc = 0 ;
-xcg=reshape(xcg,[nc*6*nc 1]); ycg=reshape(ycg,[nc*6*nc 1]);
+nPx=prod(size(xcg)); nPy=prod(size(ycg));
+if nPx == nPg & nPy == nPg,
+ xcg=reshape(xcg,[nPg 1]); ycg=reshape(ycg,[nPg 1]);
 %- add the 2 missing corners:
 %fprintf(' Local version of grph_CS : ---------------------------------- \n');
  xcg(nPg+1)=xcg(1); ycg(nPg+1)=ycg(1+2*nc);
  xcg(nPg+2)=xcg(1+3*nc); ycg(nPg+2)=ycg(1);
+elseif nPx ~= nPg+2 | nPy ~= nPg+2,
+ error([' wrong xcg,ycg dimensions : ',int2str(nPx),' , ',int2str(nPy)]);
+end
 [xx2]=split_Z_cub(xcg);
 [yy2]=split_Z_cub(ycg);
 %---
