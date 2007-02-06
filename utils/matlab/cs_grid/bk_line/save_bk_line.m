@@ -1,12 +1,14 @@
-function [svNpts,svFlg,svIuv,svJuv,svXsg,svYsg]=save_bk_line( ...
+function [svNpts,svFlg,svIuv,svJuv,svXsg,svYsg,svXx1,svYy1]=save_bk_line( ...
          nf1,nf2,nc,ydim,yl,dylat,XYout,xMid,xx0,yy0,yy1, ...
          savI,savJ,savF,isav,jsav,xsav,ncut,icut,xcut,ycut);
+% [svNpts,svFlg,svIuv,svJuv,svXsg,svYsg,svXx1,svYy1]=save_bk_line( ...
+%        nf1,nf2,nc,ydim,yl,dylat,XYout,xMid,xx0,yy0,yy1, ...
+%        savI,savJ,savF,isav,jsav,xsav,ncut,icut,xcut,ycut);
+%- output : put together the pieces of bk-lines from the 6 faces
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/save_bk_line.m,v 1.2 2007/02/05 05:24:33 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/save_bk_line.m,v 1.3 2007/02/06 19:29:36 jmc Exp $
 % $Name:  $
-
 %--------------------------------------
-%- output : put together the pieces of bk-lines from the 6 faces :
 
 %- output arrays:
 % ylat=-87:3:87;
@@ -40,7 +42,6 @@ for ns=1:nSegm,
    svYy1(1)=ycut(in,3,n); 
    svXsg(1)=xx0(isav(icut(in,3,n),n),jsav(icut(in,3,n),n),n);
    svYsg(1)=yy0(isav(icut(in,3,n),n),jsav(icut(in,3,n),n),n);
-   if ydim > 1, svXsg(1)=svXx1(1); end
   else
    if svXx1(it+1) ~= xcut(in,3,n) | svYy1(it+1) ~= ycut(in,3,n),
     fprintf('=> conection Pb: previous Seg end= %8.3f %8.3f \n', ...
@@ -61,7 +62,6 @@ for ns=1:nSegm,
    svYy1(it+1)=yy1(isav(i+1,n),jsav(i+1,n),n);
    svXsg(it+1)=xx0(isav(i+1,n),jsav(i+1,n),n);
    svYsg(it+1) =yy0(isav(i+1,n),jsav(i+1,n),n);
-%  if ydim > 1, svXsg(it+1)=svXx1(it+1); end
    
   end
   x2loc(ii)=XYout;

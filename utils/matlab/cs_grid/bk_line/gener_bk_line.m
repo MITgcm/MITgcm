@@ -1,7 +1,7 @@
 % main script to generate broken lines that folows the cubic grid
 % and stay close as possible to a given latitude
 %-----------------------
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gener_bk_line.m,v 1.2 2007/02/05 05:24:33 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gener_bk_line.m,v 1.3 2007/02/06 19:29:36 jmc Exp $
 % $Name:  $
 
 %- load definition of the grid (needs to be done at the 1rst call):
@@ -158,7 +158,7 @@ end
 %- output : put together the pieces of bk-lines from the 6 faces :
 
 %save_bk_line 
-[svNpts,svFlg,svIuv,svJuv,svXsg,svYsg]= ...
+[svNpts,svFlg,svIuv,svJuv,svXsg,svYsg,svXx1,svYy1]= ...
 save_bk_line( nf1,nf2,nc,ydim,yl,dylat,XYout,xMid,xx1,yy2,yy2, ...
               savI,savJ,savF,isav,jsav,xsav,ncut,icut,xcut,ycut );
 %- easier to debug this way:
@@ -166,8 +166,8 @@ savNpts(jl)=svNpts;
 savFlg(:,jl)=svFlg;
 savIuv(:,jl)=svIuv;
 savJuv(:,jl)=svJuv;
-savXsg(:,jl)=svXsg;
-savYsg(:,jl)=svYsg;
+savXsg(:,jl)=svXx1;
+savYsg(:,jl)=svYy1;
 
 %-- check that this broken-line is different from any previous one :
 check_bk_line( nc,ydim,jl,ylat,savNpts,savFlg,savIuv,savJuv,savXsg,savYsg );

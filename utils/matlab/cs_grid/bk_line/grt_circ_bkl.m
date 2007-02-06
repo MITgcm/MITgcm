@@ -4,7 +4,7 @@
 %  positive when the flow goes from right to left of arc A -> B.
 % (e.g.: if lat_A = lat_B and long_A < long_B, northward flow -> transport > 0 )
 %-----------------------
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grt_circ_bkl.m,v 1.1 2007/02/05 05:24:33 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grt_circ_bkl.m,v 1.2 2007/02/06 19:29:36 jmc Exp $
 % $Name:  $
 
  
@@ -156,7 +156,7 @@ savFlg=zeros(6*ncp,ydim);
 savIuv=zeros(6*ncp,ydim); savJuv=zeros(6*ncp,ydim);
 savXsg=zeros(6*ncp,ydim); savYsg=zeros(6*ncp,ydim);
 
-[svNpts,svFlg,svIuv,svJuv,svXsg,svYsg]= ...
+[svNpts,svFlg,svIuv,svJuv,svXsg,svYsg,svXx1,svYy1]= ...
 save_bk_line( nf1,nf2,nc,ydim,yl,dylat,XYout,xMid,xx0,yy0,yy2, ...
               savI,savJ,savF,isav,jsav,xsav,ncut,icut,xcut,ycut );
 %- easier to debug this way:
