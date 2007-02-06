@@ -1,6 +1,6 @@
 function fld=read_cs_face(fnam,face,kx,prec,cx)
 
-% Function fld=readface(fnam,face,kx,prec,cx)
+% Function fld=read_cs_face(fnam,face,kx,prec,cx)
 % read in a cube sphere face
 %
 % INPUTS
