@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.766 2007/01/16 19:45:13 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.767 2007/02/06 22:19:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o utils/matlab/cs_grid/bk_line: to compute transport through passages,
+  add a script (grt_circ_bkl.m) to generate broken-line between 2 points,
+  following the great-circle arc between those 2 points.
+o trap un-initialized variable with pathscale compiler on weddell.mit.edu
+  (thanks to Constantinos): fix few problems and get (almost) all exp to pass.
 o 2nd-Order Moment Advection Scheme (Prather, 1986): first check-in
  - enable by setting #define GAD_ALLOW_SOM_ADVECT (in GAD_OPTIONS.h)
  - used without limiter (AdvScheme=80) or with Prather limiter (AdvScheme=81)
