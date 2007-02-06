@@ -1,0 +1,43 @@
+% The following are examples of using routines
+%
+% readbin       : generic routine for reading binary files
+% read_cs_bin   : read in cube sphere binary output
+% read_cs_face  : read in a cube sphere face
+% read_cs_ifjk  : read in specific indices for cube sphere configuration
+% read_cs_index : read in horizontal-slice indices for cube sphere configuration
+%
+% to read cube-sphere model output.  The following four examples produce
+% identical results, but execution time and memory requirements differ.
+
+
+% input parameters
+fnam='THETA.0000374688.data';  % file name
+ix=125:3:145;                  % x-indices
+face=3;                        % cube face index
+jx=400:5:420;                  % y-indices
+kx=[1 10 20];                  % vertical indices
+prec='real*8';                 % precision
+cx=510;                        % cube face size
+
+% compute cube sphere horizontal-slice indices
+tmp=reshape(1:(cx*6*cx),cx,6,cx);
+ij_indices=tmp(ix,face,jx);
+ij_indices=ij_indices(:);
+
+% 1. example using readbin
+tmp=readbin(fnam,[cx 6 cx 50],1,prec);
+fld1=tmp(ix,face,jx,kx);
+
+% 2. example using read_cs_bin
+tmp=read_cs_bin(fnam,kx,prec,cx);
+fld2=tmp(ix,face,jx,:);
+
+% 3. example using read_cs_bin
+tmp=read_cs_face(fnam,face,kx,prec,cx);
+fld3=tmp(ix,jx,:);
+
+% 4. example using read_cs_ifjk
+fld4=read_cs_ifjk(fnam,ix,face,jx,kx,prec,cx);
+
+% 5. example using read_cs_index
+fld5=read_cs_index(fnam,ij_indices,kx,prec,cx);
