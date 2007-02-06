@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.767 2007/02/06 22:19:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.768 2007/02/06 22:24:51 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o utils/matlab/cs_grid/read_cs: routines to speed up reading of CS510 fields
+  and portions thereof.  See read_cs.txt for description and examples.
 o utils/matlab/cs_grid/bk_line: to compute transport through passages,
   add a script (grt_circ_bkl.m) to generate broken-line between 2 points,
   following the great-circle arc between those 2 points.
