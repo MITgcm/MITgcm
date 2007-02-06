@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.98 2007/01/09 22:24:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.99 2007/02/06 13:38:35 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -561,14 +561,14 @@ c-- The following assumes the TAF option '-pure'
          CALL COST_FINAL_STORE ( mythid, lastdiva )
       ELSE
          CALL TIMER_START('ADTHE_MAIN_LOOP       [ADJOINT RUN]', mythid)
-         CALL ADTHE_MAIN_LOOP ( myCurrentTime, myCurrentIter, mythid )
+         CALL ADTHE_MAIN_LOOP (  mythid )
          CALL TIMER_STOP ('ADTHE_MAIN_LOOP       [ADJOINT RUN]', mythid)
          CALL COST_FINAL_RESTORE ( mythid, lastdiva )
       ENDIF
 c--
 #  else /* ALLOW_DIVIDED_ADJOINT undef */
       CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
-      CALL ADTHE_MAIN_LOOP ( myCurrentTime, myCurrentIter, mythid )
+      CALL ADTHE_MAIN_LOOP ( myCurrentTime, mythid )
 cph      CALL ADTHE_MAIN_LOOP ( mythid )
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
 #  endif /* ALLOW_DIVIDED_ADJOINT */
