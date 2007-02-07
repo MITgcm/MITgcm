@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.12 2006/04/09 14:46:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.13 2007/02/07 00:00:32 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -138,6 +138,16 @@ CEOP
       CALL MNC_CW_ADD_VATTR_TEXT('adDiffkr',
      & 'long_name','adjoint vertical diffusion', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adDiffkr',
+     &     'coordinates','XC YC RC iter', myThid)
+#endif
+
+#ifdef ALLOW_KAPGM_CONTROL
+      CALL MNC_CW_ADD_VNAME('adkapgm', 'Cen_xy_Hn__C__t', 4,5, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adkapgm',
+     & 'units','[cost]/[m^2/s]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adkapgm',
+     & 'long_name','adjoint isopycnal diffusion', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adkapgm',
      &     'coordinates','XC YC RC iter', myThid)
 #endif
 

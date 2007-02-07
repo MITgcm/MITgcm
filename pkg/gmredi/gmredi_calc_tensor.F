@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.24 2006/06/20 22:55:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.25 2007/02/07 00:01:15 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -325,7 +325,11 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 C-    express the Tensor in term of Diffusivity (= m**2 / s )
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
+#ifdef ALLOW_KAPGM_CONTROL
+        Kgm_tmp = GM_isopycK + GM_skewflx*kapgm(i,j,k,bi,bj)
+#else
         Kgm_tmp = GM_isopycK + GM_skewflx*GM_background_K
+#endif
 #ifdef GM_VISBECK_VARIABLE_K
      &          + VisbeckK(i,j,bi,bj)*(1. _d 0 + GM_skewflx)     
 #endif
@@ -414,7 +418,11 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
           Kuz(i,j,k,bi,bj) =
+#ifdef ALLOW_KAPGM_CONTROL
+     &     ( GM_isopycK - GM_skewflx*kapgm(i,j,k,bi,bj)
+#else
      &     ( GM_isopycK - GM_skewflx*GM_background_K
+#endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*GM_advect
 #endif
@@ -533,7 +541,11 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
           Kvz(i,j,k,bi,bj) =
+#ifdef ALLOW_KAPGM_CONTROL
+     &     ( GM_isopycK - GM_skewflx*kapgm(i,j,k,bi,bj)
+#else
      &     ( GM_isopycK - GM_skewflx*GM_background_K
+#endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*GM_advect
 #endif

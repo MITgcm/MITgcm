@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.7 2005/01/03 14:35:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.8 2007/02/07 00:01:15 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -125,7 +125,11 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx+1,sNx+Olx
           GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)
+#ifdef ALLOW_KAPGM_CONTROL
+     &     *( kapgm(i,j,k,bi,bj)
+#else 
      &     *( GM_background_K
+#endif
 #ifdef GM_VISBECK_VARIABLE_K
      &      +op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
@@ -135,7 +139,11 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
        DO j=1-Oly+1,sNy+Oly
         DO i=1-Olx,sNx+Olx
          GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
+#ifdef ALLOW_KAPGM_CONTROL
+     &     *( kapgm(i,j,k,bi,bj)
+#else 
      &     *( GM_background_K
+#endif
 #ifdef GM_VISBECK_VARIABLE_K
      &      +op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
