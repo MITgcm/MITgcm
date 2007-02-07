@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.99 2007/02/06 13:38:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.100 2007/02/07 23:16:54 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -568,8 +568,11 @@ c-- The following assumes the TAF option '-pure'
 c--
 #  else /* ALLOW_DIVIDED_ADJOINT undef */
       CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
+#   ifdef ALLOW_ECCO
       CALL ADTHE_MAIN_LOOP ( myCurrentTime, mythid )
-cph      CALL ADTHE_MAIN_LOOP ( mythid )
+#   else
+      CALL ADTHE_MAIN_LOOP ( mythid )
+#   endif
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
 #  endif /* ALLOW_DIVIDED_ADJOINT */
 c
