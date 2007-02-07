@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.18 2006/12/20 12:25:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.19 2007/02/07 01:07:42 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -70,6 +70,9 @@ C     set the following flag (pressure is assumed to have no effect,
 C     which is a good assumption for the top 20 meters). With this
 C     option defined the parameter SEAICE_freeze has no effect.
 #undef SEAICE_VARIABLE_FREEZING_POINT
+
+C--   Allow SEAICEuseFlooding, which converts snow to ice if submerged.
+#undef ALLOW_SEAICE_FLOODING
 
 C--   By default the seaice model is discretized on a B-Grid (for 
 C     historical reasons). Define the following flag to use a new
