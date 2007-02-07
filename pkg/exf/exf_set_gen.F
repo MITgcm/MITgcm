@@ -54,10 +54,11 @@ c     == routine arguments ==
       _RL gen0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL gen1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       character*1 genmask
-      character*(128) genfile, genfile0, genfile1
+      character*(128) genfile
       _RL     mytime
       integer myiter
       integer mythid
+
 #ifdef USE_EXF_INTERPOLATION
 c     gen_lon_0 ,gen_lat_0 :: longitude and latitude of SouthWest
 c                             corner of global input grid
@@ -71,17 +72,16 @@ c     gen_xout, gen_yout   :: coordinates for output grid
       _RS gen_xout  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS gen_yout  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer interp_method
-#endif
+#endif /* USE_EXF_INTERPOLATION */
 
 c     == local variables ==
 
       logical first, changed
       integer count0, count1
       integer year0, year1
+      integer bi, bj, i, j, il
       _RL     fac
-
-      integer bi, bj
-      integer i, j, il
+      character*(128) genfile0, genfile1
 
 c     == external ==
 
@@ -90,18 +90,13 @@ c     == external ==
 
 c     == end of interface ==
 
-      if ( genfile .NE. ' ' ) then
+      if ( genfile .NE. ' ' .and. genperiod .ne. 0 ) then
 
 cph(
 cph-exf-print         if (genfile .EQ. hfluxfile)  year0 = 3000
 cph)
 
-         if ( genperiod .eq. 0 ) then
-c     genperiod=0 means input file is one time-constant field
-            count0 = 1
-            count1 = 1
-
-         elseif ( genperiod .eq. -12 ) then
+         if ( genperiod .eq. -12 ) then
 c     genperiod=-12 means input file contains 12 monthly means
 c     record numbers are assumed 1 to 12 corresponding to
 c     Jan. through Dec.
@@ -160,7 +155,7 @@ C     Complete filename with YR or _YEAR extension
             call mdsreadfield( genfile0, exf_iprec, exf_yftype, 1
      &           , gen1, count0, mythid
      &           )
-#endif
+#endif /* USE_EXF_INTERPOLATION */
 
             if (exf_yftype .eq. 'RL') then
                call exf_filter_rl( gen1, genmask, mythid )
@@ -201,7 +196,7 @@ C     Complete filename with YR or _YEAR extension
             call mdsreadfield( genfile1, exf_iprec, exf_yftype, 1
      &           , gen1, count1, mythid
      &           )
-#endif
+#endif /* USE_EXF_INTERPOLATION */
 
             if (exf_yftype .eq. 'RL') then
                call exf_filter_rl( gen1, genmask, mythid )
@@ -233,9 +228,18 @@ c     Interpolate linearly onto the  time.
       end
 
 
+C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
       subroutine exf_init_gen ( 
-     &     genconst, genfld, gen0, gen1, geninitfile, mythid )
+     &     genfile, exf_inscal_gen, genmask,
+     &     genconst, genfld, gen0, gen1,
+#ifdef USE_EXF_INTERPOLATION
+     &     gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
+     &     gen_nlon, gen_nlat, gen_xout, gen_yout, interp_method,
+#endif
+     &     mythid )
+
 
 c     ==================================================================
 c     SUBROUTINE exf_init_gen
@@ -263,17 +267,33 @@ c     == global variables ==
 
 c     == routine arguments ==
 
+      _RL exf_inscal_gen
       _RL genconst
       _RL genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL gen0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL gen1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      character*(128) geninitfile
+      character*1 genmask
+      character*(128) genfile
       integer mythid
+
+#ifdef USE_EXF_INTERPOLATION
+c     gen_lon_0 ,gen_lat_0 :: longitude and latitude of SouthWest
+c                             corner of global input grid
+c     gen_nlon, gen_nlat   :: input x-grid and y-grid size
+c     gen_lon_inc          :: scalar x-grid increment
+c     gen_lat_inc          :: vector y-grid increments
+c     gen_xout, gen_yout   :: coordinates for output grid
+      _RL gen_lon0, gen_lon_inc
+      _RL gen_lat0, gen_lat_inc(MAX_LAT_INC)
+      INTEGER gen_nlon, gen_nlat
+      _RS gen_xout  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS gen_yout  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      integer interp_method
+#endif /* USE_EXF_INTERPOLATION */
 
 c     == local variables ==
 
-      integer bi, bj
-      integer i, j
+      integer bi, bj, i, j, count
 
 c     == end of interface ==
 
@@ -289,9 +309,41 @@ c     == end of interface ==
         enddo
       enddo
 
-      if ( geninitfile .NE. ' ' ) then
-         call mdsreadfield( geninitfile, exf_iprec, exf_yftype,
-     &        1, genfld, 1, mythid )
+      if ( genfile .NE. ' ' ) then
+         count = 1
+
+#ifdef USE_EXF_INTERPOLATION
+         call exf_interp( genfile, exf_iprec
+     &        , genfld, count, gen_xout, gen_yout
+     &        , gen_lon0,gen_lon_inc
+     &        , gen_lat0,gen_lat_inc
+     &        , gen_nlon,gen_nlat,interp_method,mythid
+     &        )
+#else
+         call mdsreadfield( genfile, exf_iprec, exf_yftype, 1
+     &        , genfld, count, mythid
+     &        )
+#endif /* USE_EXF_INTERPOLATION */
+
+         if (exf_yftype .eq. 'RL') then
+            call exf_filter_rl( genfld, genmask, mythid )
+         else
+            call exf_filter_rs( genfld, genmask, mythid )
+         end if
+
+c     Loop over tiles.
+         do bj = mybylo(mythid),mybyhi(mythid)
+            do bi = mybxlo(mythid),mybxhi(mythid)
+               do j = 1,sny
+                  do i = 1,snx
+c     Interpolate linearly onto the  time.
+                     genfld(i,j,bi,bj) =
+     &                    exf_inscal_gen * genfld(i,j,bi,bj) 
+                  enddo
+               enddo
+            enddo
+         enddo
+
       endif
 
       end

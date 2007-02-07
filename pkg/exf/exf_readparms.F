@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.36 2007/01/18 23:44:43 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.37 2007/02/07 17:38:11 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -101,12 +101,6 @@ c     Surface flux data.
      &     snowprecipfile,          uwindfile,     vwindfile,
      &         wspeedfile,         swfluxfile,    lwfluxfile,
      &      apressurefile,         swdownfile,    lwdownfile,
-     &          hflux0file,          atemp0file,       aqh0file,
-     &          sflux0file,         precip0file,    runoff0file,
-     &        ustress0file,        vstress0file,      evap0file,
-     &     snowprecip0file,          uwind0file,     vwind0file,
-     &         wspeed0file,         swflux0file,    lwflux0file,
-     &      apressure0file,         swdown0file,    lwdown0file,
      &          exf_iprec,  exf_yftype, 
      & useExfYearlyFields,  twoDigitYear,         useExfCheckRange,
      &   exf_inscal_hflux,  exf_inscal_sflux,      exf_inscal_evap,
@@ -353,25 +347,6 @@ c     Data files.
       swdownfile         = ' '
       lwdownfile         = ' '
       apressurefile      = ' '
-c
-      hflux0file          = ' '
-      atemp0file          = ' '
-      aqh0file            = ' '
-      evap0file           = ' '
-      precip0file         = ' '
-      snowprecip0file     = ' '
-      sflux0file          = ' '
-      runoff0file         = ' '
-      ustress0file        = ' '
-      vstress0file        = ' '
-      uwind0file          = ' '
-      vwind0file          = ' '
-      wspeed0file         = ' '
-      swflux0file         = ' '
-      lwflux0file         = ' '
-      swdown0file         = ' '
-      lwdown0file         = ' '
-      apressure0file      = ' '
 
 c     Start dates.
       hfluxstartdate     = 0.

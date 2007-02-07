@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.28 2007/01/18 23:44:43 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.29 2007/02/07 17:38:11 dimitri Exp $
 c
 c
 c     ==================================================================
@@ -274,26 +274,6 @@ c     File names.
       character*(128) lwdownfile
       character*(128) apressurefile
 
-c     File names for initial fields.
-      character*(128) hflux0file
-      character*(128) atemp0file
-      character*(128) aqh0file
-      character*(128) evap0file
-      character*(128) precip0file
-      character*(128) snowprecip0file
-      character*(128) sflux0file
-      character*(128) runoff0file
-      character*(128) ustress0file
-      character*(128) vstress0file
-      character*(128) uwind0file
-      character*(128) vwind0file
-      character*(128) wspeed0file
-      character*(128) swflux0file
-      character*(128) lwflux0file
-      character*(128) swdown0file
-      character*(128) lwdown0file
-      character*(128) apressure0file
-
 C     useExfYearlyFields :: when set, automatically add extension
 C                           _YEAR to input file names
 C     twoDigitYear       :: when set, use 2-digit year extension YR
@@ -431,25 +411,7 @@ C                           instead of _YEAR for useExfYearlyFields
      &                     lwfluxfile,
      &                     swdownfile,
      &                     lwdownfile,
-     &                     apressurefile,
-     &                     hflux0file,
-     &                     atemp0file,
-     &                     aqh0file,
-     &                     sflux0file,
-     &                     evap0file,
-     &                     precip0file,
-     &                     snowprecip0file,
-     &                     runoff0file,
-     &                     ustress0file,
-     &                     vstress0file,
-     &                     uwind0file,
-     &                     vwind0file,
-     &                     wspeed0file,
-     &                     swflux0file,
-     &                     lwflux0file,
-     &                     swdown0file,
-     &                     lwdown0file,
-     &                     apressure0file
+     &                     apressurefile
 
 c     file precision and field type
 
