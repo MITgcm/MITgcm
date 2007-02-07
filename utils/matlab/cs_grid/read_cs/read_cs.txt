@@ -1,12 +1,14 @@
-% The following are examples of using routines
-%
 % readbin       : generic routine for reading binary files
 % read_cs_bin   : read in cube sphere binary output
 % read_cs_face  : read in a cube sphere face
 % read_cs_ifjk  : read in specific indices for cube sphere configuration
 % read_cs_index : read in horizontal-slice indices for cube sphere configuration
-%
-% to read cube-sphere model output.  The following four examples produce
+% writebin      : write N-D binary field
+% ts2dte        : convert model time step to a date
+
+
+% The following are examples of using the read* routines
+% to read cube-sphere model output.  The following five examples produce
 % identical results, but execution time and memory requirements differ.
 
 
