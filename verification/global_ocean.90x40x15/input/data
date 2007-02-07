@@ -15,7 +15,7 @@
  rhonil=1035.,
  rhoConstFresh=1000.,
  gravity=9.81,
- eosType = 'POLY3',
+ eosType='JMD95P',
  ivdc_kappa=100.,
  implicitDiffusion=.TRUE.,
  allowFreezing=.TRUE.,
