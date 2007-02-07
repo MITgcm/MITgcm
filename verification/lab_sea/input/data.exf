@@ -1,10 +1,11 @@
-# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/data.exf,v 1.8 2005/09/06 22:35:15 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/data.exf,v 1.9 2007/02/07 23:57:18 jmc Exp $
 #
 # *********************
 # External Forcing Data
 # *********************
  &EXF_NML
 #
+ useExfCheckRange  = .FALSE.,
  repeatPeriod      = 31622400.0,
 #
  hfluxstartdate1   = 19781216,
@@ -31,9 +32,9 @@
  aqhstartdate2     = 180000,
  aqhperiod         = 2635200.0,
 #
- evapstartdate1    = 19781216,
- evapstartdate2    = 180000,
- evapperiod        = 2635200.0,
+#evapstartdate1    = 19781216,
+#evapstartdate2    = 180000,
+#evapperiod        = 2635200.0,
 #
  precipstartdate1  = 19781216,
  precipstartdate2  = 180000,
@@ -71,7 +72,7 @@
  aqhfile           = 'qa.labsea1979',
  uwindfile         = 'u10m.labsea1979',
  vwindfile         = 'v10m.labsea1979',
- evapfile          = 'evap.labsea1979',
+#evapfile          = 'evap.labsea1979',
  precipfile        = 'prate.labsea1979',
  lwfluxfile        = ' ',
  swfluxfile        = ' ',
