@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.769 2007/02/07 17:38:11 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.770 2007/02/08 00:12:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58v_post
+o change EOS (from POLY3 to JMD95P) in global_ocean.90x45x15 to get
+  useDynP_inEos_Zc tested.
 o pkg/exf: changes to properly interpolate/mask/scale initial fields
 o utils/matlab/cs_grid/read_cs: routines to speed up reading of CS510 fields
   and portions thereof.  See read_cs.txt for description and examples.
