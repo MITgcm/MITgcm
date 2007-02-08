@@ -1,11 +1,11 @@
-# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/data.exf,v 1.9 2007/02/07 23:57:18 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/data.exf,v 1.10 2007/02/08 07:01:08 dimitri Exp $
 #
 # *********************
 # External Forcing Data
 # *********************
  &EXF_NML
 #
- useExfCheckRange  = .FALSE.,
+ useExfCheckRange  = .TRUE.,
  repeatPeriod      = 31622400.0,
 #
  hfluxstartdate1   = 19781216,

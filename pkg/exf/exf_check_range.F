@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.25 2006/06/29 15:41:58 mlosch Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.26 2007/02/08 07:01:08 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -50,10 +50,17 @@ c     == end of interface ==
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+
+C Change checking range because some atmospheric fields will
+C not always have valid values in the tile edges.
+C      jmin = 1-oly
+C      jmax = sny+oly
+C      imin = 1-olx
+C      imax = snx+olx
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
 
       do bj = jtlo,jthi
        do bi = itlo,ithi
