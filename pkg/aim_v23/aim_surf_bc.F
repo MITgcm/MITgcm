@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.10 2006/10/18 20:08:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.11 2007/02/08 17:41:37 enderton Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -28,7 +28,7 @@ C-- MITgcm
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 c #include "DYNVARS.h"
-c #include "GRID.h"
+#include "GRID.h"
 c #include "SURFACE.h"
 
 C-- Physics package
@@ -65,7 +65,8 @@ C     i,j,k,I2,k   :: Loop counters
       INTEGER i,j,I2,k, nm0
       _RL t0prd, tNcyc, tmprd, dTprd
       _RL SDEP1, IDEP2, SDEP2, SWWIL2, RSW, soilw_0, soilw_1
-      _RL RSD, alb_land, oceTfreez
+      _RL RSD, alb_land, oceTfreez, ALBSEA1, ALPHA, CZEN, CZEN2
+      _RL ZS, ZC, SJ, CJ, TMPA, TMPB, TMPL
 c     _RL DALB, alb_sea
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -179,6 +180,9 @@ c        oceTfreez = tFreeze - 1.9 _d 0
 C-    Surface Albedo : (from F.M. FORDATE S/R)
 c_FM    DALB=ALBICE-ALBSEA
         RSD=1. _d 0/SDALB
+        ALPHA = 2. _d 0*PI*(TYEAR-80. _d 0/365. _d 0)
+        ZS = SIN(ALPHA)*SIN(23.45 _d 0 * deg2rad)
+        ZC = SQRT(1. _d 0 - (ZS * ZS))
         DO j=1,sNy
          DO i=1,sNx
 c_FM      SNOWC=MIN(1.,RSD*SNOW1(I,J))
@@ -192,8 +196,35 @@ c_FM      ALB1(I,J)=FMASK1(I,J)*ALBL+FMASK0(I,J)*ALBS
 c         alb_sea  = ALBSEA + DALB*oice1(I2)
 c         alb1(I2,0,myThid) = alb_sea
 c    &        + (alb_land - alb_sea)*fMask1(I2,1,myThid)
+          ALBSEA1 = ALBSEA
+          IF ( aim_selectOceAlbedo .EQ. 1) THEN
+           SJ = SIN(yC(i,j,bi,bj) * deg2rad)
+           CJ = SQRT(1. _d 0 - (SJ * SJ))
+           TMPA = SJ*ZS
+           TMPB = -CJ*ZC
+           TMPL = -TMPA/TMPB
+           IF (TMPL .LE. -1.0 _d 0) THEN
+            CZEN = 0.0 _d 0
+           ELSEIF (TMPL .GE. 1.0 _d 0) THEN
+            CZEN = (2.0 _d 0)*TMPA*PI
+            CZEN2 = PI*((2.0 _d 0)*TMPA*TMPA + TMPB*TMPB)
+            CZEN = CZEN2/CZEN
+           ELSE
+            TMPL = ACOS(TMPL)
+            CZEN = (2.0 _d 0)*(TMPA*PI - TMPA*TMPL - TMPB*SIN(TMPL))
+            CZEN2 = PI*((2.0 _d 0)*TMPA*TMPA + TMPB*TMPB)
+     &          - (((2.0 _d 0)*TMPA*TMPA + TMPB*TMPB)*TMPL
+     &          + TMPB*SIN(TMPL)*((4.0 _d 0)*TMPA + TMPB*COS(TMPL)))
+            CZEN = CZEN2/CZEN
+           ENDIF
+           ALBSEA1 = ( ( 2.6 _d 0 / (CZEN**(1.7 _d 0) + 0.065 _d 0) )
+     &          + ( 15. _d 0 * (CZEN-0.1 _d 0) * (CZEN-0.5 _d 0)
+     &          * (CZEN-1.0 _d 0) ) ) / 100.0 _d 0
+          ENDIF
           alb1(I2,1,myThid) = alb_land
-          alb1(I2,2,myThid) = ALBSEA
+C_DE      alb1(I2,2,myThid) = ALBSEA
+          alb1(I2,2,myThid) = 0.5 _d 0 * ALBSEA 
+     &        + 0.5 _d 0 * ALBSEA1
           alb1(I2,3,myThid) = ALBICE
          ENDDO
         ENDDO

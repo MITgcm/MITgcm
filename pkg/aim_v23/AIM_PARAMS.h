@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_PARAMS.h,v 1.9 2006/10/18 20:08:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_PARAMS.h,v 1.10 2007/02/08 17:41:37 enderton Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -66,9 +66,11 @@ C     aim_MMsufxLength :: Length of sufix (Monthly Mean surf. forcing files)
 C     aim_surfForc_NppCycle   :: Number of time period per Cycle (e.g. 12)
       COMMON /AIM_PARM_I/
      &  aim_surfForc_NppCycle,
-     &  aim_MMsufxLength
+     &  aim_MMsufxLength,
+     &  aim_selectOceAlbedo
       INTEGER aim_surfForc_NppCycle
       INTEGER aim_MMsufxLength
+      INTEGER aim_selectOceAlbedo
 
 C--   COMMON /AIM_PARM_R/ "Real" valued parameters for AIM
 C     aim_surfForc_TimePeriod :: Length of forcing time period (e.g. 1 month)

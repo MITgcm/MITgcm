@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.13 2006/10/18 20:08:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.14 2007/02/08 17:41:37 enderton Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -81,6 +81,9 @@ C     aim_clrSkyDiag :: compute clear-sky radiation for diagnostics
 C     aim_taveFreq :: Frequency^-1 for time-average output (s)
 C     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
+C     aim_selectOceAlbedo :: Ocean albedo(latitude) scheme (integer)
+C                              0 = constant (default)
+C                              1 = Briegleb et al. 1986
       NAMELIST /AIM_PARAMS/
      &    aim_useFMsurfBC, aim_useMMsurfFc,
      &    aim_surfForc_TimePeriod, aim_surfForc_NppCycle,
@@ -93,7 +96,8 @@ C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
      &    aim_dragStrato,
      &    aim_clrSkyDiag, aim_taveFreq, aim_diagFreq, aim_tendFreq,
      &    aim_timeave_mnc, aim_snapshot_mnc,
-     &    aim_pickup_write_mnc, aim_pickup_read_mnc
+     &    aim_pickup_write_mnc, aim_pickup_read_mnc,
+     &    aim_selectOceAlbedo
 
 C--   Physical constants (common PHYCON) :
 C       P0    = reference pressure                 [Pa=N/m2]
@@ -229,6 +233,7 @@ C-    Length (s) of one time period:
       aim_surfForc_TimePeriod = 30.*86400.
 C-    Number of time period per Cycle:
       aim_surfForc_NppCycle   = 12
+      aim_selectOceAlbedo = 0
 C-    define how fast the (linear) transition is from one month to the next
 C      = 1                 -> linear between 2 midle month
 C      > TimePeriod/deltaT -> jump from one month to the next one
@@ -386,6 +391,9 @@ C- namelist AIM_PARAMS:
      &  '   /* Frequency^-1 for diagnostic output (s) */')
        CALL WRITE_0D_R8( aim_tendFreq, INDEX_NONE,'aim_tendFreq =',
      &  '   /* Frequency^-1 for tendencies output (s) */')
+       CALL WRITE_0D_I( aim_selectOceAlbedo, INDEX_NONE,
+     &                 'aim_selectOceAlbedo =',
+     &  '   /* Ocean albedo(latitude) flag */')
 
 C- namelist AIM_PAR_FOR:
        CALL WRITE_0D_R8( SOLC,  INDEX_NONE,'AIM_FOR:   SOLC =',
