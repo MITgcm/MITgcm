@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.37 2007/02/07 17:38:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.38 2007/02/08 14:28:02 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -581,21 +581,21 @@ c     Complete the start date specifications for the forcing
 c     fields to get a complete calendar date array.
 
 #ifdef ALLOW_ATM_WIND
-      if ( uwindfile .NE. ' ' ) then
+      if ( uwindfile .NE. ' ' .and. uwindperiod .gt. 0. ) then
          call cal_FullDate  ( uwindstartdate1    ,      uwindstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
          call cal_ToSeconds ( difftime,    uwindstartdate     ,mythid )
          uwindstartdate     = modelstart   + uwindstartdate
       endif
-      if ( vwindfile .NE. ' ' ) then
+      if ( vwindfile .NE. ' ' .and. vwindperiod .gt. 0. ) then
          call cal_FullDate  ( vwindstartdate1    ,      vwindstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
          call cal_ToSeconds ( difftime,    vwindstartdate     ,mythid )
          vwindstartdate     = modelstart   + vwindstartdate
       endif
-      if ( wspeedfile .NE. ' ' ) then
+      if ( wspeedfile .NE. ' ' .and. wspeedperiod .gt. 0. ) then
          call cal_FullDate  ( wspeedstartdate1, wspeedstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -603,14 +603,14 @@ c     fields to get a complete calendar date array.
          wspeedstartdate     = modelstart   + wspeedstartdate
       endif
 #else
-      if ( ustressfile .NE. ' ' ) then
+      if ( ustressfile .NE. ' ' .and. ustressperiod .gt. 0. ) then
          call cal_FullDate  ( ustressstartdate1  ,    ustressstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
          call cal_ToSeconds ( difftime,  ustressstartdate     ,mythid )
          ustressstartdate   = modelstart + ustressstartdate
       endif
-      if ( vstressfile .NE. ' ' ) then
+      if ( vstressfile .NE. ' ' .and. vstressperiod .gt. 0. ) then
          call cal_FullDate  ( vstressstartdate1  ,    vstressstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -620,35 +620,35 @@ c     fields to get a complete calendar date array.
 #endif
 
 #ifdef ALLOW_ATM_TEMP
-      if ( atempfile .NE. ' ' ) then
+      if ( atempfile .NE. ' ' .and. atempperiod .gt. 0. ) then
          call cal_FullDate  ( atempstartdate1    ,      atempstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
          call cal_ToSeconds ( difftime,    atempstartdate     ,mythid )
          atempstartdate     = modelstart   + atempstartdate
       endif
-      if ( aqhfile .NE. ' ' ) then
+      if ( aqhfile .NE. ' ' .and. aqhperiod .gt. 0. ) then
          call cal_FullDate  ( aqhstartdate1      ,        aqhstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
          call cal_ToSeconds ( difftime,      aqhstartdate     ,mythid )
          aqhstartdate       = modelstart     + aqhstartdate
       endif
-      if ( lwfluxfile .NE. ' ' ) then
+      if ( lwfluxfile .NE. ' ' .and. lwfluxperiod .gt. 0. ) then
          call cal_FullDate  ( lwfluxstartdate1   ,     lwfluxstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
          call cal_ToSeconds ( difftime,   lwfluxstartdate     ,mythid )
          lwfluxstartdate    = modelstart  + lwfluxstartdate
       endif
-      if ( precipfile .NE. ' ' ) then
+      if ( precipfile .NE. ' ' .and. precipperiod .gt. 0. ) then
          call cal_FullDate  ( precipstartdate1   ,     precipstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
          call cal_ToSeconds ( difftime,   precipstartdate     ,mythid )
          precipstartdate    = modelstart  + precipstartdate
       endif
-      if ( snowprecipfile .NE. ' ' ) then
+      if ( snowprecipfile .NE. ' ' .and. snowperiod .gt. 0. ) then
          call cal_FullDate( snowprecipstartdate1, snowprecipstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -656,14 +656,14 @@ c     fields to get a complete calendar date array.
          snowprecipstartdate    = modelstart  + snowprecipstartdate
       endif
 #else
-      if ( hfluxfile .NE. ' ' ) then
+      if ( hfluxfile .NE. ' ' .and. hfluxperiod .gt. 0. ) then
          call cal_FullDate  ( hfluxstartdate1    ,      hfluxstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
          call cal_ToSeconds ( difftime,    hfluxstartdate     ,mythid )
          hfluxstartdate     = modelstart   + hfluxstartdate
       endif
-      if ( sfluxfile .NE. ' ' ) then
+      if ( sfluxfile .NE. ' ' .and. sfluxperiod .gt. 0. ) then
          call cal_FullDate  ( sfluxstartdate1    ,      sfluxstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -673,7 +673,7 @@ c     fields to get a complete calendar date array.
 #endif
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-      if ( swfluxfile .NE. ' ' ) then
+      if ( swfluxfile .NE. ' ' .and. swfluxperiod .gt. 0. ) then
          call cal_FullDate  ( swfluxstartdate1   ,     swfluxstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -683,7 +683,7 @@ c     fields to get a complete calendar date array.
 #endif
 
 #ifdef EXF_READ_EVAP
-      if ( evapfile .NE. ' ' ) then
+      if ( evapfile .NE. ' ' .and. evapperiod .gt. 0. ) then
          call cal_FullDate  ( evapstartdate1     ,       evapstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -693,7 +693,7 @@ c     fields to get a complete calendar date array.
 #endif
 
 #ifdef ALLOW_RUNOFF
-      if ( runofffile .NE. ' ' .AND. runoffperiod .NE. 0. ) then
+      if ( runofffile .NE. ' ' .AND. runoffperiod .gt. 0. ) then
          call cal_FullDate  ( runoffstartdate1   ,     runoffstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -703,14 +703,14 @@ c     fields to get a complete calendar date array.
 #endif
 
 #ifdef ALLOW_DOWNWARD_RADIATION
-      if ( swdownfile .NE. ' ' ) then
+      if ( swdownfile .NE. ' ' .and. swdownperiod .gt. 0. ) then
          call cal_FullDate  ( swdownstartdate1   ,     swdownstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
          call cal_ToSeconds ( difftime,   swdownstartdate     ,mythid )
          swdownstartdate    = modelstart  + swdownstartdate
       endif
-      if ( lwdownfile .NE. ' ' ) then
+      if ( lwdownfile .NE. ' ' .and. lwdownperiod .gt. 0. ) then
          call cal_FullDate  ( lwdownstartdate1   ,     lwdownstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -720,7 +720,7 @@ c     fields to get a complete calendar date array.
 #endif
 
 #ifdef ATMOSPHERIC_LOADING
-      if ( apressurefile .NE. ' ' ) then
+      if ( apressurefile .NE. ' ' .and. apressureperiod .gt. 0. ) then
          call cal_FullDate  ( apressurestartdate1,  apressurestartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -731,7 +731,7 @@ c     fields to get a complete calendar date array.
 
 #ifdef ALLOW_OBCS
 #ifdef ALLOW_OBCS_NORTH
-      if ( obcsNperiod .NE. 0 ) then
+      if ( obcsNperiod .gt. 0 ) then
          call cal_FullDate  ( obcsNstartdate1    ,      obcsNstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -740,7 +740,7 @@ c     fields to get a complete calendar date array.
       endif
 #endif
 #ifdef ALLOW_OBCS_SOUTH
-      if ( obcsSperiod .NE. 0 ) then
+      if ( obcsSperiod .gt. 0 ) then
          call cal_FullDate  ( obcsSstartdate1    ,      obcsSstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -749,7 +749,7 @@ c     fields to get a complete calendar date array.
       endif
 #endif
 #ifdef ALLOW_OBCS_EAST
-      if ( obcsEperiod .NE. 0 ) then
+      if ( obcsEperiod .gt. 0 ) then
          call cal_FullDate  ( obcsEstartdate1    ,      obcsEstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -758,7 +758,7 @@ c     fields to get a complete calendar date array.
       endif
 #endif
 #ifdef ALLOW_OBCS_WEST
-      if ( obcsNperiod .NE. 0 ) then
+      if ( obcsNperiod .gt. 0 ) then
          call cal_FullDate  ( obcsWstartdate1    ,      obcsWstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
