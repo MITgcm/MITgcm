@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.38 2007/02/08 14:28:02 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.39 2007/02/08 15:43:17 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -648,7 +648,7 @@ c     fields to get a complete calendar date array.
          call cal_ToSeconds ( difftime,   precipstartdate     ,mythid )
          precipstartdate    = modelstart  + precipstartdate
       endif
-      if ( snowprecipfile .NE. ' ' .and. snowperiod .gt. 0. ) then
+      if ( snowprecipfile .NE. ' ' .and. snowprecipperiod .gt. 0. ) then
          call cal_FullDate( snowprecipstartdate1, snowprecipstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
