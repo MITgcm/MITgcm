@@ -232,7 +232,7 @@ C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
       subroutine exf_init_gen ( 
-     &     genfile, exf_inscal_gen, genmask,
+     &     genfile, genperiod, exf_inscal_gen, genmask,
      &     genconst, genfld, gen0, gen1,
 #ifdef USE_EXF_INTERPOLATION
      &     gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
@@ -267,8 +267,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      _RL exf_inscal_gen
-      _RL genconst
+      _RL genperiod, exf_inscal_gen, genconst
       _RL genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL gen0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL gen1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -309,7 +308,7 @@ c     == end of interface ==
         enddo
       enddo
 
-      if ( genfile .NE. ' ' ) then
+      if ( genfile .NE. ' ' .and. genperiod .eq. 0. ) then
          count = 1
 
 #ifdef USE_EXF_INTERPOLATION

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.13 2007/02/07 17:38:11 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.14 2007/02/09 04:53:52 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -47,7 +47,7 @@ c     == end of interface ==
       endif
       interp_method=12
       call exf_init_gen (
-     &     ustressfile, exf_inscal_ustress, ustressmask,
+     &     ustressfile, ustressperiod, exf_inscal_ustress, ustressmask,
      &     ustressconst, ustress, ustress0, ustress1, 
 #ifdef USE_EXF_INTERPOLATION
      &     ustress_lon0, ustress_lon_inc, 
@@ -63,7 +63,7 @@ c     == end of interface ==
       endif
       interp_method=22
       call exf_init_gen (
-     &     vstressfile, exf_inscal_vstress, vstressmask,
+     &     vstressfile, vstressperiod, exf_inscal_vstress, vstressmask,
      &     vstressconst, vstress, vstress0, vstress1, 
 #ifdef USE_EXF_INTERPOLATION
      &     vstress_lon0, vstress_lon_inc, 
@@ -81,7 +81,7 @@ c     == end of interface ==
       endif
       interp_method=12
       call exf_init_gen (
-     &     uwindfile, exf_inscal_uwind, uwindmask,
+     &     uwindfile, uwindperiod, exf_inscal_uwind, uwindmask,
      &     uwindconst, uwind, uwind0, uwind1, 
 #ifdef USE_EXF_INTERPOLATION
      &     uwind_lon0, uwind_lon_inc, 
@@ -97,7 +97,7 @@ c     == end of interface ==
       endif
       interp_method=22
       call exf_init_gen (
-     &     vwindfile, exf_inscal_vwind, vwindmask,
+     &     vwindfile, vwindperiod, exf_inscal_vwind, vwindmask,
      &     vwindconst, vwind, vwind0, vwind1, 
 #ifdef USE_EXF_INTERPOLATION
      &     vwind_lon0, vwind_lon_inc, 
@@ -111,7 +111,7 @@ c     == end of interface ==
       interp_method=1
 
       call exf_init_gen (
-     &     wspeedfile, exf_inscal_wspeed, wspeedmask,
+     &     wspeedfile, wspeedperiod, exf_inscal_wspeed, wspeedmask,
      &     wspeedconst, wspeed, wspeed0, wspeed1, 
 #ifdef USE_EXF_INTERPOLATION
      &     wspeed_lon0, wspeed_lon_inc, 
@@ -121,7 +121,7 @@ c     == end of interface ==
      &     mythid )
 
       call exf_init_gen (
-     &     hfluxfile, exf_inscal_hflux, hfluxmask,
+     &     hfluxfile, hfluxperiod, exf_inscal_hflux, hfluxmask,
      &     hfluxconst, hflux, hflux0, hflux1, 
 #ifdef USE_EXF_INTERPOLATION
      &     hflux_lon0, hflux_lon_inc, 
@@ -131,7 +131,7 @@ c     == end of interface ==
      &     mythid )
 
       call exf_init_gen (
-     &     sfluxfile, exf_inscal_sflux, sfluxmask,
+     &     sfluxfile, sfluxperiod, exf_inscal_sflux, sfluxmask,
      &     sfluxconst, sflux, sflux0, sflux1, 
 #ifdef USE_EXF_INTERPOLATION
      &     sflux_lon0, sflux_lon_inc, 
@@ -143,7 +143,7 @@ c     == end of interface ==
 #ifdef ALLOW_ATM_TEMP
 
       call exf_init_gen (
-     &     atempfile, exf_inscal_atemp, atempmask,
+     &     atempfile, atempperiod, exf_inscal_atemp, atempmask,
      &     atempconst, atemp, atemp0, atemp1, 
 #ifdef USE_EXF_INTERPOLATION
      &     atemp_lon0, atemp_lon_inc, 
@@ -153,7 +153,7 @@ c     == end of interface ==
      &     mythid )
 
       call exf_init_gen (
-     &     aqhfile, exf_inscal_aqh, aqhmask,
+     &     aqhfile, aqhperiod, exf_inscal_aqh, aqhmask,
      &     aqhconst, aqh, aqh0, aqh1, 
 #ifdef USE_EXF_INTERPOLATION
      &     aqh_lon0, aqh_lon_inc, 
@@ -163,7 +163,7 @@ c     == end of interface ==
      &     mythid )
 
       call exf_init_gen (
-     &     lwfluxfile, exf_inscal_lwflux, lwfluxmask,
+     &     lwfluxfile, lwfluxperiod, exf_inscal_lwflux, lwfluxmask,
      &     lwfluxconst, lwflux, lwflux0, lwflux1, 
 #ifdef USE_EXF_INTERPOLATION
      &     lwflux_lon0, lwflux_lon_inc, 
@@ -173,7 +173,7 @@ c     == end of interface ==
      &     mythid )
 
       call exf_init_gen (
-     &     precipfile, exf_inscal_precip, precipmask,
+     &     precipfile, precipperiod, exf_inscal_precip, precipmask,
      &     precipconst, precip, precip0, precip1, 
 #ifdef USE_EXF_INTERPOLATION
      &     precip_lon0, precip_lon_inc, 
@@ -183,7 +183,8 @@ c     == end of interface ==
      &     mythid )
 
       call exf_init_gen (
-     &     snowprecipfile, exf_inscal_snowprecip, snowprecipmask,
+     &     snowprecipfile, snowprecipperiod,
+     &     exf_inscal_snowprecip, snowprecipmask,
      &     snowprecipconst, snowprecip, snowprecip0, snowprecip1, 
 #ifdef USE_EXF_INTERPOLATION
      &     snowprecip_lon0, snowprecip_lon_inc, 
@@ -196,7 +197,7 @@ c     == end of interface ==
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
       call exf_init_gen (
-     &     swfluxfile, exf_inscal_swflux, swfluxmask,
+     &     swfluxfile, swfluxperiod,  exf_inscal_swflux, swfluxmask,
      &     swfluxconst, swflux, swflux0, swflux1, 
 #ifdef USE_EXF_INTERPOLATION
      &     swflux_lon0, swflux_lon_inc, 
@@ -208,7 +209,7 @@ c     == end of interface ==
 
 #if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
       call exf_init_gen (
-     &     evapfile, exf_inscal_evap, evapmask,
+     &     evapfile, evapperiod, exf_inscal_evap, evapmask,
      &     evapconst, evap, evap0, evap1, 
 #ifdef USE_EXF_INTERPOLATION
      &     evap_lon0, evap_lon_inc, 
@@ -221,7 +222,7 @@ c     == end of interface ==
 #ifdef ALLOW_DOWNWARD_RADIATION
 
       call exf_init_gen (
-     &     swdownfile, exf_inscal_swdown, swdownmask,
+     &     swdownfile, swdownperiod, exf_inscal_swdown, swdownmask,
      &     swdownconst, swdown, swdown0, swdown1, 
 #ifdef USE_EXF_INTERPOLATION
      &     swdown_lon0, swdown_lon_inc, 
@@ -231,7 +232,7 @@ c     == end of interface ==
      &     mythid )
 
       call exf_init_gen (
-     &     lwdownfile, exf_inscal_lwdown, lwdownmask,
+     &     lwdownfile, lwdownperiod, exf_inscal_lwdown, lwdownmask,
      &     lwdownconst, lwdown, lwdown0, lwdown1, 
 #ifdef USE_EXF_INTERPOLATION
      &     lwdown_lon0, lwdown_lon_inc, 
@@ -244,7 +245,8 @@ c     == end of interface ==
 
 #ifdef ATMOSPHERIC_LOADING
       call exf_init_gen (
-     &     apressurefile, exf_inscal_apressure, apressuremask,
+     &     apressurefile, apressureperiod,
+     &     exf_inscal_apressure, apressuremask,
      &     apressureconst, apressure, apressure0, apressure1, 
 #ifdef USE_EXF_INTERPOLATION
      &     apressure_lon0, apressure_lon_inc, 
@@ -256,7 +258,7 @@ c     == end of interface ==
 
 #if (defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE))
       call exf_init_gen (
-     &     runofffile, exf_inscal_runoff, runoffmask,
+     &     runofffile, runoffperiod, exf_inscal_runoff, runoffmask,
      &     runoffconst, runoff, runoff0, runoff1, 
 #ifdef USE_EXF_INTERPOLATION
      &     runoff_lon0, runoff_lon_inc, 
