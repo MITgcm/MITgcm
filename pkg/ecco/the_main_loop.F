@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.52 2007/02/04 21:07:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.53 2007/02/09 09:00:32 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -244,7 +244,6 @@ CADJ  INIT tapelev4 = USER
 CADJ  INIT tapelev3 = USER
 #endif
 c
-# ifdef ALLOW_DIVIDED_ADJOINT
 CADJ INIT onetape = user
 cphCADJ INIT onetape = common, 1
 cph We want to avoid common blocks except in the inner loop.
@@ -253,10 +252,10 @@ cph         in separate model executions for which the info
 cph         in common blocks are lost.
 cph Thus, we can only store real values (no integers)
 cph because we only have active file handling to real available.
-# endif
 # ifdef ALLOW_TAMC_CHECKPOINTING
        ikey_dynamics = 1
 # endif
+CADJ STORE mytime = onetape
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       CALL TIMER_START('ECCO SPIN-UP', mythid)
