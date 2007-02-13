@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.11 2007/02/08 17:41:37 enderton Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.12 2007/02/13 17:10:00 enderton Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -66,7 +66,7 @@ C     i,j,k,I2,k   :: Loop counters
       _RL t0prd, tNcyc, tmprd, dTprd
       _RL SDEP1, IDEP2, SDEP2, SWWIL2, RSW, soilw_0, soilw_1
       _RL RSD, alb_land, oceTfreez, ALBSEA1, ALPHA, CZEN, CZEN2
-      _RL ZS, ZC, SJ, CJ, TMPA, TMPB, TMPL
+      _RL RZEN, ZS, ZC, SJ, CJ, TMPA, TMPB, TMPL, hlim
 c     _RL DALB, alb_sea
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -180,9 +180,10 @@ c        oceTfreez = tFreeze - 1.9 _d 0
 C-    Surface Albedo : (from F.M. FORDATE S/R)
 c_FM    DALB=ALBICE-ALBSEA
         RSD=1. _d 0/SDALB
-        ALPHA = 2. _d 0*PI*(TYEAR-80. _d 0/365. _d 0)
-        ZS = SIN(ALPHA)*SIN(23.45 _d 0 * deg2rad)
-        ZC = SQRT(1. _d 0 - (ZS * ZS))
+        ALPHA= 2. _d 0*PI*(TYEAR+10. _d 0/365. _d 0)
+        RZEN = COS(ALPHA) * ( -23.45 _d 0 * deg2rad)
+        ZC = COS(RZEN)
+        ZS = SIN(RZEN)
         DO j=1,sNy
          DO i=1,sNx
 c_FM      SNOWC=MIN(1.,RSD*SNOW1(I,J))
@@ -199,22 +200,22 @@ c    &        + (alb_land - alb_sea)*fMask1(I2,1,myThid)
           ALBSEA1 = ALBSEA
           IF ( aim_selectOceAlbedo .EQ. 1) THEN
            SJ = SIN(yC(i,j,bi,bj) * deg2rad)
-           CJ = SQRT(1. _d 0 - (SJ * SJ))
+           CJ = COS(yC(i,j,bi,bj) * deg2rad)
            TMPA = SJ*ZS
-           TMPB = -CJ*ZC
+           TMPB = CJ*ZC
            TMPL = -TMPA/TMPB
-           IF (TMPL .LE. -1.0 _d 0) THEN
+           IF (TMPL .GE. 1.0 _d 0) THEN
             CZEN = 0.0 _d 0
-           ELSEIF (TMPL .GE. 1.0 _d 0) THEN
+           ELSEIF (TMPL .LE. -1.0 _d 0) THEN
             CZEN = (2.0 _d 0)*TMPA*PI
-            CZEN2 = PI*((2.0 _d 0)*TMPA*TMPA + TMPB*TMPB)
+            CZEN2= PI*((2.0 _d 0)*TMPA*TMPA + TMPB*TMPB)
             CZEN = CZEN2/CZEN
            ELSE
-            TMPL = ACOS(TMPL)
-            CZEN = (2.0 _d 0)*(TMPA*PI - TMPA*TMPL - TMPB*SIN(TMPL))
-            CZEN2 = PI*((2.0 _d 0)*TMPA*TMPA + TMPB*TMPB)
-     &          - (((2.0 _d 0)*TMPA*TMPA + TMPB*TMPB)*TMPL
-     &          + TMPB*SIN(TMPL)*((4.0 _d 0)*TMPA + TMPB*COS(TMPL)))
+            hlim = ACOS(TMPL)
+            CZEN = 2.0 _d 0*(TMPA*hlim + TMPB*SIN(hlim))
+            CZEN2= 2.0 _d 0*TMPA*TMPA*hlim
+     &          + 4.0 _d 0*TMPA*TMPB*SIN(hlim)
+     &          + TMPB*TMPB*( hlim + 0.5 _d 0*SIN(2.0 _d 0*hlim) )
             CZEN = CZEN2/CZEN
            ENDIF
            ALBSEA1 = ( ( 2.6 _d 0 / (CZEN**(1.7 _d 0) + 0.065 _d 0) )
