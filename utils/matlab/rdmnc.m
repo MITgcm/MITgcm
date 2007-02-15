@@ -171,7 +171,7 @@ function [S] = rdmnc_local(nc,varlist,iters,S)
             it = 0;
         end
         
-        tmpdata=squeeze(permute(tmpdata,[9:-1:1]));
+        tmpdata=shiftdim(permute(tmpdata,[9:-1:1]));
         [ni nj nk nm nn no np]=size(tmpdata);
         
         [i0,j0,fn]=findTileOffset(S);
