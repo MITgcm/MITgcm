@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.3 2006/05/25 18:35:37 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.4 2007/02/16 15:01:47 mlosch Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -36,6 +36,7 @@ c     == local variables ==
 c
          CALL DIAGNOSTICS_FILL(ustress,    'EXFtaux ',0,1,0,1,1,myThid)
          CALL DIAGNOSTICS_FILL(vstress,    'EXFtauy ',0,1,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(wspeed,     'EXFwspee',0,1,0,1,1,myThid)
          CALL DIAGNOSTICS_FILL(sflux,      'EXFempmr',0,1,0,1,1,myThid)
          CALL DIAGNOSTICS_FILL(hflux,      'EXFqnet ',0,1,0,1,1,myThid)
 #ifdef SHORTWAVE_HEATING
