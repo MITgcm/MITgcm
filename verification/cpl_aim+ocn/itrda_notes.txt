@@ -20,5 +20,17 @@ c) with pgf77 (pgi) compiler:
  same as (a) except:
   module add mpich/pgi
 
-Note: to run 1 test after the other, need to unload the previous modules:
+Note: 
+ a) to run 1 test after the other, need to unload the previous modules:
   module purge
+ b) might prefer a 2 nodes, 4 cpu session:
+  qsub -I (-q four-twelve) -l nodes=2:ppn=2
+ then do:
+  cd MITgcm/verification/cpl_aim+ocn/
+  cat $PBS_NODEFILE > mf 
+  head -3 mf > loc_nodes
+  export PBS_NODEFILE=`pwd`/loc_nodes
+  source /usr/local/pkg/modules/modules-3.1.6/init/bash
+and then as usual:
+  module add  ...
+
