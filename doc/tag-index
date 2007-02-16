@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.771 2007/02/15 14:57:36 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.772 2007/02/16 00:30:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o cpl_aim+ocn exp.: use consistent rhoConstFresh in Atm & Ocn; update output.
 o move call to cal_readparms up to make calendar parameters/variable available
   to all packages
 
