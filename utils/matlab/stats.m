@@ -12,8 +12,9 @@ function [varargout] = stats(A)
 %
 % [Min Max Mean SD]=stats(topo); returns the statistics in Min, Max,
 % Mean and SD and does not write to the terminal.
-%
-% $Header: /u/gcmpack/MITgcm/utils/matlab/stats.m,v 1.4 2004/06/04 17:03:50 adcroft Exp $
+
+% $Header: /u/gcmpack/MITgcm/utils/matlab/stats.m,v 1.5 2007/02/17 23:49:43 jmc Exp $
+% $Name:  $
 
 A=A(:);
 

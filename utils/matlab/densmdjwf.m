@@ -1,9 +1,9 @@
 function rho = densmdjwf(s,t,p);
-%function rho = densmdjwf(S,Theta,P);
 
+%
 % DENSMDJWF    Density of sea water
 %=========================================================================
-
+%
 % USAGE:  dens = densmdjwf(S,Theta,P)
 %
 % DESCRIPTION:
@@ -26,11 +26,13 @@ function rho = densmdjwf(s,t,p);
 % Theta = 3 degC
 % P     = 3000 dbar
 % rho   = 1041.83267 kg/m^3
-%
+
 
 % McDougall et al., 2003, JAOT 20(5), pp. 730-741
 
 % created by mlosch on 2002-08-09
+% $Header: /u/gcmpack/MITgcm/utils/matlab/densmdjwf.m,v 1.3 2007/02/17 23:49:43 jmc Exp $
+% $Name:  $
   
 %----------------------
 % CHECK INPUT ARGUMENTS

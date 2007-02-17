@@ -7,6 +7,9 @@ function [X] = longitude(x)
 
 % also works for radians which are assumed if range of x<=2*pi
 
+% $Header: /u/gcmpack/MITgcm/utils/matlab/longitude.m,v 1.2 2007/02/17 23:49:43 jmc Exp $
+% $Name:  $
+
 minx=min(min(min(x)));
 maxx=max(max(max(x)));
 %if maxx-minx < 2.2*pi

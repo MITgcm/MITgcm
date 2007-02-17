@@ -16,6 +16,9 @@ function [dens] = dens_poly3(poly3,t,s)
 % or to work within a single model level
 % >> D=dens_poly3(P(3),T(:,:,3),S(:,:,3));
 
+% $Header: /u/gcmpack/MITgcm/utils/matlab/dens_poly3.m,v 1.3 2007/02/17 23:49:43 jmc Exp $
+% $Name:  $
+
 if size(t) ~= size(s)
  error('T and S must be the same shape and size')
 end

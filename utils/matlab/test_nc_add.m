@@ -1,3 +1,7 @@
+
+% $Header: /u/gcmpack/MITgcm/utils/matlab/test_nc_add.m,v 1.2 2007/02/17 23:49:43 jmc Exp $
+% $Name:  $
+
 xi=-180:4:180;
 yi=-90:4:90;
 [X,Y]=ndgrid(xi,yi);

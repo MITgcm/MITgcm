@@ -4,10 +4,13 @@ function [vals] = grepread(file,varargin)
 % Extracts the expressions "expr1","expr2",... from the file "file".
 % This assumes output in the standard form defined by the MITgcm
 % monitor package and is not a replacement for TEXTREAD.
-% 
+%
 % e.g.
 % >> vals=grepread('output.txt','time_secondsf','ke_mean','ke_max');
 % >> plot(vals(:,1)/86400,vals(:,2:3));
+
+% $Header: /u/gcmpack/MITgcm/utils/matlab/grepread.m,v 1.3 2007/02/17 23:49:43 jmc Exp $
+% $Name:  $
 
 if nargin<2
  error('You must supply a filename and at least one search expression!')

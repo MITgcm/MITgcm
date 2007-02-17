@@ -3,6 +3,9 @@ function [poly3] = ini_poly3()
 %
 % Reads the file 'POLY3.COEFFS' and returns coefficients in P
 
+% $Header: /u/gcmpack/MITgcm/utils/matlab/ini_poly3.m,v 1.2 2007/02/17 23:49:43 jmc Exp $
+% $Name:  $
+
 fid=fopen('POLY3.COEFFS','r');
 
 n=fscanf(fid,'%i',1);

@@ -12,6 +12,9 @@ function foo = gluemnc(diags,nIter0)
 % EXAMPLE:
 %	   foo = gluemnc('state','0000000000');
 
+% $Header: /u/gcmpack/MITgcm/utils/matlab/gluemnc.m,v 1.2 2007/02/17 23:49:43 jmc Exp $
+% $Name:  $
+
 if nargin ~= 2, error('there have to be two input arguments!'); end
 
 nc_in    = [diags,'.',nIter0,'.t%03d.nc'];

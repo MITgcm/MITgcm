@@ -43,6 +43,8 @@ function [nt,nf] = mnc_assembly(fpat,vars, fout,fsize)
 %
 % and the resutlt is written as "all.00000.nc"
 
+% $Header: /u/gcmpack/MITgcm/utils/matlab/mnc_assembly.m,v 1.6 2007/02/17 23:49:43 jmc Exp $
+% $Name:  $
 
 %=====  Argument checking and defaults  =====
 

@@ -18,6 +18,9 @@ function interpickups(dirin,dirout,varargin)
 %
 % May be fishy near boundaries if grid is not uniform...
 
+% $Header: /u/gcmpack/MITgcm/utils/matlab/interpickups.m,v 1.5 2007/02/17 23:49:43 jmc Exp $
+% $Name:  $
+
 if nargin==2
   snap=1
 else

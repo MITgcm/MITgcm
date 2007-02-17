@@ -11,8 +11,9 @@ function [hc,hh,hcf] = pcolorfv(x,z,h,a,varargin)
 % A is field to be plotted (matrix)
 %
 % Optional arguments are passed on to PCOLOR
-%
-% $Header: /u/gcmpack/MITgcm/utils/matlab/pcolorfv.m,v 1.2 2004/06/04 17:09:11 adcroft Exp $
+
+% $Header: /u/gcmpack/MITgcm/utils/matlab/pcolorfv.m,v 1.3 2007/02/17 23:49:43 jmc Exp $
+% $Name:  $
 
 nx=prod(size(x));
 nz=prod(size(z));

@@ -11,6 +11,9 @@ function [c] = cm_landwater(n,varargin)
 %
 % Green-yellor land/blue water colormap
 
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cm_landwater.m,v 1.2 2007/02/17 23:49:43 jmc Exp $
+% $Name:  $
+
 if nargin==1
  f=0.5;
 else
