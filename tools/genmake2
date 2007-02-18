@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.160 2007/01/31 21:28:10 ce107 Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.161 2007/02/18 21:39:59 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1361,12 +1361,11 @@ done
 if test -f ./.genmakerc ; then
     echo
     echo "WARNING: genmake2 has detected a copy of the old-style \"./.genmakerc\""
-    echo "  file.  This file format is no longer supported.  Please see:"
-    echo 
+    echo "  file.  This file format is no longer supported.  For directions on"
+    echo "  how to setup and use the new \"genmake2\" script, please see:"
     echo "    http://mitgcm.org/devel_HOWTO/"
-    echo
-    echo "  for directions on how to setup and use the new \"genmake2\" input"
-    echo "  files and send an email to MITgcm-support@mitgcm.org if you want help."
+    echo "  and send an email to MITgcm-support@mitgcm.org if you need help."
+    echo "WARNING: ignore \"./.genmakerc\" and continue."
     echo 
 fi
 
@@ -1964,8 +1963,8 @@ done
 rm -f ./.tmp_pack
 echo "    packages are:  $PACKAGES"
 
-#  Check availability of NetCDF and then either build the MNC template
-#  files or delete mnc from the list of available packages.
+#  Check for package MNC: if NetCDF is available, then build the MNC 
+#  template files ; otherwise, delete mnc from the list of packages.
 echo $PACKAGES | grep ' mnc ' > /dev/null 2>&1
 RETVAL=$?
 if test "x$RETVAL" = x0 ; then
@@ -1996,6 +1995,31 @@ EOF
 	    cat make_mnc.errors 1>&2
 	    exit 1
 	fi
+    fi
+fi
+
+#  Check for package PROFILES: if NetCDF is not available,
+#  then delete profiles from the list of available packages.
+echo $PACKAGES | grep ' profiles ' > /dev/null 2>&1
+RETVAL=$?
+if test "x$RETVAL" = x0 ; then
+    if test "x$HAVE_NETCDF" != xt ; then
+	cat <<EOF
+
+*********************************************************************
+WARNING: the "profiles" package was enabled but tests failed to
+  compile NetCDF applications.  Please check that:
+
+  1) NetCDF is correctly installed for this compiler and
+  2) the LIBS variable (within the "optfile") specifies the correct 
+       NetCDF library to link against.
+
+  Due to this failure, the "profiles" package is now DISABLED.
+*********************************************************************
+
+EOF
+	PACKAGES=`echo $PACKAGES | sed -e 's/profiles//g'`
+	DISABLE="$DISABLE profiles"
     fi
 fi
 
