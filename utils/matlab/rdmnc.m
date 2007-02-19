@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.13 2007/02/19 03:43:36 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.14 2007/02/19 22:38:52 jmc Exp $
 % $Name:  $
 
 % Initializations
@@ -55,9 +55,19 @@ for iarg=1:nargin;
             iters=arg;
         else
             error(['The only allowed numeric argument is iterations',...
-                   ' to read in as a vector for the last arguement']);
+                   ' to read in as a vector for the last argument']);
         end
     end
+end
+if isempty(file)
+    if isempty(varlist),
+       fprintf( 'No file name in argument list\n');
+    else
+       fprintf(['No file in argument list:\n ==> ',char(varlist(1))]);
+       for i=2:size(varlist,2), fprintf([' , ',char(varlist(i))]); end
+       fprintf(' <==\n'); 
+    end
+    error(' check argument list !!!');
 end
 
 % Create list of filenames
@@ -153,7 +163,7 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
     if isempty(varlist), varlist=ncnames(var(nc)); end
     
     % Attributes for structure
-    if iters>0; S.iters_read_from_file=iters; end
+    if iters>0; S.iters_from_file=iters; end
     S.attributes.global=read_att(nc);
     
 	% Read variable data
@@ -166,23 +176,20 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
         end
 	
         dims = ncnames(dim(nc{cvar}));        % Dimensions
+        sizVar = size(nc{cvar}); nDims=length(sizVar);
         if dims{1} == 'T'
-            
-            if isempty(find(fii)), disp('Iters not found'); return, end
-            
-            tmpdata = nc{cvar}(fii,:);
+            if isempty(find(fii)), error('Iters not found'); end
             it = length(dims);
-%-      if only 1 time record, 1rst dim get lost; add it back:
-%         if size(nc{cvar},1) == 1, 
-          if length(fii) == 1, 
-            tmpdata=reshape(tmpdata,[1 size(tmpdata)]);
-          end
+            tmpdata = nc{cvar}(fii,:);
+%-      leading unity dimensions get lost; add them back:
+            tmpdata=reshape(tmpdata,[length(fii) sizVar(2:end)]);
         else
-            tmpdata = nc{cvar}(:);
             it = 0;
+            tmpdata = nc{cvar}(:);
+%-      leading unity dimensions get lost; add them back:
+            tmpdata=reshape(tmpdata,sizVar);
         end
         
-        nDims=length(size(nc{cvar}));
         if dBug > 1,
           fprintf(['  var:',cvar,': nDims=%i ('],nDims);fprintf(' %i',size(nc{cvar}));
           fprintf('):%i,nD=%i,it=%i ;',length(size(tmpdata)),length(dims),it); 
