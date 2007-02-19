@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.9 2006/12/01 00:00:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.10 2007/02/19 22:44:05 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -326,9 +326,9 @@ C===========================================================
       else
 
       write(fnameequinc(1:80),'(2a,i3.3,a,i3.3,a)')
-     & profilesfile(1:IL),'.',iG,'.',jG,'.equi.bin'
+     & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
       write(adfnameequinc(1:80),'(3a,i3.3,a,i3.3,a)') 'ad',
-     & profilesfile(1:IL),'.',iG,'.',jG,'.equi.bin'
+     & profilesfile(1:IL),'.',iG,'.',jG,'.equi.data'
 
       inquire( file=fnameequinc, exist=exst )
       if (.NOT.exst) then
