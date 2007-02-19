@@ -30,10 +30,11 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.12 2007/02/17 23:49:43 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.13 2007/02/19 03:43:36 jmc Exp $
 % $Name:  $
 
 % Initializations
+dBug=0;
 file={};
 filepaths={};
 files={};
@@ -97,8 +98,9 @@ end
 S.attributes=[];
 for ieachfile=1:length(files)
     eachfile = [filepaths{ieachfile},files{ieachfile}];
+    if dBug > 0, fprintf([' open: ',eachfile]); end
     nc=netcdf(char(eachfile),'read');
-    S=rdmnc_local(nc,varlist,iters,S);
+    S=rdmnc_local(nc,varlist,iters,S,dBug);
     close(nc);
 end
 
@@ -134,7 +136,7 @@ function [i0,j0,fn] = findTileOffset(S);
     end
     %[snx,sny,nsx,nsy,npx,npy,ntx,nty,i0,j0,fn];
 
-function [S] = rdmnc_local(nc,varlist,iters,S)
+function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
 
     fiter = nc{'iter'}(:);                               % File iterations present
     if isempty(fiter), fiter = nc{'T'}(:); end
@@ -142,6 +144,10 @@ function [S] = rdmnc_local(nc,varlist,iters,S)
     if isnan(iters); iters = fiter; end
     [fii,dii] = ismember(fiter,iters);  fii = find(fii); % File iteration index
     dii = dii(find(dii ~= 0));                           % Data interation index
+    if dBug > 0,
+      fprintf(' ; fii='); fprintf(' %i',fii); 
+      fprintf(' ; dii='); fprintf(' %i',dii); fprintf(' \n'); 
+    end
     
     % No variables specified? Default to all
     if isempty(varlist), varlist=ncnames(var(nc)); end
@@ -160,21 +166,33 @@ function [S] = rdmnc_local(nc,varlist,iters,S)
         end
 	
         dims = ncnames(dim(nc{cvar}));        % Dimensions
-        adj = 0;
         if dims{1} == 'T'
             
             if isempty(find(fii)), disp('Iters not found'); return, end
             
             tmpdata = nc{cvar}(fii,:);
-            if ismember('Zd000001' ,dims), adj = adj - 1; end
-            if ismember('Zmd000001',dims), adj = adj - 1; end
-            it = length(dims) + adj;
+            it = length(dims);
+%-      if only 1 time record, 1rst dim get lost; add it back:
+%         if size(nc{cvar},1) == 1, 
+          if length(fii) == 1, 
+            tmpdata=reshape(tmpdata,[1 size(tmpdata)]);
+          end
         else
             tmpdata = nc{cvar}(:);
             it = 0;
         end
         
-        tmpdata=shiftdim(permute(tmpdata,[9:-1:1]));
+        nDims=length(size(nc{cvar}));
+        if dBug > 1,
+          fprintf(['  var:',cvar,': nDims=%i ('],nDims);fprintf(' %i',size(nc{cvar}));
+          fprintf('):%i,nD=%i,it=%i ;',length(size(tmpdata)),length(dims),it); 
+        end
+        if length(dims) > 1,
+          tmpdata=permute(tmpdata,[nDims:-1:1]);
+        end
+        if dBug > 1,
+%         fprintf('(tmpdata:');fprintf(' %i',size(tmpdata)); fprintf(')');
+        end
         [ni nj nk nm nn no np]=size(tmpdata);
         
         [i0,j0,fn]=findTileOffset(S);
@@ -185,9 +203,12 @@ function [S] = rdmnc_local(nc,varlist,iters,S)
         else
             j0=0;
         end
+        if dBug > 1,
+          fprintf(' i0,ni= %i %i; j,nj= %i %i; nk=%i :',i0,ni,j0,nj,nk);
+        end
         
         Sstr = '';
-        for istr = 1:7
+        for istr = 1:max(nDims,length(dims)),
             if     istr == it,  Sstr = [Sstr,'dii,'];
             elseif istr == 1,   Sstr = [Sstr,'i0+(1:ni),'];
             elseif istr == 2,   Sstr = [Sstr,'j0+(1:nj),'];
@@ -199,9 +220,10 @@ function [S] = rdmnc_local(nc,varlist,iters,S)
             else, error('Can''t handle this many dimensions!');
             end
         end
-        
         eval(['S.(cvar)(',Sstr(1:end-1),')=tmpdata;'])
         %S.(cvar)(i0+(1:ni),j0+(1:nj),(1:nk),(1:nm),(1:nn),(1:no),(1:np))=tmpdata;
+        if dBug > 1, fprintf(' %i',size(S.(cvar))); fprintf('\n'); end
+ 
         S.attributes.(cvar)=read_att(nc{cvar});
 	end
 
