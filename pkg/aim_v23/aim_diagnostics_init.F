@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.5 2006/08/29 16:41:03 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.6 2007/02/21 21:32:09 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -202,14 +202,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagName  = 'CLDMAS  '
       diagTitle = 'Cloud-base Mass Flux  (kg/m^2/s)'
       diagUnits = 'kg/m^2/s        '
-      diagCode  = 'SM P    LL      '
+      diagCode  = 'SM P    L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'DRAG    '
       diagTitle = 'Surface Drag Coefficient (kg/m^2/s)'
       diagUnits = 'kg/m^2/s        '
-      diagCode  = 'SM P    LL      '
+      diagCode  = 'SM P    L1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
