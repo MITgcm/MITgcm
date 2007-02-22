@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad_seaice_only/Attic/the_main_loop.F,v 1.2 2007/02/22 17:56:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad_seaice_only/Attic/the_main_loop.F,v 1.3 2007/02/22 19:59:10 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -179,7 +179,6 @@ CADJ  INIT tapelev2 = USER
 #else
 CADJ  INIT tapelev3 = USER
 #endif
-# ifdef ALLOW_DIVIDED_ADJOINT
 CADJ INIT onetape = user
 cphCADJ INIT onetape = common, 1
 cph We want to avoid common blocks except in the inner loop.
@@ -188,10 +187,10 @@ cph         in separate model executions for which the info
 cph         in common blocks are lost.
 cph Thus, we can only store real values (no integers)
 cph because we only have active file handling to real available.
-# endif
 # ifdef ALLOW_TAMC_CHECKPOINTING
        ikey_dynamics = 1
 # endif
+CADJ STORE mytime = onetape
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       CALL TIMER_START('ECCO SPIN-UP', mythid)
@@ -207,31 +206,6 @@ C--   Set initial conditions (variable arrays)
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
       CALL INITIALISE_VARIA( mythid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
-
-#ifdef ALLOW_MONITOR
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('MONITOR',myThid)
-#endif
-C--   Check status of solution (statistics, cfl, etc...)
-      CALL TIMER_START('MONITOR             [THE_MAIN_LOOP]', mythid)
-      CALL MONITOR( myIter, myTime, myThid )
-      CALL TIMER_STOP ('MONITOR             [THE_MAIN_LOOP]', mythid)
-#endif /* ALLOW_MONITOR */
-
-C--   Do IO if needed (Dump for start state).
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
-#endif
-
-#ifdef ALLOW_OFFLINE
-      CALL TIMER_START('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
-      CALL OFFLINE_MODEL_IO( myTime, myIter, myThid )
-      CALL TIMER_STOP ('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
-#else
-      CALL TIMER_START('DO_THE_MODEL_IO     [THE_MAIN_LOOP]', mythid)
-      CALL DO_THE_MODEL_IO( myTime, myIter, mythid )
-      CALL TIMER_STOP ('DO_THE_MODEL_IO     [THE_MAIN_LOOP]', mythid)
-#endif
 
       call timer_stop ('ECCO SPIN-UP', mythid)
       _BARRIER
@@ -381,7 +355,6 @@ c--     Set the model iteration counter and the model time.
         CALL AUTODIFF_INADMODE_UNSET( myThid )
 #endif
 
-
 #ifdef ALLOW_COST
 
 c--     Accumulate time averages of temperature, salinity, and SSH.
@@ -476,14 +449,12 @@ C--   State-variables statistics (time-aver, diagnostics ...)
       CALL DO_STATEVARS_DIAGS( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
 
-#ifndef ALLOW_OFFLINE
 #ifdef ALLOW_MONITOR
 C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
       CALL MONITOR( myIter, myTime, myThid )
       CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
 #endif /* ALLOW_MONITOR */
-#endif
 
 C--   Do IO if needed.
 #ifdef ALLOW_OFFLINE
