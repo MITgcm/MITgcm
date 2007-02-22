@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad_seaice_only/Attic/the_main_loop.F,v 1.1 2005/09/10 14:17:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad_seaice_only/Attic/the_main_loop.F,v 1.2 2007/02/22 17:56:09 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -112,6 +112,7 @@ c They provide the fields to be stored.
 # endif /* ALLOW_EXF */
 # ifdef ALLOW_SEAICE
 #  include "SEAICE.h"
+#  include "SEAICE_COST.h"
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
@@ -425,9 +426,11 @@ cph this simple runtime flag causes a lot of recomp.
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area    = comlev1, key = ikey_dynamics
 cph-new(
+CADJ STORE atemp   = comlev1, key = ikey_dynamics
 CADJ STORE aqh     = comlev1, key = ikey_dynamics
 CADJ STORE precip  = comlev1, key = ikey_dynamics
 CADJ STORE swdown  = comlev1, key = ikey_dynamics
+CADJ STORE lwdown  = comlev1, key = ikey_dynamics
 CADJ STORE theta   = comlev1, key = ikey_dynamics
 cph-new)
 #endif
