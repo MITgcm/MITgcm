@@ -9,6 +9,7 @@ CADJ STORE runoff        = comlev1, key = ikey_dynamics
 
 CADJ STORE area          = comlev1, key = ikey_dynamics
 CADJ STORE heff          = comlev1, key = ikey_dynamics
+CADJ STORE heffm         = comlev1, key = ikey_dynamics
 CADJ STORE hsnow         = comlev1, key = ikey_dynamics
 CADJ STORE tice          = comlev1, key = ikey_dynamics
 # ifdef SEAICE_MULTICATEGORY
