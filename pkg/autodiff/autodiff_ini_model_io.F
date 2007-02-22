@@ -1,9 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.13 2007/02/07 00:00:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.14 2007/02/22 17:17:06 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: AUTODIFF_INI_MODEL_IO
@@ -284,7 +290,7 @@ c
       CALL MNC_CW_ADD_VATTR_TEXT('adhsnow',
      &     'coordinates','XC YC RC iter', myThid)
 c
-# ifdef ALLOW_DYNAMICS
+# ifdef SEAICE_ALLOW_DYNAMICS
       CALL MNC_CW_ADD_VNAME('aduice', 'U_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('aduice',
      &     'units','[cost]/[m/s]', myThid)
