@@ -110,6 +110,7 @@
  tauThetaClimRelax = 0.,
  monitorFreq=1.,
  adjMonitorFreq=1.,
+ adjDumpFreq=1.,
 #forcing_In_AB = .FALSE.
  tracForcingOutAB=1,
  &
