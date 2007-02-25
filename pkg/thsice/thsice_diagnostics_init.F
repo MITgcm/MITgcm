@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.2 2006/02/10 00:30:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.3 2007/02/25 20:00:30 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -159,7 +159,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'SIsaltFx'
         diagTitle = 'salt flux out of the ocean (+=up)'
-        diagUnits = 'psu.kg/m^2      '
+        diagUnits = 'psu.kg/m^2/s    '
         diagCode  = 'SM      M1      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
