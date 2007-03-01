@@ -54,6 +54,19 @@
   frequency(5) = 1555200000.,
  averagingFreq(5) = 2592000.,
    repeatCycle(5) = 12,
+#--- to check conservation of Volume, Heat & Salt (with z*+realFW+AB_2):
+   fields(1,6) = 'ETAN    ','oceFWflx',
+   filename(6) = 'surfInst',
+  frequency(6) = -777600.,
+  timePhase(6) = 0.,
+   fields(1,7) = 'ETAN    ',
+   filename(7) = 'etaInst',
+  frequency(7) = -777600.,
+  timePhase(7) = 86400.,
+   fields(1,8) = 'THETA   ','SALT    ',
+   filename(8) = 'dynInst',
+  frequency(8) = -777600.,
+  timePhase(8) = 0.,
  &
 
 # Parameter for Diagnostics of per level statistics:
@@ -74,10 +87,23 @@
  set_regMask(1)= 1,  1,  1,
  val_regMask(1)= 1., 2., 3.,
 #---
- stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ',
-                   'THETA   ','SALT    ','CONVADJ ','DETADT2 ',
+ stat_fields(1,1)= 'ETAN    ','ETANSQ  ','DETADT2 ',
+#                  'UVEL    ','VVEL    ','WVEL    ',
+                   'THETA   ','SALT    ','CONVADJ ',
     stat_fname(1)= 'dynStDiag',
      stat_freq(1)= 864000.,
+#--- to check conservation of Volume, Heat & Salt (with z*+realFW+AB_2):
+ stat_fields(1,2)= 'oceTAUX ','oceTAUY ','TRELAX  ','SRELAX  ',
+                   'surForcT','surForcS','TFLUX   ','SFLUX   ',
+                   'oceQnet ','oceSflux','oceFWflx',
+    stat_fname(2)= 'surfStDiag',
+     stat_freq(2)= 777600.,
+    stat_phase(2)= 86400.,
+ stat_fields(1,3)= 'ETAN    ','THETA   ','SALT    ',
+    stat_fname(3)= 'instStDiag',
+     stat_freq(3)= -777600.,
+    stat_phase(3)= 86400.,
+#---
  stat_fields(1,5)= 'SI_Fract','SI_Thick','SI_SnowH',
                    'SI_Tsrf ','SI_Tice1','SI_Tice2',
                    'SI_Qice1','SI_Qice2',
