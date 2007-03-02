@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.1 2006/08/24 01:14:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.2 2007/03/02 16:42:39 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -171,6 +171,7 @@ c         CALL MNC_CW_RL_W('D',fn,0,0,'gW', gW, myThid)
         IF ( useDynP_inEos_Zc ) THEN
           CALL MNC_CW_RL_W('D',fn,0,0,'phiHyd', totPhiHyd, myThid)
         ENDIF
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
       ENDIF
 #endif /*  ALLOW_MNC  */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_write_pickup.F,v 1.2 2006/10/26 00:24:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_write_pickup.F,v 1.3 2007/03/02 16:42:39 edhill Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -50,7 +50,6 @@ C     !LOCAL VARIABLES:
 #ifdef ALLOW_MNC
       IF (useMNC .AND. pickup_write_mnc) THEN
 C       Read variables from the pickup file
-        CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
         CALL MNC_CW_SET_UDIM(fn, 1, myThid)
         IF ( permCheckPoint ) THEN
           CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, -1, myThid)
@@ -63,6 +62,7 @@ C       Read variables from the pickup file
         CALL MNC_CW_RL_W('D',fn,0,0,'Unm1',Unm1, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'Vnm1',Vnm1, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'etaNm1', etaNm1, myThid)
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
       ENDIF
 #endif /*  ALLOW_MNC  */
 
