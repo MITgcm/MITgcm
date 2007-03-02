@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.18 2006/11/13 23:17:35 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.19 2007/03/02 16:29:49 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -157,7 +157,7 @@ C     Search for the index
 C     If this is code is reached, we have exceeded the array size
       write(msgbuf,'(a,i6,a)')
      &     'MNC_GET_NEXT_EMPTY_IND: array size ', nt, 
-     &     ' exceeded--try increasing MNC_MAX_ID'
+     &     ' exceeded'
       CALL print_error( msgbuf, myThid )
       n = ILNBLNK( var_symb )
       write(msgbuf,'(a,a,a)')
