@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.27 2006/10/26 00:32:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.28 2007/03/03 22:36:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -75,6 +75,7 @@ C Now calculate whether it is time to update the forcing arrays
       Imytm = NINT(myTime*rdt)
       Ifprd = NINT(externForcingPeriod*rdt)
       Ifcyc = NINT(externForcingCycle*rdt)
+      Imytm = Imytm + Ifcyc*( 1 - NINT(myTime/externForcingCycle) )
       Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
 
       intime0 = 1 + INT(Iftm/Ifprd)
