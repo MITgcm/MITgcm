@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.14 2007/02/19 22:38:52 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.15 2007/03/03 21:40:45 jmc Exp $
 % $Name:  $
 
 % Initializations
@@ -98,10 +98,10 @@ if isempty(iters)
         nc=netcdf(char(eachfile),'read');
         nciters = nc{'iter'}(:);
         if isempty(nciters), nciters = nc{'T'}(:); end
-        iters = [iters,nciters];
+        iters = [iters,nciters'];
         close(nc);
     end
-    iters = unique(iters);
+    iters = unique(iters');
 end
 
 % Cycle through files for data extraction.
