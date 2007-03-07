@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.15 2007/03/03 21:40:45 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.16 2007/03/07 09:59:53 mlosch Exp $
 % $Name:  $
 
 % Initializations
@@ -165,6 +165,19 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
     % Attributes for structure
     if iters>0; S.iters_from_file=iters; end
     S.attributes.global=read_att(nc);
+    [pstr,netcdf_fname,ext] = fileparts(name(nc));
+    if strcmp(netcdf_fname(end-3:end),'glob')
+      % assume it is a global file produced by gluemnc and change some
+      % attributes 
+      S.attributes.global.sNx = S.attributes.global.Nx;
+      S.attributes.global.sNy = S.attributes.global.Ny;
+      S.attributes.global.nPx = 1;
+      S.attributes.global.nSx = 1;
+      S.attributes.global.nPy = 1;
+      S.attributes.global.nSy = 1;
+      S.attributes.global.tile_number = 1;
+      S.attributes.global.nco_openmp_thread_number = 1;
+    end
     
 	% Read variable data
 	for ivar=1:size(varlist,2)
