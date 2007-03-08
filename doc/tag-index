@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.773 2007/02/21 00:43:39 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.774 2007/03/08 11:22:31 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o seaice: if ALLOW_ATM_WIND is undefined use wind stress
+  directly to drive seaice model (C-grid only)
+o exf: when input wind-stress (#undef ALLOW_ATM_WIND):
+ - reintroduce computation of wind from stress, 
+ - compute tau (in exf_bulkformulae.F) from windstress averaged to 
+   mass points to avoid tau = 0
+o rdmnc.m: make it work with "global" files created with gluemnc
 o rdmnc.m : some improvements in dealing with singleton dimension
   (tested on all testreport mnc output files).
 o genmake2: disable pkg/profiles if netcdf test fails.
