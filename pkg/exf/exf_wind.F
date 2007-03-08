@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.6 2007/03/08 14:45:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.7 2007/03/08 15:09:52 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -97,7 +97,6 @@ C    (ustar, ... etc ...) is derived directly from wind-stress
      &         +ustress(i+1,j,bi,bj)*ustress(i+1,j,bi,bj)
      &         +vstress(i,j,  bi,bj)*vstress(i,j  ,bi,bj)
      &         +vstress(i,j+1,bi,bj)*vstress(i,j+1,bi,bj))
-     &         )
           if ( ustmp .ne. 0. _d 0 ) then
              ustar = sqrt(ustmp/atmrho)
              cw(i,j,bi,bj) = ustress(i,j,bi,bj)/sqrt(ustmp)
