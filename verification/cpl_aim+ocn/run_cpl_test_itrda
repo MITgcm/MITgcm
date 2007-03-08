@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.8 2006/08/15 19:13:07 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.9 2007/03/08 18:25:54 jmc Exp $
 # $Name:  $
 
 Np=3
@@ -19,7 +19,7 @@ fi
 kpr=$1
 dir=`pwd`
 
-#- only works from a 3 nodes PBS bach session ( qsub -I -l nodes=3 )
+#- only works from a 3 (or more) nodes PBS bach session ( qsub -I -l nodes=3 )
 #  on ACES cluster (tested on itrda).
 # need to be on one computer node, 
 #  and with the correct module loaded (i.e, one of the 3):
@@ -29,12 +29,12 @@ dir=`pwd`
 if test 'dummy'$PBS_NODEFILE = 'dummy'
 then
   echo ' $PBS_NODEFILE not defined'
-  echo "for now, works only from a $Np nodes PBS bach session"
+  echo "for now, works only from a (at least) $Np nodes PBS bach session"
   exit 8
 else ncpus=`wc -l $PBS_NODEFILE | awk '{print $1}'`
- if test $ncpus != $Np ; then
+ if [ $ncpus -lt $Np ] ; then
   echo ' Nb of nodes from $PBS_NODEFILE =' $ncpus
-  echo "for now, works only from a $Np nodes PBS bach session"
+  echo "for now, works only from a (at least) $Np nodes PBS bach session"
   exit 8
  fi
 fi
@@ -149,7 +149,7 @@ then
  tmpfil=TTT.$$
 
  echo $PBS_NODEFILE
- list=`cat $PBS_NODEFILE`
+ list=`cat $PBS_NODEFILE | head -$Np`
  rm -f pr_group ; touch pr_group 
  nc=0 ; dd1=cpl ; 
  for xx in $list
