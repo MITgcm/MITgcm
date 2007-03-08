@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.14 2007/01/25 01:41:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.15 2007/03/08 11:21:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -116,6 +116,7 @@ C     dynamic masking of areas with no ice
 
 C--   NOW SET UP FORCING FIELDS
 
+#ifdef ALLOW_ATM_WIND
 C--   Wind stress is computed on center of C-grid cell and interpolated
 C     to U and V points later
 C     locations from wind on tracer locations
@@ -166,6 +167,45 @@ C     interpolate to V point
         ENDDO
        ENDDO
       ENDDO
+#else
+C--   Wind stress is available on U and V points, copy it to seaice variables.
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          U1=.5*(FU(I,J,bi,bj)+FU(I+1,J,bi,bj))
+          V1=.5*(FV(I,J,bi,bj)+FV(I,J+1,bi,bj))
+C first ocean surface stress
+          WINDX(I,J,bi,bj)=
+     &         (COSWIN*U1
+     &         -SIGN(SINWIN, _fCori(I,J,bi,bj))*V1)
+          WINDY(I,J,bi,bj)=
+     &         (SIGN(SINWIN, _fCori(I,J,bi,bj))*U1+COSWIN*V1)
+         ENDDO
+        ENDDO
+C     now interpolate to U and V points respectively
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
+C now ice surface stress
+          DAIRN(I,J,bi,bj) = SEAICE_drag/OCEAN_drag
+          FORCEX0(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(
+     &         COSWIN*FU(I,J,bi,bj)
+     &         -SIGN(SINWIN, _fCori(I  ,J,bi,bj))*0.25
+     &           *(FV(I,J,  bi,bj)+FV(I-1,J,  bi,bj)
+     &            +FV(I,J+1,bi,bj)+FV(I-1,J+1,bi,bj))
+     &         )
+C     interpolate to V point
+          FORCEY0(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(
+     &         SIGN(SINWIN, _fCori(I,J  ,bi,bj))*0.25
+     &         *(FU(I,J  ,bi,bj)+FU(I+1,J,  bi,bj)
+     &          +FU(I,J-1,bi,bj)+FU(I+1,J-1,bi,bj))
+     &         +COSWIN*FV(I,J,bi,bj) 
+     &         )
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_ATM_WIND */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
