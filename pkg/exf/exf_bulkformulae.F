@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.13 2007/01/10 21:44:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.14 2007/03/08 08:59:39 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -254,8 +254,15 @@ CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
              rdn    = sqrt(tmpbulk)
              ustar  = rdn*sh(i,j,bi,bj)
 #else /* ifndef ALLOW_ATM_WIND */
-             tau   = sqrt(ustress(i,j,bi,bj)*ustress(i,j,bi,bj)
-     &                   +vstress(i,j,bi,bj)*vstress(i,j,bi,bj))
+C     in this case ustress and vstress are defined a u and v points
+C     respectively, and we need to average to mass points to avoid
+C     tau = 0 near coasts or other boundaries
+             tau   = sqrt(0.5*
+     &                   (ustress(i,  j,bi,bj)*ustress(i  ,j,bi,bj)
+     &                   +ustress(i+1,j,bi,bj)*ustress(i+1,j,bi,bj)
+     &                   +vstress(i,j,  bi,bj)*vstress(i,j  ,bi,bj)
+     &                   +vstress(i,j+1,bi,bj)*vstress(i,j+1,bi,bj))
+     &                   )
              ustar = sqrt(tau/atmrho)
 #endif /* ifndef ALLOW_ATM_WIND */
              tmpbulk= exf_BulkRhn(stable)
