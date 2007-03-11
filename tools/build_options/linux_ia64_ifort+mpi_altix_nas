@@ -22,7 +22,7 @@ if test "x$IEEE" = x ; then
     FFLAGS='-fp-model precise -132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
     FOPTIM='-O3 -align'
     NOOPTFLAGS='-O1'
-    NOOPTFILES='phy_radiat.F'
+    NOOPTFILES='phy_radiat.F fizhi_lsm.F'
 else
     #  Try to follow IEEE-754
     FFLAGS='-fp-model strict -132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
