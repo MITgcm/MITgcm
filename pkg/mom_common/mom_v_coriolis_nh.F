@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_coriolis_nh.F,v 1.1 2006/03/30 19:44:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_coriolis_nh.F,v 1.2 2007/03/12 23:54:26 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -31,7 +31,7 @@ C  bi,bj                :: tile indices
 C  k                    :: vertical level
 C  wFld                 :: vertical flow
 C  myThid               :: thread number
-      INTEGER bi,bj,K
+      INTEGER bi,bj,k
       _RL wFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
 
@@ -55,10 +55,12 @@ C Energy conserving discretization of 2*Omega*cos(phi)*w
        DO i=1-Olx,sNx+Olx
         vCoriolisTerm(i,j) =
      &   -0.5*( fCoriCos( i ,j,bi,bj)*angleSinC(i, j ,bi,bj)
-     &         *0.5*( wFld( i ,j,k,bi,bj)+wFld( i ,j,kp1,bi,bj)*wMsk )
+     &         *0.5*( wFld( i ,j, k ,bi,bj)*rVel2wUnit( k )
+     &               +wFld( i ,j,kp1,bi,bj)*rVel2wUnit(kp1)*wMsk )
      &        + fCoriCos(i,j-1,bi,bj)*angleSinC(i,j-1,bi,bj)
-     &         *0.5*( wFld(i,j-1,k,bi,bj)+wFld(i,j-1,kp1,bi,bj)*wMsk ) )
-     &    *gravitySign*recip_horiVertRatio
+     &         *0.5*( wFld(i,j-1, k ,bi,bj)*rVel2wUnit( k )
+     &               +wFld(i,j-1,kp1,bi,bj)*rVel2wUnit(kp1)*wMsk )
+     &        )*gravitySign
        ENDDO
       ENDDO
 

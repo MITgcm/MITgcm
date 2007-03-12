@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_w_metric_nh.F,v 1.2 2006/12/05 05:27:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_w_metric_nh.F,v 1.3 2007/03/12 23:54:26 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -47,10 +47,10 @@ C  i,j                  :: loop indices
       INTEGER i,j
 CEOP
 
-      IF ( k.GT.1 .AND. K.LE.Nr ) THEN
+      IF ( k.GT.1 .AND. k.LE.Nr ) THEN
         DO j=1-Olx,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
-           wMetricTerms(i,j) = -gravitySign*horiVertRatio
+           wMetricTerms(i,j) = -gravitySign*wUnit2rVel(k)
      &      *recip_rSphere*recip_deepFacF(k)*(
      &          ( (uFld( i ,j,k-1,bi,bj)*uFld( i ,j,k-1,bi,bj)
      &            +uFld(i+1,j,k-1,bi,bj)*uFld(i+1,j,k-1,bi,bj))

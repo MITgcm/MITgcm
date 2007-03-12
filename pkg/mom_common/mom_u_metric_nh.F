@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_metric_nh.F,v 1.2 2006/12/05 05:27:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_metric_nh.F,v 1.3 2007/03/12 23:54:26 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -43,21 +43,22 @@ C  uMetricTerms         :: metric term
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-      INTEGER i,j,Kp1
+      INTEGER i,j,kp1
       _RL wVelBottomOverride
 CEOP
 
-      Kp1=min(k+1,Nr)
+      kp1=min(k+1,Nr)
       wVelBottomOverride=1.
       IF (k.EQ.Nr) wVelBottomOverride=0.
 
       DO j=1-Olx,sNy+Oly
        DO i=1-Olx+1,sNx+Olx
          uMetricTerms(i,j) = uFld(i,j)*recip_rSphere*recip_deepFacC(k)
-     &    *0.25*(wVelBottomOverride*
-     &            (wFld(i-1,j,kp1,bi,bj)+wFld(i,j,kp1,bi,bj))
-     &            +wFld(i-1,j, k ,bi,bj)+wFld(i,j, k ,bi,bj)
-     &          )*recip_horiVertRatio*gravitySign
+     &    *0.25*( (wFld(i-1,j,kp1,bi,bj)+wFld(i,j,kp1,bi,bj))
+     &            *rVel2wUnit(kp1)*wVelBottomOverride
+     &          + (wFld(i-1,j, k ,bi,bj)+wFld(i,j, k ,bi,bj))
+     &            *rVel2wUnit( k )
+     &          )*gravitySign
        ENDDO
       ENDDO
 

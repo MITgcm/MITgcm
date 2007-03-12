@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_w_coriolis_nh.F,v 1.1 2006/03/20 14:40:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_w_coriolis_nh.F,v 1.2 2007/03/12 23:54:26 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -7,11 +7,11 @@ CBOP
 C !ROUTINE: MOM_W_CORIOLIS_NH
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE MOM_W_CORIOLIS_NH( 
+      SUBROUTINE MOM_W_CORIOLIS_NH(
      I               bi,bj,k,
      I               uFld, vFld,
      U               wCoriolisTerm,
-     I               myThid)
+     I               myThid )
 
 C !DESCRIPTION:
 C Calculates the Coriolis term in the vertical momentum equation:
@@ -52,7 +52,7 @@ C Energy conserving discretization of 2*Omega*cos(phi)*u_eastward
       IF ( k.GT.1 .AND. k.LE.Nr ) THEN
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
-           wCoriolisTerm(i,j) = 
+           wCoriolisTerm(i,j) =
      &      -gravitySign*fCoriCos(i,j,bi,bj)*
      &       ( angleCosC(i,j,bi,bj)*(
      &                (uFld(i,j,k-1,bi,bj)+uFld(i+1,j,k-1,bi,bj))
@@ -62,7 +62,7 @@ C Energy conserving discretization of 2*Omega*cos(phi)*u_eastward
      &                (vFld(i,j,k-1,bi,bj)+vFld(i,j+1,k-1,bi,bj))
      &              + (vFld(i,j, k ,bi,bj)+vFld(i,j+1, k ,bi,bj))
      &                              )*0.25 _d 0
-     &       )*horiVertRatio
+     &       )*wUnit2rVel(k)
          ENDDO
         ENDDO
       ELSE
