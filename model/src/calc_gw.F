@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.35 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.36 2007/03/12 23:48:24 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#define CALC_GW_NEW_THICK
 
 CBOP
 C     !ROUTINE: CALC_GW
@@ -56,6 +57,8 @@ C     iMin,iMax
 C     jMin,jMax
 C     xA            :: W-Cell face area normal to X
 C     yA            :: W-Cell face area normal to Y
+C     rMinW,rMaxW   :: column boundaries (r-units) at Western  Edge
+C     rMinS,rMaxS   :: column boundaries (r-units) at Southern Edge
 C     rThickC_W     :: thickness (in r-units) of W-Cell at Western Edge
 C     rThickC_S     :: thickness (in r-units) of W-Cell at Southern Edge
 C     rThickC_C     :: thickness (in r-units) of W-Cell (centered on W pt)
@@ -70,6 +73,10 @@ C     i,j,k         :: Loop counters
       INTEGER iMin,iMax,jMin,jMax
       _RS    xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS    yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS    rMinW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS    rMaxW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS    rMinS (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS    rMaxS (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    rThickC_W    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    rThickC_S    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    rThickC_C    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -91,15 +98,12 @@ C     i,j,k         :: Loop counters
       _RS  halfRS, zeroRS
       PARAMETER( halfRL = 0.5D0 )
       PARAMETER( halfRS = 0.5 , zeroRS = 0. )
+      PARAMETER( iMin = 1 , iMax = sNx )
+      PARAMETER( jMin = 1 , jMax = sNy )
 CEOP
 
 C Catch barotropic mode
       IF ( Nr .LT. 2 ) RETURN
-
-      iMin = 1
-      iMax = sNx
-      jMin = 1
-      jMax = sNy
 
 C--   Initialise gW to zero
       DO k=1,Nr
@@ -123,6 +127,21 @@ C--   Boundaries condition at top
          flxDisUp(i,j) = 0.
        ENDDO
       ENDDO
+C--   column boundaries :
+      IF (momViscosity) THEN
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+           rMaxW(i,j) = MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
+           rMinW(i,j) = MAX(   R_low(i-1,j,bi,bj),   R_low(i,j,bi,bj) )
+         ENDDO
+        ENDDO
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+           rMaxS(i,j) = MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
+           rMinS(i,j) = MAX(   R_low(i,j-1,bi,bj),   R_low(i,j,bi,bj) )
+         ENDDO
+        ENDDO
+      ENDIF
 
 C---  Sweep down column
       DO k=2,Nr
@@ -133,6 +152,56 @@ C---  Sweep down column
           wOverRide=0.
         ENDIF
 C--   Compute grid factor arround a W-point:
+#ifdef CALC_GW_NEW_THICK
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+           IF ( maskC(i,j,k-1,bi,bj).EQ.0. .OR.
+     &          maskC(i,j, k ,bi,bj).EQ.0. ) THEN
+             recip_rThickC(i,j) = 0.
+           ELSE
+C-    valid in z & p coord.; also accurate if Interface @ middle between 2 centers
+             recip_rThickC(i,j) = 1. _d 0 /
+     &        (  MIN( Ro_surf(i,j,bi,bj),rC(k-1) )
+     &         - MAX( R_low(i,j,bi,bj),  rC(k)   )
+     &        )
+           ENDIF
+         ENDDO
+        ENDDO
+        IF (momViscosity) THEN
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           rThickC_C(i,j) = MAX( zeroRS,
+     &                           MIN( Ro_surf(i,j,bi,bj), rC(k-1) )
+     &                          -MAX(   R_low(i,j,bi,bj),  rC(k)  )
+     &                         )
+          ENDDO
+         ENDDO
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx+1,sNx+Olx
+           rThickC_W(i,j) = MAX( zeroRS,
+     &                           MIN( rMaxW(i,j), rC(k-1) )
+     &                          -MAX( rMinW(i,j), rC(k)   )
+     &                         )
+C     W-Cell Western face area:
+           xA(i,j) = _dyG(i,j,bi,bj)*rThickC_W(i,j)
+c    &                              *deepFacF(k)
+          ENDDO
+         ENDDO
+         DO j=1-Oly+1,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           rThickC_S(i,j) = MAX( zeroRS,
+     &                           MIN( rMaxS(i,j), rC(k-1) )
+     &                          -MAX( rMinS(i,j), rC(k)   )
+     &                         )
+C     W-Cell Southern face area:
+           yA(i,j) = _dxG(i,j,bi,bj)*rThickC_S(i,j)
+c    &                              *deepFacF(k)
+C deep-model: xA,yA is only used for viscous flux, in terms like: xA/dxC,yA/dyC.
+C this gives deepFacF*recip_deepFacF => cancel each other (and therefore omitted)
+          ENDDO
+         ENDDO
+        ENDIF
+#else /* CALC_GW_NEW_THICK */
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
 C-    note: assume fluid @ smaller k than bottom: does not work in p-coordinate !
@@ -171,6 +240,7 @@ C this gives deepFacF*recip_deepFacF => cancel each other (and therefore omitted
 c          ENDIF
          ENDDO
         ENDDO
+#endif /* CALC_GW_NEW_THICK */
 
 C--   horizontal bi-harmonic dissipation
         IF (momViscosity .AND. viscA4W.NE.0. ) THEN
@@ -227,7 +297,7 @@ CML ************************************************************
 CML   No-slip Boundary conditions for bi-harmonic dissipation
 CML   need to be implemented here!
 CML ************************************************************
-        ELSE
+        ELSEIF (momViscosity) THEN
 C-    Initialize del2w to zero:
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
@@ -322,7 +392,7 @@ C--        prepare for next level (k+1)
           ENDDO
         ENDIF
 
-        IF (no_slip_sides) THEN
+        IF ( momViscosity .AND. no_slip_sides ) THEN
 C-     No-slip BCs impose a drag at walls...
           CALL MOM_W_SIDEDRAG(
      I               bi,bj,k,
@@ -374,8 +444,10 @@ cOld &                )*halfRL
 C Advective Flux on Lower face of W-Cell (= at tracer-cell center, level k)
           DO j=jMin,jMax
            DO i=iMin,iMax
-             tmp_WbarZ = halfRL*( wVel(i,j, k ,bi,bj)
-     &                           +wVel(i,j,kp1,bi,bj)*wOverRide )
+C     NH in p-coord.: advect wSpeed [m/s] with rTrans
+             tmp_WbarZ = halfRL*
+     &              ( wVel(i,j, k ,bi,bj)*rVel2wUnit(k)
+     &               +wVel(i,j,kp1,bi,bj)*rVel2wUnit(kp1)*wOverRide )
 C     transport through Lower face area:
              rTrans = halfRL*
      &              ( wVel(i,j, k ,bi,bj)*deepFac2F( k )*rhoFacF( k )
@@ -393,7 +465,7 @@ C     anelastic: all transports & advect. fluxes are scaled by rhoFac
              gW(i,j,k,bi,bj) =
      &        -(   ( flx_EW(i+1,j)-flx_EW(i,j) )
      &           + ( flx_NS(i,j+1)-flx_NS(i,j) )
-     &           + ( flx_Dn(i,j)-flxAdvUp(i,j) )*rkSign
+     &           + ( flx_Dn(i,j)-flxAdvUp(i,j) )*rkSign*wUnit2rVel(k)
      &         )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
      &          *recip_deepFac2F(k)*recip_rhoFacF(k)
 cOld         gW(i,j,k,bi,bj) =
