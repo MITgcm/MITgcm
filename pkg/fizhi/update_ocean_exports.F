@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.24 2007/03/12 21:53:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.25 2007/03/12 21:59:10 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -106,10 +106,10 @@ c --------------------------------
        return
        end
 
-       subroutine getsice(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .      nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
-     .      sicebc1,sicebc2,first,nymdbc1,nymdbc2,nhmsbc1,nhmsbc2,
-     .      nymdbc,nhmsbc,sice,mythid)
+       subroutine getsice(iunit,clim,idim1,idim2,jdim1,jdim2,im1,im2,
+     .   jm1,jm2,nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .   sicebc1,sicebc2,first,nymdbc1,nymdbc2,nhmsbc1,nhmsbc2,
+     .   nymdbc,nhmsbc,sice,mythid)
 C***********************************************************************
 C
 C!ROUTINE:	GETSICE
@@ -155,6 +155,7 @@ C--------------------------------------------------------------------------
 
       integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSumx,nSumy
       integer xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,mythid
+      logical clim
 
       _RL sicebc1(xsize,ysize)
       _RL sicebc2(xsize,ysize)
@@ -358,10 +359,10 @@ C---------------------------------------------------------------------------
  
       return
       end
-      subroutine getsst(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .      nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
-     .      sstbc1,sstbc2,first,nymdbc1,nymdbc2,nhmsbc1,nhmsbc2,
-     .      nymdbc,nhmsbc,sst,mythid)
+      subroutine getsst(iunit,clim,idim1,idim2,jdim1,jdim2,im1,im2,
+     .   jm1,jm2,nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .   sstbc1,sstbc2,first,nymdbc1,nymdbc2,nhmsbc1,nhmsbc2,
+     .   nymdbc,nhmsbc,sst,mythid)
 C***********************************************************************
 C
 C!ROUTINE:	GETSST
@@ -407,6 +408,7 @@ C--------------------------------------------------------------------------
 
       integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSumx,nSumy
       integer xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,mythid
+      logical clim
 
       _RL sstbc1(xsize,ysize)
       _RL sstbc2(xsize,ysize)
