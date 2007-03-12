@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_phiref.F,v 1.4 2006/10/17 18:52:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_phiref.F,v 1.5 2007/03/12 23:43:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -15,8 +15,9 @@ C     | o Set reference potential at level center and
 C     |   level interface, using tRef,sRef profiles.
 C     | note: use same discretisation as in calc_phi_hyd
 C     | o Set also reference stratification here (for implicit
-C     |   Internal Gravity Waves) since it uses also the
-C     |   same reference density.
+C     |   Internal Gravity Waves) and units conversion factor
+C     |   for vertical velocity (for Non-Hydrostatic in p)
+C     |   since both use also the same reference density.
 C     *==========================================================*
 C     \ev
 
@@ -40,8 +41,8 @@ C     msgBuf :: Informational/error meesage buffer
       INTEGER k, ks, stdUnit
       _RL rHalf(2*Nr+1)
       _RL rhoRef(Nr)
-      _RL pLoc, rhoUp, rhoDw
-      _RL ddPI, conv_theta2T
+      _RL pLoc, rhoUp, rhoDw, rhoLoc
+      _RL ddPI, conv_theta2T, thetaLoc
 CEOP
 
       _BEGIN_MASTER( myThid )
@@ -52,28 +53,44 @@ CEOP
       stdUnit = standardMessageUnit
 
       DO k=1,Nr
-        rhoRef(k) = 0.
+        rhoRef(k)  = 0.
+        dBdrRef(k) = 0.
         rHalf(2*k-1) = rF(k)
         rHalf(2*k)   = rC(k)
       ENDDO
       rHalf(2*Nr+1) = rF(Nr+1)
+
+      DO k=1,Nr+1
+        rVel2wUnit(k) = 1. _d 0
+        wUnit2rVel(k) = 1. _d 0
+      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( eosType.EQ.'POLY3' ) THEN
        IF ( implicitIntGravWave ) THEN
          WRITE(msgBuf,'(A)')
      &    'INI_PHIREF: need to compute reference density for Impl.IGW'
-         CALL PRINT_ERROR( msgBuf , myThid)
+         CALL PRINT_ERROR( msgBuf , myThid )
          WRITE(msgBuf,'(2A)')
      &    'INI_PHIREF: but FIND_RHO_SCALAR(EOS="POLY3")',
      &    ' not (yet) implemented'
-         CALL PRINT_ERROR( msgBuf , myThid)
+         CALL PRINT_ERROR( msgBuf , myThid )
+         STOP 'ABNORMAL END: S/R INI_PHIREF'
+       ELSEIF ( nonHydrostatic .AND.
+     &          buoyancyRelation .EQ. 'OCEANICP' ) THEN
+         WRITE(msgBuf,'(A)')
+     &    'INI_PHIREF: need to compute reference density for Non-Hyd'
+         CALL PRINT_ERROR( msgBuf , myThid )
+         WRITE(msgBuf,'(2A)')
+     &    'INI_PHIREF: but FIND_RHO_SCALAR(EOS="POLY3")',
+     &    ' not (yet) implemented'
+         CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R INI_PHIREF'
        ELSE
          WRITE(msgBuf,'(A)')
      &    'INI_PHIREF: Unable to compute reference stratification'
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                       SQUEEZE_RIGHT , myThid)
+     &                       SQUEEZE_RIGHT , myThid )
          WRITE(msgBuf,'(A)')
      &    'INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros'
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
@@ -126,17 +143,30 @@ C--   Compute reference density profile
 
 C--   Compute reference stratification: -d.alpha/dp @ constant p
         dBdrRef(1) = 0. _d 0
-        DO k=2,Nr
+        DO k=1,Nr+1
           pLoc = rF(k)
-          CALL FIND_RHO_SCALAR(
-     I                          tRef(k-1), sRef(k-1), pLoc,
-     O                          rhoDw, myThid )
-          CALL FIND_RHO_SCALAR(
-     I                          tRef(k), sRef(k), pLoc,
-     O                          rhoUp, myThid )
-          dBdrRef(k) = (rhoDw - rhoUp)*recip_drC(k)
-     &               / (rhoDw+rhoConst)
-     &               / (rhoUp+rhoConst)
+          IF ( k.GE.2 )  CALL FIND_RHO_SCALAR(
+     I                             tRef(k-1), sRef(k-1), pLoc,
+     O                             rhoDw, myThid )
+          IF ( k.LE.Nr ) CALL FIND_RHO_SCALAR(
+     I                             tRef(k), sRef(k), pLoc,
+     O                             rhoUp, myThid )
+          IF ( k.GE.2 .AND. k.LE.Nr ) THEN
+            dBdrRef(k) = (rhoDw - rhoUp)*recip_drC(k)
+     &                 / (rhoDw+rhoConst)
+     &                 / (rhoUp+rhoConst)
+            rhoLoc = rhoConst + ( rhoDw + rhoUp )*0.5 _d 0
+          ELSEIF ( k.EQ.1 ) THEN
+            rhoLoc = rhoConst + rhoUp
+          ELSE
+            rhoLoc = rhoConst + rhoDw
+          ENDIF
+C--   Units convertion factor for vertical velocity:
+C       wUnit2rVel = gravity*rhoRef : rVel  [Pa/s] = wSpeed [m/s] * wUnit2rVel
+C       rVel2wUnit = 1/rVel2wUnit   : wSpeed [m/s] = rVel  [Pa/s] * rVel2wUnit
+C     note: wUnit2rVel & rVel2wUnit replace horiVertRatio & recip_horiVertRatio
+          wUnit2rVel(k) = gravity*rhoLoc
+          rVel2wUnit(k) = 1. _d 0 / wUnit2rVel(k)
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -152,6 +182,27 @@ c    &               * conv_theta2T*atm_Rd/rF(k)
      &                 -((rC( k )/atm_Po)**atm_kappa) )
           dBdrRef(k) = (tRef(k) - tRef(k-1))*recip_drC(k)
      &               * ddPI*recip_drC(k)
+        ENDDO
+
+C--   Units convertion factor for vertical velocity:
+C       wUnit2rVel = gravity/alpha : rVel  [Pa/s] = wSpeed [m/s] * wUnit2rVel
+C       rVel2wUnit = alpha/gravity : wSpeed [m/s] = rVel  [Pa/s] * rVel2wUnit
+C       with alpha = 1/rhoRef = (R.T/p) (ideal gas)
+C     note: wUnit2rVel & rVel2wUnit replace horiVertRatio & recip_horiVertRatio
+        DO k=1,Nr+1
+          IF ( k.EQ.1 ) THEN
+            thetaLoc = tRef(k)
+          ELSEIF ( k.GT.Nr ) THEN
+            thetaLoc = tRef(k-1)
+          ELSE
+            thetaLoc = (tRef(k) + tRef(k-1))*0.5 _d 0
+          ENDIF
+          IF ( thetaLoc.GT.0. _d 0 .AND. rF(k).GT.0. _d 0 ) THEN
+            conv_theta2T  = (rF(k)/atm_Po)**atm_kappa
+            wUnit2rVel(k) = gravity
+     &                    * rF(k)/(atm_Rd*conv_theta2T*thetaLoc)
+            rVel2wUnit(k) = 1. _d 0 / wUnit2rVel(k)
+          ENDIF
         ENDDO
 
 C-    Compute Reference Geopotential at Half levels :

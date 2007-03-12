@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.22 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.23 2007/03/12 23:43:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -135,7 +135,7 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
          ENDDO
         ENDDO
         DO K=2,Nr
-         tmpFac = nh_Fac*recip_horiVertRatio*recip_horiVertRatio
+         tmpFac = nh_Fac*rVel2wUnit(k)*rVel2wUnit(k)
      &          + igwFac*dBdrRef(k)*deltaTMom*dTtracerLev(k)
          IF (tmpFac.GT.0. ) tmpFac = 1. _d 0 / tmpFac
          DO J=1,sNy
