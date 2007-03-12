@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.15 2005/07/28 15:37:21 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.16 2007/03/12 21:49:00 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -35,11 +35,12 @@ C     !LOCAL VARIABLES:
       integer  nincr
       integer mmdd,hhmmss,nsecf2
       integer nymdend,nhmsend
+      logical climsst, climsice
 
       namelist / fizhi_list / 
      .     nymdbegin, nhmsbegin,
      .     fizhi_mnc_write_pickup, fizhi_mnc_read_pickup,
-     .     runlength
+     .     runlength, climsst, climsice
 
 C     Set defaults
       fizhi_mdsio_read_pickup = .TRUE.
@@ -47,6 +48,8 @@ C     Set defaults
       fizhi_mnc_write_pickup = .FALSE.
       fizhi_mnc_read_pickup = .FALSE.
       runlength = 0.0
+      climsst = .TRUE.
+      climsice = .TRUE.
 
 C     Read Fizhi Namelist
       WRITE(msgBuf,'(A)') ' FIZHI_READPARMS: opening data.fizhi'
@@ -89,6 +92,10 @@ C     Fill chronos Common Block with Namelist and Other File Info
       nhms0 = nhmsbegin
       nymd = nymdcurrent
       nhms = nhmscurrent
+
+C     Fill ocean params common block with namelist into
+      sstclim = climsst
+      siceclim = climsice
 
 C     Echo Date and Time Info
       _BEGIN_MASTER(myThid)
