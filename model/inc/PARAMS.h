@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.196 2007/01/10 23:48:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.197 2007/03/12 23:41:15 jmc Exp $
 C $Name:  $
 C
 
@@ -495,6 +495,12 @@ C     phiRef    :: reference potential (pressure/rho, geopotential) profile
 C     dBdrRef   :: vertical gradient of reference boyancy  [(m/s/r)^2)]:
 C               :: z-coord: = N^2_ref = Brunt-Vaissala frequency [s^-2]
 C               :: p-coord: = -(d.alpha/dp)_ref          [(m^2.s/kg)^2]
+C     rVel2wUnit :: units conversion factor (Non-Hydrostatic code),
+C                :: from r-coordinate vertical velocity to vertical velocity [m/s].
+C                :: z-coord: = 1 ; p-coord: wSpeed [m/s] = rVel [Pa/s] * rVel2wUnit
+C     wUnit2rVel :: units conversion factor (Non-Hydrostatic code),
+C                :: from vertical velocity [m/s] to r-coordinate vertical velocity.
+C                :: z-coord: = 1 ; p-coord: rVel [Pa/s] = wSpeed [m/s] * wUnit2rVel
 C     phiMin    :: Latitude of southern most cell face.
 C     thetaMin  :: Longitude of western most cell face (this
 C                 is an "inert" parameter but it is included
@@ -669,6 +675,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & rhonil, recip_rhonil, rhoConst, recip_rhoConst,
      & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF,
      & rhoConstFresh, convertEmP2rUnit, tRef, sRef, phiRef, dBdrRef,
+     & rVel2wUnit, wUnit2rVel,
      & baseTime, startTime, endTime,
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
      & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
@@ -763,6 +770,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL sRef(Nr)
       _RL phiRef(2*Nr+1)
       _RL dBdrRef(Nr)
+      _RL rVel2wUnit(Nr+1), wUnit2rVel(Nr+1)
       _RL baseTime
       _RL startTime
       _RL endTime
