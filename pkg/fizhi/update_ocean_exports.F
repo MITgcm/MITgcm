@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.23 2005/06/14 18:14:21 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.24 2007/03/12 21:53:14 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -78,14 +78,14 @@ C***********************************************************************
        bjslot = myYGlobalLo-1+(bj-1)*sNy
 #endif
 
-       call getsst(ksst,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,
-     .  nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,sst1,sst2,
-     .  first(bi,bj),nymd1sst(bi,bj),nymd2sst(bi,bj),
+       call getsst(ksst,sstclim,idim1,idim2,jdim1,jdim2,im1,im2,
+     .  jm1,jm2,nSx,nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .  sst1,sst2,first(bi,bj),nymd1sst(bi,bj),nymd2sst(bi,bj),
      .  nhms1sst(bi,bj),nhms2sst(bi,bj),sstdates(1,bi,bj),
      .  ssttimes(1,bi,bj),sst,myThid)
-       call getsice(kice,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,
-     .  nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,sice1,sice2,
-     .  first(bi,bj),nymd1sice(bi,bj),nymd2sice(bi,bj),
+       call getsice(kice,siceclim,idim1,idim2,jdim1,jdim2,im1,im2,
+     .  jm1,jm2,nSx,nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .  sice1,sice2,first(bi,bj),nymd1sice(bi,bj),nymd2sice(bi,bj),
      .  nhms1sice(bi,bj),nhms2sice(bi,bj),sicedates(1,bi,bj),
      .  sicetimes(1,bi,bj),sice,myThid)
 
