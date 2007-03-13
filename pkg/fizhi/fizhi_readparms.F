@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.16 2007/03/12 21:49:00 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.17 2007/03/13 14:04:36 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -17,9 +17,10 @@ C     !USES:
       implicit none
 
 #include "chronos.h"
+#include "SIZE.h"
+#include "fizhi_ocean_coms.h"
 #include "fizhi_io_comms.h"
 #include "EEPARAMS.h"
-#include "SIZE.h"
 #include "PARAMS.h"
 
 C     !INPUT PARAMETERS:
