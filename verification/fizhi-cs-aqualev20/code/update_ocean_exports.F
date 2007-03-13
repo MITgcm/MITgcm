@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/update_ocean_exports.F,v 1.1 2006/04/03 20:55:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/update_ocean_exports.F,v 1.2 2007/03/13 15:38:59 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -78,14 +78,14 @@ C***********************************************************************
        bjslot = myYGlobalLo-1+(bj-1)*sNy
 #endif
 
-       call getsst(ksst,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,
-     .  nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,sst1,sst2,
-     .  first(bi,bj),nymd1sst(bi,bj),nymd2sst(bi,bj),
+       call getsst(ksst,sstclim,idim1,idim2,jdim1,jdim2,im1,im2,
+     .  jm1,jm2,nSx,nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .  sst1,sst2,first(bi,bj),nymd1sst(bi,bj),nymd2sst(bi,bj),
      .  nhms1sst(bi,bj),nhms2sst(bi,bj),sstdates(1,bi,bj),
      .  ssttimes(1,bi,bj),sst,myThid)
-       call getsice(kice,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,
-     .  nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,sice1,sice2,
-     .  first(bi,bj),nymd1sice(bi,bj),nymd2sice(bi,bj),
+       call getsice(kice,siceclim,idim1,idim2,jdim1,jdim2,im1,im2,
+     .  jm1,jm2,nSx,nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .  sice1,sice2,first(bi,bj),nymd1sice(bi,bj),nymd2sice(bi,bj),
      .  nhms1sice(bi,bj),nhms2sice(bi,bj),sicedates(1,bi,bj),
      .  sicetimes(1,bi,bj),sice,myThid)
 
@@ -106,10 +106,10 @@ c --------------------------------
        return
        end
 
-       subroutine getsice(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .      nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
-     .      sicebc1,sicebc2,first,nymdbc1,nymdbc2,nhmsbc1,nhmsbc2,
-     .      nymdbc,nhmsbc,sice,mythid)
+       subroutine getsice(iunit,clim,idim1,idim2,jdim1,jdim2,im1,im2,
+     .   jm1,jm2,nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .   sicebc1,sicebc2,first,nymdbc1,nymdbc2,nhmsbc1,nhmsbc2,
+     .   nymdbc,nhmsbc,sice,mythid)
 C***********************************************************************
 C
 C!ROUTINE:	GETSICE
@@ -162,6 +162,7 @@ C--------------------------------------------------------------------------
       _RL sice(idim1:idim2,jdim1:jdim2,nSumx,nSumy)
       integer nhmsbc1,nhmsbc2,nymdbc1,nymdbc2
       logical first
+      logical clim
 
 C Maximum number of dates in one year for the data
       integer   ndmax
@@ -178,10 +179,10 @@ C Maximum number of dates in one year for the data
 
       return
       end
-      subroutine getsst(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .      nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
-     .      sstbc1,sstbc2,first,nymdbc1,nymdbc2,nhmsbc1,nhmsbc2,
-     .      nymdbc,nhmsbc,sst,mythid)
+      subroutine getsst(iunit,clim,idim1,idim2,jdim1,jdim2,im1,im2,
+     .   jm1,jm2,nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .   sstbc1,sstbc2,first,nymdbc1,nymdbc2,nhmsbc1,nhmsbc2,
+     .   nymdbc,nhmsbc,sst,mythid)
 C***********************************************************************
 C
 C!ROUTINE:	GETSST
@@ -234,6 +235,7 @@ C--------------------------------------------------------------------------
       _RL sst(idim1:idim2,jdim1:jdim2,nSumx,nSumy)
       integer nhmsbc1,nhmsbc2,nymdbc1,nymdbc2
       logical first
+      logical clim
 
 C Maximum number of dates in one year for the data
       integer   ndmax

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/Attic/fizhi_turb.F,v 1.1 2006/04/03 20:55:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/Attic/fizhi_turb.F,v 1.2 2007/03/13 15:38:59 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -2119,6 +2119,19 @@ C ---------------------------------------
        QQINIT(I,1) = QQ(I,1)
 9120  CONTINUE
       ENDIF
+
+C Zero diffusion of TKE above 10 mb
+      do L = 1,nlev-1
+        do i = 1,irun
+CCC      if(pl(i,L).le.10.) then
+CCC       qxlm(i,L) = 0.
+CCC      endif
+         if(pl(i,L).le.150.) then
+          qxlm(i,L) = min(qxlm(i,L),5.)
+         endif
+        enddo
+      enddo
+
 C UPDATE TURBULENT KINETIC ENERGY QQ
 C ----------------------------------
       NLEVMQ = NLEV - LMINQ1
@@ -2157,11 +2170,16 @@ CB
       KH(I,LMINQ1)=XQ(I,LMINQ1)*KH(I,LMINQ1)+KHBG
 9126  CONTINUE
 CE
+C Zero diffusion of u,v,t,q above 10 mb
       do L = 1,nlev-1
         do i = 1,irun
+CCC      if(pl(i,L).le.10.) then
+CCC       kh(i,L) = 0.
+CCC       km(i,L) = 0.
+CCC      endif
          if(pl(i,L).le.150.) then
-          kh(i,L) = 5.
-          km(i,L) = 5.
+          kh(i,L) = min(kh(i,L),5.)
+          km(i,L) = min(km(i,L),5.)
          endif
         enddo
       enddo

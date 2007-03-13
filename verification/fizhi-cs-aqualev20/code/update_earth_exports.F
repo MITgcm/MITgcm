@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/Attic/update_earth_exports.F,v 1.1 2006/04/03 20:55:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/Attic/update_earth_exports.F,v 1.2 2007/03/13 15:38:59 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -702,7 +702,7 @@ C*********************************************************************
 
       integer sec, imon, iday, nchps, nchpdim, nSx, nSy, bi, bj
       _RL ALAI(nchpdim,nSx,nSy), AGRN(nchpdim,nSx,nSy) 
-      _RL ALAT(nchpdim)
+      _RL ALAT(nchpdim,nSx,nSy)
       integer ITYP(nchpdim,nSx,nSy)
 
       integer i,midmon,midm,midp,id,k1,k2,kk1,kk2
@@ -787,7 +787,7 @@ C*********************************************************************
 
       DO 220 I=1,NCHPS
 
-      IF(ALAT(I).GT.0.) THEN
+      IF(ALAT(I,bi,bj).GT.0.) THEN
        KK1 = K1
        KK2 = K2
       ELSE
