@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.25 2007/03/12 21:59:10 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.26 2007/03/13 01:38:18 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -170,7 +170,7 @@ C Maximum number of dates in one year for the data
 
       character*8  cname
       character*80 cdscrip
-      character*40 sicedata
+      character*22 sicedata
       _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical found, error
       integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc
@@ -194,7 +194,12 @@ c  this only works for between 1950-2050
         nymdmod = nymd
       endif
 
-      sicedata='sice19232.weekly.clim'
+      iyear   = nymdmod/10000
+      if(clim) then
+       sicedata='sice19232.weekly.clim'
+      else
+       WRITE(sicedata,'(A,I4)') 'sice19232.weekly.y',iyear
+      endif
 
 c  initialize so that first time through they have values for the check
 c  these values make the iyear .ne. iyearbc true anyways for
@@ -211,7 +216,6 @@ c  for the first time so first isnt checked below.
 
 C---------- Read in Header file ----------------------------------
 
-      iyear   = nymdmod/10000
       iyearbc = nymdbc(2)/10000
 
       if( iyear.ne.iyearbc ) then
@@ -423,7 +427,7 @@ C Maximum number of dates in one year for the data
 
       character*8  cname
       character*80 cdscrip
-      character*20 sstdata
+      character*21 sstdata
       _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical found, error
       integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc
@@ -447,7 +451,12 @@ c  this only works for between 1950-2050
         nymdmod = nymd
       endif
 
-      sstdata='sst19232.weekly.clim'
+      iyear   = nymdmod/10000
+      if(clim) then
+       sstdata='sst19232.weekly.clim'
+      else
+       WRITE(sstdata,'(A,I4)') 'sst19232.weekly.y',iyear
+      endif
 
 c  initialize so that first time through they have values for the check
 c  these vaules make the iyear .ne. iyearbc true anyways for
@@ -463,7 +472,6 @@ c  for the first time so first isnt checked below.
 
 C---------- Read in Header file ----------------------------------
 
-      iyear   = nymdmod/10000
       iyearbc = nymdbc(2)/10000
 
       if( iyear.ne.iyearbc ) then
