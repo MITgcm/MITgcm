@@ -5,7 +5,9 @@
 #PBS -l nodes=2:ppn=2
 #PBS -e /home/edhill/test_outp/eh3_pgi.stderr
 #PBS -o /home/edhill/test_outp/eh3_pgi.stdout
-#PBS -V
+# #PBS -V
+#  ^- commented out => do not export env. variable !
+#  since head node environment (& module) is too different from computer node
  
 if test -f /etc/profile.d/modules.sh ; then
     . /etc/profile.d/modules.sh
