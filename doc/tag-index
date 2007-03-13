@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.776 2007/03/13 14:06:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.777 2007/03/13 22:02:39 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58w_post
 o p-coord. non-hydrostatic using reference profile for w <-> omega conversion:
   rVel2wUnit & wUnit2rVel are computed from reference profile Tref,Sref
   (and replace horiVertRatio in NH code).
