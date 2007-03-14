@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.5 2006/09/01 10:17:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_v_drag.F,v 1.6 2007/03/14 15:43:43 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -88,11 +88,11 @@ CML        IF (k.EQ.kTop) maskUp=0.
        ENDDO
       ENDDO
 
-CML#ifdef ALLOW_DIAGNOSTICS
-CML      IF (useDiagnostics) THEN
-CML        CALL DIAGNOSTICS_FILL(vDragTerms,'VBotDrag',k,1,2,bi,bj,myThid)
-CML      ENDIF
-CML#endif /* ALLOW_DIAGNOSTICS */
+#ifdef ALLOW_DIAGNOSTICS
+      IF (useDiagnostics) THEN
+        CALL DIAGNOSTICS_FILL(vDragTerms,'VSHIDrag',k,1,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_SHELFICE */
 
       RETURN

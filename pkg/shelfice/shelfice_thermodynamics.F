@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.5 2006/08/14 16:52:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.6 2007/03/14 15:43:43 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -240,6 +240,14 @@ C     endif (not) useISOMIPTD
        ENDDO
       ENDDO
       
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL(shelfIceFreshWaterFlux,'SHIfwFlx',
+     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(shelfIceHeatFlux,      'SHIhtFlx',
+     &      0,1,0,1,1,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_SHELFICE */
       RETURN
       END

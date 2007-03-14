@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.777 2007/03/13 22:02:39 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.778 2007/03/14 15:44:24 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o shelfice: add a few diagnostics
 
 checkpoint58w_post
 o p-coord. non-hydrostatic using reference profile for w <-> omega conversion:
