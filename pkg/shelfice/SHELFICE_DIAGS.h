@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/SHELFICE_DIAGS.h,v 1.2 2006/02/10 10:00:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/SHELFICE_DIAGS.h,v 1.3 2007/03/14 15:49:59 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -9,7 +9,7 @@ C     \==========================================================/
 #ifdef ALLOW_TIMEAVE
 
 C     Keep track of time
-      _RL SHELFICE_TimeAve(nSx,nSy)
+      _RL SHELFICE_TimeAve(1,nSx,nSy)
       COMMON /SHELFICE_TAVE/ SHELFICE_TimeAve
 
 C     Storage arrays for time-averages
