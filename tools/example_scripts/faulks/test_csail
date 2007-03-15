@@ -1,30 +1,11 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.1 2007/03/14 22:30:40 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.2 2007/03/15 19:51:28 jmc Exp $
 
 #  Ed Hill
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
-
-usage()
-{
-    cat << EOF
-
-Usage:  $0 [OPTIONS]
-
-where possible OPTIONS are:
-  (-help|-h)               print usage
-  (-dir | -d) TDIR         specify testing directory
-                             (def="$TDIR")
-  (-of | -optfile) FILE    specify an OPTFILE
-                             (def="$OPTFILE")
-  (-[no]ieee)              IEEE math flag
-                             (def="$IEEE")
-
-EOF
-    exit 1
-}
 
 
 # defaults
@@ -33,65 +14,26 @@ OPTFILE=
 TESTDIR="/scratch/jmc/test_"`hostname`
 IEEE="-ieee"
 
-#  Parse options
-ac_prev=
-for ac_option ; do
-
-    # If the previous option needs an argument, assign it.
-    if test -n "$ac_prev"; then
-        eval "$ac_prev=\$ac_option"
-        ac_prev=
-        continue
-    fi
-
-    ac_optarg=`expr "x$ac_option" : 'x[^=]*=\(.*\)'`
-    
-    case $ac_option in
-        
-        -help | --help | -h | --h)
-            usage ;;
-        
-        -dir | --dir | -d | --d)
-            ac_prev=TESTDIR ;;
-        -dir=* | --dir=* | -d=* | --d=*)
-            TESTDIR=$ac_optarg ;;
-
-        -of | --of | -optfile | --optfile)
-            ac_prev=OPTFILE ;;
-        --of=* | -of=* | --optfile=* | -optfile=*)
-            OPTFILE=$ac_optarg ;;
-
-	-ieee)
-	    IEEE="-ieee" ;;
-	-noieee)
-	    IEEE= ;;
-        
-        *)
-            echo "Error: don't understand argument \"$ac_option\""
-            usage
-            ;;
-        
-     esac
-     
-done
 
 #  Turn off stack limit for FIZHI
 ulimit -s unlimited
 
 echo -n "Creating a temp directory ..."
 mach=`hostname`
-file=${OPTFILE##*/}
-tdir=$TESTDIR"_"$file
-test -e $tdir  &&  rm -rf $tdir
-mkdir $tdir
+tdir=$TESTDIR
+if test -e $tdir
+then test -e $tdir/MITgcm  &&  rm -rf $tdir/MITgcm
+else mkdir $tdir
+fi
 echo "  done"
 
 echo -n "Downloading the MITgcm code from CVS pserver..."
 cd $tdir
 #export CVSROOT='/u/gcmpack'
-export CVSROOT=':ext:@mitgcm.org:/u/gcmpack'
-export CVS_RSH='ssh'
-cvs co -P MITgcm > /dev/null 2>&1
+#export CVSROOT=':ext:@mitgcm.org:/u/gcmpack'
+#export CVS_RSH='ssh'
+#cvs co -P MITgcm > /dev/null
+cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null
 echo "  done"
 
 new_dir='MITgcm_g77'
