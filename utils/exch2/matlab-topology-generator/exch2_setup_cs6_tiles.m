@@ -1,5 +1,9 @@
 function [tile,ntiles,ierr,domain]= ...
          exch2_setup_cs6_tiles(tnx,tny,domain,ndomains);
+
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_tiles.m,v 1.2 2007/03/19 20:34:26 jmc Exp $
+% $Name:  $
+
 ierr=0;
 tileid=0;
 for i=1:ndomains

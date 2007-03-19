@@ -1,3 +1,6 @@
+# $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/README,v 1.2 2007/03/19 20:34:26 jmc Exp $
+# $Name:  $
+
 Matlab code to generate topology description for MITgcm cs6 conventions.
 
 o To run start matlab and execute script driver.m

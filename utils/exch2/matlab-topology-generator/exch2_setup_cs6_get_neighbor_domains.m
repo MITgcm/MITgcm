@@ -1,5 +1,9 @@
 function [tile] = exch2_setup_cs6_get_neighbor_domains(tile, domain,ntiles);
 % Set neighboring domain fiel for each tile
+
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_get_neighbor_domains.m,v 1.2 2007/03/19 20:34:26 jmc Exp $
+% $Name:  $
+
 for it=1:ntiles
  dlox=tile(it).tbasex+1;
  dhix=tile(it).tbasex+tile(it).tnx;

@@ -3,6 +3,9 @@
 function [ndomains,domain,domain_nx,domain_ny] = ...
          setup_cs6_domains(nr,nb,ng);
 
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_domains.m,v 1.2 2007/03/19 20:34:26 jmc Exp $
+% $Name:  $
+
 ndomains=6;
 domain(1).dnx=nb;
 domain(1).dny=nr;

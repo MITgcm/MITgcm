@@ -6,6 +6,10 @@ function [tile] = ...
 % boundary) the index range at +/-1 in the normal direction to the edge is 
 % searched for subject to a possible rotation and translation moving betwee
 % domains.
+
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_get_external_neighbor_tiles.m,v 1.2 2007/03/19 20:34:26 jmc Exp $
+% $Name:  $
+
 for it=1:ntiles
 % Only do tiles that are external to the domain
   myD = tile(it).mydomain;

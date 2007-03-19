@@ -7,6 +7,9 @@ outmode=1;
 %outmode=2;
 outdir='./';
 
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_print.m,v 1.2 2007/03/19 20:34:26 jmc Exp $
+% $Name:  $
+
 % Output unit
 fnam=sprintf('%s%s',outdir,'w2_e2setup.F');
 fnamh=sprintf('%s%s',outdir,'W2_EXCH2_TOPOLOGY.h');

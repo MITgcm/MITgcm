@@ -1,5 +1,9 @@
 function exch2_setup_cs6_plot( domain, tile, tnx, tny)
 % Draw a picture of the domain and its tiles in the standard cube layout
+
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_plot.m,v 1.2 2007/03/19 20:34:26 jmc Exp $
+% $Name:  $
+
 clf;hold on
 % Plot domains one and two and their tiles
 xoff=0;

@@ -5,6 +5,10 @@ function [tile] = ...
 % of each tile in turn.  For internal edges (edges that don't cross a domain 
 % boundary) the index range at +/-1 in the normal direction to the edge is 
 % searched for. This identifies all the tiles that % border this tile.
+
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_get_internal_neighbor_tiles.m,v 1.2 2007/03/19 20:34:26 jmc Exp $
+% $Name:  $
+
 for it=1:ntiles
   tile(it).nW=0;
   tile(it).wTile(1)=0;
