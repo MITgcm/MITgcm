@@ -1,5 +1,5 @@
 # current output of: crontab -l
 
-#50 23 * * *  cd /u/u2/jmc/testing/faulks && cvs -q update -P -d
+50 23 * * *  cd /u/u2/jmc/testing/faulks && cvs -q update -P -d
 05 1 * * *  /u/u2/jmc/testing/faulks/test_csail
 
