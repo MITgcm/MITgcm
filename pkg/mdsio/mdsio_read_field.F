@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.1 2006/12/29 05:25:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.2 2007/03/19 02:30:49 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -91,7 +91,7 @@ C !LOCAL VARIABLES:
       INTEGER iG,jG,irec,bi,bj,i,j,k,dUnit,IL,pIL
       INTEGER x_size,y_size,length_of_rec
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-      INTEGER iG_IO,jG_IO,npe
+      INTEGER iG_IO,jG_IO,npe, loc_xGlobalLo, loc_yGlobalLo
       PARAMETER ( x_size = exch2_domain_nxt * sNx )
       PARAMETER ( y_size = exch2_domain_nyt * sNy )
 #else
@@ -104,8 +104,9 @@ C !LOCAL VARIABLES:
       Real*8 xy_buffer_r8(x_size,y_size)
       Real*8 globalBuf(Nx,Ny)
 #ifdef ALLOW_EXCH2
-c     INTEGER tGy,tGx,tNy,tNx,tn
-      INTEGER tGy,tGx,    tNx,tn
+      INTEGER iGjLoc, jGjLoc
+c     INTEGER tGy,tGx,tNy,tNx,tN
+      INTEGER tGy,tGx,    tNx,tN
 #endif /* ALLOW_EXCH2 */
       INTEGER tNy
 
@@ -220,71 +221,84 @@ C master thread of process 0, only, read from file
 #ifdef _BYTESWAPIO
            CALL MDS_BYTESWAPR4( x_size*y_size, xy_buffer_r4 )
 #endif
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-           bj=1
-           DO npe=1,nPx*nPy
-            DO bi=1,nSx
-             DO J=1,sNy
-              DO I=1,sNx
-#ifdef ALLOW_USE_MPI
-               iG=mpi_myXGlobalLo(npe)-1+(bi-1)*sNx+i
-               jG=mpi_myYGlobalLo(npe)-1+(bj-1)*sNy+j
-#else
-               iG= myXGlobalLo-1+(bi-1)*sNx+i
-               jG= myYGlobalLo-1+(bj-1)*sNy+j
-#endif /* ALLOW_USE_MPI */
-               iG_IO=exch2_txGlobalo(W2_mpi_myTileList(npe,bi))+i-1
-               jG_IO=exch2_tyGlobalo(W2_mpi_myTileList(npe,bi))+j-1
-               globalBuf(iG,jG) = xy_buffer_r4(iG_IO,jG_IO)
-              ENDDO
-             ENDDO
-            ENDDO
-           ENDDO
-#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
-           DO J=1,Ny
-            DO I=1,Nx
-             globalBuf(I,J) = xy_buffer_r4(I,J)
-            ENDDO
-           ENDDO
-#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
           ELSEIF (filePrec .EQ. precFloat64) THEN
            READ(dUnit,rec=irec) xy_buffer_r8
 #ifdef _BYTESWAPIO
            CALL MDS_BYTESWAPR8( x_size*y_size, xy_buffer_r8 )
 #endif
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-           bj=1
-           DO npe=1,nPx*nPy
-            DO bi=1,nSx
-             DO J=1,sNy
-              DO I=1,sNx
-#ifdef ALLOW_USE_MPI
-               iG=mpi_myXGlobalLo(npe)-1+(bi-1)*sNx+i
-               jG=mpi_myYGlobalLo(npe)-1+(bj-1)*sNy+j
-#else
-               iG= myXGlobalLo-1+(bi-1)*sNx+i
-               jG= myYGlobalLo-1+(bj-1)*sNy+j
-#endif /* ALLOW_USE_MPI */
-               iG_IO=exch2_txGlobalo(W2_mpi_myTileList(npe,bi))+i-1
-               jG_IO=exch2_tyGlobalo(W2_mpi_myTileList(npe,bi))+j-1
-               globalBuf(iG,jG) = xy_buffer_r8(iG_IO,jG_IO)
-              ENDDO
-             ENDDO
-            ENDDO
-           ENDDO
-#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
-           DO J=1,Ny
-            DO I=1,Nx
-             globalBuf(I,J) = xy_buffer_r8(I,J)
-            ENDDO
-           ENDDO
-#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
           ELSE
            WRITE(msgBuf,'(A)')
      &            ' MDS_READ_FIELD: illegal value for filePrec'
            CALL PRINT_ERROR( msgBuf, myThid )
            STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
           ENDIF
+
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+          bj=1
+          DO npe=1,nPx*nPy
+           DO bi=1,nSx
+#ifdef ALLOW_USE_MPI
+            loc_xGlobalLo = mpi_myXGlobalLo(npe)
+            loc_yGlobalLo = mpi_myYGlobalLo(npe)
+#else  /* ALLOW_USE_MPI */
+            loc_xGlobalLo = myXGlobalLo
+            loc_yGlobalLo = myYGlobalLo
+#endif /* ALLOW_USE_MPI */
+            tN = W2_mpi_myTileList(npe,bi)
+            IF   ( exch2_mydNx(tN) .GT. x_size ) THEN
+C-          face x-size larger than glob-size : fold it
+              iGjLoc = 0
+              jGjLoc = exch2_mydNx(tN) / x_size
+            ELSEIF ( exch2_tNy(tN) .GT. y_size ) THEN
+C-          tile y-size larger than glob-size : make a long line
+              iGjLoc = exch2_mydNx(tN)
+              jGjLoc = 0
+            ELSE
+C-          default (face fit into global-IO-array)
+              iGjLoc = 0
+              jGjLoc = 1
+            ENDIF
+
+            IF (filePrec .EQ. precFloat32) THEN
+             DO J=1,sNy
+              DO I=1,sNx
+               iG = loc_xGlobalLo-1+(bi-1)*sNx+i
+               jG = loc_yGlobalLo-1+(bj-1)*sNy+j
+               iG_IO=exch2_txGlobalo(tN)+iGjLoc*(j-1)+i-1
+               jG_IO=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
+               globalBuf(iG,jG) = xy_buffer_r4(iG_IO,jG_IO)
+              ENDDO
+             ENDDO
+            ELSEIF (filePrec .EQ. precFloat64) THEN
+             DO J=1,sNy
+              DO I=1,sNx
+               iG = loc_xGlobalLo-1+(bi-1)*sNx+i
+               jG = loc_yGlobalLo-1+(bj-1)*sNy+j
+               iG_IO=exch2_txGlobalo(tN)+iGjLoc*(j-1)+i-1
+               jG_IO=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
+               globalBuf(iG,jG) = xy_buffer_r8(iG_IO,jG_IO)
+              ENDDO
+             ENDDO
+            ENDIF
+
+C--    end of npe & bi loops
+           ENDDO
+          ENDDO
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+          IF (filePrec .EQ. precFloat32) THEN
+           DO J=1,Ny
+            DO I=1,Nx
+             globalBuf(I,J) = xy_buffer_r4(I,J)
+            ENDDO
+           ENDDO
+          ELSEIF (filePrec .EQ. precFloat64) THEN
+           DO J=1,Ny
+            DO I=1,Nx
+             globalBuf(I,J) = xy_buffer_r8(I,J)
+            ENDDO
+           ENDDO
+          ENDIF
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
 C- endif iAmDoingIO
         ENDIF
         CALL SCATTER_2D(globalBuf,sharedLocalBuf,myThid)
@@ -363,20 +377,33 @@ C (This is a place-holder for the active/passive mechanism
           IF (fileIsOpen) THEN
            tNy = sNy
 #ifdef ALLOW_EXCH2
-           tn = W2_myTileList(bi)
-           tGy = exch2_tyGlobalo(tn)
-           tGx = exch2_txGlobalo(tn)
-           tNy = exch2_tNy(tn)
-           tNx = exch2_tNx(tn)
+           tN = W2_myTileList(bi)
+           tGy = exch2_tyGlobalo(tN)
+           tGx = exch2_txGlobalo(tN)
+           tNy = exch2_tNy(tN)
+           tNx = exch2_tNx(tN)
+           IF   ( exch2_mydNx(tN) .GT. x_size ) THEN
+C-         face x-size larger than glob-size : fold it
+             iGjLoc = 0
+             jGjLoc = exch2_mydNx(tN) / x_size
+           ELSEIF ( exch2_tNy(tN) .GT. y_size ) THEN
+C-         tile y-size larger than glob-size : make a long line
+             iGjLoc = exch2_mydNx(tN)
+             jGjLoc = 0
+           ELSE
+C-         default (face fit into global-IO-array)
+             iGjLoc = 0
+             jGjLoc = 1
+           ENDIF
 #endif /* ALLOW_EXCH2 */
            DO k=1,nNz
             DO j=1,tNy
              IF (globalFile) THEN
 #ifdef ALLOW_EXCH2
-              irec = 1 + (tGx-1)/tNx
-     &                 + ( j-1 + tGy-1 )*exch2_domain_nxt
+              irec = 1 + ( tGx-1 + (j-1)*iGjLoc )/tNx
+     &                 + ( tGy-1 + (j-1)*jGjLoc )*exch2_domain_nxt
      &                 + ( k-1 + (irecord-1)*nNz
-     &                   )*tNy*exch2_domain_nyt*exch2_domain_nxt
+     &                   )*y_size*exch2_domain_nxt
 #else /* ALLOW_EXCH2 */
               iG = myXGlobalLo-1 + (bi-1)*sNx
               jG = myYGlobalLo-1 + (bj-1)*sNy
@@ -385,8 +412,6 @@ C (This is a place-holder for the active/passive mechanism
      &                + nSx*nPx*Ny*nNz*(irecord-1)
 #endif /* ALLOW_EXCH2 */
              ELSE
-              iG = 0
-              jG = 0
               irec=j + sNy*(k-1) + sNy*nNz*(irecord-1)
              ENDIF
              IF (filePrec .EQ. precFloat32) THEN

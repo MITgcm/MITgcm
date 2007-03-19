@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_metafiles.F,v 1.1 2006/12/29 05:14:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_metafiles.F,v 1.2 2007/03/19 02:30:49 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -23,7 +23,7 @@ C !INTERFACE:
 C !DESCRIPTION:
 C
 C MDS_WR_METAFILES creates either a file of the form "fName.meta" IF the
-C LOGICAL flag "globalFile" or "useSingleCPUIO" are set true. Otherwise
+C logical flag "globalFile" or "useSingleCPUIO" are set true. Otherwise
 C it creates MDS tiled files of the form "fName.xxx.yyy.meta".
 C Currently, the meta-files are not read because it is difficult
 C to parse files in fortran. We should read meta information before
@@ -35,7 +35,7 @@ C irecord is the record number to be written and must be >= 1.
 C NOTE: It is currently assumed that
 C the highest record number in the file was the last record written.
 C Nor is there a consistency check between the routine arguments and file.
-C ie. IF your WRITE record 2 after record 4 the meta information
+C ie. if you write record 2 after record 4 the meta information
 C will record the number of records to be 2. This, again, is because
 C we have read the meta information. To be fixed.
 
@@ -91,10 +91,10 @@ C Functions
 C Local variables
       CHARACTER*(MAX_LEN_FNAM) dataFName, metaFName, pfName
       INTEGER iG,jG, bi,bj, IL,pIL
-      INTEGER dimList(3,3), nDims
+      INTEGER dimList(3,3), nDims, map2gl(2)
       INTEGER xSize, ySize
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-      INTEGER tn
+      INTEGER tN
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -127,11 +127,11 @@ C Only do I/O if I am the master thread (and mpi process 0 IF useSingleCpuIO):
          dimList(3,3) = nNz
          nDims=3
          IF (nNz.EQ.1) nDims=2
-c        CALL MDSWRITEMETA( metaFName, dataFName, filePrec,
-c    &                    nDims, dimList, irecord, myIter, myThid )
+         map2gl(1) = 0
+         map2gl(2) = 1
          CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, titleLine,
-     I              filePrec, nDims, dimList, nFlds,  fldList,
+     I              filePrec, nDims,dimList,map2gl, nFlds,  fldList,
      I              nTimRec, timList, irecord, myIter, myThid )
 
        ELSE
@@ -157,14 +157,31 @@ C If we are writing to a tiled MDS file then we open each one here
 C Create meta-file for each tile IF we are tiling
            WRITE(metaFname,'(2a,i3.3,a,i3.3,a)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.meta'
+           map2gl(1) = 0
+           map2gl(2) = 1
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-           tn = W2_myTileList(bi)
+           tN = W2_myTileList(bi)
            dimList(1,1) = xSize
-           dimList(2,1) = exch2_txGlobalo(tn)
-           dimList(3,1) = exch2_txGlobalo(tn)+sNx-1
+           dimList(2,1) = exch2_txGlobalo(tN)
+           dimList(3,1) = exch2_txGlobalo(tN)+sNx-1
            dimList(1,2) = ySize
-           dimList(2,2) = exch2_tyGlobalo(tn)
-           dimList(3,2) = exch2_tyGlobalo(tn)+sNy-1
+           dimList(2,2) = exch2_tyGlobalo(tN)
+           dimList(3,2) = exch2_tyGlobalo(tN)+sNy-1
+           IF (nNx.EQ.0 .AND. nNy.EQ.0) THEN
+            IF   ( exch2_mydNx(tN) .GT. xsize ) THEN
+C-          face x-size larger than glob-size : fold it
+              map2gl(1) = 0
+              map2gl(2) = exch2_mydNx(tN) / xsize
+            ELSEIF ( exch2_tNy(tN) .GT. ysize ) THEN
+C-          tile y-size larger than glob-size : make a long line
+              map2gl(1) = exch2_mydNx(tN)
+              map2gl(2) = 0
+            ELSE
+C-          default (face fit into global-IO-array)
+              map2gl(1) = 0
+              map2gl(2) = 1
+            ENDIF
+           ENDIF
 #else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
 C- jmc: IF MISSING_TILE_IO, keep meta files unchanged
 C       to stay consistent with global file structure
@@ -184,11 +201,9 @@ C       to stay consistent with global file structure
            IF (nNx.EQ.1) dimList(3,1) = 1
            IF (nNy.EQ.1) dimList(2,2) = 1
            IF (nNy.EQ.1) dimList(3,2) = 1
-c          CALL MDSWRITEMETA( metaFName, dataFName,
-c    &              filePrec, nDims, dimList, irecord, myIter, myThid )
            CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, titleLine,
-     I              filePrec, nDims, dimList, nFlds,  fldList,
+     I              filePrec, nDims,dimList,map2gl, nFlds,  fldList,
      I              nTimRec, timList, irecord, myIter, myThid )
 C End of bi,bj loops
          ENDDO

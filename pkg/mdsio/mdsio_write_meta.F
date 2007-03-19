@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_meta.F,v 1.1 2006/12/29 05:11:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_meta.F,v 1.2 2007/03/19 02:30:49 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
      I    simulName,
      I    titleLine,
      I    filePrec,
-     I    nDims,   dimList,
+     I    nDims,   dimList, map2gl,
      I    nFlds,   fldList,
      I    nTimRec, timList,
      I    nrecords, myIter, myThid )
@@ -36,10 +36,11 @@ C     !INPUT PARAMETERS:
 C     mFileName (string ) :: complete name of meta-file
 C     dFileName (string ) :: complete name of data-file
 C     simulName (string)  :: name of this simulation
-C     titleLine (string)  :: title or any descriptive comments 
+C     titleLine (string)  :: title or any descriptive comments
 C     filePrec  (integer) :: number of bits per word in data-file (32 or 64)
 C     nDims     (integer) :: number of dimensions
 C     dimList   (integer) :: array of dimensions, etc.
+C     map2gl    (integer) :: used for mapping tiled file to global file
 C     nFlds     (integer) :: number of fields in "fldList"
 C     fldList   (string)  :: array of field names to write
 C     nTimRec   (integer) :: number of time-specification in "timList"
@@ -57,6 +58,7 @@ C
       INTEGER filePrec
       INTEGER nDims
       INTEGER dimList(3,nDims)
+      INTEGER map2gl(2)
       INTEGER nFlds
       CHARACTER*(8) fldList(*)
       INTEGER nTimRec
@@ -117,6 +119,11 @@ C     3  global end   (ie. the global position of the end   of this file)
        ENDIF
       ENDDO
       WRITE(mUnit,'(1X,A)') '];'
+C-    only write if different from default:
+      IF ( map2gl(1).NE.0 .OR. map2gl(2).NE.1 ) THEN
+        WRITE(mUnit,'(1X,2(A,I5),A)') 'map2glob = [ ',
+     &                  map2gl(1),',',map2gl(2),' ];'
+      ENDIF
 
 C-    Record the precision of the file
       IF (filePrec .EQ. precFloat32) THEN
@@ -147,7 +154,7 @@ C     that the information is superfluous and do not write it.
 
 C-    Write list of Time records
 C note: format might change once we have a better idea of what will
-C       be the time-information to write. 
+C       be the time-information to write.
 C     for now, comment out this line for rdmds (i.e.: between /* */)
       IF ( nTimRec.GT.0 ) THEN
        ii = MIN(nTimRec,20)
