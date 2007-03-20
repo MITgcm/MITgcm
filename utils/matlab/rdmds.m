@@ -63,7 +63,7 @@ function [AA,iters,MM] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.21 2007/02/17 23:49:43 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.22 2007/03/20 22:23:19 jmc Exp $
 % $Name:  $
 
 AA=[];
@@ -157,7 +157,7 @@ end
 for j=1:size(allfiles,1);
 
 % Read meta- and data-file
-[A,N,M] = localrdmds([Dir allfiles(j).name],ieee,recnum);
+[A,N,M,mG] = localrdmds([Dir allfiles(j).name],ieee,recnum);
 
 %- Merge local Meta file content (M) to MM string:
 if j > 0, %- to comment out this block: "if j < 0" (since j is always > 0)
@@ -191,18 +191,42 @@ bdims=N(1,:);
 r0=N(2,:);
 rN=N(3,:);
 ndims=prod(size(bdims));
-if     (ndims == 1)
- AA(r0(1):rN(1),iter)=A;
-elseif (ndims == 2)
- AA(r0(1):rN(1),r0(2):rN(2),iter)=A;
-elseif (ndims == 3)
- AA(r0(1):rN(1),r0(2):rN(2),r0(3):rN(3),iter)=A;
-elseif (ndims == 4)
- AA(r0(1):rN(1),r0(2):rN(2),r0(3):rN(3),r0(4):rN(4),iter)=A;
-elseif (ndims == 5)
- AA(r0(1):rN(1),r0(2):rN(2),r0(3):rN(3),r0(4):rN(4),r0(5):rN(5),iter)=A;
+if j==1 & iter==1, AA=zeros([bdims size(iters,2)]); end
+if mG(1)==0 & mG(2)==1,
+  if     (ndims == 1)
+   AA(r0(1):rN(1),iter)=A;
+  elseif (ndims == 2)
+   AA(r0(1):rN(1),r0(2):rN(2),iter)=A;
+  elseif (ndims == 3)
+   AA(r0(1):rN(1),r0(2):rN(2),r0(3):rN(3),iter)=A;
+  elseif (ndims == 4)
+   AA(r0(1):rN(1),r0(2):rN(2),r0(3):rN(3),r0(4):rN(4),iter)=A;
+  elseif (ndims == 5)
+   AA(r0(1):rN(1),r0(2):rN(2),r0(3):rN(3),r0(4):rN(4),r0(5):rN(5),iter)=A;
+  else
+   error('Dimension of data set is larger than currently coded. Sorry!')
+  end
+elseif     (ndims == 1)
+   AA(r0(1):rN(1),iter)=A;
 else
- error('Dimension of data set is larger than currently coded. Sorry!')
+%- to debug: do simple stransfert (with a loop on 2nd index);
+%  will need to change this later, to improve efficiency:
+ for i=0:rN(2)-r0(2),
+  if (ndims == 2)
+   AA(r0(1)+i*mG(1):rN(1)+i*mG(1),r0(2)+i*mG(2),iter)=A(:,1+i);
+  elseif (ndims == 3)
+   AA(r0(1)+i*mG(1):rN(1)+i*mG(1),r0(2)+i*mG(2), ...
+                                    r0(3):rN(3),iter)=A(:,1+i,:);
+  elseif (ndims == 4)
+   AA(r0(1)+i*mG(1):rN(1)+i*mG(1),r0(2)+i*mG(2), ...
+                        r0(3):rN(3),r0(4):rN(4),iter)=A(:,1+i,:,:);
+  elseif (ndims == 5)
+   AA(r0(1)+i*mG(1):rN(1)+i*mG(1),r0(2)+i*mG(2), ...
+            r0(3):rN(3),r0(4):rN(4),r0(5):rN(5),iter)=A(:,1+i,:,:,:);
+  else
+   error('Dimension of data set is larger than currently coded. Sorry!')
+  end
+ end
 end
 
 end % files
@@ -210,10 +234,13 @@ end % iterations
 
 %-------------------------------------------------------------------------------
 
-function [A,N,M] = localrdmds(fname,ieee,recnum)
+function [A,N,M,map2glob] = localrdmds(fname,ieee,recnum)
 
 mname=strrep(fname,' ','');
 dname=strrep(mname,'.meta','.data');
+
+%- set default mapping from tile to global file:
+map2glob=[0 1];
 
 % Read and interpret Meta file
 fid = fopen(mname,'r');
@@ -239,8 +266,9 @@ while keepgoing > 0,
   line=[line,' //']; ind=findstr(line,'//'); line=line(1:ind(1)-1);
 % Add to total string (without starting & ending blanks)
   while line(1:1) == ' ', line=line(2:end); end
-  allstr=[allstr,deblank(line),' '];
-% allstr=[allstr line];
+  if strncmp(line,'map2glob',8), eval(line);
+  else allstr=[allstr,deblank(line),' '];
+  end
  end
 end
 
