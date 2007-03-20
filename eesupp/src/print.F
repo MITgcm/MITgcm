@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.26 2006/10/10 19:18:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.27 2007/03/20 23:42:16 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -390,7 +390,7 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | o SUBROUTINE PRINT\_LIST\_R8                                
+C     | o SUBROUTINE PRINT\_LIST\_R8
 C     *==========================================================*
 C     | Routine for producing list of values for a field with     
 C     | duplicate values collected into                           
@@ -442,6 +442,7 @@ C     K    - Loop counter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*2 commOpen,commClose
       CHARACTER*3 index_lab
+      CHARACTER*25 fmt1, fmt2
       INTEGER K
 CEOP
 
@@ -453,6 +454,14 @@ CEOP
        index_lab = 'K ='
       ELSE
        index_lab = '?='
+      ENDIF
+C-    fortran format to write 1 or 2 indices:
+      fmt1='(A,1X,A,I3,1X,A)'
+      fmt2='(A,1X,A,I3,A,I3,1X,A)'
+      IF ( lFld.GE.1000 ) THEN
+        K = 1+INT(LOG10(FLOAT(lFld)))
+        WRITE(fmt1,'(A,I1,A)') '(A,1X,A,I',K,',1X,A)'
+        WRITE(fmt2,'(A,I1,A,I1,A)') '(A,1X,A,I',K,',A,I',K,',1X,A)'
       ENDIF
       commOpen  = '/*'
       commClose = '*/'
@@ -466,16 +475,16 @@ CEOP
         nDup = iHi-iLo+1
         IF ( nDup .EQ. 1 ) THEN
          WRITE(msgBuf,'(A,1PE23.15,A)') '              ',xOld,punc
-         IF ( index_type .NE. INDEX_NONE ) 
-     &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
+         IF ( index_type .NE. INDEX_NONE )
+     &    WRITE(msgBuf(45:),fmt1)
      &    commOpen,index_lab,iLo,commClose
         ELSE
          WRITE(msgBuf,'(I5,'' '',A,1PE23.15,A)') nDup,'@',xOld,punc
-         IF ( index_type .NE. INDEX_NONE ) 
-     &    WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
+         IF ( index_type .NE. INDEX_NONE )
+     &    WRITE(msgBuf(45:),fmt2)
      &    commOpen,index_lab,iLo,':',iHi,commClose
         ENDIF
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , 1)
         iLo  = K
         iHi  = K
@@ -489,16 +498,16 @@ CEOP
       nDup = iHi-iLo+1
       IF    ( nDup .EQ. 1 ) THEN
        WRITE(msgBuf,'(A,1PE23.15,A)') '              ',xOld,punc
-       IF ( index_type .NE. INDEX_NONE ) 
-     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
+       IF ( index_type .NE. INDEX_NONE )
+     &  WRITE(msgBuf(45:),fmt1)
      &    commOpen,index_lab,iLo,commClose
       ELSEIF( nDup .GT. 1 ) THEN
        WRITE(msgBuf,'(I5,'' '',A,1PE23.15,A)') nDup,'@',xOld,punc
-       IF ( index_type .NE. INDEX_NONE ) 
-     &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
+       IF ( index_type .NE. INDEX_NONE )
+     &  WRITE(msgBuf(45:),fmt2)
      &  commOpen,index_lab,iLo,':',iHi,commClose
       ENDIF
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , 1)
 
       RETURN
