@@ -77,14 +77,14 @@ C       Ice feels evap from model, no change with temperature
       ENDDO
 
       a1=sin(atm_yG(2)*deg2rad)
-      a2=sin(atm_yG(jm0-2)*deg2rad) - a1
+      a2=sin(atm_yG(3)*deg2rad) - a1
       a1=a1 + 1. _d 0
-      IF (cflan(2) .NE. 1. _d 0) CALL COMBINE_ENDS(a1,a2,1,2)
+      CALL COMBINE_ENDS(a1,a2,1,2)
 
-      a1=sin(atm_yG(jm0-1)*deg2rad)
-      a2=a1-sin(atm_yG(jm0-2)*deg2rad)
+      a1=sin(atm_yG(jm0)*deg2rad)
+      a2=a1-sin(atm_yG(jm0-1)*deg2rad)
       a1=1. _d 0 - a1
-      IF (cflan(jm0-1) .NE. 1. _d 0) CALL COMBINE_ENDS(a1,a2,jm0,jm0-1)
+      CALL COMBINE_ENDS(a1,a2,jm0,jm0-1)
 
 C      PRINT *,'***read_atmos: tauu',tauu(JBUGJ+1)
 C      PRINT *,'***read_atmos: atm_tauu',atm_tauu(JBUGJ+1)
