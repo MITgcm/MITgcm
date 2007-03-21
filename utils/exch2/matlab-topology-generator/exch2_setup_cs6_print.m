@@ -1,4 +1,4 @@
-function exch2_setup_cs6_print( domain, tile, tnx, tny, ntile)
+function exch2_setup_cs6_print( domain, tile, tnx, tny, mapIO, ntile)
 % Write out tile attributes in a structured format
 % Use fixed format Fortran for now
 % 1 - many routines in one big file
@@ -7,7 +7,7 @@ outmode=1;
 %outmode=2;
 outdir='./';
 
-% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_print.m,v 1.2 2007/03/19 20:34:26 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_print.m,v 1.3 2007/03/21 02:02:12 jmc Exp $
 % $Name:  $
 
 % Output unit
@@ -18,11 +18,26 @@ fouth=fopen(fnamh,'w');
 
 % Declare data structures ti hold the information
 
-domain_nxt=0;
-for i=1:length(domain)
-  domain_nxt = domain_nxt+(domain(i).dnx/tnx)
+if mapIO == -1,
+  global_nx = sum([domain(:).dnx]);
+  global_ny = max([domain(:).dny]);
+elseif mapIO == 0,
+  global_nx = sum([domain(:).dnx].*[domain(:).dny]);
+  global_ny = 1 ;
+% error(' long line format incompatible with size=domain_nyt*tny ')
+else
+  global_nx = mapIO ;
+  global_ny = sum([domain(:).dnx].*[domain(:).dny])/mapIO ;
 end
-domain_nyt = (max([domain(:).dny])/tny)
+domain_nxt = round(global_nx/tnx);
+domain_nyt = round(global_ny/tny);
+fprintf(' domain_nxt = %i , domain_nyt = %i\n',domain_nxt,domain_nyt)
+%- MITgcm currently specifies global size in tile-size units:
+%  (domain_nxt,domain_nyt). If this is not possible, decide to stop.
+%  Note: this happen only with long-line formap (mapIO=0).
+if global_nx ~= domain_nxt*tnx | global_ny ~= domain_nyt*tny ,
+  error(' Global domain size is not a multiple of tile size !');
+end
 
 % Figure out maximum number of neighbors any tile has
 nNeighbors=0;
@@ -38,6 +53,8 @@ fprintf(fouth,'C      NTILES            :: Number of tiles in this topology \n')
 fprintf(fouth,'C      MAX_NEIGHBOURS    :: Maximum number of neighbours any tile has.\n');
 fprintf(fouth,'C      exch2_domain_nxt  :: Total domain length in tiles. \n');
 fprintf(fouth,'C      exch2_domain_nyt  :: Maximum domain height in tiles. \n');
+fprintf(fouth,'C      exch2_global_Nx   :: Global-file domain length.\n');
+fprintf(fouth,'C      exch2_global_Ny   :: Global-file domain height.\n');
 fprintf(fouth,'C      exch2_tnx         :: Size in X for each tile.                  \n');
 fprintf(fouth,'C      exch2_tny         :: Size in Y for each tile.                  \n');
 fprintf(fouth,'C      exch2_tbasex      :: Tile offset in X within its sub-domain (cube face)\n');
@@ -76,10 +93,14 @@ fprintf(fouth,'       INTEGER NTILES\n');
 fprintf(fouth,'       INTEGER MAX_NEIGHBOURS\n');
 fprintf(fouth,'       INTEGER exch2_domain_nyt\n');
 fprintf(fouth,'       INTEGER exch2_domain_nxt\n');
+fprintf(fouth,'       INTEGER exch2_global_Nx\n');
+fprintf(fouth,'       INTEGER exch2_global_Ny\n');
 fprintf(fouth,'       PARAMETER ( NTILES = %d)\n',length(tile));
 fprintf(fouth,'       PARAMETER ( MAX_NEIGHBOURS = %d)\n',nNeighbors);
 fprintf(fouth,'       PARAMETER ( exch2_domain_nxt=%d)\n',domain_nxt);
 fprintf(fouth,'       PARAMETER ( exch2_domain_nyt=%d)\n',domain_nyt);
+fprintf(fouth,'       PARAMETER ( exch2_global_Nx = %d)\n',global_nx);
+fprintf(fouth,'       PARAMETER ( exch2_global_Ny = %d)\n',global_ny);
 fprintf(fouth,'       INTEGER exch2_tnx(NTILES)\n');
 fprintf(fouth,'       INTEGER exch2_tny(NTILES)\n');
 fprintf(fouth,'       INTEGER exch2_tbasex(NTILES)\n');
@@ -382,9 +403,9 @@ if outmode == 1
 fclose(fout);
 end
 
-fout=fopen('test.F','w');
-for j=1:length(tile)
- fprintf(fout,'       exch2_jthi_c(%d,%d)=%d\n',in,j,tile(j).s_jthi_l(n));
-end
+%fout=fopen('test.F','w');
+%for j=1:length(tile)
+% fprintf(fout,'       exch2_jthi_c(%d,%d)=%d\n',in,j,tile(j).s_jthi_l(n));
+%end
 
 return

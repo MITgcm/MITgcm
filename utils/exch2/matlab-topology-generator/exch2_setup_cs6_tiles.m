@@ -1,11 +1,12 @@
 function [tile,ntiles,ierr,domain]= ...
-         exch2_setup_cs6_tiles(tnx,tny,domain,ndomains);
+         exch2_setup_cs6_tiles(tnx,tny,domain,ndomains,mapIO);
 
-% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_tiles.m,v 1.2 2007/03/19 20:34:26 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_tiles.m,v 1.3 2007/03/21 02:02:12 jmc Exp $
 % $Name:  $
 
 ierr=0;
 tileid=0;
+nbPts=0;
 for i=1:ndomains
  dnx=domain(i).dnx;
  dny=domain(i).dny;
@@ -31,8 +32,20 @@ for i=1:ndomains
    tileid=tileid+1;
    tbasex=(it-1)*tnx;
    tbasey=(jt-1)*tny;
-   txgloballo=dbasex+tbasex;
-   tygloballo=dbasey+tbasey;
+%- do global IO mapping according to mapIO
+   if mapIO == -1,
+   %- old format
+     txgloballo=dbasex+tbasex;
+     tygloballo=dbasey+tbasey;
+   elseif mapIO == 0,
+   %- compact format = 1 long line
+     txgloballo=1+nbPts+tbasex+tbasey*dnx;
+     tygloballo=1;
+   else
+   %- compact format: piled in the Y direction
+     txgloballo=1+rem(nbPts+tbasex+tbasey*dnx,mapIO);
+     tygloballo=1+floor((nbPts+tbasex+tbasey*dnx)/mapIO);
+   end
    if ierr == 0 
     fprintf(' Tile %d - offset within domain %d, %d\n',tileid,tbasex,tbasey);
     fprintf('          base global coordinate %d, %d\n',txgloballo,tygloballo);
@@ -56,6 +69,7 @@ for i=1:ndomains
 % Set the index range of tiles in each domain.
  domain(i).tileidlo=tileidbase+1;
  domain(i).tileidhi=tileid;
+ nbPts=nbPts+dnx*dny;
 end
 ntiles=tileid;
 
