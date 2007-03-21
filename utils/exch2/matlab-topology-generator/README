@@ -1,20 +1,28 @@
-# $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/README,v 1.2 2007/03/19 20:34:26 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/README,v 1.3 2007/03/21 15:47:24 jmc Exp $
 # $Name:  $
 
 Matlab code to generate topology description for MITgcm cs6 conventions.
 
 o To run start matlab and execute script driver.m
 o To set sizes edit lines in driver.m
-    Settings nr, ng, nb are index space sizes for cube grid. These are the
+  - Settings nr, ng, nb are index space sizes for cube grid. These are the
     number of points normal to the red, green and blue circumferences
     of a cube. Note - nr, ng and nb do not have to equal, however the
     current physical grid generation software assumes they
     are equal.
-    Settings tnx and tny are the tile sizes ( these correspond to 
+  - Settings tnx and tny are the tile sizes ( these correspond to 
     snx and sny in SIZE.h ). tnx and tny must subdivide nr, ng and nb
     exactly.
     The product nsx*npx from SIZE.h needs to equal the number of 
     tiles created by driver.m
+  - Setting mapIO select option for global-IO mapping.
+    3 options are implemented:
+    mapIO=-1 : old format: put domains 1 after the other in the X direction.
+           can waste disk space if cube dimensions (nr,ng,nb) are not equal.
+    mapIO= 1 : compact format, 1 domain after the other (mostly in Y direction)
+           but needs to fold some domains (face) that are too large.
+    mapIO= 0 : compact format (= 1 long line), one domain after the other.
+           This format is not yet supported by pkg/mdsio.
 
 The key output from this code is a Fortran header file W2_EXCH2_TOPOLOGY.h
 and one or more Fotran files called e2setup*.F. These are written
@@ -33,6 +41,7 @@ visually annoying large number of source files (one for each tile).
 
 File list
 driver.m                                                :: Controls the topology generation
+exch2_divider.m                                         :: Calculate the larger divider of input list
 exch2_setup_cs6_domains.m                               :: Defines the cube faces (aka domains)
 exch2_setup_cs6_get_external_neighbor_index_ranges.m    :: Figures out the index remapping operators
                                                         :: and index ranges for halo's between cube faces.
