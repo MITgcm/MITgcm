@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.2 2007/03/19 02:30:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.3 2007/03/21 01:57:55 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -518,8 +518,8 @@ C Create meta-file for the global-file (also if useSingleCpuIO)
          dimList(3,3)=nNz
          nDims=3
          IF ( nNz.EQ.1 ) nDims=2
-         map2gl(1) = iGjLoc
-         map2gl(2) = jGjLoc
+         map2gl(1) = 0
+         map2gl(2) = 1
          CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
      I              filePrec, nDims,dimList,map2gl, 0,  ' ',

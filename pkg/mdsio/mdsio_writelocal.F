@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.6 2007/03/19 02:30:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.7 2007/03/21 01:57:54 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -379,8 +379,8 @@ c      _BARRIER
        dimList(3,3)=Nr
        nDims=3
        IF (nNz .EQ. 1) nDims=2
-       map2gl(1) = iGjLoc
-       map2gl(2) = jGjLoc
+       map2gl(1) = 0
+       map2gl(2) = 1
        CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
      I              filePrec, nDims,dimList,map2gl, 0,  ' ',
