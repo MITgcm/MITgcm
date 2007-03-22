@@ -63,7 +63,7 @@ function [AA,iters,MM] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.23 2007/03/20 22:29:47 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.24 2007/03/22 18:49:18 jmc Exp $
 % $Name:  $
 
 AA=[];
@@ -191,7 +191,7 @@ bdims=N(1,:);
 r0=N(2,:);
 rN=N(3,:);
 ndims=prod(size(bdims));
-%if j==1 & iter==1, AA=zeros([bdims size(iters,2)]); end
+if j==1 & iter==1, AA=zeros([bdims size(iters,2)]); end
 if mG(1)==0 & mG(2)==1,
   if     (ndims == 1)
    AA(r0(1):rN(1),iter)=A;
