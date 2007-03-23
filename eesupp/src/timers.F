@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.26 2007/01/11 17:44:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.27 2007/03/23 00:04:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -774,8 +774,8 @@ C     executable code below.
       external etime_, timenow
       Real*4 actual, tarray(2)
 # elif (defined TARGET_T3E || defined TARGET_CRAY_VECTOR)
-     real second, secondr
-     external second, secondr 
+      real second, secondr
+      external second, secondr 
 # else
 #  ifdef HAVE_ETIME
       Real*4 etime
