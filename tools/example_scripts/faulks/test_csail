@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.2 2007/03/15 19:51:28 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.3 2007/03/24 02:37:02 jmc Exp $
 
 #  Ed Hill
 
@@ -54,21 +54,6 @@ mkdir $new_dir
   $comm | tail -100
   popd
 
-new_dir='MITgcm_ifort'
-test -e $new_dir  &&  rm -rf $new_dir
-mkdir $new_dir
-
-  pushd $new_dir
-  cp -ra ../MITgcm/* .
-  echo "Running testreport using:"
-  cd verification
-  comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
-  echo "  \"$comm\""
-  echo "======================"
-  echo
-  $comm | tail -100
-  popd
-
 new_dir='MITgcm_adm'
 test -e $new_dir  &&  rm -rf $new_dir
 mkdir $new_dir
@@ -87,7 +72,20 @@ mkdir $new_dir
   $comm | tail -100
   popd
 
-exit
+new_dir='MITgcm_ifort'
+test -e $new_dir  &&  rm -rf $new_dir
+mkdir $new_dir
+
+  pushd $new_dir
+  cp -ra ../MITgcm/* .
+  echo "Running testreport using:"
+  cd verification
+  comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
+  echo "  \"$comm\""
+  echo "======================"
+  echo
+  $comm | tail -100
+  popd
 
 new_dir='MITgcm_pgi'
 test -e $new_dir  &&  rm -rf $new_dir
@@ -96,9 +94,9 @@ mkdir $new_dir
   pushd $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
-  export PGI=/usr/local/pkg/pgi/pgi-5.2-fc3
+# export PGI=/usr/local/pkg/pgi/pgi-5.2-fc3
   cd verification
-  comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_pgf77+authors_fc3 -a edhill@mitgcm.org"
+  comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org"
   echo "  \"$comm\""
   echo "======================"
   echo
