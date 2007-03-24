@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.19 2006/11/19 23:17:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.20 2007/03/24 02:25:29 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -184,15 +184,15 @@ cphadmtlm)
       end if
 
       print *, 'grad-res -------------------------------'
-      print ('(2a)'), 
+      print '(2a)', 
      &    ' grad-res  proc    #    i    j    k   bi   bj iobc',
      &    '               fc ref           fc + eps           fc - eps'
 #ifdef ALLOW_TANGENTLINEAR_RUN
-      print ('(2a)'), 
+      print '(2a)', 
      &    ' grad-res  proc    #    i    j    k   bi   bj iobc',
      &    '             tlm grad            fd grad         1 - fd/tlm'
 #else
-      print ('(2a)'), 
+      print '(2a)', 
      &    ' grad-res  proc    #    i    j    k   bi   bj iobc',
      &    '             adj grad            fd grad         1 - fd/adj'
 #endif
