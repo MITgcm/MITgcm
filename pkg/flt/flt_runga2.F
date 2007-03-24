@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.6 2005/03/01 16:52:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.7 2007/03/24 02:23:09 heimbach Exp $
 C $Name:  $
 
 #include "FLT_CPPOPTIONS.h"
@@ -32,9 +32,6 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FLT.h"
-#ifdef ALLOW_3D_FLT
-#include "GW.h"
-#endif
 
 c     == routine arguments ==
 

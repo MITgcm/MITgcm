@@ -129,10 +129,13 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
 
 #ifdef ALLOW_COST
       COMMON /COST_MEAN_R/
-     &                     cMeanTheta, cMeanUVel, cMeanVVel
+     &                     cMeanTheta, cMeanUVel, cMeanVVel,
+     &                     cMeanThetaUVel, cMeanThetaVVel
       _RL cMeanTheta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL cMeanUVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL cMeanVVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL cMeanThetaUVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL cMeanThetaVVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 c     ==================================================================

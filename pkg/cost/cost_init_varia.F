@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.7 2006/07/19 14:34:19 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.8 2007/03/24 02:23:09 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -75,6 +75,8 @@ c
                 cMeanTheta(i,j,k,bi,bj) = 0. _d 0
                 cMeanUVel(i,j,k,bi,bj)  = 0. _d 0
                 cMeanVVel(i,j,k,bi,bj)  = 0. _d 0
+                cMeanThetaUVel(i,j,k,bi,bj) = 0. _d 0
+                cMeanThetaVVel(i,j,k,bi,bj) = 0. _d 0
               end do
             end do
           end do

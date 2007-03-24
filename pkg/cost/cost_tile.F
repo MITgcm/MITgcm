@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.7 2006/07/19 14:34:18 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.8 2007/03/24 02:23:09 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -93,9 +93,10 @@ C     == Local variables ==
       integer bi, bj
 CEOP
 
-#ifdef ALLOW_DEPTH_CONTROL
-# ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta         = comlev1, key = ikey_dynamics
 CADJ STORE uvel, vvel    = comlev1, key = ikey_dynamics
+# ifdef ALLOW_DEPTH_CONTROL
 CADJ STORE hfacw, hfacs  = comlev1, key = ikey_dynamics
 # endif
 #endif

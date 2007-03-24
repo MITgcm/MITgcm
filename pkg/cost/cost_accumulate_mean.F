@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_accumulate_mean.F,v 1.4 2006/07/19 14:17:01 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_accumulate_mean.F,v 1.5 2007/03/24 02:23:09 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -47,14 +47,27 @@ C--   Calculate cost function on tile of this instance
             do j=1,sNy
               do i=1,sNx
                 cMeanTheta(i,j,k,bi,bj) = cMeanTheta(i,j,k,bi,bj)
-     &                                    + theta(i,j,k,bi,bj)
-     &                                    /lastinterval*deltaTClock
+     &                + theta(i,j,k,bi,bj)
+     &                /lastinterval*deltaTClock
                 cMeanUVel(i,j,k,bi,bj) = cMeanUVel(i,j,k,bi,bj)
-     &                                    + uVel(i,j,k,bi,bj)
-     &                                    /lastinterval*deltaTClock
+     &               + uVel(i,j,k,bi,bj)
+     &               /lastinterval*deltaTClock
                 cMeanVVel(i,j,k,bi,bj) = cMeanVVel(i,j,k,bi,bj)
-     &                                    + vVel(i,j,k,bi,bj)
-     &                                    /lastinterval*deltaTClock
+     &               + vVel(i,j,k,bi,bj)
+     &               /lastinterval*deltaTClock
+
+                cMeanThetaUVel(i,j,k,bi,bj) = 
+     &               cMeanThetaUVel(i,j,k,bi,bj)
+     &               + (theta(i,j,k,bi,bj)+theta(i-1,j,k,bi,bj))*
+     &               uvel(i,j,k,bi,bj)*
+     &               maskW(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
+     &               /lastinterval*deltaTClock
+                cMeanThetaVVel(i,j,k,bi,bj) = 
+     &               cMeanThetaVVel(i,j,k,bi,bj)
+     &               + (theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj))*
+     &               vvel(i,j,k,bi,bj)*
+     &               maskS(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
+     &               /lastinterval*deltaTClock
               end do
             end do
           end do

@@ -31,8 +31,10 @@ C     ========= Local variables =========================
       integer ig, jg
       integer bi, bj
       _RL     locfc
-      _RL     uVel_bar(Nr), vVel_bar(Nr), theta_bar(Nr) 
+      _RL     uVel_bar(Nr), vVel_bar(Nr), theta_bar(Nr)
+      _RL     thetaUvel_bar(Nr), thetaVvel_bar(Nr)
       _RL     countU(Nr), countV(Nr), countT(Nr)
+      _RL     countTU(Nr), countTV(Nr)
       _RL     petawatt
       _RL     sum
       parameter( petawatt = 1.e+15 )
@@ -88,43 +90,50 @@ C------------------------------------------------------
 
           do k = 1, Nr
            vVel_bar(k) = 0.0
-           theta_bar(k) = 0.0
-           countT(k) = 0.0
+           thetaVvel_bar(k) = 0.0
            countV(k) = 0.0
+           countTV(k) = 0.0
            do i=1,sNx
             ig = myXGlobalLo-1+(bi-1)*sNx+i
 c
             if ((ig .ge. isecbeg) .and. (ig .le. isecend)) then
-             vVel_bar(k) = vVel_bar(k) 
-     &                      + cMeanVVel(i,j,k,bi,bj)
-     &                      *maskS(i,j,k,bi,bj)
-     &                      *maskC(i,j,k,bi,bj)*maskC(i,j-1,k,bi,bj)
-             theta_bar(k) = theta_bar(k) +
-     &            0.5*( cMeanTheta(i,j,k,bi,bj)
-     &                 +cMeanTheta(i,j-1,k,bi,bj) )
-     &                 *maskS(i,j,k,bi,bj)*dxG(i,j,bi,bj)
-     &                 *maskC(i,j,k,bi,bj)*maskC(i,j-1,k,bi,bj)
-             countT(k) = countT(k) + maskS(i,j,k,bi,bj)
-     &                      *maskC(i,j,k,bi,bj)*maskC(i,j-1,k,bi,bj)
-             countV(k) = countV(k) + maskS(i,j,k,bi,bj)
-     &                      *maskC(i,j,k,bi,bj)*maskC(i,j-1,k,bi,bj)
+               vVel_bar(k) = vVel_bar(k) 
+     &              + cMeanVVel(i,j,k,bi,bj)*maskS(i,j,k,bi,bj)
+
+               thetaVvel_bar(k) = thetaVvel_bar(k)
+     &            + cMeanThetaVVel(i,j,k,bi,bj)*dxG(i,j,bi,bj)
+     &                 *maskS(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
+
+             countTV(k) = countTV(k) + 
+     &            maskS(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
+             countV(k) = countV(k) + 
+     &            maskS(i,j,k,bi,bj)
             end if
 
            enddo
           enddo
 c
           do k = 1, Nr
-           if ( k .LE. kmaxdepth .AND.
-     &          countT(k) .NE. 0 .AND. countV(k) .NE. 0) then
+#ifdef ALLOW_COST_ATLANTIC_HEAT_DOMASS
+           if ( k .LE. kmaxdepth .AND. countV(k) .NE. 0) then
             sum = sum
-     &            + vVel_bar(k) * theta_bar(k) * drF(k) 
-     &            / ( countT(k) * countV(k) )
+     &            + vVel_bar(k)*drF(k)/countV(k)
            end if
+#else
+           if ( k .LE. kmaxdepth .AND. countTV(k) .NE. 0) then
+            sum = sum
+     &            + thetaVVel_bar(k)*drF(k)/countTV(k)
+           end if
+#endif
           end do
 
 #endif /* ENERGYNORM */
 
 #else
+
+cph need to change this part to go from 
+cph \bar{u}*\bar{T} to \bar{u*T}
+cph (required store dir. are now in place)
 
         do i=1,sNx
          ig = myXGlobalLo-1+(bi-1)*sNx+i
@@ -171,8 +180,13 @@ c
          end if
         end do
 
+#ifdef ALLOW_COST_ATLANTIC_HEAT_DOMASS
+        objf_atl(bi,bj) = 
+     &     sum*1.E-6
+#else
         objf_atl(bi,bj) = 
      &     sum*HeatCapacity_Cp*rhoConst/petawatt
+#endif
 
 c--   end of bi,bj loop
        end do
