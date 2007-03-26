@@ -2,7 +2,7 @@
 % a) old-format (not compact) to compact format
 % b) compact-format to per face format (matlab structure)
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/convert_format.m,v 1.1 2007/03/22 19:13:58 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/convert_format.m,v 1.2 2007/03/26 23:15:55 jmc Exp $
 % $Name:  $
 
 nr=360;nb=90;ng=90;
@@ -91,7 +91,7 @@ k=1; ccB=[-1 1]*200;
 for n=1:Nfaces,
  nvar=['var=vF.f',int2str(n),';']; eval(nvar);
  if ndims > 2, var=var(:,:,k); end
- if n > 3, var=var'; end
+ if n > 3, var=fliplr(var'); end
  AA=axes('position',xyP(n,:));
  imagesc(var'); set(gca,'YDir','normal');
  if ccB(1) < ccB(2), caxis(ccB); end 
