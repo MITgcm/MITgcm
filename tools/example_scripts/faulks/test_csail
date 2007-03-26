@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.4 2007/03/25 23:55:37 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.5 2007/03/26 20:53:42 jmc Exp $
 
 #  Ed Hill
 
@@ -96,7 +96,14 @@ mkdir $new_dir
   echo "Running testreport using:"
   export PGI=/usr/local/pkg/pgi/pgi-6.1-5
   cd verification
-  comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org"
+  comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_pgf77+authors_fc5"
+  echo "  \"$comm\""
+  echo "======================"
+  echo
+  $comm | tail -100
+  echo "Running testreport using:"
+ #cd verification
+  comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org -q"
   echo "  \"$comm\""
   echo "======================"
   echo
