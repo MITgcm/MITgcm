@@ -51,3 +51,5 @@ for k=1:length(kx)
     end
   end
 end
+
+fid=fclose(fid);

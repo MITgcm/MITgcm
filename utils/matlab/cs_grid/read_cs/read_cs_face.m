@@ -43,3 +43,5 @@ for k=1:length(kx)
   if(fseek(fid,skip*preclength,'cof')<0), error('past end of file'); end
   fld(:,:,k)=reshape(fread(fid,cx*cx,[int2str(cx) '*' prec],cx*5*preclength),cx,cx);
 end
+
+fid=fclose(fid);

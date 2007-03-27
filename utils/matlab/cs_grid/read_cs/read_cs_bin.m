@@ -39,3 +39,5 @@ for k=1:length(kx)
   if(fseek(fid,skip*preclength,'bof')<0), error('past end of file'); end
   fld(:,:,:,k)=reshape(fread(fid,cx*6*cx,prec),cx,6,cx);
 end
+
+fid=fclose(fid);

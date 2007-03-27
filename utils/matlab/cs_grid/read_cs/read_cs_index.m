@@ -43,3 +43,5 @@ for k=1:length(kx)
     fld(i,k)=fread(fid,1,prec);
   end
 end
+
+fid=fclose(fid);
