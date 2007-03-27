@@ -1,30 +1,32 @@
-function grph_CSz(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx)
-% grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift[,cbV,AxBx]) : produce a flat plot of the
-%  cube_sphere "var" (grid position = at the corner)
-%  keeping the initial grid (no interpolation, use "surf")
+function grph_CSz(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
+% grph_CSz(var,xcs,ycs,xcg,ycg,c1,c2,shift[,cbV,AxBx,kEnv]) :
+% produce a flat plot of the cube_sphere "var" (@ C-grid corner position)
+%  keeping the initial grid (no interpolation, use "surf").
 % xcs,ycs,xcg,ycg = center + corner grid point coordinates
 % c1 < c2 = min & max for the color graph
 % c1 > c2 = scale with min,max of the field, + c1/100 and + c2/100
 % shift=0  : No coast-line
 % shift=-1 : No shift but draw coast-line calling draw_coast
 %     else : draw coast-line (using m_proj) shifted by "shift" degree.
-% cbV = 0,1 : horizontal,vertical colorbar; 2,3: no colorbar; 3 no mesh 
+% cbV = 0,1 : horizontal,vertical colorbar; >= 2 : no colorbar;
+% kEnv = 0 : standard ; =odd : do not draw the mesh ; >1 : no min,Max written.
 % AxBx = do axis(AxBx) to zoom in Box "AxBx" ; only if shift=-1 ;
 %-----------------------
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CSz.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CSz.m,v 1.2 2007/03/27 22:53:23 jmc Exp $
 % $Name:  $
 
 if nargin < 9, cbV=0 ; end
 if nargin < 10, AxBx=[-180 180 -90 90] ; end
+if nargin < 11, kEnv=0 ; end
 
 %------------------------------
 ncx=size(xcs,1); nc=size(xcs,2) ; ncp=nc+1 ; nPt2=size(var,1);
 nPts=ncx*nc;
 %- check dim
  if ncx ~= 6*nc | nPt2 ~= nPts+2,
-  fprintf('Bad dim (input fields): nc,ncx,nPts,nPt2=\n',nc,ncx,nPts,nPt2);
-  return
+  fprintf('Bad dim (input fields): nc,ncx,nPts,nPt2= %i %i %i %i\n',nc,ncx,nPts,nPt2);
+  error(' wrong dimensions ');
  end
  vv0=reshape(var(1:nPts,1),ncx,nc);
  mnV=min(var);
@@ -70,22 +72,12 @@ nbsf = 0 ; ic = 0 ; jc = 0 ;
 [yy2]=split_C_cub(ycs,1);
 %---
 for n=1:6,
-%if n < 5 & n > 2,
+%if n > 2 & n < 5,
  if n < 7,
 %--------------------------------------------------------
  i0=nc*(n-1);
  vv1=zeros(ncp,ncp) ; xx1=vv1 ; yy1=vv1 ;
  vv1(1:nc,1:nc)=vv0(1+i0:nc+i0,1:nc);
-%for j=1:nc, for i=1:nc,
-% vv1(i,j)=var(i0+i,j) ;
-%end ; end ;
-%for j=1:nc,
-% vv1(ncp,j)=vv1(nc,j) ;
-%end
-%for i=1:nc,
-% vv1(i,ncp)=vv1(i,nc) ;
-%end
-% vv1(ncp,ncp)=vv1(nc,nc) ;
 %-----
   xx1=xx2(:,:,n);
   yy1=yy2(:,:,n);
@@ -108,7 +100,7 @@ end
 % case where Xc jump from < 180 to > -180 when j goes from jc to jc+1
  
  if n == 4 | n == 3
-  jc=18 ;
+  jc=2+nc/2 ;
   xxSav=xx1(:,jc:jc);
   for i=1:ncp,
     if xx1(i,jc) < -120 ; xx1(i,jc)= 180 ; end
@@ -122,7 +114,7 @@ end
 %---
 % case where Xc jump from < -180 to > 180 when i goes from ic to ic+1
  elseif n == 6
-  ic=17 ;
+  ic=1+nc/2 ;
   xxSav=xx1(ic:ic,:);
   for j=1:ncp,
     if xx1(ic,j) < -120 ; xx1(ic,j)= 180 ; end
@@ -161,14 +153,14 @@ end ; end ;
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
 
 %- N pole:
- vvI(1,1)=var(17+2*nc+16*ncx); yyMx=max(max(ycs));
+ vvI(1,1)=var(1+nc/2+2*nc+nc/2*ncx); yyMx=max(max(ycs));
  for j=1:2, for i=1:2,
    xxI(i,j)=-180+360*(i-1);
    if j==2, yyI(i,j)=90 ; else yyI(i,j)=yyMx ; end
  end ; end
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
 %- S pole:
- vvI(1,1)=var(17+5*nc+16*ncx); yyMx=min(min(ycs));
+ vvI(1,1)=var(1+nc/2+5*nc+nc/2*ncx); yyMx=min(min(ycs));
  for j=1:2, for i=1:2,
    xxI(i,j)=-180+360*(i-1);
    if j==1, yyI(i,j)=-90 ; else yyI(i,j)=yyMx ; end
@@ -176,7 +168,7 @@ end ; end ;
 %[nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
 %--------------
   set(S,'LineStyle','-','LineWidth',0.01); 
-  if cbV > 2, set(S,'EdgeColor','none'); end
+  if rem(kEnv,2) > 0, set(S,'EdgeColor','none'); end
 hold off
 if shift == 0,
   axis(AxBx); fprintf('  Axis(Box): %i %i %i %i \n',AxBx);
@@ -193,10 +185,11 @@ else
 end
 
 %--
-if cbV < 2, scalHV_colbar([10-cbV/2 10 7-5*cbV 7+2*cbV]/10,cbV); else cbV=1; end
-if mnV < MxV, 
+if cbV < 2, scalHV_colbar([10-cbV/2 10 7-5*cbV 7+2*cbV]/10,cbV); end
+if mnV < MxV & kEnv < 2, 
+ ytxt=min(1,cbV);
  if shift == -1 | shift == 0,
-  xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(12+1*cbV)/100;
+  xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(10+1*ytxt)/100;
   text(xtxt*fac,ytxt*fac,sprintf('min,Max= %9.5g  , %9.5g', mnV, MxV))     
   %set(gca,'position',[-.1 0.2 0.8 0.75]); % xmin,ymin,xmax,ymax in [0,1]
  else text(0,(30*cbV-120)*fac,sprintf('min,Max= %9.5g  , %9.5g', mnV, MxV))     
