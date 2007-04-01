@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.42 2006/10/26 00:32:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.43 2007/04/01 19:08:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -168,20 +168,19 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
       ENDIF
 #endif
 
-      _EXCH_XY_R4(fu   , myThid )
-      _EXCH_XY_R4(fv   , myThid )
-      _EXCH_XY_R4(Qnet , myThid )
-      _EXCH_XY_R4(EmPmR, myThid )
-      _EXCH_XY_R4( saltFlux, myThid )
-      _EXCH_XY_R4(SST  , myThid )
-      _EXCH_XY_R4(SSS  , myThid )
-      _EXCH_XY_R4(lambdaThetaClimRelax , myThid )
-      _EXCH_XY_R4(lambdaSaltClimRelax , myThid )
+      CALL EXCH_UV_XY_RS( fu,fv, .TRUE., myThid )
+      CALL EXCH_XY_RS( Qnet , myThid )
+      CALL EXCH_XY_RS( EmPmR, myThid )
+      CALL EXCH_XY_RS( saltFlux, myThid )
+      CALL EXCH_XY_RS( SST  , myThid )
+      CALL EXCH_XY_RS( SSS  , myThid )
+      CALL EXCH_XY_RS( lambdaThetaClimRelax, myThid )
+      CALL EXCH_XY_RS( lambdaSaltClimRelax , myThid )
 #ifdef SHORTWAVE_HEATING
-      _EXCH_XY_R4(Qsw  , myThid )
+      CALL EXCH_XY_RS(Qsw  , myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
-      _EXCH_XY_R4(pload  , myThid )
+      CALL EXCH_XY_RS(pload  , myThid )
 C     CALL PLOT_FIELD_XYRS( pload, 'S/R INI_FORCING pload',1,myThid)
 #endif
 C     CALL PLOT_FIELD_XYRS( fu, 'S/R INI_FORCING FU',1,myThid)
