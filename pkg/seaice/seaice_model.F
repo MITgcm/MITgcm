@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.38 2006/12/14 22:31:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.39 2007/04/01 18:59:58 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: SEAICE_MODEL
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE seaice_model( myTime, myIter, myThid )
+      SUBROUTINE SEAICE_MODEL( myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
 C     /===========================================================\
@@ -62,6 +62,11 @@ C     i,j,bi,bj - Loop counters
       EXTERNAL DIFFERENT_MULTIPLE
 CEOP
 
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &   CALL DEBUG_ENTER( 'SEAICE_MODEL', myThid )
+#endif
+
 #ifdef SEAICE_EXTERNAL_FORCING
 C--   Atmospheric state and runoff are from
 C     pkg/exf, which does not update edges.
@@ -103,6 +108,10 @@ C solve ice momentum equations and calculate ocean surface stress
       IF ( 
      &  DIFFERENT_MULTIPLE(SEAICE_deltaTdyn,myTime,SEAICE_deltaTtherm)
      &   ) THEN
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL( 'SEAICE_DYNSOLVER', myThid )
+#endif
 #ifdef SEAICE_CGRID
          CALL TIMER_START('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
          CALL SEAICE_DYNSOLVER ( myTime, myIter, myThid )
@@ -115,7 +124,11 @@ C solve ice momentum equations and calculate ocean surface stress
       ENDIF
 
 C NOW DO ADVECTION and DIFFUSION
-      CALL SEAICE_ADVDIFF( myTime, myIter, myThid ) 
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
+#endif
+      CALL SEAICE_ADVDIFF( myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heffm  = comlev1, key = ikey_dynamics
 cph-test(
@@ -140,6 +153,10 @@ C--   called from DO_OCEANIC_PHYSICS
 #endif /* ALLOW_THSICE */
 C     NOW DO GROWTH
 C     MUST CALL GROWTH ONLY AFTER CALLING ADVECTION
+#ifdef ALLOW_DEBUG
+       IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL( 'SEAICE_GROWTH', myThid )
+#endif
        CALL SEAICE_GROWTH( myTime, myIter, myThid )
 #ifdef ALLOW_THSICE
       ENDIF
@@ -161,6 +178,11 @@ C--   Update overlap regions for a bunch of stuff
      &   _EXCH_XY_RS( sIceLoad, myThid )
 #endif
       _EXCH_XYZ_R8(theta , myThid )
+
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &   CALL DEBUG_LEAVE( 'SEAICE_MODEL', myThid )
+#endif
 
       RETURN
       END
