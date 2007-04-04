@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.13 2006/12/14 08:36:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.14 2007/04/04 02:44:03 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_THSICE
 # include "THSICE_OPTIONS.h"
 #endif /* ALLOW_THSICE */
-#undef THSICE_NEW_ADVECT
 
 CBOP
 C !ROUTINE: SEAICE_ADVDIFF
@@ -102,6 +101,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ks = 1
 
 #ifdef ALLOW_THSICE
+      IF ( thSIceAdvScheme.GT.0 ) RETURN
       dBugFlag = debugLevel.GE.debLevB
       minIcArea = 0. _d 0
       minIcHeff = 0. _d 0
@@ -277,16 +277,6 @@ C jmc: end new version:
          ENDDO
 
 C--   Enthalpy in layer 1
-#ifdef THSICE_NEW_ADVECT
-         extensiveFld = .FALSE.
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           iceFld(i,j) = Qice1(i,j,bi,bj)
-           uTrans(i,j) = afx(i,j)
-           vTrans(i,j) = afy(i,j)
-          ENDDO
-         ENDDO
-#else /* not THSICE_NEW_ADVECT */
          extensiveFld = .TRUE.
 C     Compute total enthalphy in cell
          DO j=1-Oly,sNy+Oly
@@ -294,7 +284,6 @@ C     Compute total enthalphy in cell
            iceFld(i,j) = Qice1(i,j,bi,bj)*HEFF(i,j,2,bi,bj)
           ENDDO
          ENDDO
-#endif /* THSICE_NEW_ADVECT */
          CALL SEAICE_ADVECTION(
      I        GAD_QICE1, SEAICEadvSchEnth, extensiveFld,
      I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
@@ -315,15 +304,9 @@ C     with current effective thickness
             WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: q1Fx=', gFld(i,j)
            ENDIF
 #endif
-#ifdef THSICE_NEW_ADVECT
-           Qice1(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
-     &          iceFld(i,j) + SEAICE_deltaTtherm * gFld(i,j)
-     &          )
-#else /* not THSICE_NEW_ADVECT */
            Qice1(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
      &          iceFld(i,j) + SEAICE_deltaTtherm * gFld(i,j)
      &          ) * recip_heff(i,j)
-#endif /* THSICE_NEW_ADVECT */
           ENDDO
          ENDDO
 
@@ -359,16 +342,6 @@ C     with current effective thickness
      &          ) * recip_heff(i,j)
           ENDDO
          ENDDO
-
-#ifdef THSICE_NEW_ADVECT
-C-      set back volume transports:
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           uTrans(i,j) = uc(i,j,bi,bj)*xA(i,j)
-           vTrans(i,j) = vc(i,j,bi,bj)*yA(i,j)
-          ENDDO
-         ENDDO
-#endif /* THSICE_NEW_ADVECT */
 
         ENDIF
 #endif /* ALLOW_THSICE */
@@ -530,16 +503,6 @@ C---   end bi,bj loops
        ENDDO
       ENDDO
 
-CML#ifdef ALLOW_THSICE
-CML      IF ( useThSice ) THEN
-CMLC--   Exchange fields 
-CML      _EXCH_XY_R8( iceMask, myThid )
-CML      _EXCH_XY_R8( iceHeight, myThid )
-CML      _EXCH_XY_R8( snowHeight, myThid )
-CML      _EXCH_XY_R8( Qice1, myThid )
-CML      _EXCH_XY_R8( Qice2, myThid )
-CML      ENDIF
-CML#endif /* ALLOW_THSICE */
 #else
       STOP 'SEAICEmultiDimAdvection not yet implemented for adjoint'
 #endif /* ndef ALLOW_AUTODIFF_TAMC */
