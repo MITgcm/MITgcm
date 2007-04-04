@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.12 2006/10/18 20:08:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.13 2007/04/04 02:47:16 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -45,12 +45,14 @@ C-- Physics package
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi,bj  ::  Tile indices
-C     myTime ::  Current time of simulation ( s )
-C     myIter ::  Current iteration number in simulation
-C     myThid ::  Number of this instance of the routine
-      INTEGER bi, bj, myIter, myThid
-      _RL myTime
+C     bi,bj     :: Tile indices
+C     myTime    :: Current time in simulation (s)
+C     myIter    :: Current iteration number
+C     myThid    :: My Thread Id. number
+      INTEGER bi,bj
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 CEOP
 
 #ifdef ALLOW_AIM
@@ -77,6 +79,14 @@ C      ==> move water wapor from the stratos to the surface level.
         salt(i,j,Nr,bi,bj) = 0.
        ENDDO
       ENDDO
+
+#ifdef ALLOW_THSICE
+      IF ( useThSIce ) THEN
+C-    do sea-ice advection before setting any surface BC.
+        CALL THSICE_DO_ADVECT(
+     I                         bi, bj, myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_THSICE */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
