@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.10 2006/07/24 20:30:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.11 2007/04/04 02:11:35 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -32,14 +32,15 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
+C     myThid    :: My Thread Id. number
       INTEGER myThid
 CEOP
 
 #ifdef ALLOW_THSICE
 
 C     === Local variables ===
-C     msgBuf      - Informational/error message buffer
-C     iUnit       - Work variable for IO unit number
+C     msgBuf    :: Informational/error message buffer
+C     iUnit     :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 
@@ -63,7 +64,7 @@ C--   Th-Sea-ICE parameter
      &     startIceModel, stepFwd_oceMxL,
      &     thSIce_deltaT, ocean_deltaT, tauRelax_MxL,
      &     hMxL_default, sMxL_default, vMxL_default,
-     &     stressReduction,
+     &     thSIce_diffK, thSIceAdvScheme, stressReduction,
      &     thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq,
      &     thSIce_tave_mnc, thSIce_snapshot_mnc, thSIce_mon_mnc,
      &     thSIce_pickup_read_mnc, thSIce_pickup_write_mnc,
@@ -130,6 +131,8 @@ C--   Default values (parameters)
       hMxL_default    = 50. _d 0
       sMxL_default    = 35. _d 0
       vMxL_default    = 5. _d -2
+      thSIce_diffK    = 0. _d 0
+      thSIceAdvScheme = 0
       stressReduction = 1. _d 0
       IF ( useSEAICE ) stressReduction = 0. _d 0
       thSIce_taveFreq = taveFreq
@@ -254,6 +257,8 @@ c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,*) 'ThSI: frac_energy',frac_energy
       WRITE(iUnit,*) 'ThSI: hihig   =',hihig
       WRITE(iUnit,*) 'ThSI: stressReduction =',stressReduction
+      WRITE(iUnit,*) 'ThSI: thSIceAdvScheme =',thSIceAdvScheme
+      WRITE(iUnit,*) 'ThSI: thSIce_diffK  =',thSIce_diffK
       WRITE(iUnit,*) 'ThSI: thSIce_deltaT =',thSIce_deltaT
       WRITE(iUnit,*) 'ThSI: ocean_deltaT  =',ocean_deltaT
       WRITE(iUnit,*) 'ThSI: stepFwd_oceMxL=',stepFwd_oceMxL
@@ -277,3 +282,4 @@ C--   Everyone else must wait for the parameters to be loaded
 
       RETURN
       END
+

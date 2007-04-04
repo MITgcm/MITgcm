@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.7 2006/07/24 20:30:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.8 2007/04/04 02:11:34 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -150,22 +150,25 @@ C     thSIce_pickup_write_mdsio :: pickup write w/ MDSIO
       LOGICAL thSIce_pickup_write_mnc
 
 C--   COMMON / THSICE_PAR_I / ice model (integer) parameters
-C     startIceModel :: =1 : start ice model at nIter0 ; =0 : use pickup files
-C                   :: -1 : start from a small pickup (without Mix.Layer)
-C     nitMaxTsf     :: maximum Nb of iter to find Surface Temp (Trsf)
+C     startIceModel   :: =1 : start ice model at nIter0 ; =0 : use pickup files
+C                     :: -1 : start from a small pickup (without Mix.Layer)
+C     nitMaxTsf       :: maximum Nb of iter to find Surface Temp (Trsf)
+C     thSIceAdvScheme :: thSIce Advection scheme selector
       COMMON / THSICE_PAR_I /
-     &  startIceModel, nitMaxTsf
+     &  startIceModel, nitMaxTsf, thSIceAdvScheme
 
       INTEGER startIceModel
       INTEGER nitMaxTsf
+      INTEGER thSIceAdvScheme
 
 C--   COMMON / THSICE_PAR_R / ice model (real) parameters
-C     thSIce_deltaT   :: ice model time-step
-C     ocean_deltaT    :: ocean mixed-layer time-step
+C     thSIce_deltaT   :: ice model time-step [s]
+C     ocean_deltaT    :: ocean mixed-layer time-step [s]
 C     tauRelax_MxL    :: Relaxation time scale for MixLayer T & S [s]
 C     hMxL_default    :: default value for ocean MixLayer thickness [m]
 C     sMxL_default    :: default value for salinity in MixLayer [psu]
 C     vMxL_default    :: default value for ocean current velocity in MxL [m/s]
+C     thSIce_diffK    :: thickness (horizontal) diffusivity [m^2/s]
 C     stressReduction :: reduction factor for wind-stress under sea-ice [0-1]
 C     thSIce_taveFreq :: Frequency^-1 for time-Aver. output [s]
 C     thSIce_diagFreq :: Frequency^-1 for diagnostic output [s]
@@ -173,12 +176,12 @@ C     thSIce_monFreq  :: Frequency^-1 for monitor    output [s]
       COMMON / THSICE_PAR_R /
      &  thSIce_deltaT, ocean_deltaT, tauRelax_MxL,
      &  hMxL_default,  sMxL_default, vMxL_default,
-     &  stressReduction,
+     &  thSIce_diffK,  stressReduction,
      &  thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
 
       _RL  thSIce_deltaT, ocean_deltaT, tauRelax_MxL
       _RL  hMxL_default, sMxL_default, vMxL_default
-      _RL  stressReduction
+      _RL  thSIce_diffK,  stressReduction
       _RL  thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
 
 C--   COMMON / THSICE_PAR_C / ice model (character) parameters
