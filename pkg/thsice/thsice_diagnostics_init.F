@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.3 2007/02/25 20:00:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.4 2007/04/04 02:40:42 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -22,11 +22,12 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 c #include "SIZE.h"
 c #include "PARAMS.h"
+#include "THSICE_SIZE.h"
 c #include "THSICE_PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid ::  my thread Id number
+C     myThid ::  My Thread Id. number
       INTEGER myThid
 CEOP
 
@@ -45,6 +46,11 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
       INTEGER       numFract, numThick
+      INTEGER       n
+      LOGICAL       flag
+      CHARACTER*16  locName
+      CHARACTER*4   THSICE_DIAG_SUFX, diagSufx
+      EXTERNAL      THSICE_DIAG_SUFX
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -178,9 +184,93 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
+       DO n=-5,-9,-1
+        flag = .TRUE.
+        IF     ( n .EQ. GAD_SI_FRAC  ) THEN
+          locName   = 'SeaIce Fraction '
+          diagUnits = 'm^2/s           '
+        ELSEIF ( n .EQ. GAD_SI_HSNOW ) THEN
+          locName   = 'Snow Thickness  '
+          diagUnits = 'm^3/s           '
+        ELSEIF ( n .EQ. GAD_SI_HICE  ) THEN
+          locName   = 'SeaIce Thickness'
+          diagUnits = 'm^3/s           '
+        ELSEIF ( n .EQ. GAD_SI_QICE1 ) THEN
+          locName   = 'Ice enthalpy l=1'
+          diagUnits = 'J/kg.m^3/s      '
+c         diagUnits = 'W.m^3/kg        '
+        ELSEIF ( n .EQ. GAD_SI_QICE2 ) THEN
+          locName   = 'Ice enthalpy l=2'
+          diagUnits = 'J/kg.m^3/s      '
+        ELSE
+          flag = .FALSE.
+        ENDIF
+        IF ( flag ) THEN
+C-     Advective flux:
+        diagSufx = THSICE_DIAG_SUFX( n, myThid )
+        diagName  = 'ADVx'//diagSufx
+        diagTitle = 'Zonal      Advective Flux of '//locName
+        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'M1      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I               diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagName  = 'ADVy'//diagSufx
+        diagTitle = 'Meridional Advective Flux of '//locName
+        WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum , 'M1      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I               diagName, diagCode, diagUnits, diagTitle, myThid )
+        ENDIF
+      ENDDO
+
 c     ENDIF
 
 #endif /* ALLOW_DIAGNOSTICS */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP 0
+C     !ROUTINE: THSICE_DIAG_SUFX
+
+C     !INTERFACE:
+      CHARACTER*4 FUNCTION THSICE_DIAG_SUFX( tracerId, myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | FUNCTION THSICE_DIAG_SUFX
+C     | o Return diagnostic suffix (4 character long) for the
+C     |   "tracerId" tracer (used to build diagnostic names).
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
+#include "EEPARAMS.h"
+#include "THSICE_SIZE.h"
+
+C     !INPUT PARAMETERS:
+C     tracerId   ::  tracer identifier
+C     myThid     ::  my thread Id number
+      INTEGER      tracerId
+      INTEGER      myThid
+CEOP
+
+C     !LOCAL VARIABLES:
+
+C--   Set diagnostic suffix (4 character long) for the "tracerId" tracer
+      IF    ( tracerId.EQ.GAD_SI_FRAC  ) THEN
+        THSICE_DIAG_SUFX = 'SIfr'
+      ELSEIF( tracerId.EQ.GAD_SI_HSNOW ) THEN
+        THSICE_DIAG_SUFX = 'SIhs'
+      ELSEIF( tracerId.EQ.GAD_SI_HICE  ) THEN
+        THSICE_DIAG_SUFX = 'SIhi'
+      ELSEIF( tracerId.EQ.GAD_SI_QICE1 ) THEN
+        THSICE_DIAG_SUFX = 'SIq1'
+      ELSEIF( tracerId.EQ.GAD_SI_QICE2 ) THEN
+        THSICE_DIAG_SUFX = 'SIq2'
+      ELSE
+        THSICE_DIAG_SUFX = 'iiii'
+      ENDIF
 
       RETURN
       END

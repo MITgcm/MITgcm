@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.17 2006/05/25 18:03:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.18 2007/04/04 02:40:42 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -29,6 +29,7 @@ C     === Global variables ===
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
 #include "THSICE_TAVE.h"
+#include "THSICE_2DYN.h"
       INTEGER siLo, siHi, sjLo, sjHi
       PARAMETER ( siLo = 1-OLx , siHi = sNx+OLx )
       PARAMETER ( sjLo = 1-OLy , sjHi = sNy+OLy )
@@ -264,7 +265,7 @@ C--    Net fluxes :
 
         IF ( hOceMxL(i,j,bi,bj).GT.0. _d 0 )
      &    isIceFree(i,j) = iceMask(i,j,bi,bj).LE.0. _d 0
-     &                       .AND.   iceFrac(i,j) .LE.0. _d 0
+     &                  .AND.   iceFrac(i,j) .LE.0. _d 0
         IF ( iceFrac(i,j) .GT. 0. _d 0 ) THEN
           iceMask(i,j,bi,bj)=iceFrac(i,j)
           IF ( snowHeight(i,j,bi,bj).EQ.0. _d 0 )
@@ -290,6 +291,19 @@ C--     Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
 
        ENDDO
       ENDDO
+
+      IF ( thSIceAdvScheme.GT.0 ) THEN
+C--   note: those fluxes should to be added directly to Qnet, EmPmR & saltFlux
+       DO j = jMin, jMax
+        DO i = iMin, iMax
+         IF ( hOceMxL(i,j,bi,bj).GT.0. _d 0 ) THEN
+          Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj) - oceQnet(i,j,bi,bj)
+          EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- oceFWfx(i,j,bi,bj)/rhofw
+          saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - oceSflx(i,j,bi,bj)
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
 
 #ifdef ALLOW_BULK_FORCE
       IF ( useBulkForce ) THEN

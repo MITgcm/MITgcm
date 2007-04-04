@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.11 2006/06/25 22:31:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.12 2007/04/04 02:40:42 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -36,10 +36,10 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myIter :: iteration counter for this thread
-C     myTime :: time counter for this thread
-C     myThid :: thread number for this instance of the routine.
-      _RL  myTime
+C     myTime    :: Current time in simulation (s)
+C     myIter    :: Current iteration number
+C     myThid    :: My Thread Id. number
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
 CEOP
@@ -114,7 +114,7 @@ C--     Mixed layer thickness: take the 1rst layer
             IF ( ksurfC(i,j,bi,bj).EQ.1 ) THEN
              hOceMxL(i,j,bi,bj) = drF(1)*hFac_surfC(i,j,bi,bj)
             ELSE
-             hOceMxL(i,j,bi,bj) = drF(1)*hfacC(i,j,1,bi,bj)
+             hOceMxL(i,j,bi,bj) = drF(1)*hFacC(i,j,1,bi,bj)
             ENDIF
            ENDDO
           ENDDO
@@ -125,7 +125,7 @@ C--     Mixed layer thickness: take the 1rst layer
 #endif /* NONLIN_FRSURF */
           DO j = jMin, jMax
            DO i = iMin, iMax
-             hOceMxL(i,j,bi,bj) = drF(1)*hfacC(i,j,1,bi,bj)
+             hOceMxL(i,j,bi,bj) = drF(1)*hFacC(i,j,1,bi,bj)
            ENDDO
           ENDDO
         ENDIF
@@ -175,6 +175,12 @@ CADJ STORE v2ocMxL = comlev1, key = iicekey
 CADJ STORE empmr   = comlev1, key = iicekey
 CADJ STORE qnet    = comlev1, key = iicekey
 #endif
+
+C-      do sea-ice advection before getting surface fluxes
+C Note: will inline this S/R once thSIce in Atmos. set-up is settled
+        IF ( thSIceAdvScheme.GT.0 )
+     &   CALL THSICE_DO_ADVECT(
+     I                   bi,bj, myTime, myIter, myThid )
 
 #ifdef ALLOW_BULK_FORCE
         IF ( useBulkforce ) THEN
@@ -239,8 +245,7 @@ C--  end bi,bj loop
       ENDDO
 
 
-#ifdef ALLOW_SEAICE
-      IF ( useSEAICE ) THEN
+      IF ( useSEAICE .OR. thSIceAdvScheme.GT.0 ) THEN
 C--   Exchange fields that are advected by seaice dynamics
         _EXCH_XY_R8( iceMask, myThid )
         _EXCH_XY_R8( iceHeight, myThid )
@@ -252,7 +257,6 @@ C--   Exchange fields that are advected by seaice dynamics
      &  _EXCH_XY_RS( sIceLoad, myThid )
 #endif
       ENDIF
-#endif /* ALLOW_SEAICE */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif  /*ALLOW_THSICE*/
