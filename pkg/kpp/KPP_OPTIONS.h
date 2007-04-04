@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.12 2005/09/11 16:52:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.13 2007/04/04 15:39:46 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -30,8 +30,7 @@ C   Exemplar or Origin 2000, wall clock time is about the
 C   same whether FRUGAL_KPP is turned on or off.
 #undef FRUGAL_KPP
 
-C o When set, smooth zonal shear meridionally and
-C   meridional shear zonally with 121 filters
+C o When set, smooth shear horizontally with 121 filters
 #define KPP_SMOOTH_SHSQ
 #undef KPP_SMOOTH_DVSQ
 
