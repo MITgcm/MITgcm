@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.779 2007/03/21 15:31:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.780 2007/04/04 01:27:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint58x_post
 o IO option for global-file compact format:
   - add options when generating topology (utils/exch2/matlab-topology-generator)
   - add I/O capability (pkg/mdsio).
