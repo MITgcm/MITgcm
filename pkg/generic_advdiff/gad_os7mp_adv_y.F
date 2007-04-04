@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_y.F,v 1.2 2007/01/21 17:25:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_y.F,v 1.3 2007/04/04 01:39:06 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
       SUBROUTINE GAD_OS7MP_ADV_Y(
-     I           bi,bj,k,deltaTloc,
+     I           bi,bj,k, calcCFL, deltaTloc,
      I           vTrans, vFld,
      I           maskLocS, Q,
      O           vT,
@@ -23,6 +23,7 @@ C     == GLobal variables ==
 
 C     == Routine arguments ==
       INTEGER bi,bj,k
+      LOGICAL calcCFL
       _RL deltaTloc
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -55,7 +56,8 @@ C     == Local variables ==
        DO i=1-Olx,sNx+Olx
 
         vLoc = vFld(i,j)
-        cfl = abs(vLoc*deltaTloc*recip_dyC(i,j,bi,bj))
+        cfl = vLoc
+        IF ( calcCFL ) cfl = abs(vLoc*deltaTloc*recip_dyC(i,j,bi,bj))
 
         IF (vLoc.gt.0.) THEN
          Qippp = Q(i,j+2)

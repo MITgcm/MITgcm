@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_x.F,v 1.10 2006/12/05 22:25:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_x.F,v 1.11 2007/04/04 01:39:06 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: GAD_FLUXLIMIT_ADV_X
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_FLUXLIMIT_ADV_X(
-     I           bi,bj,k,deltaTloc,
+     I           bi,bj,k, calcCFL, deltaTloc,
      I           uTrans, uFld,
      I           maskLocW, tracer,
      O           uT,
@@ -33,13 +33,16 @@ C !USES: ===============================================================
 #include "GRID.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
-C  k                    :: vertical level
-C  uTrans               :: zonal volume transport
-C  uFld                 :: zonal flow
-C  tracer               :: tracer field
-C  myThid               :: thread number
+C  bi,bj             :: tile indices
+C  k                 :: vertical level
+C  calcCFL           :: =T: calculate CFL number ; =F: take uFld as CFL
+C  deltaTloc         :: local time-step (s)
+C  uTrans            :: zonal volume transport
+C  uFld              :: zonal flow / CFL number
+C  tracer            :: tracer field
+C  myThid            :: thread number
       INTEGER bi,bj,k
+      LOGICAL calcCFL
       _RL deltaTloc
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -48,17 +51,16 @@ C  myThid               :: thread number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  uT                   :: zonal advective flux
+C  uT                :: zonal advective flux
       _RL uT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C !LOCAL VARIABLES: ====================================================
-C  i,j                  :: loop indices
-C  Cr                   :: slope ratio
-C  Rjm,Rj,Rjp           :: differences at i-1,i,i+1
-C  uLoc                 :: velocity [m/s], zonal component
+C  i,j               :: loop indices
+C  Cr                :: slope ratio
+C  Rjm,Rj,Rjp        :: differences at i-1,i,i+1
       INTEGER i,j
       _RL Cr,Rjm,Rj,Rjp
-      _RL uLoc, uCFL
+      _RL uCFL
 C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
 CEOP
@@ -69,8 +71,8 @@ CEOP
        uT(sNx+Olx,j)=0.
        DO i=1-Olx+2,sNx+Olx-1
 
-        uLoc = uFld(i,j)
-        uCFL = ABS( uLoc*deltaTloc
+        uCFL = uFld(i,j)
+        IF ( calcCFL ) uCFL = ABS( uFld(i,j)*deltaTloc
      &                  *recip_dxC(i,j,bi,bj)*recip_deepFacC(k) )
         Rjp=(tracer(i+1,j)-tracer( i ,j))*maskLocW(i+1,j)
         Rj =(tracer( i ,j)-tracer(i-1,j))*maskLocW( i ,j)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.4 2006/11/01 01:56:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.5 2007/04/04 01:40:58 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -342,23 +342,23 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 
          IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &        .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
-          CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme,
-     I         SEAICE_deltaTtherm,uTrans,uFld,localTij,
+          CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme, .TRUE.,
+     I         SEAICE_deltaTtherm, uTrans, uFld, localTij,
      O         af, myThid )
           IF (dBug.AND. bi.EQ.3) WRITE(6,'(A,1P4E14.6)')
      &      'ICE_adv: xFx=',af(13,11),localTij(12,11),uTrans(13,11),
      &       af(13,11)/uTrans(13,11)
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, SEAICE_deltaTtherm,
-     I         uTrans, uFld, maskLocW, localTij,
+          CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE.,
+     I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
          ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_X(      bi,bj,k, SEAICE_deltaTtherm,
-     I         uTrans, uFld, maskLocW, localTij,
+          CALL GAD_DST3_ADV_X(      bi,bj,k, .TRUE.,
+     I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
          ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-          CALL GAD_DST3FL_ADV_X(    bi,bj,k, SEAICE_deltaTtherm,
-     I         uTrans, uFld, maskLocW, localTij,
+          CALL GAD_DST3FL_ADV_X(    bi,bj,k, .TRUE.,
+     I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
          ELSE
           STOP
@@ -546,23 +546,23 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 
          IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &        .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
-          CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme,
-     I         SEAICE_deltaTtherm,vTrans,vFld,localTij,
+          CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme, .TRUE.,
+     I         SEAICE_deltaTtherm, vTrans, vFld, localTij,
      O         af, myThid )
           IF (dBug.AND. bi.EQ.3) WRITE(6,'(A,1P4E14.6)')
      &      'ICE_adv: yFx=',af(12,12),localTij(12,11),vTrans(12,12),
      &       af(12,12)/vTrans(12,12)
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, SEAICE_deltaTtherm,
-     I         vTrans, vFld, maskLocS, localTij,
+          CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE.,
+     I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
          ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_Y(      bi,bj,k, SEAICE_deltaTtherm,
-     I         vTrans, vFld, maskLocS, localTij,
+          CALL GAD_DST3_ADV_Y(      bi,bj,k, .TRUE.,
+     I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
          ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-          CALL GAD_DST3FL_ADV_Y(    bi,bj,k, SEAICE_deltaTtherm,
-     I         vTrans, vFld, maskLocS, localTij,
+          CALL GAD_DST3FL_ADV_Y(    bi,bj,k, .TRUE.,
+     I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
          ELSE
           STOP

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_x.F,v 1.11 2006/12/05 22:21:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_x.F,v 1.12 2007/04/04 01:39:06 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: GAD_DST3_ADV_X
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DST3_ADV_X(
-     I           bi,bj,k,deltaTloc,
+     I           bi,bj,k, calcCFL, deltaTloc,
      I           uTrans, uFld,
      I           maskLocW, tracer,
      O           uT,
@@ -32,12 +32,14 @@ C     == Routine arguments ==
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj             :: tile indices
 C  k                 :: vertical level
+C  calcCFL           :: =T: calculate CFL number ; =F: take uFld as CFL.
 C  deltaTloc         :: local time-step (s)
 C  uTrans            :: zonal volume transport
-C  uFld              :: zonal flow
+C  uFld              :: zonal flow / CFL number
 C  tracer            :: tracer field
 C  myThid            :: thread number
       INTEGER bi,bj,k
+      LOGICAL calcCFL
       _RL deltaTloc
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -52,10 +54,8 @@ C  uT                :: zonal advective flux
 C     == Local variables ==
 C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
-C  uLoc              :: velocity [m/s], zonal component
 C  uCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j
-      _RL uLoc
       _RL Rjm,Rj,Rjp,uCFL,d0,d1
 #ifdef OLD_DST3_FORMULATION
       _RL psiP,psiM,thetaP,thetaM
@@ -78,8 +78,8 @@ c     _RL Rjjm,Rjjp
         Rj =(tracer( i ,j)-tracer(i-1,j))*maskLocW( i ,j)
         Rjm=(tracer(i-1,j)-tracer(i-2,j))*maskLocW(i-1,j)
 
-        uLoc = uFld(i,j)
-        uCFL = ABS( uLoc*deltaTloc
+        uCFL = uFld(i,j)
+        IF ( calcCFL ) uCFL = ABS( uFld(i,j)*deltaTloc
      &                  *recip_dxC(i,j,bi,bj)*recip_deepFacC(k) )
         d0=(2.-uCFL)*(1.-uCFL)*oneSixth
         d1=(1.-uCFL*uCFL)*oneSixth

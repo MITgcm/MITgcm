@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_y.F,v 1.11 2006/12/05 22:25:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_y.F,v 1.12 2007/04/04 01:39:06 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: GAD_FLUXLIMIT_ADV_Y
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_FLUXLIMIT_ADV_Y(
-     I           bi,bj,k,deltaTloc,
+     I           bi,bj,k, calcCFL, deltaTloc,
      I           vTrans, vFld,
      I           maskLocS, tracer,
      O           vT,
@@ -35,11 +35,14 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj             :: tile indices
 C  k                 :: vertical level
+C  calcCFL           :: =T: calculate CFL number ; =F: take vFld as CFL
+C  deltaTloc         :: local time-step (s)
 C  vTrans            :: meridional volume transport
-C  vFld              :: meridional flow
+C  vFld              :: meridional flow / CFL number
 C  tracer            :: tracer field
 C  myThid            :: thread number
       INTEGER bi,bj,k
+      LOGICAL calcCFL
       _RL deltaTloc
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -55,10 +58,9 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
 C  Cr                :: slope ratio
 C  Rjm,Rj,Rjp        :: differences at j-1,j,j+1
-C  vLoc              :: velocity [m/s], meridional component
       INTEGER i,j
       _RL Cr,Rjm,Rj,Rjp
-      _RL vLoc, vCFL
+      _RL vCFL
 C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
 CEOP
@@ -71,8 +73,8 @@ CEOP
       DO j=1-Oly+2,sNy+Oly-1
        DO i=1-Olx,sNx+Olx
 
-        vLoc = vFld(i,j)
-        vCFL = ABS( vLoc*deltaTloc
+        vCFL = vFld(i,j)
+        IF ( calcCFL ) vCFL = ABS( vFld(i,j)*deltaTloc
      &                  *recip_dyC(i,j,bi,bj)*recip_deepFacC(k) )
         Rjp=(tracer(i,j+1)-tracer(i, j ))*maskLocS(i,j+1)
         Rj =(tracer(i, j )-tracer(i,j-1))*maskLocS(i, j )

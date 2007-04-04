@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.47 2007/01/25 16:59:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.48 2007/04/04 01:39:06 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -368,24 +368,24 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 
         IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &     .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
-          CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme,
+          CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme, .TRUE.,
      I                           dTtracerLev(k),uTrans,uFld,localTij,
      O                           af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, dTtracerLev(k),
+          CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE., dTtracerLev(k),
      I                              uTrans, uFld, maskLocW, localTij,
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_X(      bi,bj,k, dTtracerLev(k),
+          CALL GAD_DST3_ADV_X(      bi,bj,k, .TRUE., dTtracerLev(k),
      I                              uTrans, uFld, maskLocW, localTij,
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-          CALL GAD_DST3FL_ADV_X(    bi,bj,k, dTtracerLev(k),
+          CALL GAD_DST3FL_ADV_X(    bi,bj,k, .TRUE., dTtracerLev(k),
      I                              uTrans, uFld, maskLocW, localTij,
      O                              af, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
-          CALL GAD_OS7MP_ADV_X(     bi,bj,k, dTtracerLev(k),
+          CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE., dTtracerLev(k),
      I                              uTrans, uFld, maskLocW, localTij,
      O                              af, myThid )
 #endif
@@ -541,24 +541,24 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 
         IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &     .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
-          CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme,
+          CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme, .TRUE.,
      I                           dTtracerLev(k),vTrans,vFld,localTij,
      O                           af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, dTtracerLev(k),
+          CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE., dTtracerLev(k),
      I                              vTrans, vFld, maskLocS, localTij,
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_Y(      bi,bj,k, dTtracerLev(k),
+          CALL GAD_DST3_ADV_Y(      bi,bj,k, .TRUE., dTtracerLev(k),
      I                              vTrans, vFld, maskLocS, localTij,
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-          CALL GAD_DST3FL_ADV_Y(    bi,bj,k, dTtracerLev(k),
+          CALL GAD_DST3FL_ADV_Y(    bi,bj,k, .TRUE., dTtracerLev(k),
      I                              vTrans, vFld, maskLocS, localTij,
      O                              af, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
-          CALL GAD_OS7MP_ADV_Y(     bi,bj,k, dTtracerLev(k),
+          CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE., dTtracerLev(k),
      I                              vTrans, vFld, maskLocS, localTij,
      O                              af, myThid )
 #endif

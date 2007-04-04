@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_x.F,v 1.12 2006/12/05 22:21:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_x.F,v 1.13 2007/04/04 01:39:06 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
       SUBROUTINE GAD_DST3FL_ADV_X(
-     I           bi,bj,k,deltaTloc,
+     I           bi,bj,k, calcCFL, deltaTloc,
      I           uTrans, uFld,
      I           maskLocW, tracer,
      O           uT,
@@ -23,6 +23,7 @@ C     == GLobal variables ==
 
 C     == Routine arguments ==
       INTEGER bi,bj,k
+      LOGICAL calcCFL
       _RL deltaTloc
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -32,10 +33,8 @@ C     == Routine arguments ==
       INTEGER myThid
 
 C     == Local variables ==
-C     uLoc   :: velocity [m/s], zonal component
       INTEGER i,j
       _RL Rjm,Rj,Rjp,uCFL,d0,d1,psiP,psiM,thetaP,thetaM
-      _RL uLoc
       _RL thetaMax
       PARAMETER( thetaMax = 1.D+20 )
 
@@ -52,8 +51,8 @@ C       with no need to compute thetaM (might be easier to differentiate)
         Rj =(tracer( i ,j)-tracer(i-1,j))*maskLocW( i ,j)
         Rjm=(tracer(i-1,j)-tracer(i-2,j))*maskLocW(i-1,j)
 
-        uLoc = uFld(i,j)
-        uCFL = ABS( uLoc*deltaTloc
+        uCFL = uFld(i,j)
+        IF ( calcCFL ) uCFL = ABS( uFld(i,j)*deltaTloc
      &                  *recip_dxC(i,j,bi,bj)*recip_deepFacC(k) )
         d0=(2. _d 0 -uCFL)*(1. _d 0 -uCFL)*oneSixth
         d1=(1. _d 0 -uCFL*uCFL)*oneSixth

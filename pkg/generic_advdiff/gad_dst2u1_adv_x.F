@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.6 2006/12/05 22:21:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.7 2007/04/04 01:39:06 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: GAD_DST2U1_ADV_X
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DST2U1_ADV_X(
-     I           bi,bj,k, advectionScheme,
+     I           bi,bj,k, advectionScheme, calcCFL,
      I           deltaTloc, uTrans, uFld,
      I           tracer,
      O           uT,
@@ -30,12 +30,15 @@ C  bi,bj             :: tile indices
 C  k                 :: vertical level
 C  advectionScheme   :: advection scheme to use: either 2nd Order DST
 C                                                or 1rst Order Upwind
+C  calcCFL           :: =T: calculate CFL number ; =F: take uFld as CFL
+C  deltaTloc         :: local time-step (s)
 C  uTrans            :: zonal volume transport
-C  uFld              :: zonal flow
+C  uFld              :: zonal flow / CFL number
 C  tracer            :: tracer field
 C  myThid            :: thread number
       INTEGER bi,bj,k
       INTEGER advectionScheme
+      LOGICAL calcCFL
       _RL deltaTloc
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -49,10 +52,9 @@ C  uT                :: zonal advective flux
 C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
 C  rLimit            :: centered (vs upwind) fraction
-C  uLoc              :: velocity [m/s], zonal component
 C  uCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j
-      _RL uLoc, uCFL, xLimit, uAbs
+      _RL uCFL, xLimit, uAbs
 CEOP
 
       xLimit = 0. _d 0
@@ -62,8 +64,8 @@ CEOP
        uT(1-Olx,j)=0.
        DO i=1-Olx+1,sNx+Olx
 
-        uLoc = uFld(i,j)
-        uCFL = ABS( uLoc*deltaTloc
+        uCFL = uFld(i,j)
+        IF ( calcCFL ) uCFL = ABS( uFld(i,j)*deltaTloc
      &                  *recip_dxC(i,j,bi,bj)*recip_deepFacC(k) )
 
 c       uT(i,j) =

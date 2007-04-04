@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_y.F,v 1.11 2006/12/05 22:21:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3_adv_y.F,v 1.12 2007/04/04 01:39:06 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: GAD_DST3_ADV_Y
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DST3_ADV_Y(
-     I           bi,bj,k,deltaTloc,
+     I           bi,bj,k, calcCFL, deltaTloc,
      I           vTrans, vFld,
      I           maskLocS, tracer,
      O           vT,
@@ -31,12 +31,14 @@ C     == Routine arguments ==
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj             :: tile indices
 C  k                 :: vertical level
+C  calcCFL           :: =T: calculate CFL number ; =F: take vFld as CFL
 C  deltaTloc         :: local time-step (s)
 C  vTrans            :: meridional volume transport
-C  vFld              :: meridional flow
+C  vFld              :: meridional flow / CFL number
 C  tracer            :: tracer field
 C  myThid            :: thread number
       INTEGER bi,bj,k
+      LOGICAL calcCFL
       _RL deltaTloc
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -51,11 +53,9 @@ C  vT                :: meridional advective flux
 C     == Local variables ==
 C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
-C  vLoc              :: velocity [m/s], meridional component
 C  vCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j
       _RL Rjm,Rj,Rjp,vCFL,d0,d1
-      _RL vLoc
 #ifdef OLD_DST3_FORMULATION
       _RL psiP,psiM,thetaP,thetaM
       _RL smallNo
@@ -79,8 +79,8 @@ c     _RL Rjjm,Rjjp
         Rj =(tracer(i, j )-tracer(i,j-1))*maskLocS(i, j )
         Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskLocS(i,j-1)
 
-        vLoc = vFld(i,j)
-        vCFL = ABS( vLoc*deltaTloc
+        vCFL = vFld(i,j)
+        IF ( calcCFL ) vCFL = ABS( vFld(i,j)*deltaTloc
      &                  *recip_dyC(i,j,bi,bj)*recip_deepFacC(k) )
         d0=(2.-vCFL)*(1.-vCFL)*oneSixth
         d1=(1.-vCFL*vCFL)*oneSixth

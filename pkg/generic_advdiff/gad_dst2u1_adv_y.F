@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_y.F,v 1.6 2006/12/05 22:21:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_y.F,v 1.7 2007/04/04 01:39:06 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -8,8 +8,8 @@ C !ROUTINE: GAD_DST2U1_ADV_Y
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DST2U1_ADV_Y(
-     I           bi,bj,k, advectionScheme, deltaTloc,
-     I           vTrans, vFld,
+     I           bi,bj,k, advectionScheme, calcCFL,
+     I           deltaTloc, vTrans, vFld,
      I           tracer,
      O           vT,
      I           myThid )
@@ -30,11 +30,14 @@ C  bi,bj             :: tile indices
 C  k                 :: vertical level
 C  advectionScheme   :: advection scheme to use: either 2nd Order DST
 C                                                or 1rst Order Upwind
+C  calcCFL           :: =T: calculate CFL number ; =F: take vFld as CFL
+C  deltaTloc         :: local time-step (s)
 C  vTrans            :: meridional volume transport
-C  vFld              :: meridional flow
+C  vFld              :: meridional flow / CFL number
 C  tracer            :: tracer field
 C  myThid            :: thread number
       INTEGER bi,bj, k, advectionScheme
+      LOGICAL calcCFL
       _RL deltaTloc
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -48,10 +51,9 @@ C  vT                :: meridional advective flux
 C !LOCAL VARIABLES: ====================================================
 C  i,j               :: loop indices
 C  yLimit            :: centered (vs upwind) fraction
-C  vLoc              :: velocity [m/s], meridional component
 C  vCFL              :: Courant-Friedrich-Levy number
       INTEGER i,j
-      _RL vLoc, vCFL, yLimit, vAbs
+      _RL vCFL, yLimit, vAbs
 CEOP
 
       yLimit = 0. _d 0
@@ -63,8 +65,8 @@ CEOP
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx,sNx+Olx
 
-        vLoc = vFld(i,j)
-        vCFL = ABS( vLoc*deltaTloc
+        vCFL = vFld(i,j)
+        IF ( calcCFL ) vCFL = ABS( vFld(i,j)*deltaTloc
      &                  *recip_dyC(i,j,bi,bj)*recip_deepFacC(k) )
 
 c       vT(i,j) =
