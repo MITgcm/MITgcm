@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.7 2006/06/25 22:35:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.8 2007/04/04 01:55:45 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
+#ifdef ALLOW_AIM
+# include "AIM_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: THSICE_INI_VARS
@@ -22,14 +25,16 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
 #include "FFIELDS.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
+#ifdef ALLOW_AIM
+# include "AIM_FFIELDS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_RBCS
+C     myThid :: My Thread Id. number
       INTEGER myThid
 CEOP
 
@@ -38,15 +43,15 @@ C     == Local variables ==
 C     bi,bj  :: Loop counters
 C     i,j    :: Loop counters
       INTEGER bi, bj
-      INTEGER I, J
+      INTEGER i, j
       INTEGER prec
 c     CHARACTER*(MAX_LEN_FNAM) fn
       _RL v2Loc
 
 
 c     set up ice arrays to zero if starting ice
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
+      DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-        state variables :
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
@@ -68,9 +73,6 @@ C-        fluxes :
             flxCndBt(i,j,bi,bj) = 0. _d 0
             snowPrc(i,j,bi,bj)  = 0. _d 0
             siceAlb(i,j,bi,bj)  = 0. _d 0
-#ifdef COUPLE_MODEL
-            dFdT(i,j,bi,bj)     = 0. _d 0
-#endif
             icFlxSW (i,j,bi,bj) = 0. _d 0
             icFlxAtm(i,j,bi,bj) = 0. _d 0
             icFrwAtm(i,j,bi,bj) = 0. _d 0
@@ -86,8 +88,20 @@ C-        oceanic mixed layer state :
              v2ocMxL(i,j,bi,bj) = v2Loc
            ENDDO
           ENDDO
-         ENDDO
+#ifdef ALLOW_AIM
+          IF ( useAIM ) THEN
+C-        Mask mixed layer depth : depth is used in thsice slab_ocean
+C         and this mask is used in thsice_advdiff and if coupled
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             IF ( aim_landFr(i,j,bi,bj).EQ.1. _d 0 )
+     &       hOceMxL(i,j,bi,bj) = 0.
+            ENDDO
+           ENDDO
+          ENDIF
+#endif /* ALLOW_AIM */
         ENDDO
+      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -131,9 +145,6 @@ C--     Read initial conditions:
         _EXCH_XY_R8(Qice1,  myThid)
         _EXCH_XY_R8(Qice2,  myThid)
         _EXCH_XY_R8(snowAge,myThid)
-#ifdef COUPLE_MODEL
-        _EXCH_XY_R8(dFdT, myThid)
-#endif
 
 #ifdef ATMOSPHERIC_LOADING
 C--     Initialise Sea-Ice Loading for SeaIce-Dynamics :
