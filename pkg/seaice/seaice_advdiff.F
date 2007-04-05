@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.14 2007/04/04 02:44:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.15 2007/04/05 19:33:07 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -108,7 +108,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( useThSice ) THEN
         minIcArea = iceMaskMin
 C jmc: new version:
-c       minIcHeff = iceMaskMin*himin
+        minIcHeff = iceMaskMin*himin
       ENDIF
       r_minArea = 0. _d 0
       r_minHeff = 0. _d 0
@@ -261,17 +261,17 @@ c         DO i=1-Olx,sNx+Olx
            ENDIF
 #endif
 C jmc: comment out the old version:
-           IF ( HEFF(i,j,1,bi,bj) .GT. 0. _d 0 ) THEN
-             recip_heff(i,j)  = 1. _d 0/HEFF(i,j,1,bi,bj)
-           ELSE
-             recip_heff(i,j)  = 0. _d 0
-           ENDIF
-C jmc: new version:
-c          IF ( HEFF(i,j,1,bi,bj) .GE. minIcHeff ) THEN
+c          IF ( HEFF(i,j,1,bi,bj) .GT. 0. _d 0 ) THEN
 c            recip_heff(i,j)  = 1. _d 0/HEFF(i,j,1,bi,bj)
 c          ELSE
-c            recip_heff(i,j)  = r_minHeff
+c            recip_heff(i,j)  = 0. _d 0
 c          ENDIF
+C jmc: new version:
+           IF ( HEFF(i,j,1,bi,bj) .GE. minIcHeff ) THEN
+             recip_heff(i,j)  = 1. _d 0/HEFF(i,j,1,bi,bj)
+           ELSE
+             recip_heff(i,j)  = r_minHeff
+           ENDIF
 C jmc: end new version:
           ENDDO
          ENDDO
@@ -390,27 +390,27 @@ c         DO i=1-Olx,sNx+Olx
            ENDIF
 #endif
 C jmc: comment out the old version:
-           IF ( AREA(i,j,1,bi,bj) .GT. 0. _d 0 ) THEN
-             recip_area(i,j) = 1. _d 0/AREA(i,j,1,bi,bj)
-           ELSE
-             recip_area(i,j) = 0. _d 0
-           ENDIF
-C jmc: new version:
-c          IF ( HEFF(i,j,1,bi,bj) .GE. minIcHeff ) THEN
-C-    where there is ice, ensure that fractional Ice Area is > minIcArea & < 1
-c           IF ( AREA(i,j,1,bi,bj) .GT. 1. _d 0 ) THEN
-c            AREA(i,j,1,bi,bj)= 1. _d 0
-c            recip_area(i,j)  = 1. _d 0
-c           ELSEIF ( AREA(i,j,1,bi,bj) .LT. minIcArea ) THEN
-c            AREA(i,j,1,bi,bj)= minIcArea
-c            recip_area(i,j)  = r_minArea
-c           ELSE
-c            recip_area(i,j)  = 1. _d 0/AREA(i,j,1,bi,bj)
-c           ENDIF
+c          IF ( AREA(i,j,1,bi,bj) .GT. 0. _d 0 ) THEN
+c            recip_area(i,j) = 1. _d 0/AREA(i,j,1,bi,bj)
 c          ELSE
-C-    not enough ice
-c            recip_area(i,j)  = r_minArea
+c            recip_area(i,j) = 0. _d 0
 c          ENDIF
+C jmc: new version:
+           IF ( HEFF(i,j,1,bi,bj) .GE. minIcHeff ) THEN
+C-    where there is ice, ensure that fractional Ice Area is > minIcArea & < 1
+            IF ( AREA(i,j,1,bi,bj) .GT. 1. _d 0 ) THEN
+             AREA(i,j,1,bi,bj)= 1. _d 0
+             recip_area(i,j)  = 1. _d 0
+            ELSEIF ( AREA(i,j,1,bi,bj) .LT. minIcArea ) THEN
+             AREA(i,j,1,bi,bj)= minIcArea
+             recip_area(i,j)  = r_minArea
+            ELSE
+             recip_area(i,j)  = 1. _d 0/AREA(i,j,1,bi,bj)
+            ENDIF
+           ELSE
+C-    not enough ice
+             recip_area(i,j)  = r_minArea
+           ENDIF
 C jmc: end new version:
           ENDDO
          ENDDO
