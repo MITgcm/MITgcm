@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.780 2007/04/04 01:27:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.781 2007/04/05 00:02:49 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o Added capability for 3D specification of vertical diffusion coefficient.
+  This is done by specifying files diffKr3dSfile and diffKr3dTfile that
+  contain the 3D vertical diffusivity coefficients.
 
 checkpoint58x_post
 o IO option for global-file compact format:

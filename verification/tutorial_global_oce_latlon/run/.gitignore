@@ -1,0 +1,6 @@
+*.log
+*.data
+*.meta
+*.nc
+STD*
+*.txt

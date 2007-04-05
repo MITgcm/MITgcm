@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.197 2007/03/12 23:41:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.198 2007/04/05 00:02:49 dimitri Exp $
 C $Name:  $
 C
 
@@ -67,6 +67,8 @@ C                    (unit=m)
 C     hydrogThetaFile :: File containing initial hydrographic data for potential
 C                       temperature.
 C     hydrogSaltFile  :: File containing initial hydrographic data for salinity.
+C     diffKr3dSfile   :: File containing 3D specification of vertical salt diffusivity
+C     diffKr3dTfile   :: File containing 3D specification of vertical heat diffusivity
 C     zonalWindFile   :: File containing zonal wind data
 C     meridWindFile   :: File containing meridional wind data
 C     thetaClimFile   :: File containing theta climataology used
@@ -94,6 +96,7 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                delXFile, delYFile, horizGridFile,
      &                bathyFile, topoFile, shelfIceFile,
      &                hydrogThetaFile, hydrogSaltFile,
+     &                diffKr3dSfile, diffKr3dTfile,
      &                zonalWindFile, meridWindFile, thetaClimFile,
      &                saltClimFile, buoyancyRelation,
      &                EmPmRfile, saltFluxFile,
@@ -115,8 +118,8 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) delYFile
       CHARACTER*(MAX_LEN_FNAM) horizGridFile
       CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile, shelfIceFile
-      CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
-      CHARACTER*(MAX_LEN_FNAM) hydrogSaltFile
+      CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile, hydrogSaltFile
+      CHARACTER*(MAX_LEN_FNAM) diffKr3dSfile, diffKr3dTfile
       CHARACTER*(MAX_LEN_FNAM) zonalWindFile
       CHARACTER*(MAX_LEN_FNAM) meridWindFile
       CHARACTER*(MAX_LEN_FNAM) thetaClimFile
@@ -558,12 +561,16 @@ C     diffKhT   :: Laplacian diffusion coeff. for mixing of
 C                 heat laterally ( m^2/s )
 C     diffKrNrT :: vertical profile of Laplacian diffusion coeff. 
 C                 for mixing of heat vertically ( units of r^2/s )
+C     diffKr3dT :: full 3D specification of Laplacian diffusion coeff.
+C                 for mixing of heat vertically ( units of r^2/s )
 C     diffK4T   :: Biharmonic diffusion coeff. for mixing of
 C                 heat laterally ( m^4/s )
 C     diffKhS  ::  Laplacian diffusion coeff. for mixing of
 C                 salt laterally ( m^2/s )
 C     diffKrNrS :: vertical profile of Laplacian diffusion coeff. 
 C                 for mixing of salt vertically ( units of r^2/s ), 
+C     diffKr3dS :: full 3D specification of Laplacian diffusion coeff.
+C                 for mixing of salt vertically ( units of r^2/s )
 C     diffK4S   :: Biharmonic diffusion coeff. for mixing of
 C                 salt laterally ( m^4/s )
 C     diffKrBL79surf :: T/S surface diffusivity (m^2/s) Bryan and Lewis, 1979
@@ -666,8 +673,8 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
      & viscAhRemax, viscA4Remax,
      & viscC4leith, viscC4leithD, viscAr,
-     & diffKhT, diffK4T, diffKrNrT,
-     & diffKhS, diffK4S, diffKrNrS,
+     & diffKhT, diffK4T, diffKrNrT, diffKr3dT,
+     & diffKhS, diffK4S, diffKrNrS, diffKr3dS,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
@@ -746,9 +753,11 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL viscC4leithD
       _RL diffKhT
       _RL diffKrNrT(Nr)
+      _RL diffKr3dT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL diffK4T
       _RL diffKhS
       _RL diffKrNrS(Nr)
+      _RL diffKr3dS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL diffK4S
       _RL diffKrBL79surf
       _RL diffKrBL79deep

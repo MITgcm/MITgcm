@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.4 2005/11/04 01:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.5 2007/04/05 00:02:49 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -81,7 +81,7 @@ CEOP
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &       + diffKr(i,j,k,bi,bj)
 #else
-     &       + diffKrNrT(k)
+     &       + diffKr3dT(i,j,k,bi,bj)
 #endif
      &       + KbryanLewis79
          ENDDO
@@ -100,7 +100,7 @@ CEOP
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &       + diffKr(i,j,k,bi,bj)
 #else
-     &       + diffKrNrS(k)
+     &       + diffKr3dS(i,j,k,bi,bj)
 #endif
      &       + KbryanLewis79
          ENDDO
