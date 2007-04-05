@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.5 2007/04/05 00:02:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.6 2007/04/05 22:51:48 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,10 +78,11 @@ CEOP
          DO i = 1-Olx,sNx+Olx
           KappaRTr(i,j,k) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
+#if (defined ALLOW_3D_DIFFKR || \
+     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
      &       + diffKr(i,j,k,bi,bj)
 #else
-     &       + diffKr3dT(i,j,k,bi,bj)
+     &       + diffKrNrT(k)
 #endif
      &       + KbryanLewis79
          ENDDO
@@ -97,10 +98,11 @@ CEOP
          DO i = 1-Olx, sNx+Olx
           KappaRTr(i,j,k) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
+#if (defined ALLOW_3D_DIFFKR || \
+     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
      &       + diffKr(i,j,k,bi,bj)
 #else
-     &       + diffKr3dS(i,j,k,bi,bj)
+     &       + diffKrNrS(k)
 #endif
      &       + KbryanLewis79
          ENDDO
@@ -119,7 +121,8 @@ CEOP
          DO i = 1-Olx, sNx+Olx
           KappaRTr(i,j,k) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
+#if (defined ALLOW_3D_DIFFKR || \
+     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
      &       + diffKr(i,j,k,bi,bj)
 #else
      &       + PTRACERS_diffKrNr(k,iTr)

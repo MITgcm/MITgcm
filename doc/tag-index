@@ -1,13 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.781 2007/04/05 00:02:49 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.782 2007/04/05 22:51:48 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o Added capability for 3D specification of vertical diffusion coefficient.
-  This is done by specifying files diffKr3dSfile and diffKr3dTfile that
-  contain the 3D vertical diffusivity coefficients.
-
+o Added capability for 3D specification of background vertical diffusion
+  coefficient.  This is done by (i) #define ALLOW_3D_DIFFKR
+  in CPP_OPTIONS.h and (ii) specifying file diffKrFile in runtime
+  "data" file that contains the 3D vertical diffusivity coefficients.
+x
 checkpoint58x_post
 o IO option for global-file compact format:
   - add options when generating topology (utils/exch2/matlab-topology-generator)

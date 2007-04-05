@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.124 2007/04/05 00:02:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.125 2007/04/05 22:51:48 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -298,8 +298,7 @@ C--   Input files
       shelfIceFile    = ' '
       hydrogSaltFile  = ' '
       hydrogThetaFile = ' '
-      diffKr3dSfile   = ' '
-      diffKr3dTfile   = ' '
+      diffKrFile      = ' '
       zonalWindFile   = ' '
       meridWindFile   = ' '
       thetaClimFile   = ' '

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.37 2007/01/09 23:27:43 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.38 2007/04/05 22:51:48 dimitri Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -18,6 +18,9 @@ C o Include/exclude call to S/R CONVECT
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
+
+C o Allow full 3D specification of vertical diffusivity
+#undef ALLOW_3D_DIFFKR
 
 C o Include/exclude Implicit vertical advection code
 #define INCLUDE_IMPLVERTADV_CODE

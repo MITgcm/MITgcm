@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.29 2005/11/24 03:44:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.30 2007/04/05 22:51:48 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -73,7 +73,10 @@ cph(
 cph the following block will eventually move to a separate
 cph header file containing requires anomaly fields of control vars.
 cph
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
+#if (defined ALLOW_3D_DIFFKR || \
+     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
+C     diffKr :: full 3D specification of Laplacian diffusion coeff.
+C               for mixing of tracers vertically ( units of r^2/s )
       COMMON /DYNVARS_DIFFKR/
      &                       diffKr
       _RL  diffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

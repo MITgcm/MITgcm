@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.5 2007/04/05 00:02:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.6 2007/04/05 22:51:48 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -48,9 +48,8 @@ CEOP
          DO k=1,Nr
           DO j=1,sNy
            DO i=1,sNx
-            diffKr3dS(i,j,k,bi,bj) = diffKrNrS(k)
-            diffKr3dT(i,j,k,bi,bj) = diffKrNrT(k)
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
+#if (defined ALLOW_3D_DIFFKR || \
+     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
             diffKr(i,j,k,bi,bj) = diffKrNrS(k)
 #endif
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPGM_CONTROL))
@@ -62,16 +61,11 @@ CEOP
         ENDDO
        ENDDO
 
-       IF ( diffKr3dSfile .NE. ' ' ) THEN
-          CALL READ_FLD_XYZ_RL(diffKr3dSfile,' ',diffKr3dS,0,myThid)
+#if (defined ALLOW_3D_DIFFKR || \
+     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
+       IF ( diffKrFile .NE. ' ' ) THEN
+          CALL READ_FLD_XYZ_RL(diffKrFile,' ',diffKr,0,myThid)
        ENDIF
-       IF ( diffKr3dTfile .NE. ' ' ) THEN
-          CALL READ_FLD_XYZ_RL(diffKr3dTfile,' ',diffKr3dT,0,myThid)
-       ENDIF
-
-      _EXCH_XYZ_R8(diffKr3dS , myThid )
-      _EXCH_XYZ_R8(diffKr3dT , myThid )
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
       _EXCH_XYZ_R8(diffKr , myThid )
 #endif
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPGM_CONTROL))
