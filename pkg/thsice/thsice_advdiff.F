@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.1 2007/04/04 02:40:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.2 2007/04/05 22:06:43 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -85,16 +85,16 @@ C     msgBuf    :: Informational/error meesage buffer
       _RL oldVol    (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL minIcHeff, minIcArea, r_minArea
       _RL meanCellArea, areaEpsil, vol_Epsil
-#ifdef ALLOW_DBUG_THSICE
-      _RL tmpVar, sumVar1, sumVar2
-#endif
-      LOGICAL dBugFlag
-#include "THSICE_DEBUG.h"
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       CHARACTER*4 THSICE_DIAG_SUFX, diagSufx
       EXTERNAL    THSICE_DIAG_SUFX
 #endif
+#ifdef ALLOW_DBUG_THSICE
+      _RL tmpVar, sumVar1, sumVar2
+#endif
+      LOGICAL dBugFlag
+#include "THSICE_DEBUG.h"
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -380,8 +380,12 @@ C-    where there is enough ice, ensure that Ice fraction is > minIcArea & < 1
             iceMask(i,j,bi,bj)    = iceFrc(i,j)
            ENDIF
           ELSE
-C-    not enough ice, melt the tiny amount of snow & ice:
+C-    Not enough ice, melt the tiny amount of snow & ice:
 C     and return frsh-water, salt & energy to the ocean (flx > 0 = into ocean)
+C- -  Note: using 1rst.Order Upwind, I can get the same results as when
+C     using seaice_advdiff (with SEAICEadvScheme=1) providing I comment
+C     out the following lines (and then loose conservation).
+C- -
             oceFWfx(i,j,bi,bj) = ( rhos*snowHeight(i,j,bi,bj)
      &                            +rhoi*iceHeight(i,j,bi,bj) )
      &                                      *iceFrc(i,j)/thSIce_deltaT
@@ -391,6 +395,7 @@ C     and return frsh-water, salt & energy to the ocean (flx > 0 = into ocean)
      &                         -( Qice1(i,j,bi,bj)
      &                           +Qice2(i,j,bi,bj) )*0.5 _d 0
      &                                 *rhoi*iceFld(i,j)/thSIce_deltaT
+C- -
 c           flx2oc (i,j) = flx2oc (i,j) +
 c           frw2oc (i,j) = frw2oc (i,j) +
 c           fsalt  (i,j) = fsalt  (i,j) +
