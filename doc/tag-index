@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.783 2007/04/05 22:52:31 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.784 2007/04/06 15:58:23 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -8,6 +8,12 @@ o Added capability for 3D specification of background vertical diffusion
   coefficient.  This is done by (i) #define ALLOW_3D_DIFFKR
   in CPP_OPTIONS.h and (ii) specifying file diffKrFile in runtime
   "data" file that contains the 3D vertical diffusivity coefficients.
+o ice dynamics (pkg/seaice) with thsice thermodynamics:
+  - add code within pkg thsice to advect & diffuse sea-ice fields
+  similar to (and will replace) what has been added in  seaice_advdiff.F,
+  but: - conserving Mass, Heat & Salt.
+       - better when using non-linear advection scheme (not yet fully tested)
+       - can also be used in atmospheric set-up (for now, only the diffusion).
 
 checkpoint58x_post
 o IO option for global-file compact format:
