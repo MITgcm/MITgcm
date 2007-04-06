@@ -41,9 +41,9 @@
 #endif
 
 #ifdef CLM 
-#  include "CLM.COM"
+#  include "CLM.h"
 #  ifdef CPL_TEM  
-#    include "TEM.COM"
+#    include "TEM.h"
       external tem2climate,updatelcluc,tem,tem_init,lcluc_init,
      &   temclm_init
 #  endif
