@@ -66,7 +66,7 @@ C       Ice feels evap from model, no change with temperature
         atm_dFdt_iceq(j_atm) = -dhfidtgeq(j_atm)
         atm_dFdt_ocnq(j_atm) = -dhfodtgeq(j_atm)
         atm_dLdt_iceq(j_atm) =0. _d 0       ! -devidtgeq(j_atm)/secDay1000
-        atm_dLdt_ocnq(j_atm) = -devodtgeq(j_atm)
+        atm_dLdt_ocnq(j_atm) = -devodtgeq(j_atm)/secDay1000
         atm_solarinc(j_atm) = -solarinc_ice(j_atm)
         atm_solar_ocn(j_atm) = solarnet_ocean(j_atm)
         atm_solar_ice(j_atm) = solarnet_ice(j_atm)
@@ -76,25 +76,10 @@ C       Ice feels evap from model, no change with temperature
      
       ENDDO
 
-      a1=sin(atm_yG(2)*deg2rad)
-      a2=sin(atm_yG(3)*deg2rad) - a1
-      a1=a1 + 1. _d 0
-      CALL COMBINE_ENDS(a1,a2,1,2)
-
-      a1=sin(atm_yG(jm0)*deg2rad)
-      a2=a1-sin(atm_yG(jm0-1)*deg2rad)
-      a1=1. _d 0 - a1
-      CALL COMBINE_ENDS(a1,a2,jm0,jm0-1)
-
-C      PRINT *,'***read_atmos: tauu',tauu(JBUGJ+1)
-C      PRINT *,'***read_atmos: atm_tauu',atm_tauu(JBUGJ+1)
-C      PRINT *,'***read_atmos: atm_precip',atm_precip(JBUGJ+1)
-C      PRINT *,'***read_atmos: atm_runoff',atm_runoff(JBUGJ+1)
-C      PRINT *,'***read_atmos: atm_evap_ocn',atm_evap_ocn(JBUGJ+1)
-C      PRINT *,'***read_atmos: atm_qnet_ocn',atm_qnet_ocn(JBUGJ+1)
-C      PRINT *,'***read_atmos: atm_dFdt_ocn',atm_dFdt_ocn(JBUGJ+1)
-C      PRINT *,'***read_atmos: atm_slp',atm_slp
-C      PRINT *,'***read_atmos: atm_pco2',atm_pco2
+      IF (cflan(2).NE.1. _d 0) 
+     &          CALL COMBINE_ENDS(endwgt1,endwgt2,1,2,rsumwgt)
+      IF (cflan(jm0-1).NE.1. _d 0) 
+     &          CALL COMBINE_ENDS(endwgt1,endwgt2,jm0,jm0-1,rsumwgt)
 
       RETURN
       END
@@ -104,7 +89,7 @@ C--------------------------------------------------------------------------
 #include "ATM2D_OPTIONS.h"
 
 
-      SUBROUTINE COMBINE_ENDS(a1,a2,ind1,ind2 )
+      SUBROUTINE COMBINE_ENDS(a1,a2,ind1,ind2,rsuma)
 C     *==========================================================*
 C     | Subroutine used to combine the atmos model data points at|
 C     | the poles with their neighboring value, area weighted.   |
@@ -126,15 +111,14 @@ C     a1 - weighting of first index
 C     a2 - weighting of second index
 C     ind1 - first index into atmos data array
 C     ind2 - first index into atmos data array
+C     rsuma - recip of sum of ind1+ind2
       _RL     a1
       _RL     a2
       INTEGER ind1
       INTEGER ind2
-
-C     LOCAL VARIABLES:
       _RL  rsuma
 
-      rsuma=1. _d 0/(a1+a2)
+C     LOCAL VARIABLES:
 
 C      atm_tauu(ind2)= (a1*atm_tauu(ind1) + a2*atm_tauu(ind2))*rsuma
 C      atm_tauv(ind2)= (a1*atm_tauv(ind1) + a2*atm_tauv(ind2))*rsuma

@@ -42,11 +42,12 @@ C     Accumulate runoff into bands (runoff bands are on the ocean grid)
         IF (ib.LT.numBands) ibj2= rband(ib)
         run_b(ib)=0. _d 0
         DO j=ibj1,ibj2
-          run_b(ib)=run_b(ib)+atm_runoff(atm_oc_ind(j))*atm_oc_wgt(j) +
-     &              atm_runoff(atm_oc_ind(j)+1)*(1. _d 0-atm_oc_wgt(j))
+          run_b(ib)=run_b(ib) + 
+     &              atm_runoff(atm_oc_ind(j))*atm_oc_frac1(j) +
+     &              atm_runoff(atm_oc_ind(j)+1)*atm_oc_frac2(j)
         ENDDO
       ENDDO
-
+     
       DO j=1,sNy
         DO i=1,sNx
 
@@ -73,16 +74,11 @@ C  Tabulate following diagnostic fluxes from atmos model only
      &           precipo_2D(i,j)*dtatmo*(1. _d 0-iceMask(i,j,1,1))
             runoff_atm(i,j)= runoff_atm(i,j) +
      &           runoff_2D(i,j)*dtatmo
-          ENDIF
+         ENDIF
 
         ENDDO
       ENDDO
-
-C      PRINT *,'*** bottom calc_1to2d; evapo_2D',evapo_2D(JBUGI,JBUGJ)
-C      PRINT *,'*** bottom calc_1to2d; precipo_2D',precipo_2D(JBUGI,JBUGJ)
-C      PRINT *,'*** bottom calc_1to2d; runoff_2D',runoff_2D(JBUGI,JBUGJ)
-C      PRINT *,'*** bottom calc_1to2d; qneto_2D',qneto_2D(JBUGI,JBUGJ)
-
+ 
       RETURN
       END
 
@@ -152,25 +148,25 @@ C     wght  - weight of this atmos cell for total
 
       IF (useAltDeriv) THEN
         qneto_2D(i,j)= qneto_2D(i,j) + atm_dFdt_ocnq(ind)*
-     &             (sstFromOcn(i,j)-ctocn(ind)*wgt)
+     &             (sstFromOcn(i,j)-ctocn(ind))*wgt
         evapo_2D(i,j)= evapo_2D(i,j) + atm_dLdt_ocnq(ind)*
-     &             (sstFromOcn(i,j)-ctocn(ind)*wgt)
+     &             (sstFromOcn(i,j)-ctocn(ind))*wgt
         IF (iceMask(i,j,1,1) .GT. 0. _d 0) THEN
           qneti_2D(i,j)=qneti_2D(i,j)+atm_dFdt_iceq(ind)*
-     &             (Tsrf(i,j,1,1)-ctice(ind)*wgt)
+     &             (Tsrf(i,j,1,1)-ctice(ind))*wgt
           evapi_2D(i,j)=evapi_2D(i,j)+atm_dLdt_iceq(ind)*
-     &             (Tsrf(i,j,1,1)-ctice(ind)*wgt)
+     &             (Tsrf(i,j,1,1)-ctice(ind))*wgt
         ENDIF
       ELSE
         qneto_2D(i,j)= qneto_2D(i,j) + atm_dFdt_ocn(ind)*
-     &             (sstFromOcn(i,j)-ctocn(ind)*wgt)
+     &             (sstFromOcn(i,j)-ctocn(ind))*wgt
         evapo_2D(i,j)= evapo_2D(i,j) + atm_dLdt_ocn(ind)*
-     &             (sstFromOcn(i,j)-ctocn(ind)*wgt)
+     &             (sstFromOcn(i,j)-ctocn(ind))*wgt
         IF (iceMask(i,j,1,1) .GT. 0. _d 0) THEN
           qneti_2D(i,j)= qneti_2D(i,j) + atm_dFdt_ice(ind)*
-     &             (Tsrf(i,j,1,1)-ctice(ind)*wgt)
+     &             (Tsrf(i,j,1,1)-ctice(ind))*wgt
           evapi_2D(i,j)= evapi_2D(i,j)+atm_dLdt_ice(ind)*
-     &             (Tsrf(i,j,1,1)-ctice(ind)*wgt)
+     &             (Tsrf(i,j,1,1)-ctice(ind))*wgt
         ENDIF
       ENDIF
 

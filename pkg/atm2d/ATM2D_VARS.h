@@ -12,9 +12,9 @@
        CHARACTER*(MAX_LEN_FNAM) atmosTauuFile
        CHARACTER*(MAX_LEN_FNAM) atmosTauvFile
        CHARACTER*(MAX_LEN_FNAM) atmosWindFile
-       _RL atau(jm0,nForcingPer) 
-       _RL atav(jm0,nForcingPer)
-       _RL awind(jm0,nForcingPer)
+       _RL atau(jm0,nForcingPer) ! zonal wind stress
+       _RL atav(jm0,nForcingPer) ! meridional wind stress
+       _RL awind(jm0,nForcingPer)! (total) wind speed
 
 
       COMMON /OCEAN_2D_FILES/
@@ -38,12 +38,12 @@
 
        CHARACTER*(MAX_LEN_FNAM) thetaRelaxFile
        CHARACTER*(MAX_LEN_FNAM) saltRelaxFile
-       _RL          tauThetaRelax
-       _RL          tauSaltRelax
-       _RL          r_tauThetaRelax
-       _RL          r_tauSaltRelax
-       INTEGER      ntTypeRelax
-       INTEGER      nsTypeRelax
+       _RL          tauThetaRelax   ! relaxation time (s) for temp
+       _RL          tauSaltRelax    ! relaxation time (s) for salt
+       _RL          r_tauThetaRelax ! reciprocal of above
+       _RL          r_tauSaltRelax  ! reciprocal of above
+       INTEGER      ntTypeRelax     ! method of relaxation for temp, non-zero is tapered
+       INTEGER      nsTypeRelax     ! method of relaxation for salt, non-zero is tapered
 
 
       COMMON /RUNOFF_DATA/ 
@@ -143,9 +143,15 @@ c
 c lookup table for ocean gridcell to atmos grid cell. The weight
 c is for that atmos grid cell; 1-weight is for atmos cell+1.
 c    
-      COMMON/LOOKUP_GRID/ atm_oc_ind, atm_oc_wgt
-       INTEGER atm_oc_ind(sNy)
-       _RL atm_oc_wgt(sNy)
+      COMMON/LOOKUP_GRID/ atm_oc_ind, atm_oc_wgt, atm_oc_frac1, atm_oc_frac2,
+     &                    endwgt1, endwgt2, rsumwgt
+       INTEGER atm_oc_ind(sNy) ! lookup of (first) atm grid for given ocean lat
+       _RL atm_oc_wgt(sNy)    ! weight of first atm grid for given ocean lat
+       _RL atm_oc_frac1(sNy)  ! fraction of atm lat area covered by ocean lat
+       _RL atm_oc_frac2(sNy)  ! fraction of atm+1 lat area covered by ocean lat
+       _RL endwgt1            ! weighting of atmos polar cap
+       _RL endwgt2            ! weighting of atmos cell next polar cap
+       _RL rsumwgt            ! recip of sum of above
 
     
       COMMON/OCN_FLUXES_SUM/ sum_runoff, sum_precip, sum_evap, sum_qnet,

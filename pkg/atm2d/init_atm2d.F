@@ -42,14 +42,14 @@ C     myThid - Thread no. that called this routine.
 
 C     LOCAL VARIABLES:
       INTEGER i,j,jj
-      INTEGER ib, ibj1, ibj2
+      INTEGER ib, ibj1, ibj2  ! runoff band loop counters
       INTEGER j_atm, mn
       INTEGER dUnit
-      _RL end1, end2
-      _RL totrun_b(sNy)
+      _RL end1, end2, enda1, enda2, enda3 !used to compute grid conv areas
+      _RL totrun_b(sNy) ! total file "runoff" in runoff bands
       _RL a1,a2
-      _RS atm_dyG(jm0)
-      DATA atm_dyG/2.0,44*4.0,2.0/
+      _RS atm_dyG(jm0)  ! southern point/(boundary) of atmos grid
+      DATA atm_dyG/2.0,44*4.0,2.0/  ! grid spacing for atmosphere
 
       dtatmo = dtatm * 3600.
       dtocno = dtocn * 3600.
@@ -80,27 +80,50 @@ c end atmos grid initialization
 
       atm_oc_ind(1)=2
       atm_oc_wgt(1)=1. _d 0
+      atm_oc_frac1(1)= (sin(yG(1,2,1,1)*deg2rad) - 
+     &        sin(yG(1,1,1,1)*deg2rad))/
+     &        (sin(atm_yG(3)*deg2rad)-sin(atm_yG(1)*deg2rad))
+      atm_oc_frac2(1)= 0. _d 0   ! assumes ocean(1) fits in atm(1)
       atm_oc_ind(sNy)=jm0-1
       atm_oc_wgt(sNy)=1. _d 0
+      atm_oc_frac1(sNy)= (sin((yG(1,sNy,1,1) + 
+     &      dyG(1,sNy,1,1)/6.37D6/deg2rad)*deg2rad)-
+     &      sin(yG(1,sNy,1,1)*deg2rad))/
+     &      (sin((atm_yG(jm0)+atm_dyG(jm0))*deg2rad)- 
+     &      sin(atm_yG(jm0-1)*deg2rad))
+      atm_oc_frac2(sNy)= 0. _d 0   ! assumes ocean(1) fits in atm(1)
+
+      endwgt1 = sin(atm_yG(2)*deg2rad)            !hard-coded that the atmos
+      endwgt2 = sin(atm_yG(3)*deg2rad) - endwgt1  !grid is same in NH and SH
+      endwgt1 = endwgt1 + 1. _d 0                 !and goes 90S to 90N
+      rsumwgt = 1. _d 0/(endwgt1 + endwgt2)
+
+      atm_yG(2)=atm_yG(1) ! grid now combined atm end points
+      atm_yG(jm0)=90. _d 0
 
       DO j=2, sNy-1
 
         DO jj=2,jm0-1
-          IF  ((yG(1,j,1,1).ge.atm_yG(jj)).AND.
-     &         (yG(1,j,1,1).lt.atm_yG(jj+1))) j_atm=jj
+          IF  ((yG(1,j,1,1).GE.atm_yG(jj)).AND.
+     &         (yG(1,j,1,1).LT.atm_yG(jj+1))) j_atm=jj
         ENDDO  
         
         atm_oc_ind(j)=j_atm
-        IF ( yG(1,j+1,1,1) .gt. atm_yG(j_atm+1) ) THEN
-           end1= sin(yG(1,j,1,1) *deg2rad)
-           end2= sin(yG(1,j+1,1,1) *deg2rad)
-           atm_oc_wgt(j)=(sin(atm_yG(j_atm+1) *deg2rad)-end1)/
-     &                   (end2-end1)
+        end1= sin(yG(1,j,1,1) *deg2rad)
+        end2= sin(yG(1,j+1,1,1) *deg2rad)
+        enda1 = sin(atm_yG(j_atm) *deg2rad)
+        enda2 = sin(atm_yG(j_atm+1) *deg2rad)
+        IF ( yG(1,j+1,1,1) .GT. atm_yG(j_atm+1) ) THEN
+           enda3 = sin(atm_yG(j_atm+2) *deg2rad)
+           atm_oc_wgt(j)=(enda2-end1)/ (end2-end1)
+           atm_oc_frac1(j)= (enda2-end1) / (enda2 - enda1)
+           atm_oc_frac2(j)= (end2 - enda2) / (enda3 - enda2)
         ELSE
           atm_oc_wgt(j)=1. _d 0
+          atm_oc_frac1(j)= (end2-end1)/ (enda2-enda1)
+          atm_oc_frac2(j)=0. _d 0
         ENDIF
       ENDDO
-
 c
 c find land fraction
 c
@@ -114,7 +137,7 @@ c
           IF (maskC(i,j,1,1,1).EQ.1.) THEN
             ocnArea(atm_oc_ind(j))=ocnArea(atm_oc_ind(j)) +
      &                           rA(i,j,1,1)*atm_oc_wgt(j)
-            IF (atm_oc_wgt(j).lt.1.d0) THEN
+            IF (atm_oc_wgt(j).LT.1.d0) THEN
               ocnArea(atm_oc_ind(j)+1)=ocnArea(atm_oc_ind(j)+1) +
      &                           rA(i,j,1,1)*(1.d0-atm_oc_wgt(j))
             ENDIF
@@ -145,6 +168,10 @@ C     deal with the combined atmos grid end cells...
       PRINT *, cflan
       PRINT *,'Lookup grid index, weights:'
       PRINT *, atm_oc_ind,atm_oc_wgt
+C      PRINT *,'Lookup fraction 1 of atmos grid:'
+C      PRINT *, atm_oc_frac1
+C      PRINT *,'Lookup fraction 2 of atmos grid:'
+C      PRINT *, atm_oc_frac2
 
 c
 c read in mean 1D atmos wind files -- store in memory
