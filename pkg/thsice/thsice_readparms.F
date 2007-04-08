@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.11 2007/04/04 02:11:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.12 2007/04/08 18:54:04 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -197,7 +197,25 @@ C     Set I/O parameters
       ENDIF
 #endif
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Check parameter consistency:
+      IF ( thSIceAdvScheme.EQ.0 .AND. thSIce_diffK.NE.0. ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   'THSICE_READPARMS: to use thSIce_diffK, needs to select',
+     &   ' one advection scheme (thSIceAdvScheme<>0)'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: THSICE_READPARMS'
+      ENDIF
+#ifndef ALLOW_GENERIC_ADVDIFF
+      IF ( thSIceAdvScheme.NE.0 ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   'THSICE_READPARMS: Need to compile "generic_advdiff" pkg',
+     &   ' in order to use thSIceAdvScheme'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: THSICE_READPARMS'
+      ENDIF
+#endif /* ndef ALLOW_GENERIC_ADVDIFF */
+
       IF ( useSEAICE .AND. stressReduction.NE.0. _d 0 ) THEN
 C--     If useSEAICE=.true., the stress is computed in seaice_model,
 C--     so that it does not need any further reduction
