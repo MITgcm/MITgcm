@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.2 2007/04/05 22:06:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.3 2007/04/08 18:53:16 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: THSICE_ADVDIFF
@@ -32,11 +35,13 @@ C   oceQnet   :: heat flux to the ocean         [W/m^2]
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "GAD.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
 #include "THSICE_2DYN.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C     === Routine arguments ===
@@ -121,11 +126,13 @@ C     but what matter here is just to have the right order of magnitude.
       IF ( minIcArea.GT.0. _d 0 ) r_minArea = 1. _d 0 / minIcArea
 
       thSIce_multiDimAdv = .TRUE.
+#ifdef ALLOW_GENERIC_ADVDIFF
       IF ( thSIceAdvScheme.EQ.ENUM_CENTERED_2ND
      & .OR.thSIceAdvScheme.EQ.ENUM_UPWIND_3RD
      & .OR.thSIceAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
        thSIce_multiDimAdv = .FALSE.
       ENDIF
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
 C--   Initialisation (+ build oceanic mask)
       DO j=1-OLy,sNy+OLy

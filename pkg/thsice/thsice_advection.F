@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.1 2007/04/04 02:40:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.2 2007/04/08 18:53:16 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -93,6 +93,7 @@ C  afy             :: horizontal advective flux, y direction
       _RL afx   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
+#ifdef ALLOW_GENERIC_ADVDIFF
 C !LOCAL VARIABLES: ====================================================
 C  maskLocW      :: 2-D array for mask at West points
 C  maskLocS      :: 2-D array for mask at South points
@@ -655,6 +656,8 @@ C-    explicit advection is done ; add some debugging print
      &      afx,afy, k, standardMessageUnit,bi,bj,myThid )
       ENDIF
 #endif /* ALLOW_DEBUG */
+
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
       RETURN
       END
