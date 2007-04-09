@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.2 2007/04/08 18:53:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.3 2007/04/09 15:35:48 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -136,6 +136,7 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       _RL tmpVol
 CEOP
 
+      k = 1
       dBug = debugLevel.GE.debLevB
      &     .AND. myIter.EQ.nIter0
      &     .AND. ( tracerIdentity.EQ.GAD_SI_HICE .OR.
