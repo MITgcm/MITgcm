@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.12 2006/06/20 21:33:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.13 2007/04/09 17:44:13 jscott Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -163,7 +163,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       useBlkFlx = useEXF .OR. useBulkForce
 
-      dt  = thSIce_deltaT
+      dt  = thSIce_dtTemp
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF ( iceMask(i,j).GT.0. _d 0) THEN

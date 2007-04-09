@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.12 2007/04/08 18:54:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.13 2007/04/09 17:44:13 jscott Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -62,7 +62,8 @@ C--   Th-Sea-ICE parameter
 
       NAMELIST /THSICE_PARM01/
      &     startIceModel, stepFwd_oceMxL,
-     &     thSIce_deltaT, ocean_deltaT, tauRelax_MxL,
+     &     thSIce_deltaT, thSIce_dtTemp,
+     &     ocean_deltaT, tauRelax_MxL,
      &     hMxL_default, sMxL_default, vMxL_default,
      &     thSIce_diffK, thSIceAdvScheme, stressReduction,
      &     thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq,
@@ -126,6 +127,7 @@ C--   Default values (parameters)
       stepFwd_oceMxL  = .FALSE.
       startIceModel   = 0
       thSIce_deltaT   = dTtracerLev(1)
+      thSIce_dtTemp  = UNSET_RL
       ocean_deltaT    = dTtracerLev(1)
       tauRelax_MxL    = 0. _d 0
       hMxL_default    = 50. _d 0
@@ -172,6 +174,10 @@ C--   Read parameters from open data file
 
 C--   Close the open data file
       CLOSE(iUnit)
+
+C     If using the same time step for both icetop temp solver
+C     and ice thickness/growth, use thSIce_deltaT value
+      IF ( thSIce_dtTemp .EQ. UNSET_RL ) thSIce_dtTemp=thSIce_deltaT
 
 C-    Define other constants (from previous ones):
       Tmlt1=-mu_Tf*S_winton
@@ -300,4 +306,3 @@ C--   Everyone else must wait for the parameters to be loaded
 
       RETURN
       END
-
