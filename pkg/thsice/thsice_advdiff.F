@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.3 2007/04/08 18:53:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.4 2007/04/09 15:51:22 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -69,7 +69,6 @@ C     vTrIce    :: sea-ice volume transport, y direction
 C     afx       :: horizontal advective flux, x direction
 C     afy       :: horizontal advective flux, y direction
 C     iceFrc    :: (new) sea-ice fraction
-C     iceFld    :: (new) effective sea-ice thickness
 C     iceVol    :: temporary array used in advection S/R
 C     oldVol    :: (old) sea-ice volume
 C     msgBuf    :: Informational/error meesage buffer
@@ -85,10 +84,9 @@ C     msgBuf    :: Informational/error meesage buffer
       _RL afy       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskOce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL iceFrc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL iceFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL iceVol    (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL oldVol    (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL minIcHeff, minIcArea, r_minArea
+      _RL r_minArea
       _RL meanCellArea, areaEpsil, vol_Epsil
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
@@ -120,10 +118,8 @@ C     but what matter here is just to have the right order of magnitude.
       areaEpsil = 1. _d -10 * meanCellArea
       vol_Epsil = 1. _d -15 * meanCellArea
 
-      minIcArea = iceMaskMin
-      minIcHeff = iceMaskMin*himin
       r_minArea = 0. _d 0
-      IF ( minIcArea.GT.0. _d 0 ) r_minArea = 1. _d 0 / minIcArea
+      IF ( iceMaskMin.GT.0. _d 0 ) r_minArea = 1. _d 0 / iceMaskMin
 
       thSIce_multiDimAdv = .TRUE.
 #ifdef ALLOW_GENERIC_ADVDIFF
@@ -366,42 +362,45 @@ c           WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: q2Fx=', gFld(i,j)
         ENDIF
 #endif
 
-C--   Update Ice Fraction, Ice thickness and snow thickness:
-C      and adjust sea-ice state if not enough ice.
+C--   Update Ice Fraction: ensure that fraction is > iceMaskMin & < 1
+C      and adjust Ice thickness and snow thickness accordingly
         DO j=1,sNy
          DO i=1,sNx
-C-    store new effective ice-thickness
-          iceFld(i,j) = iceHeight(i,j,bi,bj)*iceFrc(i,j)
-          IF ( iceFld(i,j) .GE. minIcHeff ) THEN
-C-    where there is enough ice, ensure that Ice fraction is > minIcArea & < 1
-           IF ( iceFrc(i,j) .GT. 1. _d 0 ) THEN
+          IF ( iceFrc(i,j) .GT. 1. _d 0 ) THEN
             iceMask(i,j,bi,bj)    = 1. _d 0
-            iceHeight(i,j,bi,bj)  = iceFld(i,j)
+            iceHeight(i,j,bi,bj)  = iceHeight(i,j,bi,bj) *iceFrc(i,j)
             snowHeight(i,j,bi,bj) = snowHeight(i,j,bi,bj)*iceFrc(i,j)
-           ELSEIF ( iceFrc(i,j) .LT. minIcArea ) THEN
-            iceMask(i,j,bi,bj)    = minIcArea
-            iceHeight(i,j,bi,bj)  = iceFld(i,j)*r_minArea
+          ELSEIF ( iceFrc(i,j) .LT. iceMaskMin ) THEN
+            iceMask(i,j,bi,bj)    = iceMaskMin
+            iceHeight(i,j,bi,bj)  = iceHeight(i,j,bi,bj)
+     &                             *iceFrc(i,j)*r_minArea
             snowHeight(i,j,bi,bj) = snowHeight(i,j,bi,bj)
      &                             *iceFrc(i,j)*r_minArea
-           ELSE
-            iceMask(i,j,bi,bj)    = iceFrc(i,j)
-           ENDIF
           ELSE
+            iceMask(i,j,bi,bj)    = iceFrc(i,j)
+          ENDIF
+         ENDDO
+        ENDDO
+C-     adjust sea-ice state if not enough ice.
+        DO j=1,sNy
+         DO i=1,sNx
+          IF ( iceHeight(i,j,bi,bj).LT.himin ) THEN
 C-    Not enough ice, melt the tiny amount of snow & ice:
-C     and return frsh-water, salt & energy to the ocean (flx > 0 = into ocean)
+C     and return fresh-water, salt & energy to the ocean (flx > 0 = into ocean)
 C- -  Note: using 1rst.Order Upwind, I can get the same results as when
 C     using seaice_advdiff (with SEAICEadvScheme=1) providing I comment
 C     out the following lines (and then loose conservation).
 C- -
-            oceFWfx(i,j,bi,bj) = ( rhos*snowHeight(i,j,bi,bj)
-     &                            +rhoi*iceHeight(i,j,bi,bj) )
-     &                                      *iceFrc(i,j)/thSIce_deltaT
-            oceSflx(i,j,bi,bj) =saltice*rhoi*iceFld(i,j)/thSIce_deltaT
-            oceQnet(i,j,bi,bj) = -qsnow*rhos*snowHeight(i,j,bi,bj)
-     &                                      *iceFrc(i,j)/thSIce_deltaT
-     &                         -( Qice1(i,j,bi,bj)
-     &                           +Qice2(i,j,bi,bj) )*0.5 _d 0
-     &                                 *rhoi*iceFld(i,j)/thSIce_deltaT
+            oceFWfx(i,j,bi,bj) =  ( rhos*snowHeight(i,j,bi,bj)
+     &                             +rhoi*iceHeight(i,j,bi,bj)
+     &                            )*iceMask(i,j,bi,bj)/thSIce_deltaT
+            oceSflx(i,j,bi,bj) =    rhoi*iceHeight(i,j,bi,bj)*saltice
+     &                             *iceMask(i,j,bi,bj)/thSIce_deltaT
+            oceQnet(i,j,bi,bj) = -( rhos*snowHeight(i,j,bi,bj)*qsnow
+     &                             +rhoi*iceHeight(i,j,bi,bj)
+     &                                  *( Qice1(i,j,bi,bj)
+     &                                    +Qice2(i,j,bi,bj) )*0.5 _d 0
+     &                            )*iceMask(i,j,bi,bj)/thSIce_deltaT
 C- -
 c           flx2oc (i,j) = flx2oc (i,j) +
 c           frw2oc (i,j) = frw2oc (i,j) +
