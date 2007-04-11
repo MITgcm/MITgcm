@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.6 2007/04/05 22:51:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.7 2007/04/11 00:00:47 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -62,7 +62,7 @@ C     i, j, k    :: Loop counters
 C     iTr        :: passive tracer index
 C     msgBuf     :: message buffer
       INTEGER i,j,k
-      _RL KbryanLewis79
+      _RL KbryanLewis79, KbryanLewisHL, KbryanLewisEQ
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_PTRACERS
       INTEGER iTr
@@ -72,9 +72,17 @@ CEOP
       IF ( trIdentity.EQ.GAD_TEMPERATURE) THEN
 
        DO k = 1,Nr
-        KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
-     &  *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+        KbryanLewisHL=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
+     &   *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+        KbryanLewisEQ=diffKrBLEQsurf+(diffKrBLEQdeep-diffKrBLEQsurf)
+     &   *( atan( -( rF(k)-diffKrBLEQHo )/diffKrBLEQscl )/PI+0.5 _d 0)
         DO j = 1-Oly,sNy+Oly
+         IF ( abs(YC(i,j,bi,bj)) .GT. KbryanLewisLatTransition ) THEN
+          KbryanLewis79 = KbryanLewisHL
+         ELSE
+          KbryanLewis79 = KbryanLewisHL-(KbryanLewisHL-KbryanLewisEQ)*
+     &         (1+cos(YC(i,j,bi,bj)*pi/KbryanLewisLatTransition)) / 2
+         ENDIF
          DO i = 1-Olx,sNx+Olx
           KappaRTr(i,j,k) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
@@ -92,9 +100,17 @@ CEOP
       ELSEIF ( trIdentity.EQ.GAD_SALINITY) THEN
 
        DO k = 1,Nr
-        KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
-     &  *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+        KbryanLewisHL=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
+     &   *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+        KbryanLewisEQ=diffKrBLEQsurf+(diffKrBLEQdeep-diffKrBLEQsurf)
+     &   *( atan( -( rF(k)-diffKrBLEQHo )/diffKrBLEQscl )/PI+0.5 _d 0)
         DO j = 1-Oly, sNy+Oly
+         IF ( abs(YC(i,j,bi,bj)) .GT. KbryanLewisLatTransition ) THEN
+          KbryanLewis79 = KbryanLewisHL
+         ELSE
+          KbryanLewis79 = KbryanLewisHL-(KbryanLewisHL-KbryanLewisEQ)*
+     &         (1+cos(YC(i,j,bi,bj)*pi/KbryanLewisLatTransition)) / 2
+         ENDIF
          DO i = 1-Olx, sNx+Olx
           KappaRTr(i,j,k) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
@@ -115,9 +131,17 @@ CEOP
 
        iTr = trIdentity - GAD_TR1 + 1
        DO k = 1,Nr
-        KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
-     &  *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+        KbryanLewisHL=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
+     &   *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+        KbryanLewisEQ=diffKrBLEQsurf+(diffKrBLEQdeep-diffKrBLEQsurf)
+     &   *( atan( -( rF(k)-diffKrBLEQHo )/diffKrBLEQscl )/PI+0.5 _d 0)
         DO j = 1-Oly, sNy+Oly
+         IF ( abs(YC(i,j,bi,bj)) .GT. KbryanLewisLatTransition ) THEN
+          KbryanLewis79 = KbryanLewisHL
+         ELSE
+          KbryanLewis79 = KbryanLewisHL-(KbryanLewisHL-KbryanLewisEQ)*
+     &         (1+cos(YC(i,j,bi,bj)*pi/KbryanLewisLatTransition)) / 2
+         ENDIF
          DO i = 1-Olx, sNx+Olx
           KappaRTr(i,j,k) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa

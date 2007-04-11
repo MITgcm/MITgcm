@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.784 2007/04/06 15:58:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.785 2007/04/11 00:00:47 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o Added capability for latitudinal dependence of Bryan and Lewis, 1979
+  vertical diffusivity, similar to that in MOM4; vertical diffusivity is
+  specified using diffKrBL79* diffKrBLEQ* and KbryanLewisLatTransition
 o Added capability for 3D specification of background vertical diffusion
   coefficient.  This is done by (i) #define ALLOW_3D_DIFFKR
   in CPP_OPTIONS.h and (ii) specifying file diffKrFile in runtime

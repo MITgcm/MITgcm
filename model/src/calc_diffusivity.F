@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.28 2007/04/05 22:51:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.29 2007/04/11 00:00:47 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,13 +53,22 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     I, J :: Loop counters
       INTEGER i,j
-      _RL KbryanLewis79
+      _RL KbryanLewis79, KbryanLewisHL, KbryanLewisEQ
 CEOP
 
-      KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
+      KbryanLewisHL=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
      & *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
 
+      KbryanLewisEQ=diffKrBLEQsurf+(diffKrBLEQdeep-diffKrBLEQsurf)
+     & *( atan( -( rF(k)-diffKrBLEQHo )/diffKrBLEQscl )/PI+0.5 _d 0)
+
       DO j = 1-Oly, sNy+Oly
+       IF ( abs(YC(i,j,bi,bj)) .GT. KbryanLewisLatTransition ) THEN
+        KbryanLewis79 = KbryanLewisHL
+       ELSE
+        KbryanLewis79 = KbryanLewisHL - (KbryanLewisHL-KbryanLewisEQ) *
+     &         (1+cos(YC(i,j,bi,bj)*pi/KbryanLewisLatTransition)) / 2
+       ENDIF
        DO i = 1-Olx, sNx+Olx
         KappaRT(i,j) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
@@ -74,6 +83,12 @@ CEOP
       ENDDO
 
       DO j = 1-Oly, sNy+Oly
+       IF ( abs(YC(i,j,bi,bj)) .GT. KbryanLewisLatTransition ) THEN
+        KbryanLewis79 = KbryanLewisHL
+       ELSE
+        KbryanLewis79 = KbryanLewisHL - (KbryanLewisHL-KbryanLewisEQ) *
+     &         (1+cos(YC(i,j,bi,bj)*pi/KbryanLewisLatTransition)) / 2
+       ENDIF
        DO i = 1-Olx, sNx+Olx
         KappaRS(i,j) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa

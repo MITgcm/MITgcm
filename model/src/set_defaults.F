@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.125 2007/04/05 22:51:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.126 2007/04/11 00:00:47 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -119,6 +119,11 @@ C-    Earth rotation period is 86400*365.25/366.25 (use to be 1.day)
       diffKrBL79deep      = 0. _d 0
       diffKrBL79scl       = 200. _d 0
       diffKrBL79Ho        = -2000. _d 0
+      diffKrBLEQsurf      = 0. _d 0
+      diffKrBLEQdeep      = 0. _d 0
+      diffKrBLEQscl       = 200. _d 0
+      diffKrBLEQHo        = -2000. _d 0
+      KbryanLewisLatTransition = 30
       viscA4              = 0. _d 11
       viscA4Grid          = 0. _d 0
       viscA4GridMax       = 1. _d 21

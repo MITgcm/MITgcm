@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.193 2007/04/05 22:51:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.194 2007/04/11 00:00:47 dimitri Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -182,6 +182,8 @@ C--   Continuous equation parameters
      & viscAr, diffKrT, diffKrS, diffKrNrT, diffKrNrS, hFacMinDr,
      & viscAp, diffKpT, diffKpS, hFacMinDp,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
+     & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
+     & KbryanLewisLatTransition,
      & rhoConst, rhoConstFresh, buoyancyRelation, HeatCapacity_Cp,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
