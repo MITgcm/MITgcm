@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.2 2006/12/20 12:25:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.3 2007/04/14 22:19:34 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -259,7 +259,11 @@ C--   Read initial sea-ice thickness from file if available.
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            DO k=1,3
-            IF(HEFF(I,J,k,bi,bj).GT.ZERO) AREA(I,J,k,bi,bj)=ONE
+            IF(HEFF(I,J,k,bi,bj).GT.ZERO) THEN
+             AREA(I,J,k,bi,bj)=ONE
+            ELSE
+             HSNOW(I,J,bi,bj)=ZERO
+            ENDIF
            ENDDO
           ENDDO
          ENDDO
