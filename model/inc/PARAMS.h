@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.200 2007/04/11 00:00:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.201 2007/04/14 18:32:32 dimitri Exp $
 C $Name:  $
 C
 
@@ -568,16 +568,15 @@ C                 for mixing of salt vertically ( units of r^2/s ),
 C     diffK4S   :: Biharmonic diffusion coeff. for mixing of
 C                 salt laterally ( m^4/s )
 C     diffKrBL79surf :: T/S surface diffusivity (m^2/s) Bryan and Lewis, 1979
-C     diffKrBLEQsurf :: same as above at Equator
 C     diffKrBL79deep :: T/S deep diffusivity (m^2/s) Bryan and Lewis, 1979
-C     diffKrBLEQdeep :: same as above at Equator
 C     diffKrBL79scl  :: depth scale for arctan fn (m) Bryan and Lewis, 1979
-C     diffKrBLEQscl  :: same as above at Equator
 C     diffKrBL79Ho   :: depth offset for arctan fn (m) Bryan and Lewis, 1979
-C     diffKrBLEQHo   :: same as above at Equator
-C     KbryanLewisLatTransition :: polarwise of this latitude diffKrBL79 is
-C               applied with gradual transition to diffKrBLEQ towards Equator
-
+C     BL79LatVary    :: polarwise of this latitude diffKrBL79 is applied with
+C                       gradual transition to diffKrBLEQ towards Equator
+C     diffKrBLEQsurf :: same as diffKrBL79surf but at Equator
+C     diffKrBLEQdeep :: same as diffKrBL79deep but at Equator
+C     diffKrBLEQscl  :: same as diffKrBL79scl but at Equator
+C     diffKrBLEQHo   :: same as diffKrBL79Ho but at Equator
 C     deltaT    :: Default timestep ( s )
 C     deltaTClock  :: Timestep used as model "clock". This determines the
 C                    IO frequencies and is used in tagging output. It can
@@ -677,8 +676,8 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & diffKhT, diffK4T, diffKrNrT,
      & diffKhS, diffK4S, diffKrNrS,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
+     & BL79LatVary,
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
-     & KbryanLewisLatTransition,
      & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_Gravity, gBaro,
@@ -764,11 +763,11 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL diffKrBL79deep
       _RL diffKrBL79scl
       _RL diffKrBL79Ho
+      _RL BL79LatVary
       _RL diffKrBLEQsurf
       _RL diffKrBLEQdeep
       _RL diffKrBLEQscl
       _RL diffKrBLEQHo
-      _RL KbryanLewisLatTransition
       _RL delt
       _RL tauCD
       _RL rCD

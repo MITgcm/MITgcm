@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.30 2007/04/05 22:51:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.31 2007/04/14 18:32:32 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -93,6 +93,12 @@ C               for mixing of tracers vertically ( units of r^2/s )
 #endif
 cph
 cph)
+
+#ifdef ALLOW_BL79_LAT_VARY
+C     BL79LatArray :: is used for latitudinal dependence of
+C                     BryanLewis79 vertical diffusivity
+      _RL BL79LatArray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 
 C     diagnostic variables: 
 C     phiHydLow  :: Phi-Hydrostatic at r-lower boundary

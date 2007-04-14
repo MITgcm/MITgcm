@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.8 2007/04/11 15:05:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.9 2007/04/14 18:32:32 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -62,7 +62,7 @@ C     i, j, k    :: Loop counters
 C     iTr        :: passive tracer index
 C     msgBuf     :: message buffer
       INTEGER i,j,k
-      _RL KbryanLewis79
+      _RL KbryanLewis79, KbryanLewisEQ
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_PTRACERS
       INTEGER iTr
@@ -73,7 +73,11 @@ CEOP
 
        DO k = 1,Nr
         KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
-     &  *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+     &   *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+#ifdef ALLOW_BL79_LAT_VARY
+        KbryanLewisEQ=diffKrBLEQsurf+(diffKrBLEQdeep-diffKrBLEQsurf)
+     &   *( atan( -( rF(k)-diffKrBLEQHo )/diffKrBLEQscl )/PI+0.5 _d 0)
+#endif
         DO j = 1-Oly,sNy+Oly
          DO i = 1-Olx,sNx+Olx
           KappaRTr(i,j,k) =
@@ -85,6 +89,9 @@ CEOP
      &       + diffKrNrT(k)
 #endif
      &       + KbryanLewis79
+#ifdef ALLOW_BL79_LAT_VARY
+     &       + (KbryanLewisEQ-KbryanLewis79)*BL79LatArray(i,j,bi,bj)
+#endif
          ENDDO
         ENDDO
        ENDDO
@@ -93,7 +100,11 @@ CEOP
 
        DO k = 1,Nr
         KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
-     &  *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+     &   *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+#ifdef ALLOW_BL79_LAT_VARY
+        KbryanLewisEQ=diffKrBLEQsurf+(diffKrBLEQdeep-diffKrBLEQsurf)
+     &   *( atan( -( rF(k)-diffKrBLEQHo )/diffKrBLEQscl )/PI+0.5 _d 0)
+#endif
         DO j = 1-Oly, sNy+Oly
          DO i = 1-Olx, sNx+Olx
           KappaRTr(i,j,k) =
@@ -105,6 +116,9 @@ CEOP
      &       + diffKrNrS(k)
 #endif
      &       + KbryanLewis79
+#ifdef ALLOW_BL79_LAT_VARY
+     &       + (KbryanLewisEQ-KbryanLewis79)*BL79LatArray(i,j,bi,bj)
+#endif
          ENDDO
         ENDDO
        ENDDO
@@ -116,7 +130,11 @@ CEOP
        iTr = trIdentity - GAD_TR1 + 1
        DO k = 1,Nr
         KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
-     &  *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+     &   *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+#ifdef ALLOW_BL79_LAT_VARY
+        KbryanLewisEQ=diffKrBLEQsurf+(diffKrBLEQdeep-diffKrBLEQsurf)
+     &   *( atan( -( rF(k)-diffKrBLEQHo )/diffKrBLEQscl )/PI+0.5 _d 0)
+#endif
         DO j = 1-Oly, sNy+Oly
          DO i = 1-Olx, sNx+Olx
           KappaRTr(i,j,k) =
@@ -128,6 +146,9 @@ CEOP
      &       + PTRACERS_diffKrNr(k,iTr)
 #endif
      &       + KbryanLewis79
+#ifdef ALLOW_BL79_LAT_VARY
+     &       + (KbryanLewisEQ-KbryanLewis79)*BL79LatArray(i,j,bi,bj)
+#endif
          ENDDO
         ENDDO
        ENDDO

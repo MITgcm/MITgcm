@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.194 2007/04/11 00:00:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.195 2007/04/14 18:32:32 dimitri Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -182,8 +182,8 @@ C--   Continuous equation parameters
      & viscAr, diffKrT, diffKrS, diffKrNrT, diffKrNrS, hFacMinDr,
      & viscAp, diffKpT, diffKpS, hFacMinDp,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
+     & BL79LatVary,
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
-     & KbryanLewisLatTransition,
      & rhoConst, rhoConstFresh, buoyancyRelation, HeatCapacity_Cp,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
@@ -531,6 +531,11 @@ C--   z,p,r coord input switching.
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
+
+      IF (diffKrBLEQsurf .EQ. UNSET_RL) diffKrBLEQsurf = diffKrBL79surf
+      IF (diffKrBLEQdeep .EQ. UNSET_RL) diffKrBLEQdeep = diffKrBL79deep
+      IF (diffKrBLEQscl  .EQ. UNSET_RL) diffKrBLEQscl  = diffKrBL79scl
+      IF (diffKrBLEQHo   .EQ. UNSET_RL) diffKrBLEQHo   = diffKrBL79Ho
 
       IF ( hFacMinDz .NE. UNSET_RL ) zCoordInputData = .TRUE.
       IF ( hFacMinDp .NE. UNSET_RL ) pCoordInputData = .TRUE.
