@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.18 2007/04/04 02:40:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.19 2007/04/15 21:58:33 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -278,8 +278,8 @@ C--    Net fluxes :
           Tsrf(i,j,bi,bj)     = tOceMxL(i,j,bi,bj)
           Tice1(i,j,bi,bj)    = 0. _d 0
           Tice2(i,j,bi,bj)    = 0. _d 0
-          Qice1(i,j,bi,bj)    = 0. _d 0
-          Qice2(i,j,bi,bj)    = 0. _d 0
+          Qice1(i,j,bi,bj)    = Lfresh
+          Qice2(i,j,bi,bj)    = Lfresh
         ENDIF
 
 #ifdef ATMOSPHERIC_LOADING
