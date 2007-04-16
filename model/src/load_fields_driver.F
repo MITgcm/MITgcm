@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.1 2006/06/15 16:23:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.2 2007/04/16 23:31:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -72,10 +72,10 @@ c# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 c#  include "GRID.h"
 c# endif
 # ifdef ALLOW_EXF
-#  include "exf_fields.h"
-#  include "exf_clim_fields.h"
+#  include "EXF_FIELDS.h"
+#  include "EXF_CLIM_FIELDS.h"
 #  ifdef ALLOW_BULKFORMULAE
-#   include "exf_constants.h"
+#   include "EXF_CONSTANTS.h"
 #  endif
 # endif
 c# ifdef ALLOW_PTRACERS

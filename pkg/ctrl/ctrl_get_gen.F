@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.10 2006/03/29 22:07:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.11 2007/04/16 23:34:33 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -35,7 +35,7 @@ c     == global variables ==
 #include "ctrl_dummy.h"
 #include "optim.h"
 #ifdef ALLOW_EXF
-# include "exf_fields.h"
+# include "EXF_FIELDS.h"
 #endif
 
 c     == routine arguments ==
