@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check.F,v 1.1 2007/04/16 22:38:24 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check.F,v 1.2 2007/04/16 22:49:39 heimbach Exp $
 
 #include "THSICE_OPTIONS.h"
 
@@ -41,5 +41,7 @@ c     == end of interface ==
         STOP 'ABNORMAL END: S/R THSICE_CHECK'
       ENDIF
 #endif
+
+      _END_MASTER(myThid)
 
       end
