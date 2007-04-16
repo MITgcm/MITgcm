@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.13 2006/11/09 16:37:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.14 2007/04/16 23:35:25 jmc Exp $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -45,7 +45,7 @@ c     == global variables ==
 #include "ecco_cost.h"
 #include "ctrl_dummy.h"
 #ifdef ALLOW_EXF
-# include "exf_fields.h"
+# include "EXF_FIELDS.h"
 #endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE.h"
