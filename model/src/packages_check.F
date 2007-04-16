@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.39 2007/03/07 00:00:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.40 2007/04/16 22:44:29 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -183,7 +183,9 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useBulkForce) CALL PACKAGES_CHECK_ERROR('BULK?FORCE',myThid)
 #endif
 
-#ifndef ALLOW_THSICE
+#ifdef ALLOW_THSICE
+      IF (useThSIce) CALL THSICE_CHECK( myThid )
+#else
       IF (useThSIce) CALL PACKAGES_CHECK_ERROR('THSICE', myThid)
 #endif
 
