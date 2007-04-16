@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.18 2006/03/06 13:17:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.19 2007/04/16 22:36:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -329,7 +329,7 @@ cph        GO TO 8001
 cph)
        END IF
       END IF
-      CALL SEAICE_EXCH ( UICE, myThid )
+      CALL EXCH_3D_RL( UICE, 3, myThid )
 
 cph(
       END IF
@@ -568,7 +568,7 @@ cph)
        END IF
       END IF
 
-      CALL SEAICE_EXCH ( VICE, myThid )
+      CALL EXCH_3D_RL( VICE, 3, myThid )
 
 cph(
       END IF
@@ -596,7 +596,7 @@ C NOW MAKE COROLIS TERM IMPLICIT
         END DO
        ENDDO
       ENDDO
-      CALL SEAICE_EXCH_UV ( UICE, VICE, myThid )
+      CALL EXCH_UV_3D_RL( UICE, VICE, .TRUE., 3, myThid )
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */

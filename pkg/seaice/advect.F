@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.17 2006/06/05 22:39:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.18 2007/04/16 22:36:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -126,7 +126,7 @@ C--   Use flux form for MITgcm compliance, unfortunately changes results
       ENDIF
 
       _BARRIER
-      CALL SEAICE_EXCH ( HEFF, myThid )
+      CALL EXCH_3D_RL( HEFF, 3, myThid )
       _BARRIER
 
       IF (LAD .EQ. 2) THEN
@@ -199,7 +199,7 @@ C--   Use flux form for MITgcm compliance, unfortunately changes results
          ENDIF
 
          _BARRIER
-         CALL SEAICE_EXCH( HEFF, myThid )
+         CALL EXCH_3D_RL( HEFF, 3, myThid )
          _BARRIER
 
 C     NOW FIX UP H(I,J,2)
