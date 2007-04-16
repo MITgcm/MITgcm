@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.2 2006/12/15 14:36:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.3 2007/04/16 22:43:01 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -8,7 +8,7 @@ CStartOfInterface
      I     UG,
      U     TSURF,
      O     netHeatFlux, SWHeatFlux,
-     I     bi, bj )
+     I     bi, bj, myThid )
 C     /================================================================\
 C     | SUBROUTINE seaice_budget_ocean                                 |
 C     | o Calculate surface heat fluxes over open ocean                |
@@ -34,6 +34,7 @@ C     INPUT:
 C     UG      :: thermal wind of atmosphere
 C     TSURF   :: surface temperature of ocean in Kelvin
 C     bi,bj   :: loop indices
+C     myThid  :: Thread no. that called this routine.
 C     OUTPUT:
 C     netHeatFlux :: net surface heat flux over open water or under ice
 C     SWHeatFlux  :: short wave heat flux over open water or under ice
@@ -41,7 +42,7 @@ C     SWHeatFlux  :: short wave heat flux over open water or under ice
       _RL TSURF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL netHeatFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SWHeatFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER bi, bj
+      INTEGER bi, bj, myThid
 CEndOfInterface
 
 C     === Local variables ===

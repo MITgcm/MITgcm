@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.10 2007/01/09 13:33:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.11 2007/04/16 22:43:01 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -235,7 +235,7 @@ C FIRST DO OPEN WATER
      I       UG, 
      U       TMIX, 
      O       QNETO, QSWO, 
-     I       bi, bj)
+     I       bi, bj, myThid )
 
 C NOW DO ICE
 #ifdef SEAICE_MULTICATEGORY
@@ -257,7 +257,7 @@ CADJ &                           key = ilockey, byte = isbyte
      I        UG, HICEP, hSnwLoc, 
      U        TICE, 
      O        FICEP, QSWIP, 
-     I        bi, bj)
+     I        bi, bj, myThid )
          DO J=1,sNy
           DO I=1,sNx
 C     average surface heat fluxes/growth rates
@@ -273,7 +273,7 @@ C--  End loop over multi-categories
      I       UG, HICE, hSnwLoc, 
      U       TICE, 
      O       FICE, QSWI, 
-     I       bi, bj)
+     I       bi, bj, myThid )
 #endif /* SEAICE_MULTICATEGORY */
      
 #ifdef ALLOW_AUTODIFF_TAMC

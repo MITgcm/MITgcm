@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.3 2006/12/19 18:57:09 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.4 2007/04/16 22:43:01 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -8,7 +8,7 @@ CStartOfInterface
      I     UG, hIce, hSnwLoc,
      U     TSURF,
      O     netHeatFlux, SWHeatFlux,
-     I     bi, bj )
+     I     bi, bj, myThid )
 C     /================================================================\
 C     | SUBROUTINE seaice_budget_ice                                   |
 C     | o Calculate ice growth rate, surface fluxes and temperature of |
@@ -35,6 +35,7 @@ C     TSURF   :: surface temperature of ice in Kelvin, updated
 C     hIce    :: (actual) ice thickness with upper and lower limit
 C     hSnwLoc :: actual snow thickness
 C     bi,bj   :: loop indices
+C     myThid  :: Thread no. that called this routine.
 C     OUTPUT:
 C     netHeatFlux :: net heat flux under ice = growth rate
 C     SWHeatFlux  :: short wave heat flux under ice
@@ -44,7 +45,7 @@ C     SWHeatFlux  :: short wave heat flux under ice
       _RL hSnwloc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL netHeatFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SWHeatFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER bi, bj
+      INTEGER bi, bj, myTHid
       INTEGER KOPEN
 CEndOfInterface
 
