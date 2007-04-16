@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.788 2007/04/16 22:43:12 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.789 2007/04/16 23:48:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  move exf header files from lower_case.h to UPPER_CASE.h ; 
+  add missing cvs Header & Name
 o pkg/seaice:
   - remove seaice_exch and seaice_exch_uv
   - remove superfluous exchange of theta
