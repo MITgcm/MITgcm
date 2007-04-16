@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.787 2007/04/15 22:04:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.788 2007/04/16 22:43:12 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice:
+  - remove seaice_exch and seaice_exch_uv
+  - remove superfluous exchange of theta
+  - add myThid to seaice_budget_ocean/ice
 
 checkpoint58y_post
 o Added capability for latitudinal dependence of Bryan and Lewis, 1979
