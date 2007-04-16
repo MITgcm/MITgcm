@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.13 2007/04/09 17:44:13 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.14 2007/04/16 22:38:24 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -46,6 +46,11 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "SIZE.h"
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
@@ -161,11 +166,37 @@ C-    define grid-point location where to print debugging values
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       useBlkFlx = useEXF .OR. useBulkForce
 
       dt  = thSIce_dtTemp
       DO j = jMin, jMax
        DO i = iMin, iMax
+#ifdef ALLOW_AUTODIFF_TAMC
+          ikey_1 = i
+     &         + sNx*(j-1)
+     &         + sNx*sNy*act1
+     &         + sNx*sNy*max1*act2
+     &         + sNx*sNy*max1*max2*act3
+     &         + sNx*sNy*max1*max2*max3*act4
+#endif /* ALLOW_AUTODIFF_TAMC */
+C--
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE  df0dt      = comlev1_thsice_1, key=ikey_1
+CADJ STORE  flxsw(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE  qic1(i,j)  = comlev1_thsice_1, key=ikey_1
+CADJ STORE  qic2(i,j)  = comlev1_thsice_1, key=ikey_1
+CADJ STORE  tsrf(i,j)  = comlev1_thsice_1, key=ikey_1
+#endif
         IF ( iceMask(i,j).GT.0. _d 0) THEN
           hi      = hIce(i,j)
           hs      = hSnow(i,j)
@@ -251,6 +282,14 @@ C Tsfc converges.
 
 C ----- begin iteration  -----
       DO k = 1,iterMax
+
+#ifdef ALLOW_AUTODIFF_TAMC
+       ikey_3 = (ikey_1-1)*MaxTsf + k
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE dtsf = comlev1_thsice_3, key=ikey_3
+#endif
        IF ( ABS(dTsf).GE.Terrmax ) THEN
 
 C Save temperatures at start of iteration.
@@ -288,6 +327,9 @@ C Compute new top layer and surface temperatures.
 C If Tsfc is computed to be > 0 C, fix Tsfc = 0 and recompute T1
 C with different coefficients.
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE tsf  = comlev1_thsice_3, key=ikey_3
+#endif
          a1 = a10 - k12*df0dT / (k12-df0dT)
          b1 = b10 - k12*(flx0-df0dT*Tsf) / (k12-df0dT)
          Tice(1) = -(b1 + SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)

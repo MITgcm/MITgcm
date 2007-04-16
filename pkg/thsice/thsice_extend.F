@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.4 2006/05/25 18:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.5 2007/04/16 22:38:24 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -31,6 +31,11 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "SIZE.h"
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
@@ -113,11 +118,38 @@ C-    define grid-point location where to print debugging values
  1020 FORMAT(A,1P4E11.3)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      deltaTice = thSIce_deltaT
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+      deltaTice = thSIce_deltaT
 
       DO j = jMin, jMax
        DO i = iMin, iMax
+#ifdef ALLOW_AUTODIFF_TAMC
+          ikey_1 = i
+     &         + sNx*(j-1)
+     &         + sNx*sNy*act1
+     &         + sNx*sNy*max1*act2
+     &         + sNx*sNy*max1*max2*act3
+     &         + sNx*sNy*max1*max2*max3*act4
+#endif /* ALLOW_AUTODIFF_TAMC */
+C--
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hice(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE hsnow(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE icfrac(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE qic1(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE qic2(i,j) = comlev1_thsice_1, key=ikey_1
+#endif
+
         IF (fzMlOc(i,j).GT.0. _d 0) THEN
           esurp   = fzMlOc(i,j)
           Tf      = tFrz(i,j)

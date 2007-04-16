@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.3 2007/04/09 15:35:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.4 2007/04/16 22:38:24 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -56,6 +56,11 @@ C !USES: ===============================================================
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "THSICE_PARAMS.h"
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  tracerIdentity  :: tracer identifier (required only for OBCS)
@@ -136,6 +141,21 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       _RL tmpVol
 CEOP
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      iicekey = (act1 + 1) + act2*max1
+     &                     + act3*max1*max2
+     &                     + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       k = 1
       dBug = debugLevel.GE.debLevB
      &     .AND. myIter.EQ.nIter0
@@ -198,15 +218,30 @@ C--   set mask West & South
        ENDDO
       ENDDO
 
+#ifndef ALLOW_AUTODIFF_TAMC
       IF (useCubedSphereExchange) THEN
        withSigns = .FALSE.
        CALL FILL_CS_CORNER_UV_RS(
      &      withSigns, maskLocW,maskLocS, bi,bj, myThid )
       ENDIF
+#endif
 
 C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
       DO ipass=1,nipass
+#ifdef ALLOW_AUTODIFF_TAMC
+         ikey_4 = ipass
+     &         + nipass*act1
+     &         + nipass*max1*act2
+     &         + nipass*max1*max2*act3
+     &         + nipass*max1*max2*max3*act4
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+CADJ STORE af(:,:)     = comlev1_thsice_4, key=ikey_4, byte=isbyte
+#endif
 
        interiorOnly = .FALSE.
        overlapOnly  = .FALSE.
@@ -241,6 +276,10 @@ C--   X direction
 C-     Do not compute fluxes if
 C       a) needed in overlap only
 C   and b) the overlap of myTile are not cube-face Edges
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+#endif
         IF ( .NOT.overlapOnly .OR. N_edge .OR. S_edge ) THEN
 
 C-     Advective flux in X
@@ -250,6 +289,7 @@ C-     Advective flux in X
           ENDDO
          ENDDO
 
+#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in X
          IF ( useCubedSphereExchange .AND.
      &      ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
@@ -257,6 +297,7 @@ C-     Internal exchange for calculations in X
           IF ( .NOT.useGridVolume )
      &    CALL FILL_CS_CORNER_TR_RL( .TRUE., iceVol, bi,bj, myThid )
          ENDIF
+#endif
 
 C-     Compute CFL number
          IF ( useGridVolume ) THEN
@@ -307,12 +348,14 @@ C-     Compute CFL number
 C--   Advective flux in X : done
         ENDIF
 
+#ifndef ALLOW_AUTODIFF_TAMC
 C--   Internal exchange for next calculations in Y
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
          CALL FILL_CS_CORNER_TR_RL(.FALSE., iceFld, bi,bj, myThid )
          IF ( .NOT.useGridVolume )
      &   CALL FILL_CS_CORNER_TR_RL(.FALSE., iceVol, bi,bj, myThid )
         ENDIF
+#endif
 
 C-     Update the local seaice field where needed:
 
@@ -325,6 +368,10 @@ C            in corner region) but safer to keep them.
          IF ( W_edge ) iMinUpd = 1
          IF ( E_edge ) iMaxUpd = sNx
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+#endif
          IF ( S_edge .AND. useGridVolume ) THEN
           DO j=1-OLy,0
            DO i=iMinUpd,iMaxUpd
@@ -440,6 +487,10 @@ C--   Y direction
 C-     Do not compute fluxes if
 C       a) needed in overlap only
 C   and b) the overlap of myTile are not cube-face edges
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+#endif
         IF ( .NOT.overlapOnly .OR. E_edge .OR. W_edge ) THEN
 
 C-     Advective flux in Y
@@ -449,6 +500,7 @@ C-     Advective flux in Y
           ENDDO
          ENDDO
 
+#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in Y
          IF ( useCubedSphereExchange .AND.
      &      ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
@@ -456,6 +508,7 @@ C-     Internal exchange for calculations in Y
           IF ( .NOT.useGridVolume )
      &    CALL FILL_CS_CORNER_TR_RL(.FALSE., iceVol, bi,bj, myThid )
          ENDIF
+#endif
 
 C-     Compute CFL number
          IF ( useGridVolume ) THEN
@@ -506,11 +559,13 @@ C-     Compute CFL number
 C-     Advective flux in Y : done
         ENDIF
 
+#ifndef ALLOW_AUTODIFF_TAMC
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
          CALL FILL_CS_CORNER_TR_RL( .TRUE., iceFld, bi,bj, myThid )
          IF ( .NOT.useGridVolume )
      &   CALL FILL_CS_CORNER_TR_RL( .TRUE., iceVol, bi,bj, myThid )
         ENDIF
+#endif
 
 C-     Update the local seaice field where needed:
 
@@ -523,6 +578,10 @@ C         in corner region) but safer to keep them.
          IF ( S_edge ) jMinUpd = 1
          IF ( N_edge ) jMaxUpd = sNy
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceFld(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+CADJ STORE iceVol(:,:) = comlev1_thsice_4, key=ikey_4, byte=isbyte
+#endif
          IF ( W_edge .AND. useGridVolume ) THEN
           DO j=jMinUpd,jMaxUpd
            DO i=1-OLx,0

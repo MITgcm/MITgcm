@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.12 2007/04/04 02:40:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.13 2007/04/16 22:38:24 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -32,6 +32,9 @@ C     === Global variables ===
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
+C--
+# include "THSICE_2DYN.h"
+C--
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -98,6 +101,12 @@ C      to be valid at the boundaries ( d/dx 1:sNx+1 ; d/dy 1:sNy+1 )
      &                         + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ocefwfx(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE oceqnet(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE ocesflx(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
+
 C--     Mixed layer thickness: take the 1rst layer
 #ifdef NONLIN_FRSURF
         IF ( staggerTimeStep .AND. nonlinFreeSurf.GT.0 ) THEN
@@ -162,9 +171,6 @@ CADJ STORE Tsrf    = comlev1, key = iicekey
 CADJ STORE Qice1   = comlev1, key = iicekey
 CADJ STORE Qice2   = comlev1, key = iicekey
 CADJ STORE snowAge = comlev1, key = iicekey
-
-CADJ STORE sHeating = comlev1, key = iicekey
-CADJ STORE flxCndBt = comlev1, key = iicekey
 CADJ STORE snowPrc  = comlev1, key = iicekey
 
 CADJ STORE hOceMxL = comlev1, key = iicekey
@@ -205,6 +211,17 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
         CALL THSICE_STEP_TEMP(
      I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     myTime, myIter, myThid )
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE empmr, qnet = comlev1, key = iicekey
+CADJ STORE iceMask = comlev1, key = iicekey
+CADJ STORE iceHeight  = comlev1, key = iicekey
+CADJ STORE snowHeight = comlev1, key = iicekey
+CADJ STORE Tsrf    = comlev1, key = iicekey
+CADJ STORE Qice1   = comlev1, key = iicekey
+CADJ STORE Qice2   = comlev1, key = iicekey
+CADJ STORE snowAge = comlev1, key = iicekey
+#endif
 
         CALL THSICE_STEP_FWD(
      I                     bi, bj, iMin, iMax, jMin, jMax,

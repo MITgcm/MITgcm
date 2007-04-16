@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.19 2007/04/15 21:58:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.20 2007/04/16 22:38:24 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -30,6 +30,11 @@ C     === Global variables ===
 #include "THSICE_VARS.h"
 #include "THSICE_TAVE.h"
 #include "THSICE_2DYN.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
+
       INTEGER siLo, siHi, sjLo, sjHi
       PARAMETER ( siLo = 1-OLx , siHi = sNx+OLx )
       PARAMETER ( sjLo = 1-OLy , sjHi = sNy+OLy )
@@ -96,6 +101,19 @@ C-    define grid-point location where to print debugging values
  1010 FORMAT(A,1P4E14.6)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      act1 = bi - myBxLo(myThid)
+      max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+      act2 = bj - myByLo(myThid)
+      max2 = myByHi(myThid) - myByLo(myThid) + 1
+      act3 = myThid - 1
+      max3 = nTx*nTy
+      act4 = ikey_dynamics - 1
+      iicekey = (act1 + 1) + act2*max1
+     &                     + act3*max1*max2
+     &                     + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    Initialise
       dBugFlag = debugLevel.GE.debLevB
@@ -184,6 +202,10 @@ C-------
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
+
       CALL THSICE_CALC_THICKN(
      I          bi, bj, siLo, siHi, sjLo, sjHi,
      I          iMin,iMax, jMin,jMax, dBugFlag,
@@ -201,8 +223,26 @@ C-------
 C--    Net fluxes :
       DO j = jMin, jMax
        DO i = iMin, iMax
+#ifdef ALLOW_AUTODIFF_TAMC
+          ikey_1 = i
+     &         + sNx*(j-1)
+     &         + sNx*sNy*act1
+     &         + sNx*sNy*max1*act2
+     &         + sNx*sNy*max1*max2*act3
+     &         + sNx*sNy*max1*max2*max3*act4
+#endif /* ALLOW_AUTODIFF_TAMC */
+C--
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE  icemask(i,j,bi,bj) = comlev1_thsice_1, key=ikey_1
+#endif
         IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN
 C-     weighted average net fluxes:
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE  fsalt(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE  flx2oc(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE  frw2oc(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE  icemask(i,j,bi,bj) = comlev1_thsice_1, key=ikey_1
+#endif
           icFrac = iceMask(i,j,bi,bj)
           opFrac= 1. _d 0-icFrac
           icFlxAtm(i,j,bi,bj) = icFrac*icFlxAtm(i,j,bi,bj)

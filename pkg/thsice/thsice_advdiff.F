@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.4 2007/04/09 15:51:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.5 2007/04/16 22:38:24 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -41,6 +41,10 @@ C   oceQnet   :: heat flux to the ocean         [W/m^2]
 #include "THSICE_2DYN.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -101,6 +105,20 @@ C     msgBuf    :: Informational/error meesage buffer
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          iicekey = (act1 + 1) + act2*max1
+     &                         + act3*max1*max2
+     &                         + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C     areaEpsil, vol_Epsil are 2 small numbers for ice area & ice volume:
 C     if ice area (=ice fraction * grid-cell area) or ice volume (= effective
 C     thickness * grid-cell area) are too small (i.e.: < areaEpsil,vol_Epsil)
@@ -146,6 +164,12 @@ C--   Initialisation (+ build oceanic mask)
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceHeight(i,j,bi,bj)  
+CADJ &     = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE snowHeight(i,j,bi,bj) 
+CADJ &     = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
       IF ( thSIce_diffK .GT. 0. ) THEN
         CALL THSICE_DIFFUSION(
      I              maskOce,
@@ -175,6 +199,11 @@ C--   Fractional area
           iceFrc(i,j) = iceMask(i,j,bi,bj)
          ENDDO
         ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE icevol(i,j) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE utrice(i,j) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE vtrice(i,j) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
         CALL THSICE_ADVECTION(
      I       GAD_SI_FRAC,  thSIceAdvScheme, .TRUE.,
      I       uTrIce, vTrIce, maskOce, thSIce_deltaT, areaEpsil,
@@ -195,6 +224,10 @@ C--   Snow thickness
      O       afx, afy,
      I       bi, bj, myTime, myIter, myThid )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceHeight(i,j,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE iceMask(i,j,bi,bj)   = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
 C--   sea-ice Thickness
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
@@ -208,6 +241,13 @@ C--   sea-ice Thickness
      U       iceVol, iceHeight(1-Olx,1-Oly,bi,bj),
      O       uTrIce, vTrIce,
      I       bi, bj, myTime, myIter, myThid )
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE qice2(i,j,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE utrice(i,j)      = comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE vtrice(i,j)      = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
+
 #ifdef ALLOW_DBUG_THSICE
         IF ( dBugFlag ) THEN
          sumVar1 = 0.
@@ -360,6 +400,15 @@ c           WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: q2Fx=', gFld(i,j)
           diagName = 'ADVy'//diagSufx
           CALL DIAGNOSTICS_FILL( afy, diagName, 1,1,2,bi,bj, myThid )
         ENDIF
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceHeight(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE snowHeight(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key=iicekey, byte=isbyte
+CADJ STORE iceFrc(:,:) = 
+CADJ &     comlev1_bibj, key=iicekey, byte=isbyte
 #endif
 
 C--   Update Ice Fraction: ensure that fraction is > iceMaskMin & < 1

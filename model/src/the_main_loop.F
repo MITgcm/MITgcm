@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.80 2007/02/04 21:07:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.81 2007/04/16 22:38:37 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,7 +82,10 @@ c They provide the fields to be stored.
 #  include "SEAICE.h"
 # endif
 # ifdef ALLOW_THSICE
+#  include "THSICE_SIZE.h"
+#  include "THSICE_PARAMS.h"
 #  include "THSICE_VARS.h"
+#  include "THSICE_2DYN.h"
 # endif
 # ifdef ALLOW_EBM
 #  include "EBM.h"
@@ -349,6 +352,17 @@ CADJ INIT comlev1_lsr = COMMON,nchklev_1*2
 CADJ INIT comlev1_evp = COMMON,nchklev_1
 # endif
 #endif /* ALLOW_SEAICE */
+c--
+#ifdef ALLOW_THSICE
+CADJ INIT comlev1_thsice_1
+CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
+CADJ INIT comlev1_thsice_2
+CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nlyr*nthreads_chkpt
+CADJ INIT comlev1_thsice_3
+CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*MaxTsf*nthreads_chkpt
+CADJ INIT comlev1_thsice_4
+CADJ &     = COMMON,nchklev_1*nsx*nsy*maxpass*nthreads_chkpt
+#endif /* ALLOW_THSICE */
 c--
 #ifdef ALLOW_DEPTH_CONTROL
 CADJ INIT comlev1_cg2d

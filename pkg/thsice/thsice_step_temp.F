@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.2 2006/05/30 22:48:59 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.3 2007/04/16 22:38:24 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -28,6 +28,11 @@ C     === Global variables ===
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
 #include "THSICE_TAVE.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
+
       INTEGER siLo, siHi, sjLo, sjHi
       PARAMETER ( siLo = 1-OLx , siHi = sNx+OLx )
       PARAMETER ( sjLo = 1-OLy , sjHi = sNy+OLy )
@@ -78,6 +83,19 @@ C-    define grid-point location where to print debugging values
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          iicekey = (act1 + 1) + act2*max1
+     &                         + act3*max1*max2
+     &                         + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       dBugFlag = debugLevel.GE.debLevB
 C-    Initialise flxAtm,evpAtm
        DO j = 1-OLy, sNy+OLy
@@ -87,6 +105,9 @@ C-    Initialise flxAtm,evpAtm
         ENDDO
        ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE tsrf(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
 c     IF ( fluidIsWater ) THEN
        CALL THSICE_ALBEDO(
      I          bi, bj, siLo, siHi, sjLo, sjHi,
@@ -101,6 +122,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    part.1 : ice-covered fraction ;
 C     Solve for surface and ice temperature (implicitly) ; compute surf. fluxes
 C-------
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE icflxsw(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
+
        DO j = jMin, jMax
         DO i = iMin, iMax
          IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN

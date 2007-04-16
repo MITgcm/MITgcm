@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.8 2007/04/04 01:55:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.9 2007/04/16 22:38:24 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -28,6 +28,9 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "THSICE_2DYN.h"
+#endif
 #ifdef ALLOW_AIM
 # include "AIM_FFIELDS.h"
 #endif
@@ -76,6 +79,11 @@ C-        fluxes :
             icFlxSW (i,j,bi,bj) = 0. _d 0
             icFlxAtm(i,j,bi,bj) = 0. _d 0
             icFrwAtm(i,j,bi,bj) = 0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+            oceFWfx(i,j,bi,bj)  = 0. _d 0
+            oceSflx(i,j,bi,bj)  = 0. _d 0
+            oceQnet(i,j,bi,bj)  = 0. _d 0
+#endif
            ENDDO
           ENDDO
 C-        oceanic mixed layer state :

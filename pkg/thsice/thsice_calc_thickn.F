@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.6 2006/05/25 18:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.7 2007/04/16 22:38:24 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -44,6 +44,11 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "SIZE.h"
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
@@ -164,12 +169,41 @@ C-    define grid-point location where to print debugging values
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       rec_nlyr = nlyr
       rec_nlyr = 1. _d 0 / rec_nlyr
       dt  = thSIce_deltaT
 
       DO j = jMin, jMax
        DO i = iMin, iMax
+#ifdef ALLOW_AUTODIFF_TAMC
+          ikey_1 = i
+     &         + sNx*(j-1)
+     &         + sNx*sNy*act1
+     &         + sNx*sNy*max1*act2
+     &         + sNx*sNy*max1*max2*act3
+     &         + sNx*sNy*max1*max2*max3*act4
+#endif /* ALLOW_AUTODIFF_TAMC */
+C--
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE frwatm(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE fzmloc(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE hice(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE hsnow(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE icfrac(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE qic1(i,j) = comlev1_thsice_1, key=ikey_1
+CADJ STORE qic2(i,j) = comlev1_thsice_1, key=ikey_1
+#endif
+
         IF (iceMask(i,j).GT.0. _d 0) THEN
           Tf      = tFrz(i,j)
           oceTs   = tOce(i,j)
@@ -297,6 +331,9 @@ C for reasonable values of i0.)
 C Top melt: snow, then ice.
 
       IF (etop .GT. 0. _d 0) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE etop = comlev1_thsice_1, key=ikey_1
+#endif
          IF (hs. gt. 0. _d 0) THEN
             rq =  rhos * qsnow
             rqh = rq * hs
@@ -310,6 +347,20 @@ C Top melt: snow, then ice.
          ENDIF
 
          DO k = 1, nlyr
+#ifdef ALLOW_AUTODIFF_TAMC
+          ikey_2 = k
+     &         + nlyr*(i-1)
+     &         + nlyr*sNx*(j-1)
+     &         + nlyr*sNx*sNy*act1
+     &         + nlyr*sNx*sNy*max1*act2
+     &         + nlyr*sNx*sNy*max1*max2*act3
+     &         + nlyr*sNx*sNy*max1*max2*max3*act4
+#endif
+C--
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE etop = comlev1_thsice_2, key=ikey_2
+CADJ STORE hnew(k) = comlev1_thsice_2, key=ikey_2
+#endif
             IF (etop .GT. 0. _d 0) THEN
                rq =  rhoi * qicen(k)
                rqh = rq * hnew(k)
@@ -340,11 +391,31 @@ C Compute enthalpy of new ice growing at bottom surface.
          qbot =  -cpice *Tf + Lfresh
          dhi = -ebot / (qbot * rhoi)
          ebot = 0. _d 0
-         k = nlyr
-         qicen(k) = (hnew(k)*qicen(k)+dhi*qbot) / (hnew(k)+dhi)
-         hnew(k) = hnew(k) + dhi
+cph         k = nlyr
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hnew(:) = comlev1_thsice_1, key=ikey_1
+CADJ STORE qicen(:) = comlev1_thsice_1, key=ikey_1
+#endif
+         qicen(nlyr) = (hnew(nlyr)*qicen(nlyr)+dhi*qbot) / 
+     &        (hnew(nlyr)+dhi)
+         hnew(nlyr) = hnew(nlyr) + dhi
       ELSE
          DO k = nlyr, 1, -1
+#ifdef ALLOW_AUTODIFF_TAMC
+          ikey_2 = (nlyr-k+1)
+     &         + nlyr*(i-1)
+     &         + nlyr*sNx*(j-1)
+     &         + nlyr*sNx*sNy*act1
+     &         + nlyr*sNx*sNy*max1*act2
+     &         + nlyr*sNx*sNy*max1*max2*act3
+     &         + nlyr*sNx*sNy*max1*max2*max3*act4
+#endif
+C--
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ebot = comlev1_thsice_2, key=ikey_2
+CADJ STORE hnew(k) = comlev1_thsice_2, key=ikey_2
+CADJ STORE qicen(k) = comlev1_thsice_2, key=ikey_2
+#endif
             IF (ebot.GT.0. _d 0 .AND. hnew(k).GT.0. _d 0) THEN
                rq =  rhoi * qicen(k)
                rqh = rq * hnew(k)
@@ -426,6 +497,10 @@ C Let it snow
 
 C If ice evap is used to sublimate surface snow/ice or
 C if no ice pass on to ocean
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE evap = comlev1_thsice_1, key=ikey_1
+CADJ STORE hs = comlev1_thsice_1, key=ikey_1
+#endif
        IF (hs.GT.0. _d 0) THEN
          IF (evap/rhos *dt.GT.hs) THEN
            evap=evap-hs*rhos/dt
@@ -435,8 +510,29 @@ C if no ice pass on to ocean
            evap=0. _d 0
          ENDIF
        ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE evap = comlev1_thsice_1, key=ikey_1
+CADJ STORE hi = comlev1_thsice_1, key=ikey_1
+CADJ STORE hnew(:) = comlev1_thsice_1, key=ikey_1
+CADJ STORE qicen(:) = comlev1_thsice_1, key=ikey_1
+#endif
        IF (hi.GT.0. _d 0.AND.evap.GT.0. _d 0) THEN
          DO k = 1, nlyr
+#ifdef ALLOW_AUTODIFF_TAMC
+          ikey_2 = k
+     &         + nlyr*(i-1)
+     &         + nlyr*sNx*(j-1)
+     &         + nlyr*sNx*sNy*act1
+     &         + nlyr*sNx*sNy*max1*act2
+     &         + nlyr*sNx*sNy*max1*max2*act3
+     &         + nlyr*sNx*sNy*max1*max2*max3*act4
+#endif
+C--
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE evap = comlev1_thsice_2, key=ikey_2
+CADJ STORE hnew(k) = comlev1_thsice_2, key=ikey_2
+CADJ STORE qicen(k) = comlev1_thsice_2, key=ikey_2
+#endif
             IF (evap .GT. 0. _d 0) THEN
 C-- original scheme, does not care about ice temp.
 C-  this can produce small error (< 1.W/m2) in the Energy budget
@@ -454,6 +550,9 @@ C-- modified scheme. taking into account Ice enthalpy
                  esurp = esurp - hnew(k)*rhoi*(qicen(k)-Lfresh)
                  hnew(k)=0. _d 0
                ELSE
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hnew(k) = comlev1_thsice_2, key=ikey_2
+#endif
                  hq = hnew(k)*qicen(k)-dhi*Lfresh
                  hnew(k) = hnew(k) - dhi
                  qicen(k)=hq/hnew(k)
@@ -505,10 +604,19 @@ C If there is enough snow to lower the ice/snow interface below
 C freeboard, convert enough snow to ice to bring the interface back
 C to sea-level.  Adjust enthalpy of top ice layer accordingly.
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hi = comlev1_thsice_1, key=ikey_1
+CADJ STORE hs = comlev1_thsice_1, key=ikey_1
+CADJ STORE hnew(:) = comlev1_thsice_1, key=ikey_1
+CADJ STORE qicen(:) = comlev1_thsice_1, key=ikey_1
+#endif
        IF ( hs .GT. hi*rhoiw/rhos ) THEN
 cBB               WRITE (6,*)  'Freeboard adjusts'
          dhi = (hs * rhos - hi * rhoiw) / rhosw
          dhs = dhi * rhoi / rhos
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hnew(:) = comlev1_thsice_1, key=ikey_1
+#endif
          rqh = rhoi*qicen(1)*hnew(1) + rhos*qsnow*dhs
          hnew(1) = hnew(1) + dhi
          qicen(1) = rqh / (rhoi*hnew(1))
