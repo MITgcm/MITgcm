@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.39 2007/04/01 18:59:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.40 2007/04/16 22:30:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -164,8 +164,8 @@ C     MUST CALL GROWTH ONLY AFTER CALLING ADVECTION
 
 C--   Update overlap regions for a bunch of stuff
       _BARRIER
-      CALL SEAICE_EXCH( HEFF, myThid )
-      CALL SEAICE_EXCH( AREA, myThid )
+      CALL EXCH_3D_RL( HEFF, 3, myThid )
+      CALL EXCH_3D_RL( AREA, 3, myThid )
       _EXCH_XY_R8( HSNOW,  myThid )
       CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
       _EXCH_XY_R4(EmPmR, myThid )
@@ -177,7 +177,6 @@ C--   Update overlap regions for a bunch of stuff
       IF ( useRealFreshWaterFlux .AND. .NOT.useThSIce )
      &   _EXCH_XY_RS( sIceLoad, myThid )
 #endif
-      _EXCH_XYZ_R8(theta , myThid )
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.16 2006/12/20 12:25:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.17 2007/04/16 22:30:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -82,9 +82,9 @@ C--    Read ice model fields
        _BARRIER
 
 C--    Update overlap regions
-       CALL SEAICE_EXCH_UV ( UICE, VICE, myThid )
-       CALL SEAICE_EXCH ( HEFF, myThid )
-       CALL SEAICE_EXCH ( AREA, myThid )
+       CALL EXCH_UV_3D_RL( UICE, VICE, .TRUE., 3, myThid )
+       CALL EXCH_3D_RL   ( HEFF, 3, myThid )
+       CALL EXCH_3D_RL   ( AREA, 3, myThid )
        _EXCH_XY_R8(TICE , myThid )
        _EXCH_XY_R8(YNEG , myThid )
        _EXCH_XY_R8(HSNOW, myThid )
