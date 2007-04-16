@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.14 2007/03/08 08:59:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.15 2007/04/16 23:27:20 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -118,9 +118,9 @@ c     == global variables ==
 #include "DYNVARS.h"
 c #include "GRID.h"
 
-#include "exf_param.h"
-#include "exf_fields.h"
-#include "exf_constants.h"
+#include "EXF_PARAM.h"
+#include "EXF_FIELDS.h"
+#include "EXF_CONSTANTS.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"

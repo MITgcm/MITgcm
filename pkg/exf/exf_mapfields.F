@@ -1,4 +1,5 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.16 2006/03/02 15:30:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.17 2007/04/16 23:27:21 jmc Exp $
+C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
@@ -15,7 +16,7 @@ c       This routine is included to separate the ocean state estimation
 c       tool as much as possible from the ocean model.  Unit and sign
 c       conventions can be customized using variables exf_outscal_*,
 c       which are set in exf_readparms.F.  See the header files
-c       exf_fields.h and FFIELDS.h for definitions of the various input
+c       EXF_FIELDS.h and FFIELDS.h for definitions of the various input
 c       and output fields and for default unit and sign convetions.
 c
 c     started: Christian Eckert eckert@mit.edu  09-Aug-1999
@@ -51,11 +52,11 @@ c     == global variables ==
 #include "FFIELDS.h"
 #include "GRID.h"
 
-#include "exf_param.h"
-#include "exf_constants.h"
-#include "exf_fields.h"
-#include "exf_clim_param.h"
-#include "exf_clim_fields.h"
+#include "EXF_PARAM.h"
+#include "EXF_CONSTANTS.h"
+#include "EXF_FIELDS.h"
+#include "EXF_CLIM_PARAM.h"
+#include "EXF_CLIM_FIELDS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"

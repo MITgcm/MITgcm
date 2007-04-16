@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.14 2006/06/30 12:05:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.15 2007/04/16 23:27:21 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -41,9 +41,9 @@ c     == global variables ==
 #include "DYNVARS.h"
 #include "GRID.h"
 
-#include "exf_param.h"
-#include "exf_fields.h"
-#include "exf_constants.h"
+#include "EXF_PARAM.h"
+#include "EXF_FIELDS.h"
+#include "EXF_CONSTANTS.h"
 
 #ifdef ALLOW_AUTODIFF
 # include "ctrl.h"

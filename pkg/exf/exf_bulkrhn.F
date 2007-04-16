@@ -1,4 +1,5 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulkrhn.F,v 1.5 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulkrhn.F,v 1.6 2007/04/16 23:27:20 jmc Exp $
+C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
@@ -36,7 +37,7 @@ c     ==================================================================
 c     == global variables ==
 
 #include "SIZE.h"
-#include "exf_constants.h"
+#include "EXF_CONSTANTS.h"
 
 c     == function arguments ==
       _RL stab

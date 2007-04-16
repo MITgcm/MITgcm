@@ -1,4 +1,5 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_swapffields.F,v 1.4 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_swapffields.F,v 1.5 2007/04/16 23:27:21 jmc Exp $
+C $Name:  $
 
 #include "EXF_OPTIONS.h"
 

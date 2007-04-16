@@ -1,4 +1,5 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.4 2007/02/16 15:01:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.5 2007/04/16 23:27:21 jmc Exp $
+C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
@@ -19,9 +20,9 @@ c     == global variables ==
 #include "DYNVARS.h"
 #include "GRID.h"
 
-#include "exf_param.h"
-#include "exf_fields.h"
-#include "exf_constants.h"
+#include "EXF_PARAM.h"
+#include "EXF_FIELDS.h"
+#include "EXF_CONSTANTS.h"
 
 c     == routine arguments ==
 

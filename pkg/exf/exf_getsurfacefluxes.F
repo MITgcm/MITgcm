@@ -1,5 +1,4 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.11 2006/03/02 02:53:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.12 2007/04/16 23:27:21 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -40,7 +39,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "exf_fields.h"
+#include "EXF_FIELDS.h"
 #ifdef ALLOW_AUTODIFF
 # include "ctrl.h"
 # include "ctrl_dummy.h"

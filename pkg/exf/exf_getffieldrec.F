@@ -1,4 +1,5 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.14 2005/05/31 18:03:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.15 2007/04/16 23:27:21 jmc Exp $
+C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
@@ -53,7 +54,7 @@ c     == global variables ==
 c cal: modelstart, modelstep
 #include "EEPARAMS.h"
 #include "cal.h"
-#include "exf_param.h"
+#include "EXF_PARAM.h"
 
 c     == routine arguments ==
 

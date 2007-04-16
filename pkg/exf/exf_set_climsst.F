@@ -1,4 +1,5 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsst.F,v 1.15 2006/12/14 22:15:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsst.F,v 1.16 2007/04/16 23:27:21 jmc Exp $
+C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
@@ -33,10 +34,10 @@ c     ==================================================================
 #include "SIZE.h"
 #include "GRID.h"
 
-#include "exf_param.h"
-#include "exf_constants.h"
-#include "exf_clim_param.h"
-#include "exf_clim_fields.h"
+#include "EXF_PARAM.h"
+#include "EXF_CONSTANTS.h"
+#include "EXF_CLIM_PARAM.h"
+#include "EXF_CLIM_FIELDS.h"
 
 c     == routine arguments ==
 
@@ -185,10 +186,10 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-#include "exf_fields.h"
-#include "exf_param.h"
-#include "exf_clim_param.h"
-#include "exf_clim_fields.h"
+#include "EXF_FIELDS.h"
+#include "EXF_PARAM.h"
+#include "EXF_CLIM_PARAM.h"
+#include "EXF_CLIM_FIELDS.h"
 
 c     == routine arguments ==
 

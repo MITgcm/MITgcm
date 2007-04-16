@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.18 2007/04/16 23:27:21 jmc Exp $
+C $Name:  $
+
 #include "EXF_OPTIONS.h"
 
       subroutine exf_set_gen( 
@@ -41,8 +44,8 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "exf_param.h"
-#include "exf_constants.h"
+#include "EXF_PARAM.h"
+#include "EXF_CONSTANTS.h"
 
 c     == routine arguments ==
 
@@ -263,7 +266,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-#include "exf_param.h"
+#include "EXF_PARAM.h"
 
 c     == routine arguments ==
 

@@ -1,4 +1,5 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.5 2006/01/02 21:17:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.6 2007/04/16 23:27:21 jmc Exp $
+C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
@@ -36,8 +37,8 @@ c     ==================================================================
 c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "exf_fields.h"
-#include "exf_clim_fields.h"
+#include "EXF_FIELDS.h"
+#include "EXF_CLIM_FIELDS.h"
 
 c     == routine arguments ==
 
