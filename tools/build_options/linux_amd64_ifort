@@ -23,7 +23,7 @@ LIBS=''
 if test "x$DEVEL" != x ; then
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC -O0 -g -noalign -fpstkchk -check all -fpe0 -traceback -ftrapuv -fpmodel except -warn all'
 else
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecli -fPIC'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC'
 fi
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
