@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.19 2007/02/07 01:07:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.20 2007/04/16 22:38:15 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -29,7 +29,7 @@ C     SEAICE_FFIELDS.h, and reads them in from files.  When CPP option
 C     SEAICE_EXTERNAL_FORCING is defined, the above forcing variables
 C     are defined and provided by an external package.  At present this
 C     option is hardwired for pkg/exf and the variables are passed using
-C     include file exf_fields.h.
+C     include file EXF_FIELDS.h.
 #define SEAICE_EXTERNAL_FORCING
 #ifdef SEAICE_EXTERNAL_FORCING
 #include "EXF_OPTIONS.h"
