@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad_seaice_only/Attic/exf_getclim.F,v 1.1 2005/09/10 14:17:07 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad_seaice_only/Attic/exf_getclim.F,v 1.2 2007/04/16 23:41:49 jmc Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -39,8 +39,8 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "exf_fields.h"
-#include "exf_clim_fields.h"
+#include "EXF_FIELDS.h"
+#include "EXF_CLIM_FIELDS.h"
 #ifdef ALLOW_AUTODIFF
 # include "ctrl.h"
 # include "ctrl_dummy.h"

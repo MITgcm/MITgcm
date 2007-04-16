@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_FFIELDS.h,v 1.10 2005/04/17 00:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_FFIELDS.h,v 1.11 2007/04/16 23:38:54 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -52,7 +52,7 @@ C     All surface forcing fields are defined at the center of
 C     each grid (the rVel location in model/inc/GRID.h).
 C
 C     #ifdef SEAICE_EXTERNAL_FORCING, sea-ice forcing fields
-C     are defined in exf_fields.h
+C     are defined in EXF_FIELDS.h
 C
 C     #ifdef SEAICE_EXTERNAL_FLUXES, additional forcing fields, fu,
 C     fv, Qnet, Qsw, and EmPmR, as defined in FFIELDS.h, are required.
@@ -65,7 +65,7 @@ C
 #ifdef SEAICE_EXTERNAL_FORCING
 
 C--   Define forcing fields outside pkg/seaice.
-#include "exf_fields.h"
+#include "EXF_FIELDS.h"
 
 #else /* SEAICE_EXTERNAL_FORCING undefined */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.4 2006/06/25 22:22:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.5 2007/04/16 23:37:48 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -29,9 +29,9 @@ C     == Global data ==
 # include "SIZE.h"
 # include "EEPARAMS.h"
 # include "PARAMS.h"
-# include "exf_constants.h"
-# include "exf_param.h"
-# include "exf_fields.h"
+# include "EXF_CONSTANTS.h"
+# include "EXF_PARAM.h"
+# include "EXF_FIELDS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

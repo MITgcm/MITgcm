@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_map_exf.F,v 1.1 2006/05/30 22:48:59 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_map_exf.F,v 1.2 2007/04/16 23:37:48 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -30,9 +30,9 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "FFIELDS.h"
 #ifdef ALLOW_EXF
-# include "exf_constants.h"
-# include "exf_param.h"
-# include "exf_fields.h"
+# include "EXF_CONSTANTS.h"
+# include "EXF_PARAM.h"
+# include "EXF_FIELDS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
