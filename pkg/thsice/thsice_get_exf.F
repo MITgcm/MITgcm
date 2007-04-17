@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.5 2007/04/16 23:37:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.6 2007/04/17 23:42:33 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -32,6 +32,10 @@ C     == Global data ==
 # include "EXF_CONSTANTS.h"
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -105,6 +109,10 @@ C     Ts2    :: surface temperature square [K^2]
       _RL Ts2
 C     latent heat of evaporation or sublimation [J/kg]
       _RL lath
+#ifdef ALLOW_AUTODIFF_TAMC
+      integer ikey_1
+      integer ikey_2
+#endif
 
 C     == external functions ==
 
@@ -116,6 +124,23 @@ c     external  exf_BulkqSat
       external  exf_BulkRhn
 
 C     == end of interface ==
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+
+          ikey_1 = i
+     &         + sNx*(j-1)
+     &         + sNx*sNy*act1
+     &         + sNx*sNy*max1*act2
+     &         + sNx*sNy*max1*max2*act3
+     &         + sNx*sNy*max1*max2*max3*act4
+#endif
 
 C     copy a few variables to names used in bulkf_formula_lay
       Tsf    =  tsfCel+cen2kel
@@ -152,6 +177,9 @@ c          ssq    = saltsat*tmpbulk/atmrho
            deltap = atemp(i,j,bi,bj)   + gamma_blk*ht - Tsf
            delq   = aqh(i,j,bi,bj) - ssq
            stable = exf_half + sign(exf_half, deltap)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
+#endif
            tmpbulk= exf_BulkCdn(sh(i,j,bi,bj))
            rdn    = sqrt(tmpbulk)
            ustar  = rdn*sh(i,j,bi,bj)
@@ -160,6 +188,22 @@ c          ssq    = saltsat*tmpbulk/atmrho
            qstar  = cdalton*delq
 
            do iter = 1,niter_bulk
+
+#ifdef ALLOW_AUTODIFF_TAMC
+                   ikey_2 = iter
+     &                  + niter_bulk*(i-1)
+     &                  + niter_bulk*sNx*(j-1)
+     &                  + niter_bulk*sNx*sNy*act1
+     &                  + niter_bulk*sNx*sNy*max1*act2
+     &                  + niter_bulk*sNx*sNy*max1*max2*act3
+     &                  + niter_bulk*sNx*sNy*max1*max2*max3*act4
+
+CADJ STORE rdn    = comlev1_exf_2, key = ikey_2
+CADJ STORE ustar  = comlev1_exf_2, key = ikey_2
+CADJ STORE qstar  = comlev1_exf_2, key = ikey_2
+CADJ STORE tstar  = comlev1_exf_2, key = ikey_2
+CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
+#endif
 
             huol   = czol*(tstar/t0 +
      &           qstar/(exf_one/humid_fac+aqh(i,j,bi,bj)))/

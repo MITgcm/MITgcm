@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.54 2007/04/16 23:35:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.55 2007/04/17 23:42:32 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -133,6 +133,12 @@ c They provide the fields to be stored.
 # ifdef ALLOW_SEAICE
 #  include "SEAICE.h"
 #  include "SEAICE_COST.h"
+# endif
+# ifdef ALLOW_THSICE
+#  include "THSICE_SIZE.h"
+#  include "THSICE_PARAMS.h"
+#  include "THSICE_VARS.h"
+#  include "THSICE_2DYN.h"
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
@@ -423,6 +429,17 @@ CADJ INIT comlev1_multdim
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt*multdim
 #  endif
 # endif /* ALLOW_SEAICE */
+c--
+#ifdef ALLOW_THSICE
+CADJ INIT comlev1_thsice_1
+CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
+CADJ INIT comlev1_thsice_2
+CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nlyr*nthreads_chkpt
+CADJ INIT comlev1_thsice_3
+CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*MaxTsf*nthreads_chkpt
+CADJ INIT comlev1_thsice_4
+CADJ &     = COMMON,nchklev_1*nsx*nsy*maxpass*nthreads_chkpt
+#endif /* ALLOW_THSICE */
 c--
 #endif /* ALLOW_AUTODIFF_TAMC */
 c**************************************

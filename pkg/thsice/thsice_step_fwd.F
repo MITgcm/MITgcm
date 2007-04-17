@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.20 2007/04/16 22:38:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.21 2007/04/17 23:42:33 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -129,6 +129,10 @@ C-    Initialise
 
       ageFac = 1. _d 0 - thSIce_deltaT/snowAgTime
       snowFac = thSIce_deltaT/(rhos*hNewSnowAge)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE iceMask(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+#endif
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN
@@ -287,6 +291,10 @@ C-------
      O          flx2oc, frw2oc, fsalt,
      I          myTime, myIter, myThid )
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE snowHeight(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key=iicekey, byte=isbyte
+#endif
       DO j = jMin, jMax
        DO i = iMin, iMax
         IF (frzmltMxL(i,j).GT.0. _d 0) THEN
@@ -321,16 +329,23 @@ C--    Net fluxes :
           Qice1(i,j,bi,bj)    = Lfresh
           Qice2(i,j,bi,bj)    = Lfresh
         ENDIF
+       ENDDO
+      ENDDO
 
 #ifdef ATMOSPHERIC_LOADING
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE snowHeight(:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key=iicekey, byte=isbyte
+# endif
+      DO j = jMin, jMax
+       DO i = iMin, iMax
 C--     Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
         sIceLoad(i,j,bi,bj) = ( snowHeight(i,j,bi,bj)*rhos
      &                         + iceHeight(i,j,bi,bj)*rhoi
      &                        )*iceMask(i,j,bi,bj)
-#endif
-
        ENDDO
       ENDDO
+#endif
 
       IF ( thSIceAdvScheme.GT.0 ) THEN
 C--   note: those fluxes should to be added directly to Qnet, EmPmR & saltFlux

@@ -14,6 +14,7 @@ thsice_get_velocity.f
 thsice_impl_temp.f
 thsice_ini_vars.f
 thsice_main.f
+thsice_map_exf.f
 thsice_reshape_layers.f
 thsice_slab_ocean.f
 thsice_solve4temp.f

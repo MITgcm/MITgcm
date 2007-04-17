@@ -10,6 +10,8 @@ CADJ STORE ocefwfx = tapelev4, key = ilev_4
 CADJ STORE oceqnet = tapelev4, key = ilev_4
 CADJ STORE ocesflx = tapelev4, key = ilev_4
 
+CADJ STORE saltflux = tapelev4, key = ilev_4
+
 #ifdef ATMOSPHERIC_LOADING
-cphCADJ STORE siceload = tapelev4, key = ilev_4
+CADJ STORE siceload = tapelev4, key = ilev_4
 #endif

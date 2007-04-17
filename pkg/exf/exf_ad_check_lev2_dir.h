@@ -83,6 +83,10 @@ CADJ STORE siceload      = tapelev2, key = ilev_2
 CADJ STORE runoff0       = tapelev2, key = ilev_2
 CADJ STORE runoff1       = tapelev2, key = ilev_2
 # endif
+# ifdef ALLOW_THSICE
+CADJ STORE snowprecip0   = tapelev2, key = ilev_2
+CADJ STORE snowprecip1   = tapelev2, key = ilev_2
+#endif
 
 # ifdef ALLOW_HFLUX_CONTROL
 CADJ STORE xx_hflux0     = tapelev2, key = ilev_2

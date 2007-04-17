@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.13 2007/04/16 22:38:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.14 2007/04/17 23:42:33 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -105,8 +105,14 @@ C      to be valid at the boundaries ( d/dx 1:sNx+1 ; d/dy 1:sNy+1 )
 CADJ STORE ocefwfx(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
 CADJ STORE oceqnet(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
 CADJ STORE ocesflx(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+# ifdef ALLOW_EXF
+CADJ STORE qsw(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
+# endif
 #endif
 
+cph(
+          print *, 'ph-thsice-1 in thsice_main'
+cph)
 C--     Mixed layer thickness: take the 1rst layer
 #ifdef NONLIN_FRSURF
         IF ( staggerTimeStep .AND. nonlinFreeSurf.GT.0 ) THEN
@@ -182,6 +188,9 @@ CADJ STORE empmr   = comlev1, key = iicekey
 CADJ STORE qnet    = comlev1, key = iicekey
 #endif
 
+cph(
+          print *, 'ph-thsice-2 in thsice_main'
+cph)
 C-      do sea-ice advection before getting surface fluxes
 C Note: will inline this S/R once thSIce in Atmos. set-up is settled
         IF ( thSIceAdvScheme.GT.0 )
@@ -208,6 +217,9 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
 #endif
 
 
+cph(
+          print *, 'ph-thsice-3 in thsice_main'
+cph)
         CALL THSICE_STEP_TEMP(
      I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     myTime, myIter, myThid )
@@ -223,11 +235,17 @@ CADJ STORE Qice2   = comlev1, key = iicekey
 CADJ STORE snowAge = comlev1, key = iicekey
 #endif
 
+cph(
+          print *, 'ph-thsice-4 in thsice_main'
+cph)
         CALL THSICE_STEP_FWD(
      I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     prcAtm,
      I                     myTime, myIter, myThid )
 
+cph(
+          print *, 'ph-thsice-5 in thsice_main'
+cph)
         CALL THSICE_AVE(
      I                     bi,bj, myTime, myIter, myThid )
 
@@ -262,6 +280,9 @@ C--  end bi,bj loop
       ENDDO
 
 
+cph(
+          print *, 'ph-thsice-6 in thsice_main'
+cph)
       IF ( useSEAICE .OR. thSIceAdvScheme.GT.0 ) THEN
 C--   Exchange fields that are advected by seaice dynamics
         _EXCH_XY_R8( iceMask, myThid )

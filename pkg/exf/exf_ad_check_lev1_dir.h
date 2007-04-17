@@ -89,6 +89,10 @@ CADJ STORE siceload      = comlev1, key = ikey_dynamics
 CADJ STORE runoff0   = comlev1, key = ikey_dynamics
 CADJ STORE runoff1   = comlev1, key = ikey_dynamics
 # endif
+# ifdef ALLOW_THSICE
+CADJ STORE snowprecip0   = comlev1, key = ikey_dynamics
+CADJ STORE snowprecip1   = comlev1, key = ikey_dynamics
+#endif
 
 # ifdef ALLOW_HFLUX_CONTROL
 CADJ STORE xx_hflux0     = comlev1, key = ikey_dynamics

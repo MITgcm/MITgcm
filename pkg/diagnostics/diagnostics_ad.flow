@@ -57,10 +57,17 @@ CADJ SUBROUTINE DIAGS_OCEANIC_SURF_FLUX DEPEND = 1,2,3
 CADJ SUBROUTINE DIAGS_OCEANIC_SURF_FLUX REQUIRED
 
 C----------------------------------------
-C subroutine  
+C subroutine  DIAGNOSTICS_SCALE_FILL
 C----------------------------------------
 CADJ SUBROUTINE DIAGNOSTICS_SCALE_FILL INPUT  = 1,2,3,4,5,6,7,8,9,10
 CADJ SUBROUTINE DIAGNOSTICS_SCALE_FILL OUTPUT =
+
+C----------------------------------------
+C subroutine  diagnostics_fract_fill
+C----------------------------------------
+CADJ SUBROUTINE diagnostics_fract_fill INPUT  = 
+CADJ &          1,2,3,4,5,6,7,8,9,10,11
+CADJ SUBROUTINE diagnostics_fract_fill OUTPUT =
 
 
 
