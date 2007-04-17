@@ -8,8 +8,6 @@ seaice_budget_ice.f
 seaice_budget_ocean.f
 seaice_check.f
 seaice_do_diags.f
-seaice_exch.f
-seaice_exch_uv.f
 seaice_get_forcing.f
 seaice_growth.f
 seaice_init_varia.f
