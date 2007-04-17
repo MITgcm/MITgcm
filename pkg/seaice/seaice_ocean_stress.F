@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.10 2007/03/08 11:21:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.11 2007/04/17 16:13:53 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -39,7 +39,7 @@ C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
       _RL  SINWAT, COSWAT, SINWIN, COSWIN
-      _RL  fuIce, fvIce, FX, FY
+      _RL  fuIceLoc, fvIceLoc, FX, FY
       _RL  areaW, areaS
 
       _RL press       (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -222,49 +222,17 @@ C     + 2*eta*(tanphi/a) dU/dx
 C     - (d/dy) P/2
            FY = _maskS(I,J,1,bi,bj) * ( FY - _recip_dyC(I,J,bi,bj) 
      &          * ( press(I,J,bi,bj) - press(I,J-1,bi,bj) ) )
-C     
-C     recompute wind stress over ice (done already in seaice_dynsolver, 
-C     but not saved)
-#ifdef ALLOW_ATM_WIND           
-           fuIce = 0.5 _d 0 * 
-     &          ( DAIRN(I  ,J,bi,bj)*(
-     &          COSWIN*uWind(I  ,J,bi,bj)
-     &          -SIGN(SINWIN, _fCori(I  ,J,bi,bj))*vWind(I  ,J,bi,bj) )
-     &          + DAIRN(I-1,J,bi,bj)*(
-     &          COSWIN*uWind(I-1,J,bi,bj)
-     &          -SIGN(SINWIN, _fCori(I-1,J,bi,bj))*vWind(I-1,J,bi,bj) )
-     &          )
-           fvIce = 0.5 _d 0 * 
-     &          ( DAIRN(I,J  ,bi,bj)*(
-     &          SIGN(SINWIN, _fCori(I  ,J,bi,bj))*uWind(I,J  ,bi,bj)
-     &          +COSWIN*vWind(I,J  ,bi,bj) )
-     &          + DAIRN(I,J-1,bi,bj)*(
-     &          SIGN(SINWIN, _fCori(I,J-1,bi,bj))*uWind(I,J-1,bi,bj)
-     &          +COSWIN*vWind(I,J-1,bi,bj) )
-     &          )
-#else
-           fuIce=DAIRN(I,J,bi,bj)*(
-     &         COSWIN*FU(I,J,bi,bj)
-     &         -SIGN(SINWIN, _fCori(I  ,J,bi,bj))*0.25
-     &           *(FV(I,J,  bi,bj)+FV(I-1,J,  bi,bj)
-     &            +FV(I,J+1,bi,bj)+FV(I-1,J+1,bi,bj))
-     &         )
-           fvIce=DAIRN(I,J,bi,bj)*(
-     &         SIGN(SINWIN, _fCori(I,J  ,bi,bj))*0.25
-     &         *(FU(I,J  ,bi,bj)+FU(I+1,J,  bi,bj)
-     &          +FU(I,J-1,bi,bj)+FU(I+1,J-1,bi,bj))
-     &         +COSWIN*FV(I,J,bi,bj) 
-     &         )
-#endif /* ALLOW_ATM_WIND */
 C     average wind stress over ice and ocean and apply averaged wind 
 C     stress and internal ice stresses to surface layer of ocean
            areaW = 0.5 * (AREA(I,J,1,bi,bj) + AREA(I-1,J,1,bi,bj))
      &         * SEAICEstressFactor
            areaS = 0.5 * (AREA(I,J,1,bi,bj) + AREA(I,J-1,1,bi,bj))
      &         * SEAICEstressFactor
-           fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)+areaW*fuIce
+           fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)
+     &          + areaW*taux(I,J,bi,bj) 
      &          + FX * SEAICEstressFactor
-           fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)+areaS*fvIce
+           fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)
+     &          + areaS*tauy(I,J,bi,bj)
      &          + FY * SEAICEstressFactor
           END DO
          END DO
@@ -279,7 +247,7 @@ C     ice cover
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          fuIce=HALF*( DWATN(I,J,bi,bj)+DWATN(I,J+1,bi,bj) )*
+          fuIceLoc=HALF*( DWATN(I,J,bi,bj)+DWATN(I,J+1,bi,bj) )*
      &         COSWAT * 
      &         ( UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj) )
      &         - SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 * 
@@ -290,7 +258,7 @@ C     ice cover
      &         0.5 _d 0*(vIce(I-1,J  ,1,bi,bj)-GWATY(I-1,J  ,bi,bj)
      &                  +vIce(I-1,J+1,1,bi,bj)-GWATY(I-1,J+1,bi,bj)) 
      &         )
-          fvIce=HALF*( DWATN(I,J,bi,bj)+DWATN(I+1,J,bi,bj) )*
+          fvIceLoc=HALF*( DWATN(I,J,bi,bj)+DWATN(I+1,J,bi,bj) )*
      &         COSWAT *
      &         ( VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj) )
      &         + SIGN(SINWAT,  _fCori(I,J,bi,bj)) * 0.5 _d 0 *
@@ -305,8 +273,8 @@ C     ice cover
      &         * SEAICEstressFactor
           areaS = 0.5 _d 0 * (AREA(I,J,1,bi,bj) + AREA(I,J-1,1,bi,bj))
      &         * SEAICEstressFactor
-          fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)+areaW*fuIce
-          fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)+areaS*fvIce
+          fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)+areaW*fuIceLoc
+          fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)+areaS*fvIceLoc
          ENDDO
         ENDDO
        ENDDO

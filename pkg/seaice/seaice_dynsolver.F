@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.16 2007/04/01 19:02:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.17 2007/04/17 16:13:53 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -46,19 +46,11 @@ C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
-      _RL RHOICE, RHOAIR, SINWIN, COSWIN
-      _RL PSTAR, AAA
-      _RL U1, V1
+      _RL PSTAR
       _RL phiSurf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
 C--   FIRST SET UP BASIC CONSTANTS
-      RHOICE = SEAICE_rhoIce
-      RHOAIR = SEAICE_rhoAir
       PSTAR  = SEAICE_strength
-
-C--   introduce turning angle (default is zero)
-      SINWIN=SIN(SEAICE_airTurnAngle*deg2rad)
-      COSWIN=COS(SEAICE_airTurnAngle*deg2rad)
 
 C--   Compute proxy for geostrophic velocity,
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -79,10 +71,10 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
-          seaiceMassC(I,J,bi,bj)=RHOICE*HEFF(i,j,1,bi,bj)
-          seaiceMassU(I,J,bi,bj)=RHOICE*HALF*(
+          seaiceMassC(I,J,bi,bj)=SEAICE_rhoIce*HEFF(i,j,1,bi,bj)
+          seaiceMassU(I,J,bi,bj)=SEAICE_rhoIce*HALF*(
      &          HEFF(i,j,1,bi,bj) + HEFF(i-1,j  ,1,bi,bj) )
-          seaiceMassV(I,J,bi,bj)=RHOICE*HALF*(
+          seaiceMassV(I,J,bi,bj)=SEAICE_rhoIce*HALF*(
      &          HEFF(i,j,1,bi,bj) + HEFF(i  ,j-1,1,bi,bj) )
          ENDDO
         ENDDO
@@ -116,96 +108,25 @@ C     dynamic masking of areas with no ice
 
 C--   NOW SET UP FORCING FIELDS
 
-#ifdef ALLOW_ATM_WIND
-C--   Wind stress is computed on center of C-grid cell and interpolated
-C     to U and V points later
-C     locations from wind on tracer locations
+C     initialise fields
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          U1=UWIND(I,J,bi,bj)
-          V1=VWIND(I,J,bi,bj)
-          AAA=U1**2+V1**2
-          IF ( AAA .LE. SEAICE_EPS_SQ ) THEN
-             AAA=SEAICE_EPS
-          ELSE
-             AAA=SQRT(AAA)
-          ENDIF
-C first ocean surface stress
-          DAIRN(I,J,bi,bj)=RHOAIR*OCEAN_drag
-     &         *(2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
-          WINDX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &         (COSWIN*U1-SIGN(SINWIN, _fCori(I,J,bi,bj))*V1)
-          WINDY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &         (SIGN(SINWIN, _fCori(I,J,bi,bj))*U1+COSWIN*V1)
-C now ice surface stress
-          DAIRN(I,J,bi,bj) = RHOAIR*SEAICE_drag*AAA
-         ENDDO
-        ENDDO
-C     now interpolate to U and V points respectively
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
-          FORCEX0(I,J,bi,bj)=0.5 _d 0 * 
-     &         ( DAIRN(I  ,J,bi,bj)*(
-     &         COSWIN*uWind(I  ,J,bi,bj)
-     &         -SIGN(SINWIN, _fCori(I  ,J,bi,bj))*vWind(I  ,J,bi,bj) )
-     &         + DAIRN(I-1,J,bi,bj)*(
-     &         COSWIN*uWind(I-1,J,bi,bj)
-     &         -SIGN(SINWIN, _fCori(I-1,J,bi,bj))*vWind(I-1,J,bi,bj) )
-     &         )
-C     interpolate to V point
-          FORCEY0(I,J,bi,bj)=0.5 _d 0 * 
-     &         ( DAIRN(I,J  ,bi,bj)*(
-     &         SIGN(SINWIN, _fCori(I,J  ,bi,bj))*uWind(I,J  ,bi,bj)
-     &         +COSWIN*vWind(I,J  ,bi,bj) )
-     &         + DAIRN(I,J-1,bi,bj)*(
-     &         SIGN(SINWIN, _fCori(I,J-1,bi,bj))*uWind(I,J-1,bi,bj)
-     &         +COSWIN*vWind(I,J-1,bi,bj) )
-     &         )
+          TAUX (I,J,bi,bj)= 0. _d 0
+          TAUY (I,J,bi,bj)= 0. _d 0
+          WINDX(I,J,bi,bj)= 0. _d 0
+          WINDY(I,J,bi,bj)= 0. _d 0
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-#else
-C--   Wind stress is available on U and V points, copy it to seaice variables.
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
-          U1=.5*(FU(I,J,bi,bj)+FU(I+1,J,bi,bj))
-          V1=.5*(FV(I,J,bi,bj)+FV(I,J+1,bi,bj))
-C first ocean surface stress
-          WINDX(I,J,bi,bj)=
-     &         (COSWIN*U1
-     &         -SIGN(SINWIN, _fCori(I,J,bi,bj))*V1)
-          WINDY(I,J,bi,bj)=
-     &         (SIGN(SINWIN, _fCori(I,J,bi,bj))*U1+COSWIN*V1)
-         ENDDO
-        ENDDO
-C     now interpolate to U and V points respectively
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-C now ice surface stress
-          DAIRN(I,J,bi,bj) = SEAICE_drag/OCEAN_drag
-          FORCEX0(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(
-     &         COSWIN*FU(I,J,bi,bj)
-     &         -SIGN(SINWIN, _fCori(I  ,J,bi,bj))*0.25
-     &           *(FV(I,J,  bi,bj)+FV(I-1,J,  bi,bj)
-     &            +FV(I,J+1,bi,bj)+FV(I-1,J+1,bi,bj))
-     &         )
-C     interpolate to V point
-          FORCEY0(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(
-     &         SIGN(SINWIN, _fCori(I,J  ,bi,bj))*0.25
-     &         *(FU(I,J  ,bi,bj)+FU(I+1,J,  bi,bj)
-     &          +FU(I,J-1,bi,bj)+FU(I+1,J-1,bi,bj))
-     &         +COSWIN*FV(I,J,bi,bj) 
-     &         )
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_ATM_WIND */
+
+C--   interface of dynamics with atmopheric forcing fields (wind/stress)
+      CALL SEAICE_GET_DYNFORCING ( 
+     I     uIce, vIce,
+     O     TAUX, TAUY, WINDX, WINDY,
+     I     myTime, myIter, myThid )
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -238,14 +159,14 @@ C-    add atmospheric loading and Sea-Ice loading
 #endif /* ATMOSPHERIC_LOADING */
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
-C--   NOW ADD IN TILT
-          FORCEX0(I,J,bi,bj)=FORCEX0(I,J,bi,bj)
+C--   now add in wind stress ant tilt
+          FORCEX0(I,J,bi,bj)=TAUX(I,J,bi,bj)
      &         -seaiceMassU(I,J,bi,bj)*_recip_dxC(I,J,bi,bj)
      &         *( phiSurf(i,j)-phiSurf(i-1,j) )
-          FORCEY0(I,J,bi,bj)=FORCEY0(I,J,bi,bj)
+          FORCEY0(I,J,bi,bj)=TAUY(I,J,bi,bj)
      &         -seaiceMassV(I,J,bi,bj)* _recip_dyC(I,J,bi,bj)
      &         *( phiSurf(i,j)-phiSurf(i,j-1) )
-C--   NOW SET UP ICE PRESSURE AND VISCOSITIES
+C--   now set up ice pressure and viscosities
           PRESS0(I,J,bi,bj)=PSTAR*HEFF(I,J,1,bi,bj)
      &         *EXP(-20.0 _d 0*(ONE-AREA(I,J,1,bi,bj)))
           ZMAX(I,J,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(I,J,bi,bj)

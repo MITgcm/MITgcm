@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.28 2006/12/24 20:45:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.29 2007/04/17 16:13:53 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -65,8 +65,11 @@ CEOP
       _RL VICEC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
       COMMON/SEAICE_DYNVARS_4/
-     &     DAIRN, DWATN, PRESS0, FORCEX0, FORCEY0, ZMAX, ZMIN
+     &     DWATN, PRESS0, FORCEX0, FORCEY0, ZMAX, ZMIN
+#ifndef SEAICE_CGRID
+      COMMON/SEAICE_DYNVARS_BGRID/ DAIRN
       _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+#endif
       _RL DWATN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL PRESS0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL FORCEX0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -129,13 +132,19 @@ C                      /divided by Delta
 
       COMMON/MIX/TMIX,TICE
       COMMON/GWATXY/GWATX,GWATY
-      COMMON/WIND/WINDX,WINDY
-      _RL TMIX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL TICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL GWATX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL GWATY      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL WINDX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL WINDY      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      COMMON/WIND/WINDX,WINDY,TAUX,TAUY
+      _RL TMIX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL TICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GWATX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GWATY      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     TAUX   - zonal      wind stress over ice at U point
+C     TAUY   - meridional wind stress over ice at V point
+C     WINDX  - zonal      wind stress over water at C points
+C     WINDY  - meridional wind stress over water at C points
+      _RL WINDX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL WINDY      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL TAUX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL TAUY       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON/COUNT/ICOUNT
       COMMON/DAY/IDELT

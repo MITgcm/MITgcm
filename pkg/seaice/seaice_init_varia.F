@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.3 2007/04/14 22:19:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.4 2007/04/17 16:13:53 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -135,9 +135,9 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
 #endif /* SEAICE_MULTICATEGORY */
           UICEC      (I,J,bi,bj)=ZERO
           VICEC      (I,J,bi,bj)=ZERO
-          DAIRN      (I,J,bi,bj)=ZERO
           DWATN      (I,J,bi,bj)=ZERO
 #ifndef SEAICE_CGRID
+          DAIRN      (I,J,bi,bj)=ZERO
           AMASS      (I,J,bi,bj)=1000.0 _d 0
 #else
           seaiceMassC(I,J,bi,bj)=1000.0 _d 0
