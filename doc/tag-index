@@ -1,14 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.791 2007/04/17 19:47:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.792 2007/04/17 23:49:41 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/exf: fix wind-stress location: defined on A-grid (if ALLOW_ATM_WIND &
- ALLOW_BULKFORMULAE or USE_EXF_INTERPOLATION), otherwise, defined on C-grid
-o pkg/exf:
-  move exf header files from lower_case.h to UPPER_CASE.h ; 
-  add missing cvs Header & Name
+o pkg/exf: 
+  - fix wind-stress location: defined on A-grid (if ALLOW_ATM_WIND &
+    ALLOW_BULKFORMULAE or USE_EXF_INTERPOLATION), otherwise, defined on C-grid
+  - move exf header files from lower_case.h to UPPER_CASE.h ; 
+    add missing cvs Header & Name
+  - add adjoint routines and flow dirs for newly used exch_uv_agrid routines
 o pkg/seaice:
   - remove seaice_exch and seaice_exch_uv
   - remove superfluous exchange of theta
@@ -17,6 +18,8 @@ o pkg/seaice:
     + new routine
     + two new field (taux, tauy for stress over ice)
     + removed one global field (DAIRN) for C-grid case only
+o pkg/thsise
+  - 2nd set of modifs for thsice adjoint in conjunction with exf
 
 checkpoint58y_post
 o Added capability for latitudinal dependence of Bryan and Lewis, 1979
