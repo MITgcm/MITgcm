@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.790 2007/04/17 16:15:27 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.791 2007/04/17 19:47:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf: fix wind-stress location: defined on A-grid (if ALLOW_ATM_WIND &
+ ALLOW_BULKFORMULAE or USE_EXF_INTERPOLATION), otherwise, defined on C-grid
 o pkg/exf:
   move exf header files from lower_case.h to UPPER_CASE.h ; 
   add missing cvs Header & Name
