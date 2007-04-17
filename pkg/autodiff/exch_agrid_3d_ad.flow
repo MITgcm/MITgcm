@@ -1,0 +1,33 @@
+C     /==========================================================\
+C     | TAMC flow directives                                     |
+C     | for library subroutines    exch_*_3d_rs                  |
+C     |                            exch_*_3d_rl                  |
+C     |==========================================================|
+C     | These directives are for standard adjoint code           |
+C     | generation (vector Jacobian product).                    |
+C     |   tamc -reverse  ....                                    |
+C     |                                                          |
+C     | written and tested by Ralf Giering, Jan. 14th 1999       |
+C     | added new S/R's for _xz_ , _yz_ heimbach@mit.edu May-01  |
+C     | extended to tangent linear code heimbach@mit.edu Jan-02  |
+C     |==========================================================|
+C     | SUBROUTINE EXCH_*_R* is linear                           |
+C     | only the array argument is active                        |
+C     | only myThid is required for the adjoint subroutine       |
+C     \==========================================================/
+
+CADJ SUBROUTINE EXCH_UV_AGRID_3D_RL INPUT   = 1, 2, 3, 4, 5
+CADJ SUBROUTINE EXCH_UV_AGRID_3D_RL OUTPUT  = 1, 2
+CADJ SUBROUTINE EXCH_UV_AGRID_3D_RL ACTIVE  = 1, 2
+CADJ SUBROUTINE EXCH_UV_AGRID_3D_RL DEPEND  = 3, 4, 5
+CADJ SUBROUTINE EXCH_UV_AGRID_3D_RL ADNAME  = ADEXCH_UV_AGRID_3D_RL
+CADJ SUBROUTINE EXCH_UV_AGRID_3D_RL FTLNAME = EXCH_UV_AGRID_3D_RL
+
+CADJ SUBROUTINE EXCH_UV_AGRID_3D_RS INPUT   = 1, 2, 3, 4, 5
+CADJ SUBROUTINE EXCH_UV_AGRID_3D_RS OUTPUT  = 1, 2
+CADJ SUBROUTINE EXCH_UV_AGRID_3D_RS ACTIVE  = 1, 2
+CADJ SUBROUTINE EXCH_UV_AGRID_3D_RS DEPEND  = 3, 4, 5
+CADJ SUBROUTINE EXCH_UV_AGRID_3D_RS ADNAME  = ADEXCH_UV_AGRID_3D_RS
+CADJ SUBROUTINE EXCH_UV_AGRID_3D_RS FTLNAME = EXCH_UV_AGRID_3D_RS
+
+
