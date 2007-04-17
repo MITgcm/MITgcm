@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.15 2007/04/16 23:27:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.16 2007/04/17 23:51:22 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -27,7 +27,6 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "cal.h"
-#include "EXF.h"
 #include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
 

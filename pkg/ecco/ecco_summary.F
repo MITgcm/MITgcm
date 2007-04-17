@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.4 2007/04/16 23:35:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.5 2007/04/17 23:51:22 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -30,7 +30,6 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "ecco.h"
 #include "cal.h"
-#include "EXF.h"
 
 #ifdef ALLOW_ECCO_OPTIMIZATION
 #include "optim.h"

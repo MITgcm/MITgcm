@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.40 2007/04/16 23:27:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.41 2007/04/17 23:51:22 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -50,7 +50,6 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "cal.h"
-#include "EXF.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 
