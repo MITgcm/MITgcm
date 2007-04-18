@@ -63,8 +63,9 @@ C     LOCAL VARIABLES:
            ENDIF
            ctice(atm_oc_ind(j))=ctice(atm_oc_ind(j)) + Tsrf(i,j,1,1)
      &             *rA(i,j,1,1)*iceMask(i,j,1,1)*atm_oc_wgt(j)
+C          seaice albedo has been multiplied by icemask at this point
            csAlb(atm_oc_ind(j))=csAlb(atm_oc_ind(j)) + siceAlb(i,j,1,1)
-     &             *rA(i,j,1,1)*iceMask(i,j,1,1)*atm_oc_wgt(j)
+     &             *rA(i,j,1,1)*atm_oc_wgt(j)
 
            IF (atm_oc_wgt(j).LT.1. _d 0) THEN
              mWgt= 1. _d 0-atm_oc_wgt(j)
@@ -80,7 +81,7 @@ C     LOCAL VARIABLES:
              ctice(atm_oc_ind(j)+1)= ctice(atm_oc_ind(j)+1) + 
      &             Tsrf(i,j,1,1)*rA(i,j,1,1)*iceMask(i,j,1,1)*mWgt
              csAlb(atm_oc_ind(j)+1)= csAlb(atm_oc_ind(j)+1) + 
-     &             siceAlb(i,j,1,1)*rA(i,j,1,1)*iceMask(i,j,1,1)*mWgt
+     &             siceAlb(i,j,1,1)*rA(i,j,1,1)*mWgt
            ENDIF
 
          ENDIF

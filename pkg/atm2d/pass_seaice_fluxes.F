@@ -33,11 +33,12 @@ C     LOCAL VARIABLES:
       DO j=1, sNy
         DO i=1, sNx
         
-          icFlxAtm(i,j,1,1) = -qneti_2D(i,j) 
-          icFlxSw(i,j,1,1) = - solarinc_2D(i,j) !at this point, incident SW
-          dFdT(i,j,1,1) = - dFdT_ice_2D(i,j)
+          incSW(i,j) = -solarinc_2D(i,j) !at this point, incident SW
+          sFlx(i,j,0)= Tsrf(i,j,1,1)*dFdT_ice_2D(i,j)
+          sFlx(i,j,1)= -qneti_2D(i,j) 
+          sFlx(i,j,2)= -dFdT_ice_2D(i,j)
 
-C         Note converion to ice model sign convention below
+C         Note conversion to ice model sign convention below
           sum_prcIce(i,j) = sum_prcIce(i,j) -  precipi_2D(i,j)*rhofw   
           sum_evapIce(i,j) = sum_evapIce(i,j) -  evapi_2D(i,j)*rhofw   
           IF (Tair_2D(i,j) .LE. 0. _d 0)    
