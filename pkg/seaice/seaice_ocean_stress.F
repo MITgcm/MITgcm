@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.11 2007/04/17 16:13:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.12 2007/04/18 18:06:52 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -22,7 +22,6 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SEAICE.h"
 #include "SEAICE_PARAMS.h"
-#include "SEAICE_FFIELDS.h"
 
 C     === Routine arguments ===
 C     myTime - Simulation time
