@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.82 2007/04/16 23:31:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.83 2007/04/18 19:54:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -73,7 +73,6 @@ c They provide the fields to be stored.
 # endif
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
-#  include "EXF_CLIM_FIELDS.h"
 #  ifdef ALLOW_BULKFORMULAE
 #   include "EXF_CONSTANTS.h"
 #  endif

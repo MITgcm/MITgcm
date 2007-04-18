@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.40 2007/04/16 23:31:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.41 2007/04/18 19:54:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -65,7 +65,6 @@ C     == Global variables ===
 # ifdef ALLOW_EXF
 #  include "ctrl.h"
 #  include "EXF_FIELDS.h"
-#  include "EXF_CLIM_FIELDS.h"
 #  ifdef ALLOW_BULKFORMULAE
 #   include "EXF_CONSTANTS.h"
 #  endif
