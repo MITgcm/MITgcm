@@ -5,6 +5,7 @@
  &PACKAGES
  useGMRedi    = .TRUE.,
  useKPP       = .TRUE.,
+ useEXF       = .TRUE.,
  useECCO      = .TRUE.,
  useGrdchk    = .TRUE.,
 # useDiagnostics = .TRUE.,

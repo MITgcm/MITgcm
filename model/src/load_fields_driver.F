@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.3 2007/04/18 19:54:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.4 2007/04/18 23:56:05 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -139,6 +139,7 @@ C--   Bulk-Formulae pkg: load all forcing fields at current time
 
 C--   Call external forcing package
 #ifdef ALLOW_EXF
+      IF (useEXF) THEN
 # ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
      &   CALL DEBUG_CALL('EXF_GETFORCING',myThid)
@@ -146,14 +147,9 @@ C--   Call external forcing package
         CALL TIMER_START('EXF_GETFORCING     [LOAD_FLDS_DRIVER]',myThid)
         CALL EXF_GETFORCING( myTime, myIter, myThid )
         CALL TIMER_STOP ('EXF_GETFORCING     [LOAD_FLDS_DRIVER]',myThid)
+      ENDIF
 #else /* ALLOW_EXF undef */
-cph The following IF-statement creates an additional dependency
-cph for the forcing fields requiring additional storing.
-cph Therefore, the IF-statement will be put between CPP-OPTIONS,
-cph assuming that ALLOW_SEAICE has not yet been differentiated.
-# if (defined (ALLOW_SEAICE) || defined (ALLOW_EBM))
       IF ( .NOT. useSEAICE .AND. .NOT. useEBM ) THEN
-# endif
 # ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
      &   CALL DEBUG_CALL('EXTERNAL_FIELDS_LOAD',myThid)
@@ -168,9 +164,7 @@ CADJ STORE SSS    = comlev1, key = ikey_dynamics
 CADJ STORE Qsw    = comlev1, key = ikey_dynamics
 #  endif
 # endif
-# if (defined (ALLOW_SEAICE) || defined (ALLOW_EBM))
       ENDIF
-# endif
 #endif /* ALLOW_EXF */
 
 #ifdef ALLOW_OFFLINE

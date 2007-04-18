@@ -2,6 +2,7 @@
  &PACKAGES
   useGMRedi = .TRUE.,
   useKPP    = .TRUE.,
+  useEXF    = .TRUE.,
   useSEAICE = .TRUE.,
   useDiagnostics = .FALSE.,
   useMNC    = .TRUE.,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.57 2007/01/10 23:51:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.58 2007/04/18 23:56:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,9 +129,9 @@ C--   Initialize fixed params for Momentum pkgs (common, fluxform, vecinv)
 
 #ifdef ALLOW_EXF
 C--   Initialize fixed arrays for EXF
-c     IF ( useEXF ) THEN
+      IF ( useEXF ) THEN
        CALL EXF_INIT_FIXED( myThid )
-c     ENDIF
+      ENDIF
 #endif
 
 #ifdef ALLOW_GMREDI

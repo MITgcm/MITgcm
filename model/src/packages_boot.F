@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.38 2007/01/10 23:49:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.39 2007/04/18 23:56:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,6 +55,7 @@ C     data.pkg namelists
      &          useAIM,
      &          useLand,
      &          useGrdchk,
+     &          useEXF,
      &          useECCO,
      &          useSHAP_FILT,
      &          useZONAL_FILT,
@@ -143,7 +144,7 @@ C--   Close the open data file
 
 C--   packages with hard-coded switch
 #ifdef ALLOW_EXF
-      useEXF = .TRUE.
+cph      useEXF = .TRUE.
 #endif
 #ifdef ALLOW_CAL
       useCAL = .TRUE.

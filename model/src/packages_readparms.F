@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.50 2007/02/15 14:57:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.51 2007/04/18 23:56:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -234,8 +234,7 @@ C--   Initialise gradient check parameters
 
 C--   Custom routine to set forcing fields.
 #ifdef ALLOW_EXF
-ceh3 needs an IF ( useEXF ) THEN
-      call exf_readparms  ( mythid )
+      IF (useEXF) call exf_readparms  ( mythid )
 #endif
 
 #ifdef ALLOW_EBM

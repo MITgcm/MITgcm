@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.58 2007/01/16 04:40:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.59 2007/04/18 23:56:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -229,10 +229,12 @@ c--   Map the control variables onto the model state.
 #endif
 
 #ifdef ALLOW_EXF
+      IF (useEXF) THEN
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('EXF_INIT',myThid)
 #endif
-      CALL EXF_INIT( myThid )
+       CALL EXF_INIT( myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_EBM

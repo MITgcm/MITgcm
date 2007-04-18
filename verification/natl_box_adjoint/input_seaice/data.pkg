@@ -6,6 +6,7 @@
  useGMRedi    = .TRUE.,
  useKPP       = .TRUE.,
  useSEAICE    = .TRUE.,
+ useEXF       = .TRUE.,
  useECCO      = .TRUE.,
  useGrdchk    = .TRUE.,
  useDiagnostics = .TRUE.,
