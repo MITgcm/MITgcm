@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_readparms.F,v 1.14 2007/04/17 23:51:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_readparms.F,v 1.15 2007/04/18 05:02:08 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -54,6 +54,7 @@ c     Surface flux data.
      &  climsssstartdate1,  climsssstartdate2,  climsssperiod,
      &       climtempfile,       climsaltfile,    climsstfile,
      &        climsssfile,       climsstconst,   climsssconst,
+     & exf_inscal_climsst, exf_inscal_climsss,
      &     exf_clim_iprec, exf_clim_yftype
 #ifdef USE_EXF_INTERPOLATION
      & ,climsst_lon0, climsst_lon_inc,
@@ -69,37 +70,31 @@ c     Surface flux data.
 c     Set default values.
 
 c     Calendar data.
-      climtempstartdate1 = 0
-      climtempstartdate2 = 0
-      climtempperiod     = 0
-
-      climsaltstartdate1 = 0
-      climsaltstartdate2 = 0
-      climsaltperiod     = 0
-
       climsststartdate1  = 0
       climsststartdate2  = 0
       climsstperiod      = 0
+      climsstconst         = 0.0 _d 0
+      climsst_exfremo_intercept = 0.0 _d 0
+      climsst_exfremo_slope = 0.0 _d 0
 
       climsssstartdate1  = 0
       climsssstartdate2  = 0
       climsssperiod      = 0
+      climsssconst         = 0.0 _d 0
+      climsss_exfremo_intercept = 0.0 _d 0
+      climsss_exfremo_slope = 0.0 _d 0
 
 c     Data files.
-      climtempfile       = ' '
-      climsaltfile       = ' '
       climsstfile        = ' '
       climsssfile        = ' '
 
+c     Input scaling factors.
+      exf_inscal_climsst     =  1. _d 0
+      exf_inscal_climsss     =  1. _d 0
+
 c     Start dates.
-      climtempstartdate  = 0.
-      climsaltstartdate  = 0.
       climsststartdate   = 0.
       climsssstartdate   = 0.
-
-c     Initialise constant values for relax. to constant SST, SSS
-      climsstconst = 0. _d 0
-      climsssconst = 0. _d 0
 
 c     Initialise freezing temperature of sea water
       climtempfreeze = -1.9 _d 0
@@ -129,16 +124,6 @@ c     Initialise file type and field precision
          ENDIF
       ENDDO
 #endif /* USE_EXF_INTERPOLATION */
-
-c     Check for the availability of the right calendar version.
-      if ( calendarversion .ne. usescalendarversion ) then
-         print*,' exf_Init: You are not using the appropriate'
-         print*,'           version of the calendar package.'
-         print*
-         print*,' Please use Calendar version: ',
-     &        usescalendarversion
-         stop ' stopped in exf_Init.'
-      endif
 
 c     Next, read the forcing data file.
         WRITE(msgBuf,'(A)') 'EXF_CLIM_READPARMS: opening data.exf_clim'

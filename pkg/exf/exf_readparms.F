@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.41 2007/04/17 23:51:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.42 2007/04/18 05:02:11 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -544,16 +544,6 @@ c     Output scaling factors.
          ENDIF
       ENDDO
 #endif /* USE_EXF_INTERPOLATION */
-
-c     Check for the availability of the right calendar version.
-      if ( calendarversion .ne. usescalendarversion ) then
-         print*,' exf_readparms: You are not using the appropriate'
-         print*,'           version of the calendar package.'
-         print*
-         print*,' You are using Calendar version: ', calendarversion
-         print*,' Please use    Calendar version: ', usescalendarversion
-         stop ' stopped in exf_readparms.'
-      endif
 
 c     Next, read the forcing data file.
         WRITE(msgBuf,'(A)') 'EXF_READPARMS: opening data.exf'

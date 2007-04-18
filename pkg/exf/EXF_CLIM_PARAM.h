@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/EXF_CLIM_PARAM.h,v 1.1 2007/04/16 23:27:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/EXF_CLIM_PARAM.h,v 1.2 2007/04/18 05:02:08 heimbach Exp $
 C $Name:  $
 c
 c
@@ -36,6 +36,9 @@ c     Calendar data.
       integer climsststartdate2
       _RL     climsststartdate
       _RL     climsstperiod
+      _RL     climsstconst
+      _RL     climsst_exfremo_intercept 
+      _RL     climsst_exfremo_slope
       character*1 climsstmask
       parameter(  climsstmask = 's' )
 
@@ -43,11 +46,11 @@ c     Calendar data.
       integer climsssstartdate2
       _RL     climsssstartdate
       _RL     climsssperiod
+      _RL     climsssconst
+      _RL     climsss_exfremo_intercept 
+      _RL     climsss_exfremo_slope
       character*1 climsssmask
       parameter(  climsssmask = 's' )
-
-      _RL climsstconst
-      _RL climsssconst
 
 c     freezing temperature is the minimum temperature allowed, used
 c     to reset climatological temperatures fields where they have
@@ -87,6 +90,12 @@ c     file precision and field type
 
       integer       exf_clim_iprec
       character*(2) exf_clim_yftype
+
+      _RL     exf_inscal_climsst
+      _RL     exf_inscal_climsss
+      common /exf_clim__scal/
+     &                      exf_inscal_climsst
+     &                    , exf_inscal_climsss
 
 #ifdef USE_EXF_INTERPOLATION
 c for lat interpolation, arraysize currently set to 200 max data values

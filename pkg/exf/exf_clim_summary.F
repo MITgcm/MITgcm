@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_summary.F,v 1.10 2007/04/17 23:51:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_summary.F,v 1.11 2007/04/18 05:02:08 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -74,16 +74,6 @@ c     == end of interface ==
      &' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a)')
-     &'External forcing version: ',externalforcingversion
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,a)')
-     &'Uses Calendar version:    ',usescalendarversion
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
