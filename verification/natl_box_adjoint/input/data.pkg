@@ -7,5 +7,5 @@
  useKPP       = .TRUE.,
  useECCO      = .TRUE.,
  useGrdchk    = .TRUE.,
- useDiagnostics = .TRUE.,
+# useDiagnostics = .TRUE.,
  &
