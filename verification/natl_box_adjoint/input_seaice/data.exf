@@ -1,9 +1,17 @@
-# $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/input_seaice/Attic/data.exf,v 1.3 2005/09/06 16:25:30 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/input_seaice/Attic/data.exf,v 1.4 2007/04/18 22:02:24 heimbach Exp $
 #
 # *********************
 # External Forcing Data
 # *********************
- &EXF_NML
+ &EXF_NML_01
+#
+ exf_iprec   = 64,
+ exf_yftype  = 'RL',
+ repeatPeriod = 31536000,
+#
+ &
+# *********************
+ &EXF_NML_02
 #
  atempstartdate1   = 19781216,
  atempstartdate2   = 180000,
@@ -47,7 +55,12 @@
  lwdownfile        = 'flo.labsea1979',
  runoffFile        = ' '
 #
- exf_iprec   = 64,
- exf_yftype  = 'RL',
- repeatPeriod = 31536000,
+ &
+
+# *********************
+ &EXF_NML_03
+ &
+
+# *********************
+ &EXF_NML_04
  &
