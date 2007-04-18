@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.11 2007/04/16 23:27:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.12 2007/04/18 19:55:34 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -22,7 +22,6 @@ C     !USES:
 #include "GRID.h"
 #include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
-#include "EXF_CLIM_FIELDS.h"
 #ifdef ALLOW_MONITOR
 # include "MONITOR.h"
 #endif

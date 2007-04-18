@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.18 2007/04/17 18:53:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.19 2007/04/18 19:55:34 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -55,8 +55,6 @@ c     == global variables ==
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 #include "EXF_FIELDS.h"
-#include "EXF_CLIM_PARAM.h"
-#include "EXF_CLIM_FIELDS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"

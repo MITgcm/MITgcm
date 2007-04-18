@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.1 2007/04/16 23:27:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.2 2007/04/18 19:55:34 heimbach Exp $
 C $Name:  $
 c
 c
@@ -235,6 +235,32 @@ c     data values
       character*1 apressuremask
       parameter(  apressuremask = 's' )
 
+c     Calendar data.
+      integer climsststartdate1
+      integer climsststartdate2
+      _RL     climsststartdate
+      _RL     climsstperiod
+      _RL     climsstconst
+      _RL     climsst_exfremo_intercept 
+      _RL     climsst_exfremo_slope
+      character*1 climsstmask
+      parameter(  climsstmask = 's' )
+
+      integer climsssstartdate1
+      integer climsssstartdate2
+      _RL     climsssstartdate
+      _RL     climsssperiod
+      _RL     climsssconst
+      _RL     climsss_exfremo_intercept 
+      _RL     climsss_exfremo_slope
+      character*1 climsssmask
+      parameter(  climsssmask = 's' )
+
+c     freezing temperature is the minimum temperature allowed, used
+c     to reset climatological temperatures fields where they have
+c     values below climtempfreeze
+      _RL climtempfreeze
+
       integer obcsNstartdate1
       integer obcsNstartdate2
       _RL     obcsNstartdate
@@ -274,6 +300,8 @@ c     File names.
       character*(128) swdownfile
       character*(128) lwdownfile
       character*(128) apressurefile
+      character*(128) climsstfile
+      character*(128) climsssfile
 
 C     useExfYearlyFields :: when set, automatically add extension
 C                           _YEAR to input file names
@@ -414,6 +442,23 @@ C                           instead of _YEAR for useExfYearlyFields
      &                     lwdownfile,
      &                     apressurefile
 
+      common /exf_clim_i/
+     &                        climsststartdate1,  climsststartdate2,
+     &                        climsssstartdate1,  climsssstartdate2
+
+      common /exf_clim_c/
+     &                        climsstfile,
+     &                        climsssfile
+
+      common /exf_clim_r/
+     &                        climtempfreeze,
+     &                        climsstperiod,      climsststartdate,
+     &                        climsssperiod,      climsssstartdate,
+     &                        climsstconst,       climsssconst,
+     &     climsst_exfremo_intercept, climsst_exfremo_slope,
+     &     climsss_exfremo_intercept, climsss_exfremo_slope,
+     &     exf_inscal_climsst, exf_inscal_climsss
+
 c     file precision and field type
 
       common /exf_param_type/ 
@@ -449,6 +494,8 @@ c     exf_outscale_*    output scaling factors
       _RL     exf_inscal_runoff
       _RL     exf_inscal_swdown
       _RL     exf_inscal_lwdown
+      _RL     exf_inscal_climsst
+      _RL     exf_inscal_climsss
 
       _RL     exf_outscal_hflux
       _RL     exf_outscal_sflux
@@ -608,4 +655,19 @@ c for lat interpolation, arraysize currently set to 2176 max data values
      & apressure_lon0,apressure_lon_inc,
      & apressure_lat0,apressure_lat_inc,
      & apressure_nlon,apressure_nlat
+
+      _RL climsst_lon0, climsst_lon_inc
+      _RL climsst_lat0, climsst_lat_inc(MAX_LAT_INC)
+      INTEGER climsst_nlon, climsst_nlat
+      _RL climsss_lon0, climsss_lon_inc
+      _RL climsss_lat0, climsss_lat_inc(MAX_LAT_INC)
+      INTEGER climsss_nlon, climsss_nlat
+      common /exf_clim_interpolation/
+     & climsst_lon0, climsst_lon_inc,
+     & climsst_lat0, climsst_lat_inc,
+     & climsst_nlon, climsst_nlat,
+     & climsss_lon0, climsss_lon_inc,
+     & climsss_lat0, climsss_lat_inc,
+     & climsss_nlon, climsss_nlat
+
 #endif

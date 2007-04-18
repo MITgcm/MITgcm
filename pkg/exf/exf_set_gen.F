@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.20 2007/04/18 15:34:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.21 2007/04/18 19:55:34 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -46,7 +46,6 @@ c     == global variables ==
 
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
-#include "EXF_CLIM_PARAM.h"
 
 c     == routine arguments ==
 

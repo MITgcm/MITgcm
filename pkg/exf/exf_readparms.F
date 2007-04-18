@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.42 2007/04/18 05:02:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.43 2007/04/18 19:55:34 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -59,7 +59,7 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer i
+      integer i, idummy
       integer date_array(4), difftime(4)
       integer iUnit
 
@@ -68,10 +68,21 @@ c     == local variables ==
 c     == end of interface ==
 
 c     Surface flux data.
-      namelist /exf_nml/
+      NAMELIST /EXF_NML_01/
      &      windstressmax,       repeatPeriod,   exf_albedo,   
      &   ocean_emissivity,     ice_emissivity, snow_emissivity,
-     &   exf_scal_BulkCdn,
+     &   exf_scal_BulkCdn,     climtempfreeze,
+     &          exf_iprec,  exf_yftype, 
+     & useExfYearlyFields,  twoDigitYear,         useExfCheckRange
+
+      NAMELIST /EXF_NML_02/
+     &          hfluxfile,          atempfile,       aqhfile,
+     &          sfluxfile,         precipfile,    runofffile,
+     &        ustressfile,        vstressfile,      evapfile,
+     &     snowprecipfile,          uwindfile,     vwindfile,
+     &         wspeedfile,         swfluxfile,    lwfluxfile,
+     &      apressurefile,         swdownfile,    lwdownfile,
+     &        climsstfile,        climsssfile,      
      &    hfluxstartdate1,    hfluxstartdate2,   hfluxperiod,
      &    atempstartdate1,    atempstartdate2,   atempperiod,
      &      aqhstartdate1,      aqhstartdate2,     aqhperiod,
@@ -89,19 +100,11 @@ c     Surface flux data.
      &   lwfluxstartdate1,   lwfluxstartdate2,  lwfluxperiod,
      &   swdownstartdate1,   swdownstartdate2,  swdownperiod,
      &   lwdownstartdate1,   lwdownstartdate2,  lwdownperiod,
-     &    obcsNstartdate1,    obcsNstartdate2,   obcsNperiod,
-     &    obcsSstartdate1,    obcsSstartdate2,   obcsSperiod,
-     &    obcsEstartdate1,    obcsEstartdate2,   obcsEperiod,
-     &    obcsWstartdate1,    obcsWstartdate2,   obcsWperiod,
      &apressurestartdate1,apressurestartdate2,apressureperiod,
-     &          hfluxfile,          atempfile,       aqhfile,
-     &          sfluxfile,         precipfile,    runofffile,
-     &        ustressfile,        vstressfile,      evapfile,
-     &     snowprecipfile,          uwindfile,     vwindfile,
-     &         wspeedfile,         swfluxfile,    lwfluxfile,
-     &      apressurefile,         swdownfile,    lwdownfile,
-     &          exf_iprec,  exf_yftype, 
-     & useExfYearlyFields,  twoDigitYear,         useExfCheckRange,
+     &  climsststartdate1,  climsststartdate2,  climsstperiod,
+     &  climsssstartdate1,  climsssstartdate2,  climsssperiod
+
+      NAMELIST /EXF_NML_03/
      &   exf_inscal_hflux,  exf_inscal_sflux,      exf_inscal_evap,
      & exf_inscal_ustress,  exf_inscal_vstress,
      &   exf_inscal_uwind,  exf_inscal_vwind,    exf_inscal_wspeed,
@@ -110,6 +113,7 @@ c     Surface flux data.
      &  exf_inscal_swflux,  exf_inscal_lwflux,   exf_inscal_precip,
      &  exf_inscal_runoff,  exf_inscal_apressure, exf_inscal_snowprecip,
      &  exf_inscal_swdown,  exf_inscal_lwdown,
+     & exf_inscal_climsst, exf_inscal_climsss,
      &  exf_outscal_hflux,  exf_outscal_ustress, exf_outscal_vstress,
      & exf_outscal_swflux,  exf_outscal_sst,     exf_outscal_sss,
      &  exf_outscal_sflux,  exf_outscal_apressure,
@@ -117,6 +121,7 @@ c     Surface flux data.
      &  precipconst, snowprecipconst, runoffconst, ustressconst,
      &  vstressconst, uwindconst, vwindconst, wspeedconst, swfluxconst,
      &  lwfluxconst, swdownconst, lwdownconst, apressureconst,
+     &  climsstconst,   climsssconst,
      &     hflux_exfremo_intercept, hflux_exfremo_slope,
      &     atemp_exfremo_intercept, atemp_exfremo_slope,
      &     aqh_exfremo_intercept, aqh_exfremo_slope,
@@ -134,9 +139,14 @@ c     Surface flux data.
      &     lwflux_exfremo_intercept, lwflux_exfremo_slope,
      &     swdown_exfremo_intercept, swdown_exfremo_slope,
      &     lwdown_exfremo_intercept, lwdown_exfremo_slope,
-     &     apressure_exfremo_intercept, apressure_exfremo_slope
+     &     apressure_exfremo_intercept, apressure_exfremo_slope,
+     &     climsst_exfremo_intercept, climsst_exfremo_slope,
+     &     climsss_exfremo_intercept, climsss_exfremo_slope
+
+      NAMELIST /EXF_NML_04/
+     & idummy
 #ifdef USE_EXF_INTERPOLATION
-     & ,ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
+     & , ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
      & vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
      & ustress_nlon, ustress_nlat, vstress_nlon, vstress_nlat,
      & hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
@@ -163,8 +173,18 @@ c     Surface flux data.
      & lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
      & swdown_nlon, swdown_nlat, lwdown_nlon, lwdown_nlat,
      & apressure_lon0,apressure_lon_inc,apressure_nlon,
-     & apressure_lat0,apressure_lat_inc,apressure_nlat 
+     & apressure_lat0,apressure_lat_inc,apressure_nlat,
+     & climsst_lon0, climsst_lon_inc, climsst_nlon, 
+     & climsst_lat0, climsst_lat_inc, climsst_nlat,
+     & climsss_lon0, climsss_lon_inc, climsss_nlon, 
+     & climsss_lat0, climsss_lat_inc, climsss_nlat
 #endif
+
+      NAMELIST /EXF_NML_OBCS/
+     &    obcsNstartdate1,    obcsNstartdate2,   obcsNperiod,
+     &    obcsSstartdate1,    obcsSstartdate2,   obcsSperiod,
+     &    obcsEstartdate1,    obcsEstartdate2,   obcsEperiod,
+     &    obcsWstartdate1,    obcsWstartdate2,   obcsWperiod
 
       _BEGIN_MASTER(mythid)
 
@@ -300,6 +320,20 @@ c     Calendar data.
       apressure_exfremo_intercept = 0.0 _d 0
       apressure_exfremo_slope = 0.0 _d 0
 
+      climsststartdate1  = 0
+      climsststartdate2  = 0
+      climsstperiod      = 0
+      climsstconst         = 0.0 _d 0
+      climsst_exfremo_intercept = 0.0 _d 0
+      climsst_exfremo_slope = 0.0 _d 0
+
+      climsssstartdate1  = 0
+      climsssstartdate2  = 0
+      climsssperiod      = 0
+      climsssconst         = 0.0 _d 0
+      climsss_exfremo_intercept = 0.0 _d 0
+      climsss_exfremo_slope = 0.0 _d 0
+
       obcsNstartdate1    = 0
       obcsNstartdate2    = 0
       obcsNperiod        = 0.0 _d 0
@@ -325,7 +359,10 @@ c--   an earlier setting of 5.5 = ocean_emissivity*stefanBoltzmann
       ice_emissivity     = 0.98 _d 0
       snow_emissivity    = 0.98 _d 0
 
-      exf_scal_BulkCdn   = 1.00 _d 0
+      exf_scal_BulkCdn   = 1.0  _d 0
+
+c     Initialise freezing temperature of sea water
+      climtempfreeze     = -1.9 _d 0
 
 c     Data files.
       hfluxfile          = ' '
@@ -346,6 +383,8 @@ c     Data files.
       swdownfile         = ' '
       lwdownfile         = ' '
       apressurefile      = ' '
+      climsstfile        = ' '
+      climsssfile        = ' '
 
 c     Start dates.
       hfluxstartdate     = 0.
@@ -370,6 +409,8 @@ c     Start dates.
       obcsEstartdate     = 0.
       obcsWstartdate     = 0.
       apressurestartdate = 0.
+      climsststartdate   = 0.
+      climsssstartdate   = 0.
 
 c     Initialise file type and field precision
       exf_iprec            = 32
@@ -400,6 +441,8 @@ c     Input scaling factors.
       exf_inscal_runoff    =  1. _d 0
       exf_inscal_swdown    =  1. _d 0
       exf_inscal_lwdown    =  1. _d 0
+      exf_inscal_climsst   =  1. _d 0
+      exf_inscal_climsss   =  1. _d 0
 
 c     Output scaling factors.
       exf_outscal_hflux    =  1. _d 0
@@ -502,6 +545,16 @@ c     Output scaling factors.
       swdown_lon_inc    = delX(1)
       lwdown_lon_inc    = delX(1)
       apressure_lon_inc = delX(1)
+      climsst_lon0    = thetaMin + delX(1) / 2
+      climsss_lon0    = thetaMin + delX(1) / 2
+      climsst_lat0    = phimin   + delY(1) / 2
+      climsss_lat0    = phimin   + delY(1) / 2
+      climsst_nlon    = Nx
+      climsst_nlat    = Ny
+      climsss_nlon    = Nx
+      climsss_nlat    = Ny
+      climsst_lon_inc = delX(1)
+      climsss_lon_inc = delX(1)
       DO i=1,MAX_LAT_INC
          IF (i.LT.Ny) THEN
             vstress_lat_inc(i)   =  delY(i)
@@ -522,6 +575,8 @@ c     Output scaling factors.
             swdown_lat_inc(i)    = (delY(i) + delY(i)) / 2.
             lwdown_lat_inc(i)    = (delY(i) + delY(i)) / 2.
             apressure_lat_inc(i) = (delY(i) + delY(i)) / 2.
+            climsst_lat_inc(i)   = (delY(i) + delY(i)) / 2.
+            climsss_lat_inc(i)   = (delY(i) + delY(i)) / 2.
          ELSE
             ustress_lat_inc(i)   = 0.
             vstress_lat_inc(i)   = 0.
@@ -541,21 +596,49 @@ c     Output scaling factors.
             swdown_lat_inc(i)    = 0.
             lwdown_lat_inc(i)    = 0.
             apressure_lat_inc(i) = 0.
+            climsst_lat_inc(i)   = 0.
+            climsss_lat_inc(i)   = 0.
          ENDIF
       ENDDO
 #endif /* USE_EXF_INTERPOLATION */
 
 c     Next, read the forcing data file.
-        WRITE(msgBuf,'(A)') 'EXF_READPARMS: opening data.exf'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') 'EXF_READPARMS: opening data.exf'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , 1)
 
-        CALL OPEN_COPY_DATA_FILE(
+      CALL OPEN_COPY_DATA_FILE(
      I                          'data.exf', 'EXF_READPARMS',
      O                          iUnit,
      I                          myThid )
 
-      READ(  iUnit, nml = exf_nml )
+      WRITE(msgBuf,'(A)') 
+     &     'EXF_READPARMS: reading EXF_NML_01'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , 1)
+      READ(  iUnit, nml = EXF_NML_01 )
+      WRITE(msgBuf,'(A)') 
+     &     'EXF_READPARMS: reading EXF_NML_02'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , 1)
+      READ(  iUnit, nml = EXF_NML_02 )
+      WRITE(msgBuf,'(A)') 
+     &     'EXF_READPARMS: reading EXF_NML_03'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , 1)
+      READ(  iUnit, nml = EXF_NML_03 )
+      WRITE(msgBuf,'(A)') 
+     &     'EXF_READPARMS: reading EXF_NML_04'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , 1)
+      READ(  iUnit, nml = EXF_NML_04 )
+#ifdef ALLOW_OBCS
+      WRITE(msgBuf,'(A)') 
+     &     'EXF_READPARMS: reading EXF_NML_OBCS'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , 1)
+      READ(  iUnit, nml = EXF_NML_OBCS )
+#endif
 
       WRITE(msgBuf,'(A)') 
      &     'EXF_READPARMS: finished reading data.exf'
@@ -757,17 +840,38 @@ c     fields to get a complete calendar date array.
 #endif
 #endif /* ALLOW_OBCS */
 
+#ifdef USE_EXF_INTERPOLATION
+      if ( climsst_nlat .GT. MAX_LAT_INC )
+     & stop 'stopped in exf_clim_readparms: climsst_nlat > MAX_LAT_INC'
+      if ( climsss_nlat .GT. MAX_LAT_INC )
+     & stop 'stopped in exf_clim_readparms: climsss_nlat > MAX_LAT_INC'
+#endif
+
+#ifdef ALLOW_CLIMSST_RELAXATION
+      if ( climsstfile .NE. ' ' .AND. climsstperiod .NE. 0. ) then
+         call cal_FullDate( climsststartdate1, climsststartdate2,
+     &        date_array,                  mythid )
+         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
+         call cal_ToSeconds (difftime,       climsststartdate  ,mythid)
+         climsststartdate=modelstart+climsststartdate
+      endif
+#endif
+
+#ifdef ALLOW_CLIMSSS_RELAXATION
+      if ( climsssfile .NE. ' ' .AND. climsssperiod .NE. 0. ) then
+         call cal_FullDate( climsssstartdate1, climsssstartdate2,
+     &        date_array,                  mythid )
+         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
+         call cal_ToSeconds (difftime,       climsssstartdate  ,mythid)
+         climsssstartdate=modelstart+climsssstartdate
+      endif
+#endif
+
       _END_MASTER( mythid )
 
       _BARRIER
 
 c--   Summarize the External forcing's setup.
       call exf_summary( mythid )
-
-c--   set climatology parameters
-      call exf_clim_readparms( mythid )
-
-c--   summarize climatologic forcing configuration
-      call exf_clim_summary( mythid )
 
       end

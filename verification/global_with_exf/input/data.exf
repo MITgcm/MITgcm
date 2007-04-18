@@ -2,10 +2,52 @@
 # *********************
 # External Forcing Data
 # *********************
- &EXF_NML
+ &EXF_NML_01
+ exf_iprec         = 32,
+ exf_yftype        = 'RL',
+ &
+
+# *********************
+ &EXF_NML_02
  hfluxstartdate1=19920101,
  hfluxstartdate2=000000,
  hfluxperiod=2592000.0,
+#
+ sfluxstartdate1=19920101,
+ sfluxstartdate2=000000,
+ sfluxperiod=2592000.0,
+#
+ ustressstartdate1=19920101,
+ ustressstartdate2=000000,
+ ustressperiod=2592000.0,
+#
+ vstressstartdate1=19920101,
+ vstressstartdate2=000000,
+ vstressperiod=2592000.0,
+#
+ climsststartdate1  = 19920101,
+ climsststartdate2  = 000000,
+ climsstperiod      = 2592000.0,
+#
+ climsssstartdate1  = 19920101,
+ climsssstartdate2  = 000000,
+ climsssperiod      = 2592000.0,
+#
+ hfluxfile    = 'ncep_qnet.bin',
+# sfluxfile    = 'ncep_emp.bin',
+ ustressfile  = 'trenberth_taux.bin',
+ vstressfile  = 'trenberth_tauy.bin',
+ climsstfile  = 'lev_sst.bin',
+ climsssfile  = 'lev_sss.bin',
+#
+ &
+
+# *********************
+ &EXF_NML_03
+ &
+
+# *********************
+ &EXF_NML_04
  hflux_lon0    = 2
  hflux_lon_inc = 4
  hflux_lat0    = -78
@@ -13,9 +55,6 @@
  hflux_nlon    = 90
  hflux_nlat    = 40
 #
- sfluxstartdate1=19920101,
- sfluxstartdate2=000000,
- sfluxperiod=2592000.0,
  sflux_lon0    = 2
  sflux_lon_inc = 4
  sflux_lat0    = -78
@@ -23,9 +62,6 @@
  sflux_nlon    = 90
  sflux_nlat    = 40
 #
- ustressstartdate1=19920101,
- ustressstartdate2=000000,
- ustressperiod=2592000.0,
  ustress_lon0    = 0
  ustress_lon_inc = 4
  ustress_lat0    = -78
@@ -33,9 +69,6 @@
  ustress_nlon    = 90
  ustress_nlat    = 40
 #
- vstressstartdate1=19920101,
- vstressstartdate2=000000,
- vstressperiod=2592000.0,
  vstress_lon0    = 2
  vstress_lon_inc = 4
  vstress_lat0    = -80
@@ -43,11 +76,18 @@
  vstress_nlon    = 90
  vstress_nlat    = 40
 #
- hfluxfile    = 'ncep_qnet.bin',
-# sfluxfile    = 'ncep_emp.bin',
- ustressfile  = 'trenberth_taux.bin',
- vstressfile  = 'trenberth_tauy.bin',
+ climsst_lon0    = 2
+ climsst_lon_inc = 4
+ climsst_lat0    = -78
+ climsst_lat_inc = 39*4
+ climsst_nlon    = 90
+ climsst_nlat    = 40
 #
- exf_iprec         = 32,
- exf_yftype        = 'RL',
+ climsss_lon0    = 2
+ climsss_lon_inc = 4
+ climsss_lat0    = -78
+ climsss_lat_inc = 39*4
+ climsss_nlon    = 90
+ climsss_nlat    = 40
+#
  &

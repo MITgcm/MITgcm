@@ -1,11 +1,19 @@
-# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input_ad/data.exf,v 1.2 2007/02/07 23:52:17 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input_ad/data.exf,v 1.3 2007/04/18 19:57:41 heimbach Exp $
 #
 # *********************
 # External Forcing Data
 # *********************
- &EXF_NML
+ &EXF_NML_01
 #
+ useExfCheckRange  = .TRUE.,
  repeatPeriod      = 31622400.0,
+ exf_iprec         = 32,
+ exf_yftype        = 'RL',
+#
+ &
+
+# *********************
+ &EXF_NML_02
 #
  hfluxstartdate1   = 19781216,
  hfluxstartdate2   = 180000,
@@ -63,6 +71,14 @@
  lwdownstartdate2  = 180000,
  lwdownperiod      = 2635200.0,
 #
+ climsststartdate1  = 19781216,
+ climsststartdate2  = 180000,
+ climsstperiod      = 2635200.0,
+#
+ climsssstartdate1  = 19781216,
+ climsssstartdate2  = 180000,
+ climsssperiod      = 2635200.0,
+#
  hfluxfile         = ' ',
  sfluxfile         = ' ',
  ustressfile       = ' ',
@@ -78,7 +94,15 @@
  lwdownfile        = 'flo.labsea1979',
  swdownfile        = 'fsh.labsea1979',
  runoffFile        = ' '
+ climsstfile       = ' ',
+ climsssfile       = 'SSS_monthly.labsea1979',
 #
- exf_iprec         = 32,
- exf_yftype        = 'RL',
+ &
+
+# *********************
+ &EXF_NML_03
+ &
+
+# *********************
+ &EXF_NML_04
  &

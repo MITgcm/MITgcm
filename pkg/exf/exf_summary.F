@@ -1,15 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.10 2007/04/18 05:02:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.11 2007/04/18 19:55:34 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
 
-      subroutine exf_Summary(
-     I                        mythid
-     &                      )
+      subroutine exf_summary( mythid )
 
 c     ==================================================================
-c     SUBROUTINE exf_Summary
+c     SUBROUTINE exf_summary
 c     ==================================================================
 c
 c     o List all the settings of the external forcing.
@@ -27,7 +25,7 @@ c     changed: Dimitris Menemenlis menemenlis@jpl.nasa.gov 20-Dec-2002
 c              - modifications for using pkg/exf with pkg/seaice
 c
 c     ==================================================================
-c     SUBROUTINE exf_Summary
+c     SUBROUTINE exf_summary
 c     ==================================================================
 
       implicit none
@@ -582,6 +580,135 @@ c--   Atmospheric pressure.
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
      &'// External forcing configuration  >>> END <<<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'// ======================================================='
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'// ======================================================='
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'// External forcing climatology configuration >>> START <<<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'// ======================================================='
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+
+c     For each data set used the summary prints the calendar data
+c     and the corresponding file from which the data will be read.
+
+#ifdef ALLOW_CLIMSST_RELAXATION
+      write(msgbuf,'(a)')
+     &'// ALLOW_CLIMSST_RELAXATION:           defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#else
+      write(msgbuf,'(a)')
+     &'// ALLOW_CLIMSST_RELAXATION:       NOT defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+
+#ifdef ALLOW_CLIMSSS_RELAXATION
+      write(msgbuf,'(a)')
+     &'// ALLOW_CLIMSSS_RELAXATION:           defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#else
+      write(msgbuf,'(a)')
+     &'// ALLOW_CLIMSSS_RELAXATION:       NOT defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+
+c     The climatological data sets are assumed to contain monthly
+c     data. This can be changed in a later version to an arbitrary
+c     number of intervals during a given year.
+
+#ifdef ALLOW_CLIMSST_RELAXATION
+c     Relaxation to SST climatology.
+      il = ilnblnk(climsstfile)
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,f12.0)')
+     &'   Climatological SST starts at         ',
+     &    climsststartdate
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,f12.0)')
+     &'   Climatological SST period is         ',
+     &    climsstperiod
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Climatological SST is read from file:'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',climsstfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+
+#ifdef ALLOW_CLIMSSS_RELAXATION
+c     Relaxation to SSS climatology.
+      il = ilnblnk(climsssfile)
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,f12.0)')
+     &'   Climatological SSS starts at         ',
+     &    climsssstartdate
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,f12.0)')
+     &'   Climatological SSS period is         ',
+     &    climsssperiod
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Climatological SSS is read from file:'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',climsssfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'// ======================================================='
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'// External forcing climatology configuration  >>> END <<<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')

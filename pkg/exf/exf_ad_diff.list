@@ -3,7 +3,6 @@ exf_bulkformulae.f
 exf_bulkcdn.f
 exf_bulkqsat.f
 exf_bulkrhn.f
-exf_clim_init.f
 exf_filter_rl.f
 exf_filter_rs.f
 exf_getclim.f

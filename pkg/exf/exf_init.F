@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.16 2007/04/17 23:51:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.17 2007/04/18 19:55:34 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -268,7 +268,33 @@ c     == end of interface ==
      &     mythid )
 #endif /* defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE) */
 
+#ifdef ALLOW_CLIMSST_RELAXATION
+      interp_method=2
+      call exf_init_gen (
+     &     climsstfile, climsstperiod, exf_inscal_climsst, climsstmask,
+     &     climsstconst, climsst, climsst0, climsst1, 
+#ifdef USE_EXF_INTERPOLATION
+     &     climsst_lon0, climsst_lon_inc, 
+     &     climsst_lat0, climsst_lat_inc,
+     &     climsst_nlon, climsst_nlat, xC, yC, interp_method,
+#endif
+     &     mythid )
+#endif
+
+#ifdef ALLOW_CLIMSSS_RELAXATION
+      interp_method=2
+      call exf_init_gen (
+     &     climsssfile, climsssperiod, exf_inscal_climsss, climsssmask,
+     &     climsssconst, climsss, climsss0, climsss1, 
+#ifdef USE_EXF_INTERPOLATION
+     &     climsss_lon0, climsss_lon_inc, 
+     &     climsss_lat0, climsss_lat_inc,
+     &     climsss_nlon, climsss_nlat, xC, yC, interp_method,
+#endif
+     &     mythid )
+#endif
+
 c     Initialize climatological fields
-      call exf_clim_init     ( mythid )
+cph      call exf_clim_init     ( mythid )
 
       end
