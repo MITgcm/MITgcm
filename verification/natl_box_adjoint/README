@@ -98,6 +98,7 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  cp ../input_bulk/data.grdchk_precip data.grdchk
  cp ../input_seaice/data.seaice.cgrid data.seaice
  cp ../input_seaice/data.pkg .
+ cp ../input_seaice/data.diagnostics .
  cp ../input/PH_*.data .
  \rm output.txt
  ../build/mitgcmuv_ad >& output.txt
@@ -128,6 +129,7 @@ wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgc
  cp ../input_bulk/data.grdchk_precip data.grdchk
  cp ../input_seaice/data.seaice.cgrid data.seaice
  cp ../input_seaice/data.pkg .
+ cp ../input_seaice/data.diagnostics .
  cp ../input/PH_*.data .
  \rm output.txt
  ../build/mitgcmuv_ad >& output.txt
