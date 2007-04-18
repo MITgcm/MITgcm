@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.8 2007/04/18 13:24:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.9 2007/04/18 15:34:40 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -55,6 +55,7 @@ c     mythid - thread number for this instance of the routine.
 c     == local variables ==
 
       integer interp_method
+      integer bi, bj, i, j
 
 c     == end of interface ==
 
@@ -62,19 +63,29 @@ c     == end of interface ==
 
 #ifdef ALLOW_CLIMSST_RELAXATION
 c     Get values of climatological sst fields.
-cph      call exf_set_gen  (
-cph     &     climsstfile, climsststartdate, climsstperiod, 
-cph     &     climsststartdate1, climsststartdate2,
-cph     &     exf_inscal_climsst,
-cph     &     climsst_exfremo_intercept, climsst_exfremo_slope,
-cph     &     climsst, climsst0, climsst1, climsstmask, 
+      call exf_set_gen  (
+     &     climsstfile, climsststartdate, climsstperiod, 
+     &     climsststartdate1, climsststartdate2,
+     &     exf_inscal_climsst,
+     &     climsst_exfremo_intercept, climsst_exfremo_slope,
+     &     climsst, climsst0, climsst1, climsstmask, 
 #ifdef USE_EXF_INTERPOLATION
-cph     &     climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
-cph     &     climsst_nlon, climsst_nlat, xC, yC, interp_method,
+     &     climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
+     &     climsst_nlon, climsst_nlat, xC, yC, interp_method,
 #endif
-cph     &     mytime, myiter, mythid )
+     &     mytime, myiter, mythid )
 c
-      call exf_set_climsst ( mytime, myiter, mythid )
+      do bj = mybylo(mythid),mybyhi(mythid)
+       do bi = mybxlo(mythid),mybxhi(mythid)
+        do j = 1,sny
+         do i = 1,snx
+            if (climsst(i,j,bi,bj) .lt. climtempfreeze) then
+               climsst(i,j,bi,bj) = climtempfreeze
+            endif
+         enddo
+        enddo
+       enddo
+      enddo
 
 c--   Update the tile edges.
       _EXCH_XY_R8(climsst, mythid)
@@ -82,19 +93,18 @@ c--   Update the tile edges.
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
 c     Get values of climatological sss fields.
-cph      call exf_set_gen  (
-cph     &     climsssfile, climsssstartdate, climsssperiod, 
-cph     &     climsssstartdate1, climsssstartdate2,
-cph     &     exf_inscal_climsss,
-cph     &     climsss_exfremo_intercept, climsss_exfremo_slope,
-cph     &     climsss, climsss0, climsss1, climsssmask, 
+      call exf_set_gen  (
+     &     climsssfile, climsssstartdate, climsssperiod, 
+     &     climsssstartdate1, climsssstartdate2,
+     &     exf_inscal_climsss,
+     &     climsss_exfremo_intercept, climsss_exfremo_slope,
+     &     climsss, climsss0, climsss1, climsssmask, 
 #ifdef USE_EXF_INTERPOLATION
-cph     &     climsss_lon0, climsss_lon_inc, climsss_lat0, climsss_lat_inc,
-cph     &     climsss_nlon, climsss_nlat, xC, yC, interp_method,
+     &     climsss_lon0, climsss_lon_inc, climsss_lat0, climsss_lat_inc,
+     &     climsss_nlon, climsss_nlat, xC, yC, interp_method,
 #endif
-cph     &     mytime, myiter, mythid )
+     &     mytime, myiter, mythid )
 c
-      call exf_set_climsss ( mytime, myiter, mythid )
 
 c--   Update the tile edges.
       _EXCH_XY_R8(climsss, mythid)

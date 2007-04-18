@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/EXF_CLIM_PARAM.h,v 1.2 2007/04/18 05:02:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/EXF_CLIM_PARAM.h,v 1.3 2007/04/18 15:34:40 heimbach Exp $
 C $Name:  $
 c
 c
@@ -75,7 +75,9 @@ c     values below climtempfreeze
      &                        climsaltperiod,     climsaltstartdate,
      &                        climsstperiod,      climsststartdate,
      &                        climsssperiod,      climsssstartdate,
-     &                        climsstconst,       climsssconst
+     &                        climsstconst,       climsssconst,
+     &     climsst_exfremo_intercept, climsst_exfremo_slope,
+     &     climsss_exfremo_intercept, climsss_exfremo_slope
 
 c     File names.
       character*(128) climtempfile

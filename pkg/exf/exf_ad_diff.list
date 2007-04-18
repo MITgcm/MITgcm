@@ -14,8 +14,6 @@ exf_getsurfacefluxes.f
 exf_interp.f
 exf_mapfields.f
 exf_radiation.f
-exf_set_climsss.f
-exf_set_climsst.f
 exf_set_gen.f
 exf_set_obcs.f
 exf_set_uv.f
