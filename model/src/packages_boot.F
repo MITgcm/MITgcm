@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.39 2007/04/18 23:56:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.40 2007/04/19 13:23:36 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -143,11 +143,8 @@ C--   Close the open data file
       CLOSE(iUnit)
 
 C--   packages with hard-coded switch
-#ifdef ALLOW_EXF
-cph      useEXF = .TRUE.
-#endif
 #ifdef ALLOW_CAL
-      useCAL = .TRUE.
+      IF (useEXF) useCAL = .TRUE.
 #endif
 
 C--   packages with an implied switch
