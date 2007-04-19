@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF.h,v 1.6 2006/03/14 15:57:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF.h,v 1.7 2007/04/19 21:26:49 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_BULK_FORCE
@@ -10,15 +10,15 @@ C -------------------------------
 C   FORCING FIELD VARIABLES
 C- Mandatory:
 C  tair      :: air temperature (K)
-C  qair      :: specific humidity at surface (Kg/Kg)
-C  rain      :: precipitation, which may become snow (m/s), (>0: rain)
+C  qair      :: specific humidity at surface (kg/kg)
+C  rain      :: total precipitation (= rain + snow) (m/s), (>0: rain)
 C  solar     :: downward shortwave radiation (W/m^2), (>0: downward)
 C  flwdwn    :: downward longwave radiation  (W/m^2), (>0: downward)
 C  wspeed    :: wind speed (m/s)
 C- Optional:
 C  uwind     :: zonal wind speed (m/s),      at cell center (A-grid)
 C  vwind     :: meridional wind speed (m/s), at cell center (A-grid)
-C  runoff    :: freshwater runoff
+C  runoff    :: freshwater runoff (m/s)
 C  Qnetch    :: net heat flux (cheating)
 C  EmPch     :: E-P (cheating)
 C  cloud     :: fraction sky covered in cloud
