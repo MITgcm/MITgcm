@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.10 2004/10/20 21:54:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.11 2007/04/19 04:51:59 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -13,21 +13,14 @@ C of kpp routines even if ALLOW_KPP is not defined)
 C     mdiff                  - number of diffusivities for local arrays
 C     Nrm1, Nrp1, Nrp2       - number of vertical levels
 C     imt                    - array dimension for local arrays
-C     ibot, itop, jbot, jtop - array dimension indices
 
       integer    mdiff, Nrm1, Nrp1, Nrp2
-      integer    imt, ibot, itop, jbot, jtop
+      integer    imt
       parameter( mdiff = 3    )
       parameter( Nrm1  = Nr-1 )
       parameter( Nrp1  = Nr+1 )
       parameter( Nrp2  = Nr+2 )
-#ifdef FRUGAL_KPP
-      parameter( imt=(sNx+2)*(sNy+2) )
-      parameter( ibot=0, itop=sNx+1, jbot=0, jtop=sNy+1 )
-#else
       parameter( imt=(sNx+2*OLx)*(sNy+2*OLy) )
-      parameter( ibot=1-OLx, itop=sNx+OLx, jbot=1-OLy, jtop=sNy+OLy )
-#endif
 
 #ifdef ALLOW_KPP
 
@@ -42,7 +35,6 @@ C     hwide (0:Nr+1)  - layer thicknesses          (>=0)                (m)
 C     kpp_freq        - Re-computation frequency for KPP parameters     (s)
 C     kpp_dumpFreq    - KPP dump frequency.                             (s)
 C     kpp_taveFreq    - KPP time-averaging frequency.                   (s)
-
 
       INTEGER nzmax ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy,     nSx, nSy )
 c     _KPP_RL pMask ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr, nSx, nSy )

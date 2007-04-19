@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.13 2007/04/04 15:39:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.14 2007/04/19 04:51:59 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -19,16 +19,6 @@ C     \==========================================================/
 
 C o Set precision for KPP variables (Real*4 or Real*8)
 #define _KPP_RL Real*8
-
-C o When set, use exchange calls rather than recomputation
-C   to obtain KPP parameters in overlap region.  This option
-C   was added to reduce stack size requirements on the
-C   Origin 2000.  It decreases memory and computation
-C   requirements at the expense of increased communications.
-C   For a 64-processor 360x224x46 MPI configuration on the
-C   Exemplar or Origin 2000, wall clock time is about the
-C   same whether FRUGAL_KPP is turned on or off.
-#undef FRUGAL_KPP
 
 C o When set, smooth shear horizontally with 121 filters
 #define KPP_SMOOTH_SHSQ

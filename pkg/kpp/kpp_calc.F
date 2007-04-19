@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.33 2006/02/25 16:29:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.34 2007/04/19 04:51:59 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -93,9 +93,6 @@ c     (-2:sNx+3,-2:sNy+3) as required by CALC_DIFFUSIVITY and requires
 c     values of uVel, vVel, surfaceForcingU, surfaceForcingV in the
 c     region (-2:sNx+4,-2:sNy+4).
 c     Hence overlap region needs to be set OLx=4, OLy=4.
-c     When option FRUGAL_KPP is used, computation in overlap regions
-c     is replaced with exchange calls hence reducing overlap requirements
-c     to OLx=1, OLy=1.
 c \ev
 
 C !USES: ===============================================================
@@ -138,11 +135,7 @@ c     imin, imax, jmin, jmax  - array computation indices
       _KPP_RL    p0    , p5    , p25     , p125      , p0625
       parameter( p0=0.0, p5=0.5, p25=0.25, p125=0.125, p0625=0.0625 )
       integer   imin      ,imax          ,jmin      ,jmax
-#ifdef FRUGAL_KPP
-      parameter(imin=1    ,imax=sNx      ,jmin=1    ,jmax=sNy      )
-#else
       parameter(imin=2-OLx,imax=sNx+OLx-1,jmin=2-OLy,jmax=sNy+OLy-1)
-#endif
 
 c Local arrays and variables
 c     work?  (nx,ny)       - horizontal working arrays
@@ -169,28 +162,28 @@ c     uRef   (nx,ny)       - Reference zonal velocity                   (m/s)
 c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
 
       _RL     worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      integer work1 ( ibot:itop    , jbot:jtop                    )
-      _KPP_RL work2 ( ibot:itop    , jbot:jtop                    )
-      _KPP_RL work3 ( ibot:itop    , jbot:jtop                    )
-      _KPP_RL ustar ( ibot:itop    , jbot:jtop                    )
-      _KPP_RL bo    ( ibot:itop    , jbot:jtop                    )
-      _KPP_RL bosol ( ibot:itop    , jbot:jtop                    )
-      _KPP_RL shsq  ( ibot:itop    , jbot:jtop    , Nr            )
-      _KPP_RL dVsq  ( ibot:itop    , jbot:jtop    , Nr            )
-      _KPP_RL dbloc ( ibot:itop    , jbot:jtop    , Nr            )
-      _KPP_RL Ritop ( ibot:itop    , jbot:jtop    , Nr            )
-      _KPP_RL vddiff( ibot:itop    , jbot:jtop    , 0:Nrp1, mdiff )
-      _KPP_RL ghat  ( ibot:itop    , jbot:jtop    , Nr            )
-      _KPP_RL hbl   ( ibot:itop    , jbot:jtop                    )
+      integer work1 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _KPP_RL work2 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _KPP_RL work3 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _KPP_RL ustar ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _KPP_RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _KPP_RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _KPP_RL shsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
+      _KPP_RL dVsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
+      _KPP_RL dbloc ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
+      _KPP_RL Ritop ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
+      _KPP_RL vddiff( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, 0:Nrp1, mdiff )
+      _KPP_RL ghat  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
+      _KPP_RL hbl   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 cph(
-      _KPP_RL TTALPHA( ibot:itop, jbot:jtop, Nrp1 )
-      _KPP_RL SSBETA ( ibot:itop, jbot:jtop, Nrp1 )
+      _KPP_RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
+      _KPP_RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 cph)
 #ifdef KPP_ESTIMATE_UREF
-      _KPP_RL z0    ( ibot:itop    , jbot:jtop                    )
-      _KPP_RL zRef  ( ibot:itop    , jbot:jtop                    )
-      _KPP_RL uRef  ( ibot:itop    , jbot:jtop                    )
-      _KPP_RL vRef  ( ibot:itop    , jbot:jtop                    )
+      _KPP_RL z0    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _KPP_RL zRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _KPP_RL uRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _KPP_RL vRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 #endif /* KPP_ESTIMATE_UREF */
       
       _KPP_RL tempvar2
@@ -261,8 +254,8 @@ c------------------------------------------------------------------------
       CALL TIMER_STOP ('STATEKPP      [KPP_CALC]', myThid)
 
       DO k = 1, Nr
-         DO j = jbot, jtop
-            DO i = ibot, itop
+         DO j = 1-OLy, sNy+OLy
+            DO i = 1-OLx, sNx+OLx
                ghat(i,j,k) = dbloc(i,j,k)
             ENDDO
          ENDDO
@@ -277,7 +270,7 @@ c     levels therefore k+1 mask must be used
       DO k = 1, Nr-1
          CALL KPP_SMOOTH_HORIZ (
      I        k+1, bi, bj,
-     U        ghat (ibot,jbot,k) )
+     U        ghat (1-OLx,1-OLy,k) )
       ENDDO
 
 #endif /* KPP_SMOOTH_DBLOC */
@@ -290,22 +283,22 @@ c     horizontally smooth density related quantities with 121 filters
       DO k = 1, Nr
          CALL KPP_SMOOTH_HORIZ (
      I        k+1, bi, bj,
-     U        dbloc (ibot,jbot,k) )
+     U        dbloc (1-OLx,1-OLy,k) )
          CALL KPP_SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        Ritop (ibot,jbot,k)  )
+     U        Ritop (1-OLx,1-OLy,k)  )
          CALL KPP_SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        TTALPHA(ibot,jbot,k) )
+     U        TTALPHA(1-OLx,1-OLy,k) )
          CALL KPP_SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        SSBETA(ibot,jbot,k) )
+     U        SSBETA(1-OLx,1-OLy,k) )
       ENDDO
 #endif /* KPP_SMOOTH_DENS */
 
       DO k = 1, Nr
-         DO j = jbot, jtop
-            DO i = ibot, itop
+         DO j = 1-OLy, sNy+OLy
+            DO i = 1-OLx, sNx+OLx
 
 c     zero out dbloc over land points (so that the convective
 c     part of the interior mixing can be diagnosed)
@@ -349,8 +342,8 @@ c     bosol = - g * alpha * Qsw * drF(1) / rho                 (m^2/s^3)
 c------------------------------------------------------------------------
 
 c initialize arrays to zero
-      DO j = jbot, jtop
-         DO i = ibot, itop
+      DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
             ustar(i,j) = p0
             bo   (I,J) = p0
             bosol(I,J) = p0
@@ -411,8 +404,8 @@ c------------------------------------------------------------------------
 
 c initialize arrays to zero
       DO k = 1, Nr
-         DO j = jbot, jtop
-            DO i = ibot, itop
+         DO j = 1-OLy, sNy+OLy
+            DO i = 1-OLx, sNx+OLx
                shsq(i,j,k) = p0
                dVsq(i,j,k) = p0
             END DO
@@ -647,8 +640,8 @@ c-----------------------------------------------------------------------
 c     solve for viscosity, diffusivity, ghat, and hbl on "t-grid"
 c-----------------------------------------------------------------------
 
-      DO j = jbot, jtop
-         DO i = ibot, itop
+      DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
             work1(i,j) = nzmax(i,j,bi,bj)
             work2(i,j) = Fcori(i,j,bi,bj)
          END DO
@@ -680,13 +673,6 @@ c-----------------------------------------------------------------------
         KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,1,bi,bj)
        END DO
       END DO
-#ifdef FRUGAL_KPP
-      _EXCH_XYZ_R8(KPPviscAz  , myThid )
-      _EXCH_XYZ_R8(KPPdiffKzS , myThid )
-      _EXCH_XYZ_R8(KPPdiffKzT , myThid )
-      _EXCH_XYZ_R8(KPPghat    , myThid )
-      _EXCH_XY_R8 (KPPhbl     , myThid )
-#endif
 
 #ifdef KPP_SMOOTH_VISC
 c     horizontal smoothing of vertical viscosity

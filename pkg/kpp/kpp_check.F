@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_check.F,v 1.5 2004/07/18 01:19:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_check.F,v 1.6 2007/04/19 04:51:59 dimitri Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -63,27 +63,20 @@ C     (-2:sNx+3,-2:sNy+3) as required by CALC_DIFFUSIVITY and requires
 C     values of uVel, vVel, surfaceForcingU, surfaceForcingV in the
 C     region (-2:sNx+4,-2:sNy+4).
 C     Hence overlap region needs to be set OLx=4, OLy=4.
-C     When option FRUGAL_KPP is used, computation in overlap regions
-C     is replaced with exchange calls hence reducing KPP overlap
-C     requirements to OLx=1, OLy=1.
-#ifndef FRUGAL_KPP
-#  if defined(KPP_SMOOTH_SHSQ) || defined(KPP_SMOOTH_DVSQ)
-#    define KPP_NEEDS_OVERLAP_4
-#  endif
-#  if defined(KPP_SMOOTH_DBLOC) || defined(KPP_SMOOTH_DENS)
-#    define KPP_NEEDS_OVERLAP_4
-#  endif
-#  ifdef KPP_NEEDS_OVERLAP_4
+#if defined(KPP_SMOOTH_SHSQ) || defined(KPP_SMOOTH_DVSQ)
+#  define KPP_NEEDS_OVERLAP_4
+#endif
+#if defined(KPP_SMOOTH_DBLOC) || defined(KPP_SMOOTH_DENS)
+#  define KPP_NEEDS_OVERLAP_4
+#endif
+#ifdef KPP_NEEDS_OVERLAP_4
 #ifdef KPP_REACTIVATE_OL4
       IF (OLx.LT.4 .OR. OLy.LT.4) THEN
        WRITE(msgBuf,'(A)') 'KPP horizontal smoothing requires OLx=OLy=4'
        CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)') 'or CPP option FRUGAL_KPP to be defined.' 
-       CALL PRINT_ERROR( msgBuf , 1)
        STOP 'ABNORMAL END: S/R KPP_CHECK'
       ENDIF
 #endif
-#  endif
 #endif
 
 #endif /* ALLOW_KPP */

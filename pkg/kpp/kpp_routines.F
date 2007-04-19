@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.23 2005/04/29 18:47:02 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.24 2007/04/19 04:51:59 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -918,17 +918,17 @@ c     k      : vertical index used for masking
 
 c     input/output
 c     fld    : 2-D array to be smoothed
-      _KPP_RL fld( ibot:itop, jbot:jtop )
+      _KPP_RL fld( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
 
 #ifdef ALLOW_KPP
 
 c     local
       integer i, j, im1, ip1, jm1, jp1
       _KPP_RL tempVar
-      _KPP_RL fld_tmp( ibot:itop, jbot:jtop )
+      _KPP_RL fld_tmp( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
 
-      integer    imin       , imax       , jmin       , jmax
-      parameter( imin=ibot+1, imax=itop-1, jmin=jbot+1, jmax=jtop-1 )
+      integer   imin      , imax          , jmin      , jmax
+      parameter(imin=2-OLx, imax=sNx+OLx-1, jmin=2-OLy, jmax=sNy+OLy-1)
 
       _KPP_RL    p0    , p5    , p25     , p125      , p0625
       parameter( p0=0.0, p5=0.5, p25=0.25, p125=0.125, p0625=0.0625 )
@@ -1414,11 +1414,11 @@ c-----------------------------------------------------------------------
 
 c-------------- Routine arguments -----------------------------------------
       INTEGER bi, bj, myThid
-      _KPP_RL RHO1   ( ibot:itop, jbot:jtop       )
-      _KPP_RL DBLOC  ( ibot:itop, jbot:jtop, Nr   )
-      _KPP_RL DBSFC  ( ibot:itop, jbot:jtop, Nr   )
-      _KPP_RL TTALPHA( ibot:itop, jbot:jtop, Nrp1 )
-      _KPP_RL SSBETA ( ibot:itop, jbot:jtop, Nrp1 )
+      _KPP_RL RHO1   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy       )
+      _KPP_RL DBLOC  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr   )
+      _KPP_RL DBSFC  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr   )
+      _KPP_RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
+      _KPP_RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 
 #ifdef ALLOW_KPP
 
@@ -1454,7 +1454,7 @@ CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
 CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
       call FIND_RHO(
-     I     bi, bj, ibot, itop, jbot, jtop, 1, 1,
+     I     bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1,
      I     theta, salt,
      O     WORK1,
      I     myThid )
@@ -1464,15 +1464,15 @@ CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
 
       call FIND_ALPHA(
-     I     bi, bj, ibot, itop, jbot, jtop, 1, 1,
+     I     bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1,
      O     WORK2 )
 
       call FIND_BETA(
-     I     bi, bj, ibot, itop, jbot, jtop, 1, 1,
+     I     bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1,
      O     WORK3 )
 
-      DO J = jbot, jtop
-         DO I = ibot, itop
+      DO J = 1-OLy, sNy+OLy
+         DO I = 1-OLx, sNx+OLx
             RHO1(I,J)      = WORK1(I,J) + rhoConst
             TTALPHA(I,J,1) = WORK2(I,J)
             SSBETA(I,J,1)  = WORK3(I,J)
@@ -1504,7 +1504,7 @@ CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k, key=kkppkey
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k, key=kkppkey
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
          call FIND_RHO(
-     I        bi, bj, ibot, itop, jbot, jtop, K, K,
+     I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K, K,
      I        theta, salt,
      O        RHOK,
      I        myThid )
@@ -1514,7 +1514,7 @@ CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_kpp_k, key=kkppkey
 CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_kpp_k, key=kkppkey
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
          call FIND_RHO(
-     I        bi, bj, ibot, itop, jbot, jtop, K-1, K,
+     I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K-1, K,
      I        theta, salt,
      O        RHOKM1,
      I        myThid )
@@ -1524,7 +1524,7 @@ CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
 CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
          call FIND_RHO(
-     I        bi, bj, ibot, itop, jbot, jtop, 1, K,
+     I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, K,
      I        theta, salt,
      O        RHO1K,
      I        myThid )
@@ -1536,15 +1536,15 @@ CADJ STORE rho1k (:,:)          = comlev1_kpp_k, key=kkppkey
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
 
          call FIND_ALPHA(
-     I        bi, bj, ibot, itop, jbot, jtop, K, K,
+     I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K, K,
      O        WORK1 )
 
          call FIND_BETA(
-     I        bi, bj, ibot, itop, jbot, jtop, K, K,
+     I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K, K,
      O        WORK2 )
 
-         DO J = jbot, jtop
-            DO I = ibot, itop
+         DO J = 1-OLy, sNy+OLy
+            DO I = 1-OLx, sNx+OLx
                TTALPHA(I,J,K) = WORK1 (I,J)
                SSBETA(I,J,K)  = WORK2 (I,J)
                DBLOC(I,J,K-1) = gravity * (RHOK(I,J) - RHOKM1(I,J)) /
@@ -1585,8 +1585,8 @@ c     work3 - density of t(1)-.8 & s(1  ) at depth 1
       END DO
 
 c     compute arrays for K = Nrp1
-      DO J = jbot, jtop
-         DO I = ibot, itop
+      DO J = 1-OLy, sNy+OLy
+         DO I = 1-OLx, sNx+OLx
             TTALPHA(I,J,Nrp1) = TTALPHA(I,J,Nr)
             SSBETA(I,J,Nrp1)  = SSBETA(I,J,Nr)
             DBLOC(I,J,Nr)     = 0.
