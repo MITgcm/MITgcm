@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.24 2007/04/19 04:51:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.25 2007/04/19 15:40:42 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -47,8 +47,6 @@ c-----------------------------------------------------------------------
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "FFIELDS.h"
 #include "KPP_PARAMS.h"
 
 c input
@@ -257,10 +255,7 @@ c
       IMPLICIT NONE
 
 #include "SIZE.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
 #include "KPP_PARAMS.h"
-#include "FFIELDS.h"
 
 c input
 c------
