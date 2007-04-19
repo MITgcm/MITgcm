@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.13 2006/10/17 19:00:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.14 2007/04/19 15:49:11 mlosch Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -111,17 +111,17 @@ C-----------------------------------------------------------------------
 
              do j = 1-OLy, sNy+OLy
                do i = 1-OLx, sNx+OLx
-                  nzmax(i,j,bi,bj) = 0
-                  do k = 1, Nr
-c                    if (_hFacC(i,j,k,bi,bj).eq.0.) then
-c                       pMask (i,j,k,bi,bj) = 0.
-c                    else
-c                       pMask (i,j,k,bi,bj) = 1.
-c                    endif
-                     nzmax(i,j,bi,bj) = nzmax(i,j,bi,bj)
-     &                                + INT(maskC(i,j,k,bi,bj))
-c    &                                + INT(pMask(i,j,k,bi,bj))
-                  end do
+                  nzmax(i,j,bi,bj) = kLowC(I,J,bi,bj)
+CML                  do k = 1, Nr
+CMLc                    if (_hFacC(i,j,k,bi,bj).eq.0.) then
+CMLc                       pMask (i,j,k,bi,bj) = 0.
+CMLc                    else
+CMLc                       pMask (i,j,k,bi,bj) = 1.
+CMLc                    endif
+CML                     nzmax(i,j,bi,bj) = nzmax(i,j,bi,bj)
+CML     &                                + INT(maskC(i,j,k,bi,bj))
+CMLc    &                                + INT(pMask(i,j,k,bi,bj))
+CML                  end do
                end do
             end do
 

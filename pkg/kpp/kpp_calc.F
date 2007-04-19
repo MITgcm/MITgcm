@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.34 2007/04/19 04:51:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.35 2007/04/19 15:49:11 mlosch Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -104,6 +104,9 @@ C !USES: ===============================================================
 #include "KPP_PARAMS.h"
 #include "FFIELDS.h"
 #include "GRID.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif /* ALLOW_SHELFICE */
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
@@ -187,7 +190,7 @@ cph)
 #endif /* KPP_ESTIMATE_UREF */
       
       _KPP_RL tempvar2
-      integer i, j, k, kp1, im1, ip1, jm1, jp1
+      integer i, j, k, kp1, km1, im1, ip1, jm1, jp1
 
 #ifdef KPP_ESTIMATE_UREF
       _KPP_RL tempvar1, dBdz1, dBdz2, ustarX, ustarY
@@ -297,14 +300,18 @@ c     horizontally smooth density related quantities with 121 filters
 #endif /* KPP_SMOOTH_DENS */
 
       DO k = 1, Nr
+         km1 = max(1,k-1)
          DO j = 1-OLy, sNy+OLy
             DO i = 1-OLx, sNx+OLx
 
 c     zero out dbloc over land points (so that the convective
 c     part of the interior mixing can be diagnosed)
                dbloc(i,j,k) = dbloc(i,j,k) * maskC(i,j,k,bi,bj)
+     &              * maskC(i,j,km1,bi,bj)
                ghat(i,j,k)  = ghat(i,j,k)  * maskC(i,j,k,bi,bj)
+     &              * maskC(i,j,km1,bi,bj)
                Ritop(i,j,k) = Ritop(i,j,k) * maskC(i,j,k,bi,bj)
+     &              * maskC(i,j,km1,bi,bj)
                if(k.eq.nzmax(i,j,bi,bj)) then
                   dbloc(i,j,k) = p0
                   ghat(i,j,k)  = p0
@@ -376,6 +383,44 @@ cph)
            ustar(i,j) = SQRT( tempVar2 )
         endif
 
+       END DO
+      END DO
+
+CML#ifdef ALLOW_SHELFICE
+CMLC     For the pbl parameterisation to work underneath the ice shelves 
+CMLC     it needs to know the surface (ice-ocean) fluxes. However, masking
+CMLC     and indexing problems make this part of the code not work 
+CMLC     underneath the ice shelves and the following lines are only here
+CMLC     to remind me that this still needs to be sorted out.
+CML      IF ( useShelfIce ) THEN
+CML      DO j = jmin, jmax
+CML       jp1 = j + 1
+CML       DO i = imin, imax
+CML        ip1 = i+1
+CML        k   = kTopC(I,J,bi,bj)
+CML        bo(I,J) = - gravity *
+CML     &       ( TTALPHA(I,J,K) * ( maskC(I,J,1,bi,bj) 
+CML     &       * ( surfaceForcingT(i,j,bi,bj) 
+CML     &       + surfaceForcingTice(i,j,bi,bj) )
+CML     &       + shelficeForcingT(i,j,bi,bj) ) 
+CML     &       + SSBETA(I,J,K) * ( maskC(I,J,1,bi,bj) 
+CML     &       * surfaceForcingS(i,j,bi,bj) 
+CML     &       + shelficeForcingS(i,j,bi,bj) ) )
+CML     &       / work2(I,J)
+CML
+CML        bosol(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj) 
+CML     &       * maskC(I,J,1,bi,bj) * recip_Cp*recip_rhoConst
+CML     &       / work2(I,J)
+CML
+CML       END DO
+CML      END DO
+CML      ELSE
+CML#endif /* ALLOW_SHELFICE */
+      DO j = jmin, jmax
+       jp1 = j + 1
+       DO i = imin, imax
+        ip1 = i+1
+
         bo(I,J) = - gravity *
      &       ( TTALPHA(I,J,1) * (surfaceForcingT(i,j,bi,bj)+
      &       surfaceForcingTice(i,j,bi,bj)) +
@@ -388,7 +433,10 @@ cph)
 
        END DO
       END DO
-
+CML#ifdef ALLOW_SHELFICE
+CML      ENDIF
+CML#endif /* ALLOW_SHELFICE */
+       
 cph(
 CADJ store ustar = comlev1_kpp, key = ikppkey
 cph)
@@ -432,6 +480,7 @@ c     dB/dz exceeds 5.2e-5 s^-2.
             work1(i,j) = nzmax(i,j,bi,bj)
             DO k = 1, Nr
                IF ( k .LT. nzmax(i,j,bi,bj) .AND.
+     &              maskC(I,J,k,bi,bj) .GT. 0. .AND.
      &              dbloc(i,j,k) / drC(k+1) .GT. dB_dz )
      &              work1(i,j) = k
             END DO
@@ -665,12 +714,22 @@ c-----------------------------------------------------------------------
       DO j = jmin, jmax
        DO i = imin, imax
         DO k = 1, Nr
+         km1 = max(1,k-1)
          KPPviscAz(i,j,k,bi,bj) = vddiff(i,j,k-1,1) * maskC(i,j,k,bi,bj)
+     &        * maskC(i,j,km1,bi,bj)
          KPPdiffKzS(i,j,k,bi,bj)= vddiff(i,j,k-1,2) * maskC(i,j,k,bi,bj)
+     &        * maskC(i,j,km1,bi,bj)
          KPPdiffKzT(i,j,k,bi,bj)= vddiff(i,j,k-1,3) * maskC(i,j,k,bi,bj)
+     &        * maskC(i,j,km1,bi,bj)
          KPPghat(i,j,k,bi,bj)   = ghat(i,j,k)       * maskC(i,j,k,bi,bj)
+     &        * maskC(i,j,km1,bi,bj)
         END DO
-        KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,1,bi,bj)
+        k = 1
+#ifdef ALLOW_SHELFICE
+        if ( useShelfIce ) k = kTopC(i,j,bi,bj)
+#endif /* ALLOW_SHELFICE */
+        KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,k,bi,bj)
+
        END DO
       END DO
 
