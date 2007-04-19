@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.21 2007/04/17 23:42:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.22 2007/04/19 04:31:28 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -157,6 +157,7 @@ C--
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
         tmpFac = 1. _d 0
+        CALL DIAGNOSTICS_FILL(iceMask,'SI_FrcFx',0,1,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FRACT_FILL(
      I                   snowPrc,   iceMask,tmpFac,1,'SIsnwPrc',
      I                   0,1,1,bi,bj,myThid)

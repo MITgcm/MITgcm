@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.4 2007/04/04 02:40:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.5 2007/04/19 04:31:28 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -45,7 +45,7 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
-      INTEGER       numFract, numThick
+      INTEGER       numFract, numThick, numFrcFx
       INTEGER       n
       LOGICAL       flag
       CHARACTER*16  locName
@@ -114,13 +114,6 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-        diagName  = 'SIalbedo'
-        diagTitle = 'Sea-Ice Albedo [0-1] (area weighted average)'
-        diagUnits = '0-1             '
-        WRITE(diagCode,'(A,I3.3,A)') 'SM PC', numFract, 'M1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
         diagName  = 'SIsnwAge'
         diagTitle = 'snow age over Sea-Ice'
         diagUnits = 's               '
@@ -128,10 +121,25 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
+        diagName  = 'SI_FrcFx'
+        diagTitle = 'Sea-Ice fraction [0-1], synchro. with fluxes'
+        diagUnits = '0-1             '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        numFrcFx  = diagNum
+
+        diagName  = 'SIalbedo'
+        diagTitle = 'Sea-Ice Albedo [0-1] (area weighted average)'
+        diagUnits = '0-1             '
+        WRITE(diagCode,'(A,I3.3,A)') 'SM PC', numFrcFx, 'M1      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
         diagName  = 'SIsnwPrc'
         diagTitle = 'snow precip. (+=dw) over Sea-Ice (area weighted)'
         diagUnits = 'kg/m^2/s        '
-        WRITE(diagCode,'(A,I3.3,A)') 'SM  C', numFract, 'M1      '
+        WRITE(diagCode,'(A,I3.3,A)') 'SM  C', numFrcFx, 'M1      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
