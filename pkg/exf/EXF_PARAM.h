@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.2 2007/04/18 19:55:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.3 2007/04/19 14:37:00 heimbach Exp $
 C $Name:  $
 c
 c
@@ -261,6 +261,8 @@ c     to reset climatological temperatures fields where they have
 c     values below climtempfreeze
       _RL climtempfreeze
 
+      integer selectStressGridPosition
+
       integer obcsNstartdate1
       integer obcsNstartdate2
       _RL     obcsNstartdate
@@ -313,7 +315,7 @@ C                           instead of _YEAR for useExfYearlyFields
       common /exf_param_l/
      &                     useExfYearlyFields, twoDigitYear,
      &                     useExfCheckRange
-      common /exf_param_i/
+      common /exf_param_i/ selectStressGridPosition,
      &                     hfluxstartdate1,   hfluxstartdate2,
      &                     atempstartdate1,   atempstartdate2,
      &                     aqhstartdate1,     aqhstartdate2,
