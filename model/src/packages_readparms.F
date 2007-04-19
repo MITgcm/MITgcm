@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.51 2007/04/18 23:56:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.52 2007/04/19 14:52:03 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -124,8 +124,7 @@ C--   Initialize RUNCLOCK parameters
 
 #ifdef ALLOW_CAL
 C--   Initialise the calendar package.
-ceh3 should have an IF ( useCAL ) THEN
-      call cal_readparms( myThid )
+      IF ( useCAL ) call cal_readparms( myThid )
 #endif
 
 #ifdef ALLOW_GMREDI
