@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.4 2007/04/17 23:42:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.5 2007/04/19 02:59:29 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -106,7 +106,7 @@ C-    Initialise flxAtm,evpAtm
        ENDDO
 
 cph(
-          print *, 'ph-thsice-3a in thsice_main'
+c         print *, 'ph-thsice-3a in thsice_main'
 cph)
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE tsrf(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
@@ -122,7 +122,7 @@ c     IF ( fluidIsWater ) THEN
      I          myTime, myIter, myThid )
 
 cph(
-          print *, 'ph-thsice-3b in thsice_main'
+c         print *, 'ph-thsice-3b in thsice_main'
 cph)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    part.1 : ice-covered fraction ;
@@ -155,7 +155,7 @@ C-      surface net SW flux:
        ENDDO
 
 cph(
-          print *, 'ph-thsice-3c in thsice_main'
+c         print *, 'ph-thsice-3c in thsice_main'
 cph)
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE qice1(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
@@ -174,7 +174,7 @@ CADJ STORE qice2(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
      O          icFlxAtm(siLo,sjLo,bi,bj), icFrwAtm(siLo,sjLo,bi,bj),
      I          myTime, myIter, myThid )
 cph(
-          print *, 'ph-thsice-3d in thsice_main'
+c         print *, 'ph-thsice-3d in thsice_main'
 cph)
 
 #ifdef SHORTWAVE_HEATING
