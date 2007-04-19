@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.15 2007/04/19 02:59:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.16 2007/04/19 13:22:36 heimbach Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -110,9 +110,6 @@ CADJ STORE qsw(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
 # endif
 #endif
 
-cph(
-c         print *, 'ph-thsice-1 in thsice_main'
-cph)
 C--     Mixed layer thickness: take the 1rst layer
 #ifdef NONLIN_FRSURF
         IF ( staggerTimeStep .AND. nonlinFreeSurf.GT.0 ) THEN
@@ -188,9 +185,6 @@ CADJ STORE empmr   = comlev1, key = iicekey
 CADJ STORE qnet    = comlev1, key = iicekey
 #endif
 
-cph(
-c         print *, 'ph-thsice-2 in thsice_main'
-cph)
 C-      do sea-ice advection before getting surface fluxes
 C Note: will inline this S/R once thSIce in Atmos. set-up is settled
         IF ( thSIceAdvScheme.GT.0 )
@@ -216,10 +210,6 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
         ENDIF
 #endif
 
-
-cph(
-c         print *, 'ph-thsice-3 in thsice_main'
-cph)
         CALL THSICE_STEP_TEMP(
      I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     myTime, myIter, myThid )
@@ -235,17 +225,11 @@ CADJ STORE Qice2   = comlev1, key = iicekey
 CADJ STORE snowAge = comlev1, key = iicekey
 #endif
 
-cph(
-c         print *, 'ph-thsice-4 in thsice_main'
-cph)
         CALL THSICE_STEP_FWD(
      I                     bi, bj, iMin, iMax, jMin, jMax,
      I                     prcAtm,
      I                     myTime, myIter, myThid )
 
-cph(
-c         print *, 'ph-thsice-5 in thsice_main'
-cph)
         CALL THSICE_AVE(
      I                     bi,bj, myTime, myIter, myThid )
 
@@ -279,10 +263,6 @@ C--  end bi,bj loop
        ENDDO
       ENDDO
 
-
-cph(
-c         print *, 'ph-thsice-6 in thsice_main'
-cph)
       IF ( useSEAICE .OR. thSIceAdvScheme.GT.0 ) THEN
 C--   Exchange fields that are advected by seaice dynamics
         _EXCH_XY_R8( iceMask, myThid )
