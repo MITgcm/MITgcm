@@ -32,15 +32,20 @@ C     ========= Local variables =========================
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 c
+c N.B. !!!
+c Values here should be 1/(std.dev.)^2
+c to be consistent with ctrl_set_*pack_xy* routines
+c N.B. !!!
+c
         DO k=1,Nr
-         wtheta(k,bi,bj) = 1. _d 0
-         wsalt (k,bi,bj) = 0.1 _d 0
-         wuvvel(k,bi,bj) = 0.01 _d 0
+         wtheta(k,bi,bj) = 1. / (1. _d 0)**2
+         wsalt (k,bi,bj) = 1. / (0.1 _d 0)**2
+         wuvvel(k,bi,bj) = 1. / (0.01 _d 0)**2
         END DO
 c
         DO j=1,sNy
          DO i=1,sNx
-          wetan(i,j,bi,bj) = 0.1 _d 0
+          wetan(i,j,bi,bj) = 1. / (0.1 _d 0)**2
          END DO
         END DO
 c
