@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.794 2007/04/19 15:49:24 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.795 2007/04/20 18:30:39 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: fix bug in evp solver, while doing that
+  - change (improve?) discretization of stress computations for both
+    cgrid-lsr and evp solver
+  - add a new routine to compute strain rates
+  - changes lab_sea results
 o pkg/kpp: add code to have mixing in shelf ice caverns
 
 checkpoint59
