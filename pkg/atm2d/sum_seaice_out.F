@@ -39,6 +39,9 @@ C Add contribution of SW passing through ice
 C note sign convention of sum_solarnet is +=up, opposite of ice model
             sum_solarnet(i,j)= sum_solarnet(i,j)
      &                  - icFlxSW(i,j,1,1)*iceMask(i,j,1,1)
+C zero out icFlxSw or it will be double counted in thsice_step_fwd
+            icFlxSW(i,j,1,1)= 0. _d 0
+
           ENDIF
           
         ENDDO

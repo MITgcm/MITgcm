@@ -178,9 +178,9 @@ C     Also sum of atm E,P  for seaice growth step, and sum of seaice bottom flux
        _RL sum_prcIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! sum of total precip over ice (kg/m2/s, + def)
        _RL sum_snowPrc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)! sum of snow precip to ice (kg/m2/s, + def)
        _RL sum_evapIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)! total evap over ice (kg/m2/s, +=out of ocean)
-       _RL sum_sHeat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! surf heating left (post ice temp step) to melt ice/snow
+       _RL sum_sHeat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! surf heating, post ice temp step, to melt ice/snow
        _RL sum_flxCnB(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! heat flux conducted through ice to bottom surface
-
+				                   ! W/m2, +=down 
 
 C     These are the fluxes actually passed to the ocean model
       COMMON/OCN_FLUXES_PASS/ pass_runoff, pass_precip, pass_evap, pass_qnet,
@@ -201,11 +201,11 @@ C     These are the fluxes actually passed to the ocean model
        _RL sFluxFromIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! upward salt flux->ocean (psu.kg/m^2/s, or g/m^2/s?)
 
      
-      COMMON/ICE_FLUXES_PASS/ incSW, sFlx, dTsurf, pass_prcAtm
-       _RL incSW(sNx,sNy)    ! shortwave flux to ice (W/m2) (+= down), init. total, then net
+      COMMON/ICE_FLUXES_PASS/ netSW, sFlx, dTsurf, pass_prcAtm
+       _RL netSW(sNx,sNy)    ! net shortwave flux to ice (W/m2) (+= down)
        _RL sFlx(sNx,sNy,0:2) ! input variables to seaice temp solver:
-			     ! 0: flux needed to raise Tsurf to melting (Ts=0) (>= 0 W/m2)
-			     ! 1: surface heat flux to ice (Ts=Ts^n) (W/m2) (+=down)
+			     ! 0: sFlx(:,1) - Tsurf * dF/dT (W/m2)
+			     ! 1: surface heat flux to ice, no SW (Ts=Ts^n) (W/m2) (+=down)
 			     ! 2: dF/dT (over ice), (- def, as for +=down HF)
        _RL dTsurf(sNx,sNy)   ! surf temp adjustment Ts^n+1 - Ts^n
        _RL pass_prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! total precip -> seaice top ((kg/m2/s, +=precip to ice)

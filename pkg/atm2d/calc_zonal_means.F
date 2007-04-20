@@ -2,7 +2,7 @@
 #include "ATM2D_OPTIONS.h"
 
 C     !INTERFACE:
-      SUBROUTINE CALC_ZONAL_MEANS(doAll,myThid )
+      SUBROUTINE CALC_ZONAL_MEANS(doAll, myTime, myIter, myThid )
 C     *==========================================================*
 C     | Calculate zonal mean ocean quantities (at a specific     |
 C     | point in time). If first argument is false, only seaice  |
@@ -21,6 +21,9 @@ C     === Global Ocean Variables ===
 
 C     === Global SeaIce Variables === 
 #include "THSICE_VARS.h"
+      INTEGER siLo, siHi, sjLo, sjHi
+      PARAMETER ( siLo = 1-OLx , siHi = sNx+OLx )
+      PARAMETER ( sjLo = 1-OLy , sjHi = sNy+OLy )
 
 C     === Atmos/Ocean/Seaice Interface Variables ===
 #include "ATM2D_VARS.h"
@@ -28,8 +31,12 @@ C     === Atmos/Ocean/Seaice Interface Variables ===
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     doAll   - boolean, false -> only vars changed after atm step
+C     myTime - current simulation time (ocean model time)
+C     myIter - iteration number (ocean model)
 C     myThid  - Thread no. that called this routine.
       LOGICAL doAll
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 C     LOCAL VARIABLES:
@@ -47,6 +54,15 @@ C     LOCAL VARIABLES:
         csAlb(j_atm)=0. _d 0
       ENDDO
       
+       CALL THSICE_ALBEDO(
+     I          1, 1, siLo, siHi, sjLo, sjHi,
+     I          1, sNx, 1, sNy,
+     I          iceMask(siLo,sjLo,1,1), iceHeight(siLo,sjLo,1,1),
+     I          snowHeight(siLo,sjLo,1,1), Tsrf(siLo,sjLo,1,1),
+     I          snowAge(siLo,sjLo,1,1),
+     O          siceAlb(siLo,sjLo,1,1),
+     I          myTime, myIter, myThid )
+
       DO j=1,sNy
        DO i=1,sNx
 
@@ -63,9 +79,9 @@ C     LOCAL VARIABLES:
            ENDIF
            ctice(atm_oc_ind(j))=ctice(atm_oc_ind(j)) + Tsrf(i,j,1,1)
      &             *rA(i,j,1,1)*iceMask(i,j,1,1)*atm_oc_wgt(j)
-C          seaice albedo has been multiplied by icemask at this point
            csAlb(atm_oc_ind(j))=csAlb(atm_oc_ind(j)) + siceAlb(i,j,1,1)
-     &             *rA(i,j,1,1)*atm_oc_wgt(j)
+     &             *rA(i,j,1,1)*iceMask(i,j,1,1)*atm_oc_wgt(j)
+
 
            IF (atm_oc_wgt(j).LT.1. _d 0) THEN
              mWgt= 1. _d 0-atm_oc_wgt(j)
@@ -81,7 +97,7 @@ C          seaice albedo has been multiplied by icemask at this point
              ctice(atm_oc_ind(j)+1)= ctice(atm_oc_ind(j)+1) + 
      &             Tsrf(i,j,1,1)*rA(i,j,1,1)*iceMask(i,j,1,1)*mWgt
              csAlb(atm_oc_ind(j)+1)= csAlb(atm_oc_ind(j)+1) + 
-     &             siceAlb(i,j,1,1)*rA(i,j,1,1)*mWgt
+     &             siceAlb(i,j,1,1)*rA(i,j,1,1)*iceMask(i,j,1,1)*mWgt
            ENDIF
 
          ENDIF

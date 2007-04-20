@@ -59,7 +59,7 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
       INTEGER iloop_ocn
 #endif
 
-      print *,'***Top of forwrdstep_atm',iloop,myTime,myIter
+      print *,'*** Top of forwrdstep_atm',iloop,myTime,myIter
       idyear= int((iloop-1)*dtcouple/365.0/24.0) + 1
       iyr= idyear + startYear -1
       inyr = mod(iloop*dtcouple, 365*24)
@@ -151,21 +151,21 @@ C       don't run the ice growth/melt on step 1 if "cold" start
 #  endif
 #endif 
      
-      PRINT *,'Top of ncall_atm Loop'
+C      PRINT *,'Top of ncall_atm Loop'
       DO na=1,ncall_atm    !loop for atmos forward time steps
         CALL atmosphere(dtatm,monid)
 #ifdef OCEAN_3D
         CALL ATM2OCN_MAIN(iloop, na, monid, myIter, myThid)
         CALL SUM_OCN_FLUXES(myThid)
         CALL PASS_SEAICE_FLUXES(myThid)
-        CALL THSICE_STEP_TEMP(1,1,1,sNx,1,sNy,
+        CALL THSICE_IMPL_TEMP(netSW, sFlx, dTsurf, 1,1,
      &                        myTime, myIter, myThid)
         CALL SUM_SEAICE_OUT(myThid)
         CALL CALC_ZONAL_MEANS(.FALSE.,myThid) !just mean Tsrf recalculated
 #endif
       ENDDO  ! ncall_atm loop
 
-      PRINT *,'Top of ncall_ocean Loop'
+C      PRINT *,'Top of ncall_ocean Loop'
       DO no=1,ncall_ocean   !loop for each ocean forward step
 
 #ifdef OCEAN_3D 

@@ -33,9 +33,9 @@ C     LOCAL VARIABLES:
       DO j=1, sNy
         DO i=1, sNx
         
-          incSW(i,j) = -solarinc_2D(i,j) !at this point, incident SW
-          sFlx(i,j,0)= Tsrf(i,j,1,1)*dFdT_ice_2D(i,j)
-          sFlx(i,j,1)= -qneti_2D(i,j) 
+          netSW(i,j) = -solarinc_2D(i,j)*(1. _d 0 - siceAlb(i,j,1,1)) ! convert to +=down
+          sFlx(i,j,0)= -qneti_2D(i,j) -netSW(i,j) + Tsrf(i,j,1,1)*dFdT_ice_2D(i,j)
+          sFlx(i,j,1)= -qneti_2D(i,j) -netSW(i,j)
           sFlx(i,j,2)= -dFdT_ice_2D(i,j)
 
 C         Note conversion to ice model sign convention below
