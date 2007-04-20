@@ -40,6 +40,8 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
      &                       kGloPos,
      &                       iGloTile,
      &                       jGloTile,
+     &                       idep,
+     &                       jdep,
      &                       obcsglo,
      &                       recglo,
      &                       iwetsum
@@ -54,6 +56,8 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
       integer kGloPos
       integer iGloTile
       integer jGloTile
+      integer idep
+      integer jdep
       integer obcsglo
       integer recglo
       integer iwetsum(nsx,nsy,0:nr)

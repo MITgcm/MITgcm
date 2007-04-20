@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.10 2006/11/19 23:17:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.11 2007/04/20 19:26:43 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -70,6 +70,8 @@ c--   Optimization parameters.
      &                  kGloPos,
      &                  iGloTile,
      &                  jGloTile,
+     &                  idep,
+     &                  jdep,
      &                  obcsglo,
      &                  recglo
 
@@ -96,6 +98,8 @@ c--     Set default values.
         kGloPos         = 1
         iGloTile        = 1
         jGloTile        = 1
+        idep            = 1
+        jdep            = 1
         obcsglo         = 1
         recglo          = 1
 

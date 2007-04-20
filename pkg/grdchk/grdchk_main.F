@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.20 2007/03/24 02:25:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.21 2007/04/20 19:26:43 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -81,6 +81,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "grdchk.h"
 #include "cost.h"
+#include "ctrl.h"
 #ifdef ALLOW_TANGENTLINEAR_RUN
 #include "g_cost.h"
 #endif
@@ -156,10 +157,11 @@ cph   and so has unperturbed cost function,
 cph   assuming all xx_ fields are initialised to zero.
 
       ierr_grdchk = 0
-cphadmtlm(
+#ifdef ALLOW_ADMTLM
+      fcref = objf_state_final(idep,jdep,1,1,1)
+#else
       fcref = fc
-cphadmtlm      fcref = objf_state_final(45,4,1,1,1)
-cphadmtlm)
+#endif
 
       print *, 'ph-check fcref = ', fcref
 
@@ -263,21 +265,26 @@ c--
 c--   2. perform tangent linear run
             mytime = starttime
             myiter = niter0
-cphadmtlm(
+#ifdef ALLOW_ADMTLM
+            do k=1,4*Nr+1
+             do j=1,sny
+              do i=1,snx
+               g_objf_state_final(i,j,1,1,k) = 0.
+              enddo
+             enddo
+            enddo
+#else
             g_fc = 0.
-cphadmtlm            do j=1,sny
-cphadmtlm               do i=1,snx
-cphadmtlm                  g_objf_state_final(i,j,1,1,1) = 0.
-cphadmtlm                  g_objf_state_final(i,j,1,1,2) = 0.
-cphadmtlm               enddo
-cphadmtlm            enddo
-cphadmtlm)
+#endif
+
             call g_the_main_loop( mytime, myiter, mythid )
-cphadmtlm(
-            ftlxxmemo = g_fc
-cphadmtlm            ftlxxmemo = g_objf_state_final(45,4,1,1,1)
-cphadmtlm)
             _BARRIER
+#ifdef ALLOW_ADMTLM
+            ftlxxmemo = g_objf_state_final(idep,jdep,1,1,1)
+#else
+            ftlxxmemo = g_fc
+#endif
+
 c--
 c--   3. reset control vector
             if ( myProcId .EQ. grdchkwhichproc .AND.
@@ -314,10 +321,11 @@ c--   forward run with perturbed control vector
             mytime = starttime
             myiter = niter0
             call the_main_loop( mytime, myiter, mythid )
-cphadmtlm(
+#ifdef ALLOW_ADMTLM
+            fcpertplus = objf_state_final(idep,jdep,1,1,1)
+#else
             fcpertplus = fc
-cphadmtlm            fcpertplus = objf_state_final(45,4,1,1,1)
-cphadmtlm)
+#endif
             print *, 'ph-check fcpertplus = ', fcpertplus
             _BARRIER
                   
@@ -355,7 +363,11 @@ c--   forward run with perturbed control vector
                myiter = niter0
                call the_main_loop( mytime, myiter, mythid )
                _BARRIER
+#ifdef ALLOW_ADMTLM
+               fcpertminus = objf_state_final(idep,jdep,1,1,1)
+#else
                fcpertminus = fc
+#endif
                   
 c--   Reset control vector.
                if ( myProcId .EQ. grdchkwhichproc .AND.
