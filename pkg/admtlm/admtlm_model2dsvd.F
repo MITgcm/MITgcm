@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_model2dsvd.F,v 1.4 2007/02/01 02:01:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_model2dsvd.F,v 1.5 2007/04/20 18:46:11 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -468,19 +468,19 @@ C     place holder of obsolete variable jG
 #ifdef ALLOW_UVEL0_CONTROL
           ivartype = 27
           write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wuvel"
+          write(weighttype(1:80),'(a)') "wuvvel"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, fname_uvel(ictrlgrad), "maskCtrlW",
-     &         weighttype, wunit, lxxadxx, mythid)
+     &         weighttype, wuvvel, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_VVEL0_CONTROL
           ivartype = 28
           write(weighttype(1:80),'(80a)') ' '
-          write(weighttype(1:80),'(a)') "wvvel"
+          write(weighttype(1:80),'(a)') "wuvvel"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, fname_vvel(ictrlgrad), "maskCtrlS",
-     &         weighttype, wunit, lxxadxx, mythid)
+     &         weighttype, wuvvel, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_ETAN0_CONTROL
