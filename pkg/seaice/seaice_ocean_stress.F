@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.12 2007/04/18 18:06:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.13 2007/04/20 18:29:58 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,6 +41,9 @@ C     i,j,bi,bj - Loop counters
       _RL  fuIceLoc, fvIceLoc, FX, FY
       _RL  areaW, areaS
 
+      _RL e11         (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL e22         (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL e12         (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL press       (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL etaPlusZeta (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL zetaMinusEta(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -82,14 +85,15 @@ C     use an intergral over ice and ocean surface layer to define
 C     surface stresses on ocean following Hibler and Bryan (1987, JPO)
 C     
 C     recompute viscosities from updated ice velocities
-       CALL SEAICE_CALC_VISCOSITIES( 
-     I      uIce(1-Olx,1-Oly,1,1,1), vIce(1-Olx,1-Oly,1,1,1), 
-     I      zMin, zMax, hEffM, press0,
-     O      eta, zeta, press, 
-#ifdef SEAICE_ALLOW_EVP
-     O      seaice_div, seaice_tension, seaice_shear,
-#endif /* SEAICE_ALLOW_EVP */
-     I      myThid )
+      CALL SEAICE_CALC_STRAINRATES( 
+     I     uIce(1-Olx,1-Oly,1,1,1), vIce(1-Olx,1-Oly,1,1,1),
+     O     e11, e22, e12,
+     I     myThid )
+
+      CALL SEAICE_CALC_VISCOSITIES( 
+     I     e11, e22, e12, zMin, zMax, hEffM, press0,
+     O     eta, zeta, press, 
+     I     myThid )
 C     re-compute internal stresses with updated ice velocities
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)

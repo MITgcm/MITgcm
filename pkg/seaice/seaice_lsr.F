@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.14 2007/04/16 22:30:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.15 2007/04/20 18:29:58 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,6 +59,10 @@ C     i,j,bi,bj - Loop counters
 
       _RL URT(1-Olx:sNx+Olx), CUU(1-Olx:sNx+Olx)
       _RL VRT(1-Oly:sNy+Oly), CVV(1-Oly:sNy+Oly)
+C     strain rate tensor
+      _RL e11              (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL e22              (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL e12              (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       _RL etaPlusZeta (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL zetaMinusEta(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -109,12 +113,14 @@ CADJ STORE vice = comlev1_lsr,
 CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+      CALL SEAICE_CALC_STRAINRATES( 
+     I     uIceC, vIceC,
+     O     e11, e22, e12,
+     I     myThid )
+
       CALL SEAICE_CALC_VISCOSITIES( 
-     I     uIceC, vIceC, zMin, zMax, hEffM, press0,
+     I     e11, e22, e12, zMin, zMax, hEffM, press0,
      O     eta, zeta, press, 
-#ifdef SEAICE_ALLOW_EVP
-     O     seaice_div, seaice_tension, seaice_shear,
-#endif /* SEAICE_ALLOW_EVP */
      I     myThid )
 
       DO bj=myByLo(myThid),myByHi(myThid)
