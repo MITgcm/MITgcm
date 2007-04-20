@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.22 2007/04/19 04:31:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.23 2007/04/20 19:24:47 jscott Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
+#ifdef ALLOW_ATM2D
+# include "ctrparam.h"
+#endif
 
 CBOP
 C     !ROUTINE: THSICE_STEP_FWD
@@ -25,6 +28,10 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
+#ifdef  ALLOW_ATM2D
+# include "ATMSIZE.h"
+# include "ATM2D_VARS.h"
+#endif
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
@@ -120,7 +127,11 @@ C-    Initialise
       DO j = 1-OLy, sNy+OLy
         DO i = 1-OLx, sNx+OLx
           isIceFree(i,j) = .FALSE.
+#ifdef ALLOW_ATM2D
+          sFluxFromIce(i,j) = 0. _d 0
+#else
           saltFlux(i,j,bi,bj) = 0. _d 0
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
           iceFrac(i,j) = 0.
 #endif
@@ -250,6 +261,11 @@ CADJ STORE  icemask(i,j,bi,bj) = comlev1_thsice_1, key=ikey_1
 #endif
           icFrac = iceMask(i,j,bi,bj)
           opFrac= 1. _d 0-icFrac
+#ifdef ALLOW_ATM2D
+          pass_qnet(i,j) = pass_qnet(i,j) - icFrac*flx2oc(i,j)
+          pass_evap(i,j) = pass_evap(i,j) - icFrac*frw2oc(i,j)/rhofw
+          sFluxFromIce(i,j) = -icFrac*fsalt(i,j)
+#else
           icFlxAtm(i,j,bi,bj) = icFrac*icFlxAtm(i,j,bi,bj)
      &                        - opFrac*Qnet(i,j,bi,bj)
           icFrwAtm(i,j,bi,bj) = icFrac*icFrwAtm(i,j,bi,bj)
@@ -258,6 +274,7 @@ CADJ STORE  icemask(i,j,bi,bj) = comlev1_thsice_1, key=ikey_1
           EmPmR(i,j,bi,bj)= -icFrac*frw2oc(i,j)/rhofw
      &                    +  opFrac*EmPmR(i,j,bi,bj)
           saltFlux(i,j,bi,bj) = -icFrac*fsalt(i,j)
+#endif
 
 #ifdef ALLOW_DBUG_THSICE
           IF (dBug(i,j,bi,bj)) WRITE(6,1010)
@@ -300,9 +317,15 @@ CADJ &     comlev1_bibj, key=iicekey, byte=isbyte
        DO i = iMin, iMax
         IF (frzmltMxL(i,j).GT.0. _d 0) THEN
 C--    Net fluxes :
+#ifdef ALLOW_ATM2D
+          pass_qnet(i,j) = pass_qnet(i,j) - flx2oc(i,j)
+          pass_evap(i,j) = pass_evap(i,j) - frw2oc(i,j)/rhofw
+          sFluxFromIce(i,j)= sFluxFromIce(i,j) - fsalt(i,j)
+#else
           Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj) - flx2oc(i,j)
           EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- frw2oc(i,j)/rhofw
           saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - fsalt(i,j)
+#endif
 
 #ifdef ALLOW_DBUG_THSICE
           IF (dBug(i,j,bi,bj)) WRITE(6,1010)
