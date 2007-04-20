@@ -1,13 +1,22 @@
 #!/bin/bash
 # 
-# composed and tested by ce107 on ross/weddell
-# for more speed on Core2 processors replace -xW with -xT
-# for more speed on Pentium4 based EM64T processors replaces -xW with -xP
+# Composed and tested by ce107 on ross/weddell (Opteron system)
+# Should work fine on EM64T and other AMD64 compatible Intel systems
+# a) Processor specific flags:
+#    1) for more speed on Core2 processors replace -xW with -xT
+#    2) for more speed on Pentium4 based EM64T processors replaces -xW with -xP
+# b) For more speed, provided your data size doesn't exceed 2GB you can
+# remove -fPIC which carries a performance penalty of 2-6%.
+# c) Provided that the libraries you link to are compiled with -fPIC this
+# optfile should work.
+# d) You can replace -fPIC with -mcmodel=medium which may perform faster
+# then -fPIC and still support data sizes over 2GB per process but all
+# the libraries you link to myst be compiled with -fPIC or -mcmodel=medium
 
 FC=ifort
 F90C=ifort
 CC=icc
-LINK='mpif90 -i-static -no-ipo'
+LINK='ifort -i-dynamic -no-ipo'
 
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
