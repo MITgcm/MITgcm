@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.58 2007/04/18 23:56:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.59 2007/04/20 18:42:10 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -237,6 +237,12 @@ C--   in order to provide the weight files
 #ifdef ALLOW_AUTODIFF
 C--   Initialise the control variables
       CALL CTRL_INIT( myThid )
+      _BARRIER
+#endif
+
+#ifdef ALLOW_ADMTLM
+C--   Initialise ADMTLM
+      CALL CTRL_ADMTLM( myThid )
       _BARRIER
 #endif
 
