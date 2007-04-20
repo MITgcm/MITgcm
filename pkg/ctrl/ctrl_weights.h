@@ -1,12 +1,15 @@
 
 c     Define dummy weights as a placeholder
       common /ctrl_weights_dummy_r/
-     &                        wtheta, wsalt,
+     &                        wtheta, wsalt, 
+     &                        wuvvel, wetan,
      &                        wdiffkr, wkapgm,
      &                        wedtaux, wedtauy
 
-      _RL wtheta ( nr,nsx,nsy )
-      _RL wsalt ( nr,nsx,nsy )
+      _RL wtheta   ( nr,nsx,nsy )
+      _RL wsalt    ( nr,nsx,nsy )
+      _RL wuvvel   ( nr,nsx,nsy )
+      _RL wetan    ( snx,sny,nsx,nsy )
       _RL wdiffkr ( nr,nsx,nsy )
       _RL wkapgm ( nr,nsx,nsy )
       _RL wedtaux ( nr,nsx,nsy )
