@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.1 2007/04/20 18:29:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.2 2007/04/22 19:56:22 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -44,6 +44,10 @@ CEndOfInterface
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
       INTEGER i, j, bi, bj
+C  hFacU, hFacV - determine the no-slip boundary condition
+      INTEGER k
+      _RS hFacU, hFacV
+
 
 C
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -71,19 +75,33 @@ C     one metric term is missing
      &         *recip_rSphere
      &         )
 C     one metric term is missing
-CML          e12(I,J,bi,bj)=HALF*(
-CML     &         (uFld(I,J+1,bi,bj)+uFld(I+1,J+1,bi,bj)
-CML     &         -uFld(I,J-1,bi,bj)-uFld(I+1,J-1,bi,bj))
-CML     &         * 1. _d 0 / (dyC(I,J,bi,bj) + dyC(I,J-1,bi,bj))
-CML     &         +
-CML     &         (vFld(I+1,J+1,bi,bj)+vFld(I+1,J,bi,bj)
-CML     &         -vFld(I-1,J+1,bi,bj)-vFld(I-1,J,bi,bj))
-CML     &         * 1. _d 0 / (dxC(I,J,bi,bj) + dxC(I-1,J,bi,bj))
-CML     &         +HALF*
-CML     &         (uFld(I,  J,  bi,bj)+uFld(I+1,J,  bi,bj))
-CML     &         * _tanPhiAtU(I,J,bi,bj)*recip_rSphere)
          ENDDO
         ENDDO
+        IF ( SEAICE_no_slip ) THEN
+C     no slip boundary conditions are applied as a body force 
+C     following mom_u/v_sidedrag
+         k = 1
+         DO j=1-Oly+1,sNy+Oly-1
+          DO i=1-Olx+1,sNx+Olx-1
+           hFacU = _maskW(i,j,k,bi,bj) - _maskW(i,j-1,k,bi,bj)
+           hFacV = _maskS(i,j,k,bi,bj) - _maskS(i-1,j,k,bi,bj)
+
+           e12(I,J,bi,bj)= e12(I,J,bi,bj)
+     &          + HALF*( recip_rAz(i,j,bi,bj)
+     &          *( hFacU * ( _dxC(i,j  ,bi,bj)*uFld(i,j  ,bi,bj)
+     &                     + _dxC(i,j-1,bi,bj)*uFld(i,j-1,bi,bj) ) 
+     &           + hFacV * ( _dyC(i  ,j,bi,bj)*vFld(i  ,j,bi,bj)
+     &                     + _dyC(i-1,j,bi,bj)*vFld(i-1,j,bi,bj) ) )
+     &         - hFacU 
+     &         * 0.25 _d 0 * (uFld(I,J,bi,bj)+uFld(I  ,J-1,bi,bj))
+     &         * ( _tanPhiAtU(I,J,bi,bj) + _tanPhiAtU(I,J-1,bi,bj) )
+     &         *recip_rSphere
+     &          )
+C     one metric term is missing
+          ENDDO
+         ENDDO
+
+        ENDIF
        ENDDO
       ENDDO
 #endif /* SEAICE_ALLOW_DYNAMICS */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.33 2006/11/01 09:49:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.34 2007/04/22 19:56:22 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -25,6 +25,7 @@ C                          non-default Leap-frog scheme for advection)
 C     useHB87stressCoupling :: use an intergral over ice and ocean surface
 C                          layer to define surface stresses on ocean
 C                          following Hibler and Bryan (1987, JPO)
+C     SEAICE_no_slip    :: apply no slip boundary conditions to seaice velocity
 C     SEAICE_clipVelocities :: clip velocities to +/- 40cm/s
 C     SEAICE_maskRHS    :: mask the RHS of the solver where there is no ice
 C     SEAICE_tave_mdsio :: write TimeAverage output using MDSIO
@@ -36,14 +37,14 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding, SEAICEadvSnow, 
-     &     SEAICEuseFluxForm, useHB87stressCoupling, 
+     &     SEAICEuseFluxForm, useHB87stressCoupling, SEAICE_no_slip,
      &     SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP, 
      &     SEAICEuseEVPpickup, SEAICEuseFlooding, SEAICEadvSnow,
-     &     SEAICEuseFluxForm, useHB87stressCoupling, 
+     &     SEAICEuseFluxForm, useHB87stressCoupling, SEAICE_no_slip,
      &     SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc

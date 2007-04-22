@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.43 2006/11/01 09:49:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.44 2007/04/22 19:56:22 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,9 +41,9 @@ C     iUnit       - Work variable for IO unit number
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEwriteState, SEAICEuseDYNAMICS,
-     & SEAICEuseEVP, SEAICEuseEVPpickup, SEAICEuseFluxForm,
+     & SEAICEuseEVPpickup, SEAICEuseFluxForm,
      & useHB87stressCoupling, SEAICEuseFlooding, SEAICEadvSnow,
-     & SEAICE_clipVelocities, SEAICE_maskRHS,
+     & SEAICE_clipVelocities, SEAICE_maskRHS, SEAICE_no_slip,
      & LAD, IMAX_TICE, SEAICEadvScheme, SEAICEadvSchArea, 
      & SEAICEadvSchHeff, SEAICEadvSchEnth, SEAICEadvSchSnow,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
@@ -110,6 +110,7 @@ C--   set default sea ice parameters
       useHB87stressCoupling = .FALSE.
       SEAICEadvSnow      = .FALSE.    
       SEAICEuseFlooding  = .FALSE.
+      SEAICE_no_slip     = .FALSE.
       SEAICE_clipVelocities = .TRUE.
       SEAICE_maskRHS     = .FALSE.
       SEAICEadvScheme    = 2
@@ -119,7 +120,7 @@ C--   set default sea ice parameters
       SEAICEadvSchSnow   = UNSET_I
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
-      SEAICE_deltaTevp   = dTtracerLev(1)
+      SEAICE_deltaTevp   = UNSET_RL
       SEAICE_monFreq     = monitorFreq
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
@@ -283,6 +284,8 @@ C     yet been tried nor thought through.
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 #ifdef SEAICE_ALLOW_EVP
+      SEAICEuseEVP = .FALSE.
+      IF ( SEAICE_deltaTevp .NE. UNSET_RL ) SEAICEuseEVP = .TRUE.
       IF ( SEAICEuseEVP ) THEN
        IF (    (SEAICE_deltaTdyn/SEAICE_deltaTevp) .NE.
      &      INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.4 2007/04/20 18:29:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.5 2007/04/22 19:56:22 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -176,8 +176,8 @@ C
             seaice_tension(I,J,bi,bj) = (e11C-e22C)/deltaC
      &           *hEffM(I,J,bi,bj)
             seaice_shear  (I,J,bi,bj) = 2. _d 0*e12Z/deltaZ
-     &         *hEffM(I  ,J  ,bi,bj)*hEffM(I-1,J  ,bi,bj)
-     &         *hEffM(I  ,J-1,bi,bj)*hEffM(I-1,J-1,bi,bj)
+CML     &         *hEffM(I  ,J  ,bi,bj)*hEffM(I-1,J  ,bi,bj)
+CML     &         *hEffM(I  ,J-1,bi,bj)*hEffM(I-1,J-1,bi,bj)
            ENDDO
           ENDDO
          ENDDO
@@ -187,7 +187,7 @@ C--   Update overlap regions
         _EXCH_XY_R8(press         , myThid)
         _EXCH_XY_R8(seaice_div    , myThid)
         _EXCH_XY_R8(seaice_tension, myThid)
-        _EXCH_XY_R8(seaice_shear  , myThid)
+        CALL EXCH_Z_3D_RL(seaice_shear, 1, myThid)
 C
 C     set up rhs for stepping the velocity field
 C
