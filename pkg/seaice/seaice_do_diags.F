@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.27 2007/04/22 23:07:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.28 2007/04/22 23:42:49 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -35,14 +35,14 @@ C     == Local variables ==
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
       INTEGER i, j, k, bi, bj
-      _RS arr  (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
+      _RL arr  (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
 #ifdef ALLOW_DIAGNOSTICS
-      _RS brr  (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
+      _RL brr  (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
       _RL e11  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e22  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e12  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL PRESS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS sig1, sig2, sig12, sigTmp, recip_prs
+      _RL sig1, sig2, sig12, sigTmp, recip_prs
 #endif /* ALLOW_DIAGNOSTICS */
       LOGICAL dumpFiles
       CHARACTER*(1) pf
@@ -71,11 +71,11 @@ C     == Local variables ==
      &           myTime,myThid)
 #if ( defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP) )
             IF ( SEAICEuseEVP ) THEN
-             CALL MNC_CW_RS_W(pf,'sice',0,0,'si_sigma1',
+             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_sigma1',
      &            seaice_sigma1,myThid)
-             CALL MNC_CW_RS_W(pf,'sice',0,0,'si_sigma2',
+             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_sigma2',
      &            seaice_sigma2,myThid)
-             CALL MNC_CW_RS_W(pf,'sice',0,0,'si_sigma12',
+             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_sigma12',
      &            seaice_sigma12,myThid)
             ENDIF
 #endif /* SEAICE_CGRID and SEAICE_ALLOW_EVP */
@@ -102,11 +102,11 @@ C     == Local variables ==
             CALL WRITE_FLD_XY_RL( 'HSNOW.',suff,HSNOW,myIter,myThid)
 #if ( defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP) )
             IF ( SEAICEuseEVP ) THEN
-             CALL WRITE_FLD_XY_RS('SIGMA1.',suff,seaice_sigma1,
+             CALL WRITE_FLD_XY_RL('SIGMA1.',suff,seaice_sigma1,
      &            myIter,myThid)
-             CALL WRITE_FLD_XY_RS('SIGMA2.',suff,seaice_sigma2,
+             CALL WRITE_FLD_XY_RL('SIGMA2.',suff,seaice_sigma2,
      &            myIter,myThid)
-             CALL WRITE_FLD_XY_RS('SIGMA12.',suff,seaice_sigma12,
+             CALL WRITE_FLD_XY_RL('SIGMA12.',suff,seaice_sigma12,
      &            myIter,myThid)
             ENDIF
 #endif /* SEAICE_CGRID and SEAICE_ALLOW_EVP */
@@ -142,16 +142,16 @@ C     == Local variables ==
           ENDDO
           _BARRIER
           IF (SEAICE_dump_mdsio) THEN
-            CALL WRITE_FLD_XY_RS( 'UICE.',suff,arr,myIter,myThid)
+            CALL WRITE_FLD_XY_RL( 'UICE.',suff,arr,myIter,myThid)
           ENDIF
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
-            CALL MNC_CW_RS_W(pf,'sice',0,0,'si_UICE',arr,myThid)
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_UICE',arr,myThid)
           ENDIF
 #endif
 #ifdef SEAICE_DEBUG
-          _EXCH_XY_R4( arr, myThid )
-          CALL PLOT_FIELD_XYRS( arr   , 'Current uice  ',
+          _EXCH_XY_R8( arr, myThid )
+          CALL PLOT_FIELD_XYRL( arr   , 'Current uice  ',
      &         myIter, myThid )
 #endif
           _BARRIER
@@ -167,16 +167,16 @@ C     == Local variables ==
           ENDDO
           _BARRIER
           IF (SEAICE_dump_mdsio) THEN
-            CALL WRITE_FLD_XY_RS( 'VICE.',suff,arr,myIter,myThid)
+            CALL WRITE_FLD_XY_RL( 'VICE.',suff,arr,myIter,myThid)
           ENDIF
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
-            CALL MNC_CW_RS_W(pf,'sice',0,0,'si_VICE',arr,myThid)
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_VICE',arr,myThid)
           ENDIF
 #endif
 #ifdef SEAICE_DEBUG
           _EXCH_XY_R4( arr, myThid )
-          CALL PLOT_FIELD_XYRS( arr   , 'Current vice  ',
+          CALL PLOT_FIELD_XYRL( arr   , 'Current vice  ',
      &         myIter, myThid )
 #endif
           _BARRIER
@@ -192,16 +192,16 @@ C     == Local variables ==
           ENDDO
           _BARRIER
           IF (SEAICE_dump_mdsio) THEN
-            CALL WRITE_FLD_XY_RS( 'HEFF.',suff,arr,myIter,myThid)
+            CALL WRITE_FLD_XY_RL( 'HEFF.',suff,arr,myIter,myThid)
           ENDIF
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
-            CALL MNC_CW_RS_W(pf,'sice',0,0,'si_HEFF',arr,myThid)
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_HEFF',arr,myThid)
           ENDIF
 #endif
 #ifdef SEAICE_DEBUG
           _EXCH_XY_R4( arr, myThid )
-          CALL PLOT_FIELD_XYRS( arr   , 'Current heff  ',
+          CALL PLOT_FIELD_XYRL( arr   , 'Current heff  ',
      &         myIter, myThid )
 #endif
           _BARRIER
@@ -217,16 +217,16 @@ C     == Local variables ==
           ENDDO
           _BARRIER
           IF (SEAICE_dump_mdsio) THEN
-            CALL WRITE_FLD_XY_RS( 'AREA.',suff,arr,myIter,myThid)
+            CALL WRITE_FLD_XY_RL( 'AREA.',suff,arr,myIter,myThid)
           ENDIF
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
-            CALL MNC_CW_RS_W(pf,'sice',0,0,'si_AREA',arr,myThid)
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_AREA',arr,myThid)
           ENDIF
 #endif
 #ifdef SEAICE_DEBUG
           _EXCH_XY_R4( arr, myThid )
-          CALL PLOT_FIELD_XYRS( arr   , 'Current area  ',
+          CALL PLOT_FIELD_XYRL( arr   , 'Current area  ',
      &         myIter, myThid )
 #endif
           _BARRIER
@@ -440,7 +440,7 @@ C     principle stress components
             sig12 = 2.*eta(I,J,bi,bj) * 0.25 _d 0 * 
      &           ( e12(I  ,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
      &           + e12(I  ,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
-            sigTmp         = SQRT( sig2*sig2 + 4. _d 0*sig12*sig12 )
+            sigTmp = SQRT( sig2*sig2 + 4. _d 0*sig12*sig12 )
             recip_prs = 0. _d 0
             IF ( PRESS(I,J,  bi,bj) .GT. 1. _d -13 .AND. 
      &           AREA (I,J,1,bi,bj) .GT. A22 ) 
