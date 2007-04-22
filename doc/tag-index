@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.795 2007/04/20 18:30:39 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.796 2007/04/22 19:57:13 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -8,7 +8,13 @@ o pkg/seaice: fix bug in evp solver, while doing that
   - change (improve?) discretization of stress computations for both
     cgrid-lsr and evp solver
   - add a new routine to compute strain rates
-  - changes lab_sea results
+  - the above changes lab_sea results
+  - add no slip conditions for evp solver (off by default), lsr-version
+    may follow
+  - fix exchange for shear at Z-points (does not change lab_sea)
+  - retire SEAICEuseEVP, instead turn on EVP by setting SEAICE_deltaTevp
+    (to force the user to pick a time step since there is not "safe" way
+    of choosing it)
 o pkg/kpp: add code to have mixing in shelf ice caverns
 
 checkpoint59
