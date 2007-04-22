@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.796 2007/04/22 19:57:13 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.797 2007/04/22 23:08:39 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -15,6 +15,7 @@ o pkg/seaice: fix bug in evp solver, while doing that
   - retire SEAICEuseEVP, instead turn on EVP by setting SEAICE_deltaTevp
     (to force the user to pick a time step since there is not "safe" way
     of choosing it)
+  - add principal stress diagnostics
 o pkg/kpp: add code to have mixing in shelf ice caverns
 
 checkpoint59
