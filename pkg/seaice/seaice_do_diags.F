@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.26 2006/11/03 23:02:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.27 2007/04/22 23:07:54 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -32,8 +32,18 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
       INTEGER i, j, k, bi, bj
-      _RS arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
+      _RS arr  (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
+#ifdef ALLOW_DIAGNOSTICS
+      _RS brr  (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
+      _RL e11  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL e22  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL e12  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL PRESS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS sig1, sig2, sig12, sigTmp, recip_prs
+#endif /* ALLOW_DIAGNOSTICS */
       LOGICAL dumpFiles
       CHARACTER*(1) pf
 
@@ -392,6 +402,60 @@ c
        CALL DIAGNOSTICS_FILL(EmPmR  ,'SIempmr ',0,1 ,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(Qnet   ,'SIqnet  ',0,1 ,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(Qsw    ,'SIqsw   ',0,1 ,0,1,1,myThid)
+       IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
+     &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) ) THEN
+C     Unfortunately, for this we have to recompute a few things
+C     first make sure we have a current copy of ice velocities
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
+            vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+C      compute strainrates, "viscosities" and modified pressure
+        CALL SEAICE_CALC_STRAINRATES( 
+     I       uIceC, vIceC,
+     O       e11, e22, e12,
+     I       myThid )
+        
+        CALL SEAICE_CALC_VISCOSITIES( 
+     I       e11, e22, e12, zMin, zMax, hEffM, press0,
+     O       eta, zeta, press, 
+     I       myThid )
+        
+C     principle stress components
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+            sig1  = 2.*zeta(I,J,bi,bj)
+     &           * (e11(I,J,bi,bj) + e22(I,J,bi,bj)) 
+     &           - PRESS(I,J,bi,bj)
+            sig2  = 2.* eta(I,J,bi,bj)
+     &           * (e11(I,J,bi,bj) - e22(I,J,bi,bj)) 
+            sig12 = 2.*eta(I,J,bi,bj) * 0.25 _d 0 * 
+     &           ( e12(I  ,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
+     &           + e12(I  ,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
+            sigTmp         = SQRT( sig2*sig2 + 4. _d 0*sig12*sig12 )
+            recip_prs = 0. _d 0
+            IF ( PRESS(I,J,  bi,bj) .GT. 1. _d -13 .AND. 
+     &           AREA (I,J,1,bi,bj) .GT. A22 ) 
+     &           recip_prs = 1./PRESS(I,J,bi,bj)
+            arr(I,J,bi,bj) = 0.5*(sig1 + sigTmp)*recip_prs
+            brr(I,J,bi,bj) = 0.5*(sig1 - sigTmp)*recip_prs
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+C     
+        CALL DIAGNOSTICS_FILL(arr    ,'SIsigI  ',0,1 ,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(brr    ,'SIsigII ',0,1 ,0,1,1,myThid)
+       ENDIF
+C     endif useDiagnostics
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

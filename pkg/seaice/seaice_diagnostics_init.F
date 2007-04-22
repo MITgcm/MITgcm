@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.4 2006/11/22 07:20:08 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.5 2007/04/22 23:07:54 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -146,6 +146,20 @@ C     Except under sea ice, SIqsw is also identical to EXFswnet.
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIsigI  '
+      diagTitle = 'SEAICE normalized principle stress, component one'
+      diagUnits = 'no units        '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIsigII '
+      diagTitle = 'SEAICE normalized principle stress, component two'
+      diagUnits = 'no units        '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, myThid )
 
 #endif /* ALLOW_DIAGNOSTICS */
 
