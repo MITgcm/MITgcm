@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.35 2007/04/19 15:49:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.36 2007/04/23 20:46:49 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -104,6 +104,7 @@ C !USES: ===============================================================
 #include "KPP_PARAMS.h"
 #include "FFIELDS.h"
 #include "GRID.h"
+#include "GAD.h"
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
@@ -689,6 +690,19 @@ c-----------------------------------------------------------------------
 c     solve for viscosity, diffusivity, ghat, and hbl on "t-grid"
 c-----------------------------------------------------------------------
 
+c     precompute background vertical diffusivities, which are needed for
+c     matching diffusivities at bottom of KPP PBL
+      CALL CALC_3D_DIFFUSIVITY(
+     I        bi,bj,1-Olx,sNx+OLx,1-Oly,sNy+OLy,
+     I        GAD_SALINITY, .FALSE., .FALSE.,
+     O        KPPdiffKzS(1-Olx,1-Oly,1,bi,bj),
+     I        myThid)
+      CALL CALC_3D_DIFFUSIVITY(
+     I        bi,bj,1-Olx,sNx+OLx,1-Oly,sNy+OLy,
+     I        GAD_TEMPERATURE, .FALSE., .FALSE.,
+     O        KPPdiffKzT(1-Olx,1-Oly,1,bi,bj),
+     I        myThid)
+
       DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
             work1(i,j) = nzmax(i,j,bi,bj)
@@ -700,11 +714,12 @@ c-----------------------------------------------------------------------
      I       mytime, mythid
      I     , work1, shsq, dVsq, ustar
      I     , bo, bosol, dbloc, Ritop, work2
+     I     , KPPdiffKzS(1-Olx,1-Oly,1,bi,bj)
+     I     , KPPdiffKzT(1-Olx,1-Oly,1,bi,bj)
      I     , ikppkey
      O     , vddiff
      U     , ghat
      O     , hbl )
-
       CALL TIMER_STOP ('KPPMIX [KPP_CALC]', myThid)
 
 c-----------------------------------------------------------------------
@@ -804,6 +819,7 @@ C     \==========================================================/
 #include "KPP.h"
 #include "KPP_PARAMS.h"
 #include "GRID.h"
+#include "GAD.h"
 
 c Routine arguments
 c     bi, bj - array indices on which to apply calculations
@@ -825,12 +841,21 @@ c Local constants
             DO k = 1,Nr
                KPPghat   (i,j,k,bi,bj) = 0.0
                KPPviscAz (i,j,k,bi,bj) = viscAr
-               KPPdiffKzT(i,j,k,bi,bj) = diffKrNrT(k)
-               KPPdiffKzS(i,j,k,bi,bj) = diffKrNrS(k)
             ENDDO
          ENDDO
       ENDDO
-      
+
+      CALL CALC_3D_DIFFUSIVITY(
+     I     bi,bj,1-Olx,sNx+OLx,1-Oly,sNy+OLy,
+     I     GAD_SALINITY, .FALSE., .FALSE.,
+     O     KPPdiffKzS(1-Olx,1-Oly,1,bi,bj),
+     I     myThid)
+      CALL CALC_3D_DIFFUSIVITY(
+     I     bi,bj,1-Olx,sNx+OLx,1-Oly,sNy+OLy,
+     I     GAD_TEMPERATURE, .FALSE., .FALSE.,
+     O     KPPdiffKzT(1-Olx,1-Oly,1,bi,bj),
+     I     myThid)
+
 #endif
       RETURN
       END

@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.797 2007/04/22 23:08:39 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.798 2007/04/23 20:46:48 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o bug fixes for vertical diffusivity computations when both KPP and
+    3D diffusivity arrays are used.
 o pkg/seaice: fix bug in evp solver, while doing that
   - change (improve?) discretization of stress computations for both
     cgrid-lsr and evp solver

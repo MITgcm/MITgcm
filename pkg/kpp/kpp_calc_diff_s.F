@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_diff_s.F,v 1.2 2006/06/21 22:58:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_diff_s.F,v 1.3 2007/04/23 20:46:49 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -47,33 +47,21 @@ C     i,j,k     :: Loop counters
 C--   Add Vertical diffusivity contribution from KPP
       IF ( kArg .EQ. 0 ) THEN
 C-    do all levels :
-        DO k=1,MIN(Nr,kSize)
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-            KappaRS(i,j,k) = KappaRS(i,j,k)
-     &                 + ( KPPdiffKzS(i,j,k,bi,bj)
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
-     &                     - diffKr(i,j,k,bi,bj) )
-#else
-     &                     - diffKrNrS(k) )
-#endif
-          ENDDO
+       DO k=1,MIN(Nr,kSize)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          KappaRS(i,j,k) = KPPdiffKzS(i,j,k,bi,bj)
          ENDDO
         ENDDO
+       ENDDO
       ELSE
 C-    do level k=kArg only :
-         k = MIN(kArg,kSize)
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-            KappaRS(i,j,k) = KappaRS(i,j,k)
-     &                 + ( KPPdiffKzS(i,j,kArg,bi,bj)
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
-     &                     - diffKr(i,j,kArg,bi,bj) )
-#else
-     &                     - diffKrNrS(kArg) )
-#endif
-          ENDDO
-         ENDDO
+       k = MIN(kArg,kSize)
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         KappaRS(i,j,k) = KPPdiffKzS(i,j,kArg,bi,bj)
+        ENDDO
+       ENDDO
       ENDIF
 
 #endif /* ALLOW_KPP */

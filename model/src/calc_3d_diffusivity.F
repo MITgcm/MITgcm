@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.9 2007/04/14 18:32:32 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.10 2007/04/23 20:46:49 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -69,108 +69,81 @@ C     msgBuf     :: message buffer
 #endif
 CEOP
 
-      IF ( trIdentity.EQ.GAD_TEMPERATURE) THEN
-
+      IF ( .NOT. trUseKPP ) THEN
        DO k = 1,Nr
         KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
-     &   *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
+     &       *(atan(-(rF(k)-diffKrBL79Ho)/diffKrBL79scl)/PI+0.5 _d 0)
 #ifdef ALLOW_BL79_LAT_VARY
         KbryanLewisEQ=diffKrBLEQsurf+(diffKrBLEQdeep-diffKrBLEQsurf)
-     &   *( atan( -( rF(k)-diffKrBLEQHo )/diffKrBLEQscl )/PI+0.5 _d 0)
+     &       *(atan(-(rF(k)-diffKrBLEQHo)/diffKrBLEQscl)/PI+0.5 _d 0)
 #endif
         DO j = 1-Oly,sNy+Oly
          DO i = 1-Olx,sNx+Olx
           KappaRTr(i,j,k) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
-#if (defined ALLOW_3D_DIFFKR || \
-     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
-     &       + diffKr(i,j,k,bi,bj)
-#else
-     &       + diffKrNrT(k)
-#endif
-     &       + KbryanLewis79
+     &         + KbryanLewis79
 #ifdef ALLOW_BL79_LAT_VARY
-     &       + (KbryanLewisEQ-KbryanLewis79)*BL79LatArray(i,j,bi,bj)
+     &         + (KbryanLewisEQ-KbryanLewis79)*BL79LatArray(i,j,bi,bj)
 #endif
          ENDDO
         ENDDO
        ENDDO
-
-      ELSEIF ( trIdentity.EQ.GAD_SALINITY) THEN
-
-       DO k = 1,Nr
-        KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
-     &   *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
-#ifdef ALLOW_BL79_LAT_VARY
-        KbryanLewisEQ=diffKrBLEQsurf+(diffKrBLEQdeep-diffKrBLEQsurf)
-     &   *( atan( -( rF(k)-diffKrBLEQHo )/diffKrBLEQscl )/PI+0.5 _d 0)
-#endif
-        DO j = 1-Oly, sNy+Oly
-         DO i = 1-Olx, sNx+Olx
-          KappaRTr(i,j,k) =
-     &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
+       IF ( trIdentity.EQ.GAD_TEMPERATURE ) THEN
+        DO k = 1,Nr
+         DO j = 1-Oly,sNy+Oly
+          DO i = 1-Olx,sNx+Olx
+           KappaRTr(i,j,k) = KappaRTr(i,j,k) 
 #if (defined ALLOW_3D_DIFFKR || \
      (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
-     &       + diffKr(i,j,k,bi,bj)
+     &          + diffKr(i,j,k,bi,bj)
 #else
-     &       + diffKrNrS(k)
+     &          + diffKrNrT(k)
 #endif
-     &       + KbryanLewis79
-#ifdef ALLOW_BL79_LAT_VARY
-     &       + (KbryanLewisEQ-KbryanLewis79)*BL79LatArray(i,j,bi,bj)
-#endif
+          ENDDO
          ENDDO
         ENDDO
-       ENDDO
-
+       ELSEIF ( trIdentity.EQ.GAD_SALINITY) THEN
+        DO k = 1,Nr
+         DO j = 1-Oly, sNy+Oly
+          DO i = 1-Olx, sNx+Olx
+           KappaRTr(i,j,k) = KappaRTr(i,j,k)
+#if (defined ALLOW_3D_DIFFKR || \
+     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
+     &          + diffKr(i,j,k,bi,bj)
+#else
+     &          + diffKrNrS(k)
+#endif
+          ENDDO
+         ENDDO
+        ENDDO
 #ifdef ALLOW_PTRACERS
-      ELSEIF ( trIdentity.GE.GAD_TR1
+       ELSEIF ( trIdentity.GE.GAD_TR1
      &   .AND. trIdentity.LT.GAD_TR1+PTRACERS_numInUse) THEN
 
-       iTr = trIdentity - GAD_TR1 + 1
-       DO k = 1,Nr
-        KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
-     &   *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
-#ifdef ALLOW_BL79_LAT_VARY
-        KbryanLewisEQ=diffKrBLEQsurf+(diffKrBLEQdeep-diffKrBLEQsurf)
-     &   *( atan( -( rF(k)-diffKrBLEQHo )/diffKrBLEQscl )/PI+0.5 _d 0)
-#endif
-        DO j = 1-Oly, sNy+Oly
-         DO i = 1-Olx, sNx+Olx
-          KappaRTr(i,j,k) =
-     &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
+        iTr = trIdentity - GAD_TR1 + 1
+        DO k = 1,Nr
+         DO j = 1-Oly, sNy+Oly
+          DO i = 1-Olx, sNx+Olx
+           KappaRTr(i,j,k) = KappaRTr(i,j,k)
 #if (defined ALLOW_3D_DIFFKR || \
      (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
-     &       + diffKr(i,j,k,bi,bj)
+     &          + diffKr(i,j,k,bi,bj)
 #else
-     &       + PTRACERS_diffKrNr(k,iTr)
+     &          + PTRACERS_diffKrNr(k,iTr)
 #endif
-     &       + KbryanLewis79
-#ifdef ALLOW_BL79_LAT_VARY
-     &       + (KbryanLewisEQ-KbryanLewis79)*BL79LatArray(i,j,bi,bj)
-#endif
+          ENDDO
          ENDDO
         ENDDO
-       ENDDO
 #endif /* ALLOW_PTRACERS */
-
-      ELSE
+       ELSE
         WRITE(msgBuf,'(A,I4)')
-     &      ' CALC_3D_DIFFUSIVITY: Invalid tracer Id: ',trIdentity
+     &       ' CALC_3D_DIFFUSIVITY: Invalid tracer Id: ',trIdentity
         CALL PRINT_ERROR(msgBuf, myThid)
         STOP 'ABNORMAL END: S/R CALC_3D_DIFFUSIVITY'
+       ENDIF
       ENDIF
 
 C--   Add physical pacakge contributions:
-
-#ifdef ALLOW_GMREDI
-      IF (trUseGMRedi) THEN 
-         CALL GMREDI_CALC_DIFF(
-     I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
-     U        KappaRTr,
-     I        myThid)
-      ENDIF
-#endif
 
 #ifdef ALLOW_KPP
       IF (trUseKPP) THEN
@@ -185,6 +158,30 @@ C--   Add physical pacakge contributions:
      U        KappaRTr,
      I        myThid)
        ENDIF
+#if (defined ALLOW_PTRACERS && ! (defined ALLOW_3D_DIFFKR || \
+     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))))
+       IF ( trIdentity.GE.GAD_TR1
+     &   .AND. trIdentity.LT.GAD_TR1+PTRACERS_numInUse) THEN
+        iTr = trIdentity - GAD_TR1 + 1
+        DO k = 1,Nr
+         DO j = 1-Oly, sNy+Oly
+          DO i = 1-Olx, sNx+Olx
+           KappaRTr(i,j,k) = KappaRTr(i,j,k)
+     &          - diffKrNrS(k) + PTRACERS_diffKrNr(k,iTr)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif
+      ENDIF
+#endif /* ALLOW_KPP */
+
+#ifdef ALLOW_GMREDI
+      IF (trUseGMRedi) THEN 
+         CALL GMREDI_CALC_DIFF(
+     I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
+     U        KappaRTr,
+     I        myThid)
       ENDIF
 #endif
 

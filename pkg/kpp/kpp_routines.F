@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.25 2007/04/19 15:40:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.26 2007/04/23 20:46:49 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -23,6 +23,7 @@ c***********************************************************************
      I       mytime, mythid
      I     , kmtj, shsq, dvsq, ustar
      I     , bo, bosol, dbloc, Ritop, coriol
+     I     , diffusKzS, diffusKzT
      I     , ikppkey
      O     , diffus
      U     , ghat
@@ -50,35 +51,39 @@ c-----------------------------------------------------------------------
 #include "KPP_PARAMS.h"
 
 c input
-c     myTime          - current time in simulation
-c     myThid          - thread number for this instance of the routine
-c     kmtj   (imt)    - number of vertical layers on this row
-c     shsq   (imt,Nr) - (local velocity shear)^2                      ((m/s)^2)
-c     dvsq   (imt,Nr) - (velocity shear re sfc)^2                     ((m/s)^2)
-c     ustar  (imt)    - surface friction velocity                         (m/s)
-c     bo     (imt)    - surface turbulent buoy. forcing               (m^2/s^3)
-c     bosol  (imt)    - radiative buoyancy forcing                    (m^2/s^3)
-c     dbloc  (imt,Nr) - local delta buoyancy across interfaces          (m/s^2)
-c     dblocSm(imt,Nr) - horizontally smoothed dbloc                     (m/s^2)
-c                         stored in ghat to save space
-c     Ritop  (imt,Nr) - numerator of bulk Richardson Number
-c                         (zref-z) * delta buoyancy w.r.t. surface    ((m/s)^2)
-c     coriol (imt)    - Coriolis parameter                                (1/s)
+c     myTime           - current time in simulation
+c     myThid           - thread number for this instance of the routine
+c     kmtj   (imt)     - number of vertical layers on this row
+c     shsq   (imt,Nr)  - (local velocity shear)^2                     ((m/s)^2)
+c     dvsq   (imt,Nr)  - (velocity shear re sfc)^2                    ((m/s)^2)
+c     ustar  (imt)     - surface friction velocity                        (m/s)
+c     bo     (imt)     - surface turbulent buoy. forcing              (m^2/s^3)
+c     bosol  (imt)     - radiative buoyancy forcing                   (m^2/s^3)
+c     dbloc  (imt,Nr)  - local delta buoyancy across interfaces         (m/s^2)
+c     dblocSm(imt,Nr)  - horizontally smoothed dbloc                    (m/s^2)
+c                          stored in ghat to save space
+c     Ritop  (imt,Nr)  - numerator of bulk Richardson Number
+c                          (zref-z) * delta buoyancy w.r.t. surface   ((m/s)^2)
+c     coriol (imt)     - Coriolis parameter                               (1/s)
+c     diffusKzS(imt,Nr)- background vertical diffusivity for scalars    (m^2/s)
+c     diffusKzT(imt,Nr)- background vertical diffusivity for theta      (m^2/s)
 c     note: there is a conversion from 2-D to 1-D for input output variables,
 c           e.g., hbl(sNx,sNy) -> hbl(imt),
 c           where hbl(i,j) -> hbl((j-1)*sNx+i)
 
       _RL     mytime
       integer mythid
-      integer kmtj  (imt   )
-      _KPP_RL shsq  (imt,Nr)
-      _KPP_RL dvsq  (imt,Nr)
-      _KPP_RL ustar (imt   )
-      _KPP_RL bo    (imt   )
-      _KPP_RL bosol (imt   )
-      _KPP_RL dbloc (imt,Nr)
-      _KPP_RL Ritop (imt,Nr)
-      _KPP_RL coriol(imt   )
+      integer kmtj     (imt   )
+      _KPP_RL shsq     (imt,Nr)
+      _KPP_RL dvsq     (imt,Nr)
+      _KPP_RL ustar    (imt   )
+      _KPP_RL bo       (imt   )
+      _KPP_RL bosol    (imt   )
+      _KPP_RL dbloc    (imt,Nr)
+      _KPP_RL Ritop    (imt,Nr)
+      _KPP_RL coriol   (imt   )
+      _RL     diffusKzS(imt,Nr)
+      _RL     diffusKzT(imt,Nr)
 
       integer ikppkey
 
@@ -130,6 +135,7 @@ CADJ STORE dbloc = comlev1_kpp, key = ikppkey
 cph)
       call Ri_iwmix (
      I       kmtj, shsq, dbloc, ghat
+     I     , diffusKzS, diffusKzT
      I     , ikppkey
      O     , diffus )
 
@@ -208,8 +214,8 @@ c-----------------------------------------------------------------------
          do i = 1, imt
             if (k .lt. kbl(i)) then
                diffus(i,k,1) = max ( blmc(i,k,1), viscAr  )
-               diffus(i,k,2) = max ( blmc(i,k,2), diffKrNrS(k) )
-               diffus(i,k,3) = max ( blmc(i,k,3), diffKrNrT(k) )
+               diffus(i,k,2) = max ( blmc(i,k,2), diffusKzS(i,Nr) )
+               diffus(i,k,3) = max ( blmc(i,k,3), diffusKzT(i,Nr) )
             else
                ghat(i,k) = 0.
             endif
@@ -653,6 +659,7 @@ c*************************************************************************
  
       subroutine Ri_iwmix (
      I       kmtj, shsq, dbloc, dblocSm
+     I     , diffusKzS, diffusKzT
      I     , ikppkey
      O     , diffus )
 
@@ -673,10 +680,14 @@ c     kmtj   (imt)         number of vertical layers on this row
 c     shsq   (imt,Nr)      (local velocity shear)^2               ((m/s)^2)
 c     dbloc  (imt,Nr)      local delta buoyancy                     (m/s^2)
 c     dblocSm(imt,Nr)      horizontally smoothed dbloc              (m/s^2)
+c     diffusKzS(imt,Nr)- background vertical diffusivity for scalars    (m^2/s)
+c     diffusKzT(imt,Nr)- background vertical diffusivity for theta      (m^2/s)
       integer kmtj   (imt)
       _KPP_RL shsq   (imt,Nr)
       _KPP_RL dbloc  (imt,Nr)
       _KPP_RL dblocSm(imt,Nr)
+      _RL diffusKzS(imt,Nr)
+      _RL diffusKzT(imt,Nr)
       integer ikppkey
  
 c output
@@ -781,17 +792,17 @@ c    mixing due to internal waves, and shear and static instability
 #ifndef EXCLUDE_KPP_SHEAR_MIX 
             if ( .NOT. inAdMode ) then
                diffus(i,ki,1) = viscAr + fcon * difmcon + fRi * difm0
-               diffus(i,ki,2) = diffKrNrS(ki)+ fcon*difscon + fRi*difs0
-               diffus(i,ki,3) = diffKrNrT(ki)+ fcon*difscon + fRi*difs0
+               diffus(i,ki,2) = diffusKzS(i,ki)+fcon*difscon+fRi*difs0
+               diffus(i,ki,3) = diffusKzT(i,ki)+fcon*diftcon+fRi*dift0
             else
                diffus(i,ki,1) = viscAr
-               diffus(i,ki,2) = diffKrNrS(ki)
-               diffus(i,ki,3) = diffKrNrT(ki)
+               diffus(i,ki,2) = diffusKzS(i,ki)
+               diffus(i,ki,3) = diffusKzT(i,ki)
             endif
 #else
             diffus(i,ki,1) = viscAr
-            diffus(i,ki,2) = diffKrNrS(ki)
-            diffus(i,ki,3) = diffKrNrT(ki)
+            diffus(i,ki,2) = diffusKzS(i,ki)
+            diffus(i,ki,3) = diffusKzT(i,ki)
 #endif
 
          end do

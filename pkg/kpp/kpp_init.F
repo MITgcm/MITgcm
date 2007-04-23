@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.14 2007/04/19 15:49:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.15 2007/04/23 20:46:49 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -18,6 +18,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "GAD.h"
 #include "KPP.h"
 #include "KPP_PARAMS.h"
 
@@ -27,10 +28,10 @@ CEOP
 
 C     !LOCAL VARIABLES:
 #ifdef ALLOW_KPP
+
 C     i,j,k,bi,bj - Loop counters
 C     zehat       - zeta * ustar**3
 C     zeta        - Stability parameter d/l
-
       INTEGER i, j, k, bi, bj
       _KPP_RL zehat
       _KPP_RL zeta
@@ -140,11 +141,20 @@ C-----------------------------------------------------------------------
                   do i = 1-OLx, sNx+OLx
                      KPPghat       (i,j,k,bi,bj) = 0.
                      KPPviscAz  (i,j,k,bi,bj) = viscAr
-                     KPPdiffKzT (i,j,k,bi,bj) = diffKrNrT(k)
-                     KPPdiffKzS (i,j,k,bi,bj) = diffKrNrS(k)
                   end do
                end do
             end do
+
+            CALL CALC_3D_DIFFUSIVITY(
+     I           bi,bj,1-Olx,sNx+OLx,1-Oly,sNy+OLy,
+     I           GAD_SALINITY, .FALSE., .FALSE.,
+     O           KPPdiffKzS(1-Olx,1-Oly,1,bi,bj),
+     I           myThid)
+            CALL CALC_3D_DIFFUSIVITY(
+     I           bi,bj,1-Olx,sNx+OLx,1-Oly,sNy+OLy,
+     I           GAD_TEMPERATURE, .FALSE., .FALSE.,
+     O           KPPdiffKzT(1-Olx,1-Oly,1,bi,bj),
+     I           myThid)
 
        ENDDO
       ENDDO
