@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.11 2007/04/19 04:51:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.12 2007/04/23 21:09:19 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -37,9 +37,9 @@ C     kpp_dumpFreq    - KPP dump frequency.                             (s)
 C     kpp_taveFreq    - KPP time-averaging frequency.                   (s)
 
       INTEGER nzmax ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy,     nSx, nSy )
-c     _KPP_RL pMask ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr, nSx, nSy )
-      _KPP_RL zgrid ( 0:Nr+1 )
-      _KPP_RL hwide ( 0:Nr+1 )
+c     _RL pMask     ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr, nSx, nSy )
+      _RL zgrid     ( 0:Nr+1 )
+      _RL hwide     ( 0:Nr+1 )
       _RL kpp_freq
       _RL kpp_dumpFreq
       _RL kpp_taveFreq
@@ -67,14 +67,11 @@ C
 C-----------------------------------------------------------------------
 
       LOGICAL KPPmixingMaps, KPPwriteState, KPP_ghatUseTotalDiffus
-
       COMMON /KPP_PARM_L/
      &        KPPmixingMaps, KPPwriteState, KPP_ghatUseTotalDiffus
 
-      _KPP_RL minKPPhbl
-
-      COMMON /KPP_PARM_R/
-     &        minKPPhbl
+      _RL                 minKPPhbl
+      COMMON /KPP_PARM_R/ minKPPhbl
 
 c======================  file "kmixcom.h" =======================
 c
@@ -96,7 +93,7 @@ c     conc1,conam,concm,conc2,zetam,conas,concs,conc3,zetas
 c             = scalar coefficients
 c-----------------------------------------------------------------------
 
-      _KPP_RL          epsln,phepsi,epsilon,vonk,dB_dz,
+      _RL              epsln,phepsi,epsilon,vonk,dB_dz,
      $                 conc1,
      $                 conam,concm,conc2,zetam,
      $                 conas,concs,conc3,zetas
@@ -125,7 +122,7 @@ c               scale of turbulant velocity shear
 c               (=function of concv,concs,epsilon,vonk,Ricr)
 c-----------------------------------------------------------------------
 
-      _KPP_RL               Ricr,cekman,cmonob,concv,Vtc
+      _RL                   Ricr,cekman,cmonob,concv,Vtc
       _RL                   hbf
 
       common /kpp_bldepth1/ Ricr,cekman,cmonob,concv,Vtc
@@ -156,8 +153,8 @@ c-----------------------------------------------------------------------
       integer    nni      , nnj
       parameter (nni = 890, nnj = 480)
 
-      _KPP_RL          wmt(0:nni+1,0:nnj+1), wst(0:nni+1,0:nnj+1)
-      _KPP_RL          deltaz,deltau,zmin,zmax,umin,umax
+      _RL              wmt(0:nni+1,0:nnj+1), wst(0:nni+1,0:nnj+1)
+      _RL              deltaz,deltau,zmin,zmax,umin,umax
       common /kmixcws/ wmt, wst
      $               , deltaz,deltau,zmin,zmax,umin,umax
 
@@ -180,15 +177,14 @@ c     difscon = tracer diffusivity ..                               (m^2/s)
 c     diftcon = heat diffusivity ..                                 (m^2/s)
 c-----------------------------------------------------------------------
 
-      INTEGER num_v_smooth_Ri, num_v_smooth_BV
-      INTEGER num_z_smooth_sh, num_m_smooth_sh
-      _KPP_RL Riinfty, BVSQcon
-      _KPP_RL difm0  , difs0  , dift0
-      _KPP_RL difmcon, difscon, diftcon
-
+      INTEGER            num_v_smooth_Ri, num_v_smooth_BV
+      INTEGER            num_z_smooth_sh, num_m_smooth_sh
       COMMON /kmixcri_i/ num_v_smooth_Ri, num_v_smooth_BV
      1                 , num_z_smooth_sh, num_m_smooth_sh
 
+      _RL                Riinfty, BVSQcon
+      _RL                difm0  , difs0  , dift0
+      _RL                difmcon, difscon, diftcon
       COMMON /kmixcri_r/ Riinfty, BVSQcon
      1                 , difm0, difs0, dift0
      2                 , difmcon, difscon, diftcon
@@ -203,7 +199,7 @@ c     Rrho0   = limit for double diffusive density ratio
 c     dsfmax  = maximum diffusivity in case of salt fingering (m2/s)
 c-----------------------------------------------------------------------
 
-      _KPP_RL          Rrho0, dsfmax 
+      _RL              Rrho0, dsfmax 
       common /kmixcdd/ Rrho0, dsfmax
 
 c-----------------------------------------------------------------------
@@ -216,8 +212,7 @@ c     cstar   = proportionality coefficient for nonlocal transport
 c     cg      = non-dimensional coefficient for counter-gradient term
 c-----------------------------------------------------------------------
 
-      _KPP_RL          cstar, cg
-
+      _RL              cstar, cg
       common /kmixcbm/ cstar, cg
 
 #endif /* ALLOW_KPP */

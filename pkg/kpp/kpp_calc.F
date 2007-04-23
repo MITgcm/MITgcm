@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.36 2007/04/23 20:46:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.37 2007/04/23 21:09:19 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -136,7 +136,7 @@ c     imin, imax, jmin, jmax  - array computation indices
 
       _RL        minusone
       parameter( minusone=-1.0)
-      _KPP_RL    p0    , p5    , p25     , p125      , p0625
+      _RL        p0    , p5    , p25     , p125      , p0625
       parameter( p0=0.0, p5=0.5, p25=0.25, p125=0.125, p0625=0.0625 )
       integer   imin      ,imax          ,jmin      ,jmax
       parameter(imin=2-OLx,imax=sNx+OLx-1,jmin=2-OLy,jmax=sNy+OLy-1)
@@ -165,36 +165,36 @@ c     zRef   (nx,ny)       - Reference depth: Hmix * epsilon              (m)
 c     uRef   (nx,ny)       - Reference zonal velocity                   (m/s)
 c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
 
-      _RL     worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      integer work1 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _KPP_RL work2 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _KPP_RL work3 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _KPP_RL ustar ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _KPP_RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _KPP_RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _KPP_RL shsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
-      _KPP_RL dVsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
-      _KPP_RL dbloc ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
-      _KPP_RL Ritop ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
-      _KPP_RL vddiff( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, 0:Nrp1, mdiff )
-      _KPP_RL ghat  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
-      _KPP_RL hbl   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      integer work1 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy            )
+      _RL worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _RL work2 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _RL work3 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _RL ustar ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _RL shsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
+      _RL dVsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
+      _RL dbloc ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
+      _RL Ritop ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
+      _RL vddiff( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, 0:Nrp1, mdiff )
+      _RL ghat  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
+      _RL hbl   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 cph(
-      _KPP_RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
-      _KPP_RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
+      _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
+      _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 cph)
 #ifdef KPP_ESTIMATE_UREF
-      _KPP_RL z0    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _KPP_RL zRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _KPP_RL uRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _KPP_RL vRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _RL z0    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _RL zRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _RL uRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+      _RL vRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 #endif /* KPP_ESTIMATE_UREF */
       
-      _KPP_RL tempvar2
+      _RL tempvar2
       integer i, j, k, kp1, km1, im1, ip1, jm1, jp1
 
 #ifdef KPP_ESTIMATE_UREF
-      _KPP_RL tempvar1, dBdz1, dBdz2, ustarX, ustarY
+      _RL tempvar1, dBdz1, dBdz2, ustarX, ustarY
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -272,7 +272,7 @@ c     dbloc(k) is buoyancy gradientnote between k and k+1
 c     levels therefore k+1 mask must be used
 
       DO k = 1, Nr-1
-         CALL KPP_SMOOTH_HORIZ (
+         CALL SMOOTH_HORIZ (
      I        k+1, bi, bj,
      U        ghat (1-OLx,1-OLy,k) )
       ENDDO
@@ -281,20 +281,20 @@ c     levels therefore k+1 mask must be used
 
 #ifdef KPP_SMOOTH_DENS
 c     horizontally smooth density related quantities with 121 filters
-      CALL KPP_SMOOTH_HORIZ (
+      CALL SMOOTH_HORIZ (
      I     1, bi, bj,
      U     work2 )
       DO k = 1, Nr
-         CALL KPP_SMOOTH_HORIZ (
+         CALL SMOOTH_HORIZ (
      I        k+1, bi, bj,
      U        dbloc (1-OLx,1-OLy,k) )
-         CALL KPP_SMOOTH_HORIZ (
+         CALL SMOOTH_HORIZ (
      I        k, bi, bj,
      U        Ritop (1-OLx,1-OLy,k)  )
-         CALL KPP_SMOOTH_HORIZ (
+         CALL SMOOTH_HORIZ (
      I        k, bi, bj,
      U        TTALPHA(1-OLx,1-OLy,k) )
-         CALL KPP_SMOOTH_HORIZ (
+         CALL SMOOTH_HORIZ (
      I        k, bi, bj,
      U        SSBETA(1-OLx,1-OLy,k) )
       ENDDO

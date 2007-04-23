@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.15 2007/04/23 20:46:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.16 2007/04/23 21:09:19 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -33,9 +33,9 @@ C     i,j,k,bi,bj - Loop counters
 C     zehat       - zeta * ustar**3
 C     zeta        - Stability parameter d/l
       INTEGER i, j, k, bi, bj
-      _KPP_RL zehat
-      _KPP_RL zeta
-      _KPP_RL usta
+      _RL zehat
+      _RL zeta
+      _RL usta
 
       _BEGIN_MASTER(myThid)
 

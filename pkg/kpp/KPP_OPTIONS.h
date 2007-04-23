@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.14 2007/04/19 04:51:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.15 2007/04/23 21:09:19 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -16,9 +16,6 @@ C     \==========================================================/
 #ifdef ALLOW_KPP
 
 #include "CPP_OPTIONS.h"
-
-C o Set precision for KPP variables (Real*4 or Real*8)
-#define _KPP_RL Real*8
 
 C o When set, smooth shear horizontally with 121 filters
 #define KPP_SMOOTH_SHSQ

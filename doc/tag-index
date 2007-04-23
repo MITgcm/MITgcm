@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.798 2007/04/23 20:46:48 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.799 2007/04/23 21:09:19 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kpp: replaced _KPP_RL with _RL
 o bug fixes for vertical diffusivity computations when both KPP and
     3D diffusivity arrays are used.
 o pkg/seaice: fix bug in evp solver, while doing that

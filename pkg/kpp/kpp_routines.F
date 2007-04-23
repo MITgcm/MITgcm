@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.26 2007/04/23 20:46:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.27 2007/04/23 21:09:19 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -11,8 +11,7 @@ C--  o BLDEPTH     - Determine oceanic planetary boundary layer depth.
 C--  o WSCALE      - Compute turbulent velocity scales.
 C--  o RI_IWMIX    - Compute interior viscosity diffusivity coefficients.
 C--  o Z121        - Apply 121 vertical smoothing.
-C--  o KPP_SMOOTH_HORIZ - Apply horizontal smoothing to KPP array.
-C--  o SMOOTH_HORIZ     - Apply horizontal smoothing to global array.
+C--  o SMOOTH_HORIZ- Apply horizontal smoothing to global array.
 C--  o BLMIX       - Boundary layer mixing coefficients.
 C--  o ENHANCE     - Enhance diffusivity at boundary layer interface.
 C--  o STATEKPP    - Compute buoyancy-related input arrays.
@@ -73,17 +72,17 @@ c           where hbl(i,j) -> hbl((j-1)*sNx+i)
 
       _RL     mytime
       integer mythid
-      integer kmtj     (imt   )
-      _KPP_RL shsq     (imt,Nr)
-      _KPP_RL dvsq     (imt,Nr)
-      _KPP_RL ustar    (imt   )
-      _KPP_RL bo       (imt   )
-      _KPP_RL bosol    (imt   )
-      _KPP_RL dbloc    (imt,Nr)
-      _KPP_RL Ritop    (imt,Nr)
-      _KPP_RL coriol   (imt   )
-      _RL     diffusKzS(imt,Nr)
-      _RL     diffusKzT(imt,Nr)
+      integer kmtj (imt   )
+      _RL shsq     (imt,Nr)
+      _RL dvsq     (imt,Nr)
+      _RL ustar    (imt   )
+      _RL bo       (imt   )
+      _RL bosol    (imt   )
+      _RL dbloc    (imt,Nr)
+      _RL Ritop    (imt,Nr)
+      _RL coriol   (imt   )
+      _RL diffusKzS(imt,Nr)
+      _RL diffusKzT(imt,Nr)
 
       integer ikppkey
 
@@ -94,9 +93,9 @@ c     diffus (imt,3)  - vertical temperature diffusivity                (m^2/s)
 c     ghat   (imt)    - nonlocal transport coefficient                  (s/m^2)
 c     hbl    (imt)    - mixing layer depth                                  (m)
 
-      _KPP_RL diffus(imt,0:Nrp1,mdiff)
-      _KPP_RL ghat  (imt,Nr)
-      _KPP_RL hbl   (imt)
+      _RL diffus(imt,0:Nrp1,mdiff)
+      _RL ghat  (imt,Nr)
+      _RL hbl   (imt)
 
 #ifdef ALLOW_KPP
 
@@ -110,14 +109,14 @@ c     blmc   (imt,Nr,mdiff) - boundary layer mixing coefficients
 c     sigma  (imt         ) - normalized depth (d / hbl)
 c     Rib    (imt,Nr      ) - bulk Richardson number
 
-      integer kbl   (imt         )
-      _KPP_RL bfsfc (imt         )
-      _KPP_RL casea (imt         )
-      _KPP_RL stable(imt         )
-      _KPP_RL dkm1  (imt,   mdiff)
-      _KPP_RL blmc  (imt,Nr,mdiff)
-      _KPP_RL sigma (imt         )
-      _KPP_RL Rib   (imt,Nr      )
+      integer kbl(imt         )
+      _RL bfsfc  (imt         )
+      _RL casea  (imt         )
+      _RL stable (imt         )
+      _RL dkm1   (imt,   mdiff)
+      _RL blmc   (imt,Nr,mdiff)
+      _RL sigma  (imt         )
+      _RL Rib    (imt,Nr      )
 
       integer i, k, md
 
@@ -280,13 +279,13 @@ c coriol    : Coriolis parameter                        (1/s)
       _RL     mytime
       integer mythid
       integer kmtj(imt)
-      _KPP_RL dvsq  (imt,Nr)
-      _KPP_RL dbloc (imt,Nr)
-      _KPP_RL Ritop (imt,Nr)
-      _KPP_RL ustar (imt)
-      _KPP_RL bo    (imt)
-      _KPP_RL bosol (imt)
-      _KPP_RL coriol(imt)
+      _RL dvsq    (imt,Nr)
+      _RL dbloc   (imt,Nr)
+      _RL Ritop   (imt,Nr)
+      _RL ustar   (imt)
+      _RL bo      (imt)
+      _RL bosol   (imt)
+      _RL coriol  (imt)
       integer ikppkey, kkppkey
 
 c  output
@@ -298,26 +297,26 @@ c casea     : =1 in case A, =0 in case B
 c kbl       : -1 of first grid level below hbl
 c Rib       : Bulk Richardson number
 c sigma     : normalized depth (d/hbl)
-      _KPP_RL hbl   (imt)
-      _KPP_RL bfsfc (imt)
-      _KPP_RL stable(imt)
-      _KPP_RL casea (imt)
-      integer kbl   (imt)
-      _KPP_RL Rib   (imt,Nr)
-      _KPP_RL sigma (imt)
+      _RL hbl    (imt)
+      _RL bfsfc  (imt)
+      _RL stable (imt)
+      _RL casea  (imt)
+      integer kbl(imt)
+      _RL Rib    (imt,Nr)
+      _RL sigma  (imt)
 
 #ifdef ALLOW_KPP
 
 c  local
 c-------
 c wm, ws    : turbulent velocity scales         (m/s)
-      _KPP_RL wm(imt), ws(imt)
-      _RL     worka(imt)
+      _RL wm(imt), ws(imt)
+      _RL worka(imt)
 
-      _KPP_RL bvsq, vtsq, hekman, hmonob, hlimit, tempVar1, tempVar2
+      _RL bvsq, vtsq, hekman, hmonob, hlimit, tempVar1, tempVar2
       integer i, kl
 
-      _KPP_RL     p5    , eins
+      _RL         p5    , eins
       parameter ( p5=0.5, eins=1.0 )
       _RL         minusone
       parameter ( minusone=-1.0 )
@@ -584,26 +583,26 @@ c sigma   : normalized depth (d/hbl)
 c hbl     : boundary layer depth (m)
 c ustar   : surface friction velocity         (m/s)
 c bfsfc   : total surface buoyancy flux       (m^2/s^3)
-      _KPP_RL sigma(imt)
-      _KPP_RL hbl  (imt)
-      _KPP_RL ustar(imt)
-      _KPP_RL bfsfc(imt)
+      _RL sigma(imt)
+      _RL hbl  (imt)
+      _RL ustar(imt)
+      _RL bfsfc(imt)
  
 c  output
 c--------
 c wm, ws  : turbulent velocity scales at sigma
-      _KPP_RL wm(imt), ws(imt)
+      _RL wm(imt), ws(imt)
 
 #ifdef ALLOW_KPP
  
 c local
 c------
 c zehat   : = zeta *  ustar**3
-      _KPP_RL zehat
+      _RL zehat
 
       integer iz, izp1, ju, i, jup1
-      _KPP_RL udiff, zdiff, zfrac, ufrac, fzfrac, wam
-      _KPP_RL wbm, was, wbs, u3, tempVar
+      _RL udiff, zdiff, zfrac, ufrac, fzfrac, wam
+      _RL wbm, was, wbs, u3, tempVar
 
 c-----------------------------------------------------------------------
 c use lookup table for zehat < zmax only; otherwise use
@@ -682,10 +681,10 @@ c     dbloc  (imt,Nr)      local delta buoyancy                     (m/s^2)
 c     dblocSm(imt,Nr)      horizontally smoothed dbloc              (m/s^2)
 c     diffusKzS(imt,Nr)- background vertical diffusivity for scalars    (m^2/s)
 c     diffusKzT(imt,Nr)- background vertical diffusivity for theta      (m^2/s)
-      integer kmtj   (imt)
-      _KPP_RL shsq   (imt,Nr)
-      _KPP_RL dbloc  (imt,Nr)
-      _KPP_RL dblocSm(imt,Nr)
+      integer kmtj (imt)
+      _RL shsq     (imt,Nr)
+      _RL dbloc    (imt,Nr)
+      _RL dblocSm  (imt,Nr)
       _RL diffusKzS(imt,Nr)
       _RL diffusKzT(imt,Nr)
       integer ikppkey
@@ -694,18 +693,18 @@ c output
 c     diffus(imt,0:Nrp1,1)  vertical viscosivity coefficient        (m^2/s)
 c     diffus(imt,0:Nrp1,2)  vertical scalar diffusivity             (m^2/s)
 c     diffus(imt,0:Nrp1,3)  vertical temperature diffusivity        (m^2/s)
-      _KPP_RL diffus(imt,0:Nrp1,3)
+      _RL diffus(imt,0:Nrp1,3)
 
 #ifdef ALLOW_KPP
 
 c local variables
 c     Rig                   local Richardson number
 c     fRi, fcon             function of Rig
-      _KPP_RL Rig
-      _KPP_RL fRi, fcon
-      _KPP_RL ratio
+      _RL Rig
+      _RL fRi, fcon
+      _RL ratio
       integer i, ki
-      _KPP_RL c1, c0
+      _RL c1, c0
 
 #ifdef ALLOW_KPP_VERTICALLY_SMOOTH
       integer mr
@@ -843,16 +842,16 @@ c     penetrative convection.
 c input/output 
 c-------------
 c v     : 2-D array to be smoothed in Nrp1 direction
-      _KPP_RL v(imt,0:Nrp1)
+      _RL v(imt,0:Nrp1)
 
 #ifdef ALLOW_KPP
 
 c local
-      _KPP_RL zwork, zflag
-      _KPP_RL KRi_range(1:Nrp1)
+      _RL zwork, zflag
+      _RL KRi_range(1:Nrp1)
       integer i, k, km1, kp1
 
-      _KPP_RL     p0      , p25       , p5      , p2
+      _RL         p0      , p25       , p5      , p2
       parameter ( p0 = 0.0, p25 = 0.25, p5 = 0.5, p2 = 2.0 )
 
       KRi_range(Nrp1) = p0
@@ -898,87 +897,6 @@ CADJ STORE v(i,k), zwork = z121tape
          end do
 
       end do
-
-#endif /* ALLOW_KPP */
-
-      return
-      end
-
-c*************************************************************************
-
-      subroutine kpp_smooth_horiz (
-     I     k, bi, bj,
-     U     fld )
-
-c     Apply horizontal smoothing to KPP array
-
-      IMPLICIT NONE
-#include "SIZE.h"
-#include "GRID.h"
-#include "KPP_PARAMS.h"
-
-c     input
-c     bi, bj : array indices
-c     k      : vertical index used for masking
-      integer k, bi, bj
-
-c     input/output
-c     fld    : 2-D array to be smoothed
-      _KPP_RL fld( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
-
-#ifdef ALLOW_KPP
-
-c     local
-      integer i, j, im1, ip1, jm1, jp1
-      _KPP_RL tempVar
-      _KPP_RL fld_tmp( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
-
-      integer   imin      , imax          , jmin      , jmax
-      parameter(imin=2-OLx, imax=sNx+OLx-1, jmin=2-OLy, jmax=sNy+OLy-1)
-
-      _KPP_RL    p0    , p5    , p25     , p125      , p0625
-      parameter( p0=0.0, p5=0.5, p25=0.25, p125=0.125, p0625=0.0625 )
-
-      DO j = jmin, jmax
-         jm1 = j-1
-         jp1 = j+1
-         DO i = imin, imax
-            im1 = i-1
-            ip1 = i+1
-            tempVar =
-     &           p25   *   maskC(i  ,j  ,k,bi,bj)   +
-     &           p125  * ( maskC(im1,j  ,k,bi,bj)   +
-     &                     maskC(ip1,j  ,k,bi,bj)   +
-     &                     maskC(i  ,jm1,k,bi,bj)   +
-     &                     maskC(i  ,jp1,k,bi,bj) ) +
-     &           p0625 * ( maskC(im1,jm1,k,bi,bj)   +
-     &                     maskC(im1,jp1,k,bi,bj)   +
-     &                     maskC(ip1,jm1,k,bi,bj)   +
-     &                     maskC(ip1,jp1,k,bi,bj) )
-            IF ( tempVar .GE. p25 ) THEN
-               fld_tmp(i,j) = (
-     &              p25  * fld(i  ,j  )*maskC(i  ,j  ,k,bi,bj) +
-     &              p125 *(fld(im1,j  )*maskC(im1,j  ,k,bi,bj) +
-     &                     fld(ip1,j  )*maskC(ip1,j  ,k,bi,bj) +
-     &                     fld(i  ,jm1)*maskC(i  ,jm1,k,bi,bj) +
-     &                     fld(i  ,jp1)*maskC(i  ,jp1,k,bi,bj))+
-     &              p0625*(fld(im1,jm1)*maskC(im1,jm1,k,bi,bj) +
-     &                     fld(im1,jp1)*maskC(im1,jp1,k,bi,bj) +
-     &                     fld(ip1,jm1)*maskC(ip1,jm1,k,bi,bj) +
-     &                     fld(ip1,jp1)*maskC(ip1,jp1,k,bi,bj)))
-     &              / tempVar
-            ELSE
-               fld_tmp(i,j) = fld(i,j)
-            ENDIF
-         ENDDO
-      ENDDO
-
-c     transfer smoothed field to output array
-      DO j = jmin, jmax
-         DO i = imin, imax
-            fld(i,j) = fld_tmp(i,j)
-         ENDDO
-      ENDDO
 
 #endif /* ALLOW_KPP */
 
@@ -1093,13 +1011,13 @@ c     hbl   (imt)                 boundary layer depth                    (m)
 c     stable(imt)                 = 1 in stable forcing
 c     casea (imt)                 = 1 in case A
 c     diffus(imt,0:Nrp1,mdiff)    vertical diffusivities              (m^2/s)
-c     kbl(imt)                    -1 of first grid level below hbl
-      _KPP_RL ustar (imt)
-      _KPP_RL bfsfc (imt)
-      _KPP_RL hbl   (imt)
-      _KPP_RL stable(imt)
-      _KPP_RL casea (imt)
-      _KPP_RL diffus(imt,0:Nrp1,mdiff)
+c     kbl   (imt)                 -1 of first grid level below hbl
+      _RL ustar (imt)
+      _RL bfsfc (imt)
+      _RL hbl   (imt)
+      _RL stable(imt)
+      _RL casea (imt)
+      _RL diffus(imt,0:Nrp1,mdiff)
       integer kbl(imt)
 
 c output
@@ -1107,10 +1025,10 @@ c     dkm1 (imt,mdiff)            boundary layer difs at kbl-1 level
 c     blmc (imt,Nr,mdiff)         boundary layer mixing coefficients  (m^2/s)
 c     ghat (imt,Nr)               nonlocal scalar transport
 c     sigma(imt)                  normalized depth (d / hbl)
-      _KPP_RL dkm1 (imt,mdiff)
-      _KPP_RL blmc (imt,Nr,mdiff)
-      _KPP_RL ghat (imt,Nr)
-      _KPP_RL sigma(imt)
+      _RL dkm1 (imt,mdiff)
+      _RL blmc (imt,Nr,mdiff)
+      _RL ghat (imt,Nr)
+      _RL sigma(imt)
       integer ikppkey, kkppkey
 
 #ifdef ALLOW_KPP
@@ -1119,17 +1037,17 @@ c  local
 c     gat1*(imt)                 shape function at sigma = 1
 c     dat1*(imt)                 derivative of shape function at sigma = 1
 c     ws(imt), wm(imt)           turbulent velocity scales             (m/s)
-      _KPP_RL gat1m(imt), gat1s(imt), gat1t(imt) 
-      _KPP_RL dat1m(imt), dat1s(imt), dat1t(imt)
-      _KPP_RL ws(imt), wm(imt)
+      _RL gat1m(imt), gat1s(imt), gat1t(imt) 
+      _RL dat1m(imt), dat1s(imt), dat1t(imt)
+      _RL ws(imt), wm(imt)
       integer i, kn, ki
-      _KPP_RL R, dvdzup, dvdzdn, viscp
-      _KPP_RL difsp, diftp, visch, difsh, difth
-      _KPP_RL f1, sig, a1, a2, a3, delhat
-      _KPP_RL Gm, Gs, Gt
-      _KPP_RL tempVar
+      _RL R, dvdzup, dvdzdn, viscp
+      _RL difsp, diftp, visch, difsh, difth
+      _RL f1, sig, a1, a2, a3, delhat
+      _RL Gm, Gs, Gt
+      _RL tempVar
 
-      _KPP_RL    p0    , eins
+      _RL    p0    , eins
       parameter (p0=0.0, eins=1.0)
 
 c-----------------------------------------------------------------------
@@ -1332,27 +1250,27 @@ c     hbl(imt)                  boundary layer depth                 (m)
 c     kbl(imt)                  grid above hbl
 c     diffus(imt,0:Nrp1,mdiff) vertical diffusivities           (m^2/s)
 c     casea(imt)                = 1 in caseA, = 0 in case B
-      _KPP_RL dkm1  (imt,mdiff)
-      _KPP_RL hbl   (imt)
+      _RL dkm1  (imt,mdiff)
+      _RL hbl   (imt)
       integer kbl   (imt)
-      _KPP_RL diffus(imt,0:Nrp1,mdiff)
-      _KPP_RL casea (imt)
+      _RL diffus(imt,0:Nrp1,mdiff)
+      _RL casea (imt)
 
 c input/output
 c     nonlocal transport, modified ghat at kbl(i)-1 interface    (s/m**2)
-      _KPP_RL ghat (imt,Nr)
+      _RL ghat (imt,Nr)
 
 c output
 c     enhanced bound. layer mixing coeff.
-      _KPP_RL blmc  (imt,Nr,mdiff)
+      _RL blmc  (imt,Nr,mdiff)
 
 #ifdef ALLOW_KPP
 
 c local
 c     fraction hbl lies beteen zgrid neighbors
-      _KPP_RL delta
+      _RL delta
       integer ki, i, md
-      _KPP_RL dkmp5, dstar
+      _RL dkmp5, dstar
 
       do i = 1, imt
          ki = kbl(i)-1
@@ -1420,11 +1338,11 @@ c-----------------------------------------------------------------------
 
 c-------------- Routine arguments -----------------------------------------
       INTEGER bi, bj, myThid
-      _KPP_RL RHO1   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy       )
-      _KPP_RL DBLOC  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr   )
-      _KPP_RL DBSFC  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr   )
-      _KPP_RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
-      _KPP_RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
+      _RL RHO1   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy       )
+      _RL DBLOC  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr   )
+      _RL DBSFC  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr   )
+      _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
+      _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 
 #ifdef ALLOW_KPP
 
