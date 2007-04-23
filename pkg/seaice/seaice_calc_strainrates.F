@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.2 2007/04/22 19:56:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.3 2007/04/23 14:19:18 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,8 +78,7 @@ C     one metric term is missing
          ENDDO
         ENDDO
         IF ( SEAICE_no_slip ) THEN
-C     no slip boundary conditions are applied as a body force 
-C     following mom_u/v_sidedrag
+C     no slip boundary conditions apply only to e12
          k = 1
          DO j=1-Oly+1,sNy+Oly-1
           DO i=1-Olx+1,sNx+Olx-1
