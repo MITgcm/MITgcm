@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.44 2007/04/22 19:56:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.45 2007/04/24 21:04:52 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -222,7 +222,7 @@ c
 #endif
 
 C--   Read settings from model parameter file "data.seaice".
-      READ(UNIT=iUnit,NML=SEAICE_PARM01,IOSTAT=errIO)
+      READ(UNIT=iUnit,NML=SEAICE_PARM01)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R SEAICE_READPARMS'
@@ -241,7 +241,7 @@ C      CALL MODELDATA_EXAMPLE( myThid )
       ENDIF
 
 #ifdef ALLOW_COST
-      READ(UNIT=iUnit,NML=SEAICE_PARM02,IOSTAT=errIO)
+      READ(UNIT=iUnit,NML=SEAICE_PARM02)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R SEAICE_READPARMS'
