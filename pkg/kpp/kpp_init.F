@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.16 2007/04/23 21:09:19 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.17 2007/04/24 18:46:06 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -141,20 +141,23 @@ C-----------------------------------------------------------------------
                   do i = 1-OLx, sNx+OLx
                      KPPghat       (i,j,k,bi,bj) = 0.
                      KPPviscAz  (i,j,k,bi,bj) = viscAr
+                     KPPdiffKzS (i,j,k,bi,bj) = 0.
+                     KPPdiffKzT (i,j,k,bi,bj) = 0.
                   end do
                end do
             end do
 
-            CALL CALC_3D_DIFFUSIVITY(
-     I           bi,bj,1-Olx,sNx+OLx,1-Oly,sNy+OLy,
-     I           GAD_SALINITY, .FALSE., .FALSE.,
-     O           KPPdiffKzS(1-Olx,1-Oly,1,bi,bj),
-     I           myThid)
-            CALL CALC_3D_DIFFUSIVITY(
-     I           bi,bj,1-Olx,sNx+OLx,1-Oly,sNy+OLy,
-     I           GAD_TEMPERATURE, .FALSE., .FALSE.,
-     O           KPPdiffKzT(1-Olx,1-Oly,1,bi,bj),
-     I           myThid)
+cph Not needed here. Do this in kpp_calc.
+cph            CALL CALC_3D_DIFFUSIVITY(
+cph     I           bi,bj,1-Olx,sNx+OLx,1-Oly,sNy+OLy,
+cph     I           GAD_SALINITY, .FALSE., .FALSE.,
+cph     O           KPPdiffKzS(1-Olx,1-Oly,1,bi,bj),
+cph     I           myThid)
+cph            CALL CALC_3D_DIFFUSIVITY(
+cph     I           bi,bj,1-Olx,sNx+OLx,1-Oly,sNy+OLy,
+cph     I           GAD_TEMPERATURE, .FALSE., .FALSE.,
+cph     O           KPPdiffKzT(1-Olx,1-Oly,1,bi,bj),
+cph     I           myThid)
 
        ENDDO
       ENDDO
