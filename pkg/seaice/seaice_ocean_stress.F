@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.14 2007/04/24 11:23:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.15 2007/04/24 17:54:44 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -166,6 +166,7 @@ C     save stress divergence for later
            ENDDO
           ENDDO
          ELSE
+#ifdef ALLOW_EVP
           DO J=1,sNy
            DO I=1,sNx
 C     average wind stress over ice and ocean and apply averaged wind 
@@ -182,6 +183,7 @@ C     stress and internal ice stresses to surface layer of ocean
      &           + stressDivergenceY(I,J,bi,bj) * SEAICEstressFactor
            ENDDO
           ENDDO
+#endif
          ENDIF
         ENDDO
        ENDDO
