@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.16 2006/12/24 22:22:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.17 2007/04/24 13:50:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -114,6 +114,13 @@ C     At present this option is hardwired for pkg/exf.
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 # endif
+      IF ( ( Olx.LT.3 .OR. Oly.LT.3 ) .AND. SEAICEuseEVP ) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'SEAICE_CHECK: cannot use EVP solver with',
+     &  ' overlap (Olx,Oly) smaller than 3'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
 #endif
 
       _END_MASTER(myThid)
