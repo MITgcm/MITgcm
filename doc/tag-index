@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.799 2007/04/23 21:09:19 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.800 2007/04/24 11:24:37 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -19,6 +19,12 @@ o pkg/seaice: fix bug in evp solver, while doing that
     (to force the user to pick a time step since there is not "safe" way
     of choosing it)
   - add principal stress diagnostics
+  - rearrange fields for evp a little to avoid having to call a: too many 
+    exchanges and b: exchanges for stress trensor components which we do 
+    not have.
+  - modify Hibler+Bryan (1987) stress coupling so that it reuses information
+    of evp, complete rewrite for lsr case (latter is does not yet work
+    in all cases)
 o pkg/kpp: add code to have mixing in shelf ice caverns
 
 checkpoint59
