@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.18 2007/04/18 18:06:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.19 2007/04/24 21:17:47 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -116,6 +116,12 @@ C     initialise fields
           TAUY (I,J,bi,bj)= 0. _d 0
           WINDX(I,J,bi,bj)= 0. _d 0
           WINDY(I,J,bi,bj)= 0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef SEAICE_ALLOW_EVP
+          stressDivergenceX(I,J,bi,bj) = 0. _d 0
+          stressDivergenceY(I,J,bi,bj) = 0. _d 0
+# endif
+#endif
          ENDDO
         ENDDO
        ENDDO

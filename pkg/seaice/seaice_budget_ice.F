@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.4 2007/04/16 22:43:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.5 2007/04/24 21:17:47 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -162,7 +162,7 @@ cdm          UG       forcing
 cdm          hSnwLoc  snow thickness
 cdm          hice  ice thickness
 cdm outputs: A2 is needed for netHeatFlux, which is ice growth rate
-cdm          TSURF
+cdm          tsurfLoc
       DO ITER=1,IMAX_TICE
         
        DO J=1,sNy

@@ -18,6 +18,8 @@ CADJ STORE tices         = comlev1, key = ikey_dynamics
 # ifdef SEAICE_ALLOW_DYNAMICS
 CADJ STORE uice          = comlev1, key = ikey_dynamics
 CADJ STORE vice          = comlev1, key = ikey_dynamics
+CADJ STORE zeta          = comlev1, key = ikey_dynamics
+CADJ STORE eta           = comlev1, key = ikey_dynamics
 #  ifdef SEAICE_CGRID
 CADJ STORE etan          = comlev1, key = ikey_dynamics
 CADJ STORE dwatn         = comlev1, key = ikey_dynamics

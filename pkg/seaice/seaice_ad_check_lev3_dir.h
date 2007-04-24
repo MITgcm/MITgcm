@@ -9,6 +9,8 @@ CADJ STORE tices    = tapelev3, key = ilev_3
 # ifdef SEAICE_ALLOW_DYNAMICS
 CADJ STORE uice     = tapelev3, key = ilev_3
 CADJ STORE vice     = tapelev3, key = ilev_3
+CADJ STORE zeta     = tapelev3, key = ilev_3
+CADJ STORE eta      = tapelev3, key = ilev_3
 #  ifdef SEAICE_CGRID
 CADJ STORE dwatn = tapelev3, key = ilev_3
 CADJ STORE seaicemasku,seaicemaskv = tapelev3, key = ilev_3
