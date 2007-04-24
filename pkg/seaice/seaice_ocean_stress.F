@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.15 2007/04/24 17:54:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.16 2007/04/24 18:38:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -81,7 +81,8 @@ C     surface stresses on ocean following Hibler and Bryan (1987, JPO)
 C     
 C     recompute strain rates, viscosities, etc. from updated ice velocities
        IF ( .NOT. SEAICEuseEVP ) THEN
-C     we already have the stress components and do not need to recompute them
+C     only for EVP we already have the stress components otherwise we need 
+C     to recompute them here
         CALL SEAICE_CALC_STRAINRATES( 
      I       uIce(1-Olx,1-Oly,1,1,1), vIce(1-Olx,1-Oly,1,1,1),
      O       e11, e22, e12,
@@ -159,14 +160,14 @@ C     stress and internal ice stresses to surface layer of ocean
      &           + areaS*tauy(I,J,bi,bj)
      &           + FY * SEAICEstressFactor
 C     save stress divergence for later
-#ifdef ALLOW_EVP
+#ifdef SEAICE_ALLOW_EVP
             stressDivergenceX(I,J,bi,bj) = FX
             stressDivergenceY(I,J,bi,bj) = FY
-#endif 
+#endif /* SEAICE_ALLOW_EVP */
            ENDDO
           ENDDO
          ELSE
-#ifdef ALLOW_EVP
+#ifdef SEAICE_ALLOW_EVP
           DO J=1,sNy
            DO I=1,sNx
 C     average wind stress over ice and ocean and apply averaged wind 
@@ -183,7 +184,7 @@ C     stress and internal ice stresses to surface layer of ocean
      &           + stressDivergenceY(I,J,bi,bj) * SEAICEstressFactor
            ENDDO
           ENDDO
-#endif
+#endif /* SEAICE_ALLOW_EVP */
          ENDIF
         ENDDO
        ENDDO
