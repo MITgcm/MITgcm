@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.3 2007/04/23 14:19:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.4 2007/04/24 02:59:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -48,7 +48,7 @@ C  hFacU, hFacV - determine the no-slip boundary condition
       INTEGER k
       _RS hFacU, hFacV
 
-
+      k = 1
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -74,28 +74,28 @@ C     one metric term is missing
      &         * ( _tanPhiAtU(I,J,bi,bj) + _tanPhiAtU(I,J-1,bi,bj) )
      &         *recip_rSphere
      &         )
+     &         *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
+     &         *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
 C     one metric term is missing
          ENDDO
         ENDDO
         IF ( SEAICE_no_slip ) THEN
 C     no slip boundary conditions apply only to e12
-         k = 1
          DO j=1-Oly+1,sNy+Oly-1
           DO i=1-Olx+1,sNx+Olx-1
            hFacU = _maskW(i,j,k,bi,bj) - _maskW(i,j-1,k,bi,bj)
            hFacV = _maskS(i,j,k,bi,bj) - _maskS(i-1,j,k,bi,bj)
 
            e12(I,J,bi,bj)= e12(I,J,bi,bj)
-     &          + HALF*( recip_rAz(i,j,bi,bj)
-     &          *( hFacU * ( _dxC(i,j  ,bi,bj)*uFld(i,j  ,bi,bj)
-     &                     + _dxC(i,j-1,bi,bj)*uFld(i,j-1,bi,bj) ) 
-     &           + hFacV * ( _dyC(i  ,j,bi,bj)*vFld(i  ,j,bi,bj)
-     &                     + _dyC(i-1,j,bi,bj)*vFld(i-1,j,bi,bj) ) )
+     &          + recip_rAz(i,j,bi,bj) * 
+     &          ( hFacU * ( _dxC(i,j  ,bi,bj)*uFld(i,j  ,bi,bj)
+     &                    + _dxC(i,j-1,bi,bj)*uFld(i,j-1,bi,bj) ) 
+     &          + hFacV * ( _dyC(i  ,j,bi,bj)*vFld(i  ,j,bi,bj)
+     &                    + _dyC(i-1,j,bi,bj)*vFld(i-1,j,bi,bj) ) )
      &         - hFacU 
      &         * 0.25 _d 0 * (uFld(I,J,bi,bj)+uFld(I  ,J-1,bi,bj))
      &         * ( _tanPhiAtU(I,J,bi,bj) + _tanPhiAtU(I,J-1,bi,bj) )
      &         *recip_rSphere
-     &          )
 C     one metric term is missing
           ENDDO
          ENDDO
