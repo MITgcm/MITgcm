@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.41 2007/04/18 19:54:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.42 2007/04/24 18:45:11 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -305,6 +305,10 @@ cph although some of these are re-initialised later.
            VisbeckK(i,j,bi,bj)   = 0. _d 0
 #  endif
 # endif /* ALLOW_GMREDI */
+# ifdef ALLOW_KPP
+           KPPdiffKzS(i,j,k,bi,bj)  = 0. _d 0
+           KPPdiffKzT(i,j,k,bi,bj)  = 0. _d 0
+# endif /* ALLOW_KPP */
 #endif /* ALLOW_AUTODIFF_TAMC */
           ENDDO
          ENDDO
