@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.29 2007/04/17 16:13:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.30 2007/04/24 11:23:42 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -113,21 +113,15 @@ C
 C     seaice_sigma1  - sigma11+sigma22, defined at C-points
 C     seaice_sigma2  - sigma11-sigma22, defined at C-points
 C     seaice_sigma12 - off-diagonal term, defined at Z-points
-C     seaice_div     - divergence strain rates at C-points
-C                      /divided by Delta
-C     seaice_tension - tension    strain rates at C-points
-C                      /divided by Delta
-C     seaice_shear   - shear      strain rates, defined at Z-points
-C                      /divided by Delta
+C     stressDivergenceX/Y - divergence of stress tensor
       COMMON /SEAICE_EVP_FIELDS/
-     &     seaice_sigma1, seaice_sigma2, seaice_sigma12,
-     &     seaice_div, seaice_tension, seaice_shear
-      _RL seaice_sigma1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL seaice_sigma2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL seaice_sigma12(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL seaice_div    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL seaice_tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL seaice_shear  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+     &     stressDivergenceX, stressDivergenceY,
+     &     seaice_sigma1, seaice_sigma2, seaice_sigma12
+      _RL stressDivergenceX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL stressDivergenceY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL seaice_sigma1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL seaice_sigma2    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL seaice_sigma12   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* SEAICE_ALLOW_EVP and SEAICE_CGRID */
 
       COMMON/MIX/TMIX,TICE

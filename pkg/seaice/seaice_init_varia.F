@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.4 2007/04/17 16:13:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.5 2007/04/24 11:23:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -199,12 +199,11 @@ C--   Now lets look at all these beasts
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
+           stressDivergenceX(I,J,bi,bj) = 0. _d 0
+           stressDivergenceY(I,J,bi,bj) = 0. _d 0
            seaice_sigma1 (I,J,bi,bj) = 0. _d 0
            seaice_sigma2 (I,J,bi,bj) = 0. _d 0
            seaice_sigma12(I,J,bi,bj) = 0. _d 0
-           seaice_div    (I,J,bi,bj) = 0. _d 0
-           seaice_tension(I,J,bi,bj) = 0. _d 0
-           seaice_shear  (I,J,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
