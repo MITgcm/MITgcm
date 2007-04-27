@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.7 2006/09/15 15:45:18 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.8 2007/04/27 16:27:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -34,7 +34,7 @@ C     == Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==       
+C     == Routine Arguments ==
 C     myThid -  Number of this instance
       INTEGER myThid
 CEOP
@@ -44,7 +44,7 @@ CEOP
 C Functions
       INTEGER ILNBLNK
 
-C     == Local Variables == 
+C     == Local Variables ==
 C     msgBuf     :: Informational/error meesage buffer
 C     iUnit      :: Work variable for IO unit number
 C     k          :: loop counter
@@ -54,7 +54,7 @@ C     iL         :: Work variable for length of file-name
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   Coupling parameters: 
+C--   Coupling parameters:
 C     cpl_earlyExpImpCall :: call coupler early in the time stepping call sequence
 C     useImportHFlx :: True => use the Imported HeatFlux from couler
 C     useImportFW   :: True => use the Imported Fresh Water flux fr cpl
@@ -123,25 +123,25 @@ C-    If land_taveFreq is positive, then must compile the land-diagnostics code
 #endif /* ALLOW_TIMEAVE */
 
 #ifndef ATMOSPHERIC_LOADING
+      iUnit = errorMessageUnit
       IF ( useImportSLP ) THEN
-        WRITE(msgBuf,'(A)')
-     &  'CPL_READPARMS: useImportSLP is set but'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)') '** WARNING ** CPL_READPARMS:',
+     &                       ' useImportSLP is set but'
+        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ELSEIF ( useImportSIce ) THEN
-        WRITE(msgBuf,'(A)')
-     &  'CPL_READPARMS: useImportSIce is set but'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)') '** WARNING ** CPL_READPARMS:',
+     &                       ' useImportSIce is set but'
+        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
       IF ( useImportSLP .OR. useImportSIce ) THEN
-        WRITE(msgBuf,'(A)')
-     &  'CPL_READPARMS: pressure loading code is not compiled.'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)')
-     &  'Re-compile with:  #define ATMOSPHERIC_LOADING'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+        WRITE(msgBuf,'(2A)') '** WARNING ** CPL_READPARMS:',
+     &                       ' pressure loading code is not active.'
+        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+        WRITE(msgBuf,'(2A)') '** WARNING **',
+     &              ' Re-compile with:  #define ATMOSPHERIC_LOADING'
+        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
-#endif
+#endif /* ATMOSPHERIC_LOADING */
 
       IF ( .NOT.cpl_earlyExpImpCall .AND. staggerTimeStep ) THEN
         WRITE(msgBuf,'(A,L5,A,L5)')
