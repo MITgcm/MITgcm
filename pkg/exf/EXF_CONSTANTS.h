@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_CONSTANTS.h,v 1.1 2007/04/16 23:27:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_CONSTANTS.h,v 1.2 2007/04/27 15:27:38 jmc Exp $
 C $Name:  $
 c
 c
@@ -45,12 +45,12 @@ c     sigma = (2*pi^5*k^4)/(15*h^3*c^2)
       _RL stefanBoltzmann
       parameter ( stefanBoltzmann = 5.670D-8 )
 
-#ifdef ALLOW_ATM_TEMP
+c#ifdef ALLOW_ATM_TEMP
 c     is identical to "gravity" used in MITgcmUV
 c     needs to be marmonized through common constants.h file
       _RL         gravity_mks
       parameter ( gravity_mks = 9.81d0 )
-#endif
+c#endif
 
 c     3. empirical parameters
 
@@ -92,7 +92,7 @@ c      ustofu11     - ustar = 0.3818 m/s, corresponding to u = 11 m/s
      &            cquadrag_2  = clindrag_1*u11/2 + clindrag_2
      &          )
 
-#ifdef ALLOW_BULKFORMULAE
+c#ifdef ALLOW_BULKFORMULAE
 
 c     atmcp        - mean atmospheric specific heat [J/kg/deg K]
 c     flamb        - latent heat of evaporation [J/kg]
@@ -162,10 +162,10 @@ c     hq           - height of mean rel. humidity
      &            hq          =           2.000    d0
      &          )
 
-#ifdef ALLOW_ATM_TEMP
+c#ifdef ALLOW_ATM_TEMP
       _RL         czol
       parameter ( czol = hu*karman*gravity_mks )
-#endif
+c#endif
 
 c     4. control parameters
 
@@ -177,4 +177,4 @@ c
       integer     niter_bulk
       parameter ( niter_bulk = 2 )
 
-#endif /* ALLOW_BULKFORMULAE */
+c#endif /* ALLOW_BULKFORMULAE */
