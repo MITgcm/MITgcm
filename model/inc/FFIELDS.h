@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.32 2006/11/09 03:54:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.33 2007/04/27 15:34:54 jmc Exp $
 C $Name:  $
 CBOP
-C     !ROUTINE: FFIELDS.h 
+C     !ROUTINE: FFIELDS.h
 C     !INTERFACE:
 C     include "FFIELDS.h"
 C     !DESCRIPTION:
 C     \bv
 C     *==========================================================*
-C     | FFIELDS.h                                                 
-C     | o Model forcing fields                                    
+C     | FFIELDS.h
+C     | o Model forcing fields
 C     *==========================================================*
 C     | More flexible surface forcing configurations are
 C     | available via pkg/exf and pkg/seaice
@@ -67,9 +67,9 @@ C     lambdaThetaClimRelax :: Inverse time scale for relaxation ( 1/s ).
 C
 C     lambdaSaltClimRelax :: Inverse time scale for relaxation ( 1/s ).
 
-C     pload :: for the ocean:      atmospheric pressure at z=eta
+C     pLoad :: for the ocean:      atmospheric pressure at z=eta
 C                Units are           Pa=N/m^2
-C              for the atmosphere: geopotential of the orography 
+C              for the atmosphere: geopotential of the orography
 C                Units are           meters (converted)
 C  sIceLoad :: sea-ice loading, expressed in Mass of ice+snow / area unit
 C                Units are           kg/m^2
@@ -90,10 +90,8 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       COMMON /FFIELDS_SSS/ SSS
       COMMON /FFIELDS_lambdaThetaClimRelax/ lambdaThetaClimRelax
       COMMON /FFIELDS_lambdaSaltClimRelax/ lambdaSaltClimRelax
-#ifdef ATMOSPHERIC_LOADING
-      COMMON /FFIELDS_pload/ pload
+      COMMON /FFIELDS_pLoad/ pLoad
       COMMON /FFIELDS_sIceLoad/ sIceLoad
-#endif
 
       _RS  fu       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  fv       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -106,24 +104,22 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       _RS  SSS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  lambdaThetaClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  lambdaSaltClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef ATMOSPHERIC_LOADING
-      _RS  pload    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  pLoad    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
 
 #ifdef ALLOW_EP_FLUX
       COMMON /efluxFFIELDS/ EfluxY,EfluxP
       _RL  EfluxY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  EfluxP (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-                                                                                          
+
 #ifdef ALLOW_TAU_EDDY
       COMMON /edtauFFIELDS/ EddyTaux,EddyTauy
       _RS  EddyTaux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  EddyTauy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
-#ifndef ALLOW_EXF
+#ifndef EXCLUDE_FFIELDS_LOAD
 C     taux[0,1]     :: Temp. for zonal wind stress
 C     tauy[0,1]     :: Temp. for merid. wind stress
 C     Qnet[0,1]     :: Temp. for heat flux
@@ -132,7 +128,7 @@ C     saltFlux[0,1] :: Temp. for isurface salt flux
 C     SST[0,1]      :: Temp. for theta climatalogy
 C     SSS[0,1]      :: Temp. for theta climatalogy
 C     Qsw[0,1]      :: Temp. for short wave component of heat flux
-C     pload[0,1]    :: Temp. for atmospheric pressure at z=eta
+C     pLoad[0,1]    :: Temp. for atmospheric pressure at z=eta
 C     [0,1]         :: End points for interpolation
 C     Above use static heap storage to allow exchange.
 
@@ -142,9 +138,9 @@ C     Above use static heap storage to allow exchange.
      &                 saltFlux0, saltFlux1
 #ifdef SHORTWAVE_HEATING
      &               , Qsw0, Qsw1
-#endif 
+#endif
 #ifdef ATMOSPHERIC_LOADING
-     &               , pload0, pload1
+     &               , pLoad0, pLoad1
 #endif
 
       _RS  taux0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -162,14 +158,14 @@ C     Above use static heap storage to allow exchange.
       _RS  SST1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SSS1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ATMOSPHERIC_LOADING
-      _RS  pload0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  pload1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  pLoad0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  pLoad1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 #ifdef SHORTWAVE_HEATING
       _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  Qsw0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
-#endif /* ALLOW_EXF */
+#endif /* EXCLUDE_FFIELDS_LOAD */
 
 C     surfaceForcingU     units are  r_unit.m/s^2 (=m^2/s^2 if r=z)
 C                -> usage in gU:     gU = gU + surfaceForcingU/drF [m/s^2]
@@ -201,7 +197,7 @@ C              Units are r_unit.K/s (=Kelvin.m/s if r=z) (>0 for ocean warming).
      &                         surfaceForcingU,
      &                         surfaceForcingV,
      &                         surfaceForcingT,
-     &                         surfaceForcingS, 
+     &                         surfaceForcingS,
      &                         surfaceForcingTice
       _RL  surfaceForcingU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  surfaceForcingV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

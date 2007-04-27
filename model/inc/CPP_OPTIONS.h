@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.39 2007/04/14 18:32:32 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.40 2007/04/27 15:34:54 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -36,6 +36,11 @@ C o Include/exclude nonHydrostatic code
 
 C o Include pressure loading code
 #define ATMOSPHERIC_LOADING
+
+C o exclude/allow external forcing-fields load 
+C   this allows to read & do simple linear time interpolation of oceanic
+C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
+#undef EXCLUDE_FFIELDS_LOAD
 
 C o Use "Exact Convervation" of fluid in Free-Surface formulation
 C   so that d/dt(eta) is exactly equal to - Div.Transport
