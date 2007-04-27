@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.6 2007/04/17 23:42:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.7 2007/04/27 15:51:28 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -58,8 +58,8 @@ C     myThid      :: Thread no. that called this routine.
       _RL  dEvdT
 CEOP
 
-#ifdef ALLOW_THSICE
 #ifdef ALLOW_EXF
+#ifdef ALLOW_ATM_TEMP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     === Local variables ===
@@ -287,15 +287,21 @@ C--- Upward long wave radiation
 C--   Total derivative with respect to surface temperature
            df0dT = -dflwupdT+dfshdT+dflhdT
 
+#ifdef ALLOW_DOWNWARD_RADIATION
            flwNet_dwn  = lwdown(i,j,bi,bj) - flwup
+#else
+      STOP 'ABNORMAL END: S/R THSICE_GET_EXF: DOWNWARD_RADIATION undef'
+#endif
            flxExceptSw = flwNet_dwn + hsLocal + hlLocal
 
           endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+#else /* ALLOW_ATM_TEMP */
+      STOP 'ABNORMAL END: S/R THSICE_GET_EXF: ATM_TEMP undef'
+#endif /* ALLOW_ATM_TEMP */
 #endif /* ALLOW_EXF */
-#endif /* ALLOW_THSICE */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_map_exf.F,v 1.2 2007/04/16 23:37:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_map_exf.F,v 1.3 2007/04/27 15:51:28 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -55,7 +55,6 @@ C     myThid      :: Thread no. that called this routine.
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_THSICE
 #ifdef ALLOW_EXF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -65,15 +64,22 @@ C     i,j   :: current grid point indices
 
       DO j = jMin, jMax
        DO i = iMin, iMax
+#ifdef ALLOW_ATM_TEMP
         totPrc(i,j) = precip(i,j,bi,bj)*rhoConstFresh
+#endif
 #if defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE)
         totPrc(i,j) = totPrc(i,j) + runoff(i,j,bi,bj)*rhoConstFresh
 #endif
 CML           flxSW (i,j) = -Qsw(i,j,bi,bj)
+#ifdef ALLOW_DOWNWARD_RADIATION
         flxSW (i,j) = swdown(i,j,bi,bj) 
+#else
+      STOP 'ABNORMAL END: S/R THSICE_MAP_EXF: DOWNWARD_RADIATION undef'
+#endif
        ENDDO
       ENDDO
        
+#ifdef ALLOW_ATM_TEMP
       IF ( snowPrecipFile .NE. ' ' ) THEN
        DO j = jMin, jMax
         DO i = iMin, iMax
@@ -93,11 +99,13 @@ CML     &        .AND. atemp(i,j,bi,bj).LE.Tf0kel )  THEN
         ENDDO
        ENDDO
       ENDIF
+#else /* ALLOW_ATM_TEMP */
+        STOP 'ABNORMAL END: S/R THSICE_MAP_EXF: ATM_TEMP undef'
+#endif /* ALLOW_ATM_TEMP */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #endif /* ALLOW_EXF */
-#endif /* ALLOW_THSICE */
 
       RETURN
       END
