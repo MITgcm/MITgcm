@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.44 2007/04/19 14:37:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.45 2007/04/27 13:22:47 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -832,7 +832,7 @@ c     fields to get a complete calendar date array.
       endif
 #endif
 #ifdef ALLOW_OBCS_WEST
-      if ( obcsNperiod .gt. 0 ) then
+      if ( obcsWperiod .gt. 0 ) then
          call cal_FullDate  ( obcsWstartdate1    ,      obcsWstartdate2,
      &        date_array                        ,mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
