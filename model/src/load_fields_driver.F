@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.4 2007/04/18 23:56:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.5 2007/04/27 15:53:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -120,7 +120,7 @@ C     == Local variables ==
 CEOP
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
+      IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_ENTER( 'LOAD_FIELDS_DRIVER', myThid )
 #endif
 
@@ -128,7 +128,7 @@ CEOP
       IF ( useBulkForce ) THEN
 C--   Bulk-Formulae pkg: load all forcing fields at current time
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB ) 
+        IF ( debugLevel .GE. debLevB )
      &   CALL DEBUG_CALL('BULKF_FIELDS_LOAD',myThid)
 #endif
         CALL TIMER_START('BULKF_FIELDS_LOAD  [LOAD_FLDS_DRIVER]',myThid)
@@ -141,31 +141,33 @@ C--   Call external forcing package
 #ifdef ALLOW_EXF
       IF (useEXF) THEN
 # ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
+      IF ( debugLevel .GE. debLevB )
      &   CALL DEBUG_CALL('EXF_GETFORCING',myThid)
 # endif
         CALL TIMER_START('EXF_GETFORCING     [LOAD_FLDS_DRIVER]',myThid)
         CALL EXF_GETFORCING( myTime, myIter, myThid )
         CALL TIMER_STOP ('EXF_GETFORCING     [LOAD_FLDS_DRIVER]',myThid)
       ENDIF
-#else /* ALLOW_EXF undef */
-      IF ( .NOT. useSEAICE .AND. .NOT. useEBM ) THEN
-# ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB ) 
+#endif /* ALLOW_EXF */
+
+c     IF ( .NOT.useEXF ) THEN
+C- note (useEBM): needs modifications to be compatible with this call
+      IF ( .NOT.(useEXF.OR.useEBM) ) THEN
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
      &   CALL DEBUG_CALL('EXTERNAL_FIELDS_LOAD',myThid)
-# endif
+#endif
         CALL TIMER_START('EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]',myThid)
         CALL EXTERNAL_FIELDS_LOAD( myTime, myIter, myThid )
         CALL TIMER_STOP ('EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]',myThid)
-# ifdef NONLIN_FRSURF
+#ifdef NONLIN_FRSURF
 CADJ STORE SST    = comlev1, key = ikey_dynamics
 CADJ STORE SSS    = comlev1, key = ikey_dynamics
-#  ifdef SHORTWAVE_HEATING
+# ifdef SHORTWAVE_HEATING
 CADJ STORE Qsw    = comlev1, key = ikey_dynamics
-#  endif
 # endif
+#endif
       ENDIF
-#endif /* ALLOW_EXF */
 
 #ifdef ALLOW_OFFLINE
       IF ( useOffLine ) THEN
@@ -182,7 +184,7 @@ CADJ STORE Qsw    = comlev1, key = ikey_dynamics
 #ifdef ALLOW_GCHEM
       IF ( useGCHEM ) THEN
 #ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB ) 
+        IF ( debugLevel .GE. debLevB )
      &   CALL DEBUG_CALL('GCHEM_FIELDS_LOAD',myThid)
 #endif /* ALLOW_DEBUG */
         CALL GCHEM_FIELDS_LOAD( myTime, myIter, myThid )
