@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.43 2007/04/01 19:08:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.44 2007/04/27 15:45:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,16 +51,14 @@ C-    Initialise all arrays in common blocks
           SST             (i,j,bi,bj) = 0. _d 0
           SSS             (i,j,bi,bj) = 0. _d 0
           Qsw             (i,j,bi,bj) = 0. _d 0
-#ifdef ATMOSPHERIC_LOADING
-          pload           (i,j,bi,bj) = 0. _d 0
+          pLoad           (i,j,bi,bj) = 0. _d 0
           sIceLoad        (i,j,bi,bj) = 0. _d 0
-#endif
           surfaceForcingU(i,j,bi,bj) = 0. _d 0
           surfaceForcingV(i,j,bi,bj) = 0. _d 0
           surfaceForcingT(i,j,bi,bj) = 0. _d 0
           surfaceForcingS(i,j,bi,bj) = 0. _d 0
           surfaceForcingTice(i,j,bi,bj) = 0. _d 0
-#ifndef ALLOW_EXF
+#ifndef EXCLUDE_FFIELDS_LOAD
           taux0           (i,j,bi,bj) = 0. _d 0
           taux1           (i,j,bi,bj) = 0. _d 0
           tauy0           (i,j,bi,bj) = 0. _d 0
@@ -80,10 +78,10 @@ C-    Initialise all arrays in common blocks
           Qsw1            (i,j,bi,bj) = 0. _d 0
 #endif
 #ifdef ATMOSPHERIC_LOADING
-          pload0          (i,j,bi,bj) = 0. _d 0
-          pload1          (i,j,bi,bj) = 0. _d 0
+          pLoad0          (i,j,bi,bj) = 0. _d 0
+          pLoad1          (i,j,bi,bj) = 0. _d 0
 #endif
-#endif
+#endif /* EXCLUDE_FFIELDS_LOAD */
          ENDDO
         ENDDO
        ENDDO
@@ -164,7 +162,7 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
 #endif
 #ifdef ATMOSPHERIC_LOADING
       IF ( pLoadFile .NE. ' '  ) THEN
-       CALL READ_FLD_XY_RS( pLoadFile, ' ', pload, 0, myThid )
+       CALL READ_FLD_XY_RS( pLoadFile, ' ', pLoad, 0, myThid )
       ENDIF
 #endif
 
@@ -180,8 +178,8 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
       CALL EXCH_XY_RS(Qsw  , myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
-      CALL EXCH_XY_RS(pload  , myThid )
-C     CALL PLOT_FIELD_XYRS( pload, 'S/R INI_FORCING pload',1,myThid)
+      CALL EXCH_XY_RS(pLoad  , myThid )
+C     CALL PLOT_FIELD_XYRS( pLoad, 'S/R INI_FORCING pLoad',1,myThid)
 #endif
 C     CALL PLOT_FIELD_XYRS( fu, 'S/R INI_FORCING FU',1,myThid)
 C     CALL PLOT_FIELD_XYRS( fv, 'S/R INI_FORCING FV',1,myThid)

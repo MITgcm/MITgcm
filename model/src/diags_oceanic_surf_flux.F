@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.5 2006/11/20 04:24:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.6 2007/04/27 15:45:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,13 +64,11 @@ C-    tauy (surface momentum flux [Pa=N/m2], positive <-> increase v)
        CALL DIAGNOSTICS_SCALE_FILL( fv,foFacMom,1,
      &                             'oceTAUY ',0, 1,0,1,1,myThid )
 
-#ifdef ATMOSPHERIC_LOADING
-C-    pload (Atmospheric pressure loading [Pa=N/m2])
-       CALL DIAGNOSTICS_FILL( pload,   'atmPload',0,1,0,1,1,myThid )
+C-    pLoad (Atmospheric pressure loading [Pa=N/m2])
+       CALL DIAGNOSTICS_FILL( pLoad,   'atmPload',0,1,0,1,1,myThid )
 
 C-    sea-ice loading (expressed in Mass of ice+snow / area unit, [kg/m2])
        CALL DIAGNOSTICS_FILL( sIceLoad,'sIceLoad',0,1,0,1,1,myThid )
-#endif /* ATMOSPHERIC_LOADING */
 
 C-    net Fresh Water flux into the ocean (+=down), [kg/m2/s]
        tmpFac = -rhoConstFresh

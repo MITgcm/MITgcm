@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.28 2007/03/03 22:36:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.29 2007/04/27 15:45:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,7 +53,8 @@ C     myIter - Simulation timestep number
       INTEGER myIter
 
 
-#ifndef ALLOW_EXF
+#ifndef EXCLUDE_FFIELDS_LOAD
+
 
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
@@ -176,9 +177,9 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
 #endif
 #ifdef ATMOSPHERIC_LOADING
       IF ( pLoadFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( pLoadFile, pload0,
+       CALL READ_REC_XY_RS( pLoadFile, pLoad0,
      &                      intime0, myIter, myThid )
-       CALL READ_REC_XY_RS( pLoadFile, pload1,
+       CALL READ_REC_XY_RS( pLoadFile, pLoad1,
      &                      intime1, myIter, myThid )
       ENDIF
 #endif
@@ -201,8 +202,8 @@ C-    thread synchronisation (barrier) is part of the EXCH S/R calls
        _EXCH_XY_R4(Qsw1, myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
-       _EXCH_XY_R4(pload0, myThid )
-       _EXCH_XY_R4(pload1, myThid )
+       _EXCH_XY_R4(pLoad0, myThid )
+       _EXCH_XY_R4(pLoad1, myThid )
 #endif
 
       ENDIF
@@ -281,40 +282,12 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
         IF ( pLoadFile .NE. ' '  ) THEN
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            pload(i,j,bi,bj) = bWght*pload0(i,j,bi,bj)
-     &                       + aWght*pload1(i,j,bi,bj)
+            pLoad(i,j,bi,bj) = bWght*pLoad0(i,j,bi,bj)
+     &                       + aWght*pLoad1(i,j,bi,bj)
            ENDDO
           ENDDO
         ENDIF
 #endif
-C- jmc: leave the old code commented out (with all fields beeing reset,
-C       even if they are never loaded)
-c       DO j=1-Oly,sNy+Oly
-c        DO i=1-Olx,sNx+Olx
-c         SST(i,j,bi,bj)   = bWght*SST0(i,j,bi,bj)
-c    &                       +aWght*SST1(i,j,bi,bj)
-c         SSS(i,j,bi,bj)   = bWght*SSS0(i,j,bi,bj)
-c    &                       +aWght*SSS1(i,j,bi,bj)
-c         fu(i,j,bi,bj)    = bWght*taux0(i,j,bi,bj)
-c    &                       +aWght*taux1(i,j,bi,bj)
-c         fv(i,j,bi,bj)    = bWght*tauy0(i,j,bi,bj)
-c    &                       +aWght*tauy1(i,j,bi,bj)
-c         Qnet(i,j,bi,bj)  = bWght*Qnet0(i,j,bi,bj)
-c    &                       +aWght*Qnet1(i,j,bi,bj)
-c         EmPmR(i,j,bi,bj) = bWght*EmPmR0(i,j,bi,bj)
-c    &                       +aWght*EmPmR1(i,j,bi,bj)
-c         saltFlux(i,j,bi,bj) = bWght*saltFlux0(i,j,bi,bj)
-c    &                        + aWght*saltFlux1(i,j,bi,bj)
-#ifdef SHORTWAVE_HEATING
-c         Qsw(i,j,bi,bj)   = bWght*Qsw0(i,j,bi,bj)
-c    &                       +aWght*Qsw1(i,j,bi,bj)
-#endif
-#ifdef ATMOSPHERIC_LOADING
-c         pload(i,j,bi,bj) = bWght*pload0(i,j,bi,bj)
-c    &                      +aWght*pload1(i,j,bi,bj)
-#endif
-c        ENDDO
-c       ENDDO
        ENDDO
       ENDDO
 
@@ -340,7 +313,7 @@ c     IF ( debugLevel.GE.debLevA  .AND. myIter.LT.50+nIter0) THEN
 C endif for periodicForcing
       ENDIF
 
-#endif /* ALLOW_EXF */
+#endif /* EXCLUDE_FFIELDS_LOAD */
 
       RETURN
       END
