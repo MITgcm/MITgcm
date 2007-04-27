@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.800 2007/04/24 11:24:37 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.801 2007/04/27 16:33:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o in FFIELDS.h: 
+  - replace #ifndef ALLOW_EXF  by #ifndef EXCLUDE_FFIELDS_LOAD
+  - make pLoad & sIceLoad always available (but still only used if
+     ATMOSPHERIC_LOADING is #define).
 o pkg/kpp: replaced _KPP_RL with _RL
 o bug fixes for vertical diffusivity computations when both KPP and
     3D diffusivity arrays are used.
