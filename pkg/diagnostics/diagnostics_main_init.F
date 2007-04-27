@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.29 2006/11/20 04:25:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.30 2007/04/27 15:46:04 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -512,7 +512,6 @@ C--   surface fluxes:
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-#ifdef ATMOSPHERIC_LOADING
       diagName  = 'atmPload'
       diagTitle = 'Atmospheric pressure loading'
       diagUnits = 'Pa              '
@@ -526,7 +525,6 @@ C--   surface fluxes:
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
-#endif /* ATMOSPHERIC_LOADING */
 
       diagName  = 'oceFWflx'
       diagTitle = 'net surface Fresh-Water flux into the ocean'
