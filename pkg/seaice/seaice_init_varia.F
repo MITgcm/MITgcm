@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.5 2007/04/24 11:23:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.6 2007/04/27 15:50:14 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -280,7 +280,6 @@ C---  Complete initialization
           ETA(I,J,bi,bj)=ZETA(I,J,bi,bj)/4.0 _d 0
          ENDDO
         ENDDO
-#ifdef ATMOSPHERIC_LOADING
         IF ( useRealFreshWaterFlux .AND. .NOT.useThSIce ) THEN
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -290,7 +289,6 @@ C---  Complete initialization
           ENDDO
          ENDDO
         ENDIF
-#endif
        ENDDO
       ENDDO
 

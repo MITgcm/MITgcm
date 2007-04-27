@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.3 2004/07/26 20:13:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.4 2007/04/27 15:52:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
- 
+
 CBOP
 C     !ROUTINE: OCN_APPLY_IMPORT
 C     !INTERFACE:
-      SUBROUTINE OCN_APPLY_IMPORT( 
+      SUBROUTINE OCN_APPLY_IMPORT(
      I               apply2AllFields, myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE OCN_APPLY_IMPORT                           
+C     | SUBROUTINE OCN_APPLY_IMPORT
 C     | o Apply imported coupling data to forcing fields
 C     *==========================================================*
 C     *==========================================================*
@@ -29,7 +29,7 @@ C     === Global variables ===
 #include "SURFACE.h"
 c #include "GRID.h"
 c #include "DYNVARS.h"
- 
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     apply2AllFields - flag: T= apply import to all coupling fields
@@ -41,7 +41,7 @@ C     myThid - Thread no. that called this routine.
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
- 
+
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
       INTEGER bi,bj,i,j
@@ -63,7 +63,6 @@ C-   Dynamical forcing
             ENDDO
            ENDDO
          ENDIF
-#ifdef ATMOSPHERIC_LOADING
          IF ( useImportSLP ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
@@ -78,7 +77,6 @@ C-   Dynamical forcing
             ENDDO
            ENDDO
          ENDIF
-#endif /* ATMOSPHERIC_LOADING */
 
 C-   Fresh-Water & Salinity forcing
          IF ( useImportFW ) THEN
@@ -115,7 +113,6 @@ C-   Heat Flux forcing
 C--     Apply only to forcings relevant for eta/surf.press variations
         ELSE
 
-#ifdef ATMOSPHERIC_LOADING
          IF ( useImportSIce .AND. useImportSLP ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
@@ -126,7 +123,7 @@ C--     Apply only to forcings relevant for eta/surf.press variations
          ELSEIF ( useImportSIce ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
-              phi0surf(i,j,bi,bj) = pload(i,j,bi,bj)*recip_rhoConst
+              phi0surf(i,j,bi,bj) = pLoad(i,j,bi,bj)*recip_rhoConst
      &                 + gravity*seaIceMass(i,j,bi,bj)*recip_rhoConst
             ENDDO
            ENDDO
@@ -137,7 +134,6 @@ C--     Apply only to forcings relevant for eta/surf.press variations
             ENDDO
            ENDDO
          ENDIF
-#endif /* ATMOSPHERIC_LOADING */
 
          IF ( useImportFW ) THEN
            DO j=1-Oly,sNy+Oly
@@ -158,8 +154,8 @@ C--  Fill in Halo region with valid values
 
 #ifdef ATMOSPHERIC_LOADING
        IF ( apply2AllFields ) THEN
-        IF ( useImportSLP )  _EXCH_XY_R4( pload,    myThid )
-        IF ( useImportSIce)  _EXCH_XY_R4( sIceload, myThid )
+        IF ( useImportSLP )  _EXCH_XY_R4( pLoad,    myThid )
+        IF ( useImportSIce)  _EXCH_XY_R4( sIceLoad, myThid )
        ELSEIF ( useImportSLP .OR. useImportSIce ) THEN
          _EXCH_XY_R4( phi0surf, myThid )
        ENDIF

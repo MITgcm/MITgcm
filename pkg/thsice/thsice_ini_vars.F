@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.9 2007/04/16 22:38:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.10 2007/04/27 15:50:40 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -154,7 +154,6 @@ C--     Read initial conditions:
         _EXCH_XY_R8(Qice2,  myThid)
         _EXCH_XY_R8(snowAge,myThid)
 
-#ifdef ATMOSPHERIC_LOADING
 C--     Initialise Sea-Ice Loading for SeaIce-Dynamics :
         IF ( useSEAICE ) THEN
           DO bj = myByLo(myThid), myByHi(myThid)
@@ -169,7 +168,6 @@ C--     Initialise Sea-Ice Loading for SeaIce-Dynamics :
            ENDDO
           ENDDO
         ENDIF
-#endif /* ATMOSPHERIC_LOADING */
 
 #endif /* ALLOW_THSICE */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.11 2007/04/16 22:43:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.12 2007/04/27 15:50:14 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -625,7 +625,6 @@ C     convert snow to ice if submerged
         ENDIF
 #endif /* ALLOW_SEAICE_FLOODING */
 
-#ifdef ATMOSPHERIC_LOADING
         IF ( useRealFreshWaterFlux ) THEN
          DO J=1,sNy
           DO I=1,sNx
@@ -634,7 +633,6 @@ C     convert snow to ice if submerged
           ENDDO
          ENDDO
         ENDIF
-#endif
 
        ENDDO
       ENDDO

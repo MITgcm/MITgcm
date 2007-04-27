@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.23 2007/04/20 19:24:47 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.24 2007/04/27 15:50:41 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -356,7 +356,6 @@ C--    Net fluxes :
        ENDDO
       ENDDO
 
-#ifdef ATMOSPHERIC_LOADING
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE snowHeight(:,:,bi,bj) = 
 CADJ &     comlev1_bibj, key=iicekey, byte=isbyte
@@ -369,7 +368,6 @@ C--     Compute Sea-Ice Loading (= mass of sea-ice + snow / area unit)
      &                        )*iceMask(i,j,bi,bj)
        ENDDO
       ENDDO
-#endif
 
       IF ( thSIceAdvScheme.GT.0 ) THEN
 C--   note: those fluxes should to be added directly to Qnet, EmPmR & saltFlux
