@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.17 2006/09/28 04:21:32 dimitri Exp $
+#  $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.18 2007/04/28 00:16:56 jmc Exp $
 #
 
 #  This file contains a terse list of package dependencies that
@@ -17,16 +17,10 @@
 #  two packages can be compiled together.
 
 
-aim		-aim_v23
-aim_v23		-aim
-
 #  Ask PH about the following:
 #    cal cost ctrl ecco exf grdchk
 
 exf             +cal
-
-#  Ask Steph about:
-#    dic gchem
 
 #  Ask AJA about:
 #    flt
@@ -41,8 +35,6 @@ mom_vecinv	+mom_common
 cd_code         +mom_common
 shap_filt	+mom_vecinv
 ptracers	+generic_advdiff
-exf		-bulk_force
-bulk_force	-exf
 gchem           +ptracers
 dic             +gchem
 cfc             +gchem
