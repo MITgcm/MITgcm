@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.15 2007/04/05 19:33:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.16 2007/04/29 22:27:39 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_THSICE
-# include "THSICE_OPTIONS.h"
-#endif /* ALLOW_THSICE */
 
 CBOP
 C !ROUTINE: SEAICE_ADVDIFF
@@ -36,10 +33,6 @@ C     HEFFM     :: mask for scalar field
 #include "GAD.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
-#ifdef ALLOW_THSICE
-# include "THSICE_PARAMS.h"
-# include "THSICE_VARS.h"
-#endif /* ALLOW_THSICE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -86,35 +79,11 @@ C     msgBuf    :: Informational/error meesage buffer
       _RS xA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL recip_heff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef ALLOW_THSICE
-      _RL recip_area(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL minIcArea, minIcHeff
-      _RL r_minArea, r_minHeff
-      LOGICAL extensiveFld
-      LOGICAL dBugFlag
-#include "THSICE_DEBUG.h"
-#endif /* ALLOW_THSICE */
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       ks = 1
-
-#ifdef ALLOW_THSICE
-      IF ( thSIceAdvScheme.GT.0 ) RETURN
-      dBugFlag = debugLevel.GE.debLevB
-      minIcArea = 0. _d 0
-      minIcHeff = 0. _d 0
-      IF ( useThSice ) THEN
-        minIcArea = iceMaskMin
-C jmc: new version:
-        minIcHeff = iceMaskMin*himin
-      ENDIF
-      r_minArea = 0. _d 0
-      r_minHeff = 0. _d 0
-      IF ( minIcArea.GT.0. _d 0 ) r_minArea = 1. _d 0 / minIcArea
-      IF ( minIcHeff.GT.0. _d 0 ) r_minHeff = 1. _d 0 / minIcHeff
-#endif /* ALLOW_THSICE */
 
 C--   Get rid of the time dimension for velocities and interpolate
 C--   to C-points if necessary
@@ -181,9 +150,6 @@ C     Initialise for TAF
          DO i=1-Olx,sNx+Olx
           iceFld(i,j)     = 0. _d 0
           gFld(i,j)       = 0. _d 0
-#ifdef ALLOW_THSICE
-          recip_area(i,j) = 0. _d 0
-#endif
          ENDDO
         ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -220,7 +186,7 @@ C--   Effective Thickness (Volume)
          ENDDO
         ENDDO
         CALL SEAICE_ADVECTION(
-     I       GAD_HEFF, SEAICEadvSchHeff, .TRUE.,
+     I       GAD_HEFF, SEAICEadvSchHeff,
      I       uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
      I       uTrans, vTrans, iceFld, recip_heff,
      O       gFld, afx, afy,
@@ -241,110 +207,6 @@ C     now do the "explicit" time step
      &         )
          ENDDO
         ENDDO
-#ifdef ALLOW_THSICE
-        IF ( useThSice ) THEN
-C--   Compute conversion factors using updated thickness
-c        DO j=1-Oly,sNy+Oly
-c         DO i=1-Olx,sNx+Olx
-         DO j=1,sNy
-          DO i=1,sNx
-#ifdef ALLOW_DBUG_THSICE
-           IF ( dBug(i,j,bi,bj) ) THEN
-            WRITE(6,'(A,2I4,2I2,I12)') 'ICE_ADV: ij,bij,it=',
-     &                                  i,j,bi,bj,myIter
-            WRITE(6,'(2(A,1P2E14.6))')
-     &       'ICE_ADV: uc=', uc(i,j,bi,bj), uc(i+1,j,bi,bj),
-     &             ' , vc=', vc(i,j,bi,bj), vc(i,j+1,bi,bj)
-            WRITE(6,'(2(A,1P2E14.6))')
-     &       'ICE_ADV: heff_b,a=', HEFF(i,j,2,bi,bj),HEFF(i,j,1,bi,bj)
-            WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: mFx=', gFld(i,j)
-           ENDIF
-#endif
-C jmc: comment out the old version:
-c          IF ( HEFF(i,j,1,bi,bj) .GT. 0. _d 0 ) THEN
-c            recip_heff(i,j)  = 1. _d 0/HEFF(i,j,1,bi,bj)
-c          ELSE
-c            recip_heff(i,j)  = 0. _d 0
-c          ENDIF
-C jmc: new version:
-           IF ( HEFF(i,j,1,bi,bj) .GE. minIcHeff ) THEN
-             recip_heff(i,j)  = 1. _d 0/HEFF(i,j,1,bi,bj)
-           ELSE
-             recip_heff(i,j)  = r_minHeff
-           ENDIF
-C jmc: end new version:
-          ENDDO
-         ENDDO
-
-C--   Enthalpy in layer 1
-         extensiveFld = .TRUE.
-C     Compute total enthalphy in cell
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           iceFld(i,j) = Qice1(i,j,bi,bj)*HEFF(i,j,2,bi,bj)
-          ENDDO
-         ENDDO
-         CALL SEAICE_ADVECTION(
-     I        GAD_QICE1, SEAICEadvSchEnth, extensiveFld,
-     I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I        uTrans, vTrans, iceFld, recip_heff,
-     O        gFld, afx, afy,
-     I        bi, bj, myTime, myIter, myThid )
-C     now do the "explicit" time step
-C     and map total enthalpy back to enthalpy per area with
-C     with current effective thickness
-         DO j=1,sNy
-          DO i=1,sNx
-#ifdef ALLOW_DBUG_THSICE
-           IF ( dBug(i,j,bi,bj) ) THEN
-            WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: Qice1_b,a=',
-     &             Qice1(i,j,bi,bj),
-     &        ( iceFld(i,j) + SEAICE_deltaTtherm * gFld(i,j)
-     &          ) * recip_heff(i,j)
-            WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: q1Fx=', gFld(i,j)
-           ENDIF
-#endif
-           Qice1(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
-     &          iceFld(i,j) + SEAICE_deltaTtherm * gFld(i,j)
-     &          ) * recip_heff(i,j)
-          ENDDO
-         ENDDO
-
-C--   Enthalpy in layer 2
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-C     Compute total enthalphy in cell, using old effective thickness
-           iceFld(i,j) = Qice2(i,j,bi,bj)*HEFF(i,j,2,bi,bj)
-          ENDDO
-         ENDDO
-         CALL SEAICE_ADVECTION(
-     I        GAD_QICE2, SEAICEadvSchEnth, .TRUE.,
-     I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I        uTrans, vTrans, iceFld, recip_heff,
-     O        gFld, afx, afy,
-     I        bi, bj, myTime, myIter, myThid )
-C     now do the "explicit" time step
-C     and map total enthalpy back to enthalpy per area with
-C     with current effective thickness
-         DO j=1,sNy
-          DO i=1,sNx
-#ifdef ALLOW_DBUG_THSICE
-           IF ( dBug(i,j,bi,bj) ) THEN
-            WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: Qice2_b,a=',
-     &             Qice2(i,j,bi,bj),
-     &        ( iceFld(i,j) + SEAICE_deltaTtherm * gFld(i,j)
-     &          ) * recip_heff(i,j)
-            WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: q2Fx=', gFld(i,j)
-           ENDIF
-#endif
-           Qice2(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
-     &          iceFld(i,j) + SEAICE_deltaTtherm * gFld(i,j)
-     &          ) * recip_heff(i,j)
-          ENDDO
-         ENDDO
-
-        ENDIF
-#endif /* ALLOW_THSICE */
 
 C--   Fractional area
         DO j=1-Oly,sNy+Oly
@@ -353,7 +215,7 @@ C--   Fractional area
          ENDDO
         ENDDO
         CALL SEAICE_ADVECTION(
-     I       GAD_AREA, SEAICEadvSchArea, .TRUE.,
+     I       GAD_AREA, SEAICEadvSchArea,
      I       uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
      I       uTrans, vTrans, iceFld, recip_heff,
      O       gFld, afx, afy,
@@ -375,98 +237,6 @@ C     now do the "explicit" time step
          ENDDO
         ENDDO
 
-#ifdef ALLOW_THSICE
-        IF ( useThSice ) THEN
-C--   Compute conversion factors using updated area
-c        DO j=1-Oly,sNy+Oly
-c         DO i=1-Olx,sNx+Olx
-         DO j=1,sNy
-          DO i=1,sNx
-#ifdef ALLOW_DBUG_THSICE
-           IF ( dBug(i,j,bi,bj) ) THEN
-            WRITE(6,'(2(A,1P2E14.6))')
-     &       'ICE_ADV: area_b,a=', AREA(i,j,2,bi,bj),AREA(i,j,1,bi,bj)
-            WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: mFx=', gFld(i,j)
-           ENDIF
-#endif
-C jmc: comment out the old version:
-c          IF ( AREA(i,j,1,bi,bj) .GT. 0. _d 0 ) THEN
-c            recip_area(i,j) = 1. _d 0/AREA(i,j,1,bi,bj)
-c          ELSE
-c            recip_area(i,j) = 0. _d 0
-c          ENDIF
-C jmc: new version:
-           IF ( HEFF(i,j,1,bi,bj) .GE. minIcHeff ) THEN
-C-    where there is ice, ensure that fractional Ice Area is > minIcArea & < 1
-            IF ( AREA(i,j,1,bi,bj) .GT. 1. _d 0 ) THEN
-             AREA(i,j,1,bi,bj)= 1. _d 0
-             recip_area(i,j)  = 1. _d 0
-            ELSEIF ( AREA(i,j,1,bi,bj) .LT. minIcArea ) THEN
-             AREA(i,j,1,bi,bj)= minIcArea
-             recip_area(i,j)  = r_minArea
-            ELSE
-             recip_area(i,j)  = 1. _d 0/AREA(i,j,1,bi,bj)
-            ENDIF
-           ELSE
-C-    not enough ice
-             recip_area(i,j)  = r_minArea
-           ENDIF
-C jmc: end new version:
-          ENDDO
-         ENDDO
-
-C--   Effective snow thickness (Volume), from old AREA
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-C     Compute  effective snow thickness
-           iceFld(i,j) = snowHeight(i,j,bi,bj)*AREA(i,j,2,bi,bj)
-c          uTrans(i,j) = afx(i,j)
-c          vTrans(i,j) = afy(i,j)
-          ENDDO
-         ENDDO
-         CALL SEAICE_ADVECTION(
-     I        GAD_SNOW, SEAICEadvSchSnow, .TRUE.,
-     I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I        uTrans, vTrans, iceFld, recip_area,
-     O        gFld, afx, afy,
-     I        bi, bj, myTime, myIter, myThid )
-C     now do the "explicit" time step
-C     and map effective snow thickness back to actual snow thickness
-C     with current area
-         DO j=1,sNy
-          DO i=1,sNx
-           snowHeight(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
-     &          iceFld(i,j) + SEAICE_deltaTtherm * gFld(i,j)
-     &          ) * recip_area(i,j)
-          ENDDO
-         ENDDO
-
-C--   Correct for "disappearing" ice (new effective ice thickness < minIcHeff):
-C      put this small ice volume into the neighbouring grid box with highest HEFF
-C     But this does not work next to the tile edges ! For now, just reset to zero:
-         DO j=1,sNy
-          DO i=1,sNx
-           IF ( HEFF(i,j,1,bi,bj) .LT. minIcHeff ) THEN
-             HEFF(i,j,1,bi,bj) = 0. _d 0
-             Qice1(i,j,bi,bj)  = 0. _d 0
-             Qice2(i,j,bi,bj)  = 0. _d 0
-             AREA(i,j,1,bi,bj) = 0. _d 0
-             snowHeight(i,j,bi,bj)= 0. _d 0
-           ENDIF
-          ENDDO
-         ENDDO
-
-C--   Map HEFF to ice thickness, using the latest area
-         DO j=1,sNy
-          DO i=1,sNx
-           iceHeight(i,j,bi,bj) = HEFF(i,j,1,bi,bj)*recip_area(i,j)
-           iceMask(i,j,bi,bj)   = AREA(i,j,1,bi,bj)
-          ENDDO
-         ENDDO
-
-        ENDIF
-#endif /* ALLOW_THSICE */
-
 C     now do the advection of seaice variable HSNOW in order not to interfere
 C     any of the thsice advection
         IF ( SEAICEadvSnow .AND. .NOT. useThSice ) THEN
@@ -477,7 +247,7 @@ C--   Effective Snow Thickness (Volume)
          ENDDO
         ENDDO
         CALL SEAICE_ADVECTION(
-     I       GAD_SNOW, SEAICEadvSchSnow, .TRUE.,
+     I       GAD_SNOW, SEAICEadvSchSnow,
      I       uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
      I       uTrans, vTrans, iceFld, recip_heff,
      O       gFld, afx, afy,
@@ -542,17 +312,6 @@ C     with LAD=1 (Leapfrog).
          ENDDO
         ENDDO
        ENDIF
-#ifdef ALLOW_THSICE
-       IF ( useThSice ) THEN
-        WRITE(msgBuf,'(2A)') 'S/R SEAICE_ADVDIFF: ',
-     &       'traditional advection/diffusion not yet implemented'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(2A)') '                    ',
-     &       'for ThSice variable Qice1, Qice2, SnowHeight. Sorry!'
-        CALL PRINT_ERROR( msgBuf , myThid)
-          STOP 'ABNORMAL: END: S/R SEAICE_ADVDIFF'
-       ENDIF
-#endif /* ALLOW_THSICE */
 
 C--   end if multiDimAdvection
       ENDIF

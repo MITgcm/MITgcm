@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.40 2007/04/16 22:30:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.41 2007/04/29 22:27:39 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -124,6 +124,9 @@ C solve ice momentum equations and calculate ocean surface stress
       ENDIF
 
 C NOW DO ADVECTION and DIFFUSION
+#ifdef ALLOW_THSICE
+      IF ( .NOT.useThSice ) THEN
+#endif
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
@@ -144,6 +147,9 @@ cphCADJ STORE uice   = comlev1, key = ikey_dynamics
 cphCADJ STORE vice   = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef ALLOW_THSICE
+      ENDIF
+#endif
 
 #ifdef ALLOW_THSICE
       IF ( .NOT.useThSice ) THEN
