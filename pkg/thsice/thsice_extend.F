@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.5 2007/04/16 22:38:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.6 2007/04/29 23:48:44 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -165,26 +165,26 @@ C--   start ice
 
 C-    enthalpy of new ice to form :
         IF ( iceFrac.LE.0. _d 0 ) THEN
-          qicen(1)= -cpwater*Tmlt1
-     &             + cpice *(Tmlt1-Tf) + Lfresh*(1. _d 0-Tmlt1/Tf)
-          qicen(2)= -cpice *Tf + Lfresh
+          qicen(1)= -cpWater*Tmlt1
+     &             + cpIce *(Tmlt1-Tf) + Lfresh*(1. _d 0-Tmlt1/Tf)
+          qicen(2)= -cpIce *Tf + Lfresh
         ENDIF
         qicAv = rhoi*(qicen(1)+qicen(2))*0.5 _d 0
         newIce = esurp*deltaTice/qicAv
 
         IF (icFrac(i,j).EQ.0. _d 0) THEN
-c         IF (newIce.GE.himin*iceMaskmax) THEN
+c         IF (newIce.GE.hIceMin*iceMaskMax) THEN
 C- jmc: above is the original version, but below seems more logical:
-          IF (newIce.GE.himin0*iceMaskmin) THEN
+          IF (newIce.GE.hThinIce*iceMaskMin) THEN
 C-    if there is no ice in grid and enough ice to form:
-            iceThick   = MAX(himin0,newIce/iceMaskmax)
-            newIceFrac = MIN(newIce/himin0,iceMaskmax)
+            iceThick   = MAX(hThinIce,newIce/iceMaskMax)
+            newIceFrac = MIN(newIce/hThinIce,iceMaskMax)
             iceFrac = newIceFrac
             sst=Tf
           ENDIF
         ELSE
 C-    if there is already some ice
-            newIceFrac=MIN(newIce/iceThick,iceMaskmax-icFrac(i,j))
+            newIceFrac=MIN(newIce/iceThick,iceMaskMax-icFrac(i,j))
             iceFrac = icFrac(i,j) + newIceFrac
 C-    spread snow out over ice
             snowThick = snowThick*icFrac(i,j)/iceFrac
@@ -193,7 +193,7 @@ C-    spread snow out over ice
 C-    oceanic fluxes:
         flx2oc(i,j)= iceThick*newIceFrac*qicAv/deltaTice
         frw2oc(i,j)=-(rhoi*iceThick)*newIceFrac/deltaTice
-        fsalt(i,j)= -(rhoi*iceThick*saltice)*newIceFrac/deltaTice
+        fsalt(i,j)= -(rhoi*iceThick*saltIce)*newIceFrac/deltaTice
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_DBUG_THSICE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.13 2007/04/09 17:44:13 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.14 2007/04/29 23:48:44 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -47,18 +47,17 @@ C     iUnit     :: Work variable for IO unit number
 C--   Th-Sea-ICE parameter
       NAMELIST /THSICE_CONST/
      &  rhos, rhoi, rhosw, rhofw,
-     &  cpice, cpwater,
-     &  kice, ksnow,
-     &  transcoef, Lfresh, qsnow,
+     &  cpIce, cpWater,
+     &  kIce, kSnow,
+     &  bMeltCoef, Lfresh, qsnow,
      &  albColdSnow, albWarmSnow, tempSnowAlb,
      &  albOldSnow, hNewSnowAge, snowAgTime,
      &  albIceMax, albIceMin, hAlbIce, hAlbSnow,
-     &  i0, ksolar,
-     &  saltice, S_winton, mu_Tf,
-     &  Tf0kel,
-     &  himin, Terrmax, nitMaxTsf, hiMax, hsMax,
-     &  iceMaskmax, iceMaskmin, himin0,
-     &  frac_energy, hihig
+     &  i0swFrac, ksolar, dhSnowLin,
+     &  saltIce, S_winton, mu_Tf,
+     &  Tf0kel, Terrmax, nitMaxTsf,
+     &  hIceMin, hiMax, hsMax, iceMaskMax, iceMaskMin,
+     &  fracEnMelt, fracEnFreez, hThinIce, hThickIce, hNewIceMax
 
       NAMELIST /THSICE_PARM01/
      &     startIceModel, stepFwd_oceMxL,
@@ -89,11 +88,11 @@ C--   Default values (constants)
       rhoi     = 900. _d 0
       rhosw    = rhoConst
       rhofw    = rhoConstFresh
-      cpice    = 2106. _d 0
-      cpwater  = HeatCapacity_Cp
-      kice     = 2.03 _d 0
-      ksnow    = 0.30 _d 0
-      transcoef=0.006 _d 0
+      cpIce    = 2106. _d 0
+      cpWater  = HeatCapacity_Cp
+      kIce     = 2.03 _d 0
+      kSnow    = 0.30 _d 0
+      bMeltCoef=0.006 _d 0
       Lfresh   = 3.34 _d 5
       qsnow    = Lfresh
       albColdSnow= 0.85 _d 0
@@ -106,22 +105,25 @@ C--   Default values (constants)
       hAlbSnow   = 0.30 _d 0
       hNewSnowAge= 2. _d -3
       snowAgTime = 50. _d 0 * 86400. _d 0
-      i0       = 0.3 _d 0
+      i0swFrac = 0.3 _d 0
       ksolar   = 1.5 _d 0
-      saltice  = 4. _d 0
+      dhSnowLin= 0. _d 0
+      saltIce  = 4. _d 0
       S_winton = 1. _d 0
       mu_Tf    = 0.054 _d 0
       Tf0kel   = celsius2K
-      himin    = 0.01 _d 0
       Terrmax  = 5.0 _d -1
       nitMaxTsf= 20
+      hIceMin    = 1. _d -2
       hiMax      = 10. _d 0
       hsMax      = 10. _d 0
-      iceMaskmax = 1.  _d 0
-      iceMaskmin =  .1 _d 0
-      himin0     = 0.2 _d 0
-      frac_energy=  .4 _d 0
-      hihig      = 2.5 _d 0
+      iceMaskMax =  1. _d 0
+      iceMaskMin = 0.1 _d 0
+      fracEnMelt = 0.4 _d 0
+      fracEnFreez=  0. _d 0
+      hThinIce   = 0.2 _d 0
+      hThickIce  = 2.5 _d 0
+      hNewIceMax = UNSET_RL
 
 C--   Default values (parameters)
       stepFwd_oceMxL  = .FALSE.
@@ -174,6 +176,9 @@ C--   Read parameters from open data file
 
 C--   Close the open data file
       CLOSE(iUnit)
+
+C-    neutral default:
+      IF ( hNewIceMax .EQ. UNSET_RL ) hNewIceMax = hiMax
 
 C     If using the same time step for both icetop temp solver
 C     and ice thickness/growth, use thSIce_deltaT value
@@ -241,18 +246,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       iUnit = standardMessageUnit
 c     CALL MDSFINDUNIT( iUnit, mythid )
 c     OPEN(iUnit,file='thsice_check_params',status='unknown')
-      WRITE(iUnit,*) 'ThSI: rhos    =',rhos
-      WRITE(iUnit,*) 'ThSI: rhoi    =',rhoi
-      WRITE(iUnit,*) 'ThSI: rhosw   =',rhosw
-      WRITE(iUnit,*) 'ThSI: rhofw   =',rhofw
-      WRITE(iUnit,*) 'ThSI: rhoiw   =',rhoiw
-      WRITE(iUnit,*) 'ThSI: cpice   =',cpice
-      WRITE(iUnit,*) 'ThSI: cpwater =',cpwater
-      WRITE(iUnit,*) 'ThSI: kice    =',kice
-      WRITE(iUnit,*) 'ThSI: ksnow   =',ksnow
-      WRITE(iUnit,*) 'ThSI: transcoef=',transcoef
-      WRITE(iUnit,*) 'ThSI: Lfresh  =',Lfresh
-      WRITE(iUnit,*) 'ThSI: qsnow   =',qsnow
+      WRITE(iUnit,*) 'ThSI: rhos      =',rhos
+      WRITE(iUnit,*) 'ThSI: rhoi      =',rhoi
+      WRITE(iUnit,*) 'ThSI: rhosw     =',rhosw
+      WRITE(iUnit,*) 'ThSI: rhofw     =',rhofw
+      WRITE(iUnit,*) 'ThSI: rhoiw     =',rhoiw
+      WRITE(iUnit,*) 'ThSI: cpIce     =',cpIce
+      WRITE(iUnit,*) 'ThSI: cpWater   =',cpWater
+      WRITE(iUnit,*) 'ThSI: kIce      =',kIce
+      WRITE(iUnit,*) 'ThSI: kSnow     =',kSnow
+      WRITE(iUnit,*) 'ThSI: bMeltCoef =',bMeltCoef
+      WRITE(iUnit,*) 'ThSI: Lfresh    =',Lfresh
+      WRITE(iUnit,*) 'ThSI: qsnow     =',qsnow
       WRITE(iUnit,*) 'ThSI: albColdSnow=',albColdSnow
       WRITE(iUnit,*) 'ThSI: albWarmSnow=',albWarmSnow
       WRITE(iUnit,*) 'ThSI: tempSnowAlb=',tempSnowAlb
@@ -263,23 +268,26 @@ c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,*) 'ThSI: albIceMin =',albIceMin
       WRITE(iUnit,*) 'ThSI: hAlbIce   =',hAlbIce
       WRITE(iUnit,*) 'ThSI: hAlbSnow  =',hAlbSnow
-      WRITE(iUnit,*) 'ThSI: i0      =',i0
-      WRITE(iUnit,*) 'ThSI: ksolar  =',ksolar
-      WRITE(iUnit,*) 'ThSI: saltice =',saltice
-      WRITE(iUnit,*) 'ThSI: S_winton=',S_winton
-      WRITE(iUnit,*) 'ThSI: mu_Tf   =',mu_Tf
-      WRITE(iUnit,*) 'ThSI: Tf0kel  =',Tf0kel
-      WRITE(iUnit,*) 'ThSI: Tmlt1   =',Tmlt1
-      WRITE(iUnit,*) 'ThSI: himin   =',himin
-      WRITE(iUnit,*) 'ThSI: Terrmax =',Terrmax
-      WRITE(iUnit,*) 'ThSI: nitMaxTsf=',nitMaxTsf
-      WRITE(iUnit,*) 'ThSI: hiMax   =',hiMax
-      WRITE(iUnit,*) 'ThSI: hsMax   =',hsMax
-      WRITE(iUnit,*) 'ThSI: iceMaskmax=',iceMaskmax
-      WRITE(iUnit,*) 'ThSI: iceMaskmin=',iceMaskmin
-      WRITE(iUnit,*) 'ThSI: himin0  =',himin0
-      WRITE(iUnit,*) 'ThSI: frac_energy',frac_energy
-      WRITE(iUnit,*) 'ThSI: hihig   =',hihig
+      WRITE(iUnit,*) 'ThSI: i0swFrac  =',i0swFrac
+      WRITE(iUnit,*) 'ThSI: ksolar    =',ksolar
+      WRITE(iUnit,*) 'ThSI: dhSnowLin =',dhSnowLin
+      WRITE(iUnit,*) 'ThSI: saltIce   =',saltIce
+      WRITE(iUnit,*) 'ThSI: S_winton  =',S_winton
+      WRITE(iUnit,*) 'ThSI: mu_Tf     =',mu_Tf
+      WRITE(iUnit,*) 'ThSI: Tf0kel    =',Tf0kel
+      WRITE(iUnit,*) 'ThSI: Tmlt1     =',Tmlt1
+      WRITE(iUnit,*) 'ThSI: Terrmax   =',Terrmax
+      WRITE(iUnit,*) 'ThSI: nitMaxTsf =',nitMaxTsf
+      WRITE(iUnit,*) 'ThSI: hIceMin   =',hIceMin
+      WRITE(iUnit,*) 'ThSI: hiMax     =',hiMax
+      WRITE(iUnit,*) 'ThSI: hsMax     =',hsMax
+      WRITE(iUnit,*) 'ThSI: iceMaskMax =',iceMaskMax
+      WRITE(iUnit,*) 'ThSI: iceMaskMin =',iceMaskMin
+      WRITE(iUnit,*) 'ThSI: fracEnMelt =',fracEnMelt
+      WRITE(iUnit,*) 'ThSI: fracEnFreez=',fracEnFreez
+      WRITE(iUnit,*) 'ThSI: hThinIce   =',hThinIce
+      WRITE(iUnit,*) 'ThSI: hThickIce  =',hThickIce
+      WRITE(iUnit,*) 'ThSI: hNewIceMax =',hNewIceMax
       WRITE(iUnit,*) 'ThSI: stressReduction =',stressReduction
       WRITE(iUnit,*) 'ThSI: thSIceAdvScheme =',thSIceAdvScheme
       WRITE(iUnit,*) 'ThSI: thSIce_diffK  =',thSIce_diffK

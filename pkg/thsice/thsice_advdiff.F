@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.5 2007/04/16 22:38:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.6 2007/04/29 23:48:44 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -124,7 +124,7 @@ C     if ice area (=ice fraction * grid-cell area) or ice volume (= effective
 C     thickness * grid-cell area) are too small (i.e.: < areaEpsil,vol_Epsil)
 C     will assume that ice is gone, and will loose mass or energy.
 C     However, if areaEpsil,vol_Epsil are much smaller than minimun ice area
-C     (iceMaskMin*rAc) and minimum ice volume (iceMaskMin*himin*rAc),
+C     (iceMaskMin*rAc) and minimum ice volume (iceMaskMin*hIceMin*rAc),
 C     good chance that this will never happen within 1 time step.
 
       dBugFlag = debugLevel.GE.debLevB
@@ -433,7 +433,7 @@ C      and adjust Ice thickness and snow thickness accordingly
 C-     adjust sea-ice state if not enough ice.
         DO j=1,sNy
          DO i=1,sNx
-          IF ( iceHeight(i,j,bi,bj).LT.himin ) THEN
+          IF ( iceHeight(i,j,bi,bj).LT.hIceMin ) THEN
 C-    Not enough ice, melt the tiny amount of snow & ice:
 C     and return fresh-water, salt & energy to the ocean (flx > 0 = into ocean)
 C- -  Note: using 1rst.Order Upwind, I can get the same results as when
@@ -443,7 +443,7 @@ C- -
             oceFWfx(i,j,bi,bj) =  ( rhos*snowHeight(i,j,bi,bj)
      &                             +rhoi*iceHeight(i,j,bi,bj)
      &                            )*iceMask(i,j,bi,bj)/thSIce_deltaT
-            oceSflx(i,j,bi,bj) =    rhoi*iceHeight(i,j,bi,bj)*saltice
+            oceSflx(i,j,bi,bj) =    rhoi*iceHeight(i,j,bi,bj)*saltIce
      &                             *iceMask(i,j,bi,bj)/thSIce_deltaT
             oceQnet(i,j,bi,bj) = -( rhos*snowHeight(i,j,bi,bj)*qsnow
      &                             +rhoi*iceHeight(i,j,bi,bj)

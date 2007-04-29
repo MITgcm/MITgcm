@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.15 2007/04/17 23:42:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.16 2007/04/29 23:48:44 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -212,9 +212,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           IF ( dBug(i,j,bi,bj) ) WRITE(6,'(A,2I4,2I2)')
      &         'ThSI_SOLVE4T: i,j=',i,j,bi,bj
 #endif
-          IF ( hi.LT.himin ) THEN
-C If hi < himin, melt the ice.
-             STOP 'THSICE_SOLVE4TEMP: should not enter if hi<himin'
+          IF ( hi.LT.hIceMin ) THEN
+C If hi < hIceMin, melt the ice.
+             STOP 'THSICE_SOLVE4TEMP: should not enter if hi<hIceMin'
           ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -224,7 +224,7 @@ C fractional snow cover
       IF (hs .GT. 0. _d 0) frsnow = 1. _d 0
 
 C Compute SW flux absorbed at surface and penetrating to layer 1.
-      fswpen  = netSW * (1. _d 0 - frsnow) * i0
+      fswpen  = netSW * (1. _d 0 - frsnow) * i0swFrac
       fswocn = fswpen * exp(-ksolar*hi)
       fswint = fswpen - fswocn
 
@@ -232,15 +232,15 @@ C Compute SW flux absorbed at surface and penetrating to layer 1.
 
 C Compute conductivity terms at layer interfaces.
 
-      k12 = 4. _d 0*kice*ksnow / (ksnow*hi + 4. _d 0*kice*hs)
-      k32 = 2. _d 0*kice  / hi
+      k12 = 4. _d 0*kIce*kSnow / (kSnow*hi + 4. _d 0*kIce*hs)
+      k32 = 2. _d 0*kIce  / hi
 
 C compute ice temperatures
-      a1 = cpice
-      b1 = qicen(1) + (cpwater-cpice )*Tmlt1 - Lfresh
+      a1 = cpIce
+      b1 = qicen(1) + (cpWater-cpIce )*Tmlt1 - Lfresh
       c1 = Lfresh * Tmlt1
       Tice(1) = 0.5 _d 0 *(-b1 - SQRT(b1*b1-4. _d 0*a1*c1))/a1
-      Tice(2) = (Lfresh-qicen(2)) / cpice
+      Tice(2) = (Lfresh-qicen(2)) / cpIce
 
       IF (Tice(1).GT.0. _d 0 ) THEN
        WRITE (standardMessageUnit,'(A,I12,1PE14.6)') 
@@ -261,14 +261,14 @@ C compute ice temperatures
 
 C Compute coefficients used in quadratic formula.
 
-      a10 = rhoi*cpice *hi/(2. _d 0*dt) +
-     &      k32 * (4. _d 0*dt*k32 + rhoi*cpice *hi)
-     &       / (6. _d 0*dt*k32 + rhoi*cpice *hi)
+      a10 = rhoi*cpIce *hi/(2. _d 0*dt) +
+     &      k32 * (4. _d 0*dt*k32 + rhoi*cpIce *hi)
+     &       / (6. _d 0*dt*k32 + rhoi*cpIce *hi)
       b10 = -hi*
-     &      (rhoi*cpice*Tice(1)+rhoi*Lfresh*Tmlt1/Tice(1))
+     &      (rhoi*cpIce*Tice(1)+rhoi*Lfresh*Tmlt1/Tice(1))
      &       /(2. _d 0*dt)
-     &      - k32 * (4. _d 0*dt*k32*Tf+rhoi*cpice *hi*Tice(2))
-     &       / (6. _d 0*dt*k32 + rhoi*cpice *hi) - fswint
+     &      - k32 * (4. _d 0*dt*k32*Tf+rhoi*cpIce *hi*Tice(2))
+     &       / (6. _d 0*dt*k32 + rhoi*cpIce *hi) - fswint
       c1 = rhoi*Lfresh*hi*Tmlt1 / (2. _d 0*dt)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -410,8 +410,8 @@ CADJ STORE  Tice(:)      = comlev1_thsice_1, key=ikey_1
 CADJ STORE  df0dt        = comlev1_thsice_1, key=ikey_1
 #endif
       Tice(2) = (2. _d 0*dt*k32*(Tice(1)+2. _d 0*Tf)
-     &        + rhoi*cpice *hi*Tice(2))
-     &         /(6. _d 0*dt*k32 + rhoi*cpice *hi)
+     &        + rhoi*cpIce *hi*Tice(2))
+     &         /(6. _d 0*dt*k32 + rhoi*cpIce *hi)
 #ifdef ALLOW_DBUG_THSICE
       IF ( dBug(i,j,bi,bj) ) WRITE(6,1010)
      &  'ThSI_SOLVE4T: k, Ts, Tice=',k,Tsf,Tice
@@ -420,7 +420,7 @@ CADJ STORE  df0dt        = comlev1_thsice_1, key=ikey_1
 C Compute final flux values at surfaces.
 
       fct    = k12*(Tsf-Tice(1))
-      flxCnB(i,j) = 4. _d 0*kice *(Tice(2)-Tf)/hi
+      flxCnB(i,j) = 4. _d 0*kIce *(Tice(2)-Tf)/hi
       flx0   = flx0 + df0dT*dTsf
       IF ( useBlkFlx ) THEN
 C--   needs to update also Evap (Tsf changes) since Latent heat has been updated
@@ -447,12 +447,12 @@ C-    SW flux at sea-ice base left to the ocean
 
 C Compute new enthalpy for each layer.
 
-      qicen(1) = -cpwater*Tmlt1 + cpice *(Tmlt1-Tice(1))
+      qicen(1) = -cpWater*Tmlt1 + cpIce *(Tmlt1-Tice(1))
      &            + Lfresh*(1. _d 0-Tmlt1/Tice(1))
-      qicen(2) = -cpice *Tice(2) + Lfresh
+      qicen(2) = -cpIce *Tice(2) + Lfresh
 
 C Make sure internal ice temperatures do not exceed Tmlt.
-C (This should not happen for reasonable values of i0.)
+C (This should not happen for reasonable values of i0swFrac)
 
       IF (Tice(1) .GE. Tmlt1) THEN
         WRITE (6,'(A,2I4,2I3,1P2E14.6)')

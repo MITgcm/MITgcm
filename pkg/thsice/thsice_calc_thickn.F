@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.7 2007/04/16 22:38:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.8 2007/04/29 23:48:44 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -237,8 +237,8 @@ C......................................................................
 C     !-----------------------------------------------------------------
 C     ! freezing conditions
 C     !-----------------------------------------------------------------
-C if higher than hihig, use all frzmlt energy to grow extra ice
-        IF (hi.GT.hihig .AND. iceFrac.LE.iceMaskmax) THEN
+C if higher than hThickIce, use all frzmlt energy to grow extra ice
+        IF (hi.GT.hThickIce .AND. iceFrac.LE.iceMaskMax) THEN
           Fbot=0. _d 0
         ELSE
           Fbot=frzmlt
@@ -251,7 +251,7 @@ C     !-----------------------------------------------------------------
 C frictional velocity between ice and water
          ustar = SQRT(0.00536 _d 0*oceV2s)
          ustar=max(5. _d -3,ustar)
-         cpchr =cpwater*rhosw*transcoef
+         cpchr =cpWater*rhosw*bMeltCoef
          Fbot = cpchr*(Tf-oceTs)*ustar  ! < 0
          Fbot = max(Fbot,frzmlt)    ! frzmlt < Fbot < 0
          Fbot = min(Fbot,0. _d 0)
@@ -259,7 +259,7 @@ C frictional velocity between ice and water
 
 C  mass of fresh water and salt initially present in ice
       mwater0 = rhos*hs + rhoi*hi
-      msalt0  = rhoi*hi*saltice
+      msalt0  = rhoi*hi*saltIce
 
 #ifdef ALLOW_DBUG_THSICE
       IF (dBug(i,j,bi,bj) ) WRITE(6,1020) 
@@ -270,20 +270,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C Compute energy available for melting/growth.
 
-      IF (hi.LT.himin0) THEN
+      IF (hi.LT.hThinIce) THEN
 C below a certain height, all energy goes to changing ice extent
        frace=1. _d 0
       ELSE
-       frace=frac_energy
+       frace=fracEnMelt
       ENDIF
-      IF (hi.GT.hihig) THEN
+      IF (hi.GT.hThickIce) THEN
 C above certain height only melt from top
        frace=0. _d 0
       ELSE
-       frace=frac_energy
+       frace=fracEnMelt
       ENDIF
 C force this when no ice fractionation
-      IF (frac_energy.EQ.0. _d 0) frace=0. _d 0
+      IF (fracEnMelt.EQ.0. _d 0) frace=0. _d 0
 
 c     IF (Tsf .EQ. 0. _d 0 .AND. sHeating.GT.0. _d 0) THEN
       IF ( sHeating.GT.0. _d 0 ) THEN
@@ -388,7 +388,7 @@ C Bottom melt/growth.
 
       IF (ebot .LT. 0. _d 0) THEN
 C Compute enthalpy of new ice growing at bottom surface.
-         qbot =  -cpice *Tf + Lfresh
+         qbot =  -cpIce *Tf + Lfresh
          dhi = -ebot / (qbot * rhoi)
          ebot = 0. _d 0
 cph         k = nlyr
@@ -460,8 +460,8 @@ C Compute new total ice thickness.
      &  'ThSI_CALC_TH:   etop, ebot, hi, hs =', etop, ebot, hi, hs
 #endif
 
-C If hi < himin, melt the ice.
-      IF ( hi.LT.himin .AND. (hi+hs).GT.0. _d 0 ) THEN
+C If hi < hIceMin, melt the ice.
+      IF ( hi.LT.hIceMin .AND. (hi+hs).GT.0. _d 0 ) THEN
          esurp = esurp - rhos*qsnow*hs
          DO k = 1, nlyr
             esurp = esurp - rhoi*qicen(k)*hnew(k)
@@ -575,8 +575,8 @@ C Compute new total ice thickness.
          hi = hi + hnew(k)
        ENDDO
 
-C If hi < himin, melt the ice.
-       IF ( hi.GT.0. _d 0 .AND. hi.LT.himin ) THEN
+C If hi < hIceMin, melt the ice.
+       IF ( hi.GT.0. _d 0 .AND. hi.LT.hIceMin ) THEN
          fresh = fresh + (rhos*hs + rhoi*hi)/dt
          esurp = esurp - rhos*qsnow*hs
          DO k = 1, nlyr
@@ -690,14 +690,14 @@ C   but should be Lvap only for the fraction "evap" that is left to the ocean.
 
 C fresh and salt fluxes
 c     fresh = (mwater0 - (rhos*(hs) + rhoi*(hi)))/dt-evap
-c     fsalt = (msalt0 - rhoi*hi*saltice)/35. _d 0/dt  ! for same units as fresh
+c     fsalt = (msalt0 - rhoi*hi*saltIce)/35. _d 0/dt  ! for same units as fresh
 C note (jmc): fresh is computed from a sea-ice mass budget that already
 C    contains, at this point, snow & evaporation (of snow & ice)
 C    but are not meant to be part of ice/ocean fresh-water flux.
 C  fix: a) like below or b) by making the budget before snow/evap is added
 c     fresh = (mwater0 - (rhos*(hs) + rhoi*(hi)))/dt
 c    &      + snow(i,j,bi,bj)*rhos - frwAtm
-      fsalt(i,j) = (msalt0 - rhoi*hi*saltice)/dt
+      fsalt(i,j) = (msalt0 - rhoi*hi*saltIce)/dt
 
 #ifdef ALLOW_DBUG_THSICE
       IF (dBug(i,j,bi,bj) ) THEN
@@ -721,7 +721,7 @@ C calculate extent changes
          rs =  rhos * qsnow
          rqh = rq * hi + rs * hs
          freshe=(rhos*hs+rhoi*hi)/dt
-         salte=(rhoi*hi*saltice)/dt
+         salte=(rhoi*hi*saltIce)/dt
          IF (extend .LT. rqh) THEN
            iceFrac=(1. _d 0-extend/rqh)*iceFrac
            fresh=fresh+extend/rqh*freshe

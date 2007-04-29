@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.10 2007/04/16 22:38:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.11 2007/04/29 23:48:44 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -15,83 +15,93 @@ C----------------------------------------------------------------------------
 
 C--   COMMON / THSICE_PHYSPAR_R / physical (real) parameter
 C.. densities
-C     rhos      ::   density of snow (kg/m^3)
-C     rhoi      ::   density of ice (kg/m^3)
-C     rhosw     ::   density of seawater (kg/m^3)
-C     rhofw     ::   density of fresh water (kg/m^3)
-C     rhoiw     ::   ocean-ice density difference (kg/m^3)
+C     rhos      ::   density of snow [kg/m^3]
+C     rhoi      ::   density of ice [kg/m^3]
+C     rhosw     ::   density of seawater [kg/m^3]
+C     rhofw     ::   density of fresh water [kg/m^3]
+C     rhoiw     ::   ocean-ice density difference [kg/m^3]
 C.. specific heats
-C     cpice     ::   specific heat of fresh ice (J/kg/K)
-C     cpwater   ::   specific heat of water (J/kg/K)
+C     cpIce     ::   specific heat of fresh ice [J/kg/K]
+C     cpWater   ::   specific heat of water [J/kg/K]
 C .. thermal conductivity. QQ check units
-C     kice      ::   thermal conductivity of pure ice (W/m/K)
-C     ksnow     ::   thermal conductivity of snow (W/m/K)
+C     kIce      ::   thermal conductivity of pure ice [W/m/K]
+C     kSnow     ::   thermal conductivity of snow [W/m/K]
 C .. heat transfer coefficient
-C     transcoef ::   transfer coef between ice and water (unitless)
+C     bMeltCoef ::   base-melting heat transfer coefficient
+C                    (between ice & water) [no unit]
 C .. latent heat
-C     Lfresh    ::   latent heat of melting of pure ice (J/kg)
+C     Lfresh    ::   latent heat of melting of pure ice [J/kg]
 C .. Enthalpy
-C     qsnow     ::   snow enthalpy (J/kg)
+C     qsnow     ::   snow enthalpy [J/kg]
 C .. Albedo
 C     albColdSnow :: albedo of cold (=dry) new snow (Tsfc < tempSnowAlb)
 C     albWarmSnow :: albedo of warm (=wet) new snow (Tsfc = 0)
-C     tempSnowAlb :: temperature transition from ColdSnow to WarmSnow Alb. (oC)
+C     tempSnowAlb :: temperature transition from ColdSnow to WarmSnow Alb. [oC]
 C     albOldSnow  :: albedo of old snow (snowAge > 35.d)
 C     albIceMax   :: max albedo of bare ice (thick ice)
 C     albIceMin   :: minimum ice albedo (very thin ice)
 C     hAlbIce     :: ice thickness for albedo transition: thin/thick ice albedo
 C     hAlbSnow    :: snow thickness for albedo transition: snow/ice albedo
 C     hNewSnowAge :: new snow thickness that refresh the snow-age (by 1/e)
-C     snowAgTime  :: snow aging time scale (s)
+C     snowAgTime  :: snow aging time scale [s]
 C .. Solar parameters
-C     i0        ::   fraction of penetrating solar rad
-C     ksolar    ::   bulk solar abs coeff of sea ice (m-1)
+C     i0swFrac  ::   fraction of penetrating solar rad
+C     ksolar    ::   bulk solar abs coeff of sea ice [m^-1]
+C     dhSnowLin ::   half slope of linear distribution of snow thickness within
+C                    the grid-cell (from hSnow-dhSnow to hSnow+dhSnow, if full
+C                    ice & snow cover) [m] ; (only used for SW radiation).
 C .. Salinity
-C     saltice   ::   salinity of ice (o/oo)
-C     S_winton  ::   winton salinity of ice (o/oo)
-C     mu_Tf     ::   Tf:brine salinity ratio (C/ppt)
+C     saltIce   ::   salinity of ice [g/kg]
+C     S_winton  ::   Winton salinity of ice [g/kg]
 C .. melting
-C     Tf0kel    ::   Freezing temp of fresh ice in Kelvin = 273.15
-C     Tmlt1     ::    melting temp; depends on S (C)
+C     Tf0kel    ::   Freezing temp of fresh water in Kelvin = 273.15
+C     mu_Tf     ::   linear dependance of melting temperature on Salinity [oC/psu]
+C                     Tf(sea-water) = -mu_Tf * S
+C     Tmlt1     ::   Winton melting temperature: Tmlt1 = -mu_Tf * S_winton
+C     Terrmax   ::   Temperature convergence criteria [oC]
 C .. Min/Max
-C     himin     ::   minimum thickness for ice (m)
-C     Terrmax   ::   temperature convergence precision (C)
-C     hiMax     ::   Maximum thickness for ice  (m)
-C     hsMax     ::   Maximum thickness for snow (m)
+C     hIceMin   ::   Minimum ice  thickness [m]
+C     hiMax     ::   Maximum ice  thickness [m]
+C     hsMax     ::   Maximum snow thickness [m]
 C .. for fractional ice
-C     iceMaskmax :: maximum Ice fraction (=1 for no fractional ice)
-C     iceMaskmin :: mimimum Ice fraction (=1 for no fractional ice)
-C     himin0     :: minimum ice height   (=himin for no fractional ice)
-C     frac_energy:: fraction of energy going to melting (=0 for no fract. ice)
-C     hihig      :: ice height above which freezing only occurs over open ocean
-C                                        (=large for no fractional ice)
+C     iceMaskMax  :: maximum Ice fraction (=1 for no fractional ice)
+C     iceMaskMin  :: mimimum Ice fraction (=1 for no fractional ice)
+C     fracEnFreez :: fraction of energy going to lateral freezing (vs height increase)
+C     fracEnMelt  :: fraction of energy going to lateral melting (vs height decrease)
+C                                         (=0 for no fract. ice)
+C     hThinIce    :: ice height above which fracEnMelt/Freez are applied [m]
+C                                         (=hIceMin for no fractional ice)
+C     hThickIce   :: ice height below which fracEnMelt/Freez are applied [m]
+C                                         (=large for no fractional ice)
+C     hNewIceMax  :: new ice maximum thickness [m]
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       COMMON / THSICE_PHYSPAR_R /
      &  rhos, rhoi, rhosw, rhofw, rhoiw,
-     &  cpice, cpwater,
-     &  kice, ksnow,
-     &  transcoef, Lfresh, qsnow,
+     &  cpIce, cpWater,
+     &  kIce, kSnow,
+     &  bMeltCoef, Lfresh, qsnow,
      &  albColdSnow, albWarmSnow, tempSnowAlb,
      &  albOldSnow, hNewSnowAge, snowAgTime,
      &  albIceMax, albIceMin, hAlbIce, hAlbSnow,
-     &  i0, ksolar,
-     &  saltice, S_winton, mu_Tf,
-     &  Tf0kel, Tmlt1,
-     &  himin, Terrmax, hiMax, hsMax,
-     &  iceMaskmax, iceMaskmin, himin0,
-     &  frac_energy, hihig
+     &  i0swFrac, ksolar, dhSnowLin,
+     &  saltIce, S_winton, mu_Tf,
+     &  Tf0kel, Tmlt1, Terrmax,
+     &  hIceMin, hiMax, hsMax,
+     &  iceMaskMax, iceMaskMin,
+     &  fracEnMelt, fracEnFreez,
+     &  hThinIce, hThickIce, hNewIceMax
 
       _RL  rhos
       _RL  rhoi
       _RL  rhosw
       _RL  rhofw
       _RL  rhoiw
-      _RL  cpice
-      _RL  cpwater
-      _RL  kice
-      _RL  ksnow
-      _RL  transcoef
+      _RL  cpIce
+      _RL  cpWater
+      _RL  kIce
+      _RL  kSnow
+      _RL  bMeltCoef
       _RL  Lfresh
       _RL  qsnow
       _RL  albColdSnow
@@ -104,22 +114,25 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _RL  albIceMin
       _RL  hAlbIce
       _RL  hAlbSnow
-      _RL  i0
+      _RL  i0swFrac
       _RL  ksolar
-      _RL  saltice
+      _RL  dhSnowLin
+      _RL  saltIce
       _RL  S_winton
       _RL  mu_Tf
       _RL  Tf0kel
       _RL  Tmlt1
-      _RL  himin
       _RL  Terrmax
+      _RL  hIceMin
       _RL  hiMax
       _RL  hsMax
-      _RL iceMaskmax
-      _RL iceMaskmin
-      _RL himin0
-      _RL frac_energy
-      _RL hihig
+      _RL iceMaskMax
+      _RL iceMaskMin
+      _RL fracEnMelt
+      _RL fracEnFreez
+      _RL hThinIce
+      _RL hThickIce
+      _RL hNewIceMax
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
