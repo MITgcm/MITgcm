@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.8 2007/04/29 23:48:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.9 2007/04/30 15:50:01 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -37,6 +37,22 @@ Cc****subroutine thermo_winton(n,fice,fsnow,dqice,dTsfc)
 C.. Compute temperature change using Winton model with 2 ice layers, of
 C.. which only the top layer has a variable heat capacity.
 
+C---------------------------------
+C  parameters that control the partitioning between lateral (ice area) and
+C    vertical (ice thickness) ice volume changes.
+C a) surface melting and bottom melting:
+C  frace is the fraction of available heat that is used for
+C  lateral melting (and 1-frace reduces the thickness ) when
+C   hi < hThinIce            : frace=1 (lateral melting only)
+C   hThinIce < hi < hThickIce: frace=fracEnMelt (runtime parameter) ;
+C   hi > hThickIce           : frace=0 (thinning only)
+C b) ocean freezing (and ice forming):
+C  if hi > hThickIce : use all freezing potential to grow ice laterally (up
+C         to areaMax), and reserve conductive heat flux to increase thickness.
+C  if hi < hThickIce : below the sea-ice covered ocean, use the full freezing
+C                      potential (x iceFraction) to grow ice vertically;
+C              and over open ocean, form new ice (@ the same thickness)
+C---------------------------------
 C     !USES:
       IMPLICIT NONE
 
@@ -262,7 +278,7 @@ C  mass of fresh water and salt initially present in ice
       msalt0  = rhoi*hi*saltIce
 
 #ifdef ALLOW_DBUG_THSICE
-      IF (dBug(i,j,bi,bj) ) WRITE(6,1020) 
+      IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
      &  'ThSI_CALC_TH: evpAtm, frzmlt, Fbot =', frwAtm(i,j),frzmlt,Fbot
 #endif
 
@@ -314,7 +330,7 @@ C- original formulation(above): Loose energy when flxCnB < Fbot < 0
          ebote = 0. _d 0
       ENDIF
 #ifdef ALLOW_DBUG_THSICE
-      IF (dBug(i,j,bi,bj) ) WRITE(6,1020) 
+      IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
      &  'ThSI_CALC_TH: etop,etope,ebot,ebote=', etop,etope,ebot,ebote
 #endif
 
@@ -396,7 +412,7 @@ cph         k = nlyr
 CADJ STORE hnew(:) = comlev1_thsice_1, key=ikey_1
 CADJ STORE qicen(:) = comlev1_thsice_1, key=ikey_1
 #endif
-         qicen(nlyr) = (hnew(nlyr)*qicen(nlyr)+dhi*qbot) / 
+         qicen(nlyr) = (hnew(nlyr)*qicen(nlyr)+dhi*qbot) /
      &        (hnew(nlyr)+dhi)
          hnew(nlyr) = hnew(nlyr) + dhi
       ELSE
@@ -456,7 +472,7 @@ C Compute new total ice thickness.
          hi = hi + hnew(k)
       ENDDO
 #ifdef ALLOW_DBUG_THSICE
-      IF (dBug(i,j,bi,bj) ) WRITE(6,1020) 
+      IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
      &  'ThSI_CALC_TH:   etop, ebot, hi, hs =', etop, ebot, hi, hs
 #endif
 
@@ -474,7 +490,7 @@ C If hi < hIceMin, melt the ice.
            qicen(k) = 0. _d 0
          ENDDO
 #ifdef ALLOW_DBUG_THSICE
-        IF (dBug(i,j,bi,bj) ) WRITE(6,1020) 
+        IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
      &    'ThSI_CALC_TH: -1 : esurp=',esurp
 #endif
       ENDIF
@@ -590,7 +606,7 @@ C If hi < hIceMin, melt the ice.
            qicen(k) = 0. _d 0
          ENDDO
 #ifdef ALLOW_DBUG_THSICE
-         IF (dBug(i,j,bi,bj) ) WRITE(6,1020) 
+         IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
      &    'ThSI_CALC_TH: -2 : esurp,fresh=', esurp, fresh
 #endif
        ENDIF
@@ -651,7 +667,7 @@ C Compute new total ice thickness.
        ENDDO
 
 #ifdef ALLOW_DBUG_THSICE
-       IF (dBug(i,j,bi,bj) ) WRITE(6,1020) 
+       IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
      &  'ThSI_CALC_TH: b-Winton: hnew, qice =', hnew, qicen
 #endif
 
@@ -677,7 +693,7 @@ C-  Compute surplus energy left over from melting.
 C.. heat fluxes left over for ocean
        qleft = qleft + (Fbot+(esurp+etop+ebot)/dt)
 #ifdef ALLOW_DBUG_THSICE
-       IF (dBug(i,j,bi,bj) ) WRITE(6,1020) 
+       IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
      &  'ThSI_CALC_TH: [esurp,etop+ebot]/dt =',esurp/dt,etop/dt,ebot/dt
 #endif
 
@@ -751,7 +767,7 @@ C    part which has already been accounted for (Fbot):
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_DBUG_THSICE
-       IF (dBug(i,j,bi,bj) ) WRITE(6,1020) 
+       IF (dBug(i,j,bi,bj) ) WRITE(6,1020)
      &  'ThSI_CALC_TH: iceFrac,flx2oc,fsalt,frw2oc=',
      &   iceFrac, qleft, fsalt(i,j), fresh
 #endif
