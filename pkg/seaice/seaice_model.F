@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.42 2007/04/30 00:15:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.43 2007/04/30 22:48:52 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -131,15 +131,22 @@ C solve ice momentum equations and calculate ocean surface stress
 #endif /* SEAICE_CGRID */
       ENDIF
 
-C NOW DO ADVECTION and DIFFUSION
 #ifdef ALLOW_THSICE
       IF ( .NOT.useThSice ) THEN
 #endif
+C--   Only call advection of heff, area, and snow and 
+C--   growth for the generic 0-layer thermodynamics of seaice
+C--   if useThSice=.false., otherwise the 3-layer Winton thermodynamics
+C--   (called from DO_OCEANIC_PHYSICS) take care of this
+
+C NOW DO ADVECTION and DIFFUSION
+      IF ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow ) THEN
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
+       IF ( debugLevel .GE. debLevB )
+     &      CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
 #endif
-      CALL SEAICE_ADVDIFF( myTime, myIter, myThid )
+       CALL SEAICE_ADVDIFF( myTime, myIter, myThid )
+      ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heffm  = comlev1, key = ikey_dynamics
 cph-test(
@@ -159,42 +166,42 @@ cphCADJ STORE vice   = comlev1, key = ikey_dynamics
       ENDIF
 #endif
 
-#ifdef ALLOW_THSICE
-      IF ( .NOT.useThSice ) THEN
-C--   Only call growth for the generic 0-layer thermodynamics of seaice
-C--   If useThSice=.true., then the 3-layer Winton thermodynamics are
-C--   called from DO_OCEANIC_PHYSICS
-#endif /* ALLOW_THSICE */
-C     NOW DO GROWTH
-C     MUST CALL GROWTH ONLY AFTER CALLING ADVECTION
+C     thermodynamics growth
+C     must call growth after calling advection 
+C     because of ugly time level business
+       IF ( usePW79thermodynamics ) THEN
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL( 'SEAICE_GROWTH', myThid )
+        IF ( debugLevel .GE. debLevB )
+     &       CALL DEBUG_CALL( 'SEAICE_GROWTH', myThid )
 #endif
-       CALL SEAICE_GROWTH( myTime, myIter, myThid )
-#ifdef ALLOW_THSICE
-      ENDIF
-#endif /* ALLOW_THSICE */
+        CALL SEAICE_GROWTH( myTime, myIter, myThid )
+       ENDIF
 
 C--   Update overlap regions for a bunch of stuff
-      _BARRIER
-      CALL EXCH_3D_RL( HEFF, 3, myThid )
-      CALL EXCH_3D_RL( AREA, 3, myThid )
-      _EXCH_XY_R8( HSNOW,  myThid )
-      CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
-      _EXCH_XY_R4(EmPmR, myThid )
-      _EXCH_XY_R4(Qnet , myThid )
+       _BARRIER
+       CALL EXCH_3D_RL( HEFF, 3, myThid )
+       CALL EXCH_3D_RL( AREA, 3, myThid )
+       _EXCH_XY_R8( HSNOW,  myThid )
+       _EXCH_XY_R4(EmPmR, myThid )
+       _EXCH_XY_R4(Qnet , myThid )
 #ifdef SHORTWAVE_HEATING
-      _EXCH_XY_R4(Qsw  , myThid )
+       _EXCH_XY_R4(Qsw  , myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
-      IF ( useRealFreshWaterFlux .AND. .NOT.useThSIce )
-     &   _EXCH_XY_RS( sIceLoad, myThid )
+       IF ( useRealFreshWaterFlux ) 
+     &      _EXCH_XY_RS( sIceLoad, myThid )
 #endif
+
+#ifdef ALLOW_THSICE
+C     endif .not.useThSice
+      ENDIF
+#endif /* ALLOW_THSICE */
+CML   This has already been done in seaice_ocean_stress/ostres, so why repeat?
+CML   CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )
-     &   CALL DEBUG_LEAVE( 'SEAICE_MODEL', myThid )
+     &     CALL DEBUG_LEAVE( 'SEAICE_MODEL', myThid )
 #endif
 
       RETURN

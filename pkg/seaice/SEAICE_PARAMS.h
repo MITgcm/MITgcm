@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.34 2007/04/22 19:56:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.35 2007/04/30 22:48:52 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -20,11 +20,17 @@ C                          Applied only if SEAICEuseEVP=.TRUE.
 C     SEAICEuseFluxForm :: use flux form for advection and diffusion
 C                          of seaice
 C     SEAICEuseFlooding :: turn on scheme to convert submerged snow into ice
+C     SEAICEadvHeff     :: turn on advection of effective thickness 
+C                          (default = .true.)
+C     SEAICEadvArea     :: turn on advection of fraction area
+C                          (default = .true.)
 C     SEAICEadvSnow     :: turn on advection of snow (does not work with
 C                          non-default Leap-frog scheme for advection)
 C     useHB87stressCoupling :: use an intergral over ice and ocean surface
 C                          layer to define surface stresses on ocean
 C                          following Hibler and Bryan (1987, JPO)
+C     usePW79thermodynamics :: use "0-layer" thermodynamics as described in
+C                       Parkinson and Washington (1979) and Hibler (1979)
 C     SEAICE_no_slip    :: apply no slip boundary conditions to seaice velocity
 C     SEAICE_clipVelocities :: clip velocities to +/- 40cm/s
 C     SEAICE_maskRHS    :: mask the RHS of the solver where there is no ice
@@ -36,16 +42,20 @@ C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
-     &     SEAICEuseEVPpickup, SEAICEuseFlooding, SEAICEadvSnow, 
-     &     SEAICEuseFluxForm, useHB87stressCoupling, SEAICE_no_slip,
-     &     SEAICE_clipVelocities, SEAICE_maskRHS,
+     &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
+     &     SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow, 
+     &     SEAICEuseFluxForm, useHB87stressCoupling,
+     &     usePW79thermodynamics,
+     &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
-     &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP, 
-     &     SEAICEuseEVPpickup, SEAICEuseFlooding, SEAICEadvSnow,
-     &     SEAICEuseFluxForm, useHB87stressCoupling, SEAICE_no_slip,
-     &     SEAICE_clipVelocities, SEAICE_maskRHS,
+     &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
+     &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
+     &     SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow, 
+     &     SEAICEuseFluxForm, useHB87stressCoupling,
+     &     usePW79thermodynamics,
+     &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
 
@@ -57,21 +67,18 @@ C     SEAICEadvScheme  - sets the advection scheme for thickness and area
 C     SEAICEadvSchArea - sets the advection scheme for area
 C     SEAICEadvSchHeff - sets the advection scheme for effective thickness 
 C                        (=volume) and snow thickness if available
-C     SEAICEadvSchEnth - sets the advection scheme for sea-ice enthalphy
 C     SEAICEadvSchSnow - sets the advection scheme for snow on sea-ice
 C
       INTEGER LAD, IMAX_TICE
       INTEGER SEAICEadvScheme
       INTEGER SEAICEadvSchArea
       INTEGER SEAICEadvSchHeff
-      INTEGER SEAICEadvSchEnth
       INTEGER SEAICEadvSchSnow
       COMMON /SEAICE_PARM_I/ 
      &     LAD, IMAX_TICE,
      &     SEAICEadvScheme,
      &     SEAICEadvSchArea,
      &     SEAICEadvSchHeff,
-     &     SEAICEadvSchEnth,
      &     SEAICEadvSchSnow
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.11 2007/04/22 19:56:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.12 2007/04/30 22:48:52 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -17,10 +17,6 @@ C     !USES:
       IMPLICIT NONE
 C     == global variables ==
 #include "EEPARAMS.h"
-#ifdef ALLOW_THSICE
-#include "SIZE.h"
-#include "PARAMS.h"
-#endif /* ALLOW_THSICE */
 #include "SEAICE_PARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -81,6 +77,12 @@ C     == end of interface ==
       CALL WRITE_0D_L ( useHB87stressCoupling, INDEX_NONE,
      & 'useHB87stressCoupling  =', ' /* altern. ice-ocean stress */')
 #endif /* SEAICE_CGRID */
+      CALL WRITE_0D_L ( usePW79thermodynamics, INDEX_NONE,
+     & 'usePW79thermodynamics  =', ' /* default 0-layer TD */')
+      CALL WRITE_0D_L ( SEAICEadvHeff, INDEX_NONE,
+     & 'SEAICEadvHeff =', ' /* advect effective ice thickness */')
+      CALL WRITE_0D_L ( SEAICEadvArea, INDEX_NONE,
+     & 'SEAICEadvArea =', ' /* advect fractional ice area */')
       CALL WRITE_0D_L ( SEAICEadvSnow, INDEX_NONE,
      & 'SEAICEadvSnow =', ' /* advect snow layer together with ice */')
       CALL WRITE_0D_L ( SEAICEuseFlooding, INDEX_NONE,
@@ -94,18 +96,15 @@ C     == end of interface ==
       IF ( SEAICEadvScheme .EQ. 2 )
      & CALL WRITE_0D_L ( SEAICEuseFluxForm,   INDEX_NONE,
      & 'SEAICEuseFluxForm =', ' /* advection in FV flux form */')
-#ifdef ALLOW_THSICE
-      IF ( useThSice ) THEN
-       CALL WRITE_0D_I ( SEAICEadvSchArea,   INDEX_NONE,
+      IF ( SEAICEadvArea )
+     &CALL WRITE_0D_I ( SEAICEadvSchArea,   INDEX_NONE,
      & 'SEAICEadvSchArea   =', ' /* advection scheme for area */')
-       CALL WRITE_0D_I ( SEAICEadvSchHeff,   INDEX_NONE,
+      IF ( SEAICEadvHeff )
+     &CALL WRITE_0D_I ( SEAICEadvSchHeff,   INDEX_NONE,
      & 'SEAICEadvSchHeff   =', ' /* advection scheme for thickness */')
-       CALL WRITE_0D_I ( SEAICEadvSchEnth,   INDEX_NONE,
-     & 'SEAICEadvSchEnth   =', ' /* advection scheme for enthalphy */')
-       CALL WRITE_0D_I ( SEAICEadvSchSnow,   INDEX_NONE,
+      IF ( SEAICEadvSnow )
+     &CALL WRITE_0D_I ( SEAICEadvSchSnow,   INDEX_NONE,
      & 'SEAICEadvSchSnow   =', ' /* advection scheme for snow */')
-      ENDIF
-#endif
       CALL WRITE_0D_R8( SEAICE_deltaTtherm,INDEX_NONE,
      & 'SEAICE_deltaTtherm=', ' /* thermodynamic timestep */')
       CALL WRITE_0D_R8( SEAICE_deltaTdyn  ,INDEX_NONE,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.16 2007/04/29 22:27:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.17 2007/04/30 22:48:52 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -180,94 +180,96 @@ C-    Calculate "volume transports" through tracer cell faces.
         ENDDO
 
 C--   Effective Thickness (Volume)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          iceFld(i,j) = HEFF(i,j,1,bi,bj)
+        IF ( SEAICEadvHeff ) THEN
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           iceFld(i,j) = HEFF(i,j,1,bi,bj)
+          ENDDO
          ENDDO
-        ENDDO
-        CALL SEAICE_ADVECTION(
-     I       GAD_HEFF, SEAICEadvSchHeff,
-     I       uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I       uTrans, vTrans, iceFld, recip_heff,
-     O       gFld, afx, afy,
-     I       bi, bj, myTime, myIter, myThid )
-        IF ( diff1 .GT. 0. _d 0 ) THEN
+         CALL SEAICE_ADVECTION(
+     I        GAD_HEFF, SEAICEadvSchHeff,
+     I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
+     I        uTrans, vTrans, iceFld, recip_heff,
+     O        gFld, afx, afy,
+     I        bi, bj, myTime, myIter, myThid )
+         IF ( diff1 .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
-     I       GAD_HEFF,
-     I       HEFF(1-OLx,1-OLy,1,bi,bj), HEFFM, xA, yA,
-     U       gFld,
-     I       bi, bj, myTime, myIter, myThid )
-        ENDIF
+     I         GAD_HEFF,
+     I         HEFF(1-OLx,1-OLy,1,bi,bj), HEFFM, xA, yA,
+     U         gFld,
+     I         bi, bj, myTime, myIter, myThid )
+         ENDIF
 C     now do the "explicit" time step
-        DO j=1,sNy
-         DO i=1,sNx
-          HEFF(i,j,1,bi,bj) = HEFFM(i,j,bi,bj) * (
-     &         HEFF(i,j,1,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
-     &         )
+         DO j=1,sNy
+          DO i=1,sNx
+           HEFF(i,j,1,bi,bj) = HEFFM(i,j,bi,bj) * (
+     &          HEFF(i,j,1,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
+     &          )
+          ENDDO
          ENDDO
-        ENDDO
+        ENDIF
 
 C--   Fractional area
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          iceFld(i,j) = AREA(i,j,1,bi,bj)
+        IF ( SEAICEadvArea ) THEN
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           iceFld(i,j) = AREA(i,j,1,bi,bj)
+          ENDDO
          ENDDO
-        ENDDO
-        CALL SEAICE_ADVECTION(
-     I       GAD_AREA, SEAICEadvSchArea,
-     I       uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I       uTrans, vTrans, iceFld, recip_heff,
-     O       gFld, afx, afy,
-     I       bi, bj, myTime, myIter, myThid )
-        IF ( diff1 .GT. 0. _d 0 ) THEN
+         CALL SEAICE_ADVECTION(
+     I        GAD_AREA, SEAICEadvSchArea,
+     I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
+     I        uTrans, vTrans, iceFld, recip_heff,
+     O        gFld, afx, afy,
+     I        bi, bj, myTime, myIter, myThid )
+         IF ( diff1 .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
-     I       GAD_AREA,
-     I       AREA(1-OLx,1-OLy,1,bi,bj), HEFFM, xA, yA,
-     U       gFld,
-     I       bi, bj, myTime, myIter, myThid )
-        ENDIF
+     I         GAD_AREA,
+     I         AREA(1-OLx,1-OLy,1,bi,bj), HEFFM, xA, yA,
+     U         gFld,
+     I         bi, bj, myTime, myIter, myThid )
+         ENDIF
 C     now do the "explicit" time step
-        DO j=1,sNy
-         DO i=1,sNx
-          AREA(i,j,1,bi,bj) = HEFFM(i,j,bi,bj) * (
-     &         AREA(i,j,1,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
-     &         )
+         DO j=1,sNy
+          DO i=1,sNx
+           AREA(i,j,1,bi,bj) = HEFFM(i,j,bi,bj) * (
+     &          AREA(i,j,1,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
+     &          )
+          ENDDO
          ENDDO
-        ENDDO
+        ENDIF
 
-C     now do the advection of seaice variable HSNOW in order not to interfere
-C     any of the thsice advection
-        IF ( SEAICEadvSnow .AND. .NOT. useThSice ) THEN
 C--   Effective Snow Thickness (Volume)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          iceFld(i,j) = HSNOW(i,j,bi,bj)
+        IF ( SEAICEadvSnow ) THEN
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           iceFld(i,j) = HSNOW(i,j,bi,bj)
+          ENDDO
          ENDDO
-        ENDDO
-        CALL SEAICE_ADVECTION(
-     I       GAD_SNOW, SEAICEadvSchSnow,
-     I       uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I       uTrans, vTrans, iceFld, recip_heff,
-     O       gFld, afx, afy,
-     I       bi, bj, myTime, myIter, myThid )
-        IF ( diff1 .GT. 0. _d 0 ) THEN
-C-    Add tendency due to diffusion
+         CALL SEAICE_ADVECTION(
+     I        GAD_SNOW, SEAICEadvSchSnow,
+     I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
+     I        uTrans, vTrans, iceFld, recip_heff,
+     O        gFld, afx, afy,
+     I        bi, bj, myTime, myIter, myThid )
+         IF ( diff1 .GT. 0. _d 0 ) THEN
+C--   Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
-     I       GAD_SNOW,
-     I       HSNOW(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
-     U       gFld,
-     I       bi, bj, myTime, myIter, myThid )
-        ENDIF
+     I         GAD_SNOW,
+     I         HSNOW(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
+     U         gFld,
+     I         bi, bj, myTime, myIter, myThid )
+         ENDIF
 C     now do the "explicit" time step
-        DO j=1,sNy
-         DO i=1,sNx
-          HSNOW(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
-     &         HSNOW(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
-     &         )
+         DO j=1,sNy
+          DO i=1,sNx
+           HSNOW(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
+     &          HSNOW(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
+     &          )
+          ENDDO
          ENDDO
-        ENDDO
         ENDIF
 C---   end bi,bj loops
        ENDDO
@@ -284,9 +286,9 @@ CADJ STORE uc   = comlev1, key = ikey_dynamics
 CADJ STORE vc   = comlev1, key = ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-       CALL ADVECT( uc, vc, HEFF, HEFFM, myThid )
-       CALL ADVECT( uc, vc, AREA, HEFFM, myThid )
-       IF ( SEAICEadvSnow .AND. .NOT. useThSice ) THEN
+       IF ( SEAICEadvHEff ) CALL ADVECT( uc, vc, HEFF, HEFFM, myThid )
+       IF ( SEAICEadvArea ) CALL ADVECT( uc, vc, AREA, HEFFM, myThid )
+       IF ( SEAICEadvSnow ) THEN
 C     another fudge: copy 2D field HSNOW to 3D field fld3d to be able to
 C     use ADVECT. Works only with LAD=2 (Backward Euler scheme) and NOT
 C     with LAD=1 (Leapfrog).

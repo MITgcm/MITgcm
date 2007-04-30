@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.45 2007/04/24 21:04:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.46 2007/04/30 22:48:52 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,10 +42,11 @@ C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEwriteState, SEAICEuseDYNAMICS,
      & SEAICEuseEVPpickup, SEAICEuseFluxForm,
-     & useHB87stressCoupling, SEAICEuseFlooding, SEAICEadvSnow,
+     & useHB87stressCoupling, SEAICEuseFlooding, usePW79thermodynamics,
+     & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow,
      & SEAICE_clipVelocities, SEAICE_maskRHS, SEAICE_no_slip,
      & LAD, IMAX_TICE, SEAICEadvScheme, SEAICEadvSchArea, 
-     & SEAICEadvSchHeff, SEAICEadvSchEnth, SEAICEadvSchSnow,
+     & SEAICEadvSchHeff, SEAICEadvSchSnow,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_deltaTevp, SEAICE_elasticParm,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq, 
@@ -108,7 +109,11 @@ C--   set default sea ice parameters
       SEAICEuseEVPpickup = .TRUE.
       SEAICEuseFluxForm  = .FALSE.
       useHB87stressCoupling = .FALSE.
+      usePW79thermodynamics = .TRUE.
+      SEAICEadvHeff      = .TRUE.    
+      SEAICEadvArea      = .TRUE.
       SEAICEadvSnow      = .FALSE.    
+CML      SEAICEadvSnow      = .TRUE.
       SEAICEuseFlooding  = .FALSE.
       SEAICE_no_slip     = .FALSE.
       SEAICE_clipVelocities = .TRUE.
@@ -116,7 +121,6 @@ C--   set default sea ice parameters
       SEAICEadvScheme    = 2
       SEAICEadvSchArea   = UNSET_I
       SEAICEadvSchHeff   = UNSET_I
-      SEAICEadvSchEnth   = UNSET_I
       SEAICEadvSchSnow   = UNSET_I
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
@@ -304,6 +308,15 @@ C     yet been tried nor thought through.
       ENDIF
 #endif /* SEAICE_ALLOW_EVP */
 
+      IF ( useThSice ) THEN
+C     If the thsice package with the Winton thermodynamics is used
+C     is does not make sense to have the following parameters defined,
+C     so we reset them here
+       usePW79thermodynamics = .FALSE.
+       SEAICEadvHeff         = .FALSE.    
+       SEAICEadvArea         = .FALSE.
+       SEAICEadvSnow         = .FALSE.    
+      ENDIF
 C     Set advection schemes to some sensible values if not done 
 C     in data.seaice
       IF ( SEAICEadvSchArea .EQ. UNSET_I ) 
@@ -312,8 +325,6 @@ C     in data.seaice
      &     SEAICEadvScheme  = SEAICEadvSchArea
       IF ( SEAICEadvSchHeff .EQ. UNSET_I ) 
      &     SEAICEadvSchHeff = SEAICEadvSchArea
-      IF ( SEAICEadvSchEnth .EQ. UNSET_I )
-     &     SEAICEadvSchEnth = SEAICEadvSchArea
       IF ( SEAICEadvSchSnow .EQ. UNSET_I )
      &     SEAICEadvSchSnow = SEAICEadvSchHeff
 
