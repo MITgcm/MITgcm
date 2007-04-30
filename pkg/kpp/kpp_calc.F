@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.38 2007/04/29 19:30:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.39 2007/04/30 13:49:40 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -711,7 +711,7 @@ c     matching diffusivities at bottom of KPP PBL
       END DO
       CALL TIMER_START('KPPMIX [KPP_CALC]', myThid)
       CALL KPPMIX (
-     I       mytime, mythid,imt, Nr, Nrp1, mdiff, viscAr
+     I       mytime, mythid
      I     , work1, shsq, dVsq, ustar
      I     , bo, bosol, dbloc, Ritop, work2
      I     , KPPdiffKzS(1-Olx,1-Oly,1,bi,bj)
