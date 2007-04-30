@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.34 2007/03/24 02:23:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.35 2007/04/30 18:48:19 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 2
@@ -61,7 +61,7 @@ CADJ &     = tapelev2, key = ilev_2
 
 #ifdef ALLOW_EXF
 # include "exf_ad_check_lev2_dir.h"
-#else /* ALLOW_EXF undef */
+#endif /* ALLOW_EXF undef */
 
 CADJ STORE taux0   = tapelev2, key = ilev_2
 CADJ STORE taux1   = tapelev2, key = ilev_2
@@ -86,8 +86,6 @@ CADJ STORE pload0  = tapelev2, key = ilev_2
 CADJ STORE pload1  = tapelev2, key = ilev_2
 CADJ STORE siceload = tapelev2, key = ilev_2
 #endif
-
-#endif /* ALLOW_EXF */
 
 #ifdef ALLOW_PTRACERS
 # include "ptracers_ad_check_lev2_dir.h"
