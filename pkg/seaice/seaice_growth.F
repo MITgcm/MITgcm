@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.12 2007/04/27 15:50:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.13 2007/04/30 00:15:10 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -472,6 +472,7 @@ C     by construction
 
 C     now update other things
 
+#ifdef ALLOW_ATM_TEMP
           IF(FICE(I,J).GT.ZERO) THEN
 C     freezing, add precip as snow
            HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)+SEAICE_deltaTtherm*
@@ -489,6 +490,9 @@ C     through the ice into the ocean)
      &            -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*
      &            SEAICE_deltaTtherm/ICE2WATR
           ENDIF
+#else /* ALLOW_ATM_TEMP */
+          STOP 'ABNORMAL END: S/R THSICE_GROWTH: ATM_TEMP undef'
+#endif /* ALLOW_ATM_TEMP */
 
 C     Now melt snow if there is residual heat left in surface level
 C     Note that units of YNEG and frWtrIce are m of ice
@@ -504,12 +508,16 @@ cph( very sensitive bit here by JZ
 cph)
 
 C NOW GET FRESH WATER FLUX
+#ifdef ALLOW_ATM_TEMP
           EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
      &         ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
      &         * ( ONE - AREA(I,J,2,bi,bj) )
      &         - RUNOFF(I,J,bi,bj)
      &         + frWtrIce(I,J)*ICE2WATR/SEAICE_deltaTtherm
      &         )
+#else /* ALLOW_ATM_TEMP */
+          STOP 'ABNORMAL END: S/R THSICE_GROWTH: ATM_TEMP undef'
+#endif /* ALLOW_ATM_TEMP */
 
 C NOW GET TOTAL QNET AND QSW
           QNET(I,J,bi,bj) = QNETI(I,J) * AREA(I,J,2,bi,bj)

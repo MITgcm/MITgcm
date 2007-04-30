@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.5 2007/04/24 21:17:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.6 2007/04/30 00:15:10 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -110,8 +110,17 @@ C PENETRATION SHORTWAVE RADIATION FACTOR
 C     
         tsurfLoc (I,J) = MIN(273.16 _d 0+MAX_TICE,TSURF(I,J,bi,bj))
 C     Is this necessary?
+#ifdef ALLOW_ATM_TEMP
         atempLoc (I,J) = MAX(273.16 _d 0+MIN_ATEMP,ATEMP(I,J,bi,bj))
+#else /* ALLOW_ATM_TEMP */
+        STOP 'ABNORMAL END: S/R SEAICE_BUDGET_ICE: ATM_TEMP undef'
+#endif /* ALLOW_ATM_TEMP */
+#ifdef ALLOW_DOWNWARD_RADIATION
         lwdownLoc(I,J) = MAX(MIN_LWDOWN,LWDOWN(I,J,bi,bj))
+#else
+        STOP 
+     & 'ABNORMAL END: S/R SEAICE_BUDGET_ICE: DOWNWARD_RADIATION undef'
+#endif
        ENDDO
       ENDDO
 
@@ -137,6 +146,7 @@ C NOW DETERMINE FIXED FORCING TERM IN HEAT BUDGET
        DO I=1,sNx
         IF(hSnwLoc(I,J).GT.0.0) THEN
 C NO SW PENETRATION WITH SNOW
+#ifdef ALLOW_DOWNWARD_RADIATION
          A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
      &        +lwdownLoc(I,J)*0.97 _d 0
      &        +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
@@ -146,6 +156,10 @@ C SW PENETRATION UNDER ICE
      &        *(ONE-XIO*EXP(-1.5 _d 0*hice(I,J)))
      &        +lwdownLoc(I,J)*0.97 _d 0
      &        +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
+#else
+         STOP 
+     & 'ABNORMAL END: S/R SEAICE_BUDGET_ICE: DOWNWARD_RADIATION undef'
+#endif
         ENDIF
        ENDDO
       ENDDO
@@ -219,8 +233,13 @@ C NO SW PENETRATION WITH SNOW
          SWHeatFlux(I,J)=ZERO
         ELSE
 C SW PENETRATION UNDER ICE
+#ifdef ALLOW_DOWNWARD_RADIATION
          SWHeatFlux(I,J)=-(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
      &        *XIO*EXP(-1.5 _d 0*hice(I,J))
+#else
+         STOP 
+     & 'ABNORMAL END: S/R SEAICE_BUDGET_ICE: DOWNWARD_RADIATION undef'
+#endif
         ENDIF
        ENDDO
       ENDDO

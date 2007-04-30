@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.41 2007/04/29 22:27:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.42 2007/04/30 00:15:10 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -71,12 +71,20 @@ CEOP
 C--   Atmospheric state and runoff are from
 C     pkg/exf, which does not update edges.
       CALL EXCH_UV_XY_RL(uwind,vwind,.TRUE.,myThid)
+#ifdef ALLOW_ATM_TEMP
       _EXCH_XY_R8( atemp,  myThid )
       _EXCH_XY_R8( aqh,    myThid )
-      _EXCH_XY_R8( lwdown, myThid )
-      _EXCH_XY_R8( swdown, mythid )
       _EXCH_XY_R8( precip, myThid )
       _EXCH_XY_R8( evap,   myThid )
+#else /* ALLOW_ATM_TEMP */
+      STOP 'ABNORMAL END: S/R SEAICE_MODEL: ATM_TEMP undef'
+#endif /* ALLOW_ATM_TEMP */
+#ifdef ALLOW_DOWNWARD_RADIATION
+      _EXCH_XY_R8( lwdown, myThid )
+      _EXCH_XY_R8( swdown, mythid )
+#else / ALLOW_DOWNWARD_RADIATION */
+      STOP 'ABNORMAL END: S/R SEAICE_MODEL: DOWNWARD_RADIATION undef'
+#endif / ALLOW_DOWNWARD_RADIATION */
       _EXCH_XY_R8( runoff, myThid )
 #else /* SEAICE_EXTERNAL_FORCING */
 C--   Load atmospheric state and runoff.

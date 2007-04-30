@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.20 2007/04/16 22:38:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.21 2007/04/30 00:15:09 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -33,6 +33,9 @@ C     include file EXF_FIELDS.h.
 #define SEAICE_EXTERNAL_FORCING
 #ifdef SEAICE_EXTERNAL_FORCING
 #include "EXF_OPTIONS.h"
+#else /* ndef SEAICE_EXTERNAL_FORCING */
+#define ALLOW_ATM_TEMP
+#define ALLOW_DOWNWARD_RADIATION
 #endif /* SEAICE_EXTERNAL_FORCING */
 
 C--   By default, the sea-ice package uses its own integrated bulk
