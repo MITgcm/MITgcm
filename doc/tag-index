@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.801 2007/04/27 16:33:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.802 2007/04/30 16:03:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice: rename run-time parameters:
+   himin       -> hIceMin
+   himin0      -> hThinIce
+   hihig       -> hThickIce
+   i0          -> i0swFrac
+   transCoef   -> bMeltCoef
+   frac_energy -> fracMelting
+  add new parameters: hNewIceMax, fracFreezing, dhSnowLin
+   with default values (for now) that do not change the results.
+  remove old version of thsice vars advection in pkg/seaice.
 o in FFIELDS.h: 
   - replace #ifndef ALLOW_EXF  by #ifndef EXCLUDE_FFIELDS_LOAD
   - make pLoad & sIceLoad always available (but still only used if
