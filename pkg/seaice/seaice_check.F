@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.17 2007/04/24 13:50:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.18 2007/05/01 21:40:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -118,6 +118,15 @@ C     At present this option is hardwired for pkg/exf.
         WRITE(msgBuf,'(A,A)')
      &  'SEAICE_CHECK: cannot use EVP solver with',
      &  ' overlap (Olx,Oly) smaller than 3'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#else
+      IF ( SEAICE_deltaTevp .NE. UNSET_RL ) THEN
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_deltaTevp is set'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
+     &       'SEAICE_ALLOW_EVP is not defined in SEAICE_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
