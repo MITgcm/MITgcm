@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.8 2005/08/18 18:23:02 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.9 2007/05/01 20:48:42 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -51,7 +51,11 @@ CEOP
      &                   Filename3,
      &                   Filename4,
      &                   Filename5,
-     &                   nsubtime
+     &                   nsubtime,
+     &           gchem_int1, gchem_int2, gchem_int3,
+     &           gchem_int4, gchem_int5,
+     &           gchem_rl1, gchem_rl2, gchem_rl3,
+     &           gchem_rl4, gchem_rl5
 
 C Set defaults values for parameters in GCHEM.h
        tIter0 = UNSET_I
@@ -66,6 +70,16 @@ C Set defaults values for parameters in GCHEM.h
        Filename3=' '
        Filename4=' '
        Filename5=' '
+       gchem_int1=0
+       gchem_int2=0
+       gchem_int3=0
+       gchem_int4=0
+       gchem_int5=0
+       gchem_rl1=0.d0
+       gchem_rl2=0.d0
+       gchem_rl3=0.d0
+       gchem_rl4=0.d0
+       gchem_rl5=0.d0
 C Open and read the data.gchem file
       _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)') ' GCHEM_READPARMS: opening data.gchem'
