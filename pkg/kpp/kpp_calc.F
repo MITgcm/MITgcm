@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.39 2007/04/30 13:49:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.40 2007/05/01 04:09:25 mlosch Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -251,10 +251,9 @@ c------------------------------------------------------------------------
 
       CALL TIMER_START('STATEKPP      [KPP_CALC]', myThid)
       CALL STATEKPP(
-     I       ikppkey, bi, bj, myThid
-     O     , work2, dbloc, Ritop
-     O     , TTALPHA, SSBETA
-     &     )
+     O     work2, dbloc, Ritop,
+     O     TTALPHA, SSBETA,
+     I     ikppkey, bi, bj, myThid )
       CALL TIMER_STOP ('STATEKPP      [KPP_CALC]', myThid)
 
       DO k = 1, Nr
@@ -274,7 +273,8 @@ c     levels therefore k+1 mask must be used
       DO k = 1, Nr-1
          CALL SMOOTH_HORIZ (
      I        k+1, bi, bj,
-     U        ghat (1-OLx,1-OLy,k) )
+     U        ghat (1-OLx,1-OLy,k), 
+     I        myThid )
       ENDDO
 
 #endif /* KPP_SMOOTH_DBLOC */
@@ -283,20 +283,25 @@ c     levels therefore k+1 mask must be used
 c     horizontally smooth density related quantities with 121 filters
       CALL SMOOTH_HORIZ (
      I     1, bi, bj,
-     U     work2 )
+     U     work2, 
+     I     myThid )
       DO k = 1, Nr
          CALL SMOOTH_HORIZ (
      I        k+1, bi, bj,
-     U        dbloc (1-OLx,1-OLy,k) )
+     U        dbloc (1-OLx,1-OLy,k), 
+     I        myThid )
          CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        Ritop (1-OLx,1-OLy,k)  )
+     U        Ritop (1-OLx,1-OLy,k), 
+     I        myThid )
          CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        TTALPHA(1-OLx,1-OLy,k) )
+     U        TTALPHA(1-OLx,1-OLy,k), 
+     I        myThid )
          CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        SSBETA(1-OLx,1-OLy,k) )
+     U        SSBETA(1-OLx,1-OLy,k), 
+     I        myThid )
       ENDDO
 #endif /* KPP_SMOOTH_DENS */
 
@@ -711,15 +716,16 @@ c     matching diffusivities at bottom of KPP PBL
       END DO
       CALL TIMER_START('KPPMIX [KPP_CALC]', myThid)
       CALL KPPMIX (
-     I       mytime, mythid
-     I     , work1, shsq, dVsq, ustar
+     I       work1, shsq, dVsq, ustar
+     I     , maskC(1-Olx,1-Oly,1,bi,bj)
      I     , bo, bosol, dbloc, Ritop, work2
      I     , KPPdiffKzS(1-Olx,1-Oly,1,bi,bj)
      I     , KPPdiffKzT(1-Olx,1-Oly,1,bi,bj)
      I     , ikppkey
      O     , vddiff
      U     , ghat
-     O     , hbl )
+     O     , hbl
+     I     , mytime, mythid )
       CALL TIMER_STOP ('KPPMIX [KPP_CALC]', myThid)
 
 c-----------------------------------------------------------------------
@@ -753,7 +759,8 @@ c     horizontal smoothing of vertical viscosity
       DO k = 1, Nr
          CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        KPPviscAz(1-OLx,1-OLy,k,bi,bj) )
+     U        KPPviscAz(1-OLx,1-OLy,k,bi,bj), 
+     I        myThid )
       END DO
       _EXCH_XYZ_R8(KPPviscAz  , myThid )
 #endif /* KPP_SMOOTH_VISC */
@@ -763,10 +770,12 @@ c     horizontal smoothing of vertical diffusivity
       DO k = 1, Nr
          CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        KPPdiffKzS(1-OLx,1-OLy,k,bi,bj) )
+     U        KPPdiffKzS(1-OLx,1-OLy,k,bi,bj), 
+     I        myThid )
          CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        KPPdiffKzT(1-OLx,1-OLy,k,bi,bj) )
+     U        KPPdiffKzT(1-OLx,1-OLy,k,bi,bj), 
+     I        myThid )
       END DO
       _EXCH_XYZ_R8(KPPdiffKzS , myThid )
       _EXCH_XYZ_R8(KPPdiffKzT , myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.29 2007/04/30 13:49:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.30 2007/05/01 04:09:25 mlosch Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -19,14 +19,14 @@ C--  o STATEKPP    - Compute buoyancy-related input arrays.
 c***********************************************************************
 
       SUBROUTINE KPPMIX (
-     I       mytime, mythid
-     I     , kmtj, shsq, dvsq, ustar
+     I       kmtj, shsq, dvsq, ustar, msk
      I     , bo, bosol, dbloc, Ritop, coriol
      I     , diffusKzS, diffusKzT
      I     , ikppkey
      O     , diffus
      U     , ghat
-     O     , hbl )
+     O     , hbl
+     I     , mytime, mythid )
 
 c-----------------------------------------------------------------------
 c
@@ -53,6 +53,7 @@ c input
 c     myTime           - current time in simulation
 c     myThid           - thread number for this instance of the routine
 c     kmtj   (imt)     - number of vertical layers on this row
+c     msk    (imt)     - surface mask (=1 if water, =0 otherwise)
 c     shsq   (imt,Nr)  - (local velocity shear)^2                     ((m/s)^2)
 c     dvsq   (imt,Nr)  - (velocity shear re sfc)^2                    ((m/s)^2)
 c     ustar  (imt)     - surface friction velocity                        (m/s)
@@ -81,6 +82,7 @@ c           where hbl(i,j) -> hbl((j-1)*sNx+i)
       _RL dbloc    (imt,Nr)
       _RL Ritop    (imt,Nr)
       _RL coriol   (imt   )
+      _RS msk      (imt   )
       _RL diffusKzS(imt,Nr)
       _RL diffusKzT(imt,Nr)
 
@@ -167,12 +169,11 @@ c diagnose the new boundary layer depth
 c-----------------------------------------------------------------------
 
       call bldepth (
-     I       mytime, mythid
-     I     , kmtj
+     I       kmtj
      I     , dvsq, dbloc, Ritop, ustar, bo, bosol, coriol
      I     , ikppkey
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
-     &     )
+     I     , mytime, mythid )
 
 CADJ STORE hbl,bfsfc,stable,casea,kbl = comlev1_kpp, key = ikppkey
 
@@ -183,7 +184,7 @@ c-----------------------------------------------------------------------
       call blmix (
      I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
      O     , dkm1, blmc, ghat, sigma, ikppkey
-     &     )
+     I     , mythid )
 cph(
 CADJ STORE dkm1,blmc,ghat = comlev1_kpp, key = ikppkey
 CADJ STORE hbl, kbl, diffus, casea = comlev1_kpp, key = ikppkey
@@ -196,7 +197,8 @@ c-----------------------------------------------------------------------
       call enhance (
      I       dkm1, hbl, kbl, diffus, casea
      U     , ghat
-     O     , blmc )
+     O     , blmc
+     I     , mythid )
 
 cph(
 cph avoids recomp. of enhance
@@ -212,6 +214,16 @@ c-----------------------------------------------------------------------
       do k = 1, Nr
          do i = 1, imt
             if (k .lt. kbl(i)) then
+#ifdef ALLOW_SHELFICE
+C     when there is shelfice on top (msk(i)=0), reset the boundary layer
+C     mixing coefficients blmc to pure Ri-number based mixing
+               blmc(i,k,1) = max ( blmc(i,k,1)*msk(i), 
+     &              diffus(i,k,1) )
+               blmc(i,k,2) = max ( blmc(i,k,2)*msk(i), 
+     &              diffus(i,k,2) )
+               blmc(i,k,3) = max ( blmc(i,k,3)*msk(i), 
+     &              diffus(i,k,3) )
+#endif /* not ALLOW_SHELFICE */
                diffus(i,k,1) = max ( blmc(i,k,1), viscAr  )
                diffus(i,k,2) = max ( blmc(i,k,2), diffusKzS(i,Nr) )
                diffus(i,k,3) = max ( blmc(i,k,3), diffusKzT(i,Nr) )
@@ -229,12 +241,11 @@ c-----------------------------------------------------------------------
 c*************************************************************************
 
       subroutine bldepth (
-     I       mytime, mythid
-     I     , kmtj
+     I       kmtj
      I     , dvsq, dbloc, Ritop, ustar, bo, bosol, coriol
      I     , ikppkey
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
-     &     )
+     I     , mytime, mythid )
 
 c     the oceanic planetary boundary layer depth, hbl, is determined as
 c     the shallowest depth where the bulk Richardson number is
@@ -377,7 +388,7 @@ c-----------------------------------------------------------------------
  
          call wscale (
      I        sigma, casea, ustar, bfsfc,
-     O        wm, ws )
+     O        wm, ws, myThid )
 CADJ store ws = comlev1_kpp_k, key = kkppkey
 
          do i = 1, imt
@@ -562,7 +573,8 @@ c*************************************************************************
 
       subroutine wscale (
      I     sigma, hbl, ustar, bfsfc,
-     O     wm, ws )
+     O     wm, ws, 
+     I     myThid )
 
 c     compute turbulent velocity scales.
 c     use a 2D-lookup table for wm and ws as functions of ustar and
@@ -583,6 +595,8 @@ c sigma   : normalized depth (d/hbl)
 c hbl     : boundary layer depth (m)
 c ustar   : surface friction velocity         (m/s)
 c bfsfc   : total surface buoyancy flux       (m^2/s^3)
+c myThid  : thread number for this instance of the routine
+      integer myThid
       _RL sigma(imt)
       _RL hbl  (imt)
       _RL ustar(imt)
@@ -760,7 +774,8 @@ CADJ store diffus(:,:,1) = kpp_ri_tape_mr
 CADJ &  , key=mr, shape=(/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2 /)
 
          call z121 (
-     U     diffus(1,0,1))
+     U     diffus(1,0,1)
+     I     myThid )
       end do
 #endif
 
@@ -824,7 +839,8 @@ c         set surface values to 0.0
 c*************************************************************************
 
       subroutine z121 (
-     U     v )
+     U     v,
+     I     myThid )
 
 c     Apply 121 smoothing in k to 2-d array V(i,k=1,Nr)
 c     top (0) value is used as a dummy
@@ -842,6 +858,8 @@ c     penetrative convection.
 c input/output 
 c-------------
 c v     : 2-D array to be smoothed in Nrp1 direction
+c myThid: thread number for this instance of the routine
+      integer myThid
       _RL v(imt,0:Nrp1)
 
 #ifdef ALLOW_KPP
@@ -907,7 +925,8 @@ c*************************************************************************
 
       subroutine smooth_horiz (
      I     k, bi, bj,
-     U     fld )
+     U     fld,
+     I     myThid )
 
 c     Apply horizontal smoothing to global _RL 2-D array
 
@@ -919,6 +938,8 @@ c     Apply horizontal smoothing to global _RL 2-D array
 c     input
 c     bi, bj : array indices
 c     k      : vertical index used for masking
+c     myThid : thread number for this instance of the routine
+      INTEGER myThid
       integer k, bi, bj
 
 c     input/output
@@ -989,7 +1010,7 @@ c*************************************************************************
       subroutine blmix (
      I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
      O     , dkm1, blmc, ghat, sigma, ikppkey
-     &     )
+     I     , mythid )
 
 c     mixing coefficients within boundary layer depend on surface
 c     forcing and the magnitude and gradient of interior mixing below
@@ -1012,6 +1033,8 @@ c     stable(imt)                 = 1 in stable forcing
 c     casea (imt)                 = 1 in case A
 c     diffus(imt,0:Nrp1,mdiff)    vertical diffusivities              (m^2/s)
 c     kbl   (imt)                 -1 of first grid level below hbl
+c     myThid               thread number for this instance of the routine
+      integer myThid
       _RL ustar (imt)
       _RL bfsfc (imt)
       _RL hbl   (imt)
@@ -1061,7 +1084,7 @@ c-----------------------------------------------------------------------
 CADJ STORE sigma = comlev1_kpp, key = ikppkey
       call wscale (
      I        sigma, hbl, ustar, bfsfc,
-     O        wm, ws )
+     O        wm, ws, myThid )
 CADJ STORE wm = comlev1_kpp, key = ikppkey
 CADJ STORE ws = comlev1_kpp, key = ikppkey
 
@@ -1154,7 +1177,7 @@ CADJ STORE ws = comlev1_kpp_k, key = kkppkey
 CADJ STORE sigma = comlev1_kpp_k, key = kkppkey
          call wscale (
      I        sigma, hbl, ustar, bfsfc,
-     O        wm, ws )
+     O        wm, ws, myThid )
 CADJ STORE wm = comlev1_kpp_k, key = kkppkey
 CADJ STORE ws = comlev1_kpp_k, key = kkppkey
 
@@ -1207,7 +1230,7 @@ CADJ STORE ws = comlev1_kpp, key = ikppkey
 CADJ STORE sigma = comlev1_kpp, key = ikppkey
       call wscale (
      I        sigma, hbl, ustar, bfsfc,
-     O        wm, ws )
+     O        wm, ws, myThid )
 CADJ STORE wm = comlev1_kpp, key = ikppkey
 CADJ STORE ws = comlev1_kpp, key = ikppkey
 
@@ -1235,7 +1258,7 @@ c*************************************************************************
      I       dkm1, hbl, kbl, diffus, casea
      U     , ghat
      O     , blmc
-     &     )
+     &     , myThid )
 
 c enhance the diffusivity at the kbl-.5 interface
 
@@ -1250,6 +1273,8 @@ c     hbl(imt)                  boundary layer depth                 (m)
 c     kbl(imt)                  grid above hbl
 c     diffus(imt,0:Nrp1,mdiff) vertical diffusivities           (m^2/s)
 c     casea(imt)                = 1 in caseA, = 0 in case B
+c     myThid                    thread number for this instance of the routine
+      integer   myThid
       _RL dkm1  (imt,mdiff)
       _RL hbl   (imt)
       integer kbl   (imt)
@@ -1296,8 +1321,8 @@ c     fraction hbl lies beteen zgrid neighbors
 c*************************************************************************
 
       SUBROUTINE STATEKPP (
-     I     ikppkey, bi, bj, myThid,
-     O     RHO1, DBLOC, DBSFC, TTALPHA, SSBETA)
+     O     RHO1, DBLOC, DBSFC, TTALPHA, SSBETA,
+     I     ikppkey, bi, bj, myThid )
 c
 c-----------------------------------------------------------------------
 c     "statekpp" computes all necessary input arrays
@@ -1389,11 +1414,11 @@ CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
 
       call FIND_ALPHA(
      I     bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1,
-     O     WORK2 )
+     O     WORK2, myThid )
 
       call FIND_BETA(
      I     bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1,
-     O     WORK3 )
+     O     WORK3, myThid )
 
       DO J = 1-OLy, sNy+OLy
          DO I = 1-OLx, sNx+OLx
@@ -1461,11 +1486,11 @@ CADJ STORE rho1k (:,:)          = comlev1_kpp_k, key=kkppkey
 
          call FIND_ALPHA(
      I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K, K,
-     O        WORK1 )
+     O        WORK1, myThid )
 
          call FIND_BETA(
      I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K, K,
-     O        WORK2 )
+     O        WORK2, myThid )
 
          DO J = 1-OLy, sNy+OLy
             DO I = 1-OLx, sNx+OLx
