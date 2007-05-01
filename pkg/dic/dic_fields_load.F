@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.12 2007/05/01 22:12:12 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.13 2007/05/01 22:51:12 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -42,6 +42,7 @@ c !LOCAL VARIABLES: ===================================================
        INTEGER bi,bj,i,j,intime0,intime1
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 c
@@ -177,6 +178,12 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
            IF ( Filename1 .NE. ' '  ) THEN
             PAR(i,j,bi,bj)    = bWght*par0(i,j,bi,bj)
      &                          +aWght*par1(i,j,bi,bj)
+           ELSE
+            WRITE(msgBuf,'(2A)')
+     &       ' DIC_FIELDS_LOAD: You need to provide ',
+     &       ' a file if you want to use READ_PAR'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R DIC_FIELDS_LOAD'
            ENDIF
 #endif
 #ifdef ALLOW_FE

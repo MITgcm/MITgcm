@@ -25,6 +25,9 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "DIC_ABIOTIC.h"
 #include "DIC_BIOTIC.h"
+#ifdef PAR_FROMSW
+#include "FFIELDS.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -63,7 +66,9 @@ CEOP
 
 
 #ifndef READ_PAR
+#ifndef PAR_FROMSW
         call insol(myTime,sfac,bj)
+#endif
 #endif
         DO j=jmin,jmax
          DO i=imin,imax
@@ -76,7 +81,11 @@ C$TAF INIT bio_export = static, 10
 #ifdef READ_PAR
            lit=PAR(i,j,bi,bj)
 #else
+#ifdef PAR_FROMSW
+           lit=-0.4*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+#else
            lit=sfac(j)
+#endif
 #endif
            DO k=1,nlev
 C$TAF STORE lit = bio_export
