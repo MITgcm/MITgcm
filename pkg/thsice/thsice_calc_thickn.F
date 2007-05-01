@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.9 2007/04/30 15:50:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.10 2007/05/01 02:30:15 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -253,11 +253,17 @@ C......................................................................
 C     !-----------------------------------------------------------------
 C     ! freezing conditions
 C     !-----------------------------------------------------------------
+        Fbot = frzmlt
+C- jmc: would be logical to test for iceFrac:
+c       IF ( iceFrac.LT.iceMaskMax ) THEN
+        IF ( iceFrac.LE.iceMaskMax ) THEN
+         IF (hi.GT.hThickIce) THEN
 C if higher than hThickIce, use all frzmlt energy to grow extra ice
-        IF (hi.GT.hThickIce .AND. iceFrac.LE.iceMaskMax) THEN
-          Fbot=0. _d 0
-        ELSE
-          Fbot=frzmlt
+          Fbot = 0. _d 0
+         ELSEIF (hi.GE.hThinIce) THEN
+C between hThinIce & hThickIce, use partition factor fracEnFreez
+          Fbot = (1. _d 0 - fracEnFreez)*frzmlt
+         ENDIF
         ENDIF
       ELSE
 C     !-----------------------------------------------------------------
@@ -286,20 +292,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C Compute energy available for melting/growth.
 
-      IF (hi.LT.hThinIce) THEN
+      IF ( hi.GT.hThickIce .OR. fracEnMelt.EQ.0. _d 0 ) THEN
+C above certain height (or when no ice fractionation), only melt from top
+       frace = 0. _d 0
+c     ELSEIF (hi.LT.hThinIce) THEN
 C below a certain height, all energy goes to changing ice extent
-       frace=1. _d 0
+c      frace = 1. _d 0
       ELSE
-       frace=fracEnMelt
+       frace = fracEnMelt
       ENDIF
-      IF (hi.GT.hThickIce) THEN
-C above certain height only melt from top
-       frace=0. _d 0
-      ELSE
-       frace=fracEnMelt
-      ENDIF
-C force this when no ice fractionation
-      IF (fracEnMelt.EQ.0. _d 0) frace=0. _d 0
 
 c     IF (Tsf .EQ. 0. _d 0 .AND. sHeating.GT.0. _d 0) THEN
       IF ( sHeating.GT.0. _d 0 ) THEN
