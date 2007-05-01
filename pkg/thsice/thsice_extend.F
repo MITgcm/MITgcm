@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.6 2007/04/29 23:48:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.7 2007/05/01 02:37:44 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -49,11 +49,11 @@ C---  Input:
 C         iceMask :: sea-ice fractional mask [0-1]
 C  fzMlOc (esurp) :: ocean mixed-layer freezing/melting potential [W/m2]
 C  tFrz    (Tf)   :: sea-water freezing temperature [oC] (function of S)
-C  tOce    (sst)  :: surface level oceanic temperature [oC]
+C  tOce           :: surface level oceanic temperature [oC]
 C---  Modified (input&output):
 C  icFrac(iceFrac):: fraction of grid area covered in ice
 C  hIce (iceThick):: ice height [m]
-C hSnow(snowThick):: snow height [m]
+C  hSnow          :: snow height [m]
 C  tSrf           :: surface (ice or snow) temperature [oC]
 C  tIc1           :: temperature of ice layer 1 [oC]
 C  tIc2           :: temperature of ice layer 2 [oC]
@@ -97,17 +97,21 @@ C     !LOCAL VARIABLES:
 C---  local copy of input/output argument list variables (see description above)
       _RL esurp
       _RL Tf
-      _RL sst
       _RL iceFrac
       _RL iceThick
-      _RL snowThick
       _RL qicen(nlyr)
 
 C     == Local variables ==
-C     qicAv    :: mean enthalpy of ice (layer 1 & 2) [J/m^3]
+C     iceVol    :: previous ice volume
+C     newIce    :: new ice volume to produce
+C     hNewIce   :: thickness of new ice to form
+C     iceFormed :: ice-volume formed (new ice volume = iceVol+iceFormed )
+C     qicAv     :: mean enthalpy of ice (layer 1 & 2) [J/m^3]
       _RL deltaTice ! time-step for ice model
+      _RL iceVol
       _RL newIce
-      _RL newIceFrac
+      _RL hNewIce
+      _RL iceFormed
       _RL qicAv
       INTEGER  i,j     ! loop indices
 
@@ -153,15 +157,14 @@ CADJ STORE qic2(i,j) = comlev1_thsice_1, key=ikey_1
         IF (fzMlOc(i,j).GT.0. _d 0) THEN
           esurp   = fzMlOc(i,j)
           Tf      = tFrz(i,j)
-          sst     = tOce(i,j)
           iceFrac = icFrac(i,j)
           iceThick= hIce(i,j)
-          snowThick=hSnow(i,j)
           qicen(1)= qIc1(i,j)
           qicen(2)= qIc2(i,j)
 C---
 C--   start ice
-        newIceFrac = 0. _d 0
+        iceFormed = 0. _d 0
+        iceVol = iceFrac*iceThick
 
 C-    enthalpy of new ice to form :
         IF ( iceFrac.LE.0. _d 0 ) THEN
@@ -172,47 +175,56 @@ C-    enthalpy of new ice to form :
         qicAv = rhoi*(qicen(1)+qicen(2))*0.5 _d 0
         newIce = esurp*deltaTice/qicAv
 
-        IF (icFrac(i,j).EQ.0. _d 0) THEN
-c         IF (newIce.GE.hIceMin*iceMaskMax) THEN
-C- jmc: above is the original version, but below seems more logical:
-          IF (newIce.GE.hThinIce*iceMaskMin) THEN
-C-    if there is no ice in grid and enough ice to form:
-            iceThick   = MAX(hThinIce,newIce/iceMaskMax)
-            newIceFrac = MIN(newIce/hThinIce,iceMaskMax)
-            iceFrac = newIceFrac
-            sst=Tf
+        IF ( icFrac(i,j).EQ.0. _d 0 ) THEN
+C-  to keep identical results (as it use to be):
+          IF ( newIce.GE.hThinIce*iceMaskMin ) THEN
+C-  here we allow to form ice earlier (as soon as min-ice-vol is reached)
+c         IF ( newIce.GT.hIceMin*iceMaskMin ) THEN
+C-    if there is no ice in grid-cell and enough ice to form:
+C-     make ice over iceMaskMin fraction, up to hThinIce,
+C      and if more ice to form, then increase fraction
+            iceThick  = MIN(hThinIce,newIce/iceMaskMin)
+            iceThick  = MAX(iceThick,newIce/iceMaskMax)
+            iceFrac   = newIce/iceThick
+            iceFormed = newIce
           ENDIF
-        ELSE
+        ELSEIF ( iceVol.LT.hiMax*iceMaskMax ) THEN
 C-    if there is already some ice
-            newIceFrac=MIN(newIce/iceThick,iceMaskMax-icFrac(i,j))
-            iceFrac = icFrac(i,j) + newIceFrac
+C     create ice with same thickness or hNewIceMax (the smallest of the 2)
+            hNewIce = MIN(iceThick,hNewIceMax)
+            iceFrac = MIN(icFrac(i,j)+newIce/hNewIce,iceMaskMax)
+C-    update thickness: area weighted average
+c           iceThick = MIN(hiMax,(iceVol+newIce)/iceFrac)
+C-  to keep identical results: comment the line above and uncomment line below:
+            iceFrac = MIN(icFrac(i,j)+newIce/iceThick,iceMaskMax)
+            iceFormed = iceThick*iceFrac - iceVol
 C-    spread snow out over ice
-            snowThick = snowThick*icFrac(i,j)/iceFrac
-            sst=(1. _d 0-newIceFrac)*sst+newIceFrac*Tf
+            hSnow(i,j) = hSnow(i,j)*icFrac(i,j)/iceFrac
         ENDIF
 C-    oceanic fluxes:
-        flx2oc(i,j)= iceThick*newIceFrac*qicAv/deltaTice
-        frw2oc(i,j)=-(rhoi*iceThick)*newIceFrac/deltaTice
-        fsalt(i,j)= -(rhoi*iceThick*saltIce)*newIceFrac/deltaTice
+        flx2oc(i,j)= qicAv*iceFormed/deltaTice
+        frw2oc(i,j)= -rhoi*iceFormed/deltaTice
+        fsalt(i,j)= -(rhoi*saltIce)*iceFormed/deltaTice
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_DBUG_THSICE
         IF ( dBug(i,j,bi,bj) ) THEN
           WRITE(6,1020) 'ThSI_EXT: iceH, newIce, newIceFrac=',
-     &                             iceThick, newIce, newIceFrac
+     &                       iceThick, newIce, iceFrac-icFrac(i,j)
           WRITE(6,1020) 'ThSI_EXT: iceFrac,flx2oc,fsalt,frw2oc=',
      &                  iceFrac,flx2oc(i,j),fsalt(i,j),frw2oc(i,j)
         ENDIF
 #endif
 #ifdef CHECK_ENERGY_CONSERV
           CALL THSICE_CHECK_CONSERV( dBugFlag, i, j, bi, bj, 1,
-     I            icFrac(i,j), iceFrac, iceThick, snowThick, qicen,
+     I            icFrac(i,j), iceFrac, iceThick, hSnow(i,j), qicen,
      I            flx2oc(i,j), frw2oc(i,j), fsalt(i,j),
      I            myTime, myIter, myThid )
 #endif /* CHECK_ENERGY_CONSERV */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Update Sea-Ice state output:
           IF ( iceFrac.GT.0. _d 0 .AND. icFrac(i,j).EQ.0. _d 0) THEN
+c           hSnow(i,j)  = 0. _d 0
             tSrf(i,j)   = tFrz(i,j)
             tIc1(i,j)   = tFrz(i,j)
             tIc2(i,j)   = tFrz(i,j)
@@ -221,7 +233,6 @@ C-- Update Sea-Ice state output:
           ENDIF
           icFrac(i,j) = iceFrac
           hIce(i,j)   = iceThick
-          hSnow(i,j ) = snowThick
         ENDIF
        ENDDO
       ENDDO
