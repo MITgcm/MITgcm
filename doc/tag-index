@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.805 2007/05/01 12:29:18 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.806 2007/05/01 21:41:11 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice
+ - check for inconsistent evp parameter/cpp-flag combination
+ - remove leftover errIO flat for obsolete name list error handling
 
 checkpoint59a
 o pkg/seaice: some parameter clarifications and a little bit of clean up
