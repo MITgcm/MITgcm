@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.46 2007/04/30 22:48:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.47 2007/05/01 21:31:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -32,11 +32,10 @@ C     myThid -  Number of this instance of SEAICE_READPARMS
 
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
-C     errIO       - IO error flag
 C     iUnit       - Work variable for IO unit number
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER errIO, iUnit
+      INTEGER iUnit
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
@@ -105,7 +104,6 @@ C--   set default sea ice parameters
 #else
       SEAICEuseDYNAMICS  = .FALSE.
 #endif
-      SEAICEuseEVP       = .FALSE.
       SEAICEuseEVPpickup = .TRUE.
       SEAICEuseFluxForm  = .FALSE.
       useHB87stressCoupling = .FALSE.
@@ -227,41 +225,9 @@ c
 
 C--   Read settings from model parameter file "data.seaice".
       READ(UNIT=iUnit,NML=SEAICE_PARM01)
-      IF ( errIO .LT. 0 ) THEN
-       WRITE(msgBuf,'(A)')
-     &  'S/R SEAICE_READPARMS'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       WRITE(msgBuf,'(A)')
-     &  'Error reading numerical model '
-       CALL PRINT_ERROR( msgBuf , myThid)
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "data.seaice"'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       WRITE(msgBuf,'(A)')
-     &  'Problem in namelist SEAICE_PARM01'
-       CALL PRINT_ERROR( msgBuf , myThid)
-C      CALL MODELDATA_EXAMPLE( myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
-      ENDIF
 
 #ifdef ALLOW_COST
       READ(UNIT=iUnit,NML=SEAICE_PARM02)
-      IF ( errIO .LT. 0 ) THEN
-       WRITE(msgBuf,'(A)')
-     &  'S/R SEAICE_READPARMS'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       WRITE(msgBuf,'(A)')
-     &  'Error reading numerical model '
-       CALL PRINT_ERROR( msgBuf , myThid)
-       WRITE(msgBuf,'(A)')
-     &  'parameter file "data.seaice"'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       WRITE(msgBuf,'(A)')
-     &  'Problem in namelist SEAICE_PARM02'
-       CALL PRINT_ERROR( msgBuf , myThid)
-C      CALL MODELDATA_EXAMPLE( myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
-      ENDIF
 #endif
 
       CLOSE(iUnit)
