@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.804 2007/05/01 04:10:31 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.805 2007/05/01 12:29:18 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59a
 o pkg/seaice: some parameter clarifications and a little bit of clean up
 o pkg/thsice: rename run-time parameters:
    himin       -> hIceMin
