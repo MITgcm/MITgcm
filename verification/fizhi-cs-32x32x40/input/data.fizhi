@@ -3,4 +3,5 @@
  nhmsbegin=060000,
  nymdbegin=19930110,
  runlength=0.003,
+ climsst=.TRUE.,
  &
