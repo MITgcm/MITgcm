@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.15 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.16 2007/05/01 04:09:36 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -9,7 +9,8 @@ C     !ROUTINE: FIND_ALPHA
 C     !INTERFACE:
       SUBROUTINE FIND_ALPHA (
      I     bi, bj, iMin, iMax, jMin, jMax,  k, kRef, 
-     O     alphaloc )
+     O     alphaloc,
+     I     myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -38,8 +39,10 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     k    :: Level of Theta/Salt slice
-C     kRef :: Pressure reference level
+C     k      :: Level of Theta/Salt slice
+C     kRef   :: Pressure reference level
+c     myThid :: thread number for this instance of the routine
+      INTEGER myThid
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k
       INTEGER kRef
@@ -58,7 +61,6 @@ C     == Local variables ==
       _RL dnum_dtheta, dden_dtheta
       _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rhoLoc (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      INTEGER myThid
 CEOP
 
 #ifdef CHECK_SALINITY_FOR_NEGATIVE_VALUES
@@ -270,7 +272,8 @@ c$$$     &        kRef, theta, salt, rhoLoc, myThid )
 
       SUBROUTINE FIND_BETA (
      I     bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
-     O     betaloc )
+     O     betaloc,
+     I     myThid )
 C     /==========================================================\
 C     | o SUBROUTINE FIND_BETA                                   |
 C     |   Calculates [drho(S,T,z) / dS] of a horizontal slice    |
@@ -294,8 +297,10 @@ C     === Global variables ===
 #include "GRID.h"
 
 C     == Routine arguments ==
-C     k    :: Level of Theta/Salt slice
-C     kRef :: Pressure reference level
+C     k      :: Level of Theta/Salt slice
+C     kRef   :: Pressure reference level
+c     myThid :: thread number for this instance of the routine
+      INTEGER myThid
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k
       INTEGER kRef
@@ -313,7 +318,6 @@ C     == Local variables ==
       _RL dnum_dsalt, dden_dsalt
       _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rhoLoc (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      INTEGER myThid
 CEOP
 
 #ifdef CHECK_SALINITY_FOR_NEGATIVE_VALUES
