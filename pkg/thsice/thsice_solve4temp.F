@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.16 2007/04/29 23:48:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.17 2007/05/01 02:26:50 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !ROUTINE: THSICE_SOLVE4TEMP
 C     !INTERFACE:
       SUBROUTINE THSICE_SOLVE4TEMP(
      I                  bi, bj, siLo, siHi, sjLo, sjHi,
-     I                  iMin,iMax, jMin,jMax, dBugFlag, 
+     I                  iMin,iMax, jMin,jMax, dBugFlag,
      I                  useBulkForce, useEXF,
      I                  iceMask, hIce, hSnow, tFrz, flxExSW,
      U                  flxSW, tSrf, qIc1, qIc2,
@@ -155,6 +155,7 @@ C     dEvdT          :: derivative of evap. with respect to Tsf [kg/m2/s/K]
       _RL  a1, b1, c1    ! coefficients in quadratic eqn for T1
 c     _RL  Tsf_start     ! old value of Tsf
       _RL  dt            ! timestep
+      _RL  recip_dhSnowLin
       INTEGER iceornot
       LOGICAL useBlkFlx
 
@@ -177,6 +178,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       useBlkFlx = useEXF .OR. useBulkForce
+      IF ( dhSnowLin.GT.0. _d 0 ) THEN
+        recip_dhSnowLin = 1. _d 0 / dhSnowLin
+      ELSE
+        recip_dhSnowLin = 0. _d 0
+      ENDIF
 
       dt  = thSIce_dtTemp
       DO j = jMin, jMax
@@ -220,8 +226,15 @@ C If hi < hIceMin, melt the ice.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C fractional snow cover
-      frsnow = 0. _d 0
-      IF (hs .GT. 0. _d 0) frsnow = 1. _d 0
+C  assume a linear distribution of snow thickness, with dhSnowLin slope,
+C   from hs-dhSnowLin to hs+dhSnowLin if full ice & snow cover.
+C frsnow = fraction of snow over the ice-covered part of the grid cell
+      IF ( hs .GT. iceMask(i,j)*dhSnowLin ) THEN
+        frsnow = 1. _d 0
+      ELSE
+        frsnow = hs*recip_dhSnowLin/iceMask(i,j)
+        IF ( frsnow.GT.0. _d 0 ) frsnow = SQRT(frsnow)
+      ENDIF
 
 C Compute SW flux absorbed at surface and penetrating to layer 1.
       fswpen  = netSW * (1. _d 0 - frsnow) * i0swFrac
@@ -243,13 +256,13 @@ C compute ice temperatures
       Tice(2) = (Lfresh-qicen(2)) / cpIce
 
       IF (Tice(1).GT.0. _d 0 ) THEN
-       WRITE (standardMessageUnit,'(A,I12,1PE14.6)') 
+       WRITE (standardMessageUnit,'(A,I12,1PE14.6)')
      &       ' BBerr: Tice(1) > 0 ; it=', myIter, qicen(1)
        WRITE (standardMessageUnit,'(A,4I5,2F11.4)')
      &      ' BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,Tice
       ENDIF
       IF ( Tice(2).GT.0. _d 0) THEN
-       WRITE (standardMessageUnit,'(A,I12,1PE14.6)') 
+       WRITE (standardMessageUnit,'(A,I12,1PE14.6)')
      &       ' BBerr: Tice(2) > 0 ; it=', myIter, qicen(2)
        WRITE (standardMessageUnit,'(A,4I5,2F11.4)')
      &      ' BBerr: i,j,bi,bj,Tice = ',i,j,bi,bj,Tice
