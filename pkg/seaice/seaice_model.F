@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.43 2007/04/30 22:48:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.44 2007/05/01 13:42:15 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -162,9 +162,6 @@ cphCADJ STORE uice   = comlev1, key = ikey_dynamics
 cphCADJ STORE vice   = comlev1, key = ikey_dynamics
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-#ifdef ALLOW_THSICE
-      ENDIF
-#endif
 
 C     thermodynamics growth
 C     must call growth after calling advection 
