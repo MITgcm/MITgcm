@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.4 2005/10/13 16:25:12 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.5 2007/05/01 22:12:12 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -12,6 +12,7 @@ C !INTERFACE: ==========================================================
 
 C !DESCRIPTION:
 c initializes forcing fields to zero
+c (or to reasonable values)
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -24,10 +25,8 @@ C !USES: ===============================================================
 #include "PTRACERS.h"
 #include "GCHEM.h"
 #include "DIC_ABIOTIC.h"
-#ifdef DIC_BIOTIC
 #include "DIC_BIOTIC.h"
 #include "DIC_LOAD.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -35,6 +34,9 @@ C  myThid               :: thread number
 CEOP
 
 #ifdef ALLOW_PTRACERS
+
+c !LOCAL VARIABLES: ===================================================
+       INTEGER bi,bj,i,j
 c
 C First call requires that we initialize everything to zero for safety
       CALL LEF_ZERO( wspeed0,myThid )
@@ -70,6 +72,27 @@ C First call requires that we initialize everything to zero for safety
        _EXCH_XY_R4(feinput0, myThid )
        _EXCH_XY_R4(feinput1, myThid )
 # endif
+
+c set reasonable values to those that need at least something
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+             WIND(i,j,bi,bj) = 5.d0*maskC(i,j,1,bi,bj)
+             ATMOSP(i,j,bi,bj)   =1.d0*maskC(i,j,1,bi,bj)
+             SILICA(i,j,bi,bj)   =7.6838e-3*maskC(i,j,1,bi,bj)
+             FIce(i,j,bi,bj) =0.d0
+#ifdef READ_PAR
+             PAR(i,j,bi,bj) =100.d0*maskC(i,j,1,bi,bj)
+#endif
+#ifdef ALLOW_FE
+             InputFe(i,j,bi,bj)  = 1e-11*maskC(i,j,1,bi,bj)
+#endif
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
 
 #endif
       RETURN

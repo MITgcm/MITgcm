@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.11 2006/10/26 00:25:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.12 2007/05/01 22:12:12 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -25,10 +25,8 @@ C !USES: ===============================================================
 #include "PTRACERS.h"
 #include "GCHEM.h"
 #include "DIC_ABIOTIC.h"
-#ifdef DIC_BIOTIC
 #include "DIC_BIOTIC.h"
 #include "DIC_LOAD.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -155,8 +153,6 @@ C
            IF ( WindFile .NE. ' '  ) THEN
              WIND(i,j,bi,bj)    = bWght*wspeed0(i,j,bi,bj)
      &                        +aWght*wspeed1(i,j,bi,bj)
-           ELSE
-             WIND(i,j,bi,bj) = 5.d0*maskC(i,j,1,bi,bj)
            ENDIF
 c calculate piston velocity
 c QQ: note - we should have wind speed variance in here
@@ -165,20 +161,14 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
            IF ( AtmospFile .NE. ' '  ) THEN
              ATMOSP(i,j,bi,bj)    = bWght*atmosp0(i,j,bi,bj)
      &                        +aWght*atmosp1(i,j,bi,bj)
-           ELSE
-             ATMOSP(i,j,bi,bj)   =1.d0*maskC(i,j,1,bi,bj)
            ENDIF
            IF ( SilicaFile .NE. ' '  ) THEN
              SILICA(i,j,bi,bj)    = bWght*silica0(i,j,bi,bj)
      &                        +aWght*silica1(i,j,bi,bj)
-           ELSE
-             SILICA(i,j,bi,bj)   =7.6838e-3*maskC(i,j,1,bi,bj)
            ENDIF
            IF ( IceFile .NE. ' '  ) THEN
             FIce(i,j,bi,bj)    = bWght*ice0(i,j,bi,bj)
      &                          +aWght*ice1(i,j,bi,bj)
-           ELSE
-            FIce(i,j,bi,bj) =0.d0
            ENDIF
            if (FIce(i,j,bi,bj).lt.1d-2) then
               FIce(i,j,bi,bj) = 0.d0
@@ -187,16 +177,12 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
            IF ( Filename1 .NE. ' '  ) THEN
             PAR(i,j,bi,bj)    = bWght*par0(i,j,bi,bj)
      &                          +aWght*par1(i,j,bi,bj)
-           ELSE
-            PAR(i,j,bi,bj) =100.d0
            ENDIF
 #endif
 #ifdef ALLOW_FE
            IF ( IronFile .NE. ' '  ) THEN
             InputFe(i,j,bi,bj)   = bWght*feinput0(i,j,bi,bj)
      &                          +aWght*feinput1(i,j,bi,bj)
-           ELSE
-             InputFe(i,j,bi,bj)  =  0.d0*maskC(i,j,1,bi,bj)
            ENDIF
 #endif
           ENDDO
