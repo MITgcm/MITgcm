@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code/Attic/GCHEM_OPTIONS.h,v 1.1 2006/04/20 16:34:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code/Attic/GCHEM_OPTIONS.h,v 1.2 2007/05/01 21:47:07 stephd Exp $
 C $Name:  $
 
 #ifndef GCHEM_OPTIONS_H
@@ -22,6 +22,7 @@ c------------------------------------
 c specifics for dic pkg
 #define DIC_BIOTIC
 #undef  ALLOW_FE
+#define ALLOW_O2
 #undef READ_PAR
 #undef MINFE
 c -------------------------------------

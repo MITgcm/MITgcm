@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.11 2006/11/28 21:16:03 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.12 2007/05/01 21:45:33 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -44,6 +44,7 @@ C  SGO2                  :: air-sea exchange of oxygen
 
 #ifdef ALLOW_PTRACERS
 
+#ifdef ALLOW_O2
 
 C !LOCAL VARIABLES: ===================================================
 C I, J, K - Loop counters
@@ -132,6 +133,7 @@ C update surface tendencies
      &         *recip_drF(1) * recip_hFacC(i,j,1,bi,bj)
           ENDDO
          ENDDO
+#endif
 #endif
 
 

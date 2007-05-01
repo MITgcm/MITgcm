@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.13 2006/12/12 22:37:28 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.14 2007/05/01 21:45:33 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -9,7 +9,10 @@ C !ROUTINE: DIC_BIOTIC_FORCING
 
 C !INTERFACE: ==========================================================
       SUBROUTINE DIC_BIOTIC_FORCING( PTR_DIC, PTR_ALK, PTR_PO4,
-     &                            PTR_DOP, PTR_O2, 
+     &                            PTR_DOP, 
+#ifdef ALLOW_O2
+     &                            PTR_O2, 
+#endif
 #ifdef ALLOW_FE
      &                            PTR_FE,
 #endif
@@ -47,7 +50,9 @@ C  PTR_FE               :: iron
       _RL  PTR_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef ALLOW_O2
       _RL  PTR_O2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif
 #ifdef ALLOW_FE
       _RL  PTR_FE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
@@ -75,7 +80,6 @@ c  freefe                 :: iron not bound to ligand
       _RL  GALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  GPO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  GDOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  GO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  SURA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  SURC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  SURO(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -86,6 +90,9 @@ c  freefe                 :: iron not bound to ligand
       _RL  pflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  exportflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  cflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef ALLOW_O2
+      _RL  GO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif
 #ifdef ALLOW_FE
       _RL  GFE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -105,7 +112,6 @@ CEOP
            GALK(i,j,k)=0.d0
            GPO4(i,j,k)=0.d0
            GDOP(i,j,k)=0.d0
-           GO2(i,j,k)=0.d0
            SURA(i,j)=0.d0
            SURC(i,j)=0.d0
            CAR(i,j,k)=0.d0
@@ -115,6 +121,9 @@ CEOP
            pflux(i,j,k)=0.d0
            exportflux(i,j,k)=0.d0
            cflux(i,j,k)=0.d0
+#ifdef ALLOW_O2
+           GO2(i,j,k)=0.d0
+#endif
 #ifdef ALLOW_FE
            GFE(i,j,k)=0.d0
            freefe(i,j,k)=0.d0
@@ -133,10 +142,12 @@ c alkalinity air-sea interaction
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 
-c carbon air-sea interaction
+#ifdef ALLOW_O2
+c oxygen air-sea interaction
        CALL O2_SURFFORCING( PTR_O2, SURO,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
+#endif
 
 #ifdef ALLOW_FE
 c find free iron
@@ -195,11 +206,13 @@ c add all tendencies for PO4, DOP, ALK, DIC
            GALK(i,j,k)=+2.d0*car(i,j,k)-R_NP*bio(i,j,k)
            BIO_kar(i,j,k)=R_NP*bio(i,j,k)
            GDIC(i,j,k)=car(i,j,k)+R_CP*bio(i,j,k)
+#ifdef ALLOW_O2
            if (PTR_O2(i,j,k).gt.o2crit) then
              GO2(i,j,k)=R_OP*bio(i,j,k)
            else
              GO2(i,j,k)=0.d0
            endif
+#endif
 #ifdef ALLOW_FE
            GFE(i,j,k)=R_FeP*bio(i,j,k)
      &             -Kscav*freefe(i,j,k)
@@ -207,7 +220,9 @@ c add all tendencies for PO4, DOP, ALK, DIC
            IF (K.eq.1) then
                GALK(i,j,1)=GALK(i,j,1)+SURA(i,j)
                GDIC(i,j,1)=GDIC(i,j,1)+SURC(i,j)
+#ifdef ALLOW_O2
                GO2(i,j,1)=GO2(i,j,1)+SURO(i,j)
+#endif
 #ifdef ALLOW_FE
                GFE(i,j,1)=GFE(i,j,1)+alpfe*
      &                    InputFe(i,j,bi,bj)*recip_drF(1)
@@ -231,8 +246,10 @@ C update
      &      PTR_PO4(i,j,k)+GPO4(i,j,k)*dTtracerLev(k)
            PTR_DOP(i,j,k)=
      &      PTR_DOP(i,j,k)+GDOP(i,j,k)*dTtracerLev(k)
+#ifdef ALLOW_O2
            PTR_O2(i,j,k)=
      &      PTR_O2(i,j,k)+GO2(i,j,k)*dTtracerLev(k)
+#endif
 #ifdef ALLOW_FE
            PTR_FE(i,j,k)=
      &      PTR_FE(i,j,k)+GFE(i,j,k)*dTtracerLev(k)
@@ -270,8 +287,10 @@ c save averages
             if (k.eq.1) then
               SURave(i,j,bi,bj)=SURave(i,j,bi,bj)+
      &                          SURC(i,j)*deltaTclock
+#ifdef ALLOW_O2
               SUROave(i,j,bi,bj)=SUROave(i,j,bi,bj)+
      &                           SURO(i,j)*deltaTclock
+#endif
               pCO2ave(i,j,bi,bj)=pCO2ave(i,j,bi,bj)+
      &                           pCO2(i,j,bi,bj)*deltaTclock
               pHave(i,j,bi,bj)=pHave(i,j,bi,bj)+
