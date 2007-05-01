@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.803 2007/04/30 22:48:52 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.804 2007/05/01 04:10:31 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -41,6 +41,7 @@ o pkg/seaice: fix bug in evp solver, while doing that
     of evp, complete rewrite for lsr case (latter is does not yet work
     in all cases)
 o pkg/kpp: add code to have mixing in shelf ice caverns
+  - add myThid to all kpp routines (long overdue)
 
 checkpoint59
 o pkg/exf: 
