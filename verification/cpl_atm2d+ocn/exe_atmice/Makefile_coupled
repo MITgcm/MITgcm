@@ -1,0 +1,50 @@
+###################################################################
+##  A makefile for MIT Global Climate and Biogeochemistry Model  ##
+##			---------------------			 ##
+##  	  Chien Wang,  July 31, 1995	                         ##
+## 	  MIT Joint Program for Global Change	                 ##
+###################################################################
+
+##
+## === Compile, link and execute sectio:
+##
+
+# --- for PGI/LINUX
+FFLAGS =  -fastsse  
+#FFLAGS =  -fastsse  -L/usr/local/pkg/gm/gm-2.0.14/lib -I/usr/local/pkg/gm/gm-2.0.14/include
+#FFLAGS2=  -r8 -i4 -Mdalign -Msave
+CC     =  mpif90
+#CC     = pgf77
+
+CXX    = pgCC
+#FFLAGCC= -I$(INCDIR) -fast
+#LFLAGCC=-lstd -lC -lm -lpgc -lgcc -lc
+
+#LIBS   = LIBATM_NEWCLM.a  GACM64_11x46.a 
+#LIBCLM = LIBCLM.032706.a libesmf.a libmpiuni.a
+#LIBML  = LIB3DO.a 
+#LIBCDF = libnetcdf.a libnetcdf_c++.a
+
+LIBS    = LIB3DO.a LIBATM.a
+
+#LIBS:= $(LIBS) $(LIBML) $(LIBCLM) $(LIBCDF)
+
+
+	
+##
+## === Assign dependencies:
+##
+
+ALL: $(OBJECT) 
+	$(CC) $(FFLAGS) $(OBJECT) -o mod.out $(LIBS)
+#	  $(CC) $(FFLAGS) $(OBJECT) -o mod.out $(LIBS) $(LFLAGCC)
+
+#BJECT: $(INCFILE1) $(INCFILES2) $(INCFILES3) $(INCFILES4)
+
+
+
+.F.o:
+	 $(CC) -c $(FFLAGS) $<
+
+
+

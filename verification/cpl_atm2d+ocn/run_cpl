@@ -1,0 +1,21 @@
+#! /bin/sh
+
+ dir=`pwd`
+ AEXEDIR=../exe_atmice
+ OEXEDIR=../build_ocn
+
+ ROOTDIR=$dir
+ echo $ROOTDIR
+
+# echo $PBS_NODEFILE
+# list=`cat $PBS_NODEFILE`
+ cat >! host_group <<EOF
+c032
+c031
+EOF
+
+ cd $ROOTDIR
+ mpirun -v -np 1 $AEXEDIR/mitgcmuv : -np 1 -hostfile host_group $OEXEDIR/mitgcmuv > std_outp 2>&1
+ tail -20 std_outp
+
+exit 0

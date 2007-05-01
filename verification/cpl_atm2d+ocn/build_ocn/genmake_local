@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#  This is the local options file for the "new" version of genmake
+#
+#  EH3 initial version 2003-08
+
+MODS="../code_ocn ../shared_code"

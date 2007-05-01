@@ -1,0 +1,19 @@
+# Coupling package parameters, OCN component: 
+# cpl_earlyExpImpCall :: call coupler early in the time stepping call sequence
+#     useImportHFlx :: True => use the Imported HeatFlux from couler
+#     useImportFW   :: True => use the Imported Fresh Water flux fr cpl
+#     useImportTau  :: True => use the Imported Wind-Stress from couler
+#     useImportSLP  :: True => use the Imported Sea-level Atmos. Pressure
+#     useImportSIce :: True => use the Imported Sea-Ice loading
+#     cpl_taveFreq  :: Frequency^-1 for time-Aver. output (s)
+ &CPL_OCN_PARAM
+ cpl_earlyExpImpCall=.TRUE.,
+# useImportHFlx=.FALSE.,
+# useImportFW  =.FALSE.,
+# useImportTau =.FALSE.,
+  useImportSLP =.FALSE.,
+# useImportSIce=.FALSE.,
+# cpl_taveFreq=2592000.,
+#  cpl_taveFreq=18000.,
+ &
+

@@ -1,0 +1,56 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ rhonil=1035.,
+ rhoConstFresh=1000.,
+ convertFW2Salt = 35.0,
+ momStepping = .FALSE.,
+ tempStepping = .FALSE.,
+ saltStepping = .FALSE.,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+#
+ &
+
+# Time stepping parameters
+ &PARM03
+ startTime = 0.,
+ endtime   = 31536000.,
+# deltaTmom = 900.0,
+# deltaTtracer=28800.,
+ deltaTClock =28800.,
+# deltaTfreesurf=28800.,
+ abEps = 0.1,
+# forcing_In_AB=.FALSE.,
+#cAdjFreq = -1,
+ pChkptFreq= 31536000.,
+ chkptFreq=  31536000.,
+ dumpFreq=  0.,
+ taveFreq=  31536000.,
+ tauThetaClimRelax = 0.d0,
+ tauSaltClimRelax = 0.d0,
+ monitorFreq= 31536000.,
+ periodicExternalForcing=.FALSE.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ delZ= 50.,
+ phiMin=-90.,
+ delY=6.,42*4.,6.
+ delX=90*4.,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile=      'bathy_90x44x15.bin',
+ surfQFile=      ' ',
+ EmPmRFile=      ' ',
+ &
+

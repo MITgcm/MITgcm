@@ -1,0 +1,60 @@
+This verifcation run is set up to run on two processers. The atmosphere and 
+seaice run in the top directory; the ocean runs in a subdirectory rank_1.
+This rank_1 directory must be created - with appropriate input files - prior
+to running.
+
+A sample script to execute the mpirun command is run_cpl. 
+
+It is also possible to run the full coupled model on a single processor,
+or to distribute the ocean to several nodes, with subdirectories rank_1 
+to rank_n, although the atmosphere/seaice cannot be parallelized.
+(additional documentation forthcoming)
+
+-----------------------------------------------------------------
+
+To build the atmospheric/seaice code:
+
+The atmospheric code is located at:
+http://mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm_contrib/jscott/igsm/
+
+Here, there is a source and include directory, and a makefile which builds
+an atmospheric library LIBATM.a
+
+To make the atmice executable, there is a script (which runs a makefile) 
+in the verification exp. directory exe_atmice. This script first makes a 
+ocean library LIB3DO.a from the build_atmice *.o files. The MITGCM 
+options turn off pretty much everything except packages THSICE and ATM2D.
+
+The ocean code should be built in build_ocn, and the mitgcmuv executable 
+which results is used directly. There are no special options needed (except
+the generic coupling option) in the ocean-only code.
+
+Pickups (to get you started) for the GISS atmosphere are located at:
+http://mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm_contrib/jscott/igsm/pickup/
+(these are fairly large and thus not included in input_atmice)
+
+Support files for the GISS atmosphere (referenced in name.dat) are
+in the tar ball:
+http://mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm_contrib/jscott/
+
+This verification experiment was run with CLM off, i.e. using a simple bucket
+model included in the GISS atmosphere. Support for using CLM with be 
+forthcoming.
+
+name.dat notes: 
+---------------
+These are output files, and must be not present before running:
+    ocndata4atm = 'ocnd4a0001.01'
+    plotfl   = 'plot0001.01'
+    nwrfl    = 'nwr0001.01'
+These are the atmos. pickups, which are continuously overwritten:
+    file1    = 'pov10001.01.bin',
+    file2    = 'pov20001.01.bin',
+These support files are needed (in addition to some others):
+    bgrghg_data = '../ATM2D_DATA/INIT/forcing/ghgdata.GISS.2005.dat'
+    fprratio  = '../ATM2D_DATA/CLMDATA/pcp2lnd-data.001x046.txt'
+
+There are many other options to the 2D atmosphere; further support forthcoming.
+
+Questions: jscott@mit.edu
+

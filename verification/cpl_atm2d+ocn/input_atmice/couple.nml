@@ -1,0 +1,10 @@
+# couple driver parms
+ &COUPLE_PARM
+ dtcouple=8,
+ dtatm=1,
+ dtocn=8,
+ startYear=1,
+ endYear=1,
+ taveDump=1,
+ &
+

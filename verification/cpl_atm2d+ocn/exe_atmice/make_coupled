@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+
+
+#  . /etc/profile.d/modules.sh
+#  module list > .module_list 2>&1
+#  module add mpich/pgi
+
+
+
+BASEDIR=.
+
+EXEDIR=$BASEDIR/
+
+
+# --- indicate system name
+#setenv PLATFORM Linux
+#setenv PLATFORM OSF1
+
+#
+
+rm -f LIB3DO.a
+ar -r LIB3DO.a ../build_atmice32/*.o
+
+make -f ./Makefile_coupled
+
+mv  mod.out $EXEDIR/mitgcmuv
