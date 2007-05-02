@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.28 2007/04/17 18:53:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.29 2007/05/02 22:31:35 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -180,9 +180,9 @@ CADJ STORE wspeed       = comlev1, key = ikey_dynamics
 c     Deal set radiative fluxes
       call exf_wind( mytime, myiter, mythid )
 
-# ifdef ALLOW_BULK_LARGYEAG04
+# ifdef ALLOW_BULK_LARGEYEAGER04
 c     use Large & Yeager 2004
-      call exf_bulk_largyeag( mytime, myiter, mythid )
+      call exf_bulk_largeyeager04( mytime, myiter, mythid )
 # else
 c     use Large & Pond 1981
       call exf_bulkformulae( mytime, myiter, mythid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_CONSTANTS.h,v 1.2 2007/04/27 15:27:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_CONSTANTS.h,v 1.3 2007/05/02 22:31:35 heimbach Exp $
 C $Name:  $
 c
 c
@@ -45,22 +45,15 @@ c     sigma = (2*pi^5*k^4)/(15*h^3*c^2)
       _RL stefanBoltzmann
       parameter ( stefanBoltzmann = 5.670D-8 )
 
-c#ifdef ALLOW_ATM_TEMP
 c     is identical to "gravity" used in MITgcmUV
 c     needs to be marmonized through common constants.h file
       _RL         gravity_mks
       parameter ( gravity_mks = 9.81d0 )
-c#endif
+
+      _RL karman
+      parameter ( karman = 0.4d0 )
 
 c     3. empirical parameters
-
-c     umin         - minimum absolute wind speed used to evaluate
-c                    drag coefficient [m/s]
-c     atmrho       - mean atmospheric density [kg/(m*3)]
-      _RL umin
-      _RL atmrho
-      parameter ( umin           = 0.5 _d 0 
-     &          , atmrho         =        1.200    d0 )
 
 c     To invert the relationship ustar = ustar(umagn) the following
 c     parameterization is used:
@@ -92,8 +85,9 @@ c      ustofu11     - ustar = 0.3818 m/s, corresponding to u = 11 m/s
      &            cquadrag_2  = clindrag_1*u11/2 + clindrag_2
      &          )
 
-c#ifdef ALLOW_BULKFORMULAE
-
+c     umin         - minimum absolute wind speed used to evaluate
+c                    drag coefficient [m/s]
+c     atmrho       - mean atmospheric density [kg/(m*3)]
 c     atmcp        - mean atmospheric specific heat [J/kg/deg K]
 c     flamb        - latent heat of evaporation [J/kg]
 C     flami        - latent heat of melting of pure ice [J/kg]
@@ -117,6 +111,8 @@ c     hu           - height of mean wind
 c     ht           - height of mean temperature
 c     hq           - height of mean rel. humidity
 
+      _RL umin
+      _RL atmrho
       _RL atmcp
       _RL flamb, flami
       _RL cdrag_1,    cdrag_2,     cdrag_3
@@ -124,7 +120,6 @@ c     hq           - height of mean rel. humidity
       _RL cdalton
       _RL zolmin
       _RL zref
-      _RL karman
       _RL cvapor_fac, cvapor_exp
       _RL cvapor_fac_ice, cvapor_exp_ice
       _RL humid_fac
@@ -136,36 +131,32 @@ c     hq           - height of mean rel. humidity
       _RL ht
       _RL hq
 
-      parameter ( cdrag_1        =        0.0027000d0 ,
-     &            cdrag_2        =        0.0001420d0 ,
-     &            cdrag_3        =        0.0000764d0 ,
-     &            cstanton_1     =        0.0327000d0 ,
-     &            cstanton_2     =        0.0180000d0 ,
-     &            cdalton        =        0.0346000d0 ,
-     &            atmcp          =     1005.000    d0 ,
-     &            flamb          =  2500000.000    d0 ,
-     &            flami          =   334000.000    d0 ,
-     &            zolmin         =     -100.000    d0 ,
-     &            zref           =       10.000    d0 ,
-     &            karman         =        0.400    d0 ,
-     &            cvapor_fac     =   640380.000    d0 ,
-     &            cvapor_exp     =     5107.400    d0 ,
-     &            cvapor_fac_ice = 11637800.000    d0 ,
-     &            cvapor_exp_ice =     5897.800    d0 ,
-     &            humid_fac   =           0.606    d0 ,
-     &            gamma_blk   =           0.010    d0 ,
-     &            saltsat     =           0.980    d0 ,
-     &            psim_fac    =           5.000    d0 ,
-     &            cen2kel     =         273.150    d0 ,
-     &            hu          =          10.000    d0 ,
-     &            ht          =           2.000    d0 ,
-     &            hq          =           2.000    d0
-     &          )
-
-c#ifdef ALLOW_ATM_TEMP
-      _RL         czol
-      parameter ( czol = hu*karman*gravity_mks )
-c#endif
+      COMMON /exf_param_r_2/
+     &       umin,
+     &       atmrho,
+     &       cdrag_1,
+     &       cdrag_2,
+     &       cdrag_3,
+     &       cstanton_1,
+     &       cstanton_2,
+     &       cdalton,
+     &       atmcp,
+     &       flamb,
+     &       flami,
+     &       zolmin,
+     &       zref,
+     &       cvapor_fac,
+     &       cvapor_exp,
+     &       cvapor_fac_ice,
+     &       cvapor_exp_ice,
+     &       humid_fac,
+     &       gamma_blk,
+     &       saltsat,
+     &       psim_fac,
+     &       cen2kel,
+     &       hu,
+     &       ht,
+     &       hq
 
 c     4. control parameters
 
@@ -177,4 +168,3 @@ c
       integer     niter_bulk
       parameter ( niter_bulk = 2 )
 
-c#endif /* ALLOW_BULKFORMULAE */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.45 2007/04/27 13:22:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.46 2007/05/02 22:31:35 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -74,7 +74,12 @@ c     Surface flux data.
      &   exf_scal_BulkCdn,     climtempfreeze,
      &          exf_iprec,         exf_yftype,   exf_monFreq,
      & useExfYearlyFields,  twoDigitYear,   useExfCheckRange,
-     & selectStressGridPosition
+     & selectStressGridPosition,
+     & hu, ht, umin, atmrho, atmcp, cen2kel,
+     & cdrag_1, cdrag_2, cdrag_3, cstanton_1, cstanton_2, cdalton,
+     & flamb, flami, zolmin, zref,
+     & cvapor_fac, cvapor_exp, cvapor_fac_ice, cvapor_exp_ice,
+     & humid_fac, gamma_blk, saltsat, psim_fac
 
       NAMELIST /EXF_NML_02/
      &          hfluxfile,          atempfile,       aqhfile,
@@ -193,6 +198,31 @@ c     Set default values.
 
       year2sec           = 365.*86400.
       exf_monFreq        = monitorFreq
+
+      umin           = 0.5 _d 0 
+      atmrho         =        1.200    d0
+      cdrag_1        =        0.0027000d0
+      cdrag_2        =        0.0001420d0
+      cdrag_3        =        0.0000764d0
+      cstanton_1     =        0.0327000d0
+      cstanton_2     =        0.0180000d0
+      cdalton        =        0.0346000d0
+      atmcp          =     1005.000    d0
+      flamb          =  2500000.000    d0
+      flami          =   334000.000    d0
+      zolmin         =     -100.000    d0
+      zref           =       10.000    d0
+      cvapor_fac     =   640380.000    d0
+      cvapor_exp     =     5107.400    d0
+      cvapor_fac_ice = 11637800.000    d0
+      cvapor_exp_ice =     5897.800    d0
+      humid_fac   =           0.606    d0
+      gamma_blk   =           0.010    d0
+      saltsat     =           0.980    d0
+      psim_fac    =           5.000    d0
+      cen2kel     =         273.150    d0
+      hu          =          10.000    d0
+      ht          =           2.000    d0
 
 c     Calendar data.
       hfluxstartdate1    = 0
@@ -648,6 +678,9 @@ c     Next, read the forcing data file.
      &                SQUEEZE_RIGHT , 1)
 
       CLOSE( iUnit )
+
+c     Hard-wire certain parameters
+      hq = ht
 
       call exf_check( mythid )
 
