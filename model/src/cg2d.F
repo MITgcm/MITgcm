@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.46 2006/12/05 19:34:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.47 2007/05/02 15:52:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -92,6 +92,7 @@ c     INTEGER ks
       _RL    sumRHS,sumRHStile
       _RL    rhsMax
       _RL    rhsNorm
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 
@@ -190,13 +191,11 @@ c    &    )
         err    = err    + errTile
        ENDDO
       ENDDO
-C     _EXCH_XY_R8( cg2d_r, myThid )
 #ifdef LETS_MAKE_JAM
       CALL EXCH_XY_O1_R8_JAM( cg2d_r )
 #else
       CALL EXCH_XY_RL( cg2d_r, myThid )
 #endif
-C     _EXCH_XY_R8( cg2d_s, myThid )
 #ifdef LETS_MAKE_JAM
       CALL EXCH_XY_O1_R8_JAM( cg2d_s )
 #else
@@ -344,8 +343,18 @@ C      Now compute "interior" points.
        err = SQRT(err)
        actualIts      = it2d
        actualResidual = err
+       IF ( debugLevel.GT.debLevB ) THEN
+c       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
+c    &     ) THEN
+        _BEGIN_MASTER( myThid )
+        WRITE(msgBuf,'(A,I6,A,1PE21.14)')
+     &    ' cg2d: iter=', actualIts, ' ; resid.= ', actualResidual
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+        _END_MASTER( myThid )
+c       ENDIF
+       ENDIF
        IF ( err .LT. cg2dTolerance ) GOTO 11
-C      _EXCH_XY_R8(cg2d_r, myThid )
+
 #ifdef LETS_MAKE_JAM
       CALL EXCH_XY_O1_R8_JAM( cg2d_r )
 #else
