@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4+mpi_jump,v 1.1 2006/12/11 14:15:36 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4+mpi_jump,v 1.2 2007/05/02 19:19:26 mlosch Exp $
 #
 #  tested on jump.fz-juelich.de, mlosch
 #  uname -a: AIX j36 3 5 00223C3B4C00
@@ -21,8 +21,12 @@ CPP='/lib/cpp -P'
 CC='mpcc_r -q64'
 FC='mpxlf95_r -q64'
 LINK='mpxlf95_r -q64'
-#LIBS='-lmass'
-LIBS='-lmass -lesslsmp'
+#-- uncomment this line in order to link the mpiP libraries for MPI profiling
+#-- require to do "module load mpiP" before linking
+# MPIPLIBS="-L$MPIP_LIBRTS -lmpiP -lbfd -liberty -lintl -lm"
+LIBS="-lmass $MPIPLIBS"
+#-- according to Constantinos we do no need the esslsmp library
+#LIBS="-lmass -lesslsmp $MPIPLIBS"
 FFLAGS='-qfixed=132' 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
