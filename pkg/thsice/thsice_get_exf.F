@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.7 2007/04/27 15:51:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.8 2007/05/03 21:51:12 mlosch Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -92,6 +92,7 @@ C     hsLocal, hlLocal :: sensible & latent heat flux over sea-ice
       _RL     x
       _RL     tau
       _RL     tmpbulk
+      _RL     czol
 
 C     additional variables that are copied from bulkf_formula_lay:
 C     upward LW at surface (W m-2)
@@ -141,6 +142,9 @@ C     == end of interface ==
      &         + sNx*sNy*max1*max2*act3
      &         + sNx*sNy*max1*max2*max3*act4
 #endif
+
+C-- Set surface parameters :
+      czol = hu*karman*gravity_mks
 
 C     copy a few variables to names used in bulkf_formula_lay
       Tsf    =  tsfCel+cen2kel
