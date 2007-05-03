@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.30 2007/05/01 04:09:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.31 2007/05/03 21:36:26 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -26,7 +26,7 @@ c***********************************************************************
      O     , diffus
      U     , ghat
      O     , hbl
-     I     , mytime, mythid )
+     I     , myTime, myIter, myThid )
 
 c-----------------------------------------------------------------------
 c
@@ -50,8 +50,9 @@ c-----------------------------------------------------------------------
 #include "KPP_PARAMS.h"
 
 c input
-c     myTime           - current time in simulation
-c     myThid           - thread number for this instance of the routine
+c   myTime :: Current time in simulation
+c   myIter :: Current iteration number in simulation
+c   myThid :: My Thread Id. number
 c     kmtj   (imt)     - number of vertical layers on this row
 c     msk    (imt)     - surface mask (=1 if water, =0 otherwise)
 c     shsq   (imt,Nr)  - (local velocity shear)^2                     ((m/s)^2)
@@ -71,8 +72,9 @@ c     note: there is a conversion from 2-D to 1-D for input output variables,
 c           e.g., hbl(sNx,sNy) -> hbl(imt),
 c           where hbl(i,j) -> hbl((j-1)*sNx+i)
 
-      _RL     mytime
-      integer mythid
+      _RL     myTime
+      integer myIter
+      integer myThid
       integer kmtj (imt   )
       _RL shsq     (imt,Nr)
       _RL dvsq     (imt,Nr)
@@ -173,7 +175,7 @@ c-----------------------------------------------------------------------
      I     , dvsq, dbloc, Ritop, ustar, bo, bosol, coriol
      I     , ikppkey
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
-     I     , mytime, mythid )
+     I     , myTime, myIter, myThid )
 
 CADJ STORE hbl,bfsfc,stable,casea,kbl = comlev1_kpp, key = ikppkey
 
@@ -184,7 +186,7 @@ c-----------------------------------------------------------------------
       call blmix (
      I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
      O     , dkm1, blmc, ghat, sigma, ikppkey
-     I     , mythid )
+     I     , myThid )
 cph(
 CADJ STORE dkm1,blmc,ghat = comlev1_kpp, key = ikppkey
 CADJ STORE hbl, kbl, diffus, casea = comlev1_kpp, key = ikppkey
@@ -198,7 +200,7 @@ c-----------------------------------------------------------------------
      I       dkm1, hbl, kbl, diffus, casea
      U     , ghat
      O     , blmc
-     I     , mythid )
+     I     , myThid )
 
 cph(
 cph avoids recomp. of enhance
@@ -245,7 +247,7 @@ c*************************************************************************
      I     , dvsq, dbloc, Ritop, ustar, bo, bosol, coriol
      I     , ikppkey
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
-     I     , mytime, mythid )
+     I     , myTime, myIter, myThid )
 
 c     the oceanic planetary boundary layer depth, hbl, is determined as
 c     the shallowest depth where the bulk Richardson number is
@@ -275,8 +277,9 @@ c
 
 c input
 c------
-c myTime    : current time in simulation
-c myThid    : thread number for this instance of the routine
+c   myTime :: Current time in simulation
+c   myIter :: Current iteration number in simulation
+c   myThid :: My Thread Id. number
 c kmtj      : number of vertical layers
 c dvsq      : (velocity shear re sfc)^2             ((m/s)^2)
 c dbloc     : local delta buoyancy across interfaces  (m/s^2)
@@ -287,8 +290,9 @@ c ustar     : surface friction velocity                 (m/s)
 c bo        : surface turbulent buoyancy forcing    (m^2/s^3)
 c bosol     : radiative buoyancy forcing            (m^2/s^3)
 c coriol    : Coriolis parameter                        (1/s)
-      _RL     mytime
-      integer mythid
+      _RL     myTime
+      integer myIter
+      integer myThid
       integer kmtj(imt)
       _RL dvsq    (imt,Nr)
       _RL dbloc   (imt,Nr)
@@ -362,9 +366,9 @@ c     compute bfsfc = sw fraction at hbf * zgrid
          end do
 CADJ store worka = comlev1_kpp_k, key = kkppkey
          call SWFRAC(
-     I        imt, hbf, 
-     I        mytime, mythid,
-     U        worka )
+     I       imt, hbf, 
+     U       worka,
+     I       myTime, myIter, myThid )
 CADJ store worka = comlev1_kpp_k, key = kkppkey
 
 
@@ -465,9 +469,9 @@ c-----------------------------------------------------------------------
 CADJ store worka = comlev1_kpp
 CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       call SWFRAC(
-     I     imt, minusone, 
-     I     mytime, mythid,
-     U     worka )
+     I       imt, minusone, 
+     U       worka,
+     I       myTime, myIter, myThid )
 CADJ store worka = comlev1_kpp
 CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
@@ -538,8 +542,8 @@ CADJ store worka = comlev1_kpp
 CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       call SWFRAC(
      I     imt, minusone, 
-     I     mytime, mythid,
-     U     worka )
+     U     worka,
+     I     myTime, myIter, myThid )
 CADJ store worka = comlev1_kpp
 CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
  
@@ -671,10 +675,11 @@ c-----------------------------------------------------------------------
 c*************************************************************************
  
       subroutine Ri_iwmix (
-     I       kmtj, shsq, dbloc, dblocSm
-     I     , diffusKzS, diffusKzT
-     I     , ikppkey
-     O     , diffus )
+     I       kmtj, shsq, dbloc, dblocSm,
+     I       diffusKzS, diffusKzT,
+     I       ikppkey,
+     O       diffus,
+     I       myThid )
 
 c     compute interior viscosity diffusivity coefficients due
 c     to shear instability (dependent on a local Richardson number),
@@ -695,6 +700,7 @@ c     dbloc  (imt,Nr)      local delta buoyancy                     (m/s^2)
 c     dblocSm(imt,Nr)      horizontally smoothed dbloc              (m/s^2)
 c     diffusKzS(imt,Nr)- background vertical diffusivity for scalars    (m^2/s)
 c     diffusKzT(imt,Nr)- background vertical diffusivity for theta      (m^2/s)
+c     myThid :: My Thread Id. number
       integer kmtj (imt)
       _RL shsq     (imt,Nr)
       _RL dbloc    (imt,Nr)
@@ -702,6 +708,7 @@ c     diffusKzT(imt,Nr)- background vertical diffusivity for theta      (m^2/s)
       _RL diffusKzS(imt,Nr)
       _RL diffusKzT(imt,Nr)
       integer ikppkey
+      integer myThid
  
 c output
 c     diffus(imt,0:Nrp1,1)  vertical viscosivity coefficient        (m^2/s)
@@ -1010,7 +1017,7 @@ c*************************************************************************
       subroutine blmix (
      I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
      O     , dkm1, blmc, ghat, sigma, ikppkey
-     I     , mythid )
+     I     , myThid )
 
 c     mixing coefficients within boundary layer depend on surface
 c     forcing and the magnitude and gradient of interior mixing below
