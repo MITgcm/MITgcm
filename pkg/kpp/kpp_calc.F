@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.40 2007/05/01 04:09:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.41 2007/05/03 14:51:05 mlosch Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -343,6 +343,24 @@ CADJ store TTALPHA, SSBETA    = comlev1_kpp, key = ikppkey
 #endif
 cph)
 
+CML#ifdef ALLOW_SHELFICE
+CMLC     For the pbl parameterisation to work underneath the ice shelves 
+CMLC     it needs to know the surface (ice-ocean) fluxes. However, masking
+CMLC     and indexing problems make this part of the code not work 
+CMLC     underneath the ice shelves and the following lines are only here
+CMLC     to remind me that this still needs to be sorted out.
+CML      shelfIceFac = 0. _d 0
+CML      IF ( useShelfIce ) selfIceFac = 1. _d 0
+CML      DO j = jmin, jmax
+CML       DO i = imin, imax
+CML        surfForcT = surfaceForcingT(i,j,bi,bj) 
+CML     &       + shelficeForcingT(i,j,bi,bj) * shelfIceFac
+CML        surfForcS = surfaceForcingS(i,j,bi,bj) 
+CML     &       + shelficeForcingS(i,j,bi,bj) * shelfIceFac
+CML       END DO
+CML      END DO
+CML#endif /* ALLOW_SHELFICE */
+
 c------------------------------------------------------------------------
 c     friction velocity, turbulent and radiative surface buoyancy forcing
 c     -------------------------------------------------------------------
@@ -353,336 +371,77 @@ c     bo    = - g * ( alpha*surfaceForcingT +
 c                     beta *surfaceForcingS ) / rho            (m^2/s^3)
 c     bosol = - g * alpha * Qsw * drF(1) / rho                 (m^2/s^3)
 c------------------------------------------------------------------------
-
-c initialize arrays to zero
-      DO j = 1-OLy, sNy+OLy
-         DO i = 1-OLx, sNx+OLx
-            ustar(i,j) = p0
-            bo   (I,J) = p0
-            bosol(I,J) = p0
-         END DO
-      END DO
-
-      DO j = jmin, jmax
-       jp1 = j + 1
-       DO i = imin, imax
-        ip1 = i+1
-        work3(i,j) =
-     &   (surfaceForcingU(i,j,bi,bj) + surfaceForcingU(ip1,j,bi,bj)) *
-     &   (surfaceForcingU(i,j,bi,bj) + surfaceForcingU(ip1,j,bi,bj)) +
-     &   (surfaceForcingV(i,j,bi,bj) + surfaceForcingV(i,jp1,bi,bj)) *
-     &   (surfaceForcingV(i,j,bi,bj) + surfaceForcingV(i,jp1,bi,bj))
-       END DO
-      END DO
-cph(
-CADJ store work3 = comlev1_kpp, key = ikppkey
-cph)
-      DO j = jmin, jmax
-       jp1 = j + 1
-       DO i = imin, imax
-        ip1 = i+1
-
-        if ( work3(i,j) .lt. (phepsi*phepsi*drF(1)*drF(1)) ) then
-           ustar(i,j) = SQRT( phepsi * p5 * drF(1) )
-        else
-           tempVar2 =  SQRT( work3(i,j) ) * p5
-           ustar(i,j) = SQRT( tempVar2 )
-        endif
-
-       END DO
-      END DO
-
-CML#ifdef ALLOW_SHELFICE
-CMLC     For the pbl parameterisation to work underneath the ice shelves 
-CMLC     it needs to know the surface (ice-ocean) fluxes. However, masking
-CMLC     and indexing problems make this part of the code not work 
-CMLC     underneath the ice shelves and the following lines are only here
-CMLC     to remind me that this still needs to be sorted out.
-CML      IF ( useShelfIce ) THEN
-CML      DO j = jmin, jmax
-CML       jp1 = j + 1
-CML       DO i = imin, imax
-CML        ip1 = i+1
-CML        k   = kTopC(I,J,bi,bj)
-CML        bo(I,J) = - gravity *
-CML     &       ( TTALPHA(I,J,K) * ( maskC(I,J,1,bi,bj) 
-CML     &       * ( surfaceForcingT(i,j,bi,bj) 
-CML     &       + surfaceForcingTice(i,j,bi,bj) )
-CML     &       + shelficeForcingT(i,j,bi,bj) ) 
-CML     &       + SSBETA(I,J,K) * ( maskC(I,J,1,bi,bj) 
-CML     &       * surfaceForcingS(i,j,bi,bj) 
-CML     &       + shelficeForcingS(i,j,bi,bj) ) )
-CML     &       / work2(I,J)
-CML
-CML        bosol(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj) 
-CML     &       * maskC(I,J,1,bi,bj) * recip_Cp*recip_rhoConst
-CML     &       / work2(I,J)
-CML
-CML       END DO
-CML      END DO
-CML      ELSE
-CML#endif /* ALLOW_SHELFICE */
-      DO j = jmin, jmax
-       jp1 = j + 1
-       DO i = imin, imax
-        ip1 = i+1
-
-        bo(I,J) = - gravity *
-     &       ( TTALPHA(I,J,1) * (surfaceForcingT(i,j,bi,bj)+
-     &       surfaceForcingTice(i,j,bi,bj)) +
-     &       SSBETA(I,J,1) * surfaceForcingS(i,j,bi,bj) )
-     &       / work2(I,J)
-
-        bosol(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj) *
-     &       recip_Cp*recip_rhoConst
-     &       / work2(I,J)
-
-       END DO
-      END DO
-CML#ifdef ALLOW_SHELFICE
-CML      ENDIF
-CML#endif /* ALLOW_SHELFICE */
-       
-cph(
-CADJ store ustar = comlev1_kpp, key = ikppkey
-cph)
-
-c------------------------------------------------------------------------
 c     velocity shear
 c     --------------
 c     Get velocity shear squared, averaged from "u,v-grid"
 c     onto "t-grid" (in (m/s)**2):
 c     dVsq(k)=(Uref-U(k))**2+(Vref-V(k))**2      at grid levels
 c     shsq(k)=(U(k)-U(k+1))**2+(V(k)-V(k+1))**2  at interfaces
+c     
+c     note: Vref can depend on the surface fluxes that is why we compute
+c     dVsq in the subroutine that does the surface related stuff
+c     (admittedly this is a bit messy)
 c------------------------------------------------------------------------
+       
+      CALL KPP_FORCING_SURF(
+     I     work2, surfaceForcingU, surfaceForcingV,
+     I     surfaceForcingT, surfaceForcingS, surfaceForcingTice, 
+     I     Qsw, ttalpha, ssbeta,  
+     O     ustar, bo, bosol, dVsq,
+     I     ikppkey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
+
+CMLcph(
+CMLCADJ store ustar = comlev1_kpp, key = ikppkey
+CMLcph)
 
 c initialize arrays to zero
       DO k = 1, Nr
-         DO j = 1-OLy, sNy+OLy
-            DO i = 1-OLx, sNx+OLx
-               shsq(i,j,k) = p0
-               dVsq(i,j,k) = p0
-            END DO
-         END DO
+       DO j = 1-OLy, sNy+OLy
+        DO i = 1-OLx, sNx+OLx
+         shsq(i,j,k) = p0
+        END DO
+       END DO
       END DO
-
-c     dVsq computation
-
-#ifdef KPP_ESTIMATE_UREF
-
-c     Get rid of vertical resolution dependence of dVsq term by
-c     estimating a surface velocity that is independent of first level
-c     thickness in the model.  First determine mixed layer depth hMix.
-c     Second zRef = espilon * hMix.  Third determine roughness length
-c     scale z0.  Third estimate reference velocity.
-
-      DO j = jmin, jmax
-         jp1 = j + 1
-         DO i = imin, imax
-            ip1 = i + 1
-
-c     Determine mixed layer depth hMix as the shallowest depth at which
-c     dB/dz exceeds 5.2e-5 s^-2.
-            work1(i,j) = nzmax(i,j,bi,bj)
-            DO k = 1, Nr
-               IF ( k .LT. nzmax(i,j,bi,bj) .AND.
-     &              maskC(I,J,k,bi,bj) .GT. 0. .AND.
-     &              dbloc(i,j,k) / drC(k+1) .GT. dB_dz )
-     &              work1(i,j) = k
-            END DO
-
-c     Linearly interpolate to find hMix.
-            k = work1(i,j)
-            IF ( k .EQ. 0 .OR. nzmax(i,j,bi,bj) .EQ. 1 ) THEN
-               zRef(i,j) = p0
-            ELSEIF ( k .EQ. 1) THEN
-               dBdz2 = dbloc(i,j,1) / drC(2)
-               zRef(i,j) = drF(1) * dB_dz / dBdz2
-            ELSEIF ( k .LT. nzmax(i,j,bi,bj) ) THEN
-               dBdz1 = dbloc(i,j,k-1) / drC(k  )
-               dBdz2 = dbloc(i,j,k  ) / drC(k+1)
-               zRef(i,j) = rF(k) + drF(k) * (dB_dz - dBdz1) /
-     &                     MAX ( phepsi, dBdz2 - dBdz1 )
-            ELSE
-               zRef(i,j) = rF(k+1)
-            ENDIF
-
-c     Compute roughness length scale z0 subject to 0 < z0
-               tempVar1 = p5 * (
-     &              (uVel(i,  j,  1,bi,bj)-uVel(i,  j,  2,bi,bj)) *
-     &              (uVel(i,  j,  1,bi,bj)-uVel(i,  j,  2,bi,bj)) +
-     &              (uVel(ip1,j,  1,bi,bj)-uVel(ip1,j,  2,bi,bj)) *
-     &              (uVel(ip1,j,  1,bi,bj)-uVel(ip1,j,  2,bi,bj)) +
-     &              (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  2,bi,bj)) *
-     &              (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  2,bi,bj)) + 
-     &              (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,2,bi,bj)) *
-     &              (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,2,bi,bj)) )
-               if ( tempVar1 .lt. (epsln*epsln) ) then
-                  tempVar2 = epsln
-               else
-                  tempVar2 = SQRT ( tempVar1 )
-               endif
-               z0(i,j) = rF(2) *
-     &                   ( rF(3) * LOG ( rF(3) / rF(2) ) /
-     &                     ( rF(3) - rF(2) ) -
-     &                     tempVar2 * vonK /
-     &                     MAX ( ustar(i,j), phepsi ) )
-               z0(i,j) = MAX ( z0(i,j), phepsi )
-
-c     zRef is set to 0.1 * hMix subject to z0 <= zRef <= drF(1)
-               zRef(i,j) = MAX ( epsilon * zRef(i,j), z0(i,j) )
-               zRef(i,j) = MIN ( zRef(i,j), drF(1) )
-
-c     Estimate reference velocity uRef and vRef.
-               uRef(i,j) = p5 *
-     &                     ( uVel(i,j,1,bi,bj) + uVel(ip1,j,1,bi,bj) )
-               vRef(i,j) = p5 *
-     &                     ( vVel(i,j,1,bi,bj) + vVel(i,jp1,1,bi,bj) )
-               IF ( zRef(i,j) .LT. drF(1) ) THEN
-                  ustarX = ( surfaceForcingU(i,  j,bi,bj) + 
-     &                       surfaceForcingU(ip1,j,bi,bj) ) * p5
-     &                   *recip_drF(1)
-                  ustarY = ( surfaceForcingV(i,j,  bi,bj) +
-     &                       surfaceForcingV(i,jp1,bi,bj) ) * p5
-     &                   *recip_drF(1)
-                  tempVar1 = ustarX * ustarX + ustarY * ustarY
-                  if ( tempVar1 .lt. (epsln*epsln) ) then
-                     tempVar2 = epsln
-                  else
-                     tempVar2 = SQRT ( tempVar1 )
-                  endif
-                  tempVar2 = ustar(i,j) *
-     &                 ( LOG ( zRef(i,j) / rF(2) ) +
-     &                 z0(i,j) / zRef(i,j) - z0(i,j) / rF(2) ) /
-     &                 vonK / tempVar2
-                  uRef(i,j) = uRef(i,j) + ustarX * tempVar2
-                  vRef(i,j) = vRef(i,j) + ustarY * tempVar2
-               ENDIF
-
-         END DO
-      END DO
-
-      DO k = 1, Nr
-         DO j = jmin, jmax
-            jm1 = j - 1
-            jp1 = j + 1
-            DO i = imin, imax
-               im1 = i - 1
-               ip1 = i + 1
-               dVsq(i,j,k) = p5 * (
-     $              (uRef(i,j) - uVel(i,  j,  k,bi,bj)) *
-     $              (uRef(i,j) - uVel(i,  j,  k,bi,bj)) +
-     $              (uRef(i,j) - uVel(ip1,j,  k,bi,bj)) *
-     $              (uRef(i,j) - uVel(ip1,j,  k,bi,bj)) +
-     $              (vRef(i,j) - vVel(i,  j,  k,bi,bj)) *
-     $              (vRef(i,j) - vVel(i,  j,  k,bi,bj)) + 
-     $              (vRef(i,j) - vVel(i,  jp1,k,bi,bj)) *
-     $              (vRef(i,j) - vVel(i,  jp1,k,bi,bj)) )
-#ifdef KPP_SMOOTH_DVSQ
-               dVsq(i,j,k) = p5 * dVsq(i,j,k) + p125 * (
-     $              (uRef(i,j) - uVel(i,  jm1,k,bi,bj)) *
-     $              (uRef(i,j) - uVel(i,  jm1,k,bi,bj)) +
-     $              (uRef(i,j) - uVel(ip1,jm1,k,bi,bj)) *
-     $              (uRef(i,j) - uVel(ip1,jm1,k,bi,bj)) +
-     $              (uRef(i,j) - uVel(i,  jp1,k,bi,bj)) *
-     $              (uRef(i,j) - uVel(i,  jp1,k,bi,bj)) +
-     $              (uRef(i,j) - uVel(ip1,jp1,k,bi,bj)) *
-     $              (uRef(i,j) - uVel(ip1,jp1,k,bi,bj)) +
-     $              (vRef(i,j) - vVel(im1,j,  k,bi,bj)) *
-     $              (vRef(i,j) - vVel(im1,j,  k,bi,bj)) + 
-     $              (vRef(i,j) - vVel(im1,jp1,k,bi,bj)) *
-     $              (vRef(i,j) - vVel(im1,jp1,k,bi,bj)) +
-     $              (vRef(i,j) - vVel(ip1,j,  k,bi,bj)) *
-     $              (vRef(i,j) - vVel(ip1,j,  k,bi,bj)) + 
-     $              (vRef(i,j) - vVel(ip1,jp1,k,bi,bj)) *
-     $              (vRef(i,j) - vVel(ip1,jp1,k,bi,bj)) )
-#endif /* KPP_SMOOTH_DVSQ */
-            END DO
-         END DO
-      END DO
-
-#else /* KPP_ESTIMATE_UREF */
-
-      DO k = 1, Nr
-         DO j = jmin, jmax
-            jm1 = j - 1
-            jp1 = j + 1
-            DO i = imin, imax
-               im1 = i - 1
-               ip1 = i + 1
-               dVsq(i,j,k) = p5 * (
-     $              (uVel(i,  j,  1,bi,bj)-uVel(i,  j,  k,bi,bj)) *
-     $              (uVel(i,  j,  1,bi,bj)-uVel(i,  j,  k,bi,bj)) +
-     $              (uVel(ip1,j,  1,bi,bj)-uVel(ip1,j,  k,bi,bj)) *
-     $              (uVel(ip1,j,  1,bi,bj)-uVel(ip1,j,  k,bi,bj)) +
-     $              (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  k,bi,bj)) *
-     $              (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  k,bi,bj)) + 
-     $              (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,k,bi,bj)) *
-     $              (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,k,bi,bj)) )
-#ifdef KPP_SMOOTH_DVSQ
-               dVsq(i,j,k) = p5 * dVsq(i,j,k) + p125 * (
-     $              (uVel(i,  jm1,1,bi,bj)-uVel(i,  jm1,k,bi,bj)) *
-     $              (uVel(i,  jm1,1,bi,bj)-uVel(i,  jm1,k,bi,bj)) +
-     $              (uVel(ip1,jm1,1,bi,bj)-uVel(ip1,jm1,k,bi,bj)) *
-     $              (uVel(ip1,jm1,1,bi,bj)-uVel(ip1,jm1,k,bi,bj)) +
-     $              (uVel(i,  jp1,1,bi,bj)-uVel(i,  jp1,k,bi,bj)) *
-     $              (uVel(i,  jp1,1,bi,bj)-uVel(i,  jp1,k,bi,bj)) +
-     $              (uVel(ip1,jp1,1,bi,bj)-uVel(ip1,jp1,k,bi,bj)) *
-     $              (uVel(ip1,jp1,1,bi,bj)-uVel(ip1,jp1,k,bi,bj)) +
-     $              (vVel(im1,j,  1,bi,bj)-vVel(im1,j,  k,bi,bj)) *
-     $              (vVel(im1,j,  1,bi,bj)-vVel(im1,j,  k,bi,bj)) + 
-     $              (vVel(im1,jp1,1,bi,bj)-vVel(im1,jp1,k,bi,bj)) *
-     $              (vVel(im1,jp1,1,bi,bj)-vVel(im1,jp1,k,bi,bj)) +
-     $              (vVel(ip1,j,  1,bi,bj)-vVel(ip1,j,  k,bi,bj)) *
-     $              (vVel(ip1,j,  1,bi,bj)-vVel(ip1,j,  k,bi,bj)) + 
-     $              (vVel(ip1,jp1,1,bi,bj)-vVel(ip1,jp1,k,bi,bj)) *
-     $              (vVel(ip1,jp1,1,bi,bj)-vVel(ip1,jp1,k,bi,bj)) )
-#endif /* KPP_SMOOTH_DVSQ */
-            END DO
-         END DO
-      END DO
-
-#endif /* KPP_ESTIMATE_UREF */
 
 c     shsq computation
       DO k = 1, Nrm1
-         kp1 = k + 1
-         DO j = jmin, jmax
-            jm1 = j - 1
-            jp1 = j + 1
-            DO i = imin, imax
-               im1 = i - 1
-               ip1 = i + 1
-               shsq(i,j,k) = p5 * (
-     $              (uVel(i,  j,  k,bi,bj)-uVel(i,  j,  kp1,bi,bj)) *
-     $              (uVel(i,  j,  k,bi,bj)-uVel(i,  j,  kp1,bi,bj)) +
-     $              (uVel(ip1,j,  k,bi,bj)-uVel(ip1,j,  kp1,bi,bj)) *
-     $              (uVel(ip1,j,  k,bi,bj)-uVel(ip1,j,  kp1,bi,bj)) +
-     $              (vVel(i,  j,  k,bi,bj)-vVel(i,  j,  kp1,bi,bj)) *
-     $              (vVel(i,  j,  k,bi,bj)-vVel(i,  j,  kp1,bi,bj)) + 
-     $              (vVel(i,  jp1,k,bi,bj)-vVel(i,  jp1,kp1,bi,bj)) *
-     $              (vVel(i,  jp1,k,bi,bj)-vVel(i,  jp1,kp1,bi,bj)) )
+       kp1 = k + 1
+       DO j = jmin, jmax
+        jm1 = j - 1
+        jp1 = j + 1
+        DO i = imin, imax
+         im1 = i - 1
+         ip1 = i + 1
+         shsq(i,j,k) = p5 * (
+     $        (uVel(i,  j,  k,bi,bj)-uVel(i,  j,  kp1,bi,bj)) *
+     $        (uVel(i,  j,  k,bi,bj)-uVel(i,  j,  kp1,bi,bj)) +
+     $        (uVel(ip1,j,  k,bi,bj)-uVel(ip1,j,  kp1,bi,bj)) *
+     $        (uVel(ip1,j,  k,bi,bj)-uVel(ip1,j,  kp1,bi,bj)) +
+     $        (vVel(i,  j,  k,bi,bj)-vVel(i,  j,  kp1,bi,bj)) *
+     $        (vVel(i,  j,  k,bi,bj)-vVel(i,  j,  kp1,bi,bj)) + 
+     $        (vVel(i,  jp1,k,bi,bj)-vVel(i,  jp1,kp1,bi,bj)) *
+     $        (vVel(i,  jp1,k,bi,bj)-vVel(i,  jp1,kp1,bi,bj)) )
 #ifdef KPP_SMOOTH_SHSQ
-               shsq(i,j,k) = p5 * shsq(i,j,k) + p125 * (
-     $              (uVel(i,  jm1,k,bi,bj)-uVel(i,  jm1,kp1,bi,bj)) *
-     $              (uVel(i,  jm1,k,bi,bj)-uVel(i,  jm1,kp1,bi,bj)) +
-     $              (uVel(ip1,jm1,k,bi,bj)-uVel(ip1,jm1,kp1,bi,bj)) *
-     $              (uVel(ip1,jm1,k,bi,bj)-uVel(ip1,jm1,kp1,bi,bj)) +
-     $              (uVel(i,  jp1,k,bi,bj)-uVel(i,  jp1,kp1,bi,bj)) *
-     $              (uVel(i,  jp1,k,bi,bj)-uVel(i,  jp1,kp1,bi,bj)) +
-     $              (uVel(ip1,jp1,k,bi,bj)-uVel(ip1,jp1,kp1,bi,bj)) *
-     $              (uVel(ip1,jp1,k,bi,bj)-uVel(ip1,jp1,kp1,bi,bj)) +
-     $              (vVel(im1,j,  k,bi,bj)-vVel(im1,j,  kp1,bi,bj)) *
-     $              (vVel(im1,j,  k,bi,bj)-vVel(im1,j,  kp1,bi,bj)) + 
-     $              (vVel(im1,jp1,k,bi,bj)-vVel(im1,jp1,kp1,bi,bj)) *
-     $              (vVel(im1,jp1,k,bi,bj)-vVel(im1,jp1,kp1,bi,bj)) +
-     $              (vVel(ip1,j,  k,bi,bj)-vVel(ip1,j,  kp1,bi,bj)) *
-     $              (vVel(ip1,j,  k,bi,bj)-vVel(ip1,j,  kp1,bi,bj)) + 
-     $              (vVel(ip1,jp1,k,bi,bj)-vVel(ip1,jp1,kp1,bi,bj)) *
-     $              (vVel(ip1,jp1,k,bi,bj)-vVel(ip1,jp1,kp1,bi,bj)) )
+         shsq(i,j,k) = p5 * shsq(i,j,k) + p125 * (
+     $        (uVel(i,  jm1,k,bi,bj)-uVel(i,  jm1,kp1,bi,bj)) *
+     $        (uVel(i,  jm1,k,bi,bj)-uVel(i,  jm1,kp1,bi,bj)) +
+     $        (uVel(ip1,jm1,k,bi,bj)-uVel(ip1,jm1,kp1,bi,bj)) *
+     $        (uVel(ip1,jm1,k,bi,bj)-uVel(ip1,jm1,kp1,bi,bj)) +
+     $        (uVel(i,  jp1,k,bi,bj)-uVel(i,  jp1,kp1,bi,bj)) *
+     $        (uVel(i,  jp1,k,bi,bj)-uVel(i,  jp1,kp1,bi,bj)) +
+     $        (uVel(ip1,jp1,k,bi,bj)-uVel(ip1,jp1,kp1,bi,bj)) *
+     $        (uVel(ip1,jp1,k,bi,bj)-uVel(ip1,jp1,kp1,bi,bj)) +
+     $        (vVel(im1,j,  k,bi,bj)-vVel(im1,j,  kp1,bi,bj)) *
+     $        (vVel(im1,j,  k,bi,bj)-vVel(im1,j,  kp1,bi,bj)) + 
+     $        (vVel(im1,jp1,k,bi,bj)-vVel(im1,jp1,kp1,bi,bj)) *
+     $        (vVel(im1,jp1,k,bi,bj)-vVel(im1,jp1,kp1,bi,bj)) +
+     $        (vVel(ip1,j,  k,bi,bj)-vVel(ip1,j,  kp1,bi,bj)) *
+     $        (vVel(ip1,j,  k,bi,bj)-vVel(ip1,j,  kp1,bi,bj)) + 
+     $        (vVel(ip1,jp1,k,bi,bj)-vVel(ip1,jp1,kp1,bi,bj)) *
+     $        (vVel(ip1,jp1,k,bi,bj)-vVel(ip1,jp1,kp1,bi,bj)) )
 #endif
-            END DO
-         END DO
+        END DO
+       END DO
       END DO
 
 cph(
