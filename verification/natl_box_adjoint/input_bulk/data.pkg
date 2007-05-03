@@ -5,10 +5,10 @@
  &PACKAGES
  useGMRedi    = .TRUE.,
  useKPP       = .TRUE.,
- useSEAICE    = .TRUE.,
+ useSEAICE    = .FALSE.,
  useEXF       = .TRUE.,
  useECCO      = .TRUE.,
  useGrdchk    = .TRUE.,
  useDiagnostics = .TRUE.,
- useMNC       = .TRUE.,
+ useMNC       = .FALSE.,
  &
