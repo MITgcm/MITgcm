@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.41 2007/01/05 20:26:09 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.42 2007/05/03 21:41:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -330,9 +330,9 @@ c     IF ( usePenetratingSW ) THEN
        swfracb(1)=abs(rF(klev))
        swfracb(2)=abs(rF(klev+1))
        CALL SWFRAC(
-     I     two,minusone,
-     I     myTime,myThid,
-     U     swfracb)
+     I             two, minusone,
+     U             swfracb,
+     I             myTime, 1, myThid )
        kp1 = klev+1
        IF (klev.EQ.Nr) THEN
         kp1 = klev
