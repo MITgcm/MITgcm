@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.43 2007/04/24 21:18:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.44 2007/05/03 21:40:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -519,11 +519,11 @@ C--     Compute KPP mixing coefficients
      &     CALL DEBUG_CALL('KPP_CALC',myThid)
 #endif
           CALL KPP_CALC(
-     I                  bi, bj, myTime, myThid )
+     I                  bi, bj, myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
         ELSE
           CALL KPP_CALC_DUMMY(
-     I                  bi, bj, myTime, myThid )
+     I                  bi, bj, myTime, myIter, myThid )
 #endif /* ALLOW_AUTODIFF_TAMC */
         ENDIF
 
