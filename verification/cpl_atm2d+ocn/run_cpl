@@ -9,7 +9,7 @@
 
 # echo $PBS_NODEFILE
 # list=`cat $PBS_NODEFILE`
- cat >! host_group <<EOF
+ cat > host_group <<EOF
 c032
 c031
 EOF
