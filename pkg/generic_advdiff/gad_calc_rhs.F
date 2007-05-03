@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.46 2007/04/04 01:39:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.47 2007/05/03 21:34:39 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -559,18 +559,21 @@ C-    Set non local KPP transport term (ghat):
        ENDDO
        IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
         CALL KPP_TRANSPORT_T(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
-     O     df )
+     I           iMin,iMax,jMin,jMax,bi,bj,k,km1,
+     O           df,
+     I           myTime, myIter, myThid )
        ELSEIF (tracerIdentity.EQ.GAD_SALINITY) THEN
         CALL KPP_TRANSPORT_S(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
-     O     df )
+     I           iMin,iMax,jMin,jMax,bi,bj,k,km1,
+     O           df,
+     I           myTime, myIter, myThid )
 #ifdef ALLOW_PTRACERS
        ELSEIF (tracerIdentity .GE. GAD_TR1) THEN
         CALL KPP_TRANSPORT_PTR(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
-     I     tracerIdentity-GAD_TR1+1,
-     O     df )
+     I           iMin,iMax,jMin,jMax,bi,bj,k,km1,
+     I           tracerIdentity-GAD_TR1+1,
+     O           df,
+     I           myTime, myIter, myThid )
 #endif
        ELSE
         PRINT*,'invalid tracer indentity: ', tracerIdentity
