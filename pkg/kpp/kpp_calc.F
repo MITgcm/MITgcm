@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.41 2007/05/03 14:51:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.42 2007/05/03 21:37:34 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -7,17 +7,17 @@ CBOP
 C !ROUTINE: KPP_CALC
 
 C !INTERFACE: ==========================================================
-      subroutine KPP_CALC(
-     I     bi, bj, myTime, myThid )
+      SUBROUTINE KPP_CALC(
+     I     bi, bj, myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE KPP_CALC                                      |
 C     | o Compute all KPP fields defined in KPP.h                |
-C     |==========================================================|
+C     *==========================================================*
 C     | This subroutine serves as an interface between MITGCMUV  |
 C     | code and NCOM 1-D routines in kpp_routines.F             |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 c=======================================================================
@@ -52,8 +52,8 @@ c         within the boundary layer, above hbl, vertical mixing is
 c         determined by turbulent surface fluxes, and interior mixing at
 c         the lower boundary, i.e. at hbl.
 c     
-c     this subroutine provides the interface between the MIT GCM UV and the 
-c     subroutine "kppmix", where boundary layer depth, vertical 
+c     this subroutine provides the interface between the MITGCM and
+c     the routine "kppmix", where boundary layer depth, vertical 
 c     viscosity, vertical diffusivity, and counter gradient term (ghat)
 c     are computed slabwise.
 c     note: subroutine "kppmix" uses m-k-s units.
@@ -120,12 +120,15 @@ C !USES: ===============================================================
 
 C !INPUT PARAMETERS: ===================================================
 c Routine arguments
-c     bi, bj - array indices on which to apply calculations
-c     myTime - Current time in simulation
+c     bi, bj :: Current tile indices
+c     myTime :: Current time in simulation
+c     myIter :: Current iteration number in simulation
+c     myThid :: My Thread Id. number
 
       INTEGER bi, bj
-      INTEGER myThid
       _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #ifdef ALLOW_KPP
 
@@ -189,7 +192,7 @@ cph)
       _RL uRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL vRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 #endif /* KPP_ESTIMATE_UREF */
-      
+
       _RL tempvar2
       integer i, j, k, kp1, km1, im1, ip1, jm1, jp1
 
@@ -214,7 +217,7 @@ CEOP
 c     Check to see if new vertical mixing coefficient should be computed now?
       IF ( DIFFERENT_MULTIPLE(kpp_freq,myTime,deltaTClock)
      1     .OR. myTime .EQ. startTime ) THEN
-         
+
 c-----------------------------------------------------------------------
 c     prepare input arrays for subroutine "kppmix" to compute
 c     viscosity and diffusivity and ghat.
@@ -273,7 +276,7 @@ c     levels therefore k+1 mask must be used
       DO k = 1, Nr-1
          CALL SMOOTH_HORIZ (
      I        k+1, bi, bj,
-     U        ghat (1-OLx,1-OLy,k), 
+     U        ghat (1-OLx,1-OLy,k),
      I        myThid )
       ENDDO
 
@@ -283,24 +286,24 @@ c     levels therefore k+1 mask must be used
 c     horizontally smooth density related quantities with 121 filters
       CALL SMOOTH_HORIZ (
      I     1, bi, bj,
-     U     work2, 
+     U     work2,
      I     myThid )
       DO k = 1, Nr
          CALL SMOOTH_HORIZ (
      I        k+1, bi, bj,
-     U        dbloc (1-OLx,1-OLy,k), 
+     U        dbloc (1-OLx,1-OLy,k),
      I        myThid )
          CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        Ritop (1-OLx,1-OLy,k), 
+     U        Ritop (1-OLx,1-OLy,k),
      I        myThid )
          CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        TTALPHA(1-OLx,1-OLy,k), 
+     U        TTALPHA(1-OLx,1-OLy,k),
      I        myThid )
          CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        SSBETA(1-OLx,1-OLy,k), 
+     U        SSBETA(1-OLx,1-OLy,k),
      I        myThid )
       ENDDO
 #endif /* KPP_SMOOTH_DENS */
@@ -329,9 +332,9 @@ c     note: land and ocean bottom values need to be set to zero
 c     so that the subroutine "bldepth" works correctly
                Ritop(i,j,k) = (zgrid(1)-zgrid(k)) * Ritop(i,j,k)
 
-            END DO
-         END DO
-      END DO
+            ENDDO
+         ENDDO
+      ENDDO
 
 cph(
 cph  this avoids a single or double recomp./call of statekpp
@@ -357,8 +360,8 @@ CML        surfForcT = surfaceForcingT(i,j,bi,bj)
 CML     &       + shelficeForcingT(i,j,bi,bj) * shelfIceFac
 CML        surfForcS = surfaceForcingS(i,j,bi,bj) 
 CML     &       + shelficeForcingS(i,j,bi,bj) * shelfIceFac
-CML       END DO
-CML      END DO
+CML       ENDDO
+CML      ENDDO
 CML#endif /* ALLOW_SHELFICE */
 
 c------------------------------------------------------------------------
@@ -382,11 +385,11 @@ c     note: Vref can depend on the surface fluxes that is why we compute
 c     dVsq in the subroutine that does the surface related stuff
 c     (admittedly this is a bit messy)
 c------------------------------------------------------------------------
-       
+
       CALL KPP_FORCING_SURF(
      I     work2, surfaceForcingU, surfaceForcingV,
-     I     surfaceForcingT, surfaceForcingS, surfaceForcingTice, 
-     I     Qsw, ttalpha, ssbeta,  
+     I     surfaceForcingT, surfaceForcingS, surfaceForcingTice,
+     I     Qsw, ttalpha, ssbeta,
      O     ustar, bo, bosol, dVsq,
      I     ikppkey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
 
@@ -399,9 +402,9 @@ c initialize arrays to zero
        DO j = 1-OLy, sNy+OLy
         DO i = 1-OLx, sNx+OLx
          shsq(i,j,k) = p0
-        END DO
-       END DO
-      END DO
+        ENDDO
+       ENDDO
+      ENDDO
 
 c     shsq computation
       DO k = 1, Nrm1
@@ -413,36 +416,36 @@ c     shsq computation
          im1 = i - 1
          ip1 = i + 1
          shsq(i,j,k) = p5 * (
-     $        (uVel(i,  j,  k,bi,bj)-uVel(i,  j,  kp1,bi,bj)) *
-     $        (uVel(i,  j,  k,bi,bj)-uVel(i,  j,  kp1,bi,bj)) +
-     $        (uVel(ip1,j,  k,bi,bj)-uVel(ip1,j,  kp1,bi,bj)) *
-     $        (uVel(ip1,j,  k,bi,bj)-uVel(ip1,j,  kp1,bi,bj)) +
-     $        (vVel(i,  j,  k,bi,bj)-vVel(i,  j,  kp1,bi,bj)) *
-     $        (vVel(i,  j,  k,bi,bj)-vVel(i,  j,  kp1,bi,bj)) + 
-     $        (vVel(i,  jp1,k,bi,bj)-vVel(i,  jp1,kp1,bi,bj)) *
-     $        (vVel(i,  jp1,k,bi,bj)-vVel(i,  jp1,kp1,bi,bj)) )
+     &        (uVel(i,  j,  k,bi,bj)-uVel(i,  j,  kp1,bi,bj)) *
+     &        (uVel(i,  j,  k,bi,bj)-uVel(i,  j,  kp1,bi,bj)) +
+     &        (uVel(ip1,j,  k,bi,bj)-uVel(ip1,j,  kp1,bi,bj)) *
+     &        (uVel(ip1,j,  k,bi,bj)-uVel(ip1,j,  kp1,bi,bj)) +
+     &        (vVel(i,  j,  k,bi,bj)-vVel(i,  j,  kp1,bi,bj)) *
+     &        (vVel(i,  j,  k,bi,bj)-vVel(i,  j,  kp1,bi,bj)) +
+     &        (vVel(i,  jp1,k,bi,bj)-vVel(i,  jp1,kp1,bi,bj)) *
+     &        (vVel(i,  jp1,k,bi,bj)-vVel(i,  jp1,kp1,bi,bj)) )
 #ifdef KPP_SMOOTH_SHSQ
          shsq(i,j,k) = p5 * shsq(i,j,k) + p125 * (
-     $        (uVel(i,  jm1,k,bi,bj)-uVel(i,  jm1,kp1,bi,bj)) *
-     $        (uVel(i,  jm1,k,bi,bj)-uVel(i,  jm1,kp1,bi,bj)) +
-     $        (uVel(ip1,jm1,k,bi,bj)-uVel(ip1,jm1,kp1,bi,bj)) *
-     $        (uVel(ip1,jm1,k,bi,bj)-uVel(ip1,jm1,kp1,bi,bj)) +
-     $        (uVel(i,  jp1,k,bi,bj)-uVel(i,  jp1,kp1,bi,bj)) *
-     $        (uVel(i,  jp1,k,bi,bj)-uVel(i,  jp1,kp1,bi,bj)) +
-     $        (uVel(ip1,jp1,k,bi,bj)-uVel(ip1,jp1,kp1,bi,bj)) *
-     $        (uVel(ip1,jp1,k,bi,bj)-uVel(ip1,jp1,kp1,bi,bj)) +
-     $        (vVel(im1,j,  k,bi,bj)-vVel(im1,j,  kp1,bi,bj)) *
-     $        (vVel(im1,j,  k,bi,bj)-vVel(im1,j,  kp1,bi,bj)) + 
-     $        (vVel(im1,jp1,k,bi,bj)-vVel(im1,jp1,kp1,bi,bj)) *
-     $        (vVel(im1,jp1,k,bi,bj)-vVel(im1,jp1,kp1,bi,bj)) +
-     $        (vVel(ip1,j,  k,bi,bj)-vVel(ip1,j,  kp1,bi,bj)) *
-     $        (vVel(ip1,j,  k,bi,bj)-vVel(ip1,j,  kp1,bi,bj)) + 
-     $        (vVel(ip1,jp1,k,bi,bj)-vVel(ip1,jp1,kp1,bi,bj)) *
-     $        (vVel(ip1,jp1,k,bi,bj)-vVel(ip1,jp1,kp1,bi,bj)) )
+     &        (uVel(i,  jm1,k,bi,bj)-uVel(i,  jm1,kp1,bi,bj)) *
+     &        (uVel(i,  jm1,k,bi,bj)-uVel(i,  jm1,kp1,bi,bj)) +
+     &        (uVel(ip1,jm1,k,bi,bj)-uVel(ip1,jm1,kp1,bi,bj)) *
+     &        (uVel(ip1,jm1,k,bi,bj)-uVel(ip1,jm1,kp1,bi,bj)) +
+     &        (uVel(i,  jp1,k,bi,bj)-uVel(i,  jp1,kp1,bi,bj)) *
+     &        (uVel(i,  jp1,k,bi,bj)-uVel(i,  jp1,kp1,bi,bj)) +
+     &        (uVel(ip1,jp1,k,bi,bj)-uVel(ip1,jp1,kp1,bi,bj)) *
+     &        (uVel(ip1,jp1,k,bi,bj)-uVel(ip1,jp1,kp1,bi,bj)) +
+     &        (vVel(im1,j,  k,bi,bj)-vVel(im1,j,  kp1,bi,bj)) *
+     &        (vVel(im1,j,  k,bi,bj)-vVel(im1,j,  kp1,bi,bj)) +
+     &        (vVel(im1,jp1,k,bi,bj)-vVel(im1,jp1,kp1,bi,bj)) *
+     &        (vVel(im1,jp1,k,bi,bj)-vVel(im1,jp1,kp1,bi,bj)) +
+     &        (vVel(ip1,j,  k,bi,bj)-vVel(ip1,j,  kp1,bi,bj)) *
+     &        (vVel(ip1,j,  k,bi,bj)-vVel(ip1,j,  kp1,bi,bj)) +
+     &        (vVel(ip1,jp1,k,bi,bj)-vVel(ip1,jp1,kp1,bi,bj)) *
+     &        (vVel(ip1,jp1,k,bi,bj)-vVel(ip1,jp1,kp1,bi,bj)) )
 #endif
-        END DO
-       END DO
-      END DO
+        ENDDO
+       ENDDO
+      ENDDO
 
 cph(
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
@@ -471,8 +474,8 @@ c     matching diffusivities at bottom of KPP PBL
          DO i = 1-OLx, sNx+OLx
             work1(i,j) = nzmax(i,j,bi,bj)
             work2(i,j) = Fcori(i,j,bi,bj)
-         END DO
-      END DO
+         ENDDO
+      ENDDO
       CALL TIMER_START('KPPMIX [KPP_CALC]', myThid)
       CALL KPPMIX (
      I       work1, shsq, dVsq, ustar
@@ -503,25 +506,26 @@ c-----------------------------------------------------------------------
      &        * maskC(i,j,km1,bi,bj)
          KPPghat(i,j,k,bi,bj)   = ghat(i,j,k)       * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,km1,bi,bj)
-        END DO
+        ENDDO
         k = 1
 #ifdef ALLOW_SHELFICE
         if ( useShelfIce ) k = kTopC(i,j,bi,bj)
 #endif /* ALLOW_SHELFICE */
         KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,k,bi,bj)
 
-       END DO
-      END DO
+       ENDDO
+      ENDDO
 
 #ifdef KPP_SMOOTH_VISC
 c     horizontal smoothing of vertical viscosity
       DO k = 1, Nr
          CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        KPPviscAz(1-OLx,1-OLy,k,bi,bj), 
+     U        KPPviscAz(1-OLx,1-OLy,k,bi,bj),
      I        myThid )
-      END DO
-      _EXCH_XYZ_R8(KPPviscAz  , myThid )
+      ENDDO
+C jmc: No EXCH inside bi,bj loop !!!
+c     _EXCH_XYZ_R8(KPPviscAz  , myThid )
 #endif /* KPP_SMOOTH_VISC */
 
 #ifdef KPP_SMOOTH_DIFF
@@ -529,15 +533,13 @@ c     horizontal smoothing of vertical diffusivity
       DO k = 1, Nr
          CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        KPPdiffKzS(1-OLx,1-OLy,k,bi,bj), 
+     U        KPPdiffKzS(1-OLx,1-OLy,k,bi,bj),
      I        myThid )
          CALL SMOOTH_HORIZ (
      I        k, bi, bj,
-     U        KPPdiffKzT(1-OLx,1-OLy,k,bi,bj), 
+     U        KPPdiffKzT(1-OLx,1-OLy,k,bi,bj),
      I        myThid )
-      END DO
-      _EXCH_XYZ_R8(KPPdiffKzS , myThid )
-      _EXCH_XYZ_R8(KPPdiffKzT , myThid )
+      ENDDO
 #endif /* KPP_SMOOTH_DIFF */
 
 cph(
@@ -554,8 +556,8 @@ C     the bottom of the mixing layer.
       ENDDO
       CALL SWFRAC(
      I     (sNx+2*OLx)*(sNy+2*OLy), minusone,
-     I     mytime, mythid,
-     U     worka )
+     U     worka,
+     I     myTime, myIter, myThid )
       DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
             KPPfrac(i,j,bi,bj) = worka(i,j)
@@ -569,16 +571,16 @@ C     the bottom of the mixing layer.
       RETURN
       END
 
-      subroutine KPP_CALC_DUMMY(
-     I     bi, bj, myTime, myThid )
-C     /==========================================================\
+      SUBROUTINE KPP_CALC_DUMMY(
+     I     bi, bj, myTime, myIter, myThid )
+C     *==========================================================*
 C     | SUBROUTINE KPP_CALC_DUMMY                                |
 C     | o Compute all KPP fields defined in KPP.h                |
 C     | o Dummy routine for TAMC
-C     |==========================================================|
+C     *==========================================================*
 C     | This subroutine serves as an interface between MITGCMUV  |
 C     | code and NCOM 1-D routines in kpp_routines.F             |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 #include "SIZE.h"
@@ -590,12 +592,15 @@ C     \==========================================================/
 #include "GAD.h"
 
 c Routine arguments
-c     bi, bj - array indices on which to apply calculations
-c     myTime - Current time in simulation
+c     bi, bj :: Current tile indices
+c     myTime :: Current time in simulation
+c     myIter :: Current iteration number in simulation
+c     myThid :: My Thread Id. number
 
       INTEGER bi, bj
-      INTEGER myThid
       _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #ifdef ALLOW_KPP
 
