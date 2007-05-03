@@ -9,6 +9,6 @@
  useEXF       = .TRUE.,
  useECCO      = .TRUE.,
  useGrdchk    = .TRUE.,
- useDiagnostics = .TRUE.,
+ useDiagnostics = .FALSE.,
  useMNC       = .FALSE.,
  &
