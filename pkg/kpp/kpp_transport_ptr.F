@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.8 2004/10/20 21:54:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.9 2007/05/03 21:33:42 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -6,10 +6,11 @@ C $Name:  $
 #include "GMREDI_OPTIONS.h"
 #endif
 
-      subroutine KPP_TRANSPORT_PTR (
+      SUBROUTINE KPP_TRANSPORT_PTR (
      I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
      I     tracerIdentity,
-     O     df )
+     O     df,
+     I     myTime, myIter, myThid )
 C     /==========================================================\
 C     | o SUBROUTINE KPP_TRANSPORT_PTR                           |
 C     |   Add non local KPP transport term (ghat) to diffusive   |
@@ -49,8 +50,14 @@ C     iMin,iMax,jMin,  - Range of points for which calculation
 C     jMax,bi,bj,k,km1   results will be set.
 C     tracerIdentity   - Identifier for the tracer
 C     df               - Diffusive flux component work array.
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: My Thread Id. number
       INTEGER iMin,iMax,jMin,jMax,bi,bj,k,km1,tracerIdentity
       _RL df      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #if defined(ALLOW_KPP) && defined(KPP_GHAT) && defined(ALLOW_PTRACERS)
 
