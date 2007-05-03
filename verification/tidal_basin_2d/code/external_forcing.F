@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.5 2005/07/17 19:53:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.6 2007/05/03 21:42:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -322,9 +322,9 @@ c     IF ( usePenetratingSW ) THEN
        swfracb(1)=abs(rF(klev))
        swfracb(2)=abs(rF(klev+1))
        CALL SWFRAC(
-     I     two,minusone,
-     I     myTime,myThid,
-     U     swfracb)
+     I             two, minusone,
+     U             swfracb,
+     I             myTime, 1, myThid )
        kp1 = klev+1
        IF (klev.EQ.Nr) THEN
         kp1 = klev
