@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.806 2007/05/01 21:41:11 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.807 2007/05/03 14:51:33 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kpp
+ - move computation of surface related input fields to KPP into a new
+   subroutine kpp_forcing_surf.F
 o pkg/seaice
  - check for inconsistent evp parameter/cpp-flag combination
  - remove leftover errIO flat for obsolete name list error handling
