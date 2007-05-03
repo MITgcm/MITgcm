@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_visc.F,v 1.3 2007/05/03 21:31:35 jmc Exp $
+C $Name:  $
 
 #include "KPP_OPTIONS.h"
 
