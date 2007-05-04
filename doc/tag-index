@@ -1,14 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.808 2007/05/03 22:57:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.809 2007/05/04 21:51:31 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice: 
+ fix few little problems, in thsice_calc_thickn.F:
+  - growth vertically (and not laterally) if iceFrac == iceMaskMax
+  - melt laterally only if hIce < hThinIce (as the comments say)
+  and in thsice_extend.F:
+  - allow to form ice even when iceFrac == iceMaskMax (by increasing thickness)
+  - start to form ice as soon as the minimum ice-volume is reachable.
+ update output of test-exp: aim.5l_cs(thSI), global_ocean.cs32x15(thsice), 
+  and cpl_aim+ocn
 o pkg/kpp
- - remove wrong (within bi,bj loops) EXCH calls.
- - little cleaning (add argument myThid in last position, cvs header ...)
  - move computation of surface related input fields to KPP into a new
    subroutine kpp_forcing_surf.F
+ - remove wrong (within bi,bj loops) EXCH calls.
+ - little cleaning (add argument myThid in last position, cvs header ...)
+ - for now, fix conservation problem by exchanging KPPviscAz (may not 
+   be the best fix)
 o pkg/seaice
  - check for inconsistent evp parameter/cpp-flag combination
  - remove leftover errIO flat for obsolete name list error handling
