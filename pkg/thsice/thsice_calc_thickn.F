@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.10 2007/05/01 02:30:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.11 2007/05/04 19:15:56 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -255,8 +255,9 @@ C     ! freezing conditions
 C     !-----------------------------------------------------------------
         Fbot = frzmlt
 C- jmc: would be logical to test for iceFrac:
-c       IF ( iceFrac.LT.iceMaskMax ) THEN
-        IF ( iceFrac.LE.iceMaskMax ) THEN
+c-new_v:
+        IF ( iceFrac.LT.iceMaskMax ) THEN
+c-old_v IF ( iceFrac.LE.iceMaskMax ) THEN
          IF (hi.GT.hThickIce) THEN
 C if higher than hThickIce, use all frzmlt energy to grow extra ice
           Fbot = 0. _d 0
@@ -295,9 +296,11 @@ C Compute energy available for melting/growth.
       IF ( hi.GT.hThickIce .OR. fracEnMelt.EQ.0. _d 0 ) THEN
 C above certain height (or when no ice fractionation), only melt from top
        frace = 0. _d 0
-c     ELSEIF (hi.LT.hThinIce) THEN
+c-new_v:
+      ELSEIF (hi.LT.hThinIce) THEN
 C below a certain height, all energy goes to changing ice extent
-c      frace = 1. _d 0
+       frace = 1. _d 0
+c-new_v: end
       ELSE
        frace = fracEnMelt
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.7 2007/05/01 02:37:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_extend.F,v 1.8 2007/05/04 19:15:56 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -177,9 +177,10 @@ C-    enthalpy of new ice to form :
 
         IF ( icFrac(i,j).EQ.0. _d 0 ) THEN
 C-  to keep identical results (as it use to be):
-          IF ( newIce.GE.hThinIce*iceMaskMin ) THEN
+c-old_v   IF ( newIce.GE.hThinIce*iceMaskMin ) THEN
 C-  here we allow to form ice earlier (as soon as min-ice-vol is reached)
-c         IF ( newIce.GT.hIceMin*iceMaskMin ) THEN
+c-new_v:
+          IF ( newIce.GT.hIceMin*iceMaskMin ) THEN
 C-    if there is no ice in grid-cell and enough ice to form:
 C-     make ice over iceMaskMin fraction, up to hThinIce,
 C      and if more ice to form, then increase fraction
@@ -194,9 +195,10 @@ C     create ice with same thickness or hNewIceMax (the smallest of the 2)
             hNewIce = MIN(iceThick,hNewIceMax)
             iceFrac = MIN(icFrac(i,j)+newIce/hNewIce,iceMaskMax)
 C-    update thickness: area weighted average
-c           iceThick = MIN(hiMax,(iceVol+newIce)/iceFrac)
+c-new_v:
+            iceThick = MIN(hiMax,(iceVol+newIce)/iceFrac)
 C-  to keep identical results: comment the line above and uncomment line below:
-            iceFrac = MIN(icFrac(i,j)+newIce/iceThick,iceMaskMax)
+c-old_v     iceFrac = MIN(icFrac(i,j)+newIce/iceThick,iceMaskMax)
             iceFormed = iceThick*iceFrac - iceVol
 C-    spread snow out over ice
             hSnow(i,j) = hSnow(i,j)*icFrac(i,j)/iceFrac
