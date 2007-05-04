@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.44 2007/05/03 21:40:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.45 2007/05/04 18:27:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -596,6 +596,12 @@ C--     Calculate future values on open boundaries
 C--   end bi,bj loops.
        ENDDO
       ENDDO
+
+#ifdef  ALLOW_KPP
+      IF (useKPP) THEN
+        CALL KPP_DO_EXCH( myThid )
+      ENDIF
+#endif  /* ALLOW_KPP */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( fluidIsWater .AND. useDiagnostics ) THEN
