@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.161 2007/02/18 21:39:59 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.162 2007/05/05 20:18:52 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2029,7 +2029,7 @@ while test "x$ck" != xtt ; do
     i=0
     # rtot=${#PNAME[@]}
     rtot=$nname
-    while test $i -lt $rtot ; do
+    while test $i -le $rtot ; do
 
 	#  Is $pname in the current $PACKAGES list?
 	#  pname=${PNAME[$i]}
@@ -2063,6 +2063,7 @@ while test "x$ck" != xtt ; do
 
 	#  Do we need to add $dname according to the dependency rules?
 	if test "x$pin" = xt -a "x$plus" = "x+" -a "x$din" = xf ; then
+            #echo "   " $pname ": need to add :" $dname
 	    in_dis="f"
 	    for dis in $DISABLE ; do
 		if test "x$dis" = "x$dname" ; then
