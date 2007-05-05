@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.20 2007/04/30 00:12:04 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.21 2007/05/05 20:43:24 jmc Exp $
 #
 
 #  This file contains a terse list of package dependencies that
@@ -21,8 +21,6 @@
 #    cal cost ctrl ecco exf grdchk
 
 exf             +cal
-# jmc: add this here since does not work when this line is too far below !!!
-seaice		+exf
 
 #  Ask AJA about:
 #    flt
