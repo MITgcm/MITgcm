@@ -25,7 +25,7 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "DIC_ABIOTIC.h"
 #include "DIC_BIOTIC.h"
-#ifdef PAR_FROMSW
+#ifdef USE_QSW
 #include "FFIELDS.h"
 #endif
 
@@ -66,7 +66,7 @@ CEOP
 
 
 #ifndef READ_PAR
-#ifndef PAR_FROMSW
+#ifndef USE_QSW
         call insol(myTime,sfac,bj)
 #endif
 #endif
@@ -81,7 +81,7 @@ C$TAF INIT bio_export = static, 10
 #ifdef READ_PAR
            lit=PAR(i,j,bi,bj)
 #else
-#ifdef PAR_FROMSW
+#ifdef USE_QSW
            lit=-0.4*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 #else
            lit=sfac(j)

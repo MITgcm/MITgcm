@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.6 2007/05/01 22:51:12 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.7 2007/05/07 15:58:19 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -75,10 +75,10 @@ C First call requires that we initialize everything to zero for safety
 # endif
 
 #ifdef READ_PAR
-#ifdef PAR_FROMSW
+#ifdef USE_QSW
         WRITE(msgBuf,'(2A)')
      &       ' DIC_INI_FORCING: You can not use READ_PAR ',
-     &       ' and PAR_FROMSW'
+     &       ' and USE_QSW'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R DIC_INI_FORCING'
 #endif
