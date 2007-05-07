@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.96 2007/03/12 23:43:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.97 2007/05/07 23:20:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,9 +82,8 @@ C     ycoord :: varying parameters.
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(A,A40)') 'buoyancyRelation = ', buoyancyRelation
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL WRITE_0D_C( buoyancyRelation, -1, INDEX_NONE,
+     & 'buoyancyRelation =', ' /* Type of relation to get Buoyancy */')
       CALL WRITE_0D_L( fluidIsAir,   INDEX_NONE,
      & 'fluidIsAir  =', '  /* fluid major constituent is Air */')
       CALL WRITE_0D_L( fluidIsWater, INDEX_NONE,
@@ -176,10 +175,8 @@ C     ycoord :: varying parameters.
      &'   /* Depth scale for Bryan and Lewis 1979 ( m ) */')
       CALL WRITE_0D_R8( diffKrBL79Ho, INDEX_NONE,'diffKrBL79Ho =',
      &'   /* Turning depth for Bryan and Lewis 1979 ( m ) */')
-      WRITE(msgBuf,'(4A)') 'Equation of State : ',
-     &                     'eosType = ', eosType, ' ;'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL WRITE_0D_C( eosType, 0, INDEX_NONE, 'eosType =',
+     & '  /* Type of Equation of State */')
       CALL WRITE_0D_R8( tAlpha,  INDEX_NONE,'tAlpha =',
      &'   /* Linear EOS thermal expansion coefficient ( 1/oC ) */')
       CALL WRITE_0D_R8( sBeta,   INDEX_NONE,'sBeta =',
@@ -655,16 +652,8 @@ C     Grid along selected grid lines
 
       I = ILNBLNK(the_run_name)
       IF ( I.GT.0 ) THEN
-        WRITE(msgBuf,'(4A)') 'the_run_name = ',
-     &                    '/* Name of this simulation */'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(14X,3A)') "'", the_run_name(1:I), "'"
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(A)') '    ;'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid )
+        CALL WRITE_0D_C( the_run_name, I, INDEX_NONE,
+     &    'the_run_name = ', '/* Name of this simulation */' )
       ENDIF
 
       WRITE(msgBuf,'(A)')
