@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.21 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.22 2007/05/07 23:13:57 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -124,7 +124,7 @@ C     | real*8 field.
 C     *==========================================================*
 C     | This routine produces a standard format for list          
 C     | one-dimensional real*8 data in textual form. The format   
-C     | is designed to be readilya parsed by a post-processing    
+C     | is designed to be readily parsed by a post-processing    
 C     | utility.                                                  
 C     *==========================================================*
 C     \ev
@@ -289,13 +289,13 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o SUBROUTINE WRITE_1D_R8                                  
+C     | o SUBROUTINE WRITE_0D_R8                                  
 C     | Controls formatted, tabular I/O for a one-dimensional     
 C     | real*8 field.                                             
 C     *==========================================================*
 C     | This routine produces a standard format for list          
 C     | one-dimensional real*8 data in textual form. The format   
-C     | is designed to be readilya parsed by a post-processing    
+C     | is designed to be readily parsed by a post-processing    
 C     | utility.                                                  
 C     *==========================================================*
 C     \ev
@@ -335,6 +335,85 @@ CEOP
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &    SQUEEZE_RIGHT , 1)
 
+      END
+
+
+CBOP
+C     !ROUTINE: WRITE_0D_C
+C     !INTERFACE:
+      SUBROUTINE WRITE_0D_C( fld, lFld, index_type, head, comment )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE WRITE_0D_C
+C     | Controls formatted, tabular I/O for a character string
+C     *==========================================================*
+C     | This routine produces a standard format for list
+C     | a character string data in textual form. The format
+C     | is designed to be readily parsed by a post-processing
+C     | utility.
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     fld        :: Field to be printed
+C     lFld       :: Number of character (in field fld.) to print
+C                   0 = all ; -1 & -2 = until the last non-blank
+C                   -2 = starting at the first non-blank
+C     index_type :: Type of index labelling (I=,J=,...) to use
+C     head       :: Statement start e.g. phi =
+C     comment    :: Descriptive comment for field
+      CHARACTER*(*) fld
+      INTEGER lFld
+      INTEGER index_type
+      CHARACTER*(*) head
+      CHARACTER*(*) comment
+
+C     !FUNCTIONS:
+      INTEGER  IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL IFNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iS,iL
+CEOP
+
+      iS = 1
+      iL = LEN(fld)
+      IF ( lFld .GT. 0 ) THEN
+        iL = MIN( lFld, iL )
+      ELSEIF ( lFld .LT. 0 ) THEN
+        iL = ILNBLNK(fld)
+      ENDIF
+      IF ( lFld .EQ. -2 ) iS = IFNBLNK(fld)
+      iS = MAX(1,iS)
+
+      WRITE(msgBuf,'(A,A)') head, comment
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      IF ( iL.GE.iS ) THEN
+        iL = MIN( MAX_LEN_MBUF + iS - 17, iL )
+        WRITE(msgBuf,'(14X,3A)') "'", fld(iS:iL), "'"
+      ELSE
+        WRITE(msgBuf,'(14X,3A)') "'","'"
+      ENDIF
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+      WRITE(msgBuf,'(A)') '    ;'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, 1 )
+
+      RETURN
       END
 
 
