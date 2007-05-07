@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulk_largeyeager04.F,v 1.1 2007/05/02 22:31:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulk_largeyeager04.F,v 1.2 2007/05/07 19:35:20 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: EXF_BULK_LARGEYEAGER04
 C     !INTERFACE:
-      SUBROUTINE EXF_BULK_LARGEYEAGER04( mytime, myiter, mythid )
+      SUBROUTINE EXF_BULK_LARGEYEAGER04( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -52,16 +52,22 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     input:
-       _RL myTime
-       INTEGER myIter
-       INTEGER myThid           ! my Thread Id number
+C     myTime  :: Current time in simulation
+C     myIter  :: Current iteration number in simulation
+C     myThid  :: My Thread Id number
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 C     output:
 CEOP
 
 #ifdef ALLOW_BULK_LARGEYEAGER04
 
 C     == Local variables ==
-      INTEGER i,j,k,bi,bj    !current grid point indices
+C     i,j      :: grid point indices
+C     bi,bj    :: tile indices
+C     ssq      :: saturation specific humidity [kg/kg] in eq. with Sea-Surface water
+      INTEGER i,j,bi,bj
 
       _RL czol
       _RL Tsf                ! surface temperature [K]
@@ -72,8 +78,8 @@ C     == Local variables ==
       _RL delq               ! specific humidity difference [kg/kg]
       _RL deltap
       _RL ustar              ! friction velocity [m/s]
-      _RL tstar              ! temperature scale [K]
-      _RL qstar              ! humidity scale  [kg/kg]
+      _RL tstar              ! turbulent temperature scale [K]
+      _RL qstar              ! turbulent humidity scale  [kg/kg]
       _RL ssttmp
       _RL ssq
       _RL rd                 ! = sqrt(Cd)          [-]
@@ -91,7 +97,8 @@ C     == Local variables ==
       _RL psixh              ! latent & sensib. stability function
       _RL zwln               ! = log(zwd/zref)
       _RL ztln               ! = log(zth/zref)
-      _RL tau                ! surface stress  coef = rhoA * Ws * Cd
+      _RL tau                ! surface stress coef = rhoA * Ws * sqrt(Cd)
+      _RL windStress         ! surface wind-stress (@ grid cell center)
       _RL tmpbulk
       INTEGER iter
 
@@ -112,15 +119,14 @@ c     Loop over tiles.
 C--   HPF directive to help TAMC
 CHPF$ INDEPENDENT
 #endif
-      do bj = mybylo(mythid),mybyhi(mythid)
+      DO bj = myByLo(myThid),myByHi(myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
 C--    HPF directive to help TAMC
 CHPF$  INDEPENDENT
 #endif
-       do bi = mybxlo(mythid),mybxhi(mythid)
-        k = 1
-        do j = 1,sny
-         do i = 1,snx
+       DO bi = myBxLo(myThid),myBxHi(myThid)
+        DO j = 1,sNy
+         DO i = 1,sNx
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
@@ -171,14 +177,14 @@ C    take U_N = del.U ; stability from del.Theta ;
 #else /* ifndef ALLOW_ATM_WIND */
 C     in this case ustress and vstress are defined a u and v points
 C     respectively, and we need to average to mass points to avoid
-C     tau = 0 near coasts or other boundaries
-             tau   = sqrt(0.5*
+C     windStress = 0 near coasts or other boundaries
+             windStress = sqrt(0.5 _d 0*
      &                   (ustress(i,  j,bi,bj)*ustress(i  ,j,bi,bj)
      &                   +ustress(i+1,j,bi,bj)*ustress(i+1,j,bi,bj)
      &                   +vstress(i,j,  bi,bj)*vstress(i,j  ,bi,bj)
-     &                   +vstress(i,j+1,bi,bj)*vstress(i,j+1,bi,bj))
-     &                   )
-             ustar = sqrt(tau/atmrho)
+     &                   +vstress(i,j+1,bi,bj)*vstress(i,j+1,bi,bj)
+     &                   )    )
+             ustar = sqrt(windStess/atmrho)
 #endif /* ALLOW_ATM_WIND */
 
 C--  initial guess for exchange other coefficients:
@@ -312,11 +318,12 @@ c IF ( ATEMP(i,j,bi,bj) .NE. 0. )
      &                         vwind(i,j,bi,bj)
 #endif
 #endif /* ifndef ALLOW_ATM_TEMP */
-            enddo
-          enddo
-        enddo
-      enddo
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDDO
 
-#endif /* ALLOW_BULKFORMULAE */
+#endif /* ALLOW_BULK_LARGEYEAGER04 */
 
+      RETURN
       END
