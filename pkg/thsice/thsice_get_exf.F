@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.8 2007/05/03 21:51:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.9 2007/05/07 19:26:57 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -47,7 +47,7 @@ C     df0dT       :: deriv of flx with respect to Tsf    [W/m/K]
 C     evapLoc     :: surface evaporation (>0 if evaporate) [kg/m2/s]
 C     dEvdT       :: deriv of evap. with respect to Tsf  [kg/m2/s/K]
 C     i,j, bi,bj  :: current grid point indices
-C     myThid      :: Thread no. that called this routine.
+C     myThid      :: My Thread Id number
       INTEGER i,j, bi,bj
       INTEGER myThid
       INTEGER iceornot
@@ -64,35 +64,41 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     === Local variables ===
 C     hsLocal, hlLocal :: sensible & latent heat flux over sea-ice
-
-      _RL     aln
+C             t0       :: virtual temperature (K)
+C             ssq      :: saturation specific humidity (kg/kg)
+C             deltap   :: potential temperature diff (K)
 
       _RL     hsLocal, hlLocal
-      integer iter
+      INTEGER iter
       _RL     delq
       _RL     deltap
-      _RL     hqol
-      _RL     htol
-      _RL     huol
-      _RL     psimh
-      _RL     psixh
-      _RL     qstar
-      _RL     rd
-      _RL     re
-      _RL     rdn
-      _RL     rh
-      _RL     ssq
-      _RL     stable
-      _RL     tstar
-      _RL     t0
-      _RL     ustar
-      _RL     uzn
-      _RL     shn
-      _RL     xsq
-      _RL     x
-      _RL     tau
-      _RL     tmpbulk
-      _RL     czol
+c-----------------------
+      _RL czol
+      _RL ws                 ! wind speed [m/s] (unlimited)
+      _RL wsm                ! limited wind speed [m/s] (> umin)
+      _RL t0                 ! virtual temperature [K]
+      _RL ustar              ! friction velocity [m/s]
+      _RL tstar              ! turbulent temperature scale [K]
+      _RL qstar              ! turbulent humidity scale  [kg/kg]
+      _RL ssq
+      _RL rd                 ! = sqrt(Cd)          [-]
+      _RL re                 ! = Ce / sqrt(Cd)     [-]
+      _RL rh                 ! = Ch / sqrt(Cd)     [-]
+      _RL rdn, ren, rhn      ! neutral, zref (=10m) values of rd, re, rh
+      _RL usn, usm           ! neutral, zref (=10m) wind-speed (+limited)
+      _RL stable             ! = 1 if stable ; = 0 if unstable
+      _RL huol               ! stability parameter at zwd [-] (=z/Monin-Obuklov length)
+      _RL htol               ! stability parameter at zth [-]
+      _RL hqol
+      _RL x                  ! stability function  [-]
+      _RL xsq                ! = x^2               [-]
+      _RL psimh              ! momentum stability function
+      _RL psixh              ! latent & sensib. stability function
+      _RL zwln               ! = log(zwd/zref)
+      _RL ztln               ! = log(zth/zref)
+      _RL tau                ! surface stress coef = rhoA * Ws * sqrt(Cd)
+      _RL tmpbulk
+c-----------------------
 
 C     additional variables that are copied from bulkf_formula_lay:
 C     upward LW at surface (W m-2)
@@ -110,19 +116,20 @@ C     Ts2    :: surface temperature square [K^2]
       _RL Ts2
 C     latent heat of evaporation or sublimation [J/kg]
       _RL lath
+      _RL qsat_fac, qsat_exp
 #ifdef ALLOW_AUTODIFF_TAMC
-      integer ikey_1
-      integer ikey_2
+      INTEGER ikey_1
+      INTEGER ikey_2
 #endif
 
 C     == external functions ==
 
 c     _RL       exf_BulkqSat
 c     external  exf_BulkqSat
-      _RL       exf_BulkCdn
-      external  exf_BulkCdn
-      _RL       exf_BulkRhn
-      external  exf_BulkRhn
+c     _RL       exf_BulkCdn
+c     external  exf_BulkCdn
+c     _RL       exf_BulkRhn
+c     external  exf_BulkRhn
 
 C     == end of interface ==
 
@@ -144,22 +151,28 @@ C     == end of interface ==
 #endif
 
 C-- Set surface parameters :
+      zwln = LOG(hu/zref)
+      ztln = LOG(ht/zref)
       czol = hu*karman*gravity_mks
 
 C     copy a few variables to names used in bulkf_formula_lay
       Tsf    =  tsfCel+cen2kel
       Ts2    = Tsf*Tsf
+C     wind speed
+      ws     = us(i,j,bi,bj)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
+#endif
+      wsm    = sh(i,j,bi,bj)
       IF ( iceornot.EQ.0 ) THEN
         lath  = flamb
-        dEvdT = cvapor_exp
+        qsat_fac = cvapor_fac
+        qsat_exp = cvapor_exp
       ELSE
         lath  = flamb+flami
-        dEvdT = cvapor_exp_ice
+        qsat_fac = cvapor_fac_ice
+        qsat_exp = cvapor_exp_ice
       ENDIF
-
-Cph   This statement cannot be a PARAMETER statement in the header,
-Cph   but must come here; it is not fortran77 standard
-      aln = log(ht/zref)
 
 C--   Use atmospheric state to compute surface fluxes.
 
@@ -167,31 +180,30 @@ C--   Compute the turbulent surface fluxes.
 
 C             Initial guess: z/l=0.0; hu=ht=hq=z
 C             Iterations:    converge on z/l and hence the fluxes.
-C             t0     : virtual temperature (K)
-C             ssq    : sea surface humidity (kg/kg)
-C             deltap : potential temperature diff (K)
 
-          if ( atemp(i,j,bi,bj) .ne. 0. _d 0 ) then
+          IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
            t0     = atemp(i,j,bi,bj)*
      &            (exf_one + humid_fac*aqh(i,j,bi,bj))
 c          tmpbulk= exf_BulkqSat(Tsf)
 c          ssq    = saltsat*tmpbulk/atmrho
-           tmpbulk = cvapor_fac_ice/exp(cvapor_exp_ice/Tsf)
+           tmpbulk= qsat_fac*EXP(-qsat_exp/Tsf)
            ssq    = tmpbulk/atmrho
-           deltap = atemp(i,j,bi,bj)   + gamma_blk*ht - Tsf
+           deltap = atemp(i,j,bi,bj) + gamma_blk*ht - Tsf
            delq   = aqh(i,j,bi,bj) - ssq
-           stable = exf_half + sign(exf_half, deltap)
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
-#endif
-           tmpbulk= exf_BulkCdn(sh(i,j,bi,bj))
-           rdn    = sqrt(tmpbulk)
-           ustar  = rdn*sh(i,j,bi,bj)
-           tmpbulk= exf_BulkRhn(stable)
-           tstar  = tmpbulk*deltap
-           qstar  = cdalton*delq
+           stable = exf_half + SIGN(exf_half, deltap)
+c          tmpbulk= exf_BulkCdn(sh(i,j,bi,bj))
+           tmpbulk= cdrag_1/wsm + cdrag_2 + cdrag_3*wsm
+           rdn    = SQRT(tmpbulk)
+C--  initial guess for exchange other coefficients:
+c          rhn    = exf_BulkRhn(stable)
+           rhn    = (exf_one-stable)*cstanton_1 + stable*cstanton_2
+           ren    = cDalton
+C--  calculate turbulent scales
+           ustar  = rdn*wsm
+           tstar  = rhn*deltap
+           qstar  = ren*delq
 
-           do iter = 1,niter_bulk
+           DO iter = 1,niter_bulk
 
 #ifdef ALLOW_AUTODIFF_TAMC
                    ikey_2 = iter
@@ -209,73 +221,70 @@ CADJ STORE tstar  = comlev1_exf_2, key = ikey_2
 CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
 #endif
 
-            huol   = czol*(tstar/t0 +
-     &           qstar/(exf_one/humid_fac+aqh(i,j,bi,bj)))/
-     &           ustar**2
-            huol   = max(huol,zolmin)
-            stable = exf_half + sign(exf_half, huol)
+            huol   = (tstar/t0 +
+     &                qstar/(exf_one/humid_fac+aqh(i,j,bi,bj))
+     &               )*czol/(ustar*ustar)
+C-    Large&Pond_1981 code (zolmin default = -100):
+c           huol   = MAX(huol,zolmin)
+C-    Large&Yeager_2004 code:
+            huol   = MIN( MAX(-10. _d 0,huol), 10. _d 0 )
             htol   = huol*ht/hu
             hqol   = huol*hq/hu
+            stable = exf_half + SIGN(exf_half, huol)
 
 C     Evaluate all stability functions assuming hq = ht.
-            xsq    = max(sqrt(abs(exf_one - 16.*huol)),exf_one)
-            x     = sqrt(xsq)
-            psimh  = -psim_fac*huol*stable +
-     &           (exf_one - stable)*
-     &           (log((exf_one + x*(exf_two + x))*
-     &           (exf_one + xsq)/8.) - exf_two*atan(x) +
-     &           pi*exf_half)
-            xsq    = max(sqrt(abs(exf_one - 16.*htol)),exf_one)
-            psixh  = -psim_fac*htol*stable + (exf_one - stable)*
-     &           exf_two*log((exf_one + xsq)/exf_two)
+C-    Large&Pond_1981 code:
+c           xsq    = MAX(SQRT(ABS(exf_one - huol*16. _d 0)),exf_one)
+C-    Large&Yeager_2004 code:
+            xsq    = SQRT( ABS(exf_one - huol*16. _d 0) )
+            x      = SQRT(xsq)
+            psimh  = -psim_fac*huol*stable
+     &             + (exf_one-stable)
+     &              *( LOG( (exf_one + exf_two*x + xsq)
+     &                     *(exf_one+xsq)*0.125 _d 0 )
+     &                 -exf_two*ATAN(x) + exf_half*pi )
+C-    Large&Pond_1981 code:
+c           xsq    = MAX(SQRT(ABS(exf_one - htol*16. _d 0)),exf_one)
+C-    Large&Yeager_2004 code:
+            xsq    = SQRT( ABS(exf_one - htol*16. _d 0) )
+            psixh  = -psim_fac*htol*stable
+     &             + (exf_one-stable)
+     &              *exf_two*LOG( exf_half*(exf_one+xsq) )
 
 C     Shift wind speed using old coefficient
-ccc   rd   = rdn/(exf_one + rdn/karman*
-ccc   &                 (log(hu/zref) - psimh) )
-            rd     = rdn/(exf_one - rdn/karman*psimh )
-            shn    = sh(i,j,bi,bj)*rd/rdn
-            uzn    = max(shn, umin)
+            usn    = ws/( exf_one + rdn*(zwln-psimh)/karman )
+            usm    = MAX(usn, umin)
 
-C     Update the transfer coefficients at 10 meters
-C     and neutral stability.
+C-    Update the 10m, neutral stability transfer coefficients
+c           tmpbulk= exf_BulkCdn(usm)
+            tmpbulk= cdrag_1/usm + cdrag_2 + cdrag_3*usm
+            rdn    = SQRT(tmpbulk)
+c           rhn    = exf_BulkRhn(stable)
+            rhn    = (exf_one-stable)*cstanton_1 + stable*cstanton_2
 
-            tmpbulk= exf_BulkCdn(uzn)
-            rdn    = sqrt(tmpbulk)
+C     Shift all coefficients to the measurement height and stability.
+            rd     = rdn/( exf_one + rdn*(zwln-psimh)/karman )
+            rh     = rhn/( exf_one + rhn*(ztln-psixh)/karman )
+            re     = ren/( exf_one + ren*(ztln-psixh)/karman )
 
-C     Shift all coefficients to the measurement height
-C     and stability.
-c     rd = rdn/(exf_one + rdn/karman*(log(hu/zref) - psimh))
-            rd     = rdn/(exf_one - rdn/karman*psimh)
-            tmpbulk= exf_BulkRhn(stable)
-            rh     = tmpbulk/( exf_one +
-     &           tmpbulk/karman*(aln - psixh) )
-            re     = cdalton/( exf_one +
-     &           cdalton/karman*(aln - psixh) )
-
-C     Update ustar, tstar, qstar using updated, shifted
-C     coefficients.
-            ustar  = rd*sh(i,j,bi,bj)
+C     Update ustar, tstar, qstar using updated, shifted coefficients.
+            ustar  = rd*wsm
             qstar  = re*delq
             tstar  = rh*deltap
-           enddo
+           ENDDO
 
-           tau    = atmrho*ustar**2
-           tau    = tau*us(i,j,bi,bj)/sh(i,j,bi,bj)
+           tau     = atmrho*rd*ws
 
-           evapLoc       = -tau*qstar/ustar
+           evapLoc = -tau*qstar
            hlLocal = -lath*evapLoc
-           hsLocal = atmcp*tau*tstar/ustar
-#ifndef EXF_READ_EVAP
-cdm             evap(i,j,bi,bj)    = tau*qstar/ustar
-cdm !!! need to change sign and to convert from kg/m^2/s to m/s !!!
-C jmc: do not reset evap which contains evaporation over ice-free ocean fraction
-c          evap(i,j,bi,bj)    = -recip_rhonil*evapLoc
-#endif
+           hsLocal = atmcp*tau*tstar
+c          ustress = tau*rd*UwindSpeed
+c          vstress = tau*rd*VwindSpeed
 
 C---  surf.Temp derivative of turbulent Fluxes
-           dEvdT  =  (tau*re/ustar)*ssq*dEvdT/Ts2
+           dEvdT  =  (tau*re)*ssq*qsat_exp/Ts2
            dflhdT = -lath*dEvdT
-           dfshdT = -atmcp*tau*rh/ustar
+           dfshdT = -atmcp*tau*rh
 
 C--- Upward long wave radiation
            IF ( iceornot.EQ.0 ) THEN
@@ -292,19 +301,28 @@ C--   Total derivative with respect to surface temperature
            df0dT = -dflwupdT+dfshdT+dflhdT
 
 #ifdef ALLOW_DOWNWARD_RADIATION
-           flwNet_dwn  = lwdown(i,j,bi,bj) - flwup
+C-    assume long-wave albedo = 1 - emissivity
+           flwNet_dwn  = emiss*lwdown(i,j,bi,bj) - flwup
 #else
       STOP 'ABNORMAL END: S/R THSICE_GET_EXF: DOWNWARD_RADIATION undef'
 #endif
            flxExceptSw = flwNet_dwn + hsLocal + hlLocal
 
-          endif
+          ELSE
+           flxExceptSw = 0. _d 0
+           df0dT   = 0. _d 0
+           evapLoc = 0. _d 0
+           dEvdT   = 0. _d 0
+          ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #else /* ALLOW_ATM_TEMP */
       STOP 'ABNORMAL END: S/R THSICE_GET_EXF: ATM_TEMP undef'
 #endif /* ALLOW_ATM_TEMP */
+#ifdef EXF_READ_EVAP
+      STOP 'ABNORMAL END: S/R THSICE_GET_EXF: EXF_READ_EVAP defined'
+#endif /* EXF_READ_EVAP */
 #endif /* ALLOW_EXF */
 
       RETURN
