@@ -1,0 +1,39 @@
+Example matlab scripts for plotting from gmt netcdf output.
+Scripts use stuff from utils/matlab/gmt and utils/matlab in
+the MITgcm CVS tree - so that needs to be in your search path
+e.g. addpath ${mitgcm_rootdir}/utils/matlab/gmt.
+Many of the functions work with the structure from rdnctiles, so
+that is used in the example to load the data.
+
+Example driver is plot_llc.m. Running that calls the other scripts
+
+calcFacetAngles.m  :: Calculate rotation angles to project to 
+                   :: XG, YG coordinate system.
+
+croptiled.m        :: Crop data to remove values for fields 
+                   :: read in by rdnctiles
+
+llc_pcol.m         :: Do a colormap of something read in by
+                   :: rdnctiles
+
+llc_vec.m          :: Do a vector plot of something read in
+                   :: by rdnctiles
+
+plot_llc.m         :: Example driver for plotting 72 tile lat-lon cap
+                   :: output. This is mostly general except
+                   :: for directory locations and the removal of tiles
+                   :: 69-72 which are junk for this specific configuration.
+                   :: Example script produces both color scale and vector
+                   :: plots.
+                   :: It requires mnc generated grid files and 
+                   :: mnc generated time average files. 
+                   :: Example grid files can be found at
+                   :: wget http://mitgcm.org/mitgcm_repo/MITgcm_contrib/cnh_cs_plot/plot_llc_datasets/llc_grid_72tiles/v20070507/'grid.t001.nc'
+                   :: Example mnc time average files can be found at
+                   :: wget http://mitgcm.org/mitgcm_repo/MITgcm_contrib/cnh_cs_plot/plot_llc_datasets/llc_48month/v20070507/'tave.0000000001.t001.nc'
+
+vel2latlon.m       :: Rotate vectors according pre-calculated angles
+                   :: ( from calcFacetAngles ).
+
+zmean.m            :: Calculate a vertical integral divided by depth
+                   :: for a field and depths read in by rdnctiles.
