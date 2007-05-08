@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.11 2007/04/18 19:55:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.12 2007/05/08 00:21:31 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
 
-      subroutine exf_summary( mythid )
+      SUBROUTINE EXF_SUMMARY( myThid )
 
 c     ==================================================================
 c     SUBROUTINE exf_summary
@@ -30,34 +30,36 @@ c     ==================================================================
 
       implicit none
 
-c     == global variables ==
+C     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "cal.h"
+#include "EXF_CONSTANTS.h"
 #include "EXF_PARAM.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
 
-c     mythid  - thread number for this instance of the routine.
+C     myThid  - thread number for this instance of the routine.
 
-      integer mythid
+      integer myThid
 
-c     == local variables ==
+C     == local variables ==
 
       integer il
 
       character*(max_len_mbuf) msgbuf
 
-c     == external ==
+C     == external ==
 
       integer  ilnblnk
       external ilnblnk
 
-c     == end of interface ==
+C     == end of interface ==
 
-      write(msgbuf,'(a)')
-     &' '
+      _BEGIN_MASTER( myThid )
+
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
@@ -72,16 +74,111 @@ c     == end of interface ==
      &'// ======================================================='
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-c--   Print settings of some CPP flags.
+C--   Print general parameters:
+      WRITE(msgBuf,'(A)') ' EXF general parameters:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
+      CALL WRITE_0D_C( exf_yftype, 0, INDEX_NONE, 'exf_yftype = ',
+     &  ' /* ? */')
+      CALL WRITE_0D_I( exf_iprec, INDEX_NONE, 'exf_iprec =',
+     &  ' /* exf file precision */')
+      CALL WRITE_0D_L( useExfYearlyFields, INDEX_NONE,
+     &  'useExfYearlyFields =',
+     &  ' /* add extension _YEAR to input file names */')
+      CALL WRITE_0D_L( twoDigitYear, INDEX_NONE, 'twoDigitYear =',
+     &  ' /* use 2-digit year extension */')
+      CALL WRITE_0D_L( useExfCheckRange, INDEX_NONE,
+     &  'useExfCheckRange =',
+     &  ' /* check for fields range */')
+      CALL WRITE_0D_R8( exf_monFreq, INDEX_NONE, 'exf_monFreq =',
+     &  ' /* EXF monitor frequency [ s ] */')
+      CALL WRITE_0D_R8( repeatPeriod, INDEX_NONE, 'repeatPeriod =',
+     &  ' /* period for cycling forcing dataset [ s ] */')
+      CALL WRITE_0D_R8( climtempfreeze, INDEX_NONE,'climTempFreeze=',
+     &  ' /* Minimum climatological temperature [deg.C] */')
+      CALL WRITE_0D_R8( windStressMax, INDEX_NONE,'windStressMax =',
+     &  ' /* Maximum absolute windstress [ Pa ] */')
+      CALL WRITE_0D_R8( exf_albedo, INDEX_NONE, 'exf_albedo =',
+     & '  /* Sea-water albedo [-] */')
+      CALL WRITE_0D_R8( ocean_emissivity, INDEX_NONE,
+     &  'ocean_emissivity =',
+     &  ' /* longwave ocean-surface emissivity [-] */')
+      CALL WRITE_0D_R8( ice_emissivity, INDEX_NONE,'ice_emissivity =',
+     &  ' /* longwave seaice emissivity [-] */')
+      CALL WRITE_0D_R8(snow_emissivity, INDEX_NONE,'snow_emissivity =',
+     &  ' /* longwave snow  emissivity [-] */')
+      CALL WRITE_0D_R8( atmrho, INDEX_NONE, 'atmrho =',
+     & '  /* mean atmospheric density [kg/m^3] */')
+      CALL WRITE_0D_R8( atmcp, INDEX_NONE, 'atmcp =',
+     & '  /* mean atmospheric specific heat [J/kg/K] */')
+      CALL WRITE_0D_R8( flamb, INDEX_NONE, 'flamb =',
+     & '  /* latent heat of evaporation [J/kg] */')
+      CALL WRITE_0D_R8( flami, INDEX_NONE, 'flami =',
+     & '  /* latent heat of pure-ice melting [J/kg] */')
+      CALL WRITE_0D_R8( cvapor_fac, INDEX_NONE, 'cvapor_fac =',
+     &  ' /* const. for Saturation calculation [?] */')
+      CALL WRITE_0D_R8( cvapor_exp, INDEX_NONE, 'cvapor_exp =',
+     &  ' /* const. for Saturation calculation [?] */')
+      CALL WRITE_0D_R8( cvapor_fac_ice, INDEX_NONE, 'cvapor_fac_ice=',
+     &  ' /* const. for Saturation calculation [?] */')
+      CALL WRITE_0D_R8( cvapor_exp_ice, INDEX_NONE, 'cvapor_exp_ice=',
+     &  ' /* const. for Saturation calculation [?] */')
+      CALL WRITE_0D_R8( humid_fac, INDEX_NONE, 'humid_fac =',
+     &  ' /* humidity coef. in virtual temp. [(kg/kg)^-1] */')
+      CALL WRITE_0D_R8( gamma_blk, INDEX_NONE, 'gamma_blk =',
+     &  ' /* adiabatic lapse rate [?] */')
+      CALL WRITE_0D_R8( saltsat, INDEX_NONE, 'saltsat =',
+     &  ' /* reduction of Qsat over salty water [-] */')
+      CALL WRITE_0D_R8( cen2kel, INDEX_NONE, 'cen2kel =',
+     &  ' /* conversion of deg. Centigrade to Kelvin [K] */')
+      CALL WRITE_0D_R8( exf_scal_BulkCdn, INDEX_NONE,
+     &  'exf_scal_BulkCdn=',
+     &  ' /* Drag coefficient scaling factor [-] */')
+      CALL WRITE_0D_R8( psim_fac, INDEX_NONE, 'psim_fac =',
+     &  ' /* coef used in turbulent fluxes calculation [-] */')
+      CALL WRITE_0D_R8( zolmin, INDEX_NONE, 'zolmin =',
+     &  ' /* minimum stability parameter [?] */')
+      CALL WRITE_0D_R8( hu, INDEX_NONE, 'zref =',
+     & '  /* reference height [ m ] */')
+      CALL WRITE_0D_R8( hu, INDEX_NONE, 'hu =',
+     & '  /* height of mean wind [ m ] */')
+      CALL WRITE_0D_R8( hu, INDEX_NONE, 'ht =',
+     & '  /* height of mean temperature [ m ] */')
+      CALL WRITE_0D_R8( hu, INDEX_NONE, 'hq =',
+     & '  /* height of mean spec.humidity [ m ] */')
+      CALL WRITE_0D_R8( umin, INDEX_NONE, 'uMin =',
+     &  ' /* minimum wind speed [m/s] */')
+      CALL WRITE_0D_R8( cdrag_1, INDEX_NONE, 'cDrag_1 =',
+     &  ' /* coef used in drag calculation [?] */')
+      CALL WRITE_0D_R8( cdrag_2, INDEX_NONE, 'cDrag_2 =',
+     &  ' /* coef used in drag calculation [?] */')
+      CALL WRITE_0D_R8( cdrag_3, INDEX_NONE, 'cDrag_3 =',
+     &  ' /* coef used in drag calculation [?] */')
+      CALL WRITE_0D_R8( cstanton_1, INDEX_NONE, 'cStanton_1 =',
+     &  ' /* coef used in Stanton number calculation [?] */')
+      CALL WRITE_0D_R8( cstanton_2, INDEX_NONE, 'cStanton_2 =',
+     &  ' /* coef used in Stanton number calculation [?] */')
+      CALL WRITE_0D_R8( cdalton, INDEX_NONE, 'cDalton =',
+     &  ' /* coef used in Dalton number calculation [?] */')
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Print settings of some CPP flags.
+      WRITE(msgBuf,'(A)') ' EXF main CPP flags:'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid )
 
 #ifdef ALLOW_ATM_TEMP
       write(msgbuf,'(a)')
@@ -131,14 +228,15 @@ c--   Print settings of some CPP flags.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-c--   For each data set used the summary prints the calendar data
-c     and the corresponding file from which the data will be read.
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   For each data set used the summary prints the calendar data
+C     and the corresponding file from which the data will be read.
 
 #ifndef ALLOW_ATM_WIND
-c--   Zonal wind stress.
+C--   Zonal wind stress.
       il = ilnblnk(ustressfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -160,10 +258,9 @@ c--   Zonal wind stress.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-c--   Meridional wind stress.
+C--   Meridional wind stress.
       il = ilnblnk(vstressfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -187,10 +284,9 @@ c--   Meridional wind stress.
 #endif
 
 #ifndef ALLOW_ATM_TEMP
-c--   Heat flux.
+C--   Heat flux.
       il = ilnblnk(hfluxfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -212,10 +308,9 @@ c--   Heat flux.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-c--   Salt flux.
+C--   Salt flux.
       il = ilnblnk(sfluxfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -239,10 +334,9 @@ c--   Salt flux.
 #endif
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-c--   Net shortwave.
+C--   Net shortwave.
       il = ilnblnk(swfluxfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -266,10 +360,9 @@ c--   Net shortwave.
 #endif
 
 #ifdef ALLOW_ATM_WIND
-c--   Zonal wind.
+C--   Zonal wind.
       il = ilnblnk(uwindfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -291,10 +384,9 @@ c--   Zonal wind.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-c--   Meridional wind.
+C--   Meridional wind.
       il = ilnblnk(vwindfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -318,10 +410,9 @@ c--   Meridional wind.
 #endif
 
 #ifdef ALLOW_ATM_TEMP
-c--   Atmospheric temperature.
+C--   Atmospheric temperature.
       il = ilnblnk(atempfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -343,10 +434,9 @@ c--   Atmospheric temperature.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-c--   Atmospheric specific humidity.
+C--   Atmospheric specific humidity.
       il = ilnblnk(aqhfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -368,10 +458,9 @@ c--   Atmospheric specific humidity.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-c--   Net longwave.
+C--   Net longwave.
       il = ilnblnk(lwfluxfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -393,10 +482,9 @@ c--   Net longwave.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-c--   Precipitation.
+C--   Precipitation.
       il = ilnblnk(precipfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -419,17 +507,16 @@ c--   Precipitation.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
+C--   Evaporation.
+      write(msgbuf,'(a)') ' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
 #ifdef EXF_READ_EVAP
-c--   Evaporation.
       write(msgbuf,'(a)')
      &'// EXF_READ_EVAP:                      defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       il = ilnblnk(evapfile)
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
      &'   Evaporation starts at     ',
      &    evapstartdate
@@ -455,17 +542,16 @@ c--   Evaporation.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
+C--   Runoff.
+      write(msgbuf,'(a)') ' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
 #ifdef ALLOW_RUNOFF
-c--   Runoff.
       write(msgbuf,'(a)')
      &'// ALLOW_RUNOFF:                       defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       il = ilnblnk(runofffile)
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
      &'   Runnoff starts at     ',
      &    runoffstartdate
@@ -492,10 +578,9 @@ c--   Runoff.
 #endif /* ALLOW_RUNOFF */
 
 #ifdef DOWNWARD_RADIATION
-c--   Downward shortwave.
+C--   Downward shortwave.
       il = ilnblnk(swdownfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -517,10 +602,9 @@ c--   Downward shortwave.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-c--   Downward longwave.
+C--   Downward longwave.
       il = ilnblnk(lwdownfile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -544,10 +628,9 @@ c--   Downward longwave.
 #endif
 
 #ifdef ATMOSPHERIC_LOADING
-c--   Atmospheric pressure.
+C--   Atmospheric pressure.
       il = ilnblnk(apressurefile)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,f12.0)')
@@ -570,8 +653,7 @@ c--   Atmospheric pressure.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
@@ -586,13 +668,12 @@ c--   Atmospheric pressure.
      &'// ======================================================='
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-      write(msgbuf,'(a)')
-     &' '
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
@@ -607,15 +688,12 @@ c--   Atmospheric pressure.
      &'// ======================================================='
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-c     For each data set used the summary prints the calendar data
-c     and the corresponding file from which the data will be read.
+C     For each data set used the summary prints the calendar data
+C     and the corresponding file from which the data will be read.
 
 #ifdef ALLOW_CLIMSST_RELAXATION
       write(msgbuf,'(a)')
@@ -641,12 +719,12 @@ c     and the corresponding file from which the data will be read.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-c     The climatological data sets are assumed to contain monthly
-c     data. This can be changed in a later version to an arbitrary
-c     number of intervals during a given year.
+C     The climatological data sets are assumed to contain monthly
+C     data. This can be changed in a later version to an arbitrary
+C     number of intervals during a given year.
 
 #ifdef ALLOW_CLIMSST_RELAXATION
-c     Relaxation to SST climatology.
+C     Relaxation to SST climatology.
       il = ilnblnk(climsstfile)
       write(msgbuf,'(a)')
      &' '
@@ -673,7 +751,7 @@ c     Relaxation to SST climatology.
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
-c     Relaxation to SSS climatology.
+C     Relaxation to SSS climatology.
       il = ilnblnk(climsssfile)
       write(msgbuf,'(a)')
      &' '
@@ -699,8 +777,7 @@ c     Relaxation to SSS climatology.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
@@ -715,9 +792,11 @@ c     Relaxation to SSS climatology.
      &'// ======================================================='
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
-     &' '
+      write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-      end
+      _END_MASTER( myThid )
+
+      RETURN
+      END
