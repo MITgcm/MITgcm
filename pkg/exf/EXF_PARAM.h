@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.3 2007/04/19 14:37:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.4 2007/05/08 03:48:08 jmc Exp $
 C $Name:  $
 c
 c
@@ -39,14 +39,6 @@ c     Calendar data.
 
 c     Monitor Frequency (s)
       _RL     exf_monFreq
-
-c     Sea-water albedo
-      _RL     exf_albedo
-c     longwave surface emissivities (ice and snow emissivities are used
-c     in conjunction with thsice/seaice)
-      _RL     ocean_emissivity
-      _RL     ice_emissivity
-      _RL     snow_emissivity
 
 c     Drag coefficient scaling factor
       _RL     exf_scal_BulkCdn
@@ -309,12 +301,17 @@ C     useExfYearlyFields :: when set, automatically add extension
 C                           _YEAR to input file names
 C     twoDigitYear       :: when set, use 2-digit year extension YR
 C                           instead of _YEAR for useExfYearlyFields
+C     useStabilityFct_overIce :: over sea-ice, compute turbulent transfert
+C                                coeff. function of stability (like over
+C                                open ocean) rather than using fixed Coeff.
       logical useExfYearlyFields, twoDigitYear
       logical useExfCheckRange
+      logical useStabilityFct_overIce
 
       common /exf_param_l/
      &                     useExfYearlyFields, twoDigitYear,
-     &                     useExfCheckRange
+     &                     useExfCheckRange,
+     &                     useStabilityFct_overIce
       common /exf_param_i/ selectStressGridPosition,
      &                     hfluxstartdate1,   hfluxstartdate2,
      &                     atempstartdate1,   atempstartdate2,
@@ -342,8 +339,6 @@ C                           instead of _YEAR for useExfYearlyFields
       common /exf_param_r/
      &                     year2sec,          windstressmax,
      &                     repeatPeriod,      exf_monFreq,
-     &                     exf_albedo,        ocean_emissivity,
-     &                     ice_emissivity,    snow_emissivity,
      &                     exf_scal_BulkCdn,
      &                     hfluxperiod,       hfluxstartdate,
      &                     atempperiod,       atempstartdate,
