@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.20 2006/02/15 03:52:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.21 2007/05/08 17:03:12 utke Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -110,7 +110,8 @@ c--   Temperature field.
 #endif
 #ifdef ALLOW_OPENAD
                 theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
-     &                               fac*xx_theta(i,j,k,bi,bj)
+     &                               fac*xx_theta(i,j,k,bi,bj) +
+     &                               fac*tmpfld3d(i,j,k,bi,bj)
 #else
                 theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
@@ -147,7 +148,8 @@ c--   Temperature field.
 #endif
 #ifdef ALLOW_OPENAD
                 salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj) +
-     &                               fac*xx_salt(i,j,k,bi,bj)
+     &                               fac*xx_salt(i,j,k,bi,bj) +
+     &                               fac*tmpfld3d(i,j,k,bi,bj)
 #else
                 salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
