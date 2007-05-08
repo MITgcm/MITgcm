@@ -31,25 +31,24 @@ C     LOCAL VARIABLES:
       INTEGER i,j
 
       DO j=1, sNy
-        DO i=1, sNx
-        
-          netSW(i,j) = -solarinc_2D(i,j)*(1. _d 0 - siceAlb(i,j,1,1)) ! convert to +=down
-          sFlx(i,j,0)= -qneti_2D(i,j) -netSW(i,j) + Tsrf(i,j,1,1)*dFdT_ice_2D(i,j)
-          sFlx(i,j,1)= -qneti_2D(i,j) -netSW(i,j)
-          sFlx(i,j,2)= -dFdT_ice_2D(i,j)
+       DO i=1, sNx
 
-C         Note conversion to ice model sign convention below
-          sum_prcIce(i,j) = sum_prcIce(i,j) -  precipi_2D(i,j)*rhofw   
-          sum_evapIce(i,j) = sum_evapIce(i,j) -  evapi_2D(i,j)*rhofw   
-          IF (Tair_2D(i,j) .LE. 0. _d 0)    
-     &      sum_snowPrc(i,j) = sum_snowPrc(i,j) -  precipi_2D(i,j)*rhofw
+         IF (iceMask(i,j,1,1) .GT. 0. _d 0) THEN     
+           netSW(i,j) = -solarinc_2D(i,j)*(1. _d 0 - siceAlb(i,j,1,1)) ! convert to +=down
+           sFlx(i,j,0)= -qneti_2D(i,j) -netSW(i,j) + 
+     &                  Tsrf(i,j,1,1)*dFdT_ice_2D(i,j)
+           sFlx(i,j,1)= -qneti_2D(i,j) -netSW(i,j)
+           sFlx(i,j,2)= -dFdT_ice_2D(i,j)
+
+C          Note conversion to ice model sign convention below
+           sum_prcIce(i,j) = sum_prcIce(i,j) - precipi_2D(i,j)*rhofw   
+           sum_evapIce(i,j) = sum_evapIce(i,j) - evapi_2D(i,j)*rhofw   
+           IF (Tair_2D(i,j) .LE. 0. _d 0)    
+     &      sum_snowPrc(i,j) = sum_snowPrc(i,j) - precipi_2D(i,j)*rhofw
  
-C          IF (iceMask(i,j,1,1) .GT. 0. _d 0) THEN
-C            PRINT *,'Pass seaice fluxes at, T :',i,j,Tair_2D(i,j)
-C            PRINT *,precipi_2D(i,j),sum_snowPrc(i,j)
-C          ENDIF
+         ENDIF
 
-        ENDDO
+       ENDDO
       ENDDO  
 
 
