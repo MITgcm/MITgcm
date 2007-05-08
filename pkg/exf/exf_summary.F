@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.12 2007/05/08 00:21:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.13 2007/05/08 03:49:34 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -105,15 +105,10 @@ C--   Print general parameters:
      &  ' /* Minimum climatological temperature [deg.C] */')
       CALL WRITE_0D_R8( windStressMax, INDEX_NONE,'windStressMax =',
      &  ' /* Maximum absolute windstress [ Pa ] */')
-      CALL WRITE_0D_R8( exf_albedo, INDEX_NONE, 'exf_albedo =',
-     & '  /* Sea-water albedo [-] */')
-      CALL WRITE_0D_R8( ocean_emissivity, INDEX_NONE,
-     &  'ocean_emissivity =',
-     &  ' /* longwave ocean-surface emissivity [-] */')
-      CALL WRITE_0D_R8( ice_emissivity, INDEX_NONE,'ice_emissivity =',
-     &  ' /* longwave seaice emissivity [-] */')
-      CALL WRITE_0D_R8(snow_emissivity, INDEX_NONE,'snow_emissivity =',
-     &  ' /* longwave snow  emissivity [-] */')
+      CALL WRITE_0D_R8( cen2kel, INDEX_NONE, 'cen2kel =',
+     &  ' /* conversion of deg. Centigrade to Kelvin [K] */')
+      CALL WRITE_0D_R8( gravity_mks, INDEX_NONE, 'gravity_mks=',
+     &  ' /* gravitational acceleration [m/s^2] */')
       CALL WRITE_0D_R8( atmrho, INDEX_NONE, 'atmrho =',
      & '  /* mean atmospheric density [kg/m^3] */')
       CALL WRITE_0D_R8( atmcp, INDEX_NONE, 'atmcp =',
@@ -136,25 +131,6 @@ C--   Print general parameters:
      &  ' /* adiabatic lapse rate [?] */')
       CALL WRITE_0D_R8( saltsat, INDEX_NONE, 'saltsat =',
      &  ' /* reduction of Qsat over salty water [-] */')
-      CALL WRITE_0D_R8( cen2kel, INDEX_NONE, 'cen2kel =',
-     &  ' /* conversion of deg. Centigrade to Kelvin [K] */')
-      CALL WRITE_0D_R8( exf_scal_BulkCdn, INDEX_NONE,
-     &  'exf_scal_BulkCdn=',
-     &  ' /* Drag coefficient scaling factor [-] */')
-      CALL WRITE_0D_R8( psim_fac, INDEX_NONE, 'psim_fac =',
-     &  ' /* coef used in turbulent fluxes calculation [-] */')
-      CALL WRITE_0D_R8( zolmin, INDEX_NONE, 'zolmin =',
-     &  ' /* minimum stability parameter [?] */')
-      CALL WRITE_0D_R8( hu, INDEX_NONE, 'zref =',
-     & '  /* reference height [ m ] */')
-      CALL WRITE_0D_R8( hu, INDEX_NONE, 'hu =',
-     & '  /* height of mean wind [ m ] */')
-      CALL WRITE_0D_R8( hu, INDEX_NONE, 'ht =',
-     & '  /* height of mean temperature [ m ] */')
-      CALL WRITE_0D_R8( hu, INDEX_NONE, 'hq =',
-     & '  /* height of mean spec.humidity [ m ] */')
-      CALL WRITE_0D_R8( umin, INDEX_NONE, 'uMin =',
-     &  ' /* minimum wind speed [m/s] */')
       CALL WRITE_0D_R8( cdrag_1, INDEX_NONE, 'cDrag_1 =',
      &  ' /* coef used in drag calculation [?] */')
       CALL WRITE_0D_R8( cdrag_2, INDEX_NONE, 'cDrag_2 =',
@@ -167,6 +143,41 @@ C--   Print general parameters:
      &  ' /* coef used in Stanton number calculation [?] */')
       CALL WRITE_0D_R8( cdalton, INDEX_NONE, 'cDalton =',
      &  ' /* coef used in Dalton number calculation [?] */')
+      CALL WRITE_0D_R8( exf_scal_BulkCdn, INDEX_NONE,
+     &  'exf_scal_BulkCdn=',
+     &  ' /* Drag coefficient scaling factor [-] */')
+      CALL WRITE_0D_R8( zolmin, INDEX_NONE, 'zolmin =',
+     &  ' /* minimum stability parameter [?] */')
+      CALL WRITE_0D_R8( psim_fac, INDEX_NONE, 'psim_fac =',
+     &  ' /* coef used in turbulent fluxes calculation [-] */')
+      CALL WRITE_0D_R8( hu, INDEX_NONE, 'zref =',
+     & '  /* reference height [ m ] */')
+      CALL WRITE_0D_R8( hu, INDEX_NONE, 'hu =',
+     & '  /* height of mean wind [ m ] */')
+      CALL WRITE_0D_R8( hu, INDEX_NONE, 'ht =',
+     & '  /* height of mean temperature [ m ] */')
+      CALL WRITE_0D_R8( hu, INDEX_NONE, 'hq =',
+     & '  /* height of mean spec.humidity [ m ] */')
+      CALL WRITE_0D_R8( umin, INDEX_NONE, 'uMin =',
+     &  ' /* minimum wind speed [m/s] */')
+      CALL WRITE_0D_L( useStabilityFct_overIce, INDEX_NONE,
+     &  'useStabilityFct_overIce=',
+     &  ' /* transfert Coeffs over sea-ice depend on stability */')
+      CALL WRITE_0D_R8( exf_iceCd, INDEX_NONE, 'exf_iceCd =',
+     &  ' /* drag coefficient over sea-ice (fixed) [-] */')
+      CALL WRITE_0D_R8( exf_iceCe, INDEX_NONE, 'exf_iceCe =',
+     &  ' /* transfert coeff. over sea-ice, for Evap (fixed) [-] */')
+      CALL WRITE_0D_R8( exf_iceCe, INDEX_NONE, 'exf_iceCh =',
+     &  ' /* transfert coeff. over sea-ice, Sens.Heat.(fixed)[-] */')
+      CALL WRITE_0D_R8( exf_albedo, INDEX_NONE, 'exf_albedo =',
+     & '  /* Sea-water albedo [-] */')
+      CALL WRITE_0D_R8( ocean_emissivity, INDEX_NONE,
+     &  'ocean_emissivity =',
+     &  ' /* longwave ocean-surface emissivity [-] */')
+      CALL WRITE_0D_R8( ice_emissivity, INDEX_NONE,'ice_emissivity =',
+     &  ' /* longwave seaice emissivity [-] */')
+      CALL WRITE_0D_R8(snow_emissivity, INDEX_NONE,'snow_emissivity =',
+     &  ' /* longwave snow  emissivity [-] */')
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid )
