@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.810 2007/05/09 13:00:47 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.811 2007/05/09 14:32:05 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: rearrangement of common blocks (really needs more cleaning up)
 o pkg/exf: some cleaning-up:
   - change various "constants" into runtime parameters
   - cleaned-up Large&Yeager04 routine which should eventually
