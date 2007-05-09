@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.9 2007/05/07 19:26:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.10 2007/05/09 12:46:10 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -25,10 +25,10 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #ifdef ALLOW_EXF
-# include "SIZE.h"
-# include "EEPARAMS.h"
-# include "PARAMS.h"
 # include "EXF_CONSTANTS.h"
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
@@ -72,7 +72,6 @@ C             deltap   :: potential temperature diff (K)
       INTEGER iter
       _RL     delq
       _RL     deltap
-c-----------------------
       _RL czol
       _RL ws                 ! wind speed [m/s] (unlimited)
       _RL wsm                ! limited wind speed [m/s] (> umin)
@@ -98,7 +97,6 @@ c-----------------------
       _RL ztln               ! = log(zth/zref)
       _RL tau                ! surface stress coef = rhoA * Ws * sqrt(Cd)
       _RL tmpbulk
-c-----------------------
 
 C     additional variables that are copied from bulkf_formula_lay:
 C     upward LW at surface (W m-2)
@@ -150,11 +148,6 @@ C     == end of interface ==
      &         + sNx*sNy*max1*max2*max3*act4
 #endif
 
-C-- Set surface parameters :
-      zwln = LOG(hu/zref)
-      ztln = LOG(ht/zref)
-      czol = hu*karman*gravity_mks
-
 C     copy a few variables to names used in bulkf_formula_lay
       Tsf    =  tsfCel+cen2kel
       Ts2    = Tsf*Tsf
@@ -175,21 +168,29 @@ CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
       ENDIF
 
 C--   Use atmospheric state to compute surface fluxes.
+        IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
 
-C--   Compute the turbulent surface fluxes.
+C--   air - surface difference of temperature & humidity
+c         tmpbulk= exf_BulkqSat(Tsf)
+c         ssq    = saltsat*tmpbulk/atmrho
+          tmpbulk= qsat_fac*EXP(-qsat_exp/Tsf)
+          ssq    = tmpbulk/atmrho
+          deltap = atemp(i,j,bi,bj) + gamma_blk*ht - Tsf
+          delq   = aqh(i,j,bi,bj) - ssq
+
+          IF ( useStabilityFct_overIce ) THEN
+C--   Compute the turbulent surface fluxes (function of stability).
+
+C--   Set surface parameters :
+           zwln = LOG(hu/zref)
+           ztln = LOG(ht/zref)
+           czol = hu*karman*gravity_mks
 
 C             Initial guess: z/l=0.0; hu=ht=hq=z
 C             Iterations:    converge on z/l and hence the fluxes.
 
-          IF ( atemp(i,j,bi,bj) .NE. 0. _d 0 ) THEN
            t0     = atemp(i,j,bi,bj)*
      &            (exf_one + humid_fac*aqh(i,j,bi,bj))
-c          tmpbulk= exf_BulkqSat(Tsf)
-c          ssq    = saltsat*tmpbulk/atmrho
-           tmpbulk= qsat_fac*EXP(-qsat_exp/Tsf)
-           ssq    = tmpbulk/atmrho
-           deltap = atemp(i,j,bi,bj) + gamma_blk*ht - Tsf
-           delq   = aqh(i,j,bi,bj) - ssq
            stable = exf_half + SIGN(exf_half, deltap)
 c          tmpbulk= exf_BulkCdn(sh(i,j,bi,bj))
            tmpbulk= cdrag_1/wsm + cdrag_2 + cdrag_3*wsm
@@ -286,34 +287,48 @@ C---  surf.Temp derivative of turbulent Fluxes
            dflhdT = -lath*dEvdT
            dfshdT = -atmcp*tau*rh
 
+          ELSE
+C--   Compute the turbulent surface fluxes using fixed transfert Coeffs
+C      with no stability dependence ( useStabilityFct_overIce = false )
+
+           evapLoc =      -atmrho*exf_iceCe*wsm*delq
+           hlLocal = -lath*evapLoc
+           hsLocal = atmcp*atmrho*exf_iceCh*wsm*deltap
+C---  surf.Temp derivative of turbulent Fluxes
+           dEvdT  = (atmrho*exf_iceCe*wsm)*(ssq*qsat_exp/Ts2)
+           dflhdT = -lath*dEvdT
+           dfshdT = -atmcp*atmrho*exf_iceCh*wsm
+
+          ENDIF
 C--- Upward long wave radiation
-           IF ( iceornot.EQ.0 ) THEN
+          IF ( iceornot.EQ.0 ) THEN
             emiss = ocean_emissivity
-           ELSEIF (iceornot.EQ.2) THEN
+          ELSEIF (iceornot.EQ.2) THEN
             emiss = snow_emissivity
-           ELSE
+          ELSE
             emiss = ice_emissivity
-           ENDIF
-           flwup    = emiss*stefanBoltzmann*Ts2*Ts2
-           dflwupdT = emiss*stefanBoltzmann*Ts2*Tsf * 4. _d 0
+          ENDIF
+          flwup    = emiss*stefanBoltzmann*Ts2*Ts2
+          dflwupdT = emiss*stefanBoltzmann*Ts2*Tsf * 4. _d 0
 
 C--   Total derivative with respect to surface temperature
-           df0dT = -dflwupdT+dfshdT+dflhdT
+          df0dT = -dflwupdT+dfshdT+dflhdT
 
 #ifdef ALLOW_DOWNWARD_RADIATION
-C-    assume long-wave albedo = 1 - emissivity
-           flwNet_dwn  = emiss*lwdown(i,j,bi,bj) - flwup
+c         flwNet_dwn  =       lwdown(i,j,bi,bj) - flwup
+C-    assume long-wave albedo = 1 - emissivity :
+          flwNet_dwn  = emiss*lwdown(i,j,bi,bj) - flwup
 #else
       STOP 'ABNORMAL END: S/R THSICE_GET_EXF: DOWNWARD_RADIATION undef'
 #endif
-           flxExceptSw = flwNet_dwn + hsLocal + hlLocal
+          flxExceptSw = flwNet_dwn + hsLocal + hlLocal
 
-          ELSE
-           flxExceptSw = 0. _d 0
-           df0dT   = 0. _d 0
-           evapLoc = 0. _d 0
-           dEvdT   = 0. _d 0
-          ENDIF
+        ELSE
+          flxExceptSw = 0. _d 0
+          df0dT   = 0. _d 0
+          evapLoc = 0. _d 0
+          dEvdT   = 0. _d 0
+        ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
