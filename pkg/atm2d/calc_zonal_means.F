@@ -75,7 +75,7 @@ C     LOCAL VARIABLES:
              cfice(atm_oc_ind(j))=cfice(atm_oc_ind(j)) + 
      &              rA(i,j,1,1)*iceMask(i,j,1,1)*atm_oc_wgt(j)
              cco2flux(atm_oc_ind(j))=cco2flux(atm_oc_ind(j)) + 
-     &                  fluxCO2(i,j)*rA(i,j,1,1)*atm_oc_wgt(j)
+     &                  oFluxCO2(i,j)*rA(i,j,1,1)*atm_oc_wgt(j)
            ENDIF
            ctice(atm_oc_ind(j))=ctice(atm_oc_ind(j)) + Tsrf(i,j,1,1)
      &             *rA(i,j,1,1)*iceMask(i,j,1,1)*atm_oc_wgt(j)
@@ -92,7 +92,7 @@ C     LOCAL VARIABLES:
                cfice(atm_oc_ind(j)+1)= cfice(atm_oc_ind(j)+1) + 
      &             rA(i,j,1,1)*iceMask(i,j,1,1)*mWgt
                cco2flux(atm_oc_ind(j)+1)= cco2flux(atm_oc_ind(j)+1) + 
-     &                  fluxCO2(i,j)*rA(i,j,1,1)*mWgt
+     &                  oFluxCO2(i,j)*rA(i,j,1,1)*mWgt
              ENDIF
              ctice(atm_oc_ind(j)+1)= ctice(atm_oc_ind(j)+1) + 
      &             Tsrf(i,j,1,1)*rA(i,j,1,1)*iceMask(i,j,1,1)*mWgt

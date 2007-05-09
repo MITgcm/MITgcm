@@ -100,7 +100,7 @@ C     Files: basic state 3D wind fields, and E,P, and qnet prescibed fluxes (if 
        _RL atm_solar_ocn(jm0) ! solar incoming to ocean (+=into ocean)
        _RL atm_windspeed(jm0) ! windspeed at ocean surface (m/s)
        _RL atm_slp(jm0)       ! SLP (mb) 
-       _RL atm_pco2(jm0)      ! atmospheric pCO2  (units?)  
+       _RL atm_pco2(jm0)      ! atmospheric pCO2 (ppmv)  
 
 c
 c ocean data zonal means
@@ -110,7 +110,7 @@ c ocean data zonal means
        _RL cfice(jm0)    ! zonal mean ice fraction
        _RL csAlb(jm0)    ! zonal mean seaice albedo
        _RL ocnArea(jm0)  ! ocean area of latitude strip on atm grid (m2)
-       _RL cco2flux(jm0) ! zonally integrated flux of CO2 from ocean->atm (units?)
+       _RL cco2flux(jm0) ! zonally integrated flux of CO2 from ocean->atm (mol/m2/s)
 
 c
 c OCN fluxes after conversion from 1D to 2D, whether by flux adj.,
@@ -127,7 +127,7 @@ c
        _RL fv_2D(1:sNx,1:sNy)      ! merid. mom flux at lower boundary (N/m2)
        _RL solarnet_ocn_2D(1:sNx,1:sNy) ! solar incoming to ocean (+=into ocean)
        _RL slp_2D(1:sNx,1:sNy)     ! SLP (mb)
-       _RL pCO2_2D(1:sNx,1:sNy)    ! atmospheric pCO2  (units?) 
+       _RL pCO2_2D(1:sNx,1:sNy)    ! atmospheric pCO2  (ppmv) 
        _RL wspeed_2D(1:sNx,1:sNy)  ! windspeed at ocean surface (m/s)
 
 c
@@ -174,7 +174,7 @@ C     Also sum of atm E,P  for seaice growth step, and sum of seaice bottom flux
        _RL sum_wspeed(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! sum of wind speed applied to ocean (m/s)
        _RL sum_solarnet(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! sum of net solar into ocean, inc. thru ice (+=up)
        _RL sum_slp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)    ! sum of SLP (mb)
-       _RL sum_pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)   ! sum of atmospheric pCO2  (units?) 
+       _RL sum_pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)   ! sum of atmospheric pCO2  (ppmv) 
        _RL sum_prcIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! sum of total precip over ice (kg/m2/s, + def)
        _RL sum_snowPrc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)! sum of snow precip to ice (kg/m2/s, + def)
        _RL sum_evapIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)! total evap over ice (kg/m2/s, +=out of ocean)
@@ -196,8 +196,8 @@ C     These are the fluxes actually passed to the ocean model
        _RL pass_wspeed(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! wind speed -> ocean (m/s)
        _RL pass_solarnet(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! total net solar -> ocean (+=up, - def)
        _RL pass_slp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)    ! slp -> ocean (mb)
-       _RL pass_pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)   ! atmos pCO2 -> ocean (units?)
-       _RL pass_sIceLoad(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! seaice mass loading -> ocean (to be done) 
+       _RL pass_pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)   ! atmos pCO2 -> ocean (ppmv)
+       _RL pass_sIceLoad(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! seaice mass loading -> ocean  
        _RL sFluxFromIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! upward salt flux->ocean (psu.kg/m^2/s, or g/m^2/s?)
 
      
@@ -208,7 +208,7 @@ C     These are the fluxes actually passed to the ocean model
 			     ! 1: surface heat flux to ice, no SW (Ts=Ts^n) (W/m2) (+=down)
 			     ! 2: dF/dT (over ice), (- def, as for +=down HF)
        _RL dTsurf(sNx,sNy)   ! surf temp adjustment Ts^n+1 - Ts^n
-       _RL pass_prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! total precip -> seaice top ((kg/m2/s, +=precip to ice)
+       _RL pass_prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! total precip -> seaice top (kg/m2/s, +=precip to ice)
 
 
 C     Variables used to sum and compute atm2d diagnostic outputs
@@ -253,9 +253,9 @@ C     Variables used to sum and compute atm2d diagnostic outputs
        
 
 C      Variables passed from ocean model
-      COMMON/FROM_OCN/ sstFromOcn, sssFromOcn, fluxCO2, mlDepth
+      COMMON/FROM_OCN/ sstFromOcn, sssFromOcn, oFluxCO2, mlDepth
        _RL sstFromOcn(1:sNx,1:sNy)
        _RL sssFromOcn(1:sNx,1:sNy)
-       _RL fluxCO2(1:sNx,1:sNy)
+       _RL oFluxCO2(1:sNx,1:sNy)   ! flux of CO2 from ocean DIC etc. package (mol/m2/s)
        _RL mlDepth(1:sNx,1:sNy)    ! at present, simply the depth of top ocean grid cell (m)
 
