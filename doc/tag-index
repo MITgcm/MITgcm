@@ -1,10 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.809 2007/05/04 21:51:31 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.810 2007/05/09 13:00:47 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/thsice: 
+o pkg/exf: some cleaning-up:
+  - change various "constants" into runtime parameters
+  - cleaned-up Large&Yeager04 routine which should eventually
+    replace exf_bulkformulae.F (changed names of S/R and CPP)
+    and merged various ALLOW_ATM_WIND options
+ only used with thsice pkg (in thsice_get_exf.F):
+  - implement fixed turbulent transfert Coeff over ice (as in Large&Yeager04)
+    which are used when useStabilityFct_overIce=TRUE (= the default)
+  - change default values of ice & snow emissivity and scale downward LW
+    by ice & snow emissivity.
+o pkg/thsice:
  fix few little problems, in thsice_calc_thickn.F:
   - growth vertically (and not laterally) if iceFrac == iceMaskMax
   - melt laterally only if hIce < hThinIce (as the comments say)
