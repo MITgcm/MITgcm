@@ -20,6 +20,7 @@
 #endif
 
 #ifdef CPL_OCEANCO2 
+#  include "OCM.h"
       COMMON /DRIVER_VAR_CO2/
      &         ocumn, ocuptp, fluxco2mn
        REAL*4 ocumn
