@@ -90,11 +90,11 @@ C                begine.
        CALL EXCH_RS( adUphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
        CALL EXCH_RS( adVphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
@@ -172,11 +172,11 @@ C                begine.
        CALL EXCH_RL( adUphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
        CALL EXCH_RL( adVphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+     I            REVERSE_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
       ENDIF
 
       RETURN
