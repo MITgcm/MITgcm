@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.7 2007/04/24 11:23:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.8 2007/05/10 19:54:19 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -49,12 +49,11 @@ C     SIN/COSWAT    - sine/cosine of turning angle
 C     recip_evp_tau - inverse of EVP relaxation/damping timescale
 C     ecc2          - eccentricity squared
 C     e11,e12,e22   - components of strain rate tensor
-C     PRESS         - (modified) pressure (includes upper/lower bounds etc.)
-C     seaice_div    - divergence strain rates at C-points
+C     seaice_div    - divergence strain rates at C-points times P
+C                     /divided by Delta minus 1
+C     seaice_tension- tension    strain rates at C-points times P
 C                     /divided by Delta
-C     seaice_tension- tension    strain rates at C-points
-C                     /divided by Delta
-C     seaice_shear  - shear      strain rates, defined at Z-points
+C     seaice_shear  - shear      strain rates, defined at Z-points times P
 C                     /divided by Delta
 C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
       
@@ -71,16 +70,16 @@ C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
       _RL e11           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e22           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e12           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL PRESS         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL seaice_div    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL seaice_tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL seaice_shear  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL seaice_div    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL seaice_tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL seaice_shear  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig11         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     auxilliary variables
       _RL e11C, e22C, e12C, deltaC
       _RL e11Z, e22Z, e12Z, deltaZ
-      _RL zetaLoc
+      _RL zetaC, zetaZ, pressC
+      _RL denom1, denom2
 
 C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
@@ -95,7 +94,11 @@ C     determine number of interal time steps
 C     inverse relaxation/damping time scale
       recip_evp_tau = 0. _d 0
       IF ( SEAICE_elasticParm .GT. 0. )
-     &     recip_evp_tau = 1./(SEAICE_deltaTdyn*SEAICE_elasticParm)
+     &     recip_evp_tau=1. _d 0/(SEAICE_deltaTdyn*SEAICE_elasticParm)
+      denom1 = 1. _d 0 
+     &     / (1. _d 0 + 0.5 _d 0 *SEAICE_deltaTevp*recip_evp_tau)
+      denom2 = 1. _d 0 
+     &     / (1. _d 0 + 0.5 _d 0 *SEAICE_deltaTevp*recip_evp_tau*ecc2)
 #ifndef ALLOW_AUTODIFF_TAMC
       nEVPstepMax = nEVPstep
 #endif
@@ -115,9 +118,6 @@ c     initialise strain rates
           e11  (I,J,bi,bj)   = 0. _d 0
           e22  (I,J,bi,bj)   = 0. _d 0
           e12  (I,J,bi,bj)   = 0. _d 0
-          seaice_div    (I,J,bi,bj) = 0. _d 0
-          seaice_tension(I,J,bi,bj) = 0. _d 0
-          seaice_shear  (I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -151,137 +151,79 @@ C
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            seaice_div    (I,J) = 0. _d 0
+            seaice_tension(I,J) = 0. _d 0
+            seaice_shear  (I,J) = 0. _d 0
+           ENDDO
+          ENDDO
           DO j=0,sNy+1
            DO i=0,sNx+1
 C     average strain rates to Z and C points
             e11C = e11(i,j,bi,bj)
             e22C = e22(i,j,bi,bj)
-            e12C = 0.25 * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj) 
-     &           +          e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
-            e11Z = 0.25 * ( e11(I,J  ,bi,bj) + e11(I-1,J  ,bi,bj) 
-     &           +          e11(I,J-1,bi,bj) + e11(I-1,J-1,bi,bj) )
-            e22Z = 0.25 * ( e22(I,J  ,bi,bj) + e22(I-1,J  ,bi,bj) 
-     &           +          e22(I,J-1,bi,bj) + e22(I-1,J-1,bi,bj) )
+            e12C = 0.25 _d 0 
+     &         * ( e11(I,J  ,bi,bj) + e11(I-1,J  ,bi,bj) 
+     &           + e11(I,J-1,bi,bj) + e11(I-1,J-1,bi,bj) )
+            e22Z = 0.25 _d 0
+     &         * ( e22(I,J  ,bi,bj) + e22(I-1,J  ,bi,bj) 
+     &           + e22(I,J-1,bi,bj) + e22(I-1,J-1,bi,bj) )
             e12Z = e12(i,j,bi,bj)
-            deltaC = (e11C**2+e22C**2)*(ONE+recip_ecc2)
+            deltaC = (e11C+e22C)**2 + (e11C-e22C)**2 *recip_ecc2
      &           + 4. _d 0*recip_ecc2*e12C**2 
-     &           + 2. _d 0*e11C*e22C*(ONE-recip_ecc2)
-            deltaC = SQRT(MAX(deltaC,SEAICE_EPS_SQ))
-            deltaZ = (e11Z**2+e22Z**2)*(ONE+recip_ecc2)
+            deltaC = MAX(SQRT(deltaC),SEAICE_EPS)
+            deltaZ = (e11Z+e22Z)**2 + (e11Z-e22Z)**2 *recip_ecc2
      &           + 4. _d 0*recip_ecc2*e12Z**2 
-     &           + 2. _d 0*e11Z*e22Z*(ONE-recip_ecc2)
-            deltaZ = SQRT(MAX(deltaZ,SEAICE_EPS_SQ))
+            deltaZ = MAX(SQRT(deltaZ),SEAICE_EPS)
 C     modify pressure (copied from seaice_calc_viscosities)
-            zetaLoc          = HALF*press0(I,J,bi,bj)/deltaC
-            zetaLoc          = MIN(zMax(I,J,bi,bj),zetaLoc)
-            zetaLoc          = MAX(zMin(I,J,bi,bj),zetaLoc)
-            zetaLoc          = zetaLoc*hEffM(I,J,bi,bj) 
-            press(I,J,bi,bj) = TWO*zetaLoc*deltaC
-CMLC     not clear if it is better to use the original pressure
-CML            press(I,J,bi,bj) = press0(i,j,bi,bj)
-C     
-            seaice_div    (I,J,bi,bj) = (e11C+e22C)/deltaC
+            zetaC = HALF*press0(I,J,bi,bj)/deltaC
+            zetaC = MIN(zMax(I,J,bi,bj),zetaC)
+            zetaC = MAX(zMin(I,J,bi,bj),zetaC)
+CML            zetaC = zetaC*hEffM(I,J,bi,bj) 
+            zetaZ = HALF/deltaZ * 0.25 _d 0
+     &         * ( PRESS0(I,J  ,bi,bj) + PRESS0(I-1,J  ,bi,bj)
+     &           + PRESS0(I,J-1,bi,bj) + PRESS0(I-1,J-1,bi,bj) )
+            zetaZ = MIN(zMax(I,J,bi,bj),zetaZ)
+            zetaZ = MAX(zMin(I,J,bi,bj),zetaZ)
+            pressC = TWO*zetaC*deltaC
+C     Calculate the RHS of the stress equations. Do this now in order to
+C     avoid multiple divisions by Delta
+C     P * ( D_d/Delta - 1 ) = 2*zeta*D_d - P = 2*zeta*D_d - 2*zeta*Delta
+C     P * ( D_t/Delta     ) = 2*zeta*D_t
+C     P * ( D_s/Delta     ) = 2*zeta*D_s
+            seaice_div    (I,J) = (
+     &           2. _d 0 *zetaC*(e11C+e22C) - pressC
+     &           ) *hEffM(I,J,bi,bj)
+            seaice_tension(I,J) = 2. _d 0*zetaC*(e11C-e22C)
      &           *hEffM(I,J,bi,bj)
-            seaice_tension(I,J,bi,bj) = (e11C-e22C)/deltaC
-     &           *hEffM(I,J,bi,bj)
-            seaice_shear  (I,J,bi,bj) = 2. _d 0*e12Z/deltaZ
+            seaice_shear  (I,J) = 2. _d 0*zetaZ*2. _d 0*e12Z
            ENDDO
           ENDDO
-         ENDDO
-        ENDDO
-
-C--   Update overlap regions
-        _EXCH_XY_R8(press         , myThid)
-C
-C     set up rhs for stepping the velocity field
-C
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-Oly+1,sNy+Oly-1
-           DO i=1-Olx+1,sNx+Olx-1
-C     set up non-linear water drag, forcex, forcey
-            TEMPVAR = QUART*(
-     &           ( uIceC(I  ,J,bi,bj)-GWATX(I  ,J,bi,bj)
-     &           + uIceC(I+1,J,bi,bj)-GWATX(I+1,J,bi,bj))**2
-     &           +(vIceC(I,J  ,bi,bj)-GWATY(I,J  ,bi,bj)
-     &           + vIceC(I,J+1,bi,bj)-GWATY(I,J+1,bi,bj))**2)
-            IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
-             DWATN(I,J,bi,bj)=QUART
-            ELSE
-             DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
-            ENDIF
-            DWATN(I,J,bi,bj) = DWATN(I,J,bi,bj) * HEFFM(I,J,bi,bj)
-C     set up symmetric drag
-            DRAGS(I,J,bi,bj) = DWATN(I,J,bi,bj)*COSWAT
-           ENDDO
-          ENDDO
-          DO j=1,sNy
-           DO i=1,sNx
-C     set up anti symmetric drag force and add in ice ocean stress
-C     ( remember to average to correct velocity points )
-            FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
-     &           0.5*( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
-     &           COSWAT * GWATX(I,J,bi,bj) 
-     &           - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 * 
-     &           ( DWATN(I  ,J,bi,bj) *
-     &           0.5 _d 0 * (GWATY(I  ,J  ,bi,bj)-vIceC(I  ,J  ,bi,bj)
-     &                      +GWATY(I  ,J+1,bi,bj)-vIceC(I  ,J+1,bi,bj))
-     &           + DWATN(I-1,J,bi,bj) *
-     &           0.5 _d 0 * (GWATY(I-1,J  ,bi,bj)-vIceC(I-1,J  ,bi,bj)
-     &                      +GWATY(I-1,J+1,bi,bj)-vIceC(I-1,J+1,bi,bj))
-     &         )
-            FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
-     &           0.5*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
-     &           COSWAT * GWATY(I,J,bi,bj) 
-     &           + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 * 
-     &           ( DWATN(I,J  ,bi,bj) *
-     &           0.5 _d 0 * (GWATX(I  ,J  ,bi,bj)-uIceC(I  ,J  ,bi,bj)
-     &                      +GWATX(I+1,J  ,bi,bj)-uIceC(I+1,J  ,bi,bj))
-     &           + DWATN(I,J-1,bi,bj) *
-     &           0.5 _d 0 * (GWATX(I  ,J-1,bi,bj)-uIceC(I  ,J-1,bi,bj)
-     &                      +GWATX(I+1,J-1,bi,bj)-uIceC(I+1,J-1,bi,bj))
-     &         )
-C     coriols terms
-            FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj) + 0.5*( 
-     &             seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
-     &           * 0.5*( vIceC(I  ,J,bi,bj)+vIceC(I  ,J+1,bi,bj) )
-     &           + seaiceMassC(I-1,J,bi,bj) * _fCori(I-1,J,bi,bj)
-     &           * 0.5*( vIceC(I-1,J,bi,bj)+vIceC(I-1,J+1,bi,bj) ) )
-            FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj) - 0.5*( 
-     &             seaiceMassC(I,J  ,bi,bj) * _fCori(I,J  ,bi,bj)
-     &           * 0.5*( uIceC(I  ,J  ,bi,bj)+uIceC(I+1,  J,bi,bj) )
-     &           + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
-     &           * 0.5*( uIceC(I  ,J-1,bi,bj)+uIceC(I+1,j-1,bi,bj) ) )
-         ENDDO
-        ENDDO
 
 C     first step stress equations
           DO j=0,sNy+1
            DO i=0,sNx+1
 C     sigma1 and sigma2 are computed on C points
             seaice_sigma1 (I,J,bi,bj) = ( seaice_sigma1 (I,J,bi,bj)
-     &           + SEAICE_deltaTevp *  0.5 * recip_evp_tau 
-     &           * PRESS(I,J,bi,bj) * ( seaice_div(I,J,bi,bj)-1. _d 0 )
-     &           )/(1. + 0.5*SEAICE_deltaTevp*recip_evp_tau)
+     &           + SEAICE_deltaTevp *  0.5 _d 0 * recip_evp_tau 
+     &           * seaice_div(I,J) 
+     &           ) * denom1
      &           *hEffM(I,J,bi,bj)
             seaice_sigma2 (I,J,bi,bj) = ( seaice_sigma2 (I,J,bi,bj)
-     &           + SEAICE_deltaTevp * 0.5 * recip_evp_tau
-     &           * PRESS(I,J,bi,bj) * seaice_tension(I,J,bi,bj)
-     &           )/(1. + 0.5*SEAICE_deltaTevp*recip_evp_tau*ecc2)
+     &           + SEAICE_deltaTevp * 0.5 _d 0 * recip_evp_tau
+     &           * seaice_tension(I,J)
+     &           ) * denom2
      &         *hEffM(I,J,bi,bj)
 C     sigma12 is computed on Z points
             seaice_sigma12(I,J,bi,bj) = ( seaice_sigma12(I,J,bi,bj)
-     &           + SEAICE_deltaTevp * 0.25 * recip_evp_tau *
-     &           0.25*( PRESS(I,J  ,bi,bj) + PRESS(I-1,J  ,bi,bj)
-     &                + PRESS(I,J-1,bi,bj) + PRESS(I-1,J-1,bi,bj) )
-     &           * seaice_shear(I,J,bi,bj)
-     &           )/(1. + 0.5*SEAICE_deltaTevp*recip_evp_tau*ecc2)
-     &           *hEffM(I,J  ,bi,bj)*hEffM(I-1,J  ,bi,bj)
-     &           *hEffM(I,J-1,bi,bj)*hEffM(I-1,J-1,bi,bj)
+     &           + SEAICE_deltaTevp * 0.25 _d 0 * recip_evp_tau *
+     &           seaice_shear(I,J)
+     &           ) * denom2 
 C     recover sigma11 and sigma22
-            sig11(I,J) = 0.5 * 
+            sig11(I,J) = 0.5 _d 0 * 
      &           ( seaice_sigma1(I,J,bi,bj)+seaice_sigma2(I,J,bi,bj) )
-            sig22(I,J) = 0.5 * 
+            sig22(I,J) = 0.5 _d 0 * 
      &           ( seaice_sigma1(I,J,bi,bj)-seaice_sigma2(I,J,bi,bj) )
            ENDDO
           ENDDO   
@@ -316,6 +258,70 @@ C     one metric term  missing for general curvilinear coordinates
 C     two metric terms missing for general curvilinear coordinates
            ENDDO
           ENDDO   
+
+C
+C     set up rhs for stepping the velocity field
+C
+          DO j=1-Oly+1,sNy+Oly-1
+           DO i=1-Olx+1,sNx+Olx-1
+C     set up non-linear water drag, forcex, forcey
+            TEMPVAR = QUART*(
+     &           ( uIceC(I  ,J,bi,bj)-GWATX(I  ,J,bi,bj)
+     &           + uIceC(I+1,J,bi,bj)-GWATX(I+1,J,bi,bj))**2
+     &           +(vIceC(I,J  ,bi,bj)-GWATY(I,J  ,bi,bj)
+     &           + vIceC(I,J+1,bi,bj)-GWATY(I,J+1,bi,bj))**2)
+            IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
+             DWATN(I,J,bi,bj)=QUART
+            ELSE
+             DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+            ENDIF
+            DWATN(I,J,bi,bj) = DWATN(I,J,bi,bj) * HEFFM(I,J,bi,bj)
+C     set up symmetric drag
+            DRAGS(I,J,bi,bj) = DWATN(I,J,bi,bj)*COSWAT
+           ENDDO
+          ENDDO
+
+          DO j=1,sNy
+           DO i=1,sNx
+C     set up anti symmetric drag force and add in ice ocean stress
+C     ( remember to average to correct velocity points )
+            FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
+     &           0.5*( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
+     &           COSWAT * GWATX(I,J,bi,bj) 
+     &           - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 * 
+     &           ( DWATN(I  ,J,bi,bj) *
+     &           0.5 _d 0 * (GWATY(I  ,J  ,bi,bj)-vIceC(I  ,J  ,bi,bj)
+     &                      +GWATY(I  ,J+1,bi,bj)-vIceC(I  ,J+1,bi,bj))
+     &           + DWATN(I-1,J,bi,bj) *
+     &           0.5 _d 0 * (GWATY(I-1,J  ,bi,bj)-vIceC(I-1,J  ,bi,bj)
+     &                      +GWATY(I-1,J+1,bi,bj)-vIceC(I-1,J+1,bi,bj))
+     &         )
+            FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
+     &           0.5*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
+     &           COSWAT * GWATY(I,J,bi,bj) 
+     &           + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 * 
+     &           ( DWATN(I,J  ,bi,bj) *
+     &           0.5 _d 0 * (GWATX(I  ,J  ,bi,bj)-uIceC(I  ,J  ,bi,bj)
+     &                      +GWATX(I+1,J  ,bi,bj)-uIceC(I+1,J  ,bi,bj))
+     &           + DWATN(I,J-1,bi,bj) *
+     &           0.5 _d 0 * (GWATX(I  ,J-1,bi,bj)-uIceC(I  ,J-1,bi,bj)
+     &                      +GWATX(I+1,J-1,bi,bj)-uIceC(I+1,J-1,bi,bj))
+     &         )
+C     coriols terms
+            FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj) + 0.5 _d 0*( 
+     &             seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
+     &           * 0.5 _d 0*( vIceC(I  ,J,bi,bj)+vIceC(I  ,J+1,bi,bj) )
+     &           + seaiceMassC(I-1,J,bi,bj) * _fCori(I-1,J,bi,bj)
+     &           * 0.5 _d 0*( vIceC(I-1,J,bi,bj)+vIceC(I-1,J+1,bi,bj) ) 
+     &           )
+            FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj) - 0.5*( 
+     &             seaiceMassC(I,J  ,bi,bj) * _fCori(I,J  ,bi,bj)
+     &           * 0.5 _d 0*( uIceC(I,J  ,bi,bj)+uIceC(I+1,  J,bi,bj) )
+     &           + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
+     &           * 0.5 _d 0*( uIceC(I,J-1,bi,bj)+uIceC(I+1,J-1,bi,bj) )
+     &           )
+         ENDDO
+        ENDDO
 C
 C     step momentum equations with ice-ocean stress term treated implicitly
 C
