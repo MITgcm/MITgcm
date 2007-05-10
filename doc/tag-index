@@ -1,10 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.812 2007/05/10 16:55:58 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.813 2007/05/10 20:02:36 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice: rearrangement of common blocks (really needs more cleaning up)
+  - change discretisation of evp-solver in order to avoid another exchange
+    (changes lab_sea) and clean up a little
+  - replace SQRT(MAX(deltaC,SEAICE_EPS)) by MAX(SQRT(deltaC),SEAICE_EPS) 
+    help the adjoint (this also changes the results slightly)
+  - add a few "_d 0" where they had been missing in seaice_evp.F
+  - cleaning up: remove unused seaice_calc_rhs.F
 o pkg/exf: some cleaning-up:
   - change various "constants" into runtime parameters
   - cleaned-up Large&Yeager04 routine which should eventually
