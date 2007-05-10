@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.20 2007/05/10 22:21:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.21 2007/05/10 22:26:19 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -36,8 +36,8 @@ C-      local variables:
 
         lagran = numer/denom
 
-       return
-       end
+       RETURN
+       END
 
 
        SUBROUTINE exf_interp(
