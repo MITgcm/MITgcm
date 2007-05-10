@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/Attic/EXF_OPTIONS.h,v 1.1 2006/12/19 00:07:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/Attic/EXF_OPTIONS.h,v 1.2 2007/05/10 22:31:12 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -8,14 +8,13 @@ C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-C Despite the comments below, this package is currently configured by
-C ECCO_CPPOPTIONS.h and so you should not customize this file.
+#ifdef ALLOW_AUTODIFF_TAMC
 
-CPH >>>>>> THIS SHOULD BE INCLUDED BY CPP_OPTIONS.h <<<<<<
-CPH >>>>>> TO AVOID ORDERING OF HEADERS TO MATTER   <<<<<<
-CPH >>>>>> UNTIL WE DECIDE ON CONSISTENT CHANGE IN  <<<<<<
-CPH >>>>>> POLICY                                   <<<<<<
-CPH#include "ECCO_CPPOPTIONS.h"
+C When compile for AD mode,
+C this package is currently configured by ECCO_CPPOPTIONS.h 
+C which is directly included in CPP_OPTIONS.h
+
+#else /* ndef ALLOW_AUTODIFF_TAMC */
 
 C CPP flags controlling which code is included in the files that
 C will be compiled.
@@ -135,22 +134,28 @@ c   ====================================================================
 C   Do more printout for the protocol file than usual.
 #define EXF_VERBOSE
 
-C   Options that are required to use pkg/exf with pkg/seaice.
+C   Bulk formulae related flags:
+C   those options are required to use pkg/exf with pkg/seaice.
 #define  ALLOW_ATM_TEMP
 #define  ALLOW_ATM_WIND
 #define  ALLOW_DOWNWARD_RADIATION
-#define  ALLOW_BULKFORMULAE
 #define  ALLOW_RUNOFF
+#define  ALLOW_BULKFORMULAE
+#undef   ALLOW_BULK_LARGEYEAGER04
 
-C   Options that control relaxation terms.
-#undef   ALLOW_CLIMTEMP_RELAXATION
-#undef   ALLOW_CLIMSALT_RELAXATION
-#undef   ALLOW_CLIMSST_RELAXATION
-#define  ALLOW_CLIMSSS_RELAXATION
+C   Relaxation to monthly climatologies.
+#define ALLOW_CLIMSST_RELAXATION
+#define ALLOW_CLIMSSS_RELAXATION
 
-#ifdef USING_THREADS
-#define EXF_IREAD_USE_GLOBAL_POINTER
+C   Use spatial interpolation to interpolate
+C   forcing files from input grid to model grid.
+#undef USE_EXF_INTERPOLATION
+
+#define EXF_INTERP_USE_DYNALLOC
+#if ( defined (EXF_INTERP_USE_DYNALLOC) & defined (USING_THREADS) )
+# define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
 
+#endif /* ndef ALLOW_AUTODIFF_TAMC */
 #endif /* ALLOW_EXF */
 #endif /* EXF_OPTIONS_H */
