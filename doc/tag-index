@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.811 2007/05/09 14:32:05 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.812 2007/05/10 16:55:58 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -34,6 +34,8 @@ o pkg/kpp
 o pkg/seaice
  - check for inconsistent evp parameter/cpp-flag combination
  - remove leftover errIO flat for obsolete name list error handling
+o OpenAD
+ - changed verification/OpenAD to full baroclinic setup (including GM/Redi)
 
 checkpoint59a
 o pkg/seaice: some parameter clarifications and a little bit of clean up
