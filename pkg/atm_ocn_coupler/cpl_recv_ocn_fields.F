@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_recv_ocn_fields.F,v 1.3 2006/06/15 23:29:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_recv_ocn_fields.F,v 1.4 2007/05/10 21:58:12 jscott Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -45,6 +45,13 @@ C     Receive sea surface velocity square from ocean component
       CALL COUPRECV_R8TILES( ocnCompName, ocnSSVsqName, 
      I                       Nx_ocn, Ny_ocn, 
      O                       vSq_ocn )
+
+      IF ( ocnCpl_exchange_DIC ) THEN
+C       Receive ocn->atm flux of CO2 from ocean component
+        CALL COUPRECV_R8TILES( ocnCompName, ocnFCO2Name, 
+     I                       Nx_ocn, Ny_ocn, 
+     O                       fluxCO2_ocn )
+      ENDIF
 
       RETURN
       END
