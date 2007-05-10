@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/CPL_DIAGS.h,v 1.3 2004/10/27 23:19:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/CPL_DIAGS.h,v 1.4 2007/05/10 21:15:51 jscott Exp $
 C $Name:  $
 
 #ifdef COMPONENT_MODULE
@@ -34,6 +34,11 @@ C     MXLtave - Ocean mixed-layer depth   (m)
 C     SSTtave - ocean surface temperature (oC)
 C     SSStave - ocean surface salinity    (psu)
 C     vSqtave - ocean surface velocity square (m2/s2)
+C     aC02tave- CO2 level in atm (parts by volume)
+C     sWSpdtave-surface wind speed (m/s)
+C     iceftave- fraction of ocean covered by seaice
+C     fCO2tave- flux of CO2 from ocean->atm (mol/m2/s)
+
 C
       COMMON /CPL_TAVE/
      &                   SLPtave, HFtave, QSWtave, 
@@ -41,7 +46,10 @@ c    &                   QLTtave, QSNtave, QLWtave,
 c    &                   UGtave, VGtave,
      &                   TXtave, TYtave, 
      &                   FWtave, SFxtave, SICtave,
-     &                   MXLtave, SSTtave, SSStave, vSqtave
+     &                   MXLtave, SSTtave, SSStave, vSqtave,
+     &                   aCO2tave, sWSpdtave,
+     &                   iceftave, fCO2tave
+
       _RL  SLPtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  HFtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  QSWtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -59,6 +67,10 @@ c     _RL  VGtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  SSTtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  SSStave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  vSqtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  aCO2tave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  sWSpdtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  iceftave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  fCO2tave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #endif /* ALLOW_TIMEAVE */
 

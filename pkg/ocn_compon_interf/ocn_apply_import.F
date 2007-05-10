@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.4 2007/04/27 15:52:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.5 2007/05/10 21:15:52 jscott Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -24,11 +24,15 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
+#include "OCNIDS.h"
 #include "OCNCPL.h"
 #include "FFIELDS.h"
 #include "SURFACE.h"
 c #include "GRID.h"
 c #include "DYNVARS.h"
+#ifdef ALLOW_DIC
+#  include "DIC_ABIOTIC.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -110,6 +114,31 @@ C-   Heat Flux forcing
 #endif
          ENDIF
 
+#ifdef ALLOW_DIC
+C-   Carbon/DIC exchanges
+         IF ( useImportFice ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             fice(i,j,bi,bj)= fracIce(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDIF
+         IF ( useImportCO2 ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             AtmospCO2(i,j,bi,bj)= airCO2(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDIF
+         IF ( useImportWSpd ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             wind(i,j,bi,bj)= surfWSpeed(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDIF
+#endif /* ALLOW_DIC */
+
 C--     Apply only to forcings relevant for eta/surf.press variations
         ELSE
 
@@ -153,13 +182,19 @@ C--  end bi,bj loop
 C--  Fill in Halo region with valid values
 
 #ifdef ATMOSPHERIC_LOADING
+       IF ( useImportSLP . AND. 
+     &    ( ocnCpl_exchange_DIC .OR. apply2AllFields ) ) 
+     &   _EXCH_XY_R4( pLoad,    myThid )
        IF ( apply2AllFields ) THEN
-        IF ( useImportSLP )  _EXCH_XY_R4( pLoad,    myThid )
         IF ( useImportSIce)  _EXCH_XY_R4( sIceLoad, myThid )
        ELSEIF ( useImportSLP .OR. useImportSIce ) THEN
          _EXCH_XY_R4( phi0surf, myThid )
        ENDIF
+#else
+       IF ( useImportSLP . AND. ocnCpl_exchange_DIC) 
+     &     _EXCH_XY_R4( pLoad,    myThid )
 #endif
+
        IF ( useImportFW  ) _EXCH_XY_R4(EmPmR, myThid )
        IF ( apply2AllFields ) THEN
         IF (useImportTau ) CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
@@ -168,7 +203,12 @@ C--  Fill in Halo region with valid values
 #ifdef SHORTWAVE_HEATING
         IF (useImportHFlx) _EXCH_XY_R4(Qsw ,  myThid )
 #endif
-       ENDIF
+#ifdef ALLOW_DIC
+        IF ( useImportFice ) _EXCH_XY_R4(fice ,  myThid )
+        IF ( useImportCO2 )  _EXCH_XY_R4(AtmospCO2 ,  myThid )
+        IF ( useImportWSpd ) _EXCH_XY_R4(wind ,  myThid )
+#endif
+      ENDIF
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.8 2007/04/27 16:27:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.9 2007/05/10 21:15:52 jscott Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,6 +29,7 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
+#include "OCNIDS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
@@ -61,11 +62,15 @@ C     useImportFW   :: True => use the Imported Fresh Water flux fr cpl
 C     useImportTau  :: True => use the Imported Wind-Stress from couler
 C     useImportSLP  :: True => use the Imported Sea-level Atmos. Pressure
 C     useImportSIce :: True => use the Imported Sea-Ice loading
+C     useImportFIce :: True => use the Imported Sea-Ice fraction (DIC-only)
+C     useImportCO2  :: True => use the Imported atmos. CO2 from coupler
+C     useImportWSpd :: True => use the Imported surface Wind speed fr cpl
 C     cpl_taveFreq  :: Frequency^-1 for time-Aver. output (s)
       NAMELIST /CPL_OCN_PARAM/
      &    cpl_earlyExpImpCall,
      &    useImportHFlx, useImportFW, useImportTau,
-     &    useImportSLP, useImportSIce,
+     &    useImportSLP, useImportSIce, useImportFIce,
+     &    useImportCO2, useImportWSpd,
      &    cpl_taveFreq, cpl_snapshot_mnc, cpl_timeave_mnc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -77,6 +82,15 @@ C-    Set default value:
       useImportTau  = .TRUE.
       useImportSLP  = .TRUE.
       useImportSIce = .TRUE.
+      IF ( ocnCpl_exchange_DIC ) THEN
+        useImportFIce = .TRUE.
+        useImportCO2  = .TRUE.
+        useImportWSpd = .TRUE.
+      ELSE
+        useImportFIce = .FALSE.
+        useImportCO2  = .FALSE.
+        useImportWSpd = .FALSE.
+      ENDIF
       cpl_taveFreq  = taveFreq
 #ifdef ALLOW_MNC
       cpl_snapshot_mnc = snapshot_mnc
@@ -137,9 +151,9 @@ C-    If land_taveFreq is positive, then must compile the land-diagnostics code
         WRITE(msgBuf,'(2A)') '** WARNING ** CPL_READPARMS:',
      &                       ' pressure loading code is not active.'
         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-        WRITE(msgBuf,'(2A)') '** WARNING **',
-     &              ' Re-compile with:  #define ATMOSPHERIC_LOADING'
-        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+C        WRITE(msgBuf,'(2A)') '** WARNING **',
+C     &              ' Re-compile with:  #define ATMOSPHERIC_LOADING'
+C        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
 #endif /* ATMOSPHERIC_LOADING */
 
@@ -150,6 +164,14 @@ C-    If land_taveFreq is positive, then must compile the land-diagnostics code
         CALL PRINT_ERROR( msgBuf, myThid)
         WRITE(msgBuf,'(A)')
      &  'CPL_READPARMS: taggerTimeStep requires cpl_earlyExpImpCall'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+      ENDIF
+
+      IF ( ( useImportFice.OR.useImportCO2.OR.useImportWSpd ) .AND.
+     &    (.NOT.ocnCpl_exchange_DIC) ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImport', 
+     &    ' with DIC variables requires ocnCpl_exchange_DIC TRUE'
         CALL PRINT_ERROR( msgBuf, myThid)
         STOP 'ABNORMAL END: S/R CPL_READPARMS'
       ENDIF
@@ -200,6 +222,17 @@ C- namelist CPL_OCN_PARAM:
        CALL WRITE_0D_L( useImportSIce , INDEX_NONE,
      &                 'useImportSIce=',
      &   ' /* use Imported Sea-Ice loading on/off flag */')
+       IF ( ocnCpl_exchange_DIC ) THEN
+         CALL WRITE_0D_L( useImportFIce , INDEX_NONE,
+     &                 'useImportFIce=',
+     &   ' /* use Imported Sea-Ice Fract fr Cpl. on/off flag */')
+         CALL WRITE_0D_L( useImportCO2  , INDEX_NONE,
+     &                 'useImportCO2 =',
+     &   ' /* use Imported Atmos. CO2 fr Cpl. on/off flag */')
+         CALL WRITE_0D_L( useImportWSpd , INDEX_NONE,
+     &                 'useImportWSpd =',
+     &   ' /* use Imported Windspeed fr Cpl. on/off flag */')
+       ENDIF
        CALL WRITE_0D_R8( cpl_taveFreq, INDEX_NONE, 'cpl_taveFreq =',
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
        CALL WRITE_0D_L( cpl_timeave_mnc , INDEX_NONE,

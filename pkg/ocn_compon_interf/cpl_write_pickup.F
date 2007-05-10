@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_write_pickup.F,v 1.2 2004/05/21 19:42:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_write_pickup.F,v 1.3 2007/05/10 21:15:52 jscott Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -20,6 +20,7 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "OCNIDS.h"
 #include "OCNCPL.h"
 
 C     == Routine arguments ==
@@ -27,17 +28,20 @@ C     myThid - Thread number for this instance of the routine.
 C     myIter - Timestep number.
 C     permCheckpoint - Controls whether timestamped or rolling checkpoint.
 C     lgf            - Controls whether global files are used.
+C     caroffset      - offset in pickup file if carbon variables included
       INTEGER myIter
       INTEGER myThid
       LOGICAL permCheckPoint
       INTEGER prec
       LOGICAL lgf
+      INTEGER caroffset
 CEndOfInterface
 
 C     == Local variables ==
 C     fn          - Workspace for building file name
       CHARACTER*(MAX_LEN_FNAM) fn
 
+      caroffset=0
       IF ( permCheckPoint ) THEN
        WRITE(fn,'(A,I10.10)') 'pickup_cpl.',myIter
       ELSE
@@ -57,10 +61,27 @@ c     CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,vVelGround, 3,myIter,myThid)
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,iceSaltFlx, 7,myIter,myThid)
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,seaIceMass, 8,myIter,myThid)
 
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,ocMxlD2cpl, 9,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,SSTocn2cpl,10,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,SSSocn2cpl,11,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,vSqocn2cpl,12,myIter,myThid)
+      IF ( ocnCpl_exchange_DIC ) THEN 
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,
+     &                     airCO2    ,  9,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,
+     &                     surfWSpeed, 10,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,
+     &                     fracIce   , 11,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,
+     &                     fluxCO2cpl, 12,myIter,myThid)
+        caroffset=4
+      ENDIF
+
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,ocMxlD2cpl, 
+     &                   9+caroffset, myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,SSTocn2cpl,
+     &                   10+caroffset,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,SSSocn2cpl,
+     &                   11+caroffset,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,vSqocn2cpl,
+     &                   12+caroffset,myIter,myThid)
+
 
       RETURN
       END

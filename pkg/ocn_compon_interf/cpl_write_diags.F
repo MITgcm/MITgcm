@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.8 2005/09/29 12:19:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.9 2007/05/10 21:15:52 jscott Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,6 +18,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
+#include "OCNIDS.h"
 #include "OCNCPL.h"
 #include "CPL_DIAGS.h"
 
@@ -76,6 +77,12 @@ c           CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
             CALL TIMEAVE_NORMALIZ(SSTtave,CPL_TimeAve,1,bi,bj,myThid)
             CALL TIMEAVE_NORMALIZ(SSStave,CPL_TimeAve,1,bi,bj,myThid)
             CALL TIMEAVE_NORMALIZ(vSqtave,CPL_TimeAve,1,bi,bj,myThid)
+            IF ( ocnCpl_exchange_DIC ) THEN
+              CALL TIMEAVE_NORMALIZ(aCO2tave, CPL_TimeAve,1,bi,bj,myThid)
+              CALL TIMEAVE_NORMALIZ(sWSpdtave,CPL_TimeAve,1,bi,bj,myThid)
+              CALL TIMEAVE_NORMALIZ(iceftave, CPL_TimeAve,1,bi,bj,myThid)
+              CALL TIMEAVE_NORMALIZ(fCO2tave, CPL_TimeAve,1,bi,bj,myThid)
+            ENDIF
           ENDDO
         ENDDO
         
@@ -109,6 +116,16 @@ c           CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
      &         1, SSStave , 11, myIter, myThid )
           CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
      &         1, vSqtave , 12, myIter, myThid )
+          IF ( ocnCpl_exchange_DIC ) THEN
+            CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &         1, aCO2tave , 13, myIter, myThid )
+            CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &         1, sWSpdtave ,14, myIter, myThid )
+            CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &         1, iceftave , 15, myIter, myThid )
+            CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
+     &         1, fCO2tave , 16, myIter, myThid )
+          ENDIF
           _END_MASTER( myThid )
           _BARRIER
 
@@ -144,7 +161,17 @@ c           CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
      &         'SSStave',SSStave,myThid)
           CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'vSqtave',vSqtave,myThid)
-        ENDIF
+          IF ( ocnCpl_exchange_DIC ) THEN
+            CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
+     &         'aCO2tave',aCO2tave,myThid)
+            CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
+     &         'sWSpdtave',sWSpdtave,myThid)
+            CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
+     &         'iceftave',iceftave,myThid)
+            CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
+     &         'fCO2tave',fCO2tave,myThid)
+          ENDIF
+       ENDIF
 #endif /*  ALLOW_MNC  */
 
 C       Reset diagnostic counters
@@ -167,6 +194,12 @@ c           CALL TIMEAVE_RESET(VGtave ,1,bi,bj,myThid)
             CALL TIMEAVE_RESET(SSTtave,1,bi,bj,myThid)
             CALL TIMEAVE_RESET(SSStave,1,bi,bj,myThid)
             CALL TIMEAVE_RESET(vSqtave,1,bi,bj,myThid)
+            IF ( ocnCpl_exchange_DIC ) THEN
+              CALL TIMEAVE_RESET(aCO2tave ,1,bi,bj,myThid)
+              CALL TIMEAVE_RESET(sWSpdtave,1,bi,bj,myThid)
+              CALL TIMEAVE_RESET(iceftave ,1,bi,bj,myThid)
+              CALL TIMEAVE_RESET(fCO2tave ,1,bi,bj,myThid)
+            ENDIF
             CPL_TimeAve(1,bi,bj) = 0.
           ENDDO
         ENDDO

@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.2 2004/07/26 20:13:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.3 2007/05/10 21:15:52 jscott Exp $
 C $Name:  $
-
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
@@ -24,7 +24,11 @@ C     == Global variables ==
 #include "GRID.h"
 #include "SURFACE.h"
 #include "DYNVARS.h"
+#include "OCNIDS.h"
 #include "OCNCPL.h"
+#ifdef ALLOW_DIC
+#  include "DIC_ABIOTIC.h"
+#endif
 
 C     == Routine arguments ==
 C     myTime - Current internal time.
@@ -96,6 +100,16 @@ C     i,j :: Loop variables
      &              )*0.5 _d 0
         ENDDO
        ENDDO
+
+#ifdef ALLOW_DIC
+      IF ( ocnCpl_exchange_DIC ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+            fluxCO2cpl(i,j,bi,bj) = fluxCO2(i,j,bi,bj)
+         ENDDO
+        ENDDO
+      ENDIF
+#endif
 
       RETURN
       END

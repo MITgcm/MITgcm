@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_ini_vars.F,v 1.3 2005/04/06 18:44:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_ini_vars.F,v 1.4 2007/05/10 21:15:52 jscott Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -46,6 +46,7 @@ C.        Export fields
           SSTocn2cpl(I,J,bi,bj) = 0.
           SSSocn2cpl(I,J,bi,bj) = 0.
           vSqocn2cpl(I,J,bi,bj) = 0.
+          fluxCO2cpl(I,J,bi,bj) = 0.
 C-        Import fields
           atmSLPr   (I,J,bi,bj)  = 0.
           HeatFlux  (I,J,bi,bj)  = 0.
@@ -60,6 +61,9 @@ c         vVelGround(I,J,bi,bj)  = 0.
           FWflux    (I,J,bi,bj)  = 0.
           iceSaltFlx(I,J,bi,bj)  = 0.
           seaIceMass(I,J,bi,bj)  = 0.
+          airCO2    (I,J,bi,bj)  = 0.
+          surfWSpeed(I,J,bi,bj)  = 0.
+          fracIce   (I,J,bi,bj)  = 0.
          ENDDO
         ENDDO
        ENDDO
@@ -75,23 +79,28 @@ C     Initialise diagnostic counters ( these are cleared on model start
 C      i.e. not loaded from history file for now ).
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(SLPtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(HFtave , 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(QSWtave, 1, bi, bj, myThid)
-c        CALL TIMEAVE_RESET(QLTtave, 1, bi, bj, myThid)
-c        CALL TIMEAVE_RESET(QSNtave, 1, bi, bj, myThid)
-c        CALL TIMEAVE_RESET(QLWtave, 1, bi, bj, myThid)
-c        CALL TIMEAVE_RESET(UGtave , 1, bi, bj, myThid)
-c        CALL TIMEAVE_RESET(VGtave , 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(TXtave , 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(TYtave , 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(FWtave , 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(SFxtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(SICtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(MXLtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(SSTtave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(SSStave, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(vSqtave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SLPtave,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(HFtave ,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(QSWtave,  1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(QLTtave,  1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(QSNtave,  1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(QLWtave,  1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(UGtave ,  1, bi, bj, myThid)
+c        CALL TIMEAVE_RESET(VGtave ,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(TXtave ,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(TYtave ,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(FWtave ,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SFxtave,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SICtave,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(MXLtave,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SSTtave,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(SSStave,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(vSqtave,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(aCO2tave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(sWSpdtave,1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(iceftave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(fCO2tave, 1, bi, bj, myThid)
+
          CPL_TimeAve(1,bi,bj) = 0.
        ENDDO
       ENDDO

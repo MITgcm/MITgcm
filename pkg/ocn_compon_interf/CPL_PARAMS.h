@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/CPL_PARAMS.h,v 1.4 2004/10/27 23:19:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/CPL_PARAMS.h,v 1.5 2007/05/10 21:15:52 jscott Exp $
 C $Name:  $
 
 #ifdef COMPONENT_MODULE
@@ -14,13 +14,17 @@ C     cpl_earlyExpImpCall :: call coupler early in the time stepping call sequen
 C     useImportHFlx :: True => use the Imported HeatFlux from couler
 C     useImportFW   :: True => use the Imported Fresh Water flux fr cpl
 C     useImportTau  :: True => use the Imported Wind-Stress from couler
-C     useImportSLP  :: True => use the Imported Sea-level Pressure as
-C                              atmospheric loading
+C     useImportSLP  :: True => use the Imported Sea-level Pressure
 C     useImportSIce :: True => use the Imported Sea-Ice mass as ice-loading
+C     useImportFice :: True => use the Imported Seaice fraction fr cpl
+C     useImportCO2  :: True => use the Imported atmos. CO2 from coupler
+C     useImportWSpd :: True => use the Imported surface Wind speed fr cpl
+
       COMMON /CPL_OCN_PAR_L/
      &  cpl_earlyExpImpCall,
      &  useImportHFlx, useImportFW, useImportTau, 
-     &  useImportSLP, useImportSIce, 
+     &  useImportSLP, useImportSIce, useImportFIce,
+     &  useImportCO2, useImportWSpd,
      &  cpl_snapshot_mdsio, cpl_snapshot_mnc,
      &  cpl_timeave_mdsio, cpl_timeave_mnc
       LOGICAL cpl_earlyExpImpCall
@@ -29,6 +33,9 @@ C     useImportSIce :: True => use the Imported Sea-Ice mass as ice-loading
       LOGICAL useImportTau
       LOGICAL useImportSLP
       LOGICAL useImportSIce
+      LOGICAL useImportFIce
+      LOGICAL useImportCO2
+      LOGICAL useImportWSpd
       LOGICAL 
      &     cpl_snapshot_mdsio, cpl_snapshot_mnc,
      &     cpl_timeave_mdsio, cpl_timeave_mnc
