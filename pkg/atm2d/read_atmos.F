@@ -52,28 +52,28 @@ C
         atm_tauu(j_atm) = tauu(j_atm)
         atm_tauv(j_atm) = tauv(j_atm)
         atm_tair(j_atm) = tempr(j_atm)
-        atm_precip(j_atm) = -precip(j_atm)/secDay1000
-        atm_runoff(j_atm) = -arunoff(j_atm)/secDay1000
-        atm_evap_ice(j_atm) = -evai(j_atm)/secDay1000
-        atm_evap_ocn(j_atm) = -evao(j_atm)/secDay1000
-        atm_qnet_ice(j_atm) = -hfluxi(j_atm)
-        atm_qnet_ocn(j_atm) = -hfluxo(j_atm)
-        atm_dFdt_ice(j_atm) = -dhfidtg(j_atm)
-        atm_dFdt_ocn(j_atm) = -dhfodtg(j_atm)
+        atm_precip(j_atm)    = -precip(j_atm)/secDay1000
+        atm_runoff(j_atm)    = -arunoff(j_atm)/secDay1000
+        atm_evap_ice(j_atm)  = -evai(j_atm)/secDay1000
+        atm_evap_ocn(j_atm)  = -evao(j_atm)/secDay1000
+        atm_qnet_ice(j_atm)  = -hfluxi(j_atm)
+        atm_qnet_ocn(j_atm)  = -hfluxo(j_atm)
+        atm_dFdt_ice(j_atm)  = -dhfidtg(j_atm)
+        atm_dFdt_ocn(j_atm)  = -dhfodtg(j_atm)
 C       Ice feels evap from model, no change with temperature
-        atm_dLdt_ice(j_atm) = 0. _d 0       ! -devidtg(j_atm)/secDay1000
-        atm_dLdt_ocn(j_atm) = -devodtg(j_atm)/secDay1000
+        atm_dLdt_ice(j_atm)  = 0. _d 0  ! -devidtg(j_atm)/secDay1000
+        atm_dLdt_ocn(j_atm)  = -devodtg(j_atm)/secDay1000
         atm_dFdt_iceq(j_atm) = -dhfidtgeq(j_atm)
         atm_dFdt_ocnq(j_atm) = -dhfodtgeq(j_atm)
-        atm_dLdt_iceq(j_atm) =0. _d 0       ! -devidtgeq(j_atm)/secDay1000
+        atm_dLdt_iceq(j_atm) = 0. _d 0  ! -devidtgeq(j_atm)/secDay1000
         atm_dLdt_ocnq(j_atm) = -devodtgeq(j_atm)/secDay1000
-        atm_solarinc(j_atm) = -solarinc_ice(j_atm)
+        atm_solarinc(j_atm)  = solarinc_ice(j_atm)
         atm_solar_ocn(j_atm) = solarnet_ocean(j_atm)
         atm_solar_ice(j_atm) = solarnet_ice(j_atm)
         atm_windspeed(j_atm) = wsocean(j_atm)
         atm_slp(j_atm) = ps4ocean(j_atm)*1013.25/984.0
-        atm_pco2(j_atm) = co24ocean(j_atm)*1. _d -6
-     
+        atm_pco2(j_atm) = co24ocean(j_atm)
+
       ENDDO
 
       IF (cflan(2).NE.1. _d 0) 

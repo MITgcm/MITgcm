@@ -45,10 +45,10 @@ C     LOCAL VARIABLES:
             pass_fv(i,j)= sum_fv(i,j)/nper
             pass_wspeed(i,j)= sum_wspeed(i,j)/nper
             pass_solarnet(i,j)= -sum_solarnet(i,j)/nper !change sign
-            pass_slp(i,j)= sum_slp(i,j)/nper*100. _d 0   !convert to Pa
-            pass_pCO2(i,j)= sum_pCO2(i,j)/nper
+            pass_slp(i,j)= sum_slp(i,j)/nper*100. _d 0  !convert to Pa
+            pass_pCO2(i,j)= sum_pCO2(i,j)*1. _d -6/nper
 
-            sHeating(i,j,1,1) = sum_sHeat(i,j)/nper  ! from temp-solve step
+            sHeating(i,j,1,1) = sum_sHeat(i,j)/nper ! from temp-solve step
             flxCndBt(i,j,1,1)= sum_flxCnB(i,j)/nper ! from temp-solve step
             pass_PrcAtm(i,j)= sum_prcIce(i,j)/nper
             icFrwAtm(i,j,1,1)= sum_evapIce(i,j)/nper
@@ -72,18 +72,6 @@ C  Seaice diagnostics - tally at end of coupled period
 
         ENDDO
       ENDDO  
-
-C      PRINT *,'***Bottom Norm Fluxes'
-C      PRINT *,'pass_runoff:',pass_runoff(JBUGI,JBUGJ)
-C      PRINT *,'pass_precip:',pass_precip(JBUGI,JBUGJ)
-C      PRINT *,'pass_evap:', pass_evap(JBUGI,JBUGJ)
-C      PRINT *,'pass_qnet:',pass_qnet(JBUGI,JBUGJ)
-C      PRINT *,'pass_fu:',pass_fu(JBUGI,JBUGJ)
-C      PRINT *,'Icemask: ',icemask(JBUGI,JBUGJ,1,1)
-C      PRINT *,'Iceheight: ',iceheight(JBUGI,JBUGJ,1,1)
-C      PRINT *,'sHeat: ',sHeating(JBUGI,JBUGJ,1,1)
-C      PRINT *,'snowPrc: ',snowPrc(JBUGI,JBUGJ,1,1)
-C      PRINT *,'icFrwAtm: ',icFrwAtm(JBUGI,JBUGJ,1,1)
 
       CALL INIT_SUMVARS( myThid)
 

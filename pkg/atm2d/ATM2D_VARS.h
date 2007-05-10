@@ -95,8 +95,8 @@ C     Files: basic state 3D wind fields, and E,P, and qnet prescibed fluxes (if 
        _RL atm_dLdt_ocnq(jm0) ! dL/dT ocean, alternate form (m/s/K) (-)
        _RL atm_dFdt_iceq(jm0) ! dF/dT ice, alternate form (W/m2/K) (+)
        _RL atm_dFdt_ocnq(jm0) ! dF/dT ocean, alternate form (W/m2/K) (+) 
-       _RL atm_solarinc(jm0)  ! solar incoming (+=out of ocean)
-       _RL atm_solar_ice(jm0) ! net solar radation to ice (+=into ocean)
+       _RL atm_solarinc(jm0)  ! solar incoming (W/m2 +=into ocean)
+       _RL atm_solar_ice(jm0) ! net solar rad to ice (unused)(+=into ocean)
        _RL atm_solar_ocn(jm0) ! solar incoming to ocean (+=into ocean)
        _RL atm_windspeed(jm0) ! windspeed at ocean surface (m/s)
        _RL atm_slp(jm0)       ! SLP (mb) 
@@ -139,7 +139,7 @@ c
        _RL qneti_2D(1:sNx,1:sNy)   ! seaice surf. heat flux (W/m2) (+=upward)
        _RL evapi_2D(1:sNx,1:sNy)   ! ocean evap. (m/s) (-=out of ocean)
        _RL precipi_2D(1:sNx,1:sNy) ! precip (m/s) (+=out of ocean, - definite)
-       _RL solarinc_2D(1:sNx,1:sNy)! solar incoming (+=out of ocean)
+       _RL solarinc_2D(1:sNx,1:sNy)! solar incoming (+=into ocean)
        _RL dFdT_ice_2D(1:sNx,1:sNy)! dF/dT ice (W/m^2/K) (+ given +=up HF)
        _RL Tair_2D(1:sNx,1:sNy)    ! precipitation temp (used over seaice) (C)
 
@@ -172,7 +172,7 @@ C     Also sum of atm E,P  for seaice growth step, and sum of seaice bottom flux
        _RL sum_fu(1-OLx:sNx+OLx,1-OLy:sNy+OLy)     ! sum of zonal wind stress applied to ocean (N/m2)
        _RL sum_fv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)     ! sum of merid wind stress applied to ocean (N/m2)
        _RL sum_wspeed(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! sum of wind speed applied to ocean (m/s)
-       _RL sum_solarnet(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! sum of net solar into ocean, inc. thru ice (+=up)
+       _RL sum_solarnet(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! sum of net solar into ocean, inc. thru ice (+=into ocn)
        _RL sum_slp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)    ! sum of SLP (mb)
        _RL sum_pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)   ! sum of atmospheric pCO2  (ppmv) 
        _RL sum_prcIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! sum of total precip over ice (kg/m2/s, + def)
@@ -182,7 +182,8 @@ C     Also sum of atm E,P  for seaice growth step, and sum of seaice bottom flux
        _RL sum_flxCnB(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! heat flux conducted through ice to bottom surface
 				                   ! W/m2, +=down 
 
-C     These are the fluxes actually passed to the ocean model
+
+C     These are the fluxes actually passed to the ocean model (w/some unit/sign conversion)
       COMMON/OCN_FLUXES_PASS/ pass_runoff, pass_precip, pass_evap, pass_qnet,
      &                        pass_fu, pass_fv, pass_wspeed, 
      &                        pass_solarnet, pass_slp, pass_pCO2,
@@ -194,11 +195,11 @@ C     These are the fluxes actually passed to the ocean model
        _RL pass_fu(1-OLx:sNx+OLx,1-OLy:sNy+OLy)     ! zonal wind stress -> ocean (N/m2)
        _RL pass_fv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)     ! merid wind stress -> ocean (N/m2
        _RL pass_wspeed(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! wind speed -> ocean (m/s)
-       _RL pass_solarnet(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! total net solar -> ocean (+=up, - def)
-       _RL pass_slp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)    ! slp -> ocean (mb)
-       _RL pass_pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)   ! atmos pCO2 -> ocean (ppmv)
+       _RL pass_solarnet(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! total net solar -> ocean (+=out of ocn, - def)
+       _RL pass_slp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)    ! slp -> ocean (pascals)
+       _RL pass_pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)   ! atmos pCO2 -> ocean (parts by volume, i.e. ppmv*1e-6)
        _RL pass_sIceLoad(1-OLx:sNx+OLx,1-OLy:sNy+OLy)  ! seaice mass loading -> ocean  
-       _RL sFluxFromIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! upward salt flux->ocean (psu.kg/m^2/s, or g/m^2/s?)
+       _RL sFluxFromIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy) ! upward salt flux->ocean (psu.kg/m^2/s)
 
      
       COMMON/ICE_FLUXES_PASS/ netSW, sFlx, dTsurf, pass_prcAtm

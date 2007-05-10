@@ -34,7 +34,7 @@ C     LOCAL VARIABLES:
        DO i=1, sNx
 
          IF (iceMask(i,j,1,1) .GT. 0. _d 0) THEN     
-           netSW(i,j) = -solarinc_2D(i,j)*(1. _d 0 - siceAlb(i,j,1,1)) ! convert to +=down
+           netSW(i,j) = solarinc_2D(i,j)*(1. _d 0 - siceAlb(i,j,1,1)) ! convert to netSW
            sFlx(i,j,0)= -qneti_2D(i,j) -netSW(i,j) + 
      &                  Tsrf(i,j,1,1)*dFdT_ice_2D(i,j)
            sFlx(i,j,1)= -qneti_2D(i,j) -netSW(i,j)
