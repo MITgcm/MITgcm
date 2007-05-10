@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.19 2007/04/16 23:27:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.20 2007/05/10 22:21:08 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
+
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C Flux Coupler using                       C
 C Bilinear interpolation of forcing fields C
@@ -12,27 +13,31 @@ C added Bicubic (bnc 1/2003)               C
 C                                          C
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
-        real*8 function lagran(i,x,a,sp)
+       _RL FUNCTION LAGRAN(i,x,a,sp)
 
-        INTEGER i,k,sp
+        INTEGER i
         _RS x
-        real*8 a(4)
-        real*8 numer,denom
+        _RL a(4)
+        INTEGER sp
 
-        numer = 1.D0
-        denom = 1.D0
+C-      local variables:
+        INTEGER k
+        _RL numer,denom
+
+        numer = 1. _d 0
+        denom = 1. _d 0
 
         do k=1,sp
-        if ( k .ne. i) then
+         if ( k .ne. i) then
           denom = denom*(a(i) - a(k))
           numer = numer*(x    - a(k))
-        endif
+         endif
         enddo
 
         lagran = numer/denom
 
-        return
-        end
+       return
+       end
 
 
        SUBROUTINE exf_interp(
@@ -46,18 +51,18 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
       implicit none
 
-C     infile       = name of the input file (direct access binary)
-C     filePrec     = file precicision (currently not used, assumes real*4)
-C     arrout       = output arrays (different for each processor)
-C     irecord      = record number in global file
-C     xG,yG        = coordinates for output grid
-C     lon_0, lat_0 = lon and lat of sw corner of global input grid
-C     lon_inc      = scalar x-grid increment
-C     lat_inc      = vector y-grid increments
-C     nx_in, ny_in = input x-grid and y-grid size
-C     method       = 1,11,21 for bilinear; 2,12,22 for bicubic
-C                    1,2 for tracer; 11,12 for U; 21,22 for V
-C     mythid       = thread id
+C  infile      (string)  :: name of the binary input file (direct access)
+C  filePrec    (integer) :: number of bits per word in file (32 or 64)
+C  arrout      ( _RL )   :: output array
+C  irecord     (integer) :: record number to read
+C     xG,yG              :: coordinates for output grid to interpolate to
+C     lon_0, lat_0       :: lon and lat of sw corner of global input grid
+C     lon_inc            :: scalar x-grid increment
+C     lat_inc            :: vector y-grid increments
+C  nx_in,ny_in (integer) :: size in x & y direction of input file to read
+C     method             :: 1,11,21 for bilinear; 2,12,22 for bicubic
+C                        :: 1,2 for tracer; 11,12 for U; 21,22 for V
+C  myThid      (integer) :: My Thread Id number
 C
 
 #include "SIZE.h"
@@ -68,25 +73,28 @@ C subroutine variables
       character*(*) infile
       integer       filePrec, irecord, nx_in, ny_in
       _RL           arrayout(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS           xG_in      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS           xG_in   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS           yG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL           lon_0, lon_inc
       _RL           lat_0, lat_inc(ny_in-1)
       integer       method, mythid
 
+C functions
+      external lagran
+      _RL      lagran
+
 C local variables
       integer  e_ind(snx,sny),w_ind(snx,sny)
       integer  n_ind(snx,sny),s_ind(snx,sny)
-      real*8   px_ind(4), py_ind(4), ew_val(4)
-      external lagran
-      real*8   lagran
-      real*4   arrayin(-1:nx_in+2 ,      -1:ny_in+2)
-      real*8   x_in   (-1:nx_in+2), y_in(-1:ny_in+2)
-      real*8   ninety
-      PARAMETER ( ninety = 90. )
+      _RL      px_ind(4), py_ind(4), ew_val(4)
+      _RL      arrayin(-1:nx_in+2 ,      -1:ny_in+2)
+      _RL      NorthValue
+      _RL      x_in   (-1:nx_in+2), y_in(-1:ny_in+2)
       integer  i, j, k, l, js, bi, bj, sp, interp_unit
       _RS      xG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS      threeSixtyRS, NorthValue
+      _RL      ninety
+      PARAMETER ( ninety = 90. )
+      _RS      threeSixtyRS
       PARAMETER ( threeSixtyRS = 360. )
 
 C     put xG in interval [ lon_0 , lon_0+360 [
@@ -106,9 +114,6 @@ C     put xG in interval [ lon_0 , lon_0+360 [
      I   infile, filePrec,
      O   arrayin,
      I   irecord, nx_in, ny_in, mythid)
-      _BARRIER
-
-C     _BEGIN_MASTER( myThid )
 
 C setup input longitude grid
       do i=-1,nx_in+2
@@ -141,7 +146,7 @@ C enlarge boundary
        arrayin(i,0)       = arrayin(i,1)
        arrayin(i,-1)      = arrayin(i,1)
        arrayin(i,ny_in+1) = arrayin(i,ny_in)
-       arrayin(i,ny_in+2) = arrayin(i,ny_in) 
+       arrayin(i,ny_in+2) = arrayin(i,ny_in)
       enddo
 
 C     For tracer (method=1,2) set to northernmost zonal-mean value
@@ -153,7 +158,7 @@ C     as is already done above in order to allow cross-PoleArctic flow
       do j=ny_in,ny_in+2
        if (y_in(j).eq.ninety) then
         if (method.eq.1 .or. method.eq.2) then
-         NorthValue = 0
+         NorthValue = 0.
          do i=1,nx_in
           NorthValue = NorthValue + arrayin(i,j)
          enddo
@@ -163,14 +168,12 @@ C     as is already done above in order to allow cross-PoleArctic flow
          enddo
         elseif (method.eq.11 .or. method.eq.12) then
          do i=-1,nx_in+2
-          arrayin(i,j) = 0
+          arrayin(i,j) = 0.
          enddo
         endif
        endif
       enddo
 
-C     _END_MASTER( myThid )
-       
       do bj = mybylo(mythid), mybyhi(mythid)
        do bi = mybxlo(mythid), mybxhi(mythid)
 
@@ -197,7 +200,7 @@ C check validity of input/output coordinates
         endif
 #endif /* ALLOW_DEBUG */
 
-C compute interpolation indices 
+C compute interpolation indices
         do i=1,snx
          do j=1,sny
           if (xG(i,j,bi,bj)-x_in(1) .ge. 0.) then
@@ -257,10 +260,10 @@ C bicubic interpolation
      &             +arrayin(w_ind(i,j)  ,s_ind(i,j)+k-2)
      &             *lagran(2,xG(i,j,bi,bj),px_ind,sp)
      &             +arrayin(e_ind(i,j)  ,s_ind(i,j)+k-2)
-     &             *lagran(3,xG(i,j,bi,bj),px_ind,sp) 
+     &             *lagran(3,xG(i,j,bi,bj),px_ind,sp)
      &             +arrayin(e_ind(i,j)+1,s_ind(i,j)+k-2)
      &             *lagran(4,xG(i,j,bi,bj),px_ind,sp)
-            arrayout(i,j,bi,bj)=arrayout(i,j,bi,bj) 
+            arrayout(i,j,bi,bj)=arrayout(i,j,bi,bj)
      &             +ew_val(k)*lagran(k,yG(i,j,bi,bj),py_ind,sp)
            enddo
           enddo
@@ -271,4 +274,5 @@ C bicubic interpolation
        enddo
       enddo
 
+      RETURN
       END
