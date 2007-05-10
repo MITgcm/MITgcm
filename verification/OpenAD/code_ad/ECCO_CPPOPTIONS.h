@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.4 2006/07/13 19:35:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.5 2007/05/10 16:31:26 heimbach Exp $
 C $Name:  $
 
 C CPP flags controlling which code is included in the files that
@@ -19,7 +19,7 @@ C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 C
 C       >>> Extract adjoint state
-#undef ALLOW_AUTODIFF_MONITOR
+#define ALLOW_AUTODIFF_MONITOR
 C
 C       >>> DO 2-level checkpointing instead of 3-level
 #undef AUTODIFF_2_LEVEL_CHECKPOINT
@@ -42,9 +42,10 @@ C ********************************************************************
 C 
 C       >>> Cost function contributions
 #define ALLOW_COST
-#define ALLOW_COST_TEST
+#undef ALLOW_COST_TEST
 #undef ALLOW_COST_TRACER
-#undef ALLOW_COST_ATLANTIC_HEAT
+#define ALLOW_COST_ATLANTIC_HEAT
+#undef ALLOW_COST_ATLANTIC_HEAT_DOMASS 
 
 C ********************************************************************
 C ***               Control vector Package                         ***
@@ -54,9 +55,6 @@ C
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
 #define ALLOW_SALT0_CONTROL
-#define ALLOW_UVEL0_CONTROL
-#define ALLOW_VVEL0_CONTROL
-#define ALLOW_ETAN0_CONTROL
 #undef ALLOW_TR10_CONTROL
 #undef ALLOW_TAUU0_CONTROL
 #undef ALLOW_TAUV0_CONTROL
@@ -64,6 +62,10 @@ C       >>> Initial values.
 #undef ALLOW_HFLUX0_CONTROL
 #undef ALLOW_SSS0_CONTROL
 #undef ALLOW_SST0_CONTROL
-#undef ALLOW_DIFFKR_CONTROL
+#define ALLOW_DIFFKR_CONTROL
 #undef ALLOW_KAPGM_CONTROL
+
+C
+C o Enable some temporary constructs for OpenAD
+#undef ALLOW_OPENAD
 

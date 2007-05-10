@@ -3,7 +3,7 @@
 # Packages
 # ********
  &PACKAGES
- useGMRedi    = .FALSE.,
+ useGMRedi    = .TRUE.,
  useKPP       = .FALSE.,
  useGrdchk    = .TRUE.,
  useMNC       = .FALSE.,
