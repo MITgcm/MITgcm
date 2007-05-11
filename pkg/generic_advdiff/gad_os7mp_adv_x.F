@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_x.F,v 1.3 2007/04/04 01:39:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_x.F,v 1.4 2007/05/11 17:30:06 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -35,7 +35,7 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER i,j
       _RL cfl,Psi
-      _RL uLoc,Fac,Del,DelIp,DelI,Phi,Eps,rp1h,Msk
+      _RL uLoc,Fac,Del,DelIp,DelI,Phi,Eps,rp1h,rp1h_cfl,Msk
       _RL Qippp,Qipp,Qip,Qi,Qim,Qimm,Qimmm
       _RL MskIpp,MskIp,MskI,MskIm,MskImm,MskImmm
       _RL d2,d2p1,d2m1,A,B,C,D
@@ -57,7 +57,7 @@ C     == Local variables ==
         cfl = uLoc
         IF ( calcCFL ) cfl = abs(uLoc*deltaTloc*recip_dxC(i,j,bi,bj))
 
-        IF (uLoc.gt.0.) THEN
+        IF (uTrans(i,j).gt.0.) THEN
          Qippp = Q(i+2,j)
          Qipp  = Q(i+1,j)
          Qip   = Q(i,j)
@@ -72,7 +72,7 @@ C     == Local variables ==
          MskIm   = maskLocW(i-1,j)
          MskImm  = maskLocW(i-2,j)
          MskImmm = maskLocW(i-3,j)
-        ELSEIF (uLoc.lt.0.) THEN
+        ELSEIF (uTrans(i,j).lt.0.) THEN
          Qippp = Q(i-3,j)
          Qipp  = Q(i-2,j)
          Qip   = Q(i-1,j)
@@ -89,7 +89,7 @@ C     == Local variables ==
          MskImmm = maskLocW(i+3,j)
         ENDIF
 
-        IF (uLoc.ne.0.) THEN
+        IF (uTrans(i,j).ne.0.) THEN
 C        2nd order correction [i i-1]
          Fac = 1.
          Del = Qip-Qi
@@ -128,9 +128,10 @@ C        7th order correction [i+2 i+1 i i-1 i-2 i-3 i-4]
          DelI = ( Qi - Qim ) * MskIm
          rp1h =sign(1. _d 0,DelI)*sign(1. _d 0,DelIp)
      &        *abs(DelI+Eps)/abs(DelIp+Eps)
+         rp1h_cfl = rp1h/(cfl+Eps)
 
 C        TVD limiter
-!        Phi = max(0. _d 0, min( 2./(1-cfl), Phi, 2.*rp1h/cfl ) )
+!        Phi = max(0. _d 0, min( 2./(1-cfl), Phi, 2.*rp1h_cfl ) )
 
 C        MP limiter
          d2   = ( ( Qip + Qim ) - 2.*Qi  ) * MskI * MskIm
@@ -147,14 +148,14 @@ C        MP limiter
          D = d2;
          dm1h = max(min(A,B,C,D),0. _d 0)+min(max(A,B,C,D),0. _d 0)
          qMD = 0.5*( ( Qi + Qip ) - dp1h )
-         qUL = Qi + (1.-cfl)/cfl*( Qi-Qim )
+         qUL = Qi + (1.-cfl)/(cfl+Eps)*( Qi-Qim )
          qLC = Qi + 0.5*( 1.+dm1h/(Qi-Qim+Eps) )*(qUL-Qi)
          PhiMD = 2./(1.-cfl)*(qMD-Qi+Eps)/(Qip-Qi+Eps)
-         PhiLC = 2.*rp1h/cfl*(qLC-Qi+Eps)/(qUL-Qi+Eps)
+         PhiLC = 2.*rp1h_cfl*(qLC-Qi+Eps)/(qUL-Qi+Eps)
          PhiMin = max(min(0. _d 0,PhiMD),
-     &        min(0. _d 0,2.*rp1h/cfl,PhiLC))
+     &        min(0. _d 0,2.*rp1h_cfl,PhiLC))
          PhiMax = min(max(2. _d 0/(1.-cfl),PhiMD),
-     &        max(0. _d 0,2.*rp1h/cfl,PhiLC))
+     &        max(0. _d 0,2.*rp1h_cfl,PhiLC))
          Phi = max(PhiMin,min(Phi,PhiMax))
 
          Psi = Phi * 0.5 * (1. - cfl)
