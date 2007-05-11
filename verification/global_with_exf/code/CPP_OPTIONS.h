@@ -1,12 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/CPP_OPTIONS.h,v 1.12 2007/05/10 22:18:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/CPP_OPTIONS.h,v 1.13 2007/05/11 04:00:58 heimbach Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 
 C CPP flags controlling particular source code features
-
-#include "PACKAGES_CONFIG.h"
 
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
