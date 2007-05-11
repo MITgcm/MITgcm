@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.813 2007/05/10 20:02:36 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.814 2007/05/11 14:32:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - default EXF options are now set in EXF_OPTIONS.h (ifndef ALLOW_AUTODIFF_TAMC)
+  EXF_INTERPOLATION: 
+  - merge global_with_exf/code version of exf_interp_read.F
+    to the main code ; 
+  - Add new option: EXF_INTERP_USE_DYNALLOC to use Dynamical Allocation when 
+    reading the file ; Important: This options needs to be defined to recover 
+    previous code.
+    otherwise, use fixed size array to read in (size=exf_interp_bufferSize).
+  - no longer loose real*8 precision along the way when using exf_iprec=64.
 o pkg/seaice: rearrangement of common blocks (really needs more cleaning up)
   - change discretisation of evp-solver in order to avoid another exchange
     (changes lab_sea) and clean up a little
