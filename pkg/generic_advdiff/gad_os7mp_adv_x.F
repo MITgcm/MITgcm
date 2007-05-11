@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_x.F,v 1.4 2007/05/11 17:30:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_x.F,v 1.5 2007/05/11 18:24:31 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -35,11 +35,17 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER i,j
       _RL cfl,Psi
-      _RL uLoc,Fac,Del,DelIp,DelI,Phi,Eps,rp1h,rp1h_cfl,Msk
+      _RL uLoc,Fac,DelIp,DelI,Phi,Eps,rp1h,rp1h_cfl
       _RL Qippp,Qipp,Qip,Qi,Qim,Qimm,Qimmm
       _RL MskIpp,MskIp,MskI,MskIm,MskImm,MskImmm
       _RL d2,d2p1,d2m1,A,B,C,D
       _RL dp1h,dm1h,qMD,qUL,qLC,PhiMD,PhiLC,PhiMin,PhiMax
+      _RL DelM,DelP,DelMM,DelPP,DelMMM,DelPPP
+      _RL Del2MM,Del2M,Del2,Del2P,Del2PP
+      _RL Del3MM,Del3M,Del3P,Del3PP
+      _RL Del4M,Del4,Del4P
+      _RL Del5M,Del5P
+      _RL Del6
 
       Eps = 1. _d -20
 
@@ -92,34 +98,43 @@ C     == Local variables ==
         IF (uTrans(i,j).ne.0.) THEN
 C        2nd order correction [i i-1]
          Fac = 1.
-         Del = Qip-Qi
-         Msk = MskI
-         Phi = Msk * Fac * Del
+         DelP = (Qip-Qi)*MskI
+         Phi = Fac * DelP
 C        3rd order correction [i i-1 i-2]
          Fac = Fac * ( cfl + 1. )/3.
-         Del = Del - ( Qi-Qim )
-         Msk = Msk * MskIm
-         Phi = Phi - Msk * Fac * Del
+         DelM = (Qi-Qim)*MskIm
+         Del2 = DelP - DelM
+         Phi = Phi - Fac * Del2
 C        4th order correction [i+1 i i-1 i-2]
          Fac = Fac * ( cfl - 2. )/4.
-         Del = ( Qipp-2.*Qip+Qi ) - Del
-         Msk = Msk * MskIp
-         Phi = Phi + Msk * Fac * Del
+         DelPP = (Qipp-Qip)*MskIp*MskI
+         Del2P = DelPP - DelP
+         Del3P = Del2P - Del2
+         Phi = Phi + Fac * Del3p
 C        5th order correction [i+1 i i-1 i-2 i-3]
          Fac = Fac * ( cfl - 3. )/5.
-         Del = Del - ( Qip-3.*Qi+3.*Qim-Qimm )
-         Msk = Msk * MskImm
-         Phi = Phi + Msk * Fac * Del
+         DelMM = (Qim-Qimm)*MskImm*MskIm
+         Del2M = DelM - DelMM
+         Del3M = Del2 - Del2M
+         Del4 = Del3P - Del3M
+         Phi = Phi + Fac * Del4
 C        6th order correction [i+2 i+1 i i-1 i-2 i-3]
          Fac = Fac * ( cfl + 2. )/6.
-         Del = ( Qippp-4.*Qipp+6.*Qip-4.*Qi+Qim ) - Del
-         Msk = Msk * MskIpp
-         Phi = Phi + Msk * Fac * Del
+         DelPPP = (Qippp-Qipp)*MskIpp*MskIp*MskI
+         Del2PP = DelPP - DelP
+         Del3PP = Del2PP - Del2P
+         Del4P = Del3PP - Del3P
+         Del5P = Del4P - Del4
+         Phi = Phi + Fac * Del5P
 C        7th order correction [i+2 i+1 i i-1 i-2 i-3 i-4]
          Fac = Fac * ( cfl + 2. )/7.
-         Del = Del - ( Qipp-5.*Qip+10.*Qi-10.*Qim+5.*Qimm-Qimmm ) 
-         Msk = Msk * MskImmm
-         Phi = Phi - Msk * Fac * Del
+         DelMMM = (Qimm-Qimmm)*MskImmm*MskImm*MskIm
+         Del2MM = DelMM - DelMMM
+         Del3MM = Del2M - Del2MM
+         Del4M = Del3M - Del3MM
+         Del5M = Del4 - Del4M
+         Del6 = Del5P - Del5M
+         Phi = Phi - Fac * Del6
 
          DelIp = ( Qip - Qi ) * MskI
          Phi = sign(1. _d 0,Phi)*sign(1. _d 0,DelIp)
@@ -134,9 +149,9 @@ C        TVD limiter
 !        Phi = max(0. _d 0, min( 2./(1-cfl), Phi, 2.*rp1h_cfl ) )
 
 C        MP limiter
-         d2   = ( ( Qip + Qim ) - 2.*Qi  ) * MskI * MskIm
-         d2p1 = ( ( Qipp + Qi ) - 2.*Qip ) * MskIp * MskI
-         d2m1 = ( ( Qi + Qimm ) - 2.*Qim ) * MskIm * MskImm
+         d2   = Del2 !( ( Qip + Qim ) - 2.*Qi  ) * MskI * MskIm
+         d2p1 = Del2P !( ( Qipp + Qi ) - 2.*Qip ) * MskIp * MskI
+         d2m1 = Del2M !( ( Qi + Qimm ) - 2.*Qim ) * MskIm * MskImm
          A = 4.*d2 - d2p1
          B = 4.*d2p1 - d2
          C = d2
@@ -147,10 +162,11 @@ C        MP limiter
          C = d2m1
          D = d2;
          dm1h = max(min(A,B,C,D),0. _d 0)+min(max(A,B,C,D),0. _d 0)
-         qMD = 0.5*( ( Qi + Qip ) - dp1h )
-         qUL = Qi + (1.-cfl)/(cfl+Eps)*( Qi-Qim )
-         qLC = Qi + 0.5*( 1.+dm1h/(Qi-Qim+Eps) )*(qUL-Qi)
-         PhiMD = 2./(1.-cfl)*(qMD-Qi+Eps)/(Qip-Qi+Eps)
+        !qMD = 0.5*( ( Qi + Qip ) - dp1h )
+         qMD = 0.5*( ( 2.*Qi + DelIp ) - dp1h )
+         qUL = Qi + (1.-cfl)/(cfl+Eps)*DelI
+         qLC = Qi + 0.5*( 1.+dm1h/(DelI+Eps) )*(qUL-Qi)
+         PhiMD = 2./(1.-cfl)*(qMD-Qi+Eps)/(DelIp+Eps)
          PhiLC = 2.*rp1h_cfl*(qLC-Qi+Eps)/(qUL-Qi+Eps)
          PhiMin = max(min(0. _d 0,PhiMD),
      &        min(0. _d 0,2.*rp1h_cfl,PhiLC))
