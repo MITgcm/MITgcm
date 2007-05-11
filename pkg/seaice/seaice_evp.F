@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.8 2007/05/10 19:54:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.9 2007/05/11 14:07:35 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -164,6 +164,9 @@ C     average strain rates to Z and C points
             e11C = e11(i,j,bi,bj)
             e22C = e22(i,j,bi,bj)
             e12C = 0.25 _d 0 
+     &         * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj) 
+     &           + e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
+            e11Z = 0.25 _d 0
      &         * ( e11(I,J  ,bi,bj) + e11(I-1,J  ,bi,bj) 
      &           + e11(I,J-1,bi,bj) + e11(I-1,J-1,bi,bj) )
             e22Z = 0.25 _d 0
