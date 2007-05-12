@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/shared_code/OCNIDS.h,v 1.2 2004/05/21 20:21:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/shared_code/OCNIDS.h,v 1.3 2007/05/12 16:53:57 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | OCNIDS.h Declare symbolic constants holding strings that |
-C     |          are used to identify this component and the     |
-C     |          fields it exchanges with other components.      |
-C     \==========================================================/
+C     *==========================================================*
+C     | OCNIDS.h Declare symbolic constants holding strings that
+C     |          are used to identify this component and the
+C     |          fields it exchanges with other components.
+C     *==========================================================*
       CHARACTER*(8)  ocnCompName 
       PARAMETER( ocnCompName         = 'UV-Ocean'       )
 
@@ -17,6 +17,8 @@ C     \==========================================================/
       PARAMETER( ocnSSSName          = 'OCN SSS'        )
       CHARACTER*(9)  ocnSSVsqName
       PARAMETER( ocnSSVsqName        = 'OCN SSVsq'      )
+      CHARACTER*(8)  ocnFCO2Name
+      PARAMETER( ocnFCO2Name         = 'OCN FCO2'       )
 
       CHARACTER*(8)  ocnSLPrName
       PARAMETER( ocnSLPrName         = 'OCN SLPr'       )
@@ -44,4 +46,13 @@ c     PARAMETER( ocnVvelgroundName   = 'OCN Vvelground' )
       PARAMETER( ocnSaltFxName       = 'OCN SaltFlux'   )
       CHARACTER*(10) ocnSeaIceName
       PARAMETER( ocnSeaIceName       = 'OCN SeaIce'     )
-
+      CHARACTER*(10) ocnAirCO2Name
+      PARAMETER( ocnAirCO2Name       = 'OCN AirCO2'     )
+      CHARACTER*(8) ocnWSpdName
+      PARAMETER( ocnWSpdName         = 'OCN WSpd'       )
+      CHARACTER*(8) ocnFIceName
+      PARAMETER( ocnFIceName         = 'OCN FIce'       )
+C
+C     Pass carbon/DIC variables only if flag set below
+      LOGICAL ocnCpl_exchange_DIC
+      PARAMETER( ocnCpl_exchange_DIC = .FALSE.)
