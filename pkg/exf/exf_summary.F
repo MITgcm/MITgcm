@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.13 2007/05/08 03:49:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.14 2007/05/12 23:17:18 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -150,13 +150,13 @@ C--   Print general parameters:
      &  ' /* minimum stability parameter [?] */')
       CALL WRITE_0D_R8( psim_fac, INDEX_NONE, 'psim_fac =',
      &  ' /* coef used in turbulent fluxes calculation [-] */')
-      CALL WRITE_0D_R8( hu, INDEX_NONE, 'zref =',
+      CALL WRITE_0D_R8( zref, INDEX_NONE, 'zref =',
      & '  /* reference height [ m ] */')
       CALL WRITE_0D_R8( hu, INDEX_NONE, 'hu =',
      & '  /* height of mean wind [ m ] */')
-      CALL WRITE_0D_R8( hu, INDEX_NONE, 'ht =',
+      CALL WRITE_0D_R8( ht, INDEX_NONE, 'ht =',
      & '  /* height of mean temperature [ m ] */')
-      CALL WRITE_0D_R8( hu, INDEX_NONE, 'hq =',
+      CALL WRITE_0D_R8( hq, INDEX_NONE, 'hq =',
      & '  /* height of mean spec.humidity [ m ] */')
       CALL WRITE_0D_R8( umin, INDEX_NONE, 'uMin =',
      &  ' /* minimum wind speed [m/s] */')
@@ -167,7 +167,7 @@ C--   Print general parameters:
      &  ' /* drag coefficient over sea-ice (fixed) [-] */')
       CALL WRITE_0D_R8( exf_iceCe, INDEX_NONE, 'exf_iceCe =',
      &  ' /* transfert coeff. over sea-ice, for Evap (fixed) [-] */')
-      CALL WRITE_0D_R8( exf_iceCe, INDEX_NONE, 'exf_iceCh =',
+      CALL WRITE_0D_R8( exf_iceCh, INDEX_NONE, 'exf_iceCh =',
      &  ' /* transfert coeff. over sea-ice, Sens.Heat.(fixed)[-] */')
       CALL WRITE_0D_R8( exf_albedo, INDEX_NONE, 'exf_albedo =',
      & '  /* Sea-water albedo [-] */')
