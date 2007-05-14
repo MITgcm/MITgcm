@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulk_largeyeager04.F,v 1.3 2007/05/14 14:03:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulk_largeyeager04.F,v 1.4 2007/05/14 19:38:18 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -63,6 +63,8 @@ CEOP
 
 #ifdef ALLOW_BULK_LARGEYEAGER04
 
+C     == external Functions
+
 C     == Local variables ==
 C     i,j      :: grid point indices
 C     bi,bj    :: tile indices
@@ -101,13 +103,20 @@ C     ssq      :: saturation specific humidity [kg/kg] in eq. with Sea-Surface w
       _RL windStress         ! surface wind-stress (@ grid cell center)
       _RL tmpbulk
       INTEGER iter
+C     solve4Stress :: if F, by-pass momentum turb. flux (wind-stress) calculation
+      LOGICAL solve4Stress
+#ifdef ALLOW_ATM_WIND
+      PARAMETER ( solve4Stress = .TRUE. )
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
       integer ikey_1
       integer ikey_2
 #endif
 
-C     == external Functions
+#ifndef ALLOW_ATM_WIND
+      solve4Stress = wspeedfile .NE. ' '
+#endif
 
 C-- Set surface parameters :
       zwln = LOG(hu/zref)
@@ -152,7 +161,7 @@ C-   Surface Temp.
           Tsf = ssttmp + cen2kel
           Ts2 = Tsf*Tsf
 C-   Wind speed
-          ws  = us(i,j,bi,bj)
+          ws  = wspeed(i,j,bi,bj)
           wsm = sh(i,j,bi,bj)
 
 C--- Compute turbulent surface fluxes
@@ -170,23 +179,19 @@ C--  initial guess for exchange coefficients:
 C    take U_N = del.U ; stability from del.Theta ;
             stable = exf_half + SIGN(exf_half, deltap)
 
-#ifdef ALLOW_ATM_WIND
+#ifndef ALLOW_ATM_WIND
+           IF ( solve4Stress ) THEN
+#endif
             tmpbulk = cdrag_1/wsm + cdrag_2 + cdrag_3*wsm
             rdn = SQRT(tmpbulk)
             ustar=rdn*wsm
-#else /* ifndef ALLOW_ATM_WIND */
-C     in this case ustress and vstress are defined a u and v points
-C     respectively, and we need to average to mass points to avoid
-C     windStress = 0 near coasts or other boundaries
-            windStress = sqrt( 0.5 _d 0*
-     &                   (ustress(i,  j,bi,bj)*ustress(i  ,j,bi,bj)
-     &                   +ustress(i+1,j,bi,bj)*ustress(i+1,j,bi,bj)
-     &                   +vstress(i,j,  bi,bj)*vstress(i,j  ,bi,bj)
-     &                   +vstress(i,j+1,bi,bj)*vstress(i,j+1,bi,bj)
-     &                   )   )
+#ifndef ALLOW_ATM_WIND
+           ELSE
+            windStress = wStress(i,j,bi,bj)
             ustar = sqrt(windStress/atmrho)
 c           tau   = windStress/ustar
             tau   = sqrt(windStress*atmrho)
+           ENDIF
 #endif /* ALLOW_ATM_WIND */
 
 C--  initial guess for exchange other coefficients:
@@ -212,7 +217,7 @@ CADJ STORE ustar  = comlev1_exf_2, key = ikey_2
 CADJ STORE qstar  = comlev1_exf_2, key = ikey_2
 CADJ STORE tstar  = comlev1_exf_2, key = ikey_2
 CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
-CADJ STORE us(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
+CADJ STORE wspeed(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
 #endif
 
               huol = ( tstar/t0 +
@@ -227,7 +232,9 @@ cph huol = max(huol,zolmin) with zolmin = -100
               stable = exf_half + sign(exf_half, huol)
 
 c                 Evaluate all stability functions assuming hq = ht.
-#ifdef ALLOW_ATM_WIND
+#ifndef ALLOW_ATM_WIND
+             IF ( solve4Stress ) THEN
+#endif
 cph The following is different in Large&Pond1981 code:
 cph xsq = max(sqrt(abs(exf_one - 16.*huol)),exf_one)
               xsq    = SQRT( ABS(exf_one - huol*16. _d 0) )
@@ -237,14 +244,18 @@ cph xsq = max(sqrt(abs(exf_one - 16.*huol)),exf_one)
      &                 ( LOG( (exf_one + exf_two*x + xsq)*
      &                        (exf_one+xsq)*.125 _d 0 )
      &                   -exf_two*ATAN(x) + exf_half*pi )
-#endif /* ALLOW_ATM_WIND */
+#ifndef ALLOW_ATM_WIND
+             ENDIF
+#endif
 cph The following is different in Large&Pond1981 code:
 cph xsq = max(sqrt(abs(exf_one - 16.*htol)),exf_one)
               xsq   = SQRT( ABS(exf_one - htol*16. _d 0) )
               psixh = -psim_fac*htol*stable + (exf_one-stable)*
      &                 ( exf_two*LOG(exf_half*(exf_one+xsq)) )
 
-#ifdef ALLOW_ATM_WIND
+#ifndef ALLOW_ATM_WIND
+             IF ( solve4Stress ) THEN
+#endif
 C-   Shift wind speed using old coefficient
               usn = ws/(exf_one + rdn/karman*(zwln-psimh) )
               usm = MAX(usn, umin)
@@ -256,6 +267,8 @@ C-   Update the 10m, neutral stability transfer coefficients (momentum)
               ustar = rd*wsm
 C-   Coeff:
               tau   = atmrho*rd*ws
+#ifndef ALLOW_ATM_WIND
+             ENDIF
 #endif
 
 C-   Update the 10m, neutral stability transfer coefficients (sens&evap)
@@ -286,13 +299,19 @@ C-   Turbulent Fluxes
             hs(i,j,bi,bj) = atmcp*tau*tstar
             hl(i,j,bi,bj) = flamb*tau*qstar
 #ifndef EXF_READ_EVAP
-cdm !!! need to change sign and to convert from kg/m^2/s to m/s via recip_rhonil !!!
-cph rhonil should be replaced by rhoFresh
-            evap(i,j,bi,bj) = -recip_rhonil*tau*qstar
+C   change sign and convert from kg/m^2/s to m/s via rhoConstFresh
+C   but older version was using rhonil instead:
+c           evap(i,j,bi,bj) = -recip_rhonil*tau*qstar
+            evap(i,j,bi,bj) = -tau*qstar/rhoConstFresh
 #endif
 #ifdef ALLOW_ATM_WIND
-            ustress(i,j,bi,bj) = tau*rd*ws*cw(i,j,bi,bj)
-            vstress(i,j,bi,bj) = tau*rd*ws*sw(i,j,bi,bj)
+c           ustress(i,j,bi,bj) = tau*rd*ws*cw(i,j,bi,bj)
+c           vstress(i,j,bi,bj) = tau*rd*ws*sw(i,j,bi,bj)
+C- jmc: below is how it should be written ; different from above when
+C       both wind-speed & 2 compon. of the wind are specified, and in
+C-      this case, formula below is better.
+            ustress(i,j,bi,bj) = tau*rd*uwind(i,j,bi,bj)
+            vstress(i,j,bi,bj) = tau*rd*vwind(i,j,bi,bj)
 #endif
 
 c IF ( ATEMP(i,j,bi,bj) .NE. 0. )
@@ -313,9 +332,9 @@ c IF ( ATEMP(i,j,bi,bj) .NE. 0. )
 #ifdef ALLOW_ATM_WIND
           wsm = sh(i,j,bi,bj)
           tmpbulk = cdrag_1/wsm + cdrag_2 + cdrag_3*wsm
-          ustress(i,j,bi,bj) = atmrho*tmpbulk*us(i,j,bi,bj)*
+          ustress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
      &                         uwind(i,j,bi,bj)
-          vstress(i,j,bi,bj) = atmrho*tmpbulk*us(i,j,bi,bj)*
+          vstress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
      &                         vwind(i,j,bi,bj)
 #endif
 #endif /* ifndef ALLOW_ATM_TEMP */
