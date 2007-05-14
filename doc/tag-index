@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.814 2007/05/11 14:32:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.815 2007/05/14 20:44:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - implement A-grid / C-grid selection for wind-stress input files.
+  - clean-up exf_wind.F (remove us, use wspeed instead ; add wStress)
+  for now, in exf_bulk_largeyeager04.F only :
+  - change implementation for case where windspeed + 2. components wind-stress
+    are read-in. AND use rhoConstFresh to convert evap.
+o pkg/seaice:
+  - use correct EXCH_UV for wind-forcing (on A-grid).
+  - change SEAICE_OPTIONS.h to limit the number of option combinations (regarding
+    SEAICE_EXTERNAL_FORCING & SEAICE_EXTERNAL_FLUXES); add corresponding stops.
 o pkg/exf:
   - default EXF options are now set in EXF_OPTIONS.h (ifndef ALLOW_AUTODIFF_TAMC)
   EXF_INTERPOLATION: 
