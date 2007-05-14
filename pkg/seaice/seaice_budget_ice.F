@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.6 2007/04/30 00:15:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.7 2007/05/14 14:27:18 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -146,7 +146,7 @@ C NOW DETERMINE FIXED FORCING TERM IN HEAT BUDGET
        DO I=1,sNx
         IF(hSnwLoc(I,J).GT.0.0) THEN
 C NO SW PENETRATION WITH SNOW
-#ifdef ALLOW_DOWNWARD_RADIATION
+#if defined(ALLOW_DOWNWARD_RADIATION) && defined(ALLOW_ATM_TEMP)
          A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
      &        +lwdownLoc(I,J)*0.97 _d 0
      &        +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
