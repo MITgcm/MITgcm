@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.10 2007/05/09 12:46:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_exf.F,v 1.11 2007/05/14 20:48:26 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -152,7 +152,7 @@ C     copy a few variables to names used in bulkf_formula_lay
       Tsf    =  tsfCel+cen2kel
       Ts2    = Tsf*Tsf
 C     wind speed
-      ws     = us(i,j,bi,bj)
+      ws     = wspeed(i,j,bi,bj)
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 #endif
