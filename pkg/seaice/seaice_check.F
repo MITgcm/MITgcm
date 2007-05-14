@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.18 2007/05/01 21:40:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.19 2007/05/14 14:39:22 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -69,6 +69,12 @@ C     At present this option is hardwired for pkg/exf.
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #else /* ALLOW_EXF */
+         IF ( .NOT.useEXF ) THEN
+           WRITE(msgBuf,'(A)')
+     &        'S/R SEAICE_CHECK: need to set useEXF in data.pkg'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+         ENDIF
 #ifndef ALLOW_ATM_TEMP
          WRITE(msgBuf,'(A)')
      &        'need to define pkg/exf ALLOW_ATM_TEMP'
@@ -87,19 +93,26 @@ C     At present this option is hardwired for pkg/exf.
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
-#endif /* ALLOW_EXF */
-#endif /* SEAICE_EXTERNAL_FORCING */
-
-C--   SEAICE_EXTERNAL_FLUXES
-C     At present this option is hardwired for pkg/exf.
-#ifdef SEAICE_EXTERNAL_FLUXES
-#ifndef ALLOW_EXF
+#if !defined(ALLOW_ATM_WIND) && \
+    ( !defined(SEAICE_EXTERNAL_FLUXES) || !defined(SEAICE_CGRID) )
          WRITE(msgBuf,'(A)')
-     &        'need to define ALLOW_EXF'
+     &        'need to define pkg/exf ALLOW_ATM_WIND'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
+#endif /* ALLOW_EXF */
+
+#else  /* SEAICE_EXTERNAL_FORCING */
+C--   SEAICE_EXTERNAL_FLUXES :
+C     currently, cannot be turned on if SEAICE_EXTERNAL_FORCING is undef
+#ifdef SEAICE_EXTERNAL_FLUXES
+         WRITE(msgBuf,'(2A)') 
+     &    'S/R SEAICE_CHECK: SEAICE_EXTERNAL_FLUXES not allowed',
+     &    ' without SEAICE_EXTERNAL_FORCING'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif /* SEAICE_EXTERNAL_FLUXES */
+#endif /* SEAICE_EXTERNAL_FORCING */
 
 #ifdef SEAICE_ALLOW_EVP
 # ifdef ALLOW_AUTODIFF_TAMC
