@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.17 2007/04/18 19:55:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.18 2007/05/14 19:39:05 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -37,8 +37,27 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer interp_method
+      INTEGER i,j,bi,bj
 
 c     == end of interface ==
+
+C--   Initialise to zero intermediate fields (in common block)
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          wStress(i,j,bi,bj) = 0.
+          cw(i,j,bi,bj) = 0.
+          sw(i,j,bi,bj) = 0.
+          sh(i,j,bi,bj) = 0.
+#ifdef ALLOW_ATM_TEMP
+          hs(i,j,bi,bj) = 0.
+          hl(i,j,bi,bj) = 0.
+#endif
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
       if ( useCubedSphereExchange
      &     .and. ustressperiod .eq. 0
@@ -297,4 +316,5 @@ c     == end of interface ==
 c     Initialize climatological fields
 cph      call exf_clim_init     ( mythid )
 
-      end
+      RETURN
+      END
