@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.5 2007/04/22 23:07:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.6 2007/05/14 07:13:30 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -146,6 +146,27 @@ C     Except under sea ice, SIqsw is also identical to EXFswnet.
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIpress   '
+      diagTitle = 'SEAICE strength (with upper and lower limit)'
+      diagUnits = 'm^2/s^2         '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIzeta   '
+      diagTitle = 'SEAICE nonlinear bulk viscosity'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIeta    '
+      diagTitle = 'SEAICE nonlinear shear viscosity'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'SIsigI  '
       diagTitle = 'SEAICE normalized principle stress, component one'
