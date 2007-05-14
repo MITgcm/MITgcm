@@ -8,20 +8,19 @@
  sRef = 15*35.,
  viscAr=1.E-3,
  viscAh=5.E5,
- diffKhT=0.0,
+ diffKhT=0.,
  diffKrT=3.E-5,
- diffKhS=0.0,
+ diffKhS=0.,
  diffKrS=3.E-5,
  rhonil=1035.,
- rotationPeriod=86400.,
- gravity=9.81,
- eosType = 'POLY3',
+ rhoConstFresh=1000.,
+ eosType = 'JMD95Z',
  ivdc_kappa=100.,
  implicitDiffusion=.TRUE.,
- useOldFreezing=.TRUE.,
+ allowFreezing=.TRUE.,
+ exactConserv=.TRUE.,
  useRealFreshWaterFlux=.TRUE.,
  useCDscheme=.TRUE.,
- useNHMTerms=.TRUE.,
 # turn on looped cells
  hFacMin=.05,
  hFacMindr=50.,
@@ -37,32 +36,25 @@
 
 # Time stepping parameters
  &PARM03
- nIter0 =      0,
+ nIter0=       0,
  nTimeSteps = 20,
 # 100 years of integration will yield a reasonable flow field
-# startTime  =          0.,
-# endTime    = 3110400000.,
- deltaTmom = 1200.0,
+# startTime =          0.,
+# endTime   = 3110400000.,
+ deltaTmom = 1800.,
  tauCD =     321428.,
- deltaTtracer= 43200.0,
- deltaTClock = 43200.0,
-# if you are using a version later than checkpoint45d on the main branch
-# you can uncomment the following line and increase the time step
-# deltaTtracer and deltaTClock to 172800.0 as well to speed up the
-# asynchronous time stepping
-# deltaTfreesurf = 172800.0,
+ deltaTtracer= 86400.,
+ deltaTClock = 86400.,
+ deltaTfreesurf= 86400.,
  abEps = 0.1,
- pChkptFreq= 311040000.,
- dumpFreq=   311040000.,
+ pChkptFreq= 1728000.,
  dumpFreq=   864000.,
- taveFreq=   311040000.,
  taveFreq=   864000.,
-#monitorFreq=31104000.,
  monitorFreq=1.,
 # 2 months restoring timescale for temperature
- tauThetaClimRelax =  5184000.0,
+ tauThetaClimRelax=  5184000.,
 # 6 months restoring timescale for salinity
- tauSaltClimRelax = 15552000.0,
+ tauSaltClimRelax = 15552000.,
  periodicExternalForcing=.TRUE.,
  externForcingPeriod=2592000.,
  externForcingCycle=31104000.,
@@ -70,11 +62,10 @@
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.TRUE.,
- delR= 50., 70., 100., 140., 190.,
-       240., 290., 340., 390., 440.,
-       490., 540., 590., 640., 690.,
+ delR= 50.,  70., 100., 140., 190.,
+      240., 290., 340., 390., 440.,
+      490., 540., 590., 640., 690.,
  phiMin=-80.,
  dySpacing=4.,
  dxSpacing=4.,
@@ -90,8 +81,8 @@
  thetaClimFile=  'lev_sst.bin',
  saltClimFile=   'lev_sss.bin',
  surfQFile=      'ncep_qnet.bin',
- the_run_name=   'global_ocean.90x40x15',
-# fresh water flux is turned off, uncomment next line to turn on
-# (not recommened together with surface salinity restoring)
-# EmPmRFile=      'ncep_emp.bin',
+ the_run_name=   'global_oce_latlon',
+# fresh water flux is turned on, comment next line to it turn off
+# (maybe better with surface salinity restoring)
+ EmPmRFile=      'ncep_emp.bin',
  &
