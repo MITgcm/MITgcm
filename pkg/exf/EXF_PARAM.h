@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.5 2007/05/10 22:17:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.6 2007/05/14 19:34:57 jmc Exp $
 C $Name:  $
 c
 c
@@ -253,8 +253,6 @@ c     to reset climatological temperatures fields where they have
 c     values below climtempfreeze
       _RL climtempfreeze
 
-      integer selectStressGridPosition
-
       integer obcsNstartdate1
       integer obcsNstartdate2
       _RL     obcsNstartdate
@@ -301,18 +299,25 @@ C     useExfYearlyFields :: when set, automatically add extension
 C                           _YEAR to input file names
 C     twoDigitYear       :: when set, use 2-digit year extension YR
 C                           instead of _YEAR for useExfYearlyFields
+C     readStressOnAgrid  :: read wind-streess located on model-grid, A-grid position
+C     readStressOnCgrid  :: read wind-streess located on model-grid, C-grid position
+C     stressIsOnCgrid    :: ustress & vstress are positioned on Arakawa C-grid
 C     useStabilityFct_overIce :: over sea-ice, compute turbulent transfert
 C                                coeff. function of stability (like over
 C                                open ocean) rather than using fixed Coeff.
       logical useExfYearlyFields, twoDigitYear
       logical useExfCheckRange
+      logical readStressOnAgrid
+      logical readStressOnCgrid
+      logical stressIsOnCgrid
       logical useStabilityFct_overIce
 
       common /exf_param_l/
      &                     useExfYearlyFields, twoDigitYear,
      &                     useExfCheckRange,
-     &                     useStabilityFct_overIce
-      common /exf_param_i/ selectStressGridPosition,
+     &                     readStressOnAgrid, readStressOnCgrid,
+     &                     stressIsOnCgrid, useStabilityFct_overIce
+      common /exf_param_i/
      &                     hfluxstartdate1,   hfluxstartdate2,
      &                     atempstartdate1,   atempstartdate2,
      &                     aqhstartdate1,     aqhstartdate2,
@@ -458,7 +463,7 @@ C                                open ocean) rather than using fixed Coeff.
 
 c     file precision and field type
 
-      common /exf_param_type/ 
+      common /exf_param_type/
      &                     exf_iprec,
      &                     exf_yftype
 
@@ -542,9 +547,9 @@ c-- set dummy dimension 1
        parameter(MAX_LAT_INC = 1)
 #else
 C  To read input data without dynamical allocation (EXF_INTERP_USE_DYNALLOC undef),
-C  buffer size currently set to 20000 (allows to read-in a 2x2 global data set)
+C  buffer size currently set to 65000 (allows to read-in a 1x1 global data set)
       INTEGER    exf_interp_bufferSize
-      PARAMETER( exf_interp_bufferSize = 10000 )
+      PARAMETER( exf_interp_bufferSize = 65000 )
 c for lat interpolation, arraysize currently set to 2176 max data values
        integer MAX_LAT_INC
        parameter(MAX_LAT_INC = 2176)

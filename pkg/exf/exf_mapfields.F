@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.19 2007/04/18 19:55:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.20 2007/05/14 19:34:57 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -63,36 +63,23 @@ c     == routine arguments ==
 
 c     mythid - thread number for this instance of the routine.
 
-      integer mythid
-      integer myiter
       _RL     mytime
+      integer myiter
+      integer mythid
 
 c     == local variables ==
 
       integer bi,bj
       integer i,j,k
-      integer jtlo
-      integer jthi
-      integer itlo
-      integer ithi
-      integer jmin
-      integer jmax
-      integer imin
-      integer imax
+      INTEGER imin, imax
+      INTEGER jmin, jmax
+      PARAMETER ( imin = 1-OLx , imax = sNx+OLx )
+      PARAMETER ( jmin = 1-OLy , jmax = sNy+OLy )
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
-
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      DO bj = myByLo(myThid),myByHi(myThid)
+        DO bi = myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
@@ -111,7 +98,7 @@ c     == end of interface ==
             do i = imin,imax
 c            Heat flux.
              qnet(i,j,bi,bj) = exf_outscal_hflux*hflux(i,j,bi,bj)
-             if ( hfluxfile .EQ. ' ' ) 
+             if ( hfluxfile .EQ. ' ' )
      &            qnet(i,j,bi,bj) = qnet(i,j,bi,bj) -
      &            exf_outscal_hflux * ( hflux_exfremo_intercept +
      &            hflux_exfremo_slope*(mytime-starttime) )
@@ -124,7 +111,7 @@ c            Heat flux.
 c            Salt flux.
              empmr(i,j,bi,bj)= exf_outscal_sflux*sflux(i,j,bi,bj)
              if ( sfluxfile .EQ. ' ' )
-     &            empmr(i,j,bi,bj) = empmr(i,j,bi,bj) - 
+     &            empmr(i,j,bi,bj) = empmr(i,j,bi,bj) -
      &            exf_outscal_sflux * ( sflux_exfremo_intercept +
      &            sflux_exfremo_slope*(mytime-starttime) )
             enddo
@@ -151,19 +138,22 @@ CADJ STORE ustress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
               endif
             enddo
           enddo
-          do j = jmin,jmax
+          IF ( stressIsOnCgrid ) THEN
+           do j = jmin,jmax
             do i = imin+1,imax
-#if ( ( defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_WIND) ) \
-     || defined (USE_EXF_INTERPOLATION) )
-c     Shift wind stresses calculated at C-points to W/S points
-              fu(i,j,bi,bj) = exf_outscal_ustress*
-     &              (ustress(i,j,bi,bj)+ustress(i-1,j,bi,bj))/2.*
-     &              maskW(i,j,1,bi,bj)
-#else
               fu(i,j,bi,bj) = exf_outscal_ustress*ustress(i,j,bi,bj)
-#endif
             enddo
-          enddo
+           enddo
+          ELSE
+           do j = jmin,jmax
+            do i = imin+1,imax
+c     Shift wind stresses calculated at Grid-center to W/S points
+              fu(i,j,bi,bj) = exf_outscal_ustress*
+     &              (ustress(i,j,bi,bj)+ustress(i-1,j,bi,bj))
+     &              *exf_half*maskW(i,j,1,bi,bj)
+            enddo
+           enddo
+          ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE vstress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
@@ -186,19 +176,22 @@ CADJ STORE vstress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
               endif
             enddo
           enddo
-          do j = jmin+1,jmax
+          IF ( stressIsOnCgrid ) THEN
+           do j = jmin+1,jmax
             do i = imin,imax
-#if ( ( defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_WIND) ) \
-     || defined (USE_EXF_INTERPOLATION) )
+              fv(i,j,bi,bj) = exf_outscal_vstress*vstress(i,j,bi,bj)
+            enddo
+           enddo
+          ELSE
+           do j = jmin+1,jmax
+            do i = imin,imax
 c     Shift wind stresses calculated at C-points to W/S points
               fv(i,j,bi,bj) = exf_outscal_vstress*
-     &              (vstress(i,j,bi,bj)+vstress(i,j-1,bi,bj))/2.*
-     &              maskS(i,j,1,bi,bj)
-#else
-              fv(i,j,bi,bj) = exf_outscal_vstress*vstress(i,j,bi,bj)
-#endif
+     &              (vstress(i,j,bi,bj)+vstress(i,j-1,bi,bj))
+     &              *exf_half*maskS(i,j,1,bi,bj)
             enddo
-          enddo
+           enddo
+          ENDIF
 
 #ifdef SHORTWAVE_HEATING
 c             Short wave radiative flux.
@@ -233,15 +226,13 @@ c             Short wave radiative flux.
           enddo
 #endif
 
-        enddo
-      enddo
+        ENDDO
+      ENDDO
 
 c     Update the tile edges.
 
       _EXCH_XY_R4(  qnet, mythid )
       _EXCH_XY_R4( empmr, mythid )
-c      _EXCH_XY_R4(    fu, mythid )
-c      _EXCH_XY_R4(    fv, mythid )
        CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
 #ifdef SHORTWAVE_HEATING
       _EXCH_XY_R4(   qsw, mythid )
@@ -256,4 +247,5 @@ c      _EXCH_XY_R4(    fv, mythid )
       _EXCH_XY_R4( pload, mythid )
 #endif
 
-      end
+      RETURN
+      END

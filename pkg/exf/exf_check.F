@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.5 2007/04/18 19:55:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.6 2007/05/14 19:34:57 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -16,12 +16,12 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "FFIELDS.h"
-#include "GRID.h"
+c#include "FFIELDS.h"
+c#include "GRID.h"
 
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
-#include "EXF_FIELDS.h"
+c#include "EXF_FIELDS.h"
 c     == routine arguments ==
 
 c     mythid - thread number for this instance of the routine.
@@ -30,27 +30,7 @@ c     mythid - thread number for this instance of the routine.
 
 c     == local variables ==
 
-      integer bi,bj
-      integer i,j
-      integer jtlo
-      integer jthi
-      integer itlo
-      integer ithi
-      integer jmin
-      integer jmax
-      integer imin
-      integer imax
-
 c     == end of interface ==
-
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
 
 c     check for consistency
       if (.NOT. 
@@ -77,13 +57,45 @@ cph            endif
 cph         endif
       endif
 
+#if ( defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_WIND) )
+      IF ( ustressfile .NE. ' ' .OR. ustressfile .NE. ' ' ) THEN
+        STOP
+     & 'S/R EXF_CHECK: use u,v_wind components but not wind-stress'
+      ENDIF
+#endif
+#ifndef ALLOW_ATM_WIND
+      IF ( uwindfile .NE. ' ' .OR. vwindfile .NE. ' ' ) THEN
+        STOP
+     & 'S/R EXF_CHECK: read-in wind-stress but not u,v_wind components'
+      ENDIF
+#endif
+
 #ifdef USE_EXF_INTERPOLATION
+      if ( climsst_nlat .GT. MAX_LAT_INC )
+     & stop 'stopped in exf_readparms: climsst_nlat > MAX_LAT_INC'
+      if ( climsss_nlat .GT. MAX_LAT_INC )
+     & stop 'stopped in exf_readparms: climsss_nlat > MAX_LAT_INC'
       if ( usingCartesianGrid ) then
        print*,'USE_EXF_INTERPOLATION assumes latitude/longitude'
        print*,'input and output coordinates.  Trivial to extend to'
        print*,'cartesian coordinates, but has not yet been done.'
        stop
       endif
+      IF ( readStressOnAgrid.OR.readStressOnCgrid ) THEN
+        STOP 'wind-stress position defined by Long/Lat'
+      ENDIF
+#else
+      IF ( ustressfile .NE. ' ' .OR. ustressfile .NE. ' ' ) THEN
+        IF ( (readStressOnAgrid.AND.readStressOnCgrid) .OR.
+     &   .NOT.(readStressOnAgrid.OR.readStressOnCgrid) ) THEN
+          STOP
+     & 'S/R EXF_CHECK: Select 1 wind-stress position: A or C-grid'
+        ENDIF
+      ELSE
+        IF ( readStressOnAgrid .OR. readStressOnCgrid ) THEN
+          STOP 'S/R EXF_CHECK: wind-stress position irrelevant'
+        ENDIF
+      ENDIF
 #endif
 
 #ifdef ALLOW_CLIMTEMP_RELAXATION
@@ -95,4 +107,5 @@ cph         endif
       STOP 'ALLOW_CLIMSALT_RELAXATION no longer supported. Use pkg/rbcs'
 #endif
 
-      end
+      RETURN
+      END
