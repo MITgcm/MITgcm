@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.16 2007/05/02 22:31:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.17 2007/05/14 19:32:08 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -254,12 +254,13 @@ CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 C     in this case ustress and vstress are defined a u and v points
 C     respectively, and we need to average to mass points to avoid
 C     tau = 0 near coasts or other boundaries
-             tau   = sqrt(0.5*
-     &                   (ustress(i,  j,bi,bj)*ustress(i  ,j,bi,bj)
-     &                   +ustress(i+1,j,bi,bj)*ustress(i+1,j,bi,bj)
-     &                   +vstress(i,j,  bi,bj)*vstress(i,j  ,bi,bj)
-     &                   +vstress(i,j+1,bi,bj)*vstress(i,j+1,bi,bj))
-     &                   )
+c            tau   = sqrt(0.5*
+c    &                   (ustress(i,  j,bi,bj)*ustress(i  ,j,bi,bj)
+c    &                   +ustress(i+1,j,bi,bj)*ustress(i+1,j,bi,bj)
+c    &                   +vstress(i,j,  bi,bj)*vstress(i,j  ,bi,bj)
+c    &                   +vstress(i,j+1,bi,bj)*vstress(i,j+1,bi,bj))
+c    &                   )
+             tau   = wStress(i,j,bi,bj)
              ustar = sqrt(tau/atmrho)
 #endif /* ifndef ALLOW_ATM_WIND */
              tmpbulk= exf_BulkRhn(stable)
@@ -282,7 +283,7 @@ CADJ STORE ustar  = comlev1_exf_2, key = ikey_2
 CADJ STORE qstar  = comlev1_exf_2, key = ikey_2
 CADJ STORE tstar  = comlev1_exf_2, key = ikey_2
 CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
-CADJ STORE us(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
+CADJ STORE wspeed(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
 #endif
 
                   huol   = czol*(tstar/t0 +
@@ -336,7 +337,7 @@ c                 coefficients.
 #ifdef ALLOW_ATM_WIND
                   ustar  = rd*sh(i,j,bi,bj)
                   tau    = atmrho*ustar**2
-                  tau    = tau*us(i,j,bi,bj)/sh(i,j,bi,bj)
+                  tau    = tau*wspeed(i,j,bi,bj)/sh(i,j,bi,bj)
 #endif /* ALLOW_ATM_WIND */
 
                 enddo
@@ -373,9 +374,9 @@ cdm !!! need to change sign and to convert from kg/m^2/s to m/s !!!
 #else  /* ifndef ALLOW_ATM_TEMP */
 #ifdef ALLOW_ATM_WIND
               tmpbulk= exf_BulkCdn(sh(i,j,bi,bj))
-              ustress(i,j,bi,bj) = atmrho*tmpbulk*us(i,j,bi,bj)*
+              ustress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
      &                             uwind(i,j,bi,bj)
-              vstress(i,j,bi,bj) = atmrho*tmpbulk*us(i,j,bi,bj)*
+              vstress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
      &                             vwind(i,j,bi,bj)
 #endif
 #endif /* ifndef ALLOW_ATM_TEMP */
