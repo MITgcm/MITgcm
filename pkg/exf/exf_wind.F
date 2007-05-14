@@ -1,29 +1,27 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.8 2007/04/16 23:27:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.9 2007/05/14 19:35:39 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
-      subroutine exf_wind(mytime, myiter, mythid)
+      SUBROUTINE EXF_WIND( myTime, myIter, myThid )
 
-c     ==================================================================
-c     SUBROUTINE exf_wind
-c     ==================================================================
-c
-c     o Prepare wind speed and stress fields
-c
-c     ==================================================================
-c     SUBROUTINE exf_wind
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE exf_wind
+C     ==================================================================
+C
+C     o Prepare wind speed and stress fields
+C
+C     ==================================================================
+C     SUBROUTINE exf_wind
+C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
-c     == global variables ==
+C     == global variables ==
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c #include "DYNVARS.h"
-c #include "GRID.h"
 
 #include "EXF_PARAM.h"
 #include "EXF_FIELDS.h"
@@ -33,114 +31,161 @@ c #include "GRID.h"
 #include "tamc.h"
 #endif
 
-c     == routine arguments ==
+C     == routine arguments ==
 
-      integer mythid
-      integer myiter
-      _RL     mytime
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
-c     == local variables ==
+C     == external functions ==
 
-      integer bi,bj
-      integer i,j
+C     == local variables ==
 
-      _RL     ustmp
-      _RL     ustar
-      _RL     tmp1, tmp2, tmp3, tmp4, tmp5
+      INTEGER bi,bj
+      INTEGER i,j
+      _RL     wsLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_ATM_WIND
+      _RL     wsSq
+#else
+      _RL     usSq, recip_sqrtRhoA, ustar
+      _RL     tmp1, tmp2, tmp3, tmp4
+      _RL     oneThirdRL
+      PARAMETER ( oneThirdRL = 1.d0 / 3.d0 )
+#endif
 
-c     == external functions ==
+C     == end of interface ==
 
-      integer  ilnblnk
-      external ilnblnk
+C--   Use atmospheric state to compute surface fluxes.
 
-c     == end of interface ==
+C     Loop over tiles.
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
 
-c--   Use atmospheric state to compute surface fluxes.
-
-c     Loop over tiles.
-      do bj = mybylo(mythid),mybyhi(mythid)
-       do bi = mybxlo(mythid),mybxhi(mythid)
-        do j = 1,sny
-         do i = 1,snx
-c
-c--   Initialise
-          us(i,j,bi,bj) = 0. _d 0
+C--   Initialise
+        DO j = 1,sNy
+         DO i = 1,sNx
+          wsLoc(i,j) = 0. _d 0
           cw(i,j,bi,bj) = 0. _d 0
           sw(i,j,bi,bj) = 0. _d 0
           sh(i,j,bi,bj) = 0. _d 0
-c
+          wStress(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+
 #ifdef ALLOW_ATM_WIND
-c             Wind speed and direction.
-          ustmp = uwind(i,j,bi,bj)*uwind(i,j,bi,bj) +
-     &         vwind(i,j,bi,bj)*vwind(i,j,bi,bj)
-          if ( ustmp .ne. 0. _d 0 ) then
-             us(i,j,bi,bj) = sqrt(ustmp)
-             cw(i,j,bi,bj) = uwind(i,j,bi,bj)/us(i,j,bi,bj)
-             sw(i,j,bi,bj) = vwind(i,j,bi,bj)/us(i,j,bi,bj)
-          else
-             us(i,j,bi,bj) = 0. _d 0
+
+C--   Wind speed and direction.
+        DO j = 1,sNy
+         DO i = 1,sNx
+           wsSq = uwind(i,j,bi,bj)*uwind(i,j,bi,bj)
+     &         + vwind(i,j,bi,bj)*vwind(i,j,bi,bj)
+           IF ( wsSq .NE. 0. _d 0 ) THEN
+             wsLoc(i,j) = SQRT(wsSq)
+             cw(i,j,bi,bj) = uwind(i,j,bi,bj)/wsLoc(i,j)
+             sw(i,j,bi,bj) = vwind(i,j,bi,bj)/wsLoc(i,j)
+           ELSE
+             wsLoc(i,j) = 0. _d 0
              cw(i,j,bi,bj) = 0. _d 0
              sw(i,j,bi,bj) = 0. _d 0
-          endif
-#else  /* ifndef ALLOW_ATM_WIND */
-c
-c             The variables us, sh and rdn have to be computed from
-c             given wind stresses inverting relationship for neutral
-c             drag coeff. cdn.
-c             The inversion is based on linear and quadratic form of
-c             cdn(umps); ustar can be directly computed from stress;
-C-   no need for wind-stress inversion since everything
-C    (ustar, ... etc ...) is derived directly from wind-stress
+           ENDIF
+         ENDDO
+        ENDDO
+        IF ( wspeedfile .EQ. ' ' ) THEN
+C-    wind-speed is not loaded from file: save local array into common block
+          DO j = 1,sNy
+           DO i = 1,sNx
+             wspeed(i,j,bi,bj) = wsLoc(i,j)
+           ENDDO
+          ENDDO
+        ENDIF
 
-          ustmp = 0.5*
-     &         (ustress(i,  j,bi,bj)*ustress(i  ,j,bi,bj)
-     &         +ustress(i+1,j,bi,bj)*ustress(i+1,j,bi,bj)
-     &         +vstress(i,j,  bi,bj)*vstress(i,j  ,bi,bj)
-     &         +vstress(i,j+1,bi,bj)*vstress(i,j+1,bi,bj))
-          if ( ustmp .ne. 0. _d 0 ) then
-             ustar = sqrt(ustmp/atmrho)
-             cw(i,j,bi,bj) = ustress(i,j,bi,bj)/sqrt(ustmp)
-             sw(i,j,bi,bj) = vstress(i,j,bi,bj)/sqrt(ustmp)
-          else
-             ustar            = 0. _d 0
-             cw(i,j,bi,bj)    = 0. _d 0
-             sw(i,j,bi,bj)    = 0. _d 0
-          endif
- 
-          if ( ustar .eq. 0. _d 0 ) then
-             us(i,j,bi,bj) = 0. _d 0
-          else if ( ustar .lt. ustofu11 ) then
-             tmp1 = -cquadrag_2/cquadrag_1/2.
-             tmp2 = sqrt(tmp1*tmp1 + ustar*ustar/cquadrag_1)
-             us(i,j,bi,bj) = sqrt(tmp1 + tmp2)
-          else
-             tmp3 = clindrag_2/clindrag_1/3.
-             tmp4 = ustar*ustar/clindrag_1/2. - tmp3**3
-             tmp5 = sqrt(ustar*ustar/clindrag_1*
-     &            (ustar*ustar/clindrag_1/4. - tmp3**3))
-             us(i,j,bi,bj)   = (tmp4 + tmp5)**(1./3.) +
-     &            tmp3**2 * (tmp4 + tmp5)**(-1./3.) - tmp3
-          endif
-          uwind(i,j,bi,bj) = us(i,j,bi,bj)*cw(i,j,bi,bj)
-          vwind(i,j,bi,bj) = us(i,j,bi,bj)*sw(i,j,bi,bj)
+#else  /* ifndef ALLOW_ATM_WIND */
+
+C--   Wind stress and direction.
+        DO j = 1,sNy
+         DO i = 1,sNx
+           IF ( stressIsOnCgrid ) THEN
+             usSq = ( ustress(i,  j,bi,bj)*ustress(i  ,j,bi,bj)
+     &               +ustress(i+1,j,bi,bj)*ustress(i+1,j,bi,bj)
+     &               +vstress(i,j,  bi,bj)*vstress(i,j  ,bi,bj)
+     &               +vstress(i,j+1,bi,bj)*vstress(i,j+1,bi,bj)
+     &              )*0.5 _d 0
+           ELSE
+             usSq = ustress(i,j,bi,bj)*ustress(i,j,bi,bj)
+     &             +vstress(i,j,bi,bj)*vstress(i,j,bi,bj)
+           ENDIF
+           IF ( usSq .NE. 0. _d 0 ) THEN
+             wStress(i,j,bi,bj) = SQRT(usSq)
+c            ustar = SQRT(usSq/atmrho)
+             cw(i,j,bi,bj) = ustress(i,j,bi,bj)/wStress(i,j,bi,bj)
+             sw(i,j,bi,bj) = vstress(i,j,bi,bj)/wStress(i,j,bi,bj)
+           ELSE
+             wStress(i,j,bi,bj) = 0. _d 0
+             cw(i,j,bi,bj)      = 0. _d 0
+             sw(i,j,bi,bj)      = 0. _d 0
+           ENDIF
+         ENDDO
+        ENDDO
+
+        IF ( wspeedfile .EQ. ' ' ) THEN
+C--   wspeed is not loaded ; devive wind-speed by inversion of
+C     wind-stress=fct(wind-speed) relation:
+C             The variables us, sh and rdn have to be computed from
+C             given wind stresses inverting relationship for neutral
+C             drag coeff. cdn.
+C             The inversion is based on linear and quadratic form of
+C             cdn(umps); ustar can be directly computed from stress;
+         recip_sqrtRhoA = 1. _d 0 / SQRT(atmrho)
+         DO j = 1,sNy
+          DO i = 1,sNx
+            ustar = wStress(i,j,bi,bj)*recip_sqrtRhoA
+            IF ( ustar .EQ. 0. _d 0 ) THEN
+             wsLoc(i,j) = 0. _d 0
+            ELSE IF ( ustar .LT. ustofu11 ) THEN
+             tmp1 = -cquadrag_2/cquadrag_1*exf_half
+             tmp2 = SQRT(tmp1*tmp1 + ustar*ustar/cquadrag_1)
+             wsLoc(i,j) = SQRT(tmp1 + tmp2)
+            ELSE
+             tmp1 = clindrag_2/clindrag_1*oneThirdRL
+             tmp2 = ustar*ustar/clindrag_1*exf_half
+     &            - tmp1*tmp1*tmp1
+             tmp3 = SQRT( ustar*ustar/clindrag_1*
+     &            (ustar*ustar/clindrag_1*0.25 _d 0 - tmp1*tmp1*tmp1 )
+     &                  )
+             tmp4 = (tmp2 + tmp3)**oneThirdRL
+             wsLoc(i,j) = tmp4 + tmp1*tmp1 / tmp4 - tmp1
+c            wsLoc(i,j) = (tmp2 + tmp3)**oneThirdRL +
+c    &            tmp1*tmp1 * (tmp2 + tmp3)**(-oneThirdRL) - tmp1
+            ENDIF
+          ENDDO
+         ENDDO
+C-    save local array wind-speed to common block
+         DO j = 1,sNy
+          DO i = 1,sNx
+            wspeed(i,j,bi,bj) = wsLoc(i,j)
+          ENDDO
+         ENDDO
+        ENDIF
+
+C--   infer wind field from wind-speed & wind-stress direction
+        DO j = 1,sNy
+         DO i = 1,sNx
+           uwind(i,j,bi,bj) = wspeed(i,j,bi,bj)*cw(i,j,bi,bj)
+           vwind(i,j,bi,bj) = wspeed(i,j,bi,bj)*sw(i,j,bi,bj)
+         ENDDO
+        ENDDO
 #endif /* ifndef ALLOW_ATM_WIND */
 
-c--   set lower limit
-          sh(i,j,bi,bj)    = max(us(i,j,bi,bj),umin)
+C--   set wind-speed lower limit
+        DO j = 1,sNy
+         DO i = 1,sNx
+           sh(i,j,bi,bj) = MAX(wspeed(i,j,bi,bj),uMin)
+         ENDDO
+        ENDDO
 
-c--   if wspeed available, overwrite sh,
-c--   otherwise fill wspeed array for later use
-          if ( wspeedfile .NE. ' ' ) then
-             us(i,j,bi,bj) = wspeed(i,j,bi,bj)
-             sh(i,j,bi,bj) = max(wspeed(i,j,bi,bj),umin)
-          else
-             wspeed(i,j,bi,bj) = sh(i,j,bi,bj)
-          endif
+C--   end bi,bj loops
+       ENDDO
+      ENDDO
 
-         enddo
-        enddo
-       enddo
-      enddo
-
-      return
-      end
+      RETURN
+      END
