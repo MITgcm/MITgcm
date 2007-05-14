@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.14 2005/11/06 01:25:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.15 2007/05/14 22:53:26 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -103,6 +103,9 @@ c     integer iG_IO,jG_IO,npe
       Real*8 global(Nx,Ny)
 c     _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 cph-usesingle)
+CMM(
+      integer pIL
+CMM)
 
 C     ------------------------------------------------------------------
 
@@ -125,6 +128,15 @@ C Assume nothing
       globalFile = .FALSE.
       fileIsOpen = .FALSE.
       IL=ILNBLNK( fName )
+CMM(
+      pIL = ILNBLNK( mdsioLocalDir )
+CMM)
+CMM(
+C Assign special directory
+      if ( pIL.NE.0 ) then
+       write(fName,'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
+      endif
+CMM)
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
@@ -493,6 +505,9 @@ c     integer iG_IO,jG_IO,npe
       Real*8 global(Nx,Ny)
 #endif
 cph-usesingle)
+CMM(
+      integer pIL
+CMM)
 
 C     ------------------------------------------------------------------
 
@@ -514,6 +529,15 @@ C Record number must be >= 1
 C Assume nothing
       fileIsOpen=.FALSE.
       IL=ILNBLNK( fName )
+CMM(
+      pIL = ILNBLNK( mdsioLocalDir )
+CMM)
+CMM(
+C Assign special directory
+      if ( pIL.NE.0 ) then
+       write(fName,'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
+      endif
+CMM)
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
@@ -817,6 +841,9 @@ c     integer iG_IO,jG_IO,npe
       Real*8 global(Nx,Ny)
 c     _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 cph-usesingle)
+CMM(
+      integer pIL
+CMM)
 
 C     ------------------------------------------------------------------
 
@@ -839,6 +866,15 @@ C Assume nothing
       globalFile = .FALSE.
       fileIsOpen = .FALSE.
       IL=ILNBLNK( fName )
+CMM(
+      pIL = ILNBLNK( mdsioLocalDir )
+CMM)
+CMM(
+C Assign special directory
+      if ( pIL.NE.0 ) then
+       write(fName,'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
+      endif
+CMM)
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
@@ -1208,6 +1244,9 @@ c     integer iG_IO,jG_IO,npe
       Real*8 global(Nx,Ny)
 #endif
 cph-usesingle)
+CMM(
+      integer pIL
+CMM)
 
 C     ------------------------------------------------------------------
 
@@ -1229,6 +1268,15 @@ C Record number must be >= 1
 C Assume nothing
       fileIsOpen=.FALSE.
       IL=ILNBLNK( fName )
+CMM(
+      pIL = ILNBLNK( mdsioLocalDir )
+CMM)
+CMM(
+C Assign special directory
+      if ( pIL.NE.0 ) then
+       write(fName,'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
+      endif
+CMM)
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
