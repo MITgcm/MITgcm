@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.30 2007/05/14 19:34:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.31 2007/05/14 21:51:45 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -175,8 +175,11 @@ c     Deal set radiative fluxes
 #  ifndef ALLOW_ATM_WIND
 CADJ STORE ustress      = comlev1, key = ikey_dynamics
 CADJ STORE vstress      = comlev1, key = ikey_dynamics
-CADJ STORE wspeed       = comlev1, key = ikey_dynamics
+#  else
+CADJ STORE uwind        = comlev1, key = ikey_dynamics
+CADJ STORE vwind        = comlev1, key = ikey_dynamics
 #  endif
+CADJ STORE wspeed       = comlev1, key = ikey_dynamics
 # endif
 c     Deal set radiative fluxes
       call exf_wind( mytime, myiter, mythid )
