@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.11 2007/01/09 22:26:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.12 2007/05/14 19:08:22 dfer Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -34,6 +34,7 @@ C  iMin iMax jMin jMax  :: working range of tile for applying forcing
 C  k                    :: vertical level number
 C  iTracer              :: tracer number
 C  gPtracer             :: the tendency array
+C  surfPtracer          :: surface forcing term
 C  myIter               :: time-step number
 C  myTime               :: model time
 C  myThid               :: thread number
@@ -56,14 +57,15 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+      IF ( usingPCoords ) THEN
        kSurface = Nr
-      else
+      ELSE
        kSurface = 1
-      endif
+      ENDIF
 
-C--   Surface forcing term is surfaceForcingPtr, previously computed
-C     by PTRACERS_FORCING because it is needed by KPP_TRANSPORT_PTR.
+C--   Surface forcing term surfPtracer is previously computed by 
+C     PTRACERS_FORCING_SURF (and stored as surfaceForcingPtr)
+C     because it is needed by KPP_TRANSPORT_PTR.
 
 #ifdef ALLOW_GCHEM
       IF ( useGCHEM )
