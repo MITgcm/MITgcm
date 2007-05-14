@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_yz.F,v 1.9 2006/03/24 22:59:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_yz.F,v 1.10 2007/05/14 23:06:13 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -51,8 +51,9 @@ c     == local variables ==
       integer imin,imax
       integer irec,nrec_nl
 
-      _RL     globfldyz( nsx,npx,sny,nsy,npy,nr )
-      _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
+      _RL     globfldyz( snx,nr,snx,nsx )
+      _RL     globfld3d( snx,sny,nr,nsx,nsy )
+
 
 c     == external ==
 
@@ -69,33 +70,25 @@ c     == end of interface ==
 
 c     Initialise temporary file
       do k = 1,nr
-         do jp = 1,nPy
             do bj = jtlo,jthi
                do j = jmin,jmax
-                  do ip = 1,nPx
                      do bi = itlo,ithi
-                        globfldyz(bi,ip,j,bj,jp,k) = 0. _d 0
+                        globfldyz(j,k,bi,bj) = 0. _d 0
                      enddo
                   enddo
-               enddo
             enddo
-         enddo
       enddo
 c     Initialise temporary file
       do k = 1,nr
-         do jp = 1,nPy
             do bj = jtlo,jthi
                do j = jmin,jmax
-                  do ip = 1,nPx
                      do bi = itlo,ithi
                         do i = imin,imax
-                           globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
+                           globfld3d(i,j,k,bi,bj) = 0. _d 0
                         enddo
                      enddo
-                  enddo
                enddo
             enddo
-         enddo
       enddo
 
 c--   Only the master thread will do I/O.
@@ -103,13 +96,17 @@ c--   Only the master thread will do I/O.
 
       nrec_nl=int(ncvarrecs(ivartype)/Nx)
       do irec = 1, nrec_nl
-         call MDSWRITEFIELD_3D_GL( fname, ctrlprec, 'RL',
+	          call MDSWRITEFIELD( fname, ctrlprec,.FALSE., 'RL',
      &        Nr, globfld3d,
      &        irec,   optimcycle,  mythid)
+
       enddo
 
-      do irec = nrec_nl*Nx+1, ncvarrecs(ivartype)
-         call MDSWRITEFIELD_YZ_GL( fname, ctrlprec, 'RL',
+CMM( addone for good measure
+CMM      do irec = nrec_nl*Nx+1, ncvarrecs(ivartype)
+      do irec = nrec_nl*Nx+1, ncvarrecs(ivartype)+1
+CMM)
+         call MDSWRITEFIELDYZ( fname, ctrlprec,.FALSE., 'RL',
      &        Nr, globfldyz,
      &        irec,   optimcycle,  mythid)
       enddo
