@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulk_largeyeager04.F,v 1.2 2007/05/07 19:35:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulk_largeyeager04.F,v 1.3 2007/05/14 14:03:50 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -178,13 +178,15 @@ C    take U_N = del.U ; stability from del.Theta ;
 C     in this case ustress and vstress are defined a u and v points
 C     respectively, and we need to average to mass points to avoid
 C     windStress = 0 near coasts or other boundaries
-             windStress = sqrt(0.5 _d 0*
+            windStress = sqrt( 0.5 _d 0*
      &                   (ustress(i,  j,bi,bj)*ustress(i  ,j,bi,bj)
      &                   +ustress(i+1,j,bi,bj)*ustress(i+1,j,bi,bj)
      &                   +vstress(i,j,  bi,bj)*vstress(i,j  ,bi,bj)
      &                   +vstress(i,j+1,bi,bj)*vstress(i,j+1,bi,bj)
-     &                   )    )
-             ustar = sqrt(windStess/atmrho)
+     &                   )   )
+            ustar = sqrt(windStress/atmrho)
+c           tau   = windStress/ustar
+            tau   = sqrt(windStress*atmrho)
 #endif /* ALLOW_ATM_WIND */
 
 C--  initial guess for exchange other coefficients:
@@ -247,14 +249,16 @@ C-   Shift wind speed using old coefficient
               usn = ws/(exf_one + rdn/karman*(zwln-psimh) )
               usm = MAX(usn, umin)
 
-C-   Update the 10m, neutral stability transfer coefficients
+C-   Update the 10m, neutral stability transfer coefficients (momentum)
               tmpbulk = cdrag_1/usm + cdrag_2 + cdrag_3*usm
               rdn = SQRT(tmpbulk)
               rd = rdn/(exf_one + rdn*(zwln-psimh)/karman)
               ustar = rd*wsm
+C-   Coeff:
+              tau   = atmrho*rd*ws
 #endif
 
-C-   Update the 10m, neutral stability transfer coefficients
+C-   Update the 10m, neutral stability transfer coefficients (sens&evap)
               rhn = (exf_one-stable)*cstanton_1 + stable*cstanton_2
               ren = cDalton
 
@@ -277,9 +281,6 @@ CADJ STORE tau    = comlev1_exf_1, key = ikey_1
 CADJ STORE cw(i,j,bi ,bj)     = comlev1_exf_1, key = ikey_1
 CADJ STORE sw(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 #endif
-
-C-   Coeff:
-            tau           = atmrho*rd*ws
 
 C-   Turbulent Fluxes
             hs(i,j,bi,bj) = atmcp*tau*tstar
