@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.815 2007/05/14 20:44:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.816 2007/05/14 21:30:56 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o Refresh of tutorial_global_oce_latlon (includes changing salinity-like
+  passive tracer to an Age Tracer) + update output.txt
 o pkg/exf:
   - implement A-grid / C-grid selection for wind-stress input files.
   - clean-up exf_wind.F (remove us, use wspeed instead ; add wStress)
