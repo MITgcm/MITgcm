@@ -1,11 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/OCNIDS.h,v 1.1 2007/05/10 21:30:48 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/OCNIDS.h,v 1.2 2007/05/14 21:00:44 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | OCNIDS.h Declare symbolic constants holding strings that |
-C     |          are used to identify this component and the     |
-C     |          fields it exchanges with other components.      |
-C     \==========================================================/
+  These lines are here to deliberately cause a compile-time error.
+  If you see these lines in your .F files or the compiler shows them
+    as an error then it means you have not placed your coupler 
+    configuration files in the appropriate place.
+  You need: a) to place you own copy of OCNIDS.h in a directory
+    (e.g.: shared_code) which is both in the include path of the
+    coupler and in include path of the ocean component ; 
+  and b) to comment out these lines.
+
+C     *==========================================================*
+C     | OCNIDS.h Declare symbolic constants holding strings that
+C     |          are used to identify this component and the
+C     |          fields it exchanges with other components.
+C     *==========================================================*
       CHARACTER*(8)  ocnCompName 
       PARAMETER( ocnCompName         = 'UV-Ocean'       )
 
