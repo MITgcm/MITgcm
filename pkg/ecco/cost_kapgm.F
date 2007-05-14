@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_kapgm.F,v 1.2 2004/10/13 07:05:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_kapgm.F,v 1.3 2007/05/14 22:06:55 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -104,7 +104,7 @@ c--   Read state record from global file.
 
       fcthread = 0. _d 0
 
-      call active_read_xyz_loc( fnamefld, tmpfld3d, irec, doglobalread,
+      call active_read_xyz( fnamefld, tmpfld3d, irec, doglobalread,
      &                       ladinit, optimcycle, mythid
      &        , xx_kapgm_dummy )
 

@@ -136,7 +136,7 @@ c--               South mask for V
             enddo
           enddo
         enddo
-        call active_write_yz_loc( fname, gg, iobcs, 0, mythid, dummy)
+        call active_write_yz( fname, gg, iobcs, 0, mythid, dummy)
       enddo
 
       _END_MASTER( mythid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta0.F,v 1.6 2005/12/22 22:46:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta0.F,v 1.7 2007/05/14 22:06:55 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -100,7 +100,7 @@ c--   Read state record from global file.
      &       xx_theta_file(1:ilfld),'.',optimcycle
       endif
 
-      call active_read_xyz_loc( 
+      call active_read_xyz( 
      &     fnamefld, tmpfld3d, irec, doglobalread,
      &     ladinit, optimcycle, mythid, xx_theta_dummy )
 
@@ -135,7 +135,7 @@ c--         Determine the weights to be used.
 
 #ifdef ALLOW_SMOOTH_IC_COST_CONTRIBUTION
 
-      call active_read_xyz_loc( 
+      call active_read_xyz( 
      &     fnamefld, tmpfld3d, irec, doglobalread,
      &     ladinit, optimcycle, mythid, xx_theta_dummy )
 

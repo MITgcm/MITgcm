@@ -120,7 +120,7 @@ c--   Get the counters, flags, and the interpolation factor.
       do iobcs = 1,nobcs
 
         if ( obcsefirst ) then
-          call active_read_yz_loc( fnameobcse, tmpfldyz, 
+          call active_read_yz( fnameobcse, tmpfldyz, 
      &                         (obcsecount0-1)*nobcs+iobcs,
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, xx_obcse_dummy )
@@ -238,7 +238,7 @@ cgg     &                                        *   maskyz (j,k,bi,bj)
             enddo
           enddo
 
-          call active_read_yz_loc( fnameobcse, tmpfldyz, 
+          call active_read_yz( fnameobcse, tmpfldyz, 
      &                         (obcsecount1-1)*nobcs+iobcs,
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, xx_obcse_dummy )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.6 2006/10/30 17:01:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.7 2007/05/14 22:06:55 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -148,7 +148,7 @@ c--   >>> Loop 1 to compute mean forcing:
 
       do irec = 1,nrec
 
-        call active_read_xy_loc( 
+        call active_read_xy( 
      &        fnamefld, tmpfld2d, irec, doglobalread,
      &        ladinit, optimcycle, mythid, xx_gen_dummy )
 
@@ -196,7 +196,7 @@ c--     Determine the weights to be used.
 c--   >>> Loop 2 over records.
       do irec = 1,nrec
 
-        call active_read_xy_loc( 
+        call active_read_xy( 
      &        fnamefld, tmpfld2d, irec, doglobalread,
      &        ladinit, optimcycle, mythid, xx_gen_dummy )
 
@@ -238,7 +238,7 @@ c--   End of loop over records.
 c--   >>> Loop 2 over records.
       do irec = 1,nrec
 
-        call active_read_xy_loc( 
+        call active_read_xy( 
      &        fnamefld, tmpfld2d, irec, doglobalread,
      &        ladinit, optimcycle, mythid, xx_gen_dummy )
 

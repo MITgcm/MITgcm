@@ -135,7 +135,7 @@ c--               West mask for U
             enddo
           enddo
         enddo
-        call active_write_xz_loc( fname, gg, iobcs, 0, mythid, dummy )
+        call active_write_xz( fname, gg, iobcs, 0, mythid, dummy )
 
       enddo
 

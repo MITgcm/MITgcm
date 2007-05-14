@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.11 2007/04/16 23:34:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.12 2007/05/14 22:02:33 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -134,7 +134,7 @@ c--   Get the counters, flags, and the interpolation factor.
 # endif
 
       if ( genfirst ) then
-        call active_read_xy_loc( fnamegen, xx_gen1, gencount0,
+        call active_read_xy( fnamegen, xx_gen1, gencount0,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
 #ifdef ALLOW_CTRL_SMOOTH
@@ -147,7 +147,7 @@ c--   Get the counters, flags, and the interpolation factor.
       if (( genfirst ) .or. ( genchanged )) then
         call exf_SwapFFields( xx_gen0, xx_gen1, mythid )
 
-        call active_read_xy_loc( fnamegen, xx_gen1 , gencount1,
+        call active_read_xy( fnamegen, xx_gen1 , gencount1,
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gen_dummy )
 #ifdef ALLOW_CTRL_SMOOTH

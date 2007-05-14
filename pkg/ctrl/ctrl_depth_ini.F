@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_depth_ini.F,v 1.1 2006/06/07 01:45:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_depth_ini.F,v 1.2 2007/05/14 22:02:33 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -112,7 +112,7 @@ C--
       il=ilnblnk( xx_depth_file )
       write(fnamedepth(1:80),'(2a,i10.10)')
      &     xx_depth_file(1:il),'.',optimcycle
-      call active_read_xy_loc( fnamedepth, tmpfld2d, 1,
+      call active_read_xy( fnamedepth, tmpfld2d, 1,
      &                     doglobalread, ladinit, optimcycle,
      &                     mythid, xx_depth_dummy )
       do bj = jtlo,jthi

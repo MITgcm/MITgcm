@@ -120,7 +120,7 @@ c--   Get the counters, flags, and the interpolation factor.
 
       do iobcs = 1,nobcs
         if ( obcswfirst ) then
-          call active_read_yz_loc( fnameobcsw, tmpfldyz, 
+          call active_read_yz( fnameobcsw, tmpfldyz, 
      &                         (obcswcount0-1)*nobcs+iobcs,
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, xx_obcsw_dummy )
@@ -241,7 +241,7 @@ cgg     match up. I will blame Fortran for the ugliness.
             enddo
           enddo
 
-          call active_read_yz_loc( fnameobcsw, tmpfldyz, 
+          call active_read_yz( fnameobcsw, tmpfldyz, 
      &                         (obcswcount1-1)*nobcs+iobcs,
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, xx_obcsw_dummy )

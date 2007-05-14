@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.6 2006/07/07 21:54:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.7 2007/05/14 22:02:34 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -102,7 +102,7 @@ c--   Temperature field.
       il=ilnblnk( xx_theta_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_theta_file(1:il),'.',optimcycle
-      call active_read_xyz_loc( fnamegeneric, tmpfld3d, 1,
+      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_theta_dummy )
 cph(
@@ -170,7 +170,7 @@ c--   Temperature field.
       il=ilnblnk( xx_salt_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_salt_file(1:il),'.',optimcycle
-      call active_read_xyz_loc( fnamegeneric, tmpfld3d, 1,
+      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_salt_dummy )
 
@@ -278,7 +278,7 @@ c--   diffkr.
       il=ilnblnk( xx_diffkr_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_diffkr_file(1:il),'.',optimcycle
-      call active_read_xyz_loc( fnamegeneric, tmpfld3d, 1,
+      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_diffkr_dummy )
       do bj = jtlo,jthi
@@ -300,7 +300,7 @@ c--   kapgm.
       il=ilnblnk( xx_kapgm_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_kapgm_file(1:il),'.',optimcycle
-      call active_read_xyz_loc( fnamegeneric, tmpfld3d, 1,
+      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_kapgm_dummy )
       do bj = jtlo,jthi
@@ -366,7 +366,7 @@ c--   initial Eta.
       il=ilnblnk( xx_etan_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_etan_file(1:il),'.',optimcycle
-      call active_read_xy_loc ( fnamegeneric, tmpfld2d, 1,
+      call active_read_xy ( fnamegeneric, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_etan_dummy )
       do bj = jtlo,jthi
@@ -385,7 +385,7 @@ c--   SST relaxation coefficient.
       il=ilnblnk( xx_relaxsst_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_relaxsst_file(1:il),'.',optimcycle
-      call active_read_xy_loc ( fnamegeneric, tmpfld2d, 1,
+      call active_read_xy ( fnamegeneric, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_relaxsst_dummy )
       do bj = jtlo,jthi
@@ -406,7 +406,7 @@ c--   SSS relaxation coefficient.
       il=ilnblnk( xx_relaxsss_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_relaxsss_file(1:il),'.',optimcycle
-      call active_read_xy_loc ( fnamegeneric, tmpfld2d, 1,
+      call active_read_xy ( fnamegeneric, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_relaxsss_dummy )
       do bj = jtlo,jthi

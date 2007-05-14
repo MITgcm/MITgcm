@@ -79,7 +79,7 @@ c--   tauu0.
       il=ilnblnk( xx_tauu_file )
       write(fnametauu(1:80),'(2a,i10.10)')
      &     xx_tauu_file(1:il),'.',optimcycle
-      call active_read_xy_loc ( fnametauu, tmpfld2d, 1,
+      call active_read_xy ( fnametauu, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_tauu_dummy )
       do bj = jtlo,jthi
@@ -98,7 +98,7 @@ c--   tauv0.
       il=ilnblnk( xx_tauv_file )
       write(fnametauv(1:80),'(2a,i10.10)')
      &     xx_tauv_file(1:il),'.',optimcycle
-      call active_read_xy_loc ( fnametauv, tmpfld2d, 1,
+      call active_read_xy ( fnametauv, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_tauv_dummy )
       do bj = jtlo,jthi
@@ -117,7 +117,7 @@ c--   sflux0.
       il=ilnblnk( xx_sflux_file )
       write(fnamesflux(1:80),'(2a,i10.10)')
      &     xx_sflux_file(1:il),'.',optimcycle
-      call active_read_xy_loc ( fnamesflux, tmpfld2d, 1,
+      call active_read_xy ( fnamesflux, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_sflux_dummy )
       do bj = jtlo,jthi
@@ -136,7 +136,7 @@ c--   hflux0.
       il=ilnblnk( xx_hflux_file )
       write(fnamehflux(1:80),'(2a,i10.10)')
      &     xx_hflux_file(1:il),'.',optimcycle
-      call active_read_xy_loc ( fnamehflux, tmpfld2d, 1,
+      call active_read_xy ( fnamehflux, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_hflux_dummy )
       do bj = jtlo,jthi
@@ -155,7 +155,7 @@ c--   sss0.
       il=ilnblnk( xx_sss_file )
       write(fnamesss(1:80),'(2a,i10.10)')
      &     xx_sss_file(1:il),'.',optimcycle
-      call active_read_xy_loc ( fnamesss, tmpfld2d, 1,
+      call active_read_xy ( fnamesss, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_sss_dummy )
       do bj = jtlo,jthi
@@ -174,7 +174,7 @@ c--   sst0.
       il=ilnblnk( xx_sst_file )
       write(fnamesst(1:80),'(2a,i10.10)')
      &     xx_sst_file(1:il),'.',optimcycle
-      call active_read_xy_loc ( fnamesst, tmpfld2d, 1,
+      call active_read_xy ( fnamesst, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_sst_dummy )
       do bj = jtlo,jthi
