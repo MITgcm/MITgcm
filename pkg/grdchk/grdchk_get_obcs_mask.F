@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_obcs_mask.F,v 1.4 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_obcs_mask.F,v 1.5 2007/05/14 21:53:12 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -70,7 +70,7 @@ c     == end of interface ==
       write(fname(1:80),'(a)') 'maskobcsn'
 c
       do iobcs = 1,nobcs
-         call active_read_xz_loc(  fname, tmpfldxz, iobcs,
+         call active_read_xz(  fname, tmpfldxz, iobcs,
      &        .false., .false., 0, mythid, dummy)
 c
          do bj = jtlo,jthi
@@ -93,7 +93,7 @@ c
       write(fname(1:80),'(a)') 'maskobcss'
 c
       do iobcs = 1,nobcs
-         call active_read_xz_loc(  fname, tmpfldxz, iobcs,
+         call active_read_xz(  fname, tmpfldxz, iobcs,
      &        .false., .false., 0, mythid, dummy)
 c
          do bj = jtlo,jthi
@@ -116,7 +116,7 @@ c
       write(fname(1:80),'(a)') 'maskobcsw'
 c
       do iobcs = 1,nobcs
-         call active_read_yz_loc(  fname, tmpfldyz, iobcs,
+         call active_read_yz(  fname, tmpfldyz, iobcs,
      &        .false., .false., 0, mythid, dummy)
 c
          do bj = jtlo,jthi
@@ -139,7 +139,7 @@ c
       write(fname(1:80),'(a)') 'maskobcse'
 c
       do iobcs = 1,nobcs
-         call active_read_yz_loc(  fname, tmpfldyz, iobcs,
+         call active_read_yz(  fname, tmpfldyz, iobcs,
      &        .false., .false., 0, mythid, dummy)
 c
          do bj = jtlo,jthi
