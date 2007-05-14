@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.44 2007/05/01 13:42:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.45 2007/05/14 14:12:46 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
- 
+
 CBOP
 C !ROUTINE: SEAICE_MODEL
 
@@ -23,8 +23,8 @@ C     |  zhang@apl.washington.edu / menemenlis@jpl.nasa.gov       |
 C     |===========================================================|
 C     \===========================================================/
       IMPLICIT NONE
-c \ev
- 
+C \ev
+
 C !USES: ===============================================================
 C     === Global variables ===
 #include "SIZE.h"
@@ -57,7 +57,7 @@ CEndOfInterface
 C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
-      INTEGER i, j, bi, bj
+c     INTEGER i, j, bi, bj
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 CEOP
@@ -70,7 +70,7 @@ CEOP
 #ifdef SEAICE_EXTERNAL_FORCING
 C--   Atmospheric state and runoff are from
 C     pkg/exf, which does not update edges.
-      CALL EXCH_UV_XY_RL(uwind,vwind,.TRUE.,myThid)
+      CALL EXCH_UV_AGRID_3D_RL( uwind, vwind, .TRUE., 1, myThid )
 #ifdef ALLOW_ATM_TEMP
       _EXCH_XY_R8( atemp,  myThid )
       _EXCH_XY_R8( aqh,    myThid )
@@ -82,9 +82,9 @@ C     pkg/exf, which does not update edges.
 #ifdef ALLOW_DOWNWARD_RADIATION
       _EXCH_XY_R8( lwdown, myThid )
       _EXCH_XY_R8( swdown, mythid )
-#else / ALLOW_DOWNWARD_RADIATION */
+#else /* ALLOW_DOWNWARD_RADIATION */
       STOP 'ABNORMAL END: S/R SEAICE_MODEL: DOWNWARD_RADIATION undef'
-#endif / ALLOW_DOWNWARD_RADIATION */
+#endif /* ALLOW_DOWNWARD_RADIATION */
       _EXCH_XY_R8( runoff, myThid )
 #else /* SEAICE_EXTERNAL_FORCING */
 C--   Load atmospheric state and runoff.
@@ -113,7 +113,7 @@ cphCADJ STORE vice  = comlev1, key = ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C solve ice momentum equations and calculate ocean surface stress
-      IF ( 
+      IF (
      &  DIFFERENT_MULTIPLE(SEAICE_deltaTdyn,myTime,SEAICE_deltaTtherm)
      &   ) THEN
 #ifdef ALLOW_DEBUG
@@ -185,7 +185,7 @@ C--   Update overlap regions for a bunch of stuff
        _EXCH_XY_R4(Qsw  , myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
-       IF ( useRealFreshWaterFlux ) 
+       IF ( useRealFreshWaterFlux )
      &      _EXCH_XY_RS( sIceLoad, myThid )
 #endif
 
