@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.3 2007/04/16 22:43:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.4 2007/05/14 14:14:31 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -91,8 +91,17 @@ C MELTING TEMPERATURE OF ICE
 C     
         tsurfLoc (I,J) = MIN(273.16 _d 0+MAX_TICE,TSURF(I,J,bi,bj))
 C     Is this necessary?
+#ifdef ALLOW_ATM_TEMP
         atempLoc (I,J) = MAX(273.16 _d 0+MIN_ATEMP,ATEMP(I,J,bi,bj))
+#else /* ALLOW_ATM_TEMP */
+        STOP 'ABNORMAL END: S/R SEAICE_BUDGET_OCE: ATM_TEMP undef'
+#endif /* ALLOW_ATM_TEMP */
+#ifdef ALLOW_DOWNWARD_RADIATION
         lwdownLoc(I,J) = MAX(MIN_LWDOWN,LWDOWN(I,J,bi,bj))
+#else
+        STOP
+     & 'ABNORMAL END: S/R SEAICE_BUDGET_OCE: DOWNWARD_RADIATION undef'
+#endif
        ENDDO
       ENDDO
 #endif /* SEAICE_EXTERNAL_FLUXES */
@@ -106,6 +115,7 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
         SWHeatFlux (I,J) =  Qsw(I,J,bi,bj)
 #else /* SEAICE_EXTERNAL_FLUXES undefined */
         ALB(I,J)=SEAICE_waterAlbedo                                
+#if defined(ALLOW_DOWNWARD_RADIATION) && defined(ALLOW_ATM_TEMP)
         A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
      &       +lwdownLoc(I,J)*0.97 _d 0
      &       +D1*UG(I,J)*atempLoc(I,J)+D1W*UG(I,J)*AQH(I,J,bi,bj)
@@ -116,6 +126,10 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
      &       -D3*(tsurfLoc(I,J)**4)
         netHeatFlux(I,J)=-A1(I,J)-A2(I,J)    
         SWHeatFlux (I,J)=-(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
+#else
+        STOP
+     & 'ABNORMAL END: S/R SEAICE_BUDGET_OCE: DOWNWARD_RADIATION undef'
+#endif
 #endif /* SEAICE_EXTERNAL_FLUXES */
        ENDDO
       ENDDO
