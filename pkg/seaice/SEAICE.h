@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.31 2007/05/09 14:31:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.32 2007/05/14 14:29:49 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -118,24 +118,30 @@ C     stressDivergenceX/Y - divergence of stress tensor
 #endif /* SEAICE_ALLOW_EVP and SEAICE_CGRID */
 
       COMMON/MIX/TMIX,TICE
-      COMMON/GWATXY/GWATX,GWATY
-      COMMON/WIND/WINDX,WINDY,TAUX,TAUY
       _RL TMIX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL TICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      COMMON/GWATXY/GWATX,GWATY
       _RL GWATX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL GWATY      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      COMMON/WIND_STRESS_ICE/TAUX,TAUY
 C     TAUX   - zonal      wind stress over ice at U point
 C     TAUY   - meridional wind stress over ice at V point
+      _RL TAUX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL TAUY       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+#ifndef SEAICE_CGRID
+      COMMON/WIND_STRESS_OCE/WINDX,WINDY
 C     WINDX  - zonal      wind stress over water at C points
 C     WINDY  - meridional wind stress over water at C points
       _RL WINDX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL WINDY      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL TAUX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL TAUY       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 
-      COMMON/COUNT/ICOUNT
-      COMMON/DAY/IDELT
-      INTEGER ICOUNT, IDELT
+c     COMMON/COUNT/ICOUNT
+c     COMMON/DAY/IDELT
+c     INTEGER ICOUNT, IDELT
 
 C--   KGEO    Level used as a proxy for geostrophic velocity.
       COMMON/SEAICE_KGEO/KGEO

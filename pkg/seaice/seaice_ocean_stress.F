@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.16 2007/04/24 18:38:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.17 2007/05/14 14:29:49 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,24 +55,6 @@ c     introduce turning angle (default is zero)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
       SINWIN=SIN(SEAICE_airTurnAngle*deg2rad)
       COSWIN=COS(SEAICE_airTurnAngle*deg2rad)
-
-C--   Update overlap regions
-      CALL EXCH_UV_XY_RL(WINDX, WINDY, .TRUE., myThid)
-
-#ifndef SEAICE_EXTERNAL_FLUXES
-C--   Interpolate wind stress (N/m^2) from C-points of C-grid
-C     to U and V points of C-grid for forcing the ocean model.
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-          fu(I,J,bi,bj)=0.5*(WINDX(I,J,bi,bj) + WINDX(I-1,J,bi,bj))
-          fv(I,J,bi,bj)=0.5*(WINDY(I,J,bi,bj) + WINDY(I,J-1,bi,bj))
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ifndef SEAICE_EXTERNAL_FLUXES */
 
       IF ( useHB87StressCoupling ) THEN
 C
@@ -188,7 +170,9 @@ C     stress and internal ice stresses to surface layer of ocean
          ENDIF
         ENDDO
        ENDDO
+
       ELSE
+C     else: useHB87StressCoupling=F
 
 C--   Compute ice-affected wind stress (interpolate to U/V-points) 
 C     by averaging wind stress and ice-ocean stress according to 
@@ -232,7 +216,7 @@ C     ice cover
       ENDIF
       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
 
-#endif /* not SEAICE_CGRID */
+#endif /* SEAICE_CGRID */
 
       RETURN
       END

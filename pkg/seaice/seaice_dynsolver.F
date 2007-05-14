@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.19 2007/04/24 21:17:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.20 2007/05/14 14:29:49 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -114,8 +114,6 @@ C     initialise fields
          DO i=1-Olx,sNx+Olx
           TAUX (I,J,bi,bj)= 0. _d 0
           TAUY (I,J,bi,bj)= 0. _d 0
-          WINDX(I,J,bi,bj)= 0. _d 0
-          WINDY(I,J,bi,bj)= 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SEAICE_ALLOW_EVP
           stressDivergenceX(I,J,bi,bj) = 0. _d 0
@@ -130,7 +128,7 @@ C     initialise fields
 C--   interface of dynamics with atmopheric forcing fields (wind/stress)
       CALL SEAICE_GET_DYNFORCING ( 
      I     uIce, vIce,
-     O     TAUX, TAUY, WINDX, WINDY,
+     O     TAUX, TAUY,
      I     myTime, myIter, myThid )
 
       DO bj=myByLo(myThid),myByHi(myThid)
