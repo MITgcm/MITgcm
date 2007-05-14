@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_FFIELDS.h,v 1.11 2007/04/16 23:38:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_FFIELDS.h,v 1.12 2007/05/14 14:17:25 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -65,7 +65,9 @@ C
 #ifdef SEAICE_EXTERNAL_FORCING
 
 C--   Define forcing fields outside pkg/seaice.
+#ifdef ALLOW_EXF
 #include "EXF_FIELDS.h"
+#endif
 
 #else /* SEAICE_EXTERNAL_FORCING undefined */
 
