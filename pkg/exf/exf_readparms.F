@@ -1,12 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.47 2007/05/08 03:49:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.48 2007/05/14 19:36:37 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
-#ifdef ALLOW_OBCS
-# include "OBCS_OPTIONS.h"
-#endif
 
-      subroutine exf_readparms( mythid )
+      SUBROUTINE EXF_READPARMS( myThid )
 
 c     ==================================================================
 c     SUBROUTINE exf_readparms
@@ -49,18 +46,17 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "cal.h"
+c#include "cal.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 c     == local variables ==
 
       integer i, idummy
-      integer date_array(4), difftime(4)
       integer iUnit
 
       character*(max_len_mbuf) msgbuf
@@ -75,7 +71,7 @@ c     Surface flux data.
      &   exf_scal_BulkCdn,     climtempfreeze,
      &          exf_iprec,         exf_yftype,   exf_monFreq,
      & useExfYearlyFields,  twoDigitYear,   useExfCheckRange,
-     & useStabilityFct_overIce, selectStressGridPosition,
+     & useStabilityFct_overIce, readStressOnAgrid, readStressOnCgrid,
      & hu, ht, umin, atmrho, atmcp, cen2kel, gravity_mks,
      & cdrag_1, cdrag_2, cdrag_3, cstanton_1, cstanton_2, cdalton,
      & flamb, flami, zolmin, zref,
@@ -199,10 +195,13 @@ c     Set default values.
 
       year2sec           = 365.*86400.
       exf_monFreq        = monitorFreq
+      useExfCheckRange   = .TRUE.
+      readStressOnAgrid  = .FALSE.
+      readStressOnCgrid  = .FALSE.
 
 C-  default value should be set to main model parameter:
 c     cen2kel     =  celsius2K
-c     gravity_mks = gravity     <- not yet a parameter
+c     gravity_mks = gravity
 c     atmcp       =  atm_Cp
 c     humid_fac   =  atm_Rq     <- default is zero !!!
 
@@ -435,7 +434,7 @@ c     Start dates.
       aqhstartdate       = 0.
       evapstartdate      = 0.
       precipstartdate    = 0.
-      snowprecipstartdate = 0.
+      snowprecipstartdate= 0.
       sfluxstartdate     = 0.
       runoffstartdate    = 0.
       ustressstartdate   = 0.
@@ -460,8 +459,6 @@ c     Initialise file type and field precision
       exf_yftype           = 'RL'
       useExfYearlyFields   = .FALSE.
       twoDigitYear         = .FALSE.
-      useExfCheckRange     = .TRUE.
-      selectStressGridPosition = UNSET_I
 
 c     Input scaling factors.
       exf_inscal_hflux     =  1. _d 0
@@ -474,7 +471,7 @@ c     Input scaling factors.
       exf_inscal_swflux    =  1. _d 0
       exf_inscal_lwflux    =  1. _d 0
       exf_inscal_precip    =  1. _d 0
-      exf_inscal_snowprecip =  1. _d 0
+      exf_inscal_snowprecip=  1. _d 0
       exf_inscal_sst       =  1. _d 0
       exf_inscal_sss       =  1. _d 0
       exf_inscal_atemp     =  1. _d 0
@@ -501,40 +498,40 @@ c     Output scaling factors.
 #ifdef USE_EXF_INTERPOLATION
       ustress_lon0   = thetaMin
       uwind_lon0     = thetaMin 
-      vstress_lon0   = thetaMin + delX(1) / 2
-      hflux_lon0     = thetaMin + delX(1) / 2
-      sflux_lon0     = thetaMin + delX(1) / 2
-      swflux_lon0    = thetaMin + delX(1) / 2
-      runoff_lon0    = thetaMin + delX(1) / 2 
-      atemp_lon0     = thetaMin + delX(1) / 2
-      aqh_lon0       = thetaMin + delX(1) / 2 
-      evap_lon0      = thetaMin + delX(1) / 2
-      precip_lon0    = thetaMin + delX(1) / 2 
-      snowprecip_lon0 = thetaMin + delX(1) / 2 
-      vwind_lon0     = thetaMin + delX(1) / 2 
-      wspeed_lon0    = thetaMin + delX(1) / 2 
-      lwflux_lon0    = thetaMin + delX(1) / 2 
-      swdown_lon0    = thetaMin + delX(1) / 2 
-      lwdown_lon0    = thetaMin + delX(1) / 2 
-      apressure_lon0 = thetaMin + delX(1) / 2
+      vstress_lon0   = thetaMin + delX(1)*exf_half
+      hflux_lon0     = thetaMin + delX(1)*exf_half
+      sflux_lon0     = thetaMin + delX(1)*exf_half
+      swflux_lon0    = thetaMin + delX(1)*exf_half
+      runoff_lon0    = thetaMin + delX(1)*exf_half 
+      atemp_lon0     = thetaMin + delX(1)*exf_half
+      aqh_lon0       = thetaMin + delX(1)*exf_half 
+      evap_lon0      = thetaMin + delX(1)*exf_half
+      precip_lon0    = thetaMin + delX(1)*exf_half 
+      snowprecip_lon0= thetaMin + delX(1)*exf_half 
+      vwind_lon0     = thetaMin + delX(1)*exf_half 
+      wspeed_lon0    = thetaMin + delX(1)*exf_half 
+      lwflux_lon0    = thetaMin + delX(1)*exf_half 
+      swdown_lon0    = thetaMin + delX(1)*exf_half 
+      lwdown_lon0    = thetaMin + delX(1)*exf_half 
+      apressure_lon0 = thetaMin + delX(1)*exf_half
       vstress_lat0   = phimin
       vwind_lat0     = phimin
       wspeed_lat0    = phimin
-      ustress_lat0   = phimin   + delY(1) / 2
-      hflux_lat0     = phimin   + delY(1) / 2
-      sflux_lat0     = phimin   + delY(1) / 2
-      runoff_lat0    = phimin   + delY(1) / 2
-      swflux_lat0    = phimin   + delY(1) / 2
-      atemp_lat0     = phimin   + delY(1) / 2
-      aqh_lat0       = phimin   + delY(1) / 2
-      evap_lat0      = phimin   + delY(1) / 2
-      precip_lat0    = phimin   + delY(1) / 2
-      snowprecip_lat0 = phimin   + delY(1) / 2
-      uwind_lat0     = phimin   + delY(1) / 2
-      lwflux_lat0    = phimin   + delY(1) / 2
-      swdown_lat0    = phimin   + delY(1) / 2
-      lwdown_lat0    = phimin   + delY(1) / 2
-      apressure_lat0 = phimin   + delY(1) / 2
+      ustress_lat0   = phimin   + delY(1)*exf_half
+      hflux_lat0     = phimin   + delY(1)*exf_half
+      sflux_lat0     = phimin   + delY(1)*exf_half
+      runoff_lat0    = phimin   + delY(1)*exf_half
+      swflux_lat0    = phimin   + delY(1)*exf_half
+      atemp_lat0     = phimin   + delY(1)*exf_half
+      aqh_lat0       = phimin   + delY(1)*exf_half
+      evap_lat0      = phimin   + delY(1)*exf_half
+      precip_lat0    = phimin   + delY(1)*exf_half
+      snowprecip_lat0= phimin   + delY(1)*exf_half
+      uwind_lat0     = phimin   + delY(1)*exf_half
+      lwflux_lat0    = phimin   + delY(1)*exf_half
+      swdown_lat0    = phimin   + delY(1)*exf_half
+      lwdown_lat0    = phimin   + delY(1)*exf_half
+      apressure_lat0 = phimin   + delY(1)*exf_half
       ustress_nlon   = Nx
       ustress_nlat   = Ny
       vstress_nlon   = Nx
@@ -554,9 +551,9 @@ c     Output scaling factors.
       evap_nlon      = Nx
       evap_nlat      = Ny
       precip_nlon    = Nx
-      snowprecip_nlon = Nx
+      snowprecip_nlon= Nx
       precip_nlat    = Ny
-      snowprecip_nlat = Ny
+      snowprecip_nlat= Ny
       uwind_nlon     = Nx
       uwind_nlat     = Ny
       vwind_nlon     = Nx
@@ -581,7 +578,7 @@ c     Output scaling factors.
       aqh_lon_inc       = delX(1)
       evap_lon_inc      = delX(1)
       precip_lon_inc    = delX(1)
-      snowprecip_lon_inc = delX(1)
+      snowprecip_lon_inc= delX(1)
       uwind_lon_inc     = delX(1)
       vwind_lon_inc     = delX(1)
       wspeed_lon_inc    = delX(1)
@@ -589,10 +586,10 @@ c     Output scaling factors.
       swdown_lon_inc    = delX(1)
       lwdown_lon_inc    = delX(1)
       apressure_lon_inc = delX(1)
-      climsst_lon0    = thetaMin + delX(1) / 2
-      climsss_lon0    = thetaMin + delX(1) / 2
-      climsst_lat0    = phimin   + delY(1) / 2
-      climsss_lat0    = phimin   + delY(1) / 2
+      climsst_lon0    = thetaMin + delX(1)*exf_half
+      climsss_lon0    = thetaMin + delX(1)*exf_half
+      climsst_lat0    = phimin   + delY(1)*exf_half
+      climsss_lat0    = phimin   + delY(1)*exf_half
       climsst_nlon    = Nx
       climsst_nlat    = Ny
       climsss_nlon    = Nx
@@ -604,23 +601,23 @@ c     Output scaling factors.
             vstress_lat_inc(i)   =  delY(i)
             vwind_lat_inc(i)     =  delY(i)
             wspeed_lat_inc(i)    =  delY(i)
-            ustress_lat_inc(i)   = (delY(i) + delY(i)) / 2.
-            hflux_lat_inc(i)     = (delY(i) + delY(i)) / 2.
-            sflux_lat_inc(i)     = (delY(i) + delY(i)) / 2.
-            swflux_lat_inc(i)    = (delY(i) + delY(i)) / 2.
-            runoff_lat_inc(i)    = (delY(i) + delY(i)) / 2.
-            atemp_lat_inc(i)     = (delY(i) + delY(i)) / 2.
-            aqh_lat_inc(i)       = (delY(i) + delY(i)) / 2.
-            evap_lat_inc(i)      = (delY(i) + delY(i)) / 2.
-            precip_lat_inc(i)    = (delY(i) + delY(i)) / 2.
-            snowprecip_lat_inc(i) = (delY(i) + delY(i)) / 2.
-            uwind_lat_inc(i)     = (delY(i) + delY(i)) / 2.
-            lwflux_lat_inc(i)    = (delY(i) + delY(i)) / 2.
-            swdown_lat_inc(i)    = (delY(i) + delY(i)) / 2.
-            lwdown_lat_inc(i)    = (delY(i) + delY(i)) / 2.
-            apressure_lat_inc(i) = (delY(i) + delY(i)) / 2.
-            climsst_lat_inc(i)   = (delY(i) + delY(i)) / 2.
-            climsss_lat_inc(i)   = (delY(i) + delY(i)) / 2.
+            ustress_lat_inc(i)   = (delY(i) + delY(i))*exf_half
+            hflux_lat_inc(i)     = (delY(i) + delY(i))*exf_half
+            sflux_lat_inc(i)     = (delY(i) + delY(i))*exf_half
+            swflux_lat_inc(i)    = (delY(i) + delY(i))*exf_half
+            runoff_lat_inc(i)    = (delY(i) + delY(i))*exf_half
+            atemp_lat_inc(i)     = (delY(i) + delY(i))*exf_half
+            aqh_lat_inc(i)       = (delY(i) + delY(i))*exf_half
+            evap_lat_inc(i)      = (delY(i) + delY(i))*exf_half
+            precip_lat_inc(i)    = (delY(i) + delY(i))*exf_half
+            snowprecip_lat_inc(i)= (delY(i) + delY(i))*exf_half
+            uwind_lat_inc(i)     = (delY(i) + delY(i))*exf_half
+            lwflux_lat_inc(i)    = (delY(i) + delY(i))*exf_half
+            swdown_lat_inc(i)    = (delY(i) + delY(i))*exf_half
+            lwdown_lat_inc(i)    = (delY(i) + delY(i))*exf_half
+            apressure_lat_inc(i) = (delY(i) + delY(i))*exf_half
+            climsst_lat_inc(i)   = (delY(i) + delY(i))*exf_half
+            climsss_lat_inc(i)   = (delY(i) + delY(i))*exf_half
          ELSE
             ustress_lat_inc(i)   = 0.
             vstress_lat_inc(i)   = 0.
@@ -632,7 +629,7 @@ c     Output scaling factors.
             aqh_lat_inc(i)       = 0.
             evap_lat_inc(i)      = 0.
             precip_lat_inc(i)    = 0.
-            snowprecip_lat_inc(i) = 0.
+            snowprecip_lat_inc(i)= 0.
             uwind_lat_inc(i)     = 0.
             vwind_lat_inc(i)     = 0.
             wspeed_lat_inc(i)    = 0.
@@ -691,235 +688,23 @@ c     Next, read the forcing data file.
 
       CLOSE( iUnit )
 
-c     Hard-wire certain parameters
+C--   Derive other parameters:
       hq = ht
+#if ( ( defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_WIND) ) \
+     || defined (USE_EXF_INTERPOLATION) )
+      stressIsOnCgrid = .FALSE.
+#else
+      stressIsOnCgrid = readStressOnCgrid
+#endif
 
-      call exf_check( mythid )
+      CALL EXF_CHECK( myThid )
 
 c     Complete the start date specifications for the forcing
 c     fields to get a complete calendar date array.
-
-#ifdef ALLOW_ATM_WIND
-      if ( uwindfile .NE. ' ' .and. uwindperiod .gt. 0. ) then
-         call cal_FullDate  ( uwindstartdate1    ,      uwindstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,    uwindstartdate     ,mythid )
-         uwindstartdate     = modelstart   + uwindstartdate
-      endif
-      if ( vwindfile .NE. ' ' .and. vwindperiod .gt. 0. ) then
-         call cal_FullDate  ( vwindstartdate1    ,      vwindstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,    vwindstartdate     ,mythid )
-         vwindstartdate     = modelstart   + vwindstartdate
-      endif
-      if ( wspeedfile .NE. ' ' .and. wspeedperiod .gt. 0. ) then
-         call cal_FullDate  ( wspeedstartdate1, wspeedstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,    wspeedstartdate     ,mythid )
-         wspeedstartdate     = modelstart   + wspeedstartdate
-      endif
-#else
-      if ( ustressfile .NE. ' ' .and. ustressperiod .gt. 0. ) then
-         call cal_FullDate  ( ustressstartdate1  ,    ustressstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,  ustressstartdate     ,mythid )
-         ustressstartdate   = modelstart + ustressstartdate
-      endif
-      if ( vstressfile .NE. ' ' .and. vstressperiod .gt. 0. ) then
-         call cal_FullDate  ( vstressstartdate1  ,    vstressstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,  vstressstartdate     ,mythid )
-         vstressstartdate   = modelstart + vstressstartdate
-      endif
-#endif
-
-#ifdef ALLOW_ATM_TEMP
-      if ( atempfile .NE. ' ' .and. atempperiod .gt. 0. ) then
-         call cal_FullDate  ( atempstartdate1    ,      atempstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,    atempstartdate     ,mythid )
-         atempstartdate     = modelstart   + atempstartdate
-      endif
-      if ( aqhfile .NE. ' ' .and. aqhperiod .gt. 0. ) then
-         call cal_FullDate  ( aqhstartdate1      ,        aqhstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,      aqhstartdate     ,mythid )
-         aqhstartdate       = modelstart     + aqhstartdate
-      endif
-      if ( lwfluxfile .NE. ' ' .and. lwfluxperiod .gt. 0. ) then
-         call cal_FullDate  ( lwfluxstartdate1   ,     lwfluxstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,   lwfluxstartdate     ,mythid )
-         lwfluxstartdate    = modelstart  + lwfluxstartdate
-      endif
-      if ( precipfile .NE. ' ' .and. precipperiod .gt. 0. ) then
-         call cal_FullDate  ( precipstartdate1   ,     precipstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,   precipstartdate     ,mythid )
-         precipstartdate    = modelstart  + precipstartdate
-      endif
-      if ( snowprecipfile .NE. ' ' .and. snowprecipperiod .gt. 0. ) then
-         call cal_FullDate( snowprecipstartdate1, snowprecipstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime, snowprecipstartdate, mythid )
-         snowprecipstartdate    = modelstart  + snowprecipstartdate
-      endif
-#else
-      if ( hfluxfile .NE. ' ' .and. hfluxperiod .gt. 0. ) then
-         call cal_FullDate  ( hfluxstartdate1    ,      hfluxstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,    hfluxstartdate     ,mythid )
-         hfluxstartdate     = modelstart   + hfluxstartdate
-      endif
-      if ( sfluxfile .NE. ' ' .and. sfluxperiod .gt. 0. ) then
-         call cal_FullDate  ( sfluxstartdate1    ,      sfluxstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,    sfluxstartdate     ,mythid )
-         sfluxstartdate     = modelstart   + sfluxstartdate
-      endif
-#endif
-
-#if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-      if ( swfluxfile .NE. ' ' .and. swfluxperiod .gt. 0. ) then
-         call cal_FullDate  ( swfluxstartdate1   ,     swfluxstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,   swfluxstartdate     ,mythid )
-         swfluxstartdate    = modelstart  + swfluxstartdate
-      endif
-#endif
-
-#ifdef EXF_READ_EVAP
-      if ( evapfile .NE. ' ' .and. evapperiod .gt. 0. ) then
-         call cal_FullDate  ( evapstartdate1     ,       evapstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,     evapstartdate     ,mythid )
-         evapstartdate      = modelstart    + evapstartdate
-      endif
-#endif
-
-#ifdef ALLOW_RUNOFF
-      if ( runofffile .NE. ' ' .AND. runoffperiod .gt. 0. ) then
-         call cal_FullDate  ( runoffstartdate1   ,     runoffstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,   runoffstartdate     ,mythid )
-         runoffstartdate    = modelstart  + runoffstartdate
-      endif
-#endif
-
-#ifdef ALLOW_DOWNWARD_RADIATION
-      if ( swdownfile .NE. ' ' .and. swdownperiod .gt. 0. ) then
-         call cal_FullDate  ( swdownstartdate1   ,     swdownstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,   swdownstartdate     ,mythid )
-         swdownstartdate    = modelstart  + swdownstartdate
-      endif
-      if ( lwdownfile .NE. ' ' .and. lwdownperiod .gt. 0. ) then
-         call cal_FullDate  ( lwdownstartdate1   ,     lwdownstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,   lwdownstartdate     ,mythid )
-         lwdownstartdate    = modelstart  + lwdownstartdate
-      endif
-#endif
-
-#ifdef ATMOSPHERIC_LOADING
-      if ( apressurefile .NE. ' ' .and. apressureperiod .gt. 0. ) then
-         call cal_FullDate  ( apressurestartdate1,  apressurestartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,  apressurestartdate   ,mythid )
-         apressurestartdate = modelstart + apressurestartdate
-      endif
-#endif
-
-#ifdef ALLOW_OBCS
-#ifdef ALLOW_OBCS_NORTH
-      if ( obcsNperiod .gt. 0 ) then
-         call cal_FullDate  ( obcsNstartdate1    ,      obcsNstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,   obcsNstartdate      ,mythid )
-         obcsNstartdate     = modelstart + obcsNstartdate
-      endif
-#endif
-#ifdef ALLOW_OBCS_SOUTH
-      if ( obcsSperiod .gt. 0 ) then
-         call cal_FullDate  ( obcsSstartdate1    ,      obcsSstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,   obcsSstartdate      ,mythid )
-         obcsSstartdate     = modelstart + obcsSstartdate
-      endif
-#endif
-#ifdef ALLOW_OBCS_EAST
-      if ( obcsEperiod .gt. 0 ) then
-         call cal_FullDate  ( obcsEstartdate1    ,      obcsEstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,   obcsEstartdate      ,mythid )
-         obcsEstartdate     = modelstart + obcsEstartdate
-      endif
-#endif
-#ifdef ALLOW_OBCS_WEST
-      if ( obcsWperiod .gt. 0 ) then
-         call cal_FullDate  ( obcsWstartdate1    ,      obcsWstartdate2,
-     &        date_array                        ,mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds ( difftime,  obcsWstartdate       ,mythid )
-         obcsWstartdate     = modelstart + obcsWstartdate
-      endif
-#endif
-#endif /* ALLOW_OBCS */
-
-#ifdef USE_EXF_INTERPOLATION
-      if ( climsst_nlat .GT. MAX_LAT_INC )
-     & stop 'stopped in exf_clim_readparms: climsst_nlat > MAX_LAT_INC'
-      if ( climsss_nlat .GT. MAX_LAT_INC )
-     & stop 'stopped in exf_clim_readparms: climsss_nlat > MAX_LAT_INC'
-#endif
-
-#ifdef ALLOW_CLIMSST_RELAXATION
-      if ( climsstfile .NE. ' ' .AND. climsstperiod .NE. 0. ) then
-         call cal_FullDate( climsststartdate1, climsststartdate2,
-     &        date_array,                  mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds (difftime,       climsststartdate  ,mythid)
-         climsststartdate=modelstart+climsststartdate
-      endif
-#endif
-
-#ifdef ALLOW_CLIMSSS_RELAXATION
-      if ( climsssfile .NE. ' ' .AND. climsssperiod .NE. 0. ) then
-         call cal_FullDate( climsssstartdate1, climsssstartdate2,
-     &        date_array,                  mythid )
-         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
-         call cal_ToSeconds (difftime,       climsssstartdate  ,mythid)
-         climsssstartdate=modelstart+climsssstartdate
-      endif
-#endif
+C     => moved to EXF_INIT_FIXED
 
       _END_MASTER( mythid )
-
       _BARRIER
-
-c--   Summarize the External forcing's setup.
-      call exf_summary( mythid )
 
       RETURN
       END
