@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.816 2007/05/14 21:30:56 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.817 2007/05/15 14:34:44 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  - get rid of three more exchanges seaice_calc_viscosities (required 
+    different loop boundaries in seaice_lsr and seaice_ocean_stress)
+  - bug fix in seaice_ocean_stress (update of lab_sea required)
+  - reduce loop boundaries to necessary minimum also in seaice_evp
+  - go back to the old way of computing deltaC/Z as the adjoint likes that 
+    better
 o Refresh of tutorial_global_oce_latlon (includes changing salinity-like
   passive tracer to an Age Tracer) + update output.txt
 o pkg/exf:
