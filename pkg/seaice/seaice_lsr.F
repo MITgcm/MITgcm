@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.15 2007/04/20 18:29:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.16 2007/05/15 14:32:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -125,9 +125,9 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+C     set up non-linear water drag
           TEMPVAR = QUART*(
      &          (uIceC(I  ,J,bi,bj)-GWATX(I  ,J,bi,bj)
      &          +uIceC(I+1,J,bi,bj)-GWATX(I+1,J,bi,bj))**2
@@ -139,12 +139,17 @@ C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
              DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
           ENDIF
           DWATN(I,J,bi,bj) = DWATN(I,J,bi,bj) * HEFFM(I,J,bi,bj)
-C NOW SET UP SYMMETTRIC DRAG
+C     set up symmettric drag
           DRAGS(I,J,bi,bj) = DWATN(I,J,bi,bj)*COSWAT
-C NOW SET UP ANTI SYMMETTRIC DRAG FORCE AND ADD IN CURRENT FORCE 
+         ENDDO
+        ENDDO
+C
+        DO J=1,sNy
+         DO I=1,sNx
+C     set up anti symmettric drag force and add in current force
 C     ( remember to average to correct velocity points )
           FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
-     &         0.5*( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
+     &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
      &         COSWAT * GWATX(I,J,bi,bj) 
      &         - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 * 
      &         ( DWATN(I  ,J,bi,bj) *
@@ -155,7 +160,7 @@ C     ( remember to average to correct velocity points )
      &                    +GWATY(I-1,J+1,bi,bj)-vIceC(I-1,J+1,bi,bj))
      &         )
           FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
-     &         0.5*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
+     &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
      &         COSWAT * GWATY(I,J,bi,bj) 
      &         + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 * 
      &         ( DWATN(I,J  ,bi,bj) *
@@ -165,22 +170,18 @@ C     ( remember to average to correct velocity points )
      &         0.5 _d 0 * (GWATX(I  ,J-1,bi,bj)-uIceC(I  ,J-1,bi,bj)
      &                    +GWATX(I+1,J-1,bi,bj)-uIceC(I+1,J-1,bi,bj))
      &         )
-C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
+C     calculate pressure force and add to external force
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
      &         - 0.5 _d 0 *  _recip_dxC(I,J,bi,bj)
      &         *(PRESS(I,J,bi,bj) - PRESS(I-1,J  ,bi,bj))
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj) 
      &         - 0.5 _d 0 *  _recip_dyC(I,J,bi,bj)
-     &          *(PRESS(I,J,bi,bj) - PRESS(I  ,J-1,bi,bj))
+     &         *(PRESS(I,J,bi,bj) - PRESS(I  ,J-1,bi,bj))
          ENDDO
         ENDDO
-       ENDDO
-      ENDDO
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+C      this is the rhs contribution of the time derivative
+        DO j=1,sNy
+         DO i=1,sNx
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
      &         +seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
      &         *uIce(I,J,2,bi,bj)
@@ -189,26 +190,38 @@ C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
      &         *vIce(I,J,2,bi,bj)
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)* _maskW(I,J,1,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)* _maskS(I,J,1,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+C
+C     some abbreviations
+C
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=0,sNy
+         DO i=0,sNx
           etaPlusZeta (I,J,bi,bj) = ETA (I,J,bi,bj)+ZETA(I,J,bi,bj)
           zetaMinusEta(I,J,bi,bj) = ZETA(I,J,bi,bj)-ETA (I,J,bi,bj)
          ENDDO
         ENDDO
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
+        DO j=1,sNy
+         DO i=1,sNx
           etaMeanU (I,J,bi,bj) =
      &         HALF*(ETA (I,J,bi,bj) + ETA (I-1,J  ,bi,bj))
          ENDDO
         ENDDO
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1,sNy
+         DO i=1,sNx
           etaMeanV (I,J,bi,bj) =
      &         HALF*(ETA (I,J,bi,bj) + ETA (I  ,J-1,bi,bj))
          ENDDO
         ENDDO
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
-          etaMeanZ (I,J,bi,bj) = 
-     &         HALF * ( etaMeanU(I,J,bi,bj) + etaMeanU(I,J-1,bi,bj) )
+        DO j=1,sNy+1
+         DO i=1,sNx+1
+          etaMeanZ (I,J,bi,bj) = HALF * 
+     &         ( HALF*(ETA (I,J  ,bi,bj) + ETA (I-1,J  ,bi,bj) )
+     &         + HALF*(ETA (I,J-1,bi,bj) + ETA (I-1,J-1,bi,bj) ) )
          ENDDO
         ENDDO
        ENDDO
@@ -272,8 +285,8 @@ C     coefficients of uIce(I,J+1)
         END DO
 
 C     now set up right-hand side
-        DO J=1-Oly,sNy+Oly-1
-         DO I=1-Olx,sNx+Olx
+        DO J=1,sNy
+         DO I=0,sNx
           dVdy(I,J) = ( vIceC(I,J+1,bi,bj) - vIceC(I,J,bi,bj) )
      &         * _recip_dyF(I,J,bi,bj)
          ENDDO
@@ -493,8 +506,8 @@ C     coefficients for V(I+1,J)
         END DO
 
 C     now set up right-hand-side
-        DO J=1-Oly,sNy+Oly-1
-         DO I=1-Olx,sNx+Olx-1
+        DO J=0,sNy
+         DO I=1,sNx+1
           dUdx(I,J) = ( uIceC(I+1,J,bi,bj) - uIceC(I,J,bi,bj) )
      &         * _recip_dxF(I,J,bi,bj)
           dUdy(I,J) = ( uIceC(I,J+1,bi,bj) - uIceC(I,J,bi,bj) )

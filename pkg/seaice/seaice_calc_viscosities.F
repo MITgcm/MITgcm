@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.4 2007/04/20 18:29:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.5 2007/05/15 14:32:55 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -63,8 +63,8 @@ C--   FIRST SET UP BASIC CONSTANTS
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
           e12C = 0.25 * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj) 
      &         +          e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
           deltaC = (e11(i,j,bi,bj)**2+e22(i,j,bi,bj)**2)*(ONE+ecm2)
@@ -84,10 +84,6 @@ C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS
        ENDDO
       ENDDO
 
-C--   Update overlap regions
-      _EXCH_XY_R8(  eta, myThid)
-      _EXCH_XY_R8( zeta, myThid)
-      _EXCH_XY_R8(press, myThid)
 #endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID */
       RETURN
       END

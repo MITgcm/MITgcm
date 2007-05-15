@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.4 2007/04/24 02:59:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.5 2007/05/15 14:32:55 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -52,9 +52,9 @@ C  hFacU, hFacV - determine the no-slip boundary condition
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-C NOW EVALUATE STRAIN RATES
+        DO j=1-Oly,sNy+Oly-1
+         DO i=1-Olx,sNx+Olx-1
+C     evaluate strain rates
           e11(I,J,bi,bj)= _recip_dxF(I,J,bi,bj) *
      &         (uFld(I+1,J,bi,bj)-uFld(I,J,bi,bj))
      &         -HALF*
@@ -63,6 +63,10 @@ C NOW EVALUATE STRAIN RATES
           e22(I,J,bi,bj)= _recip_dyF(I,J,bi,bj) *
      &         (vFld(I,J+1,bi,bj)-vFld(I,J,bi,bj))
 C     one metric term is missing
+         ENDDO
+        ENDDO
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
           e12(I,J,bi,bj)=HALF*(
      &         (uFld(I  ,J  ,bi,bj) * _dxC(I  ,J  ,bi,bj)
      &         -uFld(I  ,J-1,bi,bj) * _dxC(I  ,J-1,bi,bj)
@@ -81,8 +85,8 @@ C     one metric term is missing
         ENDDO
         IF ( SEAICE_no_slip ) THEN
 C     no slip boundary conditions apply only to e12
-         DO j=1-Oly+1,sNy+Oly-1
-          DO i=1-Olx+1,sNx+Olx-1
+         DO j=1-Oly+1,sNy+Oly
+          DO i=1-Olx+1,sNx+Olx
            hFacU = _maskW(i,j,k,bi,bj) - _maskW(i,j-1,k,bi,bj)
            hFacV = _maskS(i,j,k,bi,bj) - _maskS(i-1,j,k,bi,bj)
 

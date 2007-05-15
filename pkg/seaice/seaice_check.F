@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.19 2007/05/14 14:39:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.20 2007/05/15 14:32:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -114,6 +114,14 @@ C     currently, cannot be turned on if SEAICE_EXTERNAL_FORCING is undef
 #endif /* SEAICE_EXTERNAL_FLUXES */
 #endif /* SEAICE_EXTERNAL_FORCING */
 
+      IF ( Olx.LT.3 .OR. Oly.LT.3 ) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'SEAICE_CHECK: cannot use EVP nor LSR solver with',
+     &  ' overlap (Olx,Oly) smaller than 3'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
 #ifdef SEAICE_ALLOW_EVP
 # ifdef ALLOW_AUTODIFF_TAMC
       IF ( INT(SEAICE_deltaTdyn/SEAICE_deltaTevp).GT.nEVPstepMax ) THEN
@@ -127,13 +135,6 @@ C     currently, cannot be turned on if SEAICE_EXTERNAL_FORCING is undef
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 # endif
-      IF ( ( Olx.LT.3 .OR. Oly.LT.3 ) .AND. SEAICEuseEVP ) THEN
-        WRITE(msgBuf,'(A,A)')
-     &  'SEAICE_CHECK: cannot use EVP solver with',
-     &  ' overlap (Olx,Oly) smaller than 3'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
 #else
       IF ( SEAICE_deltaTevp .NE. UNSET_RL ) THEN
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_deltaTevp is set'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.17 2007/05/14 14:29:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.18 2007/05/15 14:32:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -89,14 +89,19 @@ C     anything else we have to do it here
            ENDDO
           ENDDO
 
-          DO j=1-Oly+1,sNy+Oly-1
-           DO i=1-Olx+1,sNx+Olx-1
+          DO j=0,sNy
+           DO i=0,sNx
             eplus = e11(I,J,bi,bj) + e22(I,J,bi,bj)
             eminus= e11(I,J,bi,bj) - e22(I,J,bi,bj)
             sig11(I,J) = zeta(I,J,bi,bj)*eplus + eta(I,J,bi,bj)*eminus
      &           - 0.5 _d 0 * PRESS(I,J,bi,bj)
             sig22(I,J) = zeta(I,J,bi,bj)*eplus - eta(I,J,bi,bj)*eminus
      &           - 0.5 _d 0 * PRESS(I,J,bi,bj)
+           ENDDO
+          ENDDO
+
+          DO j=1,sNy+1
+           DO i=1,sNx+1
             sig12(I,J) = 2. _d 0 * e12(I,J,bi,bj) *
      &           ( eta(I,J  ,bi,bj) + eta(I-1,J  ,bi,bj)
      &           + eta(I,J-1,bi,bj) + eta(I-1,J-1,bi,bj) )
@@ -181,7 +186,7 @@ C     ice cover
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          fuIceLoc=HALF*( DWATN(I,J,bi,bj)+DWATN(I,J+1,bi,bj) )*
+          fuIceLoc=HALF*( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) )*
      &         COSWAT * 
      &         ( UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj) )
      &         - SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 * 
@@ -192,7 +197,7 @@ C     ice cover
      &         0.5 _d 0*(vIce(I-1,J  ,1,bi,bj)-GWATY(I-1,J  ,bi,bj)
      &                  +vIce(I-1,J+1,1,bi,bj)-GWATY(I-1,J+1,bi,bj)) 
      &         )
-          fvIceLoc=HALF*( DWATN(I,J,bi,bj)+DWATN(I+1,J,bi,bj) )*
+          fvIceLoc=HALF*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) )*
      &         COSWAT *
      &         ( VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj) )
      &         + SIGN(SINWAT,  _fCori(I,J,bi,bj)) * 0.5 _d 0 *
