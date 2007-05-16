@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.817 2007/05/15 14:34:44 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.818 2007/05/16 13:39:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59b
+o coupler (pkg/atm_ocn_coupler, pkg/ocn_compon_interf, pkg/atm2d):
+  - export/import (between ocean & coupler) fields needed for ocean DIC.
 o pkg/seaice: 
   - get rid of three more exchanges seaice_calc_viscosities (required 
     different loop boundaries in seaice_lsr and seaice_ocean_stress)
