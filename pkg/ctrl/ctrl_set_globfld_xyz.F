@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xyz.F,v 1.10 2007/05/15 01:28:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xyz.F,v 1.11 2007/05/16 00:03:37 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -46,7 +46,7 @@ c     == local variables ==
       integer imin,imax
       integer irec
 
-      _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
+      _RL globfld3d(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nr,nSx,nSy)
 
 c     == external ==
 
@@ -56,22 +56,18 @@ c     == end of interface ==
       jthi = nsy
       itlo = 1
       ithi = nsx
-      jmin = 1
-      jmax = sny
-      imin = 1
-      imax = snx
+      jmin = 1-oLy
+      jmax = sny+oLy
+      imin = 1-oLx
+      imax = snx+oLx
 
 c     Initialise temporary file
-      do k = 1,nr
-         do jp = 1,nPy
-            do bj = jtlo,jthi
+      do bj = jtlo,jthi
+         do bi = itlo,ithi
+            do k = 1,nr
                do j = jmin,jmax
-                  do ip = 1,nPx
-                     do bi = itlo,ithi
-                        do i = imin,imax
-                           globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
-                        enddo
-                     enddo
+                  do i = imin,imax
+                     globfld3d(i,j,k,bi,bj) = 0. _d 0
                   enddo
                enddo
             enddo
@@ -82,7 +78,7 @@ c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
       do irec = 1, ncvarrecs(ivartype)
-         call MDSWRITEFIELD_3D_GL( fname, ctrlprec, 'RL',
+         call MDSWRITEFIELD( fname, ctrlprec,.FALSE., 'RL',
      &        Nr, globfld3d,
      &        irec,   optimcycle,  mythid)
       enddo
