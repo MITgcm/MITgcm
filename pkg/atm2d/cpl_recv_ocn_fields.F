@@ -44,7 +44,12 @@ C     Receive sea surface velocity square from ocean component
      I                       Nx_ocn, Ny_ocn, 
      O                       vSq_ocn )
 
-Cjrs  Jean-Michel, need to add fluxCO2 from ocn passed here
+      IF ( ocnCpl_exchange_DIC ) THEN
+C       Receive ocn->atm flux of CO2 from ocean component
+        CALL COUPRECV_R8TILES( ocnCompName, ocnFCO2Name, 
+     I                       Nx_ocn, Ny_ocn, 
+     O                       fluxCO2_ocn )
+      ENDIF
 
       RETURN
       END

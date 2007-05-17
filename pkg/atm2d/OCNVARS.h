@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/OCNVARS.h,v 1.1 2006/09/06 15:32:40 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/OCNVARS.h,v 1.2 2007/05/17 21:11:10 jscott Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -11,6 +11,7 @@ C     OcMxlD_ocn       - Ocean mixed-layer depths on ocean grid (m)
 C     SST_ocn        - Sea surface temperature on ocean grid ( oC).
 C     SSS_ocn        - Sea surface temperature on ocean grid (psu).
 C     vSq_ocn        - Sea surface velocity square on ocean grid (m2/s2)
+C     fluxCO2_ocn    - flux of CO2 from ocn->Atm on ocean grid (mol/m2/s)
 C     atmSLPr_ocn    - Sea Level atmos. pressure on ocean grid (Pa)
 C     HeatFlux_ocn   - net Heat flux on ocean grid (W/m2, +=upward)
 C     qShortWave_ocn - net shortwave radiation on ocean grid (W/m2, +=upward)
@@ -23,22 +24,28 @@ C                      of ocean).
 C     SaltFlx_ocn    - salt flux from sea-ice compon. on ocean grid
 C                      (+=upward=leaving the ocean)
 C     sIceMass_ocn   - sea-ice mass  on ocean grid (kg/m2)
+C     aCO2_ocn       - atmos CO2 on ocean grid (parts by volume) 
+C     wSpeed_ocn     - surface windspeed on ocean grid (m/s) 
+C     sIceFrac_ocn   - sea-ice fraction  on ocean grid 
 
       COMMON /OCNVARS_R/
      &       AtmDepths_ocn,
      &       OcMxlD_ocn, SST_ocn, SSS_ocn, vSq_ocn,
+     &       fluxCO2_ocn,
      &       atmSLPr_ocn, HeatFlux_ocn, qShortWave_ocn,
 c    &       qLatent_ocn, qSensible_ocn, qLongWave_ocn,
 c    &       uVelGround_ocn, vVelGround_ocn,
      &       TauX_ocn, TauY_ocn,
      &       FWFlux_ocn,
-     &       SaltFlx_ocn, sIceMass_ocn
+     &       SaltFlx_ocn, sIceMass_ocn,
+     &       aCO2_ocn, wSpeed_ocn, sIceFrac_ocn
 
       _RS AtmDepths_ocn  (Nx_ocn,Ny_ocn)
       _RL OcMxlD_ocn     (Nx_ocn,Ny_ocn)
       _RL SST_ocn        (Nx_ocn,Ny_ocn)
       _RL SSS_ocn        (Nx_ocn,Ny_ocn)
       _RL vSq_ocn        (Nx_ocn,Ny_ocn)
+      _RL fluxCO2_ocn    (Nx_ocn,Ny_ocn)
       _RL atmSLPr_ocn    (Nx_ocn,Ny_ocn)
       _RL HeatFlux_ocn   (Nx_ocn,Ny_ocn)
       _RL qShortWave_ocn (Nx_ocn,Ny_ocn)
@@ -52,4 +59,6 @@ c     _RL vVelGround_ocn (Nx_ocn,Ny_ocn)
       _RL FWFlux_ocn     (Nx_ocn,Ny_ocn)
       _RL SaltFlx_ocn    (Nx_ocn,Ny_ocn)
       _RL sIceMass_ocn   (Nx_ocn,Ny_ocn)
-
+      _RL aCO2_ocn       (Nx_ocn,Ny_ocn)
+      _RL wSpeed_ocn     (Nx_ocn,Ny_ocn)
+      _RL sIceFrac_ocn   (Nx_ocn,Ny_ocn)

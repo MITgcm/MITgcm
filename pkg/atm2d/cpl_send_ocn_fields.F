@@ -55,6 +55,22 @@ C     Send sea-ice mass to ocean component
       CALL COUPSEND_R8TILES( ocnCompName, ocnSeaIceName, 
      I                       Nx_ocn, Ny_ocn, sIceMass_ocn )
 
+      IF ( ocnCpl_exchange_DIC ) THEN
+
+C       Send atmos CO2 to ocean component
+        CALL COUPSEND_R8TILES( ocnCompName, ocnAirCO2Name, 
+     I                       Nx_ocn, Ny_ocn, aCO2_ocn )
+
+C       Send surface windspeed to ocean component
+        CALL COUPSEND_R8TILES( ocnCompName, ocnWSpdName, 
+     I                       Nx_ocn, Ny_ocn, wSpeed_ocn )
+
+C       Send sea-ice fraction to ocean component
+        CALL COUPSEND_R8TILES( ocnCompName, ocnFIceName, 
+     I                       Nx_ocn, Ny_ocn, SIceFrac_ocn )
+
+      ENDIF 
+     
       RETURN
       END
 

@@ -13,15 +13,20 @@ C     === Global Atmosphere Variables ===
 #include "ATMSIZE.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "THSICE_VARS.h"
 #include "ATM2D_VARS.h"
 
 #ifdef ATM2D_MPI_ON
 #  include "OCNSIZE.h"
 #  include "OCNVARS.h"
+#  include "OCNIDS.h"
 #else
 #  include "PARAMS.h"
 #  include "FFIELDS.h"
 #  include "SURFACE.h"
+#  ifdef ALLOW_DIC
+#    include "DIC_ABIOTIC.h"
+#  endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -36,9 +41,10 @@ C     myThid - Thread no. that called this routine.
 C     LOCAL VARIABLES:
       INTEGER i,j
 
-#ifdef ATM2D_MPI_ON
       DO j=1,sNy
         DO i=1,sNx
+
+#ifdef ATM2D_MPI_ON
 
 C OCNVARS common set from ATM2D common
           atmSLPr_ocn(i,j)= pass_slp(i,j) 
@@ -49,18 +55,19 @@ C OCNVARS common set from ATM2D common
           FWFlux_ocn(i,j)= pass_precip(i,j) + pass_evap(i,j) 
      &                     + pass_runoff(i,j)
           SaltFlx_ocn(i,j) = sFluxFromIce(i,j)
-C need to pass seaice mass?
-C need to pass wspeed and pCO2
+#  ifdef ATMOSPHERIC_LOADING
+          sIceMass_ocn(i,j) = pass_sIceLoad(i,j)
+#  endif /* ATMOSPHERIC_LOADING */
+          IF ( ocnCpl_exchange_DIC ) THEN
+            aCO2_ocn(i,j) = pass_pCO2(i,j)
+            wSpeed_ocn(i,j) = pass_wspeed(i,j)
+            sIceFrac_ocn(i,j) = iceMask(i,j,1,1)
+          ENDIF
 
-        ENDDO
-      ENDDO
 #else
 C FFIELDS.h common block set from ATM2D common
-      DO j=1,sNy
-        DO i=1,sNx
 
-C          pLoad(i,j,1,1)= pass_slp(i,j) 
-C          _EXCH_XY_R4(pLoad, myThid )
+          pLoad(i,j,1,1)= pass_slp(i,j) 
           Qnet(i,j,1,1)= pass_qnet(i,j) 
           Qsw(i,j,1,1)= pass_solarnet(i,j) 
           fu(i,j,1,1)= pass_fu(i,j) 
@@ -71,29 +78,30 @@ C          _EXCH_XY_R4(pLoad, myThid )
 
           CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
           _EXCH_XY_R4(EmPmR, myThid )   !for NL Free surf?
+          _EXCH_XY_R4(saltFlux, myThid )
+          _EXCH_XY_R4(Qnet, myThid )
+          _EXCH_XY_R4(Qsw, myThid )
 
 #  ifdef ATMOSPHERIC_LOADING
-Cjrs ask J-M about this
-C              phi0surf(i,j,1,1) = pass_slp(i,j)*recip_rhoConst
+          sIceLoad(i,j,1,1) = pass_sIceLoad(i,j)
+          _EXCH_XY_R4(pLoad, myThid )
+          _EXCH_XY_R4( sIceLoad, myThid )
+C          phi0surf(i,j,1,1) = pass_slp(i,j)*recip_rhoConst
 C     &                 + gravity*seaIceMass(i,j,1,1)*recip_rhoConst
 #  endif /* ATMOSPHERIC_LOADING */
 
-C need to pass seaice mass? seaIceLoad(i,j,1,1)=
-C need to pass wspeed and pCO2
+#  ifdef ALLOW_DIC
+C          icemask should be imported in DIC code
+           AtmospCO2(i,j,1,1)=  pass_pCO2(i,j)   
+           wind(i,j,1,1)= pass_wspeed(i,j)
+           _EXCH_XY_R4(AtmospCO2 ,  myThid )
+           _EXCH_XY_R4(wind ,  myThid )
+#  endif /* ALLOW_DIC */
+
+#endif /* ATM2D_MPI_ON */
 
         ENDDO
       ENDDO
-
-#endif
-
-C      PRINT *,'***After seaice thicken/extend'
-C      PRINT *,'pass_runoff:',pass_runoff(JBUGI,JBUGJ)
-C      PRINT *,'pass_precip:',pass_precip(JBUGI,JBUGJ)
-C      PRINT *,'pass_evap:', pass_evap(JBUGI,JBUGJ)
-C      PRINT *,'pass_qnet:',pass_qnet(JBUGI,JBUGJ)
-C      PRINT *,'pass_fu:',pass_fu(JBUGI,JBUGJ)
-C      PRINT *,'sFluxFromIce:',sFluxFromIce(JBUGI,JBUGJ)
-C      PRINT *,'slp:',pass_slp(JBUGI,JBUGJ)
 
       RETURN
       END

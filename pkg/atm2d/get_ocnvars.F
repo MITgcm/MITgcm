@@ -20,11 +20,15 @@ C     === Global Atmosphere Variables ===
 #ifdef ATM2D_MPI_ON
 #  include "OCNSIZE.h"
 #  include "OCNVARS.h"
+#  include "OCNIDS.h"
 #else
 #  include "PARAMS.h"
 #  include "GRID.h"
 #  include "SURFACE.h"
 #  include "DYNVARS.h"
+#  ifdef ALLOW_DIC
+#    include "DIC_ABIOTIC.h"
+#  endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -47,7 +51,9 @@ C presuming ocnsize.h same as size.h
           sstFromOcn(i,j)= SST_ocn(i,j) 
           sssFromOcn(i,j)= SSS_ocn(i,j) 
           mlDepth(i,j) = OcMxlD_ocn(i,j)
-C         fluxCO2(i,j) = new variable passed
+          IF ( ocnCpl_exchange_DIC ) oFluxCO2(i,j) = fluxCO2_ocn(i,j)
+C          IF ( ocnCpl_exchange_DIC ) 
+C     &       print *,'ofluxCO2:',i,j,fluxCO2_ocn(i,j)
 
 C Put in seaice common block
           tOceMxl(i,j,1,1)= SST_ocn(i,j) 
@@ -94,7 +100,7 @@ Cjrs ask J-M about next lines
        ENDDO
       ENDIF
 
-       DO j=1,sNy
+      DO j=1,sNy
         DO i=1,sNx
           v2ocMxL(i,j,1,1) = 
      &              ( uVel(i , j,1,1,1)*uVel(i , j,1,1,1)
@@ -103,37 +109,23 @@ Cjrs ask J-M about next lines
      &              + vVel(i,j , 1,1,1)*vVel(i,j , 1,1,1)
      &              )*0.5 _d 0
         ENDDO
-       ENDDO
+      ENDDO
 
-
-       DO j=1,sNy
+      DO j=1,sNy
         DO i=1,sNx
 
-C         fluxCO2(i,j) = new variable passed
+#  ifdef ALLOW_DIC
+          oFluxCO2(i,j) = fluxCO2(i,j,1,1)
+#  endif
 
 C Put in seaice common block
           tOceMxl(i,j,1,1)= sstFromOcn(i,j) 
           sOceMxl(i,j,1,1)= sssFromOcn(i,j) 
           hOceMxl(i,j,1,1) = mlDepth(i,j)
-C         v2ocMxL(i,j,1,1) =  velSq(i,j)
         ENDDO
       ENDDO
          
 #endif
-
-C      PRINT *,'After ocean step, sst,sss:', theta(JBUGI,JBUGJ,1,1,1),
-C     &         salt(JBUGI,JBUGJ,1,1,1)
-C      PRINT *,'***get_ocnvars, before ice thicken/extend'
-C      PRINT *,'Icemask: ',icemask(JBUGI,JBUGJ,1,1)
-C      PRINT *,'Iceheight: ',iceheight(JBUGI,JBUGJ,1,1)
-C      PRINT *,'pass_runoff:',pass_runoff(JBUGI,JBUGJ)
-C      PRINT *,'pass_precip:',pass_precip(JBUGI,JBUGJ)
-C      PRINT *,'pass_evap:', pass_evap(JBUGI,JBUGJ)
-C      PRINT *,'pass_qnet:',pass_qnet(JBUGI,JBUGJ)
-C      PRINT *,'icFrwAtm',icFrwAtm(JBUGI,JBUGJ,1,1)
-C      PRINT *,'icFlxSw:',icFlxSw(JBUGI,JBUGJ,1,1)
-C      PRINT *,'pass_Prcatm',pass_prcAtm(JBUGI,JBUGJ)
-C      PRINT *,tOceMxl(JBUGI,JBUGJ,1,1),v2OcMxl(JBUGI,JBUGJ,1,1)
 
       RETURN
       END
