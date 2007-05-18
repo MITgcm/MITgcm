@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.1 2006/10/22 01:11:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.2 2007/05/18 02:41:12 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -31,8 +31,7 @@ CEndOfInterface
 C     === Local variables ===
 C     i,j,k,bi,bj - Loop counters
 
-      INTEGER i, j, k, bi, bj
-      INTEGER myIter, myTile
+      INTEGER k, bi, bj
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
