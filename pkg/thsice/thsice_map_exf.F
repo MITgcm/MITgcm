@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_map_exf.F,v 1.3 2007/04/27 15:51:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_map_exf.F,v 1.4 2007/05/18 02:45:43 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -67,8 +67,10 @@ C     i,j   :: current grid point indices
 #ifdef ALLOW_ATM_TEMP
         totPrc(i,j) = precip(i,j,bi,bj)*rhoConstFresh
 #endif
-#if defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE)
+#ifdef ALLOW_RUNOFF
         totPrc(i,j) = totPrc(i,j) + runoff(i,j,bi,bj)*rhoConstFresh
+#else
+        STOP 'ABNORMAL END: S/R THSICE_MAP_EXF: ALLOW_RUNOFF undef'
 #endif
 CML           flxSW (i,j) = -Qsw(i,j,bi,bj)
 #ifdef ALLOW_DOWNWARD_RADIATION
