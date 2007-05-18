@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.29 2007/05/14 07:13:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.30 2007/05/18 02:46:42 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -113,6 +113,7 @@ C     == Local variables ==
           ENDIF
 
 #ifdef SEAICE_DEBUG
+#ifndef SEAICE_EXTERNAL_FORCING
        CALL PLOT_FIELD_XYRS( uwind , 'Current uwind ', myIter, myThid )
        CALL PLOT_FIELD_XYRS( vwind , 'Current vwind ', myIter, myThid )
        CALL PLOT_FIELD_XYRS( atemp , 'Current atemp ', myIter, myThid )
@@ -130,6 +131,7 @@ C     == Local variables ==
        CALL PLOT_FIELD_XYRL( Qnet  , 'Current Qnet  ', myIter, myThid )
        CALL PLOT_FIELD_XYRL( Qsw   , 'Current Qsw   ', myIter, myThid )
 #endif
+#endif /* SEAICE_DEBUG */
 
           DO bj=myByLo(myThid),myByHi(myThid)
             DO bi=myBxLo(myThid),myBxHi(myThid)

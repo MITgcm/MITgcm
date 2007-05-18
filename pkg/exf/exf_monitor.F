@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.12 2007/04/18 19:55:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.13 2007/05/18 02:44:51 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -143,7 +143,7 @@ C       Print some statistics about input forcing fields
         CALL MON_PRINTSTATS_RL(1,apressure,'_apressure',
      &       maskH,maskH,rA ,drF,myThid)
 #endif
-#if defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE)
+#ifdef ALLOW_RUNOFF
         CALL MON_PRINTSTATS_RL(1,runoff,'_runoff',
      &       maskH,maskH,rA ,drF,myThid)
 #endif

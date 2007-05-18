@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.3 2007/05/14 19:32:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.4 2007/05/18 02:44:50 jmc Exp $
 C $Name:  $
 c
 c
@@ -251,7 +251,7 @@ C     sh        :: wind-speed [m/s] (always larger than uMin)
       _RL apressure1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
-#if defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE)
+#ifdef ALLOW_RUNOFF
       common /exfl_runoff_r/ runoff, runoff0, runoff1
       _RL runoff    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL runoff0   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)

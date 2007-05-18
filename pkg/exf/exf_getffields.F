@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.35 2007/04/16 23:27:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.36 2007/05/18 02:44:50 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -317,7 +317,7 @@ c     Atmos. pressure forcing
      &     mytime, myiter, mythid )
 #endif
 
-#if (defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE))
+#ifdef ALLOW_RUNOFF
 c     Runoff
       call exf_set_gen  (
      &     runofffile, runoffstartdate, runoffperiod, 

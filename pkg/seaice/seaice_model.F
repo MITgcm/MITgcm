@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.45 2007/05/14 14:12:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.46 2007/05/18 02:46:42 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -71,21 +71,25 @@ CEOP
 C--   Atmospheric state and runoff are from
 C     pkg/exf, which does not update edges.
       CALL EXCH_UV_AGRID_3D_RL( uwind, vwind, .TRUE., 1, myThid )
-#ifdef ALLOW_ATM_TEMP
+# ifdef ALLOW_ATM_TEMP
       _EXCH_XY_R8( atemp,  myThid )
       _EXCH_XY_R8( aqh,    myThid )
       _EXCH_XY_R8( precip, myThid )
       _EXCH_XY_R8( evap,   myThid )
-#else /* ALLOW_ATM_TEMP */
-      STOP 'ABNORMAL END: S/R SEAICE_MODEL: ATM_TEMP undef'
-#endif /* ALLOW_ATM_TEMP */
-#ifdef ALLOW_DOWNWARD_RADIATION
+# else /* ALLOW_ATM_TEMP */
+      STOP 'ABNORMAL END: S/R SEAICE_MODEL: ALLOW_ATM_TEMP undef'
+# endif /* ALLOW_ATM_TEMP */
+# ifdef ALLOW_DOWNWARD_RADIATION
       _EXCH_XY_R8( lwdown, myThid )
       _EXCH_XY_R8( swdown, mythid )
-#else /* ALLOW_DOWNWARD_RADIATION */
+# else /* ALLOW_DOWNWARD_RADIATION */
       STOP 'ABNORMAL END: S/R SEAICE_MODEL: DOWNWARD_RADIATION undef'
-#endif /* ALLOW_DOWNWARD_RADIATION */
+# endif /* ALLOW_DOWNWARD_RADIATION */
+# ifdef ALLOW_RUNOFF
       _EXCH_XY_R8( runoff, myThid )
+#  else /* ALLOW_DOWNWARD_RADIATION */
+      STOP 'ABNORMAL END: S/R SEAICE_MODEL: ALLOW_RUNOFF undef'
+# endif /* ALLOW_RUNOFF */
 #else /* SEAICE_EXTERNAL_FORCING */
 C--   Load atmospheric state and runoff.
       CALL SEAICE_GET_FORCING ( myTime, myIter, myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.13 2007/04/30 00:15:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.14 2007/05/18 02:46:42 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -512,7 +512,9 @@ C NOW GET FRESH WATER FLUX
           EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
      &         ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
      &         * ( ONE - AREA(I,J,2,bi,bj) )
+#ifdef ALLOW_RUNOFF
      &         - RUNOFF(I,J,bi,bj)
+#endif
      &         + frWtrIce(I,J)*ICE2WATR/SEAICE_deltaTtherm
      &         )
 #else /* ALLOW_ATM_TEMP */

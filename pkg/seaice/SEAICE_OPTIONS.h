@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.22 2007/05/14 14:39:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.23 2007/05/18 02:46:42 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -49,6 +49,7 @@ C-    current implementation requires those options to be set:
 # undef  SEAICE_EXTERNAL_FLUXES
 # define ALLOW_ATM_TEMP
 # define ALLOW_DOWNWARD_RADIATION
+# define ALLOW_RUNOFF
 
 #endif /* SEAICE_EXTERNAL_FORCING */
 

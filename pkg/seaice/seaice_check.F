@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.20 2007/05/15 14:32:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.21 2007/05/18 02:46:42 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -87,6 +87,12 @@ C     At present this option is hardwired for pkg/exf.
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
+#ifndef ALLOW_RUNOFF
+         WRITE(msgBuf,'(A)')
+     &        'need to define pkg/exf ALLOW_RUNOFF'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif
 #if !defined(EXF_READ_EVAP) && !defined(ALLOW_BULKFORMULAE)
          WRITE(msgBuf,'(A)')
      &     'need to set EXF_READ_EVAP or ALLOW_BULKFORMULAE in pkg/exf '
@@ -106,7 +112,7 @@ C     At present this option is hardwired for pkg/exf.
 C--   SEAICE_EXTERNAL_FLUXES :
 C     currently, cannot be turned on if SEAICE_EXTERNAL_FORCING is undef
 #ifdef SEAICE_EXTERNAL_FLUXES
-         WRITE(msgBuf,'(2A)') 
+         WRITE(msgBuf,'(2A)')
      &    'S/R SEAICE_CHECK: SEAICE_EXTERNAL_FLUXES not allowed',
      &    ' without SEAICE_EXTERNAL_FORCING'
          CALL PRINT_ERROR( msgBuf, myThid )
