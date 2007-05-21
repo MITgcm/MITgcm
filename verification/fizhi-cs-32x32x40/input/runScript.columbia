@@ -3,23 +3,22 @@
 #PBS -l ncpus=24
 #PBS -l walltime=08:00:00
 #PBS -j oe
-#PBS -o /nobackup2b/molod/fizhi-cs-32x32x46-newres/input/stdout
+#PBS -o /nobackup2b/molod/fizhi-cs-32x32x40-hfac02/input/stdout
 ########PBS -q normal
 #PBS -V
 
 echo 'start'
 #----------------------------------------------
 set namPBS=fizhiT3
-set runDir=/nobackup2b/molod/fizhi-cs-32x32x46-newres/input
-set executable=/nobackup2b/molod/fizhi-cs-32x32x46-newres/build/mitgcmuv
+set runDir=/nobackup2b/molod/fizhi-cs-32x32x40-hfac02/input
+set executable=/nobackup2b/molod/fizhi-cs-32x32x40-hfac02/build/mitgcmuv
 #-------------------
 cd $runDir
 
 #------
 limit stacksize unlimited
-module list
 module purge
-module load modules scsl.1.5.0.0 intel-comp.8.1.024 mpt.1.12.0.0
+module load modules scsl.1.6.1.0 intel-comp.9.1.039 mpt.1.12.0.nas pd-netcdf.3.6.0-p1
 #------
 
 set its=`egrep 'nIter0' data | sed 's/ nIter0=//'| sed 's/,$//'`
