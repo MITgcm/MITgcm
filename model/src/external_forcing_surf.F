@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.36 2006/07/22 03:53:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.37 2007/05/22 02:35:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -70,21 +70,27 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( doThetaClimRelax .OR. doSaltClimRelax ) THEN
 C--   Start with surface restoring term :
 
-       DO j = jMin, jMax
-        DO i = iMin, iMax
 #ifdef ALLOW_SEAICE
+       IF ( useSEAICE ) THEN
 C     Do not restore under sea-ice
+        DO j = jMin, jMax
+         DO i = iMin, iMax
 C     Heat Flux (restoring term) :
           surfaceForcingT(i,j,bi,bj) =
-     &      -lambdaThetaClimRelax(i,j,bi,bj) * (1-AREA(i,j,1,bi,bj))
+     &      -lambdaThetaClimRelax(i,j,bi,bj)*(1.-AREA(i,j,1,bi,bj))
      &         *(theta(i,j,ks,bi,bj)-SST(i,j,bi,bj))
      &         *drF(ks)*_hFacC(i,j,ks,bi,bj)
 C     Salt Flux (restoring term) :
           surfaceForcingS(i,j,bi,bj) =
-     &      -lambdaSaltClimRelax(i,j,bi,bj) * (1-AREA(i,j,1,bi,bj))
+     &      -lambdaSaltClimRelax(i,j,bi,bj) *(1.-AREA(i,j,1,bi,bj))
      &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
      &         *drF(ks)*_hFacC(i,j,ks,bi,bj)
-#else /* ifndef ALLOW_SEAICE */
+         ENDDO
+        ENDDO
+       ELSE
+#endif /* ALLOW_SEAICE */
+        DO j = jMin, jMax
+         DO i = iMin, iMax
 C     Heat Flux (restoring term) :
           surfaceForcingT(i,j,bi,bj) =
      &      -lambdaThetaClimRelax(i,j,bi,bj)
@@ -95,9 +101,11 @@ C     Salt Flux (restoring term) :
      &      -lambdaSaltClimRelax(i,j,bi,bj)
      &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
      &         *drF(ks)*_hFacC(i,j,ks,bi,bj)
-#endif /* ALLOW_SEAICE */
+         ENDDO
         ENDDO
-       ENDDO
+#ifdef ALLOW_SEAICE
+       ENDIF
+#endif /* ALLOW_SEAICE */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef NONLIN_FRSURF
