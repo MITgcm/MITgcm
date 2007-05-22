@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.819 2007/05/18 03:02:47 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.820 2007/05/22 11:34:32 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o change error catch in calc_r_star to improve vectorization
 o exf runoff and seaice: remove ALLOW_SEAICE from exf pkg files and
   add #define ALLOW_RUNOFF in SEAICE_OPTIONS.h (when not using exf).
 
