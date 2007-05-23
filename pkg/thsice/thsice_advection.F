@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.4 2007/04/16 22:38:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.5 2007/05/23 23:40:19 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -257,6 +257,7 @@ C--   CubedSphere : pass 3 times, with partial update of local seaice field
          calc_fluxes_X = nCFace.EQ.2 .OR. nCFace.EQ.3 .OR. nCFace.EQ.4
          calc_fluxes_Y = nCFace.EQ.5 .OR. nCFace.EQ.6 .OR. nCFace.EQ.1
         ELSE
+         interiorOnly = MOD(nCFace,3).EQ.0
          calc_fluxes_X = nCFace.EQ.5 .OR. nCFace.EQ.6
          calc_fluxes_Y = nCFace.EQ.2 .OR. nCFace.EQ.3
         ENDIF
