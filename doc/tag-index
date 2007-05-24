@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.820 2007/05/22 11:34:32 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.821 2007/05/24 23:10:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o change calculation of Visbeck K:
+  - no longer depend on tapering scheme; instead, compute slope (limited 
+    by GM_maxSlope). this is equivalent to what was comuted before with
+    clipping or linear tappering.
+  - fix vertical averaging (wrong by 1 level)
+  - leave the old version (but will not be maintained) within
+    #ifdef OLD_VISBECK_CALC / #endif
 o change error catch in calc_r_star to improve vectorization
 o exf runoff and seaice: remove ALLOW_SEAICE from exf pkg files and
   add #define ALLOW_RUNOFF in SEAICE_OPTIONS.h (when not using exf).
