@@ -5,12 +5,6 @@
 # GM_Sd:		half width scaling for diffusion coefficient
 # real background diff:	horizontal diffusion
 
-# ifdef GM_VISBECK_VARIABLE_K, include following in GM_PARM01
-# GM_Visbeck_alpha   = 0.,
-# GM_Visbeck_length  = 2.e+5,
-# GM_Visbeck_depth   = 1.e+3,
-# GM_Visbeck_maxval_K= 2.5e+3,
-
  &GM_PARM01
   GM_AdvForm=.TRUE.,
 # GM_AdvSeparate=.TRUE.,
@@ -21,6 +15,7 @@
   GM_taper_scheme    = 'linear',
 # GM_taper_scheme    = 'gkw91',
 # GM_taper_scheme    = 'ldd97',
+  GM_Small_Number    = 1.e-18,
   GM_maxSlope        = 1.e-2,
   GM_Scrit           = 4.e-3,
   GM_Sd              = 1.e-3,
