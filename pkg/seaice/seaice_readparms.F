@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.47 2007/05/01 21:31:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.48 2007/05/25 06:48:07 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -264,10 +264,9 @@ C     yet been tried nor thought through.
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
        ENDIF
-       IF ( SEAICE_elasticParm .LE. 0. _d 0 .OR.
-     &      SEAICE_elasticParm .GT. 1. _d 0 ) THEN
+       IF ( SEAICE_elasticParm .LE. 0. _d 0 ) THEN
         WRITE(msgBuf,'(A)')
-     &       'SEAICE_elasticParm must greater than 0 and less than 1.'
+     &       'SEAICE_elasticParm must greater than 0.'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
        ENDIF
