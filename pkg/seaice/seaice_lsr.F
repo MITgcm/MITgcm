@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.17 2007/05/25 12:52:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.18 2007/05/25 14:52:13 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,6 +47,7 @@ C     i,j,bi,bj - Loop counters
 
       _RL  WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
       _RL  AA1, AA2, AA3, AA4, AA5, AA6, AA7, S1, S2, S1A, S2A
+      _RL  seaiceSlipFactor, hFacM, hFacP
 
       _RL AU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL BU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -114,6 +115,14 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 CADJ STORE vice = comlev1_lsr, 
 CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+      IF ( SEAICE_no_Slip ) THEN
+C     no slip
+       seaiceSlipFactor = - 1. _d 0
+      ELSE
+C     free slip 
+       seaiceSlipFactor =   1. _d 0
+      ENDIF
 
       CALL SEAICE_CALC_STRAINRATES( 
      I     uIceC, vIceC,
@@ -286,6 +295,21 @@ C     coefficients of uIce(I,J+1)
      &         - TWO*etaMeanU(I,J,bi,bj) * _tanPhiAtU(I,J,bi,bj)
      &          * 1.0 _d 0 / ( _dyU(I,J,bi,bj) + _dyU(I,J+1,bi,bj) )
      &         *recip_rSphere
+         ENDDO
+        ENDDO
+
+C     apply boundary conditions according to slip factor
+        DO J=1,sNy
+         DO I=1,sNx
+          hFacM = _maskW(i,j,k,bi,bj) * _maskW(i,j-1,k,bi,bj)
+          hFacP = _maskW(i,j,k,bi,bj) * _maskW(i,j+1,k,bi,bj)
+C     copy contributions to coefficient of U(I,J)
+          BU(I,J,bi,bj)=BU(I,J,bi,bj)
+     &         + UVRT1(I,J,bi,bj)*( 1. _d 0 - hFacM )*seaiceSlipFactor
+     &         + UVRT2(I,J,bi,bj)*( 1. _d 0 - hFacP )*seaiceSlipFactor
+C     reset coefficients of U(I,J-1) and U(I,J+1)
+          UVRT1(I,J,bi,bj)=UVRT1(I,J,bi,bj) * hFacM 
+          UVRT2(I,J,bi,bj)=UVRT2(I,J,bi,bj) * hFacP
          ENDDO
         ENDDO
 
@@ -509,6 +533,21 @@ C     coefficients for V(I+1,J)
           UVRT2(I,J,bi,bj)= AA3
          END DO
         END DO
+
+C     apply boundary conditions according to slip factor
+        DO J=1,sNy
+         DO I=1,sNx
+          hFacM = _maskS(i,j,k,bi,bj) * _maskS(i-1,j,k,bi,bj)
+          hFacP = _maskS(i,j,k,bi,bj) * _maskS(i+1,j,k,bi,bj)
+C     copy contributions to coefficient of V(I,J)
+          BV(I,J,bi,bj)=BV(I,J,bi,bj)
+     &         + UVRT1(I,J,bi,bj)*( 1. _d 0 - hFacM )*seaiceSlipFactor
+     &         + UVRT2(I,J,bi,bj)*( 1. _d 0 - hFacP )*seaiceSlipFactor
+C     reset coefficients of V(I-1,J) and V(I+1,J)
+          UVRT1(I,J,bi,bj)=UVRT1(I,J,bi,bj) * hFacM 
+          UVRT2(I,J,bi,bj)=UVRT2(I,J,bi,bj) * hFacP
+         ENDDO
+        ENDDO
 
         DO I=1,sNx
          AV(I,1,bi,bj)=ZERO
