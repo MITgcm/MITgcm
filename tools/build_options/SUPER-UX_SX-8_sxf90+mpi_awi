@@ -1,27 +1,37 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.1 2007/05/21 13:51:16 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.2 2007/05/25 14:57:51 mlosch Exp $
 #
-# for use on sx8.awi.de
-# uname -a 
+# for cross compiling on sx8.awi.de
+# uname -a: 
 # Linux sx8 2.6.5-7.282-default #1 SMP Tue Aug 29 10:40:40 UTC 2006 ia64 ia64 ia64 GNU/Linux#
 
 # nec use
 CPP='/lib/cpp -traditional -P'
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_NEC_SX -DWORDLENGTH=1 -UHAVE_SIGREG'
-FC='sxmpif90 -c'
-CC='sxcc -sx6'
+FC='sxmpif90'
+CC='sxcc -sx8r'
+
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  X ## _"
 LINK='sxmpif90'
-#LINK='sxmpif90 -p' # profiler
+#LINK='sxmpif90 -p' # with profiler
 # output to *.L files
-FFLAGS='-Wf "-pvctl noassume loopcnt=5000000 fullmsg" -R2 -Pstack'
+FFLAGS='-Wf "-pvctl noassume loopcnt=5000000 fullmsg" -R2 -Pstack -sx8r'
 # additional options
-# -C hopt # aggressive optimization (highest automatic optimization level)
-# -ew     # define basic storage unit as 8 bytes (default is 4);
-#         # does not work with netCDF error (need recompilation)
-# -ftrace # trace output for performance analysis
+# This is how you inline routines (the actual routines depend on the packages 
+# used, therefore there are only a few examples here;
+# edit this list in the Makefile, because including it here will break the
+# various tests in genmake2, maybe I will find a better way to do this
+# later)
+#FFLAGS=$FFLAGS' -pi fullmsg exp=timestep_tracer,ilnblnk,ifnblnk,cycle_tracer,pressure_for_eos rexp=bar2,fool_the_compiler expin=timestep_tracer.F,fool_the_compiler.F,bar2.F,utils.F,cycle_tracer.F,pressure_for_eos.F'
+# define basic storage unit as 8 bytes (default is 4); does not work with 
+# netCDF (library needs recompilation, accordingly)
+#FFLAGS=$FFLAGS' -ew'   
 
-# awi specific
+#FFLAGS=$FFLAGS' -ftrace' # trace output for performance analysis
+# highest automatic optimization level, handle with care
+#FOPTIM='-C hopt' 
+
+# awi specific paths and stuff
 INCLUDES='-I/SX/usr/include -I/home/sx8/sx8bench/netcdf/include'
 LIBS='-L/home/sx8/sx8bench/netcdf/lib -lnetcdf'
