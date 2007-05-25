@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.821 2007/05/24 23:10:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.822 2007/05/25 12:53:44 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - allow values of SEAICE_elaticParm > 1
+  - make lsr boundary conditions free slip (by default, changes results of
+    lsr solver)
+  - no slip boundary conditions for lsr will follow
+  - set minimum of zeta to zero (and not 4e8) (changes results)
 o change calculation of Visbeck K:
   - no longer depend on tapering scheme; instead, compute slope (limited 
     by GM_maxSlope). this is equivalent to what was comuted before with
