@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.16 2007/05/15 14:32:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.17 2007/05/25 12:52:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,7 +41,7 @@ CEndOfInterface
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, m, bi, bj, j1, j2, im, jm
+      INTEGER i, j, k, m, bi, bj, j1, j2, im, jm
       INTEGER ICOUNT1, ICOUNT2, SOLV_MAX_ITERS, SOLV_NCHECK
       INTEGER phexit
 
@@ -102,6 +102,8 @@ C SET SOME VALUES
 
       ICOUNT1=SOLV_MAX_ITERS
       ICOUNT2=SOLV_MAX_ITERS
+
+      k = 1
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph That's an important one! Note, that
@@ -224,6 +226,15 @@ C
      &         + HALF*(ETA (I,J-1,bi,bj) + ETA (I-1,J-1,bi,bj) ) )
          ENDDO
         ENDDO
+        IF ( .NOT. SEAICE_no_Slip ) THEN
+         DO j=1,sNy+1
+          DO i=1,sNx+1
+          etaMeanZ(I,J,bi,bj) = etaMeanZ(I,J,bi,bj)
+     &         *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
+     &         *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
        ENDDO
       ENDDO
 
@@ -275,8 +286,8 @@ C     coefficients of uIce(I,J+1)
      &         - TWO*etaMeanU(I,J,bi,bj) * _tanPhiAtU(I,J,bi,bj)
      &          * 1.0 _d 0 / ( _dyU(I,J,bi,bj) + _dyU(I,J+1,bi,bj) )
      &         *recip_rSphere
-         END DO
-        END DO
+         ENDDO
+        ENDDO
 
         DO J=1,sNy
          AU(1,J,bi,bj)=ZERO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.20 2007/05/14 14:29:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.21 2007/05/25 12:52:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -169,11 +169,16 @@ C--   now add in wind stress ant tilt
           FORCEY0(I,J,bi,bj)=TAUY(I,J,bi,bj)
      &         -seaiceMassV(I,J,bi,bj)* _recip_dyC(I,J,bi,bj)
      &         *( phiSurf(i,j)-phiSurf(i,j-1) )
+         ENDDO
+        ENDDO
+
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
 C--   now set up ice pressure and viscosities
           PRESS0(I,J,bi,bj)=PSTAR*HEFF(I,J,1,bi,bj)
      &         *EXP(-20.0 _d 0*(ONE-AREA(I,J,1,bi,bj)))
           ZMAX(I,J,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(I,J,bi,bj)
-          ZMIN(I,J,bi,bj)=4.0 _d +08
+          ZMIN(I,J,bi,bj)=0.0 _d 0
           PRESS0(I,J,bi,bj)=PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
          ENDDO
         ENDDO
