@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.162 2007/05/05 20:18:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.163 2007/05/25 14:56:36 mlosch Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -756,7 +756,9 @@ EOF
       print *," HELLO WORLD", wtime
       end
 EOF
-    $FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o >> genmake_warnings 2>&1
+    COMM="$FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o"
+    echo $COMM >> genmake_warnings
+    $COMM >> genmake_warnings 2>&1
     RET_F=$?
     test -x ./genmake_tc  &&  ./genmake_tc >> genmake_warnings 2>&1
     RETVAL=$?
