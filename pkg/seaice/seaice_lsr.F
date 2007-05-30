@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.19 2007/05/30 10:55:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.20 2007/05/30 15:05:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,11 +55,12 @@ C     i,j,bi,bj - Loop counters
       _RL AV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL BV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL CV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL UERR (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL FXY  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
-      _RL URT(1-Olx:sNx+Olx), CUU(1-Olx:sNx+Olx)
-      _RL VRT(1-Oly:sNy+Oly), CVV(1-Oly:sNy+Oly)
+      _RL URT(1-Olx:sNx+Olx, 1-Oly:sNy+Oly) 
+      _RL CUU(1-Olx:sNx+Olx, 1-Oly:sNy+Oly)
+      _RL VRT(1-Olx:sNx+Olx, 1-Oly:sNy+Oly)
+      _RL CVV(1-Olx:sNx+Olx, 1-Oly:sNy+Oly)
 C     strain rate tensor
       _RL e11              (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e22              (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -81,6 +82,7 @@ C     strain rate tensor
 
       _RL SINWAT, COSWAT
       _RL TEMPVAR
+      _RL UERR
 
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
@@ -200,8 +202,8 @@ C      this is the rhs contribution of the time derivative
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
      &         +seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
      &         *vIce(I,J,2,bi,bj)
-          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)* _maskW(I,J,1,bi,bj)
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)* _maskS(I,J,1,bi,bj)
+          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)* _maskW(I,J,k,bi,bj)
+          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)* _maskS(I,J,k,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -261,10 +263,10 @@ C     coefficients of uIce(I,J)
 C     (d/dx)[(eta+zeta)*d/dx)] U 
           AA1 = etaPlusZeta(I  ,J,bi,bj)
      &         * _recip_dxF(I  ,J,bi,bj) 
-     &         * _recip_dxC(I  ,J,bi,bj) * _maskW(I,J,1,bi,bj)
+     &         * _recip_dxC(I  ,J,bi,bj) * _maskW(I,J,k,bi,bj)
           AA2 = etaPlusZeta(I-1,J,bi,bj)
      &         * _recip_dxF(I-1,J,bi,bj)
-     &         * _recip_dxC(I  ,J,bi,bj) * _maskW(I,J,1,bi,bj)
+     &         * _recip_dxC(I  ,J,bi,bj) * _maskW(I,J,k,bi,bj)
 C     (d/dy)[eta*(d/dy + tanphi/a)] U (also on UVRT1/2)
           AA3= ( etaMeanZ(I,J+1,bi,bj) * _recip_dyU(I,J+1,bi,bj)
      &         + etaMeanZ(I,J  ,bi,bj) * _recip_dyU(I,J  ,bi,bj) 
@@ -277,12 +279,12 @@ C     2*eta*(tanphi/a) * ( tanphi/a ) U
      &         * _tanPhiAtU(I,J,bi,bj)  * _tanPhiAtU(I,J,bi,bj)
           AU(I,J,bi,bj)=-AA2
           CU(I,J,bi,bj)=-AA1
-          BU(I,J,bi,bj)=(ONE - _maskW(I,J,1,bi,bj))
+          BU(I,J,bi,bj)=(ONE - _maskW(I,J,k,bi,bj))
      &         - AU(I,J,bi,bj) - CU(I,J,bi,bj)
      &         + ( AA3 + AA6
      &         + seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
      &         + 0.5 _d 0*( DRAGS(I,J,bi,bj) + DRAGS(I-1,J,bi,bj) )
-     &         )* _maskW(I,J,1,bi,bj)
+     &         )* _maskW(I,J,k,bi,bj)
 C     coefficients of uIce(I,J-1)
           UVRT1(I,J,bi,bj)=
      &         etaMeanZ(I,J  ,bi,bj) * _recip_dyG(I,J  ,bi,bj) * (
@@ -416,49 +418,48 @@ C NOW SET U(3)=U(1)
          END DO
         END DO
 
-        DO 1200 J=1,sNy
+        DO J=1,sNy
          DO I=1,sNx
           IF(I.EQ.1) THEN
            AA2 = etaPlusZeta(I-1,J,bi,bj)
      &          * _recip_dxF(I-1,J,bi,bj)
      &          * _recip_dxC(I  ,J,bi,bj)
-           AA3=AA2*uIce(I-1,J,1,bi,bj)* _maskW(I,J,1,bi,bj)
+           AA3=AA2*uIce(I-1,J,1,bi,bj)* _maskW(I,J,k,bi,bj)
           ELSE IF(I.EQ.sNx) THEN
            AA1 = etaPlusZeta(I  ,J,bi,bj)
      &          * _recip_dxF(I  ,J,bi,bj) 
      &          * _recip_dxC(I  ,J,bi,bj)
-           AA3=AA1*uIce(I+1,J,1,bi,bj) * _maskW(I,J,1,bi,bj)
+           AA3=AA1*uIce(I+1,J,1,bi,bj) * _maskW(I,J,k,bi,bj)
           ELSE
            AA3=ZERO
           END IF
-          URT(I)=FXY(I,J,bi,bj)+AA3
+          URT(I,J)=FXY(I,J,bi,bj)+AA3
      &          +UVRT1(I,J,bi,bj)*uIce(I,J-1,1,bi,bj)
      &          +UVRT2(I,J,bi,bj)*uIce(I,J+1,1,bi,bj)
-          URT(I)=URT(I)* _maskW(I,J,1,bi,bj) * seaiceMaskU(I,J,bi,bj)
+          URT(I,J)=URT(I,J)* _maskW(I,J,k,bi,bj)*seaiceMaskU(I,J,bi,bj)
          END DO
 
          DO I=1,sNx
-          CUU(I)=CU(I,J,bi,bj)
+          CUU(I,J)=CU(I,J,bi,bj)
          END DO
-         URT(1)=URT(1)/BU(1,J,bi,bj)
+         URT(1,J)=URT(1,J)/BU(1,J,bi,bj)
          DO I=2,sNx
           IM=I-1
-          CUU(I)=CUU(I)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM))
-          URT(I)=(URT(I)-AU(I,J,bi,bj)*URT(IM))
-     &          /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM))
+          CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
+          URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
+     &          /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
          END DO
          DO I=1,sNx-1
           J1=sNx-I
           J2=J1+1
-          URT(J1)=URT(J1)-CUU(J1)*URT(J2)
+          URT(J1,J)=URT(J1,J)-CUU(J1,J)*URT(J2,J)
          END DO
          DO I=1,sNx
           uIce(I,J,1,bi,bj)=uIce(I,J,3,bi,bj)
-     &        +WFAU*(URT(I)-uIce(I,J,3,bi,bj))
+     &        +WFAU*(URT(I,J)-uIce(I,J,3,bi,bj))
          END DO
-
-1200    CONTINUE
-
+        ENDDO
+C     end bi,bj-loops
        ENDDO
       ENDDO
 
@@ -468,9 +469,9 @@ C NOW SET U(3)=U(1)
          S1=ZERO
          DO J=1,sNy
           DO I=1,sNx
-           UERR(I,J,bi,bj)=(uIce(I,J,1,bi,bj)-uIce(I,J,3,bi,bj))
-     &             * _maskW(I,J,1,bi,bj)
-           S1=MAX(ABS(UERR(I,J,bi,bj)),S1)
+           UERR=(uIce(I,J,1,bi,bj)-uIce(I,J,3,bi,bj))
+     &             * _maskW(I,J,k,bi,bj)
+           S1=MAX(ABS(UERR),S1)
           END DO
          END DO
          _GLOBAL_MAX_R8( S1, myThid )
@@ -533,18 +534,18 @@ C
      &         - AA2
      &         - AA6
      &         - AA7*1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
-     &         )* _maskS(I,J,1,bi,bj)
+     &         )* _maskS(I,J,k,bi,bj)
           CV(I,J,bi,bj)=(
      &         -AA1 
      &         + AA5
      &         + AA7*1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
-     &         )* _maskS(I,J,1,bi,bj)
-          BV(I,J,bi,bj)= (ONE- _maskS(I,J,1,bi,bj))
+     &         )* _maskS(I,J,k,bi,bj)
+          BV(I,J,bi,bj)= (ONE- _maskS(I,J,k,bi,bj))
      &         +( (AA1+AA2) + (AA3+AA4)  + (AA5-AA6) 
      &         + AA7 * _tanPhiAtV(I,J,bi,bj)*recip_rSphere
      &         + seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
      &         + 0.5 _d 0 * ( DRAGS(I,J,bi,bj) + DRAGS(I,J-1,bi,bj) )
-     &         )* _maskS(I,J,1,bi,bj)
+     &         )* _maskS(I,J,k,bi,bj)
 C     coefficients for V(I-1,J)
           UVRT1(I,J,bi,bj)= AA4
 C     coefficients for V(I+1,J)
@@ -676,7 +677,7 @@ C NOW SET U(3)=U(1)
      &           + TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
      &           * _tanPhiAtV(I,J,bi,bj) 
      &           *1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
-     &           ) * vIce(I,J-1,1,bi,bj) * _maskS(I,J,1,bi,bj)
+     &           ) * vIce(I,J-1,1,bi,bj) * _maskS(I,J,k,bi,bj)
            ELSE IF(J.EQ.sNy) THEN
             AA1= etaPlusZeta(I,J  ,bi,bj)
      &           *_recip_dyF(I,J  ,bi,bj) * _recip_dyC(I,J,bi,bj)
@@ -686,37 +687,39 @@ C NOW SET U(3)=U(1)
      &           - TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
      &           * _tanPhiAtV(I,J,bi,bj) 
      &           *1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
-     &           ) * vIce(I,J+1,1,bi,bj) * _maskS(I,J,1,bi,bj)
+     &           ) * vIce(I,J+1,1,bi,bj) * _maskS(I,J,k,bi,bj)
            ELSE
             AA3=ZERO
            END IF
 
-          VRT(J)=FXY(I,J,bi,bj)+AA3+UVRT1(I,J,bi,bj)*vIce(I-1,J,1,bi,bj)
-     &                       +UVRT2(I,J,bi,bj)*vIce(I+1,J,1,bi,bj)
-          VRT(J)=VRT(J)* _maskS(I,J,1,bi,bj) * seaiceMaskV(I,J,bi,bj)
+          VRT(I,J)=FXY(I,J,bi,bj)
+     &          + AA3
+     &          + UVRT1(I,J,bi,bj)*vIce(I-1,J,1,bi,bj)
+     &          + UVRT2(I,J,bi,bj)*vIce(I+1,J,1,bi,bj)
+          VRT(I,J)=VRT(I,J)* _maskS(I,J,k,bi,bj)*seaiceMaskV(I,J,bi,bj)
          END DO
 
          DO J=1,sNy
-          CVV(J)=CV(I,J,bi,bj)
+          CVV(I,J)=CV(I,J,bi,bj)
          END DO
-         VRT(1)=VRT(1)/BV(I,1,bi,bj)
+         VRT(I,1)=VRT(I,1)/BV(I,1,bi,bj)
          DO J=2,sNy
           JM=J-1
-          CVV(J)=CVV(J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(JM))
-          VRT(J)=(VRT(J)-AV(I,J,bi,bj)*VRT(JM))
-     &          /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(JM))
+          CVV(I,J)=CVV(I,J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
+          VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
+     &          /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
          END DO
          DO J=1,sNy-1
           J1=sNy-J
           J2=J1+1
-          VRT(J1)=VRT(J1)-CVV(J1)*VRT(J2)
+          VRT(I,J1)=VRT(I,J1)-CVV(I,J1)*VRT(I,J2)
          END DO
          DO J=1,sNy
           vIce(I,J,1,bi,bj)=vIce(I,J,3,bi,bj)
-     &        +WFAV*(VRT(J)-vIce(I,J,3,bi,bj))
+     &        +WFAV*(VRT(I,J)-vIce(I,J,3,bi,bj))
          END DO
         ENDDO
-
+C     end bi,bj-loops
        ENDDO
       ENDDO
 
@@ -726,9 +729,9 @@ C NOW SET U(3)=U(1)
          S2=ZERO
          DO J=1,sNy
           DO I=1,sNx
-           UERR(I,J,bi,bj)=(vIce(I,J,1,bi,bj)-vIce(I,J,3,bi,bj))
-     &             * _maskS(I,J,1,bi,bj)
-           S2=MAX(ABS(UERR(I,J,bi,bj)),S2)
+           UERR=(vIce(I,J,1,bi,bj)-vIce(I,J,3,bi,bj))
+     &             * _maskS(I,J,k,bi,bj)
+           S2=MAX(ABS(UERR),S2)
           END DO
          END DO
          _GLOBAL_MAX_R8( S2, myThid )
@@ -767,8 +770,8 @@ C     APPLY MASKS
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
-          uIce(I,J,1,bi,bj)=uIce(I,J,1,bi,bj)* _maskW(I,J,1,bi,bj)
-          vIce(I,J,1,bi,bj)=vIce(I,J,1,bi,bj)* _maskS(I,J,1,bi,bj)
+          uIce(I,J,1,bi,bj)=uIce(I,J,1,bi,bj)* _maskW(I,J,k,bi,bj)
+          vIce(I,J,1,bi,bj)=vIce(I,J,1,bi,bj)* _maskS(I,J,k,bi,bj)
          END DO
         END DO
        ENDDO
