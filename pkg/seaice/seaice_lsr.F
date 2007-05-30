@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.18 2007/05/25 14:52:13 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.19 2007/05/30 10:55:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -74,9 +74,10 @@ C     strain rate tensor
       _RL UVRT1    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL UVRT2    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
-      _RL dVdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dUdx     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dUdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dVdx     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dVdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
       _RL SINWAT, COSWAT
       _RL TEMPVAR
@@ -228,19 +229,22 @@ C
      &         HALF*(ETA (I,J,bi,bj) + ETA (I  ,J-1,bi,bj))
          ENDDO
         ENDDO
-        DO j=1,sNy+1
-         DO i=1,sNx+1
-          etaMeanZ (I,J,bi,bj) = HALF * 
-     &         ( HALF*(ETA (I,J  ,bi,bj) + ETA (I-1,J  ,bi,bj) )
-     &         + HALF*(ETA (I,J-1,bi,bj) + ETA (I-1,J-1,bi,bj) ) )
-         ENDDO
-        ENDDO
-        IF ( .NOT. SEAICE_no_Slip ) THEN
+        IF ( SEAICE_no_Slip ) THEN
          DO j=1,sNy+1
           DO i=1,sNx+1
-          etaMeanZ(I,J,bi,bj) = etaMeanZ(I,J,bi,bj)
-     &         *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
-     &         *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
+           etaMeanZ (I,J,bi,bj) = HALF * 
+     &          ( HALF*(ETA (I,J  ,bi,bj) + ETA (I-1,J  ,bi,bj) )
+     &          + HALF*(ETA (I,J-1,bi,bj) + ETA (I-1,J-1,bi,bj) ) )
+          ENDDO
+         ENDDO
+        ELSE
+         DO j=1,sNy+1
+          DO i=1,sNx+1
+           etaMeanZ (I,J,bi,bj) = HALF * 
+     &          ( HALF*(ETA (I,J  ,bi,bj) + ETA (I-1,J  ,bi,bj) )
+     &          + HALF*(ETA (I,J-1,bi,bj) + ETA (I-1,J-1,bi,bj) ) )
+     &          *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
+     &          *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
           ENDDO
          ENDDO
         ENDIF
@@ -326,14 +330,34 @@ C     now set up right-hand side
      &         * _recip_dyF(I,J,bi,bj)
          ENDDO
         ENDDO
+        DO J=1,sNy+1
+         DO I=1,sNx
+          dVdx(I,J) = ( vIceC(I,J,bi,bj) - vIceC(I-1,J,bi,bj) )
+     &         * _recip_dxV(I,J,bi,bj)
+     &         *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
+     &         *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
+         ENDDO
+        ENDDO
+        IF ( SEAICE_no_slip ) THEN
+C     no slip boundary conditions
+C     free slip conditions are taken care of by masking dVdx
+         DO J=1,sNy+1
+          DO I=1,sNx
+           hFacM = _maskW(I,J,K,bi,bj) - _maskW(I-1,J,K,bi,bj)
+           dVdx(I,J) = dVdx(I,J) 
+     &          + ( vIceC(I,J,bi,bj) - vIceC(I-1,J,bi,bj) )
+     &          * _recip_dxV(I,J,bi,bj) * hFacM * 2. _d 0
+          ENDDO
+         ENDDO
+        ENDIF
         DO J=1,sNy
          DO I=1,sNx
 C     coriolis and other forcing
-          FXY(I,J,bi,bj)=
-     &     0.5*( seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
-     &          *0.5*( vIceC( i ,j,bi,bj)+vIceC( i ,j+1,bi,bj) )
+          FXY(I,J,bi,bj)=0.5 _d 0 *
+     &         ( seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
+     &          *0.5 _d 0*( vIceC( i ,j,bi,bj)+vIceC( i ,j+1,bi,bj) )
      &         + seaiceMassC(I-1,J,bi,bj) * _fCori(I-1,J,bi,bj)
-     &          *0.5*( vIceC(i-1,j,bi,bj)+vIceC(i-1,j+1,bi,bj) ) )
+     &          *0.5 _d 0*( vIceC(i-1,j,bi,bj)+vIceC(i-1,j+1,bi,bj) ) )
      &         +FORCEX(I,J,bi,bj)
 C     + d/dx[ (zeta-eta) dV/dy]
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) +
@@ -341,13 +365,9 @@ C     + d/dx[ (zeta-eta) dV/dy]
      &         - zetaMinusEta(I-1,J  ,bi,bj) * dVdy(I-1,J  )
      &         ) * _recip_dxC(I,J,bi,bj) 
 C     + d/dy[ eta dV/x ]
-          FXY(I,J,bi,bj)=FXY(I,J,bi,bj) + (
-     &         etaMeanZ(I,J+1,bi,bj)
-     &         * ( vIceC(I  ,J+1,bi,bj) - vIceC(I-1,J+1,bi,bj) )
-     &         * _recip_dxV(I,J+1,bi,bj)
-     &         - etaMeanZ(I,J,bi,bj)
-     &         * ( vIceC(I  ,J,bi,bj) - vIceC(I-1,J,bi,bj) )
-     &         * _recip_dxV(I,J,bi,bj)
+          FXY(I,J,bi,bj)=FXY(I,J,bi,bj) + 
+     &         ( etaMeanZ(I,J+1,bi,bj) * dVdx(I,J+1)
+     &         - etaMeanZ(I,J  ,bi,bj) * dVdx(I,J  )
      &         ) * _recip_dyG(I,J,bi,bj)
 C     - d/dx[ (eta+zeta) * v * (tanphi/a) ]
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) - (
@@ -364,9 +384,7 @@ C     - 2*eta*(tanphi/a) * dV/dx
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) - 
      &         TWO * etaMeanU(I,J,bi,bj) * _tanPhiAtV(I,J,bi,bj)
      &         *recip_rSphere
-     &         *(vIceC(I  ,J,bi,bj) + vIceC(I  ,J+1,bi,bj)
-     &          -vIceC(I-1,J,bi,bj) - vIceC(I-1,J+1,bi,bj))
-     &         * _recip_dxC(I,J,bi,bj)
+     &         *( dVdx(I,J+1) + dVdx(I,J) ) * 0.5 _d 0
          END DO
         END DO
 
@@ -557,21 +575,39 @@ C     reset coefficients of V(I-1,J) and V(I+1,J)
 
 C     now set up right-hand-side
         DO J=0,sNy
-         DO I=1,sNx+1
+         DO I=1,sNx
           dUdx(I,J) = ( uIceC(I+1,J,bi,bj) - uIceC(I,J,bi,bj) )
      &         * _recip_dxF(I,J,bi,bj)
-          dUdy(I,J) = ( uIceC(I,J+1,bi,bj) - uIceC(I,J,bi,bj) )
-     &         * _recip_dyU(I,J+1,bi,bj)
          ENDDO
         ENDDO
         DO J=1,sNy
+         DO I=1,sNx+1
+          dUdy(I,J) = ( uIceC(I,J,bi,bj) - uIceC(I,J-1,bi,bj) )
+     &         * _recip_dyU(I,J,bi,bj)
+     &         *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
+     &         *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
+         ENDDO
+        ENDDO
+        IF ( SEAICE_no_slip ) THEN
+C     no slip boundary conditions
+C     free slip conditions are taken care of by masking dUdy
+         DO J=0,sNy
+          DO I=1,sNx+1
+           hFacM = _maskW(i,j,k,bi,bj) - _maskW(i,j-1,k,bi,bj)
+           dUdy(I,J) = dUdy(I,J)
+     &          + ( uIceC(I,J,bi,bj) - uIceC(I,J-1,bi,bj) )
+     &          * _recip_dyU(I,J,bi,bj) * hFacM * 2. _d 0
+          ENDDO
+         ENDDO
+        ENDIF
+        DO J=1,sNy
          DO I=1,sNx
 C     coriols and other foring
-          FXY(I,J,bi,bj)=
-     &         -0.5*( seaiceMassC(I,J  ,bi,bj) * _fCori(I,J  ,bi,bj)
-     &              *0.5*( uIceC(i  ,j  ,bi,bj)+uIceC(i+1,  j,bi,bj) )
-     &              + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
-     &              *0.5*( uIceC(i  ,j-1,bi,bj)+uIceC(i+1,j-1,bi,bj) ) )
+          FXY(I,J,bi,bj)= - 0.5 _d 0 *
+     &         ( seaiceMassC(I,J  ,bi,bj) * _fCori(I,J  ,bi,bj)
+     &         *0.5 _d 0*( uIceC(i  ,j  ,bi,bj)+uIceC(i+1,  j,bi,bj) )
+     &         + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
+     &         *0.5 _d 0*( uIceC(i  ,j-1,bi,bj)+uIceC(i+1,j-1,bi,bj) ) )
      &         + FORCEY(I,J,bi,bj)
 C     + d/dy[ (zeta-eta) dU/dx ]
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) +
@@ -585,20 +621,18 @@ C     + d/dx[ eta dU/dy ]
      &         * _recip_dxG(I,J,bi,bj)
 C     + d/dx[ eta * (tanphi/a) * U ]
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) + (
-     &         etaMeanZ(I+1,J,bi,bj) * 0.5 * 
+     &         etaMeanZ(I+1,J,bi,bj) * 0.5 _d 0 * 
      &         ( uIceC(I+1,J  ,bi,bj) * _tanPhiAtU(I+1,J  ,bi,bj)
      &         + uIceC(I+1,J-1,bi,bj) * _tanPhiAtU(I+1,J-1,bi,bj) ) 
-     &         - etaMeanZ(I  ,J,bi,bj) * 0.5 * 
+     &         - etaMeanZ(I  ,J,bi,bj) * 0.5 _d 0 * 
      &         ( uIceC(I  ,J  ,bi,bj) * _tanPhiAtU(I  ,J  ,bi,bj) 
      &         + uIceC(I  ,J-1,bi,bj) * _tanPhiAtU(I  ,J  ,bi,bj) ) 
      &         ) *  _recip_dxG(I,J,bi,bj)*recip_rSphere
 C     + 2*eta*(tanphi/a) dU/dx
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) +
      &        TWO * etaMeanV(I,J,bi,bj)*TWO  * _tanPhiAtV(I,J,bi,bj)
-     &        * ( uIceC(I+1,J,bi,bj)+uIceC(I+1,J-1,bi,bj)
-     &          - uIceC(I  ,J,bi,bj)-uIceC(I  ,J-1,bi,bj) )
-     &         * _recip_dxG(I,J,bi,bj)
      &         *recip_rSphere
+     &         * ( dUdx(I,J) + dUdx(I,J-1) ) * 0.5 _d 0
          END DO
         END DO
 
