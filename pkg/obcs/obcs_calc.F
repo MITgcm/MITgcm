@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.14 2007/05/30 09:21:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.15 2007/05/30 09:22:54 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -47,7 +47,7 @@ C     msgBuf       - Informational/error meesage buffer
       INTEGER I, J , K, I_obc, J_obc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_OBCS_BALANCE
-      _RL Tr_T, Ar_T, recip_Ar_T, Tr, Ar 
+      _RL Tr_T, Ar_T, Tr, Ar 
 #endif /* ALLOW_OBCS_BALANCE */
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
