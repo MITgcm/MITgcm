@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.10 2007/05/15 14:31:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.11 2007/05/30 10:56:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -93,8 +93,8 @@ C     determine number of interal time steps
       nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
 C     inverse relaxation/damping time scale
       recip_evp_tau = 0. _d 0
-      IF ( SEAICE_elasticParm .GT. 0. )
-     &     recip_evp_tau=1. _d 0/(SEAICE_deltaTdyn*SEAICE_elasticParm)
+      IF ( SEAICE_evpTauRelax .GT. 0. _d 0 )
+     &     recip_evp_tau=1. _d 0/SEAICE_evpTauRelax
       denom1 = 1. _d 0 
      &     / (1. _d 0 + 0.5 _d 0 *SEAICE_deltaTevp*recip_evp_tau)
       denom2 = 1. _d 0 

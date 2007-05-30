@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.48 2007/05/25 06:48:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.49 2007/05/30 10:56:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,7 +47,7 @@ C--   SEAICE parameters
      & LAD, IMAX_TICE, SEAICEadvScheme, SEAICEadvSchArea, 
      & SEAICEadvSchHeff, SEAICEadvSchSnow,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
-     & SEAICE_deltaTevp, SEAICE_elasticParm,
+     & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq, 
      & SEAICE_initialHEFF,
      & SEAICE_rhoAir, SEAICE_rhoIce, 
@@ -127,6 +127,7 @@ CML      SEAICEadvSnow      = .TRUE.
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
       SEAICE_elasticParm = 0.33333333333333333333333333 _d 0
+      SEAICE_evpTauRelax = -1. _d 0
 #ifdef ALLOW_MNC
       SEAICE_tave_mnc = timeave_mnc
       SEAICE_dump_mnc = snapshot_mnc
@@ -270,6 +271,8 @@ C     yet been tried nor thought through.
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
        ENDIF
+       IF ( SEAICE_evpTauRelax .LE. 0. _d 0 )
+     &      SEAICE_evpTauRelax = SEAICE_deltaTdyn*SEAICE_elasticParm
       ENDIF
 #endif /* SEAICE_ALLOW_EVP */
 
