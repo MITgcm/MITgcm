@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.13 2006/07/13 22:04:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.14 2007/05/30 09:21:42 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -47,7 +47,7 @@ C     msgBuf       - Informational/error meesage buffer
       INTEGER I, J , K, I_obc, J_obc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_OBCS_BALANCE
-      _RL Tr_T, Ar_T, Tr, Ar 
+      _RL Tr_T, Ar_T, recip_Ar_T, Tr, Ar 
 #endif /* ALLOW_OBCS_BALANCE */
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
@@ -362,115 +362,123 @@ C ------------------------------------------------------------------------------
 #ifdef ALLOW_OBCS_BALANCE
       IF ( useOBCSbalance) THEN
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_MSG('useOBCSbalance=.TRUE.',myThid)
+       IF (debugMode) CALL DEBUG_MSG('useOBCSbalance=.TRUE.',myThid)
 #endif
 
 #ifdef ALLOW_OBCS_EAST
-        Tr_T = 0. _d 0
-        Ar_T = 0. _d 0
-        DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-            I_obc=OB_Ie(J,bi,bj)
-            IF (I_obc.ne.0) THEN
-              Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
-              Ar_T = Ar_T + Ar 
-              Tr_T = Tr_T + Ar * OBEu(J,K,bi,bj)
-            ENDIF
-          ENDDO
+       Tr_T = 0. _d 0
+       Ar_T = 0. _d 0
+       DO K=1,Nr
+        DO J=1-Oly,sNy+Oly
+         I_obc=OB_Ie(J,bi,bj)
+         IF (I_obc.ne.0) THEN
+          Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
+          Ar_T = Ar_T + Ar 
+          Tr_T = Tr_T + Ar * OBEu(J,K,bi,bj)
+         ENDIF
         ENDDO
-        _GLOBAL_SUM_R8( Ar_T , myThid )
+       ENDDO
+       _GLOBAL_SUM_R8( Ar_T , myThid )
+       IF ( Ar_T .GT. 0. _d 0 ) THEN
         _GLOBAL_SUM_R8( Tr_T , myThid )
         Tr_T = (0. - Tr_T)/Ar_T
         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-            I_obc=OB_Ie(J,bi,bj)
-            IF (I_obc.ne.0) THEN
-              OBEu(J,K,bi,bj) = OBEu(J,K,bi,bj) + Tr_T
-c              OBEv(J,K,bi,bj) = 0. 
-            ENDIF
-          ENDDO
+         DO J=1-Oly,sNy+Oly
+          I_obc=OB_Ie(J,bi,bj)
+          IF (I_obc.ne.0) THEN
+           OBEu(J,K,bi,bj) = OBEu(J,K,bi,bj) + Tr_T
+c          OBEv(J,K,bi,bj) = 0. 
+          ENDIF
+         ENDDO
         ENDDO
+       ENDIF
 #endif
 
 #ifdef ALLOW_OBCS_WEST
-        Tr_T = 0. _d 0
-        Ar_T = 0. _d 0
-        DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-            I_obc=OB_Iw(J,bi,bj)
-            IF (I_obc.ne.0) THEN
-              Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
-              Ar_T = Ar_T + Ar 
-              Tr_T = Tr_T + Ar * OBWu(J,K,bi,bj)
-            ENDIF
-          ENDDO
+       Tr_T = 0. _d 0
+       Ar_T = 0. _d 0
+       DO K=1,Nr
+        DO J=1-Oly,sNy+Oly
+         I_obc=OB_Iw(J,bi,bj)
+         IF (I_obc.ne.0) THEN
+          Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
+          Ar_T = Ar_T + Ar 
+          Tr_T = Tr_T + Ar * OBWu(J,K,bi,bj)
+         ENDIF
         ENDDO
-        _GLOBAL_SUM_R8( Ar_T , myThid )
+       ENDDO
+       _GLOBAL_SUM_R8( Ar_T , myThid )
+       IF ( Ar_T .GT. 0. _d 0 ) THEN
         _GLOBAL_SUM_R8( Tr_T , myThid )
         Tr_T = (0. - Tr_T)/Ar_T
         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-            I_obc=OB_Iw(J,bi,bj)
-            IF (I_obc.ne.0) THEN
-                OBWu(J,K,bi,bj) = OBWu(J,K,bi,bj) + Tr_T
-c                OBWv(J,K,bi,bj) = 0. 
-            ENDIF
-          ENDDO
+         DO J=1-Oly,sNy+Oly
+          I_obc=OB_Iw(J,bi,bj)
+          IF (I_obc.ne.0) THEN
+           OBWu(J,K,bi,bj) = OBWu(J,K,bi,bj) + Tr_T
+c          OBWv(J,K,bi,bj) = 0. 
+          ENDIF
+         ENDDO
         ENDDO
+       ENDIF
 #endif
 
 #ifdef ALLOW_OBCS_NORTH
-        Tr_T = 0. _d 0
-        Ar_T = 0. _d 0
-        DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-            J_obc=OB_Jn(I,bi,bj)
-            IF (J_obc.ne.0) THEN
-              Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
-              Ar_T = Ar_T + Ar 
-              Tr_T = Tr_T + Ar * OBNv(I,K,bi,bj)
-            ENDIF
-          ENDDO
+       Tr_T = 0. _d 0
+       Ar_T = 0. _d 0
+       DO K=1,Nr
+        DO I=1-Olx,sNx+Olx
+         J_obc=OB_Jn(I,bi,bj)
+         IF (J_obc.ne.0) THEN
+          Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
+          Ar_T = Ar_T + Ar 
+          Tr_T = Tr_T + Ar * OBNv(I,K,bi,bj)
+         ENDIF
         ENDDO
-        _GLOBAL_SUM_R8( Ar_T , myThid )
+       ENDDO
+       _GLOBAL_SUM_R8( Ar_T , myThid )
+       IF ( Ar_T .GT. 0. _d 0 ) THEN
         _GLOBAL_SUM_R8( Tr_T , myThid )
         Tr_T = (0. - Tr_T)/Ar_T
         DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-            J_obc=OB_Jn(I,bi,bj)
-            IF (J_obc.ne.0) THEN
-c                OBNu(I,K,bi,bj) = 0.
-                OBNv(I,K,bi,bj) = OBNv(I,K,bi,bj) + Tr_T
-            ENDIF
-          ENDDO
+         DO I=1-Olx,sNx+Olx
+          J_obc=OB_Jn(I,bi,bj)
+          IF (J_obc.ne.0) THEN
+c          OBNu(I,K,bi,bj) = 0.
+           OBNv(I,K,bi,bj) = OBNv(I,K,bi,bj) + Tr_T
+          ENDIF
+         ENDDO
         ENDDO
+       ENDIF
 #endif
 
 #ifdef ALLOW_OBCS_SOUTH
-        Tr_T = 0. _d 0
-        Ar_T = 0. _d 0
-        DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-            J_obc=OB_Js(I,bi,bj)
-            IF (J_obc.ne.0) THEN
-              Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
-              Ar_T = Ar_T + Ar 
-              Tr_T = Tr_T + Ar * OBSv(I,K,bi,bj)
-            ENDIF
-          ENDDO
+       Tr_T = 0. _d 0
+       Ar_T = 0. _d 0
+       DO K=1,Nr
+        DO I=1-Olx,sNx+Olx
+         J_obc=OB_Js(I,bi,bj)
+         IF (J_obc.ne.0) THEN
+          Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
+          Ar_T = Ar_T + Ar 
+          Tr_T = Tr_T + Ar * OBSv(I,K,bi,bj)
+         ENDIF
         ENDDO
-        _GLOBAL_SUM_R8( Ar_T , myThid )
+       ENDDO
+       _GLOBAL_SUM_R8( Ar_T , myThid )
+       IF ( Ar_T .GT. 0. _d 0 ) THEN
         _GLOBAL_SUM_R8( Tr_T , myThid )
         Tr_T = (0. - Tr_T)/Ar_T
         DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-            J_obc=OB_Js(I,bi,bj)
-            IF (J_obc.ne.0) THEN
-c                OBSu(I,K,bi,bj) = 0.
-                OBSv(I,K,bi,bj) = OBSv(I,K,bi,bj) + Tr_T
-            ENDIF
-          ENDDO
+         DO I=1-Olx,sNx+Olx
+          J_obc=OB_Js(I,bi,bj)
+          IF (J_obc.ne.0) THEN
+c          OBSu(I,K,bi,bj) = 0.
+           OBSv(I,K,bi,bj) = OBSv(I,K,bi,bj) + Tr_T
+          ENDIF
+         ENDDO
         ENDDO
+       ENDIF
 #endif
 
       ENDIF
