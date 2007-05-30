@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.6 2007/05/14 07:13:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.7 2007/05/30 23:34:21 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -50,7 +50,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )
-      
+
       diagName  = 'SIheff  '
       diagTitle = 'SEAICE effective ice thickness'
       diagUnits = 'm               '
@@ -64,7 +64,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagCode  = 'UU      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )
-      
+
       diagName  = 'SIvice  '
       diagTitle = 'SEAICE merid. ice velocity, >0 from South to North'
       diagUnits = 'm/s             '
@@ -79,7 +79,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )
 
-
+      diagName  = 'SIatmFW '
+      diagTitle = 'Net freshwater flux from the atmosphere (+=down)'
+      diagUnits = 'm/s             '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'SIuwind '
       diagTitle = 'SEAICE zonal 10-m wind speed, >0 increases uVel'
@@ -137,7 +142,7 @@ C     EXFlwnet+EXFswnet-EXFhl-EXFhs.
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
-      
+
 C     SIqsw, Qsw, and QSWtave are identical.
 C     Except under sea ice, SIqsw is also identical to EXFswnet.
       diagName  = 'SIqsw   '

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.14 2007/05/18 02:46:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.15 2007/05/30 23:34:22 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -74,6 +74,8 @@ C
       _RL HCORR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     frWtrIce contains m of ice melted (<0) or created (>0)
       _RL frWtrIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     frWtrAtm contains freshwater flux from the atmosphere
+      _RL frWtrAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     actual ice thickness with upper and lower limit
       _RL HICE   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
 C     actual snow thickness
@@ -160,6 +162,7 @@ CADJ &                         key = iicekey, byte = isbyte
           QSWI (I,J)      = 0.0 _d 0
           HCORR(I,J)      = 0.0 _d 0
           frWtrIce(I,J)   = 0.0 _d 0
+          frWtrAtm(I,J)   = 0.0 _d 0
           RESID_HEAT(I,J) = 0.0 _d 0
          ENDDO
         ENDDO
@@ -517,6 +520,14 @@ C NOW GET FRESH WATER FLUX
 #endif
      &         + frWtrIce(I,J)*ICE2WATR/SEAICE_deltaTtherm
      &         )
+#ifdef ALLOW_DIAGNOSTICS
+          frWtrAtm(I,J)   = maskC(I,J,kSurface,bi,bj)*(
+     &           PRECIP(I,J,bi,bj)
+     &         - EVAP(I,J,bi,bj)
+     &               *( ONE - AREA(I,J,2,bi,bj) )
+     &         + RUNOFF(I,J,bi,bj)
+     &         )
+#endif
 #else /* ALLOW_ATM_TEMP */
           STOP 'ABNORMAL END: S/R THSICE_GROWTH: ATM_TEMP undef'
 #endif /* ALLOW_ATM_TEMP */
@@ -539,6 +550,11 @@ C Add YNEG contribution to QNET
 
          ENDDO
         ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+         CALL DIAGNOSTICS_FILL(frWtrAtm,'SIatmFW ',0,1 ,2,bi,bj,myThid)
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef SEAICE_DEBUG
 c      CALL PLOT_FIELD_XYRS( UWIND,'Current UWIND ', myIter, myThid )
