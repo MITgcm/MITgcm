@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.31 2007/04/14 18:32:32 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.32 2007/05/31 16:28:22 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -8,11 +8,11 @@ C     include "DYNVARS.h"
 C     !DESCRIPTION:
 C     \bv
 C     *==========================================================*
-C     | DYNVARS.h                                                 
-C     | o Dynamical model variables (common block DYNVARS_R)      
+C     | DYNVARS.h
+C     | o Dynamical model variables (common block DYNVARS_R)
 C     *==========================================================*
-C     | The value and two levels of time tendency are held for    
-C     | each prognostic variable.                                 
+C     | The value and two levels of time tendency are held for
+C     | each prognostic variable.
 C     *==========================================================*
 C     \ev
 CEOP
@@ -23,9 +23,9 @@ C     vVel  - meridional velocity (m/s, j=1 held at southern face)
 C     theta - potential temperature (oC, held at pressure/tracer point)
 C     salt  - salinity (ppt, held at pressure/tracer point)
 C     gX, gxNm1 - Time tendencies at current and previous time levels.
-C     etaH   - surface r-anomaly, advanced in time consistently 
-C              with 2.D flow divergence (Exact-Conservation): 
-C                etaH^n+1 = etaH^n - delta_t*Div.(H^n U^n)   
+C     etaH   - surface r-anomaly, advanced in time consistently
+C              with 2.D flow divergence (Exact-Conservation):
+C                etaH^n+1 = etaH^n - delta_t*Div.(H^n U^n)
 C  note: a) used with "exactConserv" but strictly necessary for NonLinFreeSurf
 C        b) same as etaN but not necessarely at the same time, e.g.:
 C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
@@ -100,16 +100,21 @@ C                     BryanLewis79 vertical diffusivity
       _RL BL79LatArray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
-C     diagnostic variables: 
-C     phiHydLow  :: Phi-Hydrostatic at r-lower boundary
-C                  (bottom in z-coordinates, top in p-coordinates)
-C     totPhiHyd :: total hydrostatic Potential (anomaly, for now), 
-C                  at cell center level ; includes surface contribution.
-C                 (for diagnostic + used in Z-coord with EOS_funct_P)
+C     diagnostic variables:
+C     phiHydLow    :: Phi-Hydrostatic at r-lower boundary
+C                     (bottom in z-coordinates, top in p-coordinates)
+C     totPhiHyd    :: total hydrostatic Potential (anomaly, for now),
+C                     at cell center level ; includes surface contribution.
+C                     (for diagnostic + used in Z-coord with EOS_funct_P)
+C     hMixLayer    :: Mixed layer depth [m]
+C                     (for diagnostic + used GMRedi "fm07")
 C     IVDConvCount :: Impl.Vert.Diffusion convection counter:
-C                   = 0 (not convecting) or 1 (convecting)
-      COMMON /DYNVARS_DIAG/ phiHydLow, totPhiHyd, IVDConvCount
+C                     = 0 (not convecting) or 1 (convecting)
+      COMMON /DYNVARS_DIAG/
+     &                       phiHydLow, totPhiHyd,
+     &                       hMixLayer, IVDConvCount
       _RL  phiHydLow(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  totPhiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  hMixLayer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  IVDConvCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-	
+
