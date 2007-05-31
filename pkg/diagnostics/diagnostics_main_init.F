@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.30 2007/04/27 15:46:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.31 2007/05/31 18:22:00 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -478,6 +478,13 @@ c     diagTitle = 'Square of ocean bottom pressure / top. geo-Potential'
       diagTitle = DIAGS_MK_TITLE( 'Square of '//fTitle
      I                           //pTitle//' Anomaly', myThid )
       diagUnits = 'm^4/s^4         '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'MXLDEPTH'
+      diagTitle = 'Mixed-Layer Depth (>0)'
+      diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
