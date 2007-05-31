@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_precip.F,v 1.1 2006/01/22 15:58:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_precip.F,v 1.2 2007/05/31 15:19:49 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -16,10 +16,10 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R  THSICE_GET_PRECIP
-C     | Interface S/R : get Precip & Snow from pkg BULK_FORCE
+C     | Interface S/R : get Precip, Snow-precip
+C     |                 and downward short-wave
+C     |                 from pkg BULK_FORCE
 C     *==========================================================*
-C     | note: also get Short-Wave surface flux; this is a
-C     |   temporary fix until pkg Bulk-Force fills Qsw directly
 C     *==========================================================*
 C     \ev
 
@@ -39,7 +39,7 @@ C     === Routine arguments ===
 C     iceMsk    :: sea-ice fraction: no ice=0, grid all ice 1  []
 C     precip    :: Total Precipitation (including run-off) [kg/m2/s]
 C     snowPrc   :: Snow Precipitation [kg/m2/s]
-C     flxSW     :: Net short-wave surface flux (+=down) [W/m2]
+C     flxSW     :: Downward short-wave surface flux (+=down) [W/m2]
 C     iMin,iMax :: range of indices of computation domain
 C     jMin,jMax :: range of indices of computation domain
 C     bi,bj     :: current tile indices

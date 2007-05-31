@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_map_exf.F,v 1.4 2007/05/18 02:45:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_map_exf.F,v 1.5 2007/05/31 15:19:49 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -16,7 +16,7 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R  THSICE_MAP_EXF
-C     | Interface S/R : map Precip, Snow and shortwave fluxes 
+C     | Interface S/R : map Precip, Snow and shortwave fluxes
 C     |                 from pkg EXF to thsice variables
 C     *==========================================================*
 C     \ev
@@ -40,7 +40,7 @@ C     === Routine arguments ===
 C     iceMsk    :: sea-ice fraction: no ice=0, grid all ice 1  []
 C     totPrc    :: Total Precipitation (including run-off) [kg/m2/s]
 C     snowPrc   :: Snow Precipitation [kg/m2/s]
-C     flxSW     :: Net short-wave surface flux (+=down) [W/m2]
+C     flxSW     :: Downward short-wave surface flux (+=down) [W/m2]
 C     iMin,iMax :: range of indices of computation domain
 C     jMin,jMax :: range of indices of computation domain
 C     bi,bj     :: current tile indices
@@ -72,15 +72,14 @@ C     i,j   :: current grid point indices
 #else
         STOP 'ABNORMAL END: S/R THSICE_MAP_EXF: ALLOW_RUNOFF undef'
 #endif
-CML           flxSW (i,j) = -Qsw(i,j,bi,bj)
 #ifdef ALLOW_DOWNWARD_RADIATION
-        flxSW (i,j) = swdown(i,j,bi,bj) 
+        flxSW (i,j) = swdown(i,j,bi,bj)
 #else
       STOP 'ABNORMAL END: S/R THSICE_MAP_EXF: DOWNWARD_RADIATION undef'
 #endif
        ENDDO
       ENDDO
-       
+
 #ifdef ALLOW_ATM_TEMP
       IF ( snowPrecipFile .NE. ' ' ) THEN
        DO j = jMin, jMax
@@ -89,7 +88,7 @@ CML           flxSW (i,j) = -Qsw(i,j,bi,bj)
         ENDDO
        ENDDO
       ELSE
-C     If specific snow precipitiation is now available, use 
+C     If specific snow precipitiation is now available, use
 C     precipitation when ever the air temperature is below 0 degC
        DO j = jMin, jMax
         DO i = iMin, iMax
