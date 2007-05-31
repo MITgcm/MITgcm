@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.16 2005/11/08 02:10:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.17 2007/05/31 16:29:15 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -86,6 +86,7 @@ C-      2D arrays
           etaN(I,J,bi,bj)=0. _d 0
           etaH(I,J,bi,bj)=0. _d 0
           phiHydLow(I,J,bi,bj)=0. _d 0
+          hMixLayer(I,J,bi,bj)=0. _d 0
          ENDDO
         ENDDO
 
