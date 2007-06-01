@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.201 2007/04/14 18:32:32 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.202 2007/06/01 21:12:37 jmc Exp $
 C $Name:  $
 C
 
@@ -646,8 +646,10 @@ C                b) use model surface (local) value if set to UNSET_RL)
 C     horiVertRatio      :: Ratio on units in vertical to units in horizontal.
 C     recip_horiVertRatio  ( 1 if horiz in m and vertical in m ).
 C                          ( g*rho if horiz in m and vertical in Pa ).
-C     Ro_SeaLevel        :: standard position of Sea-Level in "R" coordinate, used as
-C                          starting value (k=1) for vertical coordinate (rf(1)=Ro_SeaLevel)
+C     hMixCrit    :: criteria for mixed-layer diagnostic
+C     ivdc_kappa  :: implicit vertical diffusivity for convection [m^2/s]
+C     Ro_SeaLevel :: standard position of Sea-Level in "R" coordinate, used as
+C                    starting value (k=1) for vertical coordinate (rf(1)=Ro_SeaLevel)
 C     sideDragFactor     :: side-drag scaling factor (used only if no_slip_sides) 
 C                           (default=2: full drag ; =1: gives half-slip BC)
 C     bottomDragLinear    :: Linear    bottom-drag coefficient (units of [r]/s)
@@ -696,7 +698,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
      & hFacMinDr, hFacMinDp,
      & horiVertRatio, recip_horiVertRatio,
-     & ivdc_kappa, Ro_SeaLevel,
+     & ivdc_kappa, hMixCriteria, Ro_SeaLevel,
      & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
      & smoothAbsFuncRange,
      & tCylIn, tCylOut
@@ -820,6 +822,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL horiVertRatio
       _RL recip_horiVertRatio
       _RL ivdc_kappa
+      _RL hMixCriteria
       _RL Ro_SeaLevel
       _RL sideDragFactor
       _RL bottomDragLinear
