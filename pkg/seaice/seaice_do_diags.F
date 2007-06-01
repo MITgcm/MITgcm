@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.30 2007/05/18 02:46:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.31 2007/06/01 12:56:14 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -434,7 +434,7 @@ C      compute strainrates, "viscosities" and modified pressure
 C     
         CALL DIAGNOSTICS_FILL(zeta   ,'SIzeta  ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(eta    ,'SIeta   ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(eta    ,'SIpress ',0,1 ,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1 ,0,1,1,myThid)
        ENDIF
         
        IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
