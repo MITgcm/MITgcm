@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.17 2007/04/30 22:48:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.18 2007/06/01 12:56:49 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -113,7 +113,6 @@ C     Do we need this? I am afraid so.
       CALL EXCH_UV_XY_RL(uc,vc,.TRUE.,myThid)
 #endif /* not SEAICE_CGRID */
 
-CML      IF ( SEAICEuseDynamics ) THEN
       SEAICEmultidimadvection = .TRUE.
       IF ( SEAICEadvScheme.EQ.ENUM_CENTERED_2ND
      & .OR.SEAICEadvScheme.EQ.ENUM_UPWIND_3RD
@@ -318,7 +317,21 @@ C     with LAD=1 (Leapfrog).
 C--   end if multiDimAdvection
       ENDIF
 C--   end if SEAICEuseDynamics
-CML      ENDIF
+
+      IF ( .NOT. usePW79thermodynamics ) THEN
+C     Hiblers "ridging function": Do it now if not in seaice_growth
+C     in principle we should add a "real" ridging function here (or 
+C     somewhere after doing the advection)
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           AREA(I,J,1,bi,bj) = MIN(ONE, AREA(I,J,1,bi,bj))
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 #endif /* ALLOW_SEAICE */
 
       RETURN
