@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.825 2007/05/30 10:56:27 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.826 2007/06/01 12:57:48 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -8,10 +8,12 @@ o pkg/obcs:
  - bug fix for balance code
 o pkg/seaice:
   - allow values of SEAICE_elasticParm > 1
-  - add new parameter SEAICE_evpTauRelax as an alternative to SEAICE_elasticParm
+  - add new parameter SEAICE_evpTauRelax as an alternative 
+    to SEAICE_elasticParm
   - make lsr boundary conditions free slip (by default), changes result
   - add code for no slip boundary conditions for lsr
   - set minimum of zeta to zero (and not 4e8) (changes results)
+  - add a cap on AREA after advecting AREA if seaice_growth is not called
 o change calculation of Visbeck K:
   - no longer depend on tapering scheme; instead, compute slope (limited 
     by GM_maxSlope). this is equivalent to what was comuted before with
