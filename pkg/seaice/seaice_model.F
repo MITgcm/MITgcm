@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.46 2007/05/18 02:46:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.47 2007/06/01 22:20:02 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -110,8 +110,15 @@ CADJ STORE heffm = comlev1, key = ikey_dynamics
 CADJ STORE area  = comlev1, key = ikey_dynamics
 # ifdef SEAICE_ALLOW_DYNAMICS
 #  ifdef SEAICE_CGRID
-cphCADJ STORE uice  = comlev1, key = ikey_dynamics
-cphCADJ STORE vice  = comlev1, key = ikey_dynamics
+CADJ STORE seaicemasku    = comlev1, key = ikey_dynamics
+CADJ STORE seaicemaskv    = comlev1, key = ikey_dynamics
+CADJ STORE fu    = comlev1, key = ikey_dynamics
+CADJ STORE fv    = comlev1, key = ikey_dynamics
+CADJ STORE uice  = comlev1, key = ikey_dynamics
+CADJ STORE vice  = comlev1, key = ikey_dynamics
+CADJ STORE eta   = comlev1, key = ikey_dynamics
+CADJ STORE zeta  = comlev1, key = ikey_dynamics
+
 #  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
