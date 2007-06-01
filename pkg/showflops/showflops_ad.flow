@@ -1,0 +1,25 @@
+cph: These flow dir. need to be removed from eesupp.flow
+cph: Should be obsolete with introduction of new routines
+cph: showflops_init.F, showflops_inloop.F
+
+CADJ SUBROUTINE SHOWFLOPS_INIT   INPUT  = 1
+CADJ SUBROUTINE SHOWFLOPS_INIT   OUTPUT = 
+
+CADJ SUBROUTINE SHOWFLOPS_INLOOP INPUT  = 1,2
+CADJ SUBROUTINE SHOWFLOPS_INLOOP OUTPUT = 
+
+CADJ SUBROUTINE PAPIF_flops    INPUT =
+CADJ SUBROUTINE PAPIF_flops    OUTPUT = 1,2,3,4,5
+
+CADJ SUBROUTINE PAPIF_flips    INPUT =
+CADJ SUBROUTINE PAPIF_flips    OUTPUT = 1,2,3,4,5
+
+CADJ SUBROUTINE PAPIF_ipc      INPUT =
+CADJ SUBROUTINE PAPIF_ipc      OUTPUT = 1,2,3,4,5
+
+CADJ FUNCTION   PCLstart       INPUT = 1,2,3,4
+CADJ FUNCTION   PCLstart       OUTPUT =
+
+CADJ FUNCTION   PCLstop        INPUT = 1,4
+CADJ FUNCTION   PCLstop        OUTPUT = 2,3
+
