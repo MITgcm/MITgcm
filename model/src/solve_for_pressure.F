@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.59 2007/01/17 17:50:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.60 2007/06/01 16:42:16 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -69,36 +69,6 @@ C     == Local variables ==
       LOGICAL zeroPsNH
 #endif
 CEOP
-
-#ifdef TIME_PER_TIMESTEP_SFP
-CCE107 common block for per timestep timing
-C     !TIMING VARIABLES
-C     == Timing variables ==
-      REAL*8 utnew, utold, stnew, stold, wtnew, wtold
-      COMMON /timevars/ utnew, utold, stnew, stold, wtnew, wtold
-#endif
-#ifdef USE_PAPI_FLOPS_SFP
-CCE107 common block for PAPI summary performance
-#include <fpapi.h>
-      INTEGER*8 flpops, instr
-      INTEGER check
-      REAL*4 real_time, proc_time, mflops, ipc
-      COMMON /papivars/ flpops, instr, real_time, proc_time, mflops, ipc
-#else
-#ifdef USE_PCL_FLOPS_SFP
-CCE107 common block for PCL summary performance
-#include <pclh.f>
-      INTEGER pcl_counter_list(5), flags, nevents, res, ipcl
-      INTEGER*8 i_result(5), descr
-      REAL*8 fp_result(5)
-      COMMON /pclvars/ i_result, descr, fp_result, pcl_counter_list,
-     $     flags, nevents
-      INTEGER nmaxevents
-      PARAMETER (nmaxevents = 61)
-      CHARACTER*22 pcl_counter_name(0:nmaxevents-1)
-      COMMON /pclnames/ pcl_counter_name
-#endif
-#endif
 
 #ifdef ALLOW_NONHYDROSTATIC
 c       zeroPsNH = .FALSE.
@@ -556,76 +526,9 @@ C-       Other than Z coordinate: no assumption on surface level index
       ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 
-#ifdef TIME_PER_TIMESTEP_SFP
-CCE107 Time per timestep information
-      _BEGIN_MASTER( myThid )
-      CALL TIMER_GET_TIME( utnew, stnew, wtnew )
-C Only output timing information after the 1st timestep
-      IF ( wtold .NE. 0.0D0 ) THEN
-        WRITE(msgBuf,'(A34,3F10.6)')
-     $        'User, system and wallclock time:', utnew - utold,
-     $        stnew - stold, wtnew - wtold
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-      ENDIF
-      utold = utnew
-      stold = stnew
-      wtold = wtnew
-      _END_MASTER( myThid )
+#ifdef ALLOW_SHOWFLOPS
+      CALL SHOWFLOPS_INSOLVE( myThid)
 #endif
-#ifdef USE_PAPI_FLOPS_SFP
-CCE107 PAPI summary performance
-      _BEGIN_MASTER( myThid )
-#ifdef USE_FLIPS
-      call PAPIF_flips(real_time, proc_time, flpops, mflops, check)
-#else
-      call PAPIF_flops(real_time, proc_time, flpops, mflops, check)
-#endif
-      WRITE(msgBuf,'(A34,F10.6,A,F10.6)')
-     $     'Mflop/s during this timestep:', mflops, ' ', mflops
-     $     *proc_time/(real_time + 1E-36)
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-#ifdef PAPI_VERSION
-      call PAPIF_ipc(real_time, proc_time, instr, ipc, check)
-      WRITE(msgBuf,'(A34,F10.6,A,F10.6)')
-     $     'IPC during this timestep:', ipc, ' ', ipc*proc_time
-     $     /(real_time + 1E-36)
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-#endif
-      _END_MASTER( myThid )
-#else
-#ifdef USE_PCL_FLOPS_SFP
-CCE107 PCL summary performance
-      _BEGIN_MASTER( myThid )
-      PCLstop(descr, i_result, fp_result, nevents)
-      do ipcl = 1, nevents
-         WRITE(msgBuf,'(A22,A26,F10.6)'),
-     $        pcl_counter_name(pcl_counter_list(ipcl)),
-     $        'during this timestep:', fp_results(ipcl)
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-      enddo
-      PCLstart(descr, pcl_counter_list, nevents, flags)
-      _END_MASTER( myThid )
-#endif
-#endif
+
       RETURN
       END
-
-#ifdef TIME_PER_TIMESTEP_SFP
-CCE107 Initialization of common block for per timestep timing
-      BLOCK DATA settimers
-C     !TIMING VARIABLES
-C     == Timing variables ==
-      REAL*8 utnew, utold, stnew, stold, wtnew, wtold
-      COMMON /timevars/ utnew, utold, stnew, stold, wtnew, wtold
-      DATA utnew, utold, stnew, stold, wtnew, wtold /6*0.0D0/
-      END
-#endif
-#ifdef USE_PAPI_FLOPS_SFP
-CCE107 Initialization of common block for PAPI summary performance
-      BLOCK DATA setpapis
-      INTEGER*8 flpops, instr
-      REAL real_time, proc_time, mflops, ipc
-      COMMON /papivars/ flpops, instr, real_time, proc_time, mflops, ipc
-      DATA flpops, instr, real_time, proc_time, mflops, ipc /2*0,4*0.E0/
-      END
-#endif
