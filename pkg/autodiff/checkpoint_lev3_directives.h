@@ -1,30 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.35 2007/04/30 18:48:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.36 2007/06/01 23:30:16 heimbach Exp $
 C $Name:  $
 c
-c     store directives for checkpoint level 3
+c     store directives for checkpoint level 4
 c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
-CADJ STORE gs        = tapelev3, key = ilev_3
-CADJ STORE gt        = tapelev3, key = ilev_3
-CADJ STORE gtnm1     = tapelev3, key = ilev_3
-CADJ STORE gsnm1     = tapelev3, key = ilev_3
-CADJ STORE gunm1     = tapelev3, key = ilev_3
-CADJ STORE gvnm1     = tapelev3, key = ilev_3
-CADJ STORE theta     = tapelev3, key = ilev_3
-CADJ STORE salt      = tapelev3, key = ilev_3
-CADJ STORE uvel      = tapelev3, key = ilev_3
-CADJ STORE vvel      = tapelev3, key = ilev_3
-CADJ STORE wvel      = tapelev3, key = ilev_3
-CADJ STORE etan      = tapelev3, key = ilev_3
-CADJ STORE totphihyd = tapelev3, key = ilev_3
-CADJ STORE surfaceforcingTice = tapelev3, key = ilev_3
-cnewCADJ STORE ivdconvcount       = tapelev3, key = ilev_3
+
+CADJ STORE StoreDynVars3D     = tapelev3, key = ilev_3
+CADJ STORE StoreDynVars2D     = tapelev3, key = ilev_3
+cnewCADJ STORE ivdconvcount       = tapelevx, key = ilev_x
 
 #ifdef EXACT_CONSERV
-CADJ STORE etaH      = tapelev3, key = ilev_3
-CADJ STORE dEtaHdt   = tapelev3, key = ilev_3
-CADJ STORE PmEpR     = tapelev3, key = ilev_3
 cphCADJ STORE hDivFlow  = tapelev3, key = ilev_3
 #endif /* EXACT_CONSERV */
 
@@ -61,31 +47,7 @@ CADJ &     = tapelev3, key = ilev_3
 
 #ifdef ALLOW_EXF
 # include "exf_ad_check_lev3_dir.h"
-#endif /* ALLOW_EXF undef */
-
-CADJ STORE taux0   = tapelev3, key = ilev_3
-CADJ STORE taux1   = tapelev3, key = ilev_3
-CADJ STORE tauy0   = tapelev3, key = ilev_3
-CADJ STORE tauy1   = tapelev3, key = ilev_3
-CADJ STORE Qnet0   = tapelev3, key = ilev_3
-CADJ STORE Qnet1   = tapelev3, key = ilev_3
-CADJ STORE EmPmR0  = tapelev3, key = ilev_3
-CADJ STORE EmPmR1  = tapelev3, key = ilev_3
-CADJ STORE SST0    = tapelev3, key = ilev_3
-CADJ STORE SST1    = tapelev3, key = ilev_3
-CADJ STORE SSS0    = tapelev3, key = ilev_3
-CADJ STORE SSS1    = tapelev3, key = ilev_3
-CADJ STORE saltFlux0    = tapelev3, key = ilev_3
-CADJ STORE saltFlux1    = tapelev3, key = ilev_3
-#ifdef SHORTWAVE_HEATING
-CADJ STORE Qsw0    = tapelev3, key = ilev_3
-CADJ STORE Qsw1    = tapelev3, key = ilev_3
-#endif
-#ifdef ATMOSPHERIC_LOADING
-CADJ STORE pload0  = tapelev3, key = ilev_3
-CADJ STORE pload1  = tapelev3, key = ilev_3
-CADJ STORE siceload = tapelev3, key = ilev_3
-#endif
+#endif /* ALLOW_EXF */
 
 #ifdef ALLOW_PTRACERS
 # include "ptracers_ad_check_lev3_dir.h"

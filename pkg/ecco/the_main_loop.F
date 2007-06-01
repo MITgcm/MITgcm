@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.56 2007/04/18 19:54:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.57 2007/06/01 23:30:16 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -103,6 +103,7 @@ c They provide the fields to be stored.
 # include "DYNVARS.h"
 # include "FFIELDS.h"
 # include "EOS.h"
+# include "AUTODIFF.h"
 
 # ifdef ALLOW_GENERIC_ADVDIFF
 #  include "GAD.h"
@@ -184,16 +185,6 @@ c     == local variables ==
       integer mydate(4)
 #ifdef ALLOW_SNAPSHOTS
       character yprefix*3
-#endif
-
-#ifdef ALLOW_TAMC_CHECKPOINTING
-      integer ilev_1
-      integer ilev_2
-      integer ilev_3
-      integer ilev_4
-      integer max_lev2
-      integer max_lev3
-      integer max_lev4
 #endif
 
 #if defined(TIME_PER_TIMESTEP) || defined(USE_PAPI_FLOPS) || defined(USE_PCL_FLOPS)
@@ -353,7 +344,9 @@ c**************************************
       do ilev_4 = 1,nchklev_4
          if(ilev_4.le.max_lev4) then
 c**************************************
+            CALL AUTODIFF_STORE( myThid )
 #include "checkpoint_lev4_directives.h"
+            CALL AUTODIFF_RESTORE( myThid )
 c**************************************
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev3 = USER
@@ -363,7 +356,9 @@ CADJ    INIT tapelev3 = USER
       do ilev_3 = 1,nchklev_3
          if(ilev_3.le.max_lev3) then
 c**************************************
+            CALL AUTODIFF_STORE( myThid )
 #include "checkpoint_lev3_directives.h"
+            CALL AUTODIFF_RESTORE( myThid )
 c**************************************
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev2 = USER
@@ -372,7 +367,9 @@ CADJ    INIT tapelev2 = USER
         do ilev_2 = 1,nchklev_2
          if(ilev_2.le.max_lev2) then
 c**************************************
+            CALL AUTODIFF_STORE( myThid )
 #include "checkpoint_lev2_directives.h"
+            CALL AUTODIFF_RESTORE( myThid )
 c**************************************
 
 c**************************************

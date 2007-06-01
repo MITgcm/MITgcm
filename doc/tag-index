@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.826 2007/06/01 12:57:48 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.827 2007/06/01 23:31:38 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -24,6 +24,11 @@ o change calculation of Visbeck K:
 o change error catch in calc_r_star to improve vectorization
 o exf runoff and seaice: remove ALLOW_SEAICE from exf pkg files and
   add #define ALLOW_RUNOFF in SEAICE_OPTIONS.h (when not using exf).
+o adjoint:
+  Re-organized adjoint checkpointing according to Matt Mazloff
+  (but with modifs/completions/cleanups)
+  Storing is now bundled into large arrays to optimized I/O
+  (and second step in cleanup of the_main_loop)
 
 checkpoint59b
 o coupler (pkg/atm_ocn_coupler, pkg/ocn_compon_interf, pkg/atm2d):
