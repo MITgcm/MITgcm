@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.46 2007/06/01 22:20:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.47 2007/06/03 22:53:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -85,14 +85,14 @@ C     myThid :: Thread number for this instance of the routine.
 
 C     !LOCAL VARIABLES:
 C     == Local variables
-C     rhoK, rhoKM1  :: Density at current level, and level above 
+C     rhoK, rhoKm1  :: Density at current level, and level above
 C     iMin, iMax    :: Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj        :: tile indices
 C     i,j,k         :: loop indices
-      _RL rhokp1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rhokm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoKp1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoKm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoK    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -121,12 +121,15 @@ C--   dummy statement to end declaration part
       doDiagsRho = 0
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics .AND. fluidIsWater ) THEN
-        IF ( DIAGNOSTICS_IS_ON('DRHODR  ',myThid) ) doDiagsRho = 1
         IF ( DIAGNOSTICS_IS_ON('RHOANOSQ',myThid) .OR.
      &       DIAGNOSTICS_IS_ON('URHOMASS',myThid) .OR.
      &       DIAGNOSTICS_IS_ON('VRHOMASS',myThid) .OR.
      &       DIAGNOSTICS_IS_ON('WRHOMASS',myThid) .OR.
      &       DIAGNOSTICS_IS_ON('WRHOMASS',myThid) ) doDiagsRho = 2
+        IF ( doDiagsRho.EQ.0 .AND.
+     &       DIAGNOSTICS_IS_ON('MXLDEPTH',myThid) ) doDiagsRho = 1
+        IF ( doDiagsRho.EQ.0 .AND.
+     &       DIAGNOSTICS_IS_ON('DRHODR  ',myThid) ) doDiagsRho = 1
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -202,7 +205,7 @@ C       and modify forcing terms including effects from ice
         IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('SHELFICE_THERMODYNAMICS',myThid)
 #endif
-C     compute temperature and (virtual) salt flux at the 
+C     compute temperature and (virtual) salt flux at the
 C     shelf-ice ocean interface
        CALL TIMER_START('SHELFICE_THERMODYNAMICS [DO_OCEANIC_PHYS]',
      &       myThid)
@@ -263,7 +266,7 @@ CHPF$ INDEPENDENT
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
 #else  /* ALLOW_AUTODIFF_TAMC */
-C     if fluid is not water, by-pass find_rho, gmredi, surfaceForcing 
+C     if fluid is not water, by-pass find_rho, gmredi, surfaceForcing
 C     and all vertical mixing schemes, but keep OBCS_CALC
         IF ( fluidIsWater ) THEN
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -276,9 +279,9 @@ C     uninitialised but inert locations.
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          rhok   (i,j)   = 0. _d 0
-          rhoKM1 (i,j)   = 0. _d 0
-          rhoKP1 (i,j)   = 0. _d 0
+          rhoK   (i,j)   = 0. _d 0
+          rhoKm1 (i,j)   = 0. _d 0
+          rhoKp1 (i,j)   = 0. _d 0
          ENDDO
         ENDDO
 
@@ -350,7 +353,7 @@ C--     Start of diagnostic loop
 C? Patrick, is this formula correct now that we change the loop range?
 C? Do we still need this?
 cph kkey formula corrected. 
-cph Needed for rhok, rhokm1, in the case useGMREDI.
+cph Needed for rhoK, rhoKm1, in the case useGMREDI.
          kkey = (itdkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -390,7 +393,7 @@ CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 cph Avoid variable aliasing for adjoint !!!
             DO j=jMin,jMax
              DO i=iMin,iMax
-              rhoKP1(i,j) = rhoK(i,j)
+              rhoKp1(i,j) = rhoK(i,j)
              ENDDO
             ENDDO
             CALL GRAD_SIGMA(
@@ -402,9 +405,9 @@ cph Avoid variable aliasing for adjoint !!!
 
 #ifdef ALLOW_AUTODIFF_TAMC
 ctest# ifndef GM_EXCLUDE_CLIPPING
-CADJ STORE rhok   (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
+CADJ STORE rhoK   (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
 ctest# endif
-CADJ STORE rhokm1 (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
+CADJ STORE rhoKm1 (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C--       Implicit Vertical Diffusion for Convection
 c ==> should use sigmaR !!!
@@ -430,6 +433,11 @@ c ==> should use sigmaR !!!
 C--     end of diagnostic k loop (Nr:1)
         ENDDO
 
+C--     Diagnose Mixed Layer Depth:
+        IF ( useGMRedi .OR. doDiagsRho.GE.1 ) THEN
+          CALL CALC_OCE_MXLAYER( rhoK, sigmaR,
+     &              bi, bj, myTime, myIter, myThid )
+        ENDIF
 #ifdef ALLOW_DIAGNOSTICS
         IF ( doDiagsRho.GE.1 ) THEN
           CALL DIAGNOSTICS_FILL (sigmaR, 'DRHODR  ', 0, Nr,
@@ -481,41 +489,6 @@ CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE surfaceForcingTice(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef  ALLOW_GMREDI
-
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifndef GM_EXCLUDE_CLIPPING
-cph storing here is needed only for one GMREDI_OPTIONS:
-cph define GM_BOLUS_ADVEC
-cph keep it although TAF says you dont need to.
-cph but I've avoided the #ifdef for now, in case more things change
-CADJ STORE sigmaX(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE sigmaY(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
-# endif
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
-        IF (useGMRedi) THEN
-#ifdef ALLOW_DEBUG
-          IF ( debugLevel .GE. debLevB )
-     &     CALL DEBUG_CALL('GMREDI_CALC_TENSOR',myThid)
-#endif
-          CALL GMREDI_CALC_TENSOR(
-     I             bi, bj, iMin, iMax, jMin, jMax,
-     I             sigmaX, sigmaY, sigmaR,
-     I             myThid )
-#ifdef ALLOW_AUTODIFF_TAMC
-        ELSE
-          CALL GMREDI_CALC_TENSOR_DUMMY(
-     I             bi, bj, iMin, iMax, jMin, jMax,
-     I             sigmaX, sigmaY, sigmaR,
-     I             myThid )
-#endif /* ALLOW_AUTODIFF_TAMC */
-        ENDIF
-
-#endif  /* ALLOW_GMREDI */
 
 #ifdef  ALLOW_KPP
 C--     Compute KPP mixing coefficients
@@ -580,6 +553,39 @@ C--     Compute GGL90 mixing coefficients
      I                           Nr, deltaTclock, bi, bj, myThid)
         ENDIF
 #endif /* ALLOW_TIMEAVE */
+
+#ifdef  ALLOW_GMREDI
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifndef GM_EXCLUDE_CLIPPING
+cph storing here is needed only for one GMREDI_OPTIONS:
+cph define GM_BOLUS_ADVEC
+cph keep it although TAF says you dont need to.
+cph but I've avoided the #ifdef for now, in case more things change
+CADJ STORE sigmaX(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE sigmaY(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
+        IF (useGMRedi) THEN
+#ifdef ALLOW_DEBUG
+          IF ( debugLevel .GE. debLevB )
+     &     CALL DEBUG_CALL('GMREDI_CALC_TENSOR',myThid)
+#endif
+          CALL GMREDI_CALC_TENSOR(
+     I             bi, bj, iMin, iMax, jMin, jMax,
+     I             sigmaX, sigmaY, sigmaR,
+     I             myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+        ELSE
+          CALL GMREDI_CALC_TENSOR_DUMMY(
+     I             bi, bj, iMin, iMax, jMin, jMax,
+     I             sigmaX, sigmaY, sigmaR,
+     I             myThid )
+#endif /* ALLOW_AUTODIFF_TAMC */
+        ENDIF
+#endif  /* ALLOW_GMREDI */
 
 #ifndef ALLOW_AUTODIFF_TAMC
 C---  if fluid Is Water: end
