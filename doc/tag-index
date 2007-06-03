@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.827 2007/06/01 23:31:38 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.828 2007/06/03 23:32:28 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add S/R and diagnostics for oceanic mixed-layer depth
+o move GMRedi call after all vertical mixing schemes (including KPP)
+o pkg/thsice: 
+ - ensure iceMask > iceMaskMin : this problem appeared after May-04 modifs
+  (melt only laterally if thin ice): update output of global_ocean.cs32x15.thsice
 o pkg/obcs:
  - bug fix for balance code
 o pkg/seaice:
@@ -18,9 +23,10 @@ o change calculation of Visbeck K:
   - no longer depend on tapering scheme; instead, compute slope (limited 
     by GM_maxSlope). this is equivalent to what was comuted before with
     clipping or linear tappering.
-  - fix vertical averaging (wrong by 1 level)
+  - fix vertical averaging (wrong by 1/2 level)
   - leave the old version (but will not be maintained) within
     #ifdef OLD_VISBECK_CALC / #endif
+  - update output of exp. ideal_2D_oce
 o change error catch in calc_r_star to improve vectorization
 o exf runoff and seaice: remove ALLOW_SEAICE from exf pkg files and
   add #define ALLOW_RUNOFF in SEAICE_OPTIONS.h (when not using exf).
@@ -82,7 +88,7 @@ o pkg/exf: some cleaning-up:
 o pkg/thsice:
  fix few little problems, in thsice_calc_thickn.F:
   - growth vertically (and not laterally) if iceFrac == iceMaskMax
-  - melt laterally only if hIce < hThinIce (as the comments say)
+  - melt only laterally if hIce < hThinIce (as the comments say)
   and in thsice_extend.F:
   - allow to form ice even when iceFrac == iceMaskMax (by increasing thickness)
   - start to form ice as soon as the minimum ice-volume is reachable.
