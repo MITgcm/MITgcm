@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.47 2007/06/03 22:53:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.48 2007/06/03 23:56:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -433,11 +433,13 @@ c ==> should use sigmaR !!!
 C--     end of diagnostic k loop (Nr:1)
         ENDDO
 
+#ifndef ALLOW_AUTODIFF_TAMC
 C--     Diagnose Mixed Layer Depth:
         IF ( useGMRedi .OR. doDiagsRho.GE.1 ) THEN
           CALL CALC_OCE_MXLAYER( rhoK, sigmaR,
      &              bi, bj, myTime, myIter, myThid )
         ENDIF
+#endif
 #ifdef ALLOW_DIAGNOSTICS
         IF ( doDiagsRho.GE.1 ) THEN
           CALL DIAGNOSTICS_FILL (sigmaR, 'DRHODR  ', 0, Nr,
