@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.828 2007/06/03 23:32:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.829 2007/06/04 00:51:28 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59c
 o add S/R and diagnostics for oceanic mixed-layer depth
 o move GMRedi call after all vertical mixing schemes (including KPP)
 o pkg/thsice: 
