@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.22 2007/05/14 14:46:50 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.23 2007/06/04 21:30:47 heimbach Exp $
 #
 
 #  This file contains a terse list of package dependencies that
@@ -50,6 +50,7 @@ sbo             +mdsio
 exf             +mdsio
 matrix          +ptracers
 matrix          -gchem
+showflops       +runclock
 
 #  default SEAICE_OPTIONS.h requires EXF:
 #seaice		+exf
