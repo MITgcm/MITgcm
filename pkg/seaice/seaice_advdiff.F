@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.18 2007/06/01 12:56:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.19 2007/06/04 18:48:17 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -318,6 +318,9 @@ C--   end if multiDimAdvection
       ENDIF
 C--   end if SEAICEuseDynamics
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE AREA   = comlev1, key = ikey_dynamics
+#endif
       IF ( .NOT. usePW79thermodynamics ) THEN
 C     Hiblers "ridging function": Do it now if not in seaice_growth
 C     in principle we should add a "real" ridging function here (or 

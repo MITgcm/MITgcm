@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.48 2007/06/03 23:56:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.49 2007/06/04 18:48:17 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -148,28 +148,12 @@ C     theta is dumped or time-averaged.
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE atemp,aqh,precip    = comlev1, key = ikey_dynamics
 CADJ STORE swdown,lwdown       = comlev1, key = ikey_dynamics
-CADJ STORE theta               = comlev1, key = ikey_dynamics
 cph# ifdef EXF_READ_EVAP
 CADJ STORE evap                = comlev1, key = ikey_dynamics
 cph# endif
-cph# ifdef SEAICE_ALLOW_DYNAMICS
 CADJ STORE uvel,vvel           = comlev1, key = ikey_dynamics
-CADJ STORE uice,vice           = comlev1, key = ikey_dynamics
-CADJ STORE zeta, eta           = comlev1, key = ikey_dynamics
-cph# endif
-# ifdef SEAICE_CGRID
-CADJ STORE fu, fv              = comlev1, key = ikey_dynamics
-CADJ STORE seaicemasku         = comlev1, key = ikey_dynamics
-CADJ STORE seaicemaskv         = comlev1, key = ikey_dynamics
-#  ifdef ATMOSPHERIC_LOADING
+# ifdef ATMOSPHERIC_LOADING
 CADJ STORE siceload            = comlev1, key = ikey_dynamics
-#  endif
-# endif
-# ifdef SEAICE_ALLOW_EVP
-CADJ STORE dwatn           = comlev1, key = ikey_dynamics
-CADJ STORE seaice_sigma1   = comlev1, key = ikey_dynamics
-CADJ STORE seaice_sigma2   = comlev1, key = ikey_dynamics
-CADJ STORE seaice_sigma12  = comlev1, key = ikey_dynamics
 # endif
 #endif
 #ifdef ALLOW_DEBUG

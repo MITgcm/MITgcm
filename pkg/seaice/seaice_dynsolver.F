@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.21 2007/05/25 12:52:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.22 2007/06/04 18:48:17 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -189,12 +189,11 @@ C--   now set up ice pressure and viscosities
 
       IF ( SEAICEuseDYNAMICS ) THEN
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef SEAICE_ALLOW_EVP
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef SEAICE_ALLOW_EVP
+# endif /* ALLOW_AUTODIFF_TAMC */
        IF ( SEAICEuseEVP ) THEN
         CALL SEAICE_EVP( myTime, myIter, myThid )
        ELSE
@@ -216,18 +215,18 @@ C NOW DO PREDICTOR TIME STEP
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uicec = comlev1, key=ikey_dynamics
+CADJ STORE vicec = comlev1, key=ikey_dynamics
 # ifdef SEAICE_ALLOW_EVP
 cphCADJ STORE uice = comlev1, key=ikey_dynamics
 cphCADJ STORE vice = comlev1, key=ikey_dynamics
-CADJ STORE uicec = comlev1, key=ikey_dynamics
-CADJ STORE vicec = comlev1, key=ikey_dynamics
 # endif
 #endif
 C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
        CALL SEAICE_LSR( 1, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uice = comlev1, key=ikey_dynamics
-CADJ STORE vice = comlev1, key=ikey_dynamics
+cphCADJ STORE uice = comlev1, key=ikey_dynamics
+cphCADJ STORE vice = comlev1, key=ikey_dynamics
 cphCADJ STORE uicec = comlev1, key=ikey_dynamics
 cphCADJ STORE vicec = comlev1, key=ikey_dynamics
 #endif
