@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.149 2007/04/18 19:54:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.150 2007/06/04 21:37:26 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -158,6 +158,16 @@ C--   State-variables diagnostics
         CALL DO_STATEVARS_DIAGS( myTime, 0, myIter, myThid )
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
       ENDIF
+#endif
+
+#ifdef ALLOW_PROFILES
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('',myThid)
+#endif
+c--     Accumulate in-situ time averages of theta, salt, and SSH.
+        CALL TIMER_START('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
+        CALL PROFILES_INLOOP( mytime, mythid )
+        CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
 #endif
 
 C--   Call driver to load external forcing fields from file

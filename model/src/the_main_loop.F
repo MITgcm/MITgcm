@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.85 2007/06/01 23:30:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.86 2007/06/04 21:37:26 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -171,7 +171,7 @@ C--   Set initial conditions (variable arrays)
       CALL INITIALISE_VARIA( mythid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
 
-#if (defined (TIME_PER_TIMESTEP) || defined (USE_PAPI_FLOPS) || defined (USE_PCL_FLOPS))
+#ifdef ALLOW_SHOWFLOPS
       CALL TIMER_START('SHOWFLOPS_INIT      [THE_MAIN_LOOP]', mythid)
       CALL SHOWFLOPS_INIT( myThid )
       CALL TIMER_STOP('SHOWFLOPS_INIT       [THE_MAIN_LOOP]', mythid)
@@ -354,16 +354,6 @@ c--     >>> Loop body start <<<
         CALL AUTODIFF_INADMODE_UNSET( myThid )
 # endif
 
-#ifdef ALLOW_PROFILES
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('',myThid)
-#endif
-c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
-        CALL TIMER_START('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
-        CALL PROFILES_INLOOP( mytime, mythid )
-        CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', mythid)
-#endif
-
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
@@ -382,7 +372,7 @@ c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
         CALL AUTODIFF_INADMODE_SET( myThid )
 #endif
 
-#if (defined (ALLOW_RUNCLOCK) || defined (TIME_PER_TIMESTEP) || defined (USE_PAPI_FLOPS) || defined (USE_PCL_FLOPS))
+#ifdef ALLOW_SHOWFLOPS
         CALL TIMER_START('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', mythid)
         CALL SHOWFLOPS_INLOOP( iloop, mythid )
         CALL TIMER_STOP ('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', mythid)
