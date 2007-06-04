@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.31 2007/05/03 21:36:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.32 2007/06/04 18:47:35 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -140,7 +140,7 @@ cph)
      I       kmtj, shsq, dbloc, ghat
      I     , diffusKzS, diffusKzT
      I     , ikppkey
-     O     , diffus )
+     O     , diffus, myThid )
 
 cph(
 cph these storings avoid recomp. of Ri_iwmix

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.42 2007/05/03 21:37:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.43 2007/06/04 18:47:35 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -487,7 +487,7 @@ c     matching diffusivities at bottom of KPP PBL
      O     , vddiff
      U     , ghat
      O     , hbl
-     I     , mytime, mythid )
+     I     , mytime, myIter, mythid )
       CALL TIMER_STOP ('KPPMIX [KPP_CALC]', myThid)
 
 c-----------------------------------------------------------------------
