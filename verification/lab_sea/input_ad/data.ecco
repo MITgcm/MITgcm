@@ -71,9 +71,9 @@
 #
  mult_hmean = 0.,
  mult_h     = 0.,
- mult_temp  = 0.,
- mult_salt  = 0.,
- mult_sst   = 0.,
+ mult_temp  = 1.,
+ mult_salt  = 1.,
+ mult_sst   = 1.,
  mult_hflux = 0.,
  mult_sflux = 0.,
  mult_tauu  = 0.,
