@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.11 2007/05/30 10:56:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.12 2007/06/05 10:46:06 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -79,7 +79,7 @@ C     auxilliary variables
       _RL e11C, e22C, e12C, deltaC
       _RL e11Z, e22Z, e12Z, deltaZ
       _RL zetaC, zetaZ, pressC
-      _RL denom1, denom2
+      _RL denom1, denom2, fac
 
 C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
@@ -122,7 +122,21 @@ c     initialise strain rates
         ENDDO
        ENDDO
       ENDDO
-C
+C     damping constraint (Hunke, J.Comp.Phys.,2001)
+      IF ( SEAICE_evpDampC .GT. 0. _d 0 ) THEN
+       fac = HALF * SEAICE_evpDampC * SEAICE_evpTauRelax 
+     &      /SEAICE_deltaTevp**2
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           zMax (I,J,bi,bj)   = _rA(I,J,bi,bj) * fac
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+C     
 C     start of the main time loop
       DO iEVPstep = 1, nEVPstepMax
        IF (iEVPstep.LE.nEVPstep) THEN

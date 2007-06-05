@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.13 2007/05/30 10:56:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.14 2007/06/05 10:46:06 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -113,9 +113,11 @@ C     == end of interface ==
       CALL WRITE_0D_R8( SEAICE_deltaTevp  ,INDEX_NONE,
      & 'SEAICE_deltaTevp  =', ' /* EVP timestep */')
       CALL WRITE_0D_R8( SEAICE_elasticParm  ,INDEX_NONE,
-     & 'SEAICE_elasticParm  =', ' /* EVP elastic parameter */')
+     & 'SEAICE_elasticParm=', ' /* EVP elastic parameter */')
       CALL WRITE_0D_R8( SEAICE_evpTauRelax  ,INDEX_NONE,
-     & 'SEAICE_evpTauRelax  =', ' /* EVP relaxation timescale */')
+     & 'SEAICE_evpTauRelax=', ' /* EVP relaxation timescale */')
+      CALL WRITE_0D_R8( SEAICE_evpDampC  ,INDEX_NONE,
+     & 'SEAICE_evpDampC   =', ' /* EVP damping parameter */')
 #endif
       CALL WRITE_0D_R8( SEAICE_monFreq,  INDEX_NONE,
      & 'SEAICE_monFreq  =',' /* monitor frequency */')

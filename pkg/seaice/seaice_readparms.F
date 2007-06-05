@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.49 2007/05/30 10:56:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.50 2007/06/05 10:46:06 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -48,6 +48,7 @@ C--   SEAICE parameters
      & SEAICEadvSchHeff, SEAICEadvSchSnow,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
+     & SEAICE_evpDampC,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq, 
      & SEAICE_initialHEFF,
      & SEAICE_rhoAir, SEAICE_rhoIce, 
@@ -123,6 +124,8 @@ CML      SEAICEadvSnow      = .TRUE.
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = UNSET_RL
+C     Hunke, JCP, 2001 use 615 kg/m^2 for this
+      SEAICE_evpDampC    = -1. _d 0
       SEAICE_monFreq     = monitorFreq
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
