@@ -24,3 +24,16 @@ CADJ SUBROUTINE exf_diagnostics_fill  INPUT  = 1,2,3
 CADJ SUBROUTINE exf_diagnostics_fill  OUTPUT =
 CADJ SUBROUTINE exf_diagnostics_fill  DEPEND = 1,2,3
 CADJ SUBROUTINE exf_diagnostics_fill  REQUIRED
+
+C----------------------------------------
+C subroutine exf_adjoint_snapshots
+C----------------------------------------
+cadj SUBROUTINE exf_adjoint_snapshots INPUT   = 1,2,3,4
+cadj SUBROUTINE exf_adjoint_snapshots OUTPUT  = 
+cadj SUBROUTINE exf_adjoint_snapshots ACTIVE  = 
+cadj SUBROUTINE exf_adjoint_snapshots DEPEND  = 1,2,3,4
+cadj SUBROUTINE exf_adjoint_snapshots REQUIRED
+cadj SUBROUTINE exf_adjoint_snapshots INFLUENCED
+cadj SUBROUTINE exf_adjoint_snapshots ADNAME  = adexf_adjoint_snapshots
+cadj SUBROUTINE exf_adjoint_snapshots FTLNAME = g_exf_adjoint_snapshots
+

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.31 2007/05/14 21:51:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.32 2007/06/05 21:51:23 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -167,6 +167,12 @@ c     Get the surface forcing fields.
      &  CALL EXCH_UV_XY_RL( ustress, vstress, .TRUE., myThid )
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# if (defined (ALLOW_AUTODIFF_MONITOR))
+        CALL EXF_ADJOINT_SNAPSHOTS( 2, myTime, myIter, myThid )
+# endif
+#endif
+
 #ifdef ALLOW_BULKFORMULAE
 c     Deal set radiative fluxes
       call exf_radiation( mytime, myiter, mythid )
@@ -244,6 +250,12 @@ c     Get values of the surface flux anomalies.
      &     ( myiter.EQ.niter0 .OR. debugLevel.GE.debLevB ) ) then
          call exf_check_range( mytime, myiter, mythid )
       endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+# if (defined (ALLOW_AUTODIFF_MONITOR))
+        CALL EXF_ADJOINT_SNAPSHOTS( 1, myTime, myIter, myThid )
+# endif
+#endif
 
 #ifdef SHORTWAVE_HEATING
 c     Treatment of qnet
