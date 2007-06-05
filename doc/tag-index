@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.829 2007/06/04 00:51:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.830 2007/06/05 10:46:27 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice:
+ - and new damping criterion for EVP solver according to Hunke, JCP, 2001
+ - SEAICE_evpDampC = > 0. turns it on (615. is the recommended value). 
+   It is turned off by default (=-1.), because it changes the results.
 
 checkpoint59c
 o add S/R and diagnostics for oceanic mixed-layer depth
