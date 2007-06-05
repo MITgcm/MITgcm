@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.6 2007/04/27 15:50:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.7 2007/06/05 16:01:22 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -258,12 +258,43 @@ C--   Read initial sea-ice thickness from file if available.
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            DO k=1,3
-            IF(HEFF(I,J,k,bi,bj).GT.ZERO) THEN
-             AREA(I,J,k,bi,bj)=ONE
-            ELSE
-             HSNOW(I,J,bi,bj)=ZERO
-            ENDIF
+            IF(HEFF(I,J,k,bi,bj).GT.ZERO) 
+     &           AREA(I,J,k,bi,bj)=ONE
            ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+         
+       IF ( AreaFile .NE. ' ' ) THEN
+        _BEGIN_MASTER( myThid )
+        CALL READ_FLD_XY_RL( AreaFile, ' ', ZETA, 0, myThid )
+        _END_MASTER(myThid)
+        _EXCH_XY_R8(ZETA,myThid)
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            DO k=1,3
+             AREA(I,J,k,bi,bj) = MAX(ZETA(i,j,bi,bj),ZERO)
+             AREA(I,J,k,bi,bj) = MIN(AREA(i,j,k,bi,bj),ONE)
+             IF ( AREA(I,J,k,bi,bj) .LE. ZERO )
+     &            HEFF(I,J,k,bi,bj) = ZERO
+             IF ( HEFF(I,J,k,bi,bj) .LE. ZERO )
+     &            AREA(I,J,k,bi,bj) = ZERO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           IF(HEFF(I,J,1,bi,bj).LE.ZERO) 
+     &          HSNOW(I,J,bi,bj)=ZERO
           ENDDO
          ENDDO
         ENDDO
