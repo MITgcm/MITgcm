@@ -1,7 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.1 2007/06/05 21:51:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.2 2007/06/06 14:05:27 heimbach Exp $
 
-#include "PACKAGES_CONFIG.h"
-#include "AUTODIFF_OPTIONS.h"
 #include "EXF_OPTIONS.h"
 
 CBOP

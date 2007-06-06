@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots.F,v 1.2 2007/06/06 14:05:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots.F,v 1.3 2007/06/06 14:08:41 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -20,9 +20,11 @@ C     myThid - Thread number for this instance of the routine.
       integer myiter
       _RL     mytime 
 
+#ifdef ALLOW_AUTODIFF_MONITOR
       call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
+#endif
 
       end
 
