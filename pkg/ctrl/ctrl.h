@@ -266,7 +266,7 @@ c     TAMC sees xx_..._dummy
       _RL tmpfld3d 
      &    (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
-#ifdef ALLOW_OPENAD
+#ifdef ALLOW_AUTODIFF_OPENAD
       common /controlvars_r_openad/
      &        xx_theta
      &      , xx_salt
