@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots.F,v 1.1 2007/06/05 21:51:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots.F,v 1.2 2007/06/06 14:05:27 heimbach Exp $
 
-#include "AUTODIFF_OPTIONS.h"
+#include "EXF_OPTIONS.h"
 
-      subroutine exf_adjoint_snapshots( iwhen, mytime, myiter, myThid )
+      subroutine EXF_ADJOINT_SNAPSHOTS( iwhen, mytime, myiter, myThid )
       IMPLICIT NONE
 C     /==========================================================\
-C     | SUBROUTINE exf_adjoint_snapshots                         |
+C     | SUBROUTINE EXF_ADJOINT_SNAPSHOTS                         |
 C     |==========================================================|
 C     == Global variables ===
 
