@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.12 2007/06/05 10:46:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.13 2007/06/06 14:26:32 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -76,9 +76,8 @@ C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
       _RL sig11         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     auxilliary variables
-      _RL e11C, e22C, e12C, deltaC
-      _RL e11Z, e22Z, e12Z, deltaZ
-      _RL zetaC, zetaZ, pressC
+      _RL e11C, e22C, e12C, deltaC, deltaCreg, pressC, zetaC
+      _RL e11Z, e22Z, e12Z, deltaZ, deltaZreg, pressZ, zetaZ
       _RL denom1, denom2, fac
 
 C--   introduce turning angles
@@ -187,25 +186,35 @@ C     average strain rates to Z and C points
      &         * ( e22(I,J  ,bi,bj) + e22(I-1,J  ,bi,bj) 
      &           + e22(I,J-1,bi,bj) + e22(I-1,J-1,bi,bj) )
             e12Z = e12(i,j,bi,bj)
-            deltaC = (e11C**2+e22C**2)*(ONE+recip_ecc2)
-     &           + 4. _d 0*recip_ecc2*e12C**2 
-     &           + 2. _d 0*e11C*e22C*(ONE-recip_ecc2)
-            deltaC = SQRT(MAX(deltaC,SEAICE_EPS_SQ))
-            deltaZ = (e11Z**2+e22Z**2)*(ONE+recip_ecc2)
-     &           + 4. _d 0*recip_ecc2*e12Z**2 
-     &           + 2. _d 0*e11Z*e22Z*(ONE-recip_ecc2)
-            deltaZ = SQRT(MAX(deltaZ,SEAICE_EPS_SQ))
+            deltaC    = (e11C**2+e22C**2)*(ONE+recip_ecc2)
+     &           +      4. _d 0*recip_ecc2*e12C**2 
+     &           +      2. _d 0*e11C*e22C*(ONE-recip_ecc2)
+            deltaCreg = SQRT(MAX(deltaC,SEAICE_EPS_SQ))
+            deltaZ    = (e11Z**2+e22Z**2)*(ONE+recip_ecc2)
+     &           +      4. _d 0*recip_ecc2*e12Z**2 
+     &           +      2. _d 0*e11Z*e22Z*(ONE-recip_ecc2)
+            deltaZreg = SQRT(MAX(deltaZ,SEAICE_EPS_SQ))
+#ifdef ALLOW_AUTODIFF_TAMC
+C     avoid sqrt of 0
+            IF ( deltaC .GT. 0. _d 0 ) deltaC = SQRT(deltaC)
+            IF ( deltaZ .GT. 0. _d 0 ) deltaZ = SQRT(deltaZ)
+#else
+            deltaC = SQRT(deltaC)
+            deltaZ = SQRT(deltaZ)
+#endif /* ALLOW_AUTODIFF_TAMC */
 C     modify pressure (copied from seaice_calc_viscosities)
-            zetaC = HALF*press0(I,J,bi,bj)/deltaC
-            zetaC = MIN(zMax(I,J,bi,bj),zetaC)
-            zetaC = MAX(zMin(I,J,bi,bj),zetaC)
-CML            zetaC = zetaC*hEffM(I,J,bi,bj) 
-            zetaZ = HALF/deltaZ * 0.25 _d 0
+            pressC = press0(I,J,bi,bj) * (deltaC/deltaCreg)
+            zetaC  = HALF*pressC/deltaCreg
+            zetaC  = MIN(zMax(I,J,bi,bj),zetaC)
+            zetaC  = MAX(zMin(I,J,bi,bj),zetaC)
+CML            zetaC  = zetaC*hEffM(I,J,bi,bj) 
+            pressZ = (deltaZ/deltaZreg) * 0.25 _d 0
      &         * ( PRESS0(I,J  ,bi,bj) + PRESS0(I-1,J  ,bi,bj)
      &           + PRESS0(I,J-1,bi,bj) + PRESS0(I-1,J-1,bi,bj) )
-            zetaZ = MIN(zMax(I,J,bi,bj),zetaZ)
-            zetaZ = MAX(zMin(I,J,bi,bj),zetaZ)
-            pressC = TWO*zetaC*deltaC
+            zetaZ  = HALF/deltaZreg * pressZ
+            zetaZ  = MIN(zMax(I,J,bi,bj),zetaZ)
+            zetaZ  = MAX(zMin(I,J,bi,bj),zetaZ)
+            pressC = TWO*zetaC*deltaCreg
 C     Calculate the RHS of the stress equations. Do this now in order to
 C     avoid multiple divisions by Delta
 C     P * ( D_d/Delta - 1 ) = 2*zeta*D_d - P = 2*zeta*D_d - 2*zeta*Delta

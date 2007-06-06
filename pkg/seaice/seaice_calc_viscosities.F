@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.5 2007/05/15 14:32:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.6 2007/06/06 14:26:32 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,7 +55,7 @@ C     i,j,bi,bj - Loop counters
 C     e11, e12, e22 - components of strain rate tensor
 C     ecm2          - inverse of square of eccentricity of yield curve
       INTEGER i, j, bi, bj
-      _RL ECM2, e12C, deltaC
+      _RL ECM2, e12C, deltaC, deltaCreg, pressC, etaMax
 
 C--   FIRST SET UP BASIC CONSTANTS
       ecm2=0. _d 0
@@ -70,15 +70,23 @@ C
           deltaC = (e11(i,j,bi,bj)**2+e22(i,j,bi,bj)**2)*(ONE+ecm2)
      &         + 4. _d 0*ecm2*e12C**2 
      &         + 2. _d 0*e11(i,j,bi,bj)*e22(i,j,bi,bj)*(ONE-ecm2)
-          deltaC = SQRT(MAX(deltaC,SEAICE_EPS_SQ))
-          zeta(I,J,bi,bj)=HALF*PRESS0(I,J,bi,bj)/deltaC
-C NOW PUT MIN AND MAX VISCOSITIES IN
-          zeta(I,J,bi,bj)=MIN(ZMAX(I,J,bi,bj),zeta(I,J,bi,bj))
-          zeta(I,J,bi,bj)=MAX(ZMIN(I,J,bi,bj),zeta(I,J,bi,bj))
-C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS 
+          deltaCreg = SQRT(MAX(deltaC,SEAICE_EPS_SQ))
+#ifdef ALLOW_AUTODIFF_TAMC
+C     avoid sqrt of 0
+          IF ( deltaC .GT. 0. _d 0 ) deltaC = SQRT(deltaC)
+#else
+          deltaC    = SQRT(deltaC)
+#endif /* ALLOW_AUTODIFF_TAMC */
+C     "replacement pressure"
+          pressC    = press0(I,J,bi,bj)*deltaC/deltaCreg
+          zeta (I,J,bi,bj) = HALF*pressC/deltaCreg
+C     put min and max viscosities in
+          zeta (I,J,bi,bj) = MIN(ZMAX(I,J,bi,bj),zeta(I,J,bi,bj))
+          zeta (I,J,bi,bj) = MAX(ZMIN(I,J,bi,bj),zeta(I,J,bi,bj))
+C     set viscosities to zero at hEffM flow pts 
           zeta (I,J,bi,bj) = zeta(I,J,bi,bj)*HEFFM(I,J,bi,bj) 
           eta  (I,J,bi,bj) = ECM2*zeta(I,J,bi,bj)
-          press(I,J,bi,bj) = TWO*zeta(I,J,bi,bj)*deltaC
+          press(I,J,bi,bj) = TWO *zeta(I,J,bi,bj)*deltaCreg
          ENDDO
         ENDDO
        ENDDO
