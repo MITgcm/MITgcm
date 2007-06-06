@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.831 2007/06/05 16:01:45 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.832 2007/06/06 14:37:14 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice:
+ - make sure that seaice does not move if not forced (pressure replacement
+   method, Hibler and Ip, 1995), changes results
  - and new damping criterion for EVP solver according to Hunke, JCP, 2001
  - SEAICE_evpDampC = > 0. turns it on (615. is the recommended value). 
    It is turned off by default (=-1.), because it changes the results.
