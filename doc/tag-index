@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.832 2007/06/06 14:37:14 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.833 2007/06/07 14:02:06 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice:
+ - move seaice-diagnostics from seaice_do_diags to do_statevars_diags; this
+   requires a new routine: seaice_diagnostics_fill.F
  - make sure that seaice does not move if not forced (pressure replacement
    method, Hibler and Ip, 1995), changes results
  - and new damping criterion for EVP solver according to Hunke, JCP, 2001
