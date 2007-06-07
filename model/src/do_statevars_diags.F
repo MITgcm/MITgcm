@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.8 2006/01/17 16:08:24 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.9 2007/06/07 13:47:07 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -77,6 +77,12 @@ C                    and stagger/synchronous TimeStep
           CALL PTRACERS_DIAGNOSTICS_FILL(myThid)
         ENDIF
 #endif
+
+#ifdef ALLOW_SEAICE
+       IF ( seqFlag.EQ.0 .AND. useSEAICE ) THEN
+        CALL SEAICE_DIAGNOSTICS_FILL( myTime, myIter, myThid )
+       ENDIF
+#endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_THSICE
        IF ( seqFlag.EQ.0 .AND. useThSIce ) THEN
