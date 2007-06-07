@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.49 2007/06/04 18:48:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.50 2007/06/07 22:20:08 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -152,6 +152,11 @@ cph# ifdef EXF_READ_EVAP
 CADJ STORE evap                = comlev1, key = ikey_dynamics
 cph# endif
 CADJ STORE uvel,vvel           = comlev1, key = ikey_dynamics
+# ifdef SEAICE_ALLOW_EVP
+CADJ STORE seaice_sigma1       = comlev1, key = ikey_dynamics
+CADJ STORE seaice_sigma2       = comlev1, key = ikey_dynamics
+CADJ STORE seaice_sigma12      = comlev1, key = ikey_dynamics
+# endif
 # ifdef ATMOSPHERIC_LOADING
 CADJ STORE siceload            = comlev1, key = ikey_dynamics
 # endif
