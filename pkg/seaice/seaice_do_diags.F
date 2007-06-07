@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.31 2007/06/01 12:56:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.32 2007/06/07 13:46:40 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -32,18 +32,8 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIAGNOSTICS_IS_ON
-      EXTERNAL DIAGNOSTICS_IS_ON
       INTEGER i, j, k, bi, bj
       _RL arr  (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
-#ifdef ALLOW_DIAGNOSTICS
-      _RL brr  (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
-      _RL e11  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL e22  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL e12  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL PRESS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL sig1, sig2, sig12, sigTmp, recip_prs
-#endif /* ALLOW_DIAGNOSTICS */
       LOGICAL dumpFiles
       CHARACTER*(1) pf
 
@@ -377,101 +367,6 @@ C      Reset averages to zero
       ENDIF
 
 #endif /* ALLOW_TIMEAVE */
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL DIAGNOSTICS_FILL(AREA(1-oLx,1-oLy,1,bi,bj),
-     &          'SIarea  ',0,1 ,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(HEFF(1-oLx,1-oLy,1,bi,bj),
-     &        'SIheff  ',0,1 ,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(UICE(1-oLx,1-oLy,1,bi,bj),
-     &        'SIuice  ',0,1 ,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(VICE(1-oLx,1-oLy,1,bi,bj),
-     &        'SIvice  ',0,1 ,2,bi,bj,myThid)
-        ENDDO
-       ENDDO
-c
-       CALL DIAGNOSTICS_FILL(HSNOW  ,'SIhsnow ',0,1 ,0,1,1,myThid)
-c
-       CALL DIAGNOSTICS_FILL(UWIND  ,'SIuwind ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(VWIND  ,'SIvwind ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(FU     ,'SIfu    ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(FV     ,'SIfv    ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(EmPmR  ,'SIempmr ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(Qnet   ,'SIqnet  ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(Qsw    ,'SIqsw   ',0,1 ,0,1,1,myThid)
-       IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIpress ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIzeta  ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIeta   ',myThid) ) THEN
-C     Unfortunately, for this we have to recompute a few things
-C     first make sure we have a current copy of ice velocities
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
-            vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-C      compute strainrates, "viscosities" and modified pressure
-        CALL SEAICE_CALC_STRAINRATES( 
-     I       uIceC, vIceC,
-     O       e11, e22, e12,
-     I       myThid )
-        
-        CALL SEAICE_CALC_VISCOSITIES( 
-     I       e11, e22, e12, zMin, zMax, hEffM, press0,
-     O       eta, zeta, press, 
-     I       myThid )
-C     
-        CALL DIAGNOSTICS_FILL(zeta   ,'SIzeta  ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(eta    ,'SIeta   ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1 ,0,1,1,myThid)
-       ENDIF
-        
-       IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) ) THEN
-C     principle stress components
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-            sig1  = 2.*zeta(I,J,bi,bj)
-     &           * (e11(I,J,bi,bj) + e22(I,J,bi,bj)) 
-     &           - PRESS(I,J,bi,bj)
-            sig2  = 2.* eta(I,J,bi,bj)
-     &           * (e11(I,J,bi,bj) - e22(I,J,bi,bj)) 
-            sig12 = 2.*eta(I,J,bi,bj) * 0.25 _d 0 * 
-     &           ( e12(I  ,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
-     &           + e12(I  ,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
-            sigTmp = SQRT( sig2*sig2 + 4. _d 0*sig12*sig12 )
-            recip_prs = 0. _d 0
-            IF ( PRESS(I,J,  bi,bj) .GT. 1. _d -13 .AND. 
-     &           AREA (I,J,1,bi,bj) .GT. A22 ) 
-     &           recip_prs = 1./PRESS(I,J,bi,bj)
-            arr(I,J,bi,bj) = 0.5*(sig1 + sigTmp)*recip_prs
-            brr(I,J,bi,bj) = 0.5*(sig1 - sigTmp)*recip_prs
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-C     
-        CALL DIAGNOSTICS_FILL(arr    ,'SIsigI  ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(brr    ,'SIsigII ',0,1 ,0,1,1,myThid)
-       ENDIF
-C     endif useDiagnostics
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   do SEAICE monitor output : print some statistics about seaice fields
       CALL SEAICE_MONITOR( myTime, myIter, myThid )
