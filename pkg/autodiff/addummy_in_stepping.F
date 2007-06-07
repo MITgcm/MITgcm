@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.36 2007/06/05 21:51:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.37 2007/06/07 22:21:16 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AUTODIFF_OPTIONS.h"
@@ -73,8 +73,6 @@ CEOP
       IF (
      &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
      & ) THEN
-
-       write(*,*) 'myIter= ',myiter
 
        call adexch_xy_rl( mythid,adetan)
        call adexch_xyz_rl( mythid,adtheta)
@@ -178,11 +176,8 @@ c
        _END_MASTER( myThid )
        _BARRIER
 
-        print *, 'ph-mnc in addummy param ', useMNC
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
-c
-          print *, 'ph-mnc in addummy myiter ', myiter
 c
           CALL MNC_CW_SET_UDIM('adstate', -1, myThid)
           CALL MNC_CW_RL_W_S('D','adstate',0,0,'T',myTime,myThid)
