@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.13 2007/06/06 14:26:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.14 2007/06/08 14:41:04 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -203,8 +203,7 @@ C     avoid sqrt of 0
             deltaZ = SQRT(deltaZ)
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     modify pressure (copied from seaice_calc_viscosities)
-            pressC = press0(I,J,bi,bj) * (deltaC/deltaCreg)
-            zetaC  = HALF*pressC/deltaCreg
+            zetaC  = HALF*press0(I,J,bi,bj)/deltaCreg
             zetaC  = MIN(zMax(I,J,bi,bj),zetaC)
             zetaC  = MAX(zMin(I,J,bi,bj),zetaC)
 CML            zetaC  = zetaC*hEffM(I,J,bi,bj) 
@@ -214,7 +213,7 @@ CML            zetaC  = zetaC*hEffM(I,J,bi,bj)
             zetaZ  = HALF/deltaZreg * pressZ
             zetaZ  = MIN(zMax(I,J,bi,bj),zetaZ)
             zetaZ  = MAX(zMin(I,J,bi,bj),zetaZ)
-            pressC = TWO*zetaC*deltaCreg
+            pressC = TWO*zetaC*deltaC
 C     Calculate the RHS of the stress equations. Do this now in order to
 C     avoid multiple divisions by Delta
 C     P * ( D_d/Delta - 1 ) = 2*zeta*D_d - P = 2*zeta*D_d - 2*zeta*Delta

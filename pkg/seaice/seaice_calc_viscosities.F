@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.6 2007/06/06 14:26:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.7 2007/06/08 14:41:04 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,15 +78,14 @@ C     avoid sqrt of 0
           deltaC    = SQRT(deltaC)
 #endif /* ALLOW_AUTODIFF_TAMC */
 C     "replacement pressure"
-          pressC    = press0(I,J,bi,bj)*deltaC/deltaCreg
-          zeta (I,J,bi,bj) = HALF*pressC/deltaCreg
+          zeta (I,J,bi,bj) = HALF*press0(I,J,bi,bj)/deltaCreg
 C     put min and max viscosities in
           zeta (I,J,bi,bj) = MIN(ZMAX(I,J,bi,bj),zeta(I,J,bi,bj))
           zeta (I,J,bi,bj) = MAX(ZMIN(I,J,bi,bj),zeta(I,J,bi,bj))
 C     set viscosities to zero at hEffM flow pts 
           zeta (I,J,bi,bj) = zeta(I,J,bi,bj)*HEFFM(I,J,bi,bj) 
           eta  (I,J,bi,bj) = ECM2*zeta(I,J,bi,bj)
-          press(I,J,bi,bj) = TWO *zeta(I,J,bi,bj)*deltaCreg
+          press(I,J,bi,bj) = TWO *zeta(I,J,bi,bj)*deltaC
          ENDDO
         ENDDO
        ENDDO
