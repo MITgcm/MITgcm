@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.48 2007/06/08 08:04:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.49 2007/06/08 13:37:59 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -200,15 +200,20 @@ C--   Update overlap regions for a bunch of stuff
      &      _EXCH_XY_RS( sIceLoad, myThid )
 #endif
 
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
 C     diagnostics for "non-state variables" that are modified by
 C     the seaice model 
-       CALL DIAGNOSTICS_FILL(UWIND  ,'SIuwind ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(VWIND  ,'SIvwind ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(FU     ,'SIfu    ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(FV     ,'SIfv    ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(EmPmR  ,'SIempmr ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(Qnet   ,'SIqnet  ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(Qsw    ,'SIqsw   ',0,1 ,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(UWIND  ,'SIuwind ',0,1 ,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(VWIND  ,'SIvwind ',0,1 ,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(FU     ,'SIfu    ',0,1 ,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(FV     ,'SIfv    ',0,1 ,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(EmPmR  ,'SIempmr ',0,1 ,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(Qnet   ,'SIqnet  ',0,1 ,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(Qsw    ,'SIqsw   ',0,1 ,0,1,1,myThid)
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 
 #ifdef ALLOW_THSICE
 C     endif .not.useThSice
