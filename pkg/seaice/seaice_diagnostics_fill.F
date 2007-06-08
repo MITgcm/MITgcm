@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_diagnostics_fill.F,v 1.1 2007/06/07 13:46:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_diagnostics_fill.F,v 1.2 2007/06/08 08:04:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -67,16 +67,8 @@ C
      &        'SIvice  ',0,1 ,2,bi,bj,myThid)
         ENDDO
        ENDDO
-c
+C
        CALL DIAGNOSTICS_FILL(HSNOW  ,'SIhsnow ',0,1 ,0,1,1,myThid)
-c
-       CALL DIAGNOSTICS_FILL(UWIND  ,'SIuwind ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(VWIND  ,'SIvwind ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(FU     ,'SIfu    ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(FV     ,'SIfv    ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(EmPmR  ,'SIempmr ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(Qnet   ,'SIqnet  ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(Qsw    ,'SIqsw   ',0,1 ,0,1,1,myThid)
 C     
        IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) .OR.

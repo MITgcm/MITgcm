@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.47 2007/06/01 22:20:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.48 2007/06/08 08:04:22 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -199,6 +199,16 @@ C--   Update overlap regions for a bunch of stuff
        IF ( useRealFreshWaterFlux )
      &      _EXCH_XY_RS( sIceLoad, myThid )
 #endif
+
+C     diagnostics for "non-state variables" that are modified by
+C     the seaice model 
+       CALL DIAGNOSTICS_FILL(UWIND  ,'SIuwind ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(VWIND  ,'SIvwind ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(FU     ,'SIfu    ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(FV     ,'SIfv    ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(EmPmR  ,'SIempmr ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(Qnet   ,'SIqnet  ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(Qsw    ,'SIqsw   ',0,1 ,0,1,1,myThid)
 
 #ifdef ALLOW_THSICE
 C     endif .not.useThSice
