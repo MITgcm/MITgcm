@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.30 2006/06/07 01:55:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.31 2007/06/08 16:08:18 heimbach Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -52,29 +52,24 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER I,J
       _RL Zip,Zij,Zpj,Dim,Dij,Dmj,uD2,vD2,uD4,vD4
+      _RL Zip1,Zij1,Zpj1
 
 C     - Laplacian  terms
       IF (harmonic) THEN
        DO j=2-Oly,sNy+Oly-1
         DO i=2-Olx,sNx+Olx-1
 
-         Dim=hDiv( i ,j-1)
-         Dij=hDiv( i , j )
-         Dmj=hDiv(i-1, j )
-         Zip=hFacZ( i ,j+1)*vort3( i ,j+1)
-         Zij=hFacZ( i , j )*vort3( i , j )
-         Zpj=hFacZ(i+1, j )*vort3(i+1, j )
-
 C This bit scales the harmonic dissipation operator to be proportional
 C to the grid-cell area over the time-step. viscAh is then non-dimensional
 C and should be less than 1/8, for example viscAh=0.01 
          IF (useVariableViscosity) THEN
-          Dij=Dij*viscAh_D(i,j)
-          Dim=Dim*viscAh_D(i,j-1)
-          Dmj=Dmj*viscAh_D(i-1,j)
-          Zij=Zij*viscAh_Z(i,j)
-          Zip=Zip*viscAh_Z(i,j+1)
-          Zpj=Zpj*viscAh_Z(i+1,j)
+          Dij=hDiv( i , j )*viscAh_D(i,j)
+          Dim=hDiv( i ,j-1)*viscAh_D(i,j-1)
+          Dmj=hDiv(i-1, j )*viscAh_D(i-1,j)
+          Zij=hFacZ( i , j )*vort3( i , j )*viscAh_Z(i,j)
+          Zip=hFacZ( i ,j+1)*vort3( i ,j+1)*viscAh_Z(i,j+1)
+          Zpj=hFacZ(i+1, j )*vort3(i+1, j )*viscAh_Z(i+1,j)
+
           uD2 = (
      &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
      &     -_recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj) )
@@ -89,6 +84,13 @@ C and should be less than 1/8, for example viscAh=0.01
      &                                           *cosFacV(j,bi,bj)
 #endif /* ISOTROPIC_COS_SCALING */
          ELSE
+          Dim=hDiv( i ,j-1)
+          Dij=hDiv( i , j )
+          Dmj=hDiv(i-1, j )
+          Zip=hFacZ( i ,j+1)*vort3( i ,j+1)
+          Zij=hFacZ( i , j )*vort3( i , j )
+          Zpj=hFacZ(i+1, j )*vort3(i+1, j )
+
           uD2 = viscAhD*
      &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
      &        - viscAhZ*_recip_hFacW(i,j,k,bi,bj)*
@@ -128,17 +130,17 @@ C     - Bi-harmonic terms
          Dij=dyF( i , j ,bi,bj)*dStar( i , j )
          Dmj=dyF(i-1, j ,bi,bj)*dStar(i-1, j )
 
-         Zip=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*zStar( i ,j+1)
-         Zij=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
-         Zpj=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*zStar(i+1, j )
+         Zip1=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*zStar( i ,j+1)
+         Zij1=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
+         Zpj1=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*zStar(i+1, j )
 #else
          Dim=dStar( i ,j-1)
          Dij=dStar( i , j )
          Dmj=dStar(i-1, j )
 
-         Zip=hFacZ( i ,j+1)*zStar( i ,j+1)
-         Zij=hFacZ( i , j )*zStar( i , j )
-         Zpj=hFacZ(i+1, j )*zStar(i+1, j )
+         Zip1=hFacZ( i ,j+1)*zStar( i ,j+1)
+         Zij1=hFacZ( i , j )*zStar( i , j )
+         Zpj1=hFacZ(i+1, j )*zStar(i+1, j )
 #endif
 
 C This bit scales the harmonic dissipation operator to be proportional
@@ -148,9 +150,9 @@ C and should be less than 1/8, for example viscAh=0.01
           Dij=Dij*viscA4_D(i,j)
           Dim=Dim*viscA4_D(i,j-1)
           Dmj=Dmj*viscA4_D(i-1,j)
-          Zij=Zij*viscA4_Z(i,j)
-          Zip=Zip*viscA4_Z(i,j+1)
-          Zpj=Zpj*viscA4_Z(i+1,j)
+          Zij=Zij1*viscA4_Z(i,j)
+          Zip=Zip1*viscA4_Z(i,j+1)
+          Zpj=Zpj1*viscA4_Z(i+1,j)
 
 #ifdef MOM_VI_ORIGINAL_VISCA4
           uD4 = recip_rAw(i,j,bi,bj)*(
@@ -168,6 +170,9 @@ C and should be less than 1/8, for example viscAh=0.01
 #endif /* ISOTROPIC_COS_SCALING */
      &         )
          ELSE
+          Zij=Zij1
+          Zip=Zip1
+          Zpj=Zpj1
           uD4 = recip_rAw(i,j,bi,bj)*(
      &                             viscA4*( (Dij-Dmj)*cosFacU(j,bi,bj) )
      &  -_recip_hFacW(i,j,k,bi,bj)*viscA4*( Zip-Zij ) 
