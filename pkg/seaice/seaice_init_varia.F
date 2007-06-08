@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.7 2007/06/05 16:01:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.8 2007/06/08 08:03:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -36,6 +36,7 @@ C     === Local variables ===
 C     i,j,k,bi,bj - Loop counters
 
       INTEGER i, j, k, bi, bj
+      _RL PSTAR
       _RS  mask_uice
       INTEGER myIter, myTile
 
@@ -303,12 +304,18 @@ C--   Read initial sea-ice thickness from file if available.
       ENDIF
 
 C---  Complete initialization
+      PSTAR = SEAICE_strength
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           ZETA(I,J,bi,bj)=HEFF(I,J,1,bi,bj)*(1.0 _d 11)
           ETA(I,J,bi,bj)=ZETA(I,J,bi,bj)/4.0 _d 0
+          PRESS0(I,J,bi,bj)=PSTAR*HEFF(I,J,1,bi,bj)
+     &         *EXP(-20.0 _d 0*(ONE-AREA(I,J,1,bi,bj)))
+          ZMAX(I,J,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(I,J,bi,bj)
+          ZMIN(I,J,bi,bj)=0.0 _d 0
+          PRESS0(I,J,bi,bj)=PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
          ENDDO
         ENDDO
         IF ( useRealFreshWaterFlux .AND. .NOT.useThSIce ) THEN
