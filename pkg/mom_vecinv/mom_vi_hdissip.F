@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.31 2007/06/08 16:08:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.32 2007/06/09 17:44:55 heimbach Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -158,16 +158,16 @@ C and should be less than 1/8, for example viscAh=0.01
           uD4 = recip_rAw(i,j,bi,bj)*(
      &                             ( (Dij-Dmj)*cosFacU(j,bi,bj) )
      &  -_recip_hFacW(i,j,k,bi,bj)*( Zip-Zij ) 
-#ifdef ISOTROPIC_COS_SCALING
+# ifdef ISOTROPIC_COS_SCALING
      &                                        *cosFacU(j,bi,bj)
-#endif /* ISOTROPIC_COS_SCALING */
+# endif /* ISOTROPIC_COS_SCALING */
      &         )
           vD4 = recip_rAs(i,j,bi,bj)*(
      &   _recip_hFacS(i,j,k,bi,bj)*( (Zpj-Zij)*cosFacV(j,bi,bj) )
      &   +                         ( Dij-Dim ) 
-#ifdef ISOTROPIC_COS_SCALING
+# ifdef ISOTROPIC_COS_SCALING
      &                                        *cosFacV(j,bi,bj)
-#endif /* ISOTROPIC_COS_SCALING */
+# endif /* ISOTROPIC_COS_SCALING */
      &         )
          ELSE
           Zij=Zij1
@@ -176,45 +176,48 @@ C and should be less than 1/8, for example viscAh=0.01
           uD4 = recip_rAw(i,j,bi,bj)*(
      &                             viscA4*( (Dij-Dmj)*cosFacU(j,bi,bj) )
      &  -_recip_hFacW(i,j,k,bi,bj)*viscA4*( Zip-Zij ) 
-#ifdef ISOTROPIC_COS_SCALING
+# ifdef ISOTROPIC_COS_SCALING
      &                                               *cosFacU(j,bi,bj)
-#endif /* ISOTROPIC_COS_SCALING */
+# endif /* ISOTROPIC_COS_SCALING */
      &         )
           vD4 = recip_rAs(i,j,bi,bj)*(
      &   _recip_hFacS(i,j,k,bi,bj)*viscA4*( (Zpj-Zij)*cosFacV(j,bi,bj) )
      &   +                         viscA4*( Dij-Dim ) 
-#ifdef ISOTROPIC_COS_SCALING
+# ifdef ISOTROPIC_COS_SCALING
      &                                               *cosFacV(j,bi,bj)
-#endif /* ISOTROPIC_COS_SCALING */
+# endif /* ISOTROPIC_COS_SCALING */
      &         )
 #else /* MOM_VI_ORIGINAL_VISCA4 */
           uD4 = (
      &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
      &     -_recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj) )
-#ifdef ISOTROPIC_COS_SCALING
+# ifdef ISOTROPIC_COS_SCALING
      &                                           *cosFacU(j,bi,bj)
-#endif /* ISOTROPIC_COS_SCALING */
+# endif /* ISOTROPIC_COS_SCALING */
           vD4 = (
      &      _recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
      &                                           *cosFacV(j,bi,bj)
      &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
-#ifdef ISOTROPIC_COS_SCALING
+# ifdef ISOTROPIC_COS_SCALING
      &                                           *cosFacV(j,bi,bj)
-#endif /* ISOTROPIC_COS_SCALING */
+# endif /* ISOTROPIC_COS_SCALING */
          ELSE
+          Zij=Zij1
+          Zip=Zip1
+          Zpj=Zpj1
           uD4 = viscA4D*
      &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
      &        - viscA4Z*_recip_hFacW(i,j,k,bi,bj)*
      &                                ( Zip-Zij )*recip_DYG(i,j,bi,bj)
-#ifdef ISOTROPIC_COS_SCALING
+# ifdef ISOTROPIC_COS_SCALING
      &                                           *cosFacU(j,bi,bj)
-#endif /* ISOTROPIC_COS_SCALING */
+# endif /* ISOTROPIC_COS_SCALING */
           vD4 = viscA4Z*_recip_hFacS(i,j,k,bi,bj)*
      &               cosFacV(j,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
      &        + viscA4D*              ( Dij-Dim )*recip_DYC(i,j,bi,bj)
-#ifdef ISOTROPIC_COS_SCALING
+# ifdef ISOTROPIC_COS_SCALING
      &                                           *cosFacV(j,bi,bj)
-#endif /* ISOTROPIC_COS_SCALING */
+# endif /* ISOTROPIC_COS_SCALING */
 #endif /* MOM_VI_ORIGINAL_VISCA4 */
          ENDIF
 
