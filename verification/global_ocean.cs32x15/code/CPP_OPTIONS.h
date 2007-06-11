@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.9 2006/07/16 01:56:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.10 2007/06/11 22:36:13 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -8,7 +8,7 @@ C CPP flags controlling particular source code features
 
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
-#undef SHORTWAVE_HEATING
+#define SHORTWAVE_HEATING
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
@@ -18,6 +18,12 @@ C o Include/exclude call to S/R CONVECT
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
+
+C o Allow latitudinally varying BryanLewis79 vertical diffusivity
+#undef ALLOW_BL79_LAT_VARY
+
+C o Allow full 3D specification of vertical diffusivity
+#undef ALLOW_3D_DIFFKR
 
 C o Include/exclude Implicit vertical advection code
 #define INCLUDE_IMPLVERTADV_CODE
@@ -30,6 +36,11 @@ C o Include/exclude nonHydrostatic code
 
 C o Include pressure loading code
 #define ATMOSPHERIC_LOADING
+
+C o exclude/allow external forcing-fields load 
+C   this allows to read & do simple linear time interpolation of oceanic
+C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
+#undef EXCLUDE_FFIELDS_LOAD
 
 C o Use "Exact Convervation" of fluid in Free-Surface formulation
 C   so that d/dt(eta) is exactly equal to - Div.Transport
@@ -66,6 +77,11 @@ C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F
 C          because the old code did not have no-slip BCs
 #undef  OLD_ADV_BCS
+
+C o Use LONG.bin, LATG.bin, etc., initialization for ini_curviliear_grid.F
+C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
+C   is still useful with, e.g., single-domain curvilinear configurations.
+#undef OLD_GRID_IO
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
