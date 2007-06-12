@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.833 2007/06/07 14:02:06 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.834 2007/06/12 16:04:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o additional test (in global_ocean.cs32x15) using seaice+thsice pkgs.
 o pkg/seaice:
  - move seaice-diagnostics from seaice_do_diags to do_statevars_diags; this
    requires a new routine: seaice_diagnostics_fill.F
