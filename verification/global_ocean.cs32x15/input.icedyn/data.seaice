@@ -1,0 +1,10 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+#SEAICE_monFreq = 2592000.,
+#SEAICEwriteState   = .TRUE.,
+#SEAICE_clipVelocities=.FALSE.,
+#SEAICE_maskRHS   = .TRUE.,
+ LSR_ERROR        = 1.E-12,
+#SEAICE_deltaTevp = 60.,
+#SEAICEuseDynamics = .FALSE.,
+ &
