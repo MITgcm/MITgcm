@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint59
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint59c
 (PID.TID 0000.0001) // Build user:        jscott
 (PID.TID 0000.0001) // Build host:        svante3
-(PID.TID 0000.0001) // Build date:        Mon Apr 30 11:43:33 EDT 2007
+(PID.TID 0000.0001) // Build date:        Wed Jun 13 13:04:01 EDT 2007
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -103,10 +103,10 @@
 (PID.TID 0000.0001) > abEps = 0.1,
 (PID.TID 0000.0001) ># forcing_In_AB=.FALSE.,
 (PID.TID 0000.0001) >#cAdjFreq = -1,
-(PID.TID 0000.0001) > pChkptFreq= 31536000.,
+(PID.TID 0000.0001) > pChkptFreq= 3153600000.,
 (PID.TID 0000.0001) > chkptFreq=  31536000.,
 (PID.TID 0000.0001) > dumpFreq=  0.,
-(PID.TID 0000.0001) > taveFreq=  31536000.,
+(PID.TID 0000.0001) > taveFreq=  0.,
 (PID.TID 0000.0001) > tauThetaClimRelax = 0.d0,
 (PID.TID 0000.0001) > tauSaltClimRelax = 0.d0,
 (PID.TID 0000.0001) > monitorFreq= 31536000.,
@@ -190,8 +190,6 @@
 (PID.TID 0000.0001) >#tauRelax_MxL=5184000.,
 (PID.TID 0000.0001) ># stressReduction=0.,
 (PID.TID 0000.0001) > thSIce_taveFreq=315360000.,
-(PID.TID 0000.0001) ># thSIce_taveFreq=28800.,
-(PID.TID 0000.0001) ># thSIce_diagFreq=2628000.,
 (PID.TID 0000.0001) >#thSIce_monFreq=864000.,
 (PID.TID 0000.0001) > thSIce_diagFreq=0.,
 (PID.TID 0000.0001) > &
@@ -465,11 +463,11 @@
  dtatm=           1
  dtocn=           8
  Total number of coupled periods:        1095
- MITCPLR_init1:            0 Coupler Rank/Size =            0 /           2
-(PID.TID 0000.0001) // =======================================================
+ MITCPLR_init1:            0 Coupler Rank/Size =            0 /(PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) ># Example "eedata" file
+           2
 (PID.TID 0000.0001) ># Lines beginning "#" are comments
 (PID.TID 0000.0001) ># nTx - No. threads per process in X
 (PID.TID 0000.0001) ># nTy - No. threads per process in Y
@@ -486,62 +484,60 @@
  MITCPLR_init1:            0 Coupler MPI_Bcast from            0          59
   ierr=           0
  MITCPLR_init1:            0 Coupler Bcast cbuf=
- Coupler                         x
- MITCPLR_init1:            1 UV-Ocean MPI_Bcast from            0          59
+ MITCPLR_init1:            1 UV-Ocean MPI_Bcast from            0 Coupler                         x
+          59
   ierr=           0
  MITCPLR_init1:            1 UV-Ocean Bcast cbuf=
  Coupler                         x
- MITCPLR_init1:            1 UV-Ocean MITCPLR_init1:            0 Coupler MPI_Bcast from  MPI_Bcast from            1           0
+ MITCPLR_init1:            1 UV-Ocean MPI_Bcast from            1           0
   ierr=           0
  MITCPLR_init1:            1 UV-Ocean Bcast cbuf=
-           1           0
-  ierr=           0
- MITCPLR_init1:            0 UV-Ocean                        x
- MITCPLR_init1:            1 UV-Ocean Coupler Bcast cbuf=
  UV-Ocean                        x
- MITCPLR_init1:            0 Coupler compind=           1
+ MITCPLR_init1:            1 UV-Ocean compind=           1
  MITCPLR_init1:            1 UV-Ocean coupler=Coupler                         
             0
-  compind=           1
- MITCPLR_init1:            0 CouplerMITCPLR_init1:            1 UV-Ocean component=
+ MITCPLR_init1:            1 UV-Ocean component=
  UV-Ocean                                   1
- MITCPLR_init1:  coupler=Coupler                         
-            0
- MITCPLR_init1:            0 Coupler component=           1 UV-Ocean comp+cplr=
+ MITCPLR_init1:            1 UV-Ocean comp+cplr=
  UV-Ocean                                   0           1
-UV-Ocean                        
+ MITCPLR_init1:            1 UV-Ocean MPI_Comm_group MPI_GROUP_World=
+            2 ierr=           0
+ MITCPLR_init1:            1 UV-Ocean MPI_Group_incl MPI_GROUP_Tmp=           4
+  ierr=           0
+ MITCPLR_init1:            0 Coupler MPI_Bcast from            1           0
+  ierr=           0
+ MITCPLR_init1:            0 Coupler Bcast cbuf=
+ UV-Ocean                        x
+ MITCPLR_init1:            0 Coupler compind=           1
+ MITCPLR_init1:            0 Coupler coupler=Coupler                         
+            0
+ MITCPLR_init1:            0 Coupler component=UV-Ocean                        
             1
  MITCPLR_init1:            0 Coupler comp+cplr=UV-Ocean                        
-  MITCPLR_init1:            1 UV-Ocean           0           1
- MITCPLR_init1:  MPI_Comm_group MPI_GROUP_World=
+            0           1
+ MITCPLR_init1:            0 Coupler MPI_Comm_group MPI_GROUP_World=
             2 ierr=           0
- MITCPLR_init1:            1           0 Coupler MPI_Comm_group MPI_GROUP_World=
-            2 UV-Ocean MPI_Group_incl MPI_GROUP_Tmp=           4
+ MITCPLR_init1:            0 Coupler MPI_Group_incl MPI_GROUP_Tmp=           4
   ierr=           0
- ierr=           0
- MITCPLR_init1:            0 MITCPLR_init1:            1 UV-Ocean Coupler MPI_Group_incl MPI_GROUP_Tmp=           4
-  MPI_Comm_create MPI_COMM_component=
+ MITCPLR_init1:            0  MITCPLR_init1:            1 UV-Ocean MPI_Comm_create MPI_COMM_component=Coupler MPI_Comm_create MPI_COMM_component=
+            2 ierr=           0
+ MITCPLR_init1:            0 Coupler MPI_Group_incl MPI_GROUP_Tmp=           6
+  ierr=
             3 ierr=           0
  MITCPLR_init1:            1 UV-Ocean MPI_Group_incl MPI_GROUP_Tmp=           6
   ierr=           0
- ierr=           0
- MITCPLR_init1:            0 Coupler MPI_Comm_create MPI_COMM_component=
-            2 ierr=           0
- MITCPLR_init1:            0 Coupler MPI_Group_incl MPI_GROUP_Tmp=           6
-  ierr=           0
- MITCPLR_init1:            0 Coupler MPI_Comm_create MPI_COMM_compcplr=
- MITCPLR_init1:            1 UV-Ocean MPI_Comm_create MPI_COMM_compcplr=            4 ierr=           0
+           0
+ MITCPLR_init1:            0 Coupler MITCPLR_init1:            1 UV-Ocean MPI_Comm_create MPI_COMM_compcplr=
+            4 ierr=           0
+ MITCPLR_init1:            1 UV-Ocean component num=           1 MPI_Comm_create MPI_COMM_compcplr=
+            4 ierr=           0
  MITCPLR_init1:            0 Coupler component num=           2 MPI_COMM=
             0           0
  MITCPLR_init1:            0 Coupler Rank/Size =            0 /           2
- 
-            4 ierr=           0
- MITCPLR_init1:            1 UV-Ocean component num=           1 MPI_COMM=
- in Component =           1
+  in Component =           1
+ MPI_COMM=
             3           4
  MITCPLR_init1:            1 UV-Ocean Rank/Size =            1 /           2
-INI_PHIREF: Unable to compute reference stratification
-INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
  Land fractions on atmospheric grid: 
     1.000000000000000        1.000000000000000        1.000000000000000     
    0.8333333333333334       0.6555555555555554       0.3888888888888885     
@@ -605,7 +601,9 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
 (PID.TID 0000.0001) //
 (PID.TID 0000.0001) // "Physical" paramters ( PARM01 in namelist )
 (PID.TID 0000.0001) //
-(PID.TID 0000.0001) buoyancyRelation = OCEANIC
+(PID.TID 0000.0001) buoyancyRelation = /* Type of relation to get Buoyancy */
+(PID.TID 0000.0001)               'OCEANIC'
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) fluidIsAir  =  /* fluid major constituent is Air */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
@@ -717,7 +715,15 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
 (PID.TID 0000.0001) diffKrBL79Ho =   /* Turning depth for Bryan and Lewis 1979 ( m ) */
 (PID.TID 0000.0001)                -2.000000000000000E+03
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) Equation of State : eosType = LINEAR ;
+(PID.TID 0000.0001) ivdc_kappa = /* Implicit Vertical Diffusivity for Convection ( m^2/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) hMixCriteria=  /* Criteria for mixed-layer diagnostic */
+(PID.TID 0000.0001)                -8.000000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) eosType =  /* Type of Equation of State */
+(PID.TID 0000.0001)               'LINEAR'
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tAlpha =   /* Linear EOS thermal expansion coefficient ( 1/oC ) */
 (PID.TID 0000.0001)                 2.000000000000000E-04
 (PID.TID 0000.0001)     ;
@@ -1014,7 +1020,7 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
 (PID.TID 0000.0001)                 3.153600000000000E+07
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) pChkPtFreq =   /* Permanent restart/checkpoint file interval ( s ). */
-(PID.TID 0000.0001)                 3.153600000000000E+07
+(PID.TID 0000.0001)                 3.153600000000000E+09
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) chkPtFreq =   /* Rolling restart/checkpoint file interval ( s ). */
 (PID.TID 0000.0001)                 3.153600000000000E+07
@@ -1753,14 +1759,14 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
     0.000000000000000     
  No diffusion into deep ocean
   KACC0=        59042  KACC=        57530
-  TAU1=    8760.000000000000       TAU2=    8760.000000000000     
+  TAU1=    271560.0000000000       TAU2=    280320.0000000000     
   START OF RUN     1.010000000000000     
   INDAY=            1  IMONTH=            1
   INYEAR=            1
- INITIAL CONDITIONs FROM EXP.=    1.010000000000000     
+ INITIAL CONDITIONs FROM EXP.=    501.0100000000000     
  JDAY=            1  JDATE=            1  JMONTH=JAN 
-  JYEAR=            2
-0RESTART DISK READ ON UNIT 1, TAUX=     0.00AEXP=     1.01
+  JYEAR=           33
+0RESTART DISK READ ON UNIT 2, TAUX=     0.00AEXP=     1.01
 
   fixed SST
    with LAND fractions
@@ -1960,7 +1966,7 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
  LSSM =           11,
  KOCEAN =            0,
  ISTART =           10,
- KDISK =            1,
+ KDISK =            2,
  TAUP =    0.000000000000000     ,
  TAUNI =    0.000000000000000     ,
  TAUE =    8760.000000000000     ,
@@ -2002,7 +2008,7 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
  DLAT =   6.9813166666666664E-002,
  DLON =    6.283185000000000     ,
  AREAG =    510197659061762.6     ,
- IRAND =   1955106645,
+ IRAND =    630813141,
  IJRA =            1,
  MFILTR =            2,
  NDIFS =            0,
@@ -2267,9 +2273,9 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
  /
   HOR. DIFFUSION for Q after COND
   RADIATION EVERY             5  HOURS
-  IRAND=   1955106645
+  IRAND=    630813141
   NCNDS=            6
-  after INPUT MRCHT=        96360
+  after INPUT MRCHT=      3083520
   ISTRT1=            0
   DAILY_ATM IDAY=            1  IYEAR=            1
   JYEAR=            1  JDAY=            1
@@ -2277,22 +2283,22 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
  OBLIQ=    23.44000000000000     
   Main after DAILYNEW0 JYEAR=            1
  DT2MGL
-   -2.152666918957050       -0.9803307268523133        -1.791186800758275      
-   -1.002353164377794        0.1227253424019281        -1.777445392977365      
-   -1.066087688901724         1.939462287239458         3.457738713584926      
-    5.023907477699241         7.467110878982291         10.10046491188905      
-    13.01483397027558         15.18924860957115         17.14103073378274      
-    19.61833773144125         22.18555881251507         23.78040958592142      
-    24.74464130287791         25.40735994251436         24.98715716089975      
-    25.00163762621580         25.32975899407822         24.37769163970245      
-    25.04798660247343         25.53861014963085         23.76276548373493      
-    22.48444239782588         19.69440348294556         17.00499429545347      
-    14.97809831956247         12.53106298567493         9.651079889897005      
-    6.873507221980406         4.292592623007986        0.7283727888751629      
-   -1.309985198964040        -4.675094028921138        -11.00607490276562      
-   -16.60587598652081        -21.78721464205866        -23.51385307678535      
-   -28.70376873628917        -32.04197493295480        -34.09958198384315      
-   -34.63583206580241     
+   -1.393902799083458        -1.783875944074791       -0.5004276604014162      
+  -0.5525653757218217       -0.3020631655129288       -0.3960465036122233      
+  -0.7177563115395007         1.812870714215388         4.266943892226656      
+    5.947216759260418         8.682571769909439         10.49803817367970      
+    13.00783396421433         15.18235888001999         17.24285515452761      
+    19.03084226380422         22.32128678346750         23.75153040617431      
+    23.96672441543098         25.15359143716169         25.16116387440464      
+    25.38162317775838         25.09269311249116         25.05158760812890      
+    26.02099928160137         25.42327870158641         23.67305998208935      
+    21.77333815785369         19.46762057256010         17.10630847066921      
+    14.54123354709708         12.59928643517440         9.829699226932675      
+    6.945694284024699         3.510333942679499        0.5381813850534533      
+   -2.209048206679370        -4.422384535790874        -8.832482278391849      
+   -16.70199153391117        -20.65340771045574        -23.21877077439253      
+   -28.22046103826750        -31.52412064461425        -33.82537428913166      
+   -34.41349119618990     
  DT2MLD
     0.000000000000000         0.000000000000000         0.000000000000000      
     0.000000000000000         0.000000000000000         0.000000000000000      
@@ -2529,17 +2535,17 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
   RHNEW for j=23,34,46
        0.9248    0.8755    0.9250
   RHKP/RHNEW 
- 11   17.2938    1.1895
- 10   42.3082    1.1895
-  9   77.2136    0.9950
-  8  122.0642    0.9950
-  7  199.9744    0.9950
-  6  319.4756    0.9500
-  5  466.5173    0.9500
-  4  631.2086    0.9500
-  3  783.4072    0.9450
-  2  890.5595    0.9450
-  1  955.4748    0.9450
+ 11   17.2969    1.1895
+ 10   42.3219    1.1895
+  9   77.2421    0.9950
+  8  122.1116    0.9950
+  7  200.0547    0.9950
+  6  319.6065    0.9500
+  5  466.7103    0.9500
+  4  631.4712    0.9500
+  3  783.7342    0.9450
+  2  890.9318    0.9450
+  1  955.8746    0.9450
   RHMAX=    100000.0000000000     
  SNOWMAX=4*ACE1I (1m)
   0.3390E+03  0.3012E+00  0.1547E+01  0.2930E-03  0.2990E-03
@@ -2563,7 +2569,7 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
  After CALL RCOMP1
  LOW CLOUDS IN LAYERS 1- 3   MID LEVEL CLOUDS IN LAYERS  4- 5   HIGH CLOUDS IN LAYERS  6-11
   FROM radia READGHG=    0.000000000000000     
-  FRSNALB=   0.1706401998724962     
+  FRSNALB=   0.1765397620489850     
   ASNALB(1)=   0.6000000000000000       ASNALB(2)=   0.3500000000000000     
   AOIALB(1)=   0.6000000000000000       AOIALB(2)=   0.3500000000000000     
   ALIALB(1)=   0.6000000000000000       ALIALB(2)=   0.3500000000000000     
@@ -2600,10 +2606,10 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
   8.7 10.0 11.7 13.9 16.2 18.6 20.7 22.6 24.0 24.8 25.0 24.5
  23.4 21.7 19.7 17.4 15.0 12.8 10.8  9.3  8.3  8.0
   WMGE
-  0.0  0.0  0.1  0.2  0.5  1.1  2.2  3.5  4.9  6.7  9.0 11.3
- 11.7 10.2  9.3  8.7  7.5  4.7  1.5  0.3  0.0  0.0  0.0  0.0
-  0.0  0.1  2.4  6.7 10.9 14.1 16.2 18.8 21.2 21.8 20.7 18.7
- 16.7 15.4 13.3 10.6  8.4  7.6  7.6  6.1  2.9  1.3
+  0.0  0.3  0.3  0.4  0.6  1.0  1.8  3.0  4.6  6.8  9.2 10.9
+ 11.4 10.9 10.5 10.3  7.9  3.2  0.9  0.4  0.1  0.0  0.0  0.0
+  0.0  0.2  3.6  8.5 13.8 17.7 16.2 15.9 19.2 22.8 22.9 20.3
+ 17.1 14.1 12.5 10.9  9.0  8.2  7.8  5.6  2.3  0.9
   COEFSN=    1.000000000000000     
   surfacen  CIAX=   0.3000000000000000     
   QS=Q1, TS=T1
@@ -2628,21 +2634,21 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
   DTSURF=    1800.000000000000     
  E0(1,j,1)
     0.000000000000000         0.000000000000000         0.000000000000000      
-    834529.6969668053         2110375.297739034         2181778.093809579      
-    656609.5780123076         1286675.444545337         2710016.306323231      
-    1076585.854349870         1482569.383879292         3038459.628556615      
-    3023821.934468137         3026004.750842381         2989027.221833185      
-    2936934.885966250         2960812.590040172         3116597.170979886      
-    2949797.411952749         1580432.543170178         2768406.433882343      
-    2829134.488541572         43017.17172366229         2637925.770335902      
-    2288661.629577833         699109.3117806318         1760373.672855847      
-    1526675.216013436         121322.5899189347        -414167.6416061184      
-    939763.0718237265        -563319.6673375035        -461709.3659494692      
-   -500214.8690816796        -359264.1227141892        -29108.67972143705      
-   -559618.2399774685        -739067.9264612622        -1484854.047125727      
-   -1702939.506721565        -1806297.939969145        -1856837.509320036      
-   -2070638.263137446        -2241836.785186482        -2304891.184948986      
-   -2295508.049784404     
+    1845491.991249835         2104679.580532236         1118800.326966444      
+    1228518.763740822         2741319.644361194         2921392.065957272      
+    3060845.246010523         1713393.369696031         3223183.210442087      
+    1722761.369185707         3200486.885195843         1600033.227754557      
+    320069.1796309048         3287105.070554044         3340596.867205201      
+    3090189.491695499         1535141.623538008         2820914.063114278      
+    2688183.153680809         1436645.852273375        -41617.84836645602      
+    2211646.648553484         1958946.012112553         1569554.994141025      
+   -11909.43288791645        -174526.2707090343        -782185.2623794752      
+   -511612.2506235522         435852.5196687119        -915458.0452281294      
+    290143.3086492406         39752.42377954657        -800050.6667916201      
+   -630656.1325356860        -947128.8809108086        -1494581.868254557      
+   -1817402.247613881        -1739296.954554804        -1888043.886518765      
+   -2052074.052147169        -2129325.429262885        -2166921.354017030      
+   -2096365.416627239     
   COEFSN=    1.000000000000000     
   HOR DIFF for Q and T
   FDIFF=    500000.0000000000       FDIFFQ=    1000000.000000000     
@@ -17050,14 +17056,14 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
      CL SN OI BE BY RD HT EC SN LAT OF  GL  GRAD ----- ----- EPE ZPE ------ NORTH SOUTH --------- SLOPE DRY-STAT STAT-ENR ANG MOMENTM
      CV CV CV DO AT P0 Z0 IP HT  HT GD  OB NH SH NH SH NH SH  NH  NH EQ  ML VL LT VL LT NH MAX SH EQ 45 SE ED TL ED TL LT SE ED TL LT
 
- IC  50  0 4 312 68 14 13 28 27  80 15 -26 21 21  0  0  0  0   0   0  0   0 26 24 23 36 59-102 77  0  0  0 14 26 24 31 40  0 24 25 32
+ IC  50  0 3 313 68 12 11 28 26  82 16 -25 19 23  0  0  0  0   0   0  0   0 23 28 24 30 65 110 26  0  0  0 13 19 24 30 40  0 20 21 32
 0
- ENKE=    13.29891      ENTP=    2.321954      ENTT=    15.62086    
- WLMMAX=    30.90666626758840       JWLMMAX=           38
+ ENKE=    13.57276      ENTP=    2.636612      ENTT=    16.20937    
+ WLMMAX=    29.27145732273045       JWLMMAX=           37
  From atm write(546) JAN             1  JAN             2
  From atm write(547)     1.010000000000000                 2
  Write a restart file once a year.
-  KDISK0=          501
+  KDISK0=          502
 
  ************************************************************************************************************************************
 
@@ -17065,88 +17071,87 @@ INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros
  ************************************************************************************************************************************
 
  Executing atm2ocn main   31534200.00000000     
-(PID.TID 0000.0001) // Time-average data written, t-step      1095
-(PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON thSI_time_sec                =   3.1536000000000E+07
-(PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   1.3122894743171E+13
-(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   3.1887868341449E+12
-(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   9.9341079090266E+12
-(PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.3518283185740E+00
-(PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   3.2782023390838E+00
-(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.0544680213891E+00
-(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   5.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   3.4568903011534E+00
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   1.5712665576284E-01
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   7.1197688283701E-02
-(PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   1.8470931972003E-01
-(PID.TID 0000.0001) %MON thSI_SnwH_max_S              =   3.3836198295701E-01
-(PID.TID 0000.0001) %MON thSI_SnwH_max_N              =   1.4140122103455E+00
-(PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -1.1147819152529E+22
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_G              =  -2.6324105264115E+01
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =  -2.3027339362628E+01
-(PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -2.7382346607796E+01
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =  -6.6954597687982E+01
-(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -1.4835628368110E+02
+(PID.TID 0000.0001) %MON thSI_Ice_Area_G              =   1.2187177733619E+13
+(PID.TID 0000.0001) %MON thSI_Ice_Area_S              =   2.9750560520181E+12
+(PID.TID 0000.0001) %MON thSI_Ice_Area_N              =   9.2121216816007E+12
+(PID.TID 0000.0001) %MON thSI_IceH_ave_G              =   2.0412481057470E+00
+(PID.TID 0000.0001) %MON thSI_IceH_ave_S              =   1.6794483039494E+00
+(PID.TID 0000.0001) %MON thSI_IceH_ave_N              =   2.1580914049521E+00
+(PID.TID 0000.0001) %MON thSI_IceH_max_S              =   3.1857016771252E+00
+(PID.TID 0000.0001) %MON thSI_IceH_max_N              =   4.0402713056205E+00
+(PID.TID 0000.0001) %MON thSI_SnwH_ave_G              =   1.8689592674169E-01
+(PID.TID 0000.0001) %MON thSI_SnwH_ave_S              =   1.6800713382962E-03
+(PID.TID 0000.0001) %MON thSI_SnwH_ave_N              =   2.4671141448630E-01
+(PID.TID 0000.0001) %MON thSI_SnwH_max_S              =   1.8070951078015E-02
+(PID.TID 0000.0001) %MON thSI_SnwH_max_N              =   1.3805138258401E+00
+(PID.TID 0000.0001) %MON thSI_TotEnerg_G              =  -8.0932093512768E+21
+(PID.TID 0000.0001) %MON thSI_Tsrf_ave_G              =  -2.3651418710114E+01
+(PID.TID 0000.0001) %MON thSI_Tsrf_ave_S              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_ave_N              =  -3.1289647861263E+01
+(PID.TID 0000.0001) %MON thSI_Tsrf_min_S              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_min_N              =  -4.1719070833444E+01
 (PID.TID 0000.0001) %MON thSI_Tsrf_max_S              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -3.9593512889937E+01
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =  -9.4079390434937E+01
-(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -1.1686269811661E+01
-(PID.TID 0000.0001) %MON thSI_Tic1_min_S              =  -1.6125048249309E+02
-(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -3.4580844819560E+01
-(PID.TID 0000.0001) %MON thSI_Tic1_max_S              =  -4.6181545535360E-01
-(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -5.6076576844554E-01
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -1.7625944530994E+01
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =  -4.2757192260989E+01
-(PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -4.7539147342435E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_min_S              =  -8.0881336675380E+01
-(PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -9.9450191641833E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_S              =  -1.0369457669265E+00
-(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -1.4312315219895E+00
+(PID.TID 0000.0001) %MON thSI_Tsrf_max_N              =  -8.8117663947443E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_ave_G              =  -1.2256059719236E+01
+(PID.TID 0000.0001) %MON thSI_Tic1_ave_S              =  -1.5266280800023E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_ave_N              =  -1.4952613018165E+01
+(PID.TID 0000.0001) %MON thSI_Tic1_min_S              =  -2.2891899110054E+00
+(PID.TID 0000.0001) %MON thSI_Tic1_min_N              =  -2.0802337478414E+01
+(PID.TID 0000.0001) %MON thSI_Tic1_max_S              =  -1.6386679775115E-01
+(PID.TID 0000.0001) %MON thSI_Tic1_max_N              =  -4.6145810428323E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_ave_G              =  -5.0970257759040E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_ave_S              =  -1.8227230315337E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_ave_N              =  -5.9199334716610E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_min_S              =  -2.2138496234333E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_min_N              =  -7.6680696006402E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_max_S              =  -1.0680367561023E+00
+(PID.TID 0000.0001) %MON thSI_Tic2_max_N              =  -2.4865232622971E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR Therm.SeaIce statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %CHECKPOINT      1095 0000001095
+(PID.TID 0000.0001) %CHECKPOINT      1095 ckptA
  ***end of month reached
  ***end of year reached
 NORMAL END
+NORMAL END
 (PID.TID 0000.0001)  Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)          User time:   255.3399963378906
-(PID.TID 0000.0001)        System time:   4.190000057220459
-(PID.TID 0000.0001)    Wall clock time:   289.5657699108124
+(PID.TID 0000.0001)          User time:   263.1699829101563
+(PID.TID 0000.0001)        System time:   10.68999980948865
+(PID.TID 0000.0001)    Wall clock time:   318.2367131710052
 (PID.TID 0000.0001)         No. starts:           1
 (PID.TID 0000.0001)          No. stops:           1
 (PID.TID 0000.0001)  Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)          User time:  0.5799999833106995
-(PID.TID 0000.0001)        System time:   1.139999985694885
-(PID.TID 0000.0001)    Wall clock time:   3.787767171859741
+(PID.TID 0000.0001)          User time:  0.5199999809265137
+(PID.TID 0000.0001)        System time:   1.389999976381660
+(PID.TID 0000.0001)    Wall clock time:   4.161416053771973
 (PID.TID 0000.0001)         No. starts:           1
 (PID.TID 0000.0001)          No. stops:           1
 (PID.TID 0000.0001)  Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)          User time:   254.7599963545799
-(PID.TID 0000.0001)        System time:   3.050000071525574
-(PID.TID 0000.0001)    Wall clock time:   285.7778458595276
+(PID.TID 0000.0001)          User time:   262.6499829292297
+(PID.TID 0000.0001)        System time:   9.299999833106995
+(PID.TID 0000.0001)    Wall clock time:   314.0750927925110
 (PID.TID 0000.0001)         No. starts:           1
 (PID.TID 0000.0001)          No. stops:           1
 (PID.TID 0000.0001)  Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)          User time:  3.0000030994415283E-002
-(PID.TID 0000.0001)        System time:  2.9999971389770508E-002
-(PID.TID 0000.0001)    Wall clock time:   1.362109899520874
+(PID.TID 0000.0001)          User time:  1.9999980926513672E-002
+(PID.TID 0000.0001)        System time:  4.9999952316284180E-002
+(PID.TID 0000.0001)    Wall clock time:   1.676157951354980
 (PID.TID 0000.0001)         No. starts:           1
 (PID.TID 0000.0001)          No. stops:           1
 (PID.TID 0000.0001)  Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)          User time:   254.7299963235855
-(PID.TID 0000.0001)        System time:   3.020000100135803
-(PID.TID 0000.0001)    Wall clock time:   284.4156210422516
+(PID.TID 0000.0001)          User time:   262.6299829483032
+(PID.TID 0000.0001)        System time:   9.249999880790710
+(PID.TID 0000.0001)    Wall clock time:   312.3988418579102
 (PID.TID 0000.0001)         No. starts:           1
 (PID.TID 0000.0001)          No. stops:           1
 (PID.TID 0000.0001)  Seconds in section "FORWARD_STEP_ATM2D  [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)          User time:   254.6899648904800
-(PID.TID 0000.0001)        System time:   3.020000100135803
-(PID.TID 0000.0001)    Wall clock time:   284.3804969787598
+(PID.TID 0000.0001)          User time:   262.5699777603149
+(PID.TID 0000.0001)        System time:   9.249999880790710
+(PID.TID 0000.0001)    Wall clock time:   312.3611202239990
 (PID.TID 0000.0001)         No. starts:        1095
 (PID.TID 0000.0001)          No. stops:        1095
 (PID.TID 0000.0001)  Seconds in section "DO_WRITE_PICKUP        [THE_MODEL_MAIN]":
@@ -17175,4 +17180,3 @@ NORMAL END
 (PID.TID 0000.0001) //      Min. barrier spins =              1
 (PID.TID 0000.0001) //     Total barrier spins =           1448
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
-NORMAL END
