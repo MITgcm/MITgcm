@@ -39,7 +39,7 @@
        REAL*8 tyz4ocean(jm0,lm0)  ! atmos temp structure (K)
        
       COMMON/OCDATA/mmsst,mmfice,mmtice,mmco2flux,cflan,mmsAlb,
-&                   mmicem, mmtice1, mmtice2, mmsnowm
+     &              mmicem, mmtice1, mmtice2, mmsnowm
        REAL*8 mmsst(jm0)    ! zonal mean SST (C)
        REAL*8 mmfice(jm0)   ! fraction of ocean area with seaice cover
        REAL*8 mmtice(jm0)   ! zonal mean seaice TSurf (C)
