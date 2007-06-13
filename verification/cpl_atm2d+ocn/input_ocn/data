@@ -17,8 +17,9 @@
  rhoConstFresh=1000.,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- eosType = 'POLY3',
+ eosType = 'JMD95Z',
  ivdc_kappa=100.,
+ exactConserv=.TRUE.,
  implicitDiffusion=.TRUE.,
  convertFW2Salt = 35.0,
 # tempAdvScheme       = 77
