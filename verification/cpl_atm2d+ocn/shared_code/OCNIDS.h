@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/shared_code/OCNIDS.h,v 1.1 2007/05/01 21:47:00 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/shared_code/OCNIDS.h,v 1.2 2007/06/13 15:23:10 jscott Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -17,6 +17,8 @@ C     \==========================================================/
       PARAMETER( ocnSSSName          = 'OCN SSS'        )
       CHARACTER*(9)  ocnSSVsqName
       PARAMETER( ocnSSVsqName        = 'OCN SSVsq'      )
+      CHARACTER*(8)  ocnFCO2Name
+      PARAMETER( ocnFCO2Name         = 'OCN FCO2'       )
 
       CHARACTER*(8)  ocnSLPrName
       PARAMETER( ocnSLPrName         = 'OCN SLPr'       )
@@ -44,4 +46,13 @@ c     PARAMETER( ocnVvelgroundName   = 'OCN Vvelground' )
       PARAMETER( ocnSaltFxName       = 'OCN SaltFlux'   )
       CHARACTER*(10) ocnSeaIceName
       PARAMETER( ocnSeaIceName       = 'OCN SeaIce'     )
-
+      CHARACTER*(10) ocnAirCO2Name
+      PARAMETER( ocnAirCO2Name       = 'OCN AirCO2'     )
+      CHARACTER*(8) ocnWSpdName
+      PARAMETER( ocnWSpdName         = 'OCN WSpd'       )
+      CHARACTER*(8) ocnFIceName
+      PARAMETER( ocnFIceName         = 'OCN FIce'       )
+C
+C     Pass carbon/DIC variables only if flag set below
+      LOGICAL ocnCpl_exchange_DIC
+      PARAMETER( ocnCpl_exchange_DIC = .FALSE.)
