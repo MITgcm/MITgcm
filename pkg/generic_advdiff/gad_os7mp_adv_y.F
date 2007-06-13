@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_y.F,v 1.5 2007/05/11 18:24:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_y.F,v 1.6 2007/06/13 18:45:26 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -157,12 +157,12 @@ C        MP limiter
          A = 4.*d2 - d2p1
          B = 4.*d2p1 - d2
          C = d2
-         D = d2p1;
+         D = d2p1
          dp1h = max(min(A,B,C,D),0. _d 0)+min(max(A,B,C,D),0. _d 0)
          A = 4.*d2m1 - d2
          B = 4.*d2 - d2m1
          C = d2m1
-         D = d2;
+         D = d2
          dm1h = max(min(A,B,C,D),0. _d 0)+min(max(A,B,C,D),0. _d 0)
         !qMD = 0.5*( ( Qi + Qip ) - dp1h )
          qMD = 0.5*( ( 2.*Qi + DelIp ) - dp1h )
