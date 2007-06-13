@@ -24,8 +24,6 @@
 #tauRelax_MxL=5184000.,
 # stressReduction=0.,
  thSIce_taveFreq=315360000.,
-# thSIce_taveFreq=28800.,
-# thSIce_diagFreq=2628000.,
 #thSIce_monFreq=864000.,
  thSIce_diagFreq=0.,
  &
