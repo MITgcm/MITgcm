@@ -20,7 +20,7 @@ EXEDIR=$BASEDIR/
 #
 
 rm -f LIB3DO.a
-ar -r LIB3DO.a ../build_atmice32/*.o
+ar -r LIB3DO.a ../build_atmice/*.o
 
 make -f ./Makefile_coupled
 
