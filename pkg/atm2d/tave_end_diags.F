@@ -168,25 +168,25 @@ C     LOCAL VARIABLES:
       simYr = int(myIter*deltaTClock/secYr)
       CALL MDSFINDUNIT( dUnit, mythid )
       
-      WRITE(fn,'(A,I5.5') 'attauu.', simYr
+      WRITE(fn,'(A,I5.5)') 'attauu.', simYr
       OPEN(dUnit, FILE=fn, STATUS='unknown',
      &     ACCESS='direct', RECL=8*jm0*nForcingPer, FORM='unformatted')
       WRITE(dUnit,REC=1) sum_tauu_ta
       CLOSE(dUnit)
 
-      WRITE(fn,'(A,I5.5') 'attauv.', simYr
+      WRITE(fn,'(A,I5.5)') 'attauv.', simYr
       OPEN(dUnit, FILE=fn, STATUS='unknown',
      &     ACCESS='direct', RECL=8*jm0*nForcingPer, FORM='unformatted')
       WRITE(dUnit,REC=1) sum_tauv_ta
       CLOSE(dUnit)
 
-      WRITE(fn,'(A,I5.5') 'atwind.', simYr
+      WRITE(fn,'(A,I5.5)') 'atwind.', simYr
       OPEN(dUnit, FILE=fn, STATUS='unknown',
      &     ACCESS='direct', RECL=8*jm0*nForcingPer, FORM='unformatted')
       WRITE(dUnit,REC=1) sum_wsocean_ta
       CLOSE(dUnit)
 
-      WRITE(fn,'(A,I5.5') 'atps4ocn.', simYr
+      WRITE(fn,'(A,I5.5)') 'atps4ocn.', simYr
       OPEN(dUnit, FILE=fn, STATUS='unknown',
      &     ACCESS='direct', RECL=8*jm0*nForcingPer, FORM='unformatted')
       WRITE(dUnit,REC=1) sum_ps4ocean_ta
