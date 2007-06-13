@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/code_atmice/CPP_OPTIONS.h,v 1.1 2007/05/01 21:50:52 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/code_atmice/CPP_OPTIONS.h,v 1.2 2007/06/13 20:16:33 jscott Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -19,6 +19,12 @@ C o Include/exclude call to S/R CONVECT
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
 
+C o Allow latitudinally varying BryanLewis79 vertical diffusivity
+#undef ALLOW_BL79_LAT_VARY
+
+C o Allow full 3D specification of vertical diffusivity
+#undef ALLOW_3D_DIFFKR
+
 C o Include/exclude Implicit vertical advection code
 #define INCLUDE_IMPLVERTADV_CODE
 
@@ -31,9 +37,14 @@ C o Include/exclude nonHydrostatic code
 C o Include pressure loading code
 #undef ATMOSPHERIC_LOADING
 
+C o exclude/allow external forcing-fields load 
+C   this allows to read & do simple linear time interpolation of oceanic
+C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
+#undef EXCLUDE_FFIELDS_LOAD
+
 C o Use "Exact Convervation" of fluid in Free-Surface formulation
 C   so that d/dt(eta) is exactly equal to - Div.Transport
-#undef EXACT_CONSERV
+#define EXACT_CONSERV
 
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
