@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_diagnostics_fill.F,v 1.2 2007/06/08 08:04:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_diagnostics_fill.F,v 1.3 2007/06/13 12:55:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -70,6 +70,7 @@ C
 C
        CALL DIAGNOSTICS_FILL(HSNOW  ,'SIhsnow ',0,1 ,0,1,1,myThid)
 C     
+#ifdef SEAICE_CGRID
        IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIpress ',myThid) .OR.
@@ -131,6 +132,7 @@ C     principle stress components
          ENDDO
         ENDDO
        ENDIF
+#endif /* SEAICE_CGRID */
 C     endif useDiagnostics
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
