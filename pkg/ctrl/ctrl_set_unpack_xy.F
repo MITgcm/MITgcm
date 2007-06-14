@@ -42,6 +42,7 @@ c     == routine arguments ==
       integer nwetglobal(nr)
       integer mythid
 
+#ifndef EXCLUDE_CTRL_PACK
 c     == local variables ==
 
       integer bi,bj
@@ -348,6 +349,8 @@ cph)
       endif
  
       _END_MASTER( mythid )
+
+#endif
 
       return
       end

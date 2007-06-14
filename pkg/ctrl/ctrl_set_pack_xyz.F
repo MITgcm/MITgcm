@@ -42,6 +42,7 @@ c     == routine arguments ==
       logical lxxadxx
       integer mythid
 
+#ifndef EXCLUDE_CTRL_PACK
 c     == local variables ==
 
       integer bi,bj
@@ -252,6 +253,8 @@ c     -- end of irec loop --
       endif
  
       _END_MASTER( mythid )
+
+#endif
 
       return
       end
