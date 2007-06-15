@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.835 2007/06/15 05:09:24 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.836 2007/06/15 20:49:59 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o dependencies: pkg/profiles requires pkg/cal
 o pkg/profiles:
  - added option ALLOW_PROFILES_GENERICGRID
      -> pkg/profiles can thus be used with any grid (e.g. cs32x15) assuming
