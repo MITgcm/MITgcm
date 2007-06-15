@@ -1,8 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.834 2007/06/12 16:04:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.835 2007/06/15 05:09:24 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/profiles:
+ - added option ALLOW_PROFILES_GENERICGRID
+     -> pkg/profiles can thus be used with any grid (e.g. cs32x15) assuming
+     that interpolation information (grid points and coefficients) is provided 
+     within the netcdf input files.
+     -> sample matlab scripts can be found in MITgcm_contrib/gael
+     that allow you to prepare netcdf input files.
+ - also modified: cleaner include statements, cleaner error print statements, 
+   cleaner stops when error, and more tests of the netcdf input files consistency.
 
 o additional test (in global_ocean.cs32x15) using seaice+thsice pkgs.
 o pkg/seaice:
