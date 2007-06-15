@@ -1,17 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.6 2006/10/25 22:19:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.7 2007/06/15 05:04:00 gforget Exp $
 C $Name:  $
 
 C============================================================
 C NOBSMAX : maximal number of profiles
 C============================================================
       INTEGER  NOBSGLOB
-      PARAMETER ( NOBSGLOB = 100000  )
+      PARAMETER ( NOBSGLOB = 200000  )
       INTEGER NFILESPROFMAX
       PARAMETER ( NFILESPROFMAX=10 )
       INTEGER NVARMAX
       PARAMETER ( NVARMAX=6 )
       INTEGER NLEVELMAX
       PARAMETER ( NLEVELMAX=100 )
+      INTEGER NUM_INTERP_POINTS
+      PARAMETER (NUM_INTERP_POINTS = 4)
 
 C===========================================================
 C variables
@@ -19,6 +21,20 @@ C===========================================================
       _RL prof_time(NFILESPROFMAX,NOBSGLOB,nsx,nsy),
      & prof_lon(NFILESPROFMAX,NOBSGLOB,nsx,nsy),
      & prof_lat(NFILESPROFMAX,NOBSGLOB,nsx,nsy)
+
+#ifdef ALLOW_PROFILES_GENERICGRID
+      _RL prof_interp_xC11(NFILESPROFMAX,NOBSGLOB,nsx,nsy)
+      _RL prof_interp_yC11(NFILESPROFMAX,NOBSGLOB,nsx,nsy)
+      _RL prof_interp_xCNINJ(NFILESPROFMAX,NOBSGLOB,nsx,nsy)
+      _RL prof_interp_yCNINJ(NFILESPROFMAX,NOBSGLOB,nsx,nsy)
+      _RL prof_interp_weights(NFILESPROFMAX,NOBSGLOB,
+     &     NUM_INTERP_POINTS,nsx,nsy)
+      integer prof_interp_i(NFILESPROFMAX,NOBSGLOB,
+     &     NUM_INTERP_POINTS,nsx,nsy)
+      integer prof_interp_j(NFILESPROFMAX,NOBSGLOB,
+     &     NUM_INTERP_POINTS,nsx,nsy)
+#endif
+
       integer prof_ind_glob(NFILESPROFMAX,NOBSGLOB,nsx,nsy)
       _RL prof_depth(NFILESPROFMAX,NLEVELMAX,nsx,nsy)
       _RL prof_mask1D_cur(NLEVELMAX,nsx,nsy)
@@ -57,6 +73,14 @@ C===========================================================
      & prof_num_var_tot, prof_num_var_cur, profilesfile_equi_type
       COMMON /profiles_l/ vec_quantities
       COMMON /profiles_c/ prof_names, prof_namesmask, prof_namesweight
+
+#ifdef ALLOW_PROFILES_GENERICGRID
+      COMMON /profiles_GenericGrid_r/ prof_interp_weights,
+     & prof_interp_xC11, prof_interp_yC11,
+     & prof_interp_xCNINJ, prof_interp_yCNINJ  
+      COMMON /profiles_GenericGrid_i/ 
+     & prof_interp_i, prof_interp_j
+#endif
 
       COMMON /profiles_buff_r/ profiles_data_buff, profiles_weight_buff
       COMMON /profiles_buff_i/

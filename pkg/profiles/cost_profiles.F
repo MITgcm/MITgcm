@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.11 2006/11/23 00:04:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.12 2007/06/15 05:04:00 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -45,6 +45,11 @@ C     ========= Local variables =======================
       _RL tmp_lon
       _RL prof_traj1D(NLEVELMAX), prof_traj1D_mean(NLEVELMAX)
       _RL prof_data1D(NLEVELMAX), prof_weights1D(NLEVELMAX)
+#ifdef ALLOW_PROFILES_GENERICGRID
+      integer prof_i1D(NUM_INTERP_POINTS),prof_j1D(NUM_INTERP_POINTS)
+      _RL prof_w1D(NUM_INTERP_POINTS)
+#endif
+      character*(max_len_mbuf) msgbuf
 c     == end of interface ==
  
         _BEGIN_MASTER( mythid )
@@ -56,6 +61,14 @@ c     == end of interface ==
          fid=fiddata(num_file,bi,bj)
          do prof_num=1,NOBSGLOB
           if (prof_num.LE.ProfNo(num_file,bi,bj)) then
+
+#ifdef ALLOW_PROFILES_GENERICGRID
+           do k=1,NUM_INTERP_POINTS
+            prof_i1D(k)= prof_interp_i(num_file,prof_num,k,bi,bj)
+            prof_j1D(k)= prof_interp_j(num_file,prof_num,k,bi,bj)
+            prof_w1D(k)= prof_interp_weights(num_file,prof_num,k,bi,bj)
+           enddo
+#endif
 
            do num_var=1,NVARMAX
 
@@ -71,10 +84,17 @@ c     == end of interface ==
 cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
              if (num_var.EQ.6) then
+#ifndef ALLOW_PROFILES_GENERICGRID
               call profiles_interp_mean(prof_traj1D_mean,
      &         prof_lon(num_file,prof_num,bi,bj),
      &         prof_lat(num_file,prof_num,bi,bj),
      &         num_var,num_file,mytime,bi,bj,myThid)
+#else
+              call profiles_interp_mean_genericgrid(prof_traj1D_mean,
+     &         prof_i1D,prof_j1D,prof_w1D,
+     &         num_var,num_file,mytime,bi,bj,myThid)
+
+#endif
              else
 #endif 
               do K=1,ProfDepthNo(num_file,bi,bj)
@@ -117,9 +137,11 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
 
          if (ProfNo(num_file,bi,bj).GT.0) then
           do num_var=1,NVARMAX
-           print*,'bi,bj,prof_num,num_var ',bi,bj,
+           write(msgbuf,'(a,4I9)') 'bi,bj,prof_num,num_var ',bi,bj,
      &      ProfNo(num_file,bi,bj),num_var
-           print*,prof_names(num_var),
+           call print_message(
+     &      msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
+           write(msgbuf,'(a,D22.15,D22.15)') prof_names(num_var),
      &      objf_profiles(num_file,num_var,bi,bj),
      &      num_profiles(num_file,num_var,bi,bj)
           enddo !do num_var...
