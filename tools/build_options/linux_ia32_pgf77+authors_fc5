@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+authors_fc5,v 1.2 2007/06/13 01:21:09 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+authors_fc5,v 1.3 2007/06/15 16:28:58 jmc Exp $
 #
 
 FC='/usr/local/pkg/pgi/pgi-6.1-5/linux86/6.1/bin/pgf77'
@@ -17,6 +17,6 @@ if test "x$IEEE" = x ; then
 else
     #  Try to follow IEEE-754
     FFLAGS='-byteswapio -r8'
-    FOPTIM='-O0 -Mcache_align -Mnoflushz -Kieee'
+    FOPTIM='-O0 -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
 fi
 
