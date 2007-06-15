@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.7 2006/11/30 23:22:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.8 2007/06/15 04:49:31 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -82,8 +82,8 @@ c implies that a forward loop is calling
      & vec_count, vec_tmp2)
 
       if (err.NE.NF_NOERR) then
-      print*,"stop readvector",vec_start(2),vec_count(2)
-      stop
+            WRITE(errorMessageUnit,'(A)')
+     & 'WARNING in profiles_readvector: record not found!!'
       endif
 
       do k=1,vec_count(1) 
