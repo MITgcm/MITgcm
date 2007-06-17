@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.20 2007/05/30 15:05:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.21 2007/06/17 09:21:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -345,9 +345,9 @@ C     no slip boundary conditions
 C     free slip conditions are taken care of by masking dVdx
          DO J=1,sNy+1
           DO I=1,sNx
-           hFacM = _maskW(I,J,K,bi,bj) - _maskW(I-1,J,K,bi,bj)
+           hFacM = _maskS(I,J,K,bi,bj) - _maskS(I-1,J,K,bi,bj)
            dVdx(I,J) = dVdx(I,J) 
-     &          + ( vIceC(I,J,bi,bj) - vIceC(I-1,J,bi,bj) )
+     &          + ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
      &          * _recip_dxV(I,J,bi,bj) * hFacM * 2. _d 0
           ENDDO
          ENDDO
@@ -596,7 +596,7 @@ C     free slip conditions are taken care of by masking dUdy
           DO I=1,sNx+1
            hFacM = _maskW(i,j,k,bi,bj) - _maskW(i,j-1,k,bi,bj)
            dUdy(I,J) = dUdy(I,J)
-     &          + ( uIceC(I,J,bi,bj) - uIceC(I,J-1,bi,bj) )
+     &          + ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
      &          * _recip_dyU(I,J,bi,bj) * hFacM * 2. _d 0
           ENDDO
          ENDDO
