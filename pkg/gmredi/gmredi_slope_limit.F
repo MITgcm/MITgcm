@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.23 2005/12/08 21:40:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.24 2007/06/17 22:43:13 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -66,7 +66,7 @@ C     == Local variables ==
       _RL f1,Smod,f2,Rnondim
       _RL maxSlopeSqr
       _RL fpi
-      PARAMETER(fpi=3.141592653589793047592d0)
+      PARAMETER( fpi = PI )
       INTEGER i,j
 
 #ifdef ALLOW_AUTODIFF_TAMC
