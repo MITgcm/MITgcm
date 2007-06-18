@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/CPL_PARAMS.h,v 1.2 2004/05/21 20:00:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/CPL_PARAMS.h,v 1.3 2007/06/18 21:28:52 jmc Exp $
 C $Name:  $
 
 #ifdef COMPONENT_MODULE
@@ -16,13 +16,16 @@ C     useImportMxlD :: True => use Imported Mix.Layer Detph from coupler
 C     useImportSST  :: True => use the Imported SST from coupler
 C     useImportSSS  :: True => use the Imported SSS from coupler
 C     useImportVsq  :: True => use the Imported Surf. velocity^2
+C     useImportFlxCO2 :: True => use the Imported air-sea CO2 fluxes from coupler
       COMMON /CPL_ATM_PAR_L/
      &  cpl_earlyExpImpCall, cpl_oldPickup,
-     &  useImportMxlD, useImportSST, useImportSSS, useImportVsq
+     &  useImportMxlD, useImportSST, useImportSSS,
+     &  useImportVsq, useImportFlxCO2
 
       LOGICAL cpl_earlyExpImpCall
       LOGICAL cpl_oldPickup
-      LOGICAL useImportMxlD, useImportSST, useImportSSS, useImportVsq
+      LOGICAL useImportMxlD, useImportSST, useImportSSS
+      LOGICAL useImportVsq, useImportFlxCO2
 
 C--   COMMON /CPL_ATM_PAR_I/: Integer valued parameters
 C     cplSendFrq_iter :: send data to coupler every "cplSendFrq" iter
@@ -35,7 +38,7 @@ c     CHARACTER*(MAX_LEN_FNAM) cpl_atmFile
 
 C--   COMMON /CPL_ATM_PAR_R/: real-type parameters
 C     cpl_atmSendFrq  :: Frequency^-1 for sending data to coupler (s)
-c     COMMON /CPL_ATM_PAR_R/ 
+c     COMMON /CPL_ATM_PAR_R/
 c    &    cpl_atmSendFrq
 
-#endif /* COMPONENT_MODULE */ 
+#endif /* COMPONENT_MODULE */

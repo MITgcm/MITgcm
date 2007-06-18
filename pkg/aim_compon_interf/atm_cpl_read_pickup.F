@@ -1,15 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_cpl_read_pickup.F,v 1.1 2004/05/21 19:59:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_cpl_read_pickup.F,v 1.2 2007/06/18 21:28:52 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: ATM_CPL_READ_PICKUP
+C     !INTERFACE:
       SUBROUTINE ATM_CPL_READ_PICKUP( myIter, myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE ATM_CPL_READ_PICKUP
 C     | o Reads fields from a pickup file for a restart
 C     *==========================================================*
 C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ==
@@ -17,14 +24,16 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
+#include "ATMIDS.h"
 #include "ATMCPL.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myIter  :: time-step number
-C     myThid  :: Thread number for this instance of the routine
+C     myIter  :: Current time-step number
+C     myThid  :: my Thread Id number
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef COMPONENT_MODULE
 C     == Local variables ==
@@ -35,34 +44,40 @@ C     == Local variables ==
       prec = precFloat64
 
       IF ( cpl_oldPickup ) THEN
-        CALL MDSREADFIELD(fn,prec,'RL',1,SSTocn    , 1,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,HeatFlux  , 2,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,tauX      , 3,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,tauY      , 4,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,EvMPrFlux , 5,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,RunOffFlux, 6,myThid)
-c       CALL MDSREADFIELD(fn,prec,'RL',1,uVelGround, 7,myThid)
-c       CALL MDSREADFIELD(fn,prec,'RL',1,vVelGround, 8,myThid)
-c       CALL MDSREADFIELD(fn,prec,'RL',1,qLatent   , 9,myThid)
-c       CALL MDSREADFIELD(fn,prec,'RL',1,qSensible ,10,myThid)
-c       CALL MDSREADFIELD(fn,prec,'RL',1,qLongwave ,11,myThid)
-c       CALL MDSREADFIELD(fn,prec,'RL',1,qShortwave,12,myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,SSTocn    , 1,myIter,myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,HeatFlux  , 2,myIter,myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,tauX      , 3,myIter,myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,tauY      , 4,myIter,myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,EvMPrFlux , 5,myIter,myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,RunOffFlux, 6,myIter,myThid)
+c       CALL READ_REC_3D_RL(fn,prec,1,uVelGround, 7,myIter,myThid)
+c       CALL READ_REC_3D_RL(fn,prec,1,vVelGround, 8,myIter,myThid)
+c       CALL READ_REC_3D_RL(fn,prec,1,qLatent   , 9,myIter,myThid)
+c       CALL READ_REC_3D_RL(fn,prec,1,qSensible ,10,myIter,myThid)
+c       CALL READ_REC_3D_RL(fn,prec,1,qLongwave ,11,myIter,myThid)
+c       CALL READ_REC_3D_RL(fn,prec,1,qShortwave,12,myIter,myThid)
       ELSE
-        CALL MDSREADFIELD(fn,prec,'RL',1, ocMxlD   , 1,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1, SSTocn   , 2,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1, SSSocn   , 3,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1, vSqocn   , 4,myThid)
+        CALL READ_REC_3D_RL( fn,prec,1, ocMxlD    ,  1, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, SSTocn    ,  2, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, SSSocn    ,  3, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, vSqocn    ,  4, myIter,myThid )
        IF ( cpl_earlyExpImpCall ) THEN
-        CALL MDSREADFIELD(fn,prec,'RL',1,atmSLPr   , 5,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,HeatFlux  , 6,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,qShortWave, 7,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,tauX      , 8,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,tauY      , 9,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,EvMPrFlux ,10,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,RunOffFlux,11,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,RunOffEnFx,12,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,iceSaltFlx,13,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,seaIceMass,14,myThid) 
+        CALL READ_REC_3D_RL( fn,prec,1, atmSLPr   ,  5, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, HeatFlux  ,  6, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, qShortWave,  7, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, tauX      ,  8, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, tauY      ,  9, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, EvMPrFlux , 10, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, RunOffFlux, 11, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, RunOffEnFx, 12, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, iceSaltFlx, 13, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, seaIceMass, 14, myIter,myThid )
+       ENDIF
+       IF ( atmCpl_exchange_DIC ) THEN
+        CALL READ_REC_3D_RL( fn,prec,1, flxCO2ocn , 15, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, airCO2    , 16, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, sWSpeed   , 17, myIter,myThid )
+        CALL READ_REC_3D_RL( fn,prec,1, fracIce   , 18, myIter,myThid )
        ENDIF
       ENDIF
 

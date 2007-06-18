@@ -1,18 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_import_fields.F,v 1.1 2004/05/21 19:59:38 jmc Exp $
-C $Name:  $  
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_import_fields.F,v 1.2 2007/06/18 21:28:52 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: ATM_IMPORT_FIELDS
+C     !INTERFACE:
       SUBROUTINE ATM_IMPORT_FIELDS( myThid )
-C     /==========================================================\
-C     | SUBROUTINE ATM_IMPORT_SST                                |
-C     | o Routine for importing ocean surface coupling fields    |
-C     |   from coupling layer.                                   |
-C     |==========================================================|
-C     | This version talks to the MIT Coupler. It uses the MIT   |
-C     | Coupler "checkpoint1" library calls.                     |
-C     \==========================================================/
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE ATM_IMPORT_FIELDS
+C     | o Routine for importing ocean surface coupling fields
+C     |   from coupling layer.
+C     *==========================================================*
+C     | This version talks to the MIT Coupler. It uses the MIT
+C     | Coupler "checkpoint1" library calls.
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ==
@@ -21,10 +28,11 @@ C     == Global variables ==
 #include "ATMCPL.h"
 #include "ATMIDS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine
+C     myThid :: my Thread Id number
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef COMPONENT_MODULE
 C     == Local variables ==
@@ -48,6 +56,12 @@ C-    Receive ocean surface salinity from coupling layer.
 C-    Receive ocean surface velocity square from coupling layer.
       CALL COMPRECV_R8TILES( atmSSVsqName,
      I     sNx, OLx, sNy, OLy, 1, nSx, nSy, vSqocn )
+
+C-    Receive air-sea flux of CO2
+      IF ( atmCpl_exchange_DIC ) THEN
+        CALL COMPRECV_R8TILES( atmFCO2Name,
+     I       sNx, OLx, sNy, OLy, 1, nSx, nSy, flxCO2ocn )
+      ENDIF
 
 #endif /* COMPONENT_MODULE */
 

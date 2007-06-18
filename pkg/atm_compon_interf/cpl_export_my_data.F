@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/cpl_export_my_data.F,v 1.3 2006/07/02 22:47:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/cpl_export_my_data.F,v 1.4 2007/06/18 21:28:52 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -22,6 +22,7 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
+
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -45,7 +46,7 @@ C     == Local variables ==
 C     Send data to coupling layer. Note MIT Coupler checkpoint1
 C     does not allow asynchronous posting of data, so ordering has to be
 C     consistent with coupling layer ordering.
-      IF ( (myIter/cplSendFrq_iter)*cplSendFrq_iter .EQ. myIter ) THEN
+      IF ( MOD(myIter,cplSendFrq_iter).EQ.0 ) THEN
        WRITE(0,*) ' Exporting atmospheric fluxes at iter. ', myIter
 
 C-     export Sea-Level pressure:
@@ -77,6 +78,20 @@ C-     export Salt flux (related to sea-ice melting/freezing):
 C-     export Sea-Ice Mass:
        CALL ATM_EXPORT_FLD( atmSeaIceName,
      U                      seaIceMass, seaIceTime, myThid )
+
+       IF ( atmCpl_exchange_DIC ) THEN
+C-     export atmospheric CO2:
+         CALL ATM_EXPORT_FLD( atmAirCO2Name,
+     U                        airCO2, airCO2Time, myThid )
+
+C-     export surface wind speed:
+         CALL ATM_EXPORT_FLD( atmWSpdName,
+     U                        sWSpeed, sWSpeedTime, myThid )
+
+C-     export seaice fraction:
+         CALL ATM_EXPORT_FLD( atmFIceName,
+     U                        fracIce, fracIceTime, myThid )
+       ENDIF
 
       ENDIF
 
