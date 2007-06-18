@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.9 2007/05/10 21:15:52 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.10 2007/06/18 21:06:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -170,7 +170,7 @@ C        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 
       IF ( ( useImportFice.OR.useImportCO2.OR.useImportWSpd ) .AND.
      &    (.NOT.ocnCpl_exchange_DIC) ) THEN
-        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImport', 
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImport',
      &    ' with DIC variables requires ocnCpl_exchange_DIC TRUE'
         CALL PRINT_ERROR( msgBuf, myThid)
         STOP 'ABNORMAL END: S/R CPL_READPARMS'
@@ -222,17 +222,15 @@ C- namelist CPL_OCN_PARAM:
        CALL WRITE_0D_L( useImportSIce , INDEX_NONE,
      &                 'useImportSIce=',
      &   ' /* use Imported Sea-Ice loading on/off flag */')
-       IF ( ocnCpl_exchange_DIC ) THEN
-         CALL WRITE_0D_L( useImportFIce , INDEX_NONE,
+       CALL WRITE_0D_L( useImportFIce , INDEX_NONE,
      &                 'useImportFIce=',
      &   ' /* use Imported Sea-Ice Fract fr Cpl. on/off flag */')
-         CALL WRITE_0D_L( useImportCO2  , INDEX_NONE,
+       CALL WRITE_0D_L( useImportCO2  , INDEX_NONE,
      &                 'useImportCO2 =',
      &   ' /* use Imported Atmos. CO2 fr Cpl. on/off flag */')
-         CALL WRITE_0D_L( useImportWSpd , INDEX_NONE,
+       CALL WRITE_0D_L( useImportWSpd , INDEX_NONE,
      &                 'useImportWSpd =',
      &   ' /* use Imported Windspeed fr Cpl. on/off flag */')
-       ENDIF
        CALL WRITE_0D_R8( cpl_taveFreq, INDEX_NONE, 'cpl_taveFreq =',
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
        CALL WRITE_0D_L( cpl_timeave_mnc , INDEX_NONE,
