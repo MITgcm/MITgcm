@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.13 2007/04/04 02:47:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.14 2007/06/18 21:30:00 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -172,7 +172,7 @@ C-    Slab Ocean : step forward ocean mixed-layer temp. & salinity
 
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) THEN
-        CALL ATM_STORE_MY_DATA( bi, bj, myIter, myTime, myThid )
+        CALL ATM_STORE_MY_DATA( bi, bj, myTime, myIter, myThid )
       ENDIF
 #endif /* COMPONENT_MODULE */
 
