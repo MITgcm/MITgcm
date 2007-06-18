@@ -1,13 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ATMIDS.h,v 1.1 2007/05/10 21:30:48 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ATMIDS.h,v 1.2 2007/06/18 21:20:35 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | ATMIDS.h Declare symbolic constants holding strings that |
-C     |          are used to identify this component and the     |
-C     |          fields it exchanges with other components.      |
-C     \==========================================================/
-      CHARACTER*(8)  atmCompName 
+  These lines are here to deliberately cause a compile-time error.
+  If you see these lines in your .F files or the compiler shows them
+    as an error then it means you have not placed your coupler
+    configuration files in the appropriate place.
+  You need: a) to place you own copy of ATMIDS.h in a directory
+    (e.g.: shared_code) which is both in the include path of the
+    coupler and in the include path of the atmospheric component ;
+  and b) to comment out these lines.
+
+C     *==========================================================*
+C     | ATMIDS.h Declare symbolic constants holding strings that
+C     |          are used to identify this component and the
+C     |          fields it exchanges with other components.
+C     *==========================================================*
+      CHARACTER*(8)  atmCompName
       PARAMETER( atmCompName         = 'UV-Atmos'       )
+
       CHARACTER*(10) atmDepthName
       PARAMETER( atmDepthName        = 'ATM Depths'     )
       CHARACTER*(10) atmMxlDName
@@ -18,6 +28,8 @@ C     \==========================================================/
       PARAMETER( atmSSSName          = 'ATM SSS'        )
       CHARACTER*(9)  atmSSVsqName
       PARAMETER( atmSSVsqName        = 'ATM SSVsq'      )
+      CHARACTER*(8)  atmFCO2Name
+      PARAMETER( atmFCO2Name         = 'ATM FCO2'       )
 
       CHARACTER*(8)  atmSLPrName
       PARAMETER( atmSLPrName         = 'ATM SLPr'       )
@@ -49,4 +61,14 @@ c     PARAMETER( atmVvelgroundName   = 'ATM Vvelground' )
       PARAMETER( atmSaltFxName       = 'ATM SaltFlux'   )
       CHARACTER*(10) atmSeaIceName
       PARAMETER( atmSeaIceName       = 'ATM SeaIce'     )
+      CHARACTER*(10) atmAirCO2Name
+      PARAMETER( atmAirCO2Name       = 'ATM AirCO2'     )
+      CHARACTER*(8) atmWSpdName
+      PARAMETER( atmWSpdName         = 'ATM WSpd'       )
+      CHARACTER*(8) atmFIceName
+      PARAMETER( atmFIceName         = 'ATM FIce'       )
+
+C     Pass carbon/DIC variables only if flag set below
+      LOGICAL atmCpl_exchange_DIC
+      PARAMETER( atmCpl_exchange_DIC = .FALSE.)
 
