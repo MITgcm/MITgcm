@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.837 2007/06/17 09:22:06 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.838 2007/06/19 03:44:19 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/smooth: addition to model/src and pkg/ctrl so allow 
+ initialization of pkg/smooth and application to control vector
 o pkg/seaice: fix another bug in the LSR no-slip boundary conditons
 o dependencies: pkg/profiles requires pkg/cal
 o pkg/profiles:
