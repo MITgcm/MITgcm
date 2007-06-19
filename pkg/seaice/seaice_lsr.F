@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.21 2007/06/17 09:21:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.22 2007/06/19 12:15:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -231,25 +231,13 @@ C
      &         HALF*(ETA (I,J,bi,bj) + ETA (I  ,J-1,bi,bj))
          ENDDO
         ENDDO
-        IF ( SEAICE_no_Slip ) THEN
-         DO j=1,sNy+1
-          DO i=1,sNx+1
-           etaMeanZ (I,J,bi,bj) = HALF * 
-     &          ( HALF*(ETA (I,J  ,bi,bj) + ETA (I-1,J  ,bi,bj) )
-     &          + HALF*(ETA (I,J-1,bi,bj) + ETA (I-1,J-1,bi,bj) ) )
-          ENDDO
+        DO j=1,sNy+1
+         DO i=1,sNx+1
+          etaMeanZ (I,J,bi,bj) = HALF * 
+     &         ( HALF*(ETA (I,J  ,bi,bj) + ETA (I-1,J  ,bi,bj) )
+     &         + HALF*(ETA (I,J-1,bi,bj) + ETA (I-1,J-1,bi,bj) ) )
          ENDDO
-        ELSE
-         DO j=1,sNy+1
-          DO i=1,sNx+1
-           etaMeanZ (I,J,bi,bj) = HALF * 
-     &          ( HALF*(ETA (I,J  ,bi,bj) + ETA (I-1,J  ,bi,bj) )
-     &          + HALF*(ETA (I,J-1,bi,bj) + ETA (I-1,J-1,bi,bj) ) )
-     &          *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
-     &          *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
-          ENDDO
-         ENDDO
-        ENDIF
+        ENDDO
        ENDDO
       ENDDO
 
@@ -267,39 +255,36 @@ C     (d/dx)[(eta+zeta)*d/dx)] U
           AA2 = etaPlusZeta(I-1,J,bi,bj)
      &         * _recip_dxF(I-1,J,bi,bj)
      &         * _recip_dxC(I  ,J,bi,bj) * _maskW(I,J,k,bi,bj)
-C     (d/dy)[eta*(d/dy + tanphi/a)] U (also on UVRT1/2)
-          AA3= ( etaMeanZ(I,J+1,bi,bj) * _recip_dyU(I,J+1,bi,bj)
-     &         + etaMeanZ(I,J  ,bi,bj) * _recip_dyU(I,J  ,bi,bj) 
-     &         ) * _recip_dyG(I,J,bi,bj)
-     &         - (etaMeanZ(I,J+1,bi,bj) - etaMeanZ(I,J,bi,bj)) 
-     &         * 0.5 _d 0 * _tanPhiAtU(I,J,bi,bj)
-     &         * recip_rSphere * _recip_dyG(I,J,bi,bj)
+C     (d/dy)[eta*(d/dy)] U (also on UVRT1/2)
+          AA3 = etaMeanZ(I,J  ,bi,bj) * _recip_dyU(I,J  ,bi,bj)
+     &         * _recip_dyG(I,J,bi,bj)
+          AA4 = etaMeanZ(I,J+1,bi,bj) * _recip_dyU(I,J+1,bi,bj)
+     &         * _recip_dyG(I,J,bi,bj)
+C     (d/dy)[tanphi/a)] U (also on UVRT1/2)
+          AA5 = etaMeanZ(I,J  ,bi,bj) * _recip_dyG(I,J,bi,bj)
+     &         * 0.5 _d 0 * _tanPhiAtU(I,J,bi,bj) * recip_rSphere
+          AA6 = etaMeanZ(I,J+1,bi,bj) * _recip_dyG(I,J,bi,bj)
+     &         * 0.5 _d 0 * _tanPhiAtU(I,J+1,bi,bj) * recip_rSphere
 C     2*eta*(tanphi/a) * ( tanphi/a ) U
-          AA6=TWO*etaMeanU(I,J,bi,bj)*recip_rSphere*recip_rSphere
+          AA7 = TWO*etaMeanU(I,J,bi,bj)*recip_rSphere*recip_rSphere
      &         * _tanPhiAtU(I,J,bi,bj)  * _tanPhiAtU(I,J,bi,bj)
           AU(I,J,bi,bj)=-AA2
           CU(I,J,bi,bj)=-AA1
           BU(I,J,bi,bj)=(ONE - _maskW(I,J,k,bi,bj))
      &         - AU(I,J,bi,bj) - CU(I,J,bi,bj)
-     &         + ( AA3 + AA6
+     &         + ( (AA4+AA3) - (AA6-AA5) + AA7
      &         + seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
      &         + 0.5 _d 0*( DRAGS(I,J,bi,bj) + DRAGS(I-1,J,bi,bj) )
      &         )* _maskW(I,J,k,bi,bj)
 C     coefficients of uIce(I,J-1)
-          UVRT1(I,J,bi,bj)=
-     &         etaMeanZ(I,J  ,bi,bj) * _recip_dyG(I,J  ,bi,bj) * (
-     &                                 _recip_dyU(I,J  ,bi,bj) 
-     &         - _tanPhiAtU(I,J  ,bi,bj) * 0.5 _d 0 * recip_rSphere ) 
+          UVRT1(I,J,bi,bj)= AA3 - AA5
      &         + TWO*etaMeanU(I,J,bi,bj) * _tanPhiAtU(I,J,bi,bj)
-     &          * 1.0 _d 0 / ( _dyU(I,J,bi,bj) + _dyU(I,J+1,bi,bj) )
+     &         * 1.0 _d 0 / ( _dyU(I,J,bi,bj) + _dyU(I,J+1,bi,bj) )
      &         *recip_rSphere
 C     coefficients of uIce(I,J+1)
-          UVRT2(I,J,bi,bj)=
-     &         etaMeanZ(I,J+1,bi,bj) * _recip_dyG(I,J  ,bi,bj) * (
-     &                                 _recip_dyU(I,J+1,bi,bj) 
-     &         + _tanPhiAtU(I,J+1,bi,bj) * 0.5 _d 0 * recip_rSphere )
+          UVRT2(I,J,bi,bj)= AA4 + AA6
      &         - TWO*etaMeanU(I,J,bi,bj) * _tanPhiAtU(I,J,bi,bj)
-     &          * 1.0 _d 0 / ( _dyU(I,J,bi,bj) + _dyU(I,J+1,bi,bj) )
+     &         * 1.0 _d 0 / ( _dyU(I,J,bi,bj) + _dyU(I,J+1,bi,bj) )
      &         *recip_rSphere
          ENDDO
         ENDDO
@@ -307,14 +292,18 @@ C     coefficients of uIce(I,J+1)
 C     apply boundary conditions according to slip factor
         DO J=1,sNy
          DO I=1,sNx
-          hFacM = _maskW(i,j,k,bi,bj) * _maskW(i,j-1,k,bi,bj)
-          hFacP = _maskW(i,j,k,bi,bj) * _maskW(i,j+1,k,bi,bj)
+          hFacM = _maskW(i,j-1,k,bi,bj)
+          hFacP = _maskW(i,j+1,k,bi,bj)
 C     copy contributions to coefficient of U(I,J)
+C     beware of sign convection: UVRT1/2 have the opposite sign convention
+C     than BU, hence the minus sign
           BU(I,J,bi,bj)=BU(I,J,bi,bj)
-     &         + UVRT1(I,J,bi,bj)*( 1. _d 0 - hFacM )*seaiceSlipFactor
+     &         - _maskW(i,j,k,bi,bj) *
+     &         ( UVRT1(I,J,bi,bj)*( 1. _d 0 - hFacM )*seaiceSlipFactor
      &         + UVRT2(I,J,bi,bj)*( 1. _d 0 - hFacP )*seaiceSlipFactor
+     &         )
 C     reset coefficients of U(I,J-1) and U(I,J+1)
-          UVRT1(I,J,bi,bj)=UVRT1(I,J,bi,bj) * hFacM 
+          UVRT1(I,J,bi,bj)=UVRT1(I,J,bi,bj) * hFacM
           UVRT2(I,J,bi,bj)=UVRT2(I,J,bi,bj) * hFacP
          ENDDO
         ENDDO
@@ -556,12 +545,16 @@ C     coefficients for V(I+1,J)
 C     apply boundary conditions according to slip factor
         DO J=1,sNy
          DO I=1,sNx
-          hFacM = _maskS(i,j,k,bi,bj) * _maskS(i-1,j,k,bi,bj)
-          hFacP = _maskS(i,j,k,bi,bj) * _maskS(i+1,j,k,bi,bj)
+          hFacM = _maskS(i-1,j,k,bi,bj)
+          hFacP = _maskS(i+1,j,k,bi,bj)
 C     copy contributions to coefficient of V(I,J)
+C     beware of sign convection: UVRT1/2 have the opposite sign convention
+C     than BV, hence the minus sign
           BV(I,J,bi,bj)=BV(I,J,bi,bj)
-     &         + UVRT1(I,J,bi,bj)*( 1. _d 0 - hFacM )*seaiceSlipFactor
+     &         - _maskS(i,j,k,bi,bj) *
+     &         ( UVRT1(I,J,bi,bj)*( 1. _d 0 - hFacM )*seaiceSlipFactor
      &         + UVRT2(I,J,bi,bj)*( 1. _d 0 - hFacP )*seaiceSlipFactor
+     &         )
 C     reset coefficients of V(I-1,J) and V(I+1,J)
           UVRT1(I,J,bi,bj)=UVRT1(I,J,bi,bj) * hFacM 
           UVRT2(I,J,bi,bj)=UVRT2(I,J,bi,bj) * hFacP
