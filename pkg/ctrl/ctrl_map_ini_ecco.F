@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.7 2007/05/14 22:02:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.8 2007/06/19 03:42:30 gforget Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -99,17 +99,19 @@ c     == end of interface ==
 
 #ifdef ALLOW_THETA0_CONTROL
 c--   Temperature field.
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(1a)') 'wthetaLev'
+      call mdsreadfield('wthetaLev',32,'RL',nR,
+     & wthetalev,1,mythid)
+      _EXCH_XYZ_R8( wthetalev, mythid )
+#endif                
       il=ilnblnk( xx_theta_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_theta_file(1:il),'.',optimcycle
       call active_read_xyz( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_theta_dummy )
-cph(
-       print *, 'ph-ctrl theta0 a ',
-     &    tmpfld3d(15,15,1,1,1)
-cph)
-
+#ifndef ALLOW_SMOOTH_CORREL3D
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do k = 1,nr
@@ -125,6 +127,9 @@ cph)
           enddo
        enddo
       enddo
+#else / * ALLOW_SMOOTH_CORREL3D * /
+       call smooth_correl3D(tmpfld3d,1,mythid)
+#endif / * ALLOW_SMOOTH_CORREL3D * /
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta = tapelev_init, key = ikey
@@ -149,24 +154,39 @@ c     $                ))
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
+#ifdef ALLOW_SMOOTH_CORREL3D
+      if (maskC(i,j,k,bi,bj).NE.0.) then
+      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
+     & /sqrt( wthetaLev(i,j,k,bi,bj) )
+      endif
+      theta(i,j,k,bi,bj) =theta(i,j,k,bi,bj)+tmpfld3d(i,j,k,bi,bj)
+#else / * ALLOW_SMOOTH_CORREL3D * /
                  theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
                 if(theta(i,j,k,bi,bj).lt.-2.0) 
      &               theta(i,j,k,bi,bj)= -2.0  
+#endif / * ALLOW_SMOOTH_CORREL3D * /
               enddo
             enddo
           enddo
        enddo
       enddo
-cph(
-       print *, 'ph-ctrl theta0 b ',
-     &    tmpfld3d(15,15,1,1,1)
-cph)
-
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xx_theta_file(1:il),'.effective.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & nr, tmpfld3d, 1, optimcycle, mythid)
+#endif
 #endif
 
 #ifdef ALLOW_SALT0_CONTROL
-c--   Temperature field.
+c--   Salinity field.
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(1a)') 'wsaltLev'
+      call mdsreadfield('wsaltLev',32,'RL',nR,
+     & wsaltlev,1,mythid)
+      _EXCH_XYZ_R8( wsaltlev, mythid )
+#endif
       il=ilnblnk( xx_salt_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_salt_file(1:il),'.',optimcycle
@@ -174,6 +194,7 @@ c--   Temperature field.
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_salt_dummy )
 
+#ifndef ALLOW_SMOOTH_CORREL3D
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do k = 1,nr
@@ -201,6 +222,9 @@ c     $                ) )
           enddo
        enddo
       enddo
+#else / * ALLOW_SMOOTH_CORREL3D * /
+       call smooth_correl3D(tmpfld3d,1,mythid)
+#endif / * ALLOW_SMOOTH_CORREL3D * /
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE salt = tapelev_init, key = ikey
@@ -211,14 +235,27 @@ CADJ STORE salt = tapelev_init, key = ikey
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
+#ifdef ALLOW_SMOOTH_CORREL3D
+      if (maskC(i,j,k,bi,bj).NE.0.) then
+      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
+     & /sqrt( wsaltLev(i,j,k,bi,bj) )
+      endif
+      salt(i,j,k,bi,bj) =salt(i,j,k,bi,bj)+tmpfld3d(i,j,k,bi,bj)
+#else / * ALLOW_SMOOTH_CORREL3D * /
                  salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
+#endif / * ALLOW_SMOOTH_CORREL3D * /
               enddo
             enddo
           enddo
        enddo
       enddo
-
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xx_salt_file(1:il),'.effective.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & nr, tmpfld3d, 1, optimcycle, mythid)
+#endif
 #endif
 
 #ifdef ALLOW_EDTAUX_CONTROL

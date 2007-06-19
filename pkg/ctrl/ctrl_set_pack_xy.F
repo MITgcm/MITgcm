@@ -177,19 +177,33 @@ cph(
                      globfldtmp3(i,bi,ip,j,bj,jp) =
      &                    globfld3d(i,bi,ip,j,bj,jp,k)
 cph)
+#ifndef ALLOW_SMOOTH_CORREL2D
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
                         cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k) *
      &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
+     &                       / forcingPrecond
                      else
                         cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k) /
      &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
+     &                       * forcingPrecond
                      endif
 #else
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
 #endif
+#else /* ALLOW_SMOOTH_CORREL2D */
+                     if (lxxadxx) then
+                        cbuff(cbuffindex) =
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+     &                       / forcingPrecond
+                     else
+                        cbuff(cbuffindex) =
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+     &                       * forcingPrecond
+                     endif
+#endif /* ALLOW_SMOOTH_CORREL2D */
 cph(
                      globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
 cph)
@@ -249,19 +263,33 @@ cph(
                      globfldtmp3(i,bi,ip,j,bj,jp) =
      &                    globfld3d(i,bi,ip,j,bj,jp,k)
 cph)
+#ifndef ALLOW_SMOOTH_CORREL2D
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
                         cbuff(cbuffindex) = 
      &                       globfld3d(i,bi,ip,j,bj,jp,k) *
      &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
+     &                       / forcingPrecond
                      else
                         cbuff(cbuffindex) = 
      &                       globfld3d(i,bi,ip,j,bj,jp,k) /
      &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
+     &                       * forcingPrecond
                      endif
 #else
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
 #endif
+#else /* ALLOW_SMOOTH_CORREL2D */
+                     if (lxxadxx) then
+                        cbuff(cbuffindex) =
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+     &                       / forcingPrecond
+                     else
+                        cbuff(cbuffindex) =
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+     &                       * forcingPrecond
+                     endif
+#endif /* ALLOW_SMOOTH_CORREL2D */
 cph(
                      globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
 cph)

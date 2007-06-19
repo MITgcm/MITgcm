@@ -192,6 +192,7 @@ cph(
                      globfldtmp3(i,bi,ip,j,bj,jp) =
      &                    globfld3d(i,bi,ip,j,bj,jp,k)
 cph)
+#ifndef ALLOW_SMOOTH_CORREL3D
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
                         cbuff(cbuffindex) = 1/delZnorm
@@ -216,6 +217,9 @@ cph)
 #else /* ALLOW_NONDIMENSIONAL_CONTROL_IO undef */
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
 #endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
+#else  /* ALLOW_SMOOTH_CORREL3D */
+                     cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+#endif /* ALLOW_SMOOTH_CORREL3D */
 #ifdef ALLOW_ADMTLM
                      nveccount = nveccount + 1
                      phtmpadmtlm(nveccount) = cbuff(cbuffindex)

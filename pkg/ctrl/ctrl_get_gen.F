@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.12 2007/05/14 22:02:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.13 2007/06/19 03:42:30 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -40,6 +40,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
+      character*(80) fnamegeneric
       character*(MAX_LEN_FNAM) xx_gen_file
       integer xx_genstartdate(4)
       _RL     xx_genperiod
@@ -142,6 +143,14 @@ c--   Get the counters, flags, and the interpolation factor.
      &       xx_gen_file .EQ. xx_tauv_file )
      &     call ctrl_smooth(xx_gen1,genmask)
 #endif
+#ifdef ALLOW_SMOOTH_CORREL2D
+      call smooth_correl2D(xx_gen1,genmask,1,mythid)
+      call smooth_correl2Dw(xx_gen1,genmask,xx_gen_file,mythid)
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xx_gen_file(1:ilgen),'.effective.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & 1, xx_gen1, gencount0, optimcycle, mythid)
+#endif
       endif
 
       if (( genfirst ) .or. ( genchanged )) then
@@ -154,6 +163,14 @@ c--   Get the counters, flags, and the interpolation factor.
 	if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
      &     call ctrl_smooth(xx_gen1,genmask)
+#endif
+#ifdef ALLOW_SMOOTH_CORREL2D
+      call smooth_correl2D(xx_gen1,genmask,1,mythid)
+      call smooth_correl2Dw(xx_gen1,genmask,xx_gen_file,mythid)
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xx_gen_file(1:ilgen),'.effective.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & 1, xx_gen1, gencount1, optimcycle, mythid)
 #endif
       endif
 

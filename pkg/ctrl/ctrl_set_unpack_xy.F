@@ -211,17 +211,31 @@ cph(
      &                 phtmpadmtlm(nveccount)
 cph)
 #endif
+#ifndef ALLOW_SMOOTH_CORREL2D
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k)/
      &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
+     &                       * forcingPrecond
                      else
                         globfld3d(i,bi,ip,j,bj,jp,k) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k)*
      &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
+     &                       / forcingPrecond
                      endif
 #endif
+#else / * ALLOW_SMOOTH_CORREL2D * /
+                     if ( lxxadxx ) then
+                        globfld3d(i,bi,ip,j,bj,jp,k) =
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+     &                       * forcingPrecond
+                     else
+                        globfld3d(i,bi,ip,j,bj,jp,k) =
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+     &                       / forcingPrecond
+                     endif
+#endif / * ALLOW_SMOOTH_CORREL2D * /
                   else
                      globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
                   endif
@@ -305,17 +319,31 @@ cph(
      &                 phtmpadmtlm(nveccount) 
 cph)
 #endif
+#ifndef ALLOW_SMOOTH_CORREL2D
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if ( lxxadxx ) then
                         globfld3d(i,bi,ip,j,bj,jp,k) = 
      &                       globfld3d(i,bi,ip,j,bj,jp,k)/
      &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
+     &                       * forcingPrecond
                      else
                         globfld3d(i,bi,ip,j,bj,jp,k) = 
      &                       globfld3d(i,bi,ip,j,bj,jp,k)*
      &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
+     &                       / forcingPrecond
                      endif
 #endif
+#else / * ALLOW_SMOOTH_CORREL2D * /
+                     if ( lxxadxx ) then
+                        globfld3d(i,bi,ip,j,bj,jp,k) =
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+     &                       * forcingPrecond
+                     else
+                        globfld3d(i,bi,ip,j,bj,jp,k) =
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+     &                       / forcingPrecond
+                     endif
+#endif / * ALLOW_SMOOTH_CORREL2D * /
                   else
                      globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
                   endif
