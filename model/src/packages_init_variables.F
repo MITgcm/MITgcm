@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.59 2007/04/18 23:56:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.60 2007/06/19 03:35:17 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -213,6 +213,10 @@ cph#endif
       IF (debugMode) CALL DEBUG_CALL('LAND_INI_VARS',myThid)
 #endif
       IF ( useLAND ) CALL LAND_INI_VARS( myThid )
+#endif
+
+#ifdef ALLOW_SMOOTH
+      call smooth_init_varia(mythid)
 #endif
 
 #ifdef ALLOW_AUTODIFF

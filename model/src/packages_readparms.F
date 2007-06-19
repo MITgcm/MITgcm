@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.52 2007/04/19 14:52:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.53 2007/06/19 03:35:17 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -238,6 +238,11 @@ C--   Custom routine to set forcing fields.
 
 #ifdef ALLOW_EBM
       IF (useEBM) call ebm_readparms( mythid )
+#endif
+
+#ifdef ALLOW_SMOOTH
+c--   Initialize SMOOTH package parameters
+      call smooth_readparms ( myThid )
 #endif
 
 #ifdef ALLOW_ECCO
