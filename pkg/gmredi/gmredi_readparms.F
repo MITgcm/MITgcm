@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.15 2007/06/20 20:55:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.16 2007/06/20 22:11:10 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -74,7 +74,7 @@ C--   Default values GM/Redi
       GM_background_K     = 0. _d 0
       GM_maxslope         = 1. _d -2
       GM_Kmin_horiz       = 0. _d 0
-      GM_Small_Number     = 1. _d -12
+      GM_Small_Number     = 1. _d -20
       GM_slopeSqCutoff    = 1. _d +48
       GM_taper_scheme     = ' '
       GM_Scrit            = 0.004 _d 0
