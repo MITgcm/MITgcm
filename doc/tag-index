@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.839 2007/06/19 12:39:54 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.840 2007/06/20 14:08:22 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -12,6 +12,9 @@ o pkg/seaice:
    read, understand, and debug. This causes changes at the truncation level.
  - fix (serious) bug in the boundary conditions (sign error in the implicit 
    part) of the LSR solver. Changes all LSR results.
+ - fixed problem with HSNOW initialization to avoid thick snow when AREA
+   is initilized with small values - does not change lab_sea results.
+ - added HsnowFile initialization capability
 o pkg/smooth: addition to model/src and pkg/ctrl so allow 
  initialization of pkg/smooth and application to control vector
 o pkg/seaice: fix another bug in the LSR no-slip boundary conditons

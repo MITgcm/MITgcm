@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.8 2007/06/08 08:03:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.9 2007/06/20 14:08:22 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,7 +59,6 @@ c
 c
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
-          HSNOW(I,J,bi,bj)=ZERO
           ZETA(I,J,bi,bj)=ZERO
          ENDDO
         ENDDO
@@ -222,7 +221,6 @@ C--   Set model variables to initial/restart conditions
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           HSNOW(I,J,bi,bj)=0.2*HEFFM(i,j,bi,bj)
            YNEG(I,J,bi,bj)=ZERO
            TMIX(I,J,bi,bj)=TICE(I,J,bi,bj)
            DO k=1,3
@@ -267,6 +265,7 @@ C--   Read initial sea-ice thickness from file if available.
         ENDDO
        ENDDO
          
+C--   Read initial area thickness from file if available.
        IF ( AreaFile .NE. ' ' ) THEN
         _BEGIN_MASTER( myThid )
         CALL READ_FLD_XY_RL( AreaFile, ' ', ZETA, 0, myThid )
@@ -294,12 +293,28 @@ C--   Read initial sea-ice thickness from file if available.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           IF(HEFF(I,J,1,bi,bj).LE.ZERO) 
-     &          HSNOW(I,J,bi,bj)=ZERO
+           HSNOW(I,J,bi,bj)=0.2*AREA(i,j,1,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
+
+C--   Read initial snow thickness from file if available.
+       IF ( HsnowFile .NE. ' ' ) THEN
+        _BEGIN_MASTER( myThid )
+        CALL READ_FLD_XY_RL( HsnowFile, ' ', ZETA, 0, myThid )
+        _END_MASTER(myThid)
+        _EXCH_XY_R8(ZETA,myThid)
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            HSNOW(I,J,bi,bj) = MAX(ZETA(i,j,bi,bj),ZERO)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
          
       ENDIF
 
