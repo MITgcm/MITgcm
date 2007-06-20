@@ -1,15 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.14 2006/10/17 19:00:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.15 2007/06/20 20:55:49 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: GMREDI_READPARMS
+C     !INTERFACE:
       SUBROUTINE GMREDI_READPARMS( myThid )
-C     /==========================================================\
-C     | SUBROUTINE GMREDI_READPARMS                              |
-C     | o Routine to initialize GM/Redi variables and constants. |
-C     |==========================================================|
-C     | Initialize GM/Redi parameters, read in data.gmredi       |
-C     \==========================================================/
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE GMREDI_READPARMS
+C     | o Routine to initialize GM/Redi variables and constants.
+C     *==========================================================*
+C     | Initialize GM/Redi parameters, read in data.gmredi
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -19,10 +27,18 @@ C     === Global variables ===
 #include "GRID.h"
 #include "GMREDI.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
       INTEGER myThid
 
 #ifdef ALLOW_GMREDI
+C     !LOCAL VARIABLES:
+C     === Local variables ===
+C     msgBuf      - Informational/error meesage buffer
+C     iUnit       - Work variable for IO unit number
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iUnit
+CEOP
 
 C--   GM/Redi parameter
 C     GM_Small_Number :: epsilon used in computing the slope
@@ -45,12 +61,6 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
 c     &          GM_dumpFreq,
 c     &          GM_taveFreq
 
-C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     iUnit       - Work variable for IO unit number
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit
-
       _BEGIN_MASTER(myThid)
 
 C--   GMREDI_READPARMS has been called so we know that
@@ -61,14 +71,14 @@ C--   Default values GM/Redi
       GM_AdvForm          = .FALSE.
       GM_AdvSeparate      = .FALSE.
       GM_isopycK          = -999.
-      GM_background_K     = 0.
-      GM_maxslope         = 1.0D-2
-      GM_Kmin_horiz       = 0.
+      GM_background_K     = 0. _d 0
+      GM_maxslope         = 1. _d -2
+      GM_Kmin_horiz       = 0. _d 0
       GM_Small_Number     = 1. _d -12
       GM_slopeSqCutoff    = 1. _d +48
       GM_taper_scheme     = ' '
-      GM_Scrit            = 0.004
-      GM_Sd               = 0.001
+      GM_Scrit            = 0.004 _d 0
+      GM_Sd               = 0.001 _d 0
       GM_MNC              = useMNC
 
 C--   Default values GM/Redi I/O control
@@ -76,10 +86,10 @@ c     GM_dumpFreq         = -1.
 c     GM_taveFreq         = -1.
 
 C--   Default values Visbeck
-      GM_Visbeck_alpha    = 0.
-      GM_Visbeck_length   = 200.D3
-      GM_Visbeck_depth    = 1000.D0
-      GM_Visbeck_maxval_K = 2500.D0
+      GM_Visbeck_alpha    =    0. _d 0
+      GM_Visbeck_length   =  200. _d 3
+      GM_Visbeck_depth    = 1000. _d 0
+      GM_Visbeck_maxval_K = 2500. _d 0
 
       WRITE(msgBuf,'(A)') ' GM_READPARMS: opening data.gmredi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
