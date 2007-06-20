@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt0.F,v 1.7 2007/05/14 22:06:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt0.F,v 1.8 2007/06/20 19:37:35 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -116,11 +116,15 @@ c--         Determine the weights to be used.
               do i = imin,imax
                 if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
                   tmpx = tmpfld3d(i,j,k,bi,bj)
+#ifndef ALLOW_SMOOTH_CORREL3D
                   if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
      &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
-		  fctile = fctile
+                  fctile = fctile
      &                 + wsaltLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
+#else
+                  fctile = fctile + tmpx*tmpx
+#endif
                   if ( wsaltLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj).ne.0. )
      &                 num_salt0(bi,bj) = num_salt0(bi,bj) + 1. _d 0
                 endif
@@ -133,6 +137,7 @@ c--         Determine the weights to be used.
           enddo
         enddo
 
+#ifndef ALLOW_SMOOTH_CORREL3D
 #ifdef ALLOW_SMOOTH_IC_COST_CONTRIBUTION
 
       call active_read_xyz( 
@@ -159,7 +164,7 @@ c--     Loop over this thread's tiles.
      &                *maskS(i,j+1,k,bi,bj)*maskS(i,j+2,k,bi,bj)
      &            + ( tmpfld3d(i,j+1,k,bi,bj)-tmpfld3d(i,j,k,bi,bj) )
      &                *maskS(i,j+1,k,bi,bj)
-		  if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
+                  if ( ABS(R_low(i,j,bi,bj)) .LT. 100. )
      &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.
                   fctile = fctile
      &               + wsaltLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj)
@@ -174,6 +179,7 @@ c--     Loop over this thread's tiles.
 
           enddo
         enddo
+#endif
 #endif
 
 #endif

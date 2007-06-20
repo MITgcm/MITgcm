@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.7 2007/05/14 22:06:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.8 2007/06/20 19:37:35 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -146,6 +146,7 @@ c--   >>> Loop 1 to compute mean forcing:
         enddo
       enddo
 
+#ifndef ALLOW_SMOOTH_CORREL2D
       do irec = 1,nrec
 
         call active_read_xy( 
@@ -192,6 +193,7 @@ c--     Determine the weights to be used.
         enddo
        enddo
       endif
+#endif
 
 c--   >>> Loop 2 over records.
       do irec = 1,nrec
@@ -210,6 +212,7 @@ c--         Determine the weights to be used.
             do j = jmin,jmax
               do i = imin,imax
                 if (genmask(i,j,kk,bi,bj) .ne. 0.) then
+#ifndef ALLOW_SMOOTH_CORREL2D
                   tmpx = tmpfld2d(i,j,bi,bj)-xx_mean(i,j,bi,bj)
      &                   - ( xx_gen_remo_intercept +
      &                       xx_gen_remo_slope*(irec-1)*xx_gen_period )
@@ -218,6 +221,10 @@ c--         Determine the weights to be used.
                   fctile = fctile
      &                 + wgen(i,j,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
+#else
+                  tmpx = tmpfld2d(i,j,bi,bj)
+                  fctile = fctile + tmpx*tmpx
+#endif
                   if ( wgen(i,j,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
      &                 num_gen_anom(bi,bj) = num_gen_anom(bi,bj) 
      &                 + 1. _d 0
@@ -233,6 +240,7 @@ c--         Determine the weights to be used.
 c--   End of loop over records.
       enddo
 
+#ifndef ALLOW_SMOOTH_CORREL2D
 #ifdef ALLOW_SMOOTH_BC_COST_CONTRIBUTION
 
 c--   >>> Loop 2 over records.
@@ -284,6 +292,7 @@ c--         Determine the weights to be used.
 c--   End of loop over records.
       enddo
 
+#endif
 #endif
 
       return
