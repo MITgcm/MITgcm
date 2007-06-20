@@ -47,12 +47,12 @@ cph Need to put this in namelist at some point!
       _RL cbuffGlobal( admtlmrec )
 #endif
 
-      _RL forcingPrecond
-      parameter( forcingPrecond = 1. _d 0 )
-    
       common /controlparams_r/
-     &                       delZexp
+     &                       delZexp,
+     &                       forcingPrecond
+
       _RL delZexp
+      _RL forcingPrecond
 
       common /controlvars_l /
      &                       doInitXX,

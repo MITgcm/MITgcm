@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.25 2006/10/27 05:16:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.26 2007/06/20 19:31:03 gforget Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -129,7 +129,7 @@ c--   Read the namelist input.
      &  doZscaleUnpack, doZscalePack,
      &  doMainUnpack, doMainPack,
      &  doAdmtlmBypassAD,
-     &  delZexp
+     &  delZexp, forcingPrecond
 
       namelist /ctrl_packnames/
      &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,
@@ -152,6 +152,7 @@ c--     Set default values.
         doAdmtlmBypassAD    = .FALSE.
 
         delZexp = 0.
+        forcingPrecond = 1. _d 0
 
         xx_theta_file      = 'xx_theta'
         xx_salt_file       = 'xx_salt'
