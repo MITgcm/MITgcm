@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.1 2007/06/03 22:50:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.2 2007/06/20 23:06:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -135,6 +135,8 @@ C     where the local stratification exceed the mean stratification above
 C     (from surface down to here) by factor hMixCriteria
 
 c       hMixCriteria  = 2. _d 0
+C-Note: dRhoSmall is hard coded for now but should become run-time parameter 
+        dRhoSmall = 1. _d -2
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
            IF ( klowC(i,j,bi,bj) .GT. 0 ) THEN
@@ -146,7 +148,7 @@ c       hMixCriteria  = 2. _d 0
            ENDIF
          ENDDO
         ENDDO
-        DO k = 3,Nr
+        DO k = 2,Nr-1
 C-    potential density (reference level = surface level)
          CALL FIND_RHO(
      I             bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K, 1,
@@ -155,18 +157,22 @@ C-    potential density (reference level = surface level)
 
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           IF ( k.LE.klowC(i,j,bi,bj)
+           IF ( k.LT.klowC(i,j,bi,bj)
      &          .AND. rhoMxL(i,j).GE.0. ) THEN
-             sigmAv = ( rhoLoc(i,j)-rhoSurf(i,j) ) / ( rC(1)-rC(k) )
-             IF ( -sigmaR(i,j,k).GE.sigmAv*hMixCriteria ) THEN
+             sigmAv = ( rhoLoc(i,j)-rhoSurf(i,j)+dRhoSmall )
+     &              / ( rC(1)-rC(k) )
+             IF ( -sigmaR(i,j,k+1).GT.sigmAv*hMixCriteria ) THEN
                tmpFac = 0. _d 0
                IF ( sigmAv.GT.0. _d 0 ) THEN
-                 tmpFac = sigmaR(i,j,k-1)/sigmaR(i,j,k)
-                 tmpFac = ( tmpFac*hMixCriteria - 1. _d 0 )
-     &                         / ( hMixCriteria - 1. _d 0 )
-                 tmpFac = MAX( 0. _d 0, MIN( tmpFac, 1. _d 0 ) )
+                 tmpFac = hMixCriteria*sigmaR(i,j,k)/sigmaR(i,j,k+1)
+                 IF ( tmpFac .GT. 1. _d 0 ) THEN
+                   tmpFac = 1. _d 0
+     &             + ( tmpFac - 1. _d 0 )/( hMixCriteria - 1. _d 0 )
+                 ENDIF
+                 tmpFac = MAX( 0. _d 0, MIN( tmpFac, 2. _d 0 ) )
                ENDIF
-               hMixLayer(i,j,bi,bj) = rF(1)-rC(k-1)+tmpFac*drC(k)
+               hMixLayer(i,j,bi,bj) = rF(1)-rF(k+1)
+     &                              - drF(k)*tmpFac*0.5 _d 0
                rhoMxL(i,j) = -1.
              ENDIF
            ENDIF
