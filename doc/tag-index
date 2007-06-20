@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.840 2007/06/20 14:08:22 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.841 2007/06/20 19:39:04 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco: cost function when applying pkg/smooth to controls
+o pkg/ctrl: add forcingPrecond run time parameter
 o pkg/seaice:
  - replace ZMIN=4.e8 with ZMIN=0. in dynsolver.F as in C-grid code
  - fix bug in metric terms of u-equation in LSR solver (implicit part), 
