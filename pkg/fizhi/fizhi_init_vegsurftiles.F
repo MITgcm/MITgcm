@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.7 2006/04/19 21:45:46 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.8 2007/06/21 22:11:57 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -58,7 +58,14 @@ C     !LOCAL VARIABLES:
       _RL fracland(sNx,sNy,Nsx,Nsy)
 
       ihour = nhms/10000
+      if(xsize.eq.192) then
       WRITE(fn,'(a,I8,a,I2.2,a)')'vegtiles_cs32.d',nymd,'z',ihour,'.bin'
+      elseif(xsize.eq.612) then
+      WRITE(fn,'(a,I8,a,I2.2,a)')'vegtiles_cs32.d',nymd,'z',ihour,'.bin'
+      else
+      print *,' xsize is ',xsize
+      stop 'do not seem to have correct vegtiles data '
+      endif
       fileprec = 64
 
       call MDSFINDUNIT( iunit, mythid )

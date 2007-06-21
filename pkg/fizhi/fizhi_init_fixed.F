@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.30 2005/12/01 19:28:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.31 2007/06/21 22:11:57 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -34,6 +34,10 @@ c-----------------------------------------------------------------------
 #include "gridalt_mapping.h"
 #include "GRID.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
        integer myThid
 
@@ -46,6 +50,15 @@ c-----------------------------------------------------------------------
        _RL lats(sNx,sNy,Nsx,Nsy), lons(sNx,sNy,Nsx,Nsy)
        _RL fracland(sNx,sNy,Nsx,Nsy)
        _RL tempoverlap(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nsx,Nsy)
+
+      integer xsize, ysize
+#if defined(ALLOW_EXCH2)
+       PARAMETER ( xsize = exch2_domain_nxt * sNx )
+       PARAMETER ( ysize = exch2_domain_nyt * sNy )
+#else
+       PARAMETER ( xsize = Nx )
+       PARAMETER ( ysize = Ny )
+#endif
 
        idim2 = sNx+OLx
        jdim2 = sNy+OLy
@@ -80,7 +93,15 @@ c-----------------------------------------------------------------------
        enddo
        enddo
        enddo
-       vegdata = 'veg19232.data'
+       if(xsize.eq.192) then
+        vegdata = 'veg19232.data'
+       elseif(xsize.eq.612) then
+        vegdata = 'veg612102.data'
+       else
+       print *,' xsize is ',xsize
+       stop 'do not seem to have correct vegetation data '
+       endif
+
        call fizhi_init_veg ( mythid, vegdata,im2,jm2,Nsx,Nsy,
      .         nSx*nPx,nSy*nPy,maxtyp,nchp,nchptot,nchpland,lons,lats,
      .         surftype,tilefrac,igrd,ityp,chfr,chlt,chlon)
@@ -120,7 +141,14 @@ C     to send to fizhi init chem
      .      Nrphys,pressure,n2o,methane,co2,cfc11,cfc12,cfc22)
 
 C Read dataset that contains topography variance (10m by 10m in a 2x2.5 box)
-       CALL READ_REC_XY_RL('topvar19232.data',tempoverlap,1,0,mythid )
+       if(xsize.eq.192) then
+        CALL READ_REC_XY_RL('topvar19232.data',tempoverlap,1,0,mythid )
+       elseif(xsize.eq.612) then
+        CALL READ_REC_XY_RL('topvar612102.data',tempoverlap,1,0,mythid )
+       else
+       print *,' xsize is ',xsize
+       stop 'do not seem to have correct topog variance data '
+       endif
        _BARRIER
 
        do bj = myByLo(myThid), myByHi(myThid)

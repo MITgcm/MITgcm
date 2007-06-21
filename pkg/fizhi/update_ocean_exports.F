@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.26 2007/03/13 01:38:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.27 2007/06/21 22:11:57 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -196,9 +196,13 @@ c  this only works for between 1950-2050
 
       iyear   = nymdmod/10000
       if(clim) then
-       sicedata='sice19232.weekly.clim'
+       if(xsize.eq.192)sicedata='sice19232.weekly.clim'
+       if(xsize.eq.612)sicedata='sice612102.weekly.clim'
       else
-       WRITE(sicedata,'(A,I4)') 'sice19232.weekly.y',iyear
+       if(xsize.eq.192)
+     .           WRITE(sicedata,'(A,I4)')'sice19232.weekly.y',iyear
+       if(xsize.eq.612)
+     .           WRITE(sicedata,'(A,I4)')'sice612102.weekly.y',iyear
       endif
 
 c  initialize so that first time through they have values for the check
@@ -453,9 +457,13 @@ c  this only works for between 1950-2050
 
       iyear   = nymdmod/10000
       if(clim) then
-       sstdata='sst19232.weekly.clim'
+       if(xsize.eq.192)sstdata='sst19232.weekly.clim'
+       if(xsize.eq.612)sstdata='sst612102.weekly.clim'
       else
-       WRITE(sstdata,'(A,I4)') 'sst19232.weekly.y',iyear
+       if(xsize.eq.192)
+     .           WRITE(sstdata,'(A,I4)')'sst19232.weekly.y',iyear
+       if(xsize.eq.612)
+     .           WRITE(sstdata,'(A,I4)')'sst612102.weekly.y',iyear
       endif
 
 c  initialize so that first time through they have values for the check
