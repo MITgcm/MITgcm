@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code/SIZE.h,v 1.4 2003/12/10 16:25:56 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code/SIZE.h,v 1.5 2007/06/21 01:05:53 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -46,7 +46,7 @@ C     Nr  - No. points in Z for full process domain.
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
-     &           Nr  =  15)
+     &           Nr  =  25)
 
 C     MAX_OLX  - Set to the maximum overlap region size of any array
 C     MAX_OLY    that will be exchanged. Controls the sizing of exch
