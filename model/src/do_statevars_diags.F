@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.9 2007/06/07 13:47:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.10 2007/06/21 00:29:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,13 +11,13 @@ C     !INTERFACE:
       SUBROUTINE DO_STATEVARS_DIAGS( myTime, seqFlag, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE DO_STATEVARS_DIAGS                                
+C     | SUBROUTINE DO_STATEVARS_DIAGS
 C     | o Controlling routine for state variables diagnostics
 C     *==========================================================*
-C     | Computing diagnostics of the model state (state-variables) 
-C     | is done at this level ; 
-C     | by contrast, other diagnostics (fluxes, tendencies) 
-C     | remain within the computation sequence.  
+C     | Computing diagnostics of the model state (state-variables)
+C     | is done at this level ;
+C     | by contrast, other diagnostics (fluxes, tendencies)
+C     | remain within the computation sequence.
 C     *==========================================================*
 C     \ev
 
@@ -50,7 +50,7 @@ C     selectVars :: select which group of dianostics variables to fill-in
 C            = 1 :: fill-in diagnostics for tracer   variables only
 C            = 2 :: fill-in diagnostics for momentum variables only
 C            = 3 :: fill-in diagnostics for momentum & tracer variables
-C            = 4 :: fill-in state variable tendency diagnostics the second time 
+C            = 4 :: fill-in state variable tendency diagnostics the second time
 C     bi,bj      :: tile indices
       INTEGER selectVars
       INTEGER bi, bj
@@ -58,11 +58,11 @@ C     bi,bj      :: tile indices
 C--   Fill-in Diagnostics pkg storage array (for state-variables)
       IF ( usediagnostics ) THEN
 
-C-    select which group of state-var diagnostics to fill-in, 
-C      depending on: where this S/R is called from (seqFlag) 
+C-    select which group of state-var diagnostics to fill-in,
+C      depending on: where this S/R is called from (seqFlag)
 C                    and stagger/synchronous TimeStep
         selectVars = 0
-        IF ( staggerTimeStep ) THEN 
+        IF ( staggerTimeStep ) THEN
           IF ( seqFlag.EQ.0 ) selectVars = 2
           IF ( seqFlag.EQ.1 ) selectVars = 1
         ELSE
@@ -73,14 +73,14 @@ C                    and stagger/synchronous TimeStep
 
 #ifdef ALLOW_PTRACERS
         IF ( (selectVars.EQ.1 .OR. selectVars.EQ.3)
-     &      .AND. usePTRACERS ) THEN 
-          CALL PTRACERS_DIAGNOSTICS_FILL(myThid)
+     &      .AND. usePTRACERS ) THEN
+          CALL PTRACERS_DIAGNOSTICS_STATE( myThid )
         ENDIF
 #endif
 
 #ifdef ALLOW_SEAICE
        IF ( seqFlag.EQ.0 .AND. useSEAICE ) THEN
-        CALL SEAICE_DIAGNOSTICS_FILL( myTime, myIter, myThid )
+        CALL SEAICE_DIAGNOSTICS_STATE( myTime, myIter, myThid )
        ENDIF
 #endif /* ALLOW_SEAICE */
 
@@ -88,7 +88,7 @@ C                    and stagger/synchronous TimeStep
        IF ( seqFlag.EQ.0 .AND. useThSIce ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          CALL THSICE_DIAGNOSTICS_FILL( myTime,myIter, bi,bj, myThid )
+          CALL THSICE_DIAGNOSTICS_STATE( myTime,myIter,bi,bj,myThid )
          ENDDO
         ENDDO
        ENDIF
@@ -98,7 +98,7 @@ C                    and stagger/synchronous TimeStep
        IF ( seqFlag.EQ.0 .AND. useLand ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          CALL LAND_DIAGNOSTICS_FILL( myTime,myIter, bi,bj, myThid )
+          CALL LAND_DIAGNOSTICS_STATE( myTime,myIter, bi,bj, myThid )
          ENDDO
         ENDDO
        ENDIF
