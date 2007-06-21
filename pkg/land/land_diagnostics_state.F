@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_diagnostics_fill.F,v 1.1 2005/02/14 00:41:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_diagnostics_state.F,v 1.1 2007/06/21 00:31:44 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: LAND_DIAGNOSTICS_FILL
+C     !ROUTINE: LAND_DIAGNOSTICS_STATE
 C     !INTERFACE:
-      SUBROUTINE LAND_DIAGNOSTICS_FILL( 
+      SUBROUTINE LAND_DIAGNOSTICS_STATE( 
      I                 myTime, myIter, bi,bj, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R LAND_DIAGNOSTICS_FILL
+C     | S/R LAND_DIAGNOSTICS_STATE
 C     | o fill-in diagnostics array for LAND state variables
 C     *==========================================================*
 C     \ev
