@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.841 2007/06/20 19:39:04 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.842 2007/06/21 00:53:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o standard name: {PKG}_DIAGNOSTICS_STATE to fill diagnostics array
+ for {PKG} state variables, and called from DO_STATEVARS_DIAGS.
+ (keep {PKG}_DIAGNOSTICS_FILL for non-state variables diagnostics)
+o pkg/gmredi (gmredi_readparms.F): add some missing "_d 0"
+ and change default value of parameter "GM_Small_Number";
+ update output of exp: lab_sea (x2), cfc_example, global_ocean.90x40x15,
+   global_ocean.cs32x15 (x4), global_ocean_ebm, global_with_exf,  
+   tutorial_global_oce_biogeo, tutorial_global_oce_latlon
 o pkg/ecco: cost function when applying pkg/smooth to controls
 o pkg/ctrl: add forcingPrecond run time parameter
 o pkg/seaice:
@@ -30,7 +38,6 @@ o pkg/profiles:
      that allow you to prepare netcdf input files.
  - also modified: cleaner include statements, cleaner error print statements, 
    cleaner stops when error, and more tests of the netcdf input files consistency.
-
 o additional test (in global_ocean.cs32x15) using seaice+thsice pkgs.
 o pkg/seaice:
  - move seaice-diagnostics from seaice_do_diags to do_statevars_diags; this
