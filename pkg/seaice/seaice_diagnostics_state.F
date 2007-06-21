@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_diagnostics_fill.F,v 1.3 2007/06/13 12:55:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.1 2007/06/21 00:30:53 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: SEAICE_DIAGNOSTICS_FILL
+C     !ROUTINE: SEAICE_DIAGNOSTICS_STATE
 C     !INTERFACE:
-      SUBROUTINE SEAICE_DIAGNOSTICS_FILL(
+      SUBROUTINE SEAICE_DIAGNOSTICS_STATE(
      I                      myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R  SEAICE_DIAGNOSTICS_FILL
+C     | S/R  SEAICE_DIAGNOSTICS_STATE
 C     | o fill-in diagnostics array for SEAICE state variables
 C     *==========================================================*
 C     \ev
