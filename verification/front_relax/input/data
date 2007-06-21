@@ -4,7 +4,7 @@
 #
 # Continuous equation parameters
  &PARM01
- tRef=29.,28.,27.,26.,25.,24.,23.,22.,21.,20.,19.,18.,17.,16.,15.,
+ tRef=29.,28.,27.,26.,25.,24.,23.,22.,21.,20.,19.,18.,17.,16.,15.,10*0.,
  viscAz=1.E-3,
  viscA4=1.E11,
  no_slip_sides=.FALSE.,
@@ -52,7 +52,7 @@
  usingCartesianGrid=.TRUE.,
  usingSphericalPolarGrid=.FALSE.,
  delZ= 50., 50., 55., 60., 65., 70., 80., 95.,
-       120., 155., 200., 260., 320., 400., 480.,
+       120., 155., 200., 260., 320., 400., 480., 10*1.,
  delX=1*10.E3,
 #delY=32*10.E3,
  delYfile='dy.bin',

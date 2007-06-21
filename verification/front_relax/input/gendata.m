@@ -52,7 +52,9 @@ for k=1:nz,
              *exp(-(3*zc(k)/Ho)^2);
 end
 T(:,end,:)=0;
-fid=fopen('theta.bin','w',ieee); fwrite(fid,T,prec); fclose(fid);
+%- add 10 more levels:
+t25=zeros(nx,ny,nz+10); t25(:,:,[1:nz]=T;
+fid=fopen('theta.bin','w',ieee); fwrite(fid,t25,prec); fclose(fid);
 
 % Salt (passive tracer)
 for k=1:nz,
@@ -62,4 +64,6 @@ for k=1:nz,
  S(:,:,k)=exp(-(2*Y/Ly).^2);           % Exponential with y
 end
 S(:,end,:)=0;
-fid=fopen('salt.bin','w',ieee); fwrite(fid,S,prec); fclose(fid);
+%- add 10 more levels:
+s25=zeros(nx,ny,nz+10); s25(:,:,[1:nz]=S;
+fid=fopen('salt.bin','w',ieee); fwrite(fid,s25,prec); fclose(fid);
