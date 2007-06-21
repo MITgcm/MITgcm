@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.843 2007/06/21 00:56:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.844 2007/06/21 04:16:36 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o seaice adjoint
+  * add AREA, HEFF, HSNOW as control variable
+    (should not change lab_sea results)
+  * CTRL_OPTIONS.h needs new flag: CTRL_SET_OLD_MAXCVARS_40
 
 checkpoint59d
 o standard name: {PKG}_DIAGNOSTICS_STATE to fill diagnostics array
