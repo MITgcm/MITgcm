@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.842 2007/06/21 00:53:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.843 2007/06/21 00:56:25 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59d
 o standard name: {PKG}_DIAGNOSTICS_STATE to fill diagnostics array
  for {PKG} state variables, and called from DO_STATEVARS_DIAGS.
  (keep {PKG}_DIAGNOSTICS_FILL for non-state variables diagnostics)
