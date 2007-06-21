@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ctrl_map_ini.F,v 1.1 2007/06/21 04:06:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ctrl_map_ini.F,v 1.2 2007/06/21 15:47:25 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -27,14 +27,17 @@ c     == global variables ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SEAICE.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
+#ifdef ALLOW_CTRL
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+# include "optim.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
       integer mythid
 
+#ifdef ALLOW_CTRL
 C     !LOCAL VARIABLES:
 c     == local variables ==
 
@@ -155,6 +158,8 @@ c--   Update the tile edges.
 #ifdef ALLOW_SIHSNOW_CONTROL
       _EXCH_XY_R8( hsnow, mythid )
 #endif
+
+#endif /* ALLOW_CTRL */
 
       return
       end
