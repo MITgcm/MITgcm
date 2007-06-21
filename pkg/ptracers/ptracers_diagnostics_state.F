@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_diagnostics_fill.F,v 1.1 2005/01/04 02:41:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_state.F,v 1.1 2007/06/21 00:32:21 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 1
-C     !ROUTINE: PTRACERS_DIAGNOSTICS_FILL
+C     !ROUTINE: PTRACERS_DIAGNOSTICS_STATE
 
 C     !INTERFACE:
-      SUBROUTINE PTRACERS_DIAGNOSTICS_FILL(myThid)
+      SUBROUTINE PTRACERS_DIAGNOSTICS_STATE(myThid)
 
 C     !DESCRIPTION:
-C     Fill the diagnostics array locations
+C     Fill-in the diagnostics array for PTRACERS state variables
       
 C     !USES:
       IMPLICIT NONE
