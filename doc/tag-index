@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.844 2007/06/21 04:16:36 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.845 2007/06/21 18:34:24 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o gmredi: add option (GM_taper_scheme='fm07') for Ferrari & McWilliams 2007
+  scheme and the corresponding test case (under front_relax dir). For now,
+  only available with Skew-flux form and not yet tested in realistic set-up.
 o seaice adjoint
   * add AREA, HEFF, HSNOW as control variable
     (should not change lab_sea results)
