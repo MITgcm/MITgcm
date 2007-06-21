@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.4 2007/01/30 15:17:52 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.5 2007/06/21 01:33:01 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -53,6 +53,28 @@ c     IF ( useDiagnotics ) THEN
         diagTitle = 
      &     'Mixing coefficient from Visbeck etal parameterization'
         diagUnits = 'm^2/s           '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'GM_hTrsL'
+        diagTitle = 'Base depth (>0) of the Transition Layer'
+        diagUnits = 'm               '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'GM_baseS'
+        diagTitle = 'Slope at the base of the Transition Layer'
+        diagUnits = '1               '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'GM_rLamb'
+        diagTitle =
+     &    'Slope vertical gradient at Trans. Layer Base (=recip.Lambda)'
+        diagUnits = '1/m             '
         diagCode  = 'SM P    M1      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.12 2005/07/29 18:24:35 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.13 2007/06/21 01:33:01 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -27,7 +27,7 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
       _RL GM_Visbeck_length
       _RL GM_Visbeck_depth
       _RL GM_Visbeck_maxval_K
-      CHARACTER*(MAX_LEN_FNAM) GM_taper_scheme
+      CHARACTER*(40) GM_taper_scheme
       _RL GM_Scrit
       _RL GM_Sd
       COMMON /GM_PARAMS/ GM_isopycK, GM_background_K,
