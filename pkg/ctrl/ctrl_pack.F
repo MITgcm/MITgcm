@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.29 2006/10/27 05:16:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.30 2007/06/21 04:06:21 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -144,6 +144,9 @@ c--   Assign file names.
       call ctrl_set_fname(xx_etan_file, fname_etan, mythid)
       call ctrl_set_fname(xx_relaxsst_file, fname_relaxsst, mythid)
       call ctrl_set_fname(xx_relaxsss_file, fname_relaxsss, mythid)
+      call ctrl_set_fname(xx_siarea_file, fname_siarea, mythid)
+      call ctrl_set_fname(xx_siheff_file, fname_siheff, mythid)
+      call ctrl_set_fname(xx_sihsnow_file, fname_sihsnow, mythid)
 
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
@@ -561,6 +564,33 @@ C     place holder of obsolete variable jG
           write(weighttype(1:80),'(a)') "wrunoff"
           call ctrl_set_pack_xy(
      &         cunit, ivartype, fname_runoff(ictrlgrad),
+     &         "maskCtrlC", weighttype, lxxadxx, mythid)
+#endif
+
+#ifdef ALLOW_SIAREA_CONTROL
+          ivartype = 41
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wunit"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, fname_siarea(ictrlgrad),
+     &         "maskCtrlC", weighttype, lxxadxx, mythid)
+#endif
+
+#ifdef ALLOW_SIHEFF_CONTROL
+          ivartype = 42
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wunit"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, fname_siheff(ictrlgrad),
+     &         "maskCtrlC", weighttype, lxxadxx, mythid)
+#endif
+
+#ifdef ALLOW_SIHSNOW_CONTROL
+          ivartype = 43
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wunit"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, fname_sihsnow(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
 #endif
 

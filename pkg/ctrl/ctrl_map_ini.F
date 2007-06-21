@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.23 2007/06/06 16:59:35 utke Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.24 2007/06/21 04:06:21 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -512,6 +512,10 @@ c--   SSS relaxation coefficient.
           enddo
         enddo
       enddo
+#endif
+
+#ifdef ALLOW_SEAICE
+      call seaice_ctrl_map_ini( mythid )
 #endif
 
 c--   Update the tile edges.

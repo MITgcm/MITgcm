@@ -6,6 +6,9 @@
  &CTRL_NML
  xx_theta_file      ='xx_theta',
  xx_salt_file       ='xx_salt',
+ xx_siarea_file     ='xx_siarea',
+ xx_siheff_file     ='xx_siheff',
+ xx_sihsnow_file     ='xx_sihsnow',
 #
  xx_hfluxstartdate1 = 19790101,
  xx_hfluxstartdate2 = 000000,

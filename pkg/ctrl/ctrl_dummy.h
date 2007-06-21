@@ -46,6 +46,9 @@ c     ==================================================================
      &                  , xx_uvel_dummy
      &                  , xx_vvel_dummy
      &                  , xx_etan_dummy
+     &                  , xx_siarea_dummy
+     &                  , xx_siheff_dummy
+     &                  , xx_sihsnow_dummy
      &                  , xx_relaxsst_dummy
      &                  , xx_relaxsss_dummy
      &                  , xx_tbar_mean_dummy
@@ -111,6 +114,9 @@ c     ==================================================================
       _RL xx_uvel_dummy
       _RL xx_vvel_dummy
       _RL xx_etan_dummy
+      _RL xx_siarea_dummy
+      _RL xx_siheff_dummy
+      _RL xx_sihsnow_dummy
       _RL xx_relaxsst_dummy
       _RL xx_relaxsss_dummy
 c

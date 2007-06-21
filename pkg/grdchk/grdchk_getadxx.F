@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.18 2007/05/14 21:53:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.19 2007/06/21 04:06:21 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -479,6 +479,42 @@ c--   == end of interface ==
      &                        mythid, dummy)
          xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 #endif /* ALLOW_RUNOFF_CONTROL */
+
+#ifdef ALLOW_SIAREA_CONTROL
+      else if ( grdchkvarindex .eq. 41 ) then
+         il=ilnblnk( xx_siarea_file )
+         write(fname(1:80),'(80a)') ' '
+         write(fname(1:80),'(3a,i10.10)')
+     &        yadmark, xx_siarea_file(1:il),'.',optimcycle
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+#endif /* ALLOW_SIAREA_CONTROL */
+
+#ifdef ALLOW_SIHEFF_CONTROL
+      else if ( grdchkvarindex .eq. 42 ) then
+         il=ilnblnk( xx_siheff_file )
+         write(fname(1:80),'(80a)') ' '
+         write(fname(1:80),'(3a,i10.10)')
+     &        yadmark, xx_siheff_file(1:il),'.',optimcycle
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+#endif /* ALLOW_SIHEFF_CONTROL */
+
+#ifdef ALLOW_SIHSNOW_CONTROL
+      else if ( grdchkvarindex .eq. 43 ) then
+         il=ilnblnk( xx_sihsnow_file )
+         write(fname(1:80),'(80a)') ' '
+         write(fname(1:80),'(3a,i10.10)')
+     &        yadmark, xx_sihsnow_file(1:il),'.',optimcycle
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+#endif /* ALLOW_SIHSNOW_CONTROL */
 
       else
 ce      --> this index does not exist yet.

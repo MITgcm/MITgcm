@@ -160,6 +160,11 @@ C       >>> Radiation
 #undef  ALLOW_SWFLUX_CONTROL
 #undef  ALLOW_LWFLUX_CONTROL
 
+C       >>> seaice init. conditions
+#define  ALLOW_SIAREA_CONTROL
+#define  ALLOW_SIHEFF_CONTROL
+#undef  ALLOW_SIHSNOW_CONTROL
+
 C       >>> Open boundaries
 c       >>> Make sure that ALLOW_OBCS is defined
 #undef  ALLOW_OBCSN_CONTROL

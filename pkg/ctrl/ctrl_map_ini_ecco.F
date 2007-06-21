@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.8 2007/06/19 03:42:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.9 2007/06/21 04:06:21 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -459,6 +459,10 @@ c--   SSS relaxation coefficient.
       enddo
 #endif
 
+#ifdef ALLOW_SEAICE
+      call seaice_ctrl_map_ini( mythid )
+#endif
+
 c--   Update the tile edges.
 
 #ifdef ALLOW_THETA0_CONTROL
@@ -501,7 +505,7 @@ c--   Update the tile edges.
       _EXCH_XY_R4( lambdaThetaClimRelax, mythid )
 #endif
 
-#endif
+#endif /* ALLOW_ECCO */
 
       return
       end

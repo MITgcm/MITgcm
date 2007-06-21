@@ -22,10 +22,12 @@ c     nwet[c/s/w]tile - Number of wet points in a tile for center (c),
 c                       south (s), and western (w) mask, resp. .
 
       integer     maxcvars
-#ifdef CTRL_SET_OLD_MAXCVARS_30
+#if (defined (CTRL_SET_OLD_MAXCVARS_30))
       parameter ( maxcvars = 30 )
-#else
+#elif (defined (CTRL_SET_OLD_MAXCVARS_40))
       parameter ( maxcvars = 40 )
+#else
+      parameter ( maxcvars = 60 )
 #endif
 
 cph ctrlprec will be set to 32 for ECCO to reduce I/O
@@ -585,6 +587,9 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_relaxsss_file
      &                    , xx_theta_ini_fin_file
      &                    , xx_salt_ini_fin_file
+     &                    , xx_siarea_file
+     &                    , xx_siheff_file
+     &                    , xx_sihsnow_file
 
       character*(MAX_LEN_FNAM) xx_theta_file
       character*(MAX_LEN_FNAM) xx_salt_file
@@ -627,6 +632,9 @@ c     xx_obcse_file - control vector salin. at boundary
       character*(MAX_LEN_FNAM) xx_relaxsss_file
       character*(MAX_LEN_FNAM) xx_theta_ini_fin_file
       character*(MAX_LEN_FNAM) xx_salt_ini_fin_file
+      character*(MAX_LEN_FNAM) xx_siarea_file
+      character*(MAX_LEN_FNAM) xx_siheff_file
+      character*(MAX_LEN_FNAM) xx_sihsnow_file
 
       common /packnames_c/
      &                      yadmark,
@@ -936,6 +944,9 @@ c                         control part.
       character*( 80)   fname_etan(2)
       character*( 80)   fname_relaxsst(2)
       character*( 80)   fname_relaxsss(2)
+      character*( 80)   fname_siarea(2)
+      character*( 80)   fname_siheff(2)
+      character*( 80)   fname_sihsnow(2)
 
 #ifdef ALLOW_ADMTLM
       integer          maxm, maxn

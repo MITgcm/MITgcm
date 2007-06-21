@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.25 2006/11/10 04:57:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.26 2007/06/21 04:06:21 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -158,6 +158,9 @@ cph          37                 evap
 cph          38                 snowprecip
 cph          39                 apressure
 cph          40                 runoff
+cph          41                 seaice SIAREA
+cph          42                 seaice SIHEFF
+cph          43                 seaice SIHSNOW
 cph)
 
 c----------------------------------------------------------------------
@@ -990,6 +993,39 @@ c--   Atmos. runoff
      &       xx_runoff_file, 40, 140, diffrec, startrec, endrec,
      &       snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_RUNOFF_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_SIAREA_CONTROL
+        startrec = 1
+        endrec   = 1
+        diffrec  = endrec - startrec + 1
+        call ctrl_init_ctrlvar ( 
+     &       xx_siarea_file, 41, 141, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+#endif /* ALLOW_siarea_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_SIHEFF_CONTROL
+        startrec = 1
+        endrec   = 1
+        diffrec  = endrec - startrec + 1
+        call ctrl_init_ctrlvar ( 
+     &       xx_siheff_file, 42, 142, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+#endif /* ALLOW_siheff_CONTROL */
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_SIHSNOW_CONTROL
+        startrec = 1
+        endrec   = 1
+        diffrec  = endrec - startrec + 1
+        call ctrl_init_ctrlvar ( 
+     &       xx_sihsnow_file, 42, 142, diffrec, startrec, endrec,
+     &       snx, sny, 1, 'c', 'xy', mythid )
+#endif /* ALLOW_sihsnow_CONTROL */
 
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------

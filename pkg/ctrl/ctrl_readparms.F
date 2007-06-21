@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.26 2007/06/20 19:31:03 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.27 2007/06/21 04:06:21 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -124,6 +124,7 @@ c--   Read the namelist input.
      &  xx_bottomdrag_file,
      &  xx_edtaux_file, xx_edtauy_file,
      &  xx_uvel_file, xx_vvel_file, xx_etan_file,
+     &  xx_siarea_file, xx_siheff_file, xx_sihsnow_file,
      &  doInitXX,
      &  doPackDiag,
      &  doZscaleUnpack, doZscalePack,
@@ -318,6 +319,9 @@ c
         xx_uvel_file        = 'xx_uvel'
         xx_vvel_file        = 'xx_vvel'
         xx_etan_file        = 'xx_etan'
+        xx_siarea_file        = 'xx_siarea'
+        xx_siheff_file        = 'xx_siheff'
+        xx_sihsnow_file        = 'xx_sihsnow'
 
 #ifdef ALLOW_TANGENTLINEAR_RUN
         yadprefix           = 'g_'

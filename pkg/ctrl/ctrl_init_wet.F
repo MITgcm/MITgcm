@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.6 2006/11/09 20:58:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.7 2007/06/21 04:06:21 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -533,6 +533,11 @@ c
             do k=1, nr
                wunit(k,bi,bj) = 1. _d 0
             enddo
+            do j=1-oly,sNy+oly
+               do i=1-olx,sNx+olx
+                  tmpfld2d(i,j,bi,bj) = 1. _d 0
+               enddo
+            enddo
          enddo
       enddo
 
@@ -544,6 +549,8 @@ c
 #if (defined (ALLOW_EFLUXP0_CONTROL))
       call active_write_xyz( 'maskhFacV', hFacV, 1, 0, mythid, dummy)
 #endif
+      call active_write_xy( 'wunit', tmpfld2d, 1, 0, mythid, dummy)
+
 
       return
       end

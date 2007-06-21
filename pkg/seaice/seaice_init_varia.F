@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.9 2007/06/20 14:08:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.10 2007/06/21 04:06:21 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -49,17 +49,18 @@ c
         DO K=1,3
          DO J=1-OLy,sNy+OLy
           DO I=1-OLx,sNx+OLx
-           HEFF(I,J,k,bi,bj)=ZERO
-           AREA(I,J,k,bi,bj)=ZERO
-           UICE(I,J,k,bi,bj)=ZERO
-           VICE(I,J,k,bi,bj)=ZERO
+           HEFF(I,J,k,bi,bj)=0. _d 0
+           AREA(I,J,k,bi,bj)=0. _d 0
+           UICE(I,J,k,bi,bj)=0. _d 0
+           VICE(I,J,k,bi,bj)=0. _d 0
           ENDDO
          ENDDO
         ENDDO
 c
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
-          ZETA(I,J,bi,bj)=ZERO
+          ZETA(I,J,bi,bj)=0. _d 0
+          HSNOW(I,J,bi,bj)=0. _d 0
          ENDDO
         ENDDO
 c
@@ -73,13 +74,13 @@ C--   Initialize grid info
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           HEFFM(i,j,bi,bj)=ONE
-          IF (_hFacC(i,j,1,bi,bj).eq.0.) HEFFM(i,j,bi,bj)=ZERO
+          IF (_hFacC(i,j,1,bi,bj).eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
          ENDDO
         ENDDO
         DO J=1-OLy+1,sNy+OLy
          DO I=1-OLx+1,sNx+OLx
 #ifndef SEAICE_CGRID
-          UVM(i,j,bi,bj)=ZERO
+          UVM(i,j,bi,bj)=0. _d 0
           mask_uice=HEFFM(I,J,  bi,bj)+HEFFM(I-1,J-1,bi,bj)
      &             +HEFFM(I,J-1,bi,bj)+HEFFM(I-1,J,  bi,bj)
           IF(mask_uice.GT.3.5) UVM(I,J,bi,bj)=ONE
@@ -107,18 +108,18 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
      &        exch2_myFace(myTile) .EQ. 5 ) THEN
           DO J=1-OLy,sNy+OLy
            DO I=1-OLx,sNx+OLx
-            UVM(i,j,bi,bj)=ZERO
+            UVM(i,j,bi,bj)=0. _d 0
            ENDDO
           ENDDO
          ELSEIF ( exch2_isWedge(myTile) .EQ. 1 ) THEN
           I=1
           DO J=1-OLy,sNy+OLy
-           UVM(i,j,bi,bj)=ZERO
+           UVM(i,j,bi,bj)=0. _d 0
           ENDDO
          ELSEIF ( exch2_isSedge(myTile) .EQ. 1 ) THEN
           J=1
           DO I=1-OLx,sNx+OLx
-           UVM(i,j,bi,bj)=ZERO
+           UVM(i,j,bi,bj)=0. _d 0
           ENDDO
          ENDIF
         ENDIF
@@ -133,19 +134,19 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
            TICES(I,J,k,bi,bj)=273.0 _d 0
           ENDDO
 #endif /* SEAICE_MULTICATEGORY */
-          UICEC      (I,J,bi,bj)=ZERO
-          VICEC      (I,J,bi,bj)=ZERO
-          DWATN      (I,J,bi,bj)=ZERO
+          UICEC      (I,J,bi,bj)=0. _d 0
+          VICEC      (I,J,bi,bj)=0. _d 0
+          DWATN      (I,J,bi,bj)=0. _d 0
 #ifndef SEAICE_CGRID
-          DAIRN      (I,J,bi,bj)=ZERO
+          DAIRN      (I,J,bi,bj)=0. _d 0
           AMASS      (I,J,bi,bj)=1000.0 _d 0
 #else
           seaiceMassC(I,J,bi,bj)=1000.0 _d 0
           seaiceMassU(I,J,bi,bj)=1000.0 _d 0
           seaiceMassV(I,J,bi,bj)=1000.0 _d 0
 #endif
-          GWATX      (I,J,bi,bj)=ZERO
-          GWATY      (I,J,bi,bj)=ZERO
+          GWATX      (I,J,bi,bj)=0. _d 0
+          GWATY      (I,J,bi,bj)=0. _d 0
          ENDDO
         ENDDO
 

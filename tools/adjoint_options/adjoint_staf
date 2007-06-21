@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_staf,v 1.9 2006/10/27 05:16:54 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_staf,v 1.10 2007/06/21 04:06:22 heimbach Exp $
 #  $Name:  $
 #
 
@@ -59,6 +59,9 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_uvel_dummy        \
                     xx_vvel_dummy        \
                     xx_etan_dummy        \
+                    xx_siarea_dummy        \
+                    xx_siheff_dummy        \
+                    xx_sihsnow_dummy        \
                     xx_relaxsst_dummy    \
                     xx_relaxsss_dummy'     \
             -output 'fc'"

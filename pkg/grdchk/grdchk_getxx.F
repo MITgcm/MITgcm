@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.18 2007/05/14 21:53:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.19 2007/06/21 04:06:21 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -771,6 +771,69 @@ c--   == end of interface ==
      &                         optimcycle,
      &                         mythid, dummy)
 #endif /* ALLOW_RUNOFF_CONTROL */
+
+#ifdef ALLOW_SIAREA_CONTROL
+      else if ( grdchkvarindex .eq. 41 ) then
+         il=ilnblnk( xx_siarea_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_siarea_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_siarea_file(1:il),'.',optimcycle
+         end if
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+#endif /* ALLOW_SIAREA_CONTROL */
+
+#ifdef ALLOW_SIHEFF_CONTROL
+      else if ( grdchkvarindex .eq. 42 ) then
+         il=ilnblnk( xx_siheff_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_siheff_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_siheff_file(1:il),'.',optimcycle
+         end if
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+#endif /* ALLOW_SIHEFF_CONTROL */
+
+#ifdef ALLOW_SIHSNOW_CONTROL
+      else if ( grdchkvarindex .eq. 43 ) then
+         il=ilnblnk( xx_sihsnow_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_sihsnow_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_sihsnow_file(1:il),'.',optimcycle
+         end if
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+#endif /* ALLOW_SIHSNOW_CONTROL */
 
       else
 ce      --> this index does not exist yet.
