@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.50 2007/06/08 16:07:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.51 2007/06/22 06:41:10 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -191,6 +191,7 @@ C--   Update overlap regions for a bunch of stuff
        CALL EXCH_3D_RL( AREA, 3, myThid )
        _EXCH_XY_R8( HSNOW,  myThid )
        _EXCH_XY_R4(EmPmR, myThid )
+       _EXCH_XY_R4(saltFlux, myThid )
        _EXCH_XY_R4(Qnet , myThid )
 #ifdef SHORTWAVE_HEATING
        _EXCH_XY_R4(Qsw  , myThid )
