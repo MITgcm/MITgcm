@@ -10,9 +10,8 @@ C
 C o include dump of snap shots for checks
 #define ALLOW_SNAPSHOTS
 
-#undef  ALLOW_ECCO_FORWARD_RUN
-#undef  ALLOW_ECCO_DIAGNOSTICS_RUN
-#define  ALLOW_ECCO_OPTIMIZATION
+#define  ALLOW_ECCO_FORWARD_RUN
+#undef  ALLOW_ECCO_OPTIMIZATION
 
 C       >>> Do a long protocol.
 #undef ECCO_VERBOSE
@@ -137,6 +136,10 @@ C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
 #define ALLOW_SALT0_CONTROL
 
+C       >>> Initial seaice
+#define ALLOW_SIAREA_CONTROL
+#define ALLOW_SIHEFF_CONTROL
+
 C       >>> Surface fluxes.
 #undef  ALLOW_HFLUX_CONTROL
 #undef  ALLOW_SFLUX_CONTROL
@@ -191,6 +194,7 @@ C   Do more printout for the protocol file than usual.
 #undef EXF_VERBOSE
 
 C   Bulk formulae related flags.
+#undef  ALLOW_BULK_LARGYEAG04
 #define  ALLOW_ATM_TEMP
 #define  ALLOW_ATM_WIND
 #define  ALLOW_BULKFORMULAE

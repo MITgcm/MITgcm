@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.1 2006/12/15 18:11:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.2 2007/06/22 20:02:09 heimbach Exp $
 
 C     /==========================================================\
 C     | SEAICE_OPTIONS.h                                         |
@@ -80,6 +80,9 @@ C     defining the following flag
 #ifdef SEAICE_CGRID
 #define SEAICE_ALLOW_EVP
 #endif /* SEAICE_CGRID */
+
+C--   Seaice flooding
+#define ALLOW_SEAICE_FLOODING
 
 #endif /* SEAICE_OPTIONS_H */
 
