@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.10 2007/04/18 19:55:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.11 2007/06/23 14:48:08 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -38,9 +38,17 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
+#ifdef ALLOW_BULK_OFFLINE
+# include "PARAMS.h"
+# include "DYNVARS.h"
+#endif
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 #include "EXF_FIELDS.h"
+#ifdef ALLOW_AUTODIFF
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+#endif
 
 c     == routine arguments ==
 
@@ -107,5 +115,30 @@ c
 c--   Update the tile edges.
       _EXCH_XY_R8(climsss, mythid)
 #endif
+#ifdef ALLOW_SST_CONTROL
+      call ctrl_get_gen (
+     &     xx_sst_file, xx_sststartdate, xx_sstperiod,
+     &     maskc, climsst, xx_sst0, xx_sst1, xx_sst_dummy,
+     &     mytime, myiter, mythid )
+#endif
+
+#ifdef ALLOW_BULK_OFFLINE
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-oLy,sNy+oLy
+          DO i=1-oLx,sNx+oLx
+           theta(i,j,1,bi,bj) = climsst(i,j,bi,bj)
+           if ( myiter .EQ. niter0 ) then
+              if ( maskC(i,j,1,bi,bj) .NE. 0. .AND.
+     &             theta(i,j,1,bi,bj) .EQ. 0. ) then
+                print *, 'ph-warn-exf-clim ', i, j, theta(i,j,1,bi,bj)
+cph                STOP 'in exf_getclim'
+              endif
+           endif
+          ENDDO
+         ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_BULK_OFFLINE */
 
       end
