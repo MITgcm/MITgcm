@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.8 2007/06/21 22:11:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.9 2007/06/23 14:53:24 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -61,7 +61,7 @@ C     !LOCAL VARIABLES:
       if(xsize.eq.192) then
       WRITE(fn,'(a,I8,a,I2.2,a)')'vegtiles_cs32.d',nymd,'z',ihour,'.bin'
       elseif(xsize.eq.612) then
-      WRITE(fn,'(a,I8,a,I2.2,a)')'vegtiles_cs32.d',nymd,'z',ihour,'.bin'
+      WRITE(fn,'(a,I8,a,I2.2,a)')'vegtiles_cs102.d',nymd,'z',ihour,'.bin'
       else
       print *,' xsize is ',xsize
       stop 'do not seem to have correct vegtiles data '
