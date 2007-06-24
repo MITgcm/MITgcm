@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.16 2007/06/22 06:41:10 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.17 2007/06/24 14:21:36 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -523,7 +523,6 @@ C NOW GET FRESH WATER FLUX
      &         - RUNOFF(I,J,bi,bj)
 #endif
      &         + frWtrIce(I,J)*ICE2WATR/SEAICE_deltaTtherm
-     &         + saltWtrIce(I,J)*ICE2WATR/SEAICE_deltaTtherm
      &         )
 #ifdef ALLOW_DIAGNOSTICS
           frWtrAtm(I,J)   = maskC(I,J,kSurface,bi,bj)*(
