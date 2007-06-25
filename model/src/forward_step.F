@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.150 2007/06/04 21:37:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.151 2007/06/25 20:20:05 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -9,6 +9,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
+#endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
 #endif
 
 CBOP
@@ -92,6 +95,9 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_THSICE
 #  include "THSICE_VARS.h"
+# endif
+# ifdef ALLOW_SEAICE
+#  include "SEAICE.h"
 # endif
 # ifdef ALLOW_EBM
 #  include "EBM.h"
