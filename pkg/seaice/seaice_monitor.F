@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.9 2007/06/23 14:48:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.10 2007/06/25 15:41:57 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -165,8 +165,6 @@ C       Print some statistics about input forcing fields
 c-- Trick monitor output for testreport
 C-- by writing some statistics into dynstat fields
 c-- which are tested by testreport
-        CALL MON_SET_PREF('dynstat',myThid)
-c--
         DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo(myThid),myBxHi(myThid)
               DO J=1-OLy,sNy+OLy
@@ -176,8 +174,13 @@ c--
               ENDDO
            ENDDO
         ENDDO
+        CALL MON_SET_PREF(' ',myThid)
+        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'cg2d_init_res',
+     &       maskH,maskH,rA ,drF,myThid)
+        CALL MON_SET_PREF('dynstat',myThid)
         CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_theta',
      &       maskH,maskH,rA ,drF,myThid)
+c--
         DO bj=myByLo(myThid),myByHi(myThid)
            DO bi=myBxLo(myThid),myBxHi(myThid)
               DO J=1-OLy,sNy+OLy
