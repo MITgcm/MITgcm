@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.5 2006/11/09 16:37:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.6 2007/06/25 20:17:36 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -29,7 +29,9 @@ c     == global variables ==
 #ifdef ALLOW_COST
 # include "ctrl.h"
 # include "ctrl_dummy.h"
-# include "ecco_cost.h"
+# ifdef ALLOW_ECCO
+#  include "ecco_cost.h"
+# endif
 # include "SEAICE_COST.h"
 #endif
 
@@ -39,6 +41,7 @@ c     == routine arguments ==
       _RL     mytime
       integer mythid
 
+#ifdef ALLOW_ECCO
 c     == local variables ==
       character*(max_len_mbuf) msgbuf
 
@@ -87,5 +90,7 @@ cph)
 #endif
 
       endif
+
+#endif /* ALLOW_ECCO */
 
       end
