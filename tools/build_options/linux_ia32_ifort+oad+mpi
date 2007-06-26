@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+oad+mpi,v 1.1 2007/06/26 18:02:35 utke Exp $
+#
+#  These are the build options used with the Intel compiler together with OpenAD and MPI
+
+
+FC='mpif77'
+CC='mpicc'
+F90C='mpif90'
+F90FIXEDFORMAT='-fixed -Tf'
+LINK='mpif90'
+INCLUDES='-I${MPIROOT}/include'
+LIBS=''
+
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+CPP='cpp  -traditional -P'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
+
+#  Note that the -mp switch is for ieee "maintain precision" and is
+#  roughly equivalent to -ieee
+if test "x$IEEE" = x ; then
+    FOPTIM='-O0 -align'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
+else
+    FOPTIM='-O0 -noalign'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -pc64 -xW -assume byterecl -convert big_endian'
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+
+NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
+NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F mds_byteswap.F'
