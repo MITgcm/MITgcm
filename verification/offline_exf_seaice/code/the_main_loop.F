@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/Attic/the_main_loop.F,v 1.1 2007/06/23 15:02:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/Attic/the_main_loop.F,v 1.2 2007/06/26 02:47:08 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -388,8 +388,8 @@ c--
 #endif
 
 c--     Set the model iteration counter and the model time.
-        myiter = nIter0 + (iloop-1)
-        mytime = startTime + float(iloop-1)*deltaTclock
+        myIter = nIter0 + (iloop-1)
+        myTime = startTime + float(iloop-1)*deltaTclock
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
@@ -461,6 +461,10 @@ CADJ STORE EmPmR    = comlev1, key = ikey_dynamics
 CADJ STORE pmepr    = comlev1, key = ikey_dynamics
 # endif
 #endif
+
+c--     Set the model iteration counter and the model time.
+        myIter = nIter0 + iloop
+        myTime = startTime + float(iloop)*deltaTclock
 
 #ifdef ALLOW_COST
 C--     compare model with data and compute cost function
