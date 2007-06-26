@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.9 2005/08/10 03:37:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.10 2007/06/26 15:38:40 heimbach Exp $
 C $Name:  $
 
 C CPP flags controlling which code is included in the files that
@@ -62,5 +62,5 @@ C       >>> Initial values.
 #undef ALLOW_SSS0_CONTROL
 #undef ALLOW_SST0_CONTROL
 #define ALLOW_DIFFKR_CONTROL
-#undef ALLOW_KAPGM_CONTROL
+#define ALLOW_KAPGM_CONTROL
 
