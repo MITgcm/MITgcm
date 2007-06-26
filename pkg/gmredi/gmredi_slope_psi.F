@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.9 2005/12/08 21:40:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.10 2007/06/26 15:34:15 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -164,6 +164,10 @@ CADJ STORE dSigmaDrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
         ENDDO
 
 #endif /* GM_EXCLUDE_CLIPPING */
+
+      ELSEIF (GM_taper_scheme.EQ.'fm07') THEN
+
+        STOP 'GMREDI_SLOPE_PSI: AdvForm not yet implemented for fm07'
 
       ELSE
 

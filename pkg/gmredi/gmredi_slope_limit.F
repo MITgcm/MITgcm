@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.25 2007/06/21 01:33:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.26 2007/06/26 15:34:15 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -106,12 +106,13 @@ C     == Local variables ==
       _RL SlopeMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dRdSigmaLtd(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL tmpfld(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL locVar(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL f1,Smod,f2,Rnondim
       _RL maxSlopeSqr
       _RL fpi
       PARAMETER( fpi = PI )
       INTEGER i,j
-      _RL dTransLay, taperFctLoc, taperFctHat, locVar
+      _RL dTransLay, taperFctLoc, taperFctHat
       _RL  facTrL2ML
       _RL  maxTransLay
 c     facTrL2ML = 1. _d 0
@@ -216,6 +217,12 @@ cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
       ELSEIF (GM_taper_scheme.EQ.'fm07' ) THEN
 C--   Ferrari & Mc.Williams, 2007:
 
+#ifdef GM_EXCLUDE_FM07_TAP
+
+        STOP 'Need to compile without "#define GM_EXCLUDE_FM07_TAP"'
+
+#else  /* GM_EXCLUDE_FM07_TAP */
+
 C-    a) Calculate separately slope magnitude (SlopeMod)
 C        and slope horiz. direction (Slope_X,Y : normalized)
         DO j=1-Oly+1,sNy+Oly-1
@@ -230,14 +237,14 @@ C-        Bottom or below:
 C-        Above bottom:
            IF ( dSigmaDr(i,j).GE. -GM_Small_Number )
      &          dSigmaDr(i,j) = -GM_Small_Number
-           locVar = dSigmaDx(i,j)*dSigmaDx(i,j)
+           tmpfld(i,j) = dSigmaDx(i,j)*dSigmaDx(i,j)
      &            + dSigmaDy(i,j)*dSigmaDy(i,j)
-           IF ( locVar.GT.0. ) THEN
-            locVar = SQRT( locVar )
+           IF ( tmpfld(i,j).GT.0. ) THEN
+            locVar(i,j) = SQRT( tmpfld(i,j) )
 c           dSigmMod(i,j) = locVar
-            SlopeX  (i,j) = dSigmaDx(i,j)/locVar
-            SlopeY  (i,j) = dSigmaDy(i,j)/locVar
-            SlopeMod(i,j) = -locVar/dSigmaDr(i,j)
+            SlopeX  (i,j) = dSigmaDx(i,j)/locVar(i,j)
+            SlopeY  (i,j) = dSigmaDy(i,j)/locVar(i,j)
+            SlopeMod(i,j) = -locVar(i,j)/dSigmaDr(i,j)
             taperFct(i,j) = 1. _d 0
            ELSE
             SlopeX  (i,j) = 0. _d 0
@@ -254,11 +261,11 @@ C-    b) Set Transition Layer Depth:
          DO i=1-Olx+1,sNx+Olx-1
           IF ( hTransLay(i,j).LE.0. _d 0 ) THEN
 C-     previously below the transition layer
-            dTransLay = Lrho(i,j)*SlopeMod(i,j)
+            tmpfld(i,j) = Lrho(i,j)*SlopeMod(i,j)
 C-     ensure that transition layer is not thicker than the larger
 C      of the 2 : maxTransLay and facTrL2ML*hMixLay
             dTransLay =
-     &        MIN( dTransLay,
+     &        MIN( tmpfld(i,j),
      &             MAX( facTrL2ML*hMixLay(i,j), maxTransLay ) )
             IF ( k.GE.kLow(i,j) ) THEN
 C-     bottom & below & 1rst level above the bottom :
@@ -356,6 +363,8 @@ C--       end if baseSlope > 0 / else => above/below base of Trans. Layer
 
          ENDDO
         ENDDO
+
+#endif  /* GM_EXCLUDE_FM07_TAP */
 
       ELSE IF (GM_taper_scheme.EQ.'ac02') THEN
 

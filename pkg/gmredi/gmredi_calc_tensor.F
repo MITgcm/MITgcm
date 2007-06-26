@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.27 2007/06/21 01:33:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.28 2007/06/26 15:34:15 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -202,6 +202,14 @@ C-    Just initialize to zero (not use anyway)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- 1rst loop on k : compute Tensor Coeff. at W points.
 
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+         hTransLay(i,j) = R_low(i,j,bi,bj)
+         baseSlope(i,j) =  0. _d 0
+         recipLambda(i,j) = 0. _d 0
+         locMixLayer(i,j) = 0. _d 0
+       ENDDO
+      ENDDO
 #ifdef ALLOW_KPP
       IF ( useKPP ) THEN
        DO j=1-Oly,sNy+Oly
@@ -219,13 +227,6 @@ C-- 1rst loop on k : compute Tensor Coeff. at W points.
         ENDDO
        ENDDO
       ENDIF
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-         hTransLay(i,j) = R_low(i,j,bi,bj)
-         baseSlope(i,j) =  0.
-         recipLambda(i,j)= 0.
-       ENDDO
-      ENDDO
 
       DO k=Nr,2,-1
 
@@ -276,6 +277,9 @@ C      Gradient of Sigma at rVel points
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE baseSlope(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE hTransLay(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE recipLambda(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef GM_VISBECK_VARIABLE_K
@@ -527,7 +531,11 @@ C     Gradient of Sigma at U points
 CADJ STORE SlopeSqr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dSigmaDr(:,:)   = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE locMixLayer(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE baseSlope(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE hTransLay(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE recipLambda(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Calculate slopes for use in tensor, taper and/or clip
@@ -697,7 +705,10 @@ C     Gradient of Sigma at V points
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dSigmaDr(:,:)   = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE baseSlope(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE hTransLay(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE recipLambda(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Calculate slopes for use in tensor, taper and/or clip
