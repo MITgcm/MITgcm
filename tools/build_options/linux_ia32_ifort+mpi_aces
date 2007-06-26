@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+mpi_aces,v 1.5 2006/10/13 12:41:51 cnh Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+mpi_aces,v 1.6 2007/06/26 12:30:32 utke Exp $
 #
 #  These are the build options used with the Intel 8.x compiler for the
 #  daily testing on ACES (which are initiated by cron jobs on the "ao"
@@ -45,6 +45,8 @@ else
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -pc64 -xW -assume byterecl -convert big_endian'
     # FLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
 fi
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
 
 NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
 NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F mds_byteswap.F'
