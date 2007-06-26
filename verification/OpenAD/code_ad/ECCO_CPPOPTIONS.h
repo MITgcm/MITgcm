@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.5 2007/05/10 16:31:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.6 2007/06/26 16:28:27 heimbach Exp $
 C $Name:  $
 
 C CPP flags controlling which code is included in the files that
@@ -63,7 +63,7 @@ C       >>> Initial values.
 #undef ALLOW_SSS0_CONTROL
 #undef ALLOW_SST0_CONTROL
 #define ALLOW_DIFFKR_CONTROL
-#undef ALLOW_KAPGM_CONTROL
+#define ALLOW_KAPGM_CONTROL
 
 C
 C o Enable some temporary constructs for OpenAD
