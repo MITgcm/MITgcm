@@ -8,7 +8,7 @@
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint59d
 (PID.TID 0000.0001) // Build user:        heimbach
 (PID.TID 0000.0001) // Build host:        faulks
-(PID.TID 0000.0001) // Build date:        Mon Jun 25 14:45:26 EDT 2007
+(PID.TID 0000.0001) // Build date:        Tue Jun 26 13:02:00 EDT 2007
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -696,7 +696,7 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Parameter file "data.exf"
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/results_ad/Attic/output_adm.txt,v 1.1 2007/06/25 20:15:44 heimbach Exp $
+(PID.TID 0000.0001) ># $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/results_ad/Attic/output_adm.txt,v 1.2 2007/06/26 18:24:17 heimbach Exp $
 (PID.TID 0000.0001) >#
 (PID.TID 0000.0001) ># *********************
 (PID.TID 0000.0001) ># External Forcing Data
@@ -1075,19 +1075,19 @@
 (PID.TID 0000.0001) %MON DYC_max                      =   2.2238985328912E+05
 (PID.TID 0000.0001) %MON DYC_min                      =   2.2238985328912E+05
 (PID.TID 0000.0001) %MON DYC_mean                     =   2.2238985328912E+05
-(PID.TID 0000.0001) %MON DYC_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON DYC_sd                       =   6.1118043959141E-10
 (PID.TID 0000.0001) %MON DYF_max                      =   2.2238985328912E+05
 (PID.TID 0000.0001) %MON DYF_min                      =   2.2238985328912E+05
 (PID.TID 0000.0001) %MON DYF_mean                     =   2.2238985328912E+05
-(PID.TID 0000.0001) %MON DYF_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON DYF_sd                       =   6.1118043959141E-10
 (PID.TID 0000.0001) %MON DYG_max                      =   2.2238985328912E+05
 (PID.TID 0000.0001) %MON DYG_min                      =   2.2238985328912E+05
 (PID.TID 0000.0001) %MON DYG_mean                     =   2.2238985328912E+05
-(PID.TID 0000.0001) %MON DYG_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON DYG_sd                       =   6.1118043959141E-10
 (PID.TID 0000.0001) %MON DYU_max                      =   2.2238985328912E+05
 (PID.TID 0000.0001) %MON DYU_min                      =   2.2238985328912E+05
 (PID.TID 0000.0001) %MON DYU_mean                     =   2.2238985328912E+05
-(PID.TID 0000.0001) %MON DYU_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON DYU_sd                       =   6.1118043959141E-10
 (PID.TID 0000.0001) %MON RA_max                       =   3.3728048822756E+10
 (PID.TID 0000.0001) %MON RA_min                       =   1.1124894996734E+10
 (PID.TID 0000.0001) %MON RA_mean                      =   2.2918170839356E+10
@@ -2269,10 +2269,10 @@
 (PID.TID 0000.0001)     3 @  0.000000000000000E+00              /* K =  1:  3 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dxF =  /* dxF(:,1,:,1) ( units: m ) */
-(PID.TID 0000.0001)    20 @  1.516695152377177E+05              /* I =  1: 20 */
+(PID.TID 0000.0001)    20 @  1.516695152377178E+05              /* I =  1: 20 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dxF =  /* dxF(1,:,1,:) ( units: m ) */
-(PID.TID 0000.0001)                 1.516695152377177E+05,      /* J =  1 */
+(PID.TID 0000.0001)                 1.516695152377178E+05,      /* J =  1 */
 (PID.TID 0000.0001)                 1.459008712061998E+05,      /* J =  2 */
 (PID.TID 0000.0001)                 1.399544694374234E+05,      /* J =  3 */
 (PID.TID 0000.0001)                 1.338375547059709E+05,      /* J =  4 */
@@ -2281,10 +2281,10 @@
 (PID.TID 0000.0001)                 1.145392419175564E+05,      /* J =  7 */
 (PID.TID 0000.0001)                 1.078167403197357E+05,      /* J =  8 */
 (PID.TID 0000.0001)                 1.009628806317309E+05,      /* J =  9 */
-(PID.TID 0000.0001)                 9.398601322581599E+04,      /* J = 10 */
+(PID.TID 0000.0001)                 9.398601322581600E+04,      /* J = 10 */
 (PID.TID 0000.0001)                 8.689463834022089E+04,      /* J = 11 */
 (PID.TID 0000.0001)                 7.969739572290120E+04,      /* J = 12 */
-(PID.TID 0000.0001)                 7.240305410533582E+04,      /* J = 13 */
+(PID.TID 0000.0001)                 7.240305410533583E+04,      /* J = 13 */
 (PID.TID 0000.0001)                 6.502050051917860E+04,      /* J = 14 */
 (PID.TID 0000.0001)                 5.755872946877906E+04,      /* J = 15 */
 (PID.TID 0000.0001)                 5.002683197276441E+04       /* J = 16 */
@@ -2308,12 +2308,12 @@
 (PID.TID 0000.0001)                 1.178486674278995E+05,      /* J =  7 */
 (PID.TID 0000.0001)                 1.111949266445588E+05,      /* J =  8 */
 (PID.TID 0000.0001)                 1.044057119713670E+05,      /* J =  9 */
-(PID.TID 0000.0001)                 9.748929502060510E+04,      /* J = 10 */
+(PID.TID 0000.0001)                 9.748929502060512E+04,      /* J = 10 */
 (PID.TID 0000.0001)                 9.045410238093534E+04,      /* J = 11 */
-(PID.TID 0000.0001)                 8.330870535090074E+04,      /* J = 12 */
+(PID.TID 0000.0001)                 8.330870535090075E+04,      /* J = 12 */
 (PID.TID 0000.0001)                 7.606180949611843E+04,      /* J = 13 */
 (PID.TID 0000.0001)                 6.872224404288860E+04,      /* J = 14 */
-(PID.TID 0000.0001)                 6.129895112114272E+04,      /* J = 15 */
+(PID.TID 0000.0001)                 6.129895112114271E+04,      /* J = 15 */
 (PID.TID 0000.0001)                 5.380097486983529E+04       /* J = 16 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dyG =  /* dyG(:,1,:,1) ( units: m ) */
@@ -2323,10 +2323,10 @@
 (PID.TID 0000.0001)    16 @  2.223898532891175E+05              /* J =  1: 16 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dxC =  /* dxC(:,1,:,1) ( units: m ) */
-(PID.TID 0000.0001)    20 @  1.516695152377177E+05              /* I =  1: 20 */
+(PID.TID 0000.0001)    20 @  1.516695152377178E+05              /* I =  1: 20 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dxC =  /* dxC(1,:,1,:) ( units: m ) */
-(PID.TID 0000.0001)                 1.516695152377177E+05,      /* J =  1 */
+(PID.TID 0000.0001)                 1.516695152377178E+05,      /* J =  1 */
 (PID.TID 0000.0001)                 1.459008712061998E+05,      /* J =  2 */
 (PID.TID 0000.0001)                 1.399544694374234E+05,      /* J =  3 */
 (PID.TID 0000.0001)                 1.338375547059709E+05,      /* J =  4 */
@@ -2335,10 +2335,10 @@
 (PID.TID 0000.0001)                 1.145392419175564E+05,      /* J =  7 */
 (PID.TID 0000.0001)                 1.078167403197357E+05,      /* J =  8 */
 (PID.TID 0000.0001)                 1.009628806317309E+05,      /* J =  9 */
-(PID.TID 0000.0001)                 9.398601322581599E+04,      /* J = 10 */
+(PID.TID 0000.0001)                 9.398601322581600E+04,      /* J = 10 */
 (PID.TID 0000.0001)                 8.689463834022089E+04,      /* J = 11 */
 (PID.TID 0000.0001)                 7.969739572290120E+04,      /* J = 12 */
-(PID.TID 0000.0001)                 7.240305410533582E+04,      /* J = 13 */
+(PID.TID 0000.0001)                 7.240305410533583E+04,      /* J = 13 */
 (PID.TID 0000.0001)                 6.502050051917860E+04,      /* J = 14 */
 (PID.TID 0000.0001)                 5.755872946877906E+04,      /* J = 15 */
 (PID.TID 0000.0001)                 5.002683197276441E+04       /* J = 16 */
@@ -2362,12 +2362,12 @@
 (PID.TID 0000.0001)                 1.178486674278995E+05,      /* J =  7 */
 (PID.TID 0000.0001)                 1.111949266445588E+05,      /* J =  8 */
 (PID.TID 0000.0001)                 1.044057119713670E+05,      /* J =  9 */
-(PID.TID 0000.0001)                 9.748929502060510E+04,      /* J = 10 */
+(PID.TID 0000.0001)                 9.748929502060512E+04,      /* J = 10 */
 (PID.TID 0000.0001)                 9.045410238093534E+04,      /* J = 11 */
-(PID.TID 0000.0001)                 8.330870535090074E+04,      /* J = 12 */
+(PID.TID 0000.0001)                 8.330870535090075E+04,      /* J = 12 */
 (PID.TID 0000.0001)                 7.606180949611843E+04,      /* J = 13 */
 (PID.TID 0000.0001)                 6.872224404288860E+04,      /* J = 14 */
-(PID.TID 0000.0001)                 6.129895112114272E+04,      /* J = 15 */
+(PID.TID 0000.0001)                 6.129895112114271E+04,      /* J = 15 */
 (PID.TID 0000.0001)                 5.380097486983529E+04       /* J = 16 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) dyU =  /* dyU(:,1,:,1) ( units: m ) */
@@ -2377,70 +2377,70 @@
 (PID.TID 0000.0001)    16 @  2.223898532891175E+05              /* J =  1: 16 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rA  =  /* rA (:,1,:,1) ( units: m^2 ) */
-(PID.TID 0000.0001)    20 @  3.372804882275622E+10              /* I =  1: 20 */
+(PID.TID 0000.0001)    20 @  3.372804882275630E+10              /* I =  1: 20 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rA  =  /* rA (1,:,1,:) ( units: m^2 ) */
-(PID.TID 0000.0001)                 3.372804882275622E+10,      /* J =  1 */
-(PID.TID 0000.0001)                 3.244522605358469E+10,      /* J =  2 */
-(PID.TID 0000.0001)                 3.112287377427107E+10,      /* J =  3 */
-(PID.TID 0000.0001)                 2.976260306737443E+10,      /* J =  4 */
-(PID.TID 0000.0001)                 2.836607121321791E+10,      /* J =  5 */
-(PID.TID 0000.0001)                 2.693497967074619E+10,      /* J =  6 */
-(PID.TID 0000.0001)                 2.547107200456126E+10,      /* J =  7 */
-(PID.TID 0000.0001)                 2.397613176065683E+10,      /* J =  8 */
-(PID.TID 0000.0001)                 2.245198029344202E+10,      /* J =  9 */
-(PID.TID 0000.0001)                 2.090047454670184E+10,      /* J = 10 */
-(PID.TID 0000.0001)                 1.932350479119799E+10,      /* J = 11 */
+(PID.TID 0000.0001)                 3.372804882275630E+10,      /* J =  1 */
+(PID.TID 0000.0001)                 3.244522605358471E+10,      /* J =  2 */
+(PID.TID 0000.0001)                 3.112287377427108E+10,      /* J =  3 */
+(PID.TID 0000.0001)                 2.976260306737437E+10,      /* J =  4 */
+(PID.TID 0000.0001)                 2.836607121321784E+10,      /* J =  5 */
+(PID.TID 0000.0001)                 2.693497967074614E+10,      /* J =  6 */
+(PID.TID 0000.0001)                 2.547107200456132E+10,      /* J =  7 */
+(PID.TID 0000.0001)                 2.397613176065682E+10,      /* J =  8 */
+(PID.TID 0000.0001)                 2.245198029344207E+10,      /* J =  9 */
+(PID.TID 0000.0001)                 2.090047454670177E+10,      /* J = 10 */
+(PID.TID 0000.0001)                 1.932350479119805E+10,      /* J = 11 */
 (PID.TID 0000.0001)                 1.772299232166360E+10,      /* J = 12 */
-(PID.TID 0000.0001)                 1.610088711600322E+10,      /* J = 13 */
-(PID.TID 0000.0001)                 1.445916545954347E+10,      /* J = 14 */
-(PID.TID 0000.0001)                 1.279982753723483E+10,      /* J = 15 */
-(PID.TID 0000.0001)                 1.112489499673431E+10       /* J = 16 */
+(PID.TID 0000.0001)                 1.610088711600326E+10,      /* J = 13 */
+(PID.TID 0000.0001)                 1.445916545954351E+10,      /* J = 14 */
+(PID.TID 0000.0001)                 1.279982753723478E+10,      /* J = 15 */
+(PID.TID 0000.0001)                 1.112489499673432E+10       /* J = 16 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rAw =  /* rAw(:,1,:,1) ( units: m^2 ) */
-(PID.TID 0000.0001)    20 @  3.372804882275622E+10              /* I =  1: 20 */
+(PID.TID 0000.0001)    20 @  3.372804882275630E+10              /* I =  1: 20 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rAw =  /* rAw(1,:,1,:) ( units: m^2 ) */
-(PID.TID 0000.0001)                 3.372804882275622E+10,      /* J =  1 */
-(PID.TID 0000.0001)                 3.244522605358469E+10,      /* J =  2 */
-(PID.TID 0000.0001)                 3.112287377427107E+10,      /* J =  3 */
-(PID.TID 0000.0001)                 2.976260306737443E+10,      /* J =  4 */
-(PID.TID 0000.0001)                 2.836607121321791E+10,      /* J =  5 */
-(PID.TID 0000.0001)                 2.693497967074619E+10,      /* J =  6 */
-(PID.TID 0000.0001)                 2.547107200456126E+10,      /* J =  7 */
-(PID.TID 0000.0001)                 2.397613176065683E+10,      /* J =  8 */
-(PID.TID 0000.0001)                 2.245198029344202E+10,      /* J =  9 */
-(PID.TID 0000.0001)                 2.090047454670184E+10,      /* J = 10 */
-(PID.TID 0000.0001)                 1.932350479119799E+10,      /* J = 11 */
+(PID.TID 0000.0001)                 3.372804882275630E+10,      /* J =  1 */
+(PID.TID 0000.0001)                 3.244522605358471E+10,      /* J =  2 */
+(PID.TID 0000.0001)                 3.112287377427108E+10,      /* J =  3 */
+(PID.TID 0000.0001)                 2.976260306737437E+10,      /* J =  4 */
+(PID.TID 0000.0001)                 2.836607121321784E+10,      /* J =  5 */
+(PID.TID 0000.0001)                 2.693497967074614E+10,      /* J =  6 */
+(PID.TID 0000.0001)                 2.547107200456132E+10,      /* J =  7 */
+(PID.TID 0000.0001)                 2.397613176065682E+10,      /* J =  8 */
+(PID.TID 0000.0001)                 2.245198029344207E+10,      /* J =  9 */
+(PID.TID 0000.0001)                 2.090047454670177E+10,      /* J = 10 */
+(PID.TID 0000.0001)                 1.932350479119805E+10,      /* J = 11 */
 (PID.TID 0000.0001)                 1.772299232166360E+10,      /* J = 12 */
-(PID.TID 0000.0001)                 1.610088711600322E+10,      /* J = 13 */
-(PID.TID 0000.0001)                 1.445916545954347E+10,      /* J = 14 */
-(PID.TID 0000.0001)                 1.279982753723483E+10,      /* J = 15 */
-(PID.TID 0000.0001)                 1.112489499673431E+10       /* J = 16 */
+(PID.TID 0000.0001)                 1.610088711600326E+10,      /* J = 13 */
+(PID.TID 0000.0001)                 1.445916545954351E+10,      /* J = 14 */
+(PID.TID 0000.0001)                 1.279982753723478E+10,      /* J = 15 */
+(PID.TID 0000.0001)                 1.112489499673432E+10       /* J = 16 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rAs =  /* rAs(:,1,:,1) ( units: m^2 ) */
-(PID.TID 0000.0001)    20 @  3.435414629417912E+10              /* I =  1: 20 */
+(PID.TID 0000.0001)    20 @  3.435414629417918E+10              /* I =  1: 20 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rAs =  /* rAs(1,:,1,:) ( units: m^2 ) */
-(PID.TID 0000.0001)                 3.435414629417912E+10,      /* J =  1 */
-(PID.TID 0000.0001)                 3.309167746093092E+10,      /* J =  2 */
-(PID.TID 0000.0001)                 3.178889151607879E+10,      /* J =  3 */
-(PID.TID 0000.0001)                 3.044737570361750E+10,      /* J =  4 */
-(PID.TID 0000.0001)                 2.906876445392023E+10,      /* J =  5 */
-(PID.TID 0000.0001)                 2.765473739243565E+10,      /* J =  6 */
+(PID.TID 0000.0001)                 3.435414629417918E+10,      /* J =  1 */
+(PID.TID 0000.0001)                 3.309167746093097E+10,      /* J =  2 */
+(PID.TID 0000.0001)                 3.178889151607872E+10,      /* J =  3 */
+(PID.TID 0000.0001)                 3.044737570361747E+10,      /* J =  4 */
+(PID.TID 0000.0001)                 2.906876445392020E+10,      /* J =  5 */
+(PID.TID 0000.0001)                 2.765473739243563E+10,      /* J =  6 */
 (PID.TID 0000.0001)                 2.620701729332415E+10,      /* J =  7 */
 (PID.TID 0000.0001)                 2.472736798052209E+10,      /* J =  8 */
-(PID.TID 0000.0001)                 2.321759217879510E+10,      /* J =  9 */
-(PID.TID 0000.0001)                 2.167952931739408E+10,      /* J = 10 */
-(PID.TID 0000.0001)                 2.011505328899535E+10,      /* J = 11 */
-(PID.TID 0000.0001)                 1.852607016665023E+10,      /* J = 12 */
-(PID.TID 0000.0001)                 1.691451588152949E+10,      /* J = 13 */
-(PID.TID 0000.0001)                 1.528235386428856E+10,      /* J = 14 */
-(PID.TID 0000.0001)                 1.363157265293021E+10,      /* J = 15 */
-(PID.TID 0000.0001)                 1.196418347007695E+10       /* J = 16 */
+(PID.TID 0000.0001)                 2.321759217879512E+10,      /* J =  9 */
+(PID.TID 0000.0001)                 2.167952931739416E+10,      /* J = 10 */
+(PID.TID 0000.0001)                 2.011505328899539E+10,      /* J = 11 */
+(PID.TID 0000.0001)                 1.852607016665020E+10,      /* J = 12 */
+(PID.TID 0000.0001)                 1.691451588152944E+10,      /* J = 13 */
+(PID.TID 0000.0001)                 1.528235386428863E+10,      /* J = 14 */
+(PID.TID 0000.0001)                 1.363157265293026E+10,      /* J = 15 */
+(PID.TID 0000.0001)                 1.196418347007692E+10       /* J = 16 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) globalArea = /* Integrated horizontal Area (m^2) */
-(PID.TID 0000.0001)                 3.562528105304878E+12
+(PID.TID 0000.0001)                 3.562528105304875E+12
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End of Model config. summary
@@ -2736,7 +2736,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sst_del2             =   1.1308799763521E-01
 (PID.TID 0000.0001) %MON dynstat_sss_max              =   3.4873661041260E+01
 (PID.TID 0000.0001) %MON dynstat_sss_min              =   3.0128698348999E+01
-(PID.TID 0000.0001) %MON dynstat_sss_mean             =   3.3155723399319E+01
+(PID.TID 0000.0001) %MON dynstat_sss_mean             =   3.3155723399320E+01
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   8.9005807240804E-02
 (PID.TID 0000.0001) %MON extforcing_qnet_max          =   0.0000000000000E+00
@@ -2775,7 +2775,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_a_mean                  =   1.2140910166234E-04
-(PID.TID 0000.0001) %MON vort_a_sd                    =   1.1264762399732E-05
+(PID.TID 0000.0001) %MON vort_a_sd                    =   1.1264762399733E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.6969826250415E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0565288268109E-04
 (PID.TID 0000.0001) %MON surfExpan_theta_mean         =   0.0000000000000E+00
@@ -2811,13 +2811,13 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.0000000000000E+00
@@ -2831,7 +2831,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
@@ -2948,11 +2948,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_climsss_mean             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_sd               =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON scg2d_init_res_max           =   7.3111020636161E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_min           =   1.0991726570245E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_mean          =   2.7655955077737E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_sd            =   1.5872019352493E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_del2          =   1.9324680413847E+01
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   7.3111020636161E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0991726570245E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   2.7655955077737E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   1.5872019352493E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   1.9324680413847E+01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   7.3111020636161E+02
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0991726570245E+02
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.7655955077737E+02
@@ -3020,7 +3020,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_sst_del2             =   1.1308799763521E-01
 (PID.TID 0000.0001) %MON dynstat_sss_max              =   3.4873661041260E+01
 (PID.TID 0000.0001) %MON dynstat_sss_min              =   3.0128698348999E+01
-(PID.TID 0000.0001) %MON dynstat_sss_mean             =   3.3155723399319E+01
+(PID.TID 0000.0001) %MON dynstat_sss_mean             =   3.3155723399320E+01
 (PID.TID 0000.0001) %MON dynstat_sss_sd               =   1.1868027611543E+00
 (PID.TID 0000.0001) %MON dynstat_sss_del2             =   8.9005807240804E-02
 (PID.TID 0000.0001) %MON extforcing_qnet_max          =   8.7865564785128E+04
@@ -3037,10 +3037,10 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON extforcing_empmr_min         =  -1.8416146328534E-05
 (PID.TID 0000.0001) %MON extforcing_empmr_mean        =  -7.5086298428610E-06
 (PID.TID 0000.0001) %MON extforcing_empmr_sd          =   8.8701045403057E-06
-(PID.TID 0000.0001) %MON extforcing_empmr_del2        =   5.7320979779832E-07
+(PID.TID 0000.0001) %MON extforcing_empmr_del2        =   5.7320979779833E-07
 (PID.TID 0000.0001) %MON extforcing_fu_max            =   6.3569768663143E-02
 (PID.TID 0000.0001) %MON extforcing_fu_min            =  -8.9824433077140E-02
-(PID.TID 0000.0001) %MON extforcing_fu_mean           =   2.3842868112415E-02
+(PID.TID 0000.0001) %MON extforcing_fu_mean           =   2.3842868112416E-02
 (PID.TID 0000.0001) %MON extforcing_fu_sd             =   2.6345767368776E-02
 (PID.TID 0000.0001) %MON extforcing_fu_del2           =   2.8845163759028E-03
 (PID.TID 0000.0001) %MON extforcing_fv_max            =   3.9826261227868E-02
@@ -3059,7 +3059,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_a_mean                  =   1.2140910166234E-04
-(PID.TID 0000.0001) %MON vort_a_sd                    =   1.1264762399732E-05
+(PID.TID 0000.0001) %MON vort_a_sd                    =   1.1264762399733E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =   1.6969826250415E-04
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0565288268109E-04
 (PID.TID 0000.0001) %MON surfExpan_theta_mean         =   0.0000000000000E+00
@@ -3084,9 +3084,9 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_vice_del2             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252553362055E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176718567049E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397791129979E-02
+(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252553362105E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176718567033E-01
+(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397791129195E-02
 (PID.TID 0000.0001) %MON seaice_heff_max              =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_heff_mean             =   1.4898374478941E-01
@@ -3097,16 +3097,16 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   1.1848466011858E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_sd              =   9.6623192210455E-02
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   6.2681174443294E-03
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   6.3252553362055E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   4.5176718567049E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   4.7397791129979E-02
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   6.3252553362105E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   4.5176718567033E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   4.7397791129195E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252553362055E-01
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176718567049E-01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397791129979E-02
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252553362105E-01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176718567033E-01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397791129195E-02
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.4898374478941E-01
@@ -3121,17 +3121,17 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  1  9.99999975E-06  0.  0.
- ph-ice C  1  1.13635359E+10
+ ph-ice C  1  1.13635621E+10
  ph-ice B  2  9.99999975E-06  0.  0.
- ph-ice C  2  1.14442852E+10
+ ph-ice C  2  1.14443604E+10
  ph-ice B  3  9.99999975E-06  0.  0.
- ph-ice C  3  1.15382137E+10
+ ph-ice C  3  1.15384387E+10
  ph-ice B  4  9.99999975E-06  0.  0.
- ph-ice C  4  1.16321749E+10
+ ph-ice C  4  1.16325391E+10
  ph-ice B  5  9.99999975E-06  0.  0.
- ph-ice C  5  1.1726176E+10
+ ph-ice C  5  1.17267093E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.18202695E+10
+ ph-ice C  6  1.18209007E+10
  Computing Diagnostic # 115  EXFtaux      Counter:      -1   Parms: SU      U1      
  Computing Diagnostic # 116  EXFtauy      Counter:      -1   Parms: SV      U1      
  Computing Diagnostic # 114  EXFqnet      Counter:      -1   Parms: SM      U1      
@@ -3144,25 +3144,25 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic # 118  EXFvwind     Counter:      -1   Parms: SM      U1      
  Computing Diagnostic # 120  EXFatemp     Counter:      -1   Parms: SM      U1      
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.19144097E+10
+ ph-ice C  7  1.19151748E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.20085449E+10
+ ph-ice C  8  1.20094748E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.21027584E+10
+ ph-ice C  9  1.21037677E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.2197056E+10
+ ph-ice C  10  1.21981464E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.22913226E+10
+ ph-ice C  11  1.22926118E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.23856393E+10
+ ph-ice C  12  1.23870963E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.24800181E+10
+ ph-ice C  13  1.24816394E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.25744405E+10
+ ph-ice C  14  1.25762165E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.26689323E+10
+ ph-ice C  15  1.26708213E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.27634604E+10
+ ph-ice C  16  1.27655066E+10
  Computing Diagnostic # 115  EXFtaux      Counter:      -1   Parms: SU      U1      
  Computing Diagnostic # 116  EXFtauy      Counter:      -1   Parms: SV      U1      
  Computing Diagnostic # 114  EXFqnet      Counter:      -1   Parms: SM      U1      
@@ -3175,25 +3175,25 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic # 118  EXFvwind     Counter:      -1   Parms: SM      U1      
  Computing Diagnostic # 120  EXFatemp     Counter:      -1   Parms: SM      U1      
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.28579962E+10
+ ph-ice C  17  1.28602655E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.29526808E+10
+ ph-ice C  18  1.29550567E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.30473694E+10
+ ph-ice C  19  1.30499084E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.3142102E+10
+ ph-ice C  20  1.31447815E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.32368385E+10
+ ph-ice C  21  1.32397016E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.33316485E+10
+ ph-ice C  22  1.33347108E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.34265428E+10
+ ph-ice C  23  1.34297746E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.35214445E+10
+ ph-ice C  24  1.35248908E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.36164032E+10
+ ph-ice C  25  1.36200312E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.37114397E+10
+ ph-ice C  26  1.37151699E+10
  Computing Diagnostic # 115  EXFtaux      Counter:      -1   Parms: SU      U1      
  Computing Diagnostic # 116  EXFtauy      Counter:      -1   Parms: SV      U1      
  Computing Diagnostic # 114  EXFqnet      Counter:      -1   Parms: SM      U1      
@@ -3206,25 +3206,25 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic # 118  EXFvwind     Counter:      -1   Parms: SM      U1      
  Computing Diagnostic # 120  EXFatemp     Counter:      -1   Parms: SM      U1      
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.38064533E+10
+ ph-ice C  27  1.38104163E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.39015005E+10
+ ph-ice C  28  1.39056629E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.3996691E+10
+ ph-ice C  29  1.40009958E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.40918868E+10
+ ph-ice C  30  1.40963441E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.41871243E+10
+ ph-ice C  31  1.41916881E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.42824254E+10
+ ph-ice C  32  1.42871916E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.43776738E+10
+ ph-ice C  33  1.43826846E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.44730463E+10
+ ph-ice C  34  1.44782793E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.45685023E+10
+ ph-ice C  35  1.45738489E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.46639876E+10
+ ph-ice C  36  1.46694854E+10
  Computing Diagnostic # 115  EXFtaux      Counter:      -1   Parms: SU      U1      
  Computing Diagnostic # 116  EXFtauy      Counter:      -1   Parms: SV      U1      
  Computing Diagnostic # 114  EXFqnet      Counter:      -1   Parms: SM      U1      
@@ -3237,25 +3237,25 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic # 118  EXFvwind     Counter:      -1   Parms: SM      U1      
  Computing Diagnostic # 120  EXFatemp     Counter:      -1   Parms: SM      U1      
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.4759416E+10
+ ph-ice C  37  1.47652273E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.485497E+10
+ ph-ice C  38  1.48608986E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.4950558E+10
+ ph-ice C  39  1.49566477E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.50461877E+10
+ ph-ice C  40  1.50525E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.51418223E+10
+ ph-ice C  41  1.51483495E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.52375851E+10
+ ph-ice C  42  1.52442543E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.53333721E+10
+ ph-ice C  43  1.5340227E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.54291938E+10
+ ph-ice C  44  1.5436203E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.55251483E+10
+ ph-ice C  45  1.55322655E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.5621087E+10
+ ph-ice C  46  1.56283761E+10
  Computing Diagnostic # 115  EXFtaux      Counter:      -1   Parms: SU      U1      
  Computing Diagnostic # 116  EXFtauy      Counter:      -1   Parms: SV      U1      
  Computing Diagnostic # 114  EXFqnet      Counter:      -1   Parms: SM      U1      
@@ -3268,8 +3268,8 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  Computing Diagnostic # 118  EXFvwind     Counter:      -1   Parms: SM      U1      
  Computing Diagnostic # 120  EXFatemp     Counter:      -1   Parms: SM      U1      
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.57170015E+10
- --> f_ice     = 0.157170015221499E+11
+ ph-ice C  47  1.57245292E+10
+ --> f_ice     = 0.157245292371748E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_temp    = 0.000000000000000E+00
  --> f_salt    = 0.000000000000000E+00
@@ -3347,7 +3347,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  --> f_hfluxmm2           = 0.000000000000000E+00
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.157170015221499E+11
+ --> fc               = 0.157245292371748E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3365,90 +3365,90 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_vice_del2             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   6.1384617176886E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   4.2957586109021E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   3.4011263504695E-02
-(PID.TID 0000.0001) %MON seaice_heff_max              =   4.8917256332199E-03
+(PID.TID 0000.0001) %MON seaice_area_mean             =   6.1385218138226E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.2956968178268E-01
+(PID.TID 0000.0001) %MON seaice_area_del2             =   3.4009223111017E-02
+(PID.TID 0000.0001) %MON seaice_heff_max              =   4.8917710558251E-03
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.2923188138788E-03
-(PID.TID 0000.0001) %MON seaice_heff_sd               =   1.4314609695914E-03
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   1.6548065830911E-04
-(PID.TID 0000.0001) %MON seaice_hsnow_max             =   3.7454738136401E-20
+(PID.TID 0000.0001) %MON seaice_heff_mean             =   1.2955340625742E-03
+(PID.TID 0000.0001) %MON seaice_heff_sd               =   1.4311186134145E-03
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   1.6569749451705E-04
+(PID.TID 0000.0001) %MON seaice_hsnow_max             =   2.1684043449710E-19
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_hsnow_mean            =   3.8568446493219E-21
-(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   7.7781484196837E-21
-(PID.TID 0000.0001) %MON seaice_hsnow_del2            =   3.7841514004487E-21
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   6.1384617176886E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   4.2957586109021E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   3.4011263504695E-02
+(PID.TID 0000.0001) %MON seaice_hsnow_mean            =   4.5090283089376E-21
+(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   2.0197890257439E-20
+(PID.TID 0000.0001) %MON seaice_hsnow_del2            =   5.9828760507729E-21
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   6.1385218138226E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   4.2956968178268E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   3.4009223111017E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.1384617176886E-01
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.2957586109021E-01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   3.4011263504695E-02
-(PID.TID 0000.0001) %MON dynstat_salt_max             =   4.8917256332199E-03
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.1385218138226E-01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.2956968178268E-01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   3.4009223111017E-02
+(PID.TID 0000.0001) %MON dynstat_salt_max             =   4.8917710558251E-03
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.2923188138788E-03
-(PID.TID 0000.0001) %MON dynstat_salt_sd              =   1.4314609695914E-03
-(PID.TID 0000.0001) %MON dynstat_salt_del2            =   1.6548065830911E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   3.7454738136401E-20
+(PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.2955340625742E-03
+(PID.TID 0000.0001) %MON dynstat_salt_sd              =   1.4311186134145E-03
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   1.6569749451705E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.1684043449710E-19
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   3.8568446493219E-21
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   7.7781484196837E-21
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   3.7841514004487E-21
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   4.5090283089376E-21
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.0197890257439E-20
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   5.9828760507729E-21
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.35214445E+10
+ ph-ice C  24  1.35248908E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.36164032E+10
+ ph-ice C  25  1.36200312E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.37114397E+10
+ ph-ice C  26  1.37151699E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.38064533E+10
+ ph-ice C  27  1.38104163E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.39015005E+10
+ ph-ice C  28  1.39056666E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.3996691E+10
+ ph-ice C  29  1.40009995E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.40918868E+10
+ ph-ice C  30  1.40963478E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.41871257E+10
+ ph-ice C  31  1.41916918E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.42824254E+10
+ ph-ice C  32  1.42871953E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.43776737E+10
+ ph-ice C  33  1.43826845E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.44730477E+10
+ ph-ice C  34  1.44782792E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.45685037E+10
+ ph-ice C  35  1.45738543E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.46639906E+10
+ ph-ice C  36  1.46694908E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.47594192E+10
+ ph-ice C  37  1.47652327E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.48549698E+10
+ ph-ice C  38  1.4860904E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.49505581E+10
+ ph-ice C  39  1.49566531E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.50461873E+10
+ ph-ice C  40  1.50525093E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.51418221E+10
+ ph-ice C  41  1.51483588E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.52375886E+10
+ ph-ice C  42  1.52442723E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.53333738E+10
+ ph-ice C  43  1.53402449E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.54291943E+10
+ ph-ice C  44  1.5436221E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.55251543E+10
+ ph-ice C  45  1.55322835E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.56210846E+10
+ ph-ice C  46  1.56283922E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.57170092E+10
+ ph-ice C  47  1.57245434E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -3480,9 +3480,9 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_vice_del2             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252553362055E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176718567049E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397791129979E-02
+(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252553362105E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176718567033E-01
+(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397791129195E-02
 (PID.TID 0000.0001) %MON seaice_heff_max              =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_heff_mean             =   1.4898374478941E-01
@@ -3493,16 +3493,16 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   1.1848466011858E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_sd              =   9.6623192210455E-02
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   6.2681174443294E-03
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   6.3252553362055E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   4.5176718567049E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   4.7397791129979E-02
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   6.3252553362105E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   4.5176718567033E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   4.7397791129195E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252553362055E-01
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176718567049E-01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397791129979E-02
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252553362105E-01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176718567033E-01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397791129195E-02
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.4898374478941E-01
@@ -3517,51 +3517,51 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  1  9.99999975E-06  0.  0.
- ph-ice C  1  1.13635359E+10
+ ph-ice C  1  1.13635621E+10
  ph-ice B  2  9.99999975E-06  0.  0.
- ph-ice C  2  1.14442852E+10
+ ph-ice C  2  1.14443604E+10
  ph-ice B  3  9.99999975E-06  0.  0.
- ph-ice C  3  1.15382137E+10
+ ph-ice C  3  1.15384387E+10
  ph-ice B  4  9.99999975E-06  0.  0.
- ph-ice C  4  1.16321747E+10
+ ph-ice C  4  1.16325391E+10
  ph-ice B  5  9.99999975E-06  0.  0.
- ph-ice C  5  1.17261748E+10
+ ph-ice C  5  1.17267093E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.18202682E+10
+ ph-ice C  6  1.18209007E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.19144081E+10
+ ph-ice C  7  1.19151748E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.20085443E+10
+ ph-ice C  8  1.20094748E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.21027583E+10
+ ph-ice C  9  1.21037657E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.21970565E+10
+ ph-ice C  10  1.21981443E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.22913244E+10
+ ph-ice C  11  1.22926136E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.23856496E+10
+ ph-ice C  12  1.23870973E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.24800189E+10
+ ph-ice C  13  1.24816405E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.25744404E+10
+ ph-ice C  14  1.2576217E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.26689391E+10
+ ph-ice C  15  1.26708158E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.27634768E+10
+ ph-ice C  16  1.27655062E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.28580194E+10
+ ph-ice C  17  1.28602638E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.29526944E+10
+ ph-ice C  18  1.29550539E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.30473905E+10
+ ph-ice C  19  1.30499079E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.31421241E+10
+ ph-ice C  20  1.31447823E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.32368516E+10
+ ph-ice C  21  1.32397037E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.3331655E+10
+ ph-ice C  22  1.33347129E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.34265364E+10
+ ph-ice C  23  1.34297752E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -3674,11 +3674,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_climsss_mean             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_sd               =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON scg2d_init_res_max           =   7.3111020636161E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_min           =   1.0991726570245E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_mean          =   2.7655955077737E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_sd            =   1.5872019352493E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_del2          =   1.9324680413847E+01
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   7.3111020636161E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0991726570245E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   2.7655955077737E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   1.5872019352493E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   1.9324680413847E+01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   7.3111020636161E+02
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0991726570245E+02
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.7655955077737E+02
@@ -3730,13 +3730,13 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.0000000000000E+00
@@ -3750,7 +3750,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
@@ -3780,7 +3780,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_atemp.0000000000.001.001.data
  ph-check entering grdchk_main 
- ph-check fcref =   1.57170015E+10
+ ph-check fcref =   1.57245292E+10
  grad-res -------------------------------
  grad-res  proc    #    i    j    k   bi   bj iobc               fc ref           fc + eps           fc - eps
  grad-res  proc    #    i    j    k   bi   bj iobc             adj grad            fd grad         1 - fd/adj
@@ -3979,13 +3979,13 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.0000000000000E+00
@@ -3999,7 +3999,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
@@ -4116,11 +4116,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_climsss_mean             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_sd               =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON scg2d_init_res_max           =   7.3111020636161E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_min           =   1.0991726570245E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_mean          =   2.7655954049055E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_sd            =   1.5872019498113E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_del2          =   1.9324673170204E+01
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   7.3111020636161E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0991726570245E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   2.7655954049055E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   1.5872019498113E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   1.9324673170204E+01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   7.3111020636161E+02
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0991726570245E+02
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.7655954049055E+02
@@ -4163,9 +4163,9 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_vice_del2             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252548407115E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176720645239E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397808575511E-02
+(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252548407171E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176720645220E-01
+(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397808574704E-02
 (PID.TID 0000.0001) %MON seaice_heff_max              =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_heff_mean             =   1.4898374478446E-01
@@ -4176,16 +4176,16 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   1.1848466011858E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_sd              =   9.6623192210455E-02
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   6.2681174443294E-03
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   6.3252548407115E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   4.5176720645239E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   4.7397808575511E-02
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   6.3252548407171E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   4.5176720645220E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   4.7397808574704E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252548407115E-01
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176720645239E-01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397808575511E-02
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252548407171E-01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176720645220E-01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397808574704E-02
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.4898374478446E-01
@@ -4200,100 +4200,100 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  1  9.99999975E-06  0.  0.
- ph-ice C  1  1.13635359E+10
+ ph-ice C  1  1.13635621E+10
  ph-ice B  2  9.99999975E-06  0.  0.
- ph-ice C  2  1.14442977E+10
+ ph-ice C  2  1.14443729E+10
  ph-ice B  3  9.99999975E-06  0.  0.
- ph-ice C  3  1.15382112E+10
+ ph-ice C  3  1.15384512E+10
  ph-ice B  4  9.99999975E-06  0.  0.
- ph-ice C  4  1.16321555E+10
+ ph-ice C  4  1.16324926E+10
  ph-ice B  5  9.99999975E-06  0.  0.
- ph-ice C  5  1.17261589E+10
+ ph-ice C  5  1.17266726E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.18202055E+10
+ ph-ice C  6  1.18208665E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.19143752E+10
+ ph-ice C  7  1.19151222E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.20084765E+10
+ ph-ice C  8  1.20094353E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.21026416E+10
+ ph-ice C  9  1.21037581E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.21969114E+10
+ ph-ice C  10  1.21981585E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.22911774E+10
+ ph-ice C  11  1.22926245E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.23855031E+10
+ ph-ice C  12  1.23870939E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.24799274E+10
+ ph-ice C  13  1.24816352E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.25743241E+10
+ ph-ice C  14  1.25762194E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.2668842E+10
+ ph-ice C  15  1.26708238E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.27633949E+10
+ ph-ice C  16  1.27655091E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.28579177E+10
+ ph-ice C  17  1.28602435E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.2952622E+10
+ ph-ice C  18  1.29550352E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.3047243E+10
+ ph-ice C  19  1.30498837E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.31419694E+10
+ ph-ice C  20  1.31447329E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.32367164E+10
+ ph-ice C  21  1.32396851E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.33314878E+10
+ ph-ice C  22  1.33347033E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.34264013E+10
+ ph-ice C  23  1.34297512E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.35212883E+10
+ ph-ice C  24  1.35248454E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.36162415E+10
+ ph-ice C  25  1.36199393E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.37112915E+10
+ ph-ice C  26  1.37151E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.38063163E+10
+ ph-ice C  27  1.38103372E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.39013783E+10
+ ph-ice C  28  1.3905578E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.39965016E+10
+ ph-ice C  29  1.40008825E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.40917125E+10
+ ph-ice C  30  1.40962388E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.41869809E+10
+ ph-ice C  31  1.41916237E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.42823121E+10
+ ph-ice C  32  1.42871272E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.43775648E+10
+ ph-ice C  33  1.43826045E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.44729836E+10
+ ph-ice C  34  1.4478159E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.45684727E+10
+ ph-ice C  35  1.4573702E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.46639425E+10
+ ph-ice C  36  1.46692973E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.47593933E+10
+ ph-ice C  37  1.47650215E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.4854981E+10
+ ph-ice C  38  1.48607114E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.49505538E+10
+ ph-ice C  39  1.49564919E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.50462136E+10
+ ph-ice C  40  1.50523077E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.51418766E+10
+ ph-ice C  41  1.51481492E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.52376248E+10
+ ph-ice C  42  1.52440691E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.53334412E+10
+ ph-ice C  43  1.53400561E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.54293127E+10
+ ph-ice C  44  1.54360382E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.55252759E+10
+ ph-ice C  45  1.55321406E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.56212473E+10
+ ph-ice C  46  1.56282136E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.57171922E+10
- --> f_ice     = 0.157171921593481E+11
+ ph-ice C  47  1.57243509E+10
+ --> f_ice     = 0.157243509462945E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_temp    = 0.000000000000000E+00
  --> f_salt    = 0.000000000000000E+00
@@ -4371,10 +4371,10 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  --> f_hfluxmm2           = 0.000000000000000E+00
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.157171921593481E+11
- ph-check fcpertplus =   1.57171922E+10
+ --> fc               = 0.157243509462945E+11
+ ph-check fcpertplus =   1.57243509E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
- ph-check fcpertminus =   1.57170015E+10
+ ph-check fcpertminus =   1.57245292E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
@@ -4568,13 +4568,13 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.0000000000000E+00
@@ -4588,7 +4588,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
@@ -4705,11 +4705,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_climsss_mean             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_sd               =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON scg2d_init_res_max           =   7.3111020636161E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_min           =   1.0991726570245E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_mean          =   2.7655956106420E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_sd            =   1.5872019206880E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_del2          =   1.9324687657497E+01
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   7.3111020636161E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0991726570245E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   2.7655956106420E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   1.5872019206880E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   1.9324687657497E+01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   7.3111020636161E+02
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0991726570245E+02
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.7655956106420E+02
@@ -4752,9 +4752,9 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_vice_del2             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252558317000E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176716488915E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397773684431E-02
+(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252558317044E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176716488900E-01
+(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397773683665E-02
 (PID.TID 0000.0001) %MON seaice_heff_max              =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_heff_mean             =   1.4898374479437E-01
@@ -4765,16 +4765,16 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   1.1848466011858E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_sd              =   9.6623192210455E-02
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   6.2681174443294E-03
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   6.3252558317000E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   4.5176716488915E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   4.7397773684431E-02
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   6.3252558317044E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   4.5176716488900E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   4.7397773683665E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252558317000E-01
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176716488915E-01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397773684431E-02
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252558317044E-01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176716488900E-01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397773683665E-02
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.4898374479437E-01
@@ -4789,100 +4789,100 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  1  9.99999975E-06  0.  0.
- ph-ice C  1  1.13635359E+10
+ ph-ice C  1  1.13635622E+10
  ph-ice B  2  9.99999975E-06  0.  0.
- ph-ice C  2  1.14442977E+10
+ ph-ice C  2  1.1444373E+10
  ph-ice B  3  9.99999975E-06  0.  0.
- ph-ice C  3  1.15382194E+10
+ ph-ice C  3  1.15384277E+10
  ph-ice B  4  9.99999975E-06  0.  0.
- ph-ice C  4  1.16321613E+10
+ ph-ice C  4  1.16325046E+10
  ph-ice B  5  9.99999975E-06  0.  0.
- ph-ice C  5  1.17261023E+10
+ ph-ice C  5  1.17266509E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.18201619E+10
+ ph-ice C  6  1.18208651E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.19142548E+10
+ ph-ice C  7  1.19151259E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.20084165E+10
+ ph-ice C  8  1.20094238E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.21025971E+10
+ ph-ice C  9  1.21037058E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.21968752E+10
+ ph-ice C  10  1.21980726E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.22912207E+10
+ ph-ice C  11  1.22925471E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.23855912E+10
+ ph-ice C  12  1.23870563E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.24799824E+10
+ ph-ice C  13  1.24816284E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.25744199E+10
+ ph-ice C  14  1.25761808E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.26689363E+10
+ ph-ice C  15  1.26708075E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.27634417E+10
+ ph-ice C  16  1.27654922E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.28579882E+10
+ ph-ice C  17  1.28602517E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.29526768E+10
+ ph-ice C  18  1.29550573E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.30473506E+10
+ ph-ice C  19  1.30499267E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.31420473E+10
+ ph-ice C  20  1.31447927E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.32368263E+10
+ ph-ice C  21  1.32397128E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.33316325E+10
+ ph-ice C  22  1.33347174E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.34265538E+10
+ ph-ice C  23  1.34297287E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.35214463E+10
+ ph-ice C  24  1.35248448E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.36163932E+10
+ ph-ice C  25  1.36199579E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.37114232E+10
+ ph-ice C  26  1.3715071E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.38064599E+10
+ ph-ice C  27  1.38103308E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.39015331E+10
+ ph-ice C  28  1.39055672E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.39967188E+10
+ ph-ice C  29  1.40009015E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.40918858E+10
+ ph-ice C  30  1.40962427E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.41871611E+10
+ ph-ice C  31  1.41916356E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.42824465E+10
+ ph-ice C  32  1.42871165E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.43777012E+10
+ ph-ice C  33  1.43825825E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.44730417E+10
+ ph-ice C  34  1.44781772E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.4568452E+10
+ ph-ice C  35  1.45737556E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.46639237E+10
+ ph-ice C  36  1.46693672E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.47593731E+10
+ ph-ice C  37  1.47651067E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.48549305E+10
+ ph-ice C  38  1.48607673E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.49505603E+10
+ ph-ice C  39  1.49565521E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.50461697E+10
+ ph-ice C  40  1.50523725E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.514181E+10
+ ph-ice C  41  1.51482355E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.52376045E+10
+ ph-ice C  42  1.52441527E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.53333972E+10
+ ph-ice C  43  1.53401494E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.54292647E+10
+ ph-ice C  44  1.54361637E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.55252338E+10
+ ph-ice C  45  1.55322406E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.56212157E+10
+ ph-ice C  46  1.56283593E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.57171822E+10
- --> f_ice     = 0.157171822170846E+11
+ ph-ice C  47  1.57244804E+10
+ --> f_ice     = 0.157244803731853E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_temp    = 0.000000000000000E+00
  --> f_salt    = 0.000000000000000E+00
@@ -4960,12 +4960,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  --> f_hfluxmm2           = 0.000000000000000E+00
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.157171822170846E+11
+ --> fc               = 0.157244803731853E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
  grad-res -------------------------------
- grad-res     0    1    9    1    1    1    1    1   0.157170015221E+11 0.157171921593E+11 0.157171822171E+11
- grad-res     0    1    1    1  150    1    1    1   -.230442193051E+07 0.497113173389E+08 0.225721420981E+02
-(PID.TID 0000.0001)       precision_grdchk_result ADM     1.57170015221499E+10    -2.30442193050871E+06
+ grad-res     0    1    9    1    1    1    1    1   0.157245292372E+11 0.157243509463E+11 0.157244803732E+11
+ grad-res     0    1    1    1  150    1    1    1   -.232729430733E+07 -.647134454088E+09 -.277063007351E+03
+(PID.TID 0000.0001)       precision_grdchk_result ADM     1.57245292371748E+10    -2.32729430733352E+06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  1, ichknum =  1
  ph-grd -->hit<--  10 1 1 1
@@ -5163,13 +5163,13 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.0000000000000E+00
@@ -5183,7 +5183,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
@@ -5300,11 +5300,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_climsss_mean             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_sd               =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON scg2d_init_res_max           =   7.3111020636161E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_min           =   1.0991726570245E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_mean          =   2.7655954109120E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_sd            =   1.5872019835709E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_del2          =   1.9324687234531E+01
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   7.3111020636161E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0991726570245E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   2.7655954109120E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   1.5872019835709E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   1.9324687234531E+01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   7.3111020636161E+02
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0991726570245E+02
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.7655954109120E+02
@@ -5347,9 +5347,9 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_vice_del2             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252548657851E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176722735296E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397807692709E-02
+(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252548657824E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176722735349E-01
+(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397807692198E-02
 (PID.TID 0000.0001) %MON seaice_heff_max              =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_heff_mean             =   1.4898374478471E-01
@@ -5360,16 +5360,16 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   1.1848466011858E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_sd              =   9.6623192210455E-02
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   6.2681174443294E-03
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   6.3252548657851E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   4.5176722735296E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   4.7397807692709E-02
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   6.3252548657824E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   4.5176722735349E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   4.7397807692198E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252548657851E-01
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176722735296E-01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397807692709E-02
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252548657824E-01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176722735349E-01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397807692198E-02
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.4898374478471E-01
@@ -5384,100 +5384,100 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  1  9.99999975E-06  0.  0.
- ph-ice C  1  1.13635359E+10
+ ph-ice C  1  1.13635621E+10
  ph-ice B  2  9.99999975E-06  0.  0.
- ph-ice C  2  1.14442912E+10
+ ph-ice C  2  1.14443604E+10
  ph-ice B  3  9.99999975E-06  0.  0.
- ph-ice C  3  1.15382145E+10
+ ph-ice C  3  1.15384091E+10
  ph-ice B  4  9.99999975E-06  0.  0.
- ph-ice C  4  1.16321296E+10
+ ph-ice C  4  1.16324872E+10
  ph-ice B  5  9.99999975E-06  0.  0.
- ph-ice C  5  1.17261041E+10
+ ph-ice C  5  1.17266342E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.18201646E+10
+ ph-ice C  6  1.18208256E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.19143132E+10
+ ph-ice C  7  1.19150706E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.20084412E+10
+ ph-ice C  8  1.20093833E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.2102612E+10
+ ph-ice C  9  1.21036505E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.2196878E+10
+ ph-ice C  10  1.21980131E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.22911758E+10
+ ph-ice C  11  1.22924876E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.23855196E+10
+ ph-ice C  12  1.23869504E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.24799418E+10
+ ph-ice C  13  1.24815174E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.2574318E+10
+ ph-ice C  14  1.25760726E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.26687975E+10
+ ph-ice C  15  1.26706994E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.27633211E+10
+ ph-ice C  16  1.2765378E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.28578981E+10
+ ph-ice C  17  1.28601437E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.29525868E+10
+ ph-ice C  18  1.29549185E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.30472462E+10
+ ph-ice C  19  1.30497801E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.31419942E+10
+ ph-ice C  20  1.31446193E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.32367532E+10
+ ph-ice C  21  1.32395701E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.33315044E+10
+ ph-ice C  22  1.33345935E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.34264412E+10
+ ph-ice C  23  1.34296293E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.35213218E+10
+ ph-ice C  24  1.35246942E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.36163125E+10
+ ph-ice C  25  1.36198312E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.37113546E+10
+ ph-ice C  26  1.3714984E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.38063447E+10
+ ph-ice C  27  1.3810238E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.39014231E+10
+ ph-ice C  28  1.39055015E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.39966152E+10
+ ph-ice C  29  1.40008194E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.40917977E+10
+ ph-ice C  30  1.4096158E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.41870934E+10
+ ph-ice C  31  1.4191542E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.42824134E+10
+ ph-ice C  32  1.42869783E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.43776975E+10
+ ph-ice C  33  1.43824668E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.4473102E+10
+ ph-ice C  34  1.44780287E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.45685195E+10
+ ph-ice C  35  1.45736281E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.4664022E+10
+ ph-ice C  36  1.46692607E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.47595135E+10
+ ph-ice C  37  1.47649717E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.48550664E+10
+ ph-ice C  38  1.48606259E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.49506698E+10
+ ph-ice C  39  1.49564094E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.50462724E+10
+ ph-ice C  40  1.50522321E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.5141965E+10
+ ph-ice C  41  1.51480483E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.5237737E+10
+ ph-ice C  42  1.52439592E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.53335535E+10
+ ph-ice C  43  1.53399535E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.54294643E+10
+ ph-ice C  44  1.54359502E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.5525396E+10
+ ph-ice C  45  1.55320336E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.56213579E+10
+ ph-ice C  46  1.56281517E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.57172778E+10
- --> f_ice     = 0.157172777809148E+11
+ ph-ice C  47  1.57243055E+10
+ --> f_ice     = 0.157243055430630E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_temp    = 0.000000000000000E+00
  --> f_salt    = 0.000000000000000E+00
@@ -5555,10 +5555,10 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  --> f_hfluxmm2           = 0.000000000000000E+00
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.157172777809148E+11
- ph-check fcpertplus =   1.57172778E+10
+ --> fc               = 0.157243055430630E+11
+ ph-check fcpertplus =   1.57243055E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
- ph-check fcpertminus =   1.57170015E+10
+ ph-check fcpertminus =   1.57245292E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
@@ -5752,13 +5752,13 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.0000000000000E+00
@@ -5772,7 +5772,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
@@ -5889,11 +5889,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_climsss_mean             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_sd               =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON scg2d_init_res_max           =   7.3111020636161E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_min           =   1.0991726570245E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_mean          =   2.7655956046355E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_sd            =   1.5872018869284E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_del2          =   1.9324673593158E+01
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   7.3111020636161E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0991726570245E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   2.7655956046355E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   1.5872018869284E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   1.9324673593158E+01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   7.3111020636161E+02
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0991726570245E+02
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.7655956046355E+02
@@ -5936,34 +5936,34 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_vice_del2             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252558066263E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176714398849E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397774567233E-02
+(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252558066289E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176714398854E-01
+(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397774566532E-02
 (PID.TID 0000.0001) %MON seaice_heff_max              =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_heff_mean             =   1.4898374479412E-01
 (PID.TID 0000.0001) %MON seaice_heff_sd               =   1.8290203230759E-01
-(PID.TID 0000.0001) %MON seaice_heff_del2             =   1.0123770665606E-02
+(PID.TID 0000.0001) %MON seaice_heff_del2             =   1.0123770665605E-02
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   2.0078474686707E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   1.1848466011858E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_sd              =   9.6623192210455E-02
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   6.2681174443294E-03
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   6.3252558066263E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   4.5176714398849E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   4.7397774567233E-02
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   6.3252558066289E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   4.5176714398854E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   4.7397774566532E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252558066263E-01
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176714398849E-01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397774567233E-02
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252558066289E-01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176714398854E-01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397774566532E-02
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.4898374479412E-01
 (PID.TID 0000.0001) %MON dynstat_salt_sd              =   1.8290203230759E-01
-(PID.TID 0000.0001) %MON dynstat_salt_del2            =   1.0123770665606E-02
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   1.0123770665605E-02
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0078474686707E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.1848466011858E-01
@@ -5973,100 +5973,100 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  1  9.99999975E-06  0.  0.
- ph-ice C  1  1.13635359E+10
+ ph-ice C  1  1.13635622E+10
  ph-ice B  2  9.99999975E-06  0.  0.
- ph-ice C  2  1.14442912E+10
+ ph-ice C  2  1.14443544E+10
  ph-ice B  3  9.99999975E-06  0.  0.
- ph-ice C  3  1.15381813E+10
+ ph-ice C  3  1.15384201E+10
  ph-ice B  4  9.99999975E-06  0.  0.
- ph-ice C  4  1.16321068E+10
+ ph-ice C  4  1.16325171E+10
  ph-ice B  5  9.99999975E-06  0.  0.
- ph-ice C  5  1.17260653E+10
+ ph-ice C  5  1.17266823E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.18201356E+10
+ ph-ice C  6  1.18208965E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.19142568E+10
+ ph-ice C  7  1.19151558E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.20084031E+10
+ ph-ice C  8  1.20094912E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.21026006E+10
+ ph-ice C  9  1.21038068E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.21969014E+10
+ ph-ice C  10  1.21982129E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.22911957E+10
+ ph-ice C  11  1.22926593E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.23855024E+10
+ ph-ice C  12  1.23871282E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.24798422E+10
+ ph-ice C  13  1.24816648E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.25742657E+10
+ ph-ice C  14  1.2576249E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.2668712E+10
+ ph-ice C  15  1.26708716E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.27632365E+10
+ ph-ice C  16  1.27655416E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.28577907E+10
+ ph-ice C  17  1.28603031E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.29524874E+10
+ ph-ice C  18  1.29551044E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.30471613E+10
+ ph-ice C  19  1.30499789E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.31418888E+10
+ ph-ice C  20  1.31447974E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.32366903E+10
+ ph-ice C  21  1.32397438E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.33314443E+10
+ ph-ice C  22  1.33347458E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.34263001E+10
+ ph-ice C  23  1.34297872E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.35212102E+10
+ ph-ice C  24  1.35249034E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.36161267E+10
+ ph-ice C  25  1.36200134E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.37111347E+10
+ ph-ice C  26  1.37151506E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.38061855E+10
+ ph-ice C  27  1.38104043E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.39012948E+10
+ ph-ice C  28  1.39056733E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.39964718E+10
+ ph-ice C  29  1.400103E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.40916547E+10
+ ph-ice C  30  1.40964068E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.41868803E+10
+ ph-ice C  31  1.4191799E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.42822007E+10
+ ph-ice C  32  1.42873025E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.43774658E+10
+ ph-ice C  33  1.438278E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.44728849E+10
+ ph-ice C  34  1.44783389E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.45683044E+10
+ ph-ice C  35  1.45738993E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.4663823E+10
+ ph-ice C  36  1.46695414E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.47592681E+10
+ ph-ice C  37  1.47652724E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.48548388E+10
+ ph-ice C  38  1.48609969E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.49504496E+10
+ ph-ice C  39  1.49567521E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.50460648E+10
+ ph-ice C  40  1.50525999E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.51417594E+10
+ ph-ice C  41  1.5148435E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.52375289E+10
+ ph-ice C  42  1.52443304E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.53333358E+10
+ ph-ice C  43  1.53403054E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.54291717E+10
+ ph-ice C  44  1.54362817E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.55251116E+10
+ ph-ice C  45  1.55323508E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.56210498E+10
+ ph-ice C  46  1.56284447E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.57170234E+10
- --> f_ice     = 0.157170233732204E+11
+ ph-ice C  47  1.57245941E+10
+ --> f_ice     = 0.157245941181483E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_temp    = 0.000000000000000E+00
  --> f_salt    = 0.000000000000000E+00
@@ -6144,12 +6144,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  --> f_hfluxmm2           = 0.000000000000000E+00
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.157170233732204E+11
+ --> fc               = 0.157245941181483E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
  grad-res -------------------------------
- grad-res     0    2   10    1    1    1    1    1   0.157170015221E+11 0.157172777809E+11 0.157170233732E+11
- grad-res     0    2    2    2  150    1    1    1   -.127577365972E+07 0.127203847221E+10 0.998072217726E+03
-(PID.TID 0000.0001)       precision_grdchk_result ADM     1.57170015221499E+10    -1.27577365972057E+06
+ grad-res     0    2   10    1    1    1    1    1   0.157245292372E+11 0.157243055431E+11 0.157245941181E+11
+ grad-res     0    2    2    2  150    1    1    1   -.129822545112E+07 -.144287542664E+10 -.111042130621E+04
+(PID.TID 0000.0001)       precision_grdchk_result ADM     1.57245292371748E+10    -1.29822545111999E+06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  2, ichknum =  2
  ph-grd -->hit<--  11 1 1 1
@@ -6347,13 +6347,13 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.0000000000000E+00
@@ -6367,7 +6367,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
@@ -6484,11 +6484,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_climsss_mean             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_sd               =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON scg2d_init_res_max           =   7.3111020636161E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_min           =   1.0991726570245E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_mean          =   2.7655954257260E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_sd            =   1.5872019997804E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_del2          =   1.9324680413847E+01
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   7.3111020636161E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0991726570245E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   2.7655954257260E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   1.5872019997804E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   1.9324680413847E+01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   7.3111020636161E+02
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0991726570245E+02
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.7655954257260E+02
@@ -6531,9 +6531,9 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_vice_del2             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252549050869E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176722588495E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397806308957E-02
+(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252549050912E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176722588485E-01
+(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397806308200E-02
 (PID.TID 0000.0001) %MON seaice_heff_max              =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_heff_mean             =   1.4898374478510E-01
@@ -6544,16 +6544,16 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   1.1848466011858E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_sd              =   9.6623192210455E-02
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   6.2681174443294E-03
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   6.3252549050869E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   4.5176722588495E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   4.7397806308957E-02
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   6.3252549050912E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   4.5176722588485E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   4.7397806308200E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252549050869E-01
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176722588495E-01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397806308957E-02
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252549050912E-01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176722588485E-01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397806308200E-02
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.4898374478510E-01
@@ -6568,100 +6568,100 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  1  9.99999975E-06  0.  0.
- ph-ice C  1  1.13635359E+10
+ ph-ice C  1  1.13635621E+10
  ph-ice B  2  9.99999975E-06  0.  0.
- ph-ice C  2  1.14442852E+10
+ ph-ice C  2  1.14443604E+10
  ph-ice B  3  9.99999975E-06  0.  0.
- ph-ice C  3  1.15382487E+10
+ ph-ice C  3  1.15384387E+10
  ph-ice B  4  9.99999975E-06  0.  0.
- ph-ice C  4  1.16321598E+10
+ ph-ice C  4  1.16324963E+10
  ph-ice B  5  9.99999975E-06  0.  0.
- ph-ice C  5  1.17261228E+10
+ ph-ice C  5  1.17266738E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.18201818E+10
+ ph-ice C  6  1.18208844E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.19142808E+10
+ ph-ice C  7  1.19151504E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.2008381E+10
+ ph-ice C  8  1.2009479E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.21026236E+10
+ ph-ice C  9  1.21037542E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.21968841E+10
+ ph-ice C  10  1.21981566E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.22911663E+10
+ ph-ice C  11  1.22926065E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.23854964E+10
+ ph-ice C  12  1.23870912E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.24798403E+10
+ ph-ice C  13  1.24816709E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.25742485E+10
+ ph-ice C  14  1.2576256E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.26687388E+10
+ ph-ice C  15  1.26708827E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.27633027E+10
+ ph-ice C  16  1.27655983E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.28578236E+10
+ ph-ice C  17  1.28603524E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.29524968E+10
+ ph-ice C  18  1.29551239E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.30471637E+10
+ ph-ice C  19  1.3049989E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.31419214E+10
+ ph-ice C  20  1.31448727E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.32367088E+10
+ ph-ice C  21  1.32398068E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.33314805E+10
+ ph-ice C  22  1.33348228E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.34264004E+10
+ ph-ice C  23  1.34298439E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.35213156E+10
+ ph-ice C  24  1.35249215E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.36162318E+10
+ ph-ice C  25  1.36200558E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.37112792E+10
+ ph-ice C  26  1.37151829E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.38063177E+10
+ ph-ice C  27  1.38104132E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.39013435E+10
+ ph-ice C  28  1.39056489E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.39964886E+10
+ ph-ice C  29  1.40009632E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.40916321E+10
+ ph-ice C  30  1.4096311E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.41868704E+10
+ ph-ice C  31  1.41917006E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.42821658E+10
+ ph-ice C  32  1.42872041E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.4377418E+10
+ ph-ice C  33  1.43826624E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.44727848E+10
+ ph-ice C  34  1.44782262E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.45682137E+10
+ ph-ice C  35  1.45738068E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.46636851E+10
+ ph-ice C  36  1.46694312E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.47591558E+10
+ ph-ice C  37  1.47651396E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.48546904E+10
+ ph-ice C  38  1.4860826E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.49502875E+10
+ ph-ice C  39  1.49565711E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.50459104E+10
+ ph-ice C  40  1.50524211E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.51414966E+10
+ ph-ice C  41  1.51483017E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.52372872E+10
+ ph-ice C  42  1.52441708E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.53330872E+10
+ ph-ice C  43  1.53401521E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.54289324E+10
+ ph-ice C  44  1.54361578E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.55248389E+10
+ ph-ice C  45  1.55322138E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.56207993E+10
+ ph-ice C  46  1.56283236E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.57167811E+10
- --> f_ice     = 0.157167811350007E+11
+ ph-ice C  47  1.57244667E+10
+ --> f_ice     = 0.157244667427038E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_temp    = 0.000000000000000E+00
  --> f_salt    = 0.000000000000000E+00
@@ -6739,10 +6739,10 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  --> f_hfluxmm2           = 0.000000000000000E+00
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.157167811350007E+11
- ph-check fcpertplus =   1.57167811E+10
+ --> fc               = 0.157244667427038E+11
+ ph-check fcpertplus =   1.57244667E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
- ph-check fcpertminus =   1.57170015E+10
+ ph-check fcpertminus =   1.57245292E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
@@ -6936,13 +6936,13 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.0000000000000E+00
@@ -6956,7 +6956,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
@@ -7073,11 +7073,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_climsss_mean             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_sd               =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON scg2d_init_res_max           =   7.3111020636161E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_min           =   1.0991726570245E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_mean          =   2.7655955898215E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_sd            =   1.5872018707187E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_del2          =   1.9324680413847E+01
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   7.3111020636161E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0991726570245E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   2.7655955898215E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   1.5872018707187E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   1.9324680413847E+01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   7.3111020636161E+02
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0991726570245E+02
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.7655955898215E+02
@@ -7120,9 +7120,9 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_vice_del2             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252557673245E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176714545643E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397775950987E-02
+(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252557673292E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176714545629E-01
+(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397775950212E-02
 (PID.TID 0000.0001) %MON seaice_heff_max              =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_heff_mean             =   1.4898374479373E-01
@@ -7133,16 +7133,16 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   1.1848466011858E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_sd              =   9.6623192210455E-02
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   6.2681174443294E-03
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   6.3252557673245E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   4.5176714545643E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   4.7397775950987E-02
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   6.3252557673292E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   4.5176714545629E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   4.7397775950212E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252557673245E-01
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176714545643E-01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397775950987E-02
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252557673292E-01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176714545629E-01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397775950212E-02
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.4898374479373E-01
@@ -7157,100 +7157,100 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  1  9.99999975E-06  0.  0.
- ph-ice C  1  1.13635359E+10
+ ph-ice C  1  1.13635622E+10
  ph-ice B  2  9.99999975E-06  0.  0.
- ph-ice C  2  1.14442909E+10
+ ph-ice C  2  1.14443548E+10
  ph-ice B  3  9.99999975E-06  0.  0.
- ph-ice C  3  1.15382053E+10
+ ph-ice C  3  1.15384212E+10
  ph-ice B  4  9.99999975E-06  0.  0.
- ph-ice C  4  1.1632112E+10
+ ph-ice C  4  1.16324993E+10
  ph-ice B  5  9.99999975E-06  0.  0.
- ph-ice C  5  1.17260818E+10
+ ph-ice C  5  1.17266699E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.1820152E+10
+ ph-ice C  6  1.18208604E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.1914289E+10
+ ph-ice C  7  1.19150915E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.20083867E+10
+ ph-ice C  8  1.20093776E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.21025991E+10
+ ph-ice C  9  1.21037102E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.21968929E+10
+ ph-ice C  10  1.21981337E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.22911724E+10
+ ph-ice C  11  1.22925852E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.23855315E+10
+ ph-ice C  12  1.23870829E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.24799E+10
+ ph-ice C  13  1.24816271E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.2574269E+10
+ ph-ice C  14  1.25761844E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.26688132E+10
+ ph-ice C  15  1.2670796E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.27633058E+10
+ ph-ice C  16  1.27655055E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.28578308E+10
+ ph-ice C  17  1.28602601E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.2952494E+10
+ ph-ice C  18  1.29550304E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.3047165E+10
+ ph-ice C  19  1.30498854E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.31418809E+10
+ ph-ice C  20  1.31447778E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.32366798E+10
+ ph-ice C  21  1.32396772E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.33314586E+10
+ ph-ice C  22  1.33347019E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.34263836E+10
+ ph-ice C  23  1.34297236E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.35212997E+10
+ ph-ice C  24  1.35247793E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.36162092E+10
+ ph-ice C  25  1.36199104E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.37112433E+10
+ ph-ice C  26  1.37150565E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.38062664E+10
+ ph-ice C  27  1.38102606E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.39013966E+10
+ ph-ice C  28  1.39054788E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.39964961E+10
+ ph-ice C  29  1.40008355E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.40916564E+10
+ ph-ice C  30  1.4096184E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.41868838E+10
+ ph-ice C  31  1.41915571E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.42822133E+10
+ ph-ice C  32  1.42870212E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.4377493E+10
+ ph-ice C  33  1.43825018E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.44728581E+10
+ ph-ice C  34  1.44780633E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.45682457E+10
+ ph-ice C  35  1.45736252E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.46637277E+10
+ ph-ice C  36  1.46692059E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.47591786E+10
+ ph-ice C  37  1.47649264E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.4854735E+10
+ ph-ice C  38  1.48606267E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.49503089E+10
+ ph-ice C  39  1.49564148E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.50459279E+10
+ ph-ice C  40  1.50522624E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.51415603E+10
+ ph-ice C  41  1.5148143E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.52372968E+10
+ ph-ice C  42  1.52440549E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.53330885E+10
+ ph-ice C  43  1.5340046E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.54289358E+10
+ ph-ice C  44  1.54360195E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.55248891E+10
+ ph-ice C  45  1.55321049E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.56208104E+10
+ ph-ice C  46  1.56282188E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.57167244E+10
- --> f_ice     = 0.157167243944152E+11
+ ph-ice C  47  1.57243425E+10
+ --> f_ice     = 0.157243424857043E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_temp    = 0.000000000000000E+00
  --> f_salt    = 0.000000000000000E+00
@@ -7328,12 +7328,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  --> f_hfluxmm2           = 0.000000000000000E+00
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.157167243944152E+11
+ --> fc               = 0.157243424857043E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
  grad-res -------------------------------
- grad-res     0    3   11    1    1    1    1    1   0.157170015221E+11 0.157167811350E+11 0.157167243944E+11
- grad-res     0    3    3    3  150    1    1    1   -.916639508031E+06 0.283702927723E+09 0.310503272810E+03
-(PID.TID 0000.0001)       precision_grdchk_result ADM     1.57170015221499E+10    -9.16639508031491E+05
+ grad-res     0    3   11    1    1    1    1    1   0.157245292372E+11 0.157244667427E+11 0.157243424857E+11
+ grad-res     0    3    3    3  150    1    1    1   -.935855150503E+06 0.621284997387E+09 0.664868759020E+03
+(PID.TID 0000.0001)       precision_grdchk_result ADM     1.57245292371748E+10    -9.35855150502791E+05
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  3, ichknum =  3
  ph-grd -->hit<--  12 1 1 1
@@ -7531,13 +7531,13 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.0000000000000E+00
@@ -7551,7 +7551,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
@@ -7668,11 +7668,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_climsss_mean             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_sd               =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON scg2d_init_res_max           =   7.3111020636161E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_min           =   1.0991726570245E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_mean          =   2.7655954258561E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_sd            =   1.5872020057142E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_del2          =   1.9324680413847E+01
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   7.3111020636161E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0991726570245E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   2.7655954258561E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   1.5872020057142E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   1.9324680413847E+01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   7.3111020636161E+02
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0991726570245E+02
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.7655954258561E+02
@@ -7715,9 +7715,9 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_vice_del2             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252549036420E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176722803655E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397775900129E-02
+(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252549036514E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176722803596E-01
+(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397775899498E-02
 (PID.TID 0000.0001) %MON seaice_heff_max              =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_heff_mean             =   1.4898374478509E-01
@@ -7728,16 +7728,16 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   1.1848466011858E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_sd              =   9.6623192210455E-02
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   6.2681174443294E-03
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   6.3252549036420E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   4.5176722803655E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   4.7397775900129E-02
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   6.3252549036514E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   4.5176722803596E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   4.7397775899498E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252549036420E-01
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176722803655E-01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397775900129E-02
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252549036514E-01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176722803596E-01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397775899498E-02
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.4898374478509E-01
@@ -7752,100 +7752,100 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  1  9.99999975E-06  0.  0.
- ph-ice C  1  1.13635359E+10
+ ph-ice C  1  1.13635621E+10
  ph-ice B  2  9.99999975E-06  0.  0.
- ph-ice C  2  1.144428E+10
+ ph-ice C  2  1.14443604E+10
  ph-ice B  3  9.99999975E-06  0.  0.
- ph-ice C  3  1.1538207E+10
+ ph-ice C  3  1.15384387E+10
  ph-ice B  4  9.99999975E-06  0.  0.
- ph-ice C  4  1.16321093E+10
+ ph-ice C  4  1.16325202E+10
  ph-ice B  5  9.99999975E-06  0.  0.
- ph-ice C  5  1.17260593E+10
+ ph-ice C  5  1.1726659E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.18201282E+10
+ ph-ice C  6  1.18208292E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.19142681E+10
+ ph-ice C  7  1.19150978E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.20083703E+10
+ ph-ice C  8  1.20094246E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.21025697E+10
+ ph-ice C  9  1.21037597E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.21968208E+10
+ ph-ice C  10  1.21981468E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.22910942E+10
+ ph-ice C  11  1.22925975E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.23854507E+10
+ ph-ice C  12  1.23870907E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.24798016E+10
+ ph-ice C  13  1.2481649E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.25741905E+10
+ ph-ice C  14  1.25762121E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.2668678E+10
+ ph-ice C  15  1.26708033E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.27632027E+10
+ ph-ice C  16  1.2765476E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.28577842E+10
+ ph-ice C  17  1.28602257E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.29524469E+10
+ ph-ice C  18  1.29549981E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.30471282E+10
+ ph-ice C  19  1.30498672E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.31418527E+10
+ ph-ice C  20  1.31447333E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.32366241E+10
+ ph-ice C  21  1.32396282E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.33313958E+10
+ ph-ice C  22  1.33346517E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.34263349E+10
+ ph-ice C  23  1.34297074E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.35212452E+10
+ ph-ice C  24  1.35247839E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.36161615E+10
+ ph-ice C  25  1.36198809E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.37111768E+10
+ ph-ice C  26  1.37150263E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.3806219E+10
+ ph-ice C  27  1.38102814E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.39013266E+10
+ ph-ice C  28  1.39055313E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.39964542E+10
+ ph-ice C  29  1.40008585E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.40916096E+10
+ ph-ice C  30  1.40962261E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.41868875E+10
+ ph-ice C  31  1.4191556E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.4282148E+10
+ ph-ice C  32  1.42870334E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.43774059E+10
+ ph-ice C  33  1.43825053E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.44727735E+10
+ ph-ice C  34  1.44780308E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.45681544E+10
+ ph-ice C  35  1.45736082E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.46635971E+10
+ ph-ice C  36  1.46692209E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.47590347E+10
+ ph-ice C  37  1.47649305E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.48546045E+10
+ ph-ice C  38  1.48606355E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.4950192E+10
+ ph-ice C  39  1.49564021E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.50457773E+10
+ ph-ice C  40  1.50522509E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.51414288E+10
+ ph-ice C  41  1.51481132E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.52371999E+10
+ ph-ice C  42  1.52440063E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.5332981E+10
+ ph-ice C  43  1.53399904E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.54288544E+10
+ ph-ice C  44  1.54359786E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.55247663E+10
+ ph-ice C  45  1.55320313E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.56207133E+10
+ ph-ice C  46  1.56281663E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.57166908E+10
- --> f_ice     = 0.157166907681880E+11
+ ph-ice C  47  1.57243219E+10
+ --> f_ice     = 0.157243218874964E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_temp    = 0.000000000000000E+00
  --> f_salt    = 0.000000000000000E+00
@@ -7923,10 +7923,10 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  --> f_hfluxmm2           = 0.000000000000000E+00
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.157166907681880E+11
- ph-check fcpertplus =   1.57166908E+10
+ --> fc               = 0.157243218874964E+11
+ ph-check fcpertplus =   1.57243219E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
- ph-check fcpertminus =   1.57170015E+10
+ ph-check fcpertminus =   1.57245292E+10
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
@@ -8120,13 +8120,13 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON seaice_hsnow_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.0000000000000E+00
@@ -8140,7 +8140,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =   2.0000000298023E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.0000000298023E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   3.8857805861880E-16
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   5.8286708792821E-16
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
@@ -8164,7 +8164,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_time_sec                 =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_ustress_max              =   6.3903775845771E-02
 (PID.TID 0000.0001) %MON exf_ustress_min              =  -9.5324050318348E-02
-(PID.TID 0000.0001) %MON exf_ustress_mean             =   2.2585162236770E-02
+(PID.TID 0000.0001) %MON exf_ustress_mean             =   2.2585162236771E-02
 (PID.TID 0000.0001) %MON exf_ustress_sd               =   2.7275779975693E-02
 (PID.TID 0000.0001) %MON exf_ustress_del2             =   2.9464928316532E-03
 (PID.TID 0000.0001) %MON exf_vstress_max              =   5.4708944127586E-02
@@ -8230,7 +8230,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_evap_max                 =   5.9797470045733E-08
 (PID.TID 0000.0001) %MON exf_evap_min                 =   1.0729148721654E-08
 (PID.TID 0000.0001) %MON exf_evap_mean                =   2.9083816250622E-08
-(PID.TID 0000.0001) %MON exf_evap_sd                  =   9.2938018617651E-09
+(PID.TID 0000.0001) %MON exf_evap_sd                  =   9.2938018617652E-09
 (PID.TID 0000.0001) %MON exf_evap_del2                =   2.0154590676424E-09
 (PID.TID 0000.0001) %MON exf_swdown_max               =   7.1081237792969E+01
 (PID.TID 0000.0001) %MON exf_swdown_min               =   9.0228617191315E-02
@@ -8257,11 +8257,11 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON exf_climsss_mean             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_sd               =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON exf_climsss_del2             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON scg2d_init_res_max           =   7.3111020636161E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_min           =   1.0991726570245E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_mean          =   2.7655955896913E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_sd            =   1.5872018647849E+02
-(PID.TID 0000.0001) %MON scg2d_init_res_del2          =   1.9324680413847E+01
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   7.3111020636161E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   1.0991726570245E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   2.7655955896913E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   1.5872018647849E+02
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   1.9324680413847E+01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   7.3111020636161E+02
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   1.0991726570245E+02
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.7655955896913E+02
@@ -8274,7 +8274,7 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   3.6392857220037E-09
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   6.3903775845771E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -9.5324050318348E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   2.2585162236770E-02
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   2.2585162236771E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   2.7275779975693E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.9464928316532E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   5.4708944127586E-02
@@ -8304,9 +8304,9 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_vice_del2             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_max              =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_area_min              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252557687694E-01
-(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176714330482E-01
-(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397806359845E-02
+(PID.TID 0000.0001) %MON seaice_area_mean             =   6.3252557687771E-01
+(PID.TID 0000.0001) %MON seaice_area_sd               =   4.5176714330439E-01
+(PID.TID 0000.0001) %MON seaice_area_del2             =   4.7397806359155E-02
 (PID.TID 0000.0001) %MON seaice_heff_max              =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON seaice_heff_min              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON seaice_heff_mean             =   1.4898374479374E-01
@@ -8317,16 +8317,16 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON seaice_hsnow_mean            =   1.1848466011858E-01
 (PID.TID 0000.0001) %MON seaice_hsnow_sd              =   9.6623192210455E-02
 (PID.TID 0000.0001) %MON seaice_hsnow_del2            =   6.2681174443294E-03
-(PID.TID 0000.0001) %MON Rcg2d_init_res_max           =   1.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_min           =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON Rcg2d_init_res_mean          =   6.3252557687694E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_sd            =   4.5176714330482E-01
-(PID.TID 0000.0001) %MON Rcg2d_init_res_del2          =   4.7397806359845E-02
+(PID.TID 0000.0001) %MON  cg2d_init_res_max           =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_min           =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON  cg2d_init_res_mean          =   6.3252557687771E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_sd            =   4.5176714330439E-01
+(PID.TID 0000.0001) %MON  cg2d_init_res_del2          =   4.7397806359155E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   1.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_theta_min            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252557687694E-01
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176714330482E-01
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397806359845E-02
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   6.3252557687771E-01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5176714330439E-01
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   4.7397806359155E-02
 (PID.TID 0000.0001) %MON dynstat_salt_max             =   6.0064575002430E-01
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   1.4898374479374E-01
@@ -8341,100 +8341,100 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) // End MONITOR SEAICE statistics
 (PID.TID 0000.0001) // =======================================================
  ph-ice B  1  9.99999975E-06  0.  0.
- ph-ice C  1  1.13635359E+10
+ ph-ice C  1  1.13635622E+10
  ph-ice B  2  9.99999975E-06  0.  0.
- ph-ice C  2  1.144428E+10
+ ph-ice C  2  1.14443605E+10
  ph-ice B  3  9.99999975E-06  0.  0.
- ph-ice C  3  1.15381939E+10
+ ph-ice C  3  1.15384387E+10
  ph-ice B  4  9.99999975E-06  0.  0.
- ph-ice C  4  1.16321476E+10
+ ph-ice C  4  1.16325156E+10
  ph-ice B  5  9.99999975E-06  0.  0.
- ph-ice C  5  1.17261194E+10
+ ph-ice C  5  1.17266875E+10
  ph-ice B  6  9.99999975E-06  0.  0.
- ph-ice C  6  1.18201796E+10
+ ph-ice C  6  1.18208739E+10
  ph-ice B  7  9.99999975E-06  0.  0.
- ph-ice C  7  1.1914284E+10
+ ph-ice C  7  1.19150973E+10
  ph-ice B  8  9.99999975E-06  0.  0.
- ph-ice C  8  1.20084043E+10
+ ph-ice C  8  1.20094118E+10
  ph-ice B  9  9.99999975E-06  0.  0.
- ph-ice C  9  1.21026034E+10
+ ph-ice C  9  1.21037057E+10
  ph-ice B  10  9.99999975E-06  0.  0.
- ph-ice C  10  1.21968642E+10
+ ph-ice C  10  1.21980972E+10
  ph-ice B  11  9.99999975E-06  0.  0.
- ph-ice C  11  1.22911828E+10
+ ph-ice C  11  1.2292539E+10
  ph-ice B  12  9.99999975E-06  0.  0.
- ph-ice C  12  1.23855771E+10
+ ph-ice C  12  1.23870503E+10
  ph-ice B  13  9.99999975E-06  0.  0.
- ph-ice C  13  1.24799333E+10
+ ph-ice C  13  1.24815636E+10
  ph-ice B  14  9.99999975E-06  0.  0.
- ph-ice C  14  1.25743819E+10
+ ph-ice C  14  1.25761486E+10
  ph-ice B  15  9.99999975E-06  0.  0.
- ph-ice C  15  1.26688731E+10
+ ph-ice C  15  1.26707687E+10
  ph-ice B  16  9.99999975E-06  0.  0.
- ph-ice C  16  1.27634179E+10
+ ph-ice C  16  1.27654847E+10
  ph-ice B  17  9.99999975E-06  0.  0.
- ph-ice C  17  1.28579377E+10
+ ph-ice C  17  1.28602085E+10
  ph-ice B  18  9.99999975E-06  0.  0.
- ph-ice C  18  1.29526108E+10
+ ph-ice C  18  1.29549676E+10
  ph-ice B  19  9.99999975E-06  0.  0.
- ph-ice C  19  1.30472962E+10
+ ph-ice C  19  1.30498509E+10
  ph-ice B  20  9.99999975E-06  0.  0.
- ph-ice C  20  1.31420085E+10
+ ph-ice C  20  1.31447017E+10
  ph-ice B  21  9.99999975E-06  0.  0.
- ph-ice C  21  1.32367666E+10
+ ph-ice C  21  1.3239637E+10
  ph-ice B  22  9.99999975E-06  0.  0.
- ph-ice C  22  1.33315689E+10
+ ph-ice C  22  1.3334653E+10
  ph-ice B  23  9.99999975E-06  0.  0.
- ph-ice C  23  1.34264851E+10
+ ph-ice C  23  1.34296731E+10
  ph-ice B  24  9.99999975E-06  0.  0.
- ph-ice C  24  1.35213899E+10
+ ph-ice C  24  1.35247655E+10
  ph-ice B  25  9.99999975E-06  0.  0.
- ph-ice C  25  1.36163152E+10
+ ph-ice C  25  1.3619884E+10
  ph-ice B  26  9.99999975E-06  0.  0.
- ph-ice C  26  1.37113675E+10
+ ph-ice C  26  1.37150305E+10
  ph-ice B  27  9.99999975E-06  0.  0.
- ph-ice C  27  1.38063865E+10
+ ph-ice C  27  1.38102762E+10
  ph-ice B  28  9.99999975E-06  0.  0.
- ph-ice C  28  1.39014853E+10
+ ph-ice C  28  1.39055207E+10
  ph-ice B  29  9.99999975E-06  0.  0.
- ph-ice C  29  1.39966407E+10
+ ph-ice C  29  1.4000817E+10
  ph-ice B  30  9.99999975E-06  0.  0.
- ph-ice C  30  1.4091785E+10
+ ph-ice C  30  1.40961618E+10
  ph-ice B  31  9.99999975E-06  0.  0.
- ph-ice C  31  1.41870774E+10
+ ph-ice C  31  1.41915134E+10
  ph-ice B  32  9.99999975E-06  0.  0.
- ph-ice C  32  1.42824055E+10
+ ph-ice C  32  1.42869965E+10
  ph-ice B  33  9.99999975E-06  0.  0.
- ph-ice C  33  1.43776929E+10
+ ph-ice C  33  1.43824878E+10
  ph-ice B  34  9.99999975E-06  0.  0.
- ph-ice C  34  1.44731373E+10
+ ph-ice C  34  1.44780803E+10
  ph-ice B  35  9.99999975E-06  0.  0.
- ph-ice C  35  1.4568532E+10
+ ph-ice C  35  1.45736262E+10
  ph-ice B  36  9.99999975E-06  0.  0.
- ph-ice C  36  1.46639733E+10
+ ph-ice C  36  1.46692589E+10
  ph-ice B  37  9.99999975E-06  0.  0.
- ph-ice C  37  1.47594467E+10
+ ph-ice C  37  1.47649684E+10
  ph-ice B  38  9.99999975E-06  0.  0.
- ph-ice C  38  1.48550022E+10
+ ph-ice C  38  1.48606571E+10
  ph-ice B  39  9.99999975E-06  0.  0.
- ph-ice C  39  1.49505242E+10
+ ph-ice C  39  1.49564551E+10
  ph-ice B  40  9.99999975E-06  0.  0.
- ph-ice C  40  1.50461838E+10
+ ph-ice C  40  1.50522993E+10
  ph-ice B  41  9.99999975E-06  0.  0.
- ph-ice C  41  1.51418321E+10
+ ph-ice C  41  1.51481799E+10
  ph-ice B  42  9.99999975E-06  0.  0.
- ph-ice C  42  1.5237543E+10
+ ph-ice C  42  1.52440629E+10
  ph-ice B  43  9.99999975E-06  0.  0.
- ph-ice C  43  1.5333357E+10
+ ph-ice C  43  1.53400503E+10
  ph-ice B  44  9.99999975E-06  0.  0.
- ph-ice C  44  1.54291598E+10
+ ph-ice C  44  1.54360205E+10
  ph-ice B  45  9.99999975E-06  0.  0.
- ph-ice C  45  1.55250464E+10
+ ph-ice C  45  1.55320807E+10
  ph-ice B  46  9.99999975E-06  0.  0.
- ph-ice C  46  1.56210356E+10
+ ph-ice C  46  1.56282149E+10
  ph-ice B  47  9.99999975E-06  0.  0.
- ph-ice C  47  1.57169966E+10
- --> f_ice     = 0.157169966169317E+11
+ ph-ice C  47  1.57243696E+10
+ --> f_ice     = 0.157243696378166E+11
  --> f_smrarea = 0.000000000000000E+00
  --> f_temp    = 0.000000000000000E+00
  --> f_salt    = 0.000000000000000E+00
@@ -8512,12 +8512,12 @@ Global & Regional Statistics diagnostics: Number of lists:     0
  --> f_hfluxmm2           = 0.000000000000000E+00
  --> f_sfluxmm2           = 0.000000000000000E+00
  --> objf_hmean           = 0.000000000000000E+00
- --> fc               = 0.157169966169317E+11
+ --> fc               = 0.157243696378166E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_atemp.0000000000.001.001.data
  grad-res -------------------------------
- grad-res     0    4   12    1    1    1    1    1   0.157170015221E+11 0.157166907682E+11 0.157169966169E+11
- grad-res     0    4    4    4  150    1    1    1   -.844682525024E+06 -.152924371824E+10 -.180943607857E+04
-(PID.TID 0000.0001)       precision_grdchk_result ADM     1.57170015221499E+10    -8.44682525024296E+05
+ grad-res     0    4   12    1    1    1    1    1   0.157245292372E+11 0.157243218875E+11 0.157243696378E+11
+ grad-res     0    4    4    4  150    1    1    1   -.865735768099E+06 -.238751600676E+09 -.274778833997E+03
+(PID.TID 0000.0001)       precision_grdchk_result ADM     1.57245292371748E+10    -8.65735768098599E+05
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  4, ichknum =  4
 (PID.TID 0000.0001) 
@@ -8530,16 +8530,16 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) grdchk output:            procId               I        ITILEPOS        JTILEPOS           LAYER            X(I)      X(I)+/-EPS
 (PID.TID 0000.0001) grdchk output:                                FC             FC1             FC2 FC1-FC2/(2*EPS)    ADJ GRAD(FC)   1-FDGRD/ADGRD
 (PID.TID 0000.0001) grdchk output:                 0               1               9               1               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.157170015E+11 0.157171922E+11 0.157171822E+11 0.497113173E+08 -.230442193E+07 0.225721421E+02
+(PID.TID 0000.0001) grdchk output:                   0.157245292E+11 0.157243509E+11 0.157244804E+11 -.647134454E+09 -.232729431E+07 -.277063007E+03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               2              10               1               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.157170015E+11 0.157172778E+11 0.157170234E+11 0.127203847E+10 -.127577366E+07 0.998072218E+03
+(PID.TID 0000.0001) grdchk output:                   0.157245292E+11 0.157243055E+11 0.157245941E+11 -.144287543E+10 -.129822545E+07 -.111042131E+04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               3              11               1               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.157170015E+11 0.157167811E+11 0.157167244E+11 0.283702928E+09 -.916639508E+06 0.310503273E+03
+(PID.TID 0000.0001) grdchk output:                   0.157245292E+11 0.157244667E+11 0.157243425E+11 0.621284997E+09 -.935855151E+06 0.664868759E+03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               4              12               1               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.157170015E+11 0.157166908E+11 0.157169966E+11 -.152924372E+10 -.844682525E+06 -.180943608E+04
+(PID.TID 0000.0001) grdchk output:                   0.157245292E+11 0.157243219E+11 0.157243696E+11 -.238751601E+09 -.865735768E+06 -.274778834E+03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -8548,105 +8548,105 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) %CHECKPOINT         0 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  6.07807619
-(PID.TID 0000.0001)         System time:  0.211967997
-(PID.TID 0000.0001)     Wall clock time:  6.30442595
+(PID.TID 0000.0001)           User time:  9.30858492
+(PID.TID 0000.0001)         System time:  0.229964996
+(PID.TID 0000.0001)     Wall clock time:  9.54180384
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  1.40078694
-(PID.TID 0000.0001)         System time:  0.0649899992
-(PID.TID 0000.0001)     Wall clock time:  1.47524095
+(PID.TID 0000.0001)           User time:  1.74973404
+(PID.TID 0000.0001)         System time:  0.0689890035
+(PID.TID 0000.0001)     Wall clock time:  1.81928301
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:  2.57060909
-(PID.TID 0000.0001)         System time:  0.0749889985
-(PID.TID 0000.0001)     Wall clock time:  2.64558721
+(PID.TID 0000.0001)           User time:  3.82141888
+(PID.TID 0000.0001)         System time:  0.083987996
+(PID.TID 0000.0001)     Wall clock time:  3.90786791
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.96285212
-(PID.TID 0000.0001)         System time:  0.0379959717
-(PID.TID 0000.0001)     Wall clock time:  1.00173354
+(PID.TID 0000.0001)           User time:  1.44577909
+(PID.TID 0000.0001)         System time:  0.0289969742
+(PID.TID 0000.0001)     Wall clock time:  1.4818778
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "I/O (WRITE)        [ADJOINT LOOP]":
-(PID.TID 0000.0001)           User time:  0.0629930496
-(PID.TID 0000.0001)         System time:  0.0100000054
-(PID.TID 0000.0001)     Wall clock time:  0.0691006184
+(PID.TID 0000.0001)           User time:  0.0599896908
+(PID.TID 0000.0001)         System time:  0.00399900973
+(PID.TID 0000.0001)     Wall clock time:  0.0710642338
 (PID.TID 0000.0001)          No. starts: 1776
 (PID.TID 0000.0001)           No. stops: 1776
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL    [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  0.617904186
-(PID.TID 0000.0001)         System time:  0.00200000405
-(PID.TID 0000.0001)     Wall clock time:  0.619449854
+(PID.TID 0000.0001)           User time:  1.713727
+(PID.TID 0000.0001)         System time:  0.00300000608
+(PID.TID 0000.0001)     Wall clock time:  1.71819258
 (PID.TID 0000.0001)          No. starts: 432
 (PID.TID 0000.0001)           No. stops: 432
 (PID.TID 0000.0001)   Seconds in section "DYNSOLVER          [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:  0.110984325
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0993573666
+(PID.TID 0000.0001)           User time:  0.210968733
+(PID.TID 0000.0001)         System time:  0.00199998915
+(PID.TID 0000.0001)     Wall clock time:  0.223872423
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  2.09868073
-(PID.TID 0000.0001)         System time:  0.065990001
-(PID.TID 0000.0001)     Wall clock time:  2.16992688
+(PID.TID 0000.0001)           User time:  3.73143339
+(PID.TID 0000.0001)         System time:  0.0669890046
+(PID.TID 0000.0001)     Wall clock time:  3.79908299
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.226965189
-(PID.TID 0000.0001)         System time:  0.00999602675
-(PID.TID 0000.0001)     Wall clock time:  0.236911058
+(PID.TID 0000.0001)           User time:  0.249961376
+(PID.TID 0000.0001)         System time:  0.00999701023
+(PID.TID 0000.0001)     Wall clock time:  0.259131432
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  1.8607173
-(PID.TID 0000.0001)         System time:  0.049993962
-(PID.TID 0000.0001)     Wall clock time:  1.91572523
+(PID.TID 0000.0001)           User time:  3.47447157
+(PID.TID 0000.0001)         System time:  0.0459939837
+(PID.TID 0000.0001)     Wall clock time:  3.52104259
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.783873558
-(PID.TID 0000.0001)         System time:  0.0279969722
-(PID.TID 0000.0001)     Wall clock time:  0.824789286
+(PID.TID 0000.0001)           User time:  1.18482733
+(PID.TID 0000.0001)         System time:  0.0219969749
+(PID.TID 0000.0001)     Wall clock time:  1.2159698
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.638906002
-(PID.TID 0000.0001)         System time:  0.0059980005
-(PID.TID 0000.0001)     Wall clock time:  0.633053541
+(PID.TID 0000.0001)           User time:  1.6917305
+(PID.TID 0000.0001)         System time:  0.00599901378
+(PID.TID 0000.0001)     Wall clock time:  1.70246577
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0439925194
-(PID.TID 0000.0001)         System time:  0.000999987125
-(PID.TID 0000.0001)     Wall clock time:  0.051984787
+(PID.TID 0000.0001)           User time:  0.147977352
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.151096582
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00899934769
+(PID.TID 0000.0001)           User time:  0.0250015259
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0151052475
+(PID.TID 0000.0001)     Wall clock time:  0.016528368
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.205966949
-(PID.TID 0000.0001)         System time:  0.00900000334
-(PID.TID 0000.0001)     Wall clock time:  0.205568314
+(PID.TID 0000.0001)           User time:  0.204971313
+(PID.TID 0000.0001)         System time:  0.00999900699
+(PID.TID 0000.0001)     Wall clock time:  0.214396477
 (PID.TID 0000.0001)          No. starts: 384
 (PID.TID 0000.0001)           No. stops: 384
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.00799846649
-(PID.TID 0000.0001)         System time:  0.00200000405
-(PID.TID 0000.0001)     Wall clock time:  0.0100347996
+(PID.TID 0000.0001)           User time:  0.00899744034
+(PID.TID 0000.0001)         System time:  0.00100000203
+(PID.TID 0000.0001)     Wall clock time:  0.0102007389
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP        [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.00799942017
-(PID.TID 0000.0001)         System time:  0.00499899685
-(PID.TID 0000.0001)     Wall clock time:  0.0134460926
+(PID.TID 0000.0001)           User time:  0.00599861145
+(PID.TID 0000.0001)         System time:  0.00999899209
+(PID.TID 0000.0001)     Wall clock time:  0.0153329372
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001) // ======================================================
