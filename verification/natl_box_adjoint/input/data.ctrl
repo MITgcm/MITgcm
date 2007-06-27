@@ -47,6 +47,11 @@
  xx_swfluxperiod     = 864000.0,
  xx_swflux_file      = 'xx_swflux',
 #
+ xx_swdownstartdate1 = 19920102,
+ xx_swdownstartdate2 = 220000,
+ xx_swdownperiod     = 864000.0,
+ xx_swdown_file      = 'xx_swdown',
+#
  xx_uwindstartdate1 = 19920102,
  xx_uwindstartdate2 = 220000,
  xx_uwindperiod     = 864000.0,
