@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/input_bulk/Attic/data.exf,v 1.3 2007/04/18 21:26:07 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/input_bulk/Attic/data.exf,v 1.4 2007/06/27 23:00:41 heimbach Exp $
 #
 # *********************
 # External Forcing Data
@@ -59,8 +59,8 @@
 #
  hfluxfile   = 'PH_totflsfc__020_016_23',
  sfluxfile   = 'PH_pratesfc__020_016_23',
- ustressfile = 'PH_ustress__020_016_23',
- vstressfile = 'PH_vstress__020_016_23',
+# ustressfile = 'PH_ustress__020_016_23',
+# vstressfile = 'PH_vstress__020_016_23',
  atempfile   = 'PH_atm_atemp__020_016_23',
  aqhfile     = 'PH_atm_humid__020_016_23',
  uwindfile   = 'PH_atm_uwind__020_016_23',
