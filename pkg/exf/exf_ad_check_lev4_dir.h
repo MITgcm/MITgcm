@@ -1,7 +1,7 @@
 #ifdef ALLOW_EXF
 
-CADJ STORE StoreForcing1    = tapelev4, key = ilev_4
-CADJ STORE StoreForcing2    = tapelev4, key = ilev_4
+CADJ STORE StoreEXF1        = tapelev4, key = ilev_4
+CADJ STORE StoreEXF2        = tapelev4, key = ilev_4
 CADJ STORE StoreCTRLS1      = tapelev4, key = ilev_4
 
 # ifdef ALLOW_HFLUX_CONTROL
