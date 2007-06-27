@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code_bulk/Attic/GMREDI_OPTIONS.h,v 1.2 2003/11/06 22:30:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code_bulk/Attic/GMREDI_OPTIONS.h,v 1.3 2007/06/27 21:18:09 heimbach Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -17,6 +17,7 @@ C Designed to simplify the Ajoint code:
 C  exclude the clipping/tapering part of the code that is not used
 #define GM_EXCLUDE_CLIPPING
 #define GM_EXCLUDE_AC02_TAP
+#define GM_EXCLUDE_FM07_TAP
 #undef  GM_EXCLUDE_TAPERING 
  
 C This allows to use Visbeck et al formulation to compute K_GM+Redi
@@ -28,7 +29,7 @@ C (a feature required when tapering adiabatically).
 
 C Allows to use different values of K_GM and K_Redi ; also to
 C be used with the advective form (Bolus velocity) of GM
-#undef  GM_EXTRA_DIAGONAL
+#define  GM_EXTRA_DIAGONAL
 
 C Allows to use the advective form (Bolus velocity) of GM
 C  instead of the Skew-Flux form (=default)
