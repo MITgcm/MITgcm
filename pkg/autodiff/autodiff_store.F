@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.1 2007/06/01 23:30:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.2 2007/06/27 22:14:28 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -157,41 +157,66 @@ C--   Over all tiles
 C-      2D arrays
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
-          StoreEXF1(I,J,bi,bj,1) = 0. _d 0
-          StoreEXF1(I,J,bi,bj,2) = 0. _d 0
-          StoreEXF1(I,J,bi,bj,3) = hflux0(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,4) = hflux1(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,5) = sflux0(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,6) = sflux1(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,7) = ustress0(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,8) = ustress1(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,9) = vstress0(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,10) = vstress1(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,11) = wspeed0(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,12) = wspeed1(I,J,bi,bj)
-# ifdef ALLOW_ATM_WIND
-          StoreEXF1(I,J,bi,bj,13) = uwind0(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,14) = uwind1(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,15) = vwind0(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,16) = vwind1(I,J,bi,bj)
-# else /* ALLOW_ATM_WIND undef */
+          StoreEXF1(I,J,bi,bj,1) = hflux0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,2) = hflux1(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,3) = sflux0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,4) = sflux1(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,5) = ustress0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,6) = ustress1(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,7) = vstress0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,8) = vstress1(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,9) = wspeed0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,10) = wspeed1(I,J,bi,bj)
+# ifdef SHORTWAVE_HEATING
+          StoreEXF1(I,J,bi,bj,11) = swflux0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,12) = swflux1(I,J,bi,bj)
+# else
+          StoreEXF1(I,J,bi,bj,11) = 0.0
+          StoreEXF1(I,J,bi,bj,12) = 0.0
+# endif
+# ifdef ALLOW_RUNOFF
+          StoreEXF1(I,J,bi,bj,13) = runoff0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,14) = runoff1(I,J,bi,bj)
+# else
           StoreEXF1(I,J,bi,bj,13) = 0.0
           StoreEXF1(I,J,bi,bj,14) = 0.0
+# endif
+# ifdef ATMOSPHERIC_LOADING
+          StoreEXF1(I,J,bi,bj,15) = apressure0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,16) = apressure1(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,17) = siceload(I,J,bi,bj)
+# else
           StoreEXF1(I,J,bi,bj,15) = 0.0
           StoreEXF1(I,J,bi,bj,16) = 0.0
-# endif  /* ALLOW_ATM_WIND */
+          StoreEXF1(I,J,bi,bj,17) = 0.0
+# endif
+# ifdef ALLOW_CLIMSSS_RELAXATION
+          StoreEXF1(I,J,bi,bj,18) = climsss0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,19) = climsss1(I,J,bi,bj)
+# else
+          StoreEXF1(I,J,bi,bj,18) = 0.0
+          StoreEXF1(I,J,bi,bj,19) = 0.0
+# endif
+# ifdef ALLOW_CLIMSST_RELAXATION
+          StoreEXF1(I,J,bi,bj,20) = climsst0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,21) = climsst1(I,J,bi,bj)
+# else
+          StoreEXF1(I,J,bi,bj,20) = 0.0
+          StoreEXF1(I,J,bi,bj,21) = 0.0
+# endif
          enddo
         enddo
        enddo
       enddo
        
-# ifdef ALLOW_ATM_TEMP
+# if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      2D arrays
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
+#  ifdef ALLOW_ATM_TEMP
           StoreEXF2(I,J,bi,bj,1) = aqh0(I,J,bi,bj)
           StoreEXF2(I,J,bi,bj,2) = aqh1(I,J,bi,bj)
           StoreEXF2(I,J,bi,bj,3) = atemp0(I,J,bi,bj)
@@ -200,61 +225,40 @@ C-      2D arrays
           StoreEXF2(I,J,bi,bj,6) = precip1(I,J,bi,bj)
           StoreEXF2(I,J,bi,bj,7) = lwflux0(I,J,bi,bj)
           StoreEXF2(I,J,bi,bj,8) = lwflux1(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,9) = swflux0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,10) = swflux1(I,J,bi,bj)
-#  ifdef EXF_READ_EVAP
-          StoreEXF2(I,J,bi,bj,11) = evap0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,12) = evap1(I,J,bi,bj)
-#  else
-          StoreEXF2(I,J,bi,bj,11) = evap(I,J,bi,bj)
+#   ifdef EXF_READ_EVAP
+          StoreEXF2(I,J,bi,bj,9) = evap0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,10) = evap1(I,J,bi,bj)
+#   else
+          StoreEXF2(I,J,bi,bj,9) = evap(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,10) = 0.0
+#   endif /* EXF_READ_EVAP */
+#   ifdef ALLOW_DOWNWARD_RADIATION
+          StoreEXF2(I,J,bi,bj,11) = swdown0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,12) = swdown1(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,13) = lwdown0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,14) = lwdown1(I,J,bi,bj)
+#   else
+          StoreEXF2(I,J,bi,bj,11) = 0.0
           StoreEXF2(I,J,bi,bj,12) = 0.0
-#  endif /* EXF_READ_EVAP */
-#  ifdef ALLOW_DOWNWARD_RADIATION
-          StoreEXF2(I,J,bi,bj,13) = swdown0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,14) = swdown1(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,15) = lwdown0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,16) = lwdown1(I,J,bi,bj)
-#  else
           StoreEXF2(I,J,bi,bj,13) = 0.0
           StoreEXF2(I,J,bi,bj,14) = 0.0
+#   endif
+#  endif /* ALLOW_ATM_TEMP */
+#  ifdef ALLOW_ATM_WIND
+          StoreEXF2(I,J,bi,bj,15) = uwind0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,16) = uwind1(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,17) = vwind0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,18) = vwind1(I,J,bi,bj)
+#  else /* ALLOW_ATM_WIND undef */
           StoreEXF2(I,J,bi,bj,15) = 0.0
           StoreEXF2(I,J,bi,bj,16) = 0.0
-#  endif
-# ifdef ALLOW_CLIMSSS_RELAXATION
-          StoreEXF2(I,J,bi,bj,17) = climsss0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,18) = climsss1(I,J,bi,bj)
-# else
           StoreEXF2(I,J,bi,bj,17) = 0.0
           StoreEXF2(I,J,bi,bj,18) = 0.0
-# endif
-# ifdef ALLOW_CLIMSST_RELAXATION
-          StoreEXF2(I,J,bi,bj,19) = climsst0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,20) = climsst1(I,J,bi,bj)
-# else
-          StoreEXF2(I,J,bi,bj,19) = 0.0
-          StoreEXF2(I,J,bi,bj,20) = 0.0
-# endif
-# ifdef ATMOSPHERIC_LOADING
-          StoreEXF2(I,J,bi,bj,21) = apressure0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,22) = apressure1(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,23) = siceload(I,J,bi,bj)
-# else
-          StoreEXF2(I,J,bi,bj,21) = 0.0
-          StoreEXF2(I,J,bi,bj,22) = 0.0
-          StoreEXF2(I,J,bi,bj,23) = 0.0
-# endif
-# ifdef ALLOW_RUNOFF
-          StoreEXF2(I,J,bi,bj,24) = runoff0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,25) = runoff1(I,J,bi,bj)
-# else
-          StoreEXF2(I,J,bi,bj,24) = 0.0
-          StoreEXF2(I,J,bi,bj,25) = 0.0
-# endif
+#  endif  /* ALLOW_ATM_WIND */
          enddo
         enddo
        enddo
       enddo
-       
 # endif /* ALLOW_ATM_TEMP */
 
 C--   Over all tiles

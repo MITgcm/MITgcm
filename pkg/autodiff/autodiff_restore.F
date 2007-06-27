@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.1 2007/06/01 23:30:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.2 2007/06/27 22:14:28 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -147,34 +147,50 @@ C--   Over all tiles
 C-      2D arrays
          DO J=1-Oly,sNy+Oly
           DO I=1-Olx,sNx+Olx
-          hflux0(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,3)
-          hflux1(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,4)
-          sflux0(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,5)
-          sflux1(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,6)
-          ustress0(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,7)
-          ustress1(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,8)
-          vstress0(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,9)
-          vstress1(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,10)
-          wspeed0(I,J,bi,bj)           = StoreEXF1(I,J,bi,bj,11)
-          wspeed1(I,J,bi,bj)           = StoreEXF1(I,J,bi,bj,12)
-# ifdef ALLOW_ATM_WIND
-          uwind0(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,13)
-          uwind1(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,14)
-          vwind0(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,15)
-          vwind1(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,16)
-# endif  /* ALLOW_ATM_WIND */
+          hflux0(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,1)
+          hflux1(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,2)
+          sflux0(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,3)
+          sflux1(I,J,bi,bj)            = StoreEXF1(I,J,bi,bj,4)
+          ustress0(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,5)
+          ustress1(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,6)
+          vstress0(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,7)
+          vstress1(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,8)
+          wspeed0(I,J,bi,bj)           = StoreEXF1(I,J,bi,bj,9)
+          wspeed1(I,J,bi,bj)           = StoreEXF1(I,J,bi,bj,10)
+# ifdef SHORTWAVE_HEATING
+          swflux0(I,J,bi,bj)           = StoreEXF1(I,J,bi,bj,11)
+          swflux1(I,J,bi,bj)           = StoreEXF1(I,J,bi,bj,12)
+# endif
+# ifdef ALLOW_RUNOFF
+          runoff0(I,J,bi,bj)           = StoreEXF1(I,J,bi,bj,13)
+          runoff1(I,J,bi,bj)           = StoreEXF1(I,J,bi,bj,14)
+# endif
+# ifdef ATMOSPHERIC_LOADING
+          apressure0(I,J,bi,bj)        = StoreEXF1(I,J,bi,bj,15)
+          apressure1(I,J,bi,bj)        = StoreEXF1(I,J,bi,bj,16)
+          siceload(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,17)
+# endif
+# ifdef ALLOW_CLIMSSS_RELAXATION
+          climsss0(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,18)
+          climsss1(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,19)
+# endif
+# ifdef ALLOW_CLIMSST_RELAXATION
+          climsst0(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,20)
+          climsst1(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,21)
+# endif
          enddo
         enddo
        enddo
       enddo
        
-# ifdef ALLOW_ATM_TEMP
+# if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      2D arrays
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
+#  ifdef ALLOW_ATM_TEMP
           aqh0(I,J,bi,bj)            = StoreEXF2(I,J,bi,bj,1)
           aqh1(I,J,bi,bj)            = StoreEXF2(I,J,bi,bj,2)
           atemp0(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,3)
@@ -183,42 +199,29 @@ C-      2D arrays
           precip1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,6)
           lwflux0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,7) 
           lwflux1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,8)
-          swflux0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,9)
-          swflux1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,10)
-#  ifdef EXF_READ_EVAP
-          evap0(I,J,bi,bj)           = StoreEXF2(I,J,bi,bj,11)
-          evap1(I,J,bi,bj)           = StoreEXF2(I,J,bi,bj,12)
-#  else
-          evap(I,J,bi,bj)            = StoreEXF2(I,J,bi,bj,11)
-#  endif /* EXF_READ_EVAP */
-#  ifdef ALLOW_DOWNWARD_RADIATION
-          swdown0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,13)
-          swdown1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,14)
-          lwdown0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,15)
-          lwdown1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,16)
-#  endif
-# ifdef ALLOW_CLIMSSS_RELAXATION
-          climsss0(I,J,bi,bj)        = StoreEXF2(I,J,bi,bj,17)
-          climsss1(I,J,bi,bj)        = StoreEXF2(I,J,bi,bj,18)
-# endif
-# ifdef ALLOW_CLIMSST_RELAXATION
-          climsst0(I,J,bi,bj)        = StoreEXF2(I,J,bi,bj,19)
-          climsst1(I,J,bi,bj)        = StoreEXF2(I,J,bi,bj,20)
-# endif
-# ifdef ATMOSPHERIC_LOADING
-          apressure0(I,J,bi,bj)      = StoreEXF2(I,J,bi,bj,21)
-          apressure1(I,J,bi,bj)      = StoreEXF2(I,J,bi,bj,22)
-          siceload(I,J,bi,bj)        = StoreEXF2(I,J,bi,bj,23)
-# endif
-# ifdef ALLOW_RUNOFF
-          runoff0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,24)
-          runoff1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,25)
-# endif
+#   ifdef EXF_READ_EVAP
+          evap0(I,J,bi,bj)           = StoreEXF2(I,J,bi,bj,9)
+          evap1(I,J,bi,bj)           = StoreEXF2(I,J,bi,bj,10)
+#   else
+          evap(I,J,bi,bj)            = StoreEXF2(I,J,bi,bj,9)
+#   endif /* EXF_READ_EVAP */
+#   ifdef ALLOW_DOWNWARD_RADIATION
+          swdown0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,11)
+          swdown1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,12)
+          lwdown0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,13)
+          lwdown1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,14)
+#   endif
+#  endif /* ALLOW_ATM_TEMP */
+#  ifdef ALLOW_ATM_WIND
+          uwind0(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,15)
+          uwind1(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,16)
+          vwind0(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,17)
+          vwind1(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,18)
+#  endif  /* ALLOW_ATM_WIND */
          enddo
         enddo
        enddo
       enddo
-       
 # endif /* ALLOW_ATM_TEMP */
 
 C--   Over all tiles
