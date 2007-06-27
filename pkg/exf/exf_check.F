@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.6 2007/05/14 19:34:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.7 2007/06/27 21:38:09 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -85,7 +85,7 @@ cph         endif
         STOP 'wind-stress position defined by Long/Lat'
       ENDIF
 #else
-      IF ( ustressfile .NE. ' ' .OR. ustressfile .NE. ' ' ) THEN
+      IF ( ustressfile .NE. ' ' .OR. vstressfile .NE. ' ' ) THEN
         IF ( (readStressOnAgrid.AND.readStressOnCgrid) .OR.
      &   .NOT.(readStressOnAgrid.OR.readStressOnCgrid) ) THEN
           STOP
