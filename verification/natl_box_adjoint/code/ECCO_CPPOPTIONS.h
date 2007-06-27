@@ -39,7 +39,7 @@ C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 C
 C       >>> switch btw. 2-/3-level checkpointing
-#undef AUTODIFF_2_LEVEL_CHECKPOINT
+#define AUTODIFF_4_LEVEL_CHECKPOINT
 C
 C       >>> Extract adjoint state
 #define ALLOW_AUTODIFF_MONITOR
@@ -63,6 +63,7 @@ C ********************************************************************
 C
 #define ALLOW_COST
 #ifdef ALLOW_COST
+# define ALLOW_PROFILES_CONTRIBUTION
 C       >>> Use the EGM-96 geoid error covariance.
 # undef  ALLOW_EGM96_ERROR_COV
 # undef  ALLOW_READ_EGM_DATA
@@ -168,6 +169,9 @@ C   on or off. The implementation automatically takes care of this.
 
 C   Do more printout for the protocol file than usual.
 #undef EXF_VERBOSE
+
+C   Add runoff
+#define ALLOW_RUNOFF
 
 C   Use interpolation...
 #undef USE_EXF_INTERPOLATION
