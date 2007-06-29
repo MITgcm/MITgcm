@@ -8,8 +8,8 @@ F90FIXEDFORMAT='-fixed -Tf'
 DEFINES='-DWORDLENGTH=4'
 LINK='ifort -static'
 CPP='cpp  -traditional -P'
-INCLUDES='-I/usr/local/pkg/netcdf/include'
-LIBS='-L/usr/local/pkg/netcdf/lib -lnetcdf'
+INCLUDES=''
+LIBS=''
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
