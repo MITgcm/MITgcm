@@ -21,6 +21,6 @@ else
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -xN -pc64 -convert big_endian -assume byterecl'
 fi
 
-F90OPTIM=$(FOPTIM)
-F90FLAGS=$(FFLAGS)
+F90OPTIM=$FOPTIM
+F90FLAGS=$FFLAGS
 
