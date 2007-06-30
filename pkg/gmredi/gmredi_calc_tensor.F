@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.28 2007/06/26 15:34:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.29 2007/06/30 14:09:57 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -432,18 +432,17 @@ CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
 cph)
 #endif /* GM_VISBECK_VARIABLE_K */
 
+C-    express the Tensor in term of Diffusivity (= m**2 / s )
+      DO k=1,Nr
 #ifdef ALLOW_AUTODIFF_TAMC
        kkey = (igmkey-1)*Nr + k
-#if (defined (GM_NON_UNITY_DIAGONAL) || \
+# if (defined (GM_NON_UNITY_DIAGONAL) || \
      defined (GM_VISBECK_VARIABLE_K))
 CADJ STORE Kwx(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE Kwy(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+# endif
 #endif
-#endif
-
-C-    express the Tensor in term of Diffusivity (= m**2 / s )
-      DO k=1,Nr
        DO j=1-Oly+1,sNy+Oly-1
         DO i=1-Olx+1,sNx+Olx-1
 #ifdef ALLOW_KAPGM_CONTROL
@@ -512,6 +511,9 @@ C-- 2nd  k loop : compute Tensor Coeff. at U point
        kp1 = MIN(Nr,k+1)
        maskp1 = 1. _d 0
        IF (k.GE.Nr) maskp1 = 0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+       kkey = (igmkey-1)*Nr + k
+#endif
 
 C     Gradient of Sigma at U points
        DO j=1-Oly+1,sNy+Oly-1
@@ -549,14 +551,10 @@ C     Calculate slopes for use in tensor, taper and/or clip
      I             kLow_W,
      I             k, bi, bj, myTime, myIter, myThid )
 
-cph( NEW
 #ifdef ALLOW_AUTODIFF_TAMC
-cph(
 CADJ STORE SlopeSqr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE taperFct(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-cph)
 #endif /* ALLOW_AUTODIFF_TAMC */
-cph)
 
 #ifdef GM_NON_UNITY_DIAGONAL
 c      IF ( GM_nonUnitDiag ) THEN
@@ -688,6 +686,9 @@ C     Gradient of Sigma at V points
        kp1 = MIN(Nr,k+1)
        maskp1 = 1. _d 0
        IF (k.GE.Nr) maskp1 = 0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+       kkey = (igmkey-1)*Nr + k
+#endif
 
        DO j=1-Oly+1,sNy+Oly-1
         DO i=1-Olx+1,sNx+Olx-1
