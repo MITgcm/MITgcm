@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.40 2007/06/22 06:41:10 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.41 2007/07/06 02:37:34 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -139,7 +139,7 @@ C     SEAICE_wetSnowAlb  - wet snow albedo
 C     SEAICE_waterAlbedo - water albedo
 C     SEAICE_strength    - sea-ice strength Pstar
 C     SEAICE_eccen       - sea-ice eccentricity of the elliptical yield curve
-C     SEAICE_sensHeat    - buld sensible heat transfer coefficient 
+C     SEAICE_sensHeat    - bulk sensible heat transfer coefficient 
 C                          = (sensible heat transfer coefficient)
 C                          x (heat capacity of air) 
 C                          x (density of air)
@@ -158,6 +158,8 @@ C     SEAICE_snowThick   - cutoff snow thickness
 C     SEAICE_shortwave   - penetration shortwave radiation factor
 C     SEAICE_freeze      - FREEZING TEMP. OF SEA WATER
 C     SEAICE_salinity    - seaice salinity in g/kg
+C     SEAICE_availHeatFrac - Fraction of surface level heat content used to
+C                            melt or grow ice (default 1.0)
 C     SEAICEstressFactor - factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          - sets accuracy of LSR solver
 C     DIFF1              - parameter used in advect.F
@@ -191,7 +193,7 @@ C
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
       _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
-      _RL SEAICE_salinity, SEAICEstressFactor
+      _RL SEAICE_salinity, SEAICE_availHeatFrac, SEAICEstressFactor
       _RL OCEAN_drag, LSR_ERROR, DIFF1, A22, HO
       _RL WindForcingStart, WindForcingEnd, WindForcingPeriod
       _RL FluxForcingStart, FluxForcingEnd, FluxForcingPeriod
@@ -214,7 +216,7 @@ C
      &    SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
-     &    SEAICE_salinity, SEAICEstressFactor,
+     &    SEAICE_salinity, SEAICE_availHeatFrac, SEAICEstressFactor,
      &    OCEAN_drag, LSR_ERROR, DIFF1, A22, HO,
      &    WindForcingStart, WindForcingEnd, WindForcingPeriod,
      &    FluxForcingStart, FluxForcingEnd, FluxForcingPeriod,

@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.847 2007/06/28 00:35:07 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.848 2007/07/06 02:37:34 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -13,12 +13,16 @@ o seaice adjoint
   * add AREA, HEFF, HSNOW as control variable
     (should not change lab_sea results)
   * CTRL_OPTIONS.h needs new flag: CTRL_SET_OLD_MAXCVARS_40
-o pkg/seaice: added computation of saltFlux in seaice_growth;
-   For time being, sea ice salinity is assumed constant
-   contribution of snow flooding to freshening of sea ice is neglected.
-   SEAICE_salinity is set in SEAICE_PARM01 of data.seaice and it
-   defaults to 0.0 in order to maintain backward compatibility.
-   Typical values for SEAICE_salinity are 4 to 10 g/kg.
+o pkg/seaice:
+  * added computation of saltFlux in seaice_growth;
+    For time being, sea ice salinity is assumed constant
+    contribution of snow flooding to freshening of sea ice is neglected.
+    SEAICE_salinity is set in SEAICE_PARM01 of data.seaice and it
+    defaults to 0.0 in order to maintain backward compatibility.
+    Typical values for SEAICE_salinity are 4 to 10 g/kg.
+  * replaced dRf(1) with dRf(kSurface)*hFacC(kSurface) in seaice_growth.F
+  * added SEAICE_availHeatFrac, which specifies fraction of surface level
+    heat content used to melt or grow ice
 
 checkpoint59d
 o standard name: {PKG}_DIAGNOSTICS_STATE to fill diagnostics array
