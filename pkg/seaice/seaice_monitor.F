@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.10 2007/06/25 15:41:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.11 2007/07/07 13:20:20 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -174,7 +174,7 @@ c-- which are tested by testreport
               ENDDO
            ENDDO
         ENDDO
-        CALL MON_SET_PREF(' ',myThid)
+        CALL MON_SET_PREF('offline',myThid)
         CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'cg2d_init_res',
      &       maskH,maskH,rA ,drF,myThid)
         CALL MON_SET_PREF('dynstat',myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.15 2007/06/25 15:41:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.16 2007/07/07 13:17:14 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -160,7 +160,7 @@ C       Print some statistics about input forcing fields
 c-- Trick monitor output for testreport
 C-- by writing some statistics into dynstat fields
 c-- which are tested by testreport
-        CALL MON_SET_PREF(' ',myThid)
+        CALL MON_SET_PREF('offline',myThid)
         CALL MON_PRINTSTATS_RL(1,hflux,'cg2d_init_res',
      &       maskH,maskH,rA ,drF,myThid)
 c--
