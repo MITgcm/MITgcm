@@ -147,4 +147,5 @@ c
 # endif
 #endif
 
-#endif ALLOW_AUTODIFF_MONITOR
+#endif /* ALLOW_AUTODIFF_MONITOR */
+
