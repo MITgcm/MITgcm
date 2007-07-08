@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.8 2006/11/27 16:09:55 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.9 2007/07/08 20:24:51 molod Exp $
 C $Name:  $
 
        subroutine make_phys_grid(drF,hfacC,im1,im2,jm1,jm2,Nr,
@@ -69,6 +69,7 @@ c   the dp's are in the dptry arrays:
        data bot_thick40/20000.000/
        _RL deltap, dpstar_accum
        integer nlbotmax, nstart, nlevs, nlphys, ndone
+       _RL thindp
 c
        if( (Nr.eq.10) .or. (Nr.eq.20) ) then
         ntry = ntry10
@@ -76,7 +77,7 @@ c
         do L = 1,ntry
          dptry(L) = dptry10(L)
         enddo
-       elseif((Nr.eq.40).or.(Nr.eq.46)) then
+       elseif((Nr.eq.40).or.(Nr.eq.46).or.(Nr.eq.70)) then
         ntry = ntry40
         bot_thick = bot_thick40
         do L = 1,ntry
@@ -86,6 +87,9 @@ c
         print *,' Dont know how to make fizhi grid '
         stop
        endif
+
+       thindp=100.
+       if(Nr.eq.70)thindp=0.02
 c
        do L = 1,Nr
         do j = j1,j2
@@ -232,9 +236,9 @@ c  All done adding layers - if we need more to make numlevphys, put
 c     them as thin (1 mb) layers near the top
        if(nlphys.lt.numlevphys)then
         nlevs = numlevphys-nlphys
-        dpphys(i,j,nlphys,bi,bj) = dpphys(i,j,nlphys,bi,bj)-100. * nlevs
+        dpphys(i,j,nlphys,bi,bj)=dpphys(i,j,nlphys,bi,bj)-thindp*nlevs
         do Lnew = nlphys+1,numlevphys
-         dpphys(i,j,Lnew,bi,bj) = 100.
+         dpphys(i,j,Lnew,bi,bj) = thindp
         enddo
         nlperdyn(i,j,Nr,bi,bj) = numlevphys
        endif
