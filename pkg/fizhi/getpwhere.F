@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.5 2004/11/03 23:55:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.6 2007/07/08 20:24:02 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -59,7 +59,7 @@ c    Counting from bottom to top, the dp's are:
         do L = 1,ntry
          dptry(L) = dptry10(L)
         enddo
-       elseif (Nr.eq.40) then
+       elseif ((Nr.eq.40).or.(Nr.eq.70)) then
         ntry = ntry40
         do L = 1,ntry
          dptry(L) = dptry40(L)
@@ -101,8 +101,9 @@ c define the rest of the mid pressures from the dynamics levels
          pref(L) = rF_pmid(dynlev+L-ntry+1)
         enddo
        endif
-c Add top level DP of 1 mb - p mid is at 0.5 mb
+c Add top level DP of 1 mb - p mid is at 0.5 mb (or 0.05 mb for strat version)
        pref(Nrphys) = 0.5
+       if(Nr.eq.70)pref(Nrphys) = 0.005
 c
        do n = 1,numpress
         do L = 1,Nrphys
