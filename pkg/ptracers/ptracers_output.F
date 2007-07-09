@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_output.F,v 1.1 2004/12/01 22:54:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_output.F,v 1.2 2007/07/09 10:06:48 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -38,7 +38,7 @@ C     Write snapshot output
       CALL PTRACERS_WRITE_STATE( myIter, myTime, myThid )
 #ifdef ALLOW_TIMEAVE
 C     Write time average output
-      IF (taveFreq.GT.0. .AND. myIter.NE.nIter0 ) THEN
+      IF ( PTRACERS_taveFreq.GT.0. .AND. myIter.NE.nIter0 ) THEN
        CALL PTRACERS_WRITE_TIMEAVE( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_TIMEAVE */
