@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.35 2007/02/05 03:14:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.36 2007/07/11 15:11:05 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -338,7 +338,7 @@ C     (next fill for these diagnostics will NOT allow counter to be incremented)
            DO K=1,Nr
             DO j = 1,sNy
              DO i = 1,sNx+1
-               tmpMk(i,j,K,bi,bj) = -uVel(i,j,K,bi,bj)*
+               tmpMk(i,j,K,bi,bj) = -uVel(i,j,K,bi,bj)
      .                    *86400./dTtracerLev(1)
              ENDDO
             ENDDO
