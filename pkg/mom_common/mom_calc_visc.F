@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.24 2006/11/23 09:49:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.25 2007/07/13 16:36:41 cnh Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -47,8 +47,10 @@ C     viscA4gridmax is CFL stability limiter for biharmonic viscosity
 C      biharmonic viscosity<viscA4gridmax*L**4/32/deltaT (approx)
 C
 C     viscAhgridmin and viscA4gridmin are lower limits for viscosity:
-C      harmonic viscosity>0.25*viscAhgridmax*L**2/deltaT
-C      biharmonic viscosity>viscA4gridmax*L**4/32/deltaT (approx)
+C       harmonic viscosity>0.25*viscAhgridmin*L**2/deltaT
+C       biharmonic viscosity>viscA4gridmin*L**4/32/deltaT (approx)
+
+
 C
 C     RECOMMENDED VALUES
 C     viscC2Leith=1-3
@@ -319,7 +321,7 @@ C These are (powers of) length scales
          L2rdt=0.25 _d 0*recip_dt*L2
 
          IF (useAreaViscLength) THEN
-          L4rdt=0.125 _d 0*recip_dt*rA(i,j,bi,bj)**2
+          L4rdt=0.03125 _d 0*recip_dt*L2**2
          ELSE
           L4rdt=recip_dt/( 6. _d 0*(recip_DXF(I,J,bi,bj)**4
      &                            +recip_DYF(I,J,bi,bj)**4)
