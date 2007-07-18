@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.11 2007/07/18 22:53:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.12 2007/07/18 23:07:38 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -150,7 +150,7 @@ C Western boundary
           seaiceMaskU(I,J,bi,bj)=   0.0 _d 0
           seaiceMaskV(I,J,bi,bj)=   0.0 _d 0
           mask_uice=HEFFM(I,J,bi,bj)+HEFFM(I-1,J  ,bi,bj)
-          IF(mask_uice.GT.1i,bj)=ONE
+          IF(mask_uice.GT.1.5) seaiceMaskU(I,J,bi,bj)=ONE
           mask_uice=HEFFM(I,J,bi,bj)+HEFFM(I  ,J-1,bi,bj)
           IF(mask_uice.GT.1.5) seaiceMaskV(I,J,bi,bj)=ONE
 #else
