@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.10 2007/06/21 04:06:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.11 2007/07/18 22:53:34 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -26,6 +26,9 @@ CML#include "SEAICE_GRID.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
+#ifdef ALLOW_OBCS
+#include "OBCS.h"
+#endif /* ALLOW_OBCS */
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
@@ -39,6 +42,17 @@ C     i,j,k,bi,bj - Loop counters
       _RL PSTAR
       _RS  mask_uice
       INTEGER myIter, myTile
+
+#ifdef ALLOW_OBCS
+      INTEGER I_obc, J_obc, kSurface
+      _RL obc_mask
+
+      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+       kSurface        = Nr 
+      else
+       kSurface        = 1
+      endif
+#endif /* ALLOW_OBCS */
 
 cph(
 cph   make sure TAF sees proper initialisation
@@ -77,27 +91,79 @@ C--   Initialize grid info
           IF (_hFacC(i,j,1,bi,bj).eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
          ENDDO
         ENDDO
+
+#ifdef ALLOW_OBCS
+C     Apply OBCS T/S mask (taken from pkg/obcs/obcs_apply_ts.F)
+#ifdef ALLOW_OBCS_NORTH
+        DO I=1-Olx,sNx+Olx
+C Northern boundary
+         J_obc = OB_Jn(I,bi,bj)
+         IF (J_obc.NE.0) THEN
+          obc_mask = _maskS(I,J_obc,kSurface,bi,bj)
+          DO J = J_obc, J_obc+Oly
+           HEFFM(i,j,bi,bj)=obc_mask
+          ENDDO
+         ENDIF
+        ENDDO
+#endif
+#ifdef ALLOW_OBCS_SOUTH
+        DO I=1-Olx,sNx+Olx
+C Southern boundary
+         J_obc = OB_Js(I,bi,bj)
+         IF (J_obc.NE.0) THEN
+          obc_mask = _maskS(I,J_obc+1,kSurface,bi,bj)
+          DO J = J_obc-Oly, J_obc
+           HEFFM(i,j,bi,bj)=obc_mask
+          ENDDO
+         ENDIF
+        ENDDO
+#endif
+#ifdef ALLOW_OBCS_EAST
+        DO J=1-Oly,sNy+Oly
+C Eastern boundary
+         I_obc = OB_Ie(J,bi,bj)
+         IF (I_obc.NE.0) THEN
+          obc_mask = _maskW(I_obc,J,kSurface,bi,bj)
+          DO I = I_obc, I_obc+Olx
+           HEFFM(i,j,bi,bj)=obc_mask
+          ENDDO
+         ENDIF
+        ENDDO
+#endif
+#ifdef ALLOW_OBCS_WEST
+        DO J=1-Oly,sNy+Oly
+C Western boundary
+         I_obc=OB_Iw(J,bi,bj)
+         IF (I_obc.NE.0) THEN
+          obc_mask = _maskW(I_obc+1,J,kSurface,bi,bj)
+          DO I = I_obc-Olx, I_obc
+           HEFFM(i,j,bi,bj)=obc_mask
+          ENDDO
+         ENDIF
+        ENDDO
+#endif
+#endif /* ALLOW_OBCS */
+
         DO J=1-OLy+1,sNy+OLy
          DO I=1-OLx+1,sNx+OLx
-#ifndef SEAICE_CGRID
+#ifdef SEAICE_CGRID
+          seaiceMaskU(I,J,bi,bj)=   0.0 _d 0
+          seaiceMaskV(I,J,bi,bj)=   0.0 _d 0
+          mask_uice=HEFFM(I,J,bi,bj)+HEFFM(I-1,J  ,bi,bj)
+          IF(mask_uice.GT.1i,bj)=ONE
+          mask_uice=HEFFM(I,J,bi,bj)+HEFFM(I  ,J-1,bi,bj)
+          IF(mask_uice.GT.1.5) seaiceMaskV(I,J,bi,bj)=ONE
+#else
           UVM(i,j,bi,bj)=0. _d 0
           mask_uice=HEFFM(I,J,  bi,bj)+HEFFM(I-1,J-1,bi,bj)
      &             +HEFFM(I,J-1,bi,bj)+HEFFM(I-1,J,  bi,bj)
           IF(mask_uice.GT.3.5) UVM(I,J,bi,bj)=ONE
-#else
-          seaiceMaskU(I,J,bi,bj)=   0.0 _d 0
-          seaiceMaskV(I,J,bi,bj)=   0.0 _d 0
-          mask_uice=HEFFM(I,J,bi,bj)+HEFFM(I-1,J  ,bi,bj)
-          IF(mask_uice.GT.1.5) seaiceMaskU(I,J,bi,bj)=ONE
-          mask_uice=HEFFM(I,J,bi,bj)+HEFFM(I  ,J-1,bi,bj)
-          IF(mask_uice.GT.1.5) seaiceMaskV(I,J,bi,bj)=ONE
-#endif /* not SEAICE_CGRID */
+#endif /* SEAICE_CGRID */
          ENDDO
         ENDDO
 
 #ifdef ALLOW_EXCH2
-#ifdef SEAICE_CGRID
-#else
+#ifndef SEAICE_CGRID
 C--   Special stuff for cubed sphere: assume grid is rectangular and
 C     set UV mask to zero except for Arctic and Antarctic cube faces.
         IF (useCubedSphereExchange) THEN
@@ -123,7 +189,7 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
           ENDDO
          ENDIF
         ENDIF
-#endif
+#endif /* SEAICE_CGRID */
 #endif /* ALLOW_EXCH2 */
 
         DO j=1-OLy,sNy+OLy

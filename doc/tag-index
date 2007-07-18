@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.849 2007/07/18 22:26:05 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.850 2007/07/18 22:53:34 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -25,6 +25,7 @@ o pkg/seaice:
     heat content used to melt or grow ice
   * commented out cap of HICE: it helps keep ice thinner
   * reintroduced cap of HEFF via MAX_HEFF and SEAICE_CAP_HEFF option
+  * applied OBCS T/S mask to HEFFM sea ice mask
 
 checkpoint59d
 o standard name: {PKG}_DIAGNOSTICS_STATE to fill diagnostics array
