@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.19 2007/07/06 02:37:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.20 2007/07/18 22:26:05 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -189,7 +189,9 @@ C     Do we know what this is for?
 C     Capping the actual ice thickness effectively enforces a
 C     minimum of heat flux through the ice and helps getting rid of 
 C     very thick ice.
-          HICE(I,J)    = MIN(HICE(I,J),9.0 _d +00)
+cdm actually, this does exactly the opposite, i.e., ice is thicker
+cdm when HICE is capped, so I am commenting out
+cdm          HICE(I,J)    = MIN(HICE(I,J),9.0 _d +00)
           hSnwLoc(I,J) = HSNOW(I,J,bi,bj)/areaLoc
          ENDDO
         ENDDO
@@ -638,12 +640,12 @@ CADJ &                         key = iicekey, byte = isbyte
          DO I=1,sNx
           AREA(I,J,1,bi,bj) = MAX(ZERO,AREA(I,J,1,bi,bj))
           HSNOW(I,J,bi,bj)  = MAX(ZERO,HSNOW(I,J,bi,bj))
-#endif
+#endif /* DO_WE_NEED_THIS */
           AREA(I,J,1,bi,bj) = AREA(I,J,1,bi,bj)*HEFFM(I,J,bi,bj)
           HEFF(I,J,1,bi,bj) = HEFF(I,J,1,bi,bj)*HEFFM(I,J,bi,bj)
-#ifdef DO_WE_NEED_THIS
-c          HEFF(I,J,1,bi,bj)=MIN(MAX_HEFF,HEFF(I,J,1,bi,bj))
-#endif
+#ifdef SEAICE_CAP_HEFF
+          HEFF(I,J,1,bi,bj)=MIN(MAX_HEFF,HEFF(I,J,1,bi,bj))
+#endif /* SEAICE_CAP_HEFF */
           HSNOW(I,J,bi,bj)  = HSNOW(I,J,bi,bj)*HEFFM(I,J,bi,bj)
          ENDDO
         ENDDO

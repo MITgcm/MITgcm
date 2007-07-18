@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.23 2007/05/18 02:46:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.24 2007/07/18 22:26:05 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -96,6 +96,9 @@ C     defining the following flag
 #ifdef SEAICE_CGRID
 #define SEAICE_ALLOW_EVP
 #endif /* SEAICE_CGRID */
+
+C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth
+#undef SEAICE_CAP_HEFF
 
 #endif /* SEAICE_OPTIONS_H */
 
