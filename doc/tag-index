@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.850 2007/07/18 22:53:34 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.851 2007/07/19 15:34:50 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o gather_2d/scatter_2d: removed halo regions
 o gmredi: add option (GM_taper_scheme='fm07') for Ferrari & McWilliams 2007
   scheme and the corresponding test case (under front_relax dir). For now,
   only available with Skew-flux form and not yet tested in realistic set-up.

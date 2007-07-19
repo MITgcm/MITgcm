@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/scatter_2d.F,v 1.6 2005/11/09 19:52:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/scatter_2d.F,v 1.7 2007/07/19 15:34:50 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -13,11 +13,11 @@ C     mythid - thread number for this instance of the routine.
 C     global,local - working arrays used to transfer 2-D fields
       INTEGER mythid 
       Real*8  global(Nx,Ny)
-      _RL     local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     local(1:sNx,1:sNy,nSx,nSy)
 
       INTEGER iG,jG, i, j, bi, bj
 #ifdef ALLOW_USE_MPI
-      _RL     temp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     temp(1:sNx,1:sNy,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER isource, itag, npe
       INTEGER lbuff
@@ -43,7 +43,7 @@ C--   Make everyone wait except for master thread.
 
 #else /* ALLOW_USE_MPI */
 
-      lbuff=(sNx+2*OLx)*nSx*(sNy+2*OLy)*nSy
+      lbuff=sNx*nSx*sNy*nSy
       isource = 0
       itag = 0
 
@@ -92,12 +92,6 @@ C--   All proceses except 0 receive local array from process 0
 
       _END_MASTER( myThid )
       _BARRIER
-
-C--   Fill in edges.
-C jmc: Should not rely on this exchange (wrong if useCubedSphereExchange & 
-C      vector component or Z-point field) ; When scatter_2d is used to read 
-C      a global file, call exchanges afterward anyway.
-c     _EXCH_XY_R8( local, myThid )
 
       RETURN
       END

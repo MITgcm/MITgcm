@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_2d.F,v 1.7 2006/10/19 06:54:23 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_2d.F,v 1.8 2007/07/19 15:34:50 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -13,11 +13,11 @@ C     mythid - thread number for this instance of the routine.
 C     global,local - working arrays used to transfer 2-D fields
       INTEGER mythid 
       Real*8  global(Nx,Ny)
-      _RL     local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     local(1:sNx,1:sNy,nSx,nSy)
 
       INTEGER iG,jG, i, j, bi, bj
 #ifdef ALLOW_USE_MPI
-      _RL     temp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     temp(1:sNx,1:sNy,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, idest, itag, npe, ready_to_receive
 #endif /* ALLOW_USE_MPI */
@@ -42,7 +42,7 @@ C--   Make everyone wait except for master thread.
 
 #else /* ALLOW_USE_MPI */
 
-      lbuff = (sNx+2*OLx)*nSx*(sNy+2*OLy)*nSy
+      lbuff = sNx*nSx*sNy*nSy
       idest = 0
       itag  = 0
       ready_to_receive = 0
