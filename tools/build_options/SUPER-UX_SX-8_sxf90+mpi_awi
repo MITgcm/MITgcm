@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.3 2007/06/06 16:35:45 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.4 2007/07/20 10:15:05 mlosch Exp $
 #
 # for cross compiling on sx8.awi.de
 # uname -a: 
@@ -16,9 +16,15 @@ RMFILES='*.L'
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  X ## _"
 LINK='sxmpif90'
 #LINK='sxmpif90 -p' # with profiler
-# output to *.L files
-FFLAGS='-Wf "-pvctl noassume loopcnt=5000000 fullmsg" -R2 -Pstack -sx8r'
-# additional options
+FFLAGS='-Pstack -sx8r'
+# additional options:
+# include a formated code and a listing of compiler transformations 
+# in *.L files
+#FFLAGS=$FFLAGS' -R2'
+# assume a loop count of 5,000,000 instead of estimating it from field
+# declarations and include details messages about vectorization (if -R2 
+# specified)
+#FFLAGS=$FFLAGS' -Wf "-pvctl noassume loopcnt=5000000 fullmsg"'
 # This is how you inline routines (the actual routines depend on the packages 
 # used, therefore there are only a few examples here;
 # edit this list in the Makefile, because including it here will break the
@@ -28,10 +34,16 @@ FFLAGS='-Wf "-pvctl noassume loopcnt=5000000 fullmsg" -R2 -Pstack -sx8r'
 # define basic storage unit as 8 bytes (default is 4); does not work with 
 # netCDF (library needs recompilation, accordingly)
 #FFLAGS=$FFLAGS' -ew'   
-
-#FFLAGS=$FFLAGS' -ftrace' # trace output for performance analysis
+# trace output for performance analysis
+#FFLAGS=$FFLAGS' -ftrace'
+# default automatic optimization level
+#FOPTIM='-C vopt' 
 # highest automatic optimization level, handle with care
-#FOPTIM='-C hopt' 
+FOPTIM='-C hopt'
+
+# these files require lower optimization
+NOOPTFILES='ini_forcing.F mom_calc_visc.F'
+NOOPTFLAGS='-C vopt'
 
 # awi specific paths and stuff
 INCLUDES='-I/SX/usr/include -I/home/sx8/sx8bench/netcdf/include'
