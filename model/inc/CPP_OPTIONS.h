@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.40 2007/04/27 15:34:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.41 2007/07/22 23:51:15 dimitri Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -9,6 +9,9 @@ C CPP flags controlling particular source code features
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
 #undef SHORTWAVE_HEATING
+
+C o Include/exclude Duffy et al. (GRL 1999) salt plume scheme
+#undef ALLOW_SALT_PLUME
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE

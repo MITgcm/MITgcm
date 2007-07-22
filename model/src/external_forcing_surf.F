@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.37 2007/05/22 02:35:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.38 2007/07/22 23:51:16 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,6 +58,9 @@ CEOP
 #ifdef ALLOW_DIAGNOSTICS
       _RL tmpFac
 #endif /* ALLOW_DIAGNOSTICS */
+#ifdef ALLOW_SALT_PLUME
+     _RL saltPlume
+#endif /* ALLOW_SALT_PLUME */
 
       IF ( usingPCoords ) THEN
        ks        = Nr
@@ -192,6 +195,21 @@ C     Net heat flux Qnet:
 C     Net Salt Flux :
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
      &      -saltFlux(i,j,bi,bj)*horiVertRatio*recip_rhoConst
+#ifdef ALLOW_SALT_PLUME
+C saltPlume is the amount of salt rejected by ice while freezing;
+C it is here subtracted from surfaceForcingS and will be redistributed
+C to multiple vertical levels later on as per Duffy et al. (GRL 1999)
+          saltPlume = 0.
+#ifdef ALLOW_SEAICE
+          IF ( saltFlux(i,j,bi,bj) .GT. 0. .AND.
+     &         salt(i,j,ks,bi,bj)  .GT. SEAICE_salinity ) THEN
+           saltPlume = (salt(i,j,ks,bi,bj)-SEAICE_salinity) *
+     &          saltFlux(i,j,bi,bj) / salt(i,j,ks,bi,bj)
+          ENDIF
+#endif /* ALLOW_SEAICE */
+          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
+     &      -saltPlume*horiVertRatio*recip_rhoConst
+#endif /* ALLOW_SALT_PLUME */
 
          ENDDO
       ENDDO
@@ -243,9 +261,9 @@ c
         DO j = jMin, jMax
          DO i = iMin, iMax
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &      + PmEpR(i,j,bi,bj)
-     &         *( salt_EvPrRn - salt(i,j,ks,bi,bj) )
-     &         *convertEmP2rUnit
+     &      + ( PmEpR(i,j,bi,bj)
+     &        ) *( salt_EvPrRn - salt(i,j,ks,bi,bj) )
+     &          *convertEmP2rUnit
          ENDDO
         ENDDO
        ENDIF

@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.851 2007/07/19 15:34:50 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.852 2007/07/22 23:51:15 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o starting implementation of Duffy et al. (GRL 1999) salt plume scheme
+  (#ifdef ALLOW_SALT_PLUME)
 o gather_2d/scatter_2d: removed halo regions
 o gmredi: add option (GM_taper_scheme='fm07') for Ferrari & McWilliams 2007
   scheme and the corresponding test case (under front_relax dir). For now,

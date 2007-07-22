@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.42 2007/05/03 21:41:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.43 2007/07/22 23:51:16 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -396,6 +396,11 @@ C     == Global data ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SURFACE.h"
+#ifdef ALLOW_SALT_PLUME
+#ifdef ALLOW_SEAICE
+#include "SEAICE.h"
+#endif /* ALLOW_SEAICE */
+#endif /* ALLOW_SALT_PLUME */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -416,6 +421,9 @@ C     kSurface  :: index of surface layer
       INTEGER i, j
       INTEGER kSurface
 CEOP
+#ifdef ALLOW_SALT_PLUME
+     _RL saltPlume
+#endif /* ALLOW_SALT_PLUME */
 
       IF ( fluidIsAir ) THEN
        kSurface = 0
@@ -475,12 +483,36 @@ C     Add fresh-water in top-layer
      I     myTime, myThid )
 #endif /* ALLOW_SHELFICE */
 
+#ifdef ALLOW_SALT_PLUME
+C saltPlume is the amount of salt rejected by ice while freezing;
+C it is here redistributed to multiple vertical levels as per
+C Duffy et al. (GRL 1999)
+       DO j=1,sNy
+        DO i=1,sNx
+          saltPlume = 0.
+#ifdef ALLOW_SEAICE
+          IF ( saltFlux(i,j,bi,bj) .GT. 0. .AND.
+     &         salt(i,j,ks,bi,bj)  .GT. SEAICE_salinity ) THEN
+           saltPlume = (salt(i,j,ks,bi,bj)-SEAICE_salinity) *
+     &          saltFlux(i,j,bi,bj) / salt(i,j,ks,bi,bj)
+          ENDIF
+#endif /* ALLOW_SEAICE */
+          IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
+           gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+     &          +saltPlume*horiVertRatio*recip_rhoConst
+     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+     &          *max(drF(kLev),SaltPlumeDepth(i,j,bi,bj)+rF(kLev))
+     &          /SaltPlumeDepth(i,j,bi,bj)
+        ENDDO
+       ENDDO
+#endif /* ALLOW_SALT_PLUME */
+
 #ifdef ALLOW_RBCS
        if (useRBCS) then
           call RBCS_ADD_TENDENCY(bi,bj,klev, 2,
      &                            myTime, myThid )
        endif
-#endif
+#endif /* ALLOW_RBCS */
 
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
@@ -488,7 +520,7 @@ C     Add fresh-water in top-layer
      I           iMin,iMax, jMin,jMax, bi,bj, kLev,
      I           myTime, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_OBCS */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.51 2007/06/21 15:29:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.52 2007/07/22 23:51:16 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -428,6 +428,10 @@ C--     Diagnose Mixed Layer Depth:
           CALL CALC_OCE_MXLAYER( rhoK, sigmaR,
      &              bi, bj, myTime, myIter, myThid )
         ENDIF
+#endif
+#ifdef ALLOW_SALT_PLUME
+          CALL CALC_SALT_PLUME_DEPTH( rhoK, sigmaR,
+     &              bi, bj, myTime, myIter, myThid )
 #endif
 #ifdef ALLOW_DIAGNOSTICS
         IF ( doDiagsRho.GE.1 ) THEN

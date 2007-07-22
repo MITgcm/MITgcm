@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.32 2007/05/31 16:28:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.33 2007/07/22 23:51:16 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -99,6 +99,12 @@ C     BL79LatArray :: is used for latitudinal dependence of
 C                     BryanLewis79 vertical diffusivity
       _RL BL79LatArray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
+
+#ifdef ALLOW_SALT_PLUME
+C     SaltPlumeDepth :: depth of penetration of salt plumes
+C                       rejected during sea ice growth
+      _RL SaltPlumeDepth (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* ALLOW_SALT_PLUME */
 
 C     diagnostic variables:
 C     phiHydLow    :: Phi-Hydrostatic at r-lower boundary
