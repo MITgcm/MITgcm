@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.43 2007/07/22 23:51:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.44 2007/07/23 00:17:44 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -398,7 +398,7 @@ C     == Global data ==
 #include "SURFACE.h"
 #ifdef ALLOW_SALT_PLUME
 #ifdef ALLOW_SEAICE
-#include "SEAICE.h"
+#include "SEAICE_PARAMS.h"
 #endif /* ALLOW_SEAICE */
 #endif /* ALLOW_SALT_PLUME */
 
@@ -422,7 +422,7 @@ C     kSurface  :: index of surface layer
       INTEGER kSurface
 CEOP
 #ifdef ALLOW_SALT_PLUME
-     _RL saltPlume
+      _RL saltPlume
 #endif /* ALLOW_SALT_PLUME */
 
       IF ( fluidIsAir ) THEN
@@ -492,9 +492,9 @@ C Duffy et al. (GRL 1999)
           saltPlume = 0.
 #ifdef ALLOW_SEAICE
           IF ( saltFlux(i,j,bi,bj) .GT. 0. .AND.
-     &         salt(i,j,ks,bi,bj)  .GT. SEAICE_salinity ) THEN
-           saltPlume = (salt(i,j,ks,bi,bj)-SEAICE_salinity) *
-     &          saltFlux(i,j,bi,bj) / salt(i,j,ks,bi,bj)
+     &         salt(i,j,kSurface,bi,bj)  .GT. SEAICE_salinity ) THEN
+           saltPlume = (salt(i,j,kSurface,bi,bj)-SEAICE_salinity) *
+     &          saltFlux(i,j,bi,bj) / salt(i,j,kSurface,bi,bj)
           ENDIF
 #endif /* ALLOW_SEAICE */
           IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
@@ -503,6 +503,7 @@ C Duffy et al. (GRL 1999)
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
      &          *max(drF(kLev),SaltPlumeDepth(i,j,bi,bj)+rF(kLev))
      &          /SaltPlumeDepth(i,j,bi,bj)
+          ENDIF
         ENDDO
        ENDDO
 #endif /* ALLOW_SALT_PLUME */

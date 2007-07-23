@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_salt_plume_depth.F,v 1.1 2007/07/22 23:51:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_salt_plume_depth.F,v 1.2 2007/07/23 00:17:44 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -49,7 +49,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j :: Loop counters
       INTEGER i,j,k
-      _RL     rhoBigNb, tmpFac
+      _RL     rhoBigNb, tmpFac, SaltPlumeCriterion
       _RL     rhoMxL(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     rhoLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
