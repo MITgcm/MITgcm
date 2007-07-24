@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.12 2007/07/18 23:07:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.13 2007/07/24 18:57:22 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -28,6 +28,7 @@ CML#include "SEAICE_GRID.h"
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_OBCS
 #include "OBCS.h"
+#inclulde "OBCS_OPTIONS.h"
 #endif /* ALLOW_OBCS */
 
 C     === Routine arguments ===
