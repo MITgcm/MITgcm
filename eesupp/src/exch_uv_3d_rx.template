@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_3d_rx.template,v 1.2 2006/11/17 22:35:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_3d_rx.template,v 1.3 2007/07/25 21:19:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
+#ifdef ALLOW_EXCH2
+#include "W2_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: EXCH_UV_3D_RX
@@ -52,11 +55,17 @@ C     exchWidth[XY]  :: Extent of regions that will be exchanged.
 
 CEOP
 #ifdef ALLOW_EXCH2
+#ifdef W2_USE_R1_ONLY
+      CALL EXCH2_UV_CGRID_3D_RX(
+     U                     Uphi, Vphi,
+     I                     withSigns, myNz, myThid )
+#else
       CALL EXCH2_UV_3D_RX(
      U                     Uphi, Vphi,
      I                     withSigns, myNz, myThid )
+#endif
       RETURN
-#else
+#else /* ALLOW_EXCH2 */
 
       OLw        = OLx
       OLe        = OLx
@@ -87,7 +96,7 @@ C                begine.
       ENDIF
 
       RETURN
-#endif
+#endif /* ALLOW_EXCH2 */
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

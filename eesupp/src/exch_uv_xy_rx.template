@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_xy_rx.template,v 1.6 2006/11/17 22:35:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_xy_rx.template,v 1.7 2007/07/25 21:19:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
+#ifdef ALLOW_EXCH2
+#include "W2_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: EXCH_UV_XY_RX
@@ -14,13 +17,13 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_UV_XY_RX                                  
-C     | o Handle exchanges for _RX, two-dimensional arrays.    
+C     | SUBROUTINE EXCH_UV_XY_RX
+C     | o Handle exchanges for _RX, two-dimensional arrays.
 C     *==========================================================*
 C     | Driver exchange routine which branches to cube sphere or
 C     | global, simple cartesian index grid. Exchange routine is
 C     | called with two arrays that are components of a vector.
-C     | These components are rotated and interchanged on the 
+C     | These components are rotated and interchanged on the
 C     | rotated grid during cube exchanges.
 C     *==========================================================*
 
@@ -52,11 +55,17 @@ C     exchWidth[XY]  :: Extent of regions that will be exchanged.
 CEOP
 
 #ifdef ALLOW_EXCH2
+#ifdef W2_USE_R1_ONLY
+      CALL EXCH2_UV_CGRID_3D_RX(
+     U                       Uphi, Vphi,
+     I                       withSigns, 1, myThid )
+#else
       CALL EXCH2_UV_XY_RX(
      U                       Uphi, Vphi,
      I                       withSigns, myThid )
+#endif
       RETURN
-#else
+#else /* ALLOW_EXCH2 */
 
       OLw        = OLx
       OLe        = OLx
@@ -91,7 +100,7 @@ c_jmc: for JAM compatibility, replace the 2 CALLs above by the 2 CPP_MACROs:
       ENDIF
 
       RETURN
-#endif
+#endif /* ALLOW_EXCH2 */
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
