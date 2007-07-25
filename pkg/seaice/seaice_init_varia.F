@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.14 2007/07/24 23:14:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.15 2007/07/25 08:51:29 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -102,7 +102,7 @@ C Northern boundary
          IF (J_obc.NE.0) THEN
           obc_mask = _maskS(I,J_obc,kSurface,bi,bj)
           DO J = J_obc, J_obc+Oly
-           HEFFM(i,j,bi,bj)=obc_mask
+           IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
           ENDDO
          ENDIF
         ENDDO
@@ -114,7 +114,7 @@ C Southern boundary
          IF (J_obc.NE.0) THEN
           obc_mask = _maskS(I,J_obc+1,kSurface,bi,bj)
           DO J = J_obc-Oly, J_obc
-           HEFFM(i,j,bi,bj)=obc_mask
+           IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
           ENDDO
          ENDIF
         ENDDO
@@ -126,7 +126,7 @@ C Eastern boundary
          IF (I_obc.NE.0) THEN
           obc_mask = _maskW(I_obc,J,kSurface,bi,bj)
           DO I = I_obc, I_obc+Olx
-           HEFFM(i,j,bi,bj)=obc_mask
+           IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
           ENDDO
          ENDIF
         ENDDO
@@ -138,11 +138,12 @@ C Western boundary
          IF (I_obc.NE.0) THEN
           obc_mask = _maskW(I_obc+1,J,kSurface,bi,bj)
           DO I = I_obc-Olx, I_obc
-           HEFFM(i,j,bi,bj)=obc_mask
+           IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
           ENDDO
          ENDIF
         ENDDO
 #endif
+        _EXCH_XY_R8(HEFFM, myThid)
 #endif /* ALLOW_OBCS */
 
         DO J=1-OLy+1,sNy+OLy
