@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.27 2007/03/20 23:42:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.28 2007/07/25 21:05:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -523,31 +523,33 @@ C     !INTERFACE:
      I       kMin, kMax,   kStr,
      I      bxMin, bxMax,  bxStr,
      I      byMin, byMax,  byStr )
-      IMPLICIT NONE
+
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE PRINT\_MAPRS                                    
-C     | o Does textual mapping printing of a field.               
+C     | SUBROUTINE PRINT\_MAPRS
+C     | o Does textual mapping printing of a field.
 C     *==========================================================*
-C     | This routine does the actual formatting of the data       
-C     | and printing to a file. It assumes an array using the     
-C     | MITgcm UV indexing scheme and base index variables.       
-C     | User code should call an interface routine like           
-C     | PLOT\_FIELD\_XYRS( ... ) rather than this code directly.    
-C     | Text plots can be oriented XY, YZ, XZ. An orientation     
-C     | is specficied through the "plotMode" argument. All the    
-C     | plots made by a single call to this routine will use the  
-C     | same contour interval. The plot range (iMin,...,byStr)    
-C     | can be three-dimensional. A separate plot is made for     
-C     | each point in the plot range normal to the orientation.   
-C     | e.g. if the orientation is XY (plotMode = PRINT\_MAP\_XY).  
-C     |      kMin =1, kMax = 5 and kStr = 2 will produce three XY 
-C     |      plots - one for K=1, one for K=3 and one for K=5.    
-C     |      Each plot would have extents iMin:iMax step iStr     
-C     |      and jMin:jMax step jStr.                             
+C     | This routine does the actual formatting of the data
+C     | and printing to a file. It assumes an array using the
+C     | MITgcm UV indexing scheme and base index variables.
+C     | User code should call an interface routine like
+C     | PLOT\_FIELD\_XYRS( ... ) rather than this code directly.
+C     | Text plots can be oriented XY, YZ, XZ. An orientation
+C     | is specficied through the "plotMode" argument. All the
+C     | plots made by a single call to this routine will use the
+C     | same contour interval. The plot range (iMin,...,byStr)
+C     | can be three-dimensional. A separate plot is made for
+C     | each point in the plot range normal to the orientation.
+C     | e.g. if the orientation is XY (plotMode = PRINT\_MAP\_XY).
+C     |      kMin =1, kMax = 5 and kStr = 2 will produce three XY
+C     |      plots - one for K=1, one for K=3 and one for K=5.
+C     |      Each plot would have extents iMin:iMax step iStr
+C     |      and jMin:jMax step jStr.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
+
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -610,7 +612,7 @@ C               Min  - Start index within block
 C               Max  - End index within block
 C               Str  - stride within block
       INTEGER MAX_LEN_PLOTBUF
-      PARAMETER ( MAX_LEN_PLOTBUF = MAX_LEN_MBUF-4 )
+      PARAMETER ( MAX_LEN_PLOTBUF = MAX_LEN_MBUF-20 )
       CHARACTER*(MAX_LEN_PLOTBUF) plotBuf
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER lChList
@@ -661,9 +663,7 @@ C--   Calculate field range
        ENDDO
       ENDDO
       fRange = fMax-fMin
-      IF ( fRange .GT. small .AND.
-     &     (MAX_LEN_PLOTBUF-35) .GT. sNx*nSx .AND.
-     &     (MAX_LEN_PLOTBUF-35) .GT. sNy*nSy ) validRange = .TRUE.
+      IF ( fRange .GT. small ) validRange = .TRUE.
 
 C--   Write field title and statistics
       msgBuf = 
@@ -730,13 +730,13 @@ C--   Write field title and statistics
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
 
-      if (Nx.gt.MAX_LEN_PLOTBUF-20) THEN
-       msgBuf = 
-     &  'Model domain too big to print to terminal - skipping I/O'
-       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-     &                   SQUEEZE_RIGHT, 1)
-       RETURN
-      endif
+c     if (Nx.gt.MAX_LEN_PLOTBUF-20) THEN
+c      msgBuf =
+c    &  'Model domain too big to print to terminal - skipping I/O'
+c      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+c    &                   SQUEEZE_RIGHT, 1)
+c      RETURN
+c     endif
 
 C--   Write field
 C     Figure out slice type and set plotting parameters appropriately
@@ -829,6 +829,15 @@ C      X across, Z down slice
        pltBase = myYGlobalLo
        pltStep = sNy
        pltLab  = 'J ='
+      ENDIF
+C-    check if it fits into buffer (-10 should be enough but -12 is safer):
+      IF ( (accMax-accMin+1)*(accBhi-accBlo+1).GT.MAX_LEN_PLOTBUF-12
+     &     .AND. validRange ) THEN
+       msgBuf =
+     &  'Model domain too big to print to terminal - skipping I/O'
+       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+       validRange = .FALSE.
       ENDIF
       IF ( validRange ) THEN
 C      Header
@@ -946,32 +955,33 @@ C     !INTERFACE:
      I       kMin, kMax,   kStr,
      I      bxMin, bxMax,  bxStr,
      I      byMin, byMax,  byStr )
-      IMPLICIT NONE
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE PRINT\_MAPRL                                    
-C     | o Does textual mapping printing of a field.               
+C     | SUBROUTINE PRINT\_MAPRL
+C     | o Does textual mapping printing of a field.
 C     *==========================================================*
-C     | This routine does the actual formatting of the data       
-C     | and printing to a file. It assumes an array using the     
-C     | MITgcm UV indexing scheme and base index variables.       
-C     | User code should call an interface routine like           
-C     | PLOT\_FIELD\_XYRL( ... ) rather than this code directly.    
-C     | Text plots can be oriented XY, YZ, XZ. An orientation     
-C     | is specficied through the "plotMode" argument. All the    
-C     | plots made by a single call to this routine will use the  
-C     | same contour interval. The plot range (iMin,...,byStr)    
-C     | can be three-dimensional. A separate plot is made for     
-C     | each point in the plot range normal to the orientation.   
-C     | e.g. if the orientation is XY (plotMode = PRINT\_MAP\_XY).  
-C     |      kMin =1, kMax = 5 and kStr = 2 will produce three XY 
-C     |      plots - one for K=1, one for K=3 and one for K=5.    
-C     |      Each plot would have extents iMin:iMax step iStr     
-C     |      and jMin:jMax step jStr.                             
+C     | This routine does the actual formatting of the data
+C     | and printing to a file. It assumes an array using the
+C     | MITgcm UV indexing scheme and base index variables.
+C     | User code should call an interface routine like
+C     | PLOT\_FIELD\_XYRL( ... ) rather than this code directly.
+C     | Text plots can be oriented XY, YZ, XZ. An orientation
+C     | is specficied through the "plotMode" argument. All the
+C     | plots made by a single call to this routine will use the
+C     | same contour interval. The plot range (iMin,...,byStr)
+C     | can be three-dimensional. A separate plot is made for
+C     | each point in the plot range normal to the orientation.
+C     | e.g. if the orientation is XY (plotMode = PRINT\_MAP\_XY).
+C     |      kMin =1, kMax = 5 and kStr = 2 will produce three XY
+C     |      plots - one for K=1, one for K=3 and one for K=5.
+C     |      Each plot would have extents iMin:iMax step iStr
+C     |      and jMin:jMax step jStr.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
+
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -1034,7 +1044,7 @@ C               Min  - Start index within block
 C               Max  - End index within block
 C               Str  - stride within block
       INTEGER MAX_LEN_PLOTBUF
-      PARAMETER ( MAX_LEN_PLOTBUF = MAX_LEN_MBUF-4 )
+      PARAMETER ( MAX_LEN_PLOTBUF = MAX_LEN_MBUF-20 )
       CHARACTER*(MAX_LEN_PLOTBUF) plotBuf
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER lChList
@@ -1086,9 +1096,7 @@ C--   Calculate field range
        ENDDO
       ENDDO
       fRange = fMax-fMin
-      IF ( fRange .GT. small .AND.
-     &     (MAX_LEN_PLOTBUF-35) .GT. sNx*nSx .AND.
-     &     (MAX_LEN_PLOTBUF-35) .GT. sNy*nSy ) validRange = .TRUE.
+      IF ( fRange .GT. small ) validRange = .TRUE.
 
 C--   Write field title and statistics
       msgBuf = 
@@ -1155,13 +1163,13 @@ C--   Write field title and statistics
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
 
-      if (Nx.gt.MAX_LEN_PLOTBUF-20) THEN
-       msgBuf = 
-     &  'Model domain too big to print to terminal - skipping I/O'
-       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-     &                   SQUEEZE_RIGHT, 1)
-       RETURN
-      endif
+c     if (Nx.gt.MAX_LEN_PLOTBUF-20) THEN
+c      msgBuf =
+c    &  'Model domain too big to print to terminal - skipping I/O'
+c      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+c    &                   SQUEEZE_RIGHT, 1)
+c      RETURN
+c     endif
 
 C--   Write field
 C     Figure out slice type and set plotting parameters appropriately
@@ -1254,6 +1262,15 @@ C      X across, Z down slice
        pltBase = myYGlobalLo
        pltStep = sNy
        pltLab  = 'J ='
+      ENDIF
+C-    check if it fits into buffer (-10 should be enough but -12 is safer):
+      IF ( (accMax-accMin+1)*(accBhi-accBlo+1).GT.MAX_LEN_PLOTBUF-12
+     &     .AND. validRange ) THEN
+       msgBuf =
+     &  'Model domain too big to print to terminal - skipping I/O'
+       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &                   SQUEEZE_RIGHT, 1)
+       validRange = .FALSE.
       ENDIF
       IF ( validRange ) THEN
 C      Header
