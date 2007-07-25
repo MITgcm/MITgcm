@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.852 2007/07/22 23:51:15 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.853 2007/07/25 21:23:29 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o exch2: new S/R that only use the cube-tracer (center-position) exchange:
+  for B-grid vector (not yet tested) and C-grid vector (<- only used
+  when option W2_USE_R1_ONLY in W2_OPTIONS.h is defined).
 o starting implementation of Duffy et al. (GRL 1999) salt plume scheme
   (#ifdef ALLOW_SALT_PLUME)
 o gather_2d/scatter_2d: removed halo regions
