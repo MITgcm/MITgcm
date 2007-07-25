@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_agrid_3d_rx.template,v 1.2 2006/11/18 01:09:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_agrid_3d_rx.template,v 1.3 2007/07/25 21:13:20 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -9,7 +9,7 @@ C     !ROUTINE: EXCH2_UV_AGRID_3D_RX
 
 C     !INTERFACE:
       SUBROUTINE EXCH2_UV_AGRID_3D_RX(
-     U                                 Uphi, Vphi,
+     U                                 uPhi, vPhi,
      I                                 withSigns, myNz, myThid )
 
 C     !DESCRIPTION:
@@ -17,14 +17,14 @@ C*=====================================================================*
 C  Purpose: SUBROUTINE EXCH2_UV_AGRID_3D_RX
 C      handle exchanges for a 3D vector field on an A-grid.
 C
-C  Input: 
-C    Uphi(lon,lat,levs,bi,bj) :: first component of vector
-C    Vphi(lon,lat,levs,bi,bj) :: second component of vector
+C  Input:
+C    uPhi(lon,lat,levs,bi,bj) :: first component of vector
+C    vPhi(lon,lat,levs,bi,bj) :: second component of vector
 C    withSigns (logical)      :: true to use sign of components
-C    myNz                     :: 3rd dimension of input arrays Uphi,Vphi
+C    myNz                     :: 3rd dimension of input arrays uPhi,vPhi
 C    myThid                   :: my Thread Id number
 C
-C  Output: Uphi and Vphi are updated (halo regions filled)
+C  Output: uPhi and vPhi are updated (halo regions filled)
 C
 C  Calls: exch_RX (exch2_RX1_cube) - for each component
 C
@@ -42,8 +42,8 @@ C     !USES:
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Argument list variables ==
       INTEGER myNz
-      _RX Uphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
-      _RX Vphi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
+      _RX uPhi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
+      _RX vPhi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNz,nSx,nSy)
       LOGICAL withSigns
       INTEGER myThid
 
@@ -51,15 +51,15 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j,k,bi,bj   :: loop indices.
 C     OL[wens]      :: Overlap extents in west, east, north, south.
-C     exchWidth[XY] :: - Extent of regions that will be exchanged.
-C     dummy[12]     :: - copies of the vector components with haloes filled.
+C     exchWidth[XY] :: Extent of regions that will be exchanged.
+C     uLoc,vLoc     :: copies of the vector components with haloes filled.
 
       INTEGER i,j,k,bi,bj
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
-      _RX dummy1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RX dummy2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RX uLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RX vLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RX negOne
-      INTEGER mytile, myface
+      INTEGER myTile, myFace
 CEOP
 
       OLw        = OLx
@@ -74,126 +74,128 @@ CEOP
       IF ( useCubedSphereExchange ) THEN
 C---  using CubedSphereExchange:
 
-C First CALL the exchanges for the two components
+C--   First call the exchanges for the two components
 
-       CALL EXCH2_RX1_CUBE( Uphi, 'T ',
+       CALL EXCH2_RX1_CUBE( uPhi, 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH2_RX1_CUBE( Uphi, 'T ',
+       CALL EXCH2_RX1_CUBE( uPhi, 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
 
-       CALL EXCH2_RX1_CUBE( Vphi, 'T ',
+       CALL EXCH2_RX1_CUBE( vPhi, 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH2_RX1_CUBE( Vphi, 'T ',
+       CALL EXCH2_RX1_CUBE( vPhi, 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
 
 C- note: can substitute the low-level S/R calls above with:
-c      CALL EXCH2_3D_RX( Uphi, myNz, myThid )
-c      CALL EXCH2_3D_RX( Vphi, myNz, myThid )
+c      CALL EXCH2_3D_RX( uPhi, myNz, myThid )
+c      CALL EXCH2_3D_RX( vPhi, myNz, myThid )
 
-C Then if we are on the cube we may need to switch u and v components
-C and/or the signs depending on which cube face we are located.
+C--   Then we may need to switch u and v components
+C     and/or the signs depending on which cube face we are located.
 
-C--    Loops on tile and level indices:
+C--   Loops on tile indices:
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
+
+C-    Now choose what to do at each edge of the halo based on which face
+C     (we assume that bj is always=1)
+         myTile = W2_myTileList(bi)
+         myFace = exch2_myFace(myTile)
+
+C--   Loops on level index:
          DO k = 1,myNz
 
-C First we need to copy the component info into dummy arrays
+C-    First we copy the component info into local dummy arrays
           DO j = 1-OLy,sNy+OLy
            DO i = 1-OLx,sNx+OLx
-             dummy1(i,j) = Uphi(i,j,k,bi,bj)
-             dummy2(i,j) = Vphi(i,j,k,bi,bj)
+             uLoc(i,j) = uPhi(i,j,k,bi,bj)
+             vLoc(i,j) = vPhi(i,j,k,bi,bj)
            ENDDO
           ENDDO
 
-C Now choose what to do at each edge of the halo based on which face
-C    (we assume that bj is always=1)
-          mytile = W2_myTileList(bi)
-          myface = exch2_myFace(mytile)
-
-C odd faces share disposition of all sections of the halo
-          IF ( MOD(myface,2).EQ.1 ) THEN
-C east (nothing to change)
-c          IF (exch2_isEedge(mytile).EQ.1) THEN
-c            DO j = 1-OLy,sNy+OLy
-c             DO i = 1,exchWidthX
-c              Uphi(sNx+i,j,k,bi,bj) = dummy1(sNx+i,j)
-c              Vphi(sNx+i,j,k,bi,bj) = dummy2(sNx+i,j)
-c             ENDDO
-c            ENDDO
-c          ENDIF
-C west
-           IF (exch2_isWedge(mytile).EQ.1) THEN
-             DO j = 1-OLy,sNy+OLy
-              DO i = 1,exchWidthX
-               Uphi(1-i,j,k,bi,bj) = dummy2(1-i,j)
-               Vphi(1-i,j,k,bi,bj) = dummy1(1-i,j)*negOne
-              ENDDO
-             ENDDO
-           ENDIF
-C north
-           IF (exch2_isNedge(mytile).EQ.1) THEN
+C-    odd faces share disposition of all sections of the halo
+          IF ( MOD(myFace,2).EQ.1 ) THEN
+C-    North:
+           IF (exch2_isNedge(myTile).EQ.1) THEN
              DO j = 1,exchWidthY
               DO i = 1-OLx,sNx+OLx
-               Uphi(i,sNy+j,k,bi,bj) = dummy2(i,sNy+j)*negOne
-               Vphi(i,sNy+j,k,bi,bj) = dummy1(i,sNy+j)
+               uPhi(i,sNy+j,k,bi,bj) = vLoc(i,sNy+j)*negOne
+               vPhi(i,sNy+j,k,bi,bj) = uLoc(i,sNy+j)
               ENDDO
              ENDDO
            ENDIF
-C south (nothing to change)
-c          IF (exch2_isSedge(mytile).EQ.1) THEN
+C-    South: (nothing to change)
+c          IF (exch2_isSedge(myTile).EQ.1) THEN
 c            DO j = 1,exchWidthY
 c             DO i = 1-OLx,sNx+OLx
-c              Uphi(i,1-j,k,bi,bj) = dummy1(i,1-j)
-c              Vphi(i,1-j,k,bi,bj) = dummy2(i,1-j)
+c              uPhi(i,1-j,k,bi,bj) = uLoc(i,1-j)
+c              vPhi(i,1-j,k,bi,bj) = vLoc(i,1-j)
 c             ENDDO
 c            ENDDO
 c          ENDIF
+C-    East: (nothing to change)
+c          IF (exch2_isEedge(myTile).EQ.1) THEN
+c            DO j = 1-OLy,sNy+OLy
+c             DO i = 1,exchWidthX
+c              uPhi(sNx+i,j,k,bi,bj) = uLoc(sNx+i,j)
+c              vPhi(sNx+i,j,k,bi,bj) = vLoc(sNx+i,j)
+c             ENDDO
+c            ENDDO
+c          ENDIF
+C-    West:
+           IF (exch2_isWedge(myTile).EQ.1) THEN
+             DO j = 1-OLy,sNy+OLy
+              DO i = 1,exchWidthX
+               uPhi(1-i,j,k,bi,bj) = vLoc(1-i,j)
+               vPhi(1-i,j,k,bi,bj) = uLoc(1-i,j)*negOne
+              ENDDO
+             ENDDO
+           ENDIF
 
           ELSE
-C now the even faces (share disposition of all sections of the halo)
+C-    Now the even faces (share disposition of all sections of the halo)
 
-C east
-           IF (exch2_isEedge(mytile).EQ.1) THEN
+C-    East:
+           IF (exch2_isEedge(myTile).EQ.1) THEN
              DO j = 1-OLy,sNy+OLy
               DO i = 1,exchWidthX
-               Uphi(sNx+i,j,k,bi,bj) = dummy2(sNx+i,j)
-               Vphi(sNx+i,j,k,bi,bj) = dummy1(sNx+i,j)*negOne
+               uPhi(sNx+i,j,k,bi,bj) = vLoc(sNx+i,j)
+               vPhi(sNx+i,j,k,bi,bj) = uLoc(sNx+i,j)*negOne
               ENDDO
              ENDDO
            ENDIF
-C west (nothing to change)
-c          IF (exch2_isWedge(mytile).EQ.1) THEN
+C-    West: (nothing to change)
+c          IF (exch2_isWedge(myTile).EQ.1) THEN
 c            DO j = 1-OLy,sNy+OLy
 c             DO i = 1,exchWidthX
-c              Uphi(1-i,j,k,bi,bj) = dummy1(1-i,j)
-c              Vphi(1-i,j,k,bi,bj) = dummy2(1-i,j)
+c              uPhi(1-i,j,k,bi,bj) = uLoc(1-i,j)
+c              vPhi(1-i,j,k,bi,bj) = vLoc(1-i,j)
 c             ENDDO
 c            ENDDO
 c          ENDIF
-C north (nothing to change)
-c          IF (exch2_isNedge(mytile).EQ.1) THEN
+C-    North: (nothing to change)
+c          IF (exch2_isNedge(myTile).EQ.1) THEN
 c            DO j = 1,exchWidthY
 c             DO i = 1-OLx,sNx+OLx
-c              Uphi(i,sNy+j,k,bi,bj) = dummy1(i,sNy+j)
-c              Vphi(i,sNy+j,k,bi,bj) = dummy2(i,sNy+j)
+c              uPhi(i,sNy+j,k,bi,bj) = uLoc(i,sNy+j)
+c              vPhi(i,sNy+j,k,bi,bj) = vLoc(i,sNy+j)
 c             ENDDO
 c            ENDDO
 c          ENDIF
-C south
-           IF (exch2_isSedge(mytile).EQ.1) THEN
+C-    South:
+           IF (exch2_isSedge(myTile).EQ.1) THEN
              DO j = 1,exchWidthY
               DO i = 1-OLx,sNx+OLx
-               Uphi(i,1-j,k,bi,bj) = dummy2(i,1-j)*negOne
-               Vphi(i,1-j,k,bi,bj) = dummy1(i,1-j)
+               uPhi(i,1-j,k,bi,bj) = vLoc(i,1-j)*negOne
+               vPhi(i,1-j,k,bi,bj) = uLoc(i,1-j)
               ENDDO
              ENDDO
            ENDIF
@@ -210,11 +212,11 @@ C--    end of Loops on tile and level indices (k,bi,bj).
 C---  not using CubedSphereExchange:
 
 #ifndef AUTODIFF_EXCH2
-       CALL EXCH_RX( Uphi,
+       CALL EXCH_RX( uPhi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RX( Vphi,
+       CALL EXCH_RX( vPhi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
