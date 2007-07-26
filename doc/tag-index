@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.853 2007/07/25 21:23:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.854 2007/07/26 16:30:48 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59e
 o exch2: new S/R that only use the cube-tracer (center-position) exchange:
   for B-grid vector (not yet tested) and C-grid vector (<- only used
   when option W2_USE_R1_ONLY in W2_OPTIONS.h is defined).
