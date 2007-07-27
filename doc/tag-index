@@ -1,8 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.854 2007/07/26 16:30:48 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.855 2007/07/27 22:22:37 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o exch2 adjoint
+  First set of changes:
+  - add exch2 hand-written adjoint templates
+  - exch2 hand-written no longer use TAF-flag 'nownew_arg'
+    This will require cleanup in pkg/autodiff/*.F
+    (changed routines currently kept separate in verif. code/)
+  - Comment all relevant #ifndef ALLOW_AUTODIFF_TAMC
+    that used to hide exch2 or cubed-sphere specific code
+    (commented via 'cph-exch2')
 
 checkpoint59e
 o exch2: new S/R that only use the cube-tracer (center-position) exchange:
