@@ -1,19 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_recv_rx1.template,v 1.5 2007/07/27 22:15:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_recv_rx2_ad.template,v 1.1 2007/07/27 22:15:23 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
 
-      SUBROUTINE EXCH2_RECV_RX1(
+      SUBROUTINE EXCH2_RECV_RX2_AD(
      I       tIlo, tIhi, tiStride,
      I       tJlo, tJhi, tjStride,
      I       tKlo, tKhi, tkStride,
      I       thisTile, thisI, nN,
-     I       e2Bufr1_RX, e2BufrRecSize,
+     I       e2Bufr1_RX, e2Bufr2_RX, e2BufrRecSize,
      I       mnb, nt,
-     U       array,
+     U       array1,
      I       i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
-     U       e2_msgHandles, myTiles,
+     U       array2,
+     I       i2Lo, i2Hi, j2Lo, j2Hi, k2Lo, k2Hi,
+     U       e2_msgHandle1,
+     U       e2_msgHandle2,
+     I       myTiles,
      I       commSetting,
      I       myThid )
 
@@ -60,12 +64,16 @@ C
       INTEGER tJLo, tJHi, tjStride
       INTEGER tKLo, tKHi, tkStride
       INTEGER i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi
+      INTEGER i2Lo, i2Hi, j2Lo, j2Hi, k2Lo, k2Hi
       INTEGER thisTile, nN, thisI
       INTEGER e2BufrRecSize 
       INTEGER mnb, nt
       _RX     e2Bufr1_RX( e2BufrRecSize, mnb, nt, 2 )
-      _RX     array(i1Lo:i1Hi,j1Lo:j1Hi,k1Lo:k1Hi)
-      INTEGER e2_msgHandles(mnb, nt)
+      _RX     e2Bufr2_RX( e2BufrRecSize, mnb, nt, 2 )
+      _RX     array1(i1Lo:i1Hi,j1Lo:j1Hi,k1Lo:k1Hi)
+      _RX     array2(i2Lo:i2Hi,j2Lo:j2Hi,k2Lo:k2Hi)
+      INTEGER e2_msgHandle1(1)
+      INTEGER e2_msgHandle2(1)
       INTEGER myThid
       INTEGER myTiles(nt)
       CHARACTER commSetting
@@ -81,25 +89,28 @@ c     INTEGER itc, jtc, ktc
 c     INTEGER isc, jsc, ksc
 c     INTEGER isl, jsl, ksl
 C     tt         :: Target tile
-C     iBufr      :: Buffer counter
+C     iBufr1     :: Buffer counter
+C     iBufr2     ::
       INTEGER tt
-      INTEGER iBufr
+      INTEGER iBufr1, iBufr2
 C     mb, nb :: Selects e2Bufr, msgHandle record to use
 C     ir     ::
       INTEGER mb, nb, ir
 C     oN     :: Opposing send record number 
       INTEGER oN
 C     Loop counters
-c     INTEGER I, nri, nrj, nrk
       INTEGER I
+      INTEGER itl1reduce, jtl1reduce
+      INTEGER itl2reduce, jtl2reduce
 
 C     MPI setup
 #ifdef ALLOW_USE_MPI
-c     INTEGER theTag, theSize, theType
-      INTEGER theTag, theType
-      INTEGER sProc, tProc
-      INTEGER nri, nrj, nrk
-      INTEGER mpiStatus(MPI_STATUS_SIZE), mpiRc
+      INTEGER    nri1, nrj1, nrk1
+      INTEGER    nri2, nrj2, nrk2
+      INTEGER theTag1, theTag2, theType
+c     INTEGER theSize1, theSize2
+      INTEGER sProc, tProc, mpiRc
+      INTEGER theHandle1, theHandle2
 #ifdef W2_E2_DEBUG_ON
       CHARACTER*(MAX_LEN_MBUF) messageBuffer
 #endif
@@ -107,6 +118,14 @@ c     INTEGER theTag, theSize, theType
 
       tt=exch2_neighbourId(nN, thisTile )
       oN=exch2_opposingSend_record(nN, thisTile )
+      itl1reduce=0
+      jtl1reduce=0
+      itl2reduce=0
+      jtl2reduce=0
+      IF ( exch2_pi(1,oN,tt) .EQ. -1 ) itl1reduce=1
+      IF ( exch2_pj(1,oN,tt) .EQ. -1 ) itl1reduce=1
+      IF ( exch2_pi(2,oN,tt) .EQ. -1 ) jtl2reduce=1
+      IF ( exch2_pj(2,oN,tt) .EQ. -1 ) jtl2reduce=1
 
 C     Handle receive end data transport according to communication mechanism between 
 C     source and target tile
@@ -117,10 +136,10 @@ C        assume only one thread per process.
 C      2 Need to set e2Bufr to use put buffer from opposing send.
        oN = exch2_opposingSend_record(nN, thisTile )
        mb = oN
+       ir = 1
        DO I=1,nt
         IF ( myTiles(I) .EQ. tt ) THEN
          nb = I
-         ir = 1
         ENDIF
        ENDDO
 C      Get data from e2Bufr(1,mb,nb)
@@ -130,35 +149,92 @@ C      Setup MPI stuff here
        nb = thisI
        mb = nN
        ir = 2
-       theTag =  (tt-1)*MAX_NEIGHBOURS + oN
+#endif
+      ELSE
+       STOP 'EXCH2_RECV_RX2_AD:: commSetting VALUE IS INVALID'
+      ENDIF
+
+      iBufr1=0
+      DO ktl=tKlo,tKhi,tKStride
+       DO jtl=tJLo+jtl1reduce, tJHi, tjStride
+        DO itl=tILo+itl1reduce, tIHi, tiStride
+C        Read from e2Bufr1_RX(iBufr,mb,nb)
+         iBufr1=iBufr1+1
+         e2Bufr1_RX(iBufr1,mb,nb,ir) = array1(itl,jtl,ktl)
+         array1(itl,jtl,ktl) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+
+      iBufr2=0
+      DO ktl=tKlo,tKhi,tKStride
+       DO jtl=tJLo+jtl2reduce, tJHi, tjStride
+        DO itl=tILo+itl2reduce, tIHi, tiStride
+C        Read from e2Bufr1_RX(iBufr,mb,nb)
+         iBufr2=iBufr2+1
+         e2Bufr2_RX(iBufr2,mb,nb,ir) = array2(itl,jtl,ktl)
+         array2(itl,jtl,ktl) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+ 
+      IF     ( commSetting .EQ. 'P' ) THEN
+      ELSEIF ( commSetting .EQ. 'M' ) THEN
+#ifdef ALLOW_USE_MPI
+C      Setup MPI stuff here
+       nb = thisI
+       mb = nN
+       ir = 2
+       theTag1 =  (tt-1)*MAX_NEIGHBOURS*2 + oN-1
      &         + 10000*(
-     &            (thisTile-1)*MAX_NEIGHBOURS + oN
+     &            (thisTile-1)*MAX_NEIGHBOURS*2 + oN-1
+     &           )
+       theTag2 =  (tt-1)*MAX_NEIGHBOURS*2 + MAX_NEIGHBOURS + oN-1
+     &         + 10000*(
+     &            (thisTile-1)*MAX_NEIGHBOURS*2 + MAX_NEIGHBOURS + oN-1
      &           )
        tProc = exch2_tProc(thisTile)-1
        sProc = exch2_tProc(tt)-1
        theType = MPI_REAL8
-       nri = (tIhi-tIlo+1)/tiStride
-       nrj = (tJhi-tJlo+1)/tjStride
-       nrk = (tKhi-tKlo+1)/tkStride
-       iBufr = nri*nrj*nrk
-       CALL MPI_Recv( e2Bufr1_RX(1,mb,nb,ir), iBufr, theType, sProc,
-     &               theTag, MPI_COMM_MODEL, mpiStatus, mpiRc )
+       nri1 = (tIhi-tIlo+1-itl1reduce)/tiStride
+       nrj1 = (tJhi-tJlo+1-jtl1reduce)/tjStride
+       nrk1 = (tKhi-tKlo+1)/tkStride
+       iBufr1 = nri1*nrj1*nrk1
+       nri2 = (tIhi-tIlo+1-itl2reduce)/tiStride
+       nrj2 = (tJhi-tJlo+1-jtl2reduce)/tjStride
+       nrk2 = (tKhi-tKlo+1)/tkStride
+       iBufr2 = nri2*nrj2*nrk2
+       CALL MPI_Isend( e2Bufr1_RX(1,mb,nb,ir), iBufr1, theType, sProc,
+     &               theTag1, MPI_COMM_MODEL, theHandle1, mpiRc )
+       CALL MPI_Isend( e2Bufr2_RX(1,mb,nb,ir), iBufr2, theType, sProc,
+     &               theTag2, MPI_COMM_MODEL, theHandle2, mpiRc )
+       e2_msgHandle1(1) = theHandle1
+       e2_msgHandle2(1) = theHandle2
 #ifdef W2_E2_DEBUG_ON
        WRITE(messageBuffer,'(A,I4,A,I4,A)') ' RECV FROM TILE=', tt,
-     &                                   ' (proc = ',sProc,')'
+     I                                   ' (proc = ',sProc,')'
        CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_RIGHT,
      I      myThid)
-       WRITE(messageBuffer,'(A,I4,A,I4,A)') '  INTO TILE=', thisTile,
-     &                                   ' (proc = ',tProc,')'
+       WRITE(messageBuffer,'(A,I4,A,I4,A)')
+     I                             '      INTO TILE=', thisTile,
+     I                             ' (proc = ',tProc,')'
        CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_RIGHT,
      I      myThid)
-       WRITE(messageBuffer,'(A,I10)') '            TAG=', theTag
+       WRITE(messageBuffer,'(A,I10)') '            TAG1=', theTag1
        CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_RIGHT,
      I      myThid)
-       WRITE(messageBuffer,'(A,I4)') '            NEL=', iBufr
+       WRITE(messageBuffer,'(A,I4)') '            NEL1=', iBufr1
+       CALL PRINT_MESSAGE(messageBuffer,
+     I      standardMessageUnit,SQUEEZE_RIGHT,
+     I      myThid)
+       WRITE(messageBuffer,'(A,I10)') '            TAG2=', theTag2
+       CALL PRINT_MESSAGE(messageBuffer,
+     I      standardMessageUnit,SQUEEZE_RIGHT,
+     I      myThid)
+       WRITE(messageBuffer,'(A,I4)') '            NEL2=', iBufr2
        CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_RIGHT,
      I      myThid)
@@ -168,20 +244,9 @@ C      Set nt to this tiles rank
        mb = nN
 #endif
       ELSE
-       STOP 'EXCH2_RECV_RX1:: commSetting VALUE IS INVALID'
+       STOP 'EXCH2_RECV_RX2_AD:: commSetting VALUE IS INVALID'
       ENDIF
 
-      iBufr=0
-      DO ktl=tKlo,tKhi,tKStride
-       DO jtl=tJLo, tJHi, tjStride
-        DO itl=tILo, tIHi, tiStride
-C        Read from e2Bufr1_RX(iBufr,mb,nb)
-         iBufr=iBufr+1
-         array(itl,jtl,ktl)=e2Bufr1_RX(iBufr,mb,nb,ir)
-        ENDDO
-       ENDDO
-      ENDDO
- 
       RETURN
       END
 

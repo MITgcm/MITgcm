@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx1.template,v 1.6 2007/07/27 22:15:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_send_rx1_ad.template,v 1.1 2007/07/27 22:15:24 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
 
-      SUBROUTINE EXCH2_SEND_RX1 (
+      SUBROUTINE EXCH2_SEND_RX1_AD(
      I       tIlo, tIhi, tiStride,
      I       tJlo, tJhi, tjStride,
      I       tKlo, tKhi, tkStride,
@@ -57,8 +57,9 @@ C
 
 C     MPI setup
 #ifdef ALLOW_USE_MPI
-      INTEGER theTag, theType, theHandle
+      INTEGER theTag, theType
       INTEGER sProc, tProc, mpiRc
+      INTEGER mpiStatus(MPI_STATUS_SIZE)
 #endif
 #ifdef W2_E2_DEBUG_ON
       CHARACTER*(MAX_LEN_MBUF) messageBuffer
@@ -80,68 +81,21 @@ C      before filling buffer.
       pj(2)=exch2_pj(2,nN,thisTile)
       oi=exch2_oi(nN,thisTile)
       oj=exch2_oj(nN,thisTile)
-      iBufr=0
 #ifdef W2_E2_DEBUG_ON
-      WRITE(messageBuffer,'(A,I4,A,I4)') 'EXCH2_SEND_RX1 sourceTile= ', 
+      WRITE(messageBuffer,'(A,I4,A,I4)')
+     &               'EXCH2_SEND_RX1_AD sourceTile= ',
      &                                    thisTile,
      &                                   'targetTile= ',tt
       CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_BOTH,
      I      myThid)
 #endif /* W2_E2_DEBUG_ON */
+
+      iBufr=0
       DO ktl=tKlo,tKhi,tKStride
        DO jtl=tJLo, tJHi, tjStride
         DO itl=tILo, tIHi, tiStride
          iBufr=iBufr+1
-         itc=itl+itb
-         jtc=jtl+jtb
-         isc=pi(1)*itc+pi(2)*jtc+oi
-         jsc=pj(1)*itc+pj(2)*jtc+oj
-         isl=isc-isb
-         jsl=jsc-jsb
-         e2Bufr1_RX(iBufr)=array(isl,jsl,ktl)
-#ifdef W2_E2_DEBUG_ON
-      WRITE(messageBuffer,'(A,2I4)') 
-     &     'EXCH2_SEND_RX1 target t(itl,jtl) = ', itl, jtl
-         CALL PRINT_MESSAGE(messageBuffer,
-     I      standardMessageUnit,SQUEEZE_RIGHT,
-     I      myThid)
-         WRITE(messageBuffer,'(A,2I4)') 
-     &           '               source  (isl,jsl) = ', isl, jsl
-         CALL PRINT_MESSAGE(messageBuffer,
-     I      standardMessageUnit,SQUEEZE_RIGHT,
-     I      myThid)
-         IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
-          WRITE(messageBuffer,'(A,2I4)') 
-     &        '              *** isl is out of bounds'        
-          CALL PRINT_MESSAGE(messageBuffer,
-     I       standardMessageUnit,SQUEEZE_RIGHT,
-     I       myThid)
-         ENDIF
-         IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
-          WRITE(messageBuffer,'(A,2I4)') 
-     &        '              *** jsl is out of bounds'        
-          CALL PRINT_MESSAGE(messageBuffer,
-     I       standardMessageUnit,SQUEEZE_RIGHT,
-     I       myThid)
-         ENDIF
-#endif /* W2_E2_DEBUG_ON */
-#ifdef   W2_USE_E2_SAFEMODE
-         IF ( iBufr .GT. e2BufrRecSize ) THEN
-C         Ran off end of buffer. This should not happen
-          STOP 'EXCH2_SEND_RX1:: E2BUFR LIMIT EXCEEDED'
-         ENDIF
-         IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
-C         Forward mode send getting from points outside of the
-C         tiles exclusive domain bounds in X. This should not happen
-          STOP 'EXCH2_SEND_RX1:: ISL OUTSIDE TILE EXCLUSIVE DOMAIN'
-         ENDIF
-         IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
-C         Forward mode send getting from points outside of the
-C         tiles exclusive domain bounds in Y. This should not happen
-          STOP 'EXCH2_SEND_RX1:: JSL OUTSIDE TILE EXCLUSIVE DOMAIN'
-         ENDIF
-#endif /* W2_USE_E2_SAFEMODE */
         ENDDO
        ENDDO
       ENDDO
@@ -161,8 +115,8 @@ C      Setup MPI stuff here
        sProc = exch2_tProc(thisTile)-1
        theType = MPI_REAL8
 #ifdef W2_E2_DEBUG_ON
-       WRITE(messageBuffer,'(A,I4,A,I4,A)') ' SEND FROM TILE=',
-     &                             thisTile, ' (proc = ',sProc,')'
+       WRITE(messageBuffer,'(A,I4,A,I4,A)') ' SEND FROM TILE=', thisTile,
+     &                                   ' (proc = ',sProc,')'
        CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_RIGHT,
      I      myThid)
@@ -180,15 +134,30 @@ C      Setup MPI stuff here
      I      standardMessageUnit,SQUEEZE_RIGHT,
      I      myThid)
 #endif /* W2_E2_DEBUG_ON */
-       CALL MPI_Isend( e2Bufr1_RX, iBufr, theType,
+       CALL MPI_Recv( e2Bufr1_RX, iBufr, theType,
      I                 tProc, theTag, MPI_COMM_MODEL, 
-     O                 theHandle, mpiRc )
-C      Store MPI_Wait token in messageHandle.
-       e2_msgHandle(1) = theHandle
+     O                 mpiStatus, mpiRc )
 #endif
       ELSE
-       STOP 'EXCH2_SEND_RX1:: commSetting VALUE IS INVALID'
+       STOP 'EXCH2_SEND_RX1_AD:: commSetting VALUE IS INVALID'
       ENDIF
+
+      iBufr=0
+      DO ktl=tKlo,tKhi,tKStride
+       DO jtl=tJLo, tJHi, tjStride
+        DO itl=tILo, tIHi, tiStride
+         iBufr=iBufr+1
+         itc=itl+itb
+         jtc=jtl+jtb
+         isc=pi(1)*itc+pi(2)*jtc+oi
+         jsc=pj(1)*itc+pj(2)*jtc+oj
+         isl=isc-isb
+         jsl=jsc-jsb
+         array(isl,jsl,ktl) = array(isl,jsl,ktl) + e2Bufr1_RX(iBufr)
+         e2Bufr1_RX(iBufr) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
  
       RETURN
       END

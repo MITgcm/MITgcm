@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_recv_rx1.template,v 1.5 2007/07/27 22:15:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_recv_rx1_ad.template,v 1.1 2007/07/27 22:15:23 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
 
-      SUBROUTINE EXCH2_RECV_RX1(
+      SUBROUTINE EXCH2_RECV_RX1_AD(
      I       tIlo, tIhi, tiStride,
      I       tJlo, tJhi, tjStride,
      I       tKlo, tKhi, tkStride,
@@ -13,7 +13,7 @@ C $Name:  $
      I       mnb, nt,
      U       array,
      I       i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
-     U       e2_msgHandles, myTiles,
+     U       e2_msgHandle, myTiles,
      I       commSetting,
      I       myThid )
 
@@ -46,7 +46,7 @@ C     array                :: Target array that this receive writes to.
 C     i1Lo, i1Hi           :: I coordinate bounds of target array
 C     j1Lo, j1Hi           :: J coordinate bounds of target array
 C     k1Lo, k1Hi           :: K coordinate bounds of target array
-C     e2_msgHandles        :: Synchronization and coordination data structure used to coordinate access
+C     e2_msgHandle         :: Synchronization and coordination data structure used to coordinate access
 C                          :: to e2Bufr1_RX or to regulate message buffering. In PUT communication
 C                          :: sender will increment handle entry once data is ready in buffer.
 C                          :: Receiver will decrement handle once data is consumed from buffer. For
@@ -65,7 +65,7 @@ C
       INTEGER mnb, nt
       _RX     e2Bufr1_RX( e2BufrRecSize, mnb, nt, 2 )
       _RX     array(i1Lo:i1Hi,j1Lo:j1Hi,k1Lo:k1Hi)
-      INTEGER e2_msgHandles(mnb, nt)
+      INTEGER e2_msgHandle(1)
       INTEGER myThid
       INTEGER myTiles(nt)
       CHARACTER commSetting
@@ -95,11 +95,10 @@ c     INTEGER I, nri, nrj, nrk
 
 C     MPI setup
 #ifdef ALLOW_USE_MPI
-c     INTEGER theTag, theSize, theType
-      INTEGER theTag, theType
+      INTEGER theTag, theType, theHandle
       INTEGER sProc, tProc
       INTEGER nri, nrj, nrk
-      INTEGER mpiStatus(MPI_STATUS_SIZE), mpiRc
+      INTEGER mpiRc
 #ifdef W2_E2_DEBUG_ON
       CHARACTER*(MAX_LEN_MBUF) messageBuffer
 #endif
@@ -115,7 +114,6 @@ C      1 Need to check and spin on data ready assertion for multithreaded mode, 
 C        assume only one thread per process.
 
 C      2 Need to set e2Bufr to use put buffer from opposing send.
-       oN = exch2_opposingSend_record(nN, thisTile )
        mb = oN
        DO I=1,nt
         IF ( myTiles(I) .EQ. tt ) THEN
@@ -124,6 +122,30 @@ C      2 Need to set e2Bufr to use put buffer from opposing send.
         ENDIF
        ENDDO
 C      Get data from e2Bufr(1,mb,nb)
+      ELSEIF ( commSetting .EQ. 'M' ) THEN
+#ifdef ALLOW_USE_MPI
+C      Setup MPI stuff here
+       nb = thisI
+       mb = nN
+       ir = 2
+#endif
+      ELSE
+       STOP 'EXCH2_RECV_RX1_AD:: commSetting VALUE IS INVALID'
+      ENDIF
+
+      iBufr=0
+      DO ktl=tKlo,tKhi,tKStride
+       DO jtl=tJLo, tJHi, tjStride
+        DO itl=tILo, tIHi, tiStride
+C        Read from e2Bufr1_RX(iBufr,mb,nb)
+         iBufr=iBufr+1
+         e2Bufr1_RX(iBufr,mb,nb,ir) = array(itl,jtl,ktl)
+	 array(itl,jtl,ktl) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
+ 
+      IF     ( commSetting .EQ. 'P' ) THEN
       ELSEIF ( commSetting .EQ. 'M' ) THEN
 #ifdef ALLOW_USE_MPI
 C      Setup MPI stuff here
@@ -141,15 +163,17 @@ C      Setup MPI stuff here
        nrj = (tJhi-tJlo+1)/tjStride
        nrk = (tKhi-tKlo+1)/tkStride
        iBufr = nri*nrj*nrk
-       CALL MPI_Recv( e2Bufr1_RX(1,mb,nb,ir), iBufr, theType, sProc,
-     &               theTag, MPI_COMM_MODEL, mpiStatus, mpiRc )
+       CALL MPI_Isend( e2Bufr1_RX(1,mb,nb,ir), iBufr, theType, sProc,
+     &               theTag, MPI_COMM_MODEL, theHandle, mpiRc )
+C      Store MPI_Wait token in messageHandle.
+       e2_msgHandle(1) = theHandle
 #ifdef W2_E2_DEBUG_ON
-       WRITE(messageBuffer,'(A,I4,A,I4,A)') ' RECV FROM TILE=', tt,
+       WRITE(messageBuffer,'(A,I4,A,I4,A)') ' SEND TO TILE=', tt,
      &                                   ' (proc = ',sProc,')'
        CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_RIGHT,
      I      myThid)
-       WRITE(messageBuffer,'(A,I4,A,I4,A)') '  INTO TILE=', thisTile,
+       WRITE(messageBuffer,'(A,I4,A,I4,A)') '    INTO TILE=', thisTile,
      &                                   ' (proc = ',tProc,')'
        CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_RIGHT,
@@ -163,25 +187,11 @@ C      Setup MPI stuff here
      I      standardMessageUnit,SQUEEZE_RIGHT,
      I      myThid)
 #endif /* W2_E2_DEBUG_ON */
-C      Set mb to neighbour entry
-C      Set nt to this tiles rank
-       mb = nN
 #endif
       ELSE
-       STOP 'EXCH2_RECV_RX1:: commSetting VALUE IS INVALID'
+       STOP 'EXCH2_RECV_RX1_AD:: commSetting VALUE IS INVALID'
       ENDIF
 
-      iBufr=0
-      DO ktl=tKlo,tKhi,tKStride
-       DO jtl=tJLo, tJHi, tjStride
-        DO itl=tILo, tIHi, tiStride
-C        Read from e2Bufr1_RX(iBufr,mb,nb)
-         iBufr=iBufr+1
-         array(itl,jtl,ktl)=e2Bufr1_RX(iBufr,mb,nb,ir)
-        ENDDO
-       ENDDO
-      ENDDO
- 
       RETURN
       END
 
