@@ -84,3 +84,10 @@ C subroutine  write_myfield
 C----------------------------------------
 CADJ SUBROUTINE write_myfield  INPUT  = 1,2,3,4,5
 CADJ SUBROUTINE write_myfield  OUTPUT =
+
+C----------------------------------------
+C subroutine  calc_oce_mxlayer
+C----------------------------------------
+CADJ SUBROUTINE calc_oce_mxlayer  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE calc_oce_mxlayer  OUTPUT =
+

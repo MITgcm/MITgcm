@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_del2uv.F,v 1.11 2006/06/07 01:55:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_del2uv.F,v 1.12 2007/07/27 22:18:58 heimbach Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -79,12 +79,12 @@ c     ENDDO
 
 C     - bi-harmonic viscosity : del^2(U_component)
 
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF (useCubedSphereExchange) THEN
 C     to compute d/dx(hDiv), fill corners with appropriate values:
         CALL FILL_CS_CORNER_TR_RL( .TRUE., hDiv, bi,bj, myThid )
       ENDIF
-#endif
+cph-exch2#endif
 c     DO j=1,sNy
 c      DO i=1,sNx+1
       DO j=2-Oly,sNy+Oly-1
@@ -99,12 +99,12 @@ c      DO i=1,sNx+1
 
 C     - bi-harmonic viscosity : del^2(V_component)
 
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF (useCubedSphereExchange) THEN
 C     to compute d/dy(hDiv), fill corners with appropriate values:
         CALL FILL_CS_CORNER_TR_RL(.FALSE., hDiv, bi,bj, myThid )
       ENDIF
-#endif
+cph-exch2#endif
 c     DO j=1,sNy+1
 c      DO i=1,sNx
       DO j=2-Oly,sNy+Oly-1

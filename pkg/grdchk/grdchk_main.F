@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.21 2007/04/20 19:26:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.22 2007/07/27 22:18:57 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -249,6 +249,7 @@ c--   (B): Get gradient component g_fc from tangent linear run:
 c******************************************************
 c--
 c--   1. perturb control vector component: xx(i)=1.
+            ftlxxmemo = 0.
 
             if ( myProcId .EQ. grdchkwhichproc .AND.
      &           ierr .EQ. 0 ) then

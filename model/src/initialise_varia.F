@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.54 2007/02/04 21:07:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.55 2007/07/27 22:18:57 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -271,7 +271,7 @@ C--   Update etaH(n) :
 
 #ifdef NONLIN_FRSURF
       IF ( select_rStar.NE.0 ) THEN
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef DISABLE_RSTAR_CODE
 C--   r* : compute the future level thickness according to etaH(n+1)
           CALL CALC_R_STAR(etaH, startTime, nIter0, myThid )
 #endif

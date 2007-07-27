@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.25 2007/07/13 16:36:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.26 2007/07/27 22:18:58 heimbach Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -259,12 +259,12 @@ C-     Initialise to zero gradient of vorticity & divergence:
 C      horizontal gradient of horizontal divergence:
 
 C-       gradient in x direction:
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
          IF (useCubedSphereExchange) THEN
 C        to compute d/dx(hDiv), fill corners with appropriate values:
            CALL FILL_CS_CORNER_TR_RL( .TRUE., hDiv, bi,bj, myThid )
          ENDIF
-#endif
+cph-exch2#endif
          DO j=2-Oly,sNy+Oly-1
           DO i=2-Olx,sNx+Olx-1
             divDx(i,j) = (hDiv(i,j)-hDiv(i-1,j))*recip_DXC(i,j,bi,bj)
@@ -272,12 +272,12 @@ C        to compute d/dx(hDiv), fill corners with appropriate values:
          ENDDO
 
 C-       gradient in y direction:
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
          IF (useCubedSphereExchange) THEN
 C        to compute d/dy(hDiv), fill corners with appropriate values:
            CALL FILL_CS_CORNER_TR_RL(.FALSE., hDiv, bi,bj, myThid )
          ENDIF
-#endif
+cph-exch2#endif
          DO j=2-Oly,sNy+Oly-1
           DO i=2-Olx,sNx+Olx-1
             divDy(i,j) = (hDiv(i,j)-hDiv(i,j-1))*recip_DYC(i,j,bi,bj)

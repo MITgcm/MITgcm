@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/grad_sigma.F,v 1.6 2005/06/22 00:25:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/grad_sigma.F,v 1.7 2007/07/27 22:18:57 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -56,11 +56,11 @@ C-    safer to work on a local copy of rhoK (before a partial update)
       ENDDO
 
 C-    Internal exchange for calculations in X
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF ( useCubedSphereExchange ) THEN
         CALL FILL_CS_CORNER_TR_RL( .TRUE., rhoLoc, bi,bj, myThid )
       ENDIF
-#endif
+cph-exch2#endif
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx+1,sNx+Olx
         sigmaX(i,j,k)=_maskW(i,j,k,bi,bj)
@@ -70,11 +70,11 @@ C-    Internal exchange for calculations in X
       ENDDO
 
 C-    Internal exchange for calculations in Y
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF ( useCubedSphereExchange ) THEN
         CALL FILL_CS_CORNER_TR_RL( .FALSE., rhoLoc, bi,bj, myThid )
       ENDIF
-#endif
+cph-exch2#endif
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx,sNx+Olx
         sigmaY(i,j,k)=_maskS(i,j,k,bi,bj)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_x.F,v 1.6 2006/12/05 05:26:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_x.F,v 1.7 2007/07/27 22:18:57 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -47,12 +47,12 @@ C  i,j              :: loop indices
       INTEGER i,j
 CEOP
 
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
 C--   Internal exchange for calculations in X
       IF (useCubedSphereExchange) THEN
         CALL FILL_CS_CORNER_TR_RL( .TRUE., tracer, bi,bj, myThid )
       ENDIF
-#endif
+cph-exch2#endif
 
 C     o Zonal tracer gradient
       DO j=1-Oly,sNy+Oly
