@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_do_exch.F,v 1.1 2007/05/04 18:23:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_do_exch.F,v 1.2 2007/07/28 17:06:09 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -33,7 +33,11 @@ C     myThid    :: My Thread Id number
 C     !LOCAL VARIABLES:
 CEOP
 
+#ifndef ALLOW_AUTODIFF_TAMC
       CALL EXCH_3D_RL( KPPviscAz, Nr, myThid )
+#else
+      _EXCH_XYZ_R8( KPPviscAz, myThid )
+#endif
 
 #endif /* ALLOW_KPP */
 
