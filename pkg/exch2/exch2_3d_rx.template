@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_3d_rx.template,v 1.2 2006/11/18 01:09:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_3d_rx.template,v 1.3 2007/07/28 16:07:35 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -26,7 +26,7 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+cph-mpi#include "EESUPPORT.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_xyz_rx.template,v 1.8 2007/07/25 21:19:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_xyz_rx.template,v 1.9 2007/07/28 16:07:35 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,7 +31,7 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
+cph-mpi#include "EESUPPORT.h"
 #include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
