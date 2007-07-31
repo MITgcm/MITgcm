@@ -1,5 +1,5 @@
-C$Header: /u/gcmpack/MITgcm/pkg/atm_common/atm_diagnostics_init.F,v 1.3 2005/06/30 23:09:08 molod Exp $
-C$Name:  $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_common/atm_diagnostics_init.F,v 1.4 2007/07/31 23:01:58 ce107 Exp $
+C $Name:  $
 
 #include "ATM_COMMON_OPTIONS.h"
 

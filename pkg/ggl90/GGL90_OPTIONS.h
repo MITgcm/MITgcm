@@ -1,5 +1,5 @@
-C$Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90_OPTIONS.h,v 1.2 2004/09/27 08:02:05 mlosch Exp $
-C$Name:  $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90_OPTIONS.h,v 1.3 2007/07/31 23:01:58 ce107 Exp $
+C $Name:  $
 C     /=============================================================\
 C     | GGL90_OPTIONS.h                                             |
 C     | o CPP options file for GGL90 package.                       |

@@ -1,5 +1,5 @@
-C$Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc_visc.F,v 1.1 2004/09/16 11:27:18 mlosch Exp $
-C$Name:  $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc_visc.F,v 1.2 2007/07/31 23:01:58 ce107 Exp $
+C $Name:  $
 #include "GGL90_OPTIONS.h"
 
       SUBROUTINE GGL90_CALC_VISC( 

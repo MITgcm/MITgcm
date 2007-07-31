@@ -1,5 +1,5 @@
-C$Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.1 2005/08/01 21:07:34 edhill Exp $
-C$Name:  $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.2 2007/07/31 23:01:58 ce107 Exp $
+C $Name:  $
 
 #include "DIC_OPTIONS.h"
 
