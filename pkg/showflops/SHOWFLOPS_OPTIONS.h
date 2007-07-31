@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/showflops/SHOWFLOPS_OPTIONS.h,v 1.2 2007/06/04 21:36:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/showflops/SHOWFLOPS_OPTIONS.h,v 1.3 2007/07/31 22:33:43 ce107 Exp $
 C $Name:  $
 
 C CPP options file for SHOWFLOPS package
@@ -12,11 +12,7 @@ C Use this file for selecting options within the SHOWFLOPS package
 
 #include "CPP_OPTIONS.h"
 
-#define TIME_PER_TIMESTEP
-#define USE_PAPI_FLOPS
-#define USE_FLIPS
-#define PAPI_VERSION
-#undef USE_PCL_FLOPS
+#undef USE_FLIPS
 
 #endif /* ALLOW_SHOWFLOPS */
 #endif /* SHOWFLOPS_OPTIONS_H */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/showflops/showflops_inloop.F,v 1.1 2007/06/01 16:41:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/showflops/showflops_inloop.F,v 1.2 2007/07/31 22:33:43 ce107 Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,13 +78,13 @@ CCE107 PAPI summary performance
 #else
       call PAPIF_flops(real_time, proc_time, flpops, mflops, check)
 #endif
-      WRITE(msgBuf,'(F10.6,A,F10.6,A34,I8)')
+      WRITE(msgBuf,'(F12.6,A,F12.6,A34,I8)')
      $     mflops, ' ', mflops*proc_time/(real_time + 1E-36),
      $     'Mflop/s during timestep ', iloop 
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #ifdef PAPI_VERSION
       call PAPIF_ipc(real_time, proc_time, instr, ipc, check)
-      WRITE(msgBuf,'(F10.6,A,F10.6,A34,I8)')
+      WRITE(msgBuf,'(F12.6,A,F12.6,A34,I8)')
      $     ipc, ' ', ipc*proc_time/(real_time + 1E-36),
      $     'IPC during timestep ', iloop 
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
@@ -96,7 +96,7 @@ CCE107 PCL summary performance
       _BEGIN_MASTER( myThid )
       res = PCLstop(descr, i_result, fp_result, nevents)
       do ipcl = 1, nevents
-         WRITE(msgBuf,'(F10.6,A2,A22,A17,I8)'), fp_result(ipcl),
+         WRITE(msgBuf,'(F12.6,A2,A22,A17,I8)'), fp_result(ipcl),
      $        ' ', pcl_counter_name(pcl_counter_list(ipcl)),
      $        'during timestep ', iloop
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
