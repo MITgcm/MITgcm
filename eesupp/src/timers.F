@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.27 2007/03/23 00:04:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.28 2007/07/31 22:46:46 ce107 Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -275,12 +275,20 @@ CCE107 PCL - Read event counts
 #endif
         ENDIF
 #ifdef USE_LIBHPM
+#ifdef TARGET_BGL
+        CALL f_hpmstart((myThreadId-1)*100+iTimer,tmpName)
+#else
         CALL f_hpmtstart((myThreadId-1)*100+iTimer,tmpName)
+#endif
 #endif
       ELSEIF ( tmpAction .EQ. STOP ) THEN
         IF ( iTimer .EQ. 0 ) GOTO 905
 #ifdef USE_LIBHPM
+#ifdef TARGET_BGL
+        CALL f_hpmstop((myThreadId-1)*100+iTimer)
+#else
         CALL f_hpmtstop((myThreadId-1)*100+iTimer)
+#endif
 #endif
         IF ( timerStatus(iTimer,myThreadId) .EQ. RUNNING ) THEN
 #ifdef USE_PAPI
@@ -768,7 +776,7 @@ C     October 2006
 C     Declarations follow the same preprocessor structure as the
 C     executable code below.
 
-# ifdef TARGET_AIX
+# if defined (TARGET_AIX) || defined (TARGET_BGL)
       Real*4 etime_
       Real*8 timenow
       external etime_, timenow
@@ -798,10 +806,11 @@ CEOP
 
 C     Executable code
 
-# ifdef TARGET_AIX
-      actual = ETIME_(tarray)
-      userTime      = tarray(1)
-      systemTime    = tarray(2)
+CCE107 Fixed for AIX and UNICOS
+# if defined(TARGET_AIX) || defined(TARGET_BGL)
+      ACTUAL = ETIME_(TARRAY)
+      userTime      = TARRAY(1)
+      systemTime    = TARRAY(2)
       wallClockTime = timenow()
 # elif (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR))
       userTime      = SECOND()
