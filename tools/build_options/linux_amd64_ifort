@@ -12,7 +12,8 @@
 # d) You can replace -fPIC with -mcmodel=medium which may perform faster
 # then -fPIC and still support data sizes over 2GB per process but all
 # the libraries you link to myst be compiled with -fPIC or -mcmodel=medium
-
+# e) Changed from -O3 to -O2 to avoid buggy Intel v.10 compilers. Speed 
+# impact appears to be minimal.
 FC=ifort
 F90C=ifort
 CC=icc
@@ -39,14 +40,14 @@ fi
 #  roughly equivalent to -ieee
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FOPTIM='-O3 -align -xW -ip'
+    FOPTIM='-O2 -align -xW -ip'
 else
     #  Try to follow IEEE-754
     FOPTIM='-O2 -align -xW -ip -mp'
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -ip -fPIC'
+CFLAGS='-O2 -ip -fPIC'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIRS="${NETCDF_ROOT}/include"
