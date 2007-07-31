@@ -1,5 +1,5 @@
 /*
- * $Header: /u/gcmpack/MITgcm/eesupp/src/sigreg.c,v 1.5 2006/06/20 03:13:54 edhill Exp $
+ * $Header: /u/gcmpack/MITgcm/eesupp/src/sigreg.c,v 1.6 2007/07/31 22:48:34 ce107 Exp $
  * $Name:  $
 
 //BOP
@@ -13,7 +13,7 @@
 //EOP
 
 */
-
+#ifdef HAVE_SIGREG
 /*  Here, we get the definition of the FC_NAMEMANGLE() macro. */
 #include "FC_NAMEMANGLE.h"
 
@@ -51,5 +51,5 @@ void FC_NAMEMANGLE(sigreg) (int * aip)
 #endif
     return;
 }
-
+#endif
 
