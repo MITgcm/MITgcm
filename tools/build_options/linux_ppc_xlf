@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ppc64_xlf_ncar,v 1.2 2007/07/31 22:24:51 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ppc_xlf,v 1.1 2007/07/31 22:24:51 ce107 Exp $
 #
 
 #  tested on frost, ce107 Aug 4 2005
@@ -11,12 +11,12 @@
 S64='$(TOOLSDIR)/set64bitConst.sh'
 MAKEDEPEND=makedepend
 DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
-INCLUDES='-I/contrib/fe_tools/xlc64/netcdf-3.6.0-p1/include'
+INCLUDES=''
 CPP='/lib/cpp -traditional -P'
-FC='xlf -q64'
-CC='xlc -q64'
-LINK='xlf -q64'
-LIBS='-L/contrib/fe_tools/xlc64/netcdf-3.6.0-p1/lib -lnetcdf'
+FC='xlf'
+CC='xlc'
+LINK='xlf'
+LIBS='' 
 FFLAGS='-qfixed=132'
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754

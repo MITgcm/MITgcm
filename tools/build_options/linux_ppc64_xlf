@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ppc64_xlf,v 1.1 2005/08/05 23:38:58 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ppc64_xlf,v 1.2 2007/07/31 22:24:51 ce107 Exp $
 #
 
 #  tested on frost, ce107 Aug 4 2005
@@ -10,12 +10,12 @@
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 MAKEDEPEND=makedepend
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
 INCLUDES=''
 CPP='/lib/cpp -traditional -P'
-FC='xlf'
-CC='xlc'
-LINK='xlf'
+FC='xlf -q64'
+CC='xlc -q64'
+LINK='xlf -q64'
 LIBS='' 
 FFLAGS='-qfixed=132'
 if test "x$IEEE" = x ; then

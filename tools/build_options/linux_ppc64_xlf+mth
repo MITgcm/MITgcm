@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ppc64_xlf+mth,v 1.1 2007/07/31 22:24:51 ce107 Exp $
+#
+
+#  tested on frost, ce107 Aug 4 2005
+#  using the following invocation:
+#    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/linux_ppc64_xlf
+
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR -DUSE_OMP_THREADING'
+INCLUDES=''
+CPP='/lib/cpp -traditional -P'
+FC='xlf_r -q64'
+CC='xlc_r -q64'
+LINK='xlf_r -q64'
+LIBS=''
+FFLAGS='-qfixed=132'
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+FOPTIM='-O5 -qsmp=omp -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1 -qipa=noobject:partition=large:threads'
+CFLAGS='-O5 -qsmp=omp -qinlglue -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1 -qipa=noobject:partition=large:threads'
+else
+FOPTIM='-O3 -qsmp=omp -qstrict -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+CFLAGS='-O3 -qsmp=omp -qstrict -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+fi
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
