@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.163 2007/05/25 14:56:36 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.164 2007/07/31 22:27:01 ce107 Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1564,6 +1564,7 @@ if test ! "x$TS" = x ; then
       else
 	    DEFINES="$DEFINES -DTIME_PER_TIMESTEP"
       fi
+      PACKAGES="$PACKAGES showflops"
 fi
 if test ! "x$PAPIS" = x ; then
       echo "  Turning on PAPI flop summary per timestep"
@@ -1575,6 +1576,7 @@ if test ! "x$PAPIS" = x ; then
       fi
       INCLUDES="$INCLUDES $PAPIINC"
       LIBS="$LIBS $PAPILIB"
+      PACKAGES="$PACKAGES showflops"
 fi
 if test ! "x$PCLS" = x ; then
       echo "  Turning on PCL counter summary per timestep"
@@ -1586,6 +1588,7 @@ if test ! "x$PCLS" = x ; then
       fi
       INCLUDES="$INCLUDES $PCLINC"
       LIBS="$LIBS $PCLLIB"
+      PACKAGES="$PACKAGES showflops"
 fi
 if test ! "x$PAPI" = x ; then
       if test ! "x$PAPIS" = x ; then
