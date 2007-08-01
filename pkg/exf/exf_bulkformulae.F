@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.17 2007/05/14 19:32:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.18 2007/08/01 23:03:26 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -161,6 +161,7 @@ c     == local variables ==
       _RL     stable
       _RL     tstar
       _RL     t0
+      _RL     umps
       _RL     ustar
       _RL     uzn
       _RL     shn
@@ -176,13 +177,6 @@ c     == external functions ==
 
       integer  ilnblnk
       external ilnblnk
-
-      _RL       exf_BulkqSat
-      external  exf_BulkqSat
-      _RL       exf_BulkCdn
-      external  exf_BulkCdn
-      _RL       exf_BulkRhn
-      external  exf_BulkRhn
 
 c     == end of interface ==
 
@@ -237,7 +231,8 @@ c             deltap : potential temperature diff (K)
              t0     = atemp(i,j,bi,bj)*
      &            (exf_one + humid_fac*aqh(i,j,bi,bj))
              ssttmp = theta(i,j,k,bi,bj)
-             tmpbulk= exf_BulkqSat(ssttmp + cen2kel)
+             tmpbulk= cvapor_fac /
+     &            exp( cvapor_exp/(ssttmp + cen2kel) )
              ssq    = saltsat*tmpbulk/atmrho
              deltap = atemp(i,j,bi,bj)   + gamma_blk*ht -
      &            ssttmp - cen2kel
@@ -247,7 +242,9 @@ c             deltap : potential temperature diff (K)
 CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 #endif
 #ifdef ALLOW_ATM_WIND
-             tmpbulk= exf_BulkCdn(sh(i,j,bi,bj))
+             umps   = sh(i,j,bi,bj)
+             tmpbulk= exf_scal_BulkCdn *
+     &            ( cdrag_1/umps + cdrag_2 + cdrag_3*umps )
              rdn    = sqrt(tmpbulk)
              ustar  = rdn*sh(i,j,bi,bj)
 #else /* ifndef ALLOW_ATM_WIND */
@@ -263,7 +260,8 @@ c    &                   )
              tau   = wStress(i,j,bi,bj)
              ustar = sqrt(tau/atmrho)
 #endif /* ifndef ALLOW_ATM_WIND */
-             tmpbulk= exf_BulkRhn(stable)
+             tmpbulk= (exf_one-stable)*cstanton_1 
+     &            + stable*cstanton_2
              tstar  = tmpbulk*deltap
              qstar  = cdalton*delq
 
@@ -317,14 +315,16 @@ c                 Shift wind speed using old coefficient
 c                 Update the transfer coefficients at 10 meters
 c                 and neutral stability.
 
-                  tmpbulk= exf_BulkCdn(uzn)
+                  tmpbulk= exf_scal_BulkCdn *
+     &                 ( cdrag_1/uzn + cdrag_2 + cdrag_3*uzn )
                   rdn    = sqrt(tmpbulk)
 
 c                 Shift all coefficients to the measurement height
 c                 and stability.
                   rd     = rdn/(exf_one - rdn/karman*psimh)
 #endif /* ALLOW_ATM_WIND */
-                  tmpbulk= exf_BulkRhn(stable)
+                  tmpbulk= (exf_one-stable)*cstanton_1 
+     &                 + stable*cstanton_2
                   rh     = tmpbulk/( exf_one +
      &                               tmpbulk/karman*(aln - psixh) )
                   re     = cdalton/( exf_one +
@@ -373,7 +373,9 @@ cdm !!! need to change sign and to convert from kg/m^2/s to m/s !!!
 
 #else  /* ifndef ALLOW_ATM_TEMP */
 #ifdef ALLOW_ATM_WIND
-              tmpbulk= exf_BulkCdn(sh(i,j,bi,bj))
+              umps = sh(i,j,bi,bj)
+              tmpbulk= exf_scal_BulkCdn *
+     &             ( cdrag_1/umps + cdrag_2 + cdrag_3*umps )
               ustress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
      &                             uwind(i,j,bi,bj)
               vstress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
