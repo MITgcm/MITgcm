@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_send_atm_fields.F,v 1.4 2007/06/18 21:20:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_send_atm_fields.F,v 1.5 2007/08/01 00:53:37 dfer Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -74,7 +74,7 @@ C--   Map ocn->atm flux of CO2 onto atmos. grid
      O                           fluxCO2_atm )
 C     Send ocn->atm flux of CO2 to atmos. component
         CALL COUPSEND_R8TILES( atmCompName, atmFCO2Name,
-     I                         Nx_atm, Ny_atm, vSq_atm )
+     I                         Nx_atm, Ny_atm, fluxCO2_atm )
       ENDIF
 
       RETURN
