@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.22 2007/07/27 22:18:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.23 2007/08/04 18:05:23 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -185,16 +185,17 @@ cph   assuming all xx_ fields are initialised to zero.
          grdchk_epsfac = 1. _d 0
       end if
 
-      print *, 'grad-res -------------------------------'
-      print '(2a)', 
+      WRITE(standardmessageunit,'(A)')
+     &    'grad-res -------------------------------'
+      WRITE(standardmessageunit,'(2a)')
      &    ' grad-res  proc    #    i    j    k   bi   bj iobc',
      &    '               fc ref           fc + eps           fc - eps'
 #ifdef ALLOW_TANGENTLINEAR_RUN
-      print '(2a)', 
+      WRITE(standardmessageunit,'(2a)')
      &    ' grad-res  proc    #    i    j    k   bi   bj iobc',
      &    '             tlm grad            fd grad         1 - fd/tlm'
 #else
-      print '(2a)', 
+      WRITE(standardmessageunit,'(2a)')
      &    ' grad-res  proc    #    i    j    k   bi   bj iobc',
      &    '             adj grad            fd grad         1 - fd/adj'
 #endif
@@ -440,14 +441,15 @@ c******************************************************
                ierrmem   ( ichknum ) = ierr
                icglomem  ( ichknum ) = icglo
 
-               print *, 'grad-res -------------------------------'
-               print '(a,8I5,2x,3(1x,E18.12))', ' grad-res ',
-     &              myprocid,ichknum,itilepos,jtilepos,
+               WRITE(standardmessageunit,'(A)')
+     &             'grad-res -------------------------------'
+               WRITE(standardmessageunit,'(a,8I5,2x,3(1x,E18.12))')
+     &              ' grad-res ',myprocid,ichknum,itilepos,jtilepos,
      &              layer,itile,jtile,obcspos,
      &              fcref, fcpertplus, fcpertminus
 #ifdef ALLOW_TANGENTLINEAR_RUN
-               print '(a,8I5,2x,3(1x,E18.12))', ' grad-res ',
-     &              myprocid,ichknum,ichkmem(ichknum),
+               WRITE(standardmessageunit,'(a,8I5,2x,3(1x,E18.12))')
+     &              ' grad-res ',myprocid,ichknum,ichkmem(ichknum),
      &              icompmem(ichknum),itestmem(ichknum),
      &              bimem(ichknum),bjmem(ichknum),iobcsmem(ichknum),
      &              ftlxxmemo, gfd, ratio_ftl
@@ -456,8 +458,8 @@ c******************************************************
                CALL PRINT_MESSAGE
      &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #else
-               print '(a,8I5,2x,3(1x,E18.12))', ' grad-res ',
-     &              myprocid,ichknum,ichkmem(ichknum),
+               WRITE(standardmessageunit,'(a,8I5,2x,3(1x,E18.12))')
+     &              ' grad-res ',myprocid,ichknum,ichkmem(ichknum),
      &              icompmem(ichknum),itestmem(ichknum),
      &              bimem(ichknum),bjmem(ichknum),obcspos,
      &              adxxmemo, gfd, ratio_ad
