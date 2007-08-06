@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.15 2007/07/25 08:51:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.16 2007/08/06 19:36:53 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -94,56 +94,58 @@ C--   Initialize grid info
         ENDDO
 
 #ifdef ALLOW_OBCS
+        IF (useOBCS) THEN
 C     Apply OBCS T/S mask (taken from pkg/obcs/obcs_apply_ts.F)
 #ifdef ALLOW_OBCS_NORTH
-        DO I=1-Olx,sNx+Olx
+         DO I=1-Olx,sNx+Olx
 C Northern boundary
-         J_obc = OB_Jn(I,bi,bj)
-         IF (J_obc.NE.0) THEN
-          obc_mask = _maskS(I,J_obc,kSurface,bi,bj)
-          DO J = J_obc, J_obc+Oly
-           IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
-          ENDDO
-         ENDIF
-        ENDDO
+          J_obc = OB_Jn(I,bi,bj)
+          IF (J_obc.NE.0) THEN
+           obc_mask = _maskS(I,J_obc,kSurface,bi,bj)
+           DO J = J_obc, J_obc+Oly
+            IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
+           ENDDO
+          ENDIF
+         ENDDO
 #endif
 #ifdef ALLOW_OBCS_SOUTH
-        DO I=1-Olx,sNx+Olx
+         DO I=1-Olx,sNx+Olx
 C Southern boundary
-         J_obc = OB_Js(I,bi,bj)
-         IF (J_obc.NE.0) THEN
-          obc_mask = _maskS(I,J_obc+1,kSurface,bi,bj)
-          DO J = J_obc-Oly, J_obc
-           IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
-          ENDDO
-         ENDIF
-        ENDDO
+          J_obc = OB_Js(I,bi,bj)
+          IF (J_obc.NE.0) THEN
+           obc_mask = _maskS(I,J_obc+1,kSurface,bi,bj)
+           DO J = J_obc-Oly, J_obc
+            IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
+           ENDDO
+          ENDIF
+         ENDDO
 #endif
 #ifdef ALLOW_OBCS_EAST
-        DO J=1-Oly,sNy+Oly
+         DO J=1-Oly,sNy+Oly
 C Eastern boundary
-         I_obc = OB_Ie(J,bi,bj)
-         IF (I_obc.NE.0) THEN
-          obc_mask = _maskW(I_obc,J,kSurface,bi,bj)
-          DO I = I_obc, I_obc+Olx
-           IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
-          ENDDO
-         ENDIF
-        ENDDO
+          I_obc = OB_Ie(J,bi,bj)
+          IF (I_obc.NE.0) THEN
+           obc_mask = _maskW(I_obc,J,kSurface,bi,bj)
+           DO I = I_obc, I_obc+Olx
+            IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
+           ENDDO
+          ENDIF
+         ENDDO
 #endif
 #ifdef ALLOW_OBCS_WEST
-        DO J=1-Oly,sNy+Oly
+         DO J=1-Oly,sNy+Oly
 C Western boundary
-         I_obc=OB_Iw(J,bi,bj)
-         IF (I_obc.NE.0) THEN
-          obc_mask = _maskW(I_obc+1,J,kSurface,bi,bj)
-          DO I = I_obc-Olx, I_obc
-           IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
-          ENDDO
-         ENDIF
-        ENDDO
+          I_obc=OB_Iw(J,bi,bj)
+          IF (I_obc.NE.0) THEN
+           obc_mask = _maskW(I_obc+1,J,kSurface,bi,bj)
+           DO I = I_obc-Olx, I_obc
+            IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
+           ENDDO
+          ENDIF
+         ENDDO
 #endif
-        _EXCH_XY_R8(HEFFM, myThid)
+         _EXCH_XY_R8(HEFFM, myThid)
+        ENDIF
 #endif /* ALLOW_OBCS */
 
         DO J=1-OLy+1,sNy+OLy
@@ -163,6 +165,40 @@ C Western boundary
 #endif /* SEAICE_CGRID */
          ENDDO
         ENDDO
+
+#ifdef ALLOW_OBCS
+        IF (useOBCS) THEN
+C--   If OBCS is turned on, close southern and western boundaries
+#ifdef ALLOW_OBCS_SOUTH
+         DO I=1-Olx,sNx+Olx
+C Southern boundary
+          J_obc = OB_Js(I,bi,bj)
+          IF (J_obc.NE.0) THEN
+#ifdef SEAICE_CGRID
+           seaiceMaskU(I,J_obc,bi,bj)=   0.0 _d 0
+           seaiceMaskV(I,J_obc,bi,bj)=   0.0 _d 0
+#else
+           UVM(I,J_obc,bi,bj)=0. _d 0
+#endif
+          ENDIF
+         ENDDO
+#endif /* ALLOW_OBCS_SOUTH */
+#ifdef ALLOW_OBCS_WEST
+         DO J=1-Oly,sNy+Oly
+C Western boundary
+          I_obc=OB_Iw(J,bi,bj)
+          IF (I_obc.NE.0) THEN
+#ifdef SEAICE_CGRID
+           seaiceMaskU(I_obc,J,bi,bj)=   0.0 _d 0
+           seaiceMaskV(I_obc,J,bi,bj)=   0.0 _d 0
+#else
+           UVM(I_obc,J,bi,bj)=0. _d 0
+#endif
+          ENDIF
+         ENDDO
+#endif /* ALLOW_OBCS_WEST */
+        ENDIF
+#endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_EXCH2
 #ifndef SEAICE_CGRID

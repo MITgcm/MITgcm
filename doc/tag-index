@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.855 2007/07/27 22:22:37 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.856 2007/08/06 19:36:53 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -13,6 +13,8 @@ o exch2 adjoint
   - Comment all relevant #ifndef ALLOW_AUTODIFF_TAMC
     that used to hide exch2 or cubed-sphere specific code
     (commented via 'cph-exch2')
+o pkg/seaice
+  - Close southern and western boundaries for UICE/VICE when useOBCS=.TRUE.
 
 checkpoint59e
 o exch2: new S/R that only use the cube-tracer (center-position) exchange:
