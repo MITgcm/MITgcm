@@ -37,3 +37,6 @@ vel2latlon.m       :: Rotate vectors according pre-calculated angles
 
 zmean.m            :: Calculate a vertical integral divided by depth
                    :: for a field and depths read in by rdnctiles.
+plot_compact_mdsio.m   ::
+                      Read global or tiled mdsio lat-lon-cap output and 
+                      do simple global plot (Arctic duplicated 4 times)
