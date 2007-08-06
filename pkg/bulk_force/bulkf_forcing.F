@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_forcing.F,v 1.10 2006/06/22 14:17:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_forcing.F,v 1.11 2007/08/06 21:27:59 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -182,6 +182,7 @@ C-       Net downward surface heat flux :
               hfl = hfl + fswnet(i,j,bi,bj)
 C- Heat flux:
               Qnet(i,j,bi,bj) = -hfl
+              Qsw (i,j,bi,bj) = -fswnet(i,j,bi,bj)
 #ifdef COUPLE_MODEL
               dFdT(i,j,bi,bj) = df0dT
 #endif
@@ -194,6 +195,7 @@ c            EmPmR(i,j,bi,bj) = EmPch(i,j,bi,bj)
 C----
             ELSE
               Qnet(i,j,bi,bj) = 0. _d 0
+              Qsw (i,j,bi,bj) = 0. _d 0
               EmPmR(i,j,bi,bj)= 0. _d 0
 #ifdef COUPLE_MODEL
               dFdT(i,j,bi,bj) = 0. _d 0
