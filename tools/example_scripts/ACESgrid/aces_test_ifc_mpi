@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+#PBS -q long
+#PBS -N tst_ifc
+#PBS -l nodes=2:ppn=2
+#PBS -e /home/jmc/test_ACES/output/tst_ifc.stderr
+#PBS -o /home/jmc/test_ACES/output/tst_ifc.stdout
+# #PBS -V
+#  ^- commented out => do not export env. variable !
+#  since head node environment (& module) is too different from computer node
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.1 2007/08/07 18:24:43 jmc Exp $
+# $Name:  $
+
+if test -f /etc/profile.d/modules.sh ; then
+    . /etc/profile.d/modules.sh
+fi
+module add mpich/intel
+
+TST_DIR="/home/jmc/test_ACES/gcm_tests"
+HERE='/home/jmc/test_ACES/output'
+cd $HERE
+
+FC=ifort
+MF=$HERE"/mf_"$FC
+cat $PBS_NODEFILE | sort | uniq > $MF
+NCPU=`wc -l $MF | awk '{print $1}'`
+EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
+
+# cat << EOF > $HERE"/.cvspass"
+# /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
+# EOF
+umask 0022
+tmpDIR=${TST_DIR}"/tmp_ifc"
+if test -e $tmpDIR ; then
+    rm -rf $tmpDIR
+fi
+mkdir $tmpDIR
+cd $tmpDIR
+cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null 2>&1
+#  cvs co MITgcm
+/usr/bin/find $tmpDIR -type d | xargs chmod g+rxs
+/usr/bin/find $tmpDIR -type f | xargs chmod g+r
+
+cd MITgcm/verification
+OPTFILE="../tools/build_options/linux_ia32_"$FC"+mpi_aces"
+# ./testreport -j 2 -mpi -of $OPTFILE -command "$EXE" -a 'edhill@mitgcm.org'
+echo ./testreport -j 2 -mpi -of $OPTFILE -command "$EXE"
+./testreport -j 2 -mpi -of $OPTFILE -command "$EXE"
+
