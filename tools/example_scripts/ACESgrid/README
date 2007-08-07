@@ -1,0 +1,38 @@
+
+These are the daily MITgcm testing scripts written by Ed Hill and used 
+by jmc on the ACESgrid cluster (currently from AO head node). 
+The reslts are automatically fed (by email using the mpack program) into 
+the MITgcm web site at:
+
+  http://mitgcm.org/testing.html
+
+and the scripts have the following pecularities:
+
+  - many paths are hard-coded
+
+  - the "aces_test_all" script needs an "mpack" binary which 
+    can be obtained from the main MITgcm code using:
+	(see: MITgcm/tools/mpack-1.6/INSTALL)
+
+      $ cd MITgcm/tools/mpack-1.6
+      $ ./configure
+      $ make
+
+  - a current copy of MITgcm is checked out using cvs pserver 
+    so you will need the corresponding pserver key in your 
+    ~/.cvspass which can be obtained (and which only needs to 
+    be performed *once*):
+
+      $ cvs -d ':pserver:cvsanon@mitgcm.org:/u/gcmpack' login
+      ===> ( enter the CVS password: "cvsanon" )
+
+
+The files are:
+
+  ao_crontab		result of "crontab -l > ao_crontab" from jmc@ao.csail.mit.edu
+  aces_test_all		main script called by cron
+    aces_test_gnu_mpi	\
+    aces_test_ifc_mpi	+=> MPI test scripts for each compiler
+    aces_test_pgi_mpi	/
+    aces_test_ifc_mth    => multi-threaded test with intel compiler
+
