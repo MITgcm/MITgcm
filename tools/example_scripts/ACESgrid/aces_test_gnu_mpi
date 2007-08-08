@@ -9,7 +9,7 @@
 #  ^- commented out => do not export env. variable ! 
 #  since head node environment (& module) is too different from computer node
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.1 2007/08/07 18:24:43 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.2 2007/08/08 18:47:48 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -17,6 +17,7 @@ if test -f /etc/profile.d/modules.sh ; then
 fi
 module add mpich/gnu
 
+umask 0022
 TST_DIR="/home/jmc/test_ACES/gcm_tests"
 HERE='/home/jmc/test_ACES/output'
 cd $HERE
@@ -30,7 +31,6 @@ EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
 # cat << EOF > $HERE"/.cvspass"
 # /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
 # EOF
-umask 0022
 tmpDIR=${TST_DIR}"/tmp_gnu"
 if test -e $tmpDIR ; then
     rm -rf $tmpDIR
