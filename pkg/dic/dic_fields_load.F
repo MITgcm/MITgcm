@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.13 2007/05/01 22:51:12 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.14 2007/08/09 19:51:18 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -27,6 +27,9 @@ C !USES: ===============================================================
 #include "DIC_ABIOTIC.h"
 #include "DIC_BIOTIC.h"
 #include "DIC_LOAD.h"
+#ifdef ALLOW_THSICE
+#include "THSICE_VARS.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -167,6 +170,9 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
              SILICA(i,j,bi,bj)    = bWght*silica0(i,j,bi,bj)
      &                        +aWght*silica1(i,j,bi,bj)
            ENDIF
+#ifdef ALLOW_THSICE
+           FIce(i,j,bi,bj)    = iceMask(i,j,bi,bj)
+#else
            IF ( IceFile .NE. ' '  ) THEN
             FIce(i,j,bi,bj)    = bWght*ice0(i,j,bi,bj)
      &                          +aWght*ice1(i,j,bi,bj)
@@ -174,6 +180,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
            if (FIce(i,j,bi,bj).lt.1d-2) then
               FIce(i,j,bi,bj) = 0.d0
            endif
+#endif
 #ifdef READ_PAR
            IF ( Filename1 .NE. ' '  ) THEN
             PAR(i,j,bi,bj)    = bWght*par0(i,j,bi,bj)

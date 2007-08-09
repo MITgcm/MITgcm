@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.9 2007/05/11 19:58:07 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.10 2007/08/09 19:51:18 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -109,8 +109,6 @@ cswd QQ change for placement of chem forcing (ie. after timestep)
           IF ( SilicaFile .NE. ' '  ) THEN
              SILICA(i,j,bi,bj)    = bWght*silica0(i,j,bi,bj)
      &                        +aWght*silica1(i,j,bi,bj)
-           ELSE
-             SILICA(i,j,bi,bj)   =7.6838e-3*maskC(i,j,1,bi,bj)
            ENDIF
           ENDDO
          ENDDO

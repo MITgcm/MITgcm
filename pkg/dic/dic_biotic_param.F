@@ -54,10 +54,10 @@ C set stoichiometric ratios
 C set scale depth for CaCO3 remineralization (m)
        zca = 3500.0
 cn parameters for light/nutrient limited bioac
+       parfrac=0.4   !fraction of Qsw that is PAR
        k0=0.02   !light attentuation coefficient
        lit0=30    ! half saturation light constant (W/m2)
        Kpo4 = 5.d-4 ! half saturation phosphate constant (mol/m3)
-       Kfe = 0.00000012 ! half saturation fe constant (mol/m3)
        Kfe = 1.2e-7     ! half saturation fe constant (mol/m3)
 c iron chemisty values
        alpfe = 0.01    ! solubility of aeolian fe

@@ -82,7 +82,7 @@ C$TAF INIT bio_export = static, 10
            lit=PAR(i,j,bi,bj)
 #else
 #ifdef USE_QSW
-           lit=-0.4*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+           lit=-parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 #else
            lit=sfac(j)
 #endif

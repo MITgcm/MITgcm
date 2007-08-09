@@ -22,6 +22,7 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "DIC_BIOTIC.h"
 
 C !INPUT PARAMETERS: ===================================================
 C time                 :: current time
@@ -32,7 +33,7 @@ C !OUPUT PARAMETERS: ===================================================
        _RL sfac(1-OLy:sNy+OLy)
 
 C !LOCAL VARIABLES: ====================================================
-       _RL  solar, albedo, par
+       _RL  solar, albedo
        _RL  dayfrac, yday, delta
        _RL  lat, sun1, dayhrs
        _RL  cosz, frac, fluxi
@@ -42,7 +43,6 @@ CEOP
 c
       solar = 1360.   !solar constant
       albedo = 0.6    !planetary albedo
-      par = 0.4       !photosynthetically reactive frac
 
 #ifndef READ_PAR
 C     latitute in radians, backed out from coriolis parameter
@@ -81,7 +81,7 @@ C     (makes latitude independent of grid)
           if (cosz.le.0.005) cosz=0.005
           frac = dayhrs/3.1416               !fraction of daylight in day
 c daily average photosynthetically active solar radiation just below surface
-          fluxi = solar*(1.0-albedo)*cosz*frac*par
+          fluxi = solar*(1.0-albedo)*cosz*frac*parfrac
 c
 c convert to sfac
           if (fluxi.gt.0.0) sfac(j)=fluxi
