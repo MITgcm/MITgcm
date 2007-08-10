@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.3 2004/06/24 23:43:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.4 2007/08/10 03:09:07 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -169,6 +169,10 @@ C-- Local variables:
 c     _RL  QCLOUD(NGP), ACLOUD(NGP), PSAZ(NGP),
       _RL  QCLOUD(NGP), ACLOUD(NGP),
      &     ALBTOP(NGP,NLEV), FREFL(NGP,NLEV), FLUX(NGP,2)
+#ifdef ALLOW_CLOUD_3D
+C_DE           CLDCLW = Local cloud cover                           (3-dim)
+      _RL CLDCLW(NGP,NLEV), ACLDLW(NGP,NLEV)
+#endif
 
 C-  jmc: define "FLUX" as a local variable & remove Equivalences: 
 c     EQUIVALENCE (ALBTOP(1,1),TAU2(1,1,3))
@@ -211,6 +215,9 @@ C
       DO K=1,NLEV
        DO J=1,NGP
          ALBTOP(J,K)=0.
+#ifdef ALLOW_CLOUD_3D
+         CLDCLW(J,K)=0.
+#endif
        ENDDO
       ENDDO
 C
@@ -225,6 +232,10 @@ C-    skipp this part for clear-sky diagnostics
          IF (RH(J,K).GT.RHCL1.AND.QA(J,K).GT.QACL1) THEN
             CLOUDC(J)=MAX(CLOUDC(J),RH(J,K)-RHCL1)
             IF (QA(J,K).GT.QACL3) ICLTOP(J)=K
+#ifdef ALLOW_CLOUD_3D
+            CLDCLW(J,K)=MAX(0. _d 0,RH(J,K)-RHCL1)
+            CLDCLW(J,K)=MIN(1. _d 0,CLDCLW(J,K)*RRCL)
+#endif
          ENDIF
         ENDDO
        ENDDO
@@ -235,6 +246,11 @@ C-    skipp this part for clear-sky diagnostics
         CLOUDC(J)=MIN(1. _d 0,CLOUDC(J)*RRCL)
         IF (CLOUDC(J).GT.0.0) THEN
           CLOUDC(J)=CLOUDC(J)*MIN(1. _d 0,QCLOUD(J)*RQCL)
+#ifdef ALLOW_CLOUD_3D
+          DO K=NL1(J),2,-1
+             CLDCLW(J,K)=CLDCLW(J,K)*MIN(1. _d 0,QCLOUD(J)*RQCL)
+          ENDDO
+#endif
           ALBTOP(J,ICLTOP(J))=ALBCL*CLOUDC(J)
         ELSE
           ICLTOP(J)=NLEV+1
@@ -376,9 +392,17 @@ C
 C     5.1  Longwave transmissivity:
 C          function of layer mass, abs. humidity and cloud cover.
 
+#ifdef ALLOW_CLOUD_3D
+      DO K=2,NLEV
+        DO J=1,NGP
+          ACLDLW(J,K)=CLDCLW(J,K)*(ABLCL1+ABLCL2*QCLOUD(J))
+        ENDDO
+      ENDDO
+#else
       DO J=1,NGP
         ACLOUD(J)=CLOUDC(J)*(ABLCL1+ABLCL2*QCLOUD(J))
       ENDDO
+#endif
 
       DO J=1,NGP
 c_FM    DELTAP=PSA(J)*DSIG(1)
@@ -394,7 +418,11 @@ c_FM    DELTAP=PSA(J)*DSIG(1)
 c_FM     DELTAP=PSA(J)*DSIG(K)
          DELTAP=DSIG(K)*dpFac(J,K)
          IF ( K.GE.ICLTOP(J).AND.K.NE.kGrd(J) ) THEN
+#ifdef ALLOW_CLOUD_3D
+           TAU2(J,K,1)=EXP(-DELTAP*(ABLWIN+ACLDLW(J,K)))
+#else
            TAU2(J,K,1)=EXP(-DELTAP*(ABLWIN+ACLOUD(J)))
+#endif
          ELSE
            TAU2(J,K,1)=EXP(-DELTAP*ABLWIN)
          ENDIF
@@ -403,6 +431,12 @@ c_FM     DELTAP=PSA(J)*DSIG(K)
          TAU2(J,K,4)=EXP(-DELTAP*ABLWV2*QA(J,K))
        ENDDO
       ENDDO
+
+#if (defined ALLOW_CLOUD_3D && defined ALLOW_DIAGNOSTICS)
+        CALL DIAGNOSTICS_FILL( CLDCLW,
+     &                        'CLDCLW  ',-1, Nr, 3,bi,bj, myThid )
+#endif
+
 C
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AIM */

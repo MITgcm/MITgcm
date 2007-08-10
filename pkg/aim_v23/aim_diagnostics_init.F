@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.6 2007/02/21 21:32:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.7 2007/08/10 03:09:07 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -191,6 +191,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagCode  = 'SM P    M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+#ifdef ALLOW_CLOUD_3D
+      diagName  = 'CLDCLW  '
+      diagTitle = 'Local Cloud Fraction (0-1)'
+      diagUnits = '0-1             '
+      diagCode  = 'SM      ML      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+#endif
 
       diagName  = 'CLDPRS  '
       diagTitle = 'Cloud Top Pressure (normalized)'
