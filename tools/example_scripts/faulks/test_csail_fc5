@@ -1,0 +1,116 @@
+#! /usr/bin/env bash
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail_fc5,v 1.1 2007/08/11 17:26:36 jmc Exp $
+
+#  Ed Hill
+
+#  Test script for MITgcm that should work on most of the csail.mit.edu
+#  Linux machines.
+
+
+# defaults
+export PATH='/usr/local/bin:/bin:/usr/bin'
+OPTFILE=
+TESTDIR="/scratch/jmc/test_"`hostname`
+IEEE="-ieee"
+
+
+#  Turn off stack limit for FIZHI
+ulimit -s unlimited
+
+echo -n "Creating a temp directory ..."
+mach=`hostname`
+tdir=$TESTDIR
+if test -e $tdir
+then test -e $tdir/MITgcm  &&  rm -rf $tdir/MITgcm
+else mkdir $tdir
+fi
+echo "  done"
+
+echo -n "Downloading the MITgcm code from CVS pserver..."
+cd $tdir
+export CVSROOT='/u/gcmpack'
+cvs co -P MITgcm > /dev/null 2>&1
+echo "  done"
+cd MITgcm/verification
+
+echo "Running testreport using:"
+comm="./testreport -adm $IEEE -a edhill@mitgcm.org"
+echo "  \"$comm\""
+echo "======================"
+echo
+$comm | tail -100
+
+echo
+echo "======================"
+echo "Cleaning test directories:"
+./testreport -clean > /dev/null 2>&1
+echo "======================"
+echo
+
+echo "Running testreport using:"
+comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_g77 -a edhill@mitgcm.org"
+echo "  \"$comm\""
+echo "======================"
+echo
+$comm | tail -100
+
+echo
+echo "======================"
+echo "Cleaning test directories:"
+./testreport -clean > /dev/null 2>&1
+echo "======================"
+echo
+
+echo "Running testreport using:"
+export PGI=/usr/local/pkg/pgi/pgi-6.1-5
+comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org"
+echo "  \"$comm\""
+echo "======================"
+echo
+$comm | tail -100
+
+echo
+echo "======================"
+echo "Cleaning test directories:"
+./testreport -clean > /dev/null 2>&1
+echo "======================"
+echo
+
+echo "Running testreport using:"
+comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_gfortran -a edhill@mitgcm.org"
+echo "  \"$comm\""
+echo "======================"
+echo
+$comm | tail -100
+
+echo
+echo "======================"
+echo "Cleaning test directories:"
+./testreport -clean > /dev/null 2>&1
+echo "======================"
+echo
+
+echo "Running testreport using:"
+comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
+echo "  \"$comm\""
+echo "======================"
+echo
+$comm | tail -100
+
+echo
+echo "======================"
+echo "Cleaning test directories:"
+./testreport -clean > /dev/null 2>&1
+echo "======================"
+echo
+
+echo "Running testreport using:"
+export OMP_NUM_THREADS=2
+export KMP_STACKSIZE=400m
+comm="./testreport -mth -of ../tools/build_options/linux_ia32_ifort.v9+mth -a edhill@mitgcm.org"
+echo "  \"$comm\""
+echo "======================"
+echo
+$comm | tail -100
+ 
