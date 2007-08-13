@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.13 2007/05/07 15:58:20 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.14 2007/08/13 02:29:40 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -138,8 +138,12 @@ C calculate SCHMIDT NO. for CO2
 
 c
 #ifdef USE_PLOAD
-c convert from Pa to atmos
-               AtmosP(i,j,bi,bj)=pLoad(i,j,bi,bj)/1.01295e5
+C Convert anomalous pressure pLoad (in Pa) from atmospheric model
+C to total pressure (in Atm)
+C Note: it is assumed the reference atmospheric pressure is 1Atm=1013mb
+C       rather than the actual ref. pressure from Atm. model so that on
+C       average AtmosP is about 1 Atm.
+               AtmosP(i,j,bi,bj)= 1. _d 0 + pLoad(i,j,bi,bj)/Pa2Atm
 #endif
 
 C Determine surface flux (FDIC)

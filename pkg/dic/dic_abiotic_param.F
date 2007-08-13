@@ -65,6 +65,10 @@ cph this is to please TAF
       gsm_dic = 0.
       gsm_alk = 0.
 
+C Conversion factor for atmospheric pressure pLoad when coupled 
+C to atmospheric model: 1 Atm = 1.01325e5 Pa = 1013.25 mb
+      Pa2Atm = 1.01325 _d 5
+
 c
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

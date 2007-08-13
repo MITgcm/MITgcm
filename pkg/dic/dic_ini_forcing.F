@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.7 2007/05/07 15:58:19 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.8 2007/08/13 02:29:40 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -90,7 +90,7 @@ c set reasonable values to those that need at least something
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
              WIND(i,j,bi,bj) = 5.d0*maskC(i,j,1,bi,bj)
-             ATMOSP(i,j,bi,bj)   =1.d0*maskC(i,j,1,bi,bj)
+             AtmosP(i,j,bi,bj)   =1.d0*maskC(i,j,1,bi,bj)
              SILICA(i,j,bi,bj)   =7.6838e-3*maskC(i,j,1,bi,bj)
              FIce(i,j,bi,bj) =0.d0
 #ifdef READ_PAR

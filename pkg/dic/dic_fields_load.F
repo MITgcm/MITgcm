@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.14 2007/08/09 19:51:18 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.15 2007/08/13 02:29:40 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -163,7 +163,7 @@ c QQ: note - we should have wind speed variance in here
 c QQ         also need to check units, and conversion factors
 c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
            IF ( AtmospFile .NE. ' '  ) THEN
-             ATMOSP(i,j,bi,bj)    = bWght*atmosp0(i,j,bi,bj)
+             AtmosP(i,j,bi,bj)    = bWght*atmosp0(i,j,bi,bj)
      &                        +aWght*atmosp1(i,j,bi,bj)
            ENDIF
            IF ( SilicaFile .NE. ' '  ) THEN

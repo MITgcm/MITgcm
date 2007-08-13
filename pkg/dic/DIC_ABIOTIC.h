@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_ABIOTIC.h,v 1.6 2006/09/12 19:58:01 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_ABIOTIC.h,v 1.7 2007/08/13 02:29:40 dfer Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -10,7 +10,7 @@ C     |==========================================================|
      &              AtmospCO2, AtmosP, pH, pCO2, fluxCO2,
      &              pisvel, wind, fice,Silica
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  Atmosp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  fluxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -49,17 +49,20 @@ C     |==========================================================|
       _RL oC0
 
 
-C permil is conversion factor for mol/m3 to mol/kg
-C assumes uniform (surface) density
+C permil : is conversion factor for mol/m3 to mol/kg
+C          assumes uniform (surface) density
+C Pa2Atm : for conversion of atmospheric pressure
+C          when coming from atmospheric model 
        COMMON /GLOBAL_SURF_MEAN/
      &                          gsm_alk,gsm_s,gsm_t,gsm_dic,
-     &                          gsm_c14,permil
+     &                          gsm_c14,permil,Pa2Atm
       _RL  gsm_alk
       _RL  gsm_s
       _RL  gsm_t
       _RL  gsm_DIC
       _RL  gsm_C14
       _RL  permil
+      _RL  Pa2Atm
 
 C schmidt number coefficients
       COMMON /SCHMIDT_NO/
