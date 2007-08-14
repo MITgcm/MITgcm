@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad_singlelayer/cost_test.F,v 1.1 2007/05/10 16:29:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad_singlelayer/cost_test.F,v 1.2 2007/08/14 21:02:18 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -70,7 +70,7 @@ c
      &           *( uVel(i,j,k,bi,bj) )
      &           *( uVel(i,j,k,bi,bj) )
 cph(
-               print *, 'ph-cost: objf_test ', 
+               print *, 'ph-cost: objf_test ', ig, jg,
      &              objf_test(bi,bj)
 cph)
 c
