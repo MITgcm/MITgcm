@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.14 2007/08/13 02:29:40 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.15 2007/08/14 19:32:40 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -84,19 +84,19 @@ C calculate SCHMIDT NO. for O2
 
 C Determine surface flux of O2 
 C exchange coeff, accounting for ice cover and Schmidt no.
-              pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5
+              pisvel(i,j,bi,bj)=0.337 _d 0 *wind(i,j,bi,bj)**2/3.6 _d 5
               Kwexch(i,j) = 
      &             pisvel(i,j,bi,bj)
-     &             / sqrt(SchmidtNoO2(i,j)/660.0)
+     &             / sqrt(SchmidtNoO2(i,j)/660.0 _d 0)
 c ice influence
-              Kwexch(i,j)  =(1.d0-Fice(i,j,bi,bj))*Kwexch(i,j)
+              Kwexch(i,j)  =(1. _d 0 - FIce(i,j,bi,bj))*Kwexch(i,j)
 
               ttemp = theta(i,j,k,bi,bj)
               stemp = salt(i,j,k,bi,bj)
 C determine saturation O2
 C using Garcia and Gordon (1992), L&O (mistake in original???)
-              aTT  = 298.15-ttemp
-              aTK  = 273.15+ttemp
+              aTT  = 298.15 _d 0 -ttemp
+              aTK  = 273.15 _d 0 +ttemp
               aTS  = log(aTT/aTK)
               aTS2 = aTS*aTS
               aTS3 = aTS2*aTS
@@ -111,16 +111,17 @@ C using Garcia and Gordon (1992), L&O (mistake in original???)
               o2s = EXP(oCnew)
 
 c Convert from ml/l to mol/m^3
-              O2sat(i,j) = o2s/22391.6*1000.0
+              O2sat(i,j) = o2s/22391.6 _d 0 * 1. _d 3
 
-#ifdef USE_PLOAD
+cdfer AtmosP already computed in dic_surfforcing.F
+C#ifdef USE_PLOAD
 C Convert anomalous pressure pLoad (in Pa) from atmospheric model
 C to total pressure (in Atm)
 C Note: it is assumed the reference atmospheric pressure is 1Atm=1013mb
 C       rather than the actual ref. pressure from Atm. model so that on
 C       average AtmosP is about 1 Atm.
-               AtmosP(i,j,bi,bj)= 1. _d 0 + pLoad(i,j,bi,bj)/Pa2Atm
-#endif
+C               AtmosP(i,j,bi,bj)= 1. _d 0 + pLoad(i,j,bi,bj)/Pa2Atm
+C#endif
 
 c Determine flux, inc. correction for local atmos surface pressure
 cQQ PTR_O2?
@@ -128,7 +129,7 @@ cQQ PTR_O2?
      &                     (AtmosP(i,j,bi,bj)*O2sat(i,j) 
      &                      - PTR_O2(i,j,1)) 
             ELSE
-              FluxO2(i,j) = 0.d0
+              FluxO2(i,j) = 0. _d 0
             ENDIF
 
 

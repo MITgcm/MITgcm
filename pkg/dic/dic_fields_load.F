@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.15 2007/08/13 02:29:40 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.16 2007/08/14 19:32:40 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -130,83 +130,106 @@ C      data for the period ahead and the period behind myTime.
        ENDIF
 #endif
 
-       _EXCH_XY_R4(wspeed0, myThid )
-       _EXCH_XY_R4(wspeed1, myThid )
-       _EXCH_XY_R4(atmosp0, myThid )
-       _EXCH_XY_R4(atmosp1, myThid )
-       _EXCH_XY_R4(silica0, myThid )
-       _EXCH_XY_R4(silica1, myThid )
-       _EXCH_XY_R4(ice0, myThid )
-       _EXCH_XY_R4(ice1, myThid )
-#ifdef READ_PAR
-       _EXCH_XY_R4(par0, myThid )
-       _EXCH_XY_R4(par1, myThid )
-#endif
-#ifdef ALLOW_FE
-       _EXCH_XY_R4(feinput0, myThid )
-       _EXCH_XY_R4(feinput1, myThid )
-#endif
+c       _EXCH_XY_R4(wspeed0, myThid )
+c       _EXCH_XY_R4(wspeed1, myThid )
+c       _EXCH_XY_R4(atmosp0, myThid )
+c       _EXCH_XY_R4(atmosp1, myThid )
+c       _EXCH_XY_R4(silica0, myThid )
+c       _EXCH_XY_R4(silica1, myThid )
+c       _EXCH_XY_R4(ice0, myThid )
+c       _EXCH_XY_R4(ice1, myThid )
+c#ifdef READ_PAR
+c       _EXCH_XY_R4(par0, myThid )
+c       _EXCH_XY_R4(par1, myThid )
+c#endif
+c#ifdef ALLOW_FE
+c       _EXCH_XY_R4(feinput0, myThid )
+c       _EXCH_XY_R4(feinput1, myThid )
+c#endif
 
 C
        ENDIF
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           IF ( WindFile .NE. ' '  ) THEN
-             WIND(i,j,bi,bj)    = bWght*wspeed0(i,j,bi,bj)
-     &                        +aWght*wspeed1(i,j,bi,bj)
-           ENDIF
+         IF ( WindFile .NE. ' '  ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             WIND(i,j,bi,bj) = bWght*wspeed0(i,j,bi,bj)
+     &                       + aWght*wspeed1(i,j,bi,bj)
+            ENDDO
+           ENDDO
 c calculate piston velocity
 c QQ: note - we should have wind speed variance in here
 c QQ         also need to check units, and conversion factors
 c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
-           IF ( AtmospFile .NE. ' '  ) THEN
-             AtmosP(i,j,bi,bj)    = bWght*atmosp0(i,j,bi,bj)
-     &                        +aWght*atmosp1(i,j,bi,bj)
-           ENDIF
-           IF ( SilicaFile .NE. ' '  ) THEN
-             SILICA(i,j,bi,bj)    = bWght*silica0(i,j,bi,bj)
-     &                        +aWght*silica1(i,j,bi,bj)
-           ENDIF
+         ENDIF
+#ifndef USE_PLOAD
+         IF ( AtmospFile .NE. ' '  ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             AtmosP(i,j,bi,bj) = bWght*atmosp0(i,j,bi,bj)
+     &                         + aWght*atmosp1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDIF
+#endif
+         IF ( SilicaFile .NE. ' '  ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             SILICA(i,j,bi,bj) = bWght*silica0(i,j,bi,bj)
+     &                         + aWght*silica1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDIF
 #ifdef ALLOW_THSICE
-           FIce(i,j,bi,bj)    = iceMask(i,j,bi,bj)
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             FIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
+            ENDDO
+           ENDDO
 #else
-           IF ( IceFile .NE. ' '  ) THEN
-            FIce(i,j,bi,bj)    = bWght*ice0(i,j,bi,bj)
-     &                          +aWght*ice1(i,j,bi,bj)
-           ENDIF
-           if (FIce(i,j,bi,bj).lt.1d-2) then
-              FIce(i,j,bi,bj) = 0.d0
-           endif
+         IF ( IceFile .NE. ' '  ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             FIce(i,j,bi,bj) = bWght*ice0(i,j,bi,bj)
+     &                       + aWght*ice1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDIF
 #endif
 #ifdef READ_PAR
-           IF ( Filename1 .NE. ' '  ) THEN
-            PAR(i,j,bi,bj)    = bWght*par0(i,j,bi,bj)
-     &                          +aWght*par1(i,j,bi,bj)
-           ELSE
+         IF ( Filename1 .NE. ' '  ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             PAR(i,j,bi,bj) = bWght*par0(i,j,bi,bj)
+     &                      + aWght*par1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ELSE
             WRITE(msgBuf,'(2A)')
      &       ' DIC_FIELDS_LOAD: You need to provide ',
      &       ' a file if you want to use READ_PAR'
             CALL PRINT_ERROR( msgBuf, myThid )
             STOP 'ABNORMAL END: S/R DIC_FIELDS_LOAD'
-           ENDIF
+         ENDIF
 #endif
 #ifdef ALLOW_FE
-           IF ( IronFile .NE. ' '  ) THEN
-            InputFe(i,j,bi,bj)   = bWght*feinput0(i,j,bi,bj)
-     &                          +aWght*feinput1(i,j,bi,bj)
-           ENDIF
+         IF ( IronFile .NE. ' '  ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             InputFe(i,j,bi,bj) = bWght*feinput0(i,j,bi,bj)
+     &                          + aWght*feinput1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDIF
 #endif
-          ENDDO
-         ENDDO
         ENDDO
        ENDDO
 
 C endif for periodicForcing
       ENDIF
 
-#endif
+#endif /* ALLOW_PTRACERS */
       RETURN
       END

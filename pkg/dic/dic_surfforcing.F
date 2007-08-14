@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.14 2007/08/13 02:29:40 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.15 2007/08/14 19:32:40 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -69,7 +69,7 @@ c Co2 value passed from the coupler
 C PRE-INDUSTRIAL STEADY STATE pCO2 = 278.0 ppmv
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-           AtmospCO2(i,j,bi,bj)=278.0d-6
+           AtmospCO2(i,j,bi,bj)=278.0 _d -6
         ENDDO
        ENDDO
 #endif
@@ -87,9 +87,9 @@ cQQQQ check ptracer numbers
              surfphos(i,j)  = PTR_PO4(i,j,klev)
      &                          * maskC(i,j,kLev,bi,bj)
 #else
-             surfalk(i,j) = 2.366595 * salt(i,j,kLev,bi,bj)/gsm_s
+             surfalk(i,j) = 2.366595 _d 0 * salt(i,j,kLev,bi,bj)/gsm_s
      &                          * maskC(i,j,kLev,bi,bj)
-             surfphos(i,j)  = 5.1225e-4 * maskC(i,j,kLev,bi,bj)
+             surfphos(i,j)  = 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
 #endif
 C FOR NON-INTERACTIVE Si
              surfsi(i,j)   = SILICA(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)
@@ -143,7 +143,7 @@ C to total pressure (in Atm)
 C Note: it is assumed the reference atmospheric pressure is 1Atm=1013mb
 C       rather than the actual ref. pressure from Atm. model so that on
 C       average AtmosP is about 1 Atm.
-               AtmosP(i,j,bi,bj)= 1. _d 0 + pLoad(i,j,bi,bj)/Pa2Atm
+                AtmosP(i,j,bi,bj)= 1. _d 0 + pLoad(i,j,bi,bj)/Pa2Atm
 #endif
 
 C Determine surface flux (FDIC)
@@ -152,14 +152,14 @@ C first correct pCO2at for surface atmos pressure
      &          AtmosP(i,j,bi,bj)*AtmospCO2(i,j,bi,bj)
 c find exchange coefficient
 c  account for schmidt number and and varible piston velocity
-              pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5
+              pisvel(i,j,bi,bj)=0.337 _d 0 *wind(i,j,bi,bj)**2/3.6 _d 5
               Kwexch(i,j) =
      &             pisvel(i,j,bi,bj)
-     &             / sqrt(SchmidtNoDIC(i,j)/660.0)
+     &             / sqrt(SchmidtNoDIC(i,j)/660.0 _d 0)
 c OR use a constant  coeff
 c             Kwexch(i,j) = 5e-5
 c ice influence
-              Kwexch(i,j)  =(1.d0-Fice(i,j,bi,bj))*Kwexch(i,j)
+              Kwexch(i,j)  =(1. _d 0 - FIce(i,j,bi,bj))*Kwexch(i,j)
 
 
 C Calculate flux in terms of DIC units using K0, solubility
@@ -172,7 +172,7 @@ C Converting pCO2 to [CO2] using ff, as in CALC_PCO2
      &         ff(i,j,bi,bj)*pCO2(i,j,bi,bj) 
      &         ) 
             ELSE
-               FluxCO2(i,j,bi,bj) = 0.
+               FluxCO2(i,j,bi,bj) = 0. _d 0
             ENDIF
 C convert flux (mol kg-1 m s-1) to (mol m-2 s-1)
             FluxCO2(i,j,bi,bj) = FluxCO2(i,j,bi,bj)/permil
