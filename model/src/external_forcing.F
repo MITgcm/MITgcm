@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.45 2007/07/23 21:18:13 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.46 2007/08/14 20:58:24 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -304,7 +304,8 @@ C     Add heat in top-layer
        ENDDO
       ENDIF
 
-#ifndef ALLOW_AUTODIFF_TAMC
+cph#ifndef ALLOW_AUTODIFF_TAMC
+cph I didnt put this ifndef here.
       IF (linFSConserveTr) THEN
        DO j=1,sNy
         DO i=1,sNx
@@ -315,7 +316,7 @@ C     Add heat in top-layer
         ENDDO
        ENDDO
       ENDIF
-#endif /* ndfef ALLOW_AUTODIFF_TAMC */
+cph#endif /* ndfef ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce )
@@ -463,7 +464,8 @@ C     Add fresh-water in top-layer
        ENDDO
       ENDIF
 
-#ifndef ALLOW_AUTODIFF_TAMC
+cph#ifndef ALLOW_AUTODIFF_TAMC
+cph I didnt put this ifndef here.
       IF (linFSConserveTr) THEN
        DO j=1,sNy
         DO i=1,sNx
@@ -474,7 +476,7 @@ C     Add fresh-water in top-layer
         ENDDO
        ENDDO
       ENDIF
-#endif /* ndfef ALLOW_AUTODIFF_TAMC */
+cph#endif /* ndfef ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce )
