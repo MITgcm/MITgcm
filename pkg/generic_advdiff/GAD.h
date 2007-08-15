@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.17 2007/01/25 17:29:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.18 2007/08/15 22:35:41 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -70,6 +70,18 @@ C nSOM :: number of 1rst & 2nd Order-Moments: 1+1 (1D), 2+3 (2D), 3+6 (3D)
 C oneSixth :: Third/fourth order interpolation factor
       _RL oneSixth
       PARAMETER(oneSixth=1.D0/6.D0)
+
+C loop range for computing vertical advection tendency
+C  iMinAdvR,iMaxAdvR  :: 1rst index (X-dir) loop range for vertical advection
+C  jMinAdvR,jMaxAdvR  :: 2nd  index (Y-dir) loop range for vertical advection
+      INTEGER iMinAdvR, iMaxAdvR, jMinAdvR, jMaxAdvR
+c     PARAMETER ( iMinAdvR = 1-OLx , iMaxAdvR = sNx+OLx )
+c     PARAMETER ( jMinAdvR = 1-OLy , jMaxAdvR = sNy+OLy )
+C- note: we use to compute vertical advection tracer tendency everywhere
+C        (overlap included) as above, but really needs valid tracer tendency
+C        in interior only (as below):
+      PARAMETER ( iMinAdvR = 1 , iMaxAdvR = sNx )
+      PARAMETER ( jMinAdvR = 1 , jMaxAdvR = sNy )
 
 C Differentiate between tracers (needed for KPP - arrgh!!!)
 cph                              and GMRedi arrgh*arrgh!!!)

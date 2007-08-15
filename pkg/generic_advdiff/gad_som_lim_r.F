@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_lim_r.F,v 1.1 2007/01/16 04:38:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_lim_r.F,v 1.2 2007/08/15 22:35:41 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -63,8 +63,8 @@ CEOP
 
       IF ( limiter.EQ.1 ) THEN
        DO k=1,Nr
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+        DO j=jMinAdvR,jMaxAdvR
+         DO i=iMinAdvR,iMaxAdvR
 C     If flux-limiting transport is to be applied, place limits on
 C     appropriate moments before transport.
           slpmax = 0.

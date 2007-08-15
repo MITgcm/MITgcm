@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_init.F,v 1.4 2007/04/04 01:34:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_init.F,v 1.5 2007/08/15 22:35:41 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -187,6 +187,7 @@ C     *==========================================================*
 
 C     !USES:
       IMPLICIT NONE
+#include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GAD.h"
 

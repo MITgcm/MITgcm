@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_r.F,v 1.1 2007/01/16 04:38:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_r.F,v 1.2 2007/08/15 22:35:41 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -119,8 +119,8 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  part.1 : calculate flux for all moments
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
+      DO j=jMinAdvR,jMaxAdvR
+        DO i=iMinAdvR,iMaxAdvR
           wLoc = rTrans(i,j)*deltaTloc
 C--    Flux from (k) to (k-1) when W>0 (i.e., take upper side of box k)
 C- note: Linear free surface case: this takes care of w_surf advection out
@@ -152,8 +152,8 @@ C       use same indexing as velocity, "p" for positive W
       IF ( k.EQ.1 ) THEN
 C--   Linear free surface, calculate w_surf (<0) advection term
        km1 = 1
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
+       DO j=jMinAdvR,jMaxAdvR
+        DO i=iMinAdvR,iMaxAdvR
           wLoc = rTrans(i,j)*deltaTloc
 C-     Flux from above to (k) when W<0 , surface case:
 C      take box k=1, assuming zero 1rst & 2nd moment in Z dir.
@@ -180,8 +180,8 @@ C--    Save zero-order flux:
       ELSE
 C--   Interior only: mask rTrans (if not already done)
        km1 = k-1
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
+       DO j=jMinAdvR,jMaxAdvR
+        DO i=iMinAdvR,iMaxAdvR
           wLoc = maskUp(i,j)*rTrans(i,j)*deltaTloc
 C-     Flux from (k-1) to (k) when W<0 (i.e., take lower side of box k-1)
           fn_v (i,j,kUp) = MAX( 0. _d 0, -wLoc )
@@ -220,8 +220,8 @@ C     moments assuming zero 1rst & 2nd moment in Z dir. ;
 C     and add to previous fluxes; note: identical to resetting fluxes
 C     since previous fluxes are zero in this case (=> let TAF decide)
        km1 = k
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
+       DO j=jMinAdvR,jMaxAdvR
+        DO i=iMinAdvR,iMaxAdvR
          wLoc = rTrans(i,j)*deltaTloc
          IF ( k.EQ.ksurfC(i,j,bi,bj) ) THEN
 C-     Flux from (k-1) to (k) when W<0 (special surface case, take box k)
@@ -245,8 +245,8 @@ C--    Save zero-order flux:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  part.2 : re-adjust moments remaining in the box
 C      take off from grid box (k): negative W(kDw) and positive W(kUp)
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
+      DO j=jMinAdvR,jMaxAdvR
+       DO i=iMinAdvR,iMaxAdvR
         alf1  = 1. _d 0 - aln(i,j,kDw) - alp(i,j,kUp)
         alf1q = alf1*alf1
         alpmn = alp(i,j,kUp) - aln(i,j,kDw)
@@ -267,8 +267,8 @@ C      take off from grid box (k): negative W(kDw) and positive W(kUp)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  part.3 : Put the temporary moments into appropriate neighboring boxes
 C      add into grid box (k): positive W(kDw) and negative W(kUp)
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
+      DO j=jMinAdvR,jMaxAdvR
+       DO i=iMinAdvR,iMaxAdvR
         sm_v (i,j,k) = sm_v (i,j,k) + fp_v (i,j,kDw) + fn_v (i,j,kUp)
         alfp = fp_v(i,j,kDw)/sm_v(i,j,k)
         alfn = fn_v(i,j,kUp)/sm_v(i,j,k)
