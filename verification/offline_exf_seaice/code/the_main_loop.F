@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/Attic/the_main_loop.F,v 1.2 2007/06/26 02:47:08 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/Attic/the_main_loop.F,v 1.3 2007/08/16 12:25:29 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,6 +53,7 @@ c They provide the fields to be stored.
 
 #  include "GRID.h"
 #  include "DYNVARS.h"
+#  include "SURFACE.h"
 #  include "FFIELDS.h"
 #  include "EOS.h"
 # include "AUTODIFF.h"
@@ -67,9 +68,6 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_PTRACERS
 #   include "PTRACERS_SIZE.h"
 #   include "PTRACERS.h"
-#  endif
-#  if (defined (EXACT_CONSERV) || defined (NONLIN_FRSURF))
-#   include "SURFACE.h"
 #  endif
 #  ifdef ALLOW_OBCS
 #   include "OBCS.h"
