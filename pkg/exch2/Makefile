@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/pkg/exch2/Makefile,v 1.12 2007/07/27 22:15:23 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/exch2/Makefile,v 1.13 2007/08/16 21:10:22 jmc Exp $
 # $Name:  $
 
 # Makefile for generate eesupp source code from templates.
@@ -22,6 +22,7 @@ RL_FILES = exch2_recv_rl1.F \
            exch2_3d_rl.F \
            exch2_s3d_rl.F \
            exch2_z_3d_rl.F \
+           exch2_sm_3d_rl.F \
            exch2_uv_agrid_3d_rl.F \
            exch2_uv_bgrid_3d_rl.F \
            exch2_uv_cgrid_3d_rl.F
@@ -44,6 +45,7 @@ RS_FILES = exch2_recv_rs1.F \
            exch2_3d_rs.F \
            exch2_s3d_rs.F \
            exch2_z_3d_rs.F \
+           exch2_sm_3d_rs.F \
            exch2_uv_agrid_3d_rs.F \
            exch2_uv_bgrid_3d_rs.F \
            exch2_uv_cgrid_3d_rs.F
@@ -66,6 +68,7 @@ R4_FILES = exch2_recv_r41.F \
            exch2_3d_r4.F \
            exch2_s3d_r4.F \
            exch2_z_3d_r4.F \
+           exch2_sm_3d_r4.F \
            exch2_uv_agrid_3d_r4.F \
            exch2_uv_bgrid_3d_r4.F \
            exch2_uv_cgrid_3d_r4.F
@@ -88,6 +91,7 @@ R8_FILES = exch2_recv_r81.F \
            exch2_3d_r8.F \
            exch2_s3d_r8.F \
            exch2_z_3d_r8.F \
+           exch2_sm_3d_r8.F \
            exch2_uv_agrid_3d_r8.F \
            exch2_uv_bgrid_3d_r8.F \
            exch2_uv_cgrid_3d_r8.F
@@ -302,6 +306,16 @@ exch2_z_3d_r4.F:        exch2_z_3d_rx.template
 	sed 's/RX/R4/g' exch2_z_3d_rx.template > $@
 exch2_z_3d_r8.F:        exch2_z_3d_rx.template
 	sed 's/RX/R8/g' exch2_z_3d_rx.template > $@
+
+# exch2_sm_3d_rx
+exch2_sm_3d_rl.F:       exch2_sm_3d_rx.template
+	sed 's/RX/RL/g' exch2_sm_3d_rx.template > $@
+exch2_sm_3d_rs.F:       exch2_sm_3d_rx.template
+	sed 's/RX/RS/g' exch2_sm_3d_rx.template > $@
+exch2_sm_3d_r4.F:       exch2_sm_3d_rx.template
+	sed 's/RX/R4/g' exch2_sm_3d_rx.template > $@
+exch2_sm_3d_r8.F:       exch2_sm_3d_rx.template
+	sed 's/RX/R8/g' exch2_sm_3d_rx.template > $@
 
 # exch2_uv_agrid_xy.rx
 exch2_uv_agrid_3d_rl.F: exch2_uv_agrid_3d_rx.template
