@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.857 2007/08/06 21:44:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.858 2007/08/16 02:34:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff: 
+ - in GAD.h, define as parameters (iMinAdvR,iMaxAdvR,jMinAdvR,jMaxAdvR)
+  loop range indices for computing vertical advection tendency
+  and do the calculation in the interior only (no overlap) ;
+  for now, only implemented for SOM advection (to save CPU time).
+ - add argument "withSigns" to S/R FILL_CS_CORNER_TR_RL (needed for SOM_xy moment)
 o exch2 adjoint
   First set of changes:
   - add exch2 hand-written adjoint templates
