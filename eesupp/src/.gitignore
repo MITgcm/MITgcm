@@ -6,6 +6,7 @@ exch_uv_xy_r[ls48].F
 exch_uv_3d_r[ls48].F
 exch_uv_xyz_r[ls48].F
 exch_z_3d_r[ls48].F
+exch_sm_3d_r[ls48].F
 exch_uv_agrid_3d_r[ls48].F
 exch_r[ls48].F
 exch_r[ls48]_cube.F
