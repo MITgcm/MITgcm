@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/fill_cs_corner_tr_rl.F,v 1.2 2005/11/05 01:07:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/fill_cs_corner_tr_rl.F,v 1.3 2007/08/16 02:11:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -10,15 +10,14 @@ C     !ROUTINE: FILL_CS_CORNER_TR_RL
 
 C     !INTERFACE:
       SUBROUTINE FILL_CS_CORNER_TR_RL(
-     I     fill4dirX,
+     I     fill4dirX, withSigns,
      U     trFld,
      I     bi,bj, myThid)
-      IMPLICIT NONE
 
 C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE FILL_CS_CORNER_TR_RL
-C     | o Fill the corner-halo region of CS-grid, 
+C     | o Fill the corner-halo region of CS-grid,
 C     |   for a tracer variable (center of grid cell)
 C     *==========================================================*
 C     | o the corner halo region is filled with valid values
@@ -27,8 +26,9 @@ C     |   direction, on a wide stencil.
 C     *==========================================================*
 
 C     !USES:
-C     == Global variables ==
+      IMPLICIT NONE
 
+C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #ifdef ALLOW_EXCH2
@@ -38,13 +38,15 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     
+C
 C     fill4dirX :: True = prepare for X direction calculations
 C                  otherwise, prepare for Y direction
+C     withSigns :: True = account for sign of X & Y directions
 C     trFld     :: tracer field array with empty corners to fill
 C     bi,bj     :: tile indices
 C     myThid    :: thread number
       LOGICAL fill4dirX
+      LOGICAL withSigns
       _RL trFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj
       INTEGER myThid
@@ -58,10 +60,14 @@ C      myTile        :: tile number
       LOGICAL southEastCorner
       LOGICAL northWestCorner
       LOGICAL northEastCorner
+      _RL     negOne
 #ifdef ALLOW_EXCH2
       INTEGER myTile
 #endif
 CEOP
+
+      negOne = 1.
+      IF (withSigns) negOne = -1.
 
       IF (useCubedSphereExchange) THEN
 
@@ -117,7 +123,7 @@ C         x T(sNx,sNy) |   x T(sNx+1,sNy  )
 C                      |
 C      o SE corner: copy T(sNx+1,1    ) into T(sNx+1,0    ) e.g.
 C                      |
-C         x T(sNx,1)   |   x T(sNx+1,    1) 
+C         x T(sNx,1)   |   x T(sNx+1,    1)
 C                      |  ||
 C      ----------------|--||-------
 C                      |  \/
@@ -125,28 +131,28 @@ C                      |   x T(sNx+1,    0)
          IF ( southWestCorner ) THEN
           DO j=1,OLy
            DO i=1,OLx
-            trFld( 1-i , 1-j ) = trFld( 1-j , i  )
+            trFld( 1-i , 1-j ) = negOne*trFld( 1-j , i  )
            ENDDO
           ENDDO
          ENDIF
          IF ( southEastCorner ) THEN
           DO j=1,OLy
            DO i=1,OLx
-            trFld(sNx+i, 1-j ) = trFld(sNx+j, i  )
+            trFld(sNx+i, 1-j ) = negOne*trFld(sNx+j, i  )
            ENDDO
           ENDDO
          ENDIF
          IF ( northWestCorner ) THEN
           DO j=1,OLy
            DO i=1,OLx
-            trFld( 1-i ,sNy+j) = trFld( 1-j , sNy+1-i )
+            trFld( 1-i ,sNy+j) = negOne*trFld( 1-j , sNy+1-i )
            ENDDO
           ENDDO
          ENDIF
          IF ( northEastCorner ) THEN
           DO j=1,OLy
            DO i=1,OLx
-            trFld(sNx+i,sNy+j) = trFld(sNx+j, sNy+1-i )
+            trFld(sNx+i,sNy+j) = negOne*trFld(sNx+j, sNy+1-i )
            ENDDO
           ENDDO
          ENDIF
@@ -180,43 +186,43 @@ C
 C      o NE corner: copy T(sNx+1,sNy  ) into T(sNx+1,sNy+1) e.g.
 C                      |
 C      x T(sNx,sNy+1)=====>x T(sNx+1,sNy+1)
-C                      |     
+C                      |
 C      ----------------|-----------
-C                      |     
-C      x T(sNx,sNy)    |                       
+C                      |
+C      x T(sNx,sNy)    |
 C                      |
 C      o SE corner: copy T(sNx+1,1    ) into T(sNx+1,0    ) e.g.
 C                      |
-C         x T(sNx,1)   |                    
-C                      |    
+C         x T(sNx,1)   |
+C                      |
 C      ----------------|-----------
-C                      |     
+C                      |
 C         x T(sNx,0) =====>x T(sNx+1,    0)
          IF ( southWestCorner ) THEN
           DO j=1,Oly
            DO i=1,Olx
-            trFld( 1-i , 1-j ) = trFld(   j   , 1-i )
+            trFld( 1-i , 1-j ) = negOne*trFld(   j   , 1-i )
            ENDDO
           ENDDO
          ENDIF
          IF ( southEastCorner ) THEN
           DO j=1,Oly
            DO i=1,Olx
-            trFld(sNx+i, 1-j ) = trFld(sNx+1-j, 1-i )
+            trFld(sNx+i, 1-j ) = negOne*trFld(sNx+1-j, 1-i )
            ENDDO
           ENDDO
          ENDIF
          IF ( northWestCorner ) THEN
           DO j=1,Oly
            DO i=1,Olx
-            trFld( 1-i ,sNy+j) = trFld(   j   ,sNy+i)
+            trFld( 1-i ,sNy+j) = negOne*trFld(   j   ,sNy+i)
            ENDDO
           ENDDO
          ENDIF
          IF ( northEastCorner ) THEN
           DO j=1,Oly
            DO i=1,Olx
-            trFld(sNx+i,sNy+j) = trFld(sNx+1-j,sNy+i)
+            trFld(sNx+i,sNy+j) = negOne*trFld(sNx+1-j,sNy+i)
            ENDDO
           ENDDO
          ENDIF
