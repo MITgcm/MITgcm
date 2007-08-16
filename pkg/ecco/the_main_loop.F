@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.58 2007/06/04 21:37:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.59 2007/08/16 04:15:18 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -101,6 +101,7 @@ c They provide the fields to be stored.
 
 # include "GRID.h"
 # include "DYNVARS.h"
+# include "SURFACE.h"
 # include "FFIELDS.h"
 # include "EOS.h"
 # include "AUTODIFF.h"
@@ -117,9 +118,6 @@ c They provide the fields to be stored.
 # endif
 # ifdef ALLOW_NONHYDROSTATIC
 #  include "CG3D.h"
-# endif
-# if (defined (EXACT_CONSERV) || defined (NONLIN_FRSURF))
-#  include "SURFACE.h"
 # endif
 # ifdef ALLOW_OBCS
 #  include "OBCS.h"
