@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_check.F,v 1.6 2007/04/19 04:51:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_check.F,v 1.7 2007/08/16 02:28:25 jmc Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -14,6 +14,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "KPP_PARAMS.h"
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of KPP_INIT
@@ -27,32 +28,32 @@ C     msgBuf      - Informational/error meesage buffer
 
       WRITE(msgBuf,'(A)') 'KPP_CHECK: #define ALLOW_KPP'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
+     &     SQUEEZE_RIGHT , myThid )
 
 C     KPP needs convection turned off (will be packaged later)
       IF (cAdjFreq.NE.0.  .OR.
      &     ivdc_kappa.NE.0.) THEN
          WRITE(msgBuf,'(A)') 'Some form of convection has been enabled'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R KPP_CHECK'
       ENDIF
 
 C     KPP needs implicit vertical diffusion and viscosity
       IF (.NOT.implicitDiffusion ) THEN
          WRITE(msgBuf,'(A)') 'KPP needs implicitDiffusion to be enabled'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R KPP_CHECK'
       ENDIF
       IF (.NOT.implicitViscosity) THEN
          WRITE(msgBuf,'(A)') 'KPP needs implicitViscosity to be enabled'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R KPP_CHECK'
       ENDIF
 
 C     Shortwave heating should be defined with KPP
 #ifndef SHORTWAVE_HEATING
       WRITE(msgBuf,'(A)') 'KPP needs CPP flag SHORTWAVE_HEATING enabled'
-      CALL PRINT_ERROR( msgBuf , 1)
+      CALL PRINT_ERROR( msgBuf , myThid )
       STOP 'ABNORMAL END: S/R KPP_CHECK'
 #endif /* SHORTWAVE_HEATING */
 
@@ -73,7 +74,7 @@ C     Hence overlap region needs to be set OLx=4, OLy=4.
 #ifdef KPP_REACTIVATE_OL4
       IF (OLx.LT.4 .OR. OLy.LT.4) THEN
        WRITE(msgBuf,'(A)') 'KPP horizontal smoothing requires OLx=OLy=4'
-       CALL PRINT_ERROR( msgBuf , 1)
+       CALL PRINT_ERROR( msgBuf , myThid )
        STOP 'ABNORMAL END: S/R KPP_CHECK'
       ENDIF
 #endif
@@ -81,5 +82,5 @@ C     Hence overlap region needs to be set OLx=4, OLy=4.
 
 #endif /* ALLOW_KPP */
 
-      return
-      end
+      RETURN
+      END
