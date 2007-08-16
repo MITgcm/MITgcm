@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_y.F,v 1.7 2007/07/27 22:18:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_y.F,v 1.8 2007/08/16 02:16:37 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -50,7 +50,8 @@ CEOP
 cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
 C--   Internal exchange for calculations in Y
       IF (useCubedSphereExchange) THEN
-        CALL FILL_CS_CORNER_TR_RL(.FALSE., tracer, bi,bj, myThid )
+        CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+     &                             tracer, bi,bj, myThid )
       ENDIF
 cph-exch2#endif
 

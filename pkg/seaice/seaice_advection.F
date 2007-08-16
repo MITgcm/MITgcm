@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.6 2007/04/29 22:27:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.7 2007/08/16 02:20:41 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -323,13 +323,10 @@ C-     Advective flux in X
 
 #ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in X
-#ifdef MULTIDIM_OLD_VERSION
-         IF ( useCubedSphereExchange ) THEN
-#else
          IF ( useCubedSphereExchange .AND.
      &      ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
-#endif
-          CALL FILL_CS_CORNER_TR_RL( .TRUE., localTij, bi,bj, myThid )
+          CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+     &                               localTij, bi,bj, myThid )
          ENDIF
 #endif
 
@@ -371,7 +368,8 @@ C--   Advective flux in X : done
 #ifndef ALLOW_AUTODIFF_TAMC
 C--   Internal exchange for next calculations in Y
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
-         CALL FILL_CS_CORNER_TR_RL(.FALSE., localTij, bi,bj, myThid )
+         CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+     &                              localTij, bi,bj, myThid )
         ENDIF
 #endif
 
@@ -527,13 +525,10 @@ C-     Advective flux in Y
 
 #ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in Y
-#ifdef MULTIDIM_OLD_VERSION
-         IF ( useCubedSphereExchange ) THEN
-#else
          IF ( useCubedSphereExchange .AND.
      &      ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
-#endif
-          CALL FILL_CS_CORNER_TR_RL(.FALSE., localTij, bi,bj, myThid )
+          CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+     &                               localTij, bi,bj, myThid )
          ENDIF
 #endif
 
@@ -575,7 +570,8 @@ C-     Advective flux in Y : done
 #ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for next calculations in X
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
-         CALL FILL_CS_CORNER_TR_RL( .TRUE., localTij, bi,bj, myThid )
+         CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+     &                              localTij, bi,bj, myThid )
         ENDIF
 #endif
 

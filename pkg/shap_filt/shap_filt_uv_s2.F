@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.12 2005/10/07 00:27:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.13 2007/08/16 02:20:41 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -53,16 +53,16 @@ C     myThid :: Thread number for this instance of SHAP_FILT_UV_S2
 #ifdef ALLOW_SHAP_FILT
 
 C------
-C  Combine computational Filter of Div & Vorticity 
-C   and Physical Filter of U,V field 
+C  Combine computational Filter of Div & Vorticity
+C   and Physical Filter of U,V field
 C   nShapUVPhys = 0  ==> use only computational Filter
-C   nShapUVPhys = 1  ==> compute Div & Vort. with  Grid factors, 
+C   nShapUVPhys = 1  ==> compute Div & Vort. with  Grid factors,
 C                        Filter Div & Vort. Numerically (power nShapUV-1)
-C                        and return filtered U.V in physical space 
+C                        and return filtered U.V in physical space
 C   nShapUVPhys = nShapUV  ==> Filter in Physical space only (power nShapUV)
-C------  
+C------
 
-C     !LOCAL VARIABLES: 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi,bj,k,i,j,n
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -194,7 +194,8 @@ C-       replace derivatives in physical space of Div & Vort by computational on
            IF ( .NOT.Shap_alwaysExchUV
      &          .AND. useCubedSphereExchange ) THEN
 C          to compute d/dx(hDiv), fill corners with appropriate values:
-             CALL FILL_CS_CORNER_TR_RL( .TRUE., hDiv, bi,bj, myThid )
+             CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+     &                                  hDiv, bi,bj, myThid )
            ENDIF
 #endif
            DO j=3-Oly,sNy+Oly-2
@@ -209,7 +210,8 @@ C          to compute d/dx(hDiv), fill corners with appropriate values:
            IF ( .NOT.Shap_alwaysExchUV
      &          .AND. useCubedSphereExchange ) THEN
 C          to compute d/dy(hDiv), fill corners with appropriate values:
-             CALL FILL_CS_CORNER_TR_RL(.FALSE., hDiv, bi,bj, myThid )
+             CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+     &                                  hDiv, bi,bj, myThid )
            ENDIF
 #endif
            DO j=3-Oly,sNy+Oly-1

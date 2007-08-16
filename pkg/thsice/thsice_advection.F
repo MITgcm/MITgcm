@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.5 2007/05/23 23:40:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.6 2007/08/16 02:20:41 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -294,9 +294,11 @@ C-     Advective flux in X
 C-     Internal exchange for calculations in X
          IF ( useCubedSphereExchange .AND.
      &      ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
-          CALL FILL_CS_CORNER_TR_RL( .TRUE., iceFld, bi,bj, myThid )
+          CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+     &                               iceFld, bi,bj, myThid )
           IF ( .NOT.useGridVolume )
-     &    CALL FILL_CS_CORNER_TR_RL( .TRUE., iceVol, bi,bj, myThid )
+     &    CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+     &                               iceVol, bi,bj, myThid )
          ENDIF
 #endif
 
@@ -352,9 +354,11 @@ C--   Advective flux in X : done
 #ifndef ALLOW_AUTODIFF_TAMC
 C--   Internal exchange for next calculations in Y
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
-         CALL FILL_CS_CORNER_TR_RL(.FALSE., iceFld, bi,bj, myThid )
+         CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+     &                              iceFld, bi,bj, myThid )
          IF ( .NOT.useGridVolume )
-     &   CALL FILL_CS_CORNER_TR_RL(.FALSE., iceVol, bi,bj, myThid )
+     &   CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+     &                              iceVol, bi,bj, myThid )
         ENDIF
 #endif
 
@@ -505,9 +509,11 @@ C-     Advective flux in Y
 C-     Internal exchange for calculations in Y
          IF ( useCubedSphereExchange .AND.
      &      ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
-          CALL FILL_CS_CORNER_TR_RL(.FALSE., iceFld, bi,bj, myThid )
+          CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+     &                               iceFld, bi,bj, myThid )
           IF ( .NOT.useGridVolume )
-     &    CALL FILL_CS_CORNER_TR_RL(.FALSE., iceVol, bi,bj, myThid )
+     &    CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+     &                               iceVol, bi,bj, myThid )
          ENDIF
 #endif
 
@@ -562,9 +568,11 @@ C-     Advective flux in Y : done
 
 #ifndef ALLOW_AUTODIFF_TAMC
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
-         CALL FILL_CS_CORNER_TR_RL( .TRUE., iceFld, bi,bj, myThid )
+         CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+     &                              iceFld, bi,bj, myThid )
          IF ( .NOT.useGridVolume )
-     &   CALL FILL_CS_CORNER_TR_RL( .TRUE., iceVol, bi,bj, myThid )
+     &   CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+     &                              iceVol, bi,bj, myThid )
         ENDIF
 #endif
 
