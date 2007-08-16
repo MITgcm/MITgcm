@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/grad_sigma.F,v 1.7 2007/07/27 22:18:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/grad_sigma.F,v 1.8 2007/08/16 02:13:40 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -13,8 +13,8 @@ C     !INTERFACE:
      I             myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE CALC_ISOSLOPES                                 
-C     | o Calculate isoneutral gradients                          
+C     | SUBROUTINE GRAD_SIGMA
+C     | o Calculate isoneutral gradients
 C     *==========================================================*
 C     \ev
 
@@ -58,7 +58,8 @@ C-    safer to work on a local copy of rhoK (before a partial update)
 C-    Internal exchange for calculations in X
 cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF ( useCubedSphereExchange ) THEN
-        CALL FILL_CS_CORNER_TR_RL( .TRUE., rhoLoc, bi,bj, myThid )
+        CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+     &                             rhoLoc, bi,bj, myThid )
       ENDIF
 cph-exch2#endif
       DO j=1-Oly,sNy+Oly
@@ -72,7 +73,8 @@ cph-exch2#endif
 C-    Internal exchange for calculations in Y
 cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF ( useCubedSphereExchange ) THEN
-        CALL FILL_CS_CORNER_TR_RL( .FALSE., rhoLoc, bi,bj, myThid )
+        CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+     &                             rhoLoc, bi,bj, myThid )
       ENDIF
 cph-exch2#endif
       DO j=1-Oly+1,sNy+Oly
