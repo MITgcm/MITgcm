@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_kapgm.F,v 1.3 2007/05/14 22:06:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_kapgm.F,v 1.4 2007/08/17 21:36:39 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -9,19 +9,10 @@ C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_kapgm.F,v 1.3 2007/05/14 22:06:
      I                           mythid
      &                         )
 
-c     ==================================================================
-c     SUBROUTINE cost_kapgm
-c     ==================================================================
-c
-c     o Calculate the Kappa GM  contribution to the cost function.
-c
-c     started:Armin Koehl   akoehl@ucsd.edu
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c     ==================================================================
-c     SUBROUTINE cost_kapgm
-c     ==================================================================
+C     o==========================================================o
+C     | subroutine cost_kapgm                                    |
+C     | o GM coefficient adjustment penalization                 |
+C     o==========================================================o
 
       implicit none
 
@@ -35,11 +26,7 @@ c     == global variables ==
 # include "GMREDI.h"
 #endif
 
-#ifdef ALLOW_ECCO
-# include "ecco_cost.h"
-#else
-# include "ecco_cost.h"
-#endif
+#include "ecco_cost.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
@@ -119,10 +106,15 @@ c--         Determine the weights to be used.
             do j = jmin,jmax
               do i = imin,imax
                 if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
-                  tmpx = (tmpfld3d(i,j,k,bi,bj)-GM_background_K)
+c                  tmpx = (tmpfld3d(i,j,k,bi,bj)-GM_background_K)    
+                  tmpx = tmpfld3d(i,j,k,bi,bj)
+#ifndef ALLOW_SMOOTH_CORREL3D
                   fctile = fctile
-     &                 + 1e-8*cosphi(i,j,bi,bj)
+     &                 + wkapgmFld(i,j,k,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
+#else
+                  fctile = fctile + tmpx*tmpx
+#endif
                 endif
               enddo
             enddo
@@ -156,7 +148,7 @@ c--     Print cost function for all tiles.
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,i8.8)')
-     &    ' cost_:                       irec =  ',irec
+     &    ' cost_kapgm:                       irec =  ',irec
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,d22.15)')
@@ -170,8 +162,6 @@ c--     Print cost function for all tiles.
 #endif
 
 #else
-c--   Do not enter the calculation of the salinity increment 
-c--   contribution to the final cost function.
 
       fctile   = 0. _d 0
       fcthread = 0. _d 0
@@ -181,9 +171,8 @@ c--   contribution to the final cost function.
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,a)')
-     &    ' cost_kapgm : no contribution of the I.C. in salin. ',
-     &                    ' to cost function.'
+        write(msgbuf,'(a)')
+     &    ' cost_kapgm : no contribution to cost function'
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a)') ' '

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.22 2006/10/27 05:16:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.23 2007/08/17 21:36:40 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -146,6 +146,7 @@ cph(
 	      wtauu2  (i,j,bi,bj) = 0. _d 0
 	      wtauv2  (i,j,bi,bj) = 0. _d 0
 cph)
+              wbottomdrag (i,j,bi,bj) = wbottomdrag0
             enddo
           enddo
         enddo
@@ -1295,6 +1296,104 @@ c--           Data are in units of m/s.
       enddo
 #endif
 
+#if (defined (ALLOW_BOTTOMDRAG_COST_CONTRIBUTION) || defined (ALLOW_BOTTOMDRAG_CONTROL))
+      if ( bottomdrag_errfile .NE. ' ' ) then
+
+        call mdsreadfield( bottomdrag_errfile, cost_iprec, cost_yftype,
+     &      nnz, wbottomdrag, irec, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wbottomdrag(i,j,bi,bj) .lt. -9900.) then
+                wbottomdrag(i,j,bi,bj) = 0. _d 0
+              endif
+            enddo
+          enddo
+        enddo
+      enddo
+
+      endif
+#endif
+
+#if (defined (ALLOW_DIFFKR_COST_CONTRIBUTION) || defined (ALLOW_DIFFKR_CONTROL))
+      if ( diffkr_errfile .NE. ' ' ) then
+
+        call mdsreadfield( diffkr_errfile, cost_iprec, cost_yftype,
+     &      Nr, wdiffkr2, 1, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+           do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wdiffkr2(i,j,k,bi,bj) .lt. -9900.) then
+                wdiffkr2(i,j,k,bi,bj) = 0. _d 0
+              endif
+            enddo
+           enddo
+          enddo
+        enddo
+      enddo
+
+      endif
+#endif
+
+#if (defined (ALLOW_KAPGM_COST_CONTRIBUTION) || defined (ALLOW_KAPGM_CONTROL))
+      if ( kapgm_errfile .NE. ' ' ) then
+      
+        call mdsreadfield( kapgm_errfile, cost_iprec, cost_yftype,
+     &      Nr, wkapgm2, 1, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+           do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wkapgm2(i,j,k,bi,bj) .lt. -9900.) then
+                wkapgm2(i,j,k,bi,bj) = 0. _d 0
+              endif
+            enddo
+           enddo
+          enddo
+        enddo
+      enddo
+
+      endif
+#endif
+
+#if   ( defined (ALLOW_TAUEDDY_COST_CONTRIBUTION) || \
+     defined (ALLOW_COST_TAU_EDDY) || \
+     defined (ALLOW_EDTAUX_CONTROL) || \
+     defined (ALLOW_EDTAUY_CONTROL) )
+      if ( edtau_errfile .NE. ' ' ) then
+
+        call mdsreadfield( edtau_errfile, cost_iprec, cost_yftype,
+     &      Nr, wedtaux2, 1, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+           do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wedtaux2(i,j,k,bi,bj) .lt. -9900.) then
+                wedtaux2(i,j,k,bi,bj) = 0. _d 0
+              endif
+              wedtauy2(i,j,k,bi,bj)=wedtaux2(i,j,k,bi,bj)
+            enddo
+           enddo
+          enddo
+        enddo
+      enddo
+
+      endif
+#endif
+
 c--   Units have to be checked!
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1448,7 +1547,12 @@ c--   Units have to be checked!
               else
                 wrunoff(i,j,bi,bj) = 0.0 _d 0
               endif
-
+              if (wbottomdrag(i,j,bi,bj) .ne. 0.) then
+                wbottomdrag(i,j,bi,bj) =
+     &                1./wbottomdrag(i,j,bi,bj)/wbottomdrag(i,j,bi,bj)
+              else
+                wbottomdrag(i,j,bi,bj) = 0.0 _d 0
+              endif
               if (wsfluxmm(bi,bj).ne.0.) 
      &             wsfluxmm(bi,bj) = 1./wsfluxmm(bi,bj)*wsfluxmm(bi,bj)
               if (whfluxmm(bi,bj).ne.0.) 
@@ -1586,6 +1690,7 @@ c
           enddo
         enddo
       enddo
+
 c
 c     write masks and weights to files to be read by a master process
 c
@@ -1663,6 +1768,31 @@ c
 #endif
 
 #ifdef ALLOW_OBCSN_COST_CONTRIBUTION
+#endif
+
+#if   (defined (ALLOW_KAPGM_COST_CONTRIBUTION) || defined (ALLOW_KAPGM_CONTROL))
+      call active_write_xyz( 'wkapgmFld',wkapgmFld,
+     &     1, 0, mythid, dummy)
+#endif
+
+#if   (defined (ALLOW_DIFFKR_COST_CONTRIBUTION) || defined (ALLOW_DIFFKR_CONTROL))
+      call active_write_xyz( 'wdiffkrFld',wdiffkrFld,
+     &     1, 0, mythid, dummy)
+#endif
+
+#if   ( defined (ALLOW_TAUEDDY_COST_CONTRIBUTION) || \
+     defined (ALLOW_COST_TAU_EDDY) || \
+     defined (ALLOW_EDTAUX_CONTROL) || \
+     defined (ALLOW_EDTAUY_CONTROL) )
+      call active_write_xyz( 'wedtauxFld',wedtauxFld,
+     &     1, 0, mythid, dummy)
+      call active_write_xyz( 'wedtauyFld',wedtauyFld,
+     &     1, 0, mythid, dummy)
+#endif
+
+#if (defined (ALLOW_BOTTOMDRAG_COST_CONTRIBUTION) || defined (ALLOW_BOTTOMDRAG_CONTROL))
+      call active_write_xy_loc( 'wbottomdrag', wbottomdrag
+     & , 1, 0, mythid, dummy)
 #endif
 
       end

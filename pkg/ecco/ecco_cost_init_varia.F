@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.7 2006/12/24 14:23:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.8 2007/08/17 21:36:40 gforget Exp $
 
 #include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -132,6 +132,8 @@ c--   Initialize the tiled cost function contributions.
           objf_kapgm(bi,bj)    = 0. _d 0
           objf_theta_ini_fin(bi,bj) = 0. _d 0
           objf_salt_ini_fin(bi,bj)  = 0. _d 0
+          objf_eddytau(bi,bj)    = 0. _d 0
+          objf_bottomdrag(bi,bj)    = 0. _d 0
 c
           num_hflux(bi,bj)    = 0. _d 0
           num_hfluxm(bi,bj)   = 0. _d 0
@@ -184,6 +186,8 @@ c
           num_ageos(bi,bj)    = 0. _d 0
           num_diffkr(bi,bj)   = 0. _d 0
           num_kapgm(bi,bj)    = 0. _d 0
+          num_eddytau(bi,bj)    = 0. _d 0
+          num_bottomdrag(bi,bj)    = 0. _d 0
           num_theta_ini_fin(bi,bj) = 0. _d 0
           num_salt_ini_fin(bi,bj)  = 0. _d 0
         enddo

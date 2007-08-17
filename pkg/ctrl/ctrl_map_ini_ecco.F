@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.9 2007/06/21 04:06:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.10 2007/08/17 21:37:05 gforget Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -102,8 +102,8 @@ c--   Temperature field.
 #ifdef ALLOW_SMOOTH_CORREL3D
       write(fnamegeneric(1:80),'(1a)') 'wthetaLev'
       call mdsreadfield('wthetaLev',32,'RL',nR,
-     & wthetalev,1,mythid)
-      _EXCH_XYZ_R8( wthetalev, mythid )
+     & wthetaLev,1,mythid)
+      _EXCH_XYZ_R8( wthetaLev, mythid )
 #endif                
       il=ilnblnk( xx_theta_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
@@ -258,71 +258,179 @@ CADJ STORE salt = tapelev_init, key = ikey
 #endif
 #endif
 
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+c--   bottom drag
+#ifdef ALLOW_SMOOTH_CORREL2D
+      write(fnamegeneric(1:80),'(1a)') 'wbottomdrag'
+      call mdsreadfield('wbottomdrag',32,'RL',1,
+     & wbottomdrag,1,mythid)
+      _EXCH_XY_R8( wbottomdrag, mythid )
+#endif                               
+      il=ilnblnk( xx_bottomdrag_file )
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     &     xx_bottomdrag_file(1:il),'.',optimcycle
+      call active_read_xy ( fnamegeneric, tmpfld2d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_bottomdrag_dummy )
+#ifdef ALLOW_SMOOTH_CORREL2D
+      call smooth_correl2D(tmpfld2d,maskc,1,mythid)
+#endif
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+#ifdef ALLOW_SMOOTH_CORREL2D
+      if (maskC(i,j,1,bi,bj).NE.0.) then
+      tmpfld2d(i,j,bi,bj)=tmpfld2d(i,j,bi,bj)
+     & /sqrt(wbottomdrag(i,j,bi,bj) )
+      else
+      tmpfld2d(i,j,bi,bj)=0.
+      endif
+#endif
+        bottomdragfld(i,j,bi,bj) = bottomdragfld(i,j,bi,bj)
+     &                             + tmpfld2d(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+#ifdef ALLOW_SMOOTH_CORREL2D
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xx_bottomdrag_file(1:il),'.effective.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & 1, tmpfld2d, 1, optimcycle, mythid)
+#endif
+#endif
+
 #ifdef ALLOW_EDTAUX_CONTROL
 c-- zonal eddy stress : edtaux
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(1a)') 'wedtauxFld'
+      call mdsreadfield('wedtauxFld',32,'RL',nR,
+     & wedtauxFld,1,mythid)
+      _EXCH_XYZ_R8( wedtauxFld, mythid )
+#endif            
       il=ilnblnk( xx_edtaux_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_edtaux_file(1:il),'.',optimcycle
       call active_read_xyz( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_edtaux_dummy )
+#ifdef ALLOW_SMOOTH_CORREL3D
+       call smooth_correl3D(tmpfld3d,1,mythid)
+#endif / * ALLOW_SMOOTH_CORREL3D * /
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
+#ifdef ALLOW_SMOOTH_CORREL3D
+      if (maskC(i,j,k,bi,bj).NE.0.) then
+      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
+     & /sqrt( wedtauxFld(i,j,k,bi,bj) )
+      else
+      tmpfld3d(i,j,k,bi,bj)=0.
+      endif
+#endif
                 eddyTauX(i,j,k,bi,bj) = eddyTauX(i,j,k,bi,bj) +
-     &            fCori(i,j,bi,bj)*tmpfld3d(i,j,k,bi,bj)
+     &            tmpfld3d(i,j,k,bi,bj)
+cgf     &            fCori(i,j,bi,bj)*tmpfld3d(i,j,k,bi,bj)
               enddo
             enddo
           enddo
        enddo
       enddo
 cph(
-      WRITE(suff,'(I10.10)') 0
-      CALL WRITE_FLD_XYZ_RS('GM_edTauX_pXX.',suff,eddyTauX,0,myThid)
+cgf      WRITE(suff,'(I10.10)') 0
+cgf      CALL WRITE_FLD_XYZ_RS('GM_edTauX_pXX.',suff,eddyTauX,0,myThid)
 cph)
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xx_edtaux_file(1:il),'.effective.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & nr, tmpfld3d, 1, optimcycle, mythid)
+#endif
 #endif
 
 #ifdef ALLOW_EDTAUY_CONTROL
 c-- meridional eddy stress : edtauy
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(1a)') 'wedtauyFld'
+      call mdsreadfield('wedtauyFld',32,'RL',nR,
+     & wedtauyFld,1,mythid)
+      _EXCH_XYZ_R8( wedtauyFld, mythid )
+#endif            
       il=ilnblnk( xx_edtauy_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_edtauy_file(1:il),'.',optimcycle
       call active_read_xyz( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_edtauy_dummy )
+#ifdef ALLOW_SMOOTH_CORREL3D
+       call smooth_correl3D(tmpfld3d,1,mythid)
+#endif / * ALLOW_SMOOTH_CORREL3D * /
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
+#ifdef ALLOW_SMOOTH_CORREL3D
+      if (maskC(i,j,k,bi,bj).NE.0.) then
+      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
+     & /sqrt( wedtauyFld(i,j,k,bi,bj) )
+      else
+      tmpfld3d(i,j,k,bi,bj)=0.
+      endif
+#endif
                 eddyTauY(i,j,k,bi,bj) = eddyTauY(i,j,k,bi,bj) +
-     &            fCoriG(i,j,bi,bj)*tmpfld3d(i,j,k,bi,bj)
+     &            tmpfld3d(i,j,k,bi,bj)
+cgf     &            fCoriG(i,j,bi,bj)*tmpfld3d(i,j,k,bi,bj)
               enddo
             enddo
           enddo
        enddo
       enddo
 cph(
-      WRITE(suff,'(I10.10)') 0
-      CALL WRITE_FLD_XYZ_RS('GM_edTauY_pXX.',suff,eddyTauY,0,myThid)
+cgf      WRITE(suff,'(I10.10)') 0
+cgf      CALL WRITE_FLD_XYZ_RS('GM_edTauY_pXX.',suff,eddyTauY,0,myThid)
 cph)
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xx_edtauy_file(1:il),'.effective.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & nr, tmpfld3d, 1, optimcycle, mythid)
+#endif
 #endif
 
 #ifdef ALLOW_DIFFKR_CONTROL
 c--   diffkr.
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(1a)') 'wdiffkrFld'
+      call mdsreadfield('wdiffkrFld',32,'RL',nR,
+     & wdiffkrFld,1,mythid)
+      _EXCH_XYZ_R8( wdiffkrFld, mythid )
+#endif            
       il=ilnblnk( xx_diffkr_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_diffkr_file(1:il),'.',optimcycle
       call active_read_xyz( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_diffkr_dummy )
+#ifdef ALLOW_SMOOTH_CORREL3D
+       call smooth_correl3D(tmpfld3d,1,mythid)
+#endif / * ALLOW_SMOOTH_CORREL3D * /
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
+#ifdef ALLOW_SMOOTH_CORREL3D
+      if (maskC(i,j,k,bi,bj).NE.0.) then
+      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
+     & /sqrt( wdiffkrFld(i,j,k,bi,bj) )
+      else
+      tmpfld3d(i,j,k,bi,bj)=0.
+      endif
+#endif
                 diffkr(i,j,k,bi,bj) = diffkr(i,j,k,bi,bj) +
      &                                tmpfld3d(i,j,k,bi,bj)
               enddo
@@ -330,21 +438,44 @@ c--   diffkr.
           enddo
        enddo
       enddo
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xx_diffkr_file(1:il),'.effective.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & nr, tmpfld3d, 1, optimcycle, mythid)
+#endif
 #endif
 
 #ifdef ALLOW_KAPGM_CONTROL
 c--   kapgm.
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(1a)') 'wkapgmFld'
+      call mdsreadfield('wkapgmFld',32,'RL',nR,
+     & wkapgmFld,1,mythid)
+      _EXCH_XYZ_R8( wkapgmFld, mythid )
+#endif            
       il=ilnblnk( xx_kapgm_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_kapgm_file(1:il),'.',optimcycle
       call active_read_xyz( fnamegeneric, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_kapgm_dummy )
+#ifdef ALLOW_SMOOTH_CORREL3D
+       call smooth_correl3D(tmpfld3d,1,mythid)
+#endif / * ALLOW_SMOOTH_CORREL3D * /
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
+#ifdef ALLOW_SMOOTH_CORREL3D
+      if (maskC(i,j,k,bi,bj).NE.0.) then
+      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
+     & /sqrt( wkapgmFld(i,j,k,bi,bj) )
+      else
+      tmpfld3d(i,j,k,bi,bj)=0.
+      endif
+#endif
                 kapgm(i,j,k,bi,bj) = kapgm(i,j,k,bi,bj) +
      &                               tmpfld3d(i,j,k,bi,bj)
               enddo
@@ -352,6 +483,12 @@ c--   kapgm.
           enddo
        enddo
       enddo
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xx_kapgm_file(1:il),'.effective.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & nr, tmpfld3d, 1, optimcycle, mythid)
+#endif
 #endif
 
 #ifdef ALLOW_UVEL0_CONTROL
@@ -483,6 +620,10 @@ c--   Update the tile edges.
 
 #ifdef ALLOW_KAPGM_CONTROL
       _EXCH_XYZ_R8( kapgm, mythid)
+#endif
+
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+      _EXCH_XY_R8( bottomdragfld, mythid)
 #endif
 
 #ifdef ALLOW_UVEL0_CONTROL

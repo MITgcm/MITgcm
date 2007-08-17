@@ -29,6 +29,10 @@ cost_scat.f
 cost_ssh.f                      
 cost_ssh_mean.f                 
 cost_tau_eddy.f
+cost_kapgm.f
+cost_diffkr.f
+cost_bottomdrag.f
+cost_internal_params.f
 cost_theta.f                    
 cost_theta0.f                   
 cost_xbt.f                      
@@ -40,7 +44,6 @@ cost_obcse.f
 cost_obcs_ageos.f               
 sw_ptmp.f
 sw_adtg.f                       
-cost_kapgm.f                    
 cost_readargot.f                
 cost_readargos.f                
 cost_ctdtclim.f                 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.5 2005/09/29 18:36:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.6 2007/08/17 21:38:06 gforget Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -25,6 +25,8 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+cgf bottomdragfld (ALLOW_BOTTOMDRAG_CONTROL) is defined in DYNVARS.h
+#include "DYNVARS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices

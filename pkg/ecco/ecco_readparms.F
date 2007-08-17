@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.28 2006/11/02 05:26:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.29 2007/08/17 21:36:40 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -84,6 +84,8 @@ c--   Read the namelist input.
      &                   snowprecip_errfile, apressure_errfile,
      &                   uwind_errfile, vwind_errfile,
      &                   geoid_errfile, geoid_covariancefile,
+     &                   bottomdrag_errfile,edtau_errfile,
+     &                   kapgm_errfile,diffkr_errfile,
      &                   mult_hflux, mult_sflux, mult_tauu, mult_tauv,
      &                   mult_hfluxmm, mult_sfluxmm,
      &                   mult_atemp, mult_aqh, 
@@ -106,8 +108,10 @@ c--   Read the namelist input.
      &                   mult_obcsw, mult_obcse, mult_obcsvol,
      &                   mult_curmtr, mult_ageos,
      &                   mult_kapgm, mult_diffkr,
+     &                   mult_edtau, mult_bottomdrag,
      &                   mult_smooth_ic, mult_smooth_bc,
      &                   whflux0, wsflux0, wtau0,
+     &                   wbottomdrag0,
      &                   watemp0, waqh0, 
      &                   wprecip0, wswflux0, wswdown0, wwind0,
      &                   wsnowprecip0, wlwflux0, wlwdown0, wevap0,
@@ -218,6 +222,10 @@ c--     Set default values.
         vwind_errfile         =    ' '
         geoid_errfile         =    ' '
         geoid_covariancefile  =    ' '
+        bottomdrag_errfile    =    ' '
+        edtau_errfile         =    ' '
+        kapgm_errfile         =    ' '
+        diffkr_errfile        =    ' '
 
         mult_hflux            =      0. _d 0
         mult_sflux            =      0. _d 0
@@ -271,6 +279,8 @@ c--     Set default values.
         mult_curmtr           =      0. _d 0
         mult_kapgm            =      0. _d 0
         mult_diffkr           =      0. _d 0
+        mult_edtau            =      0. _d 0
+        mult_bottomdrag       =      0. _d 0
         mult_smooth_ic        =      0. _d 0
         mult_smooth_bc        =      0. _d 0
         watemp0               =      0. _d 0
@@ -290,6 +300,7 @@ c--     Set default values.
         whflux0               =      0. _d 0
         wsflux0               =      0. _d 0
         wtau0                 =      0. _d 0
+        wbottomdrag0          =      1. _d 0
         wmean_atemp           =      0. _d 0
         wmean_aqh             =      0. _d 0
         wmean_precip          =      0. _d 0

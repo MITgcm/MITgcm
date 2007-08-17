@@ -98,6 +98,11 @@ C--   heimbach@mit.edu 11-Jan-2001
      &                       g_kapgm
       _RL  g_kapgm (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
+#ifdef ALLOW_BOTTOMDRAG_CONTROL 
+      COMMON /G_DYNVARS_BOTTOMDRAG/
+     &                       g_bottomdragfld
+      _RL  g_bottomdragfld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 
 #ifdef ALLOW_EXF
       _RL g_hflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)

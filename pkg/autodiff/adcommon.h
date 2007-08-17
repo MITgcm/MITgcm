@@ -99,6 +99,11 @@ C--   heimbach@mit.edu 11-Jan-2001
      &                       adkapgm
       _RL  adkapgm (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+      COMMON /ADDYNVARS_BOTTOMDRAG/
+     &                adbottomdragfld
+      _RL  adbottomdragfld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif                     
 #if (defined (ALLOW_EDTAUX_CONTROL) || defined (ALLOW_EDTAUY_CONTROL))
       double precision adeddytaux(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,
      $nsy)

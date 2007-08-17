@@ -281,6 +281,8 @@ c     objf_kapgm  - kappa GM contribution
 c     objf_diffkr - diffusion contribution
 c     objf_theta_ini_fin - final vs. initial theta misfit
 c     objf_salt_ini_fin  - final vs. initial salt misfit
+c     objf_eddytau - eddy stress contribution
+c     objf_bottomdrag - bottom drag contribution
 c
 c     mult_"var" - multipliers for the individual cost
 c                  function contributions.
@@ -379,7 +381,8 @@ c                  function contributions.
      &                objf_diffkr,
      &                objf_theta_ini_fin,
      &                objf_salt_ini_fin,
-     &                objf_eddytau
+     &                objf_eddytau,
+     &                objf_bottomdrag
       _RL  objf_hflux  (nsx,nsy)
       _RL  objf_hfluxm (nsx,nsy)
       _RL  objf_hfluxmm(nsx,nsy)
@@ -474,6 +477,7 @@ c                  function contributions.
       _RL  objf_theta_ini_fin(nsx,nsy)
       _RL  objf_salt_ini_fin(nsx,nsy)
       _RL  objf_eddytau(nsx,nsy)
+      _RL  objf_bottomdrag(nsx,nsy)
 
       common /ecco_cost_num/
      &                num_hflux,
@@ -550,7 +554,8 @@ c                  function contributions.
      &                num_diffkr,
      &                num_theta_ini_fin,
      &                num_salt_ini_fin,
-     &                num_eddytau
+     &                num_eddytau,
+     &                num_bottomdrag
 
       _RL  num_hflux  (nsx,nsy)
       _RL  num_hfluxm (nsx,nsy)
@@ -627,6 +632,7 @@ c                  function contributions.
       _RL  num_theta_ini_fin(nsx,nsy)
       _RL  num_salt_ini_fin(nsx,nsy)
       _RL  num_eddytau(nsx,nsy)
+      _RL  num_bottomdrag(nsx,nsy)
 
       common /ecco_cost_aux_r/
      &                    mult_hflux,
@@ -683,7 +689,8 @@ c                  function contributions.
      &                    mult_kapgm,
      &                    mult_diffkr,
      &                    mult_ini_fin,
-     &                    mult_eddytau,
+     &                    mult_edtau,
+     &                    mult_bottomdrag,
      &                    mult_smooth_ic,
      &                    mult_smooth_bc
       _RL  mult_hflux
@@ -740,7 +747,8 @@ c                  function contributions.
       _RL  mult_kapgm
       _RL  mult_diffkr
       _RL  mult_ini_fin
-      _RL  mult_eddytau
+      _RL  mult_edtau
+      _RL  mult_bottomdrag
       _RL  mult_smooth_ic
       _RL  mult_smooth_bc
 
@@ -829,6 +837,10 @@ c     velerrfile            - representation error
      &                evap_errfile,
      &                apressure_errfile,
      &                runoff_errfile,
+     &                edtau_errfile,
+     &                kapgm_errfile,
+     &                diffkr_errfile,
+     &                bottomdrag_errfile,
      &                uwind_errfile,
      &                vwind_errfile
       character*(MAX_LEN_FNAM) hflux_errfile
@@ -870,6 +882,10 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) evap_errfile
       character*(MAX_LEN_FNAM) apressure_errfile
       character*(MAX_LEN_FNAM) runoff_errfile
+      character*(MAX_LEN_FNAM) edtau_errfile
+      character*(MAX_LEN_FNAM) kapgm_errfile
+      character*(MAX_LEN_FNAM) diffkr_errfile
+      character*(MAX_LEN_FNAM) bottomdrag_errfile
       character*(MAX_LEN_FNAM) uwind_errfile
       character*(MAX_LEN_FNAM) vwind_errfile
 
@@ -905,6 +921,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
      &                      watemp,waqh,wprecip,wsnowprecip,
      &                      wswflux,wswdown,wlwflux,wlwdown,
      &                      wevap,wapressure,wrunoff,
+     &                      wbottomdrag,
      &                      wuwind,wvwind,
      &                      wscatx,wscaty,
      &                      wtheta,wtheta2,wthetaLev,
@@ -947,6 +964,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wevap   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wapressure(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wrunoff (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wbottomdrag (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wuwind  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wvwind  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtheta  (                            nr,nsx,nsy)
@@ -987,7 +1005,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
      &        watemp0, waqh0, wprecip0, wsnowprecip0, wwind0,
      &        wswflux0, wswdown0, wlwflux0, wlwdown0, 
      &        wevap0, wapressure0, wrunoff0,
-     &        wdiffkr0, wkapgm0, wedtau0
+     &        wbottomdrag0,wdiffkr0, wkapgm0, wedtau0
       _RL whflux0
       _RL wsflux0
       _RL wtau0
@@ -1002,6 +1020,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wevap0
       _RL wapressure0
       _RL wrunoff0
+      _RL wbottomdrag0
       _RL wwind0
       _RL wdiffkr0
       _RL wkapgm0

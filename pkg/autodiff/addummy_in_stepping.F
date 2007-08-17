@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.38 2007/07/26 12:07:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.39 2007/08/17 21:37:31 gforget Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AUTODIFF_OPTIONS.h"
@@ -102,6 +102,9 @@ c
 #ifdef ALLOW_SSS0_CONTROL
        call adexch_xy_rl( mythid,adsss )
 #endif
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+       call adexch_xy_rl( mythid,adbottomdragfld)
+#endif
 
        _BARRIER
        _BEGIN_MASTER( myThid )
@@ -171,6 +174,10 @@ c
 #endif
 #ifdef ALLOW_SSS0_CONTROL
         CALL WRITE_FLD_XY_RL( 'ADJsss.',suff, adsss, myIter, myThid)
+#endif
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+        CALL WRITE_FLD_XY_RL ( 'ADJbottomdrag.',suff, 
+     & adbottomdragfld, myIter, myThid)
 #endif
 
        _END_MASTER( myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.32 2006/12/24 14:23:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.33 2007/08/17 21:36:40 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -76,7 +76,7 @@ c     == local variables ==
       _RL f_ageos, f_curmtr
       _RL f_ini_fin
       _RL f_kapgm, f_diffkr
-      _RL f_eddytau
+      _RL f_eddytau, f_bottomdrag
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
 
       _RL no_temp0, no_salt0,  no_temp, no_salt 
@@ -96,7 +96,7 @@ c     == local variables ==
       _RL no_ageos, no_curmtr
       _RL no_ini_fin
       _RL no_kapgm, no_diffkr
-      _RL no_eddytau
+      _RL no_eddytau, no_bottomdrag
       _RL no_hmean
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
 
@@ -194,6 +194,7 @@ c     == end of interface ==
       f_kapgm   = 0. _d 0
       f_diffkr  = 0. _d 0
       f_eddytau = 0. _d 0
+      f_bottomdrag = 0. _d 0
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -263,6 +264,7 @@ c     == end of interface ==
       no_kapgm   = 0. _d 0
       no_diffkr  = 0. _d 0
       no_eddytau = 0. _d 0
+      no_bottomdrag = 0. _d 0
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -336,7 +338,8 @@ c--   Sum up all contributions.
      &         + mult_diffkr  * objf_diffkr(bi,bj)
      &         + mult_ini_fin *(objf_theta_ini_fin(bi,bj) +
      &                          objf_salt_ini_fin(bi,bj))
-     &         + mult_eddytau * objf_eddytau(bi,bj)
+     &         + mult_edtau * objf_eddytau(bi,bj)
+     &         + mult_bottomdrag * objf_bottomdrag(bi,bj)
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -417,6 +420,7 @@ c--   Sum up all contributions.
           f_ini_fin = f_ini_fin +
      &         objf_theta_ini_fin(bi,bj) + objf_salt_ini_fin(bi,bj)
           f_eddytau = f_eddytau + objf_eddytau(bi,bj) 
+          f_bottomdrag = f_bottomdrag + objf_bottomdrag(bi,bj)
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -482,6 +486,7 @@ c--   Sum up all contributions.
           no_ini_fin = no_ini_fin +
      &         num_theta_ini_fin(bi,bj) + num_salt_ini_fin(bi,bj)
           no_eddytau = no_eddytau + num_eddytau(bi,bj) 
+          no_bottomdrag = no_bottomdrag + num_bottomdrag(bi,bj)
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -573,6 +578,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_diffkr , myThid )
       _GLOBAL_SUM_R8( f_ini_fin , myThid )
       _GLOBAL_SUM_R8( f_eddytau , myThid )
+      _GLOBAL_SUM_R8( f_bottomdrag , myThid )
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -642,6 +648,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( no_diffkr , myThid )
       _GLOBAL_SUM_R8( no_ini_fin , myThid )
       _GLOBAL_SUM_R8( no_eddytau , myThid )
+      _GLOBAL_SUM_R8( no_bottomdrag , myThid )
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -796,6 +803,8 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_diffkr  =',f_diffkr
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_eddytau =', f_eddytau
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_bottomdrag =', f_bottomdrag
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -993,6 +1002,8 @@ cph)
      &       'f_ini_fin =', f_ini_fin, no_ini_fin
         write(ifc,'(A,2D22.15)') 
      &       'f_eddytau =', f_eddytau, no_eddytau
+        write(ifc,'(A,2D22.15)') 
+     &       'f_bottomdrag =', f_bottomdrag, no_bottomdrag
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
