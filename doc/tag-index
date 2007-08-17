@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.859 2007/08/17 20:51:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.860 2007/08/17 21:39:33 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco, ctrl, autodiff and mom_common:
+ internal parameter controls, completements of implementations
 o add few EXCH S/R (UV_BGRID, UV_DGRID, SM) for B & D-Grid velocity & 2nd Moment Sxy.
 o pkg/cd_code: use the right EXCH calls (for CS-grid); but problem remains 
    at face corners.
