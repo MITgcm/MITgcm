@@ -146,6 +146,7 @@ C       don't run the ice growth/melt on step 1 if "cold" start
       ENDIF
       CALL CALC_ZONAL_MEANS(.TRUE.,myThid)
       CALL PUT_OCNVARS(myTime,myIter,myThid)
+      CALL SUM_YR_END_DIAGS(myTime,myIter,myThid)
 #  ifdef ATM2D_MPI_ON
       CALL CPL_SEND_OCN_FIELDS
 #  endif
@@ -310,6 +311,7 @@ C    Data for the restart of the 2D ML model
         ELSEIF (mod(iyr,taveDump).EQ.0) THEN
           CALL TAVE_END_DIAGS( idyear, myTime, myIter, myThid)
         ENDIF
+        CALL YR_END_DIAGS(iyr,myTime,myIter,myThid)
 C If necessary, next line can be moved outside OCEAN_3D for IGSM2.2 cleanups
         IF (iloop.EQ.nTimeSteps) CALL ATM2D_FINISH(myThid)
 #endif

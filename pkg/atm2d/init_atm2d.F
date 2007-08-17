@@ -301,6 +301,18 @@ C     Initialize 2D diagnostic variables
         ENDDO
       ENDDO
 
+C     Initialize year-end diags and max/min seaice variables
+      SHice_min = 1. _d 18
+      NHice_min = 1. _d 18
+      SHice_max = 0. _d 0
+      NHice_max = 0. _d 0
+      sst_tave=  0. _d 0
+      sss_tave=  0. _d 0
+      HF2ocn_tave=  0. _d 0
+      FW2ocn_tave=  0. _d 0
+      OPEN(25,FILE='resocean.dat',STATUS='replace')
+      CLOSE(25)
+
 C     Initialize following for safety and/or cold start
       DO i=1-OLx,sNx+OLx
         DO j=1-OLy,sNy+OLy

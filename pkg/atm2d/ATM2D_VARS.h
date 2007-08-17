@@ -252,6 +252,18 @@ C     Variables used to sum and compute atm2d diagnostic outputs
        _RL sum_wsocean_ta(jm0,nForcingPer)
        _RL sum_ps4ocean_ta(jm0,nForcingPer)
        
+C      Yearly output diagnostics
+      COMMON/YR_MEAN_DIAG/ sst_tave, sss_tave, SHice_min, SHice_max, 
+     &                    NHice_min, NHice_max, HF2ocn_tave, FW2ocn_tave 
+       _RL sst_tave
+       _RL sss_tave
+       _RL SHice_min
+       _RL SHice_max
+       _RL NHice_min
+       _RL NHice_max
+       _RL HF2ocn_tave   
+       _RL FW2ocn_tave    
+
 
 C      Variables passed from ocean model
       COMMON/FROM_OCN/ sstFromOcn, sssFromOcn, oFluxCO2, mlDepth
