@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_3d_rx.template,v 1.1 2006/08/23 15:18:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_3d_rx.template,v 1.2 2007/08/17 18:34:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,8 +26,8 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
+c#include "EESUPPORT.h"
+c#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -39,17 +39,18 @@ C     myThid :: My thread id.
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
+#ifndef ALLOW_EXCH2
 C     == Local variables ==
 C     OL[wens]       :: Overlap extents in west, east, north, south.
 C     exchWidth[XY]  :: Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
-
+#endif
 CEOP
 
 #ifdef ALLOW_EXCH2
       CALL EXCH2_3D_RX( phi, myNz, myThid )
       RETURN
-#endif
+#else /* ALLOW_EXCH2 */
 
       OLw        = OLx
       OLe        = OLx
@@ -76,4 +77,5 @@ C                begine.
       ENDIF
 
       RETURN
+#endif /* ALLOW_EXCH2 */
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_agrid_3d_rx.template,v 1.3 2006/11/18 01:08:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_agrid_3d_rx.template,v 1.4 2007/08/17 18:34:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,8 +37,8 @@ C     !USES:
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
+c#include "EESUPPORT.h"
+c#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Argument list variables ==
@@ -49,6 +49,7 @@ C     == Argument list variables ==
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
+#ifndef ALLOW_EXCH2
 C     == Local variables ==
 C     i,j,k,bi,bj   :: are DO indices.
 C     OL[wens]      ::  Overlap extents in west, east, north, south.
@@ -60,13 +61,15 @@ C     dummy[12]     :: copies of the vector components with haloes filled.
       _RX dummy1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RX dummy2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RX negOne
+#endif
+CEOP
 
 #ifdef ALLOW_EXCH2
       CALL EXCH2_UV_AGRID_3D_RX(
      U                           Uphi, Vphi,
      I                           withSigns, myNz, myThid )
       RETURN
-#endif
+#else /* ALLOW_EXCH2 */
 
       OLw        = OLx
       OLe        = OLx
@@ -83,7 +86,6 @@ C---  using CubedSphereExchange:
 
 C First call the exchanges for the two components
 
-#ifndef AUTODIFF_EXCH2
        CALL EXCH_RX_CUBE( Uphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
@@ -92,7 +94,6 @@ C First call the exchanges for the two components
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-#endif
 
 C Then if we are on the sphere we may need to switch u and v components
 C and/or the signs depending on which cube face we are located.
@@ -172,7 +173,6 @@ C--    end of Loops on tile and level indices (k,bi,bj).
       ELSE
 C---  not using CubedSphereExchange:
 
-#ifndef AUTODIFF_EXCH2
        CALL EXCH_RX( Uphi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
@@ -181,13 +181,12 @@ C---  not using CubedSphereExchange:
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-#endif
 
 C---  using or not using CubedSphereExchange: end
       ENDIF
 
-
       RETURN
+#endif /* ALLOW_EXCH2 */
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

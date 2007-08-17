@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_sm_3d_rx.template,v 1.1 2007/08/16 21:21:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_sm_3d_rx.template,v 1.2 2007/08/17 18:34:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,8 +36,6 @@ C     !USES:
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Argument list variables ==
@@ -47,6 +45,7 @@ C     == Argument list variables ==
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
+#ifndef ALLOW_EXCH2
 C     == Local variables ==
 C     i,j,k,bi,bj   :: loop indices.
 C     OL[wens]      :: Overlap extents in west, east, north, south.
@@ -55,15 +54,16 @@ C     dummy[12]     :: copies of the vector components with haloes filled.
 
       INTEGER i,j,k,bi,bj
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
-      _RX tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RX negOne
+#endif
+CEOP
 
 #ifdef ALLOW_EXCH2
       CALL EXCH2_SM_3D_RX(
      U                           phi,
      I                           withSigns, myNz, myThid )
       RETURN
-#endif
+#else /* ALLOW_EXCH2 */
 
       OLw        = OLx
       OLe        = OLx
@@ -79,12 +79,10 @@ C---  using CubedSphereExchange:
 
 C--   First call the exchanges
 
-#ifndef AUTODIFF_EXCH2
        CALL EXCH_RX_CUBE( phi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-#endif
 
 C--   Then we may need to switch the signs depending on which cube face
 C      we are located (we assume that bj is always=1).
@@ -147,17 +145,16 @@ C--   end of Loops on tile and level indices (k,bi,bj).
       ELSE
 C---  not using CubedSphereExchange:
 
-#ifndef AUTODIFF_EXCH2
        CALL EXCH_RX( phi,
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-#endif
 
 C---  using or not using CubedSphereExchange: end
       ENDIF
 
       RETURN
+#endif /* ALLOW_EXCH2 */
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
