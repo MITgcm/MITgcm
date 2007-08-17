@@ -71,7 +71,7 @@ C       Ice feels evap from model, no change with temperature
         atm_solar_ocn(j_atm) = solarnet_ocean(j_atm)
         atm_solar_ice(j_atm) = solarnet_ice(j_atm)
         atm_windspeed(j_atm) = wsocean(j_atm)
-        atm_slp(j_atm) = ps4ocean(j_atm)*1013.25/984.0
+        atm_slp(j_atm) = ps4ocean(j_atm)*1013.25/984.0 - 1013.25
         atm_pco2(j_atm) = co24ocean(j_atm)
 
       ENDDO
