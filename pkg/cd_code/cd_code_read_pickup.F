@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_read_pickup.F,v 1.2 2006/10/26 00:24:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_read_pickup.F,v 1.3 2007/08/17 19:38:18 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -76,10 +76,9 @@ C       Read variables from the pickup file
       ENDIF
 
 C-    thread synchronisation (barrier) is part of the EXCH S/R calls
-      _EXCH_XYZ_R8( uVelD,    myThid )
-      _EXCH_XYZ_R8( vVelD,    myThid )
-      CALL EXCH_UV_XYZ_RL(uNM1,vNM1,.TRUE.,myThid)
-      _EXCH_XY_R8( etaNm1, myThid )
+      CALL EXCH_UV_DGRID_3D_RL( uVelD,vVelD, .TRUE., Nr, myThid )
+      CALL EXCH_UV_XYZ_RL( uNM1,vNM1, .TRUE., myThid )
+      CALL EXCH_XY_RL( etaNm1, myThid )
 
 #endif /*  ALLOW_CD_CODE  */
 
