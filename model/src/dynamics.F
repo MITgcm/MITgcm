@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.137 2007/01/30 03:18:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.138 2007/08/18 21:34:01 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -316,6 +316,15 @@ cph)
           phiSurfY(i,j)  = 0. _d 0
           guDissip(i,j)  = 0. _d 0
           gvDissip(i,j)  = 0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef NONLIN_FRSURF
+#  ifndef DISABLE_RSTAR_CODE
+          dWtransC(i,j,bi,bj) = 0. _d 0
+          dWtransU(i,j,bi,bj) = 0. _d 0
+          dWtransV(i,j,bi,bj) = 0. _d 0
+#  endif
+# endif
+#endif
          ENDDO
         ENDDO
 
@@ -453,6 +462,18 @@ C        phiHyd(z=0)=0
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gU, gV, etc...
          IF ( momStepping ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef NONLIN_FRSURF
+#  ifndef DISABLE_RSTAR_CODE
+CADJ STORE dWtransC(:,:,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dWtransU(:,:,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dWtransV(:,:,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+#  endif
+# endif
+#endif
            IF (.NOT. vectorInvariantMomentum) THEN
 #ifdef ALLOW_MOM_FLUXFORM
 C

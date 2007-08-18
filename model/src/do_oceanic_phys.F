@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.53 2007/07/27 22:18:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.54 2007/08/18 21:34:01 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -49,6 +49,7 @@ C     == Global variables ===
 # include "tamc.h"
 # include "tamc_keys.h"
 # include "FFIELDS.h"
+# include "SURFACE.h"
 # include "EOS.h"
 # ifdef ALLOW_KPP
 #  include "KPP.h"
@@ -58,9 +59,6 @@ C     == Global variables ===
 # endif
 # ifdef ALLOW_EBM
 #  include "EBM.h"
-# endif
-# ifdef EXACT_CONSERV
-#  include "SURFACE.h"
 # endif
 # ifdef ALLOW_EXF
 #  include "ctrl.h"

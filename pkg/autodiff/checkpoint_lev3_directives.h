@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.37 2007/08/16 04:15:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.38 2007/08/18 21:34:01 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -9,9 +9,6 @@ c
 CADJ STORE StoreDynVars3D     = tapelev3, key = ilev_3
 CADJ STORE StoreDynVars2D     = tapelev3, key = ilev_3
 cnewCADJ STORE ivdconvcount       = tapelevx, key = ilev_x
-
-CADJ STORE TsurfCor    = tapelev3, key = ilev_3
-CADJ STORE SsurfCor    = tapelev3, key = ilev_3
 
 #ifdef EXACT_CONSERV
 cphCADJ STORE hDivFlow  = tapelev3, key = ilev_3
