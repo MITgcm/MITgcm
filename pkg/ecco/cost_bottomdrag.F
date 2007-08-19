@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bottomdrag.F,v 1.1 2007/08/17 21:36:39 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bottomdrag.F,v 1.2 2007/08/19 05:29:24 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -105,7 +105,7 @@ c--         Determine the weights to be used.
                   tmpx = tmpfld2d(i,j,bi,bj)
 #ifndef ALLOW_SMOOTH_CORREL3D
                   fctile = fctile
-     &                 + wbottomdragFld(i,j,bi,bj)*cosphi(i,j,bi,bj)
+     &                 + wbottomdrag(i,j,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
 #else
                   fctile = fctile + tmpx*tmpx

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_tau_eddy.F,v 1.5 2007/08/17 21:36:40 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_tau_eddy.F,v 1.6 2007/08/19 05:29:24 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -75,6 +75,10 @@ C------------------------------------------------------
 C     Cost function consistent with ECCO standards
 C------------------------------------------------------
 
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
       jmin = 1
       jmax = sny
       imin = 1
