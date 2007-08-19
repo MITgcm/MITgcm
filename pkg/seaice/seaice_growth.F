@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.20 2007/07/18 22:26:05 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.21 2007/08/19 02:31:37 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -405,8 +405,6 @@ cph(
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE fice(:,:)         = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE fheff(:,:)        = comlev1_bibj, 
@@ -419,10 +417,6 @@ CADJ STORE qswo(:,:)         = comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-#endif
 C
 C     First update (freeze or melt) ice area
 C
@@ -503,6 +497,15 @@ C     through the ice into the ocean)
           STOP 'ABNORMAL END: S/R THSICE_GROWTH: ATM_TEMP undef'
 #endif /* ALLOW_ATM_TEMP */
 
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
+#endif
+        DO J=1,sNy
+         DO I=1,sNx
 C     Now melt snow if there is residual heat left in surface level
 C     Note that units of YNEG and frWtrIce are m of ice
 cph( very sensitive bit here by JZ
@@ -511,10 +514,35 @@ cph( very sensitive bit here by JZ
            GHEFF(I,J)       = MIN( HSNOW(I,J,bi,bj)/SDF/ICE2WATR,
      &                             RESID_HEAT(I,J) )
            YNEG(I,J,bi,bj)  = YNEG(I,J,bi,bj) +GHEFF(I,J)
+          ENDIF
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
+#endif
+        DO J=1,sNy
+         DO I=1,sNx
+
+          IF( RESID_HEAT(I,J) .GT. ZERO .AND.
+     &       HSNOW(I,J,bi,bj) .GT. ZERO ) THEN
            HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)-GHEFF(I,J)*SDF*ICE2WATR
            frWtrIce(I,J)    = frWtrIce(I,J)   -GHEFF(I,J)
           ENDIF
 cph)
+
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
+#endif
+        DO J=1,sNy
+         DO I=1,sNx
 
 #ifdef ALLOW_ATM_TEMP
 
@@ -552,19 +580,36 @@ C NOW GET TOTAL QNET AND QSW
           QSW(I,J,bi,bj)  = QSWI(I,J)  * AREA(I,J,2,bi,bj)
      &                     +QSWO(I,J)  * (ONE-AREA(I,J,2,bi,bj))
 
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE yneg(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                       key = iicekey, byte = isbyte
+#endif
+        DO J=1,sNy
+         DO I=1,sNx
 C Now convert YNEG back to deg K.
           YNEG(I,J,bi,bj) = YNEG(I,J,bi,bj)*recip_dRf(kSurface) *
      &                      recip_hFacC(i,j,kSurface,bi,bj)*72.0764 _d 0
+         ENDDO
+        ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE yneg(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                       key = iicekey, byte = isbyte
+#endif
+        DO J=1,sNy
+         DO I=1,sNx
 C Add YNEG contribution to QNET
           QNET(I,J,bi,bj) = QNET(I,J,bi,bj)
      &         +YNEG(I,J,bi,bj)/SEAICE_deltaTtherm
      &         *maskC(I,J,kSurface,bi,bj)
      &         *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
      &         *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
-
          ENDDO
         ENDDO
+
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL(frWtrAtm,'SIatmFW ',0,1 ,2,bi,bj,myThid)
