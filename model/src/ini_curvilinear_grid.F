@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.34 2007/01/09 23:27:43 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.35 2007/08/20 22:08:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -147,9 +147,8 @@ cs-   end block
 
       CALL MDSREADFIELD('DXV.bin',readBinaryPrec,'RS',1,dxV,  1,myThid)
       CALL MDSREADFIELD('DYU.bin',readBinaryPrec,'RS',1,dyU,  1,myThid)
+c     CALL EXCH_UV_BGRID_3D_RS( dxV, dyU, .FALSE., 1, myThid)
 cs-   this block needed by cubed sphere until we write more useful I/O routines
-C !!! _EXCH_ZUV_XY_R4(dxV, dyU, unSigned, myThid)
-cs!   this is not correct <= need paired exchange for dxv,dyu
       IF (.NOT.useCubedSphereExchange) THEN
       CALL EXCH_Z_3D_RS( dxV, 1, myThid )
       CALL EXCH_Z_3D_RS( dyU, 1, myThid )
@@ -375,9 +374,11 @@ C--   read Binary files:
       CALL EXCH_XY_RS(rA,myThid )
       CALL EXCH_Z_3D_RS( xG, 1, myThid )
       CALL EXCH_Z_3D_RS( yG, 1, myThid )
-C !!! _EXCH_ZUV_XY_R4(dxV, dyU, unSigned, myThid)
-c     CALL EXCH_Z_3D_RS( dxV, 1, myThid )
-c     CALL EXCH_Z_3D_RS( dyU, 1, myThid )
+#ifdef ALLOW_EXCH2
+# ifndef ALLOW_AUTODIFF_TAMC
+      CALL EXCH2_UV_BGRID_3D_RS( dxV, dyU, .FALSE., 1, myThid)
+# endif
+#endif
       CALL EXCH_Z_3D_RS( rAz, 1, myThid )
       CALL EXCH_UV_XY_RS(dxC,dyC,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(rAw,rAs,.FALSE.,myThid)
