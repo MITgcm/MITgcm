@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.860 2007/08/17 21:39:33 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.861 2007/08/20 17:44:38 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff: zero_adj resets an ajoint variable to zero (in adjoint mode) 
+o pkg/ctrl: ctrl_bound  forces parameter corrections to stay in 
+  a bounded range (in forward mode)
 o pkg/ecco, ctrl, autodiff and mom_common:
  internal parameter controls, completements of implementations
 o add few EXCH S/R (UV_BGRID, UV_DGRID, SM) for B & D-Grid velocity & 2nd Moment Sxy.
