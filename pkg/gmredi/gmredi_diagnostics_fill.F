@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_fill.F,v 1.1 2006/06/20 22:55:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_fill.F,v 1.2 2007/08/20 17:58:57 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -26,6 +26,10 @@ C     == Routine arguments ==
 C
       INTEGER bi,bj
       INTEGER myThid
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL     DIAGNOSTICS_IS_ON
+      EXTERNAL    DIAGNOSTICS_IS_ON
+#endif /* ALLOW_DIAGNOSTICS */
 CEndOfInterface
 
 #ifdef ALLOW_GMREDI
