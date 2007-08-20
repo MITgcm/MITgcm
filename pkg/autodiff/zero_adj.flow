@@ -1,0 +1,18 @@
+c----------------------------------------
+c subroutine zero_adj_3D
+c----------------------------------------
+cadj SUBROUTINE zero_adj_3D FTLNAME = g_zero_adj_3D
+cadj SUBROUTINE zero_adj_3D ADNAME  = adzero_adj_3D
+cadj SUBROUTINE zero_adj_3D INPUT   = 1, 2, 3, 4
+cadj SUBROUTINE zero_adj_3D OUTPUT  =            
+cadj SUBROUTINE zero_adj_3D ACTIVE  =       3   
+cadj SUBROUTINE zero_adj_3D DEPEND  = 1, 2,    4 
+c----------------------------------------
+c subroutine zero_adj_2D
+c----------------------------------------
+cadj SUBROUTINE zero_adj_2D FTLNAME = g_zero_adj_2D
+cadj SUBROUTINE zero_adj_2D ADNAME  = adzero_adj_2D
+cadj SUBROUTINE zero_adj_2D INPUT   = 1, 2, 3, 4
+cadj SUBROUTINE zero_adj_2D OUTPUT  =           
+cadj SUBROUTINE zero_adj_2D ACTIVE  =       3   
+cadj SUBROUTINE zero_adj_2D DEPEND  = 1, 2,    4
