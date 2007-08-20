@@ -1,0 +1,19 @@
+c----------------------------------------
+c subroutine ctrl_bound_3D
+c----------------------------------------
+cadj SUBROUTINE ctrl_bound_3D FTLNAME = g_ctrl_bound_3D
+cadj SUBROUTINE ctrl_bound_3D ADNAME  = adctrl_bound_3D
+cadj SUBROUTINE ctrl_bound_3D INPUT   = 1, 2, 3, 4,5,6
+cadj SUBROUTINE ctrl_bound_3D OUTPUT  =
+cadj SUBROUTINE ctrl_bound_3D ACTIVE  =       3
+cadj SUBROUTINE ctrl_bound_3D DEPEND  = 1, 2,    4,5,6
+c----------------------------------------
+c subroutine ctrl_bound_2D
+c----------------------------------------
+cadj SUBROUTINE ctrl_bound_2D FTLNAME = g_ctrl_bound_2D
+cadj SUBROUTINE ctrl_bound_2D ADNAME  = adctrl_bound_2D
+cadj SUBROUTINE ctrl_bound_2D INPUT   = 1, 2, 3, 4,5,6
+cadj SUBROUTINE ctrl_bound_2D OUTPUT  =
+cadj SUBROUTINE ctrl_bound_2D ACTIVE  =       3
+cadj SUBROUTINE ctrl_bound_2D DEPEND  = 1, 2,    4,5,6
+
