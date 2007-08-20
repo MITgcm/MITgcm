@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g95,v 1.1 2007/08/17 15:53:09 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g95,v 1.2 2007/08/20 20:31:00 ce107 Exp $
 #  $Name:  $
 #
 
@@ -14,7 +14,7 @@ NOOPTFLAGS='-O0'
 if test "x$DEVEL" != x ; then
     FFLAGS='-g -Wall -Wextra -fbounds-check -ftrace=full -finteger=-99999 -flogical=false -freal=nan'
 else
-    FFLAGS=''
+    FFLAGS='-Wunused'
 fi
 
 #  "warning: -Wuninitialized is not supported without -O"
@@ -28,12 +28,12 @@ else
     has_sse2=f
     grep flags /proc/cpuinfo | grep sse2 > /dev/null 2>&1  &&  has_sse2=t
     if test "x$has_sse2" = xt ; then
-        FFLAGS='-Wunused -mfpmath=sse -msse -msse2'
+        FOPTIM='-mfpmath=sse -msse -msse2'
     else
-        FFLAGS='-Wunused -ffloat-store'
+        FOPTIM='-ffloat-store'
     fi
     #  echo 'FFLAGS="'$FFLAGS'"'
-    FOPTIM='-O0 -malign-double'
+    FOPTIM="-O0 -malign-double $FOPTIM"
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM

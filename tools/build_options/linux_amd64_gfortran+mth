@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.3 2007/08/20 20:31:00 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_gfortran+mth,v 1.1 2007/08/20 20:31:00 ce107 Exp $
 #  $Name:  $
 #
 
@@ -17,9 +17,9 @@
 FC=gfortran
 F90C=gfortran
 CC=gcc
-DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR -DUSE_OMP_THREADING'
 CPP='cpp  -traditional -P'
-NOOPTFLAGS='-O0'
+NOOPTFLAGS='-O0 -fopenmp'
 
 if test "x$DEVEL" != x ; then
     FFLAGS='-g -Wall -W -ffpe-trap=invalid,zero,overflow -fbounds-check'
@@ -28,7 +28,7 @@ else
 fi
 
 # Requires gfortran from 2006 onwards for -fconvert=big-endian
-FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
+FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none -fopenmp"
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754

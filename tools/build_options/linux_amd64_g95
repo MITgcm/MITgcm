@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_g95,v 1.1 2007/01/31 21:43:34 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_g95,v 1.2 2007/08/20 20:31:00 ce107 Exp $
 #  $Name:  $
 #
 
@@ -14,7 +14,7 @@ NOOPTFLAGS='-O0'
 if test "x$DEVEL" != x ; then
     FFLAGS='-g -Wall -Wextra -fbounds-check -ftrace=full -finteger=-99999 -flogical=false -freal=nan'
 else
-    FFLAGS=''
+    FFLAGS='-Wunused'
 fi
 
 #  "warning: -Wuninitialized is not supported without -O"
@@ -22,7 +22,7 @@ FFLAGS="$FFLAGS -fendian=big -fimplicit-none"
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FOPTIM='-O3 -funroll-loops -ffast-math'
+    FOPTIM='-O3 -funroll-loops'
 else
     #  Try to follow IEEE-754
     FOPTIM='-O0'

@@ -1,10 +1,11 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.3 2007/08/20 20:31:00 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_gfortran-4.3+mth,v 1.1 2007/08/20 20:31:00 ce107 Exp $
 #  $Name:  $
 #
 
-#  Tested with gcc-gfortran v4.0.x as shipped with Fedora Core 4.
+#  Tested with gcc-gfortran v4.1.1 on FC5+, using flags formally for
+#  gcc-gfortran 4.3*
 #  It fixes the ' \' versus ' &' terminator problem but some 
 #  namelist problems remain.  The biggest seems to be the inability
 #  of current gfortran versions to support namelist syntax such as:
@@ -17,9 +18,9 @@
 FC=gfortran
 F90C=gfortran
 CC=gcc
-DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR -DUSE_OMP_THREADING'
 CPP='cpp  -traditional -P'
-NOOPTFLAGS='-O0'
+NOOPTFLAGS='-O0 -fopenmp'
 
 if test "x$DEVEL" != x ; then
     FFLAGS='-g -Wall -W -ffpe-trap=invalid,zero,overflow -fbounds-check'
@@ -28,14 +29,20 @@ else
 fi
 
 # Requires gfortran from 2006 onwards for -fconvert=big-endian
-FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
+FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none -fopenmp"
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FOPTIM='-O3 -funroll-loops'
+    FOPTIM='-O3 -malign-double -funroll-loops'
 else
     #  Try to follow IEEE-754
-    FOPTIM='-O0'
+    has_sse2=f
+    grep flags /proc/cpuinfo | grep sse2 > /dev/null 2>&1  &&  has_sse2=t
+    if test "x$has_sse2" = xt ; then
+        FOPTIM='-O0 -malign-double -mfpmath=sse -msse -msse2'
+    else
+        FOPTIM='-O0 -malign-double -ffloat-store'
+    fi
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
