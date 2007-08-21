@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.14 2006/06/05 18:17:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.15 2007/08/21 16:09:31 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -50,6 +50,7 @@ c     INTEGER newIter
       INTEGER nInterval
       _RL     xInterval
       LOGICAL dBugFlag
+      INTEGER dBugUnit
 #ifdef ALLOW_FIZHI
       LOGICAL alarm2, alarm2next
       CHARACTER *9 tagname
@@ -61,6 +62,7 @@ c     INTEGER newIter
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       dBugFlag = debugLevel.GT.debLevB .AND. myThid.EQ.1
+      dBugUnit = errorMessageUnit
 
 c     newIter = 1 + myIter
       DO n = 1,nlists
@@ -118,9 +120,9 @@ C--    Select diagnostics list that uses periodic averaging
 
 C-     check future value of pdiag:
         IF (dBugFlag.AND.pdiag(n,1,1).NE.nInterval)
-     &    WRITE(0,'(A,I8,3(A,I3),F17.6)') 'DIAG_SWITCH_ONOFF: at it=',
-     &      myIter, ', list:', n, ' switch',
-     &      pdiag(n,1,1),' ->', nInterval, xInterval
+     &    WRITE(dBugUnit,'(A,I8,3(A,I3),F17.6)')
+     &     'DIAG_SWITCH_ONOFF: at it=', myIter, ', list:', n,
+     &     ' switch', pdiag(n,1,1),' ->', nInterval, xInterval
         IF ( nInterval.LT.0 .OR. nInterval.GE.averageCycle(n) ) THEN
           WRITE(msgBuf,'(2A,I2,A,I4)') 'DIAGNOSTICS_SWITCH_ONOFF:',
      &       ' error setting pdiag(n=',n,') to:', nInterval
@@ -172,8 +174,9 @@ C--     switch ON diagnostics of output-stream # n
              IF (iSp.GT.0) THEN
                nd = jSdiag(m,n)
                IF (dBugFlag.AND.qSdiag(0,0,iSp,bi,bj).NE. 0.)
-     &          WRITE(0,'(I8,I4,3A,1PE10.3,A,I3)') myIter,
-     &           nd,' ',cdiag(nd),' :',qSdiag(0,0,iSp,bi,bj),' ->', 0
+     &          WRITE(dBugUnit,'(A,I8,A,I4,3A,1PE10.3,A,I3)')
+     &           'DIAG_SWITCH_ONOFF: at it=', myIter, ' diag:', nd,
+     &           ' ',cdiag(nd),' :',qSdiag(0,0,iSp,bi,bj),' ->', 0
                qSdiag(0,0,iSp,bi,bj) = 0.
              ENDIF
             ENDDO
@@ -184,8 +187,9 @@ C--     switch OFF diagnostics of output-stream # n
              IF (iSp.GT.0) THEN
                nd = jSdiag(m,n)
                IF (dBugFlag.AND.qSdiag(0,0,iSp,bi,bj).NE.-1.)
-     &          WRITE(0,'(I8,I4,3A,1PE10.3,A,I3)') myIter,
-     &           nd,' ',cdiag(nd),' :',qSdiag(0,0,iSp,bi,bj),' ->',-1
+     &          WRITE(dBugUnit,'(A,I8,A,I4,3A,1PE10.3,A,I3)')
+     &           'DIAG_SWITCH_ONOFF: at it=', myIter, ' diag:', nd,
+     &           ' ',cdiag(nd),' :',qSdiag(0,0,iSp,bi,bj),' ->', -1
                qSdiag(0,0,iSp,bi,bj) = -1.
              ENDIF
             ENDDO
