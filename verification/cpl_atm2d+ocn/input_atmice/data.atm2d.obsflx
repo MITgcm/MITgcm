@@ -1,0 +1,45 @@
+# 1-D mean files
+ &PARM01_ATM2D
+  atmosTauuFile = 'attauu.start', 
+  atmosTauvFile = 'attauv.start',
+  atmosWindFile = ' ',
+ &
+
+# 2-D OBS files
+ &PARM02_ATM2D
+  tauuFile= 'tren_taux.bin', 
+  tauvFile= 'tren_tauy.bin', 
+  windFile= ' ',
+  qnetFile= ' ', 
+  evapFile= 'evap_90x44.bin', 
+  precipFile= 'precip_90x44.bin', 
+ &
+
+# Relax files
+ &PARM03_ATM2D
+  thetaRelaxFile='tsurflev_90x44x15.bin', 
+  saltRelaxFile='ssurflev_90x44x15.bin',
+  tauThetaRelax=5256000., 
+  tauSaltRelax=0.,
+  nttyperelax=0, 
+  nstyperelax=0,
+ &
+
+# Runoff files
+ &PARM04_ATM2D
+  runoffFile='tren_ro_perarea.bin', 
+  runoffMapFile='tren_runoff.bin',
+  numbands=5, 
+  rband(1)=9,
+  rband(2)=19,
+  rband(3)=26,
+  rband(4)=34,
+ &
+
+#options
+ &PARM05_ATM2D
+  useObsEmP=.TRUE.,
+  useObsRunoff=.TRUE., 
+  useAltDeriv=.TRUE.,
+ &
+
