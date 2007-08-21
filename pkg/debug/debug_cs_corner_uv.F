@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_cs_corner_uv.F,v 1.3 2005/02/10 23:44:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_cs_corner_uv.F,v 1.4 2007/08/21 17:12:51 jmc Exp $
 C $Name:  $
 
 #include "DEBUG_OPTIONS.h"
 
-      SUBROUTINE DEBUG_CS_CORNER_UV( 
+      SUBROUTINE DEBUG_CS_CORNER_UV(
      I        word2print,
      I        uFld, vFld,
      I        k, ioUnit, bi,bj, myThid)
@@ -14,8 +14,8 @@ C     *==========================================================*
 C     | Values of U,V fields at the Edges of the CS grid         |
 C     |  are common to 2 faces, and are stored + used in 2       |
 C     |  places (2 tiles): one in the interior of the 1rst tile, |
-C     |  the other in the halo of the 2nd one.                   | 
-C     | This S/R print the 2 values and  check that they are     | 
+C     |  the other in the halo of the 2nd one.                   |
+C     | This S/R print the 2 values and  check that they are     |
 C     |  identical (print the difference).                       |
 C     | This is specially usefull for checking that gU,gV are    |
 C     |  correct before entering solve_for_pressure.             |
@@ -36,12 +36,12 @@ c #include "GRID.h"
 
 C     == Routine arguments ==
 C     word2print - a string to print
-C     uFld   - u component of 2D vector 
-C     vFld   - v component of 2D vector 
+C     uFld   - u component of 2D vector
+C     vFld   - v component of 2D vector
 C     k      - current level
 C     ioUnit - I/O unit number
 C     bi,bj  - tile indices
-C     myThid - Instance number for this invocation of 
+C     myThid - Instance number for this invocation of
       CHARACTER*(*) word2print
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -58,7 +58,7 @@ C     == Local variables in common block :
 
 C     == Local variables ==
 C     edgeIndex :: index (in X or Y) from the W. or S. edge of the tile
-C               :: of the U,V field to write 
+C               :: of the U,V field to write
 C     n1        :: tile index
 C     n2,n3     :: W. and S. neigbour tile indices
       INTEGER n,n1,n2,n3
@@ -75,14 +75,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        j = MIN(MAX(1-Olx,edgeIndex),Olx)
  1010 FORMAT(2A,I2,1PE12.4,I3,1P2E12.4)
 c     IF (k.EQ.4 .AND. myIter.EQ.nIter0 ) THEN
-       tmpU(1,k,bi,bj)= uFld(j,1)
-       tmpU(2,k,bi,bj)= uFld(j,sNy)
-       tmpU(3,k,bi,bj)= uFld(sNx+j,1)
-       tmpU(4,k,bi,bj)= uFld(sNx+j,sNy)
-       tmpV(1,k,bi,bj)= vFld(1,j)
-       tmpV(2,k,bi,bj)= vFld(sNx,j)
-       tmpV(3,k,bi,bj)= vFld(1,sNy+j)
-       tmpV(4,k,bi,bj)= vFld(sNx,sNy+j)
+       tmpU(1,k,bi,bj)= uFld(1,j)
+       tmpU(2,k,bi,bj)= uFld(1,sNy+1-j)
+       tmpU(3,k,bi,bj)= uFld(sNx+1,j)
+       tmpU(4,k,bi,bj)= uFld(sNx+1,sNy+1-j)
+       tmpV(1,k,bi,bj)= vFld(j,1)
+       tmpV(2,k,bi,bj)= vFld(sNx+1-j,1)
+       tmpV(3,k,bi,bj)= vFld(j,sNy+1)
+       tmpV(4,k,bi,bj)= vFld(sNx+1-j,sNy+1)
        _BARRIER
 #ifdef ALLOW_EXCH2
        IF (bi.EQ.nSx .AND. sNx.EQ.sNy) THEN
@@ -95,7 +95,7 @@ c     IF (k.EQ.4 .AND. myIter.EQ.nIter0 ) THEN
         WRITE(ioUnit,'(3A,I3)') 'DEBUG_CS_CORNER_UV: ',
      &        word2print(1:ic), ' , index=', j
         WRITE(ioUnit,'(2A,I4)') 'DEBUG_CS_CORNER_UV: ',
-     &       ' Edges values near a corner, lev=',k 
+     &       ' Edges values near a corner, lev=',k
         WRITE(ioUnit,'(2A)') 'DEBUG_CS_CORNER_UV: ',
      &     '      tile_1, value_1, tile_2, value_2, difference v1-v2:'
         DO n=1,nSx
