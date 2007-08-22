@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_scheme.F,v 1.2 2004/11/10 01:55:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_scheme.F,v 1.3 2007/08/22 14:30:08 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: CD_CODE_SCHEME
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE CD_CODE_SCHEME( 
+      SUBROUTINE CD_CODE_SCHEME(
      I        bi,bj,k, dPhiHydX,dPhiHydY, guFld,gvFld,
      O        guCor,gvCor,
      I        myTime, myIter, myThid)
@@ -56,23 +56,21 @@ C  i,j                  :: loop indices
 C  pF                   :: pressure gradient
 C  vF                   :: work space
 C  aF                   :: work space
+      INTEGER i,j
       _RL pF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL aF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER i,j,iMin,iMax,jMin,jMax
       _RL ab15,ab05
       _RL phxFac, phyFac
+C     Define ranges
+      INTEGER iMin,iMax, jMin,jMax
+      PARAMETER( iMin = 1-Olx+1 , iMax = sNx+Olx-1 )
+      PARAMETER( jMin = 1-Oly+1 , jMax = sNy+Oly-1 )
 CEOP
 
-C     Compute ranges
-      iMin=1-Olx+1
-      iMax=sNx+Olx-1
-      jMin=1-Oly+1
-      jMax=sNy+Oly-1
-
 C     Adams-Bashforth weighting factors
-      ab15   =  1.5 + abEps
-      ab05   = -0.5 - abEps
+      ab15   =  1.5 _d 0 + abEps
+      ab05   = -0.5 _d 0 - abEps
 
 C-- stagger time stepping: grad Phi_Hyp is not in gU,gV and needs to be added:
       IF (staggerTimeStep) THEN
@@ -94,7 +92,7 @@ c     ENDDO
 C     Pressure extrapolated forward in time
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        pf(i,j) = 
+        pf(i,j) =
      &   ab15*(  etaN(i,j,bi,bj)*Bo_surf(i,j,bi,bj) )
      &  +ab05*(etaNm1(i,j,bi,bj)*Bo_surf(i,j,bi,bj) )
        ENDDO
@@ -116,13 +114,13 @@ C     grady(p) + gV
 C     Average to Vd point and add coriolis
       DO j=jMin,jMax
        DO i=iMin,iMax
-        vf(i,j) =      
-     &    0.25*( af(i  ,j)+af(i  ,j+1)
-     &          +af(i-1,j)+af(i-1,j+1)
-     &         )*_maskW(i,j,k,bi,bj)
-     &   -0.5*(_fCori(i,j,bi,bj)+
-     &         _fCori(i-1,j,bi,bj))
-     &         *uVel(i,j,k,bi,bj)
+        vf(i,j) =
+     &           ( (af(i,j)+af(i-1,j+1))
+     &            +(af(i-1,j)+af(i,j+1)) )*0.25 _d 0
+     &           *_maskW(i,j,k,bi,bj)
+     &          -( _fCori( i, j,bi,bj)
+     &            +_fCori(i-1,j,bi,bj) )*0.5 _d 0
+     &           *uVel(i,j,k,bi,bj)
        ENDDO
       ENDDO
 C     Step forward Vd
@@ -135,25 +133,25 @@ C     Relax D grid V to C grid V
       DO j=jMin,jMax
        DO i=iMin,iMax
          vVelD(i,j,k,bi,bj) = ( rCD*vVelD(i,j,k,bi,bj)
-     &   +(1. - rCD)*(
-     &            ab15*( 
-     &                vVel(i  ,j  ,k,bi,bj)+vVel(i  ,j+1,k,bi,bj)
-     &               +vVel(i-1,j  ,k,bi,bj)+vVel(i-1,j+1,k,bi,bj)
-     &                 )*0.25
-     &           +ab05*( 
-     &                vNM1(i  ,j  ,k,bi,bj)+vNM1(i  ,j+1,k,bi,bj)
-     &               +vNM1(i-1,j  ,k,bi,bj)+vNM1(i-1,j+1,k,bi,bj)
-     &                 )*0.25
-     &               )        )*_maskW(i,j,k,bi,bj)
+     &                         +(1. _d 0 - rCD)
+     &         *( ab15*(
+     &                  (vVel(i,j,k,bi,bj)+vVel(i-1,j+1,k,bi,bj))
+     &                 +(vVel(i-1,j,k,bi,bj)+vVel(i,j+1,k,bi,bj))
+     &                 )*0.25 _d 0
+     &           +ab05*(
+     &                  (vNM1(i,j,k,bi,bj)+vNM1(i-1,j+1,k,bi,bj))
+     &                 +(vNM1(i-1,j,k,bi,bj)+vNM1(i,j+1,k,bi,bj))
+     &                 )*0.25 _d 0
+     &          )             )*_maskW(i,j,k,bi,bj)
        ENDDO
       ENDDO
 C     Calculate coriolis force on U
       DO j=jMin,jMax
        DO i=iMin,iMax
-        guCor(i,j) = 
-     &    0.5*( _fCori(i  ,j,bi,bj) + 
-     &          _fCori(i-1,j,bi,bj)  )
-     &   *vVelD(i,j,k,bi,bj)*cfFacMom
+        guCor(i,j) =
+     &              ( _fCori( i, j,bi,bj)
+     &               +_fCori(i-1,j,bi,bj) )*0.5 _d 0
+     &              *vVelD(i,j,k,bi,bj)*cfFacMom
        ENDDO
       ENDDO
 
@@ -172,12 +170,12 @@ C     Average to Ud point and add coriolis
       DO j=jMin,jMax
        DO i=iMin,iMax
         vf(i,j) =
-     &    0.25*( af(i  ,j)+af(i  ,j-1)
-     &          +af(i+1,j)+af(i+1,j-1)
-     &         )*_maskS(i,j,k,bi,bj)
-     &   +0.5*( _fCori(i,j,bi,bj)
-     &         +_fCori(i,j-1,bi,bj))
-     &         *vVel(i,j,k,bi,bj)
+     &           ( (af(i,j)+af(i+1,j-1))
+     &            +(af(i+1,j)+af(i,j-1)) )*0.25 _d 0
+     &           *_maskS(i,j,k,bi,bj)
+     &          +( _fCori(i, j, bi,bj)
+     &            +_fCori(i,j-1,bi,bj) )*0.5 _d 0
+     &           *vVel(i,j,k,bi,bj)
        ENDDO
       ENDDO
 C     Step forward Ud
@@ -189,34 +187,34 @@ C     Step forward Ud
 C     Relax D grid U to C grid U
       DO j=jMin,jMax
        DO i=iMin,iMax
-         uVelD(i,j,k,bi,bj) = ( rCD*uVelD(i,j,k,bi,bj) 
-     &   +(1. - rCD)*(
-     &            ab15*( 
-     &                uVel(i,j  ,k,bi,bj)+uVel(i+1,j  ,k,bi,bj)
-     &               +uVel(i,j-1,k,bi,bj)+uVel(i+1,j-1,k,bi,bj)
-     &                 )*0.25
-     &           +ab05*( 
-     &                uNM1(i,j  ,k,bi,bj)+uNM1(i+1,j  ,k,bi,bj)
-     &               +uNM1(i,j-1,k,bi,bj)+uNM1(i+1,j-1,k,bi,bj)
-     &                 )*0.25
-     &               )        )*_maskS(i,j,k,bi,bj)
+         uVelD(i,j,k,bi,bj) = ( rCD*uVelD(i,j,k,bi,bj)
+     &                         +(1. _d 0 - rCD)
+     &         *( ab15*(
+     &                  (uVel(i,j,k,bi,bj)+uVel(i+1,j-1,k,bi,bj))
+     &                 +(uVel(i,j-1,k,bi,bj)+uVel(i+1,j,k,bi,bj))
+     &                 )*0.25 _d 0
+     &           +ab05*(
+     &                  (uNM1(i,j,k,bi,bj)+uNM1(i+1,j-1,k,bi,bj))
+     &                 +(uNM1(i,j-1,k,bi,bj)+uNM1(i+1,j,k,bi,bj))
+     &                 )*0.25 _d 0
+     &          )             )*_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 C     Calculate coriolis force on V
       DO j=jMin,jMax
        DO i=iMin,iMax
         gvCor(i,j) =
-     &    -0.5*( _fCori(i  ,j,bi,bj) 
-     &          +_fCori(i,j-1,bi,bj)  )
-     &   *uVelD(i,j,k,bi,bj)*cfFacMom
+     &             -( _fCori(i, j, bi,bj)
+     &               +_fCori(i,j-1,bi,bj) )*0.5 _d 0
+     &              *uVelD(i,j,k,bi,bj)*cfFacMom
        ENDDO
       ENDDO
 
 C--   Save "previous time level" variables
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-         uNM1(i,j,k,bi,bj) =  uVel(i,j,k,bi,bj)
-         vNM1(i,j,k,bi,bj) =  vVel(i,j,k,bi,bj)
+         uNM1(i,j,k,bi,bj) = uVel(i,j,k,bi,bj)
+         vNM1(i,j,k,bi,bj) = vVel(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
