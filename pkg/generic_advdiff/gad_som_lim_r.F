@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_lim_r.F,v 1.2 2007/08/15 22:35:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_lim_r.F,v 1.3 2007/08/22 00:26:01 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -75,8 +75,8 @@ C     appropriate moments before transport.
      &                 MAX(ABS(s1new)-slpmax,sm_zz(i,j,k))  )
           sm_xz(i,j,k) = MIN( slpmax, MAX(-slpmax,sm_xz(i,j,k)) )
           sm_yz(i,j,k) = MIN( slpmax, MAX(-slpmax,sm_yz(i,j,k)) )
-          sm_z (i,j,k) = s1new ;
-          sm_zz(i,j,k) = s2new ;
+          sm_z (i,j,k) = s1new
+          sm_zz(i,j,k) = s2new
          ENDDO
         ENDDO
        ENDDO
