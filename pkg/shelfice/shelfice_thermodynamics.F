@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.6 2007/03/14 15:43:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.7 2007/08/23 19:13:10 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -117,7 +117,7 @@ CML           thetaFreeze=-1.9 _d 0
 C--   Calculate the upward heat and  fresh water fluxes
             shelfIceHeatFlux(I,J,bi,bj) = 
      &           SHELFICEheatTransCoeff * ( tLoc - thetaFreeze )
-     &           *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
+     &           *HeatCapacity_Cp*rUnit2mass
 C     upward heat flux into the shelf-ice implies basal melting,
 C     thus a downward (negative upward) fresh water flux, and vice versa
             shelfIceFreshWaterFlux(I,J,bi,bj) = 
@@ -126,7 +126,7 @@ C     thus a downward (negative upward) fresh water flux, and vice versa
 C--   compute surface tendencies
             shelficeForcingT(i,j,bi,bj) =
      &           - shelfIceHeatFlux(I,J,bi,bj)
-     &           *recip_Cp*horiVertRatio*recip_rhoConst
+     &           *recip_Cp*mass2rUnit
             IF (convertFW2Salt .EQ. -1.) THEN
              shelficeForcingS(i,j,bi,bj) = 
      &            shelfIceFreshWaterFlux(I,J,bi,bj)
@@ -220,15 +220,15 @@ CML            thetaFreeze = sLoc * ( a0 + a1*sqrt(sLoc) + a2*sLoc )
 CML     &           + b*pLoc + c0
 C--   Calculate the upward heat and fresh water fluxes
             shelfIceHeatFlux(I,J,bi,bj) = 
-     &           ( eps1 * ( tLoc - thetaFreeze ) )*recip_horiVertRatio
+     &           ( eps1 * ( tLoc - thetaFreeze ) )
+     &           *rUnit2mass*recip_rhoConst
             shelfIceFreshWaterFlux(I,J,bi,bj) = 
-     &           rhoConst/rhoShelfIce * SHELFICEsaltTransCoeff
+     &           rUnit2mass/rhoShelfIce * SHELFICEsaltTransCoeff
      &           * ( saltFreeze - sloc )/saltFreeze
-     &           * recip_horiVertRatio
 C--   compute surface tendencies
             shelficeForcingT(i,j,bi,bj) =
      &           - shelfIceHeatFlux(I,J,bi,bj)
-     &           *recip_Cp*horiVertRatio*recip_rhoConst
+     &           *recip_Cp*mass2rUnit
             shelficeForcingS(i,j,bi,bj) = 
      &           shelfIceFreshWaterFlux(I,J,bi,bj)
      &           * saltFreeze * convertEmP2rUnit

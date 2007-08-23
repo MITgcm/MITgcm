@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_ri_number.F,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_ri_number.F,v 1.2 2007/08/23 19:13:10 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -118,7 +118,7 @@ C     calculate (du/dz)^2 + (dv/dz)^2 on W (between T) points.
 C
 C     calculate - g*(drho/dz)/rho0= N^2  .
 C
-        buoyFreq = - gravity*recip_rhoConst*horiVertRatio *
+        buoyFreq = - gravity*mass2rUnit *
      &       (rhoKm1(I,J) - rhoK(I,J))*recip_drC(K)
 C     
 C     calculates gradient Richardson number, bounded by

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.9 2006/10/26 00:25:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.10 2007/08/23 19:13:10 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -405,12 +405,12 @@ C--   Interpolate uvel, vvel, wvel
 #endif
           surfaceForcingT(i,j,bi,bj) = bWght*hflx0(i,j,bi,bj)
      &                       +aWght*hflx1(i,j,bi,bj)
-          surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)/
-     &        (HeatCapacity_Cp*recip_horiVertRatio*rhoConst)
+          surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
+     &        *rUnit2mass/HeatCapacity_Cp
           surfaceForcingS(i,j,bi,bj) =  bWght*sflx0(i,j,bi,bj)
      &                       +aWght*sflx1(i,j,bi,bj)
-          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)/
-     &       (recip_horiVertRatio*rhoConst)
+          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
+     &        *rUnit2mass
 #ifdef ALLOW_KPP
           KPPdiffKzS(i,j,k,bi,bj) = bWght*kdfs0(i,j,k,bi,bj)
      &                       +aWght*kdfs1(i,j,k,bi,bj)

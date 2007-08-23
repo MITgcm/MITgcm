@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.6 2007/04/27 15:45:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.7 2007/08/23 19:12:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -93,17 +93,17 @@ C-    Qsw (= net short-wave into the ocean, +=down, [W/m2])
 #endif
 
 C-    oceFreez (= heating from freezing of sea-water, if allowFreezing=T)
-       tmpFac = HeatCapacity_Cp*recip_horiVertRatio*rhoConst
+       tmpFac = HeatCapacity_Cp*rUnit2mass
        CALL DIAGNOSTICS_SCALE_FILL( surfaceForcingTice,tmpFac,1,
      &                             'oceFreez',0, 1,0,1,1,myThid )
 
 C-    surForcT (=model surface forcing for Temperature [W/m2], >0 increases T
-       tmpFac = HeatCapacity_Cp*recip_horiVertRatio*rhoConst
+       tmpFac = HeatCapacity_Cp*rUnit2mass
        CALL DIAGNOSTICS_SCALE_FILL( surfaceForcingT,tmpFac,1,
      &                             'surForcT',0, 1,0,1,1,myThid )
 
 C-    surForcS (=model surface forcing for Salinity, [g/m2/s], >0 increases S
-       tmpFac = recip_horiVertRatio*rhoConst
+       tmpFac = rUnit2mass
        CALL DIAGNOSTICS_SCALE_FILL( surfaceForcingS,tmpFac,1,
      &                             'surForcS',0, 1,0,1,1,myThid )
 
@@ -118,7 +118,7 @@ C-    TFLUX (=total heat flux, match heat-content variations, [W/m2])
      &      -Qsw(i,j,bi,bj)+
 #endif
      &      (surfaceForcingT(i,j,bi,bj)+surfaceForcingTice(i,j,bi,bj))
-     &      *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
+     &      *HeatCapacity_Cp*rUnit2mass
           ENDDO
          ENDDO
 #ifdef NONLIN_FRSURF
@@ -145,8 +145,7 @@ C-    SFLUX (=total salt flux, match salt-content variations [g/m2/s])
          DO j = 1,sNy
           DO i = 1,sNx
            tmp1k(i,j,bi,bj) =
-     &      surfaceForcingS(i,j,bi,bj)*
-     &      recip_horiVertRatio*rhoConst
+     &      surfaceForcingS(i,j,bi,bj)*rUnit2mass
           ENDDO
          ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.9 2006/06/07 01:55:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.10 2007/08/23 19:13:10 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -21,18 +21,18 @@ C       \mbox{with r coordinate} = (\mbox{w surf})(\mbox{Tracer})
 C     \end{equation}
 C     \begin{equation}
 C       \mbox{units} = (\mbox{W units})(\mbox{Tracer units})
-C       \ ; \ \mbox{+ = out} 
+C       \ ; \ \mbox{+ = out}
 C     \end{equation}
 C     \begin{equation}
 C       \mbox{with r* coord}) = \frac{d\eta}{dt} \frac{dz}{H}
 C       (\mbox{Tracer})
 C     \end{equation}
-C     
-C     Atmosphere: convert surf.cor(Theta) to surface heating, 
+C
+C     Atmosphere: convert surf.cor(Theta) to surface heating,
 C     \begin{equation}
 C       \mbox{units} = \frac{W}{m^2}, \mbox{+ = out}
 C     \end{equation}
-C     compute mean conversion term Temp -> PE , units= W/m2, 
+C     compute mean conversion term Temp -> PE , units= W/m2,
 C     + = decreasing heat content, increasing PE
 
 C     !USES:
@@ -50,7 +50,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER i,j,k,ks,bi,bj 
+      INTEGER i,j,k,ks,bi,bj
       _RL theArea, wT_Mean, wS_Mean, wT_Heat
       _RL vT_Mean, vS_Mean, vT_Heat, theta2PE
       _RL tmpVal, ddPI
@@ -69,7 +69,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        vS_Mean = 0.
        vT_Heat = 0.
        DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid) 
+        DO bi=myBxLo(myThid),myBxHi(myThid)
           areaTile = 0.
           th2peTile = 0.
           wT_Tile = 0.
@@ -80,7 +80,7 @@ C-- Compute surface "expansion" term & do the integral
            DO i=1,sNx
             ks = ksurfC(i,j,bi,bj)
             IF (ks.LE.Nr) THEN
-             areaTile = areaTile + rA(i,j,bi,bj) 
+             areaTile = areaTile + rA(i,j,bi,bj)
              tmpVal =
      &          rA(i,j,bi,bj)*wVel(i,j,ks,bi,bj)*theta(i,j,ks,bi,bj)
              wT_Tile = wT_Tile + tmpVal
@@ -88,8 +88,8 @@ C-- Compute surface "expansion" term & do the integral
      &        + rA(i,j,bi,bj)*wVel(i,j,ks,bi,bj)* salt(i,j,ks,bi,bj)
 C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
              IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
-               wH_Tile = wH_Tile 
-     &                 + tmpVal*atm_cp*((rC(ks)/atm_po)**atm_kappa) 
+               wH_Tile = wH_Tile
+     &                 + tmpVal*atm_cp*((rC(ks)/atm_po)**atm_kappa)
              ENDIF
             ENDIF
            ENDDO
@@ -100,7 +100,7 @@ C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
            DO j=1,sNy
             DO i=1,sNx
              ks = ksurfC(i,j,bi,bj)
-             IF (ks.LE.Nr) THEN 
+             IF (ks.LE.Nr) THEN
               tmpVal = salt(i,j,ks,bi,bj)
      &               + salt(i,j,Nr,bi,bj)*drF(Nr)*recip_drF(ks)
      &                *hFacC(i,j,Nr,bi,bj)*_recip_hFacC(i,j,ks,bi,bj)
@@ -113,7 +113,7 @@ C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
 #endif /* ALLOW_AIM */
 
 
-C-- Atmos in Pot.Temp => conmpute energy conversion Temp -> PE 
+C-- Atmos in Pot.Temp => conmpute energy conversion Temp -> PE
 C    = Omega*Theta*DeltaPI
           IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
            DO k=2,Nr
@@ -132,14 +132,14 @@ C    = Omega*Theta*DeltaPI
 
 #ifdef NONLIN_FRSURF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-        IF (select_rStar.NE.0) THEN 
+        IF (select_rStar.NE.0) THEN
 C-- Compute Volume expansion term & do the integral
           vT_Mean = 0.
           vS_Mean = 0.
           vT_Heat = 0.
           conv_th2Heat = 0.
           DO k=1,Nr
-           IF (fluidIsAir) conv_th2Heat = 
+           IF (fluidIsAir) conv_th2Heat =
      &                            atm_cp*((rC(k)/atm_po)**atm_kappa)
            DO j=1,sNy
             DO i=1,sNx
@@ -149,11 +149,11 @@ C-- Compute Volume expansion term & do the integral
               vS_Mean = vS_Mean
      &          +tmpVol*rStarDhCDt(i,j,bi,bj)*salt(i,j,k,bi,bj)
 C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
-              IF (fluidIsAir) vT_Heat = vT_Heat 
+              IF (fluidIsAir) vT_Heat = vT_Heat
      &                                + tmpVol*tmpVal*conv_th2Heat
             ENDDO
            ENDDO
-          ENDDO             
+          ENDDO
           wT_Tile = wT_Tile + vT_Mean
           wS_Tile = wS_Tile + vS_Mean
           wH_Tile = wH_Tile + vT_Heat
@@ -166,24 +166,24 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           wT_Mean = wT_Mean   + wT_Tile
           wS_Mean = wS_Mean   + wS_Tile
           wT_Heat = wT_Heat   + wH_Tile
-C--    end bi,bj loop 
+C--    end bi,bj loop
         ENDDO
        ENDDO
 
-       _GLOBAL_SUM_R8(theArea,myThid) 
-       _GLOBAL_SUM_R8(wT_Mean,myThid) 
-       _GLOBAL_SUM_R8(wS_Mean,myThid) 
+       _GLOBAL_SUM_R8(theArea,myThid)
+       _GLOBAL_SUM_R8(wT_Mean,myThid)
+       _GLOBAL_SUM_R8(wS_Mean,myThid)
        IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
-        _GLOBAL_SUM_R8(wT_Heat,myThid) 
-        _GLOBAL_SUM_R8(theta2PE,myThid) 
+        _GLOBAL_SUM_R8(wT_Heat,myThid)
+        _GLOBAL_SUM_R8(theta2PE,myThid)
        ENDIF
        IF (theArea.GT.0.) THEN
          wT_Mean = wT_Mean / theArea
          wS_Mean = wS_Mean / theArea
          wT_Heat = wT_Heat / theArea
          theta2PE = theta2PE / theArea
-         wT_Heat  = wT_Heat  * rhoConst*recip_horiVertRatio
-         theta2PE = theta2PE * rhoConst*recip_horiVertRatio
+         wT_Heat  = wT_Heat  * rUnit2mass
+         theta2PE = theta2PE * rUnit2mass
        ENDIF
 
 C-    Print the Average value (monitor type output)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.21 2007/08/19 02:31:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.22 2007/08/23 19:13:10 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -605,7 +605,7 @@ C Add YNEG contribution to QNET
           QNET(I,J,bi,bj) = QNET(I,J,bi,bj)
      &         +YNEG(I,J,bi,bj)/SEAICE_deltaTtherm
      &         *maskC(I,J,kSurface,bi,bj)
-     &         *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
+     &         *HeatCapacity_Cp*rUnit2mass
      &         *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
          ENDDO
         ENDDO

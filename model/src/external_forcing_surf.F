@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.39 2007/07/23 00:17:44 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.40 2007/08/23 19:12:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -146,13 +146,13 @@ C     of surf.thickness (hFac): account for change in surf.thickness
        IF ( useDiagnostics ) THEN
 
 C     tRelax (temperature relaxation [W/m2], positive <-> increasing Theta)
-        tmpFac = HeatCapacity_Cp*recip_horiVertRatio*rhoConst
+        tmpFac = HeatCapacity_Cp*rUnit2mass
         CALL DIAGNOSTICS_SCALE_FILL(
      &           surfaceForcingT(1-OLx,1-OLy,bi,bj),tmpFac,1,
      &                             'TRELAX  ',0, 1,2,bi,bj,myThid)
 
 C     sRelax (salt relaxation [g/m2/s], positive <-> increasing Salt)
-        tmpFac = recip_horiVertRatio*rhoConst
+        tmpFac = rUnit2mass
         CALL DIAGNOSTICS_SCALE_FILL(
      &           surfaceForcingS(1-OLx,1-OLy,bi,bj),tmpFac,1,
      &                             'SRELAX  ',0, 1,2,bi,bj,myThid)
@@ -182,20 +182,20 @@ C--   Surface Fluxes :
 
 C     Zonal wind stress fu:
           surfaceForcingU(i,j,bi,bj) =
-     &      fu(i,j,bi,bj)*horiVertRatio*recip_rhoConst
+     &      fu(i,j,bi,bj)*mass2rUnit
 C     Meridional wind stress fv:
           surfaceForcingV(i,j,bi,bj) =
-     &      fv(i,j,bi,bj)*horiVertRatio*recip_rhoConst
+     &      fv(i,j,bi,bj)*mass2rUnit
 C     Net heat flux Qnet:
           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
      &       - ( Qnet(i,j,bi,bj)
 #ifdef SHORTWAVE_HEATING
      &          -Qsw(i,j,bi,bj)
 #endif
-     &         ) *recip_Cp*horiVertRatio*recip_rhoConst
+     &         ) *recip_Cp*mass2rUnit
 C     Net Salt Flux :
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &      -saltFlux(i,j,bi,bj)*horiVertRatio*recip_rhoConst
+     &      -saltFlux(i,j,bi,bj)*mass2rUnit
 #ifdef ALLOW_SALT_PLUME
 C saltPlume is the amount of salt rejected by ice while freezing;
 C it is here subtracted from surfaceForcingS and will be redistributed
@@ -209,7 +209,7 @@ C to multiple vertical levels later on as per Duffy et al. (GRL 1999)
           ENDIF
 #endif /* ALLOW_SEAICE */
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &      -saltPlume*horiVertRatio*recip_rhoConst
+     &      -saltPlume*mass2rUnit
 #endif /* ALLOW_SALT_PLUME */
 
          ENDDO

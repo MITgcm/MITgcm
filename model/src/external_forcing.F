@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.46 2007/08/14 20:58:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.47 2007/08/23 19:12:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -344,7 +344,7 @@ c     IF ( usePenetratingSW ) THEN
          gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)
      &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,klev,bi,bj)
      &                   -swfracb(2)*maskC(i,j,kp1, bi,bj))
-     &    *recip_Cp*recip_rhoConst
+     &    *recip_Cp*mass2rUnit
      &    *recip_drF(klev)*_recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
@@ -352,10 +352,10 @@ c     ENDIF
 #endif
 
 #ifdef ALLOW_RBCS
-       if (useRBCS) then
-          call RBCS_ADD_TENDENCY(bi,bj,klev, 1,
+       IF (useRBCS) THEN
+          CALL RBCS_ADD_TENDENCY(bi,bj,klev, 1,
      &                            myTime, myThid )
-       endif
+       ENDIF
 #endif
 
 #ifdef ALLOW_OBCS
@@ -501,7 +501,7 @@ C Duffy et al. (GRL 1999)
 #endif /* ALLOW_SEAICE */
           IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
            gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &          +saltPlume*horiVertRatio*recip_rhoConst
+     &          +saltPlume*mass2rUnit
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
      &          *min(drF(kLev),SaltPlumeDepth(i,j,bi,bj)+rF(kLev))
      &          /SaltPlumeDepth(i,j,bi,bj)
@@ -511,10 +511,10 @@ C Duffy et al. (GRL 1999)
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_RBCS
-       if (useRBCS) then
-          call RBCS_ADD_TENDENCY(bi,bj,klev, 2,
+       IF (useRBCS) THEN
+          CALL RBCS_ADD_TENDENCY(bi,bj,klev, 2,
      &                            myTime, myThid )
-       endif
+       ENDIF
 #endif /* ALLOW_RBCS */
 
 #ifdef ALLOW_OBCS
