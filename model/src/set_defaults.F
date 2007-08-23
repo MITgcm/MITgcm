@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.128 2007/06/01 21:13:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.129 2007/08/23 19:08:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,7 +43,6 @@ C-    Vertical gridding
       delRFile            = ' '
       delRcFile           = ' '
       rkFacDefault        = 1. _d 0
-      horiVertRatio       = 1. _d 0
       Ro_SeaLevel         = 0.
       DO k=1,Nr
        delRdefault(k)     = 0.

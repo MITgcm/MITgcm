@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.197 2007/06/01 21:13:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.198 2007/08/23 19:08:25 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -412,7 +412,7 @@ C--   z,p,r coord input switching.
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 
-C-    set the type of vertical coordinate and type of fluid 
+C-    set the type of vertical coordinate and type of fluid
 C     according to buoyancyRelation
       usingPCoords    = .FALSE.
       usingZCoords    = .FALSE.
@@ -1200,16 +1200,18 @@ C--   Input files
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 
-C--   Set factors required for mixing pressure and meters as vertical coordinate.
-C     horiVertRatio is a parameter that maps horizontal units to vertical units.
-C     It is used in certain special cases where lateral and vertical terms are
-C     being combined and a single frame of reference is needed.
-      horiVertRatio = 1. _d 0
+C--   Set Units conversion factor required to incorporate
+C     surface forcing into z-p isomorphic equations:
+C     mass2rUnit: from mass per unit area [kg/m2] to r-coordinate (z:=1/rho;p:=g)
+C     rUnit2mass: from r-coordinate to mass per unit area [kg/m2] (z:=rho;p:=1/g)
       IF ( usingPCoords ) THEN
-         horiVertRatio = Gravity * rhoConst
+         mass2rUnit = gravity
+         rUnit2mass = recip_gravity
+      ELSE
+         mass2rUnit = recip_rhoConst
+         rUnit2mass = rhoConst
       ENDIF
-      convertEmP2rUnit = rhoConstFresh*recip_rhoConst*horiVertRatio
-      recip_horiVertRatio = 1. _d 0/horiVertRatio
+      convertEmP2rUnit = rhoConstFresh*mass2rUnit
 
 c-- gradually replacing debugMode by debugLevel
       IF ( debugMode ) debugLevel = debLevB

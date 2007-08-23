@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.202 2007/06/01 21:12:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.203 2007/08/23 19:07:32 jmc Exp $
 C $Name:  $
 C
 
@@ -502,6 +502,14 @@ C                :: z-coord: = 1 ; p-coord: wSpeed [m/s] = rVel [Pa/s] * rVel2wU
 C     wUnit2rVel :: units conversion factor (Non-Hydrostatic code),
 C                :: from vertical velocity [m/s] to r-coordinate vertical velocity.
 C                :: z-coord: = 1 ; p-coord: rVel [Pa/s] = wSpeed [m/s] * wUnit2rVel
+C     mass2rUnit :: units conversion factor (surface forcing),
+C                :: from mass per unit area [kg/m2] to vertical r-coordinate unit.
+C                :: z-coord: = 1/rhoConst ( [kg/m2] / rho = [m] ) ;
+C                :: p-coord: = gravity    ( [kg/m2] *  g = [Pa] ) ;
+C     rUnit2mass :: units conversion factor (surface forcing),
+C                :: from vertical r-coordinate unit to mass per unit area [kg/m2].
+C                :: z-coord: = rhoConst  ( [m] * rho = [kg/m2] ) ;
+C                :: p-coord: = 1/gravity ( [Pa] /  g = [kg/m2] ) ;
 C     phiMin    :: Latitude of southern most cell face.
 C     thetaMin  :: Longitude of western most cell face (this
 C                 is an "inert" parameter but it is included
@@ -643,9 +651,6 @@ C     salt_EvPrRn :: salinity of Rain & Evap.
 C        (notes: a) tracer content of Rain/Evap only used if both 
 C                     NonLin_FrSurf & useRealFreshWater are set.
 C                b) use model surface (local) value if set to UNSET_RL)
-C     horiVertRatio      :: Ratio on units in vertical to units in horizontal.
-C     recip_horiVertRatio  ( 1 if horiz in m and vertical in m ).
-C                          ( g*rho if horiz in m and vertical in Pa ).
 C     hMixCrit    :: criteria for mixed-layer diagnostic
 C     ivdc_kappa  :: implicit vertical diffusivity for convection [m^2/s]
 C     Ro_SeaLevel :: standard position of Sea-Level in "R" coordinate, used as
@@ -682,11 +687,11 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
      & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
-     & gravity, recip_Gravity, gBaro,
+     & gravity, recip_gravity, gBaro,
      & rhonil, recip_rhonil, rhoConst, recip_rhoConst,
      & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF,
      & rhoConstFresh, convertEmP2rUnit, tRef, sRef, phiRef, dBdrRef,
-     & rVel2wUnit, wUnit2rVel,
+     & rVel2wUnit, wUnit2rVel, mass2rUnit, rUnit2mass,
      & baseTime, startTime, endTime,
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
      & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
@@ -697,7 +702,6 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & externForcingCycle, externForcingPeriod,
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
      & hFacMinDr, hFacMinDp,
-     & horiVertRatio, recip_horiVertRatio,
      & ivdc_kappa, hMixCriteria, Ro_SeaLevel,
      & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
      & smoothAbsFuncRange,
@@ -787,6 +791,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL phiRef(2*Nr+1)
       _RL dBdrRef(Nr)
       _RL rVel2wUnit(Nr+1), wUnit2rVel(Nr+1)
+      _RL mass2rUnit, rUnit2mass
       _RL baseTime
       _RL startTime
       _RL endTime
@@ -819,8 +824,6 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL convertFW2Salt
       _RL temp_EvPrRn
       _RL salt_EvPrRn
-      _RL horiVertRatio
-      _RL recip_horiVertRatio
       _RL ivdc_kappa
       _RL hMixCriteria
       _RL Ro_SeaLevel

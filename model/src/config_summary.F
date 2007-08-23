@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.98 2007/06/01 21:13:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.99 2007/08/23 19:08:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -544,8 +544,20 @@ C     ycoord :: varying parameters.
      &'   /* index orientation relative to vertical coordinate */')
       CALL WRITE_0D_R8( gravitySign, INDEX_NONE,'gravitySign =',
      &  ' /* gravity orientation relative to vertical coordinate */')
-      CALL WRITE_0D_R8( horiVertRatio, INDEX_NONE,'horiVertRatio =',
-     &'   /* Ratio on units : Horiz - Vertical */')
+      IF ( usingZCoords ) THEN
+       CALL WRITE_0D_R8( mass2rUnit, INDEX_NONE,'mass2rUnit =',
+     & ' /* convert mass per unit area [kg/m2] to r-units [m] */')
+       CALL WRITE_0D_R8( rUnit2mass, INDEX_NONE,'rUnit2mass =',
+     & ' /* convert r-units [m] to mass per unit area [kg/m2] */')
+      ENDIF
+      IF ( usingPCoords ) THEN
+       CALL WRITE_0D_R8( mass2rUnit, INDEX_NONE,'mass2rUnit =',
+     & ' /* convert mass per unit area [kg/m2] to r-units [Pa] */')
+       CALL WRITE_0D_R8( rUnit2mass, INDEX_NONE,'rUnit2mass =',
+     & ' /* convert r-units [Pa] to mass per unit area [kg/m2] */')
+      ENDIF
+c     CALL WRITE_0D_R8( horiVertRatio, INDEX_NONE,'horiVertRatio =',
+c    &'   /* Ratio on units : Horiz - Vertical */')
 c     CALL WRITE_1D_R8( delZ,Nr, INDEX_K,'delZ = ',
 c    &'   /* W spacing ( m ) */')
 c     CALL WRITE_1D_R8( delP,Nr, INDEX_K,'delP = ',
