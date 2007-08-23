@@ -60,6 +60,8 @@ C     LOCAL VARIABLES:
             HF2ocn_tave = HF2ocn_tave + rA(i,j,1,1)*pass_qnet(i,j)
             FW2ocn_tave = FW2ocn_tave + rA(i,j,1,1)*
      &       (pass_precip(i,j) + pass_evap(i,j) + pass_runoff(i,j))
+
+            CO2flx_tave = CO2flx_tave + rA(i,j,1,1)*oFluxCO2(i,j)
           ENDIF
 
         ENDDO

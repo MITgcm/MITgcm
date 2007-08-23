@@ -310,6 +310,7 @@ C     Initialize year-end diags and max/min seaice variables
       sss_tave=  0. _d 0
       HF2ocn_tave=  0. _d 0
       FW2ocn_tave=  0. _d 0
+      CO2flx_tave=  0. _d 0
       OPEN(25,FILE='resocean.dat',STATUS='replace')
       CLOSE(25)
 
@@ -329,6 +330,13 @@ C     Initialize following for safety and/or cold start
           pass_pCO2(i,j)= 0. _d 0
           pass_prcAtm(i,j)= 0. _d 0
           sFluxFromIce(i,j)= 0. _d 0
+        ENDDO
+      ENDDO
+
+C     Initialize following (if ocn carbon not passed)
+      DO i=1,sNx
+        DO j=1,sNy
+          oFluxCO2(i,j) = 0. _d 0
         ENDDO
       ENDDO
 

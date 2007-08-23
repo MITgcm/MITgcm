@@ -254,7 +254,8 @@ C     Variables used to sum and compute atm2d diagnostic outputs
        
 C      Yearly output diagnostics
       COMMON/YR_MEAN_DIAG/ sst_tave, sss_tave, SHice_min, SHice_max, 
-     &                    NHice_min, NHice_max, HF2ocn_tave, FW2ocn_tave 
+     &                    NHice_min, NHice_max, HF2ocn_tave, FW2ocn_tave,
+     &                    CO2flx_tave
        _RL sst_tave
        _RL sss_tave
        _RL SHice_min
@@ -263,6 +264,7 @@ C      Yearly output diagnostics
        _RL NHice_max
        _RL HF2ocn_tave   
        _RL FW2ocn_tave    
+       _RL CO2flx_tave    
 
 
 C      Variables passed from ocean model
