@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.863 2007/08/23 19:37:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.864 2007/08/23 22:43:47 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o external_forcing_surf : extend the use of salt_EvPrRn & temp_EvPrRn (fresh-water
+  tracer content) to linFS or no RealFreshWaterFlux ; default remains unchanged.
 o define mass2rUnit & rUnit2mass as units conversion factor, used for surface 
   forcing. mass2rUnit: from mass per unit area [kg/m2] to r-coordinate unit
   (z-coord: =1/rhoConst ; p-coord: =gravity) ; rUnit2mass is just the reverse;
