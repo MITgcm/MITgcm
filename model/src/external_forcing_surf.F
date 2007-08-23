@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.40 2007/08/23 19:12:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.41 2007/08/23 22:25:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -229,8 +229,8 @@ C      (needed for SSH forcing, whether or not exactConserv is used)
       ENDIF
 
 #ifdef EXACT_CONSERV
-c NB: synchronous time step: PmEpR lag 1 time step behind EmPmR
-c     to stay consitent with volume change (=d/dt etaH).
+C NB: synchronous time step: PmEpR lag 1 time step behind EmPmR
+C     to stay consitent with volume change (=d/dt etaH).
       IF ( staggerTimeStep ) THEN
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -242,18 +242,17 @@ c     to stay consitent with volume change (=d/dt etaH).
       IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &     .AND. useRealFreshWaterFlux ) THEN
 
-c-  NonLin_FrSurf and RealFreshWaterFlux : PmEpR effectively changes
-c   the water column height ; temp., salt, (tracer) flux associated
-c   with this input/output of water is added here to the surface tendency.
-c
+C--   NonLin_FrSurf and RealFreshWaterFlux : PmEpR effectively changes
+C     the water column height ; temp., salt, (tracer) flux associated
+C     with this input/output of water is added here to the surface tendency.
 
        IF (temp_EvPrRn.NE.UNSET_RL) THEN
         DO j = jMin, jMax
          DO i = iMin, iMax
           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
      &      + PmEpR(i,j,bi,bj)
-     &         *( temp_EvPrRn - theta(i,j,ks,bi,bj) )
-     &         *convertEmP2rUnit
+     &          *( temp_EvPrRn - theta(i,j,ks,bi,bj) )
+     &          *convertEmP2rUnit
          ENDDO
         ENDDO
        ENDIF
@@ -262,8 +261,8 @@ c
         DO j = jMin, jMax
          DO i = iMin, iMax
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &      + ( PmEpR(i,j,bi,bj)
-     &        ) *( salt_EvPrRn - salt(i,j,ks,bi,bj) )
+     &      + PmEpR(i,j,bi,bj)
+     &          *( salt_EvPrRn - salt(i,j,ks,bi,bj) )
      &          *convertEmP2rUnit
          ENDDO
         ENDDO
@@ -275,27 +274,62 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF (.TRUE.) THEN
 #endif /* EXACT_CONSERV */
 
-c- EmPmR does not really affect the water column height (for tracer budget)
-c   and is converted to a salt tendency.
+C--   EmPmR does not really affect the water column height (for tracer budget)
+C     and is converted to a salt tendency.
 
        IF (convertFW2Salt .EQ. -1.) THEN
-c- converts EmPmR to salinity tendency using surface local salinity
-        DO j = jMin, jMax
-         DO i = iMin, iMax
-          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &      + EmPmR(i,j,bi,bj)*salt(i,j,ks,bi,bj)
-     &         *convertEmP2rUnit
+C-    use local surface tracer field to calculate forcing term:
+
+        IF (temp_EvPrRn.NE.UNSET_RL) THEN
+C     account for Rain/Evap heat content (temp_EvPrRn) using local SST
+         DO j = jMin, jMax
+          DO i = iMin, iMax
+           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
+     &       + EmPmR(i,j,bi,bj)
+     &           *( theta(i,j,ks,bi,bj) - temp_EvPrRn )
+     &           *convertEmP2rUnit
+          ENDDO
          ENDDO
-        ENDDO
+        ENDIF
+        IF (salt_EvPrRn.NE.UNSET_RL) THEN
+C     converts EmPmR to salinity tendency using surface local salinity
+         DO j = jMin, jMax
+          DO i = iMin, iMax
+           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
+     &       + EmPmR(i,j,bi,bj)
+     &           *( salt(i,j,ks,bi,bj) - salt_EvPrRn )
+     &           *convertEmP2rUnit
+          ENDDO
+         ENDDO
+        ENDIF
+
        ELSE
-c- converts EmPmR to virtual salt flux using uniform salinity (default=35)
-        DO j = jMin, jMax
-         DO i = iMin, iMax
-          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &      + EmPmR(i,j,bi,bj)*convertFW2Salt
-     &         *convertEmP2rUnit
+C-    use uniform tracer value to calculate forcing term:
+
+        IF (temp_EvPrRn.NE.UNSET_RL) THEN
+C     account for Rain/Evap heat content (temp_EvPrRn) assuming uniform SST (=tRef)
+         DO j = jMin, jMax
+          DO i = iMin, iMax
+           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
+     &       + EmPmR(i,j,bi,bj)
+     &           *( tRef(ks) - temp_EvPrRn )
+     &           *convertEmP2rUnit
+          ENDDO
          ENDDO
-        ENDDO
+        ENDIF
+        IF (salt_EvPrRn.NE.UNSET_RL) THEN
+C     converts EmPmR to virtual salt flux using uniform salinity (default=35)
+         DO j = jMin, jMax
+          DO i = iMin, iMax
+           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
+     &       + EmPmR(i,j,bi,bj)
+     &           *( convertFW2Salt - salt_EvPrRn )
+     &           *convertEmP2rUnit
+          ENDDO
+         ENDDO
+        ENDIF
+
+C-    end local-surface-tracer / uniform-value distinction
        ENDIF
 
       ENDIF
