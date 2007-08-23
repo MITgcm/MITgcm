@@ -1,8 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.862 2007/08/21 14:39:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.863 2007/08/23 19:37:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o define mass2rUnit & rUnit2mass as units conversion factor, used for surface 
+  forcing. mass2rUnit: from mass per unit area [kg/m2] to r-coordinate unit
+  (z-coord: =1/rhoConst ; p-coord: =gravity) ; rUnit2mass is just the reverse;
+  and remove horiVertRatio (& recip_horiVertRatio). Affects truncation error
+  of exp. global_oce_in_p: 10 16 16 14 16 13 16 16 16 13 13 13 16 13 13 12 16
+  -> update output.txt
+o pkg/cd_code: add brackets in multiple terms sum (S/R CD_CODE_SCHEME):
+ this affects truncation error: -> update output.txt of exp:
+  global_ocean.90x40x15 (fw&adm), lab_sea (fw&adm) & lab_sea.lsr,
+  ideal_2D_oce, isomip.htd, natl_box, tutorial_global_oce_latlon.
 
 checkpoint59f
 o pkg/autodiff: zero_adj resets an ajoint variable to zero (in adjoint mode) 
