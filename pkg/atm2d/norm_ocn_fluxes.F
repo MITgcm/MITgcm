@@ -56,6 +56,10 @@ C     LOCAL VARIABLES:
 C  Load the following directly into the seaice common block
             snowPrc(i,j,1,1)= sum_snowPrc(i,j)/nper
 
+C  Double check that wspeed>0 (unlikely, but possible given anomaly coupling)
+            IF ( pass_wspeed(i,j) .LT. 0. _d 0)
+     &         pass_wspeed(i,j) = 0. _d 0
+
 C  Seaice diagnostics - tally at end of coupled period              
             sum_iceMask(i,j)=sum_iceMask(i,j) + 
      &                       iceMask(i,j,1,1)*dtcouplo
