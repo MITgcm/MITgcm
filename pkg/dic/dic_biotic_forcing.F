@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.14 2007/05/01 21:45:33 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.15 2007/08/24 16:06:25 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -72,7 +72,7 @@ C  BIO                    :: tendency of PO4 due to biological productivity,
 C                            exchange with DOP pool and reminerization
 C  CAR                    :: carbonate changes due to biological 
 C                             productivity and reminerization
-C  bioac                  :: biological productivity
+C  BIOac                  :: biological productivity
 C  pflux                  :: changes to PO4 due to flux and reminerlization
 c  cflux                  :: carbonate changes due to flux and reminerlization
 c  freefe                 :: iron not bound to ligand
@@ -86,7 +86,7 @@ c  freefe                 :: iron not bound to ligand
       _RL  BIO(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  BIO_kar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  CAR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  bioac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  BIOac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  pflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  exportflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  cflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -108,25 +108,25 @@ CEOP
        DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           GDIC(i,j,k)=0.d0
-           GALK(i,j,k)=0.d0
-           GPO4(i,j,k)=0.d0
-           GDOP(i,j,k)=0.d0
-           SURA(i,j)=0.d0
-           SURC(i,j)=0.d0
-           CAR(i,j,k)=0.d0
-           BIO(i,j,k)=0.d0
-           BIO_kar(i,j,k)=0.d0
-           bioac(i,j,k)=0.d0
-           pflux(i,j,k)=0.d0
-           exportflux(i,j,k)=0.d0
-           cflux(i,j,k)=0.d0
+           GDIC(i,j,k) =0. _d 0
+           GALK(i,j,k) =0. _d 0
+           GPO4(i,j,k) =0. _d 0
+           GDOP(i,j,k) =0. _d 0
+           SURA(i,j)   =0. _d 0
+           SURC(i,j)   =0. _d 0
+           CAR(i,j,k)  =0. _d 0
+           BIO(i,j,k)  =0. _d 0
+           BIO_kar(i,j,k) =0. _d 0
+           BIOac(i,j,k)   =0. _d 0
+           pflux(i,j,k)   =0. _d 0
+           exportflux(i,j,k)=0. _d 0
+           cflux(i,j,k)   =0. _d 0
 #ifdef ALLOW_O2
-           GO2(i,j,k)=0.d0
+           GO2(i,j,k)     =0. _d 0
 #endif
 #ifdef ALLOW_FE
-           GFE(i,j,k)=0.d0
-           freefe(i,j,k)=0.d0
+           GFE(i,j,k)     =0. _d 0
+           freefe(i,j,k)  =0. _d 0
 #endif
           ENDDO
          ENDDO
@@ -161,12 +161,12 @@ c biological activity
 #ifdef ALLOW_FE
      I           PTR_FE, 
 #endif 
-     I           bioac,
+     I           BIOac,
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
 c flux of po4 from layers with biological activity
-       CALL PHOS_FLUX( bioac, pflux, exportflux,
+       CALL PHOS_FLUX( BIOac, pflux, exportflux,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 
@@ -182,12 +182,12 @@ c code following methid by Karsten Friis
      I                    myIter,myTime,myThid)
         ENDIF
 c
-        CALL CAR_FLUX_OMEGA_TOP( bioac, cflux,
+        CALL CAR_FLUX_OMEGA_TOP( BIOac, cflux,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 #else
 c old OCMIP way
-        CALL CAR_FLUX( bioac, cflux,
+        CALL CAR_FLUX( BIOac, cflux,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 #endif
@@ -196,12 +196,12 @@ c add all tendencies for PO4, DOP, ALK, DIC
        DO k=1,Nr
          DO j=jmin,jmax
           DO i=imin,imax
-           bio(i,j,k)=-bioac(i,j,k)+pflux(i,j,k)
+           bio(i,j,k)=-BIOac(i,j,k)+pflux(i,j,k)
      &         + maskC(i,j,k,bi,bj)*Kdopremin*PTR_DOP(i,j,k)
-           car(i,j,k)=-bioac(i,j,k)* R_cp*rain_ratio(i,j,bi,bj)*
+           car(i,j,k)=-BIOac(i,j,k)* R_cp*rain_ratio(i,j,bi,bj)*
      &                (1.0-DOPfraction)+cflux(i,j,k)
            GPO4(i,j,k)=bio(i,j,k)
-           GDOP(i,j,k)=+bioac(i,j,k)*DOPfraction
+           GDOP(i,j,k)=+BIOac(i,j,k)*DOPfraction
      &         - maskC(i,j,k,bi,bj)*Kdopremin*PTR_DOP(i,j,k)
            GALK(i,j,k)=+2.d0*car(i,j,k)-R_NP*bio(i,j,k)
            BIO_kar(i,j,k)=R_NP*bio(i,j,k)
@@ -269,45 +269,69 @@ c find free iron and get rid of insoluble part
 
 #ifdef ALLOW_TIMEAVE 
 c save averages
+      IF ( taveFreq.GT.0. ) THEN
       DO k=1,Nr
          DO j=jmin,jmax
           DO i=imin,imax
-            BIOave(i,j,k,bi,bj)=BIOave(i,j,k,bi,bj)+
-     &                          BIOac(i,j,k)*deltaTclock
-            CARave(i,j,k,bi,bj)=CARave(i,j,k,bi,bj)+
-     &                          CAR(i,j,k)*deltaTclock
-            OmegaCave(i,j,k,bi,bj)= OmegaCave(i,j,k,bi,bj)+
-     &                           OmegaC(i,j,k,bi,bj)*deltaTclock
-            pfluxave(i,j,k,bi,bj)= pfluxave(i,j,k,bi,bj) +
-     &                           pflux(i,j,k)*deltaTclock
-            epfluxave(i,j,k,bi,bj)= epfluxave(i,j,k,bi,bj) +
-     &                           exportflux(i,j,k)*deltaTclock
-            cfluxave(i,j,k,bi,bj)= cfluxave(i,j,k,bi,bj) +
-     &                           cflux(i,j,k)*deltaTclock
-            if (k.eq.1) then
-              SURave(i,j,bi,bj)=SURave(i,j,bi,bj)+
-     &                          SURC(i,j)*deltaTclock
-#ifdef ALLOW_O2
-              SUROave(i,j,bi,bj)=SUROave(i,j,bi,bj)+
-     &                           SURO(i,j)*deltaTclock
-#endif
-              pCO2ave(i,j,bi,bj)=pCO2ave(i,j,bi,bj)+
-     &                           pCO2(i,j,bi,bj)*deltaTclock
-              pHave(i,j,bi,bj)=pHave(i,j,bi,bj)+
-     &                           pH(i,j,bi,bj)*deltaTclock
-              fluxCO2ave(i,j,bi,bj)=fluxCO2ave(i,j,bi,bj)+
-     &                           fluxCO2(i,j,bi,bj)*deltaTclock
-            endif
+            BIOave(i,j,k,bi,bj)   =BIOave(i,j,k,bi,bj)+
+     &                             BIOac(i,j,k)*deltaTclock
+            CARave(i,j,k,bi,bj)   =CARave(i,j,k,bi,bj)+
+     &                             CAR(i,j,k)*deltaTclock
+            OmegaCave(i,j,k,bi,bj)=OmegaCave(i,j,k,bi,bj)+
+     &                             OmegaC(i,j,k,bi,bj)*deltaTclock
+            pfluxave(i,j,k,bi,bj) =pfluxave(i,j,k,bi,bj) +
+     &                             pflux(i,j,k)*deltaTclock
+            epfluxave(i,j,k,bi,bj)=epfluxave(i,j,k,bi,bj) +
+     &                             exportflux(i,j,k)*deltaTclock
+            cfluxave(i,j,k,bi,bj) =cfluxave(i,j,k,bi,bj) +
+     &                             cflux(i,j,k)*deltaTclock
           ENDDO
          ENDDO
       ENDDO
+         DO j=jmin,jmax
+          DO i=imin,imax
+              SURave(i,j,bi,bj)    =SURave(i,j,bi,bj)+
+     &                              SURC(i,j)*deltaTclock
+#ifdef ALLOW_O2
+              SUROave(i,j,bi,bj)   =SUROave(i,j,bi,bj)+
+     &                              SURO(i,j)*deltaTclock
+#endif
+              pCO2ave(i,j,bi,bj)   =pCO2ave(i,j,bi,bj)+
+     &                              pCO2(i,j,bi,bj)*deltaTclock
+              pHave(i,j,bi,bj)     =pHave(i,j,bi,bj)+
+     &                              pH(i,j,bi,bj)*deltaTclock
+              fluxCO2ave(i,j,bi,bj)=fluxCO2ave(i,j,bi,bj)+
+     &                           fluxCO2(i,j,bi,bj)*deltaTclock
+          ENDDO
+         ENDDO
       do k=1,Nr
        dic_timeave(bi,bj,k)=dic_timeave(bi,bj,k)+deltaTclock
       enddo
+      ENDIF
+#endif /* ALLOW_TIMEAVE*/
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_DIAGNOSTICS
+
+      IF ( useDiagnostics ) THEN
+
+        CALL DIAGNOSTICS_FILL(BIOac  ,'DICBIOA ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(CAR    ,'DICCARB ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(pCO2   ,'DICPCO2 ',0,1 ,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(fluxCO2,'DICCFLX ',0,1 ,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(pH     ,'DICPHAV ',0,1 ,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(SURC   ,'DICTFLX ',0,1 ,2,bi,bj,myThid)
+#ifdef ALLOW_O2
+        CALL DIAGNOSTICS_FILL(SURO   ,'DICOFLX ',0,1 ,2,bi,bj,myThid)
 #endif
 
-#endif
-#endif
+      ENDIF
+
+#endif /* ALLOW_DIAGNOSTICS */
+
+#endif /* DIC_BIOTIC */
+#endif /* ALLOW_PTRACERS */
 
 c
        RETURN
