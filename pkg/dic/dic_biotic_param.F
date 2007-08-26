@@ -38,12 +38,20 @@ C DOP remineralization rate (s)
       KDOPRemin = 1.0/(0.5*360.*86400.)
 C remin power law coeff
        Kremin = 0.9
-C critical depth (m)
-       zcrit = 50.0
-       nlev=10
-#ifdef AD_SAFE
+C Depth (m) over which biological productivity (BIOac)
+C is computed --> determines nlev as the indice of the
+C first layer deeper than -zcrit
+       zcrit = 500.0
+#ifndef AD_SAFE
+       k = 1
+       DO WHILE ( k .LT. Nr .AND. rC(k) .GE. -zcrit )
+          k = k+1
+       ENDDO
+       nlev = k
+#else
        nlev=nR
 #endif
+
 ccritical oxygen level (mol m-3)
        O2crit = 4.0d-3
 C set stoichiometric ratios
