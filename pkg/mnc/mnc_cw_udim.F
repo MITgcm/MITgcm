@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.9 2006/03/10 05:50:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.10 2007/08/27 15:53:05 dfer Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -69,7 +69,7 @@ C     Check that this name is not already defined
         mnc_cw_fgud(indfg) = mnc_cw_fgud(indfg) + 1
         RETURN
       ENDIF
-      write(msgbuf,'(3a,i,a)') 
+      write(msgbuf,'(3a,i10,a)') 
      &     'MNC_CW_SET_UDIM ERROR: for file group name ''', 
      &     fgname(fgf:fgl), ''' the unlim dim ''', nudim, 
      &     ''' is not allowed'
