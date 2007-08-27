@@ -27,7 +27,7 @@
 #useSingleCpuIO=.TRUE.,
 #debugLevel=-1,
  debugMode=.FALSE.,
-&
+ &
 
 # Elliptic solver parameters
  &PARM02
@@ -35,7 +35,7 @@
  cg2dTargetResidual=1.E-13,
  cg3dMaxIters= 40,
  cg3dTargetResidual=1.E-13,
-&
+ &
 
 # Time stepping parameters
  &PARM03
@@ -47,7 +47,7 @@
  chkptFreq=0.,
  dumpFreq=7200.,
  monitorFreq=1.,
-&
+ &
 
 # Gridding parameters
  &PARM04
@@ -58,10 +58,10 @@
  delX=1*10.,
  delY=160*1.,
  phiMin=-80.,
-&
+ &
 
 # Input datasets
  &PARM05
  bathyFile='bathymetry.bin',
  hydrogThetaFile='init_temp.bin',
-&
+ &
