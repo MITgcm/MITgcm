@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.864 2007/08/23 22:43:47 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.865 2007/08/27 22:21:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice:
+ - fix reshaping of sea-ice just after advection:
+   melt all the ice only if ice-volume is too small.
+ - re-visit lateral/thinning repartition of melting (modifs from May 04, 2007):
+   prevent lateral melting if sea-ice fraction is too close to iceMaskMin ;
+ and update experiment global_ocean.cs32x15.icedyn (+start from pickup files).
 o external_forcing_surf : extend the use of salt_EvPrRn & temp_EvPrRn (fresh-water
   tracer content) to linFS or no RealFreshWaterFlux ; default remains unchanged.
 o define mass2rUnit & rUnit2mass as units conversion factor, used for surface 
