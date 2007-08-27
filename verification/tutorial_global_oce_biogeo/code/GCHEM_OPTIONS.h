@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code/Attic/GCHEM_OPTIONS.h,v 1.4 2007/05/07 15:59:08 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code/Attic/GCHEM_OPTIONS.h,v 1.5 2007/08/27 19:47:51 dfer Exp $
 C $Name:  $
 
 #ifndef GCHEM_OPTIONS_H
@@ -30,6 +30,8 @@ c atmospheric model
 #undef USE_QSW
 #undef USE_ATMOSCO2
 #undef USE_PLOAD
+
+#define ALLOW_OLD_VIRTUALFLUX
 c -------------------------------------
 
 #undef  ALLOW_CFC
