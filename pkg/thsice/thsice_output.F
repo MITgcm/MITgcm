@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.9 2006/05/25 18:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.10 2007/08/27 13:23:13 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -322,9 +322,9 @@ C     Dump a snap-shot of main state variables:
 
           CALL WRITE_FLD_XY_RL('ice_fract.',  suff,iceMask,
      &         myIter,myThid)
-          CALL WRITE_FLD_XY_RL('ice_iceH.',   suff,iceheight,
+          CALL WRITE_FLD_XY_RL('ice_iceH.',   suff,iceHeight,
      &         myIter,myThid)
-          CALL WRITE_FLD_XY_RL('ice_snowH.',  suff,snowheight,
+          CALL WRITE_FLD_XY_RL('ice_snowH.',  suff,snowHeight,
      &         myIter,myThid)
           CALL WRITE_FLD_XY_RL('ice_Tsrf.',   suff,Tsrf,
      &         myIter,myThid)

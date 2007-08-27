@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.10 2006/05/25 18:03:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.11 2007/08/27 13:23:13 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -57,9 +57,9 @@ C--    Time-average
        CALL TIMEAVE_CUMULATE(ice_fract_Ave, iceMask,
      &                       1, thSIce_deltaT, bi, bj, myThid )
 C-- area weighted average (with ice-fraction)
-       CALL TIMEAVE_CUMUL_2V( ice_iceH_Ave,  iceheight, iceMask,
+       CALL TIMEAVE_CUMUL_2V( ice_iceH_Ave,  iceHeight, iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMUL_2V( ice_snowH_Ave, snowheight, iceMask,
+       CALL TIMEAVE_CUMUL_2V( ice_snowH_Ave, snowHeight, iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
        CALL TIMEAVE_CUMUL_2V( ice_Tsrf_Ave,  Tsrf,  iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
@@ -74,7 +74,7 @@ C--    notes: siceAlb is already multiplied by iceFraction
      &                       1, thSIce_deltaT, bi, bj, myThid )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- simple average (without ice-fraction)
-c      CALL TIMEAVE_CUMULATE(ice_iceH_Ave,iceheight,
+c      CALL TIMEAVE_CUMULATE(ice_iceH_Ave,iceHeight,
 c    &                       1, thSIce_deltaT, bi, bj, myThid )
 c      CALL TIMEAVE_CUMULATE(ice_snowH_Ave,snowHeight,
 c    &                       1, thSIce_deltaT, bi, bj, myThid )

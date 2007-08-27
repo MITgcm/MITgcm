@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.13 2006/10/17 18:22:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.14 2007/08/27 13:23:13 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -115,7 +115,7 @@ C--   endif master cpu io
 C-- Ice area and Ice thickness :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                iceheight, iceMask, maskH, rA, yC, locDr,
+     I                iceHeight, iceMask, maskH, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG= theVol(1)+theVol(2)
@@ -137,7 +137,7 @@ C-- Ice area and Ice thickness :
 C-- Snow thickness :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                snowheight, iceMask, maskH, rA, yC, locDr,
+     I                snowHeight, iceMask, maskH, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG= theVol(1)+theVol(2)
@@ -155,11 +155,11 @@ C-- Snow thickness :
 
 C-- Total Energy :
         CALL  MON_STATS_RL(
-     I                1, Qice1, iceMask, iceheight, rA, locDr,
+     I                1, Qice1, iceMask, iceHeight, rA, locDr,
      O                theMin0,theMax0,theMean1,theSD,theDel2,theVolG,
      I                myThid )
         CALL  MON_STATS_RL(
-     I                1, Qice2, iceMask, iceheight, rA, locDr,
+     I                1, Qice2, iceMask, iceHeight, rA, locDr,
      O                theMin0,theMax0,theMean2,theSD,theDel2,theVolG,
      I                myThid )
         theEnergy = theEnergy -rhoi*(theMean1+theMean2)*theVolG/2
@@ -190,7 +190,7 @@ C-- Surface Temp. :
 C-- 1rst level (volume-mean) Temp. :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                Tice1, iceMask, iceheight, rA, yC, locDr,
+     I                Tice1, iceMask, iceHeight, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG = theVol(1)+theVol(2)
@@ -215,7 +215,7 @@ c       CALL MON_OUT_RL(mon_var, theVol(2), mon_sufx(2), myThid)
 C-- 2nd  level (volume-mean) Temp. :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                Tice2, iceMask, iceheight, rA, yC, locDr,
+     I                Tice2, iceMask, iceHeight, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theMeanG= theMean(1)*theVol(1)+theMean(2)*theVol(2)
