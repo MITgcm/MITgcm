@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.6 2007/04/29 23:48:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.7 2007/08/27 13:20:57 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -96,6 +96,9 @@ C     msgBuf    :: Informational/error meesage buffer
       CHARACTER*8 diagName
       CHARACTER*4 THSICE_DIAG_SUFX, diagSufx
       EXTERNAL    THSICE_DIAG_SUFX
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+      _RL tmpFac
 #endif
 #ifdef ALLOW_DBUG_THSICE
       _RL tmpVar, sumVar1, sumVar2
@@ -274,8 +277,9 @@ C-      Check that updated iceVol = iceFrc*rA
      &       'ICE_ADV: uIce=', uIce(i,j), uIce(i+1,j),
      &             ' , vIce=', vIce(i,j), vIce(i,j+1)
             WRITE(6,'(2(A,1P2E14.6))')
-c    &       'ICE_ADV: heff_b,a=', HEFF(i,j,2,bi,bj),HEFF(i,j,1,bi,bj)
-c           WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: mFx=', gFld(i,j)
+     &       'ICE_ADV: area_b,a=', iceMask(i,j,bi,bj), iceFrc(i,j),
+     &       ' , Heff_b,a=', oldVol(i,j)*recip_rA(i,j,bi,bj),
+     &                       iceHeight(i,j,bi,bj)*iceFrc(i,j)
            ENDIF
           ENDDO
          ENDDO
@@ -416,10 +420,12 @@ C      and adjust Ice thickness and snow thickness accordingly
         DO j=1,sNy
          DO i=1,sNx
           IF ( iceFrc(i,j) .GT. 1. _d 0 ) THEN
+c           IF ( dBug(i,j,bi,bj) )
             iceMask(i,j,bi,bj)    = 1. _d 0
             iceHeight(i,j,bi,bj)  = iceHeight(i,j,bi,bj) *iceFrc(i,j)
             snowHeight(i,j,bi,bj) = snowHeight(i,j,bi,bj)*iceFrc(i,j)
           ELSEIF ( iceFrc(i,j) .LT. iceMaskMin ) THEN
+c           IF ( dBug(i,j,bi,bj) )
             iceMask(i,j,bi,bj)    = iceMaskMin
             iceHeight(i,j,bi,bj)  = iceHeight(i,j,bi,bj)
      &                             *iceFrc(i,j)*r_minArea
@@ -450,6 +456,7 @@ C- -
      &                                  *( Qice1(i,j,bi,bj)
      &                                    +Qice2(i,j,bi,bj) )*0.5 _d 0
      &                            )*iceMask(i,j,bi,bj)/thSIce_deltaT
+c           IF ( dBug(i,j,bi,bj) ) 
 C- -
 c           flx2oc (i,j) = flx2oc (i,j) +
 c           frw2oc (i,j) = frw2oc (i,j) +
@@ -491,6 +498,37 @@ C---  if not multiDimAdvection
 
 C---  end if multiDimAdvection
       ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(iceMask,'SI_AdvFr',0,1,1,bi,bj,myThid)
+C-     Ice-fraction weighted quantities:
+        tmpFac = 1. _d 0
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   iceHeight, iceMask,tmpFac,1,'SI_AdvHi',
+     I                   0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FRACT_FILL(
+     I                   snowHeight,iceMask,tmpFac,1,'SI_AdvHs',
+     I                   0,1,1,bi,bj,myThid)
+C-     Ice-Volume weighted quantities:
+        IF ( DIAGNOSTICS_IS_ON('SI_AdvQ1',myThid) .OR.
+     &       DIAGNOSTICS_IS_ON('SI_AdvQ2',myThid) ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           iceVol(i,j) = iceMask(i,j,bi,bj)*iceHeight(i,j,bi,bj)
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FRACT_FILL(
+     I                   Qice1(1-OLx,1-OLy,bi,bj),
+     I                   iceVol,tmpFac,1,'SI_AdvQ1',
+     I                   0,1,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FRACT_FILL(
+     I                   Qice2(1-OLx,1-OLy,bi,bj),
+     I                   iceVol,tmpFac,1,'SI_AdvQ2',
+     I                   0,1,2,bi,bj,myThid)
+        ENDIF
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_THSICE */
 

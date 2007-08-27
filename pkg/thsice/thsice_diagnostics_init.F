@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.5 2007/04/19 04:31:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.6 2007/08/27 13:20:57 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -228,6 +228,44 @@ C-     Advective flux:
      I               diagName, diagCode, diagUnits, diagTitle, myThid )
         ENDIF
       ENDDO
+
+C--   Intermediate State, just after advection:
+        diagName  = 'SI_AdvFr'
+        diagTitle = 'Sea-Ice fraction  [0-1] (after advection)'
+        diagUnits = '0-1             '
+        diagCode  = 'SM P    M1      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        numFract  = diagNum
+
+        diagName  = 'SI_AdvHi'
+        diagTitle = 'Sea-Ice thickness (after advection)'
+        diagUnits = 'm               '
+        WRITE(diagCode,'(A,I3.3,A)') 'SM PC', numFract, 'M1      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        numThick  = diagNum
+
+        diagName  = 'SI_AdvHs'
+        diagTitle = 'Snow thickness over Sea-Ice (after advection)'
+        diagUnits = 'm               '
+        WRITE(diagCode,'(A,I3.3,A)') 'SM PC', numFract, 'M1      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'SI_AdvQ1'
+        diagTitle = 'Sea-Ice enthalpy, 1srt layer (after advection)'
+        diagUnits = 'J/kg            '
+        WRITE(diagCode,'(A,I3.3,A)') 'SM  C', numThick, 'M1      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'SI_AdvQ2'
+        diagTitle = 'Sea-Ice enthalpy, 2nd  layer (after advection)'
+        diagUnits = 'J/kg            '
+        WRITE(diagCode,'(A,I3.3,A)') 'SM  C', numThick, 'M1      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
 c     ENDIF
 
