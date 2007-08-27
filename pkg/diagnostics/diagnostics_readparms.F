@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.19 2006/12/24 20:20:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.20 2007/08/27 23:04:44 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -227,7 +227,7 @@ C-     Only lists with non-empty file name (iLen>0) are considered
            averagePhase(n) = averagingPhase(l)
            averageCycle(n) = repeatCycle(l)
          ELSEIF (averagingFreq(l).NE.0. .OR. repeatCycle(l).NE.0) THEN
-           WRITE(msgBuf,'(2A,F17.6,I3)') 'DIAGNOSTICS_READPARMS: ',
+           WRITE(msgBuf,'(2A,F18.6,I3)') 'DIAGNOSTICS_READPARMS: ',
      &       'unvalid Average-Freq & Cycle:',
      &       averagingFreq(l), repeatCycle(l)
            CALL PRINT_ERROR( msgBuf , myThid )
@@ -296,7 +296,7 @@ c        write(6,*) 'list summary:',n,nfields(n),nlevels(n)
          WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
      &    'when trying to add list l=', l
          CALL PRINT_ERROR( msgBuf , myThid )
-         WRITE(msgBuf,'(2A,F17.6,2A)') 'DIAGNOSTICS_READPARMS: ',
+         WRITE(msgBuf,'(2A,F18.6,2A)') 'DIAGNOSTICS_READPARMS: ',
      &    ' Frq=', frequency(l), ', filename: ', filename(l)
          CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
@@ -432,7 +432,7 @@ c        write(6,*) 'stat-list summary:',n,diagSt_nbFlds(n),regionCount
          WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
      &    'when trying to add stat_list l=', l
          CALL PRINT_ERROR( msgBuf , myThid )
-         WRITE(msgBuf,'(2A,F17.6,2A)') 'DIAGNOSTICS_READPARMS: ',
+         WRITE(msgBuf,'(2A,F18.6,2A)') 'DIAGNOSTICS_READPARMS: ',
      &    ' Frq=', stat_freq(l), ', stat_fname: ', stat_fname(l)
          CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
@@ -452,12 +452,12 @@ C     Echo History List Data Structure
      & '-----------------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
       DO n = 1,nlists
-        WRITE(msgBuf,'(2a)') 'Creating Output Stream: ', fnames(n)
+        WRITE(msgBuf,'(2A)') 'Creating Output Stream: ', fnames(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-        WRITE(msgBuf,'(2(A,F17.6))') 'Output Frequency:', freq(n),
+        WRITE(msgBuf,'(2(A,F18.6))') 'Output Frequency:', freq(n),
      &                               ' ; Phase: ', phase(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-        WRITE(msgBuf,'(2(A,F17.6),A,I3)')
+        WRITE(msgBuf,'(2(A,F18.6),A,I3)')
      &    ' Averaging Freq.:', averageFreq(n),
      &    ' , Phase: ', averagePhase(n), ' , Cycle:', averageCycle(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
@@ -479,7 +479,7 @@ C     Echo History List Data Structure
         ENDIF
         DO nf = 1,nfields(n),10
           m = MIN(nfields(n),nf+9)
-          WRITE(msgBuf,'(21A)') 'Fields:   ',(' ',flds(l,n),l=nf,m)
+          WRITE(msgBuf,'(21A)') ' Fields:   ',(' ',flds(l,n),l=nf,m)
           CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
         ENDDO
       ENDDO
@@ -490,24 +490,27 @@ C     Echo History List Data Structure
      &     ' DIAGNOSTICS_READPARMS: statistics diags. summary:'
       CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
       DO n = 1,diagSt_nbLists
-        WRITE(msgBuf,'(2a)') 'Creating Stats. Output Stream: ',
+        WRITE(msgBuf,'(2A)') 'Creating Stats. Output Stream: ',
      &                       diagSt_Fname(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-        WRITE(msgBuf,'(2(A,F17.6))') 'Output Frequency:',
+        WRITE(msgBuf,'(2(A,F18.6))') 'Output Frequency:',
      &               diagSt_freq(n), ' ; Phase: ', diagSt_phase(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-        WRITE(msgBuf,'(A)') ' Regions : '
-        l = 12
+        WRITE(msgBuf,'(A)') ' Regions: '
+        l = 10
         DO j=0,nRegions
          IF ( diagSt_region(j,n).GE.1 ) THEN
-          IF (l+3.LE.MAX_LEN_MBUF) WRITE(msgBuf,'(A,I3)') msgBuf(1:l),j
           l = l+3
+          IF (l.LE.MAX_LEN_MBUF) WRITE(msgBuf(l-2:l),'(I3)') j
          ENDIF
         ENDDO
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-        WRITE(msgBuf,*) 'Fields:   ',
-     &                 (' ',diagSt_Flds(l,n),l=1,diagSt_nbFlds(n))
-        CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+        DO nf = 1,diagSt_nbFlds(n),10
+          m = MIN(diagSt_nbFlds(n),nf+9)
+          WRITE(msgBuf,'(21A)') ' Fields:   ',
+     &                 (' ',diagSt_Flds(l,n),l=nf,m)
+          CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+        ENDDO
       ENDDO
       WRITE(msgBuf,'(A)')
      & '-----------------------------------------------------'
