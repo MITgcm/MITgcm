@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.15 2007/08/14 19:32:40 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.16 2007/08/27 18:54:47 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -74,25 +74,25 @@ CEOP
 C calculate SCHMIDT NO. for O2
         DO j=jmin,jmax
           DO i=imin,imax
-            IF (hFacC(i,j,k,bi,bj).NE.0.) THEN
+            IF (maskC(i,j,k,bi,bj).NE.0.) THEN
+              ttemp = theta(i,j,k,bi,bj)
+              stemp = salt(i,j,k,bi,bj)
+
               SchmidtNoO2(i,j) = 
      &            sox1 
-     &          + sox2 * theta(i,j,k,bi,bj)
-     &          + sox3 * theta(i,j,k,bi,bj)*theta(i,j,k,bi,bj)  
-     &          + sox4 * theta(i,j,k,bi,bj)*theta(i,j,k,bi,bj) 
-     &                *theta(i,j,k,bi,bj)
+     &          + sox2 * ttemp
+     &          + sox3 * ttemp*ttemp  
+     &          + sox4 * ttemp*ttemp*ttemp
 
 C Determine surface flux of O2 
 C exchange coeff, accounting for ice cover and Schmidt no.
-              pisvel(i,j,bi,bj)=0.337 _d 0 *wind(i,j,bi,bj)**2/3.6 _d 5
+C pisvel: previously computed in dic_surfforcing.F
               Kwexch(i,j) = 
      &             pisvel(i,j,bi,bj)
      &             / sqrt(SchmidtNoO2(i,j)/660.0 _d 0)
 c ice influence
               Kwexch(i,j)  =(1. _d 0 - FIce(i,j,bi,bj))*Kwexch(i,j)
 
-              ttemp = theta(i,j,k,bi,bj)
-              stemp = salt(i,j,k,bi,bj)
 C determine saturation O2
 C using Garcia and Gordon (1992), L&O (mistake in original???)
               aTT  = 298.15 _d 0 -ttemp
@@ -125,7 +125,7 @@ C#endif
 
 c Determine flux, inc. correction for local atmos surface pressure
 cQQ PTR_O2?
-              FluxO2(i,j) = maskC(i,j,k,bi,bj)*Kwexch(i,j)*
+              FluxO2(i,j) = Kwexch(i,j)*
      &                     (AtmosP(i,j,bi,bj)*O2sat(i,j) 
      &                      - PTR_O2(i,j,1)) 
             ELSE
@@ -139,8 +139,8 @@ cQQ PTR_O2?
 C update surface tendencies      
         DO j=jmin,jmax
           DO i=imin,imax
-           SGO2(i,j)= maskC(i,j,1,bi,bj)*FluxO2(i,j)
-     &         *recip_drF(1) * recip_hFacC(i,j,1,bi,bj)
+           SGO2(i,j)= FluxO2(i,j)
+     &         *recip_drF(K) * recip_hFacC(i,j,K,bi,bj)
           ENDDO
          ENDDO
 #endif
