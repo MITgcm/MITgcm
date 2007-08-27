@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.12 2007/06/03 22:17:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.13 2007/08/27 20:55:28 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -40,18 +40,24 @@ C.. which only the top layer has a variable heat capacity.
 C---------------------------------
 C  parameters that control the partitioning between lateral (ice area) and
 C    vertical (ice thickness) ice volume changes.
-C a) surface melting and bottom melting:
+C a) surface melting and bottom melting (runtime parameter: fracEnMelt):
 C  frace is the fraction of available heat that is used for
 C  lateral melting (and 1-frace reduces the thickness ) when
-C   hi < hThinIce            : frace=1 (lateral melting only)
-C   hThinIce < hi < hThickIce: frace=fracEnMelt (runtime parameter) ;
-C   hi > hThickIce           : frace=0 (thinning only)
+C o       hi < hThinIce        & frac > lowIcFrac2 : frace=1 (lateral melting only)
+C o hThinIce < hi < hThickIce  & frac > lowIcFrac1 : frace=fracEnMelt
+C o            hi > hThickIce or frac < lowIcFrac1 : frace=0 (thinning only)
 C b) ocean freezing (and ice forming):
-C  if hi > hThickIce : use all freezing potential to grow ice laterally (up
-C         to areaMax), and reserve conductive heat flux to increase thickness.
-C  if hi < hThickIce : below the sea-ice covered ocean, use the full freezing
-C                      potential (x iceFraction) to grow ice vertically;
-C              and over open ocean, form new ice (@ the same thickness)
+C - conductive heat flux (below sea-ice) always increases thickness.
+C - under sea-ice, freezing potential (x iceFraction) is used to increase ice
+C                  thickness or ice fraction (lateral growth), according to:
+C o       hi < hThinIce       : use freezing potential to grow ice vertically;
+C o hThinIce < hi < hThickIce : use partition factor fracEnFreez for lateral growth
+c                               and (1-fracEnFreez) to increase thickness.
+C o            hi > hThickIce : use all freezing potential to grow ice laterally
+C                                (up to areaMax)
+C - over open ocean, use freezing potential [x(1-iceFraction)] to grow ice laterally
+C - lateral growth forms ice of the same or =hNewIceMax thickness, the less of the 2.
+C - starts to form sea-ice over fraction iceMaskMin, as minimum ice-volume is reached
 C---------------------------------
 C     !USES:
       IMPLICIT NONE
@@ -176,6 +182,9 @@ C     Fbot     :: oceanic heat flux used to melt/form ice [W/m2]
       _RL  ustar, cpchr
       _RL  chi, chs
       _RL  frace, rs, hq
+C     lowIcFrac1 :: ice-fraction lower limit above which partial (lowIcFrac1)
+C     lowIcFrac2 :: or full (lowIcFrac2) lateral melting is allowed.
+      _RL lowIcFrac1, lowIcFrac2
 
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
@@ -198,6 +207,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       rec_nlyr = nlyr
       rec_nlyr = 1. _d 0 / rec_nlyr
       dt  = thSIce_deltaT
+
+C     for now, use hard coded threshold (iceMaskMin +1.% and +10.%)
+      lowIcFrac1 = iceMaskMin*1.01 _d 0
+      lowIcFrac2 = iceMaskMin*1.10 _d 0
 
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -254,10 +267,7 @@ C     !-----------------------------------------------------------------
 C     ! freezing conditions
 C     !-----------------------------------------------------------------
         Fbot = frzmlt
-C- jmc: would be logical to test for iceFrac:
-c-new_v:
         IF ( iceFrac.LT.iceMaskMax ) THEN
-c-old_v IF ( iceFrac.LE.iceMaskMax ) THEN
          IF (hi.GT.hThickIce) THEN
 C if higher than hThickIce, use all frzmlt energy to grow extra ice
           Fbot = 0. _d 0
@@ -296,13 +306,19 @@ C Compute energy available for melting/growth.
       IF ( hi.GT.hThickIce .OR. fracEnMelt.EQ.0. _d 0 ) THEN
 C above certain height (or when no ice fractionation), only melt from top
        frace = 0. _d 0
-c-new_v:
       ELSEIF (hi.LT.hThinIce) THEN
 C below a certain height, all energy goes to changing ice extent
        frace = 1. _d 0
-c-new_v: end
       ELSE
        frace = fracEnMelt
+      ENDIF
+C     Reduce lateral melting when ice fraction is low : the purpose is to avoid
+C     disappearing of (up to hThinIce thick) sea-ice by over doing lateral melting
+C     (which would bring iceFrac below iceMaskMin).
+      IF ( iceFrac.LE.lowIcFrac1 ) THEN
+       frace = 0. _d 0
+      ELSEIF (iceFrac.LE.lowIcFrac2 ) THEN
+       frace = MIN( frace, fracEnMelt )
       ENDIF
 
 c     IF (Tsf .EQ. 0. _d 0 .AND. sHeating.GT.0. _d 0) THEN
