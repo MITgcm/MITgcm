@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.7 2007/08/27 13:20:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.8 2007/08/27 15:55:24 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -168,9 +168,9 @@ C--   Initialisation (+ build oceanic mask)
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceHeight(i,j,bi,bj)  
+CADJ STORE iceHeight(i,j,bi,bj)
 CADJ &     = comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE snowHeight(i,j,bi,bj) 
+CADJ STORE snowHeight(i,j,bi,bj)
 CADJ &     = comlev1_bibj, key=iicekey, byte=isbyte
 #endif
       IF ( thSIce_diffK .GT. 0. ) THEN
@@ -407,11 +407,11 @@ c           WRITE(6,'(A,1P4E14.6)') 'ICE_ADV: q2Fx=', gFld(i,j)
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE iceHeight(:,:,bi,bj) = 
+CADJ STORE iceHeight(:,:,bi,bj) =
 CADJ &     comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE snowHeight(:,:,bi,bj) = 
+CADJ STORE snowHeight(:,:,bi,bj) =
 CADJ &     comlev1_bibj, key=iicekey, byte=isbyte
-CADJ STORE iceFrc(:,:) = 
+CADJ STORE iceFrc(:,:) =
 CADJ &     comlev1_bibj, key=iicekey, byte=isbyte
 #endif
 
@@ -436,10 +436,18 @@ c           IF ( dBug(i,j,bi,bj) )
           ENDIF
          ENDDO
         ENDDO
-C-     adjust sea-ice state if not enough ice.
+C-     adjust sea-ice state if ice is too thin.
         DO j=1,sNy
          DO i=1,sNx
           IF ( iceHeight(i,j,bi,bj).LT.hIceMin ) THEN
+           iceVol(i,j) = iceMask(i,j,bi,bj)*iceHeight(i,j,bi,bj)
+c          IF ( dBug(i,j,bi,bj) )
+           IF ( iceVol(i,j).GE.hIceMin*iceMaskMin ) THEN
+            iceMask(i,j,bi,bj)    = iceVol(i,j)/hIceMin
+            snowHeight(i,j,bi,bj) = snowHeight(i,j,bi,bj)
+     &                             *hIceMin/iceHeight(i,j,bi,bj)
+            iceHeight(i,j,bi,bj)  = hIceMin
+           ELSE
 C-    Not enough ice, melt the tiny amount of snow & ice:
 C     and return fresh-water, salt & energy to the ocean (flx > 0 = into ocean)
 C- -  Note: using 1rst.Order Upwind, I can get the same results as when
@@ -456,7 +464,6 @@ C- -
      &                                  *( Qice1(i,j,bi,bj)
      &                                    +Qice2(i,j,bi,bj) )*0.5 _d 0
      &                            )*iceMask(i,j,bi,bj)/thSIce_deltaT
-c           IF ( dBug(i,j,bi,bj) ) 
 C- -
 c           flx2oc (i,j) = flx2oc (i,j) +
 c           frw2oc (i,j) = frw2oc (i,j) +
@@ -467,6 +474,7 @@ c           fsalt  (i,j) = fsalt  (i,j) +
             Qice1     (i,j,bi,bj) = 0. _d 0
             Qice2     (i,j,bi,bj) = 0. _d 0
             snowAge   (i,j,bi,bj) = 0. _d 0
+           ENDIF
           ENDIF
          ENDDO
         ENDDO
