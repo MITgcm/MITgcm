@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.15 2007/08/14 19:32:40 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.16 2007/08/27 19:44:13 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -56,7 +56,9 @@ C local variables for carbon chem
       _RL surfalk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsi(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_OLD_VIRTUALFLUX
       _RL VirtualFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
 CEOP
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -177,6 +179,7 @@ C Converting pCO2 to [CO2] using ff, as in CALC_PCO2
 C convert flux (mol kg-1 m s-1) to (mol m-2 s-1)
             FluxCO2(i,j,bi,bj) = FluxCO2(i,j,bi,bj)/permil
 
+#ifdef ALLOW_OLD_VIRTUALFLUX
             IF (maskC(i,j,kLev,bi,bj).NE.0.) THEN
 c calculate virtual flux
 c EminusPforV = dS/dt*(1/Sglob)
@@ -193,6 +196,7 @@ c
             ELSE
               VirtualFlux(i,j)=0. _d 0
             ENDIF
+#endif /* ALLOW_OLD_VIRTUALFLUX */
           ENDDO
          ENDDO
 
@@ -200,9 +204,12 @@ C update tendency
          DO j=jmin,jmax
           DO i=imin,imax
            GDC(i,j)= maskC(i,j,kLev,bi,bj)*recip_drF(kLev)*
-     &                     recip_hFacC(i,j,kLev,bi,bj)*(
-     &                    FluxCO2(i,j,bi,bj) + VirtualFlux(i,j)
-     &                                              )
+     &                     recip_hFacC(i,j,kLev,bi,bj)
+     &                   *(FluxCO2(i,j,bi,bj) 
+#ifdef ALLOW_OLD_VIRTUALFLUX
+     &                   + VirtualFlux(i,j)
+#endif
+     &                    )
           ENDDO
          ENDDO
 

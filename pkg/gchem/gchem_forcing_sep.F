@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.15 2007/05/01 21:45:52 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.16 2007/08/27 19:45:09 dfer Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -50,6 +50,7 @@ ccccccccccccccccccccccccc
 c global calculations   c
 ccccccccccccccccccccccccc
 #ifdef ALLOW_DIC
+#ifdef ALLOW_OLD_VIRTUALFLUX
 c find global surface averages
        gsm_s = 0.
        gsm_dic = 0.
@@ -60,6 +61,7 @@ c find global surface averages
        print*,'mean surface dic', gsm_dic,gsm_s
        call tracer_meanarea(myThid,
      &               ptracer(1-Olx,1-Oly,1,1,1,2), 1, gsm_alk)
+#endif /* ALLOW_OLD_VIRTUALFLUX */
 #endif
 ccccccccccccccccccccccccccccccccccccccccccc
 

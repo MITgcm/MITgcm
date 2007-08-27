@@ -46,6 +46,7 @@ C  i,j                  :: loop indices
       INTEGER i,j
 CEOP
 
+#ifdef ALLOW_OLD_VIRTUALFLUX
         DO j=jmin,jmax
           DO i=imin,imax
             IF (maskC(i,j,1,bi,bj).NE.0.) THEN
@@ -66,6 +67,7 @@ c
             ENDIF
           ENDDO
          ENDDO
+#endif /* ALLOW_OLD_VIRTUALFLUX */
 
 #endif
 #endif
