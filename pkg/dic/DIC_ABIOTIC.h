@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_ABIOTIC.h,v 1.7 2007/08/13 02:29:40 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_ABIOTIC.h,v 1.8 2007/08/28 02:30:31 dfer Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -7,17 +7,17 @@ C     | o Carbon Variables
 C     |==========================================================|
 
        COMMON /CARBON_NEEDS/
-     &              AtmospCO2, AtmosP, pH, pCO2, fluxCO2,
-     &              pisvel, wind, fice,Silica
+     &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
+     &              wind, FIce, Silica, Kwexch_Pre
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  fluxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  pisvel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  FluxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  wind(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  fice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  FIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Silica(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
        COMMON /CARBON_CHEM/
      &                     ak0,ak1,ak2,akw,akb,aks,akf,

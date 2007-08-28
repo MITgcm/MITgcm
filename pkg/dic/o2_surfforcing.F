@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.16 2007/08/27 18:54:47 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.17 2007/08/28 02:30:31 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -85,13 +85,11 @@ C calculate SCHMIDT NO. for O2
      &          + sox4 * ttemp*ttemp*ttemp
 
 C Determine surface flux of O2 
-C exchange coeff, accounting for ice cover and Schmidt no.
-C pisvel: previously computed in dic_surfforcing.F
-              Kwexch(i,j) = 
-     &             pisvel(i,j,bi,bj)
-     &             / sqrt(SchmidtNoO2(i,j)/660.0 _d 0)
-c ice influence
-              Kwexch(i,j)  =(1. _d 0 - FIce(i,j,bi,bj))*Kwexch(i,j)
+C exchange coeff accounting for ice cover and Schmidt no.
+C Kwexch_Pre= pisvel*(1-fice): previously computed in dic_surfforcing.F
+
+              Kwexch(i,j) = Kwexch_Pre(i,j,bi,bj)
+     &                    / sqrt(SchmidtNoO2(i,j)/660.0 _d 0)
 
 C determine saturation O2
 C using Garcia and Gordon (1992), L&O (mistake in original???)
@@ -113,21 +111,10 @@ C using Garcia and Gordon (1992), L&O (mistake in original???)
 c Convert from ml/l to mol/m^3
               O2sat(i,j) = o2s/22391.6 _d 0 * 1. _d 3
 
-cdfer AtmosP already computed in dic_surfforcing.F
-C#ifdef USE_PLOAD
-C Convert anomalous pressure pLoad (in Pa) from atmospheric model
-C to total pressure (in Atm)
-C Note: it is assumed the reference atmospheric pressure is 1Atm=1013mb
-C       rather than the actual ref. pressure from Atm. model so that on
-C       average AtmosP is about 1 Atm.
-C               AtmosP(i,j,bi,bj)= 1. _d 0 + pLoad(i,j,bi,bj)/Pa2Atm
-C#endif
-
-c Determine flux, inc. correction for local atmos surface pressure
-cQQ PTR_O2?
+C Determine flux, inc. correction for local atmos surface pressure
               FluxO2(i,j) = Kwexch(i,j)*
      &                     (AtmosP(i,j,bi,bj)*O2sat(i,j) 
-     &                      - PTR_O2(i,j,1)) 
+     &                      - PTR_O2(i,j,K)) 
             ELSE
               FluxO2(i,j) = 0. _d 0
             ENDIF

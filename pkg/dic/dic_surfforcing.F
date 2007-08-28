@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.16 2007/08/27 19:44:13 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.17 2007/08/28 02:30:31 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -52,6 +52,7 @@ C Solubility relation coefficients
       _RL SchmidtNoDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pCO2sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Kwexch(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pisvel(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C local variables for carbon chem
       _RL surfalk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -103,6 +104,28 @@ C FOR NON-INTERACTIVE Si
      I                       bi,bj,iMin,iMax,jMin,jMax)
 C====================================================================
 
+       DO j=jmin,jmax
+        DO i=imin,imax
+C Compute AtmosP and Kwexch_Pre which are re-used for flux of O2
+
+#ifdef USE_PLOAD
+C Convert anomalous pressure pLoad (in Pa) from atmospheric model
+C to total pressure (in Atm)
+C Note: it is assumed the reference atmospheric pressure is 1Atm=1013mb
+C       rather than the actual ref. pressure from Atm. model so that on
+C       average AtmosP is about 1 Atm.
+                AtmosP(i,j,bi,bj)= 1. _d 0 + pLoad(i,j,bi,bj)/Pa2Atm
+#endif
+
+C Pre-compute part of exchange coefficient: pisvel*(1-fice)
+C Schmidt number is accounted for later
+              pisvel(i,j)=0.337 _d 0 *wind(i,j,bi,bj)**2/3.6 _d 5
+              Kwexch_Pre(i,j,bi,bj) = pisvel(i,j)
+     &                              * (1. _d 0 - FIce(i,j,bi,bj))
+
+        ENDDO
+       ENDDO
+
 c pCO2 solver...
 C$TAF LOOP = parallel
        DO j=jmin,jmax
@@ -138,38 +161,21 @@ C calculate SCHMIDT NO. for CO2
      &          + sca4 * theta(i,j,kLev,bi,bj)*theta(i,j,kLev,bi,bj) 
      &                *theta(i,j,kLev,bi,bj)
 
-c
-#ifdef USE_PLOAD
-C Convert anomalous pressure pLoad (in Pa) from atmospheric model
-C to total pressure (in Atm)
-C Note: it is assumed the reference atmospheric pressure is 1Atm=1013mb
-C       rather than the actual ref. pressure from Atm. model so that on
-C       average AtmosP is about 1 Atm.
-                AtmosP(i,j,bi,bj)= 1. _d 0 + pLoad(i,j,bi,bj)/Pa2Atm
-#endif
-
 C Determine surface flux (FDIC)
 C first correct pCO2at for surface atmos pressure
               pCO2sat(i,j) = 
      &          AtmosP(i,j,bi,bj)*AtmospCO2(i,j,bi,bj)
-c find exchange coefficient
-c  account for schmidt number and and varible piston velocity
-              pisvel(i,j,bi,bj)=0.337 _d 0 *wind(i,j,bi,bj)**2/3.6 _d 5
-              Kwexch(i,j) =
-     &             pisvel(i,j,bi,bj)
-     &             / sqrt(SchmidtNoDIC(i,j)/660.0 _d 0)
-c OR use a constant  coeff
-c             Kwexch(i,j) = 5e-5
-c ice influence
-              Kwexch(i,j)  =(1. _d 0 - FIce(i,j,bi,bj))*Kwexch(i,j)
 
+C then account for Schmidt number
+              Kwexch(i,j) = Kwexch_Pre(i,j,bi,bj)
+     &                    / sqrt(SchmidtNoDIC(i,j)/660.0 _d 0)
 
 C Calculate flux in terms of DIC units using K0, solubility
 C Flux = Vp * ([CO2sat] - [CO2])
 C CO2sat = K0*pCO2atmos*P/P0
 C Converting pCO2 to [CO2] using ff, as in CALC_PCO2
               FluxCO2(i,j,bi,bj) = 
-     &         maskC(i,j,kLev,bi,bj)*Kwexch(i,j)*( 
+     &         Kwexch(i,j)*( 
      &         ak0(i,j,bi,bj)*pCO2sat(i,j) - 
      &         ff(i,j,bi,bj)*pCO2(i,j,bi,bj) 
      &         ) 
@@ -203,13 +209,12 @@ c
 C update tendency      
          DO j=jmin,jmax
           DO i=imin,imax
-           GDC(i,j)= maskC(i,j,kLev,bi,bj)*recip_drF(kLev)*
-     &                     recip_hFacC(i,j,kLev,bi,bj)
-     &                   *(FluxCO2(i,j,bi,bj) 
+           GDC(i,j)= recip_drF(kLev)*recip_hFacC(i,j,kLev,bi,bj)
+     &              *(FluxCO2(i,j,bi,bj) 
 #ifdef ALLOW_OLD_VIRTUALFLUX
-     &                   + VirtualFlux(i,j)
+     &              + VirtualFlux(i,j)
 #endif
-     &                    )
+     &               )
           ENDDO
          ENDDO
 
