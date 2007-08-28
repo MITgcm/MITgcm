@@ -2,7 +2,7 @@
 krd=1; kpr=1; kgr=0; kwr=1;
 %krd=0; kpr=0; kgr=1; kwr=0; % <- execute a 2nd time & draw some plot
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/sep_API_basins.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/sep_API_basins.m,v 1.2 2007/08/28 16:25:46 molod Exp $
 % $Name:  $
 
 if krd == 1,
@@ -138,7 +138,7 @@ end
 
 if kgr ==1, 
  figure(1); clf; 
- shift=0; cbV=2; ccB=[0 0]; AxBx=[-180 180 -90 90];
+ shift=-1; cbV=2; ccB=[0 0]; AxBx=[-180 180 -90 90];
  for bp=1:3, subplot(310+b);
 %AxBx=[60 180 -75 15];
  var=mskBasC(:,:,1)+2*mskBasC(:,:,2)+3*mskBasC(:,:,3); 

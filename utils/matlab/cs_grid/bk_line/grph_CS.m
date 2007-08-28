@@ -5,16 +5,16 @@ function [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 % xcs,ycs,xcg,ycg = center + corner grid point coordinates
 % c1 < c2 = min & max for the color graph
 % c1 > c2 = scale with min,max of the field, + c1/100 and + c2/100
-% shift=0  : No coast-line
-%       -1 : No shift but draw coast-line calling draw_coast
+% shift=-1 : No coast-line
+%        1 : No shift but draw coast-line calling draw_coast
 %     else : draw coast-line (using m_proj) shifted by "shift" degree.
 % cbV = 0,1 : horizontal,vertical colorbar; >= 2 : no colorbar;
 % kEnv = 0 : standard ; =odd : do not draw the mesh ; >1 : no min,Max written.
-% AxBx = do axis(AxBx) to zoom in Box "AxBx" ; only if shift=-1,0 ;
+% AxBx = do axis(AxBx) to zoom in Box "AxBx" ; only if shift=-1,1 ;
 %-----------------------
 
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.2 2007/02/06 17:43:55 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.3 2007/08/28 16:25:45 molod Exp $
 % $Name:  $
 
 if nargin < 9, cbV=0 ; end
@@ -25,7 +25,7 @@ if nargin < 11, kEnv=0 ; end
 nc=size(var,2) ; ncp=nc+1 ; nPg=nc*nc*6;
   MxV=min(min(var));
   mnV=max(max(var));
- if shift == -1 | shift == 0,
+ if shift == 1 | shift == 1,
   for j=1:nc, for i=1:6*nc,
    if ~isnan(var(i,j)) & xcs(i,j) > AxBx(1) & xcs(i,j) < AxBx(2) ...
                        & ycs(i,j) > AxBx(3) & ycs(i,j) < AxBx(4) ,
@@ -50,12 +50,8 @@ if c1 >= c2
 end
 %------------------------------
 %figure(1);
-if shift ~= -1 & shift ~= 0,
-  pphh=path; ppaa='/u/u2/jmc/MATLAB';
- %pphh=path; ppaa='/home/jmc/matlab/MATLAB';
-  llaa=length(ppaa); if pphh(1:llaa) == ppaa, else path(ppaa,path);end
-  set_axis
-  fac=rad ;
+if shift ~= 1 & shift ~= -1,
+  fac=pi/180.;
 else
   fac=1. ;
 end
@@ -128,9 +124,9 @@ end ; end ;
  set(S,'LineStyle','-','LineWidth',0.01); 
  if rem(kEnv,2) > 0, set(S,'EdgeColor','none'); end
 hold off
-if shift == 0,
+if shift == -1,
   axis(AxBx); fprintf('  Axis(Box): %i %i %i %i \n',AxBx);  
-elseif shift == -1 
+elseif shift == 1 
   [L]=draw_coast(fac);
   set(L,'color',[1 0 1]);
 % set(L,'Color',[0 0 0],'LineWidth',2); % set(L,'LineStyle','-');
@@ -146,7 +142,7 @@ end
  if cbV < 2, scalHV_colbar([10-cbV/4 10 7-5*cbV 7+2*cbV]/10,cbV); end
 if mnV < MxV & kEnv < 2,
  ytxt=min(1,cbV);
- if shift == -1 | shift == 0,
+ if shift == 1 | shift == -1,
   xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(12+2*ytxt)/100;
  else 
   xtxt=60 ; ytxt=30*ytxt-145 ;

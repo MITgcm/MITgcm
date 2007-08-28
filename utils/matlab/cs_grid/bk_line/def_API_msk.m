@@ -1,5 +1,5 @@
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/def_API_msk.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/def_API_msk.m,v 1.2 2007/08/28 16:25:45 molod Exp $
 % $Name:  $
 
 krd=1; kpr=2; kgr=0; kwr=1;
@@ -116,7 +116,7 @@ if kgr==1,
 %yy1=[-89.5:1:89.5]; [x3b]=line_sep(yy1);
 
  figure(1); clf;
- shift=0; cbV=2; ccB=[0 0]; AxBx=[-180 180 -90 90];
+ shift=-1; cbV=2; ccB=[0 0]; AxBx=[-180 180 -90 90];
  var=bas ; ccB=[-1.5 4.5];  var(find(mskC(:,:,1)==0))=NaN;
  grph_CS(var,xcs,ycs,xcg,ycg,ccB(1),ccB(2),shift,cbV,AxBx);
  hold on ;

@@ -1,6 +1,6 @@
 krd=2; kgr=1; kfac=0;
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/use_psiLine.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/use_psiLine.m,v 1.2 2007/08/28 16:25:46 molod Exp $
 % $Name:  $
 
 if krd > 0,
@@ -53,7 +53,7 @@ end
 if kgr > 0,
 rac=Rac;
 load_cs;
-shift=0; ccB=[0 0]; cbV=0; AxBx=[-180 180 -90 90] ;
+shift=-1; ccB=[0 0]; cbV=0; AxBx=[-180 180 -90 90] ;
  ccB=[-140 140];
 %AxBx=[-210 210 30 90];
  grph_CSz(psiBa,xcs,ycs,xcg,ycg,ccB(1),ccB(2),shift,cbV,AxBx)

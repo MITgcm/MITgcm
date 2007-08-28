@@ -2,7 +2,7 @@ krd=1; kpr=1; kgr=0; kwr=1;
 % krd=0; kpr=0; kgr=1; kwr=0; % <- execute a 2nd time & draw some plot
 ijprt=65;
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gen_bk_Zon.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gen_bk_Zon.m,v 1.2 2007/08/28 16:25:45 molod Exp $
 % $Name:  $
 
 if krd == 1,
@@ -98,7 +98,7 @@ end
 
 if kgr==1,
  figure(1); clf;
- shift=0; cbV=2; ccB=[0 0]; AxBx=[-180 180 -90 90];
+ shift=-1; cbV=2; ccB=[0 0]; AxBx=[-180 180 -90 90];
 %var=zeros(ncx,nc) ; var(1+rem(ijprt-1,ncx),1+fix((ijprt-1)/ncx))=1 ; ccB=[-1 1];
  var=reshape(bkl_Zon,ncx,nc) ; ccB=[-1 50];
  grph_CS(var,xcs,ycs,xcg,ycg,ccB(1),ccB(2),shift,cbV,AxBx);
