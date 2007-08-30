@@ -5,3 +5,5 @@
 STD*
 *.txt
 mnc_test_*
+fort.*
+datetime
