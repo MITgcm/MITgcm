@@ -14,7 +14,7 @@ function [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 %-----------------------
 
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.3 2007/08/28 16:25:45 molod Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.4 2007/08/30 16:14:50 jmc Exp $
 % $Name:  $
 
 if nargin < 9, cbV=0 ; end
@@ -25,7 +25,7 @@ if nargin < 11, kEnv=0 ; end
 nc=size(var,2) ; ncp=nc+1 ; nPg=nc*nc*6;
   MxV=min(min(var));
   mnV=max(max(var));
- if shift == 1 | shift == 1,
+ if shift == 1 | shift == -1,
   for j=1:nc, for i=1:6*nc,
    if ~isnan(var(i,j)) & xcs(i,j) > AxBx(1) & xcs(i,j) < AxBx(2) ...
                        & ycs(i,j) > AxBx(3) & ycs(i,j) < AxBx(4) ,
@@ -33,7 +33,6 @@ nc=size(var,2) ; ncp=nc+1 ; nPg=nc*nc*6;
   end ; end ;
  else
   for j=1:nc, for i=1:6*nc,
-  %if var(i,j) ~= NaN ; mnV=min(var(i,j),mnV); MxV=max(var(i,j),MxV) ; end
    if ~isnan(var(i,j)) ; mnV=min(var(i,j),mnV); MxV=max(var(i,j),MxV) ; end
   end ; end ;
  end
