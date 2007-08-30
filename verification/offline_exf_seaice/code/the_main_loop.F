@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/Attic/the_main_loop.F,v 1.3 2007/08/16 12:25:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/Attic/the_main_loop.F,v 1.4 2007/08/30 15:07:21 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -88,7 +88,6 @@ c They provide the fields to be stored.
 #   include "THSICE_SIZE.h"
 #   include "THSICE_PARAMS.h"
 #   include "THSICE_VARS.h"
-#   include "THSICE_2DYN.h"
 #  endif
 #  ifdef ALLOW_EBM
 #   include "EBM.h"

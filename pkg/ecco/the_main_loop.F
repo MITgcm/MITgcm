@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.60 2007/08/17 21:36:40 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.61 2007/08/30 15:05:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -136,7 +136,6 @@ c They provide the fields to be stored.
 #  include "THSICE_SIZE.h"
 #  include "THSICE_PARAMS.h"
 #  include "THSICE_VARS.h"
-#  include "THSICE_2DYN.h"
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP.h"
