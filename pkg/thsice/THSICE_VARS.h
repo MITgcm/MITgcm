@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.9 2007/04/16 22:38:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.10 2007/08/30 15:02:51 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -67,6 +67,23 @@ c     _RL oceSflx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL icFlxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL icFlxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL icFrwAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+C-- COMMON /THSICE_DYN_R/  variables used with sea-ice advection/diffusion
+C   oceFWfx   :: fresh water flux to the ocean  [kg/m^2/s]
+C   oceSflx   :: salt flux to the ocean         [psu.kg/m^2/s] (~g/m^2/s)
+C   oceQnet   :: heat flux to the ocean         [W/m^2]
+C---
+C    Note :: when ice volume is too small to be kept, ice & snow is melt
+C        and fresh water, salt and heat are returned to the ocean.
+C        For now, those fluxes are stored separately and will try to find
+C        out how to incorporate them more naturally in the usual forcing.
+C---
+      COMMON /THSICE_DYN_R/
+     &       oceFWfx, oceSflx, oceQnet
+
+      _RL oceFWfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL oceSflx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL oceQnet(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C-- COMMON / THSICE_OCEMXLAYER / oceanic mixed layer state
 C   hOceMxL :: thickness   of the ocean mixed layer [m]

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.16 2007/04/19 13:22:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.17 2007/08/30 15:02:51 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -32,9 +32,6 @@ C     === Global variables ===
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
-C--
-# include "THSICE_2DYN.h"
-C--
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

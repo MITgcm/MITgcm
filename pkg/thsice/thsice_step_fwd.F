@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.24 2007/04/27 15:50:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.25 2007/08/30 15:02:51 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -36,7 +36,6 @@ C     === Global variables ===
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
 #include "THSICE_TAVE.h"
-#include "THSICE_2DYN.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"

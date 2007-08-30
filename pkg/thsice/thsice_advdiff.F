@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.8 2007/08/27 15:55:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.9 2007/08/30 15:02:51 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -38,7 +38,6 @@ C   oceQnet   :: heat flux to the ocean         [W/m^2]
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
-#include "THSICE_2DYN.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
 #endif
