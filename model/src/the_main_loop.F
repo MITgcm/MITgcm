@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.88 2007/08/16 04:15:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.89 2007/08/30 15:04:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -88,7 +88,6 @@ c They provide the fields to be stored.
 #   include "THSICE_SIZE.h"
 #   include "THSICE_PARAMS.h"
 #   include "THSICE_VARS.h"
-#   include "THSICE_2DYN.h"
 #  endif
 #  ifdef ALLOW_EBM
 #   include "EBM.h"
