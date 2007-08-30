@@ -1,10 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.865 2007/08/27 22:21:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.866 2007/08/30 21:26:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o each tested exp: add a "run" directory with a standard ".cvsignore" file ;
+  remove .cvsignore from input dir. (since testreport no longer run here).
 o pkg/thsice:
+ - cleaning: move common block out of "THSICE_2DYN.h" (removed) to "THSICE_VARS.h"
  - fix reshaping of sea-ice just after advection:
    melt all the ice only if ice-volume is too small.
  - re-visit lateral/thinning repartition of melting (modifs from May 04, 2007):
