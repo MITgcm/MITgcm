@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.19 2007/04/16 22:36:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.20 2007/08/31 14:04:28 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -64,6 +64,8 @@ C     i,j,bi,bj - Loop counters
       _RL zetaMinusEta(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL ETAMEAN  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL ZETAMEAN (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+
+      _RL utmp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
       _RL UVRT1    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL UVRT2    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -405,24 +407,50 @@ C     now set up right-hand-side
      5         -UICEC(I+1,J  ,bi,bj) - UICEC(I ,J  ,bi,bj) )
          ENDDO
         ENDDO
+        DO j=1-Oly,sNy+Oly-1
+         DO i=1-Olx,sNx+Olx-1
+          utmp(i,j,bi,bj) = quart * ( 
+     &         uicec(i,j,  bi,bj) + uicec(i+1,j,  bi,bj) )
+          utmp(i,j,bi,bj)= utmp(i,j,bi,bj) + quart * (
+     &         uicec(i,j+1,bi,bj) + uicec(i+1,j+1,bi,bj) )
+         ENDDO
+        ENDDO
         DO J=1,sNy
          DO I=1,sNx
            FXY(I,J,bi,bj)=-DRAGA(I,J,bi,bj)*UICEC(I,J,bi,bj)
      &        +FORCEY(I,J,bi,bj)
-     &     
-     &        + HALF*(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
-     &        *(zetaMinusEta(I-1,J  ,bi,bj)+zetaMinusEta(I,J  ,bi,bj)
-     &         -zetaMinusEta(I-1,J-1,bi,bj)-zetaMinusEta(I,J-1,bi,bj))
-     &         * 1. _d 0 /( _dxG(I,J,bi,bj) + _dxG(I-1,J,bi,bj))
-     &         * _recip_dyU(I,J,bi,bj)
-     &         
-     &         +HALF*(ZETAMEAN(I,J,bi,bj) - ETAMEAN(I,J,bi,bj))
-     &         *((UICEC(I+1,J+1,bi,bj) - UICEC(I-1,J+1,bi,bj))
-     &         * 2. _d 0 /( _dxG(I,J+1,bi,bj) + _dxG(I-1,J+1,bi,bj))
-     &          -(UICEC(I+1,J-1,bi,bj)-UICEC(I-1,J-1,bi,bj))
-     &         * 2. _d 0 /( _dxG(I,J-1,bi,bj) + _dxG(I-1,J-1,bi,bj)))
-     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)
      &
+     &        + ( 0.5 _d 0 * 
+     &         (zetaMinusEta(i,j,bi,bj)+zetaMinusEta(i-1,j,bi,bj))
+     &         *(utmp(i,j,bi,bj)-utmp(i-1,j,bi,bj)) 
+     &         * _recip_dxC(i,j,bi,bj)
+     &          - 0.5 _d 0 * 
+     &         (zetaMinusEta(i,j-1,bi,bj)+zetaMinusEta(i-1,j-1,bi,bj))
+     &         *(utmp(i,j-1,bi,bj)-utmp(i-1,j-1,bi,bj)) 
+     &         * _recip_dxC(i,j-1,bi,bj)
+     &         ) * _recip_dyU(i,j,bi,bj)
+     &         
+C--   This is the original discretization of the above term
+C--   d/dy ([zeta-eta] duice/dx). Because this discretization is so different
+C--   from the one of the corresponding term d/dx ([zeta-eta] dvice/dy) in 
+C--   the u-equation, it breaks the symmetry of the equations. The above
+C--   discretization is still *ad hoc* (i.e., not designed with explicit 
+C--   symmetry considerations in mind), but in simple tests the code
+C--   proves to give symmetric results where required. mlosch, Aug31,2007
+CML     &     
+CML     &        + HALF*(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
+CML     &        *(zetaMinusEta(I-1,J  ,bi,bj)+zetaMinusEta(I,J  ,bi,bj)
+CML     &         -zetaMinusEta(I-1,J-1,bi,bj)-zetaMinusEta(I,J-1,bi,bj))
+CML     &         * 1. _d 0 /( _dxG(I,J,bi,bj) + _dxG(I-1,J,bi,bj))
+CML     &         * _recip_dyU(I,J,bi,bj)
+CML     &         
+CML     &         +HALF*(ZETAMEAN(I,J,bi,bj) - ETAMEAN(I,J,bi,bj))
+CML     &         *((UICEC(I+1,J+1,bi,bj) - UICEC(I-1,J+1,bi,bj))
+CML     &         * 2. _d 0 /( _dxG(I,J+1,bi,bj) + _dxG(I-1,J+1,bi,bj))
+CML     &          -(UICEC(I+1,J-1,bi,bj)-UICEC(I-1,J-1,bi,bj))
+CML     &         * 2. _d 0 /( _dxG(I,J-1,bi,bj) + _dxG(I-1,J-1,bi,bj)))
+CML     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)
+CML     &
      &        +(ETA(I  ,J  ,bi,bj) * uDiffY(I  ,J  )
      &         +ETA(I  ,J-1,bi,bj) * uDiffY(I  ,J-1)
      &         -ETA(I-1,J  ,bi,bj) * uDiffY(I-1,J  )
@@ -454,6 +482,11 @@ C     now set up right-hand-side
          END DO
         END DO
 
+CML        DO J=1,sNy
+CML         DO I=1,sNx
+CML          FXY(I,J,bi,bj)=0. _d 0
+CML         END DO
+CML        END DO
        ENDDO
       ENDDO
 
