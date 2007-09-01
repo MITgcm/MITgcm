@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/GLOBAL_SUM.h,v 1.5 2005/09/28 01:58:25 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/GLOBAL_SUM.h,v 1.6 2007/09/01 22:31:46 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: GLOBAL_SUM.h
@@ -6,8 +6,8 @@ C     !INTERFACE:
 C     include "GLOBAL_SUM.h"
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | GLOBAL\_SUM.h                                             |
-C     | o Globals used by Fortran global sum routine.            |
+C     | GLOBAL\_SUM.h
+C     | o Globals used by Fortran global sum routine.
 C     *==========================================================*
 C     | The global sum shared memory scheme uses global heap data|
 C     | structures (.i.e COMMON blocks ). Each thread writes to  |
@@ -29,19 +29,21 @@ C     | the way the global sum routines work.                    |
 C     *==========================================================*
 CEOP
 
-      COMMON / GSUM_COMMON_R8 / phiGSRL, phiVGSRL
+      COMMON / GSUM_COMMON_R8 / phiGSRL
+c    &                        , phiVGSRL
       Real*8  phiGSRL (lShare8, MAX_NO_THREADS )
-      Real*8  phivGSRL(MAX_VGS, MAX_NO_THREADS )
+c     Real*8  phivGSRL(MAX_VGS, MAX_NO_THREADS )
 
-      COMMON / GSUM_COMMON_R4 / phiGSRS, phiVGSRS
+      COMMON / GSUM_COMMON_R4 / phiGSRS
+c    &                        , phiVGSRS
       Real*4  phiGSRS (lShare4, MAX_NO_THREADS )
-      Real*4  phivGSRS(MAX_VGS, MAX_NO_THREADS )
+c     Real*4  phivGSRS(MAX_VGS, MAX_NO_THREADS )
 
-      COMMON / GSUM_COMMON_I  / phiGSI, phiVGSI
+      COMMON / GSUM_COMMON_I  / phiGSI
+c    &                        , phiVGSI
       INTEGER phiGSI  (lShare4, MAX_NO_THREADS )
-      INTEGER phivGSI (MAX_VGS, MAX_NO_THREADS )
+c     INTEGER phivGSI (MAX_VGS, MAX_NO_THREADS )
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
 CEH3 ;;; End: ***
-
