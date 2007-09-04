@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.10 2007/06/21 00:29:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.11 2007/09/04 16:49:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,7 +53,9 @@ C            = 3 :: fill-in diagnostics for momentum & tracer variables
 C            = 4 :: fill-in state variable tendency diagnostics the second time
 C     bi,bj      :: tile indices
       INTEGER selectVars
+#if defined(ALLOW_THSICE) || defined(ALLOW_LAND)
       INTEGER bi, bj
+#endif
 
 C--   Fill-in Diagnostics pkg storage array (for state-variables)
       IF ( usediagnostics ) THEN

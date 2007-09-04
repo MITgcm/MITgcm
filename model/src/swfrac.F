@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.13 2007/05/03 21:39:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.14 2007/09/04 16:49:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,11 +63,11 @@ C     max number of different water types
       _RL rfac(nwtype),a1(nwtype),a2(nwtype)
       INTEGER i
 #ifdef ALLOW_CAL
-      _RL     fac
-      LOGICAL first, changed
-      INTEGER count0, count1
-      INTEGER jerl(12)
-      DATA jerl / 2 , 2 , 2 , 3 , 3 , 3 , 4 , 4 , 4 , 4 , 3 , 2 /
+c     _RL     fac
+c     LOGICAL first, changed
+c     INTEGER count0, count1
+c     INTEGER jerl(12)
+c     DATA jerl / 2 , 2 , 2 , 3 , 3 , 3 , 4 , 4 , 4 , 4 , 3 , 2 /
 #endif /* ALLOW_CAL */
 C
 C     Jerlov water type :  I       IA      IB      II      III

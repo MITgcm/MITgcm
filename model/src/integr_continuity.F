@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.18 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.19 2007/09/04 16:49:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,11 +53,14 @@ C     i,j,k  :: Loop counters
 C     uTrans :: Volume transports ( uVel.xA )
 C     vTrans :: Volume transports ( vVel.yA )
 C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
-      INTEGER i,j,k, ks
+      INTEGER k
+#ifdef EXACT_CONSERV
+      INTEGER i,j, ks
       _RL uTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL vTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL hDivFlow(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL facEmP
+#endif
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.12 2006/10/19 00:15:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.13 2007/09/04 16:49:44 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -52,7 +52,7 @@ C     numbWrMax    ::  maximum  Number of warning written on STD-ERR file
       _RL hFactmp, adjust_nb_pt, adjust_volum
       _RL rSurftmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hhm, hhp
-      CHARACTER*(MAX_LEN_MBUF) suff
+c     CHARACTER*(MAX_LEN_MBUF) suff
 CEOP
       DATA numbWrite / 0 /
       numbWrMax = Nx*Ny
@@ -76,15 +76,15 @@ C-- Compute the new fractional thickness of surface level (ksurfC):
            IF (rSurftmp(i,j) .LT. Rmin_surf(i,j,bi,bj)) THEN
 C-- Needs to do something :
             IF (numbWrite.LE.numbWrMax) THEN
-             numbWrite = numbWrite + 1 
+             numbWrite = numbWrite + 1
              hFactmp = ( rSurftmp(i,j)-MAX(rF(ks+1),R_low(i,j,bi,bj))
      &                 )*recip_drF(ks)
              IF (hFactmp.LT.hFacInf) THEN
-              WRITE(errorMessageUnit,'(2A,6I4,I10)') 
+              WRITE(errorMessageUnit,'(2A,6I4,I10)')
      &         'WARNING: hFacC < hFacInf at:',
      &         ' i,j,k,bi,bj,Thid,Iter=',i,j,ks,bi,bj,myThid,myIter
              ELSE
-              WRITE(errorMessageUnit,'(2A,6I4,I10)') 
+              WRITE(errorMessageUnit,'(2A,6I4,I10)')
      &         'WARNING: hFac < hFacInf near:',
      &         ' i,j,k,bi,bj,Thid,Iter=',i,j,ks,bi,bj,myThid,myIter
              ENDIF
@@ -93,16 +93,16 @@ C-- Needs to do something :
      &          hfacC(i,j,ks,bi,bj), hFactmp, etaFld(i,j,bi,bj)
             ENDIF
 C-- Decide to STOP :
-c             WRITE(errorMessageUnit,'(A)') 
+c             WRITE(errorMessageUnit,'(A)')
 c    &        'STOP in CALC_SURF_DR : too SMALL hFac !'
-c             STOP 'ABNORMAL END: S/R CALC_SURF_DR' 
+c             STOP 'ABNORMAL END: S/R CALC_SURF_DR'
 C----------
 
 C-- Continue with Rmin_surf:
              IF ( i.GE.1.AND.i.LE.sNx .AND.
      &            j.GE.1.AND.j.LE.sNy ) THEN
                adjust_nb_pt = adjust_nb_pt + 1.
-               adjust_volum = adjust_volum 
+               adjust_volum = adjust_volum
      &          + rA(i,j,bi,bj)*(Rmin_surf(i,j,bi,bj)-rSurftmp(i,j))
              ENDIF
              rSurftmp(i,j) = Rmin_surf(i,j,bi,bj)
@@ -110,18 +110,18 @@ C----------
            ENDIF
 
 C-- Set hFac_surfC :
-           hFac_surfC(i,j,bi,bj) = 
+           hFac_surfC(i,j,bi,bj) =
      &         ( rSurftmp(i,j) - MAX(rF(ks+1), R_low(i,j,bi,bj))
      &         )*recip_drF(ks)*maskC(i,j,ks,bi,bj)
 
 C-- Usefull warning when hFac becomes very large:
            IF ( numbWrite.LE.numbWrMax .AND.
      &          hFac_surfC(i,j,bi,bj).GT.hFacSup ) THEN
-              numbWrite = numbWrite + 1 
-              WRITE(errorMessageUnit,'(2A,6I4,I10)') 
+              numbWrite = numbWrite + 1
+              WRITE(errorMessageUnit,'(2A,6I4,I10)')
      &         'WARNING: hFacC > hFacSup at:',
      &         ' i,j,k,bi,bj,Thid,Iter=',i,j,ks,bi,bj,myThid,myIter
-              WRITE(errorMessageUnit,'(A,2F10.6,1PE14.6)') 
+              WRITE(errorMessageUnit,'(A,2F10.6,1PE14.6)')
      &         'hFac_n-1,hFac_n,eta =', hfacC(i,j,ks,bi,bj),
      &          hFac_surfC(i,j,bi,bj), etaFld(i,j,bi,bj)
            ENDIF
@@ -141,10 +141,10 @@ C-- Compute fractional thickness of surface level, for U & V point:
             hhm = rF(ks)
             IF(ks.EQ.ksurfC(i-1,j,bi,bj)) hhm = rSurftmp(i-1,j)
             hhp = rF(ks)
-            IF(ks.EQ.ksurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)  
-            hFac_surfW(i,j,bi,bj) = 
-     &         ( MIN(hhm,hhp) 
-     &          - MAX(rF(ks+1),R_low(i-1,j,bi,bj),R_low(i,j,bi,bj)) 
+            IF(ks.EQ.ksurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
+            hFac_surfW(i,j,bi,bj) =
+     &         ( MIN(hhm,hhp)
+     &          - MAX(rF(ks+1),R_low(i-1,j,bi,bj),R_low(i,j,bi,bj))
      &         )*recip_drF(ks)*maskW(i,j,ks,bi,bj)
           ENDIF
          ENDDO
@@ -158,9 +158,9 @@ C-- Compute fractional thickness of surface level, for U & V point:
             IF(ks.EQ.ksurfC(i,j-1,bi,bj)) hhm = rSurftmp(i,j-1)
             hhp = rF(ks)
             IF(ks.EQ.ksurfC(i,j,bi,bj))   hhp = rSurftmp(i,j)
-            hFac_surfS(i,j,bi,bj) = 
-     &         ( MIN(hhm,hhp) 
-     &          - MAX(rF(ks+1),R_low(i,j-1,bi,bj),R_low(i,j,bi,bj)) 
+            hFac_surfS(i,j,bi,bj) =
+     &         ( MIN(hhm,hhp)
+     &          - MAX(rF(ks+1),R_low(i,j-1,bi,bj),R_low(i,j,bi,bj))
      &         )*recip_drF(ks)*maskS(i,j,ks,bi,bj)
           ENDIF
          ENDDO
@@ -173,21 +173,21 @@ C-    end bi,bj loop.
       ENDDO
 
 C-- Global diagnostic :
-      _GLOBAL_SUM_R8( adjust_nb_pt , myThid ) 
-      _GLOBAL_SUM_R8( adjust_volum , myThid ) 
+      _GLOBAL_SUM_R8( adjust_nb_pt , myThid )
+      _GLOBAL_SUM_R8( adjust_volum , myThid )
       IF (adjust_nb_pt .GE.1.) THEN
-        _BEGIN_MASTER( myThid ) 
-        WRITE(standardMessageUnit,'(2(A,I10),1PE16.8)') 
+        _BEGIN_MASTER( myThid )
+        WRITE(standardMessageUnit,'(2(A,I10),1PE16.8)')
      &    ' SURF_ADJUSTMENT: Iter=', myIter,
      &    ' Nb_pts,Vol=', nint(adjust_nb_pt), adjust_volum
         _END_MASTER( myThid )
       ENDIF
 
-      _EXCH_XY_R4(hFac_surfC, myThid ) 
+      _EXCH_XY_R4(hFac_surfC, myThid )
       CALL EXCH_UV_XY_RS(hFac_surfW,hFac_surfS,.FALSE.,myThid)
 
 C-----
-C Note: testing ksurfW,S is equivalent to a full height mask 
+C Note: testing ksurfW,S is equivalent to a full height mask
 C   ==> no need for applying the mask here.
 C and with "partial thin wall" ==> mask could be applied in S/R UPDATE_SURF_DR
 C-----
@@ -195,7 +195,7 @@ C-----
 c     IF ( myIter.GE.0 ) THEN
 c       WRITE(suff,'(I10.10)') myIter
 c       CALL WRITE_FLD_XY_RS( 'hFac_surfC.', suff, hFac_surfC,
-c    &                         myIter, myThid )                    
+c    &                         myIter, myThid )
 c     ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

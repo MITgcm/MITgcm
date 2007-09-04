@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.10 2007/04/23 20:46:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.11 2007/09/04 16:49:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -6,8 +6,8 @@ C $Name:  $
 
 CBOP
 C     !ROUTINE: CALC_3D_DIFFUSIVITY
-C     !INTERFACE: 
-      SUBROUTINE CALC_3D_DIFFUSIVITY( 
+C     !INTERFACE:
+      SUBROUTINE CALC_3D_DIFFUSIVITY(
      I        bi,bj,iMin,iMax,jMin,jMax,
      I        trIdentity, trUseGMRedi, trUseKPP,
      O        KappaRTr,
@@ -62,7 +62,10 @@ C     i, j, k    :: Loop counters
 C     iTr        :: passive tracer index
 C     msgBuf     :: message buffer
       INTEGER i,j,k
-      _RL KbryanLewis79, KbryanLewisEQ
+      _RL KbryanLewis79
+#ifdef ALLOW_BL79_LAT_VARY
+      _RL KbryanLewisEQ
+#endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_PTRACERS
       INTEGER iTr
@@ -92,7 +95,7 @@ CEOP
         DO k = 1,Nr
          DO j = 1-Oly,sNy+Oly
           DO i = 1-Olx,sNx+Olx
-           KappaRTr(i,j,k) = KappaRTr(i,j,k) 
+           KappaRTr(i,j,k) = KappaRTr(i,j,k)
 #if (defined ALLOW_3D_DIFFKR || \
      (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
      &          + diffKr(i,j,k,bi,bj)
@@ -177,7 +180,7 @@ C--   Add physical pacakge contributions:
 #endif /* ALLOW_KPP */
 
 #ifdef ALLOW_GMREDI
-      IF (trUseGMRedi) THEN 
+      IF (trUseGMRedi) THEN
          CALL GMREDI_CALC_DIFF(
      I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
      U        KappaRTr,
@@ -202,7 +205,7 @@ C--   Add physical pacakge contributions:
      I        myThid)
       ENDIF
 #endif
-      
+
 #ifdef ALLOW_GGL90
       IF (useGGL90) THEN
          CALL GGL90_CALC_DIFF(
@@ -211,9 +214,9 @@ C--   Add physical pacakge contributions:
      I        myThid)
       ENDIF
 #endif
-      
-C-    Apply mask to vertical diffusivity 
-C jmc: don't have the impression that masking is needed 
+
+C-    Apply mask to vertical diffusivity
+C jmc: don't have the impression that masking is needed
 C      but could be removed later if it's the case.
 c     DO j = 1-Oly, sNy+Oly
 c      DO i = 1-Olx, sNx+Olx

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.32 2007/04/23 20:46:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.33 2007/09/04 16:49:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -6,8 +6,8 @@ C $Name:  $
 
 CBOP
 C     !ROUTINE: CALC_DIFFUSIVITY
-C     !INTERFACE: 
-      SUBROUTINE CALC_DIFFUSIVITY( 
+C     !INTERFACE:
+      SUBROUTINE CALC_DIFFUSIVITY(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
      I        maskUp,
      O        KappaRT,KappaRS,
@@ -15,8 +15,8 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE CALC_DIFFUSIVITY                               
-C     | o Calculate net vertical diffusivity                               
+C     | SUBROUTINE CALC_DIFFUSIVITY
+C     | o Calculate net vertical diffusivity
 C     *==========================================================*
 C     | Combines spatially varying diffusion coefficients from
 C     | KPP and/or GM and/or convective stability test.
@@ -36,8 +36,8 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     bi, bj, :: tile indices
 C     iMin,   :: Range of points for which calculation is performed.
-C     iMax, 
-C     jMin, 
+C     iMax,
+C     jMin,
 C     jMax
 C     maskUp  :: land/water mask for Wvel points (above tracer level)
 C     myThid  :: Instance number for this innvocation of CALC_DIFFUSIVITY
@@ -53,7 +53,10 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     I, J :: Loop counters
       INTEGER i,j
-      _RL KbryanLewis79, KbryanLewisEQ
+      _RL KbryanLewis79
+#ifdef ALLOW_BL79_LAT_VARY
+      _RL KbryanLewisEQ
+#endif
 CEOP
 
       IF ( .NOT. UseKPP ) THEN
@@ -100,7 +103,7 @@ CEOP
       ENDIF
 
 #ifdef ALLOW_GMREDI
-      IF (useGMRedi) THEN 
+      IF (useGMRedi) THEN
          CALL GMREDI_CALC_DIFF(
      I        bi,bj,iMin,iMax,jMin,jMax,k,1,
      U        KappaRT,
@@ -150,7 +153,7 @@ CEOP
      I        myThid)
       ENDIF
 #endif
-      
+
 #ifdef ALLOW_GGL90
       IF (useGGL90) THEN
          CALL GGL90_CALC_DIFF(
@@ -163,9 +166,9 @@ CEOP
      I        myThid)
       ENDIF
 #endif
-      
-C-    Apply mask to vertical diffusivity 
-C jmc: don't have the impression that masking is needed 
+
+C-    Apply mask to vertical diffusivity
+C jmc: don't have the impression that masking is needed
 C      but could be removed later if it's the case.
       DO j = 1-Oly, sNy+Oly
        DO i = 1-Olx, sNx+Olx
