@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/GLOBAL_SUM.h,v 1.6 2007/09/01 22:31:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/GLOBAL_SUM.h,v 1.7 2007/09/04 14:41:24 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: GLOBAL_SUM.h
@@ -29,9 +29,10 @@ C     | the way the global sum routines work.                    |
 C     *==========================================================*
 CEOP
 
-      COMMON / GSUM_COMMON_R8 / phiGSRL
+      COMMON / GSUM_COMMON_R8 / phiGSRL, shareBufGSR8
 c    &                        , phiVGSRL
       Real*8  phiGSRL (lShare8, MAX_NO_THREADS )
+      Real*8  shareBufGSR8 ( nSx, nSy )
 c     Real*8  phivGSRL(MAX_VGS, MAX_NO_THREADS )
 
       COMMON / GSUM_COMMON_R4 / phiGSRS
