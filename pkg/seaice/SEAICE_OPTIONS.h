@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.25 2007/07/18 22:53:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.26 2007/09/04 23:16:37 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -67,17 +67,15 @@ C     Therefore it is not possible to switch between the two
 C     in the middle of an integration.
 #undef SEAICE_MULTICATEGORY
 
-C--   By default cdm wind stress under sea-ice is set to the
-C     same value as it would be if there was no sea-ice.
-C     This is a placeholder until a more physically-sensible
-C     stable solution is developed.  Apparently ocean stress
-C     that is based on sea-ice velocity can cause trouble in
-C     Arctic Ocean configurations.  This temporary solution
-C     also corresponds to that adopted by CCSM-2.  For the
-C     adventurous user who requires ice-modified stress,
-C     following options are available.
-#undef SEAICE_ORIGINAL_BAD_ICE_STRESS
+C--   By default for B-grid dynamics solver wind stress under sea-ice is
+C     set to the same value as it would be if there was no sea-ice.
+C     Define following CPP flag for B-grid ice-ocean stress coupling.
 #undef SEAICE_TEST_ICE_STRESS_1
+
+C--   By default for B-grid dynamics solver surface tilt is obtained
+C     indirectly via geostrophic velocities.  Define following CPP
+C     in order to ues ETAN instead.
+#undef EXPLICIT_SSH_SLOPE
 
 C--   By default the freezing point of water is set to the value of 
 C     the parameter SEAICE_freeze (=-1.96 by default). To use a
