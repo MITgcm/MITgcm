@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.92 2007/09/05 01:46:37 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.93 2007/09/05 16:09:31 jmc Exp $
 #  $Name:  $
 #
 
@@ -94,15 +94,16 @@ build_mpack()
     echo "OK"
 }
 
-testoutput_for_prop()
+testoutput_var()
 {
-    # testoutput_for_prop dir s1 label subdir extension
+    # testoutput_var dir s1 label subdir extension
     #
-    #  compares files $dir/$subdir/$OUTPUTFILE and $dir/results/output.txt
-    #  using search strings s1 and text label 
+    #  compares 1 variable output selected from file $dir/$subdir/$OUTPUTFILE 
+    #     with same output from reference file $dir/results/output.$extension
+    #  using search strings s1 and text label
 
     if [ $debug -gt 0 ]; then
-	echo testoutput_for_prop: grep "$2" $1/$4/$OUTPUTFILE 1>&2
+	echo testoutput_var: grep "$2" $1/$4/$OUTPUTFILE 1>&2
     fi
     if [ -r $1/$4/$OUTPUTFILE ]; then
 	grep "$2" $1/$4/$OUTPUTFILE | sed 's/.*=//' | cat -n > tmp1.txt
@@ -114,11 +115,11 @@ testoutput_for_prop()
 	    return 99
 	fi
     else
-	echo testoutput_for_prop: $OUTPUTFILE from model run was not readable 1>&2
+	echo testoutput_var: $OUTPUTFILE from model run was not readable 1>&2
 	return 99
     fi
     if [ $debug -gt 0 ]; then
-	echo testoutput_for_prop: grep "$2" $1/results/output.$5 1>&2
+	echo testoutput_var: grep "$2" $1/results/output.$5 1>&2
     fi
     grep "$2" $1/results/output.$5 | sed 's/.*=//' | cat -n > tmp2.txt
     lncntB=`wc -l tmp2.txt | awk '{print $1}' `
@@ -136,20 +137,20 @@ testoutput_for_prop()
     fi
     has_nan=`cat tmp1.txt | grep -i nan | wc -l`
     if [ $has_nan -gt 0  ] ; then
-	echo testoutput_for_prop: $OUTPUTFILE contains $has_nan NaN values  1>&2
+	echo testoutput_var: $OUTPUTFILE contains $has_nan NaN values  1>&2
 	return 99
     fi
     has_inf=`cat tmp1.txt | grep -i inf | wc -l`
     if [ $has_inf -gt 0  ] ; then
-	echo testoutput_for_prop: $OUTPUTFILE contains $has_inf Inf values  1>&2
+	echo testoutput_var: $OUTPUTFILE contains $has_inf Inf values  1>&2
 	return 99
     fi
     if [ $debug -gt 0 ]; then
-	echo testoutput_for_prop: join tmp1.txt tmp2.txt 1>&2
+	echo testoutput_var: join tmp1.txt tmp2.txt 1>&2
     fi
     join tmp1.txt tmp2.txt | awk '{print $1 " " $2 " " $3}' > tmp3.txt
     if [ $debug -gt 0 ]; then
-	echo testoutput_for_prop: compare_lines 1>&2
+	echo testoutput_var: compare_lines 1>&2
     fi
     if [ $verbose -gt 1 ]; then
 	cat tmp3.txt 1>&2
@@ -160,7 +161,7 @@ testoutput_for_prop()
     digits_of_similarity=`./tr_cmpnum < tmp4.txt`
     if [ $digits_of_similarity -eq 99 ]; then
 	if [ $verbose -gt 0 ]; then
-	    echo testoutput_for_prop: No comparison was available for \"$2\" 1>&2
+	    echo testoutput_var: No comparison was available for \"$2\" 1>&2
 	fi
 	digits_of_similarity=99
     else
@@ -229,35 +230,35 @@ check_for_add_mon_output()
     done
 }
 
-testoutput()
+testoutput_run()
 {
-    # testoutput directory subdir extension
+    # testoutput_run directory subdir extension
     #
-    #  test output in "directory"
+    #  test output from 1 run in "directory"
     if test "x$ADM" = x ; then
 	if [ $debug -gt 0 ]; then
-	    echo testoutput: testoutput_for_prop $1 cg2d_init_res 1>&2
+	    echo testoutput_run: testoutput_var $1 cg2d_init_res 1>&2
 	fi
-	testoutput_for_prop $1 "cg2d_init_res" "cg2d init. residual" $2 $3; cg2dres=$?
+	testoutput_var $1 "cg2d_init_res" "cg2d init. residual" $2 $3; cg2dres=$?
 	if [ $debug -gt 0 ]; then
-	    echo testoutput: cg2dres=$cg2dres 1>&2
+	    echo testoutput_run: cg2dres=$cg2dres 1>&2
 	fi
-	testoutput_for_prop $1 "dynstat_theta_min" "theta minimum" $2 $3; tmin=$?
-	testoutput_for_prop $1 "dynstat_theta_max" "theta maximum" $2 $3; tmax=$?
-	testoutput_for_prop $1 "dynstat_theta_mean" "theta mean" $2 $3; tmean=$?
-	testoutput_for_prop $1 "dynstat_theta_sd" "theta s.d." $2 $3; tsd=$?
-	testoutput_for_prop $1 "dynstat_salt_min" "salt minimum" $2 $3; smin=$?
-	testoutput_for_prop $1 "dynstat_salt_max" "salt maximum" $2 $3; smax=$?
-	testoutput_for_prop $1 "dynstat_salt_mean" "salt mean" $2 $3; smean=$?
-	testoutput_for_prop $1 "dynstat_salt_sd" "salt s.d." $2 $3; ssd=$?
-	testoutput_for_prop $1 "dynstat_uvel_min" "U minimum" $2 $3; umin=$?
-	testoutput_for_prop $1 "dynstat_uvel_max" "U maximum" $2 $3; umax=$?
-	testoutput_for_prop $1 "dynstat_uvel_mean" "U mean" $2 $3; umean=$?
-	testoutput_for_prop $1 "dynstat_uvel_sd" "U s.d." $2 $3; usd=$?
-	testoutput_for_prop $1 "dynstat_vvel_min" "V minimum" $2 $3; vmin=$?
-	testoutput_for_prop $1 "dynstat_vvel_max" "V maximum" $2 $3; vmax=$?
-	testoutput_for_prop $1 "dynstat_vvel_mean" "V mean" $2 $3; vmean=$?
-	testoutput_for_prop $1 "dynstat_vvel_sd" "V s.d." $2 $3; vsd=$?
+	testoutput_var $1 "dynstat_theta_min" "theta minimum" $2 $3; tmin=$?
+	testoutput_var $1 "dynstat_theta_max" "theta maximum" $2 $3; tmax=$?
+	testoutput_var $1 "dynstat_theta_mean" "theta mean" $2 $3; tmean=$?
+	testoutput_var $1 "dynstat_theta_sd" "theta s.d." $2 $3; tsd=$?
+	testoutput_var $1 "dynstat_salt_min" "salt minimum" $2 $3; smin=$?
+	testoutput_var $1 "dynstat_salt_max" "salt maximum" $2 $3; smax=$?
+	testoutput_var $1 "dynstat_salt_mean" "salt mean" $2 $3; smean=$?
+	testoutput_var $1 "dynstat_salt_sd" "salt s.d." $2 $3; ssd=$?
+	testoutput_var $1 "dynstat_uvel_min" "U minimum" $2 $3; umin=$?
+	testoutput_var $1 "dynstat_uvel_max" "U maximum" $2 $3; umax=$?
+	testoutput_var $1 "dynstat_uvel_mean" "U mean" $2 $3; umean=$?
+	testoutput_var $1 "dynstat_uvel_sd" "U s.d." $2 $3; usd=$?
+	testoutput_var $1 "dynstat_vvel_min" "V minimum" $2 $3; vmin=$?
+	testoutput_var $1 "dynstat_vvel_max" "V maximum" $2 $3; vmax=$?
+	testoutput_var $1 "dynstat_vvel_mean" "V mean" $2 $3; vmean=$?
+	testoutput_var $1 "dynstat_vvel_sd" "V s.d." $2 $3; vsd=$?
 
 	#  This is for PTRACERS
 	for ii in $PTRACERS_NUM ; do
@@ -269,13 +270,13 @@ testoutput()
 	    #echo 'tst = '$tst
 	    if test "x$tst" = xt ; then
 		a="trcstat_ptracer0"
-		testoutput_for_prop $1 "$a"$ii"_min"  "p0"$ii"_min"  $2 $3
+		testoutput_var $1 "$a"$ii"_min"  "p0"$ii"_min"  $2 $3
 		RETVAL=$? ; eval `echo "p0"$ii"_min="$RETVAL`
-		testoutput_for_prop $1 "$a"$ii"_max"  "p0"$ii"_max"  $2 $3
+		testoutput_var $1 "$a"$ii"_max"  "p0"$ii"_max"  $2 $3
 		RETVAL=$? ; eval `echo "p0"$ii"_max="$RETVAL`
-		testoutput_for_prop $1 "$a"$ii"_mean" "p0"$ii"_mean" $2 $3
+		testoutput_var $1 "$a"$ii"_mean" "p0"$ii"_mean" $2 $3
 		RETVAL=$? ; eval `echo "p0"$ii"_mean="$RETVAL`
-		testoutput_for_prop $1 "$a"$ii"_sd"   "p0"$ii"_sd"   $2 $3
+		testoutput_var $1 "$a"$ii"_sd"   "p0"$ii"_sd"   $2 $3
 		RETVAL=$? ; eval `echo "p0"$ii"_sd="$RETVAL`
 	    fi
 	done
@@ -1147,7 +1148,7 @@ for dir in $TESTDIRS ; do
 	    && makemodel $dir/$builddir && make=Y \
 	    && linkdata $dir/$rundir $input_dirs \
 	    && runmodel $dir/$rundir && run=Y \
-	    && results=`testoutput $dir $rundir "txt"`
+	    && results=`testoutput_run $dir $rundir "txt"`
     fi
     
     echo
@@ -1172,7 +1173,7 @@ for dir in $TESTDIRS ; do
  	    run_clean $dir/tr_run.$ex
             linkdata $dir/tr_run.$ex input.$ex input
 	    runmodel $dir/tr_run.$ex && run=Y \
-		&& results=`testoutput $dir tr_run.$ex ${ex}".txt"`
+		&& results=`testoutput_run $dir tr_run.$ex ${ex}".txt"`
 	    fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
 	    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    fres="$fres.$ex"
