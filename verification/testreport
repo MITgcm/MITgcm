@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.91 2007/09/05 00:07:25 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.92 2007/09/05 01:46:37 jmc Exp $
 #  $Name:  $
 #
 
@@ -35,6 +35,8 @@ usage()
     echo "                             (DEF=\"hostname\")"
     echo "  (-ptr|-ptracers) STRING  specify which ptracers to test"
     echo "                             (DEF=\"1 2 3 4 5\")"
+    echo "  (-match) NUMBER          Matching Criteria (number of digits)"
+    echo "                             (DEF=\"12\")"
     echo "  (-j) JOBS                use \"make -j JOBS\" for parallel builds"
     echo "  (-clean)                 *ONLY* run \"make CLEAN\""
     echo "  (-quick|-q)              same as \"-nogenmake -noclean -nodepend\""
@@ -662,7 +664,7 @@ formatresults()
     if [ $1 = '--' ]; then
 	printf ' N/O '
     else
-	if [ $1 -gt 12 ]; then
+	if [ $1 -ge $MATCH_CRIT ]; then
 	    printf ' pass'
 	else
 	    printf ' FAIL'
@@ -734,6 +736,8 @@ ADM=
 # Additional monitor types
 PTRACERS_NUM="1 2 3 4 5"
 
+MATCH_CRIT=13
+
 printf "parsing options...  "
 
 ac_prev=
@@ -797,6 +801,9 @@ for ac_option ; do
 	    ac_prev=PTRACERS_NUM ;;
 	-ptracers=* | --ptracers=* | -ptr=* | --ptr=*)
 	    PTRACERS_NUM=$ac_optarg ;;
+
+	-match | --match ) ac_prev=MATCH_CRIT ;;
+	-match=* | --match=* ) MATCH_CRIT=$ac_optarg ;;
 
 	-j) ac_prev=JOBS ;;
 	-j=*) JOBS=$ac_optarg ;;
@@ -987,7 +994,11 @@ fi
 echo
 echo >> $SUMMARY
 if test "x$ADM" = x ; then
-    line_0="            ----T-----  ----S-----  ----U-----  ----V-----"
+    if [ $MATCH_CRIT -lt 10 ] ; 
+    then line_0="      "$MATCH_CRIT ;
+    else line_0="     "$MATCH_CRIT ; fi
+    line_0="   $line_0  ----T-----  ----S-----  ----U-----  ----V-----"
+#   line_0="            ----T-----  ----S-----  ----U-----  ----V-----"
     line_1="G D M    c        m  s        m  s        m  s        m  s"
     line_2="E p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  ."
     line_3="N n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d"
