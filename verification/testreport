@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.90 2007/01/31 21:28:34 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.91 2007/09/05 00:07:25 jmc Exp $
 #  $Name:  $
 #
 
@@ -155,7 +155,7 @@ testoutput_for_prop()
     echo "-1" >> tmp3.txt
     # On the SGI O3K (*not* the O2K), "cat -n" inserts a ":" after the line number
     cat tmp3.txt | sed -e 's|:||g' > tmp4.txt
-    digits_of_similarity=`./tmp_cmpnum < tmp4.txt`
+    digits_of_similarity=`./tr_cmpnum < tmp4.txt`
     if [ $digits_of_similarity -eq 99 ]; then
 	if [ $verbose -gt 0 ]; then
 	    echo testoutput_for_prop: No comparison was available for \"$2\" 1>&2
@@ -196,8 +196,8 @@ testoutput_ad()
     join t06.txt t16.txt > t6.txt
     echo "-1" >> t5.txt
     echo "-1" >> t6.txt
-    digits_5=`./tmp_cmpnum < t5.txt`
-    digits_6=`./tmp_cmpnum < t6.txt`
+    digits_5=`./tr_cmpnum < t5.txt`
+    digits_6=`./tr_cmpnum < t6.txt`
     dashnum $digits_5 $digits_6
     rm -f t[01][56].txt t[56].txt
 }
@@ -605,11 +605,11 @@ createcodelet()
     # create codelet for comparing model output
 
     printf "creating the comparison code...  "
-    cat > tmp_cmpnum.c <<EOF
+    cat > tr_cmpnum.c <<EOF
 #include <stdio.h>
 #include <math.h>
 int main( int argc, char** argv )  {
-  int linnum,best,lncnt;
+  int linnum,cmplin,best,lncnt;
   double a,b,abave,relerr;
   best = -22;
   lncnt = 0;
@@ -618,21 +618,28 @@ int main( int argc, char** argv )  {
     if (linnum == -1)  break;
     scanf("%lf", &a);  scanf("%lf", &b);
     abave = 0.5*(fabs(a)+fabs(b));
-    if (abave > 0.0) {
-      relerr=fabs(a-b)/abave;
-      if (relerr > 0.0) { linnum = (int)rint(log10(relerr)); }
-      else { linnum = -16 ; }
-      best = (best > linnum) ? best : linnum;
-    }
+    if ( abave == abave ) {
+      if (abave > 0.0) {
+        relerr=fabs(a-b)/abave;
+        if (relerr > 0.0) { cmplin = (int)rint(log10(relerr)); }
+        else { cmplin = -16 ; }
+        best = (best > cmplin) ? best : cmplin; }
+      else { cmplin = -22 ; }
+   /* printf("%d ; %lf ; %lf\n",cmplin,a,b); */
+      }
+   else {
+   /* printf("%lf ; %lf ; %lf\n",abave,a,b); */
+      break; }
   }
   if (lncnt == 999) best=-29;
+  if (linnum != -1) best=-99;
   printf("%d\n", -best);
   return 0;
 }
 EOF
-    $CC -o tmp_cmpnum tmp_cmpnum.c -lm
+    $CC -o tr_cmpnum tr_cmpnum.c -lm
 
-    if [ -x ./tmp_cmpnum ]; then
+    if [ -x ./tr_cmpnum ]; then
 	echo "OK"
 	return 0
     else
@@ -1225,8 +1232,7 @@ else
     fi
 fi
 
-# rm -f tmp_cmpnum.f a.out
-rm -f tmp_cmpnum.c tmp_cmpnum
+rm -f tr_cmpnum.c tr_cmpnum
 
 if test "x$CLEANUP" != xt ; then
     cat $SUMMARY | sed 's/ -- -- -- --//g'
