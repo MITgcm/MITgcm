@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.26 2007/06/21 04:06:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.27 2007/09/06 14:04:28 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -1023,7 +1023,7 @@ c--
         endrec   = 1
         diffrec  = endrec - startrec + 1
         call ctrl_init_ctrlvar ( 
-     &       xx_sihsnow_file, 42, 142, diffrec, startrec, endrec,
+     &       xx_sihsnow_file, 43, 143, diffrec, startrec, endrec,
      &       snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_sihsnow_CONTROL */
 
