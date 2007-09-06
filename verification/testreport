@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.93 2007/09/05 16:09:31 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.94 2007/09/06 22:31:45 jmc Exp $
 #  $Name:  $
 #
 
@@ -236,60 +236,81 @@ testoutput_run()
     #
     #  test output from 1 run in "directory"
     if test "x$ADM" = x ; then
-	if [ $debug -gt 0 ]; then
-	    echo testoutput_run: testoutput_var $1 cg2d_init_res 1>&2
-	fi
-	testoutput_var $1 "cg2d_init_res" "cg2d init. residual" $2 $3; cg2dres=$?
-	if [ $debug -gt 0 ]; then
-	    echo testoutput_run: cg2dres=$cg2dres 1>&2
-	fi
-	testoutput_var $1 "dynstat_theta_min" "theta minimum" $2 $3; tmin=$?
-	testoutput_var $1 "dynstat_theta_max" "theta maximum" $2 $3; tmax=$?
-	testoutput_var $1 "dynstat_theta_mean" "theta mean" $2 $3; tmean=$?
-	testoutput_var $1 "dynstat_theta_sd" "theta s.d." $2 $3; tsd=$?
-	testoutput_var $1 "dynstat_salt_min" "salt minimum" $2 $3; smin=$?
-	testoutput_var $1 "dynstat_salt_max" "salt maximum" $2 $3; smax=$?
-	testoutput_var $1 "dynstat_salt_mean" "salt mean" $2 $3; smean=$?
-	testoutput_var $1 "dynstat_salt_sd" "salt s.d." $2 $3; ssd=$?
-	testoutput_var $1 "dynstat_uvel_min" "U minimum" $2 $3; umin=$?
-	testoutput_var $1 "dynstat_uvel_max" "U maximum" $2 $3; umax=$?
-	testoutput_var $1 "dynstat_uvel_mean" "U mean" $2 $3; umean=$?
-	testoutput_var $1 "dynstat_uvel_sd" "U s.d." $2 $3; usd=$?
-	testoutput_var $1 "dynstat_vvel_min" "V minimum" $2 $3; vmin=$?
-	testoutput_var $1 "dynstat_vvel_max" "V maximum" $2 $3; vmax=$?
-	testoutput_var $1 "dynstat_vvel_mean" "V mean" $2 $3; vmean=$?
-	testoutput_var $1 "dynstat_vvel_sd" "V s.d." $2 $3; vsd=$?
+        # default list of output variables to be checked:
+        #  1rst : main variable used to decide if it pass or FAIL
+        #  others : number of matching digits to be printed in summary.txt
+        listChk=$DEF_CHECK_LIST
+	nbDef=`echo $listChk | awk '{print NF-1+3*gsub("+","E")}'`
+	#  load experiment-specific list from file "tr_checklist" (if it exist)
+        if test -r $1/$2/tr_checklist ; then listChk=`cat $1/$2/tr_checklist` ; fi
+        sVar=`echo $listChk | awk '{print $1}'`
+        # remove 1rst var and expand the list: + => min max mean s.d
+        listVar=`echo $listChk | awk '{ for(i=2;i<=NF;i++){if (sub("+","",$i)) \
+            {printf " %s %s %s %s",$i"mn",$i"mx",$i"av",$i"sd"} else {printf " %s",$i} }}'`
+	if [ $debug -gt 0 ]; then echo "testoutput_run: listVar(I)='$listVar'" 1>&2 ; fi
+ 	for ii in 1 2 3 4 5 6 7 8 9 ; do
+	  tst=`eval 'echo "$HAVE_PTR0'$ii'"'`
+	 #echo "-- ptr test=" $tst "number of var=" `echo $listVar | awk '{print NF}'` 1>&2
+ 	  if test "x$tst" != xt ; then listVar=`echo "$listVar" | sed "s/ pt$ii..//g"` ; fi
+        done
+        tst=`echo $sVar $listVar | awk '{ for(i=2;i<=NF;i++){t+=($i==$1)}; print t }'`
+        if test $tst != 1 ; then
+          if test $tst = 0 ; then echo "==> WARNING: selected var >$sVar< not found" 1>&2
+                 else echo "==> WARNING: found selected var >$sVar< $tst times" 1>&2 ; fi
+          echo "==> WARNING: in checked list:" $listVar 1>&2
+        #- put it back once:
+          listVar=" $sVar "`echo "$listVar " | sed "s/ $sVar / /g"`
+        fi
+	if [ $debug -gt 0 ]; then echo "testoutput_run: listVar(M)='$listVar'" 1>&2 ; fi
+	echo "listVar='$listVar'" > $CDIR"/summary.txt"
+        allargs=""
+        for xx in $listVar
+        do
+          case $xx in
+	   'PS')  if [ $debug -gt 0 ]
+		  then echo testoutput_run: testoutput_var $1 cg2d_init_res 1>&2 ; fi
+		  testoutput_var $1 "cg2d_init_res" "cg2d init. residual" $2 $3; yy=$?
+		  if [ $debug -gt 0 ] ; then echo testoutput_run: cg2dres=$yy 1>&2 ; fi ;;
+ 	   'Tmn') testoutput_var $1 "dynstat_theta_min"  "theta minimum"  $2 $3; yy=$? ;;
+ 	   'Tmx') testoutput_var $1 "dynstat_theta_max"  "theta maximum"  $2 $3; yy=$? ;;
+ 	   'Tav') testoutput_var $1 "dynstat_theta_mean" "theta mean"	  $2 $3; yy=$? ;;
+	   'Tsd') testoutput_var $1 "dynstat_theta_sd"   "theta s.d."	  $2 $3; yy=$? ;;
+	   'Smn') testoutput_var $1 "dynstat_salt_min"  "salt minimum"	  $2 $3; yy=$? ;;
+	   'Smx') testoutput_var $1 "dynstat_salt_max"  "salt maximum"	  $2 $3; yy=$? ;;
+	   'Sav') testoutput_var $1 "dynstat_salt_mean" "salt mean"	  $2 $3; yy=$? ;;
+	   'Ssd') testoutput_var $1 "dynstat_salt_sd"   "salt s.d."	  $2 $3; yy=$? ;;
+	   'Umn') testoutput_var $1 "dynstat_uvel_min"  "U minimum"	  $2 $3; yy=$? ;;
+	   'Umx') testoutput_var $1 "dynstat_uvel_max"  "U maximum"	  $2 $3; yy=$? ;;
+	   'Uav') testoutput_var $1 "dynstat_uvel_mean" "U mean"	  $2 $3; yy=$? ;;
+	   'Usd') testoutput_var $1 "dynstat_uvel_sd"   "U s.d."	  $2 $3; yy=$? ;;
+	   'Vmn') testoutput_var $1 "dynstat_vvel_min"  "V minimum"	  $2 $3; yy=$? ;;
+	   'Vmx') testoutput_var $1 "dynstat_vvel_max"  "V maximum"	  $2 $3; yy=$? ;;
+	   'Vav') testoutput_var $1 "dynstat_vvel_mean" "V mean"	  $2 $3; yy=$? ;;
+	   'Vsd') testoutput_var $1 "dynstat_vvel_sd"   "V s.d."	  $2 $3; yy=$? ;;
+	'pt1mn'|'pt2mn'|'pt3mn'|'pt4mn'|'pt5mn') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
+	   testoutput_var $1 "trcstat_ptracer0"$ii"_min"  "p0"$ii"_min"	  $2 $3; yy=$? ;;
+	'pt1mx'|'pt2mx'|'pt3mx'|'pt4mx'|'pt5mx') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
+	   testoutput_var $1 "trcstat_ptracer0"$ii"_max"  "p0"$ii"_max"	  $2 $3; yy=$? ;;
+	'pt1av'|'pt2av'|'pt3av'|'pt4av'|'pt5av') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
+	   testoutput_var $1 "trcstat_ptracer0"$ii"_mean" "p0"$ii"_mean" $2 $3; yy=$? ;;
+	'pt1sd'|'pt2sd'|'pt3sd'|'pt4sd'|'pt5sd') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
+	   testoutput_var $1 "trcstat_ptracer0"$ii"_sd"   "p0"$ii"_sd"	  $2 $3; yy=$? ;;
+              *) yy=99; echo "WARNING: asking for var=$xx : not recognized !" 1>&2 ;;
+          esac
+          if test $xx = $sVar
+          then allargs="$allargs > $yy <"
+          else allargs="$allargs $yy"
+          fi
+        done
 
-	#  This is for PTRACERS
-	for ii in $PTRACERS_NUM ; do
-	    eval `echo "p0"$ii"_min=99"`
-	    eval `echo "p0"$ii"_max=99"`
-	    eval `echo "p0"$ii"_mean=99"`
-	    eval `echo "p0"$ii"_sd=99"`
-	    tst=`eval 'echo "$HAVE_PTR0'$ii'"'`
-	    #echo 'tst = '$tst
-	    if test "x$tst" = xt ; then
-		a="trcstat_ptracer0"
-		testoutput_var $1 "$a"$ii"_min"  "p0"$ii"_min"  $2 $3
-		RETVAL=$? ; eval `echo "p0"$ii"_min="$RETVAL`
-		testoutput_var $1 "$a"$ii"_max"  "p0"$ii"_max"  $2 $3
-		RETVAL=$? ; eval `echo "p0"$ii"_max="$RETVAL`
-		testoutput_var $1 "$a"$ii"_mean" "p0"$ii"_mean" $2 $3
-		RETVAL=$? ; eval `echo "p0"$ii"_mean="$RETVAL`
-		testoutput_var $1 "$a"$ii"_sd"   "p0"$ii"_sd"   $2 $3
-		RETVAL=$? ; eval `echo "p0"$ii"_sd="$RETVAL`
-	    fi
-	done
-
-	allargs="$cg2dres $tmin $tmax $tmean $tsd $smin $smax $smean $ssd"
-	allargs="$allargs $umin $umax $umean $usd $vmin $vmax $vmean $vsd"
-	allargs="$allargs $p01_min $p01_max $p01_mean $p01_sd"
-	allargs="$allargs $p02_min $p02_max $p02_mean $p02_sd"
-	allargs="$allargs $p03_min $p03_max $p03_mean $p03_sd"
-	allargs="$allargs $p04_min $p04_max $p04_mean $p04_sd"
-	allargs="$allargs $p05_min $p05_max $p05_mean $p05_sd"
-
-	eval "dashnum $allargs"
+	nbVar=`echo $listVar | awk '{print NF}'`
+        if [ $nbVar -lt $nbDef ] ; then 
+        #-- fill line (up to standard length) with dot:
+          adNul=`expr $nbDef - $nbVar | awk '{for(i=1;i<=$1;i++){print "."}}'`
+	  echo $allargs $adNul
+        else
+	  echo $allargs
+        fi 
 
     else
 	testoutput_ad $1 $2 "precision_grdchk_result"
@@ -660,12 +681,20 @@ formatresults()
     nm=$1
     printf '%s %s %s %s' $2 $3 $4 $5
     shift; shift; shift; shift; shift;
-    printf '%3s' $@
+    listPrt=$@
+    listRes=`echo $listPrt | sed 's/>//' | sed 's/<//'`
+    xx=`echo $listPrt | sed 's/.*>//' | sed 's/<.*//' | awk '{print $1}'`
+    printf '%3s' $listPrt | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</'
+#   printf '%3s' $listPrt | sed 's/ 99/ --/g' | sed 's/  > / /' | sed 's/  < / /'
     
-    if [ $1 = '--' ]; then
+    if [ $xx = '..' ]; then
+	printf ' N/O '
+    elif [ $xx = '--' ]; then
+	printf ' N/O '
+    elif [ $xx = 99 ]; then
 	printf ' N/O '
     else
-	if [ $1 -ge $MATCH_CRIT ]; then
+	if [ $xx -ge $MATCH_CRIT ]; then
 	    printf ' pass'
 	else
 	    printf ' FAIL'
@@ -932,6 +961,18 @@ fi
 #echo "OK"
 echo "OK (COMMAND= $COMMAND )"
 
+# set the Default List of output variables to be checked:
+#  (use default or load experiment-specific list from file "tr_checklist")
+# content : 1rst = main variable used to decide if it pass or FAIL
+#         others = number of matching digits to be printed in summary.txt
+if test "x$ADM" != xt ; then
+    DEF_CHECK_LIST='PS PS T+ S+ U+ V+ pt1+ pt2+ pt3+ pt4+ pt5+'
+    EMPTY_RESULTS='.. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ..'
+    nbDef=`echo $DEF_CHECK_LIST | awk '{print NF-1+3*gsub("+","E")}'`
+    ii=`echo $EMPTY_RESULTS | awk '{print NF}'`
+    EMPTY_RESULTS=$EMPTY_RESULTS`expr $nbDef - $ii | awk 'BEGIN{FS=":"}{for(i=1;i<=$1;i++){printf "  ."}}'`
+fi
+
 #  create the FORTRAN comparison code
 createcodelet
 
@@ -996,9 +1037,9 @@ echo
 echo >> $SUMMARY
 if test "x$ADM" = x ; then
     if [ $MATCH_CRIT -lt 10 ] ; 
-    then line_0="      "$MATCH_CRIT ;
-    else line_0="     "$MATCH_CRIT ; fi
-    line_0="   $line_0  ----T-----  ----S-----  ----U-----  ----V-----"
+    then line_0="default  "$MATCH_CRIT ; 
+    else line_0="default "$MATCH_CRIT ; fi
+       line_0="$line_0  ----T-----  ----S-----  ----U-----  ----V-----"
 #   line_0="            ----T-----  ----S-----  ----U-----  ----V-----"
     line_1="G D M    c        m  s        m  s        m  s        m  s"
     line_2="E p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  ."
@@ -1128,7 +1169,7 @@ for dir in $TESTDIRS ; do
     fi
     echo
     unset genmake makedepend make run
-    results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
+    results=$EMPTY_RESULTS
 
     #  Create an output dir for each OPTFILE/tdir combination
     rel_CDIR=$DRESULTS"/"$dir
@@ -1156,7 +1197,8 @@ for dir in $TESTDIRS ; do
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo
 	echo "$fres" >> $SUMMARY
-	echo "fresults='$fres'" > $CDIR"/summary.txt"
+        touch $CDIR"/summary.txt"
+	echo "fresults='$fres'" >> $CDIR"/summary.txt"
 	echo "MACH='$MACH'" >> $CDIR"/summary.txt"
 	echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
 	echo "DATE='$DATE'" >> $CDIR"/summary.txt"
@@ -1164,7 +1206,7 @@ for dir in $TESTDIRS ; do
 
 	for ex in $extra_runs ; do
 	    unset run
-	    results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
+            results=$EMPTY_RESULTS
 	    #  Create an output dir for each OPTFILE/tdir.ex combination
 	    rel_CDIR=$DRESULTS"/"$dir"."$ex
 	    mkdir $rel_CDIR
@@ -1179,7 +1221,8 @@ for dir in $TESTDIRS ; do
 	    fres="$fres.$ex"
 	    echo
 	    echo "$fres" >> $SUMMARY
-	    echo "fresults='$fres'" > $CDIR"/summary.txt"
+            touch $CDIR"/summary.txt"
+	    echo "fresults='$fres'" >> $CDIR"/summary.txt"
 	    echo "MACH='$MACH'" >> $CDIR"/summary.txt"
 	    echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
 	    echo "DATE='$DATE'" >> $CDIR"/summary.txt"
@@ -1193,7 +1236,8 @@ for dir in $TESTDIRS ; do
 	fres=$fres"$results   $dir"
 	echo
 	echo "$fres" >> $SUMMARY
-	echo "fresults='$fres'" > $CDIR"/summary.txt"
+        touch $CDIR"/summary.txt"
+	echo "fresults='$fres'" >> $CDIR"/summary.txt"
 	echo "MACH='$MACH'" >> $CDIR"/summary.txt"
 	echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
 	echo "DATE='$DATE'" >> $CDIR"/summary.txt"
@@ -1247,11 +1291,12 @@ fi
 rm -f tr_cmpnum.c tr_cmpnum
 
 if test "x$CLEANUP" != xt ; then
-    cat $SUMMARY | sed 's/ -- -- -- --//g'
+    cat $SUMMARY | sed 's/  \.  \.  \.  \.  \.  \.  \.  \.  \.  \.  \.  \.//'
+#   cat $SUMMARY | sed 's/  \.//g'
     if test -e tr_out.txt ; then
         mv tr_out.txt tr_out.txt.old
     fi
-    cat $SUMMARY | sed 's/ -- -- -- --//g' > tr_out.txt
+    cat $SUMMARY | sed 's/  \.//g' > tr_out.txt
 fi
 
 if test "x$DELDIR" = xt ; then
