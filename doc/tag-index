@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.868 2007/09/05 01:55:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.869 2007/09/07 01:16:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o testreport:
+  Allow to choose (per experiment) the list of tested output variables
+   and the main variable (used to issue a pass/FAIL ) ;
+  - for now, done by adding the specific list in file: [exp]/input/tr_checklist
+  - default is unchange: >cg2d< , (T,S,U,V,5 tracers)_[min,max,mean,StD] ;
+  Also modify printing of summary:
+   a) ">" NN "<" indicates the "main" variable (used for pass/FAIL)
+   b) echo the list of tested variables in the individual summary.txt of
+      each experiment.
 o new S/R GLOBAL_SUM_TILE to compute global sum independently of number of
   threads and number of processes (with #define GLOBAL_SUM_SEND_RECV)
   (but still depend on the tile decompostion of the domain).
