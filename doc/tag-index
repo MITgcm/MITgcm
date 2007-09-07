@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.869 2007/09/07 01:16:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.870 2007/09/07 22:42:32 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco: allow user defined cost function contributions 
 o testreport:
   Allow to choose (per experiment) the list of tested output variables
    and the main variable (used to issue a pass/FAIL ) ;
