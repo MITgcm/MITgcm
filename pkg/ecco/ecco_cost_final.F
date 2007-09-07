@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.33 2007/08/17 21:36:40 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.34 2007/09/07 22:41:14 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -78,6 +78,7 @@ c     == local variables ==
       _RL f_kapgm, f_diffkr
       _RL f_eddytau, f_bottomdrag
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
+      _RL f_gencost(NGENCOST)
 
       _RL no_temp0, no_salt0,  no_temp, no_salt 
       _RL no_uwind, no_vwind
@@ -99,6 +100,7 @@ c     == local variables ==
       _RL no_eddytau, no_bottomdrag
       _RL no_hmean
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
+      _RL no_gencost(NGENCOST)
 
       character*20 cfname
 #ifdef ECCO_VERBOSE
@@ -202,6 +204,11 @@ c     == end of interface ==
        enddo
       enddo
 #endif
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+       do num_var=1,NGENCOST
+        f_gencost(num_var)= 0. _d 0
+       enddo
+#endif
 
       no_temp = 0. _d 0
       no_salt = 0. _d 0
@@ -271,6 +278,11 @@ c     == end of interface ==
         no_profiles(num_file,num_var)= 0. _d 0
        enddo
       enddo
+#endif
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+       do num_var=1,NGENCOST
+        no_gencost(num_var)= 0. _d 0
+       enddo
 #endif
 
 c--   Sum up all contributions.
@@ -349,7 +361,13 @@ c--   Sum up all contributions.
        enddo
       enddo
 #endif
-
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+       do num_var=1,NGENCOST
+          fc = fc
+     &            + mult_gencost(num_var)
+     &            *objf_gencost(num_var,bi,bj)
+       enddo
+#endif
           f_temp = f_temp + objf_temp(bi,bj)
           f_salt = f_salt + objf_salt(bi,bj)
           f_temp0 = f_temp0 + objf_temp0(bi,bj)
@@ -429,6 +447,12 @@ c--   Sum up all contributions.
        enddo
       enddo
 #endif
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+       do num_var=1,NGENCOST
+          f_gencost(num_var)=f_gencost(num_var)
+     &            +objf_gencost(num_var,bi,bj)
+       enddo
+#endif
           no_temp = no_temp + num_temp(bi,bj)
           no_salt = no_salt + num_salt(bi,bj)
           no_temp0 = no_temp0 + num_temp0(bi,bj)
@@ -495,6 +519,12 @@ c--   Sum up all contributions.
        enddo
       enddo
 #endif
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+       do num_var=1,NGENCOST
+          no_gencost(num_var)=no_gencost(num_var)
+     &            +num_gencost(num_var,bi,bj)
+       enddo
+#endif    
 
         enddo
       enddo
@@ -586,7 +616,11 @@ c--   Do global summation for each part of the cost function
        enddo
       enddo
 #endif
-
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+       do num_var=1,NGENCOST
+        _GLOBAL_SUM_R8(f_gencost(num_var), myThid )
+       enddo
+#endif    
       _GLOBAL_SUM_R8( no_temp , myThid )
       _GLOBAL_SUM_R8( no_salt , myThid )
       _GLOBAL_SUM_R8( no_temp0, myThid )
@@ -656,6 +690,11 @@ c--   Do global summation for each part of the cost function
        enddo
       enddo
 #endif
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+       do num_var=1,NGENCOST
+        _GLOBAL_SUM_R8(no_gencost(num_var), myThid )
+       enddo
+#endif    
 
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_temp    =',f_temp
@@ -816,6 +855,15 @@ c--   Do global summation for each part of the cost function
        enddo
       enddo
 #endif
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+       do num_var=1,NGENCOST
+        if (no_gencost(num_var).GT.0) then
+         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+     &     ' --> f_gencost =',f_gencost(num_var),
+     &      num_var
+        endif
+       enddo
+#endif    
 
 c--   Each process has calculated the global part for itself.
       _BEGIN_MASTER( mythid )
@@ -1017,6 +1065,16 @@ cph)
        enddo
       enddo
 #endif
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+       do num_var=1,NGENCOST
+        if (no_gencost(num_var).GT.0) then
+         write(ifc,'(A,i2.0,A,2D22.15)')
+     &    'gencost', num_var, ' = ',
+     &    f_gencost(num_var),
+     &    no_gencost(num_var)
+         endif
+       enddo
+#endif    
 
         close(ifc)
         

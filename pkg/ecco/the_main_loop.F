@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.61 2007/08/30 15:05:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.62 2007/09/07 22:41:14 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1194,6 +1194,11 @@ c--   Internal Parameter controls cost terms:
       call cost_internal_params( myiter, mytime, mythid )
       call timer_stop ('cost_internal_params  [ECCO SPIN-DOWN]', mythid)
       _BARRIER
+
+c--   Compute user defined cost function contributions
+      call timer_start('cost_gencost_all    [ECCO SPIN-DOWN]', mythid)
+      call cost_gencost_all( myiter, mytime, mythid )
+      call timer_stop ('cost_gencost_all    [ECCO SPIN-DOWN]', mythid)
 
 c--   Sum all cost function contributions.
 #ifndef DISABLE_DEBUGMODE

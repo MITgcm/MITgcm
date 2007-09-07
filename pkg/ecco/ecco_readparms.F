@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.29 2007/08/17 21:36:40 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.30 2007/09/07 22:41:14 gforget Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -34,7 +34,7 @@ c     == local variables ==
 C     msgBuf      - Informational/error meesage buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit, num_file, num_var
+      INTEGER k, iUnit, num_file, num_var
 
 c     == end of interface ==
 
@@ -86,6 +86,7 @@ c--   Read the namelist input.
      &                   geoid_errfile, geoid_covariancefile,
      &                   bottomdrag_errfile,edtau_errfile,
      &                   kapgm_errfile,diffkr_errfile,
+     &                   gencost_datafile, gencost_errfile,
      &                   mult_hflux, mult_sflux, mult_tauu, mult_tauv,
      &                   mult_hfluxmm, mult_sfluxmm,
      &                   mult_atemp, mult_aqh, 
@@ -109,6 +110,7 @@ c--   Read the namelist input.
      &                   mult_curmtr, mult_ageos,
      &                   mult_kapgm, mult_diffkr,
      &                   mult_edtau, mult_bottomdrag,
+     &                   mult_gencost,
      &                   mult_smooth_ic, mult_smooth_bc,
      &                   whflux0, wsflux0, wtau0,
      &                   wbottomdrag0,
@@ -226,7 +228,10 @@ c--     Set default values.
         edtau_errfile         =    ' '
         kapgm_errfile         =    ' '
         diffkr_errfile        =    ' '
-
+        do k=1,NGENCOST
+        gencost_datafile(k)    =    ' '
+        gencost_errfile(k)    =    ' '
+        enddo
         mult_hflux            =      0. _d 0
         mult_sflux            =      0. _d 0
         mult_hfluxmm          =      0. _d 0
@@ -281,6 +286,9 @@ c--     Set default values.
         mult_diffkr           =      0. _d 0
         mult_edtau            =      0. _d 0
         mult_bottomdrag       =      0. _d 0
+        do k=1,NGENCOST
+        mult_gencost(k)       =      0. _d 0
+        enddo
         mult_smooth_ic        =      0. _d 0
         mult_smooth_bc        =      0. _d 0
         watemp0               =      0. _d 0
