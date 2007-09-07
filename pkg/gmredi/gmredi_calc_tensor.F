@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.29 2007/06/30 14:09:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.30 2007/09/07 14:27:19 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -782,7 +782,7 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 
 #ifdef ALLOW_DIAGNOSTICS
        IF (doDiagRediFlx) THEN
-c       km1 = MAX(k-1,1)
+        km1 = MAX(k-1,1)
         DO j=1,sNy+1
          DO i=1,sNx
 C         store in tmp1k Kvz_Redi
