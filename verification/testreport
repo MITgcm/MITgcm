@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.95 2007/09/07 00:44:37 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.96 2007/09/10 21:26:58 jmc Exp $
 #  $Name:  $
 #
 
@@ -637,7 +637,7 @@ int main( int argc, char** argv )  {
   double a,b,abave,relerr;
   best = -22;
   lncnt = 0;
-  while( 1 & (lncnt+=1) < 999 )  {
+  while( 1 & ( (lncnt+=1) < 999 ) )  {
     scanf("%d", &linnum);
     if (linnum == -1)  break;
     scanf("%lf", &a);  scanf("%lf", &b);
