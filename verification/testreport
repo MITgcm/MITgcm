@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.96 2007/09/10 21:26:58 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.97 2007/09/11 16:44:52 jmc Exp $
 #  $Name:  $
 #
 
@@ -240,13 +240,12 @@ testoutput_run()
         #  1rst : main variable used to decide if it pass or FAIL
         #  others : number of matching digits to be printed in summary.txt
         listChk=$DEF_CHECK_LIST
-	nbDef=`echo $listChk | awk '{print NF-1+3*gsub("+","E")}'`
 	#  load experiment-specific list from file "tr_checklist" (if it exist)
         if test -r $1/$2/tr_checklist ; then listChk=`cat $1/$2/tr_checklist` ; fi
         sVar=`echo $listChk | awk '{print $1}'`
         # remove 1rst var and expand the list: + => min max mean s.d
-        listVar=`echo $listChk | awk '{ for(i=2;i<=NF;i++){if (sub("+","",$i)) \
-            {printf " %s %s %s %s",$i"mn",$i"mx",$i"av",$i"sd"} else {printf " %s",$i} }}'`
+        listVar=`echo $listChk | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' \
+                               | sed 's/+//g' | sed "s/^$sVar//"`
 	if [ $debug -gt 0 ]; then echo "testoutput_run: listVar(I)='$listVar'" 1>&2 ; fi
  	for ii in 1 2 3 4 5 6 7 8 9 ; do
 	  tst=`eval 'echo "$HAVE_PTR0'$ii'"'`
@@ -304,9 +303,9 @@ testoutput_run()
         done
 
 	nbVar=`echo $listVar | awk '{print NF}'`
-        if [ $nbVar -lt $nbDef ] ; then 
+        if [ $nbVar -lt $LEN_CHECK_LIST ] ; then 
         #-- fill line (up to standard length) with dot:
-          adNul=`expr $nbDef - $nbVar | awk '{for(i=1;i<=$1;i++){print "."}}'`
+          adNul=`expr $LEN_CHECK_LIST - $nbVar | awk '{for(i=1;i<=$1;i++){print "."}}'`
 	  echo $allargs $adNul
         else
 	  echo $allargs
@@ -684,8 +683,9 @@ formatresults()
     listPrt=$@
     listRes=`echo $listPrt | sed 's/>//' | sed 's/<//'`
     xx=`echo $listPrt | sed 's/.*>//' | sed 's/<.*//' | awk '{print $1}'`
+    printf '%3s' $listPrt
 #   printf '%3s' $listPrt | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</'
-    printf '%3s' $listPrt | sed 's/ 99/ --/g' | sed 's/  > / /' | sed 's/  < / /'
+#   printf '%3s' $listPrt | sed 's/ 99/ --/g' | sed 's/  > / /' | sed 's/  < / /'
     
     if [ $xx = '..' ]; then
 	printf ' N/O '
@@ -968,9 +968,9 @@ echo "OK (COMMAND= $COMMAND )"
 if test "x$ADM" != xt ; then
     DEF_CHECK_LIST='PS PS T+ S+ U+ V+ pt1+ pt2+ pt3+ pt4+ pt5+'
     EMPTY_RESULTS='.. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ..'
-    nbDef=`echo $DEF_CHECK_LIST | awk '{print NF-1+3*gsub("+","E")}'`
+    LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
     ii=`echo $EMPTY_RESULTS | awk '{print NF}'`
-    EMPTY_RESULTS=$EMPTY_RESULTS`expr $nbDef - $ii | awk 'BEGIN{FS=":"}{for(i=1;i<=$1;i++){printf "  ."}}'`
+    EMPTY_RESULTS=$EMPTY_RESULTS`expr $LEN_CHECK_LIST - $ii | awk 'BEGIN{FS=":"}{for(i=1;i<=$1;i++){printf "  ."}}'`
 fi
 
 #  create the FORTRAN comparison code
@@ -1196,9 +1196,10 @@ for dir in $TESTDIRS ; do
     if test "x$ADM" = x ; then
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo
-	echo "$fres" >> $SUMMARY
+#	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
+	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > / /' | sed 's/  < / /' >> $SUMMARY
         touch $CDIR"/summary.txt"
-	echo "fresults='$fres'" >> $CDIR"/summary.txt"
+	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $CDIR"/summary.txt"
 	echo "MACH='$MACH'" >> $CDIR"/summary.txt"
 	echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
 	echo "DATE='$DATE'" >> $CDIR"/summary.txt"
@@ -1220,9 +1221,10 @@ for dir in $TESTDIRS ; do
 	    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    fres="$fres.$ex"
 	    echo
-	    echo "$fres" >> $SUMMARY
+#	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
+	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > / /' | sed 's/  < / /' >> $SUMMARY
             touch $CDIR"/summary.txt"
-	    echo "fresults='$fres'" >> $CDIR"/summary.txt"
+	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $CDIR"/summary.txt"
 	    echo "MACH='$MACH'" >> $CDIR"/summary.txt"
 	    echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
 	    echo "DATE='$DATE'" >> $CDIR"/summary.txt"
