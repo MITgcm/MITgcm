@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.97 2007/09/11 16:44:52 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.98 2007/09/12 21:50:21 jmc Exp $
 #  $Name:  $
 #
 
@@ -585,7 +585,8 @@ runmodel()
 		RETVAL=8
 		ENDVAL=-1
 	else
-            if test $OUTPUTFILE -ot $EXECUTABLE ; then
+            if test ! -f $OUTPUTFILE -o $OUTPUTFILE -ot $EXECUTABLE ; then
+              # output do not exist or is older than executable:
 		rm -f run.log ; touch run.log
 		if test -f run.log_00 ; then cat run.log_00 >> run.log ; fi
 		( eval $COMMAND ) >> run.log 2>&1
@@ -684,8 +685,8 @@ formatresults()
     listRes=`echo $listPrt | sed 's/>//' | sed 's/<//'`
     xx=`echo $listPrt | sed 's/.*>//' | sed 's/<.*//' | awk '{print $1}'`
     printf '%3s' $listPrt
+#   line below does not work on hp-ux_ia64 : do those substitutions later on
 #   printf '%3s' $listPrt | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</'
-#   printf '%3s' $listPrt | sed 's/ 99/ --/g' | sed 's/  > / /' | sed 's/  < / /'
     
     if [ $xx = '..' ]; then
 	printf ' N/O '
@@ -1196,8 +1197,7 @@ for dir in $TESTDIRS ; do
     if test "x$ADM" = x ; then
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo
-#	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
-	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > / /' | sed 's/  < / /' >> $SUMMARY
+ 	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
         touch $CDIR"/summary.txt"
 	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $CDIR"/summary.txt"
 	echo "MACH='$MACH'" >> $CDIR"/summary.txt"
@@ -1217,12 +1217,10 @@ for dir in $TESTDIRS ; do
             linkdata $dir/tr_run.$ex input.$ex input
 	    runmodel $dir/tr_run.$ex && run=Y \
 		&& results=`testoutput_run $dir tr_run.$ex ${ex}".txt"`
-	    fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
 	    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    fres="$fres.$ex"
 	    echo
-#	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
-	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > / /' | sed 's/  < / /' >> $SUMMARY
+ 	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
             touch $CDIR"/summary.txt"
 	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $CDIR"/summary.txt"
 	    echo "MACH='$MACH'" >> $CDIR"/summary.txt"
@@ -1297,7 +1295,7 @@ if test "x$CLEANUP" != xt ; then
     if test -e tr_out.txt ; then
         mv tr_out.txt tr_out.txt.old
     fi
-    cat $SUMMARY | sed '11,$ s/  \.//g' > tr_out.txt
+    cat $SUMMARY | sed '/^[YN] [YN] [YN] [YN]/ s/  \.//g' > tr_out.txt
 fi
 
 if test "x$DELDIR" = xt ; then
