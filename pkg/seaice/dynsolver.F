@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.24 2007/06/19 12:07:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.25 2007/09/13 08:01:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -456,6 +456,14 @@ cdm c$taf store uice,vice = comlev1, key=ikey_dynamics
 
       ENDIF
 #endif /* SEAICE_ALLOW_DYNAMICS */
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL(zeta   ,'SIzeta  ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(eta    ,'SIeta   ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1 ,0,1,1,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */ 
 
 C Calculate ocean surface stress
       CALL OSTRES ( COR_ICE, myThid )
