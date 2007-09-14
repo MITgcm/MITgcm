@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.22 2007/06/19 12:15:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.23 2007/09/14 02:07:37 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -311,7 +311,8 @@ C     reset coefficients of U(I,J-1) and U(I,J+1)
         DO J=1,sNy
          AU(1,J,bi,bj)=ZERO
          CU(sNx,J,bi,bj)=ZERO
-         CU(1,J,bi,bj)=CU(1,J,bi,bj)/BU(1,J,bi,bj)
+         IF ( BU(1,J,bi,bj) .NE. 0.0 )
+     &    CU(1,J,bi,bj)=CU(1,J,bi,bj)/BU(1,J,bi,bj)
         END DO
 
 C     now set up right-hand side
@@ -431,12 +432,15 @@ C NOW SET U(3)=U(1)
          DO I=1,sNx
           CUU(I,J)=CU(I,J,bi,bj)
          END DO
-         URT(1,J)=URT(1,J)/BU(1,J,bi,bj)
+         IF ( BU(1,J,bi,bj) .NE. 0.0 )
+     &    URT(1,J)=URT(1,J)/BU(1,J,bi,bj)
          DO I=2,sNx
           IM=I-1
-          CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
-          URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
+          IF ( BU(I,J,bi,bj) .NE. 0.0 ) THEN
+           CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
+           URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
      &          /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
+          ENDIF
          END DO
          DO I=1,sNx-1
           J1=sNx-I
@@ -564,7 +568,8 @@ C     reset coefficients of V(I-1,J) and V(I+1,J)
         DO I=1,sNx
          AV(I,1,bi,bj)=ZERO
          CV(I,sNy,bi,bj)=ZERO
-         CV(I,1,bi,bj)=CV(I,1,bi,bj)/BV(I,1,bi,bj)
+         IF ( BV(I,1,bi,bj) .NE. 0.0 )
+     &    CV(I,1,bi,bj)=CV(I,1,bi,bj)/BV(I,1,bi,bj)
         END DO
 
 C     now set up right-hand-side
@@ -695,12 +700,15 @@ C NOW SET U(3)=U(1)
          DO J=1,sNy
           CVV(I,J)=CV(I,J,bi,bj)
          END DO
-         VRT(I,1)=VRT(I,1)/BV(I,1,bi,bj)
+         IF ( BV(I,1,bi,bj) .NE. 0.0 )
+     &    VRT(I,1)=VRT(I,1)/BV(I,1,bi,bj)
          DO J=2,sNy
           JM=J-1
-          CVV(I,J)=CVV(I,J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
-          VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
+          IF ( BV(I,J,bi,bj) .NE. 0.0 ) THEN
+           CVV(I,J)=CVV(I,J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
+           VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
      &          /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
+          ENDIF
          END DO
          DO J=1,sNy-1
           J1=sNy-J

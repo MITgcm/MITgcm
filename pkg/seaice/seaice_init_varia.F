@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.16 2007/08/06 19:36:53 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.17 2007/09/14 02:07:37 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -96,11 +96,15 @@ C--   Initialize grid info
 #ifdef ALLOW_OBCS
         IF (useOBCS) THEN
 C     Apply OBCS T/S mask (taken from pkg/obcs/obcs_apply_ts.F)
+C     Additionally apply a mask along all open boundaries
+C     Until proper seaice open boundaries are implemented, this
+C     masking is needed to avoid communication across open boundaries.
 #ifdef ALLOW_OBCS_NORTH
          DO I=1-Olx,sNx+Olx
 C Northern boundary
           J_obc = OB_Jn(I,bi,bj)
           IF (J_obc.NE.0) THEN
+           HEFFM(I,J_obc,bi,bj)=0. _d 0
            obc_mask = _maskS(I,J_obc,kSurface,bi,bj)
            DO J = J_obc, J_obc+Oly
             IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
@@ -113,6 +117,7 @@ C Northern boundary
 C Southern boundary
           J_obc = OB_Js(I,bi,bj)
           IF (J_obc.NE.0) THEN
+           HEFFM(I,J_obc,bi,bj)=0. _d 0
            obc_mask = _maskS(I,J_obc+1,kSurface,bi,bj)
            DO J = J_obc-Oly, J_obc
             IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
@@ -125,6 +130,7 @@ C Southern boundary
 C Eastern boundary
           I_obc = OB_Ie(J,bi,bj)
           IF (I_obc.NE.0) THEN
+           HEFFM(I_obc,J,bi,bj)=0. _d 0
            obc_mask = _maskW(I_obc,J,kSurface,bi,bj)
            DO I = I_obc, I_obc+Olx
             IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
@@ -137,6 +143,7 @@ C Eastern boundary
 C Western boundary
           I_obc=OB_Iw(J,bi,bj)
           IF (I_obc.NE.0) THEN
+           HEFFM(I_obc,J,bi,bj)=0. _d 0
            obc_mask = _maskW(I_obc+1,J,kSurface,bi,bj)
            DO I = I_obc-Olx, I_obc
             IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
@@ -165,40 +172,6 @@ C Western boundary
 #endif /* SEAICE_CGRID */
          ENDDO
         ENDDO
-
-#ifdef ALLOW_OBCS
-        IF (useOBCS) THEN
-C--   If OBCS is turned on, close southern and western boundaries
-#ifdef ALLOW_OBCS_SOUTH
-         DO I=1-Olx,sNx+Olx
-C Southern boundary
-          J_obc = OB_Js(I,bi,bj)
-          IF (J_obc.NE.0) THEN
-#ifdef SEAICE_CGRID
-           seaiceMaskU(I,J_obc,bi,bj)=   0.0 _d 0
-           seaiceMaskV(I,J_obc,bi,bj)=   0.0 _d 0
-#else
-           UVM(I,J_obc,bi,bj)=0. _d 0
-#endif
-          ENDIF
-         ENDDO
-#endif /* ALLOW_OBCS_SOUTH */
-#ifdef ALLOW_OBCS_WEST
-         DO J=1-Oly,sNy+Oly
-C Western boundary
-          I_obc=OB_Iw(J,bi,bj)
-          IF (I_obc.NE.0) THEN
-#ifdef SEAICE_CGRID
-           seaiceMaskU(I_obc,J,bi,bj)=   0.0 _d 0
-           seaiceMaskV(I_obc,J,bi,bj)=   0.0 _d 0
-#else
-           UVM(I_obc,J,bi,bj)=0. _d 0
-#endif
-          ENDIF
-         ENDDO
-#endif /* ALLOW_OBCS_WEST */
-        ENDIF
-#endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_EXCH2
 #ifndef SEAICE_CGRID
