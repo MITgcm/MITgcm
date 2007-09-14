@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.23 2007/08/04 18:05:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.24 2007/09/14 20:40:20 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -457,6 +457,15 @@ c******************************************************
      &              'precision_grdchk_result TLM ', fcref, ftlxxmemo
                CALL PRINT_MESSAGE
      &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c	 
+               WRITE(msgBuf,'(A34,1PE24.14)') 
+     &              'precision_derivative_cost TLM ', fcref
+               CALL PRINT_MESSAGE
+     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+               WRITE(msgBuf,'(A34,1PE24.14)') 
+     &              'precision_derivative_grad TLM ', ftlxxmemo
+               CALL PRINT_MESSAGE
+     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #else
                WRITE(standardmessageunit,'(a,8I5,2x,3(1x,E18.12))')
      &              ' grad-res ',myprocid,ichknum,ichkmem(ichknum),
@@ -465,6 +474,15 @@ c******************************************************
      &              adxxmemo, gfd, ratio_ad
                WRITE(msgBuf,'(A34,2(1PE24.14,X))') 
      &              'precision_grdchk_result ADM ', fcref, adxxmemo
+               CALL PRINT_MESSAGE
+     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+c
+               WRITE(msgBuf,'(A34,1PE24.14)') 
+     &              'precision_derivative_cost ADM ', fcref
+               CALL PRINT_MESSAGE
+     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+               WRITE(msgBuf,'(A34,1PE24.14)') 
+     &              'precision_derivative_grad ADM ', ftlxxmemo
                CALL PRINT_MESSAGE
      &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 #endif
