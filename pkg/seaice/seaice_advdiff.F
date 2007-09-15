@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.20 2007/09/15 01:38:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.21 2007/09/15 16:52:26 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -61,11 +61,9 @@ C     afx       :: horizontal advective flux, x direction
 C     afy       :: horizontal advective flux, y direction
 C     gFld      :: tendency of seaice field
 C     xA,yA     :: "areas" of X and Y face of tracer cells
-C     msgBuf    :: Informational/error meesage buffer
       INTEGER i, j, bi, bj
       INTEGER ks
       LOGICAL SEAICEmultiDimAdvection
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _RL uc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -271,6 +269,7 @@ C     now do the "explicit" time step
          ENDDO
         ENDIF
 
+#ifdef SEAICE_SALINITY
 C--   Effective Sea Ice Salinity
         IF ( SEAICEadvSalt ) THEN
          DO j=1-Oly,sNy+Oly
@@ -301,6 +300,7 @@ C     now do the "explicit" time step
           ENDDO
          ENDDO
         ENDIF
+#endif /* SEAICE_SALINITY */
 
 C---   end bi,bj loops
        ENDDO
@@ -328,51 +328,53 @@ C     with LAD=1 (Leapfrog).
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            fld3d(I,J,3,bi,bj) = 0. _d 0 
+            fld3d(I,J,3,bi,bj) = 0. _d 0
             fld3d(I,J,2,bi,bj) = HSNOW(I,J,bi,bj)
             fld3d(I,J,1,bi,bj) = HSNOW(I,J,bi,bj)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-        CALL ADVECT( uc, vc, fld3d, HEFFM, myThid )       
+        CALL ADVECT( uc, vc, fld3d, HEFFM, myThid )
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            HSNOW(I,J,bi,bj) = fld3d(I,J,1,bi,bj) 
+            HSNOW(I,J,bi,bj) = fld3d(I,J,1,bi,bj)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
        ENDIF
 
+#ifdef SEAICE_SALINITY
 C     another fudge: copy 2D field HSALT to 3D field fld3d to be able to
 C     use ADVECT. Works only with LAD=2 (Backward Euler scheme) and NOT
 C     with LAD=1 (Leapfrog).
-       IF ( SEAICEadvSnow ) THEN
+       IF ( SEAICEadvSalt ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            fld3d(I,J,3,bi,bj) = 0. _d 0 
+            fld3d(I,J,3,bi,bj) = 0. _d 0
             fld3d(I,J,2,bi,bj) = HSALT(I,J,bi,bj)
             fld3d(I,J,1,bi,bj) = HSALT(I,J,bi,bj)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-        CALL ADVECT( uc, vc, fld3d, HEFFM, myThid )       
+        CALL ADVECT( uc, vc, fld3d, HEFFM, myThid )
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            HSALT(I,J,bi,bj) = fld3d(I,J,1,bi,bj) 
+            HSALT(I,J,bi,bj) = fld3d(I,J,1,bi,bj)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
        ENDIF
+#endif /* SEAICE_SALINITY */
 
 C--   end if multiDimAdvection
       ENDIF
