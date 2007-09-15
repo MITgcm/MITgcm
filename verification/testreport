@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.98 2007/09/12 21:50:21 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.99 2007/09/15 20:30:05 jmc Exp $
 #  $Name:  $
 #
 
@@ -96,10 +96,10 @@ build_mpack()
 
 testoutput_var()
 {
-    # testoutput_var dir s1 label subdir extension
+    # testoutput_var dir s1 label subdir reference_output
     #
     #  compares 1 variable output selected from file $dir/$subdir/$OUTPUTFILE 
-    #     with same output from reference file $dir/results/output.$extension
+    #     with same output from reference file $dir/results/$reference_output
     #  using search strings s1 and text label
 
     if [ $debug -gt 0 ]; then
@@ -119,9 +119,9 @@ testoutput_var()
 	return 99
     fi
     if [ $debug -gt 0 ]; then
-	echo testoutput_var: grep "$2" $1/results/output.$5 1>&2
+	echo testoutput_var: grep "$2" $1/results/$5 1>&2
     fi
-    grep "$2" $1/results/output.$5 | sed 's/.*=//' | cat -n > tmp2.txt
+    grep "$2" $1/results/$5 | sed 's/.*=//' | cat -n > tmp2.txt
     lncntB=`wc -l tmp2.txt | awk '{print $1}' `
     if [ $lncntB -lt 3 ]; then
 	if [ $verbose -gt 0 ]; then
@@ -161,12 +161,12 @@ testoutput_var()
     digits_of_similarity=`./tr_cmpnum < tmp4.txt`
     if [ $digits_of_similarity -eq 99 ]; then
 	if [ $verbose -gt 0 ]; then
-	    echo testoutput_var: No comparison was available for \"$2\" 1>&2
+	    echo testoutput_var: No comparison was available for \"$3\" 1>&2
 	fi
 	digits_of_similarity=99
     else
 	if [ $verbose -gt 0 ]; then
-	    echo There were $digits_of_similarity decimal places of similarity for \"$2\" 1>&2
+	    echo There were $digits_of_similarity decimal places of similarity for \"$3\" 1>&2
 	fi
     fi
     rm -f tmp1.txt tmp2.txt tmp3.txt tmp4.txt
@@ -232,7 +232,7 @@ check_for_add_mon_output()
 
 testoutput_run()
 {
-    # testoutput_run directory subdir extension
+    # testoutput_run directory subdir reference_output
     #
     #  test output from 1 run in "directory"
     if test "x$ADM" = x ; then
@@ -268,24 +268,26 @@ testoutput_run()
           case $xx in
 	   'PS')  if [ $debug -gt 0 ]
 		  then echo testoutput_run: testoutput_var $1 cg2d_init_res 1>&2 ; fi
-		  testoutput_var $1 "cg2d_init_res" "cg2d init. residual" $2 $3; yy=$?
+		  testoutput_var $1 "cg2d_init_res" "Press. Solver (cg2d)" $2 $3; yy=$?
 		  if [ $debug -gt 0 ] ; then echo testoutput_run: cg2dres=$yy 1>&2 ; fi ;;
- 	   'Tmn') testoutput_var $1 "dynstat_theta_min"  "theta minimum"  $2 $3; yy=$? ;;
- 	   'Tmx') testoutput_var $1 "dynstat_theta_max"  "theta maximum"  $2 $3; yy=$? ;;
- 	   'Tav') testoutput_var $1 "dynstat_theta_mean" "theta mean"	  $2 $3; yy=$? ;;
-	   'Tsd') testoutput_var $1 "dynstat_theta_sd"   "theta s.d."	  $2 $3; yy=$? ;;
-	   'Smn') testoutput_var $1 "dynstat_salt_min"  "salt minimum"	  $2 $3; yy=$? ;;
-	   'Smx') testoutput_var $1 "dynstat_salt_max"  "salt maximum"	  $2 $3; yy=$? ;;
-	   'Sav') testoutput_var $1 "dynstat_salt_mean" "salt mean"	  $2 $3; yy=$? ;;
-	   'Ssd') testoutput_var $1 "dynstat_salt_sd"   "salt s.d."	  $2 $3; yy=$? ;;
+ 	   'Cost') testoutput_var $1 "ADM  precision_derivative_cost" "ADM Cost" $2 $3; yy=$? ;;
+ 	   'Grad') testoutput_var $1 "ADM  precision_derivative_grad" "ADM Grad" $2 $3; yy=$? ;;
+ 	   'Tmn') testoutput_var $1 "dynstat_theta_min"  "Theta minimum"  $2 $3; yy=$? ;;
+ 	   'Tmx') testoutput_var $1 "dynstat_theta_max"  "Theta maximum"  $2 $3; yy=$? ;;
+ 	   'Tav') testoutput_var $1 "dynstat_theta_mean" "Theta mean"	  $2 $3; yy=$? ;;
+	   'Tsd') testoutput_var $1 "dynstat_theta_sd"   "Theta Std.Dev"  $2 $3; yy=$? ;;
+	   'Smn') testoutput_var $1 "dynstat_salt_min"  "Salt minimum"	  $2 $3; yy=$? ;;
+	   'Smx') testoutput_var $1 "dynstat_salt_max"  "Salt maximum"	  $2 $3; yy=$? ;;
+	   'Sav') testoutput_var $1 "dynstat_salt_mean" "Salt mean"	  $2 $3; yy=$? ;;
+	   'Ssd') testoutput_var $1 "dynstat_salt_sd"   "Salt Std.Dev"	  $2 $3; yy=$? ;;
 	   'Umn') testoutput_var $1 "dynstat_uvel_min"  "U minimum"	  $2 $3; yy=$? ;;
 	   'Umx') testoutput_var $1 "dynstat_uvel_max"  "U maximum"	  $2 $3; yy=$? ;;
 	   'Uav') testoutput_var $1 "dynstat_uvel_mean" "U mean"	  $2 $3; yy=$? ;;
-	   'Usd') testoutput_var $1 "dynstat_uvel_sd"   "U s.d."	  $2 $3; yy=$? ;;
+	   'Usd') testoutput_var $1 "dynstat_uvel_sd"   "U Std.Dev"	  $2 $3; yy=$? ;;
 	   'Vmn') testoutput_var $1 "dynstat_vvel_min"  "V minimum"	  $2 $3; yy=$? ;;
 	   'Vmx') testoutput_var $1 "dynstat_vvel_max"  "V maximum"	  $2 $3; yy=$? ;;
 	   'Vav') testoutput_var $1 "dynstat_vvel_mean" "V mean"	  $2 $3; yy=$? ;;
-	   'Vsd') testoutput_var $1 "dynstat_vvel_sd"   "V s.d."	  $2 $3; yy=$? ;;
+	   'Vsd') testoutput_var $1 "dynstat_vvel_sd"   "V Std.Dev"	  $2 $3; yy=$? ;;
 	'pt1mn'|'pt2mn'|'pt3mn'|'pt4mn'|'pt5mn') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
 	   testoutput_var $1 "trcstat_ptracer0"$ii"_min"  "p0"$ii"_min"	  $2 $3; yy=$? ;;
 	'pt1mx'|'pt2mx'|'pt3mx'|'pt4mx'|'pt5mx') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
@@ -293,7 +295,7 @@ testoutput_run()
 	'pt1av'|'pt2av'|'pt3av'|'pt4av'|'pt5av') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
 	   testoutput_var $1 "trcstat_ptracer0"$ii"_mean" "p0"$ii"_mean" $2 $3; yy=$? ;;
 	'pt1sd'|'pt2sd'|'pt3sd'|'pt4sd'|'pt5sd') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
-	   testoutput_var $1 "trcstat_ptracer0"$ii"_sd"   "p0"$ii"_sd"	  $2 $3; yy=$? ;;
+	   testoutput_var $1 "trcstat_ptracer0"$ii"_sd"   "p0"$ii"_StDv"  $2 $3; yy=$? ;;
               *) yy=99; echo "WARNING: asking for var=$xx : not recognized !" 1>&2 ;;
           esac
           if test $xx = $sVar
@@ -710,7 +712,7 @@ scandirs()
 {
     if [ $# -eq 1 ]; then
  	for arg in * ; do
- 	    test -d $arg/$1 && echo $arg
+ 	    test -f $arg/$1 && echo $arg
  	done
     else
  	echo $*
@@ -895,11 +897,24 @@ if test "x$QUICK" = xt ; then
     NODEPEND=t
 fi
 
+#- setting for forward or ADM testing
+if test "x$ADM" = xt ; then
+    code_dir=code_ad
+    input_dirs='input_ad input'
+    ref_outp="output_adm.txt"
+    EXECUTABLE="mitgcmuv_ad"
+else
+    code_dir=code
+    input_dirs='input'
+    ref_outp="output.txt"
+    EXECUTABLE="mitgcmuv"
+fi
+
 if test "x$TESTDIRS" = x ; then
     if test "x$ADM" = xt ; then
-	LIST=`scandirs results_ad`
+	LIST=`scandirs results_ad/$ref_outp`
     else
-	LIST=`scandirs results`
+	LIST=`scandirs results/$ref_outp`
     fi
 else
     #- expand group of experiments:
@@ -944,14 +959,7 @@ if test "x$OPTFILE" = xNONE -a "x$MITGCM_OF" != x ; then
     OPTFILE=$MITGCM_OF
 fi
 
-if test "x$ADM" = xt ; then
-    EXECUTABLE="mitgcmuv_ad"
-    OUTPUTFILE="output_adm.txt"
-else
-    EXECUTABLE="mitgcmuv"
-    OUTPUTFILE="output.txt"
-fi
-
+OUTPUTFILE=$ref_outp
 if test "x$COMMAND" = x ; then
     COMMAND="./$EXECUTABLE > $OUTPUTFILE"
 fi
@@ -966,12 +974,16 @@ echo "OK (COMMAND= $COMMAND )"
 #  (use default or load experiment-specific list from file "tr_checklist")
 # content : 1rst = main variable used to decide if it pass or FAIL
 #         others = number of matching digits to be printed in summary.txt
-if test "x$ADM" != xt ; then
+if test "x$ADM" = x ; then
     DEF_CHECK_LIST='PS PS T+ S+ U+ V+ pt1+ pt2+ pt3+ pt4+ pt5+'
     EMPTY_RESULTS='.. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ..'
     LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
     ii=`echo $EMPTY_RESULTS | awk '{print NF}'`
     EMPTY_RESULTS=$EMPTY_RESULTS`expr $LEN_CHECK_LIST - $ii | awk 'BEGIN{FS=":"}{for(i=1;i<=$1;i++){printf "  ."}}'`
+else
+    DEF_CHECK_LIST='Cost Cost Grad'
+    EMPTY_RESULTS='.. ..'
+    LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
 fi
 
 #  create the FORTRAN comparison code
@@ -1098,9 +1110,9 @@ for dir in $TESTDIRS ; do
     #  results in the correct location--or skip this directory!
     fout=
     if test "x$ADM" = x ; then
-	fout=$dir"/results/output.txt"
+	fout=$dir"/results/"$ref_outp
     else
-	fout=$dir"/results_ad/output_adm.txt"
+	fout=$dir"/results_ad/"$ref_outp
     fi
     if test ! -r $fout ; then
 	echo "can't read \"$fout\" -- skipping $dir"
@@ -1115,20 +1127,10 @@ for dir in $TESTDIRS ; do
     builddir="build"
     if test ! -d $dir/$builddir ; then mkdir $dir/$builddir ; fi
     rundir="run"
-   #rundir=$builddir
     if test ! -d $dir/$rundir ; then
 	rundir=$builddir
     fi
-    
-    if test "x$ADM" = x ; then
-	code_dir=code
-	CODE_DIR=$dir/code
-        input_dirs='input'
-    else
-	code_dir=code_ad
-	CODE_DIR=$dir/code_ad
-        input_dirs='input_ad input'
-    fi
+    CODE_DIR=$dir/$code_dir
     BUILD_DIR=$dir/$builddir
 
     if test ! -r $CODE_DIR"/SIZE.h_mpi" -a "x$MPI" = "xt" ; then
@@ -1190,7 +1192,7 @@ for dir in $TESTDIRS ; do
 	    && makemodel $dir/$builddir && make=Y \
 	    && linkdata $dir/$rundir $input_dirs \
 	    && runmodel $dir/$rundir && run=Y \
-	    && results=`testoutput_run $dir $rundir "txt"`
+	    && results=`testoutput_run $dir $rundir $ref_outp`
     fi
     
     echo
@@ -1216,7 +1218,7 @@ for dir in $TESTDIRS ; do
  	    run_clean $dir/tr_run.$ex
             linkdata $dir/tr_run.$ex input.$ex input
 	    runmodel $dir/tr_run.$ex && run=Y \
-		&& results=`testoutput_run $dir tr_run.$ex ${ex}".txt"`
+		&& results=`testoutput_run $dir tr_run.$ex "output.${ex}.txt"`
 	    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    fres="$fres.$ex"
 	    echo
@@ -1242,6 +1244,8 @@ for dir in $TESTDIRS ; do
 	echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
 	echo "DATE='$DATE'" >> $CDIR"/summary.txt"
 	echo "tdir='$dir'" >> $CDIR"/summary.txt"
+    fi
+    if test "x$ADM" = xt ; then
         grep -A3 'Seconds in section "ALL' $dir/$rundir/$OUTPUTFILE \
 			   >> $CDIR"/summary.txt"
     fi
