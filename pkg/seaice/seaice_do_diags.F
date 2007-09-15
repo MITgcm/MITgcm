@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.32 2007/06/07 13:46:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.33 2007/09/15 01:38:59 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -90,6 +90,9 @@ C     == Local variables ==
             CALL WRITE_FLD_XY_RS( 'Qsw.',suff,Qsw,myIter,myThid)
             ENDIF
             CALL WRITE_FLD_XY_RL( 'HSNOW.',suff,HSNOW,myIter,myThid)
+#ifdef SEAICE_SALINITY
+            CALL WRITE_FLD_XY_RL( 'HSALT.',suff,HSALT,myIter,myThid)
+#endif
 #if ( defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP) )
             IF ( SEAICEuseEVP ) THEN
              CALL WRITE_FLD_XY_RL('SIGMA1.',suff,seaice_sigma1,

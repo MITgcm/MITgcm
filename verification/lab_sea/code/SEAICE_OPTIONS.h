@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.27 2007/09/15 01:38:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.8 2007/09/15 01:38:59 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -89,7 +89,7 @@ C--   Allow SEAICEuseFlooding, which converts snow to ice if submerged.
 #undef ALLOW_SEAICE_FLOODING
 
 C--   By default sea ice is fresh.  Set following flag for salty ice.
-#undef SEAICE_SALINITY
+#define SEAICE_SALINITY
 
 C--   By default the seaice model is discretized on a B-Grid (for 
 C     historical reasons). Define the following flag to use a new

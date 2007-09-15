@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.54 2007/07/06 02:37:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.55 2007/09/15 01:38:59 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,10 +42,10 @@ C--   SEAICE parameters
      & SEAICEwriteState, SEAICEuseDYNAMICS,
      & SEAICEuseEVPpickup, SEAICEuseFluxForm,
      & useHB87stressCoupling, SEAICEuseFlooding, usePW79thermodynamics,
-     & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow,
+     & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow, SEAICEadvSalt,
      & SEAICE_clipVelocities, SEAICE_maskRHS, SEAICE_no_slip,
      & LAD, IMAX_TICE, SEAICEadvScheme, SEAICEadvSchArea, 
-     & SEAICEadvSchHeff, SEAICEadvSchSnow,
+     & SEAICEadvSchHeff, SEAICEadvSchSnow, SEAICEadvSchSalt,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      & SEAICE_evpDampC,
@@ -58,10 +58,10 @@ C--   SEAICE parameters
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      & SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze, OCEAN_drag,
-     & SEAICE_salinity, SEAICE_availHeatFrac, SEAICEstressFactor,
+     & SEAICE_availHeatFrac, SEAICEstressFactor,
      & uwindFile, vwindFile, atempFile, aqhFile, lwdownFile, AreaFile, 
      & swdownFile, precipFile, evapFile, runoffFile, HeffFile,
-     & HsnowFile, LSR_ERROR, DIFF1, A22, HO,
+     & HsnowFile, HsaltFile, LSR_ERROR, DIFF1, A22, HO,
      & WindForcingStart, WindForcingEnd, WindForcingPeriod,
      & FluxForcingStart, FluxForcingEnd, FluxForcingPeriod,
      & SSTForcingStart,  SSTForcingEnd,  SSTForcingPeriod,
@@ -111,8 +111,8 @@ C--   set default sea ice parameters
       usePW79thermodynamics = .TRUE.
       SEAICEadvHeff      = .TRUE.    
       SEAICEadvArea      = .TRUE.
-      SEAICEadvSnow      = .FALSE.    
-CML      SEAICEadvSnow      = .TRUE.
+      SEAICEadvSnow      = .FALSE.
+      SEAICEadvSalt      = .FALSE.
       SEAICEuseFlooding  = .FALSE.
       SEAICE_no_slip     = .FALSE.
       SEAICE_clipVelocities = .TRUE.
@@ -121,6 +121,7 @@ CML      SEAICEadvSnow      = .TRUE.
       SEAICEadvSchArea   = UNSET_I
       SEAICEadvSchHeff   = UNSET_I
       SEAICEadvSchSnow   = UNSET_I
+      SEAICEadvSchSalt   = UNSET_I
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = UNSET_RL
@@ -165,7 +166,6 @@ C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
       SEAICE_snowThick   = 0.15   _d 0
       SEAICE_shortwave   = 0.30   _d 0
       SEAICE_freeze      = -1.96  _d 0
-      SEAICE_salinity    = 0.0    _d 0
       SEAICE_availHeatFrac = 1.   _d 0
       SEAICEstressFactor = 1.     _d 0
       uwindFile  = ' '
@@ -179,6 +179,7 @@ C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
       runoffFile = ' '
       AreaFile   = ' '
       HsnowFile  = ' '
+      HsaltFile  = ' '
       HeffFile   = ' '
       LAD        = 2
       IMAX_TICE  = 10
@@ -291,6 +292,7 @@ C     so we reset them here
        SEAICEadvHeff         = .FALSE.    
        SEAICEadvArea         = .FALSE.
        SEAICEadvSnow         = .FALSE.    
+       SEAICEadvSalt         = .FALSE.    
       ENDIF
 C     Set advection schemes to some sensible values if not done 
 C     in data.seaice
@@ -302,6 +304,8 @@ C     in data.seaice
      &     SEAICEadvSchHeff = SEAICEadvSchArea
       IF ( SEAICEadvSchSnow .EQ. UNSET_I )
      &     SEAICEadvSchSnow = SEAICEadvSchHeff
+      IF ( SEAICEadvSchSalt .EQ. UNSET_I )
+     &     SEAICEadvSchSalt = SEAICEadvSchHeff
 
 #ifndef SEAICE_EXTERNAL_FORCING
       IF ( FluxForcingStart  .EQ. -99999. .OR.

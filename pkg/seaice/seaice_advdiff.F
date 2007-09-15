@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.19 2007/06/04 18:48:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.20 2007/09/15 01:38:59 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -270,6 +270,38 @@ C     now do the "explicit" time step
           ENDDO
          ENDDO
         ENDIF
+
+C--   Effective Sea Ice Salinity
+        IF ( SEAICEadvSalt ) THEN
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           iceFld(i,j) = HSALT(i,j,bi,bj)
+          ENDDO
+         ENDDO
+         CALL SEAICE_ADVECTION(
+     I        GAD_SALT, SEAICEadvSchSalt,
+     I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
+     I        uTrans, vTrans, iceFld, recip_heff,
+     O        gFld, afx, afy,
+     I        bi, bj, myTime, myIter, myThid )
+         IF ( diff1 .GT. 0. _d 0 ) THEN
+C--   Add tendency due to diffusion
+          CALL SEAICE_DIFFUSION(
+     I         GAD_SALT,
+     I         HSALT(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
+     U         gFld,
+     I         bi, bj, myTime, myIter, myThid )
+         ENDIF
+C     now do the "explicit" time step
+         DO j=1,sNy
+          DO i=1,sNx
+           HSALT(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
+     &          HSALT(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
+     &          )
+          ENDDO
+         ENDDO
+        ENDIF
+
 C---   end bi,bj loops
        ENDDO
       ENDDO
@@ -287,10 +319,11 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics
 
        IF ( SEAICEadvHEff ) CALL ADVECT( uc, vc, HEFF, HEFFM, myThid )
        IF ( SEAICEadvArea ) CALL ADVECT( uc, vc, AREA, HEFFM, myThid )
-       IF ( SEAICEadvSnow ) THEN
+
 C     another fudge: copy 2D field HSNOW to 3D field fld3d to be able to
 C     use ADVECT. Works only with LAD=2 (Backward Euler scheme) and NOT
 C     with LAD=1 (Leapfrog).
+       IF ( SEAICEadvSnow ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -308,6 +341,33 @@ C     with LAD=1 (Leapfrog).
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             HSNOW(I,J,bi,bj) = fld3d(I,J,1,bi,bj) 
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+
+C     another fudge: copy 2D field HSALT to 3D field fld3d to be able to
+C     use ADVECT. Works only with LAD=2 (Backward Euler scheme) and NOT
+C     with LAD=1 (Leapfrog).
+       IF ( SEAICEadvSnow ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            fld3d(I,J,3,bi,bj) = 0. _d 0 
+            fld3d(I,J,2,bi,bj) = HSALT(I,J,bi,bj)
+            fld3d(I,J,1,bi,bj) = HSALT(I,J,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL ADVECT( uc, vc, fld3d, HEFFM, myThid )       
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            HSALT(I,J,bi,bj) = fld3d(I,J,1,bi,bj) 
            ENDDO
           ENDDO
          ENDDO

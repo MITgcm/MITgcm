@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.22 2007/08/23 19:13:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.23 2007/09/15 01:38:59 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -73,7 +73,6 @@ C     QSWI   - short wave heat flux under ice in W/m^2
 C     
       _RL HCORR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     saltWtrIce contains m of salty ice melted (<0) or created (>0)
-C     for time being its salinity is assumed constant SEAICE_salinity
       _RL saltWtrIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     frWtrIce contains m of freshwater ice melted (<0) or created (>0)
 C     that is, ice due to precipitation or snow
@@ -566,9 +565,12 @@ C NOW GET FRESH WATER FLUX
 #endif
 
 C NOW GET SALT FLUX
-          saltFlux(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*
+#ifdef SEAICE_SALINITY
+          IF ( HEFF(I,J,1,bi,bj) .GT. 0.0 )
+     &         saltFlux(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*
      &         saltWtrIce(I,J)*ICE2WATR/SEAICE_deltaTtherm*
-     &         rhoConstFresh*SEAICE_salinity
+     &         rhoConstFresh*HSALT(I,J,bi,bj)/HEFF(I,J,1,bi,bj)
+#endif
 
 #else /* ALLOW_ATM_TEMP */
           STOP 'ABNORMAL END: S/R THSICE_GROWTH: ATM_TEMP undef'
@@ -698,8 +700,6 @@ CADJ &                         key = iicekey, byte = isbyte
 #ifdef ALLOW_SEAICE_FLOODING
         IF ( SEAICEuseFlooding ) THEN
 C     convert snow to ice if submerged
-C     for time being, sea ice salinity is assumed constant, that is,
-C     contribution of snow flooding to freshening of sea ice is neglected
          DO J=1,sNy
           DO I=1,sNx
            hDraft = (HSNOW(I,J,bi,bj)*330. _d 0

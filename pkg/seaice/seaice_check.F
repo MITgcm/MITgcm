@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.21 2007/05/18 02:46:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.22 2007/09/15 01:38:59 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,11 +41,20 @@ C--   SEAICE needs forcing_In_AB FALSE
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
-C--   SEAICEadvSnow doees one work with LAD = 2
+C--   SEAICEadvSnow does not work with LAD = 1
       IF (SEAICEadvSnow .AND. SEAICEadvSchSnow .EQ. 2
      &     .AND. LAD .EQ. 1) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      & ' 2nd order snow advection does not work with Leap frog (LAD==1)'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
+C--   SEAICEadvSalt does not work with LAD = 1
+      IF (SEAICEadvSalt .AND. SEAICEadvSchSalt .EQ. 2
+     &     .AND. LAD .EQ. 1) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     & ' 2nd order salt advection does not work with Leap frog (LAD==1)'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF

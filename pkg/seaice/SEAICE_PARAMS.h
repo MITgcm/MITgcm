@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.41 2007/07/06 02:37:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.42 2007/09/15 01:38:59 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -26,6 +26,8 @@ C     SEAICEadvArea     :: turn on advection of fraction area
 C                          (default = .true.)
 C     SEAICEadvSnow     :: turn on advection of snow (does not work with
 C                          non-default Leap-frog scheme for advection)
+C     SEAICEadvSalt     :: turn on advection of salt (does not work with
+C                          non-default Leap-frog scheme for advection)
 C     useHB87stressCoupling :: use an intergral over ice and ocean surface
 C                          layer to define surface stresses on ocean
 C                          following Hibler and Bryan (1987, JPO)
@@ -43,7 +45,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
-     &     SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow, 
+     &     SEAICEadvHeff, SEAICEadvArea,
+     &     SEAICEadvSnow, SEAICEadvSalt,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
      &     usePW79thermodynamics,
      &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
@@ -52,7 +55,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
-     &     SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow, 
+     &     SEAICEadvHeff, SEAICEadvArea,
+     &     SEAICEadvSnow, SEAICEadvSalt,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
      &     usePW79thermodynamics,
      &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
@@ -66,20 +70,23 @@ C     IMAX_TICE  - number of iterations for ice heat budget   10
 C     SEAICEadvScheme  - sets the advection scheme for thickness and area
 C     SEAICEadvSchArea - sets the advection scheme for area
 C     SEAICEadvSchHeff - sets the advection scheme for effective thickness 
-C                        (=volume) and snow thickness if available
+C                        (=volume), snow thickness, and salt if available
 C     SEAICEadvSchSnow - sets the advection scheme for snow on sea-ice
+C     SEAICEadvSchSalt - sets the advection scheme for sea ice salinity
 C
       INTEGER LAD, IMAX_TICE
       INTEGER SEAICEadvScheme
       INTEGER SEAICEadvSchArea
       INTEGER SEAICEadvSchHeff
       INTEGER SEAICEadvSchSnow
+      INTEGER SEAICEadvSchSalt
       COMMON /SEAICE_PARM_I/ 
      &     LAD, IMAX_TICE,
      &     SEAICEadvScheme,
      &     SEAICEadvSchArea,
      &     SEAICEadvSchHeff,
-     &     SEAICEadvSchSnow
+     &     SEAICEadvSchSnow,
+     &     SEAICEadvSchSalt
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
 C     uwindFile       - File containing uwind
@@ -93,6 +100,7 @@ C     evapFile        - File containing evap
 C     runoffFile      - File containing runoffF
 C     AreaFile        - File containing initial sea-ice concentration
 C     HsnowFile       - File containing initial snow thickness
+C     HsaltFile       - File containing initial sea ice salinity
 C     HeffFile        - File containing initial sea-ice thickness
 C        !!! NOTE !!! Initial sea-ice thickness can also be set using
 C        SEAICE_initialHEFF below.  But a constant initial condition
@@ -110,10 +118,11 @@ C
       CHARACTER*(MAX_LEN_FNAM) runoffFile
       CHARACTER*(MAX_LEN_FNAM) AreaFile
       CHARACTER*(MAX_LEN_FNAM) HsnowFile
+      CHARACTER*(MAX_LEN_FNAM) HsaltFile
       CHARACTER*(MAX_LEN_FNAM) HeffFile
       COMMON /SEAICE_PARM_C/ uwindFile, vwindFile, atempFile, aqhFile,
      &     lwdownFile, swdownFile, precipFile, evapFile, runoffFile,
-     &	   HeffFile, HsnowFile, AreaFile
+     &	   HeffFile, HsnowFile, HsaltFile, AreaFile
 
 C--   COMMON /SEAICE_PARM_RL/ Real valued parameters of sea ice model.
 C     SEAICE_deltaTtherm - Seaice timestep for thermodynamic equations (s)
@@ -157,7 +166,6 @@ C     SEAICE_emissivity  - Stefan-Boltzman constant * emissivity
 C     SEAICE_snowThick   - cutoff snow thickness
 C     SEAICE_shortwave   - penetration shortwave radiation factor
 C     SEAICE_freeze      - FREEZING TEMP. OF SEA WATER
-C     SEAICE_salinity    - seaice salinity in g/kg
 C     SEAICE_availHeatFrac - Fraction of surface level heat content used to
 C                            melt or grow ice (default 1.0)
 C     SEAICEstressFactor - factor by which ice affects wind stress (default=1)
@@ -193,7 +201,7 @@ C
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
       _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
-      _RL SEAICE_salinity, SEAICE_availHeatFrac, SEAICEstressFactor
+      _RL SEAICE_availHeatFrac, SEAICEstressFactor
       _RL OCEAN_drag, LSR_ERROR, DIFF1, A22, HO
       _RL WindForcingStart, WindForcingEnd, WindForcingPeriod
       _RL FluxForcingStart, FluxForcingEnd, FluxForcingPeriod
@@ -216,7 +224,7 @@ C
      &    SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
-     &    SEAICE_salinity, SEAICE_availHeatFrac, SEAICEstressFactor,
+     &    SEAICE_availHeatFrac, SEAICEstressFactor,
      &    OCEAN_drag, LSR_ERROR, DIFF1, A22, HO,
      &    WindForcingStart, WindForcingEnd, WindForcingPeriod,
      &    FluxForcingStart, FluxForcingEnd, FluxForcingPeriod,
@@ -246,12 +254,13 @@ C--   Constants used by sea-ice model
       parameter ( QUART = 0.25 _d 0, HALF = 0.5 _d 0 ) 
 
 C--   identifiers for advected properties
-      INTEGER GAD_HEFF, GAD_AREA, GAD_QICE1, GAD_QICE2, GAD_SNOW
+      INTEGER GAD_HEFF,GAD_AREA,GAD_QICE1,GAD_QICE2,GAD_SNOW,GAD_SALT
       PARAMETER ( GAD_HEFF  = 101, 
      &            GAD_AREA  = 102,
      &            GAD_QICE1 = 103,
      &            GAD_QICE2 = 104,
-     &            GAD_SNOW  = 105 )
+     &            GAD_SNOW  = 105,
+     &            GAD_SALT  = 106 )
 
 
 CEH3 ;;; Local Variables: ***

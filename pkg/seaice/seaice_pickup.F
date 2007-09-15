@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.17 2007/04/16 22:30:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.18 2007/09/15 01:38:59 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -32,6 +32,7 @@ CEndofinterface
 
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER iRec
 
 C--    Going to do some IO. Make everyone except master thread wait.
        _BARRIER
@@ -39,44 +40,42 @@ C--    Going to do some IO. Make everyone except master thread wait.
 
 C--    Read ice model fields
        WRITE(fn,'(A,I10.10)') 'pickup_seaice.',nIter0
+       iRec = 1
 #ifdef SEAICE_MULTICATEGORY
-       CALL MDSREADFIELD
-     &      ( fn, precFloat64, 'RL', MULTDIM, TICES, 1, myThid )
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, YNEG , 8, myThid )
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, HSNOW, 9, myThid )
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, UICE , 4, myThid )
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, VICE , 5, myThid )
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, HEFF , 6, myThid )
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, AREA , 7, myThid )
-#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
-       IF ( SEAICEuseEVP .AND. SEAICEuseEVPpickup ) THEN
-        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
-     &       seaice_sigma1,  22, myThid )
-        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
-     &       seaice_sigma2,  23, myThid )
-        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
-     &       seaice_sigma12, 24, myThid )
-       ENDIF
-#endif /* SEAICE_ALLOW_EVP */
-#else /* SEAICE_MULTICATEGORY */
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, TICE , 1, myThid )
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, YNEG , 2, myThid )
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, HSNOW, 3, myThid )
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, UICE , 2, myThid )
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, VICE , 3, myThid )
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, HEFF , 4, myThid )
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, AREA , 5, myThid )
-#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
-       IF ( SEAICEuseEVP .AND. SEAICEuseEVPpickup ) THEN
-        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
-     &       seaice_sigma1,  16, myThid )
-        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
-     &       seaice_sigma2,  17, myThid )
-        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
-     &       seaice_sigma12, 18, myThid )
-       ENDIF
-#endif /* SEAICE_ALLOW_EVP */
+       CALL MDSREADFIELD(fn,precFloat64,'RL',MULTDIM,TICES,iRec,myThid)
+       iRec = iRec + MULTDIM
+#else
+       CALL MDSREADFIELD(fn,precFloat64,'RL',1,TICE,iRec,myThid)
+       iRec = iRec + 1
 #endif /* SEAICE_MULTICATEGORY */
+       CALL MDSREADFIELD(fn,precFloat64,'RL',1,YNEG,iRec,myThid)
+       iRec = iRec + 1
+       CALL MDSREADFIELD(fn,precFloat64,'RL',1,HSNOW,iRec,myThid)
+       iRec = int((iRec+3)/3)
+       CALL MDSREADFIELD(fn,precFloat64,'RL',3,UICE,iRec,myThid)
+       iRec = iRec + 1
+       CALL MDSREADFIELD(fn,precFloat64,'RL',3,VICE,iRec,myThid)
+       iRec = iRec + 1
+       CALL MDSREADFIELD(fn,precFloat64,'RL',3,HEFF,iRec,myThid)
+       iRec = iRec + 1
+       CALL MDSREADFIELD(fn,precFloat64,'RL',3,AREA,iRec,myThid)
+       iRec = iRec * 3 + 1
+#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
+       IF ( SEAICEuseEVP .AND. SEAICEuseEVPpickup ) THEN
+        CALL MDSREADFIELD(fn,precFloat64,'RL',1,
+     &       seaice_sigma1,iRec,myThid )
+        iRec = iRec + 1
+        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &       seaice_sigma2,iRec,myThid )
+        iRec = iRec + 1
+        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, 
+     &       seaice_sigma12,iRec,myThid )
+        iRec = iRec + 1
+       ENDIF
+#endif /* SEAICE_ALLOW_EVP */
+#ifdef SEAICE_SALINITY
+       CALL MDSREADFIELD(fn,precFloat64,'RL',1,HSALT,iRec,myThid)
+#endif
 
        _END_MASTER( myThid )
        _BARRIER
@@ -85,14 +84,23 @@ C--    Update overlap regions
        CALL EXCH_UV_3D_RL( UICE, VICE, .TRUE., 3, myThid )
        CALL EXCH_3D_RL   ( HEFF, 3, myThid )
        CALL EXCH_3D_RL   ( AREA, 3, myThid )
+#ifdef SEAICE_MULTICATEGORY
+cdm       CALL EXCH_3D_RL   ( TICES, MULTDIM, myThid )
+#else
        _EXCH_XY_R8(TICE , myThid )
+#endif /* SEAICE_MULTICATEGORY */
        _EXCH_XY_R8(YNEG , myThid )
        _EXCH_XY_R8(HSNOW, myThid )
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
-       _EXCH_XY_R8(seaice_sigma1 , myThid )
-       _EXCH_XY_R8(seaice_sigma2 , myThid )
-       _EXCH_XY_R8(seaice_sigma12, myThid )
+       IF ( SEAICEuseEVP .AND. SEAICEuseEVPpickup ) THEN
+          _EXCH_XY_R8(seaice_sigma1 , myThid )
+          _EXCH_XY_R8(seaice_sigma2 , myThid )
+          _EXCH_XY_R8(seaice_sigma12, myThid )
+       ENDIF
 #endif /* SEAICE_CGRID SEAICE_ALLOW_EVP */
+#ifdef SEAICE_SALINITY
+       _EXCH_XY_R8(HSALT, myThid )
+#endif
 
       RETURN
       END
@@ -129,6 +137,7 @@ CEndofinterface
 
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER iRec
       LOGICAL lgf
 
 C--    Write model fields
@@ -137,44 +146,43 @@ C--    Write model fields
        ELSE
         WRITE(fn,'(A,A)') 'pickup_seaice.',checkPtSuff(nCheckLev)
        ENDIF
+       iRec = 1
 #ifdef SEAICE_MULTICATEGORY
        CALL MDSWRITEFIELD
-     &      (fn,prec,lgf,'RL', MULTDIM,  TICES,1, myIt,myThid)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,  YNEG, 8, myIt,myThid)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, HSNOW, 9, myIt,myThid)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  UICE, 4, myIt,myThid)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  VICE, 5, myIt,myThid)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  HEFF, 6, myIt,myThid)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  AREA, 7, myIt,myThid)
-#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
-       IF ( SEAICEuseEVP ) THEN
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
-     &         seaice_sigma1,  22, myIt,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
-     &         seaice_sigma2,  23, myIt,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
-     &         seaice_sigma12, 24, myIt,myThid)
-       ENDIF
-#endif /* SEAICE_ALLOW_EVP */
-#else /* SEAICE_MULTICATEGORY */
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,  TICE, 1, myIt,myThid)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,  YNEG, 2, myIt,myThid)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, HSNOW, 3, myIt,myThid)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  UICE, 2, myIt,myThid)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  VICE, 3, myIt,myThid)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  HEFF, 4, myIt,myThid)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  AREA, 5, myIt,myThid)
-#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
-       IF ( SEAICEuseEVP ) THEN
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
-     &         seaice_sigma1,  16, myIt,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
-     &         seaice_sigma2,  17, myIt,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
-     &         seaice_sigma12, 18, myIt,myThid)
-       ENDIF
-#endif /* SEAICE_ALLOW_EVP */
+     &      (fn,prec,lgf,'RL',MULTDIM,TICES,iRec,myIt,myThid)
+       iRec = iRec + MULTDIM
+#else
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,TICE,iRec,myIt,myThid)
+       iRec = iRec + 1
 #endif /* SEAICE_MULTICATEGORY */
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,YNEG,iRec,myIt,myThid)
+       iRec = iRec + 1
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,HSNOW,iRec,myIt,myThid)
+       iRec = int((iRec+3)/3)
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',3,UICE,iRec,myIt,myThid)
+       iRec = iRec + 1
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',3,VICE,iRec,myIt,myThid)
+       iRec = iRec + 1
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',3,HEFF,iRec,myIt,myThid)
+       iRec = iRec + 1
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',3,AREA,iRec,myIt,myThid)
+       iRec = iRec * 3 + 1
+#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
+       IF ( SEAICEuseEVP ) THEN
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
+     &         seaice_sigma1,iRec,myIt,myThid)
+          iRec = iRec + 1
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
+     &         seaice_sigma2,iRec,myIt,myThid)
+          iRec = iRec + 1
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
+     &         seaice_sigma12,iRec,myIt,myThid)
+          iRec = iRec + 1
+       ENDIF
+#endif /* SEAICE_ALLOW_EVP */
+#ifdef SEAICE_SALINITY
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,HSALT,iRec,myIt,myThid)
+#endif
 
       RETURN
       END

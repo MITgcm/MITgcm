@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.1 2007/06/21 00:30:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.2 2007/09/15 01:38:59 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -69,6 +69,9 @@ C
        ENDDO
 C
        CALL DIAGNOSTICS_FILL(HSNOW  ,'SIhsnow ',0,1 ,0,1,1,myThid)
+#ifdef SEAICE_SALINITY
+       CALL DIAGNOSTICS_FILL(HSALT  ,'SIhsalt ',0,1 ,0,1,1,myThid)
+#endif
 C     
 #ifdef SEAICE_CGRID
        IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.

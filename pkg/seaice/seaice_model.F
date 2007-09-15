@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.51 2007/06/22 06:41:10 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.52 2007/09/15 01:38:59 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -145,13 +145,14 @@ C solve ice momentum equations and calculate ocean surface stress
 #ifdef ALLOW_THSICE
       IF ( .NOT.useThSice ) THEN
 #endif
-C--   Only call advection of heff, area, and snow and 
+C--   Only call advection of heff, area, snow, and salt and 
 C--   growth for the generic 0-layer thermodynamics of seaice
 C--   if useThSice=.false., otherwise the 3-layer Winton thermodynamics
 C--   (called from DO_OCEANIC_PHYSICS) take care of this
 
 C NOW DO ADVECTION and DIFFUSION
-      IF ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow ) THEN
+      IF ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow
+     &        .OR. SEAICEadvSalt ) THEN
 #ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB )
      &      CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
@@ -190,6 +191,9 @@ C--   Update overlap regions for a bunch of stuff
        CALL EXCH_3D_RL( HEFF, 3, myThid )
        CALL EXCH_3D_RL( AREA, 3, myThid )
        _EXCH_XY_R8( HSNOW,  myThid )
+#ifdef SEAICE_SALINITY
+       _EXCH_XY_R8( HSALT,  myThid )
+#endif
        _EXCH_XY_R4(EmPmR, myThid )
        _EXCH_XY_R4(saltFlux, myThid )
        _EXCH_XY_R4(Qnet , myThid )
