@@ -9,7 +9,7 @@
 #  ^- commented out => do not export env. variable !
 #  since head node environment (& module) is too different from computer node
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.2 2007/08/08 18:47:48 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.3 2007/09/17 18:48:04 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -22,6 +22,7 @@ TST_DIR="/home/jmc/test_ACES/gcm_tests"
 HERE='/home/jmc/test_ACES/output'
 cd $HERE
 
+MC=10
 FC=pgf77
 MF=$HERE"/mf_"$FC
 cat $PBS_NODEFILE | sort | uniq > $MF
@@ -44,6 +45,6 @@ cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null 2>&1
 
 cd MITgcm/verification
 OPTFILE="../tools/build_options/linux_ia32_"$FC"+mpi_aces"
-# ./testreport -j 2 -mpi -of $OPTFILE -command "$EXE" -a 'edhill@mitgcm.org'
-./testreport -mpi -of $OPTFILE -command "$EXE"
+echo ./testreport -mpi -match $MC -of $OPTFILE -command "$EXE"
+./testreport -mpi -match $MC -of $OPTFILE -command "$EXE"
 
