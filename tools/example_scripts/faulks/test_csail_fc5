@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail_fc5,v 1.2 2007/09/17 18:23:57 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail_fc5,v 1.3 2007/09/17 19:57:56 jmc Exp $
 
 #  Ed Hill
 
@@ -13,6 +13,7 @@ export PATH='/usr/local/bin:/bin:/usr/bin'
 OPTFILE=
 TESTDIR="/scratch/jmc/test_"`hostname`
 IEEE="-ieee"
+MC=10
 
 
 #  Turn off stack limit for FIZHI
@@ -27,6 +28,9 @@ else mkdir $tdir
 fi
 echo "  done"
 
+#- clean-up old output files
+rm -f $tdir/output_*
+
 echo -n "Downloading the MITgcm code from CVS pserver..."
 cd $tdir
 export CVSROOT='/u/gcmpack'
@@ -39,7 +43,9 @@ comm="./testreport -adm -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
-$comm | tail -100
+$comm > $tdir/output_adm 2>&1
+tail -100 $tdir/output_adm
+
 
 echo
 echo "======================"
@@ -53,7 +59,8 @@ comm="./testreport -of ../tools/build_options/linux_ia32_g77 -a edhill@mitgcm.or
 echo "  \"$comm\""
 echo "======================"
 echo
-$comm | tail -100
+$comm > $tdir/output_g77 2>&1
+tail -100 $tdir/output_g77
 
 echo
 echo "======================"
@@ -64,11 +71,12 @@ echo
 
 echo "Running testreport using:"
 export PGI=/usr/local/pkg/pgi/pgi-6.1-5
-comm="./testreport -match 10 -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org"
+comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
-$comm | tail -100
+$comm > $tdir/output_pgi 2>&1
+tail -100 $tdir/output_pgi
 
 echo
 echo "======================"
@@ -78,11 +86,12 @@ echo "======================"
 echo
 
 echo "Running testreport using:"
-comm="./testreport -match 10 -of ../tools/build_options/linux_ia32_gfortran -a edhill@mitgcm.org"
+comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_gfortran -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
-$comm | tail -100
+$comm > $tdir/output_gfo 2>&1
+tail -100 $tdir/output_gfo
 
 echo
 echo "======================"
@@ -92,11 +101,12 @@ echo "======================"
 echo
 
 echo "Running testreport using:"
-comm="./testreport -match 10 -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
+comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
-$comm | tail -100
+$comm > $tdir/output_ifc 2>&1
+tail -100 $tdir/output_ifc
 
 echo
 echo "======================"
@@ -108,9 +118,11 @@ echo
 echo "Running testreport using:"
 export OMP_NUM_THREADS=2
 export KMP_STACKSIZE=400m
-comm="./testreport -mth -match 10 -of ../tools/build_options/linux_ia32_ifort.v9+mth -a edhill@mitgcm.org"
+comm="./testreport -mth -match $MC -of ../tools/build_options/linux_ia32_ifort.v9+mth -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
 $comm | tail -100
+$comm > $tdir/output_mth 2>&1
+tail -100 $tdir/output_mth
  
