@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.13 2007/08/27 20:55:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.14 2007/09/17 21:58:15 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -185,6 +185,14 @@ C     Fbot     :: oceanic heat flux used to melt/form ice [W/m2]
 C     lowIcFrac1 :: ice-fraction lower limit above which partial (lowIcFrac1)
 C     lowIcFrac2 :: or full (lowIcFrac2) lateral melting is allowed.
       _RL lowIcFrac1, lowIcFrac2
+#ifdef THSICE_FRACEN_POWERLAW
+      INTEGER powerLaw
+      _RL rec_pLaw
+      _RL c1Mlt, c2Mlt, aMlt, hMlt
+      _RL c1Frz, c2Frz, aFrz, hFrz
+      _RL enFrcMlt, xxMlt, tmpMlt
+      _RL enFrcFrz, xxFrz, tmpFrz
+#endif
 
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
@@ -211,6 +219,33 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     for now, use hard coded threshold (iceMaskMin +1.% and +10.%)
       lowIcFrac1 = iceMaskMin*1.01 _d 0
       lowIcFrac2 = iceMaskMin*1.10 _d 0
+#ifdef THSICE_FRACEN_POWERLAW
+      IF ( powerLawExp2 .GE. 1 ) THEN
+        powerLaw = 1 + 2**powerLawExp2
+        rec_pLaw = powerLaw
+        rec_pLaw = 1. _d 0 / rec_pLaw
+C-    Coef for melting:
+C     lateral-melting energy fraction = fracEnMelt - [ aMlt*(hi-hMlt) ]^powerLaw
+        c1Mlt = fracEnMelt**rec_pLaw
+        c2Mlt = (1. _d 0 - fracEnMelt)**rec_pLaw
+        aMlt = (c1Mlt+c2Mlt)/(hThickIce-hThinIce)
+        hMlt = hThinIce+c2Mlt/aMlt
+C-    Coef for freezing:
+C     thickening energy fraction     = fracEnFreez - [ aFrz*(hi-hFrz) ]^powerLaw
+        c1Frz = fracEnFreez**rec_pLaw
+        c2Frz = (1. _d 0 -fracEnFreez)**rec_pLaw
+        aFrz = (c1Frz+c2Frz)/(hThickIce-hThinIce)
+        hFrz = hThinIce+c2Frz/aFrz
+      ELSE
+C-    Linear relation
+        powerLaw = 1
+        aMlt = -1. _d 0 /(hThickIce-hThinIce)
+        hMlt = hThickIce
+        aFrz = -1. _d 0 /(hThickIce-hThinIce)
+        hFrz = hThickIce
+      ENDIF
+#endif /* THSICE_FRACEN_POWERLAW */
+
 
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -262,12 +297,37 @@ C......................................................................
 C.. Compute growth and/or melting at the top and bottom surfaces.......
 C......................................................................
 
+#ifdef THSICE_FRACEN_POWERLAW
+         xxMlt = aMlt*(hi-hMlt)
+         xxFrz = aFrz*(hi-hFrz)
+c--
+         IF ( powerLawExp2 .GE. 1 ) THEN
+           tmpMlt = xxMlt
+           tmpFrz = xxFrz
+           DO k=1,powerLawExp2
+             tmpMlt = tmpMlt*tmpMlt
+             tmpFrz = tmpFrz*tmpFrz
+           ENDDO
+           xxMlt = xxMlt*tmpMlt
+           xxFrz = xxFrz*tmpFrz
+c          xxMlt = xxMlt**powerLaw
+c          xxFrz = xxFrz**powerLaw
+           xxMlt = fracEnMelt -xxMlt
+           xxFrz = fracEnFreez-xxFrz
+         ENDIF
+         enFrcMlt = MAX( 0. _d 0, MIN( xxMlt, 1. _d 0 ) )
+         enFrcFrz = MAX( 0. _d 0, MIN( xxFrz, 1. _d 0 ) )
+#endif /* THSICE_FRACEN_POWERLAW */
+
       IF (frzmlt.GE. 0. _d 0) THEN
 C     !-----------------------------------------------------------------
 C     ! freezing conditions
 C     !-----------------------------------------------------------------
         Fbot = frzmlt
         IF ( iceFrac.LT.iceMaskMax ) THEN
+#ifdef THSICE_FRACEN_POWERLAW
+         Fbot = enFrcFrz*frzmlt
+#else /* THSICE_FRACEN_POWERLAW */
          IF (hi.GT.hThickIce) THEN
 C if higher than hThickIce, use all frzmlt energy to grow extra ice
           Fbot = 0. _d 0
@@ -275,6 +335,7 @@ C if higher than hThickIce, use all frzmlt energy to grow extra ice
 C between hThinIce & hThickIce, use partition factor fracEnFreez
           Fbot = (1. _d 0 - fracEnFreez)*frzmlt
          ENDIF
+#endif /* THSICE_FRACEN_POWERLAW */
         ENDIF
       ELSE
 C     !-----------------------------------------------------------------
@@ -303,6 +364,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C Compute energy available for melting/growth.
 
+#ifdef THSICE_FRACEN_POWERLAW
+      IF ( fracEnMelt.EQ.0. _d 0 ) THEN
+        frace = 0. _d 0
+      ELSE
+        frace = (iceFrac - lowIcFrac1)/(lowIcFrac2-iceMaskMin)
+        frace = MIN( enFrcMlt, MAX( 0. _d 0, frace ) )
+      ENDIF
+#else /* THSICE_FRACEN_POWERLAW */
       IF ( hi.GT.hThickIce .OR. fracEnMelt.EQ.0. _d 0 ) THEN
 C above certain height (or when no ice fractionation), only melt from top
        frace = 0. _d 0
@@ -320,6 +389,7 @@ C     (which would bring iceFrac below iceMaskMin).
       ELSEIF (iceFrac.LE.lowIcFrac2 ) THEN
        frace = MIN( frace, fracEnMelt )
       ENDIF
+#endif /* THSICE_FRACEN_POWERLAW */
 
 c     IF (Tsf .EQ. 0. _d 0 .AND. sHeating.GT.0. _d 0) THEN
       IF ( sHeating.GT.0. _d 0 ) THEN
