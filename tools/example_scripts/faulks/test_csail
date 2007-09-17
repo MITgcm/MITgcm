@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.6 2007/08/24 19:14:57 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.7 2007/09/17 18:23:57 jmc Exp $
 
 #  Ed Hill
 
@@ -44,7 +44,7 @@ mkdir $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
   cd verification
-  comm="./testreport $IEEE -a edhill@mitgcm.org"
+  comm="./testreport -a edhill@mitgcm.org"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
@@ -62,7 +62,7 @@ mkdir $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
   cd verification
-  comm="./testreport -adm $IEEE -a edhill@mitgcm.org"
+  comm="./testreport -adm -a edhill@mitgcm.org"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
@@ -80,7 +80,7 @@ mkdir $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
   cd verification
-  comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
+  comm="./testreport -match 10 -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
   echo "  \"$comm\""
   echo "======================"
   echo
@@ -96,14 +96,14 @@ mkdir $new_dir
   echo "Running testreport using:"
   export PGI=/usr/local/pkg/pgi/pgi-6.1-5
   cd verification
-  comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -dd"
+  comm="./testreport -match 10 -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -dd"
   echo "  \"$comm\""
   echo "======================"
   echo
   $comm | tail -100
   echo "Running testreport using:"
  #cd verification
-  comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org -q"
+  comm="./testreport -match 10 -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org -q"
   echo "  \"$comm\""
   echo "======================"
   echo

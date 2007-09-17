@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail_fc5,v 1.1 2007/08/11 17:26:36 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail_fc5,v 1.2 2007/09/17 18:23:57 jmc Exp $
 
 #  Ed Hill
 
@@ -35,7 +35,7 @@ echo "  done"
 cd MITgcm/verification
 
 echo "Running testreport using:"
-comm="./testreport -adm $IEEE -a edhill@mitgcm.org"
+comm="./testreport -adm -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
@@ -49,7 +49,7 @@ echo "======================"
 echo
 
 echo "Running testreport using:"
-comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_g77 -a edhill@mitgcm.org"
+comm="./testreport -of ../tools/build_options/linux_ia32_g77 -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
@@ -64,7 +64,7 @@ echo
 
 echo "Running testreport using:"
 export PGI=/usr/local/pkg/pgi/pgi-6.1-5
-comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org"
+comm="./testreport -match 10 -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
@@ -78,7 +78,7 @@ echo "======================"
 echo
 
 echo "Running testreport using:"
-comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_gfortran -a edhill@mitgcm.org"
+comm="./testreport -match 10 -of ../tools/build_options/linux_ia32_gfortran -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
@@ -92,7 +92,7 @@ echo "======================"
 echo
 
 echo "Running testreport using:"
-comm="./testreport $IEEE -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
+comm="./testreport -match 10 -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
@@ -108,7 +108,7 @@ echo
 echo "Running testreport using:"
 export OMP_NUM_THREADS=2
 export KMP_STACKSIZE=400m
-comm="./testreport -mth -of ../tools/build_options/linux_ia32_ifort.v9+mth -a edhill@mitgcm.org"
+comm="./testreport -mth -match 10 -of ../tools/build_options/linux_ia32_ifort.v9+mth -a edhill@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
