@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.23 2007/09/14 02:07:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.24 2007/09/17 23:03:08 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -202,8 +202,8 @@ C      this is the rhs contribution of the time derivative
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
      &         +seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
      &         *vIce(I,J,2,bi,bj)
-          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)* _maskW(I,J,k,bi,bj)
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)* _maskS(I,J,k,bi,bj)
+          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)* seaiceMaskU(I,J,bi,bj)
+          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)* seaiceMaskV(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -251,10 +251,10 @@ C     coefficients of uIce(I,J)
 C     (d/dx)[(eta+zeta)*d/dx)] U 
           AA1 = etaPlusZeta(I  ,J,bi,bj)
      &         * _recip_dxF(I  ,J,bi,bj) 
-     &         * _recip_dxC(I  ,J,bi,bj) * _maskW(I,J,k,bi,bj)
+     &         * _recip_dxC(I  ,J,bi,bj) * seaiceMaskU(I,J,bi,bj)
           AA2 = etaPlusZeta(I-1,J,bi,bj)
      &         * _recip_dxF(I-1,J,bi,bj)
-     &         * _recip_dxC(I  ,J,bi,bj) * _maskW(I,J,k,bi,bj)
+     &         * _recip_dxC(I  ,J,bi,bj) * seaiceMaskU(I,J,bi,bj)
 C     (d/dy)[eta*(d/dy)] U (also on UVRT1/2)
           AA3 = etaMeanZ(I,J  ,bi,bj) * _recip_dyU(I,J  ,bi,bj)
      &         * _recip_dyG(I,J,bi,bj)
@@ -270,12 +270,12 @@ C     2*eta*(tanphi/a) * ( tanphi/a ) U
      &         * _tanPhiAtU(I,J,bi,bj)  * _tanPhiAtU(I,J,bi,bj)
           AU(I,J,bi,bj)=-AA2
           CU(I,J,bi,bj)=-AA1
-          BU(I,J,bi,bj)=(ONE - _maskW(I,J,k,bi,bj))
+          BU(I,J,bi,bj)=(ONE - seaiceMaskU(I,J,bi,bj))
      &         - AU(I,J,bi,bj) - CU(I,J,bi,bj)
      &         + ( (AA4+AA3) - (AA6-AA5) + AA7
      &         + seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
      &         + 0.5 _d 0*( DRAGS(I,J,bi,bj) + DRAGS(I-1,J,bi,bj) )
-     &         )* _maskW(I,J,k,bi,bj)
+     &         )* seaiceMaskU(I,J,bi,bj)
 C     coefficients of uIce(I,J-1)
           UVRT1(I,J,bi,bj)= AA3 - AA5
      &         + TWO*etaMeanU(I,J,bi,bj) * _tanPhiAtU(I,J,bi,bj)
@@ -292,13 +292,13 @@ C     coefficients of uIce(I,J+1)
 C     apply boundary conditions according to slip factor
         DO J=1,sNy
          DO I=1,sNx
-          hFacM = _maskW(i,j-1,k,bi,bj)
-          hFacP = _maskW(i,j+1,k,bi,bj)
+          hFacM = seaiceMaskU(i,j-1,bi,bj)
+          hFacP = seaiceMaskU(i,j+1,bi,bj)
 C     copy contributions to coefficient of U(I,J)
 C     beware of sign convection: UVRT1/2 have the opposite sign convention
 C     than BU, hence the minus sign
           BU(I,J,bi,bj)=BU(I,J,bi,bj)
-     &         - _maskW(i,j,k,bi,bj) *
+     &         - seaiceMaskU(i,j,bi,bj) *
      &         ( UVRT1(I,J,bi,bj)*( 1. _d 0 - hFacM )*seaiceSlipFactor
      &         + UVRT2(I,J,bi,bj)*( 1. _d 0 - hFacP )*seaiceSlipFactor
      &         )
@@ -311,8 +311,7 @@ C     reset coefficients of U(I,J-1) and U(I,J+1)
         DO J=1,sNy
          AU(1,J,bi,bj)=ZERO
          CU(sNx,J,bi,bj)=ZERO
-         IF ( BU(1,J,bi,bj) .NE. 0.0 )
-     &    CU(1,J,bi,bj)=CU(1,J,bi,bj)/BU(1,J,bi,bj)
+         CU(1,J,bi,bj)=CU(1,J,bi,bj)/BU(1,J,bi,bj)
         END DO
 
 C     now set up right-hand side
@@ -335,7 +334,7 @@ C     no slip boundary conditions
 C     free slip conditions are taken care of by masking dVdx
          DO J=1,sNy+1
           DO I=1,sNx
-           hFacM = _maskS(I,J,K,bi,bj) - _maskS(I-1,J,K,bi,bj)
+           hFacM = seaiceMaskV(I,J,bi,bj) - seaiceMaskV(I-1,J,bi,bj)
            dVdx(I,J) = dVdx(I,J) 
      &          + ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
      &          * _recip_dxV(I,J,bi,bj) * hFacM * 2. _d 0
@@ -414,33 +413,30 @@ C NOW SET U(3)=U(1)
            AA2 = etaPlusZeta(I-1,J,bi,bj)
      &          * _recip_dxF(I-1,J,bi,bj)
      &          * _recip_dxC(I  ,J,bi,bj)
-           AA3=AA2*uIce(I-1,J,1,bi,bj)* _maskW(I,J,k,bi,bj)
+           AA3=AA2*uIce(I-1,J,1,bi,bj)* seaiceMaskU(I,J,bi,bj)
           ELSE IF(I.EQ.sNx) THEN
            AA1 = etaPlusZeta(I  ,J,bi,bj)
      &          * _recip_dxF(I  ,J,bi,bj) 
      &          * _recip_dxC(I  ,J,bi,bj)
-           AA3=AA1*uIce(I+1,J,1,bi,bj) * _maskW(I,J,k,bi,bj)
+           AA3=AA1*uIce(I+1,J,1,bi,bj) * seaiceMaskU(I,J,bi,bj)
           ELSE
            AA3=ZERO
           END IF
           URT(I,J)=FXY(I,J,bi,bj)+AA3
      &          +UVRT1(I,J,bi,bj)*uIce(I,J-1,1,bi,bj)
      &          +UVRT2(I,J,bi,bj)*uIce(I,J+1,1,bi,bj)
-          URT(I,J)=URT(I,J)* _maskW(I,J,k,bi,bj)*seaiceMaskU(I,J,bi,bj)
+          URT(I,J)=URT(I,J)* seaiceMaskU(I,J,bi,bj)
          END DO
 
          DO I=1,sNx
           CUU(I,J)=CU(I,J,bi,bj)
          END DO
-         IF ( BU(1,J,bi,bj) .NE. 0.0 )
-     &    URT(1,J)=URT(1,J)/BU(1,J,bi,bj)
+         URT(1,J)=URT(1,J)/BU(1,J,bi,bj)
          DO I=2,sNx
           IM=I-1
-          IF ( BU(I,J,bi,bj) .NE. 0.0 ) THEN
-           CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
-           URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
-     &          /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
-          ENDIF
+          CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
+          URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
+     &         /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
          END DO
          DO I=1,sNx-1
           J1=sNx-I
@@ -463,7 +459,7 @@ C     end bi,bj-loops
          DO J=1,sNy
           DO I=1,sNx
            UERR=(uIce(I,J,1,bi,bj)-uIce(I,J,3,bi,bj))
-     &             * _maskW(I,J,k,bi,bj)
+     &             * seaiceMaskU(I,J,bi,bj)
            S1=MAX(ABS(UERR),S1)
           END DO
          END DO
@@ -527,18 +523,18 @@ C
      &         - AA2
      &         - AA6
      &         - AA7*1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
-     &         )* _maskS(I,J,k,bi,bj)
+     &         )* seaiceMaskV(I,J,bi,bj)
           CV(I,J,bi,bj)=(
      &         -AA1 
      &         + AA5
      &         + AA7*1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
-     &         )* _maskS(I,J,k,bi,bj)
-          BV(I,J,bi,bj)= (ONE- _maskS(I,J,k,bi,bj))
+     &         )* seaiceMaskV(I,J,bi,bj)
+          BV(I,J,bi,bj)= (ONE- seaiceMaskV(I,J,bi,bj))
      &         +( (AA1+AA2) + (AA3+AA4)  + (AA5-AA6) 
      &         + AA7 * _tanPhiAtV(I,J,bi,bj)*recip_rSphere
      &         + seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
      &         + 0.5 _d 0 * ( DRAGS(I,J,bi,bj) + DRAGS(I,J-1,bi,bj) )
-     &         )* _maskS(I,J,k,bi,bj)
+     &         )* seaiceMaskV(I,J,bi,bj)
 C     coefficients for V(I-1,J)
           UVRT1(I,J,bi,bj)= AA4
 C     coefficients for V(I+1,J)
@@ -549,13 +545,13 @@ C     coefficients for V(I+1,J)
 C     apply boundary conditions according to slip factor
         DO J=1,sNy
          DO I=1,sNx
-          hFacM = _maskS(i-1,j,k,bi,bj)
-          hFacP = _maskS(i+1,j,k,bi,bj)
+          hFacM = seaiceMaskV(i-1,j,bi,bj)
+          hFacP = seaiceMaskV(i+1,j,bi,bj)
 C     copy contributions to coefficient of V(I,J)
 C     beware of sign convection: UVRT1/2 have the opposite sign convention
 C     than BV, hence the minus sign
           BV(I,J,bi,bj)=BV(I,J,bi,bj)
-     &         - _maskS(i,j,k,bi,bj) *
+     &         - seaiceMaskV(I,J,bi,bj) *
      &         ( UVRT1(I,J,bi,bj)*( 1. _d 0 - hFacM )*seaiceSlipFactor
      &         + UVRT2(I,J,bi,bj)*( 1. _d 0 - hFacP )*seaiceSlipFactor
      &         )
@@ -568,8 +564,7 @@ C     reset coefficients of V(I-1,J) and V(I+1,J)
         DO I=1,sNx
          AV(I,1,bi,bj)=ZERO
          CV(I,sNy,bi,bj)=ZERO
-         IF ( BV(I,1,bi,bj) .NE. 0.0 )
-     &    CV(I,1,bi,bj)=CV(I,1,bi,bj)/BV(I,1,bi,bj)
+         CV(I,1,bi,bj)=CV(I,1,bi,bj)/BV(I,1,bi,bj)
         END DO
 
 C     now set up right-hand-side
@@ -592,7 +587,7 @@ C     no slip boundary conditions
 C     free slip conditions are taken care of by masking dUdy
          DO J=0,sNy
           DO I=1,sNx+1
-           hFacM = _maskW(i,j,k,bi,bj) - _maskW(i,j-1,k,bi,bj)
+           hFacM = seaiceMaskU(i,j,bi,bj) - seaiceMaskU(i,j-1,bi,bj)
            dUdy(I,J) = dUdy(I,J)
      &          + ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
      &          * _recip_dyU(I,J,bi,bj) * hFacM * 2. _d 0
@@ -675,7 +670,7 @@ C NOW SET U(3)=U(1)
      &           + TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
      &           * _tanPhiAtV(I,J,bi,bj) 
      &           *1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
-     &           ) * vIce(I,J-1,1,bi,bj) * _maskS(I,J,k,bi,bj)
+     &           ) * vIce(I,J-1,1,bi,bj) * seaiceMaskV(I,J,bi,bj)
            ELSE IF(J.EQ.sNy) THEN
             AA1= etaPlusZeta(I,J  ,bi,bj)
      &           *_recip_dyF(I,J  ,bi,bj) * _recip_dyC(I,J,bi,bj)
@@ -685,7 +680,7 @@ C NOW SET U(3)=U(1)
      &           - TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
      &           * _tanPhiAtV(I,J,bi,bj) 
      &           *1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
-     &           ) * vIce(I,J+1,1,bi,bj) * _maskS(I,J,k,bi,bj)
+     &           ) * vIce(I,J+1,1,bi,bj) * seaiceMaskV(I,J,bi,bj)
            ELSE
             AA3=ZERO
            END IF
@@ -694,21 +689,18 @@ C NOW SET U(3)=U(1)
      &          + AA3
      &          + UVRT1(I,J,bi,bj)*vIce(I-1,J,1,bi,bj)
      &          + UVRT2(I,J,bi,bj)*vIce(I+1,J,1,bi,bj)
-          VRT(I,J)=VRT(I,J)* _maskS(I,J,k,bi,bj)*seaiceMaskV(I,J,bi,bj)
+          VRT(I,J)=VRT(I,J)* seaiceMaskV(I,J,bi,bj)
          END DO
 
          DO J=1,sNy
           CVV(I,J)=CV(I,J,bi,bj)
          END DO
-         IF ( BV(I,1,bi,bj) .NE. 0.0 )
-     &    VRT(I,1)=VRT(I,1)/BV(I,1,bi,bj)
+         VRT(I,1)=VRT(I,1)/BV(I,1,bi,bj)
          DO J=2,sNy
           JM=J-1
-          IF ( BV(I,J,bi,bj) .NE. 0.0 ) THEN
-           CVV(I,J)=CVV(I,J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
-           VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
-     &          /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
-          ENDIF
+          CVV(I,J)=CVV(I,J)/(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
+          VRT(I,J)=(VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))
+     &         /(BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM))
          END DO
          DO J=1,sNy-1
           J1=sNy-J
@@ -731,7 +723,7 @@ C     end bi,bj-loops
          DO J=1,sNy
           DO I=1,sNx
            UERR=(vIce(I,J,1,bi,bj)-vIce(I,J,3,bi,bj))
-     &             * _maskS(I,J,k,bi,bj)
+     &             * seaiceMaskV(I,J,bi,bj)
            S2=MAX(ABS(UERR),S2)
           END DO
          END DO
@@ -771,8 +763,8 @@ C     APPLY MASKS
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
-          uIce(I,J,1,bi,bj)=uIce(I,J,1,bi,bj)* _maskW(I,J,k,bi,bj)
-          vIce(I,J,1,bi,bj)=vIce(I,J,1,bi,bj)* _maskS(I,J,k,bi,bj)
+          uIce(I,J,1,bi,bj)=uIce(I,J,1,bi,bj)* seaiceMaskU(I,J,bi,bj)
+          vIce(I,J,1,bi,bj)=vIce(I,J,1,bi,bj)* seaiceMaskV(I,J,bi,bj)
          END DO
         END DO
        ENDDO
