@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.99 2007/09/15 20:30:05 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.100 2007/09/17 15:35:46 jmc Exp $
 #  $Name:  $
 #
 
@@ -108,7 +108,7 @@ testoutput_var()
     if [ -r $1/$4/$OUTPUTFILE ]; then
 	grep "$2" $1/$4/$OUTPUTFILE | sed 's/.*=//' | cat -n > tmp1.txt
 	lncntA=`wc -l tmp1.txt | awk '{print $1}' `
-	if [ $lncntA -lt 3 ]; then
+	if [ $lncntA -lt 2 ]; then
 	    if [ $verbose -gt 0 ]; then
 		echo Not enough lines of output when searching for "$2" 1>&2
 	    fi
@@ -123,7 +123,7 @@ testoutput_var()
     fi
     grep "$2" $1/results/$5 | sed 's/.*=//' | cat -n > tmp2.txt
     lncntB=`wc -l tmp2.txt | awk '{print $1}' `
-    if [ $lncntB -lt 3 ]; then
+    if [ $lncntB -lt 2 ]; then
 	if [ $verbose -gt 0 ]; then
 	    echo Not enough lines of output when searching for "$2" 1>&2
 	fi
@@ -235,7 +235,7 @@ testoutput_run()
     # testoutput_run directory subdir reference_output
     #
     #  test output from 1 run in "directory"
-    if test "x$ADM" = x ; then
+#   if test "x$ADM" = x ; then
         # default list of output variables to be checked:
         #  1rst : main variable used to decide if it pass or FAIL
         #  others : number of matching digits to be printed in summary.txt
@@ -313,9 +313,9 @@ testoutput_run()
 	  echo $allargs
         fi 
 
-    else
-	testoutput_ad $1 $2 "precision_grdchk_result"
-    fi
+#   else
+#	testoutput_ad $1 $2 "precision_grdchk_result"
+#   fi
 }
 
 genmakemodel()
@@ -911,11 +911,11 @@ else
 fi
 
 if test "x$TESTDIRS" = x ; then
-    if test "x$ADM" = xt ; then
-	LIST=`scandirs results_ad/$ref_outp`
-    else
+#   if test "x$ADM" = xt ; then
+#	LIST=`scandirs results_ad/$ref_outp`
+#   else
 	LIST=`scandirs results/$ref_outp`
-    fi
+#   fi
 else
     #- expand group of experiments:
     LIST=" "
@@ -1077,6 +1077,10 @@ if test "x$ADM" = x ; then
 else
     echo "ADJOINT=true" >> $SUMMARY
     echo >> $SUMMARY
+    if [ $MATCH_CRIT -lt 10 ] ; 
+    then line_0="default  "$MATCH_CRIT ; 
+    else line_0="default "$MATCH_CRIT ; fi
+    echo "$line_0" | tee -a $SUMMARY
     cat << EOF | tee -a $SUMMARY
 G D M    C  G
 E p a R  o  r
@@ -1196,11 +1200,11 @@ for dir in $TESTDIRS ; do
     fi
     
     echo
-    if test "x$ADM" = x ; then
+#   if test "x$ADM" = x ; then
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo
  	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
-        touch $CDIR"/summary.txt"
+	touch $CDIR"/summary.txt"
 	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $CDIR"/summary.txt"
 	echo "MACH='$MACH'" >> $CDIR"/summary.txt"
 	echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
@@ -1222,31 +1226,31 @@ for dir in $TESTDIRS ; do
 	    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    fres="$fres.$ex"
 	    echo
- 	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
-            touch $CDIR"/summary.txt"
+	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
+	    touch $CDIR"/summary.txt"
 	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $CDIR"/summary.txt"
 	    echo "MACH='$MACH'" >> $CDIR"/summary.txt"
 	    echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
 	    echo "DATE='$DATE'" >> $CDIR"/summary.txt"
 	    echo "tdir='$dir.$ex'" >> $CDIR"/summary.txt"
 	    if test "x$POSTCLEAN" = xt ; then
- 		run_clean $dir/tr_run.$ex
+		run_clean $dir/tr_run.$ex
 	    fi
 	done
-    else
-	fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
-	fres=$fres"$results   $dir"
-	echo
-	echo "$fres" >> $SUMMARY
-        touch $CDIR"/summary.txt"
-	echo "fresults='$fres'" >> $CDIR"/summary.txt"
-	echo "MACH='$MACH'" >> $CDIR"/summary.txt"
-	echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
-	echo "DATE='$DATE'" >> $CDIR"/summary.txt"
-	echo "tdir='$dir'" >> $CDIR"/summary.txt"
-    fi
+#   else
+#	fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
+#	fres=$fres"$results   $dir"
+#	echo
+#	echo "$fres" >> $SUMMARY
+#	touch $CDIR"/summary.txt"
+#	echo "fresults='$fres'" >> $CDIR"/summary.txt"
+#	echo "MACH='$MACH'" >> $CDIR"/summary.txt"
+#	echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
+#	echo "DATE='$DATE'" >> $CDIR"/summary.txt"
+#	echo "tdir='$dir'" >> $CDIR"/summary.txt"
+#   fi
     if test "x$ADM" = xt ; then
-        grep -A3 'Seconds in section "ALL' $dir/$rundir/$OUTPUTFILE \
+	grep -A3 'Seconds in section "ALL' $dir/$rundir/$OUTPUTFILE \
 			   >> $CDIR"/summary.txt"
     fi
 
