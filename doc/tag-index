@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.873 2007/09/17 03:47:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.874 2007/09/17 15:28:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59g
 o adjoint testing: in preparation for changing testreport:
   - output format: cost and grad written on separated lines
   - ad output results in directory "results" (instead of "results_ad")
