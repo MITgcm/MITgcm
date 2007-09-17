@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.872 2007/09/15 01:38:59 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.873 2007/09/17 03:47:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o adjoint testing: in preparation for changing testreport:
+  - output format: cost and grad written on separated lines
+  - ad output results in directory "results" (instead of "results_ad")
 o pkg/seaice: adding ice salinity HSALT as a prognostic variable
 o pkg/seaice: changes for using pkg/seaice with pkg/obcs
 o pkg/ecco: allow user defined cost function contributions 
@@ -11,7 +14,7 @@ o testreport:
   Allow to choose (per experiment) the list of tested output variables
    and the main variable (used to issue a pass/FAIL ) ;
   - for now, done by adding the specific list in file: [exp]/input/tr_checklist
-  - default is unchange: >cg2d< , (T,S,U,V,5 tracers)_[min,max,mean,StD] ;
+  - default is unchanged: >cg2d< , (T,S,U,V,5 tracers)_[min,max,mean,StD] ;
   Also modify printing of summary:
    a) ">" NN "<" indicates the "main" variable (used for pass/FAIL)
    b) echo the list of tested variables in the individual summary.txt of
