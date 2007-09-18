@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.43 2007/09/18 14:43:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.44 2007/09/18 21:48:37 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -225,7 +225,7 @@ C
      &    SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
-     &    SEAICE_availHeatFrac, SEAICEstressFactor,
+     &    SEAICE_salinity, SEAICE_availHeatFrac, SEAICEstressFactor,
      &    OCEAN_drag, LSR_ERROR, DIFF1, A22, HO,
      &    WindForcingStart, WindForcingEnd, WindForcingPeriod,
      &    FluxForcingStart, FluxForcingEnd, FluxForcingPeriod,
