@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.13 2006/08/06 23:08:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.14 2007/09/18 21:24:13 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: GMREDI_CHECK
@@ -25,7 +28,11 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GMREDI.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
-#include "GAD.h"
+# include "GAD.h"
+#endif
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -39,6 +46,10 @@ C     === Local variables ===
 C     msgBuf :: Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
+#ifdef ALLOW_PTRACERS
+      INTEGER iTr
+      LOGICAL redFlag
+#endif
 
       _BEGIN_MASTER(myThid)
 
@@ -119,6 +130,27 @@ C     Make sure we are not trying to use some arrays that are unavailable
        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
       ENDIF
 #endif
+
+#ifdef ALLOW_PTRACERS
+      IF ( GM_AdvForm .AND. .NOT.GM_AdvSeparate
+     &       .AND. usePTRACERS ) THEN
+        redFlag = .FALSE.
+        DO iTr=1,PTRACERS_numInUse
+         IF ( .NOT.PTRACERS_useGMRedi(iTr) ) THEN
+          redFlag = .TRUE.
+          WRITE(msgBuf,'(2A,I3,A,L5)') ' GMREDI_CHECK:',
+     &     ' pTracers_useGMRedi(',iTr,' )=', PTRACERS_useGMRedi(iTr)
+          CALL PRINT_ERROR( msgBuf, myThid )
+         ENDIF
+        ENDDO
+        IF ( redFlag ) THEN
+          WRITE(msgBuf,'(2A)') ' GMREDI_CHECK:',
+     &     ' but GM Advective Form applies to all tracers !'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+        ENDIF
+      ENDIF
+#endif /* ALLOW_PTRACERS */
 
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     Check size of overlap region
