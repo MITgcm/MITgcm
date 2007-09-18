@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.24 2007/09/18 14:43:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.25 2007/09/18 21:18:12 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -566,17 +566,29 @@ C NOW GET FRESH WATER FLUX
 
 C COMPUTE SURFACE SALT FLUX AND ADJUST ICE SALINITY
 #ifdef SEAICE_SALINITY
-          saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*
-     &         saltWtrIce(I,J)*ICE2WATR/SEAICE_deltaTtherm*
-     &         rhoConstFresh*SEAICE_salinity
+          IF ( saltWtrIce(I,J) .GE. 0.0 ) THEN
+C saltWtrIce > 0 : m of sea ice that is created
+             saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
+     &            ICE2WATR*rhoConstFresh*SEAICE_salinity/
+     &            SEAICE_deltaTtherm
+          ELSE
+C saltWtrIce < 0 : m of sea ice that is melted
+             saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj) *
+     &            saltWtrIce(I,J) * HSALT(I,J,bi,bj) /
+     &            ( HEFF(I,J,1,bi,bj) - saltWtrIce(I,J) ) /
+     &            SEAICE_deltaTtherm
+          ENDIF
+C update HSALT based on surface saltFlux
           HSALT(I,J,bi,bj) = HSALT(I,J,bi,bj) +
      &         saltFlux(I,J,bi,bj) * SEAICE_deltaTtherm
+C set HSALT = 0 if HEFF = 0 and dump residual salt into ocean
           IF ( HEFF(I,J,1,bi,bj) .EQ. 0.0 ) THEN
              saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) -
      &            HEFFM(I,J,bi,bj) * HSALT(I,J,bi,bj) /
      &            SEAICE_deltaTtherm
              HSALT(I,J,bi,bj) = 0.0
           ENDIF
+C set HSALT = 0 if HSALT < 0 and remove equivalent salt from ocean
           IF ( HSALT(I,J,bi,bj) .LT. 0.0 ) THEN
              saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) -
      &            HEFFM(I,J,bi,bj) * HSALT(I,J,bi,bj) /

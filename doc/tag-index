@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.876 2007/09/18 00:12:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.877 2007/09/18 21:18:12 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: a first HSALT time stepping equation has been checked in
 o pkg/seaice: replaced maskW with seaiceMaskU and maskS with seaiceMaskV
   in seaice_lsr.F; this solves the pkg/seaice-pkg/obcs problem
   without requiring DO-IF statements
