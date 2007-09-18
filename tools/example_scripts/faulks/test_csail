@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.7 2007/09/17 18:23:57 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.8 2007/09/18 21:36:30 jmc Exp $
 
 #  Ed Hill
 
@@ -13,6 +13,7 @@ export PATH='/usr/local/bin:/bin:/usr/bin'
 OPTFILE=
 TESTDIR="/scratch/jmc/test_"`hostname`
 IEEE="-ieee"
+MC=10
 
 
 #  Turn off stack limit for FIZHI
@@ -26,6 +27,9 @@ then test -e $tdir/MITgcm  &&  rm -rf $tdir/MITgcm
 else mkdir $tdir
 fi
 echo "  done"
+
+#- clean-up old output files
+rm -f $tdir/output_*
 
 echo -n "Downloading the MITgcm code from CVS pserver..."
 cd $tdir
@@ -51,7 +55,8 @@ mkdir $new_dir
   echo "  \"$comm\""
   echo "======================"
   echo
-  $comm | tail -100
+  $comm > $tdir/output_g77 2>&1
+  tail -100 $tdir/output_g77
   popd
 
 new_dir='MITgcm_adm'
@@ -69,7 +74,8 @@ mkdir $new_dir
   echo "  \"$comm\""
   echo "======================"
   echo
-  $comm | tail -100
+  $comm > $tdir/output_adm 2>&1
+  tail -100 $tdir/output_adm
   popd
 
 new_dir='MITgcm_ifort'
@@ -80,11 +86,12 @@ mkdir $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
   cd verification
-  comm="./testreport -match 10 -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
+  comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
   echo "  \"$comm\""
   echo "======================"
   echo
-  $comm | tail -100
+  $comm > $tdir/output_ifc 2>&1
+  tail -100 $tdir/output_ifc
   popd
 
 new_dir='MITgcm_pgi'
@@ -96,16 +103,18 @@ mkdir $new_dir
   echo "Running testreport using:"
   export PGI=/usr/local/pkg/pgi/pgi-6.1-5
   cd verification
-  comm="./testreport -match 10 -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -dd"
+  comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -dd"
   echo "  \"$comm\""
   echo "======================"
   echo
-  $comm | tail -100
+  $comm > $tdir/output_pgi_1 2>&1
+  tail -100 $tdir/output_pgi_1
   echo "Running testreport using:"
  #cd verification
-  comm="./testreport -match 10 -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org -q"
+  comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org -q"
   echo "  \"$comm\""
   echo "======================"
   echo
-  $comm | tail -100
+  $comm > $tdir/output_pgi_2 2>&1
+  tail -100 $tdir/output_pgi_2
   popd
