@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.25 2006/08/08 21:20:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.26 2007/09/18 21:20:06 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -143,9 +143,9 @@ C     assume that all PTRACERS fields will be in use
       ENDIF
 C     Check we are not trying to use more tracers than allowed
       IF (PTRACERS_numInUse.GT.PTRACERS_num) THEN
-        WRITE(msgBuf,'(A,I2,A,I2,A)')
-     &       ' PTRACERS_READPARMS: You requested ',PTRACERS_numInUse,
-     &       ' tracers at run time when only ',PTRACERS_num,
+        WRITE(msgBuf,'(A,I4,A,I4,A)')
+     &       ' PTRACERS_READPARMS: You requested',PTRACERS_numInUse,
+     &       ' tracers at run time when only',PTRACERS_num,
      &       ' were specified at compile time. Naughty! '
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
@@ -153,7 +153,7 @@ C     Check we are not trying to use more tracers than allowed
 C     Check that enough parameters were specified
       DO iTracer=1,PTRACERS_numInUse
         IF (PTRACERS_advScheme(iTracer).EQ.0) THEN
-          WRITE(msgBuf,'(A,A,I2)')
+          WRITE(msgBuf,'(A,A,I3)')
      &         ' PTRACERS_READPARMS: ',
      &         'No advect. scheme specified for tracer #',
      &         iTracer
@@ -167,7 +167,7 @@ C     Check that enough parameters were specified
         WRITE(msgBuf,'(A)')
      &   'PTRACERS_READPARMS: #undef INCLUDE_IMPLVERTADV_CODE'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A,I2,A)') 'PTRACERS_READPARMS:',
+        WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_READPARMS:',
      &   ' but pTracers_ImplVertAdv(',iTracer,' ) is TRUE'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
@@ -175,10 +175,24 @@ C     Check that enough parameters were specified
       ENDDO
 #endif
       DO iTracer=1,PTRACERS_numInUse
-        PTRACERS_useGMRedi(iTracer) = PTRACERS_useGMRedi(iTracer)
-     &                           .AND.useGMRedi
-        PTRACERS_useKPP(iTracer) = PTRACERS_useKPP(iTracer)
-     &                        .AND.useKPP
+        IF ( PTRACERS_useGMRedi(iTracer) .AND. .NOT.useGMRedi ) THEN
+          WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_READPARMS:',
+     &     ' pTracers_useGMRedi(',iTracer,' ) is TRUE'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A,L5,A)')
+     &     'PTRACERS_READPARMS: But not useGMRedi (=',useGMRedi,')'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+        ENDIF
+        IF ( PTRACERS_useKPP(iTracer) .AND. .NOT.useKPP ) THEN
+          WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_READPARMS:',
+     &     ' pTracers_useKPP(',iTracer,' ) is TRUE'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A,L5,A)')
+     &     'PTRACERS_READPARMS: But not useKPP (=',useKPP,')'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+        ENDIF
         IF ( PTRACERS_diffKr(iTracer).NE.UNSET_RL ) THEN
          DO k=1,Nr
           PTRACERS_diffKrNr(k,iTracer)=PTRACERS_diffKr(iTracer)
