@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.875 2007/09/17 23:03:08 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.876 2007/09/18 00:12:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -7,6 +7,13 @@ $Name:  $
 o pkg/seaice: replaced maskW with seaiceMaskU and maskS with seaiceMaskV
   in seaice_lsr.F; this solves the pkg/seaice-pkg/obcs problem
   without requiring DO-IF statements
+o pkg/thsice:
+  use continuous power-law function for partition of energy between lateral
+  melting/freezing and thinning/thickening ; old code using step function
+  still available with #undef THSICE_FRACEN_POWERLAW
+  update output of exp: aim.5l_cs.thSI, global_ocean.cs32x15.icedyn & .thsice
+o testreport: change AD testing : check against results/output_adm.txt
+  using same scripts as for forward test.
 
 checkpoint59g
 o adjoint testing: in preparation for changing testreport:
