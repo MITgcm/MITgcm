@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.9 2007/03/08 18:25:54 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.10 2007/09/18 03:07:23 jmc Exp $
 # $Name:  $
 
 Np=3
@@ -43,7 +43,7 @@ fi
 
 if test $kpr = 0
 then
- rm -f genmake_optfile pr_group std_outp 
+ rm -f genmake_optfile pr_group std_outp comp_res.{ocn,atm,land,sice}
  rm -f build_???/TTT.*make.* build_???/TTT.mkdepend.*
  /bin/rm -r -f rank_0 rank_1 rank_2
  if test -f build_cpl/Makefile ; then cd build_cpl ; make CLEAN ; cd .. ; fi
@@ -53,7 +53,7 @@ fi
 if test $kpr = 5
 then
  echo 'remove output files in rank_0,1,2 dir.'
- rm -f pr_group std_outp
+ rm -f genmake_optfile pr_group std_outp comp_res.{ocn,atm,land,sice}
  if test -d rank_0 ; then cd rank_0 ; rm -f Coupler.0000.clog ; cd .. ; fi
  if test -d rank_1
  then cd rank_1 ; rm -f *.data *.meta STD???.0000 UV-*.0001.clog ; cd .. ; fi
@@ -173,18 +173,22 @@ then
  if test -f rank_1/STDOUT.0000
  then echo '==> check Ocean output:'
     /home/jmc/bin/comp_res rank_1/STDOUT.0000 results/ocnSTDOUT.0000
-   echo ' '
+    mv -f comp_res.log comp_res.ocn
+    echo ' '
  else echo 'No Ocean output file in rank_1' ; fi
 
  if test -f rank_2/STDOUT.0000
  then 
     echo '==> check Atmos output:'
     /home/jmc/bin/comp_res rank_2/STDOUT.0000 results/atmSTDOUT.0000
+    mv -f comp_res.log comp_res.atm
     echo '==> check Land output:'
     /home/jmc/bin/comp_res rank_2/STDOUT.0000 results/atmSTDOUT.0000 L
+    mv -f comp_res.log comp_res.land
     echo '==> check thSIce output:'
     /home/jmc/bin/comp_res rank_2/STDOUT.0000 results/atmSTDOUT.0000 I
-   echo ' '
+    mv -f comp_res.log comp_res.sice
+    echo ' '
  else echo 'No Atmos output file in rank_1' ; fi
 
 fi
