@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.8 2007/09/15 01:38:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.9 2007/09/18 14:43:27 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -81,7 +81,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       diagName  = 'SIhsalt '
       diagTitle = 'SEAICE effective salinity'
-      diagUnits = 'm.g/kg          '
+      diagUnits = 'g/m^2           '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )

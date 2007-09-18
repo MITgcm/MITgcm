@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.33 2007/09/15 01:38:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.34 2007/09/18 14:43:26 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -32,10 +32,8 @@ C     HSNOW - effective snow thickness in m
 C             at center of grid, i.e., tracer point
 C             note: for non-zero AREA, actual snow
 C                thickness is HSNOW / AREA
-C     HSALT - effective sea ice salinity in m * g / kg
+C     HSALT - effective sea ice salinity in g/m^2
 C             at center of grid, i.e., tracer point
-C             note: for non-zero HEFF, actual ice
-C                salinity is HSALT / HEFF
 C \ev
 CEOP
       COMMON/SEAICE_DYNVARS_1/AREA

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.42 2007/09/15 01:38:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.43 2007/09/18 14:43:27 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -166,6 +166,7 @@ C     SEAICE_emissivity  - Stefan-Boltzman constant * emissivity
 C     SEAICE_snowThick   - cutoff snow thickness
 C     SEAICE_shortwave   - penetration shortwave radiation factor
 C     SEAICE_freeze      - FREEZING TEMP. OF SEA WATER
+C     SEAICE_salinity    - initial salinity of sea ice in g/kg
 C     SEAICE_availHeatFrac - Fraction of surface level heat content used to
 C                            melt or grow ice (default 1.0)
 C     SEAICEstressFactor - factor by which ice affects wind stress (default=1)
@@ -201,7 +202,7 @@ C
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
       _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
-      _RL SEAICE_availHeatFrac, SEAICEstressFactor
+      _RL SEAICE_salinity, SEAICE_availHeatFrac, SEAICEstressFactor
       _RL OCEAN_drag, LSR_ERROR, DIFF1, A22, HO
       _RL WindForcingStart, WindForcingEnd, WindForcingPeriod
       _RL FluxForcingStart, FluxForcingEnd, FluxForcingPeriod

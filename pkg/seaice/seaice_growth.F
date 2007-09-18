@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.23 2007/09/15 01:38:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.24 2007/09/18 14:43:27 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -564,12 +564,25 @@ C NOW GET FRESH WATER FLUX
      &         )
 #endif
 
-C NOW GET SALT FLUX
+C COMPUTE SURFACE SALT FLUX AND ADJUST ICE SALINITY
 #ifdef SEAICE_SALINITY
-          IF ( HEFF(I,J,1,bi,bj) .GT. 0.0 )
-     &         saltFlux(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*
+          saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*
      &         saltWtrIce(I,J)*ICE2WATR/SEAICE_deltaTtherm*
-     &         rhoConstFresh*HSALT(I,J,bi,bj)/HEFF(I,J,1,bi,bj)
+     &         rhoConstFresh*SEAICE_salinity
+          HSALT(I,J,bi,bj) = HSALT(I,J,bi,bj) +
+     &         saltFlux(I,J,bi,bj) * SEAICE_deltaTtherm
+          IF ( HEFF(I,J,1,bi,bj) .EQ. 0.0 ) THEN
+             saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) -
+     &            HEFFM(I,J,bi,bj) * HSALT(I,J,bi,bj) /
+     &            SEAICE_deltaTtherm
+             HSALT(I,J,bi,bj) = 0.0
+          ENDIF
+          IF ( HSALT(I,J,bi,bj) .LT. 0.0 ) THEN
+             saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) -
+     &            HEFFM(I,J,bi,bj) * HSALT(I,J,bi,bj) /
+     &            SEAICE_deltaTtherm
+             HSALT(I,J,bi,bj) = 0.0
+          ENDIF
 #endif
 
 #else /* ALLOW_ATM_TEMP */
