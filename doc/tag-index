@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.877 2007/09/18 21:18:12 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.878 2007/09/18 21:29:09 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ptracers: Temporary fix for PTRACERS_useGMRedi & PTRACERS_useKPP
+  in gad_calc_rhs.F ; add few safety stops in initialisation phase.
 o pkg/seaice: a first HSALT time stepping equation has been checked in
 o pkg/seaice: replaced maskW with seaiceMaskU and maskS with seaiceMaskV
   in seaice_lsr.F; this solves the pkg/seaice-pkg/obcs problem
