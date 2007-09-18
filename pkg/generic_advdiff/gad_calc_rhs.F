@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.47 2007/05/03 21:34:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.48 2007/09/18 15:27:56 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: GAD_CALC_RHS
@@ -44,6 +47,10 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "SURFACE.h"
 #include "GAD.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -75,6 +82,10 @@ C tracerIdentity   :: tracer identifier (required for KPP,GM)
 C advectionScheme  :: advection scheme to use (Horizontal plane)
 C vertAdvecScheme  :: advection scheme to use (Vertical direction)
 C calcAdvection    :: =False if Advec computed with multiDim scheme
+C--- needs to pass those 2 flags as argument
+C trUseGMRedi      :: true if this tracer uses GM-Redi
+C trUseKPP         :: true if this tracer uses KPP
+C---
 C implicitAdvection:: =True if vertical Advec computed implicitly
 C applyAB_onTracer :: apply Adams-Bashforth on Tracer (rather than on gTr)
 C myTime           :: current time
@@ -98,7 +109,7 @@ C myThid           :: thread number
       _RL TracAB (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER tracerIdentity
       INTEGER advectionScheme, vertAdvecScheme
-      LOGICAL calcAdvection
+      LOGICAL calcAdvection, trUseGMRedi, trUseKPP
       LOGICAL implicitAdvection, applyAB_onTracer
       _RL     myTime
       INTEGER myIter, myThid
@@ -138,6 +149,18 @@ CEOP
 C--   only the kUp part of fverT is set in this subroutine
 C--   the kDown is still required
       fVerT(1,1,kDown) = fVerT(1,1,kDown)
+#endif
+
+      trUseGMRedi = useGMRedi
+      trUseKPP    = useKPP
+#ifdef ALLOW_PTRACERS
+      IF ( usePTRACERS ) THEN
+        i = MAX( 1, tracerIdentity - GAD_TR1 + 1 )
+        trUseGMRedi = useGMRedi .AND. ( tracerIdentity.LT.GAD_TR1
+     &                                  .OR. PTRACERS_useGMRedi(i) )
+        trUseKPP    = useKPP    .AND. ( tracerIdentity.LT.GAD_TR1
+     &                                  .OR. PTRACERS_useKPP(i)    )
+      ENDIF
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -278,7 +301,7 @@ C-    Add bi-harmonic diffusive flux in X
 
 #ifdef ALLOW_GMREDI
 C-    GM/Redi flux in X
-      IF (useGMRedi) THEN
+      IF ( trUseGMRedi ) THEN
 C *note* should update GMREDI_XTRANSPORT to set df  *aja*
         IF ( applyAB_onTracer ) THEN
           CALL GMREDI_XTRANSPORT(
@@ -306,7 +329,7 @@ C     anelastic: advect.fluxes are scaled by rhoFac but hor.diff. flx are not
 C-    Diagnostics of Tracer flux in X dir (mainly Diffusive term),
 C       excluding advective terms:
       IF ( useDiagnostics .AND.
-     &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. useGMRedi) ) THEN
+     &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. trUseGMRedi) ) THEN
           diagName = 'DFxE'//diagSufx
           CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
       ENDIF
@@ -393,7 +416,7 @@ C-    Add bi-harmonic flux in Y
 
 #ifdef ALLOW_GMREDI
 C-    GM/Redi flux in Y
-      IF (useGMRedi) THEN
+      IF ( trUseGMRedi ) THEN
 C *note* should update GMREDI_YTRANSPORT to set df  *aja*
         IF ( applyAB_onTracer ) THEN
           CALL GMREDI_YTRANSPORT(
@@ -421,7 +444,7 @@ C     anelastic: advect.fluxes are scaled by rhoFac but hor.diff. flx are not
 C-    Diagnostics of Tracer flux in Y dir (mainly Diffusive terms),
 C       excluding advective terms:
       IF ( useDiagnostics .AND.
-     &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. useGMRedi) ) THEN
+     &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. trUseGMRedi) ) THEN
           diagName = 'DFyE'//diagSufx
           CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
       ENDIF
@@ -515,7 +538,7 @@ C           boundary condition.
 
 #ifdef ALLOW_GMREDI
 C-    GM/Redi flux in R
-      IF (useGMRedi) THEN
+      IF ( trUseGMRedi ) THEN
 C *note* should update GMREDI_RTRANSPORT to set df  *aja*
         IF ( applyAB_onTracer ) THEN
           CALL GMREDI_RTRANSPORT(
@@ -543,7 +566,7 @@ C *note* should update GMREDI_RTRANSPORT to set df  *aja*
 C-    Diagnostics of Tracer flux in R dir (mainly Diffusive terms),
 C       Explicit terms only & excluding advective terms:
       IF ( useDiagnostics .AND.
-     &    (.NOT.implicitDiffusion .OR. useGMRedi) ) THEN
+     &    (.NOT.implicitDiffusion .OR. trUseGMRedi) ) THEN
           diagName = 'DFrE'//diagSufx
           CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
       ENDIF
@@ -551,7 +574,7 @@ C       Explicit terms only & excluding advective terms:
 
 #ifdef ALLOW_KPP
 C-    Set non local KPP transport term (ghat):
-      IF ( useKPP .AND. k.GE.2 ) THEN
+      IF ( trUseKPP .AND. k.GE.2 ) THEN
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          df(i,j) = 0. _d 0
