@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.16 2007/09/15 01:38:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.17 2007/09/19 09:10:44 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -124,6 +124,8 @@ C     == end of interface ==
       CALL WRITE_0D_R8( SEAICE_evpDampC  ,INDEX_NONE,
      & 'SEAICE_evpDampC   =', ' /* EVP damping parameter */')
 #endif
+      CALL WRITE_0D_R8( SEAICE_zetaMin  ,INDEX_NONE,
+     & 'SEAICE_zetaMin    =', ' /* lower bound for viscosity */')
       CALL WRITE_0D_R8( SEAICE_monFreq,  INDEX_NONE,
      & 'SEAICE_monFreq  =',' /* monitor frequency */')
       CALL WRITE_0D_R8( SEAICE_dumpFreq   ,INDEX_NONE,
