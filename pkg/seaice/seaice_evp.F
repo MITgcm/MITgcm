@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.14 2007/06/08 14:41:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.15 2007/09/19 08:38:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -43,6 +43,7 @@ CEndOfInterface
 
 C     === Local variables ===
 C     i,j,bi,bj     - Loop counters
+C     kSrf          - vertical index of surface layer
 C     nEVPstep      - number of timesteps within the EVP solver
 C     iEVPstep      - Loop counter
 C     SIN/COSWAT    - sine/cosine of turning angle
@@ -58,6 +59,7 @@ C                     /divided by Delta
 C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
       
       INTEGER i, j, bi, bj
+      INTEGER kSrf
       INTEGER nEVPstep, iEVPstep
       INTEGER ikeyloc
 #ifndef ALLOW_AUTODIFF_TAMC
@@ -78,8 +80,11 @@ C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
 C     auxilliary variables
       _RL e11C, e22C, e12C, deltaC, deltaCreg, pressC, zetaC
       _RL e11Z, e22Z, e12Z, deltaZ, deltaZreg, pressZ, zetaZ
+      _RL zMaxZ, zMinZ
       _RL denom1, denom2, fac
 
+C     surrface level
+      kSrf = 1
 C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
@@ -211,8 +216,16 @@ CML            zetaC  = zetaC*hEffM(I,J,bi,bj)
      &         * ( PRESS0(I,J  ,bi,bj) + PRESS0(I-1,J  ,bi,bj)
      &           + PRESS0(I,J-1,bi,bj) + PRESS0(I-1,J-1,bi,bj) )
             zetaZ  = HALF/deltaZreg * pressZ
-            zetaZ  = MIN(zMax(I,J,bi,bj),zetaZ)
-            zetaZ  = MAX(zMin(I,J,bi,bj),zetaZ)
+C     zMin, zMax are defined at C-points, make sure that they are not
+C     masked by boundaries/land points
+            zMaxZ  = MAX(
+     &           MAX(zMax(I,  J,bi,bj),zMax(I,  J-1,bi,bj)),
+     &           MAX(zMax(I-1,J,bi,bj),zMax(I-1,J-1,bi,bj)) )
+            zMinZ  = MAX(
+     &           MAX(zMin(I,  J,bi,bj),zMin(I,  J-1,bi,bj)),
+     &           MAX(zMin(I-1,J,bi,bj),zMin(I-1,J-1,bi,bj)) )
+            zetaZ  = MIN(zMaxZ,zetaZ)
+            zetaZ  = MAX(zMinZ,zetaZ)
             pressC = TWO*zetaC*deltaC
 C     Calculate the RHS of the stress equations. Do this now in order to
 C     avoid multiple divisions by Delta
@@ -392,8 +405,8 @@ C     Copy work arrays and apply masks
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
-          uIce(I,J,1,bi,bj)=uIceC(I,J,bi,bj)* _maskW(I,J,1,bi,bj)
-          vIce(I,J,1,bi,bj)=vIceC(I,J,bi,bj)* _maskS(I,J,1,bi,bj)
+          uIce(I,J,1,bi,bj)=uIceC(I,J,bi,bj)* _maskW(I,J,kSrf,bi,bj)
+          vIce(I,J,1,bi,bj)=vIceC(I,J,bi,bj)* _maskS(I,J,kSrf,bi,bj)
          END DO
         END DO
        ENDDO
