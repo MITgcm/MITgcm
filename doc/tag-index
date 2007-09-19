@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.878 2007/09/18 21:29:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.879 2007/09/19 09:41:50 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - bug fix in the evp solver: boundary conditions were affected be
+    masking of zMax/zMin (changes results)
+  - minor bug fix in boundary conditions in seaice_calc_strainrates 
+    (changes results for no_slip)
+  - seaice_lsr.F: make interpolation of eta dependent on boundaries
+  - replace hardcoded lower limit for zeta (zMin) by runtime parameter
+  - add a test to lab_sea, that tests the Hibler and Bryan (1987) ocean
+    stress formulation and no-slip boundary conditions
 o pkg/ptracers: Temporary fix for PTRACERS_useGMRedi & PTRACERS_useKPP
   in gad_calc_rhs.F ; add few safety stops in initialisation phase.
 o pkg/seaice: a first HSALT time stepping equation has been checked in
