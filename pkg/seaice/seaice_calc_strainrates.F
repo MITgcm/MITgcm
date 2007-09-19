@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.6 2007/06/19 12:09:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.7 2007/09/19 08:48:21 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -92,10 +92,10 @@ C     no slip boundary conditions apply only to e12
 
            e12(I,J,bi,bj) = e12(I,J,bi,bj)
      &          + recip_rAz(i,j,bi,bj) * 
-     &          ( hFacU * ( _dxC(i,j  ,bi,bj)*uFld(i,j  ,bi,bj)
-     &                    + _dxC(i,j-1,bi,bj)*uFld(i,j-1,bi,bj) ) 
-     &          + hFacV * ( _dyC(i  ,j,bi,bj)*vFld(i  ,j,bi,bj)
-     &                    + _dyC(i-1,j,bi,bj)*vFld(i-1,j,bi,bj) ) )
+     &          ( hFacU * ( _dxC(i,j-1,bi,bj)*uFld(i,j  ,bi,bj)
+     &                    + _dxC(i,j,  bi,bj)*uFld(i,j-1,bi,bj) ) 
+     &          + hFacV * ( _dyC(i-1,j,bi,bj)*vFld(i  ,j,bi,bj)
+     &                    + _dyC(i,  j,bi,bj)*vFld(i-1,j,bi,bj) ) )
      &         - hFacU 
      &         * 0.25 _d 0 * (uFld(I,J,bi,bj)+uFld(I  ,J-1,bi,bj))
      &         * ( _tanPhiAtU(I,J,bi,bj) + _tanPhiAtU(I,J-1,bi,bj) )
