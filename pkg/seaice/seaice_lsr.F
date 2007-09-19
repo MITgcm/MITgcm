@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.24 2007/09/17 23:03:08 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.25 2007/09/19 08:57:22 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -233,9 +233,11 @@ C
         ENDDO
         DO j=1,sNy+1
          DO i=1,sNx+1
-          etaMeanZ (I,J,bi,bj) = HALF * 
-     &         ( HALF*(ETA (I,J  ,bi,bj) + ETA (I-1,J  ,bi,bj) )
-     &         + HALF*(ETA (I,J-1,bi,bj) + ETA (I-1,J-1,bi,bj) ) )
+          etaMeanZ (I,J,bi,bj) = 
+     &         (           ETA (I,J  ,bi,bj)  + ETA (I-1,J  ,bi,bj)
+     &         +           ETA (I,J-1,bi,bj)  + ETA (I-1,J-1,bi,bj) )
+     &         / MAX(1.D0,maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
+     &         +          maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj) )
          ENDDO
         ENDDO
        ENDDO
