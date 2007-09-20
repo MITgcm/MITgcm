@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.10 2007/09/20 18:23:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.11 2007/09/20 22:01:37 heimbach Exp $
 
 #include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -96,6 +96,7 @@ c--   Initialize the tiled cost function contributions.
           objf_tmi(bi,bj)      = 0. _d 0
           objf_sst(bi,bj)      = 0. _d 0
           objf_sss(bi,bj)      = 0. _d 0
+          objf_bp(bi,bj)       = 0. _d 0
           objf_h(bi,bj)        = 0. _d 0
           objf_tp(bi,bj)       = 0. _d 0
           objf_ers(bi,bj)      = 0. _d 0
@@ -155,6 +156,7 @@ c
           num_tmi(bi,bj)      = 0. _d 0
           num_sst(bi,bj)      = 0. _d 0
           num_sss(bi,bj)      = 0. _d 0
+          num_bp(bi,bj)       = 0. _d 0
           num_h(bi,bj)        = 0. _d 0
           num_tp(bi,bj)       = 0. _d 0
           num_ers(bi,bj)      = 0. _d 0
@@ -259,6 +261,14 @@ c
                   sssmask(i,j,bi,bj) = 1. _d 0
                endif
                sssdat(i,j,bi,bj)     = 0. _d 0
+#endif
+#ifdef ALLOW_BP_COST_CONTRIBUTION
+               if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
+                  bpmask(i,j,bi,bj) = 0. _d 0
+               else
+                  bpmask(i,j,bi,bj) = 1. _d 0
+               endif
+               bpdat(i,j,bi,bj)     = 0. _d 0
 #endif
             enddo
           enddo

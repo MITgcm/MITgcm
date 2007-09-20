@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.5 2007/09/20 18:23:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.6 2007/09/20 22:01:37 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -74,6 +74,17 @@ c--       Initialise surface pressure average.
           enddo
 
           xx_psbar_mean_dummy = 0. _d 0
+#endif
+
+#ifdef ALLOW_BP_COST_CONTRIBUTION
+c--       Initialise surface pressure average.
+          do j = jmin,jmax
+            do i = imin,imax
+              bpbar(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+
+          xx_bpbar_mean_dummy = 0. _d 0
 #endif
 
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \

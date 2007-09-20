@@ -227,7 +227,8 @@ c     Define unit weight as a placeholder
      &                      wapressure,
      &                      wrunoff,
      &                      wsst,
-     &                      wsss
+     &                      wsss,
+     &                      wbp
       _RL whflux  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wsflux  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wtauu   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -244,9 +245,10 @@ c     Define unit weight as a placeholder
       _RL wevap   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wsnowprecip (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wapressure(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL wrunoff  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wrunoff (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wsst    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wsss    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL wbp     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 c     Control variables:

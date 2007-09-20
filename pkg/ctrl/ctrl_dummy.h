@@ -57,6 +57,7 @@ c     ==================================================================
      &                  , xx_vbar_mean_dummy
      &                  , xx_wbar_mean_dummy
      &                  , xx_psbar_mean_dummy
+     &                  , xx_bpbar_mean_dummy
      &                  , xx_taux_mean_dummy
      &                  , xx_tauy_mean_dummy
      &                  , xx_hflux_mean_dummy
@@ -126,6 +127,7 @@ c
       _RL xx_vbar_mean_dummy
       _RL xx_wbar_mean_dummy
       _RL xx_psbar_mean_dummy
+      _RL xx_bpbar_mean_dummy
       _RL xx_hflux_mean_dummy
       _RL xx_sflux_mean_dummy
       _RL xx_taux_mean_dummy

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.35 2007/09/20 18:23:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.36 2007/09/20 22:01:37 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -67,7 +67,7 @@ c     == local variables ==
       _RL f_tauum, f_tauvm, f_hfluxm, f_sfluxm 
       _RL f_tauusmoo, f_tauvsmoo, f_hfluxsmoo, f_sfluxsmoo
       _RL f_hfluxmm, f_sfluxmm, f_hfluxmm2, f_sfluxmm2
-      _RL f_sst, f_tmi, f_sss, f_atl, f_ctdt, f_ctds
+      _RL f_sst, f_tmi, f_sss, f_bp, f_atl, f_ctdt, f_ctds
       _RL f_drifter, f_xbt, f_tdrift, f_sdrift, f_wdrift
       _RL f_ssh , f_tp, f_ers, f_gfo
       _RL f_argot, f_argos, f_ctdtclim, f_ctdsclim
@@ -89,7 +89,7 @@ c     == local variables ==
       _RL no_tauu, no_tauv, no_hflux, no_sflux 
       _RL no_tauum, no_tauvm, no_hfluxm, no_sfluxm 
       _RL no_hfluxmm, no_sfluxmm 
-      _RL no_sst, no_tmi, no_sss, no_atl, no_ctdt, no_ctds
+      _RL no_sst, no_tmi, no_sss, no_bp, no_atl, no_ctdt, no_ctds
       _RL no_drifter, no_xbt, no_tdrift, no_sdrift, no_wdrift
       _RL no_ssh, no_tp, no_ers, no_gfo
       _RL no_argot, no_argos, no_ctdtclim, no_ctdsclim
@@ -172,6 +172,7 @@ c     == end of interface ==
       f_sst = 0. _d 0
       f_tmi = 0. _d 0
       f_sss = 0. _d 0
+      f_bp = 0. _d 0
       f_atl = 0. _d 0
       f_ctdt = 0. _d 0 
       f_ctds = 0. _d 0
@@ -248,6 +249,7 @@ c     == end of interface ==
       no_sst = 0. _d 0
       no_tmi = 0. _d 0
       no_sss = 0. _d 0
+      no_bp = 0. _d 0
       no_atl = 0. _d 0
       no_ctdt = 0. _d 0 
       no_ctds = 0. _d 0
@@ -303,6 +305,7 @@ c--   Sum up all contributions.
      &         + mult_sst     * objf_sst(bi,bj) 
      &         + mult_tmi     * objf_tmi(bi,bj) 
      &         + mult_sss     * objf_sss(bi,bj) 
+     &         + mult_bp      * objf_bp(bi,bj) 
      &         + mult_tauu    * ( objf_tauu(bi,bj)+objf_tauum(bi,bj)
      &                         +mult_smooth_bc*objf_tauusmoo(bi,bj) )
      &         + mult_tauv    * ( objf_tauv(bi,bj)+objf_tauvm(bi,bj)
@@ -419,6 +422,7 @@ c--   Sum up all contributions.
           f_sst  = f_sst + objf_sst(bi,bj) 
           f_tmi  = f_tmi + objf_tmi(bi,bj) 
           f_sss  = f_sss + objf_sss(bi,bj)
+          f_bp   = f_bp  + objf_bp(bi,bj)
           f_atl  = f_atl + objf_atl(bi,bj)
           f_ctdt = f_ctdt + objf_ctdt(bi,bj)
           f_ctds = f_ctds + objf_ctds(bi,bj) 
@@ -492,6 +496,7 @@ c--   Sum up all contributions.
           no_sst  = no_sst + num_sst(bi,bj) 
           no_tmi  = no_tmi + num_tmi(bi,bj) 
           no_sss  = no_sss + num_sss(bi,bj)
+          no_bp   = no_bp  + num_bp(bi,bj)
           no_ctdt = no_ctdt + num_ctdt(bi,bj)
           no_ctds = no_ctds + num_ctds(bi,bj) 
           no_ctdtclim = no_ctdtclim + num_ctdtclim(bi,bj)
@@ -586,6 +591,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_sst , myThid )
       _GLOBAL_SUM_R8( f_tmi , myThid )
       _GLOBAL_SUM_R8( f_sss , myThid )
+      _GLOBAL_SUM_R8( f_bp , myThid )
       _GLOBAL_SUM_R8( f_atl , myThid )
       _GLOBAL_SUM_R8( f_ctdt , myThid )
       _GLOBAL_SUM_R8( f_ctds , myThid ) 
@@ -660,6 +666,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( no_sst , myThid )
       _GLOBAL_SUM_R8( no_tmi , myThid )
       _GLOBAL_SUM_R8( no_sss , myThid )
+      _GLOBAL_SUM_R8( no_bp , myThid )
       _GLOBAL_SUM_R8( no_atl , myThid )
       _GLOBAL_SUM_R8( no_ctdt , myThid )
       _GLOBAL_SUM_R8( no_ctds , myThid ) 
@@ -718,6 +725,8 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_tmi     =',f_tmi
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_sss     =',f_sss
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_bp      =',f_bp
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_ssh       =',f_ssh
       write(standardmessageunit,'(A,D22.15)')
@@ -1010,6 +1019,8 @@ cph)
      &       'f_tmi =', f_tmi, no_tmi
         write(ifc,'(A,2D22.15)') 
      &       'f_sss =', f_sss, no_sss
+        write(ifc,'(A,2D22.15)') 
+     &       'f_bp =', f_bp, no_bp
         write(ifc,'(A,2D22.15)') 
      &       'f_atl =', f_atl, no_atl
         write(ifc,'(A,2D22.15)') 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.10 2007/09/20 18:23:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.11 2007/09/20 22:01:37 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -74,6 +74,26 @@ c     == end of interface ==
      &     objf_sst, num_sst,
      &     myiter, mytime, mythid )
 cph      call cost_sst   ( myiter, mytime, mythid )
+#endif
+
+#ifdef ALLOW_BP_COST_CONTRIBUTION 
+      write(msgbuf,'(a)') 'ph-cost call cost_bp'
+      call print_message( msgbuf, standardmessageunit,
+     &     SQUEEZE_RIGHT , mythid)
+      nnzbar = nnztbar
+      nnzobs = 1
+      spminloc = ???
+      spmaxloc = ???
+      spzeroloc = 0.
+      localperiod = 0.
+      call cost_generic(
+     &     nnzbar, bpbarfile, bpbar, xx_bpbar_mean_dummy,
+     &     nnzobs, bpdatfile, bpdat, mult_bp,
+     &     nmonsrec, modelstartdate, localperiod,
+     &     maskC, wbp, 
+     &     spminloc, spmaxloc, spzeroloc,
+     &     objf_bp, num_bp,
+     &     myiter, mytime, mythid )
 #endif
 
 #ifdef ALLOW_ARGO_THETA_COST_CONTRIBUTION

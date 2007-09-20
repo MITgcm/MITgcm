@@ -70,6 +70,7 @@ c             intantaneous field.
      &                    tbar,
      &                    sbar,
      &                    psbar,
+     &                    bpbar,
      &                    ubar,
      &                    vbar,
      &                    wbar,
@@ -124,6 +125,12 @@ c             intantaneous field.
       _RL psbar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
 #else
       _RL psbar
+#endif
+
+#ifdef ALLOW_BP_COST_CONTRIBUTION
+      _RL bpbar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
+#else
+      _RL bpbar
 #endif
 
 #if (defined (ALLOW_DRIFTER_COST_CONTRIBUTION) || \
@@ -186,6 +193,7 @@ c             intantaneous field.
      &                    tbarfile,
      &                    sbarfile,
      &                    psbarfile,
+     &                    bpbarfile,
      &                    ubarfile,
      &                    vbarfile,
      &                    wbarfile,
@@ -197,6 +205,7 @@ c             intantaneous field.
       character*(MAX_LEN_FNAM) tbarfile
       character*(MAX_LEN_FNAM) sbarfile
       character*(MAX_LEN_FNAM) psbarfile
+      character*(MAX_LEN_FNAM) bpbarfile
       character*(MAX_LEN_FNAM) ubarfile
       character*(MAX_LEN_FNAM) vbarfile
       character*(MAX_LEN_FNAM) wbarfile
@@ -335,6 +344,7 @@ c                  function contributions.
      &                objf_sst,
      &                objf_tmi,
      &                objf_sss,
+     &                objf_bp,
      &                objf_ctdt,
      &                objf_ctds,
      &                objf_ctdtclim,
@@ -432,6 +442,7 @@ c                  function contributions.
       _RL  objf_sst  (nsx,nsy)
       _RL  objf_tmi  (nsx,nsy)
       _RL  objf_sss  (nsx,nsy) 
+      _RL  objf_bp   (nsx,nsy) 
       _RL  objf_ctdt (nsx,nsy)
       _RL  objf_ctds (nsx,nsy)
       _RL  objf_ctdtclim (nsx,nsy)
@@ -525,6 +536,7 @@ c                  function contributions.
      &                num_sst,
      &                num_tmi,
      &                num_sss,
+     &                num_bp,
      &                num_ctdt,
      &                num_ctds,
      &                num_ctdtclim,
@@ -604,6 +616,7 @@ c                  function contributions.
       _RL  num_sst  (nsx,nsy)
       _RL  num_tmi  (nsx,nsy)
       _RL  num_sss  (nsx,nsy) 
+      _RL  num_bp   (nsx,nsy) 
       _RL  num_ctdt (nsx,nsy)
       _RL  num_ctds (nsx,nsy)
       _RL  num_ctdtclim (nsx,nsy)
@@ -680,6 +693,7 @@ c                  function contributions.
      &                    mult_sst,
      &                    mult_tmi,
      &                    mult_sss,
+     &                    mult_bp,
      &                    mult_ctdt,
      &                    mult_ctds,
      &                    mult_ctdtclim,
@@ -740,6 +754,7 @@ c                  function contributions.
       _RL  mult_sst
       _RL  mult_tmi
       _RL  mult_sss
+      _RL  mult_bp
       _RL  mult_ctdt
       _RL  mult_ctds
       _RL  mult_ctdtclim
@@ -963,7 +978,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
      &                      wkapgm,wkapgm2,wkapgmFld,
      &                      wedtaux,wedtaux2,wedtauxFld,
      &                      wedtauy,wedtauy2,wedtauyFld,
-     &                      wsst,wsss,
+     &                      wsst,wsss,wbp,
      &                      wtp,wers,wgfo,
      &                      wp,
      &                      wctdt,wctds,
@@ -1008,6 +1023,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wsaltLev  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wsst    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wsss    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wbp     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtp     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wers    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wgfo    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1129,6 +1145,7 @@ c     scatydat   - reference meridional wind stress.
 c     sstdat     - reference sea surface temperature data.
 c     tmidat     - reference TMI sea surface temperature data.
 c     sssdat     - reference sea surface temperature data.
+c     bpdat      - bottom pressure from time-varying GRACE.
 c     tauxmask   - mask for reference wind stress data.
 c     tauymask   - mask for reference wind stress data. 
 c     scatxmask  - mask for scat wind stress data.
@@ -1158,9 +1175,11 @@ c     vdriftdat  - drifters meridional velocities
      &                     sstdat,
      &                     tmidat,
      &                     sssdat,
+     &                     bpdat,
      &                     sstmask,
      &                     tmimask,
      &                     sssmask,
+     &                     bpmask,
      &                     tauxmask,
      &                     tauymask,
      &                     scatxmask,
@@ -1190,6 +1209,7 @@ c     vdriftdat  - drifters meridional velocities
       _RL sstdat    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tmidat    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL sssdat    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL bpdat     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tauxmask  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tauymask  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL scatxmask (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1197,6 +1217,7 @@ c     vdriftdat  - drifters meridional velocities
       _RL sstmask   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tmimask   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL sssmask   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL bpmask    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL sdat      (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL tpmean    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL tpmeanmask(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1248,6 +1269,7 @@ c     driftfile     - reference data file for drifter's mean velocities
      &                     sstdatfile,
      &                     tmidatfile,
      &                     sssdatfile,
+     &                     bpdatfile,
      &                     topexmeanfile,
      &                     topexfile,
      &                     ersfile,
@@ -1272,6 +1294,7 @@ c     driftfile     - reference data file for drifter's mean velocities
       character*(MAX_LEN_FNAM) sstdatfile
       character*(MAX_LEN_FNAM) tmidatfile
       character*(MAX_LEN_FNAM) sssdatfile
+      character*(MAX_LEN_FNAM) bpdatfile
       character*(MAX_LEN_FNAM) topexmeanfile
       character*(MAX_LEN_FNAM) topexfile
       character*(MAX_LEN_FNAM) ersfile
@@ -1321,6 +1344,7 @@ c     sshperiod      - sampling interval for the sea surface height data.
      &                           argosstartdate,
      &                           tmistartdate,
      &                           sssstartdate,
+     &                           bpstartdate,
      &                           topexstartdate,
      &                           ersstartdate,
      &                           gfostartdate
@@ -1331,6 +1355,7 @@ c     sshperiod      - sampling interval for the sea surface height data.
       integer argosstartdate(4)
       integer tmistartdate(4)
       integer sssstartdate(4)
+      integer bpstartdate(4)
       integer topexstartdate(4)
       integer ersstartdate(4)
       integer gfostartdate(4)
@@ -1342,6 +1367,8 @@ c     sshperiod      - sampling interval for the sea surface height data.
      &                           sststartdate2,
      &                           sssstartdate1,
      &                           sssstartdate2,
+     &                           bpstartdate1,
+     &                           bpstartdate2,
      &                           argotstartdate1,
      &                           argotstartdate2,
      &                           argosstartdate1,
@@ -1361,6 +1388,8 @@ c     sshperiod      - sampling interval for the sea surface height data.
       integer sststartdate2
       integer sssstartdate1
       integer sssstartdate2
+      integer bpstartdate1
+      integer bpstartdate2
       integer argotstartdate1
       integer argotstartdate2
       integer argosstartdate1

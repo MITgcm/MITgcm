@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.32 2007/09/20 18:39:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.33 2007/09/20 22:01:37 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -41,7 +41,8 @@ c     == end of interface ==
 c--   Read the namelist input.
       namelist /ecco_cost_nml/ 
      &                   data_errfile,
-     &                   tbarfile, sbarfile, psbarfile,
+     &                   tbarfile, sbarfile, 
+     &                   psbarfile, bpbarfile,
      &                   ubarfile, vbarfile, wbarfile,
      &                   tauxbarfile, tauybarfile,
      &                   hfluxbarfile, sfluxbarfile,
@@ -66,6 +67,7 @@ c--   Read the namelist input.
      &                   tmistartdate1, tmistartdate2, tmidatfile,
      &                   sststartdate1, sststartdate2, sstdatfile, 
      &                   sssstartdate1, sssstartdate2, sssdatfile, 
+     &                   bpstartdate1, bpstartdate2, bpdatfile, 
      &                   tdatfile, sdatfile,
      &                   ctdtfile, ctdsfile,
      &                   ctdtclimfile, ctdsclimfile,
@@ -98,7 +100,7 @@ c--   Read the namelist input.
      &                   mult_hmean, mult_h, 
      &                   mult_tp, mult_ers, mult_gfo, 
      &                   mult_temp, mult_salt,
-     &                   mult_tmi, mult_sst, mult_sss,
+     &                   mult_tmi, mult_sst, mult_sss, mult_bp,
      &                   mult_ctdt, mult_ctds, 
      &                   mult_ctdtclim, mult_ctdsclim, 
      &                   mult_xbt, mult_drift,
@@ -133,6 +135,7 @@ c--     Set default values.
         tbarfile              =    'tbar'
         sbarfile              =    'sbar'
         psbarfile             =    'psbar'
+        bpbarfile             =    'bpbar'
         ubarfile              =    'ubar'
         vbarfile              =    'vbar'
         wbarfile              =    'wbar'
@@ -183,6 +186,9 @@ c--     Set default values.
         sssstartdate1         =      0
         sssstartdate2         =      0
         sssdatfile            =    ' '
+        bpstartdate1          =      0
+        bpstartdate2          =      0
+        bpdatfile             =    ' '
         tdatfile              =    ' '
         sdatfile              =    ' '
         ctdtfile              =    ' '
@@ -264,6 +270,7 @@ c--     Set default values.
         mult_tmi              =      0. _d 0
         mult_sst              =      0. _d 0
         mult_sss              =      0. _d 0
+        mult_bp               =      0. _d 0
         mult_ctdt             =      0. _d 0
         mult_ctds             =      0. _d 0
         mult_ctdtclim         =      0. _d 0
@@ -351,7 +358,7 @@ c--     ... SST data.
         WRITE(msgBuf,'(A)') 'ECCO_READPARMS: start assigning cost dates'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                  SQUEEZE_RIGHT , 1)
-
+c--     ... SST data.
         call cal_FullDate( sststartdate1,   sststartdate2,
      &                     sststartdate,    mythid )
 c--     ... TMI data.
@@ -360,6 +367,9 @@ c--     ... TMI data.
 c--     ... SSS data.
         call cal_FullDate( sssstartdate1,   sssstartdate2,
      &                     sssstartdate,    mythid )     
+c--     ... BP data.
+        call cal_FullDate( bpstartdate1,   bpstartdate2,
+     &                     bpstartdate,    mythid )
 c--     ... T/P data.
         call cal_FullDate( topexstartdate1, topexstartdate2,
      &                     topexstartdate,  mythid )
