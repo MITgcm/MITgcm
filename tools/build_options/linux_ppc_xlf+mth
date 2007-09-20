@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ppc_xlf+mth,v 1.1 2007/07/31 22:24:51 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ppc_xlf+mth,v 1.2 2007/09/20 21:11:55 ce107 Exp $
 #
 
 #  tested on frost, ce107 Aug 4 2005
 #  using the following invocation:
-#    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/linux_ppc64_xlf
+#    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/linux_ppc_xlf+mth
 
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
@@ -13,9 +13,9 @@ MAKEDEPEND=makedepend
 DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR -DUSE_OMP_THREADING'
 INCLUDES=''
 CPP='/lib/cpp -traditional -P'
-FC='xlf_r'
-CC='xlc_r'
-LINK='xlf_r'
+FC='xlf_r -q32'
+CC='xlc_r -q32'
+LINK='xlf_r -q32'
 LIBS=''
 FFLAGS='-qfixed=132'
 if test "x$IEEE" = x ; then
