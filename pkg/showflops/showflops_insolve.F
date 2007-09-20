@@ -1,4 +1,4 @@
-2222222222C $Header: /u/gcmpack/MITgcm/pkg/showflops/showflops_insolve.F,v 1.2 2007/07/31 22:33:43 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/showflops/showflops_insolve.F,v 1.3 2007/09/20 20:58:37 ce107 Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
