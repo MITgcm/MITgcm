@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.101 2007/09/20 02:46:11 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.102 2007/09/20 03:17:32 jmc Exp $
 #  $Name:  $
 #
 
@@ -1317,7 +1317,7 @@ fi
 rm -f tr_cmpnum.c tr_cmpnum
 
 if test "x$CLEANUP" != xt ; then
-    cat $SUMMARY | sed 's/  \.  \.  \.  \.  \.  \.  \.  \.  \.  \.  \.  \.//'
+    cat $SUMMARY | sed 's/ \.  \.  \.  \.  \.  \.  \.  \.  \.  \.  \.  \. //'
     if test -e tr_out.txt ; then
         mv tr_out.txt tr_out.txt.old
     fi
