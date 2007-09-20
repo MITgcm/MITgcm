@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/runclock/runclock_continue.F,v 1.1 2005/05/31 18:24:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/runclock/runclock_continue.F,v 1.2 2007/09/20 20:55:21 ce107 Exp $
 C $Name:  $
 
 #include "RUNCLOCK_OPTIONS.h"
@@ -86,7 +86,8 @@ c    &  dd,dh,dm,ds,elapsed_secs,maxtime_secs,tins-RC_start_tins
 
       IF (maxtime_secs.ne.0 .AND. elapsed_secs.GT.maxtime_secs) THEN
        RUNCLOCK_CONTINUE=.FALSE.
-       WRITE(msgBuf,'(A)') ' RUNCLOCK_CONTINUE: Wall Clock limit reached!'
+       WRITE(msgBuf,'(A)') 
+     & ' RUNCLOCK_CONTINUE: Wall Clock limit reached!'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
        CALL PRINT_ERROR( msgBuf, myThid )
