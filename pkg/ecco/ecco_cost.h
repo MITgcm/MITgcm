@@ -192,7 +192,8 @@ c             intantaneous field.
      &                    tauxbarfile,
      &                    tauybarfile,
      &                    hfluxbarfile,
-     &                    sfluxbarfile
+     &                    sfluxbarfile,
+     &                    costTranspDataFile
       character*(MAX_LEN_FNAM) tbarfile
       character*(MAX_LEN_FNAM) sbarfile
       character*(MAX_LEN_FNAM) psbarfile
@@ -203,6 +204,19 @@ c             intantaneous field.
       character*(MAX_LEN_FNAM) tauybarfile
       character*(MAX_LEN_FNAM) hfluxbarfile
       character*(MAX_LEN_FNAM) sfluxbarfile
+      character*(MAX_LEN_FNAM) costTranspDataFile
+
+#ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
+      INTEGER maxNumDays
+      PARAMETER ( maxNumDays = 5480 )
+      common /averages_transp_r/
+     &                     transpbar
+     &                   , transpobs
+     &                   , wtransp
+      _RL transpbar(maxNumDays,nsx,nsy)  
+      _RL transpobs(maxNumDays)
+      _RL wtransp(maxNumDays)
+#endif
 
 c     file precision and field type
 
@@ -388,7 +402,8 @@ c                  function contributions.
      &                objf_theta_ini_fin,
      &                objf_salt_ini_fin,
      &                objf_eddytau,
-     &                objf_bottomdrag
+     &                objf_bottomdrag,
+     &                objf_transp
       _RL  objf_hflux  (nsx,nsy)
       _RL  objf_hfluxm (nsx,nsy)
       _RL  objf_hfluxmm(nsx,nsy)
@@ -485,6 +500,7 @@ c                  function contributions.
       _RL  objf_salt_ini_fin(nsx,nsy)
       _RL  objf_eddytau(nsx,nsy)
       _RL  objf_bottomdrag(nsx,nsy)
+      _RL  objf_transp
 
       common /ecco_cost_num/
      &                num_hflux,
@@ -563,7 +579,8 @@ c                  function contributions.
      &                num_theta_ini_fin,
      &                num_salt_ini_fin,
      &                num_eddytau,
-     &                num_bottomdrag
+     &                num_bottomdrag,
+     &                num_transp
 
       _RL  num_hflux  (nsx,nsy)
       _RL  num_hfluxm (nsx,nsy)
@@ -642,6 +659,7 @@ c                  function contributions.
       _RL  num_salt_ini_fin(nsx,nsy)
       _RL  num_eddytau(nsx,nsy)
       _RL  num_bottomdrag(nsx,nsy)
+      _RL  num_transp
 
       common /ecco_cost_aux_r/
      &                    mult_hflux,
@@ -702,7 +720,8 @@ c                  function contributions.
      &                    mult_edtau,
      &                    mult_bottomdrag,
      &                    mult_smooth_ic,
-     &                    mult_smooth_bc
+     &                    mult_smooth_bc,
+     &                    mult_transp
       _RL  mult_hflux
       _RL  mult_sflux
       _RL  mult_hfluxmm
@@ -762,6 +781,7 @@ c                  function contributions.
       _RL  mult_bottomdrag
       _RL  mult_smooth_ic
       _RL  mult_smooth_bc
+      _RL  mult_transp
 
 c     Record counters relevant for the cost function evaluation.
 c     ==========================================================

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.8 2006/07/07 22:53:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.9 2007/09/20 18:23:34 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "AD_CONFIG.h"
@@ -51,8 +51,13 @@ c     == local variables ==
 
       integer tempDate1(4)
       integer tempDate2(4)
-
+      integer gwunit
+      integer ilo,ihi
+      integer irec
       logical exst
+      _RL     dummy
+      _RL     missingObsFlag
+      PARAMETER ( missingObsFlag = 1. _d 23 )
 
 c     == external functions ==
 
@@ -62,6 +67,10 @@ c     == external functions ==
       external cal_IntMonths
       integer  cal_IntDays
       external cal_IntDays
+      integer  ifnblnk
+      external ifnblnk
+      integer  ilnblnk
+      external ilnblnk
 
 c     == end of interface ==
 
@@ -128,6 +137,32 @@ cph!!!
          call ecco_cost_init_barfiles( mythid )
       endif
 #endif
+
+#ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
+      _BEGIN_MASTER(myThid)
+      ilo = ifnblnk(costTranspDataFile)
+      ihi = ilnblnk(costTranspDataFile)
+      CALL OPEN_COPY_DATA_FILE(
+     I                          costTranspDataFile(ilo:ihi), 
+     I                          'ECCO_COST_INIT_FIXED',
+     O                          gwunit,
+     I                          myThid )
+      do irec = 1, ndaysrec
+c-- read daily transport time series
+c-- 1st: transport in m/s
+c-- 2nd: date in YYYYMMDD
+c-- 3rd: uncertainty in m/s
+         read(gwunit,*) transpobs(irec), dummy, wtransp(irec)
+c-- convert std.dev. to weight
+         if ( wtransp(irec) .NE. 0. )
+     &        wtransp(irec) =1./(wtransp(irec)*wtransp(irec))
+c-- set weight to zero for missing values
+         if ( transpobs(irec) .EQ. missingObsFlag )
+     &        wtransp(irec) = 0.
+      enddo
+      _END_MASTER(myThid)
+      _BARRIER
+#endif /* ALLOW_TRANSPORT_COST_CONTRIBUTION */
 
 c--   Summarize the cost function's setup.
       _BEGIN_MASTER( mythid )

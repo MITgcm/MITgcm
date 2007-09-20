@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.30 2007/09/07 22:41:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.31 2007/09/20 18:23:34 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -45,6 +45,7 @@ c--   Read the namelist input.
      &                   ubarfile, vbarfile, wbarfile,
      &                   tauxbarfile, tauybarfile,
      &                   hfluxbarfile, sfluxbarfile,
+     &                   costTranspDataFile,
      &                   using_topex,
      &                   topexstartdate1, topexstartdate2,
      &                   topexperiod, topexfile, topexmeanfile,
@@ -139,6 +140,7 @@ c--     Set default values.
         tauybarfile           =    'tauybar'
         hfluxbarfile          =    'hfluxbar'
         sfluxbarfile          =    'sfluxbar'
+        costTranspDataFile    =    ' '
         using_topex           = .false.
         topexstartdate1       =      0
         topexstartdate2       =      0

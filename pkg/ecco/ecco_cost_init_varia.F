@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.9 2007/09/07 22:41:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.10 2007/09/20 18:23:34 heimbach Exp $
 
 #include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -270,8 +270,10 @@ c--   Initialise the "global" parts of the cost function.
         objf_obcsvol = 0. _d 0
         objf_hmean   = 0. _d 0
         objf_sfluxmm = 0. _d 0
+        objf_transp  = 0. _d 0
         num_obcsvol = 0. _d 0
         num_hmean   = 0. _d 0
+        num_transp  = 0. _d 0
       _END_MASTER( mythid )
 
       _BARRIER

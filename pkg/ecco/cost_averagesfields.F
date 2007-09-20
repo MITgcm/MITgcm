@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.14 2007/04/16 23:35:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.15 2007/09/20 18:23:33 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -39,6 +39,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "GRID.h"
 #include "CG2D.h"
 
 #include "optim.h"
@@ -62,6 +63,7 @@ c     == local variables ==
       integer myiter
       integer bi,bj
       integer i,j,k
+      integer ig,jg
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
@@ -364,6 +366,34 @@ cph: these are annual means
 #if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
 cph moved to the_main_loop to separate from cost package
 cph      CALL profiles_inloop(mytime,mythid)
+#endif
+
+#ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
+c--   Currently hard-coded Florida Strait transport for 1x1 deg.
+c--   ECCO-GODAE version 1,2,3
+c--   Next, do the averages for velocitty.
+       do bj = jtlo,jthi
+        do bi = itlo,ithi
+         if (first.or.startofday) 
+     &          transpbar(dayrec,bi,bj) = 0. _d 0
+         do k = 1,nr
+          do j = jmin,jmax
+           jg = myYGlobalLo-1+(bj-1)*sNy+j
+           do i =  imin,imax
+            ig = myXGlobalLo-1+(bi-1)*sNx+i
+            if ( jg.EQ.106 .AND. ig.GE.280 .AND. ig.LE.285 ) then
+               transpbar(dayrec,bi,bj) = transpbar(dayrec,bi,bj)
+     &              +vVel(i,j,k,bi,bj)
+     &              *_dxG(i,j,bi,bj)*drF(k)*_hFacS(i,j,k,bi,bj)
+            endif
+           enddo
+          enddo
+         enddo
+         if (last .or. endofday)
+     &        transpbar(dayrec,bi,bj) = transpbar(dayrec,bi,bj)
+     &        /float(sum1day)
+        enddo
+       enddo      
 #endif
 
       return

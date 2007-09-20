@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.9 2006/04/25 16:43:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.10 2007/09/20 18:23:33 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -179,6 +179,13 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
       call cost_salt  ( myiter, mytime, mythid )
+#endif
+
+#ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
+      write(msgbuf,'(a)') 'ph-cost call cost_gen_transport'
+      call print_message( msgbuf, standardmessageunit,
+     &     SQUEEZE_RIGHT , mythid)
+      call cost_gen_transport  ( myiter, mytime, mythid )
 #endif
 
 #if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))

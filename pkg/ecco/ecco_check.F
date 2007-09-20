@@ -19,6 +19,15 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
+#include "ecco_cost.h"
+#include "ctrl.h"
+#include "ctrl_dummy.h"
+#include "optim.h"
+#include "DYNVARS.h"
+#ifdef ALLOW_PROFILES
+#include "profiles.h"
+#endif
+
 C     === Routine arguments ===
 C     myThid -  Number of this instances
       INTEGER myThid
@@ -27,7 +36,22 @@ C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-cph   Moved this content to packages_check.F
+      _BEGIN_MASTER(myThid)
+
+#ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
+      IF ( ndaysrec .GT. maxNumDays ) THEN
+       WRITE(msgBuf,'(2A,2I)') 
+     &        'ECCO_CHECK: for ALLOW_TRANSPORT_COST_CONTRIBUTION: ',
+     &        'ndaysrec > maxNumDays in ecco_cost.h ',
+     &        ndaysrec, maxNumDays
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       CALL PRINT_ERROR( msgBuf , myThid )
+       STOP 'ABNORMAL END: S/R ECCO_CHECK'
+      ENDIF
+#endif
+
+      _END_MASTER(myThid)
 
       RETURN
       END

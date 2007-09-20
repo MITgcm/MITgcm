@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.34 2007/09/07 22:41:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.35 2007/09/20 18:23:34 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -79,6 +79,7 @@ c     == local variables ==
       _RL f_eddytau, f_bottomdrag
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
       _RL f_gencost(NGENCOST)
+      _RL f_transp
 
       _RL no_temp0, no_salt0,  no_temp, no_salt 
       _RL no_uwind, no_vwind
@@ -101,6 +102,7 @@ c     == local variables ==
       _RL no_hmean
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
       _RL no_gencost(NGENCOST)
+      _RL no_transp
 
       character*20 cfname
 #ifdef ECCO_VERBOSE
@@ -197,6 +199,7 @@ c     == end of interface ==
       f_diffkr  = 0. _d 0
       f_eddytau = 0. _d 0
       f_bottomdrag = 0. _d 0
+      f_transp  = 0. _d 0
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -272,6 +275,7 @@ c     == end of interface ==
       no_diffkr  = 0. _d 0
       no_eddytau = 0. _d 0
       no_bottomdrag = 0. _d 0
+      no_transp  = 0. _d 0
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -868,7 +872,8 @@ c--   Do global summation for each part of the cost function
 c--   Each process has calculated the global part for itself.
       _BEGIN_MASTER( mythid )
 
-        fc = fc + mult_hmean*objf_hmean
+        fc = fc 
+     &          + mult_hmean*objf_hmean
         no_hmean = num_hmean
 
         if ( wmean_hflux .NE. 0. ) then
@@ -881,13 +886,20 @@ cph this is from annual mean misfits;
 cph simple sums and squares needed to be taken at annual intervals
         f_sfluxmm  = f_sfluxmm + objf_sfluxmm
         f_sfluxmm2 = mult_sfluxmm*f_sfluxmm
+        f_transp   = mult_transp*objf_transp
+
+        no_transp = num_transp
 cph)
-        fc = fc + f_hfluxmm2 + f_sfluxmm2
+        fc = fc 
+     &          + f_hfluxmm2 + f_sfluxmm2
+     &          + f_transp
 
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> f_hfluxmm2           =',f_hfluxmm2
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> f_sfluxmm2           =',f_sfluxmm2
+        write(standardmessageunit,'(A,D22.15)')
+     &           ' --> f_transp             =',f_transp
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> objf_hmean           =',objf_hmean
         write(standardmessageunit,'(A,D22.15)')
@@ -1052,6 +1064,8 @@ cph)
      &       'f_eddytau =', f_eddytau, no_eddytau
         write(ifc,'(A,2D22.15)') 
      &       'f_bottomdrag =', f_bottomdrag, no_bottomdrag
+        write(ifc,'(A,2D22.15)') 
+     &       'f_transp =', f_transp, no_transp
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
