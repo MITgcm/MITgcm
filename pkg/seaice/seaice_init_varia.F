@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.19 2007/09/19 09:10:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.20 2007/09/20 14:32:37 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -398,6 +398,17 @@ C--   Read initial snow thickness from file if available.
        ENDIF
 
 #ifdef SEAICE_SALINITY
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
+           HSALT(I,J,bi,bj)=HEFF(I,J,1,bi,bj)*
+     &            ICE2WATR*rhoConstFresh*SEAICE_salinity
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
 C--   Read initial sea ice salinity from file if available.
        IF ( HsaltFile .NE. ' ' ) THEN
         _BEGIN_MASTER( myThid )
@@ -408,7 +419,7 @@ C--   Read initial sea ice salinity from file if available.
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            HSALT(I,J,bi,bj) = ZETA(i,j,bi,bj) * HEFF(I,J,1,bi,bj)
+            HSALT(I,J,bi,bj) = ZETA(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDDO

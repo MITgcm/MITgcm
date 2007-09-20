@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.45 2007/09/19 09:10:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.46 2007/09/20 14:32:37 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -100,7 +100,7 @@ C     evapFile        - File containing evap
 C     runoffFile      - File containing runoffF
 C     AreaFile        - File containing initial sea-ice concentration
 C     HsnowFile       - File containing initial snow thickness
-C     HsaltFile       - File containing initial sea ice salinity
+C     HsaltFile       - File containing initial sea ice salt content
 C     HeffFile        - File containing initial sea-ice thickness
 C        !!! NOTE !!! Initial sea-ice thickness can also be set using
 C        SEAICE_initialHEFF below.  But a constant initial condition
@@ -264,6 +264,12 @@ C--   identifiers for advected properties
      &            GAD_SNOW  = 105,
      &            GAD_SALT  = 106 )
 
+C--   parameter used by multiple routines
+C     RATIO OF SEA ICE DESITY TO WATER DENSITY
+      _RL         ICE2WATR
+      PARAMETER ( ICE2WATR = 0.920 _d 0 )
+C     this makes more sense, but changes the results
+C      ICE2WATR     = SEAICE_rhoIce * 1. _d -03
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

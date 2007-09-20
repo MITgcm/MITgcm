@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.25 2007/09/18 21:18:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.26 2007/09/20 14:32:37 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,7 +41,7 @@ C     i,j,bi,bj - Loop counters
 C     number of surface interface layer
       INTEGER kSurface
 C     constants
-      _RL TBC, SDF, ICE2WATR, ICE2SNOW
+      _RL TBC, SDF, ICE2SNOW
       _RL QI, recip_QI, QS, recip_QS
 C     auxillary variables
       _RL availHeat, hEffOld, snowEnergy, snowAsIce
@@ -108,10 +108,6 @@ C     FREEZING TEMP. OF SEA WATER (deg C)
       TBC          = SEAICE_freeze
 C     RATIO OF WATER DESITY TO SNOW DENSITY
       SDF          = 1000.0 _d 0/330.0 _d 0
-C     RATIO OF SEA ICE DESITY TO WATER DENSITY
-      ICE2WATR     = 0.920 _d 0
-C     this makes more sense, but changes the results
-C      ICE2WATR     = SEAICE_rhoIce * 1. _d -03
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
       ICE2SNOW     = SDF * ICE2WATR
 C     HEAT OF FUSION OF ICE (m^3/J)
