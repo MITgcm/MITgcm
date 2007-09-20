@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/Attic/EXF_OPTIONS.h,v 1.1 2007/06/23 15:02:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/Attic/EXF_OPTIONS.h,v 1.2 2007/09/20 01:13:59 jmc Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -132,7 +132,7 @@ c
 c   ====================================================================
 
 C   Do more printout for the protocol file than usual.
-#define EXF_VERBOSE
+#undef EXF_VERBOSE
 
 C   Bulk formulae related flags.
 #define  ALLOW_ATM_TEMP
