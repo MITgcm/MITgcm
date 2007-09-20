@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ppc_xlf_bigred,v 1.1 2007/09/20 21:10:51 ce107 Exp $
+#
+
+#  tested on Big Red, ce107 Aug 30 2007
+#  using the following invocation:
+#    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/linux_ppc_xlf_bigred
+
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+INCLUDES='-I/N/soft/linux-sles9-ppc64/netcdf-3.6.1-ibm-32/include'
+CPP='/lib/cpp -traditional -P'
+FC='xlf -q32'
+CC='xlc -q32'
+LINK='xlf -q32'
+LIBS='-L/N/soft/linux-sles9-ppc64/netcdf-3.6.1-ibm-32/lib -lnetcdf' 
+FFLAGS='-qfixed=132'
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+FOPTIM='-O5 -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1 -qipa=noobject:partition=large:threads'
+CFLAGS='-O5 -qinlglue -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1 -qipa=noobject:partition=large:threads'
+else
+FOPTIM='-O3 -qstrict -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+CFLAGS='-O3 -qstrict -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+fi
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
