@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.100 2007/09/17 15:35:46 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.101 2007/09/20 02:46:11 jmc Exp $
 #  $Name:  $
 #
 
@@ -270,8 +270,8 @@ testoutput_run()
 		  then echo testoutput_run: testoutput_var $1 cg2d_init_res 1>&2 ; fi
 		  testoutput_var $1 "cg2d_init_res" "Press. Solver (cg2d)" $2 $3; yy=$?
 		  if [ $debug -gt 0 ] ; then echo testoutput_run: cg2dres=$yy 1>&2 ; fi ;;
- 	   'Cost') testoutput_var $1 "ADM  precision_derivative_cost" "ADM Cost" $2 $3; yy=$? ;;
- 	   'Grad') testoutput_var $1 "ADM  precision_derivative_grad" "ADM Grad" $2 $3; yy=$? ;;
+ 	  'Cost') testoutput_var $1 "ADM  precision_derivative_cost" "ADM Cost" $2 $3; yy=$? ;;
+ 	  'Grad') testoutput_var $1 "ADM  precision_derivative_grad" "ADM Grad" $2 $3; yy=$? ;;
  	   'Tmn') testoutput_var $1 "dynstat_theta_min"  "Theta minimum"  $2 $3; yy=$? ;;
  	   'Tmx') testoutput_var $1 "dynstat_theta_max"  "Theta maximum"  $2 $3; yy=$? ;;
  	   'Tav') testoutput_var $1 "dynstat_theta_mean" "Theta mean"	  $2 $3; yy=$? ;;
@@ -296,6 +296,24 @@ testoutput_run()
 	   testoutput_var $1 "trcstat_ptracer0"$ii"_mean" "p0"$ii"_mean" $2 $3; yy=$? ;;
 	'pt1sd'|'pt2sd'|'pt3sd'|'pt4sd'|'pt5sd') ii=`echo $xx | sed 's/pt//' | sed 's/..$//'`
 	   testoutput_var $1 "trcstat_ptracer0"$ii"_sd"   "p0"$ii"_StDv"  $2 $3; yy=$? ;;
+	 'Qntmn') testoutput_var $1 "extforcing_qnet_min" "Qnet minimum"  $2 $3; yy=$? ;;
+	 'Qntmx') testoutput_var $1 "extforcing_qnet_max" "Qnet maximum"  $2 $3; yy=$? ;;
+	 'Qntav') testoutput_var $1 "extforcing_qnet_mean" "Qnet mean"	  $2 $3; yy=$? ;;
+	 'Qntsd') testoutput_var $1 "extforcing_qnet_sd"  "Qnet Std.Dev"  $2 $3; yy=$? ;;
+	 'aSImn') testoutput_var $1 "seaice_area_min"   "SIce Area min"	  $2 $3; yy=$? ;;
+	 'aSImx') testoutput_var $1 "seaice_area_max"   "SIce Area max"	  $2 $3; yy=$? ;;
+	 'aSIav') testoutput_var $1 "seaice_area_mean"  "SIce Area mean"  $2 $3; yy=$? ;;
+	 'aSIsd') testoutput_var $1 "seaice_area_sd"    "SIce Area StDv"  $2 $3; yy=$? ;;
+	 'hSImn') testoutput_var $1 "seaice_heff_min"   "SIce Heff min"	  $2 $3; yy=$? ;;
+	 'hSImx') testoutput_var $1 "seaice_heff_max"   "SIce Hell max"	  $2 $3; yy=$? ;;
+	 'hSIav') testoutput_var $1 "seaice_heff_mean"  "SIce Hell mean"  $2 $3; yy=$? ;;
+	 'hSIsd') testoutput_var $1 "seaice_heff_sd"    "SIce Hell StDv"  $2 $3; yy=$? ;;
+	'AthSiG') testoutput_var $1 "thSI_Ice_Area_G" "thSIc Area Global" $2 $3; yy=$? ;;
+	'AthSiS') testoutput_var $1 "thSI_Ice_Area_S" "thSIc Area South"  $2 $3; yy=$? ;;
+	'AthSiN') testoutput_var $1 "thSI_Ice_Area_N" "thSIc Area North"  $2 $3; yy=$? ;;
+	'HthSiG') testoutput_var $1 "thSI_IceH_ave_G" "thSIc H Global"	  $2 $3; yy=$? ;;
+	'HthSiS') testoutput_var $1 "thSI_IceH_ave_S" "thSIc H South"	  $2 $3; yy=$? ;;
+	'HthSiN') testoutput_var $1 "thSI_IceH_ave_N" "thSIc H North"	  $2 $3; yy=$? ;;
               *) yy=99; echo "WARNING: asking for var=$xx : not recognized !" 1>&2 ;;
           esac
           if test $xx = $sVar
