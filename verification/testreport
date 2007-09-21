@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.102 2007/09/20 03:17:32 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.103 2007/09/21 19:23:33 jmc Exp $
 #  $Name:  $
 #
 
@@ -189,22 +189,6 @@ dashnum()
     done
 }
 
-testoutput_ad()
-{
-    grep $3 $1/results_ad/output_adm.txt | awk '{print NR " " $5}' > t05.txt
-    grep $3 $1/$2/$OUTPUTFILE | awk '{print NR " " $5}' > t15.txt
-    grep $3 $1/results_ad/output_adm.txt | awk '{print NR " " $6}' > t06.txt
-    grep $3 $1/$2/$OUTPUTFILE | awk '{print NR " " $6}' > t16.txt
-    join t05.txt t15.txt > t5.txt
-    join t06.txt t16.txt > t6.txt
-    echo "-1" >> t5.txt
-    echo "-1" >> t6.txt
-    digits_5=`./tr_cmpnum < t5.txt`
-    digits_6=`./tr_cmpnum < t6.txt`
-    dashnum $digits_5 $digits_6
-    rm -f t[01][56].txt t[56].txt
-}
-
 check_for_add_mon_output()
 {
     # Check for additional types of monitor output
@@ -235,7 +219,7 @@ testoutput_run()
     # testoutput_run directory subdir reference_output
     #
     #  test output from 1 run in "directory"
-#   if test "x$ADM" = x ; then
+# --> same processing for adjoint & forward test
         # default list of output variables to be checked:
         #  1rst : main variable used to decide if it pass or FAIL
         #  others : number of matching digits to be printed in summary.txt
@@ -330,10 +314,7 @@ testoutput_run()
         else
 	  echo $allargs
         fi 
-
-#   else
-#	testoutput_ad $1 $2 "precision_grdchk_result"
-#   fi
+# <-- same processing for adjoint & forward test
 }
 
 genmakemodel()
@@ -929,11 +910,7 @@ else
 fi
 
 if test "x$TESTDIRS" = x ; then
-#   if test "x$ADM" = xt ; then
-#	LIST=`scandirs results_ad/$ref_outp`
-#   else
-	LIST=`scandirs results/$ref_outp`
-#   fi
+    LIST=`scandirs results/$ref_outp`
 else
     #- expand group of experiments:
     LIST=" "
@@ -985,7 +962,6 @@ if test "x$MPI" = xt ; then
     OUTPUTFILE="STDOUT.0000"
 fi
 
-#echo "OK"
 echo "OK (COMMAND= $COMMAND )"
 
 # set the Default List of output variables to be checked:
@@ -999,7 +975,7 @@ if test "x$ADM" = x ; then
     ii=`echo $EMPTY_RESULTS | awk '{print NF}'`
     EMPTY_RESULTS=$EMPTY_RESULTS`expr $LEN_CHECK_LIST - $ii | awk 'BEGIN{FS=":"}{for(i=1;i<=$1;i++){printf "  ."}}'`
 else
-    DEF_CHECK_LIST='Cost Cost Grad'
+    DEF_CHECK_LIST='Grad Cost Grad'
     EMPTY_RESULTS='.. ..'
     LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
 fi
@@ -1096,8 +1072,8 @@ else
     echo "ADJOINT=true" >> $SUMMARY
     echo >> $SUMMARY
     if [ $MATCH_CRIT -lt 10 ] ; 
-    then line_0="default  "$MATCH_CRIT ; 
-    else line_0="default "$MATCH_CRIT ; fi
+    then line_0="default     "$MATCH_CRIT ; 
+    else line_0="default    "$MATCH_CRIT ; fi
     echo "$line_0" | tee -a $SUMMARY
     cat << EOF | tee -a $SUMMARY
 G D M    C  G
@@ -1218,7 +1194,7 @@ for dir in $TESTDIRS ; do
     fi
     
     echo
-#   if test "x$ADM" = x ; then
+# --> same processing for adjoint & forward test
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo
  	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
@@ -1255,18 +1231,7 @@ for dir in $TESTDIRS ; do
 		run_clean $dir/tr_run.$ex
 	    fi
 	done
-#   else
-#	fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
-#	fres=$fres"$results   $dir"
-#	echo
-#	echo "$fres" >> $SUMMARY
-#	touch $CDIR"/summary.txt"
-#	echo "fresults='$fres'" >> $CDIR"/summary.txt"
-#	echo "MACH='$MACH'" >> $CDIR"/summary.txt"
-#	echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
-#	echo "DATE='$DATE'" >> $CDIR"/summary.txt"
-#	echo "tdir='$dir'" >> $CDIR"/summary.txt"
-#   fi
+# <-- same processing for adjoint & forward test
     if test "x$ADM" = xt ; then
 	grep -A3 'Seconds in section "ALL' $dir/$rundir/$OUTPUTFILE \
 			   >> $CDIR"/summary.txt"
@@ -1321,7 +1286,7 @@ if test "x$CLEANUP" != xt ; then
     if test -e tr_out.txt ; then
         mv tr_out.txt tr_out.txt.old
     fi
-    cat $SUMMARY | sed '/^[YN] [YN] [YN] [YN]/ s/  \.//g' > tr_out.txt
+    cat $SUMMARY | sed '/^[YN] [YN] [YN] [YN]/ s/ \. //g' > tr_out.txt
 fi
 
 if test "x$DELDIR" = xt ; then
