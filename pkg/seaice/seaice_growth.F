@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.27 2007/09/21 00:18:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.28 2007/09/21 06:46:30 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -571,8 +571,8 @@ C set HSALT = 0 if HSALT < 0 and compute salt to remove from ocean
 C saltWtrIce > 0 : m of sea ice that is created
           IF ( saltWtrIce(I,J) .GE. 0.0 ) THEN
              saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
-     &            ICE2WATR*rhoConstFresh*SEAICE_salinity/
-     &            SEAICE_deltaTtherm
+     &            ICE2WATR*rhoConstFresh*SEAICE_salinity*
+     &            salt(I,J,1,bi,bj)*SEAICE_deltaTtherm
 C saltWtrIce < 0 : m of sea ice that is melted
           ELSE
              saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
