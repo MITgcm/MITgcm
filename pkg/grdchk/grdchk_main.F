@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.25 2007/09/15 17:32:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.26 2007/09/21 18:53:36 jmc Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -472,11 +472,10 @@ c
      &              icompmem(ichknum),itestmem(ichknum),
      &              bimem(ichknum),bjmem(ichknum),obcspos,
      &              adxxmemo, gfd, ratio_ad
-               WRITE(msgBuf,'(A34,2(1PE24.14,X))') 
-     &              'precision_grdchk_result ADM ', fcref, adxxmemo
-               CALL PRINT_MESSAGE
-     &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-c
+c              WRITE(msgBuf,'(A34,2(1PE24.14,X))') 
+c    &              'precision_grdchk_result ADM ', fcref, adxxmemo
+c              CALL PRINT_MESSAGE
+c    &              (msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
                WRITE(msgBuf,'(A34,1PE24.14)') 
      &              ' ADM  precision_derivative_cost =', fcref
                CALL PRINT_MESSAGE
