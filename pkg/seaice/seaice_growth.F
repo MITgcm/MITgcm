@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.28 2007/09/21 06:46:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.29 2007/09/21 13:29:56 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -563,6 +563,7 @@ C NOW GET FRESH WATER FLUX
 C COMPUTE SURFACE SALT FLUX AND ADJUST ICE SALINITY
 #ifdef SEAICE_SALINITY
 C set HSALT = 0 if HSALT < 0 and compute salt to remove from ocean
+          saltFluxAdjust = 0.0
           IF ( HSALT(I,J,bi,bj) .LT. 0.0 ) THEN
              saltFluxAdjust = - HEFFM(I,J,bi,bj) *
      &            HSALT(I,J,bi,bj) / SEAICE_deltaTtherm
