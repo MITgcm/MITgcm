@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.16 2007/07/07 13:17:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.17 2007/09/21 20:32:30 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -155,28 +155,6 @@ C       Print some statistics about input forcing fields
         CALL MON_PRINTSTATS_RL(1,climsss,'_climsss',
      &       maskH,maskH,rA ,drF,myThid)
 #endif
-
-#ifdef ALLOW_BULK_OFFLINE
-c-- Trick monitor output for testreport
-C-- by writing some statistics into dynstat fields
-c-- which are tested by testreport
-        CALL MON_SET_PREF('offline',myThid)
-        CALL MON_PRINTSTATS_RL(1,hflux,'cg2d_init_res',
-     &       maskH,maskH,rA ,drF,myThid)
-c--
-        CALL MON_SET_PREF('dynstat',myThid)
-c--
-        CALL MON_PRINTSTATS_RL(1,hflux,'_theta',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,sflux,'_salt',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,ustress,'_uvel',
-     &       maskH,maskH,rAw,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,vstress,'_vvel',
-     &       maskH,maskH,rAs,drF,myThid)
-c--
-        CALL MON_SET_PREF('exf',myThid)
-#endif /* ALLOW_BULK_OFFLINE */
 
         IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
