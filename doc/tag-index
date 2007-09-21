@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.879 2007/09/19 09:41:50 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.880 2007/09/21 21:37:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o testreport: 
+  - allow to test for Qnet & SeaIce monitor output; clean-up ALLOW_BULK_OFFLINE 
+    monitor & update offline_exf_seaice exp. output.
+  - AD testing: pass/FAIL according to Grad. output accuracy (instead of Cost)
 o pkg/seaice:
   - bug fix in the evp solver: boundary conditions were affected be
     masking of zMax/zMin (changes results)
