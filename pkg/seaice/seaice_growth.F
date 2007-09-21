@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.26 2007/09/20 14:32:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.27 2007/09/21 00:18:48 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -45,7 +45,7 @@ C     constants
       _RL QI, recip_QI, QS, recip_QS
 C     auxillary variables
       _RL availHeat, hEffOld, snowEnergy, snowAsIce
-      _RL growthHEFF, growthNeg
+      _RL growthHEFF, growthNeg, saltFluxAdjust
 #ifdef ALLOW_SEAICE_FLOODING
       _RL hDraft, hFlood
 #endif /* ALLOW_SEAICE_FLOODING */
@@ -562,36 +562,35 @@ C NOW GET FRESH WATER FLUX
 
 C COMPUTE SURFACE SALT FLUX AND ADJUST ICE SALINITY
 #ifdef SEAICE_SALINITY
-          IF ( saltWtrIce(I,J) .GE. 0.0 ) THEN
+C set HSALT = 0 if HSALT < 0 and compute salt to remove from ocean
+          IF ( HSALT(I,J,bi,bj) .LT. 0.0 ) THEN
+             saltFluxAdjust = - HEFFM(I,J,bi,bj) *
+     &            HSALT(I,J,bi,bj) / SEAICE_deltaTtherm
+             HSALT(I,J,bi,bj) = 0.0
+          ENDIF
 C saltWtrIce > 0 : m of sea ice that is created
+          IF ( saltWtrIce(I,J) .GE. 0.0 ) THEN
              saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
      &            ICE2WATR*rhoConstFresh*SEAICE_salinity/
      &            SEAICE_deltaTtherm
-          ELSE
 C saltWtrIce < 0 : m of sea ice that is melted
-             saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj) *
-     &            saltWtrIce(I,J) * HSALT(I,J,bi,bj) /
-     &            ( HEFF(I,J,1,bi,bj) - saltWtrIce(I,J) ) /
+          ELSE
+             saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
+     &            HSALT(I,J,bi,bj)/(HEFF(I,J,1,bi,bj)-saltWtrIce(I,J))/
      &            SEAICE_deltaTtherm
           ENDIF
 C update HSALT based on surface saltFlux
           HSALT(I,J,bi,bj) = HSALT(I,J,bi,bj) +
      &         saltFlux(I,J,bi,bj) * SEAICE_deltaTtherm
-C set HSALT = 0 if HEFF = 0 and dump residual salt into ocean
+          saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) + saltFluxAdjust
+C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
           IF ( HEFF(I,J,1,bi,bj) .EQ. 0.0 ) THEN
              saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) -
      &            HEFFM(I,J,bi,bj) * HSALT(I,J,bi,bj) /
      &            SEAICE_deltaTtherm
              HSALT(I,J,bi,bj) = 0.0
           ENDIF
-C set HSALT = 0 if HSALT < 0 and remove equivalent salt from ocean
-          IF ( HSALT(I,J,bi,bj) .LT. 0.0 ) THEN
-             saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) -
-     &            HEFFM(I,J,bi,bj) * HSALT(I,J,bi,bj) /
-     &            SEAICE_deltaTtherm
-             HSALT(I,J,bi,bj) = 0.0
-          ENDIF
-#endif
+#endif /* SEAICE_SALINITY */
 
 #else /* ALLOW_ATM_TEMP */
           STOP 'ABNORMAL END: S/R THSICE_GROWTH: ATM_TEMP undef'
