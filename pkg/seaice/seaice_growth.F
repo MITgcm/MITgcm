@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.30 2007/09/21 19:13:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.31 2007/09/22 03:11:03 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -573,7 +573,13 @@ C saltWtrIce > 0 : m of sea ice that is created
           IF ( saltWtrIce(I,J) .GE. 0.0 ) THEN
              saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
      &            ICE2WATR*rhoConstFresh*SEAICE_salinity*
-     &            salt(I,J,1,bi,bj)/SEAICE_deltaTtherm
+     &            salt(I,j,kSurface,bi,bj)/SEAICE_deltaTtherm
+#ifdef ALLOW_SALT_PLUME
+C saltPlumeFlux is defined only during freezing:
+             saltPlumeFlux(I,J,bi,bj)=HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
+     &            ICE2WATR*rhoConstFresh*(1-SEAICE_salinity)*
+     &            salt(I,j,kSurface,bi,bj)/SEAICE_deltaTtherm
+#endif /* ALLOW_SALT_PLUME */
 C saltWtrIce < 0 : m of sea ice that is melted
           ELSE
              saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*

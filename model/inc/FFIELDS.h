@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.33 2007/04/27 15:34:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.34 2007/09/22 03:11:02 dimitri Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -40,6 +40,14 @@ C              Note: a) only used when salty sea-ice forms or melts.
 C                    b) units: when salinity (unit= psu) is expressed
 C              	        in g/kg, saltFlux unit becomes g/m^2/s.
 C              > 0 for decrease in SSS.
+C              Southwest C-grid tracer point
+C
+C saltPlumeFlux :: Net downward salt flux in psu.kg/m^2/s
+C              flux of Salt rejected back into the ocean per time unit (second).
+C              Note: a) only used when salty sea-ice forms or melts.
+C                    b) units: when salinity (unit= psu) is expressed
+C              	        in g/kg, saltPlumeFlux unit becomes g/m^2/s.
+C              > 0 for increasing in SSS.
 C              Southwest C-grid tracer point
 C
 C     Qnet  :: Net upward surface heat flux (including shortwave) in W/m^2
@@ -106,6 +114,11 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       _RS  lambdaSaltClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  pLoad    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+#ifdef ALLOW_SALT_PLUME
+      COMMON /FFIELDS_saltPlumeFlux/ saltPlumeFlux
+      _RL  saltPlumeFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 
 #ifdef ALLOW_EP_FLUX
       COMMON /efluxFFIELDS/ EfluxY,EfluxP

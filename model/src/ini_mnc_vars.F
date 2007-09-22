@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.4 2005/12/15 01:57:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.5 2007/09/22 03:11:03 dimitri Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -390,6 +390,15 @@ C     Define variables from FFIELDS.h
      &     'psu.kg/m^2/s', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('saltFlux','description',
      &     'Net upward salt flux', myThid)
+
+#ifdef ALLOW_SALT_PLUME
+      CALL MNC_CW_ADD_VNAME('saltPlumeFlux', 'Cen_xy_Hn__-__t', 3,4, 
+     &                       myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('saltPlumeFlux','units',
+     &     'psu.kg/m^2/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('saltPlumeFlux','description',
+     &     'Net downward salt flux rejected during freezing', myThid)
+#endif /* ALLOW_SALT_PLUME */
 
       CALL MNC_CW_ADD_VNAME('SST', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('SST','units','deg C', myThid)

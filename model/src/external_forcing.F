@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.47 2007/08/23 19:12:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.48 2007/09/22 03:11:02 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -424,6 +424,12 @@ C     kSurface  :: index of surface layer
 CEOP
 #ifdef ALLOW_SALT_PLUME
       _RL saltPlume
+      integer two2
+      _RL minusone
+      parameter (two2=2,minusone=-1.)
+      _RL plumekb(two2)
+      _RL SPdepth(two2)
+      INTEGER kp1
 #endif /* ALLOW_SALT_PLUME */
 
       IF ( fluidIsAir ) THEN
@@ -491,20 +497,33 @@ C it is here redistributed to multiple vertical levels as per
 C Duffy et al. (GRL 1999)
        DO j=1,sNy
         DO i=1,sNx
+C Penetrating saltplume fraction:
+          plumekb(1)=abs(rF(klev))
+          plumekb(2)=abs(rF(klev+1))
+          SPdepth(1)=SaltPlumeDepth(i,j,bi,bj)
+          SPdepth(2)=SaltPlumeDepth(i,j,bi,bj)
+          CALL PLUMEFRAC(
+     I                   two2,minusone,SPdepth,
+     U                   plumekb,
+     I                   myTime, 1, myThid )
+          kp1 = klev+1
+          IF (klev.EQ.Nr) THEN
+           kp1 = klev
+           plumekb(2)=0. _d 0
+          ENDIF
           saltPlume = 0.
 #ifdef ALLOW_SEAICE
           IF ( saltFlux(i,j,bi,bj) .GT. 0. .AND.
      &         salt(i,j,kSurface,bi,bj)  .GT. SEAICE_salinity ) THEN
-           saltPlume = (salt(i,j,kSurface,bi,bj)-SEAICE_salinity) *
-     &          saltFlux(i,j,bi,bj) / salt(i,j,kSurface,bi,bj)
+            saltPlume = saltPlumeFlux(i,j,bi,bj)
           ENDIF
 #endif /* ALLOW_SEAICE */
           IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
            gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &          +saltPlume*mass2rUnit
+     &          +saltPlume*(plumekb(1)*maskC(i,j,klev,bi,bj)
+     &                     -plumekb(2)*maskC(i,j,kp1, bi,bj))
+     &          *horiVertRatio*recip_rhoConst
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
-     &          *min(drF(kLev),SaltPlumeDepth(i,j,bi,bj)+rF(kLev))
-     &          /SaltPlumeDepth(i,j,bi,bj)
           ENDIF
         ENDDO
        ENDDO

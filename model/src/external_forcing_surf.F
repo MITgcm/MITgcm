@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.41 2007/08/23 22:25:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.42 2007/09/22 03:11:02 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -204,8 +204,7 @@ C to multiple vertical levels later on as per Duffy et al. (GRL 1999)
 #ifdef ALLOW_SEAICE
           IF ( saltFlux(i,j,bi,bj) .GT. 0. .AND.
      &         salt(i,j,ks,bi,bj)  .GT. SEAICE_salinity ) THEN
-           saltPlume = (salt(i,j,ks,bi,bj)-SEAICE_salinity) *
-     &          saltFlux(i,j,bi,bj) / salt(i,j,ks,bi,bj)
+               saltPlume = saltPlumeFlux(i,j,bi,bj)
           ENDIF
 #endif /* ALLOW_SEAICE */
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
