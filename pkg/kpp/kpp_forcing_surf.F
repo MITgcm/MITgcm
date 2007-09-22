@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.1 2007/05/03 14:51:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.2 2007/09/22 17:55:32 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -10,8 +10,16 @@ C !INTERFACE: ==========================================================
       SUBROUTINE KPP_FORCING_SURF(
      I     rhoSurf, surfForcU, surfForcV,
      I     surfForcT, surfForcS, surfForcTice, 
-     I     Qsw, ttalpha, ssbeta,  
-     O     ustar, bo, bosol, dVsq,
+     I     Qsw, 
+#ifdef ALLOW_SALT_PLUME
+     I     saltPlumeFlux,
+#endif /* ALLOW_SALT_PLUME */
+     I     ttalpha, ssbeta,  
+     O     ustar, bo, bosol, 
+#ifdef ALLOW_SALT_PLUME
+     O     boplume,
+#endif /* ALLOW_SALT_PLUME */
+     O     dVsq,
      I     ikppkey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
 
 C !DESCRIPTION: \bv
@@ -20,7 +28,8 @@ C     | SUBROUTINE KPP_FORCING_SURF                              |
 C     | o Compute all surface related KPP fields:                |
 C     |   - friction velocity ustar                              |
 C     |   - turbulent and radiative surface buoyancy forcing,    |
-C     |     bo and bosol                                         |
+C     |     bo and bosol, and surface haline buoyancy forcing    |
+C     |     boplume                                              |
 C     |   - velocity shear relative to surface squared (this is  |
 C     |     not really a surface affected quantity unless it is  |
 C     |     computed with respect to some resolution independent |
@@ -31,10 +40,11 @@ C     \==========================================================/
 
 c     taux / rho = surfForcU                               (N/m^2)
 c     tauy / rho = surfForcV                               (N/m^2)
-c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )                (m/s)
+c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )        (m/s)
 c     bo    = - g * ( alpha*surfForcT +
-c                     beta *surfForcS ) / rho            (m^2/s^3)
-c     bosol = - g * alpha * Qsw * drF(1) / rho                 (m^2/s^3)
+c                     beta *surfForcS ) / rho              (m^2/s^3)
+c     bosol = - g * alpha * Qsw * drF(1) / rho             (m^2/s^3)
+c     boplume = g * ( beta *saltPlumeFlux/rhoConst )/rho   (m^2/s^3) 
 c------------------------------------------------------------------------
 
 c \ev
@@ -76,14 +86,16 @@ C              the KPP package (kpp_calc.F and kpp_transport_t.F).
 C              Units are r_unit.K/s (=Kelvin.m/s if r=z) (>0 for ocean warming).
 C
 C     Qsw     - surface shortwave radiation (upwards positive)
+C     saltPlumeFlux - salt rejected during freezing (downward = positive)
 C     ttalpha - thermal expansion coefficient without 1/rho factor
 C               d(rho{k,k})/d(T(k))                           (kg/m^3/C)
 C     ssbeta  - salt expansion coefficient without 1/rho factor
 C               d(rho{k,k})/d(S(k))                         (kg/m^3/PSU)
-
+C !OUTPUT PARAMETERS: 
 C     ustar  (nx,ny)       - surface friction velocity                  (m/s)
 C     bo     (nx,ny)       - surface turbulent buoyancy forcing     (m^2/s^3)
 C     bosol  (nx,ny)       - surface radiative buoyancy forcing     (m^2/s^3)
+C     boplume(nx,ny)       - surface haline buoyancy forcing        (m^2/s^3)
 C     dVsq   (nx,ny,Nr)    - velocity shear re surface squared
 C                            at grid levels for bldepth             (m^2/s^2)
 
@@ -106,6 +118,10 @@ C                            at grid levels for bldepth             (m^2/s^2)
       _RL ustar ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+#ifdef ALLOW_SALT_PLUME
+      _RL saltPlumeFlux   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL boplume(1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+#endif /* ALLOW_SALT_PLUME */
       _RL dVsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
 
 C !LOCAL VARIABLES: ====================================================
@@ -132,10 +148,11 @@ c     friction velocity, turbulent and radiative surface buoyancy forcing
 c     -------------------------------------------------------------------
 c     taux / rho = surfForcU                               (N/m^2)
 c     tauy / rho = surfForcV                               (N/m^2)
-c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )                (m/s)
+c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )        (m/s)
 c     bo    = - g * ( alpha*surfForcT +
 c                     beta *surfForcS ) / rho            (m^2/s^3)
-c     bosol = - g * alpha * Qsw * drF(1) / rho                 (m^2/s^3)
+c     bosol = - g * alpha * Qsw * drF(1) / rho           (m^2/s^3)
+c     boplume = g * ( beta *saltPlumeFlux/rhoConst )/rho (m^2/s^3)
 c------------------------------------------------------------------------
 
 c initialize arrays to zero
@@ -144,6 +161,9 @@ c initialize arrays to zero
             ustar(i,j) = p0
             bo   (I,J) = p0
             bosol(I,J) = p0
+#ifdef ALLOW_SALT_PLUME
+            boplume(I,J) = p0
+#endif /* ALLOW_SALT_PLUME */
          END DO
       END DO
 
@@ -190,7 +210,11 @@ cph)
         bosol(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj) *
      &       recip_Cp*recip_rhoConst
      &       / rhoSurf(I,J)
-
+#ifdef ALLOW_SALT_PLUME
+        boplume(I,J) = - gravity * SSBETA(I,J,1) 
+     &       * saltPlumeFlux(i,j,bi,bj)
+     &       * recip_rhoConst / rhoSurf(I,J)
+#endif /* ALLOW_SALT_PLUME */
        END DO
       END DO
 cph(

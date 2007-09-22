@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.32 2007/06/04 18:47:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.33 2007/09/22 17:55:32 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -20,7 +20,11 @@ c***********************************************************************
 
       SUBROUTINE KPPMIX (
      I       kmtj, shsq, dvsq, ustar, msk
-     I     , bo, bosol, dbloc, Ritop, coriol
+     I     , bo, bosol
+#ifdef ALLOW_SALT_PLUME
+     I     , boplume,SPDepth
+#endif /* ALLOW_SALT_PLUME */
+     I     , dbloc, Ritop, coriol
      I     , diffusKzS, diffusKzT
      I     , ikppkey
      O     , diffus
@@ -60,6 +64,7 @@ c     dvsq   (imt,Nr)  - (velocity shear re sfc)^2                    ((m/s)^2)
 c     ustar  (imt)     - surface friction velocity                        (m/s)
 c     bo     (imt)     - surface turbulent buoy. forcing              (m^2/s^3)
 c     bosol  (imt)     - radiative buoyancy forcing                   (m^2/s^3)
+c     boplume(imt)     - haline buoyancy forcing                      (m^2/s^3)
 c     dbloc  (imt,Nr)  - local delta buoyancy across interfaces         (m/s^2)
 c     dblocSm(imt,Nr)  - horizontally smoothed dbloc                    (m/s^2)
 c                          stored in ghat to save space
@@ -81,6 +86,10 @@ c           where hbl(i,j) -> hbl((j-1)*sNx+i)
       _RL ustar    (imt   )
       _RL bo       (imt   )
       _RL bosol    (imt   )
+#ifdef ALLOW_SALT_PLUME
+      _RL boplume  (imt   )
+      _RL SPDepth  (imt   )
+#endif /* ALLOW_SALT_PLUME */
       _RL dbloc    (imt,Nr)
       _RL Ritop    (imt,Nr)
       _RL coriol   (imt   )
@@ -172,7 +181,11 @@ c-----------------------------------------------------------------------
 
       call bldepth (
      I       kmtj
-     I     , dvsq, dbloc, Ritop, ustar, bo, bosol, coriol
+     I     , dvsq, dbloc, Ritop, ustar, bo, bosol
+#ifdef ALLOW_SALT_PLUME
+     I     , boplume,SPDepth
+#endif /* ALLOW_SALT_PLUME */
+     I     , coriol
      I     , ikppkey
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
      I     , myTime, myIter, myThid )
@@ -244,7 +257,11 @@ c*************************************************************************
 
       subroutine bldepth (
      I       kmtj
-     I     , dvsq, dbloc, Ritop, ustar, bo, bosol, coriol
+     I     , dvsq, dbloc, Ritop, ustar, bo, bosol
+#ifdef ALLOW_SALT_PLUME
+     I     , boplume,SPDepth
+#endif /* ALLOW_SALT_PLUME */
+     I     , coriol
      I     , ikppkey
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
      I     , myTime, myIter, myThid )
@@ -289,6 +306,7 @@ c             buoyancy with respect to surface      ((m/s)^2)
 c ustar     : surface friction velocity                 (m/s)
 c bo        : surface turbulent buoyancy forcing    (m^2/s^3)
 c bosol     : radiative buoyancy forcing            (m^2/s^3)
+c boplume   : haline buoyancy forcing               (m^2/s^3)
 c coriol    : Coriolis parameter                        (1/s)
       _RL     myTime
       integer myIter
@@ -302,6 +320,10 @@ c coriol    : Coriolis parameter                        (1/s)
       _RL bosol   (imt)
       _RL coriol  (imt)
       integer ikppkey, kkppkey
+#ifdef ALLOW_SALT_PLUME
+      _RL boplume (imt)
+      _RL SPDepth (imt)
+#endif /* ALLOW_SALT_PLUME */
 
 c  output
 c--------
@@ -327,7 +349,6 @@ c-------
 c wm, ws    : turbulent velocity scales         (m/s)
       _RL wm(imt), ws(imt)
       _RL worka(imt)
-
       _RL bvsq, vtsq, hekman, hmonob, hlimit, tempVar1, tempVar2
       integer i, kl
 
@@ -371,7 +392,6 @@ CADJ store worka = comlev1_kpp_k, key = kkppkey
      I       myTime, myIter, myThid )
 CADJ store worka = comlev1_kpp_k, key = kkppkey
 
-
          do i = 1, imt
 
 c     use caseA as temporary array
@@ -381,10 +401,26 @@ c     use caseA as temporary array
 c     compute bfsfc= Bo + radiative contribution down to hbf * hbl
 
             bfsfc(i) = bo(i) + bosol(i)*(1. - worka(i))
-            stable(i) = p5 + sign(p5,bfsfc(i))
-            sigma(i) = stable(i) + (1. - stable(i)) * epsilon
 
          end do
+#ifdef ALLOW_SALT_PLUME
+c     compute bfsfc = plume fraction at hbf * zgrid
+         do i = 1, imt
+            worka(i) = zgrid(kl)
+         enddo
+         call PLUMEFRAC(
+     I       imt, hbf,SPDepth,
+     U       worka,
+     I       myTime, myIter, myThid)
+         do i = 1, imt
+            bfsfc(i) = bfsfc(i) + boplume(i)*(1. - worka(i))
+         enddo
+#endif /* ALLOW_SALT_PLUME */
+
+         do i = 1, imt
+            stable(i) = p5 + sign(p5,bfsfc(i))
+            sigma(i) = stable(i) + (1. - stable(i)) * epsilon
+         enddo
 
 c-----------------------------------------------------------------------
 c     compute velocity scales at sigma, for hbl= caseA = -zgrid(kl)
@@ -478,6 +514,19 @@ CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       do i = 1, imt
          bfsfc(i)  = bo(i) + bosol(i) * (1. - worka(i))
       end do
+
+#ifdef ALLOW_SALT_PLUME
+      do i = 1, imt
+         worka(i) = hbl(i)
+      enddo
+      call PLUMEFRAC(
+     I       imt,minusone,SPDepth,
+     U       worka,
+     I       myTime, myIter, myThid )
+      do i = 1, imt
+         bfsfc(i) = bfsfc(i) + boplume(i) * (1. - worka(i))
+      enddo
+#endif /* ALLOW_SALT_PLUME */
 CADJ store bfsfc = comlev1_kpp
 CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
@@ -550,6 +599,19 @@ CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       do i = 1, imt
          bfsfc(i) = bo(i) + bosol(i) * (1. - worka(i))
       end do
+
+#ifdef ALLOW_SALT_PLUME
+      do i = 1, imt
+         worka(i) = hbl(i)
+      enddo
+      call PLUMEFRAC(
+     I       imt,minusone,SPDepth,
+     U       worka,
+     I       myTime, myIter, myThid )
+      do i = 1, imt
+         bfsfc(i) = bfsfc(i) + boplume(i) * (1. - worka(i))
+      enddo
+#endif /* ALLOW_SALT_PLUME */
 CADJ store bfsfc = comlev1_kpp
 CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 

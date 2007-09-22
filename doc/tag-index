@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.880 2007/09/21 21:37:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.881 2007/09/22 17:55:31 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kpp: added the salt plume scheme (ALLOW_SALT_PLUME) to KPP package
 o testreport: 
   - allow to test for Qnet & SeaIce monitor output; clean-up ALLOW_BULK_OFFLINE 
     monitor & update offline_exf_seaice exp. output.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.12 2007/05/03 21:33:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.13 2007/09/22 17:55:32 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -69,7 +69,12 @@ C     I, J - Loop counters
         df(i,j) = - _rA(i,j,bi,bj)
      &        *( KPPdiffKzS(i,j,k,bi,bj) + tmpFac*Kwz(i,j,k,bi,bj) )
      &        *KPPghat(i,j,km1,bi,bj)
-     &        *surfaceForcingS(i,j,bi,bj)
+     &        *( surfaceForcingS(i,j,bi,bj)
+#ifdef ALLOW_SALT_PLUME
+     &          + saltPlumeFlux(i,j,bi,bj)*recip_rhoConst
+     &          *(1.-KPPplumefrac(i,j,bi,bj))
+#endif /* ALLOW_SALT_PLUME */
+     &         )
        ENDDO
       ENDDO
 
@@ -80,7 +85,12 @@ C     I, J - Loop counters
         df(i,j) = - _rA(i,j,bi,bj)
      &        *KPPdiffKzS(i,j,k,bi,bj)
      &        *KPPghat(i,j,km1,bi,bj)
-     &        *surfaceForcingS(i,j,bi,bj)
+     &        *( surfaceForcingS(i,j,bi,bj)
+#ifdef ALLOW_SALT_PLUME
+     &          + saltPlumeFlux(i,j,bi,bj)*recip_rhoConst
+     &          *(1.-KPPplumefrac(i,j,bi,bj))
+#endif /* ALLOW_SALT_PLUME */
+     &         )
        ENDDO
       ENDDO
 

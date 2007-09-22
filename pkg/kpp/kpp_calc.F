@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.43 2007/06/04 18:47:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.44 2007/09/22 17:55:32 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -87,6 +87,7 @@ c     KPPdiffKzS  - KPP diffusion coefficient for salt and tracers (m^2/s)
 c     KPPghat     - Nonlocal transport coefficient                 (s/m^2)
 c     KPPhbl      - Boundary layer depth on "t-grid"                   (m)
 c     KPPfrac     - Fraction of short-wave flux penetrating mixing layer
+c     KPPplumefrac- Fraction of saltplume (flux) penetrating mixing layer
 
 c--   KPP_CALC computes vertical viscosity and diffusivity for region
 c     (-2:sNx+3,-2:sNy+3) as required by CALC_DIFFUSIVITY and requires
@@ -149,6 +150,7 @@ c     work?  (nx,ny)       - horizontal working arrays
 c     ustar  (nx,ny)       - surface friction velocity                  (m/s)
 c     bo     (nx,ny)       - surface turbulent buoyancy forcing     (m^2/s^3)
 c     bosol  (nx,ny)       - surface radiative buoyancy forcing     (m^2/s^3)
+c     boplume(nx,ny)       - surface haline buoyancy forcing        (m^2/s^3)
 c     shsq   (nx,ny,Nr)    - local velocity shear squared
 c                            at interfaces for ri_iwmix             (m^2/s^2)
 c     dVsq   (nx,ny,Nr)    - velocity shear re surface squared
@@ -175,6 +177,9 @@ c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
       _RL ustar ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+#ifdef ALLOW_SALT_PLUME
+      _RL boplume ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy              )
+#endif /* ALLOW_SALT_PLUME */
       _RL shsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
       _RL dVsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
       _RL dbloc ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
@@ -373,6 +378,7 @@ c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )                (m/s)
 c     bo    = - g * ( alpha*surfaceForcingT +
 c                     beta *surfaceForcingS ) / rho            (m^2/s^3)
 c     bosol = - g * alpha * Qsw * drF(1) / rho                 (m^2/s^3)
+c     boplume = g * (beta * saltPlumeFlux/rhoConst ) /rho      (m^2/s^3)
 c------------------------------------------------------------------------
 c     velocity shear
 c     --------------
@@ -389,8 +395,16 @@ c------------------------------------------------------------------------
       CALL KPP_FORCING_SURF(
      I     work2, surfaceForcingU, surfaceForcingV,
      I     surfaceForcingT, surfaceForcingS, surfaceForcingTice,
-     I     Qsw, ttalpha, ssbeta,
-     O     ustar, bo, bosol, dVsq,
+     I     Qsw, 
+#ifdef ALLOW_SALT_PLUME
+     I     saltPlumeFlux,
+#endif /* ALLOW_SALT_PLUME */
+     I     ttalpha, ssbeta,
+     O     ustar, bo, bosol, 
+#ifdef ALLOW_SALT_PLUME
+     O     boplume,
+#endif /* ALLOW_SALT_PLUME */
+     O     dVsq,
      I     ikppkey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
 
 CMLcph(
@@ -480,7 +494,11 @@ c     matching diffusivities at bottom of KPP PBL
       CALL KPPMIX (
      I       work1, shsq, dVsq, ustar
      I     , maskC(1-Olx,1-Oly,1,bi,bj)
-     I     , bo, bosol, dbloc, Ritop, work2
+     I     , bo, bosol
+#ifdef ALLOW_SALT_PLUME
+     I     , boplume,SaltPlumeDepth
+#endif /* ALLOW_SALT_PLUME */
+     I     , dbloc, Ritop, work2
      I     , KPPdiffKzS(1-Olx,1-Oly,1,bi,bj)
      I     , KPPdiffKzT(1-Olx,1-Oly,1,bi,bj)
      I     , ikppkey
@@ -564,6 +582,25 @@ C     the bottom of the mixing layer.
          ENDDO
       ENDDO
 
+#ifdef ALLOW_SALT_PLUME
+C     Compute fraction of saltplume (flux) penetrating to
+C     the bottom of the mixing layer.
+      DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+            worka(i,j) = KPPhbl(i,j,bi,bj)
+         ENDDO
+      ENDDO
+      CALL PLUMEFRAC(
+     I     (sNx+2*OLx)*(sNy+2*OLy), minusone,SaltPlumeDepth,
+     U     worka,
+     I     myTime, myIter, myThid )
+      DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+            KPPplumefrac(i,j,bi,bj) = worka(i,j)
+         ENDDO
+      ENDDO
+#endif /* ALLOW_SALT_PLUME */
+
       ENDIF
 
 #endif /* ALLOW_KPP */
@@ -611,6 +648,9 @@ c Local constants
          DO i=1-OLx,sNx+OLx
             KPPhbl (i,j,bi,bj) = 1.0
             KPPfrac(i,j,bi,bj) = 0.0
+#ifdef ALLOW_SALT_PLUME
+            KPPplumefrac(i,j,bi,bj) = 0.0
+#endif /* ALLOW_SALT_PLUME */
             DO k = 1,Nr
                KPPghat   (i,j,k,bi,bj) = 0.0
                KPPviscAz (i,j,k,bi,bj) = viscAr
