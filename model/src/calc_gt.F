@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.51 2006/06/18 23:22:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.52 2007/09/23 17:13:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -151,6 +151,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           gtNm(1-Olx,1-Oly,1,1,1,m2), theta,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
+     I           useGMRedi, useKPP,
      U           fVerT, gT,
      I           myTime, myIter, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
@@ -161,6 +162,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           diffKhT, diffK4T, KappaRT, gtNm1, theta,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
+     I           useGMRedi, useKPP,
      U           fVerT, gT,
      I           myTime, myIter, myThid )
 #endif
