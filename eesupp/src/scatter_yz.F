@@ -1,4 +1,7 @@
-#include "CPP_OPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_yz.F,v 1.2 2007/09/23 22:52:50 jmc Exp $
+C $Name:  $
+
+#include "CPP_EEOPTIONS.h"
 
       SUBROUTINE SCATTER_YZ( global, local, myThid )
 C     Scatter elements of a y-z array from mpi process 0 to all processes.
@@ -8,7 +11,7 @@ C     Scatter elements of a y-z array from mpi process 0 to all processes.
 #include "EESUPPORT.h"
 C     mythid - thread number for this instance of the routine.
 C     global,local - working arrays used to transfer 2-D fields
-      INTEGER mythid 
+      INTEGER mythid
       Real*8  global(Ny)
       _RL     local(1-OLy:sNy+OLy,nSx,nSy)
 

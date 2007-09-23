@@ -1,4 +1,7 @@
-#include "CPP_OPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/scatter_vector.F,v 1.4 2007/09/23 22:52:50 jmc Exp $
+C $Name:  $
+
+#include "CPP_EEOPTIONS.h"
 
       SUBROUTINE SCATTER_VECTOR( length, global, local, myThid )
 C     Scatter elements of a 2-D array from mpi process 0 to all processes.
@@ -8,7 +11,7 @@ C     Scatter elements of a 2-D array from mpi process 0 to all processes.
 #include "EESUPPORT.h"
 C     mythid - thread number for this instance of the routine.
 C     global,local - working arrays used to transfer 2-D fields
-      INTEGER mythid 
+      INTEGER mythid
       INTEGER length
       Real*8  global(length*nPx*nPy)
       _RL     local(length)
