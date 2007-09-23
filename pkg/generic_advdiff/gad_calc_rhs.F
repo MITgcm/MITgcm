@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.48 2007/09/18 15:27:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.49 2007/09/23 17:12:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
-#ifdef ALLOW_PTRACERS
-# include "PTRACERS_OPTIONS.h"
-#endif
 
 CBOP
 C !ROUTINE: GAD_CALC_RHS
@@ -17,6 +14,7 @@ C !INTERFACE: ==========================================================
      I           diffKh, diffK4, KappaR, TracerN, TracAB,
      I           tracerIdentity, advectionScheme, vertAdvecScheme,
      I           calcAdvection, implicitAdvection, applyAB_onTracer,
+     I           trUseGMRedi, trUseKPP,
      U           fVerT, gTracer,
      I           myTime, myIter, myThid )
 
@@ -47,10 +45,6 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "SURFACE.h"
 #include "GAD.h"
-#ifdef ALLOW_PTRACERS
-# include "PTRACERS_SIZE.h"
-# include "PTRACERS.h"
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -82,12 +76,10 @@ C tracerIdentity   :: tracer identifier (required for KPP,GM)
 C advectionScheme  :: advection scheme to use (Horizontal plane)
 C vertAdvecScheme  :: advection scheme to use (Vertical direction)
 C calcAdvection    :: =False if Advec computed with multiDim scheme
-C--- needs to pass those 2 flags as argument
-C trUseGMRedi      :: true if this tracer uses GM-Redi
-C trUseKPP         :: true if this tracer uses KPP
-C---
 C implicitAdvection:: =True if vertical Advec computed implicitly
 C applyAB_onTracer :: apply Adams-Bashforth on Tracer (rather than on gTr)
+C trUseGMRedi      :: true if this tracer uses GM-Redi
+C trUseKPP         :: true if this tracer uses KPP
 C myTime           :: current time
 C myIter           :: iteration number
 C myThid           :: thread number
@@ -109,8 +101,9 @@ C myThid           :: thread number
       _RL TracAB (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER tracerIdentity
       INTEGER advectionScheme, vertAdvecScheme
-      LOGICAL calcAdvection, trUseGMRedi, trUseKPP
+      LOGICAL calcAdvection
       LOGICAL implicitAdvection, applyAB_onTracer
+      LOGICAL trUseGMRedi, trUseKPP
       _RL     myTime
       INTEGER myIter, myThid
 
@@ -149,18 +142,6 @@ CEOP
 C--   only the kUp part of fverT is set in this subroutine
 C--   the kDown is still required
       fVerT(1,1,kDown) = fVerT(1,1,kDown)
-#endif
-
-      trUseGMRedi = useGMRedi
-      trUseKPP    = useKPP
-#ifdef ALLOW_PTRACERS
-      IF ( usePTRACERS ) THEN
-        i = MAX( 1, tracerIdentity - GAD_TR1 + 1 )
-        trUseGMRedi = useGMRedi .AND. ( tracerIdentity.LT.GAD_TR1
-     &                                  .OR. PTRACERS_useGMRedi(i) )
-        trUseKPP    = useKPP    .AND. ( tracerIdentity.LT.GAD_TR1
-     &                                  .OR. PTRACERS_useKPP(i)    )
-      ENDIF
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
