@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeintro_msg.F,v 1.10 2006/03/03 18:36:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeintro_msg.F,v 1.11 2007/09/23 22:48:04 jmc Exp $
+C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -28,7 +29,7 @@ CEOP
       WRITE(msgBuf,'(A)') '                '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &     '// ======================================================'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
@@ -38,7 +39,7 @@ CEOP
       WRITE(msgBuf,'(A)') '//                      ========='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &     '// ======================================================'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
@@ -48,9 +49,9 @@ CEOP
       WRITE(msgBuf,'(A)') '   '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
-      
+
 #ifdef THISVER
-      WRITE(msgBuf,'(2A)') '// MITgcmUV version:  ', 
+      WRITE(msgBuf,'(2A)') '// MITgcmUV version:  ',
      &     THISVER
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
@@ -68,7 +69,7 @@ CEOP
      &     SQUEEZE_RIGHT , 1)
 #endif
 #ifdef THISDATE
-      WRITE(msgBuf,'(2A)') '// Build date:        ', 
+      WRITE(msgBuf,'(2A)') '// Build date:        ',
      &     THISDATE
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
