@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/plumefrac.F,v 1.1 2007/09/22 03:11:03 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/plumefrac.F,v 1.2 2007/09/24 01:17:26 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,12 +55,13 @@ C               (fact*plumek) is negative distance (m) from surface
 C     plumek :: on output: saltplume contribution fraction
       _RL     plumek(imax), SPDepth(imax)
 
+#ifdef ALLOW_SALT_PLUME
 C     !LOCAL VARIABLES:
 C     === Local variables ===
       _RL facz
       INTEGER i
-      _RL     tinee
-      parameter( tinee = 1.e-1)
+      _RL        one          , tinee
+      parameter( one = 1. _d 0, tinee = 1.e-1)
 #ifdef ALLOW_CAL
       LOGICAL first, changed
       INTEGER count0, count1
@@ -87,12 +88,13 @@ CML)
       DO i = 1,imax
          facz = abs(fact*plumek(i))
          IF (SPDepth(i).GT.facz .AND. SPDepth(i).GT.tinee) THEN
-           !plumek(i) = min(plumedk(i),SPDepth(i)+facz)/SPDepth(i)
-           plumek(i) = 1.0 - min(1.0,facz/abs(SPDepth(i)))
+           plumek(i) = one - min(one,facz/abs(SPDepth(i)))
          ELSE
            plumek(i) = 0.
          ENDIF
       ENDDO
+
+#endif /* ALLOW_SALT_PLUME */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.48 2007/09/22 03:11:02 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.49 2007/09/24 01:17:25 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -522,7 +522,7 @@ C Penetrating saltplume fraction:
            gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
      &          +saltPlume*(plumekb(1)*maskC(i,j,klev,bi,bj)
      &                     -plumekb(2)*maskC(i,j,kp1, bi,bj))
-     &          *horiVertRatio*recip_rhoConst
+     &          *mass2rUnit
      &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
           ENDIF
         ENDDO
