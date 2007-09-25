@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.25 2007/09/19 08:57:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.26 2007/09/25 19:17:32 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -83,6 +83,13 @@ C     strain rate tensor
       _RL SINWAT, COSWAT
       _RL TEMPVAR
       _RL UERR
+      INTEGER tLev
+#ifdef SEAICE_VECTORIZE_LSR
+      PARAMETER ( tLev = 3 )
+#else
+      PARAMETER ( tLev = 1 )
+#endif
+
 
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
@@ -424,9 +431,10 @@ C NOW SET U(3)=U(1)
           ELSE
            AA3=ZERO
           END IF
-          URT(I,J)=FXY(I,J,bi,bj)+AA3
-     &          +UVRT1(I,J,bi,bj)*uIce(I,J-1,1,bi,bj)
-     &          +UVRT2(I,J,bi,bj)*uIce(I,J+1,1,bi,bj)
+          URT(I,J)=FXY(I,J,bi,bj)
+     &         + AA3
+     &         + UVRT1(I,J,bi,bj)*uIce(I,J-1,tLev,bi,bj)
+     &         + UVRT2(I,J,bi,bj)*uIce(I,J+1,tLev,bi,bj)
           URT(I,J)=URT(I,J)* seaiceMaskU(I,J,bi,bj)
          END DO
 
@@ -434,12 +442,25 @@ C NOW SET U(3)=U(1)
           CUU(I,J)=CU(I,J,bi,bj)
          END DO
          URT(1,J)=URT(1,J)/BU(1,J,bi,bj)
+#ifdef SEAICE_VECTORIZE_LSR
+        END DO
+C     start a new loop with reversed order to support automatic vectorization
+        DO I=2,sNx
+         IM=I-1
+         DO J=1,sNy
+#else /* do not SEAICE_VECTORIZE_LSR */
          DO I=2,sNx
           IM=I-1
+#endif /* SEAICE_VECTORIZE_LSR */
           CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
           URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
      &         /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
          END DO
+#ifdef SEAICE_VECTORIZE_LSR
+        END DO
+C     go back to original order
+        DO J=1,sNy
+#endif /* SEAICE_VECTORIZE_LSR */
          DO I=1,sNx-1
           J1=sNx-I
           J2=J1+1
@@ -651,10 +672,9 @@ CADJ LOOP = iteration vice
 cph(
       IF ( phexit .EQ. -1 ) THEN
 cph)
-C NOW SET U(3)=U(1)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-
+C NOW SET V(3)=V(1)
         DO J=1,sNy
          DO I=1,sNx
           vIce(I,J,3,bi,bj)=vIce(I,J,1,bi,bj) 
@@ -663,37 +683,37 @@ C NOW SET U(3)=U(1)
 
         DO I=1,sNx
          DO J=1,sNy
-           IF(J.EQ.1) THEN
-            AA2= etaPlusZeta(I,J-1,bi,bj)
-     &           * _recip_dyF(I,J-1,bi,bj) * _recip_dyC(I,J,bi,bj)
-            AA3=( AA2
-     &           + zetaMinusEta(I,J-1,bi,bj) * tanPhiAtU(I,J-1,bi,bj)
-     &           * _recip_dyC(I,J,bi,bj)*recip_rSphere
-     &           + TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
-     &           * _tanPhiAtV(I,J,bi,bj) 
-     &           *1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
-     &           ) * vIce(I,J-1,1,bi,bj) * seaiceMaskV(I,J,bi,bj)
-           ELSE IF(J.EQ.sNy) THEN
-            AA1= etaPlusZeta(I,J  ,bi,bj)
-     &           *_recip_dyF(I,J  ,bi,bj) * _recip_dyC(I,J,bi,bj)
-            AA3=( AA1
-     &           - zetaMinusEta(I,J  ,bi,bj) * tanPhiAtU(I,J  ,bi,bj)
-     &           * _recip_dyC(I,J,bi,bj)*recip_rSphere
-     &           - TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
-     &           * _tanPhiAtV(I,J,bi,bj) 
-     &           *1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
-     &           ) * vIce(I,J+1,1,bi,bj) * seaiceMaskV(I,J,bi,bj)
-           ELSE
-            AA3=ZERO
-           END IF
-
+          IF(J.EQ.1) THEN
+           AA2= etaPlusZeta(I,J-1,bi,bj)
+     &          * _recip_dyF(I,J-1,bi,bj) * _recip_dyC(I,J,bi,bj)
+           AA3=( AA2
+     &          + zetaMinusEta(I,J-1,bi,bj) * tanPhiAtU(I,J-1,bi,bj)
+     &          * _recip_dyC(I,J,bi,bj)*recip_rSphere
+     &          + TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
+     &          * _tanPhiAtV(I,J,bi,bj) 
+     &          *1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
+     &          ) * vIce(I,J-1,1,bi,bj) * seaiceMaskV(I,J,bi,bj)
+          ELSE IF(J.EQ.sNy) THEN
+           AA1= etaPlusZeta(I,J  ,bi,bj)
+     &          *_recip_dyF(I,J  ,bi,bj) * _recip_dyC(I,J,bi,bj)
+           AA3=( AA1
+     &          - zetaMinusEta(I,J  ,bi,bj) * tanPhiAtU(I,J  ,bi,bj)
+     &          * _recip_dyC(I,J,bi,bj)*recip_rSphere
+     &          - TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
+     &          * _tanPhiAtV(I,J,bi,bj) 
+     &          *1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
+     &          ) * vIce(I,J+1,1,bi,bj) * seaiceMaskV(I,J,bi,bj)
+          ELSE
+           AA3=ZERO
+          END IF
+          
           VRT(I,J)=FXY(I,J,bi,bj)
-     &          + AA3
-     &          + UVRT1(I,J,bi,bj)*vIce(I-1,J,1,bi,bj)
-     &          + UVRT2(I,J,bi,bj)*vIce(I+1,J,1,bi,bj)
+     &         + AA3
+     &         + UVRT1(I,J,bi,bj)*vIce(I-1,J,tLev,bi,bj)
+     &         + UVRT2(I,J,bi,bj)*vIce(I+1,J,tLev,bi,bj)
           VRT(I,J)=VRT(I,J)* seaiceMaskV(I,J,bi,bj)
          END DO
-
+         
          DO J=1,sNy
           CVV(I,J)=CV(I,J,bi,bj)
          END DO
