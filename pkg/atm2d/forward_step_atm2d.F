@@ -158,10 +158,10 @@ C      PRINT *,'Top of ncall_atm Loop'
 #ifdef OCEAN_3D
         CALL ATM2OCN_MAIN(iloop, na, monid, myIter, myThid)
         CALL SUM_OCN_FLUXES(myThid)
-        CALL PASS_SEAICE_FLUXES(myThid)
+        CALL PASS_THSICE_FLUXES(myThid)
         CALL THSICE_IMPL_TEMP(netSW, sFlx, dTsurf, 1,1,
      &                        myTime, myIter, myThid)
-        CALL SUM_SEAICE_OUT(myThid)
+        CALL SUM_THSICE_OUT(myThid)
         CALL CALC_ZONAL_MEANS(.FALSE.,myThid) !just mean Tsrf recalculated
 #endif
       ENDDO  ! ncall_atm loop
