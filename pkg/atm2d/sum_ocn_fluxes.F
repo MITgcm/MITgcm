@@ -35,15 +35,21 @@ C     LOCAL VARIABLES:
       DO j=1, sNy
         DO i=1,sNx
         
-          IF (maskC(i,j,1,1,1).EQ.1.) THEN
+          IF (maskC(i,j,1,1,1) .EQ. 1.) THEN
 
 C         Ad hoc phase out wind stress if sufficient ice coverage
-          IF (iceMask(i,j,1,1).GT.windice_thres) THEN
+C         similar idea as stressReduction used in thsice_main
+          IF (iceMask(i,j,1,1) .GT. windice_thres) THEN
 
-           fu_2D(i,j)= fu_2D(i,j)*(1. _d 0-iceMask(i,j,1,1))
-     &                 /(1.d0-windice_thres)
-           fv_2D(i,j)= fv_2D(i,j)*(1. _d 0-iceMask(i,j,1,1))
-     &                 /(1.d0-windice_thres)
+           fu_2D(i,j)= fu_2D(i,j) * (1. _d 0 - 
+     &          (iceMask(i,j,1,1) + iceMask(i-1,j,1,1)) * 0.5 _d 0 )
+     &                 / (1. _d 0 - windice_thres)
+           fv_2D(i,j)= fv_2D(i,j) * (1. _d 0 -
+     &          (iceMask(i,j,1,1) + iceMask(i,j-1,1,1)) * 0.5 _d 0 )
+     &                 / (1. _d 0 - windice_thres)
+           wspeed_2D(i,j)= wspeed_2D(i,j) 
+     &                    * (1. _d 0 - iceMask(i,j,1,1))
+     &                    / (1. _d 0 - windice_thres)
           ENDIF
 
           sum_runoff(i,j)= sum_runoff(i,j) + runoff_2D(i,j)
