@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.4 2007/07/20 10:15:05 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.5 2007/09/25 19:28:19 mlosch Exp $
 #
 # for cross compiling on sx8.awi.de
 # uname -a: 
@@ -8,7 +8,7 @@
 
 # nec use
 CPP='/lib/cpp -traditional -P'
-DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_NEC_SX -DWORDLENGTH=1 -UHAVE_SIGREG'
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_NEC_SX -DWORDLENGTH=1 -UHAVE_SIGREG -DSEAICE_VECTORIZE_LSR'
 FC='sxmpif90'
 CC='sxcc -sx8r'
 
