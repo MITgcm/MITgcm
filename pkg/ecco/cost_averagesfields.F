@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.17 2007/09/26 20:49:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.18 2007/09/26 20:51:46 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -352,7 +352,13 @@ cph: these are annual means
      &     sum1year, yearrec, 1, mythid )
 #endif
 
-
+#ifdef ALLOW_BP_COST_CONTRIBUTION
+      call cost_averagesgeneric(
+     &     bpbarfile, 
+     &     bpbar, phiHydLow, xx_bpbar_mean_dummy,
+     &     first, last, startofmonth, endofmonth, inmonth,
+     &     sum1mon, monrec, 1, mythid )
+#endif
 
 #ifdef ALLOW_SEAICE
       if (useSEAICE) then
