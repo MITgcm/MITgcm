@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.2 2007/06/22 20:02:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.3 2007/09/26 04:38:20 heimbach Exp $
 
 C     /==========================================================\
 C     | SEAICE_OPTIONS.h                                         |
@@ -78,11 +78,15 @@ C     (not thoroughly) test version on a C-grid
 C--   Only for the C-grid version it is possible to enable EVP code by
 C     defining the following flag
 #ifdef SEAICE_CGRID
-#define SEAICE_ALLOW_EVP
+#undef SEAICE_ALLOW_EVP
 #endif /* SEAICE_CGRID */
 
 C--   Seaice flooding
 #define ALLOW_SEAICE_FLOODING
+
+C--   By default sea ice is fresh.  Set following flag for salty ice.
+#define SEAICE_SALINITY
+
 
 #endif /* SEAICE_OPTIONS_H */
 

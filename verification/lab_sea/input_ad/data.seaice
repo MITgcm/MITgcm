@@ -6,7 +6,7 @@
       SEAICE_deltaTdyn   = 3600.,
       SEAICEuseDYNAMICS  =.TRUE.,
       LSR_ERROR          = 1.E-6,
-      SEAICE_deltaTevp   = 60,
+###      SEAICE_deltaTevp   = 60,
       SEAICE_EPS         = 1.E-8,
       SEAICEadvSnow      = .true.
       SEAICEuseFlooding  = .true.
