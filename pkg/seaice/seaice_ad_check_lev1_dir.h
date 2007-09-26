@@ -1,6 +1,6 @@
-#ifdef EXACT_CONSERV
+# ifdef EXACT_CONSERV
 CADJ STORE pmepr         = comlev1, key = ikey_dynamics
-#endif
+# endif
 CADJ STORE uvel          = comlev1, key = ikey_dynamics
 CADJ STORE vvel          = comlev1, key = ikey_dynamics
 CADJ STORE salt          = comlev1, key = ikey_dynamics
@@ -31,6 +31,9 @@ CADJ STORE seaice_sigma2  = comlev1, key = ikey_dynamics
 CADJ STORE seaice_sigma12 = comlev1, key = ikey_dynamics
 #  endif
 # endif
-#ifdef ALLOW_COST_ICE
+# ifdef SEAICE_SALINITY
+CADJ STORE hsalt          = comlev1, key = ikey_dynamics
+# endif
+# ifdef ALLOW_COST_ICE
 CADJ STORE objf_ice      = comlev1, key = ikey_dynamics
-#endif
+# endif

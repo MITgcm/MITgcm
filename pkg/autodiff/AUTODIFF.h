@@ -13,7 +13,7 @@
       PARAMETER (NEXF2  = 18)
       PARAMETER (NCTRL1 = 18)
       PARAMETER (NOB = 18)
-      PARAMETER (NSI = 24)	
+      PARAMETER (NSI = 25)	
       _RL StoreDynVars3D
      &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,NDV3D)
       _RL StoreDynVars2D

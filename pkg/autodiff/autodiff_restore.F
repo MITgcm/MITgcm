@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.2 2007/06/27 22:14:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.3 2007/09/26 04:12:40 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -445,6 +445,9 @@ C-      2D arrays
           seaice_sigma12(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,24)
 #  endif /* SEAICE_ALLOW_EVP */
 # endif /* SEAICE_ALLOW_DYNAMICS */
+# ifdef SEAICE_SALINITY
+          HSALT(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,25)
+# endif
          enddo
         enddo
        enddo

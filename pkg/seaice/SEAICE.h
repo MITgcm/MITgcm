@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.34 2007/09/18 14:43:26 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.35 2007/09/26 04:12:40 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -80,7 +80,7 @@ CEOP
       _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
 #ifdef SEAICE_SALINITY
-      COMMON/SEAICE_SALINITY/HSALT
+      COMMON/SEAICE_SALINITY_R/HSALT
       _RL HSALT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.31 2007/09/22 03:11:03 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.32 2007/09/26 04:12:40 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -45,7 +45,7 @@ C     constants
       _RL QI, recip_QI, QS, recip_QS
 C     auxillary variables
       _RL availHeat, hEffOld, snowEnergy, snowAsIce
-      _RL growthHEFF, growthNeg, saltFluxAdjust
+      _RL growthHEFF, growthNeg
 #ifdef ALLOW_SEAICE_FLOODING
       _RL hDraft, hFlood
 #endif /* ALLOW_SEAICE_FLOODING */
@@ -53,6 +53,9 @@ C     auxillary variables
       _RL GHEFF      ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
 C     RESID_HEAT is residual heat above freezing in equivalent m of ice
       _RL RESID_HEAT ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
+#ifdef SEAICE_SALINITY
+      _RL saltFluxAdjust( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
+#endif
 
 C     FICE  - thermodynamic ice growth rate over sea ice in W/m^2
 C             >0 causes ice growth, <0 causes snow and sea ice melt
@@ -162,6 +165,9 @@ CADJ &                         key = iicekey, byte = isbyte
           frWtrIce(I,J)   = 0.0 _d 0
           frWtrAtm(I,J)   = 0.0 _d 0
           RESID_HEAT(I,J) = 0.0 _d 0
+#ifdef SEAICE_SALINITY
+          saltFluxAdjust  = 0.0 _d 0
+#endif
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -535,6 +541,10 @@ cph)
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
 CADJ &                        key = iicekey, byte = isbyte
+# ifdef SEAICE_SALINITY
+CADJ STORE hsalt(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
+# endif
 #endif
         DO J=1,sNy
          DO I=1,sNx
@@ -563,12 +573,24 @@ C NOW GET FRESH WATER FLUX
 C COMPUTE SURFACE SALT FLUX AND ADJUST ICE SALINITY
 #ifdef SEAICE_SALINITY
 C set HSALT = 0 if HSALT < 0 and compute salt to remove from ocean
-          saltFluxAdjust = 0.0
           IF ( HSALT(I,J,bi,bj) .LT. 0.0 ) THEN
-             saltFluxAdjust = - HEFFM(I,J,bi,bj) *
+             saltFluxAdjust(I,J) = - HEFFM(I,J,bi,bj) *
      &            HSALT(I,J,bi,bj) / SEAICE_deltaTtherm
              HSALT(I,J,bi,bj) = 0.0
           ENDIF
+
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef SEAICE_SALINITY
+CADJ STORE hsalt(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
+# endif
+#endif
+        DO J=1,sNy
+         DO I=1,sNx
+
 C saltWtrIce > 0 : m of sea ice that is created
           IF ( saltWtrIce(I,J) .GE. 0.0 ) THEN
              saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
@@ -589,7 +611,8 @@ C saltWtrIce < 0 : m of sea ice that is melted
 C update HSALT based on surface saltFlux
           HSALT(I,J,bi,bj) = HSALT(I,J,bi,bj) +
      &         saltFlux(I,J,bi,bj) * SEAICE_deltaTtherm
-          saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) + saltFluxAdjust
+          saltFlux(I,J,bi,bj) = 
+     &         saltFlux(I,J,bi,bj) + saltFluxAdjust(I,J)
 C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
           IF ( HEFF(I,J,1,bi,bj) .EQ. 0.0 ) THEN
              saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) -
