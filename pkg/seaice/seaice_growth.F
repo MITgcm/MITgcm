@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.32 2007/09/26 04:12:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.33 2007/09/26 04:54:49 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -166,7 +166,7 @@ CADJ &                         key = iicekey, byte = isbyte
           frWtrAtm(I,J)   = 0.0 _d 0
           RESID_HEAT(I,J) = 0.0 _d 0
 #ifdef SEAICE_SALINITY
-          saltFluxAdjust  = 0.0 _d 0
+          saltFluxAdjust(I,J) = 0.0 _d 0
 #endif
          ENDDO
         ENDDO
@@ -608,7 +608,7 @@ C saltWtrIce < 0 : m of sea ice that is melted
      &            HSALT(I,J,bi,bj)/(HEFF(I,J,1,bi,bj)-saltWtrIce(I,J))/
      &            SEAICE_deltaTtherm
           ENDIF
-C update HSALT based on surface saltFlux
+C update HSALT based on surface altFlux
           HSALT(I,J,bi,bj) = HSALT(I,J,bi,bj) +
      &         saltFlux(I,J,bi,bj) * SEAICE_deltaTtherm
           saltFlux(I,J,bi,bj) = 
