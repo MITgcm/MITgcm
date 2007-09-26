@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.16 2007/09/20 22:01:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.17 2007/09/26 20:49:18 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -85,7 +85,6 @@ c     == local variables ==
       integer ilps, ils,ilt
 
       character*(128) fnamepsbar
-      character*(128) fnamebpbar
       character*(128) fnametbar
       character*(128) fnamesbar
       character*(128) fnameubar
@@ -96,6 +95,9 @@ c     == local variables ==
       character*(128) fnamehfluxbar
       character*(128) fnamesfluxbar
 
+cph(
+      integer locdayrec
+cph)
 c     == external functions ==
 
       integer  ilnblnk
@@ -133,14 +135,6 @@ c--   Get the time flags and record numbers for the time averaging.
      &     psbar, etan, xx_psbar_mean_dummy,
      &     first, last, startofday, endofday, inday,
      &     sum1day, dayrec, 1, mythid )
-#endif
-
-#ifdef ALLOW_BP_COST_CONTRIBUTION
-      call cost_averagesgeneric(
-     &     bpbarfile, 
-     &     bpbar, phiHydLow, xx_bpbar_mean_dummy,
-     &     first, last, startofmonth, endofmonth, inmonth,
-     &     sum1mon, monrec, 1, mythid )
 #endif
 
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \
@@ -381,26 +375,33 @@ cph      CALL profiles_inloop(mytime,mythid)
 c--   Currently hard-coded Florida Strait transport for 1x1 deg.
 c--   ECCO-GODAE version 1,2,3
 c--   Next, do the averages for velocitty.
+cph   For some funny reason cal only increments dayrec at the end
+cph   of the day, i.e. for endofday.EQ.T
+cph   Should fix/change this at some point.
+cph   In the mean time increment ad hoc during day
+       locdayrec = dayrec+1
        do bj = jtlo,jthi
         do bi = itlo,ithi
          if (first.or.startofday) 
-     &          transpbar(dayrec,bi,bj) = 0. _d 0
+     &          transpbar(locdayrec,bi,bj) = 0. _d 0
          do k = 1,nr
           do j = jmin,jmax
            jg = myYGlobalLo-1+(bj-1)*sNy+j
            do i =  imin,imax
             ig = myXGlobalLo-1+(bi-1)*sNx+i
             if ( jg.EQ.106 .AND. ig.GE.280 .AND. ig.LE.285 ) then
-               transpbar(dayrec,bi,bj) = transpbar(dayrec,bi,bj)
+               transpbar(locdayrec,bi,bj) = transpbar(locdayrec,bi,bj)
      &              +vVel(i,j,k,bi,bj)
      &              *_dxG(i,j,bi,bj)*drF(k)*_hFacS(i,j,k,bi,bj)
             endif
            enddo
           enddo
          enddo
-         if (last .or. endofday)
-     &        transpbar(dayrec,bi,bj) = transpbar(dayrec,bi,bj)
-     &        /float(sum1day)
+         if (last .or. endofday) then
+            locdayrec = dayrec
+            transpbar(locdayrec,bi,bj) =
+     &        transpbar(locdayrec,bi,bj)/float(sum1day)
+         endif
         enddo
        enddo      
 #endif
