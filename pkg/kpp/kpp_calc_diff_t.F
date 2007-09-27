@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_diff_t.F,v 1.2 2007/04/23 20:46:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_diff_t.F,v 1.3 2007/09/27 14:42:59 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
 
       SUBROUTINE KPP_CALC_DIFF_T( 
      I        bi,bj,iMin,iMax,jMin,jMax,kArg,kSize,
-     U        KappaRT,
+     O        KappaRT,
      I        myThid)
 
 C     /==========================================================\
 C     | SUBROUTINE KPP_CALC_DIFF_T                               |
-C     | o Add contrubution to net diffusivity from KPP mixing    |
+C     | o Return contribution to net diffusivity from KPP mixing |
 C     \==========================================================/
       IMPLICIT NONE
 
@@ -44,7 +44,7 @@ C     == Local variables ==
 C     i,j,k     :: Loop counters
       INTEGER i,j,k
 
-C--   Add Vertical diffusivity contribution from KPP
+C--   Set vertical diffusivity contribution from KPP
       IF ( kArg .EQ. 0 ) THEN
 C-    do all levels :
        DO k=1,MIN(Nr,kSize)

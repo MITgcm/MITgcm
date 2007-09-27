@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_calc_diff.F,v 1.3 2007/04/23 20:46:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_calc_diff.F,v 1.4 2007/09/27 14:42:59 dimitri Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -84,19 +84,20 @@ C Loop over tracers
         ENDDO
        ENDIF
 
-#ifdef ALLOW_GMREDI
-        IF ( PTRACERS_useGMRedi(iTr) ) THEN 
-         CALL GMREDI_CALC_DIFF(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,1,
-     U        KappaRtr(1-Olx,1-Oly,iTr),
+#ifdef ALLOW_KPP
+        IF ( PTRACERS_useKPP(iTr) ) THEN
+C--   Set vertical diffusivity contribution from KPP
+         CALL KPP_CALC_DIFF_S(
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
+     O        KappaRtr(1-Olx,1-Oly,iTr),
      I        myThid)
         ENDIF
 #endif
 
-#ifdef ALLOW_KPP
-        IF ( PTRACERS_useKPP(iTr) ) THEN
-         CALL KPP_CALC_DIFF_S(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
+#ifdef ALLOW_GMREDI
+        IF ( PTRACERS_useGMRedi(iTr) ) THEN 
+         CALL GMREDI_CALC_DIFF(
+     I        bi,bj,iMin,iMax,jMin,jMax,k,1,
      U        KappaRtr(1-Olx,1-Oly,iTr),
      I        myThid)
         ENDIF

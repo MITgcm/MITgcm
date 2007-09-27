@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.11 2007/09/04 16:49:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.12 2007/09/27 14:42:59 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -150,15 +150,16 @@ C--   Add physical pacakge contributions:
 
 #ifdef ALLOW_KPP
       IF (trUseKPP) THEN
+C--   Set vertical diffusivity contribution from KPP
        IF (trIdentity.EQ.GAD_TEMPERATURE) THEN
          CALL KPP_CALC_DIFF_T(
      I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
-     U        KappaRTr,
+     O        KappaRTr,
      I        myThid)
        ELSE
          CALL KPP_CALC_DIFF_S(
      I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
-     U        KappaRTr,
+     O        KappaRTr,
      I        myThid)
        ENDIF
 #if (defined ALLOW_PTRACERS && ! (defined ALLOW_3D_DIFFKR || \

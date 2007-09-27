@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.882 2007/09/27 09:42:27 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.883 2007/09/27 14:42:59 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -307,7 +307,9 @@ o in FFIELDS.h:
      ATMOSPHERIC_LOADING is #define).
 o pkg/kpp: replaced _KPP_RL with _RL
 o bug fixes for vertical diffusivity computations when both KPP and
-    3D diffusivity arrays are used.
+    3D diffusivity arrays are used; pkg/kpp/kpp_calc_diff_s & _t.F
+    are no longer updating the vertical diffusivity array
+    (passed as argument) but are (re-) setting those arrays.
 o pkg/seaice: fix bug in evp solver, while doing that
   - change (improve?) discretization of stress computations for both
     cgrid-lsr and evp solver
