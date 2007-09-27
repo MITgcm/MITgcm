@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.7 2007/06/08 14:41:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.8 2007/09/27 06:48:20 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,7 +55,7 @@ C     i,j,bi,bj - Loop counters
 C     e11, e12, e22 - components of strain rate tensor
 C     ecm2          - inverse of square of eccentricity of yield curve
       INTEGER i, j, bi, bj
-      _RL ECM2, e12C, deltaC, deltaCreg, pressC, etaMax
+      _RL ECM2, e12C, deltaC, deltaCreg
 
 C--   FIRST SET UP BASIC CONSTANTS
       ecm2=0. _d 0
