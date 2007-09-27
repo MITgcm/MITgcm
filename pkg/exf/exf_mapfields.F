@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.20 2007/05/14 19:34:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.21 2007/09/27 09:41:13 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -94,28 +94,37 @@ c     == end of interface ==
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+c     Heat flux.
           do j = jmin,jmax
             do i = imin,imax
-c            Heat flux.
              qnet(i,j,bi,bj) = exf_outscal_hflux*hflux(i,j,bi,bj)
-             if ( hfluxfile .EQ. ' ' )
-     &            qnet(i,j,bi,bj) = qnet(i,j,bi,bj) -
+            enddo
+          enddo
+          if ( hfluxfile .EQ. ' ' ) then
+           do j = jmin,jmax
+            do i = imin,imax
+                  qnet(i,j,bi,bj) = qnet(i,j,bi,bj) -
      &            exf_outscal_hflux * ( hflux_exfremo_intercept +
      &            hflux_exfremo_slope*(mytime-starttime) )
             enddo
-          enddo
+           enddo
+          endif
 
-
+c     Salt flux.
           do j = jmin,jmax
             do i = imin,imax
-c            Salt flux.
              empmr(i,j,bi,bj)= exf_outscal_sflux*sflux(i,j,bi,bj)
-             if ( sfluxfile .EQ. ' ' )
-     &            empmr(i,j,bi,bj) = empmr(i,j,bi,bj) -
+            enddo
+          enddo
+          if ( sfluxfile .EQ. ' ' ) then
+           do j = jmin,jmax
+            do i = imin,imax
+                 empmr(i,j,bi,bj) = empmr(i,j,bi,bj) -
      &            exf_outscal_sflux * ( sflux_exfremo_intercept +
      &            sflux_exfremo_slope*(mytime-starttime) )
             enddo
-          enddo
+           enddo
+          endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE ustress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte

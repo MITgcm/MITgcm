@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_radiation.F,v 1.3 2007/04/16 23:27:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_radiation.F,v 1.4 2007/09/27 09:41:13 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -49,12 +49,7 @@ c     == end of interface ==
 
 c--   Use atmospheric state to compute surface fluxes.
 
-c     Loop over tiles.
-      do bj = mybylo(mythid),mybyhi(mythid)
-       do bi = mybxlo(mythid),mybxhi(mythid)
-        k = 1
-        do j = 1,sny
-         do i = 1,snx
+      k = 1
 
 #ifdef ALLOW_DOWNWARD_RADIATION
 c--   Compute net from downward and downward from net longwave and
@@ -63,30 +58,64 @@ c     lwflux = Stefan-Boltzmann constant * emissivity * SST - lwdown
 c     swflux = - ( 1 - albedo ) * swdown
 
 #ifdef ALLOW_ATM_TEMP
-          if ( lwfluxfile .EQ. ' ' .AND. lwdownfile .NE. ' ' )
-     &         lwflux(i,j,bi,bj) = 
-     &         ocean_emissivity*stefanBoltzmann*
-     &         ((theta(i,j,k,bi,bj)+cen2kel)**4)
-     &         - lwdown(i,j,bi,bj)
-          if ( lwfluxfile .NE. ' ' .AND. lwdownfile .EQ. ' ' )
-     &         lwdown(i,j,bi,bj) = 
-     &         ocean_emissivity*stefanBoltzmann*
-     &         ((theta(i,j,k,bi,bj)+cen2kel)**4)
-     &         - lwflux(i,j,bi,bj)
-#endif
-
-#if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-          if ( swfluxfile .EQ. ' ' .AND. swdownfile .NE. ' ' )
-     &         swflux(i,j,bi,bj) = -(1.0-exf_albedo) * swdown(i,j,bi,bj)
-          if ( swfluxfile .NE. ' ' .AND. swdownfile .EQ. ' ' )
-     &         swdown(i,j,bi,bj) = -swflux(i,j,bi,bj) / (1.0-exf_albedo)
-#endif
-
-#endif /* ALLOW_DOWNWARD_RADIATION */
-
+      if ( lwfluxfile .EQ. ' ' .AND. lwdownfile .NE. ' ' ) then
+c     Loop over tiles.
+       do bj = mybylo(mythid),mybyhi(mythid)
+        do bi = mybxlo(mythid),mybxhi(mythid)
+         do j = 1,sny
+          do i = 1,snx
+           lwflux(i,j,bi,bj) = 
+     &          ocean_emissivity*stefanBoltzmann*
+     &          ((theta(i,j,k,bi,bj)+cen2kel)**4)
+     &          - lwdown(i,j,bi,bj)
+          enddo
          enddo
         enddo
        enddo
-      enddo
+      endif
+
+c     Loop over tiles.
+      if ( lwfluxfile .NE. ' ' .AND. lwdownfile .EQ. ' ' ) then
+       do bj = mybylo(mythid),mybyhi(mythid)
+        do bi = mybxlo(mythid),mybxhi(mythid)
+         do j = 1,sny
+          do i = 1,snx
+           lwdown(i,j,bi,bj) = 
+     &          ocean_emissivity*stefanBoltzmann*
+     &          ((theta(i,j,k,bi,bj)+cen2kel)**4)
+     &          - lwflux(i,j,bi,bj)
+          enddo
+         enddo
+        enddo
+       enddo
+      endif
+#endif
+
+#if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
+      if ( swfluxfile .EQ. ' ' .AND. swdownfile .NE. ' ' ) then
+       do bj = mybylo(mythid),mybyhi(mythid)
+        do bi = mybxlo(mythid),mybxhi(mythid)
+         do j = 1,sny
+          do i = 1,snx
+           swflux(i,j,bi,bj) = -(1.0-exf_albedo) * swdown(i,j,bi,bj)
+          enddo
+         enddo
+        enddo
+       enddo
+      endif
+      if ( swfluxfile .NE. ' ' .AND. swdownfile .EQ. ' ' ) then
+       do bj = mybylo(mythid),mybyhi(mythid)
+        do bi = mybxlo(mythid),mybxhi(mythid)
+         do j = 1,sny
+          do i = 1,snx
+           swdown(i,j,bi,bj) = -swflux(i,j,bi,bj) / (1.0-exf_albedo)
+          enddo
+         enddo
+        enddo
+       enddo
+      endif
+#endif
+
+#endif /* ALLOW_DOWNWARD_RADIATION */
 
       end
