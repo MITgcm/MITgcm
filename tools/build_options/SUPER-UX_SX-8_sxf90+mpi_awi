@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.5 2007/09/25 19:28:19 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.6 2007/09/27 15:00:21 mlosch Exp $
 #
 # for cross compiling on sx8.awi.de
 # uname -a: 
@@ -17,20 +17,26 @@ FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  X ## _"
 LINK='sxmpif90'
 #LINK='sxmpif90 -p' # with profiler
 FFLAGS='-Pstack -sx8r'
+# automatic inlining for routines < 50 lines (default) and in the same file 
+# where they are to be inlined (we do not have too many of those)
+FFLAGS=$FFLAGS' -pi'
+# This is how you inline external routines if they are longer than 50 lines 
+# and live in a separate file (the actual routines depend on the packages 
+# used, therefore there are only a few examples here); unfortunately, these 
+# flags break the genmake2 tests, so you will have to include them into the
+# makefile by hand
+FEXTRAFLAGS='-pi fullmsg exp=timestep_tracer,ilnblnk,ifnblnk,cycle_tracer,pressure_for_eos rexp=bar2 expin=timestep_tracer.F,bar2.F,utils.F,cycle_tracer.F,pressure_for_eos.F'
+# additional candidates for inlining are parts of packages that are not 
+# always used, therefore use this at your own risk:
+#FEXTRAFLAGS=${FEXTRAFLAGS}' -pi fullmsg exp= expin='
 # additional options:
-# include a formated code and a listing of compiler transformations 
+# include a formated code listing and a listing of compiler transformations 
 # in *.L files
 #FFLAGS=$FFLAGS' -R2'
 # assume a loop count of 5,000,000 instead of estimating it from field
 # declarations and include details messages about vectorization (if -R2 
 # specified)
 #FFLAGS=$FFLAGS' -Wf "-pvctl noassume loopcnt=5000000 fullmsg"'
-# This is how you inline routines (the actual routines depend on the packages 
-# used, therefore there are only a few examples here;
-# edit this list in the Makefile, because including it here will break the
-# various tests in genmake2, maybe I will find a better way to do this
-# later)
-#FFLAGS=$FFLAGS' -pi fullmsg exp=timestep_tracer,ilnblnk,ifnblnk,cycle_tracer,pressure_for_eos rexp=bar2,fool_the_compiler expin=timestep_tracer.F,fool_the_compiler.F,bar2.F,utils.F,cycle_tracer.F,pressure_for_eos.F'
 # define basic storage unit as 8 bytes (default is 4); does not work with 
 # netCDF (library needs recompilation, accordingly)
 #FFLAGS=$FFLAGS' -ew'   
