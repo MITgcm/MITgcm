@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.18 2007/08/01 23:03:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.19 2007/09/28 07:45:59 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -144,30 +144,31 @@ c     == local variables ==
 
       integer iter
       _RL     tmpbulk
-      _RL     delq
-      _RL     deltap
       _RL     hqol
       _RL     htol
       _RL     huol
       _RL     psimh
       _RL     psixh
-      _RL     qstar
       _RL     rd
       _RL     re
-      _RL     rdn
       _RL     rh
       _RL     ssttmp
       _RL     ssq
       _RL     stable
-      _RL     tstar
       _RL     t0
       _RL     umps
-      _RL     ustar
       _RL     uzn
       _RL     shn
       _RL     xsq
       _RL     x
-      _RL     tau
+C     these need to 2D-arrays for vectorizing code
+      _RL tstar (1:sNx,1:sNy)
+      _RL qstar (1:sNx,1:sNy)
+      _RL ustar (1:sNx,1:sNy)
+      _RL tau   (1:sNx,1:sNy)
+      _RL rdn   (1:sNx,1:sNy)
+      _RL delq  (1:sNx,1:sNy)
+      _RL deltap(1:sNx,1:sNy)
 #ifdef ALLOW_AUTODIFF_TAMC
       integer ikey_1
       integer ikey_2
@@ -228,163 +229,184 @@ c             ssq    : sea surface humidity (kg/kg)
 c             deltap : potential temperature diff (K)
 
           if ( atemp(i,j,bi,bj) .ne. 0. _d 0 ) then
-             t0     = atemp(i,j,bi,bj)*
-     &            (exf_one + humid_fac*aqh(i,j,bi,bj))
-             ssttmp = theta(i,j,k,bi,bj)
-             tmpbulk= cvapor_fac /
-     &            exp( cvapor_exp/(ssttmp + cen2kel) )
-             ssq    = saltsat*tmpbulk/atmrho
-             deltap = atemp(i,j,bi,bj)   + gamma_blk*ht -
-     &            ssttmp - cen2kel
-             delq   = aqh(i,j,bi,bj) - ssq
-             stable = exf_half + sign(exf_half, deltap)
+           t0          = atemp(i,j,bi,bj)*
+     &          (exf_one + humid_fac*aqh(i,j,bi,bj))
+           ssttmp      = theta(i,j,k,bi,bj)
+           tmpbulk     = cvapor_fac /
+     &          exp( cvapor_exp/(ssttmp + cen2kel) )
+           ssq         = saltsat*tmpbulk/atmrho
+           deltap(i,j) = atemp(i,j,bi,bj) + gamma_blk*ht -
+     &          ssttmp - cen2kel
+           delq(i,j)   = aqh(i,j,bi,bj) - ssq
+           stable      = exf_half + sign(exf_half, deltap(i,j))
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 #endif
 #ifdef ALLOW_ATM_WIND
-             umps   = sh(i,j,bi,bj)
-             tmpbulk= exf_scal_BulkCdn *
-     &            ( cdrag_1/umps + cdrag_2 + cdrag_3*umps )
-             rdn    = sqrt(tmpbulk)
-             ustar  = rdn*sh(i,j,bi,bj)
+           umps        = sh(i,j,bi,bj)
+           tmpbulk     = exf_scal_BulkCdn *
+     &          ( cdrag_1/umps + cdrag_2 + cdrag_3*umps )
+           rdn(i,j)    = sqrt(tmpbulk)
+           ustar(i,j)  = rdn(i,j)*sh(i,j,bi,bj)
 #else /* ifndef ALLOW_ATM_WIND */
 C     in this case ustress and vstress are defined a u and v points
 C     respectively, and we need to average to mass points to avoid
 C     tau = 0 near coasts or other boundaries
-c            tau   = sqrt(0.5*
+c            tau(i,j)   = sqrt(0.5*
 c    &                   (ustress(i,  j,bi,bj)*ustress(i  ,j,bi,bj)
 c    &                   +ustress(i+1,j,bi,bj)*ustress(i+1,j,bi,bj)
 c    &                   +vstress(i,j,  bi,bj)*vstress(i,j  ,bi,bj)
 c    &                   +vstress(i,j+1,bi,bj)*vstress(i,j+1,bi,bj))
 c    &                   )
-             tau   = wStress(i,j,bi,bj)
-             ustar = sqrt(tau/atmrho)
+           tau(i,j)    = wStress(i,j,bi,bj)
+           ustar(i,j)  = sqrt(tau(i,j)/atmrho)
 #endif /* ifndef ALLOW_ATM_WIND */
-             tmpbulk= (exf_one-stable)*cstanton_1 
-     &            + stable*cstanton_2
-             tstar  = tmpbulk*deltap
-             qstar  = cdalton*delq
+           tmpbulk     = (exf_one-stable)*cstanton_1 
+     &          + stable*cstanton_2
+           tstar(i,j)  = tmpbulk*deltap(i,j)
+           qstar(i,j)  = cdalton*delq(i,j)
 
-             do iter = 1,niter_bulk
-
+          else
+           tstar (i,j) = 0. _d 0
+           qstar (i,j) = 0. _d 0
+           ustar (i,j) = 0. _d 0
+           tau   (i,j) = 0. _d 0
+           rdn   (i,j) = 0. _d 0
+          end if
+         end do
+        end do
+        do iter = 1,niter_bulk
+         do j = 1,sny
+          do i = 1,snx
+           if ( atemp(i,j,bi,bj) .ne. 0. _d 0 ) then
+            
 #ifdef ALLOW_AUTODIFF_TAMC
-                   ikey_2 = iter
-     &                  + niter_bulk*(i-1)
-     &                  + niter_bulk*sNx*(j-1)
-     &                  + niter_bulk*sNx*sNy*act1
-     &                  + niter_bulk*sNx*sNy*max1*act2
-     &                  + niter_bulk*sNx*sNy*max1*max2*act3
-     &                  + niter_bulk*sNx*sNy*max1*max2*max3*act4
+            ikey_2 = iter
+     &           + niter_bulk*(i-1)
+     &           + niter_bulk*sNx*(j-1)
+     &           + niter_bulk*sNx*sNy*act1
+     &           + niter_bulk*sNx*sNy*max1*act2
+     &           + niter_bulk*sNx*sNy*max1*max2*act3
+     &           + niter_bulk*sNx*sNy*max1*max2*max3*act4
 
-CADJ STORE rdn    = comlev1_exf_2, key = ikey_2
-CADJ STORE ustar  = comlev1_exf_2, key = ikey_2
-CADJ STORE qstar  = comlev1_exf_2, key = ikey_2
-CADJ STORE tstar  = comlev1_exf_2, key = ikey_2
+CADJ STORE rdn(i,j)    = comlev1_exf_2, key = ikey_2
+CADJ STORE ustar(i,j)  = comlev1_exf_2, key = ikey_2
+CADJ STORE qstar(i,j)  = comlev1_exf_2, key = ikey_2
+CADJ STORE tstar(i,j)  = comlev1_exf_2, key = ikey_2
 CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
 CADJ STORE wspeed(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
 #endif
 
-                  huol   = czol*(tstar/t0 +
-     &                     qstar/(exf_one/humid_fac+aqh(i,j,bi,bj)))/
-     &                           ustar**2
-                  huol   = max(huol,zolmin)
-                  stable = exf_half + sign(exf_half, huol)
-                  htol   = huol*ht/hu
-                  hqol   = huol*hq/hu
-
-c                 Evaluate all stability functions assuming hq = ht.
+            t0     = atemp(i,j,bi,bj)*
+     &           (exf_one + humid_fac*aqh(i,j,bi,bj))
+            huol   = czol*(tstar(i,j)/t0 +
+     &           qstar(i,j)/(exf_one/humid_fac+aqh(i,j,bi,bj)))/
+     &           ustar(i,j)**2
+            huol   = max(huol,zolmin)
+            stable = exf_half + sign(exf_half, huol)
+            htol   = huol*ht/hu
+            hqol   = huol*hq/hu
+            
+c     Evaluate all stability functions assuming hq = ht.
 #ifdef ALLOW_ATM_WIND
-                  xsq    = max(sqrt(abs(exf_one - 16.*huol)),exf_one)
-                   x     = sqrt(xsq)
-                  psimh  = -psim_fac*huol*stable +
-     &                     (exf_one - stable)*
-     &                     (log((exf_one + x*(exf_two + x))*
-     &                     (exf_one + xsq)/8.) - exf_two*atan(x) +
-     &                     pi*exf_half)
+            xsq    = max(sqrt(abs(exf_one - 16.*huol)),exf_one)
+            x      = sqrt(xsq)
+            psimh  = -psim_fac*huol*stable +
+     &           (exf_one - stable)*
+     &           (log((exf_one + x*(exf_two + x))*
+     &           (exf_one + xsq)/8.) - exf_two*atan(x) +
+     &           pi*exf_half)
 #endif /* ALLOW_ATM_WIND */
-                  xsq    = max(sqrt(abs(exf_one - 16.*htol)),exf_one)
-                  psixh  = -psim_fac*htol*stable + (exf_one - stable)*
-     &                     exf_two*log((exf_one + xsq)/exf_two)
-
+            xsq    = max(sqrt(abs(exf_one - 16.*htol)),exf_one)
+            psixh  = -psim_fac*htol*stable + (exf_one - stable)*
+     &           exf_two*log((exf_one + xsq)/exf_two)
+            
 #ifdef ALLOW_ATM_WIND
-c                 Shift wind speed using old coefficient
-                  rd     = rdn/(exf_one - rdn/karman*psimh )
-                  shn    = sh(i,j,bi,bj)*rd/rdn
-                  uzn    = max(shn, umin)
+c     Shift wind speed using old coefficient
+            rd     = rdn(i,j)/(exf_one - rdn(i,j)/karman*psimh )
+            shn    = sh(i,j,bi,bj)*rd/rdn(i,j)
+            uzn    = max(shn, umin)
 
-c                 Update the transfer coefficients at 10 meters
-c                 and neutral stability.
+c     Update the transfer coefficients at 10 meters
+c     and neutral stability.
 
-                  tmpbulk= exf_scal_BulkCdn *
-     &                 ( cdrag_1/uzn + cdrag_2 + cdrag_3*uzn )
-                  rdn    = sqrt(tmpbulk)
+            tmpbulk  = exf_scal_BulkCdn *
+     &           ( cdrag_1/uzn + cdrag_2 + cdrag_3*uzn )
+            rdn(i,j) = sqrt(tmpbulk)
 
-c                 Shift all coefficients to the measurement height
-c                 and stability.
-                  rd     = rdn/(exf_one - rdn/karman*psimh)
+c     Shift all coefficients to the measurement height
+c     and stability.
+            rd     = rdn(i,j)/(exf_one - rdn(i,j)/karman*psimh)
 #endif /* ALLOW_ATM_WIND */
-                  tmpbulk= (exf_one-stable)*cstanton_1 
-     &                 + stable*cstanton_2
-                  rh     = tmpbulk/( exf_one +
-     &                               tmpbulk/karman*(aln - psixh) )
-                  re     = cdalton/( exf_one +
-     &                               cdalton/karman*(aln - psixh) )
+            tmpbulk= (exf_one-stable)*cstanton_1 
+     &           + stable*cstanton_2
+            rh     = tmpbulk/( exf_one +
+     &           tmpbulk/karman*(aln - psixh) )
+            re     = cdalton/( exf_one +
+     &           cdalton/karman*(aln - psixh) )
 
 c                 Update ustar, tstar, qstar using updated, shifted
 c                 coefficients.
-                  qstar  = re*delq
-                  tstar  = rh*deltap
+            qstar(i,j) = re*delq(i,j)
+            tstar(i,j) = rh*deltap(i,j)
 #ifdef ALLOW_ATM_WIND
-                  ustar  = rd*sh(i,j,bi,bj)
-                  tau    = atmrho*ustar**2
-                  tau    = tau*wspeed(i,j,bi,bj)/sh(i,j,bi,bj)
+            ustar(i,j) = rd*sh(i,j,bi,bj)
+            tau(i,j)   = atmrho*ustar(i,j)**2
+            tau(i,j)   = tau(i,j)*wspeed(i,j,bi,bj)/sh(i,j,bi,bj)
 #endif /* ALLOW_ATM_WIND */
 
-                enddo
+           endif
+          enddo
+         enddo
+        enddo
+        do j = 1,sny
+         do i = 1,snx
+          if ( atemp(i,j,bi,bj) .ne. 0. _d 0 ) then
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ustar  = comlev1_exf_1, key = ikey_1
-CADJ STORE qstar  = comlev1_exf_1, key = ikey_1
-CADJ STORE tstar  = comlev1_exf_1, key = ikey_1
-CADJ STORE tau    = comlev1_exf_1, key = ikey_1
+CADJ STORE ustar(i,j)  = comlev1_exf_1, key = ikey_1
+CADJ STORE qstar(i,j)  = comlev1_exf_1, key = ikey_1
+CADJ STORE tstar(i,j)  = comlev1_exf_1, key = ikey_1
+CADJ STORE tau(i,j)    = comlev1_exf_1, key = ikey_1
 CADJ STORE cw(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 CADJ STORE sw(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 #endif
-                hs(i,j,bi,bj)      = atmcp*tau*tstar/ustar
-                hl(i,j,bi,bj)      = flamb*tau*qstar/ustar
+           hs(i,j,bi,bj) = atmcp*tau(i,j)*tstar(i,j)/ustar(i,j)
+           hl(i,j,bi,bj) = flamb*tau(i,j)*qstar(i,j)/ustar(i,j)
 #ifndef EXF_READ_EVAP
-cdm             evap(i,j,bi,bj)    = tau*qstar/ustar
+cdm        evap(i,j,bi,bj) = tau(i,j)*qstar(i,j)/ustar(i,j)
 cdm !!! need to change sign and to convert from kg/m^2/s to m/s !!!
-                evap(i,j,bi,bj)    = -recip_rhonil*tau*qstar/ustar
+           evap(i,j,bi,bj) = -recip_rhonil
+     &          *tau(i,j)*qstar(i,j)/ustar(i,j)
 #endif
 #ifdef ALLOW_ATM_WIND
-                ustress(i,j,bi,bj) = tau*cw(i,j,bi,bj)
-                vstress(i,j,bi,bj) = tau*sw(i,j,bi,bj)
+           ustress(i,j,bi,bj) = tau(i,j)*cw(i,j,bi,bj)
+           vstress(i,j,bi,bj) = tau(i,j)*sw(i,j,bi,bj)
 #endif /* ALLOW_ATM_WIND */
-              else
+          else
 #ifdef ALLOW_ATM_WIND
-                ustress(i,j,bi,bj) = 0. _d 0
-                vstress(i,j,bi,bj) = 0. _d 0
+           ustress(i,j,bi,bj) = 0. _d 0
+           vstress(i,j,bi,bj) = 0. _d 0
 #endif /* ALLOW_ATM_WIND */
-                hflux  (i,j,bi,bj) = 0. _d 0
-                hs(i,j,bi,bj)      = 0. _d 0
-                hl(i,j,bi,bj)      = 0. _d 0
-              endif
+           hflux  (i,j,bi,bj) = 0. _d 0
+           hs(i,j,bi,bj)      = 0. _d 0
+           hl(i,j,bi,bj)      = 0. _d 0
+          endif
 
 #else  /* ifndef ALLOW_ATM_TEMP */
 #ifdef ALLOW_ATM_WIND
-              umps = sh(i,j,bi,bj)
-              tmpbulk= exf_scal_BulkCdn *
-     &             ( cdrag_1/umps + cdrag_2 + cdrag_3*umps )
-              ustress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
-     &                             uwind(i,j,bi,bj)
-              vstress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
-     &                             vwind(i,j,bi,bj)
+          umps               = sh(i,j,bi,bj)
+          tmpbulk            = exf_scal_BulkCdn *
+     &         ( cdrag_1/umps + cdrag_2 + cdrag_3*umps )
+          ustress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
+     &         uwind(i,j,bi,bj)
+          vstress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
+     &         vwind(i,j,bi,bj)
 #endif
 #endif /* ifndef ALLOW_ATM_TEMP */
-            enddo
-          enddo
+         enddo
         enddo
+       enddo
       enddo
 
 #endif /* ALLOW_BULKFORMULAE */
