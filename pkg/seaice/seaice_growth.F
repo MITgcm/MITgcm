@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.33 2007/09/26 04:54:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.34 2007/09/28 19:41:15 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -505,11 +505,13 @@ C     through the ice into the ocean)
 CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
 CADJ &                        key = iicekey, byte = isbyte
 #endif
+
+cph( very sensitive bit here by JZ
+#ifndef SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
         DO J=1,sNy
          DO I=1,sNx
 C     Now melt snow if there is residual heat left in surface level
 C     Note that units of YNEG and frWtrIce are m of ice
-cph( very sensitive bit here by JZ
           IF( RESID_HEAT(I,J) .GT. ZERO .AND.
      &       HSNOW(I,J,bi,bj) .GT. ZERO ) THEN
            GHEFF(I,J)       = MIN( HSNOW(I,J,bi,bj)/SDF/ICE2WATR,
@@ -527,16 +529,15 @@ CADJ &                        key = iicekey, byte = isbyte
 #endif
         DO J=1,sNy
          DO I=1,sNx
-
           IF( RESID_HEAT(I,J) .GT. ZERO .AND.
      &       HSNOW(I,J,bi,bj) .GT. ZERO ) THEN
            HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)-GHEFF(I,J)*SDF*ICE2WATR
            frWtrIce(I,J)    = frWtrIce(I,J)   -GHEFF(I,J)
           ENDIF
-cph)
-
          ENDDO
         ENDDO
+#endif
+cph)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
