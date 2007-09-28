@@ -7,8 +7,10 @@ C ********************************************************************
 C ***                         ECCO Package                         ***
 C ********************************************************************
 C
-C o include dump of snap shots for checks
-#define ALLOW_SNAPSHOTS
+
+cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
+#define  SEAICE_EXCLUDE_FOR_EXACT_AD_TESTING
+cph >>>>>> !!!!!! SPECIAL SEAICE FLAG FOR TESTING !!!!!! <<<<<<
 
 #define  ALLOW_ECCO_FORWARD_RUN
 #undef  ALLOW_ECCO_OPTIMIZATION
@@ -16,21 +18,11 @@ C o include dump of snap shots for checks
 C       >>> Do a long protocol.
 #undef ECCO_VERBOSE
 
-C       >>> Just do a "dry" run ( useful for testing ).
-#undef  ALLOW_NO_DYNAMICS
-C       >>> Use the Yearly-Monthly-Daily-Stepping call tree.
-#undef  ALLOW_YMDS_TREE
-C       >>> Do not call stepping
-#define ALLOW_STEPPING_CALL
-
 C ********************************************************************
 C ***                  Adjoint Support Package                     ***
 C ********************************************************************
 
 C o Include/exclude code in order to be able to automatically
-C   differentiate the MITgcmUV by using the Tangent Linear and
-C   Adjoint Model Compiler (TAMC).
-#define INCLUDE_AUTODIFF_PACKAGE
 C
 #define ALLOW_AUTODIFF_TAMC
 C

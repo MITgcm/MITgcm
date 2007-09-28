@@ -75,7 +75,7 @@
 #
  &PARM02
  cg2dMaxIters=500,
- cg2dTargetResidual=1.D-8
+ cg2dTargetResidual=1.D-8,
  &
 
 # Time stepping parameters
