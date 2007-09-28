@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_accumulate_mean.F,v 1.1 2007/09/28 00:52:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_accumulate_mean.F,v 1.2 2007/09/28 12:45:53 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -19,7 +19,9 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "SEAICE.h"
-#include "cost.h"
+#ifdef ALLOW_COST
+# include "cost.h"
+#endif
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
