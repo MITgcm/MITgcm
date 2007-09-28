@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.62 2007/09/07 22:41:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.63 2007/09/28 19:42:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1111,9 +1111,11 @@ c--   Compute cost function contribution of Temperature and Salinity.
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('seaice_cost_driver',myThid)
 #endif
+      IF ( useSeaice) THEN
       call timer_start('seaice_cost_driver [ECCO SPIN-DOWN]', mythid)
       call seaice_cost_driver( myiter, mytime, mythid )
       call timer_stop ('seaice_cost_driver [ECCO SPIN-DOWN]', mythid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_OBCS_COST_CONTRIBUTION

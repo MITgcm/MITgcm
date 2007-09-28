@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.61 2007/09/26 04:12:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.62 2007/09/28 19:42:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -175,13 +175,13 @@ C--   Initialize SEAICE model.
 # ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('SEAICE_INIT_VARIA',myThid)
 # endif
-# ifndef ALLOW_AUTODIFF_TAMC
+cph# ifndef ALLOW_AUTODIFF_TAMC
       IF (useSEAICE) THEN
-# endif
+cph# endif
        CALL SEAICE_INIT_VARIA( myThid )
-# ifndef ALLOW_AUTODIFF_TAMC
+cph# ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
-# endif
+cph# endif
 #endif
 
 cph-- moved further down

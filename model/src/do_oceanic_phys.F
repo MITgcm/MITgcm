@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.57 2007/09/28 00:52:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.58 2007/09/28 19:42:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -142,9 +142,8 @@ C     to diagnose surface buoyancy fluxes and for the non-local transport
 C     term.  Because this call precedes model thermodynamics, temperature
 C     under sea-ice may not be "exactly" at the freezing point by the time
 C     theta is dumped or time-averaged.
-#ifndef ALLOW_AUTODIFF_TAMC
       IF ( useSEAICE ) THEN
-#else
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE atemp,aqh,precip    = comlev1, key = ikey_dynamics
 CADJ STORE swdown,lwdown       = comlev1, key = ikey_dynamics
 cph# ifdef EXF_READ_EVAP
@@ -176,9 +175,7 @@ CADJ STORE recip_hfacc         = comlev1, key = ikey_dynamics
 #ifdef ALLOW_COST
         CALL SEAICE_COST_SENSI ( myTime, myIter, myThid )
 #endif
-#ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
-#endif
 #endif /* ALLOW_SEAICE */
 
 #if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
