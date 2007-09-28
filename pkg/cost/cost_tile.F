@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.8 2007/03/24 02:23:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.9 2007/09/28 00:52:18 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -101,17 +101,23 @@ CADJ STORE hfacw, hfacs  = comlev1, key = ikey_dynamics
 # endif
 #endif
 
+      IF ( myTime .GT. (EndTime - lastinterval) ) THEN
+
+#if (defined (ALLOW_COST_TEST) || defined (ALLOW_COST_ATLANTIC_HEAT))
+         CALL COST_ACCUMULATE_MEAN (myThid)
+#endif
+
+      ENDIF
+
       DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-
-           IF ( myTime .GT. (EndTime - lastinterval) )
-     &          CALL COST_ACCUMULATE_MEAN (myThid)
 
 #ifdef ALLOW_COST_TRACER
            CALL COST_TRACER( bi, bj, myThid )
 #endif
+
 #ifdef ALLOW_COST_TRANSPORT
-          CALL COST_TRANSPORT( bi, bj, myTime, myIter, myThid )
+           CALL COST_TRANSPORT( bi, bj, myTime, myIter, myThid )
 #endif /* ALLOW_COST_TRANSPORT */
 
         ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.56 2007/09/26 04:12:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.57 2007/09/28 00:52:18 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -142,8 +142,9 @@ C     to diagnose surface buoyancy fluxes and for the non-local transport
 C     term.  Because this call precedes model thermodynamics, temperature
 C     under sea-ice may not be "exactly" at the freezing point by the time
 C     theta is dumped or time-averaged.
+#ifndef ALLOW_AUTODIFF_TAMC
       IF ( useSEAICE ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
+#else
 CADJ STORE atemp,aqh,precip    = comlev1, key = ikey_dynamics
 CADJ STORE swdown,lwdown       = comlev1, key = ikey_dynamics
 cph# ifdef EXF_READ_EVAP
@@ -172,10 +173,12 @@ CADJ STORE recip_hfacc         = comlev1, key = ikey_dynamics
         CALL TIMER_START('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
         CALL SEAICE_MODEL( myTime, myIter, myThid )
         CALL TIMER_STOP ('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
-#ifdef ALLOW_COST_ICE
-        CALL COST_ICE_TEST ( myTime, myIter, myThid )
+#ifdef ALLOW_COST
+        CALL SEAICE_COST_SENSI ( myTime, myIter, myThid )
 #endif
+#ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
+#endif
 #endif /* ALLOW_SEAICE */
 
 #if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
@@ -396,12 +399,6 @@ cph Avoid variable aliasing for adjoint !!!
      I             myThid )
           ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-ctest# ifndef GM_EXCLUDE_CLIPPING
-CADJ STORE rhoK   (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
-ctest# endif
-CADJ STORE rhoKm1 (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 C--       Implicit Vertical Diffusion for Convection
 c ==> should use sigmaR !!!
           IF (k.GT.1 .AND. ivdc_kappa.NE.0.) THEN
@@ -425,6 +422,11 @@ c ==> should use sigmaR !!!
 
 C--     end of diagnostic k loop (Nr:1)
         ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE IVDConvCount(:,:,:,bi,bj) 
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+#endif
 
 C--     Diagnose Mixed Layer Depth:
         IF ( useGMRedi .OR. doDiagsRho.GE.1 ) THEN

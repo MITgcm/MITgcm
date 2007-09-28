@@ -35,5 +35,9 @@ CADJ STORE seaice_sigma12 = comlev1, key = ikey_dynamics
 CADJ STORE hsalt          = comlev1, key = ikey_dynamics
 # endif
 # ifdef ALLOW_COST_ICE
-CADJ STORE objf_ice      = comlev1, key = ikey_dynamics
+CADJ STORE objf_ice       = comlev1, key = ikey_dynamics
+# endif
+# ifdef ALLOW_SEAICE_COST_EXPORT
+CADJ STORE uHeffExportCell = comlev1, key = ikey_dynamics
+CADJ STORE vHeffExportCell = comlev1, key = ikey_dynamics
 # endif

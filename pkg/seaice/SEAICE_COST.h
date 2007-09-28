@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_COST.h,v 1.2 2005/09/01 05:34:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_COST.h,v 1.3 2007/09/28 00:52:18 heimbach Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -12,8 +12,10 @@ c     objf_ice    - sea-ice volume
       common /seaice_cost_objf/
      &                objf_ice
      &              , objf_smrarea
-      _RL  objf_ice  (nsx,nsy)
-      _RL  objf_smrarea (nsx,nsy)
+     &              , objf_ice_export
+      _RL  objf_ice        (nsx,nsy)
+      _RL  objf_smrarea    (nsx,nsy)
+      _RL  objf_ice_export (nsx,nsy)
 
       common /seaice_cost_num/
      &                num_ice
@@ -24,8 +26,10 @@ c     objf_ice    - sea-ice volume
       common /seaice_cost_aux_r/
      &                mult_ice
      &              , mult_smrarea
+     &              , mult_ice_export
       _RL  mult_ice
       _RL  mult_smrarea
+      _RL  mult_ice_export
 
       common /seaice_cost_data_aux_i/
      &                           costIceStart1,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.57 2007/09/19 09:10:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.58 2007/09/28 00:52:18 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -74,7 +74,7 @@ C--   SEAICE parameters
 
 #ifdef ALLOW_COST
       NAMELIST /SEAICE_PARM02/
-     &          mult_ice, cost_ice_flag,
+     &          mult_ice_export, mult_ice, cost_ice_flag,
      &          costIceStart1, costIceStart2,
      &          costIceEnd1, costIceEnd2,
      &          cost_ice_flag,
@@ -215,6 +215,7 @@ C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
       SEAICE_EPS_SQ     = -99999.
 
 #ifdef ALLOW_COST
+      mult_ice_export   =  0. _d 0
       mult_ice          =  0. _d 0
       costIceStart1     =  0
       costIceStart2     =  0

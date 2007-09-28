@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.6 2007/06/25 20:17:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.7 2007/09/28 00:52:18 heimbach Exp $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -55,7 +55,7 @@ c     == local variables ==
 
 c     == end of interface ==
 
-      if (useSEAICE) then
+cph      if (useSEAICE) then
 
 #ifdef ALLOW_SEAICE_COST_SMR_AREA
 
@@ -89,7 +89,7 @@ cph)
 
 #endif
 
-      endif
+cph      endif
 
 #endif /* ALLOW_ECCO */
 

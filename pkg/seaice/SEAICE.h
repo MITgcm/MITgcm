@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.35 2007/09/26 04:12:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.36 2007/09/28 00:52:18 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -153,6 +153,13 @@ c     INTEGER ICOUNT, IDELT
 C--   KGEO    Level used as a proxy for geostrophic velocity.
       COMMON/SEAICE_KGEO/KGEO
       integer KGEO   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+
+#ifdef ALLOW_SEAICE_COST_EXPORT
+      _RL uHeffExportCell(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL vHeffExportCell(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /seaice_cost_export_r/ 
+     &       uHeffExportCell, vHeffExportCell
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
       integer iicekey
