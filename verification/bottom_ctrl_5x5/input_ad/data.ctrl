@@ -23,11 +23,7 @@
 # names for ctrl_pack/unpack
 # *********************
  &CTRL_PACKNAMES
- yadmark  = 'ad',
  ctrlname = 'exp0_ctrl',
  costname = 'exp0_cost',
- scalname = 'exp0_scal',
- maskname = 'exp0_mask',
- metaname = 'exp0_meta',
  &
 
