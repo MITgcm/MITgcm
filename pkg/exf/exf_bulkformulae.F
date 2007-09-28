@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.19 2007/09/28 07:45:59 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.20 2007/09/28 19:39:58 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -228,6 +228,10 @@ c             t0     : virtual temperature (K)
 c             ssq    : sea surface humidity (kg/kg)
 c             deltap : potential temperature diff (K)
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          deltap(i,j) = 0. _d 0
+          delq(i,j)   = 0. _d 0
+#endif
           if ( atemp(i,j,bi,bj) .ne. 0. _d 0 ) then
            t0          = atemp(i,j,bi,bj)*
      &          (exf_one + humid_fac*aqh(i,j,bi,bj))
@@ -275,25 +279,25 @@ c    &                   )
           end if
          end do
         end do
+
         do iter = 1,niter_bulk
          do j = 1,sny
           do i = 1,snx
            if ( atemp(i,j,bi,bj) .ne. 0. _d 0 ) then
             
 #ifdef ALLOW_AUTODIFF_TAMC
-            ikey_2 = iter
-     &           + niter_bulk*(i-1)
-     &           + niter_bulk*sNx*(j-1)
-     &           + niter_bulk*sNx*sNy*act1
-     &           + niter_bulk*sNx*sNy*max1*act2
-     &           + niter_bulk*sNx*sNy*max1*max2*act3
-     &           + niter_bulk*sNx*sNy*max1*max2*max3*act4
-
-CADJ STORE rdn(i,j)    = comlev1_exf_2, key = ikey_2
-CADJ STORE ustar(i,j)  = comlev1_exf_2, key = ikey_2
-CADJ STORE qstar(i,j)  = comlev1_exf_2, key = ikey_2
-CADJ STORE tstar(i,j)  = comlev1_exf_2, key = ikey_2
-CADJ STORE sh(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
+            ikey_2 = i
+     &           + sNx*(j-1)
+     &           + sNx*sNy*(iter-1)
+     &           + sNx*sNy*niter_bulk*act1
+     &           + sNx*sNy*niter_bulk*max1*act2
+     &           + sNx*sNy*niter_bulk*max1*max2*act3
+     &           + sNx*sNy*niter_bulk*max1*max2*max3*act4
+CADJ STORE rdn(i,j)              = comlev1_exf_2, key = ikey_2
+CADJ STORE ustar(i,j)            = comlev1_exf_2, key = ikey_2
+CADJ STORE qstar(i,j)            = comlev1_exf_2, key = ikey_2
+CADJ STORE tstar(i,j)            = comlev1_exf_2, key = ikey_2
+CADJ STORE sh(i,j,bi,bj)         = comlev1_exf_2, key = ikey_2
 CADJ STORE wspeed(i,j,bi,bj)     = comlev1_exf_2, key = ikey_2
 #endif
 
@@ -358,16 +362,24 @@ c                 coefficients.
            endif
           enddo
          enddo
+c        end of bulk_iter loop
         enddo
+
         do j = 1,sny
          do i = 1,snx
           if ( atemp(i,j,bi,bj) .ne. 0. _d 0 ) then
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ustar(i,j)  = comlev1_exf_1, key = ikey_1
-CADJ STORE qstar(i,j)  = comlev1_exf_1, key = ikey_1
-CADJ STORE tstar(i,j)  = comlev1_exf_1, key = ikey_1
-CADJ STORE tau(i,j)    = comlev1_exf_1, key = ikey_1
+          ikey_1 = i
+     &         + sNx*(j-1)
+     &         + sNx*sNy*act1
+     &         + sNx*sNy*max1*act2
+     &         + sNx*sNy*max1*max2*act3
+     &         + sNx*sNy*max1*max2*max3*act4
+CADJ STORE ustar(i,j)        = comlev1_exf_1, key = ikey_1
+CADJ STORE qstar(i,j)        = comlev1_exf_1, key = ikey_1
+CADJ STORE tstar(i,j)        = comlev1_exf_1, key = ikey_1
+CADJ STORE tau(i,j)          = comlev1_exf_1, key = ikey_1
 CADJ STORE cw(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 CADJ STORE sw(i,j,bi,bj)     = comlev1_exf_1, key = ikey_1
 #endif
