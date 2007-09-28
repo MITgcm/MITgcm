@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.90 2007/09/28 00:52:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.91 2007/09/28 01:10:35 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,10 +58,12 @@ c They provide the fields to be stored.
 #  include "EOS.h"
 #  include "AUTODIFF.h"
 
-# ifdef ALLOW_GENERIC_ADVDIFF
-#  include "GAD.h"
-# endif
-#  include "MOM_FLUXFORM.h"
+#  ifdef ALLOW_GENERIC_ADVDIFF
+#   include "GAD.h"
+#  endif
+#  ifdef ALLOW_MOM_FLUXFORM
+#   include "MOM_FLUXFORM.h"
+#  endif
 #  ifdef ALLOW_CD_CODE
 #   include "CD_CODE_VARS.h"
 #  endif
