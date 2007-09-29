@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.884 2007/09/28 07:46:13 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.885 2007/09/29 21:37:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59h
 o pkg/exf: 
   - improve vectorization by moving if-statement out of loops in
     exf_mapfields, exf_radiation
