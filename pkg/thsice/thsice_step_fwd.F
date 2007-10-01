@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.25 2007/08/30 15:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.26 2007/10/01 13:38:08 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -268,9 +268,9 @@ CADJ STORE  icemask(i,j,bi,bj) = comlev1_thsice_1, key=ikey_1
           icFlxAtm(i,j,bi,bj) = icFrac*icFlxAtm(i,j,bi,bj)
      &                        - opFrac*Qnet(i,j,bi,bj)
           icFrwAtm(i,j,bi,bj) = icFrac*icFrwAtm(i,j,bi,bj)
-     &                        + opFrac*rhofw*EmPmR(i,j,bi,bj)
+     &                        + opFrac*EmPmR(i,j,bi,bj)
           Qnet(i,j,bi,bj) = -icFrac*flx2oc(i,j) + opFrac*Qnet(i,j,bi,bj)
-          EmPmR(i,j,bi,bj)= -icFrac*frw2oc(i,j)/rhofw
+          EmPmR(i,j,bi,bj)= -icFrac*frw2oc(i,j)
      &                    +  opFrac*EmPmR(i,j,bi,bj)
           saltFlux(i,j,bi,bj) = -icFrac*fsalt(i,j)
 #endif
@@ -282,9 +282,9 @@ CADJ STORE  icemask(i,j,bi,bj) = comlev1_thsice_1, key=ikey_1
      &           snowHeight(i,j,bi,bj), Qnet(i,j,bi,bj)
 #endif
 
-        ELSEIF (hOceMxL(i,j,bi,bj).gt.0. _d 0) THEN
+        ELSEIF (hOceMxL(i,j,bi,bj).GT.0. _d 0) THEN
           icFlxAtm(i,j,bi,bj) = -Qnet(i,j,bi,bj)
-          icFrwAtm(i,j,bi,bj) = rhofw*EmPmR(i,j,bi,bj)
+          icFrwAtm(i,j,bi,bj) = EmPmR(i,j,bi,bj)
         ELSE
           icFlxAtm(i,j,bi,bj) = 0. _d 0
           icFrwAtm(i,j,bi,bj) = 0. _d 0
@@ -322,7 +322,7 @@ C--    Net fluxes :
           sFluxFromIce(i,j)= sFluxFromIce(i,j) - fsalt(i,j)
 #else
           Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj) - flx2oc(i,j)
-          EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- frw2oc(i,j)/rhofw
+          EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- frw2oc(i,j)
           saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - fsalt(i,j)
 #endif
 
@@ -374,7 +374,7 @@ C--   note: those fluxes should to be added directly to Qnet, EmPmR & saltFlux
         DO i = iMin, iMax
          IF ( hOceMxL(i,j,bi,bj).GT.0. _d 0 ) THEN
           Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj) - oceQnet(i,j,bi,bj)
-          EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- oceFWfx(i,j,bi,bj)/rhofw
+          EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- oceFWfx(i,j,bi,bj)
           saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - oceSflx(i,j,bi,bj)
          ENDIF
         ENDDO

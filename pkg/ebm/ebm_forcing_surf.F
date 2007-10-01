@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/Attic/ebm_forcing_surf.F,v 1.6 2007/08/23 19:13:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/Attic/ebm_forcing_surf.F,v 1.7 2007/10/01 13:35:34 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -26,10 +26,8 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#include "SURFACE.h"
-#ifdef ALLOW_EBM
+c#include "SURFACE.h"
 #include "EBM.h"
-#endif
  
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -80,9 +78,9 @@ c     Net heat flux Qnet:
 
 C     Net Salt Flux : 
           surfaceForcingS(i,j,bi,bj) = 
-     &      EmPmR(i,j,bi,bj)*convertFW2Salt*convertEmP2rUnit
+     &      EmPmR(i,j,bi,bj)*convertFW2Salt*mass2rUnit
      &      +Run(i,j,bi,bj)*scale_runoff
-     &         *convertFW2Salt*convertEmP2rUnit
+     &         *convertFW2Salt*rhoConstFresh*mass2rUnit
      &      -lambdaSaltClimRelax(i,j,bi,bj)*maskC(i,j,kSurface,bi,bj)
      &        *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
      &        *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
@@ -91,7 +89,6 @@ C     Net Salt Flux :
        ENDDO
 
 #endif /* ALLOW_EBM */
-
 
       RETURN
       END

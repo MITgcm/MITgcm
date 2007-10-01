@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.6 2006/10/18 21:07:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.7 2007/10/01 13:38:08 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -71,7 +71,7 @@ cph      IF ( .NOT.stepFwd_oceMxL ) RETURN
 
 C--    add heat flux and fresh-water + salt flux :
        dtFac   = ocean_deltaT/rhosw
-       fwFac   = ocean_deltaT*sMxL_default*rhofw/rhosw
+       fwFac   = ocean_deltaT*sMxL_default/rhosw
        heatFac = ocean_deltaT/(cpwater*rhosw)
        DO j=1,sNy
         DO i=1,sNx

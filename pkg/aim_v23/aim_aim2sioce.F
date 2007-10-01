@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.7 2007/04/04 02:00:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2sioce.F,v 1.8 2007/10/01 13:34:43 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -81,10 +81,10 @@ CEOP
 
 #ifdef ALLOW_AIM
 C     == Local variables ==
-C     i,j,I2       :: loop counters
-C     conv_precip  :: conversion factor for precip: from g/m2/s to kg/m2/s
-C     conv_EmP     :: conversion factor for EmP : from g/m2/s to m/s
-      _RL conv_precip, conv_EmP
+C     i,j,I2      :: loop counters
+C     convPrcEvp  :: units conversion factor for Precip & Evap: 
+C                 :: from AIM units (g/m2/s) to model EmPmR units ( kg/m2/s )
+      _RL convPrcEvp
       _RL icFrac, opFrac
       INTEGER i,j,I2
 
@@ -93,12 +93,7 @@ C--   Initialisation :
 C--   Atmospheric Physics Fluxes
 
 C     from g/m2/s to kg/m2/s :
-      conv_Precip = 1. _d -3
-C     from g/m2/s to m/s :
-      conv_EmP = conv_Precip / rhoConstFresh
-#ifdef ALLOW_THSICE
-      IF (useThSIce) conv_EmP = conv_Precip / rhofw
-#endif
+      convPrcEvp = 1. _d -3
 
       DO j=1,sNy
        DO i=1,sNx
@@ -127,7 +122,7 @@ C     already merged together and Qnet is the mean heat flux over the grid box.
 
 C-    E-P over ice-free ocean [m/s]: (same as above is aim_splitSIOsFx=F)
          EmPmR(i,j,bi,bj) = ( EVAP(I2,2,myThid)
-     &                      - prcAtm(i,j) ) * conv_EmP
+     &                      - prcAtm(i,j) ) * convPrcEvp
 
 C-    Net short wave (ice-free ocean) into the ocean (+=down)
          Qsw(i,j,bi,bj) = SSR(I2,2,myThid)
@@ -146,7 +141,7 @@ C     NOTE: masking is now applied much earlier, during initialisation
 c        IF (land_frc(i,j,bi,bj).EQ.1. _d 0) hOceMxL(i,j,bi,bj) = 0.
 
 C-    Evaporation over sea-ice: (for thsice)
-         icFrwAtm(i,j,bi,bj) = EVAP(I2,3,myThid)*conv_precip
+         icFrwAtm(i,j,bi,bj) = EVAP(I2,3,myThid)*convPrcEvp
 
 C-    short-wave downward heat flux (ice-free ocean + ice-covered):
 C     note: at this point we already called THSICE_IMPL_TEMP to solve for
@@ -173,7 +168,7 @@ C-    positive => add to surface heating
               snowPrc(i,j,bi,bj) = 0. _d 0
             ELSE
 C-    negative => make snow
-              snowPrc(i,j,bi,bj) = prcAtm(i,j)*conv_precip
+              snowPrc(i,j,bi,bj) = prcAtm(i,j)*convPrcEvp
             ENDIF
            ELSE
               snowPrc(i,j,bi,bj) = 0. _d 0
@@ -205,7 +200,7 @@ C-    Net surface heat flux over sea-ice + ice-free ocean (+=down)
 C-    E-P over sea-ice + ice-free ocean [m/s]:
           EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)*opFrac
      &                     + ( EVAP(I2,3,myThid)
-     &                       - prcAtm(i,j) ) * conv_EmP * icFrac
+     &                       - prcAtm(i,j) ) * convPrcEvp * icFrac
 
 C-    Net short wave (ice-free ocean) into the ocean (+=down)
           Qsw(i,j,bi,bj) = opFrac*Qsw(i,j,bi,bj)
@@ -232,7 +227,7 @@ C--   Ice free fraction: Add energy flux related to Precip. (snow, T_rain):
       DO j=1,sNy
         DO i=1,sNx
 C-    Total Precip : convert units
-          prcAtm(i,j) = prcAtm(i,j) * conv_precip
+          prcAtm(i,j) = prcAtm(i,j) * convPrcEvp
 C-    Oceanic convention: Heat flux are > 0 upward ; reverse sign.
           Qsw(i,j,bi,bj) = -Qsw(i,j,bi,bj)
           Qnet(i,j,bi,bj)= -Qnet(i,j,bi,bj)

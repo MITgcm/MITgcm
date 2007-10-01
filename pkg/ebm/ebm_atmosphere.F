@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_atmosphere.F,v 1.4 2004/07/28 19:54:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_atmosphere.F,v 1.5 2007/10/01 13:35:34 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -30,11 +30,8 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
-#ifdef ALLOW_EBM
-# include "EBM.h"
-#endif
+#include "EBM.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -50,7 +47,6 @@ CEndOfInterface
 #ifdef ALLOW_EBM
 
 C     == Local variables ==
-      _RL Dy
       _RL ReCountX(1-OLy:sNy+OLy,nSy)
       INTEGER bi, bj
       INTEGER i, j
@@ -337,6 +333,7 @@ c--   Pacific
            ENDIF
           ENDIF
 #endif
+          EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)*rhoConstFresh
          ENDDO
         ENDDO
        ENDDO
@@ -354,9 +351,5 @@ cph      ENDIF
 
 #endif /* ALLOW_EBM */
 
+      RETURN
       END
-
-    
-      
-
-

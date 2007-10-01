@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.21 2007/09/27 09:41:13 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.22 2007/10/01 13:36:05 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -113,13 +113,14 @@ c     Heat flux.
 c     Salt flux.
           do j = jmin,jmax
             do i = imin,imax
-             empmr(i,j,bi,bj)= exf_outscal_sflux*sflux(i,j,bi,bj)
+             EmPmR(i,j,bi,bj)= exf_outscal_sflux*sflux(i,j,bi,bj)
+     &                                          *rhoConstFresh
             enddo
           enddo
           if ( sfluxfile .EQ. ' ' ) then
            do j = jmin,jmax
             do i = imin,imax
-                 empmr(i,j,bi,bj) = empmr(i,j,bi,bj) -
+                 EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj) - rhoConstFresh*
      &            exf_outscal_sflux * ( sflux_exfremo_intercept +
      &            sflux_exfremo_slope*(mytime-starttime) )
             enddo
