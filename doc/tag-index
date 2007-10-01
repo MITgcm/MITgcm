@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.885 2007/09/29 21:37:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.886 2007/10/01 19:30:47 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o change units of EmPmR (inside the code) from m/s to kg/m2/s (mass flux) but
+  leave input file unchanged. Affects results @ truncation level (cg2d match)
+  and update output of experiments: lab_sea(6), global_ocean.90x40x15(10),
+  global_ocean.cs32x15(11x3,10), natl_box(11), tutorial_global_oce_latlon(11)
+  + adjoint results: global_ocean_ebm(11) and lab_sea (12).
+  Next: will retire convertEmP2rUnit (simply using mass2rUnit instead).
 
 checkpoint59h
 o pkg/exf: 
