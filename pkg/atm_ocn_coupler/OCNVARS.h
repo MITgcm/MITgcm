@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/OCNVARS.h,v 1.4 2007/05/10 21:58:12 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/OCNVARS.h,v 1.5 2007/10/01 14:45:52 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -19,14 +19,14 @@ C     TauX_ocn       - Zonal momentum flux on ocean grid ( N/m^2, same
 C                      sign as the wind ; positive wind == westward flow)
 C     TauY_ocn       - Meridional momentum flux on ocean grid ( N/m^2, same
 C                      sign as the wind ; positive wind == northward flow)
-C     FWFlux_ocn     - Fresh water flux on ocean grid ( m/s, positive out
-C                      of ocean).
+C     FWFlux_ocn     - Fresh water flux on ocean grid
+C                      ( kg/m2/s, positive out of ocean).
 C     SaltFlx_ocn    - salt flux from sea-ice compon. on ocean grid
-C                      (+=upward=leaving the ocean)
+C                      ( g/m2/s, +=upward=leaving the ocean)
 C     sIceMass_ocn   - sea-ice mass  on ocean grid (kg/m2)
-C     aCO2_ocn       - atmos CO2 on ocean grid (parts by volume) 
-C     wSpeed_ocn     - surface windspeed on ocean grid (m/s) 
-C     sIceFrac_ocn   - sea-ice fraction  on ocean grid 
+C     aCO2_ocn       - atmos CO2 on ocean grid (parts by volume)
+C     wSpeed_ocn     - surface windspeed on ocean grid (m/s)
+C     sIceFrac_ocn   - sea-ice fraction  on ocean grid
 
       COMMON /OCNVARS_R/
      &       AtmDepths_ocn,

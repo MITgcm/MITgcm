@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ATMVARS.h,v 1.4 2007/06/18 21:20:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ATMVARS.h,v 1.5 2007/10/01 14:45:52 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -6,7 +6,7 @@ C     | ATMVARS.h Declare arrays for holding data on the atmos.
 C     |           grid. Arrays may need adding or removing
 C     |           different couplings.
 C     *==========================================================*
- 
+
 C     AtmDepths_atm  :: Atmos. depths on atmos. grid
 C     OcMxlD_atm     :: Ocean mixed-layer depths on atmos. grid (m)
 C     SST_atm        :: Sea surface temperature on atmos. grid ( oC).
@@ -21,13 +21,13 @@ C                       sign as the wind ; positive wind == westward flow)
 C     TauY_atm       :: Meridional momentum flux on atmos. grid ( N/m^2, same
 C                       sign as the wind ; positive wind == northward flow)
 C     EvMPr_atm      :: Fresh water flux (=Evap-Precip) on atmos. grid
-C                       ( m/s, positive into atmosphere).
+C                       ( kg/m2/s, positive into atmosphere).
 C     RunOff_atm     :: Fresh water flux (=RunOff) on atmos. grid
-C                       ( m/s, positive is leaving the land bucket)
+C                       ( kg/m2/s, positive is leaving the land bucket)
 C     ROEnFx_atm     :: Energy carried by RunOff on atmos. grid
 C                       ( W/m2, +=leaving land bucket)
 C     SaltFlx_atm    :: salt flux from sea-ice compon. on atmos. grid
-C                       (+=upward=leaving the ocean)
+C                       ( g/m2/s, +=upward=leaving the ocean)
 C     sIceMass_atm   :: sea-ice mass  on atmos. grid (kg/m2)
 C     aCO2_atm       :: atmos CO2 on atmos. grid (parts by volume)
 C     wSpeed_atm     :: surface windspeed on atmos. grid (m/s)
