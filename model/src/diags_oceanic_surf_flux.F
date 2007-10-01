@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.7 2007/08/23 19:12:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.8 2007/10/01 13:28:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -71,7 +71,7 @@ C-    sea-ice loading (expressed in Mass of ice+snow / area unit, [kg/m2])
        CALL DIAGNOSTICS_FILL( sIceLoad,'sIceLoad',0,1,0,1,1,myThid )
 
 C-    net Fresh Water flux into the ocean (+=down), [kg/m2/s]
-       tmpFac = -rhoConstFresh
+       tmpFac = -1. _d 0
        CALL DIAGNOSTICS_SCALE_FILL( EmPmR,tmpFac,1,
      &                             'oceFWflx',0, 1,0,1,1,myThid )
 
@@ -127,8 +127,7 @@ C-    TFLUX (=total heat flux, match heat-content variations, [W/m2])
           DO j=1,sNy
            DO i=1,sNx
             tmp1k(i,j,bi,bj) = tmp1k(i,j,bi,bj)
-     &       + PmEpR(i,j,bi,bj)*rhoConstFresh
-     &                         *theta(i,j,ks,bi,bj)*HeatCapacity_Cp
+     &       + PmEpR(i,j,bi,bj)*theta(i,j,ks,bi,bj)*HeatCapacity_Cp
            ENDDO
           ENDDO
          ENDIF
@@ -155,8 +154,7 @@ C-    SFLUX (=total salt flux, match salt-content variations [g/m2/s])
           DO j=1,sNy
            DO i=1,sNx
             tmp1k(i,j,bi,bj) = tmp1k(i,j,bi,bj)
-     &       + PmEpR(i,j,bi,bj)*rhoConstFresh
-     &                        *salt(i,j,ks,bi,bj)
+     &       + PmEpR(i,j,bi,bj)*salt(i,j,ks,bi,bj)
            ENDDO
           ENDDO
          ENDIF
