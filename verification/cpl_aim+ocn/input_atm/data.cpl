@@ -1,6 +1,6 @@
 # Coupling package parameters, ATM component: 
 # cpl_earlyExpImpCall :: call coupler early in the time stepping call sequence
-#     cpl_oldPickup  :: restart from an old pickup (= until ckpt 52m_post)
+#     cpl_oldPickup  :: restart from an old pickup (= until ckpt 59h)
 #     useImportMxlD  :: True => use Imported Mix.Layer Detph from coupler
 #     useImportSST   :: True => use the Imported SST from coupler
 #     useImportSSS   :: True => use the Imported SSS from coupler
