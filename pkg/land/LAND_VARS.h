@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_VARS.h,v 1.3 2004/06/21 16:50:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_VARS.h,v 1.4 2007/10/01 15:20:53 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAND
@@ -19,14 +19,14 @@ C     land_groundW :: soil moisture [0-1] (= water content / field capacity)
 C     land_skinT   :: surface skin Temperature (oC)
 C     land_hSnow   :: thickness of snow over land (m)
 C     land_snowAge :: snow age (s)
-C     land_runOff  :: run-Off per surface unit [m/s]
-C     land_enRnOf  :: energy flux associated with run-Off [W/m2] 
-C                    
+C     land_runOff  :: run-Off per surface unit [kg/m2/s]
+C     land_enRnOf  :: energy flux associated with run-Off [W/m2]
+C
       COMMON /LAND_VARS_R/
      &   land_groundT, land_enthalp, land_groundW,
      &   land_skinT, land_hSnow, land_snowAge,
      &   land_runOff, land_enRnOf
- 
+
       _RL land_groundT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,land_nLev,nSx,nSy)
       _RL land_enthalp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,land_nLev,nSx,nSy)
       _RL land_groundW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,land_nLev,nSx,nSy)
@@ -48,5 +48,5 @@ C     land_EnWFlux :: Energy flux associated with Precip [W/m2] (snow, T_rain)
       _RL land_EnWFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
- 
+
 #endif /* ALLOW_LAND */
