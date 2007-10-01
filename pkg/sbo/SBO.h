@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/SBO.h,v 1.6 2006/05/22 14:25:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/SBO.h,v 1.7 2007/10/01 15:22:54 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_SBO
@@ -21,7 +21,7 @@ C     zcom         - z-comp of center-of-mass of oceans        (m)
 C     obp          - ocean-bottom pressure               (Pascals)
 cph(
 C     area         - surface wet area                       (m**2)
-C     sboempmrwet  - net E-P-R over the ocean                (m/s)
+C     sboempmrwet  - net E-P-R over the ocean            (kg/m2/s)
 C     sboqnetwet   - net heat flux over the ocean         (W/m**2)
 cph)
 C

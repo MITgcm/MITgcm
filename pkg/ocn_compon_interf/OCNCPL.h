@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/OCNCPL.h,v 1.4 2007/05/10 21:15:52 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/OCNCPL.h,v 1.5 2007/10/01 15:17:55 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -14,7 +14,7 @@ C     | model coupling being utilised. The variables carried here|
 C     | will need to be customised accordingly.                  |
 C     \==========================================================/
 C
-C     COMMON /OCN_CPL2OCN_R/ 
+C     COMMON /OCN_CPL2OCN_R/
 C     Hatm  - Atmosphere model orography i.e. height of mountains (in Pa)
 C             Used in checking consistency of land/sea regions.
 C     atmSLPr    - Atmospheric Sea-Level pressure anomaly (Pa=N/m2)
@@ -25,11 +25,11 @@ C     qLatent    - Latent heatflux (W/m^2).
 C     qLongWave  - net longwave radiation heat flux  (W/m^2) (+=upward).
 C     uVelGround - Zonal wind speed at the ground (m/s).
 C     vVelGround - Meridional wind speed at the ground (m/s).
-C     tauX       - Zonal      surface wind-stress (N/m^2). Same sign as the 
+C     tauX       - Zonal      surface wind-stress (N/m^2). Same sign as the
 C                  wind : Zonal      wind is positive for westward flow.
-C     tauY       - Meridional surface wind-stress (N/m^2). Same sign as the 
+C     tauY       - Meridional surface wind-stress (N/m^2). Same sign as the
 C                  wind : Meridional wind is positive for northward flow.
-C     FWFlux     - Surface flux of fresh water (m/s). Positive flux 
+C     FWFlux     - Surface flux of fresh water (kg/m2/s). Positive flux
 C                  is out of ocean.
 C     iceSaltFlx - salt flux from sea-ice compon. (+=upward=leaving the ocean)
 C     seaIceMass - sea-ice mass (kg/m2)
@@ -37,14 +37,14 @@ C     airCO2     - atmospheric CO2 (parts by volume)
 C     surfWSpeed - atmospheric surface wind speed (m/s)
 C     fracIce    - seaice fraction (from external model)
 C
-      COMMON /OCN_CPL2OCN_R/ 
-     &                   Hatm, 
+      COMMON /OCN_CPL2OCN_R/
+     &                   Hatm,
      &                   atmSLPr, HeatFlux, qShortWave,
 c    &                   qLatent, qSensible, qLongWave,
 c    &                   uVelGround, vVelGround,
-     &                   tauX, tauY, 
-     &                   FWFlux, 
-     &                   iceSaltFlx, seaIceMass, 
+     &                   tauX, tauY,
+     &                   FWFlux,
+     &                   iceSaltFlx, seaIceMass,
      &                   airCO2, surfWSpeed, fracIce
       _RL Hatm      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL atmSLPr   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -64,16 +64,16 @@ c     _RL vVelGround(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL surfWSpeed(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fracIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-C     COMMON /OCN_OCN2CPL_R/ 
+C     COMMON /OCN_OCN2CPL_R/
 C     ocMxlD2cpl - Ocean mixed-layer depth exported to coupler (m)
 C     SSTocn2cpl - Ocean surface temperature map exported to
 C                  coupling layer (oC).
 C     SSSocn2cpl - Ocean surface salinity exported to coupler (psu)
-C     vSqocn2cpl - Ocean surface velocity square exported to 
+C     vSqocn2cpl - Ocean surface velocity square exported to
 C                  coupler (m2/s2)
 C     fluxCO2cpl - ocean flux of CO2 exported to atm (mol/m2/s)
 C
-      COMMON /OCN_OCN2CPL_R/ 
+      COMMON /OCN_OCN2CPL_R/
      &       ocMxlD2cpl, SSTocn2cpl, SSSocn2cpl, vSqocn2cpl,
      &       fluxCO2cpl
       _RL ocMxlD2cpl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
