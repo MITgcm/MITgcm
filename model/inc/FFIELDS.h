@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.34 2007/09/22 03:11:02 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.35 2007/10/01 14:40:19 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -28,10 +28,10 @@ C                  north for cartesian and spherical polar grids
 C              Typical range: -0.5 < fv < 0.5
 C              Southwest C-grid V point
 C
-C     EmPmR :: Net upward freshwater flux in m/s
+C     EmPmR :: Net upward freshwater flux in kg/m2/s
 C              EmPmR = Evaporation - precipitation - runoff
 C              > 0 for increase in salt (ocean salinity)
-C              Typical range: -1e-7 < EmPmR < 1e-7
+C              Typical range: -1e-4 < EmPmR < 1e-4
 C              Southwest C-grid tracer point
 C
 C  saltFlux :: Net upward salt flux in psu.kg/m^2/s
