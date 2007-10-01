@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/CPL_PARAMS.h,v 1.3 2007/06/18 21:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/CPL_PARAMS.h,v 1.4 2007/10/01 15:15:05 jmc Exp $
 C $Name:  $
 
 #ifdef COMPONENT_MODULE
@@ -11,7 +11,7 @@ C     *==========================================================*
 
 C--   COMMON /CPL_ATM_PAR_L/: logical parameters
 C     cpl_earlyExpImpCall :: call coupler early in the time stepping call sequence
-C     cpl_oldPickup :: restart from an old pickup (= until checkpoint 52m_post)
+C     cpl_oldPickup :: restart from an old pickup (= until checkpoint 59h)
 C     useImportMxlD :: True => use Imported Mix.Layer Detph from coupler
 C     useImportSST  :: True => use the Imported SST from coupler
 C     useImportSSS  :: True => use the Imported SSS from coupler

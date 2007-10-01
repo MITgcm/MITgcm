@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.4 2007/06/18 21:28:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.5 2007/10/01 15:15:05 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,7 +54,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Coupling parameters:
 C     cpl_earlyExpImpCall :: call coupler early in the time stepping call sequence
-C     cpl_oldPickup  :: restart from an old pickup (= until checkpoint 52m_post)
+C     cpl_oldPickup  :: restart from an old pickup (= until checkpoint 59h)
 C     useImportMxlD  :: True => use Imported Mix.Layer Detph from coupler
 C     useImportSST   :: True => use the Imported SST from coupler
 C     useImportSSS   :: True => use the Imported SSS from coupler
