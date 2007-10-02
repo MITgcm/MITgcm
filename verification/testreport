@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.103 2007/09/21 19:23:33 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.104 2007/10/02 14:24:42 jmc Exp $
 #  $Name:  $
 #
 
@@ -1106,12 +1106,7 @@ for dir in $TESTDIRS ; do
 
     #  Verify that the testdir exists and contains previous 
     #  results in the correct location--or skip this directory!
-    fout=
-    if test "x$ADM" = x ; then
-	fout=$dir"/results/"$ref_outp
-    else
-	fout=$dir"/results_ad/"$ref_outp
-    fi
+    fout=$dir"/results/"$ref_outp
     if test ! -r $fout ; then
 	echo "can't read \"$fout\" -- skipping $dir"
 	continue
