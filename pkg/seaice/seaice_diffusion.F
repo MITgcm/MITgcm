@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diffusion.F,v 1.5 2006/11/01 01:56:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diffusion.F,v 1.6 2007/10/03 19:41:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -44,12 +44,16 @@ C     myThid     :: my Thread Id number
       _RL iceMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS xA     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER advScheme
       INTEGER tracerIdentity
       INTEGER bi,bj
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+#ifdef ALLOW_DIAGNOSTICS
+      CHARACTER*8 diagName
+      CHARACTER*4 SEAICE_DIAG_SUFX, diagSufx
+      EXTERNAL    SEAICE_DIAG_SUFX
+#endif
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -60,6 +64,12 @@ C     i,j :: Loop counters
       _RL fMer   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       IF ( diff1 .GT. 0. _d 0 ) THEN
+#ifdef ALLOW_DIAGNOSTICS
+C--   Set diagnostic suffix for the current tracer
+       IF ( useDiagnostics ) THEN
+        diagSufx = SEAICE_DIAG_SUFX( tracerIdentity, myThid )
+       ENDIF
+#endif
 C--   Tendency due to horizontal diffusion
         k = 1
         DO j=1-Oly,sNy+Oly
@@ -88,6 +98,16 @@ C--   say, diffKhT
      &        *MIN( _dxF(I,J,bi,bj), _dyF(I,J,bi,bj))
          ENDDO
         ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+C-    Diagnostics of Tracer flux in Y dir (mainly Diffusive terms),
+C     excluding advective terms:
+        IF ( useDiagnostics .AND. diff1.NE.0. ) THEN
+         diagName = 'DFxE'//diagSufx
+         CALL DIAGNOSTICS_FILL(fZon,diagName, k,1, 2,bi,bj, myThid)
+         diagName = 'DFyE'//diagSufx
+         CALL DIAGNOSTICS_FILL(fMer,diagName, k,1, 2,bi,bj, myThid)
+        ENDIF
+#endif
 C     endif do horizontal diffusion
       ENDIF
 

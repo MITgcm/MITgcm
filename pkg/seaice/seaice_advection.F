@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.7 2007/08/16 02:20:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.8 2007/10/03 19:41:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -133,8 +133,8 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
-      CHARACTER*4 GAD_DIAG_SUFX, diagSufx
-      EXTERNAL    GAD_DIAG_SUFX
+      CHARACTER*4 SEAICE_DIAG_SUFX, diagSufx
+      EXTERNAL    SEAICE_DIAG_SUFX
 #endif
       LOGICAL dBug
       _RL tmpFac
@@ -161,12 +161,12 @@ CEOP
           endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-CML#ifdef ALLOW_DIAGNOSTICS
-CMLC--   Set diagnostic suffix for the current tracer
-CML      IF ( useDiagnostics ) THEN
-CML        diagSufx = GAD_DIAG_SUFX( tracerIdentity, myThid )
-CML      ENDIF
-CML#endif
+#ifdef ALLOW_DIAGNOSTICS
+C--   Set diagnostic suffix for the current tracer
+      IF ( useDiagnostics ) THEN
+        diagSufx = SEAICE_DIAG_SUFX( tracerIdentity, myThid )
+      ENDIF
+#endif
 
       dBug = debugLevel.GE.debLevB
      &     .AND. myIter.EQ.nIter0
@@ -717,14 +717,14 @@ C-    explicit advection is done ; store tendency in gFld:
        ENDDO
       ENDDO
 
-CML#ifdef ALLOW_DIAGNOSTICS
-CML        IF ( useDiagnostics ) THEN
-CML         diagName = 'ADVx'//diagSufx
-CML         CALL DIAGNOSTICS_FILL(afx,diagName, k,1, 2,bi,bj, myThid)
-CML         diagName = 'ADVy'//diagSufx
-CML         CALL DIAGNOSTICS_FILL(afy,diagName, k,1, 2,bi,bj, myThid)
-CML        ENDIF
-CML#endif
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+         diagName = 'ADVx'//diagSufx
+         CALL DIAGNOSTICS_FILL(afx,diagName, k,1, 2,bi,bj, myThid)
+         diagName = 'ADVy'//diagSufx
+         CALL DIAGNOSTICS_FILL(afy,diagName, k,1, 2,bi,bj, myThid)
+        ENDIF
+#endif
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB

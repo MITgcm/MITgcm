@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.35 2007/10/01 13:37:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.36 2007/10/03 19:41:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,7 +47,7 @@ C     auxillary variables
       _RL availHeat, hEffOld, snowEnergy, snowAsIce
       _RL growthHEFF, growthNeg
 #ifdef ALLOW_SEAICE_FLOODING
-      _RL hDraft, hFlood
+      _RL hDraft
 #endif /* ALLOW_SEAICE_FLOODING */
       _RL GAREA      ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
       _RL GHEFF      ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
@@ -99,6 +99,11 @@ C     local copy of AREA
       _RL HICEP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL FICEP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL QSWIP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+#endif
+
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
 #endif
 
       if ( buoyancyRelation .eq. 'OCEANICP' ) then
@@ -748,19 +753,48 @@ CADJ &                         key = iicekey, byte = isbyte
          ENDDO
         ENDDO
 
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+         IF ( DIAGNOSTICS_IS_ON('SIthdgrh',myThid) ) THEN
+C     use (abuse) GHEFF to diagnose the total thermodynamic growth rate
+          DO J=1,sNy
+           DO I=1,sNx
+            GHEFF(I,J) = (HEFF(I,J,1,bi,bj)-HEFF(I,J,2,bi,bj))
+     &           /SEAICE_deltaTtherm
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(GHEFF,'SIthdgrh',0,1,2,bi,bj,myThid)
+         ENDIF
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
 #ifdef ALLOW_SEAICE_FLOODING
         IF ( SEAICEuseFlooding ) THEN
 C     convert snow to ice if submerged
          DO J=1,sNy
           DO I=1,sNx
-           hDraft = (HSNOW(I,J,bi,bj)*330. _d 0
+           hDraft     = (HSNOW(I,J,bi,bj)*330. _d 0
      &              +HEFF(I,J,1,bi,bj)*SEAICE_rhoIce)/1000. _d 0
-           hFlood = hDraft - MIN(hDraft,HEFF(I,J,1,bi,bj))
-           HEFF(I,J,1,bi,bj) = HEFF(I,J,1,bi,bj) + hFlood
+C     here GEFF is the gain of ice due to flooding
+           GHEFF(I,J) = hDraft - MIN(hDraft,HEFF(I,J,1,bi,bj))
+           HEFF(I,J,1,bi,bj) = HEFF(I,J,1,bi,bj) + GHEFF(I,J)
            HSNOW(I,J,bi,bj)  = MAX(0. _d 0,
-     &          HSNOW(I,J,bi,bj)-hFlood*ICE2SNOW)
+     &          HSNOW(I,J,bi,bj)-GHEFF(I,J)*ICE2SNOW)
           ENDDO
          ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+         IF ( useDiagnostics ) THEN
+          IF ( DIAGNOSTICS_IS_ON('SIsnwice',myThid) ) THEN
+C     turn GHEFF into a rate
+           DO J=1,sNy
+            DO I=1,sNx
+             GHEFF(I,J) = GHEFF(I,J)/SEAICE_deltaTtherm
+            ENDDO
+           ENDDO
+           CALL DIAGNOSTICS_FILL(GHEFF,'SIsnwice',0,1,2,bi,bj,myThid)
+          ENDIF
+         ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
         ENDIF
 #endif /* ALLOW_SEAICE_FLOODING */
 

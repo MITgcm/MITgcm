@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.9 2007/09/18 14:43:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.10 2007/10/03 19:41:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -20,6 +20,7 @@ C     !USES:
 
 C     === Global variables ===
 #include "EEPARAMS.h"
+#include "SEAICE_PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -41,6 +42,11 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
+
+      CHARACTER*10  flxUnits
+      CHARACTER*15  locName
+      CHARACTER*4 SEAICE_DIAG_SUFX, diagSufx
+c     EXTERNAL    SEAICE_DIAG_SUFX
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -194,7 +200,193 @@ C     Except under sea ice, SIqsw is also identical to EXFswnet.
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )
 
+CML      diagName  = 'SIttendh'
+CML      diagTitle = 'SEAICE tendency of effective ice thickness'
+CML      diagUnits = 'm/s             '
+CML      diagCode  = 'SM      M1      '
+CML      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+CML     I    diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIthdgrh'
+      diagTitle = 'SEAICE thermodynamic growth rate of '//
+     &     'effective ice thickness'
+      diagUnits = 'm/s             '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIsnwice'
+      diagTitle = 'SEAICE ice formation rate due to flooding'
+      diagUnits = 'm/s             '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIuheff '
+      diagTitle = 'Zonal Transport of effective ice thickness'
+      diagUnits = 'm^2/s           '
+      WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIvheff '
+      diagTitle = 'Meridional Transport of effective ice thickness'
+      diagUnits = 'm^2/s           '
+      WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum ,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+C     advective and diffusive fluxes
+C     effective thickness
+      flxUnits = '.m^2/s    '
+      locName = 'eff ice thickn '
+      WRITE(diagUnits,'(2A)') 'm',flxUnits
+      diagSufx = SEAICE_DIAG_SUFX( GAD_HEFF, myThid )
+C--   advective flux
+      diagName  = 'ADVx'//diagSufx
+      diagTitle = 'Zonal      Advective Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'ADVy'//diagSufx
+      diagTitle = 'Meridional Advective Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+C--   Diffusive flux:
+      diagName  = 'DFxE'//diagSufx
+      diagTitle = 'Zonal      Diffusive Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'DFyE'//diagSufx
+      diagTitle = 'Meridional Diffusive Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+C     fractional ice covered area (ice concentration)
+      locName = 'fract area     '
+      WRITE(diagUnits,'(2A)') 'm^2/m^2',flxUnits
+      diagSufx = SEAICE_DIAG_SUFX( GAD_AREA, myThid )
+C--   advective flux
+      diagName  = 'ADVx'//diagSufx
+      diagTitle = 'Zonal      Advective Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'ADVy'//diagSufx
+      diagTitle = 'Meridional Advective Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+C--   Diffusive flux:
+      diagName  = 'DFxE'//diagSufx
+      diagTitle = 'Zonal      Diffusive Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'DFyE'//diagSufx
+      diagTitle = 'Meridional Diffusive Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+C     effective snow thickness
+      locName = 'eff snow thickn'
+      WRITE(diagUnits,'(2A)') 'm',flxUnits
+      diagSufx = SEAICE_DIAG_SUFX( GAD_SNOW, myThid )
+C--   advective flux
+      diagName  = 'ADVx'//diagSufx
+      diagTitle = 'Zonal      Advective Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'ADVy'//diagSufx
+      diagTitle = 'Meridional Advective Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+C--   Diffusive flux:
+      diagName  = 'DFxE'//diagSufx
+      diagTitle = 'Zonal      Diffusive Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'DFyE'//diagSufx
+      diagTitle = 'Meridional Diffusive Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+C     sea ice salinity
+      locName = 'seaice salinity'
+      WRITE(diagUnits,'(2A)') 'psu',flxUnits
+      diagSufx = SEAICE_DIAG_SUFX( GAD_SALT, myThid )
+C--   advective flux
+      diagName  = 'ADVx'//diagSufx
+      diagTitle = 'Zonal      Advective Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'ADVy'//diagSufx
+      diagTitle = 'Meridional Advective Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+C--   Diffusive flux:
+      diagName  = 'DFxE'//diagSufx
+      diagTitle = 'Zonal      Diffusive Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'DFyE'//diagSufx
+      diagTitle = 'Meridional Diffusive Flux of '//locName
+      WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
 #endif /* ALLOW_DIAGNOSTICS */
+
+      RETURN
+      END
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP 0
+C     !ROUTINE: SEAICE_DIAG_SUFX
+
+C     !INTERFACE:
+      CHARACTER*4 FUNCTION SEAICE_DIAG_SUFX( tracerId, myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | FUNCTION SEAICE_DIAG_SUFX
+C     | o Return diagnostic suffix (4 character long) for the
+C     |   "tracerId" tracer (used to build diagnostic names).
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
+#include "EEPARAMS.h"
+#include "SEAICE_PARAMS.h"
+
+C     !INPUT PARAMETERS:
+C     tracerId   ::  tracer identifier
+C     myThid     ::  my thread Id number
+      INTEGER      tracerId
+      INTEGER      myThid
+CEOP
+
+C     !LOCAL VARIABLES:
+
+C--   Set diagnostic suffix (4 character long) for the "tracerId" tracer
+      IF ( tracerId.EQ.GAD_HEFF ) THEN
+        SEAICE_DIAG_SUFX = 'HEFF'
+      ELSEIF( tracerId.EQ.GAD_AREA ) THEN
+        SEAICE_DIAG_SUFX = 'AREA'
+      ELSEIF( tracerId.EQ.GAD_SNOW ) THEN
+        SEAICE_DIAG_SUFX = 'SNOW' 
+      ELSEIF( tracerId.EQ.GAD_SALT ) THEN
+        SEAICE_DIAG_SUFX = 'SSLT' 
+      ELSE
+        SEAICE_DIAG_SUFX = 'aaaa'
+      ENDIF
 
       RETURN
       END

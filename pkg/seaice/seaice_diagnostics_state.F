@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.2 2007/09/15 01:38:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.3 2007/10/03 19:41:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -136,6 +136,33 @@ C     principle stress components
         ENDDO
        ENDIF
 #endif /* SEAICE_CGRID */
+C     abuse press as a temporary field
+        IF ( DIAGNOSTICS_IS_ON('SIuheff ',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j = 1,sNy
+            DO i = 1,sNx+1
+             press(i,j,bi,bj) = UICE(i,j,1,bi,bj)*0.5 _d 0
+     &            *(HEFF(i,j,1,bi,bj)+HEFF(i-1,j,1,bi,bj))
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(press,'SIuheff ',0,1,0,1,1,myThid)
+        ENDIF
+        IF ( DIAGNOSTICS_IS_ON('SIvheff ',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j = 1,sNy+1
+            DO i = 1,sNx
+             press(i,j,bi,bj) = VICE(i,j,1,bi,bj)*0.5 _d 0
+     &            *(HEFF(i,j,1,bi,bj)+HEFF(i,j-1,1,bi,bj))
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(press,'SIvheff ',0,1,0,1,1,myThid)
+        ENDIF
 C     endif useDiagnostics
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
