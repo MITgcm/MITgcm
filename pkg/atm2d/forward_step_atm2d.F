@@ -98,7 +98,6 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
         xco2ann=0.0
 #endif
 #ifdef CPL_OCEANCO2
-        ncallatm=0
         temuptann=0.
         DO j=1,jm0
           co24ocnan(j)=0.0
@@ -241,7 +240,7 @@ c        PRINT *,'N2O'
 c        PRINT *,(temn2o(j),j=1,jm0)
         DO j=1,jm0
           antemnep(j)=antemnep(j)+temnep(monid,j)
-          nepan=nepan+temnep(nn,j)
+          nepan=nepan+temnep(monid,j)
           ch4ann=ch4ann+temch4(j)
           n2oann=n2oann+temn2o(j)
         ENDDO ! j
