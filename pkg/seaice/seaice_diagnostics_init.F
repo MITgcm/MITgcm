@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.10 2007/10/03 19:41:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.11 2007/10/04 14:27:49 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -43,7 +43,7 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 
-      CHARACTER*10  flxUnits
+      CHARACTER*9   flxUnits
       CHARACTER*15  locName
       CHARACTER*4 SEAICE_DIAG_SUFX, diagSufx
 c     EXTERNAL    SEAICE_DIAG_SUFX
@@ -238,7 +238,7 @@ CML     I    diagName, diagCode, diagUnits, diagTitle, myThid )
 
 C     advective and diffusive fluxes
 C     effective thickness
-      flxUnits = '.m^2/s    '
+      flxUnits = '.m^2/s   '
       locName = 'eff ice thickn '
       WRITE(diagUnits,'(2A)') 'm',flxUnits
       diagSufx = SEAICE_DIAG_SUFX( GAD_HEFF, myThid )
