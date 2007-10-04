@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sp5+mpi_nas,v 1.1 2007/10/04 18:21:24 heimbach Exp $
+#
+
+#  tested on bluevista, ce107 Feb 2006
+#  using the following invocation:
+#    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/sp5+mpi -make=gmake
+#  modified for IBM Power 5+ "Schirra" at NASA/ARC, ce107, heimbach Oct 2007
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+
+# NML_TERMINATOR should enable using "&" as terminator, but doesnt work
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_AIX -DWORDLENGTH=4 -DNML_TERMINATOR'
+
+INCLUDES="-I/usr/lpp/ppe.poe/include/thread64 -I${NETCDF}/include"
+CPP='/lib/cpp -P'
+# The -q64 is redundant on bluevista, default mode is 64bit
+CC='mpcc_r -q64'
+FC='mpxlf_r -q64'
+LINK='mpxlf_r -q64'
+LIBS="-lmass -L${NETCDF}/lib"
+FFLAGS='-qfixed=132' 
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-O3 -Q -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+    CFLAGS='-O3 -Q -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+else
+    #  Try to follow IEEE-754
+    FOPTIM='-O3 -qstrict -Q -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+    CFLAGS='-O3 -qstrict -Q -qarch=auto -qtune=auto -qcache=auto -qmaxmem=-1'
+fi
+#
+# useful for netcdf
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
+#
+# useful for parallel DIVA
+MPI_HEADER_FILES='mpif.h'
+MPI_HEADER_FILES_INC='./mpi_headers/mpif.h'
+MPIINCLUDEDIR='/usr/lpp/ppe.poe/include/thread64'
+#
+# usful for timing, but not all libs availale on bv
+HPMTINC=' '
+HPMTLIB='-lhpm_r -lpmapi'
+#GSLINC='-I/homebv/evangeli/gsl-1.5/include'
+#GSLLIB='-L/homebv/evangeli/gsl-1.5/lib64 -lgsl -lgslcblas'
+#PAPIINC='-I/usr/local/include'
+#PAPILIB='-L/usr/local/lib -lpapi'
