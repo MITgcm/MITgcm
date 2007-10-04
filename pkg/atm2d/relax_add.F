@@ -82,13 +82,13 @@ C--   Interpolate and add to anomaly
         IF (ntTypeRelax .EQ. 0) THEN
           lambdaTheta =  r_tauThetaRelax
         ELSE
-          lambdaTheta = r_tauThetaRelax/
+          lambdaTheta = r_tauThetaRelax *
      &                 max(cos(1.5 _d 0*yC(1,j,1,1)*deg2rad),0. _d 0)
         ENDIF
         IF (nsTypeRelax .EQ. 0) THEN
           lambdaSalt = r_tauSaltRelax
         ELSE
-          lambdaSalt = r_tauSaltRelax/
+          lambdaSalt = r_tauSaltRelax *
      &                max(cos(1.5 _d 0*yC(1,j,1,1)*deg2rad),0. _d 0)
         ENDIF
 
