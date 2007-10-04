@@ -13,6 +13,7 @@ C     === Global Atmosphere Variables ===
 #include "ATMSIZE.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "THSICE_VARS.h"
 #include "ATM2D_VARS.h"
 
@@ -21,7 +22,6 @@ C     === Global Atmosphere Variables ===
 #  include "OCNVARS.h"
 #  include "OCNIDS.h"
 #else
-#  include "PARAMS.h"
 #  include "FFIELDS.h"
 #  include "SURFACE.h"
 #  ifdef ALLOW_DIC
@@ -52,8 +52,9 @@ C OCNVARS common set from ATM2D common
           qShortWave_ocn(i,j)= pass_solarnet(i,j) 
           TauX_ocn(i,j)= pass_fu(i,j) 
           TauY_ocn(i,j)= pass_fv(i,j) 
-          FWFlux_ocn(i,j)= pass_precip(i,j) + pass_evap(i,j) 
-     &                     + pass_runoff(i,j)
+C         convert FW to MITGCM units kg/m2/s for passing
+          FWFlux_ocn(i,j)= (pass_precip(i,j) + pass_evap(i,j) 
+     &                     + pass_runoff(i,j)) * rhoConstFresh
           SaltFlx_ocn(i,j) = sFluxFromIce(i,j)
 #  ifdef ATMOSPHERIC_LOADING
           sIceMass_ocn(i,j) = pass_sIceLoad(i,j)
@@ -72,8 +73,8 @@ C FFIELDS.h common block set from ATM2D common
           Qsw(i,j,1,1)= pass_solarnet(i,j) 
           fu(i,j,1,1)= pass_fu(i,j) 
           fv(i,j,1,1)= pass_fv(i,j) 
-          EmPmR(i,j,1,1)= pass_precip(i,j) + pass_evap(i,j) 
-     &                     + pass_runoff(i,j)
+          EmPmR(i,j,1,1)= (pass_precip(i,j) + pass_evap(i,j) 
+     &                     + pass_runoff(i,j)) * rhoConstFresh
           saltFlux(i,j,1,1)= sFluxFromIce(i,j)
 
           CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
