@@ -55,9 +55,10 @@ c     == local variables ==
       integer levoff
       integer ilsalt
 
-      _RL fctilemm
       _RL tmpx
-      _RL sumcos
+      _RL sumtot
+      _RL fctiletot
+
 
       character*(80) fnamehflux
 
@@ -94,7 +95,7 @@ c--   Read tiled data.
      &    hfluxbarfile(1:ilsalt),'.',optimcycle
       endif
 
-      irec = 1
+      do irec = 1, MAX(1,nyearsrec)
 
 c--     Read time averages and the monthly mean data.
         call active_read_xy( fnamehflux, tmpfld2d, irec,
@@ -102,31 +103,45 @@ c--     Read time averages and the monthly mean data.
      &                       optimcycle, mythid,
      &                       xx_hflux_mean_dummy )
 
+        sumtot    = 0.
+        fctiletot = 0.
         do bj = jtlo,jthi
           do bi = itlo,ithi
             kk = 1
-            fctilemm = 0. _d 0
-            sumcos   = 0. _d 0
             do j = jmin,jmax
               do i = imin,imax
                 tmpx=tmpfld2d(i,j,bi,bj)
                 if (maskC(i,j,kk,bi,bj) .ne. 0.) then
-                   fctilemm = fctilemm + tmpx
-     &                  *cos(yc(i,j,bi,bj)*deg2rad)
-                   sumcos = sumcos + cos(yc(i,j,bi,bj)*deg2rad)
+                   fctiletot = fctiletot
+     &                + tmpx*cos(yc(i,j,bi,bj)*deg2rad)
+                   sumtot = sumtot
+     &                + cos(yc(i,j,bi,bj)*deg2rad)
                    num_hfluxmm(bi,bj) = num_hfluxmm(bi,bj) + 1
                 endif
               enddo
             enddo
-
-            _GLOBAL_SUM_R8( sumcos , myThid )
-            if (sumcos.eq.0.) sumcos = 1.
-
-            fctilemm = fctilemm / sumcos
-            objf_hfluxmm(bi,bj) = whfluxmm(bi,bj) * fctilemm
-
           enddo
         enddo
+
+       _GLOBAL_SUM_R8( sumtot , myThid )
+       _GLOBAL_SUM_R8( fctiletot , myThid )
+       
+       if (sumtot.eq.0.) sumtot = 1.
+
+       if ( wmean_hflux .NE. 0. ) then
+          objf_hfluxmm = objf_hfluxmm
+     &        + (fctiletot/sumtot/wmean_hflux)**2
+       else
+          objf_hfluxmm = 0. _d 0
+       endif
+
+c-- diagnostic: imbalance per year:
+       write(standardmessageunit,'(A,I5,2(X,D22.14))')
+     &      ' --> bal_hfluxmm    =', irec,
+     &      fctiletot/sumtot,
+     &      (fctiletot/sumtot/wmean_hflux)**2
+
+      enddo
 
 #endif
 

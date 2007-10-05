@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.36 2007/09/20 22:01:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.37 2007/10/05 18:53:21 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -310,9 +310,9 @@ c--   Sum up all contributions.
      &                         +mult_smooth_bc*objf_tauusmoo(bi,bj) )
      &         + mult_tauv    * ( objf_tauv(bi,bj)+objf_tauvm(bi,bj)
      &                         +mult_smooth_bc*objf_tauvsmoo(bi,bj) )
-     &         + mult_hflux   * ( objf_hflux(bi,bj)+objf_hfluxm(bi,bj)
+     &         + mult_hflux   * ( objf_hflux(bi,bj)
      &                         +mult_smooth_bc*objf_hfluxsmoo(bi,bj) )
-     &         + mult_sflux   * ( objf_sflux(bi,bj)+objf_sfluxm(bi,bj)
+     &         + mult_sflux   * ( objf_sflux(bi,bj)
      &                         +mult_smooth_bc*objf_sfluxsmoo(bi,bj) )
      &         + mult_h       * ( mult_tp  * objf_tp(bi,bj) 
      &                          + mult_ers * objf_ers(bi,bj)
@@ -388,11 +388,8 @@ c--   Sum up all contributions.
           f_tauvm  = f_tauvm + objf_tauvm(bi,bj)
           f_tauvsmoo = f_tauvsmoo + objf_tauvsmoo(bi,bj)
           f_hflux = f_hflux + objf_hflux(bi,bj)   
-          f_hfluxm = f_hfluxm + objf_hfluxm(bi,bj)   
-          f_hfluxmm = f_hfluxmm + objf_hfluxmm(bi,bj)   
           f_hfluxsmoo = f_hfluxsmoo + objf_hfluxsmoo(bi,bj)   
           f_sflux = f_sflux + objf_sflux(bi,bj)  
-          f_sfluxm = f_sfluxm + objf_sfluxm(bi,bj)  
           f_sfluxsmoo = f_sfluxsmoo + objf_sfluxsmoo(bi,bj)   
           f_uwind  = f_uwind + objf_uwind(bi,bj)
           f_vwind  = f_vwind + objf_vwind(bi,bj)
@@ -470,10 +467,8 @@ c--   Sum up all contributions.
           no_tauv = no_tauv + num_tauv(bi,bj)
           no_tauvm  = no_tauvm + num_tauvm(bi,bj)
           no_hflux= no_hflux + num_hflux(bi,bj)   
-          no_hfluxm = no_hfluxm + num_hfluxm(bi,bj)   
           no_hfluxmm = no_hfluxmm + num_hfluxmm(bi,bj)   
           no_sflux= no_sflux + num_sflux(bi,bj)  
-          no_sfluxm = no_sfluxm + num_sfluxm(bi,bj)  
           no_sfluxmm = no_sfluxmm + num_sfluxmm(bi,bj)  
           no_atemp  = no_atemp + num_atemp(bi,bj)
           no_aqh    = no_aqh + num_aqh(bi,bj)
@@ -557,11 +552,9 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_tauvm , myThid )
       _GLOBAL_SUM_R8( f_tauvsmoo , myThid )
       _GLOBAL_SUM_R8( f_hflux , myThid )
-      _GLOBAL_SUM_R8( f_hfluxm , myThid )
       _GLOBAL_SUM_R8( f_hfluxmm , myThid )
       _GLOBAL_SUM_R8( f_hfluxsmoo , myThid )
       _GLOBAL_SUM_R8( f_sflux , myThid )
-      _GLOBAL_SUM_R8( f_sfluxm , myThid )
       _GLOBAL_SUM_R8( f_sfluxsmoo , myThid )
       _GLOBAL_SUM_R8( f_uwind , myThid )
       _GLOBAL_SUM_R8( f_vwind , myThid )
@@ -640,10 +633,8 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( no_tauv , myThid )
       _GLOBAL_SUM_R8( no_tauvm , myThid )
       _GLOBAL_SUM_R8( no_hflux , myThid )
-      _GLOBAL_SUM_R8( no_hfluxm , myThid )
       _GLOBAL_SUM_R8( no_hfluxmm , myThid )
       _GLOBAL_SUM_R8( no_sflux , myThid )
-      _GLOBAL_SUM_R8( no_sfluxm , myThid )
       _GLOBAL_SUM_R8( no_sfluxmm , myThid )
       _GLOBAL_SUM_R8( no_uwind , myThid )
       _GLOBAL_SUM_R8( no_vwind , myThid )
@@ -750,15 +741,11 @@ c--   Do global summation for each part of the cost function
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_hflux   =',f_hflux
       write(standardmessageunit,'(A,D22.15)')
-     &     ' --> f_hfluxm  =',f_hfluxm
-      write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_hfluxmm =',f_hfluxmm
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_hfluxsmoo =',f_hfluxsmoo
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_sflux   =',f_sflux
-      write(standardmessageunit,'(A,D22.15)')
-     &     ' --> f_sfluxm  =',f_sfluxm
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_sfluxmm =',f_sfluxmm
       write(standardmessageunit,'(A,D22.15)')
@@ -885,16 +872,15 @@ c--   Each process has calculated the global part for itself.
      &          + mult_hmean*objf_hmean
         no_hmean = num_hmean
 
-        if ( wmean_hflux .NE. 0. ) then
-          f_hfluxmm2 = mult_hfluxmm
-     &        *(f_hfluxmm+1.0)*(f_hfluxmm+1.0)
-     &        /(wmean_hflux*wmean_hflux)
-        endif
 cph(
 cph this is from annual mean misfits;
 cph simple sums and squares needed to be taken at annual intervals
+        f_hfluxmm  = f_hfluxmm + objf_hfluxmm
+        f_hfluxmm2 = mult_hfluxmm*f_hfluxmm
+c
         f_sfluxmm  = f_sfluxmm + objf_sfluxmm
         f_sfluxmm2 = mult_sfluxmm*f_sfluxmm
+c
         f_transp   = mult_transp*objf_transp
 
         no_transp = num_transp

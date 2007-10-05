@@ -130,7 +130,7 @@ c--     Read time averages and the monthly mean data.
 
        if ( wmean_sflux .NE. 0. ) then
           objf_sfluxmm = objf_sfluxmm
-     &        + (fctiletot/sumtot/wmean_sflux)**2
+     &        + ( (fctiletot/sumtot-1.D0)/wmean_sflux )**2
        else
           objf_sfluxmm = 0. _d 0
        endif

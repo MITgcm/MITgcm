@@ -416,7 +416,7 @@ c                  function contributions.
      &                objf_transp
       _RL  objf_hflux  (nsx,nsy)
       _RL  objf_hfluxm (nsx,nsy)
-      _RL  objf_hfluxmm(nsx,nsy)
+      _RL  objf_hfluxmm
       _RL  objf_hfluxsmoo  (nsx,nsy)
       _RL  objf_sflux  (nsx,nsy)
       _RL  objf_sfluxm (nsx,nsy)
