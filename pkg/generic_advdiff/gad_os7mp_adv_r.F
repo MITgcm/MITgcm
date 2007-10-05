@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_r.F,v 1.5 2007/06/13 18:45:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_r.F,v 1.6 2007/10/05 10:50:47 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -91,6 +91,21 @@ C     == Local variables ==
          MskIm   = maskC(i,j,kp1,bi,bj) * float(kp1-k)
          MskImm  = maskC(i,j,kp2,bi,bj) * float(kp2-kp1)
          MskImmm = maskC(i,j,kp3,bi,bj) * float(kp3-kp2)
+        ELSE
+         Qippp = 0. _d 0
+         Qipp  = 0. _d 0
+         Qip   = 0. _d 0
+         Qi    = 0. _d 0
+         Qim   = 0. _d 0
+         Qimm  = 0. _d 0
+         Qimmm = 0. _d 0
+
+         MskIpp  = 0. _d 0
+         MskIp   = 0. _d 0
+         MskI    = 0. _d 0
+         MskIm   = 0. _d 0
+         MskImm  = 0. _d 0
+         MskImmm = 0. _d 0
         ENDIF
 
         IF (wTrans(i,j).ne.0.) THEN
