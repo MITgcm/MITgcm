@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.887 2007/10/03 19:42:16 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.888 2007/10/05 10:54:31 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add a little bit of code to gad_os7mp_adv_?.F to help vectorization
 o add new diagnostics to seaice: advective, diffusive fluxes (only for
   multidim-advection, for scheme 2 they are not filled) and transports, 
   thermodynamic growth rates
