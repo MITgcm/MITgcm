@@ -1,9 +1,12 @@
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/CFC.h,v 1.2 2007/10/08 23:57:20 jmc Exp $
+C $Name:  $
+
 C     /==========================================================\
 C     | CFC.h                                                |
 C     |==========================================================|
 
        COMMON /CFC_NEEDS/
-     &              AtmosCFC11, AtmosCFC12, AtmosP, 
+     &              AtmosCFC11, AtmosCFC12, AtmosP,
      &              pisvel,fice
       _RL  AtmosCFC11(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosCFC12(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

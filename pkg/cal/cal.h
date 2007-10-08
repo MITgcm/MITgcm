@@ -1,5 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.4 2006/03/20 15:14:27 jmc Exp $
-
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.5 2007/10/08 23:55:46 jmc Exp $
+C $Name:  $
 
 c     ==================================================================
 c     HEADER calendar
@@ -116,7 +116,7 @@ C                    for parameters chkPtFreq, pChkPtFreq, taveFreq, SEAICE_tave
 C                    KPP_taveFreq, and freq in pkg/diagnostics are converted to exact
 C                    calendar months and years.  Requires pkg/cal.
 
-      common /cal_l/ 
+      common /cal_l/
      &               calendarDumps,
      &               usingNoCalendar,
      &               usingModelCalendar,
