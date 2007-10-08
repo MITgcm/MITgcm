@@ -1,5 +1,5 @@
-# $Header: /u/gcmpack/MITgcm/pkg/mnc/TESTING_README.txt,v 1.2 2004/03/19 03:28:36 edhill Exp $
-#
+# $Header: /u/gcmpack/MITgcm/pkg/mnc/TESTING_README.txt,v 1.3 2007/10/08 17:00:17 jmc Exp $
+# $Name:  $
 
 The files here (the "MNC package") have an intentionally weak link to
 MITgcm.  Since few FORTRAN common blocks are shared with the main

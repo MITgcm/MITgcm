@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_ad.flow,v 1.4 2007/10/08 17:00:17 jmc Exp $
+C $Name:  $
 
 C----------------------------------------
 C subroutine mnc_cw_i_w_s

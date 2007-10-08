@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/PACKAGES_CONFIG.t,v 1.5 2007/10/08 17:00:17 jmc Exp $
+C $Name:  $
 
 #define _RL Real*8
 #define _RS Real*4

@@ -1,6 +1,7 @@
 #! /usr/bin/env sh
 #
-# $Header: /u/gcmpack/MITgcm/pkg/mnc/parse_local_info,v 1.2 2005/01/05 18:26:56 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/mnc/parse_local_info,v 1.3 2007/10/08 17:00:17 jmc Exp $
+# $Name:  $
 #
 
 tag="../../doc/tag-index"
