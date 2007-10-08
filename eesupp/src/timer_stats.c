@@ -1,3 +1,7 @@
+/*
+ * $Header: /u/gcmpack/MITgcm/eesupp/src/timer_stats.c,v 1.4 2007/10/08 17:28:53 jmc Exp $
+ * $Name:  $
+ */
 #include <sys/types.h>
 #include <sys/times.h>
 #include <sys/time.h>
