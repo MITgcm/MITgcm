@@ -1,17 +1,17 @@
-#
-# $Header: /u/gcmpack/MITgcm/pkg/Attic/pkg_default,v 1.3 2004/03/25 15:20:29 adcroft Exp $
-#
-#  This is the list of packages that genmake will, by default, add to MITgcm.
-#
-#  To override this list, please specify a different file to genmake using, for 
-#  instance:
-#
-#    genmake --pdefault=/some/other/defaults_file
-#
+# $Header: /u/gcmpack/MITgcm/pkg/Attic/pkg_default,v 1.4 2007/10/08 22:12:50 jmc Exp $
+# $Name:  $
 
-
-# JMC says that aim, aim_v23, land should be off by default
-# bulk_forcing
+#
+#  This is the list of packages that genmake2 will, by default, add to MITgcm.
+#
+#  A file containing a different list of packages can be used instead of the default,
+#  a) if the file name is specified explicitly (genmake2, argument: -pdefault)
+#     e.g.:   genmake2 -pdefault /my_local_path/list_of_packages_to_compile
+#  b) otherwise, will use the list of packages from file "packages.conf" 
+#     if this file can be found 
+#        1) where MITgcm is compiled
+#     or 2) in the path of modified sources (genmake2, argument: -mods)
+#
 
 gfd
 

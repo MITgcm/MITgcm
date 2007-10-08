@@ -1,6 +1,5 @@
-#
-#  $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.24 2007/06/15 20:48:42 gforget Exp $
-#
+# $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.25 2007/10/08 22:12:50 jmc Exp $
+# $Name:  $
 
 #  This file contains a terse list of package dependencies that
 #  specify which packages either must be or must not be compiled
@@ -16,15 +15,8 @@
 #  The default behavior (that is, nothing specified) assumes that any
 #  two packages can be compiled together.
 
-
-#  Ask PH about the following:
-#    cal cost ctrl ecco exf grdchk
-
 exf             +cal
 profiles        +cal
-
-#  Ask AJA about:
-#    flt
 
 #  the following probably don't have any dependencies
 generic_advdiff

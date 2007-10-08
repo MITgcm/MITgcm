@@ -1,5 +1,6 @@
-#
-# $Header: /u/gcmpack/MITgcm/pkg/pkg_groups,v 1.9 2005/08/24 23:24:40 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/pkg_groups,v 1.10 2007/10/08 22:12:50 jmc Exp $
+# $Name:  $
+
 #
 #  This is the package "groups" definition file where groups of packages
 #  are defined so they can be conveniently substituted.
