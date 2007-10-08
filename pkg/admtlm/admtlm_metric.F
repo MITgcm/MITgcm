@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_metric.F,v 1.5 2007/10/08 23:45:51 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
@@ -72,10 +74,10 @@ cph(
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-c            print '(a,2I4,2(x,F15.9))', 'ph-metric T ', i, j, 
+c            print '(a,2I4,2(x,F15.9))', 'ph-metric T ', i, j,
 c     &           g_objf_state_final(i,j,bi,bj,1),
 c     &           g_objf_state_final(i,j,bi,bj,1)**2 / stdDevSST**2
-c            print '(a,2I4,2(x,F15.9))', 'ph-metric S ', i, j, 
+c            print '(a,2I4,2(x,F15.9))', 'ph-metric S ', i, j,
 c     &           g_objf_state_final(i,j,bi,bj,2),
 c     &           g_objf_state_final(i,j,bi,bj,2)**2 / stdDevSSS**2
           END DO
@@ -88,5 +90,5 @@ c     &           g_objf_state_final(i,j,bi,bj,2)**2 / stdDevSSS**2
 cph)
 
 #endif
-      
+
       end

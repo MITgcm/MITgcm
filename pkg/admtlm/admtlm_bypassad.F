@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_bypassad.F,v 1.3 2007/10/08 23:45:51 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
@@ -58,9 +60,9 @@ C     ===================================================
       jmax = sny
       imin = 1
       imax = snx
-      doglobalread =  .false. 
-      ladinit =  .false. 
-      equal =  .true. 
+      doglobalread =  .false.
+      ladinit =  .false.
+      equal =  .true.
       if (equal) then
         fac = 1.d0
       else
@@ -72,16 +74,16 @@ C     ===================================================
         DO j = jmin, jmax
          DO i = imin, imax
           DO k=1,Nr
-            adtheta(i,j,k,bi,bj) = 
+            adtheta(i,j,k,bi,bj) =
      &       g_objf_state_final(i,j,bi,bj,k)
-            adsalt(i,j,k,bi,bj) = 
+            adsalt(i,j,k,bi,bj) =
      &       g_objf_state_final(i,j,bi,bj,1*Nr+k)
-            aduvel(i,j,k,bi,bj) = 
+            aduvel(i,j,k,bi,bj) =
      &       g_objf_state_final(i,j,bi,bj,2*Nr+k)
-            advvel(i,j,k,bi,bj) = 
+            advvel(i,j,k,bi,bj) =
      &       g_objf_state_final(i,j,bi,bj,3*Nr+k)
           END DO
-          adetan(i,j,bi,bj) = 
+          adetan(i,j,bi,bj) =
      &       g_objf_state_final(i,j,bi,bj,4*Nr+1)
          END DO
         END DO
@@ -101,7 +103,7 @@ c---------------------------------------------------------------------
         end do
       end do
       il = ilnblnk(xx_etan_file)
-      write(unit=fnamegeneric(1:80),fmt='(2a,i10.10)') 
+      write(unit=fnamegeneric(1:80),fmt='(2a,i10.10)')
      &     xx_etan_file(1:il),'.',optimcycle
       call adactive_read_xy_loc( fnamegeneric,1,doglobalread,ladinit,
      &     optimcycle,mythid,tmpfld2d )
@@ -119,7 +121,7 @@ c--
         end do
       end do
       il = ilnblnk(xx_vvel_file)
-      write(unit=fnamegeneric(1:80),fmt='(2a,i10.10)') 
+      write(unit=fnamegeneric(1:80),fmt='(2a,i10.10)')
      &     xx_vvel_file(1:il),'.',optimcycle
       call adactive_read_xyz( fnamegeneric,1,doglobalread,ladinit,
      &     optimcycle,mythid,tmpfld3d )
@@ -137,7 +139,7 @@ c--
         end do
       end do
       il = ilnblnk(xx_uvel_file)
-      write(unit=fnamegeneric(1:80),fmt='(2a,i10.10)') 
+      write(unit=fnamegeneric(1:80),fmt='(2a,i10.10)')
      &     xx_uvel_file(1:il),'.',optimcycle
       call adactive_read_xyz( fnamegeneric,1,doglobalread,ladinit,
      &     optimcycle,mythid,tmpfld3d )
@@ -155,7 +157,7 @@ c--
         end do
       end do
       il = ilnblnk(xx_salt_file)
-      write(unit=fnamegeneric(1:80),fmt='(2a,i10.10)') 
+      write(unit=fnamegeneric(1:80),fmt='(2a,i10.10)')
      &     xx_salt_file(1:il),'.',optimcycle
       call adactive_read_xyz_loc( fnamegeneric,1,doglobalread,ladinit,
      &     optimcycle,mythid,tmpfld3d )
@@ -173,11 +175,11 @@ c--
         end do
       end do
       il = ilnblnk(xx_theta_file)
-      write(unit=fnamegeneric(1:80),fmt='(2a,i10.10)') 
+      write(unit=fnamegeneric(1:80),fmt='(2a,i10.10)')
      &     xx_theta_file(1:il),'.',optimcycle
       call adactive_read_xyz_loc( fnamegeneric,1,doglobalread,ladinit,
      &     optimcycle,mythid,tmpfld3d )
 
 #endif
-      
+
       end
