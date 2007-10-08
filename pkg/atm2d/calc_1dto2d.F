@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/calc_1dto2d.F,v 1.3 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -42,20 +45,20 @@ C     Accumulate runoff into bands (runoff bands are on the ocean grid)
         IF (ib.LT.numBands) ibj2= rband(ib)
         run_b(ib)=0. _d 0
         DO j=ibj1,ibj2
-          run_b(ib)=run_b(ib) + 
+          run_b(ib)=run_b(ib) +
      &              atm_runoff(atm_oc_ind(j))*atm_oc_frac1(j) +
      &              atm_runoff(atm_oc_ind(j)+1)*atm_oc_frac2(j)
         ENDDO
       ENDDO
-     
+
       DO j=1,sNy
         DO i=1,sNx
 
           IF (maskC(i,j,1,1,1).EQ.1.) THEN
-         
-            runoff_2D(i,j) = run_b(runIndex(j)) * 
+
+            runoff_2D(i,j) = run_b(runIndex(j)) *
      &                       runoffVal(i,j)/rA(i,j,1,1)
-  
+
             CALL CALC_WGHT2D(i,j,atm_oc_ind(j),atm_oc_wgt(j))
 
             IF (atm_oc_wgt(j).LT.1. _d 0)
@@ -78,7 +81,7 @@ C  Tabulate following diagnostic fluxes from atmos model only
 
         ENDDO
       ENDDO
- 
+
       RETURN
       END
 
@@ -115,7 +118,7 @@ C     i,j   - coordinates of point on ocean grid
 C     ind   - index into the atmos grid array
 C     wght  - weight of this atmos cell for total
       INTEGER    i, j
-      INTEGER    ind 
+      INTEGER    ind
       _RL        wgt
 
       precipo_2D(i,j)= precipo_2D(i,j) + atm_precip(ind)*wgt

@@ -1,10 +1,12 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_loc_g.F,v 1.5 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
 c     ==================================================================
 c
 c     active_file_g.F: Routines to handle the I/O of the active file for
-c                      the tangent linear calculations. All files are 
+c                      the tangent linear calculations. All files are
 c                      direct access files.
 c
 c     Routines

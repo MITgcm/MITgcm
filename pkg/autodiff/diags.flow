@@ -1,9 +1,12 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/diags.flow,v 1.7 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
+
 C----------------------------------------
 C subroutine  DO_TIME_AVERAGES
 C----------------------------------------
 CADJ SUBROUTINE DO_TIME_AVERAGES  INPUT  = 1,2,3,4,5
 CADJ SUBROUTINE DO_TIME_AVERAGES  OUTPUT =
-                                       
+
 C----------------------------------------
 C subroutine  TIMEAVER_1FLD_XYZ
 C----------------------------------------
@@ -44,13 +47,13 @@ C----------------------------------------
 C subroutine  WRITE_TIME_AVERAGES
 C----------------------------------------
 CADJ SUBROUTINE WRITE_TIME_AVERAGES  INPUT  = 1,2,3
-CADJ SUBROUTINE WRITE_TIME_AVERAGES  OUTPUT = 
+CADJ SUBROUTINE WRITE_TIME_AVERAGES  OUTPUT =
 
 C----------------------------------------
 C subroutine  DO_STATEVARS_DIAGS
 C----------------------------------------
 CADJ SUBROUTINE DO_STATEVARS_DIAGS  INPUT  = 1,2,3,4
-CADJ SUBROUTINE DO_STATEVARS_DIAGS  OUTPUT = 
+CADJ SUBROUTINE DO_STATEVARS_DIAGS  OUTPUT =
 CADJ SUBROUTINE DO_STATEVARS_DIAGS  DEPEND = 1,2,3,4
 CADJ SUBROUTINE DO_STATEVARS_DIAGS  REQUIRED
 
@@ -58,7 +61,7 @@ C----------------------------------------
 C subroutine  DO_STATEVARS_TAVE
 C----------------------------------------
 CADJ SUBROUTINE DO_STATEVARS_TAVE  INPUT  = 1,2,3
-CADJ SUBROUTINE DO_STATEVARS_TAVE  OUTPUT = 
+CADJ SUBROUTINE DO_STATEVARS_TAVE  OUTPUT =
 CADJ SUBROUTINE DO_STATEVARS_TAVE  DEPEND = 1,2,3
 CADJ SUBROUTINE DO_STATEVARS_TAVE  REQUIRED
 

@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/yr_end_diags.F,v 1.3 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -30,7 +33,7 @@ C     myThid - Thread no. that called this routine.
 
 C     LOCAL VARIABLES:
       _RL secYr
-      DATA secYr /31536000.D0/   
+      DATA secYr /31536000.D0/
       _RL norm_factor
 
       norm_factor = globalArea * secYr / dtcouplo
@@ -49,7 +52,7 @@ C     LOCAL VARIABLES:
       WRITE(25,*) 'HFLUX FWFLUX',  HF2ocn_tave,  FW2ocn_tave
       WRITE(25,*) 'SH ICE', SHice_max*1. _d -12, SHice_min*1. _d -12
       WRITE(25,*) 'NH ICE', NHice_max*1. _d -12, NHice_min*1. _d -12
-      IF  (CO2flx_tave .NE. 0. _d 0) 
+      IF  (CO2flx_tave .NE. 0. _d 0)
      &   WRITE(25,*) 'OCEAN CO2FLUX', CO2flx_tave
       WRITE(25,*) '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
       WRITE(25,*) '      '

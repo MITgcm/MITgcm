@@ -1,9 +1,11 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/myactivefunction.flow,v 1.2 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
 
 C----------------------------------------
 C function myactivefunction
 C----------------------------------------
 CADJ function myactivefunction  INPUT  = 1,2
-CADJ function myactivefunction  OUTPUT = 
+CADJ function myactivefunction  OUTPUT =
 CADJ function myactivefunction  ACTIVE = 1
 CADJ function myactivefunction  DEPEND = 1,2
 CADJ function myactivefunction  INFLUENCED

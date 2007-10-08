@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.F,v 1.2 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
+
 C     /==========================================================\
 C     | SUBROUTINEs  adexch_uv_xy_rs adexch_uv_xyz_rs            |
 C     |              adexch_uv_xy_rl adexch_uv_xyz_rl            |
@@ -18,9 +21,9 @@ C     \==========================================================/
 #include "CPP_EEOPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE adexch_uv_xy_rs( 
+      SUBROUTINE adexch_uv_xy_rs(
      I                       withSigns, myThid,
-     U                       aduphi, advphi 
+     U                       aduphi, advphi
      &                       )
 C     /==========================================================\
 C     | SUBROUTINE ADEXCH_UV_XY_RS   adjoint of  EXCH_UV_XY_RS   |
@@ -55,10 +58,10 @@ C     exchWidth[XY]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = sNy
       myNz       = 1
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
@@ -85,9 +88,9 @@ c       _EXCH_XY_RS( advphi, myThid )
 
 
 CStartOfInterface
-      SUBROUTINE adexch_uv_xy_rl( 
+      SUBROUTINE adexch_uv_xy_rl(
      I                       withSigns, myThid,
-     U                       aduphi, advphi 
+     U                       aduphi, advphi
      &                       )
 C     /==========================================================\
 C     | SUBROUTINE ADEXCH_UV_XY_RL   adjoint of  EXCH_UV_XY_RL   |
@@ -121,10 +124,10 @@ C     exchWidth[XY]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = sNy
       myNz       = 1
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
@@ -151,9 +154,9 @@ c       _EXCH_XY_RL( advphi, myThid )
 
 
 CStartOfInterface
-      SUBROUTINE adexch_uv_xyz_rs( 
+      SUBROUTINE adexch_uv_xyz_rs(
      I                       withSigns, myThid,
-     U                       aduphi, advphi 
+     U                       aduphi, advphi
      &                       )
 C     /==========================================================\
 C     | SUBROUTINE ADEXCH_UV_XYZ_RS   adjoint of  EXCH_UV_XYZ_RS |
@@ -187,10 +190,10 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = sNy
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
@@ -217,9 +220,9 @@ c       _EXCH_XY_RS( advphi, myThid )
 
 
 CStartOfInterface
-      SUBROUTINE adexch_uv_xyz_rl( 
+      SUBROUTINE adexch_uv_xyz_rl(
      I                       withSigns, myThid,
-     U                       aduphi, advphi 
+     U                       aduphi, advphi
      &                       )
 C     /==========================================================\
 C     | SUBROUTINE ADEXCH_UV_XYZ_RL   adjoint of  EXCH_UV_XYZ_RL |
@@ -253,10 +256,10 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = sNy
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN

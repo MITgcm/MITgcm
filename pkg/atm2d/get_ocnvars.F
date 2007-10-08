@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/get_ocnvars.F,v 1.3 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -48,16 +51,16 @@ C     LOCAL VARIABLES:
 C presuming ocnsize.h same as size.h
       DO j=1,sNy
         DO i=1,sNx
-          sstFromOcn(i,j)= SST_ocn(i,j) 
-          sssFromOcn(i,j)= SSS_ocn(i,j) 
+          sstFromOcn(i,j)= SST_ocn(i,j)
+          sssFromOcn(i,j)= SSS_ocn(i,j)
           mlDepth(i,j) = OcMxlD_ocn(i,j)
           IF ( ocnCpl_exchange_DIC ) oFluxCO2(i,j) = fluxCO2_ocn(i,j)
-C          IF ( ocnCpl_exchange_DIC ) 
+C          IF ( ocnCpl_exchange_DIC )
 C     &       print *,'ofluxCO2:',i,j,fluxCO2_ocn(i,j)
 
 C Put in seaice common block
-          tOceMxl(i,j,1,1)= SST_ocn(i,j) 
-          sOceMxl(i,j,1,1)= SSS_ocn(i,j) 
+          tOceMxl(i,j,1,1)= SST_ocn(i,j)
+          sOceMxl(i,j,1,1)= SSS_ocn(i,j)
           hOceMxl(i,j,1,1) = OcMxlD_ocn(i,j)
           v2ocMxL(i,j,1,1) =  vSq_ocn(i,j)
         ENDDO
@@ -74,7 +77,7 @@ C Put in seaice common block
 #  ifdef NONLIN_FRSURF
 Cjrs ask J-M about next lines
       IF ( nonlinFreeSurf.GT.0 .AND.
-     &    (staggerTimeStep .OR. .NOT.cpl_earlyExpImpCall ) ) THEN 
+     &    (staggerTimeStep .OR. .NOT.cpl_earlyExpImpCall ) ) THEN
        IF ( select_rStar.GT.0 ) THEN
         DO j=1,sNy
          DO i=1,sNx
@@ -102,7 +105,7 @@ Cjrs ask J-M about next lines
 
       DO j=1,sNy
         DO i=1,sNx
-          v2ocMxL(i,j,1,1) = 
+          v2ocMxL(i,j,1,1) =
      &              ( uVel(i , j,1,1,1)*uVel(i , j,1,1,1)
      &              + uVel(i+1,j,1,1,1)*uVel(i+1,j,1,1,1)
      &              + vVel(i,j+1,1,1,1)*vVel(i,j+1,1,1,1)
@@ -119,12 +122,12 @@ Cjrs ask J-M about next lines
 #  endif
 
 C Put in seaice common block
-          tOceMxl(i,j,1,1)= sstFromOcn(i,j) 
-          sOceMxl(i,j,1,1)= sssFromOcn(i,j) 
+          tOceMxl(i,j,1,1)= sstFromOcn(i,j)
+          sOceMxl(i,j,1,1)= sssFromOcn(i,j)
           hOceMxl(i,j,1,1) = mlDepth(i,j)
         ENDDO
       ENDDO
-         
+
 #endif
 
       RETURN

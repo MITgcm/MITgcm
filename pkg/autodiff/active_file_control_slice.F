@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control_slice.F,v 1.9 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -115,13 +117,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
 c       Read the active variable from file.
 
-        call mdsreadfieldxz( 
-     &                     active_var_file, 
-     &                     prec, 
+        call mdsreadfieldxz(
+     &                     active_var_file,
+     &                     prec,
      &                     'RL',
-     &                     mynr,      
+     &                     mynr,
      &                     active_var,
-     &                     irec, 
+     &                     irec,
      &                     mythid )
 
         if (lAdInit) then
@@ -139,12 +141,12 @@ c         adjoint variable's file. These files are tiled.
              enddo
           enddo
 
-          call mdswritefieldxz( 
-     &                           adfname, 
-     &                           prec, 
+          call mdswritefieldxz(
+     &                           adfname,
+     &                           prec,
      &                           globalfile,
-     &                           'RL', 
-     &                           mynr, 
+     &                           'RL',
+     &                           mynr,
      &                           active_data_t,
      &                           irec,
      &                           myOptimIter,
@@ -164,13 +166,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         _BEGIN_MASTER( mythid )
 
         writeglobalfile = .false.
-        call mdsreadfieldxz( 
-     &                        active_var_file, 
-     &                        prec, 
+        call mdsreadfieldxz(
+     &                        active_var_file,
+     &                        prec,
      &                        'RL',
-     &                        mynr, 
-     &                        active_data_t, 
-     &                        irec, 
+     &                        mynr,
+     &                        active_data_t,
+     &                        irec,
      &                        mythid )
 
 c             Add active_var from appropriate location to data.
@@ -178,23 +180,23 @@ c             Add active_var from appropriate location to data.
            do bi = 1,nsx
               do k = 1,mynr
                  do i = 1,snx
-                    active_data_t(i,k,bi,bj) = 
+                    active_data_t(i,k,bi,bj) =
      &                   active_data_t(i,k,bi,bj) +
      &                   active_var(i,k,bi,bj)
                  enddo
               enddo
            enddo
         enddo
-        
+
 c             Store the result on disk.
-        call mdswritefieldxz( 
-     &                         active_var_file, 
+        call mdswritefieldxz(
+     &                         active_var_file,
      &                         prec,
-     &                         writeglobalfile, 
+     &                         writeglobalfile,
      &                         'RL',
-     &                         mynr, 
-     &                         active_data_t, 
-     &                         irec, 
+     &                         mynr,
+     &                         active_data_t,
+     &                         irec,
      &                         myOptimIter,
      &                         mythid )
 
@@ -222,13 +224,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
 c       Read the active variable from file.
 
-        call mdsreadfieldxz( 
-     &                     active_var_file, 
-     &                     prec, 
+        call mdsreadfieldxz(
+     &                     active_var_file,
+     &                     prec,
      &                     'RL',
-     &                     mynr,      
+     &                     mynr,
      &                     active_var,
-     &                     irec, 
+     &                     irec,
      &                     mythid )
 
         _END_MASTER( mythid )
@@ -312,14 +314,14 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-          call mdswritefieldxz( 
-     &                        active_var_file, 
-     &                        prec, 
+          call mdswritefieldxz(
+     &                        active_var_file,
+     &                        prec,
      &                        globalfile,
-     &                        'RL', 
-     &                        mynr, 
-     &                        active_var, 
-     &                        irec, 
+     &                        'RL',
+     &                        mynr,
+     &                        active_var,
+     &                        irec,
      &                        myOptimIter,
      &                        mythid )
 
@@ -335,12 +337,12 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-        call mdsreadfieldxz( 
-     &                           active_var_file, 
-     &                           prec, 
+        call mdsreadfieldxz(
+     &                           active_var_file,
+     &                           prec,
      &                           'RL',
      &                            mynr,
-     &                            active_data_t, 
+     &                            active_data_t,
      &                            irec,
      &                            mythid )
 
@@ -349,7 +351,7 @@ c             Add active_var from appropriate location to data.
            do bi = 1,nsx
               do k = 1,nr
                  do i = 1,snx
-                    active_var(i,k,bi,bj) = 
+                    active_var(i,k,bi,bj) =
      &                   active_var(i,k,bi,bj) +
      &                   active_data_t(i,k,bi,bj)
                     active_data_t(i,k,bi,bj) = 0. _d 0
@@ -357,14 +359,14 @@ c             Add active_var from appropriate location to data.
               enddo
            enddo
         enddo
-        call mdswritefieldxz( 
-     &                            active_var_file, 
-     &                            prec, 
+        call mdswritefieldxz(
+     &                            active_var_file,
+     &                            prec,
      &                            globalfile,
-     &                            'RL', 
-     &                            mynr, 
-     &                            active_data_t, 
-     &                            irec, 
+     &                            'RL',
+     &                            mynr,
+     &                            active_data_t,
+     &                            irec,
      &                            myOptimIter,
      &                            mythid )
 
@@ -380,14 +382,14 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-          call mdswritefieldxz( 
-     &                        active_var_file, 
-     &                        prec, 
+          call mdswritefieldxz(
+     &                        active_var_file,
+     &                        prec,
      &                        globalfile,
-     &                        'RL', 
-     &                        mynr, 
-     &                        active_var, 
-     &                        irec, 
+     &                        'RL',
+     &                        mynr,
+     &                        active_var,
+     &                        irec,
      &                        myOptimIter,
      &                        mythid )
 
@@ -499,13 +501,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
 c       Read the active variable from file.
 
-        call mdsreadfieldyz( 
-     &                     active_var_file, 
-     &                     prec, 
+        call mdsreadfieldyz(
+     &                     active_var_file,
+     &                     prec,
      &                     'RL',
-     &                     mynr,      
+     &                     mynr,
      &                     active_var,
-     &                     irec, 
+     &                     irec,
      &                     mythid )
 
         if (lAdInit) then
@@ -523,12 +525,12 @@ c         adjoint variable's file. These files are tiled.
              enddo
           enddo
 
-          call mdswritefieldyz( 
-     &                           adfname, 
-     &                           prec, 
+          call mdswritefieldyz(
+     &                           adfname,
+     &                           prec,
      &                           globalfile,
-     &                           'RL', 
-     &                           mynr, 
+     &                           'RL',
+     &                           mynr,
      &                           active_data_t,
      &                           irec,
      &                           myOptimIter,
@@ -548,13 +550,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         _BEGIN_MASTER( mythid )
 
         writeglobalfile = .false.
-        call mdsreadfieldyz( 
-     &                        active_var_file, 
-     &                        prec, 
+        call mdsreadfieldyz(
+     &                        active_var_file,
+     &                        prec,
      &                        'RL',
-     &                        mynr, 
-     &                        active_data_t, 
-     &                        irec, 
+     &                        mynr,
+     &                        active_data_t,
+     &                        irec,
      &                        mythid )
 
 c             Add active_var from appropriate location to data.
@@ -562,23 +564,23 @@ c             Add active_var from appropriate location to data.
            do bi = 1,nsx
               do k = 1,mynr
                  do j = 1,sny
-                    active_data_t(j,k,bi,bj) = 
+                    active_data_t(j,k,bi,bj) =
      &                   active_data_t(j,k,bi,bj) +
      &                   active_var(j,k,bi,bj)
                  enddo
               enddo
            enddo
         enddo
-        
+
 c             Store the result on disk.
-        call mdswritefieldyz( 
-     &                         active_var_file, 
+        call mdswritefieldyz(
+     &                         active_var_file,
      &                         prec,
-     &                         writeglobalfile, 
+     &                         writeglobalfile,
      &                         'RL',
-     &                         mynr, 
-     &                         active_data_t, 
-     &                         irec, 
+     &                         mynr,
+     &                         active_data_t,
+     &                         irec,
      &                         myOptimIter,
      &                         mythid )
 
@@ -606,13 +608,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
 c       Read the active variable from file.
 
-        call mdsreadfieldyz( 
-     &                     active_var_file, 
-     &                     prec, 
+        call mdsreadfieldyz(
+     &                     active_var_file,
+     &                     prec,
      &                     'RL',
-     &                     mynr,      
+     &                     mynr,
      &                     active_var,
-     &                     irec, 
+     &                     irec,
      &                     mythid )
 
         _END_MASTER( mythid )
@@ -696,14 +698,14 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-          call mdswritefieldyz( 
-     &                        active_var_file, 
-     &                        prec, 
+          call mdswritefieldyz(
+     &                        active_var_file,
+     &                        prec,
      &                        globalfile,
-     &                        'RL', 
-     &                        mynr, 
-     &                        active_var, 
-     &                        irec, 
+     &                        'RL',
+     &                        mynr,
+     &                        active_var,
+     &                        irec,
      &                        myOptimIter,
      &                        mythid )
 
@@ -719,13 +721,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-        call mdsreadfieldyz( 
-     &                           active_var_file, 
-     &                           prec, 
+        call mdsreadfieldyz(
+     &                           active_var_file,
+     &                           prec,
      &                           'RL',
      &                            mynr,
-     &                            active_data_t, 
-     &                            irec, 
+     &                            active_data_t,
+     &                            irec,
      &                            mythid )
 
 c             Add active_var from appropriate location to data.
@@ -733,7 +735,7 @@ c             Add active_var from appropriate location to data.
            do bi = 1,nsx
               do k = 1, mynr
                  do j = 1,sny
-                    active_var(j,k,bi,bj) = 
+                    active_var(j,k,bi,bj) =
      &                   active_var(j,k,bi,bj) +
      &                   active_data_t(j,k,bi,bj)
                     active_data_t(j,k,bi,bj) = 0. _d 0
@@ -741,14 +743,14 @@ c             Add active_var from appropriate location to data.
               enddo
            enddo
         enddo
-        call mdswritefieldyz( 
-     &                            active_var_file, 
-     &                            prec, 
+        call mdswritefieldyz(
+     &                            active_var_file,
+     &                            prec,
      &                            globalfile,
-     &                            'RL', 
-     &                            mynr, 
-     &                            active_data_t, 
-     &                            irec, 
+     &                            'RL',
+     &                            mynr,
+     &                            active_data_t,
+     &                            irec,
      &                            myOptimIter,
      &                            mythid )
 
@@ -764,14 +766,14 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-          call mdswritefieldyz( 
-     &                        active_var_file, 
-     &                        prec, 
+          call mdswritefieldyz(
+     &                        active_var_file,
+     &                        prec,
      &                        globalfile,
-     &                        'RL', 
-     &                        mynr, 
-     &                        active_var, 
-     &                        irec, 
+     &                        'RL',
+     &                        mynr,
+     &                        active_var,
+     &                        irec,
      &                        myOptimIter,
      &                        mythid )
 

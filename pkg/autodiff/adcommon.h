@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.19 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
+
 C--   These common blocks are extracted from the
 C--   automatically created tangent linear code.
 C--   You need to make sure that they are up-to-date
@@ -21,8 +24,8 @@ C--   heimbach@mit.edu 11-Jan-2001
       common /addynvars_r/
      &                     adetan,
      &                     aduvel, advvel, adwvel,
-     &                     adtheta, adsalt, 
-     &                     adgu, adgv, adgt, adgs, 
+     &                     adtheta, adsalt,
+     &                     adgu, adgv, adgt, adgs,
      &                     adgunm1, adgvnm1, adgtnm1, adgsnm1
       _RL adetan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adgs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -44,9 +47,9 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RL adetah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 #ifdef ALLOW_CD_CODE
-      common /addynvars_cd/ 
+      common /addynvars_cd/
      &                      aduveld, advveld,
-     &                       adetanm1, 
+     &                       adetanm1,
      &                      adunm1, advnm1
       _RL aduveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL advveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -93,7 +96,7 @@ C--   heimbach@mit.edu 11-Jan-2001
       COMMON /ADDYNVARS_DIFFKR/
      &                       addiffKr
       _RL  addiffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif 
+#endif
 #ifdef ALLOW_KAPGM_CONTROL
       COMMON /ADDYNVARS_KAPGM/
      &                       adkapgm
@@ -103,7 +106,7 @@ C--   heimbach@mit.edu 11-Jan-2001
       COMMON /ADDYNVARS_BOTTOMDRAG/
      &                adbottomdragfld
       _RL  adbottomdragfld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif                     
+#endif
 #if (defined (ALLOW_EDTAUX_CONTROL) || defined (ALLOW_EDTAUY_CONTROL))
       double precision adeddytaux(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,
      $nsy)
@@ -170,7 +173,7 @@ c
       _RL adrecip_hfacc(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
       _RL adrecip_hfacs(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
       _RL adrecip_hfacw(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
-      common /adgrid_r/ adr_low_control, 
+      common /adgrid_r/ adr_low_control,
      &                  adrecip_hfacc, adrecip_hfacw, adrecip_hfacs
       common /adgrid_r_c/ adhfacc
       common /adgrid_r_s/ adhfacs

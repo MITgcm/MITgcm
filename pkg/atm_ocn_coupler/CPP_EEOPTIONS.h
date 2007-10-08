@@ -1,4 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/CPP_EEOPTIONS.h,v 1.3 2006/06/15 23:29:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/CPP_EEOPTIONS.h,v 1.4 2007/10/08 23:49:46 jmc Exp $
+C $Name:  $
+
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
@@ -48,7 +50,7 @@ C     Flag used to indicate which flavour of multi-threading
 C     compiler directives to use. Only set one of these.
 C     USE_SOLARIS_THREADING  - Takes directives for SUN Workshop
 C                              compiler.
-C     USE_KAP_THREADING      - Takes directives for Kuck and 
+C     USE_KAP_THREADING      - Takes directives for Kuck and
 C                              Associates multi-threading compiler
 C                              ( used on Digital platforms ).
 C     USE_IRIX_THREADING     - Takes directives for SGI MIPS
@@ -82,7 +84,7 @@ C     On some systems low-level hardware support can be accessed through
 C     compiler directives here.
 #define _BARRIER CALL BARRIER(myThid)
 
-C--   Define the mapping for the BEGIN_CRIT() and  END_CRIT() macros. 
+C--   Define the mapping for the BEGIN_CRIT() and  END_CRIT() macros.
 C     On some systems we simply execute this section only using the
 C     master thread i.e. its not really a critical section. We can
 C     do this because we do not use critical sections in any critical
@@ -111,7 +113,7 @@ C     per node. It goes with a different link-time library so be careful!
 #define USE_JAM_GSUM
 #endif
 #undef  JAM_WITH_TWO_PROCS_PER_NODE
- 
+
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
 #define ALLOW_ASYNC_COMMUNICATION
@@ -131,7 +133,7 @@ C     boosting performance because of a smaller working
 C     set size. However, on vector CRAY systems this degrades
 C     performance.
 #define REAL4_IS_SLOW
- 
+
 #ifdef REAL4_IS_SLOW
 #define real Real*8
 #define REAL Real*8
@@ -185,7 +187,7 @@ C     Use D0 where it means REAL*8 but not where it means REAL*16
 #endif
 
 C--   Control XY periodicity in processor to grid mappings
-C     Note: Model code does not need to know whether a domain is 
+C     Note: Model code does not need to know whether a domain is
 C           periodic because it has overlap regions for every box.
 C           Model assume that these values have been
 C           filled in some way.

@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/read_atmos.F,v 1.8 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -36,11 +39,11 @@ C Keep track of (raw) atmos variables for diagnostics
       DO j_atm=1,jm0
         sum_tauu_ta(j_atm,inMonth)= sum_tauu_ta(j_atm,inMonth) +
      &                           tauu(j_atm)*dtatmo
-        sum_tauv_ta(j_atm,inMonth)= sum_tauv_ta(j_atm,inMonth) + 
+        sum_tauv_ta(j_atm,inMonth)= sum_tauv_ta(j_atm,inMonth) +
      &                           tauv(j_atm)*dtatmo
-        sum_wsocean_ta(j_atm,inMonth)= sum_wsocean_ta(j_atm,inMonth) + 
+        sum_wsocean_ta(j_atm,inMonth)= sum_wsocean_ta(j_atm,inMonth) +
      &                           wsocean(j_atm)*dtatmo
-        sum_ps4ocean_ta(j_atm,inMonth)= sum_ps4ocean_ta(j_atm,inMonth) + 
+        sum_ps4ocean_ta(j_atm,inMonth)= sum_ps4ocean_ta(j_atm,inMonth) +
      &                           ps4ocean(j_atm)*dtatmo
       ENDDO
 
@@ -76,9 +79,9 @@ C       Ice feels evap from model, no change with temperature
 
       ENDDO
 
-      IF (cflan(2).NE.1. _d 0) 
+      IF (cflan(2).NE.1. _d 0)
      &          CALL COMBINE_ENDS(endwgt1,endwgt2,1,2,rsumwgt)
-      IF (cflan(jm0-1).NE.1. _d 0) 
+      IF (cflan(jm0-1).NE.1. _d 0)
      &          CALL COMBINE_ENDS(endwgt1,endwgt2,jm0,jm0-1,rsumwgt)
 
       RETURN
@@ -125,44 +128,44 @@ C      atm_tauv(ind2)= (a1*atm_tauv(ind1) + a2*atm_tauv(ind2))*rsuma
 C Tau variables not combined - zero at atm pole point
 
       atm_tair(ind2)= (a1*atm_tair(ind1) + a2*atm_tair(ind2))*rsuma
-      atm_precip(ind2)= (a1*atm_precip(ind1) + 
+      atm_precip(ind2)= (a1*atm_precip(ind1) +
      &                   a2*atm_precip(ind2))*rsuma
       atm_runoff(ind2)= atm_runoff(ind1)+ atm_runoff(ind2)
-      atm_evap_ice(ind2)= (a1*atm_evap_ice(ind1) + 
+      atm_evap_ice(ind2)= (a1*atm_evap_ice(ind1) +
      &                     a2*atm_evap_ice(ind2))*rsuma
       atm_evap_ocn(ind2)= (a1*atm_evap_ocn(ind1) +
      &                     a2*atm_evap_ocn(ind2))*rsuma
-      atm_qnet_ice(ind2)= (a1*atm_qnet_ice(ind1)+ 
+      atm_qnet_ice(ind2)= (a1*atm_qnet_ice(ind1)+
      &                     a2*atm_qnet_ice(ind2))*rsuma
       atm_qnet_ocn(ind2)= (a1*atm_qnet_ocn(ind1) +
      &                     a2*atm_qnet_ocn(ind2))*rsuma
-      atm_dFdt_ice(ind2)= (a1*atm_dFdt_ice(ind1)+ 
+      atm_dFdt_ice(ind2)= (a1*atm_dFdt_ice(ind1)+
      &                     a2*atm_dFdt_ice(ind2))*rsuma
-      atm_dFdt_ocn(ind2)= (a1*atm_dFdt_ocn(ind1)+ 
+      atm_dFdt_ocn(ind2)= (a1*atm_dFdt_ocn(ind1)+
      &                     a2*atm_dFdt_ocn(ind2))*rsuma
-      atm_dLdt_ice(ind2)= (a1*atm_dLdt_ice(ind1)+ 
+      atm_dLdt_ice(ind2)= (a1*atm_dLdt_ice(ind1)+
      &                     a2*atm_dLdt_ice(ind2))*rsuma
-      atm_dLdt_ocn(ind2)= (a1*atm_dLdt_ocn(ind1)+ 
+      atm_dLdt_ocn(ind2)= (a1*atm_dLdt_ocn(ind1)+
      &                     a2*atm_dLdt_ocn(ind2))*rsuma
-      atm_dFdt_iceq(ind2)= (a1*atm_dFdt_iceq(ind1)+ 
+      atm_dFdt_iceq(ind2)= (a1*atm_dFdt_iceq(ind1)+
      &                      a2*atm_dFdt_iceq(ind2))*rsuma
-      atm_dFdt_ocnq(ind2)= (a1*atm_dFdt_ocnq(ind1)+ 
+      atm_dFdt_ocnq(ind2)= (a1*atm_dFdt_ocnq(ind1)+
      &                      a2*atm_dFdt_ocnq(ind2))*rsuma
-      atm_dLdt_iceq(ind2)= (a1*atm_dLdt_iceq(ind1)+ 
+      atm_dLdt_iceq(ind2)= (a1*atm_dLdt_iceq(ind1)+
      &                      a2*atm_dLdt_iceq(ind2))*rsuma
-      atm_dLdt_ocnq(ind2)= (a1*atm_dLdt_ocnq(ind1)+ 
+      atm_dLdt_ocnq(ind2)= (a1*atm_dLdt_ocnq(ind1)+
      &                      a2*atm_dLdt_ocnq(ind2))*rsuma
-      atm_solarinc(ind2)= (a1*atm_solarinc(ind1) + 
+      atm_solarinc(ind2)= (a1*atm_solarinc(ind1) +
      &                     a2*atm_solarinc(ind2))*rsuma
       atm_solar_ocn(ind2)= (a1*atm_solar_ocn(ind1)+
      &                       a2*atm_solar_ocn(ind2))*rsuma
       atm_solar_ice(ind2)= (a1*atm_solar_ice(ind1)+
      &                     a2*atm_solar_ice(ind2))*rsuma
-      atm_windspeed(ind2)= (a1*atm_windspeed(ind1) + 
+      atm_windspeed(ind2)= (a1*atm_windspeed(ind1) +
      &                      a2*atm_windspeed(ind2))*rsuma
       atm_slp(ind2)= (a1*atm_slp(ind1) + a2*atm_slp(ind2))*rsuma
       atm_pco2(ind2)= (a1*atm_pco2(ind1)+a2*atm_pco2(ind2))*rsuma
-   
+
       RETURN
       END
 

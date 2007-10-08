@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/put_ocnvars.F,v 1.4 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -47,13 +50,13 @@ C     LOCAL VARIABLES:
 #ifdef ATM2D_MPI_ON
 
 C OCNVARS common set from ATM2D common
-          atmSLPr_ocn(i,j)= pass_slp(i,j) 
-          HeatFlux_ocn(i,j)= pass_qnet(i,j) 
-          qShortWave_ocn(i,j)= pass_solarnet(i,j) 
-          TauX_ocn(i,j)= pass_fu(i,j) 
-          TauY_ocn(i,j)= pass_fv(i,j) 
+          atmSLPr_ocn(i,j)= pass_slp(i,j)
+          HeatFlux_ocn(i,j)= pass_qnet(i,j)
+          qShortWave_ocn(i,j)= pass_solarnet(i,j)
+          TauX_ocn(i,j)= pass_fu(i,j)
+          TauY_ocn(i,j)= pass_fv(i,j)
 C         convert FW to MITGCM units kg/m2/s for passing
-          FWFlux_ocn(i,j)= (pass_precip(i,j) + pass_evap(i,j) 
+          FWFlux_ocn(i,j)= (pass_precip(i,j) + pass_evap(i,j)
      &                     + pass_runoff(i,j)) * rhoConstFresh
           SaltFlx_ocn(i,j) = sFluxFromIce(i,j)
 #  ifdef ATMOSPHERIC_LOADING
@@ -68,12 +71,12 @@ C         convert FW to MITGCM units kg/m2/s for passing
 #else
 C FFIELDS.h common block set from ATM2D common
 
-          pLoad(i,j,1,1)= pass_slp(i,j) 
-          Qnet(i,j,1,1)= pass_qnet(i,j) 
-          Qsw(i,j,1,1)= pass_solarnet(i,j) 
-          fu(i,j,1,1)= pass_fu(i,j) 
-          fv(i,j,1,1)= pass_fv(i,j) 
-          EmPmR(i,j,1,1)= (pass_precip(i,j) + pass_evap(i,j) 
+          pLoad(i,j,1,1)= pass_slp(i,j)
+          Qnet(i,j,1,1)= pass_qnet(i,j)
+          Qsw(i,j,1,1)= pass_solarnet(i,j)
+          fu(i,j,1,1)= pass_fu(i,j)
+          fv(i,j,1,1)= pass_fv(i,j)
+          EmPmR(i,j,1,1)= (pass_precip(i,j) + pass_evap(i,j)
      &                     + pass_runoff(i,j)) * rhoConstFresh
           saltFlux(i,j,1,1)= sFluxFromIce(i,j)
 
@@ -93,7 +96,7 @@ C     &                 + gravity*seaIceMass(i,j,1,1)*recip_rhoConst
 
 #  ifdef ALLOW_DIC
 C          icemask should be imported in DIC code
-           AtmospCO2(i,j,1,1)=  pass_pCO2(i,j)   
+           AtmospCO2(i,j,1,1)=  pass_pCO2(i,j)
            wind(i,j,1,1)= pass_wspeed(i,j)
            _EXCH_XY_R4(AtmospCO2 ,  myThid )
            _EXCH_XY_R4(wind ,  myThid )

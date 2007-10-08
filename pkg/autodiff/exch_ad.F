@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_ad.F,v 1.4 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
+
 C     /==========================================================\
 C     | SUBROUTINEs  adexch_xy_rs adexch_xyz_rs                  |
 C     |              adexch_xy_rl adexch_xyz_rl                  |
@@ -20,7 +23,7 @@ C     \==========================================================/
 #include "CPP_EEOPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE adexch_xy_rs( 
+      SUBROUTINE adexch_xy_rs(
      I                         myThid
      U                       , adphi
      &                       )
@@ -55,10 +58,10 @@ C     exchWidth[XY]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = sNy
       myNz       = 1
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
@@ -78,7 +81,7 @@ C                begine.
 
 
 CStartOfInterface
-      SUBROUTINE adexch_xy_rl( 
+      SUBROUTINE adexch_xy_rl(
      I                         myThid
      U                       , adphi
      &                       )
@@ -112,10 +115,10 @@ C     exchWidth[XY]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = sNy
       myNz       = 1
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
@@ -135,7 +138,7 @@ C                begine.
 
 
 CStartOfInterface
-      SUBROUTINE adexch_xyz_rs( 
+      SUBROUTINE adexch_xyz_rs(
      I                         myThid
      U                       , adphi
      &                       )
@@ -169,10 +172,10 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = sNy
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
@@ -192,7 +195,7 @@ C                begine.
 
 
 CStartOfInterface
-      SUBROUTINE adexch_xyz_rl( 
+      SUBROUTINE adexch_xyz_rl(
      I                         myThid
      U                       , adphi
      &                       )
@@ -226,10 +229,10 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = sNy
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
@@ -249,7 +252,7 @@ C                begine.
 
 
 CStartOfInterface
-      SUBROUTINE adexch_xz_rs( 
+      SUBROUTINE adexch_xz_rs(
      I                         myThid
      U                       , adphi
      &                       )
@@ -283,10 +286,10 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = 1
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       CALL EXCH_RS( adphi,
@@ -299,7 +302,7 @@ C                begine.
 
 
 CStartOfInterface
-      SUBROUTINE adexch_xz_rl( 
+      SUBROUTINE adexch_xz_rl(
      I                         myThid
      U                       , adphi
      &                       )
@@ -333,10 +336,10 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = sNx
       mysNy      = 1
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       CALL EXCH_RL( adphi,
@@ -349,7 +352,7 @@ C                begine.
 
 
 CStartOfInterface
-      SUBROUTINE adexch_yz_rs( 
+      SUBROUTINE adexch_yz_rs(
      I                         myThid
      U                       , adphi
      &                       )
@@ -383,10 +386,10 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = 1
       mysNy      = sNy
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       CALL EXCH_RS( adphi,
@@ -399,7 +402,7 @@ C                begine.
 
 
 CStartOfInterface
-      SUBROUTINE adexch_yz_rl( 
+      SUBROUTINE adexch_yz_rl(
      I                         myThid
      U                       , adphi
      &                       )
@@ -433,10 +436,10 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       mysNx      = 1
       mysNy      = sNy
       myNz       = Nr
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       CALL EXCH_RL( adphi,

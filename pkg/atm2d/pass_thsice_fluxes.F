@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/pass_thsice_fluxes.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -33,23 +36,23 @@ C     LOCAL VARIABLES:
       DO j=1, sNy
        DO i=1, sNx
 
-         IF (iceMask(i,j,1,1) .GT. 0. _d 0) THEN     
+         IF (iceMask(i,j,1,1) .GT. 0. _d 0) THEN
            netSW(i,j) = solarinc_2D(i,j)*(1. _d 0 - siceAlb(i,j,1,1)) ! convert to netSW
-           sFlx(i,j,0)= -qneti_2D(i,j) -netSW(i,j) + 
+           sFlx(i,j,0)= -qneti_2D(i,j) -netSW(i,j) +
      &                  Tsrf(i,j,1,1)*dFdT_ice_2D(i,j)
            sFlx(i,j,1)= -qneti_2D(i,j) -netSW(i,j)
            sFlx(i,j,2)= -dFdT_ice_2D(i,j)
 
 C          Note conversion to ice model sign convention below
-           sum_prcIce(i,j) = sum_prcIce(i,j) - precipi_2D(i,j)*rhofw   
-           sum_evapIce(i,j) = sum_evapIce(i,j) - evapi_2D(i,j)*rhofw   
-           IF (Tair_2D(i,j) .LE. 0. _d 0)    
+           sum_prcIce(i,j) = sum_prcIce(i,j) - precipi_2D(i,j)*rhofw
+           sum_evapIce(i,j) = sum_evapIce(i,j) - evapi_2D(i,j)*rhofw
+           IF (Tair_2D(i,j) .LE. 0. _d 0)
      &      sum_snowPrc(i,j) = sum_snowPrc(i,j) - precipi_2D(i,j)*rhofw
- 
+
          ENDIF
 
        ENDDO
-      ENDDO  
+      ENDDO
 
 
       RETURN

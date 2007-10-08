@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/tave_end_diags.F,v 1.3 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -32,7 +35,7 @@ C     LOCAL VARIABLES:
       INTEGER ndmonth(12)
       DATA ndmonth/31,28,31,30,31,30,31,31,30,31,30,31/
       _RL secYr
-      DATA secYr /31536000. _d 0/  
+      DATA secYr /31536000. _d 0/
       INTEGER i,j,mn,j_atm
       INTEGER simYr
       INTEGER dUnit
@@ -87,23 +90,23 @@ C     LOCAL VARIABLES:
             oceMxLT_mon(i,j)= sum_oceMxLT_ta(i,j,mn)/norm_factor
             oceMxLS_mon(i,j)= sum_oceMxLS_ta(i,j,mn)/norm_factor
 
-            qnet_ann(i,j) = qnet_ann(i,j) + 
+            qnet_ann(i,j) = qnet_ann(i,j) +
      &                      qnet_mon(i,j)*ndmonth(mn)/365.0
-            evap_ann(i,j) = evap_ann(i,j) + 
+            evap_ann(i,j) = evap_ann(i,j) +
      &                      evap_mon(i,j)*ndmonth(mn)/365.0
-            precip_ann(i,j) = precip_ann(i,j) + 
+            precip_ann(i,j) = precip_ann(i,j) +
      &                        precip_mon(i,j)*ndmonth(mn)/365.0
-            runoff_ann(i,j) = runoff_ann(i,j) + 
+            runoff_ann(i,j) = runoff_ann(i,j) +
      &                        runoff_mon(i,j)*ndmonth(mn)/365.0
-            qrel_ann(i,j) = qrel_ann(i,j) + 
+            qrel_ann(i,j) = qrel_ann(i,j) +
      &                      qrel_mon(i,j)*ndmonth(mn)/365.0
-            frel_ann(i,j) = frel_ann(i,j) + 
+            frel_ann(i,j) = frel_ann(i,j) +
      &                      frel_mon(i,j)*ndmonth(mn)/365.0
 
             qnet_atm_ta(i,j,mn)= 0. _d 0
             evap_atm_ta(i,j,mn)= 0. _d 0
             precip_atm_ta(i,j,mn)= 0. _d 0
-            runoff_atm_ta(i,j,mn)= 0. _d 0 
+            runoff_atm_ta(i,j,mn)= 0. _d 0
             sum_qrel_ta(i,j,mn)= 0. _d 0
             sum_frel_ta(i,j,mn)= 0. _d 0
             sum_iceMask_ta(i,j,mn)= 0. _d 0
@@ -120,32 +123,32 @@ C     LOCAL VARIABLES:
           sum_tauv_ta(j_atm,mn) = sum_tauv_ta(j_atm,mn) / norm_factor
           sum_wsocean_ta(j_atm,mn) = sum_wsocean_ta(j_atm,mn) /
      &                               norm_factor
-          sum_ps4ocean_ta(j_atm,mn) = sum_ps4ocean_ta(j_atm,mn) / 
+          sum_ps4ocean_ta(j_atm,mn) = sum_ps4ocean_ta(j_atm,mn) /
      &                                norm_factor
         ENDDO
 
         WRITE(suff,'(I2.2)') mn
-        CALL WRITE_FLD_XY_RL('amQnetAtmtave.', suff, 
+        CALL WRITE_FLD_XY_RL('amQnetAtmtave.', suff,
      &                       qnet_mon, myIter, myThid)
-        CALL WRITE_FLD_XY_RL('amEvapAtmtave.', suff, 
+        CALL WRITE_FLD_XY_RL('amEvapAtmtave.', suff,
      &                       evap_mon, myIter, myThid)
-        CALL WRITE_FLD_XY_RL('amPrecipAtmtave.', suff, 
+        CALL WRITE_FLD_XY_RL('amPrecipAtmtave.', suff,
      &                       precip_mon, myIter, myThid)
-        CALL WRITE_FLD_XY_RL('amRunoffAtmtave.', suff, 
+        CALL WRITE_FLD_XY_RL('amRunoffAtmtave.', suff,
      &                       runoff_mon, myIter, myThid)
-        CALL WRITE_FLD_XY_RL('amQrelfluxtave.', suff, 
+        CALL WRITE_FLD_XY_RL('amQrelfluxtave.', suff,
      &                       qrel_mon, myIter, myThid)
-        CALL WRITE_FLD_XY_RL('amFrelfluxtave.', suff, 
+        CALL WRITE_FLD_XY_RL('amFrelfluxtave.', suff,
      &                       frel_mon, myIter, myThid)
-        CALL WRITE_FLD_XY_RL('amIceMasktave.', suff, 
+        CALL WRITE_FLD_XY_RL('amIceMasktave.', suff,
      &                       iceMask_mon, myIter, myThid)
-        CALL WRITE_FLD_XY_RL('amIceHeighttave.', suff, 
+        CALL WRITE_FLD_XY_RL('amIceHeighttave.', suff,
      &                       iceHeight_mon, myIter, myThid)
-        CALL WRITE_FLD_XY_RL('amIceTimetave.', suff, 
+        CALL WRITE_FLD_XY_RL('amIceTimetave.', suff,
      &                       iceTime_mon, myIter, myThid)
-        CALL WRITE_FLD_XY_RL('amOceMxLTtave.', suff, 
+        CALL WRITE_FLD_XY_RL('amOceMxLTtave.', suff,
      &                       oceMxLT_mon, myIter, myThid)
-        CALL WRITE_FLD_XY_RL('amOceMxLStave.', suff, 
+        CALL WRITE_FLD_XY_RL('amOceMxLStave.', suff,
      &                       oceMxLS_mon, myIter, myThid)
 
       ENDDO
@@ -167,7 +170,7 @@ C     LOCAL VARIABLES:
 
       simYr = int(myIter*deltaTClock/secYr)
       CALL MDSFINDUNIT( dUnit, mythid )
-      
+
       WRITE(fn,'(A,I5.5)') 'attauu.', simYr
       OPEN(dUnit, FILE=fn, STATUS='unknown',
      &     ACCESS='direct', RECL=8*jm0*nForcingPer, FORM='unformatted')

@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.6 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -14,25 +16,25 @@ c
 c     The following input veriables are used throughout in the argument
 c     lists:
 c
-c     name   -  character 
+c     name   -  character
 c                 On entry, name is the extended tape name.
-c     len    -  integer 
+c     len    -  integer
 c                 On entry, len is the number of characters in name.
-c     tid    -  integer 
+c     tid    -  integer
 c                 On entry, tid identifies the tape.
 c     vid    -  integer
 c                 On entry, vid identifies the variable to be stored on
 c                 the tape.
-c     var    -  real array of dimension length 
+c     var    -  real array of dimension length
 c                 On entry, var contains the values to be stored.
 c                           var must not be changed.
-c     size   -  integer 
+c     size   -  integer
 c                 On entry, size is the size in bytes of the type of
 c                           variable var.
-c     length -  integer 
+c     length -  integer
 c                 On entry, length is the dimension of the variable
 c                           stored on the tape.
-c     irec   -  integer 
+c     irec   -  integer
 c                 On entry, irec is the record number to be written.
 c     mythid -  integer
 c                 On entry, mythid is the number of the thread or
@@ -143,7 +145,7 @@ CEOP
       _BEGIN_MASTER( mythid )
         by = myByLo(myThid)
         bx = myBxLo(myThid)
-        call mdsreadvector( fname, size*8, 'RL', 
+        call mdsreadvector( fname, size*8, 'RL',
      &                      length, var, bx, by, irec, mythid )
       _END_MASTER( mythid )
 
@@ -243,7 +245,7 @@ CEOP
       _BEGIN_MASTER( mythid )
         by = myByLo(myThid)
         bx = myBxLo(myThid)
-        call mdswritevector( fname, size*8, globalfile, 'RL', 
+        call mdswritevector( fname, size*8, globalfile, 'RL',
      &                       length, var, bx, by, irec, 0, mythid )
       _END_MASTER( mythid )
 

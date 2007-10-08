@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint.flow,v 1.7 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
 
 C----------------------------------------
 C subroutine  read_pickup

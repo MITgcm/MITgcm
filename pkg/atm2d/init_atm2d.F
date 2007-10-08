@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/init_atm2d.F,v 1.5 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -31,7 +34,7 @@ C     === Global SeaIce Parameters ===
 
 C     === Atmos/Ocean/Seaice Interface Variables ===
 #include "ATM2D_VARS.h"
- 
+
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -80,16 +83,16 @@ c end atmos grid initialization
 
       atm_oc_ind(1)=2
       atm_oc_wgt(1)=1. _d 0
-      atm_oc_frac1(1)= (sin(yG(1,2,1,1)*deg2rad) - 
+      atm_oc_frac1(1)= (sin(yG(1,2,1,1)*deg2rad) -
      &        sin(yG(1,1,1,1)*deg2rad))/
      &        (sin(atm_yG(3)*deg2rad)-sin(atm_yG(1)*deg2rad))
       atm_oc_frac2(1)= 0. _d 0   ! assumes ocean(1) fits in atm(1)
       atm_oc_ind(sNy)=jm0-1
       atm_oc_wgt(sNy)=1. _d 0
-      atm_oc_frac1(sNy)= (sin((yG(1,sNy,1,1) + 
+      atm_oc_frac1(sNy)= (sin((yG(1,sNy,1,1) +
      &      dyG(1,sNy,1,1)/6.37D6/deg2rad)*deg2rad)-
      &      sin(yG(1,sNy,1,1)*deg2rad))/
-     &      (sin((atm_yG(jm0)+atm_dyG(jm0))*deg2rad)- 
+     &      (sin((atm_yG(jm0)+atm_dyG(jm0))*deg2rad)-
      &      sin(atm_yG(jm0-1)*deg2rad))
       atm_oc_frac2(sNy)= 0. _d 0   ! assumes ocean(1) fits in atm(1)
 
@@ -106,8 +109,8 @@ c end atmos grid initialization
         DO jj=2,jm0-1
           IF  ((yG(1,j,1,1).GE.atm_yG(jj)).AND.
      &         (yG(1,j,1,1).LT.atm_yG(jj+1))) j_atm=jj
-        ENDDO  
-        
+        ENDDO
+
         atm_oc_ind(j)=j_atm
         end1= sin(yG(1,j,1,1) *deg2rad)
         end2= sin(yG(1,j+1,1,1) *deg2rad)
@@ -146,25 +149,25 @@ c
       ENDDO
 
       DO j_atm=3,jm0-2
-        cflan(j_atm)=1. _d 0 - ocnArea(j_atm) / 
-     &              (2. _d 0 * PI * 6.37 _d 6 * 6.37 _d 6 * 
+        cflan(j_atm)=1. _d 0 - ocnArea(j_atm) /
+     &              (2. _d 0 * PI * 6.37 _d 6 * 6.37 _d 6 *
      &    (sin(atm_yG(j_atm+1)*deg2rad) - sin(atm_yG(j_atm)*deg2rad)))
         if (cflan(j_atm).LT.1. _d -14) cflan(j_atm)=0. _d 0
       ENDDO
 
 C     deal with the combined atmos grid end cells...
-      cflan(2)= 1. _d 0 - ocnArea(2) / 
+      cflan(2)= 1. _d 0 - ocnArea(2) /
      &         (2. _d 0*PI*6.37 _d 6*6.37 _d 6*
      &         (sin(atm_yG(3)*deg2rad)+1. _d 0))
       IF (cflan(2).LT.1. _d -14) cflan(2)=0. _d 0
       cflan(1)=cflan(2)
-      cflan(jm0-1)= 1.d0 - ocnArea(jm0-1) / 
+      cflan(jm0-1)= 1.d0 - ocnArea(jm0-1) /
      &             (2. _d 0*PI*6.37 _d 6*6.37 _d 6*
      &             (1. _d 0-sin(atm_yG(jm0-1)*deg2rad)))
       IF (cflan(jm0-1).LT.1. _d -14) cflan(jm0-1)=0. _d 0
       cflan(jm0)=cflan(jm0-1)
 
-      PRINT *,'Land fractions on atmospheric grid: ' 
+      PRINT *,'Land fractions on atmospheric grid: '
       PRINT *, cflan
       PRINT *,'Lookup grid index, weights:'
       PRINT *, atm_oc_ind,atm_oc_wgt
@@ -188,7 +191,7 @@ c
 
       IF ( atmosTauuFile .NE. ' '  ) THEN
          OPEN(dUnit, FILE=atmosTauuFile,STATUS='old',
-     &        ACCESS='direct', RECL=8*jm0*nForcingPer, 
+     &        ACCESS='direct', RECL=8*jm0*nForcingPer,
      &        FORM='unformatted')
          READ(dUnit,REC=1), atau
          CLOSE(dUnit)
@@ -196,7 +199,7 @@ c
 
       IF ( atmosTauvFile .NE. ' '  ) THEN
          OPEN(dUnit, FILE=atmosTauvFile, STATUS='old',
-     &        ACCESS='direct', RECL=8*jm0*nForcingPer, 
+     &        ACCESS='direct', RECL=8*jm0*nForcingPer,
      &        FORM='unformatted')
          READ(dUnit, REC=1), atav
          CLOSE(dUnit)
@@ -204,7 +207,7 @@ c
 
       IF ( atmosWindFile .NE. ' '  ) THEN
          OPEN(dUnit, FILE=atmosWindFile, STATUS='old',
-     &        ACCESS='direct', RECL=8*jm0*nForcingPer, 
+     &        ACCESS='direct', RECL=8*jm0*nForcingPer,
      &        FORM='unformatted')
          READ(dUnit, REC=1), awind
          CLOSE(dUnit)
@@ -260,8 +263,8 @@ c
       ENDDO
 
       CALL INIT_SUMVARS(myThid)
- 
-C     Initialize 1D diagnostic variables 
+
+C     Initialize 1D diagnostic variables
       DO j_atm=1,jm0
         DO mn=1,nForcingPer
           sum_tauu_ta(j_atm,mn)= 0. _d 0
@@ -271,7 +274,7 @@ C     Initialize 1D diagnostic variables
         ENDDO
       ENDDO
 
-C     Initialize 2D diagnostic variables 
+C     Initialize 2D diagnostic variables
       DO i=1-OLx,sNx+OLx
         DO j=1-OLy,sNy+OLy
           DO mn=1,nForcingPer

@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/relax_add.F,v 1.3 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -43,9 +46,9 @@ C     Save below so that continual file reloads aren't necessary
      &                 sst0, sst1, sss0, sss1
 
       _RS  sst0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
-      _RS  sst1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)     
-      _RS  sss0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)    
-      _RS  sss1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)    
+      _RS  sst1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
+      _RS  sss0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
+      _RS  sss1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
       _RL lambdaTheta,lambdaSalt
       _RS nearIce    ! constant used to phase out rest near frz point
       _RL qrelflux, frelflux
@@ -119,7 +122,7 @@ C         ONLY if seaice is present
           ELSE
               nearIce=(sstRelax(i,j)+1.0)/3.0
           endif
-        
+
           qrelflux= lambdaTheta*(sstFromOcn(i,j)-sstRelax(i,j))/
      &              (recip_Cp*recip_rhoNil*recip_drF(1))*nearIce
 

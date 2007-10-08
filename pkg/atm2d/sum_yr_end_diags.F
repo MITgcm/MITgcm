@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/sum_yr_end_diags.F,v 1.3 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -34,22 +37,22 @@ C     LOCAL VARIABLES:
       iceArea = 0. _d 0
       DO j=1,int(sNy/2)
         DO i=1,sNx
-          IF (iceMask(i,j,1,1).GT. 0. _d 0) 
+          IF (iceMask(i,j,1,1).GT. 0. _d 0)
      &        iceArea = iceArea + rA(i,j,1,1)*iceMask(i,j,1,1)
         ENDDO
       ENDDO
-      SHice_min=min(SHice_min,iceArea)  
-      SHice_max=max(SHice_max,iceArea)  
+      SHice_min=min(SHice_min,iceArea)
+      SHice_max=max(SHice_max,iceArea)
 
       iceArea = 0. _d 0
       DO j=int(sNy/2),sNy
         DO i=1,sNx
-          IF (iceMask(i,j,1,1).GT. 0. _d 0) 
+          IF (iceMask(i,j,1,1).GT. 0. _d 0)
      &        iceArea = iceArea + rA(i,j,1,1)*iceMask(i,j,1,1)
         ENDDO
       ENDDO
-      NHice_min=min(NHice_min,iceArea)  
-      NHice_max=max(NHice_max,iceArea)  
+      NHice_min=min(NHice_min,iceArea)
+      NHice_max=max(NHice_max,iceArea)
 
       DO j=1,sNy
         DO i=1,sNx

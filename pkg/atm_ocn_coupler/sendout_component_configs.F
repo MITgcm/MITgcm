@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/Attic/sendout_component_configs.F,v 1.4 2007/10/08 23:49:46 jmc Exp $
+C $Name:  $
+
 C $ Header: $
 C $ Name:   $
 

@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/cpl_recv_ocn_ocnconfig.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ATM2D_OPTIONS.h"
 #ifdef ATM2D_MPI_ON
 
@@ -24,8 +27,8 @@ C     == Local variables ==
 CEndOfInterface
 
 C     Get config from ocean component
-      CALL COUPRECV_R8TILES( ocnCompName, 
-     I                       ocnMxlDName, Nx_ocn, Ny_ocn, 
+      CALL COUPRECV_R8TILES( ocnCompName,
+     I                       ocnMxlDName, Nx_ocn, Ny_ocn,
      O                       OcMxlD_ocn )
 
       RETURN

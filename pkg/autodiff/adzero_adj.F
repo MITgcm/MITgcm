@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adzero_adj.F,v 1.2 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

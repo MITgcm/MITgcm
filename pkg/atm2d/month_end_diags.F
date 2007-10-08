@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/month_end_diags.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -38,27 +41,27 @@ C     LOCAL VARIABLES:
       DO j=1,sNy
         DO i=1,sNx
 
-          qnet_atm_ta(i,j,monid)= qnet_atm_ta(i,j,monid) + 
+          qnet_atm_ta(i,j,monid)= qnet_atm_ta(i,j,monid) +
      &                            qnet_atm(i,j)
-          evap_atm_ta(i,j,monid)= evap_atm_ta(i,j,monid) + 
+          evap_atm_ta(i,j,monid)= evap_atm_ta(i,j,monid) +
      &                            evap_atm(i,j)
-          precip_atm_ta(i,j,monid)= precip_atm_ta(i,j,monid) + 
+          precip_atm_ta(i,j,monid)= precip_atm_ta(i,j,monid) +
      &                              precip_atm(i,j)
-          runoff_atm_ta(i,j,monid)=  runoff_atm_ta(i,j,monid) +  
+          runoff_atm_ta(i,j,monid)=  runoff_atm_ta(i,j,monid) +
      &                               runoff_atm(i,j)
-          sum_qrel_ta(i,j,monid)= sum_qrel_ta(i,j,monid) + 
+          sum_qrel_ta(i,j,monid)= sum_qrel_ta(i,j,monid) +
      &                            sum_qrel(i,j)
-          sum_frel_ta(i,j,monid)= sum_frel_ta(i,j,monid) + 
+          sum_frel_ta(i,j,monid)= sum_frel_ta(i,j,monid) +
      &                            sum_frel(i,j)
-          sum_iceMask_ta(i,j,monid)= sum_iceMask_ta(i,j,monid) + 
+          sum_iceMask_ta(i,j,monid)= sum_iceMask_ta(i,j,monid) +
      &                               sum_iceMask(i,j)
-          sum_iceHeight_ta(i,j,monid)= sum_iceHeight_ta(i,j,monid) + 
+          sum_iceHeight_ta(i,j,monid)= sum_iceHeight_ta(i,j,monid) +
      &                                 sum_iceHeight(i,j)
-          sum_iceTime_ta(i,j,monid)= sum_iceTime_ta(i,j,monid) + 
+          sum_iceTime_ta(i,j,monid)= sum_iceTime_ta(i,j,monid) +
      &                               sum_iceTime(i,j)
-          sum_oceMxLT_ta(i,j,monid)= sum_oceMxLT_ta(i,j,monid) + 
+          sum_oceMxLT_ta(i,j,monid)= sum_oceMxLT_ta(i,j,monid) +
      &                               sum_oceMxLT(i,j)
-          sum_oceMxLS_ta(i,j,monid)= sum_oceMxLS_ta(i,j,monid) + 
+          sum_oceMxLS_ta(i,j,monid)= sum_oceMxLS_ta(i,j,monid) +
      &                               sum_oceMxLS(i,j)
 
           qnet_atm(i,j)=qnet_atm(i,j)/ norm_factor
@@ -106,7 +109,7 @@ C     LOCAL VARIABLES:
           qnet_atm(i,j)= 0. _d 0
           evap_atm(i,j)= 0. _d 0
           precip_atm(i,j)= 0. _d 0
-          runoff_atm(i,j)= 0. _d 0 
+          runoff_atm(i,j)= 0. _d 0
           sum_qrel(i,j)= 0. _d 0
           sum_frel(i,j)= 0. _d 0
           sum_iceMask(i,j)= 0. _d 0

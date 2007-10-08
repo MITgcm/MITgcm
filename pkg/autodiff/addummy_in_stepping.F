@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.39 2007/08/17 21:37:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.40 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "AUTODIFF_OPTIONS.h"
@@ -32,7 +33,7 @@ C     == Global variables ===
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
-#include "GRID.h" 
+#include "GRID.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
 # include "adcommon.h"
 #endif
@@ -49,7 +50,7 @@ C     myTime - time counter for this thread
 C     myThid - Thread number for this instance of the routine.
       integer myThid
       integer myiter
-      _RL     mytime 
+      _RL     mytime
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 #ifdef ALLOW_AUTODIFF_MONITOR
@@ -116,13 +117,13 @@ C--     Set suffix for this set of data files.
 C--     Read IO error counter
         beginIOErrCount = IO_ERRCOUNT(myThid)
 
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'ADJtheta.',suff, adtheta, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'ADJsalt.',suff, adsalt, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'ADJuvel.',suff, aduvel, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'ADJvvel.',suff, advvel, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL(
      &       'ADJwvel.',suff, adwvel, myIter, myThid)
@@ -134,31 +135,31 @@ C--     Read IO error counter
         CALL WRITE_FLD_XY_RL ( 'ADJempr.',suff, adempmr, myIter, myThid)
 
 #ifdef ALLOW_SEAICE
-        CALL MDSWRITEFIELD( 
-     &       'ADJarea.'//suff, writeBinaryPrec, globalFiles, 'RL', 
+        CALL MDSWRITEFIELD(
+     &       'ADJarea.'//suff, writeBinaryPrec, globalFiles, 'RL',
      &       3,  adarea, 1, myIter, myThid )
-        CALL MDSWRITEFIELD( 
-     &       'ADJheff.'//suff, writeBinaryPrec, globalFiles, 'RL', 
+        CALL MDSWRITEFIELD(
+     &       'ADJheff.'//suff, writeBinaryPrec, globalFiles, 'RL',
      &       3,  adheff, 1, myIter, myThid )
-        CALL MDSWRITEFIELD( 
-     &       'ADJhsnow.'//suff, writeBinaryPrec, globalFiles, 'RL', 
+        CALL MDSWRITEFIELD(
+     &       'ADJhsnow.'//suff, writeBinaryPrec, globalFiles, 'RL',
      &       1,  adhsnow, 1, myIter, myThid )
 # ifdef SEAICE_ALLOW_DYNAMICS
-        CALL MDSWRITEFIELD( 
-     &       'ADJuice.'//suff, writeBinaryPrec, globalFiles, 'RL', 
+        CALL MDSWRITEFIELD(
+     &       'ADJuice.'//suff, writeBinaryPrec, globalFiles, 'RL',
      &       3,  aduice, 1, myIter, myThid )
-        CALL MDSWRITEFIELD( 
-     &       'ADJvice.'//suff, writeBinaryPrec, globalFiles, 'RL', 
+        CALL MDSWRITEFIELD(
+     &       'ADJvice.'//suff, writeBinaryPrec, globalFiles, 'RL',
      &       3,  advice, 1, myIter, myThid )
 # endif
 #endif
 c
 #ifdef ALLOW_DIFFKR_CONTROL
-        CALL WRITE_FLD_XYZ_RL ( 'ADJdiffkr.',suff, addiffkr, 
+        CALL WRITE_FLD_XYZ_RL ( 'ADJdiffkr.',suff, addiffkr,
      &       myIter, myThid)
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
-        CALL WRITE_FLD_XYZ_RL ( 'ADJkagm.',suff, adkapgm, 
+        CALL WRITE_FLD_XYZ_RL ( 'ADJkagm.',suff, adkapgm,
      &       myIter, myThid)
 #endif
 #ifdef ALLOW_EDTAUX_CONTROL
@@ -176,7 +177,7 @@ c
         CALL WRITE_FLD_XY_RL( 'ADJsss.',suff, adsss, myIter, myThid)
 #endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-        CALL WRITE_FLD_XY_RL ( 'ADJbottomdrag.',suff, 
+        CALL WRITE_FLD_XY_RL ( 'ADJbottomdrag.',suff,
      & adbottomdragfld, myIter, myThid)
 #endif
 

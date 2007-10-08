@@ -1,5 +1,8 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.F,v 1.3 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
+
 C     /==========================================================\
-C     | SUBROUTINEs  
+C     | SUBROUTINEs
 C     |              adexch_uv_agrid_3d_rs                             |
 C     |              adexch_uv_agrid_3d_rl                             |
 C     | o adjoint routines to exchange routines                  |

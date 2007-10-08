@@ -1,9 +1,12 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_write_pickup.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
-      SUBROUTINE ATM2D_WRITE_PICKUP( 
-     I     modelEnd, 
-     I     myTime, 
-     I     myIter, 
+      SUBROUTINE ATM2D_WRITE_PICKUP(
+     I     modelEnd,
+     I     myTime,
+     I     myIter,
      I     myThid )
 
 C     *==========================================================*
@@ -14,7 +17,7 @@ C     |the usual MITGCM WRITE_PICKUP routine in forward step, as |
 C     |NORM_OCN_FLUXES must be done before these fluxes are ready|
 C     *==========================================================*
 
-C     Note this routine was pilfered from the MITGCM code prior to 
+C     Note this routine was pilfered from the MITGCM code prior to
 C     JMC's changes in 8/06.
 
 C     !USES:
@@ -34,7 +37,7 @@ C     modelEnd    :: Checkpoint call at end of model run.
 C     myThid :: Thread number for this instance of the routine.
 C     myIter :: Iteration number
 C     myTime :: Current time of simulation ( s )
-      LOGICAL modelEnd    
+      LOGICAL modelEnd
       INTEGER myThid
       INTEGER myIter
       _RL     myTime
@@ -48,7 +51,7 @@ C                       checkpoint (that will be permanent if permCheckPoint=T)
 C     oldPrc :: Temp. for holding I/O precision
 C     fn     :: Temp. for building file name string.
 C     lgf    :: Flag to indicate whether to use global file mode.
-      LOGICAL permCheckPoint, tempCheckPoint  
+      LOGICAL permCheckPoint, tempCheckPoint
 CEOP
 
       permCheckPoint = .FALSE.
@@ -78,7 +81,7 @@ CEOP
         IF (tempCheckPoint)   !toggle was done prematurely...
      &       nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
 
-        CALL ATM2D_WRITE_PICKUP_NOW( 
+        CALL ATM2D_WRITE_PICKUP_NOW(
      &       permCheckPoint, myTime, myIter, myThid )
 
         IF (tempCheckPoint)   !note this works for A/B chpt only
@@ -97,10 +100,10 @@ CBOP
 C     !ROUTINE: ATM2D_WRITE_PICKUP_NOW
 
 C     !INTERFACE:
-      SUBROUTINE ATM2D_WRITE_PICKUP_NOW( 
-     I     permCheckPoint, 
-     I     myTime, 
-     I     myIter, 
+      SUBROUTINE ATM2D_WRITE_PICKUP_NOW(
+     I     permCheckPoint,
+     I     myTime,
+     I     myIter,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -147,7 +150,7 @@ C     _BEGIN_MASTER( myThid )
 
       prec = precFloat64
       lgf = globalFile
-      
+
 C     Create suffix to pass on to package pickup routines
       IF ( permCheckPoint ) THEN
        WRITE(fn,'(A,I10.10)') 'pickup_atm2d.',myIter
@@ -155,42 +158,42 @@ C     Create suffix to pass on to package pickup routines
        WRITE(fn,'(A,A)') 'pickup_atm2d.',checkPtSuff(nCheckLev)
       ENDIF
 
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_slp, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_slp,
      &                   1,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_qnet, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_qnet,
      &                   2,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_solarnet, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_solarnet,
      &                   3,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_fu, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_fu,
      &                   4,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_fv, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_fv,
      &                   5,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_precip, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_precip,
      &                   6,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_evap, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_evap,
      &                   7,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_runoff, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_runoff,
      &                   8,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_wspeed, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_wspeed,
      &                   9,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_pCO2, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_pCO2,
      &                   10,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_sIceLoad, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_sIceLoad,
      &                   11,myIter,myThid)
 
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,sHeating, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,sHeating,
      &                   12,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,flxCndBt, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,flxCndBt,
      &                   13,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_prcAtm, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_prcAtm,
      &                   14,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,snowPrc, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,snowPrc,
      &                   15,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,icFrwAtm, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,icFrwAtm,
      &                   16,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,icFlxSw, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,icFlxSw,
      &                   17,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,siceAlb, 
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,siceAlb,
      &                   18,myIter,myThid)
 
 C     _END_MASTER( myThid )

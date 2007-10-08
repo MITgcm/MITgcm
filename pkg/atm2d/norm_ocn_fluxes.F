@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/norm_ocn_fluxes.F,v 1.4 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -34,7 +37,7 @@ C     LOCAL VARIABLES:
 
       DO j=1, sNy
         DO i=1, sNx
-        
+
           IF (maskC(i,j,1,1,1) .EQ. 1.) THEN
 
             pass_runoff(i,j)= sum_runoff(i,j)/nper
@@ -52,7 +55,7 @@ C     LOCAL VARIABLES:
             flxCndBt(i,j,1,1)= sum_flxCnB(i,j)/nper ! from temp-solve step
             pass_PrcAtm(i,j)= sum_prcIce(i,j)/nper
             icFrwAtm(i,j,1,1)= sum_evapIce(i,j)/nper
- 
+
 C  Load the following directly into the seaice common block
             snowPrc(i,j,1,1)= sum_snowPrc(i,j)/nper
 
@@ -60,22 +63,22 @@ C  Double check that wspeed>0 (unlikely, but possible given anomaly coupling)
             IF ( pass_wspeed(i,j) .LT. 0. _d 0)
      &         pass_wspeed(i,j) = 0. _d 0
 
-C  Seaice diagnostics - tally at end of coupled period              
-            sum_iceMask(i,j)=sum_iceMask(i,j) + 
+C  Seaice diagnostics - tally at end of coupled period
+            sum_iceMask(i,j)=sum_iceMask(i,j) +
      &                       iceMask(i,j,1,1)*dtcouplo
-            sum_iceHeight(i,j)= sum_iceHeight(i,j) + 
+            sum_iceHeight(i,j)= sum_iceHeight(i,j) +
      &                          iceHeight(i,j,1,1)*dtcouplo
-            IF (iceMask(i,j,1,1) .NE. 0. _d 0) 
+            IF (iceMask(i,j,1,1) .NE. 0. _d 0)
      &           sum_iceTime(i,j)= sum_iceTime(i,j) + dtcouplo
-            sum_oceMxLT(i,j)=sum_oceMxLT(i,j) + 
+            sum_oceMxLT(i,j)=sum_oceMxLT(i,j) +
      &                       tOceMxL(i,j,1,1)*dtcouplo
-            sum_oceMxLS(i,j)=sum_oceMxLS(i,j) + 
+            sum_oceMxLS(i,j)=sum_oceMxLS(i,j) +
      &                       sOceMxL(i,j,1,1)*dtcouplo
 
           ENDIF
 
         ENDDO
-      ENDDO  
+      ENDDO
 
       CALL INIT_SUMVARS( myThid)
 

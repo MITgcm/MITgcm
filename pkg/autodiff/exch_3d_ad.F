@@ -1,5 +1,8 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_3d_ad.F,v 1.2 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
+
 C     /==========================================================\
-C     | SUBROUTINEs  
+C     | SUBROUTINEs
 C     |              adexch_3d_rs                                |
 C     |              adexch_3d_rl                                |
 C     |              adexch_uv_3d_rs                             |
@@ -341,7 +344,7 @@ C                begine.
       END
 
 CStartOfInterface
-      SUBROUTINE adexch_z_3d_rs( 
+      SUBROUTINE adexch_z_3d_rs(
      I                         myNz, myThid
      U                       , adphi
      &                       )
@@ -372,10 +375,10 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
@@ -395,7 +398,7 @@ C                begine.
 
 
 CStartOfInterface
-      SUBROUTINE adexch_z_3d_rl( 
+      SUBROUTINE adexch_z_3d_rl(
      I                         myNz, myThid
      U                       , adphi
      &                       )
@@ -426,10 +429,10 @@ C     exchWidth[XYZ]  - Extent of regions that will be exchanged.
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
-C     ** NOTE ** The exchange routine we use here does not 
+C     ** NOTE ** The exchange routine we use here does not
 C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface 
-C                that is calling it here is meant to ensure 
+C                However, the slow, simple exchange interface
+C                that is calling it here is meant to ensure
 C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN

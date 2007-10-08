@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/fixed_flux_add.F,v 1.3 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -38,24 +41,24 @@ C     save below in common block so continual reloading isn't necessary
       COMMON /OCEANMEAN/
      &                 tau0, tau1, tav0, tav1,
      &                 wind0, wind1, qnet0, qnet1,
-     &                 evap0, evap1, 
+     &                 evap0, evap1,
      &                 precip0, precip1,
      &                 runoff0, runoff1
 
       _RS  tau0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
-      _RS  tau1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)     
-      _RS  tav0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)    
-      _RS  tav1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)    
-      _RS  wind0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)   
+      _RS  tau1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
+      _RS  tav0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
+      _RS  tav1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
+      _RS  wind0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
       _RS  wind1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
-      _RS  qnet0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)    
-      _RS  qnet1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)  
-      _RS  evap0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)    
-      _RS  evap1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)    
-      _RS  precip0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)    
-      _RS  precip1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)    
-      _RS  runoff0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)    
-      _RS  runoff1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)    
+      _RS  qnet0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
+      _RS  qnet1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
+      _RS  evap0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
+      _RS  evap1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
+      _RS  precip0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
+      _RS  precip1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
+      _RS  runoff0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
+      _RS  runoff1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,1,1)
 
       IF (ifTime) THEN
 
@@ -123,8 +126,8 @@ C--   Interpolate and add to anomaly
      &                (wght0*qnet0(i,j,1,1) + wght1*qnet1(i,j,1,1))
 
 c note below is different from older code...
-          IF (iceMask(i,j,1,1) .NE. 0. _d 0) 
-     &      qneti_2D(i,j)= qneti_2D(i,j) + 
+          IF (iceMask(i,j,1,1) .NE. 0. _d 0)
+     &      qneti_2D(i,j)= qneti_2D(i,j) +
      &                     (wght0*qnet0(i,j,1,1) + wght1*qnet1(i,j,1,1))
 
 C 9/08/06 assume evap is + in file, thus subtract
@@ -133,7 +136,7 @@ C 9/08/06 assume evap is + in file, thus subtract
             precipo_2D(i,j)= (wght0*precip0(i,j,1,1) + wght1*precip1(i,j,1,1))
             IF (iceMask(i,j,1,1) .NE. 0. _d 0) THEN
               evapi_2D(i,j)= -(wght0*evap0(i,j,1,1) + wght1*evap1(i,j,1,1))
-              precipi_2D(i,j)= (wght0*precip0(i,j,1,1) + 
+              precipi_2D(i,j)= (wght0*precip0(i,j,1,1) +
      &                          wght1*precip1(i,j,1,1))
             ENDIF
           ELSE
@@ -152,7 +155,7 @@ C 9/08/06 assume evap is + in file, thus subtract
           IF (useObsRunoff) THEN
               runoff_2D(i,j)= (wght0*runoff0(i,j,1,1) + wght1*runoff1(i,j,1,1))
           ELSE
-              runoff_2D(i,j)= runoff_2D(i,j) + 
+              runoff_2D(i,j)= runoff_2D(i,j) +
      &                (wght0*runoff0(i,j,1,1) + wght1*runoff1(i,j,1,1))
           ENDIF
         ENDDO

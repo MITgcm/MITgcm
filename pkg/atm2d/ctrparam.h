@@ -1,18 +1,20 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ctrparam.h,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
 
 ! ==================================================
 !
 ! ctrparam.h
 ! ----------
 !
-!  Purpose:	A header file contains cpp control 
+!  Purpose:	A header file contains cpp control
 !			parameters for the model
 !
 !  -------------------------------------------------
 !	
-!  Usage:	1. (un)comment #define line; or 
+!  Usage:	1. (un)comment #define line; or
 !		2. #define/#undef x [number]
 !		  to set given cpp parameters x
-!		  to be true or false  
+!		  to be true or false
 !
 !  -------------------------------------------------
 !

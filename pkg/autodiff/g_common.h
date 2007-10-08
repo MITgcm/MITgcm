@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.16 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
+
 C--   These common blocks are extracted from the
 C--   automatically created tangent linear code.
 C--   You need to make sure that they are up-to-date
@@ -17,11 +20,11 @@ C--   heimbach@mit.edu 11-Jan-2001
 # include "SEAICE_OPTIONS.h"
 #endif
 
-      common /g_dynvars_r/ 
+      common /g_dynvars_r/
      &                     g_etan,
-     &                     g_uvel, g_vvel, g_wvel, 
-     &                     g_theta, g_salt, 
-     &                     g_gu, g_gv, g_gt, g_gs, 
+     &                     g_uvel, g_vvel, g_wvel,
+     &                     g_theta, g_salt,
+     &                     g_gu, g_gv, g_gt, g_gs,
      &                     g_gunm1, g_gvnm1, g_gtnm1, g_gsnm1
       _RL g_etan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_gs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -43,9 +46,9 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RL g_etah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 #ifdef ALLOW_CD_CODE
-      common /g_dynvars_cd/ 
+      common /g_dynvars_cd/
      &                      g_uveld, g_vveld,
-     &                      g_etanm1, 
+     &                      g_etanm1,
      &                      g_unm1, g_vnm1
       _RL g_uveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_vveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -98,7 +101,7 @@ C--   heimbach@mit.edu 11-Jan-2001
      &                       g_kapgm
       _RL  g_kapgm (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-#ifdef ALLOW_BOTTOMDRAG_CONTROL 
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
       COMMON /G_DYNVARS_BOTTOMDRAG/
      &                       g_bottomdragfld
       _RL  g_bottomdragfld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

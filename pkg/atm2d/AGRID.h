@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/AGRID.h,v 1.3 2007/10/08 23:48:27 jmc Exp $
+C $Name:  $
+
       COMMON/ATM_GRID/atm_yC,atm_yG
        REAL*4 atm_yC(jm0)    ! center points of atmos grid
        REAL*4 atm_yG(jm0)    ! southern boundary of atmos grid cells
@@ -6,7 +9,7 @@
      & dhfidtg,dhfidtgeq,precip,evao,evai,devodtg,devodtgeq,
      & devidtg,devidtgeq,tauu,tauv,arunoff,solarinc_ice,solarnet_ice,
      & solarinc_ocean,solarnet_ocean,wsocean,co24ocean,ps4ocean,tempr
-    
+
        REAL*8 hfluxo(jm0)    ! ocean surf. heat flux (W/m2) (+=downward)
        REAL*8 hfluxi(jm0)    ! seaice surf. heat flux (W/m2) (+=downward)
        REAL*8 dhfodtg(jm0)   ! dF/dT ocean, consistent with above units (-)
@@ -37,7 +40,7 @@
        REAL*8 sigfl(lm0)     ! sigma levels of atmospheric model
        REAL*8 qyz4ocean(jm0,lm0)  ! atmos mixing ratio structure (kg/kg)
        REAL*8 tyz4ocean(jm0,lm0)  ! atmos temp structure (K)
-       
+
       COMMON/OCDATA/mmsst,mmfice,mmtice,mmco2flux,cflan,mmsAlb,
      &              mmicem, mmtice1, mmtice2, mmsnowm
        REAL*8 mmsst(jm0)    ! zonal mean SST (C)

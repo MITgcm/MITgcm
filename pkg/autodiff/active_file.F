@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file.F,v 1.6 2006/03/24 22:58:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file.F,v 1.7 2007/10/08 23:50:52 jmc Exp $
+C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 

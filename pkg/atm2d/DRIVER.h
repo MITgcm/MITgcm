@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/DRIVER.h,v 1.4 2007/10/08 23:48:27 jmc Exp $
+C $Name:  $
+
       COMMON /DRIVER_VARS/
      &        dtcouple, dtatm, dtocn, startYear, endYear, taveDump,
      &        ncall_atm, ncall_ocean
@@ -6,9 +9,9 @@
        INTEGER dtocn     ! ocean time step (hrs)
        INTEGER startYear ! starting year of simulation (jan 1)
        INTEGER endYear   ! ending year of simulation (dec 31)
-       INTEGER taveDump  ! frequency of tave dumps for atm2ocn fluxes (yrs)     
-       INTEGER ncall_atm ! number of atm steps in a coupling period   
-       INTEGER ncall_ocean ! number of ocn steps in a coupling period  
+       INTEGER taveDump  ! frequency of tave dumps for atm2ocn fluxes (yrs)
+       INTEGER ncall_atm ! number of atm steps in a coupling period
+       INTEGER ncall_ocean ! number of ocn steps in a coupling period
 
 #ifdef CPL_TEM
       COMMON /DRIVER_VAR_TEM/
@@ -19,7 +22,7 @@
        INTEGER nfile
 #endif
 
-#ifdef CPL_OCEANCO2 
+#ifdef CPL_OCEANCO2
 #  include "OCM.h"
       COMMON /DRIVER_VAR_CO2/
      &         ocumn, ocuptp, fluxco2mn
@@ -41,9 +44,9 @@
        REAL*4 ghgbgr(5)
 #endif
 
-#ifdef CLM 
+#ifdef CLM
 #  include "CLM.h"
-#  ifdef CPL_TEM  
+#  ifdef CPL_TEM
 #    include "TEM.h"
       external tem2climate,updatelcluc,tem,tem_init,lcluc_init,
      &   temclm_init

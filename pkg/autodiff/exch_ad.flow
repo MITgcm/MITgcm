@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_ad.flow,v 1.6 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
+
 C     /==========================================================\
 C     | TAMC flow directives                                     |
 C     | for library subroutines    exch_xy_rs  exch_xyz_rs       |

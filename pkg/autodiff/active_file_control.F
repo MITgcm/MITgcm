@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control.F,v 1.9 2007/10/08 23:50:52 jmc Exp $
+C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -129,13 +131,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
 c       Read the active variable from file.
 
-        call mdsreadfield( 
-     &                     active_var_file, 
-     &                     prec, 
+        call mdsreadfield(
+     &                     active_var_file,
+     &                     prec,
      &                     'RL',
-     &                     mynr,      
+     &                     mynr,
      &                     active_var,
-     &                     irec, 
+     &                     irec,
      &                     mythid )
 
         if (lAdInit) then
@@ -155,12 +157,12 @@ c         adjoint variable's file. These files are tiled.
              enddo
           enddo
 
-          call mdswritefield( 
-     &                           adfname, 
-     &                           prec, 
+          call mdswritefield(
+     &                           adfname,
+     &                           prec,
      &                           globalfile,
-     &                           'RL', 
-     &                           mynr, 
+     &                           'RL',
+     &                           mynr,
      &                           active_data_t,
      &                           irec,
      &                           myOptimIter,
@@ -180,13 +182,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         _BEGIN_MASTER( mythid )
 
         writeglobalfile = .false.
-           call mdsreadfield( 
-     &                        active_var_file, 
-     &                        prec, 
+           call mdsreadfield(
+     &                        active_var_file,
+     &                        prec,
      &                        'RL',
-     &                        mynr, 
-     &                        active_data_t, 
-     &                        irec, 
+     &                        mynr,
+     &                        active_data_t,
+     &                        irec,
      &                        mythid )
 
 c             Add active_var from appropriate location to data.
@@ -195,7 +197,7 @@ c             Add active_var from appropriate location to data.
                  do k = 1,mynr
                     do j=1,sny
                        do i=1,snx
-                          active_data_t(i,j,k,bi,bj) = 
+                          active_data_t(i,j,k,bi,bj) =
      &                         active_data_t(i,j,k,bi,bj) +
      &                         active_var(i,j,k,bi,bj)
                        enddo
@@ -203,16 +205,16 @@ c             Add active_var from appropriate location to data.
                  enddo
               enddo
            enddo
-              
+
 c             Store the result on disk.
-           call mdswritefield( 
-     &                         active_var_file, 
+           call mdswritefield(
+     &                         active_var_file,
      &                         prec,
-     &                         writeglobalfile, 
+     &                         writeglobalfile,
      &                         'RL',
-     &                         mynr, 
-     &                         active_data_t, 
-     &                         irec, 
+     &                         mynr,
+     &                         active_data_t,
+     &                         irec,
      &                         myOptimIter,
      &                         mythid )
 
@@ -242,13 +244,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
 c       Read the active variable from file.
 
-        call mdsreadfield( 
-     &                     active_var_file, 
-     &                     prec, 
+        call mdsreadfield(
+     &                     active_var_file,
+     &                     prec,
      &                     'RL',
-     &                     mynr,      
+     &                     mynr,
      &                     active_var,
-     &                     irec, 
+     &                     irec,
      &                     mythid )
 
         _END_MASTER( mythid )
@@ -343,14 +345,14 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-          call mdswritefield( 
-     &                        active_var_file, 
-     &                        prec, 
+          call mdswritefield(
+     &                        active_var_file,
+     &                        prec,
      &                        globalfile,
-     &                        'RL', 
-     &                        mynr, 
-     &                        active_var, 
-     &                        irec, 
+     &                        'RL',
+     &                        mynr,
+     &                        active_var,
+     &                        irec,
      &                        myOptimIter,
      &                        mythid )
 
@@ -366,13 +368,13 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-        call mdsreadfield( 
-     &                           active_var_file, 
-     &                           prec, 
+        call mdsreadfield(
+     &                           active_var_file,
+     &                           prec,
      &                           'RL',
      &                            mynr,
-     &                            active_data_t, 
-     &                            irec, 
+     &                            active_data_t,
+     &                            irec,
      &                            mythid )
 
 c             Add active_var from appropriate location to data.
@@ -381,7 +383,7 @@ c             Add active_var from appropriate location to data.
               do k = 1, mynr
                  do j=1,sny
                     do i=1,snx
-                       active_var(i,j,k,bi,bj) = 
+                       active_var(i,j,k,bi,bj) =
      &                      active_var(i,j,k,bi,bj) +
      &                      active_data_t(i,j,k,bi,bj)
                        active_data_t(i,j,k,bi,bj) = 0. _d 0
@@ -390,14 +392,14 @@ c             Add active_var from appropriate location to data.
               enddo
            enddo
         enddo
-        call mdswritefield( 
-     &                            active_var_file, 
-     &                            prec, 
+        call mdswritefield(
+     &                            active_var_file,
+     &                            prec,
      &                            globalfile,
-     &                            'RL', 
-     &                            mynr, 
-     &                            active_data_t, 
-     &                            irec, 
+     &                            'RL',
+     &                            mynr,
+     &                            active_data_t,
+     &                            irec,
      &                            myOptimIter,
      &                            mythid )
 
@@ -413,14 +415,14 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 
         _BEGIN_MASTER( mythid )
 
-          call mdswritefield( 
-     &                        active_var_file, 
-     &                        prec, 
+          call mdswritefield(
+     &                        active_var_file,
+     &                        prec,
      &                        globalfile,
-     &                        'RL', 
-     &                        mynr, 
-     &                        active_var, 
-     &                        irec, 
+     &                        'RL',
+     &                        mynr,
+     &                        active_var,
+     &                        irec,
      &                        myOptimIter,
      &                        mythid )
 
@@ -603,7 +605,7 @@ c         adjoint variable's file.
           bi = itile
           do k = 1,mynr
             call mdswritevector( adfname, prec, writeglobalfile,
-     &                           'RL', (snx+2*olx)*(sny+2*oly), 
+     &                           'RL', (snx+2*olx)*(sny+2*oly),
      &                           active_data_t, bi, bj,
      &                           (irec-1)*mynr+k, myOptimIter,
      &                           mythid )

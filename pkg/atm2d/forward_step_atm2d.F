@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.7 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #ifdef OCEAN_3D
 #  include "ATM2D_OPTIONS.h"
@@ -132,7 +135,7 @@ C------------------- Top of Coupled Period Loop --------------------------
 C
 
 #ifdef OCEAN_3D
-#  ifdef ATM2D_MPI_ON    
+#  ifdef ATM2D_MPI_ON
       CALL CPL_RECV_OCN_FIELDS
 #  endif
       CALL GET_OCNVARS( myTime, myIter, myThid)
@@ -140,7 +143,7 @@ C
      &      (startTime.NE.baseTime .OR. nIter0.NE.0)) ) THEN
 C       don't run the ice growth/melt on step 1 if "cold" start
         CALL THSICE_STEP_FWD(1,1,1,sNx,1,sNy, pass_prcAtm,
-     &                        myTime, myIter, myThid) 
+     &                        myTime, myIter, myThid)
         CALL THSICE_AVE( 1,1, myTime, myIter, myThid )
       ENDIF
       CALL CALC_ZONAL_MEANS(.TRUE.,myThid)
@@ -149,8 +152,8 @@ C       don't run the ice growth/melt on step 1 if "cold" start
 #  ifdef ATM2D_MPI_ON
       CALL CPL_SEND_OCN_FIELDS
 #  endif
-#endif 
-     
+#endif
+
 C      PRINT *,'Top of ncall_atm Loop'
       DO na=1,ncall_atm    !loop for atmos forward time steps
         CALL atmosphere(dtatm,monid)
@@ -168,7 +171,7 @@ C      PRINT *,'Top of ncall_atm Loop'
 C      PRINT *,'Top of ncall_ocean Loop'
       DO no=1,ncall_ocean   !loop for each ocean forward step
 
-#ifdef OCEAN_3D 
+#ifdef OCEAN_3D
         iloop_ocn = nint((iloop-1)*dtcouplo/deltaTClock) + no
 #  ifndef ATM2D_MPI_ON
         CALL FORWARD_STEP(iloop_ocn, myTime, myIter, myThid )
@@ -188,8 +191,8 @@ C      PRINT *,'Top of ncall_ocean Loop'
 
 C Start of code done at the end of every coupled period
 
-#ifdef OCEAN_3D 
-      CALL NORM_OCN_FLUXES(myThid)  
+#ifdef OCEAN_3D
+      CALL NORM_OCN_FLUXES(myThid)
       CALL ATM2D_WRITE_PICKUP(.FALSE., myTime, myIter, myThid)
 #endif
 
@@ -270,10 +273,10 @@ C        CALL emissipcc(tnow,nepmn,ocumn,CO2,xco2ann,nemis)
         CALL emissipcc_mn(nepmn,ocumn,xco2ann,nemis)
 #endif
       ENDIF  !end block done at month-end
-   
+
       IF (inyr .EQ. jdofmhr(12)) THEN ! do this block at year-end
         PRINT *,'***end of year reached'
-#ifdef CPL_TEM 
+#ifdef CPL_TEM
         nepan=nepan/1000.
         IF (iyr.ge.1981.and.iyr.le.1990) THEN
           PRINT *,'Uptake avegaging year=',iyr
@@ -315,8 +318,8 @@ C If necessary, next line can be moved outside OCEAN_3D for IGSM2.2 cleanups
         IF (iloop.EQ.nTimeSteps) CALL ATM2D_FINISH(myThid)
 #endif
 
-#ifdef CPL_TEM 
-#  ifdef CPL_OCEANCO2 
+#ifdef CPL_TEM
+#  ifdef CPL_OCEANCO2
         PRINT 'a6,i6,2(a5,f10.4)','Year=',iyr,
      &         ' NEP=',nepan,' OCU=',ocuptp
 #  else

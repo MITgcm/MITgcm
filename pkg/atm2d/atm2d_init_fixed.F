@@ -1,9 +1,12 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_fixed.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #ifdef OCEAN_3D
 #  include "ATM2D_OPTIONS.h"
 #endif
 C
-#ifndef OCEAN_3D 
+#ifndef OCEAN_3D
       SUBROUTINE ATM2D_INIT_FIXED(nCouplePer, myThid)
 #else
       SUBROUTINE ATM2D_INIT_FIXED(myThid)
@@ -15,7 +18,7 @@ C     \==========================================================/
 
 #include "ATMSIZE.h"
 #include "DRIVER.h"
-#ifdef OCEAN_3D 
+#ifdef OCEAN_3D
 #  include "SIZE.h"
 #  include "EEPARAMS.h"
 #  include "PARAMS.h"
@@ -58,18 +61,18 @@ C     MITGCM helper routines; hopefully no unit conflict...
       ncall_atm=dtcouple/dtatm
       ncall_ocean=dtcouple/dtocn
       nCouplePer = (endYear-startYear+1)*24*365/dtcouple
-      
+
       PRINT *,'Model run years:',startYear,' to ', endYear
       PRINT *,'dcouple=',dtcouple
       PRINT *,'dtatm=',dtatm
       PRINT *,'dtocn=',dtocn
       PRINT *,'Total number of coupled periods:',nCouplePer
 
-#ifdef OCEAN_3D 
+#ifdef OCEAN_3D
       nTimeSteps = nCouplePer    !overwrite whatever MITGCM gets from data
-#endif  
+#endif
 
-#ifdef CPL_OCEANCO2 
+#ifdef CPL_OCEANCO2
       ocupt=0.0
       temuptann=0.0
 #endif
@@ -82,7 +85,7 @@ C     MITGCM helper routines; hopefully no unit conflict...
       CLOSE (961)
 #endif
 
-#ifdef OCEAN_3D 
+#ifdef OCEAN_3D
 #  ifdef ATM2D_MPI_ON
 
       CALL INITIALISE
@@ -90,7 +93,7 @@ C     MITGCM helper routines; hopefully no unit conflict...
 C     Perform registration with other components
       CALL ACCEPT_COMPONENT_REGISTRATIONS
 
-C     Coordinate the transfer configuration information 
+C     Coordinate the transfer configuration information
 C     between components
       CALL RECEIVE_COMPONENT_CONFIGS
       CALL SENDOUT_COMPONENT_CONFIGS

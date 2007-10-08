@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/subtract_means.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -28,7 +31,7 @@ C     LOCAL VARIABLES:
       INTEGER j_atm
 
 C     Interpolate and subtract 1D mean wind files
-      
+
       DO j_atm=2,jm0-1
         atm_tauu(j_atm)= atm_tauu(j_atm) -
      &       (wght0*atau(j_atm,intime0) + wght1*atau(j_atm,intime1))

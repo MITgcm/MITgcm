@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/sum_thsice_out.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -30,7 +33,7 @@ C     LOCAL VARIABLES:
 
       DO j=1, sNy
         DO i=1,sNx
-        
+
           IF (iceMask(i,j,1,1) .NE. 0. _d 0) THEN
             sum_sHeat(i,j) = sum_sHeat(i,j) + sHeating(i,j,1,1)
             sum_flxCnB(i,j)= sum_flxCnB(i,j) + flxCndBt(i,j,1,1)
@@ -42,9 +45,9 @@ C zero out icFlxSw or it will be double counted in thsice_step_fwd
             icFlxSW(i,j,1,1)= 0. _d 0
 
           ENDIF
-          
+
         ENDDO
-      ENDDO  
+      ENDDO
 
 
       RETURN

@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_stepping.F,v 1.10 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -85,13 +87,13 @@ C--     Read IO error counter
         CALL WRITE_FLD_XY_RL ( 'G_Jqnet.',suff, g_qnet, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'G_Jempr.',suff, g_empmr, myIter, myThid)
 c
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'G_Jtheta.',suff, g_theta, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'G_Jsalt.',suff, g_salt, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'G_Juvel.',suff, g_uvel, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'G_Jvvel.',suff, g_vvel, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL(
      &       'G_Jwvel.',suff, g_wvel, myIter, myThid)
@@ -99,11 +101,11 @@ c
      &       'G_Jetan.',suff, g_etan, myIter, myThid)
 
 #ifdef ALLOW_DIFFKR_CONTROL
-        CALL WRITE_FLD_XYZ_RL ( 'G_Jdiffkr.',suff, g_diffkr, 
+        CALL WRITE_FLD_XYZ_RL ( 'G_Jdiffkr.',suff, g_diffkr,
      &       myIter, myThid)
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
-        CALL WRITE_FLD_XYZ_RL ( 'G_Jkagm.',suff, g_kapgm, 
+        CALL WRITE_FLD_XYZ_RL ( 'G_Jkagm.',suff, g_kapgm,
      &       myIter, myThid)
 #endif
 
@@ -122,12 +124,12 @@ C--     Check for IO errors
          WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
          CALL PRINT_ERROR( msgBuf, 1 )
         ELSE
-         WRITE(msgBuf,'(A,I10)')  
+         WRITE(msgBuf,'(A,I10)')
      &    '// Model state written, timestep', myIter
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT, 1 )
          WRITE(msgBuf,'(A)')  ' '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT, 1 )
         ENDIF
 

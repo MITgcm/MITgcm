@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/cpl_send_ocn_atmconfig.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ATM2D_OPTIONS.h"
 #ifdef ATM2D_MPI_ON
 
@@ -32,9 +35,9 @@ CEndOfInterface
         ENDDO
       ENDDO
 
-   
+
 C     Send atmos. config to ocean component
-      CALL COUPSEND_R8TILES( ocnCompName, atmDepthName, Nx_ocn, Ny_ocn, 
+      CALL COUPSEND_R8TILES( ocnCompName, atmDepthName, Nx_ocn, Ny_ocn,
      &                       AtmDepths_ocn )
 
       RETURN

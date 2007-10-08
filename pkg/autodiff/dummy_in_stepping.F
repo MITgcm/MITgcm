@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/dummy_in_stepping.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/dummy_in_stepping.F,v 1.3 2007/10/08 23:50:53 jmc Exp $
+C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -17,7 +18,7 @@ C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
       integer myThid
       integer myiter
-      _RL     mytime 
+      _RL     mytime
 
       call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 

@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_readparms.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -18,9 +21,9 @@ C     \==========================================================/
 C     === Routine arguments ===
       INTEGER myThid
 
-      NAMELIST /PARM01_ATM2D/ 
+      NAMELIST /PARM01_ATM2D/
      &        atmosTauuFile, atmosTauvFile,atmosWindFile
-  
+
       NAMELIST /PARM02_ATM2D/
      &        tauuFile, tauvFile, windFile,
      &        qnetFile, evapFile, precipFile
@@ -36,7 +39,7 @@ C     === Routine arguments ===
 
       NAMELIST /PARM05_ATM2D/
      &        useObsEmP,useObsRunoff,useAltDeriv
- 
+
 
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
@@ -72,8 +75,8 @@ C--   Default values
       runoffMapFile=' '
 C
       useObsEmP=.FALSE.
-      useObsRunoff=.FALSE. 
-      useAltDeriv=.FALSE.    
+      useObsRunoff=.FALSE.
+      useAltDeriv=.FALSE.
 C
       r_tauThetaRelax=0. _d 0
       r_tauSaltRelax=0. _d 0
@@ -103,9 +106,9 @@ c
 C--   Close the open data file
       CLOSE(iUnit)
 
-      IF (tauThetaRelax .NE. 0. _d 0) 
+      IF (tauThetaRelax .NE. 0. _d 0)
      &                  r_tauThetaRelax= 1. _d 0/tauThetaRelax
-      IF (tauSaltRelax .NE. 0. _d 0) 
+      IF (tauSaltRelax .NE. 0. _d 0)
      &                  r_tauSaltRelax= 1. _d 0/tauSaltRelax
 
       RETURN

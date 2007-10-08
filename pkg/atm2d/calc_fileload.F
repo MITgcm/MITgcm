@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/calc_fileload.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Name:  $
+
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 C
@@ -27,7 +30,7 @@ C     intime0 - first of the two month to average
 C     intime1 - latter of the two months to average
 C     iftime - return true if time to do a file re-load
 C     myThid - Thread no. that called this routine.
-      _RL  curTime   
+      _RL  curTime
       INTEGER iloop
       INTEGER aloop
       _RL  wght0
@@ -57,19 +60,19 @@ C     &          349.5D0*86400.D0, 380.5D0*86400.D0/
 
       iftime=.FALSE.
       ifcyc=mod(curTime,secYr)
-  
+
       DO mn=1,13
 
-        IF ((ifcyc.GT.dmonth(mn-1)).AND.(ifcyc.LE.dmonth(mn))) 
+        IF ((ifcyc.GT.dmonth(mn-1)).AND.(ifcyc.LE.dmonth(mn)))
      &      intime1=mn
 
       ENDDO
 
 C     hence if curTime falls exactly mid-month, it is dmonth(intime1)
 C     although this should never happen if passed curTime is a mid-step time
-    
+
       intime0=intime1-1
-      wght1=(ifcyc - dmonth(intime0)) / 
+      wght1=(ifcyc - dmonth(intime0)) /
      &     (dmonth(intime1) - dmonth(intime0))
       wght0= 1. _d 0-wght1
 
@@ -78,6 +81,6 @@ C     although this should never happen if passed curTime is a mid-step time
 
       IF (intime0.EQ.0) intime0=12
       IF (intime1.EQ.13) intime1=1
-      
+
       RETURN
       END
