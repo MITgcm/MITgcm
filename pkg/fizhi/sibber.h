@@ -1,8 +1,11 @@
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/sibber.h,v 1.4 2007/10/08 23:42:14 jmc Exp $
+C $Name:  $
+
 C****
 C**** CHIP HEADER FILE
 C****
 
-C   SCCS VERSION @(#)sibber.h	1.1 10/15/92 
+C   SCCS VERSION @(#)sibber.h	1.1 10/15/92
 
       INTEGER  NTYPS, FRSTCH, MemFac
       INTEGER  NLAY, SFCLY, ROOTLY, RECHLY
