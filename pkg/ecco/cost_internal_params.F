@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_internal_params.F,v 1.2 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 

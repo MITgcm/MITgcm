@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.10 2007/09/20 22:01:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.11 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "AD_CONFIG.h"
@@ -93,10 +94,10 @@ c--     ... SST data.
      &                     sststartdate,    mythid )
 c--     ... SSS data.
         call cal_FullDate( sssstartdate1,   sssstartdate2,
-     &                     sssstartdate,    mythid )     
+     &                     sssstartdate,    mythid )
 c--     ... BP data.
         call cal_FullDate( bpstartdate1,   bpstartdate2,
-     &                     bpstartdate,    mythid )     
+     &                     bpstartdate,    mythid )
 c--     ... T/P data.
         call cal_FullDate( topexstartdate1, topexstartdate2,
      &                     topexstartdate,  mythid )
@@ -109,7 +110,7 @@ c--     ... GFO data.
 c--     ... SCAT data.
         call cal_FullDate( scatstartdate1,  scatstartdate2,
      &                     scatxstartdate,  mythid )
-        call cal_FullDate( scatstartdate1,  scatstartdate2,   
+        call cal_FullDate( scatstartdate1,  scatstartdate2,
      &                     scatystartdate,  mythid )
 c--     ... ARGO data.
         call cal_FullDate( argotstartdate1,   argotstartdate2,
@@ -146,7 +147,7 @@ cph!!!
       ilo = ifnblnk(costTranspDataFile)
       ihi = ilnblnk(costTranspDataFile)
       CALL OPEN_COPY_DATA_FILE(
-     I                          costTranspDataFile(ilo:ihi), 
+     I                          costTranspDataFile(ilo:ihi),
      I                          'ECCO_COST_INIT_FIXED',
      O                          gwunit,
      I                          myThid )

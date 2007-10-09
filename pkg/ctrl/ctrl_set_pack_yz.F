@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_yz.F,v 1.11 2007/10/09 00:00:01 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -127,7 +129,7 @@ c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
       do iobcs=1,nobcs
-         call MDSREADFIELD_YZ_GL( 
+         call MDSREADFIELD_YZ_GL(
      &        masktype, ctrlprec, 'RL',
      &        Nr, globmskyz(1,1,1,1,1,1,iobcs), iobcs,mythid)
 #ifdef CTRL_PACK_PRECISE
@@ -206,7 +208,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
                      cbuffindex = cbuffindex + 1
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
-                        cbuff(cbuffindex) = 
+                        cbuff(cbuffindex) =
      &                       globfld3d(ii,bi,ip,jj,bj,jp,kk) *
 #ifdef CTRL_PACK_PRECISE
      &                       sqrt(weightfldyz(bi,ip,j,bj,jp,k,iobcs))
@@ -214,7 +216,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
      &                       sqrt(weightfld(k,iobcs))
 #endif
                      else
-                        cbuff(cbuffindex) = 
+                        cbuff(cbuffindex) =
      &                       globfld3d(ii,bi,ip,jj,bj,jp,kk) /
 #ifdef CTRL_PACK_PRECISE
      &                       sqrt(weightfldyz(bi,ip,j,bj,jp,k,iobcs))
@@ -291,7 +293,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
                      cbuffindex = cbuffindex + 1
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
-                        cbuff(cbuffindex) = 
+                        cbuff(cbuffindex) =
      &                       globfldyz(bi,ip,j,bj,jp,k) *
 #ifdef CTRL_PACK_PRECISE
      &                       sqrt(weightfldyz(bi,ip,j,bj,jp,k,iobcs))
@@ -299,7 +301,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
      &                       sqrt(weightfld(k,iobcs))
 #endif
                      else
-                        cbuff(cbuffindex) = 
+                        cbuff(cbuffindex) =
      &                       globfldyz(bi,ip,j,bj,jp,k) /
 #ifdef CTRL_PACK_PRECISE
      &                       sqrt(weightfldyz(bi,ip,j,bj,jp,k,iobcs))

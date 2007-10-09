@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_init2b.F,v 1.2 2007/10/08 23:58:21 jmc Exp $
+C $Name:  $
+
 !=======================================================================
       subroutine mitcplr_init2b( myTypeStr )
       implicit none
@@ -29,7 +32,7 @@
        if (DEBUG) write(LogUnit,*) 'MITCPLR_init2b: ',
      &     ' Rank/Size = ',myid,' /',numprocs
 
-!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ! Assume nothing again
        num_coupler_procs=0
@@ -53,7 +56,7 @@
         lenbuf=12
         call MPI_Bcast(
      &               ibuf, lenbuf, MPI_INTEGER,
-     &               n, 
+     &               n,
      &               MPI_COMM_temp, ierr )
         if (ierr.ne.0) write(LogUnit,*) 'MITCPLR_init2b: ',
      &    ' MPI_Bcast from ',ibuf(1),ibuf(2),' ierr=',ierr
@@ -83,7 +86,7 @@
 
       enddo
 
-!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
       do compind = 1,num_components
        write(LogUnit,*) 'MITCPLR_init2b: ',

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta_ini_fin.F,v 1.1 2003/11/06 22:10:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta_ini_fin.F,v 1.2 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -79,13 +80,13 @@ c     == end of interface ==
 c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
-      
+
       irec = 1
 
 #ifdef ALLOW_COST_INI_FIN
 
       ilfld = ilnblnk( xx_theta_ini_fin_file )
-      write(fnamefld(1:80),'(2a,i10.10)') 
+      write(fnamefld(1:80),'(2a,i10.10)')
      &     xx_theta_ini_fin_file(1:ilfld),'.',optimcycle
 
       fcthread = 0. _d 0
@@ -99,7 +100,7 @@ c--     Loop over this thread's tiles.
           do bi = itlo,ithi
 
 c--         Determine the weights to be used.
-           
+
             fctile = 0. _d 0
             do k = 1,nr
             do j = jmin,jmax
@@ -114,7 +115,7 @@ c--         Determine the weights to be used.
             enddo
             enddo
 
-            objf_theta_ini_fin(bi,bj) = 
+            objf_theta_ini_fin(bi,bj) =
      &           objf_theta_ini_fin(bi,bj) + fctile
             fcthread          = fcthread + fctile
 
@@ -157,7 +158,7 @@ c--     Print cost function for all tiles.
 #endif
 
 #else
-c--   Do not enter the calculation of the salinity increment 
+c--   Do not enter the calculation of the salinity increment
 c--   contribution to the final cost function.
 
       fctile   = 0. _d 0
@@ -183,5 +184,5 @@ c--   contribution to the final cost function.
 
       return
       end
-      
-      
+
+

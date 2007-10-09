@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/CPLR_SIG.h,v 1.2 2007/10/08 23:58:20 jmc Exp $
+C $Name:  $
+
 ! Special meanings/handles
       integer   MITCPLR_COUPLER
       parameter(MITCPLR_COUPLER=59)

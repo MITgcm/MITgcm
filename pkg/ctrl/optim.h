@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/optim.h,v 1.2 2007/10/09 00:00:01 jmc Exp $
+C $Name:  $
 
 c     ==================================================================
 c     HEADER OPTIMIZATION

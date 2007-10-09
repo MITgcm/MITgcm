@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesflags.F,v 1.4 2006/12/24 14:23:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesflags.F,v 1.5 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -238,12 +239,12 @@ c--   Determine sum1mon and monrec explicitly.
             monrec = mod( mydate(1)/100, 100 )
      &             + nmonthyear - mod(modelstartdate(1)/100,100) + 1
      &             + ( mydate(1)/10000 - modelstartdate(1)/10000 - 1)*
-     &                nmonthyear               
+     &                nmonthyear
           endif
         endif
         call cal_TimeInterval( modelstep, 'secs', timediff, mythid )
 
-        sum1mon = 
+        sum1mon =
      &    cal_NumInts( targetdate, mydate, timediff, mythid ) + 1
       else
         sum1mon = 0
@@ -279,7 +280,7 @@ c--   So the cases are mutually exclusive.
 
 c--   Determine sum1year and yearrec explicitly.
       if ( last .or. endofyear ) then
-        if (  int(mydate(1)/10000) .eq. 
+        if (  int(mydate(1)/10000) .eq.
      &        int(modelstartdate(1)/10000) ) then
           call cal_CopyDate( modelstartdate, targetdate, mythid )
           yearrec  = 1
@@ -293,7 +294,7 @@ c--   Determine sum1year and yearrec explicitly.
 c
         call cal_TimeInterval( modelstep, 'secs', timediff, mythid )
 
-        sum1year = 
+        sum1year =
      &    cal_NumInts( targetdate, mydate, timediff, mythid ) + 1
       else
         sum1year = 0

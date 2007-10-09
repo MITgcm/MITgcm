@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/cost/g_cost.h,v 1.5 2007/10/08 23:59:22 jmc Exp $
+C $Name:  $
 
 c     ==================================================================
 c     HEADER G_COST

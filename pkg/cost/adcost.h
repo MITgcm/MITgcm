@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/cost/adcost.h,v 1.7 2007/10/08 23:59:21 jmc Exp $
+C $Name:  $
 
 c     ==================================================================
 c     HEADER ADCOST

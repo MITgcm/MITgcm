@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_init2a.F,v 1.2 2007/10/08 23:58:21 jmc Exp $
+C $Name:  $
+
 !=======================================================================
       subroutine mitcplr_init2a( myTypeStr )
       implicit none
@@ -23,7 +26,7 @@
       if (VERB) write(LogUnit,*) 'MITCPLR_init2a: ',
      &     ' Rank/Size = ',myid,' /',numprocs
 
-!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ! Assume nothing again
       num_coupler_procs=0
@@ -45,7 +48,7 @@
        lenbuf=12
        call MPI_Bcast(
      &               ibuf, lenbuf, MPI_INTEGER,
-     &               n, 
+     &               n,
      &               MPI_COMM_myglobal, ierr )
        if (ierr.ne.0) write(LogUnit,*) 'MITCPLR_init2a: ',
      &    ' MPI_Bcast from ',ibuf(1),ibuf(2),' ierr=',ierr
@@ -67,7 +70,7 @@
        stop 'MITCPLR_init2a: I can only handle one coupling process'
       endif
 
-!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ! Find-out my position (rank) in the "world" communicator
       call MPI_COMM_RANK( MPI_COMM_World, n, ierr )

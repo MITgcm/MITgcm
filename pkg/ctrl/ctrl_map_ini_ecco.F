@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.10 2007/08/17 21:37:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.11 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -104,7 +105,7 @@ c--   Temperature field.
       call mdsreadfield('wthetaLev',32,'RL',nR,
      & wthetaLev,1,mythid)
       _EXCH_XYZ_R8( wthetaLev, mythid )
-#endif                
+#endif
       il=ilnblnk( xx_theta_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_theta_file(1:il),'.',optimcycle
@@ -118,7 +119,7 @@ c--   Temperature field.
             do j = jmin,jmax
               do i = imin,imax
                  IF (abs(tmpfld3d(i,j,k,bi,bj)).gt.
-     &                5.0/sqrt(wthetaLev(i,j,k,bi,bj))) 
+     &                5.0/sqrt(wthetaLev(i,j,k,bi,bj)))
      &                tmpfld3d(i,j,k,bi,bj)=
      &                sign(5.0/sqrt(wthetaLev(i,j,k,bi,bj)),
      &                tmpfld3d(i,j,k,bi,bj))
@@ -135,17 +136,17 @@ c--   Temperature field.
 CADJ STORE theta = tapelev_init, key = ikey
 #endif
 
-c                 if(abs(xc(i,j,bi,bj)-123) .gt. 2 .or. 
+c                 if(abs(xc(i,j,bi,bj)-123) .gt. 2 .or.
 c     $                abs(yc(i,j,bi,bj)-84) .gt. 2 )
-c                if((abs(xc(i,j,bi,bj)-125) .gt. 8 .or. 
+c                if((abs(xc(i,j,bi,bj)-125) .gt. 8 .or.
 c     $                abs(yc(i,j,bi,bj)-5.5) .gt. 9 )
 c     $                .and. (k.le.10.or.
-c     $                (abs(xc(i,j,bi,bj)-164) .gt. 16 .or. 
+c     $                (abs(xc(i,j,bi,bj)-164) .gt. 16 .or.
 c     $                abs(yc(i,j,bi,bj)+60.5) .gt. 6)  .and.
-c     $                (abs(xc(i,j,bi,bj)-359).gt.2 .or. 
+c     $                (abs(xc(i,j,bi,bj)-359).gt.2 .or.
 c     $                abs(yc(i,j,bi,bj)-35.5).gt.2) ) .and.
 c     $                (k.le.17.or.
-c     $                (abs(xc(i,j,bi,bj)-203) .gt. 26 .or. 
+c     $                (abs(xc(i,j,bi,bj)-203) .gt. 26 .or.
 c     $                abs(yc(i,j,bi,bj)+58.5) .gt. 6)
 c     $                ))
 
@@ -163,8 +164,8 @@ c     $                ))
 #else / * ALLOW_SMOOTH_CORREL3D * /
                  theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
-                if(theta(i,j,k,bi,bj).lt.-2.0) 
-     &               theta(i,j,k,bi,bj)= -2.0  
+                if(theta(i,j,k,bi,bj).lt.-2.0)
+     &               theta(i,j,k,bi,bj)= -2.0
 #endif / * ALLOW_SMOOTH_CORREL3D * /
               enddo
             enddo
@@ -201,19 +202,19 @@ c--   Salinity field.
             do j = jmin,jmax
               do i = imin,imax
                  IF (abs(tmpfld3d(i,j,k,bi,bj)).gt.
-     &                5.0/sqrt(wsaltLev(i,j,k,bi,bj))) 
+     &                5.0/sqrt(wsaltLev(i,j,k,bi,bj)))
      &                tmpfld3d(i,j,k,bi,bj)=
      &                sign(5.0/sqrt(wsaltLev(i,j,k,bi,bj)),
      &                tmpfld3d(i,j,k,bi,bj))
-c                 if(abs(xc(i,j,bi,bj)-123) .gt. 2 .or. 
+c                 if(abs(xc(i,j,bi,bj)-123) .gt. 2 .or.
 c     $                abs(yc(i,j,bi,bj)-84) .gt. 2 )
-c                if((abs(xc(i,j,bi,bj)-125) .gt. 8 .or. 
+c                if((abs(xc(i,j,bi,bj)-125) .gt. 8 .or.
 c     $                abs(yc(i,j,bi,bj)-5.5) .gt. 9)
 c     $                .and. (k.le.10.or.
-c     $                (abs(xc(i,j,bi,bj)-164) .gt. 16 .or. 
+c     $                (abs(xc(i,j,bi,bj)-164) .gt. 16 .or.
 c     $                abs(yc(i,j,bi,bj)+60.5) .gt. 6)  )
 c     $                 .and. (k.le.17.or.
-c     $                (abs(xc(i,j,bi,bj)-203) .gt. 26 .or. 
+c     $                (abs(xc(i,j,bi,bj)-203) .gt. 26 .or.
 c     $                abs(yc(i,j,bi,bj)+58.5) .gt. 6)
 c     $                ) )
 
@@ -265,7 +266,7 @@ c--   bottom drag
       call mdsreadfield('wbottomdrag',32,'RL',1,
      & wbottomdrag,1,mythid)
       _EXCH_XY_R8( wbottomdrag, mythid )
-#endif                               
+#endif
       il=ilnblnk( xx_bottomdrag_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_bottomdrag_file(1:il),'.',optimcycle
@@ -308,7 +309,7 @@ c-- zonal eddy stress : edtaux
       call mdsreadfield('wedtauxFld',32,'RL',nR,
      & wedtauxFld,1,mythid)
       _EXCH_XYZ_R8( wedtauxFld, mythid )
-#endif            
+#endif
       il=ilnblnk( xx_edtaux_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_edtaux_file(1:il),'.',optimcycle
@@ -358,7 +359,7 @@ c-- meridional eddy stress : edtauy
       call mdsreadfield('wedtauyFld',32,'RL',nR,
      & wedtauyFld,1,mythid)
       _EXCH_XYZ_R8( wedtauyFld, mythid )
-#endif            
+#endif
       il=ilnblnk( xx_edtauy_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_edtauy_file(1:il),'.',optimcycle
@@ -408,7 +409,7 @@ c--   diffkr.
       call mdsreadfield('wdiffkrFld',32,'RL',nR,
      & wdiffkrFld,1,mythid)
       _EXCH_XYZ_R8( wdiffkrFld, mythid )
-#endif            
+#endif
       il=ilnblnk( xx_diffkr_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_diffkr_file(1:il),'.',optimcycle
@@ -453,7 +454,7 @@ c--   kapgm.
       call mdsreadfield('wkapgmFld',32,'RL',nR,
      & wkapgmFld,1,mythid)
       _EXCH_XYZ_R8( wkapgmFld, mythid )
-#endif            
+#endif
       il=ilnblnk( xx_kapgm_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_kapgm_file(1:il),'.',optimcycle
@@ -566,8 +567,8 @@ c--   SST relaxation coefficient.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              lambdaThetaClimRelax(i,j,bi,bj) = 
-     &              lambdaThetaClimRelax(i,j,bi,bj) 
+              lambdaThetaClimRelax(i,j,bi,bj) =
+     &              lambdaThetaClimRelax(i,j,bi,bj)
      &              + tmpfld2d(i,j,bi,bj)
             enddo
           enddo
@@ -587,8 +588,8 @@ c--   SSS relaxation coefficient.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              lambdaSaltClimRelax(i,j,bi,bj) = 
-     &              lambdaSaltClimRelax(i,j,bi,bj) 
+              lambdaSaltClimRelax(i,j,bi,bj) =
+     &              lambdaSaltClimRelax(i,j,bi,bj)
      &              + tmpfld2d(i,j,bi,bj)
             enddo
           enddo

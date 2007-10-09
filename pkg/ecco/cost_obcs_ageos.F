@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs_ageos.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs_ageos.F,v 1.2 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -70,7 +71,7 @@ c     == local variables ==
       _RL fctile
       _RL fcthread
 
-      _RL rholoc (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)  
+      _RL rholoc (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xzgrdrho(1-olx:snx+olx,Nr,nsx,nsy)
       _RL yzgrdrho(1-oly:sny+oly,Nr,nsx,nsy)
       _RL xzdvel1   (1-olx:snx+olx,nr,nsx,nsy)
@@ -219,11 +220,11 @@ cgg    Make a mask for the velocity shear comparison.
             do k = 1,nr-1
               do i = imin, imax
                 j = ob_jn(i,bi,bj)
-cgg    All these points need to be wet. 
+cgg    All these points need to be wet.
                 if (j .eq. 0) then
                   maskxzageos(i,k,bi,bj) = 0.
                 else
-                  maskxzageos(i,k,bi,bj) = 
+                  maskxzageos(i,k,bi,bj) =
      &       hfacC(i,j+jp1,k,bi,bj)*hfacC(i+1,j+jp1,k,bi,bj) *
      &       hfacC(i-1,j+jp1,k,bi,bj)*hfacC(i,j+jp1,k+1,bi,bj)*
      &       hfacC(i-1,j+jp1,k+1,bi,bj)*hfacC(i+1,j+jp1,k+1,bi,bj)*
@@ -231,7 +232,7 @@ cgg    All these points need to be wet.
                 endif
               enddo
             enddo
-    
+
             do k = 1,nr
               call find_rho(bi,bj,imin,imax,jmin,jmax,k,k,
      &                      tbar,sbar,rholoc,mythid)
@@ -240,7 +241,7 @@ cgg    All these points need to be wet.
 cgg   Compute centered difference horizontal gradient on bdy.
               do i = imin, imax
                 j = ob_jn(i,bi,bj)
-                  xzgrdrho(i,k,bi,bj) = 
+                  xzgrdrho(i,k,bi,bj) =
      &            (rholoc(i-1,j+jp1,bi,bj)-rholoc(i+1,j+jp1,bi,bj))
      &            /(2.*dxc(i,j+jp1,bi,bj))
               enddo
@@ -281,13 +282,13 @@ cgg    Make a mask for the velocity shear comparison.
                 if (j .eq. 0) then
                   maskxzageos(i,k,bi,bj) = 0.
                 else
-cgg    All these points need to be wet. 
-                  maskxzageos(i,k,bi,bj) = 
+cgg    All these points need to be wet.
+                  maskxzageos(i,k,bi,bj) =
      &       hfacC(i,j+jp1,k,bi,bj)*hfacC(i+1,j+jp1,k,bi,bj) *
      &       hfacC(i-1,j+jp1,k,bi,bj)*hfacC(i,j+jp1,k+1,bi,bj)*
      &       hfacC(i-1,j+jp1,k+1,bi,bj)*hfacC(i+1,j+jp1,k+1,bi,bj)*
      &       hfacS(i,j+jp1,k,bi,bj)*hfacS(i,j+jp1,k+1,bi,bj)
-                endif 
+                endif
               enddo
             enddo
 
@@ -300,7 +301,7 @@ cgg    All these points need to be wet.
 cgg   Compute centered difference horizontal gradient on bdy.
                do i = imin, imax
                  j = ob_js(i,bi,bj)
-                 xzgrdrho(i,k,bi,bj) = 
+                 xzgrdrho(i,k,bi,bj) =
      &            (rholoc(i-1,j+jp1,bi,bj)-rholoc(i+1,j+jp1,bi,bj))
      &            /(2.*dxc(i,j+jp1,bi,bj))
                enddo
@@ -340,8 +341,8 @@ cgg    Make a mask for the velocity shear comparison.
 cgg    All these points need to be wet.
                 if (i.eq. 0) then
                   maskyzageos(j,k,bi,bj) = 0.
-                else 
-                  maskyzageos(j,k,bi,bj) = 
+                else
+                  maskyzageos(j,k,bi,bj) =
      &       hfacC(i+ip1,j,k,bi,bj)*hfacC(i+ip1,j+1,k,bi,bj) *
      &       hfacC(i+ip1,j-1,k,bi,bj)*hfacC(i+ip1,j,k+1,bi,bj)*
      &       hfacC(i+ip1,j-1,k+1,bi,bj)*hfacC(i+ip1,j+1,k+1,bi,bj)*
@@ -360,7 +361,7 @@ cgg   Compute centered difference horizontal gradient on bdy.
               do j = jmin, jmax
                 i = ob_iw(j,bi,bj)
 cgg             Negative sign due to geostrophy.
-                yzgrdrho(j,k,bi,bj) = 
+                yzgrdrho(j,k,bi,bj) =
      &            (rholoc(i+ip1,j+1,bi,bj)-rholoc(i+ip1,j-1,bi,bj))
      &            /(2.*dyc(i+ip1,j,bi,bj))
               enddo
@@ -399,8 +400,8 @@ cgg    Make a mask for the velocity shear comparison.
                 if (i.eq.0) then
                   maskyzageos(j,k,bi,bj) =0.
                 else
-cgg    All these points need to be wet. 
-                  maskyzageos(j,k,bi,bj) = 
+cgg    All these points need to be wet.
+                  maskyzageos(j,k,bi,bj) =
      &       hfacC(i+ip1,j,k,bi,bj)*hfacC(i+ip1,j+1,k,bi,bj) *
      &       hfacC(i+ip1,j-1,k,bi,bj)*hfacC(i+ip1,j,k+1,bi,bj)*
      &       hfacC(i+ip1,j-1,k+1,bi,bj)*hfacC(i+ip1,j+1,k+1,bi,bj)*
@@ -419,7 +420,7 @@ cgg   Compute centered difference horizontal gradient on bdy.
               do j = jmin, jmax
                 i = ob_ie(j,bi,bj)
 cgg             Negative sign due to geostrophy.
-                yzgrdrho(j,k,bi,bj) = 
+                yzgrdrho(j,k,bi,bj) =
      &            (rholoc(i+ip1,,j+1,bi,bj)-rholoc(i+ip1,j-1,bi,bj))
      &            /(2.*dyc(i+ip1,j,bi,bj))
               enddo

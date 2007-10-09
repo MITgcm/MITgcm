@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.2 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -116,7 +118,7 @@ c     Number of records to be used.
       sumvol = 0. _d 0
       wobcsvol = .01
 cgg   Acceptable volume flux is 10^-3. Corresponds to 5 mm change over a year.
-cgg   Added a factor of 1000 because its very important to me. 
+cgg   Added a factor of 1000 because its very important to me.
       wobcsvol = 1./(wobcsvol * wobcsvol)
 
 #ifdef ECCO_VERBOSE
@@ -140,22 +142,22 @@ cgg   Added a factor of 1000 because its very important to me.
       if (optimcycle .ge. 0) then
 #ifdef ALLOW_OBCSN_CONTROL
         ilfld=ilnblnk( xx_obcsn_file )
-        write(fnamefldn(1:80),'(2a,i10.10)') 
+        write(fnamefldn(1:80),'(2a,i10.10)')
      &        xx_obcsn_file(1:ilfld),'.', optimcycle
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
         ilfld=ilnblnk( xx_obcss_file )
-        write(fnameflds(1:80),'(2a,i10.10)') 
+        write(fnameflds(1:80),'(2a,i10.10)')
      &        xx_obcss_file(1:ilfld),'.',optimcycle
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
         ilfld=ilnblnk( xx_obcsw_file )
-        write(fnamefldw(1:80),'(2a,i10.10)') 
+        write(fnamefldw(1:80),'(2a,i10.10)')
      &        xx_obcsw_file(1:ilfld),'.',optimcycle
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
         ilfld=ilnblnk( xx_obcse_file )
-        write(fnameflde(1:80),'(2a,i10.10)') 
+        write(fnameflde(1:80),'(2a,i10.10)')
      &        xx_obcse_file(1:ilfld),'.',optimcycle
 #endif
       else
@@ -185,7 +187,7 @@ cgg   think of a more general way to do this.
      &                       , xx_obcsn_dummy )
 
 cgg  At this point, do not be concerned with the overlap halos.
-cgg  From experience, there is no control contribution in the 
+cgg  From experience, there is no control contribution in the
 cgg  velocity points outside the boundaries. This has something
 cgg  to do with the computational stencil, and the fact that we
 cgg  are diagonally offset. Could check later by employing both
@@ -228,7 +230,7 @@ cgg   think of a more general way to do this.
      &                       , xx_obcss_dummy )
 
 cgg  At this point, do not be concerned with the overlap halos.
-cgg  From experience, there is no control contribution in the 
+cgg  From experience, there is no control contribution in the
 cgg  velocity points outside the boundaries. This has something
 cgg  to do with the computational stencil, and the fact that we
 cgg  are diagonally offset. Could check later by employing both
@@ -271,7 +273,7 @@ cgg   think of a more general way to do this.
      &                       , xx_obcsw_dummy )
 
 cgg  At this point, do not be concerned with the overlap halos.
-cgg  From experience, there is no control contribution in the 
+cgg  From experience, there is no control contribution in the
 cgg  velocity points outside the boundaries. This has something
 cgg  to do with the computational stencil, and the fact that we
 cgg  are diagonally offset. Could check later by employing both
@@ -314,7 +316,7 @@ cgg   think of a more general way to do this.
      &                       , xx_obcse_dummy )
 
 cgg  At this point, do not be concerned with the overlap halos.
-cgg  From experience, there is no control contribution in the 
+cgg  From experience, there is no control contribution in the
 cgg  velocity points outside the boundaries. This has something
 cgg  to do with the computational stencil, and the fact that we
 cgg  are diagonally offset. Could check later by employing both
@@ -351,7 +353,7 @@ c--   End of loop over records.
 
 c--   Do the global summation.
       _GLOBAL_SUM_R8( sumvol, mythid )
-      objf_obcsvol =  wobcsvol * sumvol* sumvol 
+      objf_obcsvol =  wobcsvol * sumvol* sumvol
 
 #endif
 #endif

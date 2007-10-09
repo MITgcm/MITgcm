@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.15 2007/10/09 00:01:42 jmc Exp $
+C $Name:  $
+
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
@@ -5,16 +8,16 @@ CBOP
 C !ROUTINE: BIO_EXPORT
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE BIO_EXPORT( PTR_PO4 , 
+      SUBROUTINE BIO_EXPORT( PTR_PO4 ,
 #ifdef ALLOW_FE
-     I           PTR_FE, 
-#endif   
+     I           PTR_FE,
+#endif
      I           bioac,
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
 c !DESCRIPTION:
-C  Calculate biological activity and export                
+C  Calculate biological activity and export
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -103,7 +106,7 @@ C$TAF STORE lit = bio_export
              thx = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4)
              thy = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+KFE)
              theps = 1.d-6
-             nutlimit= ( 1.d0 - tanh((thx-thy)/theps) ) * thx/2 + 
+             nutlimit= ( 1.d0 - tanh((thx-thy)/theps) ) * thx/2 +
      &                 ( 1.d0 + tanh((thx-thy)/theps) ) * thy/2
 #else
              nutlimit=   min(PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4),

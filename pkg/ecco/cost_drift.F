@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.7 2005/10/15 18:27:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.8 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -111,25 +112,25 @@ c--   (e.g. 0.08 degC year based on Levitus decadal drift 0.8 degC)
         write(fnamesalt(1:80),'(2a,i10.10)')
      &    sbarfile(1:ilsalt),'.',optimcycle
       endif
-      
+
       fcthread_tdrift = 0. _d 0
       fcthread_tdrifs = 0. _d 0
-      
+
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do k = 1,nr     
+          do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
                 Tfmean(i,j,k,bi,bj) = 0.0
                 Sfmean(i,j,k,bi,bj) = 0.0
                 Tlmean(i,j,k,bi,bj) = 0.0
-                Slmean(i,j,k,bi,bj) = 0.0                
+                Slmean(i,j,k,bi,bj) = 0.0
               enddo
-            enddo                
+            enddo
           enddo
         enddo
       enddo
-      
+
       nf = 0
       nl = 0
 c--   Number of full years
@@ -145,30 +146,30 @@ c--     Read time averages and the monthly mean data.
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_tbar_mean_dummy )
-     
+
         call active_read_xyz( fnamesalt, sbar, irec,
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
-     &                        xx_sbar_mean_dummy )     
-     
+     &                        xx_sbar_mean_dummy )
+
         nf = nf + 1
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do k = 1,nr     
+            do k = 1,nr
               do j = jmin,jmax
                 do i = imin,imax
-                  Tfmean(i,j,k,bi,bj) = Tfmean(i,j,k,bi,bj) + 
+                  Tfmean(i,j,k,bi,bj) = Tfmean(i,j,k,bi,bj) +
      &                  tbar(i,j,k,bi,bj)
-                  Sfmean(i,j,k,bi,bj) = Sfmean(i,j,k,bi,bj) + 
-     &                  sbar(i,j,k,bi,bj)                 
+                  Sfmean(i,j,k,bi,bj) = Sfmean(i,j,k,bi,bj) +
+     &                  sbar(i,j,k,bi,bj)
                 enddo
-              enddo                
+              enddo
             enddo
           enddo
         enddo
-        
+
       enddo
-        
+
       do irec = nmonsrec-minrec+1, nmonsrec
 
 c--     Read time averages and the monthly mean data.
@@ -176,39 +177,39 @@ c--     Read time averages and the monthly mean data.
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_tbar_mean_dummy )
-     
+
         call active_read_xyz( fnamesalt, sbar, irec,
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
-     &                        xx_sbar_mean_dummy )   
-     
-        nl = nl + 1  
-     
+     &                        xx_sbar_mean_dummy )
+
+        nl = nl + 1
+
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do k = 1,nr     
+            do k = 1,nr
               do j = jmin,jmax
                 do i = imin,imax
-                  Tlmean(i,j,k,bi,bj) = Tlmean(i,j,k,bi,bj) + 
+                  Tlmean(i,j,k,bi,bj) = Tlmean(i,j,k,bi,bj) +
      &                  tbar(i,j,k,bi,bj)
-                  Slmean(i,j,k,bi,bj) = Slmean(i,j,k,bi,bj) + 
-     &                  sbar(i,j,k,bi,bj)                 
+                  Slmean(i,j,k,bi,bj) = Slmean(i,j,k,bi,bj) +
+     &                  sbar(i,j,k,bi,bj)
                 enddo
-              enddo                
+              enddo
             enddo
           enddo
         enddo
-      
+
       enddo
- 
-        
+
+
       do bj = jtlo,jthi
         do bi = itlo,ithi
 
 c--       Loop over the model layers
           fctiles = 0. _d 0
           fctilet = 0. _d 0
-          
+
           do k = 1,nr
             do j = jmin,jmax
              do i = imin,imax
@@ -219,7 +220,7 @@ c--       Loop over the model layers
      &          (Slmean(i,j,k,bi,bj)/nl - Sfmean(i,j,k,bi,bj)/nf)*
      &          (Slmean(i,j,k,bi,bj)/nl - Sfmean(i,j,k,bi,bj)/nf))
 c
-                     diagnosfld3d(i,j,k,bi,bj) = 
+                     diagnosfld3d(i,j,k,bi,bj) =
      &                  (wsaltLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj)/
      &          ((nfmin*errsannurescal)**2)*
      &          (Slmean(i,j,k,bi,bj)/nl - Sfmean(i,j,k,bi,bj)/nf)*
@@ -249,13 +250,13 @@ c
      &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf)*
      &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf))
 c
-                     diagnosfld3d(i,j,k,bi,bj) = 
+                     diagnosfld3d(i,j,k,bi,bj) =
      &                  (wthetaLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj)/
      &          ((nfmin*errtannurescal)**2)*
      &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf)*
      &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf))
 c
-                     if ( wthetaLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj) 
+                     if ( wthetaLev(i,j,k,bi,bj)*cosphi(i,j,bi,bj)
      &                 .ne. 0. )
      &                 num_tdrift(bi,bj) = num_tdrift(bi,bj) + 1. _d 0
               else
@@ -268,7 +269,7 @@ c
           call mdswritefield( 'DiagnosCost_DriftTheta',
      &         writeBinaryPrec, globalfiles, 'RL', Nr,
      &         diagnosfld3d, 1, optimcycle, mythid )
-          
+
           fcthread_tdrift    = fcthread_tdrift    + fctilet
           fcthread_tdrifs    = fcthread_tdrifs    + fctiles
           objf_tdrift(bi,bj) = objf_tdrift(bi,bj) + fctilet

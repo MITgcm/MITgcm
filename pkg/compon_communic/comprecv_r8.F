@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/comprecv_r8.F,v 1.2 2007/10/08 23:58:20 jmc Exp $
+C $Name:  $
+
 !=======================================================================
       subroutine comprecv_r8( dataname, Ni,Oi,Nj,Oj, arr )
       implicit none

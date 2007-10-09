@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_int2char.F,v 1.2 2007/10/08 23:58:21 jmc Exp $
+C $Name:  $
+
 !=======================================================================
       subroutine mitcplr_int2char( iarg, carg )
       implicit none

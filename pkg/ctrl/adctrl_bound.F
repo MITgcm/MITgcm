@@ -1,10 +1,12 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.2 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 C     !ROUTINE: ADCTRL_BOUND_3D
 C     !INTERFACE:
       SUBROUTINE ADCTRL_BOUND_3D(
-     I             bi, bj, 
+     I             bi, bj,
      I             minCur,maxCur,
      I             myThid,adFieldFwd)
 C     !DESCRIPTION: \bv

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_zonal.F,v 1.2 2005/07/28 13:51:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_zonal.F,v 1.3 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -9,7 +10,7 @@ c     ==================================================================
 c     SUBROUTINE cost_trans_zonal
 c     ==================================================================
 c
-c     o Compute zonal transports. 
+c     o Compute zonal transports.
 c
 c     ==================================================================
 c     SUBROUTINE cost_trans_zonal
@@ -83,8 +84,8 @@ c--   5: P12 - Tasmania 145E
       DATA beglat / -67.0, -14.5, -70.0, -67.0, -67.0 /
       DATA endlat / -55.0,  -8.5, -31.0, -32.0, -42.0 /
 c
-c      _RL ylat2,beglon2,endlon2      
-c      _RL ylat3,beglon3,endlon3      
+c      _RL ylat2,beglon2,endlon2
+c      _RL ylat3,beglon3,endlon3
 c      parameter(ylat= 29., beglon=-42., endlon =-2.)
 c      parameter(ylat= 29., beglon=282., endlon =352.)
 c      parameter(ylat= 29., beglon=-82., endlon =-2.)
@@ -231,7 +232,7 @@ c
         musum(isect) = musum(isect) + mu(isect)
 
 	write(msgbuf,'(a,i3,i5,2i3,5(X,D15.8))')
-     &       'ECCO_TRANS_ZON ', isect, irec, kmin(isect), kmax(isect), 
+     &       'ECCO_TRANS_ZON ', isect, irec, kmin(isect), kmax(isect),
      &       tu(isect), su(isect), mu(isect), mumin(isect), mumax(isect)
         call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT, mythid )
@@ -241,8 +242,8 @@ c
         call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT, mythid )
 
-        write(funit,'(i3,i5,2i3,5(X,D22.15))') 
-     &       isect, irec, kmin(isect), kmax(isect), 
+        write(funit,'(i3,i5,2i3,5(X,D22.15))')
+     &       isect, irec, kmin(isect), kmax(isect),
      &       tu(isect), su(isect), mu(isect), mumin(isect), mumax(isect)
 
 c-- end loop over irec

@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_mean_saltflux.F,v 1.9 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -125,7 +127,7 @@ c--     Read time averages and the monthly mean data.
 
        _GLOBAL_SUM_R8( sumtot , myThid )
        _GLOBAL_SUM_R8( fctiletot , myThid )
-       
+
        if (sumtot.eq.0.) sumtot = 1.
 
        if ( wmean_sflux .NE. 0. ) then

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.37 2007/10/05 18:53:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.38 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -53,7 +54,7 @@ c     == local variables ==
       integer num_file,num_var
 
       _RL f_temp0, f_salt0, f_temp0smoo, f_salt0smoo
-      _RL f_temp, f_salt 
+      _RL f_temp, f_salt
       _RL f_uwind, f_vwind
       _RL f_atemp, f_aqh, f_precip
       _RL f_swflux, f_swdown
@@ -63,8 +64,8 @@ c     == local variables ==
       _RL f_uwindsmoo, f_vwindsmoo
       _RL f_atempsmoo, f_aqhsmoo, f_precipsmoo
       _RL f_swfluxsmoo, f_swdownsmoo
-      _RL f_tauu, f_tauv, f_hflux, f_sflux 
-      _RL f_tauum, f_tauvm, f_hfluxm, f_sfluxm 
+      _RL f_tauu, f_tauv, f_hflux, f_sflux
+      _RL f_tauum, f_tauvm, f_hfluxm, f_sfluxm
       _RL f_tauusmoo, f_tauvsmoo, f_hfluxsmoo, f_sfluxsmoo
       _RL f_hfluxmm, f_sfluxmm, f_hfluxmm2, f_sfluxmm2
       _RL f_sst, f_tmi, f_sss, f_bp, f_atl, f_ctdt, f_ctds
@@ -81,14 +82,14 @@ c     == local variables ==
       _RL f_gencost(NGENCOST)
       _RL f_transp
 
-      _RL no_temp0, no_salt0,  no_temp, no_salt 
+      _RL no_temp0, no_salt0,  no_temp, no_salt
       _RL no_uwind, no_vwind
       _RL no_atemp, no_aqh, no_precip, no_swflux, no_swdown
       _RL no_uwindm, no_vwindm
       _RL no_atempm, no_aqhm, no_precipm, no_swfluxm, no_swdownm
-      _RL no_tauu, no_tauv, no_hflux, no_sflux 
-      _RL no_tauum, no_tauvm, no_hfluxm, no_sfluxm 
-      _RL no_hfluxmm, no_sfluxmm 
+      _RL no_tauu, no_tauv, no_hflux, no_sflux
+      _RL no_tauum, no_tauvm, no_hfluxm, no_sfluxm
+      _RL no_hfluxmm, no_sfluxmm
       _RL no_sst, no_tmi, no_sss, no_bp, no_atl, no_ctdt, no_ctds
       _RL no_drifter, no_xbt, no_tdrift, no_sdrift, no_wdrift
       _RL no_ssh, no_tp, no_ers, no_gfo
@@ -121,26 +122,26 @@ c     == end of interface ==
       ithi = mybxhi(mythid)
 
       ifc = 30
-      
+
       f_temp = 0. _d 0
       f_salt = 0. _d 0
       f_temp0 = 0. _d 0
-      f_salt0 = 0. _d 0 
+      f_salt0 = 0. _d 0
       f_temp0smoo = 0. _d 0
-      f_salt0smoo = 0. _d 0 
-      f_tauu = 0. _d 0 
-      f_tauum = 0. _d 0 
-      f_tauusmoo = 0. _d 0 
-      f_tauv = 0. _d 0 
-      f_tauvm = 0. _d 0 
-      f_tauvsmoo = 0. _d 0 
-      f_hflux = 0. _d 0 
+      f_salt0smoo = 0. _d 0
+      f_tauu = 0. _d 0
+      f_tauum = 0. _d 0
+      f_tauusmoo = 0. _d 0
+      f_tauv = 0. _d 0
+      f_tauvm = 0. _d 0
+      f_tauvsmoo = 0. _d 0
+      f_hflux = 0. _d 0
       f_hfluxm = 0. _d 0
-      f_hfluxsmoo = 0. _d 0 
-      f_hfluxmm = 0. _d 0 
-      f_hfluxmm2 = 0. _d 0 
+      f_hfluxsmoo = 0. _d 0
+      f_hfluxmm = 0. _d 0
+      f_hfluxmm2 = 0. _d 0
       f_sflux  = 0. _d 0
-      f_sfluxsmoo = 0. _d 0 
+      f_sfluxsmoo = 0. _d 0
       f_sfluxm  = 0. _d 0
       f_sfluxmm  = 0. _d 0
       f_sfluxmm2  = 0. _d 0
@@ -174,14 +175,14 @@ c     == end of interface ==
       f_sss = 0. _d 0
       f_bp = 0. _d 0
       f_atl = 0. _d 0
-      f_ctdt = 0. _d 0 
+      f_ctdt = 0. _d 0
       f_ctds = 0. _d 0
-      f_ctdtclim = 0. _d 0 
+      f_ctdtclim = 0. _d 0
       f_ctdsclim = 0. _d 0
       f_xbt = 0. _d 0
       f_argot = 0. _d 0
       f_argos = 0. _d 0
-      f_drifter = 0. _d 0 
+      f_drifter = 0. _d 0
       f_sdrift = 0. _d 0
       f_tdrift = 0. _d 0
       f_wdrift = 0. _d 0
@@ -217,14 +218,14 @@ c     == end of interface ==
       no_temp = 0. _d 0
       no_salt = 0. _d 0
       no_temp0 = 0. _d 0
-      no_salt0 = 0. _d 0 
-      no_tauu = 0. _d 0 
-      no_tauum = 0. _d 0 
-      no_tauv = 0. _d 0 
-      no_tauvm = 0. _d 0 
-      no_hflux = 0. _d 0 
-      no_hfluxm = 0. _d 0 
-      no_hfluxmm = 0. _d 0 
+      no_salt0 = 0. _d 0
+      no_tauu = 0. _d 0
+      no_tauum = 0. _d 0
+      no_tauv = 0. _d 0
+      no_tauvm = 0. _d 0
+      no_hflux = 0. _d 0
+      no_hfluxm = 0. _d 0
+      no_hfluxmm = 0. _d 0
       no_sflux  = 0. _d 0
       no_sfluxm  = 0. _d 0
       no_sfluxmm  = 0. _d 0
@@ -251,14 +252,14 @@ c     == end of interface ==
       no_sss = 0. _d 0
       no_bp = 0. _d 0
       no_atl = 0. _d 0
-      no_ctdt = 0. _d 0 
+      no_ctdt = 0. _d 0
       no_ctds = 0. _d 0
-      no_ctdtclim = 0. _d 0 
+      no_ctdtclim = 0. _d 0
       no_ctdsclim = 0. _d 0
       no_xbt = 0. _d 0
       no_argot = 0. _d 0
       no_argos = 0. _d 0
-      no_drifter = 0. _d 0 
+      no_drifter = 0. _d 0
       no_sdrift = 0. _d 0
       no_tdrift = 0. _d 0
       no_wdrift = 0. _d 0
@@ -294,7 +295,7 @@ c     == end of interface ==
 c--   Sum up all contributions.
       do bj = jtlo,jthi
         do bi = itlo,ithi
- 
+
           fc = fc
      &         + mult_temp    * objf_temp(bi,bj)
      &         + mult_salt    * objf_salt(bi,bj)
@@ -302,10 +303,10 @@ c--   Sum up all contributions.
      &                         +mult_smooth_ic*objf_temp0smoo(bi,bj) )
      &         + mult_salt0   * ( objf_salt0(bi,bj)
      &                         +mult_smooth_ic*objf_salt0smoo(bi,bj) )
-     &         + mult_sst     * objf_sst(bi,bj) 
-     &         + mult_tmi     * objf_tmi(bi,bj) 
-     &         + mult_sss     * objf_sss(bi,bj) 
-     &         + mult_bp      * objf_bp(bi,bj) 
+     &         + mult_sst     * objf_sst(bi,bj)
+     &         + mult_tmi     * objf_tmi(bi,bj)
+     &         + mult_sss     * objf_sss(bi,bj)
+     &         + mult_bp      * objf_bp(bi,bj)
      &         + mult_tauu    * ( objf_tauu(bi,bj)+objf_tauum(bi,bj)
      &                         +mult_smooth_bc*objf_tauusmoo(bi,bj) )
      &         + mult_tauv    * ( objf_tauv(bi,bj)+objf_tauvm(bi,bj)
@@ -314,7 +315,7 @@ c--   Sum up all contributions.
      &                         +mult_smooth_bc*objf_hfluxsmoo(bi,bj) )
      &         + mult_sflux   * ( objf_sflux(bi,bj)
      &                         +mult_smooth_bc*objf_sfluxsmoo(bi,bj) )
-     &         + mult_h       * ( mult_tp  * objf_tp(bi,bj) 
+     &         + mult_h       * ( mult_tp  * objf_tp(bi,bj)
      &                          + mult_ers * objf_ers(bi,bj)
      &                          + mult_gfo * objf_gfo(bi,bj) )
      &         + mult_atl     * objf_atl(bi,bj)
@@ -347,10 +348,10 @@ c--   Sum up all contributions.
      &                         +mult_smooth_bc*objf_swfluxsmoo(bi,bj) )
      &         + mult_swdown  * ( objf_swdown(bi,bj)+objf_swdownm(bi,bj)
      &                         +mult_smooth_bc*objf_swdownsmoo(bi,bj) )
-     &         + mult_obcsn   * objf_obcsn(bi,bj)  
-     &         + mult_obcss   * objf_obcss(bi,bj)  
-     &         + mult_obcsw   * objf_obcsw(bi,bj)  
-     &         + mult_obcse   * objf_obcse(bi,bj)  
+     &         + mult_obcsn   * objf_obcsn(bi,bj)
+     &         + mult_obcss   * objf_obcss(bi,bj)
+     &         + mult_obcsw   * objf_obcsw(bi,bj)
+     &         + mult_obcse   * objf_obcse(bi,bj)
      &         + mult_curmtr  * objf_curmtr(bi,bj)
      &         + mult_ageos   * objf_ageos(bi,bj)
      &         + mult_kapgm   * objf_kapgm(bi,bj)
@@ -378,19 +379,19 @@ c--   Sum up all contributions.
           f_temp = f_temp + objf_temp(bi,bj)
           f_salt = f_salt + objf_salt(bi,bj)
           f_temp0 = f_temp0 + objf_temp0(bi,bj)
-          f_salt0 = f_salt0 + objf_salt0(bi,bj) 
+          f_salt0 = f_salt0 + objf_salt0(bi,bj)
           f_temp0smoo = f_temp0smoo + objf_temp0smoo(bi,bj)
-          f_salt0smoo = f_salt0smoo + objf_salt0smoo(bi,bj) 
+          f_salt0smoo = f_salt0smoo + objf_salt0smoo(bi,bj)
           f_tauu = f_tauu + objf_tauu(bi,bj)
           f_tauum  = f_tauum + objf_tauum(bi,bj)
           f_tauusmoo = f_tauusmoo + objf_tauusmoo(bi,bj)
           f_tauv = f_tauv + objf_tauv(bi,bj)
           f_tauvm  = f_tauvm + objf_tauvm(bi,bj)
           f_tauvsmoo = f_tauvsmoo + objf_tauvsmoo(bi,bj)
-          f_hflux = f_hflux + objf_hflux(bi,bj)   
-          f_hfluxsmoo = f_hfluxsmoo + objf_hfluxsmoo(bi,bj)   
-          f_sflux = f_sflux + objf_sflux(bi,bj)  
-          f_sfluxsmoo = f_sfluxsmoo + objf_sfluxsmoo(bi,bj)   
+          f_hflux = f_hflux + objf_hflux(bi,bj)
+          f_hfluxsmoo = f_hfluxsmoo + objf_hfluxsmoo(bi,bj)
+          f_sflux = f_sflux + objf_sflux(bi,bj)
+          f_sfluxsmoo = f_sfluxsmoo + objf_sfluxsmoo(bi,bj)
           f_uwind  = f_uwind + objf_uwind(bi,bj)
           f_vwind  = f_vwind + objf_vwind(bi,bj)
           f_atemp  = f_atemp + objf_atemp(bi,bj)
@@ -412,19 +413,19 @@ c--   Sum up all contributions.
           f_precipsmoo = f_precipsmoo + objf_precipsmoo(bi,bj)
           f_swfluxsmoo = f_swfluxsmoo + objf_swfluxsmoo(bi,bj)
           f_swdownsmoo = f_swdownsmoo + objf_swdownsmoo(bi,bj)
-          f_ssh  = f_ssh + objf_h(bi,bj) 
-          f_tp   = f_tp  + objf_tp(bi,bj) 
-          f_ers  = f_ers + objf_ers(bi,bj) 
-          f_gfo  = f_gfo + objf_gfo(bi,bj) 
-          f_sst  = f_sst + objf_sst(bi,bj) 
-          f_tmi  = f_tmi + objf_tmi(bi,bj) 
+          f_ssh  = f_ssh + objf_h(bi,bj)
+          f_tp   = f_tp  + objf_tp(bi,bj)
+          f_ers  = f_ers + objf_ers(bi,bj)
+          f_gfo  = f_gfo + objf_gfo(bi,bj)
+          f_sst  = f_sst + objf_sst(bi,bj)
+          f_tmi  = f_tmi + objf_tmi(bi,bj)
           f_sss  = f_sss + objf_sss(bi,bj)
           f_bp   = f_bp  + objf_bp(bi,bj)
           f_atl  = f_atl + objf_atl(bi,bj)
           f_ctdt = f_ctdt + objf_ctdt(bi,bj)
-          f_ctds = f_ctds + objf_ctds(bi,bj) 
+          f_ctds = f_ctds + objf_ctds(bi,bj)
           f_ctdtclim = f_ctdtclim + objf_ctdtclim(bi,bj)
-          f_ctdsclim = f_ctdsclim + objf_ctdsclim(bi,bj) 
+          f_ctdsclim = f_ctdsclim + objf_ctdsclim(bi,bj)
           f_xbt  = f_xbt + objf_xbt(bi,bj)
           f_argot  = f_argot + objf_argot(bi,bj)
           f_argos  = f_argos + objf_argos(bi,bj)
@@ -442,7 +443,7 @@ c--   Sum up all contributions.
           f_diffkr = f_diffkr + objf_diffkr(bi,bj)
           f_ini_fin = f_ini_fin +
      &         objf_theta_ini_fin(bi,bj) + objf_salt_ini_fin(bi,bj)
-          f_eddytau = f_eddytau + objf_eddytau(bi,bj) 
+          f_eddytau = f_eddytau + objf_eddytau(bi,bj)
           f_bottomdrag = f_bottomdrag + objf_bottomdrag(bi,bj)
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
@@ -461,15 +462,15 @@ c--   Sum up all contributions.
           no_temp = no_temp + num_temp(bi,bj)
           no_salt = no_salt + num_salt(bi,bj)
           no_temp0 = no_temp0 + num_temp0(bi,bj)
-          no_salt0 = no_salt0 + num_salt0(bi,bj) 
+          no_salt0 = no_salt0 + num_salt0(bi,bj)
           no_tauu = no_tauu + num_tauu(bi,bj)
           no_tauum  = no_tauum + num_tauum(bi,bj)
           no_tauv = no_tauv + num_tauv(bi,bj)
           no_tauvm  = no_tauvm + num_tauvm(bi,bj)
-          no_hflux= no_hflux + num_hflux(bi,bj)   
-          no_hfluxmm = no_hfluxmm + num_hfluxmm(bi,bj)   
-          no_sflux= no_sflux + num_sflux(bi,bj)  
-          no_sfluxmm = no_sfluxmm + num_sfluxmm(bi,bj)  
+          no_hflux= no_hflux + num_hflux(bi,bj)
+          no_hfluxmm = no_hfluxmm + num_hfluxmm(bi,bj)
+          no_sflux= no_sflux + num_sflux(bi,bj)
+          no_sfluxmm = no_sfluxmm + num_sfluxmm(bi,bj)
           no_atemp  = no_atemp + num_atemp(bi,bj)
           no_aqh    = no_aqh + num_aqh(bi,bj)
           no_precip = no_precip + num_precip(bi,bj)
@@ -484,18 +485,18 @@ c--   Sum up all contributions.
           no_swdownm = no_swdownm + num_swdownm(bi,bj)
           no_uwindm  = no_uwindm + num_uwindm(bi,bj)
           no_vwindm  = no_vwindm + num_vwindm(bi,bj)
-          no_ssh  = no_ssh + num_h(bi,bj) 
-          no_tp   = no_tp  + num_tp(bi,bj) 
-          no_ers  = no_ers + num_ers(bi,bj) 
-          no_gfo  = no_gfo + num_gfo(bi,bj) 
-          no_sst  = no_sst + num_sst(bi,bj) 
-          no_tmi  = no_tmi + num_tmi(bi,bj) 
+          no_ssh  = no_ssh + num_h(bi,bj)
+          no_tp   = no_tp  + num_tp(bi,bj)
+          no_ers  = no_ers + num_ers(bi,bj)
+          no_gfo  = no_gfo + num_gfo(bi,bj)
+          no_sst  = no_sst + num_sst(bi,bj)
+          no_tmi  = no_tmi + num_tmi(bi,bj)
           no_sss  = no_sss + num_sss(bi,bj)
           no_bp   = no_bp  + num_bp(bi,bj)
           no_ctdt = no_ctdt + num_ctdt(bi,bj)
-          no_ctds = no_ctds + num_ctds(bi,bj) 
+          no_ctds = no_ctds + num_ctds(bi,bj)
           no_ctdtclim = no_ctdtclim + num_ctdtclim(bi,bj)
-          no_ctdsclim = no_ctdsclim + num_ctdsclim(bi,bj) 
+          no_ctdsclim = no_ctdsclim + num_ctdsclim(bi,bj)
           no_xbt  = no_xbt + num_xbt(bi,bj)
           no_argot  = no_argot + num_argot(bi,bj)
           no_argos  = no_argos + num_argos(bi,bj)
@@ -513,7 +514,7 @@ c--   Sum up all contributions.
           no_diffkr = no_diffkr + num_diffkr(bi,bj)
           no_ini_fin = no_ini_fin +
      &         num_theta_ini_fin(bi,bj) + num_salt_ini_fin(bi,bj)
-          no_eddytau = no_eddytau + num_eddytau(bi,bj) 
+          no_eddytau = no_eddytau + num_eddytau(bi,bj)
           no_bottomdrag = no_bottomdrag + num_bottomdrag(bi,bj)
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
@@ -528,7 +529,7 @@ c--   Sum up all contributions.
           no_gencost(num_var)=no_gencost(num_var)
      &            +num_gencost(num_var,bi,bj)
        enddo
-#endif    
+#endif
 
         enddo
       enddo
@@ -538,7 +539,7 @@ c--   Do global summation.
       _GLOBAL_SUM_R8( fc , myThid )
 
 c--   Do global summation for each part of the cost function
-            
+
       _GLOBAL_SUM_R8( f_temp , myThid )
       _GLOBAL_SUM_R8( f_salt , myThid )
       _GLOBAL_SUM_R8( f_temp0, myThid )
@@ -587,20 +588,20 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_bp , myThid )
       _GLOBAL_SUM_R8( f_atl , myThid )
       _GLOBAL_SUM_R8( f_ctdt , myThid )
-      _GLOBAL_SUM_R8( f_ctds , myThid ) 
+      _GLOBAL_SUM_R8( f_ctds , myThid )
       _GLOBAL_SUM_R8( f_ctdtclim , myThid  )
-      _GLOBAL_SUM_R8( f_ctdsclim , myThid  ) 
+      _GLOBAL_SUM_R8( f_ctdsclim , myThid  )
       _GLOBAL_SUM_R8( f_xbt , myThid )
       _GLOBAL_SUM_R8( f_argot , myThid )
       _GLOBAL_SUM_R8( f_argos , myThid )
-      _GLOBAL_SUM_R8( f_drifter , myThid ) 
+      _GLOBAL_SUM_R8( f_drifter , myThid )
       _GLOBAL_SUM_R8( f_sdrift , myThid )
-      _GLOBAL_SUM_R8( f_tdrift , myThid )    
-      _GLOBAL_SUM_R8( f_wdrift , myThid )    
-      _GLOBAL_SUM_R8( f_scatx , myThid )    
-      _GLOBAL_SUM_R8( f_scaty , myThid )    
-      _GLOBAL_SUM_R8( f_scatxm , myThid )    
-      _GLOBAL_SUM_R8( f_scatym , myThid )    
+      _GLOBAL_SUM_R8( f_tdrift , myThid )
+      _GLOBAL_SUM_R8( f_wdrift , myThid )
+      _GLOBAL_SUM_R8( f_scatx , myThid )
+      _GLOBAL_SUM_R8( f_scaty , myThid )
+      _GLOBAL_SUM_R8( f_scatxm , myThid )
+      _GLOBAL_SUM_R8( f_scatym , myThid )
       _GLOBAL_SUM_R8( f_obcsn , myThid )
       _GLOBAL_SUM_R8( f_obcss , myThid )
       _GLOBAL_SUM_R8( f_obcsw , myThid )
@@ -623,7 +624,7 @@ c--   Do global summation for each part of the cost function
        do num_var=1,NGENCOST
         _GLOBAL_SUM_R8(f_gencost(num_var), myThid )
        enddo
-#endif    
+#endif
       _GLOBAL_SUM_R8( no_temp , myThid )
       _GLOBAL_SUM_R8( no_salt , myThid )
       _GLOBAL_SUM_R8( no_temp0, myThid )
@@ -660,20 +661,20 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( no_bp , myThid )
       _GLOBAL_SUM_R8( no_atl , myThid )
       _GLOBAL_SUM_R8( no_ctdt , myThid )
-      _GLOBAL_SUM_R8( no_ctds , myThid ) 
+      _GLOBAL_SUM_R8( no_ctds , myThid )
       _GLOBAL_SUM_R8( no_ctdtclim , myThid  )
-      _GLOBAL_SUM_R8( no_ctdsclim , myThid  ) 
+      _GLOBAL_SUM_R8( no_ctdsclim , myThid  )
       _GLOBAL_SUM_R8( no_xbt , myThid )
       _GLOBAL_SUM_R8( no_argot , myThid )
       _GLOBAL_SUM_R8( no_argos , myThid )
-      _GLOBAL_SUM_R8( no_drifter , myThid ) 
+      _GLOBAL_SUM_R8( no_drifter , myThid )
       _GLOBAL_SUM_R8( no_sdrift , myThid )
-      _GLOBAL_SUM_R8( no_tdrift , myThid )    
-      _GLOBAL_SUM_R8( no_wdrift , myThid )    
-      _GLOBAL_SUM_R8( no_scatx , myThid )    
-      _GLOBAL_SUM_R8( no_scaty , myThid )    
-      _GLOBAL_SUM_R8( no_scatxm , myThid )    
-      _GLOBAL_SUM_R8( no_scatym , myThid )    
+      _GLOBAL_SUM_R8( no_tdrift , myThid )
+      _GLOBAL_SUM_R8( no_wdrift , myThid )
+      _GLOBAL_SUM_R8( no_scatx , myThid )
+      _GLOBAL_SUM_R8( no_scaty , myThid )
+      _GLOBAL_SUM_R8( no_scatxm , myThid )
+      _GLOBAL_SUM_R8( no_scatym , myThid )
       _GLOBAL_SUM_R8( no_obcsn , myThid )
       _GLOBAL_SUM_R8( no_obcss , myThid )
       _GLOBAL_SUM_R8( no_obcsw , myThid )
@@ -696,7 +697,7 @@ c--   Do global summation for each part of the cost function
        do num_var=1,NGENCOST
         _GLOBAL_SUM_R8(no_gencost(num_var), myThid )
        enddo
-#endif    
+#endif
 
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_temp    =',f_temp
@@ -863,12 +864,12 @@ c--   Do global summation for each part of the cost function
      &      num_var
         endif
        enddo
-#endif    
+#endif
 
 c--   Each process has calculated the global part for itself.
       _BEGIN_MASTER( mythid )
 
-        fc = fc 
+        fc = fc
      &          + mult_hmean*objf_hmean
         no_hmean = num_hmean
 
@@ -885,7 +886,7 @@ c
 
         no_transp = num_transp
 cph)
-        fc = fc 
+        fc = fc
      &          + f_hfluxmm2 + f_sfluxmm2
      &          + f_transp
 
@@ -899,178 +900,178 @@ cph)
      &           ' --> objf_hmean           =',objf_hmean
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> fc               =', fc
-    
+
         write(cfname,'(A,i4.4)') 'costfunction',optimcycle
         open(unit=ifc,file=cfname)
-      
-        write(ifc,'(A,2D22.15)') 
+
+        write(ifc,'(A,2D22.15)')
      &       'fc =', fc, 0.
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_temp =', f_temp, no_temp
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_salt =', f_salt, no_salt
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_temp0 =', f_temp0, no_temp0
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_salt0 =', f_salt0, no_salt0
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_temp0smoo =', f_temp0smoo, no_temp0
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_salt0smoo =', f_salt0smoo, no_salt0
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_tauu =', f_tauu, no_tauu
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_tauum =', f_tauum, no_tauum
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_tauusmoo =', f_tauusmoo, no_tauu
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_tauv =', f_tauv, no_tauv
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_tauvm =', f_tauvm, no_tauvm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_tauvsmoo =', f_tauvsmoo, no_tauv
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_hflux =', f_hflux, no_hflux
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_hfluxm =', f_hfluxm, no_hfluxm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_hfluxmm =', f_hfluxmm, no_hfluxmm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_hfluxmm2 =', f_hfluxmm2, mult_hfluxmm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_hfluxsmoo =', f_hfluxsmoo, no_hflux
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_sflux =', f_sflux, no_sflux
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_sfluxm =', f_sfluxm, no_sfluxm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_sfluxmm =', f_sfluxmm, no_sfluxmm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_sfluxmm2 =', f_sfluxmm2, mult_sfluxmm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_sfluxsmoo =', f_sfluxsmoo, no_sflux
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_uwind  =', f_uwind, no_uwind
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_vwind  =', f_vwind, no_vwind
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_atemp  =', f_atemp, no_atemp
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_aqh    =', f_aqh, no_aqh
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_precip =', f_precip, no_precip
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_swflux =', f_swflux, no_swflux
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_swdown =', f_swdown, no_swdown
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_uwindm   =', f_uwindm, no_uwindm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_vwindm   =', f_vwindm, no_vwindm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_atempm   =', f_atempm, no_atempm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_aqhm     =', f_aqhm, no_aqhm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_precipm  =', f_precipm, no_precipm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_swfluxm  =', f_swfluxm, no_swfluxm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_swdownm  =', f_swdownm, no_swdownm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_uwindsmoo  =', f_uwindsmoo, no_uwind
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_vwindsmoo  =', f_vwindsmoo, no_vwind
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_atempsmoo  =', f_atempsmoo, no_atemp
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_aqhsmoo    =', f_aqhsmoo, no_aqh
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_precipsmoo =', f_precipsmoo, no_precip
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_swfluxsmoo =', f_swfluxsmoo, no_swflux
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_swdownsmoo =', f_swdownsmoo, no_swdown
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_ssh =', f_ssh, no_ssh
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_tp  =', f_tp, no_tp
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_ers =', f_ers, no_ers
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_gfo =', f_gfo, no_gfo
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_sst =', f_sst, no_sst
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_tmi =', f_tmi, no_tmi
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_sss =', f_sss, no_sss
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_bp =', f_bp, no_bp
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_atl =', f_atl, no_atl
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_ctdt =', f_ctdt, no_ctdt
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_ctds =', f_ctds, no_ctds
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_ctdtclim =', f_ctdtclim, no_ctdtclim
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_ctdsclim =', f_ctdsclim, no_ctdsclim
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_xbt =', f_xbt, no_xbt
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_argot =', f_argot, no_argot
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_argos =', f_argos, no_argos
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'objf_hmean =', objf_hmean, no_hmean
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_drifter =', f_drifter, no_drifter
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_sdrift =', f_sdrift, no_sdrift
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_tdrift =', f_tdrift, no_tdrift
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_wdrift =', f_wdrift, no_wdrift
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_scatx =', f_scatx, no_scatx
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_scaty =', f_scaty, no_scaty
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_scatxm =', f_scatxm, no_scatxm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_scatym =', f_scatym, no_scatym
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_obcsn =', f_obcsn, no_obcsn
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_obcss =', f_obcss, no_obcss
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_obcsw =', f_obcsw, no_obcsw
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_obcse =', f_obcse, no_obcse
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_ageos =', f_ageos, no_ageos
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_kapgm =', f_kapgm, no_kapgm
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_diffkr =', f_diffkr, no_diffkr
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_ini_fin =', f_ini_fin, no_ini_fin
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_eddytau =', f_eddytau, no_eddytau
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_bottomdrag =', f_bottomdrag, no_bottomdrag
-        write(ifc,'(A,2D22.15)') 
+        write(ifc,'(A,2D22.15)')
      &       'f_transp =', f_transp, no_transp
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
         if (no_profiles(num_file,num_var).GT.0) then
          IL  = ILNBLNK( profilesfiles(num_file) )
-         write(ifc,'(3A,2D22.15)') 
+         write(ifc,'(3A,2D22.15)')
      &    profilesfiles(num_file)(1:IL), prof_names(num_var), ' = ',
-     &    f_profiles(num_file,num_var), 
+     &    f_profiles(num_file,num_var),
      &    no_profiles(num_file,num_var)
         endif
        enddo
@@ -1085,10 +1086,10 @@ cph)
      &    no_gencost(num_var)
          endif
        enddo
-#endif    
+#endif
 
         close(ifc)
-        
+
       _END_MASTER( mythid )
 
       call cost_trans_merid( mythid )

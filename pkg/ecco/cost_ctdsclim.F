@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdsclim.F,v 1.4 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdsclim.F,v 1.5 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -70,7 +71,7 @@ c     == local variables ==
       _RL fctile
       _RL fcthread
 
-      _RL cmask (1-olx:snx+olx,1-oly:sny+oly)  
+      _RL cmask (1-olx:snx+olx,1-oly:sny+oly)
       _RL spval
 
       character*(80) fnamesalt
@@ -82,7 +83,7 @@ c     == local variables ==
 
 #ifdef GENERIC_BAR_MONTH
       integer mrec, nyears, iyear
-#endif      
+#endif
 c     == external functions ==
 
       integer  ilnblnk
@@ -162,7 +163,7 @@ c--     Determine the month to be read.
         levmon = (irec-1) + levoff
         levmon = mod(levmon-1,12)+1
 
-        call mdsreadfield( ctdsclimfile, cost_iprec, cost_yftype, 
+        call mdsreadfield( ctdsclimfile, cost_iprec, cost_yftype,
      &                     nr, sdat, levmon, mythid)
 
         do bj = jtlo,jthi
@@ -182,7 +183,7 @@ c--           Determine the mask or weights
                   if (sdat(i,j,k,bi,bj) .lt. spval) then
                     cmask(i,j) = 0. _d 0
                   endif
-                  
+
 cph(
 cph               print *, 'WARNING: SPECIFIC SETUP FOR ECCO'
 cph               below statement could be replaced by following
@@ -190,7 +191,7 @@ cph               to make it independnet of Nr:
 cph
 cph               if ( rC(K) .GT. -1000. ) then
 cph)
-c                 set cmask=0 in areas shallower than 1000m 
+c                 set cmask=0 in areas shallower than 1000m
                   if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
                     cmask(i,j) = 0. _d 0
                   endif

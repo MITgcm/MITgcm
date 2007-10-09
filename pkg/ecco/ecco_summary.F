@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.5 2007/04/17 23:51:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.6 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
@@ -243,7 +244,7 @@ c--   Read the EGM data from file.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-#ifdef ALLOW_SCAT_COST_CONTRIBUTION 
+#ifdef ALLOW_SCAT_COST_CONTRIBUTION
 c--   Use NSCAT data for getting the weights.
       write(msgbuf,'(a)')
      &'// ALLOW_SCAT_COST_CONTRIBUTION:                     defined'
@@ -269,7 +270,7 @@ c--   Include code to use the heat flux contribution.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-#ifdef ALLOW_SFLUX_COST_CONTRIBUTION 
+#ifdef ALLOW_SFLUX_COST_CONTRIBUTION
 c--   Include code to use the salt flux contribution.
       write(msgbuf,'(a)')
      &'// ALLOW_SFLUX_COST_CONTRIBUTION:        defined'
@@ -672,7 +673,7 @@ c--   Enable automatic differentiation of the ECCO code.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-#ifdef ALLOW_TAMC_CHECKPOINTING 
+#ifdef ALLOW_TAMC_CHECKPOINTING
 c--   Checkpointing as handled by TAMC.
       write(msgbuf,'(a)')
      &'// ALLOW_TAMC_CHECKPOINTING:             defined'

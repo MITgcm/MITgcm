@@ -1,4 +1,6 @@
- 
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.42 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
+
 
 c     ==================================================================
 c     HEADER CONTROLVARS
@@ -261,16 +263,16 @@ c     xx_sflux   - control vector surface salt flux part.
 c     xx_tauu  - control vector zonal wind stress part.
 c     xx_tauv  - control vector meridional wind stress part.
 cph(
-c     xx_... are to be replaced by tmpfld2d/3d throughout the code; 
+c     xx_... are to be replaced by tmpfld2d/3d throughout the code;
 c     control variables are written to / read from active files
 c     TAMC sees xx_..._dummy
 
       common /controlvars_r/
      &                        tmpfld2d
      &                      , tmpfld3d
-      _RL tmpfld2d 
+      _RL tmpfld2d
      &    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL tmpfld3d 
+      _RL tmpfld3d
      &    (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
 #ifdef ALLOW_AUTODIFF_OPENAD
@@ -546,7 +548,7 @@ c     xx_tauv_file  - control vector meridional wind stress file.
 c     xx_obcsn_file - control vector Uvel at boundary
 c     xx_obcss_file - control vector Vvel at boundary
 c     xx_obcsw_file - control vector temp. at boundary
-c     xx_obcse_file - control vector salin. at boundary 
+c     xx_obcse_file - control vector salin. at boundary
       common /controlfiles_c/
      &                      xx_theta_file
      &                    , xx_salt_file
@@ -640,10 +642,10 @@ c     xx_obcse_file - control vector salin. at boundary
 
       common /packnames_c/
      &                      yadmark,
-     &                      ctrlname, 
-     &                      costname, 
-     &                      scalname, 
-     &                      maskname, 
+     &                      ctrlname,
+     &                      costname,
+     &                      scalname,
+     &                      maskname,
      &                      metaname,
      &                      yctrlid,
      &                      yctrlposunpack,

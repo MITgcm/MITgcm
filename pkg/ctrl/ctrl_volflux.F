@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/Attic/ctrl_volflux.F,v 1.9 2007/10/09 00:00:01 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -17,8 +19,8 @@ c
 c     o calculate the o.b. volume flux due to control adjustments.
 c     o Assume the calendar is identical
 c       for all open boundaries. Need to save the barotropic adjustment
-c       velocity so it can be used in all ctrl_getobcs files. 
-c     o WARNING: eastern boundary (not defined) filenames have been a 
+c       velocity so it can be used in all ctrl_getobcs files.
+c     o WARNING: eastern boundary (not defined) filenames have been a
 c                problem in the past.
 c
 c     - started G. Gebbie, MIT-WHOI, 15-June-2002
@@ -141,22 +143,22 @@ cgg   all boundaries. Needs to be improved someday.
 c
 #ifdef ALLOW_OBCSN_CONTROL
          ilfld=ilnblnk( xx_obcsn_file )
-         write(fnamefldn(1:80),'(2a,i10.10)') 
+         write(fnamefldn(1:80),'(2a,i10.10)')
      &        xx_obcsn_file(1:ilfld),'.', optimcycle
 #endif
 #ifdef ALLOW_OBCSS_CONTROL
          ilfld=ilnblnk( xx_obcss_file )
-         write(fnameflds(1:80),'(2a,i10.10)') 
+         write(fnameflds(1:80),'(2a,i10.10)')
      &        xx_obcss_file(1:ilfld),'.',optimcycle
 #endif
 #ifdef ALLOW_OBCSW_CONTROL
          ilfld=ilnblnk( xx_obcsw_file )
-         write(fnamefldw(1:80),'(2a,i10.10)') 
+         write(fnamefldw(1:80),'(2a,i10.10)')
      &        xx_obcsw_file(1:ilfld),'.',optimcycle
 #endif
 #ifdef ALLOW_OBCSE_CONTROL
          ilfld=ilnblnk( xx_obcse_file )
-         write(fnameflde(1:80),'(2a,i10.10)') 
+         write(fnameflde(1:80),'(2a,i10.10)')
      &        xx_obcse_file(1:ilfld),'.',optimcycle
 #endif
 c
@@ -178,7 +180,7 @@ c--     Loop over this thread's tiles.
             tmparea = 0. d0
 
             do k = 1, Nr
-              do i = imin,imax  
+              do i = imin,imax
                 j = Ob_Jn(I,bi,bj)
                 if (j.ne.0) then
 cgg -- Alternatively I could read the maskobcs file. But this gives the same result.
@@ -190,7 +192,7 @@ CGG -- Barotropic velocity stored in level 1.
 
 cgg -- Pick the special point where barotropic velocity loses one degree of freedom.
 cgg -- Add up the cross-sectional area of this column for later calculations.
-                      if (ob_iw(j,bi,bj).eq.(i-1) .and. 
+                      if (ob_iw(j,bi,bj).eq.(i-1) .and.
      &                    ob_iw(j,bi,bj).ne. 0) then
                         tmpx = 0.
                         tmparea = tmparea + delR(k) * dxg(i,j+jp1,bi,bj)
@@ -256,7 +258,7 @@ cgg -- Positive is flux in.
 #ifndef ALLOW_OBCSN_CONTROL
             sumarea        = sumarea+ tmparea
 #endif
-            sumflux         = sumflux + tmpflux          
+            sumflux         = sumflux + tmpflux
           enddo
         enddo
 #endif
@@ -278,7 +280,7 @@ c--         Determine the weights to be used.
 #ifndef ALLOW_OBCSN_CONTROL
 #ifndef ALLOW_OBCSS_CONTROL
             tmparea = 0. d 0
-#endif 
+#endif
 #endif
             do k = 1, Nr
               do j = jmin,jmax
@@ -310,7 +312,7 @@ cgg -- Positive is flux in.
               enddo
             enddo
 #ifndef ALLOW_OBCSN_CONTROL
-#ifndef ALLOW_OBCSS_CONTROL 
+#ifndef ALLOW_OBCSS_CONTROL
             sumarea        =sumarea + tmparea
 #endif
 #endif
@@ -341,7 +343,7 @@ c--         Determine the weights to be used.
 #endif
 #endif
 #endif
- 
+
            do k = 1, Nr
               do j = jmin,jmax
                 i = ob_ie(j,bi,bj)

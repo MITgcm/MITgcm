@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_variables.F,v 1.9 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 

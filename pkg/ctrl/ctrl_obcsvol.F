@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/Attic/ctrl_obcsvol.F,v 1.10 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -14,10 +16,10 @@ c     ==================================================================
 c     SUBROUTINE ctrl_obcsvol
 c     ==================================================================
 c
-c     o volumetrically balance the control vector contribution. 
+c     o volumetrically balance the control vector contribution.
 c     o Assume the calendar is identical
 c       for all open boundaries. Need to save the barotropic adjustment
-c       velocity so it can be used in all ctrl_getobcs files. 
+c       velocity so it can be used in all ctrl_getobcs files.
 c     ==================================================================
 c     SUBROUTINE ctrl_obcsvol
 c     ==================================================================
@@ -81,7 +83,7 @@ c     == local variables ==
       logical obcsnfirst, obcsnchanged
       integer obcsncount0, obcsncount1
       _RL obcsnfac
-      
+
 #ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
 #endif
@@ -141,16 +143,16 @@ c--   Get the counters, flags, and the interpolation factor.
       if (optimcycle .ge. 0) then
 c
          ilfld=ilnblnk( xx_obcsn_file )
-         write(fnamefldn(1:80),'(2a,i10.10)') 
+         write(fnamefldn(1:80),'(2a,i10.10)')
      &        xx_obcsn_file(1:ilfld),'.', optimcycle
          ilfld=ilnblnk( xx_obcss_file )
-         write(fnameflds(1:80),'(2a,i10.10)') 
+         write(fnameflds(1:80),'(2a,i10.10)')
      &        xx_obcss_file(1:ilfld),'.',optimcycle
          ilfld=ilnblnk( xx_obcsw_file )
-         write(fnamefldw(1:80),'(2a,i10.10)') 
+         write(fnamefldw(1:80),'(2a,i10.10)')
      &        xx_obcsw_file(1:ilfld),'.',optimcycle
          ilfld=ilnblnk( xx_obcse_file )
-         write(fnameflde(1:80),'(2a,i10.10)') 
+         write(fnameflde(1:80),'(2a,i10.10)')
      &        xx_obcse_file(1:ilfld),'.',optimcycle
 c
       endif
@@ -178,7 +180,7 @@ c--     Loop over this thread's tiles.
             tmparea = 0. d0
 
             do k = 1, Nr
-              do i = imin,imax  
+              do i = imin,imax
                 j = Ob_Jn(I,bi,bj)
                 if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
 cgg -- Do not let the corners contribute to the volume flux.
@@ -228,7 +230,7 @@ cgg -- Positive is flux in.
               enddo
             enddo
             sumarea        = sumarea+ tmparea
-            sumvol         = sumvol + tmpflux          
+            sumvol         = sumvol + tmpflux
           enddo
         enddo
 #endif
@@ -310,14 +312,14 @@ c--   Do the global summation.
         _GLOBAL_SUM_R8( sumarea,mythid )
 
         shiftvel(2) = sumvol /sumarea
-      endif  
-cgg    End of the obcsnfirst loop. 
+      endif
+cgg    End of the obcsnfirst loop.
 
       if ( ( obcsnfirst) .or. (obcsnchanged)) then
 
 cgg     Swap the value.
         shiftvel(1) = shiftvel(2)
- 
+
         sumvol = 0. d0
         sumarea= 0. d0
 
@@ -336,7 +338,7 @@ c--     Loop over this thread's tiles.
             tmparea = 0. d0
 
             do k = 1, Nr
-              do i = imin,imax  
+              do i = imin,imax
                 j = Ob_Jn(I,bi,bj)
                 if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
 cgg -- Do not let the corners contribute to the volume flux.
@@ -386,7 +388,7 @@ cgg -- Positive is flux in.
               enddo
             enddo
             sumarea        = sumarea+ tmparea
-            sumvol         = sumvol + tmpflux          
+            sumvol         = sumvol + tmpflux
           enddo
         enddo
 #endif
@@ -468,8 +470,8 @@ c--   Do the global summation.
         _GLOBAL_SUM_R8( sumarea,mythid )
 
         shiftvel(2) = sumvol /sumarea
-      endif  
-cgg    End of the obcsnfirst, obcsnchanged loop. 
+      endif
+cgg    End of the obcsnfirst, obcsnchanged loop.
 
 #endif /* BALANCE_CONTROL_VOLFLUX_GLOBAL */
 

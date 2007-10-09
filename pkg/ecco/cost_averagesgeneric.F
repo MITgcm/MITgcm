@@ -1,9 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.2 2005/09/01 23:24:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.3 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
       subroutine cost_averagesgeneric(
-     &     localbarfile, 
+     &     localbarfile,
      &     localbar, localfld, xx_localbar_mean_dummy,
      &     first, last, startofloc, endofloc, inloc,
      &     sum1loc, locrec, nnz, mythid )
@@ -101,8 +102,8 @@ c--     Add the last value and devide by the number of accumulated records.
             do k = 1,nnz
               do j = jmin,jmax
                 do i = imin,imax
-                  localbar(i,j,k,bi,bj) = 
-     &                  (localbar(i,j,k,bi,bj) 
+                  localbar(i,j,k,bi,bj) =
+     &                  (localbar(i,j,k,bi,bj)
      &                  +localfld(i,j,k,bi,bj))/
      &                  float(sum1loc)
                 enddo
@@ -113,7 +114,7 @@ c--     Add the last value and devide by the number of accumulated records.
 c--     Save ...bar on file.
         write(fname(1:128),'(80a)') ' '
         il=ilnblnk( localbarfile )
-        write(fname,'(2a,i10.10)') 
+        write(fname,'(2a,i10.10)')
      &       localbarfile(1:il), '.', optimcycle
         if ( nnz .EQ. 1 ) then
            call active_write_xy( fname, localbar, locrec, optimcycle,
@@ -131,7 +132,7 @@ c--     Accumulate the array holding the average.
             do j = jmin,jmax
               do k = 1,nnz
                 do i = imin,imax
-                  localbar(i,j,k,bi,bj) = 
+                  localbar(i,j,k,bi,bj) =
      &                  localbar(i,j,k,bi,bj) + localfld(i,j,k,bi,bj)
                 enddo
               enddo

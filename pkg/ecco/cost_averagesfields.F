@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.18 2007/09/26 20:51:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.19 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -115,12 +116,12 @@ c     == end of interface ==
       imax = snx
 
       myiter = niter0 + INT((mytime-starttime)/deltaTClock+0.5)
- 
+
 c--   Get the time flags and record numbers for the time averaging.
 
       call cost_averagesflags(
      I                    myiter,     mytime,       mythid,
-     O                    first,      last, 
+     O                    first,      last,
      O                    startofday, startofmonth, startofyear,
      O                    inday,      inmonth,      inyear,
      O                    endofday,   endofmonth,   endofyear,
@@ -131,7 +132,7 @@ c--   Get the time flags and record numbers for the time averaging.
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
       call cost_averagesgeneric(
-     &     psbarfile, 
+     &     psbarfile,
      &     psbar, etan, xx_psbar_mean_dummy,
      &     first, last, startofday, endofday, inday,
      &     sum1day, dayrec, 1, mythid )
@@ -144,14 +145,14 @@ c--   Get the time flags and record numbers for the time averaging.
      defined (ALLOW_DRIFT_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
       call cost_averagesgeneric(
-     &     tbarfile, 
+     &     tbarfile,
      &     tbar, theta, xx_tbar_mean_dummy,
      &     first, last, startofmonth, endofmonth, inmonth,
      &     sum1mon, monrec, nr, mythid )
 #else
 #ifdef ALLOW_SST_COST_CONTRIBUTION
       call cost_averagesgeneric(
-     &     tbarfile, 
+     &     tbarfile,
      &     tbar, theta(1-Olx,1-Oly,1,1,1), xx_tbar_mean_dummy,
      &     first, last, startofmonth, endofmonth, inmonth,
      &     sum1mon, monrec, 1, mythid )
@@ -164,23 +165,23 @@ c--   Get the time flags and record numbers for the time averaging.
      defined (ALLOW_DRIFT_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
       call cost_averagesgeneric(
-     &     sbarfile, 
+     &     sbarfile,
      &     sbar, salt, xx_sbar_mean_dummy,
      &     first, last, startofmonth, endofmonth, inmonth,
      &     sum1mon, monrec, nr, mythid )
 #else
 #ifdef ALLOW_SSS_COST_CONTRIBUTION
       call cost_averagesgeneric(
-     &     sbarfile, 
+     &     sbarfile,
      &     sbar, salt(1-Olx,1-Oly,1,1,1), xx_sbar_mean_dummy,
      &     first, last, startofmonth, endofmonth, inmonth,
      &     sum1mon, monrec, 1, mythid )
-#endif  
+#endif
 #endif
 
 #ifdef ALLOW_DRIFTW_COST_CONTRIBUTION
       call cost_averagesgeneric(
-     &     wbarfile, 
+     &     wbarfile,
      &     wbar, wvel, xx_wbar_mean_dummy,
      &     first, last, startofmonth, endofmonth, inmonth,
      &     sum1mon, monrec, nr, mythid )
@@ -262,7 +263,7 @@ c--     Accumulate ubar and vbar.
       else
         stop   ' ... stopped in cost_averagesfields; ubar part.'
       endif
-      
+
 #endif
 
 #ifdef ALLOW_SCAT_COST_CONTRIBUTION
@@ -271,13 +272,13 @@ c--   Next, do the averages for velocitty.
         do bj = jtlo,jthi
           do bi = itlo,ithi
               do j = jmin,jmax
-                do i =  imin,imax     
+                do i =  imin,imax
                   tauxbar(i,j,bi,bj) = ustress(i,j,bi,bj)
                   tauybar(i,j,bi,bj) = vstress(i,j,bi,bj)
                 enddo
               enddo
           enddo
-        enddo 
+        enddo
       else if (last .or. endofmonth) then
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -293,7 +294,7 @@ c--   Next, do the averages for velocitty.
               enddo
           enddo
         enddo
-     
+
 c--     Save ubar and vbar.
         if (optimcycle .ge. 0) then
           ils=ilnblnk( tauxbarfile )
@@ -303,13 +304,13 @@ c--     Save ubar and vbar.
           write(fnametauybar,'(2a,i10.10)') tauybarfile(1:ils),'.',
      &                                             optimcycle
         endif
-     
+
         call active_write_xy( fnametauxbar, tauxbar, monrec, optimcycle,
      &                         mythid, xx_taux_mean_dummy)
-     
+
         call active_write_xy( fnametauybar, tauybar, monrec, optimcycle,
      &                         mythid, xx_tauy_mean_dummy)
-     
+
 
       else if ( .not. (first.or. startofmonth) .and.
      &          .not. (last .or. endofmonth)       ) then
@@ -330,14 +331,14 @@ c--     Accumulate ubar and vbar.
         stop   ' ... stopped in cost_averagesfields; tauxbar part.'
       endif
 
-     
+
 #endif
 
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
 cph: this is one mean over whole integration:
       intmp = (.NOT. first) .and. (.NOT. last)
       call cost_averagesgeneric(
-     &     hfluxbarfile, 
+     &     hfluxbarfile,
      &     hfluxbar, qnet, xx_hflux_mean_dummy,
      &     first, last, .false., .false., intmp,
      &     ntimesteps, 1, 1, mythid )
@@ -346,7 +347,7 @@ cph: this is one mean over whole integration:
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
 cph: these are annual means
       call cost_averagesgeneric(
-     &     sfluxbarfile, 
+     &     sfluxbarfile,
      &     sfluxbar, empmr, xx_sflux_mean_dummy,
      &     first, last, startofyear, endofyear, inyear,
      &     sum1year, yearrec, 1, mythid )
@@ -354,7 +355,7 @@ cph: these are annual means
 
 #ifdef ALLOW_BP_COST_CONTRIBUTION
       call cost_averagesgeneric(
-     &     bpbarfile, 
+     &     bpbarfile,
      &     bpbar, phiHydLow, xx_bpbar_mean_dummy,
      &     first, last, startofmonth, endofmonth, inmonth,
      &     sum1mon, monrec, 1, mythid )
@@ -364,7 +365,7 @@ cph: these are annual means
       if (useSEAICE) then
 # ifdef ALLOW_SEAICE_COST_SMR_AREA
       call cost_averagesgeneric(
-     &     smrareabarfile, 
+     &     smrareabarfile,
      &     smrareabar, area, xx_smrareabar_mean_dummy,
      &     first, last, startofday, endofday, inday,
      &     sum1day, dayrec, 1, mythid )
@@ -388,7 +389,7 @@ cph   In the mean time increment ad hoc during day
        locdayrec = dayrec+1
        do bj = jtlo,jthi
         do bi = itlo,ithi
-         if (first.or.startofday) 
+         if (first.or.startofday)
      &          transpbar(locdayrec,bi,bj) = 0. _d 0
          do k = 1,nr
           do j = jmin,jmax
@@ -409,7 +410,7 @@ cph   In the mean time increment ad hoc during day
      &        transpbar(locdayrec,bi,bj)/float(sum1day)
          endif
         enddo
-       enddo      
+       enddo
 #endif
 
       return

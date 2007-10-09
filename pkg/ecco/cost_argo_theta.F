@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_theta.F,v 1.5 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_theta.F,v 1.6 2007/10/09 00:02:49 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -54,7 +55,7 @@ c     == local variables ==
       integer nrec
       integer irec
       integer ilu
-      
+
       _RL fctile_argot
       _RL fcthread_argot
       _RL www (1-olx:snx+olx,1-oly:sny+oly)
@@ -62,7 +63,7 @@ c     == local variables ==
       _RL spval
       _RL ztop,rl_35,rl_0
       _RL spmax
-      
+
       character*(80) fnametheta
 
       logical doglobalread
@@ -95,7 +96,7 @@ c     == end of interface ==
       jmax = sny
       imin = 1
       imax = snx
-      
+
       spval = -1.8
       spmax = 40.
       ztop  = -.981*1.027
@@ -104,15 +105,15 @@ c     == end of interface ==
 c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
-      
+
 #ifdef ALLOW_ARGO_THETA_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilu=ilnblnk( tbarfile )
-        write(fnametheta(1:80),'(2a,i10.10)') 
+        write(fnametheta(1:80),'(2a,i10.10)')
      &       tbarfile(1:ilu),'.',optimcycle
       endif
-      
+
       fcthread_argot = 0. _d 0
 
 cnew(
@@ -128,12 +129,12 @@ c--     Read time averages and the monthly mean data.
      &          doglobalread, ladinit,
      &          optimcycle, mythid
      &   , xx_tbar_mean_dummy )
-  
+
 cnew(
         iyear = mody + INT((modm-1+irec-1)/12)
         imonth = 1 + MOD(modm-1+irec-1,12)
         il=ilnblnk(argotfile)
-        write(fnametmp(1:80),'(2a,i4)') 
+        write(fnametmp(1:80),'(2a,i4)')
      &       argotfile(1:il), '_', iyear
         inquire( file=fnametmp, exist=exst )
         if (.NOT. exst) then
@@ -141,7 +142,7 @@ cnew(
             imonth = irec
         endif
 
-        call mdsreadfield( fnametmp, cost_iprec, 'RL', nr, argotobs, 
+        call mdsreadfield( fnametmp, cost_iprec, 'RL', nr, argotobs,
      &                    imonth, mythid)
 cnew)
 
@@ -164,13 +165,13 @@ c--           Determine the weights to be used.
               do j = jmin,jmax
                do i = imin,imax
                 if( (argotobs(i,j,k,bi,bj) .ne. 0.).and.
-     &             (argotobs(i,j,k,bi,bj) .gt. spval).and. 
+     &             (argotobs(i,j,k,bi,bj) .gt. spval).and.
      &             (argotobs(i,j,k,bi,bj) .lt. spmax).and.
-     &             (_hFacC(i,j,13,bi,bj) .ne. 0.).and. 
+     &             (_hFacC(i,j,13,bi,bj) .ne. 0.).and.
      &             (_hFacC(i,j,k,bi,bj) .ne. 0.) )then
                  tmpobs(i,j) = SW_PTMP(rl_35,
-     $             argotobs(i,j,k,bi,bj),ztop*rc(k),rl_0) 
-                 fctile_argot = fctile_argot + 
+     $             argotobs(i,j,k,bi,bj),ztop*rc(k),rl_0)
+                 fctile_argot = fctile_argot +
      &             wtheta2(i,j,k,bi,bj)*cosphi(i,j,bi,bj)*
      &             (tbar(i,j,k,bi,bj)-tmpobs(i,j))*
      &             (tbar(i,j,k,bi,bj)-tmpobs(i,j))
@@ -183,7 +184,7 @@ c--         End of loop over layers.
             enddo
 
             fcthread_argot    = fcthread_argot    + fctile_argot
-            objf_argot(bi,bj) = objf_argot(bi,bj) + fctile_argot   
+            objf_argot(bi,bj) = objf_argot(bi,bj) + fctile_argot
 
 #ifdef ECCO_VERBOSE
             write(msgbuf,'(a)') ' '
@@ -231,7 +232,7 @@ c--   End of second loop over records.
 #else
 c--   Do not enter the calculation of the CTD temperature contribution
 c--   to the final cost function.
-      
+
       fctile_argot   = 0. _d 0
       fcthread_argot = 0. _d 0
 

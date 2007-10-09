@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/couprecv_r4.F,v 1.2 2007/10/08 23:58:20 jmc Exp $
+C $Name:  $
+
 !=======================================================================
       subroutine couprecv_r4( component, dataname, Nx, Ny, arr )
       implicit none

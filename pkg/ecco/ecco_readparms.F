@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.33 2007/09/20 22:01:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.34 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -39,9 +40,9 @@ C     iUnit       - Work variable for IO unit number
 c     == end of interface ==
 
 c--   Read the namelist input.
-      namelist /ecco_cost_nml/ 
+      namelist /ecco_cost_nml/
      &                   data_errfile,
-     &                   tbarfile, sbarfile, 
+     &                   tbarfile, sbarfile,
      &                   psbarfile, bpbarfile,
      &                   ubarfile, vbarfile, wbarfile,
      &                   tauxbarfile, tauybarfile,
@@ -59,15 +60,15 @@ c--   Read the namelist input.
      &                   gfostartdate1, gfostartdate2,
      &                   gfoperiod, gfofile,
      &                   gfointercept, gfoslope,
-     &                   scatstartdate1, scatstartdate2, 
+     &                   scatstartdate1, scatstartdate2,
      &                   scatperiod, scatxdatfile, scatydatfile,
      &                   scatx_errfile, scaty_errfile,
-     &                   ssh_errfile, 
+     &                   ssh_errfile,
      &                   tp_errfile, ers_errfile, gfo_errfile,
      &                   tmistartdate1, tmistartdate2, tmidatfile,
-     &                   sststartdate1, sststartdate2, sstdatfile, 
-     &                   sssstartdate1, sssstartdate2, sssdatfile, 
-     &                   bpstartdate1, bpstartdate2, bpdatfile, 
+     &                   sststartdate1, sststartdate2, sstdatfile,
+     &                   sssstartdate1, sssstartdate2, sssdatfile,
+     &                   bpstartdate1, bpstartdate2, bpdatfile,
      &                   tdatfile, sdatfile,
      &                   ctdtfile, ctdsfile,
      &                   ctdtclimfile, ctdsclimfile,
@@ -81,7 +82,7 @@ c--   Read the namelist input.
      &                   salt0errfile, temp0errfile, vel0errfile,
      &                   hflux_errfile, sflux_errfile,
      &                   tauu_errfile, tauv_errfile,
-     &                   atemp_errfile, aqh_errfile, 
+     &                   atemp_errfile, aqh_errfile,
      &                   precip_errfile, swflux_errfile, swdown_errfile,
      &                   lwflux_errfile, lwdown_errfile, evap_errfile,
      &                   snowprecip_errfile, apressure_errfile,
@@ -92,17 +93,17 @@ c--   Read the namelist input.
      &                   gencost_datafile, gencost_errfile,
      &                   mult_hflux, mult_sflux, mult_tauu, mult_tauv,
      &                   mult_hfluxmm, mult_sfluxmm,
-     &                   mult_atemp, mult_aqh, 
+     &                   mult_atemp, mult_aqh,
      &                   mult_precip, mult_swflux, mult_swdown,
      &                   mult_lwflux, mult_lwdown, mult_evap,
      &                   mult_snowprecip, mult_apressure,
      &                   mult_uwind, mult_vwind,
-     &                   mult_hmean, mult_h, 
-     &                   mult_tp, mult_ers, mult_gfo, 
+     &                   mult_hmean, mult_h,
+     &                   mult_tp, mult_ers, mult_gfo,
      &                   mult_temp, mult_salt,
      &                   mult_tmi, mult_sst, mult_sss, mult_bp,
-     &                   mult_ctdt, mult_ctds, 
-     &                   mult_ctdtclim, mult_ctdsclim, 
+     &                   mult_ctdt, mult_ctds,
+     &                   mult_ctdtclim, mult_ctdsclim,
      &                   mult_xbt, mult_drift,
      &                   mult_argot, mult_argos,
      &                   mult_scatx, mult_scaty,
@@ -117,12 +118,12 @@ c--   Read the namelist input.
      &                   mult_smooth_ic, mult_smooth_bc,
      &                   whflux0, wsflux0, wtau0,
      &                   wbottomdrag0,
-     &                   watemp0, waqh0, 
+     &                   watemp0, waqh0,
      &                   wprecip0, wswflux0, wswdown0, wwind0,
      &                   wsnowprecip0, wlwflux0, wlwdown0, wevap0,
      &                   wapressure0, wdiffkr0, wkapgm0, wedtau0,
      &                   wmean_hflux, wmean_sflux, wmean_tau,
-     &                   wmean_atemp, wmean_aqh, wmean_precip, 
+     &                   wmean_atemp, wmean_aqh, wmean_precip,
      &                   wmean_swflux, wmean_swdown, wmean_wind,
      &                   wmean_lwflux, wmean_lwdown, wmean_evap,
      &                   wmean_snowprecip, wmean_apressure,
@@ -366,7 +367,7 @@ c--     ... TMI data.
      &                     tmistartdate,    mythid )
 c--     ... SSS data.
         call cal_FullDate( sssstartdate1,   sssstartdate2,
-     &                     sssstartdate,    mythid )     
+     &                     sssstartdate,    mythid )
 c--     ... BP data.
         call cal_FullDate( bpstartdate1,   bpstartdate2,
      &                     bpstartdate,    mythid )
@@ -382,7 +383,7 @@ c--     ... GFO data.
 c--     ... SCAT data.
         call cal_FullDate( scatstartdate1,   scatstartdate2,
      &                     scatxstartdate,    mythid )
-        call cal_FullDate( scatstartdate1,   scatstartdate2,   
+        call cal_FullDate( scatstartdate1,   scatstartdate2,
      &                     scatystartdate,    mythid )
 
         WRITE(msgBuf,'(A)') 'ECCO_READPARMS: end assigning cost dates'

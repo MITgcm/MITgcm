@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final_restore.F,v 1.3 2005/08/05 18:40:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final_restore.F,v 1.4 2007/10/08 23:59:21 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -55,7 +56,7 @@ c
            if ( idivbeg .EQ. 0 ) then
               lastdiva = .TRUE.
               open(unit=76,file='costfinal')
-              read(76,*) fc        
+              read(76,*) fc
               close(76)
            else
               lastdiva = .FALSE.

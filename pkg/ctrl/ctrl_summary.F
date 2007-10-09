@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.3 2003/11/06 22:05:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.4 2007/10/09 00:00:01 jmc Exp $
+C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
@@ -33,7 +34,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid 
+      integer mythid
 
 c     == local variables ==
 

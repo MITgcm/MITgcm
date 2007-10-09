@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.30 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 c     ==================================================================
 c     HEADER AVERAGES
@@ -20,7 +22,7 @@ c     sum1mon - counter for the monthly averaging
 c     dayrec  - number of averaged surface pressure records.
 c     monrec  - number of averaged theta and salinity records.
 
-      common /average_i/ 
+      common /average_i/
      &                   sum1day,sum1mon,sum1year,
      &                   dayrec,monrec,yearrec
       integer sum1day
@@ -47,7 +49,7 @@ c             intantaneous salinities.
 c     psbar - contains the averaged surface pressure field after the call
 c             to subroutine POST_DAILY. Before, it accumulates the
 c             intantaneous surface pressure field.
-c     ubar  - contains the averaged zonal velocity component for the 
+c     ubar  - contains the averaged zonal velocity component for the
 c             whole integration period. Before, it accumulates the
 c             intantaneous field.
 c     vbar  - contains the averaged zonal velocity component for the
@@ -66,7 +68,7 @@ c     sfluxbar  - contains the averaged zonal velocity component for the
 c             whole integration period. Before, it accumulates the
 c             intantaneous field.
 
-      common /averages_r/ 
+      common /averages_r/
      &                    tbar,
      &                    sbar,
      &                    psbar,
@@ -78,11 +80,11 @@ c             intantaneous field.
      &                    tauybar,
      &                    hfluxbar,
      &                    sfluxbar,
-     &                    Slmean, 
+     &                    Slmean,
      &                    Tlmean,
      &                    wlmean,
      &                    Sfmean,
-     &                    Tfmean,                   
+     &                    Tfmean,
      &			  sbar_gen,
      &			  tbar_gen,
      &                    wfmean
@@ -157,7 +159,7 @@ c             intantaneous field.
       _RL   Tlmean
       _RL   Slmean
       _RL   Tfmean
-      _RL   Sfmean        
+      _RL   Sfmean
 #endif
 
 #ifdef ALLOW_DRIFTW_COST_CONTRIBUTION
@@ -172,24 +174,24 @@ c             intantaneous field.
       _RL tauxbar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
       _RL tauybar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
 #else
-      _RL tauxbar 
-      _RL tauybar 
+      _RL tauxbar
+      _RL tauybar
 #endif
 
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
       _RL hfluxbar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
-#else 
+#else
       _RL hfluxbar
 #endif
 
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
-      _RL sfluxbar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)    
-#else 
+      _RL sfluxbar  (1-olx:snx+olx,1-oly:sny+oly,  nsx,nsy)
+#else
       _RL sfluxbar
 #endif
 
 
-      common /averages_c/ 
+      common /averages_c/
      &                    tbarfile,
      &                    sbarfile,
      &                    psbarfile,
@@ -222,14 +224,14 @@ c             intantaneous field.
      &                     transpbar
      &                   , transpobs
      &                   , wtransp
-      _RL transpbar(maxNumDays,nsx,nsy)  
+      _RL transpbar(maxNumDays,nsx,nsy)
       _RL transpobs(maxNumDays)
       _RL wtransp(maxNumDays)
 #endif
 
 c     file precision and field type
 
-      common /prec_type_cost/ 
+      common /prec_type_cost/
      &                        cost_iprec,
      &                        cost_yftype
 
@@ -293,8 +295,8 @@ c     objf_salt0 - Initial conditions Salinity contribution.
 c     objf_sst   - Sea surface temperature contribution.
 c     objf_tmi   - Sea surface temperature contribution.
 c     objf_sss   - Sea surface salinity contribution.
-c     objf_ctdt  - Temperature measurements from Woce CTD 
-c     objf_ctds  - Salinity measurements from Woce CTD 
+c     objf_ctdt  - Temperature measurements from Woce CTD
+c     objf_ctds  - Salinity measurements from Woce CTD
 c     objf_ctdtclim - Temperature measurements from Woce CTD without timetag
 c     objf_ctdsclim - Salinity measurements from Woce CTD without timetag
 c     objf_xbt   - XBT temperature data
@@ -441,8 +443,8 @@ c                  function contributions.
       _RL  objf_salt0smoo(nsx,nsy)
       _RL  objf_sst  (nsx,nsy)
       _RL  objf_tmi  (nsx,nsy)
-      _RL  objf_sss  (nsx,nsy) 
-      _RL  objf_bp   (nsx,nsy) 
+      _RL  objf_sss  (nsx,nsy)
+      _RL  objf_bp   (nsx,nsy)
       _RL  objf_ctdt (nsx,nsy)
       _RL  objf_ctds (nsx,nsy)
       _RL  objf_ctdtclim (nsx,nsy)
@@ -615,8 +617,8 @@ c                  function contributions.
       _RL  num_salt0(nsx,nsy)
       _RL  num_sst  (nsx,nsy)
       _RL  num_tmi  (nsx,nsy)
-      _RL  num_sss  (nsx,nsy) 
-      _RL  num_bp   (nsx,nsy) 
+      _RL  num_sss  (nsx,nsy)
+      _RL  num_bp   (nsx,nsy)
       _RL  num_ctdt (nsx,nsy)
       _RL  num_ctds (nsx,nsy)
       _RL  num_ctdtclim (nsx,nsy)
@@ -843,7 +845,7 @@ c     salterrfile           - representation error due unresolved eddies
 c     temperrfile           - representation error due unresolved eddies
 c     velerrfile            - representation error
 
-      common /ecco_cost_c/ 
+      common /ecco_cost_c/
      &                hflux_errfile,
      &                hfluxm_errfile,
      &                sflux_errfile,
@@ -862,10 +864,10 @@ c     velerrfile            - representation error
      &                ers_errfile,
      &                gfo_errfile,
      &                ctdt_errfile,
-     &                ctds_errfile, 
+     &                ctds_errfile,
      &                drift_errfile,
-     &                udrifterrfile, 
-     &                vdrifterrfile, 
+     &                udrifterrfile,
+     &                vdrifterrfile,
      &                salterrfile,
      &                temperrfile,
      &                velerrfile,
@@ -907,11 +909,11 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) tp_errfile
       character*(MAX_LEN_FNAM) ers_errfile
       character*(MAX_LEN_FNAM) gfo_errfile
-      character*(MAX_LEN_FNAM) ctdt_errfile 
-      character*(MAX_LEN_FNAM) ctds_errfile 
+      character*(MAX_LEN_FNAM) ctdt_errfile
+      character*(MAX_LEN_FNAM) ctds_errfile
       character*(MAX_LEN_FNAM) drift_errfile
       character*(MAX_LEN_FNAM) udrifterrfile
-      character*(MAX_LEN_FNAM) vdrifterrfile      
+      character*(MAX_LEN_FNAM) vdrifterrfile
       character*(MAX_LEN_FNAM) salterrfile
       character*(MAX_LEN_FNAM) temperrfile
       character*(MAX_LEN_FNAM) velerrfile
@@ -962,7 +964,7 @@ c     wctds      - weight for CTD salinity.
 c     wudrift    - weight for mean zonal velocity from drifters.
 c     wvdrift    - weight for mean meridional velocity from drifters.
 
-      common /ecco_cost_weights_r/ 
+      common /ecco_cost_weights_r/
      &                      frame,
      &                      cosphi,
      &                      whflux,wsflux,wtauu,wtauv,
@@ -1052,7 +1054,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       common /ecco_cost_weights_0_r/
      &        whflux0, wsflux0, wtau0,
      &        watemp0, waqh0, wprecip0, wsnowprecip0, wwind0,
-     &        wswflux0, wswdown0, wlwflux0, wlwdown0, 
+     &        wswflux0, wswdown0, wlwflux0, wlwdown0,
      &        wevap0, wapressure0, wrunoff0,
      &        wbottomdrag0,wdiffkr0, wkapgm0, wedtau0
       _RL whflux0
@@ -1077,7 +1079,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
 
       common /ecco_cost_weights_mean_r/
      &        wmean_hflux, wmean_sflux, wmean_tau,
-     &        wmean_atemp, wmean_aqh, 
+     &        wmean_atemp, wmean_aqh,
      &        wmean_precip, wmean_snowprecip, wmean_wind,
      &        wmean_swflux, wmean_swdown, wmean_lwflux, wmean_lwdown,
      &        wmean_evap, wmean_apressure, wmean_runoff
@@ -1096,15 +1098,15 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wmean_apressure
       _RL wmean_runoff
       _RL wmean_wind
-						 
+						
       common /ecco_cost_weights_2_r/
      &                      whflux2,wsflux2,wtauu2,wtauv2
       _RL whflux2 (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wsflux2 (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtauu2  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtauv2  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-						 
-		      
+						
+		
 
 #if (defined (ALLOW_OBCSN_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCSN_CONTROL))
@@ -1147,9 +1149,9 @@ c     tmidat     - reference TMI sea surface temperature data.
 c     sssdat     - reference sea surface temperature data.
 c     bpdat      - bottom pressure from time-varying GRACE.
 c     tauxmask   - mask for reference wind stress data.
-c     tauymask   - mask for reference wind stress data. 
+c     tauymask   - mask for reference wind stress data.
 c     scatxmask  - mask for scat wind stress data.
-c     scatymask  - mask for scat wind stress data. 
+c     scatymask  - mask for scat wind stress data.
 c     sstmask    - mask for reference sea surface temperature data.
 c     tmimask    - mask for reference sea surface temperature data.
 c     sssmask    - mask for reference sea surface temperature data.
@@ -1162,9 +1164,9 @@ c     ersobs     - ERS data.
 c     ersmask    - mask for ERS data.
 c     ctdtobs    - CTD temperature data
 c     ctdsobs    - CTD salinity data
-c     xbtobs     - XBT data 
-c     argot      - ARGO  temperature data 
-c     argos      - ARGO  salt data 
+c     xbtobs     - XBT data
+c     argot      - ARGO  temperature data
+c     argos      - ARGO  salt data
 c     udriftdat  - drifters zonal velocities
 c     vdriftdat  - drifters meridional velocities
 
@@ -1202,7 +1204,7 @@ c     vdriftdat  - drifters meridional velocities
      &                     vdriftdat,
      &                     curmtruobs,
      &                     curmtrvobs
-     
+
       _RL tdat      (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL scatxdat  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL scatydat  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1252,7 +1254,7 @@ c     topexfile     - reference data file for sea surface height data
 c                     (TOPEX/POSEIDON).
 c     ersfile       - reference data file for sea surface height data
 c                     (ERS).
-c ctdtfile, ctdsfile- reference data file for temperature and salinity 
+c ctdtfile, ctdsfile- reference data file for temperature and salinity
 c                     from CTD
 c ctdtclimfile, ctdsclimfile- reference data file for temperature
 c                      and salinity from CTD with out timetag
@@ -1281,7 +1283,7 @@ c     driftfile     - reference data file for drifter's mean velocities
      &                     xbtfile,
      &                     argotfile,
      &                     argosfile,
-     &                     udriftfile, 
+     &                     udriftfile,
      &                     vdriftfile,
      &                     gencost_datafile,
      &                     curmtrufile,
@@ -1309,7 +1311,7 @@ c     driftfile     - reference data file for drifter's mean velocities
       character*(MAX_LEN_FNAM) argofile
       character*(MAX_LEN_FNAM) gencost_datafile(NGENCOST)
       character*(MAX_LEN_FNAM) udriftfile
-      character*(MAX_LEN_FNAM) vdriftfile      
+      character*(MAX_LEN_FNAM) vdriftfile
       character*(MAX_LEN_FNAM) curmtrufile
       character*(MAX_LEN_FNAM) curmtrvfile
 

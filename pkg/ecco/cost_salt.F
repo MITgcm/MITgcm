@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.8 2005/10/15 18:27:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.9 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -64,7 +65,7 @@ c     == local variables ==
       _RL fctile
       _RL fcthread
 
-      _RL cmask (1-olx:snx+olx,1-oly:sny+oly)  
+      _RL cmask (1-olx:snx+olx,1-oly:sny+oly)
       _RL spval
       _RL spmax
 
@@ -77,7 +78,7 @@ c     == local variables ==
 
 #ifdef GENERIC_BAR_MONTH
       integer mrec, nyears, iyear
-#endif      
+#endif
 
       _RL diagnosfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
@@ -162,7 +163,7 @@ c--     Determine the month to be read.
         levmon = (irectmp-1) + levoff
         levmon = mod(levmon-1,12)+1
 
-        call mdsreadfield( sdatfile, cost_iprec, cost_yftype, 
+        call mdsreadfield( sdatfile, cost_iprec, cost_yftype,
      &                     nr, sdat, levmon, mythid)
 
         do bj = jtlo,jthi

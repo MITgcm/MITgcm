@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.23 2007/08/17 21:36:40 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.24 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -246,7 +247,7 @@ c--   Read error information and set up weight matrices.
         ilo = ifnblnk(data_errfile)
         ihi = ilnblnk(data_errfile)
         CALL OPEN_COPY_DATA_FILE(
-     I                          data_errfile(ilo:ihi), 
+     I                          data_errfile(ilo:ihi),
      I                          'ECCO_COST_WEIGHTS',
      O                          gwunit,
      I                          myThid )
@@ -422,7 +423,7 @@ c--           Test for missing values.
             do j = jmin,jmax
              do i = imin,imax
 c--           Test for missing values.
-              if (wsalt(k,bi,bj).eq.0 .and. 
+              if (wsalt(k,bi,bj).eq.0 .and.
      $             wsalt2(i,j,k,bi,bj).eq.0) then
                  wsalt2(i,j,k,bi,bj) = 0. _d 0
               else
@@ -446,7 +447,7 @@ c--           Test for missing values.
             enddo
            enddo
           enddo
-         enddo            
+         enddo
       endif
 #endif
 
@@ -465,7 +466,7 @@ c--           Test for missing values.
             do j = jmin,jmax
              do i = imin,imax
 c--           Test for missing values.
-              if (wtheta(k,bi,bj).eq.0 .and. 
+              if (wtheta(k,bi,bj).eq.0 .and.
      $            wtheta2(i,j,k,bi,bj).eq.0) then
                  wtheta2(i,j,k,bi,bj) = 0. _d 0
               else
@@ -485,15 +486,15 @@ c--           Test for missing values.
              do i = imin,imax
               if (wtheta(k,bi,bj).eq.0 ) then
                  wtheta2(i,j,k,bi,bj) = 0. _d 0
-              else                
-                 wtheta2(i,j,k,bi,bj) = 
+              else
+                 wtheta2(i,j,k,bi,bj) =
      $              wtheta(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
               endif
              enddo
             enddo
            enddo
           enddo
-         enddo            
+         enddo
       endif
 #endif
 
@@ -508,7 +509,7 @@ c--           Test for missing values.
               elseif ( lwthetaLevInUse ) then
                 wsst(i,j,bi,bj) = wthetaLev(i,j,k,bi,bj)
               else
-                wsst(i,j,bi,bj) = 
+                wsst(i,j,bi,bj) =
      &              wtheta(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
               endif
 #endif
@@ -602,18 +603,18 @@ c--           T/P error + 5cm
       endif
 
 c-- overwrite T/P error field, if available:
-      if ( tp_errfile .NE. ' ' ) 
-     &     call mdsreadfield( tp_errfile, cost_iprec, cost_yftype, nnz, 
+      if ( tp_errfile .NE. ' ' )
+     &     call mdsreadfield( tp_errfile, cost_iprec, cost_yftype, nnz,
      &     wtp, irec, mythid )
 
 c-- overwrite ERS error field, if available:
-      if ( ers_errfile .NE. ' ' ) 
-     &     call mdsreadfield( ers_errfile, cost_iprec, cost_yftype, nnz, 
+      if ( ers_errfile .NE. ' ' )
+     &     call mdsreadfield( ers_errfile, cost_iprec, cost_yftype, nnz,
      &     wers, irec, mythid )
 
 c-- overwrite GFO error field, if available:
-      if ( gfo_errfile .NE. ' ' ) 
-     &     call mdsreadfield( gfo_errfile, cost_iprec, cost_yftype, nnz, 
+      if ( gfo_errfile .NE. ' ' )
+     &     call mdsreadfield( gfo_errfile, cost_iprec, cost_yftype, nnz,
      &     wgfo, irec, mythid )
 
          do bj = jtlo,jthi
@@ -622,11 +623,11 @@ c-- overwrite GFO error field, if available:
            do j = jmin,jmax
             do i = imin,imax
              if (maskC(i,j,k,bi,bj) .eq. 0.) then
-              if ( tp_errfile .NE. ' ' ) 
+              if ( tp_errfile .NE. ' ' )
      &               wtp (i,j,bi,bj) = 0. _d 0
-              if ( ers_errfile .NE. ' ' ) 
+              if ( ers_errfile .NE. ' ' )
      &             wers(i,j,bi,bj) = 0. _d 0
-              if ( gfo_errfile .NE. ' ' ) 
+              if ( gfo_errfile .NE. ' ' )
      &             wgfo(i,j,bi,bj) = 0. _d 0
              else
 c-- convert from cm to m and set to 0.1m for missing values.
@@ -679,9 +680,9 @@ c--   Read zonal wind stress variance.
 
       nnz   =   1
       irec  =   1
-      call mdsreadfield( scatx_errfile, cost_iprec, cost_yftype, nnz, 
+      call mdsreadfield( scatx_errfile, cost_iprec, cost_yftype, nnz,
      &                   wscatx, irec, mythid )
-      call mdsreadfield( scaty_errfile, cost_iprec, cost_yftype, nnz, 
+      call mdsreadfield( scaty_errfile, cost_iprec, cost_yftype, nnz,
      &                   wscaty, irec, mythid )
 
       do bj = jtlo,jthi
@@ -815,7 +816,7 @@ ce(   due to Patrick's processing:
 ce)
 
       if ( tauv_errfile .NE. ' ' ) then
-         call mdsreadfield( tauv_errfile, cost_iprec, cost_yftype, nnz, 
+         call mdsreadfield( tauv_errfile, cost_iprec, cost_yftype, nnz,
      &        wtauv, irec, mythid )
       endif
 
@@ -984,7 +985,7 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( aqh_errfile .NE. ' ' ) then
-         call mdsreadfield( aqh_errfile, cost_iprec, cost_yftype, nnz, 
+         call mdsreadfield( aqh_errfile, cost_iprec, cost_yftype, nnz,
      &        waqh, irec, mythid )
       endif
 
@@ -1190,7 +1191,7 @@ c--           Test for missing values.
               endif
 c--           Data are in units of m/s.
               wsnowprecip(i,j,bi,bj) = wsnowprecip(i,j,bi,bj)
-              wsnowprecip(i,j,bi,bj) = 
+              wsnowprecip(i,j,bi,bj) =
      &            max(wsnowprecip(i,j,bi,bj),wsnowprecip0)
      &            *frame(i,j)
             enddo
@@ -1255,7 +1256,7 @@ c--           Test for missing values.
               endif
 c--           Data are in units of m/s.
               wapressure(i,j,bi,bj) = wapressure(i,j,bi,bj)
-              wapressure(i,j,bi,bj) = 
+              wapressure(i,j,bi,bj) =
      &            max(wapressure(i,j,bi,bj),wapressure0)
      &            *frame(i,j)
             enddo
@@ -1344,7 +1345,7 @@ c--           Test for missing values.
 
 #if (defined (ALLOW_KAPGM_COST_CONTRIBUTION) || defined (ALLOW_KAPGM_CONTROL))
       if ( kapgm_errfile .NE. ' ' ) then
-      
+
         call mdsreadfield( kapgm_errfile, cost_iprec, cost_yftype,
      &      Nr, wkapgm2, 1, mythid )
 
@@ -1417,13 +1418,13 @@ c--   Units have to be checked!
                 wtauu(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wtauum(i,j,bi,bj) .ne. 0.) then
-                wtauum(i,j,bi,bj) = 
+                wtauum(i,j,bi,bj) =
      &            1./wtauum(i,j,bi,bj)/wtauum(i,j,bi,bj)
               else
                 wtauum(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wscatx(i,j,bi,bj) .ne. 0.) then
-                wscatx(i,j,bi,bj) = 
+                wscatx(i,j,bi,bj) =
      &            1./wscatx(i,j,bi,bj)/wscatx(i,j,bi,bj)
               else
                 wscatx(i,j,bi,bj) = 0.0 _d 0
@@ -1452,9 +1453,9 @@ c--   Units have to be checked!
                 whflux(i,j,bi,bj) = 0.0 _d 0
               endif
               if (whfluxm(i,j,bi,bj) .ne. 0.) then
-                whfluxm(i,j,bi,bj) = 
+                whfluxm(i,j,bi,bj) =
      &                1./whfluxm(i,j,bi,bj)/whfluxm(i,j,bi,bj)
-              else    
+              else
                 whfluxm(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wsflux(i,j,bi,bj) .ne. 0.) then
@@ -1464,19 +1465,19 @@ c--   Units have to be checked!
                 wsflux(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wsfluxm(i,j,bi,bj) .ne. 0.) then
-                wsfluxm(i,j,bi,bj) = 
+                wsfluxm(i,j,bi,bj) =
      &                1./wsfluxm(i,j,bi,bj)/wsfluxm(i,j,bi,bj)
               else
                 wsfluxm(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wuwind(i,j,bi,bj) .ne. 0.) then
-                wuwind(i,j,bi,bj) = 
+                wuwind(i,j,bi,bj) =
      &                1./wuwind(i,j,bi,bj)/wuwind(i,j,bi,bj)
               else
                 wuwind(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wvwind(i,j,bi,bj) .ne. 0.) then
-                wvwind(i,j,bi,bj) = 
+                wvwind(i,j,bi,bj) =
      &                1./wvwind(i,j,bi,bj)/wvwind(i,j,bi,bj)
               else
                 wvwind(i,j,bi,bj) = 0.0 _d 0
@@ -1553,9 +1554,9 @@ c--   Units have to be checked!
               else
                 wbottomdrag(i,j,bi,bj) = 0.0 _d 0
               endif
-              if (wsfluxmm(bi,bj).ne.0.) 
+              if (wsfluxmm(bi,bj).ne.0.)
      &             wsfluxmm(bi,bj) = 1./wsfluxmm(bi,bj)*wsfluxmm(bi,bj)
-              if (whfluxmm(bi,bj).ne.0.) 
+              if (whfluxmm(bi,bj).ne.0.)
      &             whfluxmm(bi,bj) = 1./whfluxmm(bi,bj)*whfluxmm(bi,bj)
 
 cph(
@@ -1572,7 +1573,7 @@ cph(
                  wsflux2(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wtauu2(i,j,bi,bj) .ne. 0.) then
-                 wtauu2(i,j,bi,bj) = 
+                 wtauu2(i,j,bi,bj) =
      &                1./wtauu2(i,j,bi,bj)/wtauu2(i,j,bi,bj)
               else
                  wtauu2(i,j,bi,bj) = 0.0 _d 0
@@ -1592,7 +1593,7 @@ cph)
             do k = 1,nr
 #ifdef ALLOW_OBCSN_COST_CONTRIBUTION
               if (wobcsn(k,iobcs) .ne. 0.) then
-                 wobcsn(k,iobcs) = 
+                 wobcsn(k,iobcs) =
      &                ratio/wobcsn(k,iobcs)/wobcsn(k,iobcs)
               else
                  wobcsn(k,iobcs) = 0.0 _d 0
@@ -1600,7 +1601,7 @@ cph)
 #endif
 #ifdef ALLOW_OBCSS_COST_CONTRIBUTION
               if (wobcss(k,iobcs) .ne. 0.) then
-                 wobcss(k,iobcs) = 
+                 wobcss(k,iobcs) =
      &                ratio/wobcss(k,iobcs)/wobcss(k,iobcs)
               else
                  wobcss(k,iobcs) = 0.0 _d 0
@@ -1608,7 +1609,7 @@ cph)
 #endif
 #ifdef ALLOW_OBCSW_COST_CONTRIBUTION
               if (wobcsw(k,iobcs) .ne. 0.) then
-                 wobcsw(k,iobcs) = 
+                 wobcsw(k,iobcs) =
      &                ratio/wobcsw(k,iobcs)/wobcsw(k,iobcs)
               else
                  wobcsw(k,iobcs) = 0.0 _d 0
@@ -1616,7 +1617,7 @@ cph)
 #endif
 #ifdef ALLOW_OBCSE_COST_CONTRIBUTION
               if (wobcse(k,iobcs) .ne. 0.) then
-                 wobcse(k,iobcs) = 
+                 wobcse(k,iobcs) =
      &                ratio/wobcse(k,iobcs)/wobcse(k,iobcs)
               else
                  wobcse(k,iobcs) = 0.0 _d 0
@@ -1660,7 +1661,7 @@ cph)
                 else
                    wdiffkr2(i,j,k,bi,bj) = 0.0 _d 0
                 endif
-                wdiffkrFld(i,j,k,bi,bj) = wdiffkr2(i,j,k,bi,bj) 
+                wdiffkrFld(i,j,k,bi,bj) = wdiffkr2(i,j,k,bi,bj)
 c
                 if (wkapgm2(i,j,k,bi,bj) .ne. 0.) then
                    wkapgm2(i,j,k,bi,bj) = frame(i,j)/
@@ -1668,7 +1669,7 @@ c
                 else
                    wkapgm2(i,j,k,bi,bj) = 0.0 _d 0
                 endif
-                wkapgmFld(i,j,k,bi,bj) = wkapgm2(i,j,k,bi,bj) 
+                wkapgmFld(i,j,k,bi,bj) = wkapgm2(i,j,k,bi,bj)
 c
                 if (wedtaux2(i,j,k,bi,bj) .ne. 0.) then
                    wedtaux2(i,j,k,bi,bj) = frame(i,j)/
@@ -1676,7 +1677,7 @@ c
                 else
                    wedtaux2(i,j,k,bi,bj) = 0.0 _d 0
                 endif
-                wedtauxFld(i,j,k,bi,bj) = wedtaux2(i,j,k,bi,bj) 
+                wedtauxFld(i,j,k,bi,bj) = wedtaux2(i,j,k,bi,bj)
 c
                 if (wedtauy2(i,j,k,bi,bj) .ne. 0.) then
                    wedtauy2(i,j,k,bi,bj) = frame(i,j)/
@@ -1684,7 +1685,7 @@ c
                 else
                    wedtauy2(i,j,k,bi,bj) = 0.0 _d 0
                 endif
-                wedtauyFld(i,j,k,bi,bj) = wedtauy2(i,j,k,bi,bj) 
+                wedtauyFld(i,j,k,bi,bj) = wedtauy2(i,j,k,bi,bj)
               enddo
             enddo
           enddo
@@ -1694,11 +1695,11 @@ c
 c
 c     write masks and weights to files to be read by a master process
 c
-      call active_write_xyz_loc( 'maskCtrlC', maskC, 
+      call active_write_xyz_loc( 'maskCtrlC', maskC,
      &     1, 0, mythid, dummy)
-      call active_write_xyz_loc( 'maskCtrlW', maskW, 
+      call active_write_xyz_loc( 'maskCtrlW', maskW,
      &     1, 0, mythid, dummy)
-      call active_write_xyz_loc( 'maskCtrlS', maskS, 
+      call active_write_xyz_loc( 'maskCtrlS', maskS,
      &     1, 0, mythid, dummy)
 
 #if   (defined (ALLOW_HFLUX_COST_CONTRIBUTION) || defined (ALLOW_HFLUX_CONTROL))

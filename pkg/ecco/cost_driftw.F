@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_driftw.F,v 1.4 2006/10/26 00:34:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_driftw.F,v 1.5 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -97,30 +98,30 @@ c--   Read tiled data.
         write(fnamew(1:80),'(2a,i10.10)')
      &    wbarfile(1:ilw),'.',optimcycle
       endif
-      
-      if (nmonsrec.lt.12) then 
+
+      if (nmonsrec.lt.12) then
         print*
-        print*,' cost_Driftw: assimilation period smaller' 
+        print*,' cost_Driftw: assimilation period smaller'
         print*,'             than 1 year, no drift computed.'
         print*
         stop   '  ... stopped in cost_Driftw.'
       endif
 
       fcthread_wdrift = 0. _d 0
-      
+
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do k = 1,nr     
+          do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
                 wfmean(i,j,k,bi,bj) = 0.0
                 wlmean(i,j,k,bi,bj) = 0.0
               enddo
-            enddo                
+            enddo
           enddo
         enddo
       enddo
-      
+
       nf = 0
       nl = 0
 
@@ -132,23 +133,23 @@ c--     Read time averages and the monthly mean data.
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_wbar_mean_dummy )
-     
+
         nf = nf + 1
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do k = 1,nr     
+            do k = 1,nr
               do j = jmin,jmax
                 do i = imin,imax
-                  wfmean(i,j,k,bi,bj) = wfmean(i,j,k,bi,bj) + 
+                  wfmean(i,j,k,bi,bj) = wfmean(i,j,k,bi,bj) +
      &                  wbar(i,j,k,bi,bj)
                 enddo
-              enddo                
+              enddo
             enddo
           enddo
         enddo
-        
+
       enddo
-        
+
       do irec = nmonsrec-12+1, nmonsrec
 
 c--     Read time averages and the monthly mean data.
@@ -156,31 +157,31 @@ c--     Read time averages and the monthly mean data.
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_wbar_mean_dummy )
-     
-        nl = nl + 1  
-     
+
+        nl = nl + 1
+
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do k = 1,nr     
+            do k = 1,nr
               do j = jmin,jmax
                 do i = imin,imax
-                  wlmean(i,j,k,bi,bj) = wlmean(i,j,k,bi,bj) + 
+                  wlmean(i,j,k,bi,bj) = wlmean(i,j,k,bi,bj) +
      &                  wbar(i,j,k,bi,bj)
                 enddo
-              enddo                
+              enddo
             enddo
           enddo
         enddo
-      
+
       enddo
- 
-        
+
+
       do bj = jtlo,jthi
         do bi = itlo,ithi
 
 c--       Loop over the model layers
           fctilew = 0. _d 0
-          
+
           do k = 1,nr
 
 c--         Compute model misfit and cost function term for

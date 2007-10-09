@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.6 2006/04/19 19:41:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.7 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -111,10 +112,10 @@ c--     Read time averages and the monthly mean data.
      &                        optimcycle, mythid,
      &                        xx_taux_mean_dummy )
 
-        call active_read_xy( fnametauy, tauybar, irec, 
+        call active_read_xy( fnametauy, tauybar, irec,
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
-     &                        xx_tauy_mean_dummy )    
+     &                        xx_tauy_mean_dummy )
 
 
         do bj = jtlo,jthi
@@ -149,17 +150,17 @@ c--         Compute cost rel. to monthly SCAT field.
             call cost_ReadscatYFields( irec, mythid )
 
             do j = jmin,jmax
-              do i = imin,imax 
+              do i = imin,imax
                 if (maskS(i,j,k,bi,bj) .ne. 0.) then
                    fctile_scaty = fctile_scaty +
      &                  wscaty(i,j,bi,bj)*cosphi(i,j,bi,bj)*
      &                  ( (tauybar(i,j,bi,bj)-scatydat(i,j,bi,bj))*
      &                    (tauybar(i,j,bi,bj)-scatydat(i,j,bi,bj))*
-     &                           scatymask(i,j,bi,bj) )  
+     &                           scatymask(i,j,bi,bj) )
                    if ( wscaty(i,j,bi,bj)*cosphi(i,j,bi,bj)*
      &                  scatymask(i,j,bi,bj) .ne. 0. )
      &                  num_scaty(bi,bj)  = num_scaty(bi,bj) + 1. _d 0
-                endif       
+                endif
               enddo
             enddo
 

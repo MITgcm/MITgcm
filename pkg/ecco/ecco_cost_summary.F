@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.2 2006/02/15 20:01:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_summary.F,v 1.3 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -33,7 +34,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid 
+      integer mythid
 
 c     == local variables ==
 
@@ -194,7 +195,7 @@ c     == end of interface ==
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)     
+     &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
      &' '
       call print_message( msgbuf, standardmessageunit,

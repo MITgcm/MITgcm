@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_xbt.F,v 1.6 2005/03/29 00:03:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_xbt.F,v 1.7 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -54,16 +55,16 @@ c     == local variables ==
       integer nrec
       integer irec
       integer ilu
-      
+
       _RL fctile_xbt
       _RL fcthread_xbt
       _RL www (1-olx:snx+olx,1-oly:sny+oly)
       _RL tmpobs (1-olx:snx+olx,1-oly:sny+oly)
-      _RL cmask (1-olx:snx+olx,1-oly:sny+oly)  
+      _RL cmask (1-olx:snx+olx,1-oly:sny+oly)
       _RL spval
       _RL spmax
       _RL ztop,rl_35,rl_0
-      
+
       character*(80) fnametheta
 
       logical doglobalread
@@ -96,7 +97,7 @@ c     == end of interface ==
       jmax = sny
       imin = 1
       imax = snx
-      
+
       spval = -1.8
       spmax = 40.
       ztop  = -.981*1.027
@@ -106,15 +107,15 @@ c     == end of interface ==
 c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
-      
+
 #ifdef ALLOW_XBT_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilu=ilnblnk( tbarfile )
-        write(fnametheta(1:80),'(2a,i10.10)') 
+        write(fnametheta(1:80),'(2a,i10.10)')
      &       tbarfile(1:ilu),'.',optimcycle
       endif
-      
+
       fcthread_xbt = 0. _d 0
 
 cnew(
@@ -130,12 +131,12 @@ c--     Read time averages and the monthly mean data.
      &          doglobalread, ladinit,
      &          optimcycle, mythid
      &   , xx_tbar_mean_dummy )
-  
+
 cnew(
         iyear = mody + INT((modm-1+irec-1)/12)
         imonth = 1 + MOD(modm-1+irec-1,12)
         il=ilnblnk(xbtfile)
-        write(fnametmp(1:80),'(2a,i4)') 
+        write(fnametmp(1:80),'(2a,i4)')
      &       xbtfile(1:il), '_', iyear
         inquire( file=fnametmp, exist=exst )
         if (.NOT. exst) then
@@ -173,19 +174,19 @@ cph               to make it independnet of Nr:
 cph
 cph               if ( rC(K) .GT. -1000. ) then
 cph)
-                  
+
                 enddo
               enddo
-              
+
               do j = jmin,jmax
                 do i = imin,imax
                   if ( _hFacC(i,j,k,bi,bj) .ne. 0. .AND.
      &                 _hFacC(i,j,13,bi,bj) .ne. 0. ) then
                     tmpobs(i,j) = SW_PTMP(rl_35,
-     $                   xbtobs(i,j,k,bi,bj),ztop*rc(k),rl_0) 
+     $                   xbtobs(i,j,k,bi,bj),ztop*rc(k),rl_0)
 c--               The array ctdtobs contains CTD temperature.
 
-                    fctile_xbt = fctile_xbt + 
+                    fctile_xbt = fctile_xbt +
      &                   (wtheta2(i,j,k,bi,bj)*cmask(i,j))*
      &                   (tbar(i,j,k,bi,bj)-tmpobs(i,j))*
      &                   (tbar(i,j,k,bi,bj)-tmpobs(i,j))
@@ -198,7 +199,7 @@ c--         End of loop over layers.
             enddo
 
             fcthread_xbt    = fcthread_xbt    + fctile_xbt
-            objf_xbt(bi,bj) = objf_xbt(bi,bj) + fctile_xbt   
+            objf_xbt(bi,bj) = objf_xbt(bi,bj) + fctile_xbt
 
 #ifdef ECCO_VERBOSE
             write(msgbuf,'(a)') ' '
@@ -246,7 +247,7 @@ c--   End of second loop over records.
 #else
 c--   Do not enter the calculation of the XBT temperature contribution
 c--   to the final cost function.
-      
+
       fctile_xbt   = 0. _d 0
       fcthread_xbt = 0. _d 0
 

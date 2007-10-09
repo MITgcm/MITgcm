@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.10 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -8,7 +10,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 c     *=================================================================
-c     | SUBROUTINE CTRL_MAP_FORCING                              
+c     | SUBROUTINE CTRL_MAP_FORCING
 c     | Add the surface flux anomalies of the control vector
 c     | to the model flux fields and update the tile halos.
 c     | The control vector is defined in the header file "ctrl.h".

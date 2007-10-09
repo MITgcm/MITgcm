@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final_store.F,v 1.2 2003/03/05 23:39:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final_store.F,v 1.3 2007/10/08 23:59:21 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -41,9 +42,9 @@ c--   Each process has calculated the global part for itself.
       lastdiva = .FALSE.
 
       IF (myProcId .eq. 0) THEN
-         _BEGIN_MASTER( mythid )    
+         _BEGIN_MASTER( mythid )
            open(unit=76,file='costfinal')
-           write(76,*) fc        
+           write(76,*) fc
            close(76)
          _END_MASTER( mythid )
       ENDIF

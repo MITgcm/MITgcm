@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.11 2007/09/20 22:01:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.12 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -55,7 +56,7 @@ c     == local variables ==
 c     == end of interface ==
 
 
-#ifdef ALLOW_SST_COST_CONTRIBUTION 
+#ifdef ALLOW_SST_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_sst'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
@@ -69,14 +70,14 @@ c     == end of interface ==
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
      &     nnzobs, sstdatfile, sstdat, mult_sst,
      &     nmonsrec, modelstartdate, localperiod,
-     &     maskC, wsst, 
+     &     maskC, wsst,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_sst, num_sst,
      &     myiter, mytime, mythid )
 cph      call cost_sst   ( myiter, mytime, mythid )
 #endif
 
-#ifdef ALLOW_BP_COST_CONTRIBUTION 
+#ifdef ALLOW_BP_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_bp'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
@@ -90,7 +91,7 @@ cph      call cost_sst   ( myiter, mytime, mythid )
      &     nnzbar, bpbarfile, bpbar, xx_bpbar_mean_dummy,
      &     nnzobs, bpdatfile, bpdat, mult_bp,
      &     nmonsrec, modelstartdate, localperiod,
-     &     maskC, wbp, 
+     &     maskC, wbp,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_bp, num_bp,
      &     myiter, mytime, mythid )
@@ -115,9 +116,9 @@ cph      call cost_sst   ( myiter, mytime, mythid )
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
       call cost_xbt   ( myiter, mytime, mythid )
-#endif 
+#endif
 
-#ifdef ALLOW_TMI_SST_COST_CONTRIBUTION 
+#ifdef ALLOW_TMI_SST_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_tmi'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
@@ -131,7 +132,7 @@ cph      call cost_sst   ( myiter, mytime, mythid )
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
      &     nnzobs, tmidatfile, tmidat, mult_tmi,
      &     nmonsrec, tmistartdate, localperiod,
-     &     maskC, wsst, 
+     &     maskC, wsst,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_tmi, num_tmi,
      &     myiter, mytime, mythid )
@@ -152,7 +153,7 @@ cph      call cost_tmi( myiter, mytime, mythid )
      &     nnzbar, sbarfile, sbar, xx_sbar_mean_dummy,
      &     nnzobs, sssdatfile, sssdat,  mult_sss,
      &     nmonsrec, modelstartdate, localperiod,
-     &     maskC, wsss, 
+     &     maskC, wsss,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_sss, num_sss,
      &     myiter, mytime, mythid )

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.8 2007/06/20 19:37:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.9 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -18,7 +19,7 @@ C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_forcing_gen.F,v 1.8 2007/06/20 
      O                       objf_gen_anom,
      O                       objf_gen_mean,
      O                       objf_gen_smoo,
-     I                       xx_gen_remo_intercept, 
+     I                       xx_gen_remo_intercept,
      I                       xx_gen_remo_slope,
      I                       genmask,
      I                       mythid
@@ -125,7 +126,7 @@ c     Number of records to be used.
 
       if (optimcycle .ge. 0) then
         ilfld=ilnblnk( xx_gen_file )
-        write(fnamefld(1:80),'(2a,i10.10)') 
+        write(fnamefld(1:80),'(2a,i10.10)')
      &       xx_gen_file(1:ilfld),'.',optimcycle
       endif
 
@@ -149,7 +150,7 @@ c--   >>> Loop 1 to compute mean forcing:
 #ifndef ALLOW_SMOOTH_CORREL2D
       do irec = 1,nrec
 
-        call active_read_xy( 
+        call active_read_xy(
      &        fnamefld, tmpfld2d, irec, doglobalread,
      &        ladinit, optimcycle, mythid, xx_gen_dummy )
 
@@ -198,7 +199,7 @@ c--     Determine the weights to be used.
 c--   >>> Loop 2 over records.
       do irec = 1,nrec
 
-        call active_read_xy( 
+        call active_read_xy(
      &        fnamefld, tmpfld2d, irec, doglobalread,
      &        ladinit, optimcycle, mythid, xx_gen_dummy )
 
@@ -226,7 +227,7 @@ c--         Determine the weights to be used.
                   fctile = fctile + tmpx*tmpx
 #endif
                   if ( wgen(i,j,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
-     &                 num_gen_anom(bi,bj) = num_gen_anom(bi,bj) 
+     &                 num_gen_anom(bi,bj) = num_gen_anom(bi,bj)
      &                 + 1. _d 0
                 endif
               enddo
@@ -246,7 +247,7 @@ c--   End of loop over records.
 c--   >>> Loop 2 over records.
       do irec = 1,nrec
 
-        call active_read_xy( 
+        call active_read_xy(
      &        fnamefld, tmpfld2d, irec, doglobalread,
      &        ladinit, optimcycle, mythid, xx_gen_dummy )
 
@@ -262,7 +263,7 @@ c--         Determine the weights to be used.
             do j = jmin,jmax
               do i = imin,imax
                 if (genmask(i,j,kk,bi,bj) .ne. 0.) then
-                  tmpx = 
+                  tmpx =
      &                 ( tmpfld2d(i+2,j,bi,bj)-tmpfld2d(i+1,j,bi,bj) )
      &                   *maskW(i+1,j,kk,bi,bj)*maskW(i+2,j,kk,bi,bj)
      &               + ( tmpfld2d(i+1,j,bi,bj)-tmpfld2d(i,j,bi,bj) )
@@ -278,7 +279,7 @@ c--         Determine the weights to be used.
      *                 *0.0161*lengthscale/4.0
      &                 *tmpx*tmpx
                   if ( wgen(i,j,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
-     &                 num_gen_smoo(bi,bj) = num_gen_smoo(bi,bj) 
+     &                 num_gen_smoo(bi,bj) = num_gen_smoo(bi,bj)
      &                 + 1. _d 0
                 endif
               enddo

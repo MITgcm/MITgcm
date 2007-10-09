@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.12 2006/10/27 05:16:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.13 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -58,8 +59,8 @@ c--   Evaluate the individual cost function contributions.
 c--   Heat flux contribution to the cost function.
       startrec = ncvarrecstart(3)
       endrec   = ncvarrecsend(3)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_hflux_file, xx_hflux_dummy, xx_hfluxperiod,
      &     wmean_hflux, whflux,
      &     num_hflux, num_hfluxm,
@@ -71,8 +72,8 @@ c--   Heat flux contribution to the cost function.
 c--   Atmos. temp. contribution to the cost function.
       startrec = ncvarrecstart(7)
       endrec   = ncvarrecsend(7)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_atemp_file, xx_atemp_dummy, xx_atempperiod,
      &     wmean_atemp, watemp,
      &     num_atemp, num_atempm,
@@ -86,8 +87,8 @@ c--   Atmos. temp. contribution to the cost function.
 c--   Salt flux contribution to the cost function.
       startrec = ncvarrecstart(4)
       endrec   = ncvarrecsend(4)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_sflux_file, xx_sflux_dummy, xx_sfluxperiod,
      &     wmean_sflux, wsflux,
      &     num_sflux, num_sfluxm,
@@ -99,8 +100,8 @@ c--   Salt flux contribution to the cost function.
 c--   Specific humidity contribution to the cost function.
       startrec = ncvarrecstart(8)
       endrec   = ncvarrecsend(8)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_aqh_file, xx_aqh_dummy, xx_aqhperiod,
      &     wmean_aqh, waqh,
      &     num_aqh, num_aqhm,
@@ -114,8 +115,8 @@ c--   Specific humidity contribution to the cost function.
 c--   Zonal wind stress contribution to the cost function.
       startrec = ncvarrecstart(5)
       endrec   = ncvarrecsend(5)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_tauu_file, xx_tauu_dummy, xx_tauuperiod,
      &     wmean_tau, wtauu,
      &     num_tauu, num_tauum,
@@ -127,8 +128,8 @@ c--   Zonal wind stress contribution to the cost function.
 c--   Zonal wind speed contribution to the cost function.
       startrec = ncvarrecstart(9)
       endrec   = ncvarrecsend(9)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_uwind_file, xx_uwind_dummy, xx_uwindperiod,
      &     wmean_wind, wuwind,
      &     num_uwind, num_uwindm,
@@ -142,8 +143,8 @@ c--   Zonal wind speed contribution to the cost function.
 c--   Meridional wind stress contribution to the cost function.
       startrec = ncvarrecstart(6)
       endrec   = ncvarrecsend(6)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_tauv_file, xx_tauv_dummy, xx_tauvperiod,
      &     wmean_tau, wtauv,
      &     num_tauv, num_tauvm,
@@ -155,8 +156,8 @@ c--   Meridional wind stress contribution to the cost function.
 c--   Meridional wind speed contribution to the cost function.
       startrec = ncvarrecstart(10)
       endrec   = ncvarrecsend(10)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_vwind_file, xx_vwind_dummy, xx_vwindperiod,
      &     wmean_wind, wvwind,
      &     num_vwind, num_vwindm,
@@ -170,8 +171,8 @@ c--   Meridional wind speed contribution to the cost function.
 c--   Atmos. precip. contribution to the cost function.
       startrec = ncvarrecstart(32)
       endrec   = ncvarrecsend(32)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_precip_file, xx_precip_dummy, xx_precipperiod,
      &     wmean_precip, wprecip,
      &     num_precip, num_precipm,
@@ -185,8 +186,8 @@ c--   Atmos. precip. contribution to the cost function.
 c--   Atmos. swflux. contribution to the cost function.
       startrec = ncvarrecstart(33)
       endrec   = ncvarrecsend(33)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_swflux_file, xx_swflux_dummy, xx_swfluxperiod,
      &     wmean_swflux, wswflux,
      &     num_swflux, num_swfluxm,
@@ -200,8 +201,8 @@ c--   Atmos. swflux. contribution to the cost function.
 c--   Atmos. swdown. contribution to the cost function.
       startrec = ncvarrecstart(34)
       endrec   = ncvarrecsend(34)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_swdown_file, xx_swdown_dummy, xx_swdownperiod,
      &     wmean_swdown, wswdown,
      &     num_swdown, num_swdownm,
@@ -215,8 +216,8 @@ c--   Atmos. swdown. contribution to the cost function.
 c--   Atmos. lwflux. contribution to the cost function.
       startrec = ncvarrecstart(35)
       endrec   = ncvarrecsend(35)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_lwflux_file, xx_lwflux_dummy, xx_lwfluxperiod,
      &     wmean_lwflux, wlwflux,
      &     num_lwflux, num_lwfluxm,
@@ -230,8 +231,8 @@ c--   Atmos. lwflux. contribution to the cost function.
 c--   Atmos. lwdown. contribution to the cost function.
       startrec = ncvarrecstart(36)
       endrec   = ncvarrecsend(36)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_lwdown_file, xx_lwdown_dummy, xx_lwdownperiod,
      &     wmean_lwdown, wlwdown,
      &     num_lwdown, num_lwdownm,
@@ -245,8 +246,8 @@ c--   Atmos. lwdown. contribution to the cost function.
 c--   Atmos. evap. contribution to the cost function.
       startrec = ncvarrecstart(36)
       endrec   = ncvarrecsend(36)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_evap_file, xx_evap_dummy, xx_evapperiod,
      &     wmean_evap, wevap,
      &     num_evap, num_evapm,
@@ -260,8 +261,8 @@ c--   Atmos. evap. contribution to the cost function.
 c--   Atmos. snowprecip. contribution to the cost function.
       startrec = ncvarrecstart(36)
       endrec   = ncvarrecsend(36)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_snowprecip_file, xx_snowprecip_dummy, xx_snowprecipperiod,
      &     wmean_snowprecip, wsnowprecip,
      &     num_snowprecip, num_snowprecipm,
@@ -275,8 +276,8 @@ c--   Atmos. snowprecip. contribution to the cost function.
 c--   Atmos. apressure. contribution to the cost function.
       startrec = ncvarrecstart(36)
       endrec   = ncvarrecsend(36)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_apressure_file, xx_apressure_dummy, xx_apressureperiod,
      &     wmean_apressure, wapressure,
      &     num_apressure, num_apressurem,
@@ -290,8 +291,8 @@ c--   Atmos. apressure. contribution to the cost function.
 c--   Atmos. runoff. contribution to the cost function.
       startrec = ncvarrecstart(36)
       endrec   = ncvarrecsend(36)
-      call cost_forcing_gen ( 
-     &     myiter, mytime, startrec, endrec, 
+      call cost_forcing_gen (
+     &     myiter, mytime, startrec, endrec,
      &     xx_runoff_file, xx_runoff_dummy, xx_runoffperiod,
      &     wmean_runoff, wrunoff,
      &     num_runoff, num_runoffm,

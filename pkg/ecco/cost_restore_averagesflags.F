@@ -1,8 +1,10 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_restore_averagesflags.F,v 1.3 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
       subroutine cost_restore_averagesflags(
-     &           lcostrestart, first, last, 
+     &           lcostrestart, first, last,
      &           sum1day, dayrec, restartdaydate,
      &           sum1mon, monrec, restartmondate,
      &           sum1year,yearrec, restartyeardate,
@@ -40,7 +42,7 @@ c     == routine arguments ==
       IF (myProcId .eq. 0) THEN
          _BEGIN_MASTER( mythid )
          open(unit=76,file='costaveragesflags')
-         read(76,*) 
+         read(76,*)
      &        sum1day, dayrec, sum1mon, monrec, sum1year,yearrec,
      &        restartdaydate, restartmondate, restartyeardate
          close(76)

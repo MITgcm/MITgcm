@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_yz.F,v 1.12 2007/10/09 00:00:01 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -174,7 +176,7 @@ cgg      And now back-calculate what iobcs should be.
             read(cunit) filej
             read(cunit) filei
             do k = 1, Nr
-               cbuffindex = nwetglobal(k,iobcs) 
+               cbuffindex = nwetglobal(k,iobcs)
                if ( cbuffindex .gt. 0 ) then
                   read(cunit) filencbuffindex
                   if (filencbuffindex .NE. cbuffindex) then
@@ -201,10 +203,10 @@ cgg      And now back-calculate what iobcs should be.
                     kk=int((i-1)*nr*sny+(k-1)*sny+j-1)/(snx*sny)+1
                     if ( globmskyz(bi,ip,j,bj,jp,k,iobcs) .ne. 0. ) then
                        cbuffindex = cbuffindex + 1
-                       globfld3d(ii,bi,ip,jj,bj,jp,kk) = 
+                       globfld3d(ii,bi,ip,jj,bj,jp,kk) =
      &                      cbuff(cbuffindex)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-                       globfld3d(ii,bi,ip,jj,bj,jp,kk) = 
+                       globfld3d(ii,bi,ip,jj,bj,jp,kk) =
      &                      globfld3d(ii,bi,ip,jj,bj,jp,kk)/
 # ifdef CTRL_UNPACK_PRECISE
      &                      sqrt(weightfldyz(bi,ip,j,bj,jp,k,iobcs))
@@ -248,7 +250,7 @@ c     -- end of irec loop --
          read(cunit) filej
          read(cunit) filei
          do k = 1, Nr
-            cbuffindex = nwetglobal(k,iobcs) 
+            cbuffindex = nwetglobal(k,iobcs)
             if ( cbuffindex .gt. 0 ) then
                read(cunit) filencbuffindex
                if (filencbuffindex .NE. cbuffindex) then
@@ -274,7 +276,7 @@ c     -- end of irec loop --
                      cbuffindex = cbuffindex + 1
                      globfldyz(bi,ip,j,bj,jp,k) = cbuff(cbuffindex)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-                     globfldyz(bi,ip,j,bj,jp,k) = 
+                     globfldyz(bi,ip,j,bj,jp,k) =
      &                    globfldyz(bi,ip,j,bj,jp,k)/
 # ifdef CTRL_UNPACK_PRECISE
      &                    sqrt(weightfldyz(bi,ip,j,bj,jp,k,iobcs))
@@ -293,7 +295,7 @@ c     -- end of irec loop --
 c
 c     -- end of k loop
          enddo
-             
+
          call MDSWRITEFIELD_YZ_GL( fname, ctrlprec, 'RL',
      &                             Nr, globfldyz, irec,
      &                             optimcycle, mythid)

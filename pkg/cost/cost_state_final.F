@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_state_final.F,v 1.5 2007/10/08 23:59:21 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -47,5 +49,5 @@ cph      _GLOBAL_SUM_R8( fc , myThid )
 cph      print *, 'fc for admtlm test at 83,33 : ', fc
 
 #endif
-      
+
       end

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.24 2007/06/21 04:06:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.25 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -10,8 +11,8 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 c     *=================================================================
 c     | SUBROUTINE ctrl_map_ini
-c     | Add the temperature, salinity, and diffusivity parts of the 
-c     | control vector to the model state and update the tile halos. 
+c     | Add the temperature, salinity, and diffusivity parts of the
+c     | control vector to the model state and update the tile halos.
 c     | The control vector is defined in the header file "ctrl.h".
 c     *=================================================================
 C     \ev
@@ -116,8 +117,8 @@ c--   Temperature field.
                 theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
 #endif
-                if(theta(i,j,k,bi,bj).lt.-2.0) 
-     &               theta(i,j,k,bi,bj)= -2.0 
+                if(theta(i,j,k,bi,bj).lt.-2.0)
+     &               theta(i,j,k,bi,bj)= -2.0
               enddo
             enddo
           enddo
@@ -200,7 +201,7 @@ c--   sst0.
           do j = jmin,jmax
             do i = imin,imax
 cph              sst(i,j,bi,bj) = sst(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
-              theta(i,j,1,bi,bj) = theta(i,j,1,bi,bj) 
+              theta(i,j,1,bi,bj) = theta(i,j,1,bi,bj)
      &                             + tmpfld2d(i,j,bi,bj)
             enddo
           enddo
@@ -341,7 +342,7 @@ c--   bottom drag
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              bottomdragfld(i,j,bi,bj) = bottomdragfld(i,j,bi,bj) 
+              bottomdragfld(i,j,bi,bj) = bottomdragfld(i,j,bi,bj)
      &                                   + tmpfld2d(i,j,bi,bj)
             enddo
           enddo
@@ -463,7 +464,7 @@ c--   initial Eta.
               etaN(i,j,bi,bj) = etaN(i,j,bi,bj) +
      &                              fac*xx_etan(i,j,bi,bj)
 #else
-              etaN(i,j,bi,bj) = etaN(i,j,bi,bj) + 
+              etaN(i,j,bi,bj) = etaN(i,j,bi,bj) +
      &                              fac*tmpfld2d(i,j,bi,bj)
 #endif
             enddo
@@ -484,8 +485,8 @@ c--   SST relaxation coefficient.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              lambdaThetaClimRelax(i,j,bi,bj) = 
-     &              lambdaThetaClimRelax(i,j,bi,bj) 
+              lambdaThetaClimRelax(i,j,bi,bj) =
+     &              lambdaThetaClimRelax(i,j,bi,bj)
      &              + tmpfld2d(i,j,bi,bj)
             enddo
           enddo
@@ -505,8 +506,8 @@ c--   SSS relaxation coefficient.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              lambdaSaltClimRelax(i,j,bi,bj) = 
-     &              lambdaSaltClimRelax(i,j,bi,bj) 
+              lambdaSaltClimRelax(i,j,bi,bj) =
+     &              lambdaSaltClimRelax(i,j,bi,bj)
      &              + tmpfld2d(i,j,bi,bj)
             enddo
           enddo

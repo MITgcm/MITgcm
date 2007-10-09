@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.6 2003/10/10 22:43:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.7 2007/10/08 23:59:21 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

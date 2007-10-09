@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.8 2005/10/15 18:27:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta.F,v 1.9 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -64,7 +65,7 @@ c     == local variables ==
       _RL fctile
       _RL fcthread
 
-      _RL cmask (1-olx:snx+olx,1-oly:sny+oly)  
+      _RL cmask (1-olx:snx+olx,1-oly:sny+oly)
       _RL spval
       _RL spmax
 
@@ -76,10 +77,10 @@ c     == local variables ==
       character*(MAX_LEN_MBUF) msgbuf
 #ifdef GENERIC_BAR_MONTH
       integer mrec, nyears, iyear
-#endif      
+#endif
 
       _RL diagnosfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -161,7 +162,7 @@ c--     Determine the month to be read.
         levmon = (irectmp-1) + levoff
         levmon = mod(levmon-1,12)+1
 
-        call mdsreadfield( tdatfile, cost_iprec, cost_yftype, 
+        call mdsreadfield( tdatfile, cost_iprec, cost_yftype,
      &                     nr, tdat, levmon, mythid)
 
         do bj = jtlo,jthi
@@ -196,7 +197,7 @@ c             the temperature field.
      &                    (tbar(i,j,k,bi,bj) - tdat(i,j,k,bi,bj)) )
                      if ( wthetaLev(i,j,k,bi,bj)*cmask(i,j) .ne. 0. )
      &                    num_temp(bi,bj) = num_temp(bi,bj) + 1. _d 0
-                     diagnosfld3d(i,j,k,bi,bj) = 
+                     diagnosfld3d(i,j,k,bi,bj) =
      &                    (wthetaLev(i,j,k,bi,bj)*cmask(i,j)*
      &                    (tbar(i,j,k,bi,bj) - tdat(i,j,k,bi,bj))*
      &                    (tbar(i,j,k,bi,bj) - tdat(i,j,k,bi,bj)) )

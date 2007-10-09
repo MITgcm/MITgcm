@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.6 2006/03/29 21:16:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.7 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -68,7 +69,7 @@ cnew(
 cnew)
 
 c     == external functions ==
- 
+
       integer  ilnblnk
       external ilnblnk
 
@@ -84,7 +85,7 @@ c     == end of interface ==
       imax = snx
 
       factor = 0.01
-      spval = -9990. 
+      spval = -9990.
 
 cnew(
       daytime = FLOAT(secondsperday*(irec-1)) + modelstart
@@ -114,11 +115,11 @@ cnew(
          write(fnametmp(1:80),'(a)') ersfile(1:il)
          sshrec = irec
       endif
- 
+
 cnew)
 
 
-      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, ersobs, 
+      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, ersobs,
      &                   sshrec, mythid )
 
 
@@ -146,14 +147,14 @@ cph               to make it independnet of Nr:
 cph
 cph               if ( rC(K) .GT. -1000. ) then
 cph)
-c             set tpmask=0 in areas shallower than 1000m 
+c             set tpmask=0 in areas shallower than 1000m
               if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
                 ersmask(i,j,bi,bj) = 0. _d 0
               endif
 
               ersmask(i,j,bi,bj) = ersmask(i,j,bi,bj)*frame(i,j)
               ersobs(i,j,bi,bj)  = ersmask(i,j,bi,bj)*factor*
-     &             ( ersobs(i,j,bi,bj) - 
+     &             ( ersobs(i,j,bi,bj) -
      &               ( ersintercept + ersslope*irec*hoursperday ) )
             enddo
           enddo

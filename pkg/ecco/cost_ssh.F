@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.13 2006/10/25 22:22:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.14 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -114,7 +115,7 @@ c--   First, read tiled data.
 
       write(fname(1:80),'(80a)') ' '
       ilps=ilnblnk( psbarfile )
-      write(fname(1:80),'(2a,i10.10)') 
+      write(fname(1:80),'(2a,i10.10)')
      &     psbarfile(1:ilps),'.',optimcycle
 
 c--   ============
@@ -125,7 +126,7 @@ c--   ============
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              psmean(i,j,bi,bj) = 0. _d 0 
+              psmean(i,j,bi,bj) = 0. _d 0
             enddo
           enddo
         enddo
@@ -139,7 +140,7 @@ c--   Loop over records for the first time.
 
 c--     Compute the mean over all psbar records.
         call active_read_xy( fname, psbar, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid, 
+     &                       ladinit, optimcycle, mythid,
      &                       xx_psbar_mean_dummy )
 
         do bj = jtlo,jthi
@@ -189,14 +190,14 @@ c--   Do a global summation.
         stop   '  ... stopped in cost_ssh.'
       else
         _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a,d22.15)') 
+        write(msgbuf,'(a,d22.15)')
      &  	' cost_ssh: offset_sum = ',offset_sum
         call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
       endif
 
-      offset = offset / offset_sum      
+      offset = offset / offset_sum
 
 #ifdef ALLOW_PROFILES
       do bj = jtlo,jthi
@@ -236,7 +237,7 @@ c--   Loop over records for the second time.
       do irec = 1, ndaysrec
 
         call active_read_xy( fname, psbar, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid, 
+     &                       ladinit, optimcycle, mythid,
      &                       xx_psbar_mean_dummy )
 
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
@@ -263,7 +264,7 @@ c--             The array psobs contains SSH anomalies.
                 junk       = ((psbar(i,j,bi,bj) - psmean(i,j,bi,bj)) -
      &                         tpobs(i,j,bi,bj))
      &                       *tpmask(i,j,bi,bj)
-                objf_tp(bi,bj) = objf_tp(bi,bj) 
+                objf_tp(bi,bj) = objf_tp(bi,bj)
      &              + junk*junk*wwwtp(i,j)
                 if ( wwwtp(i,j)*junk .ne. 0. )
      &               num_tp(bi,bj) = num_tp(bi,bj) + 1. _d 0
@@ -290,11 +291,11 @@ c--             The array ersobs contains SSH anomalies.
                 junk        = ((psbar(i,j,bi,bj) - psmean(i,j,bi,bj)) -
      &                         ersobs(i,j,bi,bj))
      &                        *ersmask(i,j,bi,bj)
-                objf_ers(bi,bj) = objf_ers(bi,bj) 
+                objf_ers(bi,bj) = objf_ers(bi,bj)
      &              + junk*junk*wwwers(i,j)
                 if ( wwwers(i,j)*junk .ne. 0. )
      &               num_ers(bi,bj) = num_ers(bi,bj) + 1. _d 0
-#else         
+#else
                 if (tpmeanmask(i,j,bi,bj)*ersmask(i,j,bi,bj)
      &                  *wp(i,j,bi,bj)*wwwers(i,j) .ne.0.) then
                 junk       = ( psbar(i,j,bi,bj) -
@@ -321,7 +322,7 @@ c--             The array gfoobs contains SSH anomalies.
      &              + junk*junk*wwwgfo(i,j)
                 if ( wwwgfo(i,j)*junk .ne. 0. )
      &               num_gfo(bi,bj) = num_gfo(bi,bj) + 1. _d 0
-#else         
+#else
                 if (tpmeanmask(i,j,bi,bj)*gfomask(i,j,bi,bj)
      &                  *wp(i,j,bi,bj)*wwwgfo(i,j) .ne.0.) then
                 junk       = ( psbar(i,j,bi,bj) -
@@ -329,7 +330,7 @@ c--             The array gfoobs contains SSH anomalies.
                 objf_gfo(bi,bj) = objf_gfo(bi,bj)
      &              +junk*junk/( 1/wp(i,j,bi,bj)+1/wwwgfo(i,j) )
                 num_gfo(bi,bj) = num_gfo(bi,bj) + 1. _d 0
-                endif          
+                endif
 #endif /* ALLOW_SSH_TOT */
               enddo
             enddo
@@ -343,9 +344,9 @@ c--   End of second loop over records.
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
-          objf_h(bi,bj) = objf_h(bi,bj) + 
+          objf_h(bi,bj) = objf_h(bi,bj) +
      &        objf_tp(bi,bj) + objf_ers(bi,bj) + objf_gfo(bi,bj)
-          num_h(bi,bj) = num_h(bi,bj) + 
+          num_h(bi,bj) = num_h(bi,bj) +
      &        num_tp(bi,bj) + num_ers(bi,bj) + num_gfo(bi,bj)
         enddo
       enddo

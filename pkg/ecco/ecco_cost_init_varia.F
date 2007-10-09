@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.12 2007/10/05 18:53:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.13 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"

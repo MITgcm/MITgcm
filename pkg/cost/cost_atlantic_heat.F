@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_atlantic_heat.F,v 1.7 2007/10/08 23:59:21 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -97,16 +99,16 @@ C------------------------------------------------------
             ig = myXGlobalLo-1+(bi-1)*sNx+i
 c
             if ((ig .ge. isecbeg) .and. (ig .le. isecend)) then
-               vVel_bar(k) = vVel_bar(k) 
+               vVel_bar(k) = vVel_bar(k)
      &              + cMeanVVel(i,j,k,bi,bj)*maskS(i,j,k,bi,bj)
 
                thetaVvel_bar(k) = thetaVvel_bar(k)
      &            + cMeanThetaVVel(i,j,k,bi,bj)*dxG(i,j,bi,bj)
      &                 *maskS(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
 
-             countTV(k) = countTV(k) + 
+             countTV(k) = countTV(k) +
      &            maskS(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
-             countV(k) = countV(k) + 
+             countV(k) = countV(k) +
      &            maskS(i,j,k,bi,bj)
             end if
 
@@ -131,7 +133,7 @@ c
 
 #else
 
-cph need to change this part to go from 
+cph need to change this part to go from
 cph \bar{u}*\bar{T} to \bar{u*T}
 cph (required store dir. are now in place)
 
@@ -181,10 +183,10 @@ c
         end do
 
 #ifdef ALLOW_COST_ATLANTIC_HEAT_DOMASS
-        objf_atl(bi,bj) = 
+        objf_atl(bi,bj) =
      &     sum*1.E-6
 #else
-        objf_atl(bi,bj) = 
+        objf_atl(bi,bj) =
      &     sum*HeatCapacity_Cp*rhoConst/petawatt
 #endif
 
@@ -193,5 +195,5 @@ c--   end of bi,bj loop
       end do
 
 #endif
-      
+
       end

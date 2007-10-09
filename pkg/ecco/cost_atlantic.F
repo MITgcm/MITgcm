@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_atlantic.F,v 1.4 2006/07/07 22:53:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_atlantic.F,v 1.5 2007/10/09 00:02:49 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -77,9 +78,9 @@ c     == local variables ==
 
       _RL del_y
       _RL tv
-      _RL ylat,beglon,endlon      
-      _RL ylat2,beglon2,endlon2      
-      _RL ylat3,beglon3,endlon3      
+      _RL ylat,beglon,endlon
+      _RL ylat2,beglon2,endlon2
+      _RL ylat3,beglon3,endlon3
 c      parameter(ylat= 29., beglon=-42., endlon =-2.)
 c      parameter(ylat= 29., beglon=282., endlon =352.)
 c      parameter(ylat= 29., beglon=-82., endlon =-2.)
@@ -108,7 +109,7 @@ c--   Get the time flags and record numbers for the time averaging.
 
       call cost_AveragesFlags(
      I                    myiter,     mytime,       mythid,
-     O                    first,      last, 
+     O                    first,      last,
      O                    startofday, startofmonth, startofyear,
      O                    inday,      inmonth,      inyear,
      O                    endofday,   endofmonth,   endofyear,
@@ -178,7 +179,7 @@ c--     records.
      &                                 )/float(nTimeSteps)
           enddo
         enddo
-      else 
+      else
 c--     Accumulate the array holding the average.
         do bj = jtlo,jthi
           do bi = itlo,ithi

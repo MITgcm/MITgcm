@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readargos.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readargos.F,v 1.2 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -12,7 +13,7 @@ c     ==================================================================
 c     SUBROUTINE cost_Readargos
 c     ==================================================================
 c
-c     o Read a given record of the 
+c     o Read a given record of the
 c
 c     started:Armin Koehl akoehl@ucsd.edu
 c              - Restructured the code in order to create a package
@@ -37,7 +38,7 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer irec
-      integer mythid 
+      integer mythid
 
 c     == local variables ==
 
@@ -57,7 +58,7 @@ c     == local variables ==
 
 c     == end of interface ==
 
-      parameter (spval = -9999. ) 
+      parameter (spval = -9999. )
 ce    --> there is certainly a better place for this.
 
       jtlo = mybylo(mythid)
@@ -82,7 +83,7 @@ ce    --> there is certainly a better place for this.
       if (argosrec.gt.0) then
       call mdsreadfield( argosfile, cost_iprec, cost_yftype, nr,
      &        argosobs,argosrec, mythid )
-      else         
+      else
          do bj = jtlo,jthi
             do bi = itlo,ithi
                do k = 1,nr

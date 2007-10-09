@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdt.F,v 1.5 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdt.F,v 1.6 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -54,17 +55,17 @@ c     == local variables ==
       integer nrec
       integer irec
       integer ilu
-      
+
       _RL fctile_ctdt
       _RL fcthread_ctdt
       _RL www (1-olx:snx+olx,1-oly:sny+oly)
       _RL wtmp (1-olx:snx+olx,1-oly:sny+oly)
       _RL tmpobs (1-olx:snx+olx,1-oly:sny+oly)
       _RL tmpbar (1-olx:snx+olx,1-oly:sny+oly)
-      _RL cmask (1-olx:snx+olx,1-oly:sny+oly)  
+      _RL cmask (1-olx:snx+olx,1-oly:sny+oly)
       _RL spval
       _RL spmax
-      
+
       character*(80) fnametheta
 
       logical doglobalread
@@ -95,22 +96,22 @@ c     == end of interface ==
       jmax = sny
       imin = 1
       imax = snx
-      
+
       spval = -1.8
       spmax = 40.
 
 c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
-      
+
 #ifdef ALLOW_CTDT_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilu=ilnblnk( tbarfile )
-        write(fnametheta(1:80),'(2a,i10.10)') 
+        write(fnametheta(1:80),'(2a,i10.10)')
      &       tbarfile(1:ilu),'.',optimcycle
       endif
-      
+
       fcthread_ctdt = 0. _d 0
 
 cnew(
@@ -125,12 +126,12 @@ c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnametheta, tbar, irec,
      &          doglobalread, ladinit,
      &          optimcycle, mythid, xx_tbar_mean_dummy )
-  
+
 cnew(
         iyear = mody + INT((modm-1+irec-1)/12)
         imonth = 1 + MOD(modm-1+irec-1,12)
         il=ilnblnk(ctdtfile)
-        write(fnametmp(1:80),'(2a,i4)') 
+        write(fnametmp(1:80),'(2a,i4)')
      &       ctdtfile(1:il), '_', iyear
         inquire( file=fnametmp, exist=exst )
         if (.NOT. exst) then
@@ -160,7 +161,7 @@ c--           Determine the weights to be used.
      &                ctdtobs(i,j,k,bi,bj) .eq. 0. ) then
                     cmask(i,j) = 0. _d 0
                   endif
-                  
+
 cph(
 cph               print *, 'WARNING: SPECIFIC SETUP FOR ECCO'
 cph               below statement could be replaced by following
@@ -168,19 +169,19 @@ cph               to make it independnet of Nr:
 cph
 cph               if ( rC(K) .GT. -1000. ) then
 cph)
-c                 set cmask=0 in areas shallower than 1000m 
-                  
+c                 set cmask=0 in areas shallower than 1000m
+
                   if (
      &             (_hFacC(i,j,13,bi,bj) .ne. 0.).and.
      &             (_hFacC(i,j,k,bi,bj) .ne. 0.)) then
 
-                     www(i,j)    = cosphi(i,j,bi,bj)*cmask(i,j)                
+                     www(i,j)    = cosphi(i,j,bi,bj)*cmask(i,j)
                      tmpobs(i,j) = ctdtobs(i,j,k,bi,bj)
                      tmpbar(i,j) = tbar(i,j,k,bi,bj)
                      wtmp(i,j) = wtheta2(i,j,k,bi,bj)
 
 c--                  The array ctdtobs contains CTD temperature.
-                     fctile_ctdt = fctile_ctdt + 
+                     fctile_ctdt = fctile_ctdt +
      &                             (wtmp(i,j)*www(i,j))*
      &                             (tmpbar(i,j)-tmpobs(i,j))*
      &                             (tmpbar(i,j)-tmpobs(i,j))
@@ -193,7 +194,7 @@ c--                  The array ctdtobs contains CTD temperature.
 c--         End of loop over layers.
 
             fcthread_ctdt    = fcthread_ctdt    + fctile_ctdt
-            objf_ctdt(bi,bj) = objf_ctdt(bi,bj) + fctile_ctdt   
+            objf_ctdt(bi,bj) = objf_ctdt(bi,bj) + fctile_ctdt
 
 #ifdef ECCO_VERBOSE
             write(msgbuf,'(a)') ' '
@@ -241,7 +242,7 @@ c--   End of second loop over records.
 #else
 c--   Do not enter the calculation of the CTD temperature contribution
 c--   to the final cost function.
-      
+
       fctile_ctdt   = 0. _d 0
       fcthread_ctdt = 0. _d 0
 

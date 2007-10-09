@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_salt.F,v 1.5 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_salt.F,v 1.6 2007/10/09 00:02:49 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -54,7 +55,7 @@ c     == local variables ==
       integer nrec
       integer irec
       integer ilu
-      
+
       _RL fctile_argos
       _RL fcthread_argos
       _RL www (1-olx:snx+olx,1-oly:sny+oly)
@@ -63,7 +64,7 @@ c     == local variables ==
       _RL tmpbar (1-olx:snx+olx,1-oly:sny+oly)
       _RL spval
       _RL spmax
-      
+
       character*(80) fnamesalt
 
       logical doglobalread
@@ -94,22 +95,22 @@ c     == end of interface ==
       jmax = sny
       imin = 1
       imax = snx
-      
+
       spval = 25.
       spmax = 40.
 
 c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
-      
+
 #ifdef ALLOW_ARGO_SALT_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilu=ilnblnk( sbarfile )
-        write(fnamesalt(1:80),'(2a,i10.10)') 
+        write(fnamesalt(1:80),'(2a,i10.10)')
      &    sbarfile(1:ilu),'.', optimcycle
       endif
-      
+
       fcthread_argos = 0. _d 0
 
 cnew(
@@ -125,12 +126,12 @@ c--     Read time averages and the monthly mean data.
      &          doglobalread, ladinit,
      &          optimcycle, mythid
      &   , xx_sbar_mean_dummy )
-  
+
 cnew(
         iyear = mody + INT((modm-1+irec-1)/12)
         imonth = 1 + MOD(modm-1+irec-1,12)
         il=ilnblnk(argosfile)
-        write(fnametmp(1:80),'(2a,i4)') 
+        write(fnametmp(1:80),'(2a,i4)')
      &       argosfile(1:il), '_', iyear
         inquire( file=fnametmp, exist=exst )
         if (.NOT. exst) then
@@ -150,7 +151,7 @@ c--         Loop over the model layers
             fctile_argos = 0. _d 0
             do k = 1,nr
 
-c--        
+c--
 cph(
 cph               print *, 'WARNING: SPECIFIC SETUP FOR ECCO'
 cph               below statement could be replaced by following
@@ -159,25 +160,25 @@ cph
 cph               if ( rC(K) .GT. -1000. ) then
 cph)
               do j = jmin,jmax
-               do i = imin,imax                 
+               do i = imin,imax
                 if ( (argosobs(i,j,k,bi,bj) .ge. spval) .and.
      $              (argosobs(i,j,k,bi,bj) .lt. spmax) .and.
      $              (_hFacC(i,j,13,bi,bj) .ne. 0.) .and.
      $              (_hFacC(i,j,k,bi,bj) .ne. 0.) ) then
-                 fctile_argos = fctile_argos + 
+                 fctile_argos = fctile_argos +
      &             wsalt2(i,j,k,bi,bj)*cosphi(i,j,bi,bj)*
      &             (sbar(i,j,k,bi,bj)-argosobs(i,j,k,bi,bj))*
      &             (sbar(i,j,k,bi,bj)-argosobs(i,j,k,bi,bj))
                  if ( wsalt2(i,j,k,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
      &             num_argos(bi,bj) = num_argos(bi,bj) + 1. _d 0
-                endif                  
+                endif
                enddo
               enddo
             enddo
 c--         End of loop over layers.
 
             fcthread_argos    = fcthread_argos    + fctile_argos
-            objf_argos(bi,bj) = objf_argos(bi,bj) + fctile_argos   
+            objf_argos(bi,bj) = objf_argos(bi,bj) + fctile_argos
 
 #ifdef ECCO_VERBOSE
             write(msgbuf,'(a)') ' '
@@ -225,7 +226,7 @@ c--   End of second loop over records.
 #else
 c--   Do not enter the calculation of the ARGO salinity contribution
 c--   to the final cost function.
-      
+
       fctile_argos   = 0. _d 0
       fcthread_argos = 0. _d 0
 

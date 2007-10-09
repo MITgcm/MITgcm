@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsw.F,v 1.3 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -113,7 +115,7 @@ c--     Read time averages and the monthly mean data.
      &                        optimcycle, mythid,
      &                        xx_tbar_mean_dummy )
 
-        call mdsreadfieldyz( OBWtFile, readBinaryPrec, 'RS', 
+        call mdsreadfieldyz( OBWtFile, readBinaryPrec, 'RS',
      &                       nr, OBWt, irec, mythid)
 
         do bj = jtlo,jthi
@@ -150,7 +152,7 @@ c--     Read time averages and the monthly mean data.
      &                        optimcycle, mythid,
      &                        xx_sbar_mean_dummy )
 
-        call mdsreadfieldyz( OBWsFile, readBinaryPrec, 'RS', 
+        call mdsreadfieldyz( OBWsFile, readBinaryPrec, 'RS',
      &                       nr, OBWs, irec, mythid)
 
         do bj = jtlo,jthi
@@ -187,7 +189,7 @@ c--     Read time averages and the monthly mean data.
      &                        optimcycle, mythid,
      &                        dummy )
 
-        call mdsreadfieldyz( OBWuFile, readBinaryPrec, 'RS', 
+        call mdsreadfieldyz( OBWuFile, readBinaryPrec, 'RS',
      &                       nr, OBWu, irec, mythid)
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -223,7 +225,7 @@ c--     Read time averages and the monthly mean data.
      &                        optimcycle, mythid,
      &                        dummy )
 
-        call mdsreadfieldyz( OBWvFile, readBinaryPrec, 'RS', 
+        call mdsreadfieldyz( OBWvFile, readBinaryPrec, 'RS',
      &                       nr, OBWv, irec, mythid)
 
         do bj = jtlo,jthi

@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xz.F,v 1.12 2007/10/09 00:00:01 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -128,7 +130,7 @@ c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
       do iobcs=1,nobcs
-         call MDSREADFIELD_XZ_GL( 
+         call MDSREADFIELD_XZ_GL(
      &        masktype, ctrlprec, 'RL',
      &        Nr, globmskxz(1,1,1,1,1,1,iobcs), iobcs,mythid)
 #ifdef CTRL_UNPACK_PRECISE
@@ -163,7 +165,7 @@ cgg       do iobcs = 1, nobcs
 cgg       And now back-calculate what iobcs should be.
          do j=1,sny
             iobcs= mod((irec-1)*sny+j-1,nobcs)+1
-     
+
             read(cunit) filencvarindex(ivartype)
             if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
      &           then
@@ -200,10 +202,10 @@ cgg       And now back-calculate what iobcs should be.
                    do i = imin,imax
                     if ( globmskxz(i,bi,ip,bj,jp,k,iobcs) .ne. 0. ) then
                        cbuffindex = cbuffindex + 1
-                       globfld3d(i,bi,ip,jj,bj,jp,kk) = 
+                       globfld3d(i,bi,ip,jj,bj,jp,kk) =
      &                      cbuff(cbuffindex)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-                       globfld3d(i,bi,ip,jj,bj,jp,kk) = 
+                       globfld3d(i,bi,ip,jj,bj,jp,kk) =
      &                      globfld3d(i,bi,ip,jj,bj,jp,kk)/
 # ifdef CTRL_UNPACK_PRECISE
      &                      sqrt(weightfldxz(i,bi,ip,bj,jp,k,iobcs))
@@ -224,7 +226,7 @@ c     -- end of k loop --
          enddo
 c     -- end of j loop --
          enddo
-             
+
          call MDSWRITEFIELD_3D_GL( fname, ctrlprec, 'RL',
      &                             Nr, globfld3d, irec,
      &                             optimcycle, mythid)
@@ -275,7 +277,7 @@ cgg       And now back-calculate what iobcs should be.
                      cbuffindex = cbuffindex + 1
                      globfldxz(i,bi,ip,bj,jp,k) = cbuff(cbuffindex)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-                     globfldxz(i,bi,ip,bj,jp,k) = 
+                     globfldxz(i,bi,ip,bj,jp,k) =
      &                    globfldxz(i,bi,ip,bj,jp,k)/
 # ifdef CTRL_UNPACK_PRECISE
      &                    sqrt(weightfldxz(i,bi,ip,bj,jp,k,iobcs))
@@ -294,7 +296,7 @@ cgg       And now back-calculate what iobcs should be.
 c
 c     -- end of k loop --
          enddo
-             
+
          call MDSWRITEFIELD_XZ_GL( fname, ctrlprec, 'RL',
      &                             Nr, globfldxz, irec,
      &                             optimcycle, mythid)

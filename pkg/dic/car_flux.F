@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.6 2007/10/09 00:01:42 jmc Exp $
+C $Name:  $
+
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
@@ -10,7 +13,7 @@ C !INTERFACE: ==========================================================
      I           myIter,myTime,myThid)
 
 C !DESCRIPTION:
-C  Calculate carbonate fluxes                              
+C  Calculate carbonate fluxes
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -55,7 +58,7 @@ c zbase                   :: depth of bottom of current productive layer
 CEOP
 
 c
-c calculate carbonate flux from base of each nlev 
+c calculate carbonate flux from base of each nlev
        DO j=jmin,jmax
         DO i=imin,imax
          DO k=1,nLev
@@ -81,17 +84,17 @@ c no flux to ocean bottom
                endif
              endif
              cflux(i,j,ko)=cflux(i,j,ko) +
-     &          ( (Flux_u-Flux_l)/(drF(ko)*hFacC(i,j,ko,bi,bj)) ) 
+     &          ( (Flux_u-Flux_l)/(drF(ko)*hFacC(i,j,ko,bi,bj)) )
            else
 c if no layer below initial layer, remineralize in place
                if (ko.eq.k+1) cflux(i,j,k)=cflux(i,j,k)
      &                  +bioac(i,j,k)*(1.0-DOPfraction)*
      &                    R_cp*rain_ratio(i,j,bi,bj)
-           endif 
+           endif
           ENDDO
           endif
          ENDDO
-        ENDDO 
+        ENDDO
        ENDDO
 c
 #endif

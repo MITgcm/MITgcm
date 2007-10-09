@@ -1,9 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.7 2006/10/23 19:54:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.8 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
 
-      subroutine cost_generic( 
+      subroutine cost_generic(
      &     nnzbar, localbarfile, localbar, xx_localbar_mean_dummy,
      &     nnzobs, localobsfile, localobs, mult_local,
      &     nrecloc, localstartdate, localperiod,
@@ -16,7 +17,7 @@ c     ==================================================================
 c     SUBROUTINE cost_generic
 c     ==================================================================
 c
-c     o Generic routine for evaluating time-dependent 
+c     o Generic routine for evaluating time-dependent
 c       cost function contribution
 c
 c     ==================================================================
@@ -90,7 +91,7 @@ c     == local variables ==
       _RL localcost
       _RL junk
 
-      _RL cmask (1-olx:snx+olx,1-oly:sny+oly,nnzobs)  
+      _RL cmask (1-olx:snx+olx,1-oly:sny+oly,nnzobs)
 
       character*(128) fname1, fname2
       character*(MAX_LEN_MBUF) msgbuf
@@ -142,7 +143,7 @@ c--   First, read tiled data.
 
       write(fname1(1:128),'(80a)') ' '
       il=ilnblnk( localbarfile )
-      write(fname1(1:128),'(2a,i10.10)') 
+      write(fname1(1:128),'(2a,i10.10)')
      &     localbarfile(1:il),'.',optimcycle
 
 cph      if ( .NOT. ( mult_local.EQ.0. .OR. localobsfile.EQ.' ' ) ) then
@@ -153,11 +154,11 @@ c--   Loop over records for the second time.
 
         if ( nnzbar .EQ. 1 ) then
            call active_read_xy( fname1, localbar, irec, doglobalread,
-     &                      ladinit, optimcycle, mythid, 
+     &                      ladinit, optimcycle, mythid,
      &                      xx_localbar_mean_dummy )
         else
            call active_read_xyz( fname1, localbar, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid, 
+     &                       ladinit, optimcycle, mythid,
      &                       xx_localbar_mean_dummy )
         endif
 
@@ -185,7 +186,7 @@ c-- assume daily fields
 c-- assume monthly fields
            beginlocal = localstartdate(1)/10000
            beginmodel = modelstartdate(1)/10000
-           obsrec = 
+           obsrec =
      &           ( beginmodel - beginlocal )*nmonthyear
      &         + ( mod(modelstartdate(1)/100,100)
      &            -mod(localstartdate(1)/100,100) )
@@ -205,8 +206,8 @@ c-- assume monthly fields
            localrec = obsrec
         endif
 
-        if ( localrec .GT. 0 ) then 
-          call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs, 
+        if ( localrec .GT. 0 ) then
+          call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs,
      &         localobs, localrec, mythid )
         else
           do bj = jtlo,jthi

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_hfacc_ini.F,v 1.4 2007/05/14 22:02:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_hfacc_ini.F,v 1.5 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -9,9 +10,9 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 c     *=================================================================
-c     | SUBROUTINE ctrl_hfacc_ini 
+c     | SUBROUTINE ctrl_hfacc_ini
 c     | Add the hFacC part of the control vector to the model state
-c     | and update the tile halos. 
+c     | and update the tile halos.
 c     | The control vector is defined in the header file "ctrl.h".
 c     *=================================================================
 C     \ev
@@ -79,17 +80,17 @@ CEOP
         fac = 0. _d 0
       endif
 
-Cml      write(msgbuf,'(a)') 
+Cml      write(msgbuf,'(a)')
 Cml     &     'ctrl_hfacc_ini: Re-initialising hFacC,'
 Cml      call print_message( msgbuf, standardmessageunit,
 Cml     &                    SQUEEZE_RIGHT , mythid)
-Cml      write(msgbuf,'(a)') 
+Cml      write(msgbuf,'(a)')
 Cml     &     '                adding the control vector.'
 Cml      call print_message( msgbuf, standardmessageunit,
 Cml     &                    SQUEEZE_RIGHT , mythid)
-      write(standardmessageunit,'(21x,a)') 
+      write(standardmessageunit,'(21x,a)')
      &     'ctrl_hfacc_ini: Re-initialising hFacC,'
-      write(standardmessageunit,'(21x,a)') 
+      write(standardmessageunit,'(21x,a)')
      &     '                adding the control vector.'
 
 C     Re-initialize hFacC, so that TAMC/TAF can see it
@@ -113,7 +114,7 @@ C     this will be no longer necessary
 Cml      _EXCH_XYZ_R8( hFacC ,myThid )
       _EXCH_XYZ_R4( hFacC ,myThid )
 
-C--   
+C--
       il=ilnblnk( xx_hfacc_file )
       write(fnamehfacc(1:80),'(2a,i10.10)')
      &     xx_hfacc_file(1:il),'.',optimcycle
@@ -143,7 +144,7 @@ C--
                do i = imin,imax
                   k = k_lowC(i,j,bi,bj)
 c                  if ( k .gt. 0 ) then
-                     hFacC(i,j,k,bi,bj) = hFacC(i,j,k,bi,bj) 
+                     hFacC(i,j,k,bi,bj) = hFacC(i,j,k,bi,bj)
      &                                  + fac*tmpfld2d(i,j,bi,bj)
 c                  end if
                enddo

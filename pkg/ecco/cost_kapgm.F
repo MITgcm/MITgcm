@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_kapgm.F,v 1.4 2007/08/17 21:36:39 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_kapgm.F,v 1.5 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -78,14 +79,14 @@ c     == end of interface ==
 c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
-      
+
       irec = 1
 
 #ifdef ALLOW_KAPGM_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilfld = ilnblnk( xx_kapgm_file )
-        write(fnamefld(1:80),'(2a,i10.10)') 
+        write(fnamefld(1:80),'(2a,i10.10)')
      &       xx_kapgm_file(1:ilfld),'.',optimcycle
       endif
 
@@ -100,13 +101,13 @@ c--     Loop over this thread's tiles.
           do bi = itlo,ithi
 
 c--         Determine the weights to be used.
-           
+
             fctile = 0. _d 0
             do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
                 if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
-c                  tmpx = (tmpfld3d(i,j,k,bi,bj)-GM_background_K)    
+c                  tmpx = (tmpfld3d(i,j,k,bi,bj)-GM_background_K)
                   tmpx = tmpfld3d(i,j,k,bi,bj)
 #ifndef ALLOW_SMOOTH_CORREL3D
                   fctile = fctile
@@ -185,5 +186,5 @@ c--     Print cost function for all tiles.
 
       return
       end
-      
-      
+
+

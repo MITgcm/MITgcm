@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.9 2007/09/28 00:52:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.10 2007/10/08 23:59:21 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
@@ -59,9 +60,9 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *================================================================*
-C     | subroutine cost_tile                                     
+C     | subroutine cost_tile
 C     | o this routine computes is called at each time step to
-C     |   accumulate the cost function for the tiles of this processor 
+C     |   accumulate the cost function for the tiles of this processor
 C     *================================================================*
 C     \ev
 

@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xy.F,v 1.16 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -116,17 +118,17 @@ c--   Only the master thread will do I/O.
          write(cfile3(1:80),'(80a)') ' '
          if ( lxxadxx ) then
             write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
-     &           'diag_pack_nonout_ctrl_', 
+     &           'diag_pack_nonout_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
             write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
-     &           'diag_pack_dimout_ctrl_', 
+     &           'diag_pack_dimout_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
          else
             write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
-     &           'diag_pack_nonout_grad_', 
+     &           'diag_pack_nonout_grad_',
      &           ivartype, '_', optimcycle, '.bin'
             write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
-     &           'diag_pack_dimout_grad_', 
+     &           'diag_pack_dimout_grad_',
      &           ivartype, '_', optimcycle, '.bin'
          endif
 
@@ -143,12 +145,12 @@ c--   Only the master thread will do I/O.
       il=ilnblnk( weighttype)
       write(weightname(1:80),'(80a)') ' '
       write(weightname(1:80),'(a)') weighttype(1:il)
-      call MDSREADFIELD_2D_GL( 
+      call MDSREADFIELD_2D_GL(
      &     weightname, ctrlprec, 'RL',
      &     1, globfld2d, 1, mythid)
 #endif
-      
-      call MDSREADFIELD_3D_GL( 
+
+      call MDSREADFIELD_3D_GL(
      &     masktype, ctrlprec, 'RL',
      &     Nr, globmsk, 1, mythid)
 
@@ -266,12 +268,12 @@ cph)
 #ifndef ALLOW_SMOOTH_CORREL2D
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
-                        cbuff(cbuffindex) = 
+                        cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k) *
      &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
      &                       / forcingPrecond
                      else
-                        cbuff(cbuffindex) = 
+                        cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,j,bj,jp,k) /
      &                       sqrt(globfld2d(i,bi,ip,j,bj,jp))
      &                       * forcingPrecond
@@ -328,7 +330,7 @@ c     -- end of irec loop --
          close ( cunit2 )
          close ( cunit3 )
       endif
- 
+
       _END_MASTER( mythid )
 
 #endif

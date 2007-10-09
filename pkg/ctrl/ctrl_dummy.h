@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.18 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 c     ==================================================================
 c     HEADER CONTROL DUMMIES

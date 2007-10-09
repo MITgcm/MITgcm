@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_real2char.F,v 1.2 2007/10/08 23:58:22 jmc Exp $
+C $Name:  $
+
 !=======================================================================
       subroutine mitcplr_real2char( rarg, carg )
       implicit none

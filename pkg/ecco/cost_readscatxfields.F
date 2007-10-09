@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatxfields.F,v 1.3 2005/03/28 19:40:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatxfields.F,v 1.4 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -40,7 +41,7 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer irec
-      integer mythid 
+      integer mythid
 
 c     == local variables ==
 
@@ -67,13 +68,13 @@ cnew(
 cnew)
 
 c     == external functions ==
- 
+
       integer  ilnblnk
       external ilnblnk
 
 c     == end of interface ==
 
-      parameter (spval = -1.8 ) 
+      parameter (spval = -1.8 )
 ce    --> there is certainly a better place for this.
 
       jtlo = mybylo(mythid)
@@ -104,7 +105,7 @@ cnew(
       imonth = 1 + MOD(modm-1+irec-1,12)
 
       il=ilnblnk(scatxdatfile)
-      write(fnametmp(1:80),'(2a,i4)') 
+      write(fnametmp(1:80),'(2a,i4)')
      &     scatxdatfile(1:il), '_', iyear
       inquire( file=fnametmp, exist=exst )
       if (.NOT. exst) then

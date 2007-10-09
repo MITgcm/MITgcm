@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bottomdrag.F,v 1.2 2007/08/19 05:29:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_bottomdrag.F,v 1.3 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -75,14 +76,14 @@ c     == end of interface ==
 c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
-      
+
       irec = 1
 
 #ifdef ALLOW_BOTTOMDRAG_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilfld = ilnblnk( xx_bottomdrag_file )
-        write(fnamefld(1:80),'(2a,i10.10)') 
+        write(fnamefld(1:80),'(2a,i10.10)')
      &       xx_bottomdrag_file(1:ilfld),'.',optimcycle
       endif
 
@@ -97,7 +98,7 @@ c--     Loop over this thread's tiles.
           do bi = itlo,ithi
 
 c--         Determine the weights to be used.
-           
+
             fctile = 0. _d 0
             do j = jmin,jmax
               do i = imin,imax
@@ -179,5 +180,5 @@ c--     Print cost function for all tiles.
 
       return
       end
-      
-      
+
+

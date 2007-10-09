@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.10 2006/06/07 01:55:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.11 2007/10/08 23:59:21 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -37,7 +38,7 @@ c     == local variables ==
 c     == end of interface ==
 
 c--   Read the namelist input.
-      namelist /cost_nml/ 
+      namelist /cost_nml/
      &         mult_atl, mult_test, mult_tracer
      &       , multTheta, multSalt, multUvel, multVvel, multEtan
 #ifdef ALLOW_COST_TRANSPORT
@@ -87,7 +88,7 @@ c--     Next, read the cost data file.
 
         CLOSE( iUnit )
 
-        IF ( MOD(lastinterval,deltaTclock) .GT. 0. ) 
+        IF ( MOD(lastinterval,deltaTclock) .GT. 0. )
      &       lastinterval = MAX(
      &       INT(lastinterval/deltaTclock-1)*deltaTclock,deltaTclock)
 

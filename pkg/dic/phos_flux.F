@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/phos_flux.F,v 1.6 2007/10/09 00:01:42 jmc Exp $
+C $Name:  $
+
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
@@ -86,7 +89,7 @@ c no flux to ocean bottom
                  endif
               endif
               pflux(i,j,ko)=pflux(i,j,ko) +
-     &          ( (Flux_u-Flux_l)/(drF(ko)*hFacC(i,j,ko,bi,bj)) ) 
+     &          ( (Flux_u-Flux_l)/(drF(ko)*hFacC(i,j,ko,bi,bj)) )
               exportflux(i,j,ko)=exportflux(i,j,ko)+Flux_u
             else
 c if no layer below initial layer, remineralize in place
@@ -95,7 +98,7 @@ c if no layer below initial layer, remineralize in place
             endif
            ENDDO
           endif
-         ENDDO 
+         ENDDO
         ENDDO
        ENDDO
 c

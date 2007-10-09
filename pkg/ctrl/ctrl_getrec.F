@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getrec.F,v 1.8 2006/10/27 05:16:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getrec.F,v 1.9 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
@@ -299,7 +300,7 @@ c
          fldperiod = xx_sssperiod
          lArgErr = .false.
       endif
-      
+
 c--   Check the field argument.
       if ( lArgErr ) then
          print*,' The subroutine *ctrl_GetRec* has been called'

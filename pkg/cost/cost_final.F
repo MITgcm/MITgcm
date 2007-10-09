@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.15 2006/06/07 01:55:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.16 2007/10/08 23:59:21 jmc Exp $
+C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -79,14 +80,14 @@ c--   Sum up all contributions.
       do bj = jtlo,jthi
         do bi = itlo,ithi
 
-          write(standardmessageunit,'(A,D22.15)') 
+          write(standardmessageunit,'(A,D22.15)')
      &          ' --> objf_test(bi,bj)   = ', objf_test(bi,bj)
-          write(standardmessageunit,'(A,D22.15)') 
+          write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_tracer(bi,bj) = ', objf_tracer(bi,bj)
-          write(standardmessageunit,'(A,D22.15)') 
+          write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_atl(bi,bj)    = ', objf_atl(bi,bj)
 #ifdef ALLOW_COST_TRANSPORT
-          write(standardmessageunit,'(A,D22.15)') 
+          write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_transport(bi,bj) = ', objf_transport(bi,bj)
 #endif
 

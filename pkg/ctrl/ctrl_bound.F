@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_bound.F,v 1.2 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

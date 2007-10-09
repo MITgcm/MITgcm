@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta0.F,v 1.8 2007/06/20 19:37:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta0.F,v 1.9 2007/10/09 00:02:51 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -89,18 +90,18 @@ c     == end of interface ==
 c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
-      
+
       irec = 1
 
 #ifdef ALLOW_THETA0_COST_CONTRIBUTION
 
       if (optimcycle .ge. 0) then
         ilfld = ilnblnk( xx_theta_file )
-        write(fnamefld(1:80),'(2a,i10.10)') 
+        write(fnamefld(1:80),'(2a,i10.10)')
      &       xx_theta_file(1:ilfld),'.',optimcycle
       endif
 
-      call active_read_xyz( 
+      call active_read_xyz(
      &     fnamefld, tmpfld3d, irec, doglobalread,
      &     ladinit, optimcycle, mythid, xx_theta_dummy )
 
@@ -109,7 +110,7 @@ c--     Loop over this thread's tiles.
           do bi = itlo,ithi
 
 c--         Determine the weights to be used.
-           
+
             fctile = 0. _d 0
             do k = 1,nr
              do j = jmin,jmax
@@ -140,7 +141,7 @@ c--         Determine the weights to be used.
 #ifndef ALLOW_SMOOTH_CORREL3D
 #ifdef ALLOW_SMOOTH_IC_COST_CONTRIBUTION
 
-      call active_read_xyz( 
+      call active_read_xyz(
      &     fnamefld, tmpfld3d, irec, doglobalread,
      &     ladinit, optimcycle, mythid, xx_theta_dummy )
 
@@ -155,7 +156,7 @@ c--     Loop over this thread's tiles.
              do j = jmin,jmax
               do i = imin,imax
                 if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
-                  tmpx = 
+                  tmpx =
      &              ( tmpfld3d(i+2,j,k,bi,bj)-tmpfld3d(i+1,j,k,bi,bj) )
      &                *maskW(i+1,j,k,bi,bj)*maskW(i+2,j,k,bi,bj)
      &            + ( tmpfld3d(i+1,j,k,bi,bj)-tmpfld3d(i,j,k,bi,bj) )
@@ -186,5 +187,5 @@ c--     Loop over this thread's tiles.
 
       return
       end
-      
-      
+
+

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.5 2007/06/19 03:42:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.6 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
@@ -94,7 +95,7 @@ c     Map the field parameters.
      &     )
       fldperiod = xx_genperiod
       lArgErr = .false.
-      
+
 c--   Check the field argument.
       if ( lArgErr ) then
          print*,' The subroutine *ctrl_get_gen_rec* has been called'

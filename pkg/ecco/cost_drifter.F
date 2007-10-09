@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drifter.F,v 1.3 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drifter.F,v 1.4 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -209,7 +210,7 @@ c                 set mask13c=0 in areas shallower than 1000m
 
          do j = jmin,jmax-1,2
            do i = i6min,imax-5,6
-             masktmp(i,j,bi,bj) = 
+             masktmp(i,j,bi,bj) =
      &           (mask13c(i,j,bi,bj)+mask13c(i+1,j,bi,bj)
      &           +mask13c(i+2,j,bi,bj)+mask13c(i+3,j,bi,bj)
      &           +mask13c(i+4,j,bi,bj)+mask13c(i+5,j,bi,bj)
@@ -236,16 +237,16 @@ c                 set mask13c=0 in areas shallower than 1000m
              endif
            enddo
          enddo
-              
+
          do j = jmin,jmax-1,2
            do i = i6min,imax-5,6
-             masktmp(i,j,bi,bj) = 
+             masktmp(i,j,bi,bj) =
      &             (mask13c(i,j,bi,bj)+mask13c(i+1,j,bi,bj)
      &             +mask13c(i+2,j,bi,bj)+mask13c(i+3,j,bi,bj)
      &             +mask13c(i+4,j,bi,bj)+mask13c(i+5,j,bi,bj)
      &             +mask13c(i,j+1,bi,bj)+mask13c(i+1,j+1,bi,bj)
      &             +mask13c(i+2,j+1,bi,bj)+mask13c(i+3,j+1,bi,bj)
-     &             +mask13c(i+4,j+1,bi,bj)+mask13c(i+5,j+1,bi,bj))  
+     &             +mask13c(i+4,j+1,bi,bj)+mask13c(i+5,j+1,bi,bj))
              if ( masktmp(i,j,bi,bj) .eq.0.0 ) then
                 v6bar(i,j,bi,bj) = 0.0
              else
@@ -266,7 +267,7 @@ c                 set mask13c=0 in areas shallower than 1000m
              endif
            enddo
          enddo
-              
+
          do j = jmin,jmax-1,2
            do i = i6min,imax-5, 6
 c--   change unit from cm/s to m/s
@@ -285,24 +286,24 @@ c                  wvd(i,j,bi,bj) = 1.0
            enddo
          enddo
 
-CADJ STORE wud(:,:,bi,bj)   
+CADJ STORE wud(:,:,bi,bj)
 CADJ &     = tapelev_ini_bibj_k, key=ikey, byte=isbyte
-CADJ STORE wvd(:,:,bi,bj)   
+CADJ STORE wvd(:,:,bi,bj)
 CADJ &     = tapelev_ini_bibj_k, key=ikey, byte=isbyte
-CADJ STORE u6bar(:,:,bi,bj) 
+CADJ STORE u6bar(:,:,bi,bj)
 CADJ &     = tapelev_ini_bibj_k, key=ikey, byte=isbyte
-CADJ STORE v6bar(:,:,bi,bj) 
+CADJ STORE v6bar(:,:,bi,bj)
 CADJ &     = tapelev_ini_bibj_k, key=ikey, byte=isbyte
 
 c--           Compute model data misfit and cost function term for
 c             drifters.
          do j = jmin,jmax-1,2
             do i = i6min,imax-5, 6
-               fctile_drift = fctile_drift 
+               fctile_drift = fctile_drift
      &              + (wud(i,j,bi,bj)*cosphi(i,j,bi,bj)*
      &                 mask6c(i,j,bi,bj)*
      &                (u6bar(i,j,bi,bj) - uddat(i,j,bi,bj))*
-     &                (u6bar(i,j,bi,bj) - uddat(i,j,bi,bj))   ) 
+     &                (u6bar(i,j,bi,bj) - uddat(i,j,bi,bj))   )
      &              + (wvd(i,j,bi,bj)*cosphi(i,j,bi,bj)*
      &                 mask6c(i,j,bi,bj)*
      &                (v6bar(i,j,bi,bj) - vddat(i,j,bi,bj))*

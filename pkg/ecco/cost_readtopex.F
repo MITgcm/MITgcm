@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.6 2006/03/29 21:16:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.7 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -68,7 +69,7 @@ cnew(
 cnew)
 
 c     == external functions ==
- 
+
       integer  ilnblnk
       external ilnblnk
 
@@ -84,7 +85,7 @@ c     == end of interface ==
       imax = snx
 
       factor = 0.01
-      spval = -9990. 
+      spval = -9990.
 
 cnew(
       daytime = FLOAT(secondsperday*(irec-1)) + modelstart
@@ -114,10 +115,10 @@ cnew(
          write(fnametmp(1:80),'(a)') topexfile(1:il)
          sshrec = irec
       endif
- 
+
 cnew)
 
-      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, tpobs, 
+      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, tpobs,
      &                   sshrec, mythid )
 
       do bj = jtlo,jthi
@@ -144,14 +145,14 @@ cph               to make it independnet of Nr:
 cph
 cph               if ( rC(K) .GT. -1000. ) then
 cph)
-c             set tpmask=0 in areas shallower than 1000m 
+c             set tpmask=0 in areas shallower than 1000m
               if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
                 tpmask(i,j,bi,bj) = 0. _d 0
               endif
 
               tpmask(i,j,bi,bj) = tpmask(i,j,bi,bj)*frame(i,j)
               tpobs(i,j,bi,bj)  = tpmask(i,j,bi,bj)*factor*
-     &             ( tpobs(i,j,bi,bj) - 
+     &             ( tpobs(i,j,bi,bj) -
      &               ( topexintercept + topexslope*irec*hoursperday ) )
             enddo
           enddo

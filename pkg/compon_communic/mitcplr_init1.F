@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_init1.F,v 1.2 2007/10/08 23:58:21 jmc Exp $
+C $Name:  $
+
 !=======================================================================
       subroutine MITCPLR_init1( myTypeStr, couplerFlag )
       implicit none
@@ -38,7 +41,7 @@
       if (DEBUG) write(0,*) 'MITCPLR_init1: ',myid,' ',myTypeStr,
      &     ' Rank/Size = ',myid,' /',numprocs
 
-!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ! Registration: collect/bcast lists of who is who
 
@@ -60,7 +63,7 @@
        lenbuf=8+MAXLEN_COMP_NAME
        call MPI_Bcast(
      &               ibuf, lenbuf, MPI_INTEGER,
-     &               n, 
+     &               n,
      &               MPI_COMM_WORLD, ierr )
        if (DEBUG) write(0,*) 'MITCPLR_init1: ',myid,' ',myTypeStr,
      &    ' MPI_Bcast from ',ibuf(1),ibuf(2),' ierr=',ierr
@@ -112,7 +115,7 @@
      &    ( rank_compcplr_procs(j,n),j=1,num_compcplr_procs(n) )
       enddo
 
-!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ! Create new groups and communicators
 
@@ -168,7 +171,7 @@
 
       enddo
 
-!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+!     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
       if ( couplerFlag ) then
        my_component_ind=-1
@@ -223,7 +226,7 @@
      & '========================================'
       write(LogUnit,*) 'This is "',myTypeStr,'"'
       write(LogUnit,*) 'myid in MPI_COMM_World = ',myid
-      if (.not.couplerFlag) 
+      if (.not.couplerFlag)
      &  write(LogUnit,*) 'myid in MPI_COMM_Global = ',j
 
 !     ------------------------------------------------------------------

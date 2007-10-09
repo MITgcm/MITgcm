@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xz.F,v 1.11 2007/10/09 00:00:01 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -202,7 +204,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
                      cbuffindex = cbuffindex + 1
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
-                        cbuff(cbuffindex) = 
+                        cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,jj,bj,jp,kk) *
 # ifdef CTRL_PACK_PRECISE
      &                       sqrt(weightfldxz(i,bi,ip,bj,jp,k,iobcs))
@@ -210,7 +212,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
      &                       sqrt(weightfld(k,iobcs))
 # endif
                      else
-                        cbuff(cbuffindex) = 
+                        cbuff(cbuffindex) =
      &                       globfld3d(i,bi,ip,jj,bj,jp,kk) /
 # ifdef CTRL_PACK_PRECISE
      &                       sqrt(weightfldxz(i,bi,ip,bj,jp,k,iobcs))
@@ -284,7 +286,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
                      cbuffindex = cbuffindex + 1
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
-                        cbuff(cbuffindex) = 
+                        cbuff(cbuffindex) =
      &                       globfldxz(i,bi,ip,bj,jp,k) *
 # ifdef CTRL_PACK_PRECISE
      &                       sqrt(weightfldxz(i,bi,ip,bj,jp,k,iobcs))
@@ -292,7 +294,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
      &                       sqrt(weightfld(k,iobcs))
 # endif
                      else
-                        cbuff(cbuffindex) = 
+                        cbuff(cbuffindex) =
      &                       globfldxz(i,bi,ip,bj,jp,k) /
 # ifdef CTRL_PACK_PRECISE
      &                       sqrt(weightfldxz(i,bi,ip,bj,jp,k,iobcs))

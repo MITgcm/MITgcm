@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xyz.F,v 1.19 2007/10/09 00:00:01 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -133,17 +135,17 @@ c--   Only the master thread will do I/O.
          write(cfile3(1:80),'(80a)') ' '
          if ( lxxadxx ) then
             write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
-     &           'diag_unpack_nondim_ctrl_', 
+     &           'diag_unpack_nondim_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
             write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
-     &           'diag_unpack_dimens_ctrl_', 
+     &           'diag_unpack_dimens_ctrl_',
      &           ivartype, '_', optimcycle, '.bin'
          else
             write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
-     &           'diag_unpack_nondim_grad_', 
+     &           'diag_unpack_nondim_grad_',
      &           ivartype, '_', optimcycle, '.bin'
             write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
-     &           'diag_unpack_dimens_grad_', 
+     &           'diag_unpack_dimens_grad_',
      &           ivartype, '_', optimcycle, '.bin'
          endif
 
@@ -166,7 +168,7 @@ c--   Only the master thread will do I/O.
      &     Nr, weightfld3d, 1, mythid)
 #endif
 
-      call MDSREADFIELD_3D_GL( 
+      call MDSREADFIELD_3D_GL(
      &     masktype, ctrlprec, 'RL',
      &     Nr, globmsk, 1, mythid)
 
@@ -224,10 +226,10 @@ cph(
 cph)
 #ifdef ALLOW_ADMTLM
                      nveccount = nveccount + 1
-                     globfld3d(i,bi,ip,j,bj,jp,k) = 
+                     globfld3d(i,bi,ip,j,bj,jp,k) =
      &                 phtmpadmtlm(nveccount)
 cph(
-                     globfldtmp2(i,bi,ip,j,bj,jp) = 
+                     globfldtmp2(i,bi,ip,j,bj,jp) =
      &                 phtmpadmtlm(nveccount)
 cph)
 #endif
@@ -272,7 +274,7 @@ c
             endif
 c
          enddo
-             
+
          call MDSWRITEFIELD_3D_GL( fname, ctrlprec, 'RL',
      &                             Nr, globfld3d,
      &                             irec,  optimcycle, mythid)

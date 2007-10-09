@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_curmtr.F,v 1.2 2005/03/28 23:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_curmtr.F,v 1.3 2007/10/09 00:02:50 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -54,21 +55,21 @@ c     == local variables ==
       integer nrec
       integer irec
       integer ilu
-      
+
       _RL fctile_curmtr
       _RL fcthread_curmtr
       _RL wwwu (1-olx:snx+olx,1-oly:sny+oly)
       _RL wwwv (1-olx:snx+olx,1-oly:sny+oly)
       _RL wu (1-olx:snx+olx,1-oly:sny+oly)
       _RL wv (1-olx:snx+olx,1-oly:sny+oly)
-      _RL umask (1-olx:snx+olx,1-oly:sny+oly)  
-      _RL vmask (1-olx:snx+olx,1-oly:sny+oly)    
+      _RL umask (1-olx:snx+olx,1-oly:sny+oly)
+      _RL vmask (1-olx:snx+olx,1-oly:sny+oly)
       _RL tmpuobs (1-olx:snx+olx,1-oly:sny+oly)
       _RL tmpubar (1-olx:snx+olx,1-oly:sny+oly)
       _RL tmpvobs (1-olx:snx+olx,1-oly:sny+oly)
       _RL tmpvbar (1-olx:snx+olx,1-oly:sny+oly)
       _RL spval
-      
+
       character*(80) fnameuvel
       character*(80) fnamevvel
 
@@ -92,13 +93,13 @@ c     == end of interface ==
       jmax = sny
       imin = 1
       imax = snx
-      
+
       spval = -9990.
 
 c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
-      
+
 #ifdef ALLOW_CURMTR_COST_CONTRIBUTION
 
 #ifdef ECCO_VERBOSE
@@ -116,16 +117,16 @@ c--   Read state record from global file.
 
       if (optimcycle .ge. 0) then
         ilu=ilnblnk( ubarfile )
-        write(fnameuvel(1:80),'(2a,i10.10)') 
+        write(fnameuvel(1:80),'(2a,i10.10)')
      &       ubarfile(1:ilu), '.', optimcycle
       endif
 
       if (optimcycle .ge. 0) then
         ilu=ilnblnk( vbarfile )
-        write(fnamevvel(1:80),'(2a,i10.10)') 
+        write(fnamevvel(1:80),'(2a,i10.10)')
      &       vbarfile(1:ilu), '.', optimcycle
       endif
-      
+
       fcthread_curmtr = 0. _d 0
 
 c--   Loop over records.
@@ -136,7 +137,7 @@ c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnameuvel, ubar, irec,
      &          doglobalread, ladinit,
      &          optimcycle, mythid, xx_ubar_mean_dummy )
-  
+
 
 cgg    Then meridional velocity.
         call active_read_xyz( fnamevvel, vbar, irec,
@@ -172,7 +173,7 @@ c--           Determine the weights to be used.
                   if (curmtrvobs(i,j,k,bi,bj) .eq. 0.) then
                     vmask(i,j) = 0. _d 0
                   endif
-                 
+
                   if (curmtruobs(i,j,k,bi,bj) .lt. spval) then
                     umask(i,j) = 0. _d 0
                   endif
@@ -180,7 +181,7 @@ c--           Determine the weights to be used.
                   if (curmtrvobs(i,j,k,bi,bj) .lt. spval) then
                     vmask(i,j) = 0. _d 0
                   endif
-                  
+
 cph(
 cph               print *, 'WARNING: SPECIFIC SETUP FOR ECCO'
 cph               below statement could be replaced by following
@@ -188,11 +189,11 @@ cph               to make it independnet of Nr:
 cph
 cph               if ( rC(K) .GT. -1000. ) then
 cph)
-c                 set cmask=0 in areas shallower than 1000m 
+c                 set cmask=0 in areas shallower than 1000m
 cgg                  if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
 cgg                    cmask(i,j) = 0. _d 0
 cgg                  endif
-                  
+
                   if (_hFacW(i,j,k,bi,bj) .eq. 0.) then
                     umask(i,j) = 0. _d 0
                   endif
@@ -200,7 +201,7 @@ cgg                  endif
                   if (_hFacS(i,j,k,bi,bj) .eq. 0.) then
                     vmask(i,j) = 0. _d 0
                   endif
-                  
+
                 enddo
               enddo
 
@@ -226,23 +227,23 @@ cgg(  Perform the comparison in observation space.
          tmpubar(i,j) = ubar(11,12,k,bi,bj)
          tmpvbar(i,j) = (vbar(10,12,k,bi,bj) + vbar(11,12,k,bi,bj)
      &                 +vbar(10,13,k,bi,bj) + vbar(11,13,k,bi,bj))/4.
-                  endif 
+                  endif
                   if ( (i .eq. 8) .and. (j .eq. 9)) then
          tmpubar(i,j) = (ubar(7,8,k,bi,bj) + ubar(8,8,k,bi,bj)
      &                 +ubar(7,9,k,bi,bj) + ubar(8,9,k,bi,bj))/4.
          tmpvbar(i,j) = vbar(7,9,k,bi,bj)
-                  endif 
+                  endif
                   if ( (i .eq. 5) .and. (j .eq. 5)) then
          tmpubar(i,j) = (ubar(5,4,k,bi,bj) + ubar(5,5,k,bi,bj))/2.
          tmpvbar(i,j) = (vbar(4,5,k,bi,bj) + vbar(5,5,k,bi,bj))/2.
-                  endif 
+                  endif
                   if ( (i .eq. 11) .and. (j .eq. 5)) then
          tmpubar(i,j) = (ubar(11,4,k,bi,bj)+ubar(11,5,k,bi,bj))/2.
          tmpvbar(i,j) = (vbar(10,5,k,bi,bj)+vbar(11,5,k,bi,bj))/2.
-                  endif 
-#endif                
+                  endif
+#endif
 
-cgg(  Weights are subject to individual's preference. 
+cgg(  Weights are subject to individual's preference.
                   wu(i,j) = wcurrent2(i,j,k,bi,bj)
                   wv(i,j) = wcurrent2(i,j,k,bi,bj)
 cgg                  wtmp(i,j) = wtheta2(i,j,k,bi,bj)
@@ -252,17 +253,17 @@ cgg                  wtmp(i,j) = wtheta2(i,j,k,bi,bj)
               do j = jmin,jmax
                 do i = imin,imax
 c--               The array tmpuobs contains current meter velocities.
-cgg                  if(umask(i,j).eq.1.0 .and.tmpubar(i,j) .ne. 0. ) then 
+cgg                  if(umask(i,j).eq.1.0 .and.tmpubar(i,j) .ne. 0. ) then
 cgg                   print *,'cost_curmtr U',i,j,tmpubar(i,j),tmpuobs(i,j)
 cgg                  endif
 
-cgg                  if(vmask(i,j).eq.1.0.and.tmpvbar(i,j) .ne. 0.) then 
+cgg                  if(vmask(i,j).eq.1.0.and.tmpvbar(i,j) .ne. 0.) then
 cgg                   print *,'cost_curmtr V',i,j,tmpvbar(i,j),tmpvobs(i,j)
 cgg                  endif
 
 cgg( Add one more zero check.
                   if (tmpubar(i,j) .ne. 0.) then
-                    fctile_curmtr = fctile_curmtr + 
+                    fctile_curmtr = fctile_curmtr +
      &                             (wu(i,j)*wwwu(i,j))*
      &                             (tmpubar(i,j)-tmpuobs(i,j))*
      &                             (tmpubar(i,j)-tmpuobs(i,j))
@@ -272,7 +273,7 @@ cgg( Add one more zero check.
 
 cgg( Add one more zero check.
                   if (tmpvbar(i,j) .ne. 0.) then
-                    fctile_curmtr = fctile_curmtr + 
+                    fctile_curmtr = fctile_curmtr +
      &                             (wv(i,j)*wwwv(i,j))*
      &                             (tmpvbar(i,j)-tmpvobs(i,j))*
      &                             (tmpvbar(i,j)-tmpvobs(i,j))
@@ -285,7 +286,7 @@ cgg( Add one more zero check.
 c--         End of loop over layers.
 
             fcthread_curmtr    = fcthread_curmtr    + fctile_curmtr
-            objf_curmtr(bi,bj) = objf_curmtr(bi,bj) + fctile_curmtr   
+            objf_curmtr(bi,bj) = objf_curmtr(bi,bj) + fctile_curmtr
 
 #ifdef ECCO_VERBOSE
             write(msgbuf,'(a)') ' '
@@ -333,7 +334,7 @@ c--   End of second loop over records.
 #else
 c--   Do not enter the calculation of the CTD temperature contribution
 c--   to the final cost function.
-      
+
       fctile_curmtr   = 0. _d 0
       fcthread_curmtr = 0. _d 0
 

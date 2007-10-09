@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/Attic/ctrl_obcsbal.F,v 1.5 2007/10/09 00:00:00 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -14,11 +16,11 @@ c     ==================================================================
 c     SUBROUTINE ctrl_obcsbal
 c     ==================================================================
 c
-c     o volumetrically balance the control vector contribution. 
+c     o volumetrically balance the control vector contribution.
 c     o Assume the calendar is identical
 c       for all open boundaries. Need to save the barotropic adjustment
-c       velocity so it can be used in all ctrl_getobcs files. 
-c     o WARNING: eastern boundary (not defined) filenames have been a 
+c       velocity so it can be used in all ctrl_getobcs files.
+c     o WARNING: eastern boundary (not defined) filenames have been a
 c                problem in the past.
 c
 c     - started G. Gebbie, MIT-WHOI, 15-June-2002
@@ -159,14 +161,14 @@ c--   Do the global summation.
 
         shiftvel(2) = volflux / area
         print*,'volflux,area',volflux,area
-      endif  
-cgg    End of the obcsnfirst loop. 
+      endif
+cgg    End of the obcsnfirst loop.
 
       if ( ( obcsnfirst) .or. (obcsnchanged)) then
 
 cgg     Swap the value.
         shiftvel(1) = shiftvel(2)
- 
+
         volflux = 0. d0
         area= 0. d0
 
@@ -179,8 +181,8 @@ c--   Do the global summation.
         shiftvel(2) = volflux /area
         print*,'volflux,area',volflux,area
 
-      endif  
-cgg    End of the obcsnfirst, obcsnchanged loop. 
+      endif
+cgg    End of the obcsnfirst, obcsnchanged loop.
 
 #endif
 
