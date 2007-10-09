@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/sphere/sphere_ad.flow,v 1.3 2007/10/09 00:11:39 jmc Exp $
+C $Name:  $
+
 CADJ SUBROUTINE FSC4DAT input  = 1, 2
 CADJ SUBROUTINE FSC4DAT output = 2
 CADJ SUBROUTINE FSC4DAT depend = 1

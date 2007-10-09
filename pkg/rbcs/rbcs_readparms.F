@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.3 2007/10/09 00:09:25 jmc Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 #include "PACKAGES_CONFIG.h"
 

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.3 2006/12/15 18:02:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.4 2007/10/09 00:10:13 jmc Exp $
+C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -81,9 +82,9 @@ c     == external functions ==
 c     == end of interface ==
 
       if ( myTime .GT. (endTime - lastinterval) ) then
-         tempVar = 1. / 
+         tempVar = 1. /
      &             ( ( 1. + min(endTime-startTime,lastinterval) )
-     &             / deltaTClock ) 
+     &             / deltaTClock )
 
 cph(
       print *, 'ph-ice B ', myiter, theta(4,4,1,1,1),

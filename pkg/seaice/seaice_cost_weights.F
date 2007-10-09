@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_weights.F,v 1.4 2007/06/25 20:17:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_weights.F,v 1.5 2007/10/09 00:10:13 jmc Exp $
+C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -91,11 +92,11 @@ c--       North/South and West/East edges set to zero.
           enddo
         enddo
       enddo
-c--   
+c--
       nnz   = 1
       irec  = 1
       k     = 1
-      if ( smrarea_errfile .NE. ' ' ) then 
+      if ( smrarea_errfile .NE. ' ' ) then
          call mdsreadfield( smrarea_errfile, cost_iprec, cost_yftype,
      &        nnz, wsmrarea, irec, mythid )
          do bj = jtlo,jthi
@@ -126,7 +127,7 @@ c--
           do j = jmin,jmax
             do i = imin,imax
               if (wsmrarea(i,j,bi,bj) .ne. 0.)
-     &              wsmrarea(i,j,bi,bj) = 
+     &              wsmrarea(i,j,bi,bj) =
      &              1./wsmrarea(i,j,bi,bj)/wsmrarea(i,j,bi,bj)
             enddo
           enddo

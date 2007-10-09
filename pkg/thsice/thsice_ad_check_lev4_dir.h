@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ad_check_lev4_dir.h,v 1.4 2007/10/09 00:12:13 jmc Exp $
+C $Name:  $
+
 CADJ STORE iceMask    = tapelev4, key = ilev_4
 CADJ STORE iceHeight  = tapelev4, key = ilev_4
 CADJ STORE snowHeight = tapelev4, key = ilev_4

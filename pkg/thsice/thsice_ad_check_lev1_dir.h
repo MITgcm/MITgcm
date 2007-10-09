@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ad_check_lev1_dir.h,v 1.4 2007/10/09 00:12:13 jmc Exp $
+C $Name:  $
+
 CADJ STORE iceMask = comlev1, key = ikey_dynamics
 CADJ STORE iceHeight  = comlev1, key = ikey_dynamics
 CADJ STORE snowHeight = comlev1, key = ikey_dynamics

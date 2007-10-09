@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.9 2007/09/28 00:52:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.10 2007/10/09 00:10:13 jmc Exp $
+C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
@@ -58,7 +59,7 @@ c     == end of interface ==
       ithi = mybxhi(mythid)
 
       ifc = 30
-      
+
       f_ice      = 0. _d 0
       f_smrarea  = 0. _d 0
 c
@@ -72,7 +73,7 @@ c
 c--   Sum up all contributions.
       do bj = jtlo,jthi
         do bi = itlo,ithi
- 
+
           fc = fc
      &          + mult_ice_export * objf_ice_export(bi,bj)
      &          + mult_ice        * objf_ice(bi,bj)
@@ -92,7 +93,7 @@ cph this is done only in ecco_cost_final!
 cph      _GLOBAL_SUM_R8( fc , myThid )
 
 c--   Do global summation for each part of the cost function
-            
+
       _GLOBAL_SUM_R8( f_ice , myThid )
       _GLOBAL_SUM_R8( f_smrarea , myThid )
 
@@ -106,16 +107,16 @@ c--   Do global summation for each part of the cost function
 
 c--   Each process has calculated the global part for itself.
       _BEGIN_MASTER( mythid )
-    
+
         write(cfname,'(A,i4.4)') 'costfunction_seaice',optimcycle
         open(unit=ifc,file=cfname)
-      
+
         write(ifc,*) 'fc =', fc
         write(ifc,*) 'f_ice   =', f_ice, no_ice
         write(ifc,*) 'f_smrarea   =', f_smrarea, no_smrarea
 
         close(ifc)
-        
+
       _END_MASTER( mythid )
 
       SEAICE_dumpFreq = 0.

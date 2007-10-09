@@ -1,12 +1,14 @@
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ad.flow,v 1.3 2007/10/09 00:12:13 jmc Exp $
+C $Name:  $
 
 C----------------------------------------
-C subroutine thsice_read_pickup 
+C subroutine thsice_read_pickup
 C----------------------------------------
 CADJ SUBROUTINE thsice_read_pickup  INPUT  = 1,2,3
 CADJ SUBROUTINE thsice_read_pickup  OUTPUT =
 
 C----------------------------------------
-C subroutine THSICE_DIAG_SUFX 
+C subroutine THSICE_DIAG_SUFX
 C----------------------------------------
 CADJ SUBROUTINE THSICE_DIAG_SUFX  INPUT  = 1,2
 CADJ SUBROUTINE THSICE_DIAG_SUFX  OUTPUT = 1

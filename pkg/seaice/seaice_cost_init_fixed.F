@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.3 2005/09/01 14:28:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.4 2007/10/09 00:10:13 jmc Exp $
+C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "AD_CONFIG.h"

@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/showflops/SHOWFLOPS_INIT.h,v 1.2 2007/10/09 00:11:02 jmc Exp $
+C $Name:  $
 
 #if defined(TIME_PER_TIMESTEP) || defined(USE_PAPI_FLOPS) || defined(USE_PCL_FLOPS)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -24,7 +26,7 @@ CCE107 common block for PCL summary performance
       INTEGER*8 i_result(5), descr
       REAL*8 fp_result(5)
       COMMON /pclvars/ i_result, descr, fp_result, pcl_counter_list,
-     $     flags, nevents 
+     $     flags, nevents
       INTEGER nmaxevents
       PARAMETER (nmaxevents = 61)
       CHARACTER*22 pcl_counter_name(0:nmaxevents-1)

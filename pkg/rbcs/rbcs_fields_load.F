@@ -1,20 +1,22 @@
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.6 2007/10/09 00:09:25 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 #include "PACKAGES_CONFIG.h"
- 
+
 C     !ROUTINE: RBCS_FIELDS_LOAD
 C     !INTERFACE:
       SUBROUTINE RBCS_FIELDS_LOAD( myTime, myIter, myThid )
 C     *==========================================================*
-C     | SUBROUTINE RBCS_FIELDS_LOAD                           
-C     | o Control reading of fields from external source.         
+C     | SUBROUTINE RBCS_FIELDS_LOAD
+C     | o Control reading of fields from external source.
 C     *==========================================================*
-C     | Offline External source field loading routine.                    
-C     | This routine is called every time we want to              
-C     | load a a set of external fields. The routine decides      
-C     | which fields to load and then reads them in.              
-C     | This routine needs to be customised for particular        
-C     | experiments.                                              
+C     | Offline External source field loading routine.
+C     | This routine is called every time we want to
+C     | load a a set of external fields. The routine decides
+C     | which fields to load and then reads them in.
+C     | This routine needs to be customised for particular
+C     | experiments.
 C     *==========================================================*
 
 C     !USES:
@@ -46,7 +48,7 @@ c     fn      :: Temp. for building file name.
       CHARACTER*(MAX_LEN_FNAM) fn2
       INTEGER prec
 
- 
+
 
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
@@ -109,12 +111,12 @@ C Now calculate whether it is time to update the forcing arrays
        Ifprd=int(rbcsForcingPeriod*rdt+0.5)
        Ifcyc=int(rbcsForcingCycle*rdt+0.5)
        Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
- 
+
        intime0=int(Iftm/Ifprd)
        intime1=mod(intime0+1,nForcingPeriods)
        aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
        bWght=1.-aWght
- 
+
        intime0=intime0+1
        INTIME1=intime1+1
       else
@@ -159,10 +161,10 @@ c
            if (useRBCptrnum(iTracer)) then
             WRITE(fn,'(A)') relaxPtracerFile(iTracer)
             CALL MDSREADFIELD ( fn, prec,
-     &       'RS', Nr, rbcptr0(1-Olx,1-Oly,1,1,1,iTracer), 
+     &       'RS', Nr, rbcptr0(1-Olx,1-Oly,1,1,1,iTracer),
      &                                         intime0, myThid )
             CALL MDSREADFIELD ( fn, prec,
-     &       'RS', Nr, rbcptr1(1-Olx,1-Oly,1,1,1,iTracer), 
+     &       'RS', Nr, rbcptr1(1-Olx,1-Oly,1,1,1,iTracer),
      &                                         intime1, myThid )
            endif
          ENDDO
@@ -186,20 +188,20 @@ C
          ENDDO
        endif
 #endif
- 
+
 c
       ENDIF
 c
-    
-C--   Interpolate 
+
+C--   Interpolate
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         do k=1,Nr
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          RBCtemp(i,j,k,bi,bj)   = bWght*rbct0(i,j,k,bi,bj)  
+          RBCtemp(i,j,k,bi,bj)   = bWght*rbct0(i,j,k,bi,bj)
      &                       +aWght*rbct1(i,j,k,bi,bj)
-          RBCsalt(i,j,k,bi,bj)    = bWght*rbcs0(i,j,k,bi,bj) 
+          RBCsalt(i,j,k,bi,bj)    = bWght*rbcs0(i,j,k,bi,bj)
      &                       +aWght*rbcs1(i,j,k,bi,bj)
          ENDDO
         ENDDO
@@ -216,7 +218,7 @@ C--   Interpolate
            do k=1,Nr
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
-             RBC_ptracers(i,j,k,bi,bj,iTracer)   = 
+             RBC_ptracers(i,j,k,bi,bj,iTracer)   =
      &                      bWght*rbcptr0(i,j,k,bi,bj,iTracer)
      &                     +aWght*rbcptr1(i,j,k,bi,bj,iTracer)
             ENDDO
@@ -231,7 +233,7 @@ C--   Interpolate
 
         CALL TIMER_STOP ('RBCS_FIELDS_LOAD      [I/O]', myThid)
 
-#endif   
+#endif
 c! ALLOW_RBCS
 
       RETURN

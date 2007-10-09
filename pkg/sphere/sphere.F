@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/sphere/sphere.F,v 1.3 2007/10/09 00:11:39 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
@@ -445,7 +447,7 @@ cadj loop = parallel
             SHC(K+M) = SHC(K+M) + P(I1) * CE
             SHC(K-M) = SHC(K-M) + P(I1) * SE
             K = K+L+L+2
-            SHC(K+M) = SHC(K+M) + P(I2) * CO                    
+            SHC(K+M) = SHC(K+M) + P(I2) * CO
             SHC(K-M) = SHC(K-M) + P(I2) * SO
          ENDDO
          I = I + 2
@@ -524,7 +526,7 @@ C
       END DO
 
       RETURN
-      END 
+      END
 
 c     ==================================================================
 

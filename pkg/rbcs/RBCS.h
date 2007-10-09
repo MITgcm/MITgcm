@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/Attic/RBCS.h,v 1.6 2007/10/09 00:09:25 jmc Exp $
+C $Name:  $
+
 #ifdef ALLOW_RBCS
 
 CBOP
@@ -11,7 +14,7 @@ C Some of these can be read in from data.rbcs
 c number of mask to read
       INTEGER maskLEN
       PARAMETER(maskLEN = 3 )
- 
+
       _RL RBC_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,maskLEN)
       _RL RBCtemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL RBCsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

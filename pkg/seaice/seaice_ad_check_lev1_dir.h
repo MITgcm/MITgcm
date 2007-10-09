@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.16 2007/10/09 00:10:13 jmc Exp $
+C $Name:  $
+
 # ifdef EXACT_CONSERV
 CADJ STORE pmepr         = comlev1, key = ikey_dynamics
 # endif

@@ -1,4 +1,7 @@
-#ifdef  ALLOW_OFFLINE   
+C $Header: /u/gcmpack/MITgcm/pkg/offline/OFFLINE.h,v 1.5 2007/10/09 00:13:15 jmc Exp $
+C $Name:  $
+
+#ifdef  ALLOW_OFFLINE
 c     !ROUTINE: OFFLINE.h
 c -------------------------------
 c   OFFLINE.h
@@ -9,12 +12,12 @@ c   Forcing files
       COMMON /OFFLINE_FFIELDS/
      &       ConvectCount,
      &       UvelFile, VvelFile, WvelFile, ThetFile, Saltfile,
-     &       ConvFile, GMwxFile, GMwyFile, GMwzFile, 
+     &       ConvFile, GMwxFile, GMwyFile, GMwzFile,
      &       HfluxFile, SfluxFile,
      &       KPP_DiffSFile, KPP_ghatFile,
      &       deltaToffline,
      &       offlineIter0, offlineOffsetIter,
-     &       offlineForcingPeriod, offlineForcingCycle   
+     &       offlineForcingPeriod, offlineForcingCycle
       _RS  ConvectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       CHARACTER*(MAX_LEN_FNAM) UvelFile
       CHARACTER*(MAX_LEN_FNAM) VvelFile

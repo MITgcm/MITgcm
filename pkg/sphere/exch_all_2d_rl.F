@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sphere/exch_all_2d_rl.F,v 1.1 2005/02/17 18:55:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sphere/exch_all_2d_rl.F,v 1.2 2007/10/09 00:11:39 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
@@ -94,7 +95,7 @@ c--     get coordinates of processor (iporc-1)
       enddo
 
 #ifndef ALWAYS_USE_MPI
-      ENDIF                 
+      ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
 

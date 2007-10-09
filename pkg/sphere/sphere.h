@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/sphere/sphere.h,v 1.3 2007/10/09 00:11:39 jmc Exp $
+C $Name:  $
 
 c     ==================================================================
 c     HEADER SPHERE

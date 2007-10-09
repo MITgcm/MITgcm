@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ad.flow,v 1.5 2007/10/09 00:13:15 jmc Exp $
+C $Name:  $
 
 C----------------------------------------
 C subroutine  GMREDI_OUTPUT

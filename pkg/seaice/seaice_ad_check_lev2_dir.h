@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev2_dir.h,v 1.12 2007/10/09 00:10:13 jmc Exp $
+C $Name:  $
 
 CADJ STORE StoreSEAICE    = tapelev2, key = ilev_2
 

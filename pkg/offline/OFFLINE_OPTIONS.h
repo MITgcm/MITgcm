@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/offline/OFFLINE_OPTIONS.h,v 1.2 2007/10/09 00:13:15 jmc Exp $
+C $Name:  $
 
 #ifndef OFFLINE_OPTIONS_H
 #define OFFLINE_OPTIONS_H
