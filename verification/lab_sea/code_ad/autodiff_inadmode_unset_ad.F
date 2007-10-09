@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/Attic/autodiff_inadmode_unset_ad.F,v 1.1 2006/12/15 18:11:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/Attic/autodiff_inadmode_unset_ad.F,v 1.2 2007/10/09 02:36:27 jmc Exp $
+C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 

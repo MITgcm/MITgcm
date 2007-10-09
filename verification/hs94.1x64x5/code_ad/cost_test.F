@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/cost_test.F,v 1.1 2003/10/26 01:58:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/cost_test.F,v 1.2 2007/10/09 02:36:42 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

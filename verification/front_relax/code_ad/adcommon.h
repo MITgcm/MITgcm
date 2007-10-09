@@ -1,18 +1,21 @@
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/adcommon.h,v 1.3 2007/10/09 02:36:41 jmc Exp $
+C $Name:  $
+
 C     These common blocks are extracted from the
 C     automatically created adjoint code.
 C     You need to make sure that they are up-to-date
 C     (i.e. in right order), and customize them
 C     accordingly.
-C 
+C
 C     heimbach@mit.edu 11-Jan-2001
 
 #ifdef ALLOW_AUTODIFF_MONITOR
 
-      common /addynvars_r/ 
-     &                     adetan, 
-     &                     aduvel, advvel, adwvel, 
-     &                     adtheta, adsalt, 
-     &                     adgu, adgv, adgt, adgs, 
+      common /addynvars_r/
+     &                     adetan,
+     &                     aduvel, advvel, adwvel,
+     &                     adtheta, adsalt,
+     &                     adgu, adgv, adgt, adgs,
      &                     adgunm1, adgvnm1, adgtnm1, adgsnm1
       _RL adetan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adgs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -30,10 +33,10 @@ C     heimbach@mit.edu 11-Jan-2001
       _RL adwvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
 #ifdef ALLOW_CD_CODE
-      common /addynvars_cd/ 
+      common /addynvars_cd/
      &                      aduveld, advveld,
-     &                      adetanm1, 
-     &                      adunm1, advnm1, 
+     &                      adetanm1,
+     &                      adunm1, advnm1,
      &                      adgucd, adgvcd
       _RL aduveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL advveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -54,7 +57,7 @@ C     heimbach@mit.edu 11-Jan-2001
       _RL adsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 #ifdef ALLOW_TR10_CONTROL
-      common /adtr1_r/ 
+      common /adtr1_r/
      &                 adtr1, adgtr1, adgtr1nm1
       _RL adgtr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgtr1nm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -62,13 +65,13 @@ C     heimbach@mit.edu 11-Jan-2001
 #endif
 
 #ifdef ALLOW_DIFFKR_CONTROL
-      common /addynvars_diffkr/ 
+      common /addynvars_diffkr/
      &                          addiffkr
       _RL addiffkr(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif
 
 #ifdef ALLOW_KAPGM_CONTROL
-      common /addynvars_kapgm/ 
+      common /addynvars_kapgm/
      &                          adkapgm
       _RL adkapgm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif

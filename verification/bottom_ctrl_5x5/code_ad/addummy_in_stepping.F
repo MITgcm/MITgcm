@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/addummy_in_stepping.F,v 1.1 2006/06/07 02:00:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/addummy_in_stepping.F,v 1.2 2007/10/09 02:36:41 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
@@ -42,7 +43,7 @@ C     myTime - time counter for this thread
 C     myThid - Thread number for this instance of the routine.
       integer myThid
       integer myiter
-      _RL     mytime 
+      _RL     mytime
 
 C     !LOCAL VARIABLES:
 c     == local variables ==
@@ -84,40 +85,40 @@ Cml        CALL WRITE_FLD_XY_RL ( 'ADJtauy.',suff, adfv, myIter, myThid)
 Cml        CALL WRITE_FLD_XY_RL ( 'ADJqnet.',suff, adqnet, myIter, myThid)
 Cml        CALL WRITE_FLD_XY_RL ( 'ADJempr.',suff, adempmr, myIter, myThid)
 c
-Cml        CALL WRITE_FLD_XYZ_RL( 
+Cml        CALL WRITE_FLD_XYZ_RL(
 Cml     &       'ADJgtnm1.',suff, adgtnm1, myIter, myThid)
-Cml        CALL WRITE_FLD_XYZ_RL( 
+Cml        CALL WRITE_FLD_XYZ_RL(
 Cml     &       'ADJgsnm1.',suff, adgsnm1, myIter, myThid)
-Cml        CALL WRITE_FLD_XYZ_RL( 
+Cml        CALL WRITE_FLD_XYZ_RL(
 Cml     &       'ADJgunm1.',suff, adgunm1, myIter, myThid)
-Cml        CALL WRITE_FLD_XYZ_RL( 
+Cml        CALL WRITE_FLD_XYZ_RL(
 Cml     &       'ADJgvnm1.',suff, adgvnm1, myIter, myThid)
 Cml#ifdef ALLOW_PASSIVE_TRACER
-Cml        CALL WRITE_FLD_XYZ_RL( 
+Cml        CALL WRITE_FLD_XYZ_RL(
 Cml     &       'ADJgtr1nm1. ',suff, adgtr1nm1, myIter, myThid)
 Cml#endif
 c
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'ADJtheta.',suff, adtheta, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'ADJsalt.',suff, adsalt, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'ADJuvel.',suff, aduvel, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'ADJvvel.',suff, advvel, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
+        CALL WRITE_FLD_XYZ_RL(
      &       'ADJwvel.',suff, adwvel, myIter, myThid)
 
 Cml#ifdef ALLOW_PASSIVE_TRACER
-Cml        CALL WRITE_FLD_XYZ_RL( 
+Cml        CALL WRITE_FLD_XYZ_RL(
 Cml     &       'ADJtr1. ',suff, adtr1, myIter, myThid)
 Cml#endif
 Cml#ifdef ALLOW_DIFFKR_CONTROL
-Cml        CALL WRITE_FLD_XYZ_RL ( 'ADJdiffkr.',suff, addiffkr, 
+Cml        CALL WRITE_FLD_XYZ_RL ( 'ADJdiffkr.',suff, addiffkr,
 Cml     &       myIter, myThid)
 Cml#endif
 Cml#ifdef ALLOW_KAPGM_CONTROL
-Cml        CALL WRITE_FLD_XYZ_RL ( 'ADJkagm.',suff, adkapgm, 
+Cml        CALL WRITE_FLD_XYZ_RL ( 'ADJkagm.',suff, adkapgm,
 Cml     &       myIter, myThid)
 Cml#endif
 #ifdef ALLOW_DEPTH_CONTROL
@@ -154,12 +155,12 @@ C--     Check for IO errors
          WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
          CALL PRINT_ERROR( msgBuf, 1 )
         ELSE
-         WRITE(msgBuf,'(A,I10)')  
+         WRITE(msgBuf,'(A,I10)')
      &    '// Model state written, timestep', myIter
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT, 1 )
          WRITE(msgBuf,'(A)')  ' '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT, 1 )
         ENDIF
 

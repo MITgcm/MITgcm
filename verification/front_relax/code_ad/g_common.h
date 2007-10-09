@@ -1,18 +1,21 @@
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/g_common.h,v 1.3 2007/10/09 02:36:41 jmc Exp $
+C $Name:  $
+
 C     These common blocks are extracted from the
 C     automatically created tangent linear code.
 C     You need to make sure that they are up-to-date
 C     (i.e. in right order), and customize them
 C     accordingly.
-C 
+C
 C     heimbach@mit.edu 11-Jan-2001
 
 #ifdef ALLOW_AUTODIFF_MONITOR
 
-      common /g_dynvars_r/ 
+      common /g_dynvars_r/
      &                     g_etan,
-     &                     g_uvel, g_vvel, g_wvel, 
-     &                     g_theta, g_salt, 
-     &                     g_gu, g_gv, g_gt, g_gs, 
+     &                     g_uvel, g_vvel, g_wvel,
+     &                     g_theta, g_salt,
+     &                     g_gu, g_gv, g_gt, g_gs,
      &                     g_gunm1, g_gvnm1, g_gtnm1, g_gsnm1
       _RL g_etan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_gs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -30,10 +33,10 @@ C     heimbach@mit.edu 11-Jan-2001
       _RL g_wvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
 #ifdef ALLOW_CD_CODE
-      common /g_dynvars_cd/ 
+      common /g_dynvars_cd/
      &                      g_uveld, g_vveld,
-     &                      g_etanm1, 
-     &                      g_unm1, g_vnm1, 
+     &                      g_etanm1,
+     &                      g_unm1, g_vnm1,
      &                      g_gucd, g_gvcd
       _RL g_uveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_vveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -54,7 +57,7 @@ C     heimbach@mit.edu 11-Jan-2001
       _RL g_sss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 #ifdef ALLOW_TR10_CONTROL
-      common /g_tr1_r/ 
+      common /g_tr1_r/
      &                 g_tr1, g_gtr1, g_gtr1nm1
       _RL g_gtr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_gtr1nm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -62,13 +65,13 @@ C     heimbach@mit.edu 11-Jan-2001
 #endif
 
 #ifdef ALLOW_DIFFKR_CONTROL
-      common /g_dynvars_diffkr/ 
+      common /g_dynvars_diffkr/
      &                          g_diffkr
       _RL g_diffkr(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif
 
 #ifdef ALLOW_KAPGM_CONTROL
-      common /g_dynvars_kapgm/ 
+      common /g_dynvars_kapgm/
      &                          g_kapgm
       _RL g_kapgm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif

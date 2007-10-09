@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/tamc.h,v 1.4 2007/10/09 02:36:42 jmc Exp $
+C $Name:  $
 
 c     ================================================================
 c     HEADER TAMC
@@ -114,7 +116,7 @@ c     and writing data.
 
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
-      INTEGER iikey, kkey, passkey, igadkey, 
+      INTEGER iikey, kkey, passkey, igadkey,
      &        itdkey, idynkey, igmkey, ikppkey
 
 c     ================================================================

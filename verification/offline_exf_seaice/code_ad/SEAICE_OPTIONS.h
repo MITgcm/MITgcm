@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/SEAICE_OPTIONS.h,v 1.1 2007/06/25 20:15:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/SEAICE_OPTIONS.h,v 1.2 2007/10/09 02:36:42 jmc Exp $
+C $Name:  $
 
 C     /==========================================================\
 C     | SEAICE_OPTIONS.h                                         |

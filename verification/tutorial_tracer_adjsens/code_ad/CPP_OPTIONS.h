@@ -1,4 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/CPP_OPTIONS.h,v 1.1 2006/04/20 18:27:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/CPP_OPTIONS.h,v 1.2 2007/10/09 02:36:42 jmc Exp $
+C $Name:  $
+
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -29,7 +31,7 @@ C o Exact volume conservation
 #define EXACT_CONSERV
 
 c o Allow atmospheric loading
-#define ATMOSPHERIC_LOADING 
+#define ATMOSPHERIC_LOADING
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"

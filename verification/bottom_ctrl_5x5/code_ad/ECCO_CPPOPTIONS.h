@@ -1,4 +1,7 @@
-C 
+C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/ECCO_CPPOPTIONS.h,v 1.2 2007/10/09 02:36:41 jmc Exp $
+C $Name:  $
+
+C
 C CPP flags controlling which code is included in the files that
 C will be compiled.
 C
@@ -45,7 +48,7 @@ C o Include the calendar tool.
 C ********************************************************************
 C ***                Cost function Package                         ***
 C ********************************************************************
-C 
+C
 C       >>> Cost function contributions
 #define ALLOW_COST
 #define ALLOW_COST_TEST
@@ -56,7 +59,7 @@ Cml#define ALLOW_COST_TRACER
 C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
-C 
+C
 #undef  ALLOW_NONDIMENSIONAL_CONTROL_IO
 C       >>> Initial values.
 Cml#define ALLOW_THETA0_CONTROL
@@ -71,7 +74,7 @@ Cml#define ALLOW_HFLUX0_CONTROL
 Cml#define ALLOW_DIFFKR_CONTROL
 #undef ALLOW_KAPGM_CONTROL
 C o only topography as a control vector
-#define ALLOW_DEPTH_CONTROL 
+#define ALLOW_DEPTH_CONTROL
 #ifdef ALLOW_DEPTH_CONTROL
 # define ALLOW_CG2D_NSA
 # define USE_SMOOTH_MIN

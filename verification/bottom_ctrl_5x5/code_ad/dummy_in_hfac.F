@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/dummy_in_hfac.F,v 1.2 2007/10/09 02:36:41 jmc Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 
       subroutine dummy_in_hfac( myname, myIter, myThid )
@@ -105,15 +108,15 @@ C--     Read IO error counter
 
         IF ( myname .eq. 'C' ) THEN
            myfullname = 'hFacC'
-           CALL WRITE_FLD_XYZ_RL ( 'ADJhFacC.', suff, adhfacc, 
+           CALL WRITE_FLD_XYZ_RL ( 'ADJhFacC.', suff, adhfacc,
      &          myIter, myThid)
         ELSE IF ( myname .eq. 'W' ) THEN
            myfullname = 'hFacW'
-           CALL WRITE_FLD_XYZ_RL ( 'ADJhFacW.', suff, adhfacw, 
+           CALL WRITE_FLD_XYZ_RL ( 'ADJhFacW.', suff, adhfacw,
      &          myIter, myThid)
         ELSE IF ( myname .eq. 'S' ) THEN
            myfullname = 'hFacS'
-           CALL WRITE_FLD_XYZ_RL ( 'ADJhFacS.', suff, adhfacs, 
+           CALL WRITE_FLD_XYZ_RL ( 'ADJhFacS.', suff, adhfacs,
      &          myIter, myThid)
         ELSE
            write(*,*) 'addummy_in_hfac: no valid myname specified'
@@ -130,12 +133,12 @@ C--     Check for IO errors
          WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
          CALL PRINT_ERROR( msgBuf, 1 )
         ELSE
-         WRITE(msgBuf,'(A,I10)')  
+         WRITE(msgBuf,'(A,I10)')
      &    '// ad'//myfullname//' written, timestep', myIter
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT, 1 )
          WRITE(msgBuf,'(A)')  ' '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT, 1 )
         ENDIF
 
