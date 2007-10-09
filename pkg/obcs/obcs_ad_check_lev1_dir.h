@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev1_dir.h,v 1.5 2007/10/09 00:07:14 jmc Exp $
+C $Name:  $
+
 #ifdef ALLOW_OBCS
 #
 #ifdef ALLOW_OBCS_NORTH
@@ -9,7 +12,7 @@ CADJ STORE obnu0,obnu1  = comlev1, key = ikey_dynamics
 CADJ STORE obnv0,obnv1  = comlev1, key = ikey_dynamics
 # ifdef ALLOW_OBCSN_CONTROL
 CADJ STORE xx_obcsn0,xx_obcsn1 = comlev1, key = ikey_dynamics
-# endif 
+# endif
 #endif /* ALLOW_OBCS_NORTH */
 #ifdef ALLOW_OBCS_SOUTH
 CADJ STORE OBSt    = comlev1, key = ikey_dynamics

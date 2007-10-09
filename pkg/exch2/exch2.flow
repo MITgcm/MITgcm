@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2.flow,v 1.2 2007/10/09 00:03:33 jmc Exp $
+C $Name:  $
+
 C------------------------------------------
 C TAF flow directives for exch2_RX1_cube
 C------------------------------------------
@@ -32,7 +35,7 @@ c$taf SUBROUTINE exch2_r81_cube FTLNAME = exch2_r81_cube
 C------------------------------------------
 C TAF flow directives for exch2_RX2_cube
 C------------------------------------------
-c$taf SUBROUTINE exch2_rl2_cube INPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13,14 
+c$taf SUBROUTINE exch2_rl2_cube INPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13,14
 c$taf SUBROUTINE exch2_rl2_cube  OUTPUT = 1,2
 c$taf SUBROUTINE exch2_rl2_cube  ACTIVE = 1,2
 c$taf SUBROUTINE exch2_rl2_cube  DEPEND =   3,4,5,6,7,8,9,10,11,12,13,14
@@ -42,7 +45,7 @@ c$taf SUBROUTINE exch2_rl2_cube FTLNAME = exch2_rl2_cube
 c$taf SUBROUTINE exch2_rs2_cube INPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13,14
 c$taf SUBROUTINE exch2_rs2_cube  OUTPUT = 1,2
 c$taf SUBROUTINE exch2_rs2_cube  ACTIVE = 1,2
-c$taf SUBROUTINE exch2_rs2_cube  DEPEND =   3,4,5,6,7,8,9,10,11,12,13,14 
+c$taf SUBROUTINE exch2_rs2_cube  DEPEND =   3,4,5,6,7,8,9,10,11,12,13,14
 c$taf SUBROUTINE exch2_rs2_cube  ADNAME = exch2_rs2_cube_ad
 c$taf SUBROUTINE exch2_rs2_cube FTLNAME = exch2_rs2_cube
 

@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad.flow,v 1.8 2007/10/09 00:04:05 jmc Exp $
+C $Name:  $
 
 C----------------------------------------
 C subroutine exf_monitor
@@ -6,7 +8,7 @@ CADJ SUBROUTINE exf_monitor  INPUT  = 1,2,3
 CADJ SUBROUTINE exf_monitor  OUTPUT =
 
 C----------------------------------------
-C subroutine exf_check_range 
+C subroutine exf_check_range
 C----------------------------------------
 CADJ SUBROUTINE exf_check_range  INPUT  = 1,2,3
 CADJ SUBROUTINE exf_check_range  OUTPUT =
@@ -29,8 +31,8 @@ C----------------------------------------
 C subroutine exf_adjoint_snapshots
 C----------------------------------------
 cadj SUBROUTINE exf_adjoint_snapshots INPUT   = 1,2,3,4
-cadj SUBROUTINE exf_adjoint_snapshots OUTPUT  = 
-cadj SUBROUTINE exf_adjoint_snapshots ACTIVE  = 
+cadj SUBROUTINE exf_adjoint_snapshots OUTPUT  =
+cadj SUBROUTINE exf_adjoint_snapshots ACTIVE  =
 cadj SUBROUTINE exf_adjoint_snapshots DEPEND  = 1,2,3,4
 cadj SUBROUTINE exf_adjoint_snapshots REQUIRED
 cadj SUBROUTINE exf_adjoint_snapshots INFLUENCED

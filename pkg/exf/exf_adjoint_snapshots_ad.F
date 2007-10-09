@@ -1,11 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.2 2007/06/06 14:05:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.3 2007/10/09 00:04:05 jmc Exp $
+C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: adexf_adjoint_snapshots
 C     !INTERFACE:
-      subroutine adexf_adjoint_snapshots( 
+      subroutine adexf_adjoint_snapshots(
      &     iwhen, mytime, myiter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -32,7 +33,7 @@ C     == Global variables ===
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
 #endif
-#include "GRID.h" 
+#include "GRID.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
 # include "adcommon.h"
 #endif
@@ -50,7 +51,7 @@ C     myThid - Thread number for this instance of the routine.
       integer iwhen
       integer myThid
       integer myiter
-      _RL     mytime 
+      _RL     mytime
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
 #ifdef ALLOW_AUTODIFF_MONITOR
@@ -143,7 +144,7 @@ c
           CALL MNC_CW_RL_W_S('D','adexf',0,0,'model_time',myTime,
      &         myThid)
 c
-          CALL MNC_CW_RL_W('D','adexf',0,0,'adustress', 
+          CALL MNC_CW_RL_W('D','adexf',0,0,'adustress',
      &         adustress, myThid)
           CALL MNC_CW_RL_W('D','adexf',0,0,'advstress',
      &         advstress, myThid)

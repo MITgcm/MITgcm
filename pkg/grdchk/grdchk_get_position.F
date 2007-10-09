@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.4 2007/05/11 20:23:26 utke Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_position.F,v 1.5 2007/10/09 00:05:45 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -86,7 +87,7 @@ c     == end of interface ==
       _BEGIN_MASTER( mythid )
 
 c--   determine proc. number from following assumptions
-               
+
       if ( myProcId .EQ. grdchkwhichproc ) then
 
 c     initialise parameters
@@ -120,7 +121,7 @@ c--   Start to loop over records.
 
 cph(
 cph-print               print *, 'ph-grd get_pos irec, bj, bi, k ',
-cph-print     &              irec, bj, bi, k 
+cph-print     &              irec, bj, bi, k
 cph)
              if ( ierr .ne. 0 ) then
                icvrec = irec
@@ -189,20 +190,20 @@ c
                         ierr     = 0
                         print '(a,6I5)',
      &                       ' grad-res exact position met: '
-                        print '(a,7I5)', 
+                        print '(a,7I5)',
      &                       ' grad-res ', grdchkwhichproc,
      &                       nbeg, itilepos, jtilepos, layer,
      &                       itile, jtile
                         goto 1234
                      endif
-                  else if ( pastit .EQ. 0 .AND. 
+                  else if ( pastit .EQ. 0 .AND.
      &                    wetlocal .NE.0 ) then
                      nbeg = icomptest
                      nend = nbeg + nend
                      ierr     = 0
                         print '(a,6I5)',
      &                       ' grad-res closest next position: '
-                        print '(a,7I5)', 
+                        print '(a,7I5)',
      &                       ' grad-res ', grdchkwhichproc,
      &                       nbeg, itilepos, jtilepos, layer,
      &                       itile, jtile

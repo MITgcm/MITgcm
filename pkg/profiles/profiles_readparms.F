@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.5 2006/10/25 01:15:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.6 2007/10/09 00:07:59 jmc Exp $
+C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
 
@@ -40,7 +41,7 @@ C     iUnit       - Work variable for IO unit number
 c     == end of interface ==
 
 c--   Read the namelist input.
-      namelist /profiles_nml/ 
+      namelist /profiles_nml/
      &                   profilesfiles,
      &                   mult_profiles
 
@@ -78,12 +79,12 @@ c--     Set default values.
       profilesfile_equi_type=2
 
       if (NVARMAX.GT.6) then
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      & 'PROFILES_READPARMS: you need to define variables 7 to NVARMAX'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
         stop
-      endif 
+      endif
 
 c--     Next, read the cost data file.
         WRITE(msgBuf,'(A)') 'PROFILES_READPARMS: opening data.profiles'

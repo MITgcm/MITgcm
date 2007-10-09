@@ -1,4 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_PARAMS.h,v 1.6 2005/07/24 01:24:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_PARAMS.h,v 1.7 2007/10/09 00:03:33 jmc Exp $
+C $Name:  $
+
 C
 C     /==========================================================\
 C     | W2_EXCH2_PARAMS.h Parameters for a WRAPPER2 topology     |
@@ -20,8 +22,8 @@ c     INTEGER E2_MSGHANDLES(2,MAX_NEIGHBOURS, nSx)
 
 C     e2FillValue_RX :: filling value for null regions (face-corner halo regions)
       INTEGER e2BufrRecSize
-      PARAMETER ( 
-     & e2BufrRecSize = ( (sNx+2*OLx)*2*OLy+(sNy+2*OLy)*2*OLx)*Nr 
+      PARAMETER (
+     & e2BufrRecSize = ( (sNx+2*OLx)*2*OLy+(sNy+2*OLy)*2*OLx)*Nr
      &)
       _RL E2BUFR1_RL( e2BufrRecSize, MAX_NEIGHBOURS, nSx, 2 )
       _RL E2BUFR2_RL( e2BufrRecSize, MAX_NEIGHBOURS, nSx, 2 )

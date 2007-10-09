@@ -1,3 +1,4 @@
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_ncfile.F,v 1.7 2007/10/09 00:07:59 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -49,17 +50,17 @@ c1) creation :
       err = NF_INQ_VARID(fid1,prof_names(num_var), varid0 )
       if (err.EQ.NF_NOERR) then
 
-      err = NF_DEF_VAR (fid2,prof_names(num_var), NF_DOUBLE, 
-     & 2,vecid,varid(2+(num_var-1)*2)) 
+      err = NF_DEF_VAR (fid2,prof_names(num_var), NF_DOUBLE,
+     & 2,vecid,varid(2+(num_var-1)*2))
       err = NF_PUT_ATT_DOUBLE(fid2, varid(2+(num_var-1)*2),'_FillValue',
-     & NF_DOUBLE,1, 0. _d 0 ) 
-      err = NF_DEF_VAR (fid2,prof_namesmask(num_var), 
+     & NF_DOUBLE,1, 0. _d 0 )
+      err = NF_DEF_VAR (fid2,prof_namesmask(num_var),
      & NF_DOUBLE, 2,vecid, varid(3+(num_var-1)*2))
       err = NF_PUT_ATT_DOUBLE(fid2,varid(3+(num_var-1)*2),'_FillValue',
      & NF_DOUBLE,1, 0. _d 0)
 
       endif
-      enddo 
+      enddo
 
       err=NF_ENDDEF(fid2)
       err=NF_CLOSE(fid2)
@@ -77,7 +78,7 @@ c1) creation :
        enddo
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8(Zlength+1,tmp_vec)
-#endif    
+#endif
        do irec=length,1,-1
        do num_var=prof_num_var_tot(num_file,bi,bj),1,-1
        write(fid2,rec=((irec-1)*prof_num_var_tot(num_file,bi,bj)

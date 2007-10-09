@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_summary.F,v 1.7 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_summary.F,v 1.8 2007/10/09 00:05:45 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
@@ -31,7 +32,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid 
+      integer mythid
 
 #ifdef ALLOW_GRDCHK
 c     == local variables ==

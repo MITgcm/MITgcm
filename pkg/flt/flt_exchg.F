@@ -1,11 +1,14 @@
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.3 2007/10/09 00:04:53 jmc Exp $
+C $Name:  $
+
 C /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.1 2001/09/13 17:43:55 adcroft Exp
 C checkpoint52h_pre
 
 #include "FLT_CPPOPTIONS.h"
 
       subroutine flt_exchg (
-     I                       myCurrentIter, 
-     I                       myCurrentTime, 
+     I                       myCurrentIter,
+     I                       myCurrentTime,
      I                       myThid
      &                      )
 
@@ -15,7 +18,7 @@ c     ==================================================================
 c
 c     o Exchange particles between tiles.
 c
-c     started: Arne Biastoch 
+c     started: Arne Biastoch
 c
 c     changed: Antti Westerlund antti.westerlund@helsinki.fi 2004.06.10
 c
@@ -68,7 +71,7 @@ C     and pack to arrays
 
          DO bj=myByLo(myThid),myByHi(myThid)
             DO bi=myBxLo(myThid),myBxHi(myThid)
-      
+
 c initialize buffers
 
                do m=1,imax2
@@ -93,16 +96,16 @@ c
      &                    ' max_npart_exch too low. stop in flt_exchg'
 
                      ic=(icountE-1)*imax
-                     fltbuf_sendE(ic+1,bi,bj) =   npart(ip,bi,bj) 
-                     fltbuf_sendE(ic+2,bi,bj) =  tstart(ip,bi,bj) 
-                     fltbuf_sendE(ic+3,bi,bj) =   xpart(ip,bi,bj) 
-                     fltbuf_sendE(ic+4,bi,bj) =   ypart(ip,bi,bj) 
-                     fltbuf_sendE(ic+5,bi,bj) =   kpart(ip,bi,bj) 
-                     fltbuf_sendE(ic+6,bi,bj) =  kfloat(ip,bi,bj) 
-                     fltbuf_sendE(ic+7,bi,bj) =     iup(ip,bi,bj) 
-                     fltbuf_sendE(ic+8,bi,bj) =    itop(ip,bi,bj) 
-                     fltbuf_sendE(ic+9,bi,bj) =    tend(ip,bi,bj) 
-                     
+                     fltbuf_sendE(ic+1,bi,bj) =   npart(ip,bi,bj)
+                     fltbuf_sendE(ic+2,bi,bj) =  tstart(ip,bi,bj)
+                     fltbuf_sendE(ic+3,bi,bj) =   xpart(ip,bi,bj)
+                     fltbuf_sendE(ic+4,bi,bj) =   ypart(ip,bi,bj)
+                     fltbuf_sendE(ic+5,bi,bj) =   kpart(ip,bi,bj)
+                     fltbuf_sendE(ic+6,bi,bj) =  kfloat(ip,bi,bj)
+                     fltbuf_sendE(ic+7,bi,bj) =     iup(ip,bi,bj)
+                     fltbuf_sendE(ic+8,bi,bj) =    itop(ip,bi,bj)
+                     fltbuf_sendE(ic+9,bi,bj) =    tend(ip,bi,bj)
+
                      npart(ip,bi,bj) =   npart(npart_tile(bi,bj),bi,bj)
                      tstart(ip,bi,bj) =  tstart(npart_tile(bi,bj),bi,bj)
                      xpart(ip,bi,bj)  =   xpart(npart_tile(bi,bj),bi,bj)
@@ -123,16 +126,16 @@ c
      &                    ' max_npart_exch too low. stop in flt_exchg'
 
                      ic=(icountW-1)*imax
-                     fltbuf_sendW(ic+1,bi,bj) =   npart(ip,bi,bj) 
-                     fltbuf_sendW(ic+2,bi,bj) =  tstart(ip,bi,bj) 
-                     fltbuf_sendW(ic+3,bi,bj) =   xpart(ip,bi,bj) 
-                     fltbuf_sendW(ic+4,bi,bj) =   ypart(ip,bi,bj) 
-                     fltbuf_sendW(ic+5,bi,bj) =   kpart(ip,bi,bj) 
-                     fltbuf_sendW(ic+6,bi,bj) =  kfloat(ip,bi,bj) 
-                     fltbuf_sendW(ic+7,bi,bj) =     iup(ip,bi,bj) 
-                     fltbuf_sendW(ic+8,bi,bj) =    itop(ip,bi,bj) 
-                     fltbuf_sendW(ic+9,bi,bj) =    tend(ip,bi,bj) 
-                     
+                     fltbuf_sendW(ic+1,bi,bj) =   npart(ip,bi,bj)
+                     fltbuf_sendW(ic+2,bi,bj) =  tstart(ip,bi,bj)
+                     fltbuf_sendW(ic+3,bi,bj) =   xpart(ip,bi,bj)
+                     fltbuf_sendW(ic+4,bi,bj) =   ypart(ip,bi,bj)
+                     fltbuf_sendW(ic+5,bi,bj) =   kpart(ip,bi,bj)
+                     fltbuf_sendW(ic+6,bi,bj) =  kfloat(ip,bi,bj)
+                     fltbuf_sendW(ic+7,bi,bj) =     iup(ip,bi,bj)
+                     fltbuf_sendW(ic+8,bi,bj) =    itop(ip,bi,bj)
+                     fltbuf_sendW(ic+9,bi,bj) =    tend(ip,bi,bj)
+
                      npart(ip,bi,bj)  =   npart(npart_tile(bi,bj),bi,bj)
                      tstart(ip,bi,bj) =  tstart(npart_tile(bi,bj),bi,bj)
                      xpart(ip,bi,bj)  =   xpart(npart_tile(bi,bj),bi,bj)
@@ -144,9 +147,9 @@ c
                      tend(ip,bi,bj)   =    tend(npart_tile(bi,bj),bi,bj)
 
                      npart_tile(bi,bj) = npart_tile(bi,bj) - 1
-                     
+
                   endif
-                  
+
                enddo
             ENDDO
          ENDDO
@@ -154,7 +157,7 @@ c
 C--   "Put" east and west edges.
          CALL EXCH_RL_SEND_PUT_VEC_X( fltbuf_sendE, fltbuf_sendW,
      I        imax2, myThid )
-C--   Receive east/west arrays 
+C--   Receive east/west arrays
          CALL EXCH_RL_RECV_GET_VEC_X( fltbuf_recvE, fltbuf_recvW,
      I        imax2, myThid )
 
@@ -162,32 +165,32 @@ C--   Unpack arrays on new tiles
 
          DO bj=myByLo(myThid),myByHi(myThid)
             DO bi=myBxLo(myThid),myBxHi(myThid)
-               
+
                do ip=1,max_npart_exch
 c
                   ic=(ip-1)*imax
                   if (fltbuf_recvE(ic+1,bi,bj) .eq. 0.) goto 100
                   npart_tile(bi,bj) = npart_tile(bi,bj) + 1
-                  if (npart_tile(bi,bj) .gt. max_npart_tile) 
+                  if (npart_tile(bi,bj) .gt. max_npart_tile)
      &                 stop ' max_npart_tile too low. stop in flt_exchg'
 
-                  npart(npart_tile(bi,bj),bi,bj) = 
+                  npart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+1,bi,bj)
-                  tstart(npart_tile(bi,bj),bi,bj) = 
+                  tstart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+2,bi,bj)
-                  xpart(npart_tile(bi,bj),bi,bj) = 
+                  xpart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+3,bi,bj)
-                  ypart(npart_tile(bi,bj),bi,bj) = 
+                  ypart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+4,bi,bj)
-                  kpart(npart_tile(bi,bj),bi,bj) = 
+                  kpart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+5,bi,bj)
-                  kfloat(npart_tile(bi,bj),bi,bj) = 
+                  kfloat(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+6,bi,bj)
-                  iup(npart_tile(bi,bj),bi,bj) = 
+                  iup(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+7,bi,bj)
-                  itop(npart_tile(bi,bj),bi,bj) = 
+                  itop(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+8,bi,bj)
-                  tend(npart_tile(bi,bj),bi,bj) = 
+                  tend(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+9,bi,bj)
 
                enddo
@@ -198,28 +201,28 @@ c
                   ic=(ip-1)*imax
                   if (fltbuf_recvW(ic+1,bi,bj) .eq. 0.) goto 200
                   npart_tile(bi,bj) = npart_tile(bi,bj) + 1
-                  if (npart_tile(bi,bj) .gt. max_npart_tile) 
+                  if (npart_tile(bi,bj) .gt. max_npart_tile)
      &                 stop ' max_npart_tile too low. stop in flt_exchg'
 
-                  npart(npart_tile(bi,bj),bi,bj) = 
+                  npart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+1,bi,bj)
-                  tstart(npart_tile(bi,bj),bi,bj) = 
+                  tstart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+2,bi,bj)
-                  xpart(npart_tile(bi,bj),bi,bj) = 
+                  xpart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+3,bi,bj)
-                  ypart(npart_tile(bi,bj),bi,bj) = 
+                  ypart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+4,bi,bj)
-                  kpart(npart_tile(bi,bj),bi,bj) = 
+                  kpart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+5,bi,bj)
-                  kfloat(npart_tile(bi,bj),bi,bj) = 
+                  kfloat(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+6,bi,bj)
-                  iup(npart_tile(bi,bj),bi,bj) = 
+                  iup(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+7,bi,bj)
-                  itop(npart_tile(bi,bj),bi,bj) = 
+                  itop(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+8,bi,bj)
-                  itop(npart_tile(bi,bj),bi,bj) = 
+                  itop(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+8,bi,bj)
-                  tend(npart_tile(bi,bj),bi,bj) = 
+                  tend(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+9,bi,bj)
 
                enddo
@@ -229,7 +232,7 @@ c
          ENDDO
 
 caw end tile check
-      endif 
+      endif
 
 C--   Choose floats that have to exchanged with northern and southern tiles
 C     and pack to arrays
@@ -239,7 +242,7 @@ caw Check if there are northern/southern tiles
 
          DO bj=myByLo(myThid),myByHi(myThid)
             DO bi=myBxLo(myThid),myBxHi(myThid)
-      
+
 c initialize buffers
 
                do m=1,imax2
@@ -264,15 +267,15 @@ c initialize buffers
      &                    ' max_npart_exch too low. stop in flt_exchg'
 
                      ic=(icountN-1)*imax
-                     fltbuf_sendE(ic+1,bi,bj) =   npart(ip,bi,bj) 
-                     fltbuf_sendE(ic+2,bi,bj) =  tstart(ip,bi,bj) 
-                     fltbuf_sendE(ic+3,bi,bj) =   xpart(ip,bi,bj) 
-                     fltbuf_sendE(ic+4,bi,bj) =   ypart(ip,bi,bj) 
-                     fltbuf_sendE(ic+5,bi,bj) =   kpart(ip,bi,bj) 
-                     fltbuf_sendE(ic+6,bi,bj) =  kfloat(ip,bi,bj) 
-                     fltbuf_sendE(ic+7,bi,bj) =     iup(ip,bi,bj) 
-                     fltbuf_sendE(ic+8,bi,bj) =    itop(ip,bi,bj) 
-                     fltbuf_sendE(ic+9,bi,bj) =    tend(ip,bi,bj) 
+                     fltbuf_sendE(ic+1,bi,bj) =   npart(ip,bi,bj)
+                     fltbuf_sendE(ic+2,bi,bj) =  tstart(ip,bi,bj)
+                     fltbuf_sendE(ic+3,bi,bj) =   xpart(ip,bi,bj)
+                     fltbuf_sendE(ic+4,bi,bj) =   ypart(ip,bi,bj)
+                     fltbuf_sendE(ic+5,bi,bj) =   kpart(ip,bi,bj)
+                     fltbuf_sendE(ic+6,bi,bj) =  kfloat(ip,bi,bj)
+                     fltbuf_sendE(ic+7,bi,bj) =     iup(ip,bi,bj)
+                     fltbuf_sendE(ic+8,bi,bj) =    itop(ip,bi,bj)
+                     fltbuf_sendE(ic+9,bi,bj) =    tend(ip,bi,bj)
 
                      npart(ip,bi,bj) =  npart(npart_tile(bi,bj),bi,bj)
                      tstart(ip,bi,bj) = tstart(npart_tile(bi,bj),bi,bj)
@@ -289,19 +292,19 @@ c initialize buffers
 
                   if (ypart(ip,bi,bj) .le. ylo) then
                      icountS=icountS+1
-                     if (icountS .gt. max_npart_exch) stop 
+                     if (icountS .gt. max_npart_exch) stop
      &                    ' max_npart_exch too low. stop in flt_exchg'
 
                      ic=(icountS-1)*imax
-                     fltbuf_sendW(ic+1,bi,bj) =   npart(ip,bi,bj) 
-                     fltbuf_sendW(ic+2,bi,bj) =  tstart(ip,bi,bj) 
-                     fltbuf_sendW(ic+3,bi,bj) =   xpart(ip,bi,bj) 
-                     fltbuf_sendW(ic+4,bi,bj) =   ypart(ip,bi,bj) 
-                     fltbuf_sendW(ic+5,bi,bj) =   kpart(ip,bi,bj) 
-                     fltbuf_sendW(ic+6,bi,bj) =  kfloat(ip,bi,bj) 
-                     fltbuf_sendW(ic+7,bi,bj) =     iup(ip,bi,bj) 
-                     fltbuf_sendW(ic+8,bi,bj) =    itop(ip,bi,bj) 
-                     fltbuf_sendW(ic+9,bi,bj) =    tend(ip,bi,bj) 
+                     fltbuf_sendW(ic+1,bi,bj) =   npart(ip,bi,bj)
+                     fltbuf_sendW(ic+2,bi,bj) =  tstart(ip,bi,bj)
+                     fltbuf_sendW(ic+3,bi,bj) =   xpart(ip,bi,bj)
+                     fltbuf_sendW(ic+4,bi,bj) =   ypart(ip,bi,bj)
+                     fltbuf_sendW(ic+5,bi,bj) =   kpart(ip,bi,bj)
+                     fltbuf_sendW(ic+6,bi,bj) =  kfloat(ip,bi,bj)
+                     fltbuf_sendW(ic+7,bi,bj) =     iup(ip,bi,bj)
+                     fltbuf_sendW(ic+8,bi,bj) =    itop(ip,bi,bj)
+                     fltbuf_sendW(ic+9,bi,bj) =    tend(ip,bi,bj)
 
                      npart(ip,bi,bj) =   npart(npart_tile(bi,bj),bi,bj)
                      tstart(ip,bi,bj) =  tstart(npart_tile(bi,bj),bi,bj)
@@ -333,32 +336,32 @@ C--   Unpack arrays on new tiles
 
          DO bj=myByLo(myThid),myByHi(myThid)
             DO bi=myBxLo(myThid),myBxHi(myThid)
-      
+
                do ip=1,max_npart_exch
 c
                   ic=(ip-1)*imax
                   if (fltbuf_recvE(ic+1,bi,bj) .eq. 0.) goto 300
                   npart_tile(bi,bj) = npart_tile(bi,bj) + 1
-                  if (npart_tile(bi,bj) .gt. max_npart_tile) 
+                  if (npart_tile(bi,bj) .gt. max_npart_tile)
      &                 stop ' max_npart_tile too low. stop in flt_exchg'
 
-                  npart(npart_tile(bi,bj),bi,bj) =  
+                  npart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+1,bi,bj)
-                  tstart(npart_tile(bi,bj),bi,bj) =  
+                  tstart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+2,bi,bj)
-                  xpart(npart_tile(bi,bj),bi,bj) =  
+                  xpart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+3,bi,bj)
-                  ypart(npart_tile(bi,bj),bi,bj) =  
+                  ypart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+4,bi,bj)
-                  kpart(npart_tile(bi,bj),bi,bj) =  
+                  kpart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+5,bi,bj)
-                  kfloat(npart_tile(bi,bj),bi,bj) =  
+                  kfloat(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+6,bi,bj)
-                  iup(npart_tile(bi,bj),bi,bj) =  
+                  iup(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+7,bi,bj)
-                  itop(npart_tile(bi,bj),bi,bj) =  
+                  itop(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+8,bi,bj)
-                  tend(npart_tile(bi,bj),bi,bj) =  
+                  tend(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvE(ic+9,bi,bj)
 
                enddo
@@ -369,31 +372,31 @@ c
                   ic=(ip-1)*imax
                   if (fltbuf_recvW(ic+1,bi,bj) .eq. 0.) goto 400
                   npart_tile(bi,bj) = npart_tile(bi,bj) + 1
-                  if (npart_tile(bi,bj) .gt. max_npart_tile) 
+                  if (npart_tile(bi,bj) .gt. max_npart_tile)
      &                 stop ' max_npart_tile too low. stop in flt_exchg'
 
-                  npart(npart_tile(bi,bj),bi,bj) =  
+                  npart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+1,bi,bj)
-                  tstart(npart_tile(bi,bj),bi,bj) =  
+                  tstart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+2,bi,bj)
-                  xpart(npart_tile(bi,bj),bi,bj) =  
+                  xpart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+3,bi,bj)
-                  ypart(npart_tile(bi,bj),bi,bj) =  
+                  ypart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+4,bi,bj)
-                  kpart(npart_tile(bi,bj),bi,bj) =  
+                  kpart(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+5,bi,bj)
-                  kfloat(npart_tile(bi,bj),bi,bj) =  
+                  kfloat(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+6,bi,bj)
-                  iup(npart_tile(bi,bj),bi,bj) =  
+                  iup(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+7,bi,bj)
-                  itop(npart_tile(bi,bj),bi,bj) =  
+                  itop(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+8,bi,bj)
-                  tend(npart_tile(bi,bj),bi,bj) =  
+                  tend(npart_tile(bi,bj),bi,bj) =
      &                 fltbuf_recvW(ic+9,bi,bj)
 
                enddo
  400           continue
-               
+
             ENDDO
          ENDDO
 

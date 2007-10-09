@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev4_dir.h,v 1.4 2007/10/09 00:07:14 jmc Exp $
+C $Name:  $
+
 #ifdef ALLOW_OBCS
 #
 CADJ STORE shiftvel = tapelev4, key = ilev_4

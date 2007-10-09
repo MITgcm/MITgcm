@@ -1,10 +1,12 @@
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_control_profiles.F,v 1.5 2007/10/09 00:07:59 jmc Exp $
+C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
 
 C     o==========================================================o
 C     | subroutine active_file_control_profile                   |
 C     | o handles the i/o of active variables for the adjoint    |
-C     |   calculations, related to netcdf profiles data files    | 
+C     |   calculations, related to netcdf profiles data files    |
 C     | o active_read_profile_rl, active_write_profile_rl	 |
 C     | started: Gael Forget 15-March-2006			 |
 C     o==========================================================o
@@ -77,7 +79,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       err = NF_INQ_VARID(fid,prof_names(active_varnum), varid1 )
       err = NF_GET_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_var)
-      
+
       err = NF_INQ_VARID(fid,prof_namesmask(active_varnum)
      & ,varid1)
       err = NF_GET_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
@@ -90,7 +92,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
      & vec_tmp
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8(nactive_var+1,vec_tmp)
-#endif    
+#endif
       do ivar=1,nactive_var
       active_var(ivar)=vec_tmp(ivar)
       enddo
@@ -104,7 +106,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       prof_mask1D_cur(ivar,bi,bj)=vec_tmp(ivar)
       enddo
 
-      endif 
+      endif
 
         _END_MASTER( mythid )
 
@@ -143,7 +145,7 @@ c       Store the result on disk.
       err = NF_PUT_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_data_t)
 
-c       Set active_var to zero. 
+c       Set active_var to zero.
         do i = 1,nactive_var
            active_var(i) = 0. _d 0
         enddo
@@ -306,7 +308,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
       err = NF_PUT_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & active_var)
 
-      err = NF_INQ_VARID(fid,prof_namesmask(active_varnum), 
+      err = NF_INQ_VARID(fid,prof_namesmask(active_varnum),
      & varid1 )
       err = NF_PUT_VARA_DOUBLE(fid, varid1 , vec_start, vec_count,
      & prof_mask1D_cur(1,bi,bj))

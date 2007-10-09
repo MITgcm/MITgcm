@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev2_dir.h,v 1.16 2007/10/09 00:04:05 jmc Exp $
+C $Name:  $
+
 #ifdef ALLOW_EXF
 
 CADJ STORE StoreEXF1    = tapelev2, key = ilev_2

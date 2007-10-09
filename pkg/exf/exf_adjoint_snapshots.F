@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots.F,v 1.3 2007/06/06 14:08:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots.F,v 1.4 2007/10/09 00:04:05 jmc Exp $
+C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
@@ -18,7 +19,7 @@ C     myThid - Thread number for this instance of the routine.
       integer iwhen
       integer myThid
       integer myiter
-      _RL     mytime 
+      _RL     mytime
 
 #ifdef ALLOW_AUTODIFF_MONITOR
       call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )

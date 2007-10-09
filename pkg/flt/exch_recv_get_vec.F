@@ -1,4 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_recv_get_vec.F,v 1.1 2001/09/13 17:43:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_recv_get_vec.F,v 1.2 2007/10/09 00:04:53 jmc Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 #include "CPP_EEOPTIONS.h"
 
@@ -22,7 +24,7 @@ C     == Global variables ==
 
 C     == Routine arguments ==
 C     arrayE - Arrays to exchange be exchanged.
-C     arrayW 
+C     arrayW
 C     myd1   - sizes.
 C     myd2
 C     theSimulationMode - Forward or reverse mode exchange ( provides
@@ -57,9 +59,9 @@ C                                  tile face uses.
 #endif
 
 
-C--   Under a "put" scenario we 
+C--   Under a "put" scenario we
 C--     i. set completetion signal for buffer we put into.
-C--    ii. wait for completetion signal indicating data has been put in 
+C--    ii. wait for completetion signal indicating data has been put in
 C--        our buffer.
 C--   Under a messaging mode we "receive" the message.
 C--   Under a "get" scenario we
@@ -98,7 +100,7 @@ c     &      theProc,theTag,theSize,(arrayW(i,bi,bj),i=1,32)
 c         endif
 c         endif
 #ifndef ALWAYS_USE_MPI
-        ENDIF                 
+        ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
         ENDIF
@@ -115,7 +117,7 @@ c         endif
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 #ifndef ALWAYS_USE_MPI
-        ENDIF                 
+        ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
         ENDIF
@@ -157,7 +159,7 @@ c          CALL MPI_Waitall( exchVReqsX(1,bi,bj), exchReqVIdX(1,1,bi,bj),
           CALL MPI_Waitall( exchNReqsX(1,bi,bj), exchReqIdX(1,1,bi,bj),
      &                      mpiStatus, mpiRC )
 #ifndef ALWAYS_USE_MPI
-        ENDIF                 
+        ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
          ENDIF
@@ -217,7 +219,7 @@ C     == Global variables ==
 
 C     == Routine arguments ==
 C     arrayN - Arrays to exchange be exchanged.
-C     arrayS 
+C     arrayS
 C     myd1   - sizes.
 C     myd2
 C     theSimulationMode - Forward or reverse mode exchange ( provides
@@ -251,9 +253,9 @@ C                                  tile face uses.
 #endif
 
 
-C--   Under a "put" scenario we 
+C--   Under a "put" scenario we
 C--     i. set completetion signal for buffer we put into.
-C--    ii. wait for completetion signal indicating data has been put in 
+C--    ii. wait for completetion signal indicating data has been put in
 C--        our buffer.
 C--   Under a messaging mode we "receive" the message.
 C--   Under a "get" scenario we
@@ -283,7 +285,7 @@ C--   iii. Set data read flag + memory sync.
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 #ifndef ALWAYS_USE_MPI
-        ENDIF                 
+        ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
         ENDIF
@@ -300,7 +302,7 @@ C--   iii. Set data read flag + memory sync.
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 #ifndef ALWAYS_USE_MPI
-        ENDIF                 
+        ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
         ENDIF
@@ -342,7 +344,7 @@ c          CALL MPI_Waitall( exchVReqsY(1,bi,bj), exchReqVIdY(1,1,bi,bj),
           CALL MPI_Waitall( exchNReqsY(1,bi,bj), exchReqIdY(1,1,bi,bj),
      &                      mpiStatus, mpiRC )
 #ifndef ALWAYS_USE_MPI
-        ENDIF                 
+        ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
          ENDIF

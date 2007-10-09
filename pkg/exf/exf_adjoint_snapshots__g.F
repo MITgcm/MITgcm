@@ -1,10 +1,12 @@
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots__g.F,v 1.3 2007/10/09 00:04:05 jmc Exp $
+C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: g_exf_adjoint_snapshots
 C     !INTERFACE:
-      subroutine g_exf_adjoint_snapshots( 
+      subroutine g_exf_adjoint_snapshots(
      &     iwhen, mytime, myiter, myThid )
 
 C     !DESCRIPTION: \bv

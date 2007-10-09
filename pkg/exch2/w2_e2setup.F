@@ -1,9 +1,12 @@
-       SUBROUTINE W2_E2SETUP                       
-                                                  
-C      Tile toplogy settings data structures      
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_e2setup.F,v 1.2 2007/10/09 00:03:33 jmc Exp $
+C $Name:  $
+
+       SUBROUTINE W2_E2SETUP
+
+C      Tile toplogy settings data structures
 #include "W2_EXCH2_TOPOLOGY.h"
-                                                  
-C      Tile settings table                        
+
+C      Tile settings table
        CALL W2_E2SETUP_1
        CALL W2_E2SETUP_2
        CALL W2_E2SETUP_3
@@ -91,7 +94,7 @@ C      Topology for tile 1
        exch2_opposingSend_record(4,1)=1
        RETURN
        END
-                                                  
+
        SUBROUTINE W2_E2SETUP_2
 C      Topology for tile 2
 #include "W2_EXCH2_TOPOLOGY.h"
@@ -171,7 +174,7 @@ C      Topology for tile 2
        exch2_opposingSend_record(4,2)=3
        RETURN
        END
-                                                  
+
        SUBROUTINE W2_E2SETUP_3
 C      Topology for tile 3
 #include "W2_EXCH2_TOPOLOGY.h"
@@ -251,7 +254,7 @@ C      Topology for tile 3
        exch2_opposingSend_record(4,3)=1
        RETURN
        END
-                                                  
+
        SUBROUTINE W2_E2SETUP_4
 C      Topology for tile 4
 #include "W2_EXCH2_TOPOLOGY.h"
@@ -331,7 +334,7 @@ C      Topology for tile 4
        exch2_opposingSend_record(4,4)=3
        RETURN
        END
-                                                  
+
        SUBROUTINE W2_E2SETUP_5
 C      Topology for tile 5
 #include "W2_EXCH2_TOPOLOGY.h"
@@ -411,7 +414,7 @@ C      Topology for tile 5
        exch2_opposingSend_record(4,5)=1
        RETURN
        END
-                                                  
+
        SUBROUTINE W2_E2SETUP_6
 C      Topology for tile 6
 #include "W2_EXCH2_TOPOLOGY.h"
@@ -491,4 +494,4 @@ C      Topology for tile 6
        exch2_opposingSend_record(4,6)=3
        RETURN
        END
-                                                  
+

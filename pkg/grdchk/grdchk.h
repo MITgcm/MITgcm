@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk.h,v 1.12 2007/10/09 00:05:45 jmc Exp $
+C $Name:  $
 
 c     ==================================================================
 c     HEADER GRADIENT_CHECK

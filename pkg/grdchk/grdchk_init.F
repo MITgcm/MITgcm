@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.9 2006/11/19 23:17:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.10 2007/10/09 00:05:45 jmc Exp $
+C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -112,22 +113,22 @@ c--   control variable on the current tile.
                   do iobcs = 1, nobcs
                      if ( grdchkvarindex .eq. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL
-                        nwettile(bi,bj,k,iobcs) = 
+                        nwettile(bi,bj,k,iobcs) =
      &                       nwetobcsn(bi,bj,k,iobcs)
 #endif
                      else if ( grdchkvarindex .eq. 12 ) then
 #ifdef ALLOW_OBCSS_CONTROL
-                        nwettile(bi,bj,k,iobcs) = 
+                        nwettile(bi,bj,k,iobcs) =
      &                       nwetobcss(bi,bj,k,iobcs)
 #endif
                      else if ( grdchkvarindex .eq. 13 ) then
 #ifdef ALLOW_OBCSW_CONTROL
-                        nwettile(bi,bj,k,iobcs) = 
+                        nwettile(bi,bj,k,iobcs) =
      &                       nwetobcsw(bi,bj,k,iobcs)
 #endif
                      else if ( grdchkvarindex .eq. 14 ) then
 #ifdef ALLOW_OBCSE_CONTROL
-                        nwettile(bi,bj,k,iobcs) = 
+                        nwettile(bi,bj,k,iobcs) =
      &                       nwetobcse(bi,bj,k,iobcs)
 #endif
                      endif
@@ -155,7 +156,7 @@ c--   components of the given control variable.
             do k = 1,ncvarnrmax(grdchkvarindex)
                do iobcs = 1, nobcs
                   ncvarcomp     = ncvarcomp + nwettile(bi,bj,k,iobcs)
-                  maxncvarcomps = maxncvarcomps + 
+                  maxncvarcomps = maxncvarcomps +
      &                 ncvarxmax(grdchkvarindex)*
      &                 ncvarymax(grdchkvarindex)
                enddo
@@ -169,7 +170,7 @@ c--   components of the given control variable.
          do bi = itlo,ithi
             iwetsum(bi,bj,0)    = 0
             do k = 1,ncvarnrmax(grdchkvarindex)
-               iwetsum(bi,bj,k) = iwetsum(bi,bj,k-1) + 
+               iwetsum(bi,bj,k) = iwetsum(bi,bj,k-1) +
      &              nwettile(bi,bj,k,1)
             enddo
          enddo

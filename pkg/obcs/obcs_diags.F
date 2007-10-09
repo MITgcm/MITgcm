@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_diags.F,v 1.6 2007/10/09 00:07:14 jmc Exp $
+C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
@@ -43,7 +45,7 @@ C     myCurrentTime - Current time of simulation ( s )
 #ifdef ALLOW_OBCS
 C     == Local variables ==
 
-C--   Generaly only thread 1 does IO here. It can not start until 
+C--   Generaly only thread 1 does IO here. It can not start until
 C--   all threads fields are ready.
       IF (
      &  DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,deltaTClock)
@@ -86,4 +88,4 @@ C--   all threads fields are ready.
 
       RETURN
       END
- 
+

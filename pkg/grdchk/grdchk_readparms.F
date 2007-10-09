@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.11 2007/04/20 19:26:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.12 2007/10/09 00:05:45 jmc Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
@@ -116,7 +117,7 @@ c       Next, read the calendar data file.
 
         READ(unit = iUnit, nml = grdchk_nml)
 
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &     'GRDCHK_READPARMS: finished reading data.grdchk'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                SQUEEZE_RIGHT , 1)
@@ -130,7 +131,7 @@ c       Next, read the calendar data file.
            STOP 'S/R grdchk_readparms'
         ENDIF
         IF ( jGloTile .GT. 1 .AND. useCubedSphereExchange ) THEN
-           WRITE(msgBuf,'(A)') 
+           WRITE(msgBuf,'(A)')
      &          'jGloTile must be = 1 for useCubedSphereExchange'
            STOP 'S/R grdchk_readparms'
         ENDIF

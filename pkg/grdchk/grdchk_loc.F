@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.11 2006/11/19 23:17:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.12 2007/10/09 00:05:45 jmc Exp $
+C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
@@ -149,7 +150,7 @@ c--   set max loop index for obcs multiplicities
         endif
 
 cph(
-cph-print        print *, 'ph-grd _loc: icomp, ichknum ', 
+cph-print        print *, 'ph-grd _loc: icomp, ichknum ',
 cph-print     &       icomp, ichknum, ncvarcomp
 cpj)
 c--   Start to loop over records.
@@ -162,19 +163,19 @@ cph         do iobcs = iobcswrk, nobcsmax
              icglo   = icglo + nwettile(bi,bj,k,iobcs)
              icglom1 = icglo - nwettile(bi,bj,k,iobcs)
 cph(
-cph-print        print *, 'ph-grd _loc: bi, bj, icomptest, ichknum ', 
+cph-print        print *, 'ph-grd _loc: bi, bj, icomptest, ichknum ',
 cph-print     &       icomptest, ichknum
-cph-print        print *, 'ph-grd _loc: icglo ', 
+cph-print        print *, 'ph-grd _loc: icglo ',
 cph-print     &       k, icglo, icglom1, iwetsum(bi,bj,k)
 cpj)
              if ( (ierr .ne. 0) .and.
      &            (icomp .gt. icglom1 .AND. icomp .LE. icglo) ) then
 cph
 cph             if ( (ierr .ne. 0) .and.
-cph     &            (icomp .gt. 
-cph     &              (iobcs-1)*iwetsum(bi,bj,nr)+iwetsum(bi,bj,k-1)) 
+cph     &            (icomp .gt.
+cph     &              (iobcs-1)*iwetsum(bi,bj,nr)+iwetsum(bi,bj,k-1))
 cph     &              .and.
-cph     &            (icomp .le. 
+cph     &            (icomp .le.
 cph     &              (iobcs-1)*iwetsum(bi,bj,nr)+iwetsum(bi,bj,k))) then
 cph
                if ( icomptest .EQ. 0 ) then
@@ -245,7 +246,7 @@ cpj)
                   endif
 cph(
 cph-print                  print *, 'ph-grd icomp, icomptest, icomploc, i, j ',
-cph-print     &                 icomp, icomptest, icomploc, i, j 
+cph-print     &                 icomp, icomptest, icomploc, i, j
 cpj)
                   if ( icomploc .eq. icomptest ) then
                      itilepos = itmp

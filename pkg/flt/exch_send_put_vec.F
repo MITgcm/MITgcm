@@ -1,4 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.1 2001/09/13 17:43:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.2 2007/10/09 00:04:53 jmc Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_FLT
 #include "CPP_EEOPTIONS.h"
@@ -35,7 +37,7 @@ CEndOfInterface
 
 C     == Local variables ==
 C     I, J                       - Loop counters and extents
-C     bi, bj  
+C     bi, bj
 C     biW, bjW                   - West tile indices
 C     biE, bjE                   - East tile indices
 C     theProc, theTag, theType,  - Variables used in message building
@@ -52,7 +54,7 @@ C                                  tile face uses.
       INTEGER theProc, theTag, theType, theSize, mpiRc
 #endif
 C--   Write data to exchange buffer
-C     Various actions are possible depending on the communication mode 
+C     Various actions are possible depending on the communication mode
 C     as follows:
 C       Mode      Action
 C     --------   ---------------------------
@@ -73,7 +75,7 @@ C                tile
 C                Write data-ready Ack for west edge of east-neighbor
 C                tile
 C                Sync. memory
-C      
+C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -110,7 +112,7 @@ c     &                  exchReqVIdX(exchVReqsX(1,bi,bj),1,bi,bj), mpiRc)
           DO I=1,myd1
             arrayE(I,biW,bjW) = arrayW(I,bi,bj)
           ENDDO
-        ELSEIF ( westCommMode .NE. COMM_NONE 
+        ELSEIF ( westCommMode .NE. COMM_NONE
      &   .AND.   westCommMode .NE. COMM_GET ) THEN
          STOP ' S/R EXCH: Invalid commW mode.'
         ENDIF
@@ -185,13 +187,13 @@ C     sure that processes that might spin on the above Ack settings
 C     will see the setting.
 C     ** NOTE ** On some machines we wont spin on the Ack setting
 C     ( particularly the T90 ), instead we will use s system barrier.
-C     On the T90 the system barrier is very fast and switches out the 
+C     On the T90 the system barrier is very fast and switches out the
 C     thread while it waits. On most machines the system barrier
 C     is much too slow and if we own the machine and have one thread
 C     per process preemption is not a problem.
       IF ( exchNeedsMemSync  ) CALL MEMSYNC
 
-      RETURN 
+      RETURN
       END
 
       SUBROUTINE EXCH_RL_SEND_PUT_VEC_Y( arrayN, arrayS,
@@ -225,7 +227,7 @@ CEndOfInterface
 
 C     == Local variables ==
 C     I, J                       - Loop counters and extents
-C     bi, bj  
+C     bi, bj
 C     biN, bjN                   - North tile indices
 C     biS, bjS                   - South tile indices
 C     theProc, theTag, theType,  - Variables used in message building
@@ -242,7 +244,7 @@ C                                  tile face uses.
       INTEGER theProc, theTag, theType, theSize, mpiRc
 #endif
 C--   Write data to exchange buffer
-C     Various actions are possible depending on the communication mode 
+C     Various actions are possible depending on the communication mode
 C     as follows:
 C       Mode      Action
 C     --------   ---------------------------
@@ -263,7 +265,7 @@ C                tile
 C                Write data-ready Ack for west edge of north-neighbor
 C                tile
 C                Sync. memory
-C      
+C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -300,7 +302,7 @@ c     &                  exchReqVIdY(exchVReqsY(1,bi,bj),1,bi,bj), mpiRc)
           DO I=1,myd1
             arrayN(I,biS,bjS) = arrayS(I,bi,bj)
           ENDDO
-        ELSEIF ( southCommMode .NE. COMM_NONE 
+        ELSEIF ( southCommMode .NE. COMM_NONE
      &   .AND.   southCommMode .NE. COMM_GET ) THEN
          STOP ' S/R EXCH: Invalid commS mode.'
         ENDIF
@@ -369,13 +371,13 @@ C     sure that processes that might spin on the above Ack settings
 C     will see the setting.
 C     ** NOTE ** On some machines we wont spin on the Ack setting
 C     ( particularly the T90 ), instead we will use s system barrier.
-C     On the T90 the system barrier is very fast and switches out the 
+C     On the T90 the system barrier is very fast and switches out the
 C     thread while it waits. On most machines the system barrier
 C     is much too slow and if we own the machine and have one thread
 C     per process preemption is not a problem.
       IF ( exchNeedsMemSync  ) CALL MEMSYNC
 
-      RETURN 
+      RETURN
       END
 
 #else

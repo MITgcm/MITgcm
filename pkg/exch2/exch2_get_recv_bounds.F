@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_get_recv_bounds.F,v 1.2 2007/07/31 23:01:58 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_get_recv_bounds.F,v 1.3 2007/10/09 00:03:33 jmc Exp $
+C $Name:  $
 
       SUBROUTINE EXCH2_GET_RECV_BOUNDS(
      I           fCode, eWdth,
