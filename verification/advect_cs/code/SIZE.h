@@ -1,4 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_cs/code/SIZE.h,v 1.2 2004/09/27 14:49:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_cs/code/SIZE.h,v 1.3 2007/10/09 02:29:09 jmc Exp $
+C $Name:  $
+
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

@@ -1,5 +1,7 @@
+C $Header: /u/gcmpack/MITgcm/verification/global2x2_tot/code/Attic/ECCO_CPPOPTIONS.h,v 1.4 2007/10/09 02:29:10 jmc Exp $
+C $Name:  $
 
-C 
+C
 C CPP flags controlling which code is included in the files that
 C will be compiled.
 C
@@ -47,7 +49,7 @@ C o use divided adjoint to split adjoint computations
 C ********************************************************************
 C ***                     Calender Package                         ***
 C ********************************************************************
-C 
+C
 C CPP flags controlling which code is included in the files that
 C will be compiled.
 
@@ -56,7 +58,7 @@ CPH >>>>>> THERE ARE NO MORE CAL OPTIONS TO BE SET <<<<<<
 C ********************************************************************
 C ***                Cost function Package                         ***
 C ********************************************************************
-C 
+C
 #define ALLOW_COST
 
 #ifdef ALLOW_COST
@@ -130,7 +132,7 @@ c       >>> Make sure that ALLOW_OBCS is defined!
 C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
-C 
+C
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO
 
 C       >>> Initial values.
@@ -170,7 +172,7 @@ c       >>> Make sure that ALLOW_OBCS is defined
 C ********************************************************************
 C ***             External forcing Package                         ***
 C ********************************************************************
-C 
+C
 C o Include/exclude the external forcing package. To use this package,
 C   you have to include the calendar tool as well. KPP can be switched
 C   on or off. The implementation automatically takes care of this.

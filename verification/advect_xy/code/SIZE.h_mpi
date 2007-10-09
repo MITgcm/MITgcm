@@ -1,4 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/SIZE.h_mpi,v 1.1 2003/09/10 02:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/SIZE.h_mpi,v 1.2 2007/10/09 02:29:10 jmc Exp $
+C $Name:  $
+
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

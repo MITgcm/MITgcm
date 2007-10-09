@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/tamc.h,v 1.5 2007/10/09 02:29:10 jmc Exp $
+C $Name:  $
 
 c     ==================================================================
 c     HEADER TAMC

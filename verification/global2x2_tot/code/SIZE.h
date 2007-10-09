@@ -1,4 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/verification/global2x2_tot/code/Attic/SIZE.h,v 1.2 2003/11/06 22:28:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global2x2_tot/code/Attic/SIZE.h,v 1.3 2007/10/09 02:29:10 jmc Exp $
+C $Name:  $
+
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

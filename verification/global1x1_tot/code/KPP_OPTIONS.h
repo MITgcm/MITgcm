@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/KPP_OPTIONS.h,v 1.6 2007/10/09 02:29:10 jmc Exp $
+C $Name:  $
+
 C     /==========================================================\
 C     | KPP_OPTIONS.h                                            |
 C     | o CPP options file for KPP package.                      |

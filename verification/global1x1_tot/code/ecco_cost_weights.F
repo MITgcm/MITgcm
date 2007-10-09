@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/ecco_cost_weights.F,v 1.4 2006/02/15 20:56:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/ecco_cost_weights.F,v 1.5 2007/10/09 02:29:10 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -219,7 +220,7 @@ c--   Read error information and set up weight matrices.
         ilo = ifnblnk(data_errfile)
         ihi = ilnblnk(data_errfile)
 	CALL OPEN_COPY_DATA_FILE(
-     I                          data_errfile(ilo:ihi), 
+     I                          data_errfile(ilo:ihi),
      I                          'ECCO_COST_WEIGHTS',
      O                          gwunit,
      I                          myThid )
@@ -343,9 +344,9 @@ c--           Test for missing values.
             enddo
            enddo
           enddo
-         enddo            
+         enddo
       endif
-      call active_write_xyz( 'wsaltLev', wsaltLev, 
+      call active_write_xyz( 'wsaltLev', wsaltLev,
      &     1, 0, mythid, dummy)
 #endif
 
@@ -382,9 +383,9 @@ c--           Test for missing values.
             enddo
            enddo
           enddo
-         enddo            
+         enddo
       endif
-      call active_write_xyz( 'wthetaLev', wthetaLev, 
+      call active_write_xyz( 'wthetaLev', wthetaLev,
      &     1, 0, mythid, dummy)
 #endif
 
@@ -402,7 +403,7 @@ c--           Test for missing values.
             do j = jmin,jmax
              do i = imin,imax
 c--           Test for missing values.
-              if (wsalt(k,bi,bj).eq.0 .and. 
+              if (wsalt(k,bi,bj).eq.0 .and.
      $            wsalt2(i,j,k,bi,bj).eq.0) then
                  wsalt2(i,j,k,bi,bj) = 0. _d 0
               else
@@ -427,7 +428,7 @@ cph  new weights by G. Forget dont need MAX
             enddo
            enddo
           enddo
-         enddo            
+         enddo
       endif
 #endif
 
@@ -445,7 +446,7 @@ cph  new weights by G. Forget dont need MAX
             do j = jmin,jmax
              do i = imin,imax
 c--           Test for missing values.
-              if (wtheta(k,bi,bj).eq.0 .and. 
+              if (wtheta(k,bi,bj).eq.0 .and.
      $            wtheta2(i,j,k,bi,bj).eq.0) then
                  wtheta2(i,j,k,bi,bj) = 0. _d 0
               else
@@ -466,7 +467,7 @@ cph  new weights by G. Forget dont need MAX
              do i = imin,imax
               if (wtheta(k,bi,bj).eq.0 ) then
                  wtheta2(i,j,k,bi,bj) = 0. _d 0
-              else                
+              else
                  wtheta2(i,j,k,bi,bj) = ratio/(wtheta(k,bi,bj)
      $                *wtheta(k,bi,bj))*frame(i,j)
               endif
@@ -474,7 +475,7 @@ cph  new weights by G. Forget dont need MAX
             enddo
            enddo
           enddo
-         enddo            
+         enddo
       endif
 #endif
 
@@ -501,7 +502,7 @@ cph       factor 5. by D Stammer
 c--   Read egm-96 geoid covariance. Data in units of meters.
       nnz   =  1
       irec  =  1
-      call mdsreadfield( geoid_errfile, cost_iprec, cost_yftype, nnz, 
+      call mdsreadfield( geoid_errfile, cost_iprec, cost_yftype, nnz,
      &                   wp, irec, mythid )
 c--   Set all tile edges to zero.
       do bj = jtlo,jthi
@@ -522,7 +523,7 @@ cph-medit(
               if ( ( xC(i,j,bi,bj) .GT. 355. .AND.
      &               xC(i,j,bi,bj) .LT. 360. .AND.
      &               yC(i,j,bi,bj) .GT.  30. .AND.
-     &               yC(i,j,bi,bj) .LT.  48. ) 
+     &               yC(i,j,bi,bj) .LT.  48. )
      &             .OR.
      &             ( xC(i,j,bi,bj) .GT.   0. .AND.
      &               xC(i,j,bi,bj) .LT.  39. .AND.
@@ -551,7 +552,7 @@ cph-medit)
 c--   Read T/P SSH anomaly rms field. Data in units of centimeters.
       nnz   =   1
       irec  =   1
-      call mdsreadfield( ssh_errfile, cost_iprec, cost_yftype, nnz, 
+      call mdsreadfield( ssh_errfile, cost_iprec, cost_yftype, nnz,
      &                   wtp, irec, mythid )
 
       do bj = jtlo,jthi
@@ -609,9 +610,9 @@ c--   Read zonal wind stress variance.
 
       nnz   =   1
       irec  =   1
-      call mdsreadfield( scatx_errfile, cost_iprec, cost_yftype, nnz, 
+      call mdsreadfield( scatx_errfile, cost_iprec, cost_yftype, nnz,
      &                   wscatx, irec, mythid )
-      call mdsreadfield( scaty_errfile, cost_iprec, cost_yftype, nnz, 
+      call mdsreadfield( scaty_errfile, cost_iprec, cost_yftype, nnz,
      &                   wscaty, irec, mythid )
 
       do bj = jtlo,jthi
@@ -699,7 +700,7 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( tauu_errfile .NE. ' ' ) then
-         call mdsreadfield( tauu_errfile, cost_iprec, cost_yftype, nnz, 
+         call mdsreadfield( tauu_errfile, cost_iprec, cost_yftype, nnz,
      &                   wtauu, irec, mythid )
       endif
 
@@ -774,7 +775,7 @@ ce(   due to Patrick's processing:
 ce)
 
       if ( tauv_errfile .NE. ' ' ) then
-         call mdsreadfield( tauv_errfile, cost_iprec, cost_yftype, nnz, 
+         call mdsreadfield( tauv_errfile, cost_iprec, cost_yftype, nnz,
      &                   wtauv, irec, mythid )
       endif
 
@@ -849,7 +850,7 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( hflux_errfile .NE. ' ' ) then
-         call mdsreadfield( hflux_errfile, cost_iprec, cost_yftype, nnz, 
+         call mdsreadfield( hflux_errfile, cost_iprec, cost_yftype, nnz,
      &                   whflux, irec, mythid )
       endif
 
@@ -917,7 +918,7 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
       if ( sflux_errfile .NE. ' ' ) then
-         call mdsreadfield( sflux_errfile, cost_iprec, cost_yftype, nnz, 
+         call mdsreadfield( sflux_errfile, cost_iprec, cost_yftype, nnz,
      &                   wsflux, irec, mythid )
       endif
 
@@ -965,7 +966,7 @@ c--           Test for missing values.
               if (waqh(i,j,bi,bj) .lt. -9900.) then
                 waqh(i,j,bi,bj) = 0. _d 0
               endif
-c--           Data are in units of 
+c--           Data are in units of
               waqh(i,j,bi,bj) = waqh(i,j,bi,bj)
               waqh(i,j,bi,bj) = max(waqh(i,j,bi,bj),waqh0)
      &                            *frame(i,j)
@@ -1002,25 +1003,25 @@ cph)
                 wp(i,j,bi,bj) = 1./wp(i,j,bi,bj)/wp(i,j,bi,bj)
               endif
               if (wtauu(i,j,bi,bj) .ne. 0.) then
-                wtauu(i,j,bi,bj) = 
+                wtauu(i,j,bi,bj) =
      &               1./wtauu(i,j,bi,bj)/wtauu(i,j,bi,bj)
               else
                 wtauu(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wtauum(i,j,bi,bj) .ne. 0.) then
-                wtauum(i,j,bi,bj) = 
+                wtauum(i,j,bi,bj) =
      &            1./wtauum(i,j,bi,bj)/wtauum(i,j,bi,bj)
               else
                 wtauum(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wscatx(i,j,bi,bj) .ne. 0.) then
-                wscatx(i,j,bi,bj) = 
+                wscatx(i,j,bi,bj) =
      &            1./wscatx(i,j,bi,bj)/wscatx(i,j,bi,bj)
               else
                 wscatx(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wtauv(i,j,bi,bj) .ne. 0.) then
-                wtauv(i,j,bi,bj) = 
+                wtauv(i,j,bi,bj) =
      &               1./wtauv(i,j,bi,bj)/wtauv(i,j,bi,bj)
               else
                 wtauv(i,j,bi,bj) = 0.0 _d 0
@@ -1044,9 +1045,9 @@ cph)
                 whflux(i,j,bi,bj) = 0.0 _d 0
               endif
               if (whfluxm(i,j,bi,bj) .ne. 0.) then
-                whfluxm(i,j,bi,bj) = 
+                whfluxm(i,j,bi,bj) =
      &                1./whfluxm(i,j,bi,bj)/whfluxm(i,j,bi,bj)
-              else    
+              else
                 whfluxm(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wsflux(i,j,bi,bj) .ne. 0.) then
@@ -1056,20 +1057,20 @@ cph)
                 wsflux(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wsfluxm(i,j,bi,bj) .ne. 0.) then
-                wsfluxm(i,j,bi,bj) = 
+                wsfluxm(i,j,bi,bj) =
      &                1./wsfluxm(i,j,bi,bj)/wsfluxm(i,j,bi,bj)
               else
                 wsfluxm(i,j,bi,bj) = 0.0 _d 0
               endif
 cph)
               if (wuwind(i,j,bi,bj) .ne. 0.) then
-                wuwind(i,j,bi,bj) = 
+                wuwind(i,j,bi,bj) =
      &                1./wuwind(i,j,bi,bj)/wuwind(i,j,bi,bj)
               else
                 wuwind(i,j,bi,bj) = 0.0 _d 0
               endif
               if (wvwind(i,j,bi,bj) .ne. 0.) then
-                wvwind(i,j,bi,bj) = 
+                wvwind(i,j,bi,bj) =
      &                1./wvwind(i,j,bi,bj)/wvwind(i,j,bi,bj)
               else
                 wvwind(i,j,bi,bj) = 0.0 _d 0
@@ -1087,9 +1088,9 @@ cph)
                 waqh(i,j,bi,bj) = 0.0 _d 0
               endif
 
-              if (wsfluxmm(bi,bj).ne.0.) 
+              if (wsfluxmm(bi,bj).ne.0.)
      &             wsfluxmm(bi,bj) = 1./wsfluxmm(bi,bj)*wsfluxmm(bi,bj)
-              if (whfluxmm(bi,bj).ne.0.) 
+              if (whfluxmm(bi,bj).ne.0.)
      &             whfluxmm(bi,bj) = 1./whfluxmm(bi,bj)*whfluxmm(bi,bj)
 cph(
               if (whflux2(i,j,bi,bj) .ne. 0.) then
@@ -1141,7 +1142,7 @@ cph)
             do k = 1,nr
 #ifdef ALLOW_OBCSN_COST_CONTRIBUTION
               if (wobcsn(k,iobcs) .ne. 0.) then
-                 wobcsn(k,iobcs) = 
+                 wobcsn(k,iobcs) =
      &                ratio/wobcsn(k,iobcs)/wobcsn(k,iobcs)
               else
                  wobcsn(k,iobcs) = 0.0 _d 0
@@ -1149,7 +1150,7 @@ cph)
 #endif
 #ifdef ALLOW_OBCSS_COST_CONTRIBUTION
               if (wobcss(k,iobcs) .ne. 0.) then
-                 wobcss(k,iobcs) = 
+                 wobcss(k,iobcs) =
      &                ratio/wobcss(k,iobcs)/wobcss(k,iobcs)
               else
                  wobcss(k,iobcs) = 0.0 _d 0
@@ -1157,7 +1158,7 @@ cph)
 #endif
 #ifdef ALLOW_OBCSW_COST_CONTRIBUTION
               if (wobcsw(k,iobcs) .ne. 0.) then
-                 wobcsw(k,iobcs) = 
+                 wobcsw(k,iobcs) =
      &                ratio/wobcsw(k,iobcs)/wobcsw(k,iobcs)
               else
                  wobcsw(k,iobcs) = 0.0 _d 0
@@ -1165,7 +1166,7 @@ cph)
 #endif
 #ifdef ALLOW_OBCSE_COST_CONTRIBUTION
               if (wobcse(k,iobcs) .ne. 0.) then
-                 wobcse(k,iobcs) = 
+                 wobcse(k,iobcs) =
      &                ratio/wobcse(k,iobcs)/wobcse(k,iobcs)
               else
                  wobcse(k,iobcs) = 0.0 _d 0

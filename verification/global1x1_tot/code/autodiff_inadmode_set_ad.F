@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/autodiff_inadmode_set_ad.F,v 1.1 2005/05/27 23:30:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/autodiff_inadmode_set_ad.F,v 1.2 2007/10/09 02:29:10 jmc Exp $
+C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
