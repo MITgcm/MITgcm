@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.11 2007/10/10 14:34:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.12 2007/10/10 14:43:36 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -215,8 +215,6 @@ C     only make sense in connection with my notes on this (M.Losch)
             aqe = a0  *(eps1+eps3) + cFac*atmp
             recip_aqe = 0. _d 0
             IF ( aqe .NE. 0. _d 0 ) recip_aqe = 0.5 _d 0/aqe
-CML            bqe = eps4*(eps1+eps3) - eps2
-CML     &           - eps1*tloc - eps3*SHELFICEthetaSurface
             bqe = btmp - eps2 + cFac*( btmp - eps5*eps6 - sloc*atmp )
             cqe = eps2*sloc   - cFac*( btmp - eps5*eps6 )*sloc
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
@@ -254,11 +252,6 @@ CML     &           - eps1*tloc - eps3*SHELFICEthetaSurface
             saltFreeze = (- bqe - SQRT(discrim))*recip_aqe
             IF ( saltFreeze .LT. 0. _d 0 )
      &           saltFreeze = (- bqe + SQRT(discrim))*recip_aqe
-CMLC--   Calculate freezing temperature as a function of salinity and pressure
-CML            thetaFreeze = saltFreeze * a0 + eps4
-CMLC--   Inconsistent but more accurate:
-CML            thetaFreeze = sLoc * ( a0 + a1*sqrt(sLoc) + a2*sLoc )
-CML     &           + b*pLoc + c0
 C--   upward fresh water flux due to melting (in m/s of sea water)
             freshWaterFlux = SHELFICEsaltTransCoeff
      &           * ( saltFreeze - sloc )
@@ -266,23 +259,10 @@ C--   upward fresh water flux due to melting (in m/s of sea water)
 C--   Calculate the upward heat and fresh water fluxes;
 C--   MITgcm sign conventions: downward (negative) fresh water flux 
 C--   implies melting and due to upward (positive) heat flux
-CML            shelfIceHeatFlux(I,J,bi,bj) = 
-CML     &           ( eps1 * ( tLoc - thetaFreeze ) )
-CML     &           *rUnit2mass*recip_rhoConst
-CML            shelfIceFreshWaterFlux(I,J,bi,bj) = 
-CML     &           rUnit2mass/rhoShelfIce * SHELFICEsaltTransCoeff
-CML     &           * ( saltFreeze - sloc )/saltFreeze
             shelfIceHeatFlux(I,J,bi,bj) = 
      &           ( eps3*( tloc - SHELFICEthetaSurface )
      &           - rhoConst*freshWaterFlux*SHELFICElatentHeat )
      &           *rUnit2mass*recip_rhoConst
-CML            print*, 'ml-shice: ', i,j,shelfIceHeatFlux(I,J,bi,bj), 
-CML     &           eps1 * ( tLoc - thetaFreeze ),
-CML     &     shelfIceHeatFlux(I,J,bi,bj)/(eps1 * ( tLoc - thetaFreeze )),
-CML     &     shelfIceHeatFlux(I,J,bi,bj)-eps1 * ( tLoc - thetaFreeze )
-CML            shelfIceHeatFlux(I,J,bi,bj) = 
-CML     &           ( eps1 * ( tLoc - thetaFreeze ) )
-CML     &           *rUnit2mass*recip_rhoConst
             shelfIceFreshWaterFlux(I,J,bi,bj) =  
      &           freshWaterFlux * rUnit2mass*recip_rhoConst
 C--   compute surface tendencies
@@ -302,20 +282,6 @@ C--   compute surface tendencies
          ENDDO
         ENDIF
 C     endif (not) useISOMIPTD
-CML        DO J = 1, sNy
-CML         DO I = 1, sNx
-CML          Qnet(i,j,bi,bj)  = shelficeForcingT(i,j,bi,bj)
-CML          EmPmR(i,j,bi,bj) = shelficeForcingS(i,j,bi,bj)
-CMLC     Maybe we need this for KPP???
-CML          surfaceForcingT(i,j,bi,bj) = shelficeForcingT(i,j,bi,bj)
-CML          surfaceForcingS(i,j,bi,bj) = shelficeForcingS(i,j,bi,bj)
-CML          print '(A,3I4,5E12.4)', 'ml-shelf:', I,J,K,Tfreezing, 
-CML     &           shelficeheatflux(i,j,bi,bj), 
-CML     &           shelficefreshwaterflux(i,j,bi,bj),
-CML     &           shelficeForcingT(i,j,bi,bj), 
-CML     &           shelficeForcingS(i,j,bi,bj)
-CML         ENDDO
-CML        ENDDO
        ENDDO
       ENDDO
       
