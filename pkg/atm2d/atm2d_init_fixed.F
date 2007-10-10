@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_fixed.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_fixed.F,v 1.3 2007/10/10 19:37:01 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -56,7 +56,10 @@ C     MITGCM helper routines; hopefully no unit conflict...
       OPEN(514,file='couple.nml',status='old')
       READ(514,COUPLE_PARM)
       CLOSE(514)
+
+#ifdef OCEAN_3D
       CALL ATM2D_READPARMS(myThid)
+#endif
 
       ncall_atm=dtcouple/dtatm
       ncall_ocean=dtcouple/dtocn
