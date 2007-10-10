@@ -2,6 +2,7 @@
 # | Parameters for SHELFICE package |
 # ===================================
  &SHELFICE_PARM01
+ SHELFICEconserve = .TRUE.,
  SHELFICEboundaryLayer = .TRUE.,
  SHELFICEloadAnomalyFile = 'phi0surf.exp1.jmd95z',
  no_slip_shelfice = .false.,
