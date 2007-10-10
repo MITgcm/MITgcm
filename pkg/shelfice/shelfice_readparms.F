@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.5 2007/01/25 21:39:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.6 2007/10/10 09:26:39 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -45,7 +45,8 @@ CEOP
      &     SHELFICElatentHeat, SHELFICEHeatCapacity_Cp,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
      &     SHELFICEthetaSurface,
-     &     useISOMIPTD, no_slip_shelfice, SHELFICEboundaryLayer,
+     &     useISOMIPTD, no_slip_shelfice, 
+     &     SHELFICEconserve, SHELFICEboundaryLayer,
      &     SHELFICEwriteState,
      &     SHELFICE_dumpFreq,
      &     SHELFICE_taveFreq,
@@ -61,6 +62,7 @@ C internal flag to indicate we are in business
 
 C Set defaults values for parameters in SHELFICE.h
       useISOMIPTD              = .FALSE.
+      SHELFICEconserve         = .FALSE.
       SHELFICEboundaryLayer    = .FALSE.
       SHELFICEloadAnomalyFile  = ' '
       SHELFICElatentHeat       =  334.0 _d 3

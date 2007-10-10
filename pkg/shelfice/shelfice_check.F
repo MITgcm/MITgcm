@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.4 2007/01/25 21:39:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.5 2007/10/10 09:26:39 mlosch Exp $
 C $Name:  $
 #include "SHELFICE_OPTIONS.h"
 
@@ -14,6 +14,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "SHELFICE.h"
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of SHELFICE_CHECK
@@ -73,6 +74,18 @@ CML#endif ALLOW_KPP
      &      'when CPP flag ALLOW_ISOMIP_TD was unset'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+      ENDIF
+#else
+      IF ( useISOMIPTD ) THEN
+       IF ( SHELFICEconserve ) THEN
+        WRITE(msgBuf,'(A,A,A)')
+     &       'Run-time control flag SHELFICEconserve=.TRUE. was used'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A,A,A)')
+     &       'when useISOMIPTD=.TRUE.; this does not work!'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SHELFICE_CHECK'
+       ENDIF
       ENDIF
 #endif /* ALLOW_ISOMIP_TD */
 
