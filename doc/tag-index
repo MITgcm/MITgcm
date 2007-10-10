@@ -1,10 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.889 2007/10/09 02:43:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.890 2007/10/10 12:25:20 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o add missing cvs $Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.889 2007/10/09 02:43:45 jmc Exp $ or $Name:  $ in eesupp/*, pkg/* & verification/code*
+o pkg/shelfice: add option for convservative form of Hellmer&Olbers (1989)
+  thermodynamics
+  - requires a little reorganization, which affects the testreport results 
+    of isomip.htd (only 7 digits of cg2d agree) => update/modify experiment,
+    so that now the conservative form is tested
+  - add a few comments
+o add missing cvs $Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.890 2007/10/10 12:25:20 mlosch Exp $ or $Name:  $ in eesupp/*, pkg/* & verification/code*
 o add a little bit of code to gad_os7mp_adv_?.F to help vectorization
 o add new diagnostics to seaice: advective, diffusive fluxes (only for
   multidim-advection, for scheme 2 they are not filled) and transports, 
