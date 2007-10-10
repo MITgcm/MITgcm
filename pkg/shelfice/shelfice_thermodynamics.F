@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.9 2007/10/10 09:26:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.10 2007/10/10 12:23:13 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -50,8 +50,8 @@ C     theta/saltFreeze :: temperature and salinity of water at the
 C                         ice-ocean interface (at the freezing point)
 C     freshWaterFlux   :: local variable for fresh water melt flux due to 
 C                         melting in kg/m^2/s (negative density x melt rate) 
-C     rhoW2rhoI        :: ratio of reference densities of water to ice, also
-C                         used as a flag to turn on conservative formulation
+C     rhoW2rhoI        :: ratio of reference densities of water to ice
+C     cFac             :: 1 for conservative form, 0, otherwise
 C     auxiliary variables and abbreviations:
 C     a0, a1, a2, b, c0
 C     eps1, eps2, eps3, eps4, eps5, eps6, eps7
@@ -65,6 +65,7 @@ C     drKp1, recip_drLoc
       _RL a0, a1, a2, b, c0
       _RL eps1, eps2, eps3, eps4, eps5, eps6, eps7
       _RL rhoW2rhoI
+      _RL cFac
       _RL atmp, btmp
       _RL aqe, bqe, cqe, discrim, recip_aqe
       _RL drKp1, recip_drLoc
@@ -87,14 +88,7 @@ C     non-linear dependence of freezing point on salinity
        c0 = 0. _d 0
       ENDIF
 #endif ALLOW_ISOMIP_TD
-C     first a few abbreviations
-      rhoW2rhoI = 0. _d 0
-      IF ( SHELFICEconserve .AND. rhoShelfIce .GT. 0 _d 0 ) 
-     &     rhoW2rhoI = rhoConst/rhoShelfIce
-      eps1 = rhoConst*HeatCapacity_Cp*SHELFICEheatTransCoeff
-      eps2 = rhoConst*SHELFICElatentHeat*SHELFICEsaltTransCoeff
-      eps5 = rhoConst*HeatCapacity_Cp*SHELFICEsaltTransCoeff
-      
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO J = 1-Oly,sNy+Oly
@@ -174,6 +168,18 @@ C     use BRIOS thermodynamics, following Hellmers PhD thesis:
 C     Hellmer, H., 1989, A two-dimensional model for the thermohaline 
 C     circulation under an ice shelf, Reports on Polar Research, No. 60
 C     (in German).
+
+C     are we doing the conservative form?
+         cFac = 0. _d 0
+         IF( SHELFICEconserve ) cFac = 1. _d 0
+C     a few abbreviations
+         rhoW2rhoI = 0. _d 0
+         IF( rhoShelfIce .GT. 0 _d 0 ) rhoW2rhoI = rhoConst/rhoShelfIce
+
+         eps1 = rhoConst*HeatCapacity_Cp*SHELFICEheatTransCoeff
+         eps2 = rhoConst*SHELFICElatentHeat*SHELFICEsaltTransCoeff
+         eps5 = rhoConst*HeatCapacity_Cp*SHELFICEsaltTransCoeff
+      
          DO J = 1, sNy
           DO I = 1, sNx
            K    = kTopC(I,J,bi,bj)
@@ -210,12 +216,12 @@ C     only make sense in connection with my notes on this (M.Losch)
             eps7 = eps4 - SHELFICEthetaSurface
             atmp = a0*( eps1 + eps3 - eps5 )
             btmp = eps1*eps6 + eps3*eps7
-            aqe = a0  *(eps1+eps3) + rhoW2rhoI*atmp
+            aqe = a0  *(eps1+eps3) + cFac*rhoW2rhoI*atmp
             recip_aqe = 0. _d 0
             IF ( aqe .NE. 0. _d 0 ) recip_aqe = 0.5 _d 0/aqe
             bqe = btmp - eps2
-     &           + rhoW2rhoI*( btmp - eps5*eps6 - sloc*atmp )
-            cqe = eps2*sloc - rhoW2rhoI*sloc*( btmp - eps5*eps6 ) 
+     &           + cFac*rhoW2rhoI*( btmp - eps5*eps6 - sloc*atmp )
+            cqe = eps2*sloc - cFac*rhoW2rhoI*sloc*( btmp - eps5*eps6 ) 
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
 #undef ALLOW_SHELFICE_DEBUG
 #ifdef ALLOW_SHELFICE_DEBUG
@@ -236,6 +242,7 @@ C     only make sense in connection with my notes on this (M.Losch)
              print *, 'ml-shelfice: rhoW    = ', rhoConst
              print *, 'ml-shelfice: rhoIce  = ', rhoShelfIce
              print *, 'ml-shelfice: rhoW2I  = ', rhoW2rhoI
+             print *, 'ml-shelfice: cFac    = ', cFac
              print *, 'ml-shelfice: Cp_W    = ', HeatCapacity_Cp
              print *, 'ml-shelfice: Cp_I    = ',
      &            SHELFICEHeatCapacity_Cp
@@ -253,8 +260,8 @@ C     only make sense in connection with my notes on this (M.Losch)
      &           saltFreeze = (- bqe + SQRT(discrim))*recip_aqe
 C--   upward fresh water flux due to melting
             freshWaterFlux = SHELFICEsaltTransCoeff
-     &           * rhoConst/rhoShelfIce * ( saltFreeze - sloc )
-     &           /( saltFreeze - rhoW2rhoI * ( saltFreeze - sloc ) )
+     &           * rhoW2rhoI * ( saltFreeze - sloc )
+     &           /( saltFreeze - cFac*rhoW2rhoI*( saltFreeze - sloc ) )
 C--   Calculate the upward heat and fresh water fluxes;
 C--   MITgcm sign conventions: downward (negative) fresh water flux 
 C--   implies melting and due to upward (positive) heat flux
