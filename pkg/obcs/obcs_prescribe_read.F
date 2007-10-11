@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.11 2007/10/11 01:29:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.12 2007/10/11 10:30:34 dimitri Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -27,8 +27,10 @@ c     == global variables ==
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 #endif
-#ifdef ALLOW_PTRACERS.h
+#if (defined (ALLOW_SEAICE) || defined (ALLOW_PTRACERS))
 # include "PARAMS.h"
+#endif
+#ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS.h"
 # include "OBCS_PTRACERS.h"
@@ -80,12 +82,14 @@ c     == end of interface ==
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
 #ifdef ALLOW_SEAICE
-      call exf_set_obcs_x (  OBNa, OBNa0, OBNa1, OBNafile, 's'
+      IF (useSEAICE) THEN
+       call exf_set_obcs_x (  OBNa, OBNa0, OBNa1, OBNafile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
-      call exf_set_obcs_x (  OBNh, OBNh0, OBNh1, OBNhfile, 's'
+       call exf_set_obcs_x (  OBNh, OBNh0, OBNh1, OBNhfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
+      ENDIF
 #endif /* ALLOW_SEAICE */
 #ifdef ALLOW_PTRACERS
       if ( usePTRACERS ) then
@@ -124,12 +128,14 @@ c     == end of interface ==
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
 #ifdef ALLOW_SEAICE
-      call exf_set_obcs_x (  OBSa, OBSa0, OBSa1, OBSafile, 's'
+      IF (useSEAICE) THEN
+       call exf_set_obcs_x (  OBSa, OBSa0, OBSa1, OBSafile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
-      call exf_set_obcs_x (  OBSh, OBSh0, OBSh1, OBShfile, 's'
+       call exf_set_obcs_x (  OBSh, OBSh0, OBSh1, OBShfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
+      ENDIF
 #endif /* ALLOW_SEAICE */
 #ifdef ALLOW_PTRACERS
       if ( usePTRACERS ) then
@@ -168,12 +174,14 @@ c     == end of interface ==
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
 #ifdef ALLOW_SEAICE
-      call exf_set_obcs_y (  OBEa, OBEa0, OBEa1, OBEafile, 's'
+      IF (useSEAICE) THEN
+       call exf_set_obcs_y (  OBEa, OBEa0, OBEa1, OBEafile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
-      call exf_set_obcs_y (  OBEh, OBEh0, OBEh1, OBEhfile, 's'
+       call exf_set_obcs_y (  OBEh, OBEh0, OBEh1, OBEhfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
+      ENDIF
 #endif /* ALLOW_SEAICE */
 #ifdef ALLOW_PTRACERS
       if ( usePTRACERS ) then
@@ -212,12 +220,14 @@ c     == end of interface ==
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
 #ifdef ALLOW_SEAICE
-      call exf_set_obcs_y (  OBWa, OBWa0, OBWa1, OBWafile, 's'
+      IF (useSEAICE) THEN
+       call exf_set_obcs_y (  OBWa, OBWa0, OBWa1, OBWafile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
-      call exf_set_obcs_y (  OBWh, OBWh0, OBWh1, OBWhfile, 's'
+       call exf_set_obcs_y (  OBWh, OBWh0, OBWh1, OBWhfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
+      ENDIF
 #endif /* ALLOW_SEAICE */
 #ifdef ALLOW_PTRACERS
       if ( usePTRACERS ) then

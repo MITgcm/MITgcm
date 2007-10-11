@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.21 2007/09/21 06:46:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.22 2007/10/11 10:30:34 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,8 +47,6 @@ C     i,j,k,bi,bj - Loop counters
 
 #ifdef ALLOW_OBCS
       INTEGER I_obc, J_obc, kSurface
-      _RL obc_mask
-
       if ( buoyancyRelation .eq. 'OCEANICP' ) then
        kSurface        = Nr 
       else
@@ -96,69 +94,6 @@ C--   Initialize grid info
           IF (_hFacC(i,j,1,bi,bj).eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
          ENDDO
         ENDDO
-
-#ifdef ALLOW_OBCS
-        IF (useOBCS) THEN
-C     Apply OBCS T/S mask (taken from pkg/obcs/obcs_apply_ts.F)
-C     Additionally apply a mask along all open boundaries
-C     Until proper seaice open boundaries are implemented, this
-C     masking is needed to avoid communication across open boundaries.
-#ifdef ALLOW_OBCS_NORTH
-         DO I=1-Olx,sNx+Olx
-C Northern boundary
-          J_obc = OB_Jn(I,bi,bj)
-          IF (J_obc.NE.0) THEN
-           HEFFM(I,J_obc,bi,bj)=0. _d 0
-           obc_mask = _maskS(I,J_obc,kSurface,bi,bj)
-           DO J = J_obc, J_obc+Oly
-            IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
-           ENDDO
-          ENDIF
-         ENDDO
-#endif
-#ifdef ALLOW_OBCS_SOUTH
-         DO I=1-Olx,sNx+Olx
-C Southern boundary
-          J_obc = OB_Js(I,bi,bj)
-          IF (J_obc.NE.0) THEN
-           HEFFM(I,J_obc,bi,bj)=0. _d 0
-           obc_mask = _maskS(I,J_obc+1,kSurface,bi,bj)
-           DO J = J_obc-Oly, J_obc
-            IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
-           ENDDO
-          ENDIF
-         ENDDO
-#endif
-#ifdef ALLOW_OBCS_EAST
-         DO J=1-Oly,sNy+Oly
-C Eastern boundary
-          I_obc = OB_Ie(J,bi,bj)
-          IF (I_obc.NE.0) THEN
-           HEFFM(I_obc,J,bi,bj)=0. _d 0
-           obc_mask = _maskW(I_obc,J,kSurface,bi,bj)
-           DO I = I_obc, I_obc+Olx
-            IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
-           ENDDO
-          ENDIF
-         ENDDO
-#endif
-#ifdef ALLOW_OBCS_WEST
-         DO J=1-Oly,sNy+Oly
-C Western boundary
-          I_obc=OB_Iw(J,bi,bj)
-          IF (I_obc.NE.0) THEN
-           HEFFM(I_obc,J,bi,bj)=0. _d 0
-           obc_mask = _maskW(I_obc+1,J,kSurface,bi,bj)
-           DO I = I_obc-Olx, I_obc
-            IF (obc_mask.eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
-           ENDDO
-          ENDIF
-         ENDDO
-#endif
-         _EXCH_XY_R8(HEFFM, myThid)
-        ENDIF
-#endif /* ALLOW_OBCS */
-
         DO J=1-OLy+1,sNy+OLy
          DO I=1-OLx+1,sNx+OLx
 #ifdef SEAICE_CGRID
@@ -176,6 +111,40 @@ C Western boundary
 #endif /* SEAICE_CGRID */
          ENDDO
         ENDDO
+
+#ifdef ALLOW_OBCS
+        IF (useOBCS) THEN
+C--   If OBCS is turned on, close southern and western boundaries
+#ifdef ALLOW_OBCS_SOUTH
+         DO I=1-Olx,sNx+Olx
+C Southern boundary
+          J_obc = OB_Js(I,bi,bj)
+          IF (J_obc.NE.0) THEN
+#ifdef SEAICE_CGRID
+           seaiceMaskU(I,J_obc,bi,bj)=   0.0 _d 0
+           seaiceMaskV(I,J_obc,bi,bj)=   0.0 _d 0
+#else
+           UVM(I,J_obc,bi,bj)=0. _d 0
+#endif /* SEAICE_CGRID */
+          ENDIF
+         ENDDO
+#endif /* ALLOW_OBCS_SOUTH */
+#ifdef ALLOW_OBCS_WEST
+         DO J=1-Oly,sNy+Oly
+C Western boundary
+          I_obc=OB_Iw(J,bi,bj)
+          IF (I_obc.NE.0) THEN
+#ifdef SEAICE_CGRID
+           seaiceMaskU(I_obc,J,bi,bj)=   0.0 _d 0
+           seaiceMaskV(I_obc,J,bi,bj)=   0.0 _d 0
+#else
+           UVM(I_obc,J,bi,bj)=0. _d 0
+#endif /* SEAICE_CGRID */
+          ENDIF
+         ENDDO
+#endif /* ALLOW_OBCS_WEST */
+        ENDIF
+#endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_EXCH2
 #ifndef SEAICE_CGRID

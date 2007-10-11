@@ -30,6 +30,7 @@ CEndofinterface
 
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER iRec
 
 C     READ N and S OB arrays
 #ifdef ALLOW_OBCS_NORTH
@@ -38,18 +39,35 @@ C     READ N and S OB arrays
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNv,2,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNt,3,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNs,4,myThid)
+      iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNw,5,myThid)
+      iRec = 5
+# endif
+# ifdef ALLOW_SEAICE
+      IF (useSEAICE) THEN
+       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNa,iRec*Nr+1,myThid)
+       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNh,iRec*Nr+2,myThid)
+      ENDIF
 # endif
 #endif
+
 #ifdef ALLOW_OBCS_SOUTH
       WRITE(fn,'(A,A10)') 'pickup_obS.',suff
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSu,1,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSv,2,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSt,3,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSs,4,myThid)
+      iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSw,5,myThid)
+      iRec = 5
+# endif
+# ifdef ALLOW_SEAICE
+      IF (useSEAICE) THEN
+       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSa,iRec*Nr+1,myThid)
+       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSh,iRec*Nr+2,myThid)
+      ENDIF
 # endif
 #endif
 
@@ -60,19 +78,35 @@ C     READ E and W OB arrays
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEv,2,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEt,3,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEs,4,myThid) 
+      iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEw,5,myThid)
+      iRec = 5
+# endif
+# ifdef ALLOW_SEAICE
+      IF (useSEAICE) THEN
+       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEa,iRec*Nr+1,myThid)
+       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEh,iRec*Nr+2,myThid)
+      ENDIF
 # endif
 #endif
-      
+
 #ifdef ALLOW_OBCS_WEST
       WRITE(fn,'(A,A10)') 'pickup_obW.',suff
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWu,1,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWv,2,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWt,3,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWs,4,myThid)
+      iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWw,5,myThid)
+      iRec = 5
+# endif
+# ifdef ALLOW_SEAICE
+      IF (useSEAICE) THEN
+       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWa,iRec*Nr+1,myThid)
+       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWh,iRec*Nr+2,myThid)
+      ENDIF
 # endif
 #endif
 
@@ -146,6 +180,7 @@ CEndofinterface
 
 C     == Local variables ==      
       CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER iRec
 
 C     Write N and S OB arrays
 #ifdef ALLOW_OBCS_NORTH
@@ -158,8 +193,16 @@ C     Write N and S OB arrays
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNv,2,myIt,myThid)
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNt,3,myIt,myThid)
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNs,4,myIt,myThid)
+      iRec = 4*Nr
 # ifdef ALLOW_NONHYDROSTATIC
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNw,5,myIt,myThid)
+      iRec = 5*Nr
+# endif
+# ifdef ALLOW_SEAICE
+      IF (useSEAICE) THEN
+       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNa,iRec+1,myIt,myThid)
+       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNh,iRec+2,myIt,myThid)
+      ENDIF
 # endif
 #endif
 
@@ -173,8 +216,16 @@ C     Write N and S OB arrays
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSv,2,myIt,myThid)
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSt,3,myIt,myThid)
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSs,4,myIt,myThid)
+      iRec = 4*Nr
 # ifdef ALLOW_NONHYDROSTATIC
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSw,5,myIt,myThid)
+      iRec = 5*Nr
+# endif
+# ifdef ALLOW_SEAICE
+      IF (useSEAICE) THEN
+       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSa,iRec+1,myIt,myThid)
+       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSh,iRec+2,myIt,myThid)
+      ENDIF
 # endif
 #endif
 
@@ -189,8 +240,16 @@ C     Write E and W OB arrays
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEv,2,myIt,myThid)
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEt,3,myIt,myThid)
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEs,4,myIt,myThid) 
+      iRec = 4*Nr
 # ifdef ALLOW_NONHYDROSTATIC
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEw,5,myIt,myThid)
+      iRec = 5*Nr
+# endif
+# ifdef ALLOW_SEAICE
+      IF (useSEAICE) THEN
+       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEa,iRec+1,myIt,myThid)
+       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEh,iRec+2,myIt,myThid)
+      ENDIF
 # endif
 #endif
 
@@ -204,8 +263,16 @@ C     Write E and W OB arrays
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWv,2,myIt,myThid)
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWt,3,myIt,myThid)
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWs,4,myIt,myThid)
+      iRec = 4*Nr
 # ifdef ALLOW_NONHYDROSTATIC
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWw,5,myIt,myThid)
+      iRec = 5*Nr
+# endif
+# ifdef ALLOW_SEAICE
+      IF (useSEAICE) THEN
+       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWa,iRec+1,myIt,myThid)
+       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWh,iRec+2,myIt,myThid)
+      ENDIF
 # endif
 #endif
 
