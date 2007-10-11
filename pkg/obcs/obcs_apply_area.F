@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_apply_area.F,v 1.2 2007/10/11 06:53:50 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_apply_area.F,v 1.3 2007/10/11 07:30:05 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE OBCS_APPLY_AREA( bi, bj,
-     U                          aFld,
+     O                          aFld,
      I                          myThid )
 C     /==========================================================\
 C     | S/R OBCS_APPLY_AREA                                      |
@@ -19,7 +19,7 @@ C     == Global variables ==
 
 C     == Routine Arguments ==
       INTEGER bi,bj
-      _RL aFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL aFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 #if (defined (ALLOW_OBCS) && defined (ALLOW_SEAICE))
@@ -38,7 +38,7 @@ C Northern boundary
        IF (J_obc.NE.0) THEN
         obc_mask = _maskS(I,J_obc,K,bi,bj)
         DO J = J_obc, J_obc+Oly
-         aFld(I,J,bi,bj)=OBNa(I,bi,bj)*obc_mask
+         aFld(I,J)=OBNa(I,bi,bj)*obc_mask
         ENDDO
        ENDIF
       ENDDO
@@ -50,7 +50,7 @@ C Southern boundary
        IF (J_obc.NE.0) THEN
         obc_mask = _maskS(I,J_obc+1,K,bi,bj)
         DO J = J_obc-Oly, J_obc
-         aFld(I,J,bi,bj)=OBSa(I,bi,bj)*obc_mask
+         aFld(I,J)=OBSa(I,bi,bj)*obc_mask
         ENDDO
        ENDIF
       ENDDO
@@ -64,7 +64,7 @@ C Eastern boundary
        IF (I_obc.NE.0) THEN
         obc_mask = _maskW(I_obc,J,K,bi,bj)
         DO I = I_obc, I_obc+Olx
-         aFld(I,J,bi,bj)=OBEa(J,bi,bj)*obc_mask
+         aFld(I,J)=OBEa(J,bi,bj)*obc_mask
         ENDDO
        ENDIF
       ENDDO
@@ -76,7 +76,7 @@ C Western boundary
        IF (I_obc.NE.0) THEN
         obc_mask = _maskW(I_obc+1,J,K,bi,bj)
         DO I = I_obc-Olx, I_obc
-         aFld(I,J,bi,bj)=OBWa(J,bi,bj) * obc_mask
+         aFld(I,J)=OBWa(J,bi,bj) * obc_mask
         ENDDO
        ENDIF
       ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_apply_heff.F,v 1.2 2007/10/11 06:53:50 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_apply_heff.F,v 1.3 2007/10/11 07:30:05 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -19,7 +19,7 @@ C     == Global variables ==
 
 C     == Routine Arguments ==
       INTEGER bi,bj
-      _RL hFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL hFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 #if (defined (ALLOW_OBCS) && defined (ALLOW_SEAICE))
@@ -38,7 +38,7 @@ C Northern boundary
        IF (J_obc.NE.0) THEN
         obc_mask = _maskS(I,J_obc,K,bi,bj)
         DO J = J_obc, J_obc+Oly
-         hFld(I,J,bi,bj)=OBNh(I,bi,bj)*obc_mask
+         hFld(I,J)=OBNh(I,bi,bj)*obc_mask
         ENDDO
        ENDIF
       ENDDO
@@ -50,7 +50,7 @@ C Southern boundary
        IF (J_obc.NE.0) THEN
         obc_mask = _maskS(I,J_obc+1,K,bi,bj)
         DO J = J_obc-Oly, J_obc
-         hFld(I,J,bi,bj)=OBSh(I,bi,bj)*obc_mask
+         hFld(I,J)=OBSh(I,bi,bj)*obc_mask
         ENDDO
        ENDIF
       ENDDO
@@ -64,7 +64,7 @@ C Eastern boundary
        IF (I_obc.NE.0) THEN
         obc_mask = _maskW(I_obc,J,K,bi,bj)
         DO I = I_obc, I_obc+Olx
-         hFld(I,J,bi,bj)=OBEh(J,bi,bj)*obc_mask
+         hFld(I,J)=OBEh(J,bi,bj)*obc_mask
         ENDDO
        ENDIF
       ENDDO
@@ -76,7 +76,7 @@ C Western boundary
        IF (I_obc.NE.0) THEN
         obc_mask = _maskW(I_obc+1,J,K,bi,bj)
         DO I = I_obc-Olx, I_obc
-         hFld(I,J,bi,bj)=OBWh(J,bi,bj) * obc_mask
+         hFld(I,J)=OBWh(J,bi,bj) * obc_mask
         ENDDO
        ENDIF
       ENDDO
