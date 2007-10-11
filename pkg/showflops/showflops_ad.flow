@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/showflops/showflops_ad.flow,v 1.2 2007/10/09 00:11:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/showflops/showflops_ad.flow,v 1.3 2007/10/11 05:19:01 heimbach Exp $
 C $Name:  $
 
 cph: These flow dir. need to be removed from eesupp.flow
@@ -10,6 +10,9 @@ CADJ SUBROUTINE SHOWFLOPS_INIT   OUTPUT =
 
 CADJ SUBROUTINE SHOWFLOPS_INLOOP INPUT  = 1,2
 CADJ SUBROUTINE SHOWFLOPS_INLOOP OUTPUT =
+
+CADJ SUBROUTINE SHOWFLOPS_INSOLVE INPUT  = 1
+CADJ SUBROUTINE SHOWFLOPS_INSOLVE OUTPUT =
 
 CADJ SUBROUTINE PAPIF_flops    INPUT =
 CADJ SUBROUTINE PAPIF_flops    OUTPUT = 1,2,3,4,5
