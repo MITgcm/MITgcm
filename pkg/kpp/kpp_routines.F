@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.33 2007/09/22 17:55:32 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.34 2007/10/11 12:31:21 mlosch Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -166,9 +166,9 @@ c for blmix
 c-----------------------------------------------------------------------
 
       do md = 1, mdiff
+       do k=1,Nrp1
          do i = 1,imt
-            do k=kmtj(i),Nrp1
-               diffus(i,k,md) = 0.0
+             if(k.ge.kmtj(i))  diffus(i,k,md) = 0.0
             end do
          end do
       end do
