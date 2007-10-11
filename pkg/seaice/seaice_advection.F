@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.8 2007/10/03 19:41:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.9 2007/10/11 06:44:01 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -479,17 +479,16 @@ C--   keep advective flux (for diagnostics)
            ENDDO
          ENDDO
 
-C     This is for later
-CML#ifdef ALLOW_OBCS
-CMLC-     Apply open boundary conditions
-CML          IF ( useOBCS ) THEN
-CML           IF (tracerIdentity.EQ.GAD_HEFF) THEN
-CML            CALL OBCS_APPLY_HEFF( bi, bj, k, localTij, myThid )
-CML           ELSEIF (tracerIdentity.EQ.GAD_AREA) THEN
-CML            CALL OBCS_APPLY_AREA( bi, bj, k, localTij, myThid )
-CML           ENDIF
-CML          ENDIF
-CML#endif /* ALLOW_OBCS */
+#ifdef ALLOW_OBCS
+C-     Apply open boundary conditions
+          IF ( useOBCS ) THEN
+           IF (tracerIdentity.EQ.GAD_HEFF) THEN
+            CALL OBCS_APPLY_HEFF( bi, bj, k, localTij, myThid )
+           ELSEIF (tracerIdentity.EQ.GAD_AREA) THEN
+            CALL OBCS_APPLY_AREA( bi, bj, k, localTij, myThid )
+           ENDIF
+          ENDIF
+#endif /* ALLOW_OBCS */
 
 C-     end if/else update overlap-Only
         ENDIF
@@ -681,17 +680,16 @@ C--   keep advective flux (for diagnostics)
            ENDDO
          ENDDO
 
-C--   Save this for later
-CML#ifdef ALLOW_OBCS
-CMLC-     Apply open boundary conditions
-CML           IF (useOBCS) THEN
-CML            IF (tracerIdentity.EQ.GAD_HEFF) THEN
-CML             CALL OBCS_APPLY_HEFF( bi, bj, k, localTij, myThid )
-CML            ELSEIF (tracerIdentity.EQ.GAD_AREA) THEN
-CML             CALL OBCS_APPLY_AREA( bi, bj, k, localTij, myThid )
-CML            ENDIF
-CML           ENDIF
-CML#endif /* ALLOW_OBCS */
+#ifdef ALLOW_OBCS
+C-     Apply open boundary conditions
+           IF (useOBCS) THEN
+            IF (tracerIdentity.EQ.GAD_HEFF) THEN
+             CALL OBCS_APPLY_HEFF( bi, bj, k, localTij, myThid )
+            ELSEIF (tracerIdentity.EQ.GAD_AREA) THEN
+             CALL OBCS_APPLY_AREA( bi, bj, k, localTij, myThid )
+            ENDIF
+           ENDIF
+#endif /* ALLOW_OBCS */
 
 C      end if/else update overlap-Only
         ENDIF
