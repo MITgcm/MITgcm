@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_apply_area.F,v 1.1 2007/10/11 06:44:01 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_apply_area.F,v 1.2 2007/10/11 06:53:50 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -19,7 +19,7 @@ C     == Global variables ==
 
 C     == Routine Arguments ==
       INTEGER bi,bj
-      _RL aFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL aFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
 
 #if (defined (ALLOW_OBCS) && defined (ALLOW_SEAICE))
