@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.9 2006/04/04 07:46:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.10 2007/10/11 01:29:16 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -62,6 +62,8 @@ C     OBNu is the U value imposed at the Northern OB
 C     OBNv is the V value imposed at the Northern OB
 C     OBNt is the T value imposed at the Northern OB
 C     OBNu is the S value imposed at the Northern OB
+C     OBNa is the ice AREA value imposed at the Northern OB
+C     OBNh is the ice HEFF value imposed at the Northern OB
 C     etc
 C
       COMMON /GRID_IND_OB/
@@ -90,7 +92,16 @@ C
       _RL OBNv1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBNt1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBNs1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
-#endif
+#endif /* ALLOW_OBCS_PRESCRIBE */
+#ifdef ALLOW_SEAICE
+      COMMON /SEAICE_N_OB/ OBNa,OBNh,OBNa0,OBNh0,OBNa1,OBNh1
+      _RL OBNa  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBNh  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBNa0 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBNh0 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBNa1 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBNh1 (1-Olx:sNx+Olx,nSx,nSy)
+#endif /* ALLOW_SEAICE */
 #endif /* ALLOW_OBCS_NORTH */
 
 #ifdef ALLOW_OBCS_SOUTH
@@ -112,8 +123,17 @@ C
       _RL OBSv1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBSt1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBSs1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
-#endif
-#endif
+#endif /* ALLOW_OBCS_PRESCRIBE */
+#ifdef ALLOW_SEAICE
+      COMMON /SEAICE_S_OB/ OBSa,OBSh,OBSa0,OBSh0,OBSa1,OBSh1
+      _RL OBSa  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSh  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSa0 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSh0 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSa1 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSh1 (1-Olx:sNx+Olx,nSx,nSy)
+#endif /* ALLOW_SEAICE */
+#endif /* ALLOW_OBCS_SOUTH */
 
 #ifdef ALLOW_OBCS_EAST
       COMMON /GRID_E_OB/ 
@@ -134,8 +154,17 @@ C
       _RL OBEv1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBEt1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBEs1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
-#endif
-#endif
+#endif /* ALLOW_OBCS_PRESCRIBE */
+#ifdef ALLOW_SEAICE
+      COMMON /SEAICE_E_OB/ OBEa,OBEh,OBEa0,OBEh0,OBEa1,OBEh1
+      _RL OBEa  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBEh  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBEa0 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBEh0 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBEa1 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBEh1 (1-Olx:sNx+Olx,nSx,nSy)
+#endif /* ALLOW_SEAICE */
+#endif /* ALLOW_OBCS_EAST */
 
 #ifdef ALLOW_OBCS_WEST
       COMMON /GRID_W_OB/ 
@@ -156,22 +185,31 @@ C
       _RL OBWv1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBWt1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBWs1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
-#endif
-#endif
+#endif /* ALLOW_OBCS_PRESCRIBE */
+#ifdef ALLOW_SEAICE
+      COMMON /SEAICE_W_OB/ OBWa,OBWh,OBWa0,OBWh0,OBWa1,OBWh1
+      _RL OBWa  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBWh  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBWa0 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBWh0 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBWa1 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBWh1 (1-Olx:sNx+Olx,nSx,nSy)
+#endif /* ALLOW_SEAICE */
+#endif /* ALLOW_OBCS_WEST */
 
       COMMON /OB_FILES/
-     &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,
-     &      OBSuFile,OBSvFile,OBStFile,OBSsFile,
-     &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,
-     &      OBWuFile,OBWvFile,OBWtFile,OBWsFile
+     &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
+     &      OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
+     &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
+     &      OBWuFile,OBWvFile,OBWtFile,OBWsFile,OBWaFile,OBWhFile
       CHARACTER*(MAX_LEN_FNAM) 
-     &      OBNuFile,OBNvFile,OBNtFile,OBNsFile
+     &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile
       CHARACTER*(MAX_LEN_FNAM) 
-     &      OBSuFile,OBSvFile,OBStFile,OBSsFile
+     &      OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile
       CHARACTER*(MAX_LEN_FNAM) 
-     &      OBEuFile,OBEvFile,OBEtFile,OBEsFile
+     &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile
       CHARACTER*(MAX_LEN_FNAM) 
-     &      OBWuFile,OBWvFile,OBWtFile,OBWsFile
+     &      OBWuFile,OBWvFile,OBWtFile,OBWsFile,OBWaFile,OBWhFile
 
 #ifdef ALLOW_NONHYDROSTATIC
       COMMON /GRID_OBNH/ 

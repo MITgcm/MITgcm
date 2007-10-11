@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_obcs.F,v 1.7 2007/04/16 23:27:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_obcs.F,v 1.8 2007/10/11 01:29:16 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -87,7 +87,7 @@ c     == end of interface ==
 
       endif
 
-#endif
+#endif /* ALLOW_OBCS */
 
       end
 
@@ -173,6 +173,171 @@ c     == end of interface ==
 
       endif
 
-#endif
+#endif /* ALLOW_OBCS */
+
+      end
+
+      subroutine exf_set_obcs_x ( 
+     &       obcs_fld_x, obcs_x_0, obcs_x_1
+     I     , obcs_file, obcsmask
+     I     , fac, first, changed, count0, count1
+     I     , mycurrenttime, mycurrentiter, mythid
+     &                           )
+
+c     ==================================================================
+c     SUBROUTINE exf_set_obcs_x
+c     ==================================================================
+c
+c     o set open boundary conditions
+c       same as exf_set_obcs_xz but for NR=1
+c
+c     ==================================================================
+c     SUBROUTINE exf_set_obcs_x
+c     ==================================================================
+
+      implicit none
+
+c     == global variables ==
+
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "GRID.h"
+#include "EXF_PARAM.h"
+#include "EXF_CONSTANTS.h"
+
+c     == routine arguments ==
+
+      _RL obcs_fld_x(1-olx:snx+olx,nsx,nsy)
+      _RL obcs_x_0(1-olx:snx+olx,nsx,nsy)
+      _RL obcs_x_1(1-olx:snx+olx,nsx,nsy)
+
+      character*(128) obcs_file
+      character*1 obcsmask
+      logical first, changed
+      integer count0, count1
+      _RL     fac
+      _RL     mycurrenttime
+      integer mycurrentiter
+      integer mythid
+
+#ifdef ALLOW_OBCS
+
+c     == local variables ==
+
+      integer bi, bj, i
+
+c     == end of interface ==
+
+      if ( obcs_file .NE. ' ' ) then
+
+         if ( first ) then
+            call mdsreadfieldxz( obcs_file, exf_iprec, exf_yftype, 1
+     &           , obcs_x_1, count0, mythid
+     &           )
+         endif
+
+         if (( first ) .or. ( changed )) then
+            call exf_swapffields_x( obcs_x_0, obcs_x_1, mythid )
+
+            call mdsreadfieldxz( obcs_file, exf_iprec, exf_yftype, 1
+     &           , obcs_x_1, count1, mythid
+     &           )
+         endif
+
+         do bj = mybylo(mythid),mybyhi(mythid)
+            do bi = mybxlo(mythid),mybxhi(mythid)
+               do i = 1,snx
+                  obcs_fld_x(i,bi,bj) = 
+     &                 fac * obcs_x_0(i,bi,bj) +
+     &                 (exf_one - fac) * obcs_x_1(i,bi,bj)
+               enddo
+            enddo
+         enddo
+
+      endif
+
+#endif /* ALLOW_OBCS */
+
+      end
+
+      subroutine exf_set_obcs_y ( 
+     &       obcs_fld_y, obcs_y_0, obcs_y_1
+     I     , obcs_file, obcsmask
+     I     , fac, first, changed, count0, count1
+     I     , mycurrenttime, mycurrentiter, mythid
+     &                           )
+
+c     ==================================================================
+c     SUBROUTINE exf_set_obcs_y
+c     ==================================================================
+c
+c     o set open boundary conditions
+c       same as exf_set_obcs_yz but for NR=1
+c
+c     ==================================================================
+c     SUBROUTINE exf_set_obcs_y
+c     ==================================================================
+
+      implicit none
+
+c     == global variables ==
+
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "GRID.h"
+#include "EXF_PARAM.h"
+#include "EXF_CONSTANTS.h"
+
+c     == routine arguments ==
+
+      _RL obcs_fld_y(1-oly:sny+oly,Nr,nsx,nsy)
+      _RL obcs_y_0(1-oly:sny+oly,Nr,nsx,nsy)
+      _RL obcs_y_1(1-oly:sny+oly,Nr,nsx,nsy)
+      character*(MAX_LEN_FNAM) obcs_file
+      character*1 obcsmask
+      logical first, changed
+      integer count0, count1
+      _RL     fac
+      _RL     mycurrenttime
+      integer mycurrentiter
+      integer mythid
+
+#ifdef ALLOW_OBCS
+
+c     == local variables ==
+
+      integer bi, bj, j
+
+c     == end of interface ==
+
+      if ( obcs_file .NE. ' ' ) then
+
+         if ( first ) then
+            call mdsreadfieldyz( obcs_file, exf_iprec, exf_yftype, 1
+     &           , obcs_y_1, count0, mythid
+     &           )
+         endif
+
+         if (( first ) .or. ( changed )) then
+            call exf_swapffields_y( obcs_y_0, obcs_y_1, mythid )
+
+            call mdsreadfieldyz( obcs_file, exf_iprec, exf_yftype, 1
+     &           , obcs_y_1, count1, mythid
+     &           )
+         endif
+
+         do bj = mybylo(mythid),mybyhi(mythid)
+            do bi = mybxlo(mythid),mybxhi(mythid)
+               do j = 1,sny
+                  obcs_fld_y(j,bi,bj) = 
+     &                 fac             *obcs_y_0(j,bi,bj) +
+     &                 (exf_one - fac) *obcs_y_1(j,bi,bj)
+               enddo
+            enddo
+         enddo
+
+      endif
+
+#endif /* ALLOW_OBCS */
 
       end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.10 2007/04/16 23:35:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.11 2007/10/11 01:29:16 dimitri Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -79,6 +79,14 @@ c     == end of interface ==
       call exf_set_obcs_xz(  OBNs, OBNs0, OBNs1, OBNsfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
+#ifdef ALLOW_SEAICE
+      call exf_set_obcs_x (  OBNa, OBNa0, OBNa1, OBNafile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_obcs_x (  OBNh, OBNh0, OBNh1, OBNhfile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+#endif /* ALLOW_SEAICE */
 #ifdef ALLOW_PTRACERS
       if ( usePTRACERS ) then
        do itracer = 1, PTRACERS_numInUse
@@ -91,7 +99,7 @@ c     == end of interface ==
        enddo
       endif
 #endif /* ALLOW_PTRACERS */
-#endif
+#endif /* ALLOW_OBCS_NORTH */
 
 #ifdef ALLOW_OBCS_SOUTH
       call exf_getffieldrec(
@@ -115,7 +123,14 @@ c     == end of interface ==
       call exf_set_obcs_xz(  OBSs, OBSs0, OBSs1, OBSsfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
-
+#ifdef ALLOW_SEAICE
+      call exf_set_obcs_x (  OBSa, OBSa0, OBSa1, OBSafile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_obcs_x (  OBSh, OBSh0, OBSh1, OBShfile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+#endif /* ALLOW_SEAICE */
 #ifdef ALLOW_PTRACERS
       if ( usePTRACERS ) then
        do itracer = 1, PTRACERS_numInUse
@@ -128,7 +143,7 @@ c     == end of interface ==
        enddo
       endif
 #endif /* ALLOW_PTRACERS */
-#endif
+#endif /* ALLOW_OBCS_SOUTH */
 
 #ifdef ALLOW_OBCS_EAST
       call exf_getffieldrec(
@@ -152,6 +167,14 @@ c     == end of interface ==
       call exf_set_obcs_yz(  OBEs, OBEs0, OBEs1, OBEsfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
+#ifdef ALLOW_SEAICE
+      call exf_set_obcs_y (  OBEa, OBEa0, OBEa1, OBEafile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_obcs_y (  OBEh, OBEh0, OBEh1, OBEhfile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+#endif /* ALLOW_SEAICE */
 #ifdef ALLOW_PTRACERS
       if ( usePTRACERS ) then
        do itracer = 1, PTRACERS_numInUse
@@ -164,7 +187,7 @@ c     == end of interface ==
        enddo
       endif
 #endif /* ALLOW_PTRACERS */
-#endif
+#endif /* ALLOW_OBCS_EAST */
 
 #ifdef ALLOW_OBCS_WEST
       call exf_getffieldrec(
@@ -188,6 +211,14 @@ c     == end of interface ==
       call exf_set_obcs_yz(  OBWs, OBWs0, OBWs1, OBWsfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
+#ifdef ALLOW_SEAICE
+      call exf_set_obcs_y (  OBWa, OBWa0, OBWa1, OBWafile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_obcs_y (  OBWh, OBWh0, OBWh1, OBWhfile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+#endif /* ALLOW_SEAICE */
 #ifdef ALLOW_PTRACERS
       if ( usePTRACERS ) then
        do itracer = 1, PTRACERS_numInUse
@@ -200,7 +231,7 @@ c     == end of interface ==
        enddo
       endif
 #endif /* ALLOW_PTRACERS */
-#endif
+#endif /* ALLOW_OBCS_WEST */
 
 #ifdef ALLOW_OBCS_CONTROL
 cgg   WARNING: Assuming North Open Boundary exists and has same
