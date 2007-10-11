@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/calc_zonal_means.F,v 1.5 2007/10/08 23:48:28 jmc Exp $
-C $Name:  $
-
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 
@@ -22,7 +19,7 @@ C     === Global Ocean Variables ===
 #include "GRID.h"
 #include "EEPARAMS.h"
 
-C     === Global SeaIce Variables ===
+C     === Global SeaIce Variables === 
 #include "THSICE_VARS.h"
       INTEGER siLo, siHi, sjLo, sjHi
       PARAMETER ( siLo = 1-OLx , siHi = sNx+OLx )
@@ -56,7 +53,7 @@ C     LOCAL VARIABLES:
         ctice(j_atm)=0. _d 0
         csAlb(j_atm)=0. _d 0
       ENDDO
-
+      
        CALL THSICE_ALBEDO(
      I          1, 1, siLo, siHi, sjLo, sjHi,
      I          1, sNx, 1, sNy,
@@ -72,12 +69,12 @@ C     LOCAL VARIABLES:
          IF (maskC(i,j,1,1,1).EQ.1.) THEN
 
            IF (doAll) THEN
-             ctocn(atm_oc_ind(j))= ctocn(atm_oc_ind(j)) +
-     &                             sstFromOcn(i,j) * rA(i,j,1,1) *
+             ctocn(atm_oc_ind(j))= ctocn(atm_oc_ind(j)) + 
+     &                             sstFromOcn(i,j) * rA(i,j,1,1) * 
      &                      (1. _d 0-iceMask(i,j,1,1))*atm_oc_wgt(j)
-             cfice(atm_oc_ind(j))=cfice(atm_oc_ind(j)) +
+             cfice(atm_oc_ind(j))=cfice(atm_oc_ind(j)) + 
      &              rA(i,j,1,1)*iceMask(i,j,1,1)*atm_oc_wgt(j)
-             cco2flux(atm_oc_ind(j))=cco2flux(atm_oc_ind(j)) +
+             cco2flux(atm_oc_ind(j))=cco2flux(atm_oc_ind(j)) + 
      &                  oFluxCO2(i,j)*rA(i,j,1,1)*atm_oc_wgt(j)
            ENDIF
            ctice(atm_oc_ind(j))=ctice(atm_oc_ind(j)) + Tsrf(i,j,1,1)
@@ -89,17 +86,17 @@ C     LOCAL VARIABLES:
            IF (atm_oc_wgt(j).LT.1. _d 0) THEN
              mWgt= 1. _d 0-atm_oc_wgt(j)
              IF (doAll) THEN
-               ctocn(atm_oc_ind(j)+1)= ctocn(atm_oc_ind(j)+1) +
-     &                                 sstFromOcn(i,j) * rA(i,j,1,1) *
+               ctocn(atm_oc_ind(j)+1)= ctocn(atm_oc_ind(j)+1) + 
+     &                                 sstFromOcn(i,j) * rA(i,j,1,1) * 
      &                                 (1. _d 0-iceMask(i,j,1,1))*mWgt
-               cfice(atm_oc_ind(j)+1)= cfice(atm_oc_ind(j)+1) +
+               cfice(atm_oc_ind(j)+1)= cfice(atm_oc_ind(j)+1) + 
      &             rA(i,j,1,1)*iceMask(i,j,1,1)*mWgt
-               cco2flux(atm_oc_ind(j)+1)= cco2flux(atm_oc_ind(j)+1) +
+               cco2flux(atm_oc_ind(j)+1)= cco2flux(atm_oc_ind(j)+1) + 
      &                  oFluxCO2(i,j)*rA(i,j,1,1)*mWgt
              ENDIF
-             ctice(atm_oc_ind(j)+1)= ctice(atm_oc_ind(j)+1) +
+             ctice(atm_oc_ind(j)+1)= ctice(atm_oc_ind(j)+1) + 
      &             Tsrf(i,j,1,1)*rA(i,j,1,1)*iceMask(i,j,1,1)*mWgt
-             csAlb(atm_oc_ind(j)+1)= csAlb(atm_oc_ind(j)+1) +
+             csAlb(atm_oc_ind(j)+1)= csAlb(atm_oc_ind(j)+1) + 
      &             siceAlb(i,j,1,1)*rA(i,j,1,1)*iceMask(i,j,1,1)*mWgt
            ENDIF
 
@@ -109,24 +106,22 @@ C     LOCAL VARIABLES:
       ENDDO
 
       DO j_atm=2,jm0-1
-
+        
         IF (ocnArea(j_atm).GT.1. _d -32) THEN
-
-          IF (doAll)THEN
-            cfice(j_atm)= cfice(j_atm)/ocnArea(j_atm)
-            cco2flux(j_atm)= cco2flux(j_atm)/ocnArea(j_atm)
-          ENDIF
+          
+          IF (doAll) 
+     &      cfice(j_atm)= cfice(j_atm)/ocnArea(j_atm)
           IF (cfice(j_atm).GT.1. _d -32) THEN
             ctice(j_atm)= ctice(j_atm)/ocnArea(j_atm)/cfice(j_atm)
             csAlb(j_atm)= csAlb(j_atm)/ocnArea(j_atm)/cfice(j_atm)
           ENDIF
 
-          IF ((1. _d 0-cfice(j_atm).GT.1. _d -32).AND.doAll)
+          IF ((1. _d 0-cfice(j_atm).GT.1. _d -32).AND.doAll) 
      &        ctocn(j_atm)= ctocn(j_atm)/ocnArea(j_atm)
      &                        /(1. _d 0-cfice(j_atm))
 
         ENDIF
-
+       
 C       At present, keeping separate variables in AGRID.h and ATM2D_VARS.h
 
         IF (doALL) THEN
@@ -136,7 +131,7 @@ C       At present, keeping separate variables in AGRID.h and ATM2D_VARS.h
         ENDIF
         mmtice(j_atm)= ctice(j_atm)
         mmsAlb(j_atm)= csAlb(j_atm)
-
+      
       ENDDO
 
 C     Copy data to atmosphere polar points
@@ -145,8 +140,8 @@ C     Copy data to atmosphere polar points
           mmsst(jm0)= ctocn(jm0-1)
           mmfice(1)= cfice(2)
           mmfice(jm0)= cfice(jm0-1)
-          mmco2flux(1)= cco2flux(2)
-          mmco2flux(jm0)= cco2flux(jm0-1)
+          mmco2flux(1)= 0. _d 0 
+          mmco2flux(jm0)= 0. _d 0 ! converted to mol/s; pole point contribution in jm0-1
       ENDIF
         mmtice(1)= ctice(2)
         mmtice(jm0)= ctice(jm0-1)
