@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.6 2006/08/06 01:29:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.7 2007/10/12 21:24:07 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -44,7 +44,7 @@ C     == Local variables ==
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 c
 c
-      IF ( periodicExternalForcing ) THEN
+      IF ( gchem_ForcingCycle.gt.0.d0 ) THEN
 
 
 C First call requires that we initialize everything to zero for safety
@@ -63,11 +63,11 @@ cQQQ need to check timing
 C Now calculate whether it is time to update the forcing arrays
        rdt=1. _d 0 / deltaTclock
        nForcingPeriods=
-     &  int(externForcingCycle/externForcingPeriod+0.5)
+     &  int(gchem_ForcingCycle/gchem_ForcingPeriod+0.5)
 cswd QQ change for placement of chem forcing (ie. after timestep)
        Imytm=int(myTime*rdt+0.5)
-       Ifprd=int(externForcingPeriod*rdt+0.5)
-       Ifcyc=int(externForcingCycle*rdt+0.5)
+       Ifprd=int(gchem_ForcingPeriod*rdt+0.5)
+       Ifcyc=int(gchem_ForcingCycle*rdt+0.5)
        Iftm=mod( Imytm+Ifcyc-Ifprd/2,Ifcyc)
 
 
