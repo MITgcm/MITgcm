@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.9 2007/10/12 01:35:22 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.10 2007/10/12 16:05:23 jmc Exp $
 
 #  Ed Hill
 
@@ -67,8 +67,7 @@ mkdir $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
   cd verification
-# comm="./testreport -adm -a edhill@mitgcm.org"
-  comm="./testreport -adm -a edhill@mitgcm.org -skd bottom_ctrl_5x5"
+  comm="./testreport -adm -a edhill@mitgcm.org"
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
