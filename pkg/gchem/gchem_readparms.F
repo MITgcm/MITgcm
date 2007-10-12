@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.9 2007/05/01 20:48:42 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.10 2007/10/12 21:23:22 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -16,6 +16,7 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GCHEM.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -32,11 +33,11 @@ C  tIter0               :: retired parameter
 C  iTracer              :: loop indices
 C  iUnit		:: unit number for I/O
 C  msgBuf		:: message buffer
-      INTEGER tIter0, UNSET_I
+      INTEGER tIter0
       INTEGER iTracer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      PARAMETER ( UNSET_I      = 123456789  )
+c     PARAMETER ( UNSET_I      = 123456789  )
 CEOP
 
       NAMELIST /GCHEM_PARM01/
@@ -55,7 +56,8 @@ CEOP
      &           gchem_int1, gchem_int2, gchem_int3,
      &           gchem_int4, gchem_int5,
      &           gchem_rl1, gchem_rl2, gchem_rl3,
-     &           gchem_rl4, gchem_rl5
+     &           gchem_rl4, gchem_rl5,
+     &           gchem_ForcingPeriod, gchem_ForcingCycle
 
 C Set defaults values for parameters in GCHEM.h
        tIter0 = UNSET_I
@@ -80,6 +82,9 @@ C Set defaults values for parameters in GCHEM.h
        gchem_rl3=0.d0
        gchem_rl4=0.d0
        gchem_rl5=0.d0
+c default periodic forcing to same as for physics
+       gchem_ForcingPeriod=externForcingPeriod
+       gchem_ForcingCycle=externForcingCycle
 C Open and read the data.gchem file
       _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)') ' GCHEM_READPARMS: opening data.gchem'
