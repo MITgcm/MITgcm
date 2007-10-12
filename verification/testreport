@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.104 2007/10/02 14:24:42 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.105 2007/10/12 21:39:37 jmc Exp $
 #  $Name:  $
 #
 
@@ -1228,6 +1228,7 @@ for dir in $TESTDIRS ; do
 	done
 # <-- same processing for adjoint & forward test
     if test "x$ADM" = xt ; then
+	head -1 $dir/$builddir/taf_ad.log >> $CDIR"/summary.txt"
 	grep -A3 'Seconds in section "ALL' $dir/$rundir/$OUTPUTFILE \
 			   >> $CDIR"/summary.txt"
     fi
