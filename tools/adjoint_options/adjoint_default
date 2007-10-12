@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.15 2007/10/12 01:32:37 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.16 2007/10/12 11:43:17 heimbach Exp $
 #  $Name:  $
 #
 
@@ -16,7 +16,7 @@ TAF=staf
 TAMC=tamc
 
 AD_TAMC_FLAGS='-reverse -admark ad -i4 -r4 -l tamc_ad.log'
-AD_TAF_FLAGS='-version 1.9.8 -z -reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log -nonew_arg'
+AD_TAF_FLAGS='-z -reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log -nonew_arg'
 FTL_TAMC_FLAGS='-forward -ftlmark g_ -i4 -r4 -l tamc_ftl.log'
 FTL_TAF_FLAGS='-z -forward -ftlmark g_ -i4 -r4 -l taf_ftl.log -flow taf_ftl_flow.log -nonew_arg'
 SVD_TAMC_FLAGS='-reverse -forward -pure -i4 -r4 -l tamc_svd.log'
