@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.7 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.8 2007/10/15 14:52:29 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -228,8 +228,10 @@ c        PRINT *,'From driver before call tem',' idyear=',idyear
 #    ifdef CPL_NEM
         PRINT *,'Month=',monid
         PRINT *,'CH4=',ch4mn/1.e9,' N2O=',n2omn/1.e9
-        write (277)iyr,monid,ch4mn,n2omn,nepmn,
+        OPEN(277,ACCESS='APPEND',FILE=fnememiss,STATUS='old')
+        WRITE (277,*) iyr,monid,ch4mn,n2omn,nepmn,
      &          temch4,temn2o,temco2
+        CLOSE(277)
 #    endif
         DO j=1,jm0
           temnep(monid,j)=temco2(j)
@@ -296,7 +298,9 @@ C        CALL emissipcc(tnow,nepmn,ocumn,CO2,xco2ann,nemis)
         IF (iyr.eq.endYear) THEN
 C         NEM emissions and NEP for start of climate-chemistry run
           adupt=aduptt
-          WRITE (367),adupt,temco2
+          OPEN(367,FILE=last_nep,FORM='unformatted',STATUS='replace')
+          WRITE (367) adupt,temco2
+          CLOSE(367)
           CALL wr_rstrt_nem
         ENDIF
 
@@ -326,18 +330,20 @@ C If necessary, next line can be moved outside OCEAN_3D for IGSM2.2 cleanups
         PRINT 'a6,i6,2(a5,f10.4)','Year=',iyr,
      &         ' NEP=',nepan
 #  endif
+
 #  ifdef IPCC_EMI
         PRINT 'a6,i6,(a5,f10.4)','Year=',iyr,
      &         ' CO2AN=',xco2ann/12.
-C        REWIND 861
-C        WRITE (861,*)co2*ghgbgr(1)
         CALL emissipcc_yr
 #  endif
+
 #  ifdef CPL_NEM
         PRINT *,' CH4=',ch4ann,' N2O=',n2oann
 #  endif
+        OPEN(333,ACCESS='APPEND',FILE=caruptfile,STATUS='old')
 C        WRITE(333,'(2f9.5)')nepan,ocuptp
         WRITE(333,*)iyr,nepan,ocuptp
+        CLOSE(333)
 #  if defined (CPL_OCEANCO2) && defined (ML_2D)
         WRITE(602)iyr
         CALL wrgary
@@ -346,7 +352,7 @@ C        WRITE(333,'(2f9.5)')nepan,ocuptp
 #endif
 #ifdef CPL_OCEANCO2
         DO j=1,jm0
-          co24ocnan(j)=co24ocnan(j)/365.0
+          co24ocnan(j)=co24ocnan(j)*dtatm/24.0/365.0
         ENDDO
         PRINT *,' CO2 for ocean model',' ncallatm=',ncall_atm
         PRINT '12f7.1,/,2(11f7.1,/),12f7.1',co24ocnan
