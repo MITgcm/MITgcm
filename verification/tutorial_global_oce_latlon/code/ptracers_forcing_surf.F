@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/code/ptracers_forcing_surf.F,v 1.2 2007/05/14 19:48:36 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/code/ptracers_forcing_surf.F,v 1.3 2007/10/15 15:29:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -60,8 +60,8 @@ C Example of how to add forcing at the surface
            DO i = iMin, iMax
 C     Restoring to zero at the surface on a 10-day timescale
              surfaceForcingPtr(i,j,bi,bj,iTrc) =
-     &        + 1. _d 0 / (10. _d 0 * 86400. _d 0) 
-     &                  * ( 0. _d 0 - pTracer(i,j,ks,bi,bj,iTrc) ) 
+     &        + 1. _d 0 / (10. _d 0 * 86400. _d 0)
+     &                  * ( 0. _d 0 - pTracer(i,j,ks,bi,bj,iTrc) )
      &                  * drF(ks) * _hFacC(i,j,ks,bi,bj)
            ENDDO
           ENDDO
@@ -84,7 +84,7 @@ c
      &          surfaceForcingPtr(i,j,bi,bj,iTrc)
      &        + PmEpR(i,j,bi,bj)
      &          *( PTRACERS_EvPrRn(iTrc) - pTracer(i,j,ks,bi,bj,iTrc) )
-     &          *convertEmP2rUnit
+     &          *mass2rUnit
            ENDDO
           ENDDO
          ENDIF

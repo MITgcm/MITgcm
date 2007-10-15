@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.19 2007/09/04 16:49:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.20 2007/10/15 15:28:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -110,7 +110,7 @@ C------------------------------------
 C note: deep-model not implemented for P-coordinate + realFreshWaterFlux ;
 C       anelastic: always assumes that rhoFacF(1) = 1
        facEmP = 0.
-       IF (useRealFreshWaterFlux) facEmP = convertEmP2rUnit
+       IF (useRealFreshWaterFlux) facEmP = mass2rUnit
        IF ( myTime.EQ.startTime .AND. myTime.NE.baseTime
      &                          .AND. useRealFreshWaterFlux) THEN
 
@@ -130,7 +130,7 @@ C     and was not in old pickup-file ; try to use etaN & etaH instead.
             PmEpR(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)
      &                       + hDivFlow(i,j)*recip_rA(i,j,bi,bj)
      &                                      *recip_deepFac2F(1)
-            PmEpR(i,j,bi,bj) = PmEpR(i,j,bi,bj)/convertEmP2rUnit
+            PmEpR(i,j,bi,bj) = PmEpR(i,j,bi,bj)*rUnit2mass
           ENDDO
          ENDDO
        ELSEIF ( myTime.EQ.startTime ) THEN
@@ -225,7 +225,7 @@ C--    Integrate continuity vertically for vertical velocity
           DO j=1,sNy
            DO i=1,sNx
              wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj)
-     &         +convertEmP2rUnit*PmEpR(i,j,bi,bj)*maskC(i,j,k,bi,bj)
+     &               +mass2rUnit*PmEpR(i,j,bi,bj)*maskC(i,j,k,bi,bj)
            ENDDO
           ENDDO
 

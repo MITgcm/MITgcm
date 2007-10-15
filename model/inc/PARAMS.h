@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.203 2007/08/23 19:07:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.204 2007/10/15 15:28:24 jmc Exp $
 C $Name:  $
 C
 
@@ -690,7 +690,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & gravity, recip_gravity, gBaro,
      & rhonil, recip_rhonil, rhoConst, recip_rhoConst,
      & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF,
-     & rhoConstFresh, convertEmP2rUnit, tRef, sRef, phiRef, dBdrRef,
+     & rhoConstFresh, tRef, sRef, phiRef, dBdrRef,
      & rVel2wUnit, wUnit2rVel, mass2rUnit, rUnit2mass,
      & baseTime, startTime, endTime,
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
@@ -785,7 +785,6 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL rhoFacC(Nr),   recip_rhoFacC(Nr)
       _RL rhoFacF(Nr+1), recip_rhoFacF(Nr+1)
       _RL rhoConstFresh
-      _RL convertEmP2rUnit
       _RL tRef(Nr)
       _RL sRef(Nr)
       _RL phiRef(2*Nr+1)

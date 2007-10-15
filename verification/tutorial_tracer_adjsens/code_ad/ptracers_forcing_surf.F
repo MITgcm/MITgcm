@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/ptracers_forcing_surf.F,v 1.2 2006/05/24 01:17:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/ptracers_forcing_surf.F,v 1.3 2007/10/15 15:29:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -82,7 +82,7 @@ c
      &          surfaceForcingPtr(i,j,bi,bj,iTrc)
      &        + PmEpR(i,j,bi,bj)
      &          *( PTRACERS_EvPrRn(iTrc) - pTracer(i,j,ks,bi,bj,iTrc) )
-     &          *convertEmP2rUnit
+     &          *mass2rUnit
            ENDDO
           ENDDO
          ENDIF

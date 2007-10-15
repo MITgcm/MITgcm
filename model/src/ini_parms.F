@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.199 2007/10/01 13:28:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.200 2007/10/15 15:28:24 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -1211,8 +1211,6 @@ C     rUnit2mass: from r-coordinate to mass per unit area [kg/m2] (z:=rho;p:=1/g
          mass2rUnit = recip_rhoConst
          rUnit2mass = rhoConst
       ENDIF
-c     convertEmP2rUnit = rhoConstFresh*mass2rUnit
-      convertEmP2rUnit = mass2rUnit
 
 c-- gradually replacing debugMode by debugLevel
       IF ( debugMode ) debugLevel = debLevB

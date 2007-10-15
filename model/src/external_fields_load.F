@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.30 2007/10/01 13:28:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.31 2007/10/15 15:28:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -134,7 +134,7 @@ C      data for the period ahead and the period behind myTime.
      &                      intime0, myIter, myThid )
        CALL READ_REC_XY_RS( EmPmRfile, EmPmR1,
      &                      intime1, myIter, myThid )
-       IF ( convertEmP2rUnit.EQ.mass2rUnit ) THEN
+c      IF ( convertEmP2rUnit.EQ.mass2rUnit ) THEN
 C-     EmPmR is now (after c59h) expressed in kg/m2/s (fresh water mass flux)
         _BARRIER
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -147,7 +147,7 @@ C-     EmPmR is now (after c59h) expressed in kg/m2/s (fresh water mass flux)
           ENDDO
          ENDDO
         ENDDO
-       ENDIF
+c      ENDIF
       ENDIF
       IF ( saltFluxFile .NE. ' '  ) THEN
        CALL READ_REC_XY_RS( saltFluxFile, saltFlux0,
