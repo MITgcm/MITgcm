@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.891 2007/10/11 10:30:34 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.892 2007/10/15 00:30:04 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/monitor:
+  - use GLOBAL_SUM_TILE instead of _GLOBAL_SUM
+  - fix mon_stats_rs (statistics over the full domain, even where field is zero)
+  - account for deep Atmosphere factor and density factor (anelastic)
 o added open boundary conditions capability for seaice HEFF and AREA
 o pkg/shelfice: add option for convservative form of Hellmer&Olbers (1989)
   thermodynamics
@@ -11,7 +15,7 @@ o pkg/shelfice: add option for convservative form of Hellmer&Olbers (1989)
     of isomip.htd (only 7 digits of cg2d agree) => update/modify experiment,
     so that now the conservative form is tested
   - add a few comments
-o add missing cvs $Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.891 2007/10/11 10:30:34 dimitri Exp $ or $Name:  $ in eesupp/*, pkg/* & verification/code*
+o add missing cvs Header: or Name: in eesupp/*, pkg/* & verification/code*
 o add a little bit of code to gad_os7mp_adv_?.F to help vectorization
 o add new diagnostics to seaice: advective, diffusive fluxes (only for
   multidim-advection, for scheme 2 they are not filled) and transports, 
