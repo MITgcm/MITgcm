@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.10 2007/08/23 19:13:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.11 2007/10/15 00:18:40 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -54,41 +54,42 @@ C     !LOCAL VARIABLES:
       _RL theArea, wT_Mean, wS_Mean, wT_Heat
       _RL vT_Mean, vS_Mean, vT_Heat, theta2PE
       _RL tmpVal, ddPI
-      _RL areaTile, wT_Tile, wS_Tile, wH_Tile, th2peTile
+      _RL tileArea(nSx,nSy)
+      _RL tile_wT (nSx,nSy)
+      _RL tile_wS (nSx,nSy)
+      _RL tileWHeat(nSx,nSy)
+      _RL tileTh2pe(nSx,nSy)
 #ifdef NONLIN_FRSURF
       _RL tmpVol, conv_th2Heat
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        theArea = 0.
-       theta2PE = 0.
        wT_Mean = 0.
        wS_Mean = 0.
        wT_Heat = 0.
-       vT_Mean = 0.
-       vS_Mean = 0.
-       vT_Heat = 0.
+       theta2PE = 0.
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-          areaTile = 0.
-          th2peTile = 0.
-          wT_Tile = 0.
-          wS_Tile = 0.
-          wH_Tile = 0.
+          tileArea(bi,bj) = 0.
+          tile_wT(bi,bj) = 0.
+          tile_wS(bi,bj) = 0.
+          tileWHeat(bi,bj) = 0.
+          tileTh2pe(bi,bj) = 0.
 C-- Compute surface "expansion" term & do the integral
           DO j=1,sNy
            DO i=1,sNx
             ks = ksurfC(i,j,bi,bj)
             IF (ks.LE.Nr) THEN
-             areaTile = areaTile + rA(i,j,bi,bj)
+             tileArea(bi,bj) = tileArea(bi,bj) + rA(i,j,bi,bj)
              tmpVal =
      &          rA(i,j,bi,bj)*wVel(i,j,ks,bi,bj)*theta(i,j,ks,bi,bj)
-             wT_Tile = wT_Tile + tmpVal
-             wS_Tile = wS_Tile
+             tile_wT(bi,bj) = tile_wT(bi,bj) + tmpVal
+             tile_wS(bi,bj) = tile_wS(bi,bj)
      &        + rA(i,j,bi,bj)*wVel(i,j,ks,bi,bj)* salt(i,j,ks,bi,bj)
 C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
-             IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
-               wH_Tile = wH_Tile
+             IF ( fluidIsAir ) THEN
+               tileWHeat(bi,bj) = tileWHeat(bi,bj)
      &                 + tmpVal*atm_cp*((rC(ks)/atm_po)**atm_kappa)
              ENDIF
             ENDIF
@@ -96,7 +97,7 @@ C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
           ENDDO
 #ifdef ALLOW_AIM
           IF ( useAIM ) THEN
-           wS_Tile = 0.
+           tile_wS(bi,bj) = 0.
            DO j=1,sNy
             DO i=1,sNx
              ks = ksurfC(i,j,bi,bj)
@@ -104,7 +105,7 @@ C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
               tmpVal = salt(i,j,ks,bi,bj)
      &               + salt(i,j,Nr,bi,bj)*drF(Nr)*recip_drF(ks)
      &                *hFacC(i,j,Nr,bi,bj)*_recip_hFacC(i,j,ks,bi,bj)
-              wS_Tile = wS_Tile
+              tile_wS(bi,bj) = tile_wS(bi,bj)
      &         + rA(i,j,bi,bj)*wVel(i,j,ks,bi,bj)*tmpVal
              ENDIF
             ENDDO
@@ -115,13 +116,13 @@ C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
 
 C-- Atmos in Pot.Temp => conmpute energy conversion Temp -> PE
 C    = Omega*Theta*DeltaPI
-          IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
+          IF ( fluidIsAir ) THEN
            DO k=2,Nr
             ddPI=atm_cp*( (rC(K-1)/atm_po)**atm_kappa
      &                   -(rC( K )/atm_po)**atm_kappa )
             DO j=1,sNy
              DO i=1,sNx
-              th2peTile = th2peTile
+              tileTh2pe(bi,bj) = tileTh2pe(bi,bj)
      &         - ddPI*rA(i,j,bi,bj)*wVel(i,j,k,bi,bj)
      &           *(theta(i,j,k,bi,bj)+theta(i,j,k-1,bi,bj))*0.5 _d 0
      &           *maskC(i,j,k-1,bi,bj)*maskC(i,j,k,bi,bj)
@@ -154,28 +155,33 @@ C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
             ENDDO
            ENDDO
           ENDDO
-          wT_Tile = wT_Tile + vT_Mean
-          wS_Tile = wS_Tile + vS_Mean
-          wH_Tile = wH_Tile + vT_Heat
+          tile_wT(bi,bj) = tile_wT(bi,bj) + vT_Mean
+          tile_wS(bi,bj) = tile_wS(bi,bj) + vS_Mean
+          tileWHeat(bi,bj) = tileWHeat(bi,bj) + vT_Heat
         ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* NONLIN_FRSURF */
 
-          theArea = theArea   + areaTile
-          theta2PE = theta2PE + th2peTile
-          wT_Mean = wT_Mean   + wT_Tile
-          wS_Mean = wS_Mean   + wS_Tile
-          wT_Heat = wT_Heat   + wH_Tile
+c         theArea = theArea   + tileArea(bi,bj)
+c         wT_Mean = wT_Mean   + tile_wT(bi,bj)
+c         wS_Mean = wS_Mean   + tile_wS(bi,bj)
+c         wT_Heat = wT_Heat   + tileWHeat(bi,bj)
+c         theta2PE = theta2PE + tileTh2pe(bi,bj)
 C--    end bi,bj loop
         ENDDO
        ENDDO
 
-       _GLOBAL_SUM_R8(theArea,myThid)
-       _GLOBAL_SUM_R8(wT_Mean,myThid)
-       _GLOBAL_SUM_R8(wS_Mean,myThid)
-       IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
-        _GLOBAL_SUM_R8(wT_Heat,myThid)
-        _GLOBAL_SUM_R8(theta2PE,myThid)
+c      _GLOBAL_SUM_R8(theArea,myThid)
+c      _GLOBAL_SUM_R8(wT_Mean,myThid)
+c      _GLOBAL_SUM_R8(wS_Mean,myThid)
+       CALL GLOBAL_SUM_TILE_RL( tileArea, theArea, myThid )
+       CALL GLOBAL_SUM_TILE_RL( tile_wT , wT_Mean, myThid )
+       CALL GLOBAL_SUM_TILE_RL( tile_wS , wS_Mean, myThid )
+       IF ( fluidIsAir ) THEN
+        CALL GLOBAL_SUM_TILE_RL( tileWHeat , wT_Heat , myThid )
+        CALL GLOBAL_SUM_TILE_RL( tileTh2pe , theta2PE, myThid )
+c       _GLOBAL_SUM_R8(wT_Heat,myThid)
+c       _GLOBAL_SUM_R8(theta2PE,myThid)
        ENDIF
        IF (theArea.GT.0.) THEN
          wT_Mean = wT_Mean / theArea
@@ -191,7 +197,7 @@ C-    Print the Average value (monitor type output)
        CALL MON_SET_PREF('surfExpan',myThid)
        CALL MON_OUT_RL( '_theta', wT_Mean, mon_foot_mean ,myThid)
        CALL MON_OUT_RL( '_salt' , wS_Mean, mon_foot_mean ,myThid)
-      IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
+      IF ( fluidIsAir ) THEN
        CALL MON_OUT_RL( '_Heat' , wT_Heat, mon_foot_mean ,myThid)
        CALL MON_SET_PREF('En_Budget',myThid)
        CALL MON_OUT_RL('_T2PE',theta2PE, mon_foot_mean ,myThid)

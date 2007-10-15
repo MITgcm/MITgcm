@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.11 2005/01/27 16:36:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.12 2007/10/15 00:18:40 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -36,9 +36,13 @@ C     !LOCAL VARIABLES:
       INTEGER numPnts
       LOGICAL noPnts
       _RL tmpVal,rNumPnts
-      _RL theVar,theVarTile
+      _RL theVar
       _RL tmpVol
-      _RL theMeanTile, theSDTile, theDel2Tile, theVolTile
+      _RL tileMean(nSx,nSy)
+      _RL tileVar (nSx,nSy)
+      _RL tileSD  (nSx,nSy)
+      _RL tileDel2(nSx,nSy)
+      _RL tileVol (nSx,nSy)
 
       theMin=0.
       theMax=0.
@@ -52,10 +56,10 @@ C     !LOCAL VARIABLES:
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        theDel2Tile = 0.
-        theVolTile = 0.
-        theMeanTile = 0.
-        theVarTile = 0.
+        tileDel2(bi,bj) = 0.
+        tileVol (bi,bj) = 0.
+        tileMean(bi,bj) = 0.
+        tileVar (bi,bj) = 0.
         DO K=1,myNr
          DO J=1,sNy
           DO I=1,sNx
@@ -68,33 +72,38 @@ C     !LOCAL VARIABLES:
            IF (arrMask(I,J,K,bi,bj).NE.0.) THEN
             theMin=min(theMin,tmpVal)
             theMax=max(theMax,tmpVal)
-            theDel2Tile = theDel2Tile+0.25*ABS(
+            tileDel2(bi,bj) = tileDel2(bi,bj)
+     &      + 0.25*ABS(
      &         (arr(I+1,J,K,bi,bj)-tmpVal)*arrMask(I+1,J,K,bi,bj)
      &        +(arr(I-1,J,K,bi,bj)-tmpVal)*arrMask(I-1,J,K,bi,bj)
      &        +(arr(I,J+1,K,bi,bj)-tmpVal)*arrMask(I,J+1,K,bi,bj)
      &        +(arr(I,J-1,K,bi,bj)-tmpVal)*arrMask(I,J-1,K,bi,bj)
-     &                               )
+     &                )
             numPnts=numPnts+1
             tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
      &                                 *arrMask(I,J,K,bi,bj)
-            theVolTile = theVolTile   + tmpVol
-            theMeanTile = theMeanTile + tmpVol*tmpVal
-            theVarTile = theVarTile   + tmpVol*tmpVal*tmpVal
+            tileVol (bi,bj) = tileVol (bi,bj) + tmpVol
+            tileMean(bi,bj) = tileMean(bi,bj) + tmpVol*tmpVal
+            tileVar (bi,bj) = tileVar (bi,bj) + tmpVol*tmpVal*tmpVal
            ENDIF
           ENDDO
          ENDDO
         ENDDO
-        theDel2 = theDel2 + theDel2Tile
-        theVol = theVol + theVolTile
-        theMean = theMean + theMeanTile
-        theVar = theVar + theVarTile
+c       theDel2 = theDel2 + tileDel2(bi,bj)
+c       theVol  = theVol  + tileVol(bi,bj)
+c       theMean = theMean + tileMean(bi,bj)
+c       theVar  = theVar  + tileVar (bi,bj)
        ENDDO
       ENDDO
 
-      _GLOBAL_SUM_R8(theDel2,myThid)
-      _GLOBAL_SUM_R8(theVol,myThid)
-      _GLOBAL_SUM_R8(theMean,myThid)
-      _GLOBAL_SUM_R8(theVar,myThid)
+c     _GLOBAL_SUM_R8(theDel2,myThid)
+c     _GLOBAL_SUM_R8(theVol,myThid)
+c     _GLOBAL_SUM_R8(theMean,myThid)
+c     _GLOBAL_SUM_R8(theVar,myThid)
+      CALL GLOBAL_SUM_TILE_RL( tileDel2, theDel2, myThid )
+      CALL GLOBAL_SUM_TILE_RL( tileVol , theVol , myThid )
+      CALL GLOBAL_SUM_TILE_RL( tileMean, theMean, myThid )
+      CALL GLOBAL_SUM_TILE_RL( tileVar , theVar , myThid )
       tmpVal=FLOAT(numPnts)
       _GLOBAL_SUM_R8(tmpVal,myThid)
       numPnts=NINT(tmpVal)
@@ -116,28 +125,29 @@ C     !LOCAL VARIABLES:
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         theSDtile=0.
+         tileSD(bi,bj)=0.
          DO K=1,myNr
           DO J=1,sNy
            DO I=1,sNx
             tmpVal=arr(I,J,K,bi,bj)
-c           IF (tmpVal.NE.0.) THEN
             IF (arrMask(I,J,K,bi,bj).NE.0.) THEN
              tmpVol=arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
      &                                *arrMask(I,J,K,bi,bj)
-             theSDtile = theSDtile + tmpVol*(tmpVal-theMean)**2
+             tileSD(bi,bj) = tileSD(bi,bj)
+     &                     + tmpVol*(tmpVal-theMean)*(tmpVal-theMean)
             ENDIF
            ENDDO
           ENDDO
          ENDDO
-         theSD = theSD + theSDtile
+c        theSD = theSD + tileSD(bi,bj)
         ENDDO
        ENDDO
 
-       _GLOBAL_SUM_R8(theSD,myThid)
+c      _GLOBAL_SUM_R8(theSD,myThid)
+       CALL GLOBAL_SUM_TILE_RL( tileSD, theSD, myThid )
 
-       theSD=sqrt(theSD/theVol)
-c      theSD=sqrt(theVar-theMean**2)
+       theSD = SQRT(theSD/theVol)
+c      theSD = SQRT(theVar-theMean*theMean)
       ENDIF
 
       RETURN

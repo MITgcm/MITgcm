@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.11 2005/11/05 01:01:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.12 2007/10/15 00:18:40 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -36,7 +36,13 @@ C     !LOCAL VARIABLES:
       INTEGER iMax,jMax
       _RL theVol, theArea, tmpVal, tmpAre, tmpVol
       _RL theMin, theMax, theMean, theVar, volMean, volVar, theSD
-      _RL areaTile, volTile, sumTile, sqsTile, vSumTile, vSqsTile 
+c     _RL areaTile, volTile, sumTile, sqsTile, vSumTile, vSqsTile
+      _RL tileArea(nSx,nSy)
+      _RL tileVol (nSx,nSy)
+      _RL tileSum (nSx,nSy)
+      _RL tileVar (nSx,nSy)
+      _RL tileVSum(nSx,nSy)
+      _RL tileVSq (nSx,nSy)
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL AZcorner
@@ -44,8 +50,8 @@ C     !LOCAL VARIABLES:
       _RL tmpFac
       _RL etaFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
-      LOGICAL northWestCorner, northEastCorner 
-      LOGICAL southWestCorner, southEastCorner 
+      LOGICAL northWestCorner, northEastCorner
+      LOGICAL southWestCorner, southEastCorner
       INTEGER iG
 #ifdef ALLOW_EXCH2
       INTEGER myTile
@@ -64,15 +70,15 @@ C     !LOCAL VARIABLES:
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-         areaTile= 0. _d 0
-         volTile = 0. _d 0
-         sumTile = 0. _d 0
-         sqsTile = 0. _d 0
-         vSumTile= 0. _d 0
-         vSqsTile= 0. _d 0
+         tileArea(bi,bj)= 0. _d 0
+         tileVol(bi,bj) = 0. _d 0
+         tileSum(bi,bj) = 0. _d 0
+         tileVar(bi,bj) = 0. _d 0
+         tileVSum(bi,bj)= 0. _d 0
+         tileVSq(bi,bj) = 0. _d 0
 #ifdef MONITOR_TEST_HFACZ
          tmpFac = 0.
-         IF( implicDiv2Dflow.GT.0 .AND. abEps.GT.-0.5 ) 
+         IF( implicDiv2Dflow.GT.0 .AND. abEps.GT.-0.5 )
      &    tmpFac = (0.5+abEps) / implicDiv2Dflow
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
@@ -91,47 +97,47 @@ C     !LOCAL VARIABLES:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    Test various definitions of hFacZ (for 1 layer, flat bottom ocean):
 c          hFacZ(i,j) = 1. +
-c    &           0.25 _d 0*( etaFld(i-1,j-1) 
+c    &           0.25 _d 0*( etaFld(i-1,j-1)
 c    &                     + etaFld( i ,j-1)
-c    &                     + etaFld(i-1, j ) 
-c    &                     + etaFld( i , j ) 
+c    &                     + etaFld(i-1, j )
+c    &                     + etaFld( i , j )
 c    &                     )*recip_drF(k)
 c          hFacZ(i,j) = 1. +
 c    &           0.25 _d 0*( etaFld(i-1,j-1)*rA(i-1,j-1,bi,bj)
-c    &                     + etaFld( i ,j-1)*rA( i ,j-1,bi,bj) 
+c    &                     + etaFld( i ,j-1)*rA( i ,j-1,bi,bj)
 c    &                     + etaFld(i-1, j )*rA(i-1, j ,bi,bj)
-c    &                     + etaFld( i , j )*rA( i , j ,bi,bj) 
+c    &                     + etaFld( i , j )*rA( i , j ,bi,bj)
 c    &                     )*recip_drF(k)*recip_rAz(i,j,bi,bj)
            hFacZ(i,j) = 1. + 0.125 _d 0*
      &                   ( ( etaFld(i-1,j-1)*rA(i-1,j-1,bi,bj)
      &                      +etaFld( i ,j-1)*rA( i ,j-1,bi,bj)
-     &                     )*recip_rAw(i,j-1,bi,bj)  
+     &                     )*recip_rAw(i,j-1,bi,bj)
      &                   + ( etaFld(i-1, j )*rA(i-1, j ,bi,bj)
-     &                      +etaFld( i , j )*rA( i , j ,bi,bj) 
+     &                      +etaFld( i , j )*rA( i , j ,bi,bj)
      &                     )*recip_rAw(i, j ,bi,bj)
      &                   + ( etaFld(i-1,j-1)*rA(i-1,j-1,bi,bj)
      &                      +etaFld(i-1, j )*rA(i-1, j ,bi,bj)
-     &                     )*recip_rAs(i-1,j,bi,bj)  
+     &                     )*recip_rAs(i-1,j,bi,bj)
      &                   + ( etaFld( i ,j-1)*rA( i ,j-1,bi,bj)
-     &                     + etaFld( i , j )*rA( i , j ,bi,bj) 
+     &                     + etaFld( i , j )*rA( i , j ,bi,bj)
      &                     )*recip_rAs( i ,j,bi,bj)
      &                   )*recip_drF(k)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #else
 C-    Standard definition of hFac at vorticity point:
            hFacZ(i,j) =
-     &           0.25 _d 0*( _hFacW(i,j-1,k,bi,bj) 
-     &                     + _hFacW(i, j ,k,bi,bj) 
-     &                     + _hFacS(i-1,j,k,bi,bj) 
+     &           0.25 _d 0*( _hFacW(i,j-1,k,bi,bj)
+     &                     + _hFacW(i, j ,k,bi,bj)
+     &                     + _hFacS(i-1,j,k,bi,bj)
      &                     + _hFacS( i ,j,k,bi,bj)
      &                     )
-#endif /* MONITOR_TEST_HFACZ */ 
+#endif /* MONITOR_TEST_HFACZ */
            vort3(i,j) = recip_rAz(i,j,bi,bj)*(
      &       vVel( i ,j,k,bi,bj)*dyC( i ,j,bi,bj)
      &      -vVel(i-1,j,k,bi,bj)*dyC(i-1,j,bi,bj)
      &      -uVel(i, j ,k,bi,bj)*dxC(i, j ,bi,bj)
      &      +uVel(i,j-1,k,bi,bj)*dxC(i,j-1,bi,bj)
-     &                                       ) 
+     &                                       )
           ENDDO
          ENDDO
 
@@ -158,7 +164,7 @@ c          AZcorner = 0.75 _d 0
 #ifdef ALLOW_EXCH2
            myTile = W2_myTileList(bi)
            iG = exch2_myFace(myTile)
-           southWestCorner = exch2_isWedge(myTile).EQ.1 
+           southWestCorner = exch2_isWedge(myTile).EQ.1
      &                 .AND. exch2_isSedge(myTile).EQ.1
            southEastCorner = exch2_isEedge(myTile).EQ.1
      &                 .AND. exch2_isSedge(myTile).EQ.1
@@ -183,8 +189,8 @@ C--       S.W. corner:
      &       -uVel(i,j,k,bi,bj)*dxC(i,j,bi,bj)
      &       +uVel(i,j-1,k,bi,bj)*dxC(i,j-1,bi,bj)
      &       )
-           hFacZ(i,j) = ( _hFacW(i,j-1,k,bi,bj) 
-     &                  + _hFacW(i, j ,k,bi,bj) 
+           hFacZ(i,j) = ( _hFacW(i,j-1,k,bi,bj)
+     &                  + _hFacW(i, j ,k,bi,bj)
      &                  + _hFacS( i ,j,k,bi,bj)
      &                  )/3. _d 0
           ENDIF
@@ -192,15 +198,15 @@ C--       S.W. corner:
 C--        S.E. corner:
            i=iMax
            j=1
-           vort3(I,J)=
-     &       +recip_rAz(I,J,bi,bj)/AZcorner*(
+           vort3(i,j)=
+     &       +recip_rAz(i,j,bi,bj)/AZcorner*(
      &       -vVel(i-1,j,k,bi,bj)*dyC(i-1,j,bi,bj)
      &       -uVel(i,j,k,bi,bj)*dxC(i,j,bi,bj)
      &       +uVel(i,j-1,k,bi,bj)*dxC(i,j-1,bi,bj)
      &       )
-           hFacZ(i,j) = ( _hFacW(i,j-1,k,bi,bj) 
-     &                  + _hFacW(i, j ,k,bi,bj) 
-     &                  + _hFacS(i-1,j,k,bi,bj) 
+           hFacZ(i,j) = ( _hFacW(i,j-1,k,bi,bj)
+     &                  + _hFacW(i, j ,k,bi,bj)
+     &                  + _hFacS(i-1,j,k,bi,bj)
      &                  )/3. _d 0
           ENDIF
           IF ( northWestCorner ) THEN
@@ -213,8 +219,8 @@ C--        N.W. corner:
      &       -uVel(i,j,k,bi,bj)*dxC(i,j,bi,bj)
      &       +uVel(i,j-1,k,bi,bj)*dxC(i,j-1,bi,bj)
      &       )
-           hFacZ(i,j) = ( _hFacW(i,j-1,k,bi,bj) 
-     &                  + _hFacW(i, j ,k,bi,bj) 
+           hFacZ(i,j) = ( _hFacW(i,j-1,k,bi,bj)
+     &                  + _hFacW(i, j ,k,bi,bj)
      &                  + _hFacS( i ,j,k,bi,bj)
      &                  )/3. _d 0
           ENDIF
@@ -228,9 +234,9 @@ C--        N.E. corner:
      &       -uVel(i,j,k,bi,bj)*dxC(i,j,bi,bj)
      &       +uVel(i,j-1,k,bi,bj)*dxC(i,j-1,bi,bj)
      &       )
-           hFacZ(i,j) = ( _hFacW(i,j-1,k,bi,bj) 
-     &                  + _hFacW(i, j ,k,bi,bj) 
-     &                  + _hFacS(i-1,j,k,bi,bj) 
+           hFacZ(i,j) = ( _hFacW(i,j-1,k,bi,bj)
+     &                  + _hFacW(i, j ,k,bi,bj)
+     &                  + _hFacS(i-1,j,k,bi,bj)
      &                  )/3. _d 0
           ENDIF
          ENDIF
@@ -246,10 +252,10 @@ C-    Special stuff for North & South Poles, LatLon grid
      &                 + uVel(i,j-1,k,bi,bj)*dxC(i,j-1,bi,bj)
             hFacZ(i,j) = 0.
 #ifndef MONITOR_TEST_HFACZ
-            hFacZ(1,j) = hFacZ(1,j) + _hFacW(i,j-1,k,bi,bj) 
+            hFacZ(1,j) = hFacZ(1,j) + _hFacW(i,j-1,k,bi,bj)
            ENDDO
 #else
-            hFacZ(1,j) = hFacZ(1,j) + etaFld(i,j-1) 
+            hFacZ(1,j) = hFacZ(1,j) + etaFld(i,j-1)
            ENDDO
             hFacZ(1,j) = sNx + hFacZ(1,j)*recip_drF(k)
 #endif
@@ -264,10 +270,10 @@ C-    Special stuff for North & South Poles, LatLon grid
      &                 - uVel(i,j,k,bi,bj)*dxC(i,j,bi,bj)
             hFacZ(i,j) = 0.
 #ifndef MONITOR_TEST_HFACZ
-            hFacZ(1,j) = hFacZ(1,j) + _hFacW(i,j,k,bi,bj) 
+            hFacZ(1,j) = hFacZ(1,j) + _hFacW(i,j,k,bi,bj)
            ENDDO
 #else
-            hFacZ(1,j) = hFacZ(1,j) + etaFld(i,j) 
+            hFacZ(1,j) = hFacZ(1,j) + etaFld(i,j)
            ENDDO
             hFacZ(1,j) = sNx + hFacZ(1,j)*recip_drF(k)
 #endif
@@ -278,50 +284,56 @@ C-    Special stuff for North & South Poles, LatLon grid
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-         DO J=1,jMax
-          DO I=1,iMax
+         DO j=1,jMax
+          DO i=1,iMax
            IF (hFacZ(i,j).GT.0. _d 0) THEN
             tmpVal = vort3(i,j)
             tmpAre = rAz(i,j,bi,bj)*drF(k)
             tmpVol = rAz(i,j,bi,bj)*drF(k)*hFacZ(i,j)
-            areaTile = areaTile + tmpAre
+            tileArea(bi,bj)  = tileArea(bi,bj)  + tmpAre
 C-       min,max of relative vorticity ("r")
             theMin = MIN(theMin,tmpVal)
             theMax = MAX(theMax,tmpVal)
 C-       average & std.dev of absolute vorticity ("a")
             tmpVal = tmpVal + fCoriG(i,j,bi,bj)
-            sumTile = sumTile + tmpAre*tmpVal
-            sqsTile = sqsTile + tmpAre*tmpVal*tmpVal
+            tileSum(bi,bj) = tileSum(bi,bj) + tmpAre*tmpVal
+            tileVar(bi,bj) = tileVar(bi,bj) + tmpAre*tmpVal*tmpVal
 C-       average & std.dev of potential vorticity ("p")
             tmpVal = tmpVal / hFacZ(i,j)
-            volTile  = volTile  + tmpVol
-            vSumTile = vSumTile + tmpVol*tmpVal
-            vSqsTile = vSqsTile + tmpVol*tmpVal*tmpVal
+            tileVol(bi,bj) = tileVol(bi,bj) + tmpVol
+            tileVSum(bi,bj)= tileVSum(bi,bj)+ tmpVol*tmpVal
+            tileVSq(bi,bj) = tileVSq(bi,bj) + tmpVol*tmpVal*tmpVal
            ENDIF
           ENDDO
          ENDDO
 
         ENDDO
-        theArea= theArea + areaTile
-        theVol = theVol  + volTile
-        theMean= theMean + sumTile
-        theVar = theVar  + sqsTile
-        volMean= volMean + vSumTile
-        volVar = volVar  + vSqsTile
+c       theArea= theArea + tileArea(bi,bj)
+c       theVol = theVol  + tileVol (bi,bj)
+c       theMean= theMean + tileSum(bi,bj)
+c       theVar = theVar  + tileVar(bi,bj)
+c       volMean= volMean + tileVSum(bi,bj)
+c       volVar = volVar  + tileVSq(bi,bj)
        ENDDO
       ENDDO
 
       theMin = -theMin
       _GLOBAL_MAX_R8(theMin, myThid)
       _GLOBAL_MAX_R8(theMax, myThid)
-      _GLOBAL_SUM_R8(theArea,myThid)
-      _GLOBAL_SUM_R8(theVol, myThid)
-      _GLOBAL_SUM_R8(theMean,myThid)
-      _GLOBAL_SUM_R8(theVar, myThid)
-      _GLOBAL_SUM_R8(volMean,myThid)
-      _GLOBAL_SUM_R8(volVar ,myThid)
       theMin = -theMin
-      IF (theArea.GT.0.) THEN 
+c     _GLOBAL_SUM_R8(theArea,myThid)
+c     _GLOBAL_SUM_R8(theVol, myThid)
+c     _GLOBAL_SUM_R8(theMean,myThid)
+c     _GLOBAL_SUM_R8(theVar, myThid)
+c     _GLOBAL_SUM_R8(volMean,myThid)
+c     _GLOBAL_SUM_R8(volVar ,myThid)
+      CALL GLOBAL_SUM_TILE_RL( tileArea, theArea, myThid )
+      CALL GLOBAL_SUM_TILE_RL( tileVol,  theVol,  myThid )
+      CALL GLOBAL_SUM_TILE_RL( tileSum,  theMean, myThid )
+      CALL GLOBAL_SUM_TILE_RL( tileVar,  theVar,  myThid )
+      CALL GLOBAL_SUM_TILE_RL( tileVSum, volMean, myThid )
+      CALL GLOBAL_SUM_TILE_RL( tileVSq,  volVar,  myThid )
+      IF (theArea.GT.0.) THEN
         theMean= theMean/theArea
         theVar = theVar /theArea
         theVar = theVar - theMean*theMean
