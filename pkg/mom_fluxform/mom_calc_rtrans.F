@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_calc_rtrans.F,v 1.6 2006/12/05 05:30:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_calc_rtrans.F,v 1.7 2007/10/15 15:28:58 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -74,10 +74,10 @@ C note: deep-model not implemented for P-coordinate + realFreshWaterFlux ;
 C       anelastic: always assumes that rhoFacF(1) = 1
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-          rTransU(i,j) = convertEmP2rUnit*
+          rTransU(i,j) = mass2rUnit*
      &      0.5 _d 0*( PmEpR( i ,j,bi,bj)*rA( i ,j,bi,bj)
      &                +PmEpR(i-1,j,bi,bj)*rA(i-1,j,bi,bj) )
-          rTransV(i,j) = convertEmP2rUnit*
+          rTransV(i,j) = mass2rUnit*
      &      0.5 _d 0*( PmEpR(i, j ,bi,bj)*rA(i, j ,bi,bj)
      &                +PmEpR(i,j-1,bi,bj)*rA(i,j-1,bi,bj) )
          ENDDO
