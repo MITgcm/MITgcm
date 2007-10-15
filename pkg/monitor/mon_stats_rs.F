@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rs.F,v 1.7 2005/01/27 16:36:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rs.F,v 1.8 2007/10/15 00:19:38 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -33,47 +33,52 @@ C     !LOCAL VARIABLES:
       INTEGER numPnts
       LOGICAL noPnts
       _RL tmpVal,rNumPnts
-      _RL theVar,theVarTile
-      _RL theMeanTile,theSDTile
+      _RL theVar
+      _RL tileMean(nSx,nSy)
+      _RL tileVar (nSx,nSy)
+      _RL tileSD  (nSx,nSy)
 
-      theMin=0.
-      theMax=0.
-      theMean=0.
-      theSD=0.
-      theVar=0.
-      numPnts=0
-      noPnts=.TRUE.
+      theMin = 0.
+      theMax = 0.
+      theMean= 0.
+      theSD  = 0.
+      theVar = 0.
+      numPnts= 0
+      noPnts = .TRUE.
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        theVarTile=0.
-        theMeanTile=0.
+        tileMean(bi,bj) = 0.
+        tileVar (bi,bj) = 0.
         DO K=1,myNr
          DO J=1,sNy
           DO I=1,sNx
            tmpVal=arr(I,J,K,bi,bj)
-           IF (tmpVal.NE.0. .AND. noPnts) THEN
-            theMin=tmpVal
-            theMax=tmpVal
-            noPnts=.FALSE.
+c          IF (tmpVal.NE.0. .AND. noPnts) THEN
+           IF ( noPnts ) THEN
+            theMin = tmpVal
+            theMax = tmpVal
+            noPnts = .FALSE.
            ENDIF
-           IF (tmpVal.NE.0.) THEN
-            theMin=min(theMin,tmpVal)
-            theMax=max(theMax,tmpVal)
-            theMeanTile=theMeanTile+tmpVal
-            theVarTile=theVarTile+tmpVal*tmpVal
+c          IF (tmpVal.NE.0.) THEN
+            theMin = MIN(theMin,tmpVal)
+            theMax = MAX(theMax,tmpVal)
+            tileMean(bi,bj)=tileMean(bi,bj)+tmpVal
+            tileVar (bi,bj)=tileVar (bi,bj)+tmpVal*tmpVal
             numPnts=numPnts+1
-           ENDIF
+c          ENDIF
           ENDDO
          ENDDO
         ENDDO
-        theMean=theMean+theMeanTile
-        theVar=theVar+theVarTile
+c       theMean=theMean+tileMean(bi,bj)
+c       theVar =theVar +tileVar (bi,bj)
        ENDDO
       ENDDO
 
-      _GLOBAL_SUM_R8(theMean,myThid)
-      _GLOBAL_SUM_R8(theVar,myThid)
+c     _GLOBAL_SUM_R8(theMean,myThid)
+c     _GLOBAL_SUM_R8(theVar,myThid)
+      CALL GLOBAL_SUM_TILE_RL( tileMean, theMean, myThid )
+      CALL GLOBAL_SUM_TILE_RL( tileVar , theVar , myThid )
       tmpVal=FLOAT(numPnts)
       _GLOBAL_SUM_R8(tmpVal,myThid)
       numPnts=NINT(tmpVal)
@@ -91,25 +96,27 @@ C     !LOCAL VARIABLES:
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-        theSDtile=0.
+         tileSD(bi,bj)=0.
          DO K=1,myNr
           DO J=1,sNy
            DO I=1,sNx
             tmpVal=arr(I,J,K,bi,bj)
-            IF (tmpVal.NE.0.) THEN
-             theSDtile=theSDtile+(tmpVal-theMean)**2
-            ENDIF
+c           IF (tmpVal.NE.0.) THEN
+             tileSD(bi,bj) = tileSD(bi,bj)
+     &                     + (tmpVal-theMean)*(tmpVal-theMean)
+c           ENDIF
            ENDDO
           ENDDO
          ENDDO
-        theSD=theSD+theSDtile
+c        theSD = theSD + tileSD(bi,bj)
         ENDDO
        ENDDO
 
-       _GLOBAL_SUM_R8(theSD,myThid)
+c      _GLOBAL_SUM_R8(theSD,myThid)
+       CALL GLOBAL_SUM_TILE_RL( tileSD, theSD, myThid )
 
-       theSD=sqrt(theSD*rNumPnts)
-c      theSD=sqrt(theVar-theMean**2)
+       theSD = SQRT(theSD*rNumPnts)
+c      theSD = SQRT(theVar-theMean*theMean)
       ENDIF
 
       RETURN
