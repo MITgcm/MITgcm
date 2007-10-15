@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.41 2006/11/27 20:26:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.42 2007/10/15 00:22:20 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -44,10 +44,8 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL dT
       _RL statsTemp(6)
-c     INTEGER time_as_int
-#ifdef ALLOW_MNC
-      INTEGER i
-#endif
+      _RS thickFacC(Nr), thickFacF(Nr)
+      INTEGER k
 
       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock) ) THEN
 
@@ -63,8 +61,8 @@ C     & mon_write_mnc (since it's the only thread that uses those flags):
           mon_write_mnc = .FALSE.
 #ifdef ALLOW_MNC
           IF (useMNC .AND. monitor_mnc) THEN
-            DO i = 1,MAX_LEN_MBUF
-              mon_fname(i:i) = ' '
+            DO k = 1,MAX_LEN_MBUF
+              mon_fname(k:k) = ' '
             ENDDO
             mon_fname(1:7) = 'monitor'
             CALL MNC_CW_APPEND_VNAME(
@@ -93,49 +91,60 @@ C       Dynamics field monitor start
 C--   endif master cpu io
         ENDIF
 
+C-      Set mass weighted thickness factor
+        DO k=1,Nr
+          thickFacC(k) = drF(k)*deepFac2C(k)*rhoFacC(k)
+          thickFacF(k) = drC(k)*deepFac2F(k)*rhoFacF(k)
+        ENDDO
+
 C       Print the time to make grepping the stdout easier
         CALL MON_SET_PREF('time',myThid)
         CALL MON_OUT_I( '_tsnumber', myIter,mon_string_none,myThid)
         CALL MON_OUT_RL('_secondsf', myTime,mon_string_none,myThid)
-C       - cause floating point error on some platform (cf Martin Losch)
-C       time_as_int = NINT( myTime )
-C       CALL MON_OUT_I( '_secondsi', time_as_int,mon_string_none,myThid)
 
 C       Print the basic statistics of model state variables
+          thickFacC(k) = drF(k)*deepFac2C(k)*rhoFacC(k)
+          thickFacF(k) = drC(k)*deepFac2F(k)*rhoFacF(k)
         CALL MON_SET_PREF('dynstat',myThid)
         CALL MON_PRINTSTATS_RL(1,EtaN,'_eta',
      &       maskH,maskH,rA ,drF,myThid)
         CALL MON_PRINTSTATS_RL(Nr,uVel,'_uvel',
-     &       maskW,hFacW,rAw,drF,myThid)
+     &       maskW,hFacW,rAw,thickFacC,myThid)
         CALL MON_PRINTSTATS_RL(Nr,vVel,'_vvel',
-     &       maskS,hFacS,rAs,drF,myThid)
+     &       maskS,hFacS,rAs,thickFacC,myThid)
         CALL MON_PRINTSTATS_RL(Nr,wVel,'_wvel',
-     &       maskC,maskC,rA ,drC,myThid)
+     &       maskC,maskC,rA ,thickFacF,myThid)
         CALL MON_WRITESTATS_RL(Nr,theta,'_theta',
-     &       maskC,hFacC,rA ,drF,
+     &       maskC,hFacC,rA ,thickFacC,
      &       statsTemp, myThid)
         CALL MON_PRINTSTATS_RL(Nr,salt,'_salt',
-     &       maskC,hFacC,rA ,drF,myThid)
+     &       maskC,hFacC,rA ,thickFacC,myThid)
         IF ( nSx.EQ.1 .AND. nSy.EQ.1 .AND. fluidIsWater ) THEN
-        CALL MON_PRINTSTATS_RL(1,theta(1-olx,1-oly,1,1,1),'_sst',
-     &       maskC,hFacC,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,salt(1-olx,1-oly,1,1,1),'_sss',
-     &       maskC,hFacC,rA ,drF,myThid)
+C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
+         k = 1
+         IF ( usingPCoords ) k = Nr
+         CALL MON_PRINTSTATS_RL(1,theta(1-Olx,1-Oly,k,1,1),'_sst',
+     &        maskH,maskH,rA ,drF,myThid)
+         CALL MON_PRINTSTATS_RL(1, salt(1-Olx,1-Oly,k,1,1),'_sss',
+     &        maskH,maskH,rA ,drF,myThid)
         ENDIF
 
 C       Print the basic statistics of external forcing
         IF ( fluidIsWater ) THEN
-        CALL MON_SET_PREF('extforcing',myThid)
-        CALL MON_PRINTSTATS_RL(1,Qnet,'_qnet',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,Qsw,'_qsw',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,EmPmR,'_empmr',
-     &       maskH,maskH,rA ,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,fu,'_fu',
-     &       maskW,hFacW,rAw,drF,myThid)
-        CALL MON_PRINTSTATS_RL(1,fv,'_fv',
-     &       maskS,hFacS,rAs,drF,myThid)
+         CALL MON_SET_PREF('extforcing',myThid)
+         CALL MON_PRINTSTATS_RL(1,Qnet,'_qnet',
+     &        maskH,maskH,rA ,drF,myThid)
+         CALL MON_PRINTSTATS_RL(1,Qsw,'_qsw',
+     &        maskH,maskH,rA ,drF,myThid)
+         CALL MON_PRINTSTATS_RL(1,EmPmR,'_empmr',
+     &        maskH,maskH,rA ,drF,myThid)
+         IF ( nSx.EQ.1 .AND. nSy.EQ.1 .AND. usingZCoords ) THEN
+C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
+          CALL MON_PRINTSTATS_RL(1,fu,'_fu',
+     &         maskW,maskW,rAw,drF,myThid)
+          CALL MON_PRINTSTATS_RL(1,fv,'_fv',
+     &         maskS,maskS,rAs,drF,myThid)
+         ENDIF
         ENDIF
 
 C       Print the numerical stablility parameters for current state
