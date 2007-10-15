@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.42 2007/10/15 00:22:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.43 2007/10/15 13:51:12 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -103,8 +103,6 @@ C       Print the time to make grepping the stdout easier
         CALL MON_OUT_RL('_secondsf', myTime,mon_string_none,myThid)
 
 C       Print the basic statistics of model state variables
-          thickFacC(k) = drF(k)*deepFac2C(k)*rhoFacC(k)
-          thickFacF(k) = drC(k)*deepFac2F(k)*rhoFacF(k)
         CALL MON_SET_PREF('dynstat',myThid)
         CALL MON_PRINTSTATS_RL(1,EtaN,'_eta',
      &       maskH,maskH,rA ,drF,myThid)
