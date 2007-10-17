@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.200 2007/10/15 15:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.201 2007/10/17 17:08:20 dimitri Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -1214,6 +1214,7 @@ C     rUnit2mass: from r-coordinate to mass per unit area [kg/m2] (z:=rho;p:=1/g
 
 c-- gradually replacing debugMode by debugLevel
       IF ( debugMode ) debugLevel = debLevB
+      IF ( debugLevel .GE. debLevB ) debugMode = .TRUE.
 
 c-- flag for approximate adjoint
       IF ( inAdExact ) THEN
