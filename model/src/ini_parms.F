@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.201 2007/10/17 17:08:20 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.202 2007/10/17 22:08:13 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -20,7 +20,6 @@ C     !USES:
 #include "PARAMS.h"
 c#include "GRID.h"
 #include "EOS.h"
-#include "EESUPPORT.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: Number of this instance of INI_PARMS
@@ -46,10 +45,9 @@ C     xxxDefault :: Default value for variable xxx
       _RL deltaTtracer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
-      CHARACTER*(MAX_LEN_FNAM) mmdir
       LOGICAL forcing_In_AB
       INTEGER goptCount
-      INTEGER K, i, j, IL, pIL, iUnit
+      INTEGER K, i, j, IL, iUnit
       INTEGER errIO
       INTEGER  IFNBLNK
       EXTERNAL IFNBLNK
@@ -1238,14 +1236,6 @@ C--   Stop if they were
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
-
-CMM(  now we make local directories with myProcessStr appended
-      IF ( mdsioLocalDir .NE. ' ' ) THEN
-         pIL = ILNBLNK( mdsioLocalDir )
-         mmdir(1:pIL) = mdsioLocalDir(1:pIL)
-         WRITE(mdsioLocalDir,'(3a)') mmdir(1:pIL),myProcessStr(1:6),'/'
-      ENDIF
-CMM )
 
       _END_MASTER(myThid)
 

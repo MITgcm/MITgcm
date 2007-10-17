@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.22 2006/08/04 01:22:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.23 2007/10/17 22:08:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -17,15 +17,22 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: my Thread Id number
       INTEGER myThid
 
+C     !FUNCTIONS
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     msgBuf :: Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_FNAM) namBuf
+      INTEGER   pIL
 CEOP
 
 C-    Safety check:
@@ -68,6 +75,13 @@ C-    Flags specific to RW and MDSIO
 
 C-    Only Master-thread updates IO-parameter in Common blocks:
       _BEGIN_MASTER( myThid )
+
+C-    now we make local directories with myProcessStr appended
+      IF ( mdsioLocalDir .NE. ' ' ) THEN
+        pIL = ILNBLNK( mdsioLocalDir )
+        namBuf(1:pIL) = mdsioLocalDir(1:pIL)
+        WRITE(mdsioLocalDir,'(3A)') namBuf(1:pIL),myProcessStr(1:4),'/'
+      ENDIF
 
 C     Set globalFiles flag for READ_WRITE_FLD package
       CALL SET_WRITE_GLOBAL_FLD( globalFiles )
