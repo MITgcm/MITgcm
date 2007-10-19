@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.48 2007/09/23 17:13:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.49 2007/10/19 14:41:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -49,6 +49,7 @@ C     == GLobal variables ==
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "RESTART.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 #include "GAD.h"
 #endif
@@ -130,7 +131,7 @@ C--   the kDown is still required
 # ifdef NONLIN_FRSURF
 CADJ STORE fVerS(:,:,:) =
 CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE gsNm1(:,:,k,bi,bj) = 
+CADJ STORE gsNm1(:,:,k,bi,bj) =
 CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif
@@ -184,7 +185,7 @@ C--   External salinity forcing term(s) inside Adams-Bashforth:
         CALL ADAMS_BASHFORTH2(
      I                        bi, bj, k,
      U                        gS, gsNm1,
-     I                        iterNb, myThid )
+     I                        saltStartAB, iterNb, myThid )
 #endif
       ENDIF
 

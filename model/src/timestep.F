@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.46 2006/06/07 01:55:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.47 2007/10/19 14:41:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,6 +26,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "RESTART.h"
 #include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -49,7 +50,6 @@ C     gvDissip :: dissipation tendency (all explicit terms), v component
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      LOGICAL momStartAB
       INTEGER i,j
       _RL phxFac,phyFac, psFac
       _RL     gUtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -67,9 +67,6 @@ C    Allow diagnosis of external forcing
       _RL     gvCor(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 CEOP
-
-C     Start AB with low-order timestepping weights
-      momStartAB = nIter0.EQ.0
 
 C-- explicit part of the surface potential gradient is added in this S/R
       psFac = pfFacMom*(1. _d 0 - implicSurfPress)
@@ -181,20 +178,20 @@ C     and save gU,gV_[n] into guNm1,gvNm1 for the next time step.
       CALL ADAMS_BASHFORTH3(
      I                        bi, bj, k,
      U                        gU, guNm,
-     I                        momStartAB, myIter, myThid )
+     I                        mom_StartAB, myIter, myThid )
       CALL ADAMS_BASHFORTH3(
      I                        bi, bj, k,
      U                        gV, gvNm,
-     I                        momStartAB, myIter, myThid )
+     I                        mom_StartAB, myIter, myThid )
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       CALL ADAMS_BASHFORTH2(
      I                        bi, bj, k,
      U                        gU, guNm1,
-     I                        myIter, myThid )
+     I                        mom_StartAB, myIter, myThid )
       CALL ADAMS_BASHFORTH2(
      I                        bi, bj, k,
      U                        gV, gvNm1,
-     I                        myIter, myThid )
+     I                        mom_StartAB, myIter, myThid )
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       
 C--   Forcing term outside the Adams-Bashforth:

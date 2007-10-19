@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth3.F,v 1.2 2005/11/06 22:19:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth3.F,v 1.3 2007/10/19 14:41:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -55,13 +55,13 @@ C     gTracer :: (kArg>0) Tendency at current time     ( units of quantity/sec )
 C             :: (kArg=0) state variable at current time
 C     gTrNm   :: (kArg>0) Tendencies at previous times ( units of quantity/sec )
 C             :: (kArg=0) state variable at previous times
-C     startAB :: start this run (or restart) without previous tendency/state var.
+C     startAB :: number of previous time level available to start/restart AB
 C     myIter  :: Current time step number
 C     myThid  :: my Thread number Id
       INTEGER bi,bj,kArg
       _RL  gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gTrNm  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
-      LOGICAL startAB
+      INTEGER startAB
       INTEGER myIter, myThid
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -80,12 +80,12 @@ CEOP
       m2 = 1 + mod( myIter ,2)
 
 C     Adams-Bashforth timestepping weights
-      IF ( myIter.EQ.nIter0 .AND. startAB ) THEN
+      IF ( myIter.EQ.nIter0 .AND. startAB.EQ.0 ) THEN
        ab0 = 1. _d 0
        ab1 = 0. _d 0
        ab2 = 0. _d 0
-      ELSEIF ( (myIter.EQ.nIter0 .AND. startFromPickupAB2)
-     &    .OR. (myIter.EQ.1+nIter0 .AND. startAB) ) THEN
+      ELSEIF ( (myIter.EQ.nIter0   .AND. startAB.EQ.1)
+     &    .OR. (myIter.EQ.1+nIter0 .AND. startAB.EQ.0) ) THEN
        ab0 = 1. _d 0 + alph_AB
        ab1 = -alph_AB
        ab2 = 0. _d 0
