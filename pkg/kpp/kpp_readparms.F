@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.15 2006/10/23 16:28:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.16 2007/10/19 19:11:17 jmc Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -42,7 +42,7 @@ C--   KPP vertical mixing parameters
      & conc1, conam, concm, conc2, zetam,
      & conas, concs, conc3, zetas,
      & Ricr, cekman, cmonob, concv, hbf,
-     & zmin, zmax, umin, umax, 
+     & zmin, zmax, umin, umax,
      & num_v_smooth_Ri, num_v_smooth_BV,
      & num_z_smooth_sh, num_m_smooth_sh,
      & Riinfty, BVSQcon, difm0, difs0, dift0,
@@ -78,54 +78,54 @@ C-----------------------------------------------------------------------
 C define some non-dimensional constants and
 C the vertical mixing coefficients in m-k-s units
 C-----------------------------------------------------------------------
- 
-      epsln   = 1.e-20
-      phepsi  = 1.e-10
-      epsilon = 0.1
-      vonk    = 0.40
-      dB_dz   = 5.2e-5
-      conc1   = 5.0
-      conam   = 1.257
-      concm   = 8.380
-      conc2   = 16.0
-      zetam   = -0.2
-      conas   = -28.86
-      concs   = 98.96
-      conc3   = 16.0
-      zetas   = -1.0
 
-c     parameters for subroutine "bldepth"
+      epsln   =   1. _d -20
+      phepsi  =   1. _d -10
+      epsilon =   1. _d -1
+      vonk    =   0.4 _d 0
+      dB_dz   =   5.2 _d -5
+      conc1   =   5. _d 0
+      conam   =   1.257 _d 0
+      concm   =   8.380 _d 0
+      conc2   =  16. _d 0
+      zetam   =  -0.2 _d 0
+      conas   = -28.86 _d 0
+      concs   =  98.96 _d 0
+      conc3   =  16. _d 0
+      zetas   =  -1. _d 0
 
-      Ricr    = 0.30
-      cekman  = 0.7
-      cmonob  = 1.0
-      concv   = 1.8
-      hbf     = 1.0
+C     parameters for subroutine "bldepth"
 
-c     parameters and common arrays for subroutines
-c     "kmixinit" and "wscale"
+      Ricr    = 0.3 _d 0
+      cekman  = 0.7 _d 0
+      cmonob  = 1.  _d 0
+      concv   = 1.8 _d 0
+      hbf     = 1.  _d 0
 
-      zmin    = -4.e-7
-      zmax    = 0.0
-      umin    = 0.0
-      umax    = .04
+C     parameters and common arrays for subroutines
+C     "kmixinit" and "wscale"
 
-c     parameters for subroutine "Ri_iwmix"
+      zmin    = -4. _d -7
+      zmax    =  0. _d 0
+      umin    =  0. _d 0
+      umax    =  4. _d -2
+
+C     parameters for subroutine "Ri_iwmix"
 
       num_v_smooth_Ri = 0
       num_v_smooth_BV = 0
       num_z_smooth_sh = 0
       num_m_smooth_sh = 0
-      Riinfty = 0.7
-      BVSQcon = -0.2e-4
+      Riinfty =  0.7 _d 0
+      BVSQcon = -0.2 _d -4
 
-      difm0   = 0.005
-      difs0   = 0.005
-      dift0   = 0.005
+      difm0   = 5. _d -3
+      difs0   = 5. _d -3
+      dift0   = 5. _d -3
 
-      difmcon = 0.1
-      difscon = 0.1
-      diftcon = 0.1
+      difmcon = 0.1 _d 0
+      difscon = 0.1 _d 0
+      diftcon = 0.1 _d 0
 
 C     parameters for subroutine "blmix"
 
@@ -165,65 +165,65 @@ C      CALL MODELDATA_EXAMPLE( myThid )
 C       Define grid types for KPP variables
         CALL MNC_CW_ADD_VNAME('KPPviscAz', 'Cen_xy_Hn__C__t',
      &       4,5, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPviscAz','units','m^2/s', 
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPviscAz','units','m^2/s',
      &       myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPviscAz','long_name',
      &       'KPP_vertical_eddy_viscosity_coefficient', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPviscAz',
      &       'coordinates','XC YC RC iter', myThid)
-        
-        CALL MNC_CW_ADD_VNAME('KPPdiffKzS', 'Cen_xy_Hn__C__t', 
+
+        CALL MNC_CW_ADD_VNAME('KPPdiffKzS', 'Cen_xy_Hn__C__t',
      &       4,5, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzS','units','m^2/s', 
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzS','units','m^2/s',
      &       myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzS','long_name',
-     &       'KPP_salt-tracer_vertical_diffusion_coefficient', 
+     &       'KPP_salt-tracer_vertical_diffusion_coefficient',
      &       myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzS',
      &       'coordinates','XC YC RC iter', myThid)
-        
-        CALL MNC_CW_ADD_VNAME('KPPdiffKzT', 'Cen_xy_Hn__C__t', 
+
+        CALL MNC_CW_ADD_VNAME('KPPdiffKzT', 'Cen_xy_Hn__C__t',
      &       4,5, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzT','units','m^2/s', 
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzT','units','m^2/s',
      &       myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzT','long_name',
      &       'KPP_vertical_heat_diffusion_coefficient', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzT',
      &       'coordinates','XC YC RC iter', myThid)
-        
-        CALL MNC_CW_ADD_VNAME('KPPGHAT', 'Cen_xy_Hn__C__t', 
+
+        CALL MNC_CW_ADD_VNAME('KPPGHAT', 'Cen_xy_Hn__C__t',
      &       4,5, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPGHAT','units','s/m^2', 
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPGHAT','units','s/m^2',
      &       myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPGHAT','long_name',
      &       'KPP_nonlocal_transport_coefficient', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPGHAT',
      &       'coordinates','XC YC RC iter', myThid)
-        
-        CALL MNC_CW_ADD_VNAME('KPPHBL', 'Cen_xy_Hn__-__t', 
+
+        CALL MNC_CW_ADD_VNAME('KPPHBL', 'Cen_xy_Hn__-__t',
      &       3,4, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPHBL','units','m', 
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPHBL','units','m',
      &       myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPHBL','long_name',
      &       'KPP_boundary_layer_depth', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPHBL',
      &       'coordinates','XC YC iter', myThid)
-        
-        CALL MNC_CW_ADD_VNAME('KPPMLD', 'Cen_xy_Hn__-__t', 
+
+        CALL MNC_CW_ADD_VNAME('KPPMLD', 'Cen_xy_Hn__-__t',
      &       3,4, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPMLD','units','m', 
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPMLD','units','m',
      &       myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPMLD','long_name',
      &       'KPP_mixed_layer_depth', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPMLD',
      &       'coordinates','XC YC iter', myThid)
-        
-        CALL MNC_CW_ADD_VNAME('KPPFRAC', 'Cen_xy_Hn__-__t', 
+
+        CALL MNC_CW_ADD_VNAME('KPPFRAC', 'Cen_xy_Hn__-__t',
      &       3,4, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC','units','dimless', 
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC','units','dimless',
      &       myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC','long_name',
-     &       'KPP_short-wave_fraction_penetrating_mixing_layer', 
+     &       'KPP_short-wave_fraction_penetrating_mixing_layer',
      &       myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC',
      &       'coordinates','XC YC iter', myThid)
@@ -235,5 +235,5 @@ C--   Everyone else must wait for the parameters to be loaded
 
 #endif /* ALLOW_KPP */
 
-      return
-      end
+      RETURN
+      END
