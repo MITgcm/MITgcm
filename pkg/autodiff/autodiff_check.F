@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.6 2007/08/16 12:32:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.7 2007/10/19 23:52:43 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -66,6 +66,12 @@ c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
        ENDIF
        IF ( adjMonitorFreq .NE. 0. ) THEN
         STOP 'adjMonitorFreq <> 0, but undef ALLOW_AUTODIFF_MONITOR'
+       ENDIF
+#endif
+
+#ifdef ALLOW_GRDCHK
+       IF ( useSingleCpuIO .AND. useGrdchk ) THEN
+          STOP 'Need to have useSingleCpuIO=.FALSE. with useGrdchk'
        ENDIF
 #endif
 
