@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.25 2007/01/16 04:40:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.26 2007/10/19 03:23:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,16 +37,12 @@ C     myThid     :: Thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
-C     == Common blocks ==
-      COMMON /PCKP_GBLFLS/ globalFile
-      LOGICAL globalFile
-
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     prec   :: file precision
-C     fn     :: Temp. for building file name string.
+C     suffix :: pickup-name suffix
 C     lgf    :: Flag to indicate whether to use global file mode.
-      CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(10) suffix
       INTEGER prec
       LOGICAL lgf
 CEOP
@@ -55,27 +51,27 @@ C     Going to really do some IO. Make everyone except master thread wait.
       _BARRIER
 
       prec = precFloat64
-      lgf = globalFile
+      lgf = globalFiles
 
 C     Create suffix to pass on to package pickup routines
       IF ( permPickup ) THEN
-        WRITE(fn,'(I10.10)') myIter
+        WRITE(suffix,'(I10.10)') myIter
       ELSE
-        WRITE(fn,'(A)') checkPtSuff(nCheckLev)
+        WRITE(suffix,'(A)') checkPtSuff(nCheckLev)
       ENDIF
 
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     Write restart file for 2nd-Order moment (active) Tracers
       IF ( useGAD ) THEN
         CALL GAD_WRITE_PICKUP(
-     I                 fn, myTime, myIter, myThid )
+     I                 suffix, myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_GENERIC_ADVDIFF */
 
 #ifdef ALLOW_CD_CODE
       IF (useCDscheme) THEN
-        CALL CD_CODE_WRITE_PICKUP(
-     &       prec, lgf, permPickup, myIter, myThid)
+        CALL CD_CODE_WRITE_PICKUP( permPickup,
+     I                     suffix, myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_CD_CODE */
 
@@ -89,22 +85,22 @@ C     SPK 4/9/01: Open boundary checkpointing
 
 #ifdef  ALLOW_SEAICE
       IF ( useSEAICE ) THEN
-        CALL SEAICE_WRITE_PICKUP(
-     &       prec, lgf, permPickup, myIter, myThid)
+        CALL SEAICE_WRITE_PICKUP( permPickup,
+     I                    suffix, myTime, myIter, myThid )
       ENDIF
 #endif  /* ALLOW_SEAICE */
 
 #ifdef ALLOW_THSICE
       IF (useThSIce) THEN
-        CALL THSICE_WRITE_PICKUP(
-     &       prec, lgf, permPickup, myIter, myThid)
+        CALL THSICE_WRITE_PICKUP( permPickup,
+     I                    suffix, myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_THSICE */
 
 #ifdef  COMPONENT_MODULE
       IF (useCoupler) THEN
         CALL CPL_WRITE_PICKUP(
-     &       prec, lgf, permPickup, myIter, myThid)
+     &                 suffix, myTime, myIter, myThid )
       ENDIF
 #endif  /* COMPONENT_MODULE */
 
@@ -118,16 +114,16 @@ C     Write restart file for floats
 #ifdef ALLOW_LAND
 C     Write pickup file for Land package:
       IF (useLand) THEN
-        CALL LAND_WRITE_PICKUP(permPickup,fn,
-     &       myTime,myIter,myThid)
+        CALL LAND_WRITE_PICKUP( permPickup,
+     &                  suffix, myTime, myIter, myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_FIZHI
 C     Write pickup file for fizhi package
       IF (usefizhi) THEN
-        CALL FIZHI_WRITE_PICKUP(fn,myTime,myIter,myThid)
-        CALL FIZHI_WRITE_VEGTILES(fn,0,myTime,myIter,myThid)
+        CALL FIZHI_WRITE_PICKUP(suffix,myTime,myIter,myThid)
+        CALL FIZHI_WRITE_VEGTILES(suffix,0,myTime,myIter,myThid)
         CALL FIZHI_WRITE_DATETIME(myTime,myIter,myThid)
       ENDIF
 #endif
@@ -135,23 +131,23 @@ C     Write pickup file for fizhi package
 #ifdef ALLOW_DIAGNOSTICS
 C     Write pickup file for diagnostics package
       IF (useDiagnostics) THEN
-        CALL DIAGNOSTICS_WRITE_PICKUP(permPickup,
-     &       fn,myTime,myIter,myThid)
+        CALL DIAGNOSTICS_WRITE_PICKUP( permPickup,
+     I                         suffix, myTime, myIter, myThid )
       ENDIF
 #endif
 
 #ifdef  ALLOW_GGL90
       IF ( useGGL90 ) THEN
-        CALL GGL90_WRITE_CHECKPOINT(
-     &       prec, lgf, permPickup, myIter, myThid)
+        CALL GGL90_WRITE_PICKUP( permPickup,
+     I                   suffix, myIter, myTime, myThid )
       ENDIF
 #endif  /* ALLOW_GGL90 */
 
 #ifdef ALLOW_PTRACERS
 C     Write restart file for passive tracers
       IF (usePTRACERS) THEN
-        CALL PTRACERS_WRITE_PICKUP(permPickup,
-     &       fn,myIter,myTime,myThid)
+        CALL PTRACERS_WRITE_PICKUP( permPickup,
+     &                      suffix, myIter, myTime, myThid )
       ENDIF
 #endif /* ALLOW_PTRACERS */
 
