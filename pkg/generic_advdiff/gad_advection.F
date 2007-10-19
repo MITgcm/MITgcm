@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.50 2007/08/16 02:16:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.51 2007/10/19 14:45:10 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -156,7 +156,7 @@ c     _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
-          act0 = tracerIdentity - 1
+          act0 = tracerIdentity
           max0 = maxpass
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
@@ -165,7 +165,7 @@ CEOP
           act3 = myThid - 1
           max3 = nTx*nTy
           act4 = ikey_dynamics - 1
-          igadkey = (act0 + 1) 
+          igadkey = act0
      &                      + act1*max0
      &                      + act2*max0*max1
      &                      + act3*max0*max1*max2
@@ -713,7 +713,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Start of k loop for vertical flux
        DO k=Nr,1,-1
 #ifdef ALLOW_AUTODIFF_TAMC 
-         kkey = (igadkey-1)*Nr + k
+         kkey = (igadkey-1)*Nr + (Nr-k+1)
 #endif /* ALLOW_AUTODIFF_TAMC */
 C--   kUp    Cycles through 1,2 to point to w-layer above
 C--   kDown  Cycles through 2,1 to point to w-layer below
@@ -722,6 +722,13 @@ C--   kDown  Cycles through 2,1 to point to w-layer below
 c       kp1=min(Nr,k+1)
         kp1Msk=1.
         if (k.EQ.Nr) kp1Msk=0.
+
+#ifdef ALLOW_AUTODIFF_TAMC 
+CADJ STORE rtrans(:,:)  = 
+CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+CADJ STORE wfld(:,:)  = 
+CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+#endif
 
 C-- Compute Vertical transport
 #ifdef ALLOW_AIM
@@ -734,10 +741,8 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC 
-CADJ STORE rtrans(:,:)  = 
-CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
-CADJ STORE wfld(:,:)  = 
-CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphmultiCADJ STORE wfld(:,:)  = 
+cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C- Surface interface :
@@ -753,10 +758,8 @@ C- Surface interface :
         ELSE
 
 #ifdef ALLOW_AUTODIFF_TAMC 
-CADJ STORE rtrans(:,:)  = 
-CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
-CADJ STORE wfld(:,:)  = 
-CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphmultiCADJ STORE wfld(:,:)  = 
+cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C- Interior interface :
@@ -780,10 +783,10 @@ C--   Residual transp = Bolus transp + Eulerian transp
 #endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_AUTODIFF_TAMC 
-CADJ STORE localTijk(:,:,k)  
-CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
-CADJ STORE rTrans(:,:)  
-CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphmultiCADJ STORE localTijk(:,:,k)  
+cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphmultiCADJ STORE rTrans(:,:)  
+cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    Compute vertical advective flux in the interior:
@@ -818,10 +821,10 @@ C- end Surface/Interior if bloc
         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC 
-CADJ STORE rTrans(:,:)  
-CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
-CADJ STORE rTranskp1(:,:)  
-CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphmultiCADJ STORE rTrans(:,:)  
+cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphmultiCADJ STORE rTranskp1(:,:)  
+cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Divergence of vertical fluxes
