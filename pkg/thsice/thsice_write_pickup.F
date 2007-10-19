@@ -1,13 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_write_pickup.F,v 1.4 2005/11/05 00:57:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_write_pickup.F,v 1.5 2007/10/19 03:21:39 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 CBOP
 C     !ROUTINE: THSICE_WRITE_PICKUP
 C     !INTERFACE:
-      SUBROUTINE THSICE_WRITE_PICKUP( 
-     I                       prec, lgf, permCheckPoint, 
-     I                                  myIter, myThid )
+      SUBROUTINE THSICE_WRITE_PICKUP( permPickup, suff,
+     I                                myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -28,54 +27,54 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-      INTEGER prec
-      LOGICAL lgf
-      LOGICAL permCheckPoint
+C     permPickup :: write a permanent pickup
+C     suff    :: suffix for pickup file (eg. ckptA or 0000000010)
+C     myTime  :: Current time in simulation
+C     myIter  :: Current iteration number in simulation
+C     myThid  :: My Thread Id number
+      LOGICAL permPickup
+      CHARACTER*(*) suff
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
 CEOP
 
 #ifdef ALLOW_THSICE
 
-C     == Local variables ==      
+C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
-
-      IF ( permCheckPoint ) THEN
-        WRITE(fn,'(A,I10.10)') 'pickup_ic.',myIter
-      ELSE
-        WRITE(fn,'(A,A)') 'pickup_ic.',checkPtSuff(nCheckLev)
-      ENDIF
+      INTEGER prec
 
       IF ( thSIce_pickup_write_mdsio ) THEN
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,iceMask,   1,
-     &                                               myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,iceHeight, 2,
-     &                                               myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,snowHeight,3,
-     &                                               myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Tsrf,   4, myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Tice1,  5, myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Tice2,  6, myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Qice1,  7, myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Qice2,  8, myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,snowAge,9, myIter,myThid)
+        prec = precFloat64
+        WRITE(fn,'(A,A)') 'pickup_ic.',suff
+
+        CALL WRITE_REC_3D_RL( fn,prec, 1, iceMask,  1, myIter,myThid )
+        CALL WRITE_REC_3D_RL( fn,prec, 1, iceHeight,2, myIter,myThid )
+        CALL WRITE_REC_3D_RL( fn,prec, 1,snowHeight,3, myIter,myThid )
+        CALL WRITE_REC_3D_RL( fn,prec, 1, Tsrf,     4, myIter,myThid )
+        CALL WRITE_REC_3D_RL( fn,prec, 1, Tice1,    5, myIter,myThid )
+        CALL WRITE_REC_3D_RL( fn,prec, 1, Tice2,    6, myIter,myThid )
+        CALL WRITE_REC_3D_RL( fn,prec, 1, Qice1,    7, myIter,myThid )
+        CALL WRITE_REC_3D_RL( fn,prec, 1, Qice2,    8, myIter,myThid )
+        CALL WRITE_REC_3D_RL( fn,prec, 1, snowAge,  9, myIter,myThid )
 
         IF ( stepFwd_oceMxL ) THEN
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,tOceMxL,10,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,sOceMxL,11,myIter,myThid)
+         CALL WRITE_REC_3D_RL( fn,prec,1, tOceMxL, 10, myIter,myThid )
+         CALL WRITE_REC_3D_RL( fn,prec,1, sOceMxL, 11, myIter,myThid )
         ENDIF
       ENDIF
 
 #ifdef ALLOW_MNC
       IF ( thSIce_pickup_write_mnc ) THEN
-        IF ( permCheckPoint ) THEN
+        IF ( permPickup ) THEN
           WRITE(fn,'(A)') 'pickup_ic'
         ELSE
-          WRITE(fn,'(A,A)') 'pickup_ic.',checkPtSuff(nCheckLev)
+          WRITE(fn,'(A,A)') 'pickup_ic.',suff
         ENDIF
 C       First ***define*** the file group name
         CALL MNC_CW_SET_UDIM(fn, 0, myThid)
-        IF ( permCheckPoint ) THEN
+        IF ( permPickup ) THEN
           CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, 0, myThid)
         ELSE
           CALL MNC_CW_SET_CITER(fn, 2, -1, -1, -1, myThid)

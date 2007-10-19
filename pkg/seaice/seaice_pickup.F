@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.18 2007/09/15 01:38:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.19 2007/10/19 03:21:39 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -34,9 +34,7 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER iRec
 
-C--    Going to do some IO. Make everyone except master thread wait.
        _BARRIER
-       _BEGIN_MASTER( myThid )
 
 C--    Read ice model fields
        WRITE(fn,'(A,I10.10)') 'pickup_seaice.',nIter0
@@ -77,7 +75,6 @@ C--    Read ice model fields
        CALL MDSREADFIELD(fn,precFloat64,'RL',1,HSALT,iRec,myThid)
 #endif
 
-       _END_MASTER( myThid )
        _BARRIER
 
 C--    Update overlap regions
@@ -105,14 +102,20 @@ cdm       CALL EXCH_3D_RL   ( TICES, MULTDIM, myThid )
       RETURN
       END
 
-CStartofinterface
-      SUBROUTINE SEAICE_WRITE_PICKUP ( 
-     I               prec, lgf, permCheckPoint, myIt, myThid )
-C     /==========================================================\
+CBOP
+C     !ROUTINE: SEAICE_WRITE_PICKUP
+C     !INTERFACE:
+      SUBROUTINE SEAICE_WRITE_PICKUP ( permPickup, suff,
+     I                                 myTime, myIter, myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
 C     | SUBROUTINE SEAICE_WRITE_PICKUP                           |
 C     | o Write sea ice pickup file for restarting.              |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
@@ -122,66 +125,66 @@ C     == Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     prec     - Precision of pickup file ( precFloat64 )
-C     lgf      - Flag to indicate whether to use global file mode.
-C     permCheckPoint - Flag indicating whether a permanent checkpoint
-C                      will be written.
-C     myIt     - Iteration number
-C     myThid   - Thread number for this instance of the routine.
-      INTEGER prec
-      LOGICAL permCheckPoint    
+C     permPickup :: write a permanent pickup
+C     suff    :: suffix for pickup file (eg. ckptA or 0000000010)
+C     myTime  :: Current time in simulation
+C     myIter  :: Current iteration number in simulation
+C     myThid  :: My Thread Id number
+      LOGICAL permPickup
+      CHARACTER*(*) suff
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
-      INTEGER myIt
-CEndofinterface
+CEOP
 
 C     == Local variables ==
+C     prec    :: Precision of pickup file ( precFloat64 )
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER iRec
+      INTEGER prec
       LOGICAL lgf
 
 C--    Write model fields
-       IF ( permCheckPoint ) THEN
-        WRITE(fn,'(A,I10.10)') 'pickup_seaice.',myIt
-       ELSE
-        WRITE(fn,'(A,A)') 'pickup_seaice.',checkPtSuff(nCheckLev)
-       ENDIF
+       prec = precFloat64
+       WRITE(fn,'(A,A)') 'pickup_seaice.',suff
+
        iRec = 1
 #ifdef SEAICE_MULTICATEGORY
-       CALL MDSWRITEFIELD
-     &      (fn,prec,lgf,'RL',MULTDIM,TICES,iRec,myIt,myThid)
+       CALL WRITE_REC_3D_RL(fn,prec,MULTDIM, TICES, iRec,myIter,myThid)
        iRec = iRec + MULTDIM
 #else
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,TICE,iRec,myIt,myThid)
+       CALL WRITE_REC_3D_RL( fn, prec, 1, TICE , iRec, myIter, myThid )
        iRec = iRec + 1
 #endif /* SEAICE_MULTICATEGORY */
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,YNEG,iRec,myIt,myThid)
+       CALL WRITE_REC_3D_RL( fn, prec, 1, YNEG , iRec, myIter, myThid )
        iRec = iRec + 1
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,HSNOW,iRec,myIt,myThid)
+       CALL WRITE_REC_3D_RL( fn, prec, 1, HSNOW, iRec, myIter, myThid )
        iRec = int((iRec+3)/3)
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',3,UICE,iRec,myIt,myThid)
+       CALL WRITE_REC_3D_RL( fn, prec, 3, UICE , iRec, myIter, myThid )
        iRec = iRec + 1
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',3,VICE,iRec,myIt,myThid)
+       CALL WRITE_REC_3D_RL( fn, prec, 3, VICE , iRec, myIter, myThid )
        iRec = iRec + 1
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',3,HEFF,iRec,myIt,myThid)
+       CALL WRITE_REC_3D_RL( fn, prec, 3, HEFF , iRec, myIter, myThid )
        iRec = iRec + 1
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',3,AREA,iRec,myIt,myThid)
+       CALL WRITE_REC_3D_RL( fn, prec, 3, AREA , iRec, myIter, myThid )
        iRec = iRec * 3 + 1
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
        IF ( SEAICEuseEVP ) THEN
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
-     &         seaice_sigma1,iRec,myIt,myThid)
+          CALL WRITE_REC_3D_RL( fn, prec, 1,
+     &         seaice_sigma1, iRec, myIter, myThid )
           iRec = iRec + 1
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
-     &         seaice_sigma2,iRec,myIt,myThid)
+          CALL WRITE_REC_3D_RL( fn, prec, 1,
+     &         seaice_sigma2, iRec, myIter, myThid )
           iRec = iRec + 1
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, 
-     &         seaice_sigma12,iRec,myIt,myThid)
+          CALL WRITE_REC_3D_RL( fn, prec, 1,
+     &         seaice_sigma12, iRec, myIter, myThid )
           iRec = iRec + 1
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
 #ifdef SEAICE_SALINITY
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,HSALT,iRec,myIt,myThid)
+       CALL WRITE_REC_3D_RL( fn, prec, 1, HSALT, iRec, myIter, myThid )
 #endif
 
       RETURN

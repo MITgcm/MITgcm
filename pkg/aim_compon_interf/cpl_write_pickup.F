@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/cpl_write_pickup.F,v 1.3 2007/06/18 21:28:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/cpl_write_pickup.F,v 1.4 2007/10/19 03:21:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: CPL_WRITE_PICKUP
 C     !INTERFACE:
       SUBROUTINE CPL_WRITE_PICKUP(
-     &               prec, lgf, permCheckPoint, myIter, myThid)
+     I                             suff, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -29,13 +29,12 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     lgf            :: Controls whether global files are used.
-C     permCheckpoint :: Controls whether timestamped or rolling checkpoint.
-C     myIter  :: Current timestep number.
-C     myThid  :: my Thread Id number
-      INTEGER prec
-      LOGICAL lgf
-      LOGICAL permCheckPoint
+C     suff    :: suffix for pickup file (eg. ckptA or 0000000010)
+C     myTime  :: Current time in simulation
+C     myIter  :: Current iteration number in simulation
+C     myThid  :: My Thread Id number
+      CHARACTER*(*) suff
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
 CEOP
@@ -44,12 +43,11 @@ CEOP
 C     == Local variables ==
 C     fn          - Workspace for building file name
       CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER prec
 
-      IF ( permCheckPoint ) THEN
-       WRITE(fn,'(A,I10.10)') 'pickup_cpl.',myIter
-      ELSE
-       WRITE(fn,'(A,A)') 'pickup_cpl.',checkPtSuff(nCheckLev)
-      ENDIF
+      prec = precFloat64
+      WRITE(fn,'(A,A)') 'pickup_cpl.',suff
+
 c     CALL WRITE_REC_3D_RL(fn,prec,1,SSTocn    , 1,myIter,myThid)
 c     CALL WRITE_REC_3D_RL(fn,prec,1,HeatFlux  , 2,myIter,myThid)
 c     CALL WRITE_REC_3D_RL(fn,prec,1,tauX      , 3,myIter,myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.17 2005/05/25 04:03:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.18 2007/10/19 03:21:39 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -33,7 +33,7 @@ C     !USES:
       INTEGER MDS_RECLEN
 
 C     !INPUT/OUTPUT PARAMETERS:
-      CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(*) fn
       INTEGER pickupflg
       _RL myTime
       INTEGER myIter
