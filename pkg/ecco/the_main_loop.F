@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.63 2007/09/28 19:42:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.64 2007/10/19 17:14:36 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -331,7 +331,7 @@ cph# ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ INIT comlev1_bibj_k_gad
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
 CADJ INIT comlev1_bibj_k_gad_pass
-CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass*maxcube
+CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass*maxpass
 cph# endif /* DISABLE_MULTIDIM_ADVECTION */
 c--
 # if (defined (ALLOW_EXF) && defined (ALLOW_BULKFORMULAE))
@@ -425,7 +425,7 @@ c--     Set the model iteration counter and the model time.
         mytime = startTime + float(iloop-1)*deltaTclock
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        CALL AUTODIFF_INADMODE_UNSET( myThid )
+cph-diva-test        CALL AUTODIFF_INADMODE_UNSET( myThid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -481,7 +481,7 @@ C--   Call driver to load external forcing fields from file
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # if (defined (ALLOW_AUTODIFF_MONITOR))
-        CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
+cph-diva-test        CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
 # endif
 #endif
 
@@ -932,7 +932,7 @@ C--   Calculate float trajectories
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        CALL AUTODIFF_INADMODE_SET( myThid )
+cph-diva-test        CALL AUTODIFF_INADMODE_SET( myThid )
 #endif
 
 #ifdef ALLOW_TIMEAVE
@@ -958,7 +958,7 @@ C--   Do IO if needed.
       CALL TIMER_STOP ('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
 #else
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
-      CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
+cph-diva-test      CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
 #endif
 
