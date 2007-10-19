@@ -26,7 +26,7 @@
  hFacMindr=50.,
 # set precision of data files
  readBinaryPrec=32,
- debugLevel=2,
+ debugLevel=1,
 #ph(
  vectorInvariantMomentum=.TRUE.,
  hFacInf=0.2,
