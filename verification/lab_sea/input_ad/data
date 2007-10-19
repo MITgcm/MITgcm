@@ -66,6 +66,11 @@
  rhoNil          = 1027.D0
  useCDscheme=.TRUE.,
  inAdExact=.TRUE.,
+#ph(
+ multiDimAdvection=.TRUE.,
+ tempAdvScheme=30,
+ saltAdvScheme=30,
+#ph)
  &
 
 # Elliptic solver parameters
@@ -74,8 +79,8 @@
 #   cg2dTargetResidual - Solver target residual
 #
  &PARM02
- cg2dMaxIters=500,
- cg2dTargetResidual=1.D-8,
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.D-13,
  &
 
 # Time stepping parameters
