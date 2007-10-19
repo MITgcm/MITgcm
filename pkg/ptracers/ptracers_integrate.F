@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.33 2007/09/23 17:13:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.34 2007/10/19 14:43:50 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -82,7 +82,7 @@ C  GAD_TR               :: passive tracer id (GAD_TR1+iTracer-1)
       INTEGER kUp,kDown,km1
       INTEGER GAD_TR
       LOGICAL calcAdvection
-      INTEGER iterNb
+      INTEGER iterNb, startAB
 CEOP
 
 C Loop ranges for daughter routines
@@ -172,11 +172,12 @@ C  prevent gPtr from being replaced by the average of gPtr and gPtrNm1.
 #endif
         iterNb = myIter
         IF (staggerTimeStep) iterNb = myIter - 1
+        startAB = nIter0 - PTRACERS_Iter0
         CALL ADAMS_BASHFORTH2(
      I                        bi,bj,K,
      U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      U                        gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
-     I                        iterNb, myThid )
+     I                        startAB, iterNb, myThid )
 #ifdef ALLOW_MATRIX
         ENDIF
 #endif
