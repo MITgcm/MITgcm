@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.18 2007/08/15 22:35:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.19 2007/10/19 14:43:10 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -108,8 +108,6 @@ C AdamsBashforthGt  :: apply Adams-Bashforth extrapolation on T tendency (=Gt)
 C AdamsBashforthGs  :: apply Adams-Bashforth extrapolation on S tendency (=Gs)
 C AdamsBashforth_T  :: apply Adams-Bashforth extrapolation on Pot.Temp.
 C AdamsBashforth_S  :: apply Adams-Bashforth extrapolation on Salinity
-C tempStartAB       :: start this run (or restart) without previous gT/Temp
-C saltStartAB       :: start this run (or restart) without previous gS/Salt
       LOGICAL tempSOM_Advection
       LOGICAL saltSOM_Advection
       LOGICAL tempMultiDimAdvec
@@ -118,14 +116,11 @@ C saltStartAB       :: start this run (or restart) without previous gS/Salt
       LOGICAL AdamsBashforthGs
       LOGICAL AdamsBashforth_T
       LOGICAL AdamsBashforth_S
-      LOGICAL tempStartAB
-      LOGICAL saltStartAB
       COMMON /GAD_PARM_L/
      & tempSOM_Advection, saltSOM_Advection,
      & tempMultiDimAdvec, saltMultiDimAdvec,
      & AdamsBashforthGt, AdamsBashforthGs,
-     & AdamsBashforth_T, AdamsBashforth_S,
-     & tempStartAB, saltStartAB
+     & AdamsBashforth_T, AdamsBashforth_S
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

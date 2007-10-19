@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.2 2007/01/16 04:38:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.3 2007/10/19 14:43:10 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -86,12 +86,6 @@ C     with synchronous time-step, which would require to do also AB(u,v,w)
         AdamsBashforthGs = .FALSE.
       ENDIF
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
-
-C-     Initialize AB starting flags for T & S:
-C      notes: those could be modified when reading a pickup that does
-C             correspond to what is actually needed.
-       tempStartAB = nIter0.EQ.0
-       saltStartAB = nIter0.EQ.0
 
       _END_MASTER(myThid)
 
