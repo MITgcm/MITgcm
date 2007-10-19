@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_read_pickup.F,v 1.4 2007/01/04 15:41:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_read_pickup.F,v 1.5 2007/10/19 03:22:25 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -39,20 +39,24 @@ C     == Local variables ==
       
       IF ( .NOT. thSIce_pickup_write_mnc ) THEN
 
-        WRITE(fn,'(A,I10.10)') 'pickup_ic.',myIter
-        CALL MDSREADFIELD(fn,prec,'RL',1,iceMask,   1,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,iceHeight, 2,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,snowHeight,3,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,Tsrf,      4,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,Tice1,     5,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,Tice2,     6,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,Qice1,     7,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,Qice2,     8,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,snowAge,   9,myThid)
+        IF (pickupSuff .EQ. ' ') THEN
+          WRITE(fn,'(A,I10.10)') 'pickup_ic.',myIter
+        ELSE
+          WRITE(fn,'(A,A10)')    'pickup_ic.',pickupSuff
+        ENDIF
+        CALL READ_REC_3D_RL( fn, prec, 1, iceMask,  1, myIter,myThid )
+        CALL READ_REC_3D_RL( fn, prec, 1, iceHeight,2, myIter,myThid )
+        CALL READ_REC_3D_RL( fn, prec, 1,snowHeight,3, myIter,myThid )
+        CALL READ_REC_3D_RL( fn, prec, 1, Tsrf,     4, myIter,myThid )
+        CALL READ_REC_3D_RL( fn, prec, 1, Tice1,    5, myIter,myThid )
+        CALL READ_REC_3D_RL( fn, prec, 1, Tice2,    6, myIter,myThid )
+        CALL READ_REC_3D_RL( fn, prec, 1, Qice1,    7, myIter,myThid )
+        CALL READ_REC_3D_RL( fn, prec, 1, Qice2,    8, myIter,myThid )
+        CALL READ_REC_3D_RL( fn, prec, 1, snowAge,  9, myIter,myThid )
 
         IF ( stepFwd_oceMxL .AND. startIceModel.EQ.0 )  THEN
-          CALL MDSREADFIELD(fn,prec,'RL',1,tOceMxL,  10,myThid)
-          CALL MDSREADFIELD(fn,prec,'RL',1,sOceMxL,  11,myThid)
+          CALL READ_REC_3D_RL( fn,prec,1, tOceMxL, 10, myIter,myThid )
+          CALL READ_REC_3D_RL( fn,prec,1, sOceMxL, 11, myIter,myThid )
         ENDIF
 
       ENDIF

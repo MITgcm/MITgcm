@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.3 2007/01/09 22:26:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.4 2007/10/19 03:22:25 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -63,7 +63,11 @@ C       Read variables from the pickup file
 
       IF ( PTRACERS_pickup_read_mdsio ) THEN
 
-      WRITE(fn,'(A,I10.10)') 'pickup_ptracers.',myIter
+      IF ( pickupSuff.EQ.' ' ) THEN
+        WRITE(fn,'(A,I10.10)') 'pickup_ptracers.',myIter
+      ELSE
+        WRITE(fn,'(A,A10)')    'pickup_ptracers.',pickupSuff
+      ENDIF
       prec = precFloat64
 
       IF ( usePickupBeforeC54 ) THEN
