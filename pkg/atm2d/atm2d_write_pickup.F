@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_write_pickup.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_write_pickup.F,v 1.3 2007/10/19 14:44:33 jmc Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -25,6 +25,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "RESTART.h"
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE

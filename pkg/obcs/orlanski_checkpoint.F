@@ -291,6 +291,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "RESTART.h"
 #include "OBCS.h"
 #include "ORLANSKI.h"
 
