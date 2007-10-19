@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.51 2007/10/19 14:45:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.52 2007/10/19 15:52:08 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -282,8 +282,9 @@ C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
       DO ipass=1,nipass
 #ifdef ALLOW_AUTODIFF_TAMC
-         passkey = ipass + (k-1)      *maxcube
-     &                   + (igadkey-1)*maxcube*Nr
+         passkey = ipass 
+     &                   + (k-1)      *maxpass
+     &                   + (igadkey-1)*maxpass*Nr
          IF (nipass .GT. maxpass) THEN
           STOP 'GAD_ADVECTION: nipass > maxcube. check tamc.h'
          ENDIF
@@ -726,8 +727,8 @@ c       kp1=min(Nr,k+1)
 #ifdef ALLOW_AUTODIFF_TAMC 
 CADJ STORE rtrans(:,:)  = 
 CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
-CADJ STORE wfld(:,:)  = 
-CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphCADJ STORE wfld(:,:)  = 
+cphCADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif
 
 C-- Compute Vertical transport
