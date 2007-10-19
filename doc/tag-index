@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.894 2007/10/19 20:34:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.895 2007/10/19 21:03:09 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o adjoint:
+  * fix multiDimAdvection adjoint 
+    (partial recomputation problem by TAF for fVerT(:,:,kDown)
+    and comlev1 size definition (maxpass vs. max. number of tracers)
+  * verification/global_ocean.90x45x15 adjoint now tests
+    NLFS and multiDimAdvection using DST3 (=30)
+  * verification/lab_sea now tests multiDimAdvection using DST3 (=30)
 o pkg/kpp: add "_d 0" to real constant (if missing); 
   update output of exp: natl_box (10.digits); vermix (std, 7.digits)
   and lab_sea, 3.FW (only 6,4,6 digits match) & AD (8.digits).
