@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.204 2007/10/15 15:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.205 2007/10/19 14:34:13 jmc Exp $
 C $Name:  $
 C
 
@@ -43,12 +43,15 @@ C     UNSET_xxx :: Used to indicate variables that have not been given a value
       INTEGER UNSET_I
       PARAMETER ( UNSET_I      = 123456789  )
 
-C     Checkpoint data
-      INTEGER maxNoChkptLev
-      PARAMETER ( maxNoChkptLev = 2 )
-
 C--   COMMON /PARM_C/ Character valued parameters used by the model.
-C     checkPtSuff :: List of checkpoint file suffices
+C     buoyancyRelation :: Flag used to indicate which relation to use to
+C                         get buoyancy.
+C     eosType         :: choose the equation of state:
+C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
+C     pickupSuff      :: force to start from pickup files (even if nIter0=0)
+C                        and read pickup files with this suffix (max 10 Char.)
+C     mdsioLocalDir   :: read-write tiled file from/to this directory name
+C                        (+ 4 digits Processor-Rank) instead of current dir.
 C     tRefFile      :: File containing reference Potential Temperat.  tRef (1.D)
 C     sRefFile      :: File containing reference salinity/spec.humid. sRef (1.D)
 C     rhoRefFile    :: File containing reference density profile rhoRef (1.D)
@@ -58,21 +61,22 @@ C     delXFile      :: File containing X-spacing grid definition (1.D array)
 C     delYFile      :: File containing Y-spacing grid definition (1.D array)
 C     horizGridFile :: File containing horizontal-grid definition
 C                        (only when using curvilinear_grid)
-C     bathyFile   :: File containing bathymetry. If not defined bathymetry
-C                   is taken from inline function.
-C     topoFile    :: File containing the topography of the surface (unit=m)
-C                   (mainly used for the atmosphere = ground height).
-C     shelfIceFile:: File containing the topography of the shelfice draught
-C                    (unit=m)
-C     hydrogThetaFile :: File containing initial hydrographic data for potential
-C                       temperature.
-C     hydrogSaltFile  :: File containing initial hydrographic data for salinity.
+C     bathyFile       :: File containing bathymetry. If not defined bathymetry
+C                        is taken from inline function.
+C     topoFile        :: File containing the topography of the surface (unit=m)
+C                        (mainly used for the atmosphere = ground height).
+C     shelfIceFile    :: File containing the topography of the shelfice draught
+C                        (unit=m)
+C     hydrogThetaFile :: File containing initial hydrographic data (3-D)
+C                        for potential temperature.
+C     hydrogSaltFile  :: File containing initial hydrographic data (3-D)
+C                        for salinity.
 C     diffKrFile      :: File containing 3D specification of vertical diffusivity
 C     zonalWindFile   :: File containing zonal wind data
 C     meridWindFile   :: File containing meridional wind data
-C     thetaClimFile   :: File containing theta climataology used
+C     thetaClimFile   :: File containing surface theta climataology used
 C                       in relaxation term -lambda(theta-theta*)
-C     saltClimFile    :: File containing salt climataology used
+C     saltClimFile    :: File containing surface salt climataology used
 C                       in relaxation term -lambda(salt-salt*)
 C     surfQfile       :: File containing surface heat flux, excluding SW
 C                        (old version, kept for backward compatibility)
@@ -84,29 +88,28 @@ C     saltFluxFile    :: File containing surface salt flux
 C     pLoadFile       :: File containing pressure loading
 C     eddyTauxFile    :: File containing zonal Eddy stress data
 C     eddyTauyFile    :: File containing meridional Eddy stress data
-C     buoyancyRelation :: Flag used to indicate which relation to use to
-C                        get buoyancy.
-C     eosType         :: choose the equation of state:
-C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
 C     the_run_name    :: string identifying the name of the model "run"
-      COMMON /PARM_C/ checkPtSuff,
+      COMMON /PARM_C/
+     &                buoyancyRelation, eosType,
+     &                pickupSuff, mdsioLocalDir,
      &                tRefFile, sRefFile, rhoRefFile,
      &                delRFile, delRcFile,
      &                delXFile, delYFile, horizGridFile,
      &                bathyFile, topoFile, shelfIceFile,
      &                hydrogThetaFile, hydrogSaltFile, diffKrFile,
      &                zonalWindFile, meridWindFile, thetaClimFile,
-     &                saltClimFile, buoyancyRelation,
+     &                saltClimFile,
      &                EmPmRfile, saltFluxFile,
      &                surfQfile, surfQnetFile, surfQswFile,
      &                lambdaThetaFile, lambdaSaltFile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                dQdTfile, ploadFile,
      &                eddyTauxFile, eddyTauyFile,
-     &                eosType, pickupSuff,
-     &                mdsioLocalDir,
      &                the_run_name
-      CHARACTER*(5) checkPtSuff(maxNoChkptLev)
+      CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
+      CHARACTER*(6)  eosType
+      CHARACTER*(10) pickupSuff
+      CHARACTER*(MAX_LEN_FNAM) mdsioLocalDir
       CHARACTER*(MAX_LEN_FNAM) tRefFile
       CHARACTER*(MAX_LEN_FNAM) sRefFile
       CHARACTER*(MAX_LEN_FNAM) rhoRefFile
@@ -127,7 +130,6 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) surfQswFile
       CHARACTER*(MAX_LEN_FNAM) EmPmRfile
       CHARACTER*(MAX_LEN_FNAM) saltFluxFile
-      CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
       CHARACTER*(MAX_LEN_FNAM) uVelInitFile
       CHARACTER*(MAX_LEN_FNAM) vVelInitFile
       CHARACTER*(MAX_LEN_FNAM) pSurfInitFile
@@ -137,10 +139,7 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) eddyTauyFile
       CHARACTER*(MAX_LEN_FNAM) lambdaThetaFile
       CHARACTER*(MAX_LEN_FNAM) lambdaSaltFile
-      CHARACTER*(MAX_LEN_FNAM) mdsioLocalDir
       CHARACTER*(MAX_LEN_PREC/2) the_run_name
-      CHARACTER*(6) eosType
-      CHARACTER*(10) pickupSuff
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        :: Maximum number of iterations in the
@@ -155,12 +154,9 @@ C     cg3dChkResFreq      :: Frequency with which to check residual
 C                           in con. grad solver.
 C     nIter0              :: Start time-step number of for this run
 C     nTimeSteps          :: Number of timesteps to execute
-C     numStepsPerPickup   :: For offline setup. Frequency of pickup
-C                           of flow fields.
 C     writeStatePrec      :: Precision used for writing model state.
 C     writeBinaryPrec     :: Precision used for writing binary files
 C     readBinaryPrec      :: Precision used for reading binary files
-C     nCheckLev           :: Holds current checkpoint level
 C     nonlinFreeSurf      :: option related to non-linear free surface
 C                           =0 Linear free surface ; >0 Non-linear
 C     select_rStar        :: option related to r* vertical coordinate
@@ -182,8 +178,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
      &        cg3dMaxIters,
      &        cg3dChkResFreq,
      &        nIter0, nTimeSteps, nEndIter,
-     &        numStepsPerPickup,
-     &        writeStatePrec, nCheckLev,
+     &        writeStatePrec,
      &        writeBinaryPrec, readBinaryPrec,
      &        nonlinFreeSurf, select_rStar,
      &        momForcingOutAB, tracForcingOutAB,
@@ -199,11 +194,9 @@ C     debugLevel          :: debug level selector: higher -> more writing
       INTEGER nIter0
       INTEGER nTimeSteps
       INTEGER nEndIter
-      INTEGER numStepsPerPickup
       INTEGER writeStatePrec
       INTEGER writeBinaryPrec
       INTEGER readBinaryPrec
-      INTEGER nCheckLev
       INTEGER nonlinFreeSurf
       INTEGER select_rStar
       INTEGER momForcingOutAB, tracForcingOutAB

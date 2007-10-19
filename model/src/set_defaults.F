@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.129 2007/08/23 19:08:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.130 2007/10/19 14:36:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -283,9 +283,6 @@ C--   Time stepping parameters
       writeStatePrec    = precFloat64
       writeBinaryPrec   = precFloat32
       readBinaryPrec    = precFloat32
-      nCheckLev         = 1
-      checkPtSuff(1)    = 'ckptA'
-      checkPtSuff(2)    = 'ckptB'
       cAdjFreq          =  0. _d 0
       tauCD             =  0. _d 0
       tauThetaClimRelax =  0. _d 0

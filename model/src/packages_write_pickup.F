@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.26 2007/10/19 03:23:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.27 2007/10/19 14:36:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,6 +26,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "RESTART.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     permPickup :: Is or is not a permanent pickup.
