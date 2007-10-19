@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.893 2007/10/19 19:10:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.894 2007/10/19 20:34:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kpp: add "_d 0" to real constant (if missing); 
+  update output of exp: natl_box (10.digits); vermix (std, 7.digits)
+  and lab_sea, 3.FW (only 6,4,6 digits match) & AD (8.digits).
 o prepare for "clever pickup" implementation: add new header file "RESTART.h"
   for internal parameters related to restart process (formerly from PARAMS.h)
   and add startAB parameter to argument list of S/R ADAMS_BASHFORTH2.
