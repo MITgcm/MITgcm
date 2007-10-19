@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.52 2007/10/19 15:52:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.53 2007/10/19 19:18:01 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -826,6 +826,12 @@ cphmultiCADJ STORE rTrans(:,:)
 cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 cphmultiCADJ STORE rTranskp1(:,:)  
 cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cph --- following storing of fVerT is critical for correct
+cph --- gradient with multiDimAdvection
+cph --- Without it, kDown component is not properly recomputed
+cph --- This is a TAF bug (and no warning available)
+CADJ STORE fVerT(:,:,:)  
+CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Divergence of vertical fluxes
