@@ -27,6 +27,9 @@ gad_fluxlimit_adv_y.f
 gad_grad_x.f
 gad_grad_y.f
 gad_init_varia.f
+gad_os7mp_adv_x.f
+gad_os7mp_adv_y.f
+gad_os7mp_adv_r.f
 gad_u3_adv_r.f
 gad_u3_adv_x.f
 gad_u3_adv_y.f
