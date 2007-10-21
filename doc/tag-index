@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.895 2007/10/19 21:03:09 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.896 2007/10/21 18:56:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59i
 o adjoint:
   * fix multiDimAdvection adjoint 
     (partial recomputation problem by TAF for fVerT(:,:,kDown)
