@@ -50,6 +50,7 @@
  deltaTClock = 86400.,
  deltaTfreesurf= 86400.,
  abEps = 0.1,
+ pickupStrictlyMatch=.FALSE.,
  pChkptFreq= 311040000.,
  dumpFreq=   311040000.,
  dumpFreq=   864000.,

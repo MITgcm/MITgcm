@@ -45,6 +45,7 @@
  abEps=0.1,
 #forcing_In_AB=.FALSE.,
  tracForcingOutAB=1,
+ pickupStrictlyMatch=.FALSE.,
  pChkptFreq=2592000.0,
  chkptFreq=0.0,
  dumpFreq=2592000.0,

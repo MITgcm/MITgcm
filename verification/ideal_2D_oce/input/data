@@ -53,6 +53,7 @@
  abEps=0.1,
  tauCD=321428.,
  tauThetaClimRelax=2592000.0,
+ pickupStrictlyMatch=.FALSE.,
  chkptFreq=0.0,
  pChkptFreq=3110400000.0,
  taveFreq=1555200000.0,

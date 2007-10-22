@@ -51,6 +51,7 @@
  alph_AB=0.5,
  beta_AB=0.281105,
  doAB_onGtGs=.FALSE.,
+ pickupStrictlyMatch=.FALSE.,
 #startFromPickupAB2=.TRUE.,
  pChkptFreq=31104000.,
  chkptFreq =0.,
