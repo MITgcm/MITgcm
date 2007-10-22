@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.11 2007/10/15 00:18:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.12 2007/10/22 13:24:50 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -51,8 +51,8 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER i,j,k,ks,bi,bj
-      _RL theArea, wT_Mean, wS_Mean, wT_Heat
-      _RL vT_Mean, vS_Mean, vT_Heat, theta2PE
+      _RL theArea, wT_Mean, wS_Mean
+      _RL wT_Heat, theta2PE
       _RL tmpVal, ddPI
       _RL tileArea(nSx,nSy)
       _RL tile_wT (nSx,nSy)
@@ -61,6 +61,7 @@ C     !LOCAL VARIABLES:
       _RL tileTh2pe(nSx,nSy)
 #ifdef NONLIN_FRSURF
       _RL tmpVol, conv_th2Heat
+      _RL vT_Mean, vS_Mean, vT_Heat
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
