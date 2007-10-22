@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.205 2007/10/19 14:34:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.206 2007/10/22 13:08:21 jmc Exp $
 C $Name:  $
 C
 
@@ -216,7 +216,7 @@ C
 C--   COMMON /PARM_L/ Logical valued parameters used by the model.
 C     usingCartesianGrid :: If TRUE grid generation will be in a cartesian
 C                          coordinate frame.
-C     usingSphericalPolarGrid :: If TRUE grid generation will be in a 
+C     usingSphericalPolarGrid :: If TRUE grid generation will be in a
 C                               spherical polar frame.
 C     usingCylindricalGrid :: If TRUE grid generation will be Cylindrical
 C     usingCurvilinearGrid :: If TRUE, use a curvilinear grid (to be provided)
@@ -236,11 +236,11 @@ C     tempAdvection :: Flag which turns advection of temperature on
 C                     and off.
 C     tempForcing   :: Flag which turns external forcing of temperature on
 C                     and off.
-C     saltAdvection :: Flag which turns advection of salinity on 
+C     saltAdvection :: Flag which turns advection of salinity on
 C                     and off.
 C     saltForcing   :: Flag which turns external forcing of salinity on
 C                     and off.
-C     useRealFreshWaterFlux :: if True (=Natural BCS), treats P+R-E flux 
+C     useRealFreshWaterFlux :: if True (=Natural BCS), treats P+R-E flux
 C                         as a real Fresh Water (=> changes the Sea Level)
 C                         if F, converts P+R-E to salt flux (no SL effect)
 C     useFullLeith   :: Set to true to use full Leith viscosity(may be unstable
@@ -252,7 +252,7 @@ C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implicit free surface
 C     exactConserv        :: Set to true to conserve exactly the total Volume
 C     linFSConserveTr     :: Set to true to correct source/sink of tracer
-C                            at the surface due to Linear Free Surface 
+C                            at the surface due to Linear Free Surface
 C     uniformLin_PhiSurf  :: Set to true to use a uniform Bo_surf in the
 C                           linear relation Phi_surf = Bo_surf*eta
 C     use3Dsolver   :: set to true to use 3-D pressure solver
@@ -284,6 +284,7 @@ C     momDissip_In_AB   :: if False, put Dissipation tendency contribution
 C                          out off Adams-Bashforth time stepping.
 C     doAB_onGtGs       :: if the Adams-Bashforth time stepping is used, always
 C                          apply AB on tracer tendencies (rather than on Tracer)
+C     pickupStrictlyMatch :: check and stop if pickup-file do not stricly match
 C     startFromPickupAB2 :: with AB-3 code, start from an AB-2 pickup
 C     usePickupBeforeC54 :: start from old-pickup files, generated with code from
 C                           before checkpoint-54a, Jul 06, 2004.
@@ -319,7 +320,7 @@ C     pickup_write_immed :: echo the pickup immediately (for conversion)
 C     timeave_mdsio      :: use mdsio for timeave output
 C     snapshot_mdsio     :: use mdsio for "snapshot" (dumpfreq/diagfreq) output
 C     monitor_stdio      :: use stdio for monitor output
-C     dumpInitAndLast :: dumps model state to files at Initial (nIter0) 
+C     dumpInitAndLast :: dumps model state to files at Initial (nIter0)
 C                        & Last iteration, in addition multiple of dumpFreq iter.
 C     balanceEmPmR    :: substract global mean of EmPmR at every time step
 C     balanceQnet     :: substract global mean of Qnet at every time step
@@ -356,7 +357,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
      & usingPCoords, usingZCoords, useDynP_inEos_Zc,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, useOldFreezing,
-     & usePickupBeforeC54, startFromPickupAB2,
+     & pickupStrictlyMatch, usePickupBeforeC54, startFromPickupAB2,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
      & outputTypesInclusive, dumpInitAndLast, debugMode,
@@ -436,6 +437,7 @@ C     balancePrintMean:: print substracted global means to STDOUT
       LOGICAL useSingleCpuIO
       LOGICAL allowFreezing
       LOGICAL useOldFreezing
+      LOGICAL pickupStrictlyMatch
       LOGICAL usePickupBeforeC54
       LOGICAL startFromPickupAB2
       LOGICAL dumpInitAndLast
