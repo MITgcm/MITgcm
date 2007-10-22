@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.24 2007/10/19 14:36:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.25 2007/10/22 13:26:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -99,6 +99,9 @@ C-    now we make local directories with myProcessStr appended
         namBuf(1:pIL) = mdsioLocalDir(1:pIL)
         WRITE(mdsioLocalDir,'(3A)') namBuf(1:pIL),myProcessStr(1:4),'/'
       ENDIF
+
+C-    Initialise MFLDS variables in common block
+      CALL READ_MFLDS_INIT( myThid )
 
 C     Set globalFiles flag for READ_WRITE_FLD package
       CALL SET_WRITE_GLOBAL_FLD( globalFiles )
