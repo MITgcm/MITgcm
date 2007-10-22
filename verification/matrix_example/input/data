@@ -39,13 +39,13 @@
 # saltAdvScheme       = 2
  writeBinaryPrec=64,
  multiDimAdvection   = .TRUE.
- /
+ &
 
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=1000,
  cg2dTargetResidual=1.E-7,
- /
+ &
 
 # Time stepping parameters
  &PARM03
@@ -58,6 +58,7 @@
  deltaTClock = 20000.0,
  abEps = 0.1,
 #cAdjFreq = -1,
+ pickupStrictlyMatch=.FALSE.,
  pChkptFreq= 500000000.0,
  dumpFreq=   200000000.0,
  taveFreq=   0.,
@@ -66,7 +67,7 @@
 # tauThetaClimRelax = 864000.0,
 # tauSaltClimRelax = 0.0,
 # periodicExternalForcing=.FALSE.,
- /
+ &
 
 # Gridding parameters
  &PARM04
@@ -76,7 +77,7 @@
  delY=31*50E3,
  delR=5000.,
 # phiMin=0.,
- /
+ &
 
 # Input datasets
  &PARM05
@@ -87,4 +88,4 @@
  meridWindFile=,
  thetaClimFile=,
  saltClimFile=,
- /
+ &
