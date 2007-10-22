@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.99 2007/08/23 19:08:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.100 2007/10/22 13:12:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -427,10 +427,6 @@ C     ycoord :: varying parameters.
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-      CALL WRITE_0D_I( nIter0, INDEX_NONE,'nIter0 =',
-     &'   /* Run starting timestep number  */')
-      CALL WRITE_0D_I( nTimeSteps, INDEX_NONE,'nTimeSteps =',
-     &'   /* Number of timesteps */')
       CALL WRITE_0D_R8( deltaTmom, INDEX_NONE,'deltaTmom =',
      &'   /* Momentum equation timestep ( s ) */')
       CALL WRITE_0D_R8( deltaTfreesurf,INDEX_NONE,'deltaTfreesurf =',
@@ -466,6 +462,18 @@ C     ycoord :: varying parameters.
       CALL WRITE_0D_R8( rCD, INDEX_NONE,'rCD =',
      &'   /* Normalised CD coupling parameter */')
       ENDIF
+      I = ILNBLNK(pickupSuff)
+      IF ( I.GT.0 ) THEN
+        CALL WRITE_0D_C( pickupSuff, 0, INDEX_NONE,
+     & 'pickupSuff =', ' /* Suffix of pickup-file to restart from */')
+      ENDIF
+      CALL WRITE_0D_L( pickupStrictlyMatch, INDEX_NONE,
+     & 'pickupStrictlyMatch=',
+     & ' /* stop if pickup do not strictly match */')
+      CALL WRITE_0D_I( nIter0, INDEX_NONE,'nIter0 =',
+     &'   /* Run starting timestep number  */')
+      CALL WRITE_0D_I( nTimeSteps, INDEX_NONE,'nTimeSteps =',
+     &'   /* Number of timesteps */')
       CALL WRITE_0D_R8( baseTime, INDEX_NONE,'baseTime =',
      &'   /* Model base time ( s ). */')
       CALL WRITE_0D_R8( startTime, INDEX_NONE,'startTime =',

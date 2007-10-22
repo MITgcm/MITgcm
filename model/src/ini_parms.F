@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.202 2007/10/17 22:08:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.203 2007/10/22 13:12:45 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -209,7 +209,8 @@ C--   Elliptic solver parameters
 
 C--   Time stepping parammeters
       NAMELIST /PARM03/
-     & nIter0, nTimeSteps, nEndIter, pickupSuff,
+     & nIter0, nTimeSteps, nEndIter,
+     & pickupSuff, pickupStrictlyMatch,
      & deltaT, deltaTClock, deltaTmom,
      & deltaTtracer, dTtracerLev, deltaTfreesurf,
      & forcing_In_AB, momForcingOutAB, tracForcingOutAB,

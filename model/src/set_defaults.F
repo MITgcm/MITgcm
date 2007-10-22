@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.130 2007/10/19 14:36:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.131 2007/10/22 13:12:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -246,6 +246,7 @@ C--   Time stepping parameters
       nIter0            = 0
       startTime         = deltaT*float(nIter0)
       pickupSuff        = ' '
+      pickupStrictlyMatch = .TRUE.
       nTimeSteps        = 0
       nEndIter          = nIter0+nTimeSteps
       endTime           = deltaT*float(nEndIter)
