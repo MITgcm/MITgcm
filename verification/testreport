@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.105 2007/10/12 21:39:37 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.106 2007/10/23 19:36:15 jmc Exp $
 #  $Name:  $
 #
 
@@ -575,6 +575,10 @@ runmodel()
 	printf 'runmodel in %s ...' $1 1>&2
 	# make output.txt
 	echo
+	if test -L $EXECUTABLE -a -x "../"$builddir"/"$EXECUTABLE ; then
+	    diff -q $EXECUTABLE "../"$builddir"/"$EXECUTABLE > /dev/null 2>&1
+	    outD=$? ; if test $outD != 0 ; then rm -f $EXECUTABLE ; rm -f run.log ; fi
+	fi
         if test ! -x $EXECUTABLE -a -x "../"$builddir"/"$EXECUTABLE ; then
 	    echo " link" $EXECUTABLE "from dir ../"$builddir > run.log_00
 	    ln -sf "../"$builddir"/"$EXECUTABLE .
@@ -1087,15 +1091,25 @@ fi
 #  ...and each test directory...
 for dir in $TESTDIRS ; do
     
+    # set builddir & rundir:
+    builddir="build"
+    if test ! -d $dir/$builddir ; then mkdir $dir/$builddir ; fi
+    rundir="run"
+    if test ! -d $dir/$rundir ; then
+	rundir=$builddir
+    fi
+    CODE_DIR=$dir/$code_dir
+    BUILD_DIR=$dir/$builddir
+
     #  Cleanup only!
     if test "x$CLEANUP" = xt ; then
-	if test -r $dir/build/Makefile ; then
+	if test -r $BUILD_DIR/Makefile ; then
             echo '  ------  clean dir:' $dir/build
-	    ( cd $dir/build ; make CLEAN )
+	    ( cd $BUILD_DIR ; make CLEAN )
 	fi
-	if test -d $dir/run/CVS ; then
-            echo '  ------  clean dir:' $dir/run
-	    run_clean $dir/run
+	if test -d $dir/$rundir/CVS ; then
+            echo '  ------  clean dir:' $dir/$rundir
+	    run_clean $dir/$rundir
 	fi
 	(
 	    cd $dir
@@ -1116,15 +1130,6 @@ for dir in $TESTDIRS ; do
     fi
 
     # Check for additional types of monitor output
-
-    builddir="build"
-    if test ! -d $dir/$builddir ; then mkdir $dir/$builddir ; fi
-    rundir="run"
-    if test ! -d $dir/$rundir ; then
-	rundir=$builddir
-    fi
-    CODE_DIR=$dir/$code_dir
-    BUILD_DIR=$dir/$builddir
 
     if test ! -r $CODE_DIR"/SIZE.h_mpi" -a "x$MPI" = "xt" ; then
 	echo "can't find \"$CODE_DIR/SIZE.h_mpi\" -- skipping $dir"
@@ -1203,15 +1208,17 @@ for dir in $TESTDIRS ; do
 	for ex in $extra_runs ; do
 	    unset run
             results=$EMPTY_RESULTS
+	    #  reference output file
+	    refExOut=`echo $ref_outp | sed "s/\./.${ex}./g"`
 	    #  Create an output dir for each OPTFILE/tdir.ex combination
 	    rel_CDIR=$DRESULTS"/"$dir"."$ex
 	    mkdir $rel_CDIR
 	    CDIR=`pwd`"/$rel_CDIR"
 	    test ! -e "$dir/tr_run.$ex" && mkdir "$dir/tr_run.$ex"
- 	    run_clean $dir/tr_run.$ex
-            linkdata $dir/tr_run.$ex input.$ex input
+	    run_clean $dir/tr_run.$ex
+	    linkdata $dir/tr_run.$ex input.$ex input
 	    runmodel $dir/tr_run.$ex && run=Y \
-		&& results=`testoutput_run $dir tr_run.$ex "output.${ex}.txt"`
+	    && results=`testoutput_run $dir tr_run.$ex $refExOut`
 	    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    fres="$fres.$ex"
 	    echo
