@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.12 2007/10/23 08:25:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.13 2007/10/23 21:45:51 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -96,7 +96,7 @@ C
       _RL OBNs1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #ifdef ALLOW_SEAICE
-      COMMON /SEAICE_N_OB/ OBNa,OBNh,OBNa0,OBNh0,OBNa1,OBNh1
+      COMMON /SEAICE_N_OB/ OBNa,OBNh,OBNa0,OBNh0,OBNa1,OBNh1,
      &        OBNsl,OBNsn,OBNsl0,OBNsn0,OBNsl1,OBNsn1
       _RL OBNa  (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBNh  (1-Olx:sNx+Olx,nSx,nSy)
@@ -134,7 +134,7 @@ C
       _RL OBSs1 (1-Olx:sNx+Olx,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #ifdef ALLOW_SEAICE
-      COMMON /SEAICE_S_OB/ OBSa,OBSh,OBSa0,OBSh0,OBSa1,OBSh1
+      COMMON /SEAICE_S_OB/ OBSa,OBSh,OBSa0,OBSh0,OBSa1,OBSh1,
      &        OBSsl,OBSsn,OBSsl0,OBSsn0,OBSsl1,OBSsn1
       _RL OBSa  (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBSh  (1-Olx:sNx+Olx,nSx,nSy)
@@ -172,7 +172,7 @@ C
       _RL OBEs1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #ifdef ALLOW_SEAICE
-      COMMON /SEAICE_E_OB/ OBEa,OBEh,OBEa0,OBEh0,OBEa1,OBEh1
+      COMMON /SEAICE_E_OB/ OBEa,OBEh,OBEa0,OBEh0,OBEa1,OBEh1,
      &        OBEsl,OBEsn,OBEsl0,OBEsn0,OBEsl1,OBEsn1
       _RL OBEa  (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBEh  (1-Oly:sNy+Oly,nSx,nSy)
@@ -210,7 +210,7 @@ C
       _RL OBWs1 (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #ifdef ALLOW_SEAICE
-      COMMON /SEAICE_W_OB/ OBWa,OBWh,OBWa0,OBWh0,OBWa1,OBWh1
+      COMMON /SEAICE_W_OB/ OBWa,OBWh,OBWa0,OBWh0,OBWa1,OBWh1,
      &        OBWsl,OBWsn,OBWsl0,OBWsn0,OBWsl1,OBWsn1
       _RL OBWa  (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBWh  (1-Oly:sNy+Oly,nSx,nSy)
