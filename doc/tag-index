@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.896 2007/10/21 18:56:16 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.897 2007/10/23 08:25:28 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o added open boundary conditions capability for seaice HSNOW and HSALT
 
 checkpoint59i
 o adjoint:

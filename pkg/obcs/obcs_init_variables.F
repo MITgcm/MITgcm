@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.21 2007/10/11 10:30:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.22 2007/10/23 08:25:28 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -141,6 +141,12 @@ C     == Local variables ==
          OBNh0(I,bi,bj)=0. _d 0
          OBNa1(I,bi,bj)=0. _d 0
          OBNh1(I,bi,bj)=0. _d 0
+         OBNsl (I,bi,bj)=0. _d 0
+         OBNsn (I,bi,bj)=0. _d 0
+         OBNsl0(I,bi,bj)=0. _d 0
+         OBNsn0(I,bi,bj)=0. _d 0
+         OBNsl1(I,bi,bj)=0. _d 0
+         OBNsn1(I,bi,bj)=0. _d 0
 #endif /* ALLOW_OBCS_NORTH */
 #ifdef ALLOW_OBCS_SOUTH
          OBSa (I,bi,bj)=0. _d 0
@@ -149,6 +155,12 @@ C     == Local variables ==
          OBSh0(I,bi,bj)=0. _d 0
          OBSa1(I,bi,bj)=0. _d 0
          OBSh1(I,bi,bj)=0. _d 0
+         OBSsl (I,bi,bj)=0. _d 0
+         OBSsn (I,bi,bj)=0. _d 0
+         OBSsl0(I,bi,bj)=0. _d 0
+         OBSsn0(I,bi,bj)=0. _d 0
+         OBSsl1(I,bi,bj)=0. _d 0
+         OBSsn1(I,bi,bj)=0. _d 0
 #endif /* ALLOW_OBCS_SOUTH */
         ENDDO
         DO J=1-Oly,sNy+Oly
@@ -159,6 +171,12 @@ C     == Local variables ==
          OBEh0(J,bi,bj)=0. _d 0
          OBEa1(J,bi,bj)=0. _d 0
          OBEh1(J,bi,bj)=0. _d 0
+         OBEsl (I,bi,bj)=0. _d 0
+         OBEsn (I,bi,bj)=0. _d 0
+         OBEsl0(I,bi,bj)=0. _d 0
+         OBEsn0(I,bi,bj)=0. _d 0
+         OBEsl1(I,bi,bj)=0. _d 0
+         OBEsn1(I,bi,bj)=0. _d 0
 #endif /* ALLOW_OBCS_EAST */
 #ifdef ALLOW_OBCS_WEST
          OBWa (J,bi,bj)=0. _d 0
@@ -167,6 +185,12 @@ C     == Local variables ==
          OBWh0(J,bi,bj)=0. _d 0
          OBWa1(J,bi,bj)=0. _d 0
          OBWh1(J,bi,bj)=0. _d 0
+         OBWsl (I,bi,bj)=0. _d 0
+         OBWsn (I,bi,bj)=0. _d 0
+         OBWsl0(I,bi,bj)=0. _d 0
+         OBWsn0(I,bi,bj)=0. _d 0
+         OBWsl1(I,bi,bj)=0. _d 0
+         OBWsn1(I,bi,bj)=0. _d 0
 #endif /* ALLOW_OBCS_WEST */
         ENDDO
 #endif /* ALLOW_SEAICE */

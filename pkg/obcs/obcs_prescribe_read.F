@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.12 2007/10/11 10:30:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.13 2007/10/23 08:25:28 dimitri Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -89,6 +89,12 @@ c     == end of interface ==
        call exf_set_obcs_x (  OBNh, OBNh0, OBNh1, OBNhfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
+       call exf_set_obcs_x (  OBNsl, OBNsl0, OBNsl1, OBNslfile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+       call exf_set_obcs_x (  OBNsn, OBNsn0, OBNsn1, OBNsnfile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
       ENDIF
 #endif /* ALLOW_SEAICE */
 #ifdef ALLOW_PTRACERS
@@ -133,6 +139,12 @@ c     == end of interface ==
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
        call exf_set_obcs_x (  OBSh, OBSh0, OBSh1, OBShfile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+       call exf_set_obcs_x (  OBSsl, OBSsl0, OBSsl1, OBSslfile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+       call exf_set_obcs_x (  OBSsn, OBSsn0, OBSsn1, OBSsnfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
       ENDIF
@@ -181,6 +193,12 @@ c     == end of interface ==
        call exf_set_obcs_y (  OBEh, OBEh0, OBEh1, OBEhfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
+       call exf_set_obcs_y (  OBEsl, OBEsl0, OBEsl1, OBEslfile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+       call exf_set_obcs_y (  OBEsn, OBEsn0, OBEsn1, OBEsnfile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
       ENDIF
 #endif /* ALLOW_SEAICE */
 #ifdef ALLOW_PTRACERS
@@ -225,6 +243,12 @@ c     == end of interface ==
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
        call exf_set_obcs_y (  OBWh, OBWh0, OBWh1, OBWhfile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+       call exf_set_obcs_y (  OBWsl, OBWsl0, OBWsl1, OBWslfile, 's'
+     I                     , fac, first, changed, count0, count1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+       call exf_set_obcs_y (  OBWsn, OBWsn0, OBWsn1, OBWsnfile, 's'
      I                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid )
       ENDIF

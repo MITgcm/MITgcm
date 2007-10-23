@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.23 2007/10/11 18:03:09 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.24 2007/10/23 08:25:28 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -404,6 +404,32 @@ C-     Apply open boundary conditions
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              AREA(i,j,1,bi,bj) = iceFld(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+          IF ( SEAICEadvSALT ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             iceFld(i,j) = HSALT(i,j,bi,bj)
+            ENDDO
+           ENDDO
+           CALL OBCS_APPLY_HSALT( bi, bj, iceFld, myThid )
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             HSALT(i,j,bi,bj) = iceFld(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+          IF ( SEAICEadvSNOW ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             iceFld(i,j) = HSNOW(i,j,bi,bj)
+            ENDDO
+           ENDDO
+           CALL OBCS_APPLY_HSNOW( bi, bj, iceFld, myThid )
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             HSNOW(i,j,bi,bj) = iceFld(i,j)
             ENDDO
            ENDDO
           ENDIF

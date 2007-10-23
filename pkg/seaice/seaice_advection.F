@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.10 2007/10/11 18:03:09 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.11 2007/10/23 08:25:28 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -486,6 +486,10 @@ C-     Apply open boundary conditions
             CALL OBCS_APPLY_HEFF( bi, bj, localTij, myThid )
            ELSEIF (tracerIdentity.EQ.GAD_AREA) THEN
             CALL OBCS_APPLY_AREA( bi, bj, localTij, myThid )
+           ELSEIF (tracerIdentity.EQ.GAD_SALT) THEN
+            CALL OBCS_APPLY_HSALT( bi, bj, localTij, myThid )
+           ELSEIF (tracerIdentity.EQ.GAD_SNOW) THEN
+            CALL OBCS_APPLY_HSNOW( bi, bj, localTij, myThid )
            ENDIF
           ENDIF
 #endif /* ALLOW_OBCS */
@@ -687,6 +691,10 @@ C-     Apply open boundary conditions
              CALL OBCS_APPLY_HEFF( bi, bj, localTij, myThid )
             ELSEIF (tracerIdentity.EQ.GAD_AREA) THEN
              CALL OBCS_APPLY_AREA( bi, bj, localTij, myThid )
+            ELSEIF (tracerIdentity.EQ.GAD_SALT) THEN
+             CALL OBCS_APPLY_HSALT( bi, bj, localTij, myThid )
+            ELSEIF (tracerIdentity.EQ.GAD_SNOW) THEN
+             CALL OBCS_APPLY_HSNOW( bi, bj, localTij, myThid )
             ENDIF
            ENDIF
 #endif /* ALLOW_OBCS */
