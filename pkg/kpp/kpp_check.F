@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_check.F,v 1.7 2007/08/16 02:28:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_check.F,v 1.8 2007/10/23 15:47:28 stephd Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -44,7 +44,7 @@ C     KPP needs implicit vertical diffusion and viscosity
          CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R KPP_CHECK'
       ENDIF
-      IF (.NOT.implicitViscosity) THEN
+      IF ( .NOT.implicitViscosity .AND. momStepping ) THEN
          WRITE(msgBuf,'(A)') 'KPP needs implicitViscosity to be enabled'
          CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R KPP_CHECK'
