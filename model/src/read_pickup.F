@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.1 2006/08/24 01:14:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.2 2007/10/23 15:22:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -22,8 +22,12 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "RESTART.h"
 #include "DYNVARS.h"
 #include "SURFACE.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD.h"
+#endif
 #ifdef ALLOW_NONHYDROSTATIC
 #include "NH_VARS.h"
 #endif
@@ -33,25 +37,51 @@ C     !USES:
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myIter :: Iteration number
-C     myThid :: my Thread number Id.
+C     myThid :: my Thread Id. number
       INTEGER myIter
       INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
-C     fp      :: pickup-file precision
-C     fn      :: Temp. for building file name.
+C     fp          :: pickup-file precision
+C     fn          :: Temp. for building file name.
+C     suff        :: suffix of pickup file to read
+C     filePrec    :: pickup-file precision (read from meta file)
+C     nbFields    :: number of fields in pickup file (read from meta file)
+C     missFldList :: List of missing fields   (attempted to read but not found)
+C     missFldDim  :: Dimension of missing fields list array: missFldList
+C     nMissing    :: Number of missing fields (attempted to read but not found)
+C     m1,m2       :: 6.th dim index (AB-3) corresponding to time-step N-1 & N-2
+C     j           :: loop index
+C     nj          :: record number
+C     ioUnit      :: temp for writing msg unit
+C     msgBuf      :: Informational/error message buffer
       INTEGER fp
-      INTEGER i, nj
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(10) suff
+      INTEGER filePrec, nbFields
+      INTEGER missFldDim, nMissing
+      PARAMETER( missFldDim = 20 )
+      CHARACTER*(8) missFldList(missFldDim)
 #ifdef ALLOW_ADAMSBASHFORTH_3
-      INTEGER j
+      INTEGER m1, m2
+#endif
+      INTEGER j, nj, ioUnit
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifndef ALLOW_GENERIC_ADVDIFF
+      LOGICAL AdamsBashforthGt
+      LOGICAL AdamsBashforthGs
+      LOGICAL AdamsBashforth_T
+      LOGICAL AdamsBashforth_S
+      PARAMETER ( AdamsBashforthGt = .FALSE. ,
+     &            AdamsBashforthGs = .FALSE. ,
+     &            AdamsBashforth_T = .FALSE. ,
+     &            AdamsBashforth_S = .FALSE. )
 #endif
 
 C     Suffix for pickup files
-      DO i = 1,MAX_LEN_FNAM
-        fn(i:i) = ' '
+      DO j = 1,MAX_LEN_FNAM
+        fn(j:j) = ' '
       ENDDO
       IF (pickupSuff .EQ. ' ') THEN
         WRITE(suff,'(I10.10)') myIter
@@ -65,9 +95,68 @@ C     Going to really do some IO. Make everyone except master thread wait.
 
       IF (pickup_read_mdsio) THEN
 
-        fp = precFloat64
+       fp = precFloat64
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C       Read model fields
+       CALL READ_MFLDS_SET(
+     I                      fn,
+     O                      nbFields, filePrec,
+     I                      Nr, myIter, myThid )
+
+       _BEGIN_MASTER( myThid )
+c      IF ( filePrec.NE.0 .AND. filePrec.NE.fp ) THEN
+       IF ( nbFields.GE.0 .AND. filePrec.NE.fp ) THEN
+         WRITE(msgBuf,'(2A,I4)') 'READ_PICKUP: ',
+     &    'pickup-file binary precision do not match !'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A,2(A,I4))') 'READ_PICKUP: ',
+     &    'file prec.=', filePrec, ' but expecting prec.=', fp
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R READ_PICKUP (data-prec Pb)'
+       ENDIF
+       _END_MASTER( myThid )
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+       IF ( nbFields.LE.0 ) THEN
+C-      No meta-file or old meta-file without List of Fields
+        ioUnit = errorMessageUnit
+        IF ( pickupStrictlyMatch ) THEN
+          WRITE(msgBuf,'(4A)') 'READ_PICKUP: ',
+     &      'no field-list found in meta-file',
+     &      ' => cannot check for strick-matching'
+c         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(4A)') 'READ_PICKUP: ',
+     &      'try with " pickupStrictlyMatch=.FALSE.,"',
+     &      ' in file: "data", NameList: "PARM03"'
+          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          STOP 'ABNORMAL END: S/R READ_PICKUP'
+        ELSE
+          WRITE(msgBuf,'(4A)') 'WARNING >> READ_PICKUP: ',
+     &      ' no field-list found'
+          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         IF ( nbFields.EQ.-1 ) THEN
+C-      No meta-file
+          WRITE(msgBuf,'(4A)') 'WARNING >> ',
+     &      ' try to read pickup as currently written'
+          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         ELSE
+C-      Old meta-file without List of Fields
+          WRITE(msgBuf,'(4A)') 'WARNING >> ',
+     &      ' try to read pickup as it used to be written'
+          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          WRITE(msgBuf,'(4A)') 'WARNING >> ',
+     &      ' until checkpoint59i (2007 Oct 22)'
+          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         ENDIF
+        ENDIF
+       ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C---   Old way to read model fields:
+       IF ( nbFields.EQ.0 ) THEN
         IF ( usePickupBeforeC54 ) THEN
 #ifndef ALLOW_ADAMSBASHFORTH_3
           CALL READ_REC_3D_RL( fn, fp, Nr, uVel,  1, myIter,myThid )
@@ -133,10 +222,10 @@ C       Read model fields
 #endif /*  ALLOW_ADAMSBASHFORTH_3 */
           CALL READ_REC_3D_RL( fn,fp,1, etaN, nj*Nr+1, myIter,myThid )
 #ifdef EXACT_CONSERV
-          IF (exactConserv) THEN
+          IF ( exactConserv ) THEN
            CALL READ_REC_3D_RL(fn,fp,1,dEtaHdt,nj*Nr+2,myIter,myThid )
           ENDIF
-          IF (nonlinFreeSurf .GT. 0) THEN
+          IF ( nonlinFreeSurf.GT.0 ) THEN
            CALL READ_REC_3D_RL(fn,fp,1, etaH, nj*Nr+3, myIter,myThid )
           ENDIF
 #endif
@@ -145,15 +234,158 @@ C       Read model fields
         IF ( useDynP_inEos_Zc ) THEN
           WRITE(fn,'(A,A10)') 'pickup_ph.',suff
           CALL READ_REC_3D_RL( fn, fp, Nr, totPhiHyd,1,myIter,myThid )
-        ENDIF
+         ENDIF
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( use3Dsolver ) THEN
+         IF ( use3Dsolver ) THEN
           WRITE(fn,'(A,A10)') 'pickup_nh.',suff
           CALL READ_REC_3D_RL( fn, fp, Nr, phi_nh,  1, myIter,myThid )
           CALL READ_REC_3D_RL( fn, fp, Nr, gwNm1,   2, myIter,myThid )
         ENDIF
 #endif
+       ELSE
+C---   New way to read model fields:
+          nj = 0
+C---    read State 3-D fields for restart
+          CALL READ_MFLDS_3D_RL( 'Uvel    ', uVel,
+     &                                     nj, fp, Nr, myIter, myThid )
+          CALL READ_MFLDS_3D_RL( 'Vvel    ', vVel,
+     &                                     nj, fp, Nr, myIter, myThid )
+          CALL READ_MFLDS_3D_RL( 'Theta   ', theta,
+     &                                     nj, fp, Nr, myIter, myThid )
+          CALL READ_MFLDS_3D_RL( 'Salt    ', salt,
+     &                                     nj, fp, Nr, myIter, myThid )
+C---    read 3-D fields for AB-restart
+#ifdef ALLOW_ADAMSBASHFORTH_3
+         m1 = 1 + MOD(myIter+1,2)
+         m2 = 1 + MOD( myIter ,2)
+C--     U velocity:
+         IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'GuNm1   ',guNm(1-Olx,1-Oly,1,1,1,m1),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+         IF ( beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'GuNm2   ',guNm(1-Olx,1-Oly,1,1,1,m2),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+C--     V velocity:
+         IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'GvNm1   ',gvNm(1-Olx,1-Oly,1,1,1,m1),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+         IF ( beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'GvNm2   ',gvNm(1-Olx,1-Oly,1,1,1,m2),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+C--     Temperature:
+        IF ( AdamsBashforthGt ) THEN
+         IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'GtNm1   ',gtNm(1-Olx,1-Oly,1,1,1,m1),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+         IF ( beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'GtNm2   ',gtNm(1-Olx,1-Oly,1,1,1,m2),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+        ELSEIF ( AdamsBashforth_T ) THEN
+         IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'TempNm1 ',gtNm(1-Olx,1-Oly,1,1,1,m1),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+         IF ( beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'TempNm2 ',gtNm(1-Olx,1-Oly,1,1,1,m2),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+        ENDIF
+C--     Salinity:
+        IF ( AdamsBashforthGs ) THEN
+         IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'GsNm1   ',gsNm(1-Olx,1-Oly,1,1,1,m1),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+         IF ( beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'GsNm2   ',gsNm(1-Olx,1-Oly,1,1,1,m2),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+        ELSEIF ( AdamsBashforth_S ) THEN
+         IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'SaltNm1 ',gsNm(1-Olx,1-Oly,1,1,1,m1),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+         IF ( beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'SaltNm2 ',gsNm(1-Olx,1-Oly,1,1,1,m2),
+     &                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+        ENDIF
+#else /*  ALLOW_ADAMSBASHFORTH_3 */
+C--     U velocity:
+          CALL READ_MFLDS_3D_RL( 'GuNm1   ', guNm1,
+     &                                     nj, fp, Nr, myIter, myThid )
+C--     V velocity:
+          CALL READ_MFLDS_3D_RL( 'GvNm1   ', gvNm1,
+     &                                     nj, fp, Nr, myIter, myThid )
+C--     Temperature
+        IF ( AdamsBashforthGt ) THEN
+          CALL READ_MFLDS_3D_RL( 'GtNm1   ', gtNm1,
+     &                                     nj, fp, Nr, myIter, myThid )
+        ENDIF
+C--     Salinity
+        IF ( AdamsBashforthGs ) THEN
+          CALL READ_MFLDS_3D_RL( 'GsNm1   ', gsNm1,
+     &                                     nj, fp, Nr, myIter, myThid )
+        ENDIF
+#endif /*  ALLOW_ADAMSBASHFORTH_3 */
 
+C-      read Full Pressure for EOS in pressure:
+        IF ( useDynP_inEos_Zc ) THEN
+          CALL READ_MFLDS_3D_RL( 'PhiHyd  ', totPhiHyd,
+     &                                     nj, fp, Nr, myIter, myThid )
+        ENDIF
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( use3Dsolver ) THEN
+          CALL READ_MFLDS_3D_RL( 'Phi_NHyd', phi_nh,
+     &                                     nj, fp, Nr, myIter, myThid )
+        ENDIF
+        IF ( nonHydrostatic ) THEN
+          CALL READ_MFLDS_3D_RL( 'GwNm1   ', gwNm1,
+     &                                     nj, fp, Nr, myIter, myThid )
+        ENDIF
+#endif
+
+C---    read 2-D fields, starting with Eta:
+          nj = nj*Nr
+          CALL READ_MFLDS_3D_RL( 'EtaN    ', etaN,
+     &                                     nj, fp, 1 , myIter, myThid )
+#ifdef EXACT_CONSERV
+        IF ( exactConserv ) THEN
+          CALL READ_MFLDS_3D_RL( 'dEtaHdt ', dEtaHdt,
+     &                                     nj, fp, 1 , myIter, myThid )
+        ENDIF
+        IF ( nonlinFreeSurf.GT.0 ) THEN
+          CALL READ_MFLDS_3D_RL( 'EtaH    ', etaH,
+     &                                     nj, fp, 1 , myIter, myThid )
+        ENDIF
+#endif
+C--    end: new way to read pickup file
+       ENDIF
+
+C--    Check for missing fields:
+       nMissing = missFldDim
+       CALL READ_MFLDS_CHECK(
+     O                    missFldList,
+     U                    nMissing,
+     I                    myIter, myThid )
+       IF ( nMissing.GT.missFldDim ) THEN
+         WRITE(msgBuf,'(2A,I4)') 'READ_PICKUP: ',
+     &     'missing fields list has been truncated to', missFldDim
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R READ_PICKUP (list-size Pb)'
+       ENDIF
+       CALL CHECK_PICKUP(
+     I                    missFldList,
+     I                    nMissing, nbFields,
+     I                    myIter, myThid )
+
+C--   end: pickup_read_mdsio
       ENDIF
 
 #ifdef ALLOW_MNC

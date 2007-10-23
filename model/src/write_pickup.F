@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.3 2007/10/19 14:36:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.4 2007/10/23 15:22:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,6 +27,9 @@ C     !USES:
 #include "RESTART.h"
 #include "DYNVARS.h"
 #include "SURFACE.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD.h"
+#endif
 #ifdef ALLOW_NONHYDROSTATIC
 #include "NH_VARS.h"
 #endif
@@ -46,15 +49,47 @@ C     myThid          :: Thread number for this instance of the routine.
 CEOP
 
 C     !LOCAL VARIABLES:
-C     fn     :: Temp. for building file name string.
-C     fp     :: file precision
+C     fp          :: pickup-file precision
+C     glf         :: local flag for "globalFiles"
+C     fn          :: Temp. for building file name.
+C     nWrFlds     :: number of fields being written
+C     n3D         :: number of 3-D fields being written
+C     listDim     :: dimension of "wrFldList" local array
+C     wrFldList   :: list of written fields
+C     m1,m2       :: 6.th dim index (AB-3) corresponding to time-step N-1 & N-2
+C     j           :: loop index / field number
+C     nj          :: record number
+C     msgBuf      :: Informational/error message buffer
       INTEGER fp
-      INTEGER i, nj
+      LOGICAL  glf
       CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER listDim, nWrFlds, n3D
+      PARAMETER( listDim = 20 )
+      CHARACTER*(8) wrFldList(listDim)
+#ifdef ALLOW_ADAMSBASHFORTH_3
+      INTEGER m1, m2
+#endif
+      INTEGER j, nj
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifndef ALLOW_GENERIC_ADVDIFF
+      LOGICAL AdamsBashforthGt
+      LOGICAL AdamsBashforthGs
+      LOGICAL AdamsBashforth_T
+      LOGICAL AdamsBashforth_S
+      PARAMETER ( AdamsBashforthGt = .FALSE. ,
+     &            AdamsBashforthGs = .FALSE. ,
+     &            AdamsBashforth_T = .FALSE. ,
+     &            AdamsBashforth_S = .FALSE. )
+#endif
+
+C-    Initialise:
+      DO j=1,listDim
+        wrFldList(j) = ' '
+      ENDDO
 
 C     Write model fields
-      DO i = 1,MAX_LEN_FNAM
-        fn(i:i) = ' '
+      DO j = 1,MAX_LEN_FNAM
+        fn(j:j) = ' '
       ENDDO
       IF ( permPickup ) THEN
         WRITE(fn,'(A,I10.10)') 'pickup.',myIter
@@ -68,65 +103,177 @@ C     Going to really do some IO. Make everyone except master thread wait.
       IF (pickup_write_mdsio) THEN
 
         fp = precFloat64
+        j  = 0
+C      record number < 0 : a hack not to write meta files now:
 
+C---   write State 3-D fields for restart
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, uVel,   -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'Uvel    '
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, vVel,   -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'Vvel    '
+
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, theta,  -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'Theta   '
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, salt,   -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'Salt    '
+C---   write 3-D fields for AB-restart
 #ifdef ALLOW_ADAMSBASHFORTH_3
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, uVel,  1, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm(1-Olx,1-Oly,1,1,1,1),
-     &                                           2, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm(1-Olx,1-Oly,1,1,1,2),
-     &                                           3, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, vVel,  4, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gvNm(1-Olx,1-Oly,1,1,1,1),
-     &                                           5, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gvNm(1-Olx,1-Oly,1,1,1,2),
-     &                                           6, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, theta, 7, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gtNm(1-Olx,1-Oly,1,1,1,1),
-     &                                           8, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gtNm(1-Olx,1-Oly,1,1,1,2),
-     &                                           9, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, salt, 10, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gsNm(1-Olx,1-Oly,1,1,1,1),
-     &                                          11, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gsNm(1-Olx,1-Oly,1,1,1,2),
-     &                                          12, myIter, myThid )
-        nj = 12
+        m1 = 1 + MOD(myIter+1,2)
+        m2 = 1 + MOD( myIter ,2)
+C--    U velocity:
+       IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm(1-Olx,1-Oly,1,1,1,m1),
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'GuNm1   '
+       ENDIF
+       IF ( beta_AB.NE.0. ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm(1-Olx,1-Oly,1,1,1,m2),
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'GuNm2   '
+       ENDIF
+C--    V velocity:
+       IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gvNm(1-Olx,1-Oly,1,1,1,m1),
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'GvNm1   '
+       ENDIF
+       IF ( beta_AB.NE.0. ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gvNm(1-Olx,1-Oly,1,1,1,m2),
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'GvNm2   '
+       ENDIF
+C--    Temperature:
+      IF ( AdamsBashforthGt.OR.AdamsBashforth_T ) THEN
+       IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gtNm(1-Olx,1-Oly,1,1,1,m1),
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) THEN
+         IF ( AdamsBashforthGt ) wrFldList(j) = 'GtNm1   '
+         IF ( AdamsBashforth_T ) wrFldList(j) = 'TempNm1 '
+        ENDIF
+       ENDIF
+       IF ( beta_AB.NE.0. ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gtNm(1-Olx,1-Oly,1,1,1,m2),
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) THEN
+         IF ( AdamsBashforthGt ) wrFldList(j) = 'GtNm2   '
+         IF ( AdamsBashforth_T ) wrFldList(j) = 'TempNm2 '
+        ENDIF
+       ENDIF
+      ENDIF
+C--    Salinity:
+      IF ( AdamsBashforthGs.OR.AdamsBashforth_S ) THEN
+       IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gsNm(1-Olx,1-Oly,1,1,1,m1),
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) THEN
+         IF ( AdamsBashforthGs ) wrFldList(j) = 'GsNm1   '
+         IF ( AdamsBashforth_S ) wrFldList(j) = 'SaltNm1 '
+        ENDIF
+       ENDIF
+       IF ( beta_AB.NE.0. ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gsNm(1-Olx,1-Oly,1,1,1,m2),
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) THEN
+         IF ( AdamsBashforthGs ) wrFldList(j) = 'GsNm2   '
+         IF ( AdamsBashforth_S ) wrFldList(j) = 'SaltNm2 '
+        ENDIF
+       ENDIF
+      ENDIF
 #else /*  ALLOW_ADAMSBASHFORTH_3 */
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, uVel,  1, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm1, 2, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, vVel,  3, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gvNm1, 4, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, theta, 5, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gtNm1, 6, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, salt,  7, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, Nr, gsNm1, 8, myIter, myThid )
-        nj = 8
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm1,  -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'GuNm1   '
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gvNm1,  -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'GvNm1   '
+       IF ( AdamsBashforthGt ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gtNm1,  -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'GtNm1   '
+       ENDIF
+       IF ( AdamsBashforthGs ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gsNm1,  -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'GsNm1   '
+       ENDIF
 #endif /*  ALLOW_ADAMSBASHFORTH_3 */
-        CALL WRITE_REC_3D_RL( fn, fp, 1,etaN, nj*Nr+1, myIter, myThid )
-#ifdef EXACT_CONSERV
-        CALL WRITE_REC_3D_RL( fn, fp, 1,dEtaHdt,nj*Nr+2,myIter,myThid )
-        CALL WRITE_REC_3D_RL( fn, fp, 1,etaHnm1,nj*Nr+3,myIter,myThid )
-#endif /* EXACT_CONSERV */
-        IF ( useDynP_inEos_Zc ) THEN
-          IF ( permPickup ) THEN
-            WRITE(fn,'(A,I10.10)') 'pickup_ph.',myIter
-          ELSE
-            WRITE(fn,'(A,A)') 'pickup_ph.',checkPtSuff(nCheckLev)
-          ENDIF
-          CALL WRITE_REC_3D_RL( fn,fp,Nr, totPhiHyd,1, myIter,myThid )
-        ENDIF
+
+C-     write Full Pressure for EOS in pressure:
+       IF ( useDynP_inEos_Zc ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr,totPhiHyd,-j,myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'PhiHyd  '
+       ENDIF
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( use3Dsolver ) THEN
-          IF ( permPickup ) THEN
-            WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
-          ELSE
-            WRITE(fn,'(A,A)') 'pickup_nh.',checkPtSuff(nCheckLev)
-          ENDIF
-          CALL WRITE_REC_3D_RL( fn,fp,Nr, phi_nh, 1, myIter, myThid )
-          CALL WRITE_REC_3D_RL( fn,fp,Nr, gwNm1,  2, myIter, myThid )
-        ENDIF
+       IF ( use3Dsolver ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, phi_nh, -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'Phi_NHyd'
+       ENDIF
+       IF ( nonHydrostatic ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, gwNm1,  -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'GwNm1   '
+       ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 
+        n3D = j
+C---   Write 2-D fields, starting with Eta:
+        j = j + 1
+        nj = -( n3D*(Nr-1) + j )
+        CALL WRITE_REC_3D_RL( fn, fp, 1 , etaN,   nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'EtaN    '
+#ifdef EXACT_CONSERV
+c      IF ( exactConserv ) THEN
+        j = j + 1
+        nj = -( n3D*(Nr-1) + j )
+        CALL WRITE_REC_3D_RL( fn, fp, 1, dEtaHdt, nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'dEtaHdt '
+c      ENDIF
+C- note: always write dEtaHdt & EtaH but read only if exactConserv & nonlinFreeSurf
+C        this works only because nonlinFreeSurf > 0 => exactConserv=T
+c      IF ( nonlinFreeSurf.GT.0 ) THEN
+        j = j + 1
+        nj = -( n3D*(Nr-1) + j )
+        CALL WRITE_REC_3D_RL( fn, fp, 1, etaHnm1, nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'EtaH    '
+c      ENDIF
+#endif /* EXACT_CONSERV */
+C--------------------------
+        nWrFlds = j
+        IF ( nWrFlds.GT.listDim ) THEN
+          WRITE(msgBuf,'(2A,I5,A)') 'WRITE_PICKUP: ',
+     &     'trying to write ',nWrFlds,' fields'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(2A,I5,A)') 'WRITE_PICKUP: ',
+     &     'field-list dimension (listDim=',listDim,') too small'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R WRITE_PICKUP (list-size Pb)'
+        ENDIF
+C-    Note: temporary: since it's a pain to add more arguments to
+C     all MDSIO S/R, uses instead this specific S/R to write only
+C     meta files but with more informations in it.
+        nj = ABS(nj)
+        glf  = globalFiles
+        CALL MDS_WR_METAFILES( fn, fp, glf, .FALSE.,
+     &                         0, 0, 1, ' ',
+     &                         nWrFlds, wrFldList,
+     &                         1, myTime,
+     &                         nj, myIter, myThid )
+C--------------------------
       ENDIF
 
 #ifdef ALLOW_MNC
