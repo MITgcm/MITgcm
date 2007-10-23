@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.1 2007/10/22 13:20:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.2 2007/10/23 15:17:24 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -68,6 +68,9 @@ C     by reading the corresponding meta file.
 C     the meta-file content is stored in common block (header: RW_MFLDS.h)
 C     to be reachable by all threads
 
+C Note: 1) Output arguments should not be shared variables (= not in common block)
+C       2) Only master-thread returns a valid filePrec (others just return 0)
+
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
@@ -111,6 +114,10 @@ C-    for debug print:
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C-----
+
+C-    Initialise output arguments:
+      nbFields = 0
+      filePrec = 0
 
 #ifdef RW_SAFE_MFLDS
       i = ILNBLNK(mFldsFile)
@@ -174,9 +181,6 @@ C-    here we have a problem
 c       IF ( nFl3D.EQ.0 ) nFl3D = nFlds
       ENDIF
 
-C-    set output arguments:
-      nbFields = nFlds
-
 C-    write to Standard Output
       IF ( debugLevel.GE.debLevA ) THEN
         ioUnit = standardMessageUnit
@@ -218,6 +222,9 @@ C-    write to Standard Output
 
       _END_MASTER( myThid )
       _BARRIER
+
+C-    set output arguments:
+      nbFields = nFlds
 
       RETURN
       END
