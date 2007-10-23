@@ -1,9 +1,28 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.897 2007/10/23 08:25:28 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.898 2007/10/23 16:19:50 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o new read/write pickup version:
+  - for now, only implemented for main (mdsio) pickup file.
+  - write out only what is needed to restart; merge pickup_nh , pickup_ph
+    and main pickup together.
+  - read meta file; read only what is needed to restart; stop if a field
+    is missing (if pickupStrictlyMatch=T, = the default) or try to restart
+    if it make sense (even if the restart is not perfect).
+  - if no meta file, assume that pickup to read corresponds exactly to
+    a pickup that would currently be written.
+  - read pickup written in the old format (until checkpoint59i) if it
+    recognizes an old meta file (no field-list).
+  - add a meta file in exp. which starts from a pickup: 2 cases:
+    a) minimal meta file (with just file precision) + pickupStrictlyMatch=F
+     e.g.: global_ocean.90x40x15/input/pickup.0000036000.meta
+    b) a meta file describing the content of the associated pickup file
+     e.g.: tutorial_global_oce_biogeo/input/pickup.0004248000.meta
+o pkg/mdsio & pkg/rw:
+  - new routine to read a meta file ; new set of routine to read
+    Multiple-fields file (with meta file).
 o added open boundary conditions capability for seaice HSNOW and HSALT
 
 checkpoint59i
