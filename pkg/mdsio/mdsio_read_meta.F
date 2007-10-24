@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_meta.F,v 1.1 2007/10/22 13:16:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_meta.F,v 1.2 2007/10/24 22:07:47 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -73,16 +73,19 @@ c     INTEGER map2gl(2)
 CEOP
 
 C     !FUNCTIONS
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
+      INTEGER  IFNBLNK, ILNBLNK
+      EXTERNAL IFNBLNK, ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     i,ii,iG,jG  :: loop indices
+C     i,j,ii      :: loop indices
+C     iG,jG       :: global tile indices
 C     iL,pL,iLm   :: length of character strings (temp. variables)
 C     nDimFil     :: number of dimensions (in meta file)
 C     nFldFil     :: number of fields in "fldList" (in meta file)
 C     nTimFil     :: number of time-specification in "timList" (meta file)
-      INTEGER i,ii,iL,pL,iLm, iG,jG
+      INTEGER i,j,ii
+      INTEGER iG,jG
+      INTEGER iL,pL,iLm
       INTEGER mUnit, errIO
       INTEGER nDimFil, nFldFil, nTimFil
       LOGICAL fileExist, globalFile
@@ -100,9 +103,9 @@ C--   Initialise output arguments
       fileIter  = 0
 c     map2gl(1) = 0
 c     map2gl(2) = 1
-      DO i=1,nDims
-       DO ii=1,3
-        dimList(ii,i) = 0
+      DO j=1,nDims
+       DO i=1,3
+        dimList(i,j) = 0
        ENDDO
       ENDDO
       DO i=1,nFlds
@@ -234,9 +237,23 @@ C-    For each dimension, read the following:
 C     1  global size  (ie. the size of the global dimension of all files)
 C     2  global start (ie. the global position of the start of this file)
 C     3  global end   (ie. the global position of the end   of this file)
-          DO ii=1,nDimFil
-           READ( mUnit, FMT='(3(1X,I5))', ERR=1002, END=1002 )
-     &                 (dimList(i,ii),i=1,3)
+          DO j=1,nDimFil
+c          READ( mUnit, FMT='(3(1X,I5))', ERR=1002, END=1002 )
+c    &                 (dimList(i,j),i=1,3)
+C-    This is to accomodate with the 2 versions of meta file:
+           READ( mUnit, FMT='(A)', END=1001 ) lineBuf
+           ii = IFNBLNK(lineBuf)
+           IF ( ii.GT.6 ) THEN
+C     Old version (S/R MDSWRITEMETA, file mdsio_writemeta.F):
+C          start each line with 10 blanks.
+            READ(lineBuf, FMT='(9X,3(1X,I5))', ERR=1002, END=1002 )
+     &                  (dimList(i,j),i=1,3)
+           ELSE
+C     New version (S/R MDS_WRITE_META, file mdsio_write_meta.F):
+C          without starting blanks.
+            READ(lineBuf, FMT='(3(1X,I5))',    ERR=1002, END=1002 )
+     &                  (dimList(i,j),i=1,3)
+           ENDIF
           ENDDO
           READ(  mUnit, FMT='(A)', END=1001 ) lineBuf
           iL = 0
@@ -337,9 +354,9 @@ C-    Read number of Fields
 C-    Read list of Fields
          IF ( nFldFil.GE.1 .AND. nFlds.GE.1 .AND.
      &        iL.GE.11 .AND. lineBuf(1:11).EQ.' fldList = ' ) THEN
-          DO ii=1,nFldFil,20
+          DO j=1,nFldFil,20
            READ( mUnit, FMT='(20(2X,A8,1X))', ERR=1004, END=1004 )
-     &          (fldList(i),i=ii,MIN(nFldFil,ii+19))
+     &          (fldList(i),i=j,MIN(nFldFil,j+19))
           ENDDO
           READ(  mUnit, FMT='(A)', END=1001 ) lineBuf
           iL = 0
@@ -350,7 +367,7 @@ C--   End of reading file line per line
  1004   CONTINUE
         WRITE(msgBuf,'(2(A,I4),A)')
      &    ' MDS_READ_META: error reading Fields: nFlds=',
-     &     nFldFil, ' , ii=', ii
+     &     nFldFil, ' , j=', j
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R MDS_READ_META'
  1003   CONTINUE
@@ -361,10 +378,11 @@ C--   End of reading file line per line
         CALL PRINT_ERROR(lineBuf, myThid )
         STOP 'ABNORMAL END: S/R MDS_READ_META'
  1002   CONTINUE
-        WRITE(msgBuf,'(2(A,I3),A)')
+        WRITE(msgBuf,'(3(A,I3),A)')
      &    ' MDS_READ_META: error reading Dim-List: nDims=',
-     &     nDimFil, ' , ii=', ii
+     &     nDimFil, ' , j=', j, ' , ii=', ii
         CALL PRINT_ERROR( msgBuf, myThid )
+        CALL PRINT_ERROR(lineBuf, myThid )
         STOP 'ABNORMAL END: S/R MDS_READ_META'
  1001   CONTINUE
 
