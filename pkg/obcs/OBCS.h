@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.13 2007/10/23 21:45:51 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.14 2007/10/24 01:02:13 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -180,12 +180,12 @@ C
       _RL OBEh0 (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBEa1 (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBEh1 (1-Oly:sNy+Oly,nSx,nSy)
-      _RL OBEsl  (1-Olx:sNx+Olx,nSx,nSy)
-      _RL OBEsn  (1-Olx:sNx+Olx,nSx,nSy)
-      _RL OBEsl0 (1-Olx:sNx+Olx,nSx,nSy)
-      _RL OBEsn0 (1-Olx:sNx+Olx,nSx,nSy)
-      _RL OBEsl1 (1-Olx:sNx+Olx,nSx,nSy)
-      _RL OBEsn1 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBEsl  (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBEsn  (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBEsl0 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBEsn0 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBEsl1 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBEsn1 (1-Oly:sNy+Oly,nSx,nSy)
 #endif /* ALLOW_SEAICE */
 #endif /* ALLOW_OBCS_EAST */
 
@@ -218,12 +218,12 @@ C
       _RL OBWh0 (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBWa1 (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBWh1 (1-Oly:sNy+Oly,nSx,nSy)
-      _RL OBWsl  (1-Olx:sNx+Olx,nSx,nSy)
-      _RL OBWsn  (1-Olx:sNx+Olx,nSx,nSy)
-      _RL OBWsl0 (1-Olx:sNx+Olx,nSx,nSy)
-      _RL OBWsn0 (1-Olx:sNx+Olx,nSx,nSy)
-      _RL OBWsl1 (1-Olx:sNx+Olx,nSx,nSy)
-      _RL OBWsn1 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBWsl  (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWsn  (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWsl0 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWsn0 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWsl1 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWsn1 (1-Oly:sNy+Oly,nSx,nSy)
 #endif /* ALLOW_SEAICE */
 #endif /* ALLOW_OBCS_WEST */
 
