@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.12 2007/05/14 19:08:22 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.13 2007/10/24 19:55:20 dfer Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -73,8 +73,9 @@ C     because it is needed by KPP_TRANSPORT_PTR.
      I                        bi,bj,iMin,iMax,jMin,jMax,k,
      I                        iTracer,
      I                        myTime,myIter, myThid)
-#else /* ALLOW_GCHEM */
-       IF ( .NOT. useGCHEM .AND. k .EQ. kSurface ) THEN
+#endif /* ALLOW_GCHEM */
+
+      IF ( k .EQ. kSurface ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
           gPtracer(i,j,k,bi,bj) = gPtracer(i,j,k,bi,bj)
@@ -82,8 +83,7 @@ C     because it is needed by KPP_TRANSPORT_PTR.
      &           *recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
          ENDDO
         ENDDO
-       ENDIF
-#endif /* ALLOW_GCHEM */
+      ENDIF
 
 #ifdef ALLOW_RBCS
        if (useRBCptracers) then
