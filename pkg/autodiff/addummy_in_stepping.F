@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.40 2007/10/08 23:50:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.41 2007/10/25 18:41:04 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -134,26 +134,6 @@ C--     Read IO error counter
         CALL WRITE_FLD_XY_RL ( 'ADJqnet.',suff, adqnet, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJempr.',suff, adempmr, myIter, myThid)
 
-#ifdef ALLOW_SEAICE
-        CALL MDSWRITEFIELD(
-     &       'ADJarea.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       3,  adarea, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJheff.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       3,  adheff, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJhsnow.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adhsnow, 1, myIter, myThid )
-# ifdef SEAICE_ALLOW_DYNAMICS
-        CALL MDSWRITEFIELD(
-     &       'ADJuice.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       3,  aduice, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJvice.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       3,  advice, 1, myIter, myThid )
-# endif
-#endif
-c
 #ifdef ALLOW_DIFFKR_CONTROL
         CALL WRITE_FLD_XYZ_RL ( 'ADJdiffkr.',suff, addiffkr,
      &       myIter, myThid)
@@ -179,6 +159,14 @@ c
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
         CALL WRITE_FLD_XY_RL ( 'ADJbottomdrag.',suff,
      & adbottomdragfld, myIter, myThid)
+#endif
+
+#ifdef ALLOW_EXF
+        IF ( useEXF ) CALL EXF_AD_DUMP( mytime, myiter, myThid )
+#endif
+
+#ifdef ALLOW_SEAICE
+        IF ( useSEAICE ) CALL SEAICE_AD_DUMP( mytime, myiter, myThid )
 #endif
 
        _END_MASTER( myThid )
@@ -219,31 +207,6 @@ c
 #ifdef ALLOW_KAPGM_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &         'adkapgm', adkapgm, myThid)
-#endif
-c
-
-#ifdef ALLOW_SEAICE
-c
-          CALL MNC_CW_SET_UDIM('adseaice', -1, myThid)
-          CALL MNC_CW_RL_W_S('D','adseaice',0,0,'T',myTime,myThid)
-          CALL MNC_CW_SET_UDIM('adseaice', 0, myThid)
-          CALL MNC_CW_I_W_S('I','adseaice',0,0,'iter',myIter,myThid)
-          CALL MNC_CW_RL_W_S('D','adseaice',0,0,'model_time',myTime,
-     &         myThid)
-c
-          CALL MNC_CW_RL_W('D','adseaice',0,0,'adarea',
-     &         adarea, myThid)
-          CALL MNC_CW_RL_W('D','adseaice',0,0,'adheff',
-     &         adheff, myThid)
-          CALL MNC_CW_RL_W('D','adseaice',0,0,'adhsnow',
-     &         adhsnow, myThid)
-# ifdef SEAICE_ALLOW_DYNAMICS
-          CALL MNC_CW_RL_W('D','adseaice',0,0,'aduice',
-     &         aduice, myThid)
-          CALL MNC_CW_RL_W('D','adseaice',0,0,'advice',
-     &         advice, myThid)
-# endif
-c
 #endif
 
         ENDIF
