@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.15 2007/08/24 16:06:25 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.16 2007/10/25 18:38:31 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -68,7 +68,7 @@ C  SURA                   :: tendency of alkalinity due to freshwater
 C  SURC                   :: tendency of DIC due to air-sea exchange
 C                            and virtual flux
 C  SURO                   :: tendency of O2 due to air-sea exchange
-C  BIO                    :: tendency of PO4 due to biological productivity,
+C  GPO4                   :: tendency of PO4 due to biological productivity,
 C                            exchange with DOP pool and reminerization
 C  CAR                    :: carbonate changes due to biological 
 C                             productivity and reminerization
@@ -83,8 +83,6 @@ c  freefe                 :: iron not bound to ligand
       _RL  SURA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  SURC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  SURO(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  BIO(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  BIO_kar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  CAR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  BIOac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  pflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -112,11 +110,7 @@ CEOP
            GALK(i,j,k) =0. _d 0
            GPO4(i,j,k) =0. _d 0
            GDOP(i,j,k) =0. _d 0
-           SURA(i,j)   =0. _d 0
-           SURC(i,j)   =0. _d 0
            CAR(i,j,k)  =0. _d 0
-           BIO(i,j,k)  =0. _d 0
-           BIO_kar(i,j,k) =0. _d 0
            BIOac(i,j,k)   =0. _d 0
            pflux(i,j,k)   =0. _d 0
            exportflux(i,j,k)=0. _d 0
@@ -131,6 +125,13 @@ CEOP
           ENDDO
          ENDDO
        ENDDO
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           SURA(i,j)   =0. _d 0
+           SURC(i,j)   =0. _d 0
+           SURO(i,j)   =0. _d 0
+          ENDDO
+         ENDDO
 
 c carbon air-sea interaction
        CALL DIC_SURFFORCING( PTR_DIC, PTR_ALK, PTR_PO4, SURC,
@@ -196,42 +197,49 @@ c add all tendencies for PO4, DOP, ALK, DIC
        DO k=1,Nr
          DO j=jmin,jmax
           DO i=imin,imax
-           bio(i,j,k)=-BIOac(i,j,k)+pflux(i,j,k)
+
+           GPO4(i,j,k)=-BIOac(i,j,k)+pflux(i,j,k)
      &         + maskC(i,j,k,bi,bj)*Kdopremin*PTR_DOP(i,j,k)
-           car(i,j,k)=-BIOac(i,j,k)* R_cp*rain_ratio(i,j,bi,bj)*
-     &                (1.0-DOPfraction)+cflux(i,j,k)
-           GPO4(i,j,k)=bio(i,j,k)
+
+           car(i,j,k) =-BIOac(i,j,k)* R_CP*rain_ratio(i,j,bi,bj)*
+     &                (1. _d 0-DOPfraction)+cflux(i,j,k)
+
            GDOP(i,j,k)=+BIOac(i,j,k)*DOPfraction
      &         - maskC(i,j,k,bi,bj)*Kdopremin*PTR_DOP(i,j,k)
-           GALK(i,j,k)=+2.d0*car(i,j,k)-R_NP*bio(i,j,k)
-           BIO_kar(i,j,k)=R_NP*bio(i,j,k)
-           GDIC(i,j,k)=car(i,j,k)+R_CP*bio(i,j,k)
+
+           GALK(i,j,k)=+2. _d 0 *car(i,j,k)-R_NP*GPO4(i,j,k)
+
+           GDIC(i,j,k)=car(i,j,k)+R_CP*GPO4(i,j,k)
+
 #ifdef ALLOW_O2
-           if (PTR_O2(i,j,k).gt.o2crit) then
-             GO2(i,j,k)=R_OP*bio(i,j,k)
+           if (PTR_O2(i,j,k).GT.O2crit) then
+             GO2(i,j,k)= R_OP*GPO4(i,j,k)
            else
-             GO2(i,j,k)=0.d0
+             GO2(i,j,k)= 0. _d 0
            endif
 #endif
 #ifdef ALLOW_FE
-           GFE(i,j,k)=R_FeP*bio(i,j,k)
+           GFE(i,j,k) =R_FeP*GPO4(i,j,k)
      &             -Kscav*freefe(i,j,k)
 #endif
-           IF (K.eq.1) then
+          ENDDO
+         ENDDO
+       ENDDO
+
+         DO j=jmin,jmax
+          DO i=imin,imax
                GALK(i,j,1)=GALK(i,j,1)+SURA(i,j)
                GDIC(i,j,1)=GDIC(i,j,1)+SURC(i,j)
 #ifdef ALLOW_O2
-               GO2(i,j,1)=GO2(i,j,1)+SURO(i,j)
+               GO2(i,j,1) =GO2(i,j,1)+SURO(i,j)
 #endif
 #ifdef ALLOW_FE
                GFE(i,j,1)=GFE(i,j,1)+alpfe*
      &                    InputFe(i,j,bi,bj)*recip_drF(1)
      &                       *recip_hFacC(i,j,1,bi,bj)
 #endif
-           ENDIF
           ENDDO
          ENDDO
-       ENDDO
 
 
 C update
