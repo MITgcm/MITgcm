@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.7 2007/10/24 19:50:26 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.8 2007/10/25 13:11:59 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -111,8 +111,8 @@ C        local surface tracer
             surfaceForcingPtr(i,j,bi,bj,iTrc) =
      &          surfaceForcingPtr(i,j,bi,bj,iTrc)
      &        + EmPmR(i,j,bi,bj)
-     &            *( pTracer(i,j,ks,bi,bj,iTrc) - PtRACERS_EvPrRn(iTrc) )
-     &            *mass2rUnit
+     &          *( pTracer(i,j,ks,bi,bj,iTrc) - PtRACERS_EvPrRn(iTrc) )
+     &          *mass2rUnit
            ENDDO
           ENDDO
          ENDIF
