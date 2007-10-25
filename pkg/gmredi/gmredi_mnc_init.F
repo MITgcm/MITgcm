@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_mnc_init.F,v 1.1 2005/07/29 18:50:00 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_mnc_init.F,v 1.2 2007/10/25 12:08:00 mlosch Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -73,7 +73,7 @@ C    &       'coordinates','XC YC RC iter', myThid)
      &       'GM Tensor Kwz is K_33 element, Z direction at W point',
      &       myThid)
 
-        CALL MNC_CW_ADD_VNAME('VisbK','Cen_xy_Hn__C__t',4,5,myThid)
+        CALL MNC_CW_ADD_VNAME('VisbK','Cen_xy_Hn__-__t',3,4,myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('VisbK','units','m^2/s', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('VisbK','description',
      &       'GM mixing/stirring coef after Visbeck et al.',
