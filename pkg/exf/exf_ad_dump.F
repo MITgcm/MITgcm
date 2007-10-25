@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_dump.F,v 1.1 2007/10/25 18:41:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_dump.F,v 1.2 2007/10/25 19:08:08 heimbach Exp $
 C $Name:  $
 
+#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #include "EXF_OPTIONS.h"
 
@@ -94,10 +95,10 @@ C--     Read IO error counter
      &       1,  adsflux, 1, myIter, myThid )
         CALL MDSWRITEFIELD(
      &       'ADJustress.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  ustress, 1, myIter, myThid )
+     &       1,  adustress, 1, myIter, myThid )
         CALL MDSWRITEFIELD(
      &       'ADJvstress.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  vstress, 1, myIter, myThid )
+     &       1,  advstress, 1, myIter, myThid )
 
 # ifdef ALLOW_ATM_TEMP
         CALL MDSWRITEFIELD(
@@ -130,19 +131,19 @@ C--     Read IO error counter
      &       1,  adlwdown, 1, myIter, myThid )
 # endif
 # ifdef ATMOSPHERIC_LOADING
-        CALL MDSWRITEFIELD(
-     &       'ADJapressure.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adapressure, 1, myIter, myThid )
+cph        CALL MDSWRITEFIELD(
+cph     &       'ADJapressure.'//suff, writeBinaryPrec, globalFiles, 'RL',
+cph     &       1,  adapressure, 1, myIter, myThid )
 # endif
 # if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-        CALL MDSWRITEFIELD(
-     &       'ADJswflux.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adswflux, 1, myIter, myThid )
+cph        CALL MDSWRITEFIELD(
+cph     &       'ADJswflux.'//suff, writeBinaryPrec, globalFiles, 'RL',
+cph     &       1,  adswflux, 1, myIter, myThid )
 # endif
 # if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
-        CALL MDSWRITEFIELD(
-     &       'ADJevap.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adevap, 1, myIter, myThid )
+cph        CALL MDSWRITEFIELD(
+cph     &       'ADJevap.'//suff, writeBinaryPrec, globalFiles, 'RL',
+cph     &       1,  adevap, 1, myIter, myThid )
 # endif
 
        _END_MASTER( myThid )
