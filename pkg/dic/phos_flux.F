@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/phos_flux.F,v 1.6 2007/10/09 00:01:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/phos_flux.F,v 1.7 2007/10/25 16:34:28 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 C !ROUTINE: PHOS_FLUX
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE PHOS_FLUX( bioac, pflux, exportflux,
+      SUBROUTINE PHOS_FLUX( BIOac, pflux, exportflux,
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
@@ -28,18 +28,17 @@ C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
 C  myIter               :: current timestep
 C  myTime               :: current time
-C  bioac                :: biological productivity
+C  BIOac                :: biological productivity
       INTEGER myIter
       _RL myTime
       INTEGER myThid
-      _RL  bioac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-
+      _RL  BIOac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      INTEGER imin, imax, jmin, jmax, bi, bj
 
 C !OUTPUT PARAMETERS: ===================================================
-C  pflux               :: changes to PO4 due to flux and reminerlization
-      _RL  pflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+C  pflux                :: changes to PO4 due to flux and reminerlization
+      _RL pflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL exportflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      INTEGER imin, imax, jmin, jmax, bi, bj
 
 #ifdef ALLOW_PTRACERS
 #ifdef DIC_BIOTIC
@@ -47,57 +46,71 @@ C  pflux               :: changes to PO4 due to flux and reminerlization
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k                  :: loop indices
 c  ko                     :: loop-within-loop index
-c bexport                :: flux of phosphurous from base each "productive"
+c  bexport                :: flux of phosphorus from base each "productive"
 c                            layer
-c depth_u, depth_l        :: depths of upper and lower interfaces
-c flux_u, flux_l          :: flux through upper and lower interfaces
-c zbase                   :: depth of bottom of current productive layer
-       _RL  zbase
+c  depth_u, depth_l       :: depths of upper and lower interfaces
+c  flux_u, flux_l         :: flux through upper and lower interfaces
+c  zbase                  :: depth of bottom of current productive layer
+       _RL zbase
        _RL bexport(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-       INTEGER I,J,k, ko
+       INTEGER I,J,k, ko, kop1, maskp1
        _RL depth_u, depth_l
        _RL flux_u, flux_l
 CEOP
 
-
-c
-c calculate PO4 flux from base of each layer
+C- Calculate PO4 flux from base of each layer
        DO j=jmin,jmax
         DO i=imin,imax
          DO k=1,nlev
-          if (hFacC(i,j,k,bi,bj).gt.0.d0) then
-c flux out of layer k
-           bexport(i,j)=bioac(i,j,k)*(1.0-DOPfraction)*
+          IF (hFacC(i,j,k,bi,bj).gt.0. _d 0) THEN
+C- flux out of layer k
+           bexport(i,j)=BIOac(i,j,k)*(1. _d 0-DOPfraction)*
      &                  drF(k)*hFacC(i,j,k,bi,bj)
-c calculate flux to each layer from base of k
-           zbase=-rF(k+1)
-           Do ko=k+1,Nr
-            if (hFacC(i,j,ko,bi,bj).gt.0.d0) then
-              depth_u=-rF(ko)
+C- calculate flux to each layer from base of k
+
+C- if no layer below initial layer (because of bottom or
+C- topography), then remineralize in place
+
+           IF (k.EQ.Nr) THEN
+             pflux(i,j,k)=pflux(i,j,k)
+     &                  +BIOac(i,j,k)*(1. _d 0-DOPfraction) 
+           ELSEIF (hFacC(i,j,k+1,bi,bj).EQ.0. _d 0) THEN
+             pflux(i,j,k)=pflux(i,j,k)
+     &                  +BIOac(i,j,k)*(1. _d 0-DOPfraction)
+           ELSE
+
+C- else, let's flux it downward
+
+             zbase=-rF(k+1)
+             DO ko=k+1,Nr
+C- Upper flux
+cdfer              depth_u=-rF(ko)
+cdfer              flux_u=bexport(i,j)*((depth_u/zbase)**(-Kremin))
+              IF (ko.EQ.k+1) THEN
+                 depth_u = zbase
+                 flux_u  = bexport(i,j)
+              ELSE
+                 depth_u = depth_l
+                 flux_u  = flux_l
+              ENDIF
+
+C- Lower flux (no flux to ocean bottom)
               depth_l=depth_u+
      &                  drF(ko)*hFacC(i,j,ko,bi,bj)
-c
-              flux_u=bexport(i,j)*((depth_u/zbase)**(-Kremin))
-c no flux to ocean bottom
-              if (ko.eq.Nr) then
-                 flux_l=0.d0
-              else
-                 if (hFacC(i,j,ko+1,bi,bj).eq.0.d0) then
-                   flux_l=0.d0
-                 else
-                   flux_l=bexport(i,j)*((depth_l/zbase)**(-Kremin))
-                 endif
-              endif
+              kop1 = MIN(Nr,ko+1)
+              maskp1=1.
+              IF (ko.GE.Nr) maskp1=0.
+              flux_l=bexport(i,j)*((depth_l/zbase)**(-Kremin))
+     &              *maskp1*maskC(i,j,kop1,bi,bj)
+
               pflux(i,j,ko)=pflux(i,j,ko) +
-     &          ( (Flux_u-Flux_l)/(drF(ko)*hFacC(i,j,ko,bi,bj)) )
-              exportflux(i,j,ko)=exportflux(i,j,ko)+Flux_u
-            else
-c if no layer below initial layer, remineralize in place
-               if (ko.eq.k+1) pflux(i,j,k)=pflux(i,j,k)
-     &                  +bioac(i,j,k)*(1.0-DOPfraction)
-            endif
-           ENDDO
-          endif
+     &          (flux_u-flux_l)*recip_drF(ko)*recip_hFacC(i,j,ko,bi,bj)
+              exportflux(i,j,ko)=exportflux(i,j,ko)+flux_u
+
+             ENDDO
+
+           ENDIF
+          ENDIF
          ENDDO
         ENDDO
        ENDDO
