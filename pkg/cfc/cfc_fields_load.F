@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.7 2007/10/12 21:24:07 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.8 2007/10/25 13:14:41 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -21,6 +21,12 @@ c#include "PTRACERS_SIZE.h"
 c#include "PTRACERS.h"
 #include "GCHEM.h"
 #include "CFC.h"
+#ifdef ALLOW_EXF
+# include "EXF_FIELDS.h"
+#endif 
+#ifdef ALLOW_SEAICE
+# include "SEAICE.h"
+#endif 
 
 C     == Routine arguments ==
       INTEGER myIter
@@ -29,12 +35,17 @@ C     == Routine arguments ==
 
 #ifdef ALLOW_PTRACERS
 C     == Local variables ==
+#ifndef ALLOW_EXF
       COMMON /cfc_load/
      &    wspeed0, wspeed1, ice0, ice1, atmosp0,
      &    atmosp1
       _RS wspeed0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS wspeed1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS wind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#else
+      COMMON /cfc_load/
+     &    ice0, ice1, atmosp0, atmosp1
+#endif
       _RS ice0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS ice1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS atmosp0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -50,12 +61,16 @@ c
 C First call requires that we initialize everything to zero for safety
 cQQQ need to check timing
        IF ( myIter .EQ. nIter0 ) THEN
+#ifndef ALLOW_EXF
          CALL LEF_ZERO( wspeed0,myThid )
          CALL LEF_ZERO( wspeed1,myThid )
+#endif
          CALL LEF_ZERO( atmosp0,myThid )
          CALL LEF_ZERO( atmosp1,myThid )
+#ifndef ALLOW_SEAICE
          CALL LEF_ZERO( ice0,myThid )
          CALL LEF_ZERO( ice1,myThid )
+#endif
          _BARRIER
        ENDIF
 
@@ -98,32 +113,40 @@ C      data for the period ahead and the period behind myTime.
      &                 myTime,myIter
        _END_MASTER(myThid)
 
-       IF ( WindFile .NE. ' '  ) THEN
+#ifndef ALLOW_EXF
+      IF ( WindFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( WindFile,wspeed0,intime0,
      &        myIter,myThid )
          CALL READ_REC_XY_RS( WindFile,wspeed1,intime1,
      &        myIter,myThid )
        ENDIF
-       IF ( AtmospFile .NE. ' '  ) THEN
+#endif
+      IF ( AtmospFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( AtmospFile,atmosp0,intime0,
      &        myIter,myThid )
          CALL READ_REC_XY_RS( AtmospFile,atmosp1,intime1,
      &        myIter,myThid )
        ENDIF 
+#ifndef ALLOW_SEAICE
        IF ( IceFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( IceFile,ice0,intime0,
      &       myIter,myThid )
          CALL READ_REC_XY_RS( IceFile,ice1,intime1,
      &       myIter,myThid )
        ENDIF
+#endif
 
 C
+#ifndef ALLOW_EXF
        _EXCH_XY_R4(wspeed0, myThid )
        _EXCH_XY_R4(wspeed1, myThid )
+#endif
        _EXCH_XY_R4(atmosp0, myThid )
        _EXCH_XY_R4(atmosp1, myThid )
+#ifndef ALLOW_SEAICE
        _EXCH_XY_R4(ice0, myThid )
        _EXCH_XY_R4(ice1, myThid )
+#endif
 C
        ENDIF
 
@@ -131,6 +154,11 @@ C
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
+#ifdef ALLOW_EXF
+C     sh = max(wspeed,umin), with default umin=0.5m/s
+C           pisvel(i,j,bi,bj)=(0.31 _d 0*wspeed(i,j,bi,bj)**2)/3.6 _d 5
+           pisvel(i,j,bi,bj)=(0.31 _d 0*sh(i,j,bi,bj)**2)/3.6 _d 5
+#else
            IF ( WindFile .NE. ' '  ) THEN
              WIND(i,j,bi,bj)    = bWght*wspeed0(i,j,bi,bj)
      &                        +aWght*wspeed1(i,j,bi,bj)
@@ -141,18 +169,23 @@ c calculate piston velocity
 c QQ: note - we should have wind speed variance in here
 c following Wannikof (1992)
            pisvel(i,j,bi,bj)=(0.31 _d 0*wind(i,j,bi,bj)**2)/3.6 _d 5
+#endif /* ALLOW_EXF */
            IF ( AtmospFile .NE. ' '  ) THEN
              ATMOSP(i,j,bi,bj)    = bWght*atmosp0(i,j,bi,bj)
      &                        +aWght*atmosp1(i,j,bi,bj)
            ELSE
              ATMOSP(i,j,bi,bj) = maskC(i,j,1,bi,bj)
            ENDIF
+#ifdef ALLOW_SEAICE
+           FIce(I,J,bi,bj) = AREA(I,J,1,bi,bj)
+#else
            IF ( IceFile .NE. ' '  ) THEN
             FIce(i,j,bi,bj)    = bWght*ice0(i,j,bi,bj)
      &                          +aWght*ice1(i,j,bi,bj)
            ELSE
             FIce(i,j,bi,bj) =0. _d 0
            ENDIF
+#endif /* ALLOW_SEAICE */
           ENDDO
          ENDDO
         ENDDO
