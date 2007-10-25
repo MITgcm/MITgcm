@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/code/ptracers_forcing_surf.F,v 1.3 2007/10/15 15:29:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/code/ptracers_forcing_surf.F,v 1.4 2007/10/25 20:00:22 dfer Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -58,7 +58,6 @@ C Example of how to add forcing at the surface
       DO iTrc=1,PTRACERS_numInUse
           DO j = jMin, jMax
            DO i = iMin, iMax
-C     Restoring to zero at the surface on a 10-day timescale
              surfaceForcingPtr(i,j,bi,bj,iTrc) =
      &        + 1. _d 0 / (10. _d 0 * 86400. _d 0)
      &                  * ( 0. _d 0 - pTracer(i,j,ks,bi,bj,iTrc) )
@@ -90,8 +89,64 @@ c
          ENDIF
 
        ENDDO
-      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      ELSE
+#else /* EXACT_CONSERV */
+      IF (.TRUE.) THEN
 #endif /* EXACT_CONSERV */
+
+C--   EmPmR does not really affect the water column height (for tracer budget)
+C     and is converted to a salt tendency.
+
+       IF (convertFW2Salt .EQ. -1.) THEN
+C-    use local surface tracer field to calculate forcing term:
+
+        DO iTrc=1,PTRACERS_numInUse
+
+         IF (PtRACERS_EvPrRn(iTrc).NE.UNSET_RL) THEN
+C        account for Rain/Evap tracer content (PtRACERS_EvPrRn) using
+C        local surface tracer
+          DO j = jMin, jMax
+           DO i = iMin, iMax
+            surfaceForcingPtr(i,j,bi,bj,iTrc) =
+     &          surfaceForcingPtr(i,j,bi,bj,iTrc)
+     &        + EmPmR(i,j,bi,bj)
+     &          *( pTracer(i,j,ks,bi,bj,iTrc) - PtRACERS_EvPrRn(iTrc) )
+     &          *mass2rUnit
+           ENDDO
+          ENDDO
+         ENDIF
+
+        ENDDO
+
+       ELSE
+C-    use uniform tracer value to calculate forcing term:
+
+        DO iTrc=1,PTRACERS_numInUse
+
+         IF (PtRACERS_EvPrRn(iTrc).NE.UNSET_RL) THEN
+C     account for Rain/Evap tracer content (PtRACERS_EvPrRn) assuming uniform
+C     surface tracer (=PTRACERS_ref)
+          DO j = jMin, jMax
+           DO i = iMin, iMax
+            surfaceForcingPtr(i,j,bi,bj,iTrc) =
+     &          surfaceForcingPtr(i,j,bi,bj,iTrc)
+     &        + EmPmR(i,j,bi,bj)
+     &            *( PTRACERS_ref(ks,iTrc) - PtRACERS_EvPrRn(iTrc) )
+     &            *mass2rUnit
+           ENDDO
+          ENDDO
+         ENDIF
+
+        ENDDO
+
+C-    end local-surface-tracer / uniform-value distinction
+       ENDIF
+
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #endif /* ALLOW_PTRACERS */
 
