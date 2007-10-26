@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.22 2007/10/23 08:25:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.23 2007/10/26 02:00:47 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -147,6 +147,12 @@ C     == Local variables ==
          OBNsn0(I,bi,bj)=0. _d 0
          OBNsl1(I,bi,bj)=0. _d 0
          OBNsn1(I,bi,bj)=0. _d 0
+         OBNuice (I,bi,bj)=0. _d 0
+         OBNvice (I,bi,bj)=0. _d 0
+         OBNuice0(I,bi,bj)=0. _d 0
+         OBNvice0(I,bi,bj)=0. _d 0
+         OBNuice1(I,bi,bj)=0. _d 0
+         OBNvice1(I,bi,bj)=0. _d 0
 #endif /* ALLOW_OBCS_NORTH */
 #ifdef ALLOW_OBCS_SOUTH
          OBSa (I,bi,bj)=0. _d 0
@@ -161,6 +167,12 @@ C     == Local variables ==
          OBSsn0(I,bi,bj)=0. _d 0
          OBSsl1(I,bi,bj)=0. _d 0
          OBSsn1(I,bi,bj)=0. _d 0
+         OBSuice (I,bi,bj)=0. _d 0
+         OBSvice (I,bi,bj)=0. _d 0
+         OBSuice0(I,bi,bj)=0. _d 0
+         OBSvice0(I,bi,bj)=0. _d 0
+         OBSuice1(I,bi,bj)=0. _d 0
+         OBSvice1(I,bi,bj)=0. _d 0
 #endif /* ALLOW_OBCS_SOUTH */
         ENDDO
         DO J=1-Oly,sNy+Oly
@@ -177,6 +189,12 @@ C     == Local variables ==
          OBEsn0(I,bi,bj)=0. _d 0
          OBEsl1(I,bi,bj)=0. _d 0
          OBEsn1(I,bi,bj)=0. _d 0
+         OBEuice (I,bi,bj)=0. _d 0
+         OBEvice (I,bi,bj)=0. _d 0
+         OBEuice0(I,bi,bj)=0. _d 0
+         OBEvice0(I,bi,bj)=0. _d 0
+         OBEuice1(I,bi,bj)=0. _d 0
+         OBEvice1(I,bi,bj)=0. _d 0
 #endif /* ALLOW_OBCS_EAST */
 #ifdef ALLOW_OBCS_WEST
          OBWa (J,bi,bj)=0. _d 0
@@ -191,6 +209,12 @@ C     == Local variables ==
          OBWsn0(I,bi,bj)=0. _d 0
          OBWsl1(I,bi,bj)=0. _d 0
          OBWsn1(I,bi,bj)=0. _d 0
+         OBWuice (I,bi,bj)=0. _d 0
+         OBWvice (I,bi,bj)=0. _d 0
+         OBWuice0(I,bi,bj)=0. _d 0
+         OBWvice0(I,bi,bj)=0. _d 0
+         OBWuice1(I,bi,bj)=0. _d 0
+         OBWvice1(I,bi,bj)=0. _d 0
 #endif /* ALLOW_OBCS_WEST */
         ENDDO
 #endif /* ALLOW_SEAICE */

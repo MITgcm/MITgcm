@@ -50,6 +50,8 @@ C     READ N and S OB arrays
        CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNh,iRec*Nr+2,myThid)
        CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNsl,iRec*Nr+3,myThid)
        CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNsn,iRec*Nr+4,myThid)
+       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNuice,iRec*Nr+5,myThid)
+       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNvice,iRec*Nr+6,myThid)
       ENDIF
 # endif
 #endif
@@ -71,6 +73,8 @@ C     READ N and S OB arrays
        CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSh,iRec*Nr+2,myThid)
        CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSsl,iRec*Nr+3,myThid)
        CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSsn,iRec*Nr+4,myThid)
+       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSuice,iRec*Nr+5,myThid)
+       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSvice,iRec*Nr+6,myThid)
       ENDIF
 # endif
 #endif
@@ -93,6 +97,8 @@ C     READ E and W OB arrays
        CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEh,iRec*Nr+2,myThid)
        CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEsl,iRec*Nr+3,myThid)
        CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEsn,iRec*Nr+4,myThid)
+       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEuice,iRec*Nr+5,myThid)
+       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEvice,iRec*Nr+6,myThid)
       ENDIF
 # endif
 #endif
@@ -114,6 +120,8 @@ C     READ E and W OB arrays
        CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWh,iRec*Nr+2,myThid)
        CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWsl,iRec*Nr+3,myThid)
        CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWsn,iRec*Nr+4,myThid)
+       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWuice,iRec*Nr+5,myThid)
+       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWvice,iRec*Nr+6,myThid)
       ENDIF
 # endif
 #endif
@@ -213,6 +221,10 @@ C     Write N and S OB arrays
        CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNh,iRec+2,myIt,myThid)
        CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNsl,iRec+3,myIt,myThid)
        CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNsn,iRec+4,myIt,myThid)
+       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNuice,iRec+5,myIt,
+     &      myThid)
+       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNvice,iRec+6,myIt,
+     &      myThid)
       ENDIF
 # endif
 #endif
@@ -238,6 +250,10 @@ C     Write N and S OB arrays
        CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSh,iRec+2,myIt,myThid)
        CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSsl,iRec+3,myIt,myThid)
        CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSsn,iRec+4,myIt,myThid)
+       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSuice,iRec+5,myIt,
+     &      myThid)
+       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSvice,iRec+6,myIt,
+     &      myThid)
       ENDIF
 # endif
 #endif
@@ -264,6 +280,10 @@ C     Write E and W OB arrays
        CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEh,iRec+2,myIt,myThid)
        CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEsl,iRec+3,myIt,myThid)
        CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEsn,iRec+4,myIt,myThid)
+       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEuice,iRec+5,myIt,
+     &      myThid)
+       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEvice,iRec+6,myIt,
+     &      myThid)
       ENDIF
 # endif
 #endif
@@ -289,6 +309,10 @@ C     Write E and W OB arrays
        CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWh,iRec+2,myIt,myThid)
        CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWsl,iRec+3,myIt,myThid)
        CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWsn,iRec+4,myIt,myThid)
+       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWuice,iRec+5,myIt,
+     &      myThid)
+       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWvice,iRec+6,myIt,
+     &      myThid)
       ENDIF
 # endif
 #endif

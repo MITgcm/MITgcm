@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.15 2007/10/23 08:25:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.16 2007/10/26 02:00:48 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -46,6 +46,8 @@ C     iUnit       - Work variable for IO unit number
      &          OBWuFile,OBWvFile,OBWtFile,OBWsFile,OBWaFile,OBWhFile,
      &          OBNslFile,OBSslFile,OBEslFile,OBWslFile,
      &          OBNsnFile,OBSsnFile,OBEsnFile,OBWsnFile,
+     &          OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
+     &          OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile,
      &          useOBCSsponge, useOBCSbalance, useOBCSprescribe,
      &          OBCSprintDiags
 #ifdef ALLOW_PTRACERS
@@ -104,6 +106,8 @@ C--   Default flags and values for OBCS
       OBNaFile = ' '
       OBNslFile = ' '
       OBNsnFile = ' '
+      OBNuiceFile = ' '
+      OBNviceFile = ' '
       OBNhFile = ' '
       OBSuFile = ' '
       OBSvFile = ' '
@@ -113,6 +117,8 @@ C--   Default flags and values for OBCS
       OBShFile = ' '
       OBSslFile = ' '
       OBSsnFile = ' '
+      OBSuiceFile = ' '
+      OBSviceFile = ' '
       OBEuFile = ' '
       OBEvFile = ' '
       OBEtFile = ' '
@@ -121,6 +127,8 @@ C--   Default flags and values for OBCS
       OBEhFile = ' '
       OBEslFile = ' '
       OBEsnFile = ' '
+      OBEuiceFile = ' '
+      OBEviceFile = ' '
       OBWuFile = ' '
       OBWvFile = ' '
       OBWtFile = ' '
@@ -129,6 +137,8 @@ C--   Default flags and values for OBCS
       OBWhFile = ' '
       OBWslFile = ' '
       OBWsnFile = ' '
+      OBWuiceFile = ' '
+      OBWviceFile = ' '
 #ifdef ALLOW_PTRACERS
       DO iTracer = 1, PTRACERS_num
        OBNptrFile(iTracer) = ' '

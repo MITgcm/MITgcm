@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.898 2007/10/23 16:19:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.899 2007/10/26 02:00:47 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -23,7 +23,8 @@ o new read/write pickup version:
 o pkg/mdsio & pkg/rw:
   - new routine to read a meta file ; new set of routine to read
     Multiple-fields file (with meta file).
-o added open boundary conditions capability for seaice HSNOW and HSALT
+o added open boundary conditions capability for seaice
+    HSNOW, HSALT, UICE, and VICE
 
 checkpoint59i
 o adjoint:

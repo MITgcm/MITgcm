@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.14 2007/10/24 01:02:13 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.15 2007/10/26 02:00:47 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -66,6 +66,8 @@ C     OBNa is the ice AREA value imposed at the Northern OB
 C     OBNh is the ice HEFF value imposed at the Northern OB
 C     OBNsl is the ice HSALT value imposed at the Northern OB
 C     OBNsn is the ice HSNOW value imposed at the Northern OB
+C     OBNuice is the uice value imposed at the Northern OB
+C     OBNvice is the vice value imposed at the Northern OB
 C     etc
 C
       COMMON /GRID_IND_OB/
@@ -97,7 +99,8 @@ C
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #ifdef ALLOW_SEAICE
       COMMON /SEAICE_N_OB/ OBNa,OBNh,OBNa0,OBNh0,OBNa1,OBNh1,
-     &        OBNsl,OBNsn,OBNsl0,OBNsn0,OBNsl1,OBNsn1
+     &     OBNsl,OBNsn,OBNsl0,OBNsn0,OBNsl1,OBNsn1,
+     &     OBNuice,OBNvice,OBNuice0,OBNvice0,OBNuice1,OBNvice1
       _RL OBNa  (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBNh  (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBNa0 (1-Olx:sNx+Olx,nSx,nSy)
@@ -110,6 +113,12 @@ C
       _RL OBNsn0 (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBNsl1 (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBNsn1 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBNuice  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBNvice  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBNuice0 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBNvice0 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBNuice1 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBNvice1 (1-Olx:sNx+Olx,nSx,nSy)
 #endif /* ALLOW_SEAICE */
 #endif /* ALLOW_OBCS_NORTH */
 
@@ -135,7 +144,8 @@ C
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #ifdef ALLOW_SEAICE
       COMMON /SEAICE_S_OB/ OBSa,OBSh,OBSa0,OBSh0,OBSa1,OBSh1,
-     &        OBSsl,OBSsn,OBSsl0,OBSsn0,OBSsl1,OBSsn1
+     &     OBSsl,OBSsn,OBSsl0,OBSsn0,OBSsl1,OBSsn1,
+     &     OBNuice,OBNvice,OBNuice0,OBNvice0,OBNuice1,OBNvice1
       _RL OBSa  (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBSh  (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBSa0 (1-Olx:sNx+Olx,nSx,nSy)
@@ -148,6 +158,12 @@ C
       _RL OBSsn0 (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBSsl1 (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBSsn1 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSuice  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSvice  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSuice0 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSvice0 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSuice1 (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSvice1 (1-Olx:sNx+Olx,nSx,nSy)
 #endif /* ALLOW_SEAICE */
 #endif /* ALLOW_OBCS_SOUTH */
 
@@ -173,7 +189,8 @@ C
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #ifdef ALLOW_SEAICE
       COMMON /SEAICE_E_OB/ OBEa,OBEh,OBEa0,OBEh0,OBEa1,OBEh1,
-     &        OBEsl,OBEsn,OBEsl0,OBEsn0,OBEsl1,OBEsn1
+     &     OBEsl,OBEsn,OBEsl0,OBEsn0,OBEsl1,OBEsn1,
+     &     OBNuice,OBNvice,OBNuice0,OBNvice0,OBNuice1,OBNvice1
       _RL OBEa  (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBEh  (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBEa0 (1-Oly:sNy+Oly,nSx,nSy)
@@ -186,6 +203,12 @@ C
       _RL OBEsn0 (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBEsl1 (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBEsn1 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBEuice  (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBEvice  (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBEuice0 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBEvice0 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBEuice1 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBEvice1 (1-Oly:sNy+Oly,nSx,nSy)
 #endif /* ALLOW_SEAICE */
 #endif /* ALLOW_OBCS_EAST */
 
@@ -211,7 +234,8 @@ C
 #endif /* ALLOW_OBCS_PRESCRIBE */
 #ifdef ALLOW_SEAICE
       COMMON /SEAICE_W_OB/ OBWa,OBWh,OBWa0,OBWh0,OBWa1,OBWh1,
-     &        OBWsl,OBWsn,OBWsl0,OBWsn0,OBWsl1,OBWsn1
+     &     OBWsl,OBWsn,OBWsl0,OBWsn0,OBWsl1,OBWsn1,
+     &     OBNuice,OBNvice,OBNuice0,OBNvice0,OBNuice1,OBNvice1
       _RL OBWa  (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBWh  (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBWa0 (1-Oly:sNy+Oly,nSx,nSy)
@@ -224,6 +248,12 @@ C
       _RL OBWsn0 (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBWsl1 (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBWsn1 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWuice  (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWvice  (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWuice0 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWvice0 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWuice1 (1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWvice1 (1-Oly:sNy+Oly,nSx,nSy)
 #endif /* ALLOW_SEAICE */
 #endif /* ALLOW_OBCS_WEST */
 
