@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.1 2007/10/26 02:00:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.2 2007/10/26 18:27:25 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
-      SUBROUTINE OBCS_APPLY_UVICE( bi, bj,
+      SUBROUTINE OBCS_APPLY_UVICE(
      O                          uFld, vFld,
      I                          myThid )
 C     /==========================================================\
@@ -18,7 +18,6 @@ C     == Global variables ==
 #include "OBCS.h"
 
 C     == Routine Arguments ==
-      INTEGER bi,bj
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
       INTEGER myThid
@@ -26,9 +25,12 @@ C     == Routine Arguments ==
 #if (defined (ALLOW_OBCS) && defined (ALLOW_SEAICE))
 
 C     == Local variables ==
-      INTEGER I,J,K
-
+C     I,J,K,bi,bj - Loop counters
+      INTEGER I,J,K,bi,bj
       K = 1
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C     Set model variables to OB values on North/South Boundaries
 #ifdef ALLOW_OBCS_NORTH
@@ -77,6 +79,9 @@ C Western boundary
        ENDIF
       ENDDO
 #endif
+
+       ENDDO
+      ENDDO
 
 #endif /* defined (ALLOW_OBCS) && defined (ALLOW_SEAICE) */
 

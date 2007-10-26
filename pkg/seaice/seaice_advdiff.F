@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.25 2007/10/24 05:02:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.26 2007/10/26 18:27:25 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -408,6 +408,7 @@ C-     Apply open boundary conditions
             ENDDO
            ENDDO
           ENDIF
+#ifdef SEAICE_SALINITY
           IF ( SEAICEadvSALT ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
@@ -421,6 +422,7 @@ C-     Apply open boundary conditions
             ENDDO
            ENDDO
           ENDIF
+#endif /* SEAICE_SALINITY */
           IF ( SEAICEadvSNOW ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
