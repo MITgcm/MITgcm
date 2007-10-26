@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.10 2007/08/09 19:51:18 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.11 2007/10/26 21:08:13 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -120,7 +120,7 @@ c end periodicExternalForcing
 
 C =================================================================
       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
         jMin=1
         jMax=sNy
@@ -138,18 +138,18 @@ cQQQQ check ptracer numbers
              surfphos(i,j)  = PTRACER(i,j,klev,bi,bj,3)
      &                          * maskC(i,j,kLev,bi,bj)
 #else
-             surfalk(i,j) = 2.366595 * salt(i,j,kLev,bi,bj)/gsm_s
+             surfalk(i,j) = 2.366595 _d 0 * salt(i,j,kLev,bi,bj)/gsm_s
      &                          * maskC(i,j,kLev,bi,bj)
-             surfphos(i,j)  = 5.1225e-4 * maskC(i,j,kLev,bi,bj)
+             surfphos(i,j)  = 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
 #endif
 C FOR NON-INTERACTIVE Si
              surfsi(i,j)   =  Silica(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)
              PTR_CO2(i,j,kLev) = PTRACER(i,j,klev,bi,bj,1)
      &                          * maskC(i,j,kLev,bi,bj)
-          ENDDO
          ENDDO
+        ENDDO
 
-         CALL CARBON_COEFFS(
+        CALL CARBON_COEFFS(
      I                       theta,salt,
      I                       bi,bj,iMin,iMax,jMin,jMax)
 C====================================================================
@@ -159,16 +159,16 @@ C set guess of pH for first step here
 
         DO j=jmin,jmax
          DO i=imin,imax
-                  pH(i,j,bi,bj) = 8.0
-          ENDDO
+                  pH(i,j,bi,bj) = 8. _d 0
          ENDDO
+        ENDDO
          print*,'QQ: pCO2 approximation method'
 c first approxmation
 C$TAF LOOP = parallel
         DO j=jmin,jmax
 C$TAF LOOP = parallel
-        DO i=imin,imax
-         IF(maskC(i,j,kLev,bi,bj) .NE. 0.)THEN
+         DO i=imin,imax
+          IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
 C$TAF init dic_surf = static, 10
           do it=1,10
 C$TAF STORE pH(i,j,bi,bj), PTR_CO2(i,j,kLev)           = dic_surf
@@ -184,12 +184,12 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj) )
           enddo
-         ENDIF
-        ENDDO
+          ENDIF
+         ENDDO
         ENDDO
 
-        ENDDO
-        ENDDO
+       ENDDO
+      ENDDO
         print*,'QQ first guess pH', pH(20,20,1,1), theta(20,20,1,1,1),
      &         salt(20,20,1,1,1),
      &        PTR_CO2(20,20,1), surfphos(20,20),

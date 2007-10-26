@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.8 2007/08/13 02:29:40 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.9 2007/10/26 21:08:13 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -89,15 +89,15 @@ c set reasonable values to those that need at least something
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-             WIND(i,j,bi,bj) = 5.d0*maskC(i,j,1,bi,bj)
-             AtmosP(i,j,bi,bj)   =1.d0*maskC(i,j,1,bi,bj)
-             SILICA(i,j,bi,bj)   =7.6838e-3*maskC(i,j,1,bi,bj)
-             FIce(i,j,bi,bj) =0.d0
+             WIND(i,j,bi,bj)   = 5. _d 0*maskC(i,j,1,bi,bj)
+             AtmosP(i,j,bi,bj) = 1. _d 0*maskC(i,j,1,bi,bj)
+             SILICA(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,1,bi,bj)
+             FIce(i,j,bi,bj)   = 0. _d 0
 #ifdef READ_PAR
-             PAR(i,j,bi,bj) =100.d0*maskC(i,j,1,bi,bj)
+             PAR(i,j,bi,bj)    = 100. _d 0*maskC(i,j,1,bi,bj)
 #endif
 #ifdef ALLOW_FE
-             InputFe(i,j,bi,bj)  = 1e-11*maskC(i,j,1,bi,bj)
+             InputFe(i,j,bi,bj)= 1. _d -11*maskC(i,j,1,bi,bj)
 #endif
           ENDDO
          ENDDO

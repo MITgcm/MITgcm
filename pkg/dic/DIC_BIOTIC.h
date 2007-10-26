@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_BIOTIC.h,v 1.7 2007/08/09 19:51:18 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_BIOTIC.h,v 1.8 2007/10/26 21:08:12 dfer Exp $
 C $Name:  $
 
 #ifdef DIC_BIOTIC
@@ -13,8 +13,8 @@ C     |==========================================================|
      &     dic_timeave,
      &     alpha, rain_ratio, InputFe, omegaC, pHlast,
      &     Kpo4, DOPfraction, zcrit, KRemin,
-     &     KDOPremin,zca,R_op,R_cp,R_np, R_fep,
-     &     o2crit, alpfe, KScav, ligand_stab, ligand_tot, KFE,
+     &     KDOPremin,zca,R_op,R_cp,R_NP, R_FeP,
+     &     O2crit, alpfe, KScav, ligand_stab, ligand_tot, KFE,
      &     freefemax, par,
      &     parfrac, k0, lit0,
      &     nlev
@@ -50,9 +50,9 @@ C     values for biogeochemistry
       _RL zca
       _RL R_op
       _RL R_cp
-      _RL R_np
-      _RL R_fep
-      _RL o2crit
+      _RL R_NP
+      _RL R_FeP
+      _RL O2crit
       _RL alpfe
       _RL KScav
       _RL ligand_stab

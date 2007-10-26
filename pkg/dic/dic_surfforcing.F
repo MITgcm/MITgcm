@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.17 2007/08/28 02:30:31 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.18 2007/10/26 21:08:13 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -132,7 +132,7 @@ C$TAF LOOP = parallel
 C$TAF LOOP = parallel
         DO i=imin,imax
 
-          IF(maskC(i,j,kLev,bi,bj) .NE. 0.)THEN
+          IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
             CALL CALC_PCO2_APPROX(
      I        theta(i,j,kLev,bi,bj),salt(i,j,kLev,bi,bj),
      I        PTR_CO2(i,j,kLev), surfphos(i,j),
@@ -144,15 +144,15 @@ C$TAF LOOP = parallel
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj) )
           ELSE
-             pCO2(i,j,bi,bj)=0. _d 0
-          END IF
+            pCO2(i,j,bi,bj)=0. _d 0
+          ENDIF
         ENDDO
        ENDDO
 
        DO j=jmin,jmax
         DO i=imin,imax
 
-            IF (maskC(i,j,kLev,bi,bj).NE.0.) THEN
+          IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
 C calculate SCHMIDT NO. for CO2
               SchmidtNoDIC(i,j) = 
      &            sca1 
@@ -179,14 +179,14 @@ C Converting pCO2 to [CO2] using ff, as in CALC_PCO2
      &         ak0(i,j,bi,bj)*pCO2sat(i,j) - 
      &         ff(i,j,bi,bj)*pCO2(i,j,bi,bj) 
      &         ) 
-            ELSE
-               FluxCO2(i,j,bi,bj) = 0. _d 0
-            ENDIF
+          ELSE
+              FluxCO2(i,j,bi,bj) = 0. _d 0
+          ENDIF
 C convert flux (mol kg-1 m s-1) to (mol m-2 s-1)
             FluxCO2(i,j,bi,bj) = FluxCO2(i,j,bi,bj)/permil
 
 #ifdef ALLOW_OLD_VIRTUALFLUX
-            IF (maskC(i,j,kLev,bi,bj).NE.0.) THEN
+            IF (maskC(i,j,kLev,bi,bj).NE.0. _d 0) THEN
 c calculate virtual flux
 c EminusPforV = dS/dt*(1/Sglob)
 C NOTE: Be very careful with signs here!

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.9 2006/11/28 21:16:03 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.10 2007/10/26 21:08:13 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -58,16 +58,17 @@ C in surface layer
 
        DO j=jmin,jmax
         DO i=imin,imax
-         DO k=1,nR
-          IF(hFacC(i,j,k,bi,bj) .gt. 0.0)THEN
+         DO k=1,Nr
+          IF (hFacC(i,j,k,bi,bj) .GT. 0. _d 0) THEN
 
 C   Ligand,FeL,Fe calculation
             
               lig=(-ligand_stab*fe (i,j,k,bi,bj)+
-     &              ligand_stab*ligand_tot-1
+     &              ligand_stab*ligand_tot-1. _d 0
      &             +((ligand_stab*fe (i,j,k,bi,bj)
-     &                -ligand_stab*ligand_tot+1)**2+4
-     &                *ligand_stab*ligand_tot)**0.5)/(2*ligand_stab)
+     &                -ligand_stab*ligand_tot+1. _d 0)**2
+     &               +4. _d 0*ligand_stab*ligand_tot)**0.5 _d 0
+     &            )/(2. _d 0*ligand_stab)
  
               FeL = ligand_tot-lig
               freefe(i,j,k,bi,bj) = fe (i,j,k,bi,bj)-FeL
@@ -75,10 +76,10 @@ C   Ligand,FeL,Fe calculation
 #ifdef AD_SAFE
               thx=freefe(i,j,k,bi,bj)
               thy=freefemax
-              theps=1.d-8
+              theps=1. _d -8
               freefe(i,j,k,bi,bj) =
-     &                 ( 1.d0 - tanh((thx-thy)/theps) ) * thx/2 +
-     &                 ( 1.d0 + tanh((thx-thy)/theps) ) * thy/2
+     &                 ( 1. _d 0 - tanh((thx-thy)/theps) ) * thx/2.+
+     &                 ( 1. _d 0 + tanh((thx-thy)/theps) ) * thy/2.
 
 #else
               freefe(i,j,k,bi,bj) = min(freefe(i,j,k,bi,bj),freefemax)
@@ -92,4 +93,4 @@ C   Ligand,FeL,Fe calculation
 c
 #endif 
         RETURN
-        END                      
+        END

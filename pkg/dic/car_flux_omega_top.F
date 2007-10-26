@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux_omega_top.F,v 1.4 2007/10/09 00:01:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux_omega_top.F,v 1.5 2007/10/26 21:08:13 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -86,7 +86,7 @@ c        exp_tot=0
          enddo
          DO k=1,nLev
           if (hFacC(i,j,k,bi,bj).gt.0.d0) then
-           caexport(i,j)= R_cp*rain_ratio(i,j,bi,bj)*bioac(i,j,k)*
+           caexport(i,j)= R_CP*rain_ratio(i,j,bi,bj)*bioac(i,j,k)*
      &           (1.0-DOPfraction)*drF(k)*hFacC(i,j,k,bi,bj)
 c          exp_tot=exp_tot+caexport(i,j)
 c calculate flux to each layer from base of k
@@ -161,14 +161,14 @@ c if no layer below initial layer, remineralize
 c ... at surface
                    cflux(i,j,1)=cflux(i,j,1)
      &                  +bioac(i,j,k)*(1.0-DOPfraction)*
-     &                    R_cp*rain_ratio(i,j,bi,bj)
+     &                    R_CP*rain_ratio(i,j,bi,bj)
      &                   *drF(k)*hFacC(i,j,k,bi,bj)/
      &                    (drF(1)*hFacC(i,j,1,bi,bj) )
                 else
 c ... at bottom
                   cflux(i,j,k)=cflux(i,j,k)
      &                  +bioac(i,j,k)*(1.0-DOPfraction)*
-     &                    R_cp*rain_ratio(i,j,bi,bj)
+     &                    R_CP*rain_ratio(i,j,bi,bj)
                 endif
                endif
            endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/calcite_saturation.F,v 1.4 2007/10/09 00:01:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/calcite_saturation.F,v 1.5 2007/10/26 21:08:12 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -72,7 +72,7 @@ cmick....................................................
 
 c determine carbonate ion concentration through full domain
 c determine calcite saturation state
-       DO k=1,nR
+       DO k=1,Nr
 
         CALL CARBON_COEFFS_PRESSURE_DEP(
      I                       theta,salt,
@@ -83,17 +83,17 @@ c determine calcite saturation state
         DO j=jmin,jmax
          DO i=imin,imax
 
-           if(hFacC(i,j,k,bi,bj) .gt. 0.0d0)then
+           if ( hFacC(i,j,k,bi,bj) .gt. 0. _d 0 ) then
 
-             calcium = 1.028d-2*salt(i,j,k,bi,bj)/35.0
+             calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
 
 c 30 micromol = 0.03 mol m-3
-             silicaTEST = 0.03d0
+             silicaTEST = 0.03 _d 0
              po4local = PTR_PO4(i,j,k)
              diclocal = PTR_DIC(i,j,k)
              alklocal = PTR_ALK(i,j,k)
 c            pHlocal = pHlast(i,j,k,bi,bj)
-             pHlocal = 7.9d0
+             pHlocal = 7.9 _d 0
 
 CMICK - TEMPORARY!!!!!
 CMICK silica = fixed
@@ -155,7 +155,7 @@ c     &                bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj)
 c             end if
 cmick....................................................
            else
-             omegaC(i,j,k,bi,bj) = 0.0d0
+             omegaC(i,j,k,bi,bj) = 0. _d 0
            endif
 
            pHlast(i,j,k,bi,bj) = pHlocal

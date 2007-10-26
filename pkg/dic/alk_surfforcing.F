@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/alk_surfforcing.F,v 1.9 2007/10/09 00:01:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/alk_surfforcing.F,v 1.10 2007/10/26 21:08:12 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -52,7 +52,7 @@ CEOP
 #ifdef ALLOW_OLD_VIRTUALFLUX
         DO j=jmin,jmax
           DO i=imin,imax
-            IF (maskC(i,j,1,bi,bj).NE.0.) THEN
+            IF (maskC(i,j,1,bi,bj).NE.0. _d 0) THEN
 c calculate virtual flux
 c EminusPforV = dS/dt*(1/Sglob)
 C NOTE: Be very careful with signs here!

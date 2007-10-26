@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.7 2007/10/25 16:34:28 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.8 2007/10/26 21:08:13 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -63,7 +63,7 @@ C- Calculate carbonate flux from base of each layer
          DO k=1,nlev
           IF (hFacC(i,j,k,bi,bj).gt.0. _d 0) THEN
 C- flux out of layer k
-           caexport(i,j)= R_cp*rain_ratio(i,j,bi,bj)*BIOac(i,j,k)*
+           caexport(i,j)= R_CP*rain_ratio(i,j,bi,bj)*BIOac(i,j,k)*
      &           (1. _d 0-DOPfraction)*drF(k)*hFacC(i,j,k,bi,bj)
 C- calculate flux to each layer from base of k
 
@@ -72,10 +72,10 @@ C- topography), then remineralize in place
 
            IF (k.EQ.Nr) THEN
              cflux(i,j,k)=cflux(i,j,k) + BIOac(i,j,k)
-     &        *(1. _d 0-DOPfraction)*R_cp*rain_ratio(i,j,bi,bj)
+     &        *(1. _d 0-DOPfraction)*R_CP*rain_ratio(i,j,bi,bj)
            ELSEIF (hFacC(i,j,k+1,bi,bj).EQ.0. _d 0) THEN
              cflux(i,j,k)=cflux(i,j,k) + BIOac(i,j,k)
-     &        *(1. _d 0-DOPfraction)*R_cp*rain_ratio(i,j,bi,bj)
+     &        *(1. _d 0-DOPfraction)*R_CP*rain_ratio(i,j,bi,bj)
            ELSE
 
 C- else, let's flux it downward

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.8 2006/11/28 21:16:03 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.9 2007/10/26 21:08:13 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -567,18 +567,18 @@ cmick based on Dickson and Goyet
 
 cmick - now estimate carbonate alkalinity
         cag = ta - bohg - (kwlocal/hguess) + hguess
-     &           - hpo4g - 2.0*po4g + h3po4g
+     &           - hpo4g - 2.0 _d 0*po4g + h3po4g
      &           - siooh3g
 
 cmick - now evaluate better guess of hydrogen ion conc
 cmick   htotal = [H+], hydrogen ion conc
         gamm  = diclocal/cag
-        stuff = (1.0-gamm)*(1.0-gamm)*k1local*k1local
-     &          - 4.0*k1local*k2local*(1.0-2.0*gamm)
-        hnew  = 0.5*( (gamm-1.0)*k1local + sqrt(stuff) )
+        stuff = (1.0 _d 0-gamm)*(1.0 _d 0-gamm)*k1local*k1local
+     &          - 4.0 _d 0*k1local*k2local*(1.0 _d 0-2.0 _d 0*gamm)
+        hnew  = 0.5 _d 0*( (gamm-1.0 _d 0)*k1local + sqrt(stuff) )
 cmick - now determine [CO2*]
         co2s  = diclocal/
-     &   (1.0 + (k1local/hnew) + (k1local*k2local/(hnew*hnew)))
+     &   (1.0 _d 0 + (k1local/hnew) + (k1local*k2local/(hnew*hnew)))
 cmick - return update pH to main routine
         phlocal = -log10(hnew)
 
@@ -692,128 +692,128 @@ C....................................................................
 
         do i=imin,imax
          do j=jmin,jmax
-          if (hFacC(i,j,1,bi,bj).gt.0.d0) then
+          if (hFacC(i,j,1,bi,bj).gt.0. _d 0) then
            t = ttemp(i,j,1,bi,bj)
            s = stemp(i,j,1,bi,bj)
 C terms used more than once
-           tk = 273.15 + t
-           tk100 = tk/100.0
+           tk = 273.15 _d 0 + t
+           tk100 = tk/100. _d 0
            tk1002=tk100*tk100
-           invtk=1.0/tk
+           invtk=1.0 _d 0/tk
            dlogtk=log(tk)
-           is=19.924*s/(1000.-1.005*s)
+           is=19.924 _d 0*s/(1000. _d 0-1.005 _d 0*s)
            is2=is*is
            sqrtis=sqrt(is)
            s2=s*s
            sqrts=sqrt(s)
-           s15=s**1.5
-           scl=s/1.80655
+           s15=s**1.5 _d 0
+           scl=s/1.80655 _d 0
 C------------------------------------------------------------------------
 C f = k0(1-pH2O)*correction term for non-ideality
 C Weiss & Price (1980, Mar. Chem., 8, 347-359; Eq 13 with table 6 values)
-           ff(i,j,bi,bj) = exp(-162.8301 + 218.2968/tk100  +
-     &          90.9241*log(tk100) - 1.47696*tk1002 +
-     &          s * (.025695 - .025225*tk100 + 
-     &          0.0049867*tk1002))
+           ff(i,j,bi,bj) = exp(-162.8301 _d 0 + 218.2968 _d 0/tk100  +
+     &          90.9241 _d 0*log(tk100) - 1.47696 _d 0*tk1002 +
+     &          s * (.025695 _d 0 - .025225 _d 0*tk100 +
+     &          0.0049867 _d 0*tk1002))
 C------------------------------------------------------------------------
 C K0 from Weiss 1974
-           ak0(i,j,bi,bj) = exp(93.4517/tk100 - 60.2409 + 
-     &        23.3585 * log(tk100) +
-     &        s * (0.023517 - 0.023656*tk100 + 
-     &        0.0047036*tk1002))
+           ak0(i,j,bi,bj) = exp(93.4517 _d 0/tk100 - 60.2409 _d 0 +
+     &        23.3585 _d 0 * log(tk100) +
+     &        s * (0.023517 _d 0 - 0.023656 _d 0*tk100 +
+     &        0.0047036 _d 0*tk1002))
 C------------------------------------------------------------------------
 C k1 = [H][HCO3]/[H2CO3]
 C k2 = [H][CO3]/[HCO3]
 C Millero p.664 (1995) using Mehrbach et al. data on seawater scale 
-           ak1(i,j,bi,bj)=10**(-1*(3670.7*invtk - 
-     &          62.008 + 9.7944*dlogtk -
-     &          0.0118 * s + 0.000116*s2))
-           ak2(i,j,bi,bj)=10**(-1*(1394.7*invtk + 4.777 - 
-     &          0.0184*s + 0.000118*s2))
+           ak1(i,j,bi,bj)=10.**(-1. _d 0*(3670.7 _d 0*invtk -
+     &          62.008 _d 0 + 9.7944 _d 0*dlogtk -
+     &          0.0118 _d 0 * s + 0.000116 _d 0*s2))
+           ak2(i,j,bi,bj)=10.**(-1. _d 0*(1394.7 _d 0*invtk+ 4.777 _d 0-
+     &          0.0184 _d 0*s + 0.000118 _d 0*s2))
 C------------------------------------------------------------------------
 C kb = [H][BO2]/[HBO2]
 C Millero p.669 (1995) using data from dickson (1990)
-           akb(i,j,bi,bj)=exp((-8966.90 - 2890.53*sqrts - 77.942*s +
-     &          1.728*s15 - 0.0996*s2)*invtk +
-     &          (148.0248 + 137.1942*sqrts + 1.62142*s) +
-     &          (-24.4344 - 25.085*sqrts - 0.2474*s) *
-     &          dlogtk + 0.053105*sqrts*tk)
+           akb(i,j,bi,bj)=exp((-8966.90 _d 0- 2890.53 _d 0*sqrts -
+     &          77.942 _d 0*s + 1.728 _d 0*s15 - 0.0996 _d 0*s2)*invtk +
+     &          (148.0248 _d 0 + 137.1942 _d 0*sqrts + 1.62142 _d 0*s) +
+     &          (-24.4344 _d 0 - 25.085 _d 0*sqrts - 0.2474 _d 0*s) *
+     &          dlogtk + 0.053105 _d 0*sqrts*tk)
 C------------------------------------------------------------------------
 C k1p = [H][H2PO4]/[H3PO4]
 C DOE(1994) eq 7.2.20 with footnote using data from Millero (1974)
-           ak1p(i,j,bi,bj) = exp(-4576.752*invtk + 115.525 - 
-     &          18.453*dlogtk +
-     &          (-106.736*invtk + 0.69171)*sqrts +
-     &          (-0.65643*invtk - 0.01844)*s)
+           ak1p(i,j,bi,bj) = exp(-4576.752 _d 0*invtk + 115.525 _d 0 -
+     &          18.453 _d 0*dlogtk +
+     &          (-106.736 _d 0*invtk + 0.69171 _d 0)*sqrts +
+     &          (-0.65643 _d 0*invtk - 0.01844 _d 0)*s)
 C------------------------------------------------------------------------
 C k2p = [H][HPO4]/[H2PO4]
 C DOE(1994) eq 7.2.23 with footnote using data from Millero (1974))
-           ak2p(i,j,bi,bj) = exp(-8814.715*invtk + 172.0883 - 
-     &          27.927*dlogtk +
-     &          (-160.340*invtk + 1.3566) * sqrts +
-     &          (0.37335*invtk - 0.05778) * s)
+           ak2p(i,j,bi,bj) = exp(-8814.715 _d 0*invtk + 172.0883 _d 0 -
+     &          27.927 _d 0*dlogtk +
+     &          (-160.340 _d 0*invtk + 1.3566 _d 0) * sqrts +
+     &          (0.37335 _d 0*invtk - 0.05778 _d 0) * s)
 C------------------------------------------------------------------------
 C k3p = [H][PO4]/[HPO4]
 C DOE(1994) eq 7.2.26 with footnote using data from Millero (1974)
-           ak3p(i,j,bi,bj) = exp(-3070.75*invtk - 18.141 + 
-     &          (17.27039*invtk + 2.81197) *
-     &          sqrts + (-44.99486*invtk - 0.09984) * s)
+           ak3p(i,j,bi,bj) = exp(-3070.75 _d 0*invtk - 18.141 _d 0 +
+     &          (17.27039 _d 0*invtk + 2.81197 _d 0) *
+     &          sqrts + (-44.99486 _d 0*invtk - 0.09984 _d 0) * s)
 C------------------------------------------------------------------------
 C ksi = [H][SiO(OH)3]/[Si(OH)4]
 C Millero p.671 (1995) using data from Yao and Millero (1995)
-           aksi(i,j,bi,bj) = exp(-8904.2*invtk + 117.385 - 
-     &          19.334*dlogtk +
-     &          (-458.79*invtk + 3.5913) * sqrtis +
-     &          (188.74*invtk - 1.5998) * is +
-     &          (-12.1652*invtk + 0.07871) * is2 +
-     &          log(1.0-0.001005*s))
+           aksi(i,j,bi,bj) = exp(-8904.2 _d 0*invtk + 117.385 _d 0 -
+     &          19.334 _d 0*dlogtk +
+     &          (-458.79 _d 0*invtk + 3.5913 _d 0) * sqrtis +
+     &          (188.74 _d 0*invtk - 1.5998 _d 0) * is +
+     &          (-12.1652 _d 0*invtk + 0.07871 _d 0) * is2 +
+     &          log(1.0 _d 0-0.001005 _d 0*s))
 C------------------------------------------------------------------------
 C kw = [H][OH]
 C Millero p.670 (1995) using composite data
-           akw(i,j,bi,bj) = exp(-13847.26*invtk + 148.9652 - 
-     &          23.6521*dlogtk + 
-     &          (118.67*invtk - 5.977 + 1.0495 * dlogtk) *
-     &          sqrts - 0.01615 * s)
+           akw(i,j,bi,bj) = exp(-13847.26 _d 0*invtk + 148.9652 _d 0 -
+     &          23.6521 _d 0*dlogtk +
+     &          (118.67 _d 0*invtk - 5.977 _d 0 + 1.0495 _d 0 * dlogtk)
+     &          * sqrts - 0.01615 _d 0 * s)
 C------------------------------------------------------------------------
 C ks = [H][SO4]/[HSO4]
 C dickson (1990, J. chem. Thermodynamics 22, 113)
-           aks(i,j,bi,bj)=exp(-4276.1*invtk + 141.328 - 
-     &          23.093*dlogtk +
-     &          (-13856*invtk + 324.57 - 47.986*dlogtk)*sqrtis +
-     &          (35474*invtk - 771.54 + 114.723*dlogtk)*is -
-     &          2698*invtk*is**1.5 + 1776*invtk*is2 +
-     &          log(1.0 - 0.001005*s))
+           aks(i,j,bi,bj)=exp(-4276.1 _d 0*invtk + 141.328 _d 0 -
+     &          23.093 _d 0*dlogtk +
+     &   (-13856. _d 0*invtk + 324.57 _d 0 - 47.986 _d 0*dlogtk)*sqrtis+
+     &   (35474. _d 0*invtk - 771.54 _d 0 + 114.723 _d 0*dlogtk)*is -
+     &          2698. _d 0*invtk*is**1.5 + 1776. _d 0*invtk*is2 +
+     &          log(1.0 _d 0 - 0.001005 _d 0*s))
 C------------------------------------------------------------------------
 C kf = [H][F]/[HF]
 C dickson and Riley (1979) -- change pH scale to total
-           akf(i,j,bi,bj)=exp(1590.2*invtk - 12.641 + 1.525*sqrtis +
-     &          log(1.0 - 0.001005*s) + 
-     &          log(1.0 + (0.1400/96.062)*(scl)/aks(i,j,bi,bj)))
+           akf(i,j,bi,bj)=exp(1590.2 _d 0*invtk - 12.641 _d 0 +
+     &   1.525 _d 0*sqrtis + log(1.0 _d 0 - 0.001005 _d 0*s) + 
+     &   log(1.0 _d 0 + (0.1400 _d 0/96.062 _d 0)*(scl)/aks(i,j,bi,bj)))
 C------------------------------------------------------------------------
 C Calculate concentrations for borate, sulfate, and fluoride
 C Uppstrom (1974)
-           bt(i,j,bi,bj) = 0.000232 * scl/10.811
+           bt(i,j,bi,bj) = 0.000232 _d 0 * scl/10.811 _d 0
 C Morris & Riley (1966)
-           st(i,j,bi,bj) = 0.14 * scl/96.062
+           st(i,j,bi,bj) = 0.14 _d 0 * scl/96.062 _d 0
 C Riley (1965)
-           ft(i,j,bi,bj) = 0.000067 * scl/18.9984
+           ft(i,j,bi,bj) = 0.000067 _d 0 * scl/18.9984 _d 0
 C------------------------------------------------------------------------
          else
-            ff(i,j,bi,bj)=0.d0
-            ak0(i,j,bi,bj)= 0.d0
-            ak1(i,j,bi,bj)= 0.d0
-            ak2(i,j,bi,bj)= 0.d0
-            akb(i,j,bi,bj)= 0.d0
-            ak1p(i,j,bi,bj) = 0.d0
-            ak2p(i,j,bi,bj) = 0.d0
-            ak3p(i,j,bi,bj) = 0.d0
-            aksi(i,j,bi,bj) = 0.d0
-            akw(i,j,bi,bj) = 0.d0
-            aks(i,j,bi,bj)= 0.d0
-            akf(i,j,bi,bj)= 0.d0
-            bt(i,j,bi,bj) = 0.d0
-            st(i,j,bi,bj) = 0.d0
-            ft(i,j,bi,bj) = 0.d0
+            ff(i,j,bi,bj)=0. _d 0
+            ak0(i,j,bi,bj)= 0. _d 0
+            ak1(i,j,bi,bj)= 0. _d 0
+            ak2(i,j,bi,bj)= 0. _d 0
+            akb(i,j,bi,bj)= 0. _d 0
+            ak1p(i,j,bi,bj) = 0. _d 0
+            ak2p(i,j,bi,bj) = 0. _d 0
+            ak3p(i,j,bi,bj) = 0. _d 0
+            aksi(i,j,bi,bj) = 0. _d 0
+            akw(i,j,bi,bj) = 0. _d 0
+            aks(i,j,bi,bj)= 0. _d 0
+            akf(i,j,bi,bj)= 0. _d 0
+            bt(i,j,bi,bj) = 0. _d 0
+            st(i,j,bi,bj) = 0. _d 0
+            ft(i,j,bi,bj) = 0. _d 0
          endif
          end do
         end do

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.16 2007/10/15 16:02:58 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.17 2007/10/26 21:08:12 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -93,21 +93,21 @@ C$TAF INIT bio_export = static, 10
            lit=lit*(1. _d 0 - FIce(i,j,bi,bj))
            DO k=1,nlev
 C$TAF STORE lit = bio_export
-             atten=(k0*drF(k)*hFacC(i,j,k,bi,bj)*.5)
+             atten=(k0*drF(k)*hFacC(i,j,k,bi,bj)*.5 _d 0)
              if (k.gt.1) atten=atten+(k0*drF(k-1)
-     &                         *hFacC(i,j,k-1,bi,bj)*.5)
+     &                         *hFacC(i,j,k-1,bi,bj)*.5 _d 0)
              lit=lit*exp(-atten)
-             if (lit.lt.0.d0.or.lit.gt.350) then
+             IF (lit.LT.0. _d 0.OR.lit.GT.350. _d 0) THEN
                  print*,'QQ lit', lit
-             endif
+             ENDIF
 
 #ifdef ALLOW_FE
 #ifdef AD_SAFE
              thx = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4)
              thy = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+KFE)
-             theps = 1.d-6
-             nutlimit= ( 1.d0 - tanh((thx-thy)/theps) ) * thx/2 +
-     &                 ( 1.d0 + tanh((thx-thy)/theps) ) * thy/2
+             theps = 1. _d -6
+             nutlimit= ( 1. _d 0 - tanh((thx-thy)/theps) ) * thx/2. _d 0
+     &                +( 1. _d 0 + tanh((thx-thy)/theps) ) * thy/2. _d 0
 #else
              nutlimit=   min(PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4),
      &                        PTR_FE(i,j,k)/(PTR_FE(i,j,k)+KFE) )
