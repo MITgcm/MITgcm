@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.55 2007/10/26 18:27:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.56 2007/10/26 19:16:46 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -146,7 +146,7 @@ C solve ice momentum equations and calculate ocean surface stress
 #ifndef DISABLE_SEAICE_OBCS
        IF ( useOBCS ) THEN
 C-     Apply ice velocity open boundary conditions
-          CALL OBCS_APPLY_UVICE( iceFld, myThid )
+          CALL OBCS_APPLY_UVICE( uice, vice, myThid )
        ENDIF
 #endif /* DISABLE_SEAICE_OBCS */
 #endif /* ALLOW_OBCS */
