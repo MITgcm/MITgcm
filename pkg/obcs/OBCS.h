@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.15 2007/10/26 02:00:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.16 2007/10/26 14:51:26 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -145,7 +145,7 @@ C
 #ifdef ALLOW_SEAICE
       COMMON /SEAICE_S_OB/ OBSa,OBSh,OBSa0,OBSh0,OBSa1,OBSh1,
      &     OBSsl,OBSsn,OBSsl0,OBSsn0,OBSsl1,OBSsn1,
-     &     OBNuice,OBNvice,OBNuice0,OBNvice0,OBNuice1,OBNvice1
+     &     OBSuice,OBSvice,OBSuice0,OBSvice0,OBSuice1,OBSvice1
       _RL OBSa  (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBSh  (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBSa0 (1-Olx:sNx+Olx,nSx,nSy)
@@ -190,7 +190,7 @@ C
 #ifdef ALLOW_SEAICE
       COMMON /SEAICE_E_OB/ OBEa,OBEh,OBEa0,OBEh0,OBEa1,OBEh1,
      &     OBEsl,OBEsn,OBEsl0,OBEsn0,OBEsl1,OBEsn1,
-     &     OBNuice,OBNvice,OBNuice0,OBNvice0,OBNuice1,OBNvice1
+     &     OBEuice,OBEvice,OBEuice0,OBEvice0,OBEuice1,OBEvice1
       _RL OBEa  (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBEh  (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBEa0 (1-Oly:sNy+Oly,nSx,nSy)
@@ -235,7 +235,7 @@ C
 #ifdef ALLOW_SEAICE
       COMMON /SEAICE_W_OB/ OBWa,OBWh,OBWa0,OBWh0,OBWa1,OBWh1,
      &     OBWsl,OBWsn,OBWsl0,OBWsn0,OBWsl1,OBWsn1,
-     &     OBNuice,OBNvice,OBNuice0,OBNvice0,OBNuice1,OBNvice1
+     &     OBWuice,OBWvice,OBWuice0,OBWvice0,OBWuice1,OBWvice1
       _RL OBWa  (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBWh  (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBWa0 (1-Oly:sNy+Oly,nSx,nSy)
@@ -263,14 +263,18 @@ C
      &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
      &      OBWuFile,OBWvFile,OBWtFile,OBWsFile,OBWaFile,OBWhFile,
      &      OBNslFile,OBSslFile,OBEslFile,OBWslFile,
-     &      OBNsnFile,OBSsnFile,OBEsnFile,OBWsnFile
+     &      OBNsnFile,OBSsnFile,OBEsnFile,OBWsnFile,
+     &      OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
+     &      OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile
       CHARACTER*(MAX_LEN_FNAM)
      &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
      &      OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
      &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
      &      OBWuFile,OBWvFile,OBWtFile,OBWsFile,OBWaFile,OBWhFile,
      &      OBNslFile,OBSslFile,OBEslFile,OBWslFile,
-     &      OBNsnFile,OBSsnFile,OBEsnFile,OBWsnFile
+     &      OBNsnFile,OBSsnFile,OBEsnFile,OBWsnFile,
+     &      OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
+     &      OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile
 
 #ifdef ALLOW_NONHYDROSTATIC
       COMMON /GRID_OBNH/ 
