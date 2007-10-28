@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.39 2006/12/05 05:30:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.40 2007/10/28 21:38:21 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -158,6 +158,11 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  sideMaskFac
       LOGICAL bottomDragTerms,harmonic,biharmonic,useVariableViscosity
 CEOP
+#ifdef MOM_BOUNDARY_CONSERVE
+      COMMON / MOM_FLUXFORM_LOCAL / uBnd, vBnd
+      _RL  uBnd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  vBnd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* MOM_BOUNDARY_CONSERVE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act0 = k - 1
@@ -300,6 +305,14 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
 C---  First call (k=1): compute vertical adv. flux fVerU(kUp) & fVerV(kUp)
       IF (momAdvection.AND.k.EQ.1) THEN
 
+#ifdef MOM_BOUNDARY_CONSERVE
+        CALL MOM_UV_BOUNDARY( bi, bj, k,
+     I                        uVel, vVel,
+     O                        uBnd(1-OLx,1-OLy,k,bi,bj),
+     O                        vBnd(1-OLx,1-OLy,k,bi,bj),
+     I                        myTime, myIter, myThid )
+#endif /* MOM_BOUNDARY_CONSERVE */
+
 C-    Calculate vertical transports above U & V points (West & South face):
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -336,6 +349,16 @@ C---  Calculate vertical transports (at k+1) below U & V points :
      I                        myTime, myIter, myThid)
       ENDIF
 
+#ifdef MOM_BOUNDARY_CONSERVE
+      IF ( momAdvection .AND. k.LT.Nr ) THEN
+        CALL MOM_UV_BOUNDARY( bi, bj, k+1,
+     I                        uVel, vVel,
+     O                        uBnd(1-OLx,1-OLy,k+1,bi,bj),
+     O                        vBnd(1-OLx,1-OLy,k+1,bi,bj),
+     I                        myTime, myIter, myThid )
+      ENDIF
+#endif /* MOM_BOUNDARY_CONSERVE */
+
       IF (momViscosity) THEN
        CALL MOM_CALC_VISC(
      I        bi,bj,k,
@@ -352,6 +375,15 @@ C---- Zonal momentum equation starts here
       IF (momAdvection) THEN
 C---  Calculate mean fluxes (advection)   between cells for zonal flow.
 
+#ifdef MOM_BOUNDARY_CONSERVE
+        CALL MOM_U_ADV_UU( bi,bj,k,uTrans,uBnd(1-OLx,1-OLy,k,bi,bj),
+     O                     fZon,myThid )
+        CALL MOM_U_ADV_VU( bi,bj,k,vTrans,uBnd(1-OLx,1-OLy,k,bi,bj),
+     O                     fMer,myThid )
+        CALL MOM_U_ADV_WU(
+     I                     bi,bj,k+1,uBnd,wVel,rTransU,
+     O                     fVerU(1-OLx,1-OLy,kDown), myThid )
+#else /* MOM_BOUNDARY_CONSERVE */
 C--   Zonal flux (fZon is at east face of "u" cell)
 C     Mean flow component of zonal flux -> fZon
         CALL MOM_U_ADV_UU(bi,bj,k,uTrans,uFld,fZon,myThid)
@@ -365,6 +397,7 @@ C     Mean flow component of vertical flux (at k+1) -> fVer
         CALL MOM_U_ADV_WU(
      I                     bi,bj,k+1,uVel,wVel,rTransU,
      O                     fVerU(1-OLx,1-OLy,kDown), myThid )
+#endif /* MOM_BOUNDARY_CONSERVE */
 
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
         DO j=jMin,jMax
@@ -557,6 +590,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---- Meridional momentum equation starts here
 
       IF (momAdvection) THEN
+
+#ifdef MOM_BOUNDARY_CONSERVE
+        CALL MOM_V_ADV_UV( bi,bj,k,uTrans,vBnd(1-OLx,1-OLy,k,bi,bj),
+     O                     fZon,myThid )
+        CALL MOM_V_ADV_VV( bi,bj,k,vTrans,vBnd(1-OLx,1-OLy,k,bi,bj),
+     O                     fMer,myThid )
+        CALL MOM_V_ADV_WV(
+     I                     bi,bj,k+1,vBnd,wVel,rTransV,
+     O                     fVerV(1-OLx,1-OLy,kDown), myThid )
+#else /* MOM_BOUNDARY_CONSERVE */
 C---  Calculate mean fluxes (advection)   between cells for meridional flow.
 C     Mean flow component of zonal flux -> fZon
         CALL MOM_V_ADV_UV(bi,bj,k,uTrans,vFld,fZon,myThid)
@@ -570,6 +613,7 @@ C     Mean flow component of vertical flux (at k+1) -> fVerV
         CALL MOM_V_ADV_WV(
      I                     bi,bj,k+1,vVel,wVel,rTransV,
      O                     fVerV(1-OLx,1-OLy,kDown), myThid )
+#endif /* MOM_BOUNDARY_CONSERVE */
 
 C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
         DO j=jMin,jMax

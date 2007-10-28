@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_adv_uu.F,v 1.4 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_adv_uu.F,v 1.5 2007/10/28 21:38:21 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -24,6 +24,7 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -42,14 +43,19 @@ C  AdvectFluxUU         :: advective flux
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-      INTEGER I,J
+      INTEGER i,j
 CEOP
 
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx,sNx+Olx-1
         AdvectFluxUU(i,j) =
      &  0.25*( uTrans(i,j) + uTrans(i+1,j) )
+#ifdef MOM_BOUNDARY_CONSERVE
+     &      *(   uFld(i,j)*_maskW(i+1,j,k,bi,bj)
+     &         + uFld(i+1,j)*_maskW(i,j,k,bi,bj) )
+#else
      &      *(   uFld(i,j) +   uFld(i+1,j) )
+#endif
        ENDDO
       ENDDO
 
