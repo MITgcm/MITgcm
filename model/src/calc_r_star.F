@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.12 2007/08/19 21:58:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.13 2007/10/29 18:15:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -70,41 +70,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid), myBxHi(myThid)
 C-    1rst bi,bj loop :
 
-        IF (myIter.EQ.-1) THEN
-C-- Initialise arrays :
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            rStarFacC(i,j,bi,bj) = 1.
-            rStarFacW(i,j,bi,bj) = 1.
-            rStarFacS(i,j,bi,bj) = 1.
-            rStarExpC(i,j,bi,bj) = 1.
-            rStarExpW(i,j,bi,bj) = 1.
-            rStarExpS(i,j,bi,bj) = 1.
-            rStarDhCDt(i,j,bi,bj) = 0.
-            rStarDhWDt(i,j,bi,bj) = 0.
-            rStarDhSDt(i,j,bi,bj) = 0.
-            PmEpR(i,j,bi,bj) = 0.
-          ENDDO
-         ENDDO
-         DO k=1,Nr
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            h0FacC(i,j,k,bi,bj) = _hFacC(i,j,k,bi,bj)
-            h0FacW(i,j,k,bi,bj) = _hFacW(i,j,k,bi,bj)
-            h0FacS(i,j,k,bi,bj) = _hFacS(i,j,k,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ELSE
 C-- copy rStarFacX -> rStarExpX
-         DO j=1-Oly,sNy+Oly
+        DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
             rStarExpC(i,j,bi,bj) = rStarFacC(i,j,bi,bj)
             rStarExpW(i,j,bi,bj) = rStarFacW(i,j,bi,bj)
             rStarExpS(i,j,bi,bj) = rStarFacS(i,j,bi,bj)
           ENDDO
-         ENDDO
-        ENDIF
+        ENDDO
 
 C-- Compute the new column thikness :
         DO j=0,sNy+1
