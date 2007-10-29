@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/check_pickup.F,v 1.1 2007/10/23 15:22:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/check_pickup.F,v 1.2 2007/10/29 18:18:26 jmc Exp $
 C $Name:  $
 
 c#include "PACKAGES_CONFIG.h"
@@ -55,8 +55,12 @@ C     !FUNCTIONS
 
 C     !LOCAL VARIABLES:
       INTEGER j
+      INTEGER ioUnit
+      INTEGER warnCnts
       LOGICAL stopFlag
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      ioUnit = errorMessageUnit
 
 c     IF (pickup_read_mdsio) THEN
       _BEGIN_MASTER( myThid )
@@ -73,27 +77,69 @@ C      start-AB parameters:
 
        IF ( nMissing.GE.1 ) THEN
         stopFlag = .FALSE.
+        warnCnts = nMissing
         DO j=1,nMissing
-C-    Old pickup for which special code takes care of missing fields
+C-    Case where missing field is not essential or can be recomputed
          IF     ( missFldList(j).EQ.'dEtaHdt '
+     &        .AND. .NOT.useRealFreshWaterFlux ) THEN
+          warnCnts = warnCnts - 1
+          IF ( .NOT.pickupStrictlyMatch ) THEN
+           WRITE(msgBuf,'(4A)') ' CHECK_PICKUP: ',
+     &      'no RealFreshWaterFlux => can restart without "dEtaHdt "'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
+C-    Old pickup for which special code takes care of missing fields
+         ELSEIF ( missFldList(j).EQ.'dEtaHdt '
      &                 .AND.usePickupBeforeC54 ) THEN
+C-    with RealFreshWaterFlux, needs dEtaHdt to restart when:
+C     * synchronousTimeStep & usingPCoords => needs PmEpR for surf-forcing
+C         <- present code might be wrong if usePickupBeforeC54 and LinFS
+C     * synchronousTimeStep & nonlinFreeSurf > 0 => needs PmEpR for surf-forcing
+C     * select_rStar <> 0 => needs dEtaHdt for 1rst Integr_continuity
+          IF ( .NOT.pickupStrictlyMatch ) THEN
+           WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+     &      'restart as before C54 without "dEtaHdt "'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
+
+C-    fields used only to speed-up solver(s) convergence:
+C     (no serious problems expected if missing, but get a non-perfect restart)
+         ELSEIF ( missFldList(j).EQ.'EtaN    '
+     &                          .AND. rigidLid ) THEN
+          IF ( .NOT.pickupStrictlyMatch ) THEN
+           WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+     &      'restart with 1rst guess == 0 for CG2D solver'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
+         ELSEIF ( missFldList(j).EQ.'Phi_NHyd' ) THEN
+          IF ( .NOT.pickupStrictlyMatch ) THEN
+           WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+     &      'restart with 1rst guess == 0 for CG3D solver'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
 
 C-    Absolutely needed fields:
          ELSEIF ( missFldList(j).EQ.'Uvel    ' .OR.
      &            missFldList(j).EQ.'Vvel    ' .OR.
      &            missFldList(j).EQ.'Theta   ' .OR.
      &            missFldList(j).EQ.'Salt    ' .OR.
-     &            missFldList(j).EQ.'EtaN    ' .OR.
-     &            missFldList(j).EQ.'PhiHyd  ' .OR.
-c    &            missFldList(j).EQ.'dEtaHdt ' .OR.
-     &            missFldList(j).EQ.'EtaH    ' .OR.
-     &            missFldList(j).EQ.'Phi_NHyd' ) THEN
+     &            missFldList(j).EQ.'EtaN    ' ) THEN
            stopFlag = .TRUE.
            WRITE(msgBuf,'(4A)') 'CHECK_PICKUP: ',
      &       'cannot restart without field "',missFldList(j),'"'
            CALL PRINT_ERROR( msgBuf, myThid )
 
-C-    missing fields which allow a non-perfect restart :
+C-    fields needed for restart (alternative not presentlently implemented)
+         ELSEIF ( missFldList(j).EQ.'PhiHyd  ' .OR.
+     &            missFldList(j).EQ.'dEtaHdt ' .OR.
+     &            missFldList(j).EQ.'EtaH    ' ) THEN
+           stopFlag = .TRUE.
+           WRITE(msgBuf,'(4A)') 'CHECK_PICKUP: ',
+     &     'cannot currently restart without field "',missFldList(j),'"'
+           CALL PRINT_ERROR( msgBuf, myThid )
+
+C-    fields with alternative in place to restart without:
+C-    (but get a non-perfect restart)
          ELSEIF ( missFldList(j).EQ.'GuNm1   ' .OR.
      &            missFldList(j).EQ.'GvNm1   ' ) THEN
            mom_StartAB = 0
@@ -132,21 +178,23 @@ C-    not recognized fields:
      &      ' in file: "data", NameList: "PARM03"'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R CHECK_PICKUP'
-        ELSE
+        ELSEIF ( warnCnts .GT. 0 ) THEN
          WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
      &     'Will get only an approximated Restart'
-         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-         WRITE(msgBuf,'(2(A,I10))')
+         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         IF ( mom_StartAB.LT.nIter0 .OR.
+     &        nHydStartAB.LT.nIter0 .OR.
+     &        tempStartAB.LT.nIter0 .OR.
+     &        saltStartAB.LT.nIter0 ) THEN
+          WRITE(msgBuf,'(2(A,I10))')
      &     ' Continue with mom_StartAB =', mom_StartAB,
      &                 ' ; nHydStartAB =', nHydStartAB
-         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-         WRITE(msgBuf,'(2(A,I10))')
+          CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          WRITE(msgBuf,'(2(A,I10))')
      &     '          with tempStartAB =', tempStartAB,
      &                 ' ; saltStartAB =', saltStartAB
-         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
+          CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         ENDIF
         ENDIF
 
        ENDIF
