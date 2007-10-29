@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.106 2007/10/23 19:36:15 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.107 2007/10/29 19:14:12 jmc Exp $
 #  $Name:  $
 #
 
@@ -414,6 +414,7 @@ run_clean()
 	    find . -type l -exec rm {} \;
 	    rm -f $EXECUTABLE *.txt STD* *diagnostics.log datetime
 	    rm -rf mnc_test_*
+ 	    rm -f *_MIT_CE_000.opt0000 costfunction*0000
 	    echo successful 1>&2
 	    exit 0
 	)
