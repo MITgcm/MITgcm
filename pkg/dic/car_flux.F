@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.8 2007/10/26 21:08:13 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.9 2007/10/29 16:49:49 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 C !ROUTINE: CAR_FLUX
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE CAR_FLUX( BIOac, cflux,
+      SUBROUTINE CAR_FLUX( CAR_S, cflux,
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
@@ -28,11 +28,11 @@ C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
 C  myIter               :: current timestep
 C  myTime               :: current time
-C  BIOac                :: biological productivity
+C  CAR_S                :: carbonate source
       INTEGER myIter
       _RL myTime
       INTEGER myThid
-      _RL  BIOac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  CAR_S(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER imin, imax, jmin, jmax, bi, bj
 
 C !OUTPUT PARAMETERS: ===================================================
@@ -61,21 +61,18 @@ C- Calculate carbonate flux from base of each layer
        DO j=jmin,jmax
         DO i=imin,imax
          DO k=1,nlev
-          IF (hFacC(i,j,k,bi,bj).gt.0. _d 0) THEN
+          IF (hFacC(i,j,k,bi,bj).GT.0. _d 0) THEN
 C- flux out of layer k
-           caexport(i,j)= R_CP*rain_ratio(i,j,bi,bj)*BIOac(i,j,k)*
-     &           (1. _d 0-DOPfraction)*drF(k)*hFacC(i,j,k,bi,bj)
+           caexport(i,j) = CAR_S(i,j,k)*drF(k)*hFacC(i,j,k,bi,bj) 
 C- calculate flux to each layer from base of k
 
 C- if no layer below initial layer (because of bottom or
 C- topography), then remineralize in place
 
            IF (k.EQ.Nr) THEN
-             cflux(i,j,k)=cflux(i,j,k) + BIOac(i,j,k)
-     &        *(1. _d 0-DOPfraction)*R_CP*rain_ratio(i,j,bi,bj)
+             cflux(i,j,k)=cflux(i,j,k) + CAR_S(i,j,k) 
            ELSEIF (hFacC(i,j,k+1,bi,bj).EQ.0. _d 0) THEN
-             cflux(i,j,k)=cflux(i,j,k) + BIOac(i,j,k)
-     &        *(1. _d 0-DOPfraction)*R_CP*rain_ratio(i,j,bi,bj)
+             cflux(i,j,k)=cflux(i,j,k) + CAR_S(i,j,k) 
            ELSE
 
 C- else, let's flux it downward

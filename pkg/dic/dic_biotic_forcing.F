@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.17 2007/10/26 21:08:13 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.18 2007/10/29 16:49:49 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -71,11 +71,13 @@ C  SURO                   :: tendency of O2 due to air-sea exchange
 C  GPO4                   :: tendency of PO4 due to biological productivity,
 C                            exchange with DOP pool and reminerization
 C  CAR                    :: carbonate changes due to biological 
-C                             productivity and reminerization
+C                             productivity and remineralization
 C  BIOac                  :: biological productivity
-C  pflux                  :: changes to PO4 due to flux and reminerlization
-c  cflux                  :: carbonate changes due to flux and reminerlization
-c  freefe                 :: iron not bound to ligand
+C  RDOP                   :: DOP sink due to remineralization
+C  pflux                  :: changes to PO4 due to flux and remineralization
+C  CAR_S                  :: carbonate sink 
+C  cflux                  :: carbonate changes due to flux and remineralization
+C  freefe                 :: iron not bound to ligand
       _RL  GDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  GALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  GPO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -85,8 +87,10 @@ c  freefe                 :: iron not bound to ligand
       _RL  SURO(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  CAR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  BIOac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  RDOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  pflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  exportflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  CAR_S(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  cflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_O2
       _RL  GO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -106,6 +110,7 @@ CEOP
        DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
+           RDOP(i,j,k) =0. _d 0
            GDIC(i,j,k) =0. _d 0
            GALK(i,j,k) =0. _d 0
            GPO4(i,j,k) =0. _d 0
@@ -115,6 +120,7 @@ CEOP
            pflux(i,j,k)   =0. _d 0
            exportflux(i,j,k)=0. _d 0
            cflux(i,j,k)   =0. _d 0
+           CAR_S(i,j,k)   =0. _d 0
 #ifdef ALLOW_O2
            GO2(i,j,k)     =0. _d 0
 #endif
@@ -171,6 +177,16 @@ c flux of po4 from layers with biological activity
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 
+C- Carbonate sink
+       DO k=1,Nr
+         DO j=jmin,jmax
+          DO i=imin,imax
+             CAR_S(i,j,k)=BIOac(i,j,k)*R_CP*rain_ratio(i,j,bi,bj)*
+     &                    (1. _d 0-DOPfraction) 
+          ENDDO
+         ENDDO
+       ENDDO
+
 c carbonate
 #ifdef CAR_DISS
 c dissolution only below saturation horizon
@@ -188,7 +204,7 @@ c
      &                    myIter,myTime,myThid)
 #else
 c old OCMIP way
-        CALL CAR_FLUX( BIOac, cflux,
+        CALL CAR_FLUX( CAR_S, cflux,
      &                    bi,bj,imin,imax,jmin,jmax,
      &                    myIter,myTime,myThid)
 #endif
@@ -197,15 +213,13 @@ c add all tendencies for PO4, DOP, ALK, DIC
        DO k=1,Nr
          DO j=jmin,jmax
           DO i=imin,imax
+           RDOP(i,j,k)= maskC(i,j,k,bi,bj)*KDOPRemin*PTR_DOP(i,j,k) 
 
-           GPO4(i,j,k)=-BIOac(i,j,k)+pflux(i,j,k)
-     &         + maskC(i,j,k,bi,bj)*KDOPRemin*PTR_DOP(i,j,k)
+           GPO4(i,j,k)=-BIOac(i,j,k)+pflux(i,j,k) + RDOP(i,j,k)
 
-           car(i,j,k) =-BIOac(i,j,k)* R_CP*rain_ratio(i,j,bi,bj)*
-     &                (1. _d 0-DOPfraction)+cflux(i,j,k)
+           car(i,j,k) = cflux(i,j,k) - CAR_S(i,j,k)
 
-           GDOP(i,j,k)=+BIOac(i,j,k)*DOPfraction
-     &         - maskC(i,j,k,bi,bj)*KDOPRemin*PTR_DOP(i,j,k)
+           GDOP(i,j,k)=+BIOac(i,j,k)*DOPfraction - RDOP(i,j,k)
 
            GALK(i,j,k)=+2. _d 0 *car(i,j,k)-R_NP*GPO4(i,j,k)
 
@@ -219,8 +233,8 @@ c add all tendencies for PO4, DOP, ALK, DIC
            endif
 #endif
 #ifdef ALLOW_FE
-           GFE(i,j,k) =R_FeP*GPO4(i,j,k)
-     &             -Kscav*freefe(i,j,k)
+           GFE(i,j,k) = R_FeP*GPO4(i,j,k)
+     &                 -Kscav*freefe(i,j,k)
 #endif
           ENDDO
          ENDDO

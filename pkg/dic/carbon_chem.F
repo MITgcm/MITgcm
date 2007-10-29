@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.9 2007/10/26 21:08:13 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.10 2007/10/29 16:49:49 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -781,7 +781,7 @@ C dickson (1990, J. chem. Thermodynamics 22, 113)
      &          23.093 _d 0*dlogtk +
      &   (-13856. _d 0*invtk + 324.57 _d 0 - 47.986 _d 0*dlogtk)*sqrtis+
      &   (35474. _d 0*invtk - 771.54 _d 0 + 114.723 _d 0*dlogtk)*is -
-     &          2698. _d 0*invtk*is**1.5 + 1776. _d 0*invtk*is2 +
+     &          2698. _d 0*invtk*is**1.5 _d 0 + 1776. _d 0*invtk*is2 +
      &          log(1.0 _d 0 - 0.001005 _d 0*s))
 C------------------------------------------------------------------------
 C kf = [H][F]/[HF]
