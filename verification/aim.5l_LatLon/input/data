@@ -26,7 +26,6 @@
  writeBinaryPrec=64,
  hFacMin=1.0,
  saltAdvScheme=3,
- usePickupBeforeC54=.TRUE.,
  &
 
 # Elliptic solver parameters
