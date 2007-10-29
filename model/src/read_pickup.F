@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.2 2007/10/23 15:22:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.3 2007/10/29 18:17:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -258,6 +258,7 @@ C---    read 3-D fields for AB-restart
 #ifdef ALLOW_ADAMSBASHFORTH_3
          m1 = 1 + MOD(myIter+1,2)
          m2 = 1 + MOD( myIter ,2)
+        IF ( momStepping ) THEN
 C--     U velocity:
          IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
           CALL READ_MFLDS_3D_RL( 'GuNm1   ',guNm(1-Olx,1-Oly,1,1,1,m1),
@@ -276,6 +277,7 @@ C--     V velocity:
           CALL READ_MFLDS_3D_RL( 'GvNm2   ',gvNm(1-Olx,1-Oly,1,1,1,m2),
      &                                     nj, fp, Nr, myIter, myThid )
          ENDIF
+        ENDIF
 C--     Temperature:
         IF ( AdamsBashforthGt ) THEN
          IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
@@ -317,12 +319,14 @@ C--     Salinity:
          ENDIF
         ENDIF
 #else /*  ALLOW_ADAMSBASHFORTH_3 */
+        IF ( momStepping ) THEN
 C--     U velocity:
           CALL READ_MFLDS_3D_RL( 'GuNm1   ', guNm1,
      &                                     nj, fp, Nr, myIter, myThid )
 C--     V velocity:
           CALL READ_MFLDS_3D_RL( 'GvNm1   ', gvNm1,
      &                                     nj, fp, Nr, myIter, myThid )
+        ENDIF
 C--     Temperature
         IF ( AdamsBashforthGt ) THEN
           CALL READ_MFLDS_3D_RL( 'GtNm1   ', gtNm1,

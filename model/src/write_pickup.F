@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.4 2007/10/23 15:22:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.5 2007/10/29 18:17:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -104,9 +104,9 @@ C     Going to really do some IO. Make everyone except master thread wait.
 
         fp = precFloat64
         j  = 0
-C      record number < 0 : a hack not to write meta files now:
+C     record number < 0 : a hack not to write meta files now:
 
-C---   write State 3-D fields for restart
+C---  write State 3-D fields for restart
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, Nr, uVel,   -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'Uvel    '
@@ -120,11 +120,12 @@ C---   write State 3-D fields for restart
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, Nr, salt,   -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'Salt    '
-C---   write 3-D fields for AB-restart
+C---  write 3-D fields for AB-restart
 #ifdef ALLOW_ADAMSBASHFORTH_3
         m1 = 1 + MOD(myIter+1,2)
         m2 = 1 + MOD( myIter ,2)
-C--    U velocity:
+      IF ( momStepping ) THEN
+C--   U velocity:
        IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm(1-Olx,1-Oly,1,1,1,m1),
@@ -137,7 +138,7 @@ C--    U velocity:
      &                                            -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'GuNm2   '
        ENDIF
-C--    V velocity:
+C--   V velocity:
        IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, Nr, gvNm(1-Olx,1-Oly,1,1,1,m1),
@@ -150,7 +151,8 @@ C--    V velocity:
      &                                            -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'GvNm2   '
        ENDIF
-C--    Temperature:
+      ENDIF
+C--   Temperature:
       IF ( AdamsBashforthGt.OR.AdamsBashforth_T ) THEN
        IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
         j = j + 1
@@ -171,7 +173,7 @@ C--    Temperature:
         ENDIF
        ENDIF
       ENDIF
-C--    Salinity:
+C--   Salinity:
       IF ( AdamsBashforthGs.OR.AdamsBashforth_S ) THEN
        IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
         j = j + 1
@@ -193,12 +195,14 @@ C--    Salinity:
        ENDIF
       ENDIF
 #else /*  ALLOW_ADAMSBASHFORTH_3 */
+       IF ( momStepping ) THEN
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, Nr, guNm1,  -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'GuNm1   '
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, Nr, gvNm1,  -j, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'GvNm1   '
+       ENDIF
        IF ( AdamsBashforthGt ) THEN
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, Nr, gtNm1,  -j, myIter, myThid )
@@ -211,7 +215,7 @@ C--    Salinity:
        ENDIF
 #endif /*  ALLOW_ADAMSBASHFORTH_3 */
 
-C-     write Full Pressure for EOS in pressure:
+C-    write Full Pressure for EOS in pressure:
        IF ( useDynP_inEos_Zc ) THEN
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, Nr,totPhiHyd,-j,myIter, myThid )
@@ -231,7 +235,7 @@ C-     write Full Pressure for EOS in pressure:
 #endif /* ALLOW_NONHYDROSTATIC */
 
         n3D = j
-C---   Write 2-D fields, starting with Eta:
+C---  Write 2-D fields, starting with Eta:
         j = j + 1
         nj = -( n3D*(Nr-1) + j )
         CALL WRITE_REC_3D_RL( fn, fp, 1 , etaN,   nj, myIter, myThid )
