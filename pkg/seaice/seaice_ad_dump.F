@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.2 2007/10/25 19:08:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.3 2007/10/30 18:13:39 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -97,14 +97,14 @@ C--     Read IO error counter
      &       'ADJhsnow.'//suff, writeBinaryPrec, globalFiles, 'RL',
      &       1,  adhsnow, 1, myIter, myThid )
 # ifdef SEAICE_ALLOW_DYNAMICS
-        IF ( SEAICEuseDynamics ) THEN
+cph        IF ( SEAICEuseDynamics ) THEN
           CALL MDSWRITEFIELD(
      &       'ADJuice.'//suff, writeBinaryPrec, globalFiles, 'RL',
      &       3,  aduice, 1, myIter, myThid )
           CALL MDSWRITEFIELD(
      &       'ADJvice.'//suff, writeBinaryPrec, globalFiles, 'RL',
      &       3,  advice, 1, myIter, myThid )
-        ENDIF
+cph        ENDIF
 # endif
 c
        _END_MASTER( myThid )
