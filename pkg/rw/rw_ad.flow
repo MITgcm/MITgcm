@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/rw_ad.flow,v 1.7 2007/10/30 19:54:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/rw_ad.flow,v 1.8 2007/10/30 20:05:08 heimbach Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -70,8 +70,8 @@ CADJ SUBROUTINE write_rec_xyz_rl  OUTPUT =
 C----------------------------------------
 C subroutine  READ_MFLDS_CHECK
 C----------------------------------------
-CADJ SUBROUTINE READ_MFLDS_CHECK  INPUT  = 1,2
-CADJ SUBROUTINE READ_MFLDS_CHECK  OUTPUT = 
+CADJ SUBROUTINE READ_MFLDS_CHECK  INPUT  =   2,3,4
+CADJ SUBROUTINE READ_MFLDS_CHECK  OUTPUT = 1,2
 
 C----------------------------------------
 C subroutine  READ_MFLDS_INIT
