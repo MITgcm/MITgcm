@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.25 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.26 2007/10/30 20:19:13 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -117,8 +117,10 @@ c--   Temperature field.
                 theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
 #endif
+#ifndef DISABLE_CTRL_THETA_LIMIT
                 if(theta(i,j,k,bi,bj).lt.-2.0)
      &               theta(i,j,k,bi,bj)= -2.0
+#endif
               enddo
             enddo
           enddo
