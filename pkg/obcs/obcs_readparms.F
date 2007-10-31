@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.16 2007/10/26 02:00:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.17 2007/10/31 21:53:49 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -19,7 +19,7 @@ C     === Global variables ===
 #ifdef ALLOW_ORLANSKI
 #include "ORLANSKI.h"
 #endif
-#ifdef ALLOW_PTRACERS.h
+#ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "OBCS_PTRACERS.h"
 #endif /* ALLOW_PTRACERS */
