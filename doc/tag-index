@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.901 2007/10/29 20:00:45 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.902 2007/11/02 15:50:30 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -64,11 +64,13 @@ o add a little bit of code to gad_os7mp_adv_?.F to help vectorization
 o add new diagnostics to seaice: advective, diffusive fluxes (only for
   multidim-advection, for scheme 2 they are not filled) and transports, 
   thermodynamic growth rates
-o change units of EmPmR (inside the code) from m/s to kg/m2/s (mass flux) but
-  leave input file unchanged. Affects results @ truncation level (cg2d match)
-  and update output of experiments: lab_sea(6), global_ocean.90x40x15(10),
+o change units of EmPmR (inside the code, + within coupling interface)
+  from m/s to kg/m2/s (mass flux) but leave input file unchanged.
+  Affects results @ truncation level (cg2d match) and update output of 
+   experiments: lab_sea(6), global_ocean.90x40x15(10),
   global_ocean.cs32x15(11x3,10), natl_box(11), tutorial_global_oce_latlon(11)
   + adjoint results: global_ocean_ebm(11) and lab_sea (12).
+  Coupled set-up: allow to restart from previous pickups (cpl_oldPickup=T).
   Next: will retire convertEmP2rUnit (simply using mass2rUnit instead).
 
 checkpoint59h
