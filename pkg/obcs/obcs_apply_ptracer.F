@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ptracer.F,v 1.2 2006/04/18 13:46:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ptracer.F,v 1.3 2007/11/04 03:48:53 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
-      SUBROUTINE OBCS_APPLY_PTRACER( 
+      SUBROUTINE OBCS_APPLY_PTRACER(
      I                            bi, bj, K, iTracer,
      U                            pFld,
      I                            myThid )
@@ -26,7 +26,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "OBCS.h"
-#ifdef ALLOW_PTRACERS.h
+#ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "OBCS_PTRACERS.h"
 #endif /* ALLOW_PTRACERS */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.15 2007/05/30 09:22:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.16 2007/11/04 03:48:53 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -21,7 +21,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h" 
 #include "OBCS.h"
-#ifdef ALLOW_PTRACERS.h
+#ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #include "OBCS_PTRACERS.h"
