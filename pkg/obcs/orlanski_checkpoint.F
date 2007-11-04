@@ -1,5 +1,5 @@
-C $Header: 
-C $Name: 
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/orlanski_checkpoint.F,v 1.6 2007/11/04 03:51:30 jmc Exp $
+C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
@@ -33,6 +33,7 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
 
 #ifdef ALLOW_OBCS_NORTH
+#ifdef ALLOW_MDSIO
 C     READ N and S OB storage and phase speed arrays
       WRITE(fn,'(A,A10)') 'pickup_orlanskiN.',suff
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,UN_STORE_1,1,myThid)
@@ -54,7 +55,7 @@ C     READ N and S OB storage and phase speed arrays
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_UN,17,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_VN,18,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_TN,19,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_SN,20,myThid)      
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_SN,20,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WN_STORE_1,21,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WN_STORE_2,22,myThid)
@@ -62,9 +63,13 @@ C     READ N and S OB storage and phase speed arrays
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WN_STORE_4,24,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_WN,25,myThid)
 #endif
-#endif
+#else /* ALLOW_MDSIO */
+      STOP 'ABNORMAL END: ORLANSKI_READ_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
+#endif /* ALLOW_OBCS_NORTH */
 
 #ifdef ALLOW_OBCS_SOUTH
+#ifdef ALLOW_MDSIO
       WRITE(fn,'(A,A10)') 'pickup_orlanskiS.',suff
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,US_STORE_1,1,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,US_STORE_2,2,myThid)
@@ -93,10 +98,14 @@ C     READ N and S OB storage and phase speed arrays
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WS_STORE_4,24,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_WS,25,myThid)
 #endif
-#endif
+#else /* ALLOW_MDSIO */
+      STOP 'ABNORMAL END: ORLANSKI_READ_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
+#endif /* ALLOW_OBCS_SOUTH */
 
 C     READ E and W OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_EAST
+#ifdef ALLOW_MDSIO
       WRITE(fn,'(A,A10)') 'pickup_orlanskiE.',suff
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UE_STORE_1,1,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UE_STORE_2,2,myThid)
@@ -117,7 +126,7 @@ C     READ E and W OB storage and phase speed arrays
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_UE,17,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_VE,18,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_TE,19,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_SE,20,myThid)      
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_SE,20,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WE_STORE_1,21,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WE_STORE_2,22,myThid)
@@ -125,9 +134,13 @@ C     READ E and W OB storage and phase speed arrays
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WE_STORE_4,24,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_WE,25,myThid)
 #endif
-#endif
+#else /* ALLOW_MDSIO */
+      STOP 'ABNORMAL END: ORLANSKI_READ_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
+#endif /* ALLOW_OBCS_EAST */
 
 #ifdef ALLOW_OBCS_WEST
+#ifdef ALLOW_MDSIO
       WRITE(fn,'(A,A10)') 'pickup_orlanskiW.',suff
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UW_STORE_1,1,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UW_STORE_2,2,myThid)
@@ -156,8 +169,10 @@ C     READ E and W OB storage and phase speed arrays
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WW_STORE_4,24,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_WW,25,myThid)
 #endif
-#endif
-
+#else /* ALLOW_MDSIO */
+      STOP 'ABNORMAL END: ORLANSKI_READ_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
+#endif /* ALLOW_OBCS_WEST */
 
 C     Fill in edge regions
 c      _EXCH_XZ_R8(UN_STORE_1 , myThid)
@@ -193,11 +208,11 @@ c      _EXCH_XZ_R8(SS_STORE_1 , myThid)
 c      _EXCH_XZ_R8(SS_STORE_2 , myThid)
 c      _EXCH_XZ_R8(SS_STORE_3 , myThid)
 c      _EXCH_XZ_R8(SS_STORE_4 , myThid)
-      
+
 c      _EXCH_XZ_R8(CVEL_UN , myThid)
 c      _EXCH_XZ_R8(CVEL_VN , myThid)
 c      _EXCH_XZ_R8(CVEL_TN , myThid)
-c      _EXCH_XZ_R8(CVEL_SN , myThid)      
+c      _EXCH_XZ_R8(CVEL_SN , myThid)
 c      _EXCH_XZ_R8(CVEL_US , myThid)
 c      _EXCH_XZ_R8(CVEL_VS , myThid)
 c      _EXCH_XZ_R8(CVEL_TS , myThid)
@@ -253,7 +268,7 @@ c      _EXCH_YZ_R8(SW_STORE_4 , myThid)
 c      _EXCH_YZ_R8(CVEL_UE , myThid)
 c      _EXCH_YZ_R8(CVEL_VE , myThid)
 c      _EXCH_YZ_R8(CVEL_TE , myThid)
-c      _EXCH_YZ_R8(CVEL_SE , myThid)      
+c      _EXCH_YZ_R8(CVEL_SE , myThid)
 c      _EXCH_YZ_R8(CVEL_UW , myThid)
 c      _EXCH_YZ_R8(CVEL_VW , myThid)
 c      _EXCH_YZ_R8(CVEL_TW , myThid)
@@ -266,7 +281,7 @@ c      _EXCH_YZ_R8(WE_STORE_4 , myThid)
 c      _EXCH_YZ_R8(WW_STORE_1 , myThid)
 c      _EXCH_YZ_R8(WW_STORE_2 , myThid)
 c      _EXCH_YZ_R8(WW_STORE_3 , myThid)
-c      _EXCH_YZ_R8(WW_STORE_4 , myThid)          
+c      _EXCH_YZ_R8(WW_STORE_4 , myThid)
 c      _EXCH_YZ_R8(CVEL_WE , myThid)
 c      _EXCH_YZ_R8(CVEL_WW , myThid)
 c#endif
@@ -277,7 +292,7 @@ c#endif
       END
 
 CStartofinterface
-      SUBROUTINE ORLANSKI_WRITE_CHECKPOINT( prec, lgf, permCheckPoint, 
+      SUBROUTINE ORLANSKI_WRITE_CHECKPOINT( prec, lgf, permCheckPoint,
      &                                      myIt, myThid )
 C     /==========================================================\
 C     | SUBROUTINE ORLANSKI_WRITE_CHECKPOINT                     |
@@ -310,6 +325,7 @@ C     == Local variables ==
 
 C     Write N and S OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_NORTH
+#ifdef ALLOW_MDSIO
       IF ( permCheckPoint ) THEN
          WRITE(fn,'(A,I10.10)') 'pickup_orlanskiN.',myIt
       ELSE
@@ -354,7 +370,7 @@ C     Write N and S OB storage and phase speed arrays
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_TN,19,
      &     myIt,myThid)
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_SN,20,
-     &     myIt,myThid)      
+     &     myIt,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WN_STORE_1,21,
      &     myIt,myThid)
@@ -367,9 +383,13 @@ C     Write N and S OB storage and phase speed arrays
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_WN,25,
      &     myIt,myThid)
 #endif
-#endif
+#else /* ALLOW_MDSIO */
+      STOP 'ABNORMAL END: ORLANSKI_WRITE_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
+#endif /* ALLOW_OBCS_NORTH */
 
 #ifdef ALLOW_OBCS_SOUTH
+#ifdef ALLOW_MDSIO
       IF ( permCheckPoint ) THEN
          WRITE(fn,'(A,I10.10)') 'pickup_orlanskiS.',myIt
       ELSE
@@ -423,14 +443,18 @@ C     Write N and S OB storage and phase speed arrays
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WS_STORE_3,23,
      &     myIt,myThid)
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WS_STORE_4,24,
-     &     myIt,myThid)   
+     &     myIt,myThid)
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_WS,25,
      &     myIt,myThid)
 #endif
-#endif
+#else /* ALLOW_MDSIO */
+      STOP 'ABNORMAL END: ORLANSKI_WRITE_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
+#endif /* ALLOW_OBCS_SOUTH */
 
 C     Write E and W OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_EAST
+#ifdef ALLOW_MDSIO
       IF ( permCheckPoint ) THEN
          WRITE(fn,'(A,I10.10)') 'pickup_orlanskiE.',myIt
       ELSE
@@ -475,7 +499,7 @@ C     Write E and W OB storage and phase speed arrays
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_TE,19,
      &     myIt,myThid)
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_SE,20,
-     &     myIt,myThid)      
+     &     myIt,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WE_STORE_1,21,
      &     myIt,myThid)
@@ -488,9 +512,13 @@ C     Write E and W OB storage and phase speed arrays
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_WE,25,
      &     myIt,myThid)
 #endif
-#endif
+#else /* ALLOW_MDSIO */
+      STOP 'ABNORMAL END: ORLANSKI_WRITE_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
+#endif /* ALLOW_OBCS_EAST */
 
 #ifdef ALLOW_OBCS_WEST
+#ifdef ALLOW_MDSIO
       IF ( permCheckPoint ) THEN
          WRITE(fn,'(A,I10.10)') 'pickup_orlanskiW.',myIt
       ELSE
@@ -548,7 +576,10 @@ C     Write E and W OB storage and phase speed arrays
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_WW,25,
      &     myIt,myThid)
 #endif
-#endif
+#else /* ALLOW_MDSIO */
+      STOP 'ABNORMAL END: ORLANSKI_WRITE_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
+#endif /* ALLOW_OBCS_WEST */
 
 #endif /* ALLOW_ORLANSKI */
       RETURN

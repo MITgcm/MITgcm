@@ -1,5 +1,5 @@
-C $Header: 
-C $Name: 
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_checkpoint.F,v 1.9 2007/11/04 03:51:30 jmc Exp $
+C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
@@ -32,6 +32,7 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER iRec
 
+#ifdef ALLOW_MDSIO
 C     READ N and S OB arrays
 #ifdef ALLOW_OBCS_NORTH
       WRITE(fn,'(A,A10)') 'pickup_obN.',suff
@@ -85,7 +86,7 @@ C     READ E and W OB arrays
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEu,1,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEv,2,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEt,3,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEs,4,myThid) 
+      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEs,4,myThid)
       iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEw,5,myThid)
@@ -125,6 +126,10 @@ C     READ E and W OB arrays
       ENDIF
 # endif
 #endif
+#else /* ALLOW_MDSIO */
+      STOP 'ABNORMAL END: S/R OBCS_READ_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
+
 
 C     Fill in edge regions
 c      _EXCH_XZ_R4(OBNu , myThid)
@@ -144,7 +149,7 @@ C     Fill in edge regions
 c      _EXCH_YZ_R4(OBEu , myThid)
 c      _EXCH_YZ_R4(OBEv , myThid)
 c      _EXCH_YZ_R4(OBEt , myThid)
-c      _EXCH_YZ_R4(OBEs , myThid) 
+c      _EXCH_YZ_R4(OBEs , myThid)
 c      _EXCH_YZ_R4(OBWu , myThid)
 c      _EXCH_YZ_R4(OBWv , myThid)
 c      _EXCH_YZ_R4(OBWt , myThid)
@@ -157,8 +162,8 @@ c#endif
 #ifdef ALLOW_ORLANSKI
       IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.
      &    useOrlanskiEast.OR.useOrlanskiWest) THEN
-        CALL ORLANSKI_READ_CHECKPOINT( 
-     &          prec, myIt, suff, myThid ) 
+        CALL ORLANSKI_READ_CHECKPOINT(
+     &          prec, myIt, suff, myThid )
       ENDIF
 #endif  /* ALLOW_ORLANSKI */
 
@@ -168,7 +173,7 @@ c#endif
 
 
 CStartofinterface
-      SUBROUTINE OBCS_WRITE_CHECKPOINT( prec, lgf, permCheckPoint, 
+      SUBROUTINE OBCS_WRITE_CHECKPOINT( prec, lgf, permCheckPoint,
      &                                  myIt, myThid )
 C     /==========================================================\
 C     | SUBROUTINE OBCS_WRITE_CHECKPOINT                         |
@@ -195,10 +200,11 @@ CEndofinterface
 
 #ifdef ALLOW_OBCS
 
-C     == Local variables ==      
+C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER iRec
 
+#ifdef ALLOW_MDSIO
 C     Write N and S OB arrays
 #ifdef ALLOW_OBCS_NORTH
       IF ( permCheckPoint ) THEN
@@ -268,7 +274,7 @@ C     Write E and W OB arrays
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEu,1,myIt,myThid)
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEv,2,myIt,myThid)
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEt,3,myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEs,4,myIt,myThid) 
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEs,4,myIt,myThid)
       iRec = 4*Nr
 # ifdef ALLOW_NONHYDROSTATIC
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEw,5,myIt,myThid)
@@ -316,13 +322,16 @@ C     Write E and W OB arrays
       ENDIF
 # endif
 #endif
+#else /* ALLOW_MDSIO */
+      STOP 'ABNORMAL END: S/R OBCS_WRITE_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
 
 
 #ifdef ALLOW_ORLANSKI
       IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.
      &    useOrlanskiEast.OR.useOrlanskiWest) THEN
-        CALL ORLANSKI_WRITE_CHECKPOINT( 
-     &          prec, lgf, permCheckPoint, myIt, myThid ) 
+        CALL ORLANSKI_WRITE_CHECKPOINT(
+     &          prec, lgf, permCheckPoint, myIt, myThid )
       ENDIF
 #endif  /* ALLOW_ORLANSKI */
 
