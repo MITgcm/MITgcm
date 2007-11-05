@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/code/Attic/ptracers_forcing.F,v 1.2 2007/10/25 20:00:22 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/code/Attic/ptracers_forcing.F,v 1.3 2007/11/05 19:27:02 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -20,8 +20,6 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c #include "FFIELDS.h"
-c #include "DYNVARS.h"
 #include "GRID.h"
 #ifdef ALLOW_RBCS
 #include "PTRACERS_SIZE.h"
@@ -63,8 +61,8 @@ CEOP
        kSurface = 1
       ENDIF
 
-C--   Surface forcing term surfPtracer is previously computed by 
-C     PTRACERS_FORCING_SURF (and stored as surfaceForcingPtr)
+C--   Surface forcing term surfPtracer is previously computed by
+C     PTRACERS_FORCING_SURF (and stored as surfaceForcingPTr)
 C     because it is needed by KPP_TRANSPORT_PTR.
 
 #ifdef ALLOW_GCHEM
@@ -93,12 +91,12 @@ C     because it is needed by KPP_TRANSPORT_PTR.
       ENDIF
 
 #ifdef ALLOW_RBCS
-       if (useRBCptracers) then
-         CALL RBCS_ADD_TENDENCY(bi,bj,k,iTracer+2,
-     I                        myTime, myThid)
-       endif
-#endif
-
+      IF ( useRBCptracers ) THEN
+        CALL RBCS_ADD_TENDENCY(
+     I                          bi,bj,k,iTracer+2,
+     I                          myTime, myThid )
+      ENDIF
+#endif /* ALLOW_RBCS */
 
 #endif /* ALLOW_PTRACERS */
 

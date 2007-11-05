@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/code/ptracers_forcing_surf.F,v 1.4 2007/10/25 20:00:22 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/code/ptracers_forcing_surf.F,v 1.5 2007/11/05 19:27:02 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -26,7 +26,8 @@ C !USES: ===============================================================
 #include "FFIELDS.h"
 c #include "DYNVARS.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -58,7 +59,7 @@ C Example of how to add forcing at the surface
       DO iTrc=1,PTRACERS_numInUse
           DO j = jMin, jMax
            DO i = iMin, iMax
-             surfaceForcingPtr(i,j,bi,bj,iTrc) =
+             surfaceForcingPTr(i,j,bi,bj,iTrc) =
      &        + 1. _d 0 / (10. _d 0 * 86400. _d 0)
      &                  * ( 0. _d 0 - pTracer(i,j,ks,bi,bj,iTrc) )
      &                  * drF(ks) * _hFacC(i,j,ks,bi,bj)
@@ -76,11 +77,11 @@ c-  NonLin_FrSurf and RealFreshWaterFlux : PmEpR effectively changes
 c   the water column height ; temp., salt, (tracer) flux associated
 c   with this input/output of water is added here to the surface tendency.
 c
-         IF (PtRACERS_EvPrRn(iTrc).NE.UNSET_RL) THEN
+         IF (PTRACERS_EvPrRn(iTrc).NE.UNSET_RL) THEN
           DO j = jMin, jMax
            DO i = iMin, iMax
-             surfaceForcingPtr(i,j,bi,bj,iTrc) =
-     &          surfaceForcingPtr(i,j,bi,bj,iTrc)
+             surfaceForcingPTr(i,j,bi,bj,iTrc) =
+     &          surfaceForcingPTr(i,j,bi,bj,iTrc)
      &        + PmEpR(i,j,bi,bj)
      &          *( PTRACERS_EvPrRn(iTrc) - pTracer(i,j,ks,bi,bj,iTrc) )
      &          *mass2rUnit
@@ -104,15 +105,15 @@ C-    use local surface tracer field to calculate forcing term:
 
         DO iTrc=1,PTRACERS_numInUse
 
-         IF (PtRACERS_EvPrRn(iTrc).NE.UNSET_RL) THEN
-C        account for Rain/Evap tracer content (PtRACERS_EvPrRn) using
+         IF (PTRACERS_EvPrRn(iTrc).NE.UNSET_RL) THEN
+C        account for Rain/Evap tracer content (PTRACERS_EvPrRn) using
 C        local surface tracer
           DO j = jMin, jMax
            DO i = iMin, iMax
-            surfaceForcingPtr(i,j,bi,bj,iTrc) =
-     &          surfaceForcingPtr(i,j,bi,bj,iTrc)
+            surfaceForcingPTr(i,j,bi,bj,iTrc) =
+     &          surfaceForcingPTr(i,j,bi,bj,iTrc)
      &        + EmPmR(i,j,bi,bj)
-     &          *( pTracer(i,j,ks,bi,bj,iTrc) - PtRACERS_EvPrRn(iTrc) )
+     &          *( pTracer(i,j,ks,bi,bj,iTrc) - PTRACERS_EvPrRn(iTrc) )
      &          *mass2rUnit
            ENDDO
           ENDDO
@@ -125,15 +126,15 @@ C-    use uniform tracer value to calculate forcing term:
 
         DO iTrc=1,PTRACERS_numInUse
 
-         IF (PtRACERS_EvPrRn(iTrc).NE.UNSET_RL) THEN
-C     account for Rain/Evap tracer content (PtRACERS_EvPrRn) assuming uniform
+         IF (PTRACERS_EvPrRn(iTrc).NE.UNSET_RL) THEN
+C     account for Rain/Evap tracer content (PTRACERS_EvPrRn) assuming uniform
 C     surface tracer (=PTRACERS_ref)
           DO j = jMin, jMax
            DO i = iMin, iMax
-            surfaceForcingPtr(i,j,bi,bj,iTrc) =
-     &          surfaceForcingPtr(i,j,bi,bj,iTrc)
+            surfaceForcingPTr(i,j,bi,bj,iTrc) =
+     &          surfaceForcingPTr(i,j,bi,bj,iTrc)
      &        + EmPmR(i,j,bi,bj)
-     &            *( PTRACERS_ref(ks,iTrc) - PtRACERS_EvPrRn(iTrc) )
+     &            *( PTRACERS_ref(ks,iTrc) - PTRACERS_EvPrRn(iTrc) )
      &            *mass2rUnit
            ENDDO
           ENDDO
