@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.8 2007/11/04 03:51:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.9 2007/11/05 19:19:05 jmc Exp $
 C $Name:  $
 #include "OBCS_OPTIONS.h"
 
@@ -65,7 +65,8 @@ C
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "OBCS_PTRACERS.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+c#include "PTRACERS_FIELDS.h"
 #endif /* ALLOW_PTRACERS */
 
 C     !LOCAL VARIABLES:

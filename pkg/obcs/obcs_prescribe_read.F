@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.14 2007/10/26 02:00:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.15 2007/11/05 19:19:05 jmc Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
 
-      subroutine obcs_prescribe_read ( 
+      subroutine obcs_prescribe_read (
      I                      mycurrenttime
      I                    , mycurrentiter
      I                    , mythid
@@ -20,19 +20,18 @@ c     |==================================================================|
 
 c     == global variables ==
 
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "OBCS.h"
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 #endif
-#if (defined (ALLOW_SEAICE) || defined (ALLOW_PTRACERS))
-# include "PARAMS.h"
-#endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
-# include "PTRACERS.h"
+# include "PTRACERS_PARAMS.h"
+# include "PTRACERS_FIELDS.h"
 # include "OBCS_PTRACERS.h"
 #endif /* ALLOW_PTRACERS */
 
@@ -108,7 +107,7 @@ c     == end of interface ==
        do itracer = 1, PTRACERS_numInUse
         call exf_set_obcs_xz(  OBNptr (1-Olx,1,1,1,iTracer)
      I                       , OBNptr0(1-Olx,1,1,1,iTracer)
-     I                       , OBNptr1(1-Olx,1,1,1,iTracer) 
+     I                       , OBNptr1(1-Olx,1,1,1,iTracer)
      I                       , OBNptrFile(iTracer), 's'
      I                       , fac, first, changed, count0, count1
      I                       , mycurrenttime, mycurrentiter, mythid )
@@ -166,7 +165,7 @@ c     == end of interface ==
        do itracer = 1, PTRACERS_numInUse
         call exf_set_obcs_xz(  OBSptr (1-Olx,1,1,1,iTracer)
      I                       , OBSptr0(1-Olx,1,1,1,iTracer)
-     I                       , OBSptr1(1-Olx,1,1,1,iTracer) 
+     I                       , OBSptr1(1-Olx,1,1,1,iTracer)
      I                       , OBSptrFile(iTracer), 's'
      I                       , fac, first, changed, count0, count1
      I                       , mycurrenttime, mycurrentiter, mythid )
@@ -224,7 +223,7 @@ c     == end of interface ==
        do itracer = 1, PTRACERS_numInUse
         call exf_set_obcs_yz(  OBEptr (1-Oly,1,1,1,iTracer)
      I                       , OBEptr0(1-Oly,1,1,1,iTracer)
-     I                       , OBEptr1(1-Oly,1,1,1,iTracer) 
+     I                       , OBEptr1(1-Oly,1,1,1,iTracer)
      I                       , OBEptrFile(iTracer), 's'
      I                       , fac, first, changed, count0, count1
      I                       , mycurrenttime, mycurrentiter, mythid )
@@ -282,7 +281,7 @@ c     == end of interface ==
        do itracer = 1, PTRACERS_numInUse
         call exf_set_obcs_yz(  OBWptr (1-Oly,1,1,1,iTracer)
      I                       , OBWptr0(1-Oly,1,1,1,iTracer)
-     I                       , OBWptr1(1-Oly,1,1,1,iTracer) 
+     I                       , OBWptr1(1-Oly,1,1,1,iTracer)
      I                       , OBWptrFile(iTracer), 's'
      I                       , fac, first, changed, count0, count1
      I                       , mycurrenttime, mycurrentiter, mythid )
@@ -314,7 +313,7 @@ cgg    calendar information as other boundaries.
 #endif
 
 #else /* not ALLOW_EXF */
-      CALL OBCS_EXTERNAL_FIELDS_LOAD( 
+      CALL OBCS_EXTERNAL_FIELDS_LOAD(
      &     myCurrentTime, myCurrentIter, myThid )
 #endif /*  ALLOw_EXF */
 
