@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_add_tendency.F,v 1.2 2004/11/29 03:34:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_add_tendency.F,v 1.3 2007/11/05 19:05:01 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -11,10 +11,10 @@ C !INTERFACE: ==========================================================
      &                           iTracer, myTime,myIter, myThid )
 
 C !DESCRIPTION:
-C     In the case of GCHEM_SEPARATE_FORCING undefined, GCHEM_ADD_TENDENCY 
+C     In the case of GCHEM_SEPARATE_FORCING undefined, GCHEM_ADD_TENDENCY
 C     will update passive tracer tendencies gPtr with gchemTendency,
 C     the latter having been computed in GCHEM_CALC_TENDENDY, so that
-C     they will be incorporated into regular timestepping in 
+C     they will be incorporated into regular timestepping in
 C     PTRACERS_INTERGRATE.
 C     IF GCHEM_SEPARATE_FORCING is defined, this routine is empty.
 
@@ -26,7 +26,8 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+c#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 #include "GCHEM_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================

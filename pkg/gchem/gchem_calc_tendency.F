@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_calc_tendency.F,v 1.2 2004/11/29 03:34:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_calc_tendency.F,v 1.3 2007/11/05 19:05:01 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -16,7 +16,7 @@ C this subroutine computes the tracer tendencies due to a
 C bio-geogchemistry or ecosystem model and stores them on an array
 C gchemTendency, that will be incorporated into regular timestepping in
 C in ptracers_intergrate.F
-C The current example uses the CFC package, but his is meant to 
+C The current example uses the CFC package, but his is meant to
 C be replaced by anything that the user provides.
 
 C !USES: ===============================================================
@@ -27,7 +27,8 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 #include "GCHEM.h"
 #include "GCHEM_FIELDS.h"
 
@@ -49,7 +50,7 @@ C  k                    :: vertical level
       INTEGER niter
       INTEGER iTracer
       INTEGER bi,bj,imin,imax,jmin,jmax,k
-#ifdef ALLOW_CFC 
+#ifdef ALLOW_CFC
       INTEGER kLoc
       _RL  PtrLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL gPtrLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -66,7 +67,7 @@ C     gchemTendency is re-initialized here
             gchemTendency(I,J,K,bi,bj,iTracer) = 0. _d 0
            ENDDO
           ENDDO
-         ENDDO	
+         ENDDO
         ENDDO
        ENDDO
       ENDDO
@@ -91,9 +92,9 @@ C           DO I = 1-Olx, sNx+Olx
 C            gchemTendency(I,J,K,bi,bj,iTracer) = your specific model
 C           ENDDO
 C          ENDDO
-C         ENDDO	
+C         ENDDO
 C        ENDDO
-        
+
 #ifdef ALLOW_CFC
 ccccccccccccccccccccccccc
 c chemical forcing      c
