@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.8 2007/10/25 13:14:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.9 2007/11/05 18:55:44 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -17,16 +17,14 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "PTRACERS_SIZE.h"
-c#include "PTRACERS.h"
 #include "GCHEM.h"
 #include "CFC.h"
 #ifdef ALLOW_EXF
 # include "EXF_FIELDS.h"
-#endif 
+#endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE.h"
-#endif 
+#endif
 
 C     == Routine arguments ==
       INTEGER myIter
@@ -71,7 +69,6 @@ cQQQ need to check timing
          CALL LEF_ZERO( ice0,myThid )
          CALL LEF_ZERO( ice1,myThid )
 #endif
-         _BARRIER
        ENDIF
 
 
@@ -103,7 +100,7 @@ cswd QQ  need nIter0+1 since chem forcing after time step
      &   .OR. myIter .EQ. nIter0
      &    ) THEN
 
-
+         _BARRIER
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
@@ -126,7 +123,7 @@ C      data for the period ahead and the period behind myTime.
      &        myIter,myThid )
          CALL READ_REC_XY_RS( AtmospFile,atmosp1,intime1,
      &        myIter,myThid )
-       ENDIF 
+       ENDIF
 #ifndef ALLOW_SEAICE
        IF ( IceFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( IceFile,ice0,intime0,

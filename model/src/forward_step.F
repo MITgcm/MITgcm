@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.152 2007/08/16 04:15:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.153 2007/11/05 18:52:21 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -83,7 +83,7 @@ C     == Global variables ==
 # endif
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
-#  include "PTRACERS.h"
+#  include "PTRACERS_FIELDS.h"
 # endif
 # ifdef ALLOW_OBCS
 #  include "OBCS.h"
@@ -339,7 +339,7 @@ ctest(
 CADJ STORE IVDConvCount       = comlev1, key = ikey_dynamics
 ctest)
 # ifdef ALLOW_PTRACERS
-CADJ STORE surfaceForcingPtr  = comlev1, key = ikey_dynamics
+CADJ STORE surfaceForcingPTr  = comlev1, key = ikey_dynamics
 # endif
 c
 # ifdef ALLOW_GMREDI

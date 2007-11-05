@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc12_forcing.F,v 1.8 2006/08/06 01:29:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc12_forcing.F,v 1.9 2007/11/05 18:55:44 jmc Exp $
 C $Name:  $
 
 C modified for external_forcing_DIC.F  August 1999
@@ -14,13 +14,13 @@ C
 #undef STEPH_GRAD
 
 CStartOfInterFace
-      SUBROUTINE CFC12_FORCING( PTR_CFC12, GCFC12, 
+      SUBROUTINE CFC12_FORCING( PTR_CFC12, GCFC12,
      &                            bi,bj,imin,imax,jmin,jmax,
      &                             myIter,myTime,myThid)
 
 C     /==========================================================\
 C     | SUBROUTINE CFC12_FORCING                                   |
-C     | o Calculate the changes to CFC12 through air-sea  fluxes   |  
+C     | o Calculate the changes to CFC12 through air-sea  fluxes   |
 C     |==========================================================|
       IMPLICIT NONE
 
@@ -30,9 +30,8 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "CFC.h"
-c#include "GCHEM.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
 
 C     == Routine arguments ==
       INTEGER myIter

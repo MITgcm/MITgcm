@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.65 2007/10/25 18:18:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.66 2007/11/05 18:53:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -114,7 +114,7 @@ c They provide the fields to be stored.
 # endif
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
-#  include "PTRACERS.h"
+#  include "PTRACERS_FIELDS.h"
 # endif
 # ifdef ALLOW_NONHYDROSTATIC
 #  include "CG3D.h"
@@ -600,7 +600,7 @@ ctest(
 CADJ STORE IVDConvCount       = comlev1, key = ikey_dynamics
 ctest)
 # ifdef ALLOW_PTRACERS
-CADJ STORE surfaceForcingPtr  = comlev1, key = ikey_dynamics
+CADJ STORE surfaceForcingPTr  = comlev1, key = ikey_dynamics
 # endif
 c
 # ifdef ALLOW_GMREDI

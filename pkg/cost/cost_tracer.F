@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tracer.F,v 1.7 2004/12/04 00:14:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tracer.F,v 1.8 2007/11/05 18:56:37 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -24,7 +24,8 @@ C     == Global variables ===
 #ifdef ALLOW_COST_TRACER
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
-#  include "PTRACERS.h"
+c# include "PTRACERS_PARAMS.h"
+#  include "PTRACERS_FIELDS.h"
 # endif
 #endif
 

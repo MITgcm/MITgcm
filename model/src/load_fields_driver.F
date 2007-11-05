@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.5 2007/04/27 15:53:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.6 2007/11/05 18:52:21 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -77,13 +77,10 @@ c# endif
 #   include "EXF_CONSTANTS.h"
 #  endif
 # endif
-c# ifdef ALLOW_PTRACERS
-c#  include "PTRACERS_SIZE.h"
-c#  include "PTRACERS.h"
-c# endif
 c# ifdef ALLOW_OBCS
 c#  include "OBCS.h"
 c#  ifdef ALLOW_PTRACERS
+c#   include "PTRACERS_SIZE.h"
 c#   include "OBCS_PTRACERS.h"
 c#  endif
 c# endif
