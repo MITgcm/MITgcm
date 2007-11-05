@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_readparms.F,v 1.2 2005/04/19 18:44:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_readparms.F,v 1.3 2007/11/05 18:58:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -15,7 +15,6 @@ C     Initialize MATRIX parameters, read in data.matrix
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
 #include "MATRIX.h"
 
 C     !INPUT PARAMETERS:
@@ -25,17 +24,19 @@ C     myThid            :: thread number
 C     !OUTPUT PARAMETERS:
 C     none
 C     !LOCAL VARIABLES:
-C     iUnit		:: unit number for I/O
-C     msgBuf		:: message buffer
+C     iUnit  :: unit number for I/O
+C     msgBuf :: message buffer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifdef ALLOW_MATRIX
 C     Open and read the data.matrix file
 
+      NAMELIST /MATRIX_PARM01/ expMatrixWriteTime, impMatrixWriteTime
+
       expMatrixWriteTime = 10. _d 10
       impMatrixWriteTime = 10. _d 10
-      
+
       _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)') ' MATRIX_READPARMS: opening data.matrix'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
