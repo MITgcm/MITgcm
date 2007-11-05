@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_write_pickup.F,v 1.4 2007/11/05 21:15:53 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_write_pickup.F,v 1.5 2007/11/05 22:59:51 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -120,6 +120,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "RESTART.h"
 #include "THSICE_VARS.h"
 #include "ATM2D_VARS.h"
 
