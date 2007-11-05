@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.34 2007/10/19 14:43:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.35 2007/11/05 18:48:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -26,7 +26,8 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 #include "GAD.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -119,9 +120,9 @@ C Loop over tracers
 #ifdef ALLOW_AUTODIFF_TAMC
       rFlx(1,1,kDown,iTracer) = rFlx(1,1,kDown,iTracer)
 c
-CADJ STORE ptracer(:,:,k,bi,bj,iTracer)
+CADJ STORE pTracer(:,:,k,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
-CADJ STORE gPtrnm1(:,:,k,bi,bj,iTracer)
+CADJ STORE gpTrNm1(:,:,k,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -139,7 +140,7 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                   PTRACERS_diffKh(iTracer),
      I                   PTRACERS_diffK4(iTracer),
      I                   KappaRtr(1-Olx,1-Oly,iTracer),
-     I                   gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     I                   gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
      I                   pTracer(1-Olx,1-Oly,1,1,1,iTracer),
      I                   GAD_TR,
      I                   PTRACERS_advScheme(iTracer),
@@ -157,7 +158,7 @@ C External forcing term(s)
      &   CALL PTRACERS_FORCING(
      I                      bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
      U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     I                      surfaceForcingPtr(1-Olx,1-Oly,1,1,iTracer),
+     I                      surfaceForcingPTr(1-Olx,1-Oly,1,1,iTracer),
      I                      myIter,myTime,myThid)
 
 C If using Adams-Bashforth II, then extrapolate tendencies
@@ -167,7 +168,7 @@ C gPtr is now the tracer tendency for explicit advection/diffusion
      & .OR.PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH ) THEN
 #ifdef ALLOW_MATRIX
 C  If matrix is being computed, block call to S/R ADAMS_BASHFORTH2 to
-C  prevent gPtr from being replaced by the average of gPtr and gPtrNm1.
+C  prevent gPtr from being replaced by the average of gPtr and gpTrNm1.
         IF (.NOT.useMATRIX) THEN
 #endif
         iterNb = myIter
@@ -176,7 +177,7 @@ C  prevent gPtr from being replaced by the average of gPtr and gPtrNm1.
         CALL ADAMS_BASHFORTH2(
      I                        bi,bj,K,
      U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     U                        gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     U                        gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
      I                        startAB, iterNb, myThid )
 #ifdef ALLOW_MATRIX
         ENDIF
@@ -188,7 +189,7 @@ C External forcing term(s)
      &   CALL PTRACERS_FORCING(
      I                      bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
      U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     I                      surfaceForcingPtr(1-Olx,1-Oly,1,1,iTracer),
+     I                      surfaceForcingPTr(1-Olx,1-Oly,1,1,iTracer),
      I                      myIter,myTime,myThid)
 
 #ifdef NONLIN_FRSURF
@@ -203,7 +204,7 @@ C Account for change in level thickness
      &   .OR.PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH )
      &  CALL FREESURF_RESCALE_G(
      I                          bi,bj,K,
-     U                          gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     U                          gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
      I                          myThid )
       ENDIF
 #endif /* NONLIN_FRSURF */

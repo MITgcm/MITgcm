@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.2 2006/11/19 22:04:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_init.F,v 1.3 2007/11/05 18:48:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -17,7 +17,7 @@ C     === Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
 #include "GAD.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -129,45 +129,45 @@ C-     Advective flux:
      &                 locName(1:ilnb)
        diagCode  = 'WM      LR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
        diagName  = 'ADVx'//diagSufx
        WRITE(diagTitle,'(2A)') 'Zonal      Advective Flux of ',
      &                 locName(1:ilnb)
        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
        diagName  = 'ADVy'//diagSufx
        WRITE(diagTitle,'(2A)') 'Meridional Advective Flux of ',
      &                 locName(1:ilnb)
        WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
 C-     Diffusive flux:
        diagName  = 'DFrE'//diagSufx
        WRITE(diagTitle,'(2A)') 'Vertical Diffusive Flux of ',
      &                 locName(1:ilnb)//' (Explicit part)'
        diagCode  = 'WM      LR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
        diagName  = 'DFxE'//diagSufx
        WRITE(diagTitle,'(2A)') 'Zonal      Diffusive Flux of ',
      &                 locName(1:ilnb)
        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
        diagName  = 'DFyE'//diagSufx
        WRITE(diagTitle,'(2A)') 'Meridional Diffusive Flux of ',
      &                 locName(1:ilnb)
        WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
 
        diagName  = 'DFrI'//diagSufx
        WRITE(diagTitle,'(2A)') 'Vertical Diffusive Flux of ',
      &                 locName(1:ilnb)//' (Implicit part)'
        diagCode  = 'WM      LR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid ) 
+     I              diagName, diagCode, diagUnits, diagTitle, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDDO

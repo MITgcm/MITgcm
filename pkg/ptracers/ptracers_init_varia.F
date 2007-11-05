@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.3 2006/10/26 00:29:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.4 2007/11/05 18:48:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -20,7 +20,8 @@ C     !USES:
 #include "PARAMS.h"
 #include "GRID.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 
 C     !INPUT PARAMETERS:
 C     myThid               :: thread number
@@ -31,7 +32,6 @@ C     myThid               :: thread number
 C     !LOCAL VARIABLES:
 C     i,j,k,bi,bj,iTracer  :: loop indices
       INTEGER i,j,k,bi,bj,iTracer
-      CHARACTER*(10) suff
 CEOP
 
 C     Loop over tracers
@@ -43,17 +43,17 @@ C     Loop over tiles
 
 C     Initialize arrays in common blocks :
          DO k=1,Nr
-          DO j=1-Oly,sNy+OLy
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             pTracer(i,j,k,bi,bj,iTracer) = PTRACERS_ref(k,iTracer)
             gPtr(i,j,k,bi,bj,iTracer)    = 0. _d 0
-            gPtrNM1(i,j,k,bi,bj,iTracer) = 0. _d 0
+            gpTrNm1(i,j,k,bi,bj,iTracer) = 0. _d 0
            ENDDO
           ENDDO
          ENDDO
-         DO j=1-Oly,sNy+OLy
-          DO i=1-Olx,sNx+Olx
-           surfaceForcingPtr(i,j,bi,bj,iTracer) = 0. _d 0
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           surfaceForcingPTr(i,j,bi,bj,iTracer) = 0. _d 0
           ENDDO
          ENDDO
 
@@ -82,8 +82,8 @@ C     Apply mask
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO k=1,Nr
-          DO j=1-Oly,sNy+OLy
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             IF (maskC(i,j,k,bi,bj).EQ.0.)
      &           pTracer(i,j,k,bi,bj,iTracer)=0. _d 0
            ENDDO
@@ -95,12 +95,6 @@ C     Apply mask
 
 C Read from a pickup file if needed
       IF (nIter0.GT.PTRACERS_Iter0) THEN
-C     Suffix for pickup files
-       IF (pickupSuff.EQ.' ') THEN
-        WRITE(suff,'(I10.10)') nIter0
-       ELSE
-        WRITE(suff,'(A10)') pickupSuff
-       ENDIF
        CALL PTRACERS_READ_PICKUP( nIter0, myThid )
       ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.13 2006/10/17 18:22:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.14 2007/11/05 18:48:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -20,7 +20,8 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 #ifdef ALLOW_MONITOR
 #include "MONITOR.h"
 #endif
@@ -110,7 +111,7 @@ C      Print the basic statistics of ptracer variables
          WRITE(suff,'(A7,I2.2)') 'ptracer',ip
 c        WRITE(suff,'(A7,I3.3)') 'ptrac_', ip
          CALL MON_PRINTSTATS_RL(
-     &        Nr, ptracer(1-Olx,1-Oly,1,1,1,ip),
+     &        Nr, pTracer(1-Olx,1-Oly,1,1,1,ip),
      &        suff, maskC,hFacC,rA ,drF,myThid)
        ENDDO
 

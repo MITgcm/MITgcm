@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.4 2005/10/10 05:53:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.5 2007/11/05 18:48:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: PTRACERS_IMPLICIT
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE PTRACERS_IMPLICIT( 
+      SUBROUTINE PTRACERS_IMPLICIT(
      U                              kappaRk,
      I                              bi, bj, myTime, myIter, myThid )
 
@@ -20,7 +20,8 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GAD.h"
@@ -72,7 +73,7 @@ C Loop over tracers
           act3 = myThid - 1
           max3 = nTx*nTy
           act4 = ikey_dynamics - 1
-          iptrkey = (act0 + 1) 
+          iptrkey = (act0 + 1)
      &                      + act1*max0
      &                      + act2*max0*max1
      &                      + act3*max0*max1*max2
@@ -90,9 +91,9 @@ C Loop over tracers
         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE kappaRk(:,:,:) = comlev1_bibj_ptracers, 
+CADJ STORE kappaRk(:,:,:) = comlev1_bibj_ptracers,
 CADJ &     key=iptrkey, byte=isbyte
-CADJ STORE gPtr(:,:,:,bi,bj,iTracer) = comlev1_bibj_ptracers, 
+CADJ STORE gPtr(:,:,:,bi,bj,iTracer) = comlev1_bibj_ptracers,
 CADJ &     key=iptrkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -100,7 +101,7 @@ CADJ &     key=iptrkey, byte=isbyte
         IF ( PTRACERS_ImplVertAdv(iTracer) ) THEN
 
           CALL GAD_IMPLICIT_R(
-     I         PTRACERS_ImplVertAdv(iTracer), 
+     I         PTRACERS_ImplVertAdv(iTracer),
      I         PTRACERS_advScheme(iTracer), GAD_TR,
      I         kappaRk, wVel, pTracer(1-Olx,1-Oly,1,1,1,iTracer),
      U         gPtr(1-Olx,1-Oly,1,1,1,iTracer),
@@ -121,7 +122,7 @@ CADJ &     key=iptrkey, byte=isbyte
 C--      Apply open boundary conditions
         IF ( useOBCS ) THEN
          DO K=1,Nr
-          CALL OBCS_APPLY_PTRACER( 
+          CALL OBCS_APPLY_PTRACER(
      I         bi, bj, K, iTracer,
      U         gPtr(1-Olx,1-Oly,K,bi,bj,iTracer),
      I         myThid )

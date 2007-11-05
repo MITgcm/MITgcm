@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.3 2007/01/09 22:26:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.4 2007/11/05 18:48:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -19,7 +19,8 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C     permCheckPoint  :: permanent or a rolling checkpoint
@@ -70,12 +71,12 @@ C       First ***define*** the file group name
 C       Then set the actual unlimited dimension
         CALL MNC_CW_SET_UDIM(fn, 1, myThid)
 C       The following two values should probably be for the n-1 time
-C       step since we're saving the gPtrNm1 variable first
+C       step since we're saving the gpTrNm1 variable first
         CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
         CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
         DO iTracer = 1,PTRACERS_numInUse
           CALL MNC_CW_RL_W('D',fn,0,0, PTRACERS_names(iTracer),
-     &         gPtrNm1(1-OLx,1-OLy,1,1,1,iTracer),myThid)
+     &         gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),myThid)
         ENDDO
         CALL MNC_CW_SET_UDIM(fn, 2, myThid)
         CALL MNC_CW_RL_W_S('D',fn,0,0,'T', myTime, myThid)
@@ -109,7 +110,7 @@ C       "InUse".
      &         iRec, myIter, myThid )
           iRec = 2*iTracer
           CALL WRITE_REC_3D_RL( fn, prec, Nr,
-     &         gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     &         gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
      &         iRec, myIter, myThid )
         ENDDO
 

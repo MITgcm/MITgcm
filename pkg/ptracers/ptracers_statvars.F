@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statvars.F,v 1.8 2005/05/15 03:06:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statvars.F,v 1.9 2007/11/05 18:48:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -21,7 +21,8 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 #include "PTRACERS_STATV.h"
 
       LOGICAL  DIFFERENT_MULTIPLE
@@ -69,7 +70,7 @@ C--   Cumulate state-variables with Half or Full time step :
 C-    Time Averages of single fields (no hFactor)
       DO iTracer=1,PTRACERS_numInUse
        CALL TIMEAVE_CUMULATE(ptracertave(1-Olx,1-Oly,1,1,1,iTracer),
-     &                       ptracer(1-Olx,1-Oly,1,1,1,iTracer),
+     &                       pTracer(1-Olx,1-Oly,1,1,1,iTracer),
      &                       Nr, DDTT, bi, bj, myThid)
       ENDDO
 
@@ -80,7 +81,7 @@ C-    Keep record of how much time has been integrated over
 
 C-    Time Averages of "intermediate" fields (no hFactor)
       IF ( myIter .NE. nIter0 ) THEN
- 
+
 C-    Time Averages of surface fluxes
 c      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
 c       k=Nr
@@ -93,14 +94,14 @@ C     ptracerFlux
 c       DO j=1,sNy
 c        DO i=1,sNx
 c         tempArray(i,j,bi,bj)=maskC(i,j,k,bi,bj)*
-c    &     surfaceForcingPtr(i,j,bi,bj,iTracer)*
+c    &     surfaceForcingPTr(i,j,bi,bj,iTracer)*
 c    &     drF(k)*hFacC(i,j,k,bi,bj)
 c        ENDDO
 c       ENDDO
 c       CALL TIMEAVE_CUMULATE(ptracerFluxtave(1-Olx,1-Oly,1,1,iTracer),
 c    &                        tempArray,1,deltaTclock,bi,bj,myThid)
         CALL TIMEAVE_CUMULATE(ptracerFluxtave(1-Olx,1-Oly,1,1,iTracer),
-     &                      surfaceForcingPtr(1-Olx,1-Oly,1,1,iTracer),
+     &                      surfaceForcingPTr(1-Olx,1-Oly,1,1,iTracer),
      &                                  1,deltaTclock,bi,bj,myThid)
        ENDDO
 
@@ -109,7 +110,7 @@ c    &                        tempArray,1,deltaTclock,bi,bj,myThid)
        ENDDO
       ENDIF
 
-#endif /* ALLOW_TIMEAVE */ 
+#endif /* ALLOW_TIMEAVE */
 #endif /* ALLOW_PTRACERS */
 
       RETURN

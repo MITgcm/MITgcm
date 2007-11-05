@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.9 2007/01/09 22:26:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.10 2007/11/05 18:48:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -20,7 +20,8 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 #include "GAD.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -72,7 +73,7 @@ C Loop over tracers
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ptracer(:,:,:,bi,bj,iTracer)
+CADJ STORE pTracer(:,:,:,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_ptracers, key=iptrkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.4 2007/10/19 03:22:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.5 2007/11/05 18:48:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -19,7 +19,8 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 
 C     !INPUT PARAMETERS:
 C     myIter            :: time-step number
@@ -49,8 +50,8 @@ C       Read variables from the pickup file
         CALL MNC_CW_SET_CITER(fn, 3, 3, myIter, -1, myThid)
         DO iTracer = 1,PTRACERS_numInUse
           CALL MNC_CW_RL_R('D',fn,0,0, PTRACERS_names(iTracer),
-     &         gPtrNm1(1-OLx,1-OLy,1,1,1,iTracer),myThid)
-      _EXCH_XYZ_R8(gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+     &         gpTrNm1(1-OLx,1-OLy,1,1,1,iTracer),myThid)
+      _EXCH_XYZ_R8(gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
         ENDDO
         CALL MNC_CW_SET_UDIM(fn, 2, myThid)
         DO iTracer = 1,PTRACERS_numInUse
@@ -91,9 +92,9 @@ C       Read historical tendencies as consecutive records
         DO iTracer=1,PTRACERS_num
           iRec = iTracer + PTRACERS_num*2
           CALL READ_REC_3D_RL( fn, prec, Nr,
-     O         gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     O         gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
      I         iRec, myIter, myThid )
-      _EXCH_XYZ_R8(gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+      _EXCH_XYZ_R8(gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
         ENDDO
 
       ELSE
@@ -108,10 +109,10 @@ C       tracers, with write_pickup dumping all of them (PTRACERS_num).
      I         iRec, myIter, myThid )
           iRec = 2*iTracer
           CALL READ_REC_3D_RL( fn, prec, Nr,
-     O         gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     O         gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
      I         iRec, myIter, myThid )
       _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
-      _EXCH_XYZ_R8(gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+      _EXCH_XYZ_R8(gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
         ENDDO
 
       ENDIF

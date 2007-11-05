@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_calc_diff.F,v 1.4 2007/09/27 14:42:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_calc_diff.F,v 1.5 2007/11/05 18:48:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: PTRACERS_CALC_DIFF
-C     !INTERFACE: 
-      SUBROUTINE PTRACERS_CALC_DIFF( 
+C     !INTERFACE:
+      SUBROUTINE PTRACERS_CALC_DIFF(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
      I        maskUp,
      O        KappaRtr,
@@ -31,7 +31,8 @@ C     == GLobal variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+c #include "PTRACERS_FIELDS.h"
 c #include "GAD.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -52,7 +53,10 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     I, J :: Loop counters
       INTEGER i,j,iTr
-      _RL KbryanLewis79, KbryanLewisEQ
+      _RL KbryanLewis79
+#ifdef ALLOW_BL79_LAT_VARY
+      _RL KbryanLewisEQ
+#endif
 CEOP
 
       KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
@@ -95,7 +99,7 @@ C--   Set vertical diffusivity contribution from KPP
 #endif
 
 #ifdef ALLOW_GMREDI
-        IF ( PTRACERS_useGMRedi(iTr) ) THEN 
+        IF ( PTRACERS_useGMRedi(iTr) ) THEN
          CALL GMREDI_CALC_DIFF(
      I        bi,bj,iMin,iMax,jMin,jMax,k,1,
      U        KappaRtr(1-Olx,1-Oly,iTr),
@@ -120,7 +124,7 @@ C--   Set vertical diffusivity contribution from KPP
      I        myThid)
         ENDIF
 #endif
-      
+
 #ifdef ALLOW_GGL90
         IF (useGGL90) THEN
          CALL GGL90_CALC_DIFF(
@@ -129,9 +133,9 @@ C--   Set vertical diffusivity contribution from KPP
      I        myThid)
         ENDIF
 #endif
-      
-C-    Apply mask to vertical diffusivity 
-C jmc: don't have the impression that masking is needed 
+
+C-    Apply mask to vertical diffusivity
+C jmc: don't have the impression that masking is needed
 C      but could be removed later if it's the case.
         DO j = 1-Oly, sNy+Oly
          DO i = 1-Olx, sNx+Olx
