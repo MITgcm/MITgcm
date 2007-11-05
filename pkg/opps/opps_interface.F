@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_interface.F,v 1.3 2005/04/27 14:10:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_interface.F,v 1.4 2007/11/05 19:15:04 jmc Exp $
 C $Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -39,11 +39,9 @@ C     == Global data ==
 #include "OPPS.h"
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 #endif
-#ifdef ALLOW_TIMEAVE
-#include "TIMEAVE_STATV.h"
-#endif 
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -98,7 +96,7 @@ C     initialization
        kSurface = Nr
       ELSE
        STOP 'OPPS_INTERFACE: We should never reach this point'
-      ENDIF	
+      ENDIF
 C     re-initialize convection counter
       DO k=1,Nr
        DO J=1-Oly,sNy+Oly
@@ -107,8 +105,8 @@ C     re-initialize convection counter
         ENDDO
        ENDDO
       ENDDO
-      
-C     
+
+C
       DO J=jMin,jMax
        DO I=iMin,iMax
         IF ( hFacC(I,J,kSurface,bi,bj) .gt. 0. _d 0 ) THEN
@@ -117,20 +115,20 @@ C
            tracerLoc(K,1) = theta(I,J,K,bi,bj)
            tracerLoc(K,2)  = salt(I,J,K,bi,bj)
            wVelLoc(K)  = wVel(I,J,K,bi,bj)
-          ENDDO	
+          ENDDO
          ELSE
           DO K=1,Nr
            tracerLoc(K,1) = theta(I,J,K,bi,bj)
            tracerLoc(K,2)  = salt(I,J,K,bi,bj)
            wVelLoc(K)  = - VERTICAL_VELOCITY
-          ENDDO	
+          ENDDO
          ENDIF
 #ifdef ALLOW_PTRACERS
          DO ktr = 3, nTracerInUse
           DO K=1,Nr
            tracerLoc(K,ktr) = ptracer(I,J,K,bi,bj,ktr-2)
           ENDDO
-         ENDDO	
+         ENDDO
 #endif /* ALLOW_PTRACERS */
 #ifdef ALLOW_OPPS_DEBUG
          IF ( OPPSdebugLevel .GE. debLevA ) THEN
@@ -152,7 +150,7 @@ C     determine range of temperature and salinity
      U        tracerLoc,
      I        wVelLoc,kMax,nTracer,nTracerInUse,
      I        I,J,bi,bj,myTime,myIter,myThid)
-#ifdef ALLOW_OPPS_DEBUG 
+#ifdef ALLOW_OPPS_DEBUG
          IF ( OPPSdebugLevel .GE. debLevA ) THEN
 C     determine range of temperature and salinity
           tMaxNew = -1. d 23
@@ -180,15 +178,15 @@ C     determine range of temperature and salinity
          DO K=1,Nr
           theta(I,J,K,bi,bj) = tracerLoc(K,1)
           salt(I,J,K,bi,bj)  = tracerLoc(K,2)
-         ENDDO	
+         ENDDO
 #ifdef ALLOW_PTRACERS
          DO ktr = 3, nTracerInUse
           DO K=1,Nr
            ptracer(I,J,K,bi,bj,ktr-2) = tracerLoc(K,ktr)
           ENDDO
-         ENDDO	
+         ENDDO
 #endif /* ALLOW_PTRACERS */
-        ENDIF	
+        ENDIF
        ENDDO
       ENDDO
 #endif /* ALLOW_OPPS */
