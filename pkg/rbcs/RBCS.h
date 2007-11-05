@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/Attic/RBCS.h,v 1.6 2007/10/09 00:09:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/Attic/RBCS.h,v 1.7 2007/11/05 19:13:11 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_RBCS
@@ -29,13 +29,6 @@ c number of mask to read
       CHARACTER*(MAX_LEN_FNAM) relaxMaskFile(maskLEN)
       CHARACTER*(MAX_LEN_FNAM) relaxTFile
       CHARACTER*(MAX_LEN_FNAM) relaxSFile
-#ifdef ALLOW_PTRACERS
-      LOGICAL useRBCptrnum(PTRACERS_num)
-      _RL RBC_ptracers(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
-     &              PTRACERS_num)
-      _RL tauRelaxPTR(PTRACERS_num)
-      CHARACTER*(MAX_LEN_FNAM) relaxPtracerFile(PTRACERS_num)
-#endif
 
       COMMON /RBCS_PARM01_R/
      &          tauRelaxT,
@@ -57,11 +50,19 @@ c number of mask to read
      &          relaxSFile
 
 #ifdef ALLOW_PTRACERS
-      COMMON /RBCS_PARM02/
-     &          useRBCptrnum,
-     &          tauRelaxPTR,
-     &          relaxPtracerFile,
-     &          RBC_ptracers
+      LOGICAL useRBCptrnum(PTRACERS_num)
+      _RL RBC_ptracers(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
+     &              PTRACERS_num)
+      _RL tauRelaxPTR(PTRACERS_num)
+      CHARACTER*(MAX_LEN_FNAM) relaxPtracerFile(PTRACERS_num)
+
+      COMMON /RBCS_PARM02_L/
+     &          useRBCptrnum
+      COMMON /RBCS_PARM02_R/
+     &          RBC_ptracers,
+     &          tauRelaxPTR
+      COMMON /RBCS_PARM02_C/
+     &          relaxPtracerFile
 #endif
 
       COMMON /RBCFFIELDS/
