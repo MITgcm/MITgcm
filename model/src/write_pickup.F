@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.5 2007/10/29 18:17:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.6 2007/11/05 15:09:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -267,6 +267,7 @@ C--------------------------
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R WRITE_PICKUP (list-size Pb)'
         ENDIF
+#ifdef ALLOW_MDSIO
 C-    Note: temporary: since it's a pain to add more arguments to
 C     all MDSIO S/R, uses instead this specific S/R to write only
 C     meta files but with more informations in it.
@@ -277,6 +278,7 @@ C     meta files but with more informations in it.
      &                         nWrFlds, wrFldList,
      &                         1, myTime,
      &                         nj, myIter, myThid )
+#endif /* ALLOW_MDSIO */
 C--------------------------
       ENDIF
 
