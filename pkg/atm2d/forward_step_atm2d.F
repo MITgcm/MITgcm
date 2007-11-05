@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.9 2007/10/17 21:02:37 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.10 2007/11/05 21:15:53 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -316,7 +316,7 @@ C    Data for the restart of the 2D ML model
         ENDIF
         CALL YR_END_DIAGS(iyr,myTime,myIter,myThid)
 C If necessary, next line can be moved outside OCEAN_3D for IGSM2.2 cleanups
-        IF (iloop.EQ.nTimeSteps) CALL ATM2D_FINISH(myThid)
+        IF (iloop.EQ.nTimeSteps) CALL ATM2D_FINISH(myTime, myIter, myThid)
 #endif
 
 #ifdef CPL_TEM
