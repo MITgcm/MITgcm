@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.18 2007/11/05 21:02:03 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.19 2007/11/05 22:27:00 stephd Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -111,13 +111,16 @@ c
 #endif
 #endif
 
-         call DIC_ATMOS(myIter,myTime,myThid,1)
 #endif
 cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
 
 c
         ENDDO
        ENDDO
+
+#ifdef ALLOW_DIC
+         call DIC_ATMOS(myIter,myTime,myThid,1)
+#endif
 
 #endif /* GCHEM_SEPARATE_FORCING */
 #endif /* ALLOW_GCHEM */
