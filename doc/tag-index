@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.903 2007/11/05 16:02:31 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.904 2007/11/05 19:38:59 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o split PTRACERS.h in 2 header files: PTRACERS_FIELDS.h & PTRACERS_PARAMS.h
+ (keep a temporary version of PTRACERS.h in verification/OpenAD/code_ad_openad
+  to allow to compile customized code before the update)
 o cleaning-up: 
   - fix CPP instruction syntax in pkg/obcs
   - replace (some) call to MDSIO S/R with call to RW interface S/R ; and
