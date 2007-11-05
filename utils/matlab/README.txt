@@ -1,33 +1,31 @@
+% $Header: /u/gcmpack/MITgcm/utils/matlab/README.txt,v 1.2 2007/11/05 17:05:13 jmc Exp $
+% $Name:  $
 
 The following utilities are available in this directory:
 
-  contourfv.m               ::
-  cube2latlon.m             ::
-  cube2latlon_fast.m        ::
-  cube2latlon_preprocess.m  ::
-  dens_poly3.m              ::
-  displaytiles.m            ::
-  drawedges.m               ::
-  grepread.m                ::
-  griddata_fast.m           ::
-  griddata_preprocess.m     ::
-  ini_poly3.m               ::
-  longitude.m               ::
-  merccube.m                ::
+  cm_landwater.m            :: creates colormap for plotting bathymetry/orography
+  contourfv.m               :: customized contourf version (for finite volume topo)
+  densjmd95.m               :: calculate in-situ density (Jackett & McDougall 1995)
+  densmdjwf.m               :: calculate in-situ density (McDougall et.al. 2003)
+  dens_poly3.m              :: calculate in-situ density as MITgcm POLY3
+  gluemnc.m                 :: glue together different tiles into a global file
+  grepread.m                :: a new (from Aug 2001) useful script
+  griddata_fast.m           :: script to help use cube and netcdf
+  griddata_preprocess.m     :: script to help use cube and netcdf
+  ini_poly3.m               :: calculate in-situ density as MITgcm POLY3
+  inpaint_nans.m            :: used by interpickups.m (for topography mask)
+  interpickups.m            :: interpolate mnc pickup files
+  ioLb2num.m                :: convert from ptracer io-label to ptracer number
+  longitude.m               :: new (from Aug 2001) script for plotting cube stuff.
   mnc_assembly.m            :: assemble MNC tiles into single NetCDF files
-  nc_add.m                  ::
-  pcolorfv.m                ::
-  permutetiles.m            ::
-  plotcube.m                ::
-  rdmds.m                   ::
-  rdmeta.m                  ::
-  rdmnc.m                   ::
-  stats.m                   ::
-  test_nc_add.m             ::
-  tiles.m                   ::
-  uvcube2latlon.m           ::
-  uvcube2latlon_fast.m      ::
-
+  nc_add.m                  :: script to help use cube and netcdf
+  num2ioLb.m                :: convert from ptracer number to ptracer io-label
+  pcolorfv.m                :: customized pcolor version (for finite volume topo)
+  rdmds.m                   :: read MDSIO output (data & meta) files
+  rdmeta.m                  :: read MDSIO output meta file
+  rdmnc.m                   :: read tiled MNC output files
+  stats.m                   :: calculate and print basic statistics of 1 array
+  test_nc_add.m             :: script to help use cube and netcdf
 
 
 And more complete directions for each script are:
