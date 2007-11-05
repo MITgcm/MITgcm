@@ -146,7 +146,7 @@ c         print*,'weights',ntim, aWght, bWght, tmp
 c interactive atmosphere
       if (gchem_int1.eq.3) then
 
-       _BEGIN_MASTER(myThid)
+c      _BEGIN_MASTER(myThid)
 
        total_atmos_moles= 1.5 _d 20
 
@@ -179,9 +179,9 @@ c interactive atmosphere
          ENDDO
         ENDDO
        ENDDO
+
        _GLOBAL_SUM_R8(total_flux,myThid)
        _GLOBAL_SUM_R8(total_ocean_carbon,myThid)
-
 
        if (istate.eq.0) then
 c read state from output file
@@ -211,7 +211,6 @@ c write out if time for a new pickup
             WRITE(fn,'(A,I10.10)') 'dic_atmos.',myIter
 C     Going to really do some IO. Make everyone except master thread wait.
             _BARRIER
-
             open(26,file=fn,status='new')
             write(26,*) total_atmos_carbon, atpco2
             close(26)
@@ -219,9 +218,6 @@ C     Going to really do some IO. Make everyone except master thread wait.
           endif
        endif
 
-
-C--   Everyone else must wait
-      _BARRIER
 
       atpco2=total_atmos_carbon/total_atmos_moles
 
@@ -282,11 +278,7 @@ c
         endif
         endif
 
-      _END_MASTER(myThid)
-
-C--   Everyone else must wait
-      _BARRIER
-
+c     _END_MASTER(myThid)
 
        endif
 
