@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.9 2007/10/26 21:08:13 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.10 2007/11/05 19:02:08 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -21,8 +21,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+c#include "PTRACERS_SIZE.h"
+c#include "PTRACERS_PARAMS.h"
+c#include "PTRACERS_FIELDS.h"
 #include "GCHEM.h"
 #include "DIC_ABIOTIC.h"
 #include "DIC_BIOTIC.h"

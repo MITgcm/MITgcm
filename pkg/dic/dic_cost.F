@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.5 2005/04/06 18:36:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.6 2007/11/05 19:02:08 jmc Exp $
 C $Name:  $
 
 cswdcost -- add sunroutine ---
@@ -21,8 +21,9 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+c#include "PTRACERS_SIZE.h"
+c#include "PTRACERS_PARAMS.h"
+c#include "PTRACERS_FIELDS.h"
 #include "GCHEM.h"
 #include "DIC_ABIOTIC.h"
 #ifdef DIC_BIOTIC
@@ -91,10 +92,10 @@ cswdmonth-add--
      &          *rA(i,j,bi,bj)*drF(2)*maskC(i,j,2,bi,bj) +
      &          (po4lev3(i,j,it,bi,bj)-po4obsl3(i,j,it,bi,bj))**2
      &          /po4varm(it,3)
-     &          *rA(i,j,bi,bj)*drF(3)*maskC(i,j,3,bi,bj) 
+     &          *rA(i,j,bi,bj)*drF(3)*maskC(i,j,3,bi,bj)
 cQQ  &          (po4lev4(i,j,it,bi,bj)-po4obsl4(i,j,it,bi,bj))**2
 cQQ  &          /po4varm(it,4)
-cQQ  &          *rA(i,j,bi,bj)*drF(4)*maskC(i,j,4,bi,bj) 
+cQQ  &          *rA(i,j,bi,bj)*drF(4)*maskC(i,j,4,bi,bj)
               o2costm=o2costm+
      &          (o2lev1(i,j,it,bi,bj)-o2obsl1(i,j,it,bi,bj))**2
      &          /o2varm(it,1)
@@ -104,7 +105,7 @@ cQQ  &          *rA(i,j,bi,bj)*drF(4)*maskC(i,j,4,bi,bj)
      &          *rA(i,j,bi,bj)*drF(2)*maskC(i,j,2,bi,bj) +
      &          (o2lev3(i,j,it,bi,bj)-o2obsl3(i,j,it,bi,bj))**2
      &          /o2varm(it,3)
-     &          *rA(i,j,bi,bj)*drF(3)*maskC(i,j,3,bi,bj) 
+     &          *rA(i,j,bi,bj)*drF(3)*maskC(i,j,3,bi,bj)
 cQQ  &          (O2lev4(i,j,it,bi,bj)-o2obsl4(i,j,it,bi,bj))**2
 cQQ  &          /o2varm(it,4)
 cQQ  &          *rA(i,j,bi,bj)*drF(4)*maskC(i,j,4,bi,bj)

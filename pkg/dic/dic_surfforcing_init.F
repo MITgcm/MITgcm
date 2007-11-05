@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.11 2007/10/26 21:08:13 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.12 2007/11/05 19:02:08 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -13,7 +13,7 @@ C !INTERFACE: ==========================================================
      I          myThid)
 
 C !DESCRIPTION:
-C  Calculate first guess of pH                            
+C  Calculate first guess of pH
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -27,7 +27,8 @@ C !USES: ===============================================================
 #include "GCHEM.h"
 #ifdef DIC_BIOTIC
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 #include "DIC_LOAD.h"
 #endif
 
@@ -79,7 +80,7 @@ cswd QQ change for placement of chem forcing (ie. after timestep)
 
        intime0=intime0+1
        intime1=intime1+1
-       
+
        _BARRIER
        _BEGIN_MASTER(myThid)
         WRITE(*,*)

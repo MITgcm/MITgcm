@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.11 2006/12/12 22:37:28 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.12 2007/11/05 19:02:08 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -19,7 +19,8 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "DIC_BIOTIC.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+c#include "PTRACERS_FIELDS.h"
 
 C     == Routine arguments ==
 C     myTime - Current time of simulation ( s )
@@ -50,7 +51,7 @@ C     == Local variables ==
 
 C     Dump files and restart average computation if needed
       IF ( DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock) ) THEN
-         
+
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -78,10 +79,10 @@ C      Normalize by integrated time
      &                 bi,bj,myThid)
         ENDDO
        ENDDO
-       
+
        IF ( PTRACERS_timeave_mdsio )  THEN
          WRITE(suff,'(I10.10)') myIter
-         CALL WRITE_FLD_XYZ_RL('DIC_Biotave.',suff,BIOave,         
+         CALL WRITE_FLD_XYZ_RL('DIC_Biotave.',suff,BIOave,
      &        myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('DIC_Cartave.',suff,CARave,
      &        myIter,myThid)
@@ -155,12 +156,12 @@ C      Reset averages to zero
          enddo
         ENDDO
        ENDDO
-         
+
       ENDIF
 
 #endif /* ALLOW_TIMEAVE */
-      
+
 #endif /* DIC_BIOTIC   */
-      
+
       RETURN
       END

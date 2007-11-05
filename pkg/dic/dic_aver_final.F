@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_final.F,v 1.4 2005/08/18 18:24:29 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_final.F,v 1.5 2007/11/05 19:02:08 jmc Exp $
 C $Name:  $
 
 cswdcost -- add sunroutine ---
@@ -17,12 +17,13 @@ C     |==========================================================|
 
 C     == GLobal variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+c#include "PTRACERS_SIZE.h"
+c#include "PTRACERS_PARAMS.h"
+c#include "PTRACERS_FIELDS.h"
 #include "GCHEM.h"
 #include "DIC_ABIOTIC.h"
 #ifdef DIC_BIOTIC

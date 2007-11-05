@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.16 2007/08/14 19:32:40 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.17 2007/11/05 19:02:08 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -21,8 +21,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+c#include "PTRACERS_SIZE.h"
+c#include "PTRACERS_PARAMS.h"
+c#include "PTRACERS_FIELDS.h"
 #include "GCHEM.h"
 #include "DIC_ABIOTIC.h"
 #include "DIC_BIOTIC.h"
