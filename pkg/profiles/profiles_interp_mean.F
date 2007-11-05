@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/Attic/profiles_interp_mean.F,v 1.2 2007/06/15 04:49:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/Attic/profiles_interp_mean.F,v 1.3 2007/11/05 19:17:59 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -28,7 +28,7 @@ C ==================== Global Variables ===========================
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_CAL
 #include "cal.h"
@@ -39,10 +39,10 @@ C ==================== Global Variables ===========================
       integer NLEVELMAX
       parameter (NLEVELMAX=1)
 #endif
-#ifdef ALLOW_PTRACERS
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
-#endif
+c#ifdef ALLOW_PTRACERS
+c#include "PTRACERS_SIZE.h"
+c#include "PTRACERS_FIELDS.h"
+c#endif
 C ==================== Routine Variables ==========================
       _RL  mytime
       integer mythid

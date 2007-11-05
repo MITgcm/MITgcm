@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.7 2007/06/15 04:49:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.8 2007/11/05 19:17:59 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -41,7 +41,7 @@ C ==================== Global Variables ===========================
 #endif
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_FIELDS.h"
 #endif
 C ==================== Routine Variables ==========================
       _RL  mytime

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/Attic/profiles_interp_genericgrid.F,v 1.1 2007/06/15 05:04:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/Attic/profiles_interp_genericgrid.F,v 1.2 2007/11/05 19:17:59 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -42,7 +42,7 @@ C ==================== Global Variables ===========================
 #endif
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS.h"
+#include "PTRACERS_FIELDS.h"
 #endif
 C ==================== Routine Variables ==========================
       _RL  mytime
