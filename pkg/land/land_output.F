@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_output.F,v 1.2 2007/01/28 18:13:36 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_output.F,v 1.3 2007/11/05 15:40:53 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -47,11 +47,10 @@ CEOP
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     == Local variables ==
-      INTEGER bi, bj, k, nrec
+      INTEGER bi, bj, k
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_FNAM) fn
-      CHARACTER*(80) suff
-      LOGICAL gf
+      CHARACTER*(10) suff
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
       CHARACTER*(80) fmnc
@@ -65,48 +64,48 @@ C     == Local variables ==
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( 
+      IF (
      &     DIFFERENT_MULTIPLE( land_diagFreq, myTime, land_deltaT )
      &  .OR. dumpInitAndLast.AND.( myTime.EQ.endTime .OR.
      &                             myTime.EQ.startTime  )
      &   ) THEN
 
-C--   Write snap-shot 
+C--   Write snap-shot
 C jmc: previously done from LAND_DO_DIAGS, but much better here.
 
         _BARRIER
 
         IF ( land_snapshot_mdsio ) THEN
 
-          WRITE(suff,'(A1,I10.10)') '.', myIter
+          WRITE(suff,'(I10.10)') myIter
 
 C--   Write ground Temp and soil moisture :
-          CALL WRITE_FLD_3D_RL( 'land_groundT', suff, land_nLev,
+          CALL WRITE_FLD_3D_RL( 'land_groundT.', suff, land_nLev,
      &                           land_groundT, myIter, myThid )
-          CALL WRITE_FLD_3D_RL( 'land_enthalp', suff, land_nLev,
+          CALL WRITE_FLD_3D_RL( 'land_enthalp.', suff, land_nLev,
      &                           land_enthalp, myIter, myThid )
-          CALL WRITE_FLD_3D_RL( 'land_groundW', suff, land_nLev,
+          CALL WRITE_FLD_3D_RL( 'land_groundW.', suff, land_nLev,
      &                           land_groundW, myIter, myThid )
 C--   other (2-D) state variables:
           CALL WRITE_FLD_XY_RL(
-     &         'land_skinT', suff, land_skinT, myIter, myThid )
+     &         'land_skinT.', suff, land_skinT, myIter, myThid )
           CALL WRITE_FLD_XY_RL(
-     &         'land_hSnow', suff, land_hSnow, myIter, myThid )
+     &         'land_hSnow.', suff, land_hSnow, myIter, myThid )
           CALL WRITE_FLD_XY_RL(
-     &         'land_snAge', suff, land_snowAge, myIter, myThid )
+     &         'land_snAge.', suff, land_snowAge, myIter, myThid )
 
           IF ( myIter.NE.nIter0 ) THEN
 C--   fluxes (2-D map):
           CALL WRITE_FLD_XY_RL(
-     &         'land_RunOff', suff, land_runOff, myIter, myThid )
+     &         'land_RunOff.', suff, land_runOff, myIter, myThid )
           CALL WRITE_FLD_XY_RL(
-     &         'land_enRnOf', suff, land_enRnOf, myIter, myThid )
+     &         'land_enRnOf.', suff, land_enRnOf, myIter, myThid )
           CALL WRITE_FLD_XY_RL(
-     &         'land_HeatFx', suff, land_HeatFlx, myIter, myThid )
+     &         'land_HeatFx.', suff, land_HeatFlx, myIter, myThid )
           CALL WRITE_FLD_XY_RL(
-     &         'land_frWaFx', suff, land_Pr_m_Ev, myIter, myThid )
+     &         'land_frWaFx.', suff, land_Pr_m_Ev, myIter, myThid )
           CALL WRITE_FLD_XY_RL(
-     &         'land_EnWaFx', suff, land_EnWFlux, myIter, myThid )
+     &         'land_EnWaFx.', suff, land_EnWFlux, myIter, myThid )
           ENDIF
 
         ENDIF
@@ -180,12 +179,12 @@ C      Initialize time-average arrays to zero
          CALL TIMEAVE_RESET(land_eROtave,        1, bi, bj, myThid)
          DO k=1,Nr
            land_timeAve(k,bi,bj)=0.
-         ENDDO                     
+         ENDDO
         ENDDO
        ENDDO
 
 C     Dump files and restart average computation if needed
-      ELSEIF ( 
+      ELSEIF (
      &     DIFFERENT_MULTIPLE( land_taveFreq, myTime, land_deltaT )
      &       ) THEN
 
@@ -209,41 +208,25 @@ C      Normalize by integrated time
 
        IF ( land_timeave_mdsio ) THEN
 
-C-     find wether we are writing globalFile or tile-files:
-        CALL GET_WRITE_GLOBAL_FLD( gf )
-
         WRITE(fn,'(A,I10.10)') 'land_tave.', myIter
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
-     &        'RL',land_nLev,land_grTtave, 1, myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
-     &        'RL',land_nLev,land_entave,  2, myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
-     &        'RL',land_nLev,land_grWtave, 3, myIter,myThid)
-        nrec = 3*land_nLev
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
-     &        'RL', 1 , land_sTtave,  1+nrec, myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
-     &        'RL', 1 , land_hStave,  2+nrec, myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
-     &        'RL', 1 , land_sAtave,  3+nrec, myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
-     &        'RL', 1 , land_ROftave, 4+nrec, myIter,myThid)
-        CALL MDSWRITEFIELD(fn,writeBinaryPrec,gf,
-     &        'RL', 1 , land_eROtave, 5+nrec, myIter,myThid)
-
-       WRITE(msgBuf,'(A,I10)')
-     &  '// Land Time-average  written, t-step', myIter
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )         
-       WRITE(msgBuf,'(A)') ' '
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )         
+        CALL WRITE_REC_3D_RL( fn, writeBinaryPrec, land_nLev,
+     &                        land_grTtave, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, writeBinaryPrec, land_nLev,
+     &                        land_entave,  2, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, writeBinaryPrec, land_nLev,
+     &                        land_grWtave, 3, myIter, myThid )
+        k = 3*land_nLev
+        CALL WRITE_REC_XY_RL( fn, land_sTtave,  k+1, myIter, myThid )
+        CALL WRITE_REC_XY_RL( fn, land_hStave,  k+2, myIter, myThid )
+        CALL WRITE_REC_XY_RL( fn, land_sAtave,  k+3, myIter, myThid )
+        CALL WRITE_REC_XY_RL( fn, land_ROftave, k+4, myIter, myThid )
+        CALL WRITE_REC_XY_RL( fn, land_eROtave, k+5, myIter, myThid )
 
        ENDIF
 
 #ifdef ALLOW_MNC
        IF ( land_timeave_mnc ) THEN
-         
+
          IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
            pf(1:1) = 'D'
          ELSE
@@ -264,7 +247,7 @@ C-     find wether we are writing globalFile or tile-files:
      &        'land_enthalp', land_entave, myThid)
          CALL MNC_CW_RL_W(pf,fn,0,0,
      &        'land_groundW', land_grWtave, myThid)
-         
+
          CALL MNC_CW_RL_W(pf,fn,0,0,
      &        'land_skinT', land_sTtave, myThid)
          CALL MNC_CW_RL_W(pf,fn,0,0,
@@ -275,9 +258,17 @@ C-     find wether we are writing globalFile or tile-files:
      &        'land_RunOff', land_ROftave, myThid)
          CALL MNC_CW_RL_W(pf,fn,0,0,
      &        'land_enRnOf', land_eROtave, myThid)
-         
+
        ENDIF
 #endif
+
+       WRITE(msgBuf,'(A,I10)')
+     &  '// Land Time-average  written, t-step', myIter
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A)') ' '
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
 
 C      Reset averages to zero
        _BARRIER
@@ -293,7 +284,7 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(land_eROtave,        1, bi, bj, myThid)
          DO k=1,Nr
            land_timeAve(k,bi,bj)=0.
-         ENDDO                     
+         ENDDO
         ENDDO
        ENDDO
 
