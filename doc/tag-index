@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.902 2007/11/02 15:50:30 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.903 2007/11/05 16:02:31 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o cleaning-up: 
+  - fix CPP instruction syntax in pkg/obcs
+  - replace (some) call to MDSIO S/R with call to RW interface S/R ; and
+    add #ifdef ALLOW_MDSIO elsewhere (allows to compile without pkg/mdsio)
+  - fix some threads issue in IO parts.
 o pkg/dic:
   - add tons of "_d 0" (--> much better testreports !)
    and then update outputs of tutorial_global_oce_biogeo
