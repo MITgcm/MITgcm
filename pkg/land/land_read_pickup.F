@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_read_pickup.F,v 1.4 2006/06/23 00:49:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_read_pickup.F,v 1.5 2007/11/05 15:40:24 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -43,11 +43,15 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+C     Going to really do some IO. Make everyone except master thread wait.
+      _BARRIER
+
       IF ( .NOT.land_pickup_read_mnc ) THEN
 
       WRITE(fn,'(A,I10.10)') 'pickup_land.',myIter
       prec = precFloat64
 
+#ifdef ALLOW_MDSIO
       IF ( land_oldPickup ) THEN
 C-    Read fields as consecutive records
       CALL MDSREADFIELD(fn,prec,'RL',land_nLev,land_groundT,1,myThid)
@@ -64,6 +68,9 @@ C-    Read fields as consecutive records
       CALL MDSREADFIELD(fn,prec,'RL', 1, land_snowAge,k+3, myThid)
 
       ENDIF
+#else /* ALLOW_MDSIO */
+      STOP 'ABNORMAL END: S/R LAND_READ_PICKUP: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
 
       ENDIF
 
@@ -95,6 +102,9 @@ C-    Read fields as consecutive records
 
 C- jmc: exchange is not really necessary for land model
 C-      and presently exchange S/R cannot work for 3d array where 3rd dim <> Nr
+
+C--   Every one else must wait until writing is done.
+      _BARRIER
 
 #endif /* ALLOW_LAND */
 

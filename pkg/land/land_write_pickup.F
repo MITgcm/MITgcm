@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_write_pickup.F,v 1.4 2005/09/17 03:17:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_write_pickup.F,v 1.5 2007/11/05 15:40:24 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: LAND_WRITE_PICKUP 
+C     !ROUTINE: LAND_WRITE_PICKUP
 C     !INTERFACE:
       SUBROUTINE LAND_WRITE_PICKUP( isperm, suff,
-     &     myTime, myIter, myThid )
+     I                              myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -59,6 +59,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       lChar = ILNBLNK(suff)
 
+C     Going to really do some IO. Make everyone except master thread wait.
+      _BARRIER
+
       IF ( land_pickup_write_mdsio ) THEN
 
 C--   Write fields as consecutive records
@@ -66,6 +69,7 @@ C--   Write fields as consecutive records
       prec = precFloat64
       lgf = globalFiles
 
+#ifdef ALLOW_MDSIO
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',land_nLev,
      &                   land_enthalp,1,myIter,myThid)
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',land_nLev,
@@ -77,6 +81,9 @@ C--   Write fields as consecutive records
      &                   land_hSnow,  k+2,myIter,myThid)
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,
      &                   land_snowAge,k+3,myIter,myThid)
+#else /* ALLOW_MDSIO */
+      STOP 'ABNORMAL END: S/R OBCS_READ_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
 
       ENDIF
 
@@ -117,6 +124,9 @@ C--   Write fields as consecutive records
 
       ENDIF
 #endif /*  ALLOW_MNC  */
+
+C--   Every one else must wait until writing is done.
+      _BARRIER
 
 #endif /* ALLOW_LAND */
 
