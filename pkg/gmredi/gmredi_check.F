@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.14 2007/09/18 21:24:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.15 2007/11/05 19:03:26 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -32,7 +32,7 @@ C     === Global variables ===
 #endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
-# include "PTRACERS.h"
+# include "PTRACERS_PARAMS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
