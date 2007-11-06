@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_init_fixed.F,v 1.2 2007/05/10 21:15:52 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_init_fixed.F,v 1.3 2007/11/06 17:33:47 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,7 +59,7 @@ CEOP
      &       'Net fresh water flux', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('FWtave','note',
      &       'equals E-P-R', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('FWtave','units','m/s', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('FWtave','units','kg/m^2/s', myThid)
         
         CALL MNC_CW_ADD_VNAME('SFxtave','Cen_xy_Hn__-__t',3,4,myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('SFxtave','long_name',
