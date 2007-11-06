@@ -148,6 +148,12 @@ c interactive atmosphere
 
 c      _BEGIN_MASTER(myThid)
 
+cMass dry atmosphere = (5.1352+/-0.0003)d18 kg (Trenberth & Smith,
+cJournal of Climate 2005)
+cand Mean molecular mass air = 28.97 g/mol (NASA earth fact sheet)
+       total_atmos_moles= 1.77 _d 20
+c for 278ppmv we need total_atmos_carbon=4.9206e+16
+
        total_atmos_moles= 1.5 _d 20
 
        if (istate.gt.0) then
@@ -211,6 +217,7 @@ c write out if time for a new pickup
             WRITE(fn,'(A,I10.10)') 'dic_atmos.',myIter
 C     Going to really do some IO. Make everyone except master thread wait.
             _BARRIER
+c write values to new pickup
             open(26,file=fn,status='new')
             write(26,*) total_atmos_carbon, atpco2
             close(26)
