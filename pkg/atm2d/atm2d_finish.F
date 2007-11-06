@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_finish.F,v 1.3 2007/11/05 21:15:53 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_finish.F,v 1.4 2007/11/06 20:28:40 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -6,7 +6,7 @@ C $Name:  $
 #  include "ATM2D_OPTIONS.h"
 #endif
 C
-      SUBROUTINE ATM2D_FINISH( myTime, myIter, myThid)
+      SUBROUTINE ATM2D_FINISH( myThid)
 C     |==========================================================|
 C     | Called from forward_step_atm2d the last time through the |
 C     | main loop -- thus, and opportunity to shut down MPI, do  |
@@ -23,17 +23,12 @@ C     == Routine arguments ==
 C     myIter - iteration counter for this thread
 C     myTime - time counter for this thread
 C     myThid - thread number for this instance of the routine.
-      _RL     myTime
-      INTEGER myIter
       INTEGER myThid
 
 C     === Local variables ===
 #ifdef OCEAN_3D
       INTEGER rc
 #endif
-
-
-      CALL ATM2D_WRITE_PICKUP(.TRUE.,myTime, myIter, myThid)
 
 #ifdef ATM2D_MPI_ON
       CALL MPI_BARRIER( MPI_COMM_WORLD, rc )

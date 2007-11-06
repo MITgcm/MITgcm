@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_write_pickup.F,v 1.5 2007/11/05 22:59:51 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_write_pickup.F,v 1.6 2007/11/06 20:28:40 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -76,11 +76,8 @@ CEOP
       IF (
      &     ( .NOT.modelEnd .AND. (permCheckPoint.OR.tempCheckPoint) )
      &     .OR.
-c     &     ( modelEnd .AND. .NOT.(permCheckPoint.OR.tempCheckPoint) )
-     &     ( modelEnd .AND. .NOT.(permCheckPoint) )
+     &     ( modelEnd .AND. .NOT.(permCheckPoint.OR.tempCheckPoint) )
      &     ) THEN
-
-        IF (modelEnd) permCheckPoint=.TRUE.
 
         IF (tempCheckPoint)   !toggle was done prematurely...
      &       nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
