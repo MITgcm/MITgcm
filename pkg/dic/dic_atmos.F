@@ -154,8 +154,6 @@ cand Mean molecular mass air = 28.97 g/mol (NASA earth fact sheet)
        total_atmos_moles= 1.77 _d 20
 c for 278ppmv we need total_atmos_carbon=4.9206e+16
 
-       total_atmos_moles= 1.5 _d 20
-
        if (istate.gt.0) then
         total_ocean_carbon_old=total_ocean_carbon
         total_atmos_carbon_old=total_atmos_carbon
