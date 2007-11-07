@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.9 2007/11/05 18:55:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.10 2007/11/07 11:11:44 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -33,19 +33,14 @@ C     == Routine arguments ==
 
 #ifdef ALLOW_PTRACERS
 C     == Local variables ==
-#ifndef ALLOW_EXF
       COMMON /cfc_load/
-     &    wspeed0, wspeed1, ice0, ice1, atmosp0,
+     &    wind0, wind1, ice0, ice1, atmosp0,
      &    atmosp1
-      _RS wspeed0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS wspeed1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS wind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#else
-      COMMON /cfc_load/
-     &    ice0, ice1, atmosp0, atmosp1
-#endif
-      _RS ice0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS ice1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS wind0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS wind1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS wind    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS ice0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS ice1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS atmosp0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS atmosp1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
        INTEGER bi,bj,i,j,intime0,intime1
@@ -60,8 +55,8 @@ C First call requires that we initialize everything to zero for safety
 cQQQ need to check timing
        IF ( myIter .EQ. nIter0 ) THEN
 #ifndef ALLOW_EXF
-         CALL LEF_ZERO( wspeed0,myThid )
-         CALL LEF_ZERO( wspeed1,myThid )
+         CALL LEF_ZERO( wind0,myThid )
+         CALL LEF_ZERO( wind1,myThid )
 #endif
          CALL LEF_ZERO( atmosp0,myThid )
          CALL LEF_ZERO( atmosp1,myThid )
@@ -110,55 +105,63 @@ C      data for the period ahead and the period behind myTime.
      &                 myTime,myIter
        _END_MASTER(myThid)
 
-#ifndef ALLOW_EXF
-      IF ( WindFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( WindFile,wspeed0,intime0,
+      IF ( WindFile .NE. ' '  .AND. .NOT.useEXF ) THEN
+         CALL READ_REC_XY_RS( WindFile,wind0,intime0,
      &        myIter,myThid )
-         CALL READ_REC_XY_RS( WindFile,wspeed1,intime1,
+         CALL READ_REC_XY_RS( WindFile,wind1,intime1,
      &        myIter,myThid )
        ENDIF
-#endif
       IF ( AtmospFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( AtmospFile,atmosp0,intime0,
      &        myIter,myThid )
          CALL READ_REC_XY_RS( AtmospFile,atmosp1,intime1,
      &        myIter,myThid )
        ENDIF
-#ifndef ALLOW_SEAICE
-       IF ( IceFile .NE. ' '  ) THEN
+       IF ( IceFile .NE. ' '  .AND. .NOT.useSEAICE ) THEN
          CALL READ_REC_XY_RS( IceFile,ice0,intime0,
      &       myIter,myThid )
          CALL READ_REC_XY_RS( IceFile,ice1,intime1,
      &       myIter,myThid )
        ENDIF
-#endif
 
 C
-#ifndef ALLOW_EXF
-       _EXCH_XY_R4(wspeed0, myThid )
-       _EXCH_XY_R4(wspeed1, myThid )
-#endif
+       IF (.NOT.useEXF) THEN
+       _EXCH_XY_R4(wind0, myThid )
+       _EXCH_XY_R4(wind1, myThid )
+       ENDIF
        _EXCH_XY_R4(atmosp0, myThid )
        _EXCH_XY_R4(atmosp1, myThid )
-#ifndef ALLOW_SEAICE
+       IF (.NOT.useSEAICE) THEN
        _EXCH_XY_R4(ice0, myThid )
        _EXCH_XY_R4(ice1, myThid )
-#endif
+       ENDIF
 C
        ENDIF
 
+#ifdef ALLOW_EXF
+       IF ( useEXF ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-#ifdef ALLOW_EXF
 C     sh = max(wspeed,umin), with default umin=0.5m/s
 C           pisvel(i,j,bi,bj)=(0.31 _d 0*wspeed(i,j,bi,bj)**2)/3.6 _d 5
            pisvel(i,j,bi,bj)=(0.31 _d 0*sh(i,j,bi,bj)**2)/3.6 _d 5
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+       ELSE
 #else
+       IF (.TRUE.) THEN
+#endif /* ALLOW_EXF */
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
            IF ( WindFile .NE. ' '  ) THEN
-             WIND(i,j,bi,bj)    = bWght*wspeed0(i,j,bi,bj)
-     &                        +aWght*wspeed1(i,j,bi,bj)
+             WIND(i,j,bi,bj)    = bWght*wind0(i,j,bi,bj)
+     &                           +aWght*wind1(i,j,bi,bj)
            ELSE
              WIND(i,j,bi,bj) = 5. _d 0*maskC(i,j,1,bi,bj)
            ENDIF
@@ -166,27 +169,56 @@ c calculate piston velocity
 c QQ: note - we should have wind speed variance in here
 c following Wannikof (1992)
            pisvel(i,j,bi,bj)=(0.31 _d 0*wind(i,j,bi,bj)**2)/3.6 _d 5
-#endif /* ALLOW_EXF */
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+       ENDIF
+C
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
            IF ( AtmospFile .NE. ' '  ) THEN
-             ATMOSP(i,j,bi,bj)    = bWght*atmosp0(i,j,bi,bj)
-     &                        +aWght*atmosp1(i,j,bi,bj)
+             ATMOSP(i,j,bi,bj) = bWght*atmosp0(i,j,bi,bj)
+     &                          +aWght*atmosp1(i,j,bi,bj)
            ELSE
              ATMOSP(i,j,bi,bj) = maskC(i,j,1,bi,bj)
            ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
 #ifdef ALLOW_SEAICE
+       IF (useSEAICE) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
            FIce(I,J,bi,bj) = AREA(I,J,1,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+       ELSE
 #else
+       IF (.TRUE.) THEN
+#endif /* ALLOW_SEAICE */
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
            IF ( IceFile .NE. ' '  ) THEN
             FIce(i,j,bi,bj)    = bWght*ice0(i,j,bi,bj)
      &                          +aWght*ice1(i,j,bi,bj)
            ELSE
             FIce(i,j,bi,bj) =0. _d 0
            ENDIF
-#endif /* ALLOW_SEAICE */
           ENDDO
          ENDDO
         ENDDO
        ENDDO
+       ENDIF
 
 C endif for periodicForcing
        ENDIF
