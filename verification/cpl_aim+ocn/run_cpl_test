@@ -1,19 +1,17 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.9 2006/07/17 01:34:23 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.10 2007/11/07 01:45:02 jmc Exp $
 # $Name:  $
 
 Np=3
-Opt=' '
-Opt='-ieee'
 if [ $# -lt 1 ]
 then
   echo 'Usage:'`basename $0`' step '
-  echo ' => test coupled set-up on myrinet cluster'
+  echo ' => test coupled set-up on linux box (1.cpu)'
   echo 'step = 0 : clean all directories'
   echo 'step = 1 : compile the 3 executables (cpl,ocn,atm)'
   echo 'step = 2 : copy input files and dir(s)'
-  echo "step = 3 : run on $Np processor"
+  echo "step = 3 : run with $Np mpi processes"
   echo 'step = 4 : check the results'
   echo 'step = 5 : remove output files in rank_0,1,2 dir.'
   exit
@@ -21,33 +19,11 @@ fi
 kpr=$1
 dir=`pwd`
 
-#- only works from a 3 nodes PBS bach session ( qsub -I -l nodes=3:p4 )
-#  on myrinet cluster:
-xx=`hostname | sed 's/[0-9]/X/g'`
-if test $xx != 'myrinet-X-XX'
-then
-  echo ' hostname='`hostname`
-  echo 'for now, works only on myrinet cluster'
-  exit 9
-fi
-if test 'dummy'$PBS_NODEFILE = 'dummy'
-then
-  echo ' $PBS_NODEFILE not defined'
-  echo "for now, works only from a $Np nodes PBS bach session"
-  exit 8
-else ncpus=`wc -l $PBS_NODEFILE | awk '{print $1}'`
- if test $ncpus != $Np ; then
-  echo ' Nb of nodes from $PBS_NODEFILE =' $ncpus
-  echo "for now, works only from a $Np nodes PBS bach session"
-  exit 8
- fi
-fi
-
 #============================================================================
 
 if test $kpr = 0
 then
- rm -f genmake_optfile pr_group std_outp
+ rm -f genmake_optfile pr_group std_outp comp_res.{ocn,atm,land,sice}
  rm -f build_???/TTT.*make.* build_???/TTT.mkdepend.*
  /bin/rm -r -f rank_0 rank_1 rank_2
  if test -f build_cpl/Makefile ; then cd build_cpl ; make CLEAN ; cd .. ; fi
@@ -57,7 +33,7 @@ fi
 if test $kpr = 5
 then
  echo 'remove output files in rank_0,1,2 dir.'
- rm -f pr_group std_outp
+ rm -f genmake_optfile pr_group std_outp comp_res.{ocn,atm,land,sice}
  if test -d rank_0 ; then cd rank_0 ; rm -f Coupler.0000.clog ; cd .. ; fi
  if test -d rank_1
  then cd rank_1 ; rm -f *.data *.meta STD???.0000 UV-*.0001.clog ; cd .. ; fi
@@ -68,11 +44,20 @@ fi
 if test $kpr = 1
 then
 
- cp -p ../../tools/build_options/linux_ia32_ifc+mpi_cg01 genmake_optfile
+#- choice of the optfile: take a local one in dir verification with sufix '.mpi'
+ nbOpF=`ls ../linux_*.mpi 2> /dev/null | wc -l`
+ if test $nbOpF = 1
+ then 
+   yy=`ls ../linux_*.mpi` ; cp -p $yy genmake_optfile
+   zz=`grep '^FC=' genmake_optfile`
+   echo " Using optfile: $yy  (compiler=$zz)"
+ else echo 'Pb in finding optfile' ; exit;
+ fi
+#---
  echo '==== compile coupler:'
  cd build_cpl
  echo ' --- genmake2 (cpl):'
- ../../../tools/genmake2 -of ../genmake_optfile $Opt >  TTT.genmake.$$
+ ../../../tools/genmake2 -of ../genmake_optfile -mpi -ieee >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (cpl):'
  make depend > TTT.mkdepend.$$
@@ -85,7 +70,7 @@ then
  echo '==== compile OGCM:'
  cd build_ocn
  echo ' --- genmake2 (ocn):'
- ../../../tools/genmake2 -of ../genmake_optfile $Opt >  TTT.genmake.$$
+ ../../../tools/genmake2 -of ../genmake_optfile -mpi -ieee >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (ocn):'
  make depend > TTT.mkdepend.$$
@@ -98,7 +83,7 @@ then
  echo '==== compile AGCM:'
  cd build_atm
  echo ' --- genmake2 (atm):'
- ../../../tools/genmake2 -of ../genmake_optfile $Opt >  TTT.genmake.$$
+ ../../../tools/genmake2 -of ../genmake_optfile -mpi -ieee >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (atm):'
  make depend > TTT.mkdepend.$$
@@ -139,20 +124,17 @@ then
  echo $ROOTDIR
  tmpfil=TTT.$$
 
- echo $PBS_NODEFILE
- list=`cat $PBS_NODEFILE`
  rm -f pr_group ; touch pr_group 
- nc=0 ; dd1=cpl ; 
- for xx in $list
+ nc=0; xx=`hostname`
+ for dd1 in cpl ocn atm
  do
   echo $xx $nc $dir/build_$dd1/mitgcmuv >> pr_group
-  if test $nc = 0 ; then dd1=ocn ; else dd1=atm ; fi
   nc=1
  done
 
  cd $ROOTDIR
- #  -wd $ROOTDIR
- /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group --gm-kill 5 -v  ./build_cpl/mitgcmuv > std_outp 2>&1
+# /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group -wd $ROOTDIR --gm-kill 5 -v  ./build_cpl/mitgcmuv > std_outp 2>&1
+ mpirun -p4pg pr_group -v ./build_cpl/mitgcmuv > std_outp 2>&1
  tail -20 std_outp
  ls -l rank_?/pickup*.ckptA.001.001.data
 
@@ -164,18 +146,22 @@ then
  if test -f rank_1/STDOUT.0000
  then echo '==> check Ocean output:'
     /home/jmc/bin/comp_res rank_1/STDOUT.0000 results/ocnSTDOUT.0000
-   echo ' '
+    mv -f comp_res.log comp_res.ocn
+    echo ' '
  else echo 'No Ocean output file in rank_1' ; fi
 
  if test -f rank_2/STDOUT.0000
  then 
     echo '==> check Atmos output:'
     /home/jmc/bin/comp_res rank_2/STDOUT.0000 results/atmSTDOUT.0000
+    mv -f comp_res.log comp_res.atm
     echo '==> check Land output:'
     /home/jmc/bin/comp_res rank_2/STDOUT.0000 results/atmSTDOUT.0000 L
+    mv -f comp_res.log comp_res.land
     echo '==> check thSIce output:'
     /home/jmc/bin/comp_res rank_2/STDOUT.0000 results/atmSTDOUT.0000 I
-   echo ' '
+    mv -f comp_res.log comp_res.sice
+    echo ' '
  else echo 'No Atmos output file in rank_1' ; fi
 
 fi
