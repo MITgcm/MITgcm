@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.5 2007/11/08 22:35:23 jmc Exp $
+C $Name:  $
+
 #include "DIC_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
@@ -6,14 +9,14 @@ CBOP
 C !ROUTINE: DIC_ATMOS
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE DIC_ATMOS(myIter,myTime,myThid,istate)
+      SUBROUTINE DIC_ATMOS( istate, myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C  Calculate the atmospheric pCO2
 C  gchem_int1:
 C  0=use default 278.d-6
-C  1=use constant value - gchem_rl1, read in from data.gchem 
-C  2=read in from file 
+C  1=use constant value - gchem_rl1, read in from data.gchem
+C  2=read in from file
 C  3=interact with atmospheric box
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -70,6 +73,12 @@ c if coupled to atmsopheric model, use the
 c Co2 value passed from the coupler
 #ifndef USE_ATMOSCO2
 
+      IF ( nThreads .GT. 1 ) THEN
+C     Problem with I/O and global-sum for multi-threaded execution
+C     Needs to be fixed before using this S/R in multi-threaded run
+        STOP 'S/R DIC_ATMOS: multi-threaded not right'
+      ENDIF
+
 c default - set only once
       if (gchem_int1.eq.0.and.istate.eq.0) then
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -105,7 +114,7 @@ c                   gchem_int2=number entries to read
 c                   gchem_int3=start timestep,
 c                   gchem_int4=timestep between file entries)
        if (gchem_int1.eq.2) then
-        if (istate.eq.0) then        
+        if (istate.eq.0) then
           OPEN(28,FILE='co2atmos.dat',STATUS='old')
           do it=1,gchem_int2
             READ(28,*) co2atmos(it)
@@ -114,13 +123,14 @@ c                   gchem_int4=timestep between file entries)
          endif
 c linearly interpolate between file entries
           ntim=int((myIter-gchem_int3)/gchem_int4)+1
-          aWght=0.5+float(myIter-gchem_int3)/float(gchem_int4)-
-     &                      float(ntim-1)
-          if (aWght.gt.1.d0) then
+          aWght = FLOAT(myIter-gchem_int3)
+          bWght = FLOAT(gchem_int4)
+          aWght = 0.5 _d 0 + aWght/bWght - FLOAT(ntim-1)
+          if (aWght.gt.1. _d 0) then
             ntim=ntim+1
-            aWght=aWght-1.d0
+            aWght=aWght-1. _d 0
           endif
-          bWght=1.d0-aWght
+          bWght = 1. _d 0 - aWght
           tmp=co2atmos(ntim)*bWght+co2atmos(ntim+1)*aWght
 c         print*,'weights',ntim, aWght, bWght, tmp
 
@@ -135,7 +145,7 @@ c         print*,'weights',ntim, aWght, bWght, tmp
             ENDDO
 
            print*,'AtmospCO2(20,20)',AtmospCO2(20,20,bi,bj)
- 
+
            ENDDO
           ENDDO
 
@@ -172,7 +182,7 @@ c for 278ppmv we need total_atmos_carbon=4.9206e+16
             if (istate.gt.0) then
               total_flux=total_flux+FluxCO2(i,j,bi,bj)*rA(i,j,bi,bj)*
      &                        hFacC(i,j,1,bi,bj)*dTtracerLev(1)
-            endif 
+            endif
             DO k=1,nR
               total_ocean_carbon= total_ocean_carbon+
      &              ( Ptracer(i,j,k,bi,bj,1)+
@@ -226,7 +236,7 @@ c write values to new pickup
 
       atpco2=total_atmos_carbon/total_atmos_moles
 
-c     print*,'QQpCO2', total_atmos_carbon, atpco2, total_ocean_carbon, 
+c     print*,'QQpCO2', total_atmos_carbon, atpco2, total_ocean_carbon,
 c    &                 total_flux
 
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -245,7 +255,7 @@ c    &                 total_flux
       total_carbon=total_atmos_carbon + total_ocean_carbon
       total_carbon_old=total_atmos_carbon_old + total_ocean_carbon_old
       carbon_diff=total_carbon-total_carbon_old
-      print*,'QQ total C, current, old, diff', total_carbon, 
+      print*,'QQ total C, current, old, diff', total_carbon,
      &                         total_carbon_old, carbon_diff
       carbon_diff=total_ocean_carbon-total_ocean_carbon_old
       tmp=carbon_diff-total_flux
