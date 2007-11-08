@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.10 2007/11/07 11:11:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.11 2007/11/08 17:51:27 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -54,16 +54,12 @@ c
 C First call requires that we initialize everything to zero for safety
 cQQQ need to check timing
        IF ( myIter .EQ. nIter0 ) THEN
-#ifndef ALLOW_EXF
          CALL LEF_ZERO( wind0,myThid )
          CALL LEF_ZERO( wind1,myThid )
-#endif
          CALL LEF_ZERO( atmosp0,myThid )
          CALL LEF_ZERO( atmosp1,myThid )
-#ifndef ALLOW_SEAICE
          CALL LEF_ZERO( ice0,myThid )
          CALL LEF_ZERO( ice1,myThid )
-#endif
        ENDIF
 
 
