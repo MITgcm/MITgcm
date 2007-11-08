@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.905 2007/11/07 11:13:21 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.906 2007/11/08 23:01:44 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o in pkgs: dic, obcs, offline, rbcs:
+  standard way to compute coeff. for time interpolation between 2 time reccords
+  which retains full precision (& make results less dependent on compiler).
+  update output of exp: tutorial_cfc_offline & tutorial_global_oce_biogeo.
 o pkg/cfc: if compiled with exf and seaice, cfc now can use fields from those
   packages instead of reading ice cover and wind speed separately
 o split PTRACERS.h in 2 header files: PTRACERS_FIELDS.h & PTRACERS_PARAMS.h
