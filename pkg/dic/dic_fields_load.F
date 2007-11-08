@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.17 2007/11/05 19:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.18 2007/11/08 22:26:22 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -54,24 +54,21 @@ c
 
 
 C Now calculate whether it is time to update the forcing arrays
-       rdt=1. _d 0 / deltaTclock
-       nForcingPeriods=
-     &  int(externForcingCycle/externForcingPeriod+0.5)
+      rdt = 1. _d 0 / deltaTclock
+      nForcingPeriods = NINT(externForcingCycle/externForcingPeriod)
 cswd QQ change for placement of chem forcing (ie. after timestep)
-       Imytm=int(myTime*rdt+0.5)
-       Ifprd=int(externForcingPeriod*rdt+0.5)
-       Ifcyc=int(externForcingCycle*rdt+0.5)
-       Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
+      Imytm = NINT(myTime*rdt)
+      Ifprd = NINT(externForcingPeriod*rdt)
+      Ifcyc = NINT(externForcingCycle*rdt)
+      Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
 
-
-       intime0=int(Iftm/Ifprd)
-       intime1=mod(intime0+1,nForcingPeriods)
-       aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
-       bWght=1.-aWght
-
-       intime0=intime0+1
-       intime1=intime1+1
-
+      intime0 = 1 + INT(Iftm/Ifprd)
+      intime1 = 1 + MOD(intime0,nForcingPeriods)
+c     aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
+      aWght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
+      bWght = FLOAT( Ifprd )
+      aWght =  aWght / bWght
+      bWght = 1. _d 0 - aWght
 
        IF (
      &   Iftm-Ifprd*(intime0-1).EQ. 0

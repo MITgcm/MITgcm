@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.7 2007/11/05 19:10:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.8 2007/11/08 22:26:22 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -66,10 +66,10 @@ C First call requires that we initialize everything to zero for safety
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           rbct0(i,j,k,bi,bj)=0.d0
-           rbcs0(i,j,k,bi,bj)=0.d0
-           rbct1(i,j,k,bi,bj)=0.d0
-           rbcs1(i,j,k,bi,bj)=0.d0
+           rbct0(i,j,k,bi,bj)=0. _d 0
+           rbcs0(i,j,k,bi,bj)=0. _d 0
+           rbct1(i,j,k,bi,bj)=0. _d 0
+           rbcs1(i,j,k,bi,bj)=0. _d 0
           ENDDO
          ENDDO
         ENDDO
@@ -82,8 +82,8 @@ C First call requires that we initialize everything to zero for safety
          DO k=1,Nr
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
-            rbcptr0(i,j,k,bi,bj,iTracer)=0.d0
-            rbcptr1(i,j,k,bi,bj,iTracer)=0.d0
+            rbcptr0(i,j,k,bi,bj,iTracer)=0. _d 0
+            rbcptr1(i,j,k,bi,bj,iTracer)=0. _d 0
            ENDDO
           ENDDO
          ENDDO
@@ -94,28 +94,29 @@ C First call requires that we initialize everything to zero for safety
       ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
-      IF (rbcsForcingCycle.GT.0.d0) THEN
-       rdt=1. _d 0 / deltaTclock
-       nForcingPeriods=int(rbcsForcingCycle/rbcsForcingPeriod+0.5)
-       Imytm=int((myTime-float(rbcsIniter)*deltaTclock)*rdt+0.5)
-       Ifprd=int(rbcsForcingPeriod*rdt+0.5)
-       Ifcyc=int(rbcsForcingCycle*rdt+0.5)
-       Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
+      IF (rbcsForcingCycle.GT.0. _d 0) THEN
+       rdt = 1. _d 0 / deltaTclock
+       nForcingPeriods = NINT(rbcsForcingCycle/rbcsForcingPeriod)
+       Imytm = NINT( (myTime-rbcsIniter*deltaTclock)*rdt )
+       Ifprd = NINT(rbcsForcingPeriod*rdt)
+       Ifcyc = NINT(rbcsForcingCycle*rdt)
+       Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
 
-       intime0=int(Iftm/Ifprd)
-       intime1=mod(intime0+1,nForcingPeriods)
-       aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
-       bWght=1.-aWght
+       intime0 = 1 + INT( Iftm/Ifprd )
+       intime1 = 1 + MOD( intime0,nForcingPeriods )
+c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
+       aWght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
+       bWght = FLOAT( Ifprd )
+       aWght =  aWght / bWght
+       bWght = 1. _d 0 - aWght
 
-       intime0=intime0+1
-       intime1=intime1+1
       ELSE
-       intime1=1
-       intime0=1
-       Iftm=1
-       Ifprd=0
-       aWght=.5d0
-       bWght=.5d0
+       intime1 = 1
+       intime0 = 1
+       Iftm  = 1
+       Ifprd = 0
+       aWght = .5 _d 0
+       bWght = .5 _d 0
       ENDIF
 
       IF (

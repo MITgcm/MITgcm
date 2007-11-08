@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.11 2007/11/08 17:51:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.12 2007/11/08 22:26:22 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -64,26 +64,21 @@ cQQQ need to check timing
 
 
 C Now calculate whether it is time to update the forcing arrays
-       rdt=1. _d 0 / deltaTclock
-       nForcingPeriods=
-     &  int(gchem_ForcingCycle/gchem_ForcingPeriod+0.5)
+       rdt = 1. _d 0 / deltaTclock
+       nForcingPeriods = NINT(gchem_ForcingCycle/gchem_ForcingPeriod)
 cswd QQ change for placement of chem forcing (ie. after timestep)
-       Imytm=int(myTime*rdt+0.5)
-       Ifprd=int(gchem_ForcingPeriod*rdt+0.5)
-       Ifcyc=int(gchem_ForcingCycle*rdt+0.5)
-       Iftm=mod( Imytm+Ifcyc-Ifprd/2,Ifcyc)
+       Imytm = NINT(myTime*rdt)
+       Ifprd = NINT(gchem_ForcingPeriod*rdt)
+       Ifcyc = NINT(gchem_ForcingCycle*rdt)
+       Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
 
-
-       intime0=int(Iftm/Ifprd)
-       intime1=mod(intime0+1,nForcingPeriods)
-       aWght=float( Iftm-Ifprd*intime0 )
-       bWght=float( Ifprd )
-       aWght=aWght/bWght
-       bWght=1. _d 0 - aWght
-
-       intime0=intime0+1
-       intime1=intime1+1
-
+       intime0= 1 + INT(Iftm/Ifprd)
+       intime1= 1 + MOD(intime0,nForcingPeriods)
+c      aWght=DFLOAT( Iftm-Ifprd*(intime0-1) )/DFLOAT( Ifprd )
+       aWght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
+       bWght = FLOAT( Ifprd )
+       aWght =  aWght / bWght
+       bWght = 1. _d 0 - aWght
 
 cswd QQ  need nIter0+1 since chem forcing after time step
        IF (
