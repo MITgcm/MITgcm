@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.906 2007/11/08 23:01:44 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.907 2007/11/09 15:42:54 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59j
 o in pkgs: dic, obcs, offline, rbcs:
   standard way to compute coeff. for time interpolation between 2 time reccords
   which retains full precision (& make results less dependent on compiler).
