@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.907 2007/11/09 15:42:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.908 2007/11/10 22:17:09 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/ptracers: 
+  use use a 2 characters string ioLabel to identify tracer (if more than 99 tracers).
+  to-do: fix pkg/diagnostics when large number of diagnostics are defined.
 
 checkpoint59j
 o in pkgs: dic, obcs, offline, rbcs:
