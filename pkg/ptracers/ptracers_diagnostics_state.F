@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_state.F,v 1.2 2007/11/05 18:49:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_diagnostics_state.F,v 1.3 2007/11/10 22:09:32 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -33,24 +33,21 @@ C     !LOCAL VARIABLES:
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
       _RL dummy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      INTEGER i,j,k,bi,bj,N
+      INTEGER i,j,k,bi,bj,iTr
       CHARACTER*8 diagName
       INTEGER km1
 
       diagName = '        '
 
-c     DO N = 1,PTRACERS_numInUse
-C-    due to format (I2) and diagnostics name limitation,
-C      => do not go beyong 99 tracers
-      DO N = 1,MIN(99,PTRACERS_numInUse)
+      DO iTr = 1,PTRACERS_numInUse
 
         diagName = '        '
-        WRITE(diagName,'(A4,I2.2)') 'TRAC',N
-        CALL DIAGNOSTICS_FILL( pTracer(1-Olx,1-Oly,1,1,1,N), diagName,
+        WRITE(diagName,'(A4,A2)') 'TRAC',PTRACERS_ioLabel(iTr)
+        CALL DIAGNOSTICS_FILL( pTracer(1-Olx,1-Oly,1,1,1,iTr), diagName,
      &                         0,Nr,0,1,1,myThid )
 
         diagName = '        '
-        WRITE(diagName,'(A5,I2.2)') 'UTRAC',N
+        WRITE(diagName,'(A5,A2)') 'UTRAC',PTRACERS_ioLabel(iTr)
         IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -59,8 +56,8 @@ C      => do not go beyong 99 tracers
                 DO i = 1,sNx+1
                   dummy(i,j,k,bi,bj) =
      &                 uVel(i,j,k,bi,bj)*hFacW(i,j,k,bi,bj) *
-     &                 0.5 _d 0*(pTracer(i,j,k,bi,bj,N)
-     &                       + pTracer(i-1,j,k,bi,bj,N))
+     &                 0.5 _d 0*( pTracer(i,j,k,bi,bj,iTr)
+     &                          + pTracer(i-1,j,k,bi,bj,iTr) )
                 ENDDO
               ENDDO
             ENDDO
@@ -70,7 +67,7 @@ C      => do not go beyong 99 tracers
         ENDIF
 
         diagName = '        '
-        WRITE(diagName,'(A5,I2.2)') 'VTRAC',N
+        WRITE(diagName,'(A5,A2)') 'VTRAC',PTRACERS_ioLabel(iTr)
         IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -79,8 +76,8 @@ C      => do not go beyong 99 tracers
                 DO i = 1,sNx
                   dummy(i,j,k,bi,bj) =
      &                 vVel(i,j,k,bi,bj)*hFacS(i,j,k,bi,bj) *
-     &                 0.5 _d 0*(pTracer(i,j,k,bi,bj,N)
-     &                       + pTracer(i,j-1,k,bi,bj,N))
+     &                 0.5 _d 0*( pTracer(i,j,k,bi,bj,iTr)
+     &                          + pTracer(i,j-1,k,bi,bj,iTr) )
                 ENDDO
               ENDDO
             ENDDO
@@ -90,7 +87,7 @@ C      => do not go beyong 99 tracers
         ENDIF
 
         diagName = '        '
-        WRITE(diagName,'(A5,I2.2)') 'WTRAC',N
+        WRITE(diagName,'(A5,A2)') 'WTRAC',PTRACERS_ioLabel(iTr)
         IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -99,8 +96,8 @@ C      => do not go beyong 99 tracers
               DO j = 1,sNy
                 DO i = 1,sNx
                   dummy(i,j,k,bi,bj) = wVel(i,j,k,bi,bj) *
-     &                 0.5 _d 0*(pTracer(i,j,k,bi,bj,N)
-     &                       + pTracer(i,j,km1,bi,bj,N))
+     &                 0.5 _d 0*( pTracer(i,j,k,bi,bj,iTr)
+     &                          + pTracer(i,j,km1,bi,bj,iTr) )
                 ENDDO
               ENDDO
             ENDDO

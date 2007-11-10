@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.1 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.2 2007/11/10 22:09:32 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -83,6 +83,12 @@ C     PTRACERS_Iter0    :: timestep number when tracers are initialized
      &     PTRACERS_names,
      &     PTRACERS_long_names,
      &     PTRACERS_units
+
+C     COMMON /PTRACERS_LABELS/ holds pTracers labels
+C     PTRACERS_ioLabel  :: pTracer I/O & diagnostics label (2 charecters long)
+      COMMON /PTRACERS_LABELS/
+     &     PTRACERS_ioLabel
+      CHARACTER*2              PTRACERS_ioLabel(PTRACERS_num)
 
 #endif /* ALLOW_PTRACERS */
 

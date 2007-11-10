@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.18 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.19 2007/11/10 22:09:32 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -41,10 +41,10 @@ C     === Functions ====
 
 C     !LOCAL VARIABLES:
 C     iTracer   :: loop indices
-C     suff      :: character buffer for creating suffix in filename
+C     pref      :: character buffer for creating prefix in filename
 C     iRec      :: record number
       INTEGER iTracer
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(MAX_LEN_FNAM) pref
       INTEGER iRec
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
@@ -86,30 +86,30 @@ C       Loop over tracers
 C     Write each snap-shot as a record in a time-history file
          IF (PTRACERS_useRecords) THEN
 C     Write each passive tracer as a record
-          WRITE(suff,'(A)') 'PTRACERS'
+          WRITE(pref,'(A)') 'PTRACERS'
           iRec = 1 + NINT( (myTime-startTime) / PTRACERS_dumpFreq )
           iRec = (iRec-1)*PTRACERS_num + iTracer + 1
          ELSE
 C     Write each passive tracer in its own file
-          WRITE(pref,'(A7,I2.2)') 'PTRACER',iTracer
+          WRITE(pref,'(2A)') 'PTRACER',PTRACERS_ioLabel(iTracer)
           iRec = 1 + NINT( (myTime-startTime) / PTRACERS_dumpFreq )
          ENDIF
 #else
-C         Write each snap-shot as a new file with a 10-digit suffix to
+C     Write each snap-shot as a new file with a 10-digit suffix to
 C     indicate time-step number
          IF (PTRACERS_useRecords) THEN
 C     Write each passive tracer as a record
-          WRITE(suff,'(A,I10.10)') 'PTRACERS',myIter
+          WRITE(pref,'(A,I10.10)') 'PTRACERS.',myIter
           iRec=iTracer
          ELSE
 C     Write each passive tracer in its own file
-          WRITE(suff,'(A7,I2.2,A1,I10.10)')
-     &         'PTRACER',iTracer,'.',myIter
+          WRITE(pref,'(3A,I10.10)')
+     &         'PTRACER',PTRACERS_ioLabel(iTracer),'.',myIter
           iRec=1
          ENDIF
 #endif /* MULTIPLE_RECORD_STATE_FILES */
 
-         CALL WRITE_REC_XYZ_RL(suff,
+         CALL WRITE_REC_XYZ_RL(pref,
      &        pTracer(1-Olx,1-Oly,1,1,1,iTracer),iRec,myIter,myThid)
 
 C     End of tracer loop

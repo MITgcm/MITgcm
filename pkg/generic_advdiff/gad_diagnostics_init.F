@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_init.F,v 1.5 2007/08/15 22:35:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_init.F,v 1.6 2007/11/10 22:10:19 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -190,6 +190,11 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GAD.h"
+#ifdef ALLOW_PTRACERS
+c#include "PARAMS.h"
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_PARAMS.h"
+#endif /* ALLOW_PTRACERS */
 
 C     !INPUT PARAMETERS:
 C     tracerId   ::  tracer identifier
@@ -205,9 +210,15 @@ C--   Set diagnostic suffix (4 character long) for the "tracerId" tracer
         GAD_DIAG_SUFX = '_TH '
       ELSEIF( tracerId.EQ.GAD_SALINITY ) THEN
         GAD_DIAG_SUFX = '_SLT'
+#ifdef ALLOW_PTRACERS
+c     ELSEIF( usePTRACERS
+c       .AND. tracerId.GE.GAD_TR1
       ELSEIF( tracerId.GE.GAD_TR1
-     &    .AND. tracerId.LT.100 ) THEN
-        WRITE(GAD_DIAG_SUFX,'(A,I2.2)') 'Tr',tracerId + 1-GAD_TR1
+     &  .AND. tracerId.LT.GAD_TR1+PTRACERS_num ) THEN
+c       WRITE(GAD_DIAG_SUFX,'(A,A2)')
+c    &                  'Tr', PTRACERS_ioLabel( tracerId+1-GAD_TR1 )
+        GAD_DIAG_SUFX = 'Tr'//PTRACERS_ioLabel( tracerId+1-GAD_TR1 )
+#endif /* ALLOW_PTRACERS */
       ELSE
         GAD_DIAG_SUFX = 'aaaa'
       ENDIF

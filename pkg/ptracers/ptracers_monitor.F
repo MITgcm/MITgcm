@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.14 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.15 2007/11/10 22:09:32 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -108,8 +108,8 @@ C      for ptracers as for the dynamics variables.
 C      Print the basic statistics of ptracer variables
        CALL MON_SET_PREF('trcstat_',myThid)
        DO ip = 1, PTRACERS_numInUse
-         WRITE(suff,'(A7,I2.2)') 'ptracer',ip
-c        WRITE(suff,'(A7,I3.3)') 'ptrac_', ip
+         WRITE(suff,'(A7,A2)') 'ptracer',PTRACERS_ioLabel(ip)
+c        WRITE(suff,'(A6,I4.4)') 'ptrac', ip
          CALL MON_PRINTSTATS_RL(
      &        Nr, pTracer(1-Olx,1-Oly,1,1,1,ip),
      &        suff, maskC,hFacC,rA ,drF,myThid)
