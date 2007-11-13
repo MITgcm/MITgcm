@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.2 2007/10/26 18:27:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.3 2007/11/13 23:58:58 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -72,7 +72,7 @@ C Eastern boundary
       DO J=1-Oly,sNy+Oly
 C Western boundary
        IF (OB_Iw(J,bi,bj).NE.0) THEN
-        uFld(OB_Iw(J,bi,bj)+1,1,J,bi,bj)=OBWuice(J,bi,bj)
+        uFld(OB_Iw(J,bi,bj)+1,J,1,bi,bj)=OBWuice(J,bi,bj)
      &                              *_maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
         vFld(OB_Iw(J,bi,bj),J,1,bi,bj)=OBWvice(J,bi,bj)
      &                              *_maskS(OB_Iw(J,bi,bj),J,K,bi,bj)
