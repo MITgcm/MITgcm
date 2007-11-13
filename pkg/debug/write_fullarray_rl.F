@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/write_fullarray_rl.F,v 1.3 2007/08/21 15:04:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/write_fullarray_rl.F,v 1.4 2007/11/13 01:23:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -15,8 +15,9 @@ C     | SUBROUTINE WRITE_FULLARRAY
 C     | write full array (including the overlap) to binary files
 C     *==========================================================*
 C     | Only used for debugging purpose.
-C     |  can write local array (tile biArg,bjArg) or global
-C     |  array (with biArg=bjArg=0)
+C     |  can write local array (with no bi,bj) corresponding to 
+C     |      tile biArg,bjArg
+C     |  or global array (with bi,bj) (called with biArg=bjArg=0)
 C     | Warning: does not explicitly do the byte-swapping
 C     |          (=> write little-endian binary file).
 C     *==========================================================*
@@ -114,7 +115,7 @@ c    &                       k=1,kSize)
          OPEN( dUnit, file=fullName, status='unknown',
      &         access='direct', recl=length_of_rec )
          DO k = 1,kSize
-           WRITE(dUnit,rec=k) (( fld(i,j,k,bi,bj),
+           WRITE(dUnit,rec=k) (( fld(i,j,k,1,1),
      &                               i=1-Olx,sNx+Olx),
      &                               j=1-Oly,sNy+Oly )
          ENDDO
