@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rl.F,v 1.5 2006/08/04 02:48:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rl.F,v 1.6 2007/11/13 19:41:05 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -26,6 +26,7 @@ C Common
       COMMON /RD_WR_FLD/ globalFile
       LOGICAL globalFile
 C Local
+      LOGICAL useCurrentDir
       CHARACTER*(2) fType
       INTEGER s1Lo,s1Hi,s2Lo,s2Hi
       CHARACTER*(MAX_LEN_FNAM) fullName
@@ -45,6 +46,7 @@ C     e.g. U.0000000100
        WRITE( fullName, '(A,A)' ) pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
       ENDIF
 C
+      useCurrentDir = .TRUE.
       fType='RL'
 #ifdef ALLOW_MDSIO
       IF (nSx.EQ.1.AND.nSy.EQ.1) THEN
@@ -52,13 +54,13 @@ C The hack below replaces MDS_WRITELOCAL with MDSWRITEFIELD_LOC for
 C single-threaded execution because the former does not support the
 C singleCpuIo option. This is a placeholder until MDS_WRITELOCAL
 C functionality is superseded by pkg/diagnostics.
-         CALL MDSWRITEFIELD_LOC(
-     &        fullName, writeBinaryPrec, globalFile,
-     &        fType, nNr, field, iRec, myIter, myThid )
+         CALL MDS_WRITE_FIELD(
+     I        fullName, writeBinaryPrec, globalFile, useCurrentDir,
+     I        fType, nNr, 1, nNr, field, iRec, myIter, myThid )
       ELSE
          CALL MDS_WRITELOCAL(
-     &        fullName, writeBinaryPrec, globalFile,
-     &        fType, nNr, field, bi, bj, iRec, myIter, myThid )
+     I        fullName, writeBinaryPrec, globalFile,
+     I        fType, nNr, field, bi, bj, iRec, myIter, myThid )
       ENDIF
 #endif
       RETURN

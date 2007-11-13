@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_fld_xy_rl.F,v 1.3 2006/08/04 02:48:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/read_fld_xy_rl.F,v 1.4 2007/11/13 19:41:05 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -19,9 +19,10 @@ C Arguments
 C Functions
       INTEGER ILNBLNK,IFNBLNK
 C Local
+      LOGICAL useCurrentDir
       CHARACTER*(2) fType
       INTEGER nNz
-      INTEGER irec
+      INTEGER iRec
       INTEGER s1Lo,s1Hi,s2Lo,s2Hi
       CHARACTER*(MAX_LEN_FNAM) fullName
 C
@@ -37,13 +38,17 @@ C     e.g. U.0000000100
        s2Hi = ILNBLNK(suff)
        WRITE( fullName, '(A,A)' ) pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
       ENDIF
-C
+
+      useCurrentDir = .FALSE.
       fType='RL'
       nNz=1
-      irec=1
+      iRec=1
 #ifdef ALLOW_MDSIO
-      CALL MDSREADFIELD( fullName, readBinaryPrec, fType,
-     &     nNz, field, irec, myThid )
+      CALL MDS_READ_FIELD(
+     I                     fullName, readBinaryPrec, useCurrentDir,
+     I                     fType, nNz, 1, nNz,
+     O                     field,
+     I                     iRec, myThid )
 #endif
       RETURN
       END
