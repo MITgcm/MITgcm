@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.24 2007/11/05 19:19:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.25 2007/11/13 23:39:25 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -184,18 +184,18 @@ C     == Local variables ==
          OBEh0(J,bi,bj)=0. _d 0
          OBEa1(J,bi,bj)=0. _d 0
          OBEh1(J,bi,bj)=0. _d 0
-         OBEsl (I,bi,bj)=0. _d 0
-         OBEsn (I,bi,bj)=0. _d 0
-         OBEsl0(I,bi,bj)=0. _d 0
-         OBEsn0(I,bi,bj)=0. _d 0
-         OBEsl1(I,bi,bj)=0. _d 0
-         OBEsn1(I,bi,bj)=0. _d 0
-         OBEuice (I,bi,bj)=0. _d 0
-         OBEvice (I,bi,bj)=0. _d 0
-         OBEuice0(I,bi,bj)=0. _d 0
-         OBEvice0(I,bi,bj)=0. _d 0
-         OBEuice1(I,bi,bj)=0. _d 0
-         OBEvice1(I,bi,bj)=0. _d 0
+         OBEsl (J,bi,bj)=0. _d 0
+         OBEsn (J,bi,bj)=0. _d 0
+         OBEsl0(J,bi,bj)=0. _d 0
+         OBEsn0(J,bi,bj)=0. _d 0
+         OBEsl1(J,bi,bj)=0. _d 0
+         OBEsn1(J,bi,bj)=0. _d 0
+         OBEuice (J,bi,bj)=0. _d 0
+         OBEvice (J,bi,bj)=0. _d 0
+         OBEuice0(J,bi,bj)=0. _d 0
+         OBEvice0(J,bi,bj)=0. _d 0
+         OBEuice1(J,bi,bj)=0. _d 0
+         OBEvice1(J,bi,bj)=0. _d 0
 #endif /* ALLOW_OBCS_EAST */
 #ifdef ALLOW_OBCS_WEST
          OBWa (J,bi,bj)=0. _d 0
@@ -204,18 +204,18 @@ C     == Local variables ==
          OBWh0(J,bi,bj)=0. _d 0
          OBWa1(J,bi,bj)=0. _d 0
          OBWh1(J,bi,bj)=0. _d 0
-         OBWsl (I,bi,bj)=0. _d 0
-         OBWsn (I,bi,bj)=0. _d 0
-         OBWsl0(I,bi,bj)=0. _d 0
-         OBWsn0(I,bi,bj)=0. _d 0
-         OBWsl1(I,bi,bj)=0. _d 0
-         OBWsn1(I,bi,bj)=0. _d 0
-         OBWuice (I,bi,bj)=0. _d 0
-         OBWvice (I,bi,bj)=0. _d 0
-         OBWuice0(I,bi,bj)=0. _d 0
-         OBWvice0(I,bi,bj)=0. _d 0
-         OBWuice1(I,bi,bj)=0. _d 0
-         OBWvice1(I,bi,bj)=0. _d 0
+         OBWsl (J,bi,bj)=0. _d 0
+         OBWsn (J,bi,bj)=0. _d 0
+         OBWsl0(J,bi,bj)=0. _d 0
+         OBWsn0(J,bi,bj)=0. _d 0
+         OBWsl1(J,bi,bj)=0. _d 0
+         OBWsn1(J,bi,bj)=0. _d 0
+         OBWuice (J,bi,bj)=0. _d 0
+         OBWvice (J,bi,bj)=0. _d 0
+         OBWuice0(J,bi,bj)=0. _d 0
+         OBWvice0(J,bi,bj)=0. _d 0
+         OBWuice1(J,bi,bj)=0. _d 0
+         OBWvice1(J,bi,bj)=0. _d 0
 #endif /* ALLOW_OBCS_WEST */
         ENDDO
 #endif /* ALLOW_SEAICE */
