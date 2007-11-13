@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.3 2007/10/03 19:41:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.4 2007/11/13 19:26:26 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -72,7 +72,7 @@ C
 #ifdef SEAICE_SALINITY
        CALL DIAGNOSTICS_FILL(HSALT  ,'SIhsalt ',0,1 ,0,1,1,myThid)
 #endif
-C     
+C
 #ifdef SEAICE_CGRID
        IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) .OR.
@@ -92,21 +92,21 @@ C     first make sure we have a current copy of ice velocities
          ENDDO
         ENDDO
 C      compute strainrates, "viscosities" and modified pressure
-        CALL SEAICE_CALC_STRAINRATES( 
+        CALL SEAICE_CALC_STRAINRATES(
      I       uIceC, vIceC,
      O       e11, e22, e12,
-     I       myThid )
-        
-        CALL SEAICE_CALC_VISCOSITIES( 
+     I       0, myTime, myIter, myThid )
+
+        CALL SEAICE_CALC_VISCOSITIES(
      I       e11, e22, e12, zMin, zMax, hEffM, press0,
-     O       eta, zeta, press, 
-     I       myThid )
-C     
+     O       eta, zeta, press,
+     I       0, myTime, myIter, myThid )
+C
         CALL DIAGNOSTICS_FILL(zeta   ,'SIzeta  ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(eta    ,'SIeta   ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1 ,0,1,1,myThid)
        ENDIF
-        
+
        IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) ) THEN
 C     principle stress components
@@ -115,11 +115,11 @@ C     principle stress components
           DO j=1,sNy
            DO i=1,sNx
             sig1  = 2.*zeta(I,J,bi,bj)
-     &           * (e11(I,J,bi,bj) + e22(I,J,bi,bj)) 
+     &           * (e11(I,J,bi,bj) + e22(I,J,bi,bj))
      &           - press(I,J,bi,bj)
             sig2  = 2.* eta(I,J,bi,bj)
-     &           * (e11(I,J,bi,bj) - e22(I,J,bi,bj)) 
-            sig12 = 2.*eta(I,J,bi,bj) * 0.25 _d 0 * 
+     &           * (e11(I,J,bi,bj) - e22(I,J,bi,bj))
+            sig12 = 2.*eta(I,J,bi,bj) * 0.25 _d 0 *
      &           ( e12(I  ,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
      &           + e12(I  ,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
             sigTmp = SQRT( sig2*sig2 + 4. _d 0*sig12*sig12 )

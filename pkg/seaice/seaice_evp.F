@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.15 2007/09/19 08:38:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.16 2007/11/13 19:26:26 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,7 +57,7 @@ C                     /divided by Delta
 C     seaice_shear  - shear      strain rates, defined at Z-points times P
 C                     /divided by Delta
 C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
-      
+
       INTEGER i, j, bi, bj
       INTEGER kSrf
       INTEGER nEVPstep, iEVPstep
@@ -99,9 +99,9 @@ C     inverse relaxation/damping time scale
       recip_evp_tau = 0. _d 0
       IF ( SEAICE_evpTauRelax .GT. 0. _d 0 )
      &     recip_evp_tau=1. _d 0/SEAICE_evpTauRelax
-      denom1 = 1. _d 0 
+      denom1 = 1. _d 0
      &     / (1. _d 0 + 0.5 _d 0 *SEAICE_deltaTevp*recip_evp_tau)
-      denom2 = 1. _d 0 
+      denom2 = 1. _d 0
      &     / (1. _d 0 + 0.5 _d 0 *SEAICE_deltaTevp*recip_evp_tau*ecc2)
 #ifndef ALLOW_AUTODIFF_TAMC
       nEVPstepMax = nEVPstep
@@ -111,7 +111,7 @@ C     inverse relaxation/damping time scale
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-C     save last external time step (useless, but consistent with 
+C     save last external time step (useless, but consistent with
 C     VP-solver)
           uIce (I,J,2,bi,bj) = uIce(I,J,1,bi,bj)
           vIce (I,J,2,bi,bj) = vIce(I,J,1,bi,bj)
@@ -128,7 +128,7 @@ c     initialise strain rates
       ENDDO
 C     damping constraint (Hunke, J.Comp.Phys.,2001)
       IF ( SEAICE_evpDampC .GT. 0. _d 0 ) THEN
-       fac = HALF * SEAICE_evpDampC * SEAICE_evpTauRelax 
+       fac = HALF * SEAICE_evpDampC * SEAICE_evpTauRelax
      &      /SEAICE_deltaTevp**2
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -140,13 +140,13 @@ C     damping constraint (Hunke, J.Comp.Phys.,2001)
         ENDDO
        ENDDO
       ENDIF
-C     
+C
 C     start of the main time loop
       DO iEVPstep = 1, nEVPstepMax
        IF (iEVPstep.LE.nEVPstep) THEN
 C
 #ifdef ALLOW_AUTODIFF_TAMC
-        ikeyloc = iEVPstep + 
+        ikeyloc = iEVPstep +
      &      (ikey_dynamics-1)*nEVPstepMax
 CADJ STORE uicec  = comlev1_evp,
 CADJ &     key = ikeyloc, byte = isbyte
@@ -161,11 +161,11 @@ CADJ &     key = ikeyloc, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
 C     first calculate strain rates and bulk moduli/viscosities
-C     
-        CALL SEAICE_CALC_STRAINRATES( 
+C
+        CALL SEAICE_CALC_STRAINRATES(
      I       uIceC, vIceC,
      O       e11, e22, e12,
-     I       myThid )
+     I       iEVPstep, myTime, myIter, myThid )
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -181,22 +181,22 @@ C
 C     average strain rates to Z and C points
             e11C = e11(i,j,bi,bj)
             e22C = e22(i,j,bi,bj)
-            e12C = 0.25 _d 0 
-     &         * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj) 
+            e12C = 0.25 _d 0
+     &         * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
      &           + e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
             e11Z = 0.25 _d 0
-     &         * ( e11(I,J  ,bi,bj) + e11(I-1,J  ,bi,bj) 
+     &         * ( e11(I,J  ,bi,bj) + e11(I-1,J  ,bi,bj)
      &           + e11(I,J-1,bi,bj) + e11(I-1,J-1,bi,bj) )
             e22Z = 0.25 _d 0
-     &         * ( e22(I,J  ,bi,bj) + e22(I-1,J  ,bi,bj) 
+     &         * ( e22(I,J  ,bi,bj) + e22(I-1,J  ,bi,bj)
      &           + e22(I,J-1,bi,bj) + e22(I-1,J-1,bi,bj) )
             e12Z = e12(i,j,bi,bj)
             deltaC    = (e11C**2+e22C**2)*(ONE+recip_ecc2)
-     &           +      4. _d 0*recip_ecc2*e12C**2 
+     &           +      4. _d 0*recip_ecc2*e12C**2
      &           +      2. _d 0*e11C*e22C*(ONE-recip_ecc2)
             deltaCreg = SQRT(MAX(deltaC,SEAICE_EPS_SQ))
             deltaZ    = (e11Z**2+e22Z**2)*(ONE+recip_ecc2)
-     &           +      4. _d 0*recip_ecc2*e12Z**2 
+     &           +      4. _d 0*recip_ecc2*e12Z**2
      &           +      2. _d 0*e11Z*e22Z*(ONE-recip_ecc2)
             deltaZreg = SQRT(MAX(deltaZ,SEAICE_EPS_SQ))
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -211,7 +211,7 @@ C     modify pressure (copied from seaice_calc_viscosities)
             zetaC  = HALF*press0(I,J,bi,bj)/deltaCreg
             zetaC  = MIN(zMax(I,J,bi,bj),zetaC)
             zetaC  = MAX(zMin(I,J,bi,bj),zetaC)
-CML            zetaC  = zetaC*hEffM(I,J,bi,bj) 
+CML            zetaC  = zetaC*hEffM(I,J,bi,bj)
             pressZ = (deltaZ/deltaZreg) * 0.25 _d 0
      &         * ( PRESS0(I,J  ,bi,bj) + PRESS0(I-1,J  ,bi,bj)
      &           + PRESS0(I,J-1,bi,bj) + PRESS0(I-1,J-1,bi,bj) )
@@ -247,8 +247,8 @@ C
            DO i=0,sNx
 C     sigma1 and sigma2 are computed on C points
             seaice_sigma1 (I,J,bi,bj) = ( seaice_sigma1 (I,J,bi,bj)
-     &           + SEAICE_deltaTevp *  0.5 _d 0 * recip_evp_tau 
-     &           * seaice_div(I,J) 
+     &           + SEAICE_deltaTevp *  0.5 _d 0 * recip_evp_tau
+     &           * seaice_div(I,J)
      &           ) * denom1
      &           *hEffM(I,J,bi,bj)
             seaice_sigma2 (I,J,bi,bj) = ( seaice_sigma2 (I,J,bi,bj)
@@ -257,9 +257,9 @@ C     sigma1 and sigma2 are computed on C points
      &           ) * denom2
      &         *hEffM(I,J,bi,bj)
 C     recover sigma11 and sigma22
-            sig11(I,J) = 0.5 _d 0 * 
+            sig11(I,J) = 0.5 _d 0 *
      &           ( seaice_sigma1(I,J,bi,bj)+seaice_sigma2(I,J,bi,bj) )
-            sig22(I,J) = 0.5 _d 0 * 
+            sig22(I,J) = 0.5 _d 0 *
      &           ( seaice_sigma1(I,J,bi,bj)-seaice_sigma2(I,J,bi,bj) )
            ENDDO
           ENDDO
@@ -270,40 +270,40 @@ C     sigma12 is computed on Z points
             seaice_sigma12(I,J,bi,bj) = ( seaice_sigma12(I,J,bi,bj)
      &           + SEAICE_deltaTevp * 0.25 _d 0 * recip_evp_tau *
      &           seaice_shear(I,J)
-     &           ) * denom2 
+     &           ) * denom2
            ENDDO
-          ENDDO   
+          ENDDO
 C
 C     compute divergence of stress tensor
 C
           DO J=1,sNy
            DO I=1,sNx
-            stressDivergenceX(I,J,bi,bj) = 
+            stressDivergenceX(I,J,bi,bj) =
      &           ( sig11(I  ,J  ) * _dyF(I  ,J,bi,bj)
      &           - sig11(I-1,J  ) * _dyF(I-1,J,bi,bj)
-     &           + seaice_sigma12(I,J+1,bi,bj) * _dxV(I,J+1,bi,bj) 
+     &           + seaice_sigma12(I,J+1,bi,bj) * _dxV(I,J+1,bi,bj)
      &           - seaice_sigma12(I,J  ,bi,bj) * _dxV(I,J  ,bi,bj)
      &           ) * recip_rAw(I,J,bi,bj)
-     &           - 
-     &           ( seaice_sigma12(I,J  ,bi,bj) 
+     &           -
+     &           ( seaice_sigma12(I,J  ,bi,bj)
      &           + seaice_sigma12(I,J+1,bi,bj) )
      &           * _tanPhiAtU(I,J,bi,bj) * recip_rSphere
-     &           + 
+     &           +
      &           ( sig22(I,J) + sig22(I-1,J) ) * 0.5 _d 0
      &           * _tanPhiAtU(I,J,bi,bj) * recip_rSphere
 C     one metric term  missing for general curvilinear coordinates
-            stressDivergenceY(I,J,bi,bj) = 
+            stressDivergenceY(I,J,bi,bj) =
      &           ( sig22(I,J  ) * _dxF(I,J  ,bi,bj)
-     &           - sig22(I,J-1) * _dxF(I,J-1,bi,bj) 
+     &           - sig22(I,J-1) * _dxF(I,J-1,bi,bj)
      &           + seaice_sigma12(I+1,J,bi,bj) * _dyU(I+1,J,bi,bj)
-     &           - seaice_sigma12(I  ,J,bi,bj) * _dyU(I  ,J,bi,bj) 
+     &           - seaice_sigma12(I  ,J,bi,bj) * _dyU(I  ,J,bi,bj)
      &           ) * recip_rAs(I,J,bi,bj)
-     &           - 
+     &           -
      &           ( sig22(I,J) + sig22(I,J-1) ) * 0.5 _d 0
      &           * _tanPhiAtV(I,J,bi,bj) * recip_rSphere
 C     two metric terms missing for general curvilinear coordinates
            ENDDO
-          ENDDO   
+          ENDDO
 
 C
 C     set up rhs for stepping the velocity field
@@ -333,8 +333,8 @@ C     set up anti symmetric drag force and add in ice ocean stress
 C     ( remember to average to correct velocity points )
             FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
      &           0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
-     &           COSWAT * GWATX(I,J,bi,bj) 
-     &           - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 * 
+     &           COSWAT * GWATX(I,J,bi,bj)
+     &           - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 *
      &           ( DWATN(I  ,J,bi,bj) *
      &           0.5 _d 0 * (GWATY(I  ,J  ,bi,bj)-vIceC(I  ,J  ,bi,bj)
      &                      +GWATY(I  ,J+1,bi,bj)-vIceC(I  ,J+1,bi,bj))
@@ -344,8 +344,8 @@ C     ( remember to average to correct velocity points )
      &         )
             FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
      &           0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
-     &           COSWAT * GWATY(I,J,bi,bj) 
-     &           + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 * 
+     &           COSWAT * GWATY(I,J,bi,bj)
+     &           + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
      &           ( DWATN(I,J  ,bi,bj) *
      &           0.5 _d 0 * (GWATX(I  ,J  ,bi,bj)-uIceC(I  ,J  ,bi,bj)
      &                      +GWATX(I+1,J  ,bi,bj)-uIceC(I+1,J  ,bi,bj))
@@ -354,13 +354,13 @@ C     ( remember to average to correct velocity points )
      &                      +GWATX(I+1,J-1,bi,bj)-uIceC(I+1,J-1,bi,bj))
      &         )
 C     coriols terms
-            FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj) + 0.5 _d 0*( 
+            FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj) + 0.5 _d 0*(
      &             seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
      &           * 0.5 _d 0*( vIceC(I  ,J,bi,bj)+vIceC(I  ,J+1,bi,bj) )
      &           + seaiceMassC(I-1,J,bi,bj) * _fCori(I-1,J,bi,bj)
-     &           * 0.5 _d 0*( vIceC(I-1,J,bi,bj)+vIceC(I-1,J+1,bi,bj) ) 
+     &           * 0.5 _d 0*( vIceC(I-1,J,bi,bj)+vIceC(I-1,J+1,bi,bj) )
      &           )
-            FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj) - 0.5 _d 0*( 
+            FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj) - 0.5 _d 0*(
      &             seaiceMassC(I,J  ,bi,bj) * _fCori(I,J  ,bi,bj)
      &           * 0.5 _d 0*( uIceC(I,J  ,bi,bj)+uIceC(I+1,  J,bi,bj) )
      &           + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
@@ -373,32 +373,32 @@ C     step momentum equations with ice-ocean stress term treated implicitly
 C
           DO J=1,sNy
            DO I=1,sNx
-            uIceC(I,J,bi,bj) = seaiceMaskU(I,J,bi,bj) * 
+            uIceC(I,J,bi,bj) = seaiceMaskU(I,J,bi,bj) *
      &           (  seaiceMassU(I,J,bi,bj)/SEAICE_deltaTevp
      &           * uIceC(I,J,bi,bj)
-     &           + FORCEX(I,J,bi,bj) 
+     &           + FORCEX(I,J,bi,bj)
      &           + stressDivergenceX(I,J,bi,bj) )
-     &           /( 1. _d 0 - seaiceMaskU(I,J,bi,bj) 
-     &           + seaiceMassU(I,J,bi,bj)/SEAICE_deltaTevp 
+     &           /( 1. _d 0 - seaiceMaskU(I,J,bi,bj)
+     &           + seaiceMassU(I,J,bi,bj)/SEAICE_deltaTevp
      &           + 0.5 _d 0*( DRAGS(I,J,bi,bj) + DRAGS(I-1,J,bi,bj) ) )
-            vIceC(I,J,bi,bj) = seaiceMaskV(I,J,bi,bj) * 
-     &           ( seaiceMassV(I,J,bi,bj)/SEAICE_deltaTevp 
+            vIceC(I,J,bi,bj) = seaiceMaskV(I,J,bi,bj) *
+     &           ( seaiceMassV(I,J,bi,bj)/SEAICE_deltaTevp
      &           * vIceC(I,J,bi,bj)
-     &           + FORCEY(I,J,bi,bj) 
+     &           + FORCEY(I,J,bi,bj)
      &           + stressDivergenceY(I,J,bi,bj) )
-     &           /( 1. _d 0 - seaiceMaskV(I,J,bi,bj) 
-     &           + seaiceMassV(I,J,bi,bj)/SEAICE_deltaTevp 
+     &           /( 1. _d 0 - seaiceMaskV(I,J,bi,bj)
+     &           + seaiceMassV(I,J,bi,bj)/SEAICE_deltaTevp
      &           + 0.5 _d 0*( DRAGS(I,J,bi,bj) + DRAGS(I,J-1,bi,bj) ) )
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-      
+
         CALL EXCH_UV_XY_RL(uIceC,vIceC,.TRUE.,myThid)
-        
+
        ENDIF
 C     end of the main time loop
-      ENDDO 
+      ENDDO
 
 C     Copy work arrays and apply masks
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -407,8 +407,8 @@ C     Copy work arrays and apply masks
          DO I=1-Olx,sNx+Olx
           uIce(I,J,1,bi,bj)=uIceC(I,J,bi,bj)* _maskW(I,J,kSrf,bi,bj)
           vIce(I,J,1,bi,bj)=vIceC(I,J,bi,bj)* _maskS(I,J,kSrf,bi,bj)
-         END DO
-        END DO
+         ENDDO
+        ENDDO
        ENDDO
       ENDDO
 

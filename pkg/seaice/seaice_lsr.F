@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.26 2007/09/25 19:17:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.27 2007/11/13 19:26:26 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE SEAICE_LSR( ilcall, myThid )
+      SUBROUTINE SEAICE_LSR( ilcall, myTime, myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE  SEAICE_LSR                                   |
 C     | o Solve ice momentum equation with an LSR dynamics solver|
@@ -30,8 +30,12 @@ C     === Global variables ===
 #endif
 
 C     === Routine arguments ===
-C     myThid - Thread no. that called this routine.
+C     myTime :: Simulation time
+C     myIter :: Simulation timestep number
+C     myThid :: my Thread Id. number
       INTEGER ilcall
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 CEndOfInterface
 
@@ -57,7 +61,7 @@ C     i,j,bi,bj - Loop counters
       _RL CV   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL FXY  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
-      _RL URT(1-Olx:sNx+Olx, 1-Oly:sNy+Oly) 
+      _RL URT(1-Olx:sNx+Olx, 1-Oly:sNy+Oly)
       _RL CUU(1-Olx:sNx+Olx, 1-Oly:sNy+Oly)
       _RL VRT(1-Olx:sNx+Olx, 1-Oly:sNy+Oly)
       _RL CVV(1-Olx:sNx+Olx, 1-Oly:sNy+Oly)
@@ -120,9 +124,9 @@ C SET SOME VALUES
 cph That's an important one! Note, that
 cph * lsr is called twice, thus the icall index
 cph * this storing is still outside the iteration loop
-CADJ STORE uice = comlev1_lsr, 
+CADJ STORE uice = comlev1_lsr,
 CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
-CADJ STORE vice = comlev1_lsr, 
+CADJ STORE vice = comlev1_lsr,
 CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -130,19 +134,19 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 C     no slip
        seaiceSlipFactor = - 1. _d 0
       ELSE
-C     free slip 
+C     free slip
        seaiceSlipFactor =   1. _d 0
       ENDIF
 
-      CALL SEAICE_CALC_STRAINRATES( 
+      CALL SEAICE_CALC_STRAINRATES(
      I     uIceC, vIceC,
      O     e11, e22, e12,
-     I     myThid )
+     I     ilcall, myTime, myIter, myThid )
 
-      CALL SEAICE_CALC_VISCOSITIES( 
+      CALL SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,
-     O     eta, zeta, press, 
-     I     myThid )
+     O     eta, zeta, press,
+     I     ilcall, myTime, myIter, myThid )
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -171,8 +175,8 @@ C     set up anti symmettric drag force and add in current force
 C     ( remember to average to correct velocity points )
           FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
      &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
-     &         COSWAT * GWATX(I,J,bi,bj) 
-     &         - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 * 
+     &         COSWAT * GWATX(I,J,bi,bj)
+     &         - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 *
      &         ( DWATN(I  ,J,bi,bj) *
      &         0.5 _d 0 * (GWATY(I  ,J  ,bi,bj)-vIceC(I  ,J  ,bi,bj)
      &                    +GWATY(I  ,J+1,bi,bj)-vIceC(I  ,J+1,bi,bj))
@@ -182,8 +186,8 @@ C     ( remember to average to correct velocity points )
      &         )
           FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
      &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
-     &         COSWAT * GWATY(I,J,bi,bj) 
-     &         + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 * 
+     &         COSWAT * GWATY(I,J,bi,bj)
+     &         + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
      &         ( DWATN(I,J  ,bi,bj) *
      &         0.5 _d 0 * (GWATX(I  ,J  ,bi,bj)-uIceC(I  ,J  ,bi,bj)
      &                    +GWATX(I+1,J  ,bi,bj)-uIceC(I+1,J  ,bi,bj))
@@ -195,7 +199,7 @@ C     calculate pressure force and add to external force
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
      &         - 0.5 _d 0 *  _recip_dxC(I,J,bi,bj)
      &         *(PRESS(I,J,bi,bj) - PRESS(I-1,J  ,bi,bj))
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj) 
+          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
      &         - 0.5 _d 0 *  _recip_dyC(I,J,bi,bj)
      &         *(PRESS(I,J,bi,bj) - PRESS(I  ,J-1,bi,bj))
          ENDDO
@@ -240,7 +244,7 @@ C
         ENDDO
         DO j=1,sNy+1
          DO i=1,sNx+1
-          etaMeanZ (I,J,bi,bj) = 
+          etaMeanZ (I,J,bi,bj) =
      &         (           ETA (I,J  ,bi,bj)  + ETA (I-1,J  ,bi,bj)
      &         +           ETA (I,J-1,bi,bj)  + ETA (I-1,J-1,bi,bj) )
      &         / MAX(1.D0,maskC(I,J,  k,bi,bj)+maskC(I-1,J,  k,bi,bj)
@@ -257,9 +261,9 @@ C SOLVE FOR uIce
         DO J=1,sNy
          DO I=1,sNx
 C     coefficients of uIce(I,J)
-C     (d/dx)[(eta+zeta)*d/dx)] U 
+C     (d/dx)[(eta+zeta)*d/dx)] U
           AA1 = etaPlusZeta(I  ,J,bi,bj)
-     &         * _recip_dxF(I  ,J,bi,bj) 
+     &         * _recip_dxF(I  ,J,bi,bj)
      &         * _recip_dxC(I  ,J,bi,bj) * seaiceMaskU(I,J,bi,bj)
           AA2 = etaPlusZeta(I-1,J,bi,bj)
      &         * _recip_dxF(I-1,J,bi,bj)
@@ -344,7 +348,7 @@ C     free slip conditions are taken care of by masking dVdx
          DO J=1,sNy+1
           DO I=1,sNx
            hFacM = seaiceMaskV(I,J,bi,bj) - seaiceMaskV(I-1,J,bi,bj)
-           dVdx(I,J) = dVdx(I,J) 
+           dVdx(I,J) = dVdx(I,J)
      &          + ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
      &          * _recip_dxV(I,J,bi,bj) * hFacM * 2. _d 0
           ENDDO
@@ -363,25 +367,25 @@ C     + d/dx[ (zeta-eta) dV/dy]
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) +
      &         ( zetaMinusEta(I  ,J  ,bi,bj) * dVdy(I  ,J  )
      &         - zetaMinusEta(I-1,J  ,bi,bj) * dVdy(I-1,J  )
-     &         ) * _recip_dxC(I,J,bi,bj) 
+     &         ) * _recip_dxC(I,J,bi,bj)
 C     + d/dy[ eta dV/x ]
-          FXY(I,J,bi,bj)=FXY(I,J,bi,bj) + 
+          FXY(I,J,bi,bj)=FXY(I,J,bi,bj) +
      &         ( etaMeanZ(I,J+1,bi,bj) * dVdx(I,J+1)
      &         - etaMeanZ(I,J  ,bi,bj) * dVdx(I,J  )
      &         ) * _recip_dyG(I,J,bi,bj)
 C     - d/dx[ (eta+zeta) * v * (tanphi/a) ]
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) - (
-     &           etaPlusZeta(I  ,J  ,bi,bj) 
+     &           etaPlusZeta(I  ,J  ,bi,bj)
      &         * 0.5 _d 0 * (vIceC(I  ,J,bi,bj)+vIceC(I  ,J+1,bi,bj))
-     &         * 0.5 _d 0 * ( _tanPhiAtU(I  ,J,bi,bj) 
+     &         * 0.5 _d 0 * ( _tanPhiAtU(I  ,J,bi,bj)
      &                      + _tanPhiAtU(I+1,J,bi,bj) )
      &         - etaPlusZeta(I-1,J,bi,bj)
      &         * 0.5 _d 0 * (vIceC(I-1,J,bi,bj)+vIceC(I-1,J+1,bi,bj))
-     &         * 0.5 _d 0 * ( _tanPhiAtU(I-1,J,bi,bj) 
+     &         * 0.5 _d 0 * ( _tanPhiAtU(I-1,J,bi,bj)
      &                      + _tanPhiAtU(I  ,J,bi,bj) )
      &         )* _recip_dxC(I,J,bi,bj)*recip_rSphere
-C     - 2*eta*(tanphi/a) * dV/dx 
-          FXY(I,J,bi,bj)=FXY(I,J,bi,bj) - 
+C     - 2*eta*(tanphi/a) * dV/dx
+          FXY(I,J,bi,bj)=FXY(I,J,bi,bj) -
      &         TWO * etaMeanU(I,J,bi,bj) * _tanPhiAtV(I,J,bi,bj)
      &         *recip_rSphere
      &         *( dVdx(I,J+1) + dVdx(I,J) ) * 0.5 _d 0
@@ -425,7 +429,7 @@ C NOW SET U(3)=U(1)
            AA3=AA2*uIce(I-1,J,1,bi,bj)* seaiceMaskU(I,J,bi,bj)
           ELSE IF(I.EQ.sNx) THEN
            AA1 = etaPlusZeta(I  ,J,bi,bj)
-     &          * _recip_dxF(I  ,J,bi,bj) 
+     &          * _recip_dxF(I  ,J,bi,bj)
      &          * _recip_dxC(I  ,J,bi,bj)
            AA3=AA1*uIce(I+1,J,1,bi,bj) * seaiceMaskU(I,J,bi,bj)
           ELSE
@@ -540,7 +544,7 @@ C     d/dy [(zeta-eta) tanphi/a] V
      &         * _recip_dyC(I,J,bi,bj)*recip_rSphere * 0.5 _d 0
 C     2*eta tanphi/a ( - tanphi/a - d/dy) V
           AA7=TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
-     &         * _tanPhiAtV(I,J,bi,bj) 
+     &         * _tanPhiAtV(I,J,bi,bj)
 C
           AV(I,J,bi,bj)=(
      &         - AA2
@@ -548,12 +552,12 @@ C
      &         - AA7*1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
      &         )* seaiceMaskV(I,J,bi,bj)
           CV(I,J,bi,bj)=(
-     &         -AA1 
+     &         -AA1
      &         + AA5
      &         + AA7*1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
      &         )* seaiceMaskV(I,J,bi,bj)
           BV(I,J,bi,bj)= (ONE- seaiceMaskV(I,J,bi,bj))
-     &         +( (AA1+AA2) + (AA3+AA4)  + (AA5-AA6) 
+     &         +( (AA1+AA2) + (AA3+AA4)  + (AA5-AA6)
      &         + AA7 * _tanPhiAtV(I,J,bi,bj)*recip_rSphere
      &         + seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
      &         + 0.5 _d 0 * ( DRAGS(I,J,bi,bj) + DRAGS(I,J-1,bi,bj) )
@@ -579,7 +583,7 @@ C     than BV, hence the minus sign
      &         + UVRT2(I,J,bi,bj)*( 1. _d 0 - hFacP )*seaiceSlipFactor
      &         )
 C     reset coefficients of V(I-1,J) and V(I+1,J)
-          UVRT1(I,J,bi,bj)=UVRT1(I,J,bi,bj) * hFacM 
+          UVRT1(I,J,bi,bj)=UVRT1(I,J,bi,bj) * hFacM
           UVRT2(I,J,bi,bj)=UVRT2(I,J,bi,bj) * hFacP
          ENDDO
         ENDDO
@@ -638,12 +642,12 @@ C     + d/dx[ eta dU/dy ]
      &         * _recip_dxG(I,J,bi,bj)
 C     + d/dx[ eta * (tanphi/a) * U ]
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) + (
-     &         etaMeanZ(I+1,J,bi,bj) * 0.5 _d 0 * 
+     &         etaMeanZ(I+1,J,bi,bj) * 0.5 _d 0 *
      &         ( uIceC(I+1,J  ,bi,bj) * _tanPhiAtU(I+1,J  ,bi,bj)
-     &         + uIceC(I+1,J-1,bi,bj) * _tanPhiAtU(I+1,J-1,bi,bj) ) 
-     &         - etaMeanZ(I  ,J,bi,bj) * 0.5 _d 0 * 
-     &         ( uIceC(I  ,J  ,bi,bj) * _tanPhiAtU(I  ,J  ,bi,bj) 
-     &         + uIceC(I  ,J-1,bi,bj) * _tanPhiAtU(I  ,J  ,bi,bj) ) 
+     &         + uIceC(I+1,J-1,bi,bj) * _tanPhiAtU(I+1,J-1,bi,bj) )
+     &         - etaMeanZ(I  ,J,bi,bj) * 0.5 _d 0 *
+     &         ( uIceC(I  ,J  ,bi,bj) * _tanPhiAtU(I  ,J  ,bi,bj)
+     &         + uIceC(I  ,J-1,bi,bj) * _tanPhiAtU(I  ,J  ,bi,bj) )
      &         ) *  _recip_dxG(I,J,bi,bj)*recip_rSphere
 C     + 2*eta*(tanphi/a) dU/dx
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) +
@@ -677,7 +681,7 @@ cph)
 C NOW SET V(3)=V(1)
         DO J=1,sNy
          DO I=1,sNx
-          vIce(I,J,3,bi,bj)=vIce(I,J,1,bi,bj) 
+          vIce(I,J,3,bi,bj)=vIce(I,J,1,bi,bj)
          END DO
         END DO
 
@@ -690,7 +694,7 @@ C NOW SET V(3)=V(1)
      &          + zetaMinusEta(I,J-1,bi,bj) * tanPhiAtU(I,J-1,bi,bj)
      &          * _recip_dyC(I,J,bi,bj)*recip_rSphere
      &          + TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
-     &          * _tanPhiAtV(I,J,bi,bj) 
+     &          * _tanPhiAtV(I,J,bi,bj)
      &          *1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
      &          ) * vIce(I,J-1,1,bi,bj) * seaiceMaskV(I,J,bi,bj)
           ELSE IF(J.EQ.sNy) THEN
@@ -700,20 +704,20 @@ C NOW SET V(3)=V(1)
      &          - zetaMinusEta(I,J  ,bi,bj) * tanPhiAtU(I,J  ,bi,bj)
      &          * _recip_dyC(I,J,bi,bj)*recip_rSphere
      &          - TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
-     &          * _tanPhiAtV(I,J,bi,bj) 
+     &          * _tanPhiAtV(I,J,bi,bj)
      &          *1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
      &          ) * vIce(I,J+1,1,bi,bj) * seaiceMaskV(I,J,bi,bj)
           ELSE
            AA3=ZERO
           END IF
-          
+
           VRT(I,J)=FXY(I,J,bi,bj)
      &         + AA3
      &         + UVRT1(I,J,bi,bj)*vIce(I-1,J,tLev,bi,bj)
      &         + UVRT2(I,J,bi,bj)*vIce(I+1,J,tLev,bi,bj)
           VRT(I,J)=VRT(I,J)* seaiceMaskV(I,J,bi,bj)
          END DO
-         
+
          DO J=1,sNy
           CVV(I,J)=CV(I,J,bi,bj)
          END DO

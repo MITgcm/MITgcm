@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.7 2007/09/19 08:48:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.8 2007/11/13 19:26:25 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE SEAICE_CALC_STRAINRATES( 
+      SUBROUTINE SEAICE_CALC_STRAINRATES(
      I     uFld, vFld,
      O     e11, e22, e12,
-     I     myThid )
+     I     iStep, myTime, myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE  SEAICE_CALC_STRAINRATES                      |
 C     | o compute strain rates from ice velocities               |
@@ -28,7 +28,13 @@ C     === Global variables ===
 #endif
 
 C     === Routine arguments ===
-C     myThid - Thread no. that called this routine.
+C     iStep  :: Sub-time-step number
+C     myTime :: Simulation time
+C     myIter :: Simulation timestep number
+C     myThid :: My Thread Id. number
+      INTEGER iStep
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 C     ice velocities
       _RL uFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -91,12 +97,12 @@ C     no slip boundary conditions apply only to e12
            hFacV = _maskS(i,j,k,bi,bj) - _maskS(i-1,j,k,bi,bj)
 
            e12(I,J,bi,bj) = e12(I,J,bi,bj)
-     &          + recip_rAz(i,j,bi,bj) * 
+     &          + recip_rAz(i,j,bi,bj) *
      &          ( hFacU * ( _dxC(i,j-1,bi,bj)*uFld(i,j  ,bi,bj)
-     &                    + _dxC(i,j,  bi,bj)*uFld(i,j-1,bi,bj) ) 
+     &                    + _dxC(i,j,  bi,bj)*uFld(i,j-1,bi,bj) )
      &          + hFacV * ( _dyC(i-1,j,bi,bj)*vFld(i  ,j,bi,bj)
      &                    + _dyC(i,  j,bi,bj)*vFld(i-1,j,bi,bj) ) )
-     &         - hFacU 
+     &         - hFacU
      &         * 0.25 _d 0 * (uFld(I,J,bi,bj)+uFld(I  ,J-1,bi,bj))
      &         * ( _tanPhiAtU(I,J,bi,bj) + _tanPhiAtU(I,J-1,bi,bj) )
      &         *recip_rSphere

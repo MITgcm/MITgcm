@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.8 2007/09/27 06:48:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.9 2007/11/13 19:26:25 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE SEAICE_CALC_VISCOSITIES( 
+      SUBROUTINE SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,
-     O     eta, zeta, press, 
-     I     myThid )
+     O     eta, zeta, press,
+     I     iStep, myTime, myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE  SEAICE_CALC_VISCOSITIES                      |
 C     | o compute shear and bulk viscositites eta, zeta and the  |
@@ -30,17 +30,23 @@ C     === Global variables ===
 #endif
 
 C     === Routine arguments ===
-C     myThid - Thread no. that called this routine.
+C     iStep  :: Sub-time-step number
+C     myTime :: Simulation time
+C     myIter :: Simulation timestep number
+C     myThid :: My Thread Id. number
+      INTEGER iStep
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 C     strain rate tensor
       _RL e11   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e22   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e12   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     
+C
       _RL zMin  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL zMax  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL hEffM (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-C     
+C
       _RL press0(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL press (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 C     bulk viscosity
@@ -65,10 +71,10 @@ C
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
-          e12C = 0.25 * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj) 
+          e12C = 0.25 * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
      &         +          e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
           deltaC = (e11(i,j,bi,bj)**2+e22(i,j,bi,bj)**2)*(ONE+ecm2)
-     &         + 4. _d 0*ecm2*e12C**2 
+     &         + 4. _d 0*ecm2*e12C**2
      &         + 2. _d 0*e11(i,j,bi,bj)*e22(i,j,bi,bj)*(ONE-ecm2)
           deltaCreg = SQRT(MAX(deltaC,SEAICE_EPS_SQ))
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -82,8 +88,8 @@ C     "replacement pressure"
 C     put min and max viscosities in
           zeta (I,J,bi,bj) = MIN(ZMAX(I,J,bi,bj),zeta(I,J,bi,bj))
           zeta (I,J,bi,bj) = MAX(ZMIN(I,J,bi,bj),zeta(I,J,bi,bj))
-C     set viscosities to zero at hEffM flow pts 
-          zeta (I,J,bi,bj) = zeta(I,J,bi,bj)*HEFFM(I,J,bi,bj) 
+C     set viscosities to zero at hEffM flow pts
+          zeta (I,J,bi,bj) = zeta(I,J,bi,bj)*HEFFM(I,J,bi,bj)
           eta  (I,J,bi,bj) = ECM2*zeta(I,J,bi,bj)
           press(I,J,bi,bj) = TWO *zeta(I,J,bi,bj)*deltaC
          ENDDO

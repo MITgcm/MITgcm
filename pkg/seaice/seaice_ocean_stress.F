@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.18 2007/05/15 14:32:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.19 2007/11/13 19:26:26 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE SEAICE_OCEAN_STRESS( 
+      SUBROUTINE SEAICE_OCEAN_STRESS(
      I     myTime, myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE SEAICE_OCEAN_STRESS                           |
@@ -32,7 +32,7 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 CEndOfInterface
 
-#ifdef SEAICE_CGRID 
+#ifdef SEAICE_CGRID
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
@@ -58,28 +58,28 @@ c     introduce turning angle (default is zero)
 
       IF ( useHB87StressCoupling ) THEN
 C
-C     use an intergral over ice and ocean surface layer to define 
+C     use an intergral over ice and ocean surface layer to define
 C     surface stresses on ocean following Hibler and Bryan (1987, JPO)
-C     
+C
 C     recompute strain rates, viscosities, etc. from updated ice velocities
        IF ( .NOT. SEAICEuseEVP ) THEN
-C     only for EVP we already have the stress components otherwise we need 
+C     only for EVP we already have the stress components otherwise we need
 C     to recompute them here
-        CALL SEAICE_CALC_STRAINRATES( 
+        CALL SEAICE_CALC_STRAINRATES(
      I       uIce(1-Olx,1-Oly,1,1,1), vIce(1-Olx,1-Oly,1,1,1),
      O       e11, e22, e12,
-     I       myThid )
+     I       3, myTime, myIter, myThid )
 
-        CALL SEAICE_CALC_VISCOSITIES( 
+        CALL SEAICE_CALC_VISCOSITIES(
      I       e11, e22, e12, zMin, zMax, hEffM, press0,
-     O       eta, zeta, press, 
-     I       myThid )
+     O       eta, zeta, press,
+     I       3, myTime, myIter, myThid )
        ENDIF
 C     re-compute internal stresses with updated ice velocities
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          IF ( .NOT. SEAICEuseEVP ) THEN
-C     only for EVP we already have computed the stress divergences, for 
+C     only for EVP we already have computed the stress divergences, for
 C     anything else we have to do it here
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
@@ -105,7 +105,7 @@ C     anything else we have to do it here
             sig12(I,J) = 2. _d 0 * e12(I,J,bi,bj) *
      &           ( eta(I,J  ,bi,bj) + eta(I-1,J  ,bi,bj)
      &           + eta(I,J-1,bi,bj) + eta(I-1,J-1,bi,bj) )
-     &           /MAX(1. _d 0, 
+     &           /MAX(1. _d 0,
      &             hEffM(I,J  ,bi,bj) + hEffM(I-1,J  ,bi,bj)
      &           + hEffM(I,J-1,bi,bj) + hEffM(I-1,J-1,bi,bj))
            ENDDO
@@ -115,33 +115,33 @@ C     evaluate divergence of stress and apply to forcing
            DO I=1,sNx
             FX = ( sig11(I  ,J  ) * _dyF(I  ,J  ,bi,bj)
      &           - sig11(I-1,J  ) * _dyF(I-1,J  ,bi,bj)
-     &           + sig12(I  ,J+1) * _dxV(I  ,J+1,bi,bj) 
+     &           + sig12(I  ,J+1) * _dxV(I  ,J+1,bi,bj)
      &           - sig12(I  ,J  ) * _dxV(I  ,J  ,bi,bj)
      &           ) * recip_rAw(I,J,bi,bj)
-     &           - 
+     &           -
      &           ( sig12(I,J) + sig12(I,J+1) )
      &           * _tanPhiAtU(I,J,bi,bj) * recip_rSphere
-     &           + 
+     &           +
      &           ( sig22(I,J) + sig22(I-1,J) ) * 0.5 _d 0
      &           * _tanPhiAtU(I,J,bi,bj) * recip_rSphere
 C     one metric term  missing for general curvilinear coordinates
             FY = ( sig22(I  ,J  ) * _dxF(I  ,J  ,bi,bj)
-     &           - sig22(I  ,J-1) * _dxF(I  ,J-1,bi,bj) 
+     &           - sig22(I  ,J-1) * _dxF(I  ,J-1,bi,bj)
      &           + sig12(I+1,J  ) * _dyU(I+1,J  ,bi,bj)
-     &           - sig12(I  ,J  ) * _dyU(I  ,J  ,bi,bj) 
+     &           - sig12(I  ,J  ) * _dyU(I  ,J  ,bi,bj)
      &           ) * recip_rAs(I,J,bi,bj)
-     &           - 
+     &           -
      &           ( sig22(I,J) + sig22(I,J-1) ) * 0.5 _d 0
      &           * _tanPhiAtV(I,J,bi,bj) * recip_rSphere
 C     two metric terms missing for general curvilinear coordinates
-C     average wind stress over ice and ocean and apply averaged wind 
+C     average wind stress over ice and ocean and apply averaged wind
 C     stress and internal ice stresses to surface layer of ocean
             areaW = 0.5 * (AREA(I,J,1,bi,bj) + AREA(I-1,J,1,bi,bj))
      &           * SEAICEstressFactor
             areaS = 0.5 * (AREA(I,J,1,bi,bj) + AREA(I,J-1,1,bi,bj))
      &           * SEAICEstressFactor
             fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)
-     &           + areaW*taux(I,J,bi,bj) 
+     &           + areaW*taux(I,J,bi,bj)
      &           + FX * SEAICEstressFactor
             fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)
      &           + areaS*tauy(I,J,bi,bj)
@@ -157,14 +157,14 @@ C     save stress divergence for later
 #ifdef SEAICE_ALLOW_EVP
           DO J=1,sNy
            DO I=1,sNx
-C     average wind stress over ice and ocean and apply averaged wind 
+C     average wind stress over ice and ocean and apply averaged wind
 C     stress and internal ice stresses to surface layer of ocean
             areaW = 0.5 * (AREA(I,J,1,bi,bj) + AREA(I-1,J,1,bi,bj))
      &           * SEAICEstressFactor
             areaS = 0.5 * (AREA(I,J,1,bi,bj) + AREA(I,J-1,1,bi,bj))
      &           * SEAICEstressFactor
             fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)
-     &           + areaW*taux(I,J,bi,bj) 
+     &           + areaW*taux(I,J,bi,bj)
      &           + stressDivergenceX(I,J,bi,bj) * SEAICEstressFactor
             fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)
      &           + areaS*tauy(I,J,bi,bj)
@@ -179,23 +179,23 @@ C     stress and internal ice stresses to surface layer of ocean
       ELSE
 C     else: useHB87StressCoupling=F
 
-C--   Compute ice-affected wind stress (interpolate to U/V-points) 
-C     by averaging wind stress and ice-ocean stress according to 
+C--   Compute ice-affected wind stress (interpolate to U/V-points)
+C     by averaging wind stress and ice-ocean stress according to
 C     ice cover
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
           fuIceLoc=HALF*( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) )*
-     &         COSWAT * 
+     &         COSWAT *
      &         ( UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj) )
-     &         - SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 * 
+     &         - SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
      &         ( DWATN(I  ,J,bi,bj) *
      &         0.5 _d 0*(vIce(I  ,J  ,1,bi,bj)-GWATY(I  ,J  ,bi,bj)
-     &                  +vIce(I  ,J+1,1,bi,bj)-GWATY(I  ,J+1,bi,bj)) 
+     &                  +vIce(I  ,J+1,1,bi,bj)-GWATY(I  ,J+1,bi,bj))
      &         + DWATN(I-1,J,bi,bj) *
      &         0.5 _d 0*(vIce(I-1,J  ,1,bi,bj)-GWATY(I-1,J  ,bi,bj)
-     &                  +vIce(I-1,J+1,1,bi,bj)-GWATY(I-1,J+1,bi,bj)) 
+     &                  +vIce(I-1,J+1,1,bi,bj)-GWATY(I-1,J+1,bi,bj))
      &         )
           fvIceLoc=HALF*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) )*
      &         COSWAT *
@@ -205,8 +205,8 @@ C     ice cover
      &         0.5 _d 0*(uIce(I  ,J  ,1,bi,bj)-GWATX(I  ,J  ,bi,bj)
      &                  +uIce(I+1,J  ,1,bi,bj)-GWATX(I+1,J  ,bi,bj))
      &         + DWATN(I,J-1,bi,bj) *
-     &         0.5 _d 0*(uIce(I  ,J-1,1,bi,bj)-GWATX(I  ,J-1,bi,bj) 
-     &                  +uIce(I+1,J-1,1,bi,bj)-GWATX(I+1,J-1,bi,bj)) 
+     &         0.5 _d 0*(uIce(I  ,J-1,1,bi,bj)-GWATX(I  ,J-1,bi,bj)
+     &                  +uIce(I+1,J-1,1,bi,bj)-GWATX(I+1,J-1,bi,bj))
      &         )
           areaW = 0.5 _d 0 * (AREA(I,J,1,bi,bj) + AREA(I-1,J,1,bi,bj))
      &         * SEAICEstressFactor
