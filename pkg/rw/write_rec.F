@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_rec.F,v 1.1 2006/08/06 18:06:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_rec.F,v 1.2 2007/11/13 19:39:26 jmc Exp $
 C $Name:  $
 #include "RW_OPTIONS.h"
 
@@ -11,7 +11,11 @@ C--   o WRITE_REC_XYZ_RS
 C--   o WRITE_REC_XYZ_RL
 C--   o WRITE_REC_3D_RS
 C--   o WRITE_REC_3D_RL
+C--   o WRITE_REC_LEV_RS
+C--   o WRITE_REC_LEV_RL
 
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: SET_WRITE_GLOBAL_REC
 C     !INTERFACE:
@@ -40,10 +44,11 @@ CEOP
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: WRITE_REC_XY_RS
 C     !INTERFACE:
-      SUBROUTINE WRITE_REC_XY_RS( fName,field,iRec,myIter,myThid)
+      SUBROUTINE WRITE_REC_XY_RS( fName,field,iRec,myIter,myThid )
 
 C     !DESCRIPTION: \bv
 C WRITE_REC_XY_RS is a "front-end" interface to the low-level I/O
@@ -74,6 +79,7 @@ C Common
 
 C     !LOCAL VARIABLES:
 C Local
+      LOGICAL useCurrentDir
       CHARACTER*(2) fType
       INTEGER nNz
 c     INTEGER IL
@@ -88,20 +94,24 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      useCurrentDir = .FALSE.
       fType='RS'
       nNz=1
-c     globalFile=.FALSE.
 #ifdef ALLOW_MDSIO
-      CALL MDSWRITEFIELD( fName, writeBinaryPrec, globalFile,
-     &     fType, nNz, field, iRec, myIter, myThid )
+      CALL MDS_WRITE_FIELD(
+     I                      fName, writeBinaryPrec,
+     I                      globalFile, useCurrentDir,
+     I                      fType, nNz, 1, nNz, field,
+     I                      iRec, myIter, myThid )
 #endif
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: WRITE_REC_XY_RL
 C     !INTERFACE:
-      SUBROUTINE WRITE_REC_XY_RL( fName,field,iRec,myIter,myThid)
+      SUBROUTINE WRITE_REC_XY_RL( fName,field,iRec,myIter,myThid )
 
 C     !DESCRIPTION: \bv
 C WRITE_REC_XY_RL is a "front-end" interface to the low-level I/O
@@ -132,6 +142,7 @@ C Common
 
 C     !LOCAL VARIABLES:
 C Local
+      LOGICAL useCurrentDir
       CHARACTER*(2) fType
       INTEGER nNz
 c     INTEGER IL
@@ -146,20 +157,24 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      useCurrentDir = .FALSE.
       fType='RL'
       nNz=1
-c     globalFile=.FALSE.
 #ifdef ALLOW_MDSIO
-      CALL MDSWRITEFIELD( fName, writeBinaryPrec, globalFile,
-     &     fType, nNz, field, iRec, myIter, myThid )
+      CALL MDS_WRITE_FIELD(
+     I                      fName, writeBinaryPrec,
+     I                      globalFile, useCurrentDir,
+     I                      fType, nNz, 1, nNz, field,
+     I                      iRec, myIter, myThid )
 #endif
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: WRITE_REC_XYZ_RS
 C     !INTERFACE:
-      SUBROUTINE WRITE_REC_XYZ_RS( fName,field,iRec,myIter,myThid)
+      SUBROUTINE WRITE_REC_XYZ_RS( fName,field,iRec,myIter,myThid )
 
 C     !DESCRIPTION: \bv
 C WRITE_REC_XYZ_RS is a "front-end" interface to the low-level I/O
@@ -190,6 +205,7 @@ C Common
 
 C     !LOCAL VARIABLES:
 C Local
+      LOGICAL useCurrentDir
       CHARACTER*(2) fType
       INTEGER nNz
 c     INTEGER IL
@@ -204,20 +220,24 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      useCurrentDir = .FALSE.
       fType='RS'
       nNz=Nr
-c     globalFile=.FALSE.
 #ifdef ALLOW_MDSIO
-      CALL MDSWRITEFIELD( fName, writeBinaryPrec, globalFile,
-     &     fType, nNz, field, iRec, myIter, myThid )
+      CALL MDS_WRITE_FIELD(
+     I                      fName, writeBinaryPrec,
+     I                      globalFile, useCurrentDir,
+     I                      fType, nNz, 1, nNz, field,
+     I                      iRec, myIter, myThid )
 #endif
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: WRITE_REC_XYZ_RL
 C     !INTERFACE:
-      SUBROUTINE WRITE_REC_XYZ_RL( fName,field,iRec,myIter,myThid)
+      SUBROUTINE WRITE_REC_XYZ_RL( fName,field,iRec,myIter,myThid )
 
 C     !DESCRIPTION: \bv
 C WRITE_REC_XYZ_RL is a "front-end" interface to the low-level I/O
@@ -248,6 +268,7 @@ C Common
 
 C     !LOCAL VARIABLES:
 C Local
+      LOGICAL useCurrentDir
       CHARACTER*(2) fType
       INTEGER nNz
 c     INTEGER IL
@@ -262,16 +283,20 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      useCurrentDir = .FALSE.
       fType='RL'
       nNz=Nr
-c     globalFile=.FALSE.
 #ifdef ALLOW_MDSIO
-      CALL MDSWRITEFIELD( fName, writeBinaryPrec, globalFile,
-     &     fType, nNz, field, iRec, myIter, myThid )
+      CALL MDS_WRITE_FIELD(
+     I                      fName, writeBinaryPrec,
+     I                      globalFile, useCurrentDir,
+     I                      fType, nNz, 1, nNz, field,
+     I                      iRec, myIter, myThid )
 #endif
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: WRITE_REC_3D_RS
 C     !INTERFACE:
@@ -311,6 +336,7 @@ C Common
 
 C     !LOCAL VARIABLES:
 C Local
+      LOGICAL useCurrentDir
       CHARACTER*(2) fType
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
@@ -324,15 +350,18 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      useCurrentDir = .FALSE.
       fType='RS'
-c     globalFile=.FALSE.
 #ifdef ALLOW_MDSIO
-      CALL MDSWRITEFIELD( fName, fPrec, globalFile,
-     &     fType, nNz, field, iRec, myIter, myThid )
+      CALL MDS_WRITE_FIELD(
+     I                      fName, fPrec, globalFile, useCurrentDir,
+     I                      fType, nNz, 1, nNz, field,
+     I                      iRec, myIter, myThid )
 #endif
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: WRITE_REC_3D_RL
 C     !INTERFACE:
@@ -372,6 +401,7 @@ C Common
 
 C     !LOCAL VARIABLES:
 C Local
+      LOGICAL useCurrentDir
       CHARACTER*(2) fType
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
@@ -385,11 +415,147 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      useCurrentDir = .FALSE.
       fType='RL'
-c     globalFile=.FALSE.
 #ifdef ALLOW_MDSIO
-      CALL MDSWRITEFIELD( fName, fPrec, globalFile,
-     &     fType, nNz, field, iRec, myIter, myThid )
+      CALL MDS_WRITE_FIELD(
+     I                      fName, fPrec, globalFile, useCurrentDir,
+     I                      fType, nNz, 1, nNz, field,
+     I                      iRec, myIter, myThid )
 #endif
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: WRITE_REC_LEV_RS
+C     !INTERFACE:
+      SUBROUTINE WRITE_REC_LEV_RS(
+     I                            fName, fPrec, kSiz, kLo, kHi, field,
+     I                            iRec, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C WRITE_REC_LEV_RS is a "front-end" interface to the low-level I/O routines.
+C  Write a set a consecutive levels (from kLo to kHi) from 3D array (size: kSiz)
+C  to record number "iRec" in binary file "fName" (precision "fPrec",
+C  generally =32 or 64).
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C Global
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      CHARACTER*(*) fName
+      INTEGER fPrec
+      INTEGER kSiz, kLo, kHi
+      _RS field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSiz,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter
+      INTEGER myThid
+
+C Functions
+c     INTEGER ILNBLNK
+
+C Common
+      COMMON /RD_WR_REC/ globalFile
+      LOGICAL globalFile
+
+C     !LOCAL VARIABLES:
+C Local
+      LOGICAL useCurrentDir
+      CHARACTER*(2) fType
+c     INTEGER IL
+c     CHARACTER*(MAX_LEN_FNAM) fullName
+CEOP
+
+
+c     IF (myIter.GE.0) THEN
+c      IL=ILNBLNK( fName )
+c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
+c     ELSE
+c      fullName=fName
+c     ENDIF
+
+      useCurrentDir = .FALSE.
+      fType='RS'
+#ifdef ALLOW_MDSIO
+      CALL MDS_WRITE_FIELD(
+     I                      fName, fPrec, globalFile, useCurrentDir,
+     I                      fType, kSiz, kLo, kHi, field,
+     I                      iRec, myIter, myThid )
+#endif
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: WRITE_REC_LEV_RL
+C     !INTERFACE:
+      SUBROUTINE WRITE_REC_LEV_RL(
+     I                            fName, fPrec, kSiz, kLo, kHi, field,
+     I                            iRec, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C WRITE_REC_LEV_RL is a "front-end" interface to the low-level I/O routines.
+C  Write a set a consecutive levels (from kLo to kHi) from 3D array (size: kSiz)
+C  to record number "iRec" in binary file "fName" (precision "fPrec",
+C  generally =32 or 64).
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C Global
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C Arguments
+      CHARACTER*(*) fName
+      INTEGER fPrec
+      INTEGER kSiz, kLo, kHi
+      _RS field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSiz,nSx,nSy)
+      INTEGER iRec
+      INTEGER myIter
+      INTEGER myThid
+
+C Functions
+c     INTEGER ILNBLNK
+
+C Common
+      COMMON /RD_WR_REC/ globalFile
+      LOGICAL globalFile
+
+C     !LOCAL VARIABLES:
+C Local
+      LOGICAL useCurrentDir
+      CHARACTER*(2) fType
+c     INTEGER IL
+c     CHARACTER*(MAX_LEN_FNAM) fullName
+CEOP
+
+
+c     IF (myIter.GE.0) THEN
+c      IL=ILNBLNK( fName )
+c      WRITE(fullName,'(2a,i10.10)') fName(1:IL),'.',myIter
+c     ELSE
+c      fullName=fName
+c     ENDIF
+
+      useCurrentDir = .FALSE.
+      fType='RL'
+#ifdef ALLOW_MDSIO
+      CALL MDS_WRITE_FIELD(
+     I                      fName, fPrec, globalFile, useCurrentDir,
+     I                      fType, kSiz, kLo, kHi, field,
+     I                      iRec, myIter, myThid )
+#endif
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
