@@ -1,5 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_ad.flow,v 1.3 2007/10/09 00:13:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_ad.flow,v 1.4 2007/11/13 19:37:44 jmc Exp $
 C $Name:  $
+
+C----------------------------------------
+C subroutine mds_read_field
+C----------------------------------------
+CADJ SUBROUTINE mds_read_field  INPUT  = 1,2,3,4,5,6,7,  9,10
+CADJ SUBROUTINE mds_read_field  OUTPUT =               8 
+CADJ SUBROUTINE mds_read_field  DEPEND = 1,2,3,4,5,6,7,8,9,10
+CADJ SUBROUTINE mds_read_field  REQUIRED
+
+C----------------------------------------
+C subroutine mds_write_field
+C----------------------------------------
+CADJ SUBROUTINE mds_write_field  INPUT  = 1,2,3,4,5,6,7,8,9,10,11,12
+CADJ SUBROUTINE mds_write_field  OUTPUT =
 
 C----------------------------------------
 C subroutine mdsreadfield

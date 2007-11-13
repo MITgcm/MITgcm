@@ -1,7 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_rw_field.F,v 1.1 2006/12/29 05:50:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_rw_field.F,v 1.2 2007/11/13 19:37:44 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
+
+C--  File mdsio_rw_field.F: old version of MDSIO READ/WRITE FIELD S/R with
+C    fewer arguments (kept for backward compatibility): call new MDSIO S/R
+C    with fixed additional arguments
+C--   Contents
+C--   o MDSREADFIELD
+C--   o MDSREADFIELD_LOC
+C--   o MDSWRITEFIELD
+C--   o MDSWRITEFIELD_LOC
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -26,7 +35,7 @@ C myThid    (integer) :: thread identifier
 C
 C Routine now calls MDS_READ_FIELD, just a way to add 2 extra arguments
 C to the argument list. The 1rst new argument is to make the difference between
-C the vertical dimension (3rd dimension) of the output array and the number 
+C the vertical dimension (3rd dimension) of the output array and the number
 C of levels to read in. This routine assumes they are the same.
 C The 2nd new argument (useCurrentDir=.FALSE.) allows to read files from
 C the "mdsioLocalDir" directory (if it is set).
@@ -46,9 +55,9 @@ C Routine arguments
       INTEGER myThid
 C     ------------------------------------------------------------------
       CALL MDS_READ_FIELD(
-     I                     fName, filePrec, .FALSE., arrType, nNz, nNz,
-     O                     arr,
-     I                     irecord, myThid )
+     I              fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
+     O              arr,
+     I              irecord, myThid )
 C     ------------------------------------------------------------------
       RETURN
       END
@@ -76,7 +85,7 @@ C myThid    (integer) :: thread identifier
 C
 C Routine now calls MDS_READ_FIELD, just a way to add 2 extra arguments
 C to the argument list. The 1rst new argument is to make the difference between
-C the vertical dimension (3rd dimension) of the output array and the number 
+C the vertical dimension (3rd dimension) of the output array and the number
 C of levels to read in. This routine assumes they are the same.
 C The 2nd new argument (useCurrentDir=.FALSE.) forces to ignore the
 C "mdsioLocalDir" parameter and to always read from the current directory.
@@ -96,9 +105,9 @@ C Routine arguments
       INTEGER myThid
 C     ------------------------------------------------------------------
       CALL MDS_READ_FIELD(
-     I                     fName, filePrec, .TRUE., arrType, nNz, nNz,
-     O                     arr,
-     I                     irecord, myThid )
+     I              fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
+     O              arr,
+     I              irecord, myThid )
 C     ------------------------------------------------------------------
       RETURN
       END
@@ -152,7 +161,7 @@ C Routine arguments
 C     ------------------------------------------------------------------
       CALL MDS_WRITE_FIELD(
      I                      fName, filePrec, globalFile, .FALSE.,
-     I                      arrType, nNz, nNz, arr, irecord,
+     I                      arrType, nNz, 1, nNz, arr, irecord,
      I                      myIter, myThid )
 C     ------------------------------------------------------------------
       RETURN
@@ -190,7 +199,7 @@ C the output routine should process. This routine assumes they are the same.
 C The 2nd new argument (useCurrentDir=.TRUE.) forces to ignore the
 C "mdsioLocalDir" parameter and to always write to the current directory.
 
-      implicit none
+      IMPLICIT NONE
 C Global variables / common blocks
 #include "SIZE.h"
 c #include "EEPARAMS.h"
@@ -208,7 +217,7 @@ C Routine arguments
 C     ------------------------------------------------------------------
       CALL MDS_WRITE_FIELD(
      I                      fName, filePrec, globalFile, .TRUE.,
-     I                      arrType, nNz, nNz, arr, irecord,
+     I                      arrType, nNz, 1, nNz, arr, irecord,
      I                      myIter, myThid )
 C     ------------------------------------------------------------------
       RETURN

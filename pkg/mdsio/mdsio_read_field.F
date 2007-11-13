@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.2 2007/03/19 02:30:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.3 2007/11/13 19:37:44 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -11,7 +11,7 @@ C !INTERFACE:
      I   filePrec,
      I   useCurrentDir,
      I   arrType,
-     I   zSize, nNz,
+     I   kSize,kLo,kHi,
      O   arr,
      I   irecord,
      I   myThid )
@@ -24,27 +24,30 @@ C filePrec  (integer) :: number of bits per word in file (32 or 64)
 C useCurrentDir(logic):: always read from the current directory (even if
 C                        "mdsioLocalDir" is set)
 C arrType   (char(2)) :: declaration of "arr": either "RS" or "RL"
-C zSize     (integer) :: size of third dimension: normally either 1 or Nr
-C nNz       (integer) :: number of vertical levels to read
-C arr       ( RS/RL ) :: array to read into, arr(:,:,zSize,:,:)
+C kSize     (integer) :: size of third dimension: normally either 1 or Nr
+C kLo       (integer) :: 1rst vertical level (of array "arr") to read-in
+C kHi       (integer) :: last vertical level (of array "arr") to read-in
+C arr       ( RS/RL ) :: array to read into, arr(:,:,kSize,:,:)
 C irecord   (integer) :: record number to read
 C myIter    (integer) :: time step number
 C myThid    (integer) :: thread identifier
 C
 C MDS_READ_FIELD first checks to see IF the file "fName" exists, then
-C IF the file "fName.data" exists and finally the tiled files of the
-C form "fName.xxx.yyy.data" exist. Currently, the meta-files are not
-C read because it is difficult to parse files in fortran.
+C  IF the file "fName.data" exists and finally the tiled files of the
+C  form "fName.xxx.yyy.data" exist. Currently, the meta-files are not
+C  read because it is difficult to parse files in fortran.
 C The precision of the file is decsribed by filePrec, set either
-C to floatPrec32 or floatPrec64. The precision or declaration of
-C the array argument must be consistently described by the char*(2)
-C string arrType, either "RS" or "RL". nNz allows for both 2-D and
-C 3-D arrays to be handled. nNz=1 implies a 2-D model field and
-C nNz=Nr implies a 3-D model field. irecord is the record number
-C to be read and must be >= 1. The file data is stored in
-C arr *but* the overlaps are *not* updated. ie. An exchange must
-C be called. This is because the routine is sometimes called from
-C within a MASTER_THID region.
+C  to floatPrec32 or floatPrec64. The precision or declaration of
+C  the array argument must be consistently described by the char*(2)
+C  string arrType, either "RS" or "RL".
+C (kSize,kLo,kHi) allows for both 2-D and 3-D arrays to be handled, with
+C  the option to only read and fill-in a sub-set of consecutive vertical
+C  levels (from kLo to kHi) ; (kSize,kLo,kHi)=(1,1,1) implies a 2-D model
+C  field and (kSize,kLo,kHi)=(Nr,1,Nr) implies a 3-D model field.
+C irecord is the record number to be read and must be >= 1.
+C The file data is stored in arr *but* the overlaps are *not* updated,
+C  i.e., an exchange must be called. This is because the routine is
+C  sometimes called from within a MASTER_THID region.
 C
 C Created: 03/16/99 adcroft@mit.edu
 CEOP
@@ -67,8 +70,7 @@ C !INPUT PARAMETERS:
       INTEGER filePrec
       LOGICAL useCurrentDir
       CHARACTER*(2) arrType
-      INTEGER zSize
-      INTEGER nNz
+      INTEGER kSize, kLo, kHi
       INTEGER irecord
       INTEGER myThid
 C !OUTPUT PARAMETERS:
@@ -88,7 +90,8 @@ C !LOCAL VARIABLES:
       LOGICAL exst
       LOGICAL globalFile, fileIsOpen
       LOGICAL iAmDoingIO
-      INTEGER iG,jG,irec,bi,bj,i,j,k,dUnit,IL,pIL
+      INTEGER iG,jG,bi,bj,i,j,k,nNz
+      INTEGER irec,dUnit,IL,pIL
       INTEGER x_size,y_size,length_of_rec
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
       INTEGER iG_IO,jG_IO,npe, loc_xGlobalLo, loc_yGlobalLo
@@ -118,6 +121,7 @@ C Assume nothing
       fileIsOpen = .FALSE.
       IL  = ILNBLNK( fName )
       pIL = ILNBLNK( mdsioLocalDir )
+      nNz = 1 + kHi - kLo
 
 C Only do I/O if I am the master thread (and mpi process 0 IF useSingleCpuIO):
       iAmDoingIO = MASTER_CPU_IO(myThid)
@@ -133,6 +137,18 @@ C Record number must be >= 1
      &                       SQUEEZE_RIGHT , myThid)
          WRITE(msgBuf,'(A)')
      &     ' MDS_READ_FIELD: Invalid value for irecord'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
+        ENDIF
+C check for valid sub-set of levels:
+        IF ( kLo.LT.1 .OR. kHi.GT.kSize ) THEN
+         WRITE(msgBuf,'(3(A,I6))')
+     &     ' MDS_READ_FIELD: arguments kSize=', kSize,
+     &     ' , kLo=', kLo, ' , kHi=', kHi
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid)
+         WRITE(msgBuf,'(A)')
+     &     ' MDS_READ_FIELD: invalid sub-set of levels'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
         ENDIF
@@ -211,11 +227,11 @@ C Otherwise stop program.
 C- endif iAmDoingIO
        ENDIF
 
-       DO k=1,nNz
+       DO k=kLo,kHi
 
 C master thread of process 0, only, read from file
         IF ( iAmDoingIO ) THEN
-          irec = k+nNz*(irecord-1)
+          irec = k+1-kLo+nNz*(irecord-1)
           IF (filePrec .EQ. precFloat32) THEN
            READ(dUnit,rec=irec) xy_buffer_r4
 #ifdef _BYTESWAPIO
@@ -303,9 +319,9 @@ C- endif iAmDoingIO
         ENDIF
         CALL SCATTER_2D(globalBuf,sharedLocalBuf,myThid)
         IF (arrType .EQ. 'RS') THEN
-          CALL MDS_PASStoRS( sharedLocalBuf,arr,k,zSize,.TRUE.,myThid )
+          CALL MDS_PASStoRS( sharedLocalBuf,arr,k,kSize,.TRUE.,myThid )
         ELSEIF (arrType .EQ. 'RL') THEN
-          CALL MDS_PASStoRL( sharedLocalBuf,arr,k,zSize,.TRUE.,myThid )
+          CALL MDS_PASStoRL( sharedLocalBuf,arr,k,kSize,.TRUE.,myThid )
         ELSE
           WRITE(msgBuf,'(A)')
      &          ' MDS_READ_FIELD: illegal value for arrType'
@@ -314,7 +330,7 @@ C- endif iAmDoingIO
         ENDIF
 
        ENDDO
-c      ENDDO k=1,nNz
+c      ENDDO k=kLo,kHi
 
        IF ( iAmDoingIO ) THEN
          CLOSE( dUnit )
@@ -396,23 +412,23 @@ C-         default (face fit into global-IO-array)
              jGjLoc = 1
            ENDIF
 #endif /* ALLOW_EXCH2 */
-           DO k=1,nNz
+           DO k=kLo,kHi
             DO j=1,tNy
              IF (globalFile) THEN
 #ifdef ALLOW_EXCH2
               irec = 1 + ( tGx-1 + (j-1)*iGjLoc )/tNx
      &                 + ( tGy-1 + (j-1)*jGjLoc )*exch2_domain_nxt
-     &                 + ( k-1 + (irecord-1)*nNz
+     &                 + ( k-kLo + (irecord-1)*nNz
      &                   )*y_size*exch2_domain_nxt
 #else /* ALLOW_EXCH2 */
               iG = myXGlobalLo-1 + (bi-1)*sNx
               jG = myYGlobalLo-1 + (bj-1)*sNy
               irec= 1 + INT(iG/sNx) + nSx*nPx*(jG+j-1)
-     &                + nSx*nPx*Ny*(k-1)
+     &                + nSx*nPx*Ny*(k-kLo)
      &                + nSx*nPx*Ny*nNz*(irecord-1)
 #endif /* ALLOW_EXCH2 */
              ELSE
-              irec=j + sNy*(k-1) + sNy*nNz*(irecord-1)
+              irec=j + sNy*(k-kLo) + sNy*nNz*(irecord-1)
              ENDIF
              IF (filePrec .EQ. precFloat32) THEN
               READ(dUnit,rec=irec) r4seg
@@ -420,9 +436,9 @@ C-         default (face fit into global-IO-array)
               CALL MDS_BYTESWAPR4( sNx, r4seg )
 #endif
               IF (arrType .EQ. 'RS') THEN
-               CALL MDS_SEG4toRS( j,bi,bj,k,zSize, r4seg, .TRUE., arr )
+               CALL MDS_SEG4toRS( j,bi,bj,k,kSize, r4seg, .TRUE., arr )
               ELSEIF (arrType .EQ. 'RL') THEN
-               CALL MDS_SEG4toRL( j,bi,bj,k,zSize, r4seg, .TRUE., arr )
+               CALL MDS_SEG4toRL( j,bi,bj,k,kSize, r4seg, .TRUE., arr )
               ELSE
                WRITE(msgBuf,'(A)')
      &         ' MDS_READ_FIELD: illegal value for arrType'
@@ -435,9 +451,9 @@ C-         default (face fit into global-IO-array)
               CALL MDS_BYTESWAPR8( sNx, r8seg )
 #endif
               IF (arrType .EQ. 'RS') THEN
-               CALL MDS_SEG8toRS( j,bi,bj,k,zSize, r8seg, .TRUE., arr )
+               CALL MDS_SEG8toRS( j,bi,bj,k,kSize, r8seg, .TRUE., arr )
               ELSEIF (arrType .EQ. 'RL') THEN
-               CALL MDS_SEG8toRL( j,bi,bj,k,zSize, r8seg, .TRUE., arr )
+               CALL MDS_SEG8toRL( j,bi,bj,k,kSize, r8seg, .TRUE., arr )
               ELSE
                WRITE(msgBuf,'(A)')
      &         ' MDS_READ_FIELD: illegal value for arrType'

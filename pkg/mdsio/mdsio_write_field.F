@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.3 2007/03/21 01:57:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.4 2007/11/13 19:37:44 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -12,7 +12,7 @@ C !INTERFACE:
      I   globalFile,
      I   useCurrentDir,
      I   arrType,
-     I   zSize,nNz,
+     I   kSize,kLo,kHi,
      I   arr,
      I   jrecord,
      I   myIter,
@@ -27,32 +27,35 @@ C globalFile (logical):: selects between writing a global or tiled file
 C useCurrentDir(logic):: always write to the current directory (even if
 C                        "mdsioLocalDir" is set)
 C arrType   (char(2)) :: declaration of "arr": either "RS" or "RL"
-C zSize     (integer) :: size of third dimension: normally either 1 or Nr
-C nNz       (integer) :: number of vertical levels to write
-C arr       ( RS/RL ) :: array to write, arr(:,:,zSize,:,:)
+C kSize     (integer) :: size of third dimension: normally either 1 or Nr
+C kLo       (integer) :: 1rst vertical level (of array "arr") to write
+C kHi       (integer) :: last vertical level (of array "arr") to write
+C arr       ( RS/RL ) :: array to write, arr(:,:,kSize,:,:)
 C irecord   (integer) :: record number to write
 C myIter    (integer) :: time step number
 C myThid    (integer) :: thread identifier
 C
 C MDS_WRITE_FIELD creates either a file of the form "fName.data" and
-C "fName.meta" if the logical flag "globalFile" is set true. Otherwise
-C it creates MDS tiled files of the form "fName.xxx.yyy.data" and
-C "fName.xxx.yyy.meta". If jrecord > 0, a meta-file is created.
+C  "fName.meta" if the logical flag "globalFile" is set true. Otherwise
+C  it creates MDS tiled files of the form "fName.xxx.yyy.data" and
+C  "fName.xxx.yyy.meta". If jrecord > 0, a meta-file is created.
 C Currently, the meta-files are not read because it is difficult
-C to parse files in fortran. We should read meta information before
-C adding records to an existing multi-record file.
+C  to parse files in fortran. We should read meta information before
+C  adding records to an existing multi-record file.
 C The precision of the file is decsribed by filePrec, set either
-C to floatPrec32 or floatPrec64. The precision or declaration of
-C the array argument must be consistently described by the char*(2)
-C string arrType, either "RS" or "RL". nNz allows for both 2-D and
-C 3-D arrays to be handled. nNz=1 implies a 2-D model field and
-C nNz=Nr implies a 3-D model field. irecord=|jrecord| is the record number
-C to be written and must be >= 1. NOTE: It is currently assumed that
-C the highest record number in the file was the last record written.
-C Nor is there a consistency check between the routine arguments and file.
-C ie. if you write record 2 after record 4 the meta information
-C will record the number of records to be 2. This, again, is because
-C we have read the meta information. To be fixed.
+C  to floatPrec32 or floatPrec64. The precision or declaration of
+C  the array argument must be consistently described by the char*(2)
+C  string arrType, either "RS" or "RL".
+C (kSize,kLo,kHi) allows for both 2-D and 3-D arrays to be handled, with
+C  the option to only write a sub-set of consecutive vertical levels (from
+C  kLo to kHi); (kSize,kLo,kHi)=(1,1,1) implies a 2-D model field and
+C  (kSize,kLo,kHi)=(Nr,1,Nr) implies a 3-D model field.
+C irecord=|jrecord| is the record number to be written and must be >= 1.
+C NOTE: It is currently assumed that the highest record number in the file
+C  was the last record written. Nor is there a consistency check between the
+C  routine arguments and file, i.e., if you write record 2 after record 4
+C  the meta information will record the number of records to be 2. This,
+C  again, is because we have read the meta information. To be fixed.
 C
 C Created: 03/16/99 adcroft@mit.edu
 C Changed: 01/06/02 menemenlis@jpl.nasa.gov
@@ -80,10 +83,10 @@ C !INPUT PARAMETERS:
       LOGICAL globalFile
       LOGICAL useCurrentDir
       CHARACTER*(2) arrType
-      INTEGER zSize, nNz
+      INTEGER kSize, kLo, kHi
 cph(
 cph      Real arr(*)
-      _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,zSize,nSx,nSy)
+      _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,kSize,nSx,nSy)
 cph)
       INTEGER jrecord
       INTEGER myIter
@@ -105,7 +108,8 @@ C !LOCAL VARIABLES:
       LOGICAL iAmDoingIO
       LOGICAL writeMetaF
       INTEGER irecord
-      INTEGER iG,jG,irec,bi,bj,i,j,k,dUnit,IL,pIL
+      INTEGER iG,jG,bi,bj,i,j,k,nNz
+      INTEGER irec,dUnit,IL,pIL
       INTEGER dimList(3,3), nDims, map2gl(2)
       INTEGER iGjLoc, jGjLoc
       INTEGER x_size,y_size,length_of_rec
@@ -138,6 +142,7 @@ C Assume nothing
       fileIsOpen = .FALSE.
       IL  = ILNBLNK( fName )
       pIL = ILNBLNK( mdsioLocalDir )
+      nNz = 1 + kHi - kLo
       irecord = ABS(jrecord)
       writeMetaF = jrecord.GT.0
 
@@ -155,6 +160,18 @@ C Record number must be >= 1
      &                       SQUEEZE_RIGHT , myThid)
          WRITE(msgBuf,'(A)')
      &     ' MDS_WRITE_FIELD: invalid value for irecord'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+        ENDIF
+C check for valid sub-set of levels:
+        IF ( kLo.LT.1 .OR. kHi.GT.kSize ) THEN
+         WRITE(msgBuf,'(3(A,I6))')
+     &     ' MDS_WRITE_FIELD: arguments kSize=', kSize,
+     &     ' , kLo=', kLo, ' , kHi=', kHi
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid)
+         WRITE(msgBuf,'(A)')
+     &     ' MDS_WRITE_FIELD: invalid sub-set of levels'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
         ENDIF
@@ -191,12 +208,12 @@ C Master thread of process 0, only, opens a global file
        ENDIF
 
 C Gather array and WRITE it to file, one vertical level at a time
-       DO k=1,nNz
+       DO k=kLo,kHi
 C-      copy from arr(level=k) to 2-D "local":
         IF ( arrType.EQ.'RS' ) THEN
-          CALL MDS_PASStoRS(sharedLocalBuf,arr,k,zSize,.FALSE.,myThid)
+          CALL MDS_PASStoRS(sharedLocalBuf,arr,k,kSize,.FALSE.,myThid)
         ELSEIF ( arrType.EQ.'RL' ) THEN
-          CALL MDS_PASStoRL(sharedLocalBuf,arr,k,zSize,.FALSE.,myThid)
+          CALL MDS_PASStoRL(sharedLocalBuf,arr,k,kSize,.FALSE.,myThid)
         ELSE
           WRITE(msgBuf,'(A)')
      &         ' MDS_WRITE_FIELD: illegal value for arrType'
@@ -287,7 +304,7 @@ C--    end of npe & bi loops
           ENDIF
 #endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
 
-          irec=k+nNz*(irecord-1)
+          irec=k+1-kLo+nNz*(irecord-1)
           IF (filePrec .EQ. precFloat32) THEN
 #ifdef _BYTESWAPIO
            CALL MDS_BYTESWAPR4( x_size*y_size, xy_buffer_r4 )
@@ -387,23 +404,23 @@ C-         default (face fit into global-IO-array)
 #ifdef ALLOW_EXCH2
               irec = 1 + ( tGx-1 + (j-1)*iGjLoc )/tNx
      &                 + ( tGy-1 + (j-1)*jGjLoc )*exch2_domain_nxt
-     &                 + ( k-1 + (irecord-1)*nNz
+     &                 + ( k-kLo + (irecord-1)*nNz
      &                   )*y_size*exch2_domain_nxt
 #else /* ALLOW_EXCH2 */
               iG = myXGlobalLo-1 + (bi-1)*sNx
               jG = myYGlobalLo-1 + (bj-1)*sNy
               irec= 1 + INT(iG/sNx) + nSx*nPx*(jG+j-1)
-     &                + nSx*nPx*Ny*(k-1)
+     &                + nSx*nPx*Ny*(k-kLo)
      &                + nSx*nPx*Ny*nNz*(irecord-1)
 #endif /* ALLOW_EXCH2 */
              ELSE
-              irec=j + sNy*(k-1) + sNy*nNz*(irecord-1)
+              irec=j + sNy*(k-kLo) + sNy*nNz*(irecord-1)
              ENDIF
              IF (filePrec .EQ. precFloat32) THEN
               IF (arrType .EQ. 'RS') THEN
-               CALL MDS_SEG4toRS( j,bi,bj,k,zSize, r4seg,.FALSE.,arr )
+               CALL MDS_SEG4toRS( j,bi,bj,k,kSize, r4seg,.FALSE.,arr )
               ELSEIF (arrType .EQ. 'RL') THEN
-               CALL MDS_SEG4toRL( j,bi,bj,k,zSize, r4seg,.FALSE.,arr )
+               CALL MDS_SEG4toRL( j,bi,bj,k,kSize, r4seg,.FALSE.,arr )
               ELSE
                WRITE(msgBuf,'(A)')
      &           ' MDS_WRITE_FIELD: illegal value for arrType'
@@ -416,9 +433,9 @@ C-         default (face fit into global-IO-array)
               WRITE(dUnit,rec=irec) r4seg
              ELSEIF (filePrec .EQ. precFloat64) THEN
               IF (arrType .EQ. 'RS') THEN
-               CALL MDS_SEG8toRS( j,bi,bj,k,zSize, r8seg,.FALSE.,arr )
+               CALL MDS_SEG8toRS( j,bi,bj,k,kSize, r8seg,.FALSE.,arr )
               ELSEIF (arrType .EQ. 'RL') THEN
-               CALL MDS_SEG8toRL( j,bi,bj,k,zSize, r8seg,.FALSE.,arr )
+               CALL MDS_SEG8toRL( j,bi,bj,k,kSize, r8seg,.FALSE.,arr )
               ELSE
                WRITE(msgBuf,'(A)')
      &           ' MDS_WRITE_FIELD: illegal value for arrType'
