@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.33 2007/01/31 21:47:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.34 2007/11/13 19:43:44 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -70,10 +70,9 @@ C              diagnostic storage qdiag into it.
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER prec, nRec
 #ifdef ALLOW_MDSIO
       LOGICAL glf
-      INTEGER nRec
-      INTEGER prec
 #endif
 #ifdef ALLOW_MNC
       INTEGER ii
@@ -340,23 +339,20 @@ C jmc: for now, this can only work in an atmospheric set-up (fluidIsAir);
 
 C--    Ready to write field "md", element "lm" in averageCycle(listId)
 
-#ifdef ALLOW_MDSIO
 C-        write to binary file, using MDSIO pkg:
-          IF (diag_mdsio) THEN
-            glf = globalFiles
+          IF ( diag_mdsio ) THEN
             nRec = lm + (md-1)*averageCycle(listId)
 C           default precision for output files
             prec = writeBinaryPrec
 C           fFlag(1)=R(or D): force it to be 32-bit(or 64) precision
             IF ( fflags(listId)(1:1).EQ.'R' ) prec = precFloat32
             IF ( fflags(listId)(1:1).EQ.'D' ) prec = precFloat64
-c           CALL MDS_WRITE_FIELD(fn,prec,glf,.FALSE.,'RL',
-c    &              NrMax,nlevels(listId),qtmp1,nRec,myIter,myThid)
-C         a hack not to write meta files now:
-            CALL MDS_WRITE_FIELD(fn,prec,glf,.FALSE.,'RL',
-     &              NrMax,nlevels(listId),qtmp1,-nRec,myIter,myThid)
+C         a hack not to write meta files now: pass -nRec < 0 to MDS_WRITE S/R
+            CALL WRITE_REC_LEV_RL(
+     I                            fn, prec,
+     I                            NrMax, 1, nlevels(listId),
+     I                            qtmp1, -nRec, myIter, myThid )
           ENDIF
-#endif /*  ALLOW_MDSIO  */
 
 #ifdef ALLOW_MNC
           IF (useMNC .AND. diag_mnc) THEN
@@ -476,6 +472,7 @@ C--     end of Processing Fld # md
 C-    Note: temporary: since it's a pain to add more arguments to
 C     all MDSIO S/R, uses instead this specific S/R to write only
 C     meta files but with more informations in it.
+            glf = globalFiles
             nRec = nfields(listId)*averageCycle(listId)
             CALL MDS_WR_METAFILES(fn, prec, glf, .FALSE.,
      &              0, 0, nlevels(listId), ' ',
