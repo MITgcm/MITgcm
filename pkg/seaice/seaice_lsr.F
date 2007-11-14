@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.27 2007/11/13 19:26:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.28 2007/11/14 15:55:48 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -141,7 +141,7 @@ C     free slip
       CALL SEAICE_CALC_STRAINRATES(
      I     uIceC, vIceC,
      O     e11, e22, e12,
-     I     ilcall, myTime, myIter, myThid )
+     I     1, ilcall, myTime, myIter, myThid )
 
       CALL SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,

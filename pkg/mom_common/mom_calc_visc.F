@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.29 2007/10/22 13:24:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.30 2007/11/14 15:55:26 mlosch Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -315,19 +315,23 @@ CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 C These are (powers of) length scales 
          IF (useAreaViscLength) THEN
           L2=rA(i,j,bi,bj)
-          L4rdt=0.03125 _d 0*recip_dt*L2**2
          ELSE
           L2=2. _d 0/((recip_DXF(I,J,bi,bj)**2+recip_DYF(I,J,bi,bj)**2))
-          L4rdt=recip_dt/( 6. _d 0*(recip_DXF(I,J,bi,bj)**4
-     &                             +recip_DYF(I,J,bi,bj)**4)
-     &                   +8. _d 0*((recip_DXF(I,J,bi,bj)
-     &                             *recip_DYF(I,J,bi,bj))**2) )
          ENDIF
          L3=(L2**1.5)
          L4=(L2**2)
-         L5=(L2*L3)
+         L5=(L2**2.5)
 
          L2rdt=0.25 _d 0*recip_dt*L2
+
+         IF (useAreaViscLength) THEN
+          L4rdt=0.03125 _d 0*recip_dt*L2**2
+         ELSE
+          L4rdt=recip_dt/( 6. _d 0*(recip_DXF(I,J,bi,bj)**4
+     &                            +recip_DYF(I,J,bi,bj)**4)
+     &                   +8. _d 0*((recip_DXF(I,J,bi,bj)
+     &                             *recip_DYF(I,J,bi,bj))**2) )
+         ENDIF
 
 C Velocity Reynolds Scale
          IF ( viscAhRe_max.GT.0. .AND. KE(i,j).GT.0. ) THEN
@@ -442,19 +446,22 @@ CCCCCCCCCCCCC Vorticity Point CalculationsCCCCCCCCCCCCCCCCCC
 C These are (powers of) length scales 
          IF (useAreaViscLength) THEN
           L2=rAz(i,j,bi,bj)
-          L4rdt=0.125 _d 0*recip_dt*rAz(i,j,bi,bj)**2
          ELSE
           L2=2. _d 0/((recip_DXV(I,J,bi,bj)**2+recip_DYU(I,J,bi,bj)**2))
-          L4rdt=recip_dt/
-     &     ( 6. _d 0*(recip_DXV(I,J,bi,bj)**4+recip_DYU(I,J,bi,bj)**4)
-     &      +8. _d 0*((recip_DXV(I,J,bi,bj)*recip_DYU(I,J,bi,bj))**2))
          ENDIF
 
          L3=(L2**1.5)
          L4=(L2**2)
-         L5=(L2*L3)
+         L5=(L2**2.5)
 
          L2rdt=0.25 _d 0*recip_dt*L2
+         IF (useAreaViscLength) THEN
+          L4rdt=0.125 _d 0*recip_dt*rAz(i,j,bi,bj)**2
+         ELSE
+          L4rdt=recip_dt/
+     &     ( 6. _d 0*(recip_DXV(I,J,bi,bj)**4+recip_DYU(I,J,bi,bj)**4)
+     &      +8. _d 0*((recip_DXV(I,J,bi,bj)*recip_DYU(I,J,bi,bj))**2))
+         ENDIF
 
 C Velocity Reynolds Scale (Pb here at CS-grid corners !)
          IF ( viscAhRe_max.GT.0. .OR. viscA4Re_max.GT.0. ) THEN

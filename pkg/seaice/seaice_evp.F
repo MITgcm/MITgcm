@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.16 2007/11/13 19:26:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.17 2007/11/14 15:55:48 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -165,7 +165,7 @@ C
         CALL SEAICE_CALC_STRAINRATES(
      I       uIceC, vIceC,
      O       e11, e22, e12,
-     I       iEVPstep, myTime, myIter, myThid )
+     I       1, iEVPstep, myTime, myIter, myThid )
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)

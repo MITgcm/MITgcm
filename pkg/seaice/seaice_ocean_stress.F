@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.19 2007/11/13 19:26:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.20 2007/11/14 15:55:48 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -66,9 +66,9 @@ C     recompute strain rates, viscosities, etc. from updated ice velocities
 C     only for EVP we already have the stress components otherwise we need
 C     to recompute them here
         CALL SEAICE_CALC_STRAINRATES(
-     I       uIce(1-Olx,1-Oly,1,1,1), vIce(1-Olx,1-Oly,1,1,1),
+     I       uIce, vIce,
      O       e11, e22, e12,
-     I       3, myTime, myIter, myThid )
+     I       3, 3, myTime, myIter, myThid )
 
         CALL SEAICE_CALC_VISCOSITIES(
      I       e11, e22, e12, zMin, zMax, hEffM, press0,

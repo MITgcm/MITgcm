@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.4 2007/11/13 19:26:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.5 2007/11/14 15:55:48 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -79,23 +79,12 @@ C
      &      DIAGNOSTICS_IS_ON('SIpress ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIzeta  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIeta   ',myThid) ) THEN
-C     Unfortunately, for this we have to recompute a few things
-C     first make sure we have a current copy of ice velocities
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
-            vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-C      compute strainrates, "viscosities" and modified pressure
+C     Unfortunately, for this we have to recompute a few things:
+C     compute strainrates, "viscosities" and modified pressure
         CALL SEAICE_CALC_STRAINRATES(
-     I       uIceC, vIceC,
+     I       uIce, vIce,
      O       e11, e22, e12,
-     I       0, myTime, myIter, myThid )
+     I       3, 0, myTime, myIter, myThid )
 
         CALL SEAICE_CALC_VISCOSITIES(
      I       e11, e22, e12, zMin, zMax, hEffM, press0,
