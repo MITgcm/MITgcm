@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.5 2007/11/08 22:35:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.6 2007/11/14 16:33:42 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -73,7 +73,8 @@ c if coupled to atmsopheric model, use the
 c Co2 value passed from the coupler
 #ifndef USE_ATMOSCO2
 
-      IF ( nThreads .GT. 1 ) THEN
+      IF ( nThreads .GT. 1 .AND.
+     &     ( gchem_int1.EQ.2 .OR. gchem_int1.EQ.3 ) ) THEN
 C     Problem with I/O and global-sum for multi-threaded execution
 C     Needs to be fixed before using this S/R in multi-threaded run
         STOP 'S/R DIC_ATMOS: multi-threaded not right'
@@ -107,13 +108,13 @@ c user specified value - set only once
 
          ENDDO
         ENDDO
-       endif
+      endif
 
 c read from a file (note:
 c                   gchem_int2=number entries to read
 c                   gchem_int3=start timestep,
 c                   gchem_int4=timestep between file entries)
-       if (gchem_int1.eq.2) then
+      if (gchem_int1.eq.2) then
         if (istate.eq.0) then
           OPEN(28,FILE='co2atmos.dat',STATUS='old')
           do it=1,gchem_int2
@@ -150,7 +151,7 @@ c         print*,'weights',ntim, aWght, bWght, tmp
           ENDDO
 
 
-       endif
+      endif
 
 
 c interactive atmosphere
@@ -295,10 +296,10 @@ c
 
 c     _END_MASTER(myThid)
 
-       endif
+      endif
 
 #endif
 #endif
 
-        RETURN
-        END
+      RETURN
+      END
