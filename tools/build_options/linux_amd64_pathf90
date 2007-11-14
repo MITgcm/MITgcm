@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.2 2007/01/31 21:43:34 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.3 2007/11/14 15:32:10 jmc Exp $
 #  $Name:  $
 #
 # Build options for Fedore Core 3 x86-64 Opteron
@@ -33,6 +33,7 @@ fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
 CFLAGS='-O3 -m64 -fPIC'
+GSLLIB='-lgsl -lgslcblas'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
