@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.909 2007/11/13 22:20:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.910 2007/11/14 16:01:11 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: fix bug in seaice_ocean_stress (call of seaice_calc_strainrates)
 o lab_sea.hb87: modify the domain & update output.hb87.txt :
   lat-long grid & no-slip BC in seaice-dynamics produce different sigma12
   at j=1 & j=Ny+1 : this case is not treated correctly in the restart
