@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.7 2007/10/08 23:59:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.8 2007/11/19 14:00:39 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -67,6 +67,7 @@ C--   Calculate cost function on tile of this instance
             do i=1,sNx
             ig = myXGlobalLo-1+(bi-1)*sNx+i
 
+#ifndef ALLOW_COST_TSQUARED
             if ((ig .eq. iLocOut) .and. (jg .eq. jLocOut)) then
                write(*,'(a,3(x,i4),a,4(x,i4))')
      &              'COST    ',ig,jg,kLocOut,' TILE ',i,j,bi,bj
@@ -76,6 +77,10 @@ cph(
      &              theta(i,j,kLocOut,bi,bj)
 cph)
             endif
+#else
+            objf_test(bi,bj) = objf_test(bi,bj) +
+     &                         theta(i,j,kLocOut,bi,bj)**2
+#endif
 
             end do
           end do
