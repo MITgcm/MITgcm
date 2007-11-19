@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ATM2D_VARS.h,v 1.11 2007/11/19 19:51:06 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ATM2D_VARS.h,v 1.12 2007/11/19 22:57:31 jscott Exp $
 C $Name:  $
 
       INTEGER nForcingPer
@@ -153,7 +153,7 @@ c lookup table for ocean gridcell to atmos grid cell. The weight
 c is for that atmos grid cell; 1-weight is for atmos cell+1.
 c
       COMMON/LOOKUP_GRID/ atm_oc_ind, atm_oc_wgt, atm_oc_frac1, atm_oc_frac2,
-     &                    endwgt1, endwgt2, rsumwgt
+     &                    endwgt1, endwgt2, rsumwgt, tauv_jpt, tauv_jwght
        INTEGER atm_oc_ind(sNy) ! lookup of (first) atm grid for given ocean lat
        _RL atm_oc_wgt(sNy)    ! weight of first atm grid for given ocean lat
        _RL atm_oc_frac1(sNy)  ! fraction of atm lat area covered by ocean lat
@@ -161,6 +161,8 @@ c
        _RL endwgt1            ! weighting of atmos polar cap
        _RL endwgt2            ! weighting of atmos cell next polar cap
        _RL rsumwgt            ! recip of sum of above
+       INTEGER tauv_jpt(sNy)  ! lookup of (first) atm grid for ocean tauv on C-grid          
+       _RL tauv_jwght(sNy)    ! weight of (first) atm grid for ocean tauv           
 
 
 C     Fields use to sum 2D ocean fluxes over several atm timesteps

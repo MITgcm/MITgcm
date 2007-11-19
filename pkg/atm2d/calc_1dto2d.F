@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/calc_1dto2d.F,v 1.3 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/calc_1dto2d.F,v 1.4 2007/11/19 22:57:31 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -34,6 +34,7 @@ C     LOCAL VARIABLES:
       INTEGER i,j           ! loop counters across ocean grid
       INTEGER ib,ibj1,ibj2  ! runoff band variables
       _RL run_b(sNy)        ! total runoff in a band
+      _RL fv_toC            ! meridional wind stress for ocean C-grid pt
 
       CALL INIT_2DFLD(myThid)
 
@@ -52,6 +53,11 @@ C     Accumulate runoff into bands (runoff bands are on the ocean grid)
       ENDDO
 
       DO j=1,sNy
+
+C       do a linear interpolation from atmos data to get tauv
+        fv_toC = atm_tauv(tauv_jpt(j)) * tauv_jwght(j) + 
+     &        atm_tauv(tauv_jpt(j+1)) * (1. _d 0 - tauv_jwght(j))
+    
         DO i=1,sNx
 
           IF (maskC(i,j,1,1,1).EQ.1.) THEN
@@ -64,6 +70,8 @@ C     Accumulate runoff into bands (runoff bands are on the ocean grid)
             IF (atm_oc_wgt(j).LT.1. _d 0)
      &          CALL CALC_WGHT2D(i, j, atm_oc_ind(j)+1,
      &                           1. _d 0-atm_oc_wgt(j))
+
+            fv_2D(i,j) = fv_toC
 
 C  Tabulate following diagnostic fluxes from atmos model only
             qnet_atm(i,j)= qnet_atm(i,j) +
@@ -127,7 +135,6 @@ C     wght  - weight of this atmos cell for total
       pCO2_2D(i,j)= pCO2_2D(i,j) + atm_pco2(ind)*wgt
       wspeed_2D(i,j)= wspeed_2D(i,j) + atm_windspeed(ind)*wgt
       fu_2D(i,j)= fu_2D(i,j) + atm_tauu(ind)*wgt
-      fv_2D(i,j)= fv_2D(i,j) + atm_tauv(ind)*wgt
 
       qneto_2D(i,j)= qneto_2D(i,j) + atm_qnet_ocn(ind)*wgt
       evapo_2D(i,j)= evapo_2D(i,j) + atm_evap_ocn(ind)*wgt
