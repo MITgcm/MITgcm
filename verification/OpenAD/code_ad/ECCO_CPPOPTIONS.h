@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.6 2007/06/26 16:28:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.7 2007/11/19 14:01:13 heimbach Exp $
 C $Name:  $
 
 C CPP flags controlling which code is included in the files that
@@ -42,16 +42,18 @@ C ********************************************************************
 C 
 C       >>> Cost function contributions
 #define ALLOW_COST
-#undef ALLOW_COST_TEST
+#define ALLOW_COST_TEST
+#define ALLOW_COST_TSQUARED
 #undef ALLOW_COST_TRACER
-#define ALLOW_COST_ATLANTIC_HEAT
+#undef ALLOW_COST_ATLANTIC_HEAT
 #undef ALLOW_COST_ATLANTIC_HEAT_DOMASS 
 
 C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
 C 
-#undef  ALLOW_NONDIMENSIONAL_CONTROL_IO
+#define DISABLE_CTRL_THETA_LIMIT
+#undef ALLOW_NONDIMENSIONAL_CONTROL_IO
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
 #define ALLOW_SALT0_CONTROL
