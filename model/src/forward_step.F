@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.153 2007/11/05 18:52:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.154 2007/11/20 18:38:34 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -138,6 +138,10 @@ CEOP
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_ENTER('FORWARD_STEP',myThid)
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      CALL AUTODIFF_INADMODE_UNSET( myThid )
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -785,6 +789,17 @@ C--   Save state for restarts
       CALL DO_WRITE_PICKUP(
      I               .FALSE., myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
+
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      CALL AUTODIFF_INADMODE_SET( myThid )
+#endif
+
+#ifdef ALLOW_SHOWFLOPS
+      CALL TIMER_START('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', mythid)
+      CALL SHOWFLOPS_INLOOP( iloop, mythid )
+      CALL TIMER_STOP ('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', mythid)
+#endif
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )

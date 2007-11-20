@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.93 2007/11/05 18:52:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.94 2007/11/20 18:38:34 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -383,7 +383,6 @@ c--     >>> Loop body start <<<
 #ifdef ALLOW_AUTODIFF_TAMC
         nIter0 = NINT( (startTime-baseTime)/deltaTClock )
         ikey_dynamics = ilev_1
-        CALL AUTODIFF_INADMODE_UNSET( myThid )
 #endif
 
 #ifdef ALLOW_DEBUG
@@ -405,16 +404,6 @@ c--     >>> Loop body start <<<
         CALL FORWARD_STEP( iloop, mytime, myiter, mythid )
 # endif
         CALL TIMER_STOP ('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
-#endif
-
-#ifdef ALLOW_AUTODIFF_TAMC
-        CALL AUTODIFF_INADMODE_SET( myThid )
-#endif
-
-#ifdef ALLOW_SHOWFLOPS
-        CALL TIMER_START('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', mythid)
-        CALL SHOWFLOPS_INLOOP( iloop, mythid )
-        CALL TIMER_STOP ('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', mythid)
 #endif
 
 c--     >>> Loop body end <<<
