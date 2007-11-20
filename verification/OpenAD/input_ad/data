@@ -30,14 +30,14 @@
 
 # Elliptic solver parameters
  &PARM02
- cg2dMaxIters=500,
- cg2dTargetResidual=1.E-13,
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-19,
  &
 
 # Time stepping parameters
  &PARM03
- nIter0 =      0,
- nTimeSteps = 10,
+ nIter0 =     0,
+ nTimeSteps = 4,
 # 100 years of integration will yield a reasonable flow field
 # startTime  =          0.,
 # endTime    = 3110400000.,
