@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.58 2007/09/28 19:42:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.59 2007/11/24 15:44:52 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -353,7 +353,7 @@ cph Needed for rhoK, rhoKm1, in the case useGMREDI.
 C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
           IF ( useGMRedi .OR. (k.GT.1 .AND. ivdc_kappa.NE.0.)
-     &                   .OR. doDiagsRho.GE.1 ) THEN
+     &         .OR. usePLUME .OR. doDiagsRho.GE.1 ) THEN
 #ifdef ALLOW_DEBUG
             IF ( debugLevel .GE. debLevB )
      &       CALL DEBUG_CALL('FIND_RHO',myThid)
