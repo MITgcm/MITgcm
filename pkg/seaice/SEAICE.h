@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.36 2007/09/28 00:52:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.37 2007/11/25 21:36:33 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -11,7 +11,7 @@ C     | o Basic header for sea ice model.                        |
 C     |   Contains most sea ice field declarations.              |
 C     \==========================================================/
 C
-C     UICE  - zonal ice velocity in m/s at South-West B-grid 
+C     UICE  - zonal ice velocity in m/s at South-West B-grid
 C             (or C-grid #ifdef SEAICE_CGRID) U point
 C             >0 from West to East
 C     UICEC - average of UICE(1) between last two time steps
@@ -58,7 +58,7 @@ CEOP
       COMMON/SEAICE_DYNVARS_BGRID/ AMASS, DAIRN
       _RL AMASS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-#else 
+#else
       COMMON/SEAICE_DYNVARS_CGRID/
      &     seaiceMassC, seaiceMassU, seaiceMassV
       _RL seaiceMassC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -99,9 +99,9 @@ CEOP
       _RL YNEG       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL RIVER      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
-#ifdef SEAICE_MULTICATEGORY
       INTEGER MULTDIM
       PARAMETER (MULTDIM=7)
+#ifdef SEAICE_MULTICATEGORY
       COMMON/MULTICATEGORY/TICES
       _RL TICES      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,MULTDIM,nSx,nSy)
 #endif
@@ -152,19 +152,19 @@ c     INTEGER ICOUNT, IDELT
 
 C--   KGEO    Level used as a proxy for geostrophic velocity.
       COMMON/SEAICE_KGEO/KGEO
-      integer KGEO   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      INTEGER KGEO   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
 #ifdef ALLOW_SEAICE_COST_EXPORT
-      _RL uHeffExportCell(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL vHeffExportCell(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /seaice_cost_export_r/ 
+      _RL uHeffExportCell(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vHeffExportCell(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /SEAICE_COST_EXPORT_R/
      &       uHeffExportCell, vHeffExportCell
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      integer iicekey
-      integer nEVPstepMax
-      parameter ( nEVPstepMax=60 )
+      INTEGER iicekey
+      INTEGER nEVPstepMax
+      PARAMETER ( nEVPstepMax=60 )
 #endif
 
 CEH3 ;;; Local Variables: ***
