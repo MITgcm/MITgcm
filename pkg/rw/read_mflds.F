@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.3 2007/11/13 19:41:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.4 2007/11/25 21:34:01 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -8,6 +8,7 @@ C--   Contents
 C--   o READ_MFLDS_INIT
 C--   o READ_MFLDS_SET
 C--   o READ_MFLDS_3D_RL
+C--   o READ_MFLDS_LEV_RL
 C--   o READ_MFLDS_CHECK
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -354,6 +355,132 @@ C--   read in array "field"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
+C     !ROUTINE: READ_MFLDS_LEV_RL
+C     !INTERFACE:
+      SUBROUTINE READ_MFLDS_LEV_RL(
+     I                fldName,
+     O                field,
+     U                nj,
+     I                fPrec, kSiz, kLo, kHi, myIter, myThid )
+
+C     !DESCRIPTION:
+C     Read, from a Multi-Fields binary file, field "fldName", a set of
+C     consecutive levels (from kLo to kHi) into 3D array "field" (size: kSiz)
+C     record Nb "nj" is search through the field-list (from meta-file) which
+C     has been set before (calling READ_MFLDS_SET).
+C     In case nFlds is <=0 , by-pass the search and directly read record number "nj"
+
+C     !USES:
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "RW_MFLDS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     fldName :: Name of the field to read
+C     field   :: Output array to read in
+C     nj (in) :: number of the record (in file) just before the one to read
+C     nj (out):: number of the record (from current file) which was read in
+C     fPrec   :: File precision (number of bits per word, = 32 or 64)
+C     kSiz    :: size of third dimension of array "field" to read-in
+C     kLo     :: 1rst vertical level (of array "field") to read-in
+C     kHi     :: last vertical level (of array "field") to read-in
+C     myIter  :: Iteration number
+C     myThid  :: My Thread Id number
+      CHARACTER*(8) fldName
+      _RL     field(*)
+      INTEGER nj
+      INTEGER fPrec
+      INTEGER kSiz, kLo, kHi
+      INTEGER myIter
+      INTEGER myThid
+CEOP
+
+C     !FUNCTIONS
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      INTEGER j, iL, ioUnit
+      LOGICAL useCurrentDir
+      CHARACTER*(2) fType
+      CHARACTER*(MAX_LEN_FNAM) fName
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+C-----
+
+      iL = ILNBLNK(mFldsFile)
+#ifdef RW_SAFE_MFLDS
+      IF ( iL.EQ.0 ) THEN
+        WRITE(msgBuf,'(2A,I4)') 'READ_MFLDS_LEV_RL: ',
+     &    'empty MFLDS file-name'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R READ_MFLDS_LEV_RL (fileName)'
+      ENDIF
+#endif /* RW_SAFE_MFLDS */
+
+      ioUnit = standardMessageUnit
+      IF ( nFlds.GE.1 ) THEN
+C--   Search for "fldName" in list of field-names:
+        nj = 0
+        DO j=1,nFlds
+          IF ( fldName.EQ.fldList(j) .AND. nj.EQ.0 ) nj = j
+        ENDDO
+        IF ( nj.EQ.0 ) THEN
+C-      record unsuccessful search:
+          _BEGIN_MASTER( myThid )
+          nMissFld = nMissFld + 1
+          j = MIN(nMissFld,sizFldList)
+          fldMiss(j) = fldName
+          _END_MASTER( myThid )
+          IF ( debugLevel.GE.debLevA ) THEN
+            iL = ILNBLNK(mFldsFile)
+            iL = MIN(iL,MAX_LEN_MBUF-54-20)
+            WRITE(msgBuf,'(5A)') 'READ_MFLDS_LEV_RL: ',
+     &       'field: "',fldName,'" missing in file: ',mFldsFile(1:iL)
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
+        ELSE
+C-      convert from field Number to record number (if mix of 3D & 2D flds)
+          j = nj
+          IF ( nj.GT.nFl3D ) nj = nj + nFl3D*(thirdDim-1)
+          IF ( debugLevel.GE.debLevA ) THEN
+            WRITE(msgBuf,'(3A,2(A,I4))') 'READ_MFLDS_LEV_RL: ',
+     &       'read field: "',fldName,'", #',j,' in fldList, rec=',nj
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
+        ENDIF
+      ELSEIF ( nj.GE.0 ) THEN
+C-      increment record number
+        nj = nj + 1
+        IF ( debugLevel.GE.debLevA ) THEN
+            WRITE(msgBuf,'(3A,2(A,I4))') 'READ_MFLDS_LEV_RL: ',
+     &       'no fldList, try to read field "',fldName, '", rec=',nj
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        ENDIF
+      ENDIF
+
+      IF ( nj.GE.1 ) THEN
+C--   read in array "field"
+        fName = mFldsFile
+        useCurrentDir = .FALSE.
+        fType = 'RL'
+#ifdef ALLOW_MDSIO
+        CALL MDS_READ_FIELD(
+     I                       fName, fPrec, useCurrentDir,
+     I                       fType, kSiz, kLo, kHi,
+     O                       field,
+     I                       nj, myThid )
+
+#endif
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: READ_MFLDS_CHECK
 C     !INTERFACE:
       SUBROUTINE READ_MFLDS_CHECK(
@@ -409,10 +536,15 @@ C-----
       ENDIF
 #endif /* RW_SAFE_MFLDS */
 
+
 C--   Initialise output arguments
       DO j=1,nbErr
        errList(j) = ' '
       ENDDO
+
+C--   every one waits for master thread to finish the update of
+C       missing fields number & list.
+      _BARRIER
 
       IF ( nMissFld.GE.1 ) THEN
 C--   Attempted to read some fields that were not in the current MFLDS file
