@@ -14,7 +14,9 @@ seaice_get_dynforcing.f
 seaice_growth.f
 seaice_init_varia.f
 seaice_model.f
-seaice_pickup.f
+seaice_read_pickup.f
+seaice_check_pickup.f
+seaice_write_pickup.f
 seaice_readparms.f
 lsr.f
 seaice_cost_accumulate_mean.f
