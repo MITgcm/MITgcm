@@ -1,7 +1,0 @@
-# Packages
- &PACKAGES
-   useKPP     = .FALSE.,
-   useMNC     = .TRUE.,
-   useDIAGNOSTICS= .TRUE.,
- /
-  
