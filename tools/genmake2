@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.166 2007/10/29 20:47:42 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.167 2007/11/26 21:39:58 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1145,12 +1145,6 @@ EOF
 
 echo "===  Processing options files and arguments  ==="
 gm_local="genmake_local"
-for i in . $MODS ; do
-    if test -r $i/$gm_local ; then
-	. $i/$gm_local
-	break
-    fi
-done
 printf "  getting local config information:  "
 if test -f $gm_local ; then
     echo "using $gm_local"
