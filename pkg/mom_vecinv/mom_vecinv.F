@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.60 2006/11/23 00:45:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.61 2007/11/27 20:20:26 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -156,13 +156,13 @@ C--   (at least in part)
           offsets(i) = 0
         ENDDO
         offsets(3) = k
-C       write(*,*) 'offsets = ',(offsets(i),i=1,9)
+c       write(*,*) 'offsets = ',(offsets(i),i=1,9)
       ENDIF
 #endif /*  ALLOW_MNC  */
 
-C     Initialise intermediate terms
-      DO J=1-OLy,sNy+OLy
-       DO I=1-OLx,sNx+OLx
+C--   Initialise intermediate terms
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         vF(i,j)    = 0.
         vrF(i,j)   = 0.
         uCf(i,j)   = 0.
@@ -176,7 +176,8 @@ C     Initialise intermediate terms
         vort3(i,j) = 0.
         omega3(i,j)= 0.
         KE(i,j)    = 0.
-c       hDiv(i,j)  = 0. 
+C-    need to initialise hDiv for MOM_VI_DEL2UV(call FILL_CS_CORNER_TR_RL)
+        hDiv(i,j)  = 0.
         viscAh_Z(i,j) = 0.
         viscAh_D(i,j) = 0.
         viscA4_Z(i,j) = 0.
@@ -236,7 +237,7 @@ C--    For viscous term, compute horizontal divergence, tension & strain
 C      and mask relative vorticity (free-slip case):
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE vort3(:,:) = 
+CADJ STORE vort3(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
 
