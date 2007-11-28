@@ -1,13 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_check.F,v 1.1 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_check.F,v 1.2 2007/11/28 17:55:36 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
-C !ROUTINE: SALT_PLUME_CHECK
-
-C !INTERFACE:
+C     !ROUTINE: SALT_PLUME_CHECK
+C     !INTERFACE:
       SUBROUTINE SALT_PLUME_CHECK( myThid )
 
 C     !DESCRIPTION:
@@ -22,6 +20,8 @@ C     myThid -  Number of this instances
       INTEGER myThid
 CEOP
 
+#ifdef ALLOW_SALT_PLUME
+
 C     !LOCAL VARIABLES:
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -29,6 +29,8 @@ C     msgBuf      - Informational/error meesage buffer
        WRITE(msgBuf,'(A)') 'SALT_PLUME_CHECK: #define SALT_PLUME'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
+
+#endif /* ALLOW_SALT_PLUME */
 
       RETURN
       END

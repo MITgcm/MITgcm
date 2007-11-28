@@ -1,12 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.2 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.3 2007/11/28 17:55:36 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
 
 CBOP 0
-C !ROUTINE: SALT_PLUME_TENDENCY_APPLY_S
-
-C !INTERFACE:
+C     !ROUTINE: SALT_PLUME_TENDENCY_APPLY_S
+C     !INTERFACE:
       SUBROUTINE SALT_PLUME_TENDENCY_APPLY_S(
      &     iMin, iMax, jMin, jMax,
      &     bi,bj,kLev,myTime,myThid)
@@ -31,6 +30,8 @@ C     !INPUT PARAMETERS:
       integer iMin, iMax, jMin, jMax, kLev, bi, bj, myThid
       _RL myTime
 CEOP
+
+#ifdef ALLOW_SALT_PLUME
 
 C     !LOCAL VARIABLES:
       integer i, j, kp1, two2
@@ -72,6 +73,8 @@ C Penetrating saltplume fraction:
      &         plumefrac,'PLUMEKB ',kLev,1,2,bi,bj,myThid )
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+
+#endif /* ALLOW_SALT_PLUME */
 
       return
       end

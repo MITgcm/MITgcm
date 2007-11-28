@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_mnc_init.F,v 1.1 2007/11/28 00:18:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_mnc_init.F,v 1.2 2007/11/28 17:55:36 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
 
 CBOP 0
 C     !ROUTINE: SALT_PLUME_MNC_INIT
-
 C     !INTERFACE:
       SUBROUTINE SALT_PLUME_MNC_INIT( myThid )
 
@@ -23,6 +22,7 @@ C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
+#ifdef ALLOW_SALT_PLUME
 #ifdef ALLOW_MNC
 
       IF (useMNC) THEN
@@ -37,6 +37,7 @@ CEOP
       ENDIF
 
 #endif /* ALLOW_MNC */
+#endif /* ALLOW_SALT_PLUME */
 
       RETURN
       END

@@ -1,12 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.1 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.2 2007/11/28 17:55:36 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
 
 CBOP 0
-C !ROUTINE: SALT_PLUME_READPARMS
-
-C !INTERFACE:
+C     !ROUTINE: SALT_PLUME_READPARMS
+C     !INTERFACE:
       SUBROUTINE SALT_PLUME_READPARMS( myThid )
 
 C     !DESCRIPTION:
@@ -24,9 +23,11 @@ C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
+#ifdef ALLOW_SALT_PLUME
+
       NAMELIST /SALT_PLUME_PARM01/ SaltPlumeCriterion
 
-C     === Local variables ===
+C     !LOCAL VARIABLES:
 C     msgBuf      - Informational/error meesage buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -58,6 +59,8 @@ C     Close the open data file
 
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
+
+#endif /* ALLOW_SALT_PLUME */
 
       RETURN
       END

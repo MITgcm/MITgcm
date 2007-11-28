@@ -1,7 +1,16 @@
 %%
-%%  $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_description.tex,v 1.1 2007/11/28 00:18:17 dimitri Exp $
+%%  $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_description.tex,v 1.2 2007/11/28 17:55:36 dimitri Exp $
 %%  $Name:  $
 %%
 
+C--   SALT_PLUME parameters
+C     Find surface where the potential density (ref.lev=surface) is
+C     larger than surface density plus SaltPlumeCriterion.  Initially
+C     use the default value 0.4 kg/m^3 of Duffy et al, 1999.
+
 C o Include/exclude Duffy et al. (GRL 1999) salt plume scheme
 #define ALLOW_SALT_PLUME
+
+set ``useSALT_PLUME=.TRUE.,'' in data.pkg
+
+requires data.salt_plume

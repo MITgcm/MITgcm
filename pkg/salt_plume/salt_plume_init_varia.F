@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_init_varia.F,v 1.1 2007/11/28 00:18:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_init_varia.F,v 1.2 2007/11/28 17:55:36 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
 
 CBOP 0
 C     !ROUTINE: SALT_PLUME_INIT_VARIA
-
 C     !INTERFACE:
       SUBROUTINE SALT_PLUME_INIT_VARIA( myThid )
 
@@ -23,8 +22,9 @@ C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP
 
+#ifdef ALLOW_SALT_PLUME
+
 C     !LOCAL VARIABLES:
-C     === Local variables ===
       INTEGER i,j,bi,bj
 
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -42,6 +42,8 @@ C     2-dim.
 C- end bi,bj loops
        ENDDO
       ENDDO
+
+#endif /* ALLOW_SALT_PLUME */
 
       RETURN
       END

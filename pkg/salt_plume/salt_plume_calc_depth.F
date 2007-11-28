@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_calc_depth.F,v 1.2 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_calc_depth.F,v 1.3 2007/11/28 17:55:36 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -9,6 +9,7 @@ C     !INTERFACE:
       SUBROUTINE SALT_PLUME_CALC_DEPTH(
      I                       rhoSurf, sigmaR,
      I                       bi, bj, myTime, myIter, myThid )
+
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R SALT_PLUME_CALC_DEPTH
@@ -29,7 +30,6 @@ C     == Global variables ==
 #include "SALT_PLUME.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==
 C     rhoSurf   :: Surface density anomaly
 C     sigmaR    :: Vertical gradient of potential density
 C     bi,bj     :: tile indices
@@ -42,16 +42,17 @@ C     myThid    :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+CEOP
+
+#ifdef ALLOW_SALT_PLUME
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     i,j :: Loop counters
       INTEGER i,j,k
       _RL     rhoBigNb, tmpFac
       _RL     rhoMxL(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     rhoLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-CEOP
 
       rhoBigNb  = rhoConst*1. _d 10
       DO j=1-Oly,sNy+Oly
@@ -91,6 +92,8 @@ C-    potential density (reference level = surface level)
       IF ( useDiagnostics )
      &      CALL SALT_PLUME_DIAGNOSTICS_FILL(bi,bj,myThid)
 #endif /* ALLOW_DIAGNOSTICS */
+
+#endif /* ALLOW_SALT_PLUME */
 
       RETURN
       END

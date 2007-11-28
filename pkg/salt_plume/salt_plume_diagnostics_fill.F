@@ -1,12 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_diagnostics_fill.F,v 1.1 2007/11/28 00:18:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_diagnostics_fill.F,v 1.2 2007/11/28 17:55:36 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
 
 CBOP 0
-C !ROUTINE: SALT_PLUME_DIAGNOSTICS_FILL
-
-C !INTERFACE:
+C     !ROUTINE: SALT_PLUME_DIAGNOSTICS_FILL
+C     !INTERFACE:
       SUBROUTINE SALT_PLUME_DIAGNOSTICS_FILL(
      I             bi, bj, myThid )
 
@@ -24,6 +23,8 @@ C     !INPUT PARAMETERS:
       INTEGER bi,bj
       INTEGER myThid
 CEOP
+
+#ifdef ALLOW_SALT_PLUME
 
 C     !LOCAL VARIABLES:
       _RL tmpFac
@@ -43,6 +44,8 @@ C-    net Salt plume flux into the ocean during freezing (+=down), [psu.kg/m2/s 
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+
+#endif /* ALLOW_SALT_PLUME */
 
       RETURN
       END
