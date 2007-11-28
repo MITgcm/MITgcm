@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.56 2007/10/26 19:16:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.57 2007/11/28 00:18:18 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -35,6 +35,9 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SEAICE.h"
 #include "SEAICE_PARAMS.h"
+#ifdef ALLOW_SALT_PLUME
+#include "SALT_PLUME.h"
+#endif /* ALLOW_SALT_PLUME */
 
 #ifdef SEAICE_EXTERNAL_FORCING
 # include "SEAICE_FFIELDS.h"
@@ -205,13 +208,14 @@ C--   Update overlap regions for a bunch of stuff
 #endif
        _EXCH_XY_R4(EmPmR, myThid )
        _EXCH_XY_R4(saltFlux, myThid )
-#ifdef ALLOW_SALT_PLUME
-       _EXCH_XY_R4(saltPlumeFlux, myThid )
-#endif
        _EXCH_XY_R4(Qnet , myThid )
 #ifdef SHORTWAVE_HEATING
        _EXCH_XY_R4(Qsw  , myThid )
-#endif
+#endif /* SHORTWAVE_HEATING */
+#ifdef ALLOW_SALT_PLUME
+       IF ( useSaltPlume )
+     &       _EXCH_XY_R4(saltPlumeFlux, myThid )
+#endif /* ALLOW_SALT_PLUME */
 #ifdef ATMOSPHERIC_LOADING
        IF ( useRealFreshWaterFlux )
      &      _EXCH_XY_RS( sIceLoad, myThid )

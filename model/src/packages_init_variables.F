@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.62 2007/09/28 19:42:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.63 2007/11/28 00:18:17 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -76,6 +76,8 @@ C       |
 C       |-- REGRID_INIT_VARIA
 C       |
 C       |-- MYPACKAGE_INIT_VARIA
+C       |
+C       |-- SALT_PLUME_INIT_VARIA
 
 C     !USES:
       IMPLICIT NONE
@@ -325,6 +327,10 @@ C Initialize FIZHI state variables
 
 #ifdef ALLOW_MYPACKAGE
       IF ( useMYPACKAGE ) CALL MYPACKAGE_INIT_VARIA( myThid )
+#endif
+
+#ifdef ALLOW_SALT_PLUME
+      IF ( useSaltPlume ) CALL SALT_PLUME_INIT_VARIA( myThid )
 #endif
 
 #ifdef ALLOW_DEBUG

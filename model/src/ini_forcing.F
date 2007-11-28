@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.47 2007/10/15 15:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.48 2007/11/28 00:18:17 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,9 +48,6 @@ C-    Initialise all arrays in common blocks
           Qnet            (i,j,bi,bj) = 0. _d 0
           EmPmR           (i,j,bi,bj) = 0. _d 0
           saltFlux        (i,j,bi,bj) = 0. _d 0
-#ifdef ALLOW_SALT_PLUME
-          saltPlumeFlux   (i,j,bi,bj) = 0. _d 0
-#endif /* ALLOW_SALT_PLUME */
           SST             (i,j,bi,bj) = 0. _d 0
           SSS             (i,j,bi,bj) = 0. _d 0
           Qsw             (i,j,bi,bj) = 0. _d 0
@@ -186,9 +183,6 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
       CALL EXCH_XY_RS( Qnet , myThid )
       CALL EXCH_XY_RS( EmPmR, myThid )
       CALL EXCH_XY_RS( saltFlux, myThid )
-#ifdef ALLOW_SALT_PLUME
-      CALL EXCH_XY_RS( saltPlumeFlux, myThid )
-#endif /* ALLOW_SALT_PLUME */
       CALL EXCH_XY_RS( SST  , myThid )
       CALL EXCH_XY_RS( SSS  , myThid )
       CALL EXCH_XY_RS( lambdaThetaClimRelax, myThid )

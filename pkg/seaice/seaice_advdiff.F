@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.26 2007/10/26 18:27:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.27 2007/11/28 00:18:17 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -48,7 +48,6 @@ C     myThid    :: Thread no. that called this routine.
       INTEGER myThid
 CEndOfInterface
 
-#ifdef ALLOW_SEAICE
 C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===
 C     i,j,bi,bj :: Loop counters
@@ -463,7 +462,6 @@ C     somewhere after doing the advection)
         ENDDO
        ENDDO
       ENDIF
-#endif /* ALLOW_SEAICE */
 
       RETURN
       END

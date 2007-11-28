@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.36 2007/10/03 19:41:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.37 2007/11/28 00:18:17 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -22,6 +22,9 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 #include "SEAICE_FFIELDS.h"
+#ifdef ALLOW_SALT_PLUME
+#include "SALT_PLUME.h"
+#endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -44,7 +47,7 @@ C     constants
       _RL TBC, SDF, ICE2SNOW
       _RL QI, recip_QI, QS, recip_QS
 C     auxillary variables
-      _RL availHeat, hEffOld, snowEnergy, snowAsIce
+      _RL availHeat, hEffOld, snowEnergy
       _RL growthHEFF, growthNeg
 #ifdef ALLOW_SEAICE_FLOODING
       _RL hDraft
@@ -389,7 +392,7 @@ C     compute remaining heat flux that will melt ice
 C     convert all snow to melt water (fresh water flux)
             frWtrIce(I,J) = frWtrIce(I,J)
      &           -HSNOW(I,J,bi,bj)/ICE2SNOW
-            HSNOW(I,J,bi,bj)=0.0
+            HSNOW(I,J,bi,bj)=0.0 _d 0
            END IF
           END IF
          ENDDO
@@ -550,8 +553,9 @@ CADJ &                        key = iicekey, byte = isbyte
 # ifdef SEAICE_SALINITY
 CADJ STORE hsalt(:,:,bi,bj) = comlev1_bibj, 
 CADJ &                        key = iicekey, byte = isbyte
-# endif
-#endif
+# endif /* SEAICE_SALINITY */
+#endif /* ALLOW_AUTODIFF_TAMC */
+
         DO J=1,sNy
          DO I=1,sNx
 
@@ -563,7 +567,7 @@ C NOW GET FRESH WATER FLUX
      &         * ( ONE - AREA(I,J,2,bi,bj) )
 #ifdef ALLOW_RUNOFF
      &         - RUNOFF(I,J,bi,bj)
-#endif
+#endif /* ALLOW_RUNOFF */
      &         + frWtrIce(I,J)*ICE2WATR/SEAICE_deltaTtherm
      &         + saltWtrIce(I,J)*ICE2WATR/SEAICE_deltaTtherm
      &         )*rhoConstFresh
@@ -574,7 +578,7 @@ C NOW GET FRESH WATER FLUX
      &               *( ONE - AREA(I,J,2,bi,bj) )
      &         + RUNOFF(I,J,bi,bj)
      &         )
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
 
 C COMPUTE SURFACE SALT FLUX AND ADJUST ICE SALINITY
 #ifdef SEAICE_SALINITY
@@ -582,18 +586,17 @@ C set HSALT = 0 if HSALT < 0 and compute salt to remove from ocean
           IF ( HSALT(I,J,bi,bj) .LT. 0.0 ) THEN
              saltFluxAdjust(I,J) = - HEFFM(I,J,bi,bj) *
      &            HSALT(I,J,bi,bj) / SEAICE_deltaTtherm
-             HSALT(I,J,bi,bj) = 0.0
+             HSALT(I,J,bi,bj) = 0.0 _d 0
           ENDIF
 
          ENDDO
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef SEAICE_SALINITY
 CADJ STORE hsalt(:,:,bi,bj) = comlev1_bibj, 
 CADJ &                        key = iicekey, byte = isbyte
-# endif
-#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
         DO J=1,sNy
          DO I=1,sNx
 
@@ -613,8 +616,11 @@ C saltWtrIce < 0 : m of sea ice that is melted
              saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
      &            HSALT(I,J,bi,bj)/(HEFF(I,J,1,bi,bj)-saltWtrIce(I,J))/
      &            SEAICE_deltaTtherm
+#ifdef ALLOW_SALT_PLUME
+             saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
+#endif /* ALLOW_SALT_PLUME */
           ENDIF
-C update HSALT based on surface altFlux
+C update HSALT based on surface saltFlux
           HSALT(I,J,bi,bj) = HSALT(I,J,bi,bj) +
      &         saltFlux(I,J,bi,bj) * SEAICE_deltaTtherm
           saltFlux(I,J,bi,bj) = 
@@ -624,7 +630,10 @@ C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
              saltFlux(I,J,bi,bj) = saltFlux(I,J,bi,bj) -
      &            HEFFM(I,J,bi,bj) * HSALT(I,J,bi,bj) /
      &            SEAICE_deltaTtherm
-             HSALT(I,J,bi,bj) = 0.0
+             HSALT(I,J,bi,bj) = 0.0 _d 0
+#ifdef ALLOW_SALT_PLUME
+             saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
+#endif /* ALLOW_SALT_PLUME */
           ENDIF
 #endif /* SEAICE_SALINITY */
 

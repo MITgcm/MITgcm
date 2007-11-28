@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_mnc_init.F,v 1.4 2006/03/20 21:36:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_mnc_init.F,v 1.5 2007/11/28 00:18:18 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -26,7 +26,6 @@ C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_SEAICE
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
 
@@ -170,7 +169,6 @@ C       Time averages
 
       ENDIF
 #endif /*  ALLOW_MNC     */
-#endif /*  ALLOW_SEAICE  */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.49 2007/09/24 01:17:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.50 2007/11/28 00:18:17 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -397,11 +397,6 @@ C     == Global data ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SURFACE.h"
-#ifdef ALLOW_SALT_PLUME
-#ifdef ALLOW_SEAICE
-#include "SEAICE_PARAMS.h"
-#endif /* ALLOW_SEAICE */
-#endif /* ALLOW_SALT_PLUME */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -422,15 +417,6 @@ C     kSurface  :: index of surface layer
       INTEGER i, j
       INTEGER kSurface
 CEOP
-#ifdef ALLOW_SALT_PLUME
-      _RL saltPlume
-      integer two2
-      _RL minusone
-      parameter (two2=2,minusone=-1.)
-      _RL plumekb(two2)
-      _RL SPdepth(two2)
-      INTEGER kp1
-#endif /* ALLOW_SALT_PLUME */
 
       IF ( fluidIsAir ) THEN
        kSurface = 0
@@ -492,41 +478,10 @@ cph#endif /* ndfef ALLOW_AUTODIFF_TAMC */
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_SALT_PLUME
-C saltPlume is the amount of salt rejected by ice while freezing;
-C it is here redistributed to multiple vertical levels as per
-C Duffy et al. (GRL 1999)
-       DO j=1,sNy
-        DO i=1,sNx
-C Penetrating saltplume fraction:
-          plumekb(1)=abs(rF(klev))
-          plumekb(2)=abs(rF(klev+1))
-          SPdepth(1)=SaltPlumeDepth(i,j,bi,bj)
-          SPdepth(2)=SaltPlumeDepth(i,j,bi,bj)
-          CALL PLUMEFRAC(
-     I                   two2,minusone,SPdepth,
-     U                   plumekb,
-     I                   myTime, 1, myThid )
-          kp1 = klev+1
-          IF (klev.EQ.Nr) THEN
-           kp1 = klev
-           plumekb(2)=0. _d 0
-          ENDIF
-          saltPlume = 0.
-#ifdef ALLOW_SEAICE
-          IF ( saltFlux(i,j,bi,bj) .GT. 0. .AND.
-     &         salt(i,j,kSurface,bi,bj)  .GT. SEAICE_salinity ) THEN
-            saltPlume = saltPlumeFlux(i,j,bi,bj)
-          ENDIF
-#endif /* ALLOW_SEAICE */
-          IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
-           gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &          +saltPlume*(plumekb(1)*maskC(i,j,klev,bi,bj)
-     &                     -plumekb(2)*maskC(i,j,kp1, bi,bj))
-     &          *mass2rUnit
-     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
-          ENDIF
-        ENDDO
-       ENDDO
+      IF ( useSaltPlume )
+     &     CALL SALT_PLUME_TENDENCY_APPLY_S(
+     I     iMin,iMax, jMin,jMax, bi,bj, kLev,
+     I     myTime, myThid )
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_RBCS

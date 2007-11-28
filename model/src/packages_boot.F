@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.42 2007/11/24 15:44:52 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.43 2007/11/28 00:18:17 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -80,7 +80,7 @@ C     data.pkg namelists
      &          useMATRIX,
      &          useEMBED_FILES,
      &          useMYPACKAGE,
-     &          usePLUME
+     &          useSaltPlume
 CEOP
 
       _BEGIN_MASTER(myThid)
@@ -131,7 +131,7 @@ C--   Default package configuration
       useRunClock     =.FALSE.
       useREGRID       =.FALSE.
       useMYPACKAGE    =.FALSE.
-      usePLUME        =.FALSE.
+      useSaltPlume    =.FALSE.
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=PACKAGES)

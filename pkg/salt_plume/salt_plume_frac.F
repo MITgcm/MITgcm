@@ -1,19 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/plumefrac.F,v 1.2 2007/09/24 01:17:26 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.1 2007/11/28 00:18:17 dimitri Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "SALT_PLUME_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: PLUMEFRAC
+C     !ROUTINE: SALT_PLUME_FRAC
 C     !INTERFACE:
-      SUBROUTINE PLUMEFRAC(
+      SUBROUTINE SALT_PLUME_FRAC(
      I                  imax, fact,SPDepth,
      U                  plumek,
      I                  myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE PLUMEFRAC
+C     | SUBROUTINE SALT_PLUME_FRAC
 C     | o Compute saltplume penetration.
 C     *==========================================================*
 C     | Compute fraction of saltplume (flux) penetrating to
@@ -21,10 +20,9 @@ C     | specified depth, plumek, due to rejected salt
 C     | during freezing.
 C     | For example, if surface value is Saltplume0,
 C     | and each level gets equal fraction 1/5 down to SPDepth=5,
-C     | PLUMEFRAC will report plumek = 4/5 on output if the input
+C     | SALT_PLUME_FRAC will report plumek = 4/5 on output if the input
 C     | plumek = 1. Else, output plumek = 0.                
 C     | Reference : Duffy et al, (GRL 1999)
-C     |
 C     |
 C     | =====
 C     | Written by   : ATN (based on SWFRAC)
@@ -55,35 +53,13 @@ C               (fact*plumek) is negative distance (m) from surface
 C     plumek :: on output: saltplume contribution fraction
       _RL     plumek(imax), SPDepth(imax)
 
-#ifdef ALLOW_SALT_PLUME
 C     !LOCAL VARIABLES:
 C     === Local variables ===
       _RL facz
       INTEGER i
       _RL        one          , tinee
       parameter( one = 1. _d 0, tinee = 1.e-1)
-#ifdef ALLOW_CAL
-      LOGICAL first, changed
-      INTEGER count0, count1
-#endif /* ALLOW_CAL */
 CEOP
-
-#ifdef ALLOW_CAL
-ceh3 this should have an IF ( useCALENDAR ) THEN
-CML(
-C     myIter = 0 makes cal_getMonthsRec always return  count0=12
-C     so that jerl(count0) = 2.
-C     The following lines are meant to be an example of how to
-C     include time dependent water types. However, it would probably
-C     make more sense to first think about a regionally varying
-C     water type before implementing a time dependence.
-CML      CALL  cal_GetMonthsRec(
-CML     O     fac, first, changed, count0, count1,
-CML     I     myTime, myIter, myThid )
-CML      jwtype=jerl(count0)
-CML)
-#else /* ALLOW_CAL undef */
-#endif /* ALLOW_CAL */
 
       DO i = 1,imax
          facz = abs(fact*plumek(i))
@@ -93,8 +69,6 @@ CML)
            plumek(i) = 0.
          ENDIF
       ENDDO
-
-#endif /* ALLOW_SALT_PLUME */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.59 2007/11/24 15:44:52 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.60 2007/11/28 00:18:17 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -353,7 +353,7 @@ cph Needed for rhoK, rhoKm1, in the case useGMREDI.
 C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
           IF ( useGMRedi .OR. (k.GT.1 .AND. ivdc_kappa.NE.0.)
-     &         .OR. usePLUME .OR. doDiagsRho.GE.1 ) THEN
+     &         .OR. useSaltPlume .OR. doDiagsRho.GE.1 ) THEN
 #ifdef ALLOW_DEBUG
             IF ( debugLevel .GE. debLevB )
      &       CALL DEBUG_CALL('FIND_RHO',myThid)
@@ -432,8 +432,10 @@ C--     Diagnose Mixed Layer Depth:
         ENDIF
 
 #ifdef ALLOW_SALT_PLUME
-          CALL CALC_SALT_PLUME_DEPTH( rhoK, sigmaR,
+        IF ( useSaltPlume ) THEN
+          CALL SALT_PLUME_CALC_DEPTH( rhoK, sigmaR,
      &              bi, bj, myTime, myIter, myThid )
+        ENDIF
 #endif
 #ifdef ALLOW_DIAGNOSTICS
         IF ( doDiagsRho.GE.1 ) THEN

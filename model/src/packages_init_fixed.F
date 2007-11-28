@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.59 2007/04/20 18:42:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.60 2007/11/28 00:18:17 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,9 +78,11 @@ C       |-- CPL_INIT_FIXED
 C       |
 C       |-- ATM2D_INIT_FIXED
 C       |
-C       |-- DIAGNOSTICS_INIT_FIXED
-C       |
 C       |-- REGRID_INIT_FIXED
+C       |
+C       |-- SALT_PLUME_INIT_FIXED
+C       |
+C       |-- DIAGNOSTICS_INIT_FIXED
 
 C     !USES:
       IMPLICIT NONE
@@ -293,6 +295,10 @@ C     IF (useDIC)
 
 #ifdef ALLOW_ATM2D
       IF ( useAtm2d ) CALL ATM2D_INIT_FIXED( myThid )
+#endif
+
+#ifdef ALLOW_SALT_PLUME
+      IF (useSaltPlume) CALL SALT_PLUME_INIT_FIXED(mythid)
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS

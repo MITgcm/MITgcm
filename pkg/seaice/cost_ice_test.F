@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.4 2007/10/09 00:10:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.5 2007/11/28 00:18:17 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -65,7 +65,7 @@ c     == routine arguments ==
       integer myiter
       integer mythid
 
-#if (defined (ALLOW_SEAICE) && defined (ALLOW_COST_ICE))
+#ifdef ALLOW_COST_ICE
 
 c     == local variables ==
 

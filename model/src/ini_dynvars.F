@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.18 2007/09/22 17:55:31 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.19 2007/11/28 00:18:17 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -87,9 +87,6 @@ C-      2D arrays
           etaH(I,J,bi,bj)=0. _d 0
           phiHydLow(I,J,bi,bj)=0. _d 0
           hMixLayer(I,J,bi,bj)=0. _d 0
-#ifdef ALLOW_SALT_PLUME
-          SaltPlumeDepth(I,J,bi,bj)=0. _d 0
-#endif
          ENDDO
         ENDDO
 

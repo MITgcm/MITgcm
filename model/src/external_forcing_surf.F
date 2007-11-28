@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.43 2007/10/15 15:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.44 2007/11/28 00:18:17 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -30,11 +30,11 @@ C     === Global variables ===
 #include "SURFACE.h"
 #ifdef ALLOW_SEAICE
 #include "SEAICE.h"
-#include "SEAICE_PARAMS.h"
 #endif /* ALLOW_SEAICE */
 #ifdef ALLOW_SHELFICE
 #include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     bi,bj  :: tile indices
@@ -59,9 +59,6 @@ CEOP
 #ifdef ALLOW_DIAGNOSTICS
       _RL tmpFac
 #endif /* ALLOW_DIAGNOSTICS */
-#ifdef ALLOW_SALT_PLUME
-      _RL saltPlume
-#endif /* ALLOW_SALT_PLUME */
 
       IF ( usingPCoords ) THEN
        ks        = Nr
@@ -196,23 +193,20 @@ C     Net heat flux Qnet:
 C     Net Salt Flux :
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
      &      -saltFlux(i,j,bi,bj)*mass2rUnit
+
+         ENDDO
+      ENDDO
+
 #ifdef ALLOW_SALT_PLUME
 C saltPlume is the amount of salt rejected by ice while freezing;
 C it is here subtracted from surfaceForcingS and will be redistributed
 C to multiple vertical levels later on as per Duffy et al. (GRL 1999)
-          saltPlume = 0.
-#ifdef ALLOW_SEAICE
-          IF ( saltFlux(i,j,bi,bj) .GT. 0. .AND.
-     &         salt(i,j,ks,bi,bj)  .GT. SEAICE_salinity ) THEN
-               saltPlume = saltPlumeFlux(i,j,bi,bj)
-          ENDIF
-#endif /* ALLOW_SEAICE */
-          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &      -saltPlume*mass2rUnit
+      IF ( useSaltPlume ) THEN
+         CALL SALT_PLUME_FORCING_SURF(
+     I        bi, bj, iMin, iMax, jMin, jMax,
+     I        myTime,myIter,myThid )
+      ENDIF
 #endif /* ALLOW_SALT_PLUME */
-
-         ENDDO
-      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Fresh-water flux
