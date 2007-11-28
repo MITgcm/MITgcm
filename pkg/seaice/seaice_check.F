@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.22 2007/09/15 01:38:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.23 2007/11/28 09:26:16 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -161,6 +161,17 @@ C     currently, cannot be turned on if SEAICE_EXTERNAL_FORCING is undef
       ENDIF
 #endif
 
+#ifdef ALLOW_SALT_PLUME
+#ifndef SEAICE_SALINITY
+      IF ( UseSALT_PlUME ) THEN
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: UseSALT_PlUME requires that'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_SALINITY be defined.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif /* SEAICE_SALINITY */
+#endif /* ALLOW_SALT_PLUME */
       _END_MASTER(myThid)
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.57 2007/11/28 00:18:18 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.58 2007/11/28 09:26:16 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -213,7 +213,7 @@ C--   Update overlap regions for a bunch of stuff
        _EXCH_XY_R4(Qsw  , myThid )
 #endif /* SHORTWAVE_HEATING */
 #ifdef ALLOW_SALT_PLUME
-       IF ( useSaltPlume )
+       IF ( useSALT_PLUME )
      &       _EXCH_XY_R4(saltPlumeFlux, myThid )
 #endif /* ALLOW_SALT_PLUME */
 #ifdef ATMOSPHERIC_LOADING

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.50 2007/11/28 00:18:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.51 2007/11/28 09:26:16 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -478,7 +478,7 @@ cph#endif /* ndfef ALLOW_AUTODIFF_TAMC */
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_SALT_PLUME
-      IF ( useSaltPlume )
+      IF ( useSALT_PLUME )
      &     CALL SALT_PLUME_TENDENCY_APPLY_S(
      I     iMin,iMax, jMin,jMax, bi,bj, kLev,
      I     myTime, myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.60 2007/11/28 00:18:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.61 2007/11/28 09:26:16 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -298,7 +298,7 @@ C     IF (useDIC)
 #endif
 
 #ifdef ALLOW_SALT_PLUME
-      IF (useSaltPlume) CALL SALT_PLUME_INIT_FIXED(mythid)
+      IF (useSALT_PLUME) CALL SALT_PLUME_INIT_FIXED(mythid)
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS

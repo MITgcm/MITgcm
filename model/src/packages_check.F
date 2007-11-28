@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.41 2007/04/28 00:15:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.42 2007/11/28 09:26:16 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -271,6 +271,12 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useMYPACKAGE) CALL MYPACKAGE_CHECK( myThid )
 #else
       IF (useMYPACKAGE) CALL PACKAGES_ERROR_MSG('MYPACKAGE',' ',myThid)
+#endif
+
+#ifdef ALLOW_SALT_PLUME
+      IF (useSALT_PLUME)CALL SALT_PLUME_CHECK( myThid )
+#else
+      IF (useSALT_PLUME)CALL PACKAGES_ERROR_MSG('SALT_PLUME',' ',myThid)
 #endif
 
 C---  Exclusive packages (which cannot be used together):

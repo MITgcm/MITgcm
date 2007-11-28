@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.53 2007/06/19 03:35:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.54 2007/11/28 09:26:16 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,7 +64,15 @@ C       |-- BULKF_READPARMS
 C       |
 C       |-- THSICE_READPARMS
 C       |
+C       |-- PTRACERS_READPARMS
+C       |
 C       |-- GCHEM_READPARMS
+C       |
+C       |-- RBCS_READPARMS
+C       |
+C       |-- MYPACKAGE_READPARMS
+C       |
+C       |-- SALT_PLUME_READPARMS
 C       |
 C       |-- OPTIM_READPARMS
 C       |
@@ -212,6 +220,10 @@ C -- initialize Therm.Sea-Ice parameters
 
 #ifdef ALLOW_MYPACKAGE
       IF (useMYPACKAGE) CALL MYPACKAGE_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_SALT_PLUME
+      IF (useSALT_PLUME) CALL SALT_PLUME_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_CTRL

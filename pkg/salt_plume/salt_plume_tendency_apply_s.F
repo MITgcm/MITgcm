@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.1 2007/11/28 00:18:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.2 2007/11/28 09:26:16 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -33,17 +33,16 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer i, j
-      integer two2
-      _RL minusone
-      parameter (two2=2,minusone=-1.)
-      _RL plumekb(two2)
-      _RL SPdepth(two2)
-      INTEGER kp1
+      integer i, j, kp1, two2
+      parameter(two2 = 2)
+      _RL plumefrac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL plumekb(two2), SPdepth(two2), minusone
+      parameter(minusone = -1.)
 
       do j=jMin,jMax
        do i=iMin,iMax
 C Penetrating saltplume fraction:
+          plumefrac(I,J) = 0. _d 0
           plumekb(1)=abs(rF(klev))
           plumekb(2)=abs(rF(klev+1))
           SPdepth(1)=SaltPlumeDepth(i,j,bi,bj)
@@ -58,19 +57,20 @@ C Penetrating saltplume fraction:
            plumekb(2)=0. _d 0
           ENDIF
           IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
+           plumefrac(I,J) = plumekb(1)*maskC(i,j,klev,bi,bj)
+     &            -plumekb(2)*maskC(i,j,kp1, bi,bj)
            gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &            +saltPlumeFlux(i,j,bi,bj)
-     &            *(plumekb(1)*maskC(i,j,klev,bi,bj)
-     &            -plumekb(2)*maskC(i,j,kp1, bi,bj))
-     &            *mass2rUnit
+     &            +saltPlumeFlux(i,j,bi,bj)*plumefrac(I,J)*mass2rUnit
      &            *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
           ENDIF
         ENDDO
        ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics )
-     &      CALL SALT_PLUME_DIAGNOSTICS_FILL(bi,bj,myThid)
+       IF ( useDiagnostics ) THEN
+          CALL DIAGNOSTICS_FILL (
+     &         plumefrac,'PLUMEKB ',kLev,1,2,bi,bj,myThid )
+       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
       return
