@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_computvort.F,v 1.1 2005/10/07 00:21:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_computvort.F,v 1.2 2007/11/28 14:58:07 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -58,15 +58,18 @@ C     == Local variables ==
 #endif /* ALLOW_EXCH2 */
 CEOP
 
+#ifdef ALLOW_AUTODIFF_TAMC
 C-    Initialisation :
       DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
           vort(i,j)= 0.
         ENDDO
       ENDDO
+#endif
+
 C-    replace Physical calc Div & Vort by computational one :
-      DO j=3-Oly,sNy+Oly-1
-        DO i=3-Olx,sNx+Olx-1
+      DO j=2-Oly,sNy+Oly
+        DO i=2-Olx,sNx+Olx
           vort(i,j) = ( vFld(i,j)-vFld(i-1,j) )
      &              - ( uFld(i,j)-uFld(i,j-1) )
           maskZ = (maskW(i,j,k,bi,bj)+maskW(i,j-1,k,bi,bj))
