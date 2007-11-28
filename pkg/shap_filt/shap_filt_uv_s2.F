@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.13 2007/08/16 02:20:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.14 2007/11/28 16:24:29 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -73,6 +73,15 @@ CEOP
 
       IF (nShapUV.GT.0 .AND. Shap_uvtau.GT.0.) THEN
 
+        IF (useCubedSphereExchange) THEN
+C-      need to initialise hDiv for MOM_VI_DEL2UV(call FILL_CS_CORNER_TR_RL)
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            hDiv(i,j) = 0. _d 0
+           ENDDO
+          ENDDO
+        ENDIF
+
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO k=1,kSize
@@ -95,13 +104,7 @@ C--   [d_xx+d_yy]^n tmpFld
        DO n=1,nShapUV
 
         IF ( MOD(n,2).EQ.1 .OR. Shap_alwaysExchUV ) THEN
-          IF (kSize.EQ.Nr) THEN
-            CALL EXCH_UV_XYZ_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
-          ELSEIF (kSize.EQ.1) THEN
-            CALL EXCH_UV_XY_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
-          ELSE
-            STOP 'S/R SHAP_FILT_UV_S2: kSize is wrong'
-          ENDIF
+          CALL EXCH_UV_3D_RL( tmpFldU,tmpFldV, .TRUE., kSize, myThid )
         ENDIF
 
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -131,8 +134,8 @@ C-    [d_xx+d_yy] tmpFld
 #endif
          ELSE
 C-    replace Physical calc Div & Vort by computational one :
-           DO j=2-Oly,sNy+Oly-1
-            DO i=2-Olx,sNx+Olx-1
+           DO j=1-Oly,sNy+Oly-1
+            DO i=1-Olx,sNx+Olx-1
              hDiv(i,j)=(tmpFldU(i+1,j,k,bi,bj)-tmpFldU(i,j,k,bi,bj))
      &                +(tmpFldV(i,j+1,k,bi,bj)-tmpFldV(i,j,k,bi,bj))
             ENDDO
@@ -148,9 +151,13 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
          IF (n.GT.nShapUV-nShapUVPhys) THEN
            IF (Shap_uvLength.LT.0.) THEN
-             DO j=2-Oly,sNy+Oly-1
-              DO i=2-Olx,sNx+Olx-1
+             DO j=1-Oly,sNy+Oly-1
+              DO i=1-Olx,sNx+Olx-1
                 hDiv(i,j) = hDiv(i,j) * rA(i,j,bi,bj)
+              ENDDO
+             ENDDO
+             DO j=2-Oly,sNy+Oly
+              DO i=2-Olx,sNx+Olx
                 vort3(i,j)= vort3(i,j)*rAz(i,j,bi,bj)
               ENDDO
              ENDDO
@@ -161,8 +168,8 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      O                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
      I                    myThid)
            IF (Shap_uvLength.LT.0.) THEN
-            DO j=3-Oly,sNy+Oly-1
-             DO i=3-Olx,sNx+Olx-1
+            DO j=2-Oly,sNy+Oly-1
+             DO i=2-Olx,sNx+Olx-1
               tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*tmpFldU(i,j,k,bi,bj)
      &                                          *_maskW(i,j,k,bi,bj)
               tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*tmpFldV(i,j,k,bi,bj)
@@ -170,8 +177,8 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
              ENDDO
             ENDDO
            ELSEIF (Shap_uvLength.EQ.0.) THEN
-            DO j=3-Oly,sNy+Oly-1
-             DO i=3-Olx,sNx+Olx-1
+            DO j=2-Oly,sNy+Oly-1
+             DO i=2-Olx,sNx+Olx-1
               tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*tmpFldU(i,j,k,bi,bj)
      &                            *rAw(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
               tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*tmpFldV(i,j,k,bi,bj)
@@ -179,8 +186,8 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
              ENDDO
             ENDDO
            ELSE
-            DO j=3-Oly,sNy+Oly-1
-             DO i=3-Olx,sNx+Olx-1
+            DO j=2-Oly,sNy+Oly-1
+             DO i=2-Olx,sNx+Olx-1
               tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*tmpFldU(i,j,k,bi,bj)
      &               *Shap_uvLength*Shap_uvLength*_maskW(i,j,k,bi,bj)
               tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*tmpFldV(i,j,k,bi,bj)
@@ -198,8 +205,8 @@ C          to compute d/dx(hDiv), fill corners with appropriate values:
      &                                  hDiv, bi,bj, myThid )
            ENDIF
 #endif
-           DO j=3-Oly,sNy+Oly-2
-            DO i=3-Olx,sNx+Olx-1
+           DO j=2-Oly,sNy+Oly-1
+            DO i=2-Olx,sNx+Olx-1
              tmpFldU(i,j,k,bi,bj) = -0.125 _d 0*
      &                   ( (hDiv(i,j) - hDiv(i-1,j))
      &                    -(vort3(i,j+1)-vort3(i,j))
@@ -214,8 +221,8 @@ C          to compute d/dy(hDiv), fill corners with appropriate values:
      &                                  hDiv, bi,bj, myThid )
            ENDIF
 #endif
-           DO j=3-Oly,sNy+Oly-1
-            DO i=3-Olx,sNx+Olx-2
+           DO j=2-Oly,sNy+Oly-1
+            DO i=2-Olx,sNx+Olx-1
              tmpFldV(i,j,k,bi,bj) = -0.125 _d 0*
      &                   ( (hDiv(i,j) - hDiv(i,j-1))
      &                    +(vort3(i+1,j)-vort3(i,j))
@@ -256,13 +263,9 @@ C      F <-  [1 - (d_xx+d_yy)^n *deltaT/tau].F
         ENDDO
        ENDDO
 
-c       IF (kSize.EQ.Nr) THEN
-c         CALL EXCH_UV_XYZ_RL(uFld,vFld,.TRUE.,myThid)
-c       ELSEIF (kSize.EQ.1) THEN
-c         CALL EXCH_UV_XY_RL(uFld,vFld,.TRUE.,myThid)
-c       ELSE
-c         STOP 'S/R SHAP_FILT_UV_S2: kSize is wrong'
-c       ENDIF
+       IF ( ( OLx.LE.2 .OR. OLy.LE.2 ) .AND.
+     &       MOD(nShapUV,2).EQ.0 .AND. .NOT.Shap_alwaysExchUV )
+     &  CALL EXCH_UV_3D_RL( uFld, vFld, .TRUE., kSize, myThid )
 
       ENDIF
 #endif /* ALLOW_SHAP_FILT */
