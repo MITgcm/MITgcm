@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.912 2007/11/28 00:18:16 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.913 2007/11/28 16:52:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix un-initialised variable problem (in mom_vecinv & shap_filt):
+  all experiments pass when compile with un-initilised var. checking option.
 o added pkg/salt_plume
 o script to test restart (for now, in MITgcm_contrib/jmc_script)
 o pkg/seaice: new read/write pickup version. 
