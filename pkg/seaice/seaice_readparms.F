@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.58 2007/09/28 00:52:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.59 2007/11/29 09:07:31 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -51,7 +51,7 @@ C--   SEAICE parameters
      & SEAICE_evpDampC, SEAICE_zetaMin, 
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq, 
      & SEAICE_initialHEFF,
-     & SEAICE_rhoAir, SEAICE_rhoIce, 
+     & SEAICE_rhoAir, SEAICE_rhoIce, ICE2WATR,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      & SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
      & SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
@@ -145,6 +145,7 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this
       SEAICE_initialHEFF = ZERO
       SEAICE_rhoAir      = 1.3    _d 0
       SEAICE_rhoIce      = 0.91   _d +03
+      ICE2WATR           = UNSET_RL
       SEAICE_drag        = 0.002  _d 0
       OCEAN_drag         = 0.001  _d 0
       SEAICE_waterDrag   = 5.5    _d 0
@@ -248,6 +249,8 @@ C--   Read settings from model parameter file "data.seaice".
      &     ' SEAICE_READPARMS: finished reading data.seaice'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
+
+      IF (ICE2WATR.EQ.UNSET_RL) ICE2WATR = SEAICE_rhoIce*recip_rhoConst
 
 C     Check that requested time step size is supported.  The combination
 C     below is the only one that is supported at this time.  Does not

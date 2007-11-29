@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.47 2007/09/21 06:46:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.48 2007/11/29 09:07:31 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -139,6 +139,7 @@ C     SEAICE_taveFreq    - SEAICE time-averaging frequency.            (s)
 C     SEAICE_initialHEFF - initial sea-ice thickness                   (m)
 C     SEAICE_rhoAir      - density of air                              (kg/m^3)
 C     SEAICE_rhoIce      - density of sea ice                          (kg/m^3)
+C     ICE2WATR           - ratio of sea ice density to water density
 C     SEAICE_drag        - air-ice drag coefficient
 C     OCEAN_drag         - air-ocean drag coefficient
 C     SEAICE_waterDrag   - water-ice drag coefficient * water density
@@ -197,7 +198,7 @@ C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
       _RL SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq
       _RL SEAICE_initialHEFF
-      _RL SEAICE_rhoAir, SEAICE_rhoIce
+      _RL SEAICE_rhoAir, SEAICE_rhoIce, ICE2WATR
       _RL SEAICE_drag, SEAICE_waterDrag,  SEAICE_dryIceAlb
       _RL SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb
       _RL SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen
@@ -220,7 +221,7 @@ C
      &    SEAICE_evpDampC, SEAICE_zetaMin,
      &    SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      &    SEAICE_initialHEFF,
-     &    SEAICE_rhoAir, SEAICE_rhoIce,
+     &    SEAICE_rhoAir, SEAICE_rhoIce, ICE2WATR,
      &    SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      &    SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
      &    SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
@@ -264,13 +265,6 @@ C--   identifiers for advected properties
      &            GAD_QICE2 = 104,
      &            GAD_SNOW  = 105,
      &            GAD_SALT  = 106 )
-
-C--   parameter used by multiple routines
-C     RATIO OF SEA ICE DESITY TO WATER DENSITY
-      _RL         ICE2WATR
-      PARAMETER ( ICE2WATR = 0.920 _d 0 )
-C     this makes more sense, but changes the results
-C      ICE2WATR     = SEAICE_rhoIce * 1. _d -03
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

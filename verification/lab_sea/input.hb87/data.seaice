@@ -7,4 +7,5 @@
   useHB87stressCoupling = .true.,
   SEAICE_no_slip     = .TRUE.,
   SEAICE_deltaTevp   = 60.,
+  ICE2WATR           = 0.92D0,
  &
