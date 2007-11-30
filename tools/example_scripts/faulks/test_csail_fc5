@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail_fc5,v 1.4 2007/09/29 21:49:51 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail_fc5,v 1.5 2007/11/30 17:05:50 jmc Exp $
 
 #  Ed Hill
 
@@ -39,7 +39,7 @@ echo "  done"
 cd MITgcm/verification
 
 echo "Running testreport using:"
-comm="./testreport -adm -a edhill@mitgcm.org"
+comm="./testreport -adm -a jmc@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
@@ -55,7 +55,7 @@ echo "======================"
 echo
 
 echo "Running testreport using:"
-comm="./testreport -of ../tools/build_options/linux_ia32_g77 -a edhill@mitgcm.org"
+comm="./testreport -of ../tools/build_options/linux_ia32_g77 -a jmc@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
@@ -71,7 +71,7 @@ echo
 
 echo "Running testreport using:"
 export PGI=/usr/local/pkg/pgi/pgi-6.1-5
-comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a edhill@mitgcm.org"
+comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a jmc@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
@@ -86,7 +86,7 @@ echo "======================"
 echo
 
 echo "Running testreport using:"
-comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_gfortran -a edhill@mitgcm.org"
+comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_gfortran -a jmc@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
@@ -101,7 +101,7 @@ echo "======================"
 echo
 
 echo "Running testreport using:"
-comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
+comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a jmc@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
@@ -118,7 +118,7 @@ echo
 echo "Running testreport using:"
 export OMP_NUM_THREADS=2
 export KMP_STACKSIZE=400m
-comm="./testreport -mth -match $MC -of ../tools/build_options/linux_ia32_ifort.v9+mth -a edhill@mitgcm.org"
+comm="./testreport -mth -match $MC -of ../tools/build_options/linux_ia32_ifort.v9+mth -a jmc@mitgcm.org"
 echo "  \"$comm\""
 echo "======================"
 echo
