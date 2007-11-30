@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.10 2007/10/12 16:05:23 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.11 2007/11/30 00:50:11 jmc Exp $
 
 #  Ed Hill
 
@@ -86,7 +86,7 @@ mkdir $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
   cd verification
-  comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a edhill@mitgcm.org"
+  comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a jmc@mitgcm.org"
   echo "  \"$comm\""
   echo "======================"
   echo
