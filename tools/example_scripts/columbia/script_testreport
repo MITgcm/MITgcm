@@ -1,0 +1,56 @@
+#! /usr/bin/env bash
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/columbia/Attic/script_testreport,v 1.1 2007/11/30 21:34:22 dfer Exp $
+# $Name:  $
+
+### script to run testreport, tar the result, and send it to jmc@mitgcm.org
+### First start an interaction session on Columbia:
+### --> qsub -I -l ncpus=6 -l walltime=12:00:00
+### and then launch the script:
+### --> ./script_testreport
+
+date_str=`date +%Y%m%d`"_0"
+
+. /usr/share/modules/init/bash
+module purge
+#module load modules scsl.1.5.0.0 intel-comp.8.1.024 mpt.1.12.0.0 pd-netcdf.3.6.0-p1
+#module load modules scsl.1.6.1.0 intel-comp.9.1.039 mpt.1.12.0.nas pd-netcdf.3.6.0-p1
+module load modules intel-comp.9.1.049 mpt.1.16.0.0 pd-netcdf.3.6.0-p1
+module list
+
+cd /u/dfer/MITgcm/verification
+
+##### IEEE
+./testreport -of='../tools/build_options/linux_ia64_ifort+mpi_altix_nas' -mpi -ieee -match 10 -command='mpirun -np 2 ./mitgcmuv' -j 2
+
+tdir1=`ls -dt1 tr_* | grep -v tr_out | head -1`
+sed "s/linux_ia64_ifort+mpi_altix_nas/linux_ia64_ifort+mpi_altix_nas_ieee/" $tdir1/summary.txt > $tdir1/toto
+mv -f $tdir1/toto $tdir1/summary.txt
+
+tdir2=tr_columbia-ieee_$date_str
+mv $tdir1 $tdir2
+
+tdir3=$tdir2.tar.gz
+tar -czf $tdir3 $tdir2 
+
+../tools/mpack-1.6/mpack -s MITgcm-test -m 3555000 $tdir3 jmc@mitgcm.org 
+
+./testreport -clean
+
+##### NO IEEE
+./testreport -of='../tools/build_options/linux_ia64_ifort+mpi_altix_nas' -mpi -noieee -match 10 -command='mpirun -np 2 ./mitgcmuv' -j 2
+
+tdir1=`ls -dt1 tr_* | grep -v tr_out | head -1`
+sed "s/linux_ia64_ifort+mpi_altix_nas/linux_ia64_ifort+mpi_altix_nas_noieee/" $tdir1/summary.txt > $tdir1/toto
+mv -f $tdir1/toto $tdir1/summary.txt
+
+tdir2=tr_columbia-noieee_$date_str
+mv $tdir1 $tdir2
+
+tdir3=$tdir2.tar.gz
+tar -czf $tdir3 $tdir2
+
+../tools/mpack-1.6/mpack -s MITgcm-test -m 3555000 $tdir3 jmc@mitgcm.org
+
+./testreport -clean
+
