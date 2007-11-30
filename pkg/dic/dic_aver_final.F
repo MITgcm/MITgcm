@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_final.F,v 1.5 2007/11/05 19:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_final.F,v 1.6 2007/11/30 17:47:41 stephd Exp $
 C $Name:  $
 
 cswdcost -- add sunroutine ---
@@ -31,9 +31,9 @@ c#include "PTRACERS_FIELDS.h"
 #include "DIC_DIAGS.h"
 #include "DIC_COST.h"
 #endif
-#ifdef ALLOW_SEAICE
-#include "ICE.h"
-#endif
+c#ifdef ALLOW_SEAICE
+c#include "SEAICE.h"
+c#endif
 
 C     == Routine arguments ==
       INTEGER myIter

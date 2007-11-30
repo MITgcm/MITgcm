@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.18 2007/11/08 22:26:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.19 2007/11/30 17:47:41 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -30,6 +30,9 @@ c#include "PTRACERS_FIELDS.h"
 #include "DIC_LOAD.h"
 #ifdef ALLOW_THSICE
 #include "THSICE_VARS.h"
+#endif
+#ifdef ALLOW_SEAICE
+#include "SEAICE.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -187,6 +190,9 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
             ENDDO
            ENDDO
 #else
+#ifdef ALLOW_SEAICE
+             FIce(i,j,bi,bj) = AREA(i,j,1,bi,bj)
+#else
          IF ( IceFile .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
@@ -195,6 +201,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
             ENDDO
            ENDDO
          ENDIF
+#endif
 #endif
 #ifdef READ_PAR
          IF ( Filename1 .NE. ' '  ) THEN
