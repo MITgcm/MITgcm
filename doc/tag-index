@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.914 2007/11/29 16:29:12 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.915 2007/11/30 21:13:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59k
 o pkg/seaice: ICE2WATR=SEAICE_rhoIce/rhoConst for consistency between
   dynamics and thermodynamics. Set ICE2WATR=0.92 to reproduce older results.
 o fix un-initialised variable problem (in mom_vecinv & shap_filt):
