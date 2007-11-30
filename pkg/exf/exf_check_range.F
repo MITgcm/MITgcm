@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.28 2007/04/18 19:55:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.29 2007/11/30 22:22:06 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
-      subroutine exf_check_range( mytime, myiter, mythid )
+      SUBROUTINE EXF_CHECK_RANGE( mytime, myiter, mythid )
 
 c     ==================================================================
-c     SUBROUTINE exf_check_range
+c     SUBROUTINE EXF_CHECK_RANGE
 c     ==================================================================
 c
       implicit none
@@ -46,10 +46,17 @@ c     == end of interface ==
 
       exferr = 0
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+c     jtlo = mybylo(mythid)
+c     jthi = mybyhi(mythid)
+c     itlo = mybxlo(mythid)
+c     ithi = mybxhi(mythid)
+C--   Only master thread can safely write directly to standard output:
+      _BARRIER
+      _BEGIN_MASTER( myThid )
+      jtlo = 1
+      jthi = nSy
+      itlo = 1
+      ithi = nSx
 
 C Change checking range because some atmospheric fields will
 C not always have valid values in the tile edges.
@@ -221,7 +228,9 @@ c
      &      'EXF WARNING: If you think these values are OK '
        write(standardmessageunit,'(A)')
      &      'EXF WARNING: then set useExfCheckRange=.FALSE.'
-       STOP 'in S/R exf_check_range'
+       STOP 'ABNORMAL END: S/R EXF_CHECK_RANGE'
       endif
+      _END_MASTER( myThid )
 
-      end
+      RETURN
+      END
