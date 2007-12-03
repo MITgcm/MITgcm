@@ -36,3 +36,12 @@ The files are:
     aces_test_pgi_mpi	/
     aces_test_ifc_mth    => multi-threaded test with intel compiler
 
+------------------------
+Old version of the same script but run by Ed Hill :
+  itrda_crontab
+  itrda_test_all
+    itrda_gnu_test_mpi
+    itrda_intel_test_mpi
+    itrda_intel_test_mth
+    itrda_pgi_test_mpi
+------------------------
