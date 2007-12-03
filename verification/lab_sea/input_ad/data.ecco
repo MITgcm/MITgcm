@@ -54,6 +54,7 @@
  wwind0               = 1.0,
  wevap0               = 1.0,
  wsnowprecip0         = 1.0,
+ wapressure0          = 1.0,
 #
  wmean_hflux          = 30.,
  wmean_sflux          = 1.6E-8,
@@ -68,6 +69,7 @@
  wmean_wind           = 2.0,
  wmean_evap           = 1.0,
  wmean_snowprecip     = 1.0,
+ wmean_apressure      = 1.0,
 #
  mult_hmean = 0.,
  mult_h     = 0.,
