@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.26 2007/09/21 18:53:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.27 2007/12/03 22:38:27 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -157,6 +157,8 @@ cph   and so has unperturbed cost function,
 cph   assuming all xx_ fields are initialised to zero.
 
       ierr_grdchk = 0
+      adxxmemo  = 0.
+      ftlxxmemo = 0.
 #ifdef ALLOW_ADMTLM
       fcref = objf_state_final(idep,jdep,1,1,1)
 #else
@@ -250,7 +252,6 @@ c--   (B): Get gradient component g_fc from tangent linear run:
 c******************************************************
 c--
 c--   1. perturb control vector component: xx(i)=1.
-            ftlxxmemo = 0.
 
             if ( myProcId .EQ. grdchkwhichproc .AND.
      &           ierr .EQ. 0 ) then
