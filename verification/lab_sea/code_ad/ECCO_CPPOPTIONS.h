@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.5 2007/10/09 02:36:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.6 2007/12/03 22:36:50 heimbach Exp $
 C $Name:  $
 
 C
@@ -79,6 +79,8 @@ C       >>> Cost function contributions
 # define ALLOW_APRESSURE_COST_CONTRIBUTION
 # undef ALLOW_RUNOFF_COST_CONTRIBUTION
 
+# define ALLOW_THETA0_COST_CONTRIBUTION
+# define ALLOW_SALT0_COST_CONTRIBUTION
 # define ALLOW_THETA_COST_CONTRIBUTION
 # define ALLOW_SALT_COST_CONTRIBUTION
 # define ALLOW_SST_COST_CONTRIBUTION
