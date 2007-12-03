@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_BIOTIC.h,v 1.8 2007/10/26 21:08:12 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_BIOTIC.h,v 1.9 2007/12/03 20:49:55 stephd Exp $
 C $Name:  $
 
 #ifdef DIC_BIOTIC
@@ -17,7 +17,7 @@ C     |==========================================================|
      &     O2crit, alpfe, KScav, ligand_stab, ligand_tot, KFE,
      &     freefemax, par,
      &     parfrac, k0, lit0,
-     &     nlev
+     &     nlev, QSW_underice
 
       integer nlev
 
@@ -61,6 +61,8 @@ C     values for biogeochemistry
       _RL freefemax
 C     values for light limited bio activity
       _RL k0, parfrac, lit0
+
+      LOGICAL QSW_underice
 #endif
 
 
