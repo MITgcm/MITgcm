@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.11 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.12 2007/12/03 22:39:44 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -88,10 +88,11 @@ c     == end of interface ==
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+c--   only do interior, and exchange at the end
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
 
       doglobalread = .false.
       ladinit      = .false.
@@ -118,11 +119,13 @@ c--   Temperature field.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-                 IF (abs(tmpfld3d(i,j,k,bi,bj)).gt.
+                 IF ( maskC(i,j,k,bi,bj).ne.0. ) THEN
+                    IF ( abs(tmpfld3d(i,j,k,bi,bj)).gt.
      &                5.0/sqrt(wthetaLev(i,j,k,bi,bj)))
      &                tmpfld3d(i,j,k,bi,bj)=
      &                sign(5.0/sqrt(wthetaLev(i,j,k,bi,bj)),
      &                tmpfld3d(i,j,k,bi,bj))
+                 ENDIF
               enddo
             enddo
           enddo
@@ -135,20 +138,6 @@ c--   Temperature field.
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta = tapelev_init, key = ikey
 #endif
-
-c                 if(abs(xc(i,j,bi,bj)-123) .gt. 2 .or.
-c     $                abs(yc(i,j,bi,bj)-84) .gt. 2 )
-c                if((abs(xc(i,j,bi,bj)-125) .gt. 8 .or.
-c     $                abs(yc(i,j,bi,bj)-5.5) .gt. 9 )
-c     $                .and. (k.le.10.or.
-c     $                (abs(xc(i,j,bi,bj)-164) .gt. 16 .or.
-c     $                abs(yc(i,j,bi,bj)+60.5) .gt. 6)  .and.
-c     $                (abs(xc(i,j,bi,bj)-359).gt.2 .or.
-c     $                abs(yc(i,j,bi,bj)-35.5).gt.2) ) .and.
-c     $                (k.le.17.or.
-c     $                (abs(xc(i,j,bi,bj)-203) .gt. 26 .or.
-c     $                abs(yc(i,j,bi,bj)+58.5) .gt. 6)
-c     $                ))
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -201,23 +190,13 @@ c--   Salinity field.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-                 IF (abs(tmpfld3d(i,j,k,bi,bj)).gt.
+                 IF ( maskC(i,j,k,bi,bj).ne.0. ) THEN
+                    IF ( abs(tmpfld3d(i,j,k,bi,bj)).gt.
      &                5.0/sqrt(wsaltLev(i,j,k,bi,bj)))
      &                tmpfld3d(i,j,k,bi,bj)=
      &                sign(5.0/sqrt(wsaltLev(i,j,k,bi,bj)),
      &                tmpfld3d(i,j,k,bi,bj))
-c                 if(abs(xc(i,j,bi,bj)-123) .gt. 2 .or.
-c     $                abs(yc(i,j,bi,bj)-84) .gt. 2 )
-c                if((abs(xc(i,j,bi,bj)-125) .gt. 8 .or.
-c     $                abs(yc(i,j,bi,bj)-5.5) .gt. 9)
-c     $                .and. (k.le.10.or.
-c     $                (abs(xc(i,j,bi,bj)-164) .gt. 16 .or.
-c     $                abs(yc(i,j,bi,bj)+60.5) .gt. 6)  )
-c     $                 .and. (k.le.17.or.
-c     $                (abs(xc(i,j,bi,bj)-203) .gt. 26 .or.
-c     $                abs(yc(i,j,bi,bj)+58.5) .gt. 6)
-c     $                ) )
-
+                 ENDIF
               enddo
             enddo
           enddo

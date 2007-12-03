@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.24 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.25 2007/12/03 22:39:20 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -211,15 +211,15 @@ c--   Build area weighting matrix used in the cost function
 c--   contributions.
 
 c--   Define frame.
-      do j = jmin,jmax
-        do i = imin,imax
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
 c--       North/South and West/East edges set to zero.
-          if ( (j .lt. 1) .or. (j .gt. sny) .or.
-     &         (i .lt. 1) .or. (i .gt. snx)      ) then
-            frame(i,j) = 0. _d 0
-          else
+cph          if ( (j .lt. 1) .or. (j .gt. sny) .or.
+cph     &         (i .lt. 1) .or. (i .gt. snx)      ) then
+cph            frame(i,j) = 0. _d 0
+cph          else
             frame(i,j) = 1. _d 0
-          endif
+cph          endif
         enddo
       enddo
 
@@ -268,10 +268,10 @@ c--   Read error information and set up weight matrices.
 
       _BARRIER
 
-cph      jmin = 1
-cph      jmax = sny
-cph      imin = 1
-cph      imax = snx
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -366,6 +366,7 @@ c--           Test for missing values.
       endif
       call active_write_xyz( 'wsaltLev', wsaltLev,
      &     1, 0, mythid, dummy)
+      _EXCH_XYZ_R8( wsaltLev, myThid )
 #endif
 
 #ifdef ALLOW_THETA0_COST_CONTRIBUTION
@@ -406,6 +407,7 @@ c--           Test for missing values.
       endif
       call active_write_xyz( 'wthetaLev', wthetaLev,
      &     1, 0, mythid, dummy)
+      _EXCH_XYZ_R8( wthetaLev, myThid )
 #endif
 
 #if (defined (ALLOW_ARGO_SALT_COST_CONTRIBUTION) || \
@@ -449,6 +451,7 @@ c--           Test for missing values.
           enddo
          enddo
       endif
+      _EXCH_XYZ_R8( wsalt2, myThid )
 #endif
 
 #if (defined (ALLOW_ARGO_THETA_COST_CONTRIBUTION) || \
@@ -496,6 +499,7 @@ c--           Test for missing values.
           enddo
          enddo
       endif
+      _EXCH_XYZ_R8( wtheta2, myThid )
 #endif
 
       k = 1
