@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.9 2007/05/10 22:17:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.10 2007/12/03 07:45:28 dimitri Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -152,6 +152,9 @@ C   Relaxation to monthly climatologies.
 C   Use spatial interpolation to interpolate
 C   forcing files from input grid to model grid.
 #undef USE_EXF_INTERPOLATION
+
+C   Subtract UVEL and VVEL from UWIND and VWIND.
+#undef EXF_SUBTRACT_UVVEL_FROM_UVWIND
 
 #define EXF_INTERP_USE_DYNALLOC
 #if ( defined (EXF_INTERP_USE_DYNALLOC) & defined (USING_THREADS) )

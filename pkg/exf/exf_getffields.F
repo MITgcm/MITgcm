@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.36 2007/05/18 02:44:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.37 2007/12/03 07:45:28 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -133,6 +133,22 @@ c     Zonal and meridional wind.
      &     vwind, vwind0, vwind1, vwindmask,
      &     mytime, myiter, mythid )
 #endif /* USE_EXF_INTERPOLATION */
+
+#ifdef EXF_SUBTRACT_UVVEL_FROM_UVWIND
+C     Subtract UVEL and VVEL from UWIND and VWIND.
+      do bj = mybylo(mythid),mybyhi(mythid)
+       do bi = mybxlo(mythid),mybxhi(mythid)
+        do j = 1,sny
+         do i = 1,snx
+          uwind(i,j,bi,bj) = uwind(i,j,bi,bj) - 0.5 *
+     &         (uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
+          vwind(i,j,bi,bj) = vwind(i,j,bi,bj) - 0.5 *
+     &         (vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
+         enddo
+        enddo
+       enddo
+      enddo
+#endif /* EXF_SUBTRACT_UVVEL_FROM_UVWIND */
 
 #endif /* ALLOW_ATM_WIND */
 
