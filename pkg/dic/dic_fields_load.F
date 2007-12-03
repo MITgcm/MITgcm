@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.19 2007/11/30 17:47:41 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.20 2007/12/03 21:54:14 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -53,16 +53,16 @@ c !LOCAL VARIABLES: ===================================================
 CEOP
 
 c
-      IF ( periodicExternalForcing ) THEN
+      IF (  gchem_ForcingCycle.gt.0. _d 0 ) THEN
 
 
 C Now calculate whether it is time to update the forcing arrays
       rdt = 1. _d 0 / deltaTclock
-      nForcingPeriods = NINT(externForcingCycle/externForcingPeriod)
+      nForcingPeriods = NINT(gchem_ForcingCycle/gchem_ForcingPeriod)
 cswd QQ change for placement of chem forcing (ie. after timestep)
       Imytm = NINT(myTime*rdt)
-      Ifprd = NINT(externForcingPeriod*rdt)
-      Ifcyc = NINT(externForcingCycle*rdt)
+      Ifprd = NINT(gchem_ForcingPeriod*rdt)
+      Ifcyc = NINT(gchem_ForcingCycle*rdt)
       Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
 
       intime0 = 1 + INT(Iftm/Ifprd)
@@ -183,16 +183,6 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
             ENDDO
            ENDDO
          ENDIF
-#ifdef ALLOW_THSICE
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
-             FIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
-            ENDDO
-           ENDDO
-#else
-#ifdef ALLOW_SEAICE
-             FIce(i,j,bi,bj) = AREA(i,j,1,bi,bj)
-#else
          IF ( IceFile .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
@@ -201,8 +191,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
             ENDDO
            ENDDO
          ENDIF
-#endif
-#endif
+
 #ifdef READ_PAR
          IF ( Filename1 .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
@@ -232,8 +221,28 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
         ENDDO
        ENDDO
 
-C endif for periodicForcing
+C endif for gchem_periodicForcing
       ENDIF
+
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+#ifdef ALLOW_THSICE
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             FIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
+            ENDDO
+           ENDDO
+#endif
+#ifdef ALLOW_SEAICE
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             FIce(i,j,bi,bj) = AREA(i,j,1,bi,bj)
+            ENDDO
+           ENDDO
+#endif
+         ENDDO
+        ENDDO
+
 
 #endif /* ALLOW_PTRACERS */
       RETURN
