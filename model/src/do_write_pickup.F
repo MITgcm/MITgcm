@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_write_pickup.F,v 1.4 2007/10/19 14:36:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_write_pickup.F,v 1.5 2007/12/04 23:43:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -76,11 +76,7 @@ C     msgBuf     :: message buffer
       ENDIF
 #endif
 
-      IF (
-     &     ( .NOT.modelEnd .AND. (permPickup.OR.tempPickup) )
-     &     .OR.
-     &     ( modelEnd .AND. .NOT.(permPickup.OR.tempPickup) )
-     &    ) THEN
+      IF ( modelEnd .OR. permPickup .OR. tempPickup ) THEN
 C--   this is time to write pickup files
 
 C-    write a pickup for each package which need it to restart

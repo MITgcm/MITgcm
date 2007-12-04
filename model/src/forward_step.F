@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.154 2007/11/20 18:38:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.155 2007/12/04 23:43:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -114,22 +114,25 @@ C     == Global variables ==
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C     !LOCAL VARIABLES:
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     note: under the multi-threaded model myIter and
 C           myTime are local variables passed around as routine
 C           arguments. Although this is fiddly it saves the need to
 C           impose additional synchronisation points when they are
 C           updated.
-C     myIter - iteration counter for this thread
-C     myTime - time counter for this thread
-C     myThid - thread number for this instance of the routine.
+C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
+C     myThid :: thread number for this instance of the routine.
       INTEGER iloop
-      INTEGER myThid
-      INTEGER myIter
       _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     modelEnd  :: true if reaching the end of the run
+      LOGICAL modelEnd
 #ifdef COMPONENT_MODULE
       INTEGER myItP1
 #endif
@@ -772,24 +775,26 @@ C--   Do IO if needed.
       CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
 
+      modelEnd = myTime.EQ.endTime .OR. myIter.EQ.nEndIter
 #ifdef HAVE_SIGREG
       IF ( useSIGREG ) THEN
-        IF ( i_got_signal .GT. 0 ) THEN
-          CALL PACKAGES_WRITE_PICKUP(
-     I         .TRUE., myTime, myIter, myThid )
-          CALL WRITE_PICKUP(
-     I         .TRUE., myTime, myIter, myThid )
-          STOP 'Checkpoint completed -- killed by signal handler'
-        ENDIF
+        modelEnd = modelEnd .OR. ( i_got_signal.GT.0 )
       ENDIF
 #endif /* HAVE_SIGREG */
 
 C--   Save state for restarts
       CALL TIMER_START('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
       CALL DO_WRITE_PICKUP(
-     I               .FALSE., myTime, myIter, myThid )
+     I                      modelEnd, myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
 
+#ifdef HAVE_SIGREG
+      IF ( useSIGREG ) THEN
+        IF ( modelEnd .AND. i_got_signal.GT.0 ) THEN
+          STOP 'Checkpoint completed -- killed by signal handler'
+        ENDIF
+      ENDIF
+#endif /* HAVE_SIGREG */
 
 #ifdef ALLOW_AUTODIFF_TAMC
       CALL AUTODIFF_INADMODE_SET( myThid )
