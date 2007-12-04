@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_model_main.F,v 1.1 2007/06/25 20:15:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/Attic/the_model_main.F,v 1.2 2007/12/04 23:44:42 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -43,7 +43,7 @@ C    |              :: specific region in decomposed discrete space.
 C    |
 C    |-INITIALISE_FIXED :: Set fixed model arrays such as topography, 
 C    | |                :: grid, solver matrices etc..
-C    | |              
+C    | |
 C    | |-INI_PARMS :: Routine to set kernel model parameters.
 C    | |           :: By default kernel parameters are read from file 
 C    | |           :: "data" in directory in which code executes.
@@ -163,12 +163,12 @@ C    | | | |-CONVECTIVE_ADJUSTMENT :: Control static instability mixing.
 C    | | | | |-FIND_RHO  :: Find adjacent densities.
 C    | | | | |-CONVECT   :: Mix static instability.
 C    | | | | |-TIMEAVE_CUMULATE :: Update convection statistics.
-C    | | | | 
-C    | | | |-CALC_EXACT_ETA        :: Change SSH to flow divergence.     
-C    | | | 
+C    | | | |
+C    | | | |-CALC_EXACT_ETA        :: Change SSH to flow divergence.
+C    | | |
 C    | | |-CONVECTIVE_ADJUSTMENT_INI :: Control static instability mixing
 C    | | | |                         :: Extra time history interactions.
-C    | | | |                       
+C    | | | |
 C    | | | |-FIND_RHO  :: Find adjacent densities.
 C    | | | |-CONVECT   :: Mix static instability.
 C    | | | |-TIMEAVE_CUMULATE :: Update convection statistics.
@@ -178,7 +178,7 @@ C    | | | |                       :: package data.
 C    | | | |
 C    | | | |-GMREDI_INIT          :: GM package. ( see pkg/gmredi )
 C    | | | |-KPP_INIT             :: KPP package. ( see pkg/kpp )
-C    | | | |-KPP_OPEN_DIAGS    
+C    | | | |-KPP_OPEN_DIAGS
 C    | | | |-OBCS_INIT_VARIABLES  :: Open bndy. package. ( see pkg/obcs )
 C    | | | |-PTRACERS_INIT        :: multi. tracer package,(see pkg/ptracers)
 C    | | | |-GCHEM_INIT           :: tracer interface pkg (see pkh/gchem)
@@ -222,7 +222,7 @@ C/\  | | |-EXF_GETFORCING :: External forcing package. ( pkg/exf )
 C/\  | | |-EXTERNAL_FIELDS_LOAD :: Control loading time dep. external data.
 C/\  | | | |                    :: Simple interpolation between end-points 
 C/\  | | | |                    :: for forcing datasets.
-C/\  | | | |                  
+C/\  | | | |
 C/\  | | | |-EXCH :: Sync forcing. in overlap regions.
 C/\  | | |-SEAICE_MODEL   :: Compute sea-ice terms. ( pkg/seaice )
 C/\  | | |-FREEZE         :: Limit surface temperature.
@@ -307,7 +307,7 @@ C/\  | | | |-CALC_GRAD_PHI_SURF :: Calculate the gradient of the surface
 C/\  | | | |                       Potential anomaly.
 C/\  | | | |-CALC_VISCOSITY     :: Calculate net vertical viscosity
 C/\  | | | | |-KPP_CALC_VISC    :: KPP package ( see pkg/kpp ).
-C/\  | | | |                                                      
+C/\  | | | |
 C/\  | | | |-CALC_PHI_HYD       :: Integrate the hydrostatic relation.
 C/\  | | | |-MOM_FLUXFORM       :: Flux form mom eqn. package ( see
 C/\  | | | |                       pkg/mom_fluxform ).
@@ -349,10 +349,10 @@ C/\  | | | | |-FIND_RHO  :: Find adjacent densities.
 C/\  | | | | |-CONVECT   :: Mix static instability.
 C/\  | | | | |-TIMEAVE_CUMULATE :: Update convection statistics.
 C/\  | | | | 
-C/\  | | | |-CALC_EXACT_ETA        :: Change SSH to flow divergence.     
+C/\  | | | |-CALC_EXACT_ETA        :: Change SSH to flow divergence.
 C/\  | | |
 C/\  | | |-DO_FIELDS_BLOCKING_EXCHANGES :: Sync up overlap regions.
-C/\  | | | |-EXCH                                                   
+C/\  | | | |-EXCH
 C/\  | | |
 C/\  | | |-GCHEM_FORCING_SEP :: tracer forcing for gchem pkg (if
 C/\  | | |                      tracer dependent tendencies calculated
@@ -410,23 +410,23 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE THE_MODEL_MAIN                                 
-C     | o Master controlling routine for model using the MITgcm   
-C     |   UV parallel wrapper.                                    
+C     | SUBROUTINE THE_MODEL_MAIN
+C     | o Master controlling routine for model using the MITgcm
+C     |   UV parallel wrapper.
 C     *==========================================================*
-C     | THE_MODEL_MAIN is invoked by the MITgcm UV parallel       
-C     | wrapper with a single integer argument "myThid". This     
-C     | variable identifies the thread number of an instance of   
-C     | THE_MODEL_MAIN. Each instance of THE_MODEL_MAIN works     
-C     | on a particular region of the models domain and           
-C     | synchronises with other instances as necessary. The       
-C     | routine has to "understand" the MITgcm parallel           
-C     | environment and the numerical algorithm. Editing this     
-C     | routine is best done with some knowledge of both aspects. 
-C     | Notes                                                     
-C     | =====                                                     
-C     | C*P* comments indicating place holders for which code is  
-C     |      presently being developed.                           
+C     | THE_MODEL_MAIN is invoked by the MITgcm UV parallel
+C     | wrapper with a single integer argument "myThid". This
+C     | variable identifies the thread number of an instance of
+C     | THE_MODEL_MAIN. Each instance of THE_MODEL_MAIN works
+C     | on a particular region of the models domain and
+C     | synchronises with other instances as necessary. The
+C     | routine has to "understand" the MITgcm parallel
+C     | environment and the numerical algorithm. Editing this
+C     | routine is best done with some knowledge of both aspects.
+C     | Notes
+C     | =====
+C     | C*P* comments indicating place holders for which code is
+C     |      presently being developed.
 C     *==========================================================*
 C     \ev
 
@@ -474,7 +474,7 @@ C     == Global variables ===
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      INTEGER myThid  
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -627,14 +627,6 @@ C--   Call time stepping loop of full model
 
 #endif /* ALLOW_TANGENTLINEAR_RUN ALLOW_ADJOINT_RUN ALLOW_ADMTLM */
 
-C--   Final checkpoint (in case the in-loop checkpoint was missed)
-      CALL TIMER_START('DO_WRITE_PICKUP        [THE_MODEL_MAIN]',myThid)
-      CALL DO_WRITE_PICKUP(
-     I        .TRUE., myCurrentTime, myCurrentIter, myThid )
-      CALL TIMER_STOP ('DO_WRITE_PICKUP        [THE_MODEL_MAIN]',myThid)
-
-      CALL TIMER_STOP ('ALL                    [THE_MODEL_MAIN]',myThid)
-
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
 C       Close all diagnostics output files
@@ -650,6 +642,9 @@ C       Close all open NetCDF files
         _END_MASTER( mythid )
       ENDIF
 #endif
+
+C--   This timer encompasses the whole code
+      CALL TIMER_STOP ('ALL                    [THE_MODEL_MAIN]',myThid)
 
 C--   Write timer statistics
       IF ( myThid .EQ. 1 ) THEN
