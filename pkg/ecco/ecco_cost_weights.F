@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.25 2007/12/03 22:39:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.26 2007/12/05 21:41:23 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -211,8 +211,8 @@ c--   Build area weighting matrix used in the cost function
 c--   contributions.
 
 c--   Define frame.
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
+      do j = jmin,jmax
+        do i = imin,imax
 c--       North/South and West/East edges set to zero.
 cph          if ( (j .lt. 1) .or. (j .gt. sny) .or.
 cph     &         (i .lt. 1) .or. (i .gt. snx)      ) then
