@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.918 2007/12/05 07:28:28 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.919 2007/12/05 08:17:05 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o cg2d.F: add 3 compiler directives that speed up this routine by 30% on a NEC
+  SX vector computer.
 o pkg/seaice: removed SEAICE_FFIELDS.h and seaice_get_forcing.F
   seaice forcing fields can now be read only through pkg/exf
 o no longer write pickup from THE_MODEL_MAIN but always from FORWARD_STEP
