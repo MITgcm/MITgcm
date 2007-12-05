@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.18 2007/04/16 22:36:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.19 2007/12/05 23:57:45 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -18,7 +18,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SEAICE_PARAMS.h"
-CML#include "SEAICE_GRID.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"

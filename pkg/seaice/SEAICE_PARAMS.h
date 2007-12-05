@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.48 2007/11/29 09:07:31 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.49 2007/12/05 23:57:45 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -89,15 +89,6 @@ C
      &     SEAICEadvSchSalt
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
-C     uwindFile       - File containing uwind
-C     vwindFile       - File containing vwind
-C     atempFile       - File containing atemp
-C     aqhFile         - File containing aqh
-C     lwdownFile      - File containing lwdown
-C     swdownFile      - File containing swdown
-C     precipFile      - File containing precip
-C     evapFile        - File containing evap
-C     runoffFile      - File containing runoffF
 C     AreaFile        - File containing initial sea-ice concentration
 C     HsnowFile       - File containing initial snow thickness
 C     HsaltFile       - File containing initial sea ice salt content
@@ -107,22 +98,11 @@ C        SEAICE_initialHEFF below.  But a constant initial condition
 C        can mean large artificial fluxes of heat and freshwater in
 C        the surface layer during the first model time step.
 C
-      CHARACTER*(MAX_LEN_FNAM) uwindFile
-      CHARACTER*(MAX_LEN_FNAM) vwindFile
-      CHARACTER*(MAX_LEN_FNAM) atempFile
-      CHARACTER*(MAX_LEN_FNAM) aqhFile
-      CHARACTER*(MAX_LEN_FNAM) lwdownFile
-      CHARACTER*(MAX_LEN_FNAM) swdownFile
-      CHARACTER*(MAX_LEN_FNAM) precipFile
-      CHARACTER*(MAX_LEN_FNAM) evapFile
-      CHARACTER*(MAX_LEN_FNAM) runoffFile
       CHARACTER*(MAX_LEN_FNAM) AreaFile
       CHARACTER*(MAX_LEN_FNAM) HsnowFile
       CHARACTER*(MAX_LEN_FNAM) HsaltFile
       CHARACTER*(MAX_LEN_FNAM) HeffFile
-      COMMON /SEAICE_PARM_C/ uwindFile, vwindFile, atempFile, aqhFile,
-     &     lwdownFile, swdownFile, precipFile, evapFile, runoffFile,
-     &	   HeffFile, HsnowFile, HsaltFile, AreaFile
+      COMMON /SEAICE_PARM_C/ HeffFile, HsnowFile, HsaltFile, AreaFile
 
 C--   COMMON /SEAICE_PARM_RL/ Real valued parameters of sea ice model.
 C     SEAICE_deltaTtherm - Seaice timestep for thermodynamic equations (s)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.6 2007/05/14 19:34:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.7 2007/12/05 23:57:44 dimitri Exp $
 C $Name:  $
 c
 c
@@ -305,18 +305,22 @@ C     stressIsOnCgrid    :: ustress & vstress are positioned on Arakawa C-grid
 C     useStabilityFct_overIce :: over sea-ice, compute turbulent transfert
 C                                coeff. function of stability (like over
 C                                open ocean) rather than using fixed Coeff.
+C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before computing U/VSTRESS
+
       logical useExfYearlyFields, twoDigitYear
       logical useExfCheckRange
       logical readStressOnAgrid
       logical readStressOnCgrid
       logical stressIsOnCgrid
       logical useStabilityFct_overIce
+      logical useRelativeWind
 
       common /exf_param_l/
      &                     useExfYearlyFields, twoDigitYear,
      &                     useExfCheckRange,
      &                     readStressOnAgrid, readStressOnCgrid,
-     &                     stressIsOnCgrid, useStabilityFct_overIce
+     &                     stressIsOnCgrid, useStabilityFct_overIce,
+     &                     useRelativeWind
       common /exf_param_i/
      &                     hfluxstartdate1,   hfluxstartdate2,
      &                     atempstartdate1,   atempstartdate2,

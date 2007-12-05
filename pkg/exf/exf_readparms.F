@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.48 2007/05/14 19:36:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.49 2007/12/05 23:57:45 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -72,6 +72,7 @@ c     Surface flux data.
      &          exf_iprec,         exf_yftype,   exf_monFreq,
      & useExfYearlyFields,  twoDigitYear,   useExfCheckRange,
      & useStabilityFct_overIce, readStressOnAgrid, readStressOnCgrid,
+     &    useRelativeWind,
      & hu, ht, umin, atmrho, atmcp, cen2kel, gravity_mks,
      & cdrag_1, cdrag_2, cdrag_3, cstanton_1, cstanton_2, cdalton,
      & flamb, flami, zolmin, zref,
@@ -198,6 +199,7 @@ c     Set default values.
       useExfCheckRange   = .TRUE.
       readStressOnAgrid  = .FALSE.
       readStressOnCgrid  = .FALSE.
+      useRelativeWind    = .FALSE.
 
 C-  default value should be set to main model parameter:
 c     cen2kel     =  celsius2K

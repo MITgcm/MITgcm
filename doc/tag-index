@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.921 2007/12/05 16:56:14 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.922 2007/12/05 23:57:44 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -12,8 +12,8 @@ o pkg/seaice:
     seaice forcing fields can now be read only through pkg/exf
   - removed some unused halos
 o no longer write pickup from THE_MODEL_MAIN but always from FORWARD_STEP
-o pkg/exf: added CPP option EXF_SUBTRACT_UVVEL_FROM_UVWIND for subtracting
-  UVEL and VVEL from UWIND and VWIND prior to applying bulk formulae.
+o pkg/exf: added useRelativeWind EXF_PARAM.h option for subtracting U/VVEL
+  or U/VICE from U/VWIND before computing U/VSTRESS
 
 checkpoint59k
 o pkg/seaice: ICE2WATR=SEAICE_rhoIce/rhoConst for consistency between
