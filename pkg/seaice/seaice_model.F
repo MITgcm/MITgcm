@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.59 2007/12/05 07:28:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.60 2007/12/05 15:37:13 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -69,28 +69,8 @@ CEOP
      &   CALL DEBUG_ENTER( 'SEAICE_MODEL', myThid )
 #endif
 
-C--   Atmospheric state and runoff are from
-C     pkg/exf, which does not update edges.
+C--   Winds are from pkg/exf, which does not update edges.
       CALL EXCH_UV_AGRID_3D_RL( uwind, vwind, .TRUE., 1, myThid )
-# ifdef ALLOW_ATM_TEMP
-      _EXCH_XY_R8( atemp,  myThid )
-      _EXCH_XY_R8( aqh,    myThid )
-      _EXCH_XY_R8( precip, myThid )
-      _EXCH_XY_R8( evap,   myThid )
-# else /* ALLOW_ATM_TEMP */
-      STOP 'ABNORMAL END: S/R SEAICE_MODEL: ALLOW_ATM_TEMP undef'
-# endif /* ALLOW_ATM_TEMP */
-# ifdef ALLOW_DOWNWARD_RADIATION
-      _EXCH_XY_R8( lwdown, myThid )
-      _EXCH_XY_R8( swdown, mythid )
-# else /* ALLOW_DOWNWARD_RADIATION */
-      STOP 'ABNORMAL END: S/R SEAICE_MODEL: DOWNWARD_RADIATION undef'
-# endif /* ALLOW_DOWNWARD_RADIATION */
-# ifdef ALLOW_RUNOFF
-      _EXCH_XY_R8( runoff, myThid )
-#  else /* ALLOW_DOWNWARD_RADIATION */
-      STOP 'ABNORMAL END: S/R SEAICE_MODEL: ALLOW_RUNOFF undef'
-# endif /* ALLOW_RUNOFF */
 
 #ifdef ALLOW_THSICE
       IF ( useThSice ) THEN

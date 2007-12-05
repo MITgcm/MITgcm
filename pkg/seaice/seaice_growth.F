@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.38 2007/12/05 07:28:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.39 2007/12/05 15:37:12 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,12 +55,12 @@ C     auxillary variables
 #ifdef ALLOW_SEAICE_FLOODING
       _RL hDraft
 #endif /* ALLOW_SEAICE_FLOODING */
-      _RL GAREA      ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
-      _RL GHEFF      ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
+      _RL GAREA         (1:sNx,1:sNy)
+      _RL GHEFF         (1:sNx,1:sNy)
 C     RESID_HEAT is residual heat above freezing in equivalent m of ice
-      _RL RESID_HEAT ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
+      _RL RESID_HEAT    (1:sNx,1:sNy)
 #ifdef SEAICE_SALINITY
-      _RL saltFluxAdjust( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
+      _RL saltFluxAdjust(1:sNx,1:sNy)
 #endif
 
 C     FICE  - thermodynamic ice growth rate over sea ice in W/m^2
@@ -73,27 +73,27 @@ C             >0 causes ice growth, <0 causes snow and sea ice melt
 C     QNETI  - net surface heat flux under ice in W/m^2
 C     QSWO   - short wave heat flux over ocean in W/m^2
 C     QSWI   - short wave heat flux under ice in W/m^2
-      _RL FHEFF  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL FICE   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL QNETO  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL QNETI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL QSWO   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL QSWI   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL FHEFF         (1:sNx,1:sNy)
+      _RL FICE          (1:sNx,1:sNy)
+      _RL QNETO         (1:sNx,1:sNy)
+      _RL QNETI         (1:sNx,1:sNy)
+      _RL QSWO          (1:sNx,1:sNy)
+      _RL QSWI          (1:sNx,1:sNy)
 C     
-      _RL HCORR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL HCORR         (1:sNx,1:sNy)
 C     saltWtrIce contains m of salty ice melted (<0) or created (>0)
-      _RL saltWtrIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL saltWtrIce    (1:sNx,1:sNy)
 C     frWtrIce contains m of freshwater ice melted (<0) or created (>0)
 C     that is, ice due to precipitation or snow
-      _RL frWtrIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL frWtrIce      (1:sNx,1:sNy)
 C     frWtrAtm contains freshwater flux from the atmosphere
-      _RL frWtrAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL frWtrAtm      (1:sNx,1:sNy)
 C     actual ice thickness with upper and lower limit
-      _RL HICE   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL HICE          (1:sNx,1:sNy)
 C     actual snow thickness
-      _RL hSnwLoc(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL hSnwLoc       (1:sNx,1:sNy)
 C     wind speed
-      _RL UG     (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL UG            (1:sNx,1:sNy)
       _RL SPEED_SQ
 C     local copy of AREA
       _RL areaLoc
@@ -102,9 +102,9 @@ C     local copy of AREA
       INTEGER it
       INTEGER ilockey
       _RL RK
-      _RL HICEP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL FICEP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL QSWIP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL HICEP         (1:sNx,1:sNy)
+      _RL FICEP         (1:sNx,1:sNy)
+      _RL QSWIP         (1:sNx,1:sNy)
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -161,12 +161,6 @@ CADJ &                         key = iicekey, byte = isbyte
          DO I=1,sNx
           FHEFF(I,J)      = 0.0 _d 0
           FICE (I,J)      = 0.0 _d 0
-#ifdef SEAICE_MULTICATEGORY
-          FICEP(I,J)      = 0.0 _d 0
-          QSWIP(I,J)      = 0.0 _d 0
-#endif
-          FHEFF(I,J)      = 0.0 _d 0
-          FICE (I,J)      = 0.0 _d 0
           QNETO(I,J)      = 0.0 _d 0
           QNETI(I,J)      = 0.0 _d 0
           QSWO (I,J)      = 0.0 _d 0
@@ -178,6 +172,10 @@ CADJ &                         key = iicekey, byte = isbyte
           RESID_HEAT(I,J) = 0.0 _d 0
 #ifdef SEAICE_SALINITY
           saltFluxAdjust(I,J) = 0.0 _d 0
+#endif
+#ifdef SEAICE_MULTICATEGORY
+          FICEP(I,J)      = 0.0 _d 0
+          QSWIP(I,J)      = 0.0 _d 0
 #endif
          ENDDO
         ENDDO
@@ -684,35 +682,11 @@ C Add YNEG contribution to QNET
 #endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef SEAICE_DEBUG
-c      CALL PLOT_FIELD_XYRS( UWIND,'Current UWIND ', myIter, myThid )
-c      CALL PLOT_FIELD_XYRS( VWIND,'Current VWIND ', myIter, myThid )
        CALL PLOT_FIELD_XYRS( GWATX,'Current GWATX ', myIter, myThid )
        CALL PLOT_FIELD_XYRS( GWATY,'Current GWATY ', myIter, myThid )
-CML       CALL PLOT_FIELD_XYRL( FO,'Current FO ', myIter, myThid )
-CML       CALL PLOT_FIELD_XYRL( FHEFF,'Current FHEFF ', myIter, myThid )
        CALL PLOT_FIELD_XYRL( QSW,'Current QSW ', myIter, myThid )
        CALL PLOT_FIELD_XYRL( QNET,'Current QNET ', myIter, myThid )
        CALL PLOT_FIELD_XYRL( EmPmR,'Current EmPmR ', myIter, myThid )
-CML       DO j=1-OLy,sNy+OLy
-CML        DO i=1-OLx,sNx+OLx
-CML         GHEFF(I,J)=SQRT(UICE(I,J,1,bi,bj)**2+VICE(I,J,1,bi,bj)**2)
-CML         GAREA(I,J)=HEFF(I,J,1,bi,bj)
-CML         print*,'I J QNET:',I, J, QNET(i,j,bi,bj), QSW(I,J,bi,bj)
-CML        ENDDO
-CML       ENDDO
-CML       CALL PLOT_FIELD_XYRL( GHEFF,'Current UICE ', myIter, myThid )
-CML       CALL PLOT_FIELD_XYRL( GAREA,'Current HEFF ', myIter, myThid )
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          if(HEFF(i,j,1,bi,bj).gt.1.) then
-             print '(A,2i4,3f10.2)','#### i j heff theta yneg',i,j,
-     &         HEFF(i,j,1,bi,bj),theta(I,J,1,bi,bj),yneg(I,J,bi,bj)
-             print '(A,3f10.2)','QSW, QNET before/after correction',
-     &         QSW(I,J,bi,bj),QNETI(I,J)*AREA(I,J,2,bi,bj)+
-     &         (ONE-AREA(I,J,2,bi,bj))*QNETO(I,J), QNET(I,J,bi,bj)
-          endif
-         ENDDO
-        ENDDO
 #endif /* SEAICE_DEBUG */
 
 crg Added by Ralf Giering: do we need DO_WE_NEED_THIS ?

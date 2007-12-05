@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.5 2007/12/05 07:28:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.6 2007/12/05 15:37:12 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,10 +41,10 @@ C     myThid  :: Thread no. that called this routine.
 C     OUTPUT:
 C     netHeatFlux :: net surface heat flux over open water or under ice
 C     SWHeatFlux  :: short wave heat flux over open water or under ice
-      _RL UG         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL UG         (1:sNx,1:sNy)
       _RL TSURF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL netHeatFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL SWHeatFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL netHeatFlux(1:sNx,1:sNy)
+      _RL SWHeatFlux (1:sNx,1:sNy)
       INTEGER bi, bj, myThid
 CEndOfInterface
 
@@ -62,16 +62,15 @@ C     powers of temperature
       _RL  t1, t2, t3, t4
 
 C     local copies of global variables
-      _RL tsurfLoc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL atempLoc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL lwdownLoc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL ALB        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tsurfLoc   (1:sNx,1:sNy)
+      _RL atempLoc   (1:sNx,1:sNy)
+      _RL lwdownLoc  (1:sNx,1:sNy)
+      _RL ALB        (1:sNx,1:sNy)
 C     coefficients of Hibler (1980), appendix B
-      _RL A1         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL A2         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL A3         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL A1         (1:sNx,1:sNy)
+      _RL A2         (1:sNx,1:sNy)
 C     auxiliary variable
-      _RL B          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL B          (1:sNx,1:sNy)
 
 C NOW DEFINE ASSORTED CONSTANTS
 C SATURATION VAPOR PRESSURE CONSTANT
