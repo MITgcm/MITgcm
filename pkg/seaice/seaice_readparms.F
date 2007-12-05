@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.59 2007/11/29 09:07:31 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.60 2007/12/05 07:28:29 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,14 +59,8 @@ C--   SEAICE parameters
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      & SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze, OCEAN_drag,
      & SEAICE_salinity, SEAICE_availHeatFrac, SEAICEstressFactor,
-     & uwindFile, vwindFile, atempFile, aqhFile, lwdownFile, AreaFile, 
-     & swdownFile, precipFile, evapFile, runoffFile, HeffFile,
-     & HsnowFile, HsaltFile, LSR_ERROR, DIFF1, A22, HO,
-     & WindForcingStart, WindForcingEnd, WindForcingPeriod,
-     & FluxForcingStart, FluxForcingEnd, FluxForcingPeriod,
-     & SSTForcingStart,  SSTForcingEnd,  SSTForcingPeriod,
-     & SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod,
-     & StartingYear, EndingYear,
+     & AreaFile, HeffFile, HsnowFile, HsaltFile,
+     & LSR_ERROR, DIFF1, A22, HO,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ, 
@@ -171,15 +165,6 @@ C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
       SEAICE_salinity    = 0.0    _d 0
       SEAICE_availHeatFrac = 1.   _d 0
       SEAICEstressFactor = 1.     _d 0
-      uwindFile  = ' '
-      vwindFile  = ' '
-      atempFile  = ' '
-      aqhFile    = ' '
-      lwdownFile = ' '
-      swdownFile = ' '
-      precipFile = ' '
-      evapFile   = ' '
-      runoffFile = ' '
       AreaFile   = ' '
       HsnowFile  = ' '
       HsaltFile  = ' '
@@ -193,20 +178,6 @@ C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
       HO         = 0.5       _d 0
       SEAICE_airTurnAngle   = 0.0 _d 0
       SEAICE_waterTurnAngle = 0.0 _d 0
-      WindForcingStart  = -99999.
-      WindForcingEnd    = -99999.
-      WindForcingPeriod = -99999.
-      FluxForcingStart  = -99999.
-      FluxForcingEnd    = -99999.
-      FluxForcingPeriod = -99999.
-      SSTForcingStart   = -99999.
-      SSTForcingEnd     = -99999.
-      SSTForcingPeriod  = -99999.
-      SSSForcingStart   = -99999.
-      SSSForcingEnd     = -99999.
-      SSSForcingPeriod  = -99999.
-      StartingYear      = 1948.
-      EndingYear        = 2000.
       MAX_HEFF          = 10.     _d 0
       MIN_ATEMP         = -50.    _d 0
       MIN_LWDOWN        = 60.     _d 0
@@ -312,34 +283,6 @@ C     in data.seaice
      &     SEAICEadvSchSnow = SEAICEadvSchHeff
       IF ( SEAICEadvSchSalt .EQ. UNSET_I )
      &     SEAICEadvSchSalt = SEAICEadvSchHeff
-
-#ifndef SEAICE_EXTERNAL_FORCING
-      IF ( FluxForcingStart  .EQ. -99999. .OR.
-     &     FluxForcingEnd    .EQ. -99999. .OR.
-     &     FluxForcingPeriod .EQ. -99999.      ) THEN
-         WRITE(msgBuf,'(A)') 'Specify FluxForcing* in data.seaice'
-         CALL PRINT_ERROR( msgBuf , myThid)
-         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
-      ENDIF
-      IF ( WindForcingStart  .EQ. -99999. )
-     &     WindForcingStart  = FluxForcingStart
-      IF ( WindForcingEnd    .EQ. -99999. )
-     &     WindForcingEnd    = FluxForcingEnd
-      IF ( WindForcingPeriod .EQ. -99999. )
-     &     WindForcingPeriod = FluxForcingPeriod
-      IF ( SSTForcingStart  .EQ. -99999. )
-     &     SSTForcingStart  = FluxForcingStart
-      IF ( SSTForcingEnd    .EQ. -99999. )
-     &     SSTForcingEnd    = FluxForcingEnd
-      IF ( SSTForcingPeriod .EQ. -99999. )
-     &     SSTForcingPeriod = FluxForcingPeriod
-      IF ( SSSForcingStart  .EQ. -99999. )
-     &     SSSForcingStart  = FluxForcingStart
-      IF ( SSSForcingEnd    .EQ. -99999. )
-     &     SSSForcingEnd    = FluxForcingEnd
-      IF ( SSSForcingPeriod .EQ. -99999. )
-     &     SSSForcingPeriod = FluxForcingPeriod
-#endif /* SEAICE_EXTERNAL_FORCING */
 
       IF ( SEAICE_EPS_SQ .EQ. -99999. )
      &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS

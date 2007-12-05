@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.23 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.24 2007/12/05 07:28:29 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -17,6 +17,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of SEAICE_CHECK
@@ -69,9 +72,17 @@ C--   SEAICE_ALLOW_DYNAMICS and SEAICEuseDYNAMICS
       ENDIF
 #endif
 
-C--   SEAICE_EXTERNAL_FORCING
-C     At present this option is hardwired for pkg/exf.
+C--   SEAICE_EXTERNAL_FORCING is obsolete: issue warning but continue.
 #ifdef SEAICE_EXTERNAL_FORCING
+         WRITE(msgBuf,'(A)')
+     &        'SEAICE_EXTERNAL_FORCING option is obsolete:'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)')
+     &        'seaice now always exf to read input files.'
+         CALL PRINT_ERROR( msgBuf, myThid )
+#endif
+
+C--   pkg/seaice requires pkg/exf with following CPP options/
 #ifndef ALLOW_EXF
          WRITE(msgBuf,'(A)')
      &        'need to define ALLOW_EXF'
@@ -108,26 +119,13 @@ C     At present this option is hardwired for pkg/exf.
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
-#if !defined(ALLOW_ATM_WIND) && \
-    ( !defined(SEAICE_EXTERNAL_FLUXES) || !defined(SEAICE_CGRID) )
+#if !defined(ALLOW_ATM_WIND) && !defined(SEAICE_CGRID)
          WRITE(msgBuf,'(A)')
      &        'need to define pkg/exf ALLOW_ATM_WIND'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 #endif /* ALLOW_EXF */
-
-#else  /* SEAICE_EXTERNAL_FORCING */
-C--   SEAICE_EXTERNAL_FLUXES :
-C     currently, cannot be turned on if SEAICE_EXTERNAL_FORCING is undef
-#ifdef SEAICE_EXTERNAL_FLUXES
-         WRITE(msgBuf,'(2A)')
-     &    'S/R SEAICE_CHECK: SEAICE_EXTERNAL_FLUXES not allowed',
-     &    ' without SEAICE_EXTERNAL_FORCING'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif /* SEAICE_EXTERNAL_FLUXES */
-#endif /* SEAICE_EXTERNAL_FORCING */
 
       IF ( Olx.LT.3 .OR. Oly.LT.3 ) THEN
         WRITE(msgBuf,'(A,A)')

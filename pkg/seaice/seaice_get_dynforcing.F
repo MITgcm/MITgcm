@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.2 2007/05/14 14:29:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.3 2007/12/05 07:28:29 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -23,7 +23,10 @@ C     === Global variables ===
 #include "GRID.h"
 #include "FFIELDS.h"
 #include "SEAICE_PARAMS.h"
-#include "SEAICE_FFIELDS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+# include "EXF_FIELDS.h"
+#endif
 
 C     === Routine arguments ===
 C     INPUT:
@@ -87,9 +90,8 @@ C first ocean surface stress at C-points
           CDAIR(I,J)=SEAICE_rhoAir*OCEAN_drag
      &         *(2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
 #ifndef SEAICE_EXTERNAL_FLUXES
-C--   Compute wind-stress over open ocean
-C note: If using EXF (define SEAICE_EXTERNAL_FORCING), 
-C       this will results in over-writing fu,fv
+C--   Compute wind-stress over open ocean:this will results in
+C     over-writing fu and fv that were computed or read-in by pkg/exf.
           oceTauX(I,J)=CDAIR(I,J)*
      &         (COSWIN*U1-SIGN(SINWIN, _fCori(I,J,bi,bj))*V1)
           oceTauY(I,J)=CDAIR(I,J)*

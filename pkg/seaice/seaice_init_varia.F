@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.23 2007/11/25 21:37:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.24 2007/12/05 07:28:29 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -19,18 +19,17 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "SEAICE.h"
-CML#include "SEAICE_GRID.h"
 #include "SEAICE_DIAGS.h"
 #include "SEAICE_PARAMS.h"
 #include "FFIELDS.h"
 #ifdef ALLOW_EXCH2
-#include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
-#endif /* ALLOW_EXCH2 */
+# include "W2_EXCH2_TOPOLOGY.h"
+# include "W2_EXCH2_PARAMS.h"
+#endif
 #ifdef ALLOW_OBCS
-#include "OBCS.h"
-#include "OBCS_OPTIONS.h"
-#endif /* ALLOW_OBCS */
+# include "OBCS_OPTIONS.h"
+# include "OBCS.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.

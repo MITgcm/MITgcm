@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.27 2007/09/15 01:38:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.28 2007/12/05 07:28:29 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -24,39 +24,12 @@ C     Sea-ice dynamics can also be turned off at runtime
 C     using variable SEAICEuseDYNAMICS.
 #define SEAICE_ALLOW_DYNAMICS
 
-C--   By default, pkg/seaice defines forcing variable internally, in
-C     SEAICE_FFIELDS.h, and reads them in from files.  When CPP option
-C     SEAICE_EXTERNAL_FORCING is defined, the above forcing variables
-C     are defined and provided by an external package.  At present this
-C     option is hardwired for pkg/exf and the variables are passed using
-C     include file EXF_FIELDS.h (=> cannot be defined without pkg/EXF )
-#define SEAICE_EXTERNAL_FORCING
-#ifndef ALLOW_EXF
-# undef SEAICE_EXTERNAL_FORCING
-#endif
-
-#ifdef  SEAICE_EXTERNAL_FORCING
-#  include "EXF_OPTIONS.h"
 C--   By default, the sea-ice package uses its own integrated bulk
 C     formulae to compute fluxes (fu, fv, EmPmR, Qnet, and Qsw) over
 C     open-ocean.  When this flag is set, these variables are computed
 C     in a separate external package, for example, pkg/exf, and then
 C     modified for sea-ice effects by pkg/seaice.
-# define SEAICE_EXTERNAL_FLUXES
-
-#else  /* SEAICE_EXTERNAL_FORCING */
-C-    current implementation requires those options to be set:
-# undef  SEAICE_EXTERNAL_FLUXES
-# define ALLOW_ATM_TEMP
-# define ALLOW_DOWNWARD_RADIATION
-# define ALLOW_RUNOFF
-
-#endif /* SEAICE_EXTERNAL_FORCING */
-
-#ifdef ALLOW_OBCS
-C- OBCS information is needed to define the correct sea ice mask.
-#include "OBCS_OPTIONS.h"
-#endif /* ALLOW_OBCS */
+#define SEAICE_EXTERNAL_FLUXES
 
 C--   By default, the sea-ice package uses 2-category thermodynamics.
 C     When this flag is set, an 8-category calculation of ice

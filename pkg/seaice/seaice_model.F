@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.58 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.59 2007/12/05 07:28:29 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -35,14 +35,13 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SEAICE.h"
 #include "SEAICE_PARAMS.h"
-#ifdef ALLOW_SALT_PLUME
-#include "SALT_PLUME.h"
-#endif /* ALLOW_SALT_PLUME */
-
-#ifdef SEAICE_EXTERNAL_FORCING
-# include "SEAICE_FFIELDS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+# include "EXF_FIELDS.h"
 #endif
-
+#ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME.h"
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
@@ -70,7 +69,6 @@ CEOP
      &   CALL DEBUG_ENTER( 'SEAICE_MODEL', myThid )
 #endif
 
-#ifdef SEAICE_EXTERNAL_FORCING
 C--   Atmospheric state and runoff are from
 C     pkg/exf, which does not update edges.
       CALL EXCH_UV_AGRID_3D_RL( uwind, vwind, .TRUE., 1, myThid )
@@ -93,10 +91,6 @@ C     pkg/exf, which does not update edges.
 #  else /* ALLOW_DOWNWARD_RADIATION */
       STOP 'ABNORMAL END: S/R SEAICE_MODEL: ALLOW_RUNOFF undef'
 # endif /* ALLOW_RUNOFF */
-#else /* SEAICE_EXTERNAL_FORCING */
-C--   Load atmospheric state and runoff.
-      CALL SEAICE_GET_FORCING ( myTime, myIter, myThid )
-#endif /* SEAICE_EXTERNAL_FORCING */
 
 #ifdef ALLOW_THSICE
       IF ( useThSice ) THEN

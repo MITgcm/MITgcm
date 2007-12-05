@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.33 2007/09/15 01:38:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.34 2007/12/05 07:28:29 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -17,8 +17,11 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SEAICE_DIAGS.h"
 #include "SEAICE_PARAMS.h"
-#include "SEAICE_FFIELDS.h"
 #include "SEAICE.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+# include "EXF_FIELDS.h"
+#endif
 
 C     == Routine arguments ==
 C     myTime        - Current time of simulation ( s )
@@ -104,27 +107,6 @@ C     == Local variables ==
             ENDIF
 #endif /* SEAICE_CGRID and SEAICE_ALLOW_EVP */
           ENDIF
-
-#ifdef SEAICE_DEBUG
-#ifndef SEAICE_EXTERNAL_FORCING
-       CALL PLOT_FIELD_XYRS( uwind , 'Current uwind ', myIter, myThid )
-       CALL PLOT_FIELD_XYRS( vwind , 'Current vwind ', myIter, myThid )
-       CALL PLOT_FIELD_XYRS( atemp , 'Current atemp ', myIter, myThid )
-       CALL PLOT_FIELD_XYRS( aqh   , 'Current aqh   ', myIter, myThid )
-       CALL PLOT_FIELD_XYRS( lwdown, 'Current lwdown', myIter, myThid )
-       CALL PLOT_FIELD_XYRS( swdown, 'Current swdown', myIter, myThid )
-       CALL PLOT_FIELD_XYRS( precip, 'Current precip', myIter, myThid )
-       CALL PLOT_FIELD_XYRL( evap  , 'Current evap  ', myIter, myThid )
-       CALL PLOT_FIELD_XYRS( runoff, 'Current runoff', myIter, myThid )
-       CALL PLOT_FIELD_XYRS( SSS   , 'Current SSS   ', myIter, myThid )
-       CALL PLOT_FIELD_XYRS( SST   , 'Current SST   ', myIter, myThid )
-       CALL PLOT_FIELD_XYRL( fu    , 'Current fu    ', myIter, myThid )
-       CALL PLOT_FIELD_XYRL( fv    , 'Current fv    ', myIter, myThid )
-       CALL PLOT_FIELD_XYRL( EmPmR , 'Current EmPmR ', myIter, myThid )
-       CALL PLOT_FIELD_XYRL( Qnet  , 'Current Qnet  ', myIter, myThid )
-       CALL PLOT_FIELD_XYRL( Qsw   , 'Current Qsw   ', myIter, myThid )
-#endif
-#endif /* SEAICE_DEBUG */
 
           DO bj=myByLo(myThid),myByHi(myThid)
             DO bi=myBxLo(myThid),myBxHi(myThid)

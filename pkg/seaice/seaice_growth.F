@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.37 2007/11/28 00:18:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.38 2007/12/05 07:28:29 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -21,14 +21,17 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
-#include "SEAICE_FFIELDS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+# include "EXF_FIELDS.h"
+#endif
 #ifdef ALLOW_SALT_PLUME
-#include "SALT_PLUME.h"
-#endif /* ALLOW_SALT_PLUME */
-
+# include "SALT_PLUME.h"
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
+
 C     === Routine arguments ===
 C     myTime - Simulation time
 C     myIter - Simulation timestep number
@@ -218,18 +221,15 @@ C NOW DETERMINE MIXED LAYER TEMPERATURE
 C THERMAL WIND OF ATMOSPHERE
         DO J=1,sNy
          DO I=1,sNx
-CML#ifdef SEAICE_EXTERNAL_FORCING
 CMLC     this seems to be more natural as we do compute the wind speed in 
 CMLC     pkg/exf/exf_wind.F, but it changes the results
 CML          UG(I,J) = MAX(SEAICE_EPS,wspeed(I,J,bi,bj))
-CML#else
           SPEED_SQ = UWIND(I,J,bi,bj)**2 + VWIND(I,J,bi,bj)**2
           IF ( SPEED_SQ .LE. SEAICE_EPS_SQ ) THEN
              UG(I,J)=SEAICE_EPS
           ELSE
              UG(I,J)=SQRT(SPEED_SQ)
           ENDIF
-CML#endif /* SEAICE_EXTERNAL_FORCING */
          ENDDO
         ENDDO
 

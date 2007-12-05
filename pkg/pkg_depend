@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.25 2007/10/08 22:12:50 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.26 2007/12/05 07:28:29 dimitri Exp $
 # $Name:  $
 
 #  This file contains a terse list of package dependencies that
@@ -44,9 +44,7 @@ exf             +mdsio
 matrix          +ptracers
 matrix          -gchem
 showflops       +runclock
-
-#  default SEAICE_OPTIONS.h requires EXF:
-#seaice		+exf
+seaice		+exf
 
 #  Need more information on the following:
 obcs
