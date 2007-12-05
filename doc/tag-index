@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.920 2007/12/05 15:37:12 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.921 2007/12/05 16:56:14 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs: added OBCS_SEAICE_AVOID_CONVERGENCE constraint
 o cg2d.F: add 3 compiler directives that speed up this routine by 30% on a NEC
   SX vector computer.
 o pkg/seaice:
