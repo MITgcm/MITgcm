@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.20 2007/12/03 21:54:14 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.21 2007/12/05 16:52:32 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -131,23 +131,6 @@ C      data for the period ahead and the period behind myTime.
        ENDIF
 #endif
 
-c       _EXCH_XY_R4(wspeed0, myThid )
-c       _EXCH_XY_R4(wspeed1, myThid )
-c       _EXCH_XY_R4(atmosp0, myThid )
-c       _EXCH_XY_R4(atmosp1, myThid )
-c       _EXCH_XY_R4(silica0, myThid )
-c       _EXCH_XY_R4(silica1, myThid )
-c       _EXCH_XY_R4(ice0, myThid )
-c       _EXCH_XY_R4(ice1, myThid )
-c#ifdef READ_PAR
-c       _EXCH_XY_R4(par0, myThid )
-c       _EXCH_XY_R4(par1, myThid )
-c#endif
-c#ifdef ALLOW_FE
-c       _EXCH_XY_R4(feinput0, myThid )
-c       _EXCH_XY_R4(feinput1, myThid )
-c#endif
-
 C
        ENDIF
 
@@ -221,7 +204,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
         ENDDO
        ENDDO
 
-C endif for gchem_periodicForcing
+C endif for gchem_ForcingCycle
       ENDIF
 
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -232,8 +215,7 @@ C endif for gchem_periodicForcing
              FIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
             ENDDO
            ENDDO
-#endif
-#ifdef ALLOW_SEAICE
+#elif ALLOW_SEAICE
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              FIce(i,j,bi,bj) = AREA(i,j,1,bi,bj)

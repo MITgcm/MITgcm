@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.11 2007/12/03 20:49:55 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.12 2007/12/05 16:52:32 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -88,13 +88,11 @@ C First call requires that we initialize everything to zero for safety
           QSW_underice=.FALSE.
 #ifdef USE_QSW_UNDERICE
           QSW_underice=.TRUE.
-#endif
-#if (defined (ALLOW_SEAICE) && defined (USE_QSW))
+#elif (defined (ALLOW_SEAICE) && defined (USE_QSW))
 c if using Qsw and seaice, then ice fraction is already
 c taken into account
           QSW_underice=.TRUE.
-#endif
-#if (defined (ALLOW_THSICE) && defined (USE_QSW))
+#elif (defined (ALLOW_THSICE) && defined (USE_QSW))
           QSW_underice=.TRUE.
 #endif
 

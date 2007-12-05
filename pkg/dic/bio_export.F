@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.19 2007/12/03 20:49:55 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.20 2007/12/05 16:52:32 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -83,21 +83,17 @@ C FORTRAN-77 with know max of nlev
 C$TAF INIT bio_export = static, 10
 #ifdef READ_PAR
            lit=PAR(i,j,bi,bj)
-#else
-#ifdef USE_QSW
+#elif (defined USE_QSW)
            lit=-parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 #else
            lit=sfac(j)
 #endif
-#endif
 
-           if (QSW_underice) then
-c if using Qsw and seaice/thsice or coupled, then ice 
-c fraction is already taken into account
-              lit=lit
-           else
+           IF ( .NOT. QSW_underice ) THEN
+c if using Qsw but not seaice/thsice or coupled, then
+c ice fraction needs to be taken into account
               lit=lit*(1. _d 0 - FIce(i,j,bi,bj))
-           endif
+           ENDIF
 c
            DO k=1,nlev
 C$TAF STORE lit = bio_export
