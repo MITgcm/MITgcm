@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.17 2007/03/13 14:04:36 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.18 2007/12/05 00:55:48 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -79,8 +79,9 @@ C  if runlength has been set in the fizhi namelist
        else
         call time2freq2(mmdd,nymdcurrent,nhmscurrent,nincr)
        endif
-       ntimesteps = int(nincr/deltat)
-       endTime = startTime + deltat*float(ntimeSteps)
+       nTimeSteps = int(nincr/deltaT)
+       nEndIter = nIter0 + nTimeSteps
+       endTime = startTime + deltaT*float(nTimeSteps)
        WRITE(msgBuf,'(A,I10)') 
      .         ' CHANGING NUMBER OF MODEL TIMESTEPS TO',ntimesteps
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
