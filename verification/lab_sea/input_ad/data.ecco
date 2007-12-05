@@ -71,8 +71,8 @@
  wmean_snowprecip     = 1.0,
  wmean_apressure      = 1.0,
 #
- mult_hmean = 0.,
- mult_h     = 0.,
+ mult_hmean = 1.,
+ mult_h     = 1.,
  mult_temp  = 1.,
  mult_salt  = 1.,
  mult_sst   = 1.,
