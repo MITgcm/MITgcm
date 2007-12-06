@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.6 2007/11/28 00:18:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.7 2007/12/06 07:42:59 mlosch Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -381,7 +381,7 @@ C     Define variables from FFIELDS.h
      &     'W/m^2/degrees', myThid)
 
       CALL MNC_CW_ADD_VNAME('EmPmR', 'Cen_xy_Hn__-__t', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('EmPmR','units','m/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('EmPmR','units','kg/m^2/s', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('EmPmR','description',
      &     'Net upward freshwater flux', myThid)
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_mnc_init.F,v 1.5 2007/11/28 00:18:18 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_mnc_init.F,v 1.6 2007/12/06 07:42:22 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -135,7 +135,7 @@ C       Time averages
         CALL MNC_CW_ADD_VNAME(
      &       'si_EmPmRtave','Cen_xy_Hn__-__t',3,4,myThid)
         CALL MNC_CW_ADD_VATTR_TEXT(
-     &       'si_EmPmRtave','units','m/s',myThid)
+     &       'si_EmPmRtave','units','kg/m^2/s',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('si_EmPmRtave','description',
      &       'Time-averaged net upward freshwater flux', myThid)
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.11 2007/10/04 14:27:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.12 2007/12/06 07:42:22 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -140,7 +140,7 @@ C     are identical but they differ from pkg/diagnostics EXFempmr, which
 C     is EmPmR before impact of ice.
       diagName  = 'SIempmr '
       diagTitle = 'SEAICE upward freshwater flux, > 0 increases salt'
-      diagUnits = 'm/s             '
+      diagUnits = 'kg/m^2/s        '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
