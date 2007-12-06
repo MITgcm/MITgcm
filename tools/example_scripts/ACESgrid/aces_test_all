@@ -1,8 +1,10 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.3 2007/11/30 17:09:21 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.4 2007/12/06 03:39:18 jmc Exp $
 # $Name:  $
 
+echo -n '-- Starting: '
+date
 if test $# = 0
 then
   tst_list='gnu ifc pgi mth'
@@ -13,36 +15,46 @@ fi
 . /etc/profile.d/modules.sh
 module list > ~/tmp/.module_list 2>&1
 
-cd /home/jmc/test_ACES/bin
+cd /home/jmc/test_ACES
 
 # QSUB="/usr/local/bin/qsub"
 # QSTAT="/usr/local/bin/qstat"
 QSUB=qsub
 QSTAT=qstat
-MPACK="./mpack"
+MPACK="MITgcm_tools/mpack-1.6/mpack"
 TST_DIR="/home/jmc/test_ACES/gcm_tests"
 
 nbtst=0
 for i in $tst_list
 do
   sfx=`echo ${i}"_mpi" | sed 's/mth_mpi/ifc_mth/g'`
-  if test -f ./aces_test_$sfx ; then
-    $QSUB ./aces_test_$sfx
-    eval M_$i='submitted'
-    nbtst=`expr $nbtst + 1`
+  if test -f MITgcm_tools/example_scripts/ACESgrid/aces_test_$sfx ; then
+    JOB="tst_"$i
+    job_exist=`$QSTAT -a | grep $USER | grep $JOB | wc -l`
+    if test "x_$job_exist" = x_0 ; then
+      $QSUB MITgcm_tools/example_scripts/ACESgrid/aces_test_$sfx
+      eval M_$i='submitted'
+      nbtst=`expr $nbtst + 1`
+    else 
+      echo $JOB
+      $QSTAT -a | grep $USER | grep $JOB
+      echo 'job already exist => skip this test'
+      eval M_$i='skipped'
+    fi
   else 
     echo 'no file:' aces_test_$sfx 'to submit'
+    eval M_$i='skipped'
   fi
 done
 
-date_str=`date +%Y%m%d`"_0"
+#date_str=`date +%Y%m%d`"_0"
 
 minutes=0
 count=$nbtst
 while test $count != 0 ; do
 
-    sleep 300
-    minutes=$(( $minutes + 5 ))
+    sleep 600
+    minutes=$(( $minutes + 10 ))
 
     for i in $tst_list ; do
 
@@ -55,10 +67,9 @@ while test $count != 0 ; do
             pat="/tmp/tr_aces-$i"'*'
             rm -rf $pat
             run_dir=${TST_DIR}"/tmp_"$i"/MITgcm/verification"
-            tdir=`ls -1 $run_dir | grep -v tr_out | grep '^tr' | head -1`
+            tdir=`ls -1 $run_dir | grep -v tr_out | grep '^tr_aces' | head -1`
             if test ! "x$tdir" = x ; then
-                cp -ra $run_dir"/"$tdir "/tmp/tr_aces-"$i"_"$date_str
-                ( cd /tmp ; tar -czf "./tr_aces-"$i".tar.gz" "./tr_aces-"$i"_"$date_str )
+                ( cd $run_dir ; tar -czf "/tmp/tr_aces-"$i".tar.gz" ./$tdir )
                 $MPACK -s MITgcm-test -m 3555000 "/tmp/tr_aces-"$i".tar.gz" jmc@mitgcm.org
                 echo "Email sent for $i"
             else
@@ -66,14 +77,14 @@ while test $count != 0 ; do
             fi
             eval M_$i=done
             count=`expr $count - 1`
-            chmod 644 ../output/tst_$i.std*
+            chmod 644 output/tst_$i.std*
         fi
       fi
     done
     
-    hrs=$(( $minutes / 60 ));
     #  "long" queue is 24hrs = 24*60min = 1440min
-    if test $minutes -gt 1440 ; then
+    if test $minutes -gt 2160 ; then
+        hrs=$(( $minutes / 60 ));
         echo "Time expired after $minutes minutes ($hrs hours)"
         echo ' ' $count '/' $nbtst 'tests not yet finished'
         exit 1
@@ -82,4 +93,6 @@ while test $count != 0 ; do
 done
 
 echo "All $nbtst tests completed successfully."
+echo -n '-- Finished: '
+date
 
