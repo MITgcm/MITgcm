@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.24 2007/12/05 07:28:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.25 2007/12/06 07:40:51 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -158,6 +158,17 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif
+
+#ifndef ALLOW_SEAICE_FLOODING
+      IF ( SEAICEuseFlooding ) THEN
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseFlooding = .TRUE.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
+     &       'ALLOW_SEAICE_FLOODING is not defined in SEAICE_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif /* ALLOW_SEAICE_FLOODING */
 
 #ifdef ALLOW_SALT_PLUME
 #ifndef SEAICE_SALINITY
