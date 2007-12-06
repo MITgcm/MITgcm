@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.39 2007/12/05 15:37:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.40 2007/12/06 05:23:41 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -24,6 +24,7 @@ C     === Global variables ===
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"
+# include "EXF_PARAM.h"
 #endif
 #ifdef ALLOW_SALT_PLUME
 # include "SALT_PLUME.h"
@@ -253,6 +254,25 @@ C FIRST DO OPEN WATER
      I       bi, bj, myThid )
 
 C NOW DO ICE
+        IF (useRelativeWind) THEN
+C     Compute relative wind speed over sea ice.
+         DO J=1,sNy
+          DO I=1,sNx
+           SPEED_SQ =
+     &          (uWind(I,J,bi,bj)
+     &          +0.5 _d 0*(uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
+     &          -0.5 _d 0*(uice(i,j,1,bi,bj)+uice(i+1,j,1,bi,bj)))**2
+     &          +(vWind(I,J,bi,bj)
+     &          +0.5 _d 0*(vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
+     &          -0.5 _d 0*(vice(i,j,1,bi,bj)+vice(i,j+1,1,bi,bj)))**2
+           IF ( SPEED_SQ .LE. SEAICE_EPS_SQ ) THEN
+             UG(I,J)=SEAICE_EPS
+           ELSE
+             UG(I,J)=SQRT(SPEED_SQ)
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDIF
 #ifdef SEAICE_MULTICATEGORY
 C--  Start loop over muli-categories
         DO IT=1,MULTDIM
