@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.107 2007/10/29 19:14:12 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.108 2007/12/06 04:04:38 jmc Exp $
 #  $Name:  $
 #
 
@@ -17,7 +17,7 @@ usage()
     echo "                             (DEF=\"-ieee\")"
     echo "  (-of=|-optfile=)STRING   list of optfiles to use"
     echo "  (-a|-addr) STRING        list of email recipients"
-    echo "                             (DEF=\"edhill@mitgcm.org\")"
+    echo "                             (DEF=\"\" no email is sent)"
     echo "  (-t|-tdir) STRING        list of group and/or exp. dirs to test"
     echo "                             (recognized groups: basic, tutorials)"
     echo "                             (DEF=\"\" which test all)"
@@ -172,21 +172,6 @@ testoutput_var()
     rm -f tmp1.txt tmp2.txt tmp3.txt tmp4.txt
     
     return $digits_of_similarity
-}
-
-dashnum()
-{
-    # dashnum n1 n2 n3 ...
-    #
-    #  print numbers using %3i format or "--" if number = 99
-
-    for num in $@ ; do
-	if [ $num = 99 ]; then
-	    printf ' --'
-	else
-	    printf '%3i' $num
-	fi
-    done
 }
 
 check_for_add_mon_output()
@@ -543,8 +528,9 @@ linkdata()
 		    if test -h eedata ; then rm -f eedata ; fi
 		fi
 	    fi
+	    prevDir='NONE'
 	    for ldir in $* ; do
-		if test -d "../"$ldir ; then
+		if test -d "../"$ldir -a $ldir != $prevDir ; then
                     printf 'ldir='${ldir} 1>&2
 		    files=`( cd "../"$ldir ; ls -1 | grep -v CVS )`
 		    for i in $files ; do
@@ -560,6 +546,7 @@ linkdata()
 		    fi
 		    printf ' ; ' 1>&2
 		fi
+		prevDir=$ldir
 	    done
 	)
     fi
@@ -904,12 +891,12 @@ fi
 #- setting for forward or ADM testing
 if test "x$ADM" = xt ; then
     code_dir=code_ad
-    input_dirs='input_ad input'
+    inputdir=input_ad
     ref_outp="output_adm.txt"
     EXECUTABLE="mitgcmuv_ad"
 else
     code_dir=code
-    input_dirs='input'
+    inputdir=input
     ref_outp="output.txt"
     EXECUTABLE="mitgcmuv"
 fi
@@ -1143,24 +1130,23 @@ for dir in $TESTDIRS ; do
 
     #  Check whether there are "extra runs" for this testdir
     extra_runs=
-    if test "x$ADM" = x ; then
-	ex_run_dirs=`( cd $dir ; echo input.* )`
-	#echo "ex_run_dirs='$ex_run_dirs'"
-	for exd in $ex_run_dirs ; do
-	    name=`echo $exd | sed -e 's/input.//g'`
-	    outf="$dir/results/output.$name.txt"
-            if test -f $outf -a -r $outf ; then
-		if test "x$MULTI_THREAD" = "xt" ; then 
-		    if test -r $dir"/"$exd"/eedata.mth" ; then
-			extra_runs="$extra_runs $name"
-		    #else echo $dir"/"$exd"/eedata.mth: not found"
-		    fi
-		else
+    ex_run_dirs=`( cd $dir ; echo $inputdir.* )`
+    #echo "ex_run_dirs='$ex_run_dirs'"
+    for exd in $ex_run_dirs ; do
+	name=`echo $exd | sed -e "s/$inputdir\.//"`
+	refExOut=`echo $ref_outp | sed "s/\./.${name}./"`
+	outf="$dir/results/$refExOut"
+        if test -f $outf -a -r $outf ; then
+	    if test "x$MULTI_THREAD" = "xt" ; then 
+		if test -r $dir"/"$exd"/eedata.mth" ; then
 		    extra_runs="$extra_runs $name"
+		#else echo $dir"/"$exd"/eedata.mth: not found"
 		fi
+	    else
+		extra_runs="$extra_runs $name"
 	    fi
-	done
-    fi
+	fi
+    done
 
     echo "-------------------------------------------------------------------------------"
     echo
@@ -1189,13 +1175,12 @@ for dir in $TESTDIRS ; do
             && symlink_mpifiles $dir $code_dir $builddir \
 	    && makedependmodel $dir/$builddir && makedepend=Y \
 	    && makemodel $dir/$builddir && make=Y \
-	    && linkdata $dir/$rundir $input_dirs \
+	    && linkdata $dir/$rundir $inputdir input \
 	    && runmodel $dir/$rundir && run=Y \
 	    && results=`testoutput_run $dir $rundir $ref_outp`
     fi
     
     echo
-# --> same processing for adjoint & forward test
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	echo
  	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
@@ -1205,6 +1190,11 @@ for dir in $TESTDIRS ; do
 	echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
 	echo "DATE='$DATE'" >> $CDIR"/summary.txt"
 	echo "tdir='$dir'" >> $CDIR"/summary.txt"
+	if test "x$ADM" = xt ; then
+	    head -1 $dir/$builddir/taf_ad.log >> $CDIR"/summary.txt"
+	    grep -A3 'Seconds in section "ALL' $dir/$rundir/$OUTPUTFILE \
+				>> $CDIR"/summary.txt"
+	fi
 
 	for ex in $extra_runs ; do
 	    unset run
@@ -1217,7 +1207,7 @@ for dir in $TESTDIRS ; do
 	    CDIR=`pwd`"/$rel_CDIR"
 	    test ! -e "$dir/tr_run.$ex" && mkdir "$dir/tr_run.$ex"
 	    run_clean $dir/tr_run.$ex
-	    linkdata $dir/tr_run.$ex input.$ex input
+	    linkdata $dir/tr_run.$ex $inputdir.$ex $inputdir input
 	    runmodel $dir/tr_run.$ex && run=Y \
 	    && results=`testoutput_run $dir tr_run.$ex $refExOut`
 	    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
@@ -1230,16 +1220,15 @@ for dir in $TESTDIRS ; do
 	    echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
 	    echo "DATE='$DATE'" >> $CDIR"/summary.txt"
 	    echo "tdir='$dir.$ex'" >> $CDIR"/summary.txt"
+            if test "x$ADM" = xt ; then
+	        head -1 $dir/$builddir/taf_ad.log >> $CDIR"/summary.txt"
+	        grep -A3 'Seconds in section "ALL' $dir/tr_run.$ex/$OUTPUTFILE \
+			           >> $CDIR"/summary.txt"
+            fi
 	    if test "x$POSTCLEAN" = xt ; then
 		run_clean $dir/tr_run.$ex
 	    fi
 	done
-# <-- same processing for adjoint & forward test
-    if test "x$ADM" = xt ; then
-	head -1 $dir/$builddir/taf_ad.log >> $CDIR"/summary.txt"
-	grep -A3 'Seconds in section "ALL' $dir/$rundir/$OUTPUTFILE \
-			   >> $CDIR"/summary.txt"
-    fi
 
     #postclean $dir/$builddir
     if test "x$POSTCLEAN" = xt ; then
