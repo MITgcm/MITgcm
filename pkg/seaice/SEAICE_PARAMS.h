@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.49 2007/12/05 23:57:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.50 2007/12/06 08:58:20 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -152,6 +152,9 @@ C     SEAICE_salinity    - initial salinity of sea ice defined as a
 C                          fraction of the model's surface level salinity
 C     SEAICE_availHeatFrac - Fraction of surface level heat content used to
 C                            melt or grow ice (default 1.0)
+C     SEAICE_gamma_t     - timescale for melting ice from a warm mixed layer (s),
+C                          3d = 259200s is a reasonable value, default=unset:
+C                          SEAICE_availHeatFrac=SEAICE_deltaTtherm/SEAICE_gamma_t
 C     SEAICEstressFactor - factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          - sets accuracy of LSR solver
 C     DIFF1              - parameter used in advect.F
@@ -186,6 +189,7 @@ C
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
       _RL SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze
       _RL SEAICE_salinity, SEAICE_availHeatFrac, SEAICEstressFactor
+      _RL SEAICE_gamma_t
       _RL OCEAN_drag, LSR_ERROR, DIFF1, A22, HO
       _RL WindForcingStart, WindForcingEnd, WindForcingPeriod
       _RL FluxForcingStart, FluxForcingEnd, FluxForcingPeriod
@@ -209,6 +213,7 @@ C
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      &    SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze,
      &    SEAICE_salinity, SEAICE_availHeatFrac, SEAICEstressFactor,
+     &    SEAICE_gamma_t,
      &    OCEAN_drag, LSR_ERROR, DIFF1, A22, HO,
      &    WindForcingStart, WindForcingEnd, WindForcingPeriod,
      &    FluxForcingStart, FluxForcingEnd, FluxForcingPeriod,
