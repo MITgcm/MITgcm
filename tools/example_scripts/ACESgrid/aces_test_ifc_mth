@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#PBS -q long
+#PBS -q four-twelve
 #PBS -N tst_mth
 #PBS -l nodes=1:ppn=2
 #PBS -e /home/jmc/test_ACES/output/tst_mth.stderr
@@ -9,7 +9,7 @@
 #  ^- commented out => do not export env. variable !
 #  since head node environment (& module) is too different from computer node
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.3 2007/09/17 18:48:04 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.4 2007/12/06 03:32:12 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -43,6 +43,6 @@ cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null 2>&1
 
 cd MITgcm/verification
 OPTFILE="../tools/build_options/linux_ia32_"$FC".aces+mth"
-echo ./testreport -j 2 -mth -match $MC -of $OPTFILE
-./testreport -j 2 -mth -match $MC -of $OPTFILE
+echo ./testreport -j 2 -mth -match $MC -of $OPTFILE -odir aces-mth
+./testreport -j 2 -mth -match $MC -of $OPTFILE -odir aces-mth
 
