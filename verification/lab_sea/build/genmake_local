@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# $Header: /u/gcmpack/MITgcm/verification/lab_sea/build/genmake_local,v 1.1 2007/11/25 23:58:00 jmc Exp $
-
-#  This is the local options file for the "new" version of genmake
-
-AD_TAF_FLAGS="-version 1.9.8"
