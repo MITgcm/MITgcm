@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.18 2007/10/29 16:49:49 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.19 2007/12/12 01:41:26 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -213,8 +213,12 @@ c add all tendencies for PO4, DOP, ALK, DIC
        DO k=1,Nr
          DO j=jmin,jmax
           DO i=imin,imax
-           RDOP(i,j,k)= maskC(i,j,k,bi,bj)*KDOPRemin*PTR_DOP(i,j,k) 
-
+#ifdef DIC_NO_NEG
+           RDOP(i,j,k)= MAX(maskC(i,j,k,bi,bj)*KDOPRemin*PTR_DOP(i,j,k)
+     &                     ,0. _d 0)
+#else
+           RDOP(i,j,k)= maskC(i,j,k,bi,bj)*KDOPRemin*PTR_DOP(i,j,k)
+#endif
            GPO4(i,j,k)=-BIOac(i,j,k)+pflux(i,j,k) + RDOP(i,j,k)
 
            car(i,j,k) = cflux(i,j,k) - CAR_S(i,j,k)
