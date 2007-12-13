@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.108 2007/12/06 04:04:38 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.109 2007/12/13 18:28:41 jmc Exp $
 #  $Name:  $
 #
 
@@ -15,6 +15,7 @@ usage()
     echo "  (-mpi)                   compile and run using MPI"
     echo "  (-ieee|-noieee)          if possible, use IEEE compiler flags"
     echo "                             (DEF=\"-ieee\")"
+    echo "  (-gsl)                   compile with \"-gsl\" flag"
     echo "  (-of=|-optfile=)STRING   list of optfiles to use"
     echo "  (-a|-addr) STRING        list of email recipients"
     echo "                             (DEF=\"\" no email is sent)"
@@ -326,6 +327,9 @@ genmakemodel()
 	    fi
 	    if test "x$IEEE" != x ; then
 		command="$command -ieee"
+	    fi
+	    if test "x$GSL" = xt ; then
+		command="$command -gsl"
 	    fi
 	    if test "x$MPI" = xt ; then
 		command="$command -mpi"
@@ -718,14 +722,12 @@ scandirs()
 debug=0
 verbose=1
 clean=0
-expts=''
-# ieee=1
 
 IEEE=true
 if test "x$MITGCM_IEEE" != x ; then
     IEEE=$MITGCM_IEEE
 fi
-
+GSL=f
 
 CLEANUP=f
 QUICK=f
@@ -855,6 +857,7 @@ for ac_option ; do
 
 	-ieee) IEEE=true ;;
 	-noieee) IEEE= ;;
+        -gsl) GSL=t ;;
 
 	-verbose) verbose=2 ;;
 	-debug) debug=1 ;;
