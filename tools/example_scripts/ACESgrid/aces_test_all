@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.4 2007/12/06 03:39:18 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.5 2007/12/14 19:30:35 jmc Exp $
 # $Name:  $
 
 echo -n '-- Starting: '
 date
 if test $# = 0
 then
-  tst_list='gnu ifc pgi mth'
+  tst_list='gnu ifc pgi mth tuv'
 else
   tst_list=$*
 fi
@@ -27,7 +27,7 @@ TST_DIR="/home/jmc/test_ACES/gcm_tests"
 nbtst=0
 for i in $tst_list
 do
-  sfx=`echo ${i}"_mpi" | sed 's/mth_mpi/ifc_mth/g'`
+  sfx=`echo ${i}"_mpi" | sed 's/mth_mpi/ifc_mth/' | sed 's/tuv_mpi/op64_tuv/'`
   if test -f MITgcm_tools/example_scripts/ACESgrid/aces_test_$sfx ; then
     JOB="tst_"$i
     job_exist=`$QSTAT -a | grep $USER | grep $JOB | wc -l`

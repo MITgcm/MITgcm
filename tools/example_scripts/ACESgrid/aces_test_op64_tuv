@@ -1,0 +1,44 @@
+#!/bin/bash
+#
+#PBS -q four-twelve
+#PBS -N tst_tuv
+#PBS -l nodes=1:ppn=2
+#PBS -e /home/jmc/test_ACES/output/tst_tuv.stderr
+#PBS -o /home/jmc/test_ACES/output/tst_tuv.stdout
+ 
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.1 2007/12/14 19:30:35 jmc Exp $
+# $Name:  $
+
+if test -f /etc/profile.d/modules.sh ; then
+    . /etc/profile.d/modules.sh
+fi
+module add open64
+export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
+
+umask 0022
+TST_DIR="/home/jmc/test_ACES/gcm_tests"
+HERE='/home/jmc/test_ACES/output'
+cd $HERE
+
+MC=10
+FC=open64
+
+# cat << EOF > $HERE"/.cvspass"
+# /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
+# EOF
+tmpDIR=${TST_DIR}"/tmp_tuv"
+if test -e $tmpDIR ; then
+    rm -rf $tmpDIR
+fi
+mkdir $tmpDIR
+cd $tmpDIR
+cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null 2>&1
+#  cvs co MITgcm
+/usr/bin/find $tmpDIR -type d | xargs chmod g+rxs
+/usr/bin/find $tmpDIR -type f | xargs chmod g+r
+
+cd MITgcm/verification
+OPTFILE="../tools/build_options/linux_ia32_"$FC".trapuv"
+echo ./testreport -j 2 -gsl -match $MC -of $OPTFILE -odir aces-tuv
+./testreport -j 2 -gsl -match $MC -of $OPTFILE -odir aces-tuv
+
