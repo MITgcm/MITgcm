@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.40 2007/12/06 05:23:41 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.41 2007/12/14 21:52:02 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -337,9 +337,19 @@ C     Positive YNEG/availHeat leads to ice melting.
 #ifdef SEAICE_VARIABLE_FREEZING_POINT
            TBC = -0.0575 _d 0*salt(I,J,kSurface,bi,bj) + 0.0901 _d 0
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
+#ifdef SEAICE_BREAKS_VERIFICATION
+C     To first order, the "thickness" of ice that melts during a given
+C     period of time due to an excess or to a deficit of heat in the
+C     mixed layer should be the same irrespective of sea ice concentration.
+C     This change breaks the pkg/seaice verification experiments.
+           availHeat = SEAICE_availHeatFrac * AREA(I,J,2,bi,bj)
+     &          * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
+     &          * hFacC(i,j,kSurface,bi,bj) / 72.0764 _d 0
+#else
            availHeat = SEAICE_availHeatFrac
      &          * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
      &          * hFacC(i,j,kSurface,bi,bj) / 72.0764 _d 0
+#endif SEAICE_BREAKS_VERIFICATION
           ELSE
            availHeat = 0.
           ENDIF
