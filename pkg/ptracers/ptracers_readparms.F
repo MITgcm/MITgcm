@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.28 2007/11/10 22:09:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.29 2007/12/17 22:03:15 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -73,7 +73,10 @@ C                          are written to post-processing files.
 
 C     This routine has been called by the main model so we set our
 C     internal flag to indicate we are in business
-      PTRACERSisON=.TRUE.
+c     PTRACERSisON=.TRUE.
+C Note(jmc): remove this flag which is not really usefull (not set properly
+C            when usePTRACERS=F and always TRUE otherwise);
+C            much better to use "usePTRACERS" flag instead.
 
 C     Set ptracer IO & diagnostics labels (2 characters long)
       CALL PTRACERS_SET_IOLABEL(

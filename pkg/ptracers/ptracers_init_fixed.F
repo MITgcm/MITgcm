@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.2 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.3 2007/12/17 22:03:15 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -20,6 +20,7 @@ C     !USES:
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#include "PTRACERS_RESTART.h"
 #include "GAD.h"
 
 C     !INPUT PARAMETERS:
@@ -35,20 +36,34 @@ C     msgBuf      - Informational/error meesage buffer
       INTEGER minOlSize
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
+      _BEGIN_MASTER( myThid )
+
+C     Initialise internal parameter in common block:
+      DO iTracer = 1, PTRACERS_num
+        PTRACERS_MultiDimAdv(iTracer) = multiDimAdvection
+        PTRACERS_AdamsBashGtr(iTracer) = .FALSE.
+        PTRACERS_startAB(iTracer) = nIter0 - PTRACERS_Iter0
+      ENDDO
+
 C     Loop over tracers
       DO iTracer = 1, PTRACERS_numInUse
 
         IF (
-     &       multiDimAdvection .AND.
-     &       PTRACERS_advScheme(iTracer).NE.ENUM_CENTERED_2ND .AND.
-     &       PTRACERS_advScheme(iTracer).NE.ENUM_UPWIND_3RD .AND.
-     &       PTRACERS_advScheme(iTracer).NE.ENUM_CENTERED_4TH ) THEN
-c         PTRACERS_multiDimAdv(iTracer) = .TRUE.
-          useMultiDimAdvec = .TRUE.
-        ENDIF
+     &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND .OR.
+     &       PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD .OR.
+     &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH
+     &     ) PTRACERS_MultiDimAdv(iTracer) = .FALSE.
+        useMultiDimAdvec = useMultiDimAdvec
+     &                .OR. PTRACERS_MultiDimAdv(iTracer)
+        PTRACERS_AdamsBashGtr(iTracer) =
+     &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND .OR.
+     &       PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD .OR.
+     &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH
 
 C       end of Tracer loop
       ENDDO
+      _END_MASTER( myThid )
+      _BARRIER
 
 C--   Check size of the overlap :
       IF ( useCubedSphereExchange .AND. useMultiDimAdvec ) THEN

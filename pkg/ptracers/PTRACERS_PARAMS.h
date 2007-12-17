@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.2 2007/11/10 22:09:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.3 2007/12/17 22:03:15 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -12,10 +12,6 @@ C    !DESCRIPTION:
 C Contains passive tracer parameters.
 
 CEOP
-
-C     Package flag
-      logical PTRACERSisON
-      COMMON /PTRACERS_PACKAGE/ PTRACERSisON
 
 C     COMMON /PTRACERS_PARAMS/  PTRACERS parameters:
 C     PTRACERS_taveFreq :: Frequency with which time-averaged PTRACERS
@@ -53,7 +49,13 @@ C     PTRACERS_Iter0    :: timestep number when tracers are initialized
      &     PTRACERS_numInUse,
      &     PTRACERS_advScheme
 
+C     PTRACERS_MultiDimAdv  :: internal flag (depend on the advection scheme),
+C                           true if this tracer uses Multi-Dim advection
+C     PTRACERS_AdamsBashGtr :: internal flag (depend on the advection scheme),
+C                           true if applies Adams-Bashforth on tracer tendency
       LOGICAL PTRACERS_ImplVertAdv(PTRACERS_num)
+      LOGICAL PTRACERS_MultiDimAdv(PTRACERS_num)
+      LOGICAL PTRACERS_AdamsBashGtr(PTRACERS_num)
       LOGICAL PTRACERS_useGMRedi(PTRACERS_num)
       LOGICAL PTRACERS_useKPP(PTRACERS_num)
       LOGICAL PTRACERS_useRecords
@@ -65,6 +67,8 @@ C     PTRACERS_Iter0    :: timestep number when tracers are initialized
      &     PTRACERS_pickup_write_mnc, PTRACERS_pickup_read_mnc
       COMMON /PTRACERS_PARAMS_L/
      &     PTRACERS_ImplVertAdv,
+     &     PTRACERS_MultiDimAdv,
+     &     PTRACERS_AdamsBashGtr,
      &     PTRACERS_useGMRedi,
      &     PTRACERS_useKPP,
      &     PTRACERS_useRecords,

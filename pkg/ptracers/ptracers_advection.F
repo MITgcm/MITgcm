@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.10 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.11 2007/12/17 22:03:15 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -48,7 +48,7 @@ C  i,j,k,bi,bj,iTracer  :: loop indices
 C  iMin,iMax,jMin,jMax  :: loop ranges
 C  kUp,kDown            :: toggle indices for even/odd level fluxes
 C  km1                  :: =min(1,k-1)
-C  rFlx			:: vertical flux
+C  rFlx                 :: vertical flux
       INTEGER iTracer
 CEOP
 
@@ -77,11 +77,7 @@ CADJ STORE pTracer(:,:,:,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_ptracers, key=iptrkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-       IF (
-     &     multiDimAdvection .AND.
-     &     PTRACERS_advScheme(iTracer).NE.ENUM_CENTERED_2ND .AND.
-     &     PTRACERS_advScheme(iTracer).NE.ENUM_UPWIND_3RD .AND.
-     &     PTRACERS_advScheme(iTracer).NE.ENUM_CENTERED_4TH ) THEN
+       IF ( PTRACERS_MultiDimAdv(iTracer) ) THEN
             CALL GAD_ADVECTION(
      I                        PTRACERS_ImplVertAdv(iTracer),
      I                        PTRACERS_advScheme(iTracer),

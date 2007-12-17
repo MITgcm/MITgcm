@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.35 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.36 2007/12/17 22:03:15 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -27,6 +27,7 @@ C !USES: ===============================================================
 #include "DYNVARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#include "PTRACERS_RESTART.h"
 #include "PTRACERS_FIELDS.h"
 #include "GAD.h"
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -45,8 +46,8 @@ C  uTrans               :: zonal transport in level k
 C  vTrans               :: meridional transport in level k
 C  rTrans               :: vertical volume transport at interface k
 C  rTransKp1            :: vertical volume transport at interface k+1
-C  KappaRtr		:: vertical diffusion of passive tracers, interf k
-C  rFlx			:: vertical flux
+C  KappaRtr             :: vertical diffusion of passive tracers, interf k
+C  rFlx                 :: vertical flux
 C  myTime               :: model time
 C  myIter               :: time-step number
 C  myThid               :: thread number
@@ -83,7 +84,7 @@ C  GAD_TR               :: passive tracer id (GAD_TR1+iTracer-1)
       INTEGER kUp,kDown,km1
       INTEGER GAD_TR
       LOGICAL calcAdvection
-      INTEGER iterNb, startAB
+      INTEGER iterNb
 CEOP
 
 C Loop ranges for daughter routines
@@ -128,13 +129,10 @@ CADJ &      = comlev1_bibj_k_ptracers, key=kkey, byte=isbyte
 
 C Calculate active tracer tendencies (gPtr) due to internal processes
 C (advection, [explicit] diffusion, parameterizations,...)
-       calcAdvection = .NOT.multiDimAdvection
-     &      .OR. PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND
-     &      .OR. PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD
-     &      .OR. PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH
+       calcAdvection = .NOT.PTRACERS_MultiDimAdv(iTracer)
        GAD_TR = GAD_TR1 + iTracer - 1
        CALL GAD_CALC_RHS(
-     I                   bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
+     I                   bi,bj,iMin,iMax,jMin,jMax,k,km1,kUp,kDown,
      I                   xA, yA, maskUp, uFld, vFld, wFld,
      I                   uTrans, vTrans, rTrans, rTransKp1,
      I                   PTRACERS_diffKh(iTracer),
@@ -163,9 +161,7 @@ C External forcing term(s)
 
 C If using Adams-Bashforth II, then extrapolate tendencies
 C gPtr is now the tracer tendency for explicit advection/diffusion
-      IF ( PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND
-     & .OR.PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD
-     & .OR.PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH ) THEN
+      IF ( PTRACERS_AdamsBashGtr(iTracer) ) THEN
 #ifdef ALLOW_MATRIX
 C  If matrix is being computed, block call to S/R ADAMS_BASHFORTH2 to
 C  prevent gPtr from being replaced by the average of gPtr and gpTrNm1.
@@ -173,12 +169,11 @@ C  prevent gPtr from being replaced by the average of gPtr and gpTrNm1.
 #endif
         iterNb = myIter
         IF (staggerTimeStep) iterNb = myIter - 1
-        startAB = nIter0 - PTRACERS_Iter0
         CALL ADAMS_BASHFORTH2(
-     I                        bi,bj,K,
-     U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     U                        gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
-     I                        startAB, iterNb, myThid )
+     I                      bi,bj,K,
+     U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+     U                      gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     I                      PTRACERS_startAB(iTracer), iterNb, myThid )
 #ifdef ALLOW_MATRIX
         ENDIF
 #endif
@@ -199,9 +194,7 @@ C Account for change in level thickness
      I                          bi,bj,K,
      U                          gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                          myThid )
-        IF ( PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND
-     &   .OR.PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD
-     &   .OR.PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH )
+        IF ( PTRACERS_AdamsBashGtr(iTracer) ) THEN
      &  CALL FREESURF_RESCALE_G(
      I                          bi,bj,K,
      U                          gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
@@ -224,7 +217,7 @@ C Apply open boundary conditions
      I         bi, bj, k, iTracer,
      U         gPtr(1-Olx,1-Oly,k,bi,bj,iTracer),
      I         myThid )
-         END IF
+         ENDIF
 #endif   /* ALLOW_OBCS */
 C end of tracer loop
       ENDDO
