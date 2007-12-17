@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.924 2007/12/14 21:52:01 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.925 2007/12/17 22:06:48 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ptracers: new version of ptracers pickup:
+  read meta file and write only fields which are needed to restart.
+  ( same logic as main pickup file ; also using pickupStrictlyMatch )
 o pkg/seaice:
   - add timescale for melting due to warm mixed layer as a means of
     setting SEAICE_availHeatFrac more conveniently
@@ -26,7 +29,7 @@ checkpoint59k
 o pkg/seaice: ICE2WATR=SEAICE_rhoIce/rhoConst for consistency between
   dynamics and thermodynamics. Set ICE2WATR=0.92 to reproduce older results.
 o fix un-initialised variable problem (in mom_vecinv & shap_filt):
-  all experiments pass when compile with un-initilised var. checking option.
+  all experiments pass when compile with un-initialised var. checking option.
 o added pkg/salt_plume
 o script to test restart (for now, in MITgcm_contrib/jmc_script)
 o pkg/seaice: new read/write pickup version. 
