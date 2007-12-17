@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.14 2007/11/05 18:49:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.15 2007/12/17 21:20:38 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -44,12 +44,12 @@ C  myThid               :: thread number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  gPtracer		:: updates tendency array
+C  gPtracer       :: updates tendency array
 
 #ifdef ALLOW_PTRACERS
 
 C !LOCAL VARIABLES: ====================================================
-C  i,j                  :: loop indices
+C  i,j            :: loop indices
       INTEGER i,j
 C     number of surface interface layer
       INTEGER kSurface

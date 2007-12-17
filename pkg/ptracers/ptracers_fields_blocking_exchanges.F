@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fields_blocking_exchanges.F,v 1.4 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fields_blocking_exchanges.F,v 1.5 2007/12/17 21:20:38 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -21,7 +21,7 @@ C !USES: ===============================================================
 #include "PTRACERS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
+C  myThid         :: thread number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -30,22 +30,20 @@ C  none
 #ifdef ALLOW_PTRACERS
 
 C !LOCAL VARIABLES: ====================================================
-C  iTracer 		:: loop indices
+C  iTracer        :: loop indices
       INTEGER iTracer
 CEOP
-
-      IF (PTRACERSisON) THEN
 
 C Loop over passive tracers
       DO iTracer=1,PTRACERS_numInUse
 
 C Exchange overlaps
-      _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+        CALL EXCH_3D_RL( pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+     &                   Nr, myThid )
 
 C End of tracer loop
       ENDDO
 
-      ENDIF
 #endif /* ALLOW_PTRACERS */
 
       RETURN

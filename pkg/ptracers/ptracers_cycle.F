@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_cycle.F,v 1.5 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_cycle.F,v 1.6 2007/12/17 21:20:38 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -36,7 +36,7 @@ C  none
 #ifdef ALLOW_PTRACERS
 
 C !LOCAL VARIABLES: ====================================================
-C  iTracer 		:: loop indices
+C  iTracer       :: loop indices
       INTEGER iTracer
 CEOP
 
