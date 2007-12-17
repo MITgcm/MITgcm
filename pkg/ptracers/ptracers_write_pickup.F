@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.4 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.5 2007/12/17 22:05:48 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -20,6 +20,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#include "PTRACERS_RESTART.h"
 #include "PTRACERS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -44,12 +45,22 @@ C     === Functions ====
       EXTERNAL ILNBLNK
 
 C !LOCAL VARIABLES: ====================================================
-C  iTracer		:: loop indices
-C  iRec    		:: record number
-C  fn   		:: character buffer for creating filename
-C  prec 		:: precision of pickup files
-      INTEGER iTracer,prec,iRec,lChar
+C     iTracer     :: tracer index
+C     j           :: loop index / field number
+C     prec        :: pickup-file precision
+C     glf         :: local flag for "globalFiles"
+C     fn          :: character buffer for creating filename
+C     nWrFlds     :: number of fields being written
+C     listDim     :: dimension of "wrFldList" local array
+C     wrFldList   :: list of written fields
+C     msgBuf      :: Informational/error message buffer
+      INTEGER iTracer, j, prec, lChar
+      LOGICAL glf
       CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER listDim, nWrFlds
+      PARAMETER( listDim = 3*PTRACERS_num )
+      CHARACTER*(8) wrFldList(listDim)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifdef ALLOW_MNC
@@ -98,22 +109,54 @@ C       step since we're saving the gpTrNm1 variable first
         ENDIF
         prec = precFloat64
 
-C       Write fields & tendencies (needed for AB) as consecutive
-C       records, one tracer after the other, for all available tracers.
-C       note: this allow to restart from a pickup with a different
-C       number of tracers, with read_pickup reading only the tracers
-C       "InUse".
-        DO iTracer=1,PTRACERS_num
-          iRec = 2*iTracer - 1
+C       Firstly, write ptracer fields as consecutive records,
+C       one tracer after the other, for all tracers "InUse".
+
+        j  = 0
+C     record number < 0 : a hack not to write meta files now:
+        DO iTracer = 1, PTRACERS_numInUse
+          j = j + 1
           CALL WRITE_REC_3D_RL( fn, prec, Nr,
      &         pTracer(1-Olx,1-Oly,1,1,1,iTracer),
-     &         iRec, myIter, myThid )
-          iRec = 2*iTracer
-          CALL WRITE_REC_3D_RL( fn, prec, Nr,
-     &         gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
-     &         iRec, myIter, myThid )
+     &         -j, myIter, myThid )
+          IF (j.LE.listDim)
+     &      wrFldList(j) = 'pTr'//PTRACERS_ioLabel(iTracer)//'   '
         ENDDO
 
+C       Then write ptracer tendencies (if this tracer is using AB time-stepping)
+        DO iTracer = 1, PTRACERS_numInUse
+         IF ( PTRACERS_AdamsBashGtr(iTracer) ) THEN
+          j = j + 1
+          CALL WRITE_REC_3D_RL( fn, prec, Nr,
+     &         gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
+     &         -j, myIter, myThid )
+          IF (j.LE.listDim)
+     &      wrFldList(j) = 'gPtr'//PTRACERS_ioLabel(iTracer)//'m1'
+         ENDIF
+
+        ENDDO
+
+C--------------------------
+        nWrFlds = j
+        IF ( nWrFlds.GT.listDim ) THEN
+          WRITE(msgBuf,'(2A,I5,A)') 'PTRACERS_WRITE_PICKUP: ',
+     &     'trying to write ',nWrFlds,' fields'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(2A,I5,A)') 'PTRACERS_WRITE_PICKUP: ',
+     &     'field-list dimension (listDim=',listDim,') too small'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R PTRACERS_WRITE_PICKUP (list-size Pb)'
+        ENDIF
+#ifdef ALLOW_MDSIO
+C     uses this specific S/R to write (with more informations) only meta files
+        glf  = globalFiles
+        CALL MDS_WR_METAFILES( fn, prec, glf, .FALSE.,
+     &                         0, 0, Nr, ' ',
+     &                         nWrFlds, wrFldList,
+     &                         1, myTime,
+     &                         j, myIter, myThid )
+#endif /* ALLOW_MDSIO */
+C--------------------------
       ENDIF
 
 #endif /* ALLOW_PTRACERS */
