@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.2 2007/11/28 17:55:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.3 2007/12/18 05:34:41 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -25,7 +25,9 @@ CEOP
 
 #ifdef ALLOW_SALT_PLUME
 
-      NAMELIST /SALT_PLUME_PARM01/ SaltPlumeCriterion
+      NAMELIST /SALT_PLUME_PARM01/
+     &     CriterionType, PlumeMethod, Npower,
+     &     SaltPlumeCriterion, SPovershoot
 
 C     !LOCAL VARIABLES:
 C     msgBuf      - Informational/error meesage buffer
@@ -36,8 +38,12 @@ C     iUnit       - Work variable for IO unit number
       _BEGIN_MASTER(myThid)
 
 C--   Default values for SALT_PLUME
-      SaltPlumeCriterion  = 0.4 _d 0
-      
+      CriterionType       = 1
+      PlumeMethod         = 1
+      Npower              = 0
+      SaltPlumeCriterion  = UNSET_RL
+      SPovershoot         = 1.0 _d 0
+
       WRITE(msgBuf,'(A)')'SALT_PLUME_READPARMS: opening data.salt_plume'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -54,6 +60,20 @@ C     Read parameters from open data file
      &    SQUEEZE_RIGHT , 1)
 C     Close the open data file
       CLOSE(iUnit)
+
+       IF ( SaltPlumeCriterion .EQ. UNSET_RL ) THEN
+          IF ( CriterionType .EQ. 1 ) THEN
+             SaltPlumeCriterion  = 0.4 _d 0
+          ELSEIF ( CriterionType .EQ. 2 ) THEN
+             SaltPlumeCriterion  = 0.005 _d 0
+          ELSE
+             WRITE(msgBuf,'(A)') 'S/R SALT_PLUME_READPARMS'
+             CALL PRINT_ERROR( msgBuf, myThid )
+             WRITE(msgBuf,'(A)') 'Invalid CriterionType'
+             CALL PRINT_ERROR( msgBuf, myThid )
+             STOP 'ABNORMAL END: S/R SALT_PLUME_READPARMS'
+          ENDIF
+       ENDIF
 
       _END_MASTER(myThid)
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.2 2007/11/28 17:55:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_frac.F,v 1.3 2007/12/18 05:34:41 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -33,6 +33,8 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
+#include "SIZE.h"
+#include "SALT_PLUME.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     input arguments
@@ -57,15 +59,63 @@ CEOP
 #ifdef ALLOW_SALT_PLUME
 
 C     !LOCAL VARIABLES:
-      _RL facz
-      INTEGER i
-      _RL        one          , tinee
-      parameter( one = 1. _d 0, tinee = 1.e-1)
+      _RL facz, dd, dd20
+      INTEGER i, kk
+      _RL     one, tempN, tempN20
+      parameter( one = 1. _d 0 )
 
       DO i = 1,imax
          facz = abs(fact*plumek(i))
-         IF (SPDepth(i).GT.facz .AND. SPDepth(i).GT.tinee) THEN
-           plumek(i) = one - min(one,facz/abs(SPDepth(i)))
+         IF (SPDepth(i).GT.facz) THEN
+           IF (PlumeMethod .EQ. 1) THEN    !uniform distribution
+             plumek(i) = one - min(one,facz/abs(SPDepth(i)))
+           ELSEIF (PlumeMethod .EQ. 2) THEN         !exponential distribution
+             dd = abs(SPDepth(i))
+             plumek(i) = one -
+     &                   (exp(facz/dd)-one)/
+     &                   (exp(one    )-one)
+           ELSEIF (PlumeMethod .EQ. 3) THEN        !overshoot 20%
+             dd20 = (abs(SPDepth(i)))
+             dd   = dd20/SPovershoot
+             IF( (facz.GE.dd).AND.(facz.LT.dd20) ) THEN
+              plumek(i) = one - min(one,(facz-dd)/(dd20-dd))
+             ELSE
+              plumek(i) = one
+             ENDIF
+           ELSEIF (PlumeMethod .EQ. 4) THEN
+             dd20 = (abs(SPDepth(i)))
+             tempN   = one                       !input depth temp
+             tempN20 = one
+             DO kk=1,Npower+1
+                tempN   = facz*tempN            !raise to the Npower+1
+                tempN20 = dd20*tempN20
+             ENDDO
+             plumek(i) = one - min(one,tempN/tempN20)
+           ELSEIF (PlumeMethod .EQ. 5) THEN
+             dd   = 0.
+             dd20 = one
+             IF( (facz.GE.dd).AND.(facz.LT.dd20) ) THEN
+               plumek(i) = one - min(one,(facz-dd)/(dd20-dd))
+             ELSE
+               plumek(i) = 0.
+             ENDIF
+           ELSE
+             dd20 = (abs(SPDepth(i)))
+             tempN   = one                       !input depth temp
+             tempN20 = one
+             DO kk=1,Npower+1
+                tempN   = facz*tempN            !raise to the Npower+1
+                tempN20 = dd20*tempN20
+             ENDDO
+             IF(Npower.EQ.1) THEN               !Npower=1
+               plumek(i) = one - min(one,2./dd20*facz-tempN/tempN20)
+             ELSE                               !Npower=2
+               plumek(i) = one - min(one,
+     &                      3./dd20*facz - 3./(dd20*dd20)*facz*facz
+     &                    + tempN/tempN20)
+             ENDIF
+
+           ENDIF
          ELSE
            plumek(i) = 0.
          ENDIF

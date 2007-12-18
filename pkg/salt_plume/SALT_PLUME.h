@@ -1,14 +1,29 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME.h,v 1.3 2007/11/28 17:55:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME.h,v 1.4 2007/12/18 05:34:41 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_SALT_PLUME
 
 C--   SALT_PLUME parameters
 C     Find surface where the potential density (ref.lev=surface) is
-C     larger than surface density plus SaltPlumeCriterion.  Initially
-C     use the default value 0.4 kg/m^3 of Duffy et al, 1999.
-      _RL SaltPlumeCriterion
-      COMMON /SALT_PLUME_PARAMS_R/ SaltPlumeCriterion
+C     larger than surface density plus SaltPlumeCriterion.
+
+C     CriterionType: 1=delta_rho, 2=drhodz, default is 1
+C     Plume_Method: method of distributing salt plume vertically
+C       1=uniform, 2=exp, 3=overshoot, 4=power, 5=dump_at_top, 6=reverse of 4
+C       default is 1
+C     Npower: choices of distributing salt uniformly (0), linear (1),
+C       or higher power (Npower>1); default is 0
+      INTEGER CriterionType, PlumeMethod, Npower
+      COMMON /SALT_PLUME_PARAMS_I/ CriterionType, PlumeMethod, Npower
+
+C     SaltPlumeCriterion
+C       for CriterionType=1, default is 0.4 kg/m^3 of Duffy et al 1999
+C       for CriterionType=2, default is 0.005 kg/m^3/m
+C     SPovershoot: overshooting depth of penetrating salt plume,
+C       so that 1.0 = no-overshoot, 1.2 = 20% overshoot.
+C       default is 1.0
+      _RL SaltPlumeCriterion, SPovershoot
+      COMMON /SALT_PLUME_PARAMS_R/ SaltPlumeCriterion, SPovershoot
 
 C--   SALT_PLUME 2-dim. fields
 C     SaltPlumeDepth :: depth of penetration of salt plumes
