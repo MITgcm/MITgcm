@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.6 2007/12/17 22:05:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.7 2007/12/18 02:00:37 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -137,7 +137,7 @@ C-      Old meta-file without List of Fields
      &      ' try to read pickup as it used to be written'
           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           WRITE(msgBuf,'(4A)') 'WARNING >> ',
-     &      ' until checkpoint59k (2007 Dec 18)'
+     &      ' until checkpoint59l (2007 Dec 17)'
           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          ENDIF
         ENDIF
