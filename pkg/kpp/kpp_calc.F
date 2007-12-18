@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.44 2007/09/22 17:55:32 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.45 2007/12/18 09:05:59 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -106,12 +106,15 @@ C !USES: ===============================================================
 #include "FFIELDS.h"
 #include "GRID.h"
 #include "GAD.h"
+#ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME.h"
+#endif /* ALLOW_SALT_PLUME */
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
 #ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
-#include "tamc_keys.h"
+# include "tamc.h"
+# include "tamc_keys.h"
 #else /* ALLOW_AUTODIFF_TAMC */
       integer ikppkey
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -590,7 +593,7 @@ C     the bottom of the mixing layer.
             worka(i,j) = KPPhbl(i,j,bi,bj)
          ENDDO
       ENDDO
-      CALL PLUMEFRAC(
+      CALL SALT_PLUME_FRAC(
      I     (sNx+2*OLx)*(sNy+2*OLy), minusone,SaltPlumeDepth,
      U     worka,
      I     myTime, myIter, myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.13 2007/09/22 17:55:32 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.14 2007/12/18 09:05:59 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -34,7 +34,10 @@ C     == GLobal variables ==
 #include "KPP.h"
 #include "KPP_PARAMS.h"
 #ifdef ALLOW_GMREDI
-#include "GMREDI.h"
+# include "GMREDI.h"
+#endif
+#ifdef ALLOW_SALT_PLUME
+# include "SALT_PLUME.h"
 #endif
 
 C     == Routine arguments ==
