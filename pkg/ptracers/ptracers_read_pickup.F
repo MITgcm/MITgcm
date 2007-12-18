@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.7 2007/12/18 02:00:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.8 2007/12/18 15:49:14 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -239,6 +239,7 @@ C--    Check for missing fields:
      I                     missFldList,
      I                     nMissing, nbFields,
      I                     myIter, myThid )
+       _BARRIER
 
 C--   end: pickup_read_mdsio
       ENDIF
