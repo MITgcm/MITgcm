@@ -1,12 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.927 2007/12/18 05:34:41 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.928 2007/12/18 16:19:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-checkpoint59l
 o pkg/salt_plume: added various options for salt plume depth
   criterion and for vertical distribution of the salt
+
+checkpoint59l
 o pkg/ptracers: new version of ptracers pickup:
   read meta file and write only fields which are needed to restart.
   ( same logic as main pickup file ; also using pickupStrictlyMatch )
