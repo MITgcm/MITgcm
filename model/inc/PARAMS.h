@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.209 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.210 2007/12/20 00:43:45 dimitri Exp $
 C $Name:  $
 C
 
@@ -84,6 +84,9 @@ C     surfQnetFile    :: File containing surface net heat flux
 C     surfQswFile     :: File containing surface shortwave radiation
 C     dQdTfile        :: File containing thermal relaxation coefficient
 C     EmPmRfile       :: File containing surface fresh water flux
+C           NOTE: for backward compatibility EmPmRfile is specified in
+C                 m/s when using external_fields_load.F.  It is converted
+C                 to kg/m2/s by multiplying by rhoConstFresh.
 C     saltFluxFile    :: File containing surface salt flux
 C     pLoadFile       :: File containing pressure loading
 C     eddyTauxFile    :: File containing zonal Eddy stress data

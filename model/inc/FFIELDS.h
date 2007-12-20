@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.36 2007/11/28 00:18:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.37 2007/12/20 00:43:45 dimitri Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -33,6 +33,9 @@ C              EmPmR = Evaporation - precipitation - runoff
 C              > 0 for increase in salt (ocean salinity)
 C              Typical range: -1e-4 < EmPmR < 1e-4
 C              Southwest C-grid tracer point
+C           NOTE: for backward compatibility EmPmRfile is specified in
+C                 m/s when using external_fields_load.F.  It is converted
+C                 to kg/m2/s by multiplying by rhoConstFresh.
 C
 C  saltFlux :: Net upward salt flux in psu.kg/m^2/s
 C              flux of Salt taken out of the ocean per time unit (second).
