@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.930 2007/12/21 02:54:34 atn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.931 2007/12/21 22:49:09 atn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/salt_plume: clean up salt_plume_frac.F to
+  remove redundancy in PlumeMethod 1 and 4
 o pkg/kpp: added saltplume diagnostics
 o pkg/obcs and pkg/seaice:
   - do not set uice and vice to zero when OB*icefile are unspecified

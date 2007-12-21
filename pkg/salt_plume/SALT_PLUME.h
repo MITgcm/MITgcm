@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME.h,v 1.4 2007/12/18 05:34:41 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME.h,v 1.5 2007/12/21 22:49:09 atn Exp $
 C $Name:  $
 
 #ifdef ALLOW_SALT_PLUME
@@ -8,11 +8,11 @@ C     Find surface where the potential density (ref.lev=surface) is
 C     larger than surface density plus SaltPlumeCriterion.
 
 C     CriterionType: 1=delta_rho, 2=drhodz, default is 1
-C     Plume_Method: method of distributing salt plume vertically
-C       1=uniform, 2=exp, 3=overshoot, 4=power, 5=dump_at_top, 6=reverse of 4
+C     PlumeMethod: method of distributing salt plume vertically
+C       1=power, 2=exp, 3=overshoot, 5=dump_at_top, 6=reverse of 1
 C       default is 1
 C     Npower: choices of distributing salt uniformly (0), linear (1),
-C       or higher power (Npower>1); default is 0
+C       or higher power (Npower>1); default is 0 when PlumeMethod = 1
       INTEGER CriterionType, PlumeMethod, Npower
       COMMON /SALT_PLUME_PARAMS_I/ CriterionType, PlumeMethod, Npower
 
