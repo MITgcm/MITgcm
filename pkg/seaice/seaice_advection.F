@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.13 2007/11/15 08:43:35 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.14 2007/12/21 01:32:35 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -62,7 +62,7 @@ C !USES: ===============================================================
       PARAMETER ( extensiveFld = .TRUE. )
 
 C !INPUT PARAMETERS: ===================================================
-C  tracerIdentity  :: tracer identifier (required only for OBCS)
+C  tracerIdentity  :: tracer identifier
 C  advectionScheme :: advection scheme to use (Horizontal plane)
 C  extensiveFld    :: indicates to advect an "extensive" type of ice field
 C  uFld            :: velocity, zonal component
@@ -479,23 +479,6 @@ C--   keep advective flux (for diagnostics)
            ENDDO
          ENDDO
 
-#ifdef ALLOW_OBCS
-#ifndef DISABLE_SEAICE_OBCS
-C-     Apply open boundary conditions
-          IF ( useOBCS ) THEN
-           IF (tracerIdentity.EQ.GAD_HEFF) THEN
-            CALL OBCS_APPLY_HEFF( bi, bj, localTij, myThid )
-           ELSEIF (tracerIdentity.EQ.GAD_AREA) THEN
-            CALL OBCS_APPLY_AREA( bi, bj, localTij, myThid )
-           ELSEIF (tracerIdentity.EQ.GAD_SALT) THEN
-            CALL OBCS_APPLY_HSALT( bi, bj, localTij, myThid )
-           ELSEIF (tracerIdentity.EQ.GAD_SNOW) THEN
-            CALL OBCS_APPLY_HSNOW( bi, bj, localTij, myThid )
-           ENDIF
-          ENDIF
-#endif /* DISABLE_SEAICE_OBCS */
-#endif /* ALLOW_OBCS */
-
 C-     end if/else update overlap-Only
         ENDIF
 
@@ -685,21 +668,6 @@ C--   keep advective flux (for diagnostics)
             afy(i,j) = af(i,j)
            ENDDO
          ENDDO
-
-#ifdef ALLOW_OBCS
-C-     Apply open boundary conditions
-           IF (useOBCS) THEN
-            IF (tracerIdentity.EQ.GAD_HEFF) THEN
-             CALL OBCS_APPLY_HEFF( bi, bj, localTij, myThid )
-            ELSEIF (tracerIdentity.EQ.GAD_AREA) THEN
-             CALL OBCS_APPLY_AREA( bi, bj, localTij, myThid )
-            ELSEIF (tracerIdentity.EQ.GAD_SALT) THEN
-             CALL OBCS_APPLY_HSALT( bi, bj, localTij, myThid )
-            ELSEIF (tracerIdentity.EQ.GAD_SNOW) THEN
-             CALL OBCS_APPLY_HSNOW( bi, bj, localTij, myThid )
-            ENDIF
-           ENDIF
-#endif /* ALLOW_OBCS */
 
 C      end if/else update overlap-Only
         ENDIF

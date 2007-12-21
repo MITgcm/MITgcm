@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.60 2007/12/05 15:37:13 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.61 2007/12/21 01:32:35 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -26,7 +26,6 @@ C     \===========================================================/
 C \ev
 
 C !USES: ===============================================================
-C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "DYNVARS.h"
@@ -47,7 +46,6 @@ C     === Global variables ===
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C     === Routine arguments ===
 C     myTime - Simulation time
 C     myIter - Simulation timestep number
 C     myThid - Thread no. that called this routine.
@@ -57,9 +55,10 @@ C     myThid - Thread no. that called this routine.
 CEndOfInterface
 
 C !LOCAL VARIABLES: ====================================================
-C     === Local variables ===
-C     i,j,bi,bj - Loop counters
-c     INTEGER i, j, bi, bj
+C     i,j,bi,bj :: Loop counters
+C     iceFld    :: Copy of seaice field
+      INTEGER i, j, bi, bj
+      _RL iceFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 CEOP
@@ -171,6 +170,72 @@ C     because of ugly time level business
 #endif
         CALL SEAICE_GROWTH( myTime, myIter, myThid )
        ENDIF
+
+#ifdef ALLOW_OBCS
+#ifndef DISABLE_SEAICE_OBCS
+       IF ( useOBCS ) THEN
+C-     Apply open boundary conditions
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          IF ( SEAICEadvHeff ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             iceFld(i,j) = HEFF(i,j,1,bi,bj)
+            ENDDO
+           ENDDO
+           CALL OBCS_APPLY_HEFF( bi, bj, iceFld, myThid )
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             HEFF(i,j,1,bi,bj) = iceFld(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+          IF ( SEAICEadvArea ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             iceFld(i,j) = AREA(i,j,1,bi,bj)
+            ENDDO
+           ENDDO
+           CALL OBCS_APPLY_AREA( bi, bj, iceFld, myThid )
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             AREA(i,j,1,bi,bj) = iceFld(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+#ifdef SEAICE_SALINITY
+          IF ( SEAICEadvSALT ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             iceFld(i,j) = HSALT(i,j,bi,bj)
+            ENDDO
+           ENDDO
+           CALL OBCS_APPLY_HSALT( bi, bj, iceFld, myThid )
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             HSALT(i,j,bi,bj) = iceFld(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+#endif /* SEAICE_SALINITY */
+          IF ( SEAICEadvSNOW ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             iceFld(i,j) = HSNOW(i,j,bi,bj)
+            ENDDO
+           ENDDO
+           CALL OBCS_APPLY_HSNOW( bi, bj, iceFld, myThid )
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             HSNOW(i,j,bi,bj) = iceFld(i,j)
+            ENDDO
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* DISABLE_SEAICE_OBCS */
+#endif /* ALLOW_OBCS */
 
 C--   Update overlap regions for a bunch of stuff
        _BARRIER
