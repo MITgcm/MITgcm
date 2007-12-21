@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.2 2007/09/22 17:55:32 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.3 2007/12/21 02:54:34 atn Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -200,26 +200,44 @@ cph)
        jp1 = j + 1
        DO i = imin, imax
         ip1 = i+1
-
         bo(I,J) = - gravity *
      &       ( TTALPHA(I,J,1) * (surfForcT(i,j,bi,bj)+
      &       surfForcTice(i,j,bi,bj)) +
      &       SSBETA(I,J,1) * surfForcS(i,j,bi,bj) )
      &       / rhoSurf(I,J)
-
         bosol(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj) *
      &       recip_Cp*recip_rhoConst
      &       / rhoSurf(I,J)
-#ifdef ALLOW_SALT_PLUME
-        boplume(I,J) = - gravity * SSBETA(I,J,1) 
-     &       * saltPlumeFlux(i,j,bi,bj)
-     &       * recip_rhoConst / rhoSurf(I,J)
-#endif /* ALLOW_SALT_PLUME */
        END DO
       END DO
+
+#ifdef ALLOW_SALT_PLUME
+      IF ( useSALT_PLUME ) THEN
+         DO j = jmin, jmax
+            jp1 = j + 1
+            DO i = imin, imax
+               ip1 = i+1
+               boplume(I,J) = - gravity * SSBETA(I,J,1)
+     &              * saltPlumeFlux(i,j,bi,bj)
+     &              * recip_rhoConst / rhoSurf(I,J)
+            END DO
+         END DO
+      ENDIF
+#endif /* ALLOW_SALT_PLUME */
+
 cph(
 CADJ store ustar = comlev1_kpp, key = ikppkey
 cph)
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+         CALL DIAGNOSTICS_FILL(bo     ,'KPPbo   ',0,1,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(bosol  ,'KPPbosol',0,1,1,bi,bj,myThid)
+#ifdef ALLOW_SALT_PLUME
+         CALL DIAGNOSTICS_FILL(boplume,'KPPboplm',0,1,1,bi,bj,myThid)
+#endif /* ALLOW_SALT_PLUME */
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 c------------------------------------------------------------------------
 c     velocity shear

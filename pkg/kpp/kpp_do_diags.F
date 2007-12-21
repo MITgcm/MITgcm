@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.25 2006/10/23 16:28:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.26 2007/12/21 02:54:34 atn Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -307,6 +307,9 @@ C       Reset averages to zero
        CALL DIAGNOSTICS_FILL(KPPghat   ,'KPPghat ',0,Nr,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(KPPhbl    ,'KPPhbl  ',0,1 ,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(KPPfrac   ,'KPPfrac ',0,1 ,0,1,1,myThid)
+#ifdef ALLOW_SALT_PLUME
+       CALL DIAGNOSTICS_FILL(KPPplumefrac,'KPPpfrac',0,1 ,0,1,1,myThid)
+#endif /* ALLOW_SALT_PLUME */
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
      

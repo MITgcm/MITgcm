@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.36 2007/12/18 09:05:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.37 2007/12/21 02:54:34 atn Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -290,6 +290,8 @@ c
       IMPLICIT NONE
 
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "KPP_PARAMS.h"
 
 c input
@@ -357,6 +359,11 @@ c wm, ws    : turbulent velocity scales         (m/s)
       _RL         minusone
       parameter ( minusone=-1.0 )
 
+#ifdef ALLOW_DIAGNOSTICS
+c     KPPBFSFC - Bo+radiation absorbed to d=hbf*hbl + plume (m^2/s^3)
+      _RL KPPBFSFC(imt,Nr)
+#endif /* ALLOW_DIAGNOSTICS */
+
 c find bulk Richardson number at every grid level until > Ricr
 c
 c note: the reference depth is -epsilon/2.*zgrid(k), but the reference
@@ -373,6 +380,14 @@ c     initialize hbl and kbl to bottomed out values
          kbl(i) = max(kmtj(i),1)
          hbl(i) = -zgrid(kbl(i))
       end do
+
+#ifdef ALLOW_DIAGNOSTICS
+      do kl = 1, Nr
+         do i = 1, imt
+            KPPBFSFC(i,kl) = 0.0
+         enddo
+      enddo
+#endif /* ALLOW_DIAGNOSTICS */
 
       do kl = 2, Nr
 
@@ -405,17 +420,25 @@ c     compute bfsfc= Bo + radiative contribution down to hbf * hbl
          end do
 #ifdef ALLOW_SALT_PLUME
 c     compute bfsfc = plume fraction at hbf * zgrid
-         do i = 1, imt
-            worka(i) = zgrid(kl)
-         enddo
-         call SALT_PLUME_FRAC(
-     I       imt, hbf,SPDepth,
-     U       worka,
-     I       myTime, myIter, myThid)
-         do i = 1, imt
-            bfsfc(i) = bfsfc(i) + boplume(i)*(1. - worka(i))
-         enddo
+         IF ( useSALT_PLUME ) THEN
+           do i = 1, imt
+              worka(i) = zgrid(kl)
+           enddo
+           call SALT_PLUME_FRAC(
+     I         imt, hbf,SPDepth,
+     U         worka,
+     I         myTime, myIter, myThid)
+           do i = 1, imt
+              bfsfc(i) = bfsfc(i) + boplume(i)*(1. - worka(i))
+           enddo
+         ENDIF
 #endif /* ALLOW_SALT_PLUME */
+
+#ifdef ALLOW_DIAGNOSTICS
+         do i = 1, imt
+            KPPBFSFC(i,kl) = bfsfc(i)
+         enddo
+#endif /* ALLOW_DIAGNOSTICS */
 
          do i = 1, imt
             stable(i) = p5 + sign(p5,bfsfc(i))
@@ -465,6 +488,10 @@ c
 
          end do
       end do
+
+#ifdef ALLOW_DIAGNOSTICS
+         CALL DIAGNOSTICS_FILL(KPPBFSFC,'KPPbfsfc',0,Nr,0,1,1,myThid)
+#endif /* ALLOW_DIAGNOSTICS */
 
 cph(
 cph  without this store, there is a recomputation error for
@@ -516,16 +543,18 @@ CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       end do
 
 #ifdef ALLOW_SALT_PLUME
-      do i = 1, imt
-         worka(i) = hbl(i)
-      enddo
-      call SALT_PLUME_FRAC(
-     I       imt,minusone,SPDepth,
-     U       worka,
-     I       myTime, myIter, myThid )
-      do i = 1, imt
-         bfsfc(i) = bfsfc(i) + boplume(i) * (1. - worka(i))
-      enddo
+      IF ( useSALT_PLUME ) THEN
+        do i = 1, imt
+           worka(i) = hbl(i)
+        enddo
+        call SALT_PLUME_FRAC(
+     I         imt,minusone,SPDepth,
+     U         worka,
+     I         myTime, myIter, myThid )
+        do i = 1, imt
+           bfsfc(i) = bfsfc(i) + boplume(i) * (1. - worka(i))
+        enddo
+      ENDIF
 #endif /* ALLOW_SALT_PLUME */
 CADJ store bfsfc = comlev1_kpp
 CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
@@ -601,16 +630,18 @@ CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       end do
 
 #ifdef ALLOW_SALT_PLUME
-      do i = 1, imt
-         worka(i) = hbl(i)
-      enddo
-      call SALT_PLUME_FRAC(
-     I       imt,minusone,SPDepth,
-     U       worka,
-     I       myTime, myIter, myThid )
-      do i = 1, imt
-         bfsfc(i) = bfsfc(i) + boplume(i) * (1. - worka(i))
-      enddo
+      IF ( useSALT_PLUME ) THEN
+        do i = 1, imt
+           worka(i) = hbl(i)
+        enddo
+        call SALT_PLUME_FRAC(
+     I         imt,minusone,SPDepth,
+     U         worka,
+     I         myTime, myIter, myThid )
+        do i = 1, imt
+           bfsfc(i) = bfsfc(i) + boplume(i) * (1. - worka(i))
+        enddo
+      ENDIF
 #endif /* ALLOW_SALT_PLUME */
 CADJ store bfsfc = comlev1_kpp
 CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
@@ -1614,6 +1645,8 @@ c     compute arrays for K = Nrp1
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL(KPPmld,'KPPmld  ',0,1,3,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(DBSFC ,'KPPdbsfc',0,Nr,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(DBLOC ,'KPPdbloc',0,Nr,0,1,1,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.3 2007/11/28 17:55:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_tendency_apply_s.F,v 1.4 2007/12/21 02:54:34 atn Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -55,7 +55,7 @@ C Penetrating saltplume fraction:
           kp1 = klev+1
           IF (klev.EQ.Nr) THEN
            kp1 = klev
-           plumekb(2)=0. _d 0
+           plumekb(2)=abs(rF(klev))
           ENDIF
           IF ( SaltPlumeDepth(i,j,bi,bj) .GT. -rF(kLev) ) THEN
            plumefrac(I,J) = plumekb(1)*maskC(i,j,klev,bi,bj)

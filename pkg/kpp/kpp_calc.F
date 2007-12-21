@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.45 2007/12/18 09:05:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.46 2007/12/21 02:54:34 atn Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -588,20 +588,22 @@ C     the bottom of the mixing layer.
 #ifdef ALLOW_SALT_PLUME
 C     Compute fraction of saltplume (flux) penetrating to
 C     the bottom of the mixing layer.
-      DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-            worka(i,j) = KPPhbl(i,j,bi,bj)
-         ENDDO
-      ENDDO
-      CALL SALT_PLUME_FRAC(
-     I     (sNx+2*OLx)*(sNy+2*OLy), minusone,SaltPlumeDepth,
-     U     worka,
-     I     myTime, myIter, myThid )
-      DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-            KPPplumefrac(i,j,bi,bj) = worka(i,j)
-         ENDDO
-      ENDDO
+      IF ( useSALT_PLUME ) THEN
+        DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+              worka(i,j) = KPPhbl(i,j,bi,bj)
+           ENDDO
+        ENDDO
+        CALL SALT_PLUME_FRAC(
+     I       (sNx+2*OLx)*(sNy+2*OLy), minusone,SaltPlumeDepth,
+     U       worka,
+     I       myTime, myIter, myThid )
+        DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+              KPPplumefrac(i,j,bi,bj) = worka(i,j)
+           ENDDO
+        ENDDO
+      ENDIF
 #endif /* ALLOW_SALT_PLUME */
 
       ENDIF

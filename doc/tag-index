@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.929 2007/12/21 01:40:28 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.930 2007/12/21 02:54:34 atn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kpp: added saltplume diagnostics
 o pkg/obcs and pkg/seaice:
   - do not set uice and vice to zero when OB*icefile are unspecified
   - OBCS_SEAICE_AVOID_CONVERGENCE is undefined by default
