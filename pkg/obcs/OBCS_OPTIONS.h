@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.5 2005/10/10 05:53:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.6 2007/12/21 00:39:44 dimitri Exp $
 C $Name:  $
  
 C CPP options file for OBCS package
@@ -32,6 +32,13 @@ C This includes hooks to sponge layer treatment of uvel, vvel
 
 C balance barotropic velocity
 #undef ALLOW_OBCS_BALANCE
+
+C     When the prescribed open boundary conditions are incosistent with
+C     forcing, for example, six-hourly forcing and monthly sea ice
+C     boundary conditions, ice convergence at edges can cause model
+C     to blow up.  The following CPP option fixes this problem but this
+C     is at the expense of less accurate boundary conditions.
+#undef OBCS_SEAICE_AVOID_CONVERGENCE
 
 #endif /* ALLOW_OBCS */
 #endif /* OBCS_OPTIONS_H */

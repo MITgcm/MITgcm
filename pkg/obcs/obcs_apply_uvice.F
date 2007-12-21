@@ -1,15 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.5 2007/12/21 00:32:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.6 2007/12/21 00:39:44 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
-
-C     When the prescribed open boundary conditions are incosistent with
-C     forcing, for example, six-hourly forcing and daily or monthly sea
-C     ice boundary conditions, ice convergence at edges can cause model
-C     to blow up.  The following CPP option fixes problem, hence it is
-C     turned on by default, but this is at the expense of less accurate
-C     boundary conditions.
-#define OBCS_SEAICE_AVOID_CONVERGENCE
 
       SUBROUTINE OBCS_APPLY_UVICE(
      U                          uFld, vFld,
