@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.4 2007/12/05 16:56:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.5 2007/12/21 00:32:38 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -42,6 +42,7 @@ C     I,J,K,bi,bj - Loop counters
 
 C     Set model variables to OB values on North/South Boundaries
 #ifdef ALLOW_OBCS_NORTH
+      if ( OBNvicefile .NE. ' ' ) then
       DO I=1-Olx,sNx+Olx
 C     Northern boundary
        IF (OB_Jn(I,bi,bj).NE.0) THEN
@@ -57,8 +58,10 @@ C     Northern boundary
      &                              *_maskW(I,OB_Jn(I,bi,bj),K,bi,bj)
        ENDIF
       ENDDO
+      endif
 #endif
 #ifdef ALLOW_OBCS_SOUTH
+      if ( OBSvicefile .NE. ' ' ) then
       DO I=1-Olx,sNx+Olx
 C     Southern boundary
        IF (OB_Js(I,bi,bj).NE.0) THEN
@@ -74,10 +77,12 @@ C     Southern boundary
      &                              *_maskW(I,OB_Js(I,bi,bj),K,bi,bj)
        ENDIF
       ENDDO
+      endif
 #endif
 
 C     Set model variables to OB values on East/West Boundaries
 #ifdef ALLOW_OBCS_EAST
+      if ( OBEuicefile .NE. ' ' ) then
       DO J=1-Oly,sNy+Oly
 C     Eastern boundary
        IF (OB_Ie(J,bi,bj).NE.0) THEN
@@ -93,8 +98,10 @@ C     Eastern boundary
      &                              *_maskS(OB_Ie(J,bi,bj),J,K,bi,bj)
        ENDIF
       ENDDO
+      endif
 #endif
 #ifdef ALLOW_OBCS_WEST
+      if ( OBWuicefile .NE. ' ' ) then
       DO J=1-Oly,sNy+Oly
 C     Western boundary
        IF (OB_Iw(J,bi,bj).NE.0) THEN
@@ -110,6 +117,7 @@ C     Western boundary
      &                              *_maskS(OB_Iw(J,bi,bj),J,K,bi,bj)
        ENDIF
       ENDDO
+      endif
 #endif
 
        ENDDO
