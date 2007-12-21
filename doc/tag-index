@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.928 2007/12/18 16:19:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.929 2007/12/21 01:40:28 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs and pkg/seaice:
+  - do not set uice and vice to zero when OB*icefile are unspecified
+  - OBCS_SEAICE_AVOID_CONVERGENCE is undefined by default
+  - moved seaice tracer obcs after call to seaice_growth
 o pkg/salt_plume: added various options for salt plume depth
   criterion and for vertical distribution of the salt
 
