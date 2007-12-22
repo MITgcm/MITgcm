@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.27 2007/10/19 14:36:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.28 2007/12/22 23:58:45 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,10 +78,10 @@ C     Write restart file for 2nd-Order moment (active) Tracers
 
 #ifdef  ALLOW_OBCS
 C     SPK 4/9/01: Open boundary checkpointing
-      IF (useOBCS) THEN
-        CALL OBCS_WRITE_CHECKPOINT(
-     &       prec, lgf, permPickup, myIter, myThid)
-      ENDIF
+c      IF (useOBCS) THEN
+c        CALL OBCS_WRITE_CHECKPOINT(
+c     &       prec, lgf, permPickup, myIter, myThid)
+c      ENDIF
 #endif  /* ALLOW_OBCS */
 
 #ifdef  ALLOW_SEAICE
