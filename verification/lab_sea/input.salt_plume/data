@@ -48,14 +48,15 @@
  momStepping=.TRUE.,
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
-#globalFiles=.TRUE.,
-#- not safe to use globalFiles in multi-processors runs; set instead useSingleCpuIO
+ tempAdvScheme=7,
+ saltAdvScheme=7,
  useSingleCpuIO=.TRUE.,
  allowFreezing=.FALSE.,
  HeatCapacity_Cp = 3986.D0,
  gravity         = 9.8156,
  rhoNil          = 1027.D0,
  useCDscheme=.TRUE.,
+ convertFW2Salt=-1,
  &
 
 # Elliptic solver parameters
@@ -134,6 +135,6 @@
 #
  &PARM05
  bathyFile       = 'bathy.labsea1979',
- hydrogThetaFile = 'LevCli_temp.labsea1979',
+ hydrogThetaFile = 'LevCli_temp.labsea1979.m8',
  hydrogSaltFile  = 'LevCli_salt.labsea1979',
  &
