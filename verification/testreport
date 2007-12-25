@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.109 2007/12/13 18:28:41 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.110 2007/12/25 17:30:25 jmc Exp $
 #  $Name:  $
 #
 
@@ -986,6 +986,8 @@ else
 fi
 
 #  Create a uniquely named directory to store results
+CMDLINE=$0
+for xx in "$@" ; do CMDLINE="$CMDLINE '$xx'" ; done
 MACH=`hostname`
 UNAMEA=`uname -a`
 DATE=`date +%Y%m%d`
@@ -1006,9 +1008,10 @@ if test "x$RETVAL" != x0 ; then
     exit 1
 fi
 SUMMARY="$DRESULTS/summary.txt"
-printf "Start time:  " >> $SUMMARY
 start_date=`date`
 echo $start_date > $SUMMARY
+echo 'run:' $CMDLINE >> $SUMMARY
+echo 'on :' $UNAMEA  >> $SUMMARY
 
 of_path=
 if test "x$OPTFILE" != xNONE ; then
