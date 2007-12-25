@@ -1,0 +1,211 @@
+#!/bin/sh
+
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.1 2007/12/25 22:10:51 jmc Exp $
+# $Name:  $
+
+usage()
+{
+        echo "Usage: `basename $0` [OPTIONS]"
+        echo "    -> perform test 2+2=4 for several experiments"
+        echo ""
+        echo "where possible OPTIONS are:"
+        echo "  -help         : print usage"
+        echo "  -t   LIST_EXP : only check experiments in LIST_EXP"
+        echo "  -skd LIST_EXP : skip experiments in LIST_EXP"
+        echo "  (-o) STRING   : used to build output directory name"
+        echo "                      (DEF=\"hostname\")"
+        echo "  (-a) STRING   : email address to send output to"
+        echo "                      (DEF=\"\" no email is sent)"
+        echo "  -clean        : clean output & reset"
+        exit
+}
+
+CLEAN=0
+TESTDIRS=
+SKIPDIRS=
+OUTDIR=`hostname`
+ADDRESS=
+SCRIPT='../tools/tst_2+2'
+MPACK="../tools/mpack-1.6/mpack"
+here=`pwd`
+yy=
+for xx
+do
+    if test -n "$yy"; then
+        eval "$yy=\$xx"
+        yy=
+    else
+      case $xx in
+      -help ) usage ;;
+      -clean) CLEAN=1 ;;
+      -t    ) yy=TESTDIRS ;;
+      -skd  ) yy=SKIPDIRS ;;
+      -a    ) yy=ADDRESS ;;
+      -o    ) yy=OUTDIR ;;
+        *) echo "Error: unrecognized option: "$xx ; usage ; exit ;;
+      esac
+    fi
+done
+#------------------------
+
+if test "x$TESTDIRS" = x
+then
+ TESTDIRS=`ls `
+fi
+LIST=""
+for xx in $TESTDIRS
+do
+  yy=`echo $SKIPDIRS | grep -c $xx`
+  if test $yy = 0 ; then
+    if test -f $xx/results/output.txt
+    then
+       LIST=${LIST}" "$xx
+#   else
+#      echo ""; echo -n " -- skip \"$xx\" (not a directory !)"
+    fi
+# else
+#      echo ""; echo -n " -- skip \"$xx\" (excluded)"
+  fi
+done
+
+if test -x $SCRIPT ; then
+ echo "run script '$SCRIPT' for experiment in:"
+ echo " $LIST"
+ yy=`echo $SCRIPT | grep -c '^\/'` 
+ if test $yy = 0 ; then SCRIPT="../../$SCRIPT" ; fi
+else
+ echo "ERROR: script '$SCRIPT' not found or not executable"
+ exit
+fi
+echo ""
+#------------------------
+
+if test $CLEAN = 1 ; then
+ for xx in $LIST
+ do
+  listD='run '`(cd $xx/results ; ls output.*.txt 2> /dev/null | sed 's/^output\./tr_run./g' | sed 's/\.txt$//g' )`
+  for yy in $listD
+  do
+    if test -r $xx/$yy/data.tst
+    then
+      echo "clean dir:" $xx/$yy
+      cd $xx/$yy 
+      echo ' ' >> outp.tst_2+2.log
+      echo $SCRIPT 4 >> outp.tst_2+2.log
+      $SCRIPT 4 >> outp.tst_2+2.log 2>&1
+      cd $here
+    fi
+  done
+ done
+ exit
+fi
+#------------------------
+#  Create a uniquely named directory to store results
+DATE=`date +%Y%m%d`
+BASE="rs_"$OUTDIR"_"$DATE"_"
+xx=0
+DRESULTS="$BASE$xx"
+while test -e $DRESULTS ; do
+    xx=$(( $xx + 1 ))
+    DRESULTS="$BASE$xx"
+done
+mkdir $DRESULTS
+out=$?
+if test "x$out" != x0 ; then
+    echo "ERROR: Can't create results directory \"./$DRESULTS\""
+    exit 1
+fi
+SUMMARY="$DRESULTS/summary.txt"
+OPTFILE=
+
+printf "Start time:  " >  $SUMMARY
+date  >> $SUMMARY
+if test -f tr_out.txt ; then
+ echo ' using output from:' >> $SUMMARY
+ sed -n '2,/OPTFILE/ p' tr_out.txt >> $SUMMARY
+ echo >> $SUMMARY
+fi
+echo  'test 2+2=4 summary :' >> $SUMMARY
+echo  >> $SUMMARY
+echo 'P. Run  Result     experiment'  >> $SUMMARY
+echo '  1 2 3'  >> $SUMMARY
+
+for xx in $LIST
+do
+  echo ==============================================================================
+  listD='run '`(cd $xx/results ; ls output.*.txt 2> /dev/null | sed 's/^output\./tr_run./g' | sed 's/\.txt$//g' )`
+  for yy in $listD
+  do
+    if test -f $xx/$yy/output.txt
+    then
+      if test "x$OPTFILE" = x -a -f $xx/build/Makefile ; then
+        comm=`grep '^# OPTFILE=' $xx/build/Makefile 2>/dev/null | head -1 | sed 's/^# //'`
+        echo "from '$xx/build/Makefile', extract:" > $DRESULTS/genmake_state
+        echo $comm >> $DRESULTS/genmake_state
+        eval $comm
+      fi
+      if test $yy = 'run' ; then nam=$xx 
+      else nam=$xx`echo $yy | sed 's/tr_run//'` ; fi
+      echo -n "Entering $xx/$yy :"
+      cd $xx/$yy
+      echo $SCRIPT All > outp.tst_2+2.log ; echo ' ' >> outp.tst_2+2.log
+      $SCRIPT All >> outp.tst_2+2.log 2>&1
+      out=$?
+      case $out in
+       0 ) echo ' pass test 2+2=4'
+           echo "Y Y Y Y  pass   <- $nam" >> ../../$SUMMARY ;;
+      4|5) echo "Y Y Y Y FAIL ($out) - $nam" >> ../../$SUMMARY ;;
+       3 ) echo "Y Y Y N FAIL ($out) - $nam" >> ../../$SUMMARY ;;
+       2 ) echo "Y Y N N FAIL ($out) - $nam" >> ../../$SUMMARY ;;
+       1 ) echo "Y N N N FAIL ($out) - $nam" >> ../../$SUMMARY ;;
+       * ) echo "N N N N FAIL ($out) - $nam" >> ../../$SUMMARY ;;
+      esac
+      if test $out != '0'
+      then 
+        echo " test 2+2=4 FAIL (exit $out)"
+        echo " "
+        tail -5 outp.tst_2+2.log
+        echo " "
+      fi
+      cd $here
+    fi
+  done
+done
+printf "End time:    " >> $SUMMARY
+date >> $SUMMARY
+
+#  If address was supplied and mpack exist, then send email using mpack.
+if test "x$ADDRESS" != xNONE -a "x$ADDRESS" != x ; then
+    if test -x $MPACK ; then
+        tar -cf $DRESULTS".tar" $DRESULTS > /dev/null 2>&1 \
+            && gzip $DRESULTS".tar" \
+            && $MPACK -s MITgcm-test -m 3555000 $DRESULTS".tar.gz" $ADDRESS
+        out=$?
+        if test "x$out" != x0 ; then
+            echo
+            echo "Warning: The tar, gzip, & mpack step failed.  Please send email"
+            echo "  to <MITgcm-support@mitgcm.org> for help.  You may copy the "
+            echo "  summary of results from the directory \"$DRESULTS\"."
+            echo
+        else
+            echo
+            echo "An email containing results was sent to the following address:"
+            echo "  \"$ADDRESS\""
+            echo
+        fi
+        test -f $DRESULTS".tar"  &&  rm -f $DRESULTS".tar"
+        test -f $DRESULTS".tar.gz"  &&  rm -f $DRESULTS".tar.gz"
+    else
+        echo "Warning: $MPACK is not executable => no email was sent"
+        echo
+    fi
+fi
+
+# save output and remove output Dir (if no address was provided)
+# note: to keep the output Dir without sending email, use option "-a NONE"
+if test -f tst_2+2_out.txt ; then mv -f tst_2+2_out.txt tst_2+2_out.old ; fi
+cp -p $SUMMARY tst_2+2_out.txt
+if test "x$ADDRESS" = x ; then
+  rm -rf $DRESULTS
+fi
+
