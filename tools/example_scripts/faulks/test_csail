@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.12 2007/11/30 17:05:50 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.13 2007/12/25 22:50:35 jmc Exp $
 
 #  Ed Hill
 
@@ -57,6 +57,7 @@ mkdir $new_dir
   echo
   $comm > $tdir/output_g77 2>&1
   tail -100 $tdir/output_g77
+  echo
   popd
 
 new_dir='MITgcm_adm'
@@ -76,6 +77,7 @@ mkdir $new_dir
   echo
   $comm > $tdir/output_adm 2>&1
   tail -100 $tdir/output_adm
+  echo
   popd
 
 new_dir='MITgcm_ifort'
@@ -92,6 +94,16 @@ mkdir $new_dir
   echo
   $comm > $tdir/output_ifc 2>&1
   tail -100 $tdir/output_ifc
+  echo
+#-- also test restart (test 2+2=4)
+  echo "testing restart using:"
+  comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
+  echo "  \"$comm\""
+  echo "======================"
+  echo
+  $comm > $tdir/output_2+2 2>&1
+  tail -100 $tdir/output_2+2
+  echo
   popd
 
 new_dir='MITgcm_pgi'
@@ -117,4 +129,5 @@ mkdir $new_dir
   echo
   $comm > $tdir/output_pgi_2 2>&1
   tail -100 $tdir/output_pgi_2
+  echo
   popd
