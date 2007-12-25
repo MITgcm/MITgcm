@@ -1,0 +1,383 @@
+#! /usr/bin/env bash
+
+# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.1 2007/12/25 22:07:54 jmc Exp $
+# $Name:  $
+
+rnp_loc()
+{
+#   rnp_loc arg_1 arg_2
+#   rename files with prefix = 'arg_1' to files with prefix = 'arg_2'
+    echo ' rnp_loc:' $1 $2
+#   rnp -s $1 $2
+    listY=`ls -1 $1*`
+    for yy in $listY
+    do
+      zz=`echo $yy | sed "s/^$1/$2/"`
+      mv $yy $zz
+    done
+}
+
+#---------------------------
+
+#- default:
+Nit=2
+prt=1    # 1 = print some informations ; 2 = print more informations
+action=1
+cmd='mv -f'
+tmpDir='temp_tst'
+
+#- executable:
+mpi=0
+if [ $mpi -ge 1 ]
+then gcmExc=run_ifc_mpi
+else gcmExc=mitgcmuv
+fi
+
+#- exit status:
+# 0 -> test is successful
+# 1 -> fail in 1rst run 
+# 2 -> fail in 2nd  run 
+# 3 -> fail in 3rd  run 
+# 4 -> pickup*.data (written at the end of 2+2 & 4 it run) are different
+# 5 -> pickup*.meta (written at the end of 2+2 & 4 it run) are different
+# 6 -> missing 'data.tst' file (removed or not yet generated ?)
+# 7 -> missing standard output from previous run
+# 8 -> missing information (in standard output of previous run) about pickup
+# 9 -> error in argument list
+
+nArg=$#
+if [ $nArg -ge 3 ]
+then
+ if test $2 = '-exe' ; then gcmExc=$3 ; nArg=`expr $nArg - 2` ; fi
+ if test $1 = '-exe' ; then gcmExc=$2 ; shift ; shift ; nArg=$# ; fi
+fi
+
+case $nArg in
+  1) ;;
+   *) echo "Usage: `basename $0` flag [-exe EXECUTABLE]"
+      echo " Check restart: compare 1 run of 2 x $Nit it long"
+      echo "     with 2 consecutive runs of $Nit it long each"
+      echo " where: flag = 0 -> prepare (from a previous run) pickup & data files"
+      echo "        flag = 1 -> do the 3 runs (with EXECUTABLE, default=mitgcmuv)"
+      echo "        flag = 2 -> compare std_outp"
+      echo "        flag = 3 -> compare pickup files"
+      echo "        flag = 4 -> clean-up output files"
+      echo "      flag = All -> do 0,1,2,3,4 sequentially"
+      exit 9 ;;
+esac
+flag=$1
+
+#=========================
+
+if test $flag = '0' -o $flag = 'All' ; then
+#----------------------------------------------------------------------
+# last pickup written (from previous run):
+if [ $mpi -ge 1 ] 
+then outpRun='STDOUT.0000'
+else outpRun='output.txt'
+fi
+if test -r $outpRun 
+then
+# grep ' %CHECKPOINT ' $outpRun | tail -1
+  lastPick=`grep ' %CHECKPOINT ' $outpRun | sed 's/^.*%CHECKPOINT //' | tail -1`
+  if test "x$lastPick" = x 
+  then 
+    echo "no pickup information written in '$outpRun' from previous run"
+    exit 8
+  else
+    iter=`echo $lastPick | awk '{print $1}'`
+    zz=`echo $lastPick | awk '{print $2}'`
+    echo "from previous run std.outp, lastPick='$lastPick' ; iter='$iter' ; zz='$zz'"
+  fi
+else 
+  echo "no standard output file '$outpRun' from previous run"
+  exit 7
+fi
+
+#- rename pickup (if needed)
+sufx=`printf "%10.10i\n" $iter`
+if test $zz = $sufx
+then
+ echo "no need to change pickup sufix"
+else
+# echo "rename pickup sufix: $zz -> $sufx"
+ listP=`ls pickup*.${zz}* 2> /dev/null | sed 's/\..*//g' | uniq`
+ if test "x$listP" = x
+ then echo ' rename' $zz  '->' $sufx ': no file to rename'
+ else
+  if [ $prt -ge 1 ] ; then echo ' rename' $zz  '->' $sufx 'for all:' $listP ; fi
+  for yy in $listP
+  do
+    listF=`ls -1 $yy.${zz}*`
+    for xx in $listF
+    do
+      new=`echo $xx | sed "s/^$yy\.$zz/$yy\.$sufx/"`
+      if [ $prt -ge 2 ] ; then echo '  '$cmd $xx $new ; fi
+      if test $action = 1 ; then    $cmd $xx $new ; fi
+    done
+  done
+ fi
+fi
+#-------------------------
+echo "prepare parameter file 'data.tst' :"
+cp -p -f data data.tst
+listOut='startTime endTime nIter0 nTimeSteps nEndIter chkPtFreq pChkPtFreq globalFiles'
+listOut=$listOut' useSingleCpuIO pickupSuff usePickupBeforeC54 mdsioLocalDir'
+#- comment out (in data.tst) all parameters from list: 'listOut'
+for yy in $listOut
+do
+  if [ $prt -ge 2 ] ; then echo -n '  commenting out:' $yy ; fi
+  nn=`grep -i -c "^ *$yy *=" data.tst`
+  if [ $nn -ge 1 ]
+  then
+    listN=`grep -i -n "^ *$yy *=" data.tst | sed 's/:.*$//'`
+    if [ $prt -ge 2 ] ; then echo " : found on line: $listN" ; fi
+    for ll in $listN
+    do
+      sed "$ll s/^./#&/" data.tst > data.tmp_$$
+#     diff data.tmp_$$ data.tst
+      mv -f data.tmp_$$ data.tst
+    done
+  else if [ $prt -ge 2 ] ; then echo ' : not found' ; fi
+  fi
+done
+if [ $prt -ge 2 ] ; then echo ' ' ; fi
+# add nIter0 & nTimeSteps in namelist "PARM03":
+Dbl=`expr $Nit \* 2`
+sed "/^ *\&PARM03/a \ nTimeSteps=$Dbl," data.tst > data.tmp_$$
+mv -f data.tmp_$$ data.tst
+sed "/^ *\&PARM03/a \ nIter0=$iter," data.tst > data.tmp_$$
+mv -f data.tmp_$$ data.tst
+echo "prepare file 'data.tst' : done"
+if  [ $prt -ge 1 ] ; then 
+  echo ' diff data.tst data' ; diff data.tst data ; echo ' ' ;
+fi
+#---- clean up current dir: move output to temp_tst dir:
+if test $action = 1 ; then
+ rm -rf $tmpDir
+ mkdir $tmpDir
+ mv -f *.data $tmpDir
+ mv -f *.meta $tmpDir
+ mv -f *.txt $tmpDir
+ listS=`ls $tmpDir/pickup*.${sufx}* 2> /dev/null | head -1`
+ if test "x$listS" != x ; then mv $tmpDir/pickup*.${sufx}* . ; fi
+#- move main parameter file "data":
+ mv -f data $tmpDir
+#- do not deal with MNC pickup at all:
+ cp -p -f data.pkg data.tmp_$$
+ mv -f data.pkg $tmpDir
+ mv -f data.tmp_$$ data.pkg
+ yy='useMNC'
+  if [ $prt -ge 2 ] ; then echo -n "  commenting out: $yy in data.pkg" ; fi
+  nn=`grep -i -c "^ *$yy *=" data.pkg`
+  if [ $nn -ge 1 ]
+  then
+    listN=`grep -i -n "^ *$yy *=" data.pkg | sed 's/:.*$//'`
+    if [ $prt -ge 2 ] ; then echo " : found on line: $listN" ; fi
+    for ll in $listN
+    do
+      sed "$ll s/^./#&/" data.pkg > data.tmp_$$
+      if  [ $prt -ge 1 ] ; then echo ' changes in data.pkg' 
+        diff data.tmp_$$ data.pkg ; echo ' ' ; fi
+      mv -f data.tmp_$$ data.pkg
+    done
+  else if [ $prt -ge 2 ] ; then echo ' : not found' ; echo ' ' ; fi
+  fi
+fi
+#----------------------------------------------------------------------
+fi
+
+#=========================
+
+if test -r data.tst ; then
+#- extract length of runs & starting iter number from file "data.tst"
+ num0=`sed -n 's/^ nIter0=//p' data.tst | sed 's/,//g' | sed 's/ //g'`
+ Dbl=`sed -n 's/^ nTimeSteps=//p' data.tst | sed 's/,//g'`
+ Nit=`expr $Dbl / 2`
+# Nit = Nb of iter of 2nd & 3rd run (1rst one is 2 x Nit iter long)
+else
+ echo '=> Need a readable "data.tst" file for the 2 x Nit iterations run'
+ exit 6
+fi
+
+#- dir where to put the results :
+dir1=res_2it
+dir2=res_1iA
+dir3=res_1iB
+
+#---------------------------
+num1=`expr $num0 + $Nit`
+num2=`expr $num0 + $Dbl`
+num0c=`printf "%10.10i\n" $num0`
+num1c=`printf "%10.10i\n" $num1`
+num2c=`printf "%10.10i\n" $num2`
+echo " start-end iter: $num0 , $num1 , $num2"
+echo " sufix: '$num0c' '$num1c' '$num2c'"
+echo ' gcmExc='$gcmExc
+#exit
+#---------------------------
+
+if test $flag = '1' -o $flag = 'All' ; then
+#----------------------------------------------------------------------
+#- check at the end of each run for pickup with prefix:
+pref='pickup'
+offLine=`grep -i -c '^ *useOffLine *= *\.TRUE\.' data.pkg`
+if [ $offLine -ge 1 ] ; then pref='pickup_ptracers' ; fi
+#---------------------------
+if test -d $dir1 -o -d $dir2 -o  -d $dir3
+then echo -n 'remove dir: '
+ if test -d $dir1 ; then echo -n $dir1 ' , ' ; rm -r $dir1 ; fi
+ if test -d $dir2 ; then echo -n $dir2 ' , ' ; rm -r $dir2 ; fi
+ if test -d $dir3 ; then echo -n $dir3 ' , ' ; rm -r $dir3 ; fi
+ echo ' '
+fi
+mkdir $dir1 $dir2 $dir3
+rm -f STDERR.0000
+
+#--- 1rst run ( 2 x Nit iter )
+cp -p data.tst data
+echo '==> START RUN 2 x' $Nit 'it'
+if [ $mpi -ge 1 ]
+then ./$gcmExc std_outp.2it > TTT.out.2it 2>&1
+else ./$gcmExc > std_outp.2it
+fi
+mv STDERR.0000 std__err.2it
+out=`egrep -c 'STOP ABNORMAL END' std_outp.2it`
+if test $out != 0
+then echo "==> RUN 2 x $Nit it : ABNORMAL END => exit" ; exit 1 ; fi
+if test -f $pref.ckptA.001.001.data
+then echo "==>  END  RUN 2 x $Nit it"
+else echo "==> RUN 2 x $Nit it STOP without writing $pref => exit" ; exit 1 ; fi
+listP=`ls pickup*.ckptA* | sed 's/\..*//g' | uniq`
+echo ' listP=' $listP
+for xx in $listP
+do
+  rnp_loc $xx.ckptA $xx.$num2c
+done
+mv *.0??.0??.* $dir1
+txtF=`ls -1 *.txt 2> /dev/null`
+mv R?.data R?.meta DR?.data DR?.meta $txtF $dir1
+listS=`ls $dir1/pickup*.${num0c}* 2> /dev/null | head -1`
+if test "x$listS" != x ; then mv $dir1/pickup*.${num0c}* . ; fi
+#---  2nd run ( Nit iter , restart from same Iter = num0 as 1rst run )
+sed "s/^ nTimeSteps=$Dbl/ nTimeSteps=$Nit/g" data.tst > data
+echo '==> START RUN 1iA'
+if [ $mpi -ge 1 ]
+then ./$gcmExc std_outp.1iA > TTT.out.1iA 2>&1
+else ./$gcmExc > std_outp.1iA
+fi
+mv STDERR.0000 std__err.1iA
+out=`egrep -c 'STOP ABNORMAL END' std_outp.1iA`
+if test $out != 0
+then echo "==> RUN 1iA : ABNORMAL END => exit" ; exit 2 ; fi
+if test -f $pref.ckptA.001.001.data
+then echo "==>  END  RUN 1iA"
+else echo "==> RUN 1iA STOP without writing $pref => exit" ; exit 2 ; fi
+for xx in $listP
+do
+ rnp_loc $xx.ckptA $xx.$num1c
+done
+mv *.0??.0??.* $dir2
+txtF=`ls -1 *.txt 2> /dev/null`
+mv R?.data R?.meta DR?.data DR?.meta $txtF $dir2
+listS=`ls $dir2/pickup*.${num0c}* 2> /dev/null | head -1`
+if test "x$listS" != x ; then mv $dir2/pickup*.${num0c}* . ; fi
+#---  3rd run ( Nit iter , restart from 2nd )
+ln -s $dir2/pickup*.$num1c.* .
+sed "s/^ nIter0=$num0/ nIter0=$num1/g" data > data.tmp
+mv -f data.tmp data
+echo '==> START RUN 1iB'
+if [ $mpi -ge 1 ]
+then ./$gcmExc std_outp.1iB > TTT.out.1iB 2>&1
+else ./$gcmExc > std_outp.1iB
+fi
+mv STDERR.0000 std__err.1iB
+out=`egrep -c 'STOP ABNORMAL END' std_outp.1iB`
+if test $out != 0
+then echo "==> RUN 1iB : ABNORMAL END => exit" ; exit 3 ; fi
+if test -f $pref.ckptA.001.001.data
+then echo "==>  END  RUN 1iB"
+else echo "==> RUN 1iB STOP without writing $pref => exit" ; exit 3 ; fi
+for xx in $listP
+do
+ rnp_loc $xx.ckptA $xx.$num2c
+done
+mv *.0??.0??.* $dir3
+txtF=`ls -1 *.txt 2> /dev/null`
+mv R?.data R?.meta DR?.data DR?.meta $txtF $dir3
+listS=`ls $dir3/pickup*.${num0c}* 2> /dev/null | head -1`
+if test "x$listS" != x ; then mv $dir3/pickup*.${num0c}* . ; fi
+rm $dir3/pickup*.$num1c.*
+rm data
+#----------------------------------------------------------------------
+fi
+
+if test $flag = '2' -o $flag = 'All' ; then
+#----------------------------------------------------------------------
+echo ' ' ; echo '== compare cg2d_init_res :'
+echo ' run 1iA:'
+ grep "cg2d_init_res" std_outp.1iA \
+      | sed 's/.* cg2d_init_res =//'
+echo ' run 1iB:'
+ grep "cg2d_init_res" std_outp.1iB \
+      | sed 's/.* cg2d_init_res =//'
+echo ' run 2it:'
+ grep "cg2d_init_res" std_outp.2it \
+      | sed 's/.* cg2d_init_res =//'
+#----------------------------------------------------------------------
+fi
+
+if test $flag = '3' -o $flag = 'All' ; then
+#----------------------------------------------------------------------
+echo ' ' 
+echo "== diff pickup files : end of 1rst run (2x$Nit it) & end of 3rd run (2nd $Nit it)"
+listP=`( cd $dir1 ; ls pickup*.$num2c* | sed 's/\..*//g' | uniq )`
+chkmeta='Y'
+for yy in $listP
+do
+ listY=`(cd $dir1 ; ls $yy.$num2c.*.data | sed "s/$yy\.$num2c\.//" | sed "s/\.data//")`
+ zz=$yy.$num2c
+ echo '--> file='$zz', listY='$listY
+ for xx in $listY
+ do
+   echo ' diff' $dir1/$zz.$xx.data $dir3
+   diff $dir1/$zz.$xx.data $dir3
+   out=$?
+   if test $out != 0 ; then
+    echo 'Diff outp=' $out ' ==> stop'
+    exit 4
+   fi
+   if test $chkmeta = 'Y' -a -f $dir1/$zz.$xx.meta ; then
+    echo ' diff' $dir1/$zz.$xx.meta $dir3
+    diff $dir1/$zz.$xx.meta $dir3
+    out=$?
+    if test $out != 0 ; then 
+     echo 'Diff outp=' $out ' ==> stop'
+     exit 5
+    fi
+   fi
+ done
+done
+#----------------------------------------------------------------------
+fi
+
+if test $flag = '4' -o $flag = 'All' ; then
+#-------------
+echo ' ' 
+echo "== clean-up and reset :"
+ echo '--> remove output dir and output files:'
+ echo ' rm -rf' $dir1 $dir2 $dir3
+ rm -rf $dir1 $dir2 $dir3
+ echo ' rm -f' std_????.?i?
+ rm -f std_????.?i?
+ echo ' rm -f' data.pkg data.tst
+ rm -f data.pkg data.tst
+#- move back files from temp_tst dir:
+ if test -d $tmpDir ; then
+  echo "--> move back files from 'temp_tst' dir."
+  cd $tmpDir ; mv -f * .. ; cd ..
+  rmdir $tmpDir
+ fi
+#-------------
+fi
+exit 0
