@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.13 2007/12/25 22:50:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.14 2007/12/26 14:52:50 jmc Exp $
 
 #  Ed Hill
 
@@ -44,6 +44,7 @@ new_dir='MITgcm_g77'
 test -e $new_dir  &&  rm -rf $new_dir
 mkdir $new_dir
 
+  echo "================================================================"
   pushd $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
@@ -54,7 +55,6 @@ mkdir $new_dir
   fi
   echo "  \"$comm\""
   echo "======================"
-  echo
   $comm > $tdir/output_g77 2>&1
   tail -100 $tdir/output_g77
   echo
@@ -64,6 +64,7 @@ new_dir='MITgcm_adm'
 test -e $new_dir  &&  rm -rf $new_dir
 mkdir $new_dir
 
+  echo "================================================================"
   pushd $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
@@ -74,9 +75,8 @@ mkdir $new_dir
   fi
   echo "  \"$comm\""
   echo "======================"
-  echo
   $comm > $tdir/output_adm 2>&1
-  tail -100 $tdir/output_adm
+  tail -60 $tdir/output_adm
   echo
   popd
 
@@ -84,6 +84,7 @@ new_dir='MITgcm_ifort'
 test -e $new_dir  &&  rm -rf $new_dir
 mkdir $new_dir
 
+  echo "================================================================"
   pushd $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
@@ -91,7 +92,6 @@ mkdir $new_dir
   comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a jmc@mitgcm.org"
   echo "  \"$comm\""
   echo "======================"
-  echo
   $comm > $tdir/output_ifc 2>&1
   tail -100 $tdir/output_ifc
   echo
@@ -100,9 +100,9 @@ mkdir $new_dir
   comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
   echo "  \"$comm\""
   echo "======================"
-  echo
   $comm > $tdir/output_2+2 2>&1
-  tail -100 $tdir/output_2+2
+# tail -100 $tdir/output_2+2
+  echo ; cat tst_2+2_out.txt
   echo
   popd
 
@@ -110,6 +110,7 @@ new_dir='MITgcm_pgi'
 test -e $new_dir  &&  rm -rf $new_dir
 mkdir $new_dir
 
+  echo "================================================================"
   pushd $new_dir
   cp -ra ../MITgcm/* .
   echo "Running testreport using:"
@@ -118,15 +119,14 @@ mkdir $new_dir
   comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -dd"
   echo "  \"$comm\""
   echo "======================"
-  echo
   $comm > $tdir/output_pgi_1 2>&1
   tail -100 $tdir/output_pgi_1
+  echo
   echo "Running testreport using:"
  #cd verification
   comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a jmc@mitgcm.org -q"
   echo "  \"$comm\""
   echo "======================"
-  echo
   $comm > $tdir/output_pgi_2 2>&1
   tail -100 $tdir/output_pgi_2
   echo
