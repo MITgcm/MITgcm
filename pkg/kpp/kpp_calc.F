@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.46 2007/12/21 02:54:34 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.47 2007/12/27 21:26:49 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -499,7 +499,7 @@ c     matching diffusivities at bottom of KPP PBL
      I     , maskC(1-Olx,1-Oly,1,bi,bj)
      I     , bo, bosol
 #ifdef ALLOW_SALT_PLUME
-     I     , boplume,SaltPlumeDepth
+     I     , boplume, SaltPlumeDepth(1-Olx,1-Oly,bi,bj)
 #endif /* ALLOW_SALT_PLUME */
      I     , dbloc, Ritop, work2
      I     , KPPdiffKzS(1-Olx,1-Oly,1,bi,bj)
@@ -591,11 +591,12 @@ C     the bottom of the mixing layer.
       IF ( useSALT_PLUME ) THEN
         DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
+              work2(i,j) = SaltPlumeDepth(i,j,bi,bj)
               worka(i,j) = KPPhbl(i,j,bi,bj)
            ENDDO
         ENDDO
         CALL SALT_PLUME_FRAC(
-     I       (sNx+2*OLx)*(sNy+2*OLy), minusone,SaltPlumeDepth,
+     I       (sNx+2*OLx)*(sNy+2*OLy), minusone, work2,
      U       worka,
      I       myTime, myIter, myThid )
         DO j=1-OLy,sNy+OLy
