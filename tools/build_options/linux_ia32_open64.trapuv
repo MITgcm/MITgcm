@@ -1,11 +1,19 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_open64.trapuv,v 1.1 2007/12/14 03:01:41 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_open64.trapuv,v 1.2 2007/12/28 21:20:53 jmc Exp $
 #  $Name:  $
 #
 # Build options for Fedore Core 4 i686 Pentium4
 # tested on ACES, (Linux a54-1727-072 2.6.11.7smp-perfctr-tty #5 SMP Fri Apr 22 15:07:50 EDT 2005 i686 i686 i386 GNU/Linux) system 20071213
 #
+#  Please note the appropriate module command:
+#    module add open64
+#
+#  Set environment variable 'GSL_IEEE_MODE' if using "-gsl" option:
+#   sh,bash:
+#    export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
+#  csh/tcsh:
+#    setenv GSL_IEEE_MODE double-precision,mask-underflow,mask-denormalized
 
 CC=opencc
 FC=openf90
@@ -32,7 +40,7 @@ if test "x$IEEE" = x ; then
     FOPTIM='-O3 -LNO:fusion=2 -OPT:roundoff=1:IEEE_arithmetic=3' # -funsafe-math-optimizations'
 else
     # full checking options:
-    NOOPTFILES=$NOOPTFILES' mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
+    NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
     FFLAGS='-m32 -fPIC -ffortran-bounds-check -trapuv -g'
     #  Try to follow IEEE-754
     FOPTIM='-O0 -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
@@ -43,38 +51,5 @@ F90OPTIM=$FOPTIM
 CFLAGS='-O2 -m32 -fPIC'
 GSLLIB='-lgsl -lgslcblas'
 
-if [ "x$NETCDF_ROOT" != x ] ; then
-    INCLUDEDIR="${NETCDF_ROOT}/include"
-    INCLUDES="-I${NETCDF_ROOT}/include"
-    LIBDIR="${NETCDF_ROOT}/lib"
-    LIBS="-L${NETCDF_ROOT}/lib"
-elif [ "x$NETCDF_HOME" != x ]; then
-    INCLUDEDIR="${NETCDF_HOME}/include"
-    INCLUDES="-I${NETCDF_HOME}/include"
-    LIBDIR="${NETCDF_HOME}/lib"
-    LIBS="-L${NETCDF_HOME}/lib"
-elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
-    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
-    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
-    INCLUDEDIR="${NETCDF_INC}"
-    INCLUDES="-I${NETCDF_INC}"
-    LIBDIR="${NETCDF_LIB}"
-    LIBS="-L${NETCDF_LIB}"
-elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
-    INCLUDEDIR="${NETCDF_INCDIR}"
-    INCLUDES="-I${NETCDF_INCDIR}"
-    LIBDIR="${NETCDF_LIBDIR}"
-    LIBS="-L${NETCDF_LIBDIR}"
-elif test -d /usr/include/netcdf-3 ; then
-    INCLUDES='-I/usr/include/netcdf-3'
-    LIBS='-L/usr/lib/netcdf-3 -lnetcdf_g77'
-elif test -d /usr/include/netcdf ; then
-    INCLUDES='-I/usr/include/netcdf'
-elif test -d /usr/local/netcdf ; then
-    INCLUDES='-I/usr/local/netcdf/include'
-    LIBS='-L/usr/local/netcdf/lib'
-elif test -d /usr/local/include/netcdf.inc ; then
-    INCLUDES='-I/usr/local/include'
-    LIBS='-L/usr/local/lib'
-fi
-
+LIBS='-L/usr/local/pkg/netcdf/netcdf-3.5.1/g77/lib '
+INCLUDES='-I/usr/local/pkg/netcdf/netcdf-3.5.1/g77/include '
