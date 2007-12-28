@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.3 2007/10/09 00:04:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.4 2007/12/28 21:13:41 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -126,6 +126,16 @@ C--     Read IO error counter
         CALL WRITE_FLD_XY_RL ( 'ADJclimsss.',
      &       suff, adclimsss, myIter, myThid)
 # endif
+
+        ELSEIF ( iwhen .EQ.3 ) THEN
+
+        CALL WRITE_FLD_XY_RL ( 'ADJtaux.',suff, adfu, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJtauy.',suff, adfv, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJqnet.',suff, adqnet, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJempr.',suff, adempmr, myIter, myThid)
+#ifdef SHORTWAVE_HEATING
+        CALL WRITE_FLD_XY_RL ( 'ADJqsw.',suff, adqsw, myIter, myThid)
+#endif
 
         ENDIF
 
