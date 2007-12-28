@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.41 2007/10/25 18:41:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.42 2007/12/28 21:21:07 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,10 +129,16 @@ C--     Read IO error counter
      &       'ADJwvel.',suff, adwvel, myIter, myThid)
         CALL WRITE_FLD_XY_RL(
      &       'ADJetan.',suff, adetan, myIter, myThid)
+
+        if ( .NOT. useSEAICE .AND. .NOT. useEXF ) then
         CALL WRITE_FLD_XY_RL ( 'ADJtaux.',suff, adfu, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJtauy.',suff, adfv, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJqnet.',suff, adqnet, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJempr.',suff, adempmr, myIter, myThid)
+#ifdef SHORTWAVE_HEATING
+        CALL WRITE_FLD_XY_RL ( 'ADJqsw.',suff, adqsw, myIter, myThid)
+#endif
+        endif
 
 #ifdef ALLOW_DIFFKR_CONTROL
         CALL WRITE_FLD_XYZ_RL ( 'ADJdiffkr.',suff, addiffkr,
@@ -162,7 +168,7 @@ C--     Read IO error counter
 #endif
 
 #ifdef ALLOW_EXF
-        IF ( useEXF ) CALL EXF_AD_DUMP( mytime, myiter, myThid )
+cph        IF ( useEXF ) CALL EXF_AD_DUMP( mytime, myiter, myThid )
 #endif
 
 #ifdef ALLOW_SEAICE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.32 2007/06/05 21:51:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.33 2007/12/28 21:22:13 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -282,6 +282,13 @@ c     Monitor output
 
 c     Map the forcing fields onto the corresponding model fields.
       call exf_mapfields( mytime, myiter, mythid )
+
+#ifdef ALLOW_AUTODIFF_TAMC
+# if (defined (ALLOW_AUTODIFF_MONITOR))
+      if ( .NOT. useSEAICE )
+     &     CALL EXF_ADJOINT_SNAPSHOTS( 3, myTime, myIter, myThid )
+# endif
+#endif
 
       end
 
