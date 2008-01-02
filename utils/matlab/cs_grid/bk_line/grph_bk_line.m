@@ -7,7 +7,7 @@ function grph_bk_line(var,xcs,ycs,xcg,ycg,c1,c2,yloc)
 % shift=-1 : No coast-line
 %     else : draw coast-line shifted by "shift" degree.
 %-----------------------
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/Attic/grph_bk_line.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/Attic/grph_bk_line.m,v 1.2 2008/01/02 21:25:32 dfer Exp $
 % $Name:  $
 
 shift=-1;
@@ -94,7 +94,7 @@ end
 % case where Xc jump from < 180 to > -180 when j goes from jc to jc+1
  
  if n == 4 | n == 3
-  jc=17 ;
+  jc=1+nc/2 ;
   nbsf=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,1,jc,c1,c2,yloc) ;
   for i=1:ncp,
     if xx1(i,jc) > 120 ; xx1(i,jc)= xx1(i,jc)-360. ; end
@@ -104,7 +104,7 @@ end
 %---
 % case where Xc jump from < -180 to > 180 when i goes from ic to ic+1
  elseif n == 6
-  ic=17 ;
+  ic=1+nc/2 ;
   nbsf=part_surf(nbsf,fac,xx1,yy1,vv1,ic,ncp,1,ncp,c1,c2,yloc) ;
   for j=1:ncp,
     if xx1(ic,j) > 120 ; xx1(ic,j)= xx1(ic,j)-360. ; end
