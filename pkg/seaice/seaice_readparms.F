@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.61 2007/12/06 08:58:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.62 2008/01/04 22:12:33 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -267,7 +267,7 @@ C     Check the consitency of a few parameters
       IF ( SEAICE_availHeatFrac .NE. UNSET_RL ) THEN
        IF ( SEAICE_gamma_t .NE. UNSET_RL ) THEN
         WRITE(msgBuf,'(A)')
-     &      'SEAICE_availHetaFrac and SEAICE_gamma_t must not be '//
+     &      'SEAICE_availHeatFrac and SEAICE_gamma_t must not be '//
      &      'set at the same time.'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
