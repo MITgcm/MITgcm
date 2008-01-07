@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.210 2007/12/20 00:43:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.211 2008/01/07 23:44:39 jmc Exp $
 C $Name:  $
 C
 
@@ -173,6 +173,8 @@ C     tempVertAdvScheme   :: Temp. Vert. Advection scheme selector
 C     saltAdvScheme       :: Salt. Horiz.advection scheme selector
 C     saltVertAdvScheme   :: Salt. Vert. Advection scheme selector
 C     selectKEscheme      :: Kinetic Energy scheme selector (Vector Inv.)
+C     monitorSelect       :: select group of variables to monitor
+C                            =1 : dynvars ; =2 : + vort ; =3 : + surface
 C     debugLevel          :: debug level selector: higher -> more writing
 
       COMMON /PARM_I/
@@ -188,7 +190,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
      &        selectKEscheme,
-     &        debugLevel
+     &        monitorSelect, debugLevel
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
       INTEGER cg2dPreCondFreq
@@ -206,6 +208,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
       INTEGER tempAdvScheme, tempVertAdvScheme
       INTEGER saltAdvScheme, saltVertAdvScheme
       INTEGER selectKEscheme
+      INTEGER monitorSelect
       INTEGER debugLevel
 
 C
