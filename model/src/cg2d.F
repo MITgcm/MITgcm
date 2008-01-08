@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.49 2007/12/04 10:22:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.50 2008/01/08 23:59:39 jahn Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -99,6 +99,10 @@ c     INTEGER ks
       _RL    sumRHS, sumRHStile(nSx,nSy)
       _RL    rhsMax
       _RL    rhsNorm
+#ifdef CG2D_SINGLECPU_SUM
+      COMMON /CG2D_SINGLECPU_BUF/ localBuf
+      _RL    localBuf(1:sNx,1:sNy,nSx,nSy)
+#endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -193,9 +197,13 @@ c    &    -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)*recip_Bo(i,j,bi,bj)
 c    &                        *cg2d_x(I  ,J  ,bi,bj)
 c    &                        /deltaTMom/deltaTfreesurf*cg2dNorm
 c    &    )
+#ifdef CG2D_SINGLECPU_SUM
+          localBuf(I,J,bi,bj) = cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
+#else
           errTile(bi,bj)    = errTile(bi,bj)
      &                      + cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
           sumRHStile(bi,bj) = sumRHStile(bi,bj) + cg2d_b(I,J,bi,bj)
+#endif
          ENDDO
         ENDDO
 c       sumRHS = sumRHS + sumRHStile(bi,bj)
@@ -212,10 +220,24 @@ c       err    = err    + errTile(bi,bj)
 #else
       CALL EXCH_XY_RL( cg2d_s, myThid )
 #endif
+#ifdef CG2D_SINGLECPU_SUM
+      CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, err, myThid)
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1,sNy
+         DO I=1,sNx
+          localBuf(I,J,bi,bj) = cg2d_b(I,J,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, sumRHS, myThid)
+#else
 c      _GLOBAL_SUM_R8( sumRHS, myThid )
 c      _GLOBAL_SUM_R8( err   , myThid )
        CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
        CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
+#endif
        err = SQRT(err)
        actualIts      = 0
        actualResidual = err
@@ -263,16 +285,25 @@ C--    conjugate direction vector "s".
 CcnhDebugStarts
 C          cg2d_q(I,J,bi,bj) = cg2d_r(I  ,J  ,bi,bj)
 CcnhDebugEnds
+#ifdef CG2D_SINGLECPU_SUM
+          localBuf(I,J,bi,bj) =
+     &      cg2d_q(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
+#else
            eta_qrNtile(bi,bj) = eta_qrNtile(bi,bj)
      &     +cg2d_q(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
+#endif
           ENDDO
          ENDDO
 c        eta_qrN = eta_qrN + eta_qrNtile(bi,bj)
         ENDDO
        ENDDO
 
+#ifdef CG2D_SINGLECPU_SUM
+       CALL GLOBAL_SUM_SINGLECPU_RL( localBuf,eta_qrN,myThid )
+#else
 c      _GLOBAL_SUM_R8(eta_qrN, myThid)
        CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
+#endif
 CcnhDebugStarts
 C      WRITE(*,*) ' CG2D: Iteration ',it2d-1,' eta_qrN = ',eta_qrN
 CcnhDebugEnds
@@ -327,15 +358,23 @@ c    &    -aS2d(I  ,J+1,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
 c    &    -freeSurfFac*_rA(i,j,bi,bj)*deepFac2F(ks)*recip_Bo(i,j,bi,bj)
 c    &                        *cg2d_s(I  ,J  ,bi,bj)
 c    &                        /deltaTMom/deltaTfreesurf*cg2dNorm
+#ifdef CG2D_SINGLECPU_SUM
+          localBuf(I,J,bi,bj) = cg2d_s(I,J,bi,bj)*cg2d_q(I,J,bi,bj)
+#else
           alphaTile(bi,bj) = alphaTile(bi,bj)
      &                     + cg2d_s(I,J,bi,bj)*cg2d_q(I,J,bi,bj)
+#endif
           ENDDO
          ENDDO
 c        alpha = alpha + alphaTile(bi,bj)
         ENDDO
        ENDDO
+#ifdef CG2D_SINGLECPU_SUM
+       CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, alpha, myThid)
+#else
 c      _GLOBAL_SUM_R8(alpha,myThid)
        CALL GLOBAL_SUM_TILE_RL( alphaTile,  alpha,  myThid )
+#endif
 CcnhDebugStarts
 C      WRITE(*,*) ' CG2D: Iteration ',it2d-1,' SUM(s*q)= ',alpha
 CcnhDebugEnds
@@ -354,16 +393,24 @@ C      Now compute "interior" points.
           DO I=1,sNx
            cg2d_x(I,J,bi,bj)=cg2d_x(I,J,bi,bj)+alpha*cg2d_s(I,J,bi,bj)
            cg2d_r(I,J,bi,bj)=cg2d_r(I,J,bi,bj)-alpha*cg2d_q(I,J,bi,bj)
+#ifdef CG2D_SINGLECPU_SUM
+           localBuf(I,J,bi,bj) = cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
+#else
            errTile(bi,bj) = errTile(bi,bj)
      &                    + cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
+#endif
           ENDDO
          ENDDO
 c        err = err + errTile(bi,bj)
         ENDDO
        ENDDO
 
+#ifdef CG2D_SINGLECPU_SUM
+       CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, err, myThid)
+#else
 c      _GLOBAL_SUM_R8( err   , myThid )
        CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
+#endif
        err = SQRT(err)
        actualIts      = it2d
        actualResidual = err
