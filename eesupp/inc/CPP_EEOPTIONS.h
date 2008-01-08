@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.28 2007/09/04 14:40:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.29 2008/01/08 23:57:55 jahn Exp $
 C $Name:  $
 
 CBOP
@@ -117,6 +117,11 @@ C     compiler flag -byteswapio on the Altix.
 C--   Alternative way of doing global sum without MPI allreduce call
 C     but instead, explicit MPI send & recv calls.
 #undef GLOBAL_SUM_SEND_RECV
+
+C--   Alternative way of doing global sum on a single CPU
+C     to eliminate tiling-dependent roundoff errors.
+C     Note: This is slow.
+#undef  CG2D_SINGLECPU_SUM
 
 #endif /* _CPP_EEOPTIONS_H_ */
 
