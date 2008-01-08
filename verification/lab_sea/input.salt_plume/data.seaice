@@ -20,4 +20,9 @@
       SEAICE_salinity    = 0.3,
       ICE2WATR           = 0.92D0,
       SEAICE_gamma_t     = 259200.,
+      SEAICEwriteState   = .TRUE.,
+      AreaFile           = 'AREA.0000001000.data',
+      HsnowFile          = 'HSNOW.0000001000.data',
+      HsaltFile          = 'HSALT.0000001000.data',
+      HeffFile           = 'HEFF.0000001000.data',
  &
