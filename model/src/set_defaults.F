@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.131 2007/10/22 13:12:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.132 2008/01/08 00:27:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -277,6 +277,7 @@ C--   Time stepping parameters
       snapshot_mdsio    = .TRUE.
       monitorFreq       = -1.
       adjMonitorFreq    = 0.
+      monitorSelect     = UNSET_I
       monitor_stdio     = .TRUE.
       taveFreq          = deltaT*0
       timeave_mdsio     = .TRUE.

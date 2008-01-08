@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.43 2007/10/15 13:51:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.44 2008/01/08 00:28:40 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -117,7 +117,8 @@ C       Print the basic statistics of model state variables
      &       statsTemp, myThid)
         CALL MON_PRINTSTATS_RL(Nr,salt,'_salt',
      &       maskC,hFacC,rA ,thickFacC,myThid)
-        IF ( nSx.EQ.1 .AND. nSy.EQ.1 .AND. fluidIsWater ) THEN
+        IF ( monitorSelect.GE.3 .AND.
+     &       nSx.EQ.1 .AND. nSy.EQ.1 ) THEN
 C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
          k = 1
          IF ( usingPCoords ) k = Nr
@@ -128,7 +129,7 @@ C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
         ENDIF
 
 C       Print the basic statistics of external forcing
-        IF ( fluidIsWater ) THEN
+        IF ( monitorSelect.GE.3 ) THEN
          CALL MON_SET_PREF('extforcing',myThid)
          CALL MON_PRINTSTATS_RL(1,Qnet,'_qnet',
      &        maskH,maskH,rA ,drF,myThid)
@@ -158,10 +159,10 @@ C       Print stats for KE
         CALL MON_KE(myIter, myThid)
 
 C       Print stats for (relative,absolute) Vorticity AND Pot.Vort.
-        CALL MON_VORT3(myIter, myThid)
+        IF ( monitorSelect.GE.2 ) CALL MON_VORT3( myIter, myThid )
 
 C       Print stats for surface correction terms (Linear Free-Surf)
-        CALL MON_SURFCOR(myThid)
+        IF ( monitorSelect.GE.2 ) CALL MON_SURFCOR( myThid )
 
 C       Check that solution is within reasonable bounds
         CALL MON_SOLUTION( statsTemp, myTime, myIter, myThid )

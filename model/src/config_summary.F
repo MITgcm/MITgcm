@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.100 2007/10/22 13:12:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.101 2008/01/08 00:27:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -508,6 +508,8 @@ C     ycoord :: varying parameters.
 #endif
       CALL WRITE_0D_R8( monitorFreq, INDEX_NONE,'monitorFreq =',
      &'   /* Monitor output interval ( s ). */')
+      CALL WRITE_0D_I( monitorSelect, INDEX_NONE, 'monitorSelect =',
+     & ' /* select group of variables to monitor */')
       CALL WRITE_0D_L(monitor_stdio,INDEX_NONE,
      &     'monitor_stdio =', '   /* Model IO flag. */')
 #ifdef ALLOW_MNC
