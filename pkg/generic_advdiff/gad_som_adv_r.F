@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_r.F,v 1.2 2007/08/15 22:35:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_r.F,v 1.3 2008/01/08 19:57:34 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -112,10 +112,14 @@ C  wLoc         :: volume transported (per time step)
       PARAMETER( three = 3. _d 0 )
       INTEGER i,j
       INTEGER km1
+      _RL  recip_dT
       _RL  wLoc, alf1, alf1q, alpmn
       _RL  alfp, alpq, alp1, locTp
       _RL  alfn, alnq, aln1, locTn
 CEOP
+
+      recip_dT = 0.
+      IF ( deltaTloc.GT.0. _d 0 ) recip_dT = 1.0 _d 0 / deltaTloc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  part.1 : calculate flux for all moments
@@ -174,7 +178,7 @@ C       use same indexing as velocity, "n" for negative W
           fn_yy(i,j,kUp) = aln(i,j,kUp)*sm_yy(i,j,km1)
           fn_xy(i,j,kUp) = aln(i,j,kUp)*sm_xy(i,j,km1)
 C--    Save zero-order flux:
-          wT(i,j)        = fp_o(i,j,kUp) - fn_o(i,j,kUp)
+          wT(i,j) = ( fp_o(i,j,kUp) - fn_o(i,j,kUp) )*recip_dT
         ENDDO
        ENDDO
       ELSE
@@ -207,7 +211,7 @@ C       use same indexing as velocity, "n" for negative W
           fn_yy(i,j,kUp) = aln(i,j,kUp)*sm_yy(i,j,km1)
           fn_xy(i,j,kUp) = aln(i,j,kUp)*sm_xy(i,j,km1)
 C--    Save zero-order flux:
-          wT(i,j)        = fp_o(i,j,kUp) - fn_o(i,j,kUp)
+          wT(i,j) = ( fp_o(i,j,kUp) - fn_o(i,j,kUp) )*recip_dT
         ENDDO
        ENDDO
 C--   end surface/interior cases for W<0 advective fluxes
@@ -236,7 +240,7 @@ C       use same indexing as velocity, "n" for negative W
           fn_yy(i,j,kUp) = aln(i,j,kUp)*sm_yy(i,j,km1)
           fn_xy(i,j,kUp) = aln(i,j,kUp)*sm_xy(i,j,km1)
 C--    Save zero-order flux:
-          wT(i,j)        = fp_o(i,j,kUp) - fn_o(i,j,kUp)
+          wT(i,j) = ( fp_o(i,j,kUp) - fn_o(i,j,kUp) )*recip_dT
          ENDIF
         ENDDO
        ENDDO

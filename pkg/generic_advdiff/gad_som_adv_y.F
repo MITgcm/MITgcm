@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_y.F,v 1.2 2007/08/22 00:26:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_y.F,v 1.3 2008/01/08 19:57:34 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -78,6 +78,7 @@ C  vLoc         :: volume transported (per time step)
       PARAMETER( two   = 2. _d 0 )
       PARAMETER( three = 3. _d 0 )
       INTEGER i,j
+      _RL  recip_dT
       _RL  slpmax, s1max, s1new, s2new
       _RL  vLoc, alf1, alf1q, alpmn
       _RL  alfp, alpq, alp1, locTp
@@ -107,6 +108,9 @@ C  vLoc         :: volume transported (per time step)
       _RL  fp_yz(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  fn_yz(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
+
+      recip_dT = 0.
+      IF ( deltaTloc.GT.0. _d 0 ) recip_dT = 1.0 _d 0 / deltaTloc
 
       IF ( limiter.EQ.1 ) THEN
        DO j=1-OLy,sNy+OLy
@@ -175,7 +179,7 @@ C       use same indexing as velocity, "n" for negative V
         fn_zz(i,j) = aln(i,j)*sm_zz(i, j )
         fn_xz(i,j) = aln(i,j)*sm_xz(i, j )
 C--    Save zero-order flux:
-        vT(i,j)    = fp_o(i,j) - fn_o(i,j)
+        vT(i,j) = ( fp_o(i,j) - fn_o(i,j) )*recip_dT
        ENDDO
       ENDDO
 
