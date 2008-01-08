@@ -1,0 +1,125 @@
+# $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/input/data.exf,v 1.1 2008/01/08 10:39:32 dimitri Exp $
+#
+# *********************
+# External Forcing Data
+# *********************
+ &EXF_NML_01
+#
+ useExfCheckRange  = .TRUE.,
+ repeatPeriod      = 31622400.0,
+ exf_iprec         = 32,
+ exf_yftype        = 'RL',
+#
+ &
+
+# *********************
+ &EXF_NML_02
+#
+ hfluxstartdate1   = 19781216,
+ hfluxstartdate2   = 180000,
+ hfluxperiod       = 2635200.0,
+#
+ sfluxstartdate1   = 19781216,
+ sfluxstartdate2   = 180000,
+ sfluxperiod       = 2635200.0,
+#
+ ustressstartdate1 = 19781216,
+ ustressstartdate2 = 180000,
+ ustressperiod     = 2635200.0,
+#
+ vstressstartdate1 = 19781216,
+ vstressstartdate2 = 180000,
+ vstressperiod     = 2635200.0,
+#
+ atempstartdate1   = 19781216,
+ atempstartdate2   = 180000,
+ atempperiod       = 2635200.0,
+#
+ aqhstartdate1     = 19781216,
+ aqhstartdate2     = 180000,
+ aqhperiod         = 2635200.0,
+#
+#evapstartdate1    = 19781216,
+#evapstartdate2    = 180000,
+#evapperiod        = 2635200.0,
+#
+ precipstartdate1  = 19781216,
+ precipstartdate2  = 180000,
+ precipperiod      = 2635200.0,
+#
+ uwindstartdate1   = 19781216,
+ uwindstartdate2   = 180000,
+ uwindperiod       = 2635200.0,
+#
+ vwindstartdate1   = 19781216,
+ vwindstartdate2   = 180000,
+ vwindperiod       = 2635200.0,
+#
+ swfluxstartdate1  = 19781216,
+ swfluxstartdate2  = 180000,
+ swfluxperiod      = 2635200.0,
+#
+ lwfluxstartdate1  = 19781216,
+ lwfluxstartdate2  = 180000,
+ lwfluxperiod      = 2635200.0,
+#
+ swdownstartdate1  = 19781216,
+ swdownstartdate2  = 180000,
+ swdownperiod      = 2635200.0,
+#
+ lwdownstartdate1  = 19781216,
+ lwdownstartdate2  = 180000,
+ lwdownperiod      = 2635200.0,
+#
+ climsststartdate1  = 19781216,
+ climsststartdate2  = 180000,
+ climsstperiod      = 2635200.0,
+#
+ climsssstartdate1  = 19781216,
+ climsssstartdate2  = 180000,
+ climsssperiod      = 2635200.0,
+#
+ hfluxfile         = ' ',
+ sfluxfile         = ' ',
+ ustressfile       = ' ',
+ vstressfile       = ' ',
+ atempfile         = 'tair.seaice_obcs',
+ aqhfile           = 'qa.seaice_obcs',
+ uwindfile         = 'u10m.seaice_obcs',
+ vwindfile         = 'v10m.seaice_obcs',
+ precipfile        = 'prate.seaice_obcs',
+ lwfluxfile        = ' ',
+ swfluxfile        = ' ',
+ lwdownfile        = 'flo.seaice_obcs',
+ swdownfile        = 'fsh.seaice_obcs',
+ runoffFile        = ' '
+ climsstfile       = ' ',
+ climsssfile       = 'SSS_monthly.seaice_obcs',
+ &
+
+# *********************
+ &EXF_NML_03
+ &
+
+# *********************
+ &EXF_NML_04
+ &
+
+# *********************
+ &EXF_NML_OBCS
+ obcsSstartdate1   = 19790101,
+ obcsSstartdate2   = 000000,
+ obcsSperiod       = 3600.0,
+#
+ obcsNstartdate1   = 19790101,
+ obcsNstartdate2   = 000000,
+ obcsNperiod       = 3600.0,
+#
+ obcsWstartdate1   = 19790101,
+ obcsWstartdate2   = 000000,
+ obcsWperiod       = 3600.0,
+#
+ obcsEstartdate1   = 19790101,
+ obcsEstartdate2   = 000000,
+ obcsEperiod       = 3600.0,
+ &

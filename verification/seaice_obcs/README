@@ -1,0 +1,8 @@
+MITgcm/verification/seaice_obcs
+is a pkg/seaice + pkg/obcs verification experiment.
+
+It is carved out from ../lab_sea/input.salt_plume
+
+Matlab script input/mk_input.m
+requires output from ../lab_sea/input.salt_plume
+to generate the input files.

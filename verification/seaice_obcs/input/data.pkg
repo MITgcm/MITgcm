@@ -1,0 +1,9 @@
+# Packages
+ &PACKAGES
+  useGMRedi = .TRUE.,
+  useKPP    = .TRUE.,
+  useEXF    = .TRUE.,
+  useSEAICE = .TRUE.,
+  useSALT_PLUME  = .TRUE.,
+  useOBCS        = .TRUE.,
+ &

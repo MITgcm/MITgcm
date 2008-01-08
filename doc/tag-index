@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.932 2007/12/22 17:44:49 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.933 2008/01/08 10:39:30 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o added verification/lab_sea/input.salt_plume
+o added verification/seaice_obcs both to test seaice open boundaries
+  and to provide an example matlab scrpt for generating them
+o added verification/lab_sea/input.salt_plume for testing pkg/salt_plume
 o pkg/salt_plume: clean up salt_plume_frac.F to
   remove redundancy in PlumeMethod 1 and 4
 o pkg/kpp: added saltplume diagnostics

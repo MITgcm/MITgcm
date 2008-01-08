@@ -84,7 +84,7 @@
 #
  &PARM03
  startTime=0.0,
- endTime=36000.,
+ endTime=32400.,
  deltaTmom=3600.0,
  deltaTtracer=3600.0,
  deltaTClock =3600.0,
@@ -107,8 +107,8 @@
 #
  &PARM04
  usingSphericalPolarGrid=.TRUE.,
- delX=20*2.E0,
- delY=16*2.E0,
+ delX=10*2.E0,
+ delY= 8*2.E0,
  delZ= 10., 10., 15., 20., 20., 25., 35., 50., 75.,
        100., 150., 200., 275., 350., 415., 450.,
        500., 500., 500., 500., 500., 500., 500.,
@@ -128,11 +128,9 @@
 #   saltClimFile    - File containing salt climatology used for relaxation
 #
  &PARM05
- bathyFile       = 'bathy.labsea1979',
-# hydrogThetaFile = 'LevCli_temp.labsea1979.m8',
-# hydrogSaltFile  = 'LevCli_salt.labsea1979',
- hydrogThetaFile = 'T.0000001000.data',
- hydrogSaltFile  = 'S.0000001000.data',
- uVelInitFile    = 'U.0000001000.data',
- vVelInitFile    = 'V.0000001000.data',
+ bathyFile       = 'bathy.seaice_obcs',
+ hydrogThetaFile = 'T.seaice_obcs',
+ hydrogSaltFile  = 'S.seaice_obcs',
+ uVelInitFile    = 'U.seaice_obcs',
+ vVelInitFile    = 'V.seaice_obcs',
  &
