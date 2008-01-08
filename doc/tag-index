@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.933 2008/01/08 10:39:30 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.934 2008/01/08 23:33:59 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o gad_som : fix flux output (& diagnostics) to have same units as other
+  advection scheme fluxes (was previously multiplied by deltaT).
 o added verification/seaice_obcs both to test seaice open boundaries
   and to provide an example matlab scrpt for generating them
 o added verification/lab_sea/input.salt_plume for testing pkg/salt_plume
