@@ -1,6 +1,6 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.1 2007/12/25 22:10:51 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.2 2008/01/09 22:02:03 jmc Exp $
 # $Name:  $
 
 usage()
@@ -12,10 +12,11 @@ usage()
         echo "  -help         : print usage"
         echo "  -t   LIST_EXP : only check experiments in LIST_EXP"
         echo "  -skd LIST_EXP : skip experiments in LIST_EXP"
-        echo "  (-o) STRING   : used to build output directory name"
+        echo "  -o     STRING : used to build output directory name"
         echo "                      (DEF=\"hostname\")"
-        echo "  (-a) STRING   : email address to send output to"
+        echo "  -a,-A  STRING : email address to send output to"
         echo "                      (DEF=\"\" no email is sent)"
+        echo "                      (-A: + save each log file)"
         echo "  -clean        : clean output & reset"
         exit
 }
@@ -24,6 +25,7 @@ CLEAN=0
 TESTDIRS=
 SKIPDIRS=
 OUTDIR=`hostname`
+SAVELOG=0
 ADDRESS=
 SCRIPT='../tools/tst_2+2'
 MPACK="../tools/mpack-1.6/mpack"
@@ -41,6 +43,7 @@ do
       -t    ) yy=TESTDIRS ;;
       -skd  ) yy=SKIPDIRS ;;
       -a    ) yy=ADDRESS ;;
+      -A    ) yy=ADDRESS ; SAVELOG=1 ;;
       -o    ) yy=OUTDIR ;;
         *) echo "Error: unrecognized option: "$xx ; usage ; exit ;;
       esac
@@ -48,17 +51,13 @@ do
 done
 #------------------------
 
-if test "x$TESTDIRS" = x
-then
- TESTDIRS=`ls `
-fi
+if test "x$TESTDIRS" = x ; then TESTDIRS=`ls ` ; fi
 LIST=""
 for xx in $TESTDIRS
 do
   yy=`echo $SKIPDIRS | grep -c $xx`
   if test $yy = 0 ; then
-    if test -f $xx/results/output.txt
-    then
+    if test -f $xx/results/output.txt ; then
        LIST=${LIST}" "$xx
 #   else
 #      echo ""; echo -n " -- skip \"$xx\" (not a directory !)"
@@ -71,7 +70,7 @@ done
 if test -x $SCRIPT ; then
  echo "run script '$SCRIPT' for experiment in:"
  echo " $LIST"
- yy=`echo $SCRIPT | grep -c '^\/'` 
+ yy=`echo $SCRIPT | grep -c '^\/'`
  if test $yy = 0 ; then SCRIPT="../../$SCRIPT" ; fi
 else
  echo "ERROR: script '$SCRIPT' not found or not executable"
@@ -86,10 +85,9 @@ if test $CLEAN = 1 ; then
   listD='run '`(cd $xx/results ; ls output.*.txt 2> /dev/null | sed 's/^output\./tr_run./g' | sed 's/\.txt$//g' )`
   for yy in $listD
   do
-    if test -r $xx/$yy/data.tst
-    then
+    if test -r $xx/$yy/data.tst ; then
       echo "clean dir:" $xx/$yy
-      cd $xx/$yy 
+      cd $xx/$yy
       echo ' ' >> outp.tst_2+2.log
       echo $SCRIPT 4 >> outp.tst_2+2.log
       $SCRIPT 4 >> outp.tst_2+2.log 2>&1
@@ -136,19 +134,19 @@ do
   listD='run '`(cd $xx/results ; ls output.*.txt 2> /dev/null | sed 's/^output\./tr_run./g' | sed 's/\.txt$//g' )`
   for yy in $listD
   do
-    if test -f $xx/$yy/output.txt
-    then
+    if test -f $xx/$yy/output.txt ; then
       if test "x$OPTFILE" = x -a -f $xx/build/Makefile ; then
         comm=`grep '^# OPTFILE=' $xx/build/Makefile 2>/dev/null | head -1 | sed 's/^# //'`
         echo "from '$xx/build/Makefile', extract:" > $DRESULTS/genmake_state
         echo $comm >> $DRESULTS/genmake_state
         eval $comm
       fi
-      if test $yy = 'run' ; then nam=$xx 
+      if test $yy = 'run' ; then nam=$xx
       else nam=$xx`echo $yy | sed 's/tr_run//'` ; fi
       echo -n "Entering $xx/$yy :"
       cd $xx/$yy
-      echo $SCRIPT All > outp.tst_2+2.log ; echo ' ' >> outp.tst_2+2.log
+      pwd > outp.tst_2+2.log
+      echo $SCRIPT All >> outp.tst_2+2.log ; echo ' ' >> outp.tst_2+2.log
       $SCRIPT All >> outp.tst_2+2.log 2>&1
       out=$?
       case $out in
@@ -160,12 +158,14 @@ do
        1 ) echo "Y N N N FAIL ($out) - $nam" >> ../../$SUMMARY ;;
        * ) echo "N N N N FAIL ($out) - $nam" >> ../../$SUMMARY ;;
       esac
-      if test $out != '0'
-      then 
+      if test $out != '0' ; then
         echo " test 2+2=4 FAIL (exit $out)"
         echo " "
         tail -5 outp.tst_2+2.log
         echo " "
+        cp -p outp.tst_2+2.log ../../$DRESULTS/$nam.log
+      elif test $SAVELOG = 1 ; then
+        cp -p outp.tst_2+2.log ../../$DRESULTS/$nam.log
       fi
       cd $here
     fi
