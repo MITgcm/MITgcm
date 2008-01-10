@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.41 2007/12/14 21:52:02 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.42 2008/01/10 23:32:15 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -338,13 +338,21 @@ C     Positive YNEG/availHeat leads to ice melting.
            TBC = -0.0575 _d 0*salt(I,J,kSurface,bi,bj) + 0.0901 _d 0
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
 #ifdef SEAICE_BREAKS_VERIFICATION
-C     To first order, the "thickness" of ice that melts during a given
-C     period of time due to an excess or to a deficit of heat in the
-C     mixed layer should be the same irrespective of sea ice concentration.
-C     This change breaks the pkg/seaice verification experiments.
-           availHeat = SEAICE_availHeatFrac * AREA(I,J,2,bi,bj)
-     &          * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
-     &          * hFacC(i,j,kSurface,bi,bj) / 72.0764 _d 0
+C     These following changes break pkg/seaice verification experiments.
+           IF ( theta(I,J,kSurface,bi,bj) .GT. TBC ) THEN
+C     Require that the thickness of ice that melts during a given period
+C     of time due to an excess of mixed layer heat be the same irrespective
+C     of sea ice concentration.
+              availHeat = SEAICE_availHeatFrac * AREA(I,J,2,bi,bj)
+     &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
+     &             * hFacC(i,j,kSurface,bi,bj) / 72.0764 _d 0
+           ELSE
+C     Use a different time constant for freezing ice due to supercooled
+C     sea water, currently hardwired to SEAICE_deltaTtherm/0.1
+              availHeat = 0.1 _d 0
+     &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
+     &             * hFacC(i,j,kSurface,bi,bj) / 72.0764 _d 0
+           ENDIF
 #else
            availHeat = SEAICE_availHeatFrac
      &          * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
