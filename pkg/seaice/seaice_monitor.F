@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.13 2007/09/21 20:32:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.14 2008/01/11 22:21:00 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -102,7 +102,9 @@ C       Print some statistics about input forcing fields
            ENDDO
         ENDDO
 #ifdef SEAICE_CGRID
-        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_uice',
+C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
+        IF ( nSx.EQ.1 .AND. nSy.EQ.1 )
+     &  CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_uice',
      &       maskW,maskW,rAw,drF,myThid)
 #else
         CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_uice',
@@ -118,7 +120,9 @@ C       Print some statistics about input forcing fields
            ENDDO
         ENDDO
 #ifdef SEAICE_CGRID
-        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_vice',
+C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
+        IF ( nSx.EQ.1 .AND. nSy.EQ.1 )
+     &  CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_vice',
      &       maskS,maskS,rAs,drF,myThid)
 #else
         CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_vice',
