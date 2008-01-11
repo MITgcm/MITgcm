@@ -1,13 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.935 2008/01/10 23:32:15 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.936 2008/01/11 19:59:28 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice/seaice_growth.F: use a different time constant for freezing
-  ice due to supercooled sea water, hardwired to SEAICE_deltaTtherm/0.1
-o gad_som : fix flux output (& diagnostics) to have same units as other
-  advection scheme fluxes (was previously multiplied by deltaT).
+o pkg/seaice: use different time constant for melting (SEAICE_gamma_t)
+  and freezing (SEAICE_gamma_t_frz) ice due to mixed layer temperature
 o added verification/seaice_obcs both to test seaice open boundaries
   and to provide an example matlab scrpt for generating them
 o added verification/lab_sea/input.salt_plume for testing pkg/salt_plume

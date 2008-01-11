@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.62 2008/01/04 22:12:33 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.63 2008/01/11 19:59:28 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -58,8 +58,9 @@ C--   SEAICE parameters
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      & SEAICE_snowThick, SEAICE_shortwave, SEAICE_freeze, OCEAN_drag,
-     & SEAICE_salinity, SEAICE_availHeatFrac, SEAICEstressFactor,
-     & SEAICE_gamma_t,
+     & SEAICE_salinity, SEAICEstressFactor,
+     & SEAICE_gamma_t, SEAICE_gamma_t_frz,
+     & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      & AreaFile, HeffFile, HsnowFile, HsaltFile,
      & LSR_ERROR, DIFF1, A22, HO,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
@@ -164,8 +165,10 @@ C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
       SEAICE_shortwave   = 0.30   _d 0
       SEAICE_freeze      = -1.96  _d 0
       SEAICE_salinity    = 0.0    _d 0
-      SEAICE_availHeatFrac = UNSET_RL
       SEAICE_gamma_t     = UNSET_RL
+      SEAICE_gamma_t_frz = UNSET_RL
+      SEAICE_availHeatFrac = UNSET_RL
+      SEAICE_availHeatFracFrz = UNSET_RL
       SEAICEstressFactor = 1.     _d 0
       AreaFile   = ' '
       HsnowFile  = ' '
@@ -264,21 +267,38 @@ C     yet been tried nor thought through.
 #endif /* SEAICE_ALLOW_EVP */
 
 C     Check the consitency of a few parameters
-      IF ( SEAICE_availHeatFrac .NE. UNSET_RL ) THEN
-       IF ( SEAICE_gamma_t .NE. UNSET_RL ) THEN
-        WRITE(msgBuf,'(A)')
-     &      'SEAICE_availHeatFrac and SEAICE_gamma_t must not be '//
-     &      'set at the same time.'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
-       ENDIF
-      ELSE
-C     default:
-       SEAICE_availHeatFrac = 1. _d 0
-       IF (       SEAICE_gamma_t .NE. UNSET_RL 
-     &      .AND. SEAICE_gamma_t .NE. 0. _d 0 ) THEN
-        SEAICE_availHeatFrac = SEAICE_deltaTtherm/SEAICE_gamma_t
-       ENDIF
+      IF ( SEAICE_availHeatFrac .NE. UNSET_RL .AND.
+     &     SEAICE_gamma_t       .NE. UNSET_RL ) THEN
+         WRITE(msgBuf,'(A)')
+     &        'SEAICE_availHeatFrac and SEAICE_gamma_t '//
+     &        'must not be set at the same time.'
+         CALL PRINT_ERROR( msgBuf , myThid)
+         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+      IF ( SEAICE_availHeatFracFrz .NE. UNSET_RL .AND.
+     &     SEAICE_gamma_t_frz      .NE. UNSET_RL ) THEN
+         WRITE(msgBuf,'(A)')
+     &        'SEAICE_availHeatFracFrz and SEAICE_gamma_t_frz '//
+     &        'must not be set at the same time.'
+         CALL PRINT_ERROR( msgBuf , myThid)
+         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+
+C     Set default values
+      IF ( SEAICE_availHeatFrac .EQ. UNSET_RL ) THEN
+         SEAICE_availHeatFrac = 1. _d 0
+      ENDIF
+      IF ( SEAICE_gamma_t .NE. UNSET_RL .AND.
+     &     SEAICE_gamma_t .NE. 0. _d 0 ) THEN
+         SEAICE_availHeatFrac = SEAICE_deltaTtherm/SEAICE_gamma_t
+      ENDIF
+      IF ( SEAICE_availHeatFracFrz .EQ. UNSET_RL ) THEN
+         SEAICE_availHeatFracFrz = SEAICE_availHeatFrac
+      ENDIF
+      IF ( SEAICE_gamma_t_frz .EQ. 0. _d 0 ) THEN
+         SEAICE_availHeatFracFrz = 1. _d 0
+      ELSEIF ( SEAICE_gamma_t_frz .NE. UNSET_RL ) THEN
+         SEAICE_availHeatFracFrz = SEAICE_deltaTtherm/SEAICE_gamma_t_frz
       ENDIF
 
       IF ( useThSice ) THEN

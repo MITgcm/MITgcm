@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.9 2007/12/22 16:38:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.10 2008/01/11 19:59:28 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -16,10 +16,6 @@ C     \==========================================================/
 
 C--   Write "text-plots" of certain fields in STDOUT for debugging.
 #undef SEAICE_DEBUG
-
-C--   This flag is meant for options that make more sense than the
-C     original options but that break the verification experiments.
-#undef SEAICE_BREAKS_VERIFICATION
 
 C--   Allow sea-ice dynamic code.
 C     This option is provided to allow use of TAMC
