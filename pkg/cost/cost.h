@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost.h,v 1.14 2007/10/08 23:59:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost.h,v 1.15 2008/01/15 20:28:39 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,6 +51,10 @@ c                  function contributions.
      &                objf_depth,
 #endif
      &                objf_eflux
+cHFLUXM_CONTROL
+     &               ,objf_hfluxm
+     &               ,objf_temp
+cHFLUXM_CONTROL
 
       _RL  objf_atl  (nsx,nsy)
       _RL  objf_test (nsx,nsy)
@@ -64,6 +68,10 @@ c                  function contributions.
 #ifdef ALLOW_COST_DEPTH
       _RL  objf_depth (nsx,nsy)
 #endif
+cHFLUXM_CONTROL
+      _RL  objf_hfluxm (nsx,nsy)
+      _RL  objf_temp (nsx,nsy)
+cHFLUXM_CONTROL
 
       common /cost_param_r/
      &                lastinterval
@@ -100,6 +108,10 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
      &           mult_depth,
 #endif
      &                    multEtan
+cHFLUXM_CONTROL
+     &                   ,mult_hfluxm
+     &                   ,mult_temp
+cHFLUXM_CONTROL
 
       _RL  mult_atl
       _RL  mult_test
@@ -118,6 +130,10 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
 #ifdef ALLOW_COST_DEPTH
       _RL  mult_depth
 #endif
+cHFLUXM_CONTROL
+      _RL  mult_hfluxm
+      _RL  mult_temp
+cHFLUXM_CONTROL
 
 #ifdef ALLOW_COST_TEST
       common /cost_test_i/

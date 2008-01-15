@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.10 2007/10/08 23:59:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.11 2008/01/15 20:28:39 dfer Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -104,7 +104,7 @@ CADJ STORE hfacw, hfacs  = comlev1, key = ikey_dynamics
 
       IF ( myTime .GT. (EndTime - lastinterval) ) THEN
 
-#if (defined (ALLOW_COST_TEST) || defined (ALLOW_COST_ATLANTIC_HEAT))
+#if (defined (ALLOW_COST_TEST) || defined (ALLOW_COST_ATLANTIC_HEAT) || defined (ALLOW_COST_TEMP) )
          CALL COST_ACCUMULATE_MEAN (myThid)
 #endif
 

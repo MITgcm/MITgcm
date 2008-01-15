@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.16 2007/10/08 23:59:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.17 2008/01/15 20:28:39 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -75,6 +75,12 @@ c     == end of interface ==
 # ifdef ALLOW_COST_ATLANTIC_HEAT
       CALL COST_ATLANTIC_HEAT (myThid)
 # endif
+#ifdef ALLOW_COST_HFLUXM
+      CALL COST_HFLUX (myThid)
+#endif
+#ifdef ALLOW_COST_TEMP
+      CALL COST_TEMP (myThid)
+#endif
 
 c--   Sum up all contributions.
       do bj = jtlo,jthi
@@ -86,6 +92,14 @@ c--   Sum up all contributions.
      &         ' --> objf_tracer(bi,bj) = ', objf_tracer(bi,bj)
           write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_atl(bi,bj)    = ', objf_atl(bi,bj)
+#ifdef ALLOW_COST_TEMP
+          write(standardmessageunit,'(A,D22.15)')
+     &          ' --> objf_temp(bi,bj)   = ', objf_temp(bi,bj)
+#endif
+#ifdef ALLOW_COST_HFLUXM
+          write(standardmessageunit,'(A,D22.15)')
+     &         ' --> objf_hfluxm(bi,bj) = ', objf_hfluxm(bi,bj)
+#endif
 #ifdef ALLOW_COST_TRANSPORT
           write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_transport(bi,bj) = ', objf_transport(bi,bj)
@@ -97,6 +111,12 @@ c--   Sum up all contributions.
      &            + mult_atl    * objf_atl(bi,bj)
 #ifdef ALLOW_COST_TRANSPORT
      &            + mult_transport * objf_transport(bi,bj)
+#endif
+#ifdef ALLOW_COST_TEMP
+     &            + mult_temp   * objf_temp(bi,bj)
+#endif
+#ifdef ALLOW_COST_HFLUXM
+     &            + mult_hfluxm * objf_hfluxm(bi,bj)
 #endif
         enddo
       enddo
