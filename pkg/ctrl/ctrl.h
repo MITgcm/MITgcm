@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.42 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.43 2008/01/15 19:56:27 dfer Exp $
 C $Name:  $
 
 
@@ -594,6 +594,9 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_siarea_file
      &                    , xx_siheff_file
      &                    , xx_sihsnow_file
+cHFLUXM_CONTROL
+     &                    , xx_hfluxm_file
+cHFLUXM_CONTROL
 
       character*(MAX_LEN_FNAM) xx_theta_file
       character*(MAX_LEN_FNAM) xx_salt_file
@@ -639,6 +642,9 @@ c     xx_obcse_file - control vector salin. at boundary
       character*(MAX_LEN_FNAM) xx_siarea_file
       character*(MAX_LEN_FNAM) xx_siheff_file
       character*(MAX_LEN_FNAM) xx_sihsnow_file
+cHFLUXM_CONTROL
+      character*(MAX_LEN_FNAM) xx_hfluxm_file
+cHFLUXM_CONTROL
 
       common /packnames_c/
      &                      yadmark,
@@ -951,6 +957,9 @@ c                         control part.
       character*( 80)   fname_siarea(2)
       character*( 80)   fname_siheff(2)
       character*( 80)   fname_sihsnow(2)
+cHFLUXM_CONTROL
+      character*( 80)   fname_hfluxm(2)
+cHFLUXM_CONTROL
 
 #ifdef ALLOW_ADMTLM
       integer          maxm, maxn

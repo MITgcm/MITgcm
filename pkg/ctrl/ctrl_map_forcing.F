@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.10 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.11 2008/01/15 19:56:27 dfer Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -56,6 +56,9 @@ C     == Local variables ==
       character*( 80)   fnamehflux
       character*( 80)   fnamesss
       character*( 80)   fnamesst
+cHFLUXM_CONTROL
+      character*( 80)   fnamehfluxm
+cHFLUXM_CONTROL
 
 c     == external ==
       integer  ilnblnk
@@ -190,6 +193,25 @@ c--   sst0.
       enddo
 #endif
 
+#ifdef ALLOW_HFLUXM_CONTROL
+c--   hfluxm.
+      il=ilnblnk( xx_hfluxm_file )
+      write(fnamehfluxm(1:80),'(2a,i10.10)')
+     &     xx_hfluxm_file(1:il),'.',optimcycle
+      call active_read_xy ( fnamehfluxm, tmpfld2d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_hfluxm_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              Qnetm(i,j,bi,bj) = Qnetm(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
 #if (defined (ALLOW_TAUU0_CONTROL) || defined (ALLOW_TAUV0_CONTROL))
        CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
 #endif
@@ -204,6 +226,9 @@ c--   sst0.
 #endif
 #ifdef ALLOW_SSS_CONTROL
        _EXCH_XY_R4(SSS,   myThid )
+#endif
+#ifdef ALLOW_HFLUXM_CONTROL
+       _EXCH_XY_R4(Qnetm, myThid )
 #endif
 
       END

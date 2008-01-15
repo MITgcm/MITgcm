@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.29 2007/06/21 04:06:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.30 2008/01/15 19:56:27 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -155,6 +155,9 @@ c--   Assign file names.
       call ctrl_set_fname(xx_siarea_file, fname_siarea, mythid)
       call ctrl_set_fname(xx_siheff_file, fname_siheff, mythid)
       call ctrl_set_fname(xx_sihsnow_file, fname_sihsnow, mythid)
+cHFLUXM_CONTROL
+      call ctrl_set_fname(xx_hfluxm_file, fname_hfluxm, mythid)
+cHFLUXM_CONTROL
 
 c--     Only the master thread will do I/O.
         _BEGIN_MASTER( mythid )
@@ -512,6 +515,15 @@ CML# endif
           write(weighttype(1:80),'(a)') "wbottomdrag"
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
      &         fname_bottomdrag(ictrlgrad), "maskCtrlC",
+     &         weighttype, nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_HFLUXM_CONTROL
+          ivartype    = 24
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "whfluxm"
+          call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
+     &         fname_hfluxm(ictrlgrad), "maskCtrlC",
      &         weighttype, nwetcglobal, mythid)
 #endif
 

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.27 2007/06/21 04:06:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.28 2008/01/15 19:56:27 dfer Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -131,6 +131,9 @@ c--   Read the namelist input.
      &  doMainUnpack, doMainPack,
      &  doAdmtlmBypassAD,
      &  delZexp, forcingPrecond
+cHFLUXM_CONTROL
+     &  ,xx_hfluxm_file
+cHFLUXM_CONTROL
 
       namelist /ctrl_packnames/
      &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,
@@ -322,6 +325,9 @@ c
         xx_siarea_file        = 'xx_siarea'
         xx_siheff_file        = 'xx_siheff'
         xx_sihsnow_file        = 'xx_sihsnow'
+cHFLUXM_CONTROL
+        xx_hfluxm_file      = 'xx_hfluxm'
+cHFLUXM_CONTROL
 
 #ifdef ALLOW_TANGENTLINEAR_RUN
         yadprefix           = 'g_'

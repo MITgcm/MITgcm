@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.30 2007/06/21 04:06:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.31 2008/01/15 19:56:27 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -147,6 +147,9 @@ c--   Assign file names.
       call ctrl_set_fname(xx_siarea_file, fname_siarea, mythid)
       call ctrl_set_fname(xx_siheff_file, fname_siheff, mythid)
       call ctrl_set_fname(xx_sihsnow_file, fname_sihsnow, mythid)
+cHFLUXM_CONTROL
+      call ctrl_set_fname(xx_hfluxm_file, fname_hfluxm, mythid)
+cHFLUXM_CONTROL
 
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
@@ -421,6 +424,15 @@ C     place holder of obsolete variable jG
           call ctrl_set_pack_xy(
      &      cunit, ivartype, fname_bottomdrag(ictrlgrad), "maskCtrlC",
      &      weighttype, lxxadxx, mythid)
+#endif
+
+#ifdef ALLOW_HFLUXM_CONTROL
+          ivartype = 24
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "whfluxm"
+          call ctrl_set_pack_xy(
+     &         cunit, ivartype, fname_hfluxm(ictrlgrad), "maskCtrlC",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_EDTAUX_CONTROL
