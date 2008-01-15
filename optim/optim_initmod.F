@@ -33,7 +33,6 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-#include "ecco.h"
 #include "ctrl.h"
 #include "optim.h"
 
@@ -52,7 +51,7 @@ c--   Generate file name for the scaling of the control vector
 c--   contributions.
       write(fname(1:80),'(80a)') ' '
       write(fname(1:80),'(4a,i10.10,a)')
-     &  scalname(1:9),'_',expId,'.',optimcycle,'.data'
+     &  scalname(1:9),'_',yctrlid,'.',optimcycle,'.data'
 
 c--   Read the scaling for the control vector.
 

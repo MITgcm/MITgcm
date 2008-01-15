@@ -37,7 +37,6 @@ cgg   Include ECCO_CPPOPTIONS because the ecco_ctrl,cost files
 cgg   have headers with options for OBCS masks.
 #include "ECCO_CPPOPTIONS.h"
 
-#include "ecco.h"
 #include "ctrl.h"
 #include "optim.h"
 #include "minimization.h"
@@ -82,8 +81,8 @@ c     == local variables ==
 c      integer         filei
 c      integer         filej
 c      integer         filek
-c      integer         fileig
-c      integer         filejg
+c      integer         fileiG
+c      integer         filejG
 c      integer         filensx
 c      integer         filensy
       integer         filenopt
@@ -131,7 +130,7 @@ c--   Read the data.
 
 c--   Generate file name and open the file.
       write(fname(1:128),'(4a,i4.4)')
-     &     dfile,'_',expId(1:10),'.opt', nopt
+     &     dfile,'_',yctrlid(1:10),'.opt', nopt
       open( funit, file   = fname,
      &     status = 'old',
      &     form   = 'unformatted',
@@ -141,7 +140,7 @@ c--   Generate file name and open the file.
 c--   Read the header.
       read( funit ) nvartype
       read( funit ) nvarlength
-      read( funit ) expId
+      read( funit ) yctrlid
       read( funit ) filenopt
       read( funit ) fileff
       read( funit ) fileiG
@@ -182,7 +181,7 @@ cph(
 cph      if (lheaderonly) then
          print *, 'pathei: nvartype ', nvartype
          print *, 'pathei: nvarlength ', nvarlength
-         print *, 'pathei: expId ', expId
+         print *, 'pathei: yctrlid ', yctrlid
          print *, 'pathei: filenopt ', filenopt
          print *, 'pathei: fileff ', fileff
          print *, 'pathei: fileiG ', fileiG

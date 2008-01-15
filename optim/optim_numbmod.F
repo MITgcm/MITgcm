@@ -73,7 +73,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-#include "ecco.h"
+cdfer#include "ecco.h"
 #include "ctrl.h"
 #include "optim.h"
 #include "minimization.h"
@@ -155,13 +155,16 @@ c     == end of interface ==
      &  xx_obcsestartdate1,  xx_obcsestartdate2,  xx_obcseperiod,
      &  xx_diffkr_file, xx_kapgm_file, xx_tr1_file,
      &  xx_sst_file, xx_sss_file,
-     &  xx_sst_file, xx_sststartdate1, xx_sststartdate2, xx_sstperiod,
-     &  xx_sss_file, xx_sssstartdate1, xx_sssstartdate2, xx_sssperiod,
+     &  xx_sststartdate1, xx_sststartdate2, xx_sstperiod,
+     &  xx_sssstartdate1, xx_sssstartdate2, xx_sssperiod,
      &  xx_depth_file, xx_efluxy_file, xx_efluxp_file,
      &  xx_bottomdrag_file, xx_edtaux_file, xx_edtauy_file,
      &  xx_uvel_file, xx_vvel_file, xx_etan_file,
      &  doInitXX, doPackDiag, doZscaleUnpack, doZscalePack,
      &  doMainUnpack, doMainPack, doAdmtlmBypassAD, delZexp
+cdfer
+     & ,xx_hfluxm_file
+cdfer
 
       namelist /CTRL_PACKNAMES/
      &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,
@@ -185,8 +188,8 @@ c--   Preset the optimization parameters.
       eps        = -1.e-6
       nupdate    =  1
       ff         = 0.
-      expId      = 'MIT_CE_000'
-      yctrlid    = expId
+cdfer      expId      = 'MIT_CE_000'
+      yctrlid    = 'MIT_CE_000'
 
       modeldataunit = 14
       scrunit1      = 11
@@ -216,7 +219,7 @@ c--   Read control parameters from file.
       print*, ' OPTIM_NUMBMOD: Control options have been read.'
 
 cph(
-      expId = yctrlid
+cdfer      expId = yctrlid
 cph)
 
 c--   Read optimization parameters from file.
