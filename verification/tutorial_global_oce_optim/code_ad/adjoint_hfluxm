@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/Attic/adjoint_hfluxm,v 1.1 2008/01/15 21:16:42 dfer Exp $
+#  $Name:  $
+#
+
+#  This file contains the default settings for the adjoint and 
+#  tangent-linear compilers.  If you need to change these settings,
+#  please make a separate (local) copy of this file.
+
+# TAMC=/data43/ralf/tamc/tamc
+# TAF=~fastopt/bin/taf
+# STAF=staf
+
+TAF=staf
+TAMC=tamc
+
+AD_TAMC_FLAGS='-reverse -admark ad -i4 -r4 -l tamc_ad.log'
+AD_TAF_FLAGS='-reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log -nonew_arg'
+FTL_TAMC_FLAGS='-forward -ftlmark g_ -i4 -r4 -l tamc_ftl.log'
+FTL_TAF_FLAGS='-forward -ftlmark g_ -i4 -r4 -l taf_ftl.log -flow taf_ftl_flow.log -nonew_arg'
+SVD_TAMC_FLAGS='-reverse -forward -pure -i4 -r4 -l tamc_svd.log'
+SVD_TAF_FLAGS='-reverse -forward -pure -i4 -r4 -l taf_svd.log -flow taf_flow.log -nonew_arg'
+
+DIFF_FLAGS="-toplevel 'the_main_loop'    \
+            -input 'xx_theta_dummy       \
+                    xx_salt_dummy        \
+                    xx_hflux_dummy       \
+                    xx_sflux_dummy       \
+                    xx_tauu_dummy        \
+                    xx_tauv_dummy        \
+                    xx_atemp_dummy       \
+                    xx_aqh_dummy         \
+                    xx_uwind_dummy       \
+                    xx_vwind_dummy       \
+                    xx_diffkr_dummy      \
+                    xx_kapgm_dummy       \
+                    xx_efluxp_dummy      \
+                    xx_hfluxm_dummy'     \
+            -output 'fc'"
+
+AD_TAMC_FLAGS="$AD_TAMC_FLAGS $DIFF_FLAGS"
+AD_TAF_FLAGS="$AD_TAF_FLAGS   $DIFF_FLAGS"
+
+FTL_TAMC_FLAGS="$FTL_TAMC_FLAGS $DIFF_FLAGS"
+FTL_TAF_FLAGS="$FTL_TAF_FLAGS   $DIFF_FLAGS"
+
+SVD_TAMC_FLAGS="$SVD_TAMC_FLAGS $DIFF_FLAGS"
+SVD_TAF_FLAGS="$SVD_TAF_FLAGS   $DIFF_FLAGS"
