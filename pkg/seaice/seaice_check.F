@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.25 2007/12/06 07:40:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.26 2008/01/16 09:47:44 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -181,6 +181,17 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
       ENDIF
 #endif /* SEAICE_SALINITY */
 #endif /* ALLOW_SALT_PLUME */
+
+#if !defined(SEAICE_ALLOW_TEM) || !defined(SEAICE_CGRID)
+      IF ( SEAICEuseTEM ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseTEM requires that'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'SEAICE_CHECK: SEAICE_ALLOW_TEM and SEAICE_CGRID are defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif
       _END_MASTER(myThid)
 
       RETURN

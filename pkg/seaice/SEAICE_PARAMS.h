@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.51 2008/01/11 19:59:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.52 2008/01/16 09:47:44 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -12,6 +12,8 @@ C     SEAICEwriteState  - If true, write sea ice state to file;
 C                         default is false.
 C     SEAICEuseDYNAMICS - If false, do not use dynamics;
 C                         default is to use dynamics.
+C     SEAICEuseTEM      - to use truncated ellipse method (see Geiger et al.
+C                         1998) set this parameter to true, default is false
 C     SEAICEuseEVP      - If false, use Zhangs LSR solver for VP equations
 C                         if true use elastic viscous plastic solver  
 C     SEAICEuseEVPpickup - Set to false in order to start EVP solver with
@@ -44,6 +46,7 @@ C     SEAICE_dump_mnc   :: write snap-shot output   using MNC
 C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
+     &     SEAICEuseTEM,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
      &     SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt,
@@ -54,6 +57,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
+     &     SEAICEuseTEM,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
      &     SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt,

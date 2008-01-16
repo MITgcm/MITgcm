@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.17 2007/11/14 15:55:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.18 2008/01/16 09:47:44 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -80,8 +80,9 @@ C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
 C     auxilliary variables
       _RL e11C, e22C, e12C, deltaC, deltaCreg, pressC, zetaC
       _RL e11Z, e22Z, e12Z, deltaZ, deltaZreg, pressZ, zetaZ
+      _RL etaDenC, zetaMaxC, etaDenZ, zetaMaxZ
       _RL zMaxZ, zMinZ
-      _RL denom1, denom2, fac
+      _RL denom1, denom2, fac, facZ
 
 C     surrface level
       kSrf = 1
@@ -179,16 +180,22 @@ C
           DO j=0,sNy+1
            DO i=0,sNx+1
 C     average strain rates to Z and C points
+            facZ = 0.25 _d 0
+CML            facZ = 1.0 _d 0
+CML     &           / MAX(1.D0,maskC(I,  J,  kSrf,bi,bj)
+CML     &           +          maskC(I-1,J,  kSrf,bi,bj)
+CML     &           +          maskC(I,  J-1,kSrf,bi,bj)
+CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
             e11C = e11(i,j,bi,bj)
             e22C = e22(i,j,bi,bj)
             e12C = 0.25 _d 0
      &         * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
      &           + e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
-            e11Z = 0.25 _d 0
-     &         * ( e11(I,J  ,bi,bj) + e11(I-1,J  ,bi,bj)
+            e11Z = facZ
+     &         * ( e11(I,J  ,bi,bj) + e11(I-1,J  ,bi,bj) 
      &           + e11(I,J-1,bi,bj) + e11(I-1,J-1,bi,bj) )
-            e22Z = 0.25 _d 0
-     &         * ( e22(I,J  ,bi,bj) + e22(I-1,J  ,bi,bj)
+            e22Z = facZ
+     &         * ( e22(I,J  ,bi,bj) + e22(I-1,J  ,bi,bj) 
      &           + e22(I,J-1,bi,bj) + e22(I-1,J-1,bi,bj) )
             e12Z = e12(i,j,bi,bj)
             deltaC    = (e11C**2+e22C**2)*(ONE+recip_ecc2)
@@ -211,8 +218,8 @@ C     modify pressure (copied from seaice_calc_viscosities)
             zetaC  = HALF*press0(I,J,bi,bj)/deltaCreg
             zetaC  = MIN(zMax(I,J,bi,bj),zetaC)
             zetaC  = MAX(zMin(I,J,bi,bj),zetaC)
-CML            zetaC  = zetaC*hEffM(I,J,bi,bj)
-            pressZ = (deltaZ/deltaZreg) * 0.25 _d 0
+CML            zetaC  = zetaC*hEffM(I,J,bi,bj) 
+            pressZ = (deltaZ/deltaZreg) * facZ
      &         * ( PRESS0(I,J  ,bi,bj) + PRESS0(I-1,J  ,bi,bj)
      &           + PRESS0(I,J-1,bi,bj) + PRESS0(I-1,J-1,bi,bj) )
             zetaZ  = HALF/deltaZreg * pressZ
@@ -235,9 +242,26 @@ C     P * ( D_s/Delta     ) = 2*zeta*D_s
             seaice_div    (I,J) = (
      &           2. _d 0 *zetaC*(e11C+e22C) - pressC
      &           ) *hEffM(I,J,bi,bj)
-            seaice_tension(I,J) = 2. _d 0*zetaC*(e11C-e22C)
-     &           *hEffM(I,J,bi,bj)
-            seaice_shear  (I,J) = 2. _d 0*zetaZ*2. _d 0*e12Z
+#ifdef SEAICE_ALLOW_TEM
+            IF ( SEAICEuseTEM ) THEN
+             etaDenC  = (e11C-e22C)**2 + 4. _d 0*e12C**2
+             etaDenC  = SQRT(MAX(SEAICE_EPS_SQ,etaDenC))
+             zetaMaxC = ecc2*zetaC*( deltaC-( e11C+e22C ) )/etaDenC
+             etaDenZ  = (e11Z-e22Z)**2 + 4. _d 0*e12Z**2
+             etaDenZ  = SQRT(MAX(SEAICE_EPS_SQ,etaDenZ))
+             zetaMaxZ = ecc2*zetaZ*( deltaZ-( e11Z+e22Z ) )/etaDenZ
+             seaice_tension(I,J) = 2. _d 0*MIN(zetaC,zetaMaxC)
+     &            *(e11C-e22C)*hEffM(I,J,bi,bj)
+             seaice_shear  (I,J) = 
+     &            2. _d 0*MIN(zetaZ,zetaMaxZ)*2. _d 0*e12Z
+            ELSE
+#endif /* SEAICE_ALLOW_TEM */
+             seaice_tension(I,J) = 2. _d 0*zetaC*(e11C-e22C)
+     &            *hEffM(I,J,bi,bj)
+             seaice_shear  (I,J) = 2. _d 0*zetaZ*2. _d 0*e12Z
+#ifdef SEAICE_ALLOW_TEM
+            ENDIF
+#endif /* SEAICE_ALLOW_TEM */
            ENDDO
           ENDDO
 C

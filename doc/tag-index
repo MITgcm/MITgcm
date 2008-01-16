@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.938 2008/01/14 02:29:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.939 2008/01/16 09:48:41 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: add a new flag SEAICEuseTEM to use a slightly different
+  ice rheology (so-called truncated ellipse, that gets rid of tensile stress);
+  for now this is only available for the C-grid code and also within
+  #ifdef SEAICE_ALLOW_TEM, because this option may slow down the EVP code
 
 checkpoint59m
 o pkg/seaice: use different time constant for melting (SEAICE_gamma_t)

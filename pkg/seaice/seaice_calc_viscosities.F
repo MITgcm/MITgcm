@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.9 2007/11/13 19:26:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.10 2008/01/16 09:47:44 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -61,7 +61,7 @@ C     i,j,bi,bj - Loop counters
 C     e11, e12, e22 - components of strain rate tensor
 C     ecm2          - inverse of square of eccentricity of yield curve
       INTEGER i, j, bi, bj
-      _RL ECM2, e12C, deltaC, deltaCreg
+      _RL ECM2, e12C, deltaC, deltaCreg, etaMax, etaDen
 
 C--   FIRST SET UP BASIC CONSTANTS
       ecm2=0. _d 0
@@ -94,6 +94,23 @@ C     set viscosities to zero at hEffM flow pts
           press(I,J,bi,bj) = TWO *zeta(I,J,bi,bj)*deltaC
          ENDDO
         ENDDO
+#ifdef SEAICE_ALLOW_TEM
+        IF ( SEAICEuseTEM ) THEN
+         DO j=1-Oly+1,sNy+Oly-1
+          DO i=1-Olx+1,sNx+Olx-1
+           e12C = 0.25 * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
+     &          +          e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
+           etaDen = (e11(I,J,bi,bj)-e22(I,J,bi,bj))**2 
+     &          + 4. _d 0*e12C**2
+           etaDen = SQRT(MAX(SEAICE_EPS_SQ,etaDen))
+           etaMax = ( 0.5 _d 0*press(I,J,bi,bj)-zeta(I,J,bi,bj)
+     &          *( e11(I,J,bi,bj)+e22(I,J,bi,bj) ) 
+     &          )/etaDen
+           eta(I,J,bi,bj) = MIN(eta(I,J,bi,bj),etaMax)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* SEAICE_ALLOW_TEM */
        ENDDO
       ENDDO
 
