@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.12 2008/01/15 20:28:39 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.13 2008/01/16 23:53:14 dfer Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -99,10 +99,10 @@ c--     Next, read the cost data file.
      &       lastinterval = MAX(
      &       INT(lastinterval/deltaTclock-1)*deltaTclock,deltaTclock)
 
-cHFLUXM_CONTROL
+#if (defined ALLOW_COST_HFLUXM) || (defined ALLOW_COST_TEMP)
 c-- get the weights for the cost functions
       CALL COST_WEIGHTS( myThid )
-cHFLUXM_CONTROL
+#endif
       _END_MASTER( mythid )
 
       _BARRIER
