@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.20 2007/10/09 00:05:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.21 2008/01/17 20:49:27 dfer Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -583,6 +583,27 @@ c--   == end of interface ==
      &                          mythid, dummy)
 
 #endif /* ALLOW_EFLUXP0_CONTROL */
+
+#ifdef ALLOW_HFLUXM_CONTROL
+      else if ( grdchkvarindex .eq. 24 ) then
+         il=ilnblnk( xx_hfluxm_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_hfluxm_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_hfluxm_file(1:il),'.',optimcycle
+         end if
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+#endif /* ALLOW_HFLUXM_CONTROL */
 
 #ifdef ALLOW_PRECIP_CONTROL
       else if ( grdchkvarindex .eq. 32 ) then
