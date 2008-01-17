@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.61 2007/12/21 01:32:35 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.62 2008/01/17 22:33:08 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,8 +59,6 @@ C     i,j,bi,bj :: Loop counters
 C     iceFld    :: Copy of seaice field
       INTEGER i, j, bi, bj
       _RL iceFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -100,23 +98,19 @@ CADJ STORE zeta  = comlev1, key = ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C solve ice momentum equations and calculate ocean surface stress
-      IF (
-     &  DIFFERENT_MULTIPLE(SEAICE_deltaTdyn,myTime,SEAICE_deltaTtherm)
-     &   ) THEN
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL( 'SEAICE_DYNSOLVER', myThid )
+      IF ( debugLevel .GE. debLevB )
+     &     CALL DEBUG_CALL( 'SEAICE_DYNSOLVER', myThid )
 #endif
 #ifdef SEAICE_CGRID
-         CALL TIMER_START('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
-         CALL SEAICE_DYNSOLVER ( myTime, myIter, myThid )
-         CALL TIMER_STOP ('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
+      CALL TIMER_START('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
+      CALL SEAICE_DYNSOLVER ( myTime, myIter, myThid )
+      CALL TIMER_STOP ('SEAICE_DYNSOLVER   [SEAICE_MODEL]',myThid)
 #else
-         CALL TIMER_START('DYNSOLVER          [SEAICE_MODEL]',myThid)
-         CALL DYNSOLVER ( myTime, myIter, myThid )
-         CALL TIMER_STOP ('DYNSOLVER          [SEAICE_MODEL]',myThid)
+      CALL TIMER_START('DYNSOLVER          [SEAICE_MODEL]',myThid)
+      CALL DYNSOLVER ( myTime, myIter, myThid )
+      CALL TIMER_STOP ('DYNSOLVER          [SEAICE_MODEL]',myThid)
 #endif /* SEAICE_CGRID */
-      ENDIF
 
 #ifdef ALLOW_OBCS
 #ifndef DISABLE_SEAICE_OBCS

@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.940 2008/01/17 20:48:07 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.941 2008/01/17 22:33:07 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: moved DIFFERENT_MULTIPLE from seaice_model to seaice_dynsolver
+  http://forge.csail.mit.edu/pipermail/mitgcm-devel/2008-January/003173.html
 o verification/seaice_obcs: updated for restart test and latest options
 o pkg/seaice: add a new flag SEAICEuseTEM to use a slightly different
   ice rheology (so-called truncated ellipse, that gets rid of tensile stress);

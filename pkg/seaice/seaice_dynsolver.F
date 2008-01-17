@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.25 2007/11/13 19:26:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.26 2008/01/17 22:33:07 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,12 +41,18 @@ C     myThid - Thread no. that called this routine.
 CEndOfInterface
 
 #ifdef SEAICE_CGRID
+
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
-
       INTEGER i, j, bi, bj
       _RL PSTAR
       _RL phiSurf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
+      IF (
+     &  DIFFERENT_MULTIPLE(SEAICE_deltaTdyn,myTime,SEAICE_deltaTtherm)
+     &   ) THEN
 
 C--   FIRST SET UP BASIC CONSTANTS
       PSTAR  = SEAICE_strength
@@ -56,8 +62,6 @@ C--   Compute proxy for geostrophic velocity,
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-CML          GWATX(I,J,bi,bj)=uVel(i,j,KGEO(I,J,bi,bj),bi,bj)
-CML          GWATY(I,J,bi,bj)=vVel(i,j,KGEO(I,J,bi,bj),bi,bj)
           GWATX(I,J,bi,bj)=uVel(i,j,1,bi,bj)
           GWATY(I,J,bi,bj)=vVel(i,j,1,bi,bj)
          ENDDO
@@ -259,6 +263,9 @@ CADJ STORE dwatn = comlev1, key=ikey_dynamics
 CADJ STORE uice  = comlev1, key=ikey_dynamics
 CADJ STORE vice  = comlev1, key=ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+C     IF(DIFFERENT_MULTIPLE(SEAICE_deltaTdyn,myTime,SEAICE_deltaTtherm))
+      ENDIF
 
 C Calculate ocean surface stress
       CALL SEAICE_OCEAN_STRESS ( myTime, myIter, myThid )
