@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_open64,v 1.1 2007/11/26 19:18:46 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_open64,v 1.2 2008/01/17 04:52:49 utke Exp $
 #  $Name:  $
 #
 # Build options for Fedore Core 4 i686 Pentium4
@@ -9,6 +9,8 @@
 
 CC=opencc
 FC=openf90
+F90C=openf90
+F90FIXEDFORMAT='-fixedform -x f95'
 LD=openf90
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
