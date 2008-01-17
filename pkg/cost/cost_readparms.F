@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.13 2008/01/16 23:53:14 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.14 2008/01/17 20:53:08 dfer Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -49,7 +49,7 @@ c--   Read the namelist input.
 #endif
      &       , lastinterval
 cHFLUXM_CONTROL
-     &                 , mult_temp, mult_hfluxm
+     &                 , mult_temp_tut, mult_hflux_tut
 cHFLUXM_CONTROL
 
       _BEGIN_MASTER( myThid )
@@ -70,8 +70,8 @@ c--     Set default values.
         mult_depth            =      0. _d 0
 #endif
 cHFLUXM_CONTROL
-        mult_temp             =      0. _d 0
-        mult_hfluxm           =      0. _d 0
+        mult_temp_tut         =      0. _d 0
+        mult_hflux_tut        =      0. _d 0
 cHFLUXM_CONTROL
 
 c--     30*24*3600 = 2592000 = 1 model month

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost.h,v 1.15 2008/01/15 20:28:39 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost.h,v 1.16 2008/01/17 20:53:08 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,8 +52,8 @@ c                  function contributions.
 #endif
      &                objf_eflux
 cHFLUXM_CONTROL
-     &               ,objf_hfluxm
-     &               ,objf_temp
+     &               ,objf_hflux_tut
+     &               ,objf_temp_tut
 cHFLUXM_CONTROL
 
       _RL  objf_atl  (nsx,nsy)
@@ -69,8 +69,8 @@ cHFLUXM_CONTROL
       _RL  objf_depth (nsx,nsy)
 #endif
 cHFLUXM_CONTROL
-      _RL  objf_hfluxm (nsx,nsy)
-      _RL  objf_temp (nsx,nsy)
+      _RL  objf_hflux_tut (nsx,nsy)
+      _RL  objf_temp_tut (nsx,nsy)
 cHFLUXM_CONTROL
 
       common /cost_param_r/
@@ -109,8 +109,8 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
 #endif
      &                    multEtan
 cHFLUXM_CONTROL
-     &                   ,mult_hfluxm
-     &                   ,mult_temp
+     &                   ,mult_hflux_tut
+     &                   ,mult_temp_tut
 cHFLUXM_CONTROL
 
       _RL  mult_atl
@@ -131,8 +131,8 @@ cHFLUXM_CONTROL
       _RL  mult_depth
 #endif
 cHFLUXM_CONTROL
-      _RL  mult_hfluxm
-      _RL  mult_temp
+      _RL  mult_hflux_tut
+      _RL  mult_temp_tut
 cHFLUXM_CONTROL
 
 #ifdef ALLOW_COST_TEST
