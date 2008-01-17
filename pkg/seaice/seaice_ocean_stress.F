@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.20 2007/11/14 15:55:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.21 2008/01/17 23:18:39 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -18,6 +18,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "DYNVARS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
 #include "SEAICE.h"
@@ -188,25 +189,25 @@ C     ice cover
          DO i=1,sNx
           fuIceLoc=HALF*( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) )*
      &         COSWAT *
-     &         ( UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj) )
+     &         ( UICE(I,J,1,bi,bj)-uVel(I,J,1,bi,bj) )
      &         - SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
      &         ( DWATN(I  ,J,bi,bj) *
-     &         0.5 _d 0*(vIce(I  ,J  ,1,bi,bj)-GWATY(I  ,J  ,bi,bj)
-     &                  +vIce(I  ,J+1,1,bi,bj)-GWATY(I  ,J+1,bi,bj))
+     &         0.5 _d 0*(vIce(I  ,J  ,1,bi,bj)-vVel(I  ,J  ,1,bi,bj)
+     &                  +vIce(I  ,J+1,1,bi,bj)-vVel(I  ,J+1,1,bi,bj))
      &         + DWATN(I-1,J,bi,bj) *
-     &         0.5 _d 0*(vIce(I-1,J  ,1,bi,bj)-GWATY(I-1,J  ,bi,bj)
-     &                  +vIce(I-1,J+1,1,bi,bj)-GWATY(I-1,J+1,bi,bj))
+     &         0.5 _d 0*(vIce(I-1,J  ,1,bi,bj)-vVel(I-1,J  ,1,bi,bj)
+     &                  +vIce(I-1,J+1,1,bi,bj)-vVel(I-1,J+1,1,bi,bj))
      &         )
           fvIceLoc=HALF*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) )*
      &         COSWAT *
-     &         ( VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj) )
+     &         ( VICE(I,J,1,bi,bj)-vVel(I,J,1,bi,bj) )
      &         + SIGN(SINWAT,  _fCori(I,J,bi,bj)) * 0.5 _d 0 *
      &         ( DWATN(I,J  ,bi,bj) *
-     &         0.5 _d 0*(uIce(I  ,J  ,1,bi,bj)-GWATX(I  ,J  ,bi,bj)
-     &                  +uIce(I+1,J  ,1,bi,bj)-GWATX(I+1,J  ,bi,bj))
+     &         0.5 _d 0*(uIce(I  ,J  ,1,bi,bj)-uVel(I  ,J  ,1,bi,bj)
+     &                  +uIce(I+1,J  ,1,bi,bj)-uVel(I+1,J  ,1,bi,bj))
      &         + DWATN(I,J-1,bi,bj) *
-     &         0.5 _d 0*(uIce(I  ,J-1,1,bi,bj)-GWATX(I  ,J-1,bi,bj)
-     &                  +uIce(I+1,J-1,1,bi,bj)-GWATX(I+1,J-1,bi,bj))
+     &         0.5 _d 0*(uIce(I  ,J-1,1,bi,bj)-uVel(I  ,J-1,1,bi,bj)
+     &                  +uIce(I+1,J-1,1,bi,bj)-uVel(I+1,J-1,1,bi,bj))
      &         )
           areaW = 0.5 _d 0 * (AREA(I,J,1,bi,bj) + AREA(I-1,J,1,bi,bj))
      &         * SEAICEstressFactor

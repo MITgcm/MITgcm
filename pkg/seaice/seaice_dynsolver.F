@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.26 2008/01/17 22:33:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.27 2008/01/17 23:18:39 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -56,18 +56,6 @@ C     i,j,bi,bj - Loop counters
 
 C--   FIRST SET UP BASIC CONSTANTS
       PSTAR  = SEAICE_strength
-
-C--   Compute proxy for geostrophic velocity,
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          GWATX(I,J,bi,bj)=uVel(i,j,1,bi,bj)
-          GWATY(I,J,bi,bj)=vVel(i,j,1,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
 
 C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
       DO bj=myByLo(myThid),myByHi(myThid)

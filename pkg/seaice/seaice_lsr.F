@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.28 2007/11/14 15:55:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.29 2008/01/17 23:18:39 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -21,6 +21,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "DYNVARS.h"
 #include "GRID.h"
 #include "SEAICE.h"
 #include "SEAICE_PARAMS.h"
@@ -154,10 +155,10 @@ C     free slip
          DO i=0,sNx+1
 C     set up non-linear water drag
           TEMPVAR = QUART*(
-     &          (uIceC(I  ,J,bi,bj)-GWATX(I  ,J,bi,bj)
-     &          +uIceC(I+1,J,bi,bj)-GWATX(I+1,J,bi,bj))**2
-     &         +(vIceC(I,J  ,bi,bj)-GWATY(I,J  ,bi,bj)
-     &          +vIceC(I,J+1,bi,bj)-GWATY(I,J+1,bi,bj))**2)
+     &          (uIceC(I  ,J,bi,bj)-uVel(I  ,J,1,bi,bj)
+     &          +uIceC(I+1,J,bi,bj)-uVel(I+1,J,1,bi,bj))**2
+     &         +(vIceC(I,J  ,bi,bj)-vVel(I,J  ,1,bi,bj)
+     &          +vIceC(I,J+1,bi,bj)-vVel(I,J+1,1,bi,bj))**2)
           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
              DWATN(I,J,bi,bj)=QUART
           ELSE
@@ -175,25 +176,25 @@ C     set up anti symmettric drag force and add in current force
 C     ( remember to average to correct velocity points )
           FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
      &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
-     &         COSWAT * GWATX(I,J,bi,bj)
+     &         COSWAT * uVel(I,J,1,bi,bj)
      &         - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 *
      &         ( DWATN(I  ,J,bi,bj) *
-     &         0.5 _d 0 * (GWATY(I  ,J  ,bi,bj)-vIceC(I  ,J  ,bi,bj)
-     &                    +GWATY(I  ,J+1,bi,bj)-vIceC(I  ,J+1,bi,bj))
+     &         0.5 _d 0 * (vVel(I  ,J  ,1,bi,bj)-vIceC(I  ,J  ,bi,bj)
+     &                    +vVel(I  ,J+1,1,bi,bj)-vIceC(I  ,J+1,bi,bj))
      &         + DWATN(I-1,J,bi,bj) *
-     &         0.5 _d 0 * (GWATY(I-1,J  ,bi,bj)-vIceC(I-1,J  ,bi,bj)
-     &                    +GWATY(I-1,J+1,bi,bj)-vIceC(I-1,J+1,bi,bj))
+     &         0.5 _d 0 * (vVel(I-1,J  ,1,bi,bj)-vIceC(I-1,J  ,bi,bj)
+     &                    +vVel(I-1,J+1,1,bi,bj)-vIceC(I-1,J+1,bi,bj))
      &         )
           FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
      &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
-     &         COSWAT * GWATY(I,J,bi,bj)
+     &         COSWAT * vVel(I,J,1,bi,bj)
      &         + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
      &         ( DWATN(I,J  ,bi,bj) *
-     &         0.5 _d 0 * (GWATX(I  ,J  ,bi,bj)-uIceC(I  ,J  ,bi,bj)
-     &                    +GWATX(I+1,J  ,bi,bj)-uIceC(I+1,J  ,bi,bj))
+     &         0.5 _d 0 * (uVel(I  ,J  ,1,bi,bj)-uIceC(I  ,J  ,bi,bj)
+     &                    +uVel(I+1,J  ,1,bi,bj)-uIceC(I+1,J  ,bi,bj))
      &         + DWATN(I,J-1,bi,bj) *
-     &         0.5 _d 0 * (GWATX(I  ,J-1,bi,bj)-uIceC(I  ,J-1,bi,bj)
-     &                    +GWATX(I+1,J-1,bi,bj)-uIceC(I+1,J-1,bi,bj))
+     &         0.5 _d 0 * (uVel(I  ,J-1,1,bi,bj)-uIceC(I  ,J-1,bi,bj)
+     &                    +uVel(I+1,J-1,1,bi,bj)-uIceC(I+1,J-1,bi,bj))
      &         )
 C     calculate pressure force and add to external force
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)

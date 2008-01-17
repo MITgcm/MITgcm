@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.37 2007/11/25 21:36:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.38 2008/01/17 23:18:39 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -128,10 +128,6 @@ C     stressDivergenceX/Y - divergence of stress tensor
       _RL TMIX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL TICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      COMMON/GWATXY/GWATX,GWATY
-      _RL GWATX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL GWATY      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
       COMMON/WIND_STRESS_ICE/TAUX,TAUY
 C     TAUX   - zonal      wind stress over ice at U point
 C     TAUY   - meridional wind stress over ice at V point
@@ -144,15 +140,15 @@ C     WINDX  - zonal      wind stress over water at C points
 C     WINDY  - meridional wind stress over water at C points
       _RL WINDX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL WINDY      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
 
-c     COMMON/COUNT/ICOUNT
-c     COMMON/DAY/IDELT
-c     INTEGER ICOUNT, IDELT
+      COMMON/GWATXY/GWATX,GWATY
+      _RL GWATX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL GWATY      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C--   KGEO    Level used as a proxy for geostrophic velocity.
       COMMON/SEAICE_KGEO/KGEO
       INTEGER KGEO   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+#endif
 
 #ifdef ALLOW_SEAICE_COST_EXPORT
       _RL uHeffExportCell(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

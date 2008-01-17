@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.24 2007/12/05 07:28:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.25 2008/01/17 23:18:39 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -104,6 +104,9 @@ C--   Initialise all variables in common blocks:
           UVM(i,j,bi,bj)    = 0. _d 0
           WINDX(i,j,bi,bj)  = 0. _d 0
           WINDY(i,j,bi,bj)  = 0. _d 0
+          GWATX(i,j,bi,bj)  = 0. _d 0
+          GWATY(i,j,bi,bj)  = 0. _d 0
+          KGEO(i,j,bi,bj)   = 0
 #endif /* SEAICE_CGRID */
           DWATN(i,j,bi,bj)  = 0. _d 0
           PRESS0(i,j,bi,bj) = 0. _d 0
@@ -120,11 +123,8 @@ C--   Initialise all variables in common blocks:
           RIVER(i,j,bi,bj)  = 0. _d 0
           TMIX(i,j,bi,bj)   = 0. _d 0
           TICE(i,j,bi,bj)   = 0. _d 0
-          GWATX(i,j,bi,bj)  = 0. _d 0
-          GWATY(i,j,bi,bj)  = 0. _d 0
           TAUX(i,j,bi,bj)   = 0. _d 0
           TAUY(i,j,bi,bj)   = 0. _d 0
-          KGEO(i,j,bi,bj)   = 0
 #ifdef ALLOW_SEAICE_COST_EXPORT
           uHeffExportCell(i,j,bi,bj) = 0. _d 0
           vHeffExportCell(i,j,bi,bj) = 0. _d 0
@@ -243,6 +243,7 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
          ENDDO
         ENDDO
 
+#ifndef SEAICE_CGRID
 C--   Choose a proxy level for geostrophic velocity,
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -261,6 +262,7 @@ C--   Choose a proxy level for geostrophic velocity,
 #endif /* SEAICE_TEST_ICE_STRESS_1 */
          ENDDO
         ENDDO
+#endif /* SEAICE_CGRID */
 
        ENDDO
       ENDDO

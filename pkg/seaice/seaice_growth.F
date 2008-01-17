@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.43 2008/01/11 19:59:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.44 2008/01/17 23:18:39 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -708,8 +708,6 @@ C Add YNEG contribution to QNET
 #endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef SEAICE_DEBUG
-       CALL PLOT_FIELD_XYRS( GWATX,'Current GWATX ', myIter, myThid )
-       CALL PLOT_FIELD_XYRS( GWATY,'Current GWATY ', myIter, myThid )
        CALL PLOT_FIELD_XYRL( QSW,'Current QSW ', myIter, myThid )
        CALL PLOT_FIELD_XYRL( QNET,'Current QNET ', myIter, myThid )
        CALL PLOT_FIELD_XYRL( EmPmR,'Current EmPmR ', myIter, myThid )
