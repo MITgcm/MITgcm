@@ -4,7 +4,7 @@ Tutorial Example: "Global Ocean State Estimation"
 
 Configure and compile the code:
   cd build
-  ../../../tools/genmake2 -mods ../code_ad -adof=../../../tools/adjoint_options/adjoint_staf [-of my_platform_optionFile]
+  ../../../tools/genmake2 -mods=../code_ad -adof=../code_ad/adjoint_hfluxm [-of my_platform_optionFile]
   make depend
   make adall
 
