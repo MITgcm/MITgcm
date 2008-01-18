@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_hflux.F,v 1.1 2008/01/15 21:16:42 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_hflux.F,v 1.2 2008/01/18 03:39:26 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,7 +52,6 @@ C
          ENDDO
       ENDDO
       _GLOBAL_SUM_R8( tmpC , myThid )
-      print *,'tmpC',tmpC
       locfc = 0. _d 0
 c
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -78,8 +77,8 @@ c
          enddo
       enddo
 c
-      objf_hfluxm(bi,bj) = locfc
-      print*,'objf_hfluxm =',locfc
+      objf_hflux_tut(bi,bj) = locfc
+c     print*,'objf_hflux_tut =',locfc
 c
          ENDDO
         ENDDO

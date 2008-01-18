@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_temp.F,v 1.1 2008/01/15 21:16:42 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_temp.F,v 1.2 2008/01/18 03:39:26 dfer Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -83,8 +83,8 @@ c
             enddo
          enddo
 c
-          objf_temp(bi,bj) = locfc
-          print*,'objf_temp =',locfc,startTime,endTime,tmp
+          objf_temp_tut(bi,bj) = locfc
+c         print*,'objf_temp_tut =',locfc,startTime,endTime,tmp
 c
          ENDDO
       ENDDO

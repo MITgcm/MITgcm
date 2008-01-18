@@ -1,18 +1,16 @@
-C
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/CPP_OPTIONS.h,v 1.1 2008/01/15 21:16:42 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/CPP_OPTIONS.h,v 1.2 2008/01/18 03:39:26 dfer Exp $
 C $Name:  $
-
-C CPP flags controlling which code in included in the files that
-C will be compiled.
 
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 
+C CPP flags controlling particular source code features
+
 #include "PACKAGES_CONFIG.h"
 
-#ifdef ALLOW_KPP
-#define  SHORTWAVE_HEATING
-#endif
+C o Shortwave heating as extra term in external_forcing.F
+C Note: this should be a run-time option
+#undef SHORTWAVE_HEATING
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
@@ -23,11 +21,12 @@ C o Include/exclude call to S/R CONVECT
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
 
-C o Allow nonHydrostatic code
-#undef  ALLOW_NONHYDROSTATIC
+C o Include/exclude nonHydrostatic code
+#undef ALLOW_NONHYDROSTATIC
 
-C o Exact volume conservation
-#undef EXACT_CONSERV
+C o Use "Exact Convervation" of fluid in Free-Surface formulation
+C   so that d/dt(eta) is exactly equal to - Div.Transport
+#define EXACT_CONSERV
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
