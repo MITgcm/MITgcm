@@ -1,0 +1,12 @@
+#
+#
+# ******************
+# ECCO cost function
+# ******************
+ &COST_NML
+#
+ mult_temp_tut  = 1.,
+ mult_hflux_tut = 5.e-1,
+#lastinterval=2592000.,
+ lastinterval=1296000.,
+ &

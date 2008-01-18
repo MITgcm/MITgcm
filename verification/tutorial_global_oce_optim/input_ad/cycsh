@@ -1,0 +1,38 @@
+#!/bin/csh
+set name=tutorial
+set itermax=10
+module load ifc
+
+set ite=`egrep 'optimcycle' data.optim | sed 's/ optimcycle=//'| sed 's/,$//'`
+set i=`expr $ite + 1`
+while ( $i <= $itermax )
+ set ii=`add0upto3c $i`
+ echo "Beginning of iteration $ii"
+ cp -p OPTIM/ctrlhflux_tut_MITgcm.opt0$ii .
+ set ite=`expr $i - 1`
+ sed "s/ optimcycle=$ite/ optimcycle=$i/" data.optim > TTT.tmp
+ mv -f TTT.tmp data.optim
+ set fich=output$name$ii
+ echo "Running mitcgm_ad: iteration $ii" 
+ ./mitgcmuv_ad > $fich
+ egrep optimcycle data.optim >> fcost$name
+ grep "objf_temp_tut(" $fich >> fcost$name
+ grep "objf_hflux_tut(" $fich >> fcost$name
+ egrep 'global fc =' $fich >> fcost$name
+ echo Cleaning 
+ \rm tapelev*
+ set direc=run$name$ii
+ mkdir $direc
+ mv *.001.001.* $direc
+ mv ctrlhflux_tut_MITgcm.opt0$ii $fich $direc
+ mv costhflux_tut_MITgcm.opt0$ii OPTIM/
+ echo "Line-search: iteration $ii"
+ cd OPTIM/
+ sed "s/ optimcycle=$ite/ optimcycle=$i/" data.optim > TTT.tmp
+ mv -f TTT.tmp data.optim
+ egrep optimcycle data.optim
+ ./optim.x > std$ii
+ cd ..
+ set i=`expr $i + 1`
+end
+

@@ -1,0 +1,18 @@
+#
+#
+# *********************
+# ECCO controlvariables
+# *********************
+ &CTRL_NML
+ xx_hfluxm_file      = 'xx_hfluxm',
+ &
+#
+# *********************
+# names for ctrl_pack/unpack
+# *********************
+ &CTRL_PACKNAMES
+ yctrlid  = 'tut_MITgcm',
+ ctrlname = 'ctrlhflux',
+ costname = 'costhflux',
+ &
+

@@ -1,0 +1,85 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef = 15*20.,
+ sRef = 15*35.,
+ viscAr=1.E-3,
+ viscAh=5.E5,
+ diffKhT=0.,
+ diffKrT=3.E-5,
+ diffKhS=0.,
+ diffKrS=3.E-5,
+ rhonil=1035.,
+ rhoConstFresh=1000.,
+ eosType = 'JMD95Z',
+ ivdc_kappa=100.,
+ implicitDiffusion=.TRUE.,
+ allowFreezing=.TRUE.,
+ exactConserv=.TRUE.,
+ useRealFreshWaterFlux=.TRUE.,
+ useCDscheme=.TRUE.,
+# turn on looped cells
+ hFacMin=.05,
+ hFacMindr=50.,
+# set precision of data files
+ readBinaryPrec=32,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=500,
+ cg2dTargetResidual=1.E-19,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=       0,
+#nTimeSteps = 30,
+ nTimeSteps = 10,
+ deltaTmom = 1800.,
+ tauCD =     321428.,
+ deltaTtracer= 86400.,
+ deltaTClock = 86400.,
+ deltaTfreesurf= 86400.,
+ abEps = 0.1,
+ pChkptFreq= 2592000.,
+ dumpFreq=   2592000.,
+ taveFreq=   2592000.,
+ monitorFreq=1.,
+# 2 months restoring timescale for temperature
+#tauThetaClimRelax=  5184000.,
+# 6 months restoring timescale for salinity
+ tauSaltClimRelax = 15552000.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2592000.,
+ externForcingCycle=31104000.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ delR= 50.,  70., 100., 140., 190.,
+      240., 290., 340., 390., 440.,
+      490., 540., 590., 640., 690.,
+ phiMin=-80.,
+ dySpacing=4.,
+ dxSpacing=4.,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile=      'bathymetry.bin',
+ hydrogThetaFile='lev_t.bin',
+ hydrogSaltFile= 'lev_s.bin',
+ zonalWindFile=  'trenberth_taux.bin',
+ meridWindFile=  'trenberth_tauy.bin',
+ thetaClimFile=  'lev_sst.bin',
+ saltClimFile=   'lev_sss.bin',
+ surfQFile=      'ncep_qnet.bin',
+# fresh water flux is turned off, uncomment next line to turn on
+# (not recommened together with surface salinity restoring)
+# EmPmRFile=      'ncep_emp.bin',
+ &
