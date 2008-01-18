@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.6 2007/08/17 21:38:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.7 2008/01/18 21:16:59 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -16,7 +16,7 @@ C !INTERFACE: ==========================================================
 C !DESCRIPTION:
 C Calculates the drag due to friction and the no-slip condition at bottom:
 C \begin{equation*}
-C G^u_{drag} = - ( r_b + C_D |v| + \frac{2}{\Delta r_c} ) u
+C G^u_{drag} = - \frac{1}{\Delta r_f} ( r_b + C_D |v| + \frac{2}{\Delta r_c} ) u
 C \end{equation*}
 
 C !USES: ===============================================================
