@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.101 2008/01/08 00:27:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.102 2008/01/18 21:23:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -43,11 +43,13 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     msgBuf :: Temp. for building output string.
+C     rUnits :: vertical coordinate units
 C     I,J,K  :: Loop counters.
 C     bi,bj  :: Tile loop counters.
 C     xcoord :: Temps. for building lists of values for uni-dimensionally
 C     ycoord :: varying parameters.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*2 rUnits
       INTEGER                  I,J,K
       INTEGER                  bi, bj
       _RL                     xcoord(Nx)
@@ -59,6 +61,9 @@ C     ycoord :: varying parameters.
 
       _BARRIER
       _BEGIN_MASTER(myThid)
+
+      rUnits = ' m'
+      IF ( usingPCoords ) rUnits = 'Pa'
 
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
@@ -146,37 +151,40 @@ C     ycoord :: varying parameters.
       CALL WRITE_0D_R8( sideDragFactor, INDEX_NONE, 'sideDragFactor =',
      & ' /* side-drag scaling factor (non-dim) */')
       CALL WRITE_0D_R8( viscAr,  INDEX_NONE,'viscAr =',
-     &'   /* Vertical eddy viscosity ( units of r^2/s ) */')
+     &'   /* Vertical eddy viscosity ('//rUnits//'^2/s ) */')
       CALL WRITE_0D_L( no_slip_bottom, INDEX_NONE,
      & 'no_slip_bottom =', '  /* Viscous BCs: No-slip bottom */')
       CALL WRITE_0D_R8( bottomDragLinear, INDEX_NONE,
      & 'bottomDragLinear =',
-     & ' /* linear bottom-drag coefficient ( 1/s ) */')
+     & ' /* linear bottom-drag coefficient ('//rUnits//'/s ) */')
       CALL WRITE_0D_R8( bottomDragQuadratic, INDEX_NONE,
      & 'bottomDragQuadratic =',
-     & ' /* quadratic bottom-drag coeff. ( 1/m ) */')
+     & ' /* quadratic bottom-drag coeff. ('//rUnits//'/m ) */')
       CALL WRITE_0D_R8( diffKhT, INDEX_NONE,'diffKhT =',
      &'   /* Laplacian diffusion of heat laterally ( m^2/s ) */')
       CALL WRITE_0D_R8( diffK4T, INDEX_NONE,'diffK4T =',
-     &'   /* Bihaarmonic diffusion of heat laterally ( m^4/s ) */')
+     &'   /* Biharmonic diffusion of heat laterally ( m^4/s ) */')
       CALL WRITE_0D_R8( diffKhS, INDEX_NONE,'diffKhS =',
      &'   /* Laplacian diffusion of salt laterally ( m^2/s ) */')
       CALL WRITE_0D_R8( diffK4S, INDEX_NONE,'diffK4S =',
-     &'   /* Bihaarmonic diffusion of salt laterally ( m^4/s ) */')
+     &'   /* Biharmonic diffusion of salt laterally ( m^4/s ) */')
       CALL WRITE_1D_R8( diffKrNrT, Nr, INDEX_K,'diffKrNrT =',
-     & ' /* vertical profile of vertical diffusion of Temp ( m^2/s )*/')
+     &  ' /* vertical profile of vertical diffusion of Temp ('
+     &  //rUnits//'^2/s )*/')
       CALL WRITE_1D_R8( diffKrNrS, Nr, INDEX_K,'diffKrNrS =',
-     & ' /* vertical profile of vertical diffusion of Salt ( m^2/s )*/')
+     &  ' /* vertical profile of vertical diffusion of Salt ('
+     &  //rUnits//'^2/s )*/')
       CALL WRITE_0D_R8( diffKrBL79surf, INDEX_NONE,'diffKrBL79surf =',
-     &'   /* Surface diffusion for Bryan and Lewis 1979 ( m^2/s ) */')
+     &  ' /* Surface diffusion for Bryan and Lewis 79 ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKrBL79deep, INDEX_NONE,'diffKrBL79deep =',
-     &'   /* Deep diffusion for Bryan and Lewis 1979 ( m^2/s ) */')
+     &  ' /* Deep diffusion for Bryan and Lewis 1979 ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKrBL79scl, INDEX_NONE,'diffKrBL79scl =',
-     &'   /* Depth scale for Bryan and Lewis 1979 ( m ) */')
+     &  ' /* Depth scale for Bryan and Lewis 1979 ( m ) */')
       CALL WRITE_0D_R8( diffKrBL79Ho, INDEX_NONE,'diffKrBL79Ho =',
-     &'   /* Turning depth for Bryan and Lewis 1979 ( m ) */')
+     &  ' /* Turning depth for Bryan and Lewis 1979 ( m ) */')
       CALL WRITE_0D_R8( ivdc_kappa, INDEX_NONE,'ivdc_kappa =',
-     &  ' /* Implicit Vertical Diffusivity for Convection ( m^2/s ) */')
+     &  ' /* Implicit Vertical Diffusivity for Convection ('
+     &  //rUnits//'^2/s ) */')
       CALL WRITE_0D_R8( hMixCriteria, INDEX_NONE,'hMixCriteria=',
      & '  /* Criteria for mixed-layer diagnostic */')
       CALL WRITE_0D_C( eosType, 0, INDEX_NONE, 'eosType =',
@@ -549,7 +557,7 @@ C     ycoord :: varying parameters.
      & 'usingCurvilinearGrid =',
      & ' /* Curvilinear coordinates flag ( True/False ) */')
       CALL WRITE_0D_R8( Ro_SeaLevel, INDEX_NONE,'Ro_SeaLevel =',
-     & ' /* r(1) ( units of r ) */')
+     & ' /* r(1) ( units of r == '//rUnits//' ) */')
       CALL WRITE_0D_R8( rkSign, INDEX_NONE,'rkSign =',
      &'   /* index orientation relative to vertical coordinate */')
       CALL WRITE_0D_R8( gravitySign, INDEX_NONE,'gravitySign =',
