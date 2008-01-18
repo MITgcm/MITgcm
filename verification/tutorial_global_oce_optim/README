@@ -17,6 +17,6 @@ To run:
 There is comparison output in the directory:
   results/output.txt_adm
 grep for grdchk output:
-  grep 'precision_grdchk_result' output.txt_adm
+  grep 'grdchk output' output_adm.txt
 
 Comments:
