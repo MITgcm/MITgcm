@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.7 2008/01/17 20:48:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.8 2008/01/19 01:57:11 dimitri Exp $
 C $Name:  $
 
-#undef OBCS_SEAICE_SMOOTH_UVICE
+#undef OBCS_SEAICE_SMOOTH_UVICE_PERP
+#undef OBCS_SEAICE_SMOOTH_UVICE_PAR
 #undef OBCS_SEAICE_COMPUTE_UVICE
 
 #include "OBCS_OPTIONS.h"
@@ -56,18 +57,22 @@ C     Northern boundary
 #endif /* OBCS_SEAICE_AVOID_CONVERGENCE */
         uFld(I,OB_Jn(I,bi,bj),1,bi,bj)=OBNuice(I,bi,bj)
      &                              *_maskW(I,OB_Jn(I,bi,bj),K,bi,bj)
-#ifdef OBCS_SEAICE_SMOOTH_UVICE
+#ifdef OBCS_SEAICE_SMOOTH_UVICE_PERP
         if ( _maskS(I,OB_Jn(I,bi,bj)  ,K,bi,bj) .NE. 0. .AND.
      &       _maskS(I,OB_Jn(I,bi,bj)-2,K,bi,bj) .NE. 0. )
-     &  vFld(I,OB_Jn(I,bi,bj)-1,1,bi,bj) = 0.5 _d 0 *
-     &      ( vFld(I,OB_Jn(I,bi,bj)  ,1,bi,bj) +
-     &        vFld(I,OB_Jn(I,bi,bj)-2,1,bi,bj) ) *
-     &      _maskS(I,OB_Jn(I,bi,bj)-1,K,bi,bj)
-c       uFld(I,OB_Jn(I,bi,bj)-1,1,bi,bj) = 0.5 _d 0 *
-c    &      ( uFld(I,OB_Jn(I,bi,bj)  ,1,bi,bj) +
-c    &        uFld(I,OB_Jn(I,bi,bj)-2,1,bi,bj) ) *
-c    &      _maskW(I,OB_Jn(I,bi,bj)-1,K,bi,bj)
-#endif /* OBCS_SEAICE_SMOOTH_UVICE */
+     &       vFld(I,OB_Jn(I,bi,bj)-1,1,bi,bj) = 0.5 _d 0 *
+     &       ( vFld(I,OB_Jn(I,bi,bj)  ,1,bi,bj) +
+     &       vFld(I,OB_Jn(I,bi,bj)-2,1,bi,bj) ) *
+     &       _maskS(I,OB_Jn(I,bi,bj)-1,K,bi,bj)
+#endif /* OBCS_SEAICE_SMOOTH_UVICE_PERP */
+#ifdef OBCS_SEAICE_SMOOTH_UVICE_PAR
+        if ( _maskW(I,OB_Jn(I,bi,bj)  ,K,bi,bj) .NE. 0. .AND.
+     &       _maskW(I,OB_Jn(I,bi,bj)-2,K,bi,bj) .NE. 0. )
+     &       uFld(I,OB_Jn(I,bi,bj)-1,1,bi,bj) = 0.5 _d 0 *
+     &       ( uFld(I,OB_Jn(I,bi,bj)  ,1,bi,bj) +
+     &       uFld(I,OB_Jn(I,bi,bj)-2,1,bi,bj) ) *
+     &       _maskW(I,OB_Jn(I,bi,bj)-1,K,bi,bj)
+#endif /* OBCS_SEAICE_SMOOTH_UVICE_PAR */
 #endif /* OBCS_SEAICE_COMPUTE_UVICE */
        ENDIF
       ENDDO
@@ -93,18 +98,22 @@ C     Southern boundary
 #endif /* OBCS_SEAICE_AVOID_CONVERGENCE */
         uFld(I,OB_Js(I,bi,bj),1,bi,bj)=OBSuice(I,bi,bj)
      &                              *_maskW(I,OB_Js(I,bi,bj),K,bi,bj)
-#ifdef OBCS_SEAICE_SMOOTH_UVICE
+#ifdef OBCS_SEAICE_SMOOTH_UVICE_PERP
         if ( _maskS(I,OB_Js(I,bi,bj)+1,K,bi,bj) .NE. 0. .AND.
      &       _maskS(I,OB_Js(I,bi,bj)+3,K,bi,bj) .NE. 0. )
-     &  vFld(I,OB_Js(I,bi,bj)+2,1,bi,bj) = 0.5 _d 0 *
-     &      ( vFld(I,OB_Js(I,bi,bj)+1,1,bi,bj) +
-     &        vFld(I,OB_Js(I,bi,bj)+3,1,bi,bj) ) *
-     &      _maskS(I,OB_Js(I,bi,bj)+2,K,bi,bj)
-c       uFld(I,OB_Js(I,bi,bj)+1,1,bi,bj) = 0.5 _d 0 *
-c    &      ( uFld(I,OB_Js(I,bi,bj)  ,1,bi,bj) +
-c    &        uFld(I,OB_Js(I,bi,bj)+2,1,bi,bj) ) *
-c    &      _maskW(I,OB_Js(I,bi,bj)+1,K,bi,bj)
-#endif /* OBCS_SEAICE_SMOOTH_UVICE */
+     &       vFld(I,OB_Js(I,bi,bj)+2,1,bi,bj) = 0.5 _d 0 *
+     &       ( vFld(I,OB_Js(I,bi,bj)+1,1,bi,bj) +
+     &       vFld(I,OB_Js(I,bi,bj)+3,1,bi,bj) ) *
+     &       _maskS(I,OB_Js(I,bi,bj)+2,K,bi,bj)
+#endif /* OBCS_SEAICE_SMOOTH_UVICE_PERP */
+#ifdef OBCS_SEAICE_SMOOTH_UVICE_PAR
+        if ( _maskW(I,OB_Js(I,bi,bj)  ,K,bi,bj) .NE. 0. .AND.
+     &       _maskW(I,OB_Js(I,bi,bj)+2,K,bi,bj) .NE. 0. )
+     &       uFld(I,OB_Js(I,bi,bj)+1,1,bi,bj) = 0.5 _d 0 *
+     &       ( uFld(I,OB_Js(I,bi,bj)  ,1,bi,bj) +
+     &       uFld(I,OB_Js(I,bi,bj)+2,1,bi,bj) ) *
+     &       _maskW(I,OB_Js(I,bi,bj)+1,K,bi,bj)
+#endif /* OBCS_SEAICE_SMOOTH_UVICE_PAR */
 #endif /* OBCS_SEAICE_COMPUTE_UVICE */
        ENDIF
       ENDDO
@@ -132,18 +141,22 @@ C     Eastern boundary
 #endif /* OBCS_SEAICE_AVOID_CONVERGENCE */
         vFld(OB_Ie(J,bi,bj),J,1,bi,bj)=OBEvice(J,bi,bj)
      &                              *_maskS(OB_Ie(J,bi,bj),J,K,bi,bj)
-#ifdef OBCS_SEAICE_SMOOTH_UVICE
+#ifdef OBCS_SEAICE_SMOOTH_UVICE_PERP
         if ( _maskW(OB_Ie(J,bi,bj)  ,J,K,bi,bj) .NE. 0. .AND.
      &       _maskW(OB_Ie(J,bi,bj)-2,J,K,bi,bj) .NE. 0. )
-     &  uFld(OB_Ie(J,bi,bj)-1,J,1,bi,bj) = 0.5 _d 0 *
-     &      ( uFld(OB_Ie(J,bi,bj)  ,J,1,bi,bj) +
-     &        uFld(OB_Ie(J,bi,bj)-2,J,1,bi,bj) ) *
-     &      _maskW(OB_Ie(J,bi,bj)-1,J,K,bi,bj)
-c       vFld(OB_Ie(J,bi,bj)-1,J,1,bi,bj) = 0.5 _d 0 *
-c    &      ( vFld(OB_Ie(J,bi,bj)  ,J,1,bi,bj) +
-c    &        vFld(OB_Ie(J,bi,bj)-2,J,1,bi,bj) ) *
-c    &      _maskS(OB_Ie(J,bi,bj)-1,J,K,bi,bj)
-#endif /* OBCS_SEAICE_SMOOTH_UVICE */
+     &       uFld(OB_Ie(J,bi,bj)-1,J,1,bi,bj) = 0.5 _d 0 *
+     &       ( uFld(OB_Ie(J,bi,bj)  ,J,1,bi,bj) +
+     &       uFld(OB_Ie(J,bi,bj)-2,J,1,bi,bj) ) *
+     &       _maskW(OB_Ie(J,bi,bj)-1,J,K,bi,bj)
+#endif /* OBCS_SEAICE_SMOOTH_UVICE_PERP */
+#ifdef OBCS_SEAICE_SMOOTH_UVICE_PAR
+        if ( _maskS(OB_Ie(J,bi,bj)  ,J,K,bi,bj) .NE. 0. .AND.
+     &       _maskS(OB_Ie(J,bi,bj)-2,J,K,bi,bj) .NE. 0. )
+     &       vFld(OB_Ie(J,bi,bj)-1,J,1,bi,bj) = 0.5 _d 0 *
+     &       ( vFld(OB_Ie(J,bi,bj)  ,J,1,bi,bj) +
+     &       vFld(OB_Ie(J,bi,bj)-2,J,1,bi,bj) ) *
+     &       _maskS(OB_Ie(J,bi,bj)-1,J,K,bi,bj)
+#endif /* OBCS_SEAICE_SMOOTH_UVICE_PAR */
 #endif /* OBCS_SEAICE_COMPUTE_UVICE */
        ENDIF
       ENDDO
@@ -167,20 +180,24 @@ C     Western boundary
         uFld(OB_Iw(J,bi,bj)+1,J,1,bi,bj)=OBWuice(J,bi,bj)
      &                              *_maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj)
 #endif /* OBCS_SEAICE_AVOID_CONVERGENCE */
+        vFld(OB_Iw(J,bi,bj),J,1,bi,bj)=OBWvice(J,bi,bj)
+     &                              *_maskS(OB_Iw(J,bi,bj),J,K,bi,bj)
+#ifdef OBCS_SEAICE_SMOOTH_UVICE_PERP
         if ( _maskW(OB_Iw(J,bi,bj)+1,J,K,bi,bj) .NE. 0. .AND.
      &       _maskW(OB_Iw(J,bi,bj)+3,J,K,bi,bj) .NE. 0. )
-     &  vFld(OB_Iw(J,bi,bj),J,1,bi,bj)=OBWvice(J,bi,bj)
-     &                              *_maskS(OB_Iw(J,bi,bj),J,K,bi,bj)
-#ifdef OBCS_SEAICE_SMOOTH_UVICE
-        uFld(OB_Ie(J,bi,bj)+2,J,1,bi,bj) = 0.5 _d 0 *
-     &      ( uFld(OB_Ie(J,bi,bj)+1,J,1,bi,bj) +
-     &        uFld(OB_Ie(J,bi,bj)+3,J,1,bi,bj) ) *
-     &      _maskW(OB_Ie(J,bi,bj)+2,J,K,bi,bj)
-c       vFld(OB_Ie(J,bi,bj)+1,J,1,bi,bj) = 0.5 _d 0 *
-c    &      ( vFld(OB_Ie(J,bi,bj)  ,J,1,bi,bj) +
-c    &        vFld(OB_Ie(J,bi,bj)+2,J,1,bi,bj) ) *
-c    &      _maskS(OB_Ie(J,bi,bj)+1,J,K,bi,bj)
-#endif /* OBCS_SEAICE_SMOOTH_UVICE */
+     &       uFld(OB_Ie(J,bi,bj)+2,J,1,bi,bj) = 0.5 _d 0 *
+     &       ( uFld(OB_Ie(J,bi,bj)+1,J,1,bi,bj) +
+     &       uFld(OB_Ie(J,bi,bj)+3,J,1,bi,bj) ) *
+     &       _maskW(OB_Ie(J,bi,bj)+2,J,K,bi,bj)
+#endif /* OBCS_SEAICE_SMOOTH_UVICE_PERP */
+#ifdef OBCS_SEAICE_SMOOTH_UVICE_PAR
+        if ( _maskS(OB_Iw(J,bi,bj)  ,J,K,bi,bj) .NE. 0. .AND.
+     &       _maskS(OB_Iw(J,bi,bj)+2,J,K,bi,bj) .NE. 0. )
+     &       vFld(OB_Ie(J,bi,bj)+1,J,1,bi,bj) = 0.5 _d 0 *
+     &       ( vFld(OB_Ie(J,bi,bj)  ,J,1,bi,bj) +
+     &       vFld(OB_Ie(J,bi,bj)+2,J,1,bi,bj) ) *
+     &       _maskS(OB_Ie(J,bi,bj)+1,J,K,bi,bj)
+#endif /* OBCS_SEAICE_SMOOTH_UVICE_PAR */
 #endif /* OBCS_SEAICE_COMPUTE_UVICE */
        ENDIF
       ENDDO
