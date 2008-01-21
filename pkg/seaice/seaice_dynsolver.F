@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.29 2008/01/21 17:46:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.30 2008/01/21 17:58:40 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -51,6 +51,8 @@ C     i,j,bi,bj - Loop counters
       EXTERNAL DIFFERENT_MULTIPLE
 
 # ifdef ALLOW_AUTODIFF_TAMC
+C Following re-initialisation breaks some "artificial" AD dependencies
+C incured by IF (DIFFERENT_MULTIPLE ... statement
       PSTAR = SEAICE_strength
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
