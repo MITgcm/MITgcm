@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.27 2008/01/17 23:18:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.28 2008/01/21 17:39:11 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -49,6 +49,28 @@ C     i,j,bi,bj - Loop counters
       _RL phiSurf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+
+cph# ifdef ALLOW_AUTODIFF_TAMC
+      PSTAR = SEAICE_strength
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          PRESS0(i,j,bi,bj)=PSTAR*HEFF(i,j,1,bi,bj)
+     &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,1,bi,bj)))
+          ZMAX(i,j,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(i,j,bi,bj)
+          ZMIN(i,j,bi,bj)=SEAICE_zetaMin
+          PRESS0(i,j,bi,bj)=PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
+          TAUX(i,j,bi,bj)   = 0. _d 0
+          TAUY(i,j,bi,bj)   = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+C
+CADJ STORE uice = comlev1, key=ikey_dynamics
+CADJ STORE vice = comlev1, key=ikey_dynamics
+cph# endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (
      &  DIFFERENT_MULTIPLE(SEAICE_deltaTdyn,myTime,SEAICE_deltaTtherm)
@@ -117,6 +139,10 @@ C     initialise fields
        ENDDO
       ENDDO
 
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uice = comlev1, key=ikey_dynamics
+CADJ STORE vice = comlev1, key=ikey_dynamics
+# endif /* ALLOW_AUTODIFF_TAMC */
 C--   interface of dynamics with atmopheric forcing fields (wind/stress)
       CALL SEAICE_GET_DYNFORCING (
      I     uIce, vIce,
@@ -243,17 +269,17 @@ C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
 
+C End of IF (SEAICEuseDYNAMICS ...
       ENDIF
 #endif /* SEAICE_ALLOW_DYNAMICS */
 
+C End of IF (DIFFERENT_MULTIPLE ...
+      ENDIF
+
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE dwatn = comlev1, key=ikey_dynamics
 CADJ STORE uice  = comlev1, key=ikey_dynamics
 CADJ STORE vice  = comlev1, key=ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-C     IF(DIFFERENT_MULTIPLE(SEAICE_deltaTdyn,myTime,SEAICE_deltaTtherm))
-      ENDIF
 
 C Calculate ocean surface stress
       CALL SEAICE_OCEAN_STRESS ( myTime, myIter, myThid )

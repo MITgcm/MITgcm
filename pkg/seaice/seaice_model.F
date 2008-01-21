@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.63 2008/01/18 01:38:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.64 2008/01/21 17:39:11 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -92,7 +92,14 @@ CADJ STORE uice  = comlev1, key = ikey_dynamics
 CADJ STORE vice  = comlev1, key = ikey_dynamics
 CADJ STORE eta   = comlev1, key = ikey_dynamics
 CADJ STORE zeta  = comlev1, key = ikey_dynamics
-
+cph(
+CADJ STORE dwatn    = comlev1, key = ikey_dynamics
+cccCADJ STORE press0   = comlev1, key = ikey_dynamics
+cccCADJ STORE taux   = comlev1, key = ikey_dynamics
+cccCADJ STORE tauy  = comlev1, key = ikey_dynamics
+cccCADJ STORE zmax   = comlev1, key = ikey_dynamics
+cccCADJ STORE zmin  = comlev1, key = ikey_dynamics
+cph)
 #  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -216,6 +223,14 @@ C     endif .not.useThSice
 #endif /* ALLOW_THSICE */
 CML   This has already been done in seaice_ocean_stress/ostres, so why repeat?
 CML   CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
+
+#ifdef ALLOW_EXF
+# ifdef ALLOW_AUTODIFF_TAMC
+#  if (defined (ALLOW_AUTODIFF_MONITOR))
+        CALL EXF_ADJOINT_SNAPSHOTS( 3, myTime, myIter, myThid )
+#  endif
+# endif
+#endif
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )

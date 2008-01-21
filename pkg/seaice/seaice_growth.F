@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.44 2008/01/17 23:18:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.45 2008/01/21 17:39:11 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -51,11 +51,13 @@ C     constants
       _RL TBC, SDF, ICE2SNOW
       _RL QI, recip_QI, QS, recip_QS
 C     auxillary variables
-      _RL availHeat, hEffOld, snowEnergy
+      _RL snowEnergy
       _RL growthHEFF, growthNeg
 #ifdef ALLOW_SEAICE_FLOODING
       _RL hDraft
 #endif /* ALLOW_SEAICE_FLOODING */
+      _RL availHeat     (1:sNx,1:sNy)
+      _RL hEffOld       (1:sNx,1:sNy)
       _RL GAREA         (1:sNx,1:sNy)
       _RL GHEFF         (1:sNx,1:sNy)
 C     RESID_HEAT is residual heat above freezing in equivalent m of ice
@@ -338,26 +340,26 @@ C     Positive YNEG/availHeat leads to ice melting.
            TBC = -0.0575 _d 0*salt(I,J,kSurface,bi,bj) + 0.0901 _d 0
 #endif /* SEAICE_VARIABLE_FREEZING_POINT */
            IF ( theta(I,J,kSurface,bi,bj) .GE. TBC ) THEN
-              availHeat = SEAICE_availHeatFrac
+              availHeat(i,j) = SEAICE_availHeatFrac
      &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
      &             * hFacC(i,j,kSurface,bi,bj) / 72.0764 _d 0
            ELSE
-              availHeat = SEAICE_availHeatFracFrz
+              availHeat(i,j) = SEAICE_availHeatFracFrz
      &             * (theta(I,J,kSurface,bi,bj)-TBC) * dRf(kSurface)
      &             * hFacC(i,j,kSurface,bi,bj) / 72.0764 _d 0
            ENDIF
           ELSE
-           availHeat = 0.
+           availHeat(i,j) = 0.
           ENDIF
 C     local copy of old effective ice thickness
-          hEffOld           = HEFF(I,J,1,bi,bj)
+          hEffOld(I,J)      = HEFF(I,J,1,bi,bj)
 C     Melt (availHeat>0) or create (availHeat<0) sea ice
-          HEFF(I,J,1,bi,bj) = MAX(ZERO,HEFF(I,J,1,bi,bj)-availHeat)
+          HEFF(I,J,1,bi,bj) = MAX(ZERO,HEFF(I,J,1,bi,bj)-availHeat(I,J))
 C     
-          YNEG(I,J,bi,bj)   = hEffOld         - HEFF(I,J,1,bi,bj)
+          YNEG(I,J,bi,bj)   = hEffOld(I,J)    - HEFF(I,J,1,bi,bj)
 C     
           saltWtrIce(I,J)   = saltWtrIce(I,J) - YNEG(I,J,bi,bj)
-          RESID_HEAT(I,J)   = availHeat       - YNEG(I,J,bi,bj)
+          RESID_HEAT(I,J)   = availHeat(I,J)  - YNEG(I,J,bi,bj)
 C     YNEG now contains m of ice melted (>0) or created (<0)
 C     saltWtrIce contains m of ice melted (<0) or created (>0)
 C     RESID_HEAT is residual heat above freezing in equivalent m of ice
@@ -534,8 +536,8 @@ C     through the ice into the ocean)
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
-CADJ &                        key = iicekey, byte = isbyte
+cphCADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
+cphCADJ &                        key = iicekey, byte = isbyte
 #endif
 
 cph( very sensitive bit here by JZ
@@ -675,8 +677,8 @@ C NOW GET TOTAL QNET AND QSW
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE yneg(:,:,bi,bj) = comlev1_bibj, 
-CADJ &                       key = iicekey, byte = isbyte
+cphCADJ STORE yneg(:,:,bi,bj) = comlev1_bibj, 
+cphCADJ &                       key = iicekey, byte = isbyte
 #endif
         DO J=1,sNy
          DO I=1,sNx
