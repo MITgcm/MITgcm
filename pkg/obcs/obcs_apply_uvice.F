@@ -1,9 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.8 2008/01/19 01:57:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.9 2008/01/23 06:55:34 dimitri Exp $
 C $Name:  $
-
-#undef OBCS_SEAICE_SMOOTH_UVICE_PERP
-#undef OBCS_SEAICE_SMOOTH_UVICE_PAR
-#undef OBCS_SEAICE_COMPUTE_UVICE
 
 #include "OBCS_OPTIONS.h"
 

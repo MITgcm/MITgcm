@@ -1,7 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.2 2008/01/19 01:57:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_seaice.F,v 1.3 2008/01/23 06:55:34 dimitri Exp $
 C $Name:  $
-
-#undef OBCS_SEAICE_SMOOTH_EDGE
 
 #include "OBCS_OPTIONS.h"
 
