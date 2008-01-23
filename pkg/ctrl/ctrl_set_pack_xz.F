@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xz.F,v 1.11 2007/10/09 00:00:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xz.F,v 1.12 2008/01/23 21:35:36 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -64,11 +64,17 @@ c     == local variables ==
       integer cbuffindex
 cgg(
       integer igg
+      integer reclen, irectrue
+      integer cunit2, cunit3
       _RL     gg
       character*(80) weightname
+      character*(80) cfile2, cfile3
+
 cgg)
 
-      real*4     cbuff      ( snx*nsx*npx*nsy*npy )
+      real*4  cbuff      ( snx*nsx*npx*nsy*npy )
+      real*4  globfldtmp2( snx,nsx,npx,nsy,npy )
+      real*4  globfldtmp3( snx,nsx,npx,nsy,npy )
       _RL     globfldxz  ( snx,nsx,npx,nsy,npy,nr )
       _RL     globfld3d  ( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globmskxz  ( snx,nsx,npx,nsy,npy,nr,nobcs )
@@ -99,7 +105,9 @@ c     Initialise temporary file
                do ip = 1,nPx
                   do bi = itlo,ithi
                      do i = imin,imax
-                        globfldxz(i,bi,ip,bj,jp,k) = 0. _d 0
+                        globfldxz  (i,bi,ip,bj,jp,k) = 0. _d 0
+                        globfldtmp2(i,bi,ip,bj,jp)   = 0.
+                        globfldtmp3(i,bi,ip,bj,jp)   = 0.
                         do iobcs=1,nobcs
                            globmskxz(i,bi,ip,bj,jp,k,iobcs) = 0. _d 0
                         enddo
@@ -128,6 +136,34 @@ c     Initialise temporary file
 
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
+
+      if ( doPackDiag ) then
+         write(cfile2(1:80),'(80a)') ' '
+         write(cfile3(1:80),'(80a)') ' '
+         if ( lxxadxx ) then
+            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_pack_nonout_ctrl_',
+     &           ivartype, '_', optimcycle, '.bin'
+            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_pack_dimout_ctrl_',
+     &           ivartype, '_', optimcycle, '.bin'
+         else
+            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_pack_nonout_grad_',
+     &           ivartype, '_', optimcycle, '.bin'
+            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_pack_dimout_grad_',
+     &           ivartype, '_', optimcycle, '.bin'
+         endif
+
+         reclen = snx*nsx*npx*nsy*npy*4
+         call mdsfindunit( cunit2, mythid )
+         open( cunit2, file=cfile2, status='unknown',
+     &        access='direct', recl=reclen )
+         call mdsfindunit( cunit3, mythid )
+         open( cunit3, file=cfile3, status='unknown',
+     &        access='direct', recl=reclen )
+      endif
 
       do iobcs = 1, nobcs
          call MDSREADFIELD_XZ_GL(
@@ -192,6 +228,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
             write(cunit) 1
             write(cunit) 1
             do k = 1,nr
+             irectrue = (irec-1)*nobcs*nr + (iobcs-1)*nr + k
              cbuffindex = 0
              do jp = 1,nPy
               do bj = jtlo,jthi
@@ -202,6 +239,10 @@ cgg    Get rid of any sensitivity to barotropic velocity.
                   kk=int((j-1)*nr+K-1)/sny+1
                   if (globmskxz(i,bi,ip,bj,jp,k,iobcs)  .ne. 0. ) then
                      cbuffindex = cbuffindex + 1
+cph(
+                     globfldtmp3(i,bi,ip,bj,jp) =
+     &                    globfld3d(i,bi,ip,jj,bj,jp,kk)
+cph)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
                         cbuff(cbuffindex) =
@@ -220,6 +261,9 @@ cgg    Get rid of any sensitivity to barotropic velocity.
      &                       sqrt(weightfld(k,iobcs))
 # endif
                      endif
+cph(
+                     globfldtmp2(i,bi,ip,bj,jp) = cbuff(cbuffindex)
+cph)
 #else /* ALLOW_NONDIMENSIONAL_CONTROL_IO undef */
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,jj,bj,jp,kk)
 #endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
@@ -235,6 +279,12 @@ c           --> check cbuffindex.
                 write(cunit) k
                 write(cunit) (cbuff(ii), ii=1,cbuffindex)
              endif
+c
+            if ( doPackDiag ) then
+               write(cunit2,rec=irectrue) globfldtmp2
+               write(cunit3,rec=irectrue) globfldtmp3
+            endif
+c
 c     -- end of k loop --
             enddo
 c     -- end of j loop --
@@ -276,6 +326,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
          write(cunit) 1
          write(cunit) 1
          do k = 1,nr
+            irectrue = (irec-1)*nobcs*nr + (iobcs-1)*nr + k
             cbuffindex = 0
             do jp = 1,nPy
              do bj = jtlo,jthi
@@ -284,6 +335,10 @@ cgg    Get rid of any sensitivity to barotropic velocity.
                 do i = imin,imax
                  if (globmskxz(i,bi,ip,bj,jp,k,iobcs)  .ne. 0. ) then
                      cbuffindex = cbuffindex + 1
+cph(
+                     globfldtmp3(i,bi,ip,bj,jp) =
+     &                    globfldxz(i,bi,ip,bj,jp,k)
+cph)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
                         cbuff(cbuffindex) =
@@ -302,9 +357,12 @@ cgg    Get rid of any sensitivity to barotropic velocity.
      &                       sqrt(weightfld(k,iobcs))
 # endif
                      endif
-#else
+cph(
+                     globfldtmp2(i,bi,ip,bj,jp) = cbuff(cbuffindex)
+cph)
+#else /* ALLOW_NONDIMENSIONAL_CONTROL_IO undef */
                      cbuff(cbuffindex) = globfldxz(i,bi,ip,bj,jp,k)
-#endif
+#endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
                  endif
                 enddo
                enddo
@@ -316,6 +374,11 @@ c           --> check cbuffindex.
                write(cunit) cbuffindex
                write(cunit) k
                write(cunit) (cbuff(ii), ii=1,cbuffindex)
+            endif
+c
+            if ( doPackDiag ) then
+               write(cunit2,rec=irectrue) globfldtmp2
+               write(cunit3,rec=irectrue) globfldtmp3
             endif
 c
 c     -- end of k loop --
