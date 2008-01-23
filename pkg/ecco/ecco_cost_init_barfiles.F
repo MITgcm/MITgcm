@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.7 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.8 2008/01/23 22:02:29 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -25,6 +25,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 
 #include "optim.h"
 #include "ecco_cost.h"
@@ -348,6 +349,7 @@ c     &                        optimcycle, mythid, xx_sflux_mean_dummy )
 #endif
 
 #ifdef ALLOW_SEAICE
+      if (useSEAICE) then
 
 #ifdef ALLOW_SEAICE_COST_SMR_AREA
       ilps=ilnblnk( smrareabarfile )
@@ -366,6 +368,7 @@ c     &                        optimcycle, mythid, xx_smrareabar_mean_dummy )
       enddo
 #endif /* ALLOW_SEAICE_COST_SMR_AREA */
 
+      endif
 #endif /* ALLOW_SEAICE */
 
 #endif /* ALLOW_COST */
