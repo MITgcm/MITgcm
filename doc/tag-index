@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.942 2008/01/18 01:38:33 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.943 2008/01/23 16:41:21 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - add a little more diagnostic to exf_interp_read (in analogy to 
+    mds_read_field, can be turned off with debugLevel < debugLevA=1)
+  - improve vectorizability of exf_interp for TARGET_NEC_SX, makes code
+    ugly but fast (vectorization is not yet complete)
 o pkg/obcs: replace obcs_apply_area/heff/hsalt/hsnow with obcs_apply_seaice
 o pkg/seaice: moved DIFFERENT_MULTIPLE from seaice_model to seaice_dynsolver
   http://forge.csail.mit.edu/pipermail/mitgcm-devel/2008-January/003173.html
