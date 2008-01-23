@@ -23,5 +23,4 @@ fid=fopen('windx.m01cos2y','w',ieee); fwrite(fid,tau,accuracy); fclose(fid);
 % dye
 dye=zeros(60,60,1);
 dye(2,30,1)=1;
-writebin('dye.bin',dye,1,'real*8');
-
+fid=fopen('dye.bin','w',ieee); fwrite(fid,dye,accuracy); fclose(fid);
