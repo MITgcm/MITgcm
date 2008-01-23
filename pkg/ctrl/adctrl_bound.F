@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.2 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.3 2008/01/23 17:32:16 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !INTERFACE:
       SUBROUTINE ADCTRL_BOUND_3D(
      I             bi, bj,
      I             minCur,maxCur,
-     I             myThid,adFieldFwd)
+     I             myThid,fieldCur)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o bound ctrl vector values in forward mode
@@ -32,7 +32,7 @@ C     !INTERFACE:
       SUBROUTINE ADCTRL_BOUND_2D(
      I             bi, bj,
      I             minCur,maxCur,
-     I             myThid,adFieldFwd)
+     I             myThid,fieldCur)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o bound ctrl vector values in forward mode
