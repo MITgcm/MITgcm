@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.21 2007/05/10 22:26:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.22 2008/01/23 16:41:01 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -27,6 +27,9 @@ C-      local variables:
         numer = 1. _d 0
         denom = 1. _d 0
 
+#ifdef TARGET_NEC_SX
+!CDIR UNROLL=8
+#endif /* TARGET_NEC_SX */
         do k=1,sp
          if ( k .ne. i) then
           denom = denom*(a(i) - a(k))
@@ -91,6 +94,10 @@ C local variables
       _RL      NorthValue
       _RL      x_in   (-1:nx_in+2), y_in(-1:ny_in+2)
       integer  i, j, k, l, js, bi, bj, sp, interp_unit
+#ifdef TARGET_NEC_SX
+      integer  ic, ii, icnt
+      integer  inx(snx*sny,2)
+#endif
       _RS      xG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL      ninety
       PARAMETER ( ninety = 90. )
@@ -209,6 +216,13 @@ C compute interpolation indices
            w_ind(i,j) = int((xG(i,j,bi,bj)-x_in(1))/lon_inc)
           endif
           e_ind(i,j) = w_ind(i,j) + 1
+         enddo
+        enddo
+#ifndef TARGET_NEC_SX
+C     use the original and more readable variant of the algorithm that 
+C     has unvectorizable while-loops for each (i,j)
+        do i=1,snx
+         do j=1,sny
           js = ny_in*.5
           do while (yG(i,j,bi,bj) .lt. y_in(js))
            js = (js - 1)*.5
@@ -217,7 +231,63 @@ C compute interpolation indices
            js = js + 1
           enddo
           s_ind(i,j) = js
-          n_ind(i,j) = js + 1
+         enddo
+        enddo
+#else /* TARGET_NEC_SX defined */
+C     this variant vectorizes more efficiently than the original one because
+C     it moves the while loops out of the i,j loops (loop pushing) but
+C     it is ugly and incomprehensible
+	icnt = 0
+        do j=1,sny
+         do i=1,snx
+          s_ind(i,j) = ny_in*.5
+	  icnt = icnt+1
+	  inx(icnt,1) = i
+	  inx(icnt,2) = j
+         enddo
+        enddo
+        do while (icnt .gt. 0)
+         ii = 0
+!CDIR NODEP
+         do ic=1,icnt
+	  i = inx(ic,1)
+	  j = inx(ic,2)
+          if (yG(i,j,bi,bj) .lt. y_in(s_ind(i,j))) then
+           s_ind(i,j) = (s_ind(i,j) - 1)*.5
+           ii = ii+1
+           inx(ii,1) = i
+           inx(ii,2) = j
+          endif
+         enddo
+	 icnt = ii
+        enddo
+	icnt = 0
+        do j=1,sny
+         do i=1,snx
+	  icnt = icnt+1
+	  inx(icnt,1) = i
+	  inx(icnt,2) = j
+         enddo
+        enddo
+        do while (icnt .gt. 0)
+         ii = 0
+!CDIR NODEP
+         do ic=1,icnt
+	  i = inx(ic,1)
+	  j = inx(ic,2)
+          if (yG(i,j,bi,bj) .ge. y_in(s_ind(i,j)+1)) then
+           s_ind(i,j) = s_ind(i,j) + 1
+           ii = ii+1
+           inx(ii,1) = i
+           inx(ii,2) = j
+          endif
+         enddo
+	 icnt = ii
+        enddo
+#endif /* TARGET_NEC_SX defined */
+        do i=1,snx
+         do j=1,sny
+          n_ind(i,j) = s_ind(i,j) + 1
          enddo
         enddo
 
