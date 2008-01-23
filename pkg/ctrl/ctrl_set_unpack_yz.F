@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_yz.F,v 1.12 2007/10/09 00:00:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_yz.F,v 1.13 2008/01/23 22:38:43 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -49,6 +49,8 @@ c     == routine arguments ==
 #ifndef EXCLUDE_CTRL_PACK
 c     == local variables ==
 
+      logical lxxadxx
+
       integer bi,bj
       integer ip,jp
       integer i,j,k
@@ -62,7 +64,9 @@ c     == local variables ==
 
       integer cbuffindex
 
-      real*4     cbuff    ( nsx*npx*sny*nsy*npy )
+      real*4  cbuff     ( nsx*npx*sny*nsy*npy )
+      real*4 globfldtmp2( nsx,npx,sny,nsy,npy )
+      real*4 globfldtmp3( nsx,npx,sny,nsy,npy )
       _RL     globfldyz( nsx,npx,sny,nsy,npy,nr )
       _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globmskyz( nsx,npx,sny,nsy,npy,nr,nobcs )
@@ -71,9 +75,12 @@ c     == local variables ==
 #endif
 
 cgg(
+      integer reclen, irectrue
+      integer cunit2, cunit3
       integer igg
       _RL     gg
       character*(80) weightname
+      character*(80) cfile2, cfile3
 cgg)
 
 c     == external ==
@@ -92,6 +99,8 @@ cc     == end of interface ==
       imin = 1
       imax = snx
 
+      lxxadxx = .TRUE.
+
 c     Initialise temporary file
       do k = 1,nr
          do jp = 1,nPy
@@ -99,7 +108,9 @@ c     Initialise temporary file
                do j = jmin,jmax
                   do ip = 1,nPx
                      do bi = itlo,ithi
-                        globfldyz(bi,ip,j,bj,jp,k) = 0. _d 0
+                        globfldyz  (bi,ip,j,bj,jp,k) = 0. _d 0
+                        globfldtmp2(bi,ip,j,bj,jp)   = 0.
+                        globfldtmp3(bi,ip,j,bj,jp)   = 0.
                         do iobcs=1,nobcs
                            globmskyz(bi,ip,j,bj,jp,k,iobcs) = 0. _d 0
                         enddo
@@ -128,6 +139,34 @@ c     Initialise temporary file
 
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
+
+      if ( doPackDiag ) then
+         write(cfile2(1:80),'(80a)') ' '
+         write(cfile3(1:80),'(80a)') ' '
+         if ( lxxadxx ) then
+            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_unpack_nondim_ctrl_',
+     &           ivartype, '_', optimcycle, '.bin'
+            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_unpack_dimens_ctrl_',
+     &           ivartype, '_', optimcycle, '.bin'
+         else
+            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_unpack_nondim_grad_',
+     &           ivartype, '_', optimcycle, '.bin'
+            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_unpack_dimens_grad_',
+     &           ivartype, '_', optimcycle, '.bin'
+         endif
+
+         reclen = nsx*npx*sny*nsy*npy*4
+         call mdsfindunit( cunit2, mythid )
+         open( cunit2, file=cfile2, status='unknown',
+     &        access='direct', recl=reclen )
+         call mdsfindunit( cunit3, mythid )
+         open( cunit3, file=cfile3, status='unknown',
+     &        access='direct', recl=reclen )
+      endif
 
       do iobcs=1,nobcs
          call MDSREADFIELD_YZ_GL(
@@ -176,6 +215,7 @@ cgg      And now back-calculate what iobcs should be.
             read(cunit) filej
             read(cunit) filei
             do k = 1, Nr
+               irectrue = (irec-1)*nobcs*nr + (iobcs-1)*nr + k
                cbuffindex = nwetglobal(k,iobcs)
                if ( cbuffindex .gt. 0 ) then
                   read(cunit) filencbuffindex
@@ -205,6 +245,10 @@ cgg      And now back-calculate what iobcs should be.
                        cbuffindex = cbuffindex + 1
                        globfld3d(ii,bi,ip,jj,bj,jp,kk) =
      &                      cbuff(cbuffindex)
+cph(
+                       globfldtmp2(bi,ip,jj,bj,jp) = 
+     &                      cbuff(cbuffindex)
+cph)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                        globfld3d(ii,bi,ip,jj,bj,jp,kk) =
      &                      globfld3d(ii,bi,ip,jj,bj,jp,kk)/
@@ -217,11 +261,20 @@ cgg      And now back-calculate what iobcs should be.
                     else
                        globfld3d(ii,bi,ip,jj,bj,jp,kk) = 0. _d 0
                     endif
+cph(
+                    globfldtmp3(bi,ip,jj,bj,jp) =
+     &                   globfld3d(ii,bi,ip,jj,bj,jp,kk)
+cph)
                    enddo
                   enddo
                  enddo
                 enddo
                enddo
+c
+               if ( doPackDiag ) then
+                  write(cunit2,rec=irectrue) globfldtmp2
+                  write(cunit3,rec=irectrue) globfldtmp3
+               endif
 c
 c     -- end of k loop --
             enddo
@@ -250,6 +303,7 @@ c     -- end of irec loop --
          read(cunit) filej
          read(cunit) filei
          do k = 1, Nr
+            irectrue = (irec-1)*nobcs*nr + (iobcs-1)*nr + k
             cbuffindex = nwetglobal(k,iobcs)
             if ( cbuffindex .gt. 0 ) then
                read(cunit) filencbuffindex
@@ -275,6 +329,9 @@ c     -- end of irec loop --
                   if ( globmskyz(bi,ip,j,bj,jp,k,iobcs) .ne. 0. ) then
                      cbuffindex = cbuffindex + 1
                      globfldyz(bi,ip,j,bj,jp,k) = cbuff(cbuffindex)
+cph(
+                     globfldtmp2(bi,ip,j,bj,jp) = cbuff(cbuffindex)
+cph)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      globfldyz(bi,ip,j,bj,jp,k) =
      &                    globfldyz(bi,ip,j,bj,jp,k)/
@@ -287,6 +344,10 @@ c     -- end of irec loop --
                   else
                      globfldyz(bi,ip,j,bj,jp,k) = 0. _d 0
                   endif
+cph(
+                  globfldtmp3(bi,ip,j,bj,jp) =
+     &                 globfldyz(bi,ip,j,bj,jp,k)
+cph)
                 enddo
                enddo
               enddo
