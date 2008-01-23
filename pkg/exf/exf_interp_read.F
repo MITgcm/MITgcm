@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.11 2007/05/10 22:21:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.12 2008/01/23 16:38:58 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -41,14 +41,18 @@ C  myThid      (integer) :: My Thread Id number
 CEOP
 
 C !FUNCTIONS
+      INTEGER  ILNBLNK
       INTEGER MDS_RECLEN
       LOGICAL MASTER_CPU_IO
+      EXTERNAL ILNBLNK
       EXTERNAL MDS_RECLEN
       EXTERNAL MASTER_CPU_IO
 
 C !LOCAL VARIABLES
       INTEGER  i, j
-      INTEGER  ioUnit, length_of_rec
+      INTEGER  ioUnit, length_of_rec, IL
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL  exst
 #ifdef EXF_INTERP_USE_DYNALLOC
 #ifdef EXF_IREAD_USE_GLOBAL_POINTER
 C     When using threads the address of the local automatic array
@@ -104,6 +108,31 @@ C---  read in input data
 
       IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   master thread of process 0, only, opens a global file
+
+#ifndef ALLOW_ECCO
+        IL  = ILNBLNK( infile )
+        INQUIRE( file=infile, exist=exst )
+        IF (exst) THEN
+         IF ( debugLevel .GE. debLevA ) THEN
+          WRITE(msgBuf,'(A,A)')
+     &         ' EXF_INTERP_READ: opening file: ',infile(1:IL)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &         SQUEEZE_RIGHT , myThid)
+         ENDIF
+        ELSE
+         WRITE(msgBuf,'(2A)')
+     &        ' EXF_INTERP_READ: filename: ', infile(1:IL)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid)
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)')
+     &        ' EXF_INTERP_READ: File does not exist'
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid)
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R EXF_INTERP_READ'
+        ENDIF
+#endif /* ALLOW_ECCO */
 
         CALL MDSFINDUNIT( ioUnit, myThid )
         length_of_rec=MDS_RECLEN( filePrec, nx_in*ny_in, myThid )
