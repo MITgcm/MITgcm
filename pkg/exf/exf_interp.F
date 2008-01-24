@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.22 2008/01/23 16:41:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.23 2008/01/24 08:29:51 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -97,6 +97,7 @@ C local variables
 #ifdef TARGET_NEC_SX
       integer  ic, ii, icnt
       integer  inx(snx*sny,2)
+      _RL      ew_val1, ew_val2, ew_val3, ew_val4
 #endif
       _RS      xG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL      ninety
@@ -302,6 +303,7 @@ C bilinear interpolation
             px_ind(l+1) = x_in(w_ind(i,j)+l)
             py_ind(l+1) = y_in(s_ind(i,j)+l)
            enddo
+#ifndef TARGET_NEC_SX
            do k=1,2
             ew_val(k) = arrayin(w_ind(i,j),s_ind(i,j)+k-1)
      &             *lagran(1,xG(i,j,bi,bj),px_ind,sp)
@@ -310,6 +312,19 @@ C bilinear interpolation
             arrayout(i,j,bi,bj)=arrayout(i,j,bi,bj)
      &             +ew_val(k)*lagran(k,yG(i,j,bi,bj),py_ind,sp)
            enddo
+#else
+           ew_val1 = arrayin(w_ind(i,j),s_ind(i,j)+1-1)
+     &             *lagran(1,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(e_ind(i,j),s_ind(i,j)+1-1)
+     &             *lagran(2,xG(i,j,bi,bj),px_ind,sp)
+           ew_val2 = arrayin(w_ind(i,j),s_ind(i,j)+2-1)
+     &             *lagran(1,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(e_ind(i,j),s_ind(i,j)+2-1)
+     &             *lagran(2,xG(i,j,bi,bj),px_ind,sp)
+           arrayout(i,j,bi,bj)=
+     &             +ew_val1*lagran(1,yG(i,j,bi,bj),py_ind,sp)
+     &             +ew_val2*lagran(2,yG(i,j,bi,bj),py_ind,sp)
+#endif /* TARGET_NEC_SX defined */
           enddo
          enddo
         elseif (method .eq. 2 .or. method.eq.12 .or. method.eq.22) then
@@ -323,6 +338,7 @@ C bicubic interpolation
             px_ind(l+2) = x_in(w_ind(i,j)+l)
             py_ind(l+2) = y_in(s_ind(i,j)+l)
            enddo
+#ifndef TARGET_NEC_SX
            do k=1,4
             ew_val(k) =
      &             arrayin(w_ind(i,j)-1,s_ind(i,j)+k-2)
@@ -336,6 +352,49 @@ C bicubic interpolation
             arrayout(i,j,bi,bj)=arrayout(i,j,bi,bj)
      &             +ew_val(k)*lagran(k,yG(i,j,bi,bj),py_ind,sp)
            enddo
+#else
+           ew_val1 =
+     &             arrayin(w_ind(i,j)-1,s_ind(i,j)+1-2)
+     &             *lagran(1,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(w_ind(i,j)  ,s_ind(i,j)+1-2)
+     &             *lagran(2,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(e_ind(i,j)  ,s_ind(i,j)+1-2)
+     &             *lagran(3,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(e_ind(i,j)+1,s_ind(i,j)+1-2)
+     &             *lagran(4,xG(i,j,bi,bj),px_ind,sp)
+            ew_val2 =
+     &             arrayin(w_ind(i,j)-1,s_ind(i,j)+2-2)
+     &             *lagran(1,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(w_ind(i,j)  ,s_ind(i,j)+2-2)
+     &             *lagran(2,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(e_ind(i,j)  ,s_ind(i,j)+2-2)
+     &             *lagran(3,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(e_ind(i,j)+1,s_ind(i,j)+2-2)
+     &             *lagran(4,xG(i,j,bi,bj),px_ind,sp)
+            ew_val3 =
+     &             arrayin(w_ind(i,j)-1,s_ind(i,j)+3-2)
+     &             *lagran(1,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(w_ind(i,j)  ,s_ind(i,j)+3-2)
+     &             *lagran(2,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(e_ind(i,j)  ,s_ind(i,j)+3-2)
+     &             *lagran(3,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(e_ind(i,j)+1,s_ind(i,j)+3-2)
+     &             *lagran(4,xG(i,j,bi,bj),px_ind,sp)
+            ew_val4 =
+     &             arrayin(w_ind(i,j)-1,s_ind(i,j)+4-2)
+     &             *lagran(1,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(w_ind(i,j)  ,s_ind(i,j)+4-2)
+     &             *lagran(2,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(e_ind(i,j)  ,s_ind(i,j)+4-2)
+     &             *lagran(3,xG(i,j,bi,bj),px_ind,sp)
+     &             +arrayin(e_ind(i,j)+1,s_ind(i,j)+4-2)
+     &             *lagran(4,xG(i,j,bi,bj),px_ind,sp)
+            arrayout(i,j,bi,bj)=
+     &             +ew_val1*lagran(1,yG(i,j,bi,bj),py_ind,sp)
+     &             +ew_val2*lagran(2,yG(i,j,bi,bj),py_ind,sp)
+     &             +ew_val3*lagran(3,yG(i,j,bi,bj),py_ind,sp)
+     &             +ew_val4*lagran(4,yG(i,j,bi,bj),py_ind,sp)
+#endif /* TARGET_NEC_SX defined */
           enddo
          enddo
         else
