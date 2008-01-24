@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.944 2008/01/24 08:30:07 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.945 2008/01/24 18:41:16 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs/exf: add useOBCSYearlyFields (=.FALSE.) to obcs with exf in 
+  analogy to useExfYearlyFields; rearrange obcs_prescribe_read: two new 
+  subroutines (which could be generated from a template, because they are 
+  almost identical), for now they are included in obcs_prescribe_read.F for
+  simplicity
 o pkg/exf:
   - add a little more diagnostic to exf_interp_read (in analogy to 
     mds_read_field, can be turned off with debugLevel < debugLevA=1)
