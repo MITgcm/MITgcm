@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.15 2006/10/17 18:52:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.16 2008/01/24 17:22:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -87,8 +87,9 @@ C     i,k    :: Loop counters
          ENDDO
          CLOSE(37)
 
-      ELSEIF ( equationOfState(1:5) .EQ. 'JMD95'
-     &         .OR. equationOfState .EQ. 'UNESCO' ) THEN
+      ELSEIF ( equationOfState .EQ. 'JMD95Z'
+     &    .OR. equationOfState .EQ. 'JMD95P'
+     &    .OR. equationOfState .EQ. 'UNESCO' ) THEN
 C
 C     Jackett & McDougall (1995, JPO) equation of state
 C     rho = R(salinity, potential temperature, pressure)
