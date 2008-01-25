@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.22 2007/11/30 22:22:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.23 2008/01/25 01:07:49 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -111,7 +111,7 @@ c     Jan. through Dec.
 
          elseif ( genperiod .lt. 0 ) then
             print *, 'genperiod is out of range'
-            STOP 'ABNORMAL END: S/R EXF_GETFFIELDREC'
+            STOP 'ABNORMAL END: S/R EXF_SET_GEN'
 
          else
 c     get record numbers and interpolation factor for gen
@@ -338,12 +338,11 @@ c     == end of interface ==
             call exf_filter_rs( genfld, genmask, mythid )
          end if
 
-c     Loop over tiles.
+c     Loop over tiles and scale genfld
          do bj = mybylo(mythid),mybyhi(mythid)
             do bi = mybxlo(mythid),mybxhi(mythid)
                do j = 1,sny
                   do i = 1,snx
-c     Interpolate linearly onto the  time.
                      genfld(i,j,bi,bj) =
      &                    exf_inscal_gen * genfld(i,j,bi,bj) 
                   enddo
