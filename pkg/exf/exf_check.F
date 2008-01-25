@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.7 2007/06/27 21:38:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.8 2008/01/25 11:23:06 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -36,25 +36,22 @@ c     check for consistency
       if (.NOT. 
      &     (exf_iprec .EQ. 32 .OR. exf_iprec .EQ. 64)
      &     ) then
-         stop 'stop in exf_readparms: value of exf_iprec not allowed'
-      else if (.NOT. 
-     &        (exf_yftype .EQ. 'RS' .OR. 
-     &        exf_yftype .EQ. 'RL')
-     &        ) then
-         stop 'stop in exf_readparms: value of exf_yftype not allowed'
-      end if
+       stop 'S/R EXF_CHECK: value of exf_iprec not allowed'
+      elseif (.NOT. 
+     &      (exf_yftype .EQ. 'RS' .OR. 
+     &      exf_yftype .EQ. 'RL')
+     &      ) then
+       stop 'S/R EXF_CHECK: value of exf_yftype not allowed'
+      endif
 
-      if ( useCubedSphereExchange ) then
-cph         if ( uvecfile .NE. ' ' .and. vvecfile .NE. ' ' ) then
-c     some restrictions that can be relaxed later on
-cph            if ( uvecstartdate .ne. vvecstartdate .or.
-cph     &           uvecperiod    .ne. vvecperiod ) then
-cph               print*,'For useCubedSphereExchange, S/R exf_set_uv.F'
-cph               print*,'assumes that the u and v wind or wind stress'
-cph               print*,'files have the same startdate and period.'
-cph               stop
-cph            endif
-cph         endif
+      if (repeatPeriod.lt.0.) then
+       stop 'S/R EXF_CHECK: repeatPeriod must be positive'
+      endif
+
+      if (useExfYearlyFields.and.repeatPeriod.ne.0.) then
+       print*,'Use of usefldyearlyfields AND repeatPeriod',
+     &      ' not implemented'
+       stop 'ABNORMAL END: S/R EXF_CHECK'
       endif
 
 #if ( defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_WIND) )
@@ -63,6 +60,7 @@ cph         endif
      & 'S/R EXF_CHECK: use u,v_wind components but not wind-stress'
       ENDIF
 #endif
+
 #ifndef ALLOW_ATM_WIND
       IF ( uwindfile .NE. ' ' .OR. vwindfile .NE. ' ' ) THEN
         STOP
@@ -84,7 +82,19 @@ cph         endif
       IF ( readStressOnAgrid.OR.readStressOnCgrid ) THEN
         STOP 'wind-stress position defined by Long/Lat'
       ENDIF
-#else
+      if ( usingCurvilinearGrid ) then
+       if ( uvecfile .NE. ' ' .and. vvecfile .NE. ' ' ) then
+c     some restrictions that can be relaxed later on
+        if ( uvecstartdate .ne. vvecstartdate .or.
+     &       uvecperiod    .ne. vvecperiod ) then
+         print*,'For useCubedSphereExchange, S/R exf_set_uv.F'
+         print*,'assumes that the u and v wind or wind stress'
+         print*,'files have the same startdate and period.'
+         stop
+        endif
+       endif
+      endif
+#else /* ifndef USE_EXF_INTERPOLATION */
       IF ( ustressfile .NE. ' ' .OR. vstressfile .NE. ' ' ) THEN
         IF ( (readStressOnAgrid.AND.readStressOnCgrid) .OR.
      &   .NOT.(readStressOnAgrid.OR.readStressOnCgrid) ) THEN
@@ -96,12 +106,11 @@ cph         endif
           STOP 'S/R EXF_CHECK: wind-stress position irrelevant'
         ENDIF
       ENDIF
-#endif
+#endif /* USE_EXF_INTERPOLATION */
 
 #ifdef ALLOW_CLIMTEMP_RELAXATION
       STOP 'ALLOW_CLIMTEMP_RELAXATION no longer supported. Use pkg/rbcs'
 #endif
-
 
 #ifdef ALLOW_CLIMSALT_RELAXATION
       STOP 'ALLOW_CLIMSALT_RELAXATION no longer supported. Use pkg/rbcs'
