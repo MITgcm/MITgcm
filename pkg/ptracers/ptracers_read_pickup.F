@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.8 2007/12/18 15:49:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.9 2008/01/25 23:18:42 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -99,13 +99,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        _BEGIN_MASTER( myThid )
 c      IF ( filePrec.NE.0 .AND. filePrec.NE.prec ) THEN
        IF ( nbFields.GE.0 .AND. filePrec.NE.prec ) THEN
-         WRITE(msgBuf,'(2A,I4)') 'READ_PICKUP: ',
+         WRITE(msgBuf,'(2A,I4)') 'PTRACERS_READ_PICKUP: ',
      &    'pickup-file binary precision do not match !'
          CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(A,2(A,I4))') 'READ_PICKUP: ',
+         WRITE(msgBuf,'(A,2(A,I4))') 'PTRACERS_READ_PICKUP: ',
      &    'file prec.=', filePrec, ' but expecting prec.=', prec
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R READ_PICKUP (data-prec Pb)'
+         STOP 'ABNORMAL END: S/R PTRACERS_READ_PICKUP (data-prec Pb)'
        ENDIF
        _END_MASTER( myThid )
 
@@ -113,17 +113,17 @@ c      IF ( filePrec.NE.0 .AND. filePrec.NE.prec ) THEN
 C-      No meta-file or old meta-file without List of Fields
         ioUnit = errorMessageUnit
         IF ( pickupStrictlyMatch ) THEN
-          WRITE(msgBuf,'(4A)') 'READ_PICKUP: ',
+          WRITE(msgBuf,'(4A)') 'PTRACERS_READ_PICKUP: ',
      &      'no field-list found in meta-file',
      &      ' => cannot check for strick-matching'
           CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(4A)') 'READ_PICKUP: ',
+          WRITE(msgBuf,'(4A)') 'PTRACERS_READ_PICKUP: ',
      &      'try with " pickupStrictlyMatch=.FALSE.,"',
      &      ' in file: "data", NameList: "PARM03"'
           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-          STOP 'ABNORMAL END: S/R READ_PICKUP'
+          STOP 'ABNORMAL END: S/R PTRACERS_READ_PICKUP'
         ELSE
-          WRITE(msgBuf,'(4A)') 'WARNING >> READ_PICKUP: ',
+          WRITE(msgBuf,'(4A)') 'WARNING >> PTRACERS_READ_PICKUP: ',
      &      ' no field-list found'
           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          IF ( nbFields.EQ.-1 ) THEN
@@ -230,10 +230,10 @@ C--    Check for missing fields:
      U                     nMissing,
      I                     myIter, myThid )
        IF ( nMissing.GT.missFldDim ) THEN
-         WRITE(msgBuf,'(2A,I4)') 'READ_PICKUP: ',
+         WRITE(msgBuf,'(2A,I4)') 'PTRACERS_READ_PICKUP: ',
      &     'missing fields list has been truncated to', missFldDim
          CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R READ_PICKUP (list-size Pb)'
+         STOP 'ABNORMAL END: S/R PTRACERS_READ_PICKUP (list-size Pb)'
        ENDIF
        CALL PTRACERS_CHECK_PICKUP(
      I                     missFldList,
