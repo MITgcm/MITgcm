@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.23 2008/01/25 01:07:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.24 2008/01/25 16:02:56 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -127,24 +127,11 @@ c     get record numbers and interpolation factor for gen
          endif
 
          if ( first ) then
-            if (useExfYearlyFields.and.genperiod.gt.0) then
-C     Complete filename with YR or _YEAR extension
-               il = ilnblnk( genfile )
-               if (twoDigitYear) then
-                  if (year0.ge.2000) then
-                     write(genfile0(1:128),'(a,i2.2)')
-     &                    genfile(1:il),year0-2000
-                  else
-                     write(genfile0(1:128),'(a,i2.2)')
-     &                    genfile(1:il),year0-1900
-                  endif
-               else
-                  write(genfile0(1:128),'(2a,i4.4)')
-     &                 genfile(1:il),'_',year0
-               endif
-            else
-               genfile0 = genfile
-            endif
+            call exf_GetYearlyFieldName(
+     I         useExfYearlyFields, twoDigitYear, genperiod, year0,
+     I         genfile,
+     O         genfile0,
+     I         mytime, myiter, mythid )
 
 #ifdef USE_EXF_INTERPOLATION
             call exf_interp( genfile0, exf_iprec
@@ -171,24 +158,12 @@ C     Complete filename with YR or _YEAR extension
          if (( first ) .or. ( changed )) then
             call exf_SwapFFields( gen0, gen1, mythid )
             
-            if (useExfYearlyFields.and.genperiod.gt.0) then
-C     Complete filename with YR or _YEAR extension
-               il = ilnblnk( genfile )
-               if (twoDigitYear) then
-                  if (year1.ge.2000) then
-                     write(genfile1(1:128),'(a,i2.2)')
-     &                    genfile(1:il),year1-2000
-                  else
-                     write(genfile1(1:128),'(a,i2.2)')
-     &                    genfile(1:il),year1-1900
-                  endif
-               else
-                  write(genfile1(1:128),'(2a,i4.4)')
-     &                 genfile(1:il),'_',year1
-               endif
-            else
-               genfile1 = genfile
-            endif
+            call exf_GetYearlyFieldName(
+     I         useExfYearlyFields, twoDigitYear, genperiod, year1,
+     I         genfile,
+     O         genfile1,
+     I         mytime, myiter, mythid )
+
 #ifdef USE_EXF_INTERPOLATION
             call exf_interp( genfile1, exf_iprec
      &           , gen1, count1, gen_xout, gen_yout

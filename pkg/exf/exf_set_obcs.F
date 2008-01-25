@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_obcs.F,v 1.10 2008/01/24 18:38:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_obcs.F,v 1.11 2008/01/25 16:02:56 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -72,24 +72,11 @@ c     == end of interface ==
 
          if ( first ) then
 
-            if (useYearlyFields.and.obcs_period.gt.0) then
-C     Complete filename with YR or _YEAR extension
-               il = ilnblnk( obcs_file )
-               if (twoDigitYear) then
-                  if (year0.ge.2000) then
-                     write(obcs_file0(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year0-2000
-                  else
-                     write(obcs_file0(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year0-1900
-                  endif
-               else
-                  write(obcs_file0(1:128),'(2a,i4.4)')
-     &                 obcs_file(1:il),'_',year0
-               endif
-            else
-               obcs_file0 = obcs_file
-            endif
+            call exf_GetYearlyFieldName(
+     I         useYearlyFields, twoDigitYear, obcs_period, year0,
+     I         obcs_file,
+     O         obcs_file0,
+     I         mycurrenttime, mycurrentiter, mythid )
 
             call mdsreadfieldxz( obcs_file0, exf_iprec, exf_yftype, Nr
      &           , obcs_xz_1, count0, mythid
@@ -99,24 +86,11 @@ C     Complete filename with YR or _YEAR extension
          if (( first ) .or. ( changed )) then
             call exf_swapffields_xz( obcs_xz_0, obcs_xz_1, mythid )
 
-            if (useYearlyFields.and.obcs_period.gt.0) then
-C     Complete filename with YR or _YEAR extension
-               il = ilnblnk( obcs_file )
-               if (twoDigitYear) then
-                  if (year1.ge.2000) then
-                     write(obcs_file1(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year1-2000
-                  else
-                     write(obcs_file1(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year1-1900
-                  endif
-               else
-                  write(obcs_file1(1:128),'(2a,i4.4)')
-     &                 obcs_file(1:il),'_',year1
-               endif
-            else
-               obcs_file1 = obcs_file
-            endif
+            call exf_GetYearlyFieldName(
+     I         useYearlyFields, twoDigitYear, obcs_period, year1, 
+     I         obcs_file,
+     O         obcs_file1,
+     I         mycurrenttime, mycurrentiter, mythid )
 
             call mdsreadfieldxz( obcs_file1, exf_iprec, exf_yftype, Nr
      &           , obcs_xz_1, count1, mythid
@@ -207,24 +181,11 @@ c     == end of interface ==
 
          if ( first ) then
 
-            if (useYearlyFields.and.obcs_period.gt.0) then
-C     Complete filename with YR or _YEAR extension
-               il = ilnblnk( obcs_file )
-               if (twoDigitYear) then
-                  if (year0.ge.2000) then
-                     write(obcs_file0(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year0-2000
-                  else
-                     write(obcs_file0(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year0-1900
-                  endif
-               else
-                  write(obcs_file0(1:128),'(2a,i4.4)')
-     &                 obcs_file(1:il),'_',year0
-               endif
-            else
-               obcs_file0 = obcs_file
-            endif
+            call exf_GetYearlyFieldName(
+     I         useYearlyFields, twoDigitYear, obcs_period, year0, 
+     I         obcs_file,
+     O         obcs_file0,
+     I         mycurrenttime, mycurrentiter, mythid )
 
             call mdsreadfieldyz( obcs_file0, exf_iprec, exf_yftype, Nr
      &           , obcs_yz_1, count0, mythid
@@ -234,24 +195,11 @@ C     Complete filename with YR or _YEAR extension
          if (( first ) .or. ( changed )) then
             call exf_swapffields_yz( obcs_yz_0, obcs_yz_1, mythid )
 
-            if (useYearlyFields.and.obcs_period.gt.0) then
-C     Complete filename with YR or _YEAR extension
-               il = ilnblnk( obcs_file )
-               if (twoDigitYear) then
-                  if (year1.ge.2000) then
-                     write(obcs_file1(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year1-2000
-                  else
-                     write(obcs_file1(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year1-1900
-                  endif
-               else
-                  write(obcs_file1(1:128),'(2a,i4.4)')
-     &                 obcs_file(1:il),'_',year1
-               endif
-            else
-               obcs_file1 = obcs_file
-            endif
+            call exf_GetYearlyFieldName(
+     I         useYearlyFields, twoDigitYear, obcs_period, year1, 
+     I         obcs_file,
+     O         obcs_file1,
+     I         mycurrenttime, mycurrentiter, mythid )
 
             call mdsreadfieldyz( obcs_file1, exf_iprec, exf_yftype, Nr
      &           , obcs_yz_1, count1, mythid
@@ -342,24 +290,11 @@ c     == end of interface ==
 
          if ( first ) then
 
-            if (useYearlyFields.and.obcs_period.gt.0) then
-C     Complete filename with YR or _YEAR extension
-               il = ilnblnk( obcs_file )
-               if (twoDigitYear) then
-                  if (year0.ge.2000) then
-                     write(obcs_file0(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year0-2000
-                  else
-                     write(obcs_file0(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year0-1900
-                  endif
-               else
-                  write(obcs_file0(1:128),'(2a,i4.4)')
-     &                 obcs_file(1:il),'_',year0
-               endif
-            else
-               obcs_file0 = obcs_file
-            endif
+            call exf_GetYearlyFieldName(
+     I         useYearlyFields, twoDigitYear, obcs_period, year0, 
+     I         obcs_file,
+     O         obcs_file0,
+     I         mycurrenttime, mycurrentiter, mythid )
 
             call mdsreadfieldxz( obcs_file0, exf_iprec, exf_yftype, 1
      &           , obcs_x_1, count0, mythid
@@ -369,24 +304,11 @@ C     Complete filename with YR or _YEAR extension
          if (( first ) .or. ( changed )) then
             call exf_swapffields_x( obcs_x_0, obcs_x_1, mythid )
 
-            if (useYearlyFields.and.obcs_period.gt.0) then
-C     Complete filename with YR or _YEAR extension
-               il = ilnblnk( obcs_file )
-               if (twoDigitYear) then
-                  if (year1.ge.2000) then
-                     write(obcs_file1(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year1-2000
-                  else
-                     write(obcs_file1(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year1-1900
-                  endif
-               else
-                  write(obcs_file1(1:128),'(2a,i4.4)')
-     &                 obcs_file(1:il),'_',year1
-               endif
-            else
-               obcs_file1 = obcs_file
-            endif
+            call exf_GetYearlyFieldName(
+     I         useYearlyFields, twoDigitYear, obcs_period, year1, 
+     I         obcs_file,
+     O         obcs_file1,
+     I         mycurrenttime, mycurrentiter, mythid )
 
             call mdsreadfieldxz( obcs_file1, exf_iprec, exf_yftype, 1
      &           , obcs_x_1, count1, mythid
@@ -474,24 +396,11 @@ c     == end of interface ==
 
          if ( first ) then
 
-            if (useYearlyFields.and.obcs_period.gt.0) then
-C     Complete filename with YR or _YEAR extension
-               il = ilnblnk( obcs_file )
-               if (twoDigitYear) then
-                  if (year0.ge.2000) then
-                     write(obcs_file0(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year0-2000
-                  else
-                     write(obcs_file0(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year0-1900
-                  endif
-               else
-                  write(obcs_file0(1:128),'(2a,i4.4)')
-     &                 obcs_file(1:il),'_',year0
-               endif
-            else
-               obcs_file0 = obcs_file
-            endif
+            call exf_GetYearlyFieldName(
+     I         useYearlyFields, twoDigitYear, obcs_period, year0, 
+     I         obcs_file,
+     O         obcs_file0,
+     I         mycurrenttime, mycurrentiter, mythid )
 
             call mdsreadfieldyz( obcs_file0, exf_iprec, exf_yftype, 1
      &           , obcs_y_1, count0, mythid
@@ -501,24 +410,11 @@ C     Complete filename with YR or _YEAR extension
          if (( first ) .or. ( changed )) then
             call exf_swapffields_y( obcs_y_0, obcs_y_1, mythid )
 
-            if (useYearlyFields.and.obcs_period.gt.0) then
-C     Complete filename with YR or _YEAR extension
-               il = ilnblnk( obcs_file )
-               if (twoDigitYear) then
-                  if (year1.ge.2000) then
-                     write(obcs_file1(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year1-2000
-                  else
-                     write(obcs_file1(1:128),'(a,i2.2)')
-     &                    obcs_file(1:il),year1-1900
-                  endif
-               else
-                  write(obcs_file1(1:128),'(2a,i4.4)')
-     &                 obcs_file(1:il),'_',year1
-               endif
-            else
-               obcs_file1 = obcs_file
-            endif
+            call exf_GetYearlyFieldName(
+     I         useYearlyFields, twoDigitYear, obcs_period, year1, 
+     I         obcs_file,
+     O         obcs_file1,
+     I         mycurrenttime, mycurrentiter, mythid )
 
             call mdsreadfieldyz( obcs_file1, exf_iprec, exf_yftype, 1
      &           , obcs_y_1, count1, mythid

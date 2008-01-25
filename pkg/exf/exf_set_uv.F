@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.16 2008/01/25 02:43:19 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.17 2008/01/25 16:02:56 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -120,38 +120,18 @@ c     get record numbers and interpolation factor
      &        )
 
           if ( first ) then
-            if (useExfYearlyFields) then
-C     Complete filenames with YR or _YEAR extension
-              il = ilnblnk( uvecfile )
-              if (twoDigitYear) then
-                if (year0.ge.2000) then
-                  write(uvecfile0(1:128),'(a,i2.2)')
-     &                uvecfile(1:il),year0-2000
-                else
-                  write(uvecfile0(1:128),'(a,i2.2)')
-     &                uvecfile(1:il),year0-1900
-                endif
-              else
-                write(uvecfile0(1:128),'(2a,i4.4)')
-     &              uvecfile(1:il),'_',year0
-              endif
-              il = ilnblnk( vvecfile )
-              if (twoDigitYear) then
-                if (year0.ge.2000) then
-                  write(vvecfile0(1:128),'(a,i2.2)')
-     &                vvecfile(1:il),year0-2000
-                else
-                  write(vvecfile0(1:128),'(a,i2.2)')
-     &                vvecfile(1:il),year0-1900
-                endif
-              else
-                write(vvecfile0(1:128),'(2a,i4.4)')
-     &              vvecfile(1:il),'_',year0
-              endif
-            else
-              uvecfile0 = uvecfile
-              vvecfile0 = vvecfile
-            endif
+
+            call exf_GetYearlyFieldName(
+     I         useExfYearlyFields, twoDigitYear, uvecperiod, year0,
+     I         uvecfile,
+     O         uvecfile0,
+     I         mytime, myiter, mythid )
+            call exf_GetYearlyFieldName(
+     I         useExfYearlyFields, twoDigitYear, vvecperiod, year0,
+     I         vvecfile,
+     O         vvecfile0,
+     I         mytime, myiter, mythid )
+
 c     scalar interpolation to (xC,yC) locations
             interp_method=12
             call exf_interp( uvecfile0, exf_iprec
@@ -219,38 +199,18 @@ c     apply mask
           if (( first ) .or. ( changed )) then
             call exf_SwapFFields( uvec0, uvec1, mythid )
             call exf_SwapFFields( vvec0, vvec1, mythid )
-            if (useExfYearlyFields) then
-C     Complete filenames with YR or _YEAR extension
-              il = ilnblnk( uvecfile )
-              if (twoDigitYear) then
-                if (year1.ge.2000) then
-                  write(uvecfile1(1:128),'(a,i2.2)')
-     &                uvecfile(1:il),year1-2000
-                else
-                  write(uvecfile1(1:128),'(a,i2.2)')
-     &                uvecfile(1:il),year1-1900
-                endif
-              else
-                write(uvecfile1(1:128),'(2a,i4.4)')
-     &              uvecfile(1:il),'_',year1
-              endif
-              il = ilnblnk( vvecfile )
-              if (twoDigitYear) then
-                if (year1.ge.2000) then
-                  write(vvecfile1(1:128),'(a,i2.2)')
-     &                vvecfile(1:il),year1-2000
-                else
-                  write(vvecfile1(1:128),'(a,i2.2)')
-     &                vvecfile(1:il),year1-1900
-                endif
-              else
-                write(vvecfile1(1:128),'(2a,i4.4)')
-     &              vvecfile(1:il),'_',year1
-              endif
-            else
-              uvecfile1 = uvecfile
-              vvecfile1 = vvecfile
-            endif
+
+            call exf_GetYearlyFieldName(
+     I         useExfYearlyFields, twoDigitYear, uvecperiod, year1,
+     I         uvecfile,
+     O         uvecfile1,
+     I         mytime, myiter, mythid )
+            call exf_GetYearlyFieldName(
+     I         useExfYearlyFields, twoDigitYear, vvecperiod, year1,
+     I         vvecfile,
+     O         vvecfile1,
+     I         mytime, myiter, mythid )
+
 c     scalar interpolation to (xC,yC) locations
             interp_method=12
             call exf_interp( uvecfile1, exf_iprec
