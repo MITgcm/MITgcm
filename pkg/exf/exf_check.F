@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.8 2008/01/25 11:23:06 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.9 2008/01/25 11:49:48 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -83,13 +83,22 @@ c     check for consistency
         STOP 'wind-stress position defined by Long/Lat'
       ENDIF
       if ( usingCurvilinearGrid ) then
-       if ( uvecfile .NE. ' ' .and. vvecfile .NE. ' ' ) then
 c     some restrictions that can be relaxed later on
-        if ( uvecstartdate .ne. vvecstartdate .or.
-     &       uvecperiod    .ne. vvecperiod ) then
+       if ( ustressfile .NE. ' ' .and. vstressfile .NE. ' ' ) then
+        if ( ustressstartdate .ne. vstressstartdate .or.
+     &       ustressperiod    .ne. vstressperiod ) then
          print*,'For useCubedSphereExchange, S/R exf_set_uv.F'
-         print*,'assumes that the u and v wind or wind stress'
-         print*,'files have the same startdate and period.'
+         print*,'assumes that the u and v wind stress files'
+         print*,'have the same startdate and period.'
+         stop
+        endif
+       endif
+       if ( uwindfile .NE. ' ' .and. vwindfile .NE. ' ' ) then
+        if ( uwindstartdate .ne. vwindstartdate .or.
+     &       uwindperiod    .ne. vwindperiod ) then
+         print*,'For useCubedSphereExchange, S/R exf_set_uv.F'
+         print*,'assumes that the u and v wind files'
+         print*,'have the same startdate and period.'
          stop
         endif
        endif
