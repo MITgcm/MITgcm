@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.5 2007/12/14 19:30:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.6 2008/01/25 15:17:20 jmc Exp $
 # $Name:  $
 
 echo -n '-- Starting: '
@@ -66,7 +66,7 @@ while test $count != 0 ; do
         if test "x_$ready_to_send" = x_0 ; then
             pat="/tmp/tr_aces-$i"'*'
             rm -rf $pat
-            run_dir=${TST_DIR}"/tmp_"$i"/MITgcm/verification"
+            run_dir=${TST_DIR}"/MITgcm_"$i"/verification"
             tdir=`ls -1 $run_dir | grep -v tr_out | grep '^tr_aces' | head -1`
             if test ! "x$tdir" = x ; then
                 ( cd $run_dir ; tar -czf "/tmp/tr_aces-"$i".tar.gz" ./$tdir )

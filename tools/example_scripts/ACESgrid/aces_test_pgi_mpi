@@ -5,26 +5,25 @@
 #PBS -l nodes=2:ppn=2
 #PBS -e /home/jmc/test_ACES/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_pgi.stdout
-# #PBS -V
-#  ^- commented out => do not export env. variable !
-#  since head node environment (& module) is too different from computer node
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.4 2007/12/06 03:32:12 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.5 2008/01/25 15:17:20 jmc Exp $
 # $Name:  $
-
-if test -f /etc/profile.d/modules.sh ; then
-    . /etc/profile.d/modules.sh
-fi
-module add mpich/pgi
 
 umask 0022
 TST_DIR="/home/jmc/test_ACES/gcm_tests"
 HERE='/home/jmc/test_ACES/output'
 cd $HERE
 
-MC=10
-FC=pgf77
-MF=$HERE"/mf_"$FC
+if test -f /etc/profile.d/modules.sh ; then
+    . /etc/profile.d/modules.sh
+fi
+
+sfx='pgi'
+module add mpich/$sfx
+OPTFILE="../tools/build_options/linux_ia32_pgf77+mpi_aces"
+options='-mpi -match 10'
+
+MF=$HERE"/mf_"$sfx
 cat $PBS_NODEFILE | sort | uniq > $MF
 NCPU=`wc -l $MF | awk '{print $1}'`
 EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
@@ -32,19 +31,17 @@ EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
 # cat << EOF > $HERE"/.cvspass"
 # /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
 # EOF
-tmpDIR=${TST_DIR}"/tmp_pgi"
-if test -e $tmpDIR ; then
-    rm -rf $tmpDIR
+gcmDIR="MITgcm_$sfx"
+cd $TST_DIR
+if test -e $gcmDIR ; then
+    rm -rf $gcmDIR
 fi
-mkdir $tmpDIR
-cd $tmpDIR
-cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null 2>&1
+cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
 #  cvs co MITgcm
-/usr/bin/find $tmpDIR -type d | xargs chmod g+rxs
-/usr/bin/find $tmpDIR -type f | xargs chmod g+r
+/usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
+/usr/bin/find $gcmDIR -type f | xargs chmod g+r
 
-cd MITgcm/verification
-OPTFILE="../tools/build_options/linux_ia32_"$FC"+mpi_aces"
-echo ./testreport -mpi -match $MC -of $OPTFILE -command "$EXE" -odir aces-pgi
-./testreport -mpi -match $MC -of $OPTFILE -command "$EXE" -odir aces-pgi
+cd $gcmDIR/verification
+echo ./testreport $options -of $OPTFILE -command "$EXE" -odir aces-$sfx
+./testreport $options -of $OPTFILE -command "$EXE" -odir aces-$sfx
 
