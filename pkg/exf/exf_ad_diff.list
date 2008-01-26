@@ -8,6 +8,7 @@ exf_getffields.f
 exf_getffieldrec.f
 exf_getforcing.f
 exf_getsurfacefluxes.f
+exf_getyearlyfieldname.f
 exf_interp.f
 exf_mapfields.f
 exf_radiation.f
