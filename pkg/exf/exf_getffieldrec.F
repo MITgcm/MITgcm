@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.16 2008/01/25 11:23:06 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.17 2008/01/26 00:30:56 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -81,8 +81,8 @@ c     == local variables ==
       integer si,sf,sp,sn
       integer li,lf,lp,ln
       integer wi,wf,wp,wn
-      integer nextiter
-      _RL nexttime
+      _RL interval
+      integer iday, ihour, iminute, isecond
 
 #ifdef EXF_VERBOSE
       character*(max_len_mbuf) msgbuf
@@ -157,7 +157,7 @@ c     Determine the flux year and record just before mycurrentdate.
        if ( mf.lt.mi .or. (mf.eq.mi .and. df.lt.di) .or.
      &      (mf.eq.mi .and. df.eq.di .and. sf.lt.si) )
      &      year0 = yf - 1
-       startinyear(1) = year0*10000 + 100 + 1
+       startinyear(1) = year0 * 10000 + mi * 100 + di
        startinyear(2) = date_array(2)
        startinyear(3) = date_array(3)
        startinyear(4) = date_array(4)
@@ -170,19 +170,29 @@ c     Weight belonging to count0 for linear interpolation purposes.
        fac = 1. - fldsecs/fldperiod
 
 c     Determine the flux year and record just after mycurrentdate.
-       nexttime = fldsecs + fldperiod
-       nextiter = int(nexttime/modelstep +0.0001)
-       call cal_GetDate( nextiter, nexttime, nextperiod, mythid )
+       interval    = fldperiod - fldsecs
+       iday        = int ( interval / 86400. )
+       interval    = interval - iday * 86400.
+       ihour       = int ( interval / 3600. )
+       interval    = interval - ihour * 3600.
+       iminute     = int ( interval / 60. )
+       interval    = interval - iminute * 60.
+       isecond     = int ( interval )
+       difftime(1) = iday
+       difftime(2) = ihour * 10000 + iminute * 100 + isecond
+       difftime(3) =  0
+       difftime(4) = -1
+       call cal_AddTime( mydate, difftime, nextperiod, mythid )
        call cal_ConvDate( nextperiod,yn,mn,dn,sn,ln,wn,mythid )
        year1 = yn
        if ( mn.lt.mi .or. (mn.eq.mi .and. dn.lt.di) .or.
      &      (mn.eq.mi .and. dn.eq.di .and. sn.lt.si) )
      &      year1 = yn - 1
-       startinyear(1) = year1*10000 + 100 + 1
+       startinyear(1) = year1*10000 + mi*100 + di
        startinyear(2) = date_array(2)
        startinyear(3) = date_array(3)
        startinyear(4) = date_array(4)
-       call cal_TimePassed( startinyear, mydate, difftime, mythid )
+       call cal_TimePassed( startinyear, nextperiod, difftime, mythid )
        call cal_ToSeconds( difftime, fldsectot, mythid )
        count1  = int((fldsectot+0.5)/fldperiod) + 1
 
@@ -193,11 +203,11 @@ c     Set switch for reading new record.
         if ( mp.lt.mi .or. (mp.eq.mi .and. dp.lt.di) .or.
      &       (mp.eq.mi .and. dp.eq.di .and. sp.lt.si) )
      &       yp = yp - 1
-        startinyear(1) = year0*10000 + 100 + 1
+        startinyear(1) = yp*10000 + mi*100 + di
         startinyear(2) = date_array(2)
         startinyear(3) = date_array(3)
         startinyear(4) = date_array(4)
-        call cal_TimePassed( startinyear, mydate, difftime, mythid )
+        call cal_TimePassed(startinyear,previousdate,difftime,mythid)
         call cal_ToSeconds( difftime, fldsectot, mythid )
         prevfldcount = int((fldsectot+0.5)/fldperiod) + 1
         if (yp.ne.year0 .or. prevfldcount.ne.count0) changed = .true.
