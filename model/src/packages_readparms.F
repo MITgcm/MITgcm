@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.54 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.55 2008/01/27 20:53:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -86,15 +86,17 @@ C       |-- EXF_READPARMS
 C       |
 C       |-- EBM_READPARMS
 C       |
+C       |-- SMOOTH_READPARMS
+C       |
 C       |-- ECCO_READPARMS
 C       |
 C       |-- CPL_READPARMS
 C       |
 C       |-- FIZHI_READPARMS
 C       |
-C       |-- CPL_READPARMS
-C       |
 C       |-- DIAGNOSTICS_READPARMS
+C       |
+C       |-- MATRIX_READPARMS
 C       |
 C       |-- REGRID_READPARMS
 
