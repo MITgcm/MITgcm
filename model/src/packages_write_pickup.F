@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.28 2007/12/22 23:58:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.29 2008/01/27 20:55:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -151,6 +151,13 @@ C     Write restart file for passive tracers
      &                      suffix, myIter, myTime, myThid )
       ENDIF
 #endif /* ALLOW_PTRACERS */
+
+#ifdef ALLOW_MYPACKAGE
+      IF (useMYPACKAGE) THEN
+        CALL MYPACKAGE_WRITE_PICKUP( permPickup,
+     &                      suffix, myIter, myTime, myThid )
+      ENDIF
+#endif /* ALLOW_MYPACKAGE */
 
 C--   Every one else must wait until writing is done.
       _BARRIER

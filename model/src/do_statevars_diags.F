@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.11 2007/09/04 16:49:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.12 2008/01/27 20:55:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -105,6 +105,12 @@ C                    and stagger/synchronous TimeStep
         ENDDO
        ENDIF
 #endif /* ALLOW_LAND */
+
+#ifdef ALLOW_MYPACKAGE
+       IF ( seqFlag.EQ.0 .AND. useMYPACKAGE ) THEN
+         CALL MYPACKAGE_DIAGNOSTICS_STATE( myTime, myIter, myThid )
+       ENDIF
+#endif /* ALLOW_MYPACKAGE */
 
       ENDIf
 #endif /* ALLOW_DIAGNOSTICS */
