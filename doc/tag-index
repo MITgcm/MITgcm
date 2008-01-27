@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.947 2008/01/25 16:03:06 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.948 2008/01/27 22:55:34 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mypackage: 
+  - add example of read/write pickup for state-var ; 
+  - add entry points to the main code for state-vars diags & write-pickup.
 o pkg/exf: rewrite of exf_getffieldrec.F to properly deal with year
   transitions for useExfYearlyFields
   - add new subroutine that determines the file to read from for 
