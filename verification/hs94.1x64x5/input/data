@@ -49,7 +49,6 @@
  pChkptFreq=0.0,
  chkptFreq=0.0,
  dumpFreq=2592000.0,
- taveFreq=2592000.,
  monitorFreq=1.,
  &
 
