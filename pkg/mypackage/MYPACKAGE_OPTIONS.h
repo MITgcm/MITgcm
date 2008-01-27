@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/MYPACKAGE_OPTIONS.h,v 1.1 2006/06/28 21:26:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/MYPACKAGE_OPTIONS.h,v 1.2 2008/01/27 20:52:11 jmc Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -13,6 +13,11 @@ C Use this file for selecting options within the GM/Redi package
 #include "CPP_OPTIONS.h"
 
 C Place CPP define/undef flag here
+
+C to reduce memory storage, disable unused array with those CPP flags :
+#define MYPACKAGE_3D_STATE
+#define MYPACKAGE_2D_STATE
+#define MYPACKAGE_TENDENCY
 
 #undef MYPA_SPECIAL_COMPILE_OPTION1
 

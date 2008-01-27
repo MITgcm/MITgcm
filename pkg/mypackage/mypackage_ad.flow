@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_ad.flow,v 1.2 2007/10/09 00:13:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_ad.flow,v 1.3 2008/01/27 20:52:11 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
-C subroutine  mypackage_diagnostics_fill
+C subroutine  mypackage_diagnostics_state
 C----------------------------------------
-CADJ SUBROUTINE mypackage_diagnostics_fill INPUT  = 1,2,3
-CADJ SUBROUTINE mypackage_diagnostics_fill OUTPUT =
+CADJ SUBROUTINE mypackage_diagnostics_state INPUT  = 1,2,3
+CADJ SUBROUTINE mypackage_diagnostics_state OUTPUT =
 

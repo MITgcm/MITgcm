@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_mnc_init.F,v 1.1 2006/06/28 21:26:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_mnc_init.F,v 1.2 2008/01/27 20:52:11 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -29,47 +29,47 @@ CEOP
 
       IF (useMNC) THEN
 
-        CALL MNC_CW_ADD_VNAME('mypaStatScal1',
+        CALL MNC_CW_ADD_VNAME('myPa_StatScal1',
      &      'Cen_xy_Hn__L__t', 4,5,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('mypaStatScal1',
+        CALL MNC_CW_ADD_VATTR_TEXT('myPa_StatScal1',
      &      'units','[unit]', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('mypaStatScal1','description',
-     &      'scalar state variable mypaStatScal1',myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('myPa_StatScal1','description',
+     &      'scalar state variable myPa_StatScal1',myThid)
 
-        CALL MNC_CW_ADD_VNAME('mypaStatScal2',
+        CALL MNC_CW_ADD_VNAME('myPa_StatScal2',
      &      'Cen_xy_Hn__L__t', 4,5,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('mypaStatScal2',
+        CALL MNC_CW_ADD_VATTR_TEXT('myPa_StatScal2',
      &      'units','[unit]', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('mypaStatScal2','description',
-     &      'scalar state variable mypaStatScal2',myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('myPa_StatScal2','description',
+     &      'scalar state variable myPa_StatScal2',myThid)
 
-        CALL MNC_CW_ADD_VNAME('mypaStatUvel',
+        CALL MNC_CW_ADD_VNAME('myPa_StatVelU',
      &      'U_xy_Hn__C__t', 4,5,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('mypaStatUvel',
+        CALL MNC_CW_ADD_VATTR_TEXT('myPa_StatVelU',
      &      'units','[unit]', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('mypaStatUvel','description',
-     &       'uVel-type state variable mypaStatUvel',myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('myPa_StatVelU','description',
+     &       'uVel-type state variable myPa_StatVelU',myThid)
 
-        CALL MNC_CW_ADD_VNAME('mypaStatVvel',
+        CALL MNC_CW_ADD_VNAME('myPa_StatVelV',
      &      'V_xy_Hn__C__t', 4,5,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('mypaStatVvel',
+        CALL MNC_CW_ADD_VATTR_TEXT('myPa_StatVelV',
      &      'units','[unit]', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('mypaStatVvel','description',
-     &       'vVel-type state variable mypaStatVvel',myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('myPa_StatVelV','description',
+     &       'vVel-type state variable myPa_StatVelV',myThid)
 
-        CALL MNC_CW_ADD_VNAME('mypaSurf1',
+        CALL MNC_CW_ADD_VNAME('myPa_Surf1',
      &      'Cen_xy_Hn__-__t', 3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('mypaSurf1',
+        CALL MNC_CW_ADD_VATTR_TEXT('myPa_Surf1',
      &      'units','[unit]', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('mypaSurf1','description',
-     &       'Surface scalar field mypaSurf1',myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('myPa_Surf1','description',
+     &       'Surface scalar field myPa_Surf1',myThid)
 
-        CALL MNC_CW_ADD_VNAME('mypaSurf2',
+        CALL MNC_CW_ADD_VNAME('myPa_Surf2',
      &      'Cen_xy_Hn__-__t', 3,4,myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('mypaSurf2',
+        CALL MNC_CW_ADD_VATTR_TEXT('myPa_Surf2',
      &      'units','[unit]', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('mypaSurf2','description',
-     &       'Surface scalar field mypaSurf2',myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('myPa_Surf2','description',
+     &       'Surface scalar field myPa_Surf2',myThid)
 
       ENDIF
 

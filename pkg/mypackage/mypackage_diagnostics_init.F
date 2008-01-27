@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_diagnostics_init.F,v 1.2 2006/08/07 21:13:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_diagnostics_init.F,v 1.3 2008/01/27 20:52:11 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -44,51 +44,45 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 c     IF ( useDiagnotics ) THEN
 
-        diagName  = 'MYPASta1'
-        diagTitle = 
-     &     'Scalar state variable 1 for package MYPACKAGE'
+        diagName  = 'MYPaSta1'
+        diagTitle = 'Scalar state variable 1 for package MYPACKAGE'
         diagUnits = 'unit            '
-        diagCode  = 'SM P    M1      '
+        diagCode  = 'SM      MR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-        diagName  = 'MYPASta2'
-        diagTitle = 
-     &     'Scalar state variable 2 for package MYPACKAGE'
+        diagName  = 'MYPaSta2'
+        diagTitle = 'Scalar state variable 2 for package MYPACKAGE'
         diagUnits = 'unit            '
-        diagCode  = 'SM P    M1      '
+        diagCode  = 'SM      MR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-        diagName  = 'MYPAStaU'
-        diagTitle = 
-     &     'uVel-type state variable for package MYPACKAGE'
+        diagName  = 'MYPaStaU'
+        diagTitle = 'uVel-type state variable for package MYPACKAGE'
         diagUnits = 'unit            '
         WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-        diagName  = 'MYPAStaV'
-        diagTitle = 
-     &     'vVel-type state variable for package MYPACKAGE'
+        diagName  = 'MYPaStaV'
+        diagTitle = 'vVel-type state variable for package MYPACKAGE'
         diagUnits = 'unit            '
-        WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '
+        WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-        diagName  = 'MYPASur1'
-        diagTitle = 
-     &     'Surface field 1 for package MYPACKAGE'
+        diagName  = 'MYPaSur1'
+        diagTitle = 'Surface field 1 for package MYPACKAGE'
         diagUnits = 'unit            '
-        diagCode  = 'SM P    M1      '
+        diagCode  = 'SM      L1      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-        diagName  = 'MYPASur2'
-        diagTitle = 
-     &     'Surface field 2 for package MYPACKAGE'
+        diagName  = 'MYPaSur2'
+        diagTitle = 'Surface field 2 for package MYPACKAGE'
         diagUnits = 'unit            '
-        diagCode  = 'SM P    M1      '
+        diagCode  = 'SM      L1      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 

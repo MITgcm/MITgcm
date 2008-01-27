@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_readparms.F,v 1.2 2006/08/07 21:13:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_readparms.F,v 1.3 2008/01/27 20:52:11 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -18,7 +18,6 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
 #include "MYPACKAGE.h"
 
 C     !INPUT PARAMETERS:
@@ -28,13 +27,17 @@ CEOP
 #ifdef ALLOW_MYPACKAGE
 
       NAMELIST /MYPACKAGE_PARM01/
-     &       MYPA_MNC,
-     &       MYPA_index1, MYPA_index2,
-     &       MYPA_param1, MYPA_param2,
-     &       MYPA_string1, MYPA_string2,
-     &       mypaStatScal1File, mypaStatScal2File,
-     &       mypaStatUvelFile, mypaStatVvelFile,
-     &       mypaSurf1File, mypaSurf2File
+     &       myPa_MNC,
+     &       myPa_StaV_Cgrid, myPa_Tend_Cgrid,
+     &       myPa_applyTendT, myPa_applyTendS,
+     &       myPa_applyTendU, myPa_applyTendV,
+     &       myPa_doSwitch1,  myPa_doSwitch2,
+     &       myPa_index1,     myPa_index2,
+     &       myPa_param1,     myPa_param2,
+     &       myPa_string1,    myPa_string2,
+     &       myPa_Scal1File,  myPa_Scal2File,
+     &       myPa_VelUFile,   myPa_VelVFile,
+     &       myPa_Surf1File,  myPa_Surf2File
 
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
@@ -42,29 +45,33 @@ C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 
-C--   MYPACKAGE_READPARMS has been called so we know that
-C     the package is active.
-      MYPAisOn = .TRUE.
-
       _BEGIN_MASTER(myThid)
 
 C--   Default values for MYPACKAGE
-      MYPA_MNC            = useMNC
-      MYPA_doSwitch1      = .FALSE.
-      MYPA_doSwitch2      = .FALSE.
-      MYPA_index1         = 0
-      MYPA_index2         = 0
-      MYPA_param1         = 0. _d 0
-      MYPA_param2         = 0. _d 0
-      MYPA_string1        = ' '
-      MYPA_string2        = ' '
-      mypaStatScal1File   = ' '
-      mypaStatScal2File   = ' '
-      mypaStatUvelFile    = ' '
-      mypaStatVvelFile    = ' '
-      mypaSurf1File   = ' '
-      mypaSurf2File   = ' '
-      
+      myPa_MNC         = useMNC
+      myPa_StaV_Cgrid  = .TRUE.
+      myPa_Tend_Cgrid  = .TRUE.
+      myPa_applyTendT  = .FALSE.
+      myPa_applyTendS  = .FALSE.
+      myPa_applyTendU  = .FALSE.
+      myPa_applyTendV  = .FALSE.
+C-    additional parameters:
+      myPa_doSwitch1   = .FALSE.
+      myPa_doSwitch2   = .FALSE.
+      myPa_index1      = 0
+      myPa_index2      = 0
+      myPa_param1      = 0. _d 0
+      myPa_param2      = 0. _d 0
+      myPa_string1     = ' '
+      myPa_string2     = ' '
+C-    file names for initial conditions:
+      myPa_Scal1File   = ' '
+      myPa_Scal2File   = ' '
+      myPa_VelUFile    = ' '
+      myPa_VelVFile    = ' '
+      myPa_Surf1File   = ' '
+      myPa_Surf2File   = ' '
+
       WRITE(msgBuf,'(A)') 'MYPACKAGE_READPARMS: opening data.mypackage'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -75,7 +82,7 @@ C--   Default values for MYPACKAGE
 
 C     Read parameters from open data file
       READ(UNIT=iUnit,NML=MYPACKAGE_PARM01)
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &    'MYPACKAGE_READPARMS: finished reading data.mypackage'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , 1)
@@ -83,12 +90,12 @@ C     Close the open data file
       CLOSE(iUnit)
 
 C     Make sure that we locally honor the global MNC on/off flag
-      MYPA_MNC = MYPA_MNC .AND. useMNC
+      myPa_MNC = myPa_MNC .AND. useMNC
 #ifndef ALLOW_MNC
 C     Fix to avoid running without getting any output:
-      MYPA_MNC = .FALSE.
+      myPa_MNC = .FALSE.
 #endif
-      MYPA_MDSIO = (.NOT. MYPA_MNC) .OR. outputTypesInclusive
+      myPa_MDSIO = (.NOT. myPa_MNC) .OR. outputTypesInclusive
 
       _END_MASTER(myThid)
 

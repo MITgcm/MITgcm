@@ -1,61 +1,79 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/MYPACKAGE.h,v 1.1 2006/06/28 21:26:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/MYPACKAGE.h,v 1.2 2008/01/27 20:52:11 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_MYPACKAGE
 
 C     Package flag
-      logical MYPAisON
-      logical MYPA_MNC
-      logical MYPA_MDSIO
-      COMMON /MYPA_PACKAGE/ MYPAisON, 
-     &                     MYPA_MNC, MYPA_MDSIO
+      LOGICAL myPa_MNC
+      LOGICAL myPa_MDSIO
+      COMMON /MYPA_PACKAGE/
+     &                     myPa_MNC, myPa_MDSIO
 
 C     MYPA parameters
-      LOGICAL MYPA_doSwitch1
-      LOGICAL MYPA_doSwitch2
-      INTEGER MYPA_index1
-      INTEGER MYPA_index2
-      _RL MYPA_param1
-      _RL MYPA_param2
-      CHARACTER*(MAX_LEN_FNAM) MYPA_string1
-      CHARACTER*(MAX_LEN_FNAM) MYPA_string2
-      CHARACTER*(MAX_LEN_FNAM) mypaStatScal1File
-      CHARACTER*(MAX_LEN_FNAM) mypaStatScal2File
-      CHARACTER*(MAX_LEN_FNAM) mypaStatUvelFile
-      CHARACTER*(MAX_LEN_FNAM) mypaStatVvelFile
-      CHARACTER*(MAX_LEN_FNAM) mypaSurf1File
-      CHARACTER*(MAX_LEN_FNAM) mypaSurf2File
+      LOGICAL myPa_StaV_Cgrid
+      LOGICAL myPa_Tend_Cgrid
+      LOGICAL myPa_applyTendT
+      LOGICAL myPa_applyTendS
+      LOGICAL myPa_applyTendU
+      LOGICAL myPa_applyTendV
 
-      COMMON /MYPA_PARAMS_L/ MYPA_doSwitch1, MYPA_doSwitch2
-      COMMON /MYPA_PARAMS_I/ MYPA_index1, MYPA_index2
-      COMMON /MYPA_PARAMS_R/ MYPA_param1, MYPA_param2
-      COMMON /MYPA_PARAMS_C/ MYPA_string1, MYPA_string2,
-     &       mypaStatScal1File, mypaStatScal2File,
-     &       mypaStatUvelFile, mypaStatVvelFile,
-     &       mypaSurf1File, mypaSurf2File
+C-    additional parameters:
+      LOGICAL myPa_doSwitch1
+      LOGICAL myPa_doSwitch2
+      INTEGER myPa_index1
+      INTEGER myPa_index2
+      _RL myPa_param1
+      _RL myPa_param2
+      CHARACTER*(MAX_LEN_FNAM) myPa_string1
+      CHARACTER*(MAX_LEN_FNAM) myPa_string2
 
+C-    file names for initial conditions:
+      CHARACTER*(MAX_LEN_FNAM) myPa_Scal1File
+      CHARACTER*(MAX_LEN_FNAM) myPa_Scal2File
+      CHARACTER*(MAX_LEN_FNAM) myPa_VelUFile
+      CHARACTER*(MAX_LEN_FNAM) myPa_VelVFile
+      CHARACTER*(MAX_LEN_FNAM) myPa_Surf1File
+      CHARACTER*(MAX_LEN_FNAM) myPa_Surf2File
 
+      COMMON /MYPA_PARAMS_L/
+     &       myPa_StaV_Cgrid, myPa_Tend_Cgrid,
+     &       myPa_applyTendT, myPa_applyTendS,
+     &       myPa_applyTendU, myPa_applyTendV,
+     &       myPa_doSwitch1, myPa_doSwitch2
+      COMMON /MYPA_PARAMS_I/ myPa_index1, myPa_index2
+      COMMON /MYPA_PARAMS_R/ myPa_param1, myPa_param2
+      COMMON /MYPA_PARAMS_C/ myPa_string1, myPa_string2,
+     &       myPa_Scal1File, myPa_Scal2File,
+     &       myPa_VelUFile,  myPa_VelVFile,
+     &       myPa_Surf1File, myPa_Surf2File
+
+#ifdef MYPACKAGE_3D_STATE
 C     MYPA 3-dim. fields
-      _RL mypaStatScal1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL mypaStatScal2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL mypaStatUvel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL mypaStatVvel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL mypaGScal1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL mypaGScal2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL mypaGUvel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL mypaGVvel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      COMMON /MYPA_real_3d/
-     &    mypaStatScal1, mypaStatScal2, 
-     &    mypaStatUvel, mypaStatVvel,
-     &    mypaGScal1, mypaGScal2, 
-     &    mypaGUvel, mypaGVvel
-
+      _RL myPa_StatScal1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_StatScal2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_StatVelU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_StatVelV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /MYPA_STATE_3D/
+     &    myPa_StatScal1, myPa_StatScal2,
+     &    myPa_StatVelU,  myPa_StatVelV
+#endif /* MYPACKAGE_3D_STATE */
+#ifdef MYPACKAGE_2D_STATE
 C     MYPA 2-dim. fields
-      _RL mypaSurf1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL mypaSurf2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      COMMON /MYPA_real_2d/ mypaSurf1, mypaSurf2
+      _RL myPa_Surf1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL myPa_Surf2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /MYPA_STATE_2D/
+     &    myPa_Surf1, myPa_Surf2
+#endif /* MYPACKAGE_2D_STATE */
 
-
+#ifdef MYPACKAGE_TENDENCY
+      _RL myPa_TendScal1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_TendScal2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_TendVelU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL myPa_TendVelV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /MYPA_TENDENCY/
+     &    myPa_TendScal1, mypa_TendScal2,
+     &    myPa_TendVelU,  mypa_TendVelV
+#endif /* MYPACKAGE_TENDENCY */
 
 #endif /* ALLOW_MYPACKAGE */
 

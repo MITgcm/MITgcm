@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_check.F,v 1.2 2006/08/07 21:13:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_check.F,v 1.3 2008/01/27 20:52:11 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -21,31 +21,56 @@ C     !USES:
 #include "MYPACKAGE.h"
 
 C     !INPUT PARAMETERS:
-C     myThid -  Number of this instances
+C     myThid   :: my Thread Id number
       INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf   :: Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
 
 #ifdef ALLOW_MYPACKAGE
 
+      _BEGIN_MASTER(myThid)
+
        WRITE(msgBuf,'(A)') 'MYPACKAGE_CHECK: #define MYPACKAGE'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                     SQUEEZE_RIGHT , 1)
+
+C--  Print out some kee parameters :
+       CALL WRITE_0D_L( myPa_StaV_Cgrid, INDEX_NONE,
+     &  'myPa_StaV_Cgrid =', ' /* state vector on C-grid */')
+       CALL WRITE_0D_L( myPa_Tend_Cgrid, INDEX_NONE,
+     &  'myPa_Tend_Cgrid =', ' /* vector tendency on C-grid */')
+       CALL WRITE_0D_L( myPa_applyTendT, INDEX_NONE,
+     &  'myPa_applyTendT =',
+     &  ' /* apply MYPA tendency to Temperature Eq.*/')
+       CALL WRITE_0D_L( myPa_applyTendS, INDEX_NONE,
+     &  'myPa_applyTendS =',
+     &  ' /* apply MYPA tendency to Salinity Eq.*/')
+       CALL WRITE_0D_L( myPa_applyTendU, INDEX_NONE,
+     &  'myPa_applyTendU =',
+     &  ' /* apply MYPA tendency to U momentum Eq.*/')
+       CALL WRITE_0D_L( myPa_applyTendV, INDEX_NONE,
+     &  'myPa_applyTendV =',
+     &  ' /* apply MYPA tendency to V momentum Eq.*/')
+C-   add some other as example:
+       CALL WRITE_0D_I( myPa_index1, INDEX_NONE, ' myPa_index1 =',
+     &  ' /* user defined parameter */')
+       CALL WRITE_0D_R8( myPa_param1, INDEX_NONE, ' myPa_param1 =',
+     &  ' /* user defined parameter */')
+       CALL WRITE_0D_C( myPa_string1,-1,INDEX_NONE,'myPa_string1 =',
+     &  ' /* user defined parameter */')
 
 C--  Check parameters:
 
-      _BEGIN_MASTER(myThid)
 
 C-     Put stops here if some flags are wrongly chosen.
 C-     For example, require this package to use tempStepping
-       IF (.NOT.tempStepping) THEN
+       IF ( .NOT.tempStepping .AND. myPa_applyTendT ) THEN
         WRITE(msgBuf,'(A)') 'An example requirement is:'
         CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)') 'mypackage needs tempStepping=.true.'
+        WRITE(msgBuf,'(A)') 'myPa_applyTendT needs tempStepping=.true.'
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R MYPACKAGE_CHECK'
        ENDIF
@@ -53,5 +78,6 @@ C-     For example, require this package to use tempStepping
       _END_MASTER(myThid)
 
 #endif /* ALLOW_MYPACKAGE */
+
       RETURN
       END

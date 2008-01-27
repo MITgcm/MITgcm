@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_varia.F,v 1.3 2006/08/09 02:37:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_varia.F,v 1.4 2008/01/27 20:52:11 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -40,71 +40,97 @@ C     3-dim.
         DO k=1,Nr
          DO j=1-Oly,sNy+OLy
           DO i=1-Olx,sNx+Olx
-           mypaStatScal1(i,j,k,bi,bj) = 0. _d 0
-           mypaStatScal2(i,j,k,bi,bj) = 0. _d 0
-           mypaStatUvel(i,j,k,bi,bj) = 0. _d 0
-           mypaStatVvel(i,j,k,bi,bj) = 0. _d 0
-           mypaGScal1(i,j,k,bi,bj) = 0. _d 0
-           mypaGScal2(i,j,k,bi,bj) = 0. _d 0
-           mypaGUvel(i,j,k,bi,bj) = 0. _d 0
-           mypaGVvel(i,j,k,bi,bj) = 0. _d 0
+#ifdef MYPACKAGE_3D_STATE
+           myPa_StatScal1(i,j,k,bi,bj) = 0. _d 0
+           myPa_StatScal2(i,j,k,bi,bj) = 0. _d 0
+           myPa_StatVelU (i,j,k,bi,bj) = 0. _d 0
+           myPa_StatVelV (i,j,k,bi,bj) = 0. _d 0
+#endif /* MYPACKAGE_3D_STATE */
+#ifdef MYPACKAGE_TENDENCY
+           myPa_TendScal1(i,j,k,bi,bj) = 0. _d 0
+           myPa_TendScal2(i,j,k,bi,bj) = 0. _d 0
+           myPa_TendVelU (i,j,k,bi,bj) = 0. _d 0
+           myPa_TendVelV (i,j,k,bi,bj) = 0. _d 0
+#endif /* MYPACKAGE_TENDENCY */
           ENDDO
          ENDDO
         ENDDO
 
 C     2-dim.
+#ifdef MYPACKAGE_2D_STATE
         DO j=1-Oly,sNy+OLy
          DO i=1-Olx,sNx+Olx
-          mypaSurf1(i,j,bi,bj) = 0. _d 0
-          mypaSurf2(i,j,bi,bj) = 0. _d 0
+          myPa_Surf1(i,j,bi,bj) = 0. _d 0
+          myPa_Surf2(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
+#endif /* MYPACKAGE_2D_STATE */
 
 C- end bi,bj loops
        ENDDO
       ENDDO
 
+      IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0 ) THEN
+
 C     Prevent loading of new data before everyone has finished initialisation
-      _BARRIER
+       _BARRIER
 
-      IF ( mypaStatScal1File .NE. ' ' ) THEN
-        CALL READ_FLD_XYZ_RL(mypaStatScal1File,' ',
-     &   mypaStatScal1,0,myThid)
-       _EXCH_XYZ_R8(mypaStatScal1,myThid)
-      ENDIF
+#ifdef MYPACKAGE_3D_STATE
+       IF ( myPa_Scal1File .NE. ' ' ) THEN
+         CALL READ_FLD_XYZ_RL( myPa_Scal1File, ' ',
+     &                         myPa_StatScal1, 0, myThid )
+         CALL EXCH_3D_RL( myPa_StatScal1, Nr, myThid )
+       ENDIF
+       IF ( myPa_Scal2File .NE. ' ' ) THEN
+         CALL READ_FLD_XYZ_RL( myPa_Scal2File, ' ',
+     &                         myPa_StatScal2, 0, myThid )
+         CALL EXCH_3D_RL( myPa_StatScal2, Nr, myThid )
+       ENDIF
 
-      IF ( mypaStatScal2File .NE. ' ' ) THEN
-        CALL READ_FLD_XYZ_RL(mypaStatScal2File,' ',
-     &   mypaStatScal2,0,myThid)
-       _EXCH_XYZ_R8(mypaStatScal2,myThid)
-      ENDIF
+       IF ( myPa_VelUFile .NE. ' ' ) THEN
+         CALL READ_FLD_XYZ_RL( myPa_VelUFile, ' ',
+     &                         myPa_StatVelU, 0, myThid )
+       ENDIF
+       IF ( myPa_VelVFile .NE. ' ' ) THEN
+         CALL READ_FLD_XYZ_RL( myPa_VelVFile, ' ',
+     &                         myPa_StatVelV, 0, myThid )
+       ENDIF
+       IF ( myPa_VelUFile .NE. ' ' .OR.
+     &      myPa_VelVFile .NE. ' ' ) THEN
+        IF ( myPa_StaV_Cgrid ) THEN
+         CALL EXCH_UV_3D_RL( myPa_StatVelU, myPa_StatVelV,
+     &                       .TRUE., Nr, myThid )
+        ELSE
+C-      Assume Agrid position:
+         CALL EXCH_UV_AGRID_3D_RL( myPa_StatVelU, myPa_StatVelV,
+     &                       .TRUE., Nr, myThid )
+        ENDIF
+       ENDIF
+#endif /* MYPACKAGE_3D_STATE */
 
-      IF ( mypaStatUvelFile .NE. ' ' ) THEN
-        CALL READ_FLD_XYZ_RL(mypaStatUvelFile,' ',
-     &   mypaStatUvel,0,myThid)
-       _EXCH_XYZ_R8(mypaStatUvel,myThid)
-      ENDIF
-
-      IF ( mypaStatVvelFile .NE. ' ' ) THEN
-        CALL READ_FLD_XYZ_RL(mypaStatVvelFile,' ',
-     &   mypaStatVvel,0,myThid)
-       _EXCH_XYZ_R8(mypaStatVvel,myThid)
-      ENDIF
-
-      IF ( mypaSurf1File .NE. ' ' ) THEN
-        CALL READ_FLD_XY_RL(mypaSurf1File,' ',
-     &   mypaSurf1,0,myThid)
-       _EXCH_XY_R8(mypaSurf1,myThid)
-      ENDIF
-
-      IF ( mypaSurf2File .NE. ' ' ) THEN
-        CALL READ_FLD_XY_RL(mypaSurf2File,' ',
-     &   mypaSurf2,0,myThid)
-       _EXCH_XY_R8(mypaSurf2,myThid)
-      ENDIF
+#ifdef MYPACKAGE_2D_STATE
+       IF ( myPa_Surf1File .NE. ' ' ) THEN
+         CALL READ_FLD_XY_RL( myPa_Surf1File,' ',
+     &                        myPa_Surf1, 0, myThid )
+         CALL EXCH_XY_RL( myPa_Surf1, myThid )
+       ENDIF
+       IF ( myPa_Surf2File .NE. ' ' ) THEN
+         CALL READ_FLD_XY_RL( myPa_Surf2File,' ',
+     &                        myPa_Surf2, 0, myThid )
+         CALL EXCH_XY_RL( myPa_Surf2, myThid )
+       ENDIF
+#endif /* MYPACKAGE_2D_STATE */
 
 C     Stop anyone leaving until all data is read
-      _BARRIER
+C note: not strictly necessary since calling EXCH force synchronisation
+c      _BARRIER
+
+      ELSE
+C--   restart from a pickup:
+         CALL MYPACKAGE_READ_PICKUP( nIter0, myThid )
+
+C--   end start-from-iter-zero if/else block
+      ENDIF
 
 #endif /* ALLOW_MYPACKAGE */
 
