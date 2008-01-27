@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.9 2008/01/25 23:18:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.10 2008/01/27 19:35:42 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -51,7 +51,7 @@ C     msgBuf      :: Informational/error message buffer
       INTEGER missFldDim, nMissing
       INTEGER nj, ioUnit
       PARAMETER( missFldDim = 2*PTRACERS_num )
-      CHARACTER*(MAX_LEN_MBUF) fn
+      CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(8) fldName, missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
