@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.17 2008/01/25 16:02:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.18 2008/01/28 06:17:01 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -125,12 +125,12 @@ c     get record numbers and interpolation factor
      I         useExfYearlyFields, twoDigitYear, uvecperiod, year0,
      I         uvecfile,
      O         uvecfile0,
-     I         mytime, myiter, mythid )
+     I         mycurrenttime, mycurrentiter, mythid )
             call exf_GetYearlyFieldName(
      I         useExfYearlyFields, twoDigitYear, vvecperiod, year0,
      I         vvecfile,
      O         vvecfile0,
-     I         mytime, myiter, mythid )
+     I         mycurrenttime, mycurrentiter, mythid )
 
 c     scalar interpolation to (xC,yC) locations
             interp_method=12
@@ -204,12 +204,12 @@ c     apply mask
      I         useExfYearlyFields, twoDigitYear, uvecperiod, year1,
      I         uvecfile,
      O         uvecfile1,
-     I         mytime, myiter, mythid )
+     I         mycurrenttime, mycurrentiter, mythid )
             call exf_GetYearlyFieldName(
      I         useExfYearlyFields, twoDigitYear, vvecperiod, year1,
      I         vvecfile,
      O         vvecfile1,
-     I         mytime, myiter, mythid )
+     I         mycurrenttime, mycurrentiter, mythid )
 
 c     scalar interpolation to (xC,yC) locations
             interp_method=12
