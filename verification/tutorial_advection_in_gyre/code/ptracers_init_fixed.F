@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_advection_in_gyre/code/Attic/ptracers_init_fixed.F,v 1.1 2008/01/28 20:09:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_advection_in_gyre/code/Attic/ptracers_init_fixed.F,v 1.2 2008/01/28 20:13:00 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -55,7 +55,7 @@ C     Initialise internal parameter in common block:
         ENDIF
 #endif /* ndef GAD_ALLOW_SOM_ADVECT */
 
-        WRITE(msgBuf,'(2A,I,A,L)') 'PTRACERS_INIT_FIXED: ',
+        WRITE(msgBuf,'(2A,I3,A,L)') 'PTRACERS_INIT_FIXED: ',
      &     'PTRACERS_SOM_Advection(', iTracer, ') = ',
      &     PTRACERS_SOM_Advection(iTracer)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
