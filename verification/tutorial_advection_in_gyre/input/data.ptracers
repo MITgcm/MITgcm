@@ -6,7 +6,7 @@
 #
  &PTRACERS_PARM01
  PTRACERS_numInUse=1,
- PTRACERS_advScheme=33,
+ PTRACERS_advScheme=80,
  PTRACERS_diffKh=0.,
  PTRACERS_diffK4=0.E9,
  PTRACERS_diffKr=0.,
