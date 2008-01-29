@@ -90,3 +90,39 @@ Instructions for generating and running a 2-CPU experiment on kalpana
   make
   cd ../input
   mpirun -np 2 ../build/mitgcmuv
+
+
+Instructions for testing useExfYearlyFields
+===========================================
+
+  cd MITgcm/verification/lab_sea/build
+  \rm *
+  \cp ../code/* .
+  sed 's/undef EXF_V/define EXF_V/' \
+      ../../../pkg/exf/EXF_OPTIONS.h > EXF_OPTIONS.h
+  ../../../tools/genmake2
+  make depend
+  make -j
+  cd ../run
+  \rm *
+  \cp ../input/* .
+  \mv v10m.labsea1979 v10m.labsea_1979
+  \mv u10m.labsea1979 u10m.labsea_1979
+  \mv flo.labsea1979 flo.labsea_1979
+  \mv prate.labsea1979 prate.labsea_1979
+  \mv tair.labsea1979 tair.labsea_1979
+  \mv fsh.labsea1979 fsh.labsea_1979
+  \mv qa.labsea1979 qa.labsea_1979
+  \mv SSS_monthly.labsea1979 SSS_monthly.labsea_1979
+  \ln -sf v10m.labsea_1979 v10m.labsea_1978
+  \ln -sf u10m.labsea_1979 u10m.labsea_1978
+  \ln -sf flo.labsea_1979 flo.labsea_1978
+  \ln -sf prate.labsea_1979 prate.labsea_1978
+  \ln -sf tair.labsea_1979 tair.labsea_1978
+  \ln -sf fsh.labsea_1979 fsh.labsea_1978
+  \ln -sf qa.labsea_1979 qa.labsea_1978
+  \ln -sf SSS_monthly.labsea_1979 SSS_monthly.labsea_1978
+  \mv data.exf_YearlyFields data.exf
+  \mv data_YearlyFields data
+  sed 's/tics = .TRUE./tics = .FALSE./' ../input/data.pkg > data.pkg
+  ../build/mitgcmuv >& output.txt &

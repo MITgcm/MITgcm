@@ -1,0 +1,67 @@
+# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/data.exf_YearlyFields,v 1.1 2008/01/29 05:57:10 dimitri Exp $
+#
+# *********************
+# External Forcing Data
+# *********************
+ &EXF_NML_01
+#
+ useExfCheckRange  = .TRUE.,
+ exf_iprec         = 32,
+ exf_yftype        = 'RL',
+ useExfYearlyFields= .TRUE.,
+#
+ &
+
+# *********************
+ &EXF_NML_02
+#
+ atempstartdate1   = 19990116,
+ atempstartdate2   = 180000,
+ atempperiod       = 2635200.0,
+#
+ aqhstartdate1     = 19990116,
+ aqhstartdate2     = 180000,
+ aqhperiod         = 2635200.0,
+#
+ precipstartdate1  = 19990116,
+ precipstartdate2  = 180000,
+ precipperiod      = 2635200.0,
+#
+ uwindstartdate1   = 19990116,
+ uwindstartdate2   = 180000,
+ uwindperiod       = 2635200.0,
+#
+ vwindstartdate1   = 19990116,
+ vwindstartdate2   = 180000,
+ vwindperiod       = 2635200.0,
+#
+ swdownstartdate1  = 19990116,
+ swdownstartdate2  = 180000,
+ swdownperiod      = 2635200.0,
+#
+ lwdownstartdate1  = 19990116,
+ lwdownstartdate2  = 180000,
+ lwdownperiod      = 2635200.0,
+#
+ climsssstartdate1  = 19990116,
+ climsssstartdate2  = 180000,
+ climsssperiod      = 2635200.0,
+#
+ atempfile         = 'tair.labsea',
+ aqhfile           = 'qa.labsea',
+ uwindfile         = 'u10m.labsea',
+ vwindfile         = 'v10m.labsea',
+ precipfile        = 'prate.labsea',
+ lwdownfile        = 'flo.labsea',
+ swdownfile        = 'fsh.labsea',
+ climsssfile       = 'SSS_monthly.labsea',
+#
+ &
+
+# *********************
+ &EXF_NML_03
+ &
+
+# *********************
+ &EXF_NML_04
+ &
