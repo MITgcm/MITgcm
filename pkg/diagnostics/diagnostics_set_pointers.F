@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.8 2006/12/24 20:20:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.9 2008/01/29 00:35:31 jahn Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -135,7 +135,7 @@ C     and if it exists. Note: for now, only used to print message.
 
          nd = jdiag(md,ld)
          mate_index = gdiag(nd)(6:8)
-         IF ( mate_index.NE.'   ' ) THEN
+         IF ( mate_index.NE.'   ' .AND. mate_index.NE.'***' ) THEN
           READ(mate_index,'(I3)') mate
           DO j=1,nlists
            DO i=1,nActive(j)
