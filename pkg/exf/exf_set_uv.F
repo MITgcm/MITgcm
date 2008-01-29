@@ -1,17 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.18 2008/01/28 06:17:01 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.19 2008/01/29 11:25:53 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
       subroutine exf_set_uv(
      &     uvecfile, uvecstartdate, uvecperiod,
-     &     uvecstartdate1, uvecstartdate2,
      &     exf_inscal_uvec, uvec, uvec0, uvec1, uvecmask,
      &     uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
      &     uvec_nlon, uvec_nlat, 
      &     uvec_remove_intercept, uvec_remove_slope,
      &     vvecfile, vvecstartdate, vvecperiod,
-     &     vvecstartdate1, vvecstartdate2,
      &     exf_inscal_vvec, vvec, vvec0, vvec1, vvecmask,
      &     vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
      &     vvec_nlon, vvec_nlat,
@@ -60,7 +58,6 @@ c     *vec_lat_inc         :: vector y-grid increments for *vec
 
       character*(128) uvecfile, uvecfile0, uvecfile1
       _RL     uvecstartdate, uvecperiod
-      integer uvecstartdate1, uvecstartdate2
       _RL     exf_inscal_uvec
       _RL     uvec_remove_intercept, uvec_remove_slope
       _RL     uvec  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -72,7 +69,6 @@ c     *vec_lat_inc         :: vector y-grid increments for *vec
       INTEGER uvec_nlon, uvec_nlat
       character*(128) vvecfile, vvecfile0, vvecfile1
       _RL     vvecstartdate, vvecperiod
-      integer vvecstartdate1, vvecstartdate2
       _RL     exf_inscal_vvec
       _RL     vvec_remove_intercept, vvec_remove_slope
       _RL     vvec  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -112,7 +108,6 @@ c     == end of interface ==
 c     get record numbers and interpolation factor
           call exf_GetFFieldRec(
      I        uvecstartdate, uvecperiod
-     I        , uvecstartdate1, uvecstartdate2
      I        , useExfYearlyFields
      O        , fac, first, changed
      O        , count0, count1, year0, year1
@@ -299,7 +294,6 @@ c     IF ( .NOT. usingCurvilinearGrid )
        interp_method=12
         call exf_set_gen(
      &      uvecfile, uvecstartdate, uvecperiod,
-     I      uvecstartdate1, uvecstartdate2,
      &      exf_inscal_uvec,
      &      uvec_remove_intercept, uvec_remove_slope,
      &      uvec, uvec0, uvec1, uvecmask,
@@ -309,7 +303,6 @@ c     IF ( .NOT. usingCurvilinearGrid )
         interp_method=22
         call exf_set_gen(
      &      vvecfile, vvecstartdate, vvecperiod,
-     I      vvecstartdate1, vvecstartdate2,
      &      exf_inscal_vvec,
      &      vvec_remove_intercept, vvec_remove_slope,
      &      vvec, vvec0, vvec1, vvecmask,

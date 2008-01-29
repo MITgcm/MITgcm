@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.24 2008/01/25 16:02:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.25 2008/01/29 11:25:53 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
       subroutine exf_set_gen( 
      &     genfile, genstartdate, genperiod, 
-     &     genstartdate1, genstartdate2,
      &     exf_inscal_gen, genremove_intercept, genremove_slope,
      &     genfld, gen0, gen1, genmask,
 #ifdef USE_EXF_INTERPOLATION
@@ -49,7 +48,6 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer genstartdate1, genstartdate2
       _RL genstartdate, genperiod
       _RL exf_inscal_gen
       _RL genremove_intercept, genremove_slope
@@ -117,7 +115,6 @@ c     Jan. through Dec.
 c     get record numbers and interpolation factor for gen
             call exf_GetFFieldRec(
      I           genstartdate, genperiod
-     I           , genstartdate1, genstartdate2
      I           , useExfYearlyFields
      O           , fac, first, changed
      O           , count0, count1, year0, year1

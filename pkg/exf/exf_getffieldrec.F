@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.17 2008/01/26 00:30:56 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.18 2008/01/29 11:25:53 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -6,7 +6,6 @@ C $Name:  $
 
       subroutine exf_GetFFieldRec(
      I                             fldstartdate, fldperiod,
-     I                             fldstartdate1, fldstartdate2,
      I                             usefldyearlyfields,
      O                             fac,
      O                             first, changed,
@@ -54,7 +53,6 @@ c cal: modelstart, modelstep
 c     == routine arguments ==
 
       _RL     fldstartdate, fldperiod
-      integer fldstartdate1, fldstartdate2
       logical usefldyearlyfields
       _RL     fac
       logical first, changed
@@ -64,29 +62,30 @@ c     == routine arguments ==
 
 c     == local variables ==
 
+c     mydate        :: model date of current time step
+c     yearStartDate :: start of year date for flux record just before mydate
+c     difftime      :: time difference between yearStartDate and mydate
+c     fldsectot     :: time in seconds from fldstartdate to mydate
+c     fldsecs       :: time from start of current forcing period to mydate
+c     fldsecs0      :: time from start of repeat period to mydate
+c     fldsecs1      :: time from end of current forcing period to mydate
+c     secondsInYear :: seconds in the flux year just before mydate
+c     myDateSeconds :: seconds from beginning of year to mydate
+
       integer mydate(4)
-      integer previousdate(4)
-      integer nextperiod(4)
+      integer yearStartDate(4)
       integer difftime(4)
-
-      _RL     fldsecs, fldsectot, fldsecs0, fldsecs1
-      _RL     prevfldsecs
-      integer prevfldcount
-
-      integer date_array(4)
-      integer startinyear(4)
-      integer yi,yf,yp,yn
-      integer mi,mf,mp,mn
-      integer di,df,dp,dn
-      integer si,sf,sp,sn
-      integer li,lf,lp,ln
-      integer wi,wf,wp,wn
-      _RL interval
-      integer iday, ihour, iminute, isecond
+      _RL fldsectot, fldsecs, fldsecs0, fldsecs1
+      _RL secondsInYear, myDateSeconds
 
 #ifdef EXF_VERBOSE
       character*(max_len_mbuf) msgbuf
 #endif
+
+c     == external ==
+
+      integer  cal_IsLeap
+      external cal_IsLeap
 
 c     == end of interface ==
 
@@ -98,122 +97,80 @@ c     Set some default values.
 
 c     Determine offset in seconds from beginning of input data
 c     to current date.
-       fldsecs = mytime - fldstartdate
-
-c     Variable needed to set switches for reading new records.
-       prevfldsecs = 0.
-       if ( .not. first ) prevfldsecs = fldsecs - modelstep
+       fldsectot = mytime - fldstartdate
 
 c     Determine the flux records just before and after mycurrentdate.
        if ( repeatPeriod .eq. 0. ) then
 
-        if ( fldsecs .lt. 0 ) then
+        if ( fldsectot .lt. 0 ) then
          print *, 'flux data not available for this date'
          stop 'ABNORMAL END: S/R EXF_GETFFIELDREC'
         endif
-        count0      = int((fldsecs+0.5)/fldperiod) + 1
-        count1      = count0 + 1
-        prevfldcount= int((prevfldsecs+0.5)/fldperiod) + 1
-        fldsecs     = fldsecs - int((fldsecs+0.5)/fldperiod)*fldperiod
+        count0       = int((fldsectot+0.5)/fldperiod) + 1
+        count1       = count0 + 1
+        fldsecs      = mod(fldsectot,fldperiod)
 
        else
 c     if ( repeatPeriod .gt. 0. )
 
-c     if using repeating data then make fldsecs cycle around.
-        do while ( fldsecs     .lt. 0 )
-         fldsecs  = fldsecs     + repeatPeriod
-        enddo
-        fldsecs0    = mod(fldsecs,repeatPeriod)
-        count0      = int((fldsecs0+0.5)/fldperiod) + 1
-        fldsecs1    = mod(fldsecs+fldperiod,repeatPeriod)
-        count1      = int((fldsecs1+0.5)/fldperiod) + 1
-        do while ( prevfldsecs .lt. 0 )
-         prevfldsecs = prevfldsecs + repeatPeriod
-        enddo
-        prevfldsecs = mod(prevfldsecs,repeatPeriod)
-        prevfldcount= int((prevfldsecs+0.5)/fldperiod) + 1
-        fldsecs     = fldsecs0-int((fldsecs0+0.5)/fldperiod)*fldperiod
+c     If using repeating data then make fldsectot cycle around.
+        if(fldsectot.lt.0) fldsectot = fldsectot + repeatPeriod
+        fldsecs0     = mod(fldsectot,repeatPeriod)
+        count0       = int((fldsecs0+0.5)/fldperiod) + 1
+        fldsecs1     = mod(fldsectot+fldperiod,repeatPeriod)
+        count1       = int((fldsecs1+0.5)/fldperiod) + 1
+        fldsecs      = mod(fldsecs0,fldperiod)
 
        endif
 
 c     Weight belonging to count0 for linear interpolation purposes.
        fac = 1. - fldsecs/fldperiod
-
-c     Set switch for reading new record.
-       if (.not.first .and. count0.ne.prevfldcount) changed = .true.
 
       else
 c     if (usefldyearlyfields)
 
-c     Compute year, month, day, second (yi, mi, di, si) of field start date
-       call cal_FullDate( fldstartdate1, fldstartdate2,
-     &      date_array, mythid )
-       call cal_ConvDate( date_array,yi,mi,di,si,li,wi,mythid )
-
-c     Determine the flux year and record just before mycurrentdate.
+c     Determine seconds from beginning of year to model current time.
        call cal_GetDate( myiter, mytime, mydate, mythid )
-       call cal_ConvDate( mydate,yf,mf,df,sf,lf,wf,mythid )
-       year0 = yf
-       if ( mf.lt.mi .or. (mf.eq.mi .and. df.lt.di) .or.
-     &      (mf.eq.mi .and. df.eq.di .and. sf.lt.si) )
-     &      year0 = yf - 1
-       startinyear(1) = year0 * 10000 + mi * 100 + di
-       startinyear(2) = date_array(2)
-       startinyear(3) = date_array(3)
-       startinyear(4) = date_array(4)
-       call cal_TimePassed( startinyear, mydate, difftime, mythid )
-       call cal_ToSeconds( difftime, fldsectot, mythid )
-       count0  = int((fldsectot+0.5)/fldperiod) + 1
+       year0            = int(mydate(1)/10000.)
+       yearStartDate(1) = year0 * 10000 + 101
+       yearStartDate(2) = 0
+       yearStartDate(3) = mydate(3)
+       yearStartDate(4) = mydate(4)
+       CALL cal_TimePassed(yearStartDate,mydate,difftime,myThid)
+       CALL cal_ToSeconds (difftime,myDateSeconds,myThid)
+
+c     Determine the flux year just before mycurrentdate.
+        if ( myDateSeconds .lt. fldstartdate ) year0 = year0 - 1
+
+c     Determine seconds in the flux year just before mycurrentdate.
+        secondsInYear = 31536000.
+        if ( cal_IsLeap(year0,mythid) .eq. 2) secondsInYear = 31622400.
+
+c     Determine the record just before mycurrentdate.
+        if ( myDateSeconds .lt. fldstartdate )
+     &       myDateSeconds = myDateSeconds + secondsInYear
+        fldsectot = myDateSeconds - fldstartdate
+        count0    = int((fldsectot+0.5)/fldperiod) + 1
+        
+c     Determine the flux year and record just after mycurrentdate.
+        year1  = year0
+        count1 = count0 + 1
+        if ( (fldstartdate+count0*fldperiod) .gt. secondsInYear ) then
+         year1  = year0 + 1
+         count1 = 1
+        endif
 
 c     Weight belonging to count0 for linear interpolation purposes.
-       fldsecs = fldsectot - int((fldsectot+0.5)/fldperiod)*fldperiod
-       fac = 1. - fldsecs/fldperiod
-
-c     Determine the flux year and record just after mycurrentdate.
-       interval    = fldperiod - fldsecs
-       iday        = int ( interval / 86400. )
-       interval    = interval - iday * 86400.
-       ihour       = int ( interval / 3600. )
-       interval    = interval - ihour * 3600.
-       iminute     = int ( interval / 60. )
-       interval    = interval - iminute * 60.
-       isecond     = int ( interval )
-       difftime(1) = iday
-       difftime(2) = ihour * 10000 + iminute * 100 + isecond
-       difftime(3) =  0
-       difftime(4) = -1
-       call cal_AddTime( mydate, difftime, nextperiod, mythid )
-       call cal_ConvDate( nextperiod,yn,mn,dn,sn,ln,wn,mythid )
-       year1 = yn
-       if ( mn.lt.mi .or. (mn.eq.mi .and. dn.lt.di) .or.
-     &      (mn.eq.mi .and. dn.eq.di .and. sn.lt.si) )
-     &      year1 = yn - 1
-       startinyear(1) = year1*10000 + mi*100 + di
-       startinyear(2) = date_array(2)
-       startinyear(3) = date_array(3)
-       startinyear(4) = date_array(4)
-       call cal_TimePassed( startinyear, nextperiod, difftime, mythid )
-       call cal_ToSeconds( difftime, fldsectot, mythid )
-       count1  = int((fldsectot+0.5)/fldperiod) + 1
-
-c     Set switch for reading new record.
-       if ( .not. first ) then
-        call cal_GetDate(myiter-1,mytime-modelstep,previousdate,mythid)
-        call cal_ConvDate( previousdate,yp,mp,dp,sp,lp,wp,mythid )
-        if ( mp.lt.mi .or. (mp.eq.mi .and. dp.lt.di) .or.
-     &       (mp.eq.mi .and. dp.eq.di .and. sp.lt.si) )
-     &       yp = yp - 1
-        startinyear(1) = yp*10000 + mi*100 + di
-        startinyear(2) = date_array(2)
-        startinyear(3) = date_array(3)
-        startinyear(4) = date_array(4)
-        call cal_TimePassed(startinyear,previousdate,difftime,mythid)
-        call cal_ToSeconds( difftime, fldsectot, mythid )
-        prevfldcount = int((fldsectot+0.5)/fldperiod) + 1
-        if (yp.ne.year0 .or. prevfldcount.ne.count0) changed = .true.
-       endif
+        fldsecs = mod(fldsectot,fldperiod)
+        fac     = 1. - fldsecs/fldperiod
+        if ( year0 .ne. year1 )
+     &       fac = 1. - fldsecs/(secondsInYear-(count0-1)*fldperiod)
 
       endif
+c     if (usefldyearlyfields)
+
+c     Set switch for reading new record.
+      if ( fldsecs - modelstep .lt. 0. ) changed = .true.
 
 #ifdef EXF_VERBOSE
 c     Do some printing for the protocol.

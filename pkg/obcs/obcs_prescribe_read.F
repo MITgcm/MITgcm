@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.17 2008/01/24 20:51:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.18 2008/01/29 11:25:54 dimitri Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -49,7 +49,6 @@ c     == end of interface ==
 #ifdef ALLOW_OBCS_NORTH
       call obcs_prescribe_exf_xz (
      I     obcsNstartdate, obcsNperiod,
-     I     obcsNstartdate1, obcsNstartdate2,
      I     useOBCSYearlyFields,
      U     OBNu,   OBNu0,   OBNu1,   OBNufile, 
      U     OBNv,   OBNv0,   OBNv1,   OBNvfile, 
@@ -73,7 +72,6 @@ c     == end of interface ==
 #ifdef ALLOW_OBCS_SOUTH
       call obcs_prescribe_exf_xz (
      I     obcsSstartdate, obcsSperiod,
-     I     obcsSstartdate1, obcsSstartdate2,
      I     useOBCSYearlyFields,
      U     OBSu,   OBSu0,   OBSu1,   OBSufile, 
      U     OBSv,   OBSv0,   OBSv1,   OBSvfile, 
@@ -97,7 +95,6 @@ c     == end of interface ==
 #ifdef ALLOW_OBCS_EAST
       call obcs_prescribe_exf_yz (
      I     obcsEstartdate, obcsEperiod,
-     I     obcsEstartdate1, obcsEstartdate2,
      I     useOBCSYearlyFields,
      U     OBEu,   OBEu0,   OBEu1,   OBEufile, 
      U     OBEv,   OBEv0,   OBEv1,   OBEvfile, 
@@ -121,7 +118,6 @@ c     == end of interface ==
 #ifdef ALLOW_OBCS_WEST
       call obcs_prescribe_exf_yz (
      I     obcsWstartdate, obcsWperiod,
-     I     obcsWstartdate1, obcsWstartdate2,
      I     useOBCSYearlyFields,
      U     OBWu,   OBWu0,   OBWu1,   OBWufile, 
      U     OBWv,   OBWv0,   OBWv1,   OBWvfile, 
@@ -182,7 +178,6 @@ C=========================================================================
 
       subroutine obcs_prescribe_exf_xz (
      I     obcsstartdate, obcsperiod,
-     I     obcsstartdate1, obcsstartdate2,
      I     useYearlyFields,
      U     OBu,   OBu0,   OBu1,   OBufile, 
      U     OBv,   OBv0,   OBv1,   OBvfile, 
@@ -226,8 +221,6 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      INTEGER obcsstartdate1
-      INTEGER obcsstartdate2
       _RL     obcsstartdate
       _RL     obcsperiod
       LOGICAL useYearlyFields
@@ -306,7 +299,6 @@ c     Jan. through Dec.
 c     get record numbers and interpolation factor
        call exf_GetFFieldRec(
      I                       obcsstartdate, obcsperiod,
-     I                       obcsstartdate1, obcsstartdate2,
      I                       useYearlyFields,
      O                       fac, first, changed,
      O                       count0, count1, year0, year1,
@@ -380,7 +372,6 @@ C=========================================================================
 
       subroutine obcs_prescribe_exf_yz (
      I     obcsstartdate, obcsperiod,
-     I     obcsstartdate1, obcsstartdate2,
      I     useYearlyFields,
      U     OBu,   OBu0,   OBu1,   OBufile, 
      U     OBv,   OBv0,   OBv1,   OBvfile, 
@@ -424,8 +415,6 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      INTEGER obcsstartdate1
-      INTEGER obcsstartdate2
       _RL     obcsstartdate
       _RL     obcsperiod
       LOGICAL useYearlyFields
@@ -504,7 +493,6 @@ c     Jan. through Dec.
 c     get record numbers and interpolation factor
        call exf_GetFFieldRec(
      I                       obcsstartdate, obcsperiod,
-     I                       obcsstartdate1, obcsstartdate2,
      I                       useYearlyFields,
      O                       fac, first, changed,
      O                       count0, count1, year0, year1,

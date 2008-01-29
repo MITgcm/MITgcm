@@ -122,6 +122,14 @@ Instructions for testing useExfYearlyFields
   \ln -sf fsh.labsea_1979 fsh.labsea_1978
   \ln -sf qa.labsea_1979 qa.labsea_1978
   \ln -sf SSS_monthly.labsea_1979 SSS_monthly.labsea_1978
+  \ln -sf v10m.labsea_1979 v10m.labsea_1980
+  \ln -sf u10m.labsea_1979 u10m.labsea_1980
+  \ln -sf flo.labsea_1979 flo.labsea_1980
+  \ln -sf prate.labsea_1979 prate.labsea_1980
+  \ln -sf tair.labsea_1979 tair.labsea_1980
+  \ln -sf fsh.labsea_1979 fsh.labsea_1980
+  \ln -sf qa.labsea_1979 qa.labsea_1980
+  \ln -sf SSS_monthly.labsea_1979 SSS_monthly.labsea_1980
   \mv data.exf_YearlyFields data.exf
   \mv data_YearlyFields data
   sed 's/tics = .TRUE./tics = .FALSE./' ../input/data.pkg > data.pkg
