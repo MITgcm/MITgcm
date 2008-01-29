@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.51 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.52 2008/01/29 00:34:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -71,12 +71,6 @@ C--   Forcing term
      &                      myTime, myThid )
 #endif /* ALLOW_FIZHI */
 
-#ifdef ALLOW_MYPACKAGE
-      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_U(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
-#endif /* ALLOW_MYPACKAGE */
-
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. kSurface ) THEN
 c      DO j=1,sNy
@@ -103,6 +97,12 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
      I           myTime, myThid )
       ENDIF
 #endif
+
+#ifdef ALLOW_MYPACKAGE
+      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_U(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END
@@ -175,12 +175,6 @@ C--   Forcing term
      &                      myTime, myThid )
 #endif /* ALLOW_FIZHI */
 
-#ifdef ALLOW_MYPACKAGE
-      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_V(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
-#endif /* ALLOW_MYPACKAGE */
-
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=1,sNy+1
@@ -207,6 +201,12 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
      I           myTime, myThid )
       ENDIF
 #endif
+
+#ifdef ALLOW_MYPACKAGE
+      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_V(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END
@@ -287,12 +287,6 @@ C--   Forcing term
      &                      myTime, myThid )
 #endif /* ALLOW_FIZHI */
 
-#ifdef ALLOW_MYPACKAGE
-      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_T(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
-#endif /* ALLOW_MYPACKAGE */
-
 C     Add heat in top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=1,sNy
@@ -365,6 +359,12 @@ c     ENDIF
      I           myTime, myThid )
       ENDIF
 #endif
+
+#ifdef ALLOW_MYPACKAGE
+      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_T(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END
@@ -439,12 +439,6 @@ C--   Forcing term
      &                      myTime, myThid )
 #endif /* ALLOW_FIZHI */
 
-#ifdef ALLOW_MYPACKAGE
-      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_S(
-     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
-     &                      myTime, myThid )
-#endif /* ALLOW_MYPACKAGE */
-
 C     Add fresh-water in top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=1,sNy
@@ -498,6 +492,12 @@ cph#endif /* ndfef ALLOW_AUTODIFF_TAMC */
      I           myTime, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
+
+#ifdef ALLOW_MYPACKAGE
+      IF ( useMYPACKAGE ) CALL MYPACKAGE_TENDENCY_APPLY_S(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myTime, myThid )
+#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END
