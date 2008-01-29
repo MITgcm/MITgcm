@@ -56,7 +56,7 @@
  gravity         = 9.8156,
  rhoNil          = 1027.D0,
  useCDscheme=.TRUE.,
- debuglevel=-1,
+ debuglevel=1,
  &
 
 # Elliptic solver parameters
