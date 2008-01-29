@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_advection_in_gyre/code/Attic/ptracers_init_fixed.F,v 1.2 2008/01/28 20:13:00 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_advection_in_gyre/code/Attic/ptracers_init_fixed.F,v 1.3 2008/01/29 16:43:15 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -41,27 +41,8 @@ C     msgBuf      - Informational/error meesage buffer
 
 C     Initialise internal parameter in common block:
       DO iTracer = 1, PTRACERS_num
-        PTRACERS_SOM_Advection(iTracer) =
-     &    PTRACERS_advScheme(iTracer).GE.ENUM_SOM_PRATHER
-     &    .AND. PTRACERS_advScheme(iTracer).LE.ENUM_SOM_LIMITER
-#ifndef GAD_ALLOW_SOM_ADVECT
-        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
-          WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
-     &   'trying to use 2nd.Order-Moment Advection that is not compiled'
-          WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
-     &   'Re-compile with:  #define GAD_ALLOW_SOM_ADVECT'
-          CALL PRINT_ERROR( msgBuf , myThid)
-          STOP 'ABNORMAL END: S/R PTRACERS_INIT_FIXED'
-        ENDIF
-#endif /* ndef GAD_ALLOW_SOM_ADVECT */
-
-        WRITE(msgBuf,'(2A,I3,A,L)') 'PTRACERS_INIT_FIXED: ',
-     &     'PTRACERS_SOM_Advection(', iTracer, ') = ',
-     &     PTRACERS_SOM_Advection(iTracer)
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT, myThid)
-
         PTRACERS_MultiDimAdv(iTracer) = multiDimAdvection
+        PTRACERS_SOM_Advection(iTracer) = .FALSE.
         PTRACERS_AdamsBashGtr(iTracer) = .FALSE.
         PTRACERS_startAB(iTracer) = nIter0 - PTRACERS_Iter0
       ENDDO
@@ -80,6 +61,25 @@ C     Loop over tracers
      &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND .OR.
      &       PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD .OR.
      &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH
+
+        PTRACERS_SOM_Advection(iTracer) =
+     &    PTRACERS_advScheme(iTracer).GE.ENUM_SOM_PRATHER
+     &    .AND. PTRACERS_advScheme(iTracer).LE.ENUM_SOM_LIMITER
+#ifndef GAD_ALLOW_SOM_ADVECT
+        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
+          WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
+     &   'trying to use 2nd.Order-Moment Advection that is not compiled'
+          WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
+     &   'Re-compile with:  #define GAD_ALLOW_SOM_ADVECT'
+          CALL PRINT_ERROR( msgBuf , myThid)
+          STOP 'ABNORMAL END: S/R PTRACERS_INIT_FIXED'
+        ENDIF
+#endif /* ndef GAD_ALLOW_SOM_ADVECT */
+        WRITE(msgBuf,'(2A,I4,A,L5)') 'PTRACERS_INIT_FIXED: ',
+     &     'PTRACERS_SOM_Advection(', iTracer, ') = ',
+     &     PTRACERS_SOM_Advection(iTracer)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid)
 
 C       end of Tracer loop
       ENDDO
