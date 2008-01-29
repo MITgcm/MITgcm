@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.45 2008/01/21 17:39:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.46 2008/01/29 14:00:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -772,7 +772,7 @@ C     use (abuse) GHEFF to diagnose the total thermodynamic growth rate
      &           /SEAICE_deltaTtherm
            ENDDO
           ENDDO
-          CALL DIAGNOSTICS_FILL(GHEFF,'SIthdgrh',0,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(GHEFF,'SIthdgrh',0,1,3,bi,bj,myThid)
          ENDIF
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
@@ -800,7 +800,7 @@ C     turn GHEFF into a rate
              GHEFF(I,J) = GHEFF(I,J)/SEAICE_deltaTtherm
             ENDDO
            ENDDO
-           CALL DIAGNOSTICS_FILL(GHEFF,'SIsnwice',0,1,2,bi,bj,myThid)
+           CALL DIAGNOSTICS_FILL(GHEFF,'SIsnwice',0,1,3,bi,bj,myThid)
           ENDIF
          ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
