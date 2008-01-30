@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.5 2008/01/30 01:16:23 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.6 2008/01/30 01:33:34 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -59,7 +59,7 @@ c     or, if useYearlyFields, from the beginning of the year.
         yearStartDate(2) = 0
         yearStartDate(3) = date_array(3)
         yearStartDate(4) = date_array(4)
-        Call cal_TimePassed( yearStartDate,date_array,difftime,myThid)
+        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
         CALL cal_ToSeconds ( difftime,   uwindstartdate       ,myThid)
        ELSE
         CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
