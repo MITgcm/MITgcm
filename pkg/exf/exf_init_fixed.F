@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.6 2008/01/30 01:33:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.7 2008/01/30 18:01:34 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -45,8 +45,9 @@ C     === Local variables ===
 c     Complete the start date specifications for the forcing
 c     fields to get a complete calendar date array.
 c     FLDstartdate, for FLD = { uwind, vwind, wspeed, etc. },
-c     returns seconds from beginning of model integration
-c     or, if useYearlyFields, from the beginning of the year.
+c     returns time in seconds of first FLD record from the
+c     beginning of the model integration or, if useYearlyFields,
+c     from the beginning of the year.
 
       _BEGIN_MASTER( myThid )
 
@@ -214,7 +215,7 @@ c     or, if useYearlyFields, from the beginning of the year.
         snowprecipstartdate=modelstart + snowprecipstartdate
        ENDIF
       ENDIF
-#else
+#else /* ifndef ALLOW_ATM_TEMP */
       IF ( hfluxfile .NE. ' ' .AND. hfluxperiod .GT. 0. ) THEN
        CALL cal_FullDate  ( hfluxstartdate1, hfluxstartdate2,
      &      date_array, myThid )
@@ -247,7 +248,7 @@ c     or, if useYearlyFields, from the beginning of the year.
         sfluxstartdate   =  modelstart + sfluxstartdate
        ENDIF
       ENDIF
-#endif
+#endif /* ALLOW_ATM_TEMP */
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
       IF ( swfluxfile .NE. ' ' .AND. swfluxperiod .GT. 0. ) THEN
@@ -266,7 +267,7 @@ c     or, if useYearlyFields, from the beginning of the year.
         swfluxstartdate  =  modelstart + swfluxstartdate
        ENDIF
       ENDIF
-#endif
+#endif /* defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING) */
 
 #ifdef EXF_READ_EVAP
       IF ( evapfile .NE. ' ' .AND. evapperiod .GT. 0. ) THEN
@@ -285,7 +286,7 @@ c     or, if useYearlyFields, from the beginning of the year.
         evapstartdate    =  modelstart + evapstartdate
        ENDIF
       ENDIF
-#endif
+#endif /* EXF_READ_EVAP */
 
 #ifdef ALLOW_RUNOFF
       IF ( runofffile .NE. ' ' .AND. runoffperiod .GT. 0. ) THEN
@@ -304,7 +305,7 @@ c     or, if useYearlyFields, from the beginning of the year.
         runoffstartdate  =  modelstart + runoffstartdate
        ENDIF
       ENDIF
-#endif
+#endif /* ALLOW_RUNOFF */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
       IF ( swdownfile .NE. ' ' .AND. swdownperiod .GT. 0. ) THEN
@@ -339,7 +340,7 @@ c     or, if useYearlyFields, from the beginning of the year.
         lwdownstartdate  =  modelstart + lwdownstartdate
        ENDIF
       ENDIF
-#endif
+#endif /* ALLOW_DOWNWARD_RADIATION */
 
 #ifdef ATMOSPHERIC_LOADING
       IF ( apressurefile .NE. ' ' .AND. apressureperiod .GT. 0. ) THEN
@@ -358,10 +359,10 @@ c     or, if useYearlyFields, from the beginning of the year.
         apressurestartdate= modelstart + apressurestartdate
        ENDIF
       ENDIF
-#endif
+#endif /* ATMOSPHERIC_LOADING */
 
 #ifdef ALLOW_OBCS
-#ifdef ALLOW_OBCS_NORTH
+# ifdef ALLOW_OBCS_NORTH
       IF ( obcsNperiod .GT. 0 ) THEN
        CALL cal_FullDate  ( obcsNstartdate1, obcsNstartdate2,
      &      date_array, myThid )
@@ -378,8 +379,8 @@ c     or, if useYearlyFields, from the beginning of the year.
         obcsNstartdate   =  modelstart + obcsNstartdate
        ENDIF
       ENDIF
-#endif
-#ifdef ALLOW_OBCS_SOUTH
+# endif /* ALLOW_OBCS_NORTH */
+# ifdef ALLOW_OBCS_SOUTH
       IF ( obcsSperiod .GT. 0 ) THEN
        CALL cal_FullDate  ( obcsSstartdate1, obcsSstartdate2,
      &      date_array, myThid )
@@ -396,8 +397,8 @@ c     or, if useYearlyFields, from the beginning of the year.
         obcsSstartdate   =  modelstart + obcsSstartdate
        ENDIF
       ENDIF
-#endif
-#ifdef ALLOW_OBCS_EAST
+# endif /* ALLOW_OBCS_SOUTH */
+# ifdef ALLOW_OBCS_EAST
       IF ( obcsEperiod .GT. 0 ) THEN
        CALL cal_FullDate  ( obcsEstartdate1, obcsEstartdate2,
      &      date_array, myThid )
@@ -414,8 +415,8 @@ c     or, if useYearlyFields, from the beginning of the year.
         obcsEstartdate   =  modelstart + obcsEstartdate
        ENDIF
       ENDIF
-#endif
-#ifdef ALLOW_OBCS_WEST
+# endif /* ALLOW_OBCS_EAST */
+# ifdef ALLOW_OBCS_WEST
       IF ( obcsWperiod .GT. 0 ) THEN
        CALL cal_FullDate  ( obcsWstartdate1, obcsWstartdate2,
      &      date_array, myThid )
@@ -432,7 +433,7 @@ c     or, if useYearlyFields, from the beginning of the year.
         obcsWstartdate   =  modelstart + obcsWstartdate
        ENDIF
       ENDIF
-#endif
+# endif /* ALLOW_OBCS_WEST */
 #endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_CLIMSST_RELAXATION
@@ -452,7 +453,7 @@ c     or, if useYearlyFields, from the beginning of the year.
         climsststartdate =  modelstart + climsststartdate
        ENDIF
       ENDIF
-#endif
+#endif /* ALLOW_CLIMSST_RELAXATION */
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
       IF ( climsssfile .NE. ' ' .AND. climsssperiod .GT. 0. ) THEN
@@ -471,7 +472,7 @@ c     or, if useYearlyFields, from the beginning of the year.
         climsssstartdate =  modelstart + climsssstartdate
        ENDIF
       ENDIF
-#endif
+#endif /* ALLOW_CLIMSSS_RELAXATION */
 
       _END_MASTER( myThid )
       _BARRIER
