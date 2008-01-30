@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.18 2008/01/29 11:25:53 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.19 2008/01/30 01:16:23 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -15,30 +15,8 @@ C $Name:  $
      &                           )
 
 c     ==================================================================
-c     SUBROUTINE exf_GetFFieldRec
-c     ==================================================================
-c
 c     o Get flags, counters, and the linear interpolation factor for a
 c       given field.
-c
-c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu  14-Jan-2000
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c              Christian Eckert eckert@mit.edu  12-Feb-2000
-c              - Changed Routine names (package prefix: exf_)
-c
-c              Curtis Heisey cheisey@mit.edu    19-Dec-2002
-c              - added "repeatPeriod" for cycling of forcing datasets
-c
-c     menemenlis@jpl.nasa.gov
-c     27-Dec-2002 bug fix for verification/global_with_exf
-c     8-Oct-2003 speed-up computations for long integration interval
-c
-c     ==================================================================
-c     SUBROUTINE exf_GetFFieldRec
 c     ==================================================================
 
       implicit none
@@ -50,18 +28,34 @@ c cal: modelstart, modelstep
 #include "cal.h"
 #include "EXF_PARAM.h"
 
-c     == routine arguments ==
+c     == input arguments ==
+c     fldstartdate       :: seconds from beginning of model integration
+c                           or from beginning of year if usefldyearlyfields
+c     fldperiod          :: period between forcing field records
+c     usefldyearlyfields :: when set, use yearly forcing files
+c     mytime             :: current time in simulation
+c     myiter             :: current iteration number in simulation
+c     mythid             :: my thread identification number
 
       _RL     fldstartdate, fldperiod
       logical usefldyearlyfields
-      _RL     fac
-      logical first, changed
-      integer count0, count1, year0, year1
       _RL     mytime
       integer myiter, mythid
 
-c     == local variables ==
+c     == output arguments ==
+c     fac     :: weight of record count0 for linear interpolation purposes
+c     first   :: model initialization flag: read two forcing records
+c     changed :: flag indicating that a new forcing record must be read
+c     count0  :: record number for forcing field preceding mytime
+c     count1  :: record number for forcing field following mytime
+c     year0   :: year of forcing file for record preceding mytime
+c     year1   :: year of forcing file for record following mytime
 
+      _RL     fac
+      logical first, changed
+      integer count0, count1, year0, year1
+
+c     == local variables ==
 c     mydate        :: model date of current time step
 c     yearStartDate :: start of year date for flux record just before mydate
 c     difftime      :: time difference between yearStartDate and mydate
