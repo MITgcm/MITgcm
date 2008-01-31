@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.20 2008/01/30 18:01:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.21 2008/01/31 18:38:35 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -151,7 +151,7 @@ c     Determine the record just before mycurrentdate.
 c     Determine the flux year and record just after mycurrentdate.
         year1  = year0
         count1 = count0 + 1
-        if ( (fldstartdate+count0*fldperiod) .gt. secondsInYear ) then
+        if ( (fldstartdate+count0*fldperiod) .ge. secondsInYear ) then
          year1  = year0 + 1
          count1 = 1
         endif
