@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.948 2008/01/27 22:55:34 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.949 2008/01/31 09:58:41 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -11,6 +11,8 @@ o pkg/exf: rewrite of exf_getffieldrec.F to properly deal with year
   transitions for useExfYearlyFields
   - add new subroutine that determines the file to read from for 
     use*YearlyFields = .TRUE. and .FALSE.
+  - add a verification experiment to global_with_exf that tests 
+    useExfYearlyFields with USE_EXF_INTERPOLATION defined
 o pkg/obcs/exf: add useOBCSYearlyFields (=.FALSE.) to obcs with exf in 
   analogy to useExfYearlyFields; rearrange obcs_prescribe_read: two new 
   subroutines (which could be generated from a template, because they are 

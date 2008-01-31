@@ -1,0 +1,95 @@
+#
+# *********************
+# External Forcing Data
+# *********************
+ &EXF_NML_01
+#repeatPeriod= 31104000.,
+ exf_iprec         = 32,
+ exf_yftype        = 'RL',
+ useEXFYearlyFields= .TRUE.,
+ &
+
+# *********************
+ &EXF_NML_02
+ hfluxstartdate1=19910116,
+ hfluxstartdate2=000000,
+ hfluxperiod=2592000.0,
+#
+ sfluxstartdate1=19910116,
+ sfluxstartdate2=000000,
+ sfluxperiod=2592000.0,
+#
+ ustressstartdate1=19910116,
+ ustressstartdate2=000000,
+ ustressperiod=2592000.0,
+#
+ vstressstartdate1=19910116,
+ vstressstartdate2=000000,
+ vstressperiod=2592000.0,
+#
+ climsststartdate1  = 19910116,
+ climsststartdate2  = 000000,
+ climsstperiod      = 2592000.0,
+#
+ climsssstartdate1  = 19910116,
+ climsssstartdate2  = 000000,
+ climsssperiod      = 2592000.0,
+#
+ hfluxfile    = 'ncep_qnet.bin',
+# sfluxfile    = 'ncep_emp.bin',
+ ustressfile  = 'trenberth_taux.bin',
+ vstressfile  = 'trenberth_tauy.bin',
+ climsstfile  = 'lev_sst.bin',
+ climsssfile  = 'lev_sss.bin',
+#
+ &
+
+# *********************
+ &EXF_NML_03
+ &
+
+# *********************
+ &EXF_NML_04
+ hflux_lon0    = 2
+ hflux_lon_inc = 4
+ hflux_lat0    = -78
+ hflux_lat_inc = 39*4
+ hflux_nlon    = 90
+ hflux_nlat    = 40
+#
+ sflux_lon0    = 2
+ sflux_lon_inc = 4
+ sflux_lat0    = -78
+ sflux_lat_inc = 39*4
+ sflux_nlon    = 90
+ sflux_nlat    = 40
+#
+ ustress_lon0    = 0
+ ustress_lon_inc = 4
+ ustress_lat0    = -78
+ ustress_lat_inc = 39*4
+ ustress_nlon    = 90
+ ustress_nlat    = 40
+#
+ vstress_lon0    = 2
+ vstress_lon_inc = 4
+ vstress_lat0    = -80
+ vstress_lat_inc = 39*4
+ vstress_nlon    = 90
+ vstress_nlat    = 40
+#
+ climsst_lon0    = 2
+ climsst_lon_inc = 4
+ climsst_lat0    = -78
+ climsst_lat_inc = 39*4
+ climsst_nlon    = 90
+ climsst_nlat    = 40
+#
+ climsss_lon0    = 2
+ climsss_lon_inc = 4
+ climsss_lat0    = -78
+ climsss_lat_inc = 39*4
+ climsss_nlon    = 90
+ climsss_nlat    = 40
+#
+ &
