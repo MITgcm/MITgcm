@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_atlantic_heat.F,v 1.7 2007/10/08 23:59:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_atlantic_heat.F,v 1.8 2008/01/31 16:55:29 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -45,12 +45,11 @@ C     80W - 0W at 24N
       parameter( isecbeg = 69, isecend = 87, jsec = 28 )
 cph      parameter( isecbeg = 70, isecend = 90, jsec = 30 )
       parameter( jsecbeg = 10, jsecend = 27, isec = 59 )
-      parameter ( kmaxdepth = 5 )
-C     80W - 0W at 48N
-C      parameter( isecbeg = 70, isecend = 90, jsec = 33 )
-C      parameter ( kmaxdepth = 14 )
-
-
+#ifdef ALLOW_COST_ATLANTIC_HEAT_DOMASS
+      parameter ( kmaxdepth = 8 )
+#else
+      parameter ( kmaxdepth = 14 )
+#endif
 
 C------------------------------------------------------
 C     Accumulate meridionally integrated transports
@@ -100,7 +99,8 @@ C------------------------------------------------------
 c
             if ((ig .ge. isecbeg) .and. (ig .le. isecend)) then
                vVel_bar(k) = vVel_bar(k)
-     &              + cMeanVVel(i,j,k,bi,bj)*maskS(i,j,k,bi,bj)
+     &              + cMeanVVel(i,j,k,bi,bj)*dxG(i,j,bi,bj)
+     &                 *maskS(i,j,k,bi,bj)
 
                thetaVvel_bar(k) = thetaVvel_bar(k)
      &            + cMeanThetaVVel(i,j,k,bi,bj)*dxG(i,j,bi,bj)
