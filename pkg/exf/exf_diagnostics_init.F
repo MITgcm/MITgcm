@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.4 2006/12/28 15:27:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.5 2008/02/01 15:45:41 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -178,6 +178,12 @@ C--   surface fluxes:
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
+      diagName  = 'EXFroff '
+      diagTitle = 'river runoff, > 0 decreases salinity'
+      diagUnits = 'm/s             '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
 #endif /* ALLOW_DIAGNOSTICS */
 

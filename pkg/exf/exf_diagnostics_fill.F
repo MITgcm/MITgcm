@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.5 2007/04/16 23:27:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.6 2008/02/01 15:45:41 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -65,6 +65,9 @@ c
 #endif
 #ifdef ATMOSPHERIC_LOADING
          CALL DIAGNOSTICS_FILL(apressure,  'EXFpress',0,1,0,1,1,myThid)
+#endif
+#ifdef ALLOW_RUNOFF
+         CALL DIAGNOSTICS_FILL(runoff,     'EXFroff ',0,1,0,1,1,myThid)
 #endif
 c
       ENDIF
