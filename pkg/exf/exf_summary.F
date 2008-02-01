@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.15 2007/05/14 19:34:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.16 2008/02/01 20:34:00 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -566,7 +566,7 @@ C--   Runoff.
      &                    SQUEEZE_RIGHT , mythid)
       il = ilnblnk(runofffile)
       write(msgbuf,'(a,f12.0)')
-     &'   Runnoff starts at     ',
+     &'   Runoff starts at     ',
      &    runoffstartdate
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
