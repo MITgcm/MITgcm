@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.6 2006/03/10 16:09:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.7 2008/02/01 11:05:14 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -44,7 +44,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer i,j, vid, nnf,nnl, doit, err
+      integer i, vid, nnf, nnl, doit, err
       integer nids, cv_did(1), xtmin,ytmin
       character*(MAX_LEN_MBUF) msgbuf
       integer cv_start(1), cv_count(1)
@@ -68,73 +68,121 @@ C     Check all the coordinate variables that we know about
 
         cv_start(1) = 1
         cv_count(1) = sNx
-        DO i = cv_start(1),cv_count(1)
 #ifdef ALLOW_EXCH2
-          rtmp(i) = xtmin + i
-#else
-          rtmp(i) = xC(i,1,bi,bj)
-#endif
+        DO i = cv_start(1),cv_count(1)
+         rtmp(i) = xtmin + i
         ENDDO
+#else
+        IF ( usingCurvilinearGrid ) THEN
+         DO i = cv_start(1),cv_count(1)
+          rtmp(i) = xtmin + i
+         ENDDO
+        ELSE
+         DO i = cv_start(1),cv_count(1)
+          rtmp(i) = xC(i,1,bi,bj)
+         ENDDO
+        ENDIF
+#endif
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Xp1') THEN
 
         cv_start(1) = 1
         cv_count(1) = sNx + 1
-        DO i = cv_start(1),cv_count(1)
 #ifdef ALLOW_EXCH2
-          rtmp(i) = xtmin + i
-#else
-          rtmp(i) = xG(i,1,bi,bj)
-#endif
+        DO i = cv_start(1),cv_count(1)
+         rtmp(i) = xtmin + i
         ENDDO
+#else
+        IF ( usingCurvilinearGrid ) THEN
+         DO i = cv_start(1),cv_count(1)
+          rtmp(i) = xtmin + i
+         ENDDO
+        ELSE
+         DO i = cv_start(1),cv_count(1)
+          rtmp(i) = xG(i,1,bi,bj)
+         ENDDO
+        ENDIF
+#endif
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Xwh') THEN
 
         cv_start(1) = 1
         cv_count(1) = sNx + 2*OLx
-        DO i = cv_start(1),cv_count(1)
 #ifdef ALLOW_EXCH2
-          rtmp(i) = xtmin - OLx + i
-#else
-          rtmp(i) = xC(i,1,bi,bj)
-#endif
+        DO i = cv_start(1),cv_count(1)
+         rtmp(i) = xtmin + i
         ENDDO
+#else
+        IF ( usingCurvilinearGrid ) THEN
+         DO i = cv_start(1),cv_count(1)
+          rtmp(i) = xtmin - OLx + i
+         ENDDO
+        ELSE
+         DO i = cv_start(1),cv_count(1)
+          rtmp(i) = xC(i,1,bi,bj)
+         ENDDO
+        ENDIF
+#endif
         
       ELSEIF (cvname(nnf:nnl) .EQ. 'Y') THEN
 
         cv_start(1) = 1
         cv_count(1) = sNy
-        DO i = cv_start(1),cv_count(1)
 #ifdef ALLOW_EXCH2
-          rtmp(i) = ytmin + i
-#else
-          rtmp(i) = yC(1,i,bi,bj)
-#endif
+        DO i = cv_start(1),cv_count(1)
+         rtmp(i) = ytmin + i
         ENDDO
+#else
+        IF ( usingCurvilinearGrid ) THEN
+         DO i = cv_start(1),cv_count(1)
+          rtmp(i) = ytmin + i
+         ENDDO
+        ELSE
+         DO i = cv_start(1),cv_count(1)
+          rtmp(i) = yC(1,i,bi,bj)
+         ENDDO
+        ENDIF
+#endif
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Yp1') THEN
 
         cv_start(1) = 1
         cv_count(1) = sNy + 1
-        DO i = cv_start(1),cv_count(1)
 #ifdef ALLOW_EXCH2
-          rtmp(i) = ytmin + i
-#else
-          rtmp(i) = yG(1,i,bi,bj)
-#endif
+        DO i = cv_start(1),cv_count(1)
+         rtmp(i) = ytmin + i
         ENDDO
+#else
+        IF ( usingCurvilinearGrid ) THEN
+         DO i = cv_start(1),cv_count(1)
+          rtmp(i) = ytmin + i
+         ENDDO
+        ELSE
+         DO i = cv_start(1),cv_count(1)
+          rtmp(i) = yG(1,i,bi,bj)
+         ENDDO
+        ENDIF
+#endif
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Ywh') THEN
 
         cv_start(1) = 1
         cv_count(1) = sNy + 2*OLy
-        DO i = cv_start(1),cv_count(1)
 #ifdef ALLOW_EXCH2
-          rtmp(i) = ytmin - OLy + i
-#else
-          rtmp(i) = yC(1,i-OLy,bi,bj)
-#endif
+        DO i = cv_start(1),cv_count(1)
+         rtmp(i) = ytmin + i
         ENDDO
+#else
+        IF ( usingCurvilinearGrid ) THEN
+         DO i = cv_start(1),cv_count(1)
+          rtmp(i) = ytmin - OLy + i
+         ENDDO
+        ELSE
+         DO i = cv_start(1),cv_count(1)
+          rtmp(i) = yC(1,i-OLy,bi,bj)
+         ENDDO
+        ENDIF
+#endif
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Z') THEN
 
