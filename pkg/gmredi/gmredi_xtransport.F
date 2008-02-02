@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_xtransport.F,v 1.15 2007/01/30 15:17:52 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_xtransport.F,v 1.16 2008/02/02 02:35:53 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -106,7 +106,11 @@ C--   Area integrated zonal flux
 #ifdef GM_NON_UNITY_DIAGONAL
      &    *Kux(i,j,k,bi,bj)
 #else
-     &    *(GM_isopycK 
+#ifdef ALLOW_KAPREDI_CONTROL
+     &    *(kapredi(i,j,k,bi,bj)
+#else
+     &    *(GM_isopycK
+#endif
 #ifdef GM_VISBECK_VARIABLE_K
      &    +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
 #endif

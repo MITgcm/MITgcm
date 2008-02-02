@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.30 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.31 2008/02/02 02:34:14 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -308,6 +308,7 @@ c     objf_scatym - time-mean meridional SCAT  contribution
 c     objf_scatx  - zonal SCAT  contribution
 c     objf_scaty  - meridional SCAT  contribution
 c     objf_kapgm  - kappa GM contribution
+c     objf_kapredi  - kappa REDI contribution
 c     objf_diffkr - diffusion contribution
 c     objf_theta_ini_fin - final vs. initial theta misfit
 c     objf_salt_ini_fin  - final vs. initial salt misfit
@@ -410,6 +411,7 @@ c                  function contributions.
      &                objf_curmtr,
      &                objf_ageos,
      &                objf_kapgm,
+     &                objf_kapredi,
      &                objf_diffkr,
      &                objf_theta_ini_fin,
      &                objf_salt_ini_fin,
@@ -508,6 +510,7 @@ c                  function contributions.
       _RL  objf_curmtr(nsx,nsy)
       _RL  objf_ageos(nsx,nsy)
       _RL  objf_kapgm(nsx,nsy)
+      _RL  objf_kapredi(nsx,nsy)
       _RL  objf_diffkr(nsx,nsy)
       _RL  objf_theta_ini_fin(nsx,nsy)
       _RL  objf_salt_ini_fin(nsx,nsy)
@@ -589,6 +592,7 @@ c                  function contributions.
      &                num_curmtr,
      &                num_ageos,
      &                num_kapgm,
+     &                num_kapredi,
      &                num_diffkr,
      &                num_theta_ini_fin,
      &                num_salt_ini_fin,
@@ -669,6 +673,7 @@ c                  function contributions.
       _RL  num_curmtr(nsx,nsy)
       _RL  num_ageos(nsx,nsy)
       _RL  num_kapgm(nsx,nsy)
+      _RL  num_kapredi(nsx,nsy)
       _RL  num_diffkr(nsx,nsy)
       _RL  num_theta_ini_fin(nsx,nsy)
       _RL  num_salt_ini_fin(nsx,nsy)
@@ -731,6 +736,7 @@ c                  function contributions.
      &                    mult_curmtr,
      &                    mult_ageos,
      &                    mult_kapgm,
+     &                    mult_kapredi,
      &                    mult_diffkr,
      &                    mult_ini_fin,
      &                    mult_edtau,
@@ -792,6 +798,7 @@ c                  function contributions.
       _RL  mult_curmtr
       _RL  mult_ageos
       _RL  mult_kapgm
+      _RL  mult_kapredi
       _RL  mult_diffkr
       _RL  mult_ini_fin
       _RL  mult_edtau
@@ -887,6 +894,7 @@ c     velerrfile            - representation error
      &                runoff_errfile,
      &                edtau_errfile,
      &                kapgm_errfile,
+     &                kapredi_errfile,
      &                diffkr_errfile,
      &                bottomdrag_errfile,
      &                gencost_errfile,
@@ -933,6 +941,7 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) runoff_errfile
       character*(MAX_LEN_FNAM) edtau_errfile
       character*(MAX_LEN_FNAM) kapgm_errfile
+      character*(MAX_LEN_FNAM) kapredi_errfile
       character*(MAX_LEN_FNAM) diffkr_errfile
       character*(MAX_LEN_FNAM) bottomdrag_errfile
       character*(MAX_LEN_FNAM) gencost_errfile(NGENCOST)
@@ -978,6 +987,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
      &                      wsalt,wsalt2,wsaltLev,
      &                      wdiffkr,wdiffkr2,wdiffkrFld,
      &                      wkapgm,wkapgm2,wkapgmFld,
+     &                      wkapredi,wkapredi2,wkaprediFld,
      &                      wedtaux,wedtaux2,wedtauxFld,
      &                      wedtauy,wedtauy2,wedtauyFld,
      &                      wsst,wsss,wbp,
@@ -1044,6 +1054,9 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wkapgm (                            nr,nsx,nsy)
       _RL wkapgm2 (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wkapgmFld (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wkapredi (                            nr,nsx,nsy)
+      _RL wkapredi2 (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL wkaprediFld (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wedtaux (                            nr,nsx,nsy)
       _RL wedtaux2 (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL wedtauxFld (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -1055,7 +1068,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
      &        whflux0, wsflux0, wtau0,
      &        watemp0, waqh0, wprecip0, wsnowprecip0, wwind0,
      &        wswflux0, wswdown0, wlwflux0, wlwdown0,
-     &        wevap0, wapressure0, wrunoff0,
+     &        wevap0, wapressure0, wrunoff0, wkapredi0,
      &        wbottomdrag0,wdiffkr0, wkapgm0, wedtau0
       _RL whflux0
       _RL wsflux0
@@ -1075,6 +1088,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wwind0
       _RL wdiffkr0
       _RL wkapgm0
+      _RL wkapredi0
       _RL wedtau0
 
       common /ecco_cost_weights_mean_r/

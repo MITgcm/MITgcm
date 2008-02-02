@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.27 2007/11/05 18:56:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.28 2008/02/02 02:34:49 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -277,6 +277,28 @@ c--   kapgm.
       enddo
 #endif
 
+#ifdef ALLOW_KAPREDI_CONTROL
+c--   kapredi.
+      il=ilnblnk( xx_kapredi_file )
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     &     xx_kapredi_file(1:il),'.',optimcycle
+      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_kapredi_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                kapredi(i,j,k,bi,bj) = kapredi(i,j,k,bi,bj) +
+     &                               tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
 #ifdef ALLOW_EFLUXY0_CONTROL
 c--   y-component EP-flux field.
       il=ilnblnk( xx_efluxy_file )
@@ -540,6 +562,9 @@ c--   Update the tile edges.
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
       _EXCH_XYZ_R8( kapgm, mythid)
+#endif
+#ifdef ALLOW_KAPREDI_CONTROL
+      _EXCH_XYZ_R8( kapredi, mythid)
 #endif
 #ifdef ALLOW_EFLUXY0_CONTROL
       _EXCH_XYZ_R8( EfluxY, mythid )

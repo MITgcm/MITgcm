@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.31 2008/01/15 19:56:27 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.32 2008/02/02 02:34:50 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -130,6 +130,7 @@ c--   Assign file names.
       call ctrl_set_fname(xx_obcse_file, fname_obcse, mythid)
       call ctrl_set_fname(xx_diffkr_file, fname_diffkr, mythid)
       call ctrl_set_fname(xx_kapgm_file, fname_kapgm, mythid)
+      call ctrl_set_fname(xx_kapredi_file, fname_kapredi, mythid)
       call ctrl_set_fname(xx_tr1_file, fname_tr1, mythid)
       call ctrl_set_fname(xx_sst_file, fname_sst, mythid)
       call ctrl_set_fname(xx_sss_file, fname_sss, mythid)
@@ -604,6 +605,15 @@ C     place holder of obsolete variable jG
           call ctrl_set_pack_xy(
      &         cunit, ivartype, fname_sihsnow(ictrlgrad),
      &         "maskCtrlC", weighttype, lxxadxx, mythid)
+#endif
+
+#ifdef ALLOW_KAPREDI_CONTROL
+          ivartype = 44 
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wkapredi"
+          call ctrl_set_pack_xyz(
+     &         cunit, ivartype, fname_kapredi(ictrlgrad), "maskCtrlC",
+     &         weighttype, wkapredi, lxxadxx, mythid)
 #endif
 
           close ( cunit )

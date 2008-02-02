@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.21 2008/01/17 20:49:27 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.22 2008/02/02 02:36:50 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -443,6 +443,32 @@ c--   == end of interface ==
      &                          mythid, dummy)
 
 #endif /* ALLOW_KAPGM_CONTROL */
+
+#ifdef ALLOW_KAPREDI_CONTROL
+      else if ( grdchkvarindex .eq. 16 ) then
+         il=ilnblnk( xx_kapredi_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_kapredi_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_kapredi_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xyz( fname, tmpfld3d, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
+
+         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
+
+         call active_write_xyz( fname, tmpfld3d, 1,
+     &                          optimcycle,
+     &                          mythid, dummy)
+
+#endif /* ALLOW_KAPREDI_CONTROL */
+
 
 #ifdef ALLOW_TR10_CONTROL
       else if ( grdchkvarindex .eq. 17 ) then

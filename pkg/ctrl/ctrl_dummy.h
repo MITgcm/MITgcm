@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.19 2008/01/15 19:56:27 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.20 2008/02/02 02:34:49 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -36,6 +36,7 @@ c     ==================================================================
      &                  , xx_obcse_dummy
      &                  , xx_diffkr_dummy
      &                  , xx_kapgm_dummy
+     &                  , xx_kapredi_dummy
      &                  , xx_tr1_dummy
      &                  , xx_sst_dummy
      &                  , xx_sss_dummy
@@ -108,6 +109,7 @@ cHFLUXM_CONTROL
       _RL xx_obcse_dummy
       _RL xx_diffkr_dummy
       _RL xx_kapgm_dummy
+      _RL xx_kapredi_dummy
       _RL xx_tr1_dummy
       _RL xx_sst_dummy
       _RL xx_sss_dummy

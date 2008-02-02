@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.43 2008/01/15 19:56:27 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.44 2008/02/02 02:34:49 gforget Exp $
 C $Name:  $
 
 
@@ -575,6 +575,7 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_obcse_file
      &                    , xx_diffkr_file
      &                    , xx_kapgm_file
+     &                    , xx_kapredi_file
      &                    , xx_tr1_file
      &                    , xx_sst_file
      &                    , xx_sss_file
@@ -623,6 +624,7 @@ cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_obcse_file
       character*(MAX_LEN_FNAM) xx_diffkr_file
       character*(MAX_LEN_FNAM) xx_kapgm_file
+      character*(MAX_LEN_FNAM) xx_kapredi_file
       character*(MAX_LEN_FNAM) xx_tr1_file
       character*(MAX_LEN_FNAM) xx_sst_file
       character*(MAX_LEN_FNAM) xx_sss_file
@@ -939,6 +941,7 @@ c                         control part.
       character*( 80)   fname_obcse(2)
       character*( 80)   fname_diffkr(2)
       character*( 80)   fname_kapgm(2)
+      character*( 80)   fname_kapredi(2)
       character*( 80)   fname_tr1(2)
       character*( 80)   fname_sst(2)
       character*( 80)   fname_sss(2)

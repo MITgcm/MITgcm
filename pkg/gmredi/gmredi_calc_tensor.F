@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.30 2007/09/07 14:27:19 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.31 2008/02/02 02:35:53 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -445,17 +445,26 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
        DO j=1-Oly+1,sNy+Oly-1
         DO i=1-Olx+1,sNx+Olx-1
-#ifdef ALLOW_KAPGM_CONTROL
-         Kgm_tmp = GM_isopycK + GM_skewflx*kapgm(i,j,k,bi,bj)
+#ifdef ALLOW_KAPREDI_CONTROL
+         Kgm_tmp = kapredi(i,j,k,bi,bj)
 #else
-         Kgm_tmp = GM_isopycK + GM_skewflx*GM_background_K
+         Kgm_tmp = GM_isopycK
+#endif
+#ifdef ALLOW_KAPGM_CONTROL
+     &           + GM_skewflx*kapgm(i,j,k,bi,bj)
+#else
+     &           + GM_skewflx*GM_background_K
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &           + VisbeckK(i,j,bi,bj)*(1. _d 0 + GM_skewflx)
 #endif
          Kwx(i,j,k,bi,bj)= Kgm_tmp*Kwx(i,j,k,bi,bj)
          Kwy(i,j,k,bi,bj)= Kgm_tmp*Kwy(i,j,k,bi,bj)
+#ifdef ALLOW_KAPREDI_CONTROL
+         Kwz(i,j,k,bi,bj)= ( kapredi(i,j,k,bi,bj) 
+#else
          Kwz(i,j,k,bi,bj)= ( GM_isopycK
+#endif
 #ifdef GM_VISBECK_VARIABLE_K
      &                     + VisbeckK(i,j,bi,bj)
 #endif
@@ -561,7 +570,11 @@ c      IF ( GM_nonUnitDiag ) THEN
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
           Kux(i,j,k,bi,bj) =
+#ifdef ALLOW_KAPREDI_CONTROL
+     &     ( kapredi(i,j,k,bi,bj)
+#else
      &     ( GM_isopycK
+#endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
 #endif
@@ -591,10 +604,15 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
           Kuz(i,j,k,bi,bj) =
-#ifdef ALLOW_KAPGM_CONTROL
-     &     ( GM_isopycK - GM_skewflx*kapgm(i,j,k,bi,bj)
+#ifdef ALLOW_KAPREDI_CONTROL
+     &     ( kapredi(i,j,k,bi,bj)
 #else
-     &     ( GM_isopycK - GM_skewflx*GM_background_K
+     &     ( GM_isopycK
+#endif
+#ifdef ALLOW_KAPGM_CONTROL
+     &     - GM_skewflx*kapgm(i,j,k,bi,bj)
+#else
+     &     - GM_skewflx*GM_background_K
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*GM_advect
@@ -611,7 +629,11 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1,sNy
          DO i=1,sNx+1
 C         store in tmp1k Kuz_Redi
+#ifdef ALLOW_KAPREDI_CONTROL
+          tmp1k(i,j) = ( kapredi(i,j,k,bi,bj)
+#else
           tmp1k(i,j) = ( GM_isopycK
+#endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*0.5 _d 0
 #endif
@@ -736,7 +758,11 @@ c      IF ( GM_nonUnitDiag ) THEN
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
           Kvy(i,j,k,bi,bj) =
+#ifdef ALLOW_KAPREDI_CONTROL
+     &     ( kapredi(i,j,k,bi,bj)
+#else
      &     ( GM_isopycK
+#endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
 #endif
@@ -766,10 +792,15 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
           Kvz(i,j,k,bi,bj) =
-#ifdef ALLOW_KAPGM_CONTROL
-     &     ( GM_isopycK - GM_skewflx*kapgm(i,j,k,bi,bj)
+#ifdef ALLOW_KAPREDI_CONTROL
+     &     ( kapredi(i,j,k,bi,bj)
 #else
-     &     ( GM_isopycK - GM_skewflx*GM_background_K
+     &     ( GM_isopycK 
+#endif
+#ifdef ALLOW_KAPGM_CONTROL
+     &     - GM_skewflx*kapgm(i,j,k,bi,bj)
+#else
+     &     - GM_skewflx*GM_background_K
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*GM_advect
@@ -786,7 +817,11 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1,sNy+1
          DO i=1,sNx
 C         store in tmp1k Kvz_Redi
+#ifdef ALLOW_KAPREDI_CONTROL
+          tmp1k(i,j) = ( kapredi(i,j,k,bi,bj)
+#else
           tmp1k(i,j) = ( GM_isopycK
+#endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*0.5 _d 0
 #endif

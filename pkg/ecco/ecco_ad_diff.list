@@ -32,6 +32,7 @@ cost_ssh.f
 cost_ssh_mean.f                 
 cost_tau_eddy.f
 cost_kapgm.f
+cost_kapredi.f
 cost_diffkr.f
 cost_bottomdrag.f
 cost_internal_params.f

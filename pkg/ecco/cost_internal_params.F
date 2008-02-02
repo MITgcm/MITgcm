@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_internal_params.F,v 1.2 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_internal_params.F,v 1.3 2008/02/02 02:34:14 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -55,6 +55,14 @@ c--   GM coeffs penalty term
       call timer_stop ('cost_kapgm      [ECCO SPIN-DOWN]', mythid)
 #endif
       _BARRIER
+
+c--   REDI coeffs penalty term
+#ifdef ALLOW_KAPREDI_COST_CONTRIBUTION
+      call timer_start('cost_kapredi      [ECCO SPIN-DOWN]', mythid)
+      call cost_kapredi( myiter, mytime, mythid )
+      call timer_stop ('cost_kapredi      [ECCO SPIN-DOWN]', mythid)
+#endif
+      _BARRIER 
 
 c--   DIFFKR coeffs penalty term
 #ifdef ALLOW_DIFFKR_COST_CONTRIBUTION

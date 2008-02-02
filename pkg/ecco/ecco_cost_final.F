@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.38 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.39 2008/02/02 02:34:14 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -76,7 +76,7 @@ c     == local variables ==
       _RL f_obcsn, f_obcss, f_obcsw, f_obcse
       _RL f_ageos, f_curmtr
       _RL f_ini_fin
-      _RL f_kapgm, f_diffkr
+      _RL f_kapgm, f_kapredi, f_diffkr
       _RL f_eddytau, f_bottomdrag
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
       _RL f_gencost(NGENCOST)
@@ -98,7 +98,7 @@ c     == local variables ==
       _RL no_obcsn, no_obcss, no_obcsw, no_obcse
       _RL no_ageos, no_curmtr
       _RL no_ini_fin
-      _RL no_kapgm, no_diffkr
+      _RL no_kapgm, no_kapredi, no_diffkr
       _RL no_eddytau, no_bottomdrag
       _RL no_hmean
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
@@ -198,6 +198,7 @@ c     == end of interface ==
       f_ageos   = 0. _d 0
       f_ini_fin = 0. _d 0
       f_kapgm   = 0. _d 0
+      f_kapredi   = 0. _d 0
       f_diffkr  = 0. _d 0
       f_eddytau = 0. _d 0
       f_bottomdrag = 0. _d 0
@@ -275,6 +276,7 @@ c     == end of interface ==
       no_ageos   = 0. _d 0
       no_ini_fin = 0. _d 0
       no_kapgm   = 0. _d 0
+      no_kapredi   = 0. _d 0
       no_diffkr  = 0. _d 0
       no_eddytau = 0. _d 0
       no_bottomdrag = 0. _d 0
@@ -355,6 +357,7 @@ c--   Sum up all contributions.
      &         + mult_curmtr  * objf_curmtr(bi,bj)
      &         + mult_ageos   * objf_ageos(bi,bj)
      &         + mult_kapgm   * objf_kapgm(bi,bj)
+     &         + mult_kapredi   * objf_kapredi(bi,bj)
      &         + mult_diffkr  * objf_diffkr(bi,bj)
      &         + mult_ini_fin *(objf_theta_ini_fin(bi,bj) +
      &                          objf_salt_ini_fin(bi,bj))
@@ -440,6 +443,7 @@ c--   Sum up all contributions.
           f_curmtr = f_curmtr + objf_curmtr(bi,bj)
           f_ageos = f_ageos + objf_ageos(bi,bj)
           f_kapgm = f_kapgm + objf_kapgm(bi,bj)
+          f_kapredi = f_kapredi + objf_kapredi(bi,bj)
           f_diffkr = f_diffkr + objf_diffkr(bi,bj)
           f_ini_fin = f_ini_fin +
      &         objf_theta_ini_fin(bi,bj) + objf_salt_ini_fin(bi,bj)
@@ -511,6 +515,7 @@ c--   Sum up all contributions.
           no_curmtr = no_curmtr + num_curmtr(bi,bj)
           no_ageos = no_ageos + num_ageos(bi,bj)
           no_kapgm = no_kapgm + num_kapgm(bi,bj)
+          no_kapredi = no_kapredi + num_kapredi(bi,bj)
           no_diffkr = no_diffkr + num_diffkr(bi,bj)
           no_ini_fin = no_ini_fin +
      &         num_theta_ini_fin(bi,bj) + num_salt_ini_fin(bi,bj)
@@ -609,6 +614,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_curmtr , myThid )
       _GLOBAL_SUM_R8( f_ageos , myThid )
       _GLOBAL_SUM_R8( f_kapgm , myThid )
+      _GLOBAL_SUM_R8( f_kapredi, myThid )
       _GLOBAL_SUM_R8( f_diffkr , myThid )
       _GLOBAL_SUM_R8( f_ini_fin , myThid )
       _GLOBAL_SUM_R8( f_eddytau , myThid )
@@ -682,6 +688,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( no_curmtr , myThid )
       _GLOBAL_SUM_R8( no_ageos , myThid )
       _GLOBAL_SUM_R8( no_kapgm , myThid )
+      _GLOBAL_SUM_R8( no_kapredi , myThid )
       _GLOBAL_SUM_R8( no_diffkr , myThid )
       _GLOBAL_SUM_R8( no_ini_fin , myThid )
       _GLOBAL_SUM_R8( no_eddytau , myThid )
@@ -839,6 +846,8 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_curmtr  =',f_curmtr
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_kapgm   =',f_kapgm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_kapredi   =',f_kapredi
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_diffkr  =',f_diffkr
       write(standardmessageunit,'(A,D22.15)')
@@ -1054,6 +1063,8 @@ cph)
      &       'f_ageos =', f_ageos, no_ageos
         write(ifc,'(A,2D22.15)')
      &       'f_kapgm =', f_kapgm, no_kapgm
+        write(ifc,'(A,2D22.15)')
+     &       'f_kapredi =', f_kapredi, no_kapredi
         write(ifc,'(A,2D22.15)')
      &       'f_diffkr =', f_diffkr, no_diffkr
         write(ifc,'(A,2D22.15)')

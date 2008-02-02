@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.16 2007/10/08 23:50:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.17 2008/02/02 02:35:26 gforget Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -101,6 +101,11 @@ C--   heimbach@mit.edu 11-Jan-2001
      &                       g_kapgm
       _RL  g_kapgm (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
+#ifdef ALLOW_KAPREDI_CONTROL
+      COMMON /G_DYNVARS_KAPREDI/
+     &                       g_kapredi
+      _RL  g_kapredi (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif 
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       COMMON /G_DYNVARS_BOTTOMDRAG/
      &                       g_bottomdragfld

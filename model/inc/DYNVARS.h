@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.35 2007/11/28 00:18:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.36 2008/02/02 02:37:24 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -85,6 +85,11 @@ C               for mixing of tracers vertically ( units of r^2/s )
       COMMON /DYNVARS_KAPGM/
      &                       kapgm
       _RL  kapgm  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPREDI_CONTROL))
+      COMMON /DYNVARS_KAPREDI/
+     &                       kapredi
+      _RL  kapredi  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_BOTTOMDRAG_CONTROL))
       COMMON /DYNVARS_BOTTOMDRAG/

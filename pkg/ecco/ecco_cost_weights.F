@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.26 2007/12/05 21:41:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.27 2008/02/02 02:34:14 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -161,6 +161,7 @@ cph)
             wctds  (k,bi,bj) = 0. _d 0
             wdiffkr(k,bi,bj) = wdiffkr0
             wkapgm (k,bi,bj) = wkapgm0
+            wkapredi (k,bi,bj) = wkapredi0
             wedtaux(k,bi,bj) = wedtau0
             wedtauy(k,bi,bj) = wedtau0
             do j = jmin,jmax
@@ -169,12 +170,14 @@ cph)
                 wsalt2  (i,j,k,bi,bj) = 0. _d 0
                 wdiffkr2(i,j,k,bi,bj) = wdiffkr0
                 wkapgm2 (i,j,k,bi,bj) = wkapgm0
+                wkapredi2 (i,j,k,bi,bj) = wkapredi0
                 wedtaux2(i,j,k,bi,bj) = wedtau0
                 wedtauy2(i,j,k,bi,bj) = wedtau0
                 wthetaLev (i,j,k,bi,bj) = 0. _d 0
                 wsaltLev  (i,j,k,bi,bj) = 0. _d 0
                 wdiffkrFld(i,j,k,bi,bj) = wdiffkr0
                 wkapgmFld (i,j,k,bi,bj) = wkapgm0
+                wkaprediFld (i,j,k,bi,bj) = wkapredi0
                 wedtauxFld(i,j,k,bi,bj) = wedtau0
                 wedtauyFld(i,j,k,bi,bj) = wedtau0
               enddo
@@ -1371,6 +1374,30 @@ c--           Test for missing values.
       endif
 #endif
 
+#if (defined (ALLOW_KAPREDI_COST_CONTRIBUTION) || defined (ALLOW_KAPREDI_CONTROL))
+      if ( kapredi_errfile .NE. ' ' ) then
+
+        call mdsreadfield( kapredi_errfile, cost_iprec, cost_yftype,
+     &      Nr, wkapredi2, 1, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+           do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wkapredi2(i,j,k,bi,bj) .lt. -9900.) then
+                wkapredi2(i,j,k,bi,bj) = 0. _d 0
+              endif
+            enddo
+           enddo
+          enddo
+        enddo
+      enddo
+
+      endif
+#endif
+
 #if   ( defined (ALLOW_TAUEDDY_COST_CONTRIBUTION) || \
      defined (ALLOW_COST_TAU_EDDY) || \
      defined (ALLOW_EDTAUX_CONTROL) || \
@@ -1647,6 +1674,11 @@ cph)
             else
               wkapgm(k,bi,bj) = 0.0 _d 0
             endif
+            if (wkapredi(k,bi,bj) .ne. 0.) then
+              wkapredi(k,bi,bj) = 1./wkapredi(k,bi,bj)/wkapredi(k,bi,bj)
+            else
+              wkapredi(k,bi,bj) = 0.0 _d 0
+            endif
             if (wedtaux(k,bi,bj) .ne. 0.) then
               wedtaux(k,bi,bj) = 1./wedtaux(k,bi,bj)/wedtaux(k,bi,bj)
             else
@@ -1674,6 +1706,14 @@ c
                    wkapgm2(i,j,k,bi,bj) = 0.0 _d 0
                 endif
                 wkapgmFld(i,j,k,bi,bj) = wkapgm2(i,j,k,bi,bj)
+c
+                if (wkapredi2(i,j,k,bi,bj) .ne. 0.) then
+                   wkapredi2(i,j,k,bi,bj) = frame(i,j)/
+     &                  wkapredi2(i,j,k,bi,bj)/wkapredi2(i,j,k,bi,bj)
+                else
+                   wkapredi2(i,j,k,bi,bj) = 0.0 _d 0
+                endif
+                wkaprediFld(i,j,k,bi,bj) = wkapredi2(i,j,k,bi,bj)
 c
                 if (wedtaux2(i,j,k,bi,bj) .ne. 0.) then
                    wedtaux2(i,j,k,bi,bj) = frame(i,j)/
@@ -1777,6 +1817,11 @@ c
 
 #if   (defined (ALLOW_KAPGM_COST_CONTRIBUTION) || defined (ALLOW_KAPGM_CONTROL))
       call active_write_xyz( 'wkapgmFld',wkapgmFld,
+     &     1, 0, mythid, dummy)
+#endif
+
+#if   (defined (ALLOW_KAPREDI_COST_CONTRIBUTION) || defined (ALLOW_KAPREDI_CONTROL))
+      call active_write_xyz( 'wkaprediFld',wkaprediFld,
      &     1, 0, mythid, dummy)
 #endif
 

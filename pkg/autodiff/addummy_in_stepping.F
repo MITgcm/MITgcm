@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.42 2007/12/28 21:21:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.43 2008/02/02 02:35:26 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -97,6 +97,9 @@ c
 #ifdef ALLOW_KAPGM_CONTROL
        call adexch_xyz_rl( mythid,adkapgm )
 #endif
+#ifdef ALLOW_KAPREDI_CONTROL
+       call adexch_xyz_rl( mythid,adkapredi )
+#endif
 #ifdef ALLOW_SST0_CONTROL
        call adexch_xy_rl( mythid,adsst )
 #endif
@@ -145,7 +148,11 @@ C--     Read IO error counter
      &       myIter, myThid)
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
-        CALL WRITE_FLD_XYZ_RL ( 'ADJkagm.',suff, adkapgm,
+        CALL WRITE_FLD_XYZ_RL ( 'ADJkapgm.',suff, adkapgm,
+     &       myIter, myThid)
+#endif
+#ifdef ALLOW_KAPREDI_CONTROL
+        CALL WRITE_FLD_XYZ_RL ( 'ADJkapredi.',suff, adkapredi,
      &       myIter, myThid)
 #endif
 #ifdef ALLOW_EDTAUX_CONTROL
@@ -213,6 +220,10 @@ c
 #ifdef ALLOW_KAPGM_CONTROL
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &         'adkapgm', adkapgm, myThid)
+#endif
+#ifdef ALLOW_KAPREDI_CONTROL
+          CALL MNC_CW_RL_W('D','adstate',0,0,
+     &         'adkapredi', adkapredi, myThid)
 #endif
 
         ENDIF

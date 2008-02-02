@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.34 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.35 2008/02/02 02:34:14 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -89,7 +89,7 @@ c--   Read the namelist input.
      &                   uwind_errfile, vwind_errfile,
      &                   geoid_errfile, geoid_covariancefile,
      &                   bottomdrag_errfile,edtau_errfile,
-     &                   kapgm_errfile,diffkr_errfile,
+     &                   kapgm_errfile,kapredi_errfile,diffkr_errfile,
      &                   gencost_datafile, gencost_errfile,
      &                   mult_hflux, mult_sflux, mult_tauu, mult_tauv,
      &                   mult_hfluxmm, mult_sfluxmm,
@@ -112,7 +112,7 @@ c--   Read the namelist input.
      &                   mult_obcsn, mult_obcss,
      &                   mult_obcsw, mult_obcse, mult_obcsvol,
      &                   mult_curmtr, mult_ageos,
-     &                   mult_kapgm, mult_diffkr,
+     &                   mult_kapgm, mult_kapredi, mult_diffkr,
      &                   mult_edtau, mult_bottomdrag,
      &                   mult_gencost, mult_transp,
      &                   mult_smooth_ic, mult_smooth_bc,
@@ -122,7 +122,7 @@ c--   Read the namelist input.
      &                   wprecip0, wswflux0, wswdown0, wwind0,
      &                   wsnowprecip0, wlwflux0, wlwdown0, wevap0,
      &                   wapressure0, wdiffkr0, wkapgm0, wedtau0,
-     &                   wmean_hflux, wmean_sflux, wmean_tau,
+     &                   wkapredi0, wmean_hflux, wmean_sflux, wmean_tau,
      &                   wmean_atemp, wmean_aqh, wmean_precip,
      &                   wmean_swflux, wmean_swdown, wmean_wind,
      &                   wmean_lwflux, wmean_lwdown, wmean_evap,
@@ -236,6 +236,7 @@ c--     Set default values.
         bottomdrag_errfile    =    ' '
         edtau_errfile         =    ' '
         kapgm_errfile         =    ' '
+        kapredi_errfile         =    ' '
         diffkr_errfile        =    ' '
         do k=1,NGENCOST
         gencost_datafile(k)    =    ' '
@@ -293,6 +294,7 @@ c--     Set default values.
         mult_ageos            =      0. _d 0
         mult_curmtr           =      0. _d 0
         mult_kapgm            =      0. _d 0
+        mult_kapredi            =      0. _d 0
         mult_diffkr           =      0. _d 0
         mult_edtau            =      0. _d 0
         mult_bottomdrag       =      0. _d 0
@@ -315,6 +317,7 @@ c--     Set default values.
         wwind0                =      0. _d 0
         wdiffkr0              =      1. _d 0
         wkapgm0               =      1. _d 0
+        wkapredi0               =      1. _d 0
         wedtau0               =      1. _d 0
         whflux0               =      0. _d 0
         wsflux0               =      0. _d 0

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.28 2008/01/15 19:56:27 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.29 2008/02/02 02:34:49 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -1034,6 +1034,15 @@ c--
      &       xx_sihsnow_file, 43, 143, diffrec, startrec, endrec,
      &       snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_sihsnow_CONTROL */
+
+
+c----------------------------------------------------------------------
+c--
+#ifdef ALLOW_KAPREDI_CONTROL
+        call ctrl_init_ctrlvar ( 
+     &       xx_kapredi_file, 44, 144, 1, 1, 1,
+     &       snx, sny, nr, 'c', '3d', mythid )
+#endif /* ALLOW_KAPREDI_CONTROL */
 
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.12 2007/12/03 22:39:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.13 2008/02/02 02:34:50 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -471,6 +471,52 @@ c--   kapgm.
 #endif
 #endif
 
+
+#ifdef ALLOW_KAPREDI_CONTROL
+c--   kapredi.
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(1a)') 'wkaprediFld'
+      call mdsreadfield('wkaprediFld',32,'RL',nR,
+     & wkaprediFld,1,mythid)
+      _EXCH_XYZ_R8( wkaprediFld, mythid )
+#endif
+      il=ilnblnk( xx_kapredi_file )
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     &     xx_kapredi_file(1:il),'.',optimcycle
+      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_kapredi_dummy )
+#ifdef ALLOW_SMOOTH_CORREL3D
+       call smooth_correl3D(tmpfld3d,1,mythid)
+#endif / * ALLOW_SMOOTH_CORREL3D * /
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+#ifdef ALLOW_SMOOTH_CORREL3D
+      if (maskC(i,j,k,bi,bj).NE.0.) then
+      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
+     & /sqrt( wkaprediFld(i,j,k,bi,bj) )
+      else
+      tmpfld3d(i,j,k,bi,bj)=0.
+      endif
+#endif
+                kapredi(i,j,k,bi,bj) = kapredi(i,j,k,bi,bj) +
+     &                               tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#ifdef ALLOW_SMOOTH_CORREL3D
+      write(fnamegeneric(1:80),'(2a,i10.10)')
+     & xx_kapredi_file(1:il),'.effective.',optimcycle
+      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
+     & nr, tmpfld3d, 1, optimcycle, mythid)
+#endif
+#endif
+
 #ifdef ALLOW_UVEL0_CONTROL
 c-- initial zonal velocity
       il=ilnblnk( xx_uvel_file )
@@ -600,6 +646,10 @@ c--   Update the tile edges.
 
 #ifdef ALLOW_KAPGM_CONTROL
       _EXCH_XYZ_R8( kapgm, mythid)
+#endif
+
+#ifdef ALLOW_KAPREDI_CONTROL
+      _EXCH_XYZ_R8( kapredi, mythid)
 #endif
 
 #ifdef ALLOW_BOTTOMDRAG_CONTROL

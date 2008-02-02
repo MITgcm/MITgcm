@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_stepping.F,v 1.10 2007/10/08 23:50:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_dummy_in_stepping.F,v 1.11 2008/02/02 02:35:26 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -105,7 +105,11 @@ c
      &       myIter, myThid)
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
-        CALL WRITE_FLD_XYZ_RL ( 'G_Jkagm.',suff, g_kapgm,
+        CALL WRITE_FLD_XYZ_RL ( 'G_Jkapgm.',suff, g_kapgm,
+     &       myIter, myThid)
+#endif
+#ifdef ALLOW_KAPREDI_CONTROL
+        CALL WRITE_FLD_XYZ_RL ( 'G_Jkapredi.',suff, g_kapredi,
      &       myIter, myThid)
 #endif
 
