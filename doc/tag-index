@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.950 2008/02/01 11:06:33 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.951 2008/02/02 02:41:43 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi,ctrl,ecco,autodiff,grdchk and model/src,inc:
+  - introduce isopycnal diffusion coefficient control.
+o tools/adjoint_options: 
+  - additional control vector components.
 o pkg/mnc: have mnc create marginally meaning full coordinate variables
   (that is the grid indices) if usingCurvilinearGrid and NOT EXCH2 
 o pkg/mypackage: 
