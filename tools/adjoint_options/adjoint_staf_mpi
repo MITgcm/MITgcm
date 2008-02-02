@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_staf_mpi,v 1.8 2007/06/21 04:06:22 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_staf_mpi,v 1.9 2008/02/02 02:30:43 gforget Exp $
 #  $Name:  $
 #
 
@@ -52,6 +52,8 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_depth_dummy       \
                     xx_diffkr_dummy      \
                     xx_kapgm_dummy       \
+                    xx_kapredi_dummy       \
+                    xx_bottomdrag_dummy  \
                     xx_efluxy_dummy      \
                     xx_efluxp_dummy      \
                     xx_edtaux_dummy      \

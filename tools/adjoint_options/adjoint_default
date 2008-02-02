@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.17 2007/11/25 23:26:33 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.18 2008/02/02 02:30:42 gforget Exp $
 #  $Name:  $
 #
 
@@ -53,6 +53,8 @@ DIFF_FLAGS="-toplevel 'the_main_loop'    \
                     xx_depth_dummy       \
                     xx_diffkr_dummy      \
                     xx_kapgm_dummy       \
+                    xx_kapredi_dummy       \
+                    xx_bottomdrag_dummy  \
                     xx_efluxy_dummy      \
                     xx_efluxp_dummy      \
                     xx_edtaux_dummy      \
