@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.12 2007/01/31 21:47:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.13 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -59,11 +59,13 @@ C     myThid :: my Thread Id number
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER l, n, nlevs, nGroundLev
+      INTEGER l, n, ncount
+      INTEGER nlevs, nGroundLev
       INTEGER  dUnit, stdUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*(72) ccHead, ccLine
-      CHARACTER*8 blk8c
+      CHARACTER*84 ccHead, ccLine
+      CHARACTER*8  blk8c
+      CHARACTER*10 gcode
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
@@ -74,8 +76,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       nlevs   = MAX(Nr,Nrphys)
       nGroundLev = land_nLev
 
-c     Diagnostic Levels
-c     -----------------
+C     Diagnostic Levels
+C     -----------------
       DO n = 1,ndiagt
         IF     (gdiag(n)(10:10) .EQ. '0') THEN
           kdiag(n) = 0
@@ -95,13 +97,30 @@ C-      others: set 1 level:
         ENDIF
       ENDDO
 
+C--   Check for unvalid diag.mate number
+      ncount = 0
+      DO n = 1,ndiagt
+       IF ( hdiag(n).LT.0 .OR. hdiag(n).GT.ndiagt ) THEN
+        WRITE(msgBuf,'(2A,I6,3A)') 'DIAGNOSTICS_SET_LEVELS: ',
+     &    'unvalid mate number=',hdiag(n),' for diag."',cdiag(n),'"'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        ncount = ncount + 1
+       ENDIF
+      ENDDO
+      IF ( ncount.GT.0 ) THEN
+        WRITE(msgBuf,'(2A,I6,3A)') 'DIAGNOSTICS_SET_LEVELS: ',
+     &    'found', ncount, ' unvalid mate number(s) => STOP'
+        CALL PRINT_ERROR( msgBuf , myThid )
+        STOP 'ABNORMAL END: S/R DIAGSTATS_SET_LEVELS'
+      ENDIF
+
       stdUnit = standardMessageUnit
       WRITE(msgBuf,'(2A)')
      &   '------------------------------------------------------------'
       CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
       WRITE(msgBuf,'(A)') 'DIAGNOSTICS_SET_LEVELS: done'
       CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-      WRITE(msgBuf,'(A,I4)')
+      WRITE(msgBuf,'(A,I6)')
      &   ' Total Nb of available Diagnostics: ndiagt=', ndiagt
       CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
 
@@ -115,8 +134,8 @@ C     write a summary of the (long) list of all available diagnostics:
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
 
         WRITE(ccHead,'(2A)')
-     &   ' Num |<-Name->|Levs|<-parsing code->|<--  Units   -->|',
-     &   '<- Tile (max=80c)'
+     &   '  Num  |<-Name->|Levs|  mate |<- code ->|',
+     &   '<--  Units   -->|<- Tile (max=80c)'
         DO l=1,LEN(ccLine)
          ccLine(l:l) = '-'
         ENDDO
@@ -124,7 +143,7 @@ C     write a summary of the (long) list of all available diagnostics:
         CALL MDSFINDUNIT( dUnit, mythid )
         OPEN(dUnit, file='available_diagnostics.log',
      &              status='unknown', form='formatted')
-        WRITE(dUnit,'(A,I4)')
+        WRITE(dUnit,'(A,I6)')
      &   ' Total Nb of available Diagnostics: ndiagt=', ndiagt
         WRITE(dUnit,'(A)') ccLine
         WRITE(dUnit,'(A)') ccHead
@@ -136,12 +155,23 @@ C     write a summary of the (long) list of all available diagnostics:
            WRITE(dUnit,'(A)') ccLine
          ENDIF
          l = ILNBLNK(tdiag(n))
-         IF (l.GE.1) THEN
-           WRITE(dUnit,'(I4,3A,I3,6A)') n,' |',cdiag(n),'|',
-     &           kdiag(n),' |',gdiag(n),'|',udiag(n),'|',tdiag(n)(1:l)
+         gcode = gdiag(n)(1:10)
+         IF ( hdiag(n).NE.0 .AND. l.GE.1 ) THEN
+           WRITE(dUnit,'(I6,3A,I3,A,I6,6A)') n, ' |', cdiag(n), '|',
+     &                 kdiag(n),' |', hdiag(n), ' |', gcode, '|',
+     &                 udiag(n), '|', tdiag(n)(1:l)
+         ELSEIF ( hdiag(n).NE.0 ) THEN
+           WRITE(dUnit,'(I6,3A,I3,A,I6,6A)') n, ' |', cdiag(n), '|',
+     &                 kdiag(n),' |', hdiag(n), ' |', gcode, '|',
+     &                 udiag(n), '|'
+         ELSEIF (l.GE.1) THEN
+           WRITE(dUnit,'(I6,3A,I3,6A)')      n, ' |', cdiag(n), '|',
+     &                 kdiag(n),' |       |',         gcode, '|',
+     &                 udiag(n), '|', tdiag(n)(1:l)
          ELSE
-           WRITE(dUnit,'(I4,3A,I3,6A)') n,' |',cdiag(n),'|',
-     &           kdiag(n),' |',gdiag(n),'|',udiag(n),'|'
+           WRITE(dUnit,'(I6,3A,I3,6A)')      n, ' |', cdiag(n), '|',
+     &                 kdiag(n),' |       |',         gcode, '|',
+     &                 udiag(n), '|'
          ENDIF
         ENDDO
         WRITE(dUnit,'(A)') ccLine

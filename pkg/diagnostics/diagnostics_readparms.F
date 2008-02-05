@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.20 2007/08/27 23:04:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.21 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -227,11 +227,11 @@ C-     Only lists with non-empty file name (iLen>0) are considered
            averagePhase(n) = averagingPhase(l)
            averageCycle(n) = repeatCycle(l)
          ELSEIF (averagingFreq(l).NE.0. .OR. repeatCycle(l).NE.0) THEN
-           WRITE(msgBuf,'(2A,F18.6,I3)') 'DIAGNOSTICS_READPARMS: ',
+           WRITE(msgBuf,'(2A,F18.6,I4)') 'DIAGNOSTICS_READPARMS: ',
      &       'unvalid Average-Freq & Cycle:',
      &       averagingFreq(l), repeatCycle(l)
            CALL PRINT_ERROR( msgBuf , myThid )
-           WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_READPARMS: ',
+           WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
      &         ' for list l=', l, ', filename: ', filename(l)
            CALL PRINT_ERROR( msgBuf , myThid )
            STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
@@ -252,13 +252,13 @@ C-     Only lists with non-empty file name (iLen>0) are considered
                nlevels(n) = nlevels(n) + 1
                levs(nlevels(n),n) = levels(k,l)
              ELSEIF ( levels(k,l).NE.UNSET_RL ) THEN
-              WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
+              WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_READPARMS: ',
      &         'Exceed Max.Num. of Levels numLevels=', numLevels
               CALL PRINT_ERROR( msgBuf , myThid )
-              WRITE(msgBuf,'(2A,I3,A,F8.0)') 'DIAGNOSTICS_READPARMS: ',
+              WRITE(msgBuf,'(2A,I4,A,F8.0)') 'DIAGNOSTICS_READPARMS: ',
      &         'when trying to add level(k=', k, ' )=', levels(k,l)
               CALL PRINT_ERROR( msgBuf , myThid )
-              WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_READPARMS: ',
+              WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
      &         ' for list l=', l, ', filename: ', filename(l)
               CALL PRINT_ERROR( msgBuf , myThid )
               STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
@@ -275,13 +275,13 @@ C-       will set levels later, once the Nb of levels of each diag is known
              nfields(n) = nfields(n) + 1
              flds(nfields(n),n) = fields(m,l)
            ELSEIF ( fields(m,l).NE.blk8c ) THEN
-             WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
+             WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_READPARMS: ',
      &        'Exceed Max.Num. of Fields/list numperlist=', numperlist
              CALL PRINT_ERROR( msgBuf , myThid )
-             WRITE(msgBuf,'(2A,I3,3A,I3,2A)') 'DIAGNOSTICS_READPARMS: ',
+             WRITE(msgBuf,'(2A,I4,3A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
      &        'when trying to add field (m=', m, ' ): ',fields(m,l)
              CALL PRINT_ERROR( msgBuf , myThid )
-             WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_READPARMS: ',
+             WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
      &        ' in list l=', l, ', filename: ', filename(l)
              CALL PRINT_ERROR( msgBuf , myThid )
              STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
@@ -290,10 +290,10 @@ C-       will set levels later, once the Nb of levels of each diag is known
          nlists = nlists + 1
 c        write(6,*) 'list summary:',n,nfields(n),nlevels(n)
        ELSEIF ( iLen.GE.1 ) THEN
-         WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
+         WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_READPARMS: ',
      &            'Exceed Max.Num. of list numlists=', numlists
          CALL PRINT_ERROR( msgBuf , myThid )
-         WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
+         WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_READPARMS: ',
      &    'when trying to add list l=', l
          CALL PRINT_ERROR( msgBuf , myThid )
          WRITE(msgBuf,'(2A,F18.6,2A)') 'DIAGNOSTICS_READPARMS: ',
@@ -347,7 +347,7 @@ C     for now, simpler just to read it from namelist in data.diagnostics
        ENDIF
       ENDDO
       IF ( j.GT.nRegions ) THEN
-         WRITE(msgBuf,'(2A,I3,A)') 'DIAGNOSTICS_READPARMS: ',
+         WRITE(msgBuf,'(2A,I4,A)') 'DIAGNOSTICS_READPARMS: ',
      &   'set_regMask & val_regMask lists assume at least',j,' regions'
          CALL PRINT_ERROR( msgBuf , myThid )
          WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_READPARMS: ',
@@ -376,23 +376,23 @@ C-     Only lists with non-empty file name (iLen>0) are considered
              diagSt_region(j,n) = 1
              regionCount = regionCount + 1
             ELSE
-             WRITE(msgBuf,'(2A,I3,2A)')
+             WRITE(msgBuf,'(2A,I4,2A)')
      &        'DIAGNOSTICS_READPARMS:',
      &        ' in list l=', l, ', stat_fname: ', stat_fname(l)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                           SQUEEZE_RIGHT , myThid )
-             WRITE(msgBuf,'(A,I3,A)')
+             WRITE(msgBuf,'(A,I4,A)')
      &        'DIAGNOSTICS_READPARMS: region=',j,
      &        ' can only be selected once => ignore 2nd selection'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                           SQUEEZE_RIGHT , myThid )
             ENDIF
            ELSEIF ( j.NE.UNSET_I ) THEN
-             WRITE(msgBuf,'(A,I3,A,I3,2A)')
+             WRITE(msgBuf,'(A,I4,A,I4,2A)')
      &       'DIAGNOSTICS_READPARMS: region=',j,
      &         ' in list l=', l, ', stat_fname: ', stat_fname(l)
              CALL PRINT_ERROR( msgBuf , myThid )
-             WRITE(msgBuf,'(2A,I3,A,I3,2A)')
+             WRITE(msgBuf,'(2A,I4,A,I4,2A)')
      &       'DIAGNOSTICS_READPARMS: ==> exceed Max.Nb of regions',
      &       '(=',nRegions,' )'
              CALL PRINT_ERROR( msgBuf , myThid )
@@ -410,14 +410,14 @@ C-       no region selected => default is Global statistics (region Id: 0)
              diagSt_nbFlds(n) = diagSt_nbFlds(n) + 1
              diagSt_Flds(diagSt_nbFlds(n),n) = stat_fields(m,l)
            ELSEIF ( stat_fields(m,l).NE.blk8c ) THEN
-             WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
+             WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_READPARMS: ',
      &        'Exceed Max.Num. of Fields/list numperlist=', numperlist
              CALL PRINT_ERROR( msgBuf , myThid )
-             WRITE(msgBuf,'(2A,I3,3A,I3,2A)') 'DIAGNOSTICS_READPARMS: ',
+             WRITE(msgBuf,'(2A,I4,3A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
      &        'when trying to add stat_field (m=', m,
      &        ' ): ',stat_fields(m,l)
              CALL PRINT_ERROR( msgBuf , myThid )
-             WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_READPARMS: ',
+             WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
      &        ' in list l=', l, ', stat_fname: ', stat_fname(l)
              CALL PRINT_ERROR( msgBuf , myThid )
              STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
@@ -426,10 +426,10 @@ C-       no region selected => default is Global statistics (region Id: 0)
          diagSt_nbLists = diagSt_nbLists + 1
 c        write(6,*) 'stat-list summary:',n,diagSt_nbFlds(n),regionCount
        ELSEIF ( iLen.GE.1 ) THEN
-         WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
+         WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_READPARMS: ',
      &            'Exceed Max.Num. of list numlists=', numlists
          CALL PRINT_ERROR( msgBuf , myThid )
-         WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
+         WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_READPARMS: ',
      &    'when trying to add stat_list l=', l
          CALL PRINT_ERROR( msgBuf , myThid )
          WRITE(msgBuf,'(2A,F18.6,2A)') 'DIAGNOSTICS_READPARMS: ',
@@ -457,7 +457,7 @@ C     Echo History List Data Structure
         WRITE(msgBuf,'(2(A,F18.6))') 'Output Frequency:', freq(n),
      &                               ' ; Phase: ', phase(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-        WRITE(msgBuf,'(2(A,F18.6),A,I3)')
+        WRITE(msgBuf,'(2(A,F18.6),A,I4)')
      &    ' Averaging Freq.:', averageFreq(n),
      &    ' , Phase: ', averagePhase(n), ' , Cycle:', averageCycle(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)

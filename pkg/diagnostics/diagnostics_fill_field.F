@@ -1,8 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_field.F,v 1.4 2005/07/11 18:59:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_field.F,v 1.5 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
 
+C--   File diagnostics_fill_field.F:
+C--    Contents:
+C--    o DIAGNOSTICS_FILL_FIELD
+C--    o DIAGNOSTICS_DO_FILL
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: DIAGNOSTICS_FILL_FIELD
 C     !INTERFACE:
@@ -182,10 +188,10 @@ C-      Check for consistency with Nb of levels reserved in storage array
         kStore = kd0 + MAX(ksgn*kFirst,ksgn*kLast) - ipointer + 1
         IF ( kStore.GT.kdiag(ndiagnum) ) THEN
          _BEGIN_MASTER(myThid)
-          WRITE(msgBuf,'(2A,I3,A)') 'DIAGNOSTICS_FILL_FIELD: ',
+          WRITE(msgBuf,'(2A,I4,A)') 'DIAGNOSTICS_FILL_FIELD: ',
      &     'exceed Nb of levels(=',kdiag(ndiagnum),' ) reserved '
           CALL PRINT_ERROR( msgBuf , myThid )
-          WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_FILL_FIELD: ',
+          WRITE(msgBuf,'(2A,I6,2A)') 'DIAGNOSTICS_FILL_FIELD: ',
      &     'for Diagnostics #', ndiagnum, ' : ', cdiag(ndiagnum)
           CALL PRINT_ERROR( msgBuf , myThid )
           WRITE(msgBuf,'(2A,2I4,I3)') 'calling DIAGNOSTICS_FILL_FIELD ',
@@ -235,8 +241,8 @@ c     IF (myThid.EQ.1) WRITE(6,1000) cdiag(ndiagnum)
 
 c     ENDIF
 
- 1000 format(' ',' Warning: Trying to write to diagnostic ',a8,
-     &        ' But it is not a valid (or active) name ')
+c1000 format(' ',' Warning: Trying to write to diagnostic ',a8,
+c    &        ' But it is not a valid (or active) name ')
       RETURN
       END
 

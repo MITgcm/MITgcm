@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.8 2005/09/17 03:17:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.9 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: DIAGNOSTICS_WRITE_PICKUP 
+C     !ROUTINE: DIAGNOSTICS_WRITE_PICKUP
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_WRITE_PICKUP(
-     I     isPerm, 
-     I     suff, 
+     I     isPerm,
+     I     suff,
      I     myTime,
      I     myIter,
      I     myThid )
@@ -83,7 +83,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           DO i = 1,MAX_LEN_FNAM
             diag_mnc_bn(i:i) = ' '
           ENDDO
-          
+
           IF ( isPerm ) THEN
             WRITE(diag_mnc_bn,'(A)') 'pickup_diagnostics'
           ELSE
@@ -120,24 +120,24 @@ C         Write the qdiag() array
           ib(2)      = OLy + 1
           ie(2)      = OLy + sNy + 1
           dn(3)(1:2) = 'Nd'
-          dim(3)     = numdiags
+          dim(3)     = numDiags
           ib(3)      = 1
-          ie(3)      = numdiags
+          ie(3)      = numDiags
           dn(4)(1:1) = 'T'
           dim(4)     = -1
           ib(4)      = 1
           ie(4)      = 1
-          
-          CALL MNC_CW_ADD_GNAME(d_cw_name, 4, 
+
+          CALL MNC_CW_ADD_GNAME(d_cw_name, 4,
      &         dim, dn, ib, ie, myThid)
-          CALL MNC_CW_ADD_VNAME(d_cw_name, d_cw_name, 
+          CALL MNC_CW_ADD_VNAME(d_cw_name, d_cw_name,
      &         4,5, myThid)
           CALL MNC_CW_ADD_VATTR_TEXT(d_cw_name,'description',
      &         'diagnostics state',myThid)
-          
+
           CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
      &         d_cw_name, qdiag, myThid)
-          
+
           CALL MNC_CW_DEL_VNAME(d_cw_name, myThid)
           CALL MNC_CW_DEL_GNAME(d_cw_name, myThid)
 
@@ -148,31 +148,31 @@ C         Write the ndiag() array
           ENDDO
           d_cw_name(1:10) = 'diag_count'
           dn(1)(1:2) = 'Nd'
-          dim(1)     = numdiags
+          dim(1)     = numDiags
           ib(1)      = 1
-          ie(1)      = numdiags
+          ie(1)      = numDiags
           dn(2)(1:1) = 'T'
           dim(2)     = -1
           ib(2)      = 1
           ie(2)      = 1
 
-          CALL MNC_CW_ADD_GNAME(d_cw_name, 2, 
+          CALL MNC_CW_ADD_GNAME(d_cw_name, 2,
      &         dim, dn, ib, ie, myThid)
-          CALL MNC_CW_ADD_VNAME(d_cw_name, d_cw_name, 
+          CALL MNC_CW_ADD_VNAME(d_cw_name, d_cw_name,
      &         4,5, myThid)
           CALL MNC_CW_ADD_VATTR_TEXT(d_cw_name,'description',
      &         'diagnostics state',myThid)
-          
+
           CALL MNC_CW_I_W('I',diag_mnc_bn,0,0,
      &         d_cw_name, ndiag, myThid)
-          
+
           CALL MNC_CW_DEL_VNAME(d_cw_name, myThid)
           CALL MNC_CW_DEL_GNAME(d_cw_name, myThid)
 
 
         ENDIF
 #endif
-        
+
 #ifdef ALLOW_MDSIO
         IF (diag_pickup_write_mdsio) THEN
           _BEGIN_MASTER( myThid )
@@ -186,7 +186,7 @@ C         Write qdiag()
           write(fn,'(a,a)') 'pickup_qdiag.', suff(1:sn)
           prec = precFloat64
           lgf = globalFiles
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',numdiags,qdiag,
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',numDiags,qdiag,
      &         1,myIter,myThid)
 
 C         Write ndiag()

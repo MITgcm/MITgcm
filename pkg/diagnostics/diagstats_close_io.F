@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_close_io.F,v 1.1 2005/05/20 07:28:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_close_io.F,v 1.2 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -59,13 +59,13 @@ C-      write a conclusion & close the file:
           iL = ILNBLNK(diagSt_Fname(n))
           WRITE(dataFName,'(2A,I10.10,A)')
      &          diagSt_Fname(n)(1:iL), '.', nIter0, '.txt'
-          WRITE(msgBuf,'(4A,I6)') 'DIAGSTATS_CLOSE_IO: ', 
+          WRITE(msgBuf,'(4A,I6)') 'DIAGSTATS_CLOSE_IO: ',
      &         'close file: ',dataFName(1:iL+15), ' , unit=', nUnit
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
 
         ENDDO
-       
+
       ENDIF
 
       _END_MASTER( myThid )

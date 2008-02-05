@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.7 2005/09/21 19:35:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.8 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: DIAG_VEGTILE_FILL
 C     !INTERFACE:
       SUBROUTINE DIAG_VEGTILE_FILL (field,indx,chfr,ib,numpts,npeice,
-     . check, chardiag, kLev, nLevs, bi, bj, myThid) 
+     . check, chardiag, kLev, nLevs, bi, bj, myThid)
 C     !DESCRIPTION:
 C***********************************************************************
 C Increment the diagnostics array with a vegetation tile space field
@@ -36,7 +36,7 @@ C   chardiag ... Character expression for diag to fill
 C   kLev   ..... Integer flag for vertical levels:
 C                > 0 (any integer): WHICH single level to increment
 C                0,-1 to increment "nLevs" levels in qdiag:
-C                 0 : fill-in in the same order as the input array 
+C                 0 : fill-in in the same order as the input array
 C                -1 : fill-in in reverse order.
 C   nLevs ...... indicates Number of levels of the input field array
 C   bi    ...... X-direction tile number
@@ -59,7 +59,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C ===============
-      INTEGER m, n 
+      INTEGER m, n
       INTEGER ndiagnum, ipointer
       INTEGER k, kFirst, kLast
       INTEGER kd, kd0, ksgn, kStore
@@ -107,7 +107,7 @@ C         and do the loop >> do k=kFirst,kLast <<
        ELSE
         STOP 'ABNORMAL END: S/R DIAGNOSTICS_FILL kLev > nLevs > 0'
        ENDIF
-C-      Which part of qdiag to update: kd = 3rd index, 
+C-      Which part of qdiag to update: kd = 3rd index,
 C         and do the loop >> do k=kFirst,kLast ; kd = kd0 + k*ksgn <<
        IF ( kLev.EQ.-1 ) THEN
         ksgn = -1
@@ -124,17 +124,17 @@ C-      Check for consistency with Nb of levels reserved in storage array
         kStore = kd0 + MAX(ksgn*kFirst,ksgn*kLast) - ipointer + 1
        IF ( kStore.GT.kdiag(ndiagnum) ) THEN
         _BEGIN_MASTER(myThid)
-        WRITE(msgBuf,'(2A,I3,A)') 'DIAGNOSTICS_FILL: ',
-     .     'exceed Nb of levels(=',kdiag(ndiagnum),' ) reserved '
+        WRITE(msgBuf,'(2A,I4,A)') 'DIAGNOSTICS_FILL: ',
+     &     'exceed Nb of levels(=',kdiag(ndiagnum),' ) reserved '
         CALL PRINT_ERROR( msgBuf , myThid )
-        WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_FILL: ',
-     .     'for Diagnostics #', ndiagnum, ' : ', chardiag
+        WRITE(msgBuf,'(2A,I6,2A)') 'DIAGNOSTICS_FILL: ',
+     &     'for Diagnostics #', ndiagnum, ' : ', chardiag
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(2A,2I4,I3)') 'calling DIAGNOSTICS_FILL ',
-     .     'with kLev,nLevs=', kLev,nLevs
+     &     'with kLev,nLevs=', kLev,nLevs
         CALL PRINT_ERROR( msgBuf , myThid )
         WRITE(msgBuf,'(2A,I6,A)') 'DIAGNOSTICS_FILL: ',
-     .     '==> trying to store up to ', kStore, ' levels'
+     &     '==> trying to store up to ', kStore, ' levels'
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R DIAGNOSTICS_FILL'
         _END_MASTER(myThid)
@@ -147,7 +147,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
          do i= 1,Lena
           jindx = 1 + int((indx(i+offset-1)-1)/sNx)
           newindx = indx(i+offset-1)+(jindx-1)*2*Olx
-          if(qdiag(newindx,1,kd,bi,bj).eq.undef 
+          if(qdiag(newindx,1,kd,bi,bj).eq.undef
      .                                  .or.field(i,k).eq.undef)then
            qdiag(newindx,1,kd,bi,bj) = undef
           else
@@ -231,7 +231,7 @@ C-    Fill local array with grid-space field after conversion.
          undef = getcon('UNDEF')
          do i= 1,Lena
           newindx = indx(i+offset-1)
-          if(gridField(newindx,k).eq.undef 
+          if(gridField(newindx,k).eq.undef
      .                           .or.field(i,k).eq.undef)then
            gridField(newindx,k)= undef
           else
@@ -258,7 +258,5 @@ C-    diagnostics is valid and Active: Now do the filling
        ENDDO
       ENDDO
 
- 1000 format(' ',' Warning: Trying to write to diagnostic ',a8,
-     .        ' But it is not a valid (or active) name ')
-      RETURN 
+      RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_check.F,v 1.7 2006/12/24 20:22:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_check.F,v 1.8 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -79,10 +79,10 @@ C-    File names:
          WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_CHECK: ',
      &            'found 2 identical filenames:'
          CALL PRINT_ERROR( msgBuf , myThid )
-         WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_CHECK: ',
+         WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
      &    '1rst (m=', m, ' ): ', fnames(m)
          CALL PRINT_ERROR( msgBuf , myThid )
-         WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_CHECK: ',
+         WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
      &    ' 2nd (n=', ld, ' ): ', fnames(ld)
          CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
@@ -96,10 +96,10 @@ C-    File names:
          WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_CHECK: ',
      &            'found 2 identical stat_fname:'
          CALL PRINT_ERROR( msgBuf , myThid )
-         WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_CHECK: ',
+         WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
      &    '1rst (m=', m, ' ): ', diagSt_Fname(m)
          CALL PRINT_ERROR( msgBuf , myThid )
-         WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_CHECK: ',
+         WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
      &    ' 2nd (n=', ld, ' ): ', diagSt_Fname(ld)
          CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
@@ -126,7 +126,7 @@ C      (needs p>0 for p^kappa ; here take a 10 % margin)
      &     .OR. levs(k,ld)-MIN(rF(1),rF(Nr+1)).LT.-margin
      &     .OR. levs(k,ld).LE.0. ) THEN
 
-            WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_CHECK: ',
+            WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
      &       'Vertical Interp. for list l=', ld,
      &       ', filename: ', fnames(ld)
             CALL PRINT_ERROR( msgBuf , myThid )
@@ -142,7 +142,7 @@ C-    p^kappa interpolation: meaningfull only if Atmosphere & P-coordiante
           WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_CHECK: ',
      &       'INTERP_VERT not allowed in this config'
           CALL PRINT_ERROR( msgBuf , myThid )
-           WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_CHECK: ',
+           WRITE(msgBuf,'(2A,I5,2A)') 'DIAGNOSTICS_CHECK: ',
      &       ' for list l=', ld, ', filename: ', fnames(ld)
           CALL PRINT_ERROR( msgBuf , myThid )
           STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
@@ -162,7 +162,7 @@ C-    If nonlinear free surf is active, need averaged pressures
      &                                   jpoint2, ipoint2, myThid )
           ENDIF
           IF ( ipoint1.EQ.0 .OR. ipoint2.EQ.0 ) THEN
-            WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_CHECK: ',
+            WRITE(msgBuf,'(2A,I5)') 'DIAGNOSTICS_CHECK: ',
      &      'to interpolate diags from output list:', ld
             CALL PRINT_ERROR( msgBuf , myThid )
             IF ( ipoint1.EQ.0 .AND. jpoint1.EQ.0 ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_vert.F,v 1.8 2007/01/31 21:47:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_vert.F,v 1.9 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -92,7 +92,7 @@ C-    IF fizhi is being  used, may need to get physics grid pressures
      &                                   jpoint2, ipoint2, myThid )
           ENDIF
           IF ( ipoint1.EQ.0 .OR. ipoint2.EQ.0 ) THEN
-            WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_INTERP_VERT: ',
+            WRITE(msgBuf,'(2A,I6,2A)') 'DIAGNOSTICS_INTERP_VERT: ',
      &      'fails to interpolate diag.(#', ndId,'): ',flds(md,listId)
             CALL PRINT_ERROR( msgBuf , myThid )
             STOP 'ABNORMAL END: S/R DIAGNOSTICS_INTERP_VERT'

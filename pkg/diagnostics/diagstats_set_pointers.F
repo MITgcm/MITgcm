@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.5 2006/11/19 21:59:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.6 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -114,7 +114,7 @@ C-       add this fields to the active list in case regions are differents:
 
       IF (  ndiagcount.LE.diagSt_size .AND.
      &      nActiveMax.LE.numperlist ) THEN
-        WRITE(msgBuf,'(A,I6,A)')
+        WRITE(msgBuf,'(A,I8,A)')
      &    '  space allocated for all stats-diags:',
      &    ndiagcount, ' levels'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -125,7 +125,7 @@ C-       add this fields to the active list in case regions are differents:
      &    'DIAGSTATS_SET_POINTERS: Not enough space',
      &    ' for all active stats-diags (from data.diagnostics)'
          CALL PRINT_ERROR( msgBuf , myThid )
-         WRITE(msgBuf,'(A,I6,A,I6)')
+         WRITE(msgBuf,'(A,I8,A,I8)')
      &    'DIAGSTATS_SET_POINTERS: diagSt_size=', diagSt_size,
      &    ' but needs at least', ndiagcount
          CALL PRINT_ERROR( msgBuf , myThid )
@@ -152,7 +152,7 @@ C-    check that all selected regions are actually defined
         IF ( diagSt_region(j,l).NE.0 ) THEN
           IF ( diagSt_kRegMsk(j).LT.1 .OR.
      &         diagSt_kRegMsk(j).GT.nSetRegMask ) THEN
-            WRITE(msgBuf,'(A,3(A,I3))') 'DIAGSTATS_SET_POINTERS:',
+            WRITE(msgBuf,'(A,3(A,I5))') 'DIAGSTATS_SET_POINTERS:',
      &       ' region', j, ' undefined (k=', diagSt_kRegMsk(j),
      &       ') in list l=', l
             CALL PRINT_ERROR( msgBuf , myThid )

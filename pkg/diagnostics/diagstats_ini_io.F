@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ini_io.F,v 1.3 2006/02/21 01:23:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ini_io.F,v 1.4 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -59,7 +59,7 @@ C-      get a free unit number as the I/O channel for this routine
      &          diagSt_Fname(n)(1:iL), '.', nIter0, '.txt'
           OPEN( nUnit, FILE=dataFName, STATUS='unknown' )
 
-          WRITE(msgBuf,'(4A,I6)') 'DIAGSTATS_INI_IO: ', 
+          WRITE(msgBuf,'(4A,I6)') 'DIAGSTATS_INI_IO: ',
      &         'open file: ',dataFName(1:iL+15), ' , unit=', nUnit
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
@@ -74,17 +74,17 @@ C-      write a kind of header:
           DO j=0,nRegions
             IF (diagSt_region(j,n).GE.1 .AND.iL+3.LE.MAX_LEN_MBUF) THEN
               tmpBuf(1:iL) = msgBuf(1:iL)
-              WRITE(msgBuf,'(A,I3)') tmpBuf(1:iL),j             
+              WRITE(msgBuf,'(A,I3)') tmpBuf(1:iL),j
               iL = iL+3
             ENDIF
           ENDDO
           WRITE(nUnit,'(A)') msgBuf(1:iL)
           DO j=1,diagSt_nbFlds(n),10
-            WRITE(nUnit,'(A,20A)')      '# Fields       :', 
+            WRITE(nUnit,'(A,20A)')      '# Fields       :',
      &        (' ', diagSt_Flds(m,n), m=j,MIN(diagSt_nbFlds(n),j+9) )
           ENDDO
           DO j=1,diagSt_nbFlds(n),50
-            WRITE(nUnit,'(A,50I4)')   '# Nb of levels : ', 
+            WRITE(nUnit,'(A,50I4)')   '# Nb of levels : ',
      &         ( kdiag(jSdiag(m,n)), m=j,MIN(diagSt_nbFlds(n),j+49) )
           ENDDO
           WRITE(nUnit,'(2A)') '# end of header ----------------------',
@@ -92,7 +92,7 @@ C-      write a kind of header:
           WRITE(nUnit,'(A)') ' '
 
         ENDDO
-       
+
       ENDIF
 
       _END_MASTER( myThid )

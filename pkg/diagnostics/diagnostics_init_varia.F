@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.11 2006/11/04 14:28:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.12 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -32,7 +32,7 @@ C     !LOCAL VARIABLES:
 C     Zero out the qdiag array which accumulates during integration
       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO k = 1,numdiags
+          DO k = 1,numDiags
             DO j = 1-Oly,sNy+Oly
               DO i = 1-Olx,sNx+Olx
                 qdiag(i,j,k,bi,bj) = 0. _d 0

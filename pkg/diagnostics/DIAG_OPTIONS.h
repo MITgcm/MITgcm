@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.5 2006/01/23 22:24:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.6 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #ifndef DIAG_OPTIONS_H
@@ -14,10 +14,10 @@ C allow to define specific regions and the corresponding mask ;
 C  used to perform regional statistics over a limited area
 #undef DIAGSTATS_REGION_MASK
 
-C allow to stop & restart at any time (i.e. not at a multiple of 
-C  the diagnostics frequency) reading diagnostics storage arrays 
-C  from pickup file. 
-C Note: Use with cautious since it does not work for all restart 
+C allow to stop & restart at any time (i.e. not at a multiple of
+C  the diagnostics frequency) reading diagnostics storage arrays
+C  from pickup file.
+C Note: Use with cautious since it does not work for all restart
 C  cases (e.g., changing data.diagnostics).
 #undef  DIAGNOSTICS_HAS_PICKUP
 

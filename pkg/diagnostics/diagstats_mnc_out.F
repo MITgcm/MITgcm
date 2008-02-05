@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_mnc_out.F,v 1.7 2005/11/01 01:53:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_mnc_out.F,v 1.8 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -186,7 +186,7 @@ C         for averaged levels.
           d_cw_gname(1:NLEN) = dn_blnk(1:NLEN)
           dn(ii)(1:NLEN) = dn_blnk(1:NLEN)
         ENDDO
-        
+
 C       Z is special since it varies
         WRITE(dn(1),'(a,i6.6)') 'Zd', kdiag(ndId)
         IF ( (gdiag(ndId)(10:10) .EQ. 'R')
@@ -204,19 +204,19 @@ C       Z is special since it varies
         dim(1) = Nr+Nrphys+1
         ib(1)  = 1
         ie(1)  = kdiag(ndId)
-        
+
 C       "region" dimension
         dim(2)     = nRegions + 1
         ib(2)      = 1
         dn(2)(1:6) = 'region'
         ie(2)      = nRegions + 1
-        
+
 C       Time dimension
         dn(3)(1:1) = 'T'
         dim(3)     = -1
         ib(3)      = 1
         ie(3)      = 1
-        
+
 C       Note that the "d_cw_gname" variable is a hack that hides a
 C       subtlety within MNC.  Basically, each MNC-wrapped file is
 C       caching its own concept of what each "grid name" (that is, a
@@ -234,90 +234,90 @@ C       guarantee uniqueness within each MNC-produced file.
         WRITE(d_cw_gname0,'(a9,i6.6)') 'dst_cw_0_', ndId
         CALL MNC_CW_ADD_GNAME(d_cw_gname0, 3,
      &       dim, dn, ib, ie, myThid)
-        
+
         DO ist = 0,nStats
-          
+
           DO i = 1,MAX_LEN_FNAM
             tnam(i:i) = ' '
           ENDDO
 
 c         IF ( kdiag(ndId) .GT. 1 ) THEN
-            
+
             ilen = ILNBLNK(cdiag(ndId))
-            WRITE(tnam,'(a,a1,a3)') 
+            WRITE(tnam,'(a,a1,a3)')
      &           cdiag(ndId)(1:ilen),'_',stat_typ(ist+1)
-            
+
             CALL MNC_CW_ADD_VNAME(tnam, d_cw_gname0,
      &           0,0, myThid)
             CALL MNC_CW_ADD_VATTR_TEXT(tnam,'description',
      &           tdiag(ndId),myThid)
             CALL MNC_CW_ADD_VATTR_TEXT(tnam,'units',
      &           udiag(ndId),myThid)
-            
+
 C           Copy the data into a temporary with the necessary shape
             DO j = 0,nRegions
               stmp(1,j+1) = statGlob(ist,0,j)
             ENDDO
-          
+
 C-jmc: fflags is not for Statistics-Diagnostics, can be unset, and since
 C-     size of the output file will not be an issue here: Always write real*8
 c           IF ((fflags(listId)(1:1) .EQ. ' ')
 c    &           .OR. (fflags(listId)(1:1) .EQ. 'R')) THEN
-c             
+c
 c             CALL MNC_CW_RL_W('R',diag_mnc_bn,1,1,
 c    &             tnam, stmp, myThid)
-c             
+c
 c           ELSEIF (fflags(listId)(1:1) .EQ. 'D') THEN
-              
+
               CALL MNC_CW_RL_W('D',diag_mnc_bn,1,1,
      &             tnam, stmp, myThid)
-            
+
 c           else
 c             write(0,*) myIter, ndId, listId
 c             write(0,'(3A)') '>',cdiag(ndId),'<'
 c             write(0,'(3A)') '>',fflags(listId),'<'
 c             STOP ' in DIAGSTATS_MNC_OUT'
 c           ENDIF
-            
+
             CALL MNC_CW_DEL_VNAME(tnam, myThid)
-            
+
 c         ENDIF
-        
+
           IF ( kdiag(ndId) .GT. 1 ) THEN
 
             ilen = ILNBLNK(cdiag(ndId))
-            WRITE(tnam,'(a,a4,a3)') 
+            WRITE(tnam,'(a,a4,a3)')
      &           cdiag(ndId)(1:ilen),'_lv_',stat_typ(ist+1)
-          
+
             CALL MNC_CW_ADD_VNAME(tnam, d_cw_gname,
      &           0,0, myThid)
             CALL MNC_CW_ADD_VATTR_TEXT(tnam,'description',
      &           tdiag(ndId),myThid)
             CALL MNC_CW_ADD_VATTR_TEXT(tnam,'units',
      &         udiag(ndId),myThid)
-          
+
 C           Copy the data into a temporary with the necessary shape
             DO j = 0,nRegions
               DO k = 1,kdiag(ndId)
                 stmp(k,j+1) = statGlob(ist,k,j)
               ENDDO
             ENDDO
-          
+
 C-jmc: Always write real*8 (size of the output file will not be an issue here)
               CALL MNC_CW_RL_W('D',diag_mnc_bn,1,1,
      &             tnam, stmp, myThid)
-            
+
             CALL MNC_CW_DEL_VNAME(tnam, myThid)
-          
+
           ENDIF
 
         ENDDO
-        
+
         CALL MNC_CW_DEL_GNAME(d_cw_gname, myThid)
         CALL MNC_CW_DEL_GNAME(d_cw_gname0, myThid)
 
       ENDIF
-        
+
       _END_MASTER( myThid )
 
 #endif /*  ALLOW_MNC  */

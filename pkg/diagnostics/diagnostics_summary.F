@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.5 2006/12/24 20:20:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_summary.F,v 1.6 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -78,9 +78,9 @@ C     write a summary diagnostics state:
          ccLine(l:l) = '-'
         ENDDO
         WRITE(ccList,'(2A)')
-     &   ' nFlds, nActive,       freq     &   phase        , nLev'
+     &  ' nFlds, nActive,       freq     &     phase        , nLev'
         WRITE(ccFlds,'(2A)')
-     &   ' diag#| name   | ipt  | iMate| kLev| count | mate.C|'
+     &  ' diag# | name   |   ipt  |  iMate | kLev|   count |   mate.C|'
 
         WRITE(dUnit,'(A,I10,A,1PE21.13)')
      &   'Iter.Nb:',myIter,' ; Time(s):', myTime
@@ -91,10 +91,10 @@ C     write a summary diagnostics state:
 
         DO ld=1,nlists
          iLen = ILNBLNK(fnames(ld))
-         WRITE(dUnit,'(A,I4,2A)') 'listId=', ld,
+         WRITE(dUnit,'(A,I5,2A)') 'listId=', ld,
      &                            ' ; file name: ',fnames(ld)(1:iLen)
          WRITE(dUnit,'(A)') ccList
-         WRITE(dUnit,'(I4,A,I4,A,2F17.6,A,I4)')
+         WRITE(dUnit,'(2(I5,A),2F17.6,A,I4)')
      &    nfields(ld), '  |',nActive(ld), '  |',
      &    freq(ld), phase(ld), ' |', nlevels(ld)
          IF ( fflags(ld)(2:2).EQ.'P' ) THEN
@@ -110,7 +110,7 @@ C     write a summary diagnostics state:
          ENDIF
          WRITE(dUnit,'(A)') ccFlds
          DO md=1,nActive(ld)
-           WRITE(msgBuf,'(I5,3A,2(I5,A),I4,A)')
+           WRITE(msgBuf,'(I6,3A,2(I7,A),I4,A)')
      &       jdiag(md,ld),' |', flds(md,ld),'|',idiag(md,ld),' |',
      &       mdiag(md,ld),' |', kdiag(jdiag(md,ld)),' |'
            ipt = ABS(idiag(md,ld))
@@ -132,9 +132,9 @@ C     write a summary diagnostics state:
                  iLen = ILNBLNK(msgBuf)
                  tmpBuf(1:iLen) = msgBuf(1:iLen)
                  IF (nDup.EQ.1) THEN
-                   WRITE(msgBuf,'(A,I5,A)') tmpBuf(1:iLen),xOld,cSep
+                   WRITE(msgBuf,'(A,I7,A)') tmpBuf(1:iLen),xOld,cSep
                  ELSE
-                   WRITE(msgBuf,'(A,I5,A,I2,2A)') tmpBuf(1:iLen),xOld,
+                   WRITE(msgBuf,'(A,I7,A,I3,2A)') tmpBuf(1:iLen),xOld,
      &              '(x',nDup,')',cSep
                  ENDIF
                  xOld = xNew
@@ -144,12 +144,12 @@ C     write a summary diagnostics state:
            ELSEIF (ipt.NE.0) THEN
             iLen = ILNBLNK(msgBuf)
             tmpBuf(1:iLen) = msgBuf(1:iLen)
-            WRITE(msgBuf,'(A,I6,A)') tmpBuf(1:iLen),ndiag(ipt,1,1),' |'
+            WRITE(msgBuf,'(A,I8,A)') tmpBuf(1:iLen),ndiag(ipt,1,1),' |'
             im = mdiag(md,ld)
             IF (im.NE.0) THEN
              iLen = ILNBLNK(msgBuf)
              tmpBuf(1:iLen) = msgBuf(1:iLen)
-             WRITE(msgBuf,'(A,I6,A)') tmpBuf(1:iLen),ndiag(im,1,1),' |'
+             WRITE(msgBuf,'(A,I8,A)') tmpBuf(1:iLen),ndiag(im,1,1),' |'
             ENDIF
            ENDIF
            iLen = ILNBLNK(msgBuf)
@@ -169,16 +169,17 @@ c       WRITE(dUnit,'(A)') ccLine
         WRITE(dUnit,'(A)') ccLine
 
         WRITE(ccList,'(2A)')
-     &   ' nFlds, nActive,       freq     &   phase        |'
+     &   ' nFlds, nActive,       freq     &     phase        |'
         WRITE(ccFlds,'(2A)')
-     &   ' diag#| name   | ipt  | iMate|    Volume   |   mate-Vol. |'
+     &   ' diag# | name   |   ipt  |  iMate |',
+     &          '    Volume   |   mate-Vol. |'
 
         DO ld=1,diagSt_nbLists
          iLen = ILNBLNK(diagSt_Fname(ld))
          WRITE(dUnit,'(A,I4,2A)') 'listId=', ld,
      &                     ' ; file name: ',diagSt_Fname(ld)(1:iLen)
          WRITE(dUnit,'(A)') ccList
-         WRITE(dUnit,'(I4,A,I4,A,2F17.6,A,I4)')
+         WRITE(dUnit,'(2(I5,A),2F17.6,A,I4)')
      &    diagSt_nbFlds(ld), '  |',diagSt_nbActv(ld), '  |',
      &    diagSt_freq(ld), diagSt_phase(ld), ' |'
          WRITE(msgBuf,'(A)') ' Regions: '
@@ -195,7 +196,7 @@ c       WRITE(dUnit,'(A)') ccLine
 
          WRITE(dUnit,'(A)') ccFlds
          DO md=1,diagSt_nbActv(ld)
-           WRITE(msgBuf,'(I5,3A,2(I5,A))')
+           WRITE(msgBuf,'(I6,3A,2(I7,A))')
      &       jSdiag(md,ld),' |', diagSt_Flds(md,ld),'|',iSdiag(md,ld),
      &       ' |', mSdiag(md,ld),' |'
            ipt = ABS(iSdiag(md,ld))

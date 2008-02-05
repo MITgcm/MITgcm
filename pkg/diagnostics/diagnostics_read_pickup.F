@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_read_pickup.F,v 1.4 2005/05/20 07:17:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_read_pickup.F,v 1.5 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: DIAGNOSTICS_READ_PICKUP 
+C     !ROUTINE: DIAGNOSTICS_READ_PICKUP
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_READ_PICKUP(
      I     myThid )
@@ -72,7 +72,7 @@ C     Add pickup capability
 C         Update the record dimension by writing the iteration number
           CALL MNC_FILE_CLOSE_ALL_MATCHING(diag_mnc_bn, myThid)
           CALL MNC_CW_SET_UDIM(diag_mnc_bn, 1, myThid)
-          
+
 C         Read the qdiag() array
           d_cw_name(1:NLEN) = dn_blnk(1:NLEN)
           DO ii = 1,CW_DIMS
@@ -88,22 +88,22 @@ C         Read the qdiag() array
           ib(2)      = OLy + 1
           ie(2)      = OLy + sNy + 1
           dn(3)(1:2) = 'Zd'
-          dim(3)     = numdiags
+          dim(3)     = numDiags
           ib(3)      = 1
-          ie(3)      = numdiags
+          ie(3)      = numDiags
           dn(4)(1:1) = 'T'
           dim(4)     = -1
           ib(4)      = 1
           ie(4)      = 1
-          CALL MNC_CW_ADD_GNAME(d_cw_name, 4, 
+          CALL MNC_CW_ADD_GNAME(d_cw_name, 4,
      &         dim, dn, ib, ie, myThid)
-          CALL MNC_CW_ADD_VNAME(d_cw_name, d_cw_name, 
+          CALL MNC_CW_ADD_VNAME(d_cw_name, d_cw_name,
      &         4,5, myThid)
           CALL MNC_CW_RL_R('D',diag_mnc_bn,0,0,
      &         d_cw_name, qdiag, myThid)
           CALL MNC_CW_DEL_VNAME(d_cw_name, myThid)
           CALL MNC_CW_DEL_GNAME(d_cw_name, myThid)
-          
+
 C         Read the ndiag() array
           d_cw_name(1:NLEN) = dn_blnk(1:NLEN)
           DO ii = 1,CW_DIMS
@@ -111,21 +111,21 @@ C         Read the ndiag() array
           ENDDO
           d_cw_name(1:10) = 'diag_count'
           dn(1)(1:2) = 'Nd'
-          dim(1)     = numdiags
+          dim(1)     = numDiags
           ib(1)      = 1
-          ie(1)      = numdiags
+          ie(1)      = numDiags
           dn(2)(1:1) = 'T'
           dim(2)     = -1
           ib(2)      = 1
           ie(2)      = 1
-          CALL MNC_CW_ADD_GNAME(d_cw_name, 2, 
+          CALL MNC_CW_ADD_GNAME(d_cw_name, 2,
      &         dim, dn, ib, ie, myThid)
-          CALL MNC_CW_ADD_VNAME(d_cw_name, d_cw_name, 
+          CALL MNC_CW_ADD_VNAME(d_cw_name, d_cw_name,
      &         4,5, myThid)
           CALL MNC_CW_ADD_VATTR_TEXT(d_cw_name,'description',
      &         'diagnostics state',myThid)
 C- jmc: get warnings when I compile this S/R because something is not right
-C       in the type or one or more arguments. commented out for now 
+C       in the type or one or more arguments. commented out for now
 c         CALL MNC_CW_RL_R('I',diag_mnc_bn,0,0,
 c    &         d_cw_name, ndiag, myThid)
           CALL MNC_CW_DEL_VNAME(d_cw_name, myThid)
@@ -133,7 +133,7 @@ c    &         d_cw_name, ndiag, myThid)
 
         ENDIF
 #endif /* ALLOW_MNC */
-           
+
 #ifdef ALLOW_MDSIO
         IF (diag_pickup_read_mdsio) THEN
           _BEGIN_MASTER(myThid)
@@ -144,7 +144,7 @@ C         Read qdiag()
           ENDDO
           write(fn,'(A,I10.10)') 'pickup_qdiag', nIter0
           CALL MDSREADFIELD(fn,readBinaryPrec,'RL',
-     &         numdiags,qdiag,1,myThid)
+     &         numDiags,qdiag,1,myThid)
 
 C         Read ndiag()
           DO i = 1,80

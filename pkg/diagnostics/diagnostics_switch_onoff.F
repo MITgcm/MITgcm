@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.15 2007/08/21 16:09:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.16 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -120,14 +120,14 @@ C--    Select diagnostics list that uses periodic averaging
 
 C-     check future value of pdiag:
         IF (dBugFlag.AND.pdiag(n,1,1).NE.nInterval)
-     &    WRITE(dBugUnit,'(A,I8,3(A,I3),F17.6)')
+     &    WRITE(dBugUnit,'(A,I8,3(A,I4),F17.6)')
      &     'DIAG_SWITCH_ONOFF: at it=', myIter, ', list:', n,
      &     ' switch', pdiag(n,1,1),' ->', nInterval, xInterval
         IF ( nInterval.LT.0 .OR. nInterval.GE.averageCycle(n) ) THEN
-          WRITE(msgBuf,'(2A,I2,A,I4)') 'DIAGNOSTICS_SWITCH_ONOFF:',
+          WRITE(msgBuf,'(2A,I3,A,I4)') 'DIAGNOSTICS_SWITCH_ONOFF:',
      &       ' error setting pdiag(n=',n,') to:', nInterval
           CALL PRINT_ERROR( msgBuf , myThid )
-          WRITE(msgBuf,'(2A,I3,A,F17.6)') 'DIAGNOSTICS_SWITCH_ONOFF:',
+          WRITE(msgBuf,'(2A,I4,A,F17.6)') 'DIAGNOSTICS_SWITCH_ONOFF:',
      &       ' cycle=', averageCycle(n), ', xInt=', xInterval
           CALL PRINT_ERROR( msgBuf , myThid )
           STOP 'ABNORMAL END: S/R DIAGNOSTICS_SWITCH_ONOFF'
@@ -174,7 +174,7 @@ C--     switch ON diagnostics of output-stream # n
              IF (iSp.GT.0) THEN
                nd = jSdiag(m,n)
                IF (dBugFlag.AND.qSdiag(0,0,iSp,bi,bj).NE. 0.)
-     &          WRITE(dBugUnit,'(A,I8,A,I4,3A,1PE10.3,A,I3)')
+     &          WRITE(dBugUnit,'(A,I8,A,I6,3A,1PE10.3,A,I3)')
      &           'DIAG_SWITCH_ONOFF: at it=', myIter, ' diag:', nd,
      &           ' ',cdiag(nd),' :',qSdiag(0,0,iSp,bi,bj),' ->', 0
                qSdiag(0,0,iSp,bi,bj) = 0.
@@ -187,7 +187,7 @@ C--     switch OFF diagnostics of output-stream # n
              IF (iSp.GT.0) THEN
                nd = jSdiag(m,n)
                IF (dBugFlag.AND.qSdiag(0,0,iSp,bi,bj).NE.-1.)
-     &          WRITE(dBugUnit,'(A,I8,A,I4,3A,1PE10.3,A,I3)')
+     &          WRITE(dBugUnit,'(A,I8,A,I6,3A,1PE10.3,A,I3)')
      &           'DIAG_SWITCH_ONOFF: at it=', myIter, ' diag:', nd,
      &           ' ',cdiag(nd),' :',qSdiag(0,0,iSp,bi,bj),' ->', -1
                qSdiag(0,0,iSp,bi,bj) = -1.

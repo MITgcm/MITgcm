@@ -1,7 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.24 2006/12/24 20:18:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.25 2008/02/05 15:31:19 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
+
+C--   File diagnostics_utils.F: General purpose support routines
+C--    Contents:
+C--    o GETDIAG
+C--    o DIAGNOSTICS_COUNT
+C--    o DIAGS_MK_UNITS (Function)
+C--    o DIAGS_MK_TITLE (Function)
+C--    o DIAGNOSTICS_GET_POINTERS
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
