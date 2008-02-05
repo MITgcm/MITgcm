@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.951 2008/02/02 02:41:43 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.952 2008/02/05 13:34:12 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add parameter rotateGrid and Euler angles EulerPhi/Theta/Psi. For
+  usingSphericalGrid, this allows to define the rotated grid coordinates
+  via phiMin/thetaMin/dxSpacing/dySpacing, etc., but then re-compute the
+  geographical coordinates according to the inverse of the rotation defined
+  by the Euler angles, so that Coriolis parameter and online-interpolation by 
+  exf works with the geographical coordinates on XC/YC/XG/YG.
+  Naturally, this feature does not work with all packages, so some 
+  combinations are prohibited in config_summary (flt, flt_zonal, ecco, 
+  profiles), because there the coordinates are assumed to be regular 
+  spherical grid coordinates. 
 o pkg/gmredi,ctrl,ecco,autodiff,grdchk and model/src,inc:
   - introduce isopycnal diffusion coefficient control.
 o tools/adjoint_options: 

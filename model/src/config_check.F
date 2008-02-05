@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.43 2007/08/07 07:52:43 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.44 2008/02/05 13:32:49 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -480,6 +480,30 @@ C- jmc: but ultimately, this block can/will be removed.
      &       'setting usePTRACERS'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+      IF ( rotateGrid ) THEN
+       IF ( .NOT. usingSphericalPolarGrid ) THEN
+        WRITE(msgBuf,'(2A)')
+     &       'CONFIG_CHECK: specifying Euler angles makes only ',
+     &       'sense with usingSphericalGrid=.TRUE.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+       ENDIF
+       IF ( useFLT .OR. useZonal_Filt .OR. useECCO ) THEN
+        WRITE(msgBuf,'(2A)')
+     &       'CONFIG_CHECK: specifying Euler angles will probably ',
+     &       'not work with pkgs FLT, ZONAL_FLT, ECCO'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+       ENDIF
+#ifdef ALLOW_PROFILES
+        WRITE(msgBuf,'(2A)')
+     &       'CONFIG_CHECK: specifying Euler angles will probably ',
+     &       'not work with pkg profiles'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+#endif /* ALLOW_PROFILES */
       ENDIF
 
       WRITE(msgBuf,'(A)') 'CONFIG_CHECK: OK'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.132 2008/01/08 00:27:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.133 2008/02/05 13:32:49 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -82,6 +82,11 @@ C     Coriolis map:
       useBetaPlaneF       = .FALSE.
       useSphereF          = .TRUE.
       use3dCoriolis       = .TRUE.
+C     grid rotation
+      rotateGrid          = .FALSE.
+      phiEuler            = 0. _d 0
+      thetaEuler          = 0. _d 0
+      psiEuler            = 0. _d 0
 
 C--   Set default "physical" parameters
       nh_Am2              = 1. _d 0

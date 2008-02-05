@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.211 2008/01/07 23:44:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.212 2008/02/05 13:32:18 mlosch Exp $
 C $Name:  $
 C
 
@@ -331,6 +331,8 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
 C     balanceEmPmR    :: substract global mean of EmPmR at every time step
 C     balanceQnet     :: substract global mean of Qnet at every time step
 C     balancePrintMean:: print substracted global means to STDOUT
+C     rotateGrid      :: rotate grid coordinates to geographical coordinates 
+C                        according to Euler angles phiEuler, thetaEuler, psiEuler
 
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid, usingCylindricalGrid,
@@ -368,7 +370,8 @@ C     balancePrintMean:: print substracted global means to STDOUT
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
      & outputTypesInclusive, dumpInitAndLast, debugMode,
      & inAdMode, inAdTrue, inAdFalse, inAdExact,
-     & balanceEmPmR, balanceQnet, balancePrintMean
+     & balanceEmPmR, balanceQnet, balancePrintMean,
+     & rotateGrid
 
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
@@ -457,6 +460,8 @@ C     balancePrintMean:: print substracted global means to STDOUT
       LOGICAL balanceEmPmR
       LOGICAL balanceQnet
       LOGICAL balancePrintMean
+
+      LOGICAL rotateGrid
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
@@ -666,6 +671,9 @@ C                           is to be replace by a smoother function
 C                           (affects myabs, mymin, mymax)
 C     nh_Am2        :: scales the non-hydrostatic terms and changes internal scales
 C                      (i.e. allows convection at different Rayleigh numbers)
+C     phiEuler      :: Euler angle, rotation about original z-axis
+C     thetaEuler    :: Euler angle, rotation about new x-axis
+C     psiEuler      :: Euler angle, rotation about new z-axis
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit,
      & cg2dpcOffDFac, cg3dTargetResidual,
      & delR, delRc, delX, delY,
@@ -706,7 +714,8 @@ C                      (i.e. allows convection at different Rayleigh numbers)
      & ivdc_kappa, hMixCriteria, Ro_SeaLevel,
      & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
      & smoothAbsFuncRange,
-     & tCylIn, tCylOut
+     & tCylIn, tCylOut,
+     & phiEuler, thetaEuler, psiEuler
 
       _RL cg2dTargetResidual
       _RL cg2dTargetResWunit
@@ -834,6 +843,7 @@ C                      (i.e. allows convection at different Rayleigh numbers)
       _RL nh_Am2
       _RL tCylIn
       _RL tCylOut
+      _RL phiEuler, thetaEuler, psiEuler
 
 C--   COMMON /PARM_A/ Thermodynamics constants ?
       COMMON /PARM_A/ HeatCapacity_Cp,recip_Cp
