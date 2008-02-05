@@ -5,6 +5,7 @@
  &EEPARMS
  nTx=1,
  nTy=1,
+ useSETRLSTK=.TRUE.,
  &
 # Note: Some systems use & as the
 # namelist terminator. Other systems
