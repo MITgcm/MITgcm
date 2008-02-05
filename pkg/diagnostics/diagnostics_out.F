@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.35 2008/02/05 15:13:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.36 2008/02/05 20:19:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -210,7 +210,7 @@ C-      Check for Mate of a Counter Diagnostic
            mate = hdiag(ndId)
         ELSEIF ( gcode(1:1).EQ.'U' .OR. gcode(1:1).EQ.'V' ) THEN
 C-      Check for Mate of a Vector Diagnostic
-           mate = hdiag(ndId)
+           mVec = hdiag(ndId)
         ENDIF
         IF ( idiag(md,listId).NE.0 .AND. gcode(5:5).NE.'D' ) THEN
 C--     Start processing 1 Fld :
