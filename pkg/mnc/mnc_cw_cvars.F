@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.7 2008/02/01 11:05:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.8 2008/02/05 13:38:45 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -73,7 +73,7 @@ C     Check all the coordinate variables that we know about
          rtmp(i) = xtmin + i
         ENDDO
 #else
-        IF ( usingCurvilinearGrid ) THEN
+        IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
          DO i = cv_start(1),cv_count(1)
           rtmp(i) = xtmin + i
          ENDDO
@@ -93,7 +93,7 @@ C     Check all the coordinate variables that we know about
          rtmp(i) = xtmin + i
         ENDDO
 #else
-        IF ( usingCurvilinearGrid ) THEN
+        IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
          DO i = cv_start(1),cv_count(1)
           rtmp(i) = xtmin + i
          ENDDO
@@ -113,7 +113,7 @@ C     Check all the coordinate variables that we know about
          rtmp(i) = xtmin + i
         ENDDO
 #else
-        IF ( usingCurvilinearGrid ) THEN
+        IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
          DO i = cv_start(1),cv_count(1)
           rtmp(i) = xtmin - OLx + i
          ENDDO
@@ -133,7 +133,7 @@ C     Check all the coordinate variables that we know about
          rtmp(i) = ytmin + i
         ENDDO
 #else
-        IF ( usingCurvilinearGrid ) THEN
+        IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
          DO i = cv_start(1),cv_count(1)
           rtmp(i) = ytmin + i
          ENDDO
@@ -153,7 +153,7 @@ C     Check all the coordinate variables that we know about
          rtmp(i) = ytmin + i
         ENDDO
 #else
-        IF ( usingCurvilinearGrid ) THEN
+        IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
          DO i = cv_start(1),cv_count(1)
           rtmp(i) = ytmin + i
          ENDDO
@@ -173,7 +173,7 @@ C     Check all the coordinate variables that we know about
          rtmp(i) = ytmin + i
         ENDDO
 #else
-        IF ( usingCurvilinearGrid ) THEN
+        IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
          DO i = cv_start(1),cv_count(1)
           rtmp(i) = ytmin - OLy + i
          ENDDO
