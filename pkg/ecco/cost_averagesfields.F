@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.20 2008/01/23 20:03:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.21 2008/02/05 12:49:10 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -336,12 +336,18 @@ c--     Accumulate ubar and vbar.
 
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
 cph: this is one mean over whole integration:
-      intmp = (.NOT. first) .and. (.NOT. last)
+c      intmp = (.NOT. first) .and. (.NOT. last)
+c      call cost_averagesgeneric(
+c     &     hfluxbarfile,
+c     &     hfluxbar, qnet, xx_hflux_mean_dummy,
+c     &     first, last, .false., .false., intmp,
+c     &     ntimesteps, 1, 1, mythid )
+cph: switch to annual means:
       call cost_averagesgeneric(
      &     hfluxbarfile,
      &     hfluxbar, qnet, xx_hflux_mean_dummy,
-     &     first, last, .false., .false., intmp,
-     &     ntimesteps, 1, 1, mythid )
+     &     first, last, startofyear, endofyear, inyear,
+     &     sum1year, yearrec, 1, mythid )
 #endif
 
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
