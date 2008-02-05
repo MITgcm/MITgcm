@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.952 2008/02/05 13:34:12 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.953 2008/02/05 15:49:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics: for large number of diagnostics, store diagnostic mate 
+  number in dedicate array "hdiag":
+  - new version of S/R DIAGNOSTICS_ADD2LIST : DIAGNOSTICS_ADDTOLIST
+    with 1 more argument (mate number); modify old version DIAGNOSTICS_ADD2LIST.
+  - many small changes (integer format) for large number of diagnostics
+  - start to use DIAGNOSTICS_ADDTOLIST (necessary for diagnostics with
+    a counter mate) in pkg diagnostics, ptracers, thsice & aim_v23.
 o add parameter rotateGrid and Euler angles EulerPhi/Theta/Psi. For
   usingSphericalGrid, this allows to define the rotated grid coordinates
   via phiMin/thetaMin/dxSpacing/dySpacing, etc., but then re-compute the
