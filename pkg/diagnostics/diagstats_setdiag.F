@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_setdiag.F,v 1.2 2005/06/26 16:51:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_setdiag.F,v 1.3 2008/02/05 15:13:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -49,16 +49,15 @@ C     == Local variables ==
       INTEGER k, l
       LOGICAL flag
 
-      CHARACTER*8 parms1
-      CHARACTER*3 mate_index
+      CHARACTER*10 gcode
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 
 C **********************************************************************
-C ****                SET POINTERS FOR DIAGNOSTIC NUM               ****
+C ****                SET POINTERS FOR DIAGNOSTIC ndId              ****
 C **********************************************************************
 
-      parms1 = gdiag(ndId)(1:8)
+      gcode   = gdiag(ndId)(1:8)
       stdUnit = standardMessageUnit
       errUnit = errorMessageUnit
 
@@ -84,18 +83,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( flag ) THEN
         IF (ndiagmx+kdiag(ndId).GT.diagSt_size) THEN
-         WRITE(msgBuf,'(A,I4,1X,A)')
+         WRITE(msgBuf,'(A,I6,1X,A)')
      &    'SETDIAG: Not enough space for Stats-Diag #',ndId,cdiag(ndId)
          CALL PRINT_MESSAGE(msgBuf, errUnit, SQUEEZE_RIGHT, myThid)
         ELSE
-         WRITE(msgBuf,'(A,I3,A,I4,1X,A)') 'SETDIAG: Allocate',
+         WRITE(msgBuf,'(A,I3,A,I6,1X,A)') 'SETDIAG: Allocate',
      &    kdiag(ndId), ' Levels for Stats-Diag #', ndId, cdiag(ndId)
          CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid)
         ENDIF
         iSdiag(mId,listId) = ndiagmx + 1
         ndiagmx = ndiagmx + kdiag(ndId)
       ELSE
-        WRITE(msgBuf,'(A,I4,1X,2A)')
+        WRITE(msgBuf,'(A,I6,1X,2A)')
      &    '- WARNING - SETDIAG: Stats-Diag #', ndId, cdiag(ndId),
      &    ' has already been set'
         CALL PRINT_MESSAGE(msgBuf, errUnit, SQUEEZE_RIGHT, myThid)
@@ -106,9 +105,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c Check for Counter Diagnostic
 c ----------------------------
       mate = 0
-      IF ( parms1(5:5).EQ.'C') THEN
-        mate_index = parms1(6:8)
-        READ (mate_index,'(I3)') mate
+      IF ( gcode(5:5).EQ.'C') THEN
+        mate = hdiag(ndId)
 
 C--     Seach for the same diag (with same freq) to see if already set
         flag = .TRUE.
@@ -129,19 +127,19 @@ C-    diagnostics already set ; use the same slot:
 
         IF ( flag ) THEN
           IF (ndiagmx+kdiag(mate).GT.diagSt_size) THEN
-           WRITE(msgBuf,'(A,I4,1X,A)')
+           WRITE(msgBuf,'(A,I6,1X,A)')
      &      'SETDIAG: Not enough space for Counter Diagnostic #',
      &      mate, cdiag(mate)
            CALL PRINT_MESSAGE(msgBuf, errUnit, SQUEEZE_RIGHT, myThid)
           ELSE
-           WRITE(msgBuf,'(A,I3,A,I4,1X,A)') 'SETDIAG: Allocate',
+           WRITE(msgBuf,'(A,I3,A,I6,1X,A)') 'SETDIAG: Allocate',
      &     kdiag(mate), ' Levels for Count.Diag #', mate, cdiag(mate)
            CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid)
           ENDIF
           mSdiag(mId,listId) = ndiagmx + 1
           ndiagmx = ndiagmx + kdiag(mate)
         ELSE
-          WRITE(msgBuf,'(A,I4,1X,2A)')
+          WRITE(msgBuf,'(A,I6,1X,2A)')
      &    '- NOTE - SETDIAG: Counter Diagnostic #', mate, cdiag(mate),
      &    ' has already been set'
           CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.34 2007/11/13 19:43:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.35 2008/02/05 15:13:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -58,7 +58,7 @@ C              diagnostic storage qdiag into it.
       INTEGER bi, bj
       INTEGER md, ndId, ip, im
       INTEGER mate, mVec
-      CHARACTER*8 parms1
+      CHARACTER*10 gcode
       _RL undef, getcon
       _RL tmpLev
       EXTERNAL getcon
@@ -202,17 +202,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO md = 1,nfields(listId)
         ndId = jdiag(md,listId)
-        parms1 = gdiag(ndId)(1:8)
+        gcode = gdiag(ndId)(1:10)
         mate = 0
         mVec = 0
-        IF ( parms1(5:5).EQ.'C' ) THEN
+        IF ( gcode(5:5).EQ.'C' ) THEN
 C-      Check for Mate of a Counter Diagnostic
-           READ(parms1,'(5X,I3)') mate
-        ELSEIF ( parms1(1:1).EQ.'U' .OR. parms1(1:1).EQ.'V' ) THEN
+           mate = hdiag(ndId)
+        ELSEIF ( gcode(1:1).EQ.'U' .OR. gcode(1:1).EQ.'V' ) THEN
 C-      Check for Mate of a Vector Diagnostic
-           READ(parms1,'(5X,I3)') mVec
+           mate = hdiag(ndId)
         ENDIF
-        IF ( idiag(md,listId).NE.0 .AND. parms1(5:5).NE.'D' ) THEN
+        IF ( idiag(md,listId).NE.0 .AND. gcode(5:5).NE.'D' ) THEN
 C--     Start processing 1 Fld :
          DO lm=1,averageCycle(listId)
 
@@ -229,17 +229,17 @@ C-        Empty diagnostics case :
      &        '- WARNING - from DIAGNOSTICS_OUT at iter=', myIter
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
-            WRITE(msgBuf,'(A,I4,3A,I3,2A)')
+            WRITE(msgBuf,'(A,I6,3A,I4,2A)')
      &       '- WARNING -   diag.#',ndId, ' : ',flds(md,listId),
      &       ' (#',md,' ) in outp.Stream: ',fnames(listId)
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
             IF ( averageCycle(listId).GT.1 ) THEN
-             WRITE(msgBuf,'(A,2(I2,A))')
+             WRITE(msgBuf,'(A,2(I3,A))')
      &        '- WARNING -   has not been filled (ndiag(lm=',lm,')=',
      &                                            ndiag(ip,1,1), ' )'
             ELSE
-             WRITE(msgBuf,'(A,2(I2,A))')
+             WRITE(msgBuf,'(A,2(I3,A))')
      &        '- WARNING -   has not been filled (ndiag=',
      &                                            ndiag(ip,1,1), ' )'
             ENDIF
@@ -266,21 +266,21 @@ C-        Empty diagnostics case :
 C-        diagnostics is not empty :
 
             IF ( debugLevel.GE.debLevA .AND. myThid.EQ.1 ) THEN
-              WRITE(ioUnit,'(A,I3,3A,I8,2A)')
+              WRITE(ioUnit,'(A,I6,3A,I8,2A)')
      &         ' Computing Diagnostic # ', ndId, '  ', cdiag(ndId),
      &         '     Counter:',ndiag(ip,1,1),'   Parms: ',gdiag(ndId)
               IF ( mate.GT.0 ) THEN
-               WRITE(ioUnit,'(3A,I3,2A)')
+               WRITE(ioUnit,'(3A,I6,2A)')
      &         '       use Counter Mate for  ', cdiag(ndId),
      &         '     Diagnostic # ',mate, '  ', cdiag(mate)
               ELSEIF ( mVec.GT.0 ) THEN
                 IF ( im.GT.0 .AND. ndiag(MAX(1,im),1,1).GT.0 ) THEN
-                 WRITE(ioUnit,'(3A,I3,3A)')
+                 WRITE(ioUnit,'(3A,I6,3A)')
      &             '           Vector  Mate for  ', cdiag(ndId),
      &             '     Diagnostic # ',mVec, '  ', cdiag(mVec),
      &             ' exists '
                 ELSE
-                 WRITE(ioUnit,'(3A,I3,3A)')
+                 WRITE(ioUnit,'(3A,I6,3A)')
      &             '           Vector  Mate for  ', cdiag(ndId),
      &             '     Diagnostic # ',mVec, '  ', cdiag(mVec),
      &             ' not enabled'

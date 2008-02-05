@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.7 2005/07/11 16:16:29 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.8 2008/02/05 15:13:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -43,8 +43,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER j, m, ndId, iSp, iSm
-      CHARACTER*8 parms1
-      CHARACTER*3 mate_index
+      CHARACTER*10 gcode
       INTEGER mate
       _RL statGlob(0:nStats,0:nLev,0:nRegions)
       _RL tmp_Glob(0:nStats,0:nLev)
@@ -63,15 +62,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO m = 1,diagSt_nbFlds(listId)
        ndId = jSdiag(m,listId)
-       parms1 = gdiag(ndId)(1:8)
-       IF ( iSdiag(m,listId).NE.0 .AND. parms1(5:5).NE.'D' ) THEN
+       gcode = gdiag(ndId)(1:10)
+       IF ( iSdiag(m,listId).NE.0 .AND. gcode(5:5).NE.'D' ) THEN
 C--    Start processing 1 Fld :
 
-         IF ( parms1(5:5).EQ.'C' ) THEN
+         IF ( gcode(5:5).EQ.'C' ) THEN
 C          Check for Mate of a Counter Diagnostic
 C          --------------------------------------
-           mate_index = parms1(6:8)
-           READ (mate_index,'(I3)') mate
+           mate = hdiag(ndId)
          ELSE
            mate = 0
          ENDIF
@@ -88,12 +86,12 @@ C          --------------------------------------
 C-          Check for empty Diag (= not filled or using empty mask)
             IF ( tmp_Glob(0,0).EQ.0. ) THEN
              _BEGIN_MASTER( myThid )
-             WRITE(msgBuf,'(A,I10,A,I3)')
+             WRITE(msgBuf,'(A,I10,A,I4)')
      &        '- WARNING - from DIAGSTATS_OUTPUT at iter=', myIter,
      &        ' , region:', j
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                           SQUEEZE_RIGHT, myThid)
-             WRITE(msgBuf,'(A,I4,3A,I3,2A)')
+             WRITE(msgBuf,'(A,I6,3A,I4,2A)')
      &       '- WARNING - diagSt.#',ndId, ' : ',diagSt_Flds(m,listId),
      &       ' (#',m,' ) in outp.Stream: ',diagSt_Fname(listId)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
@@ -111,11 +109,11 @@ C-          Check for empty Diag (= not filled or using empty mask)
 
             IF ( debugLevel .GE. debLevA ) THEN
              _BEGIN_MASTER( myThid )
-              WRITE(ioUnit,'(A,I3,3A,I3,A,1PE10.3,2A)')
+              WRITE(ioUnit,'(A,I6,3A,I4,A,1PE10.3,2A)')
      &         ' Compute Stats, Diag. # ',ndId, '  ', cdiag(ndId),
      &         '  vol(',j,' ):', statGlob(0,0,j),'  Parms: ',gdiag(ndId)
              IF ( mate.GT.0 ) THEN
-              WRITE(ioUnit,'(A,I3,3A,I3,2(A,1PE10.3))')
+              WRITE(ioUnit,'(A,I6,3A,I4,2(A,1PE10.3))')
      &         '    use Counter Mate  # ', mate,'  ',cdiag(mate),
      &         '  vol(',j,' ):',tmp_Glob(0,0), ' integral',tmp_Glob(1,0)
              ENDIF
@@ -132,7 +130,7 @@ C--      Write to ASCII file:
 
 #ifdef ALLOW_MNC
          IF (diagSt_mnc) THEN
-           CALL DIAGSTATS_MNC_OUT( 
+           CALL DIAGSTATS_MNC_OUT(
      &          statGlob, nLev, ndId,
      &          m, listId, myTime, myIter, myThid )
          ENDIF

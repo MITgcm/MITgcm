@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fract_fill.F,v 1.4 2006/07/31 16:26:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fract_fill.F,v 1.5 2008/02/05 15:13:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !ROUTINE: DIAGNOSTICS_FRACT_FILL
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_FRACT_FILL(
      I               inpFld, fractFld, scaleFact, power, chardiag,
-     I               kLev, nLevs, bibjFlg, biArg, bjArg, myThid)
+     I               kLev, nLevs, bibjFlg, biArg, bjArg, myThid )
 
 C     !DESCRIPTION:
 C***********************************************************************
@@ -80,7 +80,7 @@ C ===============
       INTEGER ndId, ipt, iSp
       INTEGER region2fill(0:nRegions)
       INTEGER mate, nLevFract
-      CHARACTER*8 parms1
+      CHARACTER*10 gcode
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       IF ( bibjFlg.EQ.0 ) THEN
@@ -102,14 +102,14 @@ C we are trying to fill a valid diagnostic
            ipt = ipt + pdiag(n,bi,bj)*kdiag(ndId)
 C-    check for a counter-mate:
            mate = 0
-           parms1 = gdiag(ndId)(1:8)
-           IF ( parms1(5:5).EQ.'C' ) READ(parms1,'(5X,I3)') mate
+           gcode = gdiag(ndId)(1:10)
+           IF ( gcode(5:5).EQ.'C' ) mate = hdiag(ndId)
            IF ( mdiag(m,n).EQ.0 ) mate = 0
            IF ( mate.LE.0 ) THEN
              WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_FRACT_FILL: ',
      &            'did not find a valid counter-mate'
              CALL PRINT_ERROR( msgBuf , myThid )
-             WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_FRACT_FILL: ',
+             WRITE(msgBuf,'(2A,I6,2A)') 'DIAGNOSTICS_FRACT_FILL: ',
      &            'for diag(#',ndId,' ) :', chardiag
              CALL PRINT_ERROR( msgBuf , myThid )
              STOP 'ABNORMAL END: S/R DIAGNOSTICS_FRACT_FILL'
@@ -140,14 +140,15 @@ C we are trying to compute & fill a valid diagnostic
            ndId = jSdiag(m,n)
 C-    check for a counter-mate:
            mate = 0
-           parms1 = gdiag(ndId)(1:8)
-           IF ( parms1(5:5).EQ.'C' ) READ(parms1,'(5X,I3)') mate
+           gcode = gdiag(ndId)(1:10)
+c          IF ( gcode(5:5).EQ.'C' ) READ(gcode,'(5X,I3)') mate
+           IF ( gcode(5:5).EQ.'C' ) mate = hdiag(ndId)
            IF ( mSdiag(m,n).EQ.0 ) mate = 0
            IF ( mate.LE.0 ) THEN
              WRITE(msgBuf,'(2A)') 'DIAGNOSTICS_FRACT_FILL: ',
      &            'did not find a valid counter-mate'
              CALL PRINT_ERROR( msgBuf , myThid )
-             WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_FRACT_FILL: ',
+             WRITE(msgBuf,'(2A,I6,2A)') 'DIAGNOSTICS_FRACT_FILL: ',
      &            'for diag(#',ndId,' ) :', chardiag
              CALL PRINT_ERROR( msgBuf , myThid )
              STOP 'ABNORMAL END: S/R DIAGNOSTICS_FRACT_FILL'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.13 2006/06/05 18:15:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.14 2008/02/05 15:13:01 jmc Exp $
 C $Name:  $
 
 C ======================================================================
@@ -6,14 +6,15 @@ C  Common blocks for diagnostics package.
 C  - DIAG_DEFINE contains the definition of all available diagnostics
 C        ndiagt :: total number of available diagnostics
 C         kdiag :: number of levels associated with the diagnostic
-C         cdiag :: character names
+C         cdiag :: list of available diagnostic names
 C         tdiag :: description of field in diagnostic
-C         gdiag :: parser field with CHARACTERistics of the diagnostics
+C         gdiag :: parser field with characteristics of the diagnostics
+C         hdiag :: mate number (in available diag. list) of the diagnostic
 C         udiag :: physical units of the diagnostic field
 C  - DIAG_STORE  contains the large array to store diagnostic fields
-C         qdiag :: diagnostic fields array
+C         qdiag :: storage array for 2D/3D diagnostic fields
 C        qSdiag :: storage array for diagnostics of (per level) statistics
-C         ndiag :: counter for number of times diagnostic is added
+C         ndiag :: holds number of times a diagnostic is filled (for time-mean diag)
 C  - DIAG_SELECT  contains the user selection of diagnostics to write
 C         idiag :: slot number in large diagnostic array
 C         mdiag :: slot number in large diagnostic array for the mate
@@ -23,33 +24,35 @@ C  - DIAG_STATIS  contains the user selection of statistics to write
 C ======================================================================
 
 C--   DIAG_DEFINE common block:
-C        ndiagt :: total number of available diagnostics
-C         kdiag :: number of levels associated with the diagnostic
-C         cdiag :: character names
-C         tdiag :: description of field in diagnostic
-C         gdiag :: parser field with CHARACTERistics of the diagnostics
-C         udiag :: physical units of the diagnostic field
+C       ndiagt :: total number of available diagnostics
+C       kdiag  :: number of levels associated with the diagnostic
+C       cdiag  :: list of available diagnostic names
+C       tdiag  :: description of field in diagnostic
+C       gdiag  :: parser field with characteristics of the diagnostics
+C       hdiag  :: mate number (in available diag. list) of the diagnostic
+C       udiag  :: physical units of the diagnostic field
 
       INTEGER        ndiagt
       INTEGER        kdiag(ndiagMax)
+      INTEGER        hdiag(ndiagMax)
       CHARACTER*8    cdiag(ndiagMax)
       CHARACTER*80   tdiag(ndiagMax)
       CHARACTER*16   gdiag(ndiagMax)
       CHARACTER*16   udiag(ndiagMax)
 
       COMMON / DIAG_DEFINE /
-     &  ndiagt, kdiag,
+     &  ndiagt, kdiag, hdiag,
      &  cdiag, tdiag, gdiag, udiag
 
 C--   DIAG_STORE common block:
-C       qdiag  :: diagnostic fields array
+C       qdiag  :: storage array for 2D/3D diagnostic fields
 C       qSdiag :: storage array for (per level) statistics
-C       ndiag  :: counter for number of times diagnostic is added
+C       ndiag  :: holds number of times a diagnostic is filled (for time-mean diag)
 C       pdiag  :: index of current averaging interval within the averaging-cycle
 
-      _RL qdiag(1-OLx:sNx+Olx,1-Oly:sNy+Oly,numdiags,nSx,nSy)
+      _RL qdiag(1-OLx:sNx+Olx,1-Oly:sNy+Oly,numDiags,nSx,nSy)
       _RL qSdiag(0:nStats,0:nRegions,diagSt_size,nSx,nSy)
-      INTEGER  ndiag(numdiags,nSx,nSy)
+      INTEGER  ndiag(numDiags,nSx,nSy)
       INTEGER  pdiag(numlists,nSx,nSy)
 
       COMMON / DIAG_STORE / qdiag, qSdiag, ndiag, pdiag

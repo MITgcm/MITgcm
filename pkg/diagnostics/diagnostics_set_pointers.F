@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.9 2008/01/29 00:35:31 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.10 2008/02/05 15:13:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -38,8 +38,6 @@ C     == Local variables ==
       INTEGER i, j, k, k1, k2, mm, kLev
       LOGICAL found
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*3 mate_index
-
 
       _BEGIN_MASTER( myThid)
 
@@ -95,21 +93,21 @@ C        Search all possible model diagnostics
        nActiveMax = MAX(nActive(ld),nActiveMax)
       ENDDO
 
-      IF (  ndiagcount.LE.numdiags .AND.
+      IF (  ndiagcount.LE.numDiags .AND.
      &      nActiveMax.LE.numperlist ) THEN
-        WRITE(msgBuf,'(A,I6,A)')
+        WRITE(msgBuf,'(A,I8,A)')
      &    '  space allocated for all diagnostics:',
      &    ndiagcount, ' levels'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid)
       ELSE
-       IF ( ndiagcount.GT.numdiags ) THEN
+       IF ( ndiagcount.GT.numDiags ) THEN
          WRITE(msgBuf,'(2A)')
      &    'DIAGNOSTICS_SET_POINTERS: Not enough space',
      &    ' for all active diagnostics (from data.diagnostics)'
          CALL PRINT_ERROR( msgBuf , myThid )
-         WRITE(msgBuf,'(A,I6,A,I6)')
-     &    'DIAGNOSTICS_SET_POINTERS: numdiags=', numdiags,
+         WRITE(msgBuf,'(A,I8,A,I8)')
+     &    'DIAGNOSTICS_SET_POINTERS: numDiags=', numDiags,
      &    ' but needs at least', ndiagcount
          CALL PRINT_ERROR( msgBuf , myThid )
        ENDIF
@@ -134,9 +132,8 @@ C     and if it exists. Note: for now, only used to print message.
         IF (mdiag(md,ld).EQ.0 ) THEN
 
          nd = jdiag(md,ld)
-         mate_index = gdiag(nd)(6:8)
-         IF ( mate_index.NE.'   ' .AND. mate_index.NE.'***' ) THEN
-          READ(mate_index,'(I3)') mate
+         mate = hdiag(nd)
+         IF ( mate.GT.0 ) THEN
           DO j=1,nlists
            DO i=1,nActive(j)
             IF ( mdiag(md,ld).EQ.0 .AND. jdiag(i,j).EQ.mate ) THEN
@@ -146,8 +143,9 @@ C     and if it exists. Note: for now, only used to print message.
           ENDDO
          ENDIF
          IF ( mdiag(md,ld).NE.0 ) THEN
-          WRITE(msgBuf,'(A,I4,4A)') '  set mate pointer for diag #',
-     &         nd, '  ', cdiag(nd), ' , Parms: ', gdiag(nd)
+          WRITE(msgBuf,'(A,I6,5A,I6)') '  set mate pointer for diag #',
+     &         nd, '  ', cdiag(nd), ' , Parms: ', gdiag(nd)(1:10),
+     &             ' , mate:', hdiag(nd)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
          ENDIF
@@ -168,7 +166,7 @@ C-      set Nb of levels to the minimum size of all diag of this list:
             kLev = MIN(kdiag(nd),kLev)
           ENDDO
           IF ( kLev.LE.0 ) THEN
-            WRITE(msgBuf,'(2A,I4,2A)')
+            WRITE(msgBuf,'(2A,I6,2A)')
      &      'DIAGNOSTICS_SET_POINTERS: kLev < 1 in ',
      &      ' setting levs of list l=',ld,', fnames: ', fnames(ld)
             CALL PRINT_ERROR( msgBuf , myThid )
@@ -202,11 +200,11 @@ C- Note: diagnostics_out take care (in some way) of this case
 C        so that it does not cause "index out-off bounds" error.
 C        However, the output file looks strange.
 C- For now, choose to stop, but could change it to just a warning
-             WRITE(msgBuf,'(A,I3,A,I3,2A)')
+             WRITE(msgBuf,'(A,I4,A,I6,2A)')
      &       'DIAGNOSTICS_SET_POINTERS: Ask for level=',kLev,
      &         ' in list l=', ld, ', filename: ', fnames(ld)
              CALL PRINT_ERROR( msgBuf , myThid )
-             WRITE(msgBuf,'(2A,I3,A,I3,2A)')
+             WRITE(msgBuf,'(2A,I4,A,I6,2A)')
      &       'DIAGNOSTICS_SET_POINTERS: ==> exceed Max.Nb of lev.',
      &       '(=',kdiag(nd),') for Diag. #', nd, ' : ',cdiag(nd)
              CALL PRINT_ERROR( msgBuf , myThid )

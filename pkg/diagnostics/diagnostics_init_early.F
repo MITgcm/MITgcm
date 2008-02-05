@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.12 2006/07/30 01:19:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.13 2008/02/05 15:13:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -70,6 +70,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO n=1,ndiagMax
         kdiag(n) = 0
+        hdiag(n) = 0
         cdiag(n) = '        '
         gdiag(n) = '                '
         udiag(n) = '                '
@@ -184,12 +185,13 @@ C----------------------------------------------------------------------
       cdiag(21) = 'SDIAGC  '
       tdiag(21) = 'User-Defined Counted Surface Diagnostic         '
       udiag(21) = 'user-defined    '
-      gdiag(21) = 'SM  C022L1      '
+      gdiag(21) = 'SM  C   L1      '
+      hdiag(21) =  22
 
       cdiag(22) = 'SDIAGCC '
       tdiag(22) = 'User-Defined Counted Surface Diagnostic Counter'
       udiag(22) = 'count           '
-      gdiag(22) = 'SM  D   L1      '
+      gdiag(22) = 'SM      L1      '
 
 C-    set the total number of available diagnostics
       ndiagt = 22
