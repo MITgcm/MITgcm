@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.25 2008/01/17 23:18:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.26 2008/02/06 13:35:12 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -291,7 +291,8 @@ C--   Now lets look at all these beasts
       ENDIF
 
 C--   Set model variables to initial/restart conditions
-      IF ( nIter0 .NE. 0 ) THEN
+      IF ( .NOT. ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
+     &     .AND. pickupSuff .EQ. ' ') ) THEN
 
          CALL SEAICE_READ_PICKUP ( myThid )
 
