@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.110 2007/12/25 17:30:25 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.111 2008/02/06 21:06:03 mlosch Exp $
 #  $Name:  $
 #
 
@@ -474,7 +474,7 @@ symlink_mpifiles()
     CODE_DIR=$dir/$code_dir
     
     # These are files that should replace their counter-part when using -mpi
-    MPI_FILES=`(cd $CODE_DIR; find . -name "*_mpi")`
+    MPI_FILES=`(cd $CODE_DIR; find . -name "*_mpi" -print)`
 
     #  Is this an MPI run?
     if test "x$MPI" = xt ; then
