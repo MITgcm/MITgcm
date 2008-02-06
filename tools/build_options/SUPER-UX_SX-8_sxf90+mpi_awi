@@ -1,13 +1,12 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.7 2008/02/05 15:07:33 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.8 2008/02/06 10:56:29 mlosch Exp $
 #
 # for cross compiling on sx8.awi.de
 # uname -a: 
 # Linux sx8 2.6.5-7.282-default #1 SMP Tue Aug 29 10:40:40 UTC 2006 ia64 ia64 ia64 GNU/Linux#
 
 # nec use
-MAKEDEPEND='/usr/bin/X11/makedepend'
 CPP='/lib/cpp -traditional -P'
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_NEC_SX -DWORDLENGTH=1 -UHAVE_SIGREG -DSEAICE_VECTORIZE_LSR -DCG2D_OUTERLOOPITERS=10'
 FC='sxmpif90'
@@ -61,3 +60,6 @@ fi
 # awi specific paths and stuff
 INCLUDES='-I/SX/usr/include -I/home/sx8/sx8bench/netcdf/include'
 LIBS='-L/home/sx8/sx8bench/netcdf/lib -lnetcdf'
+# this is needed for compiling on the compute nodes
+INCLUDES=$INCLUDES' -I/SX/opt/mpisx/inst/usr/include'
+
