@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.54 2008/02/07 08:52:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.55 2008/02/07 23:59:02 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -87,8 +87,6 @@ C !LOCAL VARIABLES: ====================================================
 C  maskUp        :: 2-D array for mask at W points
 C  maskLocW      :: 2-D array for mask at West points
 C  maskLocS      :: 2-D array for mask at South points
-C  iMin,iMax,    :: loop range for called routines
-C  jMin,jMax     :: loop range for called routines
 C [iMin,iMax]Upd :: loop range to update tracer field
 C [jMin,jMax]Upd :: loop range to update tracer field
 C  i,j,k         :: loop indices
@@ -112,7 +110,7 @@ C  calc_fluxes_X :: logical to indicate to calculate fluxes in X dir
 C  calc_fluxes_Y :: logical to indicate to calculate fluxes in Y dir
 C  interiorOnly  :: only update the interior of myTile, but not the edges
 C  overlapOnly   :: only update the edges of myTile, but not the interior
-C  nipass        :: number of passes in multi-dimensional method
+C  npass         :: number of passes in multi-dimensional method
 C  ipass         :: number of the current pass being made
 C  myTile        :: variables used to determine which cube face
 C  nCFace        :: owns a tile for cube grid runs using
@@ -121,7 +119,6 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
 c     _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER iMin,iMax,jMin,jMax
       INTEGER iMinUpd,iMaxUpd,jMinUpd,jMaxUpd
       INTEGER i,j,k,kUp,kDown
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -142,7 +139,7 @@ c     _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL kp1Msk
       LOGICAL calc_fluxes_X, calc_fluxes_Y, withSigns
       LOGICAL interiorOnly, overlapOnly
-      INTEGER nipass,ipass
+      INTEGER npass, ipass
       INTEGER nCFace
       LOGICAL N_edge, S_edge, E_edge, W_edge
 #ifdef ALLOW_EXCH2
@@ -207,9 +204,9 @@ C     uninitialised but inert locations.
 
 C--   Set tile-specific parameters for horizontal fluxes
       IF (useCubedSphereExchange) THEN
-       nipass=3
+       npass  = 3
 #ifdef ALLOW_AUTODIFF_TAMC
-       IF ( nipass.GT.maxcube ) STOP 'maxcube needs to be = 3'
+       IF ( npass.GT.maxcube ) STOP 'maxcube needs to be = 3'
 #endif
 #ifdef ALLOW_EXCH2
        myTile = W2_myTileList(bi)
@@ -226,24 +223,19 @@ C--   Set tile-specific parameters for horizontal fluxes
        W_edge = .TRUE.
 #endif
       ELSE
-       nipass=2
-       nCFace = bi
+       npass  = 2
+       nCFace = 0
        N_edge = .FALSE.
        S_edge = .FALSE.
        E_edge = .FALSE.
        W_edge = .FALSE.
       ENDIF
 
-      iMin = 1-OLx
-      iMax = sNx+OLx
-      jMin = 1-OLy
-      jMax = sNy+OLy
-
 C--   Start of k loop for horizontal fluxes
       DO k=1,Nr
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
          kkey = (igadkey-1)*Nr + k
-CADJ STORE tracer(:,:,k,bi,bj) = 
+CADJ STORE tracer(:,:,k,bi,bj) =
 CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -280,13 +272,13 @@ cph-exch2#endif
 
 C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
-      DO ipass=1,nipass
+      DO ipass=1,npass
 #ifdef ALLOW_AUTODIFF_TAMC
-         passkey = ipass 
+         passkey = ipass
      &                   + (k-1)      *maxpass
      &                   + (igadkey-1)*maxpass*Nr
-         IF (nipass .GT. maxpass) THEN
-          STOP 'GAD_ADVECTION: nipass > maxcube. check tamc.h'
+         IF (npass .GT. maxpass) THEN
+          STOP 'GAD_ADVECTION: npass > maxcube. check tamc.h'
          ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -310,10 +302,12 @@ C-    CubedSphere : pass 3 times, with partial update of local tracer field
         calc_fluxes_Y = nCFace.EQ.3 .OR. nCFace.EQ.4 .OR. nCFace.EQ.5
        ELSEIF (ipass.EQ.2) THEN
         overlapOnly  = MOD(nCFace,3).EQ.2
+        interiorOnly = MOD(nCFace,3).EQ.1
         calc_fluxes_X = nCFace.EQ.2 .OR. nCFace.EQ.3 .OR. nCFace.EQ.4
         calc_fluxes_Y = nCFace.EQ.5 .OR. nCFace.EQ.6 .OR. nCFace.EQ.1
 #endif /* MULTIDIM_OLD_VERSION */
        ELSE
+        interiorOnly = .TRUE.
         calc_fluxes_X = nCFace.EQ.5 .OR. nCFace.EQ.6
         calc_fluxes_Y = nCFace.EQ.2 .OR. nCFace.EQ.3
        ENDIF
@@ -334,9 +328,9 @@ C-     Advective flux in X
 C
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ STORE localTij(:,:)  = 
+CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
-CADJ STORE af(:,:)  = 
+CADJ STORE af(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -348,22 +342,19 @@ C       a) needed in overlap only
 C   and b) the overlap of myTile are not cube-face Edges
        IF ( .NOT.overlapOnly .OR. N_edge .OR. S_edge ) THEN
 
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in X
 #ifdef MULTIDIM_OLD_VERSION
         IF ( useCubedSphereExchange ) THEN
 #else
-        IF ( useCubedSphereExchange .AND.
-     &       ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
+        IF ( overlapOnly ) THEN
 #endif
          CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
      &                              localTij, bi,bj, myThid )
         ENDIF
-cph-exch2#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ STORE localTij(:,:)  = 
+CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -395,16 +386,14 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
          STOP 'GAD_ADVECTION: adv. scheme incompatibale with multi-dim'
         ENDIF
 
+C-     Internal exchange for next calculations in Y
+        IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
+         CALL FILL_CS_CORNER_TR_RL( .FALSE., .FALSE.,
+     &                              localTij, bi,bj, myThid )
+        ENDIF
+
 C-     Advective flux in X : done
        ENDIF
-
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
-C-     Internal exchange for next calculations in Y
-       IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
-         CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
-     &                              localTij, bi,bj, myThid )
-       ENDIF
-cph-exch2#endif
 
 C-     Update the local tracer field where needed:
 
@@ -502,9 +491,9 @@ C-     Advective flux in Y
 C
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ STORE localTij(:,:)  = 
+CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
-CADJ STORE af(:,:)  = 
+CADJ STORE af(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -516,18 +505,15 @@ C       a) needed in overlap only
 C   and b) the overlap of myTile are not cube-face edges
        IF ( .NOT.overlapOnly .OR. E_edge .OR. W_edge ) THEN
 
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in Y
 #ifdef MULTIDIM_OLD_VERSION
         IF ( useCubedSphereExchange ) THEN
 #else
-        IF ( useCubedSphereExchange .AND.
-     &       ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
+        IF ( overlapOnly ) THEN
 #endif
-         CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+         CALL FILL_CS_CORNER_TR_RL( .FALSE., .FALSE.,
      &                              localTij, bi,bj, myThid )
         ENDIF
-cph-exch2#endif
 
 C-     Advective flux in Y
         DO j=1-Oly,sNy+Oly
@@ -536,9 +522,9 @@ C-     Advective flux in Y
          ENDDO
         ENDDO
 
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
 #ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ STORE localTij(:,:)  = 
+CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -570,16 +556,14 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
          STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
         ENDIF
 
-C-     Advective flux in Y : done
-       ENDIF
-
-cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for next calculations in X
        IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
          CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
      &                              localTij, bi,bj, myThid )
        ENDIF
-cph-exch2#endif
+
+C-     Advective flux in Y : done
+       ENDIF
 
 C-     Update the local tracer field where needed:
 
@@ -713,7 +697,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( .NOT.implicitAdvection ) THEN
 C--   Start of k loop for vertical flux
        DO k=Nr,1,-1
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
          kkey = (igadkey-1)*Nr + (Nr-k+1)
 #endif /* ALLOW_AUTODIFF_TAMC */
 C--   kUp    Cycles through 1,2 to point to w-layer above
@@ -724,10 +708,10 @@ c       kp1=min(Nr,k+1)
         kp1Msk=1.
         if (k.EQ.Nr) kp1Msk=0.
 
-#ifdef ALLOW_AUTODIFF_TAMC 
-CADJ STORE rtrans(:,:)  = 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rtrans(:,:)  =
 CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
-cphCADJ STORE wfld(:,:)  = 
+cphCADJ STORE wfld(:,:)  =
 cphCADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif
 
@@ -741,8 +725,8 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
         IF ( k.EQ.1 ) THEN
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC 
-cphmultiCADJ STORE wfld(:,:)  = 
+#ifdef ALLOW_AUTODIFF_TAMC
+cphmultiCADJ STORE wfld(:,:)  =
 cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -758,8 +742,8 @@ C- Surface interface :
 
         ELSE
 
-#ifdef ALLOW_AUTODIFF_TAMC 
-cphmultiCADJ STORE wfld(:,:)  = 
+#ifdef ALLOW_AUTODIFF_TAMC
+cphmultiCADJ STORE wfld(:,:)  =
 cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -783,10 +767,10 @@ C--   Residual transp = Bolus transp + Eulerian transp
      I                 k, bi, bj, myThid )
 #endif /* ALLOW_GMREDI */
 
-#ifdef ALLOW_AUTODIFF_TAMC 
-cphmultiCADJ STORE localTijk(:,:,k)  
+#ifdef ALLOW_AUTODIFF_TAMC
+cphmultiCADJ STORE localTijk(:,:,k)
 cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
-cphmultiCADJ STORE rTrans(:,:)  
+cphmultiCADJ STORE rTrans(:,:)
 cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -821,16 +805,16 @@ C-    Compute vertical advective flux in the interior:
 C- end Surface/Interior if bloc
         ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC 
-cphmultiCADJ STORE rTrans(:,:)  
+#ifdef ALLOW_AUTODIFF_TAMC
+cphmultiCADJ STORE rTrans(:,:)
 cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
-cphmultiCADJ STORE rTranskp1(:,:)  
+cphmultiCADJ STORE rTranskp1(:,:)
 cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 cph --- following storing of fVerT is critical for correct
 cph --- gradient with multiDimAdvection
 cph --- Without it, kDown component is not properly recomputed
 cph --- This is a TAF bug (and no warning available)
-CADJ STORE fVerT(:,:,:)  
+CADJ STORE fVerT(:,:,:)
 CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
