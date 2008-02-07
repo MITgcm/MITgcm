@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.53 2007/10/19 19:18:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.54 2008/02/07 08:52:12 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -265,8 +265,8 @@ C--   Make local copy of tracer array and mask West & South
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
          localTij(i,j)=tracer(i,j,k,bi,bj)
-         maskLocW(i,j)=maskW(i,j,k,bi,bj)
-         maskLocS(i,j)=maskS(i,j,k,bi,bj)
+         maskLocW(i,j)=_maskW(i,j,k,bi,bj)
+         maskLocS(i,j)=_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
