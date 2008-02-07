@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.6 2007/08/16 02:20:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.7 2008/02/07 23:59:45 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -254,10 +254,11 @@ C--   CubedSphere : pass 3 times, with partial update of local seaice field
          calc_fluxes_Y = nCFace.EQ.3 .OR. nCFace.EQ.4 .OR. nCFace.EQ.5
         ELSEIF (ipass.EQ.2) THEN
          overlapOnly  = MOD(nCFace,3).EQ.2
+         interiorOnly = MOD(nCFace,3).EQ.1
          calc_fluxes_X = nCFace.EQ.2 .OR. nCFace.EQ.3 .OR. nCFace.EQ.4
          calc_fluxes_Y = nCFace.EQ.5 .OR. nCFace.EQ.6 .OR. nCFace.EQ.1
         ELSE
-         interiorOnly = MOD(nCFace,3).EQ.0
+         interiorOnly = .TRUE.
          calc_fluxes_X = nCFace.EQ.5 .OR. nCFace.EQ.6
          calc_fluxes_Y = nCFace.EQ.2 .OR. nCFace.EQ.3
         ENDIF
@@ -292,8 +293,7 @@ C-     Advective flux in X
 
 #ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in X
-         IF ( useCubedSphereExchange .AND.
-     &      ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
+         IF ( overlapOnly ) THEN
           CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
      &                               iceFld, bi,bj, myThid )
           IF ( .NOT.useGridVolume )
@@ -348,19 +348,19 @@ C-     Compute CFL number
      & 'THSICE_ADVECTION: adv. scheme incompatibale with multi-dim'
          ENDIF
 
-C--   Advective flux in X : done
-        ENDIF
-
 #ifndef ALLOW_AUTODIFF_TAMC
 C--   Internal exchange for next calculations in Y
-        IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
-         CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
-     &                              iceFld, bi,bj, myThid )
-         IF ( .NOT.useGridVolume )
-     &   CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
-     &                              iceVol, bi,bj, myThid )
-        ENDIF
+         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
+          CALL FILL_CS_CORNER_TR_RL( .FALSE., .FALSE.,
+     &                               iceFld, bi,bj, myThid )
+          IF ( .NOT.useGridVolume )
+     &    CALL FILL_CS_CORNER_TR_RL( .FALSE., .FALSE.,
+     &                               iceVol, bi,bj, myThid )
+         ENDIF
 #endif
+
+C--   Advective flux in X : done
+        ENDIF
 
 C-     Update the local seaice field where needed:
 
@@ -507,12 +507,11 @@ C-     Advective flux in Y
 
 #ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in Y
-         IF ( useCubedSphereExchange .AND.
-     &      ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
-          CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+         IF ( overlapOnly ) THEN
+          CALL FILL_CS_CORNER_TR_RL( .FALSE., .FALSE.,
      &                               iceFld, bi,bj, myThid )
           IF ( .NOT.useGridVolume )
-     &    CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+     &    CALL FILL_CS_CORNER_TR_RL( .FALSE., .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
 #endif
@@ -563,18 +562,18 @@ C-     Compute CFL number
      &  'THSICE_ADVECTION: adv. scheme incompatibale with mutli-dim'
          ENDIF
 
+#ifndef ALLOW_AUTODIFF_TAMC
+         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
+          CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+     &                               iceFld, bi,bj, myThid )
+          IF ( .NOT.useGridVolume )
+     &    CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+     &                               iceVol, bi,bj, myThid )
+         ENDIF
+#endif
+
 C-     Advective flux in Y : done
         ENDIF
-
-#ifndef ALLOW_AUTODIFF_TAMC
-        IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
-         CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
-     &                              iceFld, bi,bj, myThid )
-         IF ( .NOT.useGridVolume )
-     &   CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
-     &                              iceVol, bi,bj, myThid )
-        ENDIF
-#endif
 
 C-     Update the local seaice field where needed:
 
