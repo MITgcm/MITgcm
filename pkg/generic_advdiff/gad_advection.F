@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.56 2008/02/08 15:04:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.57 2008/02/08 20:03:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -147,8 +147,13 @@ c     _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
-      CHARACTER*4 GAD_DIAG_SUFX, diagSufx
+      CHARACTER*4 diagSufx
+      LOGICAL     doDiagAdvX, doDiagAdvY, doDiagAdvR
+C-    Functions:
+      CHARACTER*4 GAD_DIAG_SUFX
       EXTERNAL    GAD_DIAG_SUFX
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
 #endif
 CEOP
 
@@ -167,16 +172,25 @@ CEOP
      &                      + act2*max0*max1
      &                      + act3*max0*max1*max2
      &                      + act4*max0*max1*max2*max3
-          if (tracerIdentity.GT.maxpass) then
+          IF (tracerIdentity.GT.maxpass) THEN
              print *, 'ph-pass gad_advection ', maxpass, tracerIdentity
              STOP 'maxpass seems smaller than tracerIdentity'
-          endif
+          ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_DIAGNOSTICS
-C--   Set diagnostic suffix for the current tracer
+C--   Set diagnostics flags and suffix for the current tracer
+      doDiagAdvX = .FALSE.
+      doDiagAdvY = .FALSE.
+      doDiagAdvR = .FALSE.
       IF ( useDiagnostics ) THEN
         diagSufx = GAD_DIAG_SUFX( tracerIdentity, myThid )
+        diagName = 'ADVx'//diagSufx
+        doDiagAdvX = DIAGNOSTICS_IS_ON( diagName, myThid )
+        diagName = 'ADVy'//diagSufx
+        doDiagAdvY = DIAGNOSTICS_IS_ON( diagName, myThid )
+        diagName = 'ADVr'//diagSufx
+        doDiagAdvR = DIAGNOSTICS_IS_ON( diagName, myThid )
       ENDIF
 #endif
 
@@ -670,9 +684,11 @@ C-    horizontal advection done; store intermediate result in 3D array:
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics ) THEN
+        IF ( doDiagAdvX ) THEN
           diagName = 'ADVx'//diagSufx
           CALL DIAGNOSTICS_FILL(afx,diagName, k,1, 2,bi,bj, myThid)
+        ENDIF
+        IF ( doDiagAdvY ) THEN
           diagName = 'ADVy'//diagSufx
           CALL DIAGNOSTICS_FILL(afy,diagName, k,1, 2,bi,bj, myThid)
         ENDIF
@@ -834,7 +850,7 @@ C--   Divergence of vertical fluxes
         ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics ) THEN
+        IF ( doDiagAdvR ) THEN
           diagName = 'ADVr'//diagSufx
           CALL DIAGNOSTICS_FILL( fVerT(1-Olx,1-Oly,kUp),
      &                           diagName, k,1, 2,bi,bj, myThid)
