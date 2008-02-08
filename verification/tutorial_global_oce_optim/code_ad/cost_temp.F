@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_temp.F,v 1.2 2008/01/18 03:39:26 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_temp.F,v 1.3 2008/02/08 17:06:45 dfer Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -39,10 +39,10 @@ C     ========= Local variables =========================
       _RL locfc,tmp
       _RL thetalev(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 C
-      Nk = 1
+      Nk = 2
 C Read annual mean Levitus temperature
 C
-      CALL READ_FLD_XYZ_RL('lev_t_jan.bin',' ',thetalev,0,myThid)
+      CALL READ_FLD_XYZ_RL('lev_t_an.bin',' ',thetalev,0,myThid)
 C
 C  Total number of wet temperature point
       tmp  = 0. _d 0
