@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/rotate_spherical_polar_grid.F,v 1.1 2008/02/05 13:32:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/rotate_spherical_polar_grid.F,v 1.2 2008/02/08 13:01:25 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -65,13 +65,9 @@ C     inverted rotation matrix
 C     cartesian coordinates
       _RL XYZgeo(3), XYZrot(3)
 C     some auxilliary variables
-      _RL hypotxy, rcoslat
+      _RL hypotxy
 CEOP
 
-CMLC     for NAOSIMit
-CML      phiEuler  = - 30. _d 0
-CML      thetaEuler= - 90. _d 0
-CML      psiEuler  = - 90. _d 0
 C     convert to radians
       phiRad    = phiEuler  *deg2rad
       thetaRad  = thetaEuler*deg2rad
@@ -176,6 +172,84 @@ C     this can not happen for a sphere with unit radius
           ELSE
            Y(I,J,bi,bj) = ATAN2(XYZgeo(3),hypotxy)/deg2rad
           ENDIF
+         ENDDO
+        ENDDO
+C     bi,bj-loops
+       ENDDO
+      ENDDO
+
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: ROTATE_ANGLES
+C     !INTERFACE:
+      SUBROUTINE CALC_ANGLES( 
+     I     myThid )
+C     !DESCRIPTION: \bv
+C     /===================================================================\
+C     | SUBROUTINE CALC_ANGLES                                            |
+C     | o calculate the angle between geographical north and model grid   |
+C     |   north, assuming that yG holds the geographical coordinates      |
+C     \===================================================================/
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myThid -  Number of this instance of ROTATECARTESIAN_GRID
+      INTEGER myThid
+CEndOfInterface
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     xLoc, yLoc - local copies of X, Y
+C     bi,bj  - Loop counters
+C     I, J
+      INTEGER bi, bj
+      INTEGER  I,  J
+C     pseudo velocities
+      _RS uPseudo(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RS vPseudo(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RS uC, vC, uNorm
+CEOP
+
+      
+C     For each tile ...
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+
+C     compute pseudo velocities from stream function psi = -yG*deg2rad,
+C     that is, zonal flow
+        DO J = 1-Oly,sNy+Oly-1
+         DO I = 1-Olx,sNx+Olx
+          IF ( _dyG(I,J,bi,bj) .GT. 0 ) uPseudo(I,J) = 
+     &         - ( yG(I,J,bi,bj) - yG(I,J+1,bi,bj) )*deg2rad
+     &         / _dyG(I,J,bi,bj)
+         ENDDO
+        ENDDO
+        DO J = 1-Oly,sNy+Oly
+         DO I = 1-Olx,sNx+Olx-1
+          IF ( _dxG(I,J,bi,bj) .GT. 0 ) vPseudo(I,J) = 
+     &         + ( yG(I,J,bi,bj) - yG(I+1,J,bi,bj) )*deg2rad
+     &         / _dxG(I,J,bi,bj)
+         ENDDO
+        ENDDO
+        DO J = 1-Oly,sNy+Oly-1
+         DO I = 1-Olx,sNx+Olx-1
+          uC = 0.5*(uPseudo(I,J) + uPseudo(I+1,J))
+          vC = 0.5*(vPseudo(I,J) + vPseudo(I,J+1))
+          uNorm = SQRT(uC*uC+vC*vC)
+          IF ( uNorm .NE. 0. _d 0 ) uNorm = 1./uNorm
+          angleCosC(I,J,bi,bj) =  uC*uNorm
+          angleSinC(I,J,bi,bj) = -vC*uNorm
          ENDDO
         ENDDO
 C     bi,bj-loops

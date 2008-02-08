@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.24 2008/02/05 13:32:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.25 2008/02/08 13:01:25 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -348,6 +348,7 @@ C--     Cosine(lat) scaling
       IF ( rotateGrid ) THEN
        CALL ROTATE_SPHERICAL_POLAR_GRID( xC, yC, myThid )
        CALL ROTATE_SPHERICAL_POLAR_GRID( xG, yG, myThid )
+       CALL CALC_ANGLES( myThid )
       ENDIF
 
       RETURN
