@@ -6,7 +6,7 @@
  &COST_NML
 #
  mult_temp_tut  = 1.,
- mult_hflux_tut = 5.e-1,
-#lastinterval=2592000.,
- lastinterval=1296000.,
+ mult_hflux_tut = 2.,
+ lastinterval= 864000.,
+#lastinterval=31104000.,
  &

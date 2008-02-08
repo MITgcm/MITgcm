@@ -4,4 +4,9 @@
 # ********************************
  &OPTIM
  optimcycle=0,
+ numiter=1,
+ nfunc=3,
+ fmin=5.74,
+ iprint=10,
+ nupdate=8,
  &

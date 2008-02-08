@@ -37,7 +37,7 @@
 # Time stepping parameters
  &PARM03
  nIter0=       0,
-#nTimeSteps = 30,
+#nTimeSteps = 360,
  nTimeSteps = 10,
  deltaTmom = 1800.,
  tauCD =     321428.,

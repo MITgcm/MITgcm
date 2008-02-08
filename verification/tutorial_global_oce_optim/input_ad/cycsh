@@ -1,6 +1,6 @@
 #!/bin/csh
 set name=tutorial
-set itermax=10
+set itermax=15
 module load ifc
 
 set ite=`egrep 'optimcycle' data.optim | sed 's/ optimcycle=//'| sed 's/,$//'`
@@ -23,13 +23,11 @@ while ( $i <= $itermax )
  \rm tapelev*
  set direc=run$name$ii
  mkdir $direc
- mv *.001.001.* $direc
+ mv *.data *.meta $direc
  mv ctrlhflux_tut_MITgcm.opt0$ii $fich $direc
  mv costhflux_tut_MITgcm.opt0$ii OPTIM/
  echo "Line-search: iteration $ii"
  cd OPTIM/
- sed "s/ optimcycle=$ite/ optimcycle=$i/" data.optim > TTT.tmp
- mv -f TTT.tmp data.optim
  egrep optimcycle data.optim
  ./optim.x > std$ii
  cd ..
