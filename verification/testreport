@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.111 2008/02/06 21:06:03 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.112 2008/02/09 18:30:25 jmc Exp $
 #  $Name:  $
 #
 
@@ -74,10 +74,10 @@ build_mpack()
 	    echo
 	    HAVE_MPACK=f
 	fi
-	printf "building mpack...  "
 	if test "x$CC" = x ; then
 	    export CC=cc
 	fi
+	printf "building mpack (using CC=$CC)...  "
 	( cd $MPACKDIR && ./configure && $MAKE ) > tr_build_mpack.out 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
@@ -88,11 +88,12 @@ build_mpack()
 	else
 	    rm -f tr_build_mpack.out
 	    HAVE_MPACK=t
+	    echo "OK"
 	fi
     else
 	HAVE_MPACK=t
+	echo "done"
     fi
-    echo "OK"
 }
 
 testoutput_var()
@@ -625,7 +626,7 @@ createcodelet()
 {
     # create codelet for comparing model output
 
-    printf "creating the comparison code...  "
+    printf "creating the comparison code (using CC=$CC)...  "
     cat > tr_cmpnum.c <<EOF
 #include <stdio.h>
 #include <math.h>
@@ -978,8 +979,8 @@ fi
 #  create the FORTRAN comparison code
 createcodelet
 
-#  build the mpack utility
-if test "x$ADDRESSES" = xNONE -o "x$ADDRESSES" = x ; then
+#  build the mpack utility (if ADDRESSES = NONE, do it to test the build)
+if test "x$ADDRESSES" = x ; then
     echo "skipping mpack build"
 else
     build_mpack
