@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.13 2008/02/02 02:34:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.14 2008/02/09 23:28:59 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -10,9 +10,9 @@ c     ==================================================================
 c     SUBROUTINE ctrl_map_ini_ecco
 c     ==================================================================
 c
-c     o Add the temperature and salinity parts of the control vector to
-c       the model state and update the tile edges. The control vector is
-c       defined in the header file "ctrl.h".
+c     o Add the temperature and salinity etc. parts of the control vector to
+c       the model state and params and update the tile edges. 
+c     o The control vector is defined in the header file "ctrl.h".
 c
 c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
 c
@@ -20,6 +20,10 @@ c     changed: Christian Eckert eckert@mit.edu 23-Feb-2000
 c
 c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
+c
+c     o rewritten: Gael Forget gforget@mit.edu 09-Feb-2008
+c              - Introduce a generic routine (ctrl_map_ini_gen.F) 
+c                handling individual ctrl vector terms
 c
 c     ==================================================================
 c     SUBROUTINE ctrl_map_ini_ecco
@@ -35,6 +39,7 @@ c     == global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "GMREDI.h"
 
 #include "ctrl.h"
 #include "ctrl_dummy.h"
@@ -63,6 +68,7 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
       integer il
+      _RL boundsVec(5)
 
       logical doglobalread
       logical ladinit
@@ -99,582 +105,191 @@ c--   only do interior, and exchange at the end
 
       fac = 1. _d 0
 
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              tmpfld2d(i,j,bi,bj) = 1.
+            enddo
+          enddo
+        enddo
+      enddo
+      _EXCH_XY_R8( tmpfld2d, mythid)
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                tmpfld3d(i,j,k,bi,bj)=1.
+              enddo
+            enddo
+          enddo
+        enddo
+      enddo
+      _EXCH_XYZ_R8( tmpfld3d, mythid)
+
+
+
 #ifdef ALLOW_THETA0_CONTROL
 c--   Temperature field.
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(1a)') 'wthetaLev'
-      call mdsreadfield('wthetaLev',32,'RL',nR,
-     & wthetaLev,1,mythid)
-      _EXCH_XYZ_R8( wthetaLev, mythid )
-#endif
-      il=ilnblnk( xx_theta_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_theta_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_theta_dummy )
-#ifndef ALLOW_SMOOTH_CORREL3D
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-                 IF ( maskC(i,j,k,bi,bj).ne.0. ) THEN
-                    IF ( abs(tmpfld3d(i,j,k,bi,bj)).gt.
-     &                5.0/sqrt(wthetaLev(i,j,k,bi,bj)))
-     &                tmpfld3d(i,j,k,bi,bj)=
-     &                sign(5.0/sqrt(wthetaLev(i,j,k,bi,bj)),
-     &                tmpfld3d(i,j,k,bi,bj))
-                 ENDIF
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
-#else / * ALLOW_SMOOTH_CORREL3D * /
-       call smooth_correl3D(tmpfld3d,1,mythid)
-#endif / * ALLOW_SMOOTH_CORREL3D * /
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta = tapelev_init, key = ikey
+      boundsVec(1)=-2.
+      boundsVec(2)=-1.9
+      boundsVec(3)=39.
+      boundsVec(4)=40.
+      boundsVec(5)=5.
+      call ctrl_map_ini_gen3D(xx_theta_file, wthetaLev, 
+     & xx_theta_dummy, boundsVec, theta, maskc, mythid ) 
+      _EXCH_XYZ_R8( theta, mythid)
 #endif
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-#ifdef ALLOW_SMOOTH_CORREL3D
-      if (maskC(i,j,k,bi,bj).NE.0.) then
-      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
-     & /sqrt( wthetaLev(i,j,k,bi,bj) )
-      endif
-      theta(i,j,k,bi,bj) =theta(i,j,k,bi,bj)+tmpfld3d(i,j,k,bi,bj)
-#else / * ALLOW_SMOOTH_CORREL3D * /
-                 theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
-     &                               fac*tmpfld3d(i,j,k,bi,bj)
-                if(theta(i,j,k,bi,bj).lt.-2.0)
-     &               theta(i,j,k,bi,bj)= -2.0
-#endif / * ALLOW_SMOOTH_CORREL3D * /
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     & xx_theta_file(1:il),'.effective.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & nr, tmpfld3d, 1, optimcycle, mythid)
-#endif
-#endif
 
 #ifdef ALLOW_SALT0_CONTROL
 c--   Salinity field.
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(1a)') 'wsaltLev'
-      call mdsreadfield('wsaltLev',32,'RL',nR,
-     & wsaltlev,1,mythid)
-      _EXCH_XYZ_R8( wsaltlev, mythid )
-#endif
-      il=ilnblnk( xx_salt_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_salt_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_salt_dummy )
-
-#ifndef ALLOW_SMOOTH_CORREL3D
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-                 IF ( maskC(i,j,k,bi,bj).ne.0. ) THEN
-                    IF ( abs(tmpfld3d(i,j,k,bi,bj)).gt.
-     &                5.0/sqrt(wsaltLev(i,j,k,bi,bj)))
-     &                tmpfld3d(i,j,k,bi,bj)=
-     &                sign(5.0/sqrt(wsaltLev(i,j,k,bi,bj)),
-     &                tmpfld3d(i,j,k,bi,bj))
-                 ENDIF
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
-#else / * ALLOW_SMOOTH_CORREL3D * /
-       call smooth_correl3D(tmpfld3d,1,mythid)
-#endif / * ALLOW_SMOOTH_CORREL3D * /
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE salt = tapelev_init, key = ikey
-#endif
-
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-#ifdef ALLOW_SMOOTH_CORREL3D
-      if (maskC(i,j,k,bi,bj).NE.0.) then
-      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
-     & /sqrt( wsaltLev(i,j,k,bi,bj) )
-      endif
-      salt(i,j,k,bi,bj) =salt(i,j,k,bi,bj)+tmpfld3d(i,j,k,bi,bj)
-#else / * ALLOW_SMOOTH_CORREL3D * /
-                 salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj) +
-     &                               fac*tmpfld3d(i,j,k,bi,bj)
-#endif / * ALLOW_SMOOTH_CORREL3D * /
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     & xx_salt_file(1:il),'.effective.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & nr, tmpfld3d, 1, optimcycle, mythid)
-#endif
-#endif
-
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
-c--   bottom drag
-#ifdef ALLOW_SMOOTH_CORREL2D
-      write(fnamegeneric(1:80),'(1a)') 'wbottomdrag'
-      call mdsreadfield('wbottomdrag',32,'RL',1,
-     & wbottomdrag,1,mythid)
-      _EXCH_XY_R8( wbottomdrag, mythid )
-#endif
-      il=ilnblnk( xx_bottomdrag_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_bottomdrag_file(1:il),'.',optimcycle
-      call active_read_xy ( fnamegeneric, tmpfld2d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_bottomdrag_dummy )
-#ifdef ALLOW_SMOOTH_CORREL2D
-      call smooth_correl2D(tmpfld2d,maskc,1,mythid)
-#endif
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
-#ifdef ALLOW_SMOOTH_CORREL2D
-      if (maskC(i,j,1,bi,bj).NE.0.) then
-      tmpfld2d(i,j,bi,bj)=tmpfld2d(i,j,bi,bj)
-     & /sqrt(wbottomdrag(i,j,bi,bj) )
-      else
-      tmpfld2d(i,j,bi,bj)=0.
-      endif
-#endif
-        bottomdragfld(i,j,bi,bj) = bottomdragfld(i,j,bi,bj)
-     &                             + tmpfld2d(i,j,bi,bj)
-            enddo
-          enddo
-        enddo
-      enddo
-#ifdef ALLOW_SMOOTH_CORREL2D
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     & xx_bottomdrag_file(1:il),'.effective.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & 1, tmpfld2d, 1, optimcycle, mythid)
-#endif
-#endif
-
-#ifdef ALLOW_EDTAUX_CONTROL
-c-- zonal eddy stress : edtaux
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(1a)') 'wedtauxFld'
-      call mdsreadfield('wedtauxFld',32,'RL',nR,
-     & wedtauxFld,1,mythid)
-      _EXCH_XYZ_R8( wedtauxFld, mythid )
-#endif
-      il=ilnblnk( xx_edtaux_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_edtaux_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_edtaux_dummy )
-#ifdef ALLOW_SMOOTH_CORREL3D
-       call smooth_correl3D(tmpfld3d,1,mythid)
-#endif / * ALLOW_SMOOTH_CORREL3D * /
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-#ifdef ALLOW_SMOOTH_CORREL3D
-      if (maskC(i,j,k,bi,bj).NE.0.) then
-      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
-     & /sqrt( wedtauxFld(i,j,k,bi,bj) )
-      else
-      tmpfld3d(i,j,k,bi,bj)=0.
-      endif
-#endif
-                eddyTauX(i,j,k,bi,bj) = eddyTauX(i,j,k,bi,bj) +
-     &            tmpfld3d(i,j,k,bi,bj)
-cgf     &            fCori(i,j,bi,bj)*tmpfld3d(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
-cph(
-cgf      WRITE(suff,'(I10.10)') 0
-cgf      CALL WRITE_FLD_XYZ_RS('GM_edTauX_pXX.',suff,eddyTauX,0,myThid)
-cph)
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     & xx_edtaux_file(1:il),'.effective.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & nr, tmpfld3d, 1, optimcycle, mythid)
-#endif
-#endif
-
-#ifdef ALLOW_EDTAUY_CONTROL
-c-- meridional eddy stress : edtauy
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(1a)') 'wedtauyFld'
-      call mdsreadfield('wedtauyFld',32,'RL',nR,
-     & wedtauyFld,1,mythid)
-      _EXCH_XYZ_R8( wedtauyFld, mythid )
-#endif
-      il=ilnblnk( xx_edtauy_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_edtauy_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_edtauy_dummy )
-#ifdef ALLOW_SMOOTH_CORREL3D
-       call smooth_correl3D(tmpfld3d,1,mythid)
-#endif / * ALLOW_SMOOTH_CORREL3D * /
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-#ifdef ALLOW_SMOOTH_CORREL3D
-      if (maskC(i,j,k,bi,bj).NE.0.) then
-      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
-     & /sqrt( wedtauyFld(i,j,k,bi,bj) )
-      else
-      tmpfld3d(i,j,k,bi,bj)=0.
-      endif
-#endif
-                eddyTauY(i,j,k,bi,bj) = eddyTauY(i,j,k,bi,bj) +
-     &            tmpfld3d(i,j,k,bi,bj)
-cgf     &            fCoriG(i,j,bi,bj)*tmpfld3d(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
-cph(
-cgf      WRITE(suff,'(I10.10)') 0
-cgf      CALL WRITE_FLD_XYZ_RS('GM_edTauY_pXX.',suff,eddyTauY,0,myThid)
-cph)
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     & xx_edtauy_file(1:il),'.effective.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & nr, tmpfld3d, 1, optimcycle, mythid)
-#endif
-#endif
-
-#ifdef ALLOW_DIFFKR_CONTROL
-c--   diffkr.
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(1a)') 'wdiffkrFld'
-      call mdsreadfield('wdiffkrFld',32,'RL',nR,
-     & wdiffkrFld,1,mythid)
-      _EXCH_XYZ_R8( wdiffkrFld, mythid )
-#endif
-      il=ilnblnk( xx_diffkr_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_diffkr_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_diffkr_dummy )
-#ifdef ALLOW_SMOOTH_CORREL3D
-       call smooth_correl3D(tmpfld3d,1,mythid)
-#endif / * ALLOW_SMOOTH_CORREL3D * /
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-#ifdef ALLOW_SMOOTH_CORREL3D
-      if (maskC(i,j,k,bi,bj).NE.0.) then
-      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
-     & /sqrt( wdiffkrFld(i,j,k,bi,bj) )
-      else
-      tmpfld3d(i,j,k,bi,bj)=0.
-      endif
-#endif
-                diffkr(i,j,k,bi,bj) = diffkr(i,j,k,bi,bj) +
-     &                                tmpfld3d(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     & xx_diffkr_file(1:il),'.effective.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & nr, tmpfld3d, 1, optimcycle, mythid)
-#endif
-#endif
-
-#ifdef ALLOW_KAPGM_CONTROL
-c--   kapgm.
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(1a)') 'wkapgmFld'
-      call mdsreadfield('wkapgmFld',32,'RL',nR,
-     & wkapgmFld,1,mythid)
-      _EXCH_XYZ_R8( wkapgmFld, mythid )
-#endif
-      il=ilnblnk( xx_kapgm_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_kapgm_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_kapgm_dummy )
-#ifdef ALLOW_SMOOTH_CORREL3D
-       call smooth_correl3D(tmpfld3d,1,mythid)
-#endif / * ALLOW_SMOOTH_CORREL3D * /
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-#ifdef ALLOW_SMOOTH_CORREL3D
-      if (maskC(i,j,k,bi,bj).NE.0.) then
-      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
-     & /sqrt( wkapgmFld(i,j,k,bi,bj) )
-      else
-      tmpfld3d(i,j,k,bi,bj)=0.
-      endif
-#endif
-                kapgm(i,j,k,bi,bj) = kapgm(i,j,k,bi,bj) +
-     &                               tmpfld3d(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     & xx_kapgm_file(1:il),'.effective.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & nr, tmpfld3d, 1, optimcycle, mythid)
-#endif
+      boundsVec(1)=29.
+      boundsVec(2)=29.5.
+      boundsVec(3)=40.5
+      boundsVec(4)=41.
+      boundsVec(5)=5.
+      call ctrl_map_ini_gen3D(xx_salt_file, wsaltLev, 
+     & xx_salt_dummy, boundsVec, salt, maskc, mythid )
+      _EXCH_XYZ_R8( salt, mythid)
 #endif
 
 
-#ifdef ALLOW_KAPREDI_CONTROL
-c--   kapredi.
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(1a)') 'wkaprediFld'
-      call mdsreadfield('wkaprediFld',32,'RL',nR,
-     & wkaprediFld,1,mythid)
-      _EXCH_XYZ_R8( wkaprediFld, mythid )
-#endif
-      il=ilnblnk( xx_kapredi_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_kapredi_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_kapredi_dummy )
-#ifdef ALLOW_SMOOTH_CORREL3D
-       call smooth_correl3D(tmpfld3d,1,mythid)
-#endif / * ALLOW_SMOOTH_CORREL3D * /
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-#ifdef ALLOW_SMOOTH_CORREL3D
-      if (maskC(i,j,k,bi,bj).NE.0.) then
-      tmpfld3d(i,j,k,bi,bj)=tmpfld3d(i,j,k,bi,bj)
-     & /sqrt( wkaprediFld(i,j,k,bi,bj) )
-      else
-      tmpfld3d(i,j,k,bi,bj)=0.
-      endif
-#endif
-                kapredi(i,j,k,bi,bj) = kapredi(i,j,k,bi,bj) +
-     &                               tmpfld3d(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
-#ifdef ALLOW_SMOOTH_CORREL3D
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     & xx_kapredi_file(1:il),'.effective.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & nr, tmpfld3d, 1, optimcycle, mythid)
-#endif
-#endif
-
-#ifdef ALLOW_UVEL0_CONTROL
+#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+      boundsVec(1)=0.
+      boundsVec(2)=0.
+      boundsVec(3)=0.
+      boundsVec(4)=0.
+      boundsVec(5)=0.      
 c-- initial zonal velocity
-      il=ilnblnk( xx_uvel_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_uvel_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_uvel_dummy )
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-                uVel(i,j,k,bi,bj) = uVel(i,j,k,bi,bj) +
-     &                              tmpfld3d(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
+      call ctrl_map_ini_gen3D(xx_uvel_file, tmpfld3d, 
+     & xx_uvel_dummy, boundsVec, uvel, maskw, mythid )
+c-- initial merid. velocity
+      call ctrl_map_ini_gen3D(xx_vvel_file, tmpfld3d, 
+     & xx_vvel_dummy, boundsVec, vvel, masks, mythid )
+c-- eschange UV:
+       CALL EXCH_UV_XYZ_RS(uvel,vvel,.TRUE.,myThid)
 #endif
 
-#ifdef ALLOW_VVEL0_CONTROL
-c-- initial merid. velocity
-      il=ilnblnk( xx_vvel_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_vvel_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamegeneric, tmpfld3d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_vvel_dummy )
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-                vVel(i,j,k,bi,bj) = vVel(i,j,k,bi,bj) +
-     &                              tmpfld3d(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
-#endif
 
 #ifdef ALLOW_ETAN0_CONTROL
 c--   initial Eta.
-      il=ilnblnk( xx_etan_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_etan_file(1:il),'.',optimcycle
-      call active_read_xy ( fnamegeneric, tmpfld2d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_etan_dummy )
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
-              etaN(i,j,bi,bj) = etaN(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
-            enddo
-          enddo
-        enddo
-      enddo
+      boundsVec(1)=0.
+      boundsVec(2)=0.
+      boundsVec(3)=0.
+      boundsVec(4)=0.
+      boundsVec(5)=0.
+      call ctrl_map_ini_gen2D(xx_etan_file, tmpfld2d, 
+     & xx_etan_dummy, boundsVec, etan, maskc, mythid )
+      _EXCH_XY_R8( etan, mythid)
 #endif
+
+
+
 
 #ifdef ALLOW_RELAXSST_CONTROL
 c--   SST relaxation coefficient.
-      il=ilnblnk( xx_relaxsst_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_relaxsst_file(1:il),'.',optimcycle
-      call active_read_xy ( fnamegeneric, tmpfld2d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_relaxsst_dummy )
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
-              lambdaThetaClimRelax(i,j,bi,bj) =
-     &              lambdaThetaClimRelax(i,j,bi,bj)
-     &              + tmpfld2d(i,j,bi,bj)
-            enddo
-          enddo
-        enddo
-      enddo
+      boundsVec(1)=0.
+      boundsVec(2)=0.
+      boundsVec(3)=0.
+      boundsVec(4)=0.
+      boundsVec(5)=0.
+      call ctrl_map_ini_gen2D(xx_relaxsst_file, tmpfld2d, 
+     & xx_relaxsst_dummy, boundsVec, 
+     & lambdaThetaClimRelax, maskc, mythid )
+      _EXCH_XY_R8( lambdaSaltClimRelax, mythid)
 #endif
+
 
 #ifdef ALLOW_RELAXSSS_CONTROL
 c--   SSS relaxation coefficient.
-      il=ilnblnk( xx_relaxsss_file )
-      write(fnamegeneric(1:80),'(2a,i10.10)')
-     &     xx_relaxsss_file(1:il),'.',optimcycle
-      call active_read_xy ( fnamegeneric, tmpfld2d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_relaxsss_dummy )
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j = jmin,jmax
-            do i = imin,imax
-              lambdaSaltClimRelax(i,j,bi,bj) =
-     &              lambdaSaltClimRelax(i,j,bi,bj)
-     &              + tmpfld2d(i,j,bi,bj)
-            enddo
-          enddo
-        enddo
-      enddo
+      boundsVec(1)=0.
+      boundsVec(2)=0.
+      boundsVec(3)=0.
+      boundsVec(4)=0.
+      boundsVec(5)=0.
+      call ctrl_map_ini_gen2D(xx_relaxsss_file, tmpfld2d, 
+     & xx_relaxsss_dummy, boundsVec, 
+     & lambdaSaltClimRelax, maskc, mythid )
+      _EXCH_XY_R8( lambdaSaltClimRelax, mythid)
 #endif
+
+
+
 
 #ifdef ALLOW_SEAICE
       call seaice_ctrl_map_ini( mythid )
 #endif
 
-c--   Update the tile edges.
-
-#ifdef ALLOW_THETA0_CONTROL
-      _EXCH_XYZ_R8( theta, mythid )
-#endif
-#ifdef ALLOW_SALT0_CONTROL
-      _EXCH_XYZ_R8(  salt, mythid )
-#endif
-#if (defined (ALLOW_EDTAUX_CONTROL) && defined (ALLOW_EDTAUY_CONTROL))
-       CALL EXCH_UV_XYZ_RS(eddyTauX,eddyTauY,.TRUE.,myThid)
-#elif (defined (ALLOW_EDTAUX_CONTROL) || defined (ALLOW_EDTAUY_CONTROL))
-       STOP 'ctrl_map_forcing: need BOTH ALLOW_EDTAU[X,Y]_CONTROL'
-#endif
-
-#ifdef ALLOW_DIFFKR_CONTROL
-      _EXCH_XYZ_R8( diffkr, mythid)
-#endif
-
-#ifdef ALLOW_KAPGM_CONTROL
-      _EXCH_XYZ_R8( kapgm, mythid)
-#endif
-
-#ifdef ALLOW_KAPREDI_CONTROL
-      _EXCH_XYZ_R8( kapredi, mythid)
-#endif
 
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
+      boundsVec(1)=0.
+      boundsVec(2)=1. _d -4
+      boundsVec(3)=0.9 _d -2
+      boundsVec(4)=1. _d -2
+      boundsVec(5)=0.
+      call ctrl_map_ini_gen2D(xx_bottomdrag_file, wbottomdrag, 
+     & xx_bottomdrag_dummy, boundsVec, bottomdragfld, maskc, mythid )
       _EXCH_XY_R8( bottomdragfld, mythid)
 #endif
 
-#ifdef ALLOW_UVEL0_CONTROL
-      _EXCH_XYZ_R8( uVel, mythid)
+
+#if (defined (ALLOW_EDTAUX_CONTROL) && defined (ALLOW_EDTAUY_CONTROL))
+      boundsVec(1)=0.
+      boundsVec(2)=0.
+      boundsVec(3)=0.
+      boundsVec(4)=0.
+      boundsVec(5)=0.
+c-- zonal eddy stress : edtaux
+      call ctrl_map_ini_gen3D(xx_edtaux_file, wedtauxFld, 
+     & xx_edtaux_dummy, boundsVec, eddytaux, maskw, mythid )
+c-- meridional eddy stress : edtauy
+      call ctrl_map_ini_gen3D(xx_edtauy_file, wedtauyFld, 
+     & xx_edtauy_dummy, boundsVec, eddytauy, masks, mythid )
+c-- exchange UV:
+       CALL EXCH_UV_XYZ_RS(eddyTauX,eddyTauY,.TRUE.,myThid)
 #endif
 
-#ifdef ALLOW_VVEL0_CONTROL
-      _EXCH_XYZ_R8( vVel, mythid)
+
+#ifdef ALLOW_DIFFKR_CONTROL
+      boundsVec(1)=1. _d -6
+      boundsVec(2)=2. _d -6
+      boundsVec(3)=0.9 _d -3
+      boundsVec(4)=1. _d -3
+      boundsVec(5)=0.
+      call ctrl_map_ini_gen3D(xx_diffkr_file, wdiffkrFld, 
+     & xx_diffkr_dummy, boundsVec, diffkr, maskc, mythid )
+      _EXCH_XYZ_R8( diffkr, mythid)
 #endif
 
-#ifdef ALLOW_ETAN0_CONTROL
-      _EXCH_XY_R8( etaN, mythid )
+
+#ifdef ALLOW_KAPGM_CONTROL
+      boundsVec(1)=1. _d 1
+      boundsVec(2)=2. _d 1
+      boundsVec(3)=0.9 _d 4
+      boundsVec(4)=1. _d 4
+      boundsVec(5)=0.
+      call ctrl_map_ini_gen3D(xx_kapgm_file, wkapgmFld, 
+     & xx_kapgm_dummy, boundsVec, kapgm, maskc, mythid )
+      _EXCH_XYZ_R8( kapgm, mythid)
 #endif
 
-#ifdef ALLOW_RELAXSST_CONTROL
-      _EXCH_XY_R4( lambdaThetaClimRelax, mythid )
+
+#ifdef ALLOW_KAPREDI_CONTROL
+      boundsVec(1)=1. _d 1
+      boundsVec(2)=2. _d 1
+      boundsVec(3)=0.9 _d 4
+      boundsVec(4)=1. _d 4
+      boundsVec(5)=0.
+      call ctrl_map_ini_gen3D(xx_kapredi_file, wkaprediFld, 
+     & xx_kapredi_dummy, boundsVec, kapredi, maskc, mythid )
+      _EXCH_XYZ_R8( kapredi, mythid)
 #endif
 
-#ifdef ALLOW_RELAXSSS_CONTROL
-      _EXCH_XY_R4( lambdaThetaClimRelax, mythid )
-#endif
+
 
 #endif /* ALLOW_ECCO */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_bound.F,v 1.2 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_bound.F,v 1.3 2008/02/09 23:28:59 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,75 +6,105 @@ C $Name:  $
 C     !ROUTINE: CTRL_BOUND_3D
 C     !INTERFACE:
       SUBROUTINE CTRL_BOUND_3D(
-     I             bi, bj, fieldCur,
-     I             minCur,maxCur,
-     I             myThid)
+     I             fieldCur,maskFld3d,
+     I             boundsVec,myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o bound ctrl vector values in forward mode
-C     | author: Gael Forget
+C     | started: Gael Forget gforget@mit.edu 20-Aug-2007
+C     |
+C     | o in forward mode: impose bounds on ctrl vector values
+C     | o in adjoint mode: do nothing ... or emulate local minimum
 C     *==========================================================*
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
       integer myThid,bi,bj,i,j,k
-      _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL minCur,maxCur
+      integer itlo,ithi,jtlo,jthi
+      _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
+      _RL maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
+      _RL boundsVec(5)
 
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
 
+      if (boundsVec(1).LT.boundsVec(4)) then
+ 
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
           do k = 1,nr
-            do j = 1-oly,sny+oly
-              do i = 1-olx,snx+olx
-          IF (fieldCur(i,j,k).gt.maxCur) then
-             fieldCur(i,j,k)=maxCur
-          ENDIF
-          IF (fieldCur(i,j,k).lt.minCur) then
-             fieldCur(i,j,k)=minCur
+            do j = 1,sny
+              do i = 1,snx
+          IF (maskFld3d(i,j,k,bi,bj).NE.0.) then
+            IF (fieldCur(i,j,k,bi,bj).gt.boundsVec(4)) then
+             fieldCur(i,j,k,bi,bj)=boundsVec(4)
+            ENDIF
+            IF (fieldCur(i,j,k,bi,bj).lt.boundsVec(1)) then
+             fieldCur(i,j,k,bi,bj)=boundsVec(1)
+            ENDIF
           ENDIF
               enddo
             enddo
           enddo
+        enddo
+      enddo
 
+      endif
 
       end
 
 C     !ROUTINE: CTRL_BOUND_2D
 C     !INTERFACE:
       SUBROUTINE CTRL_BOUND_2D(
-     I             bi, bj, fieldCur,
-     I             minCur,maxCur,
-     I             myThid)
+     I             fieldCur,maskFld3d,
+     I             boundsVec,myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o bound ctrl vector values in forward mode
-C     | author: Gael Forget
+C     | started: Gael Forget gforget@mit.edu 20-Aug-2007
+C     |
+C     | o in forward mode: impose bounds on ctrl vector values
+C     | o in adjoint mode: do nothing ... or emulate local minimum
 C     *==========================================================*
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
+
       integer myThid,bi,bj,i,j,k
-      _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL minCur,maxCur
+      integer itlo,ithi,jtlo,jthi
+      _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nsx,nsy)
+      _RL maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
+      _RL boundsVec(5)
 
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
 
+      if (boundsVec(1).LT.boundsVec(4)) then
+ 
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
             do j = 1-oly,sny+oly
               do i = 1-olx,snx+olx
-          IF (fieldCur(i,j).gt.maxCur) then
-             fieldCur(i,j)=maxCur
-          ENDIF
-          IF (fieldCur(i,j).lt.minCur) then
-             fieldCur(i,j)=minCur
+          IF (maskFld3d(i,j,1,bi,bj).NE.0.) then
+            IF (fieldCur(i,j,bi,bj).gt.boundsVec(4)) then
+             fieldCur(i,j,bi,bj)=boundsVec(4)
+            ENDIF
+            IF (fieldCur(i,j,bi,bj).lt.boundsVec(1)) then
+             fieldCur(i,j,bi,bj)=boundsVec(1)
+            ENDIF
           ENDIF
               enddo
             enddo
+        enddo
+      enddo
+
+      endif
 
 
       end

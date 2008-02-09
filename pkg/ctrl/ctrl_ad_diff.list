@@ -4,6 +4,7 @@ ctrl_get_gen_rec.f
 ctrl_init_variables.f
 ctrl_map_ini.f
 ctrl_map_ini_ecco.f	
+ctrl_map_ini_gen.f
 ctrl_map_forcing.f
 ctrl_smooth.f
 ctrl_getobcse.f
