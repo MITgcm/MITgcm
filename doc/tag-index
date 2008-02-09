@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.953 2008/02/05 15:49:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.954 2008/02/09 16:34:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59n
 o pkg/diagnostics: for large number of diagnostics, store diagnostic mate 
   number in dedicate array "hdiag":
   - new version of S/R DIAGNOSTICS_ADD2LIST : DIAGNOSTICS_ADDTOLIST
