@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.954 2008/02/09 16:34:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.955 2008/02/09 23:31:18 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - Rewrite of ctrl_map_ini_ecco.F, 
+    introducing a generic routine (ctrl_map_ini_gen.F).
+  - Modification of ctrl_bound/adctrl_bound handling control vector bounds.
 checkpoint59n
 o pkg/diagnostics: for large number of diagnostics, store diagnostic mate 
   number in dedicate array "hdiag":
