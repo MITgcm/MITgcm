@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.14 2008/02/09 23:28:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.15 2008/02/10 05:31:32 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -139,7 +139,7 @@ c--   Temperature field.
       boundsVec(3)=39.
       boundsVec(4)=40.
       boundsVec(5)=5.
-      call ctrl_map_ini_gen3D(xx_theta_file, wthetaLev, 
+      call ctrl_map_ini_gen3D(xx_theta_file, 'wthetaLev', 
      & xx_theta_dummy, boundsVec, theta, maskc, mythid ) 
       _EXCH_XYZ_R8( theta, mythid)
 #endif
@@ -152,7 +152,7 @@ c--   Salinity field.
       boundsVec(3)=40.5
       boundsVec(4)=41.
       boundsVec(5)=5.
-      call ctrl_map_ini_gen3D(xx_salt_file, wsaltLev, 
+      call ctrl_map_ini_gen3D(xx_salt_file, 'wsaltLev', 
      & xx_salt_dummy, boundsVec, salt, maskc, mythid )
       _EXCH_XYZ_R8( salt, mythid)
 #endif
@@ -165,10 +165,10 @@ c--   Salinity field.
       boundsVec(4)=0.
       boundsVec(5)=0.      
 c-- initial zonal velocity
-      call ctrl_map_ini_gen3D(xx_uvel_file, tmpfld3d, 
+      call ctrl_map_ini_gen3D(xx_uvel_file, 'wuvel', 
      & xx_uvel_dummy, boundsVec, uvel, maskw, mythid )
 c-- initial merid. velocity
-      call ctrl_map_ini_gen3D(xx_vvel_file, tmpfld3d, 
+      call ctrl_map_ini_gen3D(xx_vvel_file, 'wvvel', 
      & xx_vvel_dummy, boundsVec, vvel, masks, mythid )
 c-- eschange UV:
        CALL EXCH_UV_XYZ_RS(uvel,vvel,.TRUE.,myThid)
@@ -182,7 +182,7 @@ c--   initial Eta.
       boundsVec(3)=0.
       boundsVec(4)=0.
       boundsVec(5)=0.
-      call ctrl_map_ini_gen2D(xx_etan_file, tmpfld2d, 
+      call ctrl_map_ini_gen2D(xx_etan_file, 'wetan', 
      & xx_etan_dummy, boundsVec, etan, maskc, mythid )
       _EXCH_XY_R8( etan, mythid)
 #endif
@@ -197,7 +197,7 @@ c--   SST relaxation coefficient.
       boundsVec(3)=0.
       boundsVec(4)=0.
       boundsVec(5)=0.
-      call ctrl_map_ini_gen2D(xx_relaxsst_file, tmpfld2d, 
+      call ctrl_map_ini_gen2D(xx_relaxsst_file, 'wrelaxsst', 
      & xx_relaxsst_dummy, boundsVec, 
      & lambdaThetaClimRelax, maskc, mythid )
       _EXCH_XY_R8( lambdaSaltClimRelax, mythid)
@@ -211,7 +211,7 @@ c--   SSS relaxation coefficient.
       boundsVec(3)=0.
       boundsVec(4)=0.
       boundsVec(5)=0.
-      call ctrl_map_ini_gen2D(xx_relaxsss_file, tmpfld2d, 
+      call ctrl_map_ini_gen2D(xx_relaxsss_file, 'wrelaxsss', 
      & xx_relaxsss_dummy, boundsVec, 
      & lambdaSaltClimRelax, maskc, mythid )
       _EXCH_XY_R8( lambdaSaltClimRelax, mythid)
@@ -231,7 +231,7 @@ c--   SSS relaxation coefficient.
       boundsVec(3)=0.9 _d -2
       boundsVec(4)=1. _d -2
       boundsVec(5)=0.
-      call ctrl_map_ini_gen2D(xx_bottomdrag_file, wbottomdrag, 
+      call ctrl_map_ini_gen2D(xx_bottomdrag_file, 'wbottomdrag', 
      & xx_bottomdrag_dummy, boundsVec, bottomdragfld, maskc, mythid )
       _EXCH_XY_R8( bottomdragfld, mythid)
 #endif
@@ -244,10 +244,10 @@ c--   SSS relaxation coefficient.
       boundsVec(4)=0.
       boundsVec(5)=0.
 c-- zonal eddy stress : edtaux
-      call ctrl_map_ini_gen3D(xx_edtaux_file, wedtauxFld, 
+      call ctrl_map_ini_gen3D(xx_edtaux_file, 'wedtauxFld', 
      & xx_edtaux_dummy, boundsVec, eddytaux, maskw, mythid )
 c-- meridional eddy stress : edtauy
-      call ctrl_map_ini_gen3D(xx_edtauy_file, wedtauyFld, 
+      call ctrl_map_ini_gen3D(xx_edtauy_file, 'wedtauyFld', 
      & xx_edtauy_dummy, boundsVec, eddytauy, masks, mythid )
 c-- exchange UV:
        CALL EXCH_UV_XYZ_RS(eddyTauX,eddyTauY,.TRUE.,myThid)
@@ -260,7 +260,7 @@ c-- exchange UV:
       boundsVec(3)=0.9 _d -3
       boundsVec(4)=1. _d -3
       boundsVec(5)=0.
-      call ctrl_map_ini_gen3D(xx_diffkr_file, wdiffkrFld, 
+      call ctrl_map_ini_gen3D(xx_diffkr_file, 'wdiffkrFld', 
      & xx_diffkr_dummy, boundsVec, diffkr, maskc, mythid )
       _EXCH_XYZ_R8( diffkr, mythid)
 #endif
@@ -272,7 +272,7 @@ c-- exchange UV:
       boundsVec(3)=0.9 _d 4
       boundsVec(4)=1. _d 4
       boundsVec(5)=0.
-      call ctrl_map_ini_gen3D(xx_kapgm_file, wkapgmFld, 
+      call ctrl_map_ini_gen3D(xx_kapgm_file, 'wkapgmFld', 
      & xx_kapgm_dummy, boundsVec, kapgm, maskc, mythid )
       _EXCH_XYZ_R8( kapgm, mythid)
 #endif
@@ -284,7 +284,7 @@ c-- exchange UV:
       boundsVec(3)=0.9 _d 4
       boundsVec(4)=1. _d 4
       boundsVec(5)=0.
-      call ctrl_map_ini_gen3D(xx_kapredi_file, wkaprediFld, 
+      call ctrl_map_ini_gen3D(xx_kapredi_file, 'wkaprediFld', 
      & xx_kapredi_dummy, boundsVec, kapredi, maskc, mythid )
       _EXCH_XYZ_R8( kapredi, mythid)
 #endif

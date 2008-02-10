@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.1 2008/02/09 23:28:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.2 2008/02/10 05:31:32 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -47,7 +47,7 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer mythid
-      character*(MAX_LEN_FNAM) wFileCur,xxFileCur
+      character*(*) wFileCur,xxFileCur
       _RL boundsVec(5),tmpMax,xxDummyCur
 
       _RL wFld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -133,7 +133,7 @@ c avoid xx larger than boundsVec(5) X uncertainty
       endif
 #else
 c apply Weaver And Courtier correlation operator
-       call smooth_correl3D(xxFld3d,1,mythid)
+       call smooth_correl3D(xxFld3d,2,mythid)
 #endif 
 
       do bj = jtlo,jthi
@@ -217,7 +217,7 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer mythid
-      character*(MAX_LEN_FNAM) wFileCur,xxFileCur
+      character*(*) wFileCur,xxFileCur
       _RL boundsVec(5),tmpMax,xxDummyCur
 
       _RL wFld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -301,7 +301,7 @@ c avoid xx larger than boundsVec(5) X uncertainty
       endif
 #else
 c apply Weaver And Courtier correlation operator
-       call smooth_correl2d(xxFld2d,maskFld3d,1,mythid)
+       call smooth_correl2d(xxFld2d,maskFld3d,2,mythid)
 #endif 
 
       do bj = jtlo,jthi
