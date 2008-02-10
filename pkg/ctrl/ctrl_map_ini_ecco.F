@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.15 2008/02/10 05:31:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.16 2008/02/10 21:24:38 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -39,7 +39,9 @@ c     == global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "GMREDI.h"
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
 
 #include "ctrl.h"
 #include "ctrl_dummy.h"
@@ -148,7 +150,7 @@ c--   Temperature field.
 #ifdef ALLOW_SALT0_CONTROL
 c--   Salinity field.
       boundsVec(1)=29.
-      boundsVec(2)=29.5.
+      boundsVec(2)=29.5
       boundsVec(3)=40.5
       boundsVec(4)=41.
       boundsVec(5)=5.

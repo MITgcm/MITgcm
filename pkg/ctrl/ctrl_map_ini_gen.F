@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.2 2008/02/10 05:31:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.3 2008/02/10 21:24:38 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -30,7 +30,6 @@ c     == global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "GMREDI.h"
 
 #include "ctrl.h"
 #include "ctrl_dummy.h"
@@ -200,7 +199,6 @@ c     == global variables ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#include "GMREDI.h"
 
 #include "ctrl.h"
 #include "ctrl_dummy.h"
