@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.13 2007/11/05 18:52:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.14 2008/02/12 23:04:44 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -185,7 +185,7 @@ C--   Set vertical diffusivity contribution from KPP
          CALL GMREDI_CALC_DIFF(
      I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
      U        KappaRTr,
-     I        myThid)
+     I        trIdentity,myThid)
       ENDIF
 #endif
 
