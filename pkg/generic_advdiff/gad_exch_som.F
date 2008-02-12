@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_exch_som.F,v 1.2 2008/02/08 17:16:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_exch_som.F,v 1.3 2008/02/12 20:29:57 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -39,7 +39,6 @@ CEOP
 #ifdef GAD_ALLOW_SOM_ADVECT
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-      INTEGER n
 
 C--   Apply exchanges to 1rst.O.Moments:
 C-    Sx,Sy :
