@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.12 2008/01/27 20:55:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.13 2008/02/12 20:27:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -72,6 +72,12 @@ C                    and stagger/synchronous TimeStep
         ENDIF
         IF ( seqFlag.EQ.2 ) selectVars = 4
         CALL DIAGNOSTICS_FILL_STATE(selectVars, myThid)
+
+#ifdef ALLOW_GENERIC_ADVDIFF
+        IF ( seqFlag.EQ.0 .AND. useGAD ) THEN
+          CALL GAD_DIAGNOSTICS_STATE( myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
 #ifdef ALLOW_PTRACERS
         IF ( (selectVars.EQ.1 .OR. selectVars.EQ.3)
