@@ -28,13 +28,14 @@
 # Time stepping parameters
  &PARM03
  niter0=0,
- endTime=1036800.,
+ endTime=518400.,
+#- to simulate 1 rotation period:
+#endTime=1036800.,
  abEps=0.1,
  deltaT=2700.,
  pChkptFreq=0.,
  chkptFreq=0.,
 #dumpFreq=86400.,
- dumpFreq=518400.,
  monitorFreq=21600.,
  &
 
