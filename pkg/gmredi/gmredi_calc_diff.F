@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_diff.F,v 1.8 2004/10/22 01:40:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_diff.F,v 1.9 2008/02/12 23:01:18 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
       SUBROUTINE GMREDI_CALC_DIFF( 
      I        bi,bj,iMin,iMax,jMin,jMax,kArg,kSize,
      U        KappaRx,
-     I        myThid)
+     I        tracerIdentity,myThid)
 
 C     /==========================================================\
 C     | SUBROUTINE GMREDI_CALC_DIFF                              |
@@ -35,6 +35,7 @@ C     myThid    :: Instance number for this innvocation of GMREDI_CALC_DIFF
 C
       INTEGER bi,bj,iMin,iMax,jMin,jMax,kArg,kSize
       _RL KappaRx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSize)
+      INTEGER tracerIdentity
       INTEGER myThid
 
 #ifdef ALLOW_GMREDI
