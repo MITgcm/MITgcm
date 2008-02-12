@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_write_pickup.F,v 1.1 2007/01/16 04:38:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_write_pickup.F,v 1.2 2008/02/12 20:29:25 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -50,7 +50,9 @@ C     prec    :: precision of pickup files
 C     msgBuf  :: Informational/error meesage buffer
       INTEGER n,prec,iRec,lChar
       CHARACTER*(MAX_LEN_FNAM) fn
+#ifdef ALLOW_MNC
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 CEOP
 
 #ifdef ALLOW_MNC
