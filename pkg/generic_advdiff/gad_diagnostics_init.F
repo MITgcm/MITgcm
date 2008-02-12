@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_init.F,v 1.6 2007/11/10 22:10:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_init.F,v 1.7 2008/02/12 20:26:02 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -25,21 +25,29 @@ C     myThid   :: My Thread Id. number
 CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
+C     ! FUNCTIONS:
+      CHARACTER*4  GAD_DIAG_SUFX
+      CHARACTER*16 DIAGS_MK_UNITS
+      CHARACTER*80 DIAGS_MK_TITLE
+c     EXTERNAL     GAD_DIAG_SUFX
+      EXTERNAL     DIAGS_MK_UNITS
+      EXTERNAL     DIAGS_MK_TITLE
+
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf   :: Informational/error meesage buffer
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      INTEGER       diagNum
-      CHARACTER*8   diagName
-      CHARACTER*16  diagCode
-      CHARACTER*16  diagUnits
+      INTEGER        diagNum
+      INTEGER        diagMate
+      CHARACTER*8    diagName
+      CHARACTER*16   diagCode
+      CHARACTER*16   diagUnits
       CHARACTER*(80) diagTitle
 
-      CHARACTER*10  flxUnits
+      CHARACTER*10  flxUnits, trUnits
       CHARACTER*12  locName
-      CHARACTER*4 GAD_DIAG_SUFX, diagSufx
-c     EXTERNAL    GAD_DIAG_SUFX
+      CHARACTER*4   diagSufx
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -52,116 +60,255 @@ C--   Add diagnostics to the (long) list
 
 C-     add diagnostics of advective & diffusive flux of Temp :
        IF ( fluidIsAir ) THEN
-         WRITE(diagUnits,'(2A)') 'K',flxUnits
+         trUnits = 'K'
        ELSE
-         WRITE(diagUnits,'(2A)') 'degC',flxUnits
+         trUnits = 'degC'
        ENDIF
+       diagUnits = DIAGS_MK_UNITS( trUnits//flxUnits, myThid )
        diagSufx = GAD_DIAG_SUFX( GAD_TEMPERATURE, myThid )
 
 C-     Advective flux:
        diagName  = 'ADVr'//diagSufx
        diagTitle = 'Vertical   Advective Flux of Pot.Temperature'
        diagCode  = 'WM      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
        diagName  = 'ADVx'//diagSufx
        diagTitle = 'Zonal      Advective Flux of Pot.Temperature'
-       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
        diagName  = 'ADVy'//diagSufx
        diagTitle = 'Meridional Advective Flux of Pot.Temperature'
-       WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 C-     Diffusive flux:
        diagName  = 'DFrE'//diagSufx
        diagTitle = 'Vertical Diffusive Flux of Pot.Temperature'
      &           //' (Explicit part)'
        diagCode  = 'WM      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
        diagName  = 'DFxE'//diagSufx
        diagTitle = 'Zonal      Diffusive Flux of Pot.Temperature'
-       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
        diagName  = 'DFyE'//diagSufx
        diagTitle = 'Meridional Diffusive Flux of Pot.Temperature'
-       WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
        diagName  = 'DFrI'//diagSufx
        diagTitle = 'Vertical Diffusive Flux of Pot.Temperature'
      &           //' (Implicit part)'
        diagCode  = 'WM      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef GAD_ALLOW_SOM_ADVECT
+       diagUnits = DIAGS_MK_UNITS( trUnits, myThid )
+
+       diagName  = 'SM_x'//diagSufx
+       diagTitle = 'Pot.Temp.   1rst Order Moment Sx'
+       diagCode  = 'UM      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SM_y'//diagSufx
+       diagTitle = 'Pot.Temp.   1rst Order Moment Sy'
+       diagCode  = 'VM      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SM_z'//diagSufx
+       diagTitle = 'Pot.Temp.   1rst Order Moment Sz'
+       diagCode  = 'SM      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'SMxx'//diagSufx
+       diagTitle = 'Pot.Temp.   2nd Order Moment Sxx'
+       diagCode  = 'UM      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SMyy'//diagSufx
+       diagTitle = 'Pot.Temp.   2nd Order Moment Syy'
+       diagCode  = 'VM      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SMzz'//diagSufx
+       diagTitle = 'Pot.Temp.   2nd Order Moment Szz'
+       diagCode  = 'SM      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'SMxy'//diagSufx
+       diagTitle = 'Pot.Temp.   2nd Order Moment Sxy'
+       diagCode  = 'SM      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+       diagName  = 'SMxz'//diagSufx
+       diagTitle = 'Pot.Temp.   2nd Order Moment Sxz'
+       diagCode  = 'UM      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SMyz'//diagSufx
+       diagTitle = 'Pot.Temp.   2nd Order Moment Syz'
+       diagCode  = 'VM      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+       diagUnits = DIAGS_MK_UNITS( '('//trUnits//')^2', myThid )
+       diagName  = 'SM_v'//diagSufx
+       diagTitle = 'Pot.Temp.   sub-grid variance'
+       diagCode  = 'SM P    MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif /* GAD_ALLOW_SOM_ADVECT */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-     add diagnostics of advective & diffusive flux of Salt :
        IF ( fluidIsAir ) THEN
-         locName = ' Water-Vapor'
-         WRITE(diagUnits,'(2A)') 'g/kg',flxUnits
+         locName = 'Water-Vapor '
+         trUnits = 'g/kg'
 #ifdef ALLOW_FIZHI
-        IF(useFIZHI)THEN
-         WRITE(diagUnits,'(2A)') 'kg/kg',flxUnits
-        ENDIF
+        IF ( useFIZHI ) trUnits = 'kg/kg'
 #endif /* ALLOW_FIZHI */
        ELSE
-         locName = ' Salinity   '
-         WRITE(diagUnits,'(2A)') 'psu',flxUnits
+         locName = 'Salinity    '
+         trUnits = 'psu'
        ENDIF
+       diagUnits = DIAGS_MK_UNITS( trUnits//flxUnits, myThid )
        diagSufx = GAD_DIAG_SUFX( GAD_SALINITY, myThid )
 
 C-     Advective flux:
        diagName  = 'ADVr'//diagSufx
-       diagTitle = 'Vertical   Advective Flux of'//locName
+       diagTitle = 'Vertical   Advective Flux of '//locName
        diagCode  = 'WM      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
        diagName  = 'ADVx'//diagSufx
-       diagTitle = 'Zonal      Advective Flux of'//locName
-       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagTitle = 'Zonal      Advective Flux of '//locName
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
        diagName  = 'ADVy'//diagSufx
-       diagTitle = 'Meridional Advective Flux of'//locName
-       WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagTitle = 'Meridional Advective Flux of '//locName
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 C-     Diffusive flux:
        diagName  = 'DFrE'//diagSufx
-       diagTitle = 'Vertical Diffusive Flux of'//locName
-     &           // ' (Explicit part)'
+       diagTitle = 'Vertical Diffusive Flux of '//locName
+     &           // '(Explicit part)'
        diagCode  = 'WM      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
        diagName  = 'DFxE'//diagSufx
-       diagTitle = 'Zonal      Diffusive Flux of'//locName
-       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagTitle = 'Zonal      Diffusive Flux of '//locName
+       diagCode  = 'UU      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
        diagName  = 'DFyE'//diagSufx
-       diagTitle = 'Meridional Diffusive Flux of'//locName
-       WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       diagTitle = 'Meridional Diffusive Flux of '//locName
+       diagCode  = 'VV      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
        diagName  = 'DFrI'//diagSufx
-       diagTitle = 'Vertical Diffusive Flux of'//locName
-     &           //' (Implicit part)'
+       diagTitle = 'Vertical Diffusive Flux of '//locName
+     &           //'(Implicit part)'
        diagCode  = 'WM      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
        diagName  = 'SALTFILL'
-       diagTitle = 'Filling of Negative Values of'//locName
+       diagTitle = 'Filling of Negative Values of '//locName
        diagCode  = 'SM      MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef GAD_ALLOW_SOM_ADVECT
+
+       diagUnits = DIAGS_MK_UNITS( trUnits, myThid )
+
+       diagName  = 'SM_x'//diagSufx
+       diagTitle = locName//'1rst Order Moment Sx'
+       diagCode  = 'UM      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SM_y'//diagSufx
+       diagTitle = locName//'1rst Order Moment Sy'
+       diagCode  = 'VM      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SM_z'//diagSufx
+       diagTitle = locName//'1rst Order Moment Sz'
+       diagCode  = 'SM      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'SMxx'//diagSufx
+       diagTitle = locName//'2nd Order Moment Sxx'
+       diagCode  = 'UM      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SMyy'//diagSufx
+       diagTitle = locName//'2nd Order Moment Syy'
+       diagCode  = 'VM      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SMzz'//diagSufx
+       diagTitle = locName//'2nd Order Moment Szz'
+       diagCode  = 'SM      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'SMxy'//diagSufx
+       diagTitle = locName//'2nd Order Moment Sxy'
+       diagCode  = 'SM      MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+       diagName  = 'SMxz'//diagSufx
+       diagTitle = locName//'2nd Order Moment Sxz'
+       diagCode  = 'UM      MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+       diagName  = 'SMyz'//diagSufx
+       diagTitle = locName//'2nd Order Moment Syz'
+       diagCode  = 'VM      MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+       diagUnits = DIAGS_MK_UNITS( '('//trUnits//')^2', myThid )
+       diagName  = 'SM_v'//diagSufx
+       diagTitle = locName//'sub-grid variance'
+       diagCode  = 'SM P    MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif /* GAD_ALLOW_SOM_ADVECT */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

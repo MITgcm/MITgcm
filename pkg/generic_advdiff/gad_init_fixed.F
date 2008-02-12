@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.3 2007/10/19 14:43:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.4 2008/02/12 20:26:02 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -21,18 +21,33 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid -  Number of this instance of GAD_INIT_FIXED
+C     myThid  :: My Thread Id. number
       INTEGER myThid
 CEOP
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf  :: Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER   minOlSize
+      INTEGER   n
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
+
+C-- Set SOM I/O suffix (used for pickup, diagnostics ...)
+      DO n=1,nSOM
+        somSfx(n) = '  '
+        IF (n.EQ.1) somSfx(n) = '_x'
+        IF (n.EQ.2) somSfx(n) = '_y'
+        IF (n.EQ.3) somSfx(n) = '_z'
+        IF (n.EQ.4) somSfx(n) = 'xx'
+        IF (n.EQ.5) somSfx(n) = 'yy'
+        IF (n.EQ.6) somSfx(n) = 'zz'
+        IF (n.EQ.7) somSfx(n) = 'xy'
+        IF (n.EQ.8) somSfx(n) = 'xz'
+        IF (n.EQ.9) somSfx(n) = 'yz'
+      ENDDO
 
 C-- Set Temp & Salt 2nd-Order Moment Advec. flag according to advection scheme
       tempSOM_Advection = tempAdvScheme.GE.ENUM_SOM_PRATHER
