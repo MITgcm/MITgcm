@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_x.F,v 1.3 2008/01/08 19:57:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_x.F,v 1.4 2008/02/12 20:32:34 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,6 +9,8 @@ C !ROUTINE: GAD_SOM_ADV_X
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_SOM_ADV_X(
      I           bi,bj,k, limiter,
+     I           overlapOnly, interiorOnly,
+     I           N_edge, S_edge, E_edge, W_edge,
      I           deltaTloc, uTrans,
      U           sm_v, sm_o, sm_x, sm_y, sm_z,
      U           sm_xx, sm_yy, sm_zz, sm_xy, sm_xz, sm_yz,
@@ -34,20 +36,23 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-c #include "GRID.h"
 #include "GAD.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj        :: tile indices
-C  k            :: vertical level
-C  limiter      :: 0: no limiter ; 1: Prather, 1986 limiter
-C  uTrans       :: zonal volume transport
-C  myThid       :: my Thread Id. number
+C  bi,bj         :: tile indices
+C  k             :: vertical level
+C  limiter       :: 0: no limiter ; 1: Prather, 1986 limiter
+C  overlapOnly   :: only update the edges of myTile, but not the interior
+C  interiorOnly  :: only update the interior of myTile, but not the edges
+C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
+C  uTrans        :: zonal volume transport
+C  myThid        :: my Thread Id. number
       INTEGER bi,bj,k
       INTEGER limiter
+      LOGICAL overlapOnly, interiorOnly
+      LOGICAL N_edge, S_edge, E_edge, W_edge
       _RL deltaTloc
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -72,12 +77,17 @@ C  uT           :: zonal advective flux
 
 #ifdef GAD_ALLOW_SOM_ADVECT
 C !LOCAL VARIABLES: ====================================================
-C  i,j          :: loop indices
-C  uLoc         :: volume transported (per time step)
+C  i,j           :: loop indices
+C  uLoc          :: volume transported (per time step)
+C [iMin,iMax]Upd :: loop range to update tracer field
+C [jMin,jMax]Upd :: loop range to update tracer field
+C  nbStrips      :: number of strips (if region to update is splitted)
       _RL two, three
       PARAMETER( two   = 2. _d 0 )
       PARAMETER( three = 3. _d 0 )
       INTEGER i,j
+      INTEGER ns, nbStrips
+      INTEGER iMinUpd(2), iMaxUpd(2), jMinUpd(2), jMaxUpd(2)
       _RL  recip_dT
       _RL  slpmax, s1max, s1new, s2new
       _RL  uLoc, alf1, alf1q, alpmn
@@ -112,9 +122,45 @@ CEOP
       recip_dT = 0.
       IF ( deltaTloc.GT.0. _d 0 ) recip_dT = 1.0 _d 0 / deltaTloc
 
+C-    Set loop ranges for updating tracer field (splitted in 2 strips)
+      nbStrips   = 1
+      iMinUpd(1) = 1-Olx+1
+      iMaxUpd(1) = sNx+Olx-1
+      jMinUpd(1) = 1-Oly
+      jMaxUpd(1) = sNy+Oly
+      IF ( overlapOnly ) THEN
+C     update in overlap-Only
+        IF ( W_edge ) iMinUpd(1) = 1
+        IF ( E_edge ) iMaxUpd(1) = sNx
+        IF ( S_edge ) THEN
+          jMinUpd(1) = 1-Oly
+          jMaxUpd(1) = 0
+        ENDIF
+        IF ( N_edge ) THEN
+          IF ( S_edge ) nbStrips = 2
+          jMinUpd(nbStrips) = sNy+1
+          jMaxUpd(nbStrips) = sNy+Oly
+        ENDIF
+      ELSE
+C     do not only update the overlap
+        IF ( interiorOnly .AND. S_edge ) jMinUpd(1) = 1
+        IF ( interiorOnly .AND. N_edge ) jMaxUpd(1) = sNy
+      ENDIF
+
+C-    Internal exchange for calculations in X
+c     IF ( overlapOnly ) THEN
+c         CALL GAD_SOM_FILL_CS_CORNER( .TRUE.,
+c    U           sm_v,  sm_o,  sm_x,  sm_y,  sm_z,
+c    U           sm_xx, sm_yy, sm_zz, sm_xy, sm_xz, sm_yz,
+c    I           bi, bj, myThid )
+c     ENDIF
+
+C--   start 1rst loop on strip number "ns"
+      DO ns=1,nbStrips
+
       IF ( limiter.EQ.1 ) THEN
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
+       DO j=jMinUpd(ns),jMaxUpd(ns)
+        DO i=iMinUpd(1)-1,iMaxUpd(1)+1
 C     If flux-limiting transport is to be applied, place limits on
 C     appropriate moments before transport.
          slpmax = 0.
@@ -133,9 +179,8 @@ C     appropriate moments before transport.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  part.1 : calculate flux for all moments
-      DO j=1-OLy,sNy+OLy
-       uT(1-OLx,j)=0.
-       DO i=1-OLx+1,sNx+OLx
+      DO j=jMinUpd(ns),jMaxUpd(ns)
+       DO i=iMinUpd(1),iMaxUpd(1)+1
         uLoc = uTrans(i,j)*deltaTloc
 C--    Flux from (i-1) to (i) when U>0 (i.e., take right side of box i-1)
         fp_v (i,j) = MAX( 0. _d 0,  uLoc )
@@ -180,11 +225,25 @@ C--    Save zero-order flux:
        ENDDO
       ENDDO
 
+C--   end 1rst loop on strip number "ns"
+c     ENDDO
+
+C-    Internal exchange for next calculations in Y
+c     IF ( overlapOnly ) THEN
+c         CALL GAD_SOM_FILL_CS_CORNER( .FALSE.,
+c    U           sm_v,  sm_o,  sm_x,  sm_y,  sm_z,
+c    U           sm_xx, sm_yy, sm_zz, sm_xy, sm_xz, sm_yz,
+c    I           bi, bj, myThid )
+c     ENDIF
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   start 2nd loop on strip number "ns"
+c     DO ns=1,nbStrips
+
 C---  part.2 : re-adjust moments remaining in the box
 C      take off from grid box (i): negative U(i) and positive U(i+1)
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx+1,sNx+OLx-1
+      DO j=jMinUpd(ns),jMaxUpd(ns)
+       DO i=iMinUpd(1),iMaxUpd(1)
         alf1  = 1. _d 0 - aln(i,j) - alp(i+1,j)
         alf1q = alf1*alf1
         alpmn = alp(i+1,j) - aln(i,j)
@@ -205,8 +264,8 @@ C      take off from grid box (i): negative U(i) and positive U(i+1)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  part.3 : Put the temporary moments into appropriate neighboring boxes
 C      add into grid box (i): positive U(i) and negative U(i+1)
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx+1,sNx+OLx-1
+      DO j=jMinUpd(ns),jMaxUpd(ns)
+       DO i=iMinUpd(1),iMaxUpd(1)
         sm_v (i,j) = sm_v (i,j) + fp_v (i,j) + fn_v (i+1,j)
         alfp = fp_v( i ,j)/sm_v(i,j)
         alfn = fn_v(i+1,j)/sm_v(i,j)
@@ -242,6 +301,9 @@ C      add into grid box (i): positive U(i) and negative U(i+1)
         sm_zz(i,j) = sm_zz(i,j) + fp_zz(i,j) + fn_zz(i+1,j)
         sm_yz(i,j) = sm_yz(i,j) + fp_yz(i,j) + fn_yz(i+1,j)
        ENDDO
+      ENDDO
+
+C--   end 2nd loop on strip number "ns"
       ENDDO
 
 #endif /* GAD_ALLOW_SOM_ADVECT */
