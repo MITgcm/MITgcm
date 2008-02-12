@@ -16,7 +16,7 @@
  writeBinaryPrec=64,
  momStepping=.FALSE.,
  tempAdvScheme=33,
- saltAdvScheme=33,
+ saltAdvScheme=80,
  &
 
 # Elliptic solver parameters
@@ -30,10 +30,11 @@
  niter0=0,
  endTime=1036800.,
  abEps=0.1,
- deltaT=3600.0,
- pChkptFreq=0.0,
- chkptFreq=0.0,
- dumpFreq=86400.0,
+ deltaT=2700.,
+ pChkptFreq=0.,
+ chkptFreq=0.,
+#dumpFreq=86400.,
+ dumpFreq=518400.,
  monitorFreq=21600.,
  &
 
