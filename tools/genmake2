@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.167 2007/11/26 21:39:58 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.168 2008/02/13 07:39:34 mlosch Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -746,7 +746,9 @@ void FC_NAMEMANGLE(cloc) ( double *curtim )
  *curtim = *curtim/1.E6;
 }
 EOF
-    make genmake_tc_1.o >> genmake_warnings 2>&1
+    COMM="$CC $CFLAGS -c genmake_tc_1.c"
+    echo $COMM >> genmake_warnings
+    $COMM >> genmake_warnings 2>&1
     RET_C=$?
     cat <<EOF > genmake_tc_2.$FS
       program hello
@@ -805,7 +807,9 @@ void FC_NAMEMANGLE(sigreg) (int * aip)
     return;
 }
 EOF
-    make genmake_tc_1.o >> genmake_warnings 2>&1
+    COMM="$CC $CFLAGS -c genmake_tc_1.c"
+    echo $COMM >> genmake_warnings
+    $COMM >> genmake_warnings 2>&1
     RET_C=$?
     cat <<EOF > genmake_tc_2.$FS
       program hello
@@ -853,7 +857,9 @@ void FC_NAMEMANGLE(setrlstk) ()
     return;
 }
 EOF
-    make genmake_tc_1.o >> genmake_warnings 2>&1
+    COMM="$CC $CFLAGS -c genmake_tc_1.c"
+    echo $COMM >> genmake_warnings
+    $COMM >> genmake_warnings 2>&1
     RET_C=$?
     cat <<EOF > genmake_tc_2.$FS
       program hello
@@ -897,7 +903,9 @@ void FC_NAMEMANGLE(tfsize) ( int *nbyte )
         *nbyte = -1;
 }
 EOF
-    make genmake_tc_1.o >> genmake_tc.log 2>&1
+    COMM="$CC $CFLAGS -c genmake_tc_1.c"
+    echo $COMM >> genmake_warnings
+    $COMM >> genmake_tc.log 2>&1
     RET_C=$?
     cat <<EOF > genmake_tc_2.$FS
       program hello

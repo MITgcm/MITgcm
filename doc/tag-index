@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.956 2008/02/12 23:18:18 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.957 2008/02/13 07:43:39 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o genmake2: replace (4 times)
+     make genmake_tc_1.o >> genmake_warnings 2>&1
+  with
+     COMM="$CC $CFLAGS -c genmake_tc_1.c"
+     echo $COMM >> genmake_warnings
+     $COMM >> genmake_warnings 2>&1
+  to make genmake2 always see the value of CC as specified in the optfile.
 o generic_advdiff: - prather advection scheme (SOM) coded for CS-grid.
   - add diagnostics for 1srt & 2nd Order moments and sub-grid variance.
   - modify verification advect_cs test to test SOM-advection on CS-grid.
