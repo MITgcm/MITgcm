@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.35 2008/02/12 23:04:44 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.36 2008/02/13 02:43:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,7 +31,9 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
 #include "GAD.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -117,6 +119,7 @@ C--   Set vertical diffusivity contribution from KPP
       ENDIF
 #endif
 
+#ifdef ALLOW_GENERIC_ADVDIFF
 #ifdef ALLOW_GMREDI
       IF (useGMRedi) THEN
          CALL GMREDI_CALC_DIFF(
@@ -128,7 +131,8 @@ C--   Set vertical diffusivity contribution from KPP
      U        KappaRS,
      I        GAD_SALINITY,myThid)
       ENDIF
-#endif
+#endif /* ALLOW_GMREDI */
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
 #ifdef ALLOW_PP81
       IF (usePP81) THEN
