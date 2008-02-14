@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_global.F,v 1.3 2005/07/10 00:52:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_global.F,v 1.4 2008/02/14 15:41:43 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -48,6 +48,7 @@ C     !LOCAL VARIABLES:
       PARAMETER ( iv = nStats - 2 , im = nStats - 1 , ix = nStats )
       INTEGER bi, bj
       INTEGER i, k, kd, kCnt, klev, kMlev
+      _RL     tmpMin, tmpMax, tmpVol
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -90,15 +91,13 @@ C--     Retrieve tile statistics first
             kd = iSm + k - 1
             IF ( qSdiag(0,jReg,kd,bi,bj).GT.0. ) THEN
              IF ( qtmp2(0,k).LE.0. ) THEN
-              DO i=0,nStats
+              DO i=0,1
                 qtmp2(i,k) = qSdiag(i,jReg,kd,bi,bj)
               ENDDO
              ELSE
-              DO i=0,iv
+              DO i=0,1
                 qtmp2(i,k) = qtmp2(i,k) + qSdiag(i,jReg,kd,bi,bj)
               ENDDO
-              qtmp2(im,k) = MIN( qtmp2(im,k),qSdiag(im,jReg,kd,bi,bj) )
-              qtmp2(ix,k) = MAX( qtmp2(ix,k),qSdiag(ix,jReg,kd,bi,bj) )
              ENDIF
             ENDIF
            ENDDO
@@ -110,28 +109,34 @@ C-       end tile index loops
 
 C--     Global min,max & sum (at each level) over all thread & processors :
         DO k=1,klev
+           tmpVol = qtmp1(0,k)
            DO i=0,iv
             _GLOBAL_SUM_R8(qtmp1(i,k),myThid)
            ENDDO
-            qtmp1(im,k) = -qtmp1(im,k)
-            _GLOBAL_MAX_R8(qtmp1(im,k),myThid)
-            qtmp1(im,k) = -qtmp1(im,k)
-            _GLOBAL_MAX_R8(qtmp1(ix,k),myThid)
+           IF ( qtmp1(0,k).GT.0. .AND. tmpVol.LE.0. ) THEN
+C-      In case 1 processor has only empty tiles:
+             tmpMax = qtmp1(1,k)/qtmp1(0,k)
+             tmpmin = -tmpMax
+           ELSE
+             tmpMin = -qtmp1(im,k)
+             tmpMax =  qtmp1(ix,k)
+           ENDIF
+           _GLOBAL_MAX_R8(tmpMin,myThid)
+           _GLOBAL_MAX_R8(tmpMax,myThid)
+           qtmp1(im,k) = -tmpMin
+           qtmp1(ix,k) =  tmpMax
         ENDDO
         IF ( mate.GT.0 ) THEN
          DO k=1,kMlev
-           DO i=0,iv
+           DO i=0,1
             _GLOBAL_SUM_R8(qtmp2(i,k),myThid)
            ENDDO
-            qtmp2(im,k) = -qtmp2(im,k)
-            _GLOBAL_MAX_R8(qtmp2(im,k),myThid)
-            qtmp2(im,k) = -qtmp2(im,k)
-            _GLOBAL_MAX_R8(qtmp2(ix,k),myThid)
          ENDDO
         ENDIF
 
 C--     Vertical integral, min & max :
         DO k=1,klev
+          IF ( qtmp1(0,k).GT.0. ) THEN
            IF ( qtmp1(0,0).LE.0. ) THEN
              DO i=0,nStats
               qtmp1(i,0) = qtmp1(i,k)
@@ -143,20 +148,21 @@ C--     Vertical integral, min & max :
               qtmp1(im,0) = MIN(qtmp1(im,0),qtmp1(im,k))
               qtmp1(ix,0) = MAX(qtmp1(ix,0),qtmp1(ix,k))
            ENDIF
+          ENDIF
         ENDDO
         IF ( mate.GT.0 ) THEN
          DO k=1,kMlev
+          IF ( qtmp2(0,k).GT.0. ) THEN
            IF ( qtmp2(0,0).LE.0. ) THEN
-             DO i=0,nStats
+             DO i=0,1
               qtmp2(i,0) = qtmp2(i,k)
              ENDDO
            ELSE
-             DO i=0,iv
+             DO i=0,1
               qtmp2(i,0) = qtmp2(i,0) + qtmp2(i,k)
              ENDDO
-              qtmp2(im,0) = MIN(qtmp2(im,0),qtmp2(im,k))
-              qtmp2(ix,0) = MAX(qtmp2(ix,0),qtmp2(ix,k))
            ENDIF
+          ENDIF
          ENDDO
         ENDIF
 
