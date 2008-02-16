@@ -35,6 +35,7 @@ The files are:
     aces_test_ifc_mpi	+=> MPI test scripts for each compiler
     aces_test_pgi_mpi	/
     aces_test_ifc_mth    => multi-threaded test with intel compiler
+    aces_test_op64_tuv  using open64 compiler with option to Trap Uninitialised Vars.
 
 ------------------------
 Old version of the same script but run by Ed Hill :
