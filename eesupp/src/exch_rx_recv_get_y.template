@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_y.template,v 1.7 2005/11/11 03:01:26 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_y.template,v 1.8 2008/02/20 20:18:59 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -206,11 +206,11 @@ C        i.e. we only lock waiting for data that we need.
 C         IF ( myThid .EQ. 1 .AND. spinCount .GT. _EXCH_SPIN_LIMIT ) THEN
 C          STOP ' S/R EXCH_RECV_GET_Y: spinCount .GT. _EXCH_SPIN_LIMIT'
 C         ENDIF
-          IF ( southRecvAck(eBl,bi,bj) .EQ. 0. ) GOTO 10
-          IF ( northRecvAck(eBl,bi,bj) .EQ. 0. ) GOTO 10
+          IF ( southRecvAck(eBl,bi,bj) .EQ. 0 ) GOTO 10
+          IF ( northRecvAck(eBl,bi,bj) .EQ. 0 ) GOTO 10
 C        Clear requests
-         southRecvAck(eBl,bi,bj) = 0.
-         northRecvAck(eBl,bi,bj) = 0.
+         southRecvAck(eBl,bi,bj) = 0
+         northRecvAck(eBl,bi,bj) = 0
 C        Update statistics
          IF ( exchCollectStatistics ) THEN
           exchRecvYExchCount(1,bi,bj) = exchRecvYExchCount(1,bi,bj)+1

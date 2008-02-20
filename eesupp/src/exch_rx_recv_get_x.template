@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_x.template,v 1.7 2005/11/11 03:01:26 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_x.template,v 1.8 2008/02/20 20:19:00 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -202,11 +202,11 @@ C         IF ( myThid .EQ. 1 .AND. spinCount .GT. _EXCH_SPIN_LIMIT ) THEN
 C          WRITE(*,*) ' eBl = ', ebl
 C          STOP ' S/R EXCH_RECV_GET_X: spinCount .GT. _EXCH_SPIN_LIMIT'
 C         ENDIF
-          IF ( westRecvAck(eBl,bi,bj) .EQ. 0. ) GOTO 10
-          IF ( eastRecvAck(eBl,bi,bj) .EQ. 0. ) GOTO 10
+          IF ( westRecvAck(eBl,bi,bj) .EQ. 0 ) GOTO 10
+          IF ( eastRecvAck(eBl,bi,bj) .EQ. 0 ) GOTO 10
 C        Clear outstanding requests
-         westRecvAck(eBl,bi,bj) = 0.
-         eastRecvAck(eBl,bi,bj) = 0.
+         westRecvAck(eBl,bi,bj) = 0
+         eastRecvAck(eBl,bi,bj) = 0
 
          IF ( exchNReqsX(1,bi,bj) .GT. 0 ) THEN
 #ifdef ALLOW_USE_MPI
