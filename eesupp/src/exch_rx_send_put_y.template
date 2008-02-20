@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_y.template,v 1.6 2005/11/11 03:01:26 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_y.template,v 1.7 2008/02/20 20:29:54 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -205,7 +205,7 @@ C        Send the data
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-         northRecvAck(eBl,biS,bjS) = 1.
+         northRecvAck(eBl,biS,bjS) = 1
         ELSEIF ( southCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
@@ -251,7 +251,7 @@ C        Send the data
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-         southRecvAck(eBl,biN,bjN) = 1.
+         southRecvAck(eBl,biN,bjN) = 1
         ELSEIF ( northCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
@@ -302,7 +302,7 @@ C        Send the data
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-         northRecvAck(eBl,biS,bjS) = 1.
+         northRecvAck(eBl,biS,bjS) = 1
         ELSEIF ( southCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
@@ -350,7 +350,7 @@ C        Send the data
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-         southRecvAck(eBl,biN,bjN) = 1.
+         southRecvAck(eBl,biN,bjN) = 1
         ELSEIF ( northCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
@@ -388,10 +388,10 @@ C     overlap region data that will be exchanged is up to date.
         bjN = _tileBjN(bi,bj)
         southCommMode = _tileCommModeS(bi,bj)
         northCommMode = _tileCommModeN(bi,bj)
-        IF ( southCommMode .EQ. COMM_PUT ) northRecvAck(eBl,biS,bjS) = 1.
-        IF ( northCommMode .EQ. COMM_PUT ) southRecvAck(eBl,biN,bjN) = 1.
-        IF ( southCommMode .EQ. COMM_GET ) northRecvAck(eBl,biS,bjS) = 1.
-        IF ( northCommMode .EQ. COMM_GET ) southRecvAck(eBl,biN,bjN) = 1.
+        IF ( southCommMode.EQ.COMM_PUT ) northRecvAck(eBl,biS,bjS) = 1
+        IF ( northCommMode.EQ.COMM_PUT ) southRecvAck(eBl,biN,bjN) = 1
+        IF ( southCommMode.EQ.COMM_GET ) northRecvAck(eBl,biS,bjS) = 1
+        IF ( northCommMode.EQ.COMM_GET ) southRecvAck(eBl,biN,bjN) = 1
        ENDDO
       ENDDO
 

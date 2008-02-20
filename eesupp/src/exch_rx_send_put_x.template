@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_x.template,v 1.6 2005/11/11 03:01:26 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_x.template,v 1.7 2008/02/20 20:29:54 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -193,7 +193,7 @@ C        Send the data
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-         eastRecvAck(eBl,biW,bjW) = 1.
+         eastRecvAck(eBl,biW,bjW) = 1
         ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
@@ -239,7 +239,7 @@ C        Send the data
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-         westRecvAck(eBl,biE,bjE) = 1.
+         westRecvAck(eBl,biE,bjE) = 1
         ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
@@ -288,7 +288,7 @@ C        Send the data
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-         eastRecvAck(eBl,biW,bjW) = 1.
+         eastRecvAck(eBl,biW,bjW) = 1
         ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
@@ -336,7 +336,7 @@ C        Send the data
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-         westRecvAck(eBl,biE,bjE) = 1.
+         westRecvAck(eBl,biE,bjE) = 1
         ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
@@ -376,10 +376,10 @@ C     overlap region data that will be exchanged is up to date.
         bjW = _tileBjW(bi,bj)
         westCommMode = _tileCommModeW(bi,bj)
         eastCommMode = _tileCommModeE(bi,bj)
-        IF ( westCommMode .EQ. COMM_PUT ) eastRecvAck(eBl,biW,bjW) = 1.
-        IF ( eastCommMode .EQ. COMM_PUT ) westRecvAck(eBl,biE,bjE) = 1.
-        IF ( westCommMode .EQ. COMM_GET ) eastRecvAck(eBl,biW,bjW) = 1.
-        IF ( eastCommMode .EQ. COMM_GET ) westRecvAck(eBl,biE,bjE) = 1.
+        IF ( westCommMode.EQ.COMM_PUT ) eastRecvAck(eBl,biW,bjW) = 1
+        IF ( eastCommMode.EQ.COMM_PUT ) westRecvAck(eBl,biE,bjE) = 1
+        IF ( westCommMode.EQ.COMM_GET ) eastRecvAck(eBl,biW,bjW) = 1
+        IF ( eastCommMode.EQ.COMM_GET ) westRecvAck(eBl,biE,bjE) = 1
        ENDDO
       ENDDO
 
