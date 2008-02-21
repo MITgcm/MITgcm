@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.26 2008/02/06 13:35:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.27 2008/02/21 17:52:24 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -343,7 +343,7 @@ C--   Read initial sea-ice thickness from file if available.
         ENDDO
        ENDDO
 
-C--   Read initial area thickness from file if available.
+C--   Read initial sea-ice area from file if available.
        IF ( AreaFile .NE. ' ' ) THEN
         CALL READ_FLD_XY_RL( AreaFile, ' ', ZETA, 0, myThid )
         _EXCH_XY_R8(ZETA,myThid)
