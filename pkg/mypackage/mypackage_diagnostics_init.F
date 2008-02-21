@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_diagnostics_init.F,v 1.3 2008/01/27 20:52:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_diagnostics_init.F,v 1.4 2008/02/21 02:03:56 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -16,9 +16,8 @@ C     Initialize list of all available diagnostics
 C     !USES:
       IMPLICIT NONE
 #include "EEPARAMS.h"
-c #include "SIZE.h"
-c #include "PARAMS.h"
-c #include "MYPACKAGE.h"
+#include "SIZE.h"
+#include "MYPACKAGE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid ::  my Thread Id number
@@ -29,12 +28,14 @@ CEOP
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     diagNum   :: diagnostics number in the (long) list of available diag.
+C     diagMate  :: diag. mate number in the (long) list of available diag.
 C     diagName  :: local short name (8c) of a diagnostics
 C     diagCode  :: local parser field with characteristics of the diagnostics
 C              cf head of S/R DIAGNOSTICS_INIT_EARLY or DIAGNOSTICS_MAIN_INIT
 C     diagUnits :: local string (16c): physical units of a diagnostic field
 C     diagTitle :: local string (80c): description of field in diagnostic
       INTEGER       diagNum
+      INTEGER       diagMate
       CHARACTER*8   diagName
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
@@ -48,43 +49,79 @@ c     IF ( useDiagnotics ) THEN
         diagTitle = 'Scalar state variable 1 for package MYPACKAGE'
         diagUnits = 'unit            '
         diagCode  = 'SM      MR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'MYPaSta2'
         diagTitle = 'Scalar state variable 2 for package MYPACKAGE'
         diagUnits = 'unit            '
         diagCode  = 'SM      MR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'MYPaStaU'
         diagTitle = 'uVel-type state variable for package MYPACKAGE'
         diagUnits = 'unit            '
-        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'UM      MR      '
+        diagMate  = diagNum + 2
+        IF ( myPa_StaV_Cgrid ) diagCode(2:2) = 'U'
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'MYPaStaV'
         diagTitle = 'vVel-type state variable for package MYPACKAGE'
         diagUnits = 'unit            '
-        WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        diagCode  = 'VM      MR      '
+        diagMate  = diagNum
+        IF ( myPa_StaV_Cgrid ) diagCode(2:2) = 'V'
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
         diagName  = 'MYPaSur1'
         diagTitle = 'Surface field 1 for package MYPACKAGE'
         diagUnits = 'unit            '
         diagCode  = 'SM      L1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'MYPaSur2'
         diagTitle = 'Surface field 2 for package MYPACKAGE'
         diagUnits = 'unit            '
         diagCode  = 'SM      L1      '
-        CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'MYPadTdt'
+        diagTitle = ' Pot.Temp. tendency from package MYPACKAGE'
+        diagUnits = 'K/s             '
+        diagCode  = 'SM      MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'MYPadSdt'
+        diagTitle = ' Salinity  tendency from package MYPACKAGE'
+        diagUnits = 'psu/s           '
+        diagCode  = 'SM      MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'MYPadUdt'
+        diagTitle = 'u-Velocity tendency from package MYPACKAGE'
+        diagUnits = 'm/s^2           '
+        diagCode  = 'UM      MR      '
+        diagMate  = diagNum + 2
+        IF ( myPa_Tend_Cgrid ) diagCode(2:2) = 'U'
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+        diagName  = 'MYPadVdt'
+        diagTitle = 'v-Velocity tendency from package MYPACKAGE'
+        diagUnits = 'm/s^2           '
+        diagCode  = 'VM      MR      '
+        diagMate  = diagNum
+        IF ( myPa_Tend_Cgrid ) diagCode(2:2) = 'V'
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
 c     ENDIF
 
