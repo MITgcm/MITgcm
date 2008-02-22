@@ -2,6 +2,6 @@ profiles_init_varia.f
 profiles_inloop.f
 profiles_interp.f
 profiles_interp_mean.f
-profiles_interp_genericgrid.f
-profiles_interp_mean_genericgrid.f
+profiles_interp_gg.f
+profiles_interp_mean_gg.f
 cost_profiles.f

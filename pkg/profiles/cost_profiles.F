@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.12 2007/06/15 05:04:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.13 2008/02/22 21:16:52 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -90,7 +90,7 @@ cgf for ssh anomalies, prof_traj1D_mean is the model time average, to be removed
      &         prof_lat(num_file,prof_num,bi,bj),
      &         num_var,num_file,mytime,bi,bj,myThid)
 #else
-              call profiles_interp_mean_genericgrid(prof_traj1D_mean,
+              call profiles_interp_mean_gg(prof_traj1D_mean,
      &         prof_i1D,prof_j1D,prof_w1D,
      &         num_var,num_file,mytime,bi,bj,myThid)
 

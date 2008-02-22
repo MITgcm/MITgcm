@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/Attic/profiles_interp_genericgrid.F,v 1.2 2007/11/05 19:17:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/Attic/profiles_interp_gg.F,v 1.1 2008/02/22 21:16:51 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -10,7 +10,7 @@ C     |   for netcdf profiles data                               |
 C     | started: Gael Forget 15-March-2006                       |
 C     o==========================================================o
 
-      SUBROUTINE profiles_interp_genericgrid(
+      SUBROUTINE profiles_interp_gg(
      O traj_cur_out,
      I i_cur,
      I j_cur,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.9 2007/06/15 05:04:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.10 2008/02/22 21:16:52 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -87,7 +87,7 @@ c     == end of interface ==
      & prof_lat(num_file,prof_num,bi,bj),
      & num_var,num_file,mytime,bi,bj,myThid)
 #else
-              call profiles_interp_genericgrid(prof_traj1D,
+              call profiles_interp_gg(prof_traj1D,
      & prof_i1D,prof_j1D,prof_w1D,
      & num_var,num_file,mytime,bi,bj,myThid)
 #endif
