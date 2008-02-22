@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.959 2008/02/22 20:25:54 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.960 2008/02/22 21:17:40 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/profiles: 
+  rename profiles_interp_mean_genericgrid as profiles_interp_mean_gg
+  (for "less than 32 characters name" compiler requirement)
 o pkg/obcs and pkg/exf: added capability to specify seaice open boundary
   conditions that have a different sampling frequency than S/T/U/V obcs
 o pkg/diagnostics (stats-diags): 
