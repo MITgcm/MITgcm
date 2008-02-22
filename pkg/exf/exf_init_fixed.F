@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.7 2008/01/30 18:01:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.8 2008/02/22 20:25:54 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -434,6 +434,80 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
 # endif /* ALLOW_OBCS_WEST */
+# ifdef ALLOW_SEAICE
+#  ifdef ALLOW_OBCS_NORTH
+      IF ( siobNperiod .GT. 0 ) THEN
+       CALL cal_FullDate  ( siobNstartdate1, siobNstartdate2,
+     &      date_array, myThid )
+       IF ( useOBCSYearlyFields ) THEN
+        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
+        yearStartDate(2) = 0
+        yearStartDate(3) = date_array(3)
+        yearStartDate(4) = date_array(4)
+        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
+        CALL cal_ToSeconds ( difftime,   siobNstartdate       ,myThid)
+       ELSE
+        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
+        CALL cal_ToSeconds ( difftime,   siobNstartdate       ,myThid)
+        siobNstartdate   =  modelstart + siobNstartdate
+       ENDIF
+      ENDIF
+#  endif /* ALLOW_OBCS_NORTH */
+#  ifdef ALLOW_OBCS_SOUTH
+      IF ( siobSperiod .GT. 0 ) THEN
+       CALL cal_FullDate  ( siobSstartdate1, siobSstartdate2,
+     &      date_array, myThid )
+       IF ( useOBCSYearlyFields ) THEN
+        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
+        yearStartDate(2) = 0
+        yearStartDate(3) = date_array(3)
+        yearStartDate(4) = date_array(4)
+        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
+        CALL cal_ToSeconds ( difftime,   siobSstartdate       ,myThid)
+       ELSE
+        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
+        CALL cal_ToSeconds ( difftime,   siobSstartdate       ,myThid)
+        siobSstartdate   =  modelstart + siobSstartdate
+       ENDIF
+      ENDIF
+#  endif /* ALLOW_OBCS_SOUTH */
+#  ifdef ALLOW_OBCS_EAST
+      IF ( siobEperiod .GT. 0 ) THEN
+       CALL cal_FullDate  ( siobEstartdate1, siobEstartdate2,
+     &      date_array, myThid )
+       IF ( useOBCSYearlyFields ) THEN
+        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
+        yearStartDate(2) = 0
+        yearStartDate(3) = date_array(3)
+        yearStartDate(4) = date_array(4)
+        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
+        CALL cal_ToSeconds ( difftime,   siobEstartdate       ,myThid)
+       ELSE
+        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
+        CALL cal_ToSeconds ( difftime,   siobEstartdate       ,myThid)
+        siobEstartdate   =  modelstart + siobEstartdate
+       ENDIF
+      ENDIF
+#  endif /* ALLOW_OBCS_EAST */
+#  ifdef ALLOW_OBCS_WEST
+      IF ( siobWperiod .GT. 0 ) THEN
+       CALL cal_FullDate  ( siobWstartdate1, siobWstartdate2,
+     &      date_array, myThid )
+       IF ( useOBCSYearlyFields ) THEN
+        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
+        yearStartDate(2) = 0
+        yearStartDate(3) = date_array(3)
+        yearStartDate(4) = date_array(4)
+        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
+        CALL cal_ToSeconds ( difftime,   siobWstartdate       ,myThid)
+       ELSE
+        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
+        CALL cal_ToSeconds ( difftime,   siobWstartdate       ,myThid)
+        siobWstartdate   =  modelstart + siobWstartdate
+       ENDIF
+      ENDIF
+#  endif /* ALLOW_OBCS_WEST */
+# endif /* ALLOW_SEAICE */
 #endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_CLIMSST_RELAXATION

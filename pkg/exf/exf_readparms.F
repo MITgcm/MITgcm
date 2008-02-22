@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.49 2007/12/05 23:57:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.50 2008/02/22 20:25:54 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -188,7 +188,11 @@ c     Surface flux data.
      &    obcsNstartdate1,    obcsNstartdate2,   obcsNperiod,
      &    obcsSstartdate1,    obcsSstartdate2,   obcsSperiod,
      &    obcsEstartdate1,    obcsEstartdate2,   obcsEperiod,
-     &    obcsWstartdate1,    obcsWstartdate2,   obcsWperiod
+     &    obcsWstartdate1,    obcsWstartdate2,   obcsWperiod,
+     &    siobNstartdate1,    siobNstartdate2,   siobNperiod,
+     &    siobSstartdate1,    siobSstartdate2,   siobSperiod,
+     &    siobEstartdate1,    siobEstartdate2,   siobEperiod,
+     &    siobWstartdate1,    siobWstartdate2,   siobWperiod
 
       _BEGIN_MASTER(mythid)
 
@@ -387,18 +391,28 @@ c     Calendar data.
       obcsNstartdate1    = 0
       obcsNstartdate2    = 0
       obcsNperiod        = 0.0 _d 0
-
       obcsSstartdate1    = 0
       obcsSstartdate2    = 0
       obcsSperiod        = 0.0 _d 0
-
       obcsEstartdate1    = 0
       obcsEstartdate2    = 0
       obcsEperiod        = 0.0 _d 0
-
       obcsWstartdate1    = 0
       obcsWstartdate2    = 0
       obcsWperiod        = 0.0 _d 0
+
+      siobNstartdate1    = UNSET_I
+      siobNstartdate2    = UNSET_I
+      siobNperiod        = UNSET_RL
+      siobSstartdate1    = UNSET_I
+      siobSstartdate2    = UNSET_I
+      siobSperiod        = UNSET_RL
+      siobEstartdate1    = UNSET_I
+      siobEstartdate2    = UNSET_I
+      siobEperiod        = UNSET_RL
+      siobWstartdate1    = UNSET_I
+      siobWstartdate2    = UNSET_I
+      siobWperiod        = UNSET_RL
 
       repeatPeriod       = 0.0 _d 0
       windstressmax      = 2.0 _d 0
@@ -452,6 +466,10 @@ c     Start dates.
       obcsSstartdate     = 0.
       obcsEstartdate     = 0.
       obcsWstartdate     = 0.
+      siobNstartdate     = 0.
+      siobSstartdate     = 0.
+      siobEstartdate     = 0.
+      siobWstartdate     = 0.
       apressurestartdate = 0.
       climsststartdate   = 0.
       climsssstartdate   = 0.
@@ -681,6 +699,18 @@ c     Next, read the forcing data file.
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
       READ(  iUnit, nml = EXF_NML_OBCS )
+      IF(siobNstartdate1.EQ.UNSET_I ) siobNstartdate1 = obcsNstartdate1
+      IF(siobNstartdate2.EQ.UNSET_I ) siobNstartdate2 = obcsNstartdate2
+      IF(siobNperiod    .EQ.UNSET_RL) siobNperiod     = obcsNperiod
+      IF(siobSstartdate1.EQ.UNSET_I ) siobSstartdate1 = obcsSstartdate1
+      IF(siobSstartdate2.EQ.UNSET_I ) siobSstartdate2 = obcsSstartdate2
+      IF(siobSperiod    .EQ.UNSET_RL) siobSperiod     = obcsSperiod
+      IF(siobEstartdate1.EQ.UNSET_I ) siobEstartdate1 = obcsEstartdate1
+      IF(siobEstartdate2.EQ.UNSET_I ) siobEstartdate2 = obcsEstartdate2
+      IF(siobEperiod    .EQ.UNSET_RL) siobEperiod     = obcsEperiod
+      IF(siobWstartdate1.EQ.UNSET_I ) siobWstartdate1 = obcsWstartdate1
+      IF(siobWstartdate2.EQ.UNSET_I ) siobWstartdate2 = obcsWstartdate2
+      IF(siobWperiod    .EQ.UNSET_RL) siobWperiod     = obcsWperiod
 #endif
 
       WRITE(msgBuf,'(A)') 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.18 2008/01/29 11:25:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.19 2008/02/22 20:25:54 dimitri Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -44,9 +44,9 @@ c     == local variables ==
 
 c     == end of interface ==
 
-#ifdef ALLOW_EXF
+# ifdef ALLOW_EXF
       IF ( useEXF ) THEN
-#ifdef ALLOW_OBCS_NORTH
+#  ifdef ALLOW_OBCS_NORTH
       call obcs_prescribe_exf_xz (
      I     obcsNstartdate, obcsNperiod,
      I     useOBCSYearlyFields,
@@ -54,22 +54,23 @@ c     == end of interface ==
      U     OBNv,   OBNv0,   OBNv1,   OBNvfile, 
      U     OBNt,   OBNt0,   OBNt1,   OBNtfile, 
      U     OBNs,   OBNs0,   OBNs1,   OBNsfile, 
-#ifdef ALLOW_SEAICE
+#   ifdef ALLOW_SEAICE
+     I     siobNstartdate, siobNperiod,
      U     OBNa,   OBNa0,   OBNa1,   OBNafile,
      U     OBNh,   OBNh0,   OBNh1,   OBNhfile,
      U     OBNsl,  OBNsl0,  OBNsl1,  OBNslfile,
      U     OBNsn,  OBNsn0,  OBNsn1,  OBNsnfile,
      U     OBNuice,OBNuice0,OBNuice1,OBNuicefile,
      U     OBNvice,OBNvice0,OBNvice1,OBNvicefile,
-#endif
-#ifdef ALLOW_PTRACERS
+#   endif
+#   ifdef ALLOW_PTRACERS
      U     OBNptr ,OBNptr0, OBNptr1, OBNptrFile,
-#endif
+#   endif
      I     mycurrenttime, mycurrentiter, mythid
      &     )
-#endif /* ALLOW_OBCS_NORTH */
+#  endif /* ALLOW_OBCS_NORTH */
 
-#ifdef ALLOW_OBCS_SOUTH
+#  ifdef ALLOW_OBCS_SOUTH
       call obcs_prescribe_exf_xz (
      I     obcsSstartdate, obcsSperiod,
      I     useOBCSYearlyFields,
@@ -77,22 +78,23 @@ c     == end of interface ==
      U     OBSv,   OBSv0,   OBSv1,   OBSvfile, 
      U     OBSt,   OBSt0,   OBSt1,   OBStfile, 
      U     OBSs,   OBSs0,   OBSs1,   OBSsfile, 
-#ifdef ALLOW_SEAICE
+#   ifdef ALLOW_SEAICE
+     I     siobSstartdate, siobSperiod,
      U     OBSa,   OBSa0,   OBSa1,   OBSafile,
      U     OBSh,   OBSh0,   OBSh1,   OBShfile,
      U     OBSsl,  OBSsl0,  OBSsl1,  OBSslfile,
      U     OBSsn,  OBSsn0,  OBSsn1,  OBSsnfile,
      U     OBSuice,OBSuice0,OBSuice1,OBSuicefile,
      U     OBSvice,OBSvice0,OBSvice1,OBSvicefile,
-#endif
-#ifdef ALLOW_PTRACERS
+#   endif
+#   ifdef ALLOW_PTRACERS
      U     OBSptr ,OBSptr0, OBSptr1, OBSptrFile,
-#endif
+#   endif
      I     mycurrenttime, mycurrentiter, mythid
      &     )
-#endif /* ALLOW_OBCS_SOUTH */
+#  endif /* ALLOW_OBCS_SOUTH */
 
-#ifdef ALLOW_OBCS_EAST
+#  ifdef ALLOW_OBCS_EAST
       call obcs_prescribe_exf_yz (
      I     obcsEstartdate, obcsEperiod,
      I     useOBCSYearlyFields,
@@ -100,22 +102,23 @@ c     == end of interface ==
      U     OBEv,   OBEv0,   OBEv1,   OBEvfile, 
      U     OBEt,   OBEt0,   OBEt1,   OBEtfile, 
      U     OBEs,   OBEs0,   OBEs1,   OBEsfile, 
-#ifdef ALLOW_SEAICE
+#   ifdef ALLOW_SEAICE
+     I     siobEstartdate, siobEperiod,
      U     OBEa,   OBEa0,   OBEa1,   OBEafile,
      U     OBEh,   OBEh0,   OBEh1,   OBEhfile,
      U     OBEsl,  OBEsl0,  OBEsl1,  OBEslfile,
      U     OBEsn,  OBEsn0,  OBEsn1,  OBEsnfile,
      U     OBEuice,OBEuice0,OBEuice1,OBEuicefile,
      U     OBEvice,OBEvice0,OBEvice1,OBEvicefile,
-#endif
-#ifdef ALLOW_PTRACERS
+#   endif
+#   ifdef ALLOW_PTRACERS
      U     OBEptr ,OBEptr0, OBEptr1, OBEptrFile,
-#endif
+#   endif
      I     mycurrenttime, mycurrentiter, mythid
      &     )
-#endif /* ALLOW_OBCS_EAST */
+#  endif /* ALLOW_OBCS_EAST */
 
-#ifdef ALLOW_OBCS_WEST
+#  ifdef ALLOW_OBCS_WEST
       call obcs_prescribe_exf_yz (
      I     obcsWstartdate, obcsWperiod,
      I     useOBCSYearlyFields,
@@ -123,55 +126,57 @@ c     == end of interface ==
      U     OBWv,   OBWv0,   OBWv1,   OBWvfile, 
      U     OBWt,   OBWt0,   OBWt1,   OBWtfile, 
      U     OBWs,   OBWs0,   OBWs1,   OBWsfile, 
-#ifdef ALLOW_SEAICE
+#   ifdef ALLOW_SEAICE
+     I     siobEstartdate, siobEperiod,
      U     OBWa,   OBWa0,   OBWa1,   OBWafile,
      U     OBWh,   OBWh0,   OBWh1,   OBWhfile,
      U     OBWsl,  OBWsl0,  OBWsl1,  OBWslfile,
      U     OBWsn,  OBWsn0,  OBWsn1,  OBWsnfile,
      U     OBWuice,OBWuice0,OBWuice1,OBWuicefile,
      U     OBWvice,OBWvice0,OBWvice1,OBWvicefile,
-#endif
-#ifdef ALLOW_PTRACERS
+#   endif
+#   ifdef ALLOW_PTRACERS
      U     OBWptr ,OBWptr0, OBWptr1, OBWptrFile,
-#endif
+#   endif
      I     mycurrenttime, mycurrentiter, mythid
      &     )
-#endif /* ALLOW_OBCS_WEST */
+#  endif /* ALLOW_OBCS_WEST */
 C     ENDIF useEXF
       ENDIF
-#endif /* ALLOW_EXF */
+# endif /* ALLOW_EXF */
 
-#ifdef ALLOW_OBCS_CONTROL
+# ifdef ALLOW_OBCS_CONTROL
 cgg   WARNING: Assuming North Open Boundary exists and has same
 cgg    calendar information as other boundaries.
       call ctrl_obcsbal ( mycurrenttime,mycurrentiter,mythid )
-#endif
+# endif
 
-#ifdef ALLOW_OBCSN_CONTROL
+# ifdef ALLOW_OBCSN_CONTROL
       call ctrl_getobcsn ( mycurrenttime, mycurrentiter, mythid )
-#endif
+# endif
 
-#ifdef ALLOW_OBCSS_CONTROL
+# ifdef ALLOW_OBCSS_CONTROL
       call ctrl_getobcss ( mycurrenttime, mycurrentiter, mythid )
-#endif
+# endif
 
-#ifdef ALLOW_OBCSW_CONTROL
+# ifdef ALLOW_OBCSW_CONTROL
       call ctrl_getobcsw ( mycurrenttime, mycurrentiter, mythid )
-#endif
+# endif
 
-#ifdef ALLOW_OBCSE_CONTROL
+# ifdef ALLOW_OBCSE_CONTROL
       call ctrl_getobcse ( mycurrenttime, mycurrentiter, mythid )
-#endif
+# endif
 
       IF ( .NOT. useEXF ) THEN
        CALL OBCS_EXTERNAL_FIELDS_LOAD(
      &     myCurrentTime, myCurrentIter, myThid )
       ENDIF
 
-#endif /* ALLOW_OBCS */
+#endif /* ALLOW_OBCS and ALLOW_OBCS_PRESCRIBE */
 
       RETURN
       END
+
 
 C=========================================================================
 C=========================================================================
@@ -183,7 +188,8 @@ C=========================================================================
      U     OBv,   OBv0,   OBv1,   OBvfile, 
      U     OBt,   OBt0,   OBt1,   OBtfile, 
      U     OBs,   OBs0,   OBs1,   OBsfile, 
-#if defined ALLOW_SEAICE && defined ALLOW_OBCS
+#ifdef ALLOW_SEAICE
+     I     siobstartdate, siobperiod,
      U     OBa,   OBa0,   OBa1,   OBafile,
      U     OBh,   OBh0,   OBh1,   OBhfile,
      U     OBsl,  OBsl0,  OBsl1,  OBslfile,
@@ -191,7 +197,7 @@ C=========================================================================
      U     OBuice,OBuice0,OBuice1,OBuicefile,
      U     OBvice,OBvice0,OBvice1,OBvicefile,
 #endif
-#if defined ALLOW_PTRACERS && defined ALLOW_OBCS
+#ifdef ALLOW_PTRACERS
      U     OBptr ,OBptr0, OBptr1, OBptrFile,
 #endif
      I     mycurrenttime, mycurrentiter, mythid
@@ -237,7 +243,9 @@ c     == routine arguments ==
       _RL OBt1    (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBs1    (1-Olx:sNx+Olx,Nr,nSx,nSy)
       CHARACTER*(MAX_LEN_FNAM) OBuFile,OBvFile,OBtFile,OBsFile
-#if defined ALLOW_SEAICE && defined ALLOW_OBCS
+#ifdef ALLOW_SEAICE
+      _RL     siobstartdate
+      _RL     siobperiod
       _RL OBa     (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBh     (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBa0    (1-Olx:sNx+Olx,nSx,nSy)
@@ -259,7 +267,7 @@ c     == routine arguments ==
       CHARACTER*(MAX_LEN_FNAM)
      &     OBaFile,OBhFile,OBslFile,OBsnFile,OBuiceFile,OBviceFile
 #endif /* ALLOW_SEAICE */
-#if defined ALLOW_PTRACERS && defined ALLOW_OBCS
+#ifdef ALLOW_PTRACERS
       _RL OBptr (1-Olx:sNx+Olx,Nr,nSx,nSy,PTRACERS_num)
       _RL OBptr0(1-Olx:sNx+Olx,Nr,nSx,nSy,PTRACERS_num)
       _RL OBptr1(1-Olx:sNx+Olx,Nr,nSx,nSy,PTRACERS_num)
@@ -277,9 +285,9 @@ c     == local variables ==
       integer count0, count1
       integer year0, year1
       _RL     fac
-#ifdef ALLOW_PTRACERS
+# ifdef ALLOW_PTRACERS
       integer iTracer
-#endif /* ALLOW_PTRACERS */
+# endif /* ALLOW_PTRACERS */
 
 c     == end of interface ==
       if ( obcsperiod .eq. -12 ) then
@@ -304,6 +312,13 @@ c     get record numbers and interpolation factor
      O                       count0, count1, year0, year1,
      I                       mycurrenttime, mycurrentiter, mythid
      &                      )
+       call exf_GetFFieldRec(
+     I                       siobstartdate, siobperiod,
+     I                       useYearlyFields,
+     O                       fac, first, changed,
+     O                       count0, count1, year0, year1,
+     I                       mycurrenttime, mycurrentiter, mythid
+     &                      )
       endif
 
       call exf_set_obcs_xz(  OBu, OBu0, OBu1, OBufile, 'u'
@@ -322,35 +337,35 @@ c     get record numbers and interpolation factor
      I                     , fac, first, changed, useYearlyFields
      I                     , obcsperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
-#ifdef ALLOW_SEAICE
+# ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
        call exf_set_obcs_x (  OBa, OBa0, OBa1, OBafile, 's'
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
        call exf_set_obcs_x (  OBh, OBh0, OBh1, OBhfile, 's'
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
        call exf_set_obcs_x (  OBsl, OBsl0, OBsl1, OBslfile, 's'
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
        call exf_set_obcs_x (  OBsn, OBsn0, OBsn1, OBsnfile, 's'
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
        call exf_set_obcs_x ( OBuice,OBuice0,OBuice1,OBuicefile,'s'
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
        call exf_set_obcs_x ( OBvice,OBvice0,OBvice1,OBvicefile,'s'
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
       ENDIF
-#endif /* ALLOW_SEAICE */
-#ifdef ALLOW_PTRACERS
+# endif /* ALLOW_SEAICE */
+# ifdef ALLOW_PTRACERS
       if ( usePTRACERS ) then
        do iTracer = 1, PTRACERS_numInUse
         call exf_set_obcs_xz(  OBptr (1-Olx,1,1,1,iTracer)
@@ -362,7 +377,7 @@ c     get record numbers and interpolation factor
      I                       , mycurrenttime, mycurrentiter, mythid )
        enddo
       endif
-#endif /* ALLOW_PTRACERS */
+# endif /* ALLOW_PTRACERS */
 
 #endif /* ALLOW_OBCS and ALLOW_OBCS_PRESCRIBE and ALLOW_EXF */
       RETURN
@@ -377,7 +392,8 @@ C=========================================================================
      U     OBv,   OBv0,   OBv1,   OBvfile, 
      U     OBt,   OBt0,   OBt1,   OBtfile, 
      U     OBs,   OBs0,   OBs1,   OBsfile, 
-#if defined ALLOW_SEAICE && defined ALLOW_OBCS
+#ifdef ALLOW_SEAICE
+     I     siobstartdate, siobperiod,
      U     OBa,   OBa0,   OBa1,   OBafile,
      U     OBh,   OBh0,   OBh1,   OBhfile,
      U     OBsl,  OBsl0,  OBsl1,  OBslfile,
@@ -385,7 +401,7 @@ C=========================================================================
      U     OBuice,OBuice0,OBuice1,OBuicefile,
      U     OBvice,OBvice0,OBvice1,OBvicefile,
 #endif
-#if defined ALLOW_PTRACERS && defined ALLOW_OBCS
+#ifdef ALLOW_PTRACERS
      U     OBptr ,OBptr0, OBptr1, OBptrFile,
 #endif
      I     mycurrenttime, mycurrentiter, mythid
@@ -431,7 +447,9 @@ c     == routine arguments ==
       _RL OBt1    (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBs1    (1-Oly:sNy+Oly,Nr,nSx,nSy)
       CHARACTER*(MAX_LEN_FNAM) OBuFile,OBvFile,OBtFile,OBsFile
-#if defined ALLOW_SEAICE && defined ALLOW_OBCS
+#ifdef ALLOW_SEAICE
+      _RL     siobstartdate
+      _RL     siobperiod
       _RL OBa     (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBh     (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBa0    (1-Oly:sNy+Oly,nSx,nSy)
@@ -453,7 +471,7 @@ c     == routine arguments ==
       CHARACTER*(MAX_LEN_FNAM)
      &     OBaFile,OBhFile,OBslFile,OBsnFile,OBuiceFile,OBviceFile
 #endif /* ALLOW_SEAICE */
-#if defined ALLOW_PTRACERS && defined ALLOW_OBCS
+#ifdef ALLOW_PTRACERS
       _RL OBptr (1-Oly:sNy+Oly,Nr,nSx,nSy,PTRACERS_num)
       _RL OBptr0(1-Oly:sNy+Oly,Nr,nSx,nSy,PTRACERS_num)
       _RL OBptr1(1-Oly:sNy+Oly,Nr,nSx,nSy,PTRACERS_num)
@@ -471,9 +489,9 @@ c     == local variables ==
       integer count0, count1
       integer year0, year1
       _RL     fac
-#ifdef ALLOW_PTRACERS
+# ifdef ALLOW_PTRACERS
       integer iTracer
-#endif /* ALLOW_PTRACERS */
+# endif /* ALLOW_PTRACERS */
 
 c     == end of interface ==
       if ( obcsperiod .eq. -12 ) then
@@ -516,35 +534,35 @@ c     get record numbers and interpolation factor
      I                     , fac, first, changed, useYearlyFields
      I                     , obcsperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
-#ifdef ALLOW_SEAICE
+# ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
        call exf_set_obcs_y (  OBa, OBa0, OBa1, OBafile, 's'
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
        call exf_set_obcs_y (  OBh, OBh0, OBh1, OBhfile, 's'
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
        call exf_set_obcs_y (  OBsl, OBsl0, OBsl1, OBslfile, 's'
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
        call exf_set_obcs_y (  OBsn, OBsn0, OBsn1, OBsnfile, 's'
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
        call exf_set_obcs_y ( OBuice,OBuice0,OBuice1,OBuicefile,'s'
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
        call exf_set_obcs_y ( OBvice,OBvice0,OBvice1,OBvicefile,'s'
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
       ENDIF
-#endif /* ALLOW_SEAICE */
-#ifdef ALLOW_PTRACERS
+# endif /* ALLOW_SEAICE */
+# ifdef ALLOW_PTRACERS
       if ( usePTRACERS ) then
        do iTracer = 1, PTRACERS_numInUse
         call exf_set_obcs_yz(  OBptr (1-Olx,1,1,1,iTracer)
@@ -556,7 +574,7 @@ c     get record numbers and interpolation factor
      I                       , mycurrenttime, mycurrentiter, mythid )
        enddo
       endif
-#endif /* ALLOW_PTRACERS */
+# endif /* ALLOW_PTRACERS */
 
 #endif /* ALLOW_OBCS and ALLOW_OBCS_PRESCRIBE and ALLOW_EXF */
       RETURN

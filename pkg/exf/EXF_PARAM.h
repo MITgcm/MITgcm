@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.8 2008/01/31 18:48:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.9 2008/02/22 20:25:54 dimitri Exp $
 C $Name:  $
 c
 c
@@ -253,25 +253,44 @@ c     to reset climatological temperatures fields where they have
 c     values below climtempfreeze
       _RL climtempfreeze
 
+c     the following variables are used in conjunction with pkg/obcs
+c     to describe S/T/U/V open boundary condition files
       integer obcsNstartdate1
       integer obcsNstartdate2
-      _RL     obcsNstartdate
-      _RL     obcsNperiod
-
       integer obcsSstartdate1
       integer obcsSstartdate2
-      _RL     obcsSstartdate
-      _RL     obcsSperiod
-
       integer obcsEstartdate1
       integer obcsEstartdate2
-      _RL     obcsEstartdate
-      _RL     obcsEperiod
-
       integer obcsWstartdate1
       integer obcsWstartdate2
+      _RL     obcsNstartdate
+      _RL     obcsNperiod
+      _RL     obcsSstartdate
+      _RL     obcsSperiod
+      _RL     obcsEstartdate
+      _RL     obcsEperiod
       _RL     obcsWstartdate
       _RL     obcsWperiod
+
+c     the following variables are used in conjunction with pkg/obcs
+c     and pkg/seaice to describe area, heff, hsnow, hsalt, uice,
+c     and vice open boundary condition files
+      integer siobNstartdate1
+      integer siobNstartdate2
+      integer siobSstartdate1
+      integer siobSstartdate2
+      integer siobEstartdate1
+      integer siobEstartdate2
+      integer siobWstartdate1
+      integer siobWstartdate2
+      _RL     siobNstartdate
+      _RL     siobNperiod
+      _RL     siobSstartdate
+      _RL     siobSperiod
+      _RL     siobEstartdate
+      _RL     siobEperiod
+      _RL     siobWstartdate
+      _RL     siobWperiod
 
 c     File names.
       character*(128) hfluxfile
@@ -345,6 +364,10 @@ C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before comput
      &                     obcsSstartdate1,   obcsSstartdate2,
      &                     obcsEstartdate1,   obcsEstartdate2,
      &                     obcsWstartdate1,   obcsWstartdate2,
+     &                     siobNstartdate1,   siobNstartdate2,
+     &                     siobSstartdate1,   siobSstartdate2,
+     &                     siobEstartdate1,   siobEstartdate2,
+     &                     siobWstartdate1,   siobWstartdate2,
      &                     apressurestartdate1,apressurestartdate2
 
       common /exf_param_r/
@@ -372,6 +395,10 @@ C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before comput
      &                     obcsSperiod,       obcsSstartdate,
      &                     obcsEperiod,       obcsEstartdate,
      &                     obcsWperiod,       obcsWstartdate,
+     &                     siobNperiod,       siobNstartdate,
+     &                     siobSperiod,       siobSstartdate,
+     &                     siobEperiod,       siobEstartdate,
+     &                     siobWperiod,       siobWstartdate,
      &                     apressureperiod,   apressurestartdate,
      &                     hfluxconst,
      &                     atempconst,
