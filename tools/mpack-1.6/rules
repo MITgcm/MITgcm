@@ -1,0 +1,68 @@
+#!/usr/bin/make -f
+
+DEBDIR = debian/tmp/DEBIAN
+BINDIR = debian/tmp/usr/bin
+MANDIR = debian/tmp/usr/share/man
+DOCDIR = debian/tmp/usr/share/doc/mpack
+
+ifeq (,$(findstring noopt,${DEB_BUILD_OPTIONS}))
+	OPT = -O2
+endif
+#ifeq (,$(findstring nostrip,${DEB_BUILD_OPTIONS}))
+#	STRIP = -s
+#endif
+
+STRIP = strip --remove-section=.comment --remove-section=.note
+
+export DEB_HOST  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+export DEB_BUILD ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+build:
+	test -f debian/rules
+	./configure --prefix=/usr --build ${DEB_BUILD} --host ${DEB_BUILD}
+	make CFLAGS="${OPT} -g -Wall"
+	touch build
+
+clean:
+	test -f debian/rules
+	-rm -f build
+	-make clean
+	-rm -f debian/*~ core
+	-rm -f config.log config.cache config.status Makefile
+	-rm -f mpack.1 munpack.1
+	-rm -rf debian/tmp debian/files* debian/substvars
+
+binary-indep:
+
+binary-arch: build
+	test root = "`whoami`"
+	test -f debian/rules
+	-rm -rf debian/tmp
+# programs
+	install -d ${BINDIR}
+#	install ${STRIP} -m 755 mpack ${BINDIR}
+#	install ${STRIP} -m 755 munpack ${BINDIR}
+	${STRIP} mpack
+	${STRIP} munpack
+	install -m 755 mpack ${BINDIR}
+	install -m 755 munpack ${BINDIR}
+# manpages
+	install -d ${MANDIR}/man1
+	install -p -m 644 unixpk.man ${MANDIR}/man1/mpack.1
+	install -p -m 644 unixunpk.man ${MANDIR}/man1/munpack.1
+	gzip -9 ${MANDIR}/man1/*.1
+# documentation
+	install -d ${DOCDIR}
+	install -p -m 644 README.unix ${DOCDIR}
+	install -p -m 644 debian/changelog ${DOCDIR}/changelog.Debian
+	gzip -9 ${DOCDIR}/*
+	install -p -m 644 debian/copyright ${DOCDIR}
+# control files
+	install -d ${DEBDIR}
+	dpkg-shlibdeps ${BINDIR}/*
+	dpkg-gencontrol -isp
+	dpkg --build debian/tmp ..
+
+binary: binary-indep binary-arch
+
+.PHONY: binary binary-arch binary-indep clean

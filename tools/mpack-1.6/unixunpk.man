@@ -50,7 +50,7 @@ munpack
 appends ".1", ".2", etc to find a nonexistent file.
 .TP
 .B \-q
-Be quiet.  Supresses messages about saving partial messages and about
+Be quiet.  Suppresses messages about saving partial messages and about
 messages with no interesting information.
 .TP
 .B \-t
@@ -107,7 +107,7 @@ see the section "OPTIONS" above.
 .SH ENVIRONMENT
 .TP
 .B TMPDIR
-Directory to store temporary files.  Default is /usr/tmp.
+Directory to store temporary files.  Default is /var/tmp.
 .SH FILES
 .TP
 .B $TMPDIR/m-prts-$USER/

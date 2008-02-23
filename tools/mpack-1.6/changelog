@@ -1,0 +1,131 @@
+mpack (1.6-4) unstable; urgency=low
+
+  * Fixed "munpack no longer preserves filename". Closes: #212283, #356457.
+    Patch by Ian Bygrave <ian@bygrave.me.uk>.
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Sat, 22 Jul 2006 13:42:22 +1000
+
+mpack (1.6-3) unstable; urgency=low
+
+  * Set Standards-Version to 3.7.2.
+  * Fixed "New option -a", closes: #184506. Patch by
+    James A Morrison <ja2morri@student.math.uwaterloo.ca>. 
+  * Fixed "mpack -o /dev/stdout", closes: #303952.
+    Patch by "Sven Rudolph" <rudsve@drewag.de>.
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Sun, 25 Jun 2006 09:44:26 +1000
+
+mpack (1.6-2) unstable; urgency=low
+
+  * New maintainer, closes: #353129.
+  * ACKed NMUs.
+    - "NMU patch", closes: #321685.
+    - "FTBFS with gcc-3.4: conflicting types for 'malloc'", closes: #260652.
+    - "implicit function declarations are evil", closes: #153187.
+    - "Please remove inewsinn from Suggests", closes: #243737.
+    - "'man munpack' typo: Supresses", closes: #311460.
+  * Fixed the following linda errors:
+    - E: mpack; Binary /usr/bin/mpack contains unneeded section comment.
+    - E: mpack; Binary /usr/bin/munpack contains unneeded section comment.
+  * Set priority to standard and added homepage to description.
+  * Added watch file.
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Fri, 17 Feb 2006 08:13:08 +1100
+
+mpack (1.6-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Include patch by Daniel Schepler (based on earlier patches
+    by Roger Leigh and Andreas Jochens) to fix FTBFS with
+    gcc 4.0 (Closes: #260652) and other code problems
+    (Closes: #153187)
+  * Change priority to optional, I see no reason why this should be
+    standard.
+  * Remove inewsinn from suggests as it isn't in the archive anymore
+    (Closes: #243737)
+  * Fix typo in munpack man page (Closes: #311460)
+  * Bump Standards-Version to 3.6.2 (no changes)
+
+ -- Frank Lichtenheld <djpig@debian.org>  Sat,  6 Aug 2005 23:12:56 +0200
+
+mpack (1.6-1) unstable; urgency=low
+
+  * New upstream version, incorporating a number of Debian patches.
+  * Forward ported Debian patches:
+      - /usr/tmp to /var/tmp
+      - unixpk.c: Don't declare extern int errno
+  * munpack: Mention -t in usage info.  Closes: #182825, reported by
+    Dan Jacobson.
+  * Minor changes to function prototypes to fix the more alarming warnings.
+  * Invoke configure instead of just make, now that upstream uses autoconf.
+  * debian/rules: clean now deletes some autoconf junk.
+  * debian/rules: update DEB_BUILD_OPTIONS support to noopt and nostrip.
+  * debian/control: Recommend uudeview instead.
+  * Dropped postinst and prerm, since /usr/doc symlinks are no longer needed.
+  * debian/control: Update to standards version 3.6.0.
+
+ -- Richard Braakman <dark@xs4all.nl>  Fri, 25 Jul 2003 19:35:28 +0300
+
+mpack (1.5-9) unstable; urgency=low
+
+  * Handle empty parameter lists without crashing, such as in
+    "Content-Type: text/plain;".  Thanks to Henry Grebler for
+    finding this bug.
+  * [SECURITY] Do not accept disposition filenames like "../a".
+    Security impact is limited because only a single leading "../"
+    was accepted.  (closes #134210, reported by Herbert Xu)
+
+ -- Richard Braakman <dark@xs4all.nl>  Wed, 17 Jul 2002 12:01:31 +0300
+
+mpack (1.5-8) unstable; urgency=high
+
+  * [SECURITY] Fix buffer overflows in parsing of MIME headers.
+  * Removed emacs variables from the end of this changelog file.
+
+ -- Richard Braakman <dark@xs4all.nl>  Tue, 16 Jul 2002 01:50:55 +0300
+
+mpack (1.5-7) unstable; urgency=low
+
+  * Only declare "extern int errno" if errno is not a macro.
+
+ -- Richard Braakman <dark@xs4all.nl>  Sun, 20 May 2001 19:30:45 +0300
+
+mpack (1.5-6) unstable; urgency=low
+
+  * Made /var/tmp the default temp directory for mpack, just like
+    it is for munpack.  It used to be /tmp.  Also fixed the mpack
+    manpage, which used to say /usr/tmp.  Spotted by Alex King.
+    (closes #81997)
+  * Moved manpages to /usr/share.
+  * Made debian/rules sensitive to DEB_BUILD_OPTIONS environment variable.
+  * Moved documentation to /usr/share/doc/mpack.
+  * debian/postinst, prerm: Handle compatibility symlink /usr/doc/mpack.
+  * Set Standards-Version to 3.2.1.
+
+ -- Richard Braakman <dark@xs4all.nl>  Sun, 28 Jan 2001 12:31:17 +0200
+
+mpack (1.5-5) unstable; urgency=low
+
+  * Removed README.Debian and moved some bits of it to the copyright file.
+  * Standards-Version 2.4.0.0.
+
+ -- Richard Braakman <dark@xs4all.nl>  Sat,  7 Feb 1998 12:39:11 +0100
+
+mpack (1.5-4) unstable; urgency=low
+
+  * Changed TMPDIR default from /usr/tmp to /var/tmp for FSSTND compliance.
+  * Upgraded to policy version 2.3.0.1.
+  * Renamed README.debian to README.Debian.
+  * Don't use debmake.
+  
+ -- Richard Braakman <dark@xs4all.nl>  Sun, 18 Jan 1998 02:03:47 +0100
+
+mpack (1.5-3) unstable; urgency=low
+
+  * Only Suggest rather than Recommend (#5628, #6616, #6881)
+  * Don't stall on non-printable characters in Subject: header (#11148)
+  * Upgraded to policy version 2.1.2.2
+  * Changed to new source format (#9450)
+  * New maintainer
+
+ -- Richard Braakman <dark@xs4all.nl>  Mon, 14 Jul 1997 21:52:05 +0200

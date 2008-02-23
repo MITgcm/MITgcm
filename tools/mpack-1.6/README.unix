@@ -188,7 +188,7 @@ The environment variables which control munpack's behavior are:
 
      TMPDIR
           Root of directory to store partial messages awaiting 
-          reassembly.  Default is "/usr/tmp".   Partial messages
+          reassembly.  Default is "/var/tmp".   Partial messages
 	  are stored in subdirectories of $TMPDIR/m-prts-$USER/
 
 

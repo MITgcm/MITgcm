@@ -1,0 +1,18 @@
+Source: mpack
+Section: mail
+Priority: standard
+Maintainer: Anibal Monsalve Salazar <anibal@debian.org>
+Standards-Version: 3.7.2
+
+Package: mpack
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: mail-transport-agent, inews
+Description: tools for encoding/decoding MIME messages
+ Mpack and munpack are utilities for encoding and decoding
+ (respectively) binary files in MIME (Multipurpose Internet
+ Mail Extensions) format mail messages. For compatibility
+ with older forms of transferring binary files, the munpack
+ program can also decode messages in split-uuencoded format.
+ .
+  Homepage: ftp://ftp.andrew.cmu.edu/pub/mpack/
