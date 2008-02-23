@@ -23,30 +23,24 @@
  * SOFTWARE.
  */
 #include <stdio.h>
-#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <sys/param.h>
-#include <time.h>
 #include <netdb.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include "xmalloc.h"
 #include "common.h"
 #include "part.h"
-
-extern void warn(char *s);
 
 #ifndef MAXHOSTNAMELEN
 #define MAXHOSTNAMELEN 64
 #endif
 
-#ifndef errno
 extern int errno;
-#endif
+/* extern char *malloc(); */
+extern char *getenv();
 
 int overwrite_files = 0;
 int didchat;
@@ -81,8 +75,8 @@ char *os_genid(void)
 	}
     }
 
-    result = malloc(25+strlen(hostname));
-    sprintf(result, "%d.%lu@%s", pid, (unsigned long) curtime++, hostname);
+    result = (char *)malloc(25+strlen(hostname));
+    sprintf(result, "%d.%d@%s", pid, curtime++, hostname);
     return result;
 }
 
@@ -96,7 +90,7 @@ char *os_idtodir(char *id)
 	strcpy(buf, getenv("TMPDIR"));
     }
     else {
-	strcpy(buf, "/var/tmp");
+	strcpy(buf, "/usr/tmp");
     }
     strcat(buf, "/m-prts-");
     p = getenv("USER");
@@ -143,14 +137,7 @@ FILE *os_createnewfile(char *fname)
     FILE *ret;
      
 #ifdef O_EXCL
-    struct stat statbuf;
-
-    if ((stat(fname, &statbuf) == 0) && (S_ISCHR(statbuf.st_mode))) {
-	fd=open(fname, O_RDWR);
-    }
-    else {
-	fd=open(fname, O_RDWR|O_CREAT|O_EXCL, 0644);
-    }
+    fd=open(fname, O_RDWR|O_CREAT|O_EXCL, 0644);
 #else
     fd=open(fname, O_RDWR|O_CREAT|O_TRUNC, 0644);
 #endif
@@ -207,7 +194,7 @@ FILE *os_newtypedfile(char *fname, char *contentType, int flags, params contentP
 	do {
 	    if (outfile) fclose(outfile);
 	    sprintf(buf, "part%d", ++filesuffix);
-	} while ((outfile = fopen(buf, "r")));
+	} while (outfile = fopen(buf, "r"));
 	fname = buf;
     }
     else if (!overwrite_files && (outfile = fopen(fname, "r"))) {
@@ -215,7 +202,7 @@ FILE *os_newtypedfile(char *fname, char *contentType, int flags, params contentP
 	    fclose(outfile);
 	    sprintf(buf, "%s.%d", fname, ++filesuffix);
 	 
-	} while ((outfile = fopen(buf, "r")));
+	} while (outfile = fopen(buf, "r"));
 	fname = buf;
     }
 
@@ -241,7 +228,7 @@ FILE *os_newtypedfile(char *fname, char *contentType, int flags, params contentP
 
     p = strchr(descfname, '/');
     if (!p) p = descfname;
-    if ((p = strrchr(p, '.'))) *p = '\0';
+    if (p = strrchr(p, '.')) *p = '\0';
 
     strcat(descfname, ".desc");
     (void) rename(TEMPFILENAME, descfname);

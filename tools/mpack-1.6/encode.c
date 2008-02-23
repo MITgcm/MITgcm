@@ -23,18 +23,14 @@
  * SOFTWARE.
  */
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 extern char *magic_look(FILE *infile);
 extern char *os_genid(void);
 extern FILE *os_createnewfile(char *fname);
 extern char *md5digest(FILE *infile, long int *len);
-extern void os_perror(char *str);
-extern int to64(FILE *infile, FILE *outfile, long int limit);
 
 #define NUMREFERENCES 4
-int attachment;
 
 /*
  * Encode a file into one or more MIME messages, each
@@ -47,7 +43,7 @@ int encode(FILE *infile, FILE *applefile, char *fname, FILE *descfile, char *sub
     char *type;
     FILE *outfile;
     char *cleanfname, *p;
-    char *digest, *appledigest = NULL;
+    char *digest, *appledigest;
     long filesize, l, written;
     int thispart, numparts = 1;
     int wrotefiletype = 0;
@@ -61,12 +57,12 @@ int encode(FILE *infile, FILE *applefile, char *fname, FILE *descfile, char *sub
     /* This filename-cleaning knowledge will probably
      * be moved to the os layer in a future version.
      */
-    if ((p = strrchr(cleanfname, '.'))) cleanfname = p+1;
+    if (p = strrchr(cleanfname, '.')) cleanfname = p+1;
 #else
-    if ((p = strrchr(cleanfname, '/'))) cleanfname = p+1;
-    if ((p = strrchr(cleanfname, '\\'))) cleanfname = p+1;
+    if (p = strrchr(cleanfname, '/')) cleanfname = p+1;
+    if (p = strrchr(cleanfname, '\\')) cleanfname = p+1;
 #endif
-    if ((p = strrchr(cleanfname, ':'))) cleanfname = p+1;
+    if (p = strrchr(cleanfname, ':')) cleanfname = p+1;
 
     /* Find file type */
     if (typeoverride) {
@@ -193,8 +189,8 @@ int encode(FILE *infile, FILE *applefile, char *fname, FILE *descfile, char *sub
 	"Content-Type: multipart/appledouble; boundary=\"=\"; name=\"%s\"\n",
 			cleanfname);
 		fprintf(outfile,
-			"Content-Disposition: %s; filename=\"%s\"\n",
-		        attachment ? "attachment" : "inline", cleanfname);
+			"Content-Disposition: inline; filename=\"%s\"\n",
+			cleanfname);
 		fprintf(outfile, "\n\n--=\n");
 		fprintf(outfile, "Content-Type: application/applefile\n");
 		fprintf(outfile, "Content-Transfer-Encoding: base64\n");
@@ -223,8 +219,8 @@ int encode(FILE *infile, FILE *applefile, char *fname, FILE *descfile, char *sub
 	    fprintf(outfile, "Content-Type: %s; name=\"%s\"\n", type,
 		    cleanfname);
 	    fprintf(outfile, "Content-Transfer-Encoding: base64\n");
-	    fprintf(outfile, "Content-Disposition: %s; filename=\"%s\"\n",
-		    attachment ? "attachment" : "inline", cleanfname);
+	    fprintf(outfile, "Content-Disposition: inline; filename=\"%s\"\n",
+		    cleanfname);
 	    fprintf(outfile, "Content-MD5: %s\n\n", digest);
 	    free(digest);
 	    written += 80;
