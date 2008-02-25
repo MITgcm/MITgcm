@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.960 2008/02/22 21:17:40 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.961 2008/02/25 20:59:01 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add a flag writePickupAtEnd (default=true) to be able to suppress 
+  writing a pickup at the last timestep
 o pkg/profiles: 
   rename profiles_interp_mean_genericgrid as profiles_interp_mean_gg
   (for "less than 32 characters name" compiler requirement)
