@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.23 2006/05/12 19:08:46 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.24 2008/02/25 18:59:37 jmc Exp $
 #  $Name:  $
 #
 
@@ -20,9 +20,6 @@ else
     #  Try to follow IEEE-754
     has_sse2=f
     grep flags /proc/cpuinfo | grep sse2 > /dev/null 2>&1  &&  has_sse2=t
-
-    # older OS on sea.mit.edu does not support sse
-    if [ `uname -n` = "sea" ]; then has_sse2=f; fi
 
     if test "x$has_sse2" = xt ; then
 	FFLAGS='-Wimplicit -Wunused -mfpmath=sse -msse -msse2'
