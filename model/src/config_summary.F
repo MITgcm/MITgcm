@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.103 2008/02/05 13:32:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.104 2008/02/25 20:57:24 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -504,6 +504,8 @@ C     ycoord :: varying parameters.
 #endif
       CALL WRITE_0D_L(pickup_write_immed,INDEX_NONE,
      &     'pickup_write_immed =','   /* Model IO flag. */')
+      CALL WRITE_0D_L(writePickupAtEnd,INDEX_NONE,
+     &     'writePickupAtEnd =','   /* Model IO flag. */')
       CALL WRITE_0D_R8( dumpFreq, INDEX_NONE,'dumpFreq =',
      &'   /* Model state write out interval ( s ). */')
       CALL WRITE_0D_L(dumpInitAndLast,INDEX_NONE,'dumpInitAndLast=',

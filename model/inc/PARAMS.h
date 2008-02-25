@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.212 2008/02/05 13:32:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.213 2008/02/25 20:57:24 mlosch Exp $
 C $Name:  $
 C
 
@@ -323,6 +323,7 @@ C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-1
 C     pickup_write_mdsio :: use mdsio to write pickups
 C     pickup_read_mdsio  :: use mdsio to read  pickups
 C     pickup_write_immed :: echo the pickup immediately (for conversion)
+C     writePickupAtEnd   :: write pickup at the last timestep
 C     timeave_mdsio      :: use mdsio for timeave output
 C     snapshot_mdsio     :: use mdsio for "snapshot" (dumpfreq/diagfreq) output
 C     monitor_stdio      :: use stdio for monitor output
@@ -367,6 +368,7 @@ C                        according to Euler angles phiEuler, thetaEuler, psiEule
      & allowFreezing, useOldFreezing,
      & pickupStrictlyMatch, usePickupBeforeC54, startFromPickupAB2,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
+     & writePickupAtEnd,
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
      & outputTypesInclusive, dumpInitAndLast, debugMode,
      & inAdMode, inAdTrue, inAdFalse, inAdExact,
@@ -452,7 +454,7 @@ C                        according to Euler angles phiEuler, thetaEuler, psiEule
       LOGICAL dumpInitAndLast
       LOGICAL debugMode
       LOGICAL pickup_read_mdsio, pickup_write_mdsio
-      LOGICAL pickup_write_immed
+      LOGICAL pickup_write_immed, writePickupAtEnd
       LOGICAL timeave_mdsio, snapshot_mdsio, monitor_stdio
       LOGICAL outputTypesInclusive
       LOGICAL inAdMode, inAdTrue, inAdFalse, inAdExact

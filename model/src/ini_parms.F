@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.205 2008/02/05 13:32:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.206 2008/02/25 20:57:24 mlosch Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -218,6 +218,7 @@ C--   Time stepping parammeters
      & abEps, alph_AB, beta_AB, startFromPickupAB2,
      & tauCD, rCD, cAdjFreq,
      & chkPtFreq, pChkPtFreq, pickupSuff, pickupStrictlyMatch,
+     & writePickupAtEnd,
      & dumpFreq, dumpInitAndLast, adjDumpFreq, taveFreq, tave_lastIter,
      & diagFreq, monitorFreq, adjMonitorFreq, monitorSelect,
      & outputTypesInclusive,
