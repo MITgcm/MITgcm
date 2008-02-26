@@ -4,6 +4,9 @@ mpack \- pack a file in MIME format
 .SH SYNOPSIS
 .B mpack
 [
+.B \-a
+]
+[
 .B \-s
 .I subject
 ]
@@ -23,6 +26,9 @@ mpack \- pack a file in MIME format
 .I "address \&..."
 .br
 .B mpack
+[
+.B \-a
+]
 [
 .B \-s
 .I subject
@@ -44,6 +50,9 @@ mpack \- pack a file in MIME format
 .I file
 .br
 .B mpack
+[
+.B \-a
+]
 [
 .B \-s
 .I subject
@@ -73,6 +82,10 @@ written to a named file or set of files, or posted to a set of
 newsgroups.
 .PP
 .SH OPTIONS
+.TP
+.BI \-a
+Set the Content-Disposition to attachment.  If \-a is not used
+the Content-Disposition is inline.
 .TP
 .BI \-s " subject"
 Set the 
@@ -136,7 +149,7 @@ Mail the generated messages to the specified addresses.
 .SH ENVIRONMENT
 .TP
 .B TMPDIR
-Directory to store temporary files.  Default is /usr/tmp.
+Directory to store temporary files.  Default is /var/tmp.
 .TP
 .B SPLITSIZE
 Default value of the -m switch.
