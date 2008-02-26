@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/input/data.exf,v 1.1 2008/01/08 10:39:32 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/input/data.exf,v 1.2 2008/02/26 15:32:30 dimitri Exp $
 #
 # *********************
 # External Forcing Data
@@ -122,4 +122,16 @@
  obcsEstartdate1   = 19790101,
  obcsEstartdate2   = 000000,
  obcsEperiod       = 3600.0,
+#
+ siobSstartdate1   = 19790101,
+ siobSstartdate2   = 000000,
+ siobSperiod       = 3600.0,
+#
+ siobNstartdate1   = 19790101,
+ siobNstartdate2   = 000000,
+ siobNperiod       = 3600.0,
+#
+ siobWstartdate1   = 19790101,
+ siobWstartdate2   = 000000,
+ siobWperiod       = 3600.0,
  &
