@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.6 2008/01/25 15:17:20 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.7 2008/02/26 21:52:16 jmc Exp $
 # $Name:  $
 
 echo -n '-- Starting: '
@@ -49,6 +49,31 @@ done
 
 #date_str=`date +%Y%m%d`"_0"
 
+MPACKDIR=`dirname $MPACK`
+#- build the mpack utility (from build_mpack in testreport):
+( cd $MPACKDIR && ./configure && make ) > TTT.build_mpack.$$ 2>&1
+RETVAL=$?
+if test "x$RETVAL" != x0 ; then
+    echo
+    echo "Error building the mpack tools at: $MPACK_DIR"
+    if test -x $MPACK ; then
+       HAVE_MPACK=t
+       echo "  use (old ?) executable:" ; ls -l $MPACK
+    else
+       HAVE_MPACK=f
+    fi
+else
+    if test -x $MPACK ; then
+       rm -f TTT.build_mpack.$$
+       HAVE_MPACK=t
+       echo " building mpack: OK"
+    else
+       echo " $MPACK not executable"
+       HAVE_MPACK=f
+    fi
+fi
+echo
+
 minutes=0
 count=$nbtst
 while test $count != 0 ; do
@@ -70,8 +95,12 @@ while test $count != 0 ; do
             tdir=`ls -1 $run_dir | grep -v tr_out | grep '^tr_aces' | head -1`
             if test ! "x$tdir" = x ; then
                 ( cd $run_dir ; tar -czf "/tmp/tr_aces-"$i".tar.gz" ./$tdir )
+              if test "x$HAVE_MPACK" = xt ; then
                 $MPACK -s MITgcm-test -m 3555000 "/tmp/tr_aces-"$i".tar.gz" jmc@mitgcm.org
                 echo "Email sent for $i"
+              else
+                echo "no email sent for $i (no mpack)"
+              fi
             else
                 echo "Output not found so no email sent for $i"
             fi
