@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.962 2008/02/27 04:35:59 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.963 2008/02/27 23:33:15 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -8,6 +8,11 @@ o pkg/shelfice:
   - sort out freshwater flux; convert freshwater fluxes to mass fluxes 
     (kg/m^2/s), does not break tests, because in verification/isomip,
     rhoConstFresh=rhoConst (by accident)
+  - rearrange computation of tLoc, sLoc, pLoc to make code more efficient
+  - move S/R find_rho_scalar, pkg/ecco/sw_ptmp.F, pkg/ecco/sw_adtg.F into
+    new file model/src/seawater.F, so that they are available for all pkgs.
+  - convert potential temperature into in-situ temperature. This changes the
+    isomip tests => update tests
 o add a flag writePickupAtEnd (default=true) to be able to suppress 
   writing a pickup at the last timestep
 o pkg/profiles: 

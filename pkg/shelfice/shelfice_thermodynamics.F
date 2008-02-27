@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.14 2008/02/27 12:43:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.15 2008/02/27 23:32:38 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -70,6 +70,9 @@ C     drKp1, recip_drLoc
       _RL aqe, bqe, cqe, discrim, recip_aqe
       _RL drKp1, recip_drLoc
 
+      _RL SW_TEMP
+      EXTERNAL SW_TEMP
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     linear dependence of freezing point on salinity
@@ -133,6 +136,14 @@ C--   lower cell may not be as thick as required
          ENDDO
         ENDIF
 
+C--   turn potential temperature into in-situ temperature relative 
+C--   to the surface
+        DO J = 1, sNy
+         DO I = 1, sNx
+          tLoc(I,J) = SW_TEMP(sLoc(I,J),tLoc(I,J),pLoc(I,J),0.D0)
+         ENDDO
+        ENDDO
+
 #ifdef ALLOW_ISOMIP_TD
         IF ( useISOMIPTD ) THEN
          DO J = 1, sNy
@@ -140,7 +151,6 @@ C--   lower cell may not be as thick as required
            K = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
 C--   Calculate freezing temperature as a function of salinity and pressure
-CML           thetaFreeze=-1.9 _d 0
             thetaFreeze = 
      &           sLoc(I,J) * ( a0 + a1*sqrt(sLoc(I,J)) + a2*sLoc(I,J) )
      &           + b*pLoc(I,J) + c0
