@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.13 2008/02/27 04:35:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.14 2008/02/27 12:43:21 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -58,7 +58,9 @@ C     atmp, btmp, aqe, bqe, cqe, discrim, recip_aqe
 C     drKp1, recip_drLoc
       INTEGER I,J,K,Kp1
       INTEGER bi,bj
-      _RL tLoc, sLoc, pLoc
+      _RL tLoc(1:sNx,1:sNy)
+      _RL sLoc(1:sNx,1:sNy)
+      _RL pLoc(1:sNx,1:sNy)
       _RL thetaFreeze, saltFreeze
       _RL freshWaterFlux
       _RL a0, a1, a2, b, c0
@@ -97,39 +99,54 @@ C     non-linear dependence of freezing point on salinity
           shelficeForcingS      (I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
+        DO J = 1, sNy
+         DO I = 1, sNx
+C--   make local copies of temperature, salinity and depth (pressure) 
+C--   underneath the ice
+          K         = MAX(1,kTopC(I,J,bi,bj))
+          pLoc(I,J) = ABS(R_shelfIce(I,J,bi,bj))
+          tLoc(I,J) = theta(I,J,K,bi,bj)
+          sLoc(I,J) = MAX(salt(I,J,K,bi,bj), 0. _d 0)
+         ENDDO
+        ENDDO
+        IF ( SHELFICEBoundaryLayer ) THEN
+C--   average over boundary layer width
+         DO J = 1, sNy
+          DO I = 1, sNx
+           K   = kTopC(I,J,bi,bj)
+           IF ( K .NE. 0 .AND. K .LT. Nr ) THEN
+            Kp1 = MIN(Nr,K+1)
+C--   overlap into lower cell
+            drKp1 = drF(K)*( 1. _d 0 - _hFacC(I,J,K,bi,bj) )
+C--   lower cell may not be as thick as required
+            drKp1 = MIN( drKp1, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) ) 
+            recip_drLoc = 1. _d 0 / 
+     &           ( drF(K)*_hFacC(I,J,K,bi,bj) + drKp1 )
+            tLoc(I,J) = ( tLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+     &           + theta(I,J,Kp1,bi,bj) *drKp1 )
+     &           * recip_drLoc
+            sLoc(I,J) = ( sLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+     &           + MAX(salt(I,J,Kp1,bi,bj), 0. _d 0) * drKp1 )
+     &           * recip_drLoc
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDIF
+
 #ifdef ALLOW_ISOMIP_TD
         IF ( useISOMIPTD ) THEN
          DO J = 1, sNy
           DO I = 1, sNx
-           K    = kTopC(I,J,bi,bj)
-           pLoc = ABS(R_shelfIce(I,J,bi,bj))
-           IF ( K .NE. 0 .AND. pLoc .GT. 0. _d 0 ) THEN
-C--   Calculate the in-situ temperature 
-            tLoc = theta(I,J,K,bi,bj)
-            sLoc = MAX(salt(I,J,K,bi,bj), 0. _d 0)
-            IF ( SHELFICEBoundaryLayer .AND. K .LT. Nr ) THEN
-C--   average over boundary layer width
-             Kp1 = MIN(Nr,K+1)
-C--   overlap into lower cell
-             drKp1 = drF(K)*( 1. _d 0 - _hFacC(I,J,K,bi,bj) )
-C--   lower cell may not be as thick as required
-             drKp1 = MIN( drKp1, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) ) 
-             recip_drLoc = 1. _d 0 / 
-     &            ( drF(K)*_hFacC(I,J,K,bi,bj) + drKp1 )
-             tloc = ( tloc * drF(K)*_hFacC(I,J,K,bi,bj)
-     &            + theta(I,J,Kp1,bi,bj) *drKp1 )
-     &            * recip_drLoc
-             sloc = ( sloc * drF(K)*_hFacC(I,J,K,bi,bj)
-     &            + MAX(salt(I,J,Kp1,bi,bj), 0. _d 0) * drKp1 )
-     &            * recip_drLoc
-            ENDIF
+           K = kTopC(I,J,bi,bj)
+           IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
 C--   Calculate freezing temperature as a function of salinity and pressure
 CML           thetaFreeze=-1.9 _d 0
-            thetaFreeze = sLoc * ( a0 + a1*sqrt(sLoc) + a2*sLoc )
-     &           + b*pLoc + c0
+            thetaFreeze = 
+     &           sLoc(I,J) * ( a0 + a1*sqrt(sLoc(I,J)) + a2*sLoc(I,J) )
+     &           + b*pLoc(I,J) + c0
 C--   Calculate the upward heat and  fresh water fluxes
-            shelfIceHeatFlux(I,J,bi,bj) = 
-     &           SHELFICEheatTransCoeff * ( tLoc - thetaFreeze )
+            shelfIceHeatFlux(I,J,bi,bj) = maskC(I,J,K,bi,bj) *
+     &           SHELFICEheatTransCoeff * ( tLoc(I,J) - thetaFreeze )
      &           *HeatCapacity_Cp*rUnit2mass
 C     upward heat flux into the shelf-ice implies basal melting,
 C     thus a downward (negative upward) fresh water flux (as a mass flux),
@@ -169,7 +186,7 @@ C     Hellmer, H., 1989, A two-dimensional model for the thermohaline
 C     circulation under an ice shelf, Reports on Polar Research, No. 60
 C     (in German).
 
-C     are we doing the conservative form?
+C     are we doing the conservative form of Jenkins et al. (2001)?
          cFac = 0. _d 0
          IF( SHELFICEconserve ) cFac = 1. _d 0
 C     a few abbreviations
@@ -180,52 +197,32 @@ C     a few abbreviations
          DO J = 1, sNy
           DO I = 1, sNx
            K    = kTopC(I,J,bi,bj)
-           pLoc = ABS(R_shelfIce(I,J,bi,bj))
-           IF ( K .NE. 0 .AND. pLoc .GT. 0. _d 0 ) THEN
-C--   Calculate the in-situ temperature 
-            tLoc = theta(I,J,K,bi,bj)
-            sLoc = MAX(salt(I,J,K,bi,bj), 0. _d 0)
-            IF ( SHELFICEBoundaryLayer .AND. K .LT. Nr ) THEN
-C--   average over boundary layer width
-             Kp1 = MIN(Nr,K+1)
-C--   overlap into lower cell
-             drKp1 = drF(K)*( 1. _d 0 - _hFacC(I,J,K,bi,bj) )
-C--   lower cell may not be as thick as required
-             drKp1 = MIN( drKp1, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) ) 
-             recip_drLoc = 1. _d 0 / 
-     &            ( drF(K)*_hFacC(I,J,K,bi,bj) + drKp1 )
-             tloc = ( tloc * drF(K)*_hFacC(I,J,K,bi,bj)
-     &            + theta(I,J,Kp1,bi,bj) *drKp1 )
-     &            * recip_drLoc
-             sloc = ( sloc * drF(K)*_hFacC(I,J,K,bi,bj)
-     &            + MAX(salt(I,J,Kp1,bi,bj), 0. _d 0) * drKp1 )
-     &            * recip_drLoc
-            ENDIF
+           IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
 C     solve quadratic equation to get salinity at shelfice-ocean interface
 C     note: this part of the code is not very intuitive as it involves
 C     many arbitrary abbreviations that were introduced to derive the
 C     correct form of the quadratic equation for salinity. The abbreviations
 C     only make sense in connection with my notes on this (M.Losch)
             eps3 = rhoShelfIce*SHELFICEheatCapacity_Cp
-     &           * SHELFICEkappa/ploc
-            eps4 = b*pLoc + c0
-            eps6 = eps4 - tloc
+     &           * SHELFICEkappa/pLoc(I,J)
+            eps4 = b*pLoc(I,J) + c0
+            eps6 = eps4 - tLoc(I,J)
             eps7 = eps4 - SHELFICEthetaSurface
             atmp = a0*( eps1 + eps3 - eps5 )
             btmp = eps1*eps6 + eps3*eps7
             aqe = a0  *(eps1+eps3) + cFac*atmp
             recip_aqe = 0. _d 0
             IF ( aqe .NE. 0. _d 0 ) recip_aqe = 0.5 _d 0/aqe
-            bqe = btmp - eps2 + cFac*( btmp - eps5*eps6 - sloc*atmp )
-            cqe = eps2*sloc   - cFac*( btmp - eps5*eps6 )*sloc
+            bqe = btmp-eps2 + cFac*(btmp - eps5*eps6 - sLoc(I,J)*atmp)
+            cqe = eps2*sLoc(I,J)  - cFac*( btmp - eps5*eps6 )*sLoc(I,J)
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
 #undef ALLOW_SHELFICE_DEBUG
 #ifdef ALLOW_SHELFICE_DEBUG
             IF ( discrim .LT. 0. _d 0 ) THEN
              print *, 'ml-shelfice: discrim = ', discrim,aqe,bqe,cqe
-             print *, 'ml-shelfice: ploc    = ', ploc
-             print *, 'ml-shelfice: tloc    = ', tloc
-             print *, 'ml-shelfice: sloc    = ', sloc
+             print *, 'ml-shelfice: pLoc    = ', pLoc(I,J)
+             print *, 'ml-shelfice: tLoc    = ', tLoc(I,J)
+             print *, 'ml-shelfice: sLoc    = ', sLoc(I,J)
              print *, 'ml-shelfice: tsurface= ', 
      &            SHELFICEthetaSurface
              print *, 'ml-shelfice: eps1    = ', eps1
@@ -255,13 +252,13 @@ C     only make sense in connection with my notes on this (M.Losch)
      &           saltFreeze = (- bqe + SQRT(discrim))*recip_aqe
 C--   upward fresh water flux due to melting (in kg/m^2/s)
             freshWaterFlux = rUnit2mass*SHELFICEsaltTransCoeff
-     &           * ( saltFreeze - sloc )
-     &           /( saltFreeze + cFac*( saltFreeze - sloc ) )
+     &           * ( saltFreeze - sLoc(I,J) )
+     &           /( saltFreeze + cFac*( saltFreeze - sLoc(I,J) ) )
 C--   Calculate the upward heat and fresh water fluxes;
 C--   MITgcm sign conventions: downward (negative) fresh water flux 
 C--   implies melting and due to upward (positive) heat flux
             shelfIceHeatFlux(I,J,bi,bj) = 
-     &           ( eps3*( tloc - SHELFICEthetaSurface )
+     &           ( eps3*( tLoc(I,J) - SHELFICEthetaSurface )
      &           - freshWaterFlux*SHELFICElatentHeat )
             shelfIceFreshWaterFlux(I,J,bi,bj) = freshWaterFlux
 C--   compute surface tendencies
