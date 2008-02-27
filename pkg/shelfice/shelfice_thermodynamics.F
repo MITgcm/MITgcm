@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.12 2007/10/10 14:43:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.13 2008/02/27 04:35:02 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -132,10 +132,11 @@ C--   Calculate the upward heat and  fresh water fluxes
      &           SHELFICEheatTransCoeff * ( tLoc - thetaFreeze )
      &           *HeatCapacity_Cp*rUnit2mass
 C     upward heat flux into the shelf-ice implies basal melting,
-C     thus a downward (negative upward) fresh water flux, and vice versa
+C     thus a downward (negative upward) fresh water flux (as a mass flux),
+C     and vice versa
             shelfIceFreshWaterFlux(I,J,bi,bj) = 
      &           - shelfIceHeatFlux(I,J,bi,bj)
-     &           *recip_rhoConst*recip_SHELFICElatentHeat
+     &           *recip_SHELFICElatentHeat
 C--   compute surface tendencies
             shelficeForcingT(i,j,bi,bj) =
      &           - shelfIceHeatFlux(I,J,bi,bj)
@@ -143,11 +144,11 @@ C--   compute surface tendencies
             IF (convertFW2Salt .EQ. -1.) THEN
              shelficeForcingS(i,j,bi,bj) = 
      &            shelfIceFreshWaterFlux(I,J,bi,bj)
-     &            * salt(I,J,K,bi,bj) * rhoConstFresh*mass2rUnit
+     &            * salt(I,J,K,bi,bj) * mass2rUnit
             ELSE
              shelficeForcingS(i,j,bi,bj) = 
      &            shelfIceFreshWaterFlux(I,J,bi,bj)
-     &            * convertFW2Salt * rhoConstFresh*mass2rUnit
+     &            * convertFW2Salt * mass2rUnit
             ENDIF
 C--   stress at the ice/water interface is computed in separate
 C     routines that are called from mom_fluxform/mom_vecinv
@@ -172,9 +173,9 @@ C     are we doing the conservative form?
          cFac = 0. _d 0
          IF( SHELFICEconserve ) cFac = 1. _d 0
 C     a few abbreviations
-         eps1 = rhoConst*HeatCapacity_Cp*SHELFICEheatTransCoeff
-         eps2 = rhoConst*SHELFICElatentHeat*SHELFICEsaltTransCoeff
-         eps5 = rhoConst*HeatCapacity_Cp*SHELFICEsaltTransCoeff
+         eps1 = rUnit2mass*HeatCapacity_Cp*SHELFICEheatTransCoeff
+         eps2 = rUnit2mass*SHELFICElatentHeat*SHELFICEsaltTransCoeff
+         eps5 = rUnit2mass*HeatCapacity_Cp*SHELFICEsaltTransCoeff
       
          DO J = 1, sNy
           DO I = 1, sNx
@@ -234,7 +235,7 @@ C     only make sense in connection with my notes on this (M.Losch)
              print *, 'ml-shelfice: eps5    = ', eps5
              print *, 'ml-shelfice: eps6    = ', eps6
              print *, 'ml-shelfice: eps7    = ', eps7
-             print *, 'ml-shelfice: rhoW    = ', rhoConst
+             print *, 'ml-shelfice: rU2mass = ', rUnit2mass
              print *, 'ml-shelfice: rhoIce  = ', rhoShelfIce
              print *, 'ml-shelfice: cFac    = ', cFac
              print *, 'ml-shelfice: Cp_W    = ', HeatCapacity_Cp
@@ -252,8 +253,8 @@ C     only make sense in connection with my notes on this (M.Losch)
             saltFreeze = (- bqe - SQRT(discrim))*recip_aqe
             IF ( saltFreeze .LT. 0. _d 0 )
      &           saltFreeze = (- bqe + SQRT(discrim))*recip_aqe
-C--   upward fresh water flux due to melting (in m/s of sea water)
-            freshWaterFlux = SHELFICEsaltTransCoeff
+C--   upward fresh water flux due to melting (in kg/m^2/s)
+            freshWaterFlux = rUnit2mass*SHELFICEsaltTransCoeff
      &           * ( saltFreeze - sloc )
      &           /( saltFreeze + cFac*( saltFreeze - sloc ) )
 C--   Calculate the upward heat and fresh water fluxes;
@@ -261,17 +262,15 @@ C--   MITgcm sign conventions: downward (negative) fresh water flux
 C--   implies melting and due to upward (positive) heat flux
             shelfIceHeatFlux(I,J,bi,bj) = 
      &           ( eps3*( tloc - SHELFICEthetaSurface )
-     &           - rhoConst*freshWaterFlux*SHELFICElatentHeat )
-     &           *rUnit2mass*recip_rhoConst
-            shelfIceFreshWaterFlux(I,J,bi,bj) =  
-     &           freshWaterFlux * rUnit2mass*recip_rhoConst
+     &           - freshWaterFlux*SHELFICElatentHeat )
+            shelfIceFreshWaterFlux(I,J,bi,bj) = freshWaterFlux
 C--   compute surface tendencies
             shelficeForcingT(i,j,bi,bj) =
      &           - shelfIceHeatFlux(I,J,bi,bj)
-     &           *recip_Cp*mass2rUnit
+     &           * recip_Cp * mass2rUnit
             shelficeForcingS(i,j,bi,bj) = 
      &           shelfIceFreshWaterFlux(I,J,bi,bj)
-     &           * saltFreeze * rhoConstFresh*mass2rUnit
+     &           * saltFreeze * mass2rUnit
            ELSE
             shelfIceHeatFlux      (I,J,bi,bj) = 0. _d 0
             shelfIceFreshWaterFlux(I,J,bi,bj) = 0. _d 0

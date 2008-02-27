@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_init.F,v 1.5 2007/03/14 15:43:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_init.F,v 1.6 2008/02/27 04:35:02 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -70,7 +70,7 @@ C-    EXCH call implicitly contains Barrier: no need for an other one.
       IF ( useDiagnostics ) THEN
        diagName  = 'SHIfwFlx'
        diagTitle = 'SHELFICE fresh water flux (positive upward)'
-       diagUnits = 'm/s             '
+       diagUnits = 'kg/m^2/s        '
        diagCode  = 'SM      M1      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, myThid )
