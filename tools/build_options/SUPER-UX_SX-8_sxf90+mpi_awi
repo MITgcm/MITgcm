@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.8 2008/02/06 10:56:29 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.9 2008/02/27 19:59:46 mlosch Exp $
 #
 # for cross compiling on sx8.awi.de
 # uname -a: 
@@ -25,7 +25,7 @@ FFLAGS=$FFLAGS' -pi'
 # used, therefore there are only a few examples here); unfortunately, these 
 # flags break the genmake2 tests, so you will have to include them into the
 # makefile by hand
-FEXTRAFLAGS='-pi auto fullmsg exp=barrier,ucase,timestep_tracer,ilnblnk,ifnblnk,cycle_tracer,pressure_for_eos rexp=fool_the_compiler,bar2 expin=barrier.F,timestep_tracer.F,fool_the_compiler.F,bar2.F,utils.F,cycle_tracer.F,pressure_for_eos.F'
+FEXTRAFLAGS='-pi auto fullmsg exp=barrier,ucase,timestep_tracer,ilnblnk,ifnblnk,cycle_tracer,pressure_for_eos,sw_temp,sw_ptmp rexp=fool_the_compiler,bar2,sw_adtg expin=barrier.F,timestep_tracer.F,fool_the_compiler.F,bar2.F,utils.F,cycle_tracer.F,pressure_for_eos.F seawater.F'
 # additional candidates for inlining are parts of packages that are not 
 # always used, therefore use this at your own risk:
 #FEXTRAFLAGS=${FEXTRAFLAGS}' -pi fullmsg exp= expin='
