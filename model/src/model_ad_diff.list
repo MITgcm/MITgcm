@@ -73,6 +73,7 @@ momentum_correction_step.f
 packages_init_variables.f
 pressure_for_eos.f
 read_pickup.f
+seawater.F
 solve_for_pressure.f
 state_summary.f	
 taueddy_external_forcing.f
