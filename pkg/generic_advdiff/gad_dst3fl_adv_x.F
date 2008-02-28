@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_x.F,v 1.13 2007/04/04 01:39:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_x.F,v 1.14 2008/02/28 23:15:18 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -46,6 +46,8 @@ C       with no need to compute thetaM (might be easier to differentiate)
        uT(1-Olx,j)=0. _d 0
        uT(2-Olx,j)=0. _d 0
        uT(sNx+Olx,j)=0. _d 0
+      ENDDO
+      DO j=1-Oly,sNy+Oly
        DO i=1-Olx+2,sNx+Olx-1
         Rjp=(tracer(i+1,j)-tracer( i ,j))*maskLocW(i+1,j)
         Rj =(tracer( i ,j)-tracer(i-1,j))*maskLocW( i ,j)
