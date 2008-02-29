@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.7 2007/04/04 01:39:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.8 2008/02/29 01:30:59 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -62,6 +62,8 @@ CEOP
 
       DO j=1-Oly,sNy+Oly
        uT(1-Olx,j)=0.
+      ENDDO
+      DO j=1-Oly,sNy+Oly
        DO i=1-Olx+1,sNx+Olx
 
         uCFL = uFld(i,j)

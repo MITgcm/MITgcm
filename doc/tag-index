@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.963 2008/02/27 23:33:15 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.964 2008/02/29 01:31:34 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o change the loop ordering in most gad_*_adv_x.F to improve vectorization:
+  move a few statemens out the main loop into separate loops
 o pkg/shelfice: 
   - sort out freshwater flux; convert freshwater fluxes to mass fluxes 
     (kg/m^2/s), does not break tests, because in verification/isomip,

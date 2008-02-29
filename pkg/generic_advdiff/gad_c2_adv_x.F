@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_adv_x.F,v 1.3 2001/09/21 13:11:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_adv_x.F,v 1.4 2008/02/29 01:30:59 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -48,6 +48,8 @@ CEOP
 
       DO j=1-Oly,sNy+Oly
        uT(1-Olx,j)=0.
+      ENDDO
+      DO j=1-Oly,sNy+Oly
        DO i=1-Olx+1,sNx+Olx
         uT(i,j) = 
      &   uTrans(i,j)*(Tracer(i,j)+Tracer(i-1,j))*0.5 _d 0

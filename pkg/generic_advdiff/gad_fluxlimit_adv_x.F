@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_x.F,v 1.11 2007/04/04 01:39:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_x.F,v 1.12 2008/02/29 01:30:59 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -69,6 +69,8 @@ CEOP
        uT(1-Olx,j)=0.
        uT(2-Olx,j)=0.
        uT(sNx+Olx,j)=0.
+      ENDDO
+      DO j=1-Oly,sNy+Oly
        DO i=1-Olx+2,sNx+Olx-1
 
         uCFL = uFld(i,j)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3_adv_x.F,v 1.4 2002/01/08 21:43:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3_adv_x.F,v 1.5 2008/02/29 01:31:00 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -56,6 +56,8 @@ CEOP
        uT(1-Olx,j)=0.
        uT(2-Olx,j)=0.
        uT(sNx+Olx,j)=0.
+      ENDDO
+      DO j=1-Oly,sNy+Oly
        DO i=1-Olx+2,sNx+Olx-1
         Rjp=(tracer(i+1,j)-tracer(i,j))*maskW(i+1,j,k,bi,bj)
         Rj =(tracer(i,j)-tracer(i-1,j))*maskW(i,j,k,bi,bj)

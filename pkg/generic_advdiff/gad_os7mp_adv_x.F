@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_x.F,v 1.7 2007/10/05 10:50:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_x.F,v 1.8 2008/02/29 01:30:59 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -57,6 +57,8 @@ C     == Local variables ==
        uT(sNx+Olx-2,j)=0. _d 0
        uT(sNx+Olx-1,j)=0. _d 0
        uT(sNx+Olx,j)=0. _d 0
+      ENDDO
+      DO j=1-Oly,sNy+Oly
        DO i=1-Olx+4,sNx+Olx-3
 
         uLoc = uFld(i,j)
