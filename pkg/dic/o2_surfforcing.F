@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.17 2007/08/28 02:30:31 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/o2_surfforcing.F,v 1.18 2008/02/29 22:36:13 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -54,7 +54,6 @@ C Solubility relation coefficients
       _RL O2sat(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Kwexch(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL FluxO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL AtmosO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  aTT 
       _RL  aTK
       _RL  aTS
