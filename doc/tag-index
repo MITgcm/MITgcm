@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.964 2008/02/29 01:31:34 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.965 2008/03/02 23:38:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o dome/code/obcs_calc.F: avoid division by zero (detected using gfortran).
 o change the loop ordering in most gad_*_adv_x.F to improve vectorization:
   move a few statemens out the main loop into separate loops
 o pkg/shelfice: 
