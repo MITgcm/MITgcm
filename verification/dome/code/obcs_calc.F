@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.2 2006/12/06 18:28:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.3 2008/03/02 23:25:43 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE OBCS_CALC( bi, bj, futureTime, futureIter,
-     &                      uVel, vVel, wVel, theta, salt, 
+     &                      uVel, vVel, wVel, theta, salt,
      &                      myThid )
 C     /==========================================================\
 C     | SUBROUTINE OBCS_CALC                                     |
@@ -57,14 +57,14 @@ c     g' of inflow
       gp_inflow=Talpha*gravity*dTemp
 c     Deformation radius
       Lrho=sqrt(gp_inflow*Dinf)/f0
-c     dimensional width 
+c     dimensional width
       Width=100. _d 3
 c     nondimensional width
       Width=Width/Lrho
 c      print *,'Width=',Width
 c     coordinate of center of embayment
       Xcenter = 1700. _d 3
-c     Critical Richardson number 
+c     Critical Richardson number
       Rit = 1. _d 0/3. _d 0
 c      Ttarget=-5.0e6
 c      areaCh=Width*Lrho*Dmax
@@ -87,8 +87,8 @@ c     ramptime for velocity
 C     Eastern OB
       IF (useOrlanskiEast) THEN
         CALL ORLANSKI_EAST(
-     &          bi, bj, futureTime, 
-     &          uVel, vVel, wVel, theta, salt, 
+     &          bi, bj, futureTime,
+     &          uVel, vVel, wVel, theta, salt,
      &          myThid )
       ELSE
         DO K=1,Nr
@@ -107,7 +107,7 @@ c     & *0.5*(1.0 - (exp((z(k)-hinit)/delh)
 c     &   - exp(-(z(k)-hinit)/delh))
 c     &   /(exp((z(k)-hinit)/delh)
 c     &  + exp(-(z(k)-hinit)/delh)))
-c     &*(1.0 - rexpt*rexpt)/(1.0 + rexpt*rexpt) 
+c     &*(1.0 - rexpt*rexpt)/(1.0 + rexpt*rexpt)
             OBEs(J,K,bi,bj)=sRef(K)
 #ifdef ALLOW_NONHYDROSTATIC
             OBEw(J,K,bi,bj)=0.
@@ -119,8 +119,8 @@ c     &*(1.0 - rexpt*rexpt)/(1.0 + rexpt*rexpt)
 C     Western OB
       IF (useOrlanskiWest) THEN
         CALL ORLANSKI_WEST(
-     &          bi, bj, futureTime, 
-     &          uVel, vVel, wVel, theta, salt, 
+     &          bi, bj, futureTime,
+     &          uVel, vVel, wVel, theta, salt,
      &          myThid )
       ELSE
         DO K=1,Nr
@@ -138,51 +138,50 @@ C     Western OB
 C         Northern OB, template for forcing
       IF (useOrlanskiNorth) THEN
         CALL ORLANSKI_NORTH(
-     &          bi, bj, futureTime, 
-     &          uVel, vVel, wVel, theta, salt, 
+     &          bi, bj, futureTime,
+     &          uVel, vVel, wVel, theta, salt,
      &          myThid )
       ELSE
         DO K=1,Nr
           DO I=1-Olx,sNx+Olx
 c Make center of embayment x=0
            x=(xC(I,1,bi,bj)-Xcenter)/Lrho +Width/2. _d 0
-           if ((x.ge.0.).and.(x.le.Width)) then
+           IF ((x.GE.0.).AND.(x.LE.Width)) THEN
             hinit=Dinf*(exp(-x)) - Dmax
 c      if (k.eq.5) then
 c      print *,'x=',x,'  xC',xC(I,1,bi,bj),'  I=',I
 c      print *,'hinit=',hinit
 c      endif
-           else
-           hinit=-Dmax
-           endif
-
             zt=(z(k) + Dmax - (hinit + Dmax))/(hinit+Dmax)
-            if (zt.ge.(Rit/(2-Rit))) then
+            IF (zt.GE.(Rit/(2. _d 0 -Rit))) THEN
+             Fz=1.
+            ELSE
+             IF (zt.GE.(-Rit/(2.+Rit))) THEN
+              Fz=1. _d 0/Rit*zt/(zt+1. _d 0) + 0.5 _d 0
+             ELSE
+              Fz=0.
+             ENDIF
+            ENDIF
+           ELSE
             Fz=1.
-            else 
-            if (zt.ge.(-Rit/(2+Rit))) then
-            Fz=1. _d 0/Rit*zt/(zt+1. _d 0) + 0.5 _d 0
-            else
-            Fz=0
-            endif
-            endif
+           ENDIF
 c       if ((x.ge.0).and.(x.le.Width)) then
 c        print *,'z(k)',z(k),'zt',zt,'Fz',Fz
 c	endif
-            OBNv(I,K,bi,bj)=0. 
+            OBNv(I,K,bi,bj)=0.
      &     -  sqrt(gp_inflow*Dinf)*exp(-x)
-     & *(1. _d 0-Fz)
+     &                            *(1. _d 0 - Fz)
 c           if ((x.ge.0).and.(x.le.Width)) then
 c           if (k.eq.5) then
 c       print *,'V=',OBNv(I,K,bi,bj)
 c           endif
 c           endif
             OBNu(I,K,bi,bj)=0.
-           if (tRef(K).le. (-dTemp*(1. _d 0 - Fz))) then
-           OBNt(I,K,bi,bj) = tRef(K)
-           else
-           OBNt(I,K,bi,bj) = -dTemp*(1. _d 0 - Fz)
-           endif
+           IF (tRef(K).LE. (-dTemp*(1. _d 0 - Fz))) THEN
+            OBNt(I,K,bi,bj) = tRef(K)
+           ELSE
+            OBNt(I,K,bi,bj) = -dTemp*(1. _d 0 - Fz)
+           ENDIF
 c           if ((x.ge.0).and.(x.le.Width)) then
 c       print *,'T=',OBNt(I,K,bi,bj)
 c	    endif
@@ -198,10 +197,10 @@ c     & *(1.0 - Fz)
       ENDIF
 
 C         Southern OB, template for forcing
-      IF (useOrlanskiSouth) THEN   
+      IF (useOrlanskiSouth) THEN
         CALL ORLANSKI_SOUTH(
-     &          bi, bj, futureTime, 
-     &          uVel, vVel, wVel, theta, salt, 
+     &          bi, bj, futureTime,
+     &          uVel, vVel, wVel, theta, salt,
      &          myThid )
       ELSE
         DO K=1,Nr
