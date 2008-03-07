@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.965 2008/03/02 23:38:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.966 2008/03/07 19:25:48 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59o
 o dome/code/obcs_calc.F: avoid division by zero (detected using gfortran).
 o change the loop ordering in most gad_*_adv_x.F to improve vectorization:
   move a few statemens out the main loop into separate loops
@@ -18,6 +19,10 @@ o pkg/shelfice:
     isomip tests => update tests
 o add a flag writePickupAtEnd (default=true) to be able to suppress 
   writing a pickup at the last timestep
+o tools/mpack-1.6 : 
+  - disable automake (not working) and autoconf (not needed).
+  - update to version 1.6.4 which fix MD5 code on some 64 bits platforms
+    also cleaner with much less compilation warnings.
 o pkg/profiles: 
   rename profiles_interp_mean_genericgrid as profiles_interp_mean_gg
   (for "less than 32 characters name" compiler requirement)
