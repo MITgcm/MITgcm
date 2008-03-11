@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.29 2008/01/27 20:55:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.30 2008/03/11 20:57:14 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -151,6 +151,12 @@ C     Write restart file for passive tracers
      &                      suffix, myIter, myTime, myThid )
       ENDIF
 #endif /* ALLOW_PTRACERS */
+
+#ifdef ALLOW_DIC
+C     Write restart file for dic package
+      CALL DIC_WRITE_PICKUP( permPickup,
+     I                   suffix, myIter, myTime, myThid )
+#endif
 
 #ifdef ALLOW_MYPACKAGE
       IF (useMYPACKAGE) THEN

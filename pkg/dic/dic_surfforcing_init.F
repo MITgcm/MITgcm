@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.14 2007/11/08 22:35:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.15 2008/03/11 20:56:14 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -122,20 +122,20 @@ c end periodicExternalForcing
       ENDIF
 
 C =================================================================
+
+      jMin=1
+      jMax=sNy
+      iMin=1
+      iMax=sNx
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-
-        jMin=1
-        jMax=sNy
-        iMin=1
-        iMax=sNx
 
 C determine inorganic carbon chem coefficients
         DO j=jmin,jmax
          DO i=imin,imax
 
 #ifdef DIC_BIOTIC
-cQQQQ check ptracer numbers
              surfalk(i,j) = PTRACER(i,j,klev,bi,bj,2)
      &                          * maskC(i,j,kLev,bi,bj)
              surfphos(i,j)  = PTRACER(i,j,klev,bi,bj,3)
@@ -155,28 +155,35 @@ C FOR NON-INTERACTIVE Si
         CALL CARBON_COEFFS(
      I                       theta,salt,
      I                       bi,bj,iMin,iMax,jMin,jMax)
+
+C     end bi,bj loops
+       ENDDO
+      ENDDO
 C====================================================================
 
-c set number of iterations for [H+] solvers
-C set guess of pH for first step here
+cdfer      IF (nIter0.EQ.PTRACERS_Iter0) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
 
-        DO j=jmin,jmax
-         DO i=imin,imax
-                  pH(i,j,bi,bj) = 8. _d 0
-         ENDDO
-        ENDDO
+C set guess of pH for first step here
+          DO j=jmin,jmax
+           DO i=imin,imax
+             pH(i,j,bi,bj) = 8. _d 0
+           ENDDO
+          ENDDO
+
          print*,'QQ: pCO2 approximation method'
-c first approxmation
+c first approximation
 C$TAF LOOP = parallel
-        DO j=jmin,jmax
+          DO j=jmin,jmax
 C$TAF LOOP = parallel
-         DO i=imin,imax
-          IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
+           DO i=imin,imax
+             IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
 C$TAF init dic_surf = static, 10
-          do it=1,10
+              do it=1,10
 C$TAF STORE pH(i,j,bi,bj), PTR_CO2(i,j,kLev)           = dic_surf
 C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
-           CALL CALC_PCO2_APPROX(
+              CALL CALC_PCO2_APPROX(
      I        theta(i,j,kLev,bi,bj),salt(i,j,kLev,bi,bj),
      I        PTR_CO2(i,j,kLev), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),
@@ -186,17 +193,26 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      I        aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj) )
-          enddo
-          ENDIF
+              enddo
+             ENDIF
+           ENDDO
+          ENDDO
+
          ENDDO
         ENDDO
 
-       ENDDO
-      ENDDO
         print*,'QQ first guess pH', pH(20,20,1,1), theta(20,20,1,1,1),
      &         salt(20,20,1,1,1),
      &        PTR_CO2(20,20,1), surfphos(20,20),
      &        surfsi(20,20),surfalk(20,20)
+
+cdfer      ELSEIF (nIter0.GT.PTRACERS_Iter0) THEN
+cdfer
+cdferC Read from a pickup file if needed
+cdfer        CALL DIC_READ_PICKUP( nIter0, myThid )
+cdfer
+cdfer      ENDIF
+
 #endif
         RETURN
         END
