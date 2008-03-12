@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.15 2008/03/11 20:56:14 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.16 2008/03/12 01:44:18 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -52,6 +52,7 @@ C local variables for carbon chem
       _RL surfalk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsi(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER iprt,jprt
 CEOP
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -156,14 +157,9 @@ C FOR NON-INTERACTIVE Si
      I                       theta,salt,
      I                       bi,bj,iMin,iMax,jMin,jMax)
 
-C     end bi,bj loops
-       ENDDO
-      ENDDO
 C====================================================================
 
-cdfer      IF (nIter0.EQ.PTRACERS_Iter0) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
+cdfer   IF (nIter0.EQ.PTRACERS_Iter0) THEN
 
 C set guess of pH for first step here
           DO j=jmin,jmax
@@ -178,9 +174,9 @@ C$TAF LOOP = parallel
           DO j=jmin,jmax
 C$TAF LOOP = parallel
            DO i=imin,imax
-             IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
+            IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
 C$TAF init dic_surf = static, 10
-              do it=1,10
+             DO it=1,10
 C$TAF STORE pH(i,j,bi,bj), PTR_CO2(i,j,kLev)           = dic_surf
 C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
               CALL CALC_PCO2_APPROX(
@@ -193,26 +189,30 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      I        aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj) )
-              enddo
-             ENDIF
+             ENDDO
+            ENDIF
            ENDDO
           ENDDO
+          iprt = MIN(20,sNx)
+          jprt = MIN(20,sNy)
+          print*,'QQ first guess pH', pH(iprt,jprt,bi,bj),
+     &        theta(iprt,jprt,1,bi,bj), salt(iprt,jprt,1,bi,bj),
+     &        PTR_CO2(iprt,jprt,1), surfphos(iprt,jprt),
+     &        surfsi(iprt,jprt),surfalk(iprt,jprt)
 
-         ENDDO
-        ENDDO
+cdfer   ENDIF
 
-        print*,'QQ first guess pH', pH(20,20,1,1), theta(20,20,1,1,1),
-     &         salt(20,20,1,1,1),
-     &        PTR_CO2(20,20,1), surfphos(20,20),
-     &        surfsi(20,20),surfalk(20,20)
+C     end bi,bj loops
+       ENDDO
+      ENDDO
 
-cdfer      ELSEIF (nIter0.GT.PTRACERS_Iter0) THEN
+cdfer IF (nIter0.GT.PTRACERS_Iter0) THEN
 cdfer
 cdferC Read from a pickup file if needed
-cdfer        CALL DIC_READ_PICKUP( nIter0, myThid )
+cdfer   CALL DIC_READ_PICKUP( nIter0, myThid )
 cdfer
-cdfer      ENDIF
+cdfer ENDIF
 
 #endif
-        RETURN
-        END
+      RETURN
+      END
