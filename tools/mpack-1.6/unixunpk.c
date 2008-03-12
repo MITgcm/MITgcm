@@ -24,7 +24,9 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef HAVE_GETOPT_H
 #include <getopt.h>
+#endif
 #include <unistd.h>
 #include "version.h"
 #include "part.h"

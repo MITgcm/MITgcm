@@ -1389,7 +1389,50 @@ LIBOBJS="$LIBOBJS ${ac_func}.${ac_objext}"
 fi
 done
 
+#---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+for ac_head in getopt
+do
+ac_header=${ac_head}.h
+echo $ac_n "checking for $ac_header""... $ac_c" 1>&6
+echo "configure:1396: checking for $ac_header" >&5
+if eval "test \"`echo '$''{'ac_cv_head_$ac_head'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  cat > conftest.$ac_ext <<EOF
+#line 1401 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+#include <$ac_header>
+int main(int argc, char **argv) {
+  printf("Hello!\n")
+; return 0; }
+EOF
+if { (eval echo configure:1409: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+  rm -rf conftest*
+  eval "ac_cv_head_$ac_head=yes"
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  eval "ac_cv_head_$ac_head=no"
+fi
+rm -f conftest*
+fi
+
+if eval "test \"`echo '$ac_cv_head_'$ac_head`\" = yes"; then
+  echo "$ac_t""yes" 1>&6
+    ac_tr_head=HAVE_`echo ${ac_head}_h | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+  cat >> confdefs.h <<EOF
+#define $ac_tr_head 1
+EOF
+ 
+else
+  echo "$ac_t""no" 1>&6
+fi
+done
+
+#---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 trap '' 1 2 15
 cat > confcache <<\EOF
