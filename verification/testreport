@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.112 2008/02/09 18:30:25 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.113 2008/03/12 02:20:04 jmc Exp $
 #  $Name:  $
 #
 
@@ -19,6 +19,8 @@ usage()
     echo "  (-of=|-optfile=)STRING   list of optfiles to use"
     echo "  (-a|-addr) STRING        list of email recipients"
     echo "                             (DEF=\"\" no email is sent)"
+    echo "  (-mpd|-mpackdir) DIR     location of the mpack utility"
+    echo "                             (DEF=\"../tools/mpack-1.6\")"
     echo "  (-t|-tdir) STRING        list of group and/or exp. dirs to test"
     echo "                             (recognized groups: basic, tutorials)"
     echo "                             (DEF=\"\" which test all)"
@@ -65,7 +67,8 @@ usage()
 build_mpack()
 {
     printf "building the mpack utility...  "
-    if test ! -x "$MPACKDIR/mpack" ; then
+    MPACK="$MPACKDIR/mpack"
+    if test ! -x $MPACK ; then
 	if test ! -d $MPACKDIR ; then
 	    echo
 	    echo "Error: can't find \"$MPACKDIR\""
@@ -88,11 +91,11 @@ build_mpack()
 	else
 	    rm -f tr_build_mpack.out
 	    HAVE_MPACK=t
-	    echo "OK"
+	    echo "done"
 	fi
     else
 	HAVE_MPACK=t
-	echo "done"
+	echo "already exist"
     fi
 }
 
@@ -744,7 +747,7 @@ TESTDIRS=
 SKIPDIRS=
 MPACKDIR="../tools/mpack-1.6"
 HAVE_MPACK=
-MPACK="$MPACKDIR/mpack"
+MPACK=
 COMMAND=
 if test "x$MAKE" = x ; then
     MAKE=make
@@ -793,6 +796,10 @@ for ac_option ; do
             ac_prev=ADDRESSES ;;
         -addr=* | --addr=*)
             ADDRESSES=$ac_optarg ;;
+        -mpackdir | --mpackdir | -mpd | --mpd)
+            ac_prev=MPACKDIR ;;
+        -mpackdir=* | --mpackdir=* | -mpd=* | --mpd=*)
+            MPACKDIR=$ac_optarg ;;
 
 	-tdir | --tdir | -t | --t)
             ac_prev=TESTDIRS ;;
