@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.3 2007/10/08 23:50:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.4 2008/03/18 19:49:11 utke Exp $
 C $Name:  $
 
 C--   File global_adsum.F: Routines that perform adjoint of
@@ -79,8 +79,6 @@ C--   every thread takes its adjoint sum
       RETURN
       END
 
-
-#include "CPP_EEOPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE GLOBAL_ADSUM_R8(
