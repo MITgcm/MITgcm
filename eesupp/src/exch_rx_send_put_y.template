@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_y.template,v 1.7 2008/02/20 20:29:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_y.template,v 1.8 2008/03/18 21:34:01 utke Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -82,6 +82,9 @@ C                                  tile face uses.
       INTEGER southCommMode
 #ifdef ALLOW_USE_MPI
       INTEGER theProc, theTag, theType, theSize, mpiRc
+# ifdef ALLOW_AUTODIFF_OPENAD
+      INTEGER mpiStatus(MPI_STATUS_SIZE)
+# endif
 #endif
 
 C--   Write data to exchange buffer
@@ -151,7 +154,27 @@ C        if you want to get multi-threaded MPI comms.
       ENDIF
 #endif
 #endif
-C      
+#ifdef ALLOW_AUTODIFF_OPENAD
+# ifdef ALLOW_USE_MPI
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+
+#  ifndef ALWAYS_USE_MPI
+         IF ( usingMPI ) THEN
+#  endif
+          CALL ampi_awaitall ( 
+     & exchNReqsY(1,bi,bj) , 
+     & exchReqIdY(1,1,bi,bj) ,
+     & mpiStatus , 
+     & mpiRC )
+#  ifndef ALWAYS_USE_MPI
+         ENDIF
+#  endif
+       ENDDO
+      ENDDO
+# endif
+#endif
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -198,9 +221,21 @@ C        Send the data
           theSize = iB
           theType = _MPI_TYPE_RX
           exchNreqsY(1,bi,bj) = exchNreqsY(1,bi,bj)+1
+# ifndef ALLOW_AUTODIFF_OPENAD
           CALL MPI_Isend(southSendBuf_RX(1,eBl,bi,bj), theSize, theType,
      &                   theProc, theTag, MPI_COMM_MODEL,
      &                   exchReqIdY(exchNreqsY(1,bi,bj),1,bi,bj), mpiRc)
+# else         
+          CALL ampi_isend_RX(
+     & southSendBuf_RX(1,eBl,bi,bj), 
+     & theSize, 
+     & theType,
+     & theProc, 
+     & theTag, 
+     & MPI_COMM_MODEL,
+     & exchReqIdY(exchNReqsY(1,bi,bj),1,bi,bj), 
+     & mpiRc )
+# endif /* ALLOW_AUTODIFF_OPENAD */
 #ifndef ALWAYS_USE_MPI
          ENDIF
 #endif
@@ -244,9 +279,21 @@ C        Send the data
          theSize = iB
          theType = _MPI_TYPE_RX
          exchNreqsY(1,bi,bj) = exchNreqsY(1,bi,bj)+1
+#ifndef ALLOW_AUTODIFF_OPENAD
          CALL MPI_Isend(northSendBuf_RX(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdY(exchNreqsY(1,bi,bj),1,bi,bj), mpiRc )
+# else
+         CALL ampi_isend_RX(
+     & northSendBuf_RX(1,eBl,bi,bj) , 
+     & theSize , 
+     & theType ,
+     & theProc , 
+     & theTag , 
+     & MPI_COMM_MODEL ,
+     & exchReqIdY(exchNReqsY(1,bi,bj)+1,1,bi,bj) , 
+     & mpiRc )
+# endif /* ALLOW_AUTODIFF_OPENAD */
 #ifndef ALWAYS_USE_MPI
          ENDIF
 #endif
@@ -266,6 +313,7 @@ C        Send the data
      &   .AND.   northCommMode .NE. COMM_GET  ) THEN
          STOP ' S/R EXCH: Invalid commN mode.'
         ENDIF
+#ifndef ALLOW_AUTODIFF_OPENAD
 
 c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
@@ -366,6 +414,7 @@ C        Send the data
      &   .AND.   northCommMode .NE. COMM_GET  ) THEN
          STOP ' S/R EXCH: Invalid commN mode.'
         ENDIF
+#endif /* ALLOW_AUTODIFF_OPENAD */
         endif
        ENDDO
       ENDDO

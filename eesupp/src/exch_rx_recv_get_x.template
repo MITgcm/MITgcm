@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_x.template,v 1.8 2008/02/20 20:19:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_x.template,v 1.9 2008/03/18 21:34:01 utke Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -154,9 +154,21 @@ C--   iii. Set data read flag + memory sync.
          theTag  = _tileTagRecvW(bi,bj)
          theType = _MPI_TYPE_RX
          theSize = sNy*exchWidthX*myNz
+# ifndef ALLOW_AUTODIFF_OPENAD
          CALL MPI_Recv( westRecvBuf_RX(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
+# else
+         CALL ampi_recv_RX( 
+     & westRecvBuf_RX(1,eBl,bi,bj) , 
+     & theSize , 
+     & theType ,
+     & theProc , 
+     & theTag , 
+     & MPI_COMM_MODEL ,
+     & mpiStatus , 
+     & mpiRc ) 
+# endif /* ALLOW_AUTODIFF_OPENAD */
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
 #endif
@@ -171,9 +183,21 @@ C--   iii. Set data read flag + memory sync.
          theTag  = _tileTagRecvE(bi,bj)
          theType = _MPI_TYPE_RX
          theSize = sNy*exchWidthX*myNz
+# ifndef ALLOW_AUTODIFF_OPENAD
          CALL MPI_Recv( eastRecvBuf_RX(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
+# else
+         CALL ampi_recv_RX( 
+     & eastRecvBuf_RX(1,eBl,bi,bj) , 
+     & theSize , 
+     & theType ,
+     & theProc , 
+     & theTag , 
+     & MPI_COMM_MODEL ,
+     & mpiStatus , 
+     & mpiRc )
+# endif /* ALLOW_AUTODIFF_OPENAD */
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
 #endif
@@ -195,6 +219,7 @@ C        i.e. we only lock waiting for data that we need.
          ebL = exchangeBufLevel(1,bi,bj)
          westCommMode = _tileCommModeW(bi,bj)
          eastCommMode = _tileCommModeE(bi,bj)
+# ifndef ALLOW_AUTODIFF_OPENAD
    10    CONTINUE
           CALL FOOL_THE_COMPILER( spinCount )
           spinCount = spinCount+1
@@ -204,6 +229,14 @@ C          STOP ' S/R EXCH_RECV_GET_X: spinCount .GT. _EXCH_SPIN_LIMIT'
 C         ENDIF
           IF ( westRecvAck(eBl,bi,bj) .EQ. 0 ) GOTO 10
           IF ( eastRecvAck(eBl,bi,bj) .EQ. 0 ) GOTO 10
+# else 
+	 do while ((westRecvAck(eBl,bi,bj) .EQ. 0. 
+     &             .or. 
+     &              eastRecvAck(eBl,bi,bj) .EQ. 0. ))
+          CALL FOOL_THE_COMPILER( spinCount )
+          spinCount = spinCount+1
+         end do
+# endif /* ALLOW_AUTODIFF_OPENAD */
 C        Clear outstanding requests
          westRecvAck(eBl,bi,bj) = 0
          eastRecvAck(eBl,bi,bj) = 0
@@ -213,8 +246,16 @@ C        Clear outstanding requests
 #ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
 #endif
+# ifndef ALLOW_AUTODIFF_OPENAD
           CALL MPI_Waitall( exchNReqsX(1,bi,bj), exchReqIdX(1,1,bi,bj),
      &                      mpiStatus, mpiRC )
+# else
+          CALL ampi_waitall( 
+     & exchNReqsX(1,bi,bj), 
+     & exchReqIdX(1,1,bi,bj),
+     & mpiStatus, 
+     & mpiRC )
+# endif /* ALLOW_AUTODIFF_OPENAD */
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
 #endif

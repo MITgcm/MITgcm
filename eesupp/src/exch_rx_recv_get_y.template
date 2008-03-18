@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_y.template,v 1.8 2008/02/20 20:18:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_y.template,v 1.9 2008/03/18 21:34:01 utke Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -157,9 +157,21 @@ C--   iii. Set data read flag + memory sync.
          theSize = sNx*exchWidthY*myNz
          IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS )
      &    theSize = (sNx+2*exchWidthX)*exchWidthY*myNz
+# ifndef ALLOW_AUTODIFF_OPENAD
          CALL MPI_Recv( southRecvBuf_RX(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
+# else 
+         CALL ampi_recv_RX( 
+     & southRecvBuf_RX(1,eBl,bi,bj) , 
+     & theSize , 
+     & theType ,
+     & theProc , 
+     & theTag , 
+     & MPI_COMM_MODEL ,
+     & mpiStatus , 
+     & mpiRc ) 
+# endif /* ALLOW_AUTODIFF_OPENAD */
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
 #endif
@@ -176,9 +188,21 @@ C--   iii. Set data read flag + memory sync.
          theSize = sNx*exchWidthY*myNz
          IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS )
      &    theSize = (sNx+2*exchWidthX)*exchWidthY*myNz
+# ifndef ALLOW_AUTODIFF_OPENAD
          CALL MPI_Recv( northRecvBuf_RX(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
+# else
+         CALL ampi_recv_RX( 
+     & northRecvBuf_RX(1,eBl,bi,bj) , 
+     & theSize , 
+     & theType ,
+     & theProc , 
+     & theTag , 
+     & MPI_COMM_MODEL ,
+     & mpiStatus , 
+     & mpiRc )
+# endif /* ALLOW_AUTODIFF_OPENAD */
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
 #endif
@@ -200,6 +224,7 @@ C        i.e. we only lock waiting for data that we need.
          southCommMode = _tileCommModeS(bi,bj)
          northCommMode = _tileCommModeN(bi,bj)
          spinCount = 0
+# ifndef ALLOW_AUTODIFF_OPENAD
    10    CONTINUE
           CALL FOOL_THE_COMPILER( spinCount )
           spinCount = spinCount+1
@@ -208,6 +233,14 @@ C          STOP ' S/R EXCH_RECV_GET_Y: spinCount .GT. _EXCH_SPIN_LIMIT'
 C         ENDIF
           IF ( southRecvAck(eBl,bi,bj) .EQ. 0 ) GOTO 10
           IF ( northRecvAck(eBl,bi,bj) .EQ. 0 ) GOTO 10
+# else
+	 do while ((southRecvAck(eBl,bi,bj) .EQ. 0. 
+     &             .or. 
+     &              northRecvAck(eBl,bi,bj) .EQ. 0. )) 
+          CALL FOOL_THE_COMPILER( spinCount )
+          spinCount = spinCount+1
+         end do
+# endif /* ALLOW_AUTODIFF_OPENAD */
 C        Clear requests
          southRecvAck(eBl,bi,bj) = 0
          northRecvAck(eBl,bi,bj) = 0
