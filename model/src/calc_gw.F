@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.37 2007/10/19 14:41:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.38 2008/03/24 00:32:53 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #define CALC_GW_NEW_THICK
 
@@ -315,12 +316,10 @@ C Viscous Flux on Western face
      &       - (viscAh_W(i,j,k,bi,bj)+viscAh_W(i-1,j,k,bi,bj))*halfRL
      &              *(wVel(i,j,k,bi,bj)-wVel(i-1,j,k,bi,bj))
      &              *_recip_dxC(i,j,bi,bj)*xA(i,j)
-cOld &              *_recip_dxC(i,j,bi,bj)*rThickC_W(i,j)
      &              *cosFacU(j,bi,bj)
      &       + (viscA4_W(i,j,k,bi,bj)+viscA4_W(i-1,j,k,bi,bj))*halfRL
      &              *(del2w(i,j)-del2w(i-1,j))
      &              *_recip_dxC(i,j,bi,bj)*xA(i,j)
-cOld &              *_recip_dxC(i,j,bi,bj)*drC(k)
 #ifdef COSINEMETH_III
      &              *sqCosFacU(j,bi,bj)
 #else
@@ -335,14 +334,12 @@ C Viscous Flux on Southern face
      &       - (viscAh_W(i,j,k,bi,bj)+viscAh_W(i,j-1,k,bi,bj))*halfRL
      &              *(wVel(i,j,k,bi,bj)-wVel(i,j-1,k,bi,bj))
      &              *_recip_dyC(i,j,bi,bj)*yA(i,j)
-cOld &              *_recip_dyC(i,j,bi,bj)*rThickC_S(i,j)
 #ifdef ISOTROPIC_COS_SCALING
      &              *cosFacV(j,bi,bj)
 #endif
      &       + (viscA4_W(i,j,k,bi,bj)+viscA4_W(i,j-1,k,bi,bj))*halfRL
      &              *(del2w(i,j)-del2w(i,j-1))
      &              *_recip_dyC(i,j,bi,bj)*yA(i,j)
-cOld &              *_recip_dyC(i,j,bi,bj)*drC(k)
 #ifdef ISOTROPIC_COS_SCALING
 #ifdef COSINEMETH_III
      &              *sqCosFacV(j,bi,bj)
@@ -366,7 +363,6 @@ C     Interpolate vert viscosity to center of tracer-cell (level k):
      &                     -wVel(i,j, k ,bi,bj) )*rkSign
      &                   *recip_drF(k)*rA(i,j,bi,bj)
      &                   *deepFac2C(k)*rhoFacC(k)
-cOld &                   *recip_drF(k)
            ENDDO
           ENDDO
 C     Tendency is minus divergence of viscous fluxes:
@@ -380,13 +376,6 @@ C     anelastic: vert.visc.flx is scaled by rhoFac but hor.visc.fluxes are not
      &                                          *recip_rhoFacF(k)
      &         )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
      &          *recip_deepFac2F(k)
-cOld         gwDiss(i,j) =
-cOld &        -(
-cOld &          +_recip_dxF(i,j,bi,bj)*( flx_EW(i+1,j)-flx_EW(i,j) )
-cOld &          +_recip_dyF(i,j,bi,bj)*( flx_NS(i,j+1)-flx_NS(i,j) )
-cOld &          +                      ( flxDisUp(i,j)-flx_Dn(i,j) )
-c    &         )*recip_rThickC(i,j)
-cOld &         )*recip_drC(k)
 C--        prepare for next level (k+1)
              flxDisUp(i,j)=flx_Dn(i,j)
            ENDDO
@@ -422,7 +411,6 @@ C     transport through Western face area:
      &        + drF( k )*_hFacW(i,j, k ,bi,bj)*uVel(i,j, k ,bi,bj)
      &                  *rhoFacC(k)
      &                )*halfRL*_dyG(i,j,bi,bj)*deepFacF(k)
-cOld &                )*halfRL
              flx_EW(i,j)=
      &         uTrans*(wVel(i,j,k,bi,bj)+wVel(i-1,j,k,bi,bj))*halfRL
            ENDDO
@@ -437,7 +425,6 @@ C     transport through Southern face area:
      &         +drF( k )*_hFacS(i,j, k ,bi,bj)*vVel(i,j, k ,bi,bj)
      &                  *rhoFacC(k)
      &                )*halfRL*_dxG(i,j,bi,bj)*deepFacF(k)
-cOld &                )*halfRL
              flx_NS(i,j)=
      &         vTrans*(wVel(i,j,k,bi,bj)+wVel(i,j-1,k,bi,bj))*halfRL
            ENDDO
@@ -456,7 +443,6 @@ C     transport through Lower face area:
      &                                   *wOverRide
      &              )*rA(i,j,bi,bj)
              flx_Dn(i,j) = rTrans*tmp_WbarZ
-cOld         flx_Dn(i,j) = tmp_WbarZ*tmp_WbarZ
            ENDDO
           ENDDO
 C     Tendency is minus divergence of advective fluxes:
@@ -469,13 +455,6 @@ C     anelastic: all transports & advect. fluxes are scaled by rhoFac
      &           + ( flx_Dn(i,j)-flxAdvUp(i,j) )*rkSign*wUnit2rVel(k)
      &         )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
      &          *recip_deepFac2F(k)*recip_rhoFacF(k)
-cOld         gW(i,j,k,bi,bj) =
-cOld &        -(
-cOld &          +_recip_dxF(i,j,bi,bj)*( flx_EW(i+1,j)-flx_EW(i,j) )
-cOld &          +_recip_dyF(i,j,bi,bj)*( flx_NS(i,j+1)-flx_NS(i,j) )
-cOld &          +                      ( flxAdvUp(i,j)-flx_Dn(i,j) )
-c    &         )*recip_rThickC(i,j)
-cOld &         )*recip_drC(k)
 C--          prepare for next level (k+1)
              flxAdvUp(i,j)=flx_Dn(i,j)
            ENDDO
@@ -543,6 +522,13 @@ C--   Dissipation term outside the Adams-Bashforth:
 
 C-    end of the k loop
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF (useDiagnostics) THEN
+        CALL DIAGNOSTICS_FILL(viscAh_W,'VISCAHW ',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(viscA4_W,'VISCA4W ',0,Nr,1,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_NONHYDROSTATIC */
 
