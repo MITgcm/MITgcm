@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.966 2008/03/07 19:25:48 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.967 2008/03/24 00:33:31 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o in mom_calc_visc, fix average value of viscAh_W & viscA4_W next to the
+  bottom ; only used with variable horizontal viscosity and non-hydrostatic.
+  also fix diagnostics VISCAHW & VISCA4W.
 
 checkpoint59o
 o dome/code/obcs_calc.F: avoid division by zero (detected using gfortran).
