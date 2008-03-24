@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.31 2007/11/14 16:00:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.32 2008/03/24 00:25:31 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -34,11 +34,11 @@ C     This allows the same value of the coefficient to be used
 C     for roughly similar results with biharmonic and harmonic
 C
 C     LIMITERS -- limit min and max values of viscosities
-C     viscAhRemax is min value for grid point harmonic Reynolds num
-C      harmonic viscosity>sqrt(2*KE)*L/viscAhRemax
+C     viscAhReMax is min value for grid point harmonic Reynolds num
+C      harmonic viscosity>sqrt(2*KE)*L/viscAhReMax
 C
-C     viscA4Remax is min value for grid point biharmonic Reynolds num
-C      biharmonic viscosity>sqrt(2*KE)*L**3/8/viscA4Remax
+C     viscA4ReMax is min value for grid point biharmonic Reynolds num
+C      biharmonic viscosity>sqrt(2*KE)*L**3/8/viscA4ReMax
 C
 C     viscAhgridmax is CFL stability limiter for harmonic viscosity
 C      harmonic viscosity<0.25*viscAhgridmax*L**2/deltaT
@@ -57,11 +57,11 @@ C     viscC2Leith=1-3
 C     viscC2LeithD=1-3
 C     viscC4Leith=1-3
 C     viscC4LeithD=1.5-3
-C     viscC2smag=2.2-4 (Griffies and Hallberg,2000) 
+C     viscC2smag=2.2-4 (Griffies and Hallberg,2000)
 C               0.2-0.9 (Smagorinsky,1993)
-C     viscC4smag=2.2-4 (Griffies and Hallberg,2000) 
-C     viscAhRemax>=1, (<2 suppresses a computational mode)
-C     viscA4Remax>=1, (<2 suppresses a computational mode)
+C     viscC4smag=2.2-4 (Griffies and Hallberg,2000)
+C     viscAhReMax>=1, (<2 suppresses a computational mode)
+C     viscA4ReMax>=1, (<2 suppresses a computational mode)
 C     viscAhgridmax=1
 C     viscA4gridmax=1
 C     viscAhgrid<1
@@ -129,8 +129,9 @@ C     == Local variables ==
       _RL viscAh_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      LOGICAL calcLeith,calcSmag
+      LOGICAL calcLeith, calcSmag
 
+C--   Set flags which are used in this S/R and elsewhere :
       useVariableViscosity=
      &      (viscAhGrid.NE.0.)
      &  .OR.(viscA4Grid.NE.0.)
@@ -150,12 +151,6 @@ C     == Local variables ==
      &  .OR.(viscC2leithD.NE.0.)
      &  .OR.(viscC2smag.NE.0.)
 
-      IF ((harmonic).and.(viscAhremax.ne.0.)) THEN
-        viscAhre_max=sqrt(2. _d 0)/viscAhRemax
-      ELSE
-        viscAhre_max=0. _d 0
-      ENDIF
-
       biharmonic=
      &      (viscA4.NE.0.)
      &  .OR.(viscA4D.NE.0.)
@@ -165,37 +160,46 @@ C     == Local variables ==
      &  .OR.(viscC4leithD.NE.0.)
      &  .OR.(viscC4smag.NE.0.)
 
-      IF ((biharmonic).and.(viscA4remax.ne.0.)) THEN
-        viscA4re_max=0.125 _d 0*sqrt(2. _d 0)/viscA4Remax
-      ELSE
-        viscA4re_max=0. _d 0
-      ENDIF
+      IF (useVariableViscosity) THEN
+C---- variable viscosity :
 
-      calcleith=
+       IF ((harmonic).AND.(viscAhReMax.NE.0.)) THEN
+        viscAhRe_max=SQRT(2. _d 0)/viscAhReMax
+       ELSE
+        viscAhRe_max=0. _d 0
+       ENDIF
+
+       IF ((biharmonic).AND.(viscA4ReMax.NE.0.)) THEN
+        viscA4Re_max=0.125 _d 0*SQRT(2. _d 0)/viscA4ReMax
+       ELSE
+        viscA4Re_max=0. _d 0
+       ENDIF
+
+       calcLeith=
      &      (viscC2leith.NE.0.)
      &  .OR.(viscC2leithD.NE.0.)
      &  .OR.(viscC4leith.NE.0.)
      &  .OR.(viscC4leithD.NE.0.)
 
-      calcsmag=
+       calcSmag=
      &      (viscC2smag.NE.0.)
      &  .OR.(viscC4smag.NE.0.)
 
-      IF (deltaTmom.NE.0.) THEN
-       recip_dt=1. _d 0/deltaTmom
-      ELSE
-       recip_dt=0. _d 0
-      ENDIF
+       IF (deltaTmom.NE.0.) THEN
+        recip_dt=1. _d 0/deltaTmom
+       ELSE
+        recip_dt=0. _d 0
+       ENDIF
 
-      IF (calcsmag) THEN
+       IF (calcSmag) THEN
         smag2fac=(viscC2smag/pi)**2
         smag4fac=0.125 _d 0*(viscC4smag/pi)**2
-      ELSE
+       ELSE
         smag2fac=0. _d 0
         smag4fac=0. _d 0
-      ENDIF
+       ENDIF
 
-      IF (calcleith) THEN
+       IF (calcLeith) THEN
         IF (useFullLeith) THEN
          leith2fac =(viscC2leith /pi)**6
          leithD2fac=(viscC2leithD/pi)**6
@@ -207,19 +211,19 @@ C     == Local variables ==
          leith4fac =0.125 _d 0*(viscC4leith /pi)**3
          leithD4fac=0.125 _d 0*(viscC4leithD/pi)**3
         ENDIF
-      ELSE
+       ELSE
         leith2fac=0. _d 0
         leith4fac=0. _d 0
         leithD2fac=0. _d 0
         leithD4fac=0. _d 0
-      ENDIF
+       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      IF ( calcLeith .OR. calcSmag ) THEN
-       STOP 'calcLeith or calcSmag not implemented for ADJOINT'
-      ENDIF
+       IF ( calcLeith .OR. calcSmag ) THEN
+        STOP 'calcLeith or calcSmag not implemented for ADJOINT'
+       ENDIF
 #endif
-      DO j=1-Oly,sNy+Oly
+       DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
           viscAh_D(i,j)=viscAhD
           viscAh_Z(i,j)=viscAhZ
@@ -242,10 +246,7 @@ c
           viscAh_ZLthD(i,j)= 0. _d 0
           viscA4_ZLthD(i,j)= 0. _d 0
         ENDDO
-      ENDDO
-
-C     - Viscosity
-      IF (useVariableViscosity) THEN
+       ENDDO
 
 C-     Initialise to zero gradient of vorticity & divergence:
        DO j=1-Oly,sNy+Oly
@@ -257,7 +258,7 @@ C-     Initialise to zero gradient of vorticity & divergence:
         ENDDO
        ENDDO
 
-       IF (calcleith) THEN
+       IF (calcLeith) THEN
 C      horizontal gradient of horizontal divergence:
 
 C-       gradient in x direction:
@@ -312,7 +313,7 @@ C-       gradient in y direction:
         DO i=2-Olx,sNx+Olx-1
 CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 
-C These are (powers of) length scales 
+C These are (powers of) length scales
          IF (useAreaViscLength) THEN
           L2=rA(i,j,bi,bj)
           L4rdt=0.03125 _d 0*recip_dt*L2**2
@@ -331,18 +332,18 @@ C These are (powers of) length scales
 
 C Velocity Reynolds Scale
          IF ( viscAhRe_max.GT.0. .AND. KE(i,j).GT.0. ) THEN
-           Uscl=sqrt(KE(i,j)*L2)*viscAhRe_max
+           Uscl=SQRT(KE(i,j)*L2)*viscAhRe_max
          ELSE
            Uscl=0.
          ENDIF
          IF ( viscA4Re_max.GT.0. .AND. KE(i,j).GT.0. ) THEN
-           U4scl=sqrt(KE(i,j))*L3*viscA4Re_max
+           U4scl=SQRT(KE(i,j))*L3*viscA4Re_max
          ELSE
            U4scl=0.
          ENDIF
 
 #ifndef ALLOW_AUTODIFF_TAMC
-         IF (useFullLeith.and.calcleith) THEN
+         IF (useFullLeith.AND.calcLeith) THEN
 C This is the vector magnitude of the vorticity gradient squared
           grdVrt=0.25 _d 0*( (vrtDx(i,j+1)*vrtDx(i,j+1)
      &                        + vrtDx(i,j)*vrtDx(i,j) )
@@ -357,24 +358,24 @@ C Using it in Leith serves to damp instabilities in w.
      &                        + divDy(i,j)*divDy(i,j) )  )
 
           viscAh_DLth(i,j)=
-     &     sqrt(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
+     &     SQRT(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
           viscA4_DLth(i,j)=
-     &     sqrt(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
+     &     SQRT(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
           viscAh_DLthd(i,j)=
-     &     sqrt(leithD2fac*grdDiv)*L3
+     &     SQRT(leithD2fac*grdDiv)*L3
           viscA4_DLthd(i,j)=
-     &     sqrt(leithD4fac*grdDiv)*L5
-         ELSEIF (calcleith) THEN
+     &     SQRT(leithD4fac*grdDiv)*L5
+         ELSEIF (calcLeith) THEN
 C but this approximation will work on cube
 c (and differs by as much as 4X)
-          grdVrt=max( abs(vrtDx(i,j+1)), abs(vrtDx(i,j)) ) 
-          grdVrt=max( grdVrt, abs(vrtDy(i+1,j)) )
-          grdVrt=max( grdVrt, abs(vrtDy(i,j))   )
+          grdVrt=MAX( ABS(vrtDx(i,j+1)), ABS(vrtDx(i,j)) )
+          grdVrt=MAX( grdVrt, ABS(vrtDy(i+1,j)) )
+          grdVrt=MAX( grdVrt, ABS(vrtDy(i,j))   )
 
 c This approximation is good to the same order as above...
-          grdDiv=max( abs(divDx(i+1,j)), abs(divDx(i,j)) ) 
-          grdDiv=max( grdDiv, abs(divDy(i,j+1)) )
-          grdDiv=max( grdDiv, abs(divDy(i,j))   )
+          grdDiv=MAX( ABS(divDx(i+1,j)), ABS(divDx(i,j)) )
+          grdDiv=MAX( grdDiv, ABS(divDy(i,j+1)) )
+          grdDiv=MAX( grdDiv, ABS(divDy(i,j))   )
 
           viscAh_Dlth(i,j)=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
           viscA4_Dlth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
@@ -387,9 +388,9 @@ c This approximation is good to the same order as above...
           viscA4_DlthD(i,j)=0. _d 0
          ENDIF
 
-         IF (calcsmag) THEN
+         IF (calcSmag) THEN
           viscAh_DSmg(i,j)=L2
-     &       *sqrt(tension(i,j)**2
+     &       *SQRT(tension(i,j)**2
      &       +0.25 _d 0*(strain(i+1, j )**2+strain( i ,j+1)**2
      &                  +strain(i  , j )**2+strain(i+1,j+1)**2))
           viscA4_DSmg(i,j)=smag4fac*L2*viscAh_DSmg(i,j)
@@ -403,43 +404,51 @@ c This approximation is good to the same order as above...
 C  Harmonic on Div.u points
          Alin=viscAhD+viscAhGrid*L2rdt
      &          +viscAh_DLth(i,j)+viscAh_DSmg(i,j)
-         viscAh_DMin(i,j)=max(viscAhGridMin*L2rdt,Uscl)
-         viscAh_D(i,j)=max(viscAh_DMin(i,j),Alin)
-         viscAh_DMax(i,j)=min(viscAhGridMax*L2rdt,viscAhMax)
-         viscAh_D(i,j)=min(viscAh_DMax(i,j),viscAh_D(i,j))
+         viscAh_DMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
+         viscAh_D(i,j)=MAX(viscAh_DMin(i,j),Alin)
+         viscAh_DMax(i,j)=MIN(viscAhGridMax*L2rdt,viscAhMax)
+         viscAh_D(i,j)=MIN(viscAh_DMax(i,j),viscAh_D(i,j))
 
 C  BiHarmonic on Div.u points
          Alin=viscA4D+viscA4Grid*L4rdt
      &          +viscA4_DLth(i,j)+viscA4_DSmg(i,j)
-         viscA4_DMin(i,j)=max(viscA4GridMin*L4rdt,U4scl)
-         viscA4_D(i,j)=max(viscA4_DMin(i,j),Alin)
-         viscA4_DMax(i,j)=min(viscA4GridMax*L4rdt,viscA4Max)
-         viscA4_D(i,j)=min(viscA4_DMax(i,j),viscA4_D(i,j))
+         viscA4_DMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
+         viscA4_D(i,j)=MAX(viscA4_DMin(i,j),Alin)
+         viscA4_DMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
+         viscA4_D(i,j)=MIN(viscA4_DMax(i,j),viscA4_D(i,j))
 
 #ifdef ALLOW_NONHYDROSTATIC
-C     /* Pass Viscosities to calc_gw, if constant, not necessary */
+C--   Pass Viscosities to calc_gw, if constant, not necessary
 
          kp1  = MIN(k+1,Nr)
 
-         if (k .eq. 1) then
+         IF ( k.EQ.1 ) THEN
+C     Prepare for next level (next call)
           viscAh_W(i,j,kp1,bi,bj)=0.5*viscAh_D(i,j)
           viscA4_W(i,j,kp1,bi,bj)=0.5*viscA4_D(i,j)
 
-C     /* These values dont get used */
+C     These values dont get used
           viscAh_W(i,j,k,bi,bj)=viscAh_D(i,j)
           viscA4_W(i,j,k,bi,bj)=viscA4_D(i,j)
-         else
-C Note that previous call of this function has already added half.
+
+         ELSEIF ( k.EQ.Nr ) THEN
+          viscAh_W(i,j,k,bi,bj)=viscAh_W(i,j,k,bi,bj)+0.5*viscAh_D(i,j)
+          viscA4_W(i,j,k,bi,bj)=viscA4_W(i,j,k,bi,bj)+0.5*viscA4_D(i,j)
+
+         ELSE
+C     Prepare for next level (next call)
           viscAh_W(i,j,kp1,bi,bj)=0.5*viscAh_D(i,j)
           viscA4_W(i,j,kp1,bi,bj)=0.5*viscA4_D(i,j)
 
+C     Note that previous call of this function has already added half.
           viscAh_W(i,j,k,bi,bj)=viscAh_W(i,j,k,bi,bj)+0.5*viscAh_D(i,j)
           viscA4_W(i,j,k,bi,bj)=viscA4_W(i,j,k,bi,bj)+0.5*viscA4_D(i,j)
-         endif
+
+         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 
 CCCCCCCCCCCCC Vorticity Point CalculationsCCCCCCCCCCCCCCCCCC
-C These are (powers of) length scales 
+C These are (powers of) length scales
          IF (useAreaViscLength) THEN
           L2=rAz(i,j,bi,bj)
           L4rdt=0.125 _d 0*recip_dt*rAz(i,j,bi,bj)**2
@@ -461,8 +470,8 @@ C Velocity Reynolds Scale (Pb here at CS-grid corners !)
            keZpt=0.25 _d 0*( (KE(i,j)+KE(i-1,j-1))
      &                      +(KE(i-1,j)+KE(i,j-1)) )
            IF ( keZpt.GT.0. ) THEN
-             Uscl = sqrt(keZpt*L2)*viscAhRe_max
-             U4scl= sqrt(keZpt)*L3*viscA4Re_max
+             Uscl = SQRT(keZpt*L2)*viscAhRe_max
+             U4scl= SQRT(keZpt)*L3*viscA4Re_max
            ELSE
              Uscl =0.
              U4scl=0.
@@ -474,7 +483,7 @@ C Velocity Reynolds Scale (Pb here at CS-grid corners !)
 
 #ifndef ALLOW_AUTODIFF_TAMC
 C This is the vector magnitude of the vorticity gradient squared
-         IF (useFullLeith.and.calcleith) THEN
+         IF (useFullLeith.AND.calcLeith) THEN
           grdVrt=0.25 _d 0*( (vrtDx(i-1,j)*vrtDx(i-1,j)
      &                        + vrtDx(i,j)*vrtDx(i,j) )
      &                     + (vrtDy(i,j-1)*vrtDy(i,j-1)
@@ -487,23 +496,23 @@ C This is the vector magnitude of grad(div.v) squared
      &                        + divDy(i,j)*divDy(i,j) )  )
 
           viscAh_ZLth(i,j)=
-     &     sqrt(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
+     &     SQRT(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
           viscA4_ZLth(i,j)=
-     &     sqrt(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
+     &     SQRT(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
           viscAh_ZLthD(i,j)=
-     &     sqrt(leithD2fac*grdDiv)*L3
+     &     SQRT(leithD2fac*grdDiv)*L3
           viscA4_ZLthD(i,j)=
-     &     sqrt(leithD4fac*grdDiv)*L5
+     &     SQRT(leithD4fac*grdDiv)*L5
 
-         ELSEIF (calcleith) THEN
+         ELSEIF (calcLeith) THEN
 C but this approximation will work on cube (and differs by 4X)
-          grdVrt=max( abs(vrtDx(i-1,j)), abs(vrtDx(i,j)) ) 
-          grdVrt=max( grdVrt, abs(vrtDy(i,j-1)) )
-          grdVrt=max( grdVrt, abs(vrtDy(i,j))   )
+          grdVrt=MAX( ABS(vrtDx(i-1,j)), ABS(vrtDx(i,j)) )
+          grdVrt=MAX( grdVrt, ABS(vrtDy(i,j-1)) )
+          grdVrt=MAX( grdVrt, ABS(vrtDy(i,j))   )
 
-          grdDiv=max( abs(divDx(i,j)), abs(divDx(i,j-1)) ) 
-          grdDiv=max( grdDiv, abs(divDy(i,j))   )
-          grdDiv=max( grdDiv, abs(divDy(i-1,j)) )
+          grdDiv=MAX( ABS(divDx(i,j)), ABS(divDx(i,j-1)) )
+          grdDiv=MAX( grdDiv, ABS(divDy(i,j))   )
+          grdDiv=MAX( grdDiv, ABS(divDy(i-1,j)) )
 
           viscAh_ZLth(i,j)=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
           viscA4_ZLth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
@@ -516,9 +525,9 @@ C but this approximation will work on cube (and differs by 4X)
           viscA4_ZLthD(i,j)=0. _d 0
          ENDIF
 
-         IF (calcsmag) THEN
+         IF (calcSmag) THEN
           viscAh_ZSmg(i,j)=L2
-     &      *sqrt(strain(i,j)**2
+     &      *SQRT(strain(i,j)**2
      &        +0.25 _d 0*(tension( i , j )**2+tension( i ,j-1)**2
      &                   +tension(i-1, j )**2+tension(i-1,j-1)**2))
           viscA4_ZSmg(i,j)=smag4fac*L2*viscAh_ZSmg(i,j)
@@ -529,21 +538,24 @@ C but this approximation will work on cube (and differs by 4X)
 C  Harmonic on Zeta points
          Alin=viscAhZ+viscAhGrid*L2rdt
      &           +viscAh_ZLth(i,j)+viscAh_ZSmg(i,j)
-         viscAh_ZMin(i,j)=max(viscAhGridMin*L2rdt,Uscl)
-         viscAh_Z(i,j)=max(viscAh_ZMin(i,j),Alin)
-         viscAh_ZMax(i,j)=min(viscAhGridMax*L2rdt,viscAhMax)
-         viscAh_Z(i,j)=min(viscAh_ZMax(i,j),viscAh_Z(i,j))
+         viscAh_ZMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
+         viscAh_Z(i,j)=MAX(viscAh_ZMin(i,j),Alin)
+         viscAh_ZMax(i,j)=MIN(viscAhGridMax*L2rdt,viscAhMax)
+         viscAh_Z(i,j)=MIN(viscAh_ZMax(i,j),viscAh_Z(i,j))
 
 C  BiHarmonic on Zeta points
          Alin=viscA4Z+viscA4Grid*L4rdt
      &           +viscA4_ZLth(i,j)+viscA4_ZSmg(i,j)
-         viscA4_ZMin(i,j)=max(viscA4GridMin*L4rdt,U4scl)
-         viscA4_Z(i,j)=max(viscA4_ZMin(i,j),Alin)
-         viscA4_ZMax(i,j)=min(viscA4GridMax*L4rdt,viscA4Max)
-         viscA4_Z(i,j)=min(viscA4_ZMax(i,j),viscA4_Z(i,j))
+         viscA4_ZMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
+         viscA4_Z(i,j)=MAX(viscA4_ZMin(i,j),Alin)
+         viscA4_ZMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
+         viscA4_Z(i,j)=MIN(viscA4_ZMax(i,j),viscA4_Z(i,j))
         ENDDO
        ENDDO
+
       ELSE
+C---- use constant viscosity (useVariableViscosity=F):
+
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          viscAh_D(i,j)=viscAhD
@@ -552,6 +564,8 @@ C  BiHarmonic on Zeta points
          viscA4_Z(i,j)=viscA4Z
         ENDDO
        ENDDO
+
+C---- variable/constant viscosity : end if/else block
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -560,10 +574,6 @@ C  BiHarmonic on Zeta points
        CALL DIAGNOSTICS_FILL(viscA4_D,'VISCA4D ',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscAh_Z,'VISCAHZ ',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_Z,'VISCA4Z ',k,1,2,bi,bj,myThid)
-#ifdef ALLOW_NONHYDROSTATIC
-       CALL DIAGNOSTICS_FILL(viscAh_W,'VISCAHW ',k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(viscA4_W,'VISCA4W ',k,1,2,bi,bj,myThid)
-#endif
 
        CALL DIAGNOSTICS_FILL(viscAh_DMax,'VAHDMAX ',k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_DMax,'VA4DMAX ',k,1,2,bi,bj,myThid)
