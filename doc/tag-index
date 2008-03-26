@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.967 2008/03/24 00:33:31 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.968 2008/03/26 10:10:05 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: add a line to the summary to indicate grid type (B/C)
 o in mom_calc_visc, fix average value of viscAh_W & viscA4_W next to the
   bottom ; only used with variable horizontal viscosity and non-hydrostatic.
   also fix diagnostics VISCAHW & VISCA4W.
