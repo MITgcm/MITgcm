@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.46 2008/01/29 14:00:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.47 2008/03/27 19:49:07 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -582,10 +582,9 @@ CADJ &                        key = iicekey, byte = isbyte
 # endif /* SEAICE_SALINITY */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+#ifdef ALLOW_ATM_TEMP
         DO J=1,sNy
          DO I=1,sNx
-
-#ifdef ALLOW_ATM_TEMP
 
 C NOW GET FRESH WATER FLUX
           EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
@@ -606,15 +605,21 @@ C NOW GET FRESH WATER FLUX
      &         )
 #endif /* ALLOW_DIAGNOSTICS */
 
+         ENDDO
+        ENDDO
+
 C COMPUTE SURFACE SALT FLUX AND ADJUST ICE SALINITY
+
 #ifdef SEAICE_SALINITY
+
+        DO J=1,sNy
+         DO I=1,sNx
 C set HSALT = 0 if HSALT < 0 and compute salt to remove from ocean
           IF ( HSALT(I,J,bi,bj) .LT. 0.0 ) THEN
              saltFluxAdjust(I,J) = - HEFFM(I,J,bi,bj) *
      &            HSALT(I,J,bi,bj) / SEAICE_deltaTtherm
              HSALT(I,J,bi,bj) = 0.0 _d 0
           ENDIF
-
          ENDDO
         ENDDO
 
@@ -625,7 +630,6 @@ CADJ &                        key = iicekey, byte = isbyte
 
         DO J=1,sNy
          DO I=1,sNx
-
 C saltWtrIce > 0 : m of sea ice that is created
           IF ( saltWtrIce(I,J) .GE. 0.0 ) THEN
              saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
@@ -661,18 +665,22 @@ C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
              saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
 #endif /* ALLOW_SALT_PLUME */
           ENDIF
+         ENDDO
+        ENDDO
+
 #endif /* SEAICE_SALINITY */
 
 #else /* ALLOW_ATM_TEMP */
-          STOP 'ABNORMAL END: S/R THSICE_GROWTH: ATM_TEMP undef'
+        STOP 'ABNORMAL END: S/R THSICE_GROWTH: ATM_TEMP undef'
 #endif /* ALLOW_ATM_TEMP */
 
+        DO J=1,sNy
+         DO I=1,sNx
 C NOW GET TOTAL QNET AND QSW
           QNET(I,J,bi,bj) = QNETI(I,J) * AREA(I,J,2,bi,bj)
      &                     +QNETO(I,J) * (ONE-AREA(I,J,2,bi,bj))
           QSW(I,J,bi,bj)  = QSWI(I,J)  * AREA(I,J,2,bi,bj)
      &                     +QSWO(I,J)  * (ONE-AREA(I,J,2,bi,bj))
-
          ENDDO
         ENDDO
 
