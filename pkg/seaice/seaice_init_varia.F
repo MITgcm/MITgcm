@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.27 2008/02/21 17:52:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.28 2008/03/27 19:53:14 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -43,6 +43,13 @@ C     i,j,k,bi,bj - Loop counters
       _RL PSTAR
       _RS  mask_uice
       INTEGER myIter, myTile
+cif(
+cif   Helper variable for determining the fraction of sw radiation
+cif   penetrating the model's shallowest layer
+      _RL swfracba(two)
+      _RL FACTORM,dummyTime
+      INTEGER IMAX
+cif)
 
 #ifdef ALLOW_OBCS
       INTEGER I_obc, J_obc, kSurface
@@ -52,6 +59,21 @@ C     i,j,k,bi,bj - Loop counters
        kSurface        = 1
       ENDIF
 #endif /* ALLOW_OBCS */
+
+cif(
+#ifdef SHORTWAVE_HEATING
+      IMAX = 2
+      FACTORM = -1.0
+      dummyTime = 1.0
+      swfracba(1) = abs(rF(1)) 
+      swfracba(2) = abs(rF(2))
+      CALL SWFRAC(
+     I       IMAX,FACTORM,
+     I       dummyTime,myThid,
+     U       swfracba)
+      SWFRACB = swfracba(2)
+#endif
+cif)
 
 C--   Initialise all variables in common blocks:
       DO bj=myByLo(myThid),myByHi(myThid)

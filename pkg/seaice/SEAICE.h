@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.38 2008/01/17 23:18:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.39 2008/03/27 19:53:14 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -156,6 +156,14 @@ C--   KGEO    Level used as a proxy for geostrophic velocity.
       COMMON /SEAICE_COST_EXPORT_R/
      &       uHeffExportCell, vHeffExportCell
 #endif
+
+cif(
+#ifdef SHORTWAVE_HEATING
+      _RL SWFRACB
+      COMMON /SEAICE_SW_R/
+     &       SWFRACB
+#endif
+cif)
 
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER iicekey

@@ -5,12 +5,15 @@ ostres.f
 seaice_advection.f
 seaice_advdiff.f
 seaice_budget_ice.f
+seaice_budget_ice_if.f
 seaice_budget_ocean.f
+seaice_budget_ocean_if.f
 seaice_check.f
 seaice_do_diags.f
 seaice_diagnostics_state.f
 seaice_get_dynforcing.f
 seaice_growth.f
+seaice_growth_if.f
 seaice_init_varia.f
 seaice_model.f
 seaice_read_pickup.f
