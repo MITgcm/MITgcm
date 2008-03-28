@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.3 2007/09/26 04:12:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.4 2008/03/28 03:36:03 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -75,7 +75,7 @@ c     == local variables ==
        
 c--   == end of interface ==
 
-#ifndef DISABLE_DEBUGMODE
+#ifndef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_ENTER('AUTODIFF_RESTORE',myThid)
 #endif
@@ -454,7 +454,7 @@ C-      2D arrays
       enddo
 #endif /* ALLOW_SEAICE */
 
-#ifndef DISABLE_DEBUGMODE
+#ifndef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_LEAVE('AUTODIFF_RESTORE',myThid)
 #endif
