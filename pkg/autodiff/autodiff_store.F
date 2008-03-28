@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.4 2008/03/28 03:36:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.5 2008/03/28 03:49:12 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -581,7 +581,7 @@ C-      2D arrays
       enddo
 #endif /* ALLOW_SEAICE */
 
-#ifndef ALLOW_DEBUG
+#ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_LEAVE('AUTODIFF_STORE',myThid)
 #endif
