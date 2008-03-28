@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.26 2007/12/05 07:28:29 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.27 2008/03/28 18:48:05 heimbach Exp $
 # $Name:  $
 
 #  This file contains a terse list of package dependencies that
@@ -45,6 +45,9 @@ matrix          +ptracers
 matrix          -gchem
 showflops       +runclock
 seaice		+exf
+grdchk          +autodiff
+grdchk          +cost
+grdchk          +ctrl
 
 #  Need more information on the following:
 obcs

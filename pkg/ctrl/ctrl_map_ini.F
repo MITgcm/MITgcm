@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.28 2008/02/02 02:34:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.29 2008/03/28 18:48:05 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -233,6 +233,7 @@ cph              sss(i,j,bi,bj) = sss(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
       enddo
 #endif
 
+#ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_DIFFKR_CONTROL
 c--   diffkr.
       il=ilnblnk( xx_diffkr_file )
@@ -254,7 +255,9 @@ c--   diffkr.
        enddo
       enddo
 #endif
+#endif
 
+#ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_KAPGM_CONTROL
 c--   kapgm.
       il=ilnblnk( xx_kapgm_file )
@@ -276,7 +279,9 @@ c--   kapgm.
        enddo
       enddo
 #endif
+#endif
 
+#ifdef ALLOW_AUTODIFF
 #ifdef ALLOW_KAPREDI_CONTROL
 c--   kapredi.
       il=ilnblnk( xx_kapredi_file )
@@ -297,6 +302,7 @@ c--   kapredi.
           enddo
        enddo
       enddo
+#endif
 #endif
 
 #ifdef ALLOW_EFLUXY0_CONTROL
@@ -557,15 +563,19 @@ c--   Update the tile edges.
       _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,1),myThid)
 #endif
 #endif
-#ifdef ALLOW_DIFFKR_CONTROL
+
+#ifdef ALLOW_AUTODIFF
+# ifdef ALLOW_DIFFKR_CONTROL
       _EXCH_XYZ_R8( diffkr, mythid)
-#endif
-#ifdef ALLOW_KAPGM_CONTROL
+# endif
+# ifdef ALLOW_KAPGM_CONTROL
       _EXCH_XYZ_R8( kapgm, mythid)
-#endif
-#ifdef ALLOW_KAPREDI_CONTROL
+# endif
+# ifdef ALLOW_KAPREDI_CONTROL
       _EXCH_XYZ_R8( kapredi, mythid)
+# endif
 #endif
+
 #ifdef ALLOW_EFLUXY0_CONTROL
       _EXCH_XYZ_R8( EfluxY, mythid )
 #endif

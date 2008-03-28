@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.25 2007/10/22 13:26:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.26 2008/03/28 18:48:05 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -123,7 +123,7 @@ C       Write units/set precision/etc for I/O of variables/arrays
 C       belonging to the core dynamical model
         CALL INI_MNC_VARS( myThid )
 
-#ifdef ALLOW_AUTODIFF_MONITOR
+#ifdef ALLOW_AUTODIFF
         CALL AUTODIFF_INI_MODEL_IO( myThid )
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.36 2008/02/02 02:37:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.37 2008/03/28 18:48:05 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -74,24 +74,24 @@ cph the following block will eventually move to a separate
 cph header file containing requires anomaly fields of control vars.
 cph
 #if (defined ALLOW_3D_DIFFKR || \
-     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
+     (defined (ALLOW_AUTODIFF) && defined (ALLOW_DIFFKR_CONTROL)))
 C     diffKr :: full 3D specification of Laplacian diffusion coeff.
 C               for mixing of tracers vertically ( units of r^2/s )
       COMMON /DYNVARS_DIFFKR/
      &                       diffKr
       _RL  diffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPGM_CONTROL))
+#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
       COMMON /DYNVARS_KAPGM/
      &                       kapgm
       _RL  kapgm  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPREDI_CONTROL))
+#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPREDI_CONTROL))
       COMMON /DYNVARS_KAPREDI/
      &                       kapredi
       _RL  kapredi  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_BOTTOMDRAG_CONTROL))
+#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_BOTTOMDRAG_CONTROL))
       COMMON /DYNVARS_BOTTOMDRAG/
      &                       bottomdragfld
       _RL  bottomdragfld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

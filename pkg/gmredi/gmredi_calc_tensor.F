@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.31 2008/02/02 02:35:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.32 2008/03/28 18:48:05 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -450,7 +450,7 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #else
          Kgm_tmp = GM_isopycK
 #endif
-#ifdef ALLOW_KAPGM_CONTROL
+#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
      &           + GM_skewflx*kapgm(i,j,k,bi,bj)
 #else
      &           + GM_skewflx*GM_background_K
@@ -609,7 +609,7 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #else
      &     ( GM_isopycK
 #endif
-#ifdef ALLOW_KAPGM_CONTROL
+#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
      &     - GM_skewflx*kapgm(i,j,k,bi,bj)
 #else
      &     - GM_skewflx*GM_background_K
@@ -797,7 +797,7 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #else
      &     ( GM_isopycK 
 #endif
-#ifdef ALLOW_KAPGM_CONTROL
+#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
      &     - GM_skewflx*kapgm(i,j,k,bi,bj)
 #else
      &     - GM_skewflx*GM_background_K
