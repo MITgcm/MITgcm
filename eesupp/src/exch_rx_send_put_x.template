@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_x.template,v 1.8 2008/03/18 21:34:01 utke Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_x.template,v 1.9 2008/03/28 18:39:54 utke Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -208,8 +208,8 @@ C        Send the data
          theTag  = _tileTagSendW(bi,bj)
          theSize = iB
          theType = _MPI_TYPE_RX
-         exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
 # ifndef ALLOW_AUTODIFF_OPENAD
+         exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
          CALL MPI_Isend(westSendBuf_RX(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc )
@@ -221,7 +221,9 @@ C        Send the data
      & theProc, 
      & theTag, 
      & MPI_COMM_MODEL,
-     & exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), 
+     & exchReqIdX(exchNReqsX(1,bi,bj)+1,1,bi,bj),
+     & exchNReqsX(1,bi,bj), 
+     & mpiStatus , 
      & mpiRc )
 # endif /* ALLOW_AUTODIFF_OPENAD */
 #ifndef ALWAYS_USE_MPI
@@ -266,8 +268,8 @@ C        Send the data
          theTag  = _tileTagSendE(bi,bj)
          theSize = iB
          theType = _MPI_TYPE_RX
-         exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
 # ifndef ALLOW_AUTODIFF_OPENAD
+         exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
          CALL MPI_Isend(eastSendBuf_RX(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc )
@@ -279,7 +281,9 @@ C        Send the data
      & theProc , 
      & theTag , 
      & MPI_COMM_MODEL ,
-     & exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj) , 
+     & exchReqIdX(exchNReqsX(1,bi,bj)+1,1,bi,bj) , 
+     & exchNReqsX(1,bi,bj),
+     & mpiStatus , 
      & mpiRc  )
 # endif /* ALLOW_AUTODIFF_OPENAD */
 #ifndef ALWAYS_USE_MPI

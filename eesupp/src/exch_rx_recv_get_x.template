@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_x.template,v 1.9 2008/03/18 21:34:01 utke Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_x.template,v 1.10 2008/03/28 18:39:54 utke Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -166,6 +166,8 @@ C--   iii. Set data read flag + memory sync.
      & theProc , 
      & theTag , 
      & MPI_COMM_MODEL ,
+     & exchReqIdX(exchNReqsX(1,bi,bj)+1,1,bi,bj),
+     & exchNReqsX(1,bi,bj), 
      & mpiStatus , 
      & mpiRc ) 
 # endif /* ALLOW_AUTODIFF_OPENAD */
@@ -195,6 +197,8 @@ C--   iii. Set data read flag + memory sync.
      & theProc , 
      & theTag , 
      & MPI_COMM_MODEL ,
+     & exchReqIdX(exchNReqsX(1,bi,bj)+1,1,bi,bj),
+     & exchNReqsX(1,bi,bj), 
      & mpiStatus , 
      & mpiRc )
 # endif /* ALLOW_AUTODIFF_OPENAD */
