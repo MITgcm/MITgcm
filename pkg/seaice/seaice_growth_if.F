@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.1 2008/03/27 19:53:14 heimbach Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.2 2008/03/28 04:18:08 heimbach Exp $
 C     $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -324,9 +324,9 @@ CADJ &                         key = iicekey, byte = isbyte
 C WE HAVE TO BE CAREFUL HERE SINCE ADVECTION/DIFFUSION COULD HAVE 
 C MAKE EITHER (BUT NOT BOTH) HEFF OR AREA ZERO OR NEGATIVE 
 C HSNOW COULD ALSO BECOME NEGATIVE 
-                  HEFF(I,J,2,bi,bj)  = MAX(0.0, HEFF(I,J,2,bi,bj)  ) 
-                  HSNOW(I,J,bi,bj)   = MAX(0.0, HSNOW(I,J,bi,bj)   ) 
-                  AREA(I,J,2,bi,bj)  = MAX(0.0, AREA(I,J,2,bi,bj)  ) 
+                  HEFF(I,J,2,bi,bj)  = MAX(0. _d 0, HEFF(I,J,2,bi,bj)  ) 
+                  HSNOW(I,J,bi,bj)   = MAX(0. _d 0, HSNOW(I,J,bi,bj)   ) 
+                  AREA(I,J,2,bi,bj)  = MAX(0. _d 0, AREA(I,J,2,bi,bj)  ) 
 cif this is hack to prevent negative precip.  somehow negative precips  
 cif escapes my exf_checkrange hack
 cph-checkthis
@@ -775,10 +775,10 @@ CADJ &                         key = iicekey, byte = isbyte
             DO J=1,sNy
                DO I=1,sNx
 C     SET LIMIT ON AREA etc.
-                  AREA(I,J,1,bi,bj) = MIN(1.,AREA(I,J,1,bi,bj))
-                  AREA(I,J,1,bi,bj) = MAX(0.,AREA(I,J,1,bi,bj))
-                  HEFF(I,J,1,bi,bj) = MAX(0.0, HEFF(I,J,1,bi,bj))
-                  HSNOW(I,J,bi,bj)  = MAX(0.0, HSNOW(I,J,bi,bj))
+                  AREA(I,J,1,bi,bj) = MIN(1. _d 0,AREA(I,J,1,bi,bj))
+                  AREA(I,J,1,bi,bj) = MAX(0. _d 0,AREA(I,J,1,bi,bj))
+                  HEFF(I,J,1,bi,bj) = MAX(0. _d 0, HEFF(I,J,1,bi,bj))
+                  HSNOW(I,J,bi,bj)  = MAX(0. _d 0, HSNOW(I,J,bi,bj))
                ENDDO
             ENDDO
             
