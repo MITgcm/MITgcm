@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.213 2008/02/25 20:57:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.214 2008/03/30 21:44:09 jmc Exp $
 C $Name:  $
 C
 
@@ -173,6 +173,7 @@ C     tempVertAdvScheme   :: Temp. Vert. Advection scheme selector
 C     saltAdvScheme       :: Salt. Horiz.advection scheme selector
 C     saltVertAdvScheme   :: Salt. Vert. Advection scheme selector
 C     selectKEscheme      :: Kinetic Energy scheme selector (Vector Inv.)
+C     selectVortScheme    :: Scheme selector for Vorticity term (Vector Inv.)
 C     monitorSelect       :: select group of variables to monitor
 C                            =1 : dynvars ; =2 : + vort ; =3 : + surface
 C     debugLevel          :: debug level selector: higher -> more writing
@@ -189,7 +190,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
      &        momForcingOutAB, tracForcingOutAB,
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
-     &        selectKEscheme,
+     &        selectKEscheme, selectVortScheme,
      &        monitorSelect, debugLevel
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
@@ -208,6 +209,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
       INTEGER tempAdvScheme, tempVertAdvScheme
       INTEGER saltAdvScheme, saltVertAdvScheme
       INTEGER selectKEscheme
+      INTEGER selectVortScheme
       INTEGER monitorSelect
       INTEGER debugLevel
 
@@ -274,7 +276,6 @@ C     use3dCoriolis :: Turns the 3-D coriolis terms (in Omega.cos Phi) on - off
 C     useCDscheme   :: use CD-scheme to calculate Coriolis terms.
 C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 1986)
 C     useJamartMomAdv :: Use wet-point method for V.I. non-linear term
-C     SadournyCoriolis :: use the enstrophy conserving scheme by Sadourny
 C     upwindVorticity :: bias interpolation of vorticity in the Coriolis term
 C     highOrderVorticity :: use 3rd/4th order interp. of vorticity (V.I., advection)
 C     upwindShear        :: use 1rst order upwind interp. (V.I., vertical advection)
@@ -332,7 +333,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
 C     balanceEmPmR    :: substract global mean of EmPmR at every time step
 C     balanceQnet     :: substract global mean of Qnet at every time step
 C     balancePrintMean:: print substracted global means to STDOUT
-C     rotateGrid      :: rotate grid coordinates to geographical coordinates 
+C     rotateGrid      :: rotate grid coordinates to geographical coordinates
 C                        according to Euler angles phiEuler, thetaEuler, psiEuler
 
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
@@ -354,7 +355,7 @@ C                        according to Euler angles phiEuler, thetaEuler, psiEule
      & useConstantF, useBetaPlaneF, useSphereF, use3dCoriolis,
      & useCDscheme,
      & useEnergyConservingCoriolis, useJamartWetPoints, useJamartMomAdv,
-     & SadournyCoriolis, upwindVorticity, highOrderVorticity,
+     & upwindVorticity, highOrderVorticity,
      & useAbsVorticity, upwindShear,
      & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
@@ -419,7 +420,6 @@ C                        according to Euler angles phiEuler, thetaEuler, psiEule
       LOGICAL useEnergyConservingCoriolis
       LOGICAL useJamartWetPoints
       LOGICAL useJamartMomAdv
-      LOGICAL SadournyCoriolis
       LOGICAL upwindVorticity
       LOGICAL highOrderVorticity
       LOGICAL useAbsVorticity
@@ -529,14 +529,14 @@ C                 ( Southern edge f for beta plane )
 C     beta      :: df/dy ( s^-1.m^-1 )
 C     omega     :: Angular velocity ( rad/s )
 C     rotationPeriod :: Rotation period (s) (= 2.pi/omega)
+C     viscAr    :: Eddy viscosity coeff. for mixing of
+C                 momentum vertically ( units of r^2/s )
 C     viscAh    :: Eddy viscosity coeff. for mixing of
 C                 momentum laterally ( m^2/s )
 C     viscAhW   :: Eddy viscosity coeff. for mixing of vertical
 C                 momentum laterally, no effect for hydrostatic
 C                 model, defaults to viscAh if unset ( m^2/s )
 C                 Not used if variable horiz. viscosity is used.
-C     viscAr    :: Eddy viscosity coeff. for mixing of
-C                 momentum vertically ( units of r^2/s )
 C     viscA4    :: Biharmonic viscosity coeff. for mixing of
 C                 momentum laterally ( m^4/s )
 C     viscA4W   :: Biharmonic viscosity coeff. for mixing of vertical
@@ -551,36 +551,36 @@ C     viscA4D   :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                  (act on Divergence part) ( m^4/s )
 C     viscA4Z   :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                  (act on Vorticity  part) ( m^4/s )
-C     viscC2leith :: Leith non-dimensional viscosity factor (grad(vort))
+C     viscC2leith  :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC2leithD :: Modified Leith non-dimensional visc. factor (grad(div))
-C     viscC2smag  :: Smagorinsky non-dimensional viscosity factor (harmonic)
-C     viscC4smag  :: Smagorinsky non-dimensional viscosity factor (biharmonic)
-C     viscAhMax :: Maximum eddy viscosity coeff. for mixing of
-C                   momentum laterally ( m^2/s )
-C     viscAhReMax :: Maximum gridscale Reynolds number for eddy viscosity 
-C                   coeff. for mixing of momentum laterally (non-dim)
+C     viscC4leith  :: Leith non-dimensional viscosity factor (grad(vort))
+C     viscC4leithD :: Modified Leith non-dimensional viscosity factor (grad(div))
+C     viscC2smag   :: Smagorinsky non-dimensional viscosity factor (harmonic)
+C     viscC4smag   :: Smagorinsky non-dimensional viscosity factor (biharmonic)
+C     viscAhMax    :: Maximum eddy viscosity coeff. for mixing of
+C                    momentum laterally ( m^2/s )
+C     viscAhReMax  :: Maximum gridscale Reynolds number for eddy viscosity
+C                     coeff. for mixing of momentum laterally (non-dim)
+C     viscAhGrid   :: non-dimensional grid-size dependent viscosity
 C     viscAhGridMax:: maximum and minimum harmonic viscosity coefficients ...
 C     viscAhGridMin::  in terms of non-dimensional grid-size dependent visc.
-C     viscA4Max :: Maximum biharmonic viscosity coeff. for mixing of
-C                 momentum laterally ( m^4/s )
-C     viscA4ReMax :: Maximum Gridscale Reynolds number for 
-C                  biharmonic viscosity coeff. momentum laterally (non-dim)
-C     viscAhGrid:: non-dimensional grid-size dependent viscosity
-C     viscA4Grid:: non-dimensional grid-size dependent bi-harmonic viscosity
+C     viscA4Max    :: Maximum biharmonic viscosity coeff. for mixing of
+C                     momentum laterally ( m^4/s )
+C     viscA4ReMax  :: Maximum Gridscale Reynolds number for
+C                     biharmonic viscosity coeff. momentum laterally (non-dim)
+C     viscA4Grid   :: non-dimensional grid-size dependent bi-harmonic viscosity
 C     viscA4GridMax:: maximum and minimum biharmonic viscosity coefficients ...
 C     viscA4GridMin::  in terms of non-dimensional grid-size dependent viscosity
-C     viscC4leith :: Leith non-dimensional viscosity factor (grad(vort))
-C     viscC4leithD :: Modified Leith non-dimensional viscosity factor (grad(div))
 C     diffKhT   :: Laplacian diffusion coeff. for mixing of
 C                 heat laterally ( m^2/s )
-C     diffKrNrT :: vertical profile of Laplacian diffusion coeff. 
+C     diffKrNrT :: vertical profile of Laplacian diffusion coeff.
 C                 for mixing of heat vertically ( units of r^2/s )
 C     diffK4T   :: Biharmonic diffusion coeff. for mixing of
 C                 heat laterally ( m^4/s )
 C     diffKhS  ::  Laplacian diffusion coeff. for mixing of
 C                 salt laterally ( m^2/s )
-C     diffKrNrS :: vertical profile of Laplacian diffusion coeff. 
-C                 for mixing of salt vertically ( units of r^2/s ), 
+C     diffKrNrS :: vertical profile of Laplacian diffusion coeff.
+C                 for mixing of salt vertically ( units of r^2/s ),
 C     diffK4S   :: Biharmonic diffusion coeff. for mixing of
 C                 salt laterally ( m^4/s )
 C     diffKrBL79surf :: T/S surface diffusivity (m^2/s) Bryan and Lewis, 1979
@@ -639,10 +639,10 @@ C     mtFacMom      :: Metric terms tracer parameter
 C     cosPower      :: Power of cosine of latitude to multiply viscosity
 C     cAdjFreq      :: Frequency of convective adjustment
 C
-C     taveFreq      :: Frequency with which time-averaged model state 
+C     taveFreq      :: Frequency with which time-averaged model state
 C                      is written to post-processing files ( s ).
-C     tave_lastIter :: (for state variable only) fraction of the last time 
-C                      step (of each taveFreq period) put in the time average. 
+C     tave_lastIter :: (for state variable only) fraction of the last time
+C                      step (of each taveFreq period) put in the time average.
 C                      (fraction for 1rst iter = 1 - tave_lastIter)
 C     tauThetaClimRelax :: Relaxation to climatology time scale ( s ).
 C     tauSaltClimRelax :: Relaxation to climatology time scale ( s ).
@@ -654,16 +654,16 @@ C                          (note: externForcingCycle must be an integer
 C                           number times externForcingPeriod)
 C     convertFW2Salt :: salinity, used to convert Fresh-Water Flux to Salt Flux
 C                       (use model surface (local) value if set to -1)
-C     temp_EvPrRn :: temperature of Rain & Evap. 
+C     temp_EvPrRn :: temperature of Rain & Evap.
 C     salt_EvPrRn :: salinity of Rain & Evap.
-C        (notes: a) tracer content of Rain/Evap only used if both 
+C        (notes: a) tracer content of Rain/Evap only used if both
 C                     NonLin_FrSurf & useRealFreshWater are set.
 C                b) use model surface (local) value if set to UNSET_RL)
 C     hMixCrit    :: criteria for mixed-layer diagnostic
 C     ivdc_kappa  :: implicit vertical diffusivity for convection [m^2/s]
 C     Ro_SeaLevel :: standard position of Sea-Level in "R" coordinate, used as
 C                    starting value (k=1) for vertical coordinate (rf(1)=Ro_SeaLevel)
-C     sideDragFactor     :: side-drag scaling factor (used only if no_slip_sides) 
+C     sideDragFactor     :: side-drag scaling factor (used only if no_slip_sides)
 C                           (default=2: full drag ; =1: gives half-slip BC)
 C     bottomDragLinear    :: Linear    bottom-drag coefficient (units of [r]/s)
 C     bottomDragQuadratic :: Quadratic bottom-drag coefficient (units of [r]/m)
@@ -687,9 +687,9 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & viscC2leith, viscC2leithD,
      & viscC2smag, viscC4smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
-     & viscA4, viscA4W,
-     & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
-     & viscAhRemax, viscA4Remax,
+     & viscA4, viscA4W, viscA4Max,
+     & viscA4Grid, viscA4GridMax, viscA4GridMin,
+     & viscAhReMax, viscA4ReMax,
      & viscC4leith, viscC4leithD, viscAr,
      & diffKhT, diffK4T, diffKrNrT,
      & diffKhS, diffK4S, diffKrNrS,
@@ -748,20 +748,17 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL hFacInf
       _RL hFacSup
       _RL beta
+      _RL viscAr
       _RL viscAh
       _RL viscAhW
       _RL viscAhD
       _RL viscAhZ
       _RL viscAhMax
       _RL viscAhReMax
-      _RL viscAhGrid
-      _RL viscAhGridMax
-      _RL viscAhGridMin
+      _RL viscAhGrid, viscAhGridMax, viscAhGridMin
       _RL viscC2leith
       _RL viscC2leithD
       _RL viscC2smag
-      _RL viscC4smag
-      _RL viscAr
       _RL viscA4
       _RL viscA4W
       _RL viscA4D
@@ -771,6 +768,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL viscA4Grid, viscA4GridMax, viscA4GridMin
       _RL viscC4leith
       _RL viscC4leithD
+      _RL viscC4smag
       _RL diffKhT
       _RL diffKrNrT(Nr)
       _RL diffK4T
@@ -861,7 +859,7 @@ C     atm_kappa :: kappa = R/Cp (R: constant of Ideal Gas EOS)
 C     atm_Rq    :: water vapour specific volume anomaly relative to dry air
 C                  (e.g. typical value = (29/18 -1) 10^-3 with q [g/kg])
 C     integr_GeoPot :: option to select the way we integrate the geopotential
-C                     (still a subject of discussions ...) 
+C                     (still a subject of discussions ...)
 C     selectFindRoSurf :: select the way surf. ref. pressure (=Ro_surf) is
 C             derived from the orography. Implemented: 0,1 (see INI_P_GROUND)
       COMMON /PARM_ATM/

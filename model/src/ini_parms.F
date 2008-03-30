@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.206 2008/02/25 20:57:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.207 2008/03/30 21:45:11 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -30,6 +30,7 @@ C     dxSpacing, dySpacing :: Default spacing in X and Y.
 C                          :: Units are that of coordinate system
 C                          :: i.e. cartesian => metres
 C                          ::       s. polar => degrees
+C     SadournyCoriolis :: for backward compatibility
 C     deltaTtracer  :: Timestep for tracer equations ( s )
 C     forcing_In_AB :: flag to put all forcings (Temp,Salt,Tracers,Momentum)
 C                   :: contribution in (or out of) Adams-Bashforth time stepping.
@@ -45,6 +46,7 @@ C     xxxDefault :: Default value for variable xxx
       _RL deltaTtracer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
+      LOGICAL SadournyCoriolis
       LOGICAL forcing_In_AB
       INTEGER goptCount
       INTEGER K, i, j, IL, iUnit
@@ -153,7 +155,7 @@ C--   Continuous equation parameters
      & viscC2leith, viscC4leith,
      & useFullLeith, useAnisotropicViscAgridMax, useStrainTensionVisc,
      & useAreaViscLength,
-     & viscC2leithD, viscC4leithD, viscC2Smag, viscC4Smag,
+     & viscC2leithD, viscC4leithD, viscC2smag, viscC4smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W,
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
@@ -193,7 +195,7 @@ C--   Continuous equation parameters
      & saltAdvScheme, saltVertAdvScheme, tracerAdvScheme,
      & multiDimAdvection, useEnergyConservingCoriolis,
      & useCDscheme, useJamartWetPoints, useJamartMomAdv, useNHMTerms,
-     & SadournyCoriolis, upwindVorticity, highOrderVorticity,
+     & selectVortScheme, upwindVorticity, highOrderVorticity,
      & useAbsVorticity, upwindShear, selectKEscheme,
      & useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
@@ -260,6 +262,7 @@ C     Defaults values for input parameters
      O   viscArDefault, diffKrTDefault, diffKrSDefault,
      O   hFacMinDrDefault, delRDefault, rkFacDefault,
      I   myThid )
+      SadournyCoriolis = .FALSE.
 
 C--   Initialise "which vertical coordinate system used" flags.
       zCoordInputData = .FALSE.
@@ -550,6 +553,19 @@ C--   z,p,r coord input switching.
       IF (convertFW2Salt.EQ.UNSET_RL) THEN
         convertFW2Salt = 35.
         IF (useRealFreshWaterFlux) convertFW2Salt=-1
+      ENDIF
+
+      IF ( SadournyCoriolis ) THEN
+C--   for backward compatibility :
+        IF ( selectVortScheme.EQ.UNSET_I ) selectVortScheme = 2
+        IF ( selectVortScheme.NE.2 ) THEN
+          WRITE(msgBuf,'(A,I10)')
+     &     'S/R INI_PARMS: selectVortScheme =', selectVortScheme
+          WRITE(msgBuf,'(A,A)')
+     &     'S/R INI_PARMS: not compatible with "SadournyCoriolis"'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R INI_PARMS'
+        ENDIF
       ENDIF
 
       IF ( ivdc_kappa .NE. 0. .AND. .NOT. implicitDiffusion ) THEN

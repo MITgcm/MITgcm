@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.105 2008/03/30 19:10:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.106 2008/03/30 21:45:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -44,17 +44,19 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
 C     msgBuf :: Temp. for building output string.
 C     rUnits :: vertical coordinate units
+C     ioUnit :: Temp. for fortran I/O unit
 C     I,J,K  :: Loop counters.
 C     bi,bj  :: Tile loop counters.
 C     xcoord :: Temps. for building lists of values for uni-dimensionally
 C     ycoord :: varying parameters.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*2 rUnits
-      INTEGER                  I,J,K
-      INTEGER                  bi, bj
-      _RL                     xcoord(Nx)
-      _RL                     ycoord(Ny)
-      _RL                     rcoord(Nr+1)
+      INTEGER ioUnit
+      INTEGER I,J,K
+      INTEGER bi, bj
+      _RL     xcoord(Nx)
+      _RL     ycoord(Ny)
+      _RL     rcoord(Nr+1)
       INTEGER coordLine
       INTEGER tileLine
 
@@ -62,31 +64,26 @@ C     ycoord :: varying parameters.
       _BARRIER
       _BEGIN_MASTER(myThid)
 
+      ioUnit = standardMessageUnit
       rUnits = ' m'
       IF ( usingPCoords ) rUnits = 'Pa'
 
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// Model configuration'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      & '// "Physical" paramters ( PARM01 in namelist ) '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_C( buoyancyRelation, -1, INDEX_NONE,
      & 'buoyancyRelation =', ' /* Type of relation to get Buoyancy */')
       CALL WRITE_0D_L( fluidIsAir,   INDEX_NONE,
@@ -199,8 +196,7 @@ C     ycoord :: varying parameters.
         DO K = 1, Nr
          WRITE(msgBuf,'(I3,13F8.3)')
      &   K,eosRefT(K),eosRefS(K),eosSig0(K), (eosC(I,K),I=1,9)
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
+         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDDO
       ENDIF
       IF ( fluidIsAir ) THEN
@@ -270,8 +266,7 @@ C     ycoord :: varying parameters.
      &'   /* Non-linear Free Surf. options (-1,0,1,2,3)*/')
       WRITE(msgBuf,'(2A)') '     -1,0= Off ; 1,2,3= On,',
      &  ' 2=+rescale gU,gV, 3=+update cg2d solv.'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_R8( hFacInf, INDEX_NONE,
      &'hFacInf =',
      &'   /* lower threshold for hFac (nonlinFreeSurf only)*/')
@@ -338,12 +333,38 @@ C     ycoord :: varying parameters.
      & 'useJamartWetPoints=',' /* Coriolis WetPoints method flag */')
       CALL WRITE_0D_L( useJamartMomAdv,  INDEX_NONE,
      & 'useJamartMomAdv=',' /* V.I. Non-linear terms Jamart flag */')
-      CALL WRITE_0D_L( SadournyCoriolis,  INDEX_NONE,
-     & 'SadournyCoriolis=',' /* Sadourny Coriolis discr. flag */')
-      CALL WRITE_0D_L( upwindVorticity,  INDEX_NONE,
-     & 'upwindVorticity=',' /* Upwind bias vorticity flag */')
       CALL WRITE_0D_L( useAbsVorticity,  INDEX_NONE,
      & 'useAbsVorticity=',' /* Work with f+zeta in Coriolis */')
+c     CALL WRITE_0D_I( selectVortScheme, INDEX_NONE,
+c    & 'selectVortScheme=',' /* Scheme selector for Vorticity-Term */')
+      WRITE(msgBuf,'(2A)')
+     & 'selectVortScheme=',' /* Scheme selector for Vorticity-Term */'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      CALL PRINT_LIST_I( selectVortScheme, 1, INDEX_NONE,
+     &                   .FALSE., .TRUE., ioUnit )
+      WRITE(msgBuf,'(2A)') '   = 0 : enstrophy (Shallow-Water Eq.)',
+     &                  ' conserving scheme by Sadourny, JAS 75'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)') '   = 1 : same as 0 with modified hFac'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)') '   = 2 : energy conserving scheme',
+     &         ' (used by Sadourny in JAS 75 paper)'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+c     WRITE(msgBuf,'(2A)') '   = 3 : energy (general)',
+c    &             ' and enstrophy (2D, nonDiv.) conserving scheme'
+c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+c     WRITE(msgBuf,'(2A)') '         from Sadourny',
+c    &                     ' (Burridge & Haseler, ECMWF Rep.4, 1977)'
+c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+c     WRITE(msgBuf,'(2A)') '   = 4 : energy (general)',
+c    &             ' and enstrophy (2D, nonDiv.) conserving scheme'
+c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+c     WRITE(msgBuf,'(2A)') '         from Arakawa & Lamb, 77'
+c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)')   '    ;     '
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      CALL WRITE_0D_L( upwindVorticity,  INDEX_NONE,
+     & 'upwindVorticity=',' /* Upwind bias vorticity flag */')
       CALL WRITE_0D_L( highOrderVorticity,  INDEX_NONE,
      & 'highOrderVorticity=',' /* High order interp. of vort. flag */')
       CALL WRITE_0D_L( upwindShear,  INDEX_NONE,
@@ -402,16 +423,13 @@ C     ycoord :: varying parameters.
       CALL WRITE_0D_I( debugLevel, INDEX_NONE,
      & ' debugLevel =', '  /* select debugging level */')
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
       WRITE(msgBuf,'(A)')
      & '// Elliptic solver(s) paramters ( PARM02 in namelist ) '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_I( cg2dMaxIters,   INDEX_NONE,'cg2dMaxIters =',
      &'   /* Upper limit on 2d con. grad iterations  */')
       CALL WRITE_0D_I( cg2dChkResFreq, INDEX_NONE,'cg2dChkResFreq =',
@@ -426,15 +444,12 @@ C     ycoord :: varying parameters.
      &'   /* Freq. for updating cg2d preconditioner */')
 
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      & '// Time stepping paramters ( PARM03 in namelist ) '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_R8( deltaTmom, INDEX_NONE,'deltaTmom =',
      &'   /* Momentum equation timestep ( s ) */')
       CALL WRITE_0D_R8( deltaTfreesurf,INDEX_NONE,'deltaTfreesurf =',
@@ -537,15 +552,12 @@ C     ycoord :: varying parameters.
       CALL WRITE_0D_R8( latBandClimRelax, INDEX_NONE,
      &   'latBandClimRelax =', '   /* max. Lat. where relaxation */')
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      & '// Gridding paramters ( PARM04 in namelist ) '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '//  '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L( usingCartesianGrid, INDEX_NONE,
      & 'usingCartesianGrid =',
      & ' /* Cartesian coordinates flag ( True/False ) */')
@@ -702,18 +714,14 @@ C     Grid along selected grid lines
 
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// End of Model config. summary'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') ' '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
       _END_MASTER(myThid)
       _BARRIER

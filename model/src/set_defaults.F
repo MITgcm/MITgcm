@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.134 2008/02/25 20:57:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.135 2008/03/30 21:45:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -190,7 +190,7 @@ Cml      sBeta               = 7.4 _d -4
       useEnergyConservingCoriolis = .FALSE.
       useJamartWetPoints  = .FALSE.
       useJamartMomAdv     = .FALSE.
-      SadournyCoriolis    = .FALSE.
+      selectVortScheme    = UNSET_I
       upwindVorticity     = .FALSE.
       highOrderVorticity  = .FALSE.
       useAbsVorticity     = .FALSE.
