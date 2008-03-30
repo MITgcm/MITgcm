@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis_c4.F,v 1.8 2006/06/12 21:15:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis_c4.F,v 1.9 2008/03/30 21:46:48 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -121,7 +121,7 @@ c      DO i=2-Olx,sNx+Olx-2
       DO j=1,sNy+1
        DO i=1,sNx
 
-        IF ( SadournyCoriolis ) THEN
+        IF ( selectVortScheme.EQ.2 ) THEN
 C-      using SadournyCoriolis discretization:
 
          uBarXY=1.

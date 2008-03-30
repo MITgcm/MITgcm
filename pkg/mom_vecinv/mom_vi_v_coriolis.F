@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.10 2006/06/07 01:55:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.11 2008/03/30 21:46:48 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -56,7 +56,7 @@ C     == Local variables ==
            vort3v=0.5*(omega3(i,j)*r_hFacZ(i,j)
      &                +omega3(i+1,j)*r_hFacZ(i+1,j))
          ENDIF
-        ELSEIF ( SadournyCoriolis ) THEN
+        ELSEIF ( selectVortScheme.EQ.2 ) THEN
          Zm=0.5*(
      &       uFld( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
      &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj) )
