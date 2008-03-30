@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.104 2008/02/25 20:57:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.105 2008/03/30 19:10:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -636,11 +636,11 @@ c    &'   /* W spacing ( units of r ) */')
      & ' /* Vertical gradient of reference boyancy [(m/s/r)^2)] */')
       CALL WRITE_0D_L( rotateGrid, INDEX_NONE,
      & 'rotateGrid =',' /* use rotated grid ( True/False ) */')
-      CALL WRITE_0D_R8( mass2rUnit, INDEX_NONE,'phiEuler =',
+      CALL WRITE_0D_R8( phiEuler, INDEX_NONE,'phiEuler =',
      &' /* Euler angle, rotation about original z-coordinate [rad] */')
-      CALL WRITE_0D_R8( mass2rUnit, INDEX_NONE,'thetaEuler =',
+      CALL WRITE_0D_R8( thetaEuler, INDEX_NONE,'thetaEuler =',
      & ' /* Euler angle, rotation about new x-coordinate [rad] */')
-      CALL WRITE_0D_R8( mass2rUnit, INDEX_NONE,'psiEuler =',
+      CALL WRITE_0D_R8( psiEuler, INDEX_NONE,'psiEuler =',
      & ' /* Euler angle, rotation about new z-coordinate [rad] */')
 
 C     Grid along selected grid lines
