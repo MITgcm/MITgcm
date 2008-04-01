@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis_c4.F,v 1.9 2008/03/30 21:46:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis_c4.F,v 1.10 2008/04/01 01:27:33 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -15,8 +15,8 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R MOM_VI_V_CORIOLIS_C4
 C     |==========================================================*
-C     | o Calculate zonal flux of vorticity at V point
-C     |   using 4th order interpolation
+C     | o Calculate flux (in X-dir.) of vorticity at V point
+C     |   using 4th order (or 1rst order) interpolation
 C     *==========================================================*
 C     \ev
 
@@ -44,6 +44,8 @@ C     == Routine arguments ==
 CEOP
 
 C     == Local variables ==
+C     msgBuf :: Informational/error meesage buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER i,j
       _RL vort3r(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uBarXY,vort3v,Rjp,Rjm
@@ -56,10 +58,8 @@ C     == Local variables ==
       INTEGER myTile
 #endif /* ALLOW_EXCH2 */
       _RL oneSixth, oneTwelve
-      LOGICAL upwindVort3
       LOGICAL fourthVort3
       PARAMETER(oneSixth=1.D0/6.D0 , oneTwelve=1.D0/12.D0)
-      PARAMETER(upwindVort3=.FALSE.)
       PARAMETER(fourthVort3=.TRUE. )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -71,7 +71,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDDO
 
 C--   Special stuff for Cubed Sphere
-      IF (useCubedSphereExchange) THEN
+      IF ( useCubedSphereExchange.AND.highOrderVorticity ) THEN
 
 #ifdef ALLOW_EXCH2
        myTile = W2_myTileList(bi)
@@ -116,15 +116,51 @@ C--   End of special stuff for Cubed Sphere.
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-c     DO j=2-Oly,sNy+Oly
-c      DO i=2-Olx,sNx+Olx-2
-      DO j=1,sNy+1
-       DO i=1,sNx
 
-        IF ( selectVortScheme.EQ.2 ) THEN
-C-      using SadournyCoriolis discretization:
+      IF ( selectVortScheme.EQ.0 ) THEN
+C--   using Sadourny Enstrophy conserving discretization:
 
-         uBarXY=1.
+c      DO j=2-Oly,sNy+Oly
+c       DO i=2-Olx,sNx+Olx-2
+       DO j=1,sNy+1
+        DO i=1,sNx
+
+         uBarXY=0.25*(
+     &      (uFld( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
+     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj))
+     &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
+     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj))
+     &               )
+         IF (upwindVorticity) THEN
+          IF (uBarXY.GT.0.) THEN
+           vort3v=vort3r(i,j)
+          ELSE
+           vort3v=vort3r(i+1,j)
+          ENDIF
+         ELSEIF (fourthVort3) THEN
+          Rjp = vort3r(i+2,j) - vort3r(i+1,j)
+          Rjm = vort3r( i ,j) - vort3r(i-1,j)
+          vort3v=0.5*( vort3r(i,j) + vort3r(i+1,j)
+     &                -oneTwelve*(Rjp-Rjm)
+     &               )
+         ELSE
+          vort3v=0.5*( vort3r(i,j) + vort3r(i+1,j) )
+         ENDIF
+
+         vCoriolisTerm(i,j) = -vort3v*uBarXY*recip_dyC(i,j,bi,bj)
+     &                               * _maskS(i,j,k,bi,bj)
+
+        ENDDO
+       ENDDO
+
+      ELSEIF ( selectVortScheme.EQ.2 ) THEN
+C--   using Energy conserving discretization:
+
+c      DO j=2-Oly,sNy+Oly
+c       DO i=2-Olx,sNx+Olx-2
+       DO j=1,sNy+1
+        DO i=1,sNx
+
          uBarYm=0.5*(
      &       uFld( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
      &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj) )
@@ -145,40 +181,20 @@ C-      using SadournyCoriolis discretization:
           vort3v=0.5*( uBarYm*vort3r( i ,j) + uBarYp*vort3r(i+1,j) )
          ENDIF
 
-        ELSE
-C-      not using SadournyCoriolis discretization:
+         vCoriolisTerm(i,j) = -vort3v*recip_dyC(i,j,bi,bj)
+     &                               * _maskS(i,j,k,bi,bj)
 
-         uBarXY=0.25*(
-     &      (uFld( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
-     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj))
-     &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
-     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj))
-     &               )
-         IF (upwindVort3) THEN
-          IF (uBarXY.GT.0.) THEN
-           vort3v=vort3r(i,j)
-          ELSE
-           vort3v=vort3r(i+1,j)
-          ENDIF
-         ELSEIF (fourthVort3) THEN
-          Rjp = vort3r(i+2,j) - vort3r(i+1,j)
-          Rjm = vort3r( i ,j) - vort3r(i-1,j)
-          vort3v=0.5*( vort3r(i,j) + vort3r(i+1,j)
-     &                -oneTwelve*(Rjp-Rjm)
-     &               )
-         ELSE
-          vort3v=0.5*( vort3r(i,j) + vort3r(i+1,j) )
-         ENDIF
-
-C-      end if / else SadournyCoriolis
-        ENDIF
-
-        vCoriolisTerm(i,j)=
-     &   -vort3v*uBarXY*recip_dyC(i,j,bi,bj)
-     &                 * _maskS(i,j,k,bi,bj)
-
+        ENDDO
        ENDDO
-      ENDDO
+
+      ELSE
+        WRITE(msgBuf,'(A,I5,A)')
+     &   'MOM_VI_V_CORIOLIS_C4: selectVortScheme=', selectVortScheme,
+     &   ' not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R MOM_VI_V_CORIOLIS_C4'
+
+      ENDIF
 
       RETURN
       END

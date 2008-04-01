@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.61 2007/11/27 20:20:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.62 2008/04/01 01:27:33 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -537,13 +537,14 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
 
       IF (momAdvection) THEN
 C--   Horizontal advection of relative (or absolute) vorticity
-       IF (highOrderVorticity.AND.useAbsVorticity) THEN
+       IF ( (highOrderVorticity.OR.upwindVorticity)
+     &     .AND.useAbsVorticity ) THEN
         CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,vFld,omega3,r_hFacZ,
      &                         uCf,myThid)
-       ELSEIF (highOrderVorticity) THEN
+       ELSEIF ( (highOrderVorticity.OR.upwindVorticity) ) THEN
         CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,vFld,vort3, r_hFacZ,
      &                         uCf,myThid)
-       ELSEIF (useAbsVorticity) THEN
+       ELSEIF ( useAbsVorticity ) THEN
         CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,omega3,hFacZ,r_hFacZ,
      &                         uCf,myThid)
        ELSE
@@ -555,13 +556,14 @@ C--   Horizontal advection of relative (or absolute) vorticity
          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
         ENDDO
        ENDDO
-       IF (highOrderVorticity.AND.useAbsVorticity) THEN
+       IF ( (highOrderVorticity.OR.upwindVorticity)
+     &     .AND.useAbsVorticity ) THEN
         CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,omega3,r_hFacZ,
      &                         vCf,myThid)
-       ELSEIF (highOrderVorticity) THEN
+       ELSEIF ( (highOrderVorticity.OR.upwindVorticity) ) THEN
         CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,vort3, r_hFacZ,
      &                         vCf,myThid)
-       ELSEIF (useAbsVorticity) THEN
+       ELSEIF ( useAbsVorticity ) THEN
         CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,omega3,hFacZ,r_hFacZ,
      &                         vCf,myThid)
        ELSE

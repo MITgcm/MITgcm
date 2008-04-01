@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.208 2008/03/30 22:21:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.209 2008/04/01 01:28:39 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -559,10 +559,9 @@ C--   z,p,r coord input switching.
 C--   for backward compatibility :
         IF ( selectVortScheme.EQ.UNSET_I ) selectVortScheme = 2
         IF ( selectVortScheme.NE.2 ) THEN
-          WRITE(msgBuf,'(A,I10)')
-     &     'S/R INI_PARMS: selectVortScheme =', selectVortScheme
-          WRITE(msgBuf,'(A,A)')
-     &     'S/R INI_PARMS: not compatible with "SadournyCoriolis"'
+          WRITE(msgBuf,'(A,I5,A)')
+     &     'S/R INI_PARMS: selectVortScheme=', selectVortScheme,
+     &     ' conflicts with "SadournyCoriolis"'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R INI_PARMS'
         ENDIF

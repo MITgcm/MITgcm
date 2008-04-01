@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.46 2008/02/08 13:01:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.47 2008/04/01 01:28:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -413,6 +413,15 @@ c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
      &                    SQUEEZE_RIGHT , myThid)
       ENDIF
 #endif /* EXACT_CONSERV */
+
+      IF ( vectorInvariantMomentum.AND.momStepping ) THEN
+       IF ( highOrderVorticity.AND.upwindVorticity ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   '"highOrderVorticity" conflicts with "upwindVorticity"'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+       ENDIF
+      ENDIF
 
       IF (.NOT.useCDscheme .AND. (tauCD.NE.0. .OR. rCD.NE.-1.) ) THEN
 C- jmc: since useCDscheme is a new [04-13-03] flag (default=F),
