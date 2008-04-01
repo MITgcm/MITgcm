@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.968 2008/03/26 10:10:05 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.969 2008/04/01 02:06:54 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_vecinv: - new parameter "selectVortScheme" to select which
+   scheme to use for vorticty-term ;
+ - compute upwindVorticity=T case within mom_vi_u/v_coriolis_c4.F 
+   (with default selectVortScheme, return to original discretisation)
+ - remove weird combination (e.g.: upwindVorticity & highOrderVorticity)
 o pkg/seaice: add a line to the summary to indicate grid type (B/C)
 o in mom_calc_visc, fix average value of viscAh_W & viscA4_W next to the
   bottom ; only used with variable horizontal viscosity and non-hydrostatic.
