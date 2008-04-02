@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.113 2008/03/12 02:20:04 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.114 2008/04/02 23:41:22 jmc Exp $
 #  $Name:  $
 #
 
@@ -1255,7 +1255,7 @@ for dir in $TESTDIRS ; do
 done
 
 printf "Start time:  " >> $SUMMARY
-echo $start_date >> $SUMMARY
+echo "$start_date" >> $SUMMARY
 printf "End time:    " >> $SUMMARY
 date >> $SUMMARY
 
