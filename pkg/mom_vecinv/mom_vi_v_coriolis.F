@@ -1,18 +1,27 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.11 2008/03/30 21:46:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.12 2008/04/02 21:18:45 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: MOM_VI_V_CORIOLIS
+C     !INTERFACE:
       SUBROUTINE MOM_VI_V_CORIOLIS(
-     I        bi,bj,k,
-     I        uFld,omega3,hFacZ,r_hFacZ,
-     O        vCoriolisTerm,
-     I        myThid)
-      IMPLICIT NONE
+     I                     bi, bj, k,
+     I                     uFld, omega3, hFacZ, r_hFacZ,
+     O                     vCoriolisTerm,
+     I                     myThid )
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R MOM_VI_V_CORIOLIS
-C     | o Calculate zonal flux of vorticity at V point
+C     |==========================================================*
+C     | o Calculate flux (in X-dir.) of vorticity at V point
+C     |   using 2nd order interpolation
 C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -20,33 +29,41 @@ C     == Global variables ==
 #include "GRID.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-      INTEGER bi,bj,k
-      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL omega3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS hFacZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER bi, bj, k
+      _RL     uFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     omega3   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS     hFacZ    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS     r_hFacZ  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vCoriolisTerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
+CEOP
 
 C     == Local variables ==
-      LOGICAL use_original_hFac
-      INTEGER I,J
-      _RL uBarXY,vort3v,Zp,Zm
-      _RS epsil
-      PARAMETER ( use_original_hFac=.FALSE. )
+C     msgBuf :: Informational/error meesage buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL upwindVort3
+      INTEGER i, j
+      _RL     uBarXY, uBarYm, uBarYp
+      _RL     vort3v
+      _RS     epsil
+      PARAMETER( upwindVort3 = .FALSE. )
 
       epsil = 1. _d -9
 
-      DO J=2-Oly,sNy+Oly
-       DO I=1-Olx,sNx+Olx-1
-        IF ( use_original_hFac ) THEN
+      IF ( selectVortScheme.EQ.0 ) THEN
+C--   using enstrophy conserving scheme (Shallow-Water Eq.) by Sadourny, JAS 75
+
+       DO j=2-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx-1
          uBarXY=0.25*(
      &      (uFld( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
      &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj))
      &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
-     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj)))
-         IF (upwindVorticity) THEN
+     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj))
+     &               )
+         IF (upwindVort3) THEN
           IF (uBarXY.GT.0.) THEN
            vort3v=omega3(i,j)*r_hFacZ(i,j)
           ELSE
@@ -56,34 +73,23 @@ C     == Local variables ==
            vort3v=0.5*(omega3(i,j)*r_hFacZ(i,j)
      &                +omega3(i+1,j)*r_hFacZ(i+1,j))
          ENDIF
-        ELSEIF ( selectVortScheme.EQ.2 ) THEN
-         Zm=0.5*(
-     &       uFld( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
-     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj) )
-         Zp=0.5*(
-     &       uFld(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
-     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj) )
-         IF (upwindVorticity) THEN
-          IF ( (Zm+Zp) .GT.0.) THEN
-           vort3v=Zm*r_hFacZ( i ,j)*omega3( i ,j)
-          ELSE
-           vort3v=Zp*r_hFacZ(i+1,j)*omega3(i+1,j)
-          ENDIF
-         ELSE
-          Zm=Zm*r_hFacZ( i ,j)*omega3( i ,j)
-          Zp=Zp*r_hFacZ(i+1,j)*omega3(i+1,j)
-          vort3v=0.5*( Zm + Zp )
-         ENDIF
-         uBarXY=1.
-        ELSE
-c--      test a different formulation (relatively to hFac)
-         uBarXY=0.5*(
-     &      (uFld( i , j )*dyG( i , j ,bi,bj)*hFacZ(i,j)
-     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacZ(i,j)  )
+         vCoriolisTerm(i,j)= -vort3v*uBarXY*recip_dyC(i,j,bi,bj)
+     &                              * _maskS(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+
+      ELSEIF ( selectVortScheme.EQ.1 ) THEN
+C--   same as above, with different formulation (relatively to hFac)
+
+       DO j=2-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx-1
+         uBarXY= 0.5*(
+     &      (uFld( i , j )*dyG( i , j ,bi,bj)*hFacZ( i ,j)
+     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacZ( i ,j))
      &     +(uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacZ(i+1,j)
      &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacZ(i+1,j))
-     &              )/MAX( epsil, hFacZ(i,j)+hFacZ(i+1,j) )
-         IF (upwindVorticity) THEN
+     &               )/MAX( epsil, hFacZ(i,j)+hFacZ(i+1,j) )
+         IF (upwindVort3) THEN
           IF (uBarXY.GT.0.) THEN
            vort3v=omega3(i,j)
           ELSE
@@ -92,28 +98,59 @@ c--      test a different formulation (relatively to hFac)
          ELSE
            vort3v=0.5*(omega3(i,j)+omega3(i+1,j))
          ENDIF
-        ENDIF
-
-        IF (useJamartMomAdv)
-     &   uBarXY = uBarXY * 4. _d 0 * hFacS(i,j,k,bi,bj)
-     &   / MAX( epsil,(_hFacW( i ,j,k,bi,bj)+_hFacW( i ,j-1,k,bi,bj))
-     &               +(_hFacW(i+1,j,k,bi,bj)+_hFacW(i+1,j-1,k,bi,bj)) )
-
-        vCoriolisTerm(i,j)=
-     &   -vort3v*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
-C high order vorticity advection term
-c    &   ...
-C linear Coriolis term
-c    &   -0.5 *(fCoriG(I,J,bi,bj)+fCoriG(I+1,J,bi,bj))*uBarXY
-C full nonlinear Coriolis term
-c    &   -0.5*(omega3(I,J)+omega3(I+1,J))*uBarXY
-C correct energy conserving form of Coriolis term
-c    &   -0.5 *( fCori(I,J  ,bi,bj)*uBarX(I,J  ,K,bi,bj) +
-c    &           fCori(I,J-1,bi,bj)*uBarX(I,J-1,K,bi,bj)  )
-C original form of Coriolis term (copied from calc_mom_rhs)
-c    &   -0.5*(fCori(i,j,bi,bj)+fCori(i,j-1,bi,bj))*uBarXY
+         vCoriolisTerm(i,j)= -vort3v*uBarXY*recip_dyC(i,j,bi,bj)
+     &                              * _maskS(i,j,k,bi,bj)
+        ENDDO
        ENDDO
-      ENDDO
+
+      ELSEIF ( selectVortScheme.EQ.2 ) THEN
+C--   using energy conserving scheme (used by Sadourny in JAS 75 paper)
+
+       DO j=2-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx-1
+         uBarYm=0.5*(
+     &       uFld( i , j )*dyG( i , j ,bi,bj)*_hFacW( i , j ,k,bi,bj)
+     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*_hFacW( i ,j-1,k,bi,bj) )
+         uBarYp=0.5*(
+     &       uFld(i+1, j )*dyG(i+1, j ,bi,bj)*_hFacW(i+1, j ,k,bi,bj)
+     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*_hFacW(i+1,j-1,k,bi,bj) )
+         IF (upwindVort3) THEN
+          IF ( (uBarYm+uBarYp) .GT.0.) THEN
+           vort3v=uBarYm*r_hFacZ( i ,j)*omega3( i ,j)
+          ELSE
+           vort3v=uBarYp*r_hFacZ(i+1,j)*omega3(i+1,j)
+          ENDIF
+         ELSE
+           vort3v = ( uBarYm*r_hFacZ( i ,j)*omega3( i ,j)
+     &               +uBarYp*r_hFacZ(i+1,j)*omega3(i+1,j)
+     &              )*0.5 _d 0
+         ENDIF
+         vCoriolisTerm(i,j)= -vort3v*recip_dyC(i,j,bi,bj)
+     &                              * _maskS(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+
+      ELSE
+        WRITE(msgBuf,'(A,I5,A)')
+     &   'MOM_VI_V_CORIOLIS: selectVortScheme=', selectVortScheme,
+     &   ' not implemented'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R MOM_VI_V_CORIOLIS'
+
+      ENDIF
+
+      IF ( useJamartMomAdv ) THEN
+       DO j=2-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx-1
+         vCoriolisTerm(i,j) = vCoriolisTerm(i,j)
+     &           * 4. _d 0 * _hFacS(i,j,k,bi,bj)
+     &           / MAX( epsil,
+     &                  (_hFacW( i ,j,k,bi,bj)+_hFacW( i ,j-1,k,bi,bj))
+     &                 +(_hFacW(i+1,j,k,bi,bj)+_hFacW(i+1,j-1,k,bi,bj))
+     &                )
+        ENDDO
+       ENDDO
+      ENDIF
 
       RETURN
       END
