@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/calcite_saturation.F,v 1.5 2007/10/26 21:08:12 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/calcite_saturation.F,v 1.6 2008/04/03 22:49:53 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -92,7 +92,6 @@ c 30 micromol = 0.03 mol m-3
              po4local = PTR_PO4(i,j,k)
              diclocal = PTR_DIC(i,j,k)
              alklocal = PTR_ALK(i,j,k)
-c            pHlocal = pHlast(i,j,k,bi,bj)
              pHlocal = 7.9 _d 0
 
 CMICK - TEMPORARY!!!!!
@@ -157,8 +156,6 @@ cmick....................................................
            else
              omegaC(i,j,k,bi,bj) = 0. _d 0
            endif
-
-           pHlast(i,j,k,bi,bj) = pHlocal
 
          ENDDO
         ENDDO
