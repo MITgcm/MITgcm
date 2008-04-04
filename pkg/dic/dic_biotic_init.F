@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_init.F,v 1.6 2006/12/12 22:37:28 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_init.F,v 1.7 2008/04/04 21:37:05 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -18,9 +18,7 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef DIC_BIOTIC
-#include "DIC_BIOTIC.h"
-#endif
+#include "DIC_VARS.h"
 
 c!INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.9 2007/10/29 16:49:49 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.10 2008/04/04 21:32:36 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -22,7 +22,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DIC_BIOTIC.h"
+#include "DIC_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number

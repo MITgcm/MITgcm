@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.7 2008/04/04 18:57:36 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.8 2008/04/04 21:32:37 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -26,10 +26,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DIC_ABIOTIC.h"
-#ifdef DIC_BIOTIC
-#include "DIC_BIOTIC.h"
-#endif
+#include "DIC_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_FIELDS.h"
 #include "GCHEM.h"

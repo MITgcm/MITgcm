@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/alk_surfforcing.F,v 1.10 2007/10/26 21:08:12 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/alk_surfforcing.F,v 1.11 2008/04/04 21:32:36 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -24,7 +24,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DIC_ABIOTIC.h"
+#include "DIC_VARS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.10 2007/10/29 16:49:49 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.11 2008/04/04 21:32:36 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -32,7 +32,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DIC_ABIOTIC.h"
+#include "DIC_VARS.h"
 
 C     == Routine arguments ==
 C       diclocal = total inorganic carbon (mol/m^3) 
@@ -358,7 +358,7 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DIC_ABIOTIC.h"
+#include "DIC_VARS.h"
 
 C     == Routine arguments ==
 C       diclocal = total inorganic carbon (mol/m^3)
@@ -494,7 +494,7 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DIC_ABIOTIC.h"
+#include "DIC_VARS.h"
 
 C     == Routine arguments ==
 C       diclocal = total inorganic carbon (mol/m^3)
@@ -643,7 +643,7 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DIC_ABIOTIC.h"
+#include "DIC_VARS.h"
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays
 C dont really need to pass T and S in, could use theta, salt in
@@ -872,7 +872,7 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "DIC_ABIOTIC.h"
+#include "DIC_VARS.h"
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays
 C dont really need to pass T and S in, could use theta, salt in

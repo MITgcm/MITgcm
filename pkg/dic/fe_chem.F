@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.11 2007/12/06 22:24:34 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.12 2008/04/04 21:37:06 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -22,7 +22,7 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DIC_BIOTIC.h"
+#include "DIC_VARS.h"
 
 C     == Routine arguments ==                
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation

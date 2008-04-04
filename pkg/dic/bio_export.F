@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.21 2007/12/06 22:24:34 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.22 2008/04/04 21:32:36 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -26,8 +26,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DIC_ABIOTIC.h"
-#include "DIC_BIOTIC.h"
+#include "DIC_VARS.h"
 #ifdef USE_QSW
 #include "FFIELDS.h"
 #endif

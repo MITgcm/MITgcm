@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_abiotic_param.F,v 1.8 2007/10/26 21:08:13 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_abiotic_param.F,v 1.9 2008/04/04 21:32:37 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -20,7 +20,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "DIC_ABIOTIC.h"
+#include "DIC_VARS.h"
 
 c !INPUT PARAMETERS: ===================================================
       INTEGER myThid

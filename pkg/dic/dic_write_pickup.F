@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.1 2008/03/11 20:56:14 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.2 2008/04/04 21:37:06 dfer Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -12,7 +12,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DIC_ABIOTIC.h"
+#include "DIC_VARS.h"
 
 C     == Routine arguments ==
 C     permPickup :: write a permanent pickup

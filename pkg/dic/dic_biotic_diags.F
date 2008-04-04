@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.12 2007/11/05 19:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.13 2008/04/04 21:32:37 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -17,7 +17,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DIC_BIOTIC.h"
+#include "DIC_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 c#include "PTRACERS_FIELDS.h"
