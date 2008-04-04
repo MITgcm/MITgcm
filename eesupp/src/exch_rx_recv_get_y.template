@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_y.template,v 1.10 2008/03/28 18:39:54 utke Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_y.template,v 1.11 2008/04/04 20:18:34 utke Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -78,7 +78,7 @@ C     mpiStatus                  :: MPI error code
       INTEGER northCommMode
       INTEGER spinCount
 #ifdef ALLOW_USE_MPI
-      INTEGER theProc, theTag, theType, theSize
+      INTEGER theProc, theTag, theType, theSize, pReqI
       INTEGER mpiStatus(MPI_STATUS_SIZE,4), mpiRc
 #endif
 CEOP
@@ -162,6 +162,7 @@ C--   iii. Set data read flag + memory sync.
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 # else 
+         pReqI=exchNReqsY(1,bi,bj)+1
          CALL ampi_recv_RX( 
      & southRecvBuf_RX(1,eBl,bi,bj) , 
      & theSize , 
@@ -169,7 +170,7 @@ C--   iii. Set data read flag + memory sync.
      & theProc , 
      & theTag , 
      & MPI_COMM_MODEL ,
-     & exchReqIdY(exchNReqsY(1,bi,bj)+1,1,bi,bj), 
+     & exchReqIdY(pReqI,1,bi,bj), 
      & exchNReqsY(1,bi,bj),
      & mpiStatus , 
      & mpiRc ) 
@@ -195,6 +196,7 @@ C--   iii. Set data read flag + memory sync.
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 # else
+	 pReqI=exchNReqsY(1,bi,bj)+1
          CALL ampi_recv_RX( 
      & northRecvBuf_RX(1,eBl,bi,bj) , 
      & theSize , 
@@ -202,7 +204,7 @@ C--   iii. Set data read flag + memory sync.
      & theProc , 
      & theTag , 
      & MPI_COMM_MODEL ,
-     & exchReqIdY(exchNReqsY(1,bi,bj)+1,1,bi,bj), 
+     & exchReqIdY(pReqI,1,bi,bj), 
      & exchNReqsY(1,bi,bj),
      & mpiStatus , 
      & mpiRc )
@@ -265,8 +267,16 @@ C        Update statistics
 #ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
 #endif
+# ifndef ALLOW_AUTODIFF_OPENAD
           CALL MPI_Waitall( exchNReqsY(1,bi,bj), exchReqIdY(1,1,bi,bj),
      &                      mpiStatus, mpiRC )
+# else
+          CALL ampi_waitall( 
+     & exchNReqsY(1,bi,bj), 
+     & exchReqIdY(1,1,bi,bj),
+     & mpiStatus, 
+     & mpiRC )
+# endif /* ALLOW_AUTODIFF_OPENAD */
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_y.template,v 1.9 2008/03/28 18:39:54 utke Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_y.template,v 1.10 2008/04/04 20:18:34 utke Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -84,6 +84,7 @@ C                                  tile face uses.
       INTEGER theProc, theTag, theType, theSize, mpiRc
 # ifdef ALLOW_AUTODIFF_OPENAD
       INTEGER mpiStatus(MPI_STATUS_SIZE)
+      INTEGER pReqI
 # endif
 #endif
 
@@ -226,6 +227,7 @@ C        Send the data
      &                   theProc, theTag, MPI_COMM_MODEL,
      &                   exchReqIdY(exchNreqsY(1,bi,bj),1,bi,bj), mpiRc)
 # else         
+	  pReqI=exchNReqsY(1,bi,bj)+1
           CALL ampi_isend_RX(
      & southSendBuf_RX(1,eBl,bi,bj), 
      & theSize, 
@@ -233,7 +235,7 @@ C        Send the data
      & theProc, 
      & theTag, 
      & MPI_COMM_MODEL,
-     & exchReqIdY(exchNReqsY(1,bi,bj)+1,1,bi,bj), 
+     & exchReqIdY(pReqI,1,bi,bj), 
      & exchNReqsY(1,bi,bj),
      & mpiStatus, 
      & mpiRc )
@@ -286,6 +288,7 @@ C        Send the data
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdY(exchNreqsY(1,bi,bj),1,bi,bj), mpiRc )
 # else
+	 pReqI=exchNReqsY(1,bi,bj)+1
          CALL ampi_isend_RX(
      & northSendBuf_RX(1,eBl,bi,bj) , 
      & theSize , 
@@ -293,7 +296,7 @@ C        Send the data
      & theProc , 
      & theTag , 
      & MPI_COMM_MODEL ,
-     & exchReqIdY(exchNReqsY(1,bi,bj)+1,1,bi,bj) , 
+     & exchReqIdY(pReqI,1,bi,bj) , 
      & exchNReqsY(1,bi,bj) ,
      & mpiStatus , 
      & mpiRc )
