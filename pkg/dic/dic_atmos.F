@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.6 2007/11/14 16:33:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.7 2008/04/04 18:57:36 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -28,10 +28,10 @@ C !USES: ===============================================================
 #include "FFIELDS.h"
 #include "DIC_ABIOTIC.h"
 #ifdef DIC_BIOTIC
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS_FIELDS.h"
 #include "DIC_BIOTIC.h"
 #endif
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_FIELDS.h"
 #include "GCHEM.h"
 #include "DIC_ATMOS.h"
 
@@ -186,8 +186,11 @@ c for 278ppmv we need total_atmos_carbon=4.9206e+16
             endif
             DO k=1,nR
               total_ocean_carbon= total_ocean_carbon+
-     &              ( Ptracer(i,j,k,bi,bj,1)+
-     &                R_cp*Ptracer(i,j,k,bi,bj,4) )*rA(i,j,bi,bj)*
+     &              ( Ptracer(i,j,k,bi,bj,1)
+#ifdef DIC_BIOTIC
+     &               +R_cp*Ptracer(i,j,k,bi,bj,4) 
+#endif
+     &              ) * rA(i,j,bi,bj)*
      &                drF(k)*hFacC(i,j,k,bi,bj)
             ENDDO
           ENDDO

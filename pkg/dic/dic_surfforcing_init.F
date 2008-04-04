@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.16 2008/03/12 01:44:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.17 2008/04/04 18:57:36 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -25,12 +25,9 @@ C !USES: ===============================================================
 #include "FFIELDS.h"
 #include "DIC_ABIOTIC.h"
 #include "GCHEM.h"
-#ifdef DIC_BIOTIC
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 #include "DIC_LOAD.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -139,12 +136,12 @@ C determine inorganic carbon chem coefficients
 #ifdef DIC_BIOTIC
              surfalk(i,j) = PTRACER(i,j,klev,bi,bj,2)
      &                          * maskC(i,j,kLev,bi,bj)
-             surfphos(i,j)  = PTRACER(i,j,klev,bi,bj,3)
+             surfphos(i,j)= PTRACER(i,j,klev,bi,bj,3)
      &                          * maskC(i,j,kLev,bi,bj)
 #else
              surfalk(i,j) = 2.366595 _d 0 * salt(i,j,kLev,bi,bj)/gsm_s
      &                          * maskC(i,j,kLev,bi,bj)
-             surfphos(i,j)  = 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
+             surfphos(i,j)= 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
 #endif
 C FOR NON-INTERACTIVE Si
              surfsi(i,j)   =  Silica(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)

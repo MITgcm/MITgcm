@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.12 2007/12/05 16:52:32 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.13 2008/04/04 18:57:36 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -85,6 +85,7 @@ C First call requires that we initialize everything to zero for safety
 #endif
 #endif
 
+#ifdef DIC_BIOTIC
           QSW_underice=.FALSE.
 #ifdef USE_QSW_UNDERICE
           QSW_underice=.TRUE.
@@ -95,7 +96,7 @@ c taken into account
 #elif (defined (ALLOW_THSICE) && defined (USE_QSW))
           QSW_underice=.TRUE.
 #endif
-
+#endif
 
 c set reasonable values to those that need at least something
        DO bj = myByLo(myThid), myByHi(myThid)

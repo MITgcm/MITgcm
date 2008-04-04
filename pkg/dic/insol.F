@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/insol.F,v 1.8 2007/10/29 19:51:00 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/insol.F,v 1.9 2008/04/04 18:57:36 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -33,6 +33,8 @@ C Time                 :: current time
 
 C !OUPUT PARAMETERS: ===================================================
        _RL sfac(1-OLy:sNy+OLy)
+
+#ifdef DIC_BIOTIC
 
 C !LOCAL VARIABLES: ====================================================
        _RL  solar, albedo
@@ -88,8 +90,8 @@ c
 c convert to sfac
           sfac(j) = MAX(1. _d -5,fluxi)
        ENDDO !j
-c
+
+#endif /* DIC_BIOTIC */
+
       return
       end
-c
-C==========================================================================
