@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.3 2007/05/10 21:15:52 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.4 2008/04/04 21:43:57 dfer Exp $
 C $Name:  $
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
@@ -27,7 +27,7 @@ C     == Global variables ==
 #include "OCNIDS.h"
 #include "OCNCPL.h"
 #ifdef ALLOW_DIC
-#  include "DIC_ABIOTIC.h"
+#  include "DIC_VARS.h"
 #endif
 
 C     == Routine arguments ==

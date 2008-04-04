@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.5 2007/05/10 21:15:52 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.6 2008/04/04 21:43:57 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,7 +31,7 @@ C     === Global variables ===
 c #include "GRID.h"
 c #include "DYNVARS.h"
 #ifdef ALLOW_DIC
-#  include "DIC_ABIOTIC.h"
+#  include "DIC_VARS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

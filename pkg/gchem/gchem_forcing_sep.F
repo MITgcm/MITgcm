@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.21 2008/01/18 01:06:29 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.22 2008/04/04 21:43:18 dfer Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -26,8 +26,7 @@ C !USES: ===============================================================
 c#include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 #ifdef ALLOW_DIC
-#include "DIC_BIOTIC.h"
-#include "DIC_ABIOTIC.h"
+#include "DIC_VARS.h"
 #endif /* ALLOW_DIC */
 
 C !INPUT PARAMETERS: ===================================================
