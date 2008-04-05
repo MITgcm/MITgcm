@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.29 2007/12/17 22:03:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.30 2008/04/05 18:22:16 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -39,10 +39,13 @@ C     msgBuf     :: message buffer
       INTEGER ic
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL PTRACERS_diffKr(PTRACERS_num)
+      _RL tauTr1ClimRelax
 
 C     PTRACERS_taveFreq :: Frequency with which time-averaged PTRACERS
 C                          are written to post-processing files.
+C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
       NAMELIST /PTRACERS_PARM01/
+     &     tauTr1ClimRelax,
      &     PTRACERS_dumpFreq,
      &     PTRACERS_taveFreq,
      &     PTRACERS_monitorFreq,
@@ -123,6 +126,7 @@ C     Set defaults values for parameters in PTRACERS.h
       PTRACERS_pickup_write_mnc = .FALSE.
       PTRACERS_pickup_read_mnc  = .FALSE.
 #endif
+      tauTr1ClimRelax = 0.
 
 C     Open and read the data.ptracers file
       WRITE(msgBuf,'(A)') ' PTRACERS_READPARMS: opening data.ptracers'
@@ -143,6 +147,13 @@ C     Close the open data file
 
 C     Now set-up any remaining parameters that result from the input
 C     parameters
+
+C     Tracer 1 climatology relaxation time scale (<- but the code is gone !)
+      IF ( tauTr1ClimRelax .EQ. 0. ) THEN
+       lambdaTr1ClimRelax = 0.
+      ELSE
+       lambdaTr1ClimRelax = 1./tauTr1ClimRelax
+      ENDIF
 
 C     If PTRACERS_numInUse was not set in data.ptracers then we can
 C     assume that all PTRACERS fields will be in use

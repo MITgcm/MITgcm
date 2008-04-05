@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.3 2007/12/17 22:03:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.4 2008/04/05 18:22:16 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -40,6 +40,12 @@ C     PTRACERS_Iter0    :: timestep number when tracers are initialized
      &     PTRACERS_diffKrNr,
      &     PTRACERS_ref,
      &     PTRACERS_EvPrRn
+
+C     COMMON /PTRACERS_OLD_R/ Old (real type) PTRACERS parameters 
+C        (to be removed 1 day ...)
+      _RL lambdaTr1ClimRelax
+      COMMON /PTRACERS_OLD_R/
+     &     lambdaTr1ClimRelax
 
       INTEGER PTRACERS_Iter0
       INTEGER PTRACERS_numInUse
