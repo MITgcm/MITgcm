@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.3 2008/04/01 01:28:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.4 2008/04/05 21:24:08 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -20,6 +20,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EOS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid - Number of this instance of SET_PARMS
@@ -117,6 +118,16 @@ C--   Advection and Forcing for Temp and salt  on/off flags
       saltForcing   = saltStepping .AND. saltForcing
       tempImplVertAdv = tempAdvection .AND. tempImplVertAdv
       saltImplVertAdv = saltAdvection .AND. saltImplVertAdv
+
+C--   Dynamically Active Tracers : set flags
+      tempIsActiveTr = momPressureForcing .AND. tempAdvection
+      saltIsActiveTr = momPressureForcing .AND. saltAdvection
+      IF ( eosType.EQ.'IDEALGAS' .AND. atm_Rq.EQ.0. ) THEN
+        saltIsActiveTr = .FALSE.
+      ELSEIF ( eosType.EQ.'LINEAR' ) THEN
+        IF ( tAlpha.EQ.0. ) tempIsActiveTr = .FALSE.
+        IF ( sBeta .EQ.0. ) saltIsActiveTr = .FALSE.
+      ENDIF
 
 C--   When using the dynamical pressure in EOS (with Z-coord.),
 C     needs to activate specific part of the code (restart & exchange)

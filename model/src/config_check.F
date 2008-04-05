@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.47 2008/04/01 01:28:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.48 2008/04/05 21:24:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -212,7 +212,7 @@ C       code is being compiled
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C-  check parameter consistency :
+C--   Check parameter consistency :
 
       IF ( ( Olx.LT.3 .OR. Oly.LT.3 ) .AND.
      &     ( viscC4leithD.NE.0.  .OR. viscC4leith.NE.0.
@@ -234,7 +234,7 @@ C-  check parameter consistency :
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
-C-    Deep-Atmosphere & Anelastic limitations:
+C--   Deep-Atmosphere & Anelastic limitations:
       IF ( deepAtmosphere .AND.
      &     useRealFreshWaterFlux .AND. usingPCoords ) THEN
         WRITE(msgBuf,'(A,A)')
@@ -262,6 +262,7 @@ C-    Deep-Atmosphere & Anelastic limitations:
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
+C--   Free-surface related limitations:
       IF ( rigidLid .AND. implicitFreeSurface ) THEN
         WRITE(msgBuf,'(A,A)')
      &  'CONFIG_CHECK: Cannot select both implicitFreeSurface',
@@ -414,6 +415,7 @@ c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
       ENDIF
 #endif /* EXACT_CONSERV */
 
+C--   Momentum related limitations:
       IF ( vectorInvariantMomentum.AND.momStepping ) THEN
        IF ( highOrderVorticity.AND.upwindVorticity ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
@@ -457,6 +459,7 @@ C- jmc: but ultimately, this block can/will be removed.
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
+C--   Time-stepping limitations
       IF ( momForcingOutAB.NE.0 .AND. momForcingOutAB.NE.1 ) THEN
         WRITE(msgBuf,'(A,I10,A)') 'CONFIG_CHECK: momForcingOutAB=',
      &                             momForcingOutAB, ' not allowed'
@@ -476,21 +479,7 @@ C- jmc: but ultimately, this block can/will be removed.
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
-      IF ( useMATRIX .AND. useGCHEM ) THEN
-        WRITE(msgBuf,'(2A)')
-     &   'CONFIG_CHECK: cannot set both: useMATRIX & useGCHEM'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
-      ENDIF
-
-      IF ( useMATRIX .AND. .NOT.usePTRACERS ) THEN
-        WRITE(msgBuf,'(2A)')
-     &       'CONFIG_CHECK: cannot set useMATRIX without ',
-     &       'setting usePTRACERS'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
-      ENDIF
-
+C--   Grid limitations:
       IF ( rotateGrid ) THEN
        IF ( .NOT. usingSphericalPolarGrid ) THEN
         WRITE(msgBuf,'(2A)')
@@ -513,6 +502,22 @@ C- jmc: but ultimately, this block can/will be removed.
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
 #endif /* ALLOW_PROFILES */
+      ENDIF
+
+C--   Packages conflict
+      IF ( useMATRIX .AND. useGCHEM ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   'CONFIG_CHECK: cannot set both: useMATRIX & useGCHEM'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+      IF ( useMATRIX .AND. .NOT.usePTRACERS ) THEN
+        WRITE(msgBuf,'(2A)')
+     &       'CONFIG_CHECK: cannot set useMATRIX without ',
+     &       'setting usePTRACERS'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
       WRITE(msgBuf,'(A)') 'CONFIG_CHECK: OK'

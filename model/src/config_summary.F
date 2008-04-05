@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.106 2008/03/30 21:45:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.107 2008/04/05 21:24:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -398,6 +398,8 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &                '/* Temp. implicit vert. advection on/off */')
       CALL WRITE_0D_L( tempForcing,  INDEX_NONE,
      & 'tempForcing  =', '  /* Temperature forcing on/off flag */')
+      CALL WRITE_0D_L( tempIsActiveTr, INDEX_NONE, 'tempIsActiveTr =',
+     & ' /* Temp. is a dynamically Active Tracer */')
       CALL WRITE_0D_L( saltStepping,  INDEX_NONE,
      & 'saltStepping =', '  /* Salinity equation on/off flag */')
       CALL WRITE_0D_L( saltAdvection,  INDEX_NONE,
@@ -406,6 +408,8 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &                '/* Sali. implicit vert. advection on/off */')
       CALL WRITE_0D_L( saltForcing,  INDEX_NONE,
      & 'saltForcing  =', '  /* Salinity forcing on/off flag */')
+      CALL WRITE_0D_L( saltIsActiveTr, INDEX_NONE, 'saltIsActiveTr =',
+     & ' /* Salt  is a dynamically Active Tracer */')
       CALL WRITE_0D_I( readBinaryPrec, INDEX_NONE, ' readBinaryPrec =',
      &  ' /* Precision used for reading binary files */')
       CALL WRITE_0D_I(writeBinaryPrec, INDEX_NONE, 'writeBinaryPrec =',
