@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.1 2007/01/16 04:38:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.2 2008/04/05 21:28:32 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -77,6 +77,25 @@ c     IF ( useMultiDimAdvec ) THEN
 #endif /* ndef GAD_ALLOW_SOM_ADVECT */
 
 C--  Check parameters:
+
+C-   Check internal wave dynamics stability regarding active tracer time-stepping
+      IF ( .NOT.staggerTimeStep ) THEN
+        IF ( tempIsActiveTr .AND.
+     &                      .NOT.(AdamsBashforthGt.OR.AdamsBashforth_T)
+     &  .OR. saltIsActiveTr .AND.
+     &                      .NOT.(AdamsBashforthGs.OR.AdamsBashforth_S)
+     &     ) THEN
+C-      issue a warning in Error msg file:
+           WRITE(msgBuf,'(2A)') '** WARNING ** GAD_CHECK: ',
+     &       'potentially unstable time-stepping (Internal Wave)'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT , myThid)
+           WRITE(msgBuf,'(2A)') '** WARNING ** GAD_CHECK: ',
+     &       'need "staggerTimeStep=.TRUE." in "data", nml PARM01'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT , myThid)
+        ENDIF
+      ENDIF
 
 C--- note: minimum size of overlap due to tracer limitations is checked in
 C     GAD_INIT, PTRACERS_INIT_FIXED and GMREDI_CHECK ; can all move here.
