@@ -17,7 +17,7 @@ LINK='mpif90'
 CPP='cpp  -traditional -P'
 #INCLUDES='-I/usr/include/netcdf'
 
-INCLUDES='-I/opt/netcdf-3.6.0-p1/include -I/usr/local/topspin/mpi/mpich'
+INCLUDES='-I/opt/netcdf-3.6.0-p1/include -I/usr/local/topspin/mpi/mpich/include'
 LIBS='-L/opt/netcdf-3.6.0-p1/lib -L/usr/local/topspin/mpi/mpich/lib64  -lmpich_i -lpthread'
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
