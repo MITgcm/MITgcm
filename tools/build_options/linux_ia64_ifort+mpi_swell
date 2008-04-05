@@ -11,12 +11,13 @@
 
 FC=mpif90
 F90C=mpif90
+CC=mpicc
 DEFINES='-DWORDLENGTH=4'
-LINK='ifort'
+LINK='mpif90'
 CPP='cpp  -traditional -P'
 #INCLUDES='-I/usr/include/netcdf'
 
-INCLUDES='-I/opt/netcdf-3.6.0-p1/include -I/usr/local/topspin/mpi/mpich/include'
+INCLUDES='-I/opt/netcdf-3.6.0-p1/include -I/usr/local/topspin/mpi/mpich'
 LIBS='-L/opt/netcdf-3.6.0-p1/lib -L/usr/local/topspin/mpi/mpich/lib64  -lmpich_i -lpthread'
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
@@ -26,10 +27,21 @@ if test "x$IEEE" = x ; then
     FOPTIM=
 #P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
 #P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
-    FFLAGS='-132 -r8 -i4 -w95 -convert big_endian -assume byterecl'
+    FFLAGS='-132 -r8 -i4 -w95 -g -convert big_endian -assume byterecl'
+    FOPTIM='-O3 -align'
 else
     FOPTIM='-O0 -noalign'
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -xN -pc64 -convert big_endian -assume byterecl'
    #FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
 fi
+
+
+
+#if test "x$IEEE" = x ; then
+#    FFLAGS='-Wimplicit -Wunused -Wuninitialized  -fno-second-underscore'
+#    FOPTIM='-O3 -funroll-loops'
+#else
+#    FFLAGS='-Wimplicit -Wunused -ffloat-store'
+#    FOPTIM='-O0 '
+#fi
 
