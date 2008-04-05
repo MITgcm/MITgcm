@@ -12,7 +12,7 @@
 FC=mpif90
 F90C=mpif90
 CC=mpicc
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DALLOW_USE_MPI -DALWAYS_USE_MPI'
 LINK='mpif90'
 CPP='cpp  -traditional -P'
 #INCLUDES='-I/usr/include/netcdf'
