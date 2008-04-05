@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.969 2008/04/01 02:06:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.970 2008/04/05 21:37:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add a "warning" (to Error msg file) when an Active Tracer is not using AB-2
+  and staggerTimeStep is off (needed for stability of Internal-wave dynamics).
+o move out of PARAMS.h & data the last pieces of old-ptracer code: tauTr1ClimRelax,
+ & lambdaTr1ClimRelax ; put those 2 params in PTRACERS_PARAMS.h & data.ptracers
+   (note: not clear to me what lambdaTr1ClimRelax is still used for ...)
 o pkg/mom_vecinv: - new parameter "selectVortScheme" to select which
    scheme to use for vorticty-term ;
  - compute upwindVorticity=T case within mom_vi_u/v_coriolis_c4.F 
