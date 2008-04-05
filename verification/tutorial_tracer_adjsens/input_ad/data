@@ -62,7 +62,7 @@
 #
  tauThetaClimRelax = 2592000.0,
  tauSaltClimRelax  = 2592000.0,
- tauTr1ClimRelax   = 31104000.0,
+#tauTr1ClimRelax   = 31104000., <= moved to data.ptracers
  &
 
 # Gridding parameters

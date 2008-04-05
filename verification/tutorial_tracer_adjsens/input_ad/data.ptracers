@@ -7,4 +7,5 @@
  PTRACERS_diffKr=3.E-5,
  PTRACERS_initialFile=' ',
  PTRACERS_ref=1., 19*0.,
+ tauTr1ClimRelax= 31104000.,
  &
