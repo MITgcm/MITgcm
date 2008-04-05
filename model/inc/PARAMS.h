@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.215 2008/04/05 18:02:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.216 2008/04/05 18:09:30 jmc Exp $
 C $Name:  $
 C
 
@@ -406,8 +406,10 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL useCoriolis
       LOGICAL vectorInvariantMomentum
       LOGICAL tempAdvection
+      LOGICAL tempIsActiveTr
       LOGICAL tempForcing
       LOGICAL saltAdvection
+      LOGICAL saltIsActiveTr
       LOGICAL saltForcing
       LOGICAL useRealFreshWaterFlux
       LOGICAL useFullLeith
