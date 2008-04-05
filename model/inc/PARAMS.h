@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.214 2008/03/30 21:44:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.215 2008/04/05 18:02:35 jmc Exp $
 C $Name:  $
 C
 
@@ -222,64 +222,86 @@ C
       PARAMETER(debLevB=2)
 
 C--   COMMON /PARM_L/ Logical valued parameters used by the model.
+C- Coordinate + Grid params:
+C     fluidIsAir       :: Set to indicate that the fluid major constituent
+C                        is air
+C     fluidIsWater     :: Set to indicate that the fluid major constituent
+C                        is water
+C     usingPCoords     :: Set to indicate that we are working in a pressure
+C                        type coordinate (p or p*).
+C     usingZCoords     :: Set to indicate that we are working in a height
+C                        type coordinate (z or z*)
+C     useDynP_inEos_Zc :: use the dynamical pressure in EOS (with Z-coord.)
+C                         this requires specific code for restart & exchange
 C     usingCartesianGrid :: If TRUE grid generation will be in a cartesian
 C                          coordinate frame.
 C     usingSphericalPolarGrid :: If TRUE grid generation will be in a
 C                               spherical polar frame.
-C     usingCylindricalGrid :: If TRUE grid generation will be Cylindrical
+C     rotateGrid      :: rotate grid coordinates to geographical coordinates
+C                        according to Euler angles phiEuler, thetaEuler, psiEuler
 C     usingCurvilinearGrid :: If TRUE, use a curvilinear grid (to be provided)
+C     usingCylindricalGrid :: If TRUE grid generation will be Cylindrical
 C     deepAtmosphere :: deep model (drop the shallow-atmosphere approximation)
-C     no_slip_sides :: Impose "no-slip" at lateral boundaries.
+C     setInterFDr    :: set Interface depth (put cell-Center at the middle)
+C     setCenterDr    :: set cell-Center depth (put Interface at the middle)
+C- Momentum params:
+C     no_slip_sides  :: Impose "no-slip" at lateral boundaries.
 C     no_slip_bottom :: Impose "no-slip" at bottom boundary.
+C     useFullLeith   :: Set to true to use full Leith viscosity(may be unstable
+C                       on irregular grids)
+C     useStrainTensionVisc:: Set to true to use Strain-Tension viscous terms
+C     useAreaViscLength :: Set to true to use old scaling for viscous lengths,
+C                          e.g., L2=Raz.  May be preferable for cube sphere.
 C     momViscosity  :: Flag which turns momentum friction terms on and off.
 C     momAdvection  :: Flag which turns advection of momentum on and off.
 C     momForcing    :: Flag which turns external forcing of momentum on
-C                     and off.
+C                      and off.
 C     momPressureForcing :: Flag which turns pressure term in momentum equation
 C                          on and off.
 C     metricTerms   :: Flag which turns metric terms on or off.
 C     useNHMTerms   :: If TRUE use non-hydrostatic metric terms.
 C     useCoriolis   :: Flag which turns the coriolis terms on and off.
-C     tempAdvection :: Flag which turns advection of temperature on
-C                     and off.
-C     tempForcing   :: Flag which turns external forcing of temperature on
-C                     and off.
-C     saltAdvection :: Flag which turns advection of salinity on
-C                     and off.
-C     saltForcing   :: Flag which turns external forcing of salinity on
-C                     and off.
+C     use3dCoriolis :: Turns the 3-D coriolis terms (in Omega.cos Phi) on - off
+C     useConstantF  :: Coriolis parameter set to f0
+C     useBetaPlaneF :: Coriolis parameter set to f0 + beta.y
+C     useSphereF    :: Coriolis parameter set to 2.omega.sin(phi)
+C     useCDscheme   :: use CD-scheme to calculate Coriolis terms.
+C     vectorInvariantMomentum :: use Vector-Invariant form (mom_vecinv package)
+C                                (default = F = use mom_fluxform package)
+C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart & Ozer 1986)
+C     useJamartMomAdv :: Use wet-point method for V.I. non-linear term
+C     upwindVorticity :: bias interpolation of vorticity in the Coriolis term
+C     highOrderVorticity :: use 3rd/4th order interp. of vorticity (V.I., advection)
+C     useAbsVorticity :: work with f+zeta in Coriolis terms
+C     upwindShear        :: use 1rst order upwind interp. (V.I., vertical advection)
+C     momStepping    :: Turns momentum equation time-stepping off
+C- Temp. & Salt params:
+C     tempStepping   :: Turns temperature equation time-stepping off
+C     saltStepping   :: Turns salinity equation time-stepping off
+C     tempAdvection  :: Flag which turns advection of temperature on and off.
+C     tempIsActiveTr :: Pot.Temp. is a dynamically active tracer
+C     tempForcing    :: Flag which turns external forcing of temperature on
+C                       and off.
+C     saltAdvection  :: Flag which turns advection of salinity on and off.
+C     saltIsActiveTr :: Salinity  is a dynamically active tracer
+C     saltForcing    :: Flag which turns external forcing of salinity on
+C                       and off.
 C     useRealFreshWaterFlux :: if True (=Natural BCS), treats P+R-E flux
 C                         as a real Fresh Water (=> changes the Sea Level)
 C                         if F, converts P+R-E to salt flux (no SL effect)
-C     useFullLeith   :: Set to true to use full Leith viscosity(may be unstable
-C                       on irregular grids)
-C     useAreaViscLength :: Set to true to use old scaling for viscous
-C              lengths, e.g., L2=Raz.  May be preferable for cube sphere.
-C     useStrainTensionVisc:: Set to true to use Strain-Tension viscous terms
+C- Time-stepping params:
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implicit free surface
 C     exactConserv        :: Set to true to conserve exactly the total Volume
 C     linFSConserveTr     :: Set to true to correct source/sink of tracer
 C                            at the surface due to Linear Free Surface
 C     uniformLin_PhiSurf  :: Set to true to use a uniform Bo_surf in the
-C                           linear relation Phi_surf = Bo_surf*eta
-C     use3Dsolver   :: set to true to use 3-D pressure solver
+C                            linear relation Phi_surf = Bo_surf*eta
+C     quasiHydrostatic :: Using non-hydrostatic terms in hydrostatic algorithm
+C     nonHydrostatic   :: Using non-hydrostatic algorithm
+C     use3Dsolver      :: set to true to use 3-D pressure solver
 C     implicitIntGravWave :: treat Internal Gravity Wave implicitly
-C     staggerTimeStep :: enable a Stagger time stepping T,S Rho then U,V
-C     momStepping   :: Turns momentum equation time-stepping off
-C     tempStepping  :: Turns temperature equation time-stepping off
-C     saltStepping  :: Turns salinity equation time-stepping off
-C     useConstantF  :: Coriolis parameter set to f0
-C     useBetaPlaneF :: Coriolis parameter set to f0 + beta.y
-C     useSphereF    :: Coriolis parameter set to 2.omega.sin(phi)
-C     use3dCoriolis :: Turns the 3-D coriolis terms (in Omega.cos Phi) on - off
-C     useCDscheme   :: use CD-scheme to calculate Coriolis terms.
-C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 1986)
-C     useJamartMomAdv :: Use wet-point method for V.I. non-linear term
-C     upwindVorticity :: bias interpolation of vorticity in the Coriolis term
-C     highOrderVorticity :: use 3rd/4th order interp. of vorticity (V.I., advection)
-C     upwindShear        :: use 1rst order upwind interp. (V.I., vertical advection)
-C     useAbsVorticity :: work with f+zeta in Coriolis terms
+C     staggerTimeStep   :: enable a Stagger time stepping U,V (& W) then T,S
 C     implicitDiffusion :: Turns implicit vertical diffusion on
 C     implicitViscosity :: Turns implicit vertical viscosity on
 C     tempImplVertAdv :: Turns on implicit vertical advection for Temperature
@@ -291,36 +313,27 @@ C     momDissip_In_AB   :: if False, put Dissipation tendency contribution
 C                          out off Adams-Bashforth time stepping.
 C     doAB_onGtGs       :: if the Adams-Bashforth time stepping is used, always
 C                          apply AB on tracer tendencies (rather than on Tracer)
-C     pickupStrictlyMatch :: check and stop if pickup-file do not stricly match
-C     startFromPickupAB2 :: with AB-3 code, start from an AB-2 pickup
-C     usePickupBeforeC54 :: start from old-pickup files, generated with code from
-C                           before checkpoint-54a, Jul 06, 2004.
+C- Other forcing params -
+C     balanceEmPmR    :: substract global mean of EmPmR at every time step
+C     balanceQnet     :: substract global mean of Qnet at every time step
+C     balancePrintMean:: print substracted global means to STDOUT
 C     doThetaClimRelax :: Set true if relaxation to temperature
 C                        climatology is required.
 C     doSaltClimRelax  :: Set true if relaxation to salinity
 C                        climatology is required.
+C     allowFreezing  :: Allows surface water to freeze and form ice
+C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
 C     periodicExternalForcing :: Set true if forcing is time-dependant
-C     usingPCoords     :: Set to indicate that we are working in a pressure
-C                        type coordinate (p or p*).
-C     usingZCoords     :: Set to indicate that we are working in a height
-C                        type coordinate (z or z*)
-C     fluidIsAir       :: Set to indicate that the fluid major constituent
-C                        is air
-C     fluidIsWater     :: Set to indicate that the fluid major constituent
-C                        is water
-C     useDynP_inEos_Zc :: use the dynamical pressure in EOS (with Z-coord.)
-C                         this requires specific code for restart & exchange
-C     setInterFDr    :: set Interface depth (put cell-Center at the middle)
-C     setCenterDr    :: set cell-Center depth (put Interface at the middle)
-C     nonHydrostatic :: Using non-hydrostatic terms
-C     quasiHydrostatic :: Using non-hydrostatic terms in hydrostatic algorithm
+C- I/O parameters -
 C     globalFiles    :: Selects between "global" and "tiled" files
 C     useSingleCpuIO :: On SGI platforms, option globalFiles is either
 C                       slow (f77) or does not work (f90).  When
 C                       useSingleCpuIO is set, mdsio_writefield.F
 C                       outputs from master mpi process only.
-C     allowFreezing  :: Allows surface water to freeze and form ice
-C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
+C     pickupStrictlyMatch :: check and stop if pickup-file do not stricly match
+C     startFromPickupAB2 :: with AB-3 code, start from an AB-2 pickup
+C     usePickupBeforeC54 :: start from old-pickup files, generated with code from
+C                           before checkpoint-54a, Jul 06, 2004.
 C     pickup_write_mdsio :: use mdsio to write pickups
 C     pickup_read_mdsio  :: use mdsio to read  pickups
 C     pickup_write_immed :: echo the pickup immediately (for conversion)
@@ -330,54 +343,54 @@ C     snapshot_mdsio     :: use mdsio for "snapshot" (dumpfreq/diagfreq) output
 C     monitor_stdio      :: use stdio for monitor output
 C     dumpInitAndLast :: dumps model state to files at Initial (nIter0)
 C                        & Last iteration, in addition multiple of dumpFreq iter.
-C     balanceEmPmR    :: substract global mean of EmPmR at every time step
-C     balanceQnet     :: substract global mean of Qnet at every time step
-C     balancePrintMean:: print substracted global means to STDOUT
-C     rotateGrid      :: rotate grid coordinates to geographical coordinates
-C                        according to Euler angles phiEuler, thetaEuler, psiEuler
 
-      COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
+      COMMON /PARM_L/
+     & fluidIsAir, fluidIsWater,
+     & usingPCoords, usingZCoords, useDynP_inEos_Zc,
+     & usingCartesianGrid, usingSphericalPolarGrid, rotateGrid,
      & usingCurvilinearGrid, usingCylindricalGrid,
      & deepAtmosphere, setInterFDr, setCenterDr,
-     & no_slip_sides,no_slip_bottom,
-     & momViscosity, momAdvection, momForcing, useCoriolis,
-     & momPressureForcing, vectorInvariantMomentum,
-     & tempAdvection, tempForcing,
-     & saltAdvection, saltForcing,
-     & useRealFreshWaterFlux,
-     & useFullLeith, useStrainTensionVisc,
-     & useAreaViscLength,
-     & rigidLid, implicitFreeSurface, exactConserv, linFSConserveTr,
-     & uniformLin_PhiSurf,
-     & use3Dsolver, implicitIntGravWave, staggerTimeStep,
-     & momStepping, tempStepping, saltStepping,
-     & metricTerms, useNHMTerms,
-     & useConstantF, useBetaPlaneF, useSphereF, use3dCoriolis,
-     & useCDscheme,
+     & no_slip_sides, no_slip_bottom,
+     & useFullLeith, useStrainTensionVisc, useAreaViscLength,
+     & momViscosity, momAdvection, momForcing,
+     & momPressureForcing, metricTerms, useNHMTerms,
+     & useCoriolis, use3dCoriolis,
+     & useConstantF, useBetaPlaneF, useSphereF,
+     & useCDscheme, vectorInvariantMomentum,
      & useEnergyConservingCoriolis, useJamartWetPoints, useJamartMomAdv,
      & upwindVorticity, highOrderVorticity,
      & useAbsVorticity, upwindShear,
+     & momStepping, tempStepping, saltStepping,
+     & tempAdvection, tempIsActiveTr, tempForcing,
+     & saltAdvection, saltIsActiveTr, saltForcing,
+     & useRealFreshWaterFlux,
+     & rigidLid, implicitFreeSurface, exactConserv, linFSConserveTr,
+     & uniformLin_PhiSurf,
+     & quasiHydrostatic, nonHydrostatic,
+     & use3Dsolver, implicitIntGravWave, staggerTimeStep,
      & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & multiDimAdvection, useMultiDimAdvec,
      & momDissip_In_AB, doAB_onGtGs,
-     & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax,
-     & periodicExternalForcing,
-     & fluidIsAir, fluidIsWater,
-     & usingPCoords, usingZCoords, useDynP_inEos_Zc,
-     & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
+     & balanceEmPmR, balanceQnet, balancePrintMean,
+     & doThetaClimRelax, doSaltClimRelax,
      & allowFreezing, useOldFreezing,
+     & periodicExternalForcing,
+     & globalFiles, useSingleCpuIO,
      & pickupStrictlyMatch, usePickupBeforeC54, startFromPickupAB2,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
      & writePickupAtEnd,
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
      & outputTypesInclusive, dumpInitAndLast, debugMode,
-     & inAdMode, inAdTrue, inAdFalse, inAdExact,
-     & balanceEmPmR, balanceQnet, balancePrintMean,
-     & rotateGrid
+     & inAdMode, inAdTrue, inAdFalse, inAdExact
 
+      LOGICAL fluidIsAir
+      LOGICAL fluidIsWater
+      LOGICAL usingPCoords
+      LOGICAL usingZCoords
+      LOGICAL useDynP_inEos_Zc
       LOGICAL usingCartesianGrid
-      LOGICAL usingSphericalPolarGrid
+      LOGICAL usingSphericalPolarGrid, rotateGrid
       LOGICAL usingCylindricalGrid
       LOGICAL usingCurvilinearGrid
       LOGICAL deepAtmosphere
@@ -405,6 +418,8 @@ C                        according to Euler angles phiEuler, thetaEuler, psiEule
       LOGICAL exactConserv
       LOGICAL linFSConserveTr
       LOGICAL uniformLin_PhiSurf
+      LOGICAL quasiHydrostatic
+      LOGICAL nonHydrostatic
       LOGICAL use3Dsolver
       LOGICAL implicitIntGravWave
       LOGICAL staggerTimeStep
@@ -433,37 +448,26 @@ C                        according to Euler angles phiEuler, thetaEuler, psiEule
       LOGICAL useMultiDimAdvec
       LOGICAL momDissip_In_AB
       LOGICAL doAB_onGtGs
+      LOGICAL balanceEmPmR
+      LOGICAL balanceQnet
+      LOGICAL balancePrintMean
       LOGICAL doThetaClimRelax
       LOGICAL doSaltClimRelax
-      LOGICAL doTr1ClimRelax
-      LOGICAL periodicExternalForcing
-      LOGICAL fluidIsAir
-      LOGICAL fluidIsWater
-      LOGICAL usingPCoords
-      LOGICAL usingZCoords
-      LOGICAL useDynP_inEos_Zc
-      LOGICAL nonHydrostatic
-      LOGICAL quasiHydrostatic
-      LOGICAL globalFiles
-      LOGICAL useSingleCpuIO
       LOGICAL allowFreezing
       LOGICAL useOldFreezing
+      LOGICAL periodicExternalForcing
+      LOGICAL globalFiles
+      LOGICAL useSingleCpuIO
       LOGICAL pickupStrictlyMatch
       LOGICAL usePickupBeforeC54
       LOGICAL startFromPickupAB2
-      LOGICAL dumpInitAndLast
-      LOGICAL debugMode
       LOGICAL pickup_read_mdsio, pickup_write_mdsio
       LOGICAL pickup_write_immed, writePickupAtEnd
       LOGICAL timeave_mdsio, snapshot_mdsio, monitor_stdio
       LOGICAL outputTypesInclusive
+      LOGICAL dumpInitAndLast
+      LOGICAL debugMode
       LOGICAL inAdMode, inAdTrue, inAdFalse, inAdExact
-
-      LOGICAL balanceEmPmR
-      LOGICAL balanceQnet
-      LOGICAL balancePrintMean
-
-      LOGICAL rotateGrid
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
@@ -708,8 +712,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cosPower, cAdjFreq, omega, rotationPeriod,
-     & tauThetaClimRelax, tauSaltClimRelax,
-     & tauTr1ClimRelax, lambdaTr1ClimRelax, latBandClimRelax,
+     & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax,
      & externForcingCycle, externForcingPeriod,
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
      & hFacMinDr, hFacMinDp,
@@ -825,8 +828,6 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL rotationPeriod
       _RL tauThetaClimRelax
       _RL tauSaltClimRelax
-      _RL tauTr1ClimRelax
-      _RL lambdaTr1ClimRelax
       _RL latBandClimRelax
       _RL externForcingCycle
       _RL externForcingPeriod
