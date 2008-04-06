@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.61 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.62 2008/04/06 20:53:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -66,8 +66,6 @@ C       |-- PTRACERS_INIT_FIXED
 C       |
 C       |-- GCHEM_INIT_FIXED
 C       |
-C       |-- DIC_INIT_FIXED
-C       |
 C       |-- THSICE_INIT_FIXED
 C       |
 C       |-- SHELFICE_INIT_FIXED
@@ -125,7 +123,7 @@ C--   Initialize fixed params for Momentum pkgs (common, fluxform, vecinv)
 
 #ifdef ALLOW_CD_CODE
       IF (useCDscheme) THEN
-       CALL CD_CODE_INIT_FIXED(mythid)
+       CALL CD_CODE_INIT_FIXED(myThid)
       ENDIF
 #endif
 
@@ -200,9 +198,9 @@ C AMM
 #ifdef ALLOW_GRIDALT
 C--   Initialise GRIDALT parameters - the alternative grid
       IF (useGRIDALT) then
-       CALL TIMER_START('GRIDALT_INITIALISE  [PACKAGES_INIT_F]',mythid)
+       CALL TIMER_START('GRIDALT_INITIALISE  [PACKAGES_INIT_F]',myThid)
        CALL GRIDALT_INITIALISE( myThid )
-       CALL TIMER_STOP ('GRIDALT_INITIALISE  [PACKAGES_INIT_F]',mythid)
+       CALL TIMER_STOP ('GRIDALT_INITIALISE  [PACKAGES_INIT_F]',myThid)
       ENDIF
 
 #endif
@@ -253,24 +251,19 @@ C--   Initialise ADMTLM
 #endif
 
 #ifdef ALLOW_GCHEM
-      IF (useGCHEM) CALL GCHEM_INIT_FIXED(mythid)
-#endif
-
-#ifdef ALLOW_DIC
-C     IF (useDIC)
-      CALL DIC_INIT_FIXED(mythid)
+      IF (useGCHEM) CALL GCHEM_INIT_FIXED(myThid)
 #endif
 
 #ifdef ALLOW_RBCS
-      IF (useRBCS) CALL RBCS_INIT_FIXED(mythid)
+      IF (useRBCS) CALL RBCS_INIT_FIXED(myThid)
 #endif
 
 #ifdef ALLOW_THSICE
-      IF (useThSIce) CALL THSICE_INIT_FIXED(mythid)
+      IF (useThSIce) CALL THSICE_INIT_FIXED(myThid)
 #endif
 
 #ifdef ALLOW_SEAICE
-      IF (useSEAICE) CALL SEAICE_INIT_FIXED(mythid)
+      IF (useSEAICE) CALL SEAICE_INIT_FIXED(myThid)
 #endif
 
 #ifdef ALLOW_SHELFICE
@@ -278,19 +271,19 @@ C     IF (useDIC)
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_EMBED_FILES
-      IF ( useEMBED_FILES ) CALL EMBED_FILES_INIT( mythid )
+      IF ( useEMBED_FILES ) CALL EMBED_FILES_INIT( myThid )
 #endif
 
 #ifdef ALLOW_REGRID
-      IF ( useREGRID ) CALL REGRID_INIT_FIXED( mythid )
+      IF ( useREGRID ) CALL REGRID_INIT_FIXED( myThid )
 #endif
 
 #ifdef ALLOW_MYPACKAGE
-      IF (useMYPACKAGE) CALL MYPACKAGE_INIT_FIXED(mythid)
+      IF (useMYPACKAGE) CALL MYPACKAGE_INIT_FIXED(myThid)
 #endif
 
 #ifdef COMPONENT_MODULE
-      IF ( useCoupler ) CALL CPL_INIT_FIXED( mythid )
+      IF ( useCoupler ) CALL CPL_INIT_FIXED( myThid )
 #endif
 
 #ifdef ALLOW_ATM2D
@@ -298,7 +291,7 @@ C     IF (useDIC)
 #endif
 
 #ifdef ALLOW_SALT_PLUME
-      IF (useSALT_PLUME) CALL SALT_PLUME_INIT_FIXED(mythid)
+      IF (useSALT_PLUME) CALL SALT_PLUME_INIT_FIXED(myThid)
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
