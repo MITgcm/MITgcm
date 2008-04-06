@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_meta.F,v 1.2 2007/10/24 22:07:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_meta.F,v 1.3 2008/04/06 00:01:55 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -127,7 +127,6 @@ C     this S/R, using, e.g., common block (+ Master_thread + Barrier)
       _BEGIN_MASTER( myThid )
 
 C     Assign special directory
-      useCurrentDir = .FALSE.
       iL = ILNBLNK(fileName)
       pL = ILNBLNK( mdsioLocalDir )
       IF ( useCurrentDir .OR. pL.EQ.0 ) THEN
