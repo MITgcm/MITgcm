@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_write_pickup.F,v 1.1 2008/01/27 20:52:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_write_pickup.F,v 1.2 2008/04/06 02:03:17 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: MYPACKAGE_WRITE_PICKUP
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MYPACKAGE_WRITE_PICKUP( permPickup,
-     &                    suff, myIter, myTime, myThid )
+     &                    suff, myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C     Writes current state of passive tracers to a pickup file
@@ -23,13 +23,13 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C     permPickup      :: write a permanent pickup
 C     suff            :: suffix for pickup file (eg. ckptA or 0000000010)
-C     myIter          :: time-step number
 C     myTime          :: model time
+C     myIter          :: time-step number
 C     myThid          :: thread number
       LOGICAL permPickup
       CHARACTER*(*) suff
-      INTEGER myIter
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
