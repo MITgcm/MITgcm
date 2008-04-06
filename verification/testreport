@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.114 2008/04/02 23:41:22 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.115 2008/04/06 19:19:47 jmc Exp $
 #  $Name:  $
 #
 
@@ -1106,7 +1106,7 @@ for dir in $TESTDIRS ; do
     #  Cleanup only!
     if test "x$CLEANUP" = xt ; then
 	if test -r $BUILD_DIR/Makefile ; then
-            echo '  ------  clean dir:' $dir/build
+            echo '  ------  clean dir:' $dir/$builddir
 	    ( cd $BUILD_DIR ; make CLEAN )
 	fi
 	if test -d $dir/$rundir/CVS ; then
