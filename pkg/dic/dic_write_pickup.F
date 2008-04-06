@@ -1,12 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.3 2008/04/06 03:26:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.4 2008/04/06 20:54:09 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
 #include "DIC_OPTIONS.h"
 
-      SUBROUTINE DIC_WRITE_PICKUP( permPickup, suff,
-     I                               myTime, myIter, myThid )
+CBOP
+C !ROUTINE: DIC_WRITE_PICKUP
 
+C !INTERFACE: ==========================================================
+      SUBROUTINE DIC_WRITE_PICKUP( permPickup,
+     I                             suff, myTime, myIter, myThid )
+
+C !DESCRIPTION:
+C     Writes DIC arrays (needed for a restart) to a pickup file
+
+C !USES: ===============================================================
       IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
@@ -14,17 +22,18 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "DIC_VARS.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
 C     permPickup :: write a permanent pickup
-C     suff    :: suffix for pickup file (eg. ckptA or 0000000010)
-C     myTime  :: Current time in simulation
-C     myIter  :: Current iteration number in simulation
-C     myThid  :: My Thread Id number
+C     suff       :: suffix for pickup file (eg. ckptA or 0000000010)
+C     myTime     :: Current time in simulation
+C     myIter     :: Current iteration number in simulation
+C     myThid     :: My Thread Id number
       LOGICAL permPickup
       CHARACTER*(*) suff
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_DIC
 #ifdef DIC_BIOTIC
@@ -38,7 +47,6 @@ C     == Local variables ==
       PARAMETER( listDim = 2 )
       CHARACTER*(8) wrFldList(listDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-CEOP
 
 c     IF ( DIC_pickup_write_mdsio ) THEN
         prec = precFloat64
