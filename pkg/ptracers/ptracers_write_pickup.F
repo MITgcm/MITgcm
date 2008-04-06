@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.5 2007/12/17 22:05:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.6 2008/04/06 02:01:52 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: PTRACERS_WRITE_PICKUP
 
 C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_WRITE_PICKUP( permCheckPoint,
-     &                    suff, myIter, myTime, myThid )
+     &                    suff, myTime, myIter, myThid )
 
 C !DESCRIPTION:
 C     Writes current state of passive tracers to a pickup file
@@ -26,13 +26,13 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C     permCheckPoint  :: permanent or a rolling checkpoint
 C     suff            :: suffix for pickup file (eg. ckptA or 0000000010)
-C     myIter          :: time-step number
 C     myTime          :: model time
+C     myIter          :: time-step number
 C     myThid          :: thread number
       LOGICAL permCheckPoint
       CHARACTER*(*) suff
-      INTEGER myIter
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
