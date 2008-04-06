@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.18 2008/04/04 21:37:06 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.19 2008/04/06 03:26:01 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -26,6 +26,7 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 #include "GCHEM.h"
 #include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
 #include "DIC_LOAD.h"
 
@@ -36,7 +37,7 @@ C  myThid               :: thread number
 #ifdef ALLOW_PTRACERS
 
 C !LOCAL VARIABLES: ====================================================
-       INTEGER I,J, kLev, it
+       INTEGER i,j, kLev, it
        INTEGER intime0,intime1
        _RL otime
        _RL aWght,bWght,rdt
@@ -50,6 +51,7 @@ C local variables for carbon chem
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsi(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iprt,jprt
+      LOGICAL pH_isLoaded
 CEOP
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -96,25 +98,27 @@ c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
        ENDIF
 
 #ifdef ALLOW_OFFLINE
+       IF ( useOffLine ) THEN
          otime=nIter0*deltaTclock
-         call OFFLINE_FIELDS_LOAD( otime, nIter0, myThid )
+         CALL OFFLINE_FIELDS_LOAD( otime, nIter0, myThid )
+       ENDIF
 #endif
 
        _EXCH_XY_R4(silica0, myThid )
        _EXCH_XY_R4(silica1, myThid )
 
-      DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-          IF ( SilicaFile .NE. ' '  ) THEN
-             SILICA(i,j,bi,bj)    = bWght*silica0(i,j,bi,bj)
-     &                        +aWght*silica1(i,j,bi,bj)
-           ENDIF
+       IF ( SilicaFile .NE. ' '  ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+             SILICA(i,j,bi,bj)= bWght*silica0(i,j,bi,bj)
+     &                        + aWght*silica1(i,j,bi,bj)
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
+       ENDIF
 
 c end periodicExternalForcing
       ENDIF
@@ -128,10 +132,28 @@ C =================================================================
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-Olx,sNx+OLx
+            pH(i,j,bi,bj) = 8. _d 0
+          ENDDO
+         ENDDO
+       ENDDO
+      ENDDO
+
+      pH_isLoaded = .FALSE.
+      IF ( nIter0.GT.PTRACERS_Iter0 ) THEN
+C       Read pH from a pickup file if needed
+        CALL DIC_READ_PICKUP(
+     O                        pH_isLoaded,
+     I                        nIter0, myThid )
+      ENDIF
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C determine inorganic carbon chem coefficients
-        DO j=jmin,jmax
-         DO i=imin,imax
+        DO j=jMin,jMax
+         DO i=iMin,iMax
 
 #ifdef DIC_BIOTIC
              surfalk(i,j) = PTRACER(i,j,klev,bi,bj,2)
@@ -156,21 +178,15 @@ C FOR NON-INTERACTIVE Si
 
 C====================================================================
 
-cdfer   IF (nIter0.EQ.PTRACERS_Iter0) THEN
-
+        IF ( .NOT.pH_isLoaded ) THEN
 C set guess of pH for first step here
-          DO j=jmin,jmax
-           DO i=imin,imax
-             pH(i,j,bi,bj) = 8. _d 0
-           ENDDO
-          ENDDO
 
-         print*,'QQ: pCO2 approximation method'
+          print*,'QQ: pCO2 approximation method'
 c first approximation
 C$TAF LOOP = parallel
-          DO j=jmin,jmax
+          DO j=jMin,jMax
 C$TAF LOOP = parallel
-           DO i=imin,imax
+           DO i=iMin,iMax
             IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
 C$TAF init dic_surf = static, 10
              DO it=1,10
@@ -197,18 +213,11 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      &        PTR_CO2(iprt,jprt,1), surfphos(iprt,jprt),
      &        surfsi(iprt,jprt),surfalk(iprt,jprt)
 
-cdfer   ENDIF
+        ENDIF
 
 C     end bi,bj loops
        ENDDO
       ENDDO
-
-cdfer IF (nIter0.GT.PTRACERS_Iter0) THEN
-cdfer
-cdferC Read from a pickup file if needed
-cdfer   CALL DIC_READ_PICKUP( nIter0, myThid )
-cdfer
-cdfer ENDIF
 
 #endif
       RETURN
