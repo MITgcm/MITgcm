@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.970 2008/04/05 21:37:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.971 2008/04/06 02:05:05 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o change argument list of S/R PTRACERS_WRITE_PICKUP & MYPACKAGE_WRITE_PICKUP
+  + fix call to S/R GGL90_WRITE_PICKUP & DIC_WRITE_PICKUP
 o add a "warning" (to Error msg file) when an Active Tracer is not using AB-2
   and staggerTimeStep is off (needed for stability of Internal-wave dynamics).
 o move out of PARAMS.h & data the last pieces of old-ptracer code: tauTr1ClimRelax,
