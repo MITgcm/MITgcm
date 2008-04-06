@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.30 2008/03/11 20:57:14 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.31 2008/04/06 02:00:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -140,7 +140,7 @@ C     Write pickup file for diagnostics package
 #ifdef  ALLOW_GGL90
       IF ( useGGL90 ) THEN
         CALL GGL90_WRITE_PICKUP( permPickup,
-     I                   suffix, myIter, myTime, myThid )
+     I                      suffix, myTime, myIter, myThid )
       ENDIF
 #endif  /* ALLOW_GGL90 */
 
@@ -148,20 +148,20 @@ C     Write pickup file for diagnostics package
 C     Write restart file for passive tracers
       IF (usePTRACERS) THEN
         CALL PTRACERS_WRITE_PICKUP( permPickup,
-     &                      suffix, myIter, myTime, myThid )
+     I                      suffix, myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_PTRACERS */
 
 #ifdef ALLOW_DIC
 C     Write restart file for dic package
       CALL DIC_WRITE_PICKUP( permPickup,
-     I                   suffix, myIter, myTime, myThid )
+     I                   suffix, myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_MYPACKAGE
       IF (useMYPACKAGE) THEN
         CALL MYPACKAGE_WRITE_PICKUP( permPickup,
-     &                      suffix, myIter, myTime, myThid )
+     I                      suffix, myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
