@@ -61,6 +61,7 @@
 #EH3 chkptFreq= 3110400000.,
 #EH3 dumpFreq=  3110400000.,
 #EH3 taveFreq=  3110400000.,
+ pickupStrictlyMatch=.FALSE.,
  pChkptFreq=216000.0,
  chkptFreq= 216000.0,
  dumpFreq=  216000.0,
