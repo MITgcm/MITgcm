@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.11 2008/01/18 01:06:29 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.12 2008/04/06 20:49:03 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -59,11 +59,17 @@ CEOP
      &           gchem_rl4, gchem_rl5,
      &           gchem_ForcingPeriod, gchem_ForcingCycle
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      _BEGIN_MASTER(myThid)
+
 C Set defaults values for parameters in GCHEM.h
+       useDIC = .FALSE.
+       useCFC = .FALSE.
        tIter0 = UNSET_I
        nsubtime=1
        windFile=' '
-       atmospFile=' ' 
+       atmospFile=' '
        IceFile=' '
        IronFile=' '
        SilicaFile=' '
@@ -86,7 +92,6 @@ c default periodic forcing to same as for physics
        gchem_ForcingPeriod=externForcingPeriod
        gchem_ForcingCycle=externForcingCycle
 C Open and read the data.gchem file
-      _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)') ' GCHEM_READPARMS: opening data.gchem'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT , 1)
@@ -102,6 +107,17 @@ C Open and read the data.gchem file
 
 C Close the open data file
       CLOSE(iUnit)
+
+C- Sub-package on/off flags: until fully implemented, which requires
+C   a) to read the flag value from data.gchem
+C   b) to test the flag before any corresponding pkg S/R call
+C- (for now) just it turned on when the corresponding pkg is compliled
+#ifdef ALLOW_DIC
+       useDIC = .TRUE.
+#endif
+#ifdef ALLOW_CFC
+       useCFC = .TRUE.
+#endif
 
 C- Check for retired parameters:
       IF ( tIter0 .NE. UNSET_I ) THEN
