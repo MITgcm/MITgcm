@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.971 2008/04/06 02:05:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.972 2008/04/06 03:37:44 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic: test for "pickup_dic" file when restarting ; 
+  if no pickup-file, can restart with a re-initialised pH (same as it did 
+  before) providing pickupStrictlyMatch is set to False.
 o change argument list of S/R PTRACERS_WRITE_PICKUP & MYPACKAGE_WRITE_PICKUP
   + fix call to S/R GGL90_WRITE_PICKUP & DIC_WRITE_PICKUP
 o add a "warning" (to Error msg file) when an Active Tracer is not using AB-2
