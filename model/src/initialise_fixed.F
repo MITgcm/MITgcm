@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.47 2006/10/17 18:52:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.48 2008/04/07 21:12:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -7,7 +7,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: INITIALISE_FIXED
 C     !INTERFACE:
-      SUBROUTINE INITIALISE_FIXED(myThid)
+      SUBROUTINE INITIALISE_FIXED( myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -55,8 +55,6 @@ C      |-- INI_MASKS_ETC
 C      |
 C      |-- PACKAGES_INIT_FIXED
 C      |
-C      |-- PACKAGES_CHECK
-C      |
 C      |-- INI_LINEAR_PHSURF
 C      |
 C      |-- INI_CORI
@@ -65,9 +63,11 @@ C      |-- INI_CG2D
 C      |
 C      |-- INI_CG3D
 C      |
-C      |-- CONFIG_CHECK
-C      |
 C      |-- CONFIG_SUMMARY
+C      |
+C      |-- PACKAGES_CHECK
+C      |
+C      |-- CONFIG_CHECK
 C      |
 C      |-- WRITE_GRID
 C      |
@@ -141,9 +141,6 @@ C--   Synchronize all threads after setting masks and before pkgs init.
 C--   Call fixed data initialization phase of packages
       CALL PACKAGES_INIT_FIXED( myThid )
 
-C--   Check dependances between packages
-      CALL PACKAGES_CHECK( myThid )
-
 C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
       CALL INI_LINEAR_PHISURF( myThid )
 
@@ -155,15 +152,17 @@ C--   Set laplace operators for use in 2D conjugate gradient solver.
 
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Set laplace operators for use in 3D conjugate gradient solver.
-ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
       CALL INI_CG3D( myThid )
 #endif
 
-C--   Check parameters and model cofiguration
-      CALL CONFIG_CHECK( myThid )
-
-C--   Finally summarise the model cofiguration
+C--   Finally summarise the model configuration
       CALL CONFIG_SUMMARY( myThid )
+
+C--   Check packages configuration (& print summary)
+      CALL PACKAGES_CHECK( myThid )
+
+C--   Check parameters and model configuration
+      CALL CONFIG_CHECK( myThid )
 
 C--   Write grid data and geometry arrays
       IF ( debugLevel.GE.debLevA .OR.
