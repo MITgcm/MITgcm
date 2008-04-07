@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_cfc_offline/code/Attic/GCHEM_OPTIONS.h,v 1.2 2005/12/06 16:52:58 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_cfc_offline/code/Attic/GCHEM_OPTIONS.h,v 1.3 2008/04/07 22:32:47 jmc Exp $
 C $Name:  $
 
 #ifndef GCHEM_OPTIONS_H
@@ -13,13 +13,10 @@ C    !ROUTINE: GCHEM_OPTIONS.h
 C    !INTERFACE:
 
 C    !DESCRIPTION:
-c options for biogeochemistry package
+C options for biogeochemistry package
 CEOP
 
 #undef  GCHEM_SEPARATE_FORCING
-
-#define ALLOW_CFC
-
 
 #endif /* ALLOW_GCHEM */
 #endif /* GCHEM_OPTIONS_H */
