@@ -1,7 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_LOAD.h,v 1.4 2006/09/12 19:58:01 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_LOAD.h,v 1.5 2008/04/07 20:31:16 dfer Exp $
 C $Name:  $
-
-#include "GCHEM_OPTIONS.h"
 
       COMMON /dic_load/
      &    wspeed0, wspeed1, ice0, ice1, atmosp0,

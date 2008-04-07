@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/tracer_meanarea.F,v 1.8 2007/08/13 17:22:17 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/tracer_meanarea.F,v 1.9 2008/04/07 20:31:17 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
-c#include "GCHEM_OPTIONS.h"
 
 C !INTERFACE: ==========================================================
       SUBROUTINE TRACER_MEANAREA(myThid,tracer, kLev,

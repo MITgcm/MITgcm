@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.8 2008/04/04 21:32:37 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.9 2008/04/07 20:31:16 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
 
 CBOP
 C !ROUTINE: DIC_ATMOS

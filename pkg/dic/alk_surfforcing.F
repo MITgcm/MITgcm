@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/alk_surfforcing.F,v 1.11 2008/04/04 21:32:36 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/alk_surfforcing.F,v 1.12 2008/04/07 20:31:16 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
 
 CBOP
 C !ROUTINE: ALK_SURFFORCING

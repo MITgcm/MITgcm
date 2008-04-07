@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver.F,v 1.7 2008/04/04 21:32:37 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver.F,v 1.8 2008/04/07 20:31:16 dfer Exp $
 C $Name:  $
 
-cswdcost -- add sunroutine ---
 #include "DIC_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
-
 
 CStartOfInterFace
       SUBROUTINE DIC_AVER(

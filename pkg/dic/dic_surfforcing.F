@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.20 2008/04/04 21:37:06 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.21 2008/04/07 20:31:16 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
 
 CBOP
 C !ROUTINE: DIC_SURFFORCING

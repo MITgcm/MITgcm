@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_pickup.F,v 1.3 2008/04/06 03:26:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_pickup.F,v 1.4 2008/04/07 20:31:16 dfer Exp $
 C $Name:  $
 
-#include "GCHEM_OPTIONS.h"
 #include "DIC_OPTIONS.h"
 
       SUBROUTINE DIC_READ_PICKUP(

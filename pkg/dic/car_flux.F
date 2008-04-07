@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.10 2008/04/04 21:32:36 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux.F,v 1.11 2008/04/07 20:31:16 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
 
 CBOP
 C !ROUTINE: CAR_FLUX

@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_init.F,v 1.7 2008/04/04 21:37:05 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_init.F,v 1.8 2008/04/07 20:31:16 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
 
 CBOP
 C !ROUTINE: DIC_BIOTIC_INIT

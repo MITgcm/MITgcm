@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.13 2008/04/04 21:32:37 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.14 2008/04/07 20:31:16 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE DIC_BIOTIC_DIAGS( myTime, myIter, myThid )
