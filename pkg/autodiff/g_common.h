@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.17 2008/02/02 02:35:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.18 2008/04/08 03:11:33 heimbach Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -55,6 +55,13 @@ C--   heimbach@mit.edu 11-Jan-2001
       _RL g_etanm1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_unm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_vnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
+
+#ifdef ALLOW_AUTODIFF_MONITOR_PHIHYD
+cph this is a tricky one since TAF exctracts it from a
+cph larger common block, so be careful
+      common /g_dynvars_diag/ g_totphihyd
+      _RL g_totphihyd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif
 
       COMMON /g_ffields_fu/ g_fu
