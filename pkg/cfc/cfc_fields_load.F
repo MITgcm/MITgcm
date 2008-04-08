@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.12 2007/11/08 22:26:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.13 2008/04/08 20:23:05 dfer Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -8,7 +8,7 @@ CStartOfInterFace
      I           myIter,myTime,myThid)
 
 C     /==========================================================\
-C     | SUBROUTINE CFC_FIELDS_LOAD  i                            |
+C     | SUBROUTINE CFC_FIELDS_LOAD                               |
 C     |==========================================================|
       IMPLICIT NONE
 
@@ -17,7 +17,6 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "GCHEM.h"
 #include "CFC.h"
 #ifdef ALLOW_EXF
 # include "EXF_FIELDS.h"
@@ -33,23 +32,12 @@ C     == Routine arguments ==
 
 #ifdef ALLOW_PTRACERS
 C     == Local variables ==
-      COMMON /cfc_load/
-     &    wind0, wind1, ice0, ice1, atmosp0,
-     &    atmosp1
-      _RS wind0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS wind1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS wind    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS ice0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS ice1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS atmosp0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS atmosp1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
        INTEGER bi,bj,i,j,intime0,intime1
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 c
 c
-      IF ( gchem_ForcingCycle.gt.0.d0 ) THEN
-
+      IF ( cfc_ForcingCycle .GT. 0. _d 0 ) THEN
 
 C First call requires that we initialize everything to zero for safety
 cQQQ need to check timing
@@ -65,11 +53,11 @@ cQQQ need to check timing
 
 C Now calculate whether it is time to update the forcing arrays
        rdt = 1. _d 0 / deltaTclock
-       nForcingPeriods = NINT(gchem_ForcingCycle/gchem_ForcingPeriod)
+       nForcingPeriods = NINT(cfc_ForcingCycle/cfc_ForcingPeriod)
 cswd QQ change for placement of chem forcing (ie. after timestep)
        Imytm = NINT(myTime*rdt)
-       Ifprd = NINT(gchem_ForcingPeriod*rdt)
-       Ifcyc = NINT(gchem_ForcingCycle*rdt)
+       Ifprd = NINT(cfc_ForcingPeriod*rdt)
+       Ifcyc = NINT(cfc_ForcingCycle*rdt)
        Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
 
        intime0= 1 + INT(Iftm/Ifprd)
@@ -92,26 +80,26 @@ C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
         _BEGIN_MASTER(myThid)
         WRITE(*,*)
-     &    'S/R EXTERNAL_FIELDS_LOAD: Reading new cfc data',
+     &    'S/R CFC_FIELDS_LOAD: Reading new cfc data',
      &                 myTime,myIter
        _END_MASTER(myThid)
 
-      IF ( WindFile .NE. ' '  .AND. .NOT.useEXF ) THEN
-         CALL READ_REC_XY_RS( WindFile,wind0,intime0,
+      IF ( WindFileCfc .NE. ' '  .AND. .NOT.useEXF ) THEN
+         CALL READ_REC_XY_RS( WindFileCfc,wind0,intime0,
      &        myIter,myThid )
-         CALL READ_REC_XY_RS( WindFile,wind1,intime1,
-     &        myIter,myThid )
-       ENDIF
-      IF ( AtmospFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( AtmospFile,atmosp0,intime0,
-     &        myIter,myThid )
-         CALL READ_REC_XY_RS( AtmospFile,atmosp1,intime1,
+         CALL READ_REC_XY_RS( WindFileCfc,wind1,intime1,
      &        myIter,myThid )
        ENDIF
-       IF ( IceFile .NE. ' '  .AND. .NOT.useSEAICE ) THEN
-         CALL READ_REC_XY_RS( IceFile,ice0,intime0,
+      IF ( AtmospFileCfc .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( AtmospFileCfc,atmosp0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XY_RS( AtmospFileCfc,atmosp1,intime1,
+     &        myIter,myThid )
+       ENDIF
+       IF ( IceFileCfc .NE. ' '  .AND. .NOT.useSEAICE ) THEN
+         CALL READ_REC_XY_RS( IceFileCfc,ice0,intime0,
      &       myIter,myThid )
-         CALL READ_REC_XY_RS( IceFile,ice1,intime1,
+         CALL READ_REC_XY_RS( IceFileCfc,ice1,intime1,
      &       myIter,myThid )
        ENDIF
 
@@ -150,7 +138,7 @@ C           pisvel(i,j,bi,bj)=(0.31 _d 0*wspeed(i,j,bi,bj)**2)/3.6 _d 5
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           IF ( WindFile .NE. ' '  ) THEN
+           IF ( WindFileCfc .NE. ' '  ) THEN
              WIND(i,j,bi,bj)    = bWght*wind0(i,j,bi,bj)
      &                           +aWght*wind1(i,j,bi,bj)
            ELSE
@@ -170,7 +158,7 @@ C
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           IF ( AtmospFile .NE. ' '  ) THEN
+           IF ( AtmospFileCfc .NE. ' '  ) THEN
              ATMOSP(i,j,bi,bj) = bWght*atmosp0(i,j,bi,bj)
      &                          +aWght*atmosp1(i,j,bi,bj)
            ELSE
@@ -199,7 +187,7 @@ C
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           IF ( IceFile .NE. ' '  ) THEN
+           IF ( IceFileCfc .NE. ' '  ) THEN
             FIce(i,j,bi,bj)    = bWght*ice0(i,j,bi,bj)
      &                          +aWght*ice1(i,j,bi,bj)
            ELSE
