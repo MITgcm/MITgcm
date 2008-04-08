@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_vari.F,v 1.9 2008/04/08 16:20:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_vari.F,v 1.10 2008/04/08 21:00:17 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -34,7 +34,6 @@ ccccccccccccccccccccccccccc
 #ifdef ALLOW_DIC
       IF ( useDIC ) THEN
           print*,'QQ load dic parameters, initial vari' 
-          CALL DIC_READPARMS(myThid)
           CALL DIC_INI_FORCING(myThid)
           CALL DIC_SURFFORCING_INIT(myThid)
           CALL DIC_BIOTIC_INIT(myThid )
