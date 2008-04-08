@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.9 2008/04/06 20:51:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.10 2008/04/08 16:20:16 dfer Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -36,8 +36,6 @@ ccccccccccccccccccccccccccc
 #ifdef ALLOW_DIC
       IF ( useDIC ) THEN
           print*,'QQ load dic parameters, initial fixed'
-          CALL DIC_ABIOTIC_PARAM( myThid )
-          CALL DIC_BIOTIC_PARAM( myThid )
           CALL DIC_INIT_FIXED( myThid )
       ENDIF
 #endif /* ALLOW_DIC */
