@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.3 2008/04/08 16:18:43 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.4 2008/04/08 23:59:36 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -54,6 +54,20 @@ C coefficients for determining saturation O2
       oB2= -1.03410 _d -2
       oB3= -8.17083 _d -3
       oC0= -4.88682 _d -7
+
+C     Set other constant/flag
+
+#ifdef DIC_BIOTIC
+#ifdef AD_SAFE
+      nlev=Nr
+#else
+      k = 1
+      DO WHILE ( k .LT. Nr .AND. rC(k) .GE. -zcrit )
+        k = k+1
+      ENDDO
+      nlev = k
+#endif
+#endif /* DIC_BIOTIC */
 
       _END_MASTER(myThid)
 
