@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+#  tested on pollux.jpl.nasa.gov
+
+CPP='/lib/cpp  -traditional -P'
+FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+FOPTIM='-O3 -align -ip'
+NOOPTFILES='ini_curvilinear_grid.F'
+NOOPTFLAGS='-O3'
+FC=ifort
+DEFINES='-DWORDLENGTH=4'
+INCLUDES="-I/usr/include"
+INCLUDEDIRS="/usr/include"
