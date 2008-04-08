@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM.h,v 1.11 2008/04/06 20:49:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM.h,v 1.12 2008/04/08 20:23:48 dfer Exp $
 C $Name:  $
 
 #ifdef ALLOW_GCHEM
@@ -18,16 +18,6 @@ C
 C--   COMMON /GCHEM_PARAMS/
 C  nsubtime    :: number of chemistry timesteps per deltaTtracer
 C                 (default 1)
-C  WindFile    :: file name of wind speeds that may be needed for
-C                 biogeochemical experiments
-C  AtmospFile  :: file name of atmospheric pressure that may be needed for
-C                 biogeochemical experiments
-C  IceFile     :: file name of seaice fraction that may be needed for
-C                 biogeochemical experiments
-C  IronFile    :: file name of aeolian iron flux that may be needed for
-C                 biogeochemical experiments
-C  SilicaFile  :: file name of surface silica that may be needed for
-C                 biogeochemical experiments
 C  Filename*   :: various spare filenames
 C  gchem_int*  :: place holder to read in a integer number, set at run time
 C  gchem_rl*   :: place holder to read in a real number, set at run time
@@ -43,11 +33,6 @@ CEOP
       LOGICAL useDIC, useCFC
 
       COMMON /GCHEM_PARAMS/
-     &                   WindFile,
-     &                   AtmospFile,
-     &                   IceFile,
-     &                   IronFile,
-     &                   SilicaFile,
      &                   Filename1,
      &                   Filename2,
      &                   Filename3,
@@ -61,11 +46,6 @@ CEOP
      &           gchem_ForcingPeriod, gchem_ForcingCycle
 
       INTEGER nsubtime
-      CHARACTER*(MAX_LEN_FNAM) WindFile
-      CHARACTER*(MAX_LEN_FNAM) AtmospFile
-      CHARACTER*(MAX_LEN_FNAM) IceFile
-      CHARACTER*(MAX_LEN_FNAM) IronFile
-      CHARACTER*(MAX_LEN_FNAM) SilicaFile
       CHARACTER*(MAX_LEN_FNAM) Filename1
       CHARACTER*(MAX_LEN_FNAM) Filename2
       CHARACTER*(MAX_LEN_FNAM) Filename3

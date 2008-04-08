@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.9 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.10 2008/04/08 20:21:35 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -18,18 +18,11 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "PTRACERS_SIZE.h"
-c#include "PTRACERS_PARAMS.h"
-c#include "PTRACERS_FIELDS.h"
-#include "GCHEM.h"
 #include "DIC_VARS.h"
 #ifdef DIC_BIOTIC
 #include "DIC_DIAGS.h"
 #include "DIC_COST.h"
 #endif
-c#ifdef ALLOW_SEAICE
-c#include "SEAICE.h"
-c#endif
 
 C     == Routine arguments ==
       INTEGER myIter

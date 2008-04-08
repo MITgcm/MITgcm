@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.1 2008/04/04 21:38:56 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.2 2008/04/08 20:21:35 dfer Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -75,6 +75,36 @@ C schmidt number coefficients
       _RL  sox2
       _RL  sox3
       _RL  sox4
+
+C--   COMMON /DIC_FILENAMES/
+C  WindFileDic    :: file name of wind speeds
+C  AtmospFileDic  :: file name of atmospheric pressure
+C  IceFileDic     :: file name of seaice fraction
+C  IronFileDic    :: file name of aeolian iron flux
+C  SilicaFileDic  :: file name of surface silica
+C  dic_ForcingPeriod :: periodic forcing parameter specific for dic (seconds)
+C  dic_ForcingCycle  :: periodic forcing parameter specific for dic (seconds)
+C  dic_int*          :: place holder to read in a integer number, set at run time
+C  dic_pCO2          :: Atmospheric pCO2 to be rad in data.dic 
+
+      COMMON /DIC_FILENAMES/
+     &        WindFileDic, AtmospFileDic, IceFileDic,
+     &        IronFileDic, SilicaFileDic,
+     &        dic_ForcingPeriod, dic_ForcingCycle,
+     &        dic_int1, dic_int2, dic_int3, dic_int4, dic_pCO2
+
+      CHARACTER*(MAX_LEN_FNAM) WindFileDic
+      CHARACTER*(MAX_LEN_FNAM) AtmospFileDic
+      CHARACTER*(MAX_LEN_FNAM) IceFileDic
+      CHARACTER*(MAX_LEN_FNAM) IronFileDic
+      CHARACTER*(MAX_LEN_FNAM) SilicaFileDic
+      _RL     dic_ForcingPeriod
+      _RL     dic_ForcingCycle
+      INTEGER dic_int1
+      INTEGER dic_int2
+      INTEGER dic_int3
+      INTEGER dic_int4
+      _RL dic_pCO2
 
 #ifdef DIC_BIOTIC
 C     /==========================================================\

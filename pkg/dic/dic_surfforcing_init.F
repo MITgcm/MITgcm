@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.21 2008/04/08 16:18:43 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.22 2008/04/08 20:21:35 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -23,7 +23,6 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "FFIELDS.h"
 #include "DIC_VARS.h"
-#include "GCHEM.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
@@ -89,10 +88,10 @@ c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
      &                 intime0, intime1
        _END_MASTER(myThid)
 
-      IF ( SilicaFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( SilicaFile,silica0,intime0,
+      IF ( SilicaFileDic .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( SilicaFileDic,silica0,intime0,
      &        nIter0,myThid )
-         CALL READ_REC_XY_RS( SilicaFile,silica1,intime1,
+         CALL READ_REC_XY_RS( SilicaFileDic,silica1,intime1,
      &        nIter0,myThid )
        ENDIF
 
@@ -106,7 +105,7 @@ c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
        _EXCH_XY_R4(silica0, myThid )
        _EXCH_XY_R4(silica1, myThid )
 
-       IF ( SilicaFile .NE. ' '  ) THEN
+       IF ( SilicaFileDic .NE. ' '  ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-Oly,sNy+Oly

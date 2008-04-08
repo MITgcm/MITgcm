@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_init.F,v 1.8 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_init.F,v 1.9 2008/04/08 20:21:35 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -19,17 +19,12 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "PTRACERS_SIZE.h"
-#include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
-#include "GCHEM.h"
 #include "DIC_VARS.h"
 #ifdef DIC_BIOTIC
 #include "DIC_DIAGS.h"
 #include "DIC_COST.h"
 #endif
-c#ifdef ALLOW_SEAICE
-c#include "SEAICE.h"
-c#endif
 
 C     == Routine arguments ==
       INTEGER myThid
@@ -215,7 +210,7 @@ cswdmonth -end-
         _END_MASTER(myThid)
 C
 C Reset averages to zero
-       print*,'QQ dic_diags, set to zero, gchem_init'
+       print*,'QQ dic_aver_init, set to zero'
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          CALL TIMEAVE_RESET(PO4ann,Nr,bi,bj,myThid)

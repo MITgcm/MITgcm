@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.13 2008/04/08 16:20:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.14 2008/04/08 20:23:48 dfer Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -42,11 +42,6 @@ CEOP
 
       NAMELIST /GCHEM_PARM01/
      &                   tIter0,
-     &                   WindFile,
-     &                   IceFile,
-     &                   AtmospFile,
-     &                   IronFile,
-     &                   SilicaFile,
      &                   Filename1,
      &                   Filename2,
      &                   Filename3,
@@ -68,11 +63,6 @@ C Set defaults values for parameters in GCHEM.h
        useCFC = .FALSE.
        tIter0 = UNSET_I
        nsubtime=1
-       windFile=' '
-       atmospFile=' '
-       IceFile=' '
-       IronFile=' '
-       SilicaFile=' '
        Filename1=' '
        Filename2=' '
        Filename3=' '
@@ -140,6 +130,13 @@ c      nRetired = nRetired+1
       CALL DIC_READPARMS(myThid)
       ENDIF
 #endif
+
+#ifdef ALLOW_CFC
+      IF ( useCFC ) THEN
+      CALL CFC_READPARMS(myThid)
+      ENDIF
+#endif
+
 
 C Everyone else must wait for the parameters to be loaded
       _BARRIER

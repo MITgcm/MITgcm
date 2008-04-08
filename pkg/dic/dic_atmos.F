@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.9 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.10 2008/04/08 20:21:35 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -12,9 +12,9 @@ C !INTERFACE: ==========================================================
 
 C !DESCRIPTION:
 C  Calculate the atmospheric pCO2
-C  gchem_int1:
+C  dic_int1:
 C  0=use default 278.d-6
-C  1=use constant value - gchem_rl1, read in from data.gchem
+C  1=use constant value - dic_pCO2, read in from data.dic
 C  2=read in from file
 C  3=interact with atmospheric box
 C !USES: ===============================================================
@@ -28,7 +28,6 @@ C !USES: ===============================================================
 #include "DIC_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_FIELDS.h"
-#include "GCHEM.h"
 #include "DIC_ATMOS.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -70,14 +69,14 @@ c Co2 value passed from the coupler
 #ifndef USE_ATMOSCO2
 
       IF ( nThreads .GT. 1 .AND.
-     &     ( gchem_int1.EQ.2 .OR. gchem_int1.EQ.3 ) ) THEN
+     &     ( dic_int1.EQ.2 .OR. dic_int1.EQ.3 ) ) THEN
 C     Problem with I/O and global-sum for multi-threaded execution
 C     Needs to be fixed before using this S/R in multi-threaded run
         STOP 'S/R DIC_ATMOS: multi-threaded not right'
       ENDIF
 
 c default - set only once
-      if (gchem_int1.eq.0.and.istate.eq.0) then
+      if (dic_int1.eq.0.and.istate.eq.0) then
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -92,13 +91,13 @@ c default - set only once
       endif
 
 c user specified value - set only once
-      if (gchem_int1.eq.1.and.istate.eq.0) then
+      if (dic_int1.eq.1.and.istate.eq.0) then
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
 
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-             AtmospCO2(i,j,bi,bj)=gchem_rl1
+             AtmospCO2(i,j,bi,bj)=dic_pCO2
           ENDDO
          ENDDO
 
@@ -107,21 +106,21 @@ c user specified value - set only once
       endif
 
 c read from a file (note:
-c                   gchem_int2=number entries to read
-c                   gchem_int3=start timestep,
-c                   gchem_int4=timestep between file entries)
-      if (gchem_int1.eq.2) then
+c                   dic_int2=number entries to read
+c                   dic_int3=start timestep,
+c                   dic_int4=timestep between file entries)
+      if (dic_int1.eq.2) then
         if (istate.eq.0) then
           OPEN(28,FILE='co2atmos.dat',STATUS='old')
-          do it=1,gchem_int2
+          do it=1,dic_int2
             READ(28,*) co2atmos(it)
             print*,'co2atmos',co2atmos(it)
           enddo
          endif
 c linearly interpolate between file entries
-          ntim=int((myIter-gchem_int3)/gchem_int4)+1
-          aWght = FLOAT(myIter-gchem_int3)
-          bWght = FLOAT(gchem_int4)
+          ntim=int((myIter-dic_int3)/dic_int4)+1
+          aWght = FLOAT(myIter-dic_int3)
+          bWght = FLOAT(dic_int4)
           aWght = 0.5 _d 0 + aWght/bWght - FLOAT(ntim-1)
           if (aWght.gt.1. _d 0) then
             ntim=ntim+1
@@ -151,7 +150,7 @@ c         print*,'weights',ntim, aWght, bWght, tmp
 
 
 c interactive atmosphere
-      if (gchem_int1.eq.3) then
+      if (dic_int1.eq.3) then
 
 c      _BEGIN_MASTER(myThid)
 

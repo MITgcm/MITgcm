@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.23 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.24 2008/04/08 20:21:35 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -20,10 +20,6 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-c#include "PTRACERS_SIZE.h"
-c#include "PTRACERS_PARAMS.h"
-c#include "PTRACERS_FIELDS.h"
-#include "GCHEM.h"
 #include "DIC_VARS.h"
 #include "DIC_LOAD.h"
 #ifdef ALLOW_THSICE
@@ -51,16 +47,16 @@ c !LOCAL VARIABLES: ===================================================
 CEOP
 
 c
-      IF (  gchem_ForcingCycle.gt.0. _d 0 ) THEN
+      IF (  dic_ForcingCycle.gt.0. _d 0 ) THEN
 
 
 C Now calculate whether it is time to update the forcing arrays
       rdt = 1. _d 0 / deltaTclock
-      nForcingPeriods = NINT(gchem_ForcingCycle/gchem_ForcingPeriod)
+      nForcingPeriods = NINT(dic_ForcingCycle/dic_ForcingPeriod)
 cswd QQ change for placement of chem forcing (ie. after timestep)
       Imytm = NINT(myTime*rdt)
-      Ifprd = NINT(gchem_ForcingPeriod*rdt)
-      Ifcyc = NINT(gchem_ForcingCycle*rdt)
+      Ifprd = NINT(dic_ForcingPeriod*rdt)
+      Ifcyc = NINT(dic_ForcingCycle*rdt)
       Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
 
       intime0 = 1 + INT(Iftm/Ifprd)
@@ -88,28 +84,28 @@ C      data for the period ahead and the period behind myTime.
         _END_MASTER(myThid)
 
 
-       IF ( WindFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( WindFile,wspeed0,intime0,
+       IF ( WindFileDic .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( WindFileDic,wspeed0,intime0,
      &        myIter,myThid )
-         CALL READ_REC_XY_RS( WindFile,wspeed1,intime1,
-     &        myIter,myThid )
-       ENDIF
-       IF ( AtmospFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( AtmospFile,atmosp0,intime0,
-     &        myIter,myThid )
-         CALL READ_REC_XY_RS( AtmospFile,atmosp1,intime1,
+         CALL READ_REC_XY_RS( WindFileDic,wspeed1,intime1,
      &        myIter,myThid )
        ENDIF
-       IF ( SilicaFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( SilicaFile,silica0,intime0,
+       IF ( AtmospFileDic .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( AtmospFileDic,atmosp0,intime0,
      &        myIter,myThid )
-         CALL READ_REC_XY_RS( SilicaFile,silica1,intime1,
+         CALL READ_REC_XY_RS( AtmospFileDic,atmosp1,intime1,
      &        myIter,myThid )
        ENDIF
-       IF ( IceFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( IceFile,ice0,intime0,
+       IF ( SilicaFileDic .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( SilicaFileDic,silica0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XY_RS( SilicaFileDic,silica1,intime1,
+     &        myIter,myThid )
+       ENDIF
+       IF ( IceFileDic .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( IceFileDic,ice0,intime0,
      &       myIter,myThid )
-         CALL READ_REC_XY_RS( IceFile,ice1,intime1,
+         CALL READ_REC_XY_RS( IceFileDic,ice1,intime1,
      &       myIter,myThid )
        ENDIF
 #ifdef READ_PAR
@@ -121,10 +117,10 @@ C      data for the period ahead and the period behind myTime.
        ENDIF
 #endif
 #ifdef ALLOW_FE
-       IF ( IronFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( IronFile,feinput0,intime0,
+       IF ( IronFileDic .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( IronFileDic,feinput0,intime0,
      &       myIter,myThid )
-         CALL READ_REC_XY_RS( IronFile,feinput1,intime1,
+         CALL READ_REC_XY_RS( IronFileDic,feinput1,intime1,
      &       myIter,myThid )
        ENDIF
 #endif
@@ -134,7 +130,7 @@ C
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         IF ( WindFile .NE. ' '  ) THEN
+         IF ( WindFileDic .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              WIND(i,j,bi,bj) = bWght*wspeed0(i,j,bi,bj)
@@ -147,7 +143,7 @@ c QQ         also need to check units, and conversion factors
 c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
          ENDIF
 #ifndef USE_PLOAD
-         IF ( AtmospFile .NE. ' '  ) THEN
+         IF ( AtmospFileDic .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              AtmosP(i,j,bi,bj) = bWght*atmosp0(i,j,bi,bj)
@@ -156,7 +152,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
            ENDDO
          ENDIF
 #endif
-         IF ( SilicaFile .NE. ' '  ) THEN
+         IF ( SilicaFileDic .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              SILICA(i,j,bi,bj) = bWght*silica0(i,j,bi,bj)
@@ -164,7 +160,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
             ENDDO
            ENDDO
          ENDIF
-         IF ( IceFile .NE. ' '  ) THEN
+         IF ( IceFileDic .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              FIce(i,j,bi,bj) = bWght*ice0(i,j,bi,bj)
@@ -190,7 +186,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
          ENDIF
 #endif
 #ifdef ALLOW_FE
-         IF ( IronFile .NE. ' '  ) THEN
+         IF ( IronFileDic .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              InputFe(i,j,bi,bj) = bWght*feinput0(i,j,bi,bj)
@@ -202,7 +198,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
         ENDDO
        ENDDO
 
-C endif for gchem_ForcingCycle
+C endif for dic_ForcingCycle
       ENDIF
 
        DO bj = myByLo(myThid), myByHi(myThid)

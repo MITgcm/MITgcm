@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.1 2008/04/08 16:18:43 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.2 2008/04/08 20:21:35 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -93,6 +93,12 @@ C                  read in rain_ratioloc and filled in 2d array rain_ratio
      & alphaloc, rain_ratioloc
 #endif
 
+      NAMELIST /DIC_FORCING/
+     &          WindFileDic, AtmospFileDic, IceFileDic,
+     &          IronFileDic, SilicaFileDic,
+     &          dic_ForcingPeriod, dic_ForcingCycle,
+     &          dic_int1, dic_int2, dic_int3, dic_int4, dic_pCO2
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
@@ -123,7 +129,19 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        alphaloc    = 2. _d -3/(360. _d 0 * 86400. _d 0)
        rain_ratioloc = 7. _d -2
 #endif
-
+       WindFileDic  = ' '
+       AtmospFileDic= ' '
+       IceFileDic   = ' '
+       IronFileDic  = ' '
+       SilicaFileDic= ' '
+       dic_int1    = 0
+       dic_int2    = 0
+       dic_int3    = 0
+       dic_int4    = 0
+       dic_pCO2    = 0. _d 0
+c default periodic forcing to same as for physics
+       dic_ForcingPeriod = externForcingPeriod
+       dic_ForcingCycle  = externForcingCycle
 
       WRITE(msgBuf,'(A)') ' DIC_READPARMS: opening data.dic'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -141,6 +159,9 @@ C-    Abiotic parameters
 C-    Biotic parameters
       READ(UNIT=iUnit,NML=BIOTIC_PARMS)
 #endif
+
+C-    forcing filenames and parameters
+      READ(UNIT=iUnit,NML=DIC_FORCING)
 
       WRITE(msgBuf,'(A)')
      &   ' DIC_READPARMS: finished reading data.dic'
