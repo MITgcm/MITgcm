@@ -1,6 +1,3 @@
  &GCHEM_PARM01
-  iceFile='fice.bin',
-  windFile='tren_speed.bin',
-  SilicaFile='sillev1.bin',
   nsubtime=1,
  &
