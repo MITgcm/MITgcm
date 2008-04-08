@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.21 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.22 2008/04/08 16:18:43 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -100,10 +100,6 @@ C  freefe                 :: iron not bound to ligand
        INTEGER I,J,k
        INTEGER nCALCITEstep
 CEOP
-       jmin=1
-       jmax=sNy
-       imin=1
-       imax=sNx
 
        DO k=1,Nr
          DO j=1-OLy,sNy+OLy

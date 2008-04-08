@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.2 2007/07/31 23:01:58 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.3 2008/04/08 16:18:43 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -18,6 +18,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "DIC_VARS.h"
 
 C     !INPUT PARAMETERS:
 C     myThid               :: thread number
@@ -25,11 +26,43 @@ C     myThid               :: thread number
 CEOP
 
 #ifdef ALLOW_DIC
+
+      _BEGIN_MASTER(myThid)
+
+C set up coefficients for DIC chemistry
+C define Schmidt no. coefficients for CO2
+      sca1 = 2073.1 _d 0
+      sca2 = -125.62 _d 0
+      sca3 =    3.6276 _d 0
+      sca4 =   -0.043219 _d 0
+C define Schmidt no. coefficients for O2
+C based on Keeling et al [GBC, 12, 141, (1998)]
+      sox1 = 1638.0 _d 0
+      sox2 = -81.83 _d 0
+      sox3 =    1.483 _d 0
+      sox4 =   -0.008004 _d 0
+
+C coefficients for determining saturation O2
+      oA0=  2.00907 _d 0
+      oA1=  3.22014 _d 0
+      oA2=  4.05010 _d 0
+      oA3=  4.94457 _d 0
+      oA4= -2.56847 _d -1
+      oA5=  3.88767 _d 0
+      oB0= -6.24523 _d -3
+      oB1= -7.37614 _d -3
+      oB2= -1.03410 _d -2
+      oB3= -8.17083 _d -3
+      oC0= -4.88682 _d -7
+
+      _END_MASTER(myThid)
+
 #ifdef ALLOW_MNC
       IF ( useMNC ) THEN
         CALL DIC_MNC_INIT( myThid )
       ENDIF
 #endif /* ALLOW_MNC */
+
 #endif /* ALLOW_DIC */
 
       RETURN

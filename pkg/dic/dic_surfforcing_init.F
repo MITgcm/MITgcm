@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.20 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.21 2008/04/08 16:18:43 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -136,6 +136,29 @@ C =================================================================
             pH(i,j,bi,bj) = 8. _d 0
           ENDDO
          ENDDO
+       ENDDO
+      ENDDO
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          ak0(i,j,bi,bj)=0. _d 0
+          ak1(i,j,bi,bj)=0. _d 0
+          ak2(i,j,bi,bj)=0. _d 0
+          akw(i,j,bi,bj)=0. _d 0
+          akb(i,j,bi,bj)=0. _d 0
+          akf(i,j,bi,bj)=0. _d 0
+          ak1p(i,j,bi,bj)=0. _d 0
+          ak2p(i,j,bi,bj)=0. _d 0
+          ak3p(i,j,bi,bj)=0. _d 0
+          aksi(i,j,bi,bj)=0. _d 0
+          ff(i,j,bi,bj)=0. _d 0
+          ft(i,j,bi,bj)=0. _d 0
+          st(i,j,bi,bj)=0. _d 0
+          bt(i,j,bi,bj)=0. _d 0
+         ENDDO
+        ENDDO
        ENDDO
       ENDDO
 
