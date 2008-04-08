@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice_if.F,v 1.2 2008/03/28 04:18:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice_if.F,v 1.3 2008/04/08 03:01:55 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -7,7 +7,7 @@ CStartOfInterface
       SUBROUTINE SEAICE_BUDGET_ICE_IF(
      I     UG, HICE_ACTUAL, HSNOW_ACTUAL,
      U     TSURF,
-     O     F_io_net,F_ia_net,F_ia, IcePenetratingShortwaveFlux,
+     O     F_io_net,F_ia_net,F_ia, IcePenetSWFlux,
      I     bi, bj )
 C     /================================================================\
 C     | SUBROUTINE seaice_budget_ice_if                                |
@@ -41,7 +41,7 @@ C     HSNOW_ACTUAL :: actual snow thickness
 C     bi,bj   :: loop indices
 C     OUTPUT:
 C     netHeatFlux :: net heat flux under ice = growth rate
-C     IcePenetratingShortwaveFlux  :: short wave heat flux under ice
+C     IcePenetSWFlux  :: short wave heat flux under ice
       _RL UG         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL TSURF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL HICE_ACTUAL  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -59,9 +59,9 @@ C     IcePenetratingShortwaveFlux  :: short wave heat flux under ice
       _RL F_c        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL qhice_mm   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      _RL IcePenetratingShortwaveFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL AbsorbedShortwaveFlux       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL IcePenetratingShortwaveFluxFraction
+      _RL IcePenetSWFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL AbsorbedSWFlux       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL IcePenetSWFluxFrac
      &           (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       INTEGER bi, bj
@@ -122,9 +122,9 @@ C PENETRATION SHORTWAVE RADIATION FACTOR
 
       DO J=1,sNy
        DO I=1,sNx
-        IcePenetratingShortwaveFlux         (I,J) = 0. _d 0
-        IcePenetratingShortwaveFluxFraction (I,J) = 0. _d 0
-        AbsorbedShortwaveFlux               (I,J) = 0. _d 0
+        IcePenetSWFlux     (I,J) = 0. _d 0
+        IcePenetSWFluxFrac (I,J) = 0. _d 0
+        AbsorbedSWFlux (I,J) = 0. _d 0
 
         qhice_mm (I,J) = 0.0 _d 0
         F_ia     (I,J) = 0.0 _d 0 
@@ -180,21 +180,21 @@ C         DECIDE ON ALBEDO
           F_lwd(I,J) = - 0.97 _d 0 * lwdownLoc(I,J)
 
           IF (HSNOW_ACTUAL(I,J) .GT. 0.0) THEN
-           IcePenetratingShortwaveFluxFraction(I,J) = ZERO
+           IcePenetSWFluxFrac(I,J) = ZERO
           ELSE
-           IcePenetratingShortwaveFluxFraction(I,J) = 
+           IcePenetSWFluxFrac(I,J) = 
      &        XIO*EXP(-1.5 _d 0 * HICE_ACTUAL(I,J))
           ENDIF
 
-           AbsorbedShortwaveFlux(I,J)       = -(ONE - ALB(I,J))*
-     &        (1.0 - IcePenetratingShortwaveFluxFraction(I,J))
+           AbsorbedSWFlux(I,J)       = -(ONE - ALB(I,J))*
+     &        (1.0 - IcePenetSWFluxFrac(I,J))
      &         *SWDOWN(I,J,bi,bj)
 
-           IcePenetratingShortwaveFlux(I,J) = -(ONE - ALB(I,J))*
-     &        IcePenetratingShortwaveFluxFraction(I,J)
+           IcePenetSWFlux(I,J) = -(ONE - ALB(I,J))*
+     &        IcePenetSWFluxFrac(I,J)
      &        *SWDOWN(I,J,bi,bj)
 
-          F_swi(I,J) = AbsorbedShortwaveFlux(I,J)
+          F_swi(I,J) = AbsorbedSWFlux(I,J)
 
 c         set a min ice as 5 cm to limit arbitrarily large conduction.
           HICE_ACTUAL(I,J) = max(HICE_ACTUAL(I,J),5. _d -2)
@@ -302,12 +302,12 @@ c         exlude conductive flux, the actual flux with the atmosphere.
 
           print '(A,2i4,3(1x,1P2E15.3))',
      &     'ibi i j QSW(Tot, Abs, Pen)    ',I,J, 
-     &     SWDOWN(I,J,bi,bj), AbsorbedShortwaveFlux(I,J),
-     &     IcePenetratingShortwaveFlux(I,J)
+     &     SWDOWN(I,J,bi,bj), AbsorbedSWFlux(I,J),
+     &     IcePenetSWFlux(I,J)
 
           print '(A,2i4,3(1x,1P2E15.3))',
      &     'ibi i j IcePenSWFluxFrac, Alb ',I,J, 
-     ^      IcePenetratingShortwaveFluxFraction(I,J), ALB(I,J)
+     ^      IcePenetSWFluxFrac(I,J), ALB(I,J)
  
           print '(A,2i4,3(1x,1P2E15.3))',
      &     'ibi i j qh(ATM ICE)           ',I,J, 

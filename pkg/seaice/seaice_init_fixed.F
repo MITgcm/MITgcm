@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.2 2007/05/18 02:41:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.3 2008/04/08 03:01:55 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -32,12 +32,37 @@ C     === Local variables ===
 C     i,j,k,bi,bj - Loop counters
 
       INTEGER k, bi, bj
+cif(
+cif   Helper variable for determining the fraction of sw radiation
+cif   penetrating the model's shallowest layer
+      INTEGER dummyIter
+      _RL dummyTime
+      _RL swfracba(2)
+      _RL FACTORM
+      INTEGER IMAX
+cif)
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
         CALL SEAICE_DIAGNOSTICS_INIT( myThid )
       ENDIF
 #endif
+
+cif(
+#ifdef SHORTWAVE_HEATING
+      IMAX      = 2
+      FACTORM   = -1.0
+      dummyTime = 1.0
+      dummyIter = 0
+      swfracba(1) = abs(rF(1)) 
+      swfracba(2) = abs(rF(2))
+      CALL SWFRAC(
+     I       IMAX,FACTORM,
+     U       swfracba,
+     I       dummyTime,dummyIter,myThid)
+      SWFRACB = swfracba(2)
+#endif
+cif)
 
 #ifdef ALLOW_TIMEAVE
 C     Initialize averages to zero
