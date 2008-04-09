@@ -1,11 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/tracer_meanarea.F,v 1.9 2008/04/07 20:31:17 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/tracer_meanarea.F,v 1.10 2008/04/09 22:16:14 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE TRACER_MEANAREA(myThid,tracer, kLev,
-     O                    gsm_tracer)
+      SUBROUTINE TRACER_MEANAREA(
+     I                    tracer, kLev,
+     O                    gsm_tracer,
+     I                    myThid )
 
 C !DESCRIPTION:
 C  Calculate surface means of tracer

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_init.F,v 1.9 2008/04/08 20:21:35 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_init.F,v 1.10 2008/04/09 22:16:14 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -33,9 +33,9 @@ C     == Routine arguments ==
 
 C     == Local variables ==
       INTEGER i, j, bi, bj, k, it
-      _RL po4av(nR)
-      _RL o2av(nR)
-      _RL volvar(nR)
+      _RL po4av(Nr)
+      _RL o2av(Nr)
+      _RL volvar(Nr)
 cswdmonth -add-
       _RL po4avm(12,4)
       _RL o2avm(12,4)
@@ -80,7 +80,6 @@ cswdmonth
           enddo
          ENDDO
         ENDDO
-        _BEGIN_MASTER( myThid )
         CALL READ_FLD_XYZ_RL( 'input/po4obs.bin', ' ',
      &                          po4obs, 0, myThid )
         CALL READ_FLD_XYZ_RL( 'input/o2obs.bin', ' ',
@@ -103,7 +102,6 @@ cQQ  &                          po4obsl4, 0, myThid )
 cQQ     CALL READ_FLD_XYZ_RL( 'input/o2lev4.bin', ' ',
 cQQ  &                          o2obsl4, 0, myThid )
 cswdmonth -end-
-       _END_MASTER(myThid)
        _EXCH_XYZ_R8(po4obs  , myThid )
        _EXCH_XYZ_R8(o2obs  , myThid )
 cswdmonth -add-
@@ -117,43 +115,39 @@ cQQ    _EXCH_XYZ_R8(po4obsl4  , myThid )
 cQQ    _EXCH_XYZ_R8(o2obsl4  , myThid )
 cswdmonth -end-
 
-        _BARRIER
 c calculate layer means
-        _BEGIN_MASTER( mythid )
         do k=1,Nr
-         call tracer_meanarea(myThid,po4obs, k,
-     &                    po4av(k))
-         call tracer_meanarea(myThid,o2obs, k,
-     &                    o2av(k))
+         call tracer_meanarea(po4obs, k,
+     &                    po4av(k),myThid)
+         call tracer_meanarea(o2obs, k,
+     &                    o2av(k),myThid)
 c        print*,po4av(k), o2av(k)
         enddo
 cswdmonth -add-
-        do it=1,12
-         call tracer_meanarea(myThid,po4obsl1,it,
-     &                    po4avm(it,1))
-         call tracer_meanarea(myThid,po4obsl2,it,
-     &                    po4avm(it,2))
-         call tracer_meanarea(myThid,po4obsl3,it,
-     &                    po4avm(it,3))
-cQQ      call tracer_meanarea(myThid,po4obsl4,it,
-cQQ  &                    po4avm(it,4))
-         call tracer_meanarea(myThid,o2obsl1,it,
-     &                    o2avm(it,1))
-         call tracer_meanarea(myThid,o2obsl2,it,
-     &                    o2avm(it,2))
-         call tracer_meanarea(myThid,o2obsl3,it,
-     &                    o2avm(it,3))
-cQQ      call tracer_meanarea(myThid,o2obsl4,it,
-cQQ  &                    o2avm(it,4))
+        do it=1,MIN(12,Nr)
+         call tracer_meanarea(po4obsl1,it,
+     &                    po4avm(it,1),myThid)
+         call tracer_meanarea(po4obsl2,it,
+     &                    po4avm(it,2),myThid)
+         call tracer_meanarea(po4obsl3,it,
+     &                    po4avm(it,3),myThid)
+cQQ      call tracer_meanarea(po4obsl4,it,
+cQQ  &                    po4avm(it,4),myThid)
+         call tracer_meanarea(o2obsl1,it,
+     &                    o2avm(it,1),myThid)
+         call tracer_meanarea(o2obsl2,it,
+     &                    o2avm(it,2),myThid)
+         call tracer_meanarea(o2obsl3,it,
+     &                    o2avm(it,3),myThid)
+cQQ      call tracer_meanarea(o2obsl4,it,
+cQQ  &                    o2avm(it,4),myThid)
 
         enddo
-        _END_MASTER(myThid)
 c calculate layer variance
-        _BEGIN_MASTER( mythid )
         DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
+         DO j=1,sNy
+         DO i=1,sNx
           DO k=1,Nr
             volvar(k)=volvar(k)+
      &                rA(i,j,bi,bj)*drF(k)*maskC(i,j,k,bi,bj)
@@ -207,7 +201,6 @@ cswdmonth- add-
          ENDDO
         ENDDO
 cswdmonth -end-
-        _END_MASTER(myThid)
 C
 C Reset averages to zero
        print*,'QQ dic_aver_init, set to zero'
@@ -237,4 +230,3 @@ c
 c
       RETURN
       END
-cswd -- end added subroutine --
