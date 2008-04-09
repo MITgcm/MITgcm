@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.21 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.22 2008/04/09 22:13:15 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -100,7 +100,7 @@ C FOR NON-INTERACTIVE Si
 
          CALL CARBON_COEFFS(
      I                       theta,salt,
-     I                       bi,bj,iMin,iMax,jMin,jMax)
+     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 C====================================================================
 
        DO j=jmin,jmax
@@ -141,7 +141,8 @@ C$TAF LOOP = parallel
      I        aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
      I        aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
-     U        pH(i,j,bi,bj),pCO2(i,j,bi,bj) )
+     U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),
+     I        myThid )
           ELSE
             pCO2(i,j,bi,bj)=0. _d 0
           ENDIF

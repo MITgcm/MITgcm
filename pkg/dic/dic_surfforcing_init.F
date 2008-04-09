@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.23 2008/04/09 18:54:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.24 2008/04/09 22:13:15 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -84,7 +84,7 @@ c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
        _BARRIER
        _BEGIN_MASTER(myThid)
         WRITE(*,*)
-     &    'S/R EXTERNAL_FIELDS_LOAD: Reading new dic data',
+     &    'S/R DIC_SURFFORCING_INIT: Reading new dic data',
      &                 intime0, intime1
        _END_MASTER(myThid)
 
@@ -195,7 +195,7 @@ C FOR NON-INTERACTIVE Si
 
         CALL CARBON_COEFFS(
      I                       theta,salt,
-     I                       bi,bj,iMin,iMax,jMin,jMax)
+     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 
 C====================================================================
 
@@ -222,7 +222,8 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      I        aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
      I        aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
-     U        pH(i,j,bi,bj),pCO2(i,j,bi,bj) )
+     U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),
+     I        myThid )
              ENDDO
             ENDIF
            ENDDO

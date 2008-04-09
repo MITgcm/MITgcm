@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.25 2008/04/09 18:54:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.26 2008/04/09 22:13:15 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -50,27 +50,27 @@ c
 
 
 C Now calculate whether it is time to update the forcing arrays
-      rdt = 1. _d 0 / deltaTclock
-      nForcingPeriods = NINT(DIC_forcingCycle/DIC_forcingPeriod)
+       rdt = 1. _d 0 / deltaTclock
+       nForcingPeriods = NINT(DIC_forcingCycle/DIC_forcingPeriod)
 cswd QQ change for placement of chem forcing (ie. after timestep)
-      Imytm = NINT(myTime*rdt)
-      Ifprd = NINT(DIC_forcingPeriod*rdt)
-      Ifcyc = NINT(DIC_forcingCycle*rdt)
-      Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
+       Imytm = NINT(myTime*rdt)
+       Ifprd = NINT(DIC_forcingPeriod*rdt)
+       Ifcyc = NINT(DIC_forcingCycle*rdt)
+       Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
 
-      intime0 = 1 + INT(Iftm/Ifprd)
-      intime1 = 1 + MOD(intime0,nForcingPeriods)
-c     aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
-      aWght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
-      bWght = FLOAT( Ifprd )
-      aWght =  aWght / bWght
-      bWght = 1. _d 0 - aWght
+       intime0 = 1 + INT(Iftm/Ifprd)
+       intime1 = 1 + MOD(intime0,nForcingPeriods)
+c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
+       aWght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
+       bWght = FLOAT( Ifprd )
+       aWght =  aWght / bWght
+       bWght = 1. _d 0 - aWght
 
        IF (
      &   Iftm-Ifprd*(intime0-1).EQ. 0
      &   .OR. myIter .EQ. nIter0
      &    ) THEN
-
+C-     this is time to load new fields
 
         _BARRIER
 
@@ -83,47 +83,49 @@ C      data for the period ahead and the period behind myTime.
         _END_MASTER(myThid)
 
 
-       IF ( DIC_windFile .NE. ' '  ) THEN
+        IF ( DIC_windFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( DIC_windFile,wspeed0,intime0,
      &        myIter,myThid )
          CALL READ_REC_XY_RS( DIC_windFile,wspeed1,intime1,
      &        myIter,myThid )
-       ENDIF
-       IF ( DIC_atmospFile .NE. ' '  ) THEN
+        ENDIF
+        IF ( DIC_atmospFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( DIC_atmospFile,atmosp0,intime0,
      &        myIter,myThid )
          CALL READ_REC_XY_RS( DIC_atmospFile,atmosp1,intime1,
      &        myIter,myThid )
-       ENDIF
-       IF ( DIC_silicaFile .NE. ' '  ) THEN
+        ENDIF
+        IF ( DIC_silicaFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( DIC_silicaFile,silica0,intime0,
      &        myIter,myThid )
          CALL READ_REC_XY_RS( DIC_silicaFile,silica1,intime1,
      &        myIter,myThid )
-       ENDIF
-       IF ( DIC_iceFile .NE. ' '  ) THEN
+        ENDIF
+        IF ( DIC_iceFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( DIC_iceFile,ice0,intime0,
      &       myIter,myThid )
          CALL READ_REC_XY_RS( DIC_iceFile,ice1,intime1,
      &       myIter,myThid )
-       ENDIF
+        ENDIF
 #ifdef READ_PAR
-       IF ( Filename1 .NE. ' '  ) THEN
+        IF ( Filename1 .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( Filename1,par0,intime0,
      &       myIter,myThid )
          CALL READ_REC_XY_RS( Filename1,par1,intime1,
      &       myIter,myThid )
-       ENDIF
+        ENDIF
 #endif
 #ifdef ALLOW_FE
-       IF ( DIC_ironFile .NE. ' '  ) THEN
+        IF ( DIC_ironFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( DIC_ironFile,feinput0,intime0,
      &       myIter,myThid )
          CALL READ_REC_XY_RS( DIC_ironFile,feinput1,intime1,
      &       myIter,myThid )
-       ENDIF
+        ENDIF
 #endif
+        _BARRIER
 
+C-     end if-bloc (time to load new fields)
        ENDIF
 
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -199,23 +201,28 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
 C endif for DIC_forcingCycle
       ENDIF
 
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-#ifdef ALLOW_THSICE
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
-             FIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
-            ENDDO
-           ENDDO
-#elif ALLOW_SEAICE
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+#ifdef ALLOW_SEAICE
+         IF ( useSEAICE ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              FIce(i,j,bi,bj) = AREA(i,j,1,bi,bj)
             ENDDO
            ENDDO
+         ENDIF
 #endif
-         ENDDO
-        ENDDO
+#ifdef ALLOW_THSICE
+         IF ( useThSIce ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             FIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDIF
+#endif
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_PTRACERS */
       RETURN

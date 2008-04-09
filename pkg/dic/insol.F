@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/insol.F,v 1.11 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/insol.F,v 1.12 2008/04/09 22:13:15 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: INSOL
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE insol(Time,sfac,bj)
+      SUBROUTINE insol(Time,sfac,bi,bj,myThid)
 
 C !DESCRIPTION:
 C find light as function of date and latitude
@@ -28,7 +28,8 @@ C     === Global variables ===
 C !INPUT PARAMETERS: ===================================================
 C Time                 :: current time
        _RL Time
-       integer bj
+       INTEGER bi,bj
+       INTEGER myThid
 
 C !OUPUT PARAMETERS: ===================================================
        _RL sfac(1-OLy:sNy+OLy)

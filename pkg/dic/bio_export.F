@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.23 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/bio_export.F,v 1.24 2008/04/09 22:13:15 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -69,7 +69,7 @@ CEOP
 
 #ifndef READ_PAR
 #ifndef USE_QSW
-        call insol(myTime,sfac,bj)
+        CALL INSOL(myTime,sfac,bi,bj,myThid)
 #endif
 #endif
         DO j=jmin,jmax

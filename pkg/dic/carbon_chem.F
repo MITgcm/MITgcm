@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.12 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.13 2008/04/09 22:13:15 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -15,7 +15,8 @@ C !INTERFACE: ==========================================================
      I                       kslocal,kblocal,kwlocal,
      I                       ksilocal,kflocal,
      I                       fflocal,btlocal,stlocal,ftlocal,
-     U                       pHlocal,pCO2surfloc)
+     U                       pHlocal,pCO2surfloc,
+     I                       myThid)
 
 C !DESCRIPTION:
 C  surface ocean inorganic carbon chemistry to OCMIP2       
@@ -50,6 +51,7 @@ C       s   = salinity (PSU)
         _RL  k1local, k2local
         _RL  k1plocal, k2plocal, k3plocal
         _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
+        INTEGER myThid
 CEndOfInterface
 
 C     == Local variables ==
@@ -343,8 +345,8 @@ CStartOfInterFace
      I                       kslocal,kblocal,kwlocal,
      I                       ksilocal,kflocal,
      I                       fflocal,btlocal,stlocal,ftlocal,
-     U                       pHlocal,pCO2surfloc,
-     U                       co3local)
+     U                       pHlocal,pCO2surfloc,co3local,
+     I                       myThid)
 C     /==========================================================\
 C     | SUBROUTINE CALC_PCO2_APPROX_CO3                          |
 C     \==========================================================/
@@ -373,6 +375,7 @@ C       s   = salinity (PSU)
         _RL  k1local, k2local
         _RL  k1plocal, k2plocal, k3plocal
         _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
+        INTEGER myThid
 CEndOfInterface
 
 C     == Local variables ==
@@ -480,7 +483,8 @@ CStartOfInterFace
      I                       kslocal,kblocal,kwlocal,
      I                       ksilocal,kflocal,
      I                       fflocal,btlocal,stlocal,ftlocal,
-     U                       pHlocal,pCO2surfloc)
+     U                       pHlocal,pCO2surfloc,
+     I                       myThid)
 C     /==========================================================\
 C     | SUBROUTINE CALC_PCO2_APPROX                              |
 C     \==========================================================/
@@ -509,6 +513,7 @@ C       s   = salinity (PSU)
         _RL  k1local, k2local
         _RL  k1plocal, k2plocal, k3plocal
         _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
+        INTEGER myThid
 CEndOfInterface
 
 C     == Local variables ==
@@ -606,7 +611,7 @@ c=================================================================
 CStartOfInterFace
       SUBROUTINE CARBON_COEFFS(
      I                   ttemp,stemp,
-     I                   bi,bj,iMin,iMax,jMin,jMax)
+     I                   bi,bj,iMin,iMax,jMin,jMax,myThid)
 C
 C     /==========================================================\
 C     | SUBROUTINE CARBON_COEFFS                                 |
@@ -651,6 +656,7 @@ C general
         _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
         _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
         INTEGER bi,bj,iMin,iMax,jMin,jMax
+        INTEGER myThid
 CEndOfInterface
 
 
@@ -827,7 +833,7 @@ CStartOfInterFace
       SUBROUTINE CARBON_COEFFS_PRESSURE_DEP(
      I                   ttemp,stemp,
      I                   bi,bj,iMin,iMax,jMin,jMax,
-     I                   Klevel)
+     I                   Klevel,myThid)
 C
 C     /==========================================================\
 C     | SUBROUTINE CARBON_COEFFS                                 |
@@ -882,6 +888,7 @@ C general
         INTEGER bi,bj,iMin,iMax,jMin,jMax
 c K is depth index
         INTEGER Klevel
+        INTEGER myThid
 CEndOfInterface
 
 
