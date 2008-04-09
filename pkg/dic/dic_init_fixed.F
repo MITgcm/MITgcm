@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.5 2008/04/09 00:16:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.6 2008/04/09 16:22:54 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -28,6 +28,8 @@ CEOP
 
 #ifdef ALLOW_DIC
       INTEGER k
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iUnit
 
       _BEGIN_MASTER(myThid)
 
@@ -69,6 +71,17 @@ C     Set other constant/flag
       ENDDO
       nlev = k
 #endif
+C--   Print out nlev values :
+      iUnit = standardMessageUnit
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A)') '//  DIC_INIT_FIXED parameters :'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+
+       CALL WRITE_0D_I( nlev, INDEX_NONE, 'nlev =',
+     &   ' /* Number of level over which Bio act is computed */')
 #endif /* DIC_BIOTIC */
 
       _END_MASTER(myThid)
