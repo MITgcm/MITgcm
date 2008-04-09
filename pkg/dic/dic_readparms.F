@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.4 2008/04/09 16:22:54 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.5 2008/04/09 18:54:50 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -22,8 +22,6 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "DIC_VARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -94,9 +92,9 @@ C                  read in rain_ratioloc and filled in 2d array rain_ratio
 #endif
 
       NAMELIST /DIC_FORCING/
-     &          WindFileDic, AtmospFileDic, IceFileDic,
-     &          IronFileDic, SilicaFileDic,
-     &          dic_ForcingPeriod, dic_ForcingCycle,
+     &          DIC_windFile, DIC_atmospFile, DIC_iceFile,
+     &          DIC_ironFile, DIC_silicaFile,
+     &          DIC_forcingPeriod, DIC_forcingCycle,
      &          dic_int1, dic_int2, dic_int3, dic_int4, dic_pCO2
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -129,19 +127,19 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        alphaloc    = 2. _d -3/(360. _d 0 * 86400. _d 0)
        rain_ratioloc = 7. _d -2
 #endif
-       WindFileDic  = ' '
-       AtmospFileDic= ' '
-       IceFileDic   = ' '
-       IronFileDic  = ' '
-       SilicaFileDic= ' '
+       DIC_windFile  = ' '
+       DIC_atmospFile= ' '
+       DIC_iceFile   = ' '
+       DIC_ironFile  = ' '
+       DIC_silicaFile= ' '
        dic_int1    = 0
        dic_int2    = 0
        dic_int3    = 0
        dic_int4    = 0
        dic_pCO2    = 0. _d 0
 c default periodic forcing to same as for physics
-       dic_ForcingPeriod = externForcingPeriod
-       dic_ForcingCycle  = externForcingCycle
+       DIC_forcingPeriod = externForcingPeriod
+       DIC_forcingCycle  = externForcingCycle
 
       WRITE(msgBuf,'(A)') ' DIC_READPARMS: opening data.dic'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -194,7 +192,7 @@ C--   Print out parameter values :
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      WRITE(msgBuf,'(A)') '// Dic package parameters :'
+      WRITE(msgBuf,'(A)') '// DIC package parameters :'
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
@@ -250,22 +248,22 @@ C- namelist BIOTIC_PARMS
      &  ' /* Timescape for biological activity */')
        CALL WRITE_0D_R8( rain_ratioloc, INDEX_NONE,'rain_ratioloc =',
      &  ' /* Inorganic/organic carbon rain ratio */')
-       CALL WRITE_0D_C( WindFileDic, 0, INDEX_NONE, 'WindFileDic =',
+       CALL WRITE_0D_C( DIC_windFile, -1, INDEX_NONE, 'DIC_windFile =',
      & '  /* File name of wind speeds */')
-       CALL WRITE_0D_C( AtmospFileDic, 0, INDEX_NONE, 'AtmospFileDic =', 
+       CALL WRITE_0D_C( DIC_atmospFile, -1,INDEX_NONE,'DIC_atmospFile=',
      & '  /* File name of atmospheric pressure*/')
-       CALL WRITE_0D_C( IceFileDic, 0, INDEX_NONE, 'IceFileDic =', 
+       CALL WRITE_0D_C( DIC_iceFile, -1, INDEX_NONE, 'DIC_iceFile =',
      & '  /* File name of seaice fraction */')
-       CALL WRITE_0D_C( IronFileDic, 0, INDEX_NONE, 'IronFileDic =', 
+       CALL WRITE_0D_C( DIC_ironFile, -1, INDEX_NONE, 'DIC_ironFile =',
      & '  /* File name of aeolian iron flux */')
-       CALL WRITE_0D_C( SilicaFileDic, 0, INDEX_NONE, 'SilicaFileDic =',
+       CALL WRITE_0D_C( DIC_silicaFile, -1,INDEX_NONE,'DIC_silicaFile=',
      & '  /* File name of surface silica */')
-       CALL WRITE_0D_R8( dic_ForcingPeriod,
-     &   INDEX_NONE,'dic_ForcingPeriod =',
-     &  ' /* Periodic forcing parameter specific for dic (s) */')
-       CALL WRITE_0D_R8( dic_ForcingCycle,
-     &   INDEX_NONE,'dic_ForcingCycle =',
-     &  ' /* Periodic forcing parameter specific for dic (s) */')
+       CALL WRITE_0D_R8( DIC_forcingPeriod,
+     &   INDEX_NONE,'DIC_forcingPeriod =',
+     &  ' /* Periodic forcing parameter specific for DIC (s) */')
+       CALL WRITE_0D_R8( DIC_forcingCycle,
+     &   INDEX_NONE,'DIC_forcingCycle =',
+     &  ' /* Periodic forcing parameter specific for DIC (s) */')
        CALL WRITE_0D_I( dic_int1, INDEX_NONE, 'dic_int1 =',
      &  '  /*  */')
        CALL WRITE_0D_I( dic_int2, INDEX_NONE, 'dic_int2 =',

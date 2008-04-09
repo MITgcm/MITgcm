@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.22 2008/04/08 20:21:35 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.23 2008/04/09 18:54:50 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -32,7 +32,7 @@ C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER  myThid
 
-#ifdef ALLOW_PTRACERS
+#ifdef ALLOW_DIC
 
 C !LOCAL VARIABLES: ====================================================
        INTEGER i,j, kLev, it
@@ -88,10 +88,10 @@ c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
      &                 intime0, intime1
        _END_MASTER(myThid)
 
-      IF ( SilicaFileDic .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( SilicaFileDic,silica0,intime0,
+      IF ( DIC_silicaFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( DIC_silicaFile,silica0,intime0,
      &        nIter0,myThid )
-         CALL READ_REC_XY_RS( SilicaFileDic,silica1,intime1,
+         CALL READ_REC_XY_RS( DIC_silicaFile,silica1,intime1,
      &        nIter0,myThid )
        ENDIF
 
@@ -105,7 +105,7 @@ c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
        _EXCH_XY_R4(silica0, myThid )
        _EXCH_XY_R4(silica1, myThid )
 
-       IF ( SilicaFileDic .NE. ' '  ) THEN
+       IF ( DIC_silicaFile .NE. ' '  ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-Oly,sNy+Oly
@@ -240,6 +240,6 @@ C     end bi,bj loops
        ENDDO
       ENDDO
 
-#endif
+#endif /* ALLOW_DIC */
       RETURN
       END

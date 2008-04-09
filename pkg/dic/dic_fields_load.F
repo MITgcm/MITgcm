@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.24 2008/04/08 20:21:35 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.25 2008/04/09 18:54:50 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -16,7 +16,6 @@ C  Read in fields needed for CO2,O2 fluxterms, silica for pH calculation
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
@@ -47,16 +46,16 @@ c !LOCAL VARIABLES: ===================================================
 CEOP
 
 c
-      IF (  dic_ForcingCycle.gt.0. _d 0 ) THEN
+      IF (  DIC_forcingCycle.gt.0. _d 0 ) THEN
 
 
 C Now calculate whether it is time to update the forcing arrays
       rdt = 1. _d 0 / deltaTclock
-      nForcingPeriods = NINT(dic_ForcingCycle/dic_ForcingPeriod)
+      nForcingPeriods = NINT(DIC_forcingCycle/DIC_forcingPeriod)
 cswd QQ change for placement of chem forcing (ie. after timestep)
       Imytm = NINT(myTime*rdt)
-      Ifprd = NINT(dic_ForcingPeriod*rdt)
-      Ifcyc = NINT(dic_ForcingCycle*rdt)
+      Ifprd = NINT(DIC_forcingPeriod*rdt)
+      Ifcyc = NINT(DIC_forcingCycle*rdt)
       Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
 
       intime0 = 1 + INT(Iftm/Ifprd)
@@ -84,28 +83,28 @@ C      data for the period ahead and the period behind myTime.
         _END_MASTER(myThid)
 
 
-       IF ( WindFileDic .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( WindFileDic,wspeed0,intime0,
+       IF ( DIC_windFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( DIC_windFile,wspeed0,intime0,
      &        myIter,myThid )
-         CALL READ_REC_XY_RS( WindFileDic,wspeed1,intime1,
-     &        myIter,myThid )
-       ENDIF
-       IF ( AtmospFileDic .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( AtmospFileDic,atmosp0,intime0,
-     &        myIter,myThid )
-         CALL READ_REC_XY_RS( AtmospFileDic,atmosp1,intime1,
+         CALL READ_REC_XY_RS( DIC_windFile,wspeed1,intime1,
      &        myIter,myThid )
        ENDIF
-       IF ( SilicaFileDic .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( SilicaFileDic,silica0,intime0,
+       IF ( DIC_atmospFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( DIC_atmospFile,atmosp0,intime0,
      &        myIter,myThid )
-         CALL READ_REC_XY_RS( SilicaFileDic,silica1,intime1,
+         CALL READ_REC_XY_RS( DIC_atmospFile,atmosp1,intime1,
      &        myIter,myThid )
        ENDIF
-       IF ( IceFileDic .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( IceFileDic,ice0,intime0,
+       IF ( DIC_silicaFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( DIC_silicaFile,silica0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XY_RS( DIC_silicaFile,silica1,intime1,
+     &        myIter,myThid )
+       ENDIF
+       IF ( DIC_iceFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( DIC_iceFile,ice0,intime0,
      &       myIter,myThid )
-         CALL READ_REC_XY_RS( IceFileDic,ice1,intime1,
+         CALL READ_REC_XY_RS( DIC_iceFile,ice1,intime1,
      &       myIter,myThid )
        ENDIF
 #ifdef READ_PAR
@@ -117,33 +116,32 @@ C      data for the period ahead and the period behind myTime.
        ENDIF
 #endif
 #ifdef ALLOW_FE
-       IF ( IronFileDic .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( IronFileDic,feinput0,intime0,
+       IF ( DIC_ironFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( DIC_ironFile,feinput0,intime0,
      &       myIter,myThid )
-         CALL READ_REC_XY_RS( IronFileDic,feinput1,intime1,
+         CALL READ_REC_XY_RS( DIC_ironFile,feinput1,intime1,
      &       myIter,myThid )
        ENDIF
 #endif
 
-C
        ENDIF
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         IF ( WindFileDic .NE. ' '  ) THEN
+         IF ( DIC_windFile .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              WIND(i,j,bi,bj) = bWght*wspeed0(i,j,bi,bj)
      &                       + aWght*wspeed1(i,j,bi,bj)
             ENDDO
            ENDDO
-c calculate piston velocity
-c QQ: note - we should have wind speed variance in here
-c QQ         also need to check units, and conversion factors
+C calculate piston velocity
+C QQ: note - we should have wind speed variance in here
+C QQ         also need to check units, and conversion factors
 c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
          ENDIF
 #ifndef USE_PLOAD
-         IF ( AtmospFileDic .NE. ' '  ) THEN
+         IF ( DIC_atmospFile .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              AtmosP(i,j,bi,bj) = bWght*atmosp0(i,j,bi,bj)
@@ -152,7 +150,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
            ENDDO
          ENDIF
 #endif
-         IF ( SilicaFileDic .NE. ' '  ) THEN
+         IF ( DIC_silicaFile .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              SILICA(i,j,bi,bj) = bWght*silica0(i,j,bi,bj)
@@ -160,7 +158,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
             ENDDO
            ENDDO
          ENDIF
-         IF ( IceFileDic .NE. ' '  ) THEN
+         IF ( DIC_iceFile .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              FIce(i,j,bi,bj) = bWght*ice0(i,j,bi,bj)
@@ -186,7 +184,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
          ENDIF
 #endif
 #ifdef ALLOW_FE
-         IF ( IronFileDic .NE. ' '  ) THEN
+         IF ( DIC_ironFile .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
              InputFe(i,j,bi,bj) = bWght*feinput0(i,j,bi,bj)
@@ -198,7 +196,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
         ENDDO
        ENDDO
 
-C endif for dic_ForcingCycle
+C endif for DIC_forcingCycle
       ENDIF
 
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -218,7 +216,6 @@ C endif for dic_ForcingCycle
 #endif
          ENDDO
         ENDDO
-
 
 #endif /* ALLOW_PTRACERS */
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.2 2008/04/08 20:21:35 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.3 2008/04/09 18:54:50 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -43,7 +43,7 @@ C     |==========================================================|
        COMMON /OXYGEN_CHEM/
      &              oA0,oA1,oA2,oA3,oA4,oA5,
      &              oB0,oB1,oB2,oB3,
-     &              oC0       
+     &              oC0
       _RL oA0,oA1,oA2,oA3,oA4,oA5
       _RL oB0,oB1,oB2,oB3
       _RL oC0
@@ -51,7 +51,7 @@ C     |==========================================================|
 C permil : is conversion factor for mol/m3 to mol/kg
 C          assumes uniform (surface) density
 C Pa2Atm : for conversion of atmospheric pressure
-C          when coming from atmospheric model 
+C          when coming from atmospheric model
        COMMON /GLOBAL_SURF_MEAN/
      &                          gsm_alk,gsm_s,gsm_t,gsm_dic,
      &                          gsm_c14,permil,Pa2Atm
@@ -64,7 +64,7 @@ C          when coming from atmospheric model
       _RL  Pa2Atm
 
 C schmidt number coefficients
-      COMMON /SCHMIDT_NO/
+      COMMON /DIC_SCHMIDT_NO/
      &                    sca1, sca2, sca3, sca4,
      &                    sox1, sox2, sox3, sox4
       _RL  sca1
@@ -77,34 +77,34 @@ C schmidt number coefficients
       _RL  sox4
 
 C--   COMMON /DIC_FILENAMES/
-C  WindFileDic    :: file name of wind speeds
-C  AtmospFileDic  :: file name of atmospheric pressure
-C  IceFileDic     :: file name of seaice fraction
-C  IronFileDic    :: file name of aeolian iron flux
-C  SilicaFileDic  :: file name of surface silica
-C  dic_ForcingPeriod :: periodic forcing parameter specific for dic (seconds)
-C  dic_ForcingCycle  :: periodic forcing parameter specific for dic (seconds)
+C  DIC_windFile    :: file name of wind speeds
+C  DIC_atmospFile  :: file name of atmospheric pressure
+C  DIC_iceFile     :: file name of seaice fraction
+C  DIC_ironFile    :: file name of aeolian iron flux
+C  DIC_silicaFile  :: file name of surface silica
+C  DIC_forcingPeriod :: periodic forcing parameter specific for dic (seconds)
+C  DIC_forcingCycle  :: periodic forcing parameter specific for dic (seconds)
+C  dic_pCO2          :: Atmospheric pCO2 to be rad in data.dic
 C  dic_int*          :: place holder to read in a integer number, set at run time
-C  dic_pCO2          :: Atmospheric pCO2 to be rad in data.dic 
 
       COMMON /DIC_FILENAMES/
-     &        WindFileDic, AtmospFileDic, IceFileDic,
-     &        IronFileDic, SilicaFileDic,
-     &        dic_ForcingPeriod, dic_ForcingCycle,
-     &        dic_int1, dic_int2, dic_int3, dic_int4, dic_pCO2
+     &        DIC_windFile, DIC_atmospFile, DIC_iceFile,
+     &        DIC_ironFile, DIC_silicaFile,
+     &        DIC_forcingPeriod, DIC_forcingCycle,
+     &        dic_pCO2, dic_int1, dic_int2, dic_int3, dic_int4
 
-      CHARACTER*(MAX_LEN_FNAM) WindFileDic
-      CHARACTER*(MAX_LEN_FNAM) AtmospFileDic
-      CHARACTER*(MAX_LEN_FNAM) IceFileDic
-      CHARACTER*(MAX_LEN_FNAM) IronFileDic
-      CHARACTER*(MAX_LEN_FNAM) SilicaFileDic
-      _RL     dic_ForcingPeriod
-      _RL     dic_ForcingCycle
+      CHARACTER*(MAX_LEN_FNAM) DIC_windFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_atmospFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_iceFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_ironFile
+      CHARACTER*(MAX_LEN_FNAM) DIC_silicaFile
+      _RL     DIC_forcingPeriod
+      _RL     DIC_forcingCycle
+      _RL dic_pCO2
       INTEGER dic_int1
       INTEGER dic_int2
       INTEGER dic_int3
       INTEGER dic_int4
-      _RL dic_pCO2
 
 #ifdef DIC_BIOTIC
 C     /==========================================================\
@@ -112,8 +112,8 @@ C     | o Biological Carbon Variables
 C     |==========================================================|
 
       COMMON /BIOTIC_NEEDS/
-     &     BIOave, CARave, SURave, SUROave, pCO2ave, pHave, 
-     &     fluxCO2ave, omegaCave, pfluxave, epfluxave, cfluxave, 
+     &     BIOave, CARave, SURave, SUROave, pCO2ave, pHave,
+     &     fluxCO2ave, omegaCave, pfluxave, epfluxave, cfluxave,
      &     dic_timeave,
      &     alpha, rain_ratio, InputFe, omegaC,
      &     Kpo4, DOPfraction, zcrit, KRemin,
@@ -123,7 +123,7 @@ C     |==========================================================|
      &     parfrac, k0, lit0,
      &     nlev, QSW_underice
 
-      integer nlev
+      INTEGER nlev
 
 C     For averages
       _RL BIOave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
@@ -145,8 +145,8 @@ C     values for biogeochemistry
       _RL rain_ratio(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL InputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
-      _RL Kpo4            
-      _RL DOPfraction   
+      _RL Kpo4
+      _RL DOPfraction
       _RL zcrit
       _RL KRemin
       _RL KDOPremin
@@ -166,7 +166,7 @@ C     values for light limited bio activity
       _RL k0, parfrac, lit0
 
       LOGICAL QSW_underice
-#endif
+#endif /* DIC_BIOTIC */
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
