@@ -1,10 +1,12 @@
 # DIC parameters 
  &ABIOTIC_PARMS
  &
+
  &BIOTIC_PARMS
  &
+
  &DIC_FORCING
-  IceFileDic='fice.bin',
-  WindFileDic='tren_speed.bin',
-  SilicaFileDic='sillev1.bin',
+  DIC_iceFile='fice.bin',
+  DIC_windFile='tren_speed.bin',
+  DIC_silicaFile='sillev1.bin',
  &
