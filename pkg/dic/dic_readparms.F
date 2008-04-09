@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.2 2008/04/08 20:21:35 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.3 2008/04/09 00:44:03 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -39,14 +39,14 @@ C     msgBuf    :: Informational/error message buffer
 C     iUnit     :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
-      INTEGER i,j,k,bi,bj
+      INTEGER i,j,bi,bj
       _RL alphaloc, rain_ratioloc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-- Abiotic dic parameters:
 C permil   :: set carbon mol/m3 <---> mol/kg conversion factor
-C             default permil = 1024.5 kg/m3 
+C             default permil = 1024.5 kg/m3
 C Pa2Atm   :: Conversion factor for atmospheric pressure pLoad (when coupled
 C             to atmospheric model) into Atm. Default assumes pLoad in Pascal
 C             1 Atm = 1.01325e5 Pa = 1013.25 mb
@@ -76,7 +76,7 @@ CC Iron chemisty values
 C   alpfe       :: solubility of aeolian fe
 C   freefemax   :: max solubility of free iron (mol/m3)
 CC Control variables
-C   KScav       :: iron scavenging rate QQ 
+C   KScav       :: iron scavenging rate QQ
 C   ligand_stab :: ligand-free iron stability constant (m3/mol)
 C   ligand_tot  :: total free ligand  (mol/m3)
 C   alpha       :: timescape for biological activity
@@ -175,17 +175,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    derive other parameters:
 
 #ifdef DIC_BIOTIC
-
-#ifndef AD_SAFE
-       k = 1
-       DO WHILE ( k .LT. Nr .AND. rC(k) .GE. -zcrit )
-          k = k+1
-       ENDDO
-       nlev = k
-#else
-       nlev=Nr
+       QSW_underice = .FALSE.
+#ifdef USE_QSW_UNDERICE
+       QSW_underice = .TRUE.
+#elif (defined (USE_QSW))
+C if using Qsw and seaice, then ice fraction is already
+C taken into account
+       IF ( useSEAICE ) QSW_underice = .TRUE.
+       IF ( useThSIce ) QSW_underice = .TRUE.
 #endif
-
 #endif /* DIC_BIOTIC */
 
       _END_MASTER(myThid)

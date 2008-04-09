@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.16 2008/04/08 20:21:35 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.17 2008/04/09 00:44:03 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -76,19 +76,6 @@ C First call requires that we initialize everything to zero for safety
      &       ' and USE_QSW'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R DIC_INI_FORCING'
-#endif
-#endif
-
-#ifdef DIC_BIOTIC
-          QSW_underice=.FALSE.
-#ifdef USE_QSW_UNDERICE
-          QSW_underice=.TRUE.
-#elif (defined (ALLOW_SEAICE) && defined (USE_QSW))
-c if using Qsw and seaice, then ice fraction is already
-c taken into account
-          QSW_underice=.TRUE.
-#elif (defined (ALLOW_THSICE) && defined (USE_QSW))
-          QSW_underice=.TRUE.
 #endif
 #endif
 
