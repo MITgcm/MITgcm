@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.4 2008/04/08 23:59:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.5 2008/04/09 00:16:53 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -18,6 +18,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "DIC_VARS.h"
 
 C     !INPUT PARAMETERS:
@@ -26,6 +27,7 @@ C     myThid               :: thread number
 CEOP
 
 #ifdef ALLOW_DIC
+      INTEGER k
 
       _BEGIN_MASTER(myThid)
 
