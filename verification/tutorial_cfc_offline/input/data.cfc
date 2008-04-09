@@ -1,4 +1,4 @@
  &CFC_FORCING
-  IceFileCfc='fice.bin',
-  WindFileCfc='tren_speed.bin',
+  CFC_iceFile='fice.bin',
+  CFC_windFile='tren_speed.bin',
  &
