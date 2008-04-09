@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_y.template,v 1.10 2008/04/04 20:18:34 utke Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_y.template,v 1.11 2008/04/09 22:33:42 utke Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -320,7 +320,6 @@ C        Send the data
      &   .AND.   northCommMode .NE. COMM_GET  ) THEN
          STOP ' S/R EXCH: Invalid commN mode.'
         ENDIF
-#ifndef ALLOW_AUTODIFF_OPENAD
 
 c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
@@ -421,7 +420,6 @@ C        Send the data
      &   .AND.   northCommMode .NE. COMM_GET  ) THEN
          STOP ' S/R EXCH: Invalid commN mode.'
         ENDIF
-#endif /* ALLOW_AUTODIFF_OPENAD */
         endif
        ENDDO
       ENDDO
