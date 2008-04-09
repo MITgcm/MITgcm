@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.15 2008/04/09 17:55:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.16 2008/04/09 20:10:04 dfer Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -40,19 +40,24 @@ C  msgBuf		:: message buffer
 c     PARAMETER ( UNSET_I      = 123456789  )
 CEOP
 
+C- Sub-package on/off flags: not fully implemented, requires
+C  to test the flag before any corresponding pkg S/R call
+
       NAMELIST /GCHEM_PARM01/
-     &                   tIter0,
+     &                   nsubtime,
+     &                   useDIC,
+     &                   useCFC,
      &                   Filename1,
      &                   Filename2,
      &                   Filename3,
      &                   Filename4,
      &                   Filename5,
-     &                   nsubtime,
      &           gchem_int1, gchem_int2, gchem_int3,
      &           gchem_int4, gchem_int5,
      &           gchem_rl1, gchem_rl2, gchem_rl3,
      &           gchem_rl4, gchem_rl5,
-     &           gchem_ForcingPeriod, gchem_ForcingCycle
+     &           gchem_ForcingPeriod, gchem_ForcingCycle,
+     &           tIter0
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -97,17 +102,6 @@ C Open and read the data.gchem file
 
 C Close the open data file
       CLOSE(iUnit)
-
-C- Sub-package on/off flags: until fully implemented, which requires
-C   a) to read the flag value from data.gchem
-C   b) to test the flag before any corresponding pkg S/R call
-C- (for now) just it turned on when the corresponding pkg is compliled
-#ifdef ALLOW_DIC
-       useDIC = .TRUE.
-#endif
-#ifdef ALLOW_CFC
-       useCFC = .TRUE.
-#endif
 
 C- Check for retired parameters:
       IF ( tIter0 .NE. UNSET_I ) THEN
