@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.5 2008/04/09 18:54:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.6 2008/04/09 20:08:14 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -203,6 +203,7 @@ C- namelist ABIOTIC_PARMS
        CALL WRITE_0D_R8( Pa2Atm, INDEX_NONE,'Pa2Atm =',
      &  ' /* Atmosph. pressure conversion coeff (to Atm) */')
 
+#ifdef DIC_BIOTIC
 C- namelist BIOTIC_PARMS
        CALL WRITE_0D_R8( DOPfraction, INDEX_NONE,'DOPfraction =',
      &  ' /* Fraction of new production going to DOP */')
@@ -248,6 +249,12 @@ C- namelist BIOTIC_PARMS
      &  ' /* Timescape for biological activity */')
        CALL WRITE_0D_R8( rain_ratioloc, INDEX_NONE,'rain_ratioloc =',
      &  ' /* Inorganic/organic carbon rain ratio */')
+
+       CALL WRITE_0D_L( QSW_underice, INDEX_NONE, 'QSW_underice  =',
+     &  '  /* Flag for Qsw under Sea-Ice (i.e. SI fract included) */')
+#endif
+
+C- namelist DIC_FORCING
        CALL WRITE_0D_C( DIC_windFile, -1, INDEX_NONE, 'DIC_windFile =',
      & '  /* File name of wind speeds */')
        CALL WRITE_0D_C( DIC_atmospFile, -1,INDEX_NONE,'DIC_atmospFile=',
@@ -274,8 +281,6 @@ C- namelist BIOTIC_PARMS
      &  '  /*  */')
        CALL WRITE_0D_R8( dic_pCO2, INDEX_NONE,'dic_pCO2 =',
      &  ' /* Atmospheric pCO2 to be read in data.dic */')
-       CALL WRITE_0D_L( QSW_underice, INDEX_NONE, 'QSW_underice  =',
-     &  '  /* Flag for Qsw under Sea-Ice (i.e. SI fract included) */')
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
