@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_readparms.F,v 1.1 2008/04/08 20:23:05 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_readparms.F,v 1.2 2008/04/09 16:07:41 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -22,8 +22,6 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "CFC.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -39,24 +37,23 @@ C     msgBuf    :: Informational/error message buffer
 C     iUnit     :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
-      INTEGER i,j,k,bi,bj
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       NAMELIST /CFC_FORCING/
-     &          WindFileCfc, AtmospFileCfc, IceFileCfc,
-     &          cfc_ForcingPeriod, cfc_ForcingCycle
+     &          CFC_windFile, CFC_atmospFile, CFC_iceFile,
+     &          CFC_forcingPeriod, CFC_forcingCycle
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
 
-       WindFileCfc  = ' '
-       AtmospFileCfc= ' '
-       IceFileCfc   = ' '
+       CFC_windFile  = ' '
+       CFC_atmospFile= ' '
+       CFC_iceFile   = ' '
 c default periodic forcing to same as for physics
-       cfc_ForcingPeriod = externForcingPeriod
-       cfc_ForcingCycle  = externForcingCycle
+       CFC_forcingPeriod = externForcingPeriod
+       CFC_forcingCycle  = externForcingCycle
 
       WRITE(msgBuf,'(A)') ' CFC_READPARMS: opening data.cfc'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
