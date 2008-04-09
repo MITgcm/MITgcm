@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.14 2008/04/08 20:23:48 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.15 2008/04/09 17:55:12 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -125,21 +125,20 @@ c      nRetired = nRetired+1
 
       _END_MASTER(myThid)
 
+C Everyone else must wait for the parameters to be loaded
+      _BARRIER
+
 #ifdef ALLOW_DIC
       IF ( useDIC ) THEN
-      CALL DIC_READPARMS(myThid)
+        CALL DIC_READPARMS(myThid)
       ENDIF
 #endif
 
 #ifdef ALLOW_CFC
       IF ( useCFC ) THEN
-      CALL CFC_READPARMS(myThid)
+        CALL CFC_READPARMS(myThid)
       ENDIF
 #endif
-
-
-C Everyone else must wait for the parameters to be loaded
-      _BARRIER
 
 #endif /* ALLOW_GCHEM */
 
