@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_pickup.F,v 1.4 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_pickup.F,v 1.5 2008/04/10 00:49:25 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -16,7 +16,7 @@ C     === Global variables ===
 
 C     == Routine arguments ==
 C     myThid  :: my Thread Id number
-      LOGICAL ph_isLoaded
+      LOGICAL pH_isLoaded
       INTEGER myIter
       INTEGER myThid
 
@@ -32,12 +32,13 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn, dFileName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL fileExist, shareExist
+      INTEGER iG, jG
       INTEGER fp, iL, i, ioUnit
 
       COMMON / LOCAL_DIC_PICKUP / shareExist
 CEOP
 
-      ph_isLoaded =.FALSE.
+      pH_isLoaded =.FALSE.
       ioUnit = errorMessageUnit
 
 C--   pickup file name :
@@ -64,6 +65,15 @@ C-    look for file = {fn}
 C-    look for file = {fn}'.data'
         WRITE(dFileName,'(2A)') fn(1:iL), '.data'
         i = iL + 5
+        INQUIRE( FILE=dFileName, EXIST=fileExist )
+      ENDIF
+      IF ( .NOT.fileExist ) THEN
+C-    look for file = {fn}'.{iG}.{jG}.meta'
+        iG = 1+(myXGlobalLo-1)/sNx
+        jG = 1+(myYGlobalLo-1)/sNy
+        WRITE(dFileName,'(2A,I3.3,A,I3.3,A)')
+     &                fn(1:iL), '.', iG, '.', jG, '.data'
+        i = iL + 5 + 8
         INQUIRE( FILE=dFileName, EXIST=fileExist )
       ENDIF
       IF ( .NOT.fileExist ) THEN
@@ -101,7 +111,7 @@ C--   Read pickup file
           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           STOP 'ABNORMAL END: S/R DIC_READ_PICKUP'
         ELSE
-          WRITE(msgBuf,'(4A)') 'DIC_READ_PICKUP: ',
+          WRITE(msgBuf,'(2A)') 'WARNING >> DIC_READ_PICKUP: ',
      &      'will restart from approximated pH'
           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
