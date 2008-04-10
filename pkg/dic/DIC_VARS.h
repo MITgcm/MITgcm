@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.3 2008/04/09 18:54:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.4 2008/04/10 01:53:50 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -121,6 +121,7 @@ C     |==========================================================|
      &     O2crit, alpfe, KScav, ligand_stab, ligand_tot, KFE,
      &     freefemax, par,
      &     parfrac, k0, lit0,
+     &     alphaUniform, rainRatioUniform,
      &     nlev, QSW_underice
 
       INTEGER nlev
@@ -164,6 +165,8 @@ C     values for biogeochemistry
       _RL freefemax
 C     values for light limited bio activity
       _RL k0, parfrac, lit0
+      _RL alphaUniform
+      _RL rainRatioUniform
 
       LOGICAL QSW_underice
 #endif /* DIC_BIOTIC */

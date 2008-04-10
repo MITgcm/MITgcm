@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.7 2008/04/10 01:09:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.8 2008/04/10 01:53:50 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -37,12 +37,6 @@ C     msgBuf    :: Informational/error message buffer
 C     iUnit     :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
-      INTEGER i,j,bi,bj
-      _RL alphaloc, rain_ratioloc
-
-C- jmc: Add this local common bloc to fix the multi-threaded version
-      COMMON / DIC_READPARMS_LOCAL /
-     &    alphaloc, rain_ratioloc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -82,9 +76,9 @@ C   KScav       :: iron scavenging rate QQ
 C   ligand_stab :: ligand-free iron stability constant (m3/mol)
 C   ligand_tot  :: total free ligand  (mol/m3)
 C   alpha       :: timescale for biological activity
-C                  read in alphaloc and filled in 2d array alpha
+C                  read in alphaUniform and filled in 2d array alpha
 C   rain_ratio  :: inorganic/organic carbon rain ratio
-C                  read in rain_ratioloc and filled in 2d array rain_ratio
+C                  read in rainRatioUniform and filled in 2d array rain_ratio
 
       NAMELIST /BIOTIC_PARMS/
      & DOPfraction, KDOPRemin, KRemin, zcrit,
@@ -92,7 +86,7 @@ C                  read in rain_ratioloc and filled in 2d array rain_ratio
      & parfrac, k0, lit0, KPO4, KFE,
      & alpfe, freefemax,
      & KScav, ligand_stab, ligand_tot,
-     & alphaloc, rain_ratioloc
+     & alphaUniform, rainRatioUniform
 #endif
 
       NAMELIST /DIC_FORCING/
@@ -128,8 +122,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        KScav       = 0.19 _d 0/(360. _d 0*86400. _d 0)
        ligand_stab = 1. _d 8
        ligand_tot  = 1. _d -6
-       alphaloc    = 2. _d -3/(360. _d 0 * 86400. _d 0)
-       rain_ratioloc = 7. _d -2
+       alphaUniform     = 2. _d -3/(360. _d 0 * 86400. _d 0)
+       rainRatioUniform = 7. _d -2
 #endif
        DIC_windFile  = ' '
        DIC_atmospFile= ' '
@@ -249,9 +243,9 @@ C- namelist BIOTIC_PARMS
      &  ' /* Ligand-free iron stability constant (m3/mol) */')
        CALL WRITE_0D_R8( ligand_tot, INDEX_NONE,'ligand_tot =',
      &  ' /* Total free ligand  (mol/m3) */')
-       CALL WRITE_0D_R8( alphaloc, INDEX_NONE,'alphaloc =',
+       CALL WRITE_0D_R8( alphaUniform, INDEX_NONE,'alphaUniform =',
      &  ' /* Timescale for biological activity */')
-       CALL WRITE_0D_R8( rain_ratioloc, INDEX_NONE,'rain_ratioloc =',
+       CALL WRITE_0D_R8(rainRatioUniform,INDEX_NONE,'rainRatioUniform=',
      &  ' /* Inorganic/organic carbon rain ratio */')
 
        CALL WRITE_0D_L( QSW_underice, INDEX_NONE, 'QSW_underice  =',
@@ -292,19 +286,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
-
-#ifdef DIC_BIOTIC
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            alpha(i,j,bi,bj)     = alphaloc
-            rain_ratio(i,j,bi,bj)= rain_ratioloc
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-#endif /* DIC_BIOTIC */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
