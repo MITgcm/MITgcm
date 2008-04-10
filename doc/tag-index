@@ -1,11 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.972 2008/04/06 03:37:44 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.973 2008/04/10 13:56:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/dic: test for "pickup_dic" file when restarting ; 
-  if no pickup-file, can restart with a re-initialised pH (same as it did 
+checkpoint59p
+o gchem / dic / cfc :
+  - add useDIC, useCFC , read from "data.gchem" (& hold in GCHEM.h);
+  - add new parameter files: "data.dic" & "data.cfc" ;
+  - various re-arrangement in initialisation & header file ;
+  - fix tutorial_global_oce_biogeo for multi-threaded test.
+o pkg/dic: test for "pickup_dic" file when restarting ;
+  if no pickup-file, can restart with a re-initialised pH (same as it did
   before) providing pickupStrictlyMatch is set to False.
 o change argument list of S/R PTRACERS_WRITE_PICKUP & MYPACKAGE_WRITE_PICKUP
   + fix call to S/R GGL90_WRITE_PICKUP & DIC_WRITE_PICKUP
