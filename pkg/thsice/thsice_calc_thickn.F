@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.14 2007/09/17 21:58:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.15 2008/04/11 21:31:14 dfer Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -708,7 +708,9 @@ C-    else hi > 0: end
 
 C If there is enough snow to lower the ice/snow interface below
 C freeboard, convert enough snow to ice to bring the interface back
-C to sea-level.  Adjust enthalpy of top ice layer accordingly.
+C to sea-level OR if snow height is larger than hsMax, snow is
+C converted to ice to bring hs down to hsMax. Largest change is
+C applied and enthalpy of top ice layer adjusted accordingly.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hi = comlev1_thsice_1, key=ikey_1
@@ -716,10 +718,13 @@ CADJ STORE hs = comlev1_thsice_1, key=ikey_1
 CADJ STORE hnew(:) = comlev1_thsice_1, key=ikey_1
 CADJ STORE qicen(:) = comlev1_thsice_1, key=ikey_1
 #endif
-       IF ( hs .GT. hi*rhoiw/rhos ) THEN
+       IF ( hs .GT. hi*floodFac .OR. hs .GT. hsMax ) THEN
 cBB               WRITE (6,*)  'Freeboard adjusts'
-         dhi = (hs * rhos - hi * rhoiw) / rhosw
-         dhs = dhi * rhoi / rhos
+c         dhi = (hs * rhos - hi * rhoiw) / rhosw
+c         dhs = dhi * rhoi / rhos
+         dhs = (hs - hi*floodFac) * rhoi / rhosw
+         dhs = MAX( hs - hsMax, dhs )
+         dhi = dhs * rhos / rhoi
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hnew(:) = comlev1_thsice_1, key=ikey_1
 #endif
@@ -742,12 +747,12 @@ cBB      print*,'BBerr, hi>hiMax',i,j,hi
          ENDDO
          fresh = fresh + chi*rhoi/dt
        ENDIF
-       IF (hs.GT.hsMax) THEN
-c        print*,'BBerr, hs>hsMax',i,j,hs
-         chs=hs-hsMax
-         hs=hsMax
-         fresh = fresh + chs*rhos/dt
-       ENDIF
+c       IF (hs.GT.hsMax) THEN
+cc        print*,'BBerr, hs>hsMax',i,j,hs
+c         chs=hs-hsMax
+c         hs=hsMax
+c         fresh = fresh + chs*rhos/dt
+c       ENDIF
 
 C Compute new total ice thickness.
 

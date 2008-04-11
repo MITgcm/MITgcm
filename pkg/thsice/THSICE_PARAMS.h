@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.11 2007/04/29 23:48:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.12 2008/04/11 21:31:14 dfer Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -19,7 +19,7 @@ C     rhos      ::   density of snow [kg/m^3]
 C     rhoi      ::   density of ice [kg/m^3]
 C     rhosw     ::   density of seawater [kg/m^3]
 C     rhofw     ::   density of fresh water [kg/m^3]
-C     rhoiw     ::   ocean-ice density difference [kg/m^3]
+C     floodFac  ::   flooding factor = (rhosw-rhoi)/rhos [dimensionless]
 C.. specific heats
 C     cpIce     ::   specific heat of fresh ice [J/kg/K]
 C     cpWater   ::   specific heat of water [J/kg/K]
@@ -77,7 +77,7 @@ C     hNewIceMax  :: new ice maximum thickness [m]
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       COMMON / THSICE_PHYSPAR_R /
-     &  rhos, rhoi, rhosw, rhofw, rhoiw,
+     &  rhos, rhoi, rhosw, rhofw, floodFac,
      &  cpIce, cpWater,
      &  kIce, kSnow,
      &  bMeltCoef, Lfresh, qsnow,
@@ -96,7 +96,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _RL  rhoi
       _RL  rhosw
       _RL  rhofw
-      _RL  rhoiw
+      _RL  floodFac
       _RL  cpIce
       _RL  cpWater
       _RL  kIce

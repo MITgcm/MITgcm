@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.14 2007/04/29 23:48:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.15 2008/04/11 21:31:14 dfer Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -186,7 +186,7 @@ C     and ice thickness/growth, use thSIce_deltaT value
 
 C-    Define other constants (from previous ones):
       Tmlt1=-mu_Tf*S_winton
-      rhoiw = rhosw - rhoi
+      floodFac = (rhosw - rhoi)/rhos
 
 C     Set I/O parameters
       thSIce_tave_mdsio     = .TRUE.
@@ -250,7 +250,7 @@ c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,*) 'ThSI: rhoi      =',rhoi
       WRITE(iUnit,*) 'ThSI: rhosw     =',rhosw
       WRITE(iUnit,*) 'ThSI: rhofw     =',rhofw
-      WRITE(iUnit,*) 'ThSI: rhoiw     =',rhoiw
+      WRITE(iUnit,*) 'ThSI: floodFac  =',floodFac
       WRITE(iUnit,*) 'ThSI: cpIce     =',cpIce
       WRITE(iUnit,*) 'ThSI: cpWater   =',cpWater
       WRITE(iUnit,*) 'ThSI: kIce      =',kIce
