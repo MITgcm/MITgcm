@@ -2,7 +2,7 @@
 #
 # tested on columbia using:
 # module purge
-# module load modules scsl.1.6.1.0 intel-comp.10.0.026 mpt.1.16.0.0 pd-netcdf.3.6.0-p1
+# module load modules scsl.1.6.1.0 intel-comp.10.1.013 mpt.1.16.0.0 pd-netcdf.3.6.0-p1
 
 CPP='/lib/cpp  -traditional -P'
 FC=ifort
