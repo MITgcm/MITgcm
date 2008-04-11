@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.973 2008/04/10 13:56:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.974 2008/04/11 21:48:34 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o thsice pkg:
+  - Now hsMax limits snow heitght by turning it into ice following
+    flooding scheme (and now conserving energy)
+  - Slight rewriting of the formula in thsice_calc_thick.F
+  - Parameter rhowi eliminated to be replaced by floodFac = (rhosw-rhoi)/rhos
+    --> changes results of global_ocean.cs32x15.icedyn and global_ocean.cs32x15.thsice 
 
 checkpoint59p
 o gchem / dic / cfc :
