@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/Attic/my82_do_diags.F,v 1.5 2008/04/14 10:09:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/Attic/my82_do_diags.F,v 1.6 2008/04/14 10:12:40 mlosch Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -129,10 +129,8 @@ C         transfer analyse a particular snap-shots
      &       'MYviscAr', MYviscAr, myThid)
         CALL MNC_CW_RL_W(pf,'my_state',0,0,
      &       'MYdiffKr', MYdiffKr, myThid)
-        print *, 'ml-hbl 1'
         CALL MNC_CW_RL_W(pf,'my_state',0,0,
      &       'MYhbl', MYhbl, myThid)
-        print *, 'ml-hbl 2'
        ENDIF
 #endif /*  ALLOW_MNC  */
 
