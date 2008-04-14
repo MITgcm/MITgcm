@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.64 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.65 2008/04/14 09:45:18 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -33,7 +33,7 @@ C       |-- KPP_OPEN_DIAGS
 C       |
 C       |-- PP81_INIT
 C       |
-C       |-- MY82_INIT
+C       |-- MY82_INIT_VARIA
 C       |
 C       |-- GGL90_INIT
 C       |
@@ -158,7 +158,7 @@ C--   Initialize PP81 vertical mixing scheme.
 #ifdef ALLOW_MY82
 C--   Initialize MY82 vertical mixing scheme.
       IF (useMY82) THEN
-       CALL MY82_INIT( myThid )
+       CALL MY82_INIT_VARIA( myThid )
       ENDIF
 #endif
 

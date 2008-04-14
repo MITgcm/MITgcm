@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/Attic/my82_init.F,v 1.3 2005/05/30 07:41:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_init_varia.F,v 1.1 2008/04/14 09:42:03 mlosch Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
 
-      SUBROUTINE MY82_INIT( myThid )
+      SUBROUTINE MY82_INIT_VARIA( myThid )
 C     /==========================================================\
-C     | SUBROUTINE MY82_INIT                                     |
+C     | SUBROUTINE MY82_INIT_VARIA                               |
 C     | o Routine to initialize MY82 parameters and variables.   |
 C     |==========================================================|
 C     | Initialize MY92 parameters and variables.                |

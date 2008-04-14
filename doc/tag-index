@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.974 2008/04/11 21:48:34 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.975 2008/04/14 09:45:35 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/my82: add netcdf-support and diagnostics 
 o thsice pkg:
   - Now hsMax limits snow heitght by turning it into ice following
     flooding scheme (and now conserving energy)

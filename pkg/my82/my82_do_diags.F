@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/Attic/my82_do_diags.F,v 1.3 2005/05/15 03:04:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/Attic/my82_do_diags.F,v 1.4 2008/04/14 09:42:03 mlosch Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -44,6 +44,9 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "MY82.h"
 #include "MY82_DIAGS.h"
 
@@ -65,7 +68,14 @@ C     == Local variables ==
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER bi, bj, K
       _RL DDTT
+      CHARACTER*(1) pf
 CEOP
+
+      IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
+        pf(1:1) = 'D'
+      ELSE
+        pf(1:1) = 'R'
+      ENDIF
 
 C----------------------------------------------------------------
 C     Dump snapshot of MY82 variables.
@@ -85,7 +95,7 @@ C----------------------------------------------------------------
      &       Nr, myIter, myThid )
        ENDIF
 
-       if (MYwriteState) then
+       if (MYwriteState .AND. snapshot_mdsio) then
 #ifdef MULTIPLE_RECORD_MY82_STATE_FILES
 C       Write each snap-shot as a new record in one file per variable
 C       - creates relatively few files but these files can become huge
@@ -108,6 +118,21 @@ C         transfer analyse a particular snap-shots
      &       myIter,myThid)
 #endif /* MULTIPLE_RECORD_MY82_STATE_FILES */
        endif
+
+#ifdef ALLOW_MNC
+        IF (MYwriteState .AND. useMNC .AND. snapshot_mnc ) THEN
+          CALL MNC_CW_SET_UDIM('my_state', -1, myThid)
+          CALL MNC_CW_RL_W_S('D','my_state',0,0,'T',myTime,myThid)
+          CALL MNC_CW_SET_UDIM('my_state', 0, myThid)
+          CALL MNC_CW_I_W_S('I','my_state',0,0,'iter',myIter,myThid)
+          CALL MNC_CW_RL_W(pf,'my_state',0,0,
+     &         'MYviscAr', MYviscAr, myThid)
+          CALL MNC_CW_RL_W(pf,'my_state',0,0,
+     &         'MYdiffKr', MYdiffKr, myThid)
+          CALL MNC_CW_RL_W(pf,'my_state',0,0,
+     &         'MYhbl', MYhbl, myThid)
+        ENDIF
+#endif /*  ALLOW_MNC  */
 
 C--   Increment record counter
        my_drctrec = my_drctrec + 1
@@ -174,6 +199,7 @@ C     Normalize by integrated time
         ENDDO
        ENDDO
        
+      IF (MYwriteState .AND. timeave_mdsio) THEN
 #ifdef MULTIPLE_RECORD_MY82_STATE_FILES
 C     Write each snap-shot as a new record in one file per variable
 C     - creates relatively few files but these files can become huge
@@ -199,7 +225,23 @@ C     transfer analyse a particular snap-shots
        CALL WRITE_FLD_XY_RL('MYhbl-T.',    suff,MYhblTave,
      &      myIter,myThid)
 #endif /* MULTIPLE_RECORD_MY82_STATE_FILES */          
-         
+       ENDIF
+       
+#ifdef ALLOW_MNC
+        IF (MYwriteState .AND. useMNC .AND. timeave_mnc) THEN
+          CALL MNC_CW_SET_UDIM('my_timeave', -1, myThid)
+          CALL MNC_CW_RL_W_S('D','my_timeave',0,0,'T',myTime,myThid)
+          CALL MNC_CW_SET_UDIM('my_timeave', 0, myThid)
+          CALL MNC_CW_I_W_S('I','my_timeave',0,0,'iter',myIter,myThid)
+          CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
+     &         'MYviscAr', MYviscArTave, myThid)
+          CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
+     &         'MYdiffKr', MYdiffKrTave, myThid)
+          CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
+     &         'MYhbl', MYhblTave, myThid)
+        ENDIF
+#endif /*  ALLOW_MNC  */
+
 C     Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -230,9 +272,17 @@ C     Keep record of how much time has been integrated over
        ENDDO
       ENDIF
 
-#endif
+#endif /* ALLOW_TIMEAVE */
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL(MYviscAz,'MYviscAr',0,Nr,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(MYdiffKr,'MYdiffKr',0,Nr,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(MYhbl   ,'MYhbl   ',0,1 ,0,1,1,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
       
-#endif
+#endif /* ALLOW_MY82 */
       
       RETURN
       END

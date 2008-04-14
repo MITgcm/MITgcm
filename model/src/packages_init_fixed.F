@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.62 2008/04/06 20:53:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.63 2008/04/14 09:45:18 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,6 +35,8 @@ C       |
 C       |-- GMREDI_INIT_FIXED
 C       |
 C       |-- KPP_INIT_FIXED
+C       |
+C       |-- MY82_INIT_FIXED
 C       |
 C       |-- OPPS_INIT
 C       |
@@ -145,6 +147,13 @@ C--   Initialize fixed arrays for GM-Redi
 C--   Initialize fixed arrays for KPP
       IF ( useKPP ) THEN
        CALL KPP_INIT_FIXED( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_MY82
+C--   Initialize fixed arrays for MY82
+      IF ( useMY82 ) THEN
+       CALL MY82_INIT_FIXED( myThid )
       ENDIF
 #endif
 
