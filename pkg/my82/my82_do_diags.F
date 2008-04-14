@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/Attic/my82_do_diags.F,v 1.4 2008/04/14 09:42:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/Attic/my82_do_diags.F,v 1.5 2008/04/14 10:09:34 mlosch Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -72,9 +72,9 @@ C     == Local variables ==
 CEOP
 
       IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
-        pf(1:1) = 'D'
+       pf(1:1) = 'D'
       ELSE
-        pf(1:1) = 'R'
+       pf(1:1) = 'R'
       ENDIF
 
 C----------------------------------------------------------------
@@ -95,7 +95,7 @@ C----------------------------------------------------------------
      &       Nr, myIter, myThid )
        ENDIF
 
-       if (MYwriteState .AND. snapshot_mdsio) then
+       IF (MYwriteState .AND. snapshot_mdsio) THEN
 #ifdef MULTIPLE_RECORD_MY82_STATE_FILES
 C       Write each snap-shot as a new record in one file per variable
 C       - creates relatively few files but these files can become huge
@@ -117,21 +117,23 @@ C         transfer analyse a particular snap-shots
         CALL WRITE_FLD_XY_RL('MYhbl.',suff,MYhbl,
      &       myIter,myThid)
 #endif /* MULTIPLE_RECORD_MY82_STATE_FILES */
-       endif
+       ENDIF
 
 #ifdef ALLOW_MNC
-        IF (MYwriteState .AND. useMNC .AND. snapshot_mnc ) THEN
-          CALL MNC_CW_SET_UDIM('my_state', -1, myThid)
-          CALL MNC_CW_RL_W_S('D','my_state',0,0,'T',myTime,myThid)
-          CALL MNC_CW_SET_UDIM('my_state', 0, myThid)
-          CALL MNC_CW_I_W_S('I','my_state',0,0,'iter',myIter,myThid)
-          CALL MNC_CW_RL_W(pf,'my_state',0,0,
-     &         'MYviscAr', MYviscAr, myThid)
-          CALL MNC_CW_RL_W(pf,'my_state',0,0,
-     &         'MYdiffKr', MYdiffKr, myThid)
-          CALL MNC_CW_RL_W(pf,'my_state',0,0,
-     &         'MYhbl', MYhbl, myThid)
-        ENDIF
+       IF (MYwriteState .AND. useMNC .AND. snapshot_mnc ) THEN
+        CALL MNC_CW_SET_UDIM('my_state', -1, myThid)
+        CALL MNC_CW_RL_W_S('D','my_state',0,0,'T',myCurrentTime,myThid)
+        CALL MNC_CW_SET_UDIM('my_state', 0, myThid)
+        CALL MNC_CW_I_W_S('I','my_state',0,0,'iter',myIter,myThid)
+        CALL MNC_CW_RL_W(pf,'my_state',0,0,
+     &       'MYviscAr', MYviscAr, myThid)
+        CALL MNC_CW_RL_W(pf,'my_state',0,0,
+     &       'MYdiffKr', MYdiffKr, myThid)
+        print *, 'ml-hbl 1'
+        CALL MNC_CW_RL_W(pf,'my_state',0,0,
+     &       'MYhbl', MYhbl, myThid)
+        print *, 'ml-hbl 2'
+       ENDIF
 #endif /*  ALLOW_MNC  */
 
 C--   Increment record counter
@@ -225,60 +227,60 @@ C     transfer analyse a particular snap-shots
        CALL WRITE_FLD_XY_RL('MYhbl-T.',    suff,MYhblTave,
      &      myIter,myThid)
 #endif /* MULTIPLE_RECORD_MY82_STATE_FILES */          
-       ENDIF
+      ENDIF
        
 #ifdef ALLOW_MNC
-        IF (MYwriteState .AND. useMNC .AND. timeave_mnc) THEN
-          CALL MNC_CW_SET_UDIM('my_timeave', -1, myThid)
-          CALL MNC_CW_RL_W_S('D','my_timeave',0,0,'T',myTime,myThid)
-          CALL MNC_CW_SET_UDIM('my_timeave', 0, myThid)
-          CALL MNC_CW_I_W_S('I','my_timeave',0,0,'iter',myIter,myThid)
-          CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
-     &         'MYviscAr', MYviscArTave, myThid)
-          CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
-     &         'MYdiffKr', MYdiffKrTave, myThid)
-          CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
-     &         'MYhbl', MYhblTave, myThid)
-        ENDIF
+      IF (MYwriteState .AND. useMNC .AND. timeave_mnc) THEN
+       CALL MNC_CW_SET_UDIM('my_timeave', -1, myThid)
+       CALL MNC_CW_RL_W_S('D','my_timeave',0,0,'T',myCurrentTime,myThid)
+       CALL MNC_CW_SET_UDIM('my_timeave', 0, myThid)
+       CALL MNC_CW_I_W_S('I','my_timeave',0,0,'iter',myIter,myThid)
+       CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
+     &      'MYviscAr', MYviscArTave, myThid)
+       CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
+     &      'MYdiffKr', MYdiffKrTave, myThid)
+       CALL MNC_CW_RL_W(pf,'my_timeave',0,0,
+     &      'MYhbl', MYhblTave, myThid)
+      ENDIF
 #endif /*  ALLOW_MNC  */
 
 C     Reset averages to zero
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(MYviscArtave,Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(MYdiffKrtave,Nr,bi,bj,myThid)
-         CALL TIMEAVE_RESET(MYhbltave,    1,bi,bj,myThid)
-         DO k=1,Nr
-          my_TimeAve(k,bi,bj)=0.
-         ENDDO
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        CALL TIMEAVE_RESET(MYviscArtave,Nr,bi,bj,myThid)
+        CALL TIMEAVE_RESET(MYdiffKrtave,Nr,bi,bj,myThid)
+        CALL TIMEAVE_RESET(MYhbltave,    1,bi,bj,myThid)
+        DO k=1,Nr
+         my_TimeAve(k,bi,bj)=0.
         ENDDO
        ENDDO
+      ENDDO
          
 C     Time Average MY fields
-       DDTT=0.5*deltaTclock
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_CUMULATE(
-     &        MYviscArtave,MYviscAr,Nr,DDTT,bi,bj,myThid)
-         CALL TIMEAVE_CUMULATE(
-     &        MYdiffKrtave,MYdiffKr,Nr,DDTT,bi,bj,myThid)
-         CALL TIMEAVE_CUMULATE(
-     &        MYhbltave,    MYhbl,    1, DDTT,bi,bj,myThid)
+      DDTT=0.5*deltaTclock
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        CALL TIMEAVE_CUMULATE(
+     &       MYviscArtave,MYviscAr,Nr,DDTT,bi,bj,myThid)
+        CALL TIMEAVE_CUMULATE(
+     &       MYdiffKrtave,MYdiffKr,Nr,DDTT,bi,bj,myThid)
+        CALL TIMEAVE_CUMULATE(
+     &       MYhbltave,    MYhbl,    1, DDTT,bi,bj,myThid)
 C     Keep record of how much time has been integrated over
-         DO k=1,Nr
-          my_TimeAve(k,bi,bj)=my_TimeAve(k,bi,bj)+DDTT
-         ENDDO
+        DO k=1,Nr
+         my_TimeAve(k,bi,bj)=my_TimeAve(k,bi,bj)+DDTT
         ENDDO
        ENDDO
+      ENDDO
       ENDIF
 
 #endif /* ALLOW_TIMEAVE */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-       CALL DIAGNOSTICS_FILL(MYviscAz,'MYviscAr',0,Nr,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(MYdiffKr,'MYdiffKr',0,Nr,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(MYhbl   ,'MYhbl   ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(MYviscAr,'MYVISCAR',0,Nr,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(MYdiffKr,'MYDIFFKR',0,Nr,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(MYhbl   ,'MYHBL   ',0,1 ,0,1,1,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
       

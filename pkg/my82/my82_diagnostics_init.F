@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_diagnostics_init.F,v 1.1 2008/04/14 09:42:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_diagnostics_init.F,v 1.2 2008/04/14 10:09:34 mlosch Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -44,21 +44,21 @@ C     diagTitle :: local string (80c): description of field in diagnostic
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-        diagName  = 'MYviscAr'
+        diagName  = 'MYVISCAR'
         diagTitle = 'MY vertical eddy viscosity coefficient'
         diagUnits = 'm^2/s           '
         diagCode  = 'SM P    UR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-        diagName  = 'MYdiffKr'
+        diagName  = 'MYDIFFKR'
         diagTitle = 'Vertical diffusion coefficient for salt & tracers'
         diagUnits = 'm^2/s           '
         diagCode  = 'SM P    UR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-        diagName  = 'MYhbl   '
+        diagName  = 'MYHBL   '
         diagTitle = 'MY82 boundary layer depth'
         diagUnits = 'm               '
         diagCode  = 'SM P     1      '
