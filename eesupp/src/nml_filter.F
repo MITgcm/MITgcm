@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/nml_filter.F,v 1.7 2005/08/05 23:44:28 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/nml_filter.F,v 1.8 2008/04/16 20:48:06 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -67,7 +67,7 @@ C--   Open the data file
 
 c--   open the filtered data file
       call mdsfindunit( outunit, mythid )
-#ifdef TARGET_BGL
+#if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
       open( unit=outunit, file='scratch3', status='unknown' )
 #else
       open( unit=outunit, status='scratch' )

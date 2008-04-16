@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.210 2008/04/05 18:14:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.211 2008/04/16 20:48:06 heimbach Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -289,7 +289,7 @@ C--   Initialise retired parameters to unlikely value
       groundAtK1      = .FALSE.
 
 C--   Open the parameter file
-#ifdef TARGET_BGL
+#if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
       OPEN(UNIT=scrUnit1,FILE='scratch1',STATUS='UNKNOWN')
       OPEN(UNIT=scrUnit2,FILE='scratch2',STATUS='UNKNOWN')
 #else

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/open_copy_data_file.F,v 1.5 2005/08/05 23:44:28 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/open_copy_data_file.F,v 1.6 2008/04/16 20:48:06 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -62,7 +62,7 @@ C--   Open the parameter file
        STOP 'ABNORMAL END: S/R OPEN_COPY_DATA_FILE'
       ENDIF
 
-#ifdef TARGET_BGL
+#if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
       OPEN(UNIT=scrUnit1,FILE='scratch1',STATUS='UNKNOWN')
       OPEN(UNIT=scrUnit2,FILE='scratch2',STATUS='UNKNOWN')
 #else
