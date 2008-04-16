@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.23 2005/11/05 00:51:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.24 2008/04/16 20:46:46 heimbach Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 CBOP
@@ -60,7 +60,7 @@ C                         units.
       INTEGER elCount
       INTEGER elLen
       INTEGER elStride
-      INTEGER npe,itemp,ierr,istatus(MPI_STATUS_SIZE)
+      INTEGER npe,itemp(2),ierr,istatus(MPI_STATUS_SIZE)
       INTEGER mpiBufSize,mpiRequest
 #endif /* ALLOW_USE_MPI */
       INTEGER myThid
@@ -182,25 +182,13 @@ C--   To speed-up mpi gather and scatter routines, myXGlobalLo
 C     and myYGlobalLo from each process are transferred to
 C     a common block array.  This allows process 0 to know
 C     the location of the domains controlled by each process.
-       mpiBufSize=1
-       mpiRequest=0
        DO npe = 0, numberOfProcs-1
-          CALL MPI_ISEND (myXGlobalLo, mpiBufSize, MPI_INTEGER,
-     &         npe, mpiMyId, MPI_COMM_MODEL, mpiRequest, ierr)
-       ENDDO
-       DO npe = 0, numberOfProcs-1
-          CALL MPI_RECV (itemp, mpiBufSize, MPI_INTEGER,
-     &         npe, npe, MPI_COMM_MODEL, istatus, ierr)
-          mpi_myXGlobalLo(npe+1) = itemp
-       ENDDO
-       DO npe = 0, numberOfProcs-1
-          CALL MPI_ISEND (myYGlobalLo, mpiBufSize, MPI_INTEGER,
-     &         npe, mpiMyId, MPI_COMM_MODEL, mpiRequest, ierr)
-       ENDDO
-       DO npe = 0, numberOfProcs-1
-          CALL MPI_RECV (itemp, mpiBufSize, MPI_INTEGER,
-     &         npe, npe, MPI_COMM_MODEL, istatus, ierr)
-          mpi_myYGlobalLo(npe+1) = itemp
+          itemp(1) = myXGlobalLo
+          itemp(2) = myYGlobalLo
+          CALL MPI_BCAST(itemp, 2, MPI_INTEGER, npe, 
+     &         MPI_COMM_MODEL, ierr)
+          mpi_myXGlobalLo(npe+1) = itemp(1)
+          mpi_myYGlobalLo(npe+1) = itemp(2)
        ENDDO
 
        myPx = mpiPx+1
@@ -540,4 +528,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.23 2005/11/05 00:51:06 jmc Exp $
+C $Id: ini_procs.F,v 1.24 2008/04/16 20:46:46 heimbach Exp $
