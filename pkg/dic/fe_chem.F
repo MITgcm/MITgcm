@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.13 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.14 2008/04/18 19:32:12 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -62,7 +62,7 @@ C in surface layer
           IF (hFacC(i,j,k,bi,bj) .GT. 0. _d 0) THEN
 
 #ifdef DIC_NO_NEG
-              tmpfe=max(0. _d0 , fe (i,j,k,bi,bj))
+              tmpfe=max(0. _d 0 , fe (i,j,k,bi,bj))
 #else
               tmpfe=fe (i,j,k,bi,bj)
 #endif
