@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.50 2007/10/20 14:56:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.51 2008/04/18 19:39:48 jahn Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -136,6 +136,9 @@ C locABT           :: local copy of (AB-extrapolated) tracer field
       _RL localT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL locABT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL advFac, rAdvFac
+#ifdef GAD_SMOLARKIEWICZ_HACK
+      _RL outFlux, trac, fac
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -581,6 +584,59 @@ C-    Set non local KPP transport term (ghat):
         DO i=1-Olx,sNx+Olx
          fVerT(i,j,kUp) = fVerT(i,j,kUp)
      &                  + df(i,j)*maskUp(i,j)*rhoFacF(k)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
+
+#ifdef GAD_SMOLARKIEWICZ_HACK
+coj   hack to make redi (and everything else in this s/r) positive
+coj   (see Smolarkiewicz MWR 1989 and Bott MWR 1989)
+coj   only works if 'down' is k+1 and k loop in thermodynamics is k=Nr,1,-1
+coj
+coj   apply to all tracers except temperature
+      IF (tracerIdentity.NE.GAD_TEMPERATURE) THEN
+       DO j=1-Oly,sNy+Oly-1
+        DO i=1-Olx,sNx+Olx-1
+coj   add outgoing fluxes
+         outFlux=dTtracerLev(k)*
+     &    _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &   *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
+     &    *( MAX(0. _d 0,fZon(i+1,j)) + MAX(0. _d 0,-fZon(i,j))
+     &      +MAX(0. _d 0,fMer(i,j+1)) + MAX(0. _d 0,-fMer(i,j))
+     &      +MAX(0. _d 0,fVerT(i,j,kDown)*rkSign)
+     &      +MAX(0. _d 0,-fVerT(i,j,kUp)*rkSign)
+     &     )
+         IF ( applyAB_onTracer ) THEN
+           trac=TracerN(i,j,k,bi,bj)
+         ELSE
+           trac=TracAB(i,j,k,bi,bj)
+         ENDIF
+coj   if they would reduce tracer by a fraction of more than
+coj   SmolarkiewiczMaxFrac, ...
+         IF (outFlux.GT.0. _d 0 .AND.
+     &       outFlux.GT.SmolarkiewiczMaxFrac*trac) THEN
+coj   ... scale them down
+coj   if trac is already negative, set flux to zero
+           fac = MAX(0. _d 0,SmolarkiewiczMaxFrac*trac/outFlux)
+           IF (fZon(i+1,j).GT.0. _d 0) fZon(i+1,j)=fac*fZon(i+1,j)
+           IF (-fZon(i,j) .GT.0. _d 0) fZon(i,j)  =fac*fZon(i,j)       
+           IF (fMer(i,j+1).GT.0. _d 0) fMer(i,j+1)=fac*fMer(i,j+1)
+           IF (-fMer(i,j) .GT.0. _d 0) fMer(i,j)  =fac*fMer(i,j)
+           IF (-fVerT(i,j,kUp)*rkSign .GT.0. _d 0)
+     &      fVerT(i,j,kUp)=fac*fVerT(i,j,kUp)
+           IF (fVerT(i,j,kDown)*rkSign.GT.0. _d 0) THEN
+            fVerT(i,j,kDown)=fac*fVerT(i,j,kDown)
+            IF (k.LT.Nr) THEN
+coj   down flux has already been applied in lower layer - undo it
+             gTracer(i,j,k+1,bi,bj)=gTracer(i,j,k+1,bi,bj)
+     &        -_recip_hFacC(i,j,k+1,bi,bj)*recip_drF(k+1)
+     &        *recip_rA(i,j,bi,bj)*recip_deepFac2C(k+1)
+     &        *recip_rhoFacC(k+1)
+     &        *( (-(fac-1. _d 0)*fVerT(i,j,kDown))*rkSign )
+            ENDIF
+           ENDIF
+         ENDIF
         ENDDO
        ENDDO
       ENDIF

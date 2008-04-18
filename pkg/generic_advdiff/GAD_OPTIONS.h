@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.9 2007/01/25 16:47:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.10 2008/04/18 19:39:48 jahn Exp $
 C $Name:  $
 
 CBOP
@@ -45,6 +45,20 @@ C This enable the use of 2nd-Order Moment advection scheme (Prather, 1986)
 C due to large memory space (10 times more / tracer) requirement,
 C by default, this part of the code is not compiled.
 #undef GAD_ALLOW_SOM_ADVECT
+
+C Hack to make Redi positive by restricting the outgoing flux for each cell
+C to be no more than the amount of tracer in the cell (see Smolarkiewicz 
+C MWR 1989 and Bott MWR 1989).  This affects all contributions to the
+C tracer equation calculated in gad_calc_rhs, i.e., diffusion, GMRedi and
+C the non-local part of KPP, but advection only if 
+C multiDimAdvection=.FALSE. and vertical diffusion (including the
+C diagonal contribution from GMRedi) only if implicitDiffusion=.FALSE.
+C GM is affected only if GMREDI_AdvForm=.FALSE.
+C The parameter SmolarkiewiczMaxFrac (set in gad_init_fixed) can be used to
+C restrict the fraction of tracer that can leave a cell to be less than 1.
+C This will be necessary to make the tracer strictly positive.
+C This hack applies to all tracers except temperature! 
+#undef  GAD_SMOLARKIEWICZ_HACK
 
 #else
 

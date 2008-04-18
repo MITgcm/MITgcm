@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.4 2008/02/12 20:26:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.5 2008/04/18 19:39:48 jahn Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -102,6 +102,10 @@ C     with synchronous time-step, which would require to do also AB(u,v,w)
       ENDIF
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
 
+#ifdef GAD_SMOLARKIEWICZ_HACK
+      SmolarkiewiczMaxFrac = 1. _d 0
+#endif
+
       _END_MASTER(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -164,6 +168,11 @@ C-- Print out GAD parameters :
       CALL WRITE_0D_L( AdamsBashforth_S, INDEX_NONE,
      & 'AdamsBashforth_S =',
      & ' /* apply Adams-Bashforth extrapolation on Salt */')
+#ifdef GAD_SMOLARKIEWICZ_HACK
+      CALL WRITE_0D_R8( SmolarkiewiczMaxFrac, INDEX_NONE,
+     & 'SmolarkiewiczMaxFrac =',
+     & ' /* maximal fraction of tracer to flow out of a cell */')
+#endif
 
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
