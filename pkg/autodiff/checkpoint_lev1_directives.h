@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.30 2007/04/30 18:48:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.31 2008/04/18 22:57:54 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -105,3 +105,8 @@ CADJ STORE cMeanThetaUVel = comlev1, key = ikey_dynamics
 CADJ STORE cMeanThetaVVel = comlev1, key = ikey_dynamics
 #endif
 
+#ifdef ALLOW_COST_ATLANTIC
+CADJ STORE theta = comlev1, key = ikey_dynamics
+CADJ STORE uVel  = comlev1, key = ikey_dynamics
+CADJ STORE vVel  = comlev1, key = ikey_dynamics
+#endif

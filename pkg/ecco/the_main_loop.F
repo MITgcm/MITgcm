@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.66 2007/11/05 18:53:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.67 2008/04/18 22:57:54 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -455,6 +455,8 @@ c--     Accumulate time averages of temperature, salinity
 
 
 #ifdef ALLOW_COST_ATLANTIC
+CADJ STORE theta = comlev1, key = ikey_dynamics
+CADJ STORE vVel  = comlev1, key = ikey_dynamics
 c--     Compute meridional heat transport 
         call timer_start('cost_atlantic         [ECCO MAIN]', mythid)
         call cost_atlantic(  mytime, myiter,mythid )
