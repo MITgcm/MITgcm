@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.32 2008/03/24 00:25:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.33 2008/04/18 18:11:43 heimbach Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -77,6 +77,10 @@ C     == Global variables ==
 #ifdef ALLOW_NONHYDROSTATIC
 #include "NH_VARS.h"
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc.h"
+#include "tamc_keys.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     == Routine arguments ==
       INTEGER bi,bj,k
@@ -98,6 +102,7 @@ C     == Local variables ==
 #ifdef ALLOW_NONHYDROSTATIC
       INTEGER kp1
 #endif
+      INTEGER lockey
       _RL smag2fac, smag4fac
       _RL leith2fac, leith4fac
       _RL leithD2fac, leithD4fac
@@ -130,6 +135,20 @@ C     == Local variables ==
       _RL viscA4_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL calcLeith, calcSmag
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+          lockey = (ikey-1)*Nr + k
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set flags which are used in this S/R and elsewhere :
       useVariableViscosity=
@@ -219,9 +238,9 @@ C---- variable viscosity :
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       IF ( calcLeith .OR. calcSmag ) THEN
-        STOP 'calcLeith or calcSmag not implemented for ADJOINT'
-       ENDIF
+cphtest       IF ( calcLeith .OR. calcSmag ) THEN
+cphtest        STOP 'calcLeith or calcSmag not implemented for ADJOINT'
+cphtest       ENDIF
 #endif
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
@@ -309,6 +328,13 @@ C-       gradient in y direction:
 
        ENDIF
 
+#ifdef    ALLOW_AUTODIFF_TAMC
+cphCADJ STORE viscA4_ZSmg(:,:) 
+cphCADJ &     = comlev1_bibj_k , key=lockey, byte=isbyte
+cphCADJ STORE viscAh_ZSmg(:,:) 
+cphCADJ &     = comlev1_bibj_k , key=lockey, byte=isbyte
+#endif    /* ALLOW_AUTODIFF_TAMC */
+
        DO j=2-Oly,sNy+Oly-1
         DO i=2-Olx,sNx+Olx-1
 CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
@@ -342,7 +368,8 @@ C Velocity Reynolds Scale
            U4scl=0.
          ENDIF
 
-#ifndef ALLOW_AUTODIFF_TAMC
+cph-leith#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef AUTODIFF_DISABLE_LEITH
          IF (useFullLeith.AND.calcLeith) THEN
 C This is the vector magnitude of the vorticity gradient squared
           grdVrt=0.25 _d 0*( (vrtDx(i,j+1)*vrtDx(i,j+1)
@@ -399,7 +426,7 @@ c This approximation is good to the same order as above...
           viscAh_DSmg(i,j)=0. _d 0
           viscA4_DSmg(i,j)=0. _d 0
          ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* AUTODIFF_DISABLE_LEITH */
 
 C  Harmonic on Div.u points
          Alin=viscAhD+viscAhGrid*L2rdt
@@ -481,7 +508,7 @@ C Velocity Reynolds Scale (Pb here at CS-grid corners !)
            U4scl=0.
          ENDIF
 
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef AUTODIFF_DISABLE_LEITH
 C This is the vector magnitude of the vorticity gradient squared
          IF (useFullLeith.AND.calcLeith) THEN
           grdVrt=0.25 _d 0*( (vrtDx(i-1,j)*vrtDx(i-1,j)
@@ -533,7 +560,7 @@ C but this approximation will work on cube (and differs by 4X)
           viscA4_ZSmg(i,j)=smag4fac*L2*viscAh_ZSmg(i,j)
           viscAh_ZSmg(i,j)=smag2fac*viscAh_ZSmg(i,j)
          ENDIF
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* AUTODIFF_DISABLE_LEITH */
 
 C  Harmonic on Zeta points
          Alin=viscAhZ+viscAhGrid*L2rdt
