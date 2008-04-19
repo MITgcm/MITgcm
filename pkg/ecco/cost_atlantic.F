@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_atlantic.F,v 1.5 2007/10/09 00:02:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_atlantic.F,v 1.6 2008/04/19 18:03:11 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -160,7 +160,7 @@ c--     Assign the first value to the array holding the average.
                        tv = tv+p5*(theta(i,j,k,bi,bj)
      $                     + theta(i,j-1,k,bi,bj))*vVel(i,j,k,bi,bj)
      $                     * _dxG(i,j,bi,bj)
-     &                     *  drF(k)*_hFacS(i,j,k,bi,bj)
+     &                     *  drF(k)*maskS(i,j,k,bi,bj)
      $                     *HeatCapacity_Cp*rhoNil
                       endif
                 enddo
@@ -204,7 +204,7 @@ c--     Accumulate the array holding the average.
      $                     +p5*(theta(i,j,k,bi,bj)
      $                     + theta(i,j-1,k,bi,bj))*vVel(i,j,k,bi,bj)
      $                     * _dxG(i,j,bi,bj)
-     &                     *  drF(k)*_hFacS(i,j,k,bi,bj)
+     &                     *  drF(k)*maskS(i,j,k,bi,bj)
      $                     *HeatCapacity_Cp*rhoNil
                    endif
                 enddo
