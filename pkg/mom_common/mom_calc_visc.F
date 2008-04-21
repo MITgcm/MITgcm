@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.33 2008/04/18 18:11:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.34 2008/04/21 15:17:33 heimbach Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -102,7 +102,7 @@ C     == Local variables ==
 #ifdef ALLOW_NONHYDROSTATIC
       INTEGER kp1
 #endif
-      INTEGER lockey
+      INTEGER lockey_1, lockey_2
       _RL smag2fac, smag4fac
       _RL leith2fac, leith4fac
       _RL leithD2fac, leithD4fac
@@ -136,6 +136,10 @@ C     == Local variables ==
       _RL viscA4_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL calcLeith, calcSmag
 
+cph(
+      print *, 'ph-test a ', mythid, k
+      print *, 'ph-test b ', myBxLo(myThid)
+cph)
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
@@ -147,7 +151,7 @@ C     == Local variables ==
           ikey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
-          lockey = (ikey-1)*Nr + k
+          lockey_1 = (ikey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set flags which are used in this S/R and elsewhere :
@@ -328,16 +332,19 @@ C-       gradient in y direction:
 
        ENDIF
 
-#ifdef    ALLOW_AUTODIFF_TAMC
-cphCADJ STORE viscA4_ZSmg(:,:) 
-cphCADJ &     = comlev1_bibj_k , key=lockey, byte=isbyte
-cphCADJ STORE viscAh_ZSmg(:,:) 
-cphCADJ &     = comlev1_bibj_k , key=lockey, byte=isbyte
-#endif    /* ALLOW_AUTODIFF_TAMC */
-
        DO j=2-Oly,sNy+Oly-1
         DO i=2-Olx,sNx+Olx-1
 CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
+
+#ifdef    ALLOW_AUTODIFF_TAMC
+# ifndef AUTODIFF_DISABLE_LEITH
+           lockey_2 = i + sNx*(j-1) + sNx*sNy*(lockey_1-1)
+CADJ STORE viscA4_ZSmg(i,j) 
+CADJ &     = comlev1_mom_ijk_loop , key=lockey_2, byte=isbyte
+CADJ STORE viscAh_ZSmg(i,j) 
+CADJ &     = comlev1_mom_ijk_loop , key=lockey_2, byte=isbyte
+# endif
+#endif    /* ALLOW_AUTODIFF_TAMC */
 
 C These are (powers of) length scales
          IF (useAreaViscLength) THEN
