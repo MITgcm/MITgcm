@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.26 2008/01/16 09:47:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.27 2008/04/21 11:36:37 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -17,6 +17,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
+#include "GAD.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
@@ -28,6 +29,8 @@ C     myThid -  Number of this instance of SEAICE_CHECK
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL checkAdvSchArea, checkAdvSchHeff, checkAdvSchSnow
+      LOGICAL checkAdvSchSalt
 
       _BEGIN_MASTER(myThid)
 
@@ -42,6 +45,67 @@ C--   SEAICE needs forcing_In_AB FALSE
      &         ' Need T,S forcing out of AB (tracForcingOutAB=1)'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
+C--   Check advection schemes
+      checkAdvSchArea = SEAICEadvArea .AND. (
+     &     SEAICEadvSchArea.NE.ENUM_UPWIND_1RST .AND.
+     &     SEAICEadvSchArea.NE.ENUM_CENTERED_2ND .AND.
+     &     SEAICEadvSchArea.NE.ENUM_DST2 .AND.
+     &     SEAICEadvSchArea.NE.ENUM_FLUX_LIMIT .AND.
+     &     SEAICEadvSchArea.NE.ENUM_DST3 .AND.
+     &     SEAICEadvSchArea.NE.ENUM_DST3_FLUX_LIMIT .AND.
+     &     SEAICEadvSchArea.NE.ENUM_OS7MP )
+      checkAdvSchHEFF = SEAICEadvHeff .AND. (
+     &     SEAICEadvSchHeff.NE.ENUM_UPWIND_1RST .AND.
+     &     SEAICEadvSchHeff.NE.ENUM_CENTERED_2ND .AND.
+     &     SEAICEadvSchHeff.NE.ENUM_DST2 .AND.
+     &     SEAICEadvSchHeff.NE.ENUM_FLUX_LIMIT .AND.
+     &     SEAICEadvSchHeff.NE.ENUM_DST3 .AND.
+     &     SEAICEadvSchHeff.NE.ENUM_DST3_FLUX_LIMIT .AND.
+     &     SEAICEadvSchHeff.NE.ENUM_OS7MP )
+      checkAdvSchSnow = SEAICEadvSnow .AND. (
+     &     SEAICEadvSchSnow.NE.ENUM_UPWIND_1RST .AND.
+     &     SEAICEadvSchSnow.NE.ENUM_CENTERED_2ND .AND.
+     &     SEAICEadvSchSnow.NE.ENUM_DST2 .AND.
+     &     SEAICEadvSchSnow.NE.ENUM_FLUX_LIMIT .AND.
+     &     SEAICEadvSchSnow.NE.ENUM_DST3 .AND.
+     &     SEAICEadvSchSnow.NE.ENUM_DST3_FLUX_LIMIT .AND.
+     &     SEAICEadvSchSnow.NE.ENUM_OS7MP )
+      checkAdvSchSalt = SEAICEadvSalt .AND. (
+     &     SEAICEadvSchSalt.NE.ENUM_UPWIND_1RST .AND.
+     &     SEAICEadvSchSalt.NE.ENUM_CENTERED_2ND .AND.
+     &     SEAICEadvSchSalt.NE.ENUM_DST2 .AND.
+     &     SEAICEadvSchSalt.NE.ENUM_FLUX_LIMIT .AND.
+     &     SEAICEadvSchSalt.NE.ENUM_DST3 .AND.
+     &     SEAICEadvSchSalt.NE.ENUM_DST3_FLUX_LIMIT .AND.
+     &     SEAICEadvSchSalt.NE.ENUM_OS7MP ) 
+      IF ( checkAdvSchArea .OR. checkAdvSchHeff .OR. 
+     &     checkAdvSchSnow .OR. checkAdvSchSalt ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     & ' allowed advection schemes for heff, area, snow and salt are: '
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,7I3)') 'SEAICE_CHECK:',
+     &      ENUM_UPWIND_1RST, ENUM_CENTERED_2ND, ENUM_DST2,
+     &      ENUM_FLUX_LIMIT, ENUM_DST3, ENUM_DST3_FLUX_LIMIT, 
+     &      ENUM_OS7MP
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &      ' one of the following is not allowed'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &      ' SEAICEadvSchArea = ',  SEAICEadvSchArea
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &      ' SEAICEadvSchHeff = ',  SEAICEadvSchHeff
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &      ' SEAICEadvSchSnow = ',  SEAICEadvSchSnow
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &      ' SEAICEadvSchSalt = ',  SEAICEadvSchSalt
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
 C--   SEAICEadvSnow does not work with LAD = 1
