@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.975 2008/04/14 09:45:35 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.976 2008/04/21 11:37:38 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: add os7mp as an advection scheme
+              add check for advection schemes
 o pkg/my82: add netcdf-support and diagnostics 
 o thsice pkg:
   - Now hsMax limits snow heitght by turning it into ice following
