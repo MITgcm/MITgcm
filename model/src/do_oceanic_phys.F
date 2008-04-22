@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.61 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.62 2008/04/22 15:18:00 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -142,40 +142,48 @@ C     to diagnose surface buoyancy fluxes and for the non-local transport
 C     term.  Because this call precedes model thermodynamics, temperature
 C     under sea-ice may not be "exactly" at the freezing point by the time
 C     theta is dumped or time-averaged.
+# ifndef ALLOW_ECCO_PRODUCTION
       IF ( useSEAICE ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
+# endif
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE atemp,aqh,precip    = comlev1, key = ikey_dynamics
 CADJ STORE swdown,lwdown       = comlev1, key = ikey_dynamics
 cph# ifdef EXF_READ_EVAP
 CADJ STORE evap                = comlev1, key = ikey_dynamics
 cph# endif
 CADJ STORE uvel,vvel           = comlev1, key = ikey_dynamics
-# ifdef SEAICE_ALLOW_EVP
+#  ifdef SEAICE_ALLOW_DYNAMICS
+CADJ STORE uice                = comlev1, key = ikey_dynamics
+CADJ STORE vice                = comlev1, key = ikey_dynamics
+#   ifdef SEAICE_ALLOW_EVP
 CADJ STORE seaice_sigma1       = comlev1, key = ikey_dynamics
 CADJ STORE seaice_sigma2       = comlev1, key = ikey_dynamics
 CADJ STORE seaice_sigma12      = comlev1, key = ikey_dynamics
-# endif
-# ifdef SEAICE_SALINITY
+#   endif
+#  endif
+#  ifdef SEAICE_SALINITY
 CADJ STORE salt                = comlev1, key = ikey_dynamics
-# endif
-# ifdef ATMOSPHERIC_LOADING
+#  endif
+#  ifdef ATMOSPHERIC_LOADING
 CADJ STORE siceload            = comlev1, key = ikey_dynamics
-# endif
-# ifdef NONLIN_FRSURF
+#  endif
+#  ifdef NONLIN_FRSURF
 CADJ STORE recip_hfacc         = comlev1, key = ikey_dynamics
+#  endif
 # endif
-#endif
-#ifdef ALLOW_DEBUG
+# ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('SEAICE_MODEL',myThid)
-#endif
+# endif
         CALL TIMER_START('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
         CALL SEAICE_MODEL( myTime, myIter, myThid )
         CALL TIMER_STOP ('SEAICE_MODEL    [DO_OCEANIC_PHYS]', myThid)
-#ifdef ALLOW_COST
+# ifdef ALLOW_COST
         CALL SEAICE_COST_SENSI ( myTime, myIter, myThid )
-#endif
+# endif
+# ifndef ALLOW_ECCO_PRODUCTION
       ENDIF
+# endif
 #endif /* ALLOW_SEAICE */
 
 #if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
