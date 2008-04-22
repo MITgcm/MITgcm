@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.38 2008/03/24 00:32:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.39 2008/04/22 22:20:31 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -103,9 +103,24 @@ C     i,j,k         :: Loop counters
       PARAMETER( iMin = 1 , iMax = sNx )
       PARAMETER( jMin = 1 , jMax = sNy )
 CEOP
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL diagDiss, diagAdvec
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif /* ALLOW_DIAGNOSTICS */
 
-C Catch barotropic mode
+C--   Catch barotropic mode
       IF ( Nr .LT. 2 ) RETURN
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        diagDiss  = DIAGNOSTICS_IS_ON( 'Wm_Diss ', myThid )
+        diagAdvec = DIAGNOSTICS_IS_ON( 'Wm_Advec', myThid )
+      ELSE
+        diagDiss  = .FALSE.
+        diagAdvec = .FALSE.
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   Initialise gW to zero
       DO k=1,Nr
@@ -487,6 +502,13 @@ C--          prepare for next level (k+1)
         ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( diagDiss )  CALL DIAGNOSTICS_FILL( gwDiss, 'Wm_Diss ',
+     &                                        k, 1, 2, bi,bj, myThid )
+      IF ( diagAdvec ) CALL DIAGNOSTICS_FILL( gW, 'Wm_Advec',
+     &                                        k,Nr, 1, bi,bj, myThid )
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   Dissipation term inside the Adams-Bashforth:
         IF ( momViscosity .AND. momDissip_In_AB) THEN
