@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.32 2008/02/05 15:34:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.33 2008/04/22 22:01:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -503,6 +503,15 @@ c     diagTitle = 'Square of ocean bottom pressure / top. geo-Potential'
       diagCode  = 'SM P    M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef ALLOW_NONHYDROSTATIC
+      diagName  = 'PHI_NH  '
+      diagTitle = DIAGS_MK_TITLE( 'Non-Hydrostatic '//pTitle, myThid )
+      diagUnits = 'm^2/s^2         '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif /* ALLOW_NONHYDROSTATIC */
 
       diagName  = 'MXLDEPTH'
       diagTitle = 'Mixed-Layer Depth (>0)'

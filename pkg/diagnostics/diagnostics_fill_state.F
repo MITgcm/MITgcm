@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.36 2007/07/11 15:11:05 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.37 2008/04/22 22:01:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -22,8 +22,9 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
 #include "SURFACE.h"
+#include "DYNVARS.h"
+#include "NH_VARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -76,6 +77,11 @@ C--   fill momentum state-var diagnostics:
 #ifdef EXACT_CONSERV
         CALL DIAGNOSTICS_SCALE_FILL(dEtaHdt,tmpFac,2,
      &                              'DETADT2 ',0, 1,0,1,1,myThid)
+#endif
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( use3Dsolver ) THEN
+          CALL DIAGNOSTICS_FILL( phi_nh,'PHI_NH  ',0,Nr,0,1,1,myThid )
+        ENDIF
 #endif
 
         CALL DIAGNOSTICS_FILL(uVel, 'UVEL    ',0,Nr,0,1,1,myThid)
