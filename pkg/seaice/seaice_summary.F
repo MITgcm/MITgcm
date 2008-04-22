@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.21 2008/04/21 11:36:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.22 2008/04/22 15:28:06 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -86,6 +86,8 @@ C     == end of interface ==
       CALL WRITE_0D_L ( useHB87stressCoupling, INDEX_NONE,
      & 'useHB87stressCoupling  =', ' /* altern. ice-ocean stress */')
 #endif /* SEAICE_CGRID */
+      CALL WRITE_0D_L ( SEAICErestoreUnderIce, INDEX_NONE,
+     & 'SEAICErestoreUnderIce  =', ' /* restore T and S under ice */')
       CALL WRITE_0D_L ( usePW79thermodynamics, INDEX_NONE,
      & 'usePW79thermodynamics  =', ' /* default 0-layer TD */')
       CALL WRITE_0D_L ( SEAICEadvHeff, INDEX_NONE,

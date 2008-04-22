@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.52 2008/01/16 09:47:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.53 2008/04/22 15:28:06 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -34,7 +34,9 @@ C     useHB87stressCoupling :: use an intergral over ice and ocean surface
 C                          layer to define surface stresses on ocean
 C                          following Hibler and Bryan (1987, JPO)
 C     usePW79thermodynamics :: use "0-layer" thermodynamics as described in
-C                       Parkinson and Washington (1979) and Hibler (1979)
+C                           Parkinson and Washington (1979) and Hibler (1979)
+C     SEAICErestoreUnderIce :: restore surface T/S also underneath ice
+C                          ( default is false )
 C     SEAICE_no_slip    :: apply no slip boundary conditions to seaice velocity
 C     SEAICE_clipVelocities :: clip velocities to +/- 40cm/s
 C     SEAICE_maskRHS    :: mask the RHS of the solver where there is no ice
@@ -51,7 +53,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
-     &     usePW79thermodynamics,
+     &     usePW79thermodynamics, SEAICErestoreUnderIce,
      &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc
@@ -62,7 +64,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
-     &     usePW79thermodynamics,
+     &     usePW79thermodynamics, SEAICErestoreUnderIce,
      &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
      &     SEAICE_tave_mdsio, SEAICE_dump_mdsio, SEAICE_mon_stdio,
      &     SEAICE_tave_mnc,   SEAICE_dump_mnc,   SEAICE_mon_mnc

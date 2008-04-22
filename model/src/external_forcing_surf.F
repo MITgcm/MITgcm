@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.45 2007/11/28 09:26:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.46 2008/04/22 15:28:20 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,6 +29,7 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SURFACE.h"
 #ifdef ALLOW_SEAICE
+#include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 #endif /* ALLOW_SEAICE */
 #ifdef ALLOW_SHELFICE
@@ -72,7 +73,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Start with surface restoring term :
 
 #ifdef ALLOW_SEAICE
-       IF ( useSEAICE ) THEN
+       IF ( useSEAICE .AND. (.NOT. SEAICErestoreUnderIce) ) THEN
 C     Do not restore under sea-ice
         DO j = jMin, jMax
          DO i = iMin, iMax
