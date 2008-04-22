@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.9 2006/07/13 21:30:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_diagnostics_init.F,v 1.10 2008/04/22 22:03:17 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -32,6 +32,7 @@ C     msgBuf      - Informational/error meesage buffer
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       INTEGER       diagNum
+      INTEGER       diagMate
       CHARACTER*8   diagName
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
@@ -46,443 +47,478 @@ C--   add diagnostics for viscosity coefficients:
       diagTitle = 'Harmonic Visc Coefficient (m2/s) (Zeta Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SZ      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VISCA4Z '
       diagTitle = 'Biharmonic Visc Coefficient (m4/s) (Zeta Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SZ      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VISCAHD '
       diagTitle = 'Harmonic Viscosity Coefficient (m2/s) (Div Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VISCA4D '
       diagTitle = 'Biharmonic Viscosity Coefficient (m4/s) (Div Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VISCAHW '
       diagTitle = 'Harmonic Viscosity Coefficient (m2/s) (W Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'WM      LR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VISCA4W '
       diagTitle = 'Biharmonic Viscosity Coefficient (m4/s) (W Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'WM      LR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VAHZMAX '
       diagTitle = 'CFL-MAX Harm Visc Coefficient (m2/s) (Zeta Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SZ      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VA4ZMAX '
       diagTitle = 'CFL-MAX Biharm Visc Coefficient (m4/s) (Zeta Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SZ      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VAHDMAX '
       diagTitle = 'CFL-MAX Harm Visc Coefficient (m2/s) (Div Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VA4DMAX '
       diagTitle = 'CFL-MAX Biharm Visc Coefficient (m4/s) (Div Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VAHZMIN '
       diagTitle = 'RE-MIN Harm Visc Coefficient (m2/s) (Zeta Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SZ      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VA4ZMIN '
       diagTitle = 'RE-MIN Biharm Visc Coefficient (m4/s) (Zeta Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SZ      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VAHDMIN '
       diagTitle = 'RE-MIN Harm Visc Coefficient (m2/s) (Div Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VA4DMIN '
       diagTitle = 'RE-MIN Biharm Visc Coefficient (m4/s) (Div Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VAHZLTH '
       diagTitle = 'Leith Harm Visc Coefficient (m2/s) (Zeta Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SZ      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VA4ZLTH '
       diagTitle = 'Leith Biharm Visc Coefficient (m4/s) (Zeta Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SZ      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VAHDLTH '
       diagTitle = 'Leith Harm Visc Coefficient (m2/s) (Div Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VA4DLTH '
       diagTitle = 'Leith Biharm Visc Coefficient (m4/s) (Div Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VAHZLTHD'
       diagTitle = 'LeithD Harm Visc Coefficient (m2/s) (Zeta Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SZ      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VA4ZLTHD'
       diagTitle = 'LeithD Biharm Visc Coefficient (m4/s) (Zeta Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SZ      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VAHDLTHD'
       diagTitle = 'LeithD Harm Visc Coefficient (m2/s) (Div Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VA4DLTHD'
       diagTitle = 'LeithD Biharm Visc Coefficient (m4/s) (Div Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VAHZSMAG'
       diagTitle = 'Smagorinsky Harm Visc Coefficient (m2/s) (Zeta Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SZ      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VA4ZSMAG'
       diagTitle = 'Smagorinsky Biharm Visc Coeff. (m4/s) (Zeta Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SZ      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VAHDSMAG'
       diagTitle = 'Smagorinsky Harm Visc Coefficient (m2/s) (Div Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'VA4DSMAG'
       diagTitle = 'Smagorinsky Biharm Visc Coeff. (m4/s) (Div Pt)'
       diagUnits = 'm^4/s           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 
-
-C--    add diagnostics of simple derivative quantities:
-       diagName  = 'momKE   '
-       diagTitle = 'Kinetic Energy (in momentum Eq.)'
-       diagCode  = 'SM      MR      '
-       diagUnits = 'm^2/s^2         '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+C--   add diagnostics of simple derivative quantities:
+      diagName  = 'momKE   '
+      diagTitle = 'Kinetic Energy (in momentum Eq.)'
+      diagCode  = 'SM      MR      '
+      diagUnits = 'm^2/s^2         '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 #ifdef ALLOW_MOM_VECINV
-       diagName  = 'momHDiv '
-       diagTitle = 'Horizontal Divergence (in momentum Eq.)'
-       diagCode  = 'SM      MR      '
-       diagUnits = 's^-1            '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'momHDiv '
+      diagTitle = 'Horizontal Divergence (in momentum Eq.)'
+      diagCode  = 'SM      MR      '
+      diagUnits = 's^-1            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-       diagName  = 'momVort3'
-       diagTitle = '3rd component (vertical) of Vorticity'
-       diagCode  = 'SZ      MR      '
-       diagUnits = 's^-1            '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'momVort3'
+      diagTitle = '3rd component (vertical) of Vorticity'
+      diagCode  = 'SZ      MR      '
+      diagUnits = 's^-1            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-       diagName  = 'Strain  '
-       diagTitle = 'Horizontal Strain of Horizontal Velocities'
-       diagCode  = 'SZ      MR      '
-       diagUnits = 's^-1            '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'Strain  '
+      diagTitle = 'Horizontal Strain of Horizontal Velocities'
+      diagCode  = 'SZ      MR      '
+      diagUnits = 's^-1            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-       diagName  = 'Tension '
-       diagTitle = 'Horizontal Tension of Horizontal Velocities'
-       diagCode  = 'SM      MR      '
-       diagUnits = 's^-1            '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'Tension '
+      diagTitle = 'Horizontal Tension of Horizontal Velocities'
+      diagCode  = 'SM      MR      '
+      diagUnits = 's^-1            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_MOM_VECINV */
 
-C--    add diagnostics of tendencies from each terms
-       diagUnits = 'm/s^2           '
+C--   add diagnostics of tendencies from each terms
+      diagUnits = 'm/s^2           '
 
-       diagName  = 'UBotDrag'
-       diagTitle = 'U momentum tendency from Bottom Drag'
-       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'VBotDrag'
-       diagTitle = 'V momentum tendency from Bottom Drag'
-       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'USidDrag'
-       diagTitle = 'U momentum tendency from Side Drag'
-       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'VSidDrag'
-       diagTitle = 'V momentum tendency from Side Drag'
-       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'UBotDrag'
+      diagTitle = 'U momentum tendency from Bottom Drag'
+      diagCode  = 'UU      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'VBotDrag'
+      diagTitle = 'V momentum tendency from Bottom Drag'
+      diagCode  = 'VV      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'USidDrag'
+      diagTitle = 'U momentum tendency from Side Drag'
+      diagCode  = 'UU      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'VSidDrag'
+      diagTitle = 'V momentum tendency from Side Drag'
+      diagCode  = 'VV      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-       diagName  = 'Um_Diss '
-       diagTitle = 'U momentum tendency from Dissipation'
-       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'Vm_Diss '
-       diagTitle = 'V momentum tendency from Dissipation'
-       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'Um_Diss '
+      diagTitle = 'U momentum tendency from Dissipation'
+      diagCode  = 'UU      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_Diss '
+      diagTitle = 'V momentum tendency from Dissipation'
+      diagCode  = 'VV      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-       diagName  = 'Um_Advec'
-       diagTitle = 'U momentum tendency from Advection terms'
-       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'Vm_Advec'
-       diagTitle = 'V momentum tendency from Advection terms'
-       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'Um_Advec'
+      diagTitle = 'U momentum tendency from Advection terms'
+      diagCode  = 'UU      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_Advec'
+      diagTitle = 'V momentum tendency from Advection terms'
+      diagCode  = 'VV      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-       diagName  = 'Um_Cori '
-       diagTitle = 'U momentum tendency from Coriolis term'
-       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'Vm_Cori '
-       diagTitle = 'V momentum tendency from Coriolis term'
-       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'Um_Cori '
+      diagTitle = 'U momentum tendency from Coriolis term'
+      diagCode  = 'UU      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_Cori '
+      diagTitle = 'V momentum tendency from Coriolis term'
+      diagCode  = 'VV      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-       diagName  = 'Um_Ext  '
-       diagTitle = 'U momentum tendency from external forcing'
-       WRITE(diagCode,'(A,I3.3,A)') 'UU   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'Vm_Ext  '
-       diagTitle = 'V momentum tendency from external forcing'
-       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'Um_Ext  '
+      diagTitle = 'U momentum tendency from external forcing'
+      diagCode  = 'UU      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_Ext  '
+      diagTitle = 'V momentum tendency from external forcing'
+      diagCode  = 'VV      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
 #ifdef ALLOW_MOM_VECINV
-       diagName  = 'Um_AdvZ3'
-       diagTitle = 'U momentum tendency from Vorticity Advection'
-       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'Vm_AdvZ3'
-       diagTitle = 'V momentum tendency from Vorticity Advection'
-       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'Um_AdvZ3'
+      diagTitle = 'U momentum tendency from Vorticity Advection'
+      diagCode  = 'UU      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_AdvZ3'
+      diagTitle = 'V momentum tendency from Vorticity Advection'
+      diagCode  = 'VV      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-       diagName  = 'Um_AdvRe'
-       diagTitle = 'U momentum tendency from vertical Advection'
-     &           //' (Explicit part)'
-       WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'Vm_AdvRe'
-       diagTitle = 'V momentum tendency from vertical Advection'
-     &           //' (Explicit part)'
-       WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'Um_AdvRe'
+      diagTitle = 'U momentum tendency from vertical Advection'
+     &          //' (Explicit part)'
+      diagCode  = 'UU      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'Vm_AdvRe'
+      diagTitle = 'V momentum tendency from vertical Advection'
+     &          //' (Explicit part)'
+      diagCode  = 'VV      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
 #endif /* ALLOW_MOM_VECINV */
 
 #ifdef ALLOW_NONHYDROSTATIC
-C-     vertical momentum tendencies
-       IF ( usingPCoords ) THEN
-         diagUnits = 'Pa/s^2          '
-       ELSE
-         diagUnits = 'm/s^2           '
-       ENDIF
-       diagName  = 'WSidDrag'
-       diagTitle = 'Vertical momentum tendency from Side Drag'
-       diagCode  = 'WM      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+C-    vertical momentum tendencies
+      IF ( usingPCoords ) THEN
+        diagUnits = 'Pa/s^2          '
+      ELSE
+        diagUnits = 'm/s^2           '
+      ENDIF
+      diagName  = 'Wm_Diss '
+      diagTitle = 'W momentum tendency from Dissipation'
+      diagCode  = 'WM      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'Wm_Advec'
+      diagTitle = 'W momentum tendency from Advection terms'
+      diagCode  = 'WM      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'WSidDrag'
+      diagTitle = 'Vertical momentum tendency from Side Drag'
+      diagCode  = 'WM      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_NONHYDROSTATIC */
 
-C--    add diagnostics of advective & viscous flux :
-       IF ( usingPCoords ) THEN
-         diagUnits = 'Pa.m^3/s^2      '
-       ELSE
-         diagUnits = 'm^4/s^2         '
-       ENDIF
+C--   add diagnostics of advective & viscous flux :
+      IF ( usingPCoords ) THEN
+        diagUnits = 'Pa.m^3/s^2      '
+      ELSE
+        diagUnits = 'm^4/s^2         '
+      ENDIF
 
 C-     Advective flux of Zonal momentum:
 #ifdef ALLOW_MOM_FLUXFORM
-       diagName  = 'ADVx_Um '
-       diagTitle = 'Zonal      Advective Flux of U momentum'
-       WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'ADVy_Um '
-       diagTitle = 'Meridional Advective Flux of U momentum'
-       WRITE(diagCode,'(A,I3.3,A)') 'VZ   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'ADVrE_Um'
-       diagTitle = 'Vertical   Advective Flux of U momentum'
-     &           //' (Explicit part)'
-       diagCode  = 'WU      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'ADVx_Um '
+      diagTitle = 'Zonal      Advective Flux of U momentum'
+      diagCode  = 'UM      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'ADVy_Um '
+      diagTitle = 'Meridional Advective Flux of U momentum'
+      diagCode  = 'VZ      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'ADVrE_Um'
+      diagTitle = 'Vertical   Advective Flux of U momentum'
+     &          //' (Explicit part)'
+      diagCode  = 'WU      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_MOM_FLUXFORM */
-c      diagName  = 'ADVrI_Um'
-c      diagTitle = 'Vertical   Advective Flux of U momentum'
-c    &           //' (Implicit part)'
-c      diagCode  = 'WU      LR      '
-c      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-c    I              diagName, diagCode, diagUnits, diagTitle, myThid )
+c     diagName  = 'ADVrI_Um'
+c     diagTitle = 'Vertical   Advective Flux of U momentum'
+c    &          //' (Implicit part)'
+c     diagCode  = 'WU      LR      '
+c     CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-C-     Advective flux of Meridional momentum:
+C-    Advective flux of Meridional momentum:
 #ifdef ALLOW_MOM_FLUXFORM
-       diagName  = 'ADVx_Vm '
-       diagTitle = 'Zonal      Advective Flux of V momentum'
-       WRITE(diagCode,'(A,I3.3,A)') 'UZ   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'ADVy_Vm '
-       diagTitle = 'Meridional Advective Flux of V momentum'
-       WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'ADVrE_Vm'
-       diagTitle = 'Vertical   Advective Flux of V momentum'
-     &           //' (Explicit part)'
-       diagCode  = 'WV      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'ADVx_Vm '
+      diagTitle = 'Zonal      Advective Flux of V momentum'
+      diagCode  = 'UZ      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'ADVy_Vm '
+      diagTitle = 'Meridional Advective Flux of V momentum'
+      diagCode  = 'VM      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'ADVrE_Vm'
+      diagTitle = 'Vertical   Advective Flux of V momentum'
+     &          //' (Explicit part)'
+      diagCode  = 'WV      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_MOM_FLUXFORM */
-c      diagName  = 'ADVrI_Vm'
-c      diagTitle = 'Vertical   Advective Flux of V momentum'
-c    &           //' (Implicit part)'
-c      diagCode  = 'WV      LR      '
-c      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-c    I              diagName, diagCode, diagUnits, diagTitle, myThid )
+c     diagName  = 'ADVrI_Vm'
+c     diagTitle = 'Vertical   Advective Flux of V momentum'
+c    &          //' (Implicit part)'
+c     diagCode  = 'WV      LR      '
+c     CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-c-     Viscous flux of Zonal momentum :
+C-    Viscous flux of Zonal momentum :
 #ifdef ALLOW_MOM_FLUXFORM
-       diagName  = 'VISCx_Um'
-       diagTitle = 'Zonal      Viscous Flux of U momentum'
-       WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'VISCy_Um'
-       diagTitle = 'Meridional Viscous Flux of U momentum'
-       WRITE(diagCode,'(A,I3.3,A)') 'VZ   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'VISrE_Um'
-       diagTitle = 'Vertical   Viscous Flux of U momentum'
-     &           //' (Explicit part)'
-       diagCode  = 'WU      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'VISCx_Um'
+      diagTitle = 'Zonal      Viscous Flux of U momentum'
+      diagCode  = 'UM      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'VISCy_Um'
+      diagTitle = 'Meridional Viscous Flux of U momentum'
+      diagCode  = 'VZ      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'VISrE_Um'
+      diagTitle = 'Vertical   Viscous Flux of U momentum'
+     &          //' (Explicit part)'
+      diagCode  = 'WU      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_MOM_FLUXFORM */
-       diagName  = 'VISrI_Um'
-       diagTitle = 'Vertical   Viscous Flux of U momentum'
-     &           //' (Implicit part)'
-       diagCode  = 'WU      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'VISrI_Um'
+      diagTitle = 'Vertical   Viscous Flux of U momentum'
+     &          //' (Implicit part)'
+      diagCode  = 'WU      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-c-     Viscous flux of Meridional momentum :
+C-    Viscous flux of Meridional momentum :
 #ifdef ALLOW_MOM_FLUXFORM
-       diagName  = 'VISCx_Vm'
-       diagTitle = 'Zonal      Viscous Flux of V momentum'
-       WRITE(diagCode,'(A,I3.3,A)') 'UZ   ',diagNum+2,'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'VISCy_Vm'
-       diagTitle = 'Meridional Viscous Flux of V momentum'
-       WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum, 'MR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
-       diagName  = 'VISrE_Vm'
-       diagTitle = 'Vertical   Viscous Flux of V momentum'
-     &           //' (Explicit part)'
-       diagCode  = 'WV      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'VISCx_Vm'
+      diagTitle = 'Zonal      Viscous Flux of V momentum'
+      diagCode  = 'UZ      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'VISCy_Vm'
+      diagTitle = 'Meridional Viscous Flux of V momentum'
+      diagCode  = 'VM      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      diagName  = 'VISrE_Vm'
+      diagTitle = 'Vertical   Viscous Flux of V momentum'
+     &          //' (Explicit part)'
+      diagCode  = 'WV      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_MOM_FLUXFORM */
-       diagName  = 'VISrI_Vm'
-       diagTitle = 'Vertical   Viscous Flux of V momentum'
-     &           //' (Implicit part)'
-       diagCode  = 'WV      LR      '
-       CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I              diagName, diagCode, diagUnits, diagTitle, myThid )
+      diagName  = 'VISrI_Vm'
+      diagTitle = 'Vertical   Viscous Flux of V momentum'
+     &          //' (Implicit part)'
+      diagCode  = 'WV      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
