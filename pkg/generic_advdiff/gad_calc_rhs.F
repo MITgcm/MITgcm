@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.51 2008/04/18 19:39:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.52 2008/04/23 18:32:20 jahn Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -137,7 +137,7 @@ C locABT           :: local copy of (AB-extrapolated) tracer field
       _RL locABT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL advFac, rAdvFac
 #ifdef GAD_SMOLARKIEWICZ_HACK
-      _RL outFlux, trac, fac
+      _RL outFlux, trac, fac, gTrFac
 #endif
 CEOP
 
@@ -590,15 +590,16 @@ C-    Set non local KPP transport term (ghat):
 #endif
 
 #ifdef GAD_SMOLARKIEWICZ_HACK
-coj   hack to make redi (and everything else in this s/r) positive
-coj   (see Smolarkiewicz MWR 1989 and Bott MWR 1989)
-coj   only works if 'down' is k+1 and k loop in thermodynamics is k=Nr,1,-1
+coj   Hack to make redi (and everything else in this s/r) positive
+coj   (see Smolarkiewicz MWR 1989 and Bott MWR 1989).
+coj   Only works if 'down' is k+1 and k loop in thermodynamics is k=Nr,1,-1
 coj
-coj   apply to all tracers except temperature
-      IF (tracerIdentity.NE.GAD_TEMPERATURE) THEN
+coj   Apply to all tracers except temperature
+      IF (tracerIdentity.NE.GAD_TEMPERATURE .AND.
+     &    tracerIdentity.NE.GAD_SALINITY) THEN
        DO j=1-Oly,sNy+Oly-1
         DO i=1-Olx,sNx+Olx-1
-coj   add outgoing fluxes
+coj   Add outgoing fluxes
          outFlux=dTtracerLev(k)*
      &    _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &   *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)*recip_rhoFacC(k)
@@ -612,30 +613,54 @@ coj   add outgoing fluxes
          ELSE
            trac=TracAB(i,j,k,bi,bj)
          ENDIF
-coj   if they would reduce tracer by a fraction of more than
-coj   SmolarkiewiczMaxFrac, ...
+coj   If they would reduce tracer by a fraction of more than
+coj   SmolarkiewiczMaxFrac, scale them down
          IF (outFlux.GT.0. _d 0 .AND.
      &       outFlux.GT.SmolarkiewiczMaxFrac*trac) THEN
-coj   ... scale them down
-coj   if trac is already negative, set flux to zero
+coj   If tracer is already negative, scale flux to zero
            fac = MAX(0. _d 0,SmolarkiewiczMaxFrac*trac/outFlux)
+
            IF (fZon(i+1,j).GT.0. _d 0) fZon(i+1,j)=fac*fZon(i+1,j)
            IF (-fZon(i,j) .GT.0. _d 0) fZon(i,j)  =fac*fZon(i,j)       
            IF (fMer(i,j+1).GT.0. _d 0) fMer(i,j+1)=fac*fMer(i,j+1)
            IF (-fMer(i,j) .GT.0. _d 0) fMer(i,j)  =fac*fMer(i,j)
            IF (-fVerT(i,j,kUp)*rkSign .GT.0. _d 0)
-     &      fVerT(i,j,kUp)=fac*fVerT(i,j,kUp)
-           IF (fVerT(i,j,kDown)*rkSign.GT.0. _d 0) THEN
-            fVerT(i,j,kDown)=fac*fVerT(i,j,kDown)
-            IF (k.LT.Nr) THEN
-coj   down flux has already been applied in lower layer - undo it
+     &       fVerT(i,j,kUp)=fac*fVerT(i,j,kUp)
+
+           IF (k.LT.Nr .AND. fVerT(i,j,kDown)*rkSign.GT.0. _d 0) THEN
+coj   Down flux is special: it has already been applied in lower layer,
+coj   so we have to readjust this.
+coj   Note: for k+1, gTracer is now the updated tracer, not the tendency!
+coj   thus it has an extra factor dTtracerLev(k+1)
+             gTrFac=dTtracerLev(k+1)
+coj   Other factors that have been applied to gTracer since the last call:
+#ifdef NONLIN_FRSURF
+             IF (nonlinFreeSurf.GT.0) THEN
+              IF (select_rStar.GT.0) THEN
+#ifndef DISABLE_RSTAR_CODE
+                gTrFac = gTrFac/rStarExpC(i,j,bi,bj)
+#endif /* DISABLE_RSTAR_CODE */
+              ENDIF
+             ENDIF
+#endif /* NONLIN_FRSURF */
+coj   Now: undo down flux, ...
              gTracer(i,j,k+1,bi,bj)=gTracer(i,j,k+1,bi,bj)
-     &        -_recip_hFacC(i,j,k+1,bi,bj)*recip_drF(k+1)
-     &        *recip_rA(i,j,bi,bj)*recip_deepFac2C(k+1)
-     &        *recip_rhoFacC(k+1)
-     &        *( (-(fac-1. _d 0)*fVerT(i,j,kDown))*rkSign )
-            ENDIF
+     &        +gTrFac
+     &         *_recip_hFacC(i,j,k+1,bi,bj)*recip_drF(k+1)
+     &         *recip_rA(i,j,bi,bj)*recip_deepFac2C(k+1)
+     &         *recip_rhoFacC(k+1)
+     &         *( -fVerT(i,j,kDown)*rkSign )
+coj   ... scale ...
+             fVerT(i,j,kDown)=fac*fVerT(i,j,kDown)
+coj   ... and reapply
+             gTracer(i,j,k+1,bi,bj)=gTracer(i,j,k+1,bi,bj)
+     &        +gTrFac
+     &         *_recip_hFacC(i,j,k+1,bi,bj)*recip_drF(k+1)
+     &         *recip_rA(i,j,bi,bj)*recip_deepFac2C(k+1)
+     &         *recip_rhoFacC(k+1)
+     &         *( fVerT(i,j,kDown)*rkSign )
            ENDIF
+
          ENDIF
         ENDDO
        ENDDO
