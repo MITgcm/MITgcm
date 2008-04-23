@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.18 2008/01/24 18:39:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.19 2008/04/23 16:34:05 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -72,9 +72,11 @@ C--   OBCS_READPARMS has been called so we know that
 C     the package is active.
       OBCSIsOn=.TRUE.
 
-      WRITE(msgBuf,'(A)') ' OBCS_READPARMS: opening data.obcs'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+      IF ( debugLevel .GE. debLevB ) THEN
+       WRITE(msgBuf,'(A)') ' OBCS_READPARMS: opening data.obcs'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT , 1)
+      ENDIF
 
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.obcs', 'OBCS_READPARMS',
@@ -159,10 +161,12 @@ C     Account for periodicity if negative indices were supplied
       DO I=1,Nx
        IF (OB_Jnorth(I).lt.0) OB_Jnorth(I)=OB_Jnorth(I)+Ny+1
       ENDDO
-      write(*,*) 'OB Jn =',OB_Jnorth
-      write(*,*) 'OB Js =',OB_Jsouth
-      write(*,*) 'OB Ie =',OB_Ieast
-      write(*,*) 'OB Iw =',OB_Iwest
+      IF ( debugLevel .GE. debLevB ) THEN
+       write(*,*) 'OB Jn =',OB_Jnorth
+       write(*,*) 'OB Js =',OB_Jsouth
+       write(*,*) 'OB Ie =',OB_Ieast
+       write(*,*) 'OB Iw =',OB_Iwest
+      ENDIF
 
 #ifdef ALLOW_ORLANSKI
 C     Default Orlanski radiation parameters
@@ -196,9 +200,11 @@ CML      Vrelaxobcsbound = 1. _d 0
      & READ(UNIT=iUnit,NML=OBCS_PARM03)
 #endif
 
-      WRITE(msgBuf,'(A)') ' OBCS_READPARMS: finished reading data.obcs'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+      IF ( debugLevel .GE. debLevB ) THEN
+       WRITE(msgBuf,'(A)') ' OBCS_READPARMS: finished reading data.obcs'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT , 1)
+      ENDIF
 
 C--   Close the open data file
       CLOSE(iUnit)
