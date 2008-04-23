@@ -1,0 +1,2332 @@
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) //                      MITgcm UV
+(PID.TID 0000.0001) //                      =========
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // execution environment starting up...
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint59p
+(PID.TID 0000.0001) // Build user:        jmc
+(PID.TID 0000.0001) // Build host:        faulks
+(PID.TID 0000.0001) // Build date:        Wed Apr 23 19:28:41 EDT 2008
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Execution Environment parameter file "eedata"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># Example "eedata" file
+(PID.TID 0000.0001) ># Lines beginning "#" are comments
+(PID.TID 0000.0001) ># nTx - No. threads per process in X
+(PID.TID 0000.0001) ># nTy - No. threads per process in Y
+(PID.TID 0000.0001) > &EEPARMS
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) ># Note: Some systems use & as the
+(PID.TID 0000.0001) ># namelist terminator. Other systems
+(PID.TID 0000.0001) ># use a / character (as shown here).
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Computational Grid Specification ( see files "SIZE.h" )
+(PID.TID 0000.0001) //                                  ( and "eedata"       )
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001)      nPx =    1 ; /* No. processes in X */
+(PID.TID 0000.0001)      nPy =    1 ; /* No. processes in Y */
+(PID.TID 0000.0001)      nSx =    2 ; /* No. tiles in X per process */
+(PID.TID 0000.0001)      nSy =    2 ; /* No. tiles in Y per process */
+(PID.TID 0000.0001)      sNx =   50 ; /* Tile size in X */
+(PID.TID 0000.0001)      sNy =   50 ; /* Tile size in Y */
+(PID.TID 0000.0001)      OLx =    2 ; /* Tile overlap distance in X */
+(PID.TID 0000.0001)      OLy =    2 ; /* Tile overlap distance in Y */
+(PID.TID 0000.0001)      nTx =    1 ; /* No. threads in X per process */
+(PID.TID 0000.0001)      nTy =    1 ; /* No. threads in Y per process */
+(PID.TID 0000.0001)       Nr =   50 ; /* No. levels in the vertical   */
+(PID.TID 0000.0001)       nX =  100 ; /* Total domain size in X ( = nPx*nSx*sNx ) */
+(PID.TID 0000.0001)       nY =  100 ; /* Total domain size in Y ( = nPy*nSy*sNy ) */
+(PID.TID 0000.0001)   nTiles =    4 ; /* Total no. tiles per process ( = nSx*nSy ) */
+(PID.TID 0000.0001)   nProcs =    1 ; /* Total no. processes ( = nPx*nPy ) */
+(PID.TID 0000.0001) nThreads =    1 ; /* Total no. threads per process ( = nTx*nTy ) */
+(PID.TID 0000.0001) usingMPI =    F ; /* Flag used to control whether MPI is in use */
+(PID.TID 0000.0001)                   /*  note: To execute a program with MPI calls */
+(PID.TID 0000.0001)                   /*  it must be launched appropriately e.g     */
+(PID.TID 0000.0001)                   /*  "mpirun -np 64 ......"                    */
+(PID.TID 0000.0001) useCoupler=   F ; /* Flag used to control communications with */
+(PID.TID 0000.0001)                   /*  other model components, through a coupler */
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // Mapping of tiles to threads
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // -o- Thread   1, tiles (   1:   2,   1:   2)
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // Tile <-> Tile connectvity table
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // Tile number: 000001 (process no. = 000001)
+(PID.TID 0000.0001) //        WEST: Tile = 000002, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000002, bj = 000001
+(PID.TID 0000.0001) //        EAST: Tile = 000002, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000002, bj = 000001
+(PID.TID 0000.0001) //       SOUTH: Tile = 000003, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000001, bj = 000002
+(PID.TID 0000.0001) //       NORTH: Tile = 000003, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000001, bj = 000002
+(PID.TID 0000.0001) // Tile number: 000002 (process no. = 000001)
+(PID.TID 0000.0001) //        WEST: Tile = 000001, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000001, bj = 000001
+(PID.TID 0000.0001) //        EAST: Tile = 000001, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000001, bj = 000001
+(PID.TID 0000.0001) //       SOUTH: Tile = 000004, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000002, bj = 000002
+(PID.TID 0000.0001) //       NORTH: Tile = 000004, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000002, bj = 000002
+(PID.TID 0000.0001) // Tile number: 000003 (process no. = 000001)
+(PID.TID 0000.0001) //        WEST: Tile = 000004, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000002, bj = 000002
+(PID.TID 0000.0001) //        EAST: Tile = 000004, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000002, bj = 000002
+(PID.TID 0000.0001) //       SOUTH: Tile = 000001, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000001, bj = 000001
+(PID.TID 0000.0001) //       NORTH: Tile = 000001, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000001, bj = 000001
+(PID.TID 0000.0001) // Tile number: 000004 (process no. = 000001)
+(PID.TID 0000.0001) //        WEST: Tile = 000003, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000001, bj = 000002
+(PID.TID 0000.0001) //        EAST: Tile = 000003, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000001, bj = 000002
+(PID.TID 0000.0001) //       SOUTH: Tile = 000002, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000002, bj = 000001
+(PID.TID 0000.0001) //       NORTH: Tile = 000002, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000002, bj = 000001
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Model parameter file "data"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># ====================
+(PID.TID 0000.0001) ># | Model parameters |
+(PID.TID 0000.0001) ># ====================
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) ># Continuous equation parameters
+(PID.TID 0000.0001) > &PARM01
+(PID.TID 0000.0001) > tRef=20*20.,
+(PID.TID 0000.0001) > sRef=20*35.,
+(PID.TID 0000.0001) > viscAh=4.E-2,
+(PID.TID 0000.0001) > viscAz=4.E-2,
+(PID.TID 0000.0001) > no_slip_sides=.FALSE.,
+(PID.TID 0000.0001) > no_slip_bottom=.FALSE.,
+(PID.TID 0000.0001) > diffKhT=4.E-2,
+(PID.TID 0000.0001) > diffKzT=4.E-2,
+(PID.TID 0000.0001) > f0=1.E-4,
+(PID.TID 0000.0001) > beta=0.E-11,
+(PID.TID 0000.0001) > tAlpha=2.0E-4,
+(PID.TID 0000.0001) > sBeta =0.,
+(PID.TID 0000.0001) > gravity=10.,
+(PID.TID 0000.0001) > rhoConst=1000.,
+(PID.TID 0000.0001) > rhoNil=1000.,
+(PID.TID 0000.0001) > heatCapacity_Cp=4000.,
+(PID.TID 0000.0001) >#rigidLid=.TRUE.,
+(PID.TID 0000.0001) > implicitFreeSurface=.TRUE.,
+(PID.TID 0000.0001) >#exactConserv=.TRUE.,
+(PID.TID 0000.0001) > eosType='LINEAR',
+(PID.TID 0000.0001) > nonHydrostatic=.TRUE.,
+(PID.TID 0000.0001) > saltStepping=.FALSE.,
+(PID.TID 0000.0001) > readBinaryPrec=64,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># Elliptic solver parameters
+(PID.TID 0000.0001) > &PARM02
+(PID.TID 0000.0001) > cg2dMaxIters=1000,
+(PID.TID 0000.0001) > cg2dTargetResidual=1.E-9,
+(PID.TID 0000.0001) > cg3dMaxIters=100,
+(PID.TID 0000.0001) > cg3dTargetResidual=1.E-9,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># Time stepping parameters
+(PID.TID 0000.0001) > &PARM03
+(PID.TID 0000.0001) > nIter0=0,
+(PID.TID 0000.0001) >#endTime=43200.,
+(PID.TID 0000.0001) > nTimeSteps=10,
+(PID.TID 0000.0001) > deltaT=20.,
+(PID.TID 0000.0001) > abEps=0.1,
+(PID.TID 0000.0001) > pChkptFreq=43200.,
+(PID.TID 0000.0001) > chkptFreq=7200.,
+(PID.TID 0000.0001) > dumpFreq=1800.,
+(PID.TID 0000.0001) > monitorFreq=600.,
+(PID.TID 0000.0001) > monitorSelect=1,
+(PID.TID 0000.0001) > monitorFreq=1.,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># Gridding parameters
+(PID.TID 0000.0001) > &PARM04
+(PID.TID 0000.0001) > usingCartesianGrid=.TRUE.,
+(PID.TID 0000.0001) > dXspacing=20.,
+(PID.TID 0000.0001) > dYspacing=20.,
+(PID.TID 0000.0001) > delZ=50*20.,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># Input datasets
+(PID.TID 0000.0001) > &PARM05
+(PID.TID 0000.0001) > surfQfile='Qnet.bin',
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM01
+(PID.TID 0000.0001) S/R INI_PARMS ; read PARM01 : OK
+(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM02
+(PID.TID 0000.0001) S/R INI_PARMS ; read PARM02 : OK
+(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM03
+(PID.TID 0000.0001) S/R INI_PARMS ; read PARM03 : OK
+(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM04
+(PID.TID 0000.0001) S/R INI_PARMS ; read PARM04 : OK
+(PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM05
+(PID.TID 0000.0001) S/R INI_PARMS ; read PARM05 : OK
+(PID.TID 0000.0001)  PACKAGES_BOOT: opening data.pkg
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.pkg
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.pkg"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># Packages
+(PID.TID 0000.0001) > &PACKAGES
+(PID.TID 0000.0001) >#useMNC=.TRUE.,
+(PID.TID 0000.0001) > useDiagnostics=.TRUE.,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
+(PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: opening data.diagnostics
+(PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.diagnostics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Parameter file "data.diagnostics"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># Diagnostic Package Choices
+(PID.TID 0000.0001) >#-----------------
+(PID.TID 0000.0001) ># for each output-stream:
+(PID.TID 0000.0001) >#  filename(n) : prefix of the output file name (only 8.c long) for outp.stream n
+(PID.TID 0000.0001) >#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
+(PID.TID 0000.0001) >#               > 0 : write time-average output every frequency seconds
+(PID.TID 0000.0001) >#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+(PID.TID 0000.0001) >#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+(PID.TID 0000.0001) >#                 when this entry is missing, select all common levels of this list
+(PID.TID 0000.0001) >#  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
+(PID.TID 0000.0001) >#                 file for the list of all available diag. in this particular config)
+(PID.TID 0000.0001) >#-----------------
+(PID.TID 0000.0001) > &diagnostics_list
+(PID.TID 0000.0001) ># diag_mnc     = .FALSE.,
+(PID.TID 0000.0001) >  frequency(1) = 1800.,
+(PID.TID 0000.0001) >   filename(1) = 'surfDiag',
+(PID.TID 0000.0001) >   fields(1,1) = 'ETAN    ','ETANSQ  ','DETADT2 ',
+(PID.TID 0000.0001) >   fileflags(1)= 'D       ',
+(PID.TID 0000.0001) >  frequency(2) = 1800.,
+(PID.TID 0000.0001) >   filename(2) = 'dynDiag',
+(PID.TID 0000.0001) ># do not specify levels => all levels are selected
+(PID.TID 0000.0001) >   fields(1,2) = 'UVEL    ','VVEL    ','WVEL    ',
+(PID.TID 0000.0001) >                 'THETA   ','PHIHYD  ','PHI_NH  ',
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># Parameter for Diagnostics of per level statistics:
+(PID.TID 0000.0001) >#-----------------
+(PID.TID 0000.0001) ># for each output-stream:
+(PID.TID 0000.0001) >#  stat_fname(n) : prefix of the output file name (only 8.c long) for outp.stream n
+(PID.TID 0000.0001) >#  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
+(PID.TID 0000.0001) >#               > 0 : write time-average output every stat_freq seconds
+(PID.TID 0000.0001) >#  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
+(PID.TID 0000.0001) >#  stat_region(:,n) : list of "regions" (default: 1 region only=global)
+(PID.TID 0000.0001) >#  stat_fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
+(PID.TID 0000.0001) >#                 file for the list of all available diag. in this particular config)
+(PID.TID 0000.0001) >#-----------------
+(PID.TID 0000.0001) > &DIAG_STATIS_PARMS
+(PID.TID 0000.0001) > stat_fields(1,1)= 'ETAN    ','UVEL    ','VVEL    ','WVEL    ',
+(PID.TID 0000.0001) >                   'THETA   ','PHIHYD  ','PHI_NH  ',
+(PID.TID 0000.0001) >    stat_fname(1)= 'dynStDiag',
+(PID.TID 0000.0001) >     stat_freq(1)= 120.,
+(PID.TID 0000.0001) >    stat_phase(1)= 60.,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "diagnostics_list": start
+(PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "diagnostics_list": OK
+(PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "DIAG_STATIS_PARMS": start
+(PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "DIAG_STATIS_PARMS": OK
+(PID.TID 0000.0001) -----------------------------------------------------
+(PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: active diagnostics summary:
+(PID.TID 0000.0001) -----------------------------------------------------
+(PID.TID 0000.0001) Creating Output Stream: surfDiag
+(PID.TID 0000.0001) Output Frequency:       1800.000000 ; Phase:           0.000000
+(PID.TID 0000.0001)  Averaging Freq.:       1800.000000 , Phase:           0.000000 , Cycle:   1
+(PID.TID 0000.0001)  Levels:    will be set later
+(PID.TID 0000.0001)  Fields:    ETAN     ETANSQ   DETADT2
+(PID.TID 0000.0001) Creating Output Stream: dynDiag
+(PID.TID 0000.0001) Output Frequency:       1800.000000 ; Phase:           0.000000
+(PID.TID 0000.0001)  Averaging Freq.:       1800.000000 , Phase:           0.000000 , Cycle:   1
+(PID.TID 0000.0001)  Levels:    will be set later
+(PID.TID 0000.0001)  Fields:    UVEL     VVEL     WVEL     THETA    PHIHYD   PHI_NH
+(PID.TID 0000.0001) -----------------------------------------------------
+(PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: statistics diags. summary:
+(PID.TID 0000.0001) Creating Stats. Output Stream: dynStDiag
+(PID.TID 0000.0001) Output Frequency:        120.000000 ; Phase:          60.000000
+(PID.TID 0000.0001)  Regions:   0
+(PID.TID 0000.0001)  Fields:    ETAN     UVEL     VVEL     WVEL     THETA    PHIHYD   PHI_NH
+(PID.TID 0000.0001) -----------------------------------------------------
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) SET_PARMS: done
+(PID.TID 0000.0001) Enter INI_VERTICAL_GRID: setInterFDr=    T ; setCenterDr=    F
+(PID.TID 0000.0001) %MON XC_max                       =   1.9900000000000E+03
+(PID.TID 0000.0001) %MON XC_min                       =   1.0000000000000E+01
+(PID.TID 0000.0001) %MON XC_mean                      =   1.0000000000000E+03
+(PID.TID 0000.0001) %MON XC_sd                        =   5.7732140095444E+02
+(PID.TID 0000.0001) %MON XG_max                       =   1.9800000000000E+03
+(PID.TID 0000.0001) %MON XG_min                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON XG_mean                      =   9.9000000000000E+02
+(PID.TID 0000.0001) %MON XG_sd                        =   5.7732140095444E+02
+(PID.TID 0000.0001) %MON DXC_max                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DXC_min                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DXC_mean                     =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DXC_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON DXF_max                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DXF_min                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DXF_mean                     =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DXF_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON DXG_max                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DXG_min                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DXG_mean                     =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DXG_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON DXV_max                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DXV_min                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DXV_mean                     =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DXV_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON YC_max                       =   1.9900000000000E+03
+(PID.TID 0000.0001) %MON YC_min                       =   1.0000000000000E+01
+(PID.TID 0000.0001) %MON YC_mean                      =   1.0000000000000E+03
+(PID.TID 0000.0001) %MON YC_sd                        =   5.7732140095444E+02
+(PID.TID 0000.0001) %MON YG_max                       =   1.9800000000000E+03
+(PID.TID 0000.0001) %MON YG_min                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON YG_mean                      =   9.9000000000000E+02
+(PID.TID 0000.0001) %MON YG_sd                        =   5.7732140095444E+02
+(PID.TID 0000.0001) %MON DYC_max                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DYC_min                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DYC_mean                     =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DYC_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON DYF_max                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DYF_min                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DYF_mean                     =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DYF_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON DYG_max                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DYG_min                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DYG_mean                     =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DYG_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON DYU_max                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DYU_min                      =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DYU_mean                     =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON DYU_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON RA_max                       =   4.0000000000000E+02
+(PID.TID 0000.0001) %MON RA_min                       =   4.0000000000000E+02
+(PID.TID 0000.0001) %MON RA_mean                      =   4.0000000000000E+02
+(PID.TID 0000.0001) %MON RA_sd                        =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON RAW_max                      =   4.0000000000000E+02
+(PID.TID 0000.0001) %MON RAW_min                      =   4.0000000000000E+02
+(PID.TID 0000.0001) %MON RAW_mean                     =   4.0000000000000E+02
+(PID.TID 0000.0001) %MON RAW_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON RAS_max                      =   4.0000000000000E+02
+(PID.TID 0000.0001) %MON RAS_min                      =   4.0000000000000E+02
+(PID.TID 0000.0001) %MON RAS_mean                     =   4.0000000000000E+02
+(PID.TID 0000.0001) %MON RAS_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON RAZ_max                      =   4.0000000000000E+02
+(PID.TID 0000.0001) %MON RAZ_min                      =   4.0000000000000E+02
+(PID.TID 0000.0001) %MON RAZ_mean                     =   4.0000000000000E+02
+(PID.TID 0000.0001) %MON RAZ_sd                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON AngleCS_max                  =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON AngleCS_min                  =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON AngleCS_mean                 =   1.0000000000000E+00
+(PID.TID 0000.0001) %MON AngleCS_sd                   =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON AngleSN_max                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON AngleSN_min                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON AngleSN_mean                 =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON AngleSN_sd                   =   0.0000000000000E+00
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Model R_low (ini_masks_etc) at iteration          1
+(PID.TID 0000.0001) // CMIN =         -1.000000000000000E+03
+(PID.TID 0000.0001) // CMAX =         -1.000000000000000E+03
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -1: 102:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):( 102:  -1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Model Ro_surf (ini_masks_etc) at iteration          1
+(PID.TID 0000.0001) // CMIN =          1.000000000000000E+32
+(PID.TID 0000.0001) // CMAX =         -1.000000000000000E+32
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -1: 102:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):( 102:  -1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field hFacC at iteration          1
+(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
+(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -1: 102:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):( 102:  -1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field hFacW at iteration          1
+(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
+(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -1: 102:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):( 102:  -1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field hFacS at iteration          1
+(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
+(PID.TID 0000.0001) // CMAX =          1.000000000000000E+00
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -1: 102:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):( 102:  -1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // ===================================
+(PID.TID 0000.0001) // GAD parameters :
+(PID.TID 0000.0001) // ===================================
+(PID.TID 0000.0001) tempAdvScheme =   /* Temp. Horiz.Advection scheme selector */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tempVertAdvScheme =   /* Temp. Vert. Advection scheme selector */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tempMultiDimAdvec =   /* use Muti-Dim Advec method for Temp */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tempSOM_Advection = /* use 2nd Order Moment Advection for Temp */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) AdamsBashforthGt = /* apply Adams-Bashforth extrapolation on Gt */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) AdamsBashforth_T = /* apply Adams-Bashforth extrapolation on Temp */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) saltAdvScheme =   /* Salt. Horiz.advection scheme selector */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) saltVertAdvScheme =   /* Salt. Vert. Advection scheme selector */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) saltMultiDimAdvec =   /* use Muti-Dim Advec method for Salt */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) saltSOM_Advection = /* use 2nd Order Moment Advection for Salt */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) AdamsBashforthGs = /* apply Adams-Bashforth extrapolation on Gs */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) AdamsBashforth_S = /* apply Adams-Bashforth extrapolation on Salt */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) // ===================================
+(PID.TID 0000.0001) ------------------------------------------------------------
+(PID.TID 0000.0001) DIAGNOSTICS_SET_LEVELS: done
+(PID.TID 0000.0001)  Total Nb of available Diagnostics: ndiagt=   172
+(PID.TID 0000.0001)  write list of available Diagnostics to file: available_diagnostics.log
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #    23 ETAN
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #    24 ETANSQ
+(PID.TID 0000.0001) SETDIAG: Allocate  1 x  1 Levels for Diagnostic #    25 DETADT2
+(PID.TID 0000.0001) SETDIAG: Allocate 50 x  1 Levels for Diagnostic #    30 UVEL
+(PID.TID 0000.0001) SETDIAG: Allocate 50 x  1 Levels for Diagnostic #    31 VVEL
+(PID.TID 0000.0001) SETDIAG: Allocate 50 x  1 Levels for Diagnostic #    32 WVEL
+(PID.TID 0000.0001) SETDIAG: Allocate 50 x  1 Levels for Diagnostic #    26 THETA
+(PID.TID 0000.0001) SETDIAG: Allocate 50 x  1 Levels for Diagnostic #    65 PHIHYD
+(PID.TID 0000.0001) SETDIAG: Allocate 50 x  1 Levels for Diagnostic #    69 PHI_NH
+(PID.TID 0000.0001)   space allocated for all diagnostics:     303 levels
+(PID.TID 0000.0001)   set mate pointer for diag #    30  UVEL     , Parms: UU      MR , mate:    31
+(PID.TID 0000.0001)   set mate pointer for diag #    31  VVEL     , Parms: VV      MR , mate:    30
+(PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: Set levels for Outp.Stream: surfDiag
+(PID.TID 0000.0001)  Levels:       1.
+(PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: Set levels for Outp.Stream: dynDiag
+(PID.TID 0000.0001)  Levels:       1.   2.   3.   4.   5.   6.   7.   8.   9.  10.  11.  12.  13.  14.  15.  16.  17.  18.  19.  20.
+(PID.TID 0000.0001)  Levels:      21.  22.  23.  24.  25.  26.  27.  28.  29.  30.  31.  32.  33.  34.  35.  36.  37.  38.  39.  40.
+(PID.TID 0000.0001)  Levels:      41.  42.  43.  44.  45.  46.  47.  48.  49.  50.
+(PID.TID 0000.0001) DIAGNOSTICS_SET_POINTERS: done
+(PID.TID 0000.0001) ------------------------------------------------------------
+(PID.TID 0000.0001) DIAGSTATS_SET_REGIONS: define no region
+(PID.TID 0000.0001) ------------------------------------------------------------
+(PID.TID 0000.0001) SETDIAG: Allocate  1 Levels for Stats-Diag #    23 ETAN
+(PID.TID 0000.0001) SETDIAG: Allocate 50 Levels for Stats-Diag #    30 UVEL
+(PID.TID 0000.0001) SETDIAG: Allocate 50 Levels for Stats-Diag #    31 VVEL
+(PID.TID 0000.0001) SETDIAG: Allocate 50 Levels for Stats-Diag #    32 WVEL
+(PID.TID 0000.0001) SETDIAG: Allocate 50 Levels for Stats-Diag #    26 THETA
+(PID.TID 0000.0001) SETDIAG: Allocate 50 Levels for Stats-Diag #    65 PHIHYD
+(PID.TID 0000.0001) SETDIAG: Allocate 50 Levels for Stats-Diag #    69 PHI_NH
+(PID.TID 0000.0001)   space allocated for all stats-diags:     301 levels
+(PID.TID 0000.0001) DIAGSTATS_SET_POINTERS: done
+(PID.TID 0000.0001) ------------------------------------------------------------
+(PID.TID 0000.0001) DIAGSTATS_INI_IO: open file: dynStDiag.0000000000.txt , unit=     9
+(PID.TID 0000.0001) %MON fCori_max                    =   1.0000000000000E-04
+(PID.TID 0000.0001) %MON fCori_min                    =   1.0000000000000E-04
+(PID.TID 0000.0001) %MON fCori_mean                   =   9.9999999999996E-05
+(PID.TID 0000.0001) %MON fCori_sd                     =   4.4858864886588E-18
+(PID.TID 0000.0001) %MON fCoriG_max                   =   1.0000000000000E-04
+(PID.TID 0000.0001) %MON fCoriG_min                   =   1.0000000000000E-04
+(PID.TID 0000.0001) %MON fCoriG_mean                  =   9.9999999999996E-05
+(PID.TID 0000.0001) %MON fCoriG_sd                    =   4.4858864886588E-18
+(PID.TID 0000.0001) %MON fCoriCos_max                 =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON fCoriCos_min                 =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON fCoriCos_mean                =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON fCoriCos_sd                  =   0.0000000000000E+00
+(PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  1.0000000000000000E-03
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) INI_CG3D: CG3D normalisation factor =  5.0000000000000003E-02
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Model configuration
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) // "Physical" paramters ( PARM01 in namelist )
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) buoyancyRelation = /* Type of relation to get Buoyancy */
+(PID.TID 0000.0001)               'OCEANIC'
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) fluidIsAir  =  /* fluid major constituent is Air */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) fluidIsWater=  /* fluid major constituent is Water */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) usingPCoords =  /* use p (or p*) vertical coordinate */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) usingZCoords =  /* use z (or z*) vertical coordinate */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tRef =   /* Reference temperature profile ( oC or K ) */
+(PID.TID 0000.0001)    50 @  2.000000000000000E+01              /* K =  1: 50 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) sRef =   /* Reference salinity profile ( psu ) */
+(PID.TID 0000.0001)    50 @  3.500000000000000E+01              /* K =  1: 50 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscAh =   /* Lateral eddy viscosity ( m^2/s ) */
+(PID.TID 0000.0001)                 4.000000000000000E-02
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscAhMax =   /* Maximum lateral eddy viscosity ( m^2/s ) */
+(PID.TID 0000.0001)                 1.000000000000000E+21
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscAhGrid =   /* Grid dependent lateral eddy viscosity ( non-dim. ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useFullLeith =   /* Use Full Form of Leith Viscosity on/off flag*/
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useStrainTensionVisc =   /* Use StrainTension Form of Viscous Operator on/off flag*/
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useAreaViscLength =   /* Use area for visc length instead of geom. mean*/
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscC2leith = /* Leith harmonic visc. factor (on grad(vort),non-dim.) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscC2leithD = /* Leith harmonic viscosity factor (on grad(div),non-dim.) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscC2smag =   /* Smagorinsky harmonic viscosity factor (non-dim.) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscA4 =   /* Lateral biharmonic viscosity ( m^4/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscA4Max =   /* Maximum biharmonic viscosity ( m^2/s ) */
+(PID.TID 0000.0001)                 1.000000000000000E+21
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscA4Grid =   /* Grid dependent biharmonic viscosity ( non-dim. ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscC4leith = /* Leith biharm viscosity factor (on grad(vort), non-dim.) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscC4leithD = /* Leith biharm viscosity factor (on grad(div), non-dim.) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscC4Smag = /* Smagorinsky biharm viscosity factor (non-dim) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) no_slip_sides =  /* Viscous BCs: No-slip sides */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) sideDragFactor = /* side-drag scaling factor (non-dim) */
+(PID.TID 0000.0001)                 2.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscAr =   /* Vertical eddy viscosity ( m^2/s ) */
+(PID.TID 0000.0001)                 4.000000000000000E-02
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) no_slip_bottom =  /* Viscous BCs: No-slip bottom */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) bottomDragLinear = /* linear bottom-drag coefficient ( m/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) bottomDragQuadratic = /* quadratic bottom-drag coeff. ( m/m ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKhT =   /* Laplacian diffusion of heat laterally ( m^2/s ) */
+(PID.TID 0000.0001)                 4.000000000000000E-02
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffK4T =   /* Biharmonic diffusion of heat laterally ( m^4/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKhS =   /* Laplacian diffusion of salt laterally ( m^2/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffK4S =   /* Biharmonic diffusion of salt laterally ( m^4/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKrNrT = /* vertical profile of vertical diffusion of Temp ( m^2/s )*/
+(PID.TID 0000.0001)    50 @  4.000000000000000E-02              /* K =  1: 50 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKrNrS = /* vertical profile of vertical diffusion of Salt ( m^2/s )*/
+(PID.TID 0000.0001)    50 @  0.000000000000000E+00              /* K =  1: 50 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKrBL79surf = /* Surface diffusion for Bryan and Lewis 79 ( m^2/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKrBL79deep = /* Deep diffusion for Bryan and Lewis 1979 ( m^2/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKrBL79scl = /* Depth scale for Bryan and Lewis 1979 ( m ) */
+(PID.TID 0000.0001)                 2.000000000000000E+02
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKrBL79Ho = /* Turning depth for Bryan and Lewis 1979 ( m ) */
+(PID.TID 0000.0001)                -2.000000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) ivdc_kappa = /* Implicit Vertical Diffusivity for Convection ( m^2/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) hMixCriteria=  /* Criteria for mixed-layer diagnostic */
+(PID.TID 0000.0001)                -8.000000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) eosType =  /* Type of Equation of State */
+(PID.TID 0000.0001)               'LINEAR'
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tAlpha =   /* Linear EOS thermal expansion coefficient ( 1/oC ) */
+(PID.TID 0000.0001)                 2.000000000000000E-04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) sBeta =   /* Linear EOS haline contraction coefficient ( 1/psu ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rhonil =   /* Reference density ( kg/m^3 ) */
+(PID.TID 0000.0001)                 1.000000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rhoConst =   /* Reference density ( kg/m^3 ) */
+(PID.TID 0000.0001)                 1.000000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rhoFacC = /* normalized Reference density @ cell-Center (-) */
+(PID.TID 0000.0001)    50 @  1.000000000000000E+00              /* K =  1: 50 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rhoFacF = /* normalized Reference density @ W-Interface (-) */
+(PID.TID 0000.0001)    51 @  1.000000000000000E+00              /* K =  1: 51 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rhoConstFresh =   /* Reference density ( kg/m^3 ) */
+(PID.TID 0000.0001)                 1.000000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) gravity =   /* Gravitational acceleration ( m/s^2 ) */
+(PID.TID 0000.0001)                 1.000000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) gBaro =   /* Barotropic gravity ( m/s^2 ) */
+(PID.TID 0000.0001)                 1.000000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rotationPeriod =   /* Rotation Period ( s ) */
+(PID.TID 0000.0001)                 8.616400000000000E+04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) omega =   /* Angular velocity ( rad/s ) */
+(PID.TID 0000.0001)                 7.292123516990375E-05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) f0 =   /* Reference coriolis parameter ( 1/s ) */
+(PID.TID 0000.0001)                 1.000000000000000E-04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) beta =   /* Beta ( 1/(m.s) ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) freeSurfFac =   /* Implicit free surface factor */
+(PID.TID 0000.0001)                 1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implicitFreeSurface =   /* Implicit free surface on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rigidLid =   /* Rigid lid on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implicSurfPress =   /* Surface Pressure implicit factor (0-1)*/
+(PID.TID 0000.0001)                 1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implicDiv2Dflow =   /* Barot. Flow Div. implicit factor (0-1)*/
+(PID.TID 0000.0001)                 1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) exactConserv =   /* Exact Volume Conservation on/off flag*/
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) linFSConserveTr =   /* Tracer correction for Lin Free Surface on/off flag*/
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) uniformLin_PhiSurf =   /* use uniform Bo_surf on/off flag*/
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) nonlinFreeSurf =   /* Non-linear Free Surf. options (-1,0,1,2,3)*/
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)      -1,0= Off ; 1,2,3= On, 2=+rescale gU,gV, 3=+update cg2d solv.
+(PID.TID 0000.0001) hFacInf =   /* lower threshold for hFac (nonlinFreeSurf only)*/
+(PID.TID 0000.0001)                 2.000000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) hFacSup =   /* upper threshold for hFac (nonlinFreeSurf only)*/
+(PID.TID 0000.0001)                 2.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) select_rStar =   /* r* Coordinate options (not yet implemented)*/
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useRealFreshWaterFlux =   /* Real Fresh Water Flux on/off flag*/
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) convertFW2Salt = /* convert F.W. Flux to Salt Flux (-1=use local S)(ppt)*/
+(PID.TID 0000.0001)                 3.500000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) use3Dsolver = /* use 3-D pressure solver on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) nonHydrostatic =  /* Non-Hydrostatic on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) nh_Am2 = /* Non-Hydrostatic terms scaling factor */
+(PID.TID 0000.0001)                 1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) quasiHydrostatic = /* Quasi-Hydrostatic on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momStepping =  /* Momentum equation on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) vectorInvariantMomentum= /* Vector-Invariant Momentum on/off */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momAdvection =  /* Momentum advection on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momViscosity =  /* Momentum viscosity on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momImplVertAdv =/* Momentum implicit vert. advection on/off*/
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implicitViscosity = /* Implicit viscosity on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) metricTerms =  /* metric-Terms on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useNHMTerms = /* Non-Hydrostatic Metric-Terms on/off */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useConstantF =  /* use Constant f0 Coriolis flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useBetaPlaneF = /* use Beta-Plane Coriolis flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useSphereF  =   /* use Spherical Coriolis flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) use3dCoriolis = /* 3-D Coriolis on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useCoriolis =  /* Coriolis on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useCDscheme =  /* CD scheme on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useJamartWetPoints= /* Coriolis WetPoints method flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useJamartMomAdv= /* V.I. Non-linear terms Jamart flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useAbsVorticity= /* Work with f+zeta in Coriolis */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) selectVortScheme= /* Scheme selector for Vorticity-Term */
+(PID.TID 0000.0001)               123456789
+(PID.TID 0000.0001)    = 0 : enstrophy (Shallow-Water Eq.) conserving scheme by Sadourny, JAS 75
+(PID.TID 0000.0001)    = 1 : same as 0 with modified hFac
+(PID.TID 0000.0001)    = 2 : energy conserving scheme (used by Sadourny in JAS 75 paper)
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) upwindVorticity= /* Upwind bias vorticity flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) highOrderVorticity= /* High order interp. of vort. flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) upwindShear= /* Upwind vertical Shear advection flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) selectKEscheme= /* Kinetic Energy scheme selector */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momForcing =  /* Momentum forcing on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momPressureForcing =  /* Momentum pressure term on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implicitIntGravWave= /* Implicit Internal Gravity Wave flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) staggerTimeStep =   /* Stagger time stepping on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) multiDimAdvection =   /* enable/disable Multi-Dim Advection */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useMultiDimAdvec =   /* Multi-Dim Advection is/is-not used */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implicitDiffusion =/* Implicit Diffusion on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tempStepping =  /* Temperature equation on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tempAdvection=  /* Temperature advection on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tempImplVertAdv =/* Temp. implicit vert. advection on/off */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tempForcing  =  /* Temperature forcing on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tempIsActiveTr = /* Temp. is a dynamically Active Tracer */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) saltStepping =  /* Salinity equation on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) saltAdvection=  /* Salinity advection on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) saltImplVertAdv =/* Sali. implicit vert. advection on/off */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) saltForcing  =  /* Salinity forcing on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) saltIsActiveTr = /* Salt  is a dynamically Active Tracer */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  readBinaryPrec = /* Precision used for reading binary files */
+(PID.TID 0000.0001)                      64
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) writeBinaryPrec = /* Precision used for writing binary files */
+(PID.TID 0000.0001)                      32
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  globalFiles = /* write "global" (=not per tile) files */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  useSingleCpuIO = /* only master MPI process does I/O */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  debugMode  =  /* Debug Mode on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)    debLevA  =  /* 1rst level of debugging */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)    debLevB  =  /* 2nd  level of debugging */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  debugLevel =  /* select debugging level */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) // Elliptic solver(s) paramters ( PARM02 in namelist )
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) cg2dMaxIters =   /* Upper limit on 2d con. grad iterations  */
+(PID.TID 0000.0001)                    1000
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) cg2dChkResFreq =   /* 2d con. grad convergence test frequency */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) cg2dTargetResidual =   /* 2d con. grad target residual  */
+(PID.TID 0000.0001)                 1.000000000000000E-09
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) cg2dTargetResWunit =   /* CG2d target residual [W units] */
+(PID.TID 0000.0001)                -1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) cg2dPreCondFreq =   /* Freq. for updating cg2d preconditioner */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) // Time stepping paramters ( PARM03 in namelist )
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) deltaTmom =   /* Momentum equation timestep ( s ) */
+(PID.TID 0000.0001)                 2.000000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) deltaTfreesurf =   /* FreeSurface equation timestep ( s ) */
+(PID.TID 0000.0001)                 2.000000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dTtracerLev =   /* Tracer equation timestep ( s ) */
+(PID.TID 0000.0001)    50 @  2.000000000000000E+01              /* K =  1: 50 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) deltaTClock  =   /* Model clock timestep ( s ) */
+(PID.TID 0000.0001)                 2.000000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) cAdjFreq =   /* Convective adjustment interval ( s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momForcingOutAB = /* =1: take Momentum Forcing out of Adams-Bash. stepping */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tracForcingOutAB = /* =1: take T,S,pTr Forcing out of Adams-Bash. stepping */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momDissip_In_AB = /* put Dissipation Tendency in Adams-Bash. stepping */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) doAB_onGtGs = /* apply AB on Tendencies (rather than on T,S)*/
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) abEps =   /* Adams-Bashforth-2 stabilizing weight */
+(PID.TID 0000.0001)                 1.000000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) pickupStrictlyMatch= /* stop if pickup do not strictly match */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) nIter0 =   /* Run starting timestep number  */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) nTimeSteps =   /* Number of timesteps */
+(PID.TID 0000.0001)                      10
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) baseTime =   /* Model base time ( s ). */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) startTime =   /* Run start time ( s ). */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) endTime =   /* Integration ending time ( s ). */
+(PID.TID 0000.0001)                 2.000000000000000E+02
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) pChkPtFreq =   /* Permanent restart/checkpoint file interval ( s ). */
+(PID.TID 0000.0001)                 4.320000000000000E+04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) chkPtFreq =   /* Rolling restart/checkpoint file interval ( s ). */
+(PID.TID 0000.0001)                 7.200000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) pickup_write_mdsio =   /* Model IO flag. */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) pickup_read_mdsio =   /* Model IO flag. */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) pickup_write_immed =   /* Model IO flag. */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) writePickupAtEnd =   /* Model IO flag. */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dumpFreq =   /* Model state write out interval ( s ). */
+(PID.TID 0000.0001)                 1.800000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dumpInitAndLast= /* write out Initial & Last iter. model state */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) snapshot_mdsio =   /* Model IO flag. */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) monitorFreq =   /* Monitor output interval ( s ). */
+(PID.TID 0000.0001)                 1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) monitorSelect = /* select group of variables to monitor */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) monitor_stdio =   /* Model IO flag. */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) externForcingPeriod =   /* forcing period (s) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) externForcingCycle =   /* period of the cyle (s). */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tauThetaClimRelax =   /* relaxation time scale (s) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tauSaltClimRelax =   /* relaxation time scale (s) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) latBandClimRelax =   /* max. Lat. where relaxation */
+(PID.TID 0000.0001)                 6.000000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) // Gridding paramters ( PARM04 in namelist )
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) usingCartesianGrid = /* Cartesian coordinates flag ( True/False ) */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) usingCylindricalGrid = /* Cylindrical coordinates flag ( True/False ) */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) usingSphericalPolarGrid = /* Spherical coordinates flag ( True/False ) */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) usingCurvilinearGrid = /* Curvilinear coordinates flag ( True/False ) */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) Ro_SeaLevel = /* r(1) ( units of r ==  m ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rkSign =   /* index orientation relative to vertical coordinate */
+(PID.TID 0000.0001)                -1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) gravitySign = /* gravity orientation relative to vertical coordinate */
+(PID.TID 0000.0001)                -1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) mass2rUnit = /* convert mass per unit area [kg/m2] to r-units [m] */
+(PID.TID 0000.0001)                 1.000000000000000E-03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rUnit2mass = /* convert r-units [m] to mass per unit area [kg/m2] */
+(PID.TID 0000.0001)                 1.000000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) drC =   /* C spacing ( units of r ) */
+(PID.TID 0000.0001)                 1.000000000000000E+01,      /* K =  1 */
+(PID.TID 0000.0001)    49 @  2.000000000000000E+01              /* K =  2: 50 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) drF =   /* W spacing ( units of r ) */
+(PID.TID 0000.0001)    50 @  2.000000000000000E+01              /* K =  1: 50 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) delX =   /* U spacing ( m - cartesian, degrees - spherical ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* I =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) delY =   /* V spacing ( m - cartesian, degrees - spherical ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* J =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) phiMin =    /* South edge (ignored - cartesian, degrees - spherical ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) thetaMin =    /* West edge ( ignored - cartesian, degrees - spherical ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rSphere =  /* Radius ( ignored - cartesian, m - spherical ) */
+(PID.TID 0000.0001)                 6.370000000000000E+06
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) deepAtmosphere = /* Deep/Shallow Atmosphere flag (True/False) */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) xcoord =   /* P-point X coord ( m - cartesian, degrees - spherical ) */
+(PID.TID 0000.0001)                 1.000000000000000E+01,      /* I =  1 */
+(PID.TID 0000.0001)                 3.000000000000000E+01,      /* I =  2 */
+(PID.TID 0000.0001)                 5.000000000000000E+01,      /* I =  3 */
+(PID.TID 0000.0001)                 7.000000000000000E+01,      /* I =  4 */
+(PID.TID 0000.0001)                 9.000000000000000E+01,      /* I =  5 */
+(PID.TID 0000.0001)                 1.100000000000000E+02,      /* I =  6 */
+(PID.TID 0000.0001)                 1.300000000000000E+02,      /* I =  7 */
+(PID.TID 0000.0001)                 1.500000000000000E+02,      /* I =  8 */
+(PID.TID 0000.0001)                 1.700000000000000E+02,      /* I =  9 */
+(PID.TID 0000.0001)                 1.900000000000000E+02,      /* I = 10 */
+(PID.TID 0000.0001)                 2.100000000000000E+02,      /* I = 11 */
+(PID.TID 0000.0001)                 2.300000000000000E+02,      /* I = 12 */
+(PID.TID 0000.0001)                 2.500000000000000E+02,      /* I = 13 */
+(PID.TID 0000.0001)                 2.700000000000000E+02,      /* I = 14 */
+(PID.TID 0000.0001)                 2.900000000000000E+02,      /* I = 15 */
+(PID.TID 0000.0001)                 3.100000000000000E+02,      /* I = 16 */
+(PID.TID 0000.0001)                 3.300000000000000E+02,      /* I = 17 */
+(PID.TID 0000.0001)                 3.500000000000000E+02,      /* I = 18 */
+(PID.TID 0000.0001)                 3.700000000000000E+02,      /* I = 19 */
+(PID.TID 0000.0001)                 3.900000000000000E+02,      /* I = 20 */
+(PID.TID 0000.0001)                 4.100000000000000E+02,      /* I = 21 */
+(PID.TID 0000.0001)                 4.300000000000000E+02,      /* I = 22 */
+(PID.TID 0000.0001)                 4.500000000000000E+02,      /* I = 23 */
+(PID.TID 0000.0001)                 4.700000000000000E+02,      /* I = 24 */
+(PID.TID 0000.0001)                 4.900000000000000E+02,      /* I = 25 */
+(PID.TID 0000.0001)                 5.100000000000000E+02,      /* I = 26 */
+(PID.TID 0000.0001)                 5.300000000000000E+02,      /* I = 27 */
+(PID.TID 0000.0001)                 5.500000000000000E+02,      /* I = 28 */
+(PID.TID 0000.0001)                 5.700000000000000E+02,      /* I = 29 */
+(PID.TID 0000.0001)                 5.900000000000000E+02,      /* I = 30 */
+(PID.TID 0000.0001)                 6.100000000000000E+02,      /* I = 31 */
+(PID.TID 0000.0001)                 6.300000000000000E+02,      /* I = 32 */
+(PID.TID 0000.0001)                 6.500000000000000E+02,      /* I = 33 */
+(PID.TID 0000.0001)                 6.700000000000000E+02,      /* I = 34 */
+(PID.TID 0000.0001)                 6.900000000000000E+02,      /* I = 35 */
+(PID.TID 0000.0001)                 7.100000000000000E+02,      /* I = 36 */
+(PID.TID 0000.0001)                 7.300000000000000E+02,      /* I = 37 */
+(PID.TID 0000.0001)                 7.500000000000000E+02,      /* I = 38 */
+(PID.TID 0000.0001)                 7.700000000000000E+02,      /* I = 39 */
+(PID.TID 0000.0001)                 7.900000000000000E+02,      /* I = 40 */
+(PID.TID 0000.0001)                 8.100000000000000E+02,      /* I = 41 */
+(PID.TID 0000.0001)                 8.300000000000000E+02,      /* I = 42 */
+(PID.TID 0000.0001)                 8.500000000000000E+02,      /* I = 43 */
+(PID.TID 0000.0001)                 8.700000000000000E+02,      /* I = 44 */
+(PID.TID 0000.0001)                 8.900000000000000E+02,      /* I = 45 */
+(PID.TID 0000.0001)                 9.100000000000000E+02,      /* I = 46 */
+(PID.TID 0000.0001)                 9.300000000000000E+02,      /* I = 47 */
+(PID.TID 0000.0001)                 9.500000000000000E+02,      /* I = 48 */
+(PID.TID 0000.0001)                 9.700000000000000E+02,      /* I = 49 */
+(PID.TID 0000.0001)                 9.900000000000000E+02,      /* I = 50 */
+(PID.TID 0000.0001)                 1.010000000000000E+03,      /* I = 51 */
+(PID.TID 0000.0001)                 1.030000000000000E+03,      /* I = 52 */
+(PID.TID 0000.0001)                 1.050000000000000E+03,      /* I = 53 */
+(PID.TID 0000.0001)                 1.070000000000000E+03,      /* I = 54 */
+(PID.TID 0000.0001)                 1.090000000000000E+03,      /* I = 55 */
+(PID.TID 0000.0001)                 1.110000000000000E+03,      /* I = 56 */
+(PID.TID 0000.0001)                 1.130000000000000E+03,      /* I = 57 */
+(PID.TID 0000.0001)                 1.150000000000000E+03,      /* I = 58 */
+(PID.TID 0000.0001)                 1.170000000000000E+03,      /* I = 59 */
+(PID.TID 0000.0001)                 1.190000000000000E+03,      /* I = 60 */
+(PID.TID 0000.0001)                 1.210000000000000E+03,      /* I = 61 */
+(PID.TID 0000.0001)                 1.230000000000000E+03,      /* I = 62 */
+(PID.TID 0000.0001)                 1.250000000000000E+03,      /* I = 63 */
+(PID.TID 0000.0001)                 1.270000000000000E+03,      /* I = 64 */
+(PID.TID 0000.0001)                 1.290000000000000E+03,      /* I = 65 */
+(PID.TID 0000.0001)                 1.310000000000000E+03,      /* I = 66 */
+(PID.TID 0000.0001)                 1.330000000000000E+03,      /* I = 67 */
+(PID.TID 0000.0001)                 1.350000000000000E+03,      /* I = 68 */
+(PID.TID 0000.0001)                 1.370000000000000E+03,      /* I = 69 */
+(PID.TID 0000.0001)                 1.390000000000000E+03,      /* I = 70 */
+(PID.TID 0000.0001)                 1.410000000000000E+03,      /* I = 71 */
+(PID.TID 0000.0001)                 1.430000000000000E+03,      /* I = 72 */
+(PID.TID 0000.0001)                 1.450000000000000E+03,      /* I = 73 */
+(PID.TID 0000.0001)                 1.470000000000000E+03,      /* I = 74 */
+(PID.TID 0000.0001)                 1.490000000000000E+03,      /* I = 75 */
+(PID.TID 0000.0001)                 1.510000000000000E+03,      /* I = 76 */
+(PID.TID 0000.0001)                 1.530000000000000E+03,      /* I = 77 */
+(PID.TID 0000.0001)                 1.550000000000000E+03,      /* I = 78 */
+(PID.TID 0000.0001)                 1.570000000000000E+03,      /* I = 79 */
+(PID.TID 0000.0001)                 1.590000000000000E+03,      /* I = 80 */
+(PID.TID 0000.0001)                 1.610000000000000E+03,      /* I = 81 */
+(PID.TID 0000.0001)                 1.630000000000000E+03,      /* I = 82 */
+(PID.TID 0000.0001)                 1.650000000000000E+03,      /* I = 83 */
+(PID.TID 0000.0001)                 1.670000000000000E+03,      /* I = 84 */
+(PID.TID 0000.0001)                 1.690000000000000E+03,      /* I = 85 */
+(PID.TID 0000.0001)                 1.710000000000000E+03,      /* I = 86 */
+(PID.TID 0000.0001)                 1.730000000000000E+03,      /* I = 87 */
+(PID.TID 0000.0001)                 1.750000000000000E+03,      /* I = 88 */
+(PID.TID 0000.0001)                 1.770000000000000E+03,      /* I = 89 */
+(PID.TID 0000.0001)                 1.790000000000000E+03,      /* I = 90 */
+(PID.TID 0000.0001)                 1.810000000000000E+03,      /* I = 91 */
+(PID.TID 0000.0001)                 1.830000000000000E+03,      /* I = 92 */
+(PID.TID 0000.0001)                 1.850000000000000E+03,      /* I = 93 */
+(PID.TID 0000.0001)                 1.870000000000000E+03,      /* I = 94 */
+(PID.TID 0000.0001)                 1.890000000000000E+03,      /* I = 95 */
+(PID.TID 0000.0001)                 1.910000000000000E+03,      /* I = 96 */
+(PID.TID 0000.0001)                 1.930000000000000E+03,      /* I = 97 */
+(PID.TID 0000.0001)                 1.950000000000000E+03,      /* I = 98 */
+(PID.TID 0000.0001)                 1.970000000000000E+03,      /* I = 99 */
+(PID.TID 0000.0001)                 1.990000000000000E+03       /* I =100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) ycoord =   /* P-point Y coord ( m - cartesian, degrees - spherical ) */
+(PID.TID 0000.0001)                 1.000000000000000E+01,      /* J =  1 */
+(PID.TID 0000.0001)                 3.000000000000000E+01,      /* J =  2 */
+(PID.TID 0000.0001)                 5.000000000000000E+01,      /* J =  3 */
+(PID.TID 0000.0001)                 7.000000000000000E+01,      /* J =  4 */
+(PID.TID 0000.0001)                 9.000000000000000E+01,      /* J =  5 */
+(PID.TID 0000.0001)                 1.100000000000000E+02,      /* J =  6 */
+(PID.TID 0000.0001)                 1.300000000000000E+02,      /* J =  7 */
+(PID.TID 0000.0001)                 1.500000000000000E+02,      /* J =  8 */
+(PID.TID 0000.0001)                 1.700000000000000E+02,      /* J =  9 */
+(PID.TID 0000.0001)                 1.900000000000000E+02,      /* J = 10 */
+(PID.TID 0000.0001)                 2.100000000000000E+02,      /* J = 11 */
+(PID.TID 0000.0001)                 2.300000000000000E+02,      /* J = 12 */
+(PID.TID 0000.0001)                 2.500000000000000E+02,      /* J = 13 */
+(PID.TID 0000.0001)                 2.700000000000000E+02,      /* J = 14 */
+(PID.TID 0000.0001)                 2.900000000000000E+02,      /* J = 15 */
+(PID.TID 0000.0001)                 3.100000000000000E+02,      /* J = 16 */
+(PID.TID 0000.0001)                 3.300000000000000E+02,      /* J = 17 */
+(PID.TID 0000.0001)                 3.500000000000000E+02,      /* J = 18 */
+(PID.TID 0000.0001)                 3.700000000000000E+02,      /* J = 19 */
+(PID.TID 0000.0001)                 3.900000000000000E+02,      /* J = 20 */
+(PID.TID 0000.0001)                 4.100000000000000E+02,      /* J = 21 */
+(PID.TID 0000.0001)                 4.300000000000000E+02,      /* J = 22 */
+(PID.TID 0000.0001)                 4.500000000000000E+02,      /* J = 23 */
+(PID.TID 0000.0001)                 4.700000000000000E+02,      /* J = 24 */
+(PID.TID 0000.0001)                 4.900000000000000E+02,      /* J = 25 */
+(PID.TID 0000.0001)                 5.100000000000000E+02,      /* J = 26 */
+(PID.TID 0000.0001)                 5.300000000000000E+02,      /* J = 27 */
+(PID.TID 0000.0001)                 5.500000000000000E+02,      /* J = 28 */
+(PID.TID 0000.0001)                 5.700000000000000E+02,      /* J = 29 */
+(PID.TID 0000.0001)                 5.900000000000000E+02,      /* J = 30 */
+(PID.TID 0000.0001)                 6.100000000000000E+02,      /* J = 31 */
+(PID.TID 0000.0001)                 6.300000000000000E+02,      /* J = 32 */
+(PID.TID 0000.0001)                 6.500000000000000E+02,      /* J = 33 */
+(PID.TID 0000.0001)                 6.700000000000000E+02,      /* J = 34 */
+(PID.TID 0000.0001)                 6.900000000000000E+02,      /* J = 35 */
+(PID.TID 0000.0001)                 7.100000000000000E+02,      /* J = 36 */
+(PID.TID 0000.0001)                 7.300000000000000E+02,      /* J = 37 */
+(PID.TID 0000.0001)                 7.500000000000000E+02,      /* J = 38 */
+(PID.TID 0000.0001)                 7.700000000000000E+02,      /* J = 39 */
+(PID.TID 0000.0001)                 7.900000000000000E+02,      /* J = 40 */
+(PID.TID 0000.0001)                 8.100000000000000E+02,      /* J = 41 */
+(PID.TID 0000.0001)                 8.300000000000000E+02,      /* J = 42 */
+(PID.TID 0000.0001)                 8.500000000000000E+02,      /* J = 43 */
+(PID.TID 0000.0001)                 8.700000000000000E+02,      /* J = 44 */
+(PID.TID 0000.0001)                 8.900000000000000E+02,      /* J = 45 */
+(PID.TID 0000.0001)                 9.100000000000000E+02,      /* J = 46 */
+(PID.TID 0000.0001)                 9.300000000000000E+02,      /* J = 47 */
+(PID.TID 0000.0001)                 9.500000000000000E+02,      /* J = 48 */
+(PID.TID 0000.0001)                 9.700000000000000E+02,      /* J = 49 */
+(PID.TID 0000.0001)                 9.900000000000000E+02,      /* J = 50 */
+(PID.TID 0000.0001)                 1.010000000000000E+03,      /* J = 51 */
+(PID.TID 0000.0001)                 1.030000000000000E+03,      /* J = 52 */
+(PID.TID 0000.0001)                 1.050000000000000E+03,      /* J = 53 */
+(PID.TID 0000.0001)                 1.070000000000000E+03,      /* J = 54 */
+(PID.TID 0000.0001)                 1.090000000000000E+03,      /* J = 55 */
+(PID.TID 0000.0001)                 1.110000000000000E+03,      /* J = 56 */
+(PID.TID 0000.0001)                 1.130000000000000E+03,      /* J = 57 */
+(PID.TID 0000.0001)                 1.150000000000000E+03,      /* J = 58 */
+(PID.TID 0000.0001)                 1.170000000000000E+03,      /* J = 59 */
+(PID.TID 0000.0001)                 1.190000000000000E+03,      /* J = 60 */
+(PID.TID 0000.0001)                 1.210000000000000E+03,      /* J = 61 */
+(PID.TID 0000.0001)                 1.230000000000000E+03,      /* J = 62 */
+(PID.TID 0000.0001)                 1.250000000000000E+03,      /* J = 63 */
+(PID.TID 0000.0001)                 1.270000000000000E+03,      /* J = 64 */
+(PID.TID 0000.0001)                 1.290000000000000E+03,      /* J = 65 */
+(PID.TID 0000.0001)                 1.310000000000000E+03,      /* J = 66 */
+(PID.TID 0000.0001)                 1.330000000000000E+03,      /* J = 67 */
+(PID.TID 0000.0001)                 1.350000000000000E+03,      /* J = 68 */
+(PID.TID 0000.0001)                 1.370000000000000E+03,      /* J = 69 */
+(PID.TID 0000.0001)                 1.390000000000000E+03,      /* J = 70 */
+(PID.TID 0000.0001)                 1.410000000000000E+03,      /* J = 71 */
+(PID.TID 0000.0001)                 1.430000000000000E+03,      /* J = 72 */
+(PID.TID 0000.0001)                 1.450000000000000E+03,      /* J = 73 */
+(PID.TID 0000.0001)                 1.470000000000000E+03,      /* J = 74 */
+(PID.TID 0000.0001)                 1.490000000000000E+03,      /* J = 75 */
+(PID.TID 0000.0001)                 1.510000000000000E+03,      /* J = 76 */
+(PID.TID 0000.0001)                 1.530000000000000E+03,      /* J = 77 */
+(PID.TID 0000.0001)                 1.550000000000000E+03,      /* J = 78 */
+(PID.TID 0000.0001)                 1.570000000000000E+03,      /* J = 79 */
+(PID.TID 0000.0001)                 1.590000000000000E+03,      /* J = 80 */
+(PID.TID 0000.0001)                 1.610000000000000E+03,      /* J = 81 */
+(PID.TID 0000.0001)                 1.630000000000000E+03,      /* J = 82 */
+(PID.TID 0000.0001)                 1.650000000000000E+03,      /* J = 83 */
+(PID.TID 0000.0001)                 1.670000000000000E+03,      /* J = 84 */
+(PID.TID 0000.0001)                 1.690000000000000E+03,      /* J = 85 */
+(PID.TID 0000.0001)                 1.710000000000000E+03,      /* J = 86 */
+(PID.TID 0000.0001)                 1.730000000000000E+03,      /* J = 87 */
+(PID.TID 0000.0001)                 1.750000000000000E+03,      /* J = 88 */
+(PID.TID 0000.0001)                 1.770000000000000E+03,      /* J = 89 */
+(PID.TID 0000.0001)                 1.790000000000000E+03,      /* J = 90 */
+(PID.TID 0000.0001)                 1.810000000000000E+03,      /* J = 91 */
+(PID.TID 0000.0001)                 1.830000000000000E+03,      /* J = 92 */
+(PID.TID 0000.0001)                 1.850000000000000E+03,      /* J = 93 */
+(PID.TID 0000.0001)                 1.870000000000000E+03,      /* J = 94 */
+(PID.TID 0000.0001)                 1.890000000000000E+03,      /* J = 95 */
+(PID.TID 0000.0001)                 1.910000000000000E+03,      /* J = 96 */
+(PID.TID 0000.0001)                 1.930000000000000E+03,      /* J = 97 */
+(PID.TID 0000.0001)                 1.950000000000000E+03,      /* J = 98 */
+(PID.TID 0000.0001)                 1.970000000000000E+03,      /* J = 99 */
+(PID.TID 0000.0001)                 1.990000000000000E+03       /* J =100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rcoord =   /* P-point R coordinate (  units of r ) */
+(PID.TID 0000.0001)                -1.000000000000000E+01,      /* K =  1 */
+(PID.TID 0000.0001)                -3.000000000000000E+01,      /* K =  2 */
+(PID.TID 0000.0001)                -5.000000000000000E+01,      /* K =  3 */
+(PID.TID 0000.0001)                -7.000000000000000E+01,      /* K =  4 */
+(PID.TID 0000.0001)                -9.000000000000000E+01,      /* K =  5 */
+(PID.TID 0000.0001)                -1.100000000000000E+02,      /* K =  6 */
+(PID.TID 0000.0001)                -1.300000000000000E+02,      /* K =  7 */
+(PID.TID 0000.0001)                -1.500000000000000E+02,      /* K =  8 */
+(PID.TID 0000.0001)                -1.700000000000000E+02,      /* K =  9 */
+(PID.TID 0000.0001)                -1.900000000000000E+02,      /* K = 10 */
+(PID.TID 0000.0001)                -2.100000000000000E+02,      /* K = 11 */
+(PID.TID 0000.0001)                -2.300000000000000E+02,      /* K = 12 */
+(PID.TID 0000.0001)                -2.500000000000000E+02,      /* K = 13 */
+(PID.TID 0000.0001)                -2.700000000000000E+02,      /* K = 14 */
+(PID.TID 0000.0001)                -2.900000000000000E+02,      /* K = 15 */
+(PID.TID 0000.0001)                -3.100000000000000E+02,      /* K = 16 */
+(PID.TID 0000.0001)                -3.300000000000000E+02,      /* K = 17 */
+(PID.TID 0000.0001)                -3.500000000000000E+02,      /* K = 18 */
+(PID.TID 0000.0001)                -3.700000000000000E+02,      /* K = 19 */
+(PID.TID 0000.0001)                -3.900000000000000E+02,      /* K = 20 */
+(PID.TID 0000.0001)                -4.100000000000000E+02,      /* K = 21 */
+(PID.TID 0000.0001)                -4.300000000000000E+02,      /* K = 22 */
+(PID.TID 0000.0001)                -4.500000000000000E+02,      /* K = 23 */
+(PID.TID 0000.0001)                -4.700000000000000E+02,      /* K = 24 */
+(PID.TID 0000.0001)                -4.900000000000000E+02,      /* K = 25 */
+(PID.TID 0000.0001)                -5.100000000000000E+02,      /* K = 26 */
+(PID.TID 0000.0001)                -5.300000000000000E+02,      /* K = 27 */
+(PID.TID 0000.0001)                -5.500000000000000E+02,      /* K = 28 */
+(PID.TID 0000.0001)                -5.700000000000000E+02,      /* K = 29 */
+(PID.TID 0000.0001)                -5.900000000000000E+02,      /* K = 30 */
+(PID.TID 0000.0001)                -6.100000000000000E+02,      /* K = 31 */
+(PID.TID 0000.0001)                -6.300000000000000E+02,      /* K = 32 */
+(PID.TID 0000.0001)                -6.500000000000000E+02,      /* K = 33 */
+(PID.TID 0000.0001)                -6.700000000000000E+02,      /* K = 34 */
+(PID.TID 0000.0001)                -6.900000000000000E+02,      /* K = 35 */
+(PID.TID 0000.0001)                -7.100000000000000E+02,      /* K = 36 */
+(PID.TID 0000.0001)                -7.300000000000000E+02,      /* K = 37 */
+(PID.TID 0000.0001)                -7.500000000000000E+02,      /* K = 38 */
+(PID.TID 0000.0001)                -7.700000000000000E+02,      /* K = 39 */
+(PID.TID 0000.0001)                -7.900000000000000E+02,      /* K = 40 */
+(PID.TID 0000.0001)                -8.100000000000000E+02,      /* K = 41 */
+(PID.TID 0000.0001)                -8.300000000000000E+02,      /* K = 42 */
+(PID.TID 0000.0001)                -8.500000000000000E+02,      /* K = 43 */
+(PID.TID 0000.0001)                -8.700000000000000E+02,      /* K = 44 */
+(PID.TID 0000.0001)                -8.900000000000000E+02,      /* K = 45 */
+(PID.TID 0000.0001)                -9.100000000000000E+02,      /* K = 46 */
+(PID.TID 0000.0001)                -9.300000000000000E+02,      /* K = 47 */
+(PID.TID 0000.0001)                -9.500000000000000E+02,      /* K = 48 */
+(PID.TID 0000.0001)                -9.700000000000000E+02,      /* K = 49 */
+(PID.TID 0000.0001)                -9.900000000000000E+02       /* K = 50 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rF =   /* W-Interf. R coordinate (  units of r ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00,      /* K =  1 */
+(PID.TID 0000.0001)                -2.000000000000000E+01,      /* K =  2 */
+(PID.TID 0000.0001)                -4.000000000000000E+01,      /* K =  3 */
+(PID.TID 0000.0001)                -6.000000000000000E+01,      /* K =  4 */
+(PID.TID 0000.0001)                -8.000000000000000E+01,      /* K =  5 */
+(PID.TID 0000.0001)                -1.000000000000000E+02,      /* K =  6 */
+(PID.TID 0000.0001)                -1.200000000000000E+02,      /* K =  7 */
+(PID.TID 0000.0001)                -1.400000000000000E+02,      /* K =  8 */
+(PID.TID 0000.0001)                -1.600000000000000E+02,      /* K =  9 */
+(PID.TID 0000.0001)                -1.800000000000000E+02,      /* K = 10 */
+(PID.TID 0000.0001)                -2.000000000000000E+02,      /* K = 11 */
+(PID.TID 0000.0001)                -2.200000000000000E+02,      /* K = 12 */
+(PID.TID 0000.0001)                -2.400000000000000E+02,      /* K = 13 */
+(PID.TID 0000.0001)                -2.600000000000000E+02,      /* K = 14 */
+(PID.TID 0000.0001)                -2.800000000000000E+02,      /* K = 15 */
+(PID.TID 0000.0001)                -3.000000000000000E+02,      /* K = 16 */
+(PID.TID 0000.0001)                -3.200000000000000E+02,      /* K = 17 */
+(PID.TID 0000.0001)                -3.400000000000000E+02,      /* K = 18 */
+(PID.TID 0000.0001)                -3.600000000000000E+02,      /* K = 19 */
+(PID.TID 0000.0001)                -3.800000000000000E+02,      /* K = 20 */
+(PID.TID 0000.0001)                -4.000000000000000E+02,      /* K = 21 */
+(PID.TID 0000.0001)                -4.200000000000000E+02,      /* K = 22 */
+(PID.TID 0000.0001)                -4.400000000000000E+02,      /* K = 23 */
+(PID.TID 0000.0001)                -4.600000000000000E+02,      /* K = 24 */
+(PID.TID 0000.0001)                -4.800000000000000E+02,      /* K = 25 */
+(PID.TID 0000.0001)                -5.000000000000000E+02,      /* K = 26 */
+(PID.TID 0000.0001)                -5.200000000000000E+02,      /* K = 27 */
+(PID.TID 0000.0001)                -5.400000000000000E+02,      /* K = 28 */
+(PID.TID 0000.0001)                -5.600000000000000E+02,      /* K = 29 */
+(PID.TID 0000.0001)                -5.800000000000000E+02,      /* K = 30 */
+(PID.TID 0000.0001)                -6.000000000000000E+02,      /* K = 31 */
+(PID.TID 0000.0001)                -6.200000000000000E+02,      /* K = 32 */
+(PID.TID 0000.0001)                -6.400000000000000E+02,      /* K = 33 */
+(PID.TID 0000.0001)                -6.600000000000000E+02,      /* K = 34 */
+(PID.TID 0000.0001)                -6.800000000000000E+02,      /* K = 35 */
+(PID.TID 0000.0001)                -7.000000000000000E+02,      /* K = 36 */
+(PID.TID 0000.0001)                -7.200000000000000E+02,      /* K = 37 */
+(PID.TID 0000.0001)                -7.400000000000000E+02,      /* K = 38 */
+(PID.TID 0000.0001)                -7.600000000000000E+02,      /* K = 39 */
+(PID.TID 0000.0001)                -7.800000000000000E+02,      /* K = 40 */
+(PID.TID 0000.0001)                -8.000000000000000E+02,      /* K = 41 */
+(PID.TID 0000.0001)                -8.200000000000000E+02,      /* K = 42 */
+(PID.TID 0000.0001)                -8.400000000000000E+02,      /* K = 43 */
+(PID.TID 0000.0001)                -8.600000000000000E+02,      /* K = 44 */
+(PID.TID 0000.0001)                -8.800000000000000E+02,      /* K = 45 */
+(PID.TID 0000.0001)                -9.000000000000000E+02,      /* K = 46 */
+(PID.TID 0000.0001)                -9.200000000000000E+02,      /* K = 47 */
+(PID.TID 0000.0001)                -9.400000000000000E+02,      /* K = 48 */
+(PID.TID 0000.0001)                -9.600000000000000E+02,      /* K = 49 */
+(PID.TID 0000.0001)                -9.800000000000000E+02,      /* K = 50 */
+(PID.TID 0000.0001)                -1.000000000000000E+03       /* K = 51 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) deepFacC = /* deep-model grid factor @ cell-Center (-) */
+(PID.TID 0000.0001)    50 @  1.000000000000000E+00              /* K =  1: 50 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) deepFacF = /* deep-model grid factor @ W-Interface (-) */
+(PID.TID 0000.0001)    51 @  1.000000000000000E+00              /* K =  1: 51 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rVel2wUnit = /* convert units: rVel -> wSpeed (=1 if z-coord)*/
+(PID.TID 0000.0001)    51 @  1.000000000000000E+00              /* K =  1: 51 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) wUnit2rVel = /* convert units: wSpeed -> rVel (=1 if z-coord)*/
+(PID.TID 0000.0001)    51 @  1.000000000000000E+00              /* K =  1: 51 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dBdrRef = /* Vertical gradient of reference boyancy [(m/s/r)^2)] */
+(PID.TID 0000.0001)    50 @  0.000000000000000E+00              /* K =  1: 50 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rotateGrid = /* use rotated grid ( True/False ) */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) phiEuler = /* Euler angle, rotation about original z-coordinate [rad] */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) thetaEuler = /* Euler angle, rotation about new x-coordinate [rad] */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) psiEuler = /* Euler angle, rotation about new z-coordinate [rad] */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dxF =  /* dxF(:,1,:,1) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* I =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dxF =  /* dxF(1,:,1,:) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* J =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dyF =  /* dyF(:,1,:,1) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* I =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dyF =  /* dyF(1,:,1,:) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* J =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dxG =  /* dxG(:,1,:,1) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* I =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dxG =  /* dxG(1,:,1,:) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* J =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dyG =  /* dyG(:,1,:,1) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* I =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dyG =  /* dyG(1,:,1,:) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* J =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dxC =  /* dxC(:,1,:,1) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* I =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dxC =  /* dxC(1,:,1,:) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* J =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dyC =  /* dyC(:,1,:,1) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* I =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dyC =  /* dyC(1,:,1,:) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* J =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dxV =  /* dxV(:,1,:,1) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* I =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dxV =  /* dxV(1,:,1,:) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* J =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dyU =  /* dyU(:,1,:,1) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* I =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dyU =  /* dyU(1,:,1,:) ( units: m ) */
+(PID.TID 0000.0001)   100 @  2.000000000000000E+01              /* J =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rA  =  /* rA (:,1,:,1) ( units: m^2 ) */
+(PID.TID 0000.0001)   100 @  4.000000000000000E+02              /* I =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rA  =  /* rA (1,:,1,:) ( units: m^2 ) */
+(PID.TID 0000.0001)   100 @  4.000000000000000E+02              /* J =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rAw =  /* rAw(:,1,:,1) ( units: m^2 ) */
+(PID.TID 0000.0001)   100 @  4.000000000000000E+02              /* I =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rAw =  /* rAw(1,:,1,:) ( units: m^2 ) */
+(PID.TID 0000.0001)   100 @  4.000000000000000E+02              /* J =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rAs =  /* rAs(:,1,:,1) ( units: m^2 ) */
+(PID.TID 0000.0001)   100 @  4.000000000000000E+02              /* I =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rAs =  /* rAs(1,:,1,:) ( units: m^2 ) */
+(PID.TID 0000.0001)   100 @  4.000000000000000E+02              /* J =  1:100 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) globalArea = /* Integrated horizontal Area (m^2) */
+(PID.TID 0000.0001)                 4.000000000000000E+06
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // End of Model config. summary
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) == Packages configuration : Check & print summary ==
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) GAD_CHECK: #define ALLOW_GENERIC_ADVDIFF
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // CONFIG_CHECK : Normal End
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial Temperature at iteration          1
+(PID.TID 0000.0001) // CMIN =          2.000000000000000E+01
+(PID.TID 0000.0001) // CMAX =          2.000000000000000E+01
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1: 100:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):( 100:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial Salinity at iteration          1
+(PID.TID 0000.0001) // CMIN =          3.500000000000000E+01
+(PID.TID 0000.0001) // CMAX =          3.500000000000000E+01
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1: 100:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):( 100:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) Start initial hydrostatic pressure computation
+(PID.TID 0000.0001) Pressure is predetermined for buoyancyRelation OCEANIC
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: Qnet.bin
+(PID.TID 0000.0001)  write diagnostics summary to file ioUnit:      6
+Iter.Nb:         0 ; Time(s):  0.0000000000000E+00
+------------------------------------------------------------------------
+2D/3D diagnostics: Number of lists:     2
+------------------------------------------------------------------------
+listId=    1 ; file name: surfDiag
+ nFlds, nActive,       freq     &     phase        , nLev               
+    3  |    3  |      1800.000000         0.000000 |   1
+ levels:   1
+ diag# | name   |   ipt  |  iMate | kLev|   count |   mate.C|           
+    23 |ETAN    |      1 |      0 |   1 |       0 |
+    24 |ETANSQ  |      2 |      0 |   1 |       0 |
+    25 |DETADT2 |      3 |      0 |   1 |       0 |
+------------------------------------------------------------------------
+listId=    2 ; file name: dynDiag
+ nFlds, nActive,       freq     &     phase        , nLev               
+    6  |    6  |      1800.000000         0.000000 |  50
+ levels:   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25
+ levels:  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50
+ diag# | name   |   ipt  |  iMate | kLev|   count |   mate.C|           
+    30 |UVEL    |      4 |     54 |  50 |       0 |       0 |
+    31 |VVEL    |     54 |      4 |  50 |       0 |       0 |
+    32 |WVEL    |    104 |      0 |  50 |       0 |
+    26 |THETA   |    154 |      0 |  50 |       0 |
+    65 |PHIHYD  |    204 |      0 |  50 |       0 |
+    69 |PHI_NH  |    254 |      0 |  50 |       0 |
+------------------------------------------------------------------------
+Global & Regional Statistics diagnostics: Number of lists:     1
+------------------------------------------------------------------------
+listId=   1 ; file name: dynStDiag
+ nFlds, nActive,       freq     &     phase        |                    
+    7  |    7  |       120.000000        60.000000 |
+ Regions:   0
+ diag# | name   |   ipt  |  iMate |    Volume   |   mate-Vol. |         
+    23 |ETAN    |      1 |      0 | 0.00000E+00 |
+    30 |UVEL    |      2 |      0 | 0.00000E+00 |
+    31 |VVEL    |     52 |      0 | 0.00000E+00 |
+    32 |WVEL    |    102 |      0 | 0.00000E+00 |
+    26 |THETA   |    152 |      0 | 0.00000E+00 |
+    65 |PHIHYD  |    202 |      0 | 0.00000E+00 |
+    69 |PHI_NH  |    252 |      0 | 0.00000E+00 |
+------------------------------------------------------------------------
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Model current state
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) %MON time_tsnumber                =                     0
+(PID.TID 0000.0001) %MON time_secondsf                =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_eta_min              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON pe_b_mean                    =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON ke_max                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON ke_mean                      =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON ke_vol                       =   4.0000000000000E+09
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // End MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+ cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
+(PID.TID 0000.0001)                    cg2d_init_res =    0.00000000000000E+00
+(PID.TID 0000.0001)                       cg2d_iters =     0
+(PID.TID 0000.0001)                         cg2d_res =    0.00000000000000E+00
+ cg3d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
+(PID.TID 0000.0001)                    cg3d_init_res =    0.00000000000000E+00
+(PID.TID 0000.0001)                       cg3d_iters =     0
+(PID.TID 0000.0001)                         cg3d_res =    0.00000000000000E+00
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) %MON time_tsnumber                =                     1
+(PID.TID 0000.0001) %MON time_secondsf                =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_eta_min              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.9999796250757E+01
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.9999998854693E+01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.5113183473261E-05
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   3.7698609024787E-08
+(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON pe_b_mean                    =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON ke_max                       =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON ke_mean                      =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON ke_vol                       =   4.0000000000000E+09
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // End MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+ cg2d: Sum(rhs),rhsMax =  -8.33361157859258E-15  1.86090661807134E-05
+(PID.TID 0000.0001)                    cg2d_init_res =    1.20944745805427E+01
+(PID.TID 0000.0001)                       cg2d_iters =   113
+(PID.TID 0000.0001)                         cg2d_res =    7.46189389609083E-10
+ cg3d: Sum(rhs),rhsMax =   4.20270982186451E-14  9.22856574363770E-06
+(PID.TID 0000.0001)                    cg3d_init_res =    1.22543887585968E+01
+(PID.TID 0000.0001)                       cg3d_iters =   100
+(PID.TID 0000.0001)                         cg3d_res =    3.44493825250514E-03
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) %MON time_tsnumber                =                     2
+(PID.TID 0000.0001) %MON time_secondsf                =   4.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   3.6847033886716E-07
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2118984915003E-07
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   2.7569092841961E-22
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   5.6384859135455E-07
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   1.1948284840147E-08
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.2720556180702E-06
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -2.2864272003767E-06
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -1.6209256159527E-23
+(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   3.9450530258722E-08
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   6.7510301977264E-10
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   2.2772643735452E-06
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -2.2783916148827E-06
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -4.8849813083507E-24
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   3.9446611045009E-08
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   6.7528528195115E-10
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.5905187064380E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.7241330474274E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -2.1545780293875E-25
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   4.3221966205331E-08
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   1.4221231365514E-09
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.9999593167676E+01
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.9999997709386E+01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   3.0175226626536E-05
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   7.5027877017753E-08
+(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   2.2864272003767E-06
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   2.2783916148827E-06
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.7241330474274E-06
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   3.4482660948547E-06
+(PID.TID 0000.0001) %MON pe_b_mean                    =   1.5896261698625E-15
+(PID.TID 0000.0001) %MON ke_max                       =   1.6407286639966E-12
+(PID.TID 0000.0001) %MON ke_mean                      =   1.5561897303153E-15
+(PID.TID 0000.0001) %MON ke_vol                       =   4.0000000000000E+09
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // End MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+ cg2d: Sum(rhs),rhsMax =  -3.03533240209042E-15  2.99359634941696E-05
+(PID.TID 0000.0001)                    cg2d_init_res =    4.60445730330044E+00
+(PID.TID 0000.0001)                       cg2d_iters =   111
+(PID.TID 0000.0001)                         cg2d_res =    8.05630824845054E-10
+ cg3d: Sum(rhs),rhsMax =  -1.12965928827241E-13  1.48525146673167E-05
+(PID.TID 0000.0001)                    cg3d_init_res =    4.63639718556398E+00
+(PID.TID 0000.0001)                       cg3d_iters =   100
+(PID.TID 0000.0001)                         cg3d_res =    1.00961163531287E-03
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) %MON time_tsnumber                =                     3
+(PID.TID 0000.0001) %MON time_secondsf                =   6.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   5.9276047342340E-07
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -1.5132349499693E-06
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -1.6028736497808E-21
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   9.3465483898798E-07
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   1.9290634762470E-08
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   6.0742796023796E-06
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -6.1120102804904E-06
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   1.8207657603853E-23
+(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.0358609270502E-07
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.7488447985677E-09
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   6.0879923701683E-06
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -6.0908355161887E-06
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -1.5432100042290E-23
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.0357604849284E-07
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.7493009648716E-09
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   4.1394926623614E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -4.4474291151556E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   4.1478946750392E-25
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.0722597302681E-07
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   3.3851628270429E-09
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.9999390489962E+01
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.9999996564080E+01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5205735840921E-05
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   1.1213563513351E-07
+(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   6.1120102804904E-06
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   6.0908355161887E-06
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   4.4474291151556E-06
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   8.8948582303111E-06
+(PID.TID 0000.0001) %MON pe_b_mean                    =   4.3678983402182E-15
+(PID.TID 0000.0001) %MON ke_max                       =   1.1834817947009E-11
+(PID.TID 0000.0001) %MON ke_mean                      =   1.0729038211642E-14
+(PID.TID 0000.0001) %MON ke_vol                       =   4.0000000000000E+09
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // End MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+ Compute Stats, Diag. #     23  ETAN      vol(   0 ): 1.200E+07  Parms: SM      M1      
+ Compute Stats, Diag. #     30  UVEL      vol(   0 ): 1.200E+10  Parms: UU      MR      
+ Compute Stats, Diag. #     31  VVEL      vol(   0 ): 1.200E+10  Parms: VV      MR      
+ Compute Stats, Diag. #     32  WVEL      vol(   0 ): 1.188E+10  Parms: WM      LR      
+ Compute Stats, Diag. #     26  THETA     vol(   0 ): 1.200E+10  Parms: SM      MR      
+ Compute Stats, Diag. #     65  PHIHYD    vol(   0 ): 1.200E+10  Parms: SM      MR      
+ Compute Stats, Diag. #     69  PHI_NH    vol(   0 ): 1.200E+10  Parms: SM      MR      
+ cg2d: Sum(rhs),rhsMax =  -4.08827902087516E-11  4.11923750996478E-05
+(PID.TID 0000.0001)                    cg2d_init_res =    3.32981576017876E+00
+(PID.TID 0000.0001)                       cg2d_iters =   110
+(PID.TID 0000.0001)                         cg2d_res =    8.84336180681155E-10
+ cg3d: Sum(rhs),rhsMax =  -3.78981204341146E-09  2.04644193463917E-05
+(PID.TID 0000.0001)                    cg3d_init_res =    3.37925273230248E+00
+(PID.TID 0000.0001)                       cg3d_iters =   100
+(PID.TID 0000.0001)                         cg3d_res =    5.70921696788396E-04
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) %MON time_tsnumber                =                     4
+(PID.TID 0000.0001) %MON time_secondsf                =   8.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   8.1744737003823E-07
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -2.0889772716125E-06
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   1.3317829575688E-17
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   1.2914880085165E-06
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.6609638754204E-08
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.1292519216977E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -1.1362341075766E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -1.8873791418628E-24
+(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.9239195273479E-07
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   3.2200803006754E-09
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   1.1317880870596E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.1323022804674E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   2.4868995751604E-23
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.9237371728740E-07
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   3.2209496109189E-09
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   7.6338461863274E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -8.1895608845719E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -8.4699187899019E-25
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.9695656260593E-07
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.0071639543272E-09
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.9999188219250E+01
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.9999995418773E+01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   6.0204838283402E-05
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   1.4902555955134E-07
+(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.1362341075766E-05
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.1323022804674E-05
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   8.1895608845719E-06
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.6379121769144E-05
+(PID.TID 0000.0001) %MON pe_b_mean                    =   8.3397063807090E-15
+(PID.TID 0000.0001) %MON ke_max                       =   4.0997454997847E-11
+(PID.TID 0000.0001) %MON ke_mean                      =   3.7011155290040E-14
+(PID.TID 0000.0001) %MON ke_vol                       =   4.0000000000000E+09
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // End MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+ cg2d: Sum(rhs),rhsMax =  -1.77365075317709E-10  5.23353039840782E-05
+(PID.TID 0000.0001)                    cg2d_init_res =    2.60055644088294E+00
+(PID.TID 0000.0001)                       cg2d_iters =   110
+(PID.TID 0000.0001)                         cg2d_res =    6.90704786643753E-10
+ cg3d: Sum(rhs),rhsMax =  -1.61892681387949E-08  2.60228519736921E-05
+(PID.TID 0000.0001)                    cg3d_init_res =    2.63625983852414E+00
+(PID.TID 0000.0001)                       cg3d_iters =   100
+(PID.TID 0000.0001)                         cg3d_res =    4.71556766556940E-04
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) %MON time_tsnumber                =                     5
+(PID.TID 0000.0001) %MON time_secondsf                =   1.0000000000000E+02
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   1.0431290969009E-06
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -2.6670887885307E-06
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   8.5649516754112E-17
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   1.6488361407943E-06
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   3.3886381874729E-08
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.7931631254258E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -1.8042231936344E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -5.8286708792821E-23
+(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   3.0558641214006E-07
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   5.0845074677373E-09
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   1.7971774044808E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.7979759060187E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   3.5860203695393E-23
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   3.0555798232566E-07
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   5.0859081266498E-09
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.2056660309829E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.2931704202100E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -9.8136723915582E-25
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   3.1136842921844E-07
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.3102651487446E-09
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.9998986353990E+01
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.9999994273466E+01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   7.5172713505763E-05
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   1.8569957044851E-07
+(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.8042231936344E-05
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.7979759060187E-05
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.2931704202100E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   2.5863408404200E-05
+(PID.TID 0000.0001) %MON pe_b_mean                    =   1.3593303095948E-14
+(PID.TID 0000.0001) %MON ke_max                       =   1.0350247609623E-10
+(PID.TID 0000.0001) %MON ke_mean                      =   9.3374367923782E-14
+(PID.TID 0000.0001) %MON ke_vol                       =   4.0000000000000E+09
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // End MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+ cg2d: Sum(rhs),rhsMax =  -4.59345832204416E-10  6.33664442443093E-05
+(PID.TID 0000.0001)                    cg2d_init_res =    2.13130511567137E+00
+(PID.TID 0000.0001)                       cg2d_iters =   109
+(PID.TID 0000.0001)                         cg2d_res =    9.95982641170136E-10
+ cg3d: Sum(rhs),rhsMax =  -4.12602471196236E-08  3.15352327628067E-05
+(PID.TID 0000.0001)                    cg3d_init_res =    2.16185801116992E+00
+(PID.TID 0000.0001)                       cg3d_iters =   100
+(PID.TID 0000.0001)                         cg3d_res =    3.45708065992923E-04
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) %MON time_tsnumber                =                     6
+(PID.TID 0000.0001) %MON time_secondsf                =   1.2000000000000E+02
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   1.2698583418050E-06
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -3.2467152695018E-06
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   3.0845263515687E-16
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   2.0070619525190E-06
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   4.1120669756877E-08
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.5986644096682E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -2.6146624791169E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -4.1744385725906E-23
+(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   4.4308106492913E-07
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   7.3361728760097E-09
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   2.6044660224963E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -2.6055997387619E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   6.9499961341535E-23
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   4.4304053847751E-07
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   7.3382378472041E-09
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.7393545592111E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.8657400232753E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.2673118727275E-24
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   4.5007958498685E-07
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   1.3268286936001E-08
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.9998784892491E+01
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.9999993128159E+01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   9.0109539567458E-05
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   2.2216158537021E-07
+(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   2.6146624791169E-05
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   2.6055997387619E-05
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.8657400232753E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   3.7314800465507E-05
+(PID.TID 0000.0001) %MON pe_b_mean                    =   2.0141488406246E-14
+(PID.TID 0000.0001) %MON ke_max                       =   2.1759939536221E-10
+(PID.TID 0000.0001) %MON ke_mean                      =   1.9630287441659E-13
+(PID.TID 0000.0001) %MON ke_vol                       =   4.0000000000000E+09
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // End MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+ cg2d: Sum(rhs),rhsMax =  -9.36022045896351E-10  7.42873378433209E-05
+(PID.TID 0000.0001)                    cg2d_init_res =    1.80407494582638E+00
+(PID.TID 0000.0001)                       cg2d_iters =   109
+(PID.TID 0000.0001)                         cg2d_res =    8.42274303274638E-10
+ cg3d: Sum(rhs),rhsMax =  -8.27121818111193E-08  3.70013873904844E-05
+(PID.TID 0000.0001)                    cg3d_init_res =    1.83128119507658E+00
+(PID.TID 0000.0001)                       cg3d_iters =   100
+(PID.TID 0000.0001)                         cg3d_res =    2.88212725298816E-04
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) %MON time_tsnumber                =                     7
+(PID.TID 0000.0001) %MON time_secondsf                =   1.4000000000000E+02
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   1.4965578276047E-06
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -3.8263752938692E-06
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   8.3252466021293E-16
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   2.3652987516204E-06
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   4.8312978966975E-08
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   3.5448852447723E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -3.5666730163361E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -2.9976021664879E-24
+(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   6.0477175842774E-07
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   9.9698869948774E-09
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   3.5527793067655E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -3.5542957925899E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -1.4765966227515E-23
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   6.0471733011105E-07
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   9.9727539758363E-09
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.3629612001258E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -2.5351566650481E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -4.9851396860142E-25
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   6.1289226585340E-07
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   1.7883414716184E-08
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.9998583833065E+01
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.9999991982852E+01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.0501549316594E-04
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   2.5841489267616E-07
+(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   3.5666730163361E-05
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   3.5542957925899E-05
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   2.5351566650481E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   5.0703133300962E-05
+(PID.TID 0000.0001) %MON pe_b_mean                    =   2.7973190922085E-14
+(PID.TID 0000.0001) %MON ke_max                       =   4.0527356121236E-10
+(PID.TID 0000.0001) %MON ke_mean                      =   3.6571596456421E-13
+(PID.TID 0000.0001) %MON ke_vol                       =   4.0000000000000E+09
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // End MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+ cg2d: Sum(rhs),rhsMax =  -1.65191122846603E-09  8.50995352038103E-05
+(PID.TID 0000.0001)                    cg2d_init_res =    1.56289228916399E+00
+(PID.TID 0000.0001)                       cg2d_iters =   109
+(PID.TID 0000.0001)                         cg2d_res =    7.29197295691045E-10
+ cg3d: Sum(rhs),rhsMax =  -1.43583509342664E-07  4.24217799742353E-05
+(PID.TID 0000.0001)                    cg3d_init_res =    1.58766231361597E+00
+(PID.TID 0000.0001)                       cg3d_iters =   100
+(PID.TID 0000.0001)                         cg3d_res =    2.53313173096064E-04
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) %MON time_tsnumber                =                     8
+(PID.TID 0000.0001) %MON time_secondsf                =   1.6000000000000E+02
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   1.7232647169437E-06
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -4.4059556149671E-06
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   1.8755560936582E-15
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   2.7234224889175E-06
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   5.5464608556376E-08
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   4.6309351547034E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -4.6593559926869E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -2.8865798640254E-24
+(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   7.9055451603342E-07
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.2980502011155E-08
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   4.6412226673275E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -4.6431662016073E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -4.9515946898282E-23
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   7.9048447531899E-07
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.2984195708906E-08
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   3.0750109329032E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -3.2999468089304E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -2.7405126428563E-24
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   7.9962815113389E-07
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   2.3150512908295E-08
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.9998383174020E+01
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.9999990837545E+01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.1989074973981E-04
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   2.9446849894837E-07
+(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   4.6593559926869E-05
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   4.6431662016073E-05
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   3.2999468089304E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   6.5998936178609E-05
+(PID.TID 0000.0001) %MON pe_b_mean                    =   3.7085150265708E-14
+(PID.TID 0000.0001) %MON ke_max                       =   6.9220487296884E-10
+(PID.TID 0000.0001) %MON ke_mean                      =   6.2492107427058E-13
+(PID.TID 0000.0001) %MON ke_vol                       =   4.0000000000000E+09
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // End MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+ cg2d: Sum(rhs),rhsMax =  -2.65634877288923E-09  9.58046016864724E-05
+(PID.TID 0000.0001)                    cg2d_init_res =    1.37778248264849E+00
+(PID.TID 0000.0001)                       cg2d_iters =   109
+(PID.TID 0000.0001)                         cg2d_res =    6.42923461742769E-10
+ cg3d: Sum(rhs),rhsMax =  -2.27152008493569E-07  4.77970491894075E-05
+(PID.TID 0000.0001)                    cg3d_init_res =    1.40070064449692E+00
+(PID.TID 0000.0001)                       cg3d_iters =   100
+(PID.TID 0000.0001)                         cg3d_res =    2.25911447503241E-04
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) %MON time_tsnumber                =                     9
+(PID.TID 0000.0001) %MON time_secondsf                =   1.8000000000000E+02
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   1.9499659602570E-06
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -4.9854884775018E-06
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   3.7347520808395E-15
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.0814732380290E-06
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   6.2576997188333E-08
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   5.8559481008712E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -5.8918371652536E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -1.8463008899516E-22
+(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.0003297275102E-06
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.6362807081305E-08
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   5.8689259248229E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -5.8713376088211E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -4.7850612361344E-23
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.0002424568215E-06
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.6367314949467E-08
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   3.8740593028318E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -4.1586533737804E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   4.8594160401542E-24
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.0101091083642E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   2.9061343887371E-08
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.9998182913660E+01
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.9999989692238E+01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.3473548344548E-04
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   3.3032491718024E-07
+(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   5.8918371652536E-05
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   5.8713376088211E-05
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   4.1586533737804E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   8.3173067475607E-05
+(PID.TID 0000.0001) %MON pe_b_mean                    =   4.7477386583445E-14
+(PID.TID 0000.0001) %MON ke_max                       =   1.1077082601413E-09
+(PID.TID 0000.0001) %MON ke_mean                      =   1.0005722680845E-12
+(PID.TID 0000.0001) %MON ke_vol                       =   4.0000000000000E+09
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // End MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+ Compute Stats, Diag. #     23  ETAN      vol(   0 ): 2.400E+07  Parms: SM      M1      
+ Compute Stats, Diag. #     30  UVEL      vol(   0 ): 2.400E+10  Parms: UU      MR      
+ Compute Stats, Diag. #     31  VVEL      vol(   0 ): 2.400E+10  Parms: VV      MR      
+ Compute Stats, Diag. #     32  WVEL      vol(   0 ): 2.376E+10  Parms: WM      LR      
+ Compute Stats, Diag. #     26  THETA     vol(   0 ): 2.400E+10  Parms: SM      MR      
+ Compute Stats, Diag. #     65  PHIHYD    vol(   0 ): 2.400E+10  Parms: SM      MR      
+ Compute Stats, Diag. #     69  PHI_NH    vol(   0 ): 2.400E+10  Parms: SM      MR      
+ cg2d: Sum(rhs),rhsMax =  -4.00369600016617E-09  1.06404120414133E-04
+(PID.TID 0000.0001)                    cg2d_init_res =    1.23124569720684E+00
+(PID.TID 0000.0001)                       cg2d_iters =   109
+(PID.TID 0000.0001)                         cg2d_res =    5.75720382325463E-10
+ cg3d: Sum(rhs),rhsMax =  -3.36930872250074E-07  5.31278272265364E-05
+(PID.TID 0000.0001)                    cg3d_init_res =    1.25271486595760E+00
+(PID.TID 0000.0001)                       cg3d_iters =   100
+(PID.TID 0000.0001)                         cg3d_res =    2.03796030983167E-04
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) %MON time_tsnumber                =                    10
+(PID.TID 0000.0001) %MON time_secondsf                =   2.0000000000000E+02
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   2.1766615120195E-06
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -5.5649865759770E-06
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.8001333181598E-15
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.4394639910358E-06
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   6.9650386376050E-08
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   7.2190715499049E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -7.2632559280192E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   1.1379786002408E-22
+(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.2340003523984E-06
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.0111607616178E-08
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   7.2350323759950E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -7.2379502284766E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -7.5273121069586E-23
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.2338943251727E-06
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   2.0116979338069E-08
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   4.7586899678855E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -5.1098391980742E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.5402241771552E-24
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.2441603044903E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   3.5607710204216E-08
+(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.0000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.9997983050293E+01
+(PID.TID 0000.0001) %MON dynstat_theta_mean           =   1.9999988546931E+01
+(PID.TID 0000.0001) %MON dynstat_theta_sd             =   1.4954986714424E-04
+(PID.TID 0000.0001) %MON dynstat_theta_del2           =   3.6598885657476E-07
+(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.5000000000000E+01
+(PID.TID 0000.0001) %MON dynstat_salt_sd              =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   7.2632559280192E-05
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   7.2379502284766E-05
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   5.1098391980742E-05
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.0219678396148E-04
+(PID.TID 0000.0001) %MON pe_b_mean                    =   5.9149562728161E-14
+(PID.TID 0000.0001) %MON ke_max                       =   1.6846713786096E-09
+(PID.TID 0000.0001) %MON ke_mean                      =   1.5226260377064E-12
+(PID.TID 0000.0001) %MON ke_vol                       =   4.0000000000000E+09
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // End MONITOR dynamic field statistics
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) %CHECKPOINT        10 ckptA
+(PID.TID 0000.0001) DIAGSTATS_CLOSE_IO: close file: dynStDiag.0000000000.txt , unit=     9
+(PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
+(PID.TID 0000.0001)           User time:  373.963157
+(PID.TID 0000.0001)         System time:  2.78257711
+(PID.TID 0000.0001)     Wall clock time:  377.979366
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
+(PID.TID 0000.0001)           User time:  2.00869495
+(PID.TID 0000.0001)         System time:  0.40493799
+(PID.TID 0000.0001)     Wall clock time:  2.46121812
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
+(PID.TID 0000.0001)           User time:  371.954462
+(PID.TID 0000.0001)         System time:  2.37763911
+(PID.TID 0000.0001)     Wall clock time:  375.517919
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:  3.04453707
+(PID.TID 0000.0001)         System time:  0.65990001
+(PID.TID 0000.0001)     Wall clock time:  3.77534509
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:  368.909925
+(PID.TID 0000.0001)         System time:  1.71773911
+(PID.TID 0000.0001)     Wall clock time:  371.74245
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
+(PID.TID 0000.0001)           User time:  368.909925
+(PID.TID 0000.0001)         System time:  1.71773911
+(PID.TID 0000.0001)     Wall clock time:  371.742004
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  2.30465746
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  2.31139421
+(PID.TID 0000.0001)          No. starts: 20
+(PID.TID 0000.0001)           No. stops: 20
+(PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.000999450684
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.00128173828
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.000428676605
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.000402927399
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.371947289
+(PID.TID 0000.0001)         System time:  0.00699901581
+(PID.TID 0000.0001)     Wall clock time:  0.3791399
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  8.9926033
+(PID.TID 0000.0001)         System time:  0.00399899483
+(PID.TID 0000.0001)     Wall clock time:  9.00500751
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  38.7320852
+(PID.TID 0000.0001)         System time:  0.0239959955
+(PID.TID 0000.0001)     Wall clock time:  38.7824619
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "CALC_GW          [DYNAMICS]":
+(PID.TID 0000.0001)           User time:  9.56957817
+(PID.TID 0000.0001)         System time:  0.00399804115
+(PID.TID 0000.0001)     Wall clock time:  9.57620955
+(PID.TID 0000.0001)          No. starts: 40
+(PID.TID 0000.0001)           No. stops: 40
+(PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  297.809755
+(PID.TID 0000.0001)         System time:  0.0399940014
+(PID.TID 0000.0001)     Wall clock time:  298.901317
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "CG3D   [SOLVE_FOR_PRESSURE]":
+(PID.TID 0000.0001)           User time:  288.941034
+(PID.TID 0000.0001)         System time:  0.0299960375
+(PID.TID 0000.0001)     Wall clock time:  289.703338
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  2.79458618
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  2.79250312
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.294938087
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.296326876
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.418972969
+(PID.TID 0000.0001)         System time:  0.00100004673
+(PID.TID 0000.0001)     Wall clock time:  0.419792414
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  15.3316679
+(PID.TID 0000.0001)         System time:  0.00199997425
+(PID.TID 0000.0001)     Wall clock time:  15.3421619
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  0.617897034
+(PID.TID 0000.0001)         System time:  0.568914056
+(PID.TID 0000.0001)     Wall clock time:  1.19085217
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
+(PID.TID 0000.0001)           User time:  1.23583221
+(PID.TID 0000.0001)         System time:  1.06983709
+(PID.TID 0000.0001)     Wall clock time:  2.31305695
+(PID.TID 0000.0001)          No. starts: 10
+(PID.TID 0000.0001)           No. stops: 10
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // Tile <-> Tile communication statistics
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // o Tile number: 000001
+(PID.TID 0000.0001) //         No. X exchanges =              0
+(PID.TID 0000.0001) //            Max. X spins =              0
+(PID.TID 0000.0001) //            Min. X spins =     1000000000
+(PID.TID 0000.0001) //          Total. X spins =              0
+(PID.TID 0000.0001) //            Avg. X spins =       0.00E+00
+(PID.TID 0000.0001) //         No. Y exchanges =              0
+(PID.TID 0000.0001) //            Max. Y spins =              0
+(PID.TID 0000.0001) //            Min. Y spins =     1000000000
+(PID.TID 0000.0001) //          Total. Y spins =              0
+(PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
+(PID.TID 0000.0001) // o Tile number: 000002
+(PID.TID 0000.0001) //         No. X exchanges =              0
+(PID.TID 0000.0001) //            Max. X spins =              0
+(PID.TID 0000.0001) //            Min. X spins =     1000000000
+(PID.TID 0000.0001) //          Total. X spins =              0
+(PID.TID 0000.0001) //            Avg. X spins =       0.00E+00
+(PID.TID 0000.0001) //         No. Y exchanges =              0
+(PID.TID 0000.0001) //            Max. Y spins =              0
+(PID.TID 0000.0001) //            Min. Y spins =     1000000000
+(PID.TID 0000.0001) //          Total. Y spins =              0
+(PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
+(PID.TID 0000.0001) // o Tile number: 000003
+(PID.TID 0000.0001) //         No. X exchanges =              0
+(PID.TID 0000.0001) //            Max. X spins =              0
+(PID.TID 0000.0001) //            Min. X spins =     1000000000
+(PID.TID 0000.0001) //          Total. X spins =              0
+(PID.TID 0000.0001) //            Avg. X spins =       0.00E+00
+(PID.TID 0000.0001) //         No. Y exchanges =              0
+(PID.TID 0000.0001) //            Max. Y spins =              0
+(PID.TID 0000.0001) //            Min. Y spins =     1000000000
+(PID.TID 0000.0001) //          Total. Y spins =              0
+(PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
+(PID.TID 0000.0001) // o Tile number: 000004
+(PID.TID 0000.0001) //         No. X exchanges =              0
+(PID.TID 0000.0001) //            Max. X spins =              0
+(PID.TID 0000.0001) //            Min. X spins =     1000000000
+(PID.TID 0000.0001) //          Total. X spins =              0
+(PID.TID 0000.0001) //            Avg. X spins =       0.00E+00
+(PID.TID 0000.0001) //         No. Y exchanges =              0
+(PID.TID 0000.0001) //            Max. Y spins =              0
+(PID.TID 0000.0001) //            Min. Y spins =     1000000000
+(PID.TID 0000.0001) //          Total. Y spins =              0
+(PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
+(PID.TID 0000.0001) // o Thread number: 000001
+(PID.TID 0000.0001) //            No. barriers =          38130
+(PID.TID 0000.0001) //      Max. barrier spins =              1
+(PID.TID 0000.0001) //      Min. barrier spins =              1
+(PID.TID 0000.0001) //     Total barrier spins =          38130
+(PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
