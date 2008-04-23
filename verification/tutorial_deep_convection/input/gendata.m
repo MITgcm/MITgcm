@@ -1,26 +1,28 @@
 % This is a matlab script that generates the input data
 
 % Dimensions of grid
-nx=64;
-ny=64;
-nz=20;
+nx=100;
+ny=100;
+nz=50;
 % Nominal depth of model (meters)
 H=1000;
 % Size of domain
-Lx=3.2e3;
-% Scale of disk (m)
-L=10e3;
+Lx=2.0e3;
+% Radius of cooling disk (m)
+Rc=600.;
 % Horizontal resolution (m)
 dx=Lx/nx;
 % Rotation
-f=1e-4;
+f=1.e-4;
 % Stratification
-N=0. * f*L/H;
-% Flux
-Qo=800;
+N=0.0*(f*Rc/H);
+% surface temperature
+Ts=20.;
+% Flux : Cooling disk & noise added to cooling
+Qo=800; Q1=10;
 
 % Gravity
-g=9.81;
+g=10.;
 % E.O.S.
 alpha=2.e-4;
 
@@ -33,13 +35,30 @@ x=(1:nx)*dx;x=x-mean(x);
 y=(1:ny)*dx;y=y-mean(y);
 z=-dz/2:-dz:-H;
 
-[Y,X]=meshgrid(y,x);
-
 % Temperature profile
-[sprintf('Tref =') sprintf(' %8.6g,',Tz*z-mean(Tz*z))]
+Tref=Ts+Tz*z-mean(Tz*z);
+[sprintf('Tref =') sprintf(' %8.6g,',Tref)]
 
-% Surface heat flux
-Q=Qo*(0.5+rand([nx,ny]));
-r=sqrt(X.^2+Y.^2);
-Q( find(r>L) )=0;
-fid=fopen('Qsurface','w','b'); fwrite(fid,Q,'real*8'); fclose(fid);
+% Surface heat flux : refine the grid (by 3 x 3) to assign mean heat flux
+Q=Qo+Q1*(0.5+rand([nx,ny]));
+Qc=zeros(nx,ny);
+xc=x'*ones(1,ny); yc=ones(nx,1)*y; 
+for j=-1:1, for i=-1:1,
+ xs=xc+dx*i/3 ; ys=yc+dx*j/3; r2=xs.*xs+ys.*ys;
+ qs=Q/9; qs( find(r2 > Rc*Rc) )=0.;
+ Qc=Qc+qs;
+end ; end
+fid=fopen('Qnet.bin','w','b'); fwrite(fid,Qc,'real*8'); fclose(fid);
+
+var=2*pi*[0:1000]/1000; xl=Rc*cos(var); yl=Rc*sin(var);
+figure(1);clf;
+var=Qc; var(find(var==0))=NaN;
+imagesc(xc,yc,var'); set(gca,'YDir','normal');
+caxis([-15 820]);
+%change_colmap(-1);
+colorbar
+grid;
+hold on
+L=line(xl,yl);
+set(L,'color',[0 0 0]);
+hold off ;

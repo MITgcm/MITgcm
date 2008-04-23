@@ -1,4 +1,5 @@
 # Packages
  &PACKAGES
- useMNC=.TRUE.,
+#useMNC=.TRUE.,
+ useDiagnostics=.TRUE.,
  &

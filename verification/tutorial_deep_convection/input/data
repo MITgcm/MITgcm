@@ -4,29 +4,28 @@
 #
 # Continuous equation parameters
  &PARM01
- tRef=20*20.0,
- sRef=20*35.0,
- viscAh=0.1,
- viscAz=0.1,
+ tRef=20*20.,
+ sRef=20*35.,
+ viscAh=4.E-2,
+ viscAz=4.E-2,
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
- viscA4=0.E12,
- diffKhT=0.1,
- diffKzT=0.1,
- diffKhS=0.1,
- diffKzS=0.1,
- f0=1E-4,
+ diffKhT=4.E-2,
+ diffKzT=4.E-2,
+ f0=1.E-4,
  beta=0.E-11,
  tAlpha=2.0E-4,
  sBeta =0.,
- gravity=9.81,
- rhoConst=1000.0,
- rhoNil=1000.0,
- heatCapacity_Cp=3900.0,
- rigidLid=.FALSE.,
+ gravity=10.,
+ rhoConst=1000.,
+ rhoNil=1000.,
+ heatCapacity_Cp=4000.,
+#rigidLid=.TRUE.,
  implicitFreeSurface=.TRUE.,
+#exactConserv=.TRUE.,
  eosType='LINEAR',
  nonHydrostatic=.TRUE.,
+ saltStepping=.FALSE.,
  readBinaryPrec=64,
  &
 
@@ -34,32 +33,34 @@
  &PARM02
  cg2dMaxIters=1000,
  cg2dTargetResidual=1.E-9,
- cg3dMaxIters=40,
+ cg3dMaxIters=100,
  cg3dTargetResidual=1.E-9,
  &
 
 # Time stepping parameters
  &PARM03
  nIter0=0,
- nTimeSteps=1440,
- deltaT=60,
+#endTime=43200.,
+ nTimeSteps=10,
+ deltaT=20.,
  abEps=0.1,
- pChkptFreq=0.0,
- chkptFreq=0.0,
- dumpFreq=600,
- monitorFreq=1.E-5,
+ pChkptFreq=43200.,
+ chkptFreq=7200.,
+ dumpFreq=1800.,
+ monitorFreq=600.,
+ monitorSelect=1,
+ monitorFreq=1.,
  &
 
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- usingSphericalPolarGrid=.FALSE.,
- dXspacing=50.0,
- dYspacing=50.0,
- delZ=20*50.0,
+ dXspacing=20.,
+ dYspacing=20.,
+ delZ=50*20.,
  &
 
 # Input datasets
  &PARM05
- surfQfile='Qnet.circle',
+ surfQfile='Qnet.bin',
  &
