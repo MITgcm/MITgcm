@@ -1,15 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.979 2008/04/24 08:23:20 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.980 2008/04/24 19:39:28 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o remove "exp5" (replaced by tutorial_deep_convection).
 o pkg/obcs: add code to fix topography gradients normal to open boundaries;
   this requires computing the index fields OB_Jn/Js/Ie/Iw in obcs_readparms;
   the code can be turned on by setting OBCSfixTopo = .true. in data.obcs
   --> changes results in dome, exp4, internal_wave, seaice_obcs, and
   tutorial_plume_on_slope.
-o tutorial_deep_convection : 
+o tutorial_deep_convection :
   update the set-up and increase resolution and domain size ; start
   from pseudo initial conditions = output at t=120mn in order to see
   something happening when running testreport.
@@ -22,7 +23,7 @@ o thsice pkg:
     flooding scheme (and now conserving energy)
   - Slight rewriting of the formula in thsice_calc_thick.F
   - Parameter rhowi eliminated to be replaced by floodFac = (rhosw-rhoi)/rhos
-    --> changes results of global_ocean.cs32x15.icedyn and global_ocean.cs32x15.thsice 
+  --> changes results of global_ocean.cs32x15.icedyn and global_ocean.cs32x15.thsice 
 
 checkpoint59p
 o gchem / dic / cfc :
