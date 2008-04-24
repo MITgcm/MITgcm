@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.17 2008/01/24 18:39:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.18 2008/04/24 08:22:06 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -34,7 +34,8 @@ C
      & useOrlanskiNorth,useOrlanskiSouth,
      & useOrlanskiEast,useOrlanskiWest,
      & useOBCSsponge, useOBCSbalance, useOBCSprescribe,
-     & OBCSprintDiags, useOBCSYearlyFields
+     & OBCSprintDiags, useOBCSYearlyFields,
+     & OBCSfixTopo
       INTEGER OB_Jnorth(Nx)
       INTEGER OB_Jsouth(Nx)
       INTEGER OB_Ieast(Ny)
@@ -49,6 +50,7 @@ C
       LOGICAL useOBCSprescribe
       LOGICAL OBCSprintDiags
       LOGICAL useOBCSYearlyFields
+      LOGICAL OBCSfixTopo
 
       COMMON /PARM_R_OB/
      & Urelaxobcsinner,Urelaxobcsbound,

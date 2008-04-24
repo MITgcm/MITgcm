@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.20 2008/04/24 07:42:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.21 2008/04/24 08:22:06 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -50,7 +50,7 @@ C     iUnit       - Work variable for IO unit number
      &          OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
      &          OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile,
      &          useOBCSsponge, useOBCSbalance, useOBCSprescribe,
-     &          OBCSprintDiags, useOBCSYearlyFields
+     &          OBCSprintDiags, useOBCSYearlyFields, OBCSfixTopo
 #ifdef ALLOW_PTRACERS
      &        , OBNptrFile,OBSptrFile,OBEptrFile,OBWptrFile
 #endif
@@ -102,6 +102,7 @@ C--   Default flags and values for OBCS
       useOBCSprescribe   =.FALSE.
       OBCSprintDiags     =.TRUE.
       useOBCSYearlyFields=.FALSE.
+      OBCSfixTopo        =.FALSE.
 
       OBNuFile = ' '
       OBNvFile = ' '
