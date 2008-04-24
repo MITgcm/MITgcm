@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.980 2008/04/24 19:39:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.981 2008/04/24 21:41:27 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o implementation of TAF directives for gchem,cfc,dic 
 o remove "exp5" (replaced by tutorial_deep_convection).
 o pkg/obcs: add code to fix topography gradients normal to open boundaries;
   this requires computing the index fields OB_Jn/Js/Ie/Iw in obcs_readparms;
