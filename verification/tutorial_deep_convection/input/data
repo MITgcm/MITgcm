@@ -26,7 +26,6 @@
  eosType='LINEAR',
  nonHydrostatic=.TRUE.,
  saltStepping=.FALSE.,
- readBinaryPrec=64,
  &
 
 # Elliptic solver parameters
@@ -41,7 +40,7 @@
  &PARM03
  nIter0=0,
 #endTime=43200.,
- nTimeSteps=10,
+ nTimeSteps=3,
  deltaT=20.,
  abEps=0.1,
  pChkptFreq=43200.,
@@ -62,5 +61,9 @@
 
 # Input datasets
  &PARM05
- surfQfile='Qnet.bin',
+ surfQfile='Qnet_p32.bin',
+ hydrogThetaFile='T.120mn.bin',
+ pSurfInitFile='Eta.120mn.bin',
+ uVelInitFile =  'U.120mn.bin',
+ vVelInitFile =  'V.120mn.bin',
  &

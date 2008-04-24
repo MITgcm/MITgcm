@@ -1,5 +1,8 @@
 % This is a matlab script that generates the input data
 
+% $Header: /u/gcmpack/MITgcm/verification/tutorial_deep_convection/input/gendata.m,v 1.3 2008/04/24 01:48:52 jmc Exp $
+% $Name:  $
+
 % Dimensions of grid
 nx=100;
 ny=100;
@@ -48,7 +51,8 @@ for j=-1:1, for i=-1:1,
  qs=Q/9; qs( find(r2 > Rc*Rc) )=0.;
  Qc=Qc+qs;
 end ; end
-fid=fopen('Qnet.bin','w','b'); fwrite(fid,Qc,'real*8'); fclose(fid);
+%fid=fopen('Qnet_p64.bin','w','b'); fwrite(fid,Qc,'real*8'); fclose(fid);
+ fid=fopen('Qnet_p32.bin','w','b'); fwrite(fid,Qc,'real*4'); fclose(fid);
 
 var=2*pi*[0:1000]/1000; xl=Rc*cos(var); yl=Rc*sin(var);
 figure(1);clf;
