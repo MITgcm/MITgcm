@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.7 2008/04/10 01:53:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.8 2008/04/24 21:35:53 gforget Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -20,6 +20,7 @@ C     !USES:
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DIC_VARS.h"
+#include "DIC_ATMOS.h"
 
 C     !INPUT PARAMETERS:
 C     myThid               :: thread number
@@ -31,6 +32,10 @@ CEOP
       INTEGER k
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+      CHARACTER*(MAX_LEN_FNAM) iName
+      integer ilo,ihi
+      integer  ilnblnk,ifnblnk
+      external ilnblnk,ifnblnk
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -77,6 +82,31 @@ C coefficients for determining saturation O2
       oC0= -4.88682 _d -7
 
 C     Set other constant/flag
+
+#ifndef USE_ATMOSCO2
+
+      if (dic_int1.eq.2) then
+        call mdsfindunit( iUnit, mythid )
+        open(UNIT=iUnit,FILE='co2atmos.dat',STATUS='old')
+        do k=1,dic_int2
+          read(iUnit,*) co2atmos(k)
+          print*,'co2atmos',co2atmos(k)
+        enddo
+        close(iUnit)
+      endif
+
+      if (dic_int1.eq.3) then
+        write(iName,'(A,I10.10)') 'dic_atmos.',nIter0
+        ilo = ifnblnk(iName)
+        ihi = ilnblnk(iName)
+        call mdsfindunit( iUnit, mythid )
+        open(UNIT=iUnit,FILE=iname(ilo:ihi),STATUS='old')
+        read(iUnit,*) total_atmos_carbon_ini,
+     &              atpco2_ini
+        close(iUnit)
+      endif
+     
+#endif
 
 #ifdef DIC_BIOTIC
 #ifdef AD_SAFE

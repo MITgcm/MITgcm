@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.26 2008/04/09 22:13:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.27 2008/04/24 21:35:53 gforget Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -84,9 +84,9 @@ C      data for the period ahead and the period behind myTime.
 
 
         IF ( DIC_windFile .NE. ' '  ) THEN
-         CALL READ_REC_XY_RS( DIC_windFile,wspeed0,intime0,
+         CALL READ_REC_XY_RS( DIC_windFile,dicwind0,intime0,
      &        myIter,myThid )
-         CALL READ_REC_XY_RS( DIC_windFile,wspeed1,intime1,
+         CALL READ_REC_XY_RS( DIC_windFile,dicwind1,intime1,
      &        myIter,myThid )
         ENDIF
         IF ( DIC_atmospFile .NE. ' '  ) THEN
@@ -133,8 +133,8 @@ C-     end if-bloc (time to load new fields)
          IF ( DIC_windFile .NE. ' '  ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
-             WIND(i,j,bi,bj) = bWght*wspeed0(i,j,bi,bj)
-     &                       + aWght*wspeed1(i,j,bi,bj)
+             WIND(i,j,bi,bj) = bWght*dicwind0(i,j,bi,bj)
+     &                       + aWght*dicwind1(i,j,bi,bj)
             ENDDO
            ENDDO
 C calculate piston velocity

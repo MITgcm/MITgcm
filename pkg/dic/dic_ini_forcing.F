@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.17 2008/04/09 00:44:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.18 2008/04/24 21:35:53 gforget Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -35,8 +35,8 @@ c !LOCAL VARIABLES: ===================================================
        CHARACTER*(MAX_LEN_MBUF) msgBuf
 c
 C First call requires that we initialize everything to zero for safety
-      CALL LEF_ZERO( wspeed0,myThid )
-      CALL LEF_ZERO( wspeed1,myThid )
+      CALL LEF_ZERO( dicwind0,myThid )
+      CALL LEF_ZERO( dicwind1,myThid )
       CALL LEF_ZERO( atmosp0,myThid )
       CALL LEF_ZERO( atmosp1,myThid )
       CALL LEF_ZERO( silica0,myThid )
@@ -52,8 +52,8 @@ C First call requires that we initialize everything to zero for safety
       CALL LEF_ZERO( feinput1,myThid )
 # endif
 
-       _EXCH_XY_R4(wspeed0, myThid )
-       _EXCH_XY_R4(wspeed1, myThid )
+       _EXCH_XY_R4(dicwind0, myThid )
+       _EXCH_XY_R4(dicwind1, myThid )
        _EXCH_XY_R4(atmosp0, myThid )
        _EXCH_XY_R4(atmosp1, myThid )
        _EXCH_XY_R4(silica0, myThid )

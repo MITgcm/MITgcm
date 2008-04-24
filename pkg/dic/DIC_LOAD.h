@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_LOAD.h,v 1.5 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_LOAD.h,v 1.6 2008/04/24 21:35:53 gforget Exp $
 C $Name:  $
 
       COMMON /dic_load/
-     &    wspeed0, wspeed1, ice0, ice1, atmosp0,
+     &    dicwind0, dicwind1, ice0, ice1, atmosp0,
      &    atmosp1, silica0, silica1
 #ifdef READ_PAR
      &    ,par0, par1
@@ -10,8 +10,8 @@ C $Name:  $
 #ifdef ALLOW_FE
      &    ,feinput0,feinput1
 #endif
-              _RS wspeed0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-              _RS wspeed1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+              _RS dicwind0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+              _RS dicwind1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 	      _RS ice0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 	      _RS ice1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 	      _RS atmosp0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

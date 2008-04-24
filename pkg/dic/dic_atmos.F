@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.10 2008/04/08 20:21:35 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.11 2008/04/24 21:35:53 gforget Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -110,13 +110,6 @@ c                   dic_int2=number entries to read
 c                   dic_int3=start timestep,
 c                   dic_int4=timestep between file entries)
       if (dic_int1.eq.2) then
-        if (istate.eq.0) then
-          OPEN(28,FILE='co2atmos.dat',STATUS='old')
-          do it=1,dic_int2
-            READ(28,*) co2atmos(it)
-            print*,'co2atmos',co2atmos(it)
-          enddo
-         endif
 c linearly interpolate between file entries
           ntim=int((myIter-dic_int3)/dic_int4)+1
           aWght = FLOAT(myIter-dic_int3)
@@ -197,18 +190,9 @@ c for 278ppmv we need total_atmos_carbon=4.9206e+16
        _GLOBAL_SUM_R8(total_ocean_carbon,myThid)
 
        if (istate.eq.0) then
-c read state from output file
-          DO i = 1,MAX_LEN_FNAM
-                fn(i:i) = ' '
-          ENDDO
-          WRITE(fn,'(A,I10.10)') 'dic_atmos.',myIter
-C     Going to really do some IO. Make everyone except master thread wait.
-           _BARRIER
-c read in values from last pickup
-           open(26,file=fn,status='old')
-           read(26,*) total_atmos_carbon, atpco2
-           close(26)
-
+c use value read in dic_init_fixed
+       total_atmos_carbon=total_atmos_carbon_ini
+       atpco2=atpco2_ini
        else
 c calculate new atmos pCO2
           total_atmos_carbon=total_atmos_carbon - total_flux
