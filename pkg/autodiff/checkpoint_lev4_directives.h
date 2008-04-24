@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.12 2007/08/18 21:34:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.13 2008/04/24 21:39:57 gforget Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -68,6 +68,18 @@ CADJ &     = tapelev4, key = ilev_4
 #ifdef ALLOW_RBCS
 # include "rbcs_ad_check_lev4_dir.h"
 #endif /* ALLOW_rbcs */
+
+#ifdef ALLOW_GCHEM
+# include "gchem_ad_check_lev4_dir.h"
+#endif
+ 
+#ifdef ALLOW_CFC
+# include "cfc_ad_check_lev4_dir.h"
+#endif
+ 
+#ifdef ALLOW_DIC
+# include "dic_ad_check_lev4_dir.h"
+#endif
 
 #ifdef ALLOW_EBM
 CADJ STORE fu    = tapelev4, key = ilev_4

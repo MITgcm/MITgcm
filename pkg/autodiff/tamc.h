@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/tamc.h,v 1.8 2004/07/13 18:07:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/tamc.h,v 1.9 2008/04/24 21:39:57 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -114,15 +114,9 @@ c     and writing data.
       PARAMETER( isbyte      = 8 )
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
+#ifndef ALLOW_PTRACERS
       INTEGER    maxpass
-#ifdef ALLOW_PTRACERS
-      PARAMETER( maxpass     = PTRACERS_num + 2 )
-#else
-# ifdef ALLOW_PASSIVE_TRACER
-      PARAMETER( maxpass     = 3 )
-# else
       PARAMETER( maxpass     = 2 )
-# endif
 #endif
       INTEGER    maxcube
       PARAMETER( maxcube     = 1 )

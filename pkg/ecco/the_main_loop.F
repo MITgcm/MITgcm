@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.69 2008/04/21 15:19:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.70 2008/04/24 21:39:55 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -115,6 +115,17 @@ c They provide the fields to be stored.
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
 #  include "PTRACERS_FIELDS.h"
+# endif
+# ifdef ALLOW_GCHEM
+#  include "GCHEM_FIELDS.h"
+# endif
+# ifdef ALLOW_CFC
+#  include "CFC.h"
+# endif
+# ifdef ALLOW_DIC
+#  include "DIC_VARS.h"
+#  include "DIC_LOAD.h"
+#  include "DIC_ATMOS.h"
 # endif
 # ifdef ALLOW_NONHYDROSTATIC
 #  include "CG3D.h"
@@ -588,6 +599,11 @@ C     which is needed for KPP is not set properly. ptracerForcingSurf must
 C     be treated differently depending on whether GCHEM_SEPARATE_FORCING
 C     is define or not. TBD.
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ptracer  = comlev1, key = ikey_dynamics
+CADJ STORE theta  = comlev1, key = ikey_dynamics
+CADJ STORE salt  = comlev1, key = ikey_dynamics
+#endif 
        IF ( useGCHEM ) THEN
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
@@ -903,6 +919,11 @@ C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
 #ifdef ALLOW_GCHEM
 C     Add separate timestepping of chemical/biological/forcing
 C     of ptracers here in GCHEM_FORCING_SEP
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ptracer  = comlev1, key = ikey_dynamics
+CADJ STORE theta  = comlev1, key = ikey_dynamics
+CADJ STORE salt  = comlev1, key = ikey_dynamics
+#endif 
         IF ( useGCHEM ) THEN 
 #ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevB ) 
