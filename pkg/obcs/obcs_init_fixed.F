@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.6 2008/04/24 07:42:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.7 2008/04/24 07:57:20 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -29,7 +29,6 @@ C     myThid -  Number of this instance of INI_DEPTHS
 #ifdef ALLOW_OBCS
 
 C     == Local variables ==
-      INTEGER iG, jG, iGm, jGm
       INTEGER bi, bj
       INTEGER I, J
 #ifdef NONLIN_FRSURF
