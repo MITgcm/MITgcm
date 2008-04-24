@@ -1,6 +1,9 @@
-Tutorial Example: "Surface Driven Convection" 
-=============================================
-(formerly "exp5" ; 
+# $Header: /u/gcmpack/MITgcm/verification/tutorial_deep_convection/README,v 1.2 2008/04/24 02:26:22 jmc Exp $
+# $Name:  $
+
+Tutorial Example: "Surface Driven (Deep) Convection"
+====================================================
+(formerly "exp5" ;
  also "nonhydrostatic_deep_convection" in release.1 branch)
 
 
@@ -11,8 +14,9 @@ Configure and compile the code:
   make
 
 To run:
-  cd build
+  cd run
   ln -s ../input/* .
+  ln -s ../build/mitgcmuv .
   ./mitgcmuv > output.txt
 
 There is comparison output in the directory:
@@ -20,5 +24,5 @@ There is comparison output in the directory:
 
 Comments:
   The input data is real*8 and generated using the MATLAB script
-  gendata.m.
+  input/gendata.m
 
