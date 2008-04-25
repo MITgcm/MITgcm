@@ -1,16 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.981 2008/04/24 21:41:27 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.982 2008/04/25 12:14:35 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs: change default to OBCSfixTopo = .true., 
+  set OBCSfixTopo=.false. in exp4/input/data.obcs to reproduce old result
 o implementation of TAF directives for gchem,cfc,dic 
 o remove "exp5" (replaced by tutorial_deep_convection).
 o pkg/obcs: add code to fix topography gradients normal to open boundaries;
   this requires computing the index fields OB_Jn/Js/Ie/Iw in obcs_readparms;
   the code can be turned on by setting OBCSfixTopo = .true. in data.obcs
-  --> changes results in dome, exp4, internal_wave, seaice_obcs, and
-  tutorial_plume_on_slope.
+  --> changes results in exp4, seaice_obcs
 o tutorial_deep_convection :
   update the set-up and increase resolution and domain size ; start
   from pseudo initial conditions = output at t=120mn in order to see
