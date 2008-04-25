@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.21 2008/03/28 14:22:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.22 2008/04/25 21:57:49 dimitri Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -316,13 +316,17 @@ c     get record numbers and interpolation factor
      O                       count0, count1, year0, year1,
      I                       mycurrenttime, mycurrentiter, mythid
      &                      )
-       call exf_GetFFieldRec(
+# ifdef ALLOW_SEAICE
+       IF (useSEAICE) THEN
+        call exf_GetFFieldRec(
      I                       siobstartdate, siobperiod,
      I                       useYearlyFields,
      O                       fac, first, changed,
      O                       count0, count1, year0, year1,
      I                       mycurrenttime, mycurrentiter, mythid
      &                      )
+       ENDIF
+# endif /* ALLOW_SEAICE */
       endif
 
       call exf_set_obcs_xz(  OBu, OBu0, OBu1, OBufile, 'u'
@@ -359,11 +363,11 @@ c     get record numbers and interpolation factor
      I                     , fac, first, changed, useYearlyFields
      I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
-       call exf_set_obcs_x ( OBuice,OBuice0,OBuice1,OBuicefile,'s'
+       call exf_set_obcs_x ( OBuice,OBuice0,OBuice1,OBuicefile,'u'
      I                     , fac, first, changed, useYearlyFields
      I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
-       call exf_set_obcs_x ( OBvice,OBvice0,OBvice1,OBvicefile,'s'
+       call exf_set_obcs_x ( OBvice,OBvice0,OBvice1,OBvicefile,'v'
      I                     , fac, first, changed, useYearlyFields
      I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
@@ -520,6 +524,17 @@ c     get record numbers and interpolation factor
      O                       count0, count1, year0, year1,
      I                       mycurrenttime, mycurrentiter, mythid
      &                      )
+# ifdef ALLOW_SEAICE
+       IF (useSEAICE) THEN
+        call exf_GetFFieldRec(
+     I                       siobstartdate, siobperiod,
+     I                       useYearlyFields,
+     O                       fac, first, changed,
+     O                       count0, count1, year0, year1,
+     I                       mycurrenttime, mycurrentiter, mythid
+     &                      )
+       ENDIF
+# endif /* ALLOW_SEAICE */
       endif
 
       call exf_set_obcs_yz(  OBu, OBu0, OBu1, OBufile, 'u'
@@ -556,11 +571,11 @@ c     get record numbers and interpolation factor
      I                     , fac, first, changed, useYearlyFields
      I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
-       call exf_set_obcs_y ( OBuice,OBuice0,OBuice1,OBuicefile,'s'
+       call exf_set_obcs_y ( OBuice,OBuice0,OBuice1,OBuicefile,'u'
      I                     , fac, first, changed, useYearlyFields
      I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
-       call exf_set_obcs_y ( OBvice,OBvice0,OBvice1,OBvicefile,'s'
+       call exf_set_obcs_y ( OBvice,OBvice0,OBvice1,OBvicefile,'v'
      I                     , fac, first, changed, useYearlyFields
      I                     , siobperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
