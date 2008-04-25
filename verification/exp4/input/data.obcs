@@ -1,5 +1,9 @@
 # Open-boundaries
  &OBCS_PARM01
+# This flag turns off checking and fixing problematic topography across 
+# open boundaries. We set it here to override the default because
+# we want to reproduce old results (including their bugs).
+ OBCSfixTopo=.FALSE.,
  OB_Jnorth=80*-1,
  OB_Jsouth=80*1,
  OB_Ieast=42*-1,
