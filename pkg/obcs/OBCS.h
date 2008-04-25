@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.18 2008/04/24 08:22:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.19 2008/04/25 12:20:50 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -28,6 +28,37 @@ C For convenience, negative values for Jnorth/Ieast refer to
 C points relative to the Northern/Eastern edges of the model
 C eg. OB_Jnorth(3)=-1  means that the point (3,Ny) is a northern O-B.
 C
+C OB_Jnorth(Nx)    :: global index array of northern open-boundary point
+C OB_Jsouth(Nx)    :: global index array of southern open-boundary point
+C OB_Ieast(Ny)     :: global index array of eastern  open-boundary point
+C OB_Iwest(Ny)     :: global index array of western  open-boundary point
+C useOrlanskiNorth/South/East/West
+C                  :: specify Orlanski boundary conditions for northern/
+C                     southern/eastern/Western
+C useOBCSsponge    :: turns on sponge layer along boundary (def=false)
+C spongeThickness  :: number grid points that make up the sponge layer (def=0)
+C U/Vrelaxobcsinner/bound :: relaxation time scale (in seconds) for U/V-points
+C                     on the boundary (bound) and at the innermost grid point
+C                     of the sponge layer (inner); relaxation time scales
+C                     in-between are linearly interpolated from these values
+C useOBCSbalance   :: balance the volume flux through boundary 
+C                     at every time step
+C useOBCSprescribe :: read boundary conditions from a file 
+C                      (overrides Orlanski and other boundary values)
+C OBCSprintDiags   :: print boundary values to STDOUT (def=true)
+C useOBCSYearlyFields :: when reading boundary values by exf, assume yearly 
+C                     climatology (def=false)
+C OBCSfixTopo      :: check and adjust topography for problematic gradients
+C                     across boundaries (def=true)
+C OB[N,S,E,W][u,v,t,s,a,h,sn,sl,uice,vice]File :: Files with boundary 
+C                     conditons, the letter combinations mean:
+C                     N/S/E/W   :: northern/southern/eastern/western boundary
+C                     u/v/t/s   :: ocean u/v velocities, temperature/salinity
+C                     a/h       :: sea ice concentration/effective thickness
+C                     sn/sl     :: effective snow thickness/sea ice salinity
+C                     uice/vice :: sea ice u/v drift velocities
+C
+
       COMMON /PARM_IL_OB/
      & OB_Jnorth,OB_Jsouth,OB_Ieast,OB_Iwest,
      & spongeThickness,
