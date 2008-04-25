@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.21 2008/04/24 08:22:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.22 2008/04/25 12:13:38 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -102,7 +102,7 @@ C--   Default flags and values for OBCS
       useOBCSprescribe   =.FALSE.
       OBCSprintDiags     =.TRUE.
       useOBCSYearlyFields=.FALSE.
-      OBCSfixTopo        =.FALSE.
+      OBCSfixTopo        =.TRUE.
 
       OBNuFile = ' '
       OBNvFile = ' '
