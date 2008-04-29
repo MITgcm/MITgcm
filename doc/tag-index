@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.983 2008/04/28 14:25:30 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.984 2008/04/29 21:43:54 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl: change formula in adctrl_bound.F and add a parameter to ctrl_map_ini_gen.F
 o pkg/obcs: change default to OBCSfixTopo = .true., 
   - set OBCSfixTopo=.false. in exp4/input/data.obcs to reproduce old result
   - replace "debugMode" with "debugLevel .GE. debLevB"
