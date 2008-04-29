@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.4 2008/02/09 23:28:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.5 2008/04/29 21:43:22 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -28,7 +28,7 @@ C     *==========================================================*
       _RL adjFieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
       _RL boundsVec(5)
       _RL x0,x0p5,l0p5,x1,x2,x2p5,l2p5,x3
-      _RL xCur,adxCur 
+      _RL tmpCur,xCur,adxCur 
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -40,12 +40,12 @@ C     *==========================================================*
 
       x0=boundsVec(1)
       x1=boundsVec(2)
-        x0p5=(x0+x1)/2
-        l0p5=(x1-x0)/1.5
+        x0p5=(x0+x1)/2.0
+        l0p5=(x1-x0)/2.0
       x2=boundsVec(3)
       x3=boundsVec(4)
-        x2p5=(x2+x3)/2
-        l2p5=(x3-x2)/1.5
+        x2p5=(x2+x3)/2.0
+        l2p5=(x3-x2)/2.0
 
 C  x0<x1<x2<x3 	=> ctrl_bound and adctrl_bound   act on xx/adxx
 C  x0=x3 	=> ctrl_bound and adctrl_bound   do nothing
@@ -63,12 +63,14 @@ C  otherwise	=> error
         xCur=fieldCur(i,j,k,bi,bj)
         adxCur=adjFieldCur(i,j,k,bi,bj)
         IF ( (xCur.gt.x2).AND.(adxCur.LT.0) ) then
-          adjFieldCur(i,j,k,bi,bj)=
-     &    tanh((xCur-x2p5)/l2p5)*abs(adxCur)
+          tmpCur=1.0
+          adjFieldCur(i,j,k,bi,bj)=abs(adxCur)*
+     &    min((xCur-x2p5)/l2p5,tmpCur)
         ENDIF
         IF ( (xCur.lt.x1).AND.(adxCur.GT.0) ) then
-          adjFieldCur(i,j,k,bi,bj)=
-     &    -tanh((xCur-x0p5)/l0p5)*abs(adxCur)
+          tmpCur=-1.0
+          adjFieldCur(i,j,k,bi,bj)=abs(adxCur)*
+     &    max((xCur-x0p5)/l0p5,tmpCur)
         ENDIF
       ENDIF
               enddo
@@ -111,6 +113,8 @@ C     *==========================================================*
       _RL maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nsx,nsy)
       _RL adjFieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nsx,nsy)
       _RL boundsVec(5)
+      _RL x0,x0p5,l0p5,x1,x2,x2p5,l2p5,x3
+      _RL tmpCur,xCur,adxCur
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -122,12 +126,12 @@ C     *==========================================================*
 
       x0=boundsVec(1)
       x1=boundsVec(2)
-        x0p5=(x0+x1)/2
-        l0p5=(x1-x0)/1.5
+        x0p5=(x0+x1)/2.0
+        l0p5=(x1-x0)/2.0
       x2=boundsVec(3)
       x3=boundsVec(4)
-        x2p5=(x2+x3)/2
-        l2p5=(x3-x2)/1.5
+        x2p5=(x2+x3)/2.0
+        l2p5=(x3-x2)/2.0
 
 C  x0<x1<x2<x3 	=> ctrl_bound and adctrl_bound   act on xx/adxx
 C  x0=x3 	=> ctrl_bound and adctrl_bound   do nothing
@@ -144,12 +148,14 @@ C  otherwise	=> error
         xCur=fieldCur(i,j,bi,bj)
         adxCur=adjFieldCur(i,j,bi,bj)
         IF ( (xCur.gt.x2).AND.(adxCur.LT.0) ) then
-          adjFieldCur(i,j,bi,bj)=
-     &    tanh((xCur-x2p5)/l2p5)*abs(adxCur)
+          tmpCur=1.0
+          adjFieldCur(i,j,bi,bj)=abs(adxCur)*
+     &    min((xCur-x2p5)/l2p5,tmpCur)
         ENDIF
         IF ( (xCur.lt.x1).AND.(adxCur.GT.0) ) then
-          adjFieldCur(i,j,bi,bj)=
-     &    -tanh((xCur-x0p5)/l0p5)*abs(adxCur)
+          tmpCur=-1.0
+          adjFieldCur(i,j,bi,bj)=abs(adxCur)*
+     &    max((xCur-x0p5)/l0p5,tmpCur)
         ENDIF
       ENDIF
               enddo
