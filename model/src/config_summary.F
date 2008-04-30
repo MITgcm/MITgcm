@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.107 2008/04/05 21:24:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.108 2008/04/30 19:18:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -275,7 +275,7 @@ C     ycoord :: varying parameters.
      &'   /* upper threshold for hFac (nonlinFreeSurf only)*/')
       CALL WRITE_0D_I( select_rStar, INDEX_NONE,
      &'select_rStar =',
-     &'   /* r* Coordinate options (not yet implemented)*/')
+     &' /* r* Vertical coord. options (=0 r coord.; > 0 uses r*) */')
       CALL WRITE_0D_L( useRealFreshWaterFlux, INDEX_NONE,
      &'useRealFreshWaterFlux =',
      &'   /* Real Fresh Water Flux on/off flag*/')
