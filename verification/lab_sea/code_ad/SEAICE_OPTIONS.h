@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.4 2007/10/09 02:36:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.5 2008/05/01 23:55:12 heimbach Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -88,6 +88,9 @@ C--   Seaice flooding
 C--   By default sea ice is fresh.  Set following flag for salty ice.
 #define SEAICE_SALINITY
 
+c--   Enable modified sea-ice thermodynamic by Ian Fenty
+c--   Should improve adjoint, but doesnt work so far.
+#undef SEAICE_ALLOW_TD_IF
 
 #endif /* SEAICE_OPTIONS_H */
 
