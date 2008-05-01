@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.63 2008/04/30 01:44:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.64 2008/05/01 23:52:24 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -132,16 +132,6 @@ C--   dummy statement to end declaration part
 #endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ALLOW_SEAICE
-C--   Call sea ice model to compute forcing/external data fields.  In
-C     addition to computing prognostic sea-ice variables and diagnosing the
-C     forcing/external data fields that drive the ocean model, SEAICE_MODEL
-C     also sets theta to the freezing point under sea-ice.  The implied
-C     surface heat flux is then stored in variable surfaceTendencyTice,
-C     which is needed by KPP package (kpp_calc.F and kpp_transport_t.F)
-C     to diagnose surface buoyancy fluxes and for the non-local transport
-C     term.  Because this call precedes model thermodynamics, temperature
-C     under sea-ice may not be "exactly" at the freezing point by the time
-C     theta is dumped or time-averaged.
       IF ( useSEAICE ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE atemp,aqh,precip    = comlev1, key = ikey_dynamics
@@ -163,6 +153,7 @@ CADJ STORE seaice_sigma12      = comlev1, key = ikey_dynamics
 CADJ STORE salt                = comlev1, key = ikey_dynamics
 #  endif
 #  ifdef ATMOSPHERIC_LOADING
+CADJ STORE pload               = comlev1, key = ikey_dynamics
 CADJ STORE siceload            = comlev1, key = ikey_dynamics
 #  endif
 #  ifdef NONLIN_FRSURF
@@ -181,6 +172,14 @@ CADJ STORE recip_hfacc         = comlev1, key = ikey_dynamics
 # endif
       ENDIF
 #endif /* ALLOW_SEAICE */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE sst, sss           = comlev1, key = ikey_dynamics
+CADJ STORE qsw                = comlev1, key = ikey_dynamics
+# ifdef ALLOW_SEAICE
+CADJ STORE area               = comlev1, key = ikey_dynamics
+# endif
+#endif
 
 #if (defined ALLOW_THSICE) && !(defined ALLOW_ATM2D)
       IF ( useThSIce .AND. fluidIsWater ) THEN

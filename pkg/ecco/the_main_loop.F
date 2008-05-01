@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.71 2008/04/30 01:43:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.72 2008/05/01 23:52:24 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -495,6 +495,13 @@ C--   Call driver to load external forcing fields from file
       IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('LOAD_FIELDS_DRIVER',myThid)
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+cph Important STORE that avoids hidden recomp. of load_fields_driver
+CADJ STORE theta      = comlev1, key = ikey_dynamics
+#endif
+cph-adj-test(
+CADJ STORE uvel,vvel       = comlev1, key = ikey_dynamics
+cph-adj-test)
       CALL TIMER_START('LOAD_FIELDS_DRIVER  [FORWARD_STEP]',myThid)
       CALL LOAD_FIELDS_DRIVER( myTime, myIter, myThid )
       CALL TIMER_STOP ('LOAD_FIELDS_DRIVER  [FORWARD_STEP]',myThid)
@@ -535,7 +542,7 @@ C--     Step forward fields and calculate time tendency terms.
        CALL TIMER_STOP ('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',mythid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surfaceforcingtice    = comlev1, key = ikey_dynamics
+cphCADJ STORE surfaceforcingtice    = comlev1, key = ikey_dynamics
 # ifdef EXACT_CONSERV
 cphCADJ STORE empmr              = comlev1, key = ikey_dynamics
 cphCADJ STORE pmepr              = comlev1, key = ikey_dynamics
@@ -549,23 +556,20 @@ CADJ STORE hFacC              = comlev1, key = ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifndef ALLOW_OFFLINE
-#ifdef ALLOW_DEBUG
+# ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('DO_OCEANIC_PHYS',myThid)
-#endif
+# endif
        CALL TIMER_START('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE EmPmR              = comlev1, key = ikey_dynamics
-cph-adj-test(
-CADJ STORE qnet, qsw, fu, fv  = comlev1, key = ikey_dynamics
-CADJ STORE theta, salt, uvel, vvel = comlev1, key = ikey_dynamics
-cph-adj-test)
-# ifdef EXACT_CONSERV
+CADJ STORE qsw                = comlev1, key = ikey_dynamics
+#  ifdef EXACT_CONSERV
 CADJ STORE pmepr              = comlev1, key = ikey_dynamics
+#  endif
 # endif
-#endif
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -585,28 +589,11 @@ CADJ STORE surfaceforcingv = comlev1, key = ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_GCHEM
-C     GCHEM package is an interface for any bio-geochemical or
-C     ecosystem model you would like to include. 
-C     If GCHEM_SEPARATE_FORCING is not defined, you are 
-C     responsible for computing tendency terms for passive 
-C     tracers and storing them on a 3DxNumPtracers-array called
-C     gchemTendency in GCHEM_CALC_TENDENCY. This tendency is then added
-C     to gPtr in ptracers_forcing later-on.
-C     If GCHEM_SEPARATE_FORCING is defined, you are reponsible for
-C     UPDATING ptracers directly in GCHEM_FORCING_SEP. This amounts
-C     to a completely separate time step that you have to implement
-C     yourself (Eulerian seems to be fine in most cases).
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C     CAVEAT: Up to now, when GCHEM is turned on the field ptracerForcingSurf,
-C     which is needed for KPP is not set properly. ptracerForcingSurf must
-C     be treated differently depending on whether GCHEM_SEPARATE_FORCING
-C     is define or not. TBD.
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE ptracer  = comlev1, key = ikey_dynamics
 CADJ STORE theta  = comlev1, key = ikey_dynamics
 CADJ STORE salt  = comlev1, key = ikey_dynamics
-#endif 
+# endif 
        IF ( useGCHEM ) THEN
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
