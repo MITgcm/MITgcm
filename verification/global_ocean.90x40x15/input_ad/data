@@ -47,6 +47,21 @@
 # set precision of data files
  readBinaryPrec=32,
  debugLevel=1,
+#ph(
+ vectorInvariantMomentum=.TRUE.,
+ hFacInf=0.2,
+ hFacSup=2.0,
+ nonlinFreeSurf=2,
+ exactConserv=.TRUE.
+ useRealFreshWaterFlux=.TRUE.,
+ staggerTimeStep=.TRUE.,
+ multiDimAdvection=.TRUE,
+ tempAdvScheme=30,
+ saltAdvScheme=30,
+ tempImplVertAdv=.FALSE.,
+ saltImplVertAdv=.FALSE.,
+ inAdExact=.TRUE.,
+#ph)
  &
 
 # Elliptic solver parameters
