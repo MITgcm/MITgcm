@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.157 2008/05/01 23:52:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.158 2008/05/02 00:13:55 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -370,9 +370,7 @@ CADJ STORE KPPdiffKzT         = comlev1, key = ikey_dynamics
 # endif
 c
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-cph-adj-test(
 CADJ STORE theta,salt,wvel          = comlev1, key = ikey_dynamics
-cph-adj-test)
 CADJ STORE etaH               = comlev1, key = ikey_dynamics
 #  ifdef ALLOW_CD_CODE
 CADJ STORE etanm1             = comlev1, key = ikey_dynamics
@@ -390,7 +388,7 @@ CADJ STORE rstarexpc = comlev1, key = ikey_dynamics
      &    CALL DEBUG_CALL('THERMODYNAMICS',myThid)
 #endif
 cph-adj-test(
-CADJ STORE salt,wvel          = comlev1, key = ikey_dynamics
+CADJ STORE salt               = comlev1, key = ikey_dynamics
 cph-adj-test)
         CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',myThid)
         CALL THERMODYNAMICS( myTime, myIter, myThid )
@@ -463,7 +461,6 @@ C--   Step forward fields and calculate time tendency terms.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-cph-test
 CADJ STORE gU, gV  = comlev1, key = ikey_dynamics
 # endif
 #endif
@@ -653,10 +650,8 @@ CADJ STORE etaH          = comlev1, key = ikey_dynamics
         CALL TIMER_STOP ('CALC_SURF_DR      [FORWARD_STEP]',myThid)
       ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hFac_surfC    = comlev1, key = ikey_dynamics
-cph-adj-test(
+CADJ STORE hFac_surfC       = comlev1, key = ikey_dynamics
 CADJ STORE salt,theta,vvel  = comlev1, key = ikey_dynamics
-cph-adj-test)
 # endif
 #endif /* NONLIN_FRSURF */
 
