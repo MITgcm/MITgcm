@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.64 2008/05/01 23:52:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.65 2008/05/03 00:07:08 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -134,6 +134,9 @@ C--   dummy statement to end declaration part
 #ifdef ALLOW_SEAICE
       IF ( useSEAICE ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
+cph-adj-test(
+CADJ STORE area,empmr,qsw,theta   = comlev1, key = ikey_dynamics
+cph-adj-test)
 CADJ STORE atemp,aqh,precip    = comlev1, key = ikey_dynamics
 CADJ STORE swdown,lwdown       = comlev1, key = ikey_dynamics
 cph# ifdef EXF_READ_EVAP

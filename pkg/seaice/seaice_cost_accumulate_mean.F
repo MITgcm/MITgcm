@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_accumulate_mean.F,v 1.2 2007/09/28 12:45:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_accumulate_mean.F,v 1.3 2008/05/03 00:02:53 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -22,6 +22,10 @@ C     == Global variables ===
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -43,6 +47,10 @@ C     == Local variables
       ithi = mybxhi(mythid)
 
 #ifdef ALLOW_SEAICE_COST_EXPORT
+
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heff, uice, vice    = comlev1, key = ikey_dynamics
+#endif
 
 C--   Calculate cost function on tile of this instance
       do bj = jtlo,jthi
