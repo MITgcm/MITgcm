@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_driftw.F,v 1.5 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_driftw.F,v 1.6 2008/05/03 00:08:42 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -60,6 +60,7 @@ c     == local variables ==
       integer irec
       integer ilw
       integer nf, nl
+      integer minrec
 
       _RL fctilew
       _RL fcthread_wdrift
@@ -99,14 +100,6 @@ c--   Read tiled data.
      &    wbarfile(1:ilw),'.',optimcycle
       endif
 
-      if (nmonsrec.lt.12) then
-        print*
-        print*,' cost_Driftw: assimilation period smaller'
-        print*,'             than 1 year, no drift computed.'
-        print*
-        stop   '  ... stopped in cost_Driftw.'
-      endif
-
       fcthread_wdrift = 0. _d 0
 
       do bj = jtlo,jthi
@@ -124,9 +117,13 @@ c--   Read tiled data.
 
       nf = 0
       nl = 0
+c--   Number of full years
+      nfmin = MAX(INT(FLOAT(nmonsrec)/12.),1)
+c--   Prevent code from crashing if integrated for less than a year
+      minrec = MIN(nmonsrec,12)
 
 c--   Loop over records.
-      do irec = 1,12
+      do irec = 1,minrec
 
 c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnamew, wbar, irec,
@@ -150,8 +147,8 @@ c--     Read time averages and the monthly mean data.
 
       enddo
 
-      do irec = nmonsrec-12+1, nmonsrec
-
+      do irec = nmonsrec-minrec+1, nmonsrec
+ 
 c--     Read time averages and the monthly mean data.
         call active_read_xyz( fnamew, wbar, irec,
      &                        doglobalread, ladinit,
