@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_driftw.F,v 1.6 2008/05/03 00:08:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_driftw.F,v 1.7 2008/05/03 00:31:07 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -59,7 +59,7 @@ c     == local variables ==
       integer imin,imax
       integer irec
       integer ilw
-      integer nf, nl
+      integer nf, nl, nfmin
       integer minrec
 
       _RL fctilew
