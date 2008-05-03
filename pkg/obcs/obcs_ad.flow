@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad.flow,v 1.2 2007/10/09 00:07:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad.flow,v 1.3 2008/05/03 00:03:26 heimbach Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -6,3 +6,9 @@ C subroutine  OBCS_DIAGS
 C----------------------------------------
 CADJ SUBROUTINE OBCS_DIAGS INPUT  = 1,2,3
 CADJ SUBROUTINE OBCS_DIAGS OUTPUT =
+ 
+C----------------------------------------
+C subroutine  OBCS_CHECK_TOPOGRAPHY
+C----------------------------------------
+CADJ SUBROUTINE OBCS_CHECK_TOPOGRAPHY INPUT  = 1
+CADJ SUBROUTINE OBCS_CHECK_TOPOGRAPHY OUTPUT =
