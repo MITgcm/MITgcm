@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.984 2008/04/29 21:43:54 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.985 2008/05/05 18:56:21 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o Refresh tutorial_global_oce_biogeo, notably:
+  - change bathymetry (put back seamounts in ACC, use hFacs)
+  - change EOS (POLY3 --> JMD95Z)
+  - use Bryan-Lewis vertical diffusivity
+  - use multidimensional advection
+  - remove old virtual virtual in dic pkg, now done through ptracer pkg
+  - change a couple of parameters in dic pkg
 o pkg/ctrl: change formula in adctrl_bound.F and add a parameter to ctrl_map_ini_gen.F
 o pkg/obcs: change default to OBCSfixTopo = .true., 
   - set OBCSfixTopo=.false. in exp4/input/data.obcs to reproduce old result
