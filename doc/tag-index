@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.985 2008/05/05 18:56:21 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.986 2008/05/05 23:16:00 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_vecinv: Add energy & enstrophy conserving scheme (selectVortScheme=3)
+   (from Sadourny, described by Burridge & Haseler, ECMWF Rep.4, 1977)
 o Refresh tutorial_global_oce_biogeo, notably:
   - change bathymetry (put back seamounts in ACC, use hFacs)
   - change EOS (POLY3 --> JMD95Z)
