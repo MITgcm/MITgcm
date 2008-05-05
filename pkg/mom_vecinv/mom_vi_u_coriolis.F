@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis.F,v 1.12 2008/04/02 21:18:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis.F,v 1.13 2008/05/05 22:45:00 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -47,10 +47,15 @@ C     msgBuf :: Informational/error meesage buffer
       INTEGER i, j
       _RL     vBarXY, vBarXm, vBarXp
       _RL     vort3u
+      _RL     vort3mj, vort3ij, vort3mp, vort3ip
+      _RL     oneThird, tmpFac
       _RS     epsil
       PARAMETER( upwindVort3 = .FALSE. )
 
       epsil = 1. _d -9
+      tmpFac = 1. _d 0
+c     oneThird = 1. _d 0 / ( 1. _d 0 + 2.*tmpFac )
+      oneThird = 1. _d 0 / 3. _d 0
 
       IF ( selectVortScheme.EQ.0 ) THEN
 C--   using enstrophy conserving scheme (Shallow-Water Eq.) by Sadourny, JAS 75
@@ -81,7 +86,7 @@ C--   using enstrophy conserving scheme (Shallow-Water Eq.) by Sadourny, JAS 75
       ELSEIF ( selectVortScheme.EQ.1 ) THEN
 C--   same as above, with different formulation (relatively to hFac)
 
-       DO J=1-Oly,sNy+Oly-1
+       DO j=1-Oly,sNy+Oly-1
         DO i=2-Olx,sNx+Olx
          vBarXY= 0.5*(
      &      (vFld( i , j )*dxG( i , j ,bi,bj)*hFacZ(i, j )
@@ -130,6 +135,46 @@ C--   using energy conserving scheme (used by Sadourny in JAS 75 paper)
         ENDDO
        ENDDO
 
+      ELSEIF ( selectVortScheme.EQ.3 ) THEN
+C--   using energy & enstrophy conserving scheme
+C     (from Sadourny, described by Burridge & Haseler, ECMWF Rep.4, 1977)
+
+C     domain where uCoriolisTerm is valid :
+C     [ 3-Olx : sNx+Olx-1 ] x [ 2-Oly : sNy+Oly-1 ]
+C     (=> might need overlap of 3 if using CD-scheme)
+       DO j=1-Oly,sNy+Oly-1
+        DO i=2-Olx,sNx+Olx-1
+         vort3mj= ( r_hFacZ(i, j )*omega3(i, j )
+     &            +(r_hFacZ(i,j+1)*omega3(i,j+1)
+     &             +r_hFacZ(i-1,j)*omega3(i-1,j)
+     &            ))*oneThird
+c    &            )*tmpFac)*oneThird
+     &      *vFld(i-1, j )*dxG(i-1, j ,bi,bj)*_hFacS(i-1, j ,k,bi,bj)
+         vort3ij= ( r_hFacZ(i, j )*omega3(i, j )
+     &            +(r_hFacZ(i,j+1)*omega3(i,j+1)
+     &             +r_hFacZ(i+1,j)*omega3(i+1,j)
+     &            ))*oneThird
+c    &            )*tmpFac)*oneThird
+     &      *vFld( i , j )*dxG( i , j ,bi,bj)*_hFacS( i , j ,k,bi,bj)
+         vort3mp= ( r_hFacZ(i,j+1)*omega3(i,j+1)
+     &            +(r_hFacZ(i, j )*omega3(i, j )
+     &             +r_hFacZ(i-1,j+1)*omega3(i-1,j+1)
+     &            ))*oneThird
+c    &            )*tmpFac)*oneThird
+     &      *vFld(i-1,j+1)*dxG(i-1,j+1,bi,bj)*_hFacS(i-1,j+1,k,bi,bj)
+         vort3ip= ( r_hFacZ(i,j+1)*omega3(i,j+1)
+     &            +(r_hFacZ(i, j )*omega3(i, j )
+     &             +r_hFacZ(i+1,j+1)*omega3(i+1,j+1)
+     &            ))*oneThird
+c    &            )*tmpFac)*oneThird
+     &      *vFld( i ,j+1)*dxG( i ,j+1,bi,bj)*_hFacS( i ,j+1,k,bi,bj)
+C---
+         uCoriolisTerm(i,j)= +( (vort3mj+vort3ij)+(vort3mp+vort3ip) )
+     &                     *0.25 _d 0 *recip_dxC(i,j,bi,bj)
+     &                                * _maskW(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+
       ELSE
         WRITE(msgBuf,'(A,I5,A)')
      &   'MOM_VI_U_CORIOLIS: selectVortScheme=', selectVortScheme,
@@ -141,7 +186,7 @@ C--   using energy conserving scheme (used by Sadourny in JAS 75 paper)
 
       IF ( useJamartMomAdv ) THEN
        DO j=1-Oly,sNy+Oly-1
-        DO i=2-Olx,sNx+Olx
+        DO i=2-Olx,sNx+Olx-1
          uCoriolisTerm(i,j) = uCoriolisTerm(i,j)
      &           * 4. _d 0 * _hFacW(i,j,k,bi,bj)
      &           / MAX( epsil,
