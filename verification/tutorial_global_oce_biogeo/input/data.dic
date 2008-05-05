@@ -3,6 +3,9 @@
  &
 
  &BIOTIC_PARMS
+  alphaUniform = 0.97e-10,
+  rainRatioUniform = 5.e-2,
+  KRemin = 0.95,
  &
 
  &DIC_FORCING
