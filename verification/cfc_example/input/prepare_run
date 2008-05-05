@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/cfc_example/input/prepare_run,v 1.2 2007/10/22 13:34:09 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/cfc_example/input/prepare_run,v 1.3 2008/05/05 22:34:24 jmc Exp $
 #  $Name:  $
  
 #- in order to save disc space, take *.bin files
 #- a) from this dir:
 fromDir="../../tutorial_global_oce_biogeo/input"
 
-fileList=`( cd $fromDir ; ls *.bin | grep -v 'sillev1.bin' )`
+fileList=`( cd $fromDir ; ls *.bin | grep -v 'sillev1.bin' | grep -v 'bathy.bin' )`
 
 #echo 'fileList=' $fileList
 
@@ -32,7 +32,7 @@ fi
 #- and b) from this dir:
 fromDir="../../tutorial_cfc_offline/input"
 
-fileList=`( cd $fromDir ; ls pickup*.0004269600* )`
+fileList=`( cd $fromDir ; ls pickup*.0004269600* *.bin )`
 
 #- and do a symbolic link in the current directory 
 #   (if the file does not already exist)
