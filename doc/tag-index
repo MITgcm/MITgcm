@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.986 2008/05/05 23:16:00 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.987 2008/05/06 19:02:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59q
 o pkg/mom_vecinv: Add energy & enstrophy conserving scheme (selectVortScheme=3)
    (from Sadourny, described by Burridge & Haseler, ECMWF Rep.4, 1977)
 o Refresh tutorial_global_oce_biogeo, notably:
