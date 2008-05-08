@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.10 2008/01/27 19:35:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.11 2008/05/08 19:50:09 jahn Exp $
 C $Name:  $
 
+#include "GAD_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -14,10 +15,12 @@ C     !DESCRIPTION:
 C     Reads current state of passive tracers from a pickup file
 
 C     !USES:
+#include "PTRACERS_MOD.h"
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GAD.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_RESTART.h"
@@ -46,7 +49,7 @@ C     j           :: loop index
 C     nj          :: record number
 C     ioUnit      :: temp for writing msg unit
 C     msgBuf      :: Informational/error message buffer
-      INTEGER iTracer, iRec, prec
+      INTEGER iTracer, iRec, prec, n
       INTEGER filePrec, nbFields
       INTEGER missFldDim, nMissing
       INTEGER nj, ioUnit
@@ -79,6 +82,19 @@ C       Read variables from the pickup file
      &                     Nr, myThid )
         ENDDO
       ENDIF
+#ifdef GAD_ALLOW_SOM_ADVECT
+      IF ( useMNC .AND. PTRACERS_pickup_read_mnc ) THEN
+       DO iTracer = 1, PTRACERS_numInUse
+        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
+         WRITE(msgBuf,'(3A)')'PTRACERS_READ_PICKUP: MNC not yet coded',
+     &                       ' for SOM advection',
+     &                       ' => read bin file instead'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid)
+        ENDIF
+       ENDDO
+      ENDIF
+#endif /*  GAD_ALLOW_SOM_ADVECT  */
 #endif /*  ALLOW_MNC  */
 
       IF ( PTRACERS_pickup_read_mdsio ) THEN
@@ -239,6 +255,39 @@ C--    Check for missing fields:
      I                     missFldList,
      I                     nMissing, nbFields,
      I                     myIter, myThid )
+
+#if defined(GAD_ALLOW_SOM_ADVECT) && defined(PTRACERS_ALLOW_DYN_STATE)
+C--   Read pickup file with 2nd.Order moment fields
+       DO iTracer = 1, PTRACERS_numInUse
+        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
+
+         IF (pickupSuff .EQ. ' ') THEN
+           WRITE(fn,'(3A,I10.10)') 'pickup_somTRAC',
+     &                     PTRACERS_ioLabel(iTracer),'.', myIter
+         ELSE
+           WRITE(fn,'(3A,A10)') 'pickup_somTRAC',
+     &                     PTRACERS_ioLabel(iTracer),'.', pickupSuff
+         ENDIF
+         WRITE(msgBuf,'(A,I3,A)')'PTRACERS_READ_PICKUP: iTracer = ', 
+     &                      iTracer,
+     &                      ' : reading 2nd-order moments from file '
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid)
+         CALL PRINT_MESSAGE( fn, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid)
+         prec = precFloat64
+C        Read 2nd Order moments as consecutive records
+         DO n=1,nSOM
+           iRec = n
+           CALL READ_REC_3D_RL( fn, prec, Nr,
+     O               _Ptracers_som(1-Olx,1-Oly,1,1,1,n,iTracer),
+     I               iRec, myIter, myThid )
+         ENDDO
+	 CALL GAD_EXCH_SOM( _Ptracers_som(1-Olx,1-Oly,1,1,1,1,iTracer),
+     &                      Nr, myThid )
+        ENDIF
+       ENDDO
+#endif /* GAD_ALLOW_SOM_ADVECT && PTRACERS_ALLOW_DYN_STATE */
        _BARRIER
 
 C--   end: pickup_read_mdsio

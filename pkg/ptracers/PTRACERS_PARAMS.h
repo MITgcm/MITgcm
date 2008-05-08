@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.4 2008/04/05 18:22:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.5 2008/05/08 19:50:08 jahn Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -41,7 +41,7 @@ C     PTRACERS_Iter0    :: timestep number when tracers are initialized
      &     PTRACERS_ref,
      &     PTRACERS_EvPrRn
 
-C     COMMON /PTRACERS_OLD_R/ Old (real type) PTRACERS parameters 
+C     COMMON /PTRACERS_OLD_R/ Old (real type) PTRACERS parameters
 C        (to be removed 1 day ...)
       _RL lambdaTr1ClimRelax
       COMMON /PTRACERS_OLD_R/
@@ -55,12 +55,15 @@ C        (to be removed 1 day ...)
      &     PTRACERS_numInUse,
      &     PTRACERS_advScheme
 
-C     PTRACERS_MultiDimAdv  :: internal flag (depend on the advection scheme),
-C                           true if this tracer uses Multi-Dim advection
-C     PTRACERS_AdamsBashGtr :: internal flag (depend on the advection scheme),
-C                           true if applies Adams-Bashforth on tracer tendency
+C     PTRACERS_MultiDimAdv   :: internal flag (depend on the advection scheme),
+C                               true if this tracer uses Multi-Dim advection
+C     PTRACERS_SOM_Advection :: internal flag (depend on the advection scheme),
+C                               true if this tracer uses 2nd-order moment advection
+C     PTRACERS_AdamsBashGtr  :: internal flag (depend on the advection scheme),
+C                               true if applies Adams-Bashforth on tracer tendency
       LOGICAL PTRACERS_ImplVertAdv(PTRACERS_num)
       LOGICAL PTRACERS_MultiDimAdv(PTRACERS_num)
+      LOGICAL PTRACERS_SOM_Advection(PTRACERS_num)
       LOGICAL PTRACERS_AdamsBashGtr(PTRACERS_num)
       LOGICAL PTRACERS_useGMRedi(PTRACERS_num)
       LOGICAL PTRACERS_useKPP(PTRACERS_num)
@@ -74,6 +77,7 @@ C                           true if applies Adams-Bashforth on tracer tendency
       COMMON /PTRACERS_PARAMS_L/
      &     PTRACERS_ImplVertAdv,
      &     PTRACERS_MultiDimAdv,
+     &     PTRACERS_SOM_Advection,
      &     PTRACERS_AdamsBashGtr,
      &     PTRACERS_useGMRedi,
      &     PTRACERS_useKPP,

@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.3 2007/12/17 22:03:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.4 2008/05/08 19:50:09 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
+#include "GAD_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -14,6 +15,7 @@ C     !DESCRIPTION:
 C     Initialize PTRACERS constant
 
 C     !USES:
+#include "PTRACERS_MOD.h"
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -40,10 +42,51 @@ C     msgBuf      - Informational/error meesage buffer
 
 C     Initialise internal parameter in common block:
       DO iTracer = 1, PTRACERS_num
+        PTRACERS_SOM_Advection(iTracer) =
+     &    PTRACERS_advScheme(iTracer).GE.ENUM_SOM_PRATHER
+     &    .AND. PTRACERS_advScheme(iTracer).LE.ENUM_SOM_LIMITER
+#ifndef GAD_ALLOW_SOM_ADVECT
+        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
+          WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
+     &   'trying to use 2nd.Order-Moment Advection that is not compiled'
+          WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
+     &   'Re-compile with:  #define GAD_ALLOW_SOM_ADVECT'
+          CALL PRINT_ERROR( msgBuf , myThid)
+          STOP 'ABNORMAL END: S/R PTRACERS_INIT_FIXED'
+        ENDIF
+#endif /* ndef GAD_ALLOW_SOM_ADVECT */
+#ifndef PTRACERS_ALLOW_DYN_STATE
+        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
+          WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
+     &   'trying to use 2nd.Order-Moment Advection without'
+          WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
+     &   'dynamical internal state data structures compiled'
+          WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
+     &   'Re-compile with:  #define PTRACERS_ALLOW_DYN_STATE'
+          CALL PRINT_ERROR( msgBuf , myThid)
+          STOP 'ABNORMAL END: S/R PTRACERS_INIT_FIXED'
+        ENDIF
+#endif /* ndef PTRACERS_ALLOW_DYN_STATE */
+
+        WRITE(msgBuf,'(2A,I3,A,L)') 'PTRACERS_INIT_FIXED: ',
+     &     'PTRACERS_SOM_Advection(', iTracer, ') = ',
+     &     PTRACERS_SOM_Advection(iTracer)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid)
+
         PTRACERS_MultiDimAdv(iTracer) = multiDimAdvection
         PTRACERS_AdamsBashGtr(iTracer) = .FALSE.
         PTRACERS_startAB(iTracer) = nIter0 - PTRACERS_Iter0
       ENDDO
+
+#ifdef PTRACERS_ALLOW_DYN_STATE
+      CALL PTRACERS_INIT_FIXED_DYNAMIC( PtrISt, 
+     &                                  PTRACERS_numInUse,
+     &                                  PTRACERS_SOM_Advection,
+     &                                  sNx, sNy, Nr, OLx, OLy,
+     &                                  nSx, nSy, nSOM,
+     &                                  myThid )
+#endif
 
 C     Loop over tracers
       DO iTracer = 1, PTRACERS_numInUse

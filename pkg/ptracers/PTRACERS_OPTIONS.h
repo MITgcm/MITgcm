@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_OPTIONS.h,v 1.6 2004/09/03 20:10:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_OPTIONS.h,v 1.7 2008/05/08 19:50:08 jahn Exp $
 C $Name:  $
 
 C CPP options file for PTRACERS package
@@ -22,6 +22,10 @@ C---
 
 
 C CPP Macros go here
+C     This enables the dynamically allocated internal state data structures
+C     for PTracers.  Needed for PTRACERS_SOM_Advection.
+C     This requires a Fortran 90 compiler!
+#undef  PTRACERS_ALLOW_DYN_STATE
 
 #endif /* ALLOW_PTRACERS */
 #endif /* PTRACERS_OPTIONS_H */

@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.4 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.5 2008/05/08 19:50:09 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
+#include "GAD_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -14,11 +15,13 @@ C     !DESCRIPTION:
 C     Initialize PTRACERS data structures
 
 C     !USES:
+#include "PTRACERS_MOD.h"
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "GAD.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
@@ -31,7 +34,7 @@ C     myThid               :: thread number
 
 C     !LOCAL VARIABLES:
 C     i,j,k,bi,bj,iTracer  :: loop indices
-      INTEGER i,j,k,bi,bj,iTracer
+      INTEGER i,j,k,bi,bj,iTracer,n
 CEOP
 
 C     Loop over tracers
@@ -56,6 +59,21 @@ C     Initialize arrays in common blocks :
            surfaceForcingPTr(i,j,bi,bj,iTracer) = 0. _d 0
           ENDDO
          ENDDO
+
+#if defined(GAD_ALLOW_SOM_ADVECT) && defined(PTRACERS_ALLOW_DYN_STATE)
+C     Initialize SOM array :
+         IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
+           DO n = 1,nSOM
+            DO k=1,Nr
+             DO j=1-OLy,sNy+OLy
+              DO i=1-OLx,sNx+OLx
+               _Ptracers_som(i,j,k,bi,bj,n,iTracer) = 0. _d 0
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDDO
+         ENDIF
+#endif /* GAD_ALLOW_SOM_ADVECT && PTRACERS_ALLOW_DYN_STATE */
 
 C     end bi,bj loops
         ENDDO

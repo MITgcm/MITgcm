@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.6 2008/04/06 02:01:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.7 2008/05/08 19:50:09 jahn Exp $
 C $Name:  $
 
+#include "GAD_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 
 CBOP
@@ -14,10 +15,12 @@ C !DESCRIPTION:
 C     Writes current state of passive tracers to a pickup file
 
 C !USES: ===============================================================
+#include "PTRACERS_MOD.h"
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GAD.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_RESTART.h"
@@ -54,7 +57,7 @@ C     nWrFlds     :: number of fields being written
 C     listDim     :: dimension of "wrFldList" local array
 C     wrFldList   :: list of written fields
 C     msgBuf      :: Informational/error message buffer
-      INTEGER iTracer, j, prec, lChar
+      INTEGER iTracer, j, prec, lChar, n, iRec
       LOGICAL glf
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER listDim, nWrFlds
@@ -97,6 +100,19 @@ C       step since we're saving the gpTrNm1 variable first
      &         pTracer(1-OLx,1-OLy,1,1,1,iTracer),myThid)
         ENDDO
       ENDIF
+#ifdef GAD_ALLOW_SOM_ADVECT
+      IF ( useMNC .AND. PTRACERS_pickup_write_mnc ) THEN
+       DO iTracer = 1, PTRACERS_numInUse
+        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
+         WRITE(msgBuf,'(3A)')'PTRACERS_WRITE_PICKUP: MNC not yet coded',
+     &                       ' for SOM advection',
+     &                       ' => write bin file instead'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid)
+        ENDIF
+       ENDDO
+      ENDIF
+#endif /* GAD_ALLOW_SOM_ADVECT */
 #endif /*  ALLOW_MNC  */
 
       IF ( PTRACERS_pickup_write_mdsio ) THEN
@@ -156,6 +172,36 @@ C     uses this specific S/R to write (with more informations) only meta files
      &                         1, myTime,
      &                         j, myIter, myThid )
 #endif /* ALLOW_MDSIO */
+C--------------------------
+#if defined(GAD_ALLOW_SOM_ADVECT) && defined(PTRACERS_ALLOW_DYN_STATE)
+C     write pickup for 2nd-order moment fields
+C     we write a separate file for each Ptracer that uses SOM advection
+        DO iTracer = 1, PTRACERS_numInUse
+         IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
+          IF ( lChar.EQ.0 ) THEN
+            WRITE(fn,'(2A)') 'pickup_somTRAC',PTRACERS_ioLabel(iTracer)
+          ELSE
+            WRITE(fn,'(4A)') 'pickup_somTRAC',PTRACERS_ioLabel(iTracer),
+     &                       '.',suff(1:lChar)
+          ENDIF
+          WRITE(msgBuf,'(A,I3,A)')'PTRACERS_WRITE_PICKUP: iTracer = ', 
+     &                       iTracer,
+     &                       ' : writing 2nd-order moments to file '
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid)
+          CALL PRINT_MESSAGE( fn, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid)
+          prec = precFloat64
+C     Write 2nd Order moments as consecutive records
+          DO n=1,nSOM
+            iRec = n
+            CALL WRITE_REC_3D_RL( fn, prec, Nr,
+     I               _Ptracers_som(1-Olx,1-Oly,1,1,1,n,iTracer),
+     I               iRec, myIter, myThid )
+          ENDDO
+         ENDIF
+        ENDDO
+#endif /* GAD_ALLOW_SOM_ADVECT && PTRACERS_ALLOW_DYN_STATE */
 C--------------------------
       ENDIF
 
