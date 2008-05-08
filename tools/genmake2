@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.169 2008/02/15 19:33:34 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.170 2008/05/08 19:48:37 jahn Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2361,7 +2361,10 @@ for d in $alldirs ; do
 	echo "" >> srclinks.tmp
 	echo "#  These files are linked from $d" >> srclinks.tmp
 	echo "$deplist :" >> srclinks.tmp
-	printf "\t\$(LN) %s/\$@ \$@\n" $d >> srclinks.tmp
+# We need to make sure that the link isn't already there.
+# This may happen when make thinks that a header file has to be "remade"
+# because a module it depends on has changed.  In this case we do nothing.
+	printf "\tif [ ! -L \$@ ]; then \$(LN) %s/\$@ \$@; fi\n" $d >> srclinks.tmp
     fi
 done
 rm -rf .links.tmp
