@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.987 2008/05/06 19:02:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.988 2008/05/08 19:50:31 jahn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/ptracers: add second-order moment advection schemes (80 and 81);
+  this uses a dynamically allocated internal state data structure
+  (#define PTRACERS_ALLOW_DYN_STATE in PTRACERS_OPTIONS.h) 
+  and requires a fortran 90 compiler
 
 checkpoint59q
 o pkg/mom_vecinv: Add energy & enstrophy conserving scheme (selectVortScheme=3)
