@@ -3,6 +3,7 @@
 *.f
 *.for
 *.o
+*.mod
 *.data
 *.meta
 *.nc
