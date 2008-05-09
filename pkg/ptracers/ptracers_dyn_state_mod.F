@@ -45,6 +45,9 @@
 
       END MODULE
 #else
-!     Nothing
+!     some compilers do not like empty files, so ...
+      SUBROUTINE PTRACERS_DYN_STATE_MOD_DUMMY
+        RETURN
+      END SUBROUTINE
 #endif
 
