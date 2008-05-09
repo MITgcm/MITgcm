@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fields_blocking_exchanges.F,v 1.7 2008/05/09 14:30:29 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fields_blocking_exchanges.F,v 1.8 2008/05/09 21:44:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -42,12 +42,12 @@ C Loop over passive tracers
 C Exchange overlaps
         CALL EXCH_3D_RL( pTracer(1-Olx,1-Oly,1,1,1,iTracer),
      &                   Nr, myThid )
-#if defined(GAD_ALLOW_SOM_ADVECT) && defined(PTRACERS_ALLOW_DYN_STATE)
-	IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
-	  CALL GAD_EXCH_SOM( _Ptracers_som(1-Olx,1-Oly,1,1,1,1,iTracer),
+#ifdef PTRACERS_ALLOW_DYN_STATE
+        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
+          CALL GAD_EXCH_SOM( _Ptracers_som(1-Olx,1-Oly,1,1,1,1,iTracer),
      &                       Nr, myThid )
-	ENDIF
-#endif /* GAD_ALLOW_SOM_ADVECT && PTRACERS_ALLOW_DYN_STATE */
+        ENDIF
+#endif /* PTRACERS_ALLOW_DYN_STATE */
 
 C End of tracer loop
       ENDDO

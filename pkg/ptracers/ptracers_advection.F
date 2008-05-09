@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.12 2008/05/08 19:50:08 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.13 2008/05/09 21:44:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -79,7 +79,7 @@ CADJ STORE pTracer(:,:,:,bi,bj,iTracer)
 CADJ &      = comlev1_bibj_ptracers, key=iptrkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#if defined(GAD_ALLOW_SOM_ADVECT) && defined(PTRACERS_ALLOW_DYN_STATE)
+#ifdef PTRACERS_ALLOW_DYN_STATE
        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
 #ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevB )
@@ -96,9 +96,9 @@ CADJ &      = comlev1_bibj_ptracers, key=iptrkey, byte=isbyte
      O                       gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                       bi,bj,myTime,myIter,myThid)
        ELSEIF ( PTRACERS_MultiDimAdv(iTracer) ) THEN
-#else /* GAD_ALLOW_SOM_ADVECT && PTRACERS_ALLOW_DYN_STATE */
+#else /* PTRACERS_ALLOW_DYN_STATE */
        IF ( PTRACERS_MultiDimAdv(iTracer) ) THEN
-#endif /* GAD_ALLOW_SOM_ADVECT && PTRACERS_ALLOW_DYN_STATE */
+#endif /* PTRACERS_ALLOW_DYN_STATE */
             CALL GAD_ADVECTION(
      I                        PTRACERS_ImplVertAdv(iTracer),
      I                        PTRACERS_advScheme(iTracer),

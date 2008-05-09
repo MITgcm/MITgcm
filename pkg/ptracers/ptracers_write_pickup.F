@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.7 2008/05/08 19:50:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.8 2008/05/09 21:44:31 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -100,7 +100,6 @@ C       step since we're saving the gpTrNm1 variable first
      &         pTracer(1-OLx,1-OLy,1,1,1,iTracer),myThid)
         ENDDO
       ENDIF
-#ifdef GAD_ALLOW_SOM_ADVECT
       IF ( useMNC .AND. PTRACERS_pickup_write_mnc ) THEN
        DO iTracer = 1, PTRACERS_numInUse
         IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
@@ -112,7 +111,6 @@ C       step since we're saving the gpTrNm1 variable first
         ENDIF
        ENDDO
       ENDIF
-#endif /* GAD_ALLOW_SOM_ADVECT */
 #endif /*  ALLOW_MNC  */
 
       IF ( PTRACERS_pickup_write_mdsio ) THEN
@@ -173,7 +171,7 @@ C     uses this specific S/R to write (with more informations) only meta files
      &                         j, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------
-#if defined(GAD_ALLOW_SOM_ADVECT) && defined(PTRACERS_ALLOW_DYN_STATE)
+#ifdef PTRACERS_ALLOW_DYN_STATE
 C     write pickup for 2nd-order moment fields
 C     we write a separate file for each Ptracer that uses SOM advection
         DO iTracer = 1, PTRACERS_numInUse
@@ -184,7 +182,7 @@ C     we write a separate file for each Ptracer that uses SOM advection
             WRITE(fn,'(4A)') 'pickup_somTRAC',PTRACERS_ioLabel(iTracer),
      &                       '.',suff(1:lChar)
           ENDIF
-          WRITE(msgBuf,'(A,I3,A)')'PTRACERS_WRITE_PICKUP: iTracer = ', 
+          WRITE(msgBuf,'(A,I3,A)')'PTRACERS_WRITE_PICKUP: iTracer = ',
      &                       iTracer,
      &                       ' : writing 2nd-order moments to file '
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -201,7 +199,7 @@ C     Write 2nd Order moments as consecutive records
           ENDDO
          ENDIF
         ENDDO
-#endif /* GAD_ALLOW_SOM_ADVECT && PTRACERS_ALLOW_DYN_STATE */
+#endif /* PTRACERS_ALLOW_DYN_STATE */
 C--------------------------
       ENDIF
 

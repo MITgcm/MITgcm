@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.5 2008/05/08 19:50:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.6 2008/05/09 21:44:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -60,7 +60,7 @@ C     Initialize arrays in common blocks :
           ENDDO
          ENDDO
 
-#if defined(GAD_ALLOW_SOM_ADVECT) && defined(PTRACERS_ALLOW_DYN_STATE)
+#ifdef PTRACERS_ALLOW_DYN_STATE
 C     Initialize SOM array :
          IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
            DO n = 1,nSOM
@@ -73,7 +73,7 @@ C     Initialize SOM array :
             ENDDO
            ENDDO
          ENDIF
-#endif /* GAD_ALLOW_SOM_ADVECT && PTRACERS_ALLOW_DYN_STATE */
+#endif /* PTRACERS_ALLOW_DYN_STATE */
 
 C     end bi,bj loops
         ENDDO

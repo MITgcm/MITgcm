@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.6 2008/05/09 14:30:17 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.7 2008/05/09 21:44:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -66,16 +66,6 @@ C     Loop over tracers
         PTRACERS_SOM_Advection(iTracer) =
      &    PTRACERS_advScheme(iTracer).GE.ENUM_SOM_PRATHER
      &    .AND. PTRACERS_advScheme(iTracer).LE.ENUM_SOM_LIMITER
-#ifndef GAD_ALLOW_SOM_ADVECT
-        IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
-          WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
-     &   'trying to use 2nd.Order-Moment Advection that is not compiled'
-          WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
-     &   'Re-compile with:  #define GAD_ALLOW_SOM_ADVECT'
-          CALL PRINT_ERROR( msgBuf , myThid)
-          STOP 'ABNORMAL END: S/R PTRACERS_INIT_FIXED'
-        ENDIF
-#endif /* ndef GAD_ALLOW_SOM_ADVECT */
 #ifndef PTRACERS_ALLOW_DYN_STATE
         IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
           WRITE(msgBuf,'(2A)') 'PTRACERS_INIT_FIXED: ',
@@ -99,7 +89,7 @@ C       end of Tracer loop
       ENDDO
 
 #ifdef PTRACERS_ALLOW_DYN_STATE
-      CALL PTRACERS_INIT_FIXED_DYNAMIC( PtrISt, 
+      CALL PTRACERS_INIT_FIXED_DYNAMIC( PtrISt,
      &                                  PTRACERS_numInUse,
      &                                  PTRACERS_SOM_Advection,
      &                                  sNx, sNy, Nr, OLx, OLy,
