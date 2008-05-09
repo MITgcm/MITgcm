@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.2 2003/11/25 19:04:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.3 2008/05/09 18:42:27 dfer Exp $
 C $Name:  $
 
 C ********************************************************************
@@ -40,7 +40,7 @@ C
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
 #define ALLOW_SALT0_CONTROL
-#define ALLOW_TR10_CONTROL
+#undef ALLOW_TR10_CONTROL
 #undef ALLOW_TAUU0_CONTROL
 #undef ALLOW_TAUV0_CONTROL
 #undef ALLOW_SFLUX0_CONTROL
