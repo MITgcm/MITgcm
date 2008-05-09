@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fields_blocking_exchanges.F,v 1.6 2008/05/08 19:50:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fields_blocking_exchanges.F,v 1.7 2008/05/09 14:30:29 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -21,7 +21,6 @@ C !USES: ===============================================================
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
-!#include "GAD.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid         :: thread number
