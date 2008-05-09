@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_fill_cs_corner.F,v 1.1 2008/02/12 20:32:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_fill_cs_corner.F,v 1.2 2008/05/09 21:43:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -58,7 +58,6 @@ C     myThid    :: my Thread Id. number
       INTEGER bi,bj
       INTEGER myThid
 
-#ifdef GAD_ALLOW_SOM_ADVECT
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 CEOP
@@ -81,8 +80,6 @@ CEOP
           CALL FILL_CS_CORNER_AG_RL( fill4dirX, .TRUE.,
      &                               sm_xz, sm_yz, bi,bj, myThid )
       ENDIF
-
-#endif /* GAD_ALLOW_SOM_ADVECT */
 
       RETURN
       END

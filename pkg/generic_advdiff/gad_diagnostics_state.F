@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_state.F,v 1.1 2008/02/12 20:26:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_state.F,v 1.2 2008/05/09 21:43:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -32,7 +32,7 @@ C     myThid  :: my Thread Id. number
 CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
-#ifdef GAD_ALLOW_SOM_ADVECT
+#ifdef GAD_ALLOW_TS_SOM_ADV
 C     ! FUNCTIONS:
       CHARACTER*4  GAD_DIAG_SUFX
       EXTERNAL     GAD_DIAG_SUFX
@@ -142,7 +142,7 @@ C     [Sx^2 + Sy^2 + Sz^2]/3 +[Sxx^2 + Syy^2 + Szz^2]/5 +[Sxy^2 + Sxz^2 + Syz^2]
         ENDDO
       ENDIF
 
-#endif /* GAD_ALLOW_SOM_ADVECT */
+#endif /* GAD_ALLOW_TS_SOM_ADV */
 #endif /* ALLOW_DIAGNOSTICS */
 
       RETURN

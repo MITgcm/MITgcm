@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_varia.F,v 1.1 2007/01/16 04:38:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_varia.F,v 1.2 2008/05/09 21:43:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -31,7 +31,7 @@ C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP
 
-#ifdef GAD_ALLOW_SOM_ADVECT
+#ifdef GAD_ALLOW_TS_SOM_ADV
 C     !LOCAL VARIABLES:
 C     === Local variables ===
       INTEGER i,j,k,bi,bj
@@ -72,7 +72,7 @@ C-     Read 2nd-O moments state from pickup files
        ENDIF
       ENDIF
 
-#endif /* GAD_ALLOW_SOM_ADVECT */
+#endif /* GAD_ALLOW_TS_SOM_ADV */
 
       RETURN
       END

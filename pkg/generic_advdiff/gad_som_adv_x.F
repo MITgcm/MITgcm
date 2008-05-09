@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_x.F,v 1.4 2008/02/12 20:32:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_x.F,v 1.5 2008/05/09 21:43:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -75,7 +75,6 @@ C  uT           :: zonal advective flux
       _RL sm_yz (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-#ifdef GAD_ALLOW_SOM_ADVECT
 C !LOCAL VARIABLES: ====================================================
 C  i,j           :: loop indices
 C  uLoc          :: volume transported (per time step)
@@ -305,8 +304,6 @@ C      add into grid box (i): positive U(i) and negative U(i+1)
 
 C--   end 2nd loop on strip number "ns"
       ENDDO
-
-#endif /* GAD_ALLOW_SOM_ADVECT */
 
       RETURN
       END

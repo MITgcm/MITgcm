@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.2 2008/02/12 20:32:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.3 2008/05/09 21:43:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -66,7 +66,6 @@ C  gTracer           :: tendency array
       _RL smTr   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,nSOM)
       _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-#ifdef GAD_ALLOW_SOM_ADVECT
 C !LOCAL VARIABLES: ====================================================
 C  maskUp        :: 2-D array mask for W points
 C  i,j,k         :: loop indices
@@ -642,8 +641,6 @@ C--   End of k loop for vertical flux
        ENDDO
 C--   end of if not.implicitAdvection block
       ENDIF
-
-#endif /* GAD_ALLOW_SOM_ADVECT */
 
       RETURN
       END

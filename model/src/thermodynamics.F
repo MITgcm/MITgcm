@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.121 2008/05/01 23:52:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.122 2008/05/09 21:45:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -137,7 +137,7 @@ C                                      so we need an fVer for each
 C                                      variable.
 C     kappaRT,       - Total diffusion in vertical at level k, for T and S
 C     kappaRS          (background + spatially varying, isopycnal term).
-C     kappaRTr       - Total diffusion in vertical at level k, 
+C     kappaRTr       - Total diffusion in vertical at level k,
 C                      for each passive Tracer
 C     kappaRk        - Total diffusion in vertical, all levels, 1 tracer
 C     useVariableK   = T when vertical diffusion is not constant
@@ -145,7 +145,7 @@ C     iMin, iMax     - Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj
 C     k, kup,        - Index for layer above and below. kup and kDown
-C     kDown, km1       are switched with layer to be the appropriate 
+C     kDown, km1       are switched with layer to be the appropriate
 C                      index into fVerTerm.
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -327,7 +327,7 @@ cph avoids recomputation of integrate_for_w
 CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--     Attention: by defining "SINGLE_LAYER_MODE" in CPP_OPTIONS.h 
+C--     Attention: by defining "SINGLE_LAYER_MODE" in CPP_OPTIONS.h
 C--     MOST of THERMODYNAMICS will be disabled
 #ifndef SINGLE_LAYER_MODE
 
@@ -353,7 +353,7 @@ C to be able to exclude this scheme to avoid excessive storage and
 C recomputation. It *is* differentiable, if you need it.
 C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
-#ifdef GAD_ALLOW_SOM_ADVECT
+#ifdef GAD_ALLOW_TS_SOM_ADV
         IF ( tempSOM_Advection ) THEN
 #ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB )
@@ -367,9 +367,9 @@ C disable this section of code.
      O             gT,
      I             bi,bj,myTime,myIter,myThid)
         ELSEIF (tempMultiDimAdvec) THEN
-#else /* GAD_ALLOW_SOM_ADVECT */
+#else /* GAD_ALLOW_TS_SOM_ADV */
         IF (tempMultiDimAdvec) THEN
-#endif /* GAD_ALLOW_SOM_ADVECT */
+#endif /* GAD_ALLOW_TS_SOM_ADV */
 #ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_CALL('GAD_ADVECTION',myThid)
@@ -381,7 +381,7 @@ C disable this section of code.
      O             gT,
      I             bi,bj,myTime,myIter,myThid)
         ENDIF
-#ifdef GAD_ALLOW_SOM_ADVECT
+#ifdef GAD_ALLOW_TS_SOM_ADV
         IF ( saltSOM_Advection ) THEN
 #ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB )
@@ -395,9 +395,9 @@ C disable this section of code.
      O             gS,
      I             bi,bj,myTime,myIter,myThid)
         ELSEIF (saltMultiDimAdvec) THEN
-#else /* GAD_ALLOW_SOM_ADVECT */
+#else /* GAD_ALLOW_TS_SOM_ADV */
         IF (saltMultiDimAdvec) THEN
-#endif /* GAD_ALLOW_SOM_ADVECT */
+#endif /* GAD_ALLOW_TS_SOM_ADV */
 #ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB )
      &     CALL DEBUG_CALL('GAD_ADVECTION',myThid)
@@ -431,7 +431,7 @@ C of whether multiDimAdvection is set or not.
 
 C--     Start of thermodynamics loop
         DO k=Nr,1,-1
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
 C? Patrick Is this formula correct?
 cph Yes, but I rewrote it.
 cph Also, the kappaR? need the index and subscript k!
@@ -512,8 +512,8 @@ C--   Residual transp = Bolus transp + Eulerian transp
             ENDIF
           ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte 
-CADJ STORE wfld(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte 
+CADJ STORE rTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE wfld(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
 # ifdef GM_BOLUS_ADVEC
 CADJ STORE ufld(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE vfld(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -532,7 +532,7 @@ C--      Calculate the total vertical diffusivity
      O          kappaRT,kappaRS,
      I          myThid)
           ENDIF
-# ifdef ALLOW_AUTODIFF_TAMC 
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE kappaRT(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE kappaRS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
@@ -546,7 +546,7 @@ CADJ STORE kappaRS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 C--      Calculate active tracer tendencies (gT,gS,...)
 C        and step forward storing result in gT, gS, etc.
 C--
-# ifdef ALLOW_AUTODIFF_TAMC 
+# ifdef ALLOW_AUTODIFF_TAMC
 #  if ((defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)) && (defined ALLOW_GMREDI)
 #   ifdef GM_NON_UNITY_DIAGONAL
 CADJ STORE kux(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -559,7 +559,7 @@ CADJ STORE kvz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #  endif
 # endif /* ALLOW_AUTODIFF_TAMC */
 C
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 cph-test
 CADJ STORE uFld(:,:), vFld(:,:), wFld(:,:)
@@ -572,7 +572,7 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
          IF ( tempStepping ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE gTnm1(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE gt(:,:,:,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -648,7 +648,7 @@ CADJ STORE fvers(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
      O            kappaRTr,
      I            myThid)
            ENDIF
-# ifdef ALLOW_AUTODIFF_TAMC 
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE kappaRTr(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
            CALL PTRACERS_INTEGRATE(
@@ -670,7 +670,7 @@ C--      Apply open boundary conditions
 
 C--      Freeze water
 C  this bit of code is left here for backward compatibility.
-C  freezing at surface level has been moved to FORWARD_STEP 
+C  freezing at surface level has been moved to FORWARD_STEP
          IF ( useOldFreezing .AND. .NOT. useSEAICE
      &       .AND. .NOT.(useThSIce.AND.k.EQ.1) ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -683,22 +683,22 @@ CADJ &   , key = kkey, byte = isbyte
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO
 
-C       All explicit advection/diffusion/sources should now be 
-C       done. The updated tracer field is in gPtr. Accumalate 
-C       explicit tendency and also reset gPtr to initial tracer 
+C       All explicit advection/diffusion/sources should now be
+C       done. The updated tracer field is in gPtr. Accumalate
+C       explicit tendency and also reset gPtr to initial tracer
 C       field for implicit matrix calculation
 
 #ifdef ALLOW_MATRIX
-        IF (useMATRIX) 
+        IF (useMATRIX)
      &    CALL MATRIX_STORE_TENDENCY_EXP(bi,bj, myTime,myIter,myThid)
-#endif 
+#endif
 
         iMin = 1
         iMax = sNx
         jMin = 1
         jMax = sNy
 
-C--     Implicit vertical advection & diffusion 
+C--     Implicit vertical advection & diffusion
         IF ( tempStepping .AND. implicitDiffusion ) THEN
           CALL CALC_3D_DIFFUSIVITY(
      I         bi,bj,iMin,iMax,jMin,jMax,
@@ -740,7 +740,7 @@ c          CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, theta, kappaRT,
 c    I                        Nr, 3, deltaTclock, bi, bj, myThid)
          ENDIF
         ENDIF
-#endif /* ALLOW_TIMEAVE */ 
+#endif /* ALLOW_TIMEAVE */
 
         IF ( saltStepping .AND. implicitDiffusion ) THEN
           CALL CALC_3D_DIFFUSIVITY(

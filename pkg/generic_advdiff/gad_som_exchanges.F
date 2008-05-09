@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_exchanges.F,v 1.2 2007/08/16 21:23:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_exchanges.F,v 1.3 2008/05/09 21:43:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -30,7 +30,7 @@ C     myThid ::  my Thread Id number
       INTEGER myThid
 CEOP
 
-#ifdef GAD_ALLOW_SOM_ADVECT
+#ifdef GAD_ALLOW_TS_SOM_ADV
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 
@@ -44,7 +44,7 @@ C--   Apply exchanges to Salin. 2nd.O.Moments:
        CALL GAD_EXCH_SOM( som_S, Nr, myThid )
       ENDIF
 
-#endif /* GAD_ALLOW_SOM_ADVECT */
+#endif /* GAD_ALLOW_TS_SOM_ADV */
 
       RETURN
       END

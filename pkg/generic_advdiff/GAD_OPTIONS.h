@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.12 2008/05/05 16:14:58 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.13 2008/05/09 21:43:16 jmc Exp $
 C $Name:  $
 
 CBOP
 C !ROUTINE: GAD_OPTIONS.h
 
 C !INTERFACE:
-C #include "GAD_OPTIONS.h" 
+C #include "GAD_OPTIONS.h"
 
 C !DESCRIPTION:
 C Contains CPP macros/flags for controlling optional features of package.
@@ -31,7 +31,7 @@ C use COSINEMETH_III in the momentum equations set it CPP_OPTIONS.h
 C This selects isotropic scaling of harmonic and bi-harmonic term when
 C using the COSINE(lat) scaling.
 C Setting this flag here only affects the tracer diffusion terms; to
-C use ISOTROPIC_COS_SCALING of the horizontal viscosity terms in the 
+C use ISOTROPIC_COS_SCALING of the horizontal viscosity terms in the
 C momentum equations set it CPP_OPTIONS.h; the following line
 C even overrides setting the flag in CPP_OPTIONS.h
 #undef ISOTROPIC_COS_SCALING
@@ -41,13 +41,13 @@ C introduces excessive recomputation/storage for the adjoint.
 C We can disable it here using CPP because run-time flags are insufficient.
 #undef DISABLE_MULTIDIM_ADVECTION
 
-C This enable the use of 2nd-Order Moment advection scheme (Prather, 1986)
-C due to large memory space (10 times more / tracer) requirement,
-C by default, this part of the code is not compiled.
-#undef GAD_ALLOW_SOM_ADVECT
+C This enable the use of 2nd-Order Moment advection scheme (Prather, 1986) for
+C Temperature and Salinity ; due to large memory space (10 times more / tracer)
+C requirement, by default, this part of the code is not compiled.
+#undef GAD_ALLOW_TS_SOM_ADV
 
 C Hack to get rid of negatives caused by Redi.  Works by restricting the
-C outgoing flux (only contributions computed in gad_calc_rhs) for each cell 
+C outgoing flux (only contributions computed in gad_calc_rhs) for each cell
 C to be no more than the amount of tracer in the cell (see Smolarkiewicz
 C MWR 1989 and Bott MWR 1989).
 C The flux contributions computed in gad_calc_rhs which are affected by
@@ -65,7 +65,7 @@ C due to contributions from gad_calc_rhs alone.  In the presence of other
 C contributions (or roundoff errors), it may be necessary to reduce this
 C value to achieve strict positivity.
 C
-C This hack applies to all tracers except temperature and salinity! 
+C This hack applies to all tracers except temperature and salinity!
 C Don't use with Adams-Bashforth (for ptracers)!
 C Don't use with OBCS!
 #undef  GAD_SMOLARKIEWICZ_HACK

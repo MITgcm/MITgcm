@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_lim_r.F,v 1.3 2007/08/22 00:26:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_lim_r.F,v 1.4 2008/05/09 21:43:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -52,7 +52,6 @@ C  sm_xy,xz,yz  ::  2nd order moment of tracer distr., in cross direction xy,xz,
       _RL sm_xz (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sm_yz (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
-#ifdef GAD_ALLOW_SOM_ADVECT
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k        :: loop indices
       _RL  three
@@ -81,8 +80,6 @@ C     appropriate moments before transport.
         ENDDO
        ENDDO
       ENDIF
-
-#endif /* GAD_ALLOW_SOM_ADVECT */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_init.F,v 1.7 2008/02/12 20:26:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_init.F,v 1.8 2008/05/09 21:43:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -112,7 +112,7 @@ C-     Diffusive flux:
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#ifdef GAD_ALLOW_SOM_ADVECT
+#ifdef GAD_ALLOW_TS_SOM_ADV
        diagUnits = DIAGS_MK_UNITS( trUnits, myThid )
 
        diagName  = 'SM_x'//diagSufx
@@ -175,7 +175,7 @@ C-     Diffusive flux:
        diagCode  = 'SM P    MR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-#endif /* GAD_ALLOW_SOM_ADVECT */
+#endif /* GAD_ALLOW_TS_SOM_ADV */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -244,7 +244,7 @@ C-     Diffusive flux:
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#ifdef GAD_ALLOW_SOM_ADVECT
+#ifdef GAD_ALLOW_TS_SOM_ADV
 
        diagUnits = DIAGS_MK_UNITS( trUnits, myThid )
 
@@ -308,7 +308,7 @@ C-     Diffusive flux:
        diagCode  = 'SM P    MR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-#endif /* GAD_ALLOW_SOM_ADVECT */
+#endif /* GAD_ALLOW_TS_SOM_ADV */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.2 2008/04/05 21:28:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_check.F,v 1.3 2008/05/09 21:43:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -62,7 +62,7 @@ c     IF ( useMultiDimAdvec ) THEN
       ENDIF
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 
-#ifndef GAD_ALLOW_SOM_ADVECT
+#ifndef GAD_ALLOW_TS_SOM_ADV
       IF ( tempAdvScheme.EQ.ENUM_SOM_PRATHER
      & .OR.saltAdvScheme.EQ.ENUM_SOM_PRATHER
      & .OR.tempAdvScheme.EQ.ENUM_SOM_LIMITER
@@ -70,11 +70,11 @@ c     IF ( useMultiDimAdvec ) THEN
         WRITE(msgBuf,'(2A)') 'GAD_CHECK: ',
      &  'trying to use 2nd.Order-Moment Advection that is not compiled'
         WRITE(msgBuf,'(2A)') 'GAD_CHECK: ',
-     &  'Re-compile with:  #define GAD_ALLOW_SOM_ADVECT'
+     &  'Re-compile with:  #define GAD_ALLOW_TS_SOM_ADV'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R GAD_CHECK'
       ENDIF
-#endif /* ndef GAD_ALLOW_SOM_ADVECT */
+#endif /* ndef GAD_ALLOW_TS_SOM_ADV */
 
 C--  Check parameters:
 

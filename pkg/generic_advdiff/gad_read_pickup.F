@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_read_pickup.F,v 1.1 2007/01/16 04:38:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_read_pickup.F,v 1.2 2008/05/09 21:43:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -30,7 +30,7 @@ C     myThid  :: thread number
       INTEGER myIter
       INTEGER myThid
 
-#ifdef GAD_ALLOW_SOM_ADVECT
+#ifdef GAD_ALLOW_TS_SOM_ADV
 
 C     !LOCAL VARIABLES:
 C     n       :: 2nd.O. moment loop index
@@ -101,7 +101,7 @@ C       Read 2nd Order moments as consecutive records
 
       ENDIF
 
-#endif /* GAD_ALLOW_SOM_ADVECT */
+#endif /* GAD_ALLOW_TS_SOM_ADV */
 
       RETURN
       END

@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_cs/code/GAD_OPTIONS.h,v 1.1 2008/02/12 22:32:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_cs/code/GAD_OPTIONS.h,v 1.2 2008/05/09 21:46:25 jmc Exp $
 C $Name:  $
 
 CBOP
 C !ROUTINE: GAD_OPTIONS.h
 
 C !INTERFACE:
-C #include "GAD_OPTIONS.h" 
+C #include "GAD_OPTIONS.h"
 
 C !DESCRIPTION:
 C Contains CPP macros/flags for controlling optional features of package.
@@ -31,7 +31,7 @@ C use COSINEMETH_III in the momentum equations set it CPP_OPTIONS.h
 C This selects isotropic scaling of harmonic and bi-harmonic term when
 C using the COSINE(lat) scaling.
 C Setting this flag here only affects the tracer diffusion terms; to
-C use ISOTROPIC_COS_SCALING of the horizontal viscosity terms in the 
+C use ISOTROPIC_COS_SCALING of the horizontal viscosity terms in the
 C momentum equations set it CPP_OPTIONS.h; the following line
 C even overrides setting the flag in CPP_OPTIONS.h
 #undef ISOTROPIC_COS_SCALING
@@ -41,10 +41,10 @@ C introduces excessive recomputation/storage for the adjoint.
 C We can disable it here using CPP because run-time flags are insufficient.
 #undef DISABLE_MULTIDIM_ADVECTION
 
-C This enable the use of 2nd-Order Moment advection scheme (Prather, 1986)
-C due to large memory space (10 times more / tracer) requirement,
-C by default, this part of the code is not compiled.
-#define GAD_ALLOW_SOM_ADVECT
+C This enable the use of 2nd-Order Moment advection scheme (Prather, 1986) for
+C Temperature and Salinity ; due to large memory space (10 times more / tracer)
+C requirement, by default, this part of the code is not compiled.
+#define GAD_ALLOW_TS_SOM_ADV
 
 #else
 
