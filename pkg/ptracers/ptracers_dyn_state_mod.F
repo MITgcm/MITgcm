@@ -1,9 +1,12 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_dyn_state_mod.F,v 1.3 2008/05/09 19:57:04 jahn Exp $
+C $Name:  $
+
 #include "PTRACERS_OPTIONS.h"
 #ifdef PTRACERS_ALLOW_DYN_STATE
 
       MODULE PTRACERS_DYN_STATE_MOD
 
-! ptracers internal state data structures
+C ptracers internal state data structures
       TYPE PTRACERS_ISTATE 
        _RL, POINTER :: som_P(:,:,:,:,:,:)
       END TYPE
@@ -45,7 +48,7 @@
 
       END MODULE
 #else
-!     some compilers do not like empty files, so ...
+C     some compilers do not like empty files, so ...
       SUBROUTINE PTRACERS_DYN_STATE_MOD_DUMMY
         RETURN
       END SUBROUTINE
