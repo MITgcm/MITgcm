@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.989 2008/05/09 21:51:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.990 2008/05/09 22:39:42 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o Freshen up a bit hs94.1x64x5, notably: 
+  remove rotationPeriod and tRef=5*0. (adjoint only), and add exactConserv=.TRUE.
 o pkg/generic_advdiff:
   change option GAD_ALLOW_SOM_ADVECT to GAD_ALLOW_TS_SOM_ADV which only
   applies to files where Temperature & Salinity 2nd Order moments are used.
