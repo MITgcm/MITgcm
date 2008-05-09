@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_obcs.F,v 1.11 2008/01/25 16:02:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_obcs.F,v 1.12 2008/05/09 09:20:30 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -39,8 +39,7 @@ c     == routine arguments ==
       _RL obcs_fld_xz(1-olx:snx+olx,Nr,nsx,nsy)
       _RL obcs_xz_0(1-olx:snx+olx,Nr,nsx,nsy)
       _RL obcs_xz_1(1-olx:snx+olx,Nr,nsx,nsy)
-
-      character*(128) obcs_file
+      character*(MAX_LEN_FNAM) obcs_file
       character*1 obcsmask
       logical first, changed
       logical useYearlyFields
@@ -57,9 +56,8 @@ c     == local variables ==
 
       integer bi, bj
       integer i, k
-
       integer il
-      character*(128) obcs_file0, obcs_file1
+      character*(MAX_LEN_FNAM) obcs_file0, obcs_file1
 
 c     == external ==
 
@@ -102,7 +100,7 @@ c     == end of interface ==
                do k = 1,Nr
                   do i = 1,snx
                      obcs_fld_xz(i,k,bi,bj) = 
-     &                    fac * obcs_xz_0(i,k,bi,bj) +
+     &                    fac             * obcs_xz_0(i,k,bi,bj) +
      &                    (exf_one - fac) * obcs_xz_1(i,k,bi,bj)
                   enddo
                enddo
@@ -130,6 +128,7 @@ c
 c     o set open boundary conditions
 c
 c     started: heimbach@mit.edu 01-May-2001
+c     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
 
 c     ==================================================================
 c     SUBROUTINE exf_set_obcs_yz
@@ -168,7 +167,7 @@ c     == local variables ==
       integer bi, bj
       integer j, k
       integer il
-      character*(128) obcs_file0, obcs_file1
+      character*(MAX_LEN_FNAM) obcs_file0, obcs_file1
 
 c     == external ==
 
@@ -182,7 +181,7 @@ c     == end of interface ==
          if ( first ) then
 
             call exf_GetYearlyFieldName(
-     I         useYearlyFields, twoDigitYear, obcs_period, year0, 
+     I         useYearlyFields, twoDigitYear, obcs_period, year0,
      I         obcs_file,
      O         obcs_file0,
      I         mycurrenttime, mycurrentiter, mythid )
@@ -211,8 +210,8 @@ c     == end of interface ==
                do k = 1,Nr
                   do j = 1,sny
                      obcs_fld_yz(j,k,bi,bj) = 
-     &                    fac             *obcs_yz_0(j,k,bi,bj) +
-     &                    (exf_one - fac) *obcs_yz_1(j,k,bi,bj)
+     &                    fac             * obcs_yz_0(j,k,bi,bj) +
+     &                    (exf_one - fac) * obcs_yz_1(j,k,bi,bj)
                   enddo
                enddo
             enddo
@@ -258,8 +257,7 @@ c     == routine arguments ==
       _RL obcs_fld_x(1-olx:snx+olx,nsx,nsy)
       _RL obcs_x_0(1-olx:snx+olx,nsx,nsy)
       _RL obcs_x_1(1-olx:snx+olx,nsx,nsy)
-
-      character*(128) obcs_file
+      character*(MAX_LEN_FNAM) obcs_file
       character*1 obcsmask
       logical first, changed
       logical useYearlyFields
@@ -275,9 +273,8 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi, bj, i
-
       integer il
-      character*(128) obcs_file0, obcs_file1
+      character*(MAX_LEN_FNAM) obcs_file0, obcs_file1
 
 c     == external ==
 
@@ -319,7 +316,7 @@ c     == end of interface ==
             do bi = mybxlo(mythid),mybxhi(mythid)
                do i = 1,snx
                   obcs_fld_x(i,bi,bj) = 
-     &                 fac * obcs_x_0(i,bi,bj) +
+     &                 fac             * obcs_x_0(i,bi,bj) +
      &                 (exf_one - fac) * obcs_x_1(i,bi,bj)
                enddo
             enddo
@@ -381,9 +378,8 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi, bj, j
-
       integer il
-      character*(128) obcs_file0, obcs_file1
+      character*(MAX_LEN_FNAM) obcs_file0, obcs_file1
 
 c     == external ==
 
@@ -425,8 +421,8 @@ c     == end of interface ==
             do bi = mybxlo(mythid),mybxhi(mythid)
                do j = 1,sny
                   obcs_fld_y(j,bi,bj) = 
-     &                 fac             *obcs_y_0(j,bi,bj) +
-     &                 (exf_one - fac) *obcs_y_1(j,bi,bj)
+     &                 fac             * obcs_y_0(j,bi,bj) +
+     &                 (exf_one - fac) * obcs_y_1(j,bi,bj)
                enddo
             enddo
          enddo

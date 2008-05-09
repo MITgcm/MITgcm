@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.22 2008/04/25 21:57:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.23 2008/05/09 09:20:30 dimitri Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -127,7 +127,7 @@ c     == end of interface ==
      U     OBWt,   OBWt0,   OBWt1,   OBWtfile, 
      U     OBWs,   OBWs0,   OBWs1,   OBWsfile, 
 #   ifdef ALLOW_SEAICE
-     I     siobEstartdate, siobEperiod,
+     I     siobWstartdate, siobWperiod,
      U     OBWa,   OBWa0,   OBWa1,   OBWafile,
      U     OBWh,   OBWh0,   OBWh1,   OBWhfile,
      U     OBWsl,  OBWsl0,  OBWsl1,  OBWslfile,
@@ -292,8 +292,8 @@ c     == local variables ==
 # ifdef ALLOW_PTRACERS
       integer iTracer
 # endif /* ALLOW_PTRACERS */
-
 c     == end of interface ==
+
       if ( obcsperiod .eq. -12 ) then
 c     obcsperiod=-12 means input file contains 12 monthly means
 c     record numbers are assumed 1 to 12 corresponding to
@@ -316,19 +316,7 @@ c     get record numbers and interpolation factor
      O                       count0, count1, year0, year1,
      I                       mycurrenttime, mycurrentiter, mythid
      &                      )
-# ifdef ALLOW_SEAICE
-       IF (useSEAICE) THEN
-        call exf_GetFFieldRec(
-     I                       siobstartdate, siobperiod,
-     I                       useYearlyFields,
-     O                       fac, first, changed,
-     O                       count0, count1, year0, year1,
-     I                       mycurrenttime, mycurrentiter, mythid
-     &                      )
-       ENDIF
-# endif /* ALLOW_SEAICE */
       endif
-
       call exf_set_obcs_xz(  OBu, OBu0, OBu1, OBufile, 'u'
      I                     , fac, first, changed, useYearlyFields
      I                     , obcsperiod, count0, count1, year0, year1
@@ -345,8 +333,44 @@ c     get record numbers and interpolation factor
      I                     , fac, first, changed, useYearlyFields
      I                     , obcsperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
+# ifdef ALLOW_PTRACERS
+      if ( usePTRACERS ) then
+       do iTracer = 1, PTRACERS_numInUse
+        call exf_set_obcs_xz(  OBptr (1-Olx,1,1,1,iTracer)
+     I                       , OBptr0(1-Olx,1,1,1,iTracer)
+     I                       , OBptr1(1-Olx,1,1,1,iTracer)
+     I                       , OBptrFile(iTracer), 's'
+     I                       , fac, first, changed, useYearlyFields
+     I                       , obcsperiod, count0, count1, year0, year1
+     I                       , mycurrenttime, mycurrentiter, mythid )
+       enddo
+      endif
+# endif /* ALLOW_PTRACERS */
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
+       if ( siobperiod .eq. -12 ) then
+c     siobperiod=-12 means input file contains 12 monthly means
+c     record numbers are assumed 1 to 12 corresponding to
+c     Jan. through Dec.
+        call cal_GetMonthsRec(
+     O                        fac, first, changed,
+     O                        count0, count1,
+     I                        mycurrenttime, mycurrentiter, mythid
+     &           )
+
+       elseif ( siobperiod .lt. 0 ) then
+        print *, 'siobperiod is out of range'
+        STOP 'ABNORMAL END: S/R OBCS_PRESCIBE_EXF_XZ'
+       else
+c     get record numbers and interpolation factor
+        call exf_GetFFieldRec(
+     I                       siobstartdate, siobperiod,
+     I                       useYearlyFields,
+     O                       fac, first, changed,
+     O                       count0, count1, year0, year1,
+     I                       mycurrenttime, mycurrentiter, mythid
+     &                      )
+       endif
        call exf_set_obcs_x (  OBa, OBa0, OBa1, OBafile, 's'
      I                     , fac, first, changed, useYearlyFields
      I                     , siobperiod, count0, count1, year0, year1
@@ -373,19 +397,6 @@ c     get record numbers and interpolation factor
      I                     , mycurrenttime, mycurrentiter, mythid )
       ENDIF
 # endif /* ALLOW_SEAICE */
-# ifdef ALLOW_PTRACERS
-      if ( usePTRACERS ) then
-       do iTracer = 1, PTRACERS_numInUse
-        call exf_set_obcs_xz(  OBptr (1-Olx,1,1,1,iTracer)
-     I                       , OBptr0(1-Olx,1,1,1,iTracer)
-     I                       , OBptr1(1-Olx,1,1,1,iTracer)
-     I                       , OBptrFile(iTracer), 's'
-     I                       , fac, first, changed, useYearlyFields
-     I                       , obcsperiod, count0, count1, year0, year1
-     I                       , mycurrenttime, mycurrentiter, mythid )
-       enddo
-      endif
-# endif /* ALLOW_PTRACERS */
 
 #endif /* ALLOW_OBCS and ALLOW_OBCS_PRESCRIBE and ALLOW_EXF */
       RETURN
@@ -524,19 +535,7 @@ c     get record numbers and interpolation factor
      O                       count0, count1, year0, year1,
      I                       mycurrenttime, mycurrentiter, mythid
      &                      )
-# ifdef ALLOW_SEAICE
-       IF (useSEAICE) THEN
-        call exf_GetFFieldRec(
-     I                       siobstartdate, siobperiod,
-     I                       useYearlyFields,
-     O                       fac, first, changed,
-     O                       count0, count1, year0, year1,
-     I                       mycurrenttime, mycurrentiter, mythid
-     &                      )
-       ENDIF
-# endif /* ALLOW_SEAICE */
       endif
-
       call exf_set_obcs_yz(  OBu, OBu0, OBu1, OBufile, 'u'
      I                     , fac, first, changed, useYearlyFields
      I                     , obcsperiod, count0, count1, year0, year1
@@ -553,8 +552,44 @@ c     get record numbers and interpolation factor
      I                     , fac, first, changed, useYearlyFields
      I                     , obcsperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
+# ifdef ALLOW_PTRACERS
+      if ( usePTRACERS ) then
+       do iTracer = 1, PTRACERS_numInUse
+        call exf_set_obcs_yz(  OBptr (1-Olx,1,1,1,iTracer)
+     I                       , OBptr0(1-Olx,1,1,1,iTracer)
+     I                       , OBptr1(1-Olx,1,1,1,iTracer)
+     I                       , OBptrFile(iTracer), 's'
+     I                       , fac, first, changed, useYearlyFields
+     I                       , obcsperiod, count0, count1, year0, year1
+     I                       , mycurrenttime, mycurrentiter, mythid )
+       enddo
+      endif
+# endif /* ALLOW_PTRACERS */
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
+       if ( siobperiod .eq. -12 ) then
+c     siobperiod=-12 means input file contains 12 monthly means
+c     record numbers are assumed 1 to 12 corresponding to
+c     Jan. through Dec.
+        call cal_GetMonthsRec(
+     O                        fac, first, changed,
+     O                        count0, count1,
+     I                        mycurrenttime, mycurrentiter, mythid
+     &           )
+
+       elseif ( siobperiod .lt. 0 ) then
+        print *, 'siobperiod is out of range'
+        STOP 'ABNORMAL END: S/R OBCS_PRESCIBE_EXF_XZ'
+       else
+c     get record numbers and interpolation factor
+        call exf_GetFFieldRec(
+     I                       siobstartdate, siobperiod,
+     I                       useYearlyFields,
+     O                       fac, first, changed,
+     O                       count0, count1, year0, year1,
+     I                       mycurrenttime, mycurrentiter, mythid
+     &                      )
+       endif
        call exf_set_obcs_y (  OBa, OBa0, OBa1, OBafile, 's'
      I                     , fac, first, changed, useYearlyFields
      I                     , siobperiod, count0, count1, year0, year1
@@ -581,19 +616,6 @@ c     get record numbers and interpolation factor
      I                     , mycurrenttime, mycurrentiter, mythid )
       ENDIF
 # endif /* ALLOW_SEAICE */
-# ifdef ALLOW_PTRACERS
-      if ( usePTRACERS ) then
-       do iTracer = 1, PTRACERS_numInUse
-        call exf_set_obcs_yz(  OBptr (1-Olx,1,1,1,iTracer)
-     I                       , OBptr0(1-Olx,1,1,1,iTracer)
-     I                       , OBptr1(1-Olx,1,1,1,iTracer)
-     I                       , OBptrFile(iTracer), 's'
-     I                       , fac, first, changed, useYearlyFields
-     I                       , obcsperiod, count0, count1, year0, year1
-     I                       , mycurrenttime, mycurrentiter, mythid )
-       enddo
-      endif
-# endif /* ALLOW_PTRACERS */
 
 #endif /* ALLOW_OBCS and ALLOW_OBCS_PRESCRIBE and ALLOW_EXF */
       RETURN
