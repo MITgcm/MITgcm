@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.3 2008/05/09 21:43:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.4 2008/05/09 22:32:35 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -219,9 +219,6 @@ c       rTrans(i,j)  = 0. _d 0
 C--   Set tile-specific parameters for horizontal fluxes
       IF (useCubedSphereExchange) THEN
        npass  = 3
-#ifdef ALLOW_AUTODIFF_TAMC
-       IF ( npass.GT.maxcube ) STOP 'maxcube needs to be = 3'
-#endif
 #ifdef ALLOW_EXCH2
        myTile = W2_myTileList(bi)
        nCFace = exch2_myFace(myTile)
