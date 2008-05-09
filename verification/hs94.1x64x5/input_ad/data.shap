@@ -1,6 +1,6 @@
-# Packages
+# Shapiro Filter parameters
  &SHAP_PARM01
+ Shap_funct=4,
  nShapT=4,
  nShapUV=4,
- Shap_funct=4,
  &

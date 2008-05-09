@@ -1,7 +1,7 @@
 # Packages
  &PACKAGES
- useSHAP_FILT=.TRUE.,
+ useSHAP_FILT = .TRUE.,
  useDiagnostics=.TRUE.,
- useMYPACKAGE=.TRUE.,
+ useMYPACKAGE = .TRUE.,
 #useMNC=.TRUE.,
  &

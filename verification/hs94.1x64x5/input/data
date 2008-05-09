@@ -21,14 +21,13 @@
  eosType='IDEALGAS',
  rotationPeriod=86400.,
  gravity=9.81,
- rhonil=1.0,
  rhoConst=1.0,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  staggerTimestep=.TRUE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
-#globalFiles=.TRUE.,
+# globalFiles=.TRUE.,
 #- not safe to use globalFiles in multi-processors runs; set instead useSingleCpuIO
  useSingleCpuIO=.TRUE.,
  &

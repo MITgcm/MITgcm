@@ -1,9 +1,7 @@
-#
-# ********
 # Packages
-# ********
  &PACKAGES
- useSHAP_FILT = .TRUE., 
+ useSHAP_FILT = .TRUE.,
+ useDiagnostics=.TRUE.,
  useGrdchk    = .TRUE.,
  useMYPACKAGE = .TRUE.,
  &
