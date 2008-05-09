@@ -19,7 +19,7 @@
  diffK4S=0.,
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALGAS',
- rotationPeriod=86400.,
+ exactConserv=.TRUE.,
  gravity=9.81,
  rhoConst=1.0,
  rigidLid=.FALSE.,
