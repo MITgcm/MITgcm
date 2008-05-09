@@ -5,7 +5,6 @@
 # Continuous equation parameters
  &PARM01
  tRef= 281.089, 289.321, 307.191, 331.377, 432.413,
- tRef=5*0.,
  sRef=5*0.,
  viscAr=0.,
  viscAh=0.,
@@ -20,7 +19,7 @@
  diffK4S=0.,
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALGAS',
- rotationPeriod=86400.,
+ exactConserv=.TRUE.,
  gravity=9.81,
  rhoConst=1.0,
  rigidLid=.FALSE.,
