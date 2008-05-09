@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.4 2008/05/08 19:50:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.5 2008/05/09 00:38:45 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -68,7 +68,7 @@ C     Initialise internal parameter in common block:
         ENDIF
 #endif /* ndef PTRACERS_ALLOW_DYN_STATE */
 
-        WRITE(msgBuf,'(2A,I3,A,L)') 'PTRACERS_INIT_FIXED: ',
+        WRITE(msgBuf,'(2A,I3,A,L5)') 'PTRACERS_INIT_FIXED: ',
      &     'PTRACERS_SOM_Advection(', iTracer, ') = ',
      &     PTRACERS_SOM_Advection(iTracer)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
