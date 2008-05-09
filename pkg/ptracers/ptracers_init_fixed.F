@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.5 2008/05/09 00:38:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_fixed.F,v 1.6 2008/05/09 14:30:17 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -42,6 +42,27 @@ C     msgBuf      - Informational/error meesage buffer
 
 C     Initialise internal parameter in common block:
       DO iTracer = 1, PTRACERS_num
+        PTRACERS_MultiDimAdv(iTracer) = multiDimAdvection
+        PTRACERS_SOM_Advection(iTracer) = .FALSE.
+        PTRACERS_AdamsBashGtr(iTracer) = .FALSE.
+        PTRACERS_startAB(iTracer) = nIter0 - PTRACERS_Iter0
+      ENDDO
+
+C     Loop over tracers
+      DO iTracer = 1, PTRACERS_numInUse
+
+        IF (
+     &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND .OR.
+     &       PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD .OR.
+     &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH
+     &     ) PTRACERS_MultiDimAdv(iTracer) = .FALSE.
+        useMultiDimAdvec = useMultiDimAdvec
+     &                .OR. PTRACERS_MultiDimAdv(iTracer)
+        PTRACERS_AdamsBashGtr(iTracer) =
+     &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND .OR.
+     &       PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD .OR.
+     &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH
+
         PTRACERS_SOM_Advection(iTracer) =
      &    PTRACERS_advScheme(iTracer).GE.ENUM_SOM_PRATHER
      &    .AND. PTRACERS_advScheme(iTracer).LE.ENUM_SOM_LIMITER
@@ -68,15 +89,13 @@ C     Initialise internal parameter in common block:
         ENDIF
 #endif /* ndef PTRACERS_ALLOW_DYN_STATE */
 
-        WRITE(msgBuf,'(2A,I3,A,L5)') 'PTRACERS_INIT_FIXED: ',
+        WRITE(msgBuf,'(2A,I4,A,L5)') 'PTRACERS_INIT_FIXED: ',
      &     'PTRACERS_SOM_Advection(', iTracer, ') = ',
      &     PTRACERS_SOM_Advection(iTracer)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT, myThid)
 
-        PTRACERS_MultiDimAdv(iTracer) = multiDimAdvection
-        PTRACERS_AdamsBashGtr(iTracer) = .FALSE.
-        PTRACERS_startAB(iTracer) = nIter0 - PTRACERS_Iter0
+C       end of Tracer loop
       ENDDO
 
 #ifdef PTRACERS_ALLOW_DYN_STATE
@@ -88,23 +107,6 @@ C     Initialise internal parameter in common block:
      &                                  myThid )
 #endif
 
-C     Loop over tracers
-      DO iTracer = 1, PTRACERS_numInUse
-
-        IF (
-     &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND .OR.
-     &       PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD .OR.
-     &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH
-     &     ) PTRACERS_MultiDimAdv(iTracer) = .FALSE.
-        useMultiDimAdvec = useMultiDimAdvec
-     &                .OR. PTRACERS_MultiDimAdv(iTracer)
-        PTRACERS_AdamsBashGtr(iTracer) =
-     &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND .OR.
-     &       PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD .OR.
-     &       PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH
-
-C       end of Tracer loop
-      ENDDO
       _END_MASTER( myThid )
       _BARRIER
 
