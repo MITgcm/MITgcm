@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_dyn_state_data_mod.F,v 1.4 2008/05/10 19:57:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_dyn_state_data_mod.F,v 1.5 2008/05/12 14:08:24 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -15,7 +15,7 @@ C     array with one PTRACERS_ISTATE for each Ptracer
       END MODULE
 #else
 C     some compilers do not like empty files, so ...
-      SUBROUTINE PTRACERS_DYN_STATE_DATA_MOD_DUMMY
+      SUBROUTINE PTRACERS_DYN_STATE_DATA_DUMMY
         RETURN
       END
 #endif
