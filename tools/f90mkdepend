@@ -1,27 +1,37 @@
 #!/bin/csh -f
+# $Header: /u/gcmpack/MITgcm/tools/f90mkdepend,v 1.3 2008/05/13 19:02:00 jahn Exp $
+# $Name:  $
 #
 # Generate some make file dependency entries for a Fortran 90 file that employs "use".
 # Note: We assume that the name of a module and the same of source are the same.
+#       The name of the source file should be all lower case (except for the extension).
 #
+cat /dev/null > f90mkdepend.log
+
 set flist =  ( `echo *.F90 *.F *.h` )
 foreach filename ( $flist )
-set dirlist  =  (  . )
+  set dirlist  =  (  . )
 
-# Try and find some use statements
-set modreflist = `cat $filename | grep '[ *] use ' | awk '{print $2}' | sed s'/,//'`
+  # Try and find some use statements
+  cat $filename | grep -i '^ *use ' >> f90mkdepend.log
+  set modreflist = `cat $filename | grep -i '^ *use ' | awk '{print tolower($2)}' | sed s'/,.*$//'`
 
-set depfiles = ( )
-foreach m ( $modreflist )
- set depfile = ( )
- foreach d ( $dirlist )
-   if ( -f $m.F90 || -f $m.F ) then
-    if ( $depfile == "" ) then
-     set depfile = ( $m.o )
-    endif
-   endif
- end
- set depfiles = ( $depfiles $depfile )
-end
-set ext=`echo ${filename:e} | sed -e 's/F/f/'`
-echo ${filename:r}.${ext}: $depfiles
+  if ("x$modreflist" != x) then 
+    echo "$filename => $modreflist" >> f90mkdepend.log
+  endif
+
+  set depfiles = ( )
+  foreach m ( $modreflist )
+    set depfile = ( )
+    foreach d ( $dirlist )
+      if ( -f $m.F90 || -f $m.F ) then
+       if ( $depfile == "" ) then
+        set depfile = ( $m.o )
+       endif
+      endif
+    end
+    set depfiles = ( $depfiles $depfile )
+  end
+  set ext=`echo ${filename:e} | sed -e 's/F/f/'`
+  echo ${filename:r}.${ext}: $depfiles
 end
