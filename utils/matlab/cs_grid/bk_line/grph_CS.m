@@ -1,5 +1,5 @@
 function [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
-% [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift[,cbV,AxBx,kEnv]) : 
+% [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift[,cbV,AxBx,kEnv]) :
 % produce a flat plot of the cube_sphere field "var",
 %  keeping the initial grid (no interpolation, use "surf")
 % xcs,ycs,xcg,ycg = center + corner grid point coordinates
@@ -14,11 +14,17 @@ function [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 %-----------------------
 
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.4 2007/08/30 16:14:50 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.5 2008/05/15 22:40:03 jmc Exp $
 % $Name:  $
 
+%- small number (relative to lon,lat in degree)
+epsil=1.e-6;
+%- mid-longitude of the grid (truncated @ epsil level):
+xMid=mean(xcs(:)); xMid=epsil*round(xMid/epsil);
+%fprintf(' mid Longitude of the grid: %22.16e\n',xMid);
+
 if nargin < 9, cbV=0 ; end
-if nargin < 10, AxBx=[-180 180 -90 90] ; end
+if nargin < 10, AxBx=[xMid-180 xMid+180 -90 90] ; end
 if nargin < 11, kEnv=0 ; end
 
 %------------------------------
@@ -41,7 +47,7 @@ if c1 >= c2
   mb=(MxV-mnV)*0.01;
   c1=mnV+mb*c1;
   c2=MxV+mb*c2;
-  if c1*c2 < 0 
+  if c1*c2 < 0
    c2=max(abs([c1 c2]));
    c1=-c2;
   end
@@ -79,30 +85,31 @@ for n=1:6,
   vv1(1:nc,1:nc)=var(:,:,n);
   xx1=xx2(:,:,n);
   yy1=yy2(:,:,n);
-  if xx1(ncp,1) < -300. ; xx1(ncp,1)=xx1(ncp,1)+360. ; end
-  if xx1(1,ncp) < -300. ; xx1(1,ncp)=xx1(1,ncp)+360. ; end
+  if xx1(ncp,1) < xMid-300. ; xx1(ncp,1)=xx1(ncp,1)+360. ; end
+  if xx1(1,ncp) < xMid-300. ; xx1(1,ncp)=xx1(1,ncp)+360. ; end
 %------------
 if shift <= -360
 %--- Jump ? (only for debug diagnostic) :
  for i=1:nc, for j=1:nc,
    if abs(xx1(i,j)-xx1(i,j+1)) > 120
      fprintf('N: i,J,xx_j,j+1,+C %3i %3i %3i %8.3e %8.3e %8.3e \n', ...
-             n, i,j,xx1(i,j), xx1(i,j+1), xcs(i0+i,j) ) ; end 
+             n, i,j,xx1(i,j), xx1(i,j+1), xcs(i0+i,j) ) ; end
    if abs(xx1(i,j)-xx1(i+1,j)) > 120
      fprintf('N: I,j,xx_i,i+1,+C %3i %3i %3i %8.3e %8.3e %8.3e \n', ...
              n, i,j,xx1(i,j), xx1(i+1,j), xcs(i0+i,j) ) ; end
- end ; end   
+ end ; end
 %---
 end
 %--------------------------------------
 % case where Xc jump from < 180 to > -180 when j goes from jc to jc+1
- 
+
  if n == 4 | n == 3
   jc=1+nc/2 ;
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,1,jc,c1,c2) ;
   for i=1:ncp,
-    if xx1(i,jc) > 120 ; xx1(i,jc)= xx1(i,jc)-360. ; end
-    if yy1(i,jc) == 90 & xx1(i,jc) == 90, xx1(i,jc)=-90; end
+    if xx1(i,jc) > xMid+120 ; xx1(i,jc)= xx1(i,jc)-360. ; end
+    if abs(yy1(i,jc)-90) < epsil & abs(xx1(i,jc)-xMid-90) < epsil,
+                                       xx1(i,jc)=xMid-90; end
   end
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,jc,ncp,c1,c2) ;
 %---
@@ -111,28 +118,29 @@ end
   ic=1+nc/2 ;
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,ic,ncp,1,ncp,c1,c2) ;
   for j=1:ncp,
-    if xx1(ic,j) > 120 ; xx1(ic,j)= xx1(ic,j)-360. ; end
-    if yy1(ic,j) == -90 & xx1(ic,j) == 90, xx1(ic,j)=-90; end
+    if xx1(ic,j) > xMid+120 ; xx1(ic,j)= xx1(ic,j)-360. ; end
+    if abs(yy1(ic,j)+90) < epsil & abs(xx1(ic,j)-xMid-90) < epsil,
+                                       xx1(ic,j)=xMid-90; end
   end
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ic,1,ncp,c1,c2) ;
  else
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,1,ncp,c1,c2) ;
  end
 %--------------------------------------
-end ; end ; 
- set(S,'LineStyle','-','LineWidth',0.01); 
+end ; end
+ set(S,'LineStyle','-','LineWidth',0.01);
  if rem(kEnv,2) > 0, set(S,'EdgeColor','none'); end
 hold off
 if shift == -1,
-  axis(AxBx); fprintf('  Axis(Box): %i %i %i %i \n',AxBx);  
-elseif shift == 1 
+  axis(AxBx); fprintf('  Axis(Box): %i %i %i %i \n',AxBx);
+elseif shift == 1,
   [L]=draw_coast(fac);
   set(L,'color',[1 0 1]);
 % set(L,'Color',[0 0 0],'LineWidth',2); % set(L,'LineStyle','-');
-  axis(AxBx); fprintf('  Axis(Box): %i %i %i %i \n',AxBx);  
+  axis(AxBx); fprintf('  Axis(Box): %i %i %i %i \n',AxBx);
 else
-  m_proj('Equidistant Cylindrical','lat',90,'lon',[-180+shift 180+shift]) 
-  %m_proj('Equidistant Cylindrical','lat',[-0 60],'lon',[-180+shift 180+shift]) 
+  m_proj('Equidistant Cylindrical','lat',90,'lon',[-180+shift 180+shift])
+  %m_proj('Equidistant Cylindrical','lat',[-0 60],'lon',[-180+shift 180+shift])
   m_coast('color',[0 0 0]);
   m_grid('box','on')
 end
@@ -143,14 +151,14 @@ if mnV < MxV & kEnv < 2,
  ytxt=min(1,cbV);
  if shift == 1 | shift == -1,
   xtxt=mean(AxBx(1:2)) ; ytxt=AxBx(3)-(AxBx(4)-AxBx(3))*(12+2*ytxt)/100;
- else 
+ else
   xtxt=60 ; ytxt=30*ytxt-145 ;
  %xtxt= 0 ; ytxt=30*ytxt-120 ;
  end
- %fprintf('min,Max= %9.5g  , %9.5g (xtxt,ytxt= %f %f)\n',mnV,MxV,xtxt,ytxt);     
-  text(xtxt*fac,ytxt*fac,sprintf('min,Max= %9.5g  , %9.5g', mnV, MxV))     
+ %fprintf('min,Max= %9.5g  , %9.5g (xtxt,ytxt= %f %f)\n',mnV,MxV,xtxt,ytxt);
+  text(xtxt*fac,ytxt*fac,sprintf('min,Max= %9.5g  , %9.5g', mnV, MxV))
   %set(gca,'position',[-.1 0.2 0.8 0.75]); % xmin,ymin,xmax,ymax in [0,1]
-elseif mnV < MxV, fprintf('min,Max= %9.5g  , %9.5g \n',mnV,MxV);     
+elseif mnV < MxV, fprintf('min,Max= %9.5g  , %9.5g \n',mnV,MxV);
 else fprintf('Uniform field: min,Max= %g \n',MxV); end
 return
 %----------------------------------------------------------------------
