@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.46 2008/04/22 15:28:20 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.47 2008/05/16 01:53:27 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -339,14 +339,21 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_PTRACERS */
 
 #ifdef ATMOSPHERIC_LOADING
-
-C-- Atmospheric surface Pressure loading :
+C-- Atmospheric surface Pressure loading : added to phi0surf when using Z-coord;
+C   Not yet implemented for Ocean in P: would need to be applied to the other end
+C   of the column, as a vertical velocity (omega); (meaningless for Atmos in P).
+C- Note:
+C   Using P-coord., a hack (now directly applied from S/R INI_FORCING)
+C   is sometime used to read phi0surf from a file (pLoadFile) instead
+C   of computing it from bathymetry & density ref. profile.
 
       IF ( usingZCoords ) THEN
+C   The true atmospheric P-loading is not yet implemented for P-coord
+C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
        IF ( useRealFreshWaterFlux ) THEN
         DO j = jMin, jMax
          DO i = iMin, iMax
-          phi0surf(i,j,bi,bj) = ( pload(i,j,bi,bj)
+          phi0surf(i,j,bi,bj) = ( pLoad(i,j,bi,bj)
      &                        +sIceLoad(i,j,bi,bj)*gravity
      &                          )*recip_rhoConst
          ENDDO
@@ -354,22 +361,20 @@ C-- Atmospheric surface Pressure loading :
        ELSE
         DO j = jMin, jMax
          DO i = iMin, iMax
-          phi0surf(i,j,bi,bj) = pload(i,j,bi,bj)*recip_rhoConst
+          phi0surf(i,j,bi,bj) = pLoad(i,j,bi,bj)*recip_rhoConst
          ENDDO
         ENDDO
        ENDIF
-      ELSEIF ( usingPCoords ) THEN
-C-- This is a hack used to read phi0surf from a file (ploadFile)
+c     ELSEIF ( usingPCoords ) THEN
+C-- This is a hack used to read phi0surf from a file (pLoadFile)
 C   instead of computing it from bathymetry & density ref. profile.
-C   The true atmospheric P-loading is not yet implemented for P-coord
-C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
-        DO j = jMin, jMax
-         DO i = iMin, iMax
-          phi0surf(i,j,bi,bj) = pload(i,j,bi,bj)
-         ENDDO
-        ENDDO
+C   ==> now done only once, in S/R INI_FORCING
+c       DO j = jMin, jMax
+c        DO i = iMin, iMax
+c         phi0surf(i,j,bi,bj) = pLoad(i,j,bi,bj)
+c        ENDDO
+c       ENDDO
       ENDIF
-
 #endif /* ATMOSPHERIC_LOADING */
 
 #ifdef ALLOW_SHELFICE
