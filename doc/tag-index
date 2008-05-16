@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.990 2008/05/09 22:39:42 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.991 2008/05/16 02:05:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o move from external_forcing_surf.F to ini_forcing.F
+  the p-coord. hack consisting in using pLoad to set phi0surf ;
+  update output of tutorial_global_oce_in_p (affected @ truncation level).
 o Freshen up a bit hs94.1x64x5, notably: 
   remove rotationPeriod and tRef=5*0. (adjoint only), and add exactConserv=.TRUE.
 o pkg/generic_advdiff:
