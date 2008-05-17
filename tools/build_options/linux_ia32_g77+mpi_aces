@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_aces,v 1.2 2006/07/29 17:24:49 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_aces,v 1.3 2008/05/17 23:35:04 jmc Exp $
 #  $Name:  $
 #
 #  These are the build options used with the GNU compiler for the
@@ -23,8 +23,13 @@ INCLUDES='-I/usr/local/pkg/mpich/mpich-gcc/include '
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS='-Wimplicit -Wunused -Wuninitialized'
-    FOPTIM='-O3 -malign-double -funroll-loops'
+    # FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+    # FOPTIM='-O3 -malign-double -funroll-loops'
+#- note(jmc):
+# -O3 is not always faster than -O2 ; sse & sse2 are faster ;
+# Problems with "-funroll-loops" for some set-up, e.g. tutorial_helt_suarez_cs
+    FFLAGS='-Wimplicit -Wunused -mfpmath=sse -msse -msse2'
+    FOPTIM='-O3 -malign-double'
 else
     #  Try to follow IEEE-754
     # FFLAGS='-Wimplicit -Wunused -ffloat-store'
