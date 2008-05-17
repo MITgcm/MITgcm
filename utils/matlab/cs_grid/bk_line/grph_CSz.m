@@ -13,7 +13,7 @@ function grph_CSz(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 % AxBx = do axis(AxBx) to zoom in Box "AxBx" ; only if shift=-1 ;
 %-----------------------
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CSz.m,v 1.4 2008/05/15 22:40:03 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CSz.m,v 1.5 2008/05/17 21:27:53 jmc Exp $
 % $Name:  $
 
 %- small number (relative to lon,lat in degree)
@@ -87,8 +87,8 @@ for n=1:6,
 %-----
   xx1=xx2(:,:,n);
   yy1=yy2(:,:,n);
-  if xx1(ncp,1) < xMid-300. ; xx1(ncp,1)=xx1(ncp,1)+360. ; end
-  if xx1(1,ncp) < xMid-300. ; xx1(1,ncp)=xx1(1,ncp)+360. ; end
+% if xx1(ncp,1) < xMid-300. ; xx1(ncp,1)=xx1(ncp,1)+360. ; end
+% if xx1(1,ncp) < xMid-300. ; xx1(1,ncp)=xx1(1,ncp)+360. ; end
 %------------
 if shift <= -360
 %--- Jump ? (only for debug diagnostic) :
@@ -103,35 +103,33 @@ if shift <= -360
 %---
 end
 %--------------------------------------
-% case where Xc jump from < 180 to > -180 when j goes from jc to jc+1
-
  if n == 4 | n == 3
   jc=2+nc/2 ;
+%-- case where Xc jump from < 180 to > -180 when j goes from jc to jc+1 :
+%   cut the face in 2 parts (1: x > 0 ; 2: x < 0 ) and plot separately
   xxSav=xx1(:,jc);
-  for i=1:ncp,
-    if xx1(i,jc) < xMid-120 ; xx1(i,jc)= xMid+180 ; end
-  end
+  [I]=find(xx1(:,jc) < xMid-120); xx1(I,jc)=xMid+180.;
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,1,jc,c1,c2) ;
+%-
   xx1(:,jc)=xxSav; jc=jc-1;
-  for i=1:ncp,
-    if xx1(i,jc) > xMid+120 ; xx1(i,jc)= xMid-180 ; end
-  end
+  [I]=find(xx1(:,jc) > xMid+120); xx1(I,jc)=xMid-180.;
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,jc,ncp,c1,c2) ;
+% Note: later on, will plot separately N & S poles with the 2 missing corners.
 %---
-% case where Xc jump from < -180 to > 180 when i goes from ic to ic+1
  elseif n == 6
   ic=1+nc/2 ;
+%-- case where Xc jump from < -180 to > 180 when i goes from ic to ic+1 :
+%   cut the face in 2 parts (1: x > 0 ; 2: x < 0 ) and plot separately
   xxSav=xx1(ic,:);
-  for j=1:ncp,
-    if xx1(ic,j) < xMid-120 ; xx1(ic,j)= xMid+180 ; end
-  end
+  [J]=find(xx1(ic,:) < xMid-120); xx1(ic,J)=xMid+180.;
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,ic,ncp,1,ncp,c1,c2) ;
+%-
   xx1(ic,:)=xxSav; ic=ic+1;
-  for j=1:ncp,
-    if xx1(ic,j) > xMid+120 ; xx1(ic,j)= xMid-180. ; end
-  end
+  [J]=find(xx1(ic,:) > xMid+120); xx1(ic,J)=xMid-180.;
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ic,1,ncp,c1,c2) ;
+%---
  else
+%-- plot the face in 1 piece :
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,1,ncp,c1,c2) ;
  end
 %--------------------------------------
@@ -159,18 +157,14 @@ end ; end
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
 
 %- N pole:
- vvI(1,1)=var(1+nc/2+2*nc+nc/2*ncx); yyMx=max(max(ycs));
- for j=1:2, for i=1:2,
-   xxI(i,j)=xMid-180+360*(i-1);
-   if j==2, yyI(i,j)=90 ; else yyI(i,j)=yyMx ; end
- end ; end
+ vvI(1,1)=var(1+nc/2+2*nc+nc/2*ncx);
+ xxI(1,:)=xMid-180; xxI(2,:)=xMid+180;
+ yyI(:,1)=max(ycs(:)); yyI(:,2)=+90;
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
 %- S pole:
- vvI(1,1)=var(1+nc/2+5*nc+nc/2*ncx); yyMx=min(min(ycs));
- for j=1:2, for i=1:2,
-   xxI(i,j)=xMid-180+360*(i-1);
-   if j==1, yyI(i,j)=-90 ; else yyI(i,j)=yyMx ; end
- end ; end
+ vvI(1,1)=var(1+nc/2+5*nc+nc/2*ncx);
+ xxI(1,:)=xMid-180; xxI(2,:)=xMid+180;
+ yyI(:,2)=min(ycs(:)); yyI(:,1)=-90;
  [nbsf,S(nbsf)]=part_surf(nbsf,fac,xxI,yyI,vvI,1,2,1,2,c1,c2) ;
 %--------------
   set(S,'LineStyle','-','LineWidth',0.01);

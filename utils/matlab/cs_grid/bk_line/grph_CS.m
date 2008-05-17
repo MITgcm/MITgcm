@@ -14,7 +14,7 @@ function [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 %-----------------------
 
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.5 2008/05/15 22:40:03 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.6 2008/05/17 21:27:53 jmc Exp $
 % $Name:  $
 
 %- small number (relative to lon,lat in degree)
@@ -85,8 +85,8 @@ for n=1:6,
   vv1(1:nc,1:nc)=var(:,:,n);
   xx1=xx2(:,:,n);
   yy1=yy2(:,:,n);
-  if xx1(ncp,1) < xMid-300. ; xx1(ncp,1)=xx1(ncp,1)+360. ; end
-  if xx1(1,ncp) < xMid-300. ; xx1(1,ncp)=xx1(1,ncp)+360. ; end
+% if xx1(ncp,1) < xMid-300. ; xx1(ncp,1)=xx1(ncp,1)+360. ; end
+% if xx1(1,ncp) < xMid-300. ; xx1(1,ncp)=xx1(1,ncp)+360. ; end
 %------------
 if shift <= -360
 %--- Jump ? (only for debug diagnostic) :
@@ -101,29 +101,36 @@ if shift <= -360
 %---
 end
 %--------------------------------------
-% case where Xc jump from < 180 to > -180 when j goes from jc to jc+1
-
  if n == 4 | n == 3
   jc=1+nc/2 ;
+%-- case where Xc jump from < 180 to > -180 when j goes from jc to jc+1 :
+%   cut the face in 2 parts (1: x > 0 ; 2: x < 0 ) and plot separately
+  [I]=find(xx1(:,jc) < xMid-120); xx1(I,jc)=xx1(I,jc)+360.;
+%  N pole longitude is arbitrary: set to +90 to get a nicer plot:
+  xx1(find( abs(yy1-90)<epsil ))=xMid+90;
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,1,jc,c1,c2) ;
-  for i=1:ncp,
-    if xx1(i,jc) > xMid+120 ; xx1(i,jc)= xx1(i,jc)-360. ; end
-    if abs(yy1(i,jc)-90) < epsil & abs(xx1(i,jc)-xMid-90) < epsil,
-                                       xx1(i,jc)=xMid-90; end
-  end
+%-
+  [I]=find(xx1(:,jc) > xMid+120); xx1(I,jc)=xx1(I,jc)-360.;
+%  N pole longitude is arbitrary: set to -90 to get a nicer plot:
+  xx1(find( abs(yy1-90)<epsil ))=xMid-90;
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,jc,ncp,c1,c2) ;
 %---
-% case where Xc jump from < -180 to > 180 when i goes from ic to ic+1
  elseif n == 6
   ic=1+nc/2 ;
+%-- case where Xc jump from < -180 to > 180 when i goes from ic to ic+1 :
+%   cut the face in 2 parts (1: x > 0 ; 2: x < 0 ) and plot separately
+  [J]=find(xx1(ic,:) < xMid-120); xx1(ic,J)=xx1(ic,J)+360.;
+%  S pole longitude is arbitrary: set to +90 to get a nicer plot:
+  xx1(find( abs(yy1+90)<epsil ))=xMid+90;
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,ic,ncp,1,ncp,c1,c2) ;
-  for j=1:ncp,
-    if xx1(ic,j) > xMid+120 ; xx1(ic,j)= xx1(ic,j)-360. ; end
-    if abs(yy1(ic,j)+90) < epsil & abs(xx1(ic,j)-xMid-90) < epsil,
-                                       xx1(ic,j)=xMid-90; end
-  end
+%-
+  [J]=find(xx1(ic,:) > xMid+120); xx1(ic,J)=xx1(ic,J)-360.;
+%  S pole longitude is arbitrary: set to -90 to get a nicer plot:
+  xx1(find( abs(yy1+90)<epsil ))=xMid-90;
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ic,1,ncp,c1,c2) ;
+%---
  else
+%-- plot the face in 1 piece :
   [nbsf,S(nbsf)]=part_surf(nbsf,fac,xx1,yy1,vv1,1,ncp,1,ncp,c1,c2) ;
  end
 %--------------------------------------
