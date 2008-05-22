@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.993 2008/05/22 08:36:53 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.994 2008/05/22 12:22:13 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -11,13 +11,17 @@ o pkg/diagnostics: enforce missing_value attribute for scalar variables at
 o pkg/mnc: prepare mnc for the actual use of missing values with the
   diagnostics package: small fix in mnc_cw_readwrite.template and more
   initialisation of never used fields
-o pkg/thsice/thsice_ini_vars.F added default initial values so that thermodynamics
-  sea ice solver does not blow up when some initial fields are missing.
+  - replace mnc_common.h and mnc_id_header.h with corresponding upper case
+  versions
+o pkg/thsice/thsice_ini_vars.F added default initial values so that 
+  thermodynamics sea ice solver does not blow up when some initial fields 
+  are missing.
 o move from external_forcing_surf.F to ini_forcing.F
   the p-coord. hack consisting in using pLoad to set phi0surf ;
   update output of tutorial_global_oce_in_p (affected @ truncation level).
 o Freshen up a bit hs94.1x64x5, notably: 
-  remove rotationPeriod and tRef=5*0. (adjoint only), and add exactConserv=.TRUE.
+  remove rotationPeriod and tRef=5*0. (adjoint only), and add 
+  exactConserv=.TRUE.
 o pkg/generic_advdiff:
   change option GAD_ALLOW_SOM_ADVECT to GAD_ALLOW_TS_SOM_ADV which only
   applies to files where Temperature & Salinity 2nd Order moments are used.
