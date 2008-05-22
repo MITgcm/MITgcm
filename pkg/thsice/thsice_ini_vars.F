@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.11 2007/08/30 15:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.12 2008/05/22 01:59:51 dimitri Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -26,6 +26,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
+#include "DYNVARS.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
 #ifdef ALLOW_AIM
@@ -118,21 +119,66 @@ C--     Read ice pickup fields
       ELSE
 C--     Read initial conditions:
         _BEGIN_MASTER( myThid )
-        IF ( thSIceFract_InitFile .NE. ' ' ) THEN
-         CALL READ_REC_XY_RL(thSIceFract_InitFile,iceMask,1,0,myThid)
-        ENDIF
         IF ( thSIceThick_InitFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RL(thSIceThick_InitFile,iceHeight,1,0,myThid)
         ENDIF
+        IF ( thSIceFract_InitFile .NE. ' ' ) THEN
+         CALL READ_REC_XY_RL(thSIceFract_InitFile,iceMask,1,0,myThid)
+        ELSE
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             IF (iceHeight(i,j,bi,bj) .NE. 0. _d 0)
+     &            iceMask(i,j,bi,bj) = 1. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
         IF ( thSIceSnowH_InitFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RL(thSIceSnowH_InitFile,snowHeight,1,0,myThid)
+        ELSE
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             snowHeight(i,j,bi,bj) = 0.2 _d 0 * iceMask(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
         ENDIF
         IF ( thSIceSnowA_InitFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RL(thSIceSnowA_InitFile,snowAge,1,0,myThid)
+        ELSE
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             IF (snowHeight(i,j,bi,bj) .NE. 0. _d 0)
+     &            snowAge(i,j,bi,bj) = 259200. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
         ENDIF
         IF ( thSIceEnthp_InitFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RL(thSIceEnthp_InitFile,Qice1,1,0,myThid)
          CALL READ_REC_XY_RL(thSIceEnthp_InitFile,Qice2,2,0,myThid)
+        ELSE
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             IF (iceMask(i,j,bi,bj) .NE. 0. _d 0) THEN
+              Qice1(i,j,bi,bj) = 3.4 _d 5
+              Qice2(i,j,bi,bj) = 3.4 _d 5
+             ENDIF
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
         ENDIF
         IF ( thSIceTsurf_InitFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RS(thSIceTsurf_InitFile,Tsrf,1,0,myThid)

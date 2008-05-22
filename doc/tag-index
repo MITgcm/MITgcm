@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.991 2008/05/16 02:05:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.992 2008/05/22 01:59:50 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice/thsice_ini_vars.F added default initial values so that thermodynamics
+  sea ice solver does not blow up when some initial fields are missing.
 o move from external_forcing_surf.F to ini_forcing.F
   the p-coord. hack consisting in using pLoad to set phi0surf ;
   update output of tutorial_global_oce_in_p (affected @ truncation level).
