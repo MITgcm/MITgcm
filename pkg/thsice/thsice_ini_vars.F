@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.12 2008/05/22 01:59:51 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.13 2008/05/22 15:54:37 dimitri Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -125,6 +125,7 @@ C--     Read initial conditions:
         IF ( thSIceFract_InitFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RL(thSIceFract_InitFile,iceMask,1,0,myThid)
         ELSE
+C     default to 100% ice concentration when thickness is non-zero
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
@@ -139,11 +140,12 @@ C--     Read initial conditions:
         IF ( thSIceSnowH_InitFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RL(thSIceSnowH_InitFile,snowHeight,1,0,myThid)
         ELSE
+C     default to <= 20 cm snow thickness where there is ice
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             snowHeight(i,j,bi,bj) = 0.2 _d 0 * iceMask(i,j,bi,bj)
+             snowHeight(i,j,bi,bj) = 0.2 _d 0
             ENDDO
            ENDDO
           ENDDO
@@ -152,6 +154,7 @@ C--     Read initial conditions:
         IF ( thSIceSnowA_InitFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RL(thSIceSnowA_InitFile,snowAge,1,0,myThid)
         ELSE
+C     default to 3 days for snow age
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
@@ -167,6 +170,7 @@ C--     Read initial conditions:
          CALL READ_REC_XY_RL(thSIceEnthp_InitFile,Qice1,1,0,myThid)
          CALL READ_REC_XY_RL(thSIceEnthp_InitFile,Qice2,2,0,myThid)
         ELSE
+C     default to 3.4e5 J/kg for enthalpy where there is sea ice
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
