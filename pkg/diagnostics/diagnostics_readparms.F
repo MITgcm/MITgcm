@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.21 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.22 2008/05/22 08:36:05 mlosch Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -35,6 +35,8 @@ C     timePhase :: phase (in s) within the "frequency" period to write output
 C     averagingFreq  :: frequency (in s) for periodic averaging interval
 C     averagingPhase :: phase     (in s) for periodic averaging interval
 C     repeatCycle    :: number of averaging intervals in 1 cycle
+C     mising_value     :: missing value for floats   in output
+C     mising_value_int :: missing value for integers in output
 C     levels    :: List Output Levels
 C     fields    :: List Output Fields
 C     filename  :: List Output Filename
@@ -55,6 +57,8 @@ C     stat_fname  :: List of statistics output Filename
       _RL         frequency(ldimLoc), timePhase(ldimLoc)
       _RL         averagingFreq(ldimLoc), averagingPhase(ldimLoc)
       INTEGER     repeatCycle(ldimLoc)
+      _RL         missing_value(ldimLoc)
+      INTEGER     missing_value_int(ldimLoc)
       _RL         levels(kdimLoc,ldimLoc)
       _RL         stat_freq(ldimLoc), stat_phase(ldimLoc)
       CHARACTER*8 fields(fdimLoc,ldimLoc)
@@ -77,6 +81,7 @@ C--   full level output:
       NAMELIST / DIAGNOSTICS_LIST /
      &     frequency, timePhase,
      &     averagingFreq, averagingPhase, repeatCycle,
+     &     missing_value, missing_value_int,
      &     levels, fields, filename, fileflags,
      &     dumpAtLast, diag_mnc,
      &     diag_pickup_read,     diag_pickup_write,
@@ -104,6 +109,8 @@ C     Initialize and Read Diagnostics Namelist
         averagingPhase(l)= 0.
         repeatCycle(l)   = 0
         filename(l)   = blkFilName
+        missing_value(l)     = UNSET_RL
+        missing_value_int(l) = UNSET_I
 C       eight spaces:        12345678
 c       fileflags(l)(1:8) = '        '
         fileflags(l)  = blk8c
@@ -183,6 +190,8 @@ C     Initialise DIAG_SELECT common block (except pointers)
         nlevels(n) = 0
         nfields(n) = 0
         fnames(n) = blkFilName
+        misvalFlt(n) = UNSET_RL
+        misvalInt(n) = UNSET_I
         DO k = 1,numLevels
           levs(k,n) = 0
         ENDDO
@@ -242,6 +251,10 @@ C-     Only lists with non-empty file name (iLen>0) are considered
            averageFreq(n)  = frequency(l)
            averagePhase(n) = phase(n)
          ENDIF
+         IF ( missing_value(l) .NE. UNSET_RL ) 
+     &        misvalFlt(n) = missing_value(l)
+         IF ( missing_value_int(l) .NE. UNSET_I ) 
+     &        misvalInt(n) = missing_value_int(l)
          fnames(n)  = filename (l)
          fflags(n)  = fileflags(l)
          nlevels(n) = 0
@@ -460,6 +473,10 @@ C     Echo History List Data Structure
         WRITE(msgBuf,'(2(A,F18.6),A,I4)')
      &    ' Averaging Freq.:', averageFreq(n),
      &    ' , Phase: ', averagePhase(n), ' , Cycle:', averageCycle(n)
+        CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+        WRITE(msgBuf,'(A,E18.6,A,I18))') 
+     &       'missing value:   ', misvalFlt(n),
+     &       ' ; for integers: ', misvalInt(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
         IF ( nlevels(n).EQ.-1 ) THEN
           WRITE(msgBuf,'(A,A)') ' Levels:    ','will be set later'

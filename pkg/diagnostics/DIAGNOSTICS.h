@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.14 2008/02/05 15:13:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.15 2008/05/22 08:36:05 mlosch Exp $
 C $Name:  $
 
 C ======================================================================
@@ -64,6 +64,8 @@ C     phase       :: phase     (in s) to write output stream # n
 C     averageFreq :: frequency (in s) for periodic averaging interval
 C     averagePhase:: phase     (in s) for periodic averaging interval
 C     averageCycle:: number of averaging intervals in 1 cycle
+C     misvalFlt(n):: missing value for floats   to use in output stream #n
+C     misvalInt(n):: missing value for integers to use in output stream #n
 C     nfields(n)  :: number of active diagnostics for output stream # n
 C     nActive(n)  :: number of active diagnostics (including counters)
 C                    for output stream # n
@@ -78,6 +80,8 @@ C     fflags(n)   :: character string with per-file flags
       _RL freq(numlists), phase(numlists)
       _RL levs (numLevels,numlists)
       _RL averageFreq(numlists), averagePhase(numlists)
+      _RL misvalFlt(numlists)
+      INTEGER misvalInt(numlists)
       INTEGER averageCycle(numlists)
       INTEGER nlevels(numlists)
       INTEGER nfields(numlists)
@@ -97,6 +101,7 @@ C     fflags(n)   :: character string with per-file flags
       COMMON / DIAG_SELECT /
      &     freq, phase, levs,
      &     averageFreq, averagePhase, averageCycle,
+     &     misvalFlt,  misvalInt,
      &     nlevels, nfields, nActive, nlists,
      &     idiag, mdiag, jdiag,
      &     dumpAtLast, diag_mdsio, diag_mnc,
