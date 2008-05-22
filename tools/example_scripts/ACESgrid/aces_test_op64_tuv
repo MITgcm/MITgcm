@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_tuv.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_tuv.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.2 2008/01/25 15:17:20 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.3 2008/05/22 22:32:48 jmc Exp $
 # $Name:  $
 
 umask 0022
@@ -24,18 +24,31 @@ OPTFILE="../tools/build_options/linux_ia32_open64.trapuv"
 options='-j 2 -gsl -match 10'
 export GSL_IEEE_MODE=double-precision,mask-underflow,mask-denormalized
 
+checkOut=1
+#options="$options -nc" ; checkOut=0
+#options="$options -q"  ; checkOut=0
+
 # cat << EOF > $HERE"/.cvspass"
 # /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
 # EOF
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
-if test -e $gcmDIR ; then
-    rm -rf $gcmDIR
+if test $checkOut = '1' ; then
+  if test -e $gcmDIR ; then
+     rm -rf $gcmDIR
+  fi
+  cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
+# cvs co MITgcm
+  /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
+  /usr/bin/find $gcmDIR -type f | xargs chmod g+r
+else
+  if test -e $gcmDIR/verification ; then
+     echo "dir $gcmDIR exist"
+  else
+     echo "no dir $gcmDIR/verification => exit"
+     exit
+  fi
 fi
-cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
-#  cvs co MITgcm
-/usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
-/usr/bin/find $gcmDIR -type f | xargs chmod g+r
 
 cd $gcmDIR/verification
 echo ./testreport $options -of $OPTFILE -odir aces-$sfx

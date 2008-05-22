@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_mth.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mth.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.5 2008/01/25 15:17:20 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.6 2008/05/22 22:32:48 jmc Exp $
 # $Name:  $
 
 umask 0022
@@ -25,18 +25,31 @@ options='-j 2 -mth -match 10'
 export OMP_NUM_THREADS=2
 export KMP_STACKSIZE=400m
 
+checkOut=1
+#options="$options -nc" ; checkOut=0
+#options="$options -q"  ; checkOut=0
+
 # cat << EOF > $HERE"/.cvspass"
 # /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
 # EOF
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
-if test -e $gcmDIR ; then
-    rm -rf $gcmDIR
+if test $checkOut = '1' ; then
+  if test -e $gcmDIR ; then
+     rm -rf $gcmDIR
+  fi
+  cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
+# cvs co MITgcm
+  /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
+  /usr/bin/find $gcmDIR -type f | xargs chmod g+r
+else
+  if test -e $gcmDIR/verification ; then
+     echo "dir $gcmDIR exist"
+  else
+     echo "no dir $gcmDIR/verification => exit"
+     exit
+  fi
 fi
-cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
-#  cvs co MITgcm
-/usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
-/usr/bin/find $gcmDIR -type f | xargs chmod g+r
 
 cd $gcmDIR/verification
 echo ./testreport $options -of $OPTFILE -odir aces-$sfx

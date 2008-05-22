@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_pgi.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.5 2008/01/25 15:17:20 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.6 2008/05/22 22:32:48 jmc Exp $
 # $Name:  $
 
 umask 0022
@@ -23,6 +23,10 @@ module add mpich/$sfx
 OPTFILE="../tools/build_options/linux_ia32_pgf77+mpi_aces"
 options='-mpi -match 10'
 
+checkOut=1
+#options="$options -nc" ; checkOut=0
+#options="$options -q"  ; checkOut=0
+
 MF=$HERE"/mf_"$sfx
 cat $PBS_NODEFILE | sort | uniq > $MF
 NCPU=`wc -l $MF | awk '{print $1}'`
@@ -33,13 +37,22 @@ EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
 # EOF
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
-if test -e $gcmDIR ; then
-    rm -rf $gcmDIR
+if test $checkOut = '1' ; then
+  if test -e $gcmDIR ; then
+     rm -rf $gcmDIR
+  fi
+  cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
+# cvs co MITgcm
+  /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
+  /usr/bin/find $gcmDIR -type f | xargs chmod g+r
+else
+  if test -e $gcmDIR/verification ; then
+     echo "dir $gcmDIR exist"
+  else
+     echo "no dir $gcmDIR/verification => exit"
+     exit
+  fi
 fi
-cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P -d $gcmDIR MITgcm > /dev/null 2>&1
-#  cvs co MITgcm
-/usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
-/usr/bin/find $gcmDIR -type f | xargs chmod g+r
 
 cd $gcmDIR/verification
 echo ./testreport $options -of $OPTFILE -command "$EXE" -odir aces-$sfx
