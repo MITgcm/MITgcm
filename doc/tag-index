@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.992 2008/05/22 01:59:50 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.993 2008/05/22 08:36:53 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics: enforce missing_value attribute for scalar variables at
+  mass points, when using mnc for output
+  - add runtime parameter (missing_value, missing_value_int) to override 
+    default (which is the value of getcon('UNDEF'))
+o pkg/mnc: prepare mnc for the actual use of missing values with the
+  diagnostics package: small fix in mnc_cw_readwrite.template and more
+  initialisation of never used fields
 o pkg/thsice/thsice_ini_vars.F added default initial values so that thermodynamics
   sea ice solver does not blow up when some initial fields are missing.
 o move from external_forcing_surf.F to ini_forcing.F
