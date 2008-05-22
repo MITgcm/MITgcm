@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.37 2008/05/22 08:35:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.38 2008/05/22 09:53:21 mlosch Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -104,6 +104,19 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_MNC
       IF (useMNC .AND. diag_mnc) THEN
+#ifdef DIAGNOSTICS_MISSING_VALUE
+C     Handle missing value attribute (land points)
+        misvalLoc = undef
+C     Defaults to UNSET_I
+        misvalIntLoc = UNSET_I
+        DO ii=1,2
+C        misval_r4(ii)  = UNSET_FLOAT4
+C        misval_r8(ii)  = UNSET_FLOAT8
+         misval_r4(ii)  = misvalLoc
+         misval_r8(ii)  = misvalLoc
+         misval_int(ii) = UNSET_I
+        ENDDO
+#endif /* DIAGNOSTICS_MISSING_VALUE */
         DO i = 1,MAX_LEN_FNAM
           diag_mnc_bn(i:i) = ' '
         ENDDO
@@ -135,6 +148,11 @@ C       beginning and ending times for each diagnostics period
         CALL MNC_CW_ADD_VATTR_TEXT('diag_levels','description',
      &       'Idicies of vertical levels within the source arrays',
      &       myThid)
+#ifdef DIAGNOSTICS_MISSING_VALUE
+        CALL MNC_CW_VATTR_MISSING('diag_levels', 0,
+     I       misval_r8, misval_r4, misval_int, 
+     I       myThid )
+#endif /* DIAGNOSTICS_MISSING_VALUE */
 
         CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
      &       'diag_levels', levs(1,listId), myThid)
@@ -193,6 +211,11 @@ C         for averaged levels.
      &           'Dimensional coordinate value at the lower point',
      &           myThid)
           ENDIF
+#ifdef DIAGNOSTICS_MISSING_VALUE
+          CALL MNC_CW_VATTR_MISSING(dn(1), 0,
+     I         misval_r8, misval_r4, misval_int, 
+     I         myThid )
+#endif /* DIAGNOSTICS_MISSING_VALUE */
           CALL MNC_CW_RS_W('D',diag_mnc_bn,0,0, dn(1), ztmp, myThid)
           CALL MNC_CW_DEL_VNAME(dn(1), myThid)
           CALL MNC_CW_DEL_GNAME(dn(1), myThid)
@@ -437,6 +460,7 @@ C           Time dimension
             CALL MNC_CW_ADD_VATTR_TEXT(cdiag(ndId),'units',
      &             udiag(ndId),myThid)
 
+#ifdef DIAGNOSTICS_MISSING_VALUE
 C     Handle missing value attribute (land points)
             IF ( misvalFlt(listId) .NE. UNSET_RL ) THEN
              misvalLoc = misvalFlt(listId)
@@ -474,14 +498,16 @@ C     and now use the missing values for masking out the land points
              ENDDO
             ELSE
 C     suppress the missing value attribute (iflag = 0)
-C     Note: I have no idea, why we have to do this here, but if we do not
-C     do it, variables get the missing_value attribute (the one of the 
-C     previous varable) that are not supposed to get one. These is something
-C     fishy with the flag array mnc_cw_vfmv.
+C     Note: We have to call the following subroutine for each mnc that has
+C     been created "on the fly" by mnc_cw_add_vname and will be deleted
+C     by mnc_cw_del_vname, because all of these variables use the same
+C     identifier so that mnc_cw_vfmv(indv) needs to be overwritten for 
+C     each of these variables
              CALL MNC_CW_VATTR_MISSING(cdiag(ndId), 0,
      I            misval_r8, misval_r4, misval_int, 
      I            myThid )
             ENDIF
+#endif /* DIAGNOSTICS_MISSING_VALUE */
 
             IF ( ( (writeBinaryPrec .EQ. precFloat32)
      &           .AND. (fflags(listId)(1:1) .NE. 'D')
