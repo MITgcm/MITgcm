@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.40 2006/08/22 03:15:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.41 2008/05/22 08:29:59 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -510,12 +510,26 @@ C         Handle missing values
      &             NF_DOUBLE, 1, dvm(2))
             ELSEIF (stype(1:1) .EQ. 'R') THEN
               err = NF_PUT_ATT_REAL(fid, idv, 'missing_value', 
-     &             NF_FLOAT, 1, dvm(2))
+     &             NF_FLOAT, 1, rvm(2))
             ELSEIF (stype(1:1) .EQ. 'I') THEN
               err = NF_PUT_ATT_INT(fid, idv, 'missing_value', 
      &             NF_INT, 1, ivm(2))
             ENDIF
             CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+CMLC	 it may be better to use the attribute _FillValue, or both
+CML            write(msgbuf,'(4a)') 'writing attribute ''_FillValue''', 
+CML     &           ' within file ''', fname(1:nfname), ''''
+CML            IF (stype(1:1) .EQ. 'D') THEN
+CML              err = NF_PUT_ATT_DOUBLE(fid, idv, '_FillValue', 
+CML     &             NF_DOUBLE, 1, dvm(2))
+CML            ELSEIF (stype(1:1) .EQ. 'R') THEN
+CML              err = NF_PUT_ATT_REAL(fid, idv, '_FillValue', 
+CML     &             NF_FLOAT, 1, rvm(2))
+CML            ELSEIF (stype(1:1) .EQ. 'I') THEN
+CML              err = NF_PUT_ATT_INT(fid, idv, '_FillValue', 
+CML     &             NF_INT, 1, ivm(2))
+CML            ENDIF
+CML            CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
           ENDIF
 
           CALL MNC_FILE_ENDDEF(fname, myThid)
