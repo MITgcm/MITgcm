@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.36 2008/02/05 20:19:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.37 2008/05/22 08:35:44 mlosch Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -54,7 +54,7 @@ C              diagnostic storage qdiag into it.
       COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
       _RL qtmp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,NrMax,nSx,nSy)
 
-      INTEGER i, j, k, lm
+      INTEGER i, j, k, lm, klev
       INTEGER bi, bj
       INTEGER md, ndId, ip, im
       INTEGER mate, mVec
@@ -88,6 +88,10 @@ C              diagnostic storage qdiag into it.
       CHARACTER*(5) ctmp
       _RS ztmp(NrMax)
 #endif
+      REAL*8 misvalLoc
+      REAL*8 misval_r8(2)
+      REAL*4 misval_r4(2)
+      INTEGER misvalIntLoc, misval_int(2)
 #endif /*  ALLOW_MNC  */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -433,14 +437,51 @@ C           Time dimension
             CALL MNC_CW_ADD_VATTR_TEXT(cdiag(ndId),'units',
      &             udiag(ndId),myThid)
 
-C           Per the observations of Baylor, this has been commented out
-C           until we have code that can write missing_value attributes
-C           in a way thats compatible with most of the more popular
-C           netCDF tools including ferret.  Using all-zeros completely
-C           breaks ferret.
-
-C           CALL MNC_CW_ADD_VATTR_DBL(cdiag(ndId),'missing_value',
-C           &             0.0 _d 0,myThid)
+C     Handle missing value attribute (land points)
+            IF ( misvalFlt(listId) .NE. UNSET_RL ) THEN
+             misvalLoc = misvalFlt(listId)
+            ELSE
+             misvalLoc = undef
+            ENDIF
+C     Defaults to UNSET_I
+            misvalIntLoc = misvalInt(listId)
+            DO ii=1,2
+C            misval_r4(ii)  = UNSET_FLOAT4
+C            misval_r8(ii)  = UNSET_FLOAT8
+             misval_r4(ii)  = misvalLoc
+             misval_r8(ii)  = misvalLoc
+             misval_int(ii) = UNSET_I
+            ENDDO
+C     Missing values only for scalar diagnostics at mass points (so far)
+            IF ( gdiag(ndId)(1:2) .EQ. 'SM' ) THEN
+C     assign missing values and set flag for adding the netCDF atttibute
+             CALL MNC_CW_VATTR_MISSING(cdiag(ndId), 2,
+     I            misval_r8, misval_r4, misval_int, 
+     I            myThid )
+C     and now use the missing values for masking out the land points
+             DO bj = myByLo(myThid), myByHi(myThid)
+              DO bi = myBxLo(myThid), myBxHi(myThid)
+               DO k = 1,nlevels(listId)
+                klev = NINT(levs(k,listId))
+                DO j = 1-OLy,sNy+OLy
+                 DO i = 1-OLx,sNx+OLx
+                  IF ( _hFacC(I,J,klev,bi,bj) .EQ. 0. )
+     &                 qtmp1(i,j,k,bi,bj) = misvalLoc
+                 ENDDO
+                ENDDO
+               ENDDO
+              ENDDO
+             ENDDO
+            ELSE
+C     suppress the missing value attribute (iflag = 0)
+C     Note: I have no idea, why we have to do this here, but if we do not
+C     do it, variables get the missing_value attribute (the one of the 
+C     previous varable) that are not supposed to get one. These is something
+C     fishy with the flag array mnc_cw_vfmv.
+             CALL MNC_CW_VATTR_MISSING(cdiag(ndId), 0,
+     I            misval_r8, misval_r4, misval_int, 
+     I            myThid )
+            ENDIF
 
             IF ( ( (writeBinaryPrec .EQ. precFloat32)
      &           .AND. (fflags(listId)(1:1) .NE. 'D')
