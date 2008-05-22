@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.23 2006/03/10 22:01:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.24 2008/05/22 08:29:06 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -16,11 +16,12 @@ C     \textbf{always} be run before any other MNC subroutines to ensure
 C     that the lookup tables start in a well-defined state.
       
 C     !USES:
-#include "mnc_common.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "PARAMS.h"
+#include "mnc_common.h"
+#include "MNC_PARAMS.h"
 
 C     !INPUT PARAMETERS:
       integer myThid
@@ -97,6 +98,12 @@ C          mnc_cw_cvse(i,g) = 0
         mnc_cw_cit(1,i) = 0
         mnc_cw_cit(2,i) = 0
         mnc_cw_cit(3,i) = -1
+      ENDDO
+
+      DO i = 1,2
+       mnc_def_imv(i) = UNSET_I
+       mnc_def_rmv(i) = UNSET_FLOAT4
+       mnc_def_dmv(i) = UNSET_FLOAT8
       ENDDO
 
 C     The default for all file types is to add the iter to the name and
