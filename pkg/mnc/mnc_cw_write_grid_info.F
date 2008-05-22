@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.10 2006/11/28 20:23:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.11 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -19,7 +19,7 @@ C     (\texttt{grid.xxxxx.nc}) per tile.
       
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"

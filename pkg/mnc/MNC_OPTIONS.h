@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_OPTIONS.h,v 1.6 2005/09/10 18:30:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_OPTIONS.h,v 1.7 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
 
 #ifndef MNC_OPTIONS_H
@@ -8,7 +8,7 @@ C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-#include "mnc_id_header.h"
+#include "MNC_ID_HEADER.h"
 
 CEH3 package-specific options go here
 

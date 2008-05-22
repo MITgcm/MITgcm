@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_citer.F,v 1.2 2005/09/14 19:27:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_citer.F,v 1.3 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -19,7 +19,7 @@ C     Set CITER information for group "igroup"
 
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 
 C     !INPUT PARAMETERS:
       integer igroup, iflag, ival_curr, ival_next, myThid
@@ -69,7 +69,7 @@ C     Get the current CITER information for group "igroup"
 
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 
 C     !INPUT PARAMETERS:
       integer igroup, iflag, ival_curr, ival_next, myThid
@@ -99,7 +99,7 @@ C     Set the flag and/or current iteration value
 
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -163,7 +163,7 @@ C     Set the flag and/or current iteration value
 
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:

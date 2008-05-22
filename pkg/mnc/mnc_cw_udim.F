@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.10 2007/08/27 15:53:05 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.11 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -29,7 +29,7 @@ C     \end{equation}
 
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -95,7 +95,7 @@ C     unlimited (or record) dimension.
 
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:

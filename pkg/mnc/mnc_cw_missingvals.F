@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_missingvals.F,v 1.1 2006/02/24 20:39:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_missingvals.F,v 1.2 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -19,7 +19,7 @@ C     Set missing values to be associated with a CW variable name.
       
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:

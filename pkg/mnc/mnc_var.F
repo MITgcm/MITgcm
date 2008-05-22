@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.22 2006/03/10 22:01:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.23 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -109,7 +109,7 @@ C     context.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -149,7 +149,7 @@ C     Check for sufficient storage space in mnc_fv_ids
       IF (needed .GE. MNC_MAX_INFO) THEN
         write(msgbuf,'(2a,i7,a)') 'MNC ERROR: MNC_MAX_INFO exceeded', 
      &       ': please increase it to ', 2*MNC_MAX_INFO, 
-     &       ' in the file ''pkg/mnc/mnc_common.h'''
+     &       ' in the file ''pkg/mnc/MNC_COMMON.h'''
         CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: S/R MNC_VAR_INIT_ANY'
       ENDIF
@@ -396,7 +396,7 @@ C     General subroutine for adding attributes to a NetCDF file.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -582,7 +582,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     Arguments

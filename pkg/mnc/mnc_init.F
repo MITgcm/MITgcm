@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.24 2008/05/22 08:29:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.25 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -20,7 +20,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "PARAMS.h"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "MNC_PARAMS.h"
 
 C     !INPUT PARAMETERS:

@@ -1,5 +1,5 @@
 #
-# $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.18 2007/10/08 17:00:16 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.19 2008/05/22 12:21:19 mlosch Exp $
 # $Name:  $
 #
 #  A Makefile for MNC templates and testing
@@ -64,7 +64,7 @@ mnc_netcdf_stubs.c: mnc_netcdf_stubs.h
 mnc_netcdf_stubs.o: mnc_netcdf_stubs.c
 	-gcc -c mnc_netcdf_stubs.c
 
-templates: $(TEMPLATE_FILES) mnc_id_header.h
+templates: $(TEMPLATE_FILES) MNC_ID_HEADER.h
 
 MNC_CW_READWRITE_RS.F: mnc_cw_readwrite.template
 	cat mnc_cw_readwrite.template | sed -e 's/RX/RS/g' | sed -e 's/MNC2I/NINT/g' | sed -e 's/MNCI2//g' | sed -e 's/__V/_RS/g' > MNC_CW_READWRITE_RS.F
@@ -75,7 +75,7 @@ MNC_CW_READWRITE_I.F: mnc_cw_readwrite.template
 
 tag = ../../doc/tag-index
 
-mnc_id_header.h:
+MNC_ID_HEADER.h:
 	-./parse_local_info > $@
 
 test: all mnc_test_001 mnc_test_002 
@@ -101,6 +101,6 @@ testclean:
 	-rm -f mnc_test_???.F mnc_test_??? test_???.nc t_out_???
 
 clean: testclean
-	-rm -f $(TEMPLATE_FILES) mnc_id_header.h
+	-rm -f $(TEMPLATE_FILES) MNC_ID_HEADER.h
 	-rm -f mnc_netcdf_stubs.o
 

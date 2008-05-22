@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_init.F,v 1.3 2005/02/23 05:17:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_init.F,v 1.4 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -39,7 +39,7 @@ C     \end{center}
 
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dump.F,v 1.2 2006/03/10 22:01:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dump.F,v 1.3 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -33,7 +33,7 @@ C     Create a summary of a specified portion of the current state of
 C     the MNC lookup tables.  This can be helpful for debugging MNC.
 
 C     !USES:
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 
 C     !INPUT PARAMETERS:
       integer n_id, n_items, myThid

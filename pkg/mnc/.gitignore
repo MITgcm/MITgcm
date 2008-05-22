@@ -1,5 +1,5 @@
 MNC_RESHAPE_R*.F
-mnc_id_header.h
+MNC_ID_HEADER.h
 MNC_CW_READWRITE_R*
 MNC_CW_READWRITE_I*
 mnc_netcdf_stubs.c

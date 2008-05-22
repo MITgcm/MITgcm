@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.8 2008/02/05 13:38:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.9 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -22,7 +22,7 @@ C     Write a CF-convention coordinate variable (a vector).
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"

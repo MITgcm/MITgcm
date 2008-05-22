@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.30 2006/04/05 21:07:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.31 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -21,7 +21,7 @@ C     Add a grid name to the MNC convenience wrapper layer.
       
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -83,7 +83,7 @@ C     Delete a grid name from the MNC convenience wrapper layer.
       
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -125,7 +125,7 @@ C     tables for the convenience wrapper section.
       
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -248,7 +248,7 @@ C     variable type.  Calls MNC\_CW\_ADD\_VNAME().
   
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 
 C     !INPUT PARAMETERS:
       integer myThid, bi_dim, bj_dim
@@ -292,7 +292,7 @@ C     \end{center}
   
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -362,7 +362,7 @@ C     Delete a variable type from the MNC CW layer.
   
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -480,7 +480,7 @@ C     !DESCRIPTION:
 
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -735,7 +735,7 @@ C     and, if not, creating a new file.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:

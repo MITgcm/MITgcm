@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.30 2006/11/05 18:36:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.31 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -19,7 +19,7 @@ C     errors.
 C     !USES:
       implicit none
 #include "SIZE.h"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "MNC_PARAMS.h"
@@ -169,7 +169,7 @@ C     Create the output (sub--)directory for the MNC output files.
       
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"

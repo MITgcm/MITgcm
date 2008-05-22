@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.22 2006/03/10 22:01:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.23 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -48,7 +48,7 @@ C     Open or create a NetCDF file.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -244,7 +244,7 @@ C     Add all attributes to a NetCDF file.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -327,7 +327,7 @@ C     Close a NetCDF file.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -416,7 +416,7 @@ C     Close all files matching a character string.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -457,7 +457,7 @@ C     Close all NetCDF files.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -500,7 +500,7 @@ C     Set the NetCDF file to DEFINE mode.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -553,7 +553,7 @@ C     End DEFINE mode for a NetCDF file.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -647,7 +647,7 @@ C     Try to open and read a NetCDF file.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:

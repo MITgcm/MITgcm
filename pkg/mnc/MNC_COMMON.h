@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.32 2006/04/05 21:07:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_COMMON.h,v 1.1 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -39,10 +39,10 @@ C
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP 1
-C     !ROUTINE: mnc_common.h
+C     !ROUTINE: MNC_COMMON.h
 
 C     !INTERFACE:
-C     #include "mnc_common.h"
+C     #include "MNC_COMMON.h"
 
 C     !DESCRIPTION:
 C     Contains the ``look-up'' tables for the MNC package.  These tables

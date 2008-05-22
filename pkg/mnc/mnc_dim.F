@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.15 2006/03/10 22:01:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.16 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -75,7 +75,7 @@ C     Create a dimension within the MNC look-up tables.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -182,7 +182,7 @@ C     Get the size of the unlimited dimension.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:

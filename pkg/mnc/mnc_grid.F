@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.18 2006/03/10 22:01:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.19 2008/05/22 12:21:19 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -59,7 +59,7 @@ C     grid name re--definition.
 C     !USES:
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -230,7 +230,7 @@ C     Get the dimension ID (index) for the named dimension.
       
 C     !USES:
       implicit none
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 
 C     !INPUT PARAMETERS:
       integer indf, ind_fg_ids, myThid
