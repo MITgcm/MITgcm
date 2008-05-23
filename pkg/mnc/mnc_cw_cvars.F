@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.9 2008/05/22 12:21:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.10 2008/05/23 12:40:37 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -49,6 +49,16 @@ C     !LOCAL VARIABLES:
       character*(MAX_LEN_MBUF) msgbuf
       integer cv_start(1), cv_count(1)
       _RS rtmp(sNx + 2*OLx + sNy + 2*OLy + Nr)
+C     variables for text attributes
+      integer MAX_LEN_NAME, ia
+      PARAMETER ( MAX_LEN_NAME = 128 )
+      character*(MAX_LEN_NAME) units, long_name, positive
+
+      DO i=1,MAX_LEN_NAME
+         units(i:i)     = ' '
+         long_name(i:i) = ' '
+         positive(i:i)  = ' '
+      ENDDO
 
       nnf = IFNBLNK(cvname)
       nnl = ILNBLNK(cvname)
@@ -83,6 +93,22 @@ C     Check all the coordinate variables that we know about
          ENDDO
         ENDIF
 #endif
+        IF ( usingCartesianGrid ) THEN
+         long_name = 'X-coordinate of cell center'
+         units     = 'meters'
+        ELSEIF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
+         long_name = 'i-index of cell center' 
+         units     = 'none'
+        ELSEIF ( usingSphericalPolarGrid ) THEN
+         long_name = 'longitude of cell center'
+         units     = 'degrees_east'
+        ELSEIF ( usingCylindricalGrid ) THEN
+         long_name = 'polar angle coordinate of cell center'
+         units     = 'degrees'
+        ELSE
+C       unknown grid type
+         print *, 'S/R MNC_CW_CVARS: Ooops, unknown horizontal grid!'
+        ENDIF
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Xp1') THEN
 
@@ -103,6 +129,22 @@ C     Check all the coordinate variables that we know about
          ENDDO
         ENDIF
 #endif
+        IF ( usingCartesianGrid ) THEN
+         long_name = 'X-Coordinate of cell corner'
+         units     = 'meters'
+        ELSEIF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
+         long_name = 'i-index of cell corner' 
+         units     = 'none'
+        ELSEIF ( usingSphericalPolarGrid ) THEN
+         long_name = 'longitude of cell corner'
+         units     = 'degrees_east'
+        ELSEIF ( usingCylindricalGrid ) THEN
+         long_name = 'polar angle  of cell corner'
+         units     = 'degrees'
+        ELSE
+C       unknown grid type
+         print *, 'S/R MNC_CW_CVARS: Ooops, unknown horizontal grid!'
+        ENDIF
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Xwh') THEN
 
@@ -120,9 +162,27 @@ C     Check all the coordinate variables that we know about
         ELSE
          DO i = cv_start(1),cv_count(1)
           rtmp(i) = xC(i,1,bi,bj)
+CML????          rtmp(i) = xC(i-Olx,1,bi,bj)
          ENDDO
         ENDIF
 #endif
+        IF ( usingCartesianGrid ) THEN
+         long_name = 'X-Coordinate of cell center including overlaps'
+         units     = 'meters'
+        ELSEIF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
+         long_name = 'i-index of cell center including overlaps' 
+         units     = 'none'
+        ELSEIF ( usingSphericalPolarGrid ) THEN
+         long_name = 'longitude of cell center including overlaps'
+         units     = 'degrees_east'
+        ELSEIF ( usingCylindricalGrid ) THEN
+         long_name = 
+     &        'polar angle coordinate of cell center including overlaps'
+         units     = 'degrees'
+        ELSE
+C       unknown grid type
+         print *, 'S/R MNC_CW_CVARS: Ooops, unknown horizontal grid!'
+        ENDIF
         
       ELSEIF (cvname(nnf:nnl) .EQ. 'Y') THEN
 
@@ -143,6 +203,22 @@ C     Check all the coordinate variables that we know about
          ENDDO
         ENDIF
 #endif
+        IF ( usingCartesianGrid ) THEN
+         long_name = 'Y-Coordinate of cell center'
+         units     = 'meters'
+        ELSEIF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
+         long_name = 'j-index of cell center' 
+         units     = 'none'
+        ELSEIF ( usingSphericalPolarGrid ) THEN
+         long_name = 'latitude of cell center'
+         units     = 'degrees_north'
+        ELSEIF ( usingCylindricalGrid ) THEN
+         long_name = 'radial coordinate of cell center'
+         units     = 'meters'
+        ELSE
+C       unknown grid type
+         print *, 'S/R MNC_CW_CVARS: Ooops, unknown horizontal grid!'
+        ENDIF
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Yp1') THEN
 
@@ -163,6 +239,22 @@ C     Check all the coordinate variables that we know about
          ENDDO
         ENDIF
 #endif
+        IF ( usingCartesianGrid ) THEN
+         long_name = 'Y-Coordinate of cell corner'
+         units     = 'meters'
+        ELSEIF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
+         long_name = 'j-index of cell corner' 
+         units     = 'none'
+        ELSEIF ( usingSphericalPolarGrid ) THEN
+         long_name = 'latitude of cell corner'
+         units     = 'degrees_north'
+        ELSEIF ( usingCylindricalGrid ) THEN
+         long_name = 'radial coordinate of cell corner'
+         units     = 'meters'
+        ELSE
+C       unknown grid type
+         print *, 'S/R MNC_CW_CVARS: Ooops, unknown horizontal grid!'
+        ENDIF
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Ywh') THEN
 
@@ -183,6 +275,23 @@ C     Check all the coordinate variables that we know about
          ENDDO
         ENDIF
 #endif
+        IF ( usingCartesianGrid ) THEN
+         long_name = 'Y-Coordinate of cell center including overlaps'
+         units     = 'meters'
+        ELSEIF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
+         long_name = 'j-index of cell center including overlaps' 
+         units     = 'none'
+        ELSEIF ( usingSphericalPolarGrid ) THEN
+         long_name = 'latitude of cell center including overlaps'
+         units     = 'degrees_north'
+        ELSEIF ( usingCylindricalGrid ) THEN
+         long_name = 
+     &        'radial coordinate of cell center including overlaps'
+         units     = 'meters'
+        ELSE
+C       unknown grid type
+         print *, 'S/R MNC_CW_CVARS: Ooops, unknown horizontal grid!'
+        ENDIF
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Z') THEN
 
@@ -191,6 +300,17 @@ C     Check all the coordinate variables that we know about
         DO i = cv_start(1),cv_count(1)
           rtmp(i) = rC(i)
         ENDDO
+C     
+        long_name = 'vertical coordinate of cell center'
+        IF ( usingZCoords ) THEN
+         units     = 'meters'
+         positive  = 'up'
+        ELSEIF ( usingPCoords ) THEN
+         units     = 'pascal'
+        ELSE
+C       unknown grid type
+         print *, 'S/R MNC_CW_CVARS: Ooops, unknown vertical grid!'
+        ENDIF
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Zp1') THEN
 
@@ -199,6 +319,17 @@ C     Check all the coordinate variables that we know about
         DO i = cv_start(1),cv_count(1)
           rtmp(i) = rF(i)
         ENDDO
+C
+        long_name = 'vertical coordinate of cell interface'
+        IF ( usingZCoords ) THEN
+         units     = 'meters'
+         positive  = 'up'
+        ELSEIF ( usingPCoords ) THEN
+         units     = 'pascal'
+        ELSE
+C       unknown grid type
+         print *, 'S/R MNC_CW_CVARS: Ooops, unknown vertical grid!'
+        ENDIF
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Zu') THEN
 
@@ -207,6 +338,18 @@ C     Check all the coordinate variables that we know about
         DO i = cv_start(1),cv_count(1)
           rtmp(i) = rF(i + 1)
         ENDDO
+C
+        IF ( usingZCoords ) THEN
+         long_name = 'vertical coordinate of lower cell interface'
+         units     = 'meters'
+         positive  = 'up'
+        ELSEIF ( usingPCoords ) THEN
+         long_name = 'vertical coordinate of upper cell interface'
+         units     = 'pascal'
+        ELSE
+C       unknown grid type
+         print *, 'S/R MNC_CW_CVARS: Ooops, unknown vertical grid!'
+        ENDIF
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Zl') THEN
 
@@ -215,6 +358,18 @@ C     Check all the coordinate variables that we know about
         DO i = cv_start(1),cv_count(1)
           rtmp(i) = rF(i)
         ENDDO
+C
+        IF ( usingZCoords ) THEN
+         long_name = 'vertical coordinate of upper cell interface'
+         units     = 'meters'
+         positive  = 'up'
+        ELSEIF ( usingPCoords ) THEN
+         long_name = 'vertical coordinate of lower cell interface'
+         units     = 'pascal'
+        ELSE
+C       unknown grid type
+         print *, 'S/R MNC_CW_CVARS: Ooops, unknown vertical grid!'
+        ENDIF
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Zm1') THEN
 
@@ -223,6 +378,18 @@ C     Check all the coordinate variables that we know about
         DO i = cv_start(1),cv_count(1)
           rtmp(i) = rF(i + 1)
         ENDDO
+C
+        IF ( usingZCoords ) THEN
+         long_name = 'vertical coordinate of lower cell interface'
+         units     = 'meters'
+         positive  = 'up'
+        ELSEIF ( usingPCoords ) THEN
+         long_name = 'vertical coordinate of upper cell interface'
+         units     = 'pascal'
+        ELSE
+C       unknown grid type
+         print *, 'S/R MNC_CW_CVARS: Ooops, unknown vertical grid!'
+        ENDIF
 
       ELSE
 
@@ -239,6 +406,32 @@ C     Check all the coordinate variables that we know about
         write(msgbuf,'(5a)') 'defining coordinate variable ''', 
      &       cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
         CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+C     add attributes if set
+        ia = ILNBLNK(long_name)
+        IF ( ia .GT. 0 ) THEN
+         err = NF_PUT_ATT_TEXT(fid, vid, 'long_name', ia, long_name)
+         write(msgbuf,'(5a)') 
+     &     'adding attribute ''long_name'' to coordinate variable ''', 
+     &     cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
+         CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+        ENDIF
+        ia = ILNBLNK(units)
+        IF ( ia .GT. 0 ) THEN
+         err = NF_PUT_ATT_TEXT(fid, vid, 'units', ia, units)
+         write(msgbuf,'(5a)') 
+     &     'adding attribute ''units'' to coordinate variable ''', 
+     &     cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
+         CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+        ENDIF
+        ia = ILNBLNK(positive)
+        IF ( ia .GT. 0 ) THEN
+         err = NF_PUT_ATT_TEXT(fid, vid, 'positive', ia, positive)
+         write(msgbuf,'(5a)') 
+     &     'adding attribute ''positive'' to coordinate variable ''', 
+     &     cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
+         CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+        ENDIF
+C     
         CALL MNC_FILE_ENDDEF(fname, myThid)
         err = NF_PUT_VARA_DOUBLE(fid, vid, 
      &       cv_start, cv_count, rtmp)
