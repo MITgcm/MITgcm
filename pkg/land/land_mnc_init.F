@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_mnc_init.F,v 1.2 2005/09/10 20:40:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_mnc_init.F,v 1.3 2008/05/23 07:22:40 mlosch Exp $
 C $Name:  $
       
 #include "LAND_OPTIONS.h"
@@ -39,7 +39,7 @@ C     \end{center}
 C     !USES:
       implicit none
 #ifdef ALLOW_MNC
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #endif  /*  ALLOW_MNC  */
 #include "EEPARAMS.h"
 

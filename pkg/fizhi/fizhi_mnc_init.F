@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.8 2004/10/10 06:08:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.9 2008/05/23 07:22:29 mlosch Exp $
 C $Name:  $
       
 #include "FIZHI_OPTIONS.h"
@@ -23,7 +23,7 @@ C     !USES:
 #include "PARAMS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #endif
 
 C     !INPUT PARAMETERS:

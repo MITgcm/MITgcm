@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/regrid/regrid_mnc_init.F,v 1.1 2006/08/15 04:05:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/regrid/regrid_mnc_init.F,v 1.2 2008/05/23 07:22:53 mlosch Exp $
 C $Name:  $
 
 #include "REGRID_OPTIONS.h"
@@ -21,7 +21,7 @@ C     !USES:
 #include "REGRID_SIZE.h"
 #include "REGRID.h"
 #ifdef ALLOW_MNC
-#include "mnc_common.h"
+#include "MNC_COMMON.h"
 #endif /* ALLOW_MNC */
 
 C     !INPUT PARAMETERS:
