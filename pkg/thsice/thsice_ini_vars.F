@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.13 2008/05/22 15:54:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.14 2008/05/23 09:56:25 dimitri Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -145,7 +145,8 @@ C     default to <= 20 cm snow thickness where there is ice
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             snowHeight(i,j,bi,bj) = 0.2 _d 0
+             IF (iceMask(i,j,bi,bj) .NE. 0. _d 0)
+     &            snowHeight(i,j,bi,bj) = 0.2 _d 0
             ENDDO
            ENDDO
           ENDDO
