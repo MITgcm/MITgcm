@@ -50,6 +50,7 @@
  implicitViscosity=.TRUE.,
  tempAdvScheme=7,
  saltAdvScheme=7,
+ StaggerTimeStep=.TRUE.,
  useSingleCpuIO=.TRUE.,
  allowFreezing=.FALSE.,
  HeatCapacity_Cp = 3986.D0,
