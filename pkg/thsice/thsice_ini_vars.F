@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.14 2008/05/23 09:56:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.15 2008/05/23 21:24:41 dimitri Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -26,7 +26,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#include "DYNVARS.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
 #ifdef ALLOW_AIM
@@ -48,7 +47,7 @@ C     i,j    :: Loop counters
       INTEGER prec
 c     CHARACTER*(MAX_LEN_FNAM) fn
       _RL v2Loc
-
+      _RL Tf
 
 c     set up ice arrays to zero if starting ice
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -119,102 +118,71 @@ C--     Read ice pickup fields
       ELSE
 C--     Read initial conditions:
         _BEGIN_MASTER( myThid )
+        IF ( thSIceFract_InitFile .NE. ' ' ) THEN
+         CALL READ_REC_XY_RL(thSIceFract_InitFile,iceMask,1,0,myThid)
+        ENDIF
         IF ( thSIceThick_InitFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RL(thSIceThick_InitFile,iceHeight,1,0,myThid)
         ENDIF
-        IF ( thSIceFract_InitFile .NE. ' ' ) THEN
-         CALL READ_REC_XY_RL(thSIceFract_InitFile,iceMask,1,0,myThid)
-        ELSE
-C     default to 100% ice concentration when thickness is non-zero
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             IF (iceHeight(i,j,bi,bj) .NE. 0. _d 0)
-     &            iceMask(i,j,bi,bj) = 1. _d 0
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDIF
         IF ( thSIceSnowH_InitFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RL(thSIceSnowH_InitFile,snowHeight,1,0,myThid)
-        ELSE
-C     default to <= 20 cm snow thickness where there is ice
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             IF (iceMask(i,j,bi,bj) .NE. 0. _d 0)
-     &            snowHeight(i,j,bi,bj) = 0.2 _d 0
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
         ENDIF
         IF ( thSIceSnowA_InitFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RL(thSIceSnowA_InitFile,snowAge,1,0,myThid)
-        ELSE
-C     default to 3 days for snow age
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             IF (snowHeight(i,j,bi,bj) .NE. 0. _d 0)
-     &            snowAge(i,j,bi,bj) = 259200. _d 0
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
         ENDIF
         IF ( thSIceEnthp_InitFile .NE. ' ' ) THEN
          CALL READ_REC_XY_RL(thSIceEnthp_InitFile,Qice1,1,0,myThid)
          CALL READ_REC_XY_RL(thSIceEnthp_InitFile,Qice2,2,0,myThid)
-        ELSE
-C     default to 3.4e5 J/kg for enthalpy where there is sea ice
+        ENDIF
+        IF ( thSIceTsurf_InitFile .NE. ' ' ) THEN
+         CALL READ_REC_XY_RS(thSIceTsurf_InitFile,Tsrf,1,0,myThid)
+        ENDIF
+        _END_MASTER(myThid)
+        IF ( thSIceEnthp_InitFile .EQ. ' ' ) THEN
+C-    enthalpy of new ice in J/kg, taken from thsice_extend.F with Tf beeing
+C     the freezing Temp of seawater computed from a fixed salinity (31.5 psu)
+C     Tf = -mu_Tf*salinity = -1.62 deg C;  Qice1 ~ 3.2e5;  Qice2 ~ 3.4e5
+         Tf = -1.70 _d 0
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              IF (iceMask(i,j,bi,bj) .NE. 0. _d 0) THEN
-              Qice1(i,j,bi,bj) = 3.4 _d 5
-              Qice2(i,j,bi,bj) = 3.4 _d 5
+              Qice1(i,j,bi,bj) = -cpWater*Tmlt1
+     &             + cpIce *(Tmlt1-Tf) + Lfresh*(1. _d 0-Tmlt1/Tf)
+              Qice2(i,j,bi,bj) = -cpIce *Tf + Lfresh
              ENDIF
             ENDDO
            ENDDO
           ENDDO
          ENDDO
         ENDIF
-        IF ( thSIceTsurf_InitFile .NE. ' ' ) THEN
-         CALL READ_REC_XY_RS(thSIceTsurf_InitFile,Tsrf,1,0,myThid)
-        ENDIF
-        _END_MASTER(myThid)
       ENDIF
 
-        _EXCH_XY_R8(iceMask,myThid)
-        _EXCH_XY_R8(iceHeight, myThid)
-        _EXCH_XY_R8(snowHeight,myThid)
-        _EXCH_XY_R8(Tsrf,   myThid)
-        _EXCH_XY_R8(Tice1,  myThid)
-        _EXCH_XY_R8(Tice2,  myThid)
-        _EXCH_XY_R8(Qice1,  myThid)
-        _EXCH_XY_R8(Qice2,  myThid)
-        _EXCH_XY_R8(snowAge,myThid)
+      _EXCH_XY_R8(iceMask,myThid)
+      _EXCH_XY_R8(iceHeight, myThid)
+      _EXCH_XY_R8(snowHeight,myThid)
+      _EXCH_XY_R8(Tsrf,   myThid)
+      _EXCH_XY_R8(Tice1,  myThid)
+      _EXCH_XY_R8(Tice2,  myThid)
+      _EXCH_XY_R8(Qice1,  myThid)
+      _EXCH_XY_R8(Qice2,  myThid)
+      _EXCH_XY_R8(snowAge,myThid)
 
 C--     Initialise Sea-Ice Loading for SeaIce-Dynamics :
-        IF ( useSEAICE ) THEN
-          DO bj = myByLo(myThid), myByHi(myThid)
-           DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO j=1-OLy,sNy+OLy
-             DO i=1-OLx,sNx+OLx
-               sIceLoad(i,j,bi,bj) = ( snowHeight(i,j,bi,bj)*rhos
-     &                               + iceHeight(i,j,bi,bj)*rhoi
-     &                               )*iceMask(i,j,bi,bj)
-             ENDDO
-            ENDDO
-           ENDDO
+      IF ( useSEAICE ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           sIceLoad(i,j,bi,bj) = ( snowHeight(i,j,bi,bj)*rhos
+     &          + iceHeight(i,j,bi,bj)*rhoi
+     &          )*iceMask(i,j,bi,bj)
           ENDDO
-        ENDIF
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 
 #endif /* ALLOW_THSICE */
 
