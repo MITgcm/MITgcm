@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.15 2007/12/27 14:19:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.16 2008/05/24 16:11:30 jmc Exp $
 
 #  Ed Hill
 
@@ -59,14 +59,14 @@ mkdir $new_dir
   tail -100 $tdir/output_g77
   echo
 #-- also test restart (test 2+2=4)
-  echo "testing restart using:"
-  comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
-  echo "  \"$comm\""
-  echo "======================"
-  $comm > $tdir/output_2+2 2>&1
-# tail -100 $tdir/output_2+2
-  echo ; cat tst_2+2_out.txt
-  echo
+# echo "testing restart using:"
+# comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
+# echo "  \"$comm\""
+# echo "======================"
+# $comm > $tdir/output_2+2 2>&1
+##tail -100 $tdir/output_2+2
+# echo ; cat tst_2+2_out.txt
+# echo
   popd
 
 new_dir='MITgcm_adm'
@@ -105,14 +105,14 @@ mkdir $new_dir
   tail -100 $tdir/output_ifc
   echo
 #-- also test restart (test 2+2=4)
-# echo "testing restart using:"
-# comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
-# echo "  \"$comm\""
-# echo "======================"
-# $comm > $tdir/output_2+2 2>&1
-##tail -100 $tdir/output_2+2
-# echo ; cat tst_2+2_out.txt
-# echo
+  echo "testing restart using:"
+  comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
+  echo "  \"$comm\""
+  echo "======================"
+  $comm > $tdir/output_2+2 2>&1
+ #tail -100 $tdir/output_2+2
+  echo ; cat tst_2+2_out.txt
+  echo
   popd
 
 new_dir='MITgcm_pgi'
