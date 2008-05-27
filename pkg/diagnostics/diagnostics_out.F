@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.38 2008/05/22 09:53:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.39 2008/05/27 08:37:19 mlosch Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -88,6 +88,7 @@ C              diagnostic storage qdiag into it.
       CHARACTER*(5) ctmp
       _RS ztmp(NrMax)
 #endif
+      LOGICAL useMissingValue, useMisValForThisDiag
       REAL*8 misvalLoc
       REAL*8 misval_r8(2)
       REAL*4 misval_r4(2)
@@ -104,19 +105,25 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_MNC
       IF (useMNC .AND. diag_mnc) THEN
-#ifdef DIAGNOSTICS_MISSING_VALUE
 C     Handle missing value attribute (land points)
-        misvalLoc = undef
-C     Defaults to UNSET_I
-        misvalIntLoc = UNSET_I
-        DO ii=1,2
-C        misval_r4(ii)  = UNSET_FLOAT4
-C        misval_r8(ii)  = UNSET_FLOAT8
-         misval_r4(ii)  = misvalLoc
-         misval_r8(ii)  = misvalLoc
-         misval_int(ii) = UNSET_I
-        ENDDO
+       useMissingValue = .FALSE.
+#ifdef DIAGNOSTICS_MISSING_VALUE
+       useMissingValue = .TRUE.
 #endif /* DIAGNOSTICS_MISSING_VALUE */
+       IF ( misvalFlt(listId) .NE. UNSET_RL ) THEN
+        misvalLoc = misvalFlt(listId)
+       ELSE
+        misvalLoc = undef
+       ENDIF
+C     Defaults to UNSET_I
+       misvalIntLoc = misvalInt(listId)
+       DO ii=1,2
+C       misval_r4(ii)  = UNSET_FLOAT4
+C       misval_r8(ii)  = UNSET_FLOAT8
+        misval_r4(ii)  = misvalLoc
+        misval_r8(ii)  = misvalLoc
+        misval_int(ii) = UNSET_I
+       ENDDO
         DO i = 1,MAX_LEN_FNAM
           diag_mnc_bn(i:i) = ' '
         ENDDO
@@ -148,11 +155,11 @@ C       beginning and ending times for each diagnostics period
         CALL MNC_CW_ADD_VATTR_TEXT('diag_levels','description',
      &       'Idicies of vertical levels within the source arrays',
      &       myThid)
-#ifdef DIAGNOSTICS_MISSING_VALUE
-        CALL MNC_CW_VATTR_MISSING('diag_levels', 0,
+C     suppress the missing value attribute (iflag = 0)
+        IF (useMissingValue) 
+     &       CALL MNC_CW_VATTR_MISSING('diag_levels', 0,
      I       misval_r8, misval_r4, misval_int, 
      I       myThid )
-#endif /* DIAGNOSTICS_MISSING_VALUE */
 
         CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
      &       'diag_levels', levs(1,listId), myThid)
@@ -211,11 +218,11 @@ C         for averaged levels.
      &           'Dimensional coordinate value at the lower point',
      &           myThid)
           ENDIF
-#ifdef DIAGNOSTICS_MISSING_VALUE
-          CALL MNC_CW_VATTR_MISSING(dn(1), 0,
+C     suppress the missing value attribute (iflag = 0)
+          IF (useMissingValue)
+     &         CALL MNC_CW_VATTR_MISSING(dn(1), 0,
      I         misval_r8, misval_r4, misval_int, 
      I         myThid )
-#endif /* DIAGNOSTICS_MISSING_VALUE */
           CALL MNC_CW_RS_W('D',diag_mnc_bn,0,0, dn(1), ztmp, myThid)
           CALL MNC_CW_DEL_VNAME(dn(1), myThid)
           CALL MNC_CW_DEL_GNAME(dn(1), myThid)
@@ -460,24 +467,10 @@ C           Time dimension
             CALL MNC_CW_ADD_VATTR_TEXT(cdiag(ndId),'units',
      &             udiag(ndId),myThid)
 
-#ifdef DIAGNOSTICS_MISSING_VALUE
-C     Handle missing value attribute (land points)
-            IF ( misvalFlt(listId) .NE. UNSET_RL ) THEN
-             misvalLoc = misvalFlt(listId)
-            ELSE
-             misvalLoc = undef
-            ENDIF
-C     Defaults to UNSET_I
-            misvalIntLoc = misvalInt(listId)
-            DO ii=1,2
-C            misval_r4(ii)  = UNSET_FLOAT4
-C            misval_r8(ii)  = UNSET_FLOAT8
-             misval_r4(ii)  = misvalLoc
-             misval_r8(ii)  = misvalLoc
-             misval_int(ii) = UNSET_I
-            ENDDO
 C     Missing values only for scalar diagnostics at mass points (so far)
-            IF ( gdiag(ndId)(1:2) .EQ. 'SM' ) THEN
+            useMisValForThisDiag = useMissingValue
+     &           .AND.gdiag(ndId)(1:2).EQ.'SM'
+            IF ( useMisValForThisDiag ) THEN
 C     assign missing values and set flag for adding the netCDF atttibute
              CALL MNC_CW_VATTR_MISSING(cdiag(ndId), 2,
      I            misval_r8, misval_r4, misval_int, 
@@ -507,7 +500,6 @@ C     each of these variables
      I            misval_r8, misval_r4, misval_int, 
      I            myThid )
             ENDIF
-#endif /* DIAGNOSTICS_MISSING_VALUE */
 
             IF ( ( (writeBinaryPrec .EQ. precFloat32)
      &           .AND. (fflags(listId)(1:1) .NE. 'D')
