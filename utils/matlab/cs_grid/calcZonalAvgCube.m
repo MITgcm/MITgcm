@@ -24,18 +24,22 @@ function [fldzon,mskzon,ylat,areazon] = calcZonalAvgCube(fld,ny,yc,ar,hc);
 % Dimension information.
 nBas = 0;
 dims = size(fld);
-if length(dims) > 4,
-    error(['To many dimensions (Max 4):  ',mat2str(dims)]);
+%if length(dims) > 4,
+%    error(['To many dimensions (Max 4):  ',mat2str(dims)]);
+%end
+nc = dims(2); nr=1; nt=1; nDim=4;
+if length(dims) > 2,
+  if length(size(hc)) == 3, nr=size(hc,3); end
+  if dims(3) ~= nr, nr=1; nDim=3; end
+  nt=prod(dims(3:end))/nr;
 end
-nc = dims(2);
-if length(dims) < 4, nt = 1; else nt = dims(4); end
-if length(dims) < 3, nr = 1; else nr = dims(3); end
 
 % Reshape data.
 if nr == 1, hc = hc(:,:,1); end % Account for nr = 1
-hc = reshape(hc,[6*nc*nc,nr]);
-yc = reshape(yc,[6*nc*nc,1] );
-ar = reshape(ar,[6*nc*nc,1] );
+hc = reshape(hc, [6*nc*nc,nr]);
+yc = reshape(yc, [6*nc*nc,1] );
+ar = reshape(ar, [6*nc*nc,1] );
+fld= reshape(fld,[6*nc*nc,nr,nt]);
 
 % Define latitude axis (with regular spacing) to average to.
 dy=180/ny; ylat=-90+([1:ny]-0.5)*dy;
@@ -127,7 +131,7 @@ end
 % Compute zonal average:
 fldzon = zeros(ny,nr,1+abs(nBas),nt);
 for it = 1:nt,
-    fld1t = reshape(fld(:,:,:,it),[6*nc*nc,nr]);
+    fld1t = fld(:,:,it);
     for nb = 1:1+abs(nBas),
         if nb == 1, vv1 = ar;
         else        vv1 = ar.*mskB(:,nb-1); end
@@ -147,5 +151,8 @@ for it = 1:nt,
             end
         end
     end
+end
+if length(dims) > nDim,
+  fldzon=reshape(fldzon,[ny nr 1+abs(nBas) dims(nDim:end)]);
 end
 fldzon = squeeze(fldzon);
