@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.33 2008/04/22 22:01:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.34 2008/05/27 00:08:48 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -261,6 +261,22 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       diagCode  = 'WM P    LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'UE_VEL_C'
+      diagTitle = 'Eastward Velocity (m/s) (cell center)'
+      diagUnits = 'm/s             '
+      diagCode  = 'UM      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'VN_VEL_C'
+      diagTitle = 'Northward Velocity (m/s) (cell center)'
+      diagUnits = 'm/s             '
+      diagCode  = 'VM      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'UV_VEL_C'
       diagTitle ='Product of horizontal Comp of velocity (cell center)'

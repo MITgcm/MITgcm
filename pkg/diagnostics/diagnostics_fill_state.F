@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.37 2008/04/22 22:01:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.38 2008/05/27 00:08:48 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -44,6 +44,8 @@ C     == Local variables ==
       EXTERNAL DIAGNOSTICS_IS_ON
       _RL tmpMk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tmp1k(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tmpU (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpV (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpFac, uBarC, vBarC
 #ifdef ALLOW_FIZHI
       _RL dummy1, dummy2, dummy3, dummy4, kappa, getcon
@@ -97,7 +99,9 @@ C--   fill momentum state-var diagnostics:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-        IF ( DIAGNOSTICS_IS_ON('UV_VEL_C',myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON('UE_VEL_C',myThid) .OR.
+     &       DIAGNOSTICS_IS_ON('VN_VEL_C',myThid) .OR.
+     &       DIAGNOSTICS_IS_ON('UV_VEL_C',myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO K=1,Nr
@@ -107,13 +111,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &           *(uVel(i,j,K,bi,bj)+uVel(i+1,j,K,bi,bj))
               vBarC = 0.5 _d 0
      &           *(vVel(i,j,K,bi,bj)+vVel(i,j+1,K,bi,bj))
-              tmpMk(i,j,K,bi,bj) =
-     &            ( angleCosC(i,j,bi,bj)*uBarC
-     &             -angleSinC(i,j,bi,bj)*vBarC )
-     &           *( angleSinC(i,j,bi,bj)*uBarC
-     &             +angleCosC(i,j,bi,bj)*vBarC )
+              tmpU(i,j) = angleCosC(i,j,bi,bj)*uBarC
+     &                   -angleSinC(i,j,bi,bj)*vBarC
+              tmpV(i,j) = angleSinC(i,j,bi,bj)*uBarC
+     &                   +angleCosC(i,j,bi,bj)*vBarC
+              tmpMk(i,j,K,bi,bj) = tmpU(i,j)*tmpV(i,j)
              ENDDO
             ENDDO
+            CALL DIAGNOSTICS_FILL(tmpU,'UE_VEL_C',k,1,2,bi,bj,myThid)
+            CALL DIAGNOSTICS_FILL(tmpV,'VN_VEL_C',k,1,2,bi,bj,myThid)
            ENDDO
           ENDDO
          ENDDO
