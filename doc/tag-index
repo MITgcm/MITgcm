@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.995 2008/05/23 12:40:53 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.996 2008/05/28 03:37:35 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o new S/R (pkg/mdsio/mdsio_facef_read.F) reading of sNx+1 x sNy+1 array
+  from per-face file (take S/R READSYMTILE_RS out of ini_curvilinear_grid.F);
+  fix option to read coriolis(@ cell-corner) from files with CS-grid.
 o pkg/mnc: add some attributes to standard 1D-coordinate variables
 o pkg/diagnostics: enforce missing_value attribute for scalar variables at
   mass points, when using mnc for output
