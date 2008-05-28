@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.35 2007/08/20 22:08:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.36 2008/05/28 03:02:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -43,19 +43,15 @@ C     myThid -  Number of this instance of INI_CURVILINEAR_GRID
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi,bj
-      INTEGER I,J
+      INTEGER i,j
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL anglesAreSet
 #ifdef ALLOW_MNC
       CHARACTER*(80) mncFn
 #endif
 #ifndef OLD_GRID_IO
-# ifdef ALLOW_EXCH2
-      _RL buf(sNx*nSx*nPx+1)
+      INTEGER fp
       INTEGER myTile
-# else
-      _RL buf(sNx+1,sNy+1)
-# endif
       INTEGER iG, iL, iLen
       CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) tmpBuf
@@ -68,8 +64,8 @@ C--   Set everything to zero everywhere
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
           xC(i,j,bi,bj)=0.
           yC(i,j,bi,bj)=0.
           xG(i,j,bi,bj)=0.
@@ -90,10 +86,10 @@ C--   Set everything to zero everywhere
           tanPhiAtV(i,j,bi,bj)=0.
           angleCosC(i,j,bi,bj)=1.
           angleSinC(i,j,bi,bj)=0.
-          cosFacU(J,bi,bj)=1.
-          cosFacV(J,bi,bj)=1.
-          sqCosFacU(J,bi,bj)=1.
-          sqCosFacV(J,bi,bj)=1.
+          cosFacU(j,bi,bj)=1.
+          cosFacV(j,bi,bj)=1.
+          sqCosFacU(j,bi,bj)=1.
+          sqCosFacV(j,bi,bj)=1.
          ENDDO
         ENDDO
 
@@ -270,15 +266,21 @@ C--   read NetCDF files:
 C--   read Binary files:
 #endif /* ALLOW_MNC */
 
+C--   File Precision: keep 64-bits precision (as it used to be)
+C     but should probably change it to the standard file-prec (= readBinaryPrec)
+      fp = precFloat64
+c     fp = readBinaryPrec
+
       DO bj = 1,nSy
        DO bi = 1,nSx
-        iG=bi+(myXGlobalLo-1)/sNx
-        WRITE(tmpBuf,'(A,I4)') 'tile:',iG
+        iG = bi+(myXGlobalLo-1)/sNx
+        myTile = iG
 #ifdef ALLOW_EXCH2
         myTile = W2_myTileList(bi)
-        WRITE(tmpBuf,'(A,I4)') 'tile:',myTile
         iG = exch2_myface(myTile)
 #endif
+        WRITE(tmpBuf,'(A,I4)') 'tile:',myTile
+
         iLen = ILNBLNK(horizGridFile)
         IF ( iLen .EQ. 0 ) THEN
           WRITE(fName,'("tile",I3.3,".mitgrid")') iG
@@ -294,67 +296,74 @@ C--   read Binary files:
      &                      SQUEEZE_RIGHT , myThid)
         WRITE(msgBuf,'(A)') '  =>'
 
-        CALL READSYMTILE_RS(fName,1,xC,buf,bi,bj,myThid)
+#ifdef ALLOW_MDSIO
+        CALL MDS_FACEF_READ_RS( fName, fp, 1,  xC, bi, bj, myThid )
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'xC'
-        CALL READSYMTILE_RS(fName,2,yC,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp, 2,  yC, bi, bj, myThid )
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'yC'
-        CALL READSYMTILE_RS(fName,3,dxF,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp, 3, dxF, bi, bj, myThid )
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dxF'
-        CALL READSYMTILE_RS(fName,4,dyF,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp, 4, dyF, bi, bj, myThid )
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dyF'
-        CALL READSYMTILE_RS(fName,5,rA,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp, 5,  rA, bi, bj, myThid )
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'rA'
-        CALL READSYMTILE_RS(fName,6,xG,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp, 6,  xG, bi, bj, myThid )
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'xG'
-        CALL READSYMTILE_RS(fName,7,yG,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp, 7,  yG, bi, bj, myThid )
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'yG'
-        CALL READSYMTILE_RS(fName,8,dxV,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp, 8, dxV, bi, bj, myThid )
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dxV'
-        CALL READSYMTILE_RS(fName,9,dyU,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp, 9, dyU, bi, bj, myThid )
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dyU'
-        CALL READSYMTILE_RS(fName,10,rAz,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp,10, rAz, bi, bj, myThid )
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'rAz'
-        CALL READSYMTILE_RS(fName,11,dxC,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp,11, dxC, bi, bj, myThid )
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dxC'
-        CALL READSYMTILE_RS(fName,12,dyC,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp,12, dyC, bi, bj, myThid )
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dyC'
-        CALL READSYMTILE_RS(fName,13,rAw,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp,13, rAw, bi, bj, myThid )
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'rAw'
-        CALL READSYMTILE_RS(fName,14,rAs,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp,14, rAs, bi, bj, myThid )
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'rAs'
-        CALL READSYMTILE_RS(fName,15,dxG,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp,15, dxG, bi, bj, myThid )
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dxG'
-        CALL READSYMTILE_RS(fName,16,dyG,buf,bi,bj,myThid)
+        CALL MDS_FACEF_READ_RS( fName, fp,16, dyG, bi, bj, myThid )
         iL = ILNBLNK(tmpBuf)
         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dyG'
 
         iLen = ILNBLNK(horizGridFile)
         IF ( iLen.GT.0 ) THEN
-         CALL READSYMTILE_RS(fName,17,angleCosC,buf,bi,bj,myThid)
+         CALL MDS_FACEF_READ_RS(fName,fp,17,angleCosC,bi,bj,myThid)
          iL = ILNBLNK(msgBuf)
          WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'AngleCS'
-         CALL READSYMTILE_RS(fName,18,angleSinC,buf,bi,bj,myThid)
+         CALL MDS_FACEF_READ_RS(fName,fp,18,angleSinC,bi,bj,myThid)
          iL = ILNBLNK(tmpBuf)
          WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'AngleSN'
          anglesAreSet = .TRUE.
         ELSE
          anglesAreSet = .FALSE.
         ENDIF
+#else /* ALLOW_MDSIO */
+        WRITE(msgBuf,'(2A)')
+     &   'INI_CURVILINEAR_GRID: Needs to compile MDSIO pkg'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R INI_CURVILINEAR_GRID'
+#endif /* ALLOW_MDSIO */
 
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid)
@@ -393,7 +402,7 @@ C--   Stop if Angle have not been loaded but are needed :
         WRITE(msgBuf,'(2A)')
      &   'INI_CURVILINEAR_GRID: Angle of CurvilinearGrid not set',
      &   ' but needed for 3-D Coriolis'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R INI_CURVILINEAR_GRID'
       ENDIF
       _END_MASTER(myThid)
@@ -425,118 +434,6 @@ C--   Now let's look at all these beasts
         CALL PLOT_FIELD_XYRS(angleCosC, 'Current AngleCS ', 0, myThid )
         CALL PLOT_FIELD_XYRS(angleSinC, 'Current AngleSN ', 0, myThid )
       ENDIF
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-CBOP
-C     !ROUTINE: READSYMTILE_RS
-C     !INTERFACE:
-      SUBROUTINE READSYMTILE_RS(
-     I                           fName, irec,
-     U                           array, buf,
-     I                           bi,bj, myThid )
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE READSYMTILE_RS
-C     *==========================================================*
-C     *==========================================================*
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-C     === Global variables ===
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#ifdef ALLOW_EXCH2
-#include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
-#endif /* ALLOW_EXCH2 */
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-      CHARACTER*(*) fName
-      INTEGER irec
-      _RS array(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-#ifdef ALLOW_EXCH2
-      _RL buf(1:sNx*nSx*nPx+1)
-#else
-      _RL buf(1:sNx+1,1:sNy+1)
-#endif /* ALLOW_EXCH2 */
-      INTEGER bi,bj, myThid
-CEOP
-
-C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER I,J,dUnit, iLen
-      INTEGER length_of_rec
-      INTEGER MDS_RECLEN
-#ifdef ALLOW_EXCH2
-      INTEGER TN, dNx, dNy, TBX, TBY, TNX, TNY, II, iBase
-#endif
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
-      iLen = ILNBLNK(fName)
-#ifdef ALLOW_EXCH2
-C     Figure out offset of tile within face
-      TN  = W2_myTileList(bi)
-      dNx = exch2_mydnx(TN)
-      dNy = exch2_mydny(TN)
-      TBX = exch2_tbasex(TN)
-      TBY = exch2_tbasey(TN)
-      TNX = exch2_tnx(TN)
-      TNY = exch2_tny(TN)
-
-      CALL MDSFINDUNIT( dUnit, myThid )
-      length_of_rec=MDS_RECLEN( 64, (dNx+1), myThid )
-      OPEN( dUnit, file=fName(1:iLen), status='old',
-     &             access='direct', recl=length_of_rec )
-      J=0
-      iBase=(irec-1)*(dny+1)
-      DO I=1+TBY,sNy+1+TBY
-       READ(dUnit,rec=I+iBase)(buf(ii),ii=1,dNx+1)
-#ifdef _BYTESWAPIO
-#ifdef REAL4_IS_SLOW
-       CALL MDS_BYTESWAPR8((dNx+1), buf)
-#else
-       CALL MDS_BYTESWAPR4((dNx+1), buf)
-#endif
-#endif
-       J=J+1
-       DO II=1,sNx+1
-        array(II,J,bi,bj)=buf(II+TBX)
-       ENDDO
-      ENDDO
-      CLOSE( dUnit )
-
-#else /* ALLOW_EXCH2 */
-
-      CALL MDSFINDUNIT( dUnit, myThid )
-      length_of_rec=MDS_RECLEN( 64, (sNx+1)*(sNy+1), myThid )
-      OPEN( dUnit, file=fName(1:iLen), status='old',
-     &             access='direct', recl=length_of_rec )
-      READ(dUnit,rec=irec) buf
-      CLOSE( dUnit )
-
-#ifdef _BYTESWAPIO
-#ifdef REAL4_IS_SLOW
-      CALL MDS_BYTESWAPR8((sNx+1)*(sNy+1), buf)
-#else
-      CALL MDS_BYTESWAPR4((sNx+1)*(sNy+1), buf)
-#endif
-#endif
-
-      DO J=1,sNy+1
-       DO I=1,sNx+1
-        array(I,J,bi,bj)=buf(I,J)
-       ENDDO
-      ENDDO
-c       write(0,*) irec,buf(1,1),array(1,1,1,1)
-
-#endif /* ALLOW_EXCH2 */
 
       RETURN
       END
