@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.26 2006/10/17 18:20:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.27 2008/05/28 03:06:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,11 +18,15 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_EXCH2
+# include "W2_EXCH2_TOPOLOGY.h"
+# include "W2_EXCH2_PARAMS.h"
+#endif
 #ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
+# include "MNC_PARAMS.h"
 #endif
 #ifdef ALLOW_MONITOR
-#include "MONITOR.h"
+# include "MONITOR.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -40,6 +44,14 @@ C     facGrid :: Factor for grid to meter conversion
       INTEGER bi,bj
       INTEGER i, j
       _RL facGrid
+#ifndef OLD_GRID_IO
+      INTEGER myTile, iG, iLen
+      CHARACTER*(MAX_LEN_FNAM) fName
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+#endif
+
 
 C     Initialise coriolis parameter
       IF     ( useConstantF ) THEN
@@ -106,9 +118,12 @@ C       Special custom form
         ENDDO
         _BARRIER
         CALL READ_REC_XY_RS( 'fCoriC.bin', fCori,   1, 0, myThid )
-        CALL READ_REC_XY_RS( 'fCoriG.bin', fCoriG,  1, 0, myThid )
         CALL READ_REC_XY_RS( 'fCorCs.bin', fCoriCos,1, 0, myThid )
-        IF ( useCubedSphereExchange ) THEN
+        IF ( .NOT.useCubedSphereExchange ) THEN
+         CALL READ_REC_XY_RS('fCoriG.bin', fCoriG,  1, 0, myThid )
+        ELSE
+#ifdef OLD_GRID_IO
+         CALL READ_REC_XY_RS('fCoriG.bin', fCoriG,  1, 0, myThid )
          _BARRIER
 C-       deal with the 2 missing corners (for fCoriG):
          DO bj = myByLo(myThid), myByHi(myThid)
@@ -129,6 +144,35 @@ C    with 2 polar faces + 4 equatorials:
            ENDIF
           ENDDO
          ENDDO
+#else  /* OLD_GRID_IO */
+         _BEGIN_MASTER(myThid)
+         DO bj = 1,nSy
+          DO bi = 1,nSx
+           iG = bi+(myXGlobalLo-1)/sNx
+           myTile = iG
+#ifdef ALLOW_EXCH2
+           myTile = W2_myTileList(bi)
+           iG = exch2_myface(myTile)
+#endif
+           WRITE(fName,'(2A,I3.3,A)') 'fCoriG','.face',iG,'.bin'
+           iLen = ILNBLNK(fName)
+           WRITE(msgBuf,'(A,I6,2A)')
+     &       ' Reading tile:', myTile, ' from file ', fName(1:iLen)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT , myThid )
+#ifdef ALLOW_MDSIO
+           CALL MDS_FACEF_READ_RS( fName, readBinaryPrec, 1,
+     &                             fCoriG, bi, bj, myThid )
+#else /* ALLOW_MDSIO */
+           WRITE(msgBuf,'(A)') 'INI_CORI: Needs to compile MDSIO pkg'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R INI_CORI'
+#endif /* ALLOW_MDSIO */
+
+          ENDDO
+         ENDDO
+         _END_MASTER(myThid)
+#endif /* OLD_GRID_IO */
         ENDIF
 
         CALL EXCH_XY_RS( fCori, myThid )
