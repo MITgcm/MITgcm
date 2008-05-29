@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.996 2008/05/28 03:37:35 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.997 2008/05/29 21:33:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint59r
 o new S/R (pkg/mdsio/mdsio_facef_read.F) reading of sNx+1 x sNy+1 array
   from per-face file (take S/R READSYMTILE_RS out of ini_curvilinear_grid.F);
   fix option to read coriolis(@ cell-corner) from files with CS-grid.
