@@ -6,7 +6,7 @@ FC=ifort
 LD=ifort
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
-MAKEDEPEND=/usr/X11R6/bin/makedepend
+#MAKEDEPEND=/usr/X11R6/bin/makedepend
 NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
 
