@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.997 2008/05/29 21:33:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.998 2008/05/30 02:53:14 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o bridging the gap between eddy stress and GM.
+  -> eddyTau is replaced with eddyPsi (eddyTau = f x rho0 x eddyPsi)
+      along with a change in CPP option (now ALLOW_EDDYPSI).
+  -> when using GM w/ GM_AdvForm: 
+      The total eddy streamfunction (Psi = eddyPsi + K x Slope)
+      is applied either in the tracer Eq. or in momentum Eq.
+      depending on data.gmredi (intro. GM_InMomAsStress).
+  -> ALLOW_EDDYPSI_CONTROL for estimation purpose.
+  The key modifications are in model/src/taueddy_external_forcing.F
+  pkg/gmredi/gmredi_calc_*F pkg/gmredi/gmredi_*transport.F
 checkpoint59r
 o new S/R (pkg/mdsio/mdsio_facef_read.F) reading of sNx+1 x sNy+1 array
   from per-face file (take S/R READSYMTILE_RS out of ini_curvilinear_grid.F);
