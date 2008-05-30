@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_ad.flow,v 1.4 2007/11/13 19:37:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_ad.flow,v 1.5 2008/05/30 19:43:18 heimbach Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -114,3 +114,9 @@ C subroutine mdswritefieldyz_loc
 C----------------------------------------
 CADJ SUBROUTINE mdswritefieldyz_loc  INPUT  = 1,2,3,4,5,6,7,8,9
 CADJ SUBROUTINE mdswritefieldyz_loc  OUTPUT =
+
+C----------------------------------------
+C subroutine MDS_FACEF_READ_RS
+C----------------------------------------
+CADJ SUBROUTINE MDS_FACEF_READ_RS  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE MDS_FACEF_READ_RS  OUTPUT =       4
