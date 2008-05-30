@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.9 2008/03/28 18:48:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.10 2008/05/30 02:50:16 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -23,6 +23,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GMREDI.h"
+#include "FFIELDS.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -134,6 +135,9 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
      &      +op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
      &      )*maskW(i,j,k,bi,bj)
+#ifdef ALLOW_EDDYPSI
+     &     +eddyPsiX(i,j,k,bi,bj)*maskW(i,j,k,bi,bj)
+#endif
         ENDDO
        ENDDO
        DO j=1-Oly+1,sNy+Oly
@@ -148,6 +152,9 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
      &      +op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
      &      )*maskS(i,j,k,bi,bj)
+#ifdef ALLOW_EDDYPSI
+     &     +eddyPsiY(i,j,k,bi,bj)*maskS(i,j,k,bi,bj)
+#endif
         ENDDO
        ENDDO
 

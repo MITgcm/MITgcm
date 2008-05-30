@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_fill.F,v 1.2 2007/08/20 17:58:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_fill.F,v 1.3 2008/05/30 02:50:16 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -35,7 +35,7 @@ CEndOfInterface
 #ifdef ALLOW_GMREDI
 
 C     == Local variables ==
-#ifdef ALLOW_TAU_EDDY
+#ifdef ALLOW_EDDYPSI
       INTEGER i,j,k
       _RL tmpfld3dloc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
@@ -71,7 +71,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        ENDIF
 #endif
 
-#ifdef ALLOW_TAU_EDDY
+#ifdef ALLOW_EDDYPSI
        IF ( DIAGNOSTICS_IS_ON('GMEdTauX',myThid) ) THEN
         DO k = 1, Nr
          DO j = 1, sny
@@ -99,7 +99,7 @@ c
         CALL DIAGNOSTICS_FILL(tmpfld3dloc,'GMEdTauY',
      &   0,Nr,1,bi,bj,myThid)
        ENDIF
-#endif /* ALLOW_TAU_EDDY */
+#endif /* ALLOW_EDDYPSI */
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

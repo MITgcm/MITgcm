@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_calc_wflow.F,v 1.4 2006/06/18 23:28:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_calc_wflow.F,v 1.5 2008/05/30 02:50:16 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -43,7 +43,8 @@ C     i, j :: loop indices
       _RL delPsi
 CEOP
 
-      IF (GM_AdvForm .AND. .NOT.GM_AdvSeparate) THEN
+      IF (GM_AdvForm .AND. .NOT.GM_AdvSeparate
+     & .AND. .NOT.GM_InMomAsStress) THEN
 
        DO j=1-Oly,sNy+Oly-1
         DO i=1-Olx,sNx+Olx-1

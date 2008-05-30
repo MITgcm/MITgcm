@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.28 2008/05/16 21:00:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.29 2008/05/30 02:49:05 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -1398,10 +1398,7 @@ c--           Test for missing values.
       endif
 #endif
 
-#if   ( defined (ALLOW_TAUEDDY_COST_CONTRIBUTION) || \
-     defined (ALLOW_COST_TAU_EDDY) || \
-     defined (ALLOW_EDTAUX_CONTROL) || \
-     defined (ALLOW_EDTAUY_CONTROL) )
+#if ( defined (ALLOW_EDDYPSI_COST_CONTRIBUTION) || defined (ALLOW_EDDYPSI_CONTROL) )
       if ( edtau_errfile .NE. ' ' ) then
 
         call mdsreadfield( edtau_errfile, cost_iprec, cost_yftype,
@@ -1830,10 +1827,7 @@ c
      &     1, 0, mythid, dummy)
 #endif
 
-#if   ( defined (ALLOW_TAUEDDY_COST_CONTRIBUTION) || \
-     defined (ALLOW_COST_TAU_EDDY) || \
-     defined (ALLOW_EDTAUX_CONTROL) || \
-     defined (ALLOW_EDTAUY_CONTROL) )
+#if   ( defined (ALLOW_EDDYPSI_COST_CONTRIBUTION) || defined (ALLOW_EDDYPSI_CONTROL) )
       call active_write_xyz( 'wedtauxFld',wedtauxFld,
      &     1, 0, mythid, dummy)
       call active_write_xyz( 'wedtauyFld',wedtauyFld,

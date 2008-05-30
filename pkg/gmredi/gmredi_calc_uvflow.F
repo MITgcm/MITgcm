@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_calc_uvflow.F,v 1.4 2006/06/18 23:28:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_calc_uvflow.F,v 1.5 2008/05/30 02:50:16 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -49,7 +49,8 @@ C     i, j :: loop indices
       _RL delPsi
 CEOP
 
-      IF (GM_AdvForm .AND. .NOT.GM_AdvSeparate) THEN
+      IF (GM_AdvForm .AND. .NOT.GM_AdvSeparate
+     & .AND. .NOT.GM_InMomAsStress) THEN
 
        kp1 = MIN(k+1,Nr)
        maskp1 = 1.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_tau_eddy.F,v 1.7 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_tau_eddy.F,v 1.8 2008/05/30 02:49:05 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -71,7 +71,7 @@ c     == external functions ==
 c     == end of interface ==
 
 
-#ifdef ALLOW_TAUEDDY_COST_CONTRIBUTION
+#ifdef ALLOW_EDDYPSI_COST_CONTRIBUTION
 C------------------------------------------------------
 C     Cost function consistent with ECCO standards
 C------------------------------------------------------
@@ -202,7 +202,7 @@ c--     Print cost function for all tiles.
 
 
 
-#elif (defined (ALLOW_TAU_EDDY) && defined (ALLOW_COST_TAU_EDDY))
+#elif (defined (ALLOW_COST_TAU_EDDY))
 C------------------------------------------------------
 C     Cost function as a distance to max. value
 C------------------------------------------------------
@@ -230,12 +230,14 @@ c
         do j=1,sNy
          do i=1,sNx
           do k=2,Nr
-           tau2_temp = (rhonil*Eddytaux(i,j,k,bi,bj))**2
+           tau2_temp = ( rhonil*eddyPsiX(i,j,k,bi,bj)
+     &  *0.5*(_fCori(i,j,bi,bj)+_fCori(i-1,j,bi,bj)) )**2
            if ( tau2_temp .gt. tau2_max) then
              locfc = locfc + maskW(i,j,k,bi,bj)*
      &               ( tau2_temp - tau2_max )
            endif
-           tau2_temp = (rhonil*Eddytauy(i,j,k,bi,bj))**2
+           tau2_temp = ( rhonil*eddyPsiY(i,j,k,bi,bj) 
+     &  *0.5*(_fCori(i,j,bi,bj)+_fCori(i,j-1,bi,bj)) )**2
            if ( tau2_temp .gt. tau2_max) then
              locfc = locfc + maskS(i,j,k,bi,bj)*
      &               ( tau2_temp - tau2_max )

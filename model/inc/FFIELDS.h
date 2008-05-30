@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.37 2007/12/20 00:43:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.38 2008/05/30 02:46:19 gforget Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -77,8 +77,8 @@ C                Units are           meters (converted)
 C  sIceLoad :: sea-ice loading, expressed in Mass of ice+snow / area unit
 C                Units are           kg/m^2
 C              Note: only used with Sea-Ice & RealFreshWater formulation
-C     EddyTaux -Zonal Eddy stress       in N/m^2 used in external_forcing.F
-C     Eddytauy -Meridional Eddy stress  in N/m^2 used in external_forcing.F
+C     eddyPsiX -Zonal Eddy Streamfunction in m^2/s used in taueddy_external_forcing.F
+C     eddyPsiY -Meridional Streamfunction in m^2/s used in taueddy_external_forcing.F
 C     EfluxY - y-component of Eliassen-Palm flux vector
 C     EfluxP - p-component of Eliassen-Palm flux vector
 
@@ -116,10 +116,10 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       _RL  EfluxP (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
-#ifdef ALLOW_TAU_EDDY
-      COMMON /edtauFFIELDS/ EddyTaux,EddyTauy
-      _RS  EddyTaux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS  EddyTauy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#ifdef ALLOW_EDDYPSI
+      COMMON /eddypsiFFIELDS/ eddyPsiX,eddyPsiY
+      _RS  eddyPsiX (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  eddyPsiY (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 #ifndef EXCLUDE_FFIELDS_LOAD

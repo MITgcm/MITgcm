@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.31 2008/02/02 02:34:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.32 2008/05/30 02:48:28 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -528,16 +528,14 @@ CML# endif
      &         weighttype, nwetcglobal, mythid)
 #endif
 
-#ifdef ALLOW_EDTAUX_CONTROL
+#ifdef ALLOW_EDDYPSI_CONTROL
           ivartype    = 25
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wedtaux"
           call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
      &         fname_edtaux(ictrlgrad), "maskCtrlW",
      &         weighttype, wedtaux, nwetwglobal, mythid)
-#endif
 
-#ifdef ALLOW_EDTAUY_CONTROL
           ivartype    = 26
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wedtauy"

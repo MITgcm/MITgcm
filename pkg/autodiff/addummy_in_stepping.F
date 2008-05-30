@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.43 2008/02/02 02:35:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.44 2008/05/30 02:47:50 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -85,11 +85,9 @@ c
        call adexch_xy_rl( mythid,adfv )
        call adexch_xy_rl( mythid,adqnet )
        call adexch_xy_rl( mythid,adempmr )
-#ifdef ALLOW_EDTAUX_CONTROL
-       call adexch_xyz_rl( mythid,adeddytaux )
-#endif
-#ifdef ALLOW_EDTAUY_CONTROL
-       call adexch_xyz_rl( mythid,adeddytauy )
+#ifdef ALLOW_EDDYPSI_CONTROL
+       call adexch_xyz_rl( mythid,adeddypsix )
+       call adexch_xyz_rl( mythid,adeddypsiy )
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
        call adexch_xyz_rl( mythid,addiffkr )
@@ -155,13 +153,11 @@ C--     Read IO error counter
         CALL WRITE_FLD_XYZ_RL ( 'ADJkapredi.',suff, adkapredi,
      &       myIter, myThid)
 #endif
-#ifdef ALLOW_EDTAUX_CONTROL
+#ifdef ALLOW_EDDYPSI_CONTROL
         CALL WRITE_FLD_XYZ_RL(
-     &       'ADJedtaux. ',suff, adeddytaux, myIter, myThid)
-#endif
-#ifdef ALLOW_EDTAUY_CONTROL
+     &       'ADJeddypsix. ',suff, adeddypsix, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL(
-     &       'ADJedtauy. ',suff, adeddytauy, myIter, myThid)
+     &       'ADJeddypsiy. ',suff, adeddypsiy, myIter, myThid)
 #endif
 #ifdef ALLOW_SST0_CONTROL
         CALL WRITE_FLD_XY_RL( 'ADJsst.',suff, adsst, myIter, myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.14 2004/09/17 23:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.15 2008/05/30 02:50:16 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -132,7 +132,8 @@ C-      Off-diagonal components of vertical flux
       ENDDO
 
 #ifdef GM_BOLUS_ADVEC
-      IF (GM_AdvForm .AND. GM_AdvSeparate) THEN
+      IF (GM_AdvForm .AND. GM_AdvSeparate
+     & .AND. .NOT.GM_InMomAsStress) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          rTrans(i,j) = 

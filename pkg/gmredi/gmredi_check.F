@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.15 2007/11/05 19:03:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.16 2008/05/30 02:50:16 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -60,6 +60,8 @@ CEOP
 C- print out some kee parameters :
        CALL WRITE_0D_L( GM_AdvForm, INDEX_NONE,
      &  'GM_AdvForm =', '  /* if FALSE => use SkewFlux Form */')
+       CALL WRITE_0D_L( GM_InMomAsStress, INDEX_NONE,
+     &  'GM_InMomAsStress =', '  /* if TRUE => apply as Eddy Stress */')
        CALL WRITE_0D_L( GM_AdvSeparate, INDEX_NONE,
      & 'GM_AdvSeparate =',' /* Calc Bolus & Euler Adv. separately */')
        CALL WRITE_0D_L( GM_ExtraDiag, INDEX_NONE,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.55 2007/07/27 22:18:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.56 2008/05/30 02:45:43 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -153,7 +153,7 @@ C--   Initialise 3-dim. diffusivities
       CALL INI_MIXING( myThid )
       _BARRIER
 
-#ifdef ALLOW_TAU_EDDY
+#ifdef ALLOW_EDDYPSI
 C--  Initialise eddy diffusivities
       CALL TAUEDDY_INIT_VARIA( myThid )
 #endif

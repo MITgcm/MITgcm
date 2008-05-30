@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.17 2008/04/29 21:43:22 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.18 2008/05/30 02:48:28 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -253,23 +253,23 @@ c--   SSS relaxation coefficient.
 #endif
 
 
-#if (defined (ALLOW_EDTAUX_CONTROL) && defined (ALLOW_EDTAUY_CONTROL))
+#ifdef ALLOW_EDDYPSI_CONTROL
       boundsVec(1)=0.
       boundsVec(2)=0.
       boundsVec(3)=0.
       boundsVec(4)=0.
       boundsVec(5)=0.
       paramSmooth=1      
-c-- zonal eddy stress : edtaux
+c-- zonal eddy streamfunction : eddyPsiX
       call ctrl_map_ini_gen3D(xx_edtaux_file, 'wedtauxFld', 
-     & xx_edtaux_dummy, boundsVec, eddytaux, maskw, paramSmooth,
+     & xx_edtaux_dummy, boundsVec, eddyPsiX, maskw, paramSmooth,
      & mythid )
-c-- meridional eddy stress : edtauy
+c-- meridional eddy streamfunction : eddyPsiY
       call ctrl_map_ini_gen3D(xx_edtauy_file, 'wedtauyFld', 
-     & xx_edtauy_dummy, boundsVec, eddytauy, masks, paramSmooth, 
+     & xx_edtauy_dummy, boundsVec, eddyPsiY, masks, paramSmooth, 
      & mythid )
 c-- exchange UV:
-       CALL EXCH_UV_XYZ_RS(eddyTauX,eddyTauY,.TRUE.,myThid)
+       CALL EXCH_UV_XYZ_RS(eddyPsiX,eddyPsiY,.TRUE.,myThid)
 #endif
 
 

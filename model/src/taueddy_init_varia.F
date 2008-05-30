@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/taueddy_init_varia.F,v 1.1 2006/02/15 03:52:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/taueddy_init_varia.F,v 1.2 2008/05/30 02:45:43 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,7 +29,7 @@ C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_UVEL 
       INTEGER myThid
 
-#ifdef ALLOW_TAU_EDDY
+#ifdef ALLOW_EDDYPSI
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -45,43 +45,24 @@ C--   Over all tiles
         DO K=1,Nr
          DO J=1-Oly,sNy+Oly
           DO I=1-Olx,sNx+Olx
-           eddyTauX(i,j,k,bi,bj)=0.
-           eddyTauY(i,j,k,bi,bj)=0.
+           eddyPsiX(i,j,k,bi,bj)=0.
+           eddyPsiY(i,j,k,bi,bj)=0.
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
-      IF ( eddyTauxFile .NE. ' ' ) THEN
-       CALL MDSREADFIELD(eddyTauxFile,precFloat32,
-     &                  'RS',Nr,eddyTauX,1,myThid)
+      IF ( eddyPsixFile .NE. ' ' ) THEN
+       CALL MDSREADFIELD(eddyPsiXFile,precFloat32,
+     &                  'RS',Nr,eddyPsiX,1,myThid)
       ENDIF
-      IF ( eddyTauyFile .NE. ' ' ) THEN
-       CALL MDSREADFIELD(eddyTauyFile,precFloat32,
-     &                  'RS',Nr,eddyTauY,1,myThid)
+      IF ( eddyPsiyFile .NE. ' ' ) THEN
+       CALL MDSREADFIELD(eddyPsiYFile,precFloat32,
+     &                  'RS',Nr,eddyPsiY,1,myThid)
       ENDIF
 
-cph(
-cph divide by rhoConst to suppress it in momentum eqn.
-cph see taueddy_external_forcing
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-           eddyTauX(i,j,k,bi,bj)=eddyTauX(i,j,k,bi,bj)
-     &      *recip_rhoConst
-           eddyTauY(i,j,k,bi,bj)=eddyTauY(i,j,k,bi,bj)
-     &      *recip_rhoConst
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-cph)
-
-      CALL EXCH_UV_XYZ_RS(eddyTauX,eddyTauY,.TRUE.,myThid)
+      CALL EXCH_UV_XYZ_RS(eddyPsiX,eddyPsiY,.TRUE.,myThid)
 
 #endif /* ALLOW_AUTODIFF_TAMC */
 

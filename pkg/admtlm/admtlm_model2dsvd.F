@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_model2dsvd.F,v 1.5 2007/04/20 18:46:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_model2dsvd.F,v 1.6 2008/05/30 02:47:26 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -447,16 +447,14 @@ C     place holder of obsolete variable jG
      &      weighttype, lxxadxx, mythid)
 #endif
 
-#ifdef ALLOW_EDTAUX_CONTROL
+#ifdef ALLOW_EDDYPSI_CONTROL
           ivartype = 25
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wedtaux"
           call ctrl_set_pack_xyz(
      &         cunit, ivartype, fname_edtaux(ictrlgrad), "maskCtrlW",
      &         weighttype, wunit, lxxadxx, mythid)
-#endif
 
-#ifdef ALLOW_EDTAUY_CONTROL
           ivartype = 26
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wedtauy"

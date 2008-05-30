@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/taueddy_external_forcing.F,v 1.2 2006/02/26 19:44:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/taueddy_external_forcing.F,v 1.3 2008/05/30 02:45:43 gforget Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -28,6 +29,9 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#ifdef ALLOW_GMREDI
+#include "GMREDI.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -41,7 +45,7 @@ C     kLev
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_TAU_EDDY
+#ifdef ALLOW_EDDYPSI
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     Loop counters
@@ -59,6 +63,9 @@ C     number of surface interface layer
       ENDIF
 
 C     Add zonal eddy momentum impulse into the layer
+#ifdef ALLOW_GMREDI
+      if ( GM_InMomAsStress ) then
+#endif
       Kp1=min(klev+1,Nr)
       maskp1=1.
       maskm1=1.
@@ -68,11 +75,21 @@ C     Add zonal eddy momentum impulse into the layer
        DO i=iMin,iMax
         gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
      &  +foFacMom*
-     &  (maskm1*_maskW(i,j,klev,bi,bj)*eddyTauX(i,j,klev,bi,bj)
-     &  -maskp1*_maskW(i,j,kp1,bi,bj)*eddyTauX(i,j,kp1,bi,bj))
+#ifdef ALLOW_GMREDI
+     &  (maskm1*_maskW(i,j,klev,bi,bj)*GM_PsiX(i,j,klev,bi,bj)
+     &  -maskp1*_maskW(i,j,kp1,bi,bj)*GM_PsiX(i,j,kp1,bi,bj))
+#else
+     &  (maskm1*_maskW(i,j,klev,bi,bj)*eddyPsiX(i,j,klev,bi,bj)
+     &  -maskp1*_maskW(i,j,kp1,bi,bj)*eddyPsiX(i,j,kp1,bi,bj))
+#endif
      &  *recip_drF(klev)*_recip_hFacW(i,j,klev,bi,bj)
+     &  *0.5*(_fCori(i,j,bi,bj)+_fCori(i-1,j,bi,bj))
        ENDDO
       ENDDO
+#ifdef ALLOW_GMREDI
+      endif
+#endif
+
 #endif
 
       RETURN
@@ -102,6 +119,9 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#ifdef ALLOW_GMREDI
+#include "GMREDI.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -115,7 +135,7 @@ C     kLev
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_TAU_EDDY
+#ifdef ALLOW_EDDYPSI
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     Loop counters
@@ -133,6 +153,9 @@ C     number of surface interface layer
       ENDIF
 
 C     Add meridional eddy momentum impulse into the layer
+#ifdef ALLOW_GMREDI
+      if ( GM_InMomAsStress ) then
+#endif
       Kp1=min(klev+1,Nr)
       maskp1=1.
       maskm1=1.
@@ -142,11 +165,21 @@ C     Add meridional eddy momentum impulse into the layer
        DO i=iMin,iMax
         gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
      &  +foFacMom*
-     &  (maskm1*_maskS(i,j,klev,bi,bj)*eddyTauY(i,j,klev,bi,bj)
-     &  -maskp1*_maskS(i,j,kp1,bi,bj)*eddyTauY(i,j,kp1,bi,bj))
+#ifdef ALLOW_GMREDI
+     &  (maskm1*_maskS(i,j,klev,bi,bj)*GM_PsiY(i,j,klev,bi,bj)
+     &  -maskp1*_maskS(i,j,kp1,bi,bj)*GM_PsiY(i,j,kp1,bi,bj))
+#else
+     &  (maskm1*_maskS(i,j,klev,bi,bj)*eddyPsiY(i,j,klev,bi,bj)
+     &  -maskp1*_maskS(i,j,kp1,bi,bj)*eddyPsiY(i,j,kp1,bi,bj))
+#endif
      &  *recip_drF(klev)*_recip_hFacS(i,j,klev,bi,bj)
+     &  *0.5*(_fCori(i,j,bi,bj)+_fCori(i,j-1,bi,bj))
        ENDDO
       ENDDO
+#ifdef ALLOW_GMREDI
+      if ( GM_InMomAsStress ) then
+#endif
+
 #endif
 
       RETURN

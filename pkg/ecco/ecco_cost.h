@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.31 2008/02/02 02:34:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.32 2008/05/30 02:49:05 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -312,7 +312,7 @@ c     objf_kapredi  - kappa REDI contribution
 c     objf_diffkr - diffusion contribution
 c     objf_theta_ini_fin - final vs. initial theta misfit
 c     objf_salt_ini_fin  - final vs. initial salt misfit
-c     objf_eddytau - eddy stress contribution
+c     objf_eddytau - eddy streamfunction contribution
 c     objf_bottomdrag - bottom drag contribution
 c
 c     mult_"var" - multipliers for the individual cost

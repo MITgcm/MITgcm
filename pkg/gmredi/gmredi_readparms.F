@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.16 2007/06/20 22:11:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.17 2008/05/30 02:50:16 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -45,6 +45,7 @@ C     GM_Small_Number :: epsilon used in computing the slope
 C     GM_slopeSqCutoff :: slope^2 cut-off value
       NAMELIST /GM_PARM01/
      &          GM_AdvForm, GM_AdvSeparate,
+     &          GM_InMomAsStress,
      &          GM_isopycK,
      &          GM_background_K,
      &          GM_taper_scheme,
@@ -70,6 +71,7 @@ C     the package is active.
 C--   Default values GM/Redi
       GM_AdvForm          = .FALSE.
       GM_AdvSeparate      = .FALSE.
+      GM_InMomAsStress    = .FALSE.
       GM_isopycK          = -999.
       GM_background_K     = 0. _d 0
       GM_maxslope         = 1. _d -2

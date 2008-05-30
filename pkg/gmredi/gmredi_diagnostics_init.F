@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.5 2007/06/21 01:33:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.6 2008/05/30 02:50:16 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -170,7 +170,7 @@ c     IF ( useDiagnotics ) THEN
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
-#ifdef ALLOW_TAU_EDDY
+#ifdef ALLOW_EDDYPSI
         diagName  = 'GMEdTauX'
         diagTitle = 'eddy-induced stress X-comp. estimated from Kwx'
         diagUnits = 'N/m^2           '

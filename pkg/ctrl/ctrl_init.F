@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.29 2008/02/02 02:34:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.30 2008/05/30 02:48:28 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -688,19 +688,15 @@ c--
 
 c----------------------------------------------------------------------
 c--
-#ifdef ALLOW_EDTAUX_CONTROL
+#ifdef ALLOW_EDDYPSI_CONTROL
         call ctrl_init_ctrlvar (
      &       xx_edtaux_file, 25, 125, 1, 1, 1,
      &       snx, sny, nr, 'w', '3d', mythid )
-#endif /* ALLOW_EDTAUX_CONTROL */
 
-c----------------------------------------------------------------------
-c--
-#ifdef ALLOW_EDTAUY_CONTROL
         call ctrl_init_ctrlvar (
      &       xx_edtauy_file, 26, 126, 1, 1, 1,
      &       snx, sny, nr, 's', '3d', mythid )
-#endif /* ALLOW_EDTAUY_CONTROL */
+#endif /* ALLOW_EDDYPSI_CONTROL */
 
 c----------------------------------------------------------------------
 c--

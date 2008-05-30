@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.216 2008/04/05 18:09:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.217 2008/05/30 02:46:19 gforget Exp $
 C $Name:  $
 C
 
@@ -89,8 +89,8 @@ C                 m/s when using external_fields_load.F.  It is converted
 C                 to kg/m2/s by multiplying by rhoConstFresh.
 C     saltFluxFile    :: File containing surface salt flux
 C     pLoadFile       :: File containing pressure loading
-C     eddyTauxFile    :: File containing zonal Eddy stress data
-C     eddyTauyFile    :: File containing meridional Eddy stress data
+C     eddyPsiXFile    :: File containing zonal Eddy streamfunction data
+C     eddyPsiYFile    :: File containing meridional Eddy streamfunction data
 C     the_run_name    :: string identifying the name of the model "run"
       COMMON /PARM_C/
      &                buoyancyRelation, eosType,
@@ -107,7 +107,7 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                lambdaThetaFile, lambdaSaltFile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                dQdTfile, ploadFile,
-     &                eddyTauxFile, eddyTauyFile,
+     &                eddyPsiXFile, eddyPsiYFile,
      &                the_run_name
       CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
       CHARACTER*(6)  eosType
@@ -138,8 +138,8 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) pSurfInitFile
       CHARACTER*(MAX_LEN_FNAM) dQdTfile
       CHARACTER*(MAX_LEN_FNAM) ploadFile
-      CHARACTER*(MAX_LEN_FNAM) eddyTauxFile
-      CHARACTER*(MAX_LEN_FNAM) eddyTauyFile
+      CHARACTER*(MAX_LEN_FNAM) eddyPsiXFile
+      CHARACTER*(MAX_LEN_FNAM) eddyPsiYFile
       CHARACTER*(MAX_LEN_FNAM) lambdaThetaFile
       CHARACTER*(MAX_LEN_FNAM) lambdaSaltFile
       CHARACTER*(MAX_LEN_PREC/2) the_run_name

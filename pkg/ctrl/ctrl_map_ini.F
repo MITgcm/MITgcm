@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.29 2008/03/28 18:48:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.30 2008/05/30 02:48:28 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -381,8 +381,8 @@ c--   bottom drag
       enddo
 #endif
 
-#ifdef ALLOW_EDTAUX_CONTROL
-c-- zonal eddy stress : edtaux
+#ifdef ALLOW_EDDYPSI_CONTROL
+c-- zonal eddy streamfunction : eddyPsiX
       il=ilnblnk( xx_edtaux_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_edtaux_file(1:il),'.',optimcycle
@@ -394,17 +394,14 @@ c-- zonal eddy stress : edtaux
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-                eddyTauX(i,j,k,bi,bj) = eddyTauX(i,j,k,bi,bj) +
-     &            fCori(i,j,bi,bj)*tmpfld3d(i,j,k,bi,bj)
+                eddyPsiX(i,j,k,bi,bj) = eddyPsiX(i,j,k,bi,bj) +
+     &            tmpfld3d(i,j,k,bi,bj)
               enddo
             enddo
           enddo
        enddo
       enddo
-#endif
-
-#ifdef ALLOW_EDTAUY_CONTROL
-c-- meridional eddy stress : edtauy
+c-- meridional eddy streamfunction : eddyPsiY
       il=ilnblnk( xx_edtauy_file )
       write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_edtauy_file(1:il),'.',optimcycle
@@ -416,8 +413,8 @@ c-- meridional eddy stress : edtauy
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-                eddyTauY(i,j,k,bi,bj) = eddyTauY(i,j,k,bi,bj) +
-     &            fCoriG(i,j,bi,bj)*tmpfld3d(i,j,k,bi,bj)
+                eddyPsiY(i,j,k,bi,bj) = eddyPsiY(i,j,k,bi,bj) +
+     &            tmpfld3d(i,j,k,bi,bj)
               enddo
             enddo
           enddo
@@ -586,10 +583,8 @@ c--   Update the tile edges.
       _EXCH_XY_R8( bottomdragfld, mythid )
 #endif
 
-#if (defined (ALLOW_EDTAUX_CONTROL) && defined (ALLOW_EDTAUY_CONTROL))
-       CALL EXCH_UV_XYZ_RS(eddyTauX,eddyTauY,.TRUE.,myThid)
-#elif (defined (ALLOW_EDTAUX_CONTROL) || defined (ALLOW_EDTAUY_CONTROL))
-       STOP 'ctrl_map_forcing: need BOTH ALLOW_EDTAU[X,Y]_CONTROL'
+#ifdef ALLOW_EDDYPSI_CONTROL
+       CALL EXCH_UV_XYZ_RS(eddyPsiX,eddyPsiY,.TRUE.,myThid)
 #endif
 
 #ifdef ALLOW_UVEL0_CONTROL
