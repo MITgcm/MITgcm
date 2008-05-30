@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.18 2008/05/30 02:48:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.19 2008/05/30 21:17:10 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -254,10 +254,10 @@ c--   SSS relaxation coefficient.
 
 
 #ifdef ALLOW_EDDYPSI_CONTROL
-      boundsVec(1)=0.
-      boundsVec(2)=0.
-      boundsVec(3)=0.
-      boundsVec(4)=0.
+      boundsVec(1)=-0.4
+      boundsVec(2)=-0.3
+      boundsVec(3)=0.3
+      boundsVec(4)=0.4
       boundsVec(5)=0.
       paramSmooth=1      
 c-- zonal eddy streamfunction : eddyPsiX
@@ -302,10 +302,10 @@ c-- exchange UV:
 
 
 #ifdef ALLOW_KAPREDI_CONTROL
-      boundsVec(1)=1. _d 1
-      boundsVec(2)=2. _d 1
-      boundsVec(3)=0.9 _d 4
-      boundsVec(4)=1. _d 4
+      boundsVec(1)=3. _d 2
+      boundsVec(2)=4. _d 2
+      boundsVec(3)=2.5 _d 3
+      boundsVec(4)=3.0 _d 3
       boundsVec(5)=0.
       paramSmooth=1      
       call ctrl_map_ini_gen3D(xx_kapredi_file, 'wkaprediFld', 
