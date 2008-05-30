@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_mean_saltflux.F,v 1.10 2008/02/05 12:49:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_mean_saltflux.F,v 1.11 2008/05/30 19:58:17 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -115,7 +115,7 @@ c--     Read time averages and the monthly mean data.
                 tmpx=tmpfld2d(i,j,bi,bj)
                 if (maskC(i,j,kk,bi,bj) .ne. 0.) then
                    fctiletot = fctiletot
-     &                + tmpx*cos(yc(i,j,bi,bj)*deg2rad)
+     &                + tmpx*cos(yc(i,j,bi,bj)*deg2rad)/rhoConstFresh
                    sumtot = sumtot
      &                + cos(yc(i,j,bi,bj)*deg2rad)
                    num_sfluxmm(bi,bj) = num_sfluxmm(bi,bj) + 1
