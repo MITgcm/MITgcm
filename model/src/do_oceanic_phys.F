@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.65 2008/05/03 00:07:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.66 2008/05/30 21:10:31 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -400,6 +400,15 @@ cph Avoid variable aliasing for adjoint !!!
      I             rhoK, rhoKm1, rhoKp1,
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef GMREDI_WITH_STABLE_ADJOINT 
+cgf zero out adjoint fields to stabilize pkg/gmredi adjoint
+cgf -> cuts adjoint dependency from slope to state
+      CALL ZERO_ADJ_3D( bi, bj, sigmaX, myThid)
+      CALL ZERO_ADJ_3D( bi, bj, sigmaY, myThid)
+      CALL ZERO_ADJ_3D( bi, bj, sigmaR, myThid)
+#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
           ENDIF
 
 C--       Implicit Vertical Diffusion for Convection

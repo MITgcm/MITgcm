@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.10 2007/06/26 15:34:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.11 2008/05/30 21:10:25 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -47,6 +47,7 @@ C
       _RL dSigmaDrS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL LrhoW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL LrhoS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL slopeTmpSpec,slopeMaxSpec
       _RS depthZ
       INTEGER K,bi,bj,myThid
 CEndOfInterface
@@ -78,6 +79,9 @@ C     == Local variables ==
      &                    + act4*max1*max2*max3
       kkey = (igmkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifndef GMREDI_WITH_STABLE_ADJOINT
+c common case:
 
       IF (GM_taper_scheme.EQ.'orig' .OR.
      &    GM_taper_scheme.EQ.'clipping') THEN
@@ -358,6 +362,83 @@ C-      Large, Danabasoglu and Doney, JPO 1997
 #endif /* GM_EXCLUDE_TAPERING */
 
       ENDIF
+
+
+#else  /* GMREDI_WITH_STABLE_ADJOINT */
+c special choice for adjoint/optimization of parameters
+c (~ strong clipping, reducing non linearity of psi=f(K))
+
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE slopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dSigmaDrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          IF (dSigmaDrW(i,j).GE.-GM_Small_Number)
+     &        dSigmaDrW(i,j) = -GM_Small_Number
+         ENDDO
+        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE dsigmadrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          SlopeX(i,j) = -SlopeX(i,j)/dSigmaDrW(i,j)
+          taperX(i,j) = 1. _d 0
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE slopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dSigmaDrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif
+
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          IF (dSigmaDrS(i,j).GE.-GM_Small_Number)
+     &        dSigmaDrS(i,j) = -GM_Small_Number
+         ENDDO
+        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE dsigmadrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          SlopeY(i,j) = -SlopeY(i,j)/dSigmaDrS(i,j)
+          taperY(i,j) = 1. _d 0
+         ENDDO
+        ENDDO
+
+        slopeMaxSpec=1. _d -4
+
+CADJ STORE slopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE slopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+       slopeTmpSpec=ABS(SlopeX(i,j))
+       IF ( slopeTmpSpec .GT. slopeMaxSpec ) then
+        SlopeX(i,j)=5.*SlopeX(i,j)*slopeMaxSpec/slopeTmpSpec
+       ELSE
+        SlopeX(i,j)=5.*SlopeX(i,j)
+       ENDIF
+       taperX(i,j)=1.
+         ENDDO
+        ENDDO
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+       slopeTmpSpec=ABS(SlopeY(i,j))
+       IF ( slopeTmpSpec .GT. slopeMaxSpec ) then
+        SlopeY(i,j)=5.*SlopeY(i,j)*slopeMaxSpec/slopeTmpSpec
+       ELSE
+        SlopeY(i,j)=5.*SlopeY(i,j)
+       ENDIF
+       taperY(i,j)=1.
+         ENDDO
+        ENDDO
+
+#endif /* GMREDI_WITH_STABLE_ADJOINT */
 
 #endif /* BOLUS_ADVEC */
 #endif /* ALLOW_GMREDI */
