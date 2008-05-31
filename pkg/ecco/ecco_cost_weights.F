@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.29 2008/05/30 02:49:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.30 2008/05/31 17:03:10 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -414,6 +414,7 @@ c--           Test for missing values.
 #endif
 
 #if (defined (ALLOW_ARGO_SALT_COST_CONTRIBUTION) || \
+     defined (ALLOW_SSS_COST_CONTRIBUTION) || \
      defined (ALLOW_CTDS_COST_CONTRIBUTION)|| \
      defined (ALLOW_CTDSCLIM_COST_CONTRIBUTION))
 
@@ -458,6 +459,8 @@ c--           Test for missing values.
 #endif
 
 #if (defined (ALLOW_ARGO_THETA_COST_CONTRIBUTION) || \
+     defined (ALLOW_SST_COST_CONTRIBUTION) || \
+     defined (ALLOW_TMI_SST_COST_CONTRIBUTION) || \
      defined (ALLOW_CTDT_COST_CONTRIBUTION) || \
      defined (ALLOW_CTDTCLIM_COST_CONTRIBUTION) || \
      defined (ALLOW_XBT_COST_CONTRIBUTION))
