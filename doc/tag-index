@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.998 2008/05/30 02:53:14 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.999 2008/05/31 16:53:51 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl: Bounds for (kapgm,kapredi,eddypsi) parameter estimation.
+o model/src and pkg/gmredi: GMREDI_WITH_STABLE_ADJOINT CPP option
+  special setup of gmredi for which the adjoint is stable 
+  enough for parameter optimization.
 o bridging the gap between eddy stress and GM.
   -> eddyTau is replaced with eddyPsi (eddyTau = f x rho0 x eddyPsi)
       along with a change in CPP option (now ALLOW_EDDYPSI).
