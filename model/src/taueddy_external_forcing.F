@@ -1,8 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/taueddy_external_forcing.F,v 1.3 2008/05/30 02:45:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/taueddy_external_forcing.F,v 1.4 2008/05/31 16:50:35 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: TAUEDDY_EXTERNAL_FORCING_U
@@ -177,7 +181,7 @@ C     Add meridional eddy momentum impulse into the layer
        ENDDO
       ENDDO
 #ifdef ALLOW_GMREDI
-      if ( GM_InMomAsStress ) then
+      endif
 #endif
 
 #endif
