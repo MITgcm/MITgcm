@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.22 2008/02/08 13:01:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.23 2008/06/01 03:48:32 jmc Exp $
 C $Name:  $
-      
+
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-      
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: WRITE_GRID
 C     !INTERFACE:
       SUBROUTINE WRITE_GRID(
-     I     myThid )
+     I                 myThid )
 
 C     !DESCRIPTION:
 C     Writes the model geometry and grid arrays to file(s) using which
@@ -43,6 +43,10 @@ C               thread => needs to be in common to be shared by all threads
       _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER i,j,bi,bj
       LOGICAL writegrid_mdsio
+#ifdef ALLOW_MDSIO
+      INTEGER k
+      _RS tmpVar(Nr+1)
+#endif
 #ifdef ALLOW_MNC
       CHARACTER*(4) bfname
 #endif
@@ -107,6 +111,19 @@ C     Write vertical grid arrays
      &                                0,0, 1, -1, myThid)
         CALL MDSWRITEVEC_LOC_RS('DRF',writeBinaryPrec, Nr, drF,
      &                                0,0, 1, -1, myThid)
+C--  comment out the "if": also usefull for the Ocean (to get the full Presure)
+c       IF (buoyancyRelation .EQ. 'ATMOSPHERIC') THEN
+        DO k=1,Nr+1
+          tmpVar(k) = phiRef(2*k-1)
+        ENDDO
+        CALL MDSWRITEVEC_LOC_RS('PHrefF', writeBinaryPrec, 1+Nr,
+     &                            tmpVar, 0, 0, 1, -1, myThid)
+        DO k=1,Nr
+          tmpVar(k) = phiRef(2*k)
+        ENDDO
+        CALL MDSWRITEVEC_LOC_RS('PHrefC', writeBinaryPrec, Nr,
+     &                            tmpVar, 0, 0, 1, -1, myThid)
+c       ENDIF
 #endif /* ALLOW_MDSIO */
 
       ENDIF
@@ -118,7 +135,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         _BEGIN_MASTER( myThid )
         bfname='grid'
-        
+
 C       Write the GRID.h variables to a file
         CALL MNC_CW_SET_UDIM(bfname, 0, myThid)
         CALL MNC_CW_SET_CITER(bfname, 2, -1, -1, -1, myThid)
