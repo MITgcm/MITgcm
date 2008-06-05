@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.5 2007/11/28 00:18:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.6 2008/06/05 13:27:36 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -9,8 +9,8 @@ c     ==================================================================
 c     SUBROUTINE cost_ice_test
 c     ==================================================================
 c
-c     o Compute sea-ice cost function.  The following options can
-c       be selected with data.cost variable cost_ice_flag:
+c     o Compute sea-ice cost function.  The following options can be
+c       selected with data.seaice (SEAICE_PARM02) variable cost_ice_flag
 c
 c     cost_ice_flag = 1
 c     - compute mean sea-ice volume
