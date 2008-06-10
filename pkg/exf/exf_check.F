@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.9 2008/01/25 11:49:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.10 2008/06/10 09:36:34 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -55,7 +55,7 @@ c     check for consistency
       endif
 
 #if ( defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_WIND) )
-      IF ( ustressfile .NE. ' ' .OR. ustressfile .NE. ' ' ) THEN
+      IF ( ustressfile .NE. ' ' .OR. vstressfile .NE. ' ' ) THEN
         STOP
      & 'S/R EXF_CHECK: use u,v_wind components but not wind-stress'
       ENDIF
