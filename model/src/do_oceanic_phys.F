@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.66 2008/05/30 21:10:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.67 2008/06/11 18:29:08 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -404,9 +404,9 @@ cph Avoid variable aliasing for adjoint !!!
 #ifdef GMREDI_WITH_STABLE_ADJOINT 
 cgf zero out adjoint fields to stabilize pkg/gmredi adjoint
 cgf -> cuts adjoint dependency from slope to state
-      CALL ZERO_ADJ_3D( bi, bj, sigmaX, myThid)
-      CALL ZERO_ADJ_3D( bi, bj, sigmaY, myThid)
-      CALL ZERO_ADJ_3D( bi, bj, sigmaR, myThid)
+      CALL ZERO_ADJ_LOC( Nr, sigmaX, myThid)
+      CALL ZERO_ADJ_LOC( Nr, sigmaY, myThid)
+      CALL ZERO_ADJ_LOC( Nr, sigmaR, myThid)
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
           ENDIF

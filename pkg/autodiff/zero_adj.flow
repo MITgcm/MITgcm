@@ -1,21 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/zero_adj.flow,v 1.2 2007/10/08 23:50:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/zero_adj.flow,v 1.3 2008/06/11 18:29:11 gforget Exp $
 C $Name:  $
 
 c----------------------------------------
-c subroutine zero_adj_3D
+c subroutine zero_adj_loc
 c----------------------------------------
-cadj SUBROUTINE zero_adj_3D FTLNAME = g_zero_adj_3D
-cadj SUBROUTINE zero_adj_3D ADNAME  = adzero_adj_3D
-cadj SUBROUTINE zero_adj_3D INPUT   = 1, 2, 3, 4
-cadj SUBROUTINE zero_adj_3D OUTPUT  =
-cadj SUBROUTINE zero_adj_3D ACTIVE  =       3
-cadj SUBROUTINE zero_adj_3D DEPEND  = 1, 2,    4
+cadj SUBROUTINE zero_adj_loc FTLNAME = g_zero_adj_loc
+cadj SUBROUTINE zero_adj_loc ADNAME  = adzero_adj_loc
+cadj SUBROUTINE zero_adj_loc INPUT   = 1, 2, 3
+cadj SUBROUTINE zero_adj_loc OUTPUT  =
+cadj SUBROUTINE zero_adj_loc ACTIVE  =    2   
+cadj SUBROUTINE zero_adj_loc DEPEND  = 1,    3
 c----------------------------------------
-c subroutine zero_adj_2D
+c subroutine zero_adj
 c----------------------------------------
-cadj SUBROUTINE zero_adj_2D FTLNAME = g_zero_adj_2D
-cadj SUBROUTINE zero_adj_2D ADNAME  = adzero_adj_2D
-cadj SUBROUTINE zero_adj_2D INPUT   = 1, 2, 3, 4
-cadj SUBROUTINE zero_adj_2D OUTPUT  =
-cadj SUBROUTINE zero_adj_2D ACTIVE  =       3
-cadj SUBROUTINE zero_adj_2D DEPEND  = 1, 2,    4
+cadj SUBROUTINE zero_adj FTLNAME = g_zero_adj
+cadj SUBROUTINE zero_adj ADNAME  = adzero_adj
+cadj SUBROUTINE zero_adj INPUT   = 1, 2, 3
+cadj SUBROUTINE zero_adj OUTPUT  =
+cadj SUBROUTINE zero_adj ACTIVE  =    2 
+cadj SUBROUTINE zero_adj DEPEND  = 1,    3

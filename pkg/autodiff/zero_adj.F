@@ -1,16 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/zero_adj.F,v 1.2 2007/10/08 23:50:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/zero_adj.F,v 1.3 2008/06/11 18:29:11 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-C     !ROUTINE: ZERO_ADJ_3D
+C     !ROUTINE: ZERO_ADJ_LOC
 C     !INTERFACE:
-      SUBROUTINE ZERO_ADJ_3D(
-     I             bi, bj, fieldFwd,
-     I             myThid)
+      SUBROUTINE ZERO_ADJ_LOC(
+     I             NrIn,myThid,FieldFwd)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o zero out a 3D adjoint field
+C     | o zero out a local (no nsx,nsy dims.) adjoint field
 C     | ... nothing happens in forward mode
 C     | author: Gael Forget
 C     *==========================================================*
@@ -22,19 +21,18 @@ C     *==========================================================*
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
       integer myThid,bi,bj,i,j,k
-      _RL fieldFwd(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL FieldFwd(1-Olx:sNx+Olx,1-Oly:sNy+Oly,NrIn)
 
       end
 
 
-C     !ROUTINE: ZERO_ADJ_2D
+C     !ROUTINE: ZERO_ADJ
 C     !INTERFACE:
-      SUBROUTINE ZERO_ADJ_2D(
-     I             bi, bj, fieldFwd,
-     I             myThid)
+      SUBROUTINE ZERO_ADJ(
+     I             NrIn,myThid,FieldFwd)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o zero out a 2D adjoint field
+C     | o zero out a full (incl. nsx,nsy dims.) adjoint field
 C     | ... nothing happens in forward mode
 C     | author: Gael Forget
 C     *==========================================================*
@@ -45,9 +43,8 @@ C     *==========================================================*
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer myThid,bi,bj,i,j
-      _RL fieldFwd(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      integer myThid,bi,bj,i,j,k
+      _RL FieldFwd(1-Olx:sNx+Olx,1-Oly:sNy+Oly,NrIn,nSx,nSy)
 
       end
-
 
