@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.40 2008/01/29 11:25:53 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.41 2008/06/11 18:55:10 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -307,6 +307,21 @@ c     Atmos. pressure forcing
 #ifdef USE_EXF_INTERPOLATION
      &     apressure_lon0, apressure_lon_inc, apressure_lat0,
      &     apressure_lat_inc, apressure_nlon, apressure_nlat, xC, yC,
+     &     interp_method,
+#endif
+     &     mytime, myiter, mythid )
+#endif
+
+#ifdef ALLOW_ICE_AREAMASK
+c     fractional ice-covered area MASK
+      call exf_set_gen  (
+     &     areamaskfile, areamaskstartdate, areamaskperiod,
+     &     exf_inscal_areamask,
+     &     areamask_exfremo_intercept, areamask_exfremo_slope,
+     &     areamask, areamask0, areamask1, areamaskmask,
+#ifdef USE_EXF_INTERPOLATION
+     &     areamask_lon0, areamask_lon_inc, areamask_lat0,
+     &     areamask_lat_inc, areamask_nlon, areamask_nlat, xC, yC,
      &     interp_method,
 #endif
      &     mytime, myiter, mythid )

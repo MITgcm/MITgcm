@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.8 2008/02/22 20:25:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.9 2008/06/11 18:55:10 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -360,6 +360,25 @@ c     from the beginning of the year.
        ENDIF
       ENDIF
 #endif /* ATMOSPHERIC_LOADING */
+
+#ifdef ALLOW_ICE_AREAMASK
+      IF ( areamaskfile .NE. ' ' .AND. areamaskperiod .GT. 0. ) THEN
+       CALL cal_FullDate  ( areamaskstartdate1,  areamaskstartdate2,
+     &      date_array, myThid )
+       IF ( useExfYearlyFields ) THEN
+        yearStartDate(1) = int(date_array(1)/10000.) * 10000 + 101
+        yearStartDate(2) = 0
+        yearStartDate(3) = date_array(3)
+        yearStartDate(4) = date_array(4)
+        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
+        CALL cal_ToSeconds ( difftime,   areamaskstartdate   ,myThid)
+       ELSE
+        CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
+        CALL cal_ToSeconds ( difftime,   areamaskstartdate   ,myThid)
+        areamaskstartdate= modelstart + areamaskstartdate
+       ENDIF
+      ENDIF
+#endif /* ALLOW_ICE_AREAMASK */
 
 #ifdef ALLOW_OBCS
 # ifdef ALLOW_OBCS_NORTH

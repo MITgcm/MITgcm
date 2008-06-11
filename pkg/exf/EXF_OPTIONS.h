@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.12 2007/12/28 21:26:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.13 2008/06/11 18:55:09 gforget Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -54,6 +54,9 @@ c   >>> ATMOSPHERIC_LOADING <<<
 c       If defined, atmospheric pressure can be read-in from files.
 c   WARNING: this flag is set (define/undef) in CPP_OPTIONS.h 
 c            and cannot be changed here (in EXF_OPTIONS)
+c
+c   >>> ICE_AREAMASK <<<
+c       If defined, fractional ice-covered area MASK can be read-in from files.
 c
 c   >>> ALLOW_CLIMSST_RELAXATION <<<
 c       Allow the relaxation to a monthly climatology of sea surface

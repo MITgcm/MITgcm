@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.4 2007/05/18 02:44:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.5 2008/06/11 18:55:09 gforget Exp $
 C $Name:  $
 c
 c
@@ -256,6 +256,15 @@ C     sh        :: wind-speed [m/s] (always larger than uMin)
       _RL runoff    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL runoff0   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL runoff1   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
+#ifdef ALLOW_ICE_AREAMASK
+      common /exf_ice_areamask_r/ areamask, lambda_areamask,
+     &                        areamask0, areamask1
+      _RL areamask       (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL lambda_areamask(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL areamask0      (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL areamask1      (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 #ifdef ALLOW_CLIMSST_RELAXATION

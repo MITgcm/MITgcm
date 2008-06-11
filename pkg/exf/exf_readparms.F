@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.50 2008/02/22 20:25:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.51 2008/06/11 18:55:10 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -86,7 +86,7 @@ c     Surface flux data.
      &     snowprecipfile,          uwindfile,     vwindfile,
      &         wspeedfile,         swfluxfile,    lwfluxfile,
      &      apressurefile,         swdownfile,    lwdownfile,
-     &        climsstfile,        climsssfile,      
+     &       areamaskfile,        climsstfile,   climsssfile,      
      &    hfluxstartdate1,    hfluxstartdate2,   hfluxperiod,
      &    atempstartdate1,    atempstartdate2,   atempperiod,
      &      aqhstartdate1,      aqhstartdate2,     aqhperiod,
@@ -105,8 +105,9 @@ c     Surface flux data.
      &   swdownstartdate1,   swdownstartdate2,  swdownperiod,
      &   lwdownstartdate1,   lwdownstartdate2,  lwdownperiod,
      &apressurestartdate1,apressurestartdate2,apressureperiod,
-     &  climsststartdate1,  climsststartdate2,  climsstperiod,
-     &  climsssstartdate1,  climsssstartdate2,  climsssperiod
+     &  areamaskstartdate1,areamaskstartdate2,areamaskperiod,
+     &  climsststartdate1,  climsststartdate2, climsstperiod,
+     &  climsssstartdate1,  climsssstartdate2, climsssperiod
 
       NAMELIST /EXF_NML_03/
      &   exf_inscal_hflux,  exf_inscal_sflux,      exf_inscal_evap,
@@ -125,7 +126,7 @@ c     Surface flux data.
      &  precipconst, snowprecipconst, runoffconst, ustressconst,
      &  vstressconst, uwindconst, vwindconst, wspeedconst, swfluxconst,
      &  lwfluxconst, swdownconst, lwdownconst, apressureconst,
-     &  climsstconst,   climsssconst,
+     &  areamaskconst, climsstconst,   climsssconst,
      &     hflux_exfremo_intercept, hflux_exfremo_slope,
      &     atemp_exfremo_intercept, atemp_exfremo_slope,
      &     aqh_exfremo_intercept, aqh_exfremo_slope,
@@ -178,6 +179,8 @@ c     Surface flux data.
      & swdown_nlon, swdown_nlat, lwdown_nlon, lwdown_nlat,
      & apressure_lon0,apressure_lon_inc,apressure_nlon,
      & apressure_lat0,apressure_lat_inc,apressure_nlat,
+     & areamask_lon0,areamask_lon_inc,areamask_nlon,
+     & areamask_lat0,areamask_lat_inc,areamask_nlat,
      & climsst_lon0, climsst_lon_inc, climsst_nlon, 
      & climsst_lat0, climsst_lat_inc, climsst_nlat,
      & climsss_lon0, climsss_lon_inc, climsss_nlon, 
@@ -374,6 +377,11 @@ c     Calendar data.
       apressure_exfremo_intercept = 0.0 _d 0
       apressure_exfremo_slope = 0.0 _d 0
 
+      areamaskstartdate1    = 0
+      areamaskstartdate2    = 0
+      areamaskperiod        = 0.0 _d 0
+      areamaskconst         = 0.0 _d 0
+
       climsststartdate1  = 0
       climsststartdate2  = 0
       climsstperiod      = 0
@@ -440,7 +448,8 @@ c     Data files.
       lwfluxfile         = ' '
       swdownfile         = ' '
       lwdownfile         = ' '
-      apressurefile      = ' '
+      apressurefile      = ' ' 
+      areamaskfile       = ' '
       climsstfile        = ' '
       climsssfile        = ' '
 
@@ -471,6 +480,7 @@ c     Start dates.
       siobEstartdate     = 0.
       siobWstartdate     = 0.
       apressurestartdate = 0.
+      areamaskstartdate  = 0.
       climsststartdate   = 0.
       climsssstartdate   = 0.
 
@@ -534,6 +544,7 @@ c     Output scaling factors.
       swdown_lon0    = thetaMin + delX(1)*exf_half 
       lwdown_lon0    = thetaMin + delX(1)*exf_half 
       apressure_lon0 = thetaMin + delX(1)*exf_half
+      areamask_lon0  = thetaMin + delX(1)*exf_half
       vstress_lat0   = phimin
       vwind_lat0     = phimin
       wspeed_lat0    = phimin
@@ -552,6 +563,7 @@ c     Output scaling factors.
       swdown_lat0    = phimin   + delY(1)*exf_half
       lwdown_lat0    = phimin   + delY(1)*exf_half
       apressure_lat0 = phimin   + delY(1)*exf_half
+      areamask_lat0 = phimin   + delY(1)*exf_half
       ustress_nlon   = Nx
       ustress_nlat   = Ny
       vstress_nlon   = Nx
@@ -588,6 +600,8 @@ c     Output scaling factors.
       lwdown_nlat    = Ny
       apressure_nlon = Nx
       apressure_nlat = Ny
+      areamask_nlon = Nx
+      areamask_nlat = Ny
       Ustress_lon_inc   = delX(1)
       vstress_lon_inc   = delX(1)
       hflux_lon_inc     = delX(1)
@@ -606,6 +620,7 @@ c     Output scaling factors.
       swdown_lon_inc    = delX(1)
       lwdown_lon_inc    = delX(1)
       apressure_lon_inc = delX(1)
+      areamask_lon_inc = delX(1)
       climsst_lon0    = thetaMin + delX(1)*exf_half
       climsss_lon0    = thetaMin + delX(1)*exf_half
       climsst_lat0    = phimin   + delY(1)*exf_half
@@ -636,6 +651,7 @@ c     Output scaling factors.
             swdown_lat_inc(i)    = (delY(i) + delY(i))*exf_half
             lwdown_lat_inc(i)    = (delY(i) + delY(i))*exf_half
             apressure_lat_inc(i) = (delY(i) + delY(i))*exf_half
+            areamask_lat_inc(i)  = (delY(i) + delY(i))*exf_half
             climsst_lat_inc(i)   = (delY(i) + delY(i))*exf_half
             climsss_lat_inc(i)   = (delY(i) + delY(i))*exf_half
          ELSE
@@ -657,6 +673,7 @@ c     Output scaling factors.
             swdown_lat_inc(i)    = 0.
             lwdown_lat_inc(i)    = 0.
             apressure_lat_inc(i) = 0.
+            areamask_lat_inc(i)  = 0.
             climsst_lat_inc(i)   = 0.
             climsss_lat_inc(i)   = 0.
          ENDIF

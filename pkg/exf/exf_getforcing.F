@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.33 2007/12/28 21:22:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.34 2008/06/11 18:55:10 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -241,6 +241,9 @@ c     Update the tile edges.
 #endif
 #ifdef ATMOSPHERIC_LOADING
       _EXCH_XY_R8(apressure, mythid)
+#endif
+#ifdef ALLOW_ICE_AREAMASK
+      _EXCH_XY_R8(areamask, mythid)
 #endif
 
 c     Get values of the surface flux anomalies.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.9 2008/02/22 20:25:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.10 2008/06/11 18:55:09 gforget Exp $
 C $Name:  $
 c
 c
@@ -227,6 +227,16 @@ c     data values
       character*1 apressuremask
       parameter(  apressuremask = 's' )
 
+      integer areamaskstartdate1
+      integer areamaskstartdate2
+      _RL     areamaskstartdate
+      _RL     areamaskperiod
+      _RL     areamaskconst
+      _RL     areamask_exfremo_intercept
+      _RL     areamask_exfremo_slope
+      character*1 areamaskmask
+      parameter(  areamaskmask = 's' )
+
 c     Calendar data.
       integer climsststartdate1
       integer climsststartdate2
@@ -311,6 +321,7 @@ c     File names.
       character*(128) swdownfile
       character*(128) lwdownfile
       character*(128) apressurefile
+      character*(128) areamaskfile
       character*(128) climsstfile
       character*(128) climsssfile
 
@@ -368,7 +379,8 @@ C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before comput
      &                     siobSstartdate1,   siobSstartdate2,
      &                     siobEstartdate1,   siobEstartdate2,
      &                     siobWstartdate1,   siobWstartdate2,
-     &                     apressurestartdate1,apressurestartdate2
+     &                     apressurestartdate1,apressurestartdate2,
+     &                     areamaskstartdate1,areamaskstartdate2
 
       common /exf_param_r/
      &                     year2sec,          windstressmax,
@@ -400,6 +412,7 @@ C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before comput
      &                     siobEperiod,       siobEstartdate,
      &                     siobWperiod,       siobWstartdate,
      &                     apressureperiod,   apressurestartdate,
+     &                     areamaskperiod,   areamaskstartdate,
      &                     hfluxconst,
      &                     atempconst,
      &                     aqhconst,
@@ -417,7 +430,8 @@ C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before comput
      &                     lwfluxconst,
      &                     swdownconst,
      &                     lwdownconst,
-     &                     apressureconst
+     &                     apressureconst,
+     &                     areamaskconst
 
       common /exf_param_trend_removal/
      &                     hflux_exfremo_intercept,
@@ -475,7 +489,8 @@ C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before comput
      &                     lwfluxfile,
      &                     swdownfile,
      &                     lwdownfile,
-     &                     apressurefile
+     &                     apressurefile,
+     &                     areamaskfile
 
       common /exf_clim_i/
      &                        climsststartdate1,  climsststartdate2,
@@ -640,6 +655,9 @@ c for lat interpolation, arraysize currently set to 2176 max data values
       _RL apressure_lon0,apressure_lon_inc
       _RL apressure_lat0,apressure_lat_inc(MAX_LAT_INC)
       INTEGER apressure_nlon,apressure_nlat
+      _RL areamask_lon0,areamask_lon_inc
+      _RL areamask_lat0,areamask_lat_inc(MAX_LAT_INC)
+      INTEGER areamask_nlon,areamask_nlat
 
       common /exf_interpolation/
      & ustress_lon0, ustress_lon_inc,
@@ -695,7 +713,10 @@ c for lat interpolation, arraysize currently set to 2176 max data values
      & lwdown_nlon, lwdown_nlat,
      & apressure_lon0,apressure_lon_inc,
      & apressure_lat0,apressure_lat_inc,
-     & apressure_nlon,apressure_nlat
+     & apressure_nlon,apressure_nlat,
+     & areamask_lon0,areamask_lon_inc,
+     & areamask_lat0,areamask_lat_inc,
+     & areamask_nlon,areamask_nlat
 
       _RL climsst_lon0, climsst_lon_inc
       _RL climsst_lat0, climsst_lat_inc(MAX_LAT_INC)

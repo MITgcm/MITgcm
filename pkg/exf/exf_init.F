@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.19 2007/05/18 02:44:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.20 2008/06/11 18:55:10 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -274,6 +274,19 @@ C--   Initialise to zero intermediate fields (in common block)
 #endif
      &     mythid )
 #endif /* ATMOSPHERIC_LOADING */
+
+#ifdef ALLOW_ICE_AREAMASK
+      call exf_init_gen (
+     &     areamaskfile, areamaskperiod,
+     &     exf_inscal_areamask, areamaskmask,
+     &     areamaskconst, areamask, areamask0, areamask1, 
+#ifdef USE_EXF_INTERPOLATION
+     &     areamask_lon0, areamask_lon_inc,
+     &     areamask_lat0, areamask_lat_inc,
+     &     areamask_nlon, areamask_nlat, xC, yC, interp_method,
+#endif
+     &     mythid )
+#endif /* ALLOW_ICE_AREAMASK */
 
 #ifdef ALLOW_RUNOFF
       call exf_init_gen (
