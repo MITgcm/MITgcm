@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1001 2008/06/11 18:56:14 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1002 2008/06/11 19:32:27 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/grdchk: Add gradient check to etan0 perturbations.
 o pkg/exf: read ice area from file (#ifdef ALLOW_ICE_AREAMASK). 
 o pkg/autodiff: more flexibility in zeroadj. 
   model/src: modifying do_oceanic_phys.F accordingly. 
