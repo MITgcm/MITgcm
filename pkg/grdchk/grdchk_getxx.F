@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.22 2008/02/02 02:36:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.23 2008/06/11 19:31:41 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -882,6 +882,27 @@ c--   == end of interface ==
      &                         optimcycle,
      &                         mythid, dummy)
 #endif /* ALLOW_SIHSNOW_CONTROL */
+
+#ifdef ALLOW_ETAN0_CONTROL
+      else if ( grdchkvarindex .eq. 29 ) then
+         il=ilnblnk( xx_etan_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_etan_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_etan_file(1:il),'.',optimcycle
+         end if
+         call active_read_xy( fname, tmpfld2d, 1,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + localEps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+         call active_write_xy( fname, tmpfld2d, 1,
+     &                         optimcycle,
+     &                         mythid, dummy)
+#endif /* ALLOW_ETAN0_CONTROL */
 
       else
 ce      --> this index does not exist yet.
