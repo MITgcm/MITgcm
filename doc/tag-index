@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1000 2008/06/11 18:31:22 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1001 2008/06/11 18:56:14 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf: read ice area from file (#ifdef ALLOW_ICE_AREAMASK). 
 o pkg/autodiff: more flexibility in zeroadj. 
   model/src: modifying do_oceanic_phys.F accordingly. 
 o pkg/ctrl: Bounds for (kapgm,kapredi,eddypsi) parameter estimation.
