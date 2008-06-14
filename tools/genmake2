@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.170 2008/05/08 19:48:37 jahn Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.171 2008/06/14 12:57:13 heimbach Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2493,9 +2493,10 @@ echo >> $MAKEFILE
 echo 'F77FILES =  $(SRCFILES:.F=.'$FS')'      >> $MAKEFILE
 echo 'F90FILES =  $(F90SRCFILES:.F90=.'$FS90')' >> $MAKEFILE
 echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o) $(F90SRCFILES:.F90=.o)' >> $MAKEFILE
+echo 'FLOFILES =  $(AD_FLOW_FILES:.flow=.FLOW)' >> $MAKEFILE
 echo >> $MAKEFILE
 echo '.SUFFIXES:' >> $MAKEFILE
-echo '.SUFFIXES: .o .'$FS' .p .F .c .'$FS90' .F90' >> $MAKEFILE
+echo '.SUFFIXES: .o .'$FS' .p .F .c .'$FS90' .F90 .FLOW .flow' >> $MAKEFILE
 rm -f srclist.inc csrclist.inc hlist.inc flist.tmp clist.tmp f90srclist.inc
 rm -f ad_flow_files.inc
 
@@ -2528,7 +2529,7 @@ output.txt: \$(EXECUTABLE)
 clean:
 	-rm -rf *.p *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template
 	-rm -rf *.o
-	-rm -rf *.$FS
+	-rm -rf *.$FS *.FLOW
 Clean:
 	@make clean
 	@make cleanlinks
@@ -2606,6 +2607,8 @@ cat >>$MAKEFILE <<EOF
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$<
 .c.o:
 	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) -c \$<
+.flow.FLOW:
+	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 
 # Special exceptions that use the ( .F - .p - .$FS - .o ) rule-chain
 .F.p:
@@ -2658,8 +2661,8 @@ ad_input_code.$FS: \$(AD_FILES) \$(HEADERFILES)
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	-rm -f ad_config.template
 	@make \$(F77FILES)
-	@make \$(AD_FLOW_FILES)
-	cat \$(AD_FLOW_FILES) \$(AD_FILES) > ad_input_code.$FS
+	@make \$(FLOFILES)
+	cat \$(FLOFILES) \$(AD_FILES) > ad_input_code.$FS
 
 ad_taf_output.$FS: ad_input_code.$FS
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.$FS
