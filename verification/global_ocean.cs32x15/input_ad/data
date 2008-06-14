@@ -1,0 +1,103 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=15*20.,
+ sRef=15*35.,
+ viscAh =3.E5,
+#- biharmonic Viscosity: 3.e15 is close to the stability limit with deltaTmom=20mn
+#viscA4 =3.E15,
+ viscAr =1.E-3,
+ diffKhT=0.,
+ diffK4T=0.,
+ diffKrT=3.E-5,
+ diffKhS=0.,
+ diffK4S=0.,
+ diffKrS=3.E-5,
+ ivdc_kappa=10.,
+ implicitDiffusion=.TRUE.,
+ rotationPeriod=86400.,
+ gravity=9.81,
+ rhonil=1035.,
+ rhoConstFresh=1000.,
+ eosType='JMD95Z',
+ staggerTimeStep=.TRUE.,
+ vectorInvariantMomentum=.TRUE.,
+ implicitFreeSurface=.TRUE.,
+ tempAdvScheme=30,
+ saltAdvScheme=30,
+# exactConserv=.TRUE.,
+# select_rStar=2,
+# nonlinFreeSurf=4,
+ hFacInf=0.2,
+ hFacSup=2.0,
+# useRealFreshWaterFlux=.TRUE.,
+ allowFreezing=.TRUE.,
+ hFacMin=.1,
+ hFacMinDr=20.,
+ readBinaryPrec=64,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=200,
+#cg2dTargetResidual=1.E-9,
+ cg2dTargetResWunit=1.E-14,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=72000,
+# nIter0=0,
+# nTimeSteps=365,
+ nTimeSteps=20,
+ deltaTmom   =1200.,
+ deltaTtracer=86400.,
+ deltaTfreesurf=86400.,
+ deltaTClock =86400.,
+ abEps = 0.1,
+#forcing_In_AB=.FALSE.,
+ tracForcingOutAB=1,
+ pChkptFreq  =1728000., 
+# chkptFreq   =864000., 
+# taveFreq    =1244160000., 
+# dumpFreq    =6307200.,
+# adjDumpFreq  =6307200.,
+ dumpFreq    =86400.,
+# adjDumpFreq  =86400.,
+# monitorFreq =31104000.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2592000.,
+ externForcingCycle=31104000.,
+# 2 months restoring timescale for temperature
+ tauThetaClimRelax = 5184000.,
+# 2yrs restoring timescale for salinity
+ tauSaltClimRelax = 62208000.,
+ monitorFreq =1.,
+# adjMonitorFreq =1.,
+ pickupStrictlyMatch=.FALSE.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCurvilinearGrid=.TRUE.,
+ horizGridFile='grid_cs32',
+ delR= 50., 70., 100., 140., 190.,
+       240., 290., 340., 390., 440.,
+       490., 540., 590., 640., 690.,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile      ='bathy_Hmin50.bin',
+ hydrogThetaFile='lev_T_cs_15k.bin',
+ hydrogSaltFile ='lev_S_cs_15k.bin',
+ zonalWindFile  ='trenberth_taux.bin',
+ meridWindFile  ='trenberth_tauy.bin',
+ thetaClimFile  ='lev_surfT_cs_12m.bin',
+ saltClimFile   ='lev_surfS_cs_12m.bin',
+ surfQFile      ='shiQnet_cs32.bin',
+ EmPmRFile      ='shiEmPR_cs32.bin',
+ &
