@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.F,v 1.2 2007/10/08 23:50:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.F,v 1.3 2008/06/14 16:15:04 heimbach Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -18,7 +18,19 @@ C     | written and tested by Ralf Giering, Jan. 14th 1999       |
 C     | added new S/R's for _xz_ , _yz_ heimbach@mit.edu May-01  |
 C     \==========================================================/
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_EXCH2
+
+C     For exch2 all exch_xy* routines are shown to TAF
+C     and hand-written code below is not needed.
+
+      SUBROUTINE DUMMY_EXCH_UV_AD
+
+      RETURN
+      END
+
+#else
 
 CStartOfInterface
       SUBROUTINE adexch_uv_xy_rs(
@@ -284,3 +296,4 @@ c       _EXCH_XY_RL( advphi, myThid )
       RETURN
       END
 
+#endif /* ALLOW_EXCH2 */

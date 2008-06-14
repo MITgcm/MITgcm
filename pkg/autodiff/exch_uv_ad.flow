@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.flow,v 1.5 2007/10/08 23:50:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.flow,v 1.6 2008/06/14 16:15:04 heimbach Exp $
 C $Name:  $
+
+#include "CPP_OPTIONS.h"
 
 C     /==========================================================\
 C     | TAMC flow directives                                     |
@@ -18,6 +20,13 @@ C     | SUBROUTINE EXCH_UV_*_R* is linear                        |
 C     | only the array argument is active                        |
 C     | only myThid is required for the adjoint subroutine       |
 C     \==========================================================/
+
+#ifdef ALLOW_EXCH2
+
+C   Suppress these flow directives in conjunction with EXCH2 adjoint
+
+#else
+
 cadj SUBROUTINE exch_uv_xy_rs INPUT   = 1, 2, 3, 4
 cadj SUBROUTINE exch_uv_xy_rs OUTPUT  = 1, 2
 cadj SUBROUTINE exch_uv_xy_rs ACTIVE  = 1, 2
@@ -46,3 +55,4 @@ cadj SUBROUTINE exch_uv_xyz_rl DEPEND  = 3, 4
 cadj SUBROUTINE exch_uv_xyz_rl ADNAME  = adexch_uv_xyz_rl
 cadj SUBROUTINE exch_uv_xyz_rl FTLNAME = exch_uv_xyz_rl
 
+#endif /* ALLOW_EXCH2 */
