@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1002 2008/06/11 19:32:27 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1003 2008/06/16 14:08:55 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff, os7mp: simplify and avoid division by zero.
 o pkg/grdchk: Add gradient check to etan0 perturbations.
 o pkg/exf: read ice area from file (#ifdef ALLOW_ICE_AREAMASK). 
 o pkg/autodiff: more flexibility in zeroadj. 
@@ -22,6 +23,7 @@ o bridging the gap between eddy stress and GM.
   -> ALLOW_EDDYPSI_CONTROL for estimation purpose.
   The key modifications are in model/src/taueddy_external_forcing.F
   pkg/gmredi/gmredi_calc_*F pkg/gmredi/gmredi_*transport.F
+
 checkpoint59r
 o new S/R (pkg/mdsio/mdsio_facef_read.F) reading of sNx+1 x sNy+1 array
   from per-face file (take S/R READSYMTILE_RS out of ini_curvilinear_grid.F);
