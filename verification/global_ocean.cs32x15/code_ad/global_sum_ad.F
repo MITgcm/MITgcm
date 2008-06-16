@@ -52,7 +52,7 @@ C--   broadcast to all processes
 #ifndef ALWAYS_USE_MPI
       IF ( usingMPI ) THEN
 #endif
-         CALL MPI_Bcast(tmp, 1, MPI_REAL, myThid
+         CALL MPI_Bcast(tmp, 1, MPI_REAL, 0
      &        , MPI_COMM_WORLD, mpiRC
      &        ) 
 #ifndef ALWAYS_USE_MPI
@@ -123,7 +123,7 @@ C--   broadcast to all processes
 #ifndef ALWAYS_USE_MPI
       IF ( usingMPI ) THEN
 #endif
-         CALL MPI_Bcast(tmp, 1, MPI_DOUBLE_PRECISION, myThid
+         CALL MPI_Bcast(tmp, 1, MPI_DOUBLE_PRECISION, 0
      &        , MPI_COMM_WORLD, mpiRC
      &        ) 
 #ifndef ALWAYS_USE_MPI
