@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.20 2007/02/04 21:12:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.21 2008/06/19 17:21:24 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -118,6 +118,15 @@ C-          <=> usingPCoords:
           deltaK  =  0
          ENDIF	
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,:,bi,bj)  = tapelev_ini_bibj,
+CADJ &     key=ikey, byte=isbyte
+CADJ STORE salt (:,:,:,bi,bj)  = tapelev_ini_bibj, 
+CADJ &     key=ikey, byte=isbyte
+CADJ STORE convectcount(:,:,:) = tapelev_ini_bibj, 
+CADJ &     key=ikey, byte=isbyte
+#endif
+
 C--       Loop over all *interior* layers
           DO K=kTop,kBottom,kDir
 
@@ -126,6 +135,8 @@ C--       Loop over all *interior* layers
 CADJ STORE theta(:,:,k-1,bi,bj) = tapelev_ini_bibj_k,
 CADJ &     key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k-1,bi,bj) = tapelev_ini_bibj_k,
+CADJ &     key=kkey, byte=isbyte
+CADJ STORE convectcount(:,:,k-1) = tapelev_ini_bibj_k,
 CADJ &     key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
