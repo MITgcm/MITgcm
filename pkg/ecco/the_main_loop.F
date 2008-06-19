@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.73 2008/05/03 00:04:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.74 2008/06/19 17:49:29 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -858,7 +858,9 @@ CADJ STORE etaH          = comlev1, key = ikey_dynamics
       ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
 cph-test
-CADJ STORE hFac_surfC    = comlev1, key = ikey_dynamics
+CADJ STORE hFac_surfC         = comlev1, key = ikey_dynamics
+CADJ STORE surfaceforcingtice = comlev1, key = ikey_dynamics
+CADJ STORE theta, salt        = comlev1, key = ikey_dynamics
 # endif 
 #endif /* NONLIN_FRSURF */
 
