@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_oad,v 1.1 2008/06/20 22:23:22 utke Exp $
+#  $Name:  $
+#
+
+#  This file contains settings for OpenAD
+
+export OPENAD=true
