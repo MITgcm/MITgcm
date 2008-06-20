@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.19 2008/05/22 12:21:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.20 2008/06/20 20:36:58 utke Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -58,9 +58,9 @@ C     grid name re--definition.
 
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "MNC_COMMON.h"
 #include "EEPARAMS.h"
+#include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
       integer myThid, ndim, ind

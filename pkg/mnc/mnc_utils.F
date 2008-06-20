@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.20 2008/05/22 12:21:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.21 2008/06/20 20:36:58 utke Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -16,8 +16,8 @@ C     errors.
       
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "EEPARAMS.h"
+#include "netcdf.inc"
 
 C     !DESCRIPTION:
 C     Create an MNC grid within a NetCDF file context.
@@ -187,8 +187,8 @@ C     Get the variable indicies.
       
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "MNC_COMMON.h"
+#include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
       INTEGER  myThid, fid, indf, ind_fv_ids

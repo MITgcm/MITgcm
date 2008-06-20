@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.23 2008/05/22 12:21:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.24 2008/06/20 20:36:58 utke Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -47,9 +47,9 @@ C     Open or create a NetCDF file.
       
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "MNC_COMMON.h"
 #include "EEPARAMS.h"
+#include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
       integer myThid,indf
@@ -243,9 +243,9 @@ C     Add all attributes to a NetCDF file.
 
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "MNC_COMMON.h"
 #include "EEPARAMS.h"
+#include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
       integer myThid, atype, len, iv
@@ -326,9 +326,9 @@ C     Close a NetCDF file.
       
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "MNC_COMMON.h"
 #include "EEPARAMS.h"
+#include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
       integer myThid
@@ -415,9 +415,9 @@ C     Close all files matching a character string.
       
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "MNC_COMMON.h"
 #include "EEPARAMS.h"
+#include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
       integer myThid
@@ -456,9 +456,9 @@ C     Close all NetCDF files.
       
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "MNC_COMMON.h"
 #include "EEPARAMS.h"
+#include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
       integer myThid
@@ -499,9 +499,9 @@ C     Set the NetCDF file to DEFINE mode.
       
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "MNC_COMMON.h"
 #include "EEPARAMS.h"
+#include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
       integer myThid
@@ -552,9 +552,9 @@ C     End DEFINE mode for a NetCDF file.
       
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "MNC_COMMON.h"
 #include "EEPARAMS.h"
+#include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
       integer myThid
@@ -605,8 +605,8 @@ C     Try to open and read a NetCDF file.
       
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "EEPARAMS.h"
+#include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
       integer myThid
@@ -646,9 +646,9 @@ C     Try to open and read a NetCDF file.
       
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "MNC_COMMON.h"
 #include "EEPARAMS.h"
+#include "netcdf.inc"
 
 C     !INPUT PARAMETERS:
       integer myThid, ierr, indf

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.10 2008/05/23 12:40:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.11 2008/06/20 20:36:58 utke Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -21,7 +21,6 @@ C     Write a CF-convention coordinate variable (a vector).
 
 C     !USES:
       implicit none
-#include "netcdf.inc"
 #include "MNC_COMMON.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -32,6 +31,7 @@ C     !USES:
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
 #endif
+#include "netcdf.inc"
 
 C     Functions
       integer IFNBLNK, ILNBLNK
