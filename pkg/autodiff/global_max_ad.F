@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_max_ad.F,v 1.2 2002/07/13 03:30:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_max_ad.F,v 1.3 2008/06/20 21:43:19 heimbach Exp $
 C $Name:  $
 
 C--   File global_max.F: Routines that perform global max reduction on an array
@@ -19,10 +19,17 @@ CBOP
 C     !ROUTINE: GLOBAL_ADMAX_R4
 
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE GLOBAL_ADMAX_R4( 
      I                            myThid,
      U                            maxPhi
      &                          )
+#else
+      SUBROUTINE GLOBAL_ADMAX_R4( 
+     U                            maxPhi,
+     I                            myThid
+     &                          )
+#endif
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -106,10 +113,17 @@ CBOP
 C     !ROUTINE: GLOBAL_ADMAX_R8
 
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE GLOBAL_ADMAX_R8( 
      I                            myThid,
-     O                            maxPhi
+     U                            maxPhi
      &                          )
+#else
+      SUBROUTINE GLOBAL_ADMAX_R8( 
+     U                            maxPhi,
+     I                            myThid
+     &                          )
+#endif
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*

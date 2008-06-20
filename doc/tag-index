@@ -1,8 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1004 2008/06/19 16:43:56 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1005 2008/06/20 21:43:18 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o autodiff
+  Change default for TAF usage by removing argument '-nonew_arg'
+  This changes TAF subroutine argument list (ordering of active var.)
+  Omission of this flag leads to incompatibility w.r.t. TAMC
+  To restore TAMC-compatibility, need following modifs:
+  * use adoptfile tools/adjoint_options/adjoint_tamc_compatibility
+  * use CPP option #define AUTODIFF_TAMC_COMPATIBILITY
+  Tested TAF version is 1.9.22
+  N.B.: exch2 hand-written adjoint code currently not TAMC compatible
 
 checkpoint60
 --->>> This is the last checkpoint for which generating the adjoint

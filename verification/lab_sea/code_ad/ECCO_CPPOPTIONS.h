@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.7 2008/05/01 23:55:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.8 2008/06/20 21:43:19 heimbach Exp $
 C $Name:  $
 
 C
@@ -39,6 +39,9 @@ C       >>> Extract adjoint state
 C
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
+C
+C o TAMC compatible subroutine parameter list
+#undef AUTODIFF_TAMC_COMPATIBILITY
 
 C ********************************************************************
 C ***                     Calendar Package                         ***

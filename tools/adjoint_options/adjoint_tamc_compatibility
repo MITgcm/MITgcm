@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_exch2,v 1.2 2008/02/02 02:30:42 gforget Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_tamc_compatibility,v 1.1 2008/06/20 21:43:19 heimbach Exp $
 #  $Name:  $
 #
 
@@ -16,11 +16,12 @@ TAF=staf
 TAMC=tamc
 
 AD_TAMC_FLAGS='-reverse -admark ad -i4 -r4 -l tamc_ad.log'
-AD_TAF_FLAGS='-z -reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log'
+#AD_TAF_FLAGS='-z -reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log'
+AD_TAF_FLAGS="-nonew_arg -z -reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log $AD_TAF_FLAGS"
 FTL_TAMC_FLAGS='-forward -ftlmark g_ -i4 -r4 -l tamc_ftl.log'
-FTL_TAF_FLAGS='-z -forward -ftlmark g_ -i4 -r4 -l taf_ftl.log -flow taf_ftl_flow.log'
+FTL_TAF_FLAGS='-nonew_arg -z -forward -ftlmark g_ -i4 -r4 -l taf_ftl.log -flow taf_ftl_flow.log'
 SVD_TAMC_FLAGS='-reverse -forward -pure -i4 -r4 -l tamc_svd.log'
-SVD_TAF_FLAGS='-z -reverse -forward -pure -i4 -r4 -l taf_svd.log -flow taf_flow.log'
+SVD_TAF_FLAGS='-nonew_arg -z -reverse -forward -pure -i4 -r4 -l taf_svd.log -flow taf_flow.log'
 
 DIFF_FLAGS="-toplevel 'the_main_loop'    \
             -input 'xx_theta_dummy       \

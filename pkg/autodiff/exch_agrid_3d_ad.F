@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.F,v 1.3 2007/10/08 23:50:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_agrid_3d_ad.F,v 1.4 2008/06/20 21:43:19 heimbach Exp $
 C $Name:  $
 
 C     /==========================================================\
 C     | SUBROUTINEs
-C     |              adexch_uv_agrid_3d_rs                             |
-C     |              adexch_uv_agrid_3d_rl                             |
+C     |              adexch_uv_agrid_3d_rs                       |
+C     |              adexch_uv_agrid_3d_rl                       |
 C     | o adjoint routines to exchange routines                  |
 C     |==========================================================|
 C     | These routines essentially are calling the original      |
@@ -19,15 +19,23 @@ C     | written and tested by Ralf Giering, Jan. 14th 1999       |
 C     | added new S/R's for _xz_ , _yz_ heimbach@mit.edu May-01  |
 C     \==========================================================/
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: ADEXCH_UV_AGRID_3D_RS
 
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE ADEXCH_UV_AGRID_3D_RS(
      I                          withSigns, myNz, myThid,
-     U                          adUphi, adVphi )
+     U                          adUphi, adVphi
+     &                                )
+#else
+      SUBROUTINE ADEXCH_UV_AGRID_3D_RS(
+     U                          adUphi, adVphi,
+     I                          withSigns, myNz, myThid
+     &                                )
+#endif
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -107,9 +115,17 @@ CBOP
 C     !ROUTINE: ADEXCH_UV_AGRID_3D_RL
 
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE ADEXCH_UV_AGRID_3D_RL(
      I                          withSigns, myNz, myThid,
-     U                          adUphi, adVphi )
+     U                          adUphi, adVphi
+     &                                )
+#else
+      SUBROUTINE ADEXCH_UV_AGRID_3D_RL(
+     U                          adUphi, adVphi,
+     I                          withSigns, myNz, myThid
+     &                                )
+#endif
 
 C     !DESCRIPTION:
 C     *==========================================================*

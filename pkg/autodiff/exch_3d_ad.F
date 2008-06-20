@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_3d_ad.F,v 1.3 2008/06/14 16:15:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_3d_ad.F,v 1.4 2008/06/20 21:43:19 heimbach Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -41,9 +41,17 @@ CBOP
 C     !ROUTINE: ADEXCH_3D_RS
 
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE ADEXCH_3D_RS(
      I                       myNz, myThid,
-     U                       adphi )
+     U                       adphi
+     &                       )
+#else
+      SUBROUTINE ADEXCH_3D_RS(
+     U                       adphi,
+     I                       myNz, myThid
+     &                       )
+#endif
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -115,9 +123,17 @@ CBOP
 C     !ROUTINE: ADEXCH_3D_RL
 
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE ADEXCH_3D_RL(
      I                       myNz, myThid,
-     U                       adphi )
+     U                       adphi
+     &                       )
+#else
+      SUBROUTINE ADEXCH_3D_RL(
+     U                       adphi,
+     I                       myNz, myThid
+     &                       )
+#endif
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -189,9 +205,16 @@ CBOP
 C     !ROUTINE: ADEXCH_UV_3D_RS
 
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE ADEXCH_UV_3D_RS(
      I                          withSigns, myNz, myThid,
      U                          adUphi, adVphi )
+#else
+      SUBROUTINE ADEXCH_UV_3D_RS(
+     U                          adUphi, adVphi,
+     I                          withSigns, myNz, myThid
+     &                          )
+#endif
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -274,9 +297,16 @@ CBOP
 C     !ROUTINE: ADEXCH_UV_3D_RL
 
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE ADEXCH_UV_3D_RL(
      I                          withSigns, myNz, myThid,
      U                          adUphi, adVphi )
+#else
+      SUBROUTINE ADEXCH_UV_3D_RL(
+     U                          adUphi, adVphi,
+     I                          withSigns, myNz, myThid
+     &                          )
+#endif
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -356,10 +386,17 @@ C                begine.
       END
 
 CStartOfInterface
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE adexch_z_3d_rs(
      I                         myNz, myThid
      U                       , adphi
      &                       )
+#else
+      SUBROUTINE adexch_z_3d_rs(
+     U                         adphi,
+     I                         myNz, myThid
+     &                       )
+#endif
 C     /==========================================================\
 C     | SUBROUTINE ADEXCH_Z_3D_RS   adjoint of  EXCH_Z_3D_RS     |
 C     | o Handle exchanges for real*4, two-dimensional arrays.   |
@@ -410,10 +447,18 @@ C                begine.
 
 
 CStartOfInterface
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE adexch_z_3d_rl(
      I                         myNz, myThid
      U                       , adphi
      &                       )
+#else
+      SUBROUTINE adexch_z_3d_rl(
+     U                         adphi,
+     I                         myNz, myThid
+     &                       )
+#endif
+
 C     /==========================================================\
 C     | SUBROUTINE ADEXCH_Z_3D_RL   adjoint of  EXCH_Z_3D_RL   |
 C     | o Handle exchanges for real*8, two-dimensional arrays.   |

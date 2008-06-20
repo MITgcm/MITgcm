@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.44 2008/05/30 02:47:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.45 2008/06/20 21:43:19 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -75,6 +75,7 @@ CEOP
      &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
      & ) THEN
 
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
        call adexch_xy_rl( mythid,adetan)
        call adexch_xyz_rl( mythid,adtheta)
        call adexch_xyz_rl( mythid,adsalt)
@@ -85,28 +86,62 @@ c
        call adexch_xy_rl( mythid,adfv )
        call adexch_xy_rl( mythid,adqnet )
        call adexch_xy_rl( mythid,adempmr )
-#ifdef ALLOW_EDDYPSI_CONTROL
+# ifdef ALLOW_EDDYPSI_CONTROL
        call adexch_xyz_rl( mythid,adeddypsix )
        call adexch_xyz_rl( mythid,adeddypsiy )
-#endif
-#ifdef ALLOW_DIFFKR_CONTROL
+# endif
+# ifdef ALLOW_DIFFKR_CONTROL
        call adexch_xyz_rl( mythid,addiffkr )
-#endif
-#ifdef ALLOW_KAPGM_CONTROL
+# endif
+# ifdef ALLOW_KAPGM_CONTROL
        call adexch_xyz_rl( mythid,adkapgm )
-#endif
-#ifdef ALLOW_KAPREDI_CONTROL
+# endif
+# ifdef ALLOW_KAPREDI_CONTROL
        call adexch_xyz_rl( mythid,adkapredi )
-#endif
-#ifdef ALLOW_SST0_CONTROL
+# endif
+# ifdef ALLOW_SST0_CONTROL
        call adexch_xy_rl( mythid,adsst )
-#endif
-#ifdef ALLOW_SSS0_CONTROL
+# endif
+# ifdef ALLOW_SSS0_CONTROL
        call adexch_xy_rl( mythid,adsss )
-#endif
-#ifdef ALLOW_BOTTOMDRAG_CONTROL
+# endif
+# ifdef ALLOW_BOTTOMDRAG_CONTROL
        call adexch_xy_rl( mythid,adbottomdragfld)
-#endif
+# endif
+# else /* ndfef AUTODIFF_TAMC_COMPATIBILITY */
+       call adexch_xy_rl( adetan, mythid )
+       call adexch_xyz_rl( adtheta, mythid )
+       call adexch_xyz_rl( adsalt, mythid )
+       call adexch_xyz_rl( adwvel, mythid )
+       call adexch_uv_xyz_rl( aduvel,advvel, .true. ,mythid )
+c
+       call adexch_xy_rl( adfu, mythid )
+       call adexch_xy_rl( adfv, mythid )
+       call adexch_xy_rl( adqnet, mythid )
+       call adexch_xy_rl( adempmr, mythid )
+# ifdef ALLOW_EDDYPSI_CONTROL
+       call adexch_xyz_rl( adeddypsix, mythid )
+       call adexch_xyz_rl( adeddypsiy, mythid )
+# endif
+# ifdef ALLOW_DIFFKR_CONTROL
+       call adexch_xyz_rl( addiffkr, mythid )
+# endif
+# ifdef ALLOW_KAPGM_CONTROL
+       call adexch_xyz_rl( adkapgm, mythid )
+# endif
+# ifdef ALLOW_KAPREDI_CONTROL
+       call adexch_xyz_rl( adkapredi, mythid )
+# endif
+# ifdef ALLOW_SST0_CONTROL
+       call adexch_xy_rl( adsst, mythid )
+# endif
+# ifdef ALLOW_SSS0_CONTROL
+       call adexch_xy_rl( adsss, mythid )
+# endif
+# ifdef ALLOW_BOTTOMDRAG_CONTROL
+       call adexch_xy_rl( adbottomdragfld, mythid )
+# endif
+#endif /* AUTODIFF_TAMC_COMPATIBILITY */
 
        _BARRIER
        _BEGIN_MASTER( myThid )

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.10 2007/06/26 15:38:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.11 2008/06/20 21:43:19 heimbach Exp $
 C $Name:  $
 
 C CPP flags controlling which code is included in the files that
@@ -26,6 +26,9 @@ C       >>> DO 2-level checkpointing instead of 3-level
 C
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
+C
+C o TAMC compatible subroutine parameter list
+#undef AUTODIFF_TAMC_COMPATIBILITY
 
 C ********************************************************************
 C ***                     Calender Package                         ***

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_loc_ad.F,v 1.4 2007/10/08 23:50:53 jmc Exp $
-C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -25,7 +23,7 @@ c        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
 c                 - Added routines that do active writes on tiles
 c                   instead of a whole thread.
 c        changed: Patrick Heimbach heimbach@mit.edu 27-May-2000
-c                 - changed suboutine argument list:
+c                 - changed suboutine argument list: 
 c                   dropped mycurrentiter, mycurrenttime
 c        changed: heimbach@mit.edu 25-Mar-2002
 c                 - added active file handling of xz-/yz-arrays
@@ -35,6 +33,7 @@ c     ==================================================================
 CBOP
 C     !ROUTINE: adactive_read_xy_loc
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       subroutine adactive_read_xy_loc(
      I                             active_var_file,
      I                             irec,
@@ -44,6 +43,17 @@ C     !INTERFACE:
      I                             mythid,
      I                             adactive_var
      &                           )
+#else
+      subroutine adactive_read_xy_loc(
+     I                             active_var_file,
+     I                             adactive_var,
+     I                             irec,
+     I                             doglobalread,
+     I                             lAdInit,
+     I                             myiter,
+     I                             mythid
+     &                           )
+#endif
 
 C     !DESCRIPTION: \bv
 c     ==================================================================
@@ -111,6 +121,7 @@ CEOP
 CBOP
 C     !ROUTINE: adactive_read_xyz_loc
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       subroutine adactive_read_xyz_loc(
      I                              active_var_file,
      I                              irec,
@@ -120,6 +131,17 @@ C     !INTERFACE:
      I                              mythid,
      I                              adactive_var
      &                            )
+#else
+      subroutine adactive_read_xyz_loc(
+     I                              active_var_file,
+     I                              adactive_var,
+     I                              irec,
+     I                              doglobalread,
+     I                              lAdInit,
+     I                              myiter,
+     I                              mythid
+     &                            )
+#endif
 
 C     !DESCRIPTION: \bv
 c     ==================================================================
@@ -186,6 +208,7 @@ CEOP
 CBOP
 C     !ROUTINE: adactive_read_xz_loc
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       subroutine adactive_read_xz_loc(
      I                              active_var_file,
      I                              irec,
@@ -195,6 +218,17 @@ C     !INTERFACE:
      I                              mythid,
      I                              adactive_var
      &                            )
+#else
+      subroutine adactive_read_xz_loc(
+     I                              active_var_file,
+     I                              adactive_var,
+     I                              irec,
+     I                              doglobalread,
+     I                              lAdInit,
+     I                              myiter,
+     I                              mythid
+     &                            )
+#endif
 
 C     !DESCRIPTION: \bv
 c     ==================================================================
@@ -261,6 +295,7 @@ CEOP
 CBOP
 C     !ROUTINE: adactive_read_yz_loc
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       subroutine adactive_read_yz_loc(
      I                              active_var_file,
      I                              irec,
@@ -270,6 +305,17 @@ C     !INTERFACE:
      I                              mythid,
      I                              adactive_var
      &                            )
+#else
+      subroutine adactive_read_yz_loc(
+     I                              active_var_file,
+     I                              adactive_var,
+     I                              irec,
+     I                              doglobalread,
+     I                              lAdInit,
+     I                              myiter,
+     I                              mythid
+     &                            )
+#endif
 
 C     !DESCRIPTION: \bv
 c     ==================================================================
@@ -336,6 +382,7 @@ CEOP
 CBOP
 C     !ROUTINE: adactive_read_xy_loc
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       subroutine adactive_write_xy_loc(
      I                              active_var_file,
      I                              irec,
@@ -344,7 +391,16 @@ C     !INTERFACE:
      U                              adactive_var,
      I                              dummy
      &                            )
-
+#else
+      subroutine adactive_write_xy_loc(
+     I                              active_var_file,
+     U                              adactive_var,
+     I                              irec,
+     I                              myiter,
+     I                              mythid,
+     I                              dummy
+     &                            )
+#endif
 
 C     !DESCRIPTION: \bv
 c     ==================================================================
@@ -409,6 +465,7 @@ CEOP
 CBOP
 C     !ROUTINE: adactive_read_xyz_loc
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       subroutine adactive_write_xyz_loc(
      I                               active_var_file,
      I                               irec,
@@ -417,7 +474,16 @@ C     !INTERFACE:
      U                               adactive_var,
      I                               dummy
      &                             )
-
+#else
+      subroutine adactive_write_xyz_loc(
+     I                               active_var_file,
+     U                               adactive_var,
+     I                               irec,
+     I                               myiter,
+     I                               mythid,
+     I                               dummy
+     &                             )
+#endif
 
 C     !DESCRIPTION: \bv
 c     ==================================================================
@@ -482,6 +548,7 @@ CEOP
 CBOP
 C     !ROUTINE: adactive_read_xz_loc
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       subroutine adactive_write_xz_loc(
      I                               active_var_file,
      I                               irec,
@@ -490,7 +557,16 @@ C     !INTERFACE:
      U                               adactive_var,
      I                               dummy
      &                             )
-
+#else
+      subroutine adactive_write_xz_loc(
+     I                               active_var_file,
+     U                               adactive_var,
+     I                               irec,
+     I                               myiter,
+     I                               mythid,
+     I                               dummy
+     &                             )
+#endif
 
 C     !DESCRIPTION: \bv
 c     ==================================================================
@@ -555,6 +631,7 @@ CEOP
 CBOP
 C     !ROUTINE: adactive_read_yz_loc
 C     !INTERFACE:
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       subroutine adactive_write_yz_loc(
      I                               active_var_file,
      I                               irec,
@@ -563,7 +640,16 @@ C     !INTERFACE:
      U                               adactive_var,
      I                               dummy
      &                             )
-
+#else
+      subroutine adactive_write_yz_loc(
+     I                               active_var_file,
+     U                               adactive_var,
+     I                               irec,
+     I                               myiter,
+     I                               mythid,
+     I                               dummy
+     &                             )
+#endif
 
 C     !DESCRIPTION: \bv
 c     ==================================================================

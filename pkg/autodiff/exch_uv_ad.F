@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.F,v 1.3 2008/06/14 16:15:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/exch_uv_ad.F,v 1.4 2008/06/20 21:43:19 heimbach Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -33,10 +33,17 @@ C     and hand-written code below is not needed.
 #else
 
 CStartOfInterface
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE adexch_uv_xy_rs(
      I                       withSigns, myThid,
      U                       aduphi, advphi
      &                       )
+#else
+      SUBROUTINE adexch_uv_xy_rs(
+     U                       aduphi, advphi,
+     I                       withSigns, myThid
+     &                       )
+#endif
 C     /==========================================================\
 C     | SUBROUTINE ADEXCH_UV_XY_RS   adjoint of  EXCH_UV_XY_RS   |
 C     | o Handle exchanges for real*4, two-dimensional arrays.   |
@@ -100,10 +107,18 @@ c       _EXCH_XY_RS( advphi, myThid )
 
 
 CStartOfInterface
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE adexch_uv_xy_rl(
      I                       withSigns, myThid,
      U                       aduphi, advphi
      &                       )
+#else
+      SUBROUTINE adexch_uv_xy_rl(
+     U                       aduphi, advphi,
+     I                       withSigns, myThid
+     &                       )
+#endif
+
 C     /==========================================================\
 C     | SUBROUTINE ADEXCH_UV_XY_RL   adjoint of  EXCH_UV_XY_RL   |
 C     | o Handle exchanges for real*8, two-dimensional arrays.   |
@@ -166,10 +181,17 @@ c       _EXCH_XY_RL( advphi, myThid )
 
 
 CStartOfInterface
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE adexch_uv_xyz_rs(
      I                       withSigns, myThid,
      U                       aduphi, advphi
      &                       )
+#else
+      SUBROUTINE adexch_uv_xyz_rs(
+     U                       aduphi, advphi,
+     I                       withSigns, myThid
+     &                       )
+#endif
 C     /==========================================================\
 C     | SUBROUTINE ADEXCH_UV_XYZ_RS   adjoint of  EXCH_UV_XYZ_RS |
 C     | o Handle exchanges for real*4, two-dimensional arrays.   |
@@ -232,10 +254,18 @@ c       _EXCH_XY_RS( advphi, myThid )
 
 
 CStartOfInterface
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE adexch_uv_xyz_rl(
      I                       withSigns, myThid,
      U                       aduphi, advphi
      &                       )
+#else
+      SUBROUTINE adexch_uv_xyz_rl(
+     U                       aduphi, advphi,
+     I                       withSigns, myThid
+     &                       )
+#endif
+
 C     /==========================================================\
 C     | SUBROUTINE ADEXCH_UV_XYZ_RL   adjoint of  EXCH_UV_XYZ_RL |
 C     | o Handle exchanges for real*8, two-dimensional arrays.   |

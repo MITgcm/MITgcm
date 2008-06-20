@@ -1,18 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.5 2008/06/11 19:14:28 gforget Exp $
-C $Name:  $
-
 C--   File global_adsum.F: Routines that perform adjoint of
 C                          global sum on an array of thread values.
 C      Contents
 C      o global_adsum_r4
 C      o global_adsum_r8
-#include "CPP_EEOPTIONS.h"
+#include "AUTODIFF_OPTIONS.h"
 
 CStartOfInterface
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE GLOBAL_ADSUM_R4(
      I                            myThid,
      U                            adsumPhi
      &                          )
+#else
+      SUBROUTINE GLOBAL_ADSUM_R4( 
+     U                            adsumPhi,
+     I                            myThid
+     &                          )
+#endif
 C     /==========================================================\
 C     | SUBROUTINE GLOBAL_ADSUM_R4                               |
 C     | o Handle sum for real*4 data.                            |
@@ -51,15 +55,13 @@ C--   broadcast to all processes
 
       tmp = adsumPhi
 
-cph      call global_sum_r4( tmp,mythid )
-
 #ifdef  ALLOW_USE_MPI
 #ifndef ALWAYS_USE_MPI
       IF ( usingMPI ) THEN
 #endif
          CALL MPI_Bcast(tmp, 1, MPI_REAL, 0
      &        , MPI_COMM_WORLD, mpiRC
-     &        )
+     &        ) 
 #ifndef ALWAYS_USE_MPI
       ENDIF
 #endif
@@ -80,11 +82,20 @@ C--   every thread takes its adjoint sum
       END
 
 
+#include "CPP_EEOPTIONS.h"
+
 CStartOfInterface
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE GLOBAL_ADSUM_R8(
      I                            myThid,
      U                            adsumPhi
      &                          )
+#else
+      SUBROUTINE GLOBAL_ADSUM_R8( 
+     U                            adsumPhi,
+     I                            myThid
+     &                          )
+#endif
 C     /==========================================================\
 C     | SUBROUTINE GLOBAL_ADSUM_R4                               |
 C     | o Handle sum for real*8 data.                            |
@@ -122,15 +133,13 @@ C--   broadcast to all processes
 
       tmp = adsumPhi
 
-cph      call global_sum_r8( tmp,mythid )
-
 #ifdef  ALLOW_USE_MPI
 #ifndef ALWAYS_USE_MPI
       IF ( usingMPI ) THEN
 #endif
          CALL MPI_Bcast(tmp, 1, MPI_DOUBLE_PRECISION, 0
      &        , MPI_COMM_WORLD, mpiRC
-     &        )
+     &        ) 
 #ifndef ALWAYS_USE_MPI
       ENDIF
 #endif
