@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.158 2008/05/02 00:13:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.159 2008/06/20 20:32:29 utke Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,8 +45,6 @@ C     == Global variables ==
 
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
 #endif
 
 #ifdef HAVE_SIGREG
@@ -124,6 +122,12 @@ C     == Global variables ==
 #  include "RBCS.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_MNC
+      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFFERENT_MULTIPLE
+#endif
+
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
