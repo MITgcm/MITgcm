@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.13 2008/04/24 21:39:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.14 2008/06/21 13:49:08 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -106,3 +106,8 @@ CADJ STORE objf_tracer = tapelev4, key = ilev_4
 #ifdef ALLOW_COST_TRANSPORT
 CADJ STORE objf_transport = tapelev4, key = ilev_4
 #endif
+
+#ifdef ALLOW_HFLUXM_CONTROL
+CADJ STORE qnetm          = tapelev4, key = ilev_4
+#endif
+
