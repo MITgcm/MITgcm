@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.14 2008/04/18 19:32:12 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.15 2008/06/23 22:26:32 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -76,7 +76,7 @@ C   Ligand,FeL,Fe calculation
      &            )/(2. _d 0*ligand_stab)
  
               FeL = ligand_tot-lig
-              if (tmpfe.eq.0. _d 0) then
+              if (tmpfe.ne.0. _d 0) then
                 freefe(i,j,k,bi,bj) = tmpfe -FeL
               else
                 freefe(i,j,k,bi,bj) = 0. _d 0
