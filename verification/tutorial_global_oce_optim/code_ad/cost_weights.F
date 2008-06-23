@@ -1,18 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_weights.F,v 1.1 2008/01/15 21:16:42 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_weights.F,v 1.2 2008/06/23 18:38:34 dfer Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
-      subroutine cost_weights( mythid )
+      SUBROUTINE COST_WEIGHTS( myThid )
 
 c     ==================================================================
-c     SUBROUTINE cost_weights
+c     SUBROUTINE COST_WEIGHTS
 c     ==================================================================
 c
 c     o Set weights used in the cost function and in the
 c       normalization of the sensitivities when ALLOW_NON_DIMENSIONAL
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 
@@ -27,50 +27,44 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer  mythid
+      INTEGER  myThid
 
 c     == local variables ==
 
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-      integer gwunit
+      INTEGER bi,bj
+      INTEGER i,j,k
+      INTEGER itlo,ithi,jtlo,jthi
+      INTEGER jMin,jMax,iMin,iMax
+      INTEGER iUnit
 
-      _RL factor
       _RL dummy
-      real*8 wti(nr)
-      real*8 wtemp
-
-c     == external ==
-
-      integer  ifnblnk
-      external ifnblnk
-      integer  ilnblnk
-      external ilnblnk
+      _RL wti(Nr)
+      REAL*8 tmpwti(Nr)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
+      iMin = 1-OLx
+      iMax = sNx+OLx
+      jMin = 1-OLy
+      jMax = sNy+OLy
 
 c--   Initialize variance (weight) fields.
+      DO k = 1,Nr
+         wti(k) = 0. _d 0
+      ENDDO
       DO bj = jtlo,jthi
         DO bi = itlo,ithi
-          DO j = jmin,jmax
-            DO i = imin,imax
+          DO j = jMin,jMax
+            DO i = iMin,iMax
               whfluxm(i,j,bi,bj)= 0. _d 0
             ENDDO
           ENDDO
-          DO k = 1,nr
+          DO k = 1,Nr
              wunit(k,bi,bj)  = 1. _d 0
              wtheta(k,bi,bj) = 0. _d 0
              wsalt(k,bi,bj)  = 0. _d 0
@@ -78,27 +72,35 @@ c--   Initialize variance (weight) fields.
         ENDDO
       ENDDO
 
-c--   Build area weighting matrix used in the cost function
-c--   contributions.
-
 c--   Read error information and set up weight matrices.
-c--   First the temperature weights :
-c
+
 #ifdef ALLOW_COST_TEMP
-      _BEGIN_MASTER(myThid)
-       call mdsfindunit( gwunit, mythid )
-       open(gwunit, file='Err_levitus_15layer.bin',
-     &               status='old', form='unformatted',
-     &     access = 'sequential'   )
-       read(gwunit) (wti(k), k=1,nr)
-       close(gwunit)
-      _END_MASTER(myThid)
-      _BARRIER
+C  Temperature weights for cost function   
+       _BEGIN_MASTER(myThid)
+       CALL MDSFINDUNIT( iUnit, myThid )
+       OPEN(iUnit, FILE='Err_levitus_15layer.bin', STATUS='OLD',
+     &      FORM='UNFORMATTED',ACCESS='DIRECT',RECL=2*WORDLENGTH*Nr)
+       READ(iUnit,rec=1) tmpwti 
+       CLOSE(iUnit)
+#ifdef _BYTESWAPIO
+       CALL MDS_BYTESWAPR8( Nr, tmpwti )
+#endif
+       _END_MASTER(myThid)
+       _BARRIER
+
+       DO k=1,Nr
+         wti(k) = tmpwti(k)
+       ENDDO
+       WRITE(msgBuf,'(3A)') 'S/R COST_WEIGHTS:',
+     &  ' Temperature weights loaded from: ','Err_levitus_15layer.bin'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+
       print*,'Weights for temperature: wti', (wti(k),k=1,nr)
 
       DO bj = jtlo,jthi
         DO bi = itlo,ithi
-          DO k = 1, nr
+          DO k = 1, Nr
                wtheta(k,bi,bj) = 1. _d 0/wti(k)/wti(k)
           ENDDO
         ENDDO
@@ -115,8 +117,8 @@ c
       _EXCH_XY_RL(whfluxm   , myThid )
       DO bj = jtlo,jthi
         DO bi = itlo,ithi
-          DO j = jmin,jmax
-            DO i = imin,imax
+          DO j = jMin,jMax
+            DO i = iMin,iMax
              print*,'Uncertainties for Heat Flux',i,j,whfluxm(i,j,bi,bj)
              IF (whfluxm(i,j,bi,bj) .NE. 0. _d 0) THEN
                  whfluxm(i,j,bi,bj) = 1. _d 0 /whfluxm(i,j,bi,bj)
@@ -129,7 +131,7 @@ c
         ENDDO
       ENDDO
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-      call active_write_xy('whfluxm',whfluxm,1,0,mythid,dummy)
+      call active_write_xy('whfluxm',whfluxm,1,0,myThid,dummy)
 #endif
 #endif
 c
