@@ -1,5 +1,5 @@
 function [uE,vN,msk] = rotate_uv2uvEN(u,v,AngleCS,AngleSN,Grid,maskW,maskS)
-% [uE,vN,msk] = rotate_uv2uvEN(u,v,AngleCS,AngleSN,[Grid,maskU,maskV])
+% [uE,vN,msk] = rotate_uv2uvEN(u,v,AngleCS,AngleSN,[Grid,maskW,maskS])
 %
 % Rotate cube sphere U and V vector components to east-west (uE) and
 % north-south (vN) components located on cube sphere grid centers.
@@ -25,7 +25,7 @@ function [uE,vN,msk] = rotate_uv2uvEN(u,v,AngleCS,AngleSN,Grid,maskW,maskS)
 % >> AngleSN=rdmds('AngleSN');
 % >> [uE,vN] = rotate_uv2uvEN(uA,vA,AngleCS,AngleSN,'A');
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/rotate_uv2uvEN.m,v 1.3 2008/06/22 22:11:48 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/rotate_uv2uvEN.m,v 1.4 2008/06/24 16:48:42 jmc Exp $
 % $Name:  $
 
 % Default is a C-grid configuration.
@@ -46,8 +46,8 @@ nz=1; if length(dim) > 2, nz=prod(dim(3:end)); end
 if UVmsk == 1,
  if length(dim) == 2,
    n3d=1;
-   maskW=maksW(:,:,1);
-   maskS=maksS(:,:,1);
+   maskW=maskW(:,:,1);
+   maskS=maskS(:,:,1);
  else
    n3d=dim(3);
  end 
@@ -70,8 +70,8 @@ end
 if UVmsk == 1,
   if n3d == nz,
    nt=1;
-   u=u.*maksW;
-   v=v.*maksW;
+   u=u.*maskW;
+   v=v.*maskS;
   else
    nt=dim(4);
    u=reshape(u,[6*nc*nc*n3d nt]);
