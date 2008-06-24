@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.74 2008/06/19 17:49:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.75 2008/06/24 17:57:36 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -132,6 +132,9 @@ c They provide the fields to be stored.
 # endif
 # ifdef ALLOW_OBCS
 #  include "OBCS.h"
+#   ifdef ALLOW_PTRACERS
+#    include "OBCS_PTRACERS.h"
+#   endif
 # endif
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"
