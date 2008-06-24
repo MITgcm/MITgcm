@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1005 2008/06/20 21:43:18 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1006 2008/06/24 11:20:09 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61
 o autodiff
   Change default for TAF usage by removing argument '-nonew_arg'
   This changes TAF subroutine argument list (ordering of active var.)
