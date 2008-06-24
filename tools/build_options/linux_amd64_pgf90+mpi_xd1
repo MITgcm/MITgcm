@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf90+mpi_xd1,v 1.1 2008/06/24 10:28:01 mlosch Exp $
+#  $Name:  $
+#
+# tested on xd1.awi.de
+# Linux xd1-420-6 2.4.21_H_01_01 #6 SMP Wed Nov 3 15:30:06 PST 2004 x86_64 unknownx
+# pgf90 7.1-1 64-bit target on x86-64 Linux -tp k8-64 
+# Copyright 1989-2000, The Portland Group, Inc.  All Rights Reserved.
+# Copyright 2000-2007, STMicroelectronics, Inc.  All Rights Reserved.
+
+#FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
+
+FC='mpif90'
+CC='mpicc'
+LINK='mpif90'
+CPP='/usr/bin/cpp -P -traditional'
+
+MPI='true'
+DEFINES='-DWORDLENGTH=4'
+INCLUDES='-I/usr/mpich/mpich-1.2.6-pgi524/include -I/opt/awi/netcdf-3.6.0-p1/include' 
+LIBS='-L/usr/mpich/mpich-1.2.6-pgi524/lib -Mmpi -L/opt/awi/netcdf-3.6.0-p1/lib -lnetcdf'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS='-byteswapio -Mnodclchk -Mextend'
+    FOPTIM='-O2 -Munroll'
+else
+    #  Try to follow IEEE-754
+    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FOPTIM='-tp amd64 -O0 -Munroll -Kieee'
+fi
+#FFLAGS=$FFLAGS' -mcmodel=medium'
