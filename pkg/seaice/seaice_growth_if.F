@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.2 2008/03/28 04:18:08 heimbach Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.3 2008/06/25 21:44:17 heimbach Exp $
 C     $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -935,9 +935,7 @@ c    weighted
 #endif
      &                 - (FreshwaterContribFromIce(I,J) +
      &                    FreshwaterContribFromSnowMelt(I,J))/
-     &                    SEAICE_deltaTtherm) 
-
-
+     &                    SEAICE_deltaTtherm )*rhoConstFresh
 
 C     DO SOME DEBUGGING CALCULATIONS.  MAKE SURE SUMS ALL ADD UP.
 #ifdef SEAICE_DEBUG
