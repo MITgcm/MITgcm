@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.29 2008/02/02 02:34:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.30 2008/06/26 18:11:53 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -340,8 +340,8 @@ cHFLUXM_CONTROL
         yctrlid             = 'MIT_CE_000'
         yctrlposunpack      = '.opt'
         yctrlpospack        = '.opt'
-        ctrlname            = ' '
-        costname            = ' '
+        ctrlname            = 'ecco_ctrl'
+        costname            = 'ecco_cost'
         scalname            = ' '
         maskname            = ' '
         metaname            = ' '
