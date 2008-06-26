@@ -95,6 +95,4 @@
 # names for ctrl_pack/unpack
 # *********************
  &CTRL_PACKNAMES
- ctrlname = 'ecco_ctrl',
- costname = 'ecco_cost',
  &
