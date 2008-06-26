@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.115 2008/04/06 19:19:47 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.116 2008/06/26 14:41:33 mlosch Exp $
 #  $Name:  $
 #
 
@@ -226,7 +226,7 @@ testoutput_run()
 	 #echo "-- ptr test=" $tst "number of var=" `echo $listVar | awk '{print NF}'` 1>&2
  	  if test "x$tst" != xt ; then listVar=`echo "$listVar" | sed "s/ pt$ii..//g"` ; fi
         done
-        tst=`echo $sVar $listVar | awk '{ for(i=2;i<=NF;i++){t+=($i==$1)}; print t }'`
+        tst=`echo $sVar $listVar | awk '{ for(i=2;i<=NF;i++){if($i==$1)t+=1}; print t }'`
         if test $tst != 1 ; then
           if test $tst = 0 ; then echo "==> WARNING: selected var >$sVar< not found" 1>&2
                  else echo "==> WARNING: found selected var >$sVar< $tst times" 1>&2 ; fi
