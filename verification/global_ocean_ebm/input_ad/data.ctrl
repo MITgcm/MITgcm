@@ -19,10 +19,5 @@
 # names for ctrl_pack/unpack
 # *********************
  &CTRL_PACKNAMES
- ctrlname = 'ecco_ctrl',
- costname = 'ecco_cost',
- scalname = 'ecco_scal',
- maskname = 'ecco_mask',
- metaname = 'ecco_meta',
  &
 
