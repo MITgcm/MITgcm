@@ -3,11 +3,7 @@
 *.f
 *.for
 *.o
-*.data
-*.meta
-*.nc
-STD*
-*.txt
+*.flowdir
 mfile*
 mitgcmuv*
 work.pc*
@@ -19,7 +15,6 @@ genmake_state
 genmake_ad_optfile
 genmake_optfile
 genmake_warnings
-mnc_test_*
-fort.*
-datetime
+taf_command
+taf_output
 
