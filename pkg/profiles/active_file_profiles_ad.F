@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_profiles_ad.F,v 1.6 2007/10/09 00:07:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_profiles_ad.F,v 1.7 2008/06/27 19:04:14 heimbach Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -21,14 +21,14 @@ c     ==================================================================
       subroutine adactive_read_profile(
      I                              active_num_file,
      I                              nadactive_var,
+     I                              adactive_var,
      I                              active_varnum,
      I                              irec,
      I                              lAdInit,
      I                              myiter,
      I                              bi,
      I                              bj,
-     I                              mythid,
-     I                              adactive_var
+     I                              mythid
      &                            )
 
 C     !DESCRIPTION: \bv
@@ -84,13 +84,13 @@ c     ==================================================================
       subroutine adactive_write_profile(
      I                              active_num_file,
      I                              nadactive_var,
+     I                              adactive_var,
      I                              active_varnum,
      I                              irec,
      I                              myiter,
      I                              bi,
      I                              bj,
      I                              mythid,
-     I                              adactive_var,
      I                              dummy
      &                            )
 
