@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1007 2008/06/26 14:43:25 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1008 2008/06/30 14:26:26 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mnc: small fix in mnc_handle_err: make sure that length of msgbuf
+  is exceeded
 o testreport: modify syntax of awk, so that it works also with 
   awk, and not only with nawk and gawk
 
