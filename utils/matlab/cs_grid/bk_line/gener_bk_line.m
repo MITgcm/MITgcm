@@ -1,7 +1,7 @@
 % main script to generate broken lines that folows the cubic grid
 % and stay close as possible to a given latitude
 %-----------------------
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gener_bk_line.m,v 1.3 2007/02/06 19:29:36 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gener_bk_line.m,v 1.4 2008/07/07 13:13:50 jmc Exp $
 % $Name:  $
 
 %- load definition of the grid (needs to be done at the 1rst call):
@@ -12,7 +12,7 @@ else
  fprintf('krd undefined ; set to 1 \n'); krd=1 ;
 end   
 if krd==1, 
- more off
+ more off ;
 %rac='/home/jmc/grid_cs32/';
  rac='grid_files/';
  load_cs ;
@@ -49,20 +49,15 @@ xMid(4)=180;
 %-- define large value for X,Y position :
 XYout=1000;
 
-xx1=split_Z_cub(xcg);
-yy2=split_Z_cub(ycg);
-%- dx,dy not used but would be  necessary to compute the length of broken-lines
-% [dy6t,dx6t]=split_UV_cub(dyg,dxg);
-xx2=xx1;
-for n=1:6,
- if xMid(n) ~= 0,
-   dec=xMid(n)-180;
-   xx2(:,:,n)=rem( xx2(:,:,n)+360-dec, 360) +dec ;
- end
- fprintf('face  %i : xMid= %8.3f ; Xmin,Xmax = %8.3f %8.3f \n', ...
-         n, xMid(n), min(min(xx2(:,:,n))), max(max(xx2(:,:,n))) );
-end
+nPxy=nc*6*nc; nPp2=nPxy+2;
+yg2=zeros(nPp2,1); yg2([1:nPxy],1)=reshape(ycg,[nPxy 1]);
+xg2=zeros(nPp2,1); xg2([1:nPxy],1)=reshape(xcg,[nPxy 1]);
+%-- add missing corner:
+xg2(nPxy+1)=xg2(1); yg2(nPxy+1)=yg2(1+2*nc);
+xg2(nPxy+2)=xg2(1+3*nc); yg2(nPxy+2)=yg2(1);
 
+%------------------------------
+yy2=split_Z_cub(yg2);
 %-- define dylat = width of Lat. band that contains the broken line:
 ddy=zeros(ncp,ncp,6); 
 ddy(1:nc,:,:)=yy2(1:nc,:,:)-yy2(2:ncp,:,:); ddy=abs(ddy);
@@ -73,6 +68,32 @@ dyJmx=max(max(max(ddy)));
 dylat=sqrt(2)*max(dyImx,dyJmx);
 fprintf('dyImx,dyJmx = %7.3f %7.3f ; ==> select dylat= %9.6f \n', ...
          dyImx,dyJmx,dylat);
+%-- set long precision ; deal with long=-180 / +180 separation
+epsil=dylat*1.e-10;
+dd0=abs(xg2+180); ddd=dd0; ddd(find(ddd<epsil))=200; dd1=min(ddd(:));
+ddd=abs(xg2-180);          ddd(find(ddd<epsil))=200; dd2=min(ddd(:));
+if ( dd1 < dylat/10 | dd2 < dylat/10 ),
+  fprintf(' date change line is poorly defined : dd1= %g , dd2= %g\n',dd1,dd2);
+  fprintf(' needs to be +/-180 (+/- esilon=%10.3e) ==> Stop here\n',epsil);
+  return
+end
+%-- change long=-180 (+/- epsil) to +180
+[II]=find(dd0<epsil); xg2(II)=xg2(II)+360; clear II;
+%---------
+xx1=split_Z_cub(xg2);
+%- dx,dy not used but would be  necessary to compute the length of broken-lines
+% [dy6t,dx6t]=split_UV_cub(dyg,dxg);
+xx2=xx1;
+for n=1:6,
+ if xMid(n) ~= 0,
+   dec=xMid(n)-180;
+   xx2(:,:,n)=rem( xx2(:,:,n)+360-dec, 360) +dec ;
+ end
+ fprintf('face  %i : x1 min,max= %8.3f %8.3f', ...
+             n, min(min(xx1(:,:,n))), max(max(xx1(:,:,n))) );
+ fprintf(' ; xMid= %8.3f ; x2 min,max= %8.3f %8.3f \n', ...
+             xMid(n), min(min(xx2(:,:,n))), max(max(xx2(:,:,n))) );
+end
 %------------------------------
 
 %-----------------------------------------
@@ -86,8 +107,9 @@ if max(kplot) > 0,
 
  figure(1); clf;
  %subplot(212);
- if ydim == 1, Ygraph=yl ; else Ygraph=90; end
- grph_bk_line(zeros(6*nc,nc),xcs,ycs,xcg,ycg,-25,40,Ygraph); 
+ ccB=[-25 40]; shift=-1; cbV=2; AxBx=[-180 180 -90 90]; kEnv=0;
+ if ydim == 1, AxBx(3:4)=[-15 15]+yl ; end
+ grph_CS(zeros(6*nc,nc),xcs,ycs,xg2,yg2,ccB(1),ccB(2),shift,cbV,AxBx,kEnv);
  AA=axis; 
  if ydim == 1,
   h(1)=line(AA(1:2),[yl yl]);
@@ -142,6 +164,10 @@ if kplot(jl) == 2 | ( max(kplot) > 0 & misfit > 0 ) ,
      np=np+1;
      P(np)=plot(xsav(icut(in,is,n):icut(in,ie,n),n), ...
                 yloc(icut(in,is,n):icut(in,ie,n)),'*');
+%fprintf( ...
+%'n,in= %i %i ; is,ict,x,y= %i %i %6.2f %6.2f ; ie,ict,x,y= %i %i %6.2f %6.2f\n', ...
+%   n,in,is,icut(in,is,n),xsav(icut(in,is,n),n),yloc(icut(in,is,n)), ...
+%        ie,icut(in,ie,n),xsav(icut(in,ie,n),n),yloc(icut(in,ie,n)) );
   end ; end; end
   if np > 0,
    set(P,'Color',face_color(n,:),'LineWidth',lineThick(n),'LineStyle','-'); end
