@@ -16,7 +16,7 @@ function [del] = cube2latlon_preprocess(x,y,xi,yi,varargin)
 % >> ti=cube2latlon_fast(del,t);
 %
 % Written by adcroft@.mit.edu, 2004.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/cube2latlon_preprocess.m,v 1.1 2005/09/15 20:04:56 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/cube2latlon_preprocess.m,v 1.2 2008/07/14 23:26:18 jmc Exp $
 % $Name:  $
 
 NN=size(x);
@@ -24,8 +24,9 @@ NN=size(x);
 
 X=reshape(x,[1 nx*ny]);
 Y=reshape(y,[1 nx*ny]);
-ig=find(X>90);
-il=find(X<-90);
+xMid=mean(X,2);
+ig=find(X>xMid+90);
+il=find(X<xMid-90);
 del=griddata_preprocess([Y Y(il) Y(ig)],[X X(il)+360 X(ig)-360],yi,xi',varargin{:});
 
 del.ig=ig;
