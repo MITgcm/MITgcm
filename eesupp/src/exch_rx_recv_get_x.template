@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_x.template,v 1.11 2008/04/04 20:18:34 utke Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_x.template,v 1.12 2008/07/15 04:00:33 utke Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -154,7 +154,7 @@ C--   iii. Set data read flag + memory sync.
          theTag  = _tileTagRecvW(bi,bj)
          theType = _MPI_TYPE_RX
          theSize = sNy*exchWidthX*myNz
-# ifndef ALLOW_AUTODIFF_OPENAD
+# ifndef ALLOW_AUTODIFF_OPENAD_AMPI
          CALL MPI_Recv( westRecvBuf_RX(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
@@ -171,7 +171,7 @@ C--   iii. Set data read flag + memory sync.
      & exchNReqsX(1,bi,bj),
      & mpiStatus , 
      & mpiRc ) 
-# endif /* ALLOW_AUTODIFF_OPENAD */
+# endif /* ALLOW_AUTODIFF_OPENAD_AMPI */
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
 #endif
@@ -186,7 +186,7 @@ C--   iii. Set data read flag + memory sync.
          theTag  = _tileTagRecvE(bi,bj)
          theType = _MPI_TYPE_RX
          theSize = sNy*exchWidthX*myNz
-# ifndef ALLOW_AUTODIFF_OPENAD
+# ifndef ALLOW_AUTODIFF_OPENAD_AMPI
          CALL MPI_Recv( eastRecvBuf_RX(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
@@ -203,7 +203,7 @@ C--   iii. Set data read flag + memory sync.
      & exchNReqsX(1,bi,bj),
      & mpiStatus , 
      & mpiRc )
-# endif /* ALLOW_AUTODIFF_OPENAD */
+# endif /* ALLOW_AUTODIFF_OPENAD_AMPI */
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
 #endif
@@ -225,7 +225,7 @@ C        i.e. we only lock waiting for data that we need.
          ebL = exchangeBufLevel(1,bi,bj)
          westCommMode = _tileCommModeW(bi,bj)
          eastCommMode = _tileCommModeE(bi,bj)
-# ifndef ALLOW_AUTODIFF_OPENAD
+# ifndef ALLOW_AUTODIFF_OPENAD_AMPI
    10    CONTINUE
           CALL FOOL_THE_COMPILER( spinCount )
           spinCount = spinCount+1
@@ -242,7 +242,7 @@ C         ENDIF
           CALL FOOL_THE_COMPILER( spinCount )
           spinCount = spinCount+1
          end do
-# endif /* ALLOW_AUTODIFF_OPENAD */
+# endif /* ALLOW_AUTODIFF_OPENAD_AMPI */
 C        Clear outstanding requests
          westRecvAck(eBl,bi,bj) = 0
          eastRecvAck(eBl,bi,bj) = 0
@@ -252,7 +252,7 @@ C        Clear outstanding requests
 #ifndef ALWAYS_USE_MPI
          IF ( usingMPI ) THEN
 #endif
-# ifndef ALLOW_AUTODIFF_OPENAD
+# ifndef ALLOW_AUTODIFF_OPENAD_AMPI
           CALL MPI_Waitall( exchNReqsX(1,bi,bj), exchReqIdX(1,1,bi,bj),
      &                      mpiStatus, mpiRC )
 # else
@@ -261,7 +261,7 @@ C        Clear outstanding requests
      & exchReqIdX(1,1,bi,bj),
      & mpiStatus, 
      & mpiRC )
-# endif /* ALLOW_AUTODIFF_OPENAD */
+# endif /* ALLOW_AUTODIFF_OPENAD_AMPI */
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
 #endif

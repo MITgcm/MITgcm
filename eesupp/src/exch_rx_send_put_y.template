@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_y.template,v 1.11 2008/04/09 22:33:42 utke Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_y.template,v 1.12 2008/07/15 04:00:33 utke Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -82,7 +82,7 @@ C                                  tile face uses.
       INTEGER southCommMode
 #ifdef ALLOW_USE_MPI
       INTEGER theProc, theTag, theType, theSize, mpiRc
-# ifdef ALLOW_AUTODIFF_OPENAD
+# ifdef ALLOW_AUTODIFF_OPENAD_AMPI
       INTEGER mpiStatus(MPI_STATUS_SIZE)
       INTEGER pReqI
 # endif
@@ -155,7 +155,7 @@ C        if you want to get multi-threaded MPI comms.
       ENDIF
 #endif
 #endif
-#ifdef ALLOW_AUTODIFF_OPENAD
+#ifdef ALLOW_AUTODIFF_OPENAD_AMPI
 # ifdef ALLOW_USE_MPI
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -221,7 +221,7 @@ C        Send the data
           theTag  = _tileTagSendS(bi,bj)
           theSize = iB
           theType = _MPI_TYPE_RX
-# ifndef ALLOW_AUTODIFF_OPENAD
+# ifndef ALLOW_AUTODIFF_OPENAD_AMPI
           exchNreqsY(1,bi,bj) = exchNreqsY(1,bi,bj)+1
           CALL MPI_Isend(southSendBuf_RX(1,eBl,bi,bj), theSize, theType,
      &                   theProc, theTag, MPI_COMM_MODEL,
@@ -239,7 +239,7 @@ C        Send the data
      & exchNReqsY(1,bi,bj),
      & mpiStatus, 
      & mpiRc )
-# endif /* ALLOW_AUTODIFF_OPENAD */
+# endif /* ALLOW_AUTODIFF_OPENAD_AMPI */
 #ifndef ALWAYS_USE_MPI
          ENDIF
 #endif
@@ -282,7 +282,7 @@ C        Send the data
          theTag  = _tileTagSendN(bi,bj)
          theSize = iB
          theType = _MPI_TYPE_RX
-#ifndef ALLOW_AUTODIFF_OPENAD
+#ifndef ALLOW_AUTODIFF_OPENAD_AMPI
          exchNreqsY(1,bi,bj) = exchNreqsY(1,bi,bj)+1
          CALL MPI_Isend(northSendBuf_RX(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
@@ -300,7 +300,7 @@ C        Send the data
      & exchNReqsY(1,bi,bj) ,
      & mpiStatus , 
      & mpiRc )
-# endif /* ALLOW_AUTODIFF_OPENAD */
+# endif /* ALLOW_AUTODIFF_OPENAD_AMPI */
 #ifndef ALWAYS_USE_MPI
          ENDIF
 #endif
