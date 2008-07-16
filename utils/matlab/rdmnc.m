@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.16 2007/03/07 09:59:53 mlosch Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.17 2008/07/16 09:12:21 mlosch Exp $
 % $Name:  $
 
 % Initializations
@@ -73,7 +73,7 @@ end
 % Create list of filenames
 for eachfile=file
 	filepathtemp=eachfile{:};
-	indecies = find(filepathtemp=='/');
+	indecies = find(filepathtemp==filesep);
 	if ~isempty(indecies)
         filepathtemp = filepathtemp(1:indecies(end));
 	else
