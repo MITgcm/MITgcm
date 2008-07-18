@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.217 2008/05/30 02:46:19 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.218 2008/07/18 22:19:26 jmc Exp $
 C $Name:  $
 C
 
@@ -23,25 +23,6 @@ C     Useful physical values
       PARAMETER ( PI    = 3.14159265358979323844D0   )
       Real*8 deg2rad
       PARAMETER ( deg2rad = 2.D0*PI/360.D0           )
-
-C     Symbolic values
-C     precXXXX :: Used to indicate what precision to use for
-C                dumping model state.
-      INTEGER precFloat32
-      PARAMETER ( precFloat32 = 32 )
-      INTEGER precFloat64
-      PARAMETER ( precFloat64 = 64 )
-C     UNSET_xxx :: Used to indicate variables that have not been given a value
-      Real*8 UNSET_FLOAT8
-      PARAMETER ( UNSET_FLOAT8 = 1.234567D5 )
-      Real*4 UNSET_FLOAT4
-      PARAMETER ( UNSET_FLOAT4 = 1.234567E5 )
-      _RL    UNSET_RL
-      PARAMETER ( UNSET_RL     = 1.234567D5 )
-      _RS    UNSET_RS
-      PARAMETER ( UNSET_RS     = 1.234567E5 )
-      INTEGER UNSET_I
-      PARAMETER ( UNSET_I      = 123456789  )
 
 C--   COMMON /PARM_C/ Character valued parameters used by the model.
 C     buoyancyRelation :: Flag used to indicate which relation to use to
@@ -212,14 +193,6 @@ C     debugLevel          :: debug level selector: higher -> more writing
       INTEGER selectVortScheme
       INTEGER monitorSelect
       INTEGER debugLevel
-
-C
-      INTEGER debLevZero
-      PARAMETER(debLevZero=0)
-      INTEGER debLevA
-      PARAMETER(debLevA=1)
-      INTEGER debLevB
-      PARAMETER(debLevB=2)
 
 C--   COMMON /PARM_L/ Logical valued parameters used by the model.
 C- Coordinate + Grid params:

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.23 2006/07/30 00:00:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.24 2008/07/18 22:19:28 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -66,6 +66,32 @@ C               one dimensional.
 C     ========  EESIZE.h  ========================================
 
 
+C     Symbolic values
+C     precXXXX :: precision used for I/O
+      INTEGER precFloat32
+      PARAMETER ( precFloat32 = 32 )
+      INTEGER precFloat64
+      PARAMETER ( precFloat64 = 64 )
+
+C     UNSET_xxx :: Used to indicate variables that have not been given a value
+      Real*8  UNSET_FLOAT8
+      PARAMETER ( UNSET_FLOAT8 = 1.234567D5 )
+      Real*4  UNSET_FLOAT4
+      PARAMETER ( UNSET_FLOAT4 = 1.234567E5 )
+      _RL     UNSET_RL
+      PARAMETER ( UNSET_RL     = 1.234567D5 )
+      _RS     UNSET_RS
+      PARAMETER ( UNSET_RS     = 1.234567D5 )
+      INTEGER UNSET_I
+      PARAMETER ( UNSET_I      = 123456789  )
+
+C     debLevX  :: used to decide when to print debug messages
+      INTEGER debLevZero
+      PARAMETER ( debLevZero=0 )
+      INTEGER debLevA
+      PARAMETER ( debLevA=1 )
+      INTEGER debLevB
+      PARAMETER ( debLevB=2 )
 
 C     SQUEEZE_RIGHT       - Flag indicating right blank space removal
 C                           from text field.
@@ -98,7 +124,7 @@ C     INDEX_NONE
       PARAMETER ( commentCharacter = '#' )
       INTEGER INDEX_I
       INTEGER INDEX_J
-      INTEGER INDEX_K   
+      INTEGER INDEX_K
       INTEGER INDEX_NONE
       PARAMETER ( INDEX_I    = 1,
      &            INDEX_J    = 2,
