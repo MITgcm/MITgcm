@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.214 2008/05/30 03:05:21 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.215 2008/07/18 16:49:52 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -165,7 +165,7 @@ C--   Continuous equation parameters
      & diffKhS, diffKzS, diffK4S,
      & tRef, sRef, tRefFile, sRefFile, rhoRefFile,
      & eosType, integr_GeoPot, selectFindRoSurf,
-     & atm_Cp, atm_Rd, atm_Rq,
+     & atm_Cp, atm_Rd, atm_Rq, atm_Po,
      & no_slip_sides, sideDragFactor,
      & no_slip_bottom, bottomDragLinear, bottomDragQuadratic,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
