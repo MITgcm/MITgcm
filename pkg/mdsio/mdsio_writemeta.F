@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writemeta.F,v 1.4 2005/08/19 22:42:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writemeta.F,v 1.5 2008/07/20 12:26:10 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
 
-      subroutine MDSWRITEMETA(
+      SUBROUTINE MDSWRITEMETA(
      I    mFileName,
      I    dFileName,
      I    filePrec,
@@ -30,7 +30,6 @@ C Created: 03/20/99 adcroft@mit.edu
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
 
 C Arguments
       character*(*) mFileName
@@ -114,7 +113,7 @@ C that the information is superfluous and do not write it.
 
 C Close meta-file
       close(mUnit)
-      
+
 C     ------------------------------------------------------------------
       return
       end

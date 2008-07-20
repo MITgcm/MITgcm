@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readtile.F,v 1.3 2006/08/07 20:30:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readtile.F,v 1.4 2008/07/20 12:26:10 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -44,7 +44,6 @@ C Created: 03/16/99 adcroft@mit.edu
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
 
 C Routine arguments
       character*(*) fName

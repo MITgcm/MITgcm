@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writetile.F,v 1.3 2006/08/07 20:30:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writetile.F,v 1.4 2008/07/20 12:26:10 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -56,7 +56,6 @@ C          open(dUnit, ..., status='old', ... -> status='unknown'
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
 
 C Routine arguments
       character*(*) fName
