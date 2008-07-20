@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.172 2008/06/25 18:28:06 dfer Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.173 2008/07/20 18:01:05 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2666,10 +2666,12 @@ ad_input_code.$FS: \$(AD_FILES) \$(HEADERFILES)
 
 ad_taf_output.$FS: ad_input_code.$FS
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.$FS
+	ls -l ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
 adtafonly:
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.$FS
+	ls -l ad_input_code_ad.$FS
 	cat ad_input_code_ad.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ad_taf_output.$FS
 
 \${EXE_AD}: ad_taf_output.o \$(OBJFILES)
@@ -2703,10 +2705,12 @@ ftl_input_code.$FS: \$(AD_FILES) \$(HEADERFILES)
 
 ftl_taf_output.$FS: ftl_input_code.$FS
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) ftl_input_code.$FS
+	ls -l ftl_input_code_ftl.$FS
 	cat ftl_input_code_ftl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
 ftltafonly:
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) ftl_input_code.$FS
+	ls -l ftl_input_code_ftl.$FS
 	cat ftl_input_code_ftl.$FS | sed -f \$(TOOLSDIR)/adjoint_sed > ftl_taf_output.$FS
 
 ftl_taf: ftl_taf_output.o \$(OBJFILES)
