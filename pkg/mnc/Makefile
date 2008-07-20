@@ -1,5 +1,5 @@
 #
-# $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.19 2008/05/22 12:21:19 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.20 2008/07/20 13:57:49 jmc Exp $
 # $Name:  $
 #
 #  A Makefile for MNC templates and testing
@@ -101,6 +101,6 @@ testclean:
 	-rm -f mnc_test_???.F mnc_test_??? test_???.nc t_out_???
 
 clean: testclean
-	-rm -f $(TEMPLATE_FILES) MNC_ID_HEADER.h
+	-rm -f $(TEMPLATE_FILES) MNC_ID_HEADER.h mnc_id_header.h
 	-rm -f mnc_netcdf_stubs.o
 
