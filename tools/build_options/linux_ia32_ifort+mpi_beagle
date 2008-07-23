@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+mpi_beagle,v 1.1 2007/12/20 15:16:31 jahn Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+mpi_beagle,v 1.2 2008/07/23 19:01:28 jahn Exp $
 #
 #  These are the build options used with the Intel 9.x compiler for
 #  testing on Beagle.
@@ -33,7 +33,8 @@ INCLUDES="-I$mpichhome/include -I$netcdfhome/include"
 LIBS="-L$mpichhome/lib -L$netcdfhome/lib"
 
 
-DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+# -DIFORT turns on ifort-specific declarations in darwin (RAND is not an intrinsic)
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4 -DIFORT'
 CPP='cpp  -traditional -P'
 
 NOOPTFLAGS='-O0'
