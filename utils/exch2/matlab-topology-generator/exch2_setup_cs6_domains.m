@@ -1,9 +1,9 @@
 % Make list of subdomains. Assume MITgcm standard cube layout, three color 
 % path labeling and global indexing convention.
 function [ndomains,domain,domain_nx,domain_ny] = ...
-         setup_cs6_domains(nr,nb,ng);
+         exch2_setup_cs6_domains(nr,nb,ng);
 
-% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_domains.m,v 1.2 2007/03/19 20:34:26 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_domains.m,v 1.3 2008/07/23 13:22:29 cnh Exp $
 % $Name:  $
 
 ndomains=6;
