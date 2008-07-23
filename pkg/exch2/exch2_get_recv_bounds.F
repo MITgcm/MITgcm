@@ -1,19 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_get_recv_bounds.F,v 1.3 2007/10/09 00:03:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_get_recv_bounds.F,v 1.4 2008/07/23 21:06:06 jmc Exp $
 C $Name:  $
 
       SUBROUTINE EXCH2_GET_RECV_BOUNDS(
      I           fCode, eWdth,
-     U           tiStride, tjStride,
+     O           tiStride, tjStride,
      U           tIlo, tIhi, tJlo, tJhi )
 C
       IMPLICIT NONE
 C
       CHARACTER*2 fCode
       INTEGER     eWdth
-      INTEGER     tIlo, tIhi, tJlo, tJhi
       INTEGER     tiStride, tjStride
+      INTEGER     tIlo, tIhi, tJlo, tJhi
 C
-
       IF ( tIlo .EQ. tIhi .AND. tIlo .EQ. 0 ) THEN
 C      Receiving to a west edge
        tIlo=1-eWdth
