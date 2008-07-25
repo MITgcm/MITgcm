@@ -1,0 +1,123 @@
+#! /usr/bin/env bash
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail_fc9,v 1.1 2008/07/25 18:08:17 jmc Exp $
+
+#  Ed Hill
+
+#  Test script for MITgcm that should work on most of the csail.mit.edu
+#  Linux machines.
+
+
+# defaults
+export PATH='/usr/local/bin:/bin:/usr/bin'
+OPTFILE=
+TESTDIR="/scratch2/jmc/test_"`hostname`
+# IEEE="-ieee" <- this is the default
+MC=10
+
+
+#  Turn off stack limit for FIZHI
+#ulimit -s unlimited  <- this is the default
+
+echo -n "Creating a temp directory ..."
+mach=`hostname`
+tdir=$TESTDIR
+if test -e $tdir
+then test -e $tdir/MITgcm  &&  rm -rf $tdir/MITgcm
+else mkdir $tdir
+fi
+echo "  done"
+
+#- clean-up old output files
+rm -f $tdir/output_*
+
+echo -n "Downloading the MITgcm code from CVS pserver..."
+cd $tdir
+#export CVSROOT='/u/gcmpack'
+#cvs co -P MITgcm > /dev/null 2>&1
+cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null
+echo "  done"
+cd MITgcm/verification
+
+  echo "Running testreport using:"
+# comm="./testreport -adm -a jmc@mitgcm.org"
+  comm="./testreport -adm -of ../tools/build_options/linux_ia32_gfortran -a jmc@mitgcm.org"
+  echo "  \"$comm\""
+  echo "======================"
+  echo
+  $comm > $tdir/output_adm 2>&1
+  tail -100 $tdir/output_adm
+
+
+  echo
+  echo "======================"
+  echo "Cleaning test directories:"
+  ./testreport -clean > /dev/null 2>&1
+  echo "======================"
+  echo
+
+  echo "Running testreport using:"
+  comm="./testreport -of ../tools/build_options/linux_ia32_g77 -a jmc@mitgcm.org"
+  echo "  \"$comm\""
+  echo "======================"
+  echo
+  $comm > $tdir/output_g77 2>&1
+  tail -100 $tdir/output_g77
+
+  echo
+  echo "======================"
+  echo "Cleaning test directories:"
+  ./testreport -clean > /dev/null 2>&1
+  echo "======================"
+  echo
+
+  echo "Running testreport using:"
+  comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_gfortran -a jmc@mitgcm.org"
+  echo "  \"$comm\""
+  echo "======================"
+  echo
+  $comm > $tdir/output_gfo 2>&1
+  tail -100 $tdir/output_gfo
+  echo
+#-- also test restart (test 2+2=4)
+  echo "testing restart using:"
+  comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
+  echo "  \"$comm\""
+  echo "======================"
+  $comm > $tdir/output_2+2 2>&1
+ #tail -100 $tdir/output_2+2
+  echo ; cat tst_2+2_out.txt
+  echo
+
+# echo
+# echo "======================"
+# echo "Cleaning test directories:"
+# ./testreport -clean > /dev/null 2>&1
+# echo "======================"
+# echo
+
+# echo "Running testreport using:"
+# comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a jmc@mitgcm.org"
+# echo "  \"$comm\""
+# echo "======================"
+# echo
+# $comm > $tdir/output_ifc 2>&1
+# tail -100 $tdir/output_ifc
+
+# echo
+# echo "======================"
+# echo "Cleaning test directories:"
+# ./testreport -clean > /dev/null 2>&1
+# echo "======================"
+# echo
+#
+# echo "Running testreport using:"
+# export OMP_NUM_THREADS=2
+# export KMP_STACKSIZE=400m
+# comm="./testreport -mth -match $MC -of ../tools/build_options/linux_ia32_ifort.v9+mth -a jmc@mitgcm.org"
+# echo "  \"$comm\""
+# echo "======================"
+# echo
+# $comm > $tdir/output_mth 2>&1
+# tail -100 $tdir/output_mth
+ 
