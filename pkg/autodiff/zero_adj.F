@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/zero_adj.F,v 1.3 2008/06/11 18:29:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/zero_adj.F,v 1.4 2008/07/25 16:34:43 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -14,16 +14,20 @@ C     | ... nothing happens in forward mode
 C     | author: Gael Forget
 C     *==========================================================*
 
+C     !USES:
+      IMPLICIT NONE
+C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer myThid,bi,bj,i,j,k
+      INTEGER NrIn, myThid
       _RL FieldFwd(1-Olx:sNx+Olx,1-Oly:sNy+Oly,NrIn)
 
-      end
+      RETURN
+      END
 
 
 C     !ROUTINE: ZERO_ADJ
@@ -37,14 +41,17 @@ C     | ... nothing happens in forward mode
 C     | author: Gael Forget
 C     *==========================================================*
 
+C     !USES:
+      IMPLICIT NONE
+C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      integer myThid,bi,bj,i,j,k
+      INTEGER NrIn, myThid
       _RL FieldFwd(1-Olx:sNx+Olx,1-Oly:sNy+Oly,NrIn,nSx,nSy)
 
-      end
-
+      RETURN
+      END
