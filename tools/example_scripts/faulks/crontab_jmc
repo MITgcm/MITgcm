@@ -1,13 +1,15 @@
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/crontab_jmc,v 1.4 2008/02/16 19:15:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/crontab_jmc,v 1.5 2008/07/25 18:18:47 jmc Exp $
 
 #-from: jmc@faulks.csail.mit.edu 
 #  current output of: crontab -l
-
 50 23 * * *  cd /u/u2/jmc/testing/faulks && cvs -q update -P -d
 05 00 * * *  /u/u2/jmc/testing/faulks/test_csail
 
+#-from: jmc@hugo.csail.mit.edu 
+#  current output of: crontab -l
+05 01 * * 0,3  /u/u2/jmc/testing/faulks/test_csail_fc9
+
 #-from: jmc@eddy.csail.mit.edu 
 #  current output of: crontab -l
-
-15  0 * * 0,2,4,6  /u/u2/jmc/testing/faulks/test_csail_fc5
+15 00 * * 0,2,4,6  /u/u2/jmc/testing/faulks/test_csail_fc5
 
