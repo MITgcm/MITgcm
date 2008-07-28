@@ -17,7 +17,7 @@ function [tile] = ...
 %   tile.sXHi_tl  :: Target local upper bound index in X
 %   tile.sXOff_t  :: Target local to canonical index offset conversion in X
 
-% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_get_internal_neighbor_index_ranges.m,v 1.2 2007/03/19 20:34:26 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_get_internal_neighbor_index_ranges.m,v 1.3 2008/07/28 21:17:40 jmc Exp $
 % $Name:  $
 
 for it=1:ntiles
@@ -105,8 +105,8 @@ for it=1:ntiles
  end
  % Set north and south edge numbers
  % Source bounds
- srangeLoX_c=tile(it).tbasex+1-1;
- srangeHiX_c=tile(it).tnx+tile(it).tbasex+1;
+ srangeLoX_c=tile(it).tbasex+1;
+ srangeHiX_c=tile(it).tnx+tile(it).tbasex;
  if tile(it).nDomain==tile(it).mydomain
   nN = tile(it).nN;
   for j=1:nN
@@ -114,9 +114,9 @@ for it=1:ntiles
    tt=tile(it).nTile(j);
    % find indexes in target bounds that intersect target range 
    % (no rotations needed since we are doing internal tiles here).
-   trangeLoX_l=0;
+   trangeLoX_l=1;
    trangeLoX_c=trangeLoX_l+tile(tt).tbasex;
-   trangeHiX_l=tile(tt).tnx+1;
+   trangeHiX_l=tile(tt).tnx;
    trangeHiX_c=trangeHiX_l+tile(tt).tbasex;
    intersectXHi_c=min(trangeHiX_c,srangeHiX_c);
    intersectXLo_c=max(trangeLoX_c,srangeLoX_c);
@@ -124,8 +124,8 @@ for it=1:ntiles
    tintersectXLo_l=intersectXLo_c-tile(tt).tbasex;
    tile(it).n_jtlo_c(j)=0+tile(tt).tbasey;
    tile(it).n_jthi_c(j)=0+tile(tt).tbasey;
-   tile(it).n_itlo_c(j)=intersectXLo_c;
-   tile(it).n_ithi_c(j)=intersectXHi_c;
+   tile(it).n_itlo_c(j)=intersectXLo_c-1;
+   tile(it).n_ithi_c(j)=intersectXHi_c+1;
    tile(it).n_jtlo_l(j)=tile(it).n_jtlo_c(j)-tile(tt).tbasey;
    tile(it).n_jthi_l(j)=tile(it).n_jthi_c(j)-tile(tt).tbasey;
    tile(it).n_itlo_l(j)=tile(it).n_itlo_c(j)-tile(tt).tbasex;
@@ -163,8 +163,8 @@ for it=1:ntiles
    tintersectXLo_l=intersectXLo_c-tile(tt).tbasex;
    tile(it).s_jtlo_c(j)=tile(tt).tny+tile(tt).tbasey+1;
    tile(it).s_jthi_c(j)=tile(tt).tny+tile(tt).tbasey+1;
-   tile(it).s_itlo_c(j)=intersectXLo_c;
-   tile(it).s_ithi_c(j)=intersectXHi_c;
+   tile(it).s_itlo_c(j)=intersectXLo_c-1;
+   tile(it).s_ithi_c(j)=intersectXHi_c+1;
    tile(it).s_jtlo_l(j)=tile(it).s_jtlo_c(j)-tile(tt).tbasey;
    tile(it).s_jthi_l(j)=tile(it).s_jthi_c(j)-tile(tt).tbasey;
    tile(it).s_itlo_l(j)=tile(it).s_itlo_c(j)-tile(tt).tbasex;
