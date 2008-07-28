@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.3 2008/07/28 18:15:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.4 2008/07/28 21:33:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -98,7 +98,7 @@ C       Get the range of points associated with that entry
         targetIhi =exch2_ithi_c(tN,targetTile)
         targetJlo =exch2_jtlo_c(tN,targetTile)
         targetJhi =exch2_jthi_c(tN,targetTile)
-        CALL EXCH2_GET_REC_BOUNDS(
+        CALL EXCH2_GET_RECV_BOUNDS(
      I       'T ', OLx,
      O       iStride, jStride,
      U       targetIlo, targetIhi, targetJlo, targetJhi )
