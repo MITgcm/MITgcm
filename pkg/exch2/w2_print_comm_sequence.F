@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.2 2005/07/22 18:21:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.3 2008/07/28 18:15:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
-CBOP             
+CBOP
 C     !ROUTINE: W2_PRINT_COMM_SEQUENCE
 
 C     !INTERFACE:
@@ -12,8 +12,8 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE W2_PRINT_COMM_SEQUENCE                            
-C     | o Write communication sequence for a given WRAPPER2 
+C     | SUBROUTINE W2_PRINT_COMM_SEQUENCE
+C     | o Write communication sequence for a given WRAPPER2
 C     |   toplogy
 C     *==========================================================*
 #include "SIZE.h"
@@ -32,6 +32,7 @@ c     _RL     SXDIR_TX2CX(2), SYDIR_TX2CX(2)
       INTEGER I, N, targetTile, myThid, targetProc, sourceProc
       INTEGER iStride, jStride
       INTEGER pi(2), pj(2), oi, oj, tN
+      INTEGER itb, jtb, isb, jsb
 
       myThid = 1
 
@@ -53,87 +54,30 @@ C     Send loop for cell centered
         pj(2)     =exch2_pj(2,N,myTileId)
         oi        =exch2_oi(N,myTileId)
         oj        =exch2_oj(N,myTileId)
-        IF ( targetIlo .EQ. targetIhi .AND. targetIlo .EQ. 0 ) THEN
-C        Sending to a west edge
-         targetIlo=1-OLx
-         targetIhi=0
-         istride=1
-         IF ( targetJlo .LE. targetJhi ) THEN
-          targetJlo=targetJlo-OLx+1
-          targetJhi=targetJhi+OLx-1
-          jstride=1
-         ELSE
-          targetJlo=targetJlo+OLx-1
-          targetJhi=targetJhi-OLx+1
-          jstride=-1
-         ENDIF
-        ENDIF
-        IF ( targetIlo .EQ. targetIhi .AND. targetIlo .GT. 1 ) THEN
-C        Sending to an east edge
-         targetIhi=targetIhi+OLx-1
-         istride=1
-         IF ( targetJlo .LE. targetJhi ) THEN
-          targetJlo=targetJlo-OLx+1
-          targetJhi=targetJhi+OLx-1
-          jstride=1
-         ELSE
-          targetJlo=targetJlo+OLx-1
-          targetJhi=targetJhi-OLx+1
-          jstride=-1
-         ENDIF
-        ENDIF
-        IF ( targetJlo .EQ. targetJhi .AND. targetJlo .EQ. 0 ) THEN
-C        Sending to a south edge
-         targetJlo=1-OLx
-         targetJhi=0
-         jstride=1
-         IF ( targetIlo .LE. targetIhi ) THEN
-          targetIlo=targetIlo-OLx+1
-          targetIhi=targetIhi+OLx-1
-          istride=1
-         ELSE
-          targetIlo=targetIlo+OLx-1
-          targetIhi=targetIhi-OLx+1
-          istride=-1
-         ENDIF
-        ENDIF
-        IF ( targetJlo .EQ. targetJhi .AND. targetJlo .GT. 1 ) THEN
-C        Sending to an north edge
-         targetJhi=targetJhi+OLx-1
-         jstride=1
-         IF ( targetIlo .LE. targetIhi ) THEN
-          targetIlo=targetIlo-OLx+1
-          targetIhi=targetIhi+OLx-1
-          istride=1
-         ELSE
-          targetIlo=targetIlo+OLx-1
-          targetIhi=targetIhi-OLx+1
-          istride=-1
-         ENDIF
-        ENDIF
-        sourceIlo=pi(1)*targetIlo+pi(2)*targetJlo+oi
-        sourceJlo=pj(1)*targetIlo+pj(2)*targetJlo+oj
-        sourceIhi=pi(1)*targetIhi+pi(2)*targetJhi+oi
-        sourceJhi=pj(1)*targetIhi+pj(2)*targetJhi+oj
+        CALL EXCH2_GET_SEND_BOUNDS(
+     I       'T ', OLx,
+     O       iStride, jStride,
+     U       targetIlo, targetIhi, targetJlo, targetJhi )
+
+        itb = exch2_tbasex(targetTile)
+        jtb = exch2_tbasey(targetTile)
+        isb = exch2_tbasex(myTileId)
+        jsb = exch2_tbasey(myTileId)
+        sourceIlo=pi(1)*(targetIlo+itb)+pi(2)*(targetJlo+jtb)+oi-isb
+        sourceJlo=pj(1)*(targetIlo+itb)+pj(2)*(targetJlo+jtb)+oj-jsb
+        sourceIhi=pi(1)*(targetIhi+itb)+pi(2)*(targetJhi+jtb)+oi-isb
+        sourceJhi=pj(1)*(targetIhi+itb)+pj(2)*(targetJhi+jtb)+oj-jsb
 C       Tile XX sends to points i=ilo:ihi,j=jlo:jhi in tile YY
-        WRITE(msgBuffer,
-     &        '(A,I4,A,I4,A,A,I4,A,I4,A,I4,A,I4)')
-     &   'Tile ',myTileId
-     &   ,'(proc =',sourceProc,')',
-     &   ' sends points i=',sourceIlo,
-     &   ':',sourceIhi,
-     &   ', j=',sourceJlo,
-     &   ':',sourceJhi
+        WRITE(msgBuffer,'(A,I6,A,I4,A,4(A,I4))')
+     &   'Tile', myTileId,' (pr=',sourceProc,')',
+     &   ' sends pts i=',sourceIlo,':',sourceIhi,
+     &            ', j=',sourceJlo,':',sourceJhi
          CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
      &         SQUEEZE_RIGHT,myThid)
-        WRITE(msgBuffer,
-     &        '(A,I4,A,I4,A,I4,A,I4,A,I4,A,I4,A)')
-     &   '                         to points i=',targetIlo,
-     &   ':',targetIhi,
-     &   ', j=',targetJlo,
-     &   ':',targetJhi,
-     &   ' in tile ',targetTile,
-     &   '(proc =',targetProc,')'
+        WRITE(msgBuffer,'(4(A,I4),A,I6,A,I4,A)')
+     &   '                        to pts i=',targetIlo,':',targetIhi,
+     &                                ', j=',targetJlo,':',targetJhi,
+     &                ' in tile ',targetTile,' (pr=',targetProc,')'
          CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
      &         SQUEEZE_RIGHT,myThid)
        ENDDO
@@ -154,75 +98,16 @@ C       Get the range of points associated with that entry
         targetIhi =exch2_ithi_c(tN,targetTile)
         targetJlo =exch2_jtlo_c(tN,targetTile)
         targetJhi =exch2_jthi_c(tN,targetTile)
-        IF ( targetIlo .EQ. targetIhi .AND. targetIlo .EQ. 0 ) THEN
-C        Sending to a west edge
-         targetIlo=1-OLx
-         targetIhi=0
-         istride=1
-         IF ( targetJlo .LE. targetJhi ) THEN
-          targetJlo=targetJlo-OLx+1
-          targetJhi=targetJhi+OLx-1
-          jstride=1
-         ELSE
-          targetJlo=targetJlo+OLx-1
-          targetJhi=targetJhi-OLx+1
-          jstride=-1
-         ENDIF
-        ENDIF
-        IF ( targetIlo .EQ. targetIhi .AND. targetIlo .GT. 1 ) THEN
-C        Sending to an east edge
-         targetIhi=targetIhi+OLx-1
-         istride=1
-         IF ( targetJlo .LE. targetJhi ) THEN
-          targetJlo=targetJlo-OLx+1
-          targetJhi=targetJhi+OLx-1
-          jstride=1
-         ELSE
-          targetJlo=targetJlo+OLx-1
-          targetJhi=targetJhi-OLx+1
-          jstride=-1
-         ENDIF
-        ENDIF
-        IF ( targetJlo .EQ. targetJhi .AND. targetJlo .EQ. 0 ) THEN
-C        Sending to a south edge
-         targetJlo=1-OLx
-         targetJhi=0
-         jstride=1
-         IF ( targetIlo .LE. targetIhi ) THEN
-          targetIlo=targetIlo-OLx+1
-          targetIhi=targetIhi+OLx-1
-          istride=1
-         ELSE
-          targetIlo=targetIlo+OLx-1
-          targetIhi=targetIhi-OLx+1
-          istride=-1
-         ENDIF
-        ENDIF
-        IF ( targetJlo .EQ. targetJhi .AND. targetJlo .GT. 1 ) THEN
-C        Sending to an north edge
-         targetJhi=targetJhi+OLx-1
-         jstride=1
-         IF ( targetIlo .LE. targetIhi ) THEN
-          targetIlo=targetIlo-OLx+1
-          targetIhi=targetIhi+OLx-1
-          istride=1
-         ELSE
-          targetIlo=targetIlo+OLx-1
-          targetIhi=targetIhi-OLx+1
-          istride=-1
-         ENDIF
-        ENDIF
+        CALL EXCH2_GET_REC_BOUNDS(
+     I       'T ', OLx,
+     O       iStride, jStride,
+     U       targetIlo, targetIhi, targetJlo, targetJhi )
 C       Tile XX receives points i=ilo:ihi,j=jlo:jhi in tile YY
-        WRITE(msgBuffer,
-     &        '(A,I4,A,I4,A,A,I4,A,I4,A,I4,A,I4,A,I4,A,I4,A)')
-     &   'Tile ',myTileId
-     &   ,'(proc =',targetProc,')',
-     &   'recv to points i=',targetIlo,
-     &   ':',targetIhi,
-     &   ', j=',targetJlo,
-     &   ':',targetJhi,
-     &   'from tile',targetTile,
-     &   '(proc =',targetProc,')'
+        WRITE(msgBuffer,'(A,I6,A,I4,A,4(A,I4),A,I6,A,I4,A)')
+     &   'Tile', myTileId,' (pr=',sourceProc,')',
+     &   ' recv pts i=',targetIlo,':',targetIhi,
+     &           ', j=',targetJlo, ':',targetJhi,
+     &   ' from tile',targetTile,' (pr=',targetProc,')'
          CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
      &         SQUEEZE_RIGHT,myThid)
        ENDDO
