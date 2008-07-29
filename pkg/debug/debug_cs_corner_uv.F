@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_cs_corner_uv.F,v 1.4 2007/08/21 17:12:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_cs_corner_uv.F,v 1.5 2008/07/29 20:27:08 jmc Exp $
 C $Name:  $
 
 #include "DEBUG_OPTIONS.h"
@@ -103,7 +103,7 @@ c     IF (k.EQ.4 .AND. myIter.EQ.nIter0 ) THEN
          n1 = W2_myTileList(n)
          n2 = exch2_neighbourId(4,n1)
          n3 = exch2_neighbourId(2,n1)
-         IF ( exch2_pj(1,4,n1).eq.-1 ) THEN
+         IF ( exch2_pij(3,4,n1).eq.-1 ) THEN
           WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'W edge, S:',
      &      n1,tmpU(1,k,n1,1), n2,tmpV(4,k,n2,1),
      &         tmpU(1,k,n1,1)  -  tmpV(4,k,n2,1)
@@ -111,7 +111,7 @@ c     IF (k.EQ.4 .AND. myIter.EQ.nIter0 ) THEN
      &      n1,tmpU(2,k,n1,1), n2,tmpV(3,k,n2,1),
      &         tmpU(2,k,n1,1)  -  tmpV(3,k,n2,1)
          ENDIF
-         IF ( exch2_pj(2,4,n1).eq.1 ) THEN
+         IF ( exch2_pij(4,4,n1).eq.1 ) THEN
           WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'W edge, S:',
      &      n1,tmpU(1,k,n1,1), n2,tmpU(3,k,n2,1),
      &         tmpU(1,k,n1,1)  -  tmpU(3,k,n2,1)
@@ -119,7 +119,7 @@ c     IF (k.EQ.4 .AND. myIter.EQ.nIter0 ) THEN
      &      n1,tmpU(2,k,n1,1), n2,tmpU(4,k,n2,1),
      &         tmpU(2,k,n1,1)  -  tmpU(4,k,n2,1)
          ENDIF
-         IF ( exch2_pi(1,2,n1).eq.1 ) THEN
+         IF ( exch2_pij(1,2,n1).eq.1 ) THEN
           WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'S edge, W:',
      &      n1,tmpV(1,k,n1,1), n3,tmpV(3,k,n3,1),
      &         tmpV(1,k,n1,1)  -  tmpV(3,k,n3,1)
@@ -127,7 +127,7 @@ c     IF (k.EQ.4 .AND. myIter.EQ.nIter0 ) THEN
      &      n1,tmpV(2,k,n1,1), n3,tmpV(4,k,n3,1),
      &         tmpV(2,k,n1,1)  -  tmpV(4,k,n3,1)
          ENDIF
-         IF ( exch2_pi(2,2,n1).eq.-1 ) THEN
+         IF ( exch2_pij(2,2,n1).eq.-1 ) THEN
           WRITE(ioUnit,1010) 'DEBUG_CS_CORNER_UV: ', 'S edge, W:',
      &      n1,tmpV(1,k,n1,1), n3,tmpU(4,k,n3,1),
      &         tmpV(1,k,n1,1)  -  tmpU(4,k,n3,1)
