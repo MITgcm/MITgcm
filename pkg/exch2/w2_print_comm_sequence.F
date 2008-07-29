@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.4 2008/07/28 21:33:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.5 2008/07/29 20:25:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -44,14 +44,15 @@ C     Send loop for cell centered
        DO N=1,nN
         targetTile=exch2_neighbourId(N,myTileId)
         targetProc=exch2_tProc(targetTile)
-        targetIlo =exch2_itlo_c(N,myTileId)
-        targetIhi =exch2_ithi_c(N,myTileId)
-        targetJlo =exch2_jtlo_c(N,myTileId)
-        targetJhi =exch2_jthi_c(N,myTileId)
-        pi(1)     =exch2_pi(1,N,myTileId)
-        pi(2)     =exch2_pi(2,N,myTileId)
-        pj(1)     =exch2_pj(1,N,myTileId)
-        pj(2)     =exch2_pj(2,N,myTileId)
+        tN = exch2_opposingSend(N,myTileId)
+        targetIlo =exch2_iLo(tN,targetTile)
+        targetIhi =exch2_iHi(tN,targetTile)
+        targetJlo =exch2_jLo(tN,targetTile)
+        targetJhi =exch2_jHi(tN,targetTile)
+        pi(1)     =exch2_pij(1,N,myTileId)
+        pi(2)     =exch2_pij(2,N,myTileId)
+        pj(1)     =exch2_pij(3,N,myTileId)
+        pj(2)     =exch2_pij(4,N,myTileId)
         oi        =exch2_oi(N,myTileId)
         oj        =exch2_oj(N,myTileId)
         CALL EXCH2_GET_SEND_BOUNDS(
@@ -59,10 +60,10 @@ C     Send loop for cell centered
      O       iStride, jStride,
      U       targetIlo, targetIhi, targetJlo, targetJhi )
 
-        itb = exch2_tbasex(targetTile)
-        jtb = exch2_tbasey(targetTile)
-        isb = exch2_tbasex(myTileId)
-        jsb = exch2_tbasey(myTileId)
+        itb = exch2_tBasex(targetTile)
+        jtb = exch2_tBasey(targetTile)
+        isb = exch2_tBasex(myTileId)
+        jsb = exch2_tBasey(myTileId)
         sourceIlo=pi(1)*(targetIlo+itb)+pi(2)*(targetJlo+jtb)+oi-isb
         sourceJlo=pj(1)*(targetIlo+itb)+pj(2)*(targetJlo+jtb)+oj-jsb
         sourceIhi=pi(1)*(targetIhi+itb)+pi(2)*(targetJhi+jtb)+oi-isb
@@ -92,12 +93,12 @@ C     Recv loop for cell centered
         targetTile=exch2_neighbourId(N,myTileId)
         targetProc=exch2_tProc(targetTile)
 C       Find entry for tile targetTile entry that sent to this edge.
-        tN=exch2_opposingSend_record(N,myTileId)
+        tN=exch2_opposingSend(N,myTileId)
 C       Get the range of points associated with that entry
-        targetIlo =exch2_itlo_c(tN,targetTile)
-        targetIhi =exch2_ithi_c(tN,targetTile)
-        targetJlo =exch2_jtlo_c(tN,targetTile)
-        targetJhi =exch2_jthi_c(tN,targetTile)
+        targetIlo =exch2_iLo(N,myTileId)
+        targetIhi =exch2_iHi(N,myTileId)
+        targetJlo =exch2_jLo(N,myTileId)
+        targetJhi =exch2_jHi(N,myTileId)
         CALL EXCH2_GET_RECV_BOUNDS(
      I       'T ', OLx,
      O       iStride, jStride,

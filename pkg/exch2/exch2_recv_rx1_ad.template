@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_recv_rx1_ad.template,v 1.1 2007/07/27 22:15:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_recv_rx1_ad.template,v 1.2 2008/07/29 20:25:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -105,7 +105,7 @@ C     MPI setup
 #endif
 
       tt=exch2_neighbourId(nN, thisTile )
-      oN=exch2_opposingSend_record(nN, thisTile )
+      oN=exch2_opposingSend(nN, thisTile )
 
 C     Handle receive end data transport according to communication mechanism between 
 C     source and target tile

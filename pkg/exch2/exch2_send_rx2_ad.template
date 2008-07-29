@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_send_rx2_ad.template,v 1.1 2007/07/27 22:15:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_send_rx2_ad.template,v 1.2 2008/07/29 20:25:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -64,7 +64,7 @@ C
       INTEGER  tt
       INTEGER itb, jtb
       INTEGER isb, jsb
-      INTEGER pi(2), pj(2), oi, oj, oi_c, oi_f, oj_c, oj_f
+      INTEGER pi(2), pj(2), oi, oj
       _RX     sa1, sa2, val1, val2
       INTEGER iBufr1, iBufr2
       INTEGER itlreduce
@@ -85,14 +85,14 @@ C      shared memory modes only.
       ENDIF
 
       tt=exch2_neighbourId(nN, thisTile )
-      itb=exch2_tbasex(tt)
-      jtb=exch2_tbasey(tt)
-      isb=exch2_tbasex(thisTile)
-      jsb=exch2_tbasey(thisTile)
-      pi(1)=exch2_pi(1,nN,thisTile)
-      pi(2)=exch2_pi(2,nN,thisTile)
-      pj(1)=exch2_pj(1,nN,thisTile)
-      pj(2)=exch2_pj(2,nN,thisTile)
+      itb=exch2_tBasex(tt)
+      jtb=exch2_tBasey(tt)
+      isb=exch2_tBasex(thisTile)
+      jsb=exch2_tBasey(thisTile)
+      pi(1)=exch2_pij(1,nN,thisTile)
+      pi(2)=exch2_pij(2,nN,thisTile)
+      pj(1)=exch2_pij(3,nN,thisTile)
+      pj(2)=exch2_pij(4,nN,thisTile)
 
 C     if pi(1) is 1 then +i in source aligns with +i in target
 C     if pj(1) is 1 then +i in source aligns with +j in target
@@ -204,22 +204,18 @@ C     if pj(1) is -1 then +i in target <=> -j in source so bufr1 should get -arr
        sa1 = ABS(sa1)
        sa2 = ABS(sa2)
       ENDIF
-      oi_c=exch2_oi(nN,thisTile)
-      oi_f=exch2_oi_f(nN,thisTile)
-      oi=oi_c
-      oj_c=exch2_oj(nN,thisTile)
-      oj_f=exch2_oj_f(nN,thisTile)
-      oj=oj_c
+      oi = exch2_oi(nN,thisTile)
+      oj = exch2_oj(nN,thisTile)
 C     if pi(1) is 1 then +i in source aligns with +i in target
 C     if pj(1) is 1 then +i in source aligns with +j in target
       itlreduce=0
       jtlreduce=0
       IF ( pi(1) .EQ. -1 ) THEN
-       oi=oi_f
+       oi = exch2_oi(nN,thisTile)+1
        itlreduce=1
       ENDIF
       IF ( pj(1) .EQ. -1 ) THEN
-       oj=oj_f
+       oj = exch2_oj(nN,thisTile)+1
        itlreduce=1
       ENDIF
       iBufr1=0
@@ -262,23 +258,19 @@ C     if pj(2) is -1 then +j in target <=> -j in source so bufr1 should get -arr
        sa1 = ABS(sa1)
        sa2 = ABS(sa2)
       ENDIF
-      oi_c=exch2_oi(nN,thisTile)
-      oi_f=exch2_oi_f(nN,thisTile)
-      oi=oi_c
-      oj_c=exch2_oj(nN,thisTile)
-      oj_f=exch2_oj_f(nN,thisTile)
-      oj=oj_c
+      oi = exch2_oi(nN,thisTile)
+      oj = exch2_oj(nN,thisTile)
 C     if pi(2) is 1 then +i in source aligns with +j in target
 C     if pj(2) is 1 then +j in source aligns with +j in target
       itlreduce=0
       jtlreduce=0
       IF ( pi(2) .EQ. -1 ) THEN
        jtlreduce=1
-       oi=oi_f
+       oi = exch2_oi(nN,thisTile)+1
       ENDIF
       IF ( pj(2) .EQ. -1 ) THEN
        jtlreduce=1
-       oj=oj_f
+       oj = exch2_oj(nN,thisTile)+1
       ENDIF
       iBufr2=0
 #ifdef W2_E2_DEBUG_ON

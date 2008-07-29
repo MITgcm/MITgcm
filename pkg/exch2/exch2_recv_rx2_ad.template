@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_recv_rx2_ad.template,v 1.1 2007/07/27 22:15:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_recv_rx2_ad.template,v 1.2 2008/07/29 20:25:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -117,15 +117,15 @@ c     INTEGER theSize1, theSize2
 #endif
 
       tt=exch2_neighbourId(nN, thisTile )
-      oN=exch2_opposingSend_record(nN, thisTile )
+      oN=exch2_opposingSend(nN, thisTile )
       itl1reduce=0
       jtl1reduce=0
       itl2reduce=0
       jtl2reduce=0
-      IF ( exch2_pi(1,oN,tt) .EQ. -1 ) itl1reduce=1
-      IF ( exch2_pj(1,oN,tt) .EQ. -1 ) itl1reduce=1
-      IF ( exch2_pi(2,oN,tt) .EQ. -1 ) jtl2reduce=1
-      IF ( exch2_pj(2,oN,tt) .EQ. -1 ) jtl2reduce=1
+      IF ( exch2_pij(1,oN,tt) .EQ. -1 ) itl1reduce=1
+      IF ( exch2_pij(3,oN,tt) .EQ. -1 ) itl1reduce=1
+      IF ( exch2_pij(2,oN,tt) .EQ. -1 ) jtl2reduce=1
+      IF ( exch2_pij(4,oN,tt) .EQ. -1 ) jtl2reduce=1
 
 C     Handle receive end data transport according to communication mechanism between 
 C     source and target tile
@@ -134,7 +134,7 @@ C      1 Need to check and spin on data ready assertion for multithreaded mode, 
 C        assume only one thread per process.
 
 C      2 Need to set e2Bufr to use put buffer from opposing send.
-       oN = exch2_opposingSend_record(nN, thisTile )
+       oN = exch2_opposingSend(nN, thisTile )
        mb = oN
        ir = 1
        DO I=1,nt

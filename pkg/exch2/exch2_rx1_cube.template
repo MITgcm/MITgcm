@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube.template,v 1.4 2006/08/31 22:11:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube.template,v 1.5 2008/07/29 20:25:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -95,10 +95,11 @@ C     Post sends as messages or buffer copies
        nN=exch2_nNeighbours(thisTile)
        DO N=1,nN
         farTile=exch2_neighbourId(N,thisTile)
-        tIlo =exch2_itlo_c(N,thisTile)
-        tIhi =exch2_ithi_c(N,thisTile)
-        tJlo =exch2_jtlo_c(N,thisTile)
-        tJhi =exch2_jthi_c(N,thisTile)
+        oN=exch2_opposingSend(N,thisTile)
+        tIlo =exch2_iLo(oN,farTile)
+        tIhi =exch2_iHi(oN,farTile)
+        tJlo =exch2_jLo(oN,farTile)
+        tJhi =exch2_jHi(oN,farTile)
         CALL EXCH2_GET_SEND_BOUNDS(
      I       fieldCode, exchWidthX,
      O       tiStride, tjStride,
@@ -142,11 +143,10 @@ C     Receive messages or extract buffer copies
        nN=exch2_nNeighbours(thisTile)
        DO N=1,nN
         farTile=exch2_neighbourId(N,thisTile)
-        oN=exch2_opposingSend_Record(N,thisTile)
-        tIlo =exch2_itlo_c(oN,farTile)
-        tIhi =exch2_ithi_c(oN,farTile)
-        tJlo =exch2_jtlo_c(oN,farTile)
-        tJhi =exch2_jthi_c(oN,farTile)
+        tIlo =exch2_iLo(N,thisTile)
+        tIhi =exch2_iHi(N,thisTile)
+        tJlo =exch2_jLo(N,thisTile)
+        tJhi =exch2_jHi(N,thisTile)
         CALL EXCH2_GET_RECV_BOUNDS(
      I       fieldCode, exchWidthX,
      O       tiStride, tjStride,

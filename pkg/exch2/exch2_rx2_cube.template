@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.4 2006/08/31 22:11:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.5 2008/07/29 20:25:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -9,7 +9,7 @@ CBOP
 C     !ROUTINE: EXCH_RX2_CUBE
 
 C     !INTERFACE:
-      SUBROUTINE EXCH2_RX2_CUBE( 
+      SUBROUTINE EXCH2_RX2_CUBE(
      U            array1, array2, signOption, fieldCode,
      I            myOLw, myOLe, myOLn, myOLs, myNz,
      I            exchWidthX, exchWidthY,
@@ -49,10 +49,10 @@ C     myThid         :: Thread number of this instance of S/R EXCH...
       INTEGER cornerMode
       INTEGER myThid
       _RX array1(1-myOLw:sNx+myOLe,
-     &           1-myOLs:sNy+myOLn, 
+     &           1-myOLs:sNy+myOLn,
      &           myNZ, nSx, nSy)
       _RX array2(1-myOLw:sNx+myOLe,
-     &           1-myOLs:sNy+myOLn, 
+     &           1-myOLs:sNy+myOLn,
      &           myNZ, nSx, nSy)
 
 C     !LOCAL VARIABLES:
@@ -99,10 +99,11 @@ C     Post sends as messages or buffer copies
        nN=exch2_nNeighbours(thisTile)
        DO N=1,nN
         farTile=exch2_neighbourId(N,thisTile)
-        tIlo =exch2_itlo_c(N,thisTile)
-        tIhi =exch2_ithi_c(N,thisTile)
-        tJlo =exch2_jtlo_c(N,thisTile)
-        tJhi =exch2_jthi_c(N,thisTile)
+        oN=exch2_opposingSend(N,thisTile)
+        tIlo =exch2_iLo(oN,farTile)
+        tIhi =exch2_iHi(oN,farTile)
+        tJlo =exch2_jLo(oN,farTile)
+        tJhi =exch2_jHi(oN,farTile)
         CALL EXCH2_GET_SEND_BOUNDS(
      I       fieldCode, exchWidthX,
      O       tiStride, tjStride,
@@ -122,22 +123,22 @@ C     Post sends as messages or buffer copies
         j2Hi  = sNy+myOLs
         k2Lo  = 1
         k2Hi  = myNz
-C       Send to neighbour N to fill neighbor points 
+C       Send to neighbour N to fill neighbor points
 C       (tIlo:tIhi:tiStride,tJlo:tJhi,tJStride,tKlo:tKhi,tKStride)
 C       in its copy of "array".
         CALL EXCH2_SEND_RX2(
-     I       tIlo, tIhi, tiStride, 
-     I       tJlo, tJhi, tjStride, 
+     I       tIlo, tIhi, tiStride,
+     I       tJlo, tJhi, tjStride,
      I       tKlo, tKhi, tkStride,
      I       thisTile, N,
-     I       e2Bufr1_RX(1,N,I,1), e2BufrRecSize,
-     I       e2Bufr2_RX(1,N,I,1),
+     O       e2Bufr1_RX(1,N,I,1), e2BufrRecSize,
+     O       e2Bufr2_RX(1,N,I,1),
      I       array1(1-myOLw,1-myOLs,1,I,1),
      I       i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
      I       array2(1-myOLw,1-myOLs,1,I,1),
      I       i2Lo, i2Hi, j2Lo, j2Hi, k2Lo, k2Hi,
-     O       e2_msgHandles(1,N,I), 
-     O       e2_msgHandles(2,N,I), 
+     O       e2_msgHandles(1,N,I),
+     O       e2_msgHandles(2,N,I),
      I       W2_myCommFlag(N,I), signOption,
      I       myThid )
        ENDDO
@@ -152,11 +153,10 @@ C     Receive messages or extract buffer copies
        nN=exch2_nNeighbours(thisTile)
        DO N=1,nN
         farTile=exch2_neighbourId(N,thisTile)
-        oN=exch2_opposingSend_Record(N,thisTile)
-        tIlo =exch2_itlo_c(oN,farTile)
-        tIhi =exch2_ithi_c(oN,farTile)
-        tJlo =exch2_jtlo_c(oN,farTile)
-        tJhi =exch2_jthi_c(oN,farTile)
+        tIlo =exch2_iLo(N,thisTile)
+        tIhi =exch2_iHi(N,thisTile)
+        tJlo =exch2_jLo(N,thisTile)
+        tJhi =exch2_jHi(N,thisTile)
         CALL EXCH2_GET_RECV_BOUNDS(
      I       fieldCode, exchWidthX,
      O       tiStride, tjStride,
@@ -176,25 +176,25 @@ C     Receive messages or extract buffer copies
         j2Hi  = sNy+myOLs
         k2Lo  = 1
         k2Hi  = myNz
-C       Receive from neighbour N to fill my points 
+C       Receive from neighbour N to fill my points
 C       (tIlo:tIhi:tiStride,tJlo:tJhi,tJStride,tKlo:tKhi,tKStride)
-C       in "array". 
+C       in "array".
 C       Note: when transferring data within a process:
 C             o e2Bufr entry to read is entry associated with opposing send record
 C             o e2_msgHandle entry to read is entry associated with opposing send
 C               record.
         CALL EXCH2_RECV_RX2(
-     I       tIlo, tIhi, tiStride, 
-     I       tJlo, tJhi, tjStride, 
+     I       tIlo, tIhi, tiStride,
+     I       tJlo, tJhi, tjStride,
      I       tKlo, tKhi, tkStride,
      I       thisTile, I, N,
      I       e2Bufr1_RX, e2Bufr2_RX, e2BufrRecSize,
      I       MAX_NEIGHBOURS, nSx,
-     I       array1(1-myOLw,1-myOLs,1,I,1),
+     U       array1(1-myOLw,1-myOLs,1,I,1),
      I       i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
-     I       array2(1-myOLw,1-myOLs,1,I,1),
+     U       array2(1-myOLw,1-myOLs,1,I,1),
      I       i2Lo, i2Hi, j2Lo, j2Hi, k2Lo, k2Hi,
-     U       e2_msgHandles, 
+     U       e2_msgHandles,
      I       W2_myTileList,
      I       W2_myCommFlag(N,I),
      I       myThid )
@@ -210,7 +210,7 @@ C       Note: In a between process tile-tile data transport using
 C             MPI the sender needs to clear an Isend wait handle here.
 C             In a within process tile-tile data transport using true
 C             shared address space/or direct transfer through commonly
-C             addressable memory blocks the receiver needs to assert 
+C             addressable memory blocks the receiver needs to assert
 C             that is has consumed the buffer the sender filled here.
         farTile=exch2_neighbourId(N,thisTile)
         IF     ( W2_myCommFlag(N,I) .EQ. 'M' ) THEN
@@ -227,7 +227,7 @@ C             that is has consumed the buffer the sender filled here.
       ENDDO
 
       CALL BAR2(myThid)
-  
+
       RETURN
       END
 
