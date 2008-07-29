@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.12 2006/03/03 18:36:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.13 2008/07/29 20:26:42 jmc Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -97,18 +97,12 @@ C     W2/exch2 information
      &     'exch2_neighbourId', exch2_nNeighbours(tnum), 
      &     exch2_neighbourId(1,tnum), myThid)
 
-      CALL MNC_FILE_ADD_ATTR_INT(fname, 'exch2_pi', 
-     &     2*exch2_nNeighbours(tnum), exch2_pi(1,1,tnum), myThid)
-      CALL MNC_FILE_ADD_ATTR_INT(fname, 'exch2_pj', 
-     &     2*exch2_nNeighbours(tnum), exch2_pj(1,1,tnum), myThid)
+      CALL MNC_FILE_ADD_ATTR_INT(fname, 'exch2_pij', 
+     &     4*exch2_nNeighbours(tnum), exch2_pij(1,1,tnum), myThid)
       CALL MNC_FILE_ADD_ATTR_INT(fname, 'exch2_oi', 
      &     exch2_nNeighbours(tnum), exch2_oi(1,tnum), myThid)
       CALL MNC_FILE_ADD_ATTR_INT(fname, 'exch2_oj', 
      &     exch2_nNeighbours(tnum), exch2_oj(1,tnum), myThid)
-      CALL MNC_FILE_ADD_ATTR_INT(fname, 'exch2_oi_f', 
-     &     exch2_nNeighbours(tnum), exch2_oi_f(1,tnum), myThid)
-      CALL MNC_FILE_ADD_ATTR_INT(fname, 'exch2_oj_f', 
-     &     exch2_nNeighbours(tnum), exch2_oj_f(1,tnum), myThid)
 
       CALL MNC_FILE_ADD_ATTR_INT(fname, 
      &     'exch2_isNedge', 1, exch2_isNedge(tnum), myThid)
@@ -122,13 +116,13 @@ C     W2/exch2 information
       CALL MNC_FILE_ADD_ATTR_INT(fname, 
      &     'exch2_myFace', 1, exch2_myFace(tnum), myThid)
       CALL MNC_FILE_ADD_ATTR_INT(fname, 
-     &     'exch2_txglobalo', 1, exch2_txglobalo(tnum), myThid)
+     &     'exch2_txGlobalo', 1, exch2_txGlobalo(tnum), myThid)
       CALL MNC_FILE_ADD_ATTR_INT(fname, 
-     &     'exch2_tyglobalo', 1, exch2_tyglobalo(tnum), myThid)
+     &     'exch2_tyGlobalo', 1, exch2_tyGlobalo(tnum), myThid)
       CALL MNC_FILE_ADD_ATTR_INT(fname, 
-     &     'exch2_tbasex', 1, exch2_tbasex(tnum), myThid)
+     &     'exch2_tBasex', 1, exch2_tBasex(tnum), myThid)
       CALL MNC_FILE_ADD_ATTR_INT(fname, 
-     &     'exch2_tbasey', 1, exch2_tbasey(tnum), myThid)
+     &     'exch2_tBasey', 1, exch2_tBasey(tnum), myThid)
 #endif
       
 C     Model parameters (SIZE.h) included as attributes
