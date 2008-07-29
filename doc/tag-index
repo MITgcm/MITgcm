@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1010 2008/07/29 18:42:35 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1011 2008/07/29 21:17:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o exch2: 
+ - change index-bounds storage (moved from target to local tile,
+   more intuitive this way) ; rename/remove some variables.
+ - change utils/exch2/matlab-topology-generator accordingly.
 
 checkpoint61a
 o exch2/matlab-topology-generator: 
