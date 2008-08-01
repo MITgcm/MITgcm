@@ -15,14 +15,8 @@ exch_rs_cube.f
 exch_cycle_ebl.f
 exch2_xy_rl.f
 exch2_xy_rs.f
-exch2_get_recv_bounds.f
-exch2_get_send_bounds.f
-exch2_recv_rl1.f
-exch2_send_rl1.f
 exch2_3d_rl.f
 exch2_3d_rs.f
-exch2_recv_rs1.f
-exch2_send_rs1.f
 exch2_uv_xy_rs.f
 exch2_uv_xy_rl.f
 exch2_uv_3d_rs.f
