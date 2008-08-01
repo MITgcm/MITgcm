@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx2.template,v 1.6 2008/07/29 20:25:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx2.template,v 1.7 2008/08/01 00:45:16 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
 
       SUBROUTINE EXCH2_SEND_RX2 (
-     I       tIlo, tIhi, tiStride,
-     I       tJlo, tJhi, tjStride,
+     I       tIlo1, tIhi1, tIlo2, tIhi2, tiStride,
+     I       tJlo1, tJhi1, tJlo2, tJhi2, tjStride,
      I       tKlo, tKhi, tkStride,
-     I       thisTile, nN,
-     O       e2Bufr1_RX, e2BufrRecSize,
-     O       e2Bufr2_RX,
+     I       thisTile, nN, oIs1, oJs1, oIs2, oJs2,
+     O       e2Bufr1_RX, e2Bufr2_RX,
+     I       e2BufrRecSize,
      I       array1,
      I       i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
      I       array2,
@@ -30,12 +30,13 @@ C     bufr2 along +j axis in target tile.
 #include "W2_EXCH2_TOPOLOGY.h"
 
 C     === Routine arguments ===
-      INTEGER tILo, tIHi, tiStride
-      INTEGER tJLo, tJHi, tjStride
-      INTEGER tKLo, tKHi, tkStride
+      INTEGER tIlo1, tIhi1, tIlo2, tIhi2, tiStride
+      INTEGER tJlo1, tJhi1, tJlo2, tJhi2, tjStride
+      INTEGER tKlo, tKhi, tkStride
       INTEGER i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi
       INTEGER i2Lo, i2Hi, j2Lo, j2Hi, k2Lo, k2Hi
       INTEGER thisTile, nN
+      INTEGER oIs1, oJs1, oIs2, oJs2
       INTEGER e2BufrRecSize
       _RX     e2Bufr1_RX( e2BufrRecSize )
       _RX     e2Bufr2_RX( e2BufrRecSize )
@@ -57,18 +58,15 @@ C                    :: isc etc... source canonical
       INTEGER itc, jtc
       INTEGER isc, jsc
       INTEGER isl, jsl
-c     INTEGER ktc, ksc, ksl
 C     tt         :: Target tile
 C     itb, jtb   :: Target local to canonical offsets
 C
       INTEGER  tt
       INTEGER itb, jtb
       INTEGER isb, jsb
-      INTEGER pi(2), pj(2), oi, oj
+      INTEGER pi(2), pj(2)
       _RX     sa1, sa2, val1, val2
       INTEGER iBufr1, iBufr2
-      INTEGER itlreduce
-      INTEGER jtlreduce
 
 C     MPI setup
 #ifdef ALLOW_USE_MPI
@@ -104,20 +102,8 @@ C     if pj(1) is -1 then +i in target <=> -j in source so bufr1 should get -arr
        sa1 = ABS(sa1)
        sa2 = ABS(sa2)
       ENDIF
-      oi = exch2_oi(nN,thisTile)
-      oj = exch2_oj(nN,thisTile)
 C     if pi(1) is 1 then +i in source aligns with +i in target
 C     if pj(1) is 1 then +i in source aligns with +j in target
-      itlreduce=0
-      jtlreduce=0
-      IF ( pi(1) .EQ. -1 ) THEN
-       oi = exch2_oi(nN,thisTile)+1
-       itlreduce=1
-      ENDIF
-      IF ( pj(1) .EQ. -1 ) THEN
-       oj = exch2_oj(nN,thisTile)+1
-       itlreduce=1
-      ENDIF
       iBufr1=0
 #ifdef W2_E2_DEBUG_ON
       WRITE(messageBuffer,'(A,I4,A,I4)') 'EXCH2_SEND_RX2 sourceTile= ',
@@ -127,16 +113,14 @@ C     if pj(1) is 1 then +i in source aligns with +j in target
      I      standardMessageUnit,SQUEEZE_BOTH,
      I      myThid)
 #endif /* W2_E2_DEBUG_ON */
-      DO ktl=tKlo,tKhi,tKStride
-       DO jtl=tJLo+jtlreduce, tJHi, tjStride
-        DO itl=tILo+itlreduce, tIHi, tiStride
-C      DO jtl=1,32,31
-C       DO itl=1,32,31
+      DO ktl=tKlo,tKhi,tkStride
+       DO jtl=tJlo1, tJhi1, tjStride
+        DO itl=tIlo1, tIhi1, tiStride
          iBufr1=iBufr1+1
          itc=itl+itb
          jtc=jtl+jtb
-         isc=pi(1)*itc+pi(2)*jtc+oi
-         jsc=pj(1)*itc+pj(2)*jtc+oj
+         isc=pi(1)*itc+pi(2)*jtc+oIs1
+         jsc=pj(1)*itc+pj(2)*jtc+oJs1
          isl=isc-isb
          jsl=jsc-jsb
          val1=sa1*array1(isl,jsl,ktl)
@@ -190,7 +174,7 @@ C         Ran off end of buffer. This should not happen
 C         Forward mode send getting from points outside of the
 C         tiles exclusive domain bounds in X. This should not happen
           WRITE(messageBuffer,'(A,I4,I4)')
-     &     'EXCH2_SEND_RX2 tIlo, tIhi =', tIlo, tIhi
+     &     'EXCH2_SEND_RX2 tIlo1,tIhi1=', tIlo1, tIhi1
           CALL PRINT_MESSAGE(messageBuffer,
      I     standardMessageUnit,SQUEEZE_BOTH,
      I     myThid)
@@ -205,7 +189,7 @@ C         tiles exclusive domain bounds in X. This should not happen
 C         Forward mode send getting from points outside of the
 C         tiles exclusive domain bounds in Y. This should not happen
           WRITE(messageBuffer,'(A,I4,I4)')
-     &     'EXCH2_SEND_RX2 tJlo, tJhi =', tJlo, tJhi
+     &     'EXCH2_SEND_RX2 tJlo1,tJhi1=', tJlo1, tJhi1
           CALL PRINT_MESSAGE(messageBuffer,
      I     standardMessageUnit,SQUEEZE_BOTH,
      I     myThid)
@@ -238,20 +222,6 @@ C     if pj(2) is -1 then +j in target <=> -j in source so bufr1 should get -arr
        sa1 = ABS(sa1)
        sa2 = ABS(sa2)
       ENDIF
-      oi = exch2_oi(nN,thisTile)
-      oj = exch2_oj(nN,thisTile)
-C     if pi(2) is 1 then +i in source aligns with +j in target
-C     if pj(2) is 1 then +j in source aligns with +j in target
-      itlreduce=0
-      jtlreduce=0
-      IF ( pi(2) .EQ. -1 ) THEN
-       jtlreduce=1
-       oi = exch2_oi(nN,thisTile)+1
-      ENDIF
-      IF ( pj(2) .EQ. -1 ) THEN
-       jtlreduce=1
-       oj = exch2_oj(nN,thisTile)+1
-      ENDIF
       iBufr2=0
 #ifdef W2_E2_DEBUG_ON
       WRITE(messageBuffer,'(A,I4,A,I4)') 'EXCH2_SEND_RX2 sourceTile= ',
@@ -261,16 +231,14 @@ C     if pj(2) is 1 then +j in source aligns with +j in target
      I      standardMessageUnit,SQUEEZE_BOTH,
      I      myThid)
 #endif /* W2_E2_DEBUG_ON */
-      DO ktl=tKlo,tKhi,tKStride
-       DO jtl=tJLo+jtlreduce, tJHi, tjStride
-        DO itl=tILo+itlreduce, tIHi, tiStride
-C      DO jtl=1,32,31
-C       DO itl=1,32,31
+      DO ktl=tKlo,tKhi,tkStride
+       DO jtl=tJlo2, tJhi2, tjStride
+        DO itl=tIlo2, tIhi2, tiStride
          iBufr2=iBufr2+1
          itc=itl+itb
          jtc=jtl+jtb
-         isc=pi(1)*itc+pi(2)*jtc+oi
-         jsc=pj(1)*itc+pj(2)*jtc+oj
+         isc=pi(1)*itc+pi(2)*jtc+oIs2
+         jsc=pj(1)*itc+pj(2)*jtc+oJs2
          isl=isc-isb
          jsl=jsc-jsb
          val2=sa1*array1(isl,jsl,ktl)
@@ -325,7 +293,7 @@ C         Ran off end of buffer. This should not happen
 C         Forward mode send getting from points outside of the
 C         tiles exclusive domain bounds in X. This should not happen
           WRITE(messageBuffer,'(A,I4,I4)')
-     &     'EXCH2_SEND_RX2 tIlo, tIhi =', tIlo, tIhi
+     &     'EXCH2_SEND_RX2 tIlo2,tIhi2=', tIlo2, tIhi2
           CALL PRINT_MESSAGE(messageBuffer,
      I     standardMessageUnit,SQUEEZE_BOTH,
      I     myThid)
@@ -340,7 +308,7 @@ C         tiles exclusive domain bounds in X. This should not happen
 C         Forward mode send getting from points outside of the
 C         tiles exclusive domain bounds in Y. This should not happen
           WRITE(messageBuffer,'(A,I4,I4)')
-     &     'EXCH2_SEND_RX2 tJlo, tJhi =', tJlo, tJhi
+     &     'EXCH2_SEND_RX2 tJlo2,tJhi2=', tJlo2, tJhi2
           CALL PRINT_MESSAGE(messageBuffer,
      I     standardMessageUnit,SQUEEZE_BOTH,
      I     myThid)
@@ -382,7 +350,7 @@ C      Setup MPI stuff here
        sProc = exch2_tProc(thisTile)-1
        theType = MPI_REAL8
 #ifdef W2_E2_DEBUG_ON
-       WRITE(messageBuffer,'(A,I4,A,I4,A)') ' SEND FROM TILE=', thisTile,
+       WRITE(messageBuffer,'(A,I4,A,I4,A)') ' SEND FROM TILE=',thisTile,
      &                                   ' (proc = ',sProc,')'
        CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_RIGHT,

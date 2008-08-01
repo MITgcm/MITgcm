@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_recv_rx2_ad.template,v 1.2 2008/07/29 20:25:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_recv_rx2_ad.template,v 1.3 2008/08/01 00:45:16 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
 
       SUBROUTINE EXCH2_RECV_RX2_AD(
-     I       tIlo, tIhi, tiStride,
-     I       tJlo, tJhi, tjStride,
+     I       tIlo1, tIhi1, tIlo2, tIhi2, tiStride,
+     I       tJlo1, tJhi1, tJlo2, tJhi2, tjStride,
      I       tKlo, tKhi, tkStride,
      I       thisTile, thisI, nN,
      I       e2Bufr1_RX, e2Bufr2_RX, e2BufrRecSize,
@@ -29,9 +29,11 @@ C $Name:  $
 #include "W2_EXCH2_TOPOLOGY.h"
 
 C     === Routine arguments ===
-C     tIlo, tIhi, tIstride :: index range in I that will be filled in target "array"
-C     tJlo, tJhi, tJstride :: index range in J that will be filled in target "array"
-C     tKlo, tKhi, tKstride :: index range in K that will be filled in target "array"
+C     tIlo1,tIhi1,tIstride :: index range in I that will be filled in target "array1"
+C     tIlo2,tIhi2,tIstride :: index range in I that will be filled in target "array2"
+C     tJlo1,tJhi1,tJstride :: index range in J that will be filled in target "array1"
+C     tJlo2,tJhi2,tJstride :: index range in J that will be filled in target "array2"
+C     tKlo, tKhi, tKstride :: index range in K that will be filled in target arrays
 C     thisTile             :: Rank of the receiveing tile
 C     thisI                :: Index of the receiving tile within this process (used
 C                          :: to select buffer slots that are allowed).
@@ -58,15 +60,15 @@ C                          :: MPI MSG communication MPI_Wait uses hanlde to chec
 C                          :: This is done in routine after receives.
 C     myTiles              :: List of nt tiles that this process owns.
 C     commSetting          :: Mode of communication used to exchnage with this neighbor
-C     myThid               :: Thread number of this instance of EXCH2_RECV_RX1
-C  
-      INTEGER tILo, tIHi, tiStride
-      INTEGER tJLo, tJHi, tjStride
-      INTEGER tKLo, tKHi, tkStride
+C     myThid               :: Thread number of this instance of EXCH2_RECV_RX2
+
+      INTEGER tIlo1, tIhi1, tIlo2, tIhi2, tiStride
+      INTEGER tJlo1, tJhi1, tJlo2, tJhi2, tjStride
+      INTEGER tKlo, tKhi, tkStride
       INTEGER i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi
       INTEGER i2Lo, i2Hi, j2Lo, j2Hi, k2Lo, k2Hi
       INTEGER thisTile, nN, thisI
-      INTEGER e2BufrRecSize 
+      INTEGER e2BufrRecSize
       INTEGER mnb, nt
       _RX     e2Bufr1_RX( e2BufrRecSize, mnb, nt, 2 )
       _RX     e2Bufr2_RX( e2BufrRecSize, mnb, nt, 2 )
@@ -81,13 +83,7 @@ C
 C     == Local variables ==
 C     itl, jtl, ktl  :: Loop counters
 C                    :: itl etc... target local
-C                    :: itc etc... target canonical
-C                    :: isl etc... source local
-C                    :: isc etc... source canonical
       INTEGER itl, jtl, ktl
-c     INTEGER itc, jtc, ktc
-c     INTEGER isc, jsc, ksc
-c     INTEGER isl, jsl, ksl
 C     tt         :: Target tile
 C     iBufr1     :: Buffer counter
 C     iBufr2     ::
@@ -96,19 +92,14 @@ C     iBufr2     ::
 C     mb, nb :: Selects e2Bufr, msgHandle record to use
 C     ir     ::
       INTEGER mb, nb, ir
-C     oN     :: Opposing send record number 
+C     oN     :: Opposing send record number
       INTEGER oN
 C     Loop counters
       INTEGER I
-      INTEGER itl1reduce, jtl1reduce
-      INTEGER itl2reduce, jtl2reduce
 
 C     MPI setup
 #ifdef ALLOW_USE_MPI
-      INTEGER    nri1, nrj1, nrk1
-      INTEGER    nri2, nrj2, nrk2
       INTEGER theTag1, theTag2, theType
-c     INTEGER theSize1, theSize2
       INTEGER sProc, tProc, mpiRc
       INTEGER theHandle1, theHandle2
 #ifdef W2_E2_DEBUG_ON
@@ -118,16 +109,8 @@ c     INTEGER theSize1, theSize2
 
       tt=exch2_neighbourId(nN, thisTile )
       oN=exch2_opposingSend(nN, thisTile )
-      itl1reduce=0
-      jtl1reduce=0
-      itl2reduce=0
-      jtl2reduce=0
-      IF ( exch2_pij(1,oN,tt) .EQ. -1 ) itl1reduce=1
-      IF ( exch2_pij(3,oN,tt) .EQ. -1 ) itl1reduce=1
-      IF ( exch2_pij(2,oN,tt) .EQ. -1 ) jtl2reduce=1
-      IF ( exch2_pij(4,oN,tt) .EQ. -1 ) jtl2reduce=1
 
-C     Handle receive end data transport according to communication mechanism between 
+C     Handle receive end data transport according to communication mechanism between
 C     source and target tile
       IF     ( commSetting .EQ. 'P' ) THEN
 C      1 Need to check and spin on data ready assertion for multithreaded mode, for now do nothing i.e.
@@ -155,9 +138,9 @@ C      Setup MPI stuff here
       ENDIF
 
       iBufr1=0
-      DO ktl=tKlo,tKhi,tKStride
-       DO jtl=tJLo+jtl1reduce, tJHi, tjStride
-        DO itl=tILo+itl1reduce, tIHi, tiStride
+      DO ktl=tKlo,tKhi,tkStride
+       DO jtl=tJlo1, tJhi1, tjStride
+        DO itl=tIlo1, tIhi1, tiStride
 C        Read from e2Bufr1_RX(iBufr,mb,nb)
          iBufr1=iBufr1+1
          e2Bufr1_RX(iBufr1,mb,nb,ir) = array1(itl,jtl,ktl)
@@ -167,9 +150,9 @@ C        Read from e2Bufr1_RX(iBufr,mb,nb)
       ENDDO
 
       iBufr2=0
-      DO ktl=tKlo,tKhi,tKStride
-       DO jtl=tJLo+jtl2reduce, tJHi, tjStride
-        DO itl=tILo+itl2reduce, tIHi, tiStride
+      DO ktl=tKlo,tKhi,tkStride
+       DO jtl=tJlo2, tJhi2, tjStride
+        DO itl=tIlo2, tIhi2, tiStride
 C        Read from e2Bufr1_RX(iBufr,mb,nb)
          iBufr2=iBufr2+1
          e2Bufr2_RX(iBufr2,mb,nb,ir) = array2(itl,jtl,ktl)
@@ -177,7 +160,7 @@ C        Read from e2Bufr1_RX(iBufr,mb,nb)
         ENDDO
        ENDDO
       ENDDO
- 
+
       IF     ( commSetting .EQ. 'P' ) THEN
       ELSEIF ( commSetting .EQ. 'M' ) THEN
 #ifdef ALLOW_USE_MPI
@@ -196,14 +179,6 @@ C      Setup MPI stuff here
        tProc = exch2_tProc(thisTile)-1
        sProc = exch2_tProc(tt)-1
        theType = MPI_REAL8
-       nri1 = (tIhi-tIlo+1-itl1reduce)/tiStride
-       nrj1 = (tJhi-tJlo+1-jtl1reduce)/tjStride
-       nrk1 = (tKhi-tKlo+1)/tkStride
-       iBufr1 = nri1*nrj1*nrk1
-       nri2 = (tIhi-tIlo+1-itl2reduce)/tiStride
-       nrj2 = (tJhi-tJlo+1-jtl2reduce)/tjStride
-       nrk2 = (tKhi-tKlo+1)/tkStride
-       iBufr2 = nri2*nrj2*nrk2
        CALL MPI_Isend( e2Bufr1_RX(1,mb,nb,ir), iBufr1, theType, sProc,
      &               theTag1, MPI_COMM_MODEL, theHandle1, mpiRc )
        CALL MPI_Isend( e2Bufr2_RX(1,mb,nb,ir), iBufr2, theType, sProc,
