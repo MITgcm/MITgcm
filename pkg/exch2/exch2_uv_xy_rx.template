@@ -1,8 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xy_rx.template,v 1.8 2007/07/28 16:07:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xy_rx.template,v 1.9 2008/08/01 00:50:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
+#define DO_CORNER_COPY_V2U
 
 CBOP
 
@@ -29,7 +30,6 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-cph-mpi#include "EESUPPORT.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
 
@@ -72,23 +72,24 @@ C                that threads are synchronised before exchanges
 C                begine.
       IF (useCubedSphereExchange) THEN
 
-       CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'UV',
+       CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'Cg',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'UV',
+       CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'Cg',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'UV',
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+c      CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'Cg',
+c    I            OLw, OLe, OLs, OLn, myNz,
+c    I            exchWidthX, exchWidthY,
+c    I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          myTile = W2_myTileList(bi)
 
+#ifdef DO_CORNER_COPY_V2U
          IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
 C         Uphi(snx+1,    0,bi,bj)= vPhi(snx+1,    1,bi,bj)
@@ -113,6 +114,7 @@ C          Uphi(snx+1,sny+1,bi,bj)= vPhi(snx+1,sny+1,bi,bj)
            ENDDO
           ENDIF
          ENDIF
+#endif
 
 C--      Now zero out the null areas that should not be used in the numerics
 C        Also add one valid u,v value next to the corner, that allows
