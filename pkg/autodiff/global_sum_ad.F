@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.7 2008/08/02 23:16:58 jmc Exp $
+C $Name:  $
+
 C--   File global_adsum.F: Routines that perform adjoint of
 C                          global sum on an array of thread values.
 C      Contents
@@ -12,7 +15,7 @@ CStartOfInterface
      U                            adsumPhi
      &                          )
 #else
-      SUBROUTINE GLOBAL_ADSUM_R4( 
+      SUBROUTINE GLOBAL_ADSUM_R4(
      U                            adsumPhi,
      I                            myThid
      &                          )
@@ -61,7 +64,7 @@ C--   broadcast to all processes
 #endif
          CALL MPI_Bcast(tmp, 1, MPI_REAL, 0
      &        , MPI_COMM_WORLD, mpiRC
-     &        ) 
+     &        )
 #ifndef ALWAYS_USE_MPI
       ENDIF
 #endif
@@ -91,7 +94,7 @@ CStartOfInterface
      U                            adsumPhi
      &                          )
 #else
-      SUBROUTINE GLOBAL_ADSUM_R8( 
+      SUBROUTINE GLOBAL_ADSUM_R8(
      U                            adsumPhi,
      I                            myThid
      &                          )
@@ -139,7 +142,7 @@ C--   broadcast to all processes
 #endif
          CALL MPI_Bcast(tmp, 1, MPI_DOUBLE_PRECISION, 0
      &        , MPI_COMM_WORLD, mpiRC
-     &        ) 
+     &        )
 #ifndef ALWAYS_USE_MPI
       ENDIF
 #endif

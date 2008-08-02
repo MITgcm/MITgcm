@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_ad.F,v 1.9 2008/08/02 23:16:58 jmc Exp $
+C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -23,7 +25,7 @@ c        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
 c                 - Added routines that do active writes on tiles
 c                   instead of a whole thread.
 c        changed: Patrick Heimbach heimbach@mit.edu 27-May-2000
-c                 - changed suboutine argument list: 
+c                 - changed suboutine argument list:
 c                   dropped mycurrentiter, mycurrenttime
 c        changed: heimbach@mit.edu 25-Mar-2002
 c                 - added active file handling of xz-/yz-arrays
