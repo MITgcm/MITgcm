@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.35 2007/09/04 17:04:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.36 2008/08/02 22:44:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -32,6 +32,10 @@ C     === Global variables ===
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_EXCH2
+# include "W2_EXCH2_TOPOLOGY.h"
+# include "W2_EXCH2_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -49,6 +53,9 @@ C     tmpfld  :: Temporary array used to compute & write Total Depth
       _RL hFacCtmp
       _RL hFacMnSz
       _RL tileArea(nSx,nSy), threadArea
+C     put tileArea in (local) common block to print from master-thread:
+      COMMON / LOCAL_INI_MASKS_ETC / tileArea
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 C- Calculate lopping factor hFacC : over-estimate the part inside of the domain
@@ -222,6 +229,27 @@ C_jmc: apply GLOBAL_SUM to thread-local variable (not in common block)
 #endif
       _BEGIN_MASTER( myThid )
       globalArea = threadArea
+C-    list empty tiles:
+      msgBuf(1:1) = ' '
+      DO bj = 1,nSy
+       DO bi = 1,nSx
+        IF ( tileArea(bi,bj).EQ.0. _d 0 ) THEN
+#ifdef ALLOW_EXCH2
+         WRITE(msgBuf,'(A,I6,A,I6,A)')
+     &     'Empty tile: #', W2_myTileList(bi), ' (bi=', bi,' )'
+#else
+         WRITE(msgBuf,'(A,I6,I6)') 'Empty tile bi,bj=', bi, bj
+#endif
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+        ENDIF
+       ENDDO
+      ENDDO
+      IF ( msgBuf(1:1).NE.' ' ) THEN
+         WRITE(msgBuf,'(A)') ' '
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      ENDIF
       _END_MASTER( myThid )
 
 C     hFacW and hFacS (at U and V points)
