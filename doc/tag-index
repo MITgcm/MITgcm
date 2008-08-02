@@ -1,13 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1011 2008/07/29 21:17:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1012 2008/08/02 23:12:23 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o exch2: 
+  change index bounds in rx2_cube exchanges (new S/R: EXCH2_GET_UV_BOUNDS)
+  - no longer depend on the order sequence (N,S,E,W).
+  - 3rd exchange no longer needed (tested with 24 tiles).
+  - same modif to hand-written adjoint S/R (global_ocean.cs32x15: zero diff)
+  - exch_UV_A-grid readily available (but not yet tested).
+  comment out 3rd exch call and remove copy of V to U at SE & NE face-corners 
+  (both are no longer needed) in exch_uv: no effect in forward run; but 
+   get truncation error differences with adjoint exch.
+o exch2: 
  - change index-bounds storage (moved from target to local tile,
    more intuitive this way) ; rename/remove some variables.
- - change utils/exch2/matlab-topology-generator accordingly.
+ - change utils/exch2/matlab-topology-generator & code_mods accordingly.
 
 checkpoint61a
 o exch2/matlab-topology-generator: 
