@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_3d_rx.template,v 1.3 2008/08/01 00:50:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_3d_rx.template,v 1.4 2008/08/02 23:04:38 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
-#define DO_CORNER_COPY_V2U
+#undef DO_CORNER_COPY_V2U
 
 CBOP
 C     !ROUTINE: EXCH2_UV_3D_RX
@@ -119,7 +119,7 @@ C          Uphi(snx+1,sny+1,k,bi,bj)= vPhi(snx+1,sny+1,k,bi,bj)
           ENDDO
          ENDIF
         ENDIF
-#endif
+#endif /* DO_CORNER_COPY_V2U */
 
 C--     Now zero out the null areas that should not be used in the numerics
 C       Also add one valid u,v value next to the corner, that allows
