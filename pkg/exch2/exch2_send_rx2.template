@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx2.template,v 1.7 2008/08/01 00:45:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx2.template,v 1.8 2008/08/05 18:31:55 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -339,13 +339,7 @@ C      nothing i.e. assume only one thread per process.
 #ifdef ALLOW_USE_MPI
 C      Setup MPI stuff here
        theTag1 =  (thisTile-1)*MAX_NEIGHBOURS*2 + nN-1
-     &           + 10000*(
-     &             (tt-1)*MAX_NEIGHBOURS*2 + nN-1
-     &            )
        theTag2 =  (thisTile-1)*MAX_NEIGHBOURS*2 + MAX_NEIGHBOURS + nN-1
-     &           + 10000*(
-     &             (tt-1)*MAX_NEIGHBOURS*2 + MAX_NEIGHBOURS + nN-1
-     &            )
        tProc = exch2_tProc(tt)-1
        sProc = exch2_tProc(thisTile)-1
        theType = MPI_REAL8

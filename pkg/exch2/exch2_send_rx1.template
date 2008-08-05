@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx1.template,v 1.7 2008/07/29 20:25:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx1.template,v 1.8 2008/08/05 18:31:55 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -154,9 +154,6 @@ C      for multithreaded mode, for now do nothing i.e. assume only one thread pe
 #ifdef ALLOW_USE_MPI
 C      Setup MPI stuff here
        theTag =  (thisTile-1)*MAX_NEIGHBOURS + nN
-     &         + 10000*(
-     &            (tt-1)*MAX_NEIGHBOURS + nN
-     &           )
        tProc = exch2_tProc(tt)-1
        sProc = exch2_tProc(thisTile)-1
        theType = MPI_REAL8
