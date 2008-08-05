@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.34 2008/06/19 17:49:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.35 2008/08/05 21:13:16 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -118,7 +118,7 @@ CADJ STORE cMeanThetaUVel = comlev1, key = ikey_dynamics
 CADJ STORE cMeanThetaVVel = comlev1, key = ikey_dynamics
 #endif
 
-#ifdef ALLOW_COST_ATLANTIC
+#if (defined (ALLOW_COST_ATLANTIC) || defined (ALLOW_COST_ATLANTIC_HEAT))
 CADJ STORE theta = comlev1, key = ikey_dynamics
 CADJ STORE uVel  = comlev1, key = ikey_dynamics
 CADJ STORE vVel  = comlev1, key = ikey_dynamics
