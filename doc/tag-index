@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1012 2008/08/02 23:12:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1013 2008/08/05 15:58:18 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61b
 o exch2: 
   change index bounds in rx2_cube exchanges (new S/R: EXCH2_GET_UV_BOUNDS)
   - no longer depend on the order sequence (N,S,E,W).
