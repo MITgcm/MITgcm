@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.55 2008/01/27 20:53:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.56 2008/08/05 22:02:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -73,6 +73,8 @@ C       |
 C       |-- MYPACKAGE_READPARMS
 C       |
 C       |-- SALT_PLUME_READPARMS
+C       |
+C       |-- CHEAPAML_READPARMS
 C       |
 C       |-- OPTIM_READPARMS
 C       |
@@ -226,6 +228,11 @@ C -- initialize Therm.Sea-Ice parameters
 
 #ifdef ALLOW_SALT_PLUME
       IF (useSALT_PLUME) CALL SALT_PLUME_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_CHEAPAML
+C -- initialize cheapaml parameters
+      IF (useCheapAml) CALL CHEAPAML_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_CTRL

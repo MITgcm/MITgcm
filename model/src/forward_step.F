@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.159 2008/06/20 20:32:29 utke Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.160 2008/08/05 22:02:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -222,6 +222,21 @@ C-    calculate qnet and empmr (and wind stress)
         CALL TIMER_STOP ('BULKF_FORCING       [FORWARD_STEP]',myThid)
       ENDIF
 #endif /* ALLOW_BULK_FORCE */
+
+C--   Call external chepaml forcing package
+#ifdef ALLOW_CHEAPAML
+      IF ( useCheapAML  ) THEN
+#ifdef ALLOW_DEBUG
+       IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('CHEAPAML_FIELDS_LOAD',myThid)
+#endif
+       CALL TIMER_START('CHEAPAML      [FORWARD_STEP]',mythid)
+C-    calculate qnet (and wind stress)
+       CALL CHEAPAML( myTime, myIter,myThid )
+       CALL TIMER_STOP ('CHEAPAML      [FORWARD_STEP]',mythid)
+      ENDIF
+#endif /*ALLOW_CHEAPAML */
+
 
 #ifdef ALLOW_AUTODIFF
 c--   Add control vector for forcing and parameter fields

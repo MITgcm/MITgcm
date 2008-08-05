@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.33 2008/04/06 21:14:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.34 2008/08/05 22:02:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -159,6 +159,14 @@ C     Write restart file for GCHEM pkg & GCHEM sub-packages
      I                      suffix, myTime, myIter, myThid )
       ENDIF
 #endif
+
+#ifdef ALLOW_CHEAPAML
+C     Write restart file for CHEAPAML pkg
+      IF ( useCheapAML ) THEN
+         CALL CHEAPAML_WRITE_PICKUP( permPickup,
+     I                      suffix, myTime, myIter, myThid)
+       ENDIF
+#endif /* ALLOW_CHEAPAML */
 
 #ifdef ALLOW_MYPACKAGE
       IF (useMYPACKAGE) THEN
