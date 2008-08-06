@@ -1,0 +1,77 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_beagle,v 1.1 2008/08/06 21:54:56 jahn Exp $
+#  $Name:  $
+#
+#  These are the build options used with the Intel 9.x compiler for
+#  testing on Beagle.
+#
+#  Please note that the appropriate module commands:
+#
+#    module add intel/9.1.051
+#    module add mpich-mx/1.2.7..1/intel/9.1.051
+#
+#  will add /home/ibm/util/mpich-mx-1.2.7..1/icc/9.1.051/lib,
+#  /opt/intel/cce/9.1.051/lib and /opt/intel/fce/9.1.051/lib
+#  to LD_LIBRARY_PATH which is needed by any executables generated
+#  with this optfile.
+#  The SGE -V option for exporting environment variables may also be
+#  helpful if you encounter missing-library problems.  Or,
+#  alternatively, one may choose to link with one of the intel
+#  "-static" or "-i-static" flags.
+
+
+mpichhome=/home/ibm/util/mpich-mx-1.2.7..1/icc/9.1.051
+#netcdfhome=/home/software/netcdf/netcdf-3.6.2/intel-9.1.051
+netcdfhome=/home/ibm/util/netcdf-3.6.2
+
+
+FC='mpif77'
+CC='mpicc'
+F90C='mpif90 -fixed -c '
+LINK='mpif77'
+INCLUDES="-I$mpichhome/include -I$netcdfhome/include"
+LIBS="-L$mpichhome/lib -L$netcdfhome/lib"
+
+
+# -DIFORT turns on ifort-specific declarations in darwin (RAND is not an intrinsic)
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4 -DIFORT'
+CPP='cpp  -traditional -P'
+
+NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F mom_calc_ke.F'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    NOOPTFLAGS='-O2'
+    FOPTIM='-O3 -align'
+    # ifort options:
+    # -132        fixed-form line length is 132 characters
+    # -r8         REAL is REAL*8
+    # -i4         INTEGER is INTEGER*4
+    # -w95        don't warn about use of Fortran 95 extensions
+    # -W0         disable all warning messages
+    # -WB         turns a compile-time bounds check error into a warning
+    # -xT         optimize for Intel Core2 and Xeon 51xx
+    # -fno-alias  don't assume aliasing (assume that different variables DON'T refer to the same memory location) 
+    # -assume byterecl     record length in OPEN statements is in bytes
+    # -convert big_endian  binary files contain big-endian data
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian' 
+    # FFLAGS='-132 -O3 -xT -fPIC -ipo -fno-alias'
+else
+    #  Try to follow IEEE-754
+    NOOPTFLAGS='-O0'
+    # -CB         check bounds
+    # FOPTIM='-O0 -noalign -CA -CB -CU -CV -CS'
+    FOPTIM='-O0 -noalign'
+    # -pc64       round floating point values to 64 bits
+    # one could also try
+    # -mp         maintain precision
+    FFLAGS='-pc64 -132 -r8 -i4 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian' 
+    # FFLAGS='-132 -O3 -xT -fPIC -ipo -fno-alias'
+    # FLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
+fi
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+
+NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
+NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F mds_byteswap.F'
