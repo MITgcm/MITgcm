@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.16 2007/05/01 04:09:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.17 2008/08/09 01:02:28 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -8,22 +8,22 @@ CBOP
 C     !ROUTINE: FIND_ALPHA
 C     !INTERFACE:
       SUBROUTINE FIND_ALPHA (
-     I     bi, bj, iMin, iMax, jMin, jMax,  k, kRef, 
-     O     alphaloc,
+     I     bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
+     O     alphaLoc,
      I     myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o SUBROUTINE FIND_ALPHA                                   
-C     |   Calculates [drho(S,T,z) / dT] of a horizontal slice     
+C     | o SUBROUTINE FIND_ALPHA
+C     |   Calculates [drho(S,T,z) / dT] of a horizontal slice
 C     *==========================================================*
-C     |                                                           
-C     | k - is the Theta/Salt level                               
-C     | kRef - determines pressure reference level                
-C     |        (not used in 'LINEAR' mode)                        
-C     |                                                           
-C     | alphaloc - drho / dT (kg/m^3/C)                           
-C     |                                                           
+C     |
+C     | k - is the Theta/Salt level
+C     | kRef - determines pressure reference level
+C     |        (not used in 'LINEAR' mode)
+C     |
+C     | alphaLoc - drho / dT (kg/m^3/C)
+C     |
 C     *==========================================================*
 C     \ev
 
@@ -46,10 +46,10 @@ c     myThid :: thread number for this instance of the routine
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k
       INTEGER kRef
-      _RL alphaloc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL alphaLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
 C     !LOCAL VARIABLES:
-C     == Local variables == 
+C     == Local variables ==
       INTEGER i,j
       _RL refTemp,refSalt,tP,sP
       _RL t1, t2, t3, s1, s3o2, p1, p2, sp5, p1t1
@@ -64,18 +64,20 @@ C     == Local variables ==
 CEOP
 
 #ifdef CHECK_SALINITY_FOR_NEGATIVE_VALUES
-      CALL LOOK_FOR_NEG_SALINITY( bi, bj, iMin, iMax, jMin, jMax,  k,
-     &     sFld, myThid )
+c     CALL LOOK_FOR_NEG_SALINITY(
+c    I          iMin, iMax, jMin, jMax,
+c    U          sFld,
+c    I          k, bi, bj, myThid )
 #endif
 
       IF (equationOfState.EQ.'LINEAR') THEN
 
          DO j=jMin,jMax
             DO i=iMin,iMax
-               alphaloc(i,j) = -rhonil * tAlpha
+               alphaLoc(i,j) = -rhonil * tAlpha
             ENDDO
          ENDDO
-         
+
       ELSEIF (equationOfState.EQ.'POLY3') THEN
 
          refTemp=eosRefT(kRef)
@@ -86,15 +88,15 @@ CEOP
                tP=theta(i,j,k,bi,bj)-refTemp
                sP=salt(i,j,k,bi,bj)-refSalt
 #ifdef USE_FACTORIZED_POLY
-               alphaloc(i,j) =
+               alphaLoc(i,j) =
      &     ( eosC(6,kRef)
      &         *tP*3.
      &        +(eosC(7,kRef)*sP + eosC(3,kRef))*2.
      &       )*tP
      &      +(eosC(8,kRef)*sP + eosC(4,kRef) )*sP + eosC(1,kRef)
-     &     
+     &
 #else
-               alphaloc(i,j) =
+               alphaLoc(i,j) =
      &              eosC(1,kRef)                +
      &              eosC(3,kRef)*tP*2.          +
      &              eosC(4,kRef)         *sP    +
@@ -104,7 +106,7 @@ CEOP
 #endif
             ENDDO
          ENDDO
-         
+
       ELSEIF ( equationOfState(1:5).EQ.'JMD95'
      &        .OR. equationOfState.EQ.'UNESCO' ) THEN
 C     nonlinear equation of state in pressure coordinates
@@ -112,17 +114,17 @@ C     nonlinear equation of state in pressure coordinates
          CALL PRESSURE_FOR_EOS(
      I        bi, bj, iMin, iMax, jMin, jMax,  kRef,
      O        locPres,
-     I        myThid ) 
+     I        myThid )
 
          CALL FIND_RHOP0(
-     I        bi, bj, iMin, iMax, jMin, jMax, k,
-     I        theta, salt,
+     I        iMin, iMax, jMin, jMax,
+     I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
      O        rhoP0,
      I        myThid )
-         
+
          CALL FIND_BULKMOD(
-     I        bi, bj, iMin, iMax, jMin, jMax,  k,
-     I        locPres, theta, salt,
+     I        iMin, iMax, jMin, jMax, locPres,
+     I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
      O        bulkMod,
      I        myThid )
 
@@ -130,10 +132,10 @@ C     nonlinear equation of state in pressure coordinates
             DO i=iMin,iMax
 
 C     abbreviations
-               t1 = theta(i,j,k,bi,bj) 
+               t1 = theta(i,j,k,bi,bj)
                t2 = t1*t1
                t3 = t2*t1
-               
+
                s1  = salt(i,j,k,bi,bj)
               IF ( s1 .GT. 0. _d 0 ) THEN
                s3o2 = SQRT(s1*s1*s1)
@@ -141,20 +143,20 @@ C     abbreviations
                s1   = 0. _d 0
                s3o2 = 0. _d 0
               ENDIF
-               
+
                p1  = locPres(i,j)*SItoBar
                p2 = p1*p1
 
 C     d(rho)/d(theta)
 C     of fresh water at p = 0
-               drhoP0dthetaFresh = 
+               drhoP0dthetaFresh =
      &                eosJMDCFw(2)
      &           + 2.*eosJMDCFw(3)*t1
      &           + 3.*eosJMDCFw(4)*t2
      &           + 4.*eosJMDCFw(5)*t3
      &           + 5.*eosJMDCFw(6)*t3*t1
 C     of salt water at p = 0
-               drhoP0dthetaSalt = 
+               drhoP0dthetaSalt =
      &        s1*(
      &                eosJMDCSw(2)
      &           + 2.*eosJMDCSw(3)*t1
@@ -167,7 +169,7 @@ C     of salt water at p = 0
      &           )
 C     d(bulk modulus)/d(theta)
 C     of fresh water at p = 0
-               dKdthetaFresh = 
+               dKdthetaFresh =
      &                eosJMDCKFw(2)
      &           + 2.*eosJMDCKFw(3)*t1
      &           + 3.*eosJMDCKFw(4)*t2
@@ -197,18 +199,18 @@ C     of sea water at p
      &           + 2.*eosJMDCKP(14)*t1
      &           )
 
-               drhoP0dtheta  = drhoP0dthetaFresh 
+               drhoP0dtheta  = drhoP0dthetaFresh
      &                       + drhoP0dthetaSalt
-               dKdtheta      = dKdthetaFresh 
-     &                       + dKdthetaSalt 
+               dKdtheta      = dKdthetaFresh
+     &                       + dKdthetaSalt
      &                       + dKdthetaPres
-               alphaloc(i,j) = 
+               alphaLoc(i,j) =
      &              ( bulkmod(i,j)**2*drhoP0dtheta
      &              - bulkmod(i,j)*p1*drhoP0dtheta
      &              - rhoP0(i,j)*p1*dKdtheta )
      &              /( bulkmod(i,j) - p1 )**2
-               
-              
+
+
             ENDDO
          ENDDO
       ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
@@ -216,16 +218,19 @@ C     of sea water at p
          CALL PRESSURE_FOR_EOS(
      I        bi, bj, iMin, iMax, jMin, jMax,  kRef,
      O        locPres,
-     I        myThid ) 
+     I        myThid )
 
-c$$$         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax,  k,
-c$$$     &        kRef, theta, salt, rhoLoc, myThid )
+         CALL FIND_RHONUM(
+     I        iMin, iMax, jMin, jMax, locPres,
+     I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
+     O        rhoLoc,
+     I        myThid )
 
-         CALL FIND_RHONUM( bi, bj, iMin, iMax, jMin, jMax, k,
-     &      locPres, theta, salt, rhoLoc, myThid )
-
-         CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k,
-     &        locPres, theta, salt, rhoDen, myThid )
+         CALL FIND_RHODEN(
+     I        iMin, iMax, jMin, jMax, locPres,
+     I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
+     O        rhoDen,
+     I        myThid )
 
          DO j=jMin,jMax
             DO i=iMin,iMax
@@ -233,7 +238,7 @@ c$$$     &        kRef, theta, salt, rhoLoc, myThid )
                t2  = t1*t1
                s1  = salt(i,j,k,bi,bj)
               IF ( s1 .GT. 0. _d 0 ) THEN
-               sp5 = SQRT(s1) 
+               sp5 = SQRT(s1)
               ELSE
                s1  = 0. _d 0
                sp5 = 0. _d 0
@@ -241,24 +246,24 @@ c$$$     &        kRef, theta, salt, rhoLoc, myThid )
 
                p1   = locPres(i,j)*SItodBar
                p1t1 = p1*t1
-            
+
                dnum_dtheta = eosMDJWFnum(1)
-     &              + t1*(2.*eosMDJWFnum(2) + 3.*eosMDJWFnum(3)*t1) 
-     &              + eosMDJWFnum(5)*s1                                 
+     &              + t1*(2.*eosMDJWFnum(2) + 3.*eosMDJWFnum(3)*t1)
+     &              + eosMDJWFnum(5)*s1
      &              + p1t1*(2.*eosMDJWFnum(8) + 2.*eosMDJWFnum(11)*p1)
-            
-               dden_dtheta = eosMDJWFden(1) 
-     &              + t1*(2.*eosMDJWFden(2) 
-     &              +     t1*(3.*eosMDJWFden(3) 
+
+               dden_dtheta = eosMDJWFden(1)
+     &              + t1*(2.*eosMDJWFden(2)
+     &              +     t1*(3.*eosMDJWFden(3)
      &              +         4.*eosMDJWFden(4)*t1 ) )
-     &              + s1*(eosMDJWFden(6) 
-     &              +     t1*(3.*eosMDJWFden(7)*t1 
+     &              + s1*(eosMDJWFden(6)
+     &              +     t1*(3.*eosMDJWFden(7)*t1
      &              +         2.*eosMDJWFden(9)*sp5 ) )
      &              + p1*p1*(3.*eosMDJWFden(11)*t2 + eosMDJWFden(12)*p1)
-            
-               alphaLoc(i,j)    = rhoDen(i,j)*(dnum_dtheta 
+
+               alphaLoc(i,j)    = rhoDen(i,j)*(dnum_dtheta
      &              - (rhoLoc(i,j)*rhoDen(i,j))*dden_dtheta)
-            
+
          ENDDO
       ENDDO
 
@@ -267,12 +272,12 @@ c$$$     &        kRef, theta, salt, rhoLoc, myThid )
          STOP 'FIND_ALPHA: "equationOfState" has illegal value'
       ENDIF
 
-      RETURN 
+      RETURN
       END
 
       SUBROUTINE FIND_BETA (
      I     bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
-     O     betaloc,
+     O     betaLoc,
      I     myThid )
 C     /==========================================================\
 C     | o SUBROUTINE FIND_BETA                                   |
@@ -283,7 +288,7 @@ C     | k - is the Theta/Salt level                              |
 C     | kRef - determines pressure reference level               |
 C     |        (not used in 'LINEAR' mode)                       |
 C     |                                                          |
-C     | betaloc - drho / dS (kg/m^3/PSU)                         |
+C     | betaLoc - drho / dS (kg/m^3/PSU)                         |
 C     |                                                          |
 C     \==========================================================/
       IMPLICIT NONE
@@ -304,7 +309,7 @@ c     myThid :: thread number for this instance of the routine
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k
       INTEGER kRef
-      _RL betaloc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL betaLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
 C     == Local variables ==
       INTEGER i,j
@@ -321,18 +326,20 @@ C     == Local variables ==
 CEOP
 
 #ifdef CHECK_SALINITY_FOR_NEGATIVE_VALUES
-      CALL LOOK_FOR_NEG_SALINITY( bi, bj, iMin, iMax, jMin, jMax,  k,
-     &     sFld, myThid )
+c     CALL LOOK_FOR_NEG_SALINITY(
+c    I          iMin, iMax, jMin, jMax,
+c    U          sFld,
+c    I          k, bi, bj, myThid )
 #endif
 
       IF (equationOfState.EQ.'LINEAR') THEN
 
          DO j=jMin,jMax
             DO i=iMin,iMax
-               betaloc(i,j) = rhonil * sBeta
+               betaLoc(i,j) = rhonil * sBeta
             ENDDO
          ENDDO
-         
+
       ELSEIF (equationOfState.EQ.'POLY3') THEN
 
          refTemp=eosRefT(kRef)
@@ -343,13 +350,13 @@ CEOP
                tP=theta(i,j,k,bi,bj)-refTemp
                sP=salt(i,j,k,bi,bj)-refSalt
 #ifdef USE_FACTORIZED_POLY
-               betaloc(i,j) =
+               betaLoc(i,j) =
      &    ( eosC(9,kRef)*sP*3. + eosC(5,kRef)*2. )*sP + eosC(2,kRef)
      &   + ( eosC(7,kRef)*tP
      &      +eosC(8,kRef)*sP*2. + eosC(4,kRef)
      &     )*tP
 #else
-               betaloc(i,j) =
+               betaLoc(i,j) =
      &              eosC(2,kRef)                +
      &              eosC(4,kRef)*tP             +
      &              eosC(5,kRef)         *sP*2. +
@@ -367,17 +374,17 @@ C     nonlinear equation of state in pressure coordinates
          CALL PRESSURE_FOR_EOS(
      I        bi, bj, iMin, iMax, jMin, jMax,  kRef,
      O        locPres,
-     I        myThid ) 
+     I        myThid )
 
          CALL FIND_RHOP0(
-     I        bi, bj, iMin, iMax, jMin, jMax, k,
-     I        theta, salt,
+     I        iMin, iMax, jMin, jMax,
+     I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
      O        rhoP0,
      I        myThid )
-         
+
          CALL FIND_BULKMOD(
-     I        bi, bj, iMin, iMax, jMin, jMax,  k,
-     I        locPres, theta, salt,
+     I        iMin, iMax, jMin, jMax, locPres,
+     I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
      O        bulkMod,
      I        myThid )
 
@@ -385,10 +392,10 @@ C     nonlinear equation of state in pressure coordinates
             DO i=iMin,iMax
 
 C     abbreviations
-               t1 = theta(i,j,k,bi,bj) 
+               t1 = theta(i,j,k,bi,bj)
                t2 = t1*t1
                t3 = t2*t1
-               
+
                s1  = salt(i,j,k,bi,bj)
               IF ( s1 .GT. 0. _d 0 ) THEN
                s3o2 = 1.5*SQRT(s1)
@@ -430,7 +437,7 @@ C     of sea water at p = 0
      &              )
 
 C     of sea water at p
-               dKdSPres = 
+               dKdSPres =
      &           p1*( eosJMDCKP(5)
      &              + eosJMDCKP(6)*t1
      &              + eosJMDCKP(7)*t2
@@ -443,13 +450,13 @@ C     of sea water at p
 
                dKdS = dKdSSalt + dKdSPres
 
-               betaloc(i,j) = 
+               betaLoc(i,j) =
      &              ( bulkmod(i,j)**2*drhoP0dS
      &              - bulkmod(i,j)*p1*drhoP0dS
      &              - rhoP0(i,j)*p1*dKdS )
      &              /( bulkmod(i,j) - p1 )**2
-               
-              
+
+
             ENDDO
          ENDDO
       ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
@@ -457,40 +464,43 @@ C     of sea water at p
          CALL PRESSURE_FOR_EOS(
      I        bi, bj, iMin, iMax, jMin, jMax,  kRef,
      O        locPres,
-     I        myThid ) 
+     I        myThid )
 
-c$$$         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax,  k,
-c$$$     &        kRef, theta, salt, rhoLoc, myThid )
+         CALL FIND_RHONUM(
+     I        iMin, iMax, jMin, jMax, locPres,
+     I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
+     O        rhoLoc,
+     I        myThid )
 
-         CALL FIND_RHONUM( bi, bj, iMin, iMax, jMin, jMax, k,
-     &      locPres, theta, salt, rhoLoc, myThid )
+         CALL FIND_RHODEN(
+     I        iMin, iMax, jMin, jMax, locPres,
+     I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
+     O        rhoDen,
+     I        myThid )
 
-         CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k,
-     &        locPres, theta, salt, rhoDen, myThid )
-         
          DO j=jMin,jMax
             DO i=iMin,iMax
                t1  = theta(i,j,k,bi,bj)
                t2  = t1*t1
                s1  = salt(i,j,k,bi,bj)
               IF ( s1 .GT. 0. _d 0 ) THEN
-               sp5 = SQRT(s1) 
+               sp5 = SQRT(s1)
               ELSE
                s1  = 0. _d 0
                sp5 = 0. _d 0
               ENDIF
-         
+
                p1   = locPres(i,j)*SItodBar
                p1t1 = p1*t1
-               
-               dnum_dsalt = eosMDJWFnum(4) 
+
+               dnum_dsalt = eosMDJWFnum(4)
      &              + eosMDJWFnum(5)*t1
      &              + 2.*eosMDJWFnum(6)*s1 + eosMDJWFnum(9)*p1
-               dden_dsalt = eosMDJWFden(5) 
-     &              + t1*( eosMDJWFden(6) + eosMDJWFden(7)*t2 ) 
+               dden_dsalt = eosMDJWFden(5)
+     &              + t1*( eosMDJWFden(6) + eosMDJWFden(7)*t2 )
      &              + 1.5*sp5*(eosMDJWFden(8) + eosMDJWFden(9)*t2)
 
-               betaLoc(i,j) = rhoDen(i,j)*( dnum_dsalt 
+               betaLoc(i,j) = rhoDen(i,j)*( dnum_dsalt
      &              - (rhoLoc(i,j)*rhoDen(i,j))*dden_dsalt )
 
             ENDDO
@@ -501,5 +511,5 @@ c$$$     &        kRef, theta, salt, rhoLoc, myThid )
          STOP 'FIND_BETA: "equationOfState" has illegal value'
       ENDIF
 
-      RETURN 
+      RETURN
       END

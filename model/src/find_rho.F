@@ -1,9 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.34 2008/02/27 19:42:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.35 2008/08/09 01:02:28 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 #define USE_FACTORIZED_POLY
 
+C--  File find_rho.F: Routines to compute density
+C--   Contents
+C--   o FIND_RHO
+C--   o FIND_RHO_2D
+C--   o FIND_RHOP0
+C--   o FIND_BULKMOD
+C--   o FIND_RHONUM
+C--   o FIND_RHODEN
+C--   o LOOK_FOR_NEG_SALINITY
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: FIND_RHO
 C     !INTERFACE:
@@ -15,14 +26,14 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o SUBROUTINE FIND_RHO                                     
-C     |   Calculates [rho(S,T,z)-rhoConst] of a slice               
+C     | o SUBROUTINE FIND_RHO
+C     |   Calculates [rho(S,T,z)-rhoConst] of a slice
 C     *==========================================================*
-C     |                                                           
-C     | k - is the Theta/Salt level                               
-C     | kRef - determines pressure reference level                
-C     |        (not used in 'LINEAR' mode)                        
-C     |                                                           
+C     |
+C     | k - is the Theta/Salt level
+C     | kRef - determines pressure reference level
+C     |        (not used in 'LINEAR' mode)
+C     |
 C     *==========================================================*
 C     \ev
 
@@ -31,9 +42,6 @@ C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "EOS.h"
-#include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -45,6 +53,62 @@ C     kRef :: Pressure reference level
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL rholoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      INTEGER myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+CEOP
+
+      CALL FIND_RHO_2D(
+     I      iMin, iMax, jMin, jMax, kRef,
+     I      tFld(1-OLx,1-OLy,k,bi,bj), sFld(1-OLx,1-OLy,k,bi,bj),
+     O      rholoc,
+     I      k, bi, bj, myThid )
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: FIND_RHO_2D
+C     !INTERFACE:
+      SUBROUTINE FIND_RHO_2D(
+     I                iMin, iMax, jMin, jMax, kRef,
+     I                tFld, sFld,
+     O                rholoc,
+     I                k, bi, bj, myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE FIND_RHO_2D
+C     |   Calculates [rho(S,T,z)-rhoConst] of a 2-D slice
+C     *==========================================================*
+C     |
+C     | kRef - determines pressure reference level
+C     |        (not used in 'LINEAR' mode)
+C     | Note:  k is not used ; keep it for debugging.
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "EOS.h"
+c#include "GRID.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     k    :: Level of Theta/Salt slice
+C     kRef :: Pressure reference level
+      INTEGER iMin,iMax,jMin,jMax
+      INTEGER kRef
+      _RL tFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rholoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      INTEGER k, bi, bj
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -70,8 +134,10 @@ CEOP
 #endif
 
 #ifdef CHECK_SALINITY_FOR_NEGATIVE_VALUES
-      CALL LOOK_FOR_NEG_SALINITY( bi, bj, iMin, iMax, jMin, jMax,  k,
-     &     sFld, myThid )
+      CALL LOOK_FOR_NEG_SALINITY(
+     I          iMin, iMax, jMin, jMax,
+     U          sFld,
+     I          k, bi, bj, myThid )
 #endif
 
       IF (equationOfState.EQ.'LINEAR') THEN
@@ -88,12 +154,12 @@ C **********
        DO j=jMin,jMax
         DO i=iMin,iMax
          rholoc(i,j)=rhoNil*(
-     &     sBeta*(sFld(i,j,k,bi,bj)-refSalt)
-     &   -tAlpha*(tFld(i,j,k,bi,bj)-refTemp) )
+     &     sBeta*(sFld(i,j)-refSalt)
+     &   -tAlpha*(tFld(i,j)-refTemp) )
      &        + dRho
         ENDDO
        ENDDO
-       
+
       ELSEIF (equationOfState.EQ.'POLY3') THEN
 
        refTemp=eosRefT(kRef)
@@ -102,8 +168,8 @@ C **********
 
        DO j=jMin,jMax
         DO i=iMin,iMax
-         tP=tFld(i,j,k,bi,bj)-refTemp
-         sP=sFld(i,j,k,bi,bj)-refSalt
+         tP=tFld(i,j)-refTemp
+         sP=sFld(i,j)-refSalt
 #ifdef USE_FACTORIZED_POLY
          deltaSig=
      &    (( eosC(9,kRef)*sP + eosC(5,kRef) )*sP + eosC(2,kRef) )*sP
@@ -134,93 +200,97 @@ C **********
 C     nonlinear equation of state in pressure coordinates
 
          CALL PRESSURE_FOR_EOS(
-     I        bi, bj, iMin, iMax, jMin, jMax,  kRef,
-     O        locPres,
-     I        myThid )
+     I             bi, bj, iMin, iMax, jMin, jMax, kRef,
+     O             locPres,
+     I             myThid )
 
          CALL FIND_RHOP0(
-     I        bi, bj, iMin, iMax, jMin, jMax, k,
-     I        tFld, sFld,
-     O        rhoP0,
-     I        myThid )
-         
+     I             iMin, iMax, jMin, jMax,
+     I             tFld, sFld,
+     O             rhoP0,
+     I             myThid )
+
          CALL FIND_BULKMOD(
-     I        bi, bj, iMin, iMax, jMin, jMax,  k,
-     I        locPres, tFld, sFld,
-     O        bulkMod,
-     I        myThid )
-         
-#ifdef ALLOW_AUTODIFF_TAMC 
+     I             iMin, iMax, jMin, jMax,
+     I             locPres, tFld, sFld,
+     O             bulkMod,
+     I             myThid )
+
+#ifdef ALLOW_AUTODIFF_TAMC
 cph can not DO storing here since find_rho is called multiple times;
 cph additional recomp. should be acceptable
 cphCADJ STORE rhoP0(:,:)   = comlev1_bibj_k ,  key=kkey , byte=isbyte
 cphCADJ STORE bulkMod(:,:) = comlev1_bibj_k ,  key=kkey , byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
-            DO i=iMin,iMax
+          DO i=iMin,iMax
 
 C     density of sea water at pressure p
-               rholoc(i,j) = rhoP0(i,j)
-     &              /(1. _d 0 - 
-     &              locPres(i,j)*SItoBar/bulkMod(i,j))
+            rholoc(i,j) = rhoP0(i,j)
+     &              /(1. _d 0 -
+     &              locPres(i,j)*SItoBar/bulkMod(i,j) )
      &              - rhoConst
 
-            ENDDO
+          ENDDO
          ENDDO
 
       ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
 
          CALL PRESSURE_FOR_EOS(
-     I        bi, bj, iMin, iMax, jMin, jMax,  kRef,
-     O        locPres,
-     I        myThid )
+     I             bi, bj, iMin, iMax, jMin, jMax, kRef,
+     O             locPres,
+     I             myThid )
 
-         CALL FIND_RHONUM( bi, bj, iMin, iMax, jMin, jMax, k,
-     &      locPres, tFld, sFld, rhoNum, myThid )
+         CALL FIND_RHONUM(
+     I             iMin, iMax, jMin, jMax,
+     I             locPres, tFld, sFld,
+     O             rhoNum,
+     I             myThid )
 
-         CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k,
-     &      locPres, tFld, sFld, rhoDen, myThid )
-#ifdef ALLOW_AUTODIFF_TAMC 
+         CALL FIND_RHODEN(
+     I             iMin, iMax, jMin, jMax,
+     I             locPres, tFld, sFld,
+     O             rhoDen,
+     I             myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
 cph can not DO storing here since find_rho is called multiple times;
 cph additional recomp. should be acceptable
 cphCADJ STORE rhoNum(:,:) = comlev1_bibj_k ,  key=kkey , byte=isbyte
 cphCADJ STORE rhoDen(:,:) = comlev1_bibj_k ,  key=kkey , byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
-            DO i=iMin,iMax
-               rholoc(i,j) = rhoNum(i,j)*rhoDen(i,j) - rhoConst
-            ENDDO
+          DO i=iMin,iMax
+            rholoc(i,j) = rhoNum(i,j)*rhoDen(i,j) - rhoConst
+          ENDDO
          ENDDO
 
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
-C     
+C
       ELSE
        WRITE(msgBuf,'(3a)')
-     &        ' FIND_RHO: equationOfState = "',equationOfState,'"'
+     &      ' FIND_RHO_2D: equationOfState = "',equationOfState,'"'
        CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R FIND_RHO'
+       STOP 'ABNORMAL END: S/R FIND_RHO_2D'
       ENDIF
 
-      RETURN 
+      RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: FIND_RHOP0
 C     !INTERFACE:
       SUBROUTINE FIND_RHOP0(
-     I      bi, bj, iMin, iMax, jMin, jMax, k,
-     I      tFld, sFld,
-     O      rhoP0,
-     I      myThid )
+     I                iMin, iMax, jMin, jMax,
+     I                tFld, sFld,
+     O                rhoP0,
+     I                myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o SUBROUTINE FIND_RHOP0
-C     |   Calculates rho(S,T,0) of a slice               
+C     |   Calculates rho(S,T,0) of a slice
 C     *==========================================================*
-C     |                                                           
-C     | k - is the surface level                               
-C     |                                                           
 C     *==========================================================*
 C     \ev
 
@@ -234,11 +304,9 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     k    :: Level of Theta/Salt slice
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER k	
-      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      INTEGER iMin,iMax,jMin,jMax
+      _RL tFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoP0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER myThid
 
@@ -252,29 +320,29 @@ CEOP
       DO j=jMin,jMax
          DO i=iMin,iMax
 C     abbreviations
-            t  = tFld(i,j,k,bi,bj) 
+            t  = tFld(i,j)
             t2 = t*t
             t3 = t2*t
             t4 = t3*t
 
-            s  = sFld(i,j,k,bi,bj)
+            s  = sFld(i,j)
            IF ( s .GT. 0. _d 0 ) THEN
             s3o2 = s*SQRT(s)
            ELSE
             s    = 0. _d 0
             s3o2 = 0. _d 0
            ENDIF
-            
+
 C     density of freshwater at the surface
-            rfresh = 
-     &             eosJMDCFw(1) 
+            rfresh =
+     &             eosJMDCFw(1)
      &           + eosJMDCFw(2)*t
      &           + eosJMDCFw(3)*t2
      &           + eosJMDCFw(4)*t3
      &           + eosJMDCFw(5)*t4
      &           + eosJMDCFw(6)*t4*t
 C     density of sea water at the surface
-            rsalt = 
+            rsalt =
      &         s*(
      &             eosJMDCSw(1)
      &           + eosJMDCSw(2)*t
@@ -294,25 +362,25 @@ C     density of sea water at the surface
          ENDDO
       ENDDO
 
-      RETURN 
+      RETURN
       END
 
 C     !ROUTINE: FIND_BULKMOD
 C     !INTERFACE:
       SUBROUTINE FIND_BULKMOD(
-     I      bi, bj, iMin, iMax, jMin, jMax,  k,
-     I      locPres, tFld, sFld,
-     O      bulkMod,
-     I      myThid )
+     I                iMin, iMax, jMin, jMax,
+     I                locPres, tFld, sFld,
+     O                bulkMod,
+     I                myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o SUBROUTINE FIND_BULKMOD                                     
+C     | o SUBROUTINE FIND_BULKMOD
 C     |   Calculates the secant bulk modulus K(S,T,p) of a slice
 C     *==========================================================*
-C     |                                                           
+C     |
 C     | k    - is the level of Theta/Salt slice
-C     |                                                           
+C     |
 C     *==========================================================*
 C     \ev
 
@@ -326,12 +394,10 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     k    :: Level of Theta/Salt slice
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER k	
+      INTEGER iMin,iMax,jMin,jMax
       _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER myThid
 
@@ -345,12 +411,12 @@ CEOP
       DO j=jMin,jMax
          DO i=iMin,iMax
 C     abbreviations
-            t  = tFld(i,j,k,bi,bj) 
+            t  = tFld(i,j)
             t2 = t*t
             t3 = t2*t
             t4 = t3*t
 
-            s  = sFld(i,j,k,bi,bj)
+            s  = sFld(i,j)
           IF ( s .GT. 0. _d 0 ) THEN
             s3o2 = s*SQRT(s)
           ELSE
@@ -361,7 +427,7 @@ C
             p = locPres(i,j)*SItoBar
             p2 = p*p
 C     secant bulk modulus of fresh water at the surface
-            bMfresh = 
+            bMfresh =
      &             eosJMDCKFw(1)
      &           + eosJMDCKFw(2)*t
      &           + eosJMDCKFw(3)*t2
@@ -379,7 +445,7 @@ C     secant bulk modulus of sea water at the surface
      &           + eosJMDCKSw(7)*t2
      &           )
 C     secant bulk modulus of sea water at pressure p
-            bMpres = 
+            bMpres =
      &         p*( eosJMDCKP(1)
      &           + eosJMDCKP(2)*t
      &           + eosJMDCKP(3)*t2
@@ -404,17 +470,17 @@ C     secant bulk modulus of sea water at pressure p
          ENDDO
       ENDDO
 
-      RETURN 
+      RETURN
       END
 
 CBOP
 C     !ROUTINE: FIND_RHONUM
 C     !INTERFACE:
       SUBROUTINE FIND_RHONUM(
-     I      bi, bj, iMin, iMax, jMin, jMax, k,
-     I      locPres, tFld, sFld,
-     O      rhoNum,
-     I      myThid )
+     I                iMin, iMax, jMin, jMax,
+     I                locPres, tFld, sFld,
+     O                rhoNum,
+     I                myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -423,9 +489,6 @@ C     |   Calculates the numerator of the McDougall et al.
 C     |   equation of state
 C     |   - the code is more or less a copy of MOM4
 C     *==========================================================*
-C     |                                                           
-C     | k    - is the level of Theta/Salt slice
-C     |                                                           
 C     *==========================================================*
 C     \ev
 
@@ -439,13 +502,11 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     k    :: Level of Theta/Salt slice
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER k
+      INTEGER iMin,iMax,jMin,jMax
       _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL rhoNum(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL tFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoNum (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -456,35 +517,35 @@ CEOP
       DO j=jMin,jMax
          DO i=iMin,iMax
 C     abbreviations
-            t1  = tFld(i,j,k,bi,bj) 
+            t1  = tFld(i,j)
             t2 = t1*t1
-            s1  = sFld(i,j,k,bi,bj)
-            
+            s1  = sFld(i,j)
+
             p1   = locPres(i,j)*SItodBar
-            
+
             rhoNum(i,j) = eosMDJWFnum(0)
-     &           + t1*(eosMDJWFnum(1) 
-     &           +     t1*(eosMDJWFnum(2) + eosMDJWFnum(3)*t1) )  
+     &           + t1*(eosMDJWFnum(1)
+     &           +     t1*(eosMDJWFnum(2) + eosMDJWFnum(3)*t1) )
      &           + s1*(eosMDJWFnum(4)
-     &           +     eosMDJWFnum(5)*t1  + eosMDJWFnum(6)*s1)      
-     &           + p1*(eosMDJWFnum(7) + eosMDJWFnum(8)*t2 
-     &           +     eosMDJWFnum(9)*s1 
+     &           +     eosMDJWFnum(5)*t1  + eosMDJWFnum(6)*s1)
+     &           + p1*(eosMDJWFnum(7) + eosMDJWFnum(8)*t2
+     &           +     eosMDJWFnum(9)*s1
      &           +     p1*(eosMDJWFnum(10) + eosMDJWFnum(11)*t2) )
 
          ENDDO
       ENDDO
 
-      RETURN 
-      end 
+      RETURN
+      END
 
 CBOP
 C     !ROUTINE: FIND_RHODEN
 C     !INTERFACE:
       SUBROUTINE FIND_RHODEN(
-     I      bi, bj, iMin, iMax, jMin, jMax, k,
-     I      locPres, tFld, sFld,
-     O      rhoDen,
-     I      myThid )
+     I                iMin, iMax, jMin, jMax,
+     I                locPres, tFld, sFld,
+     O                rhoDen,
+     I                myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -493,9 +554,6 @@ C     |   Calculates the denominator of the McDougall et al.
 C     |   equation of state
 C     |   - the code is more or less a copy of MOM4
 C     *==========================================================*
-C     |                                                           
-C     | k    - is the level of Theta/Salt slice
-C     |                                                           
 C     *==========================================================*
 C     \ev
 
@@ -509,13 +567,11 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     k    :: Level of Theta/Salt slice
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER k	
+      INTEGER iMin,iMax,jMin,jMax
       _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL rhoDen(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL tFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -528,45 +584,45 @@ CEOP
       DO j=jMin,jMax
          DO i=iMin,iMax
 C     abbreviations
-            t1  = tFld(i,j,k,bi,bj) 
+            t1  = tFld(i,j)
             t2 = t1*t1
-            s1  = sFld(i,j,k,bi,bj)
+            s1  = sFld(i,j)
            IF ( s1 .GT. 0. _d 0 ) THEN
-            sp5 = SQRT(s1) 
+            sp5 = SQRT(s1)
            ELSE
             s1  = 0. _d 0
             sp5 = 0. _d 0
            ENDIF
-            
+
             p1   = locPres(i,j)*SItodBar
             p1t1 = p1*t1
-            
+
             den = eosMDJWFden(0)
      &           + t1*(eosMDJWFden(1)
      &           +     t1*(eosMDJWFden(2)
      &           +         t1*(eosMDJWFden(3) + t1*eosMDJWFden(4) ) ) )
      &           + s1*(eosMDJWFden(5)
-     &           +     t1*(eosMDJWFden(6) 
-     &           +         eosMDJWFden(7)*t2) 
-     &           +     sp5*(eosMDJWFden(8) + eosMDJWFden(9)*t2) ) 
+     &           +     t1*(eosMDJWFden(6)
+     &           +         eosMDJWFden(7)*t2)
+     &           +     sp5*(eosMDJWFden(8) + eosMDJWFden(9)*t2) )
      &           + p1*(eosMDJWFden(10)
      &           +     p1t1*(eosMDJWFden(11)*t2 + eosMDJWFden(12)*p1) )
-            
-            rhoDen(i,j) = 1.0/(epsln+den) 
+
+            rhoDen(i,j) = 1.0/(epsln+den)
 
          ENDDO
       ENDDO
 
-      RETURN 
-      END 
+      RETURN
+      END
 
 CBOP
 C     !ROUTINE: LOOK_FOR_NEG_SALINITY
 C     !INTERFACE:
       SUBROUTINE LOOK_FOR_NEG_SALINITY(
-     I     bi, bj, iMin, iMax, jMin, jMax,  k, 
-     I     sFld,
-     I     myThid )
+     I                iMin, iMax, jMin, jMax,
+     U                sFld,
+     I                k, bi, bj, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -575,9 +631,9 @@ C     |   looks for and fixes negative salinity values
 C     |   this is necessary IF the equation of state uses
 C     |   the square root of salinity
 C     *==========================================================*
-C     |                                                           
-C     | k - is the Salt level                               
-C     |                                                           
+C     |
+C     | k - is the Salt level
+C     |
 C     *==========================================================*
 C     \ev
 
@@ -591,10 +647,9 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     k    :: Level of Theta/Salt slice
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER k
-      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C     k    :: Level of Salt slice
+      INTEGER bi,bj,iMin,iMax,jMin,jMax,k
+      _RL     sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -607,20 +662,20 @@ CEOP
       DO j=jMin,jMax
        DO i=iMin,iMax
 C     abbreviations
-        IF ( sFld(i,j,k,bi,bj) .LT. 0. _d 0 ) THEN
+        IF ( sFld(i,j) .LT. 0. _d 0 ) THEN
          localWarning = localWarning + 1
-         sFld(i,j,k,bi,bj) = 0. _d 0
+         sFld(i,j) = 0. _d 0
         ENDIF
        ENDDO
       ENDDO
 C     issue a warning
       IF ( localWarning .GT. 0 ) THEN
-       WRITE(standardMessageUnit,'(A,A)') 
-     &      'S/R LOOK_FOR_NEG_SALINITY: found negative salinity',
-     &      'values and reset them to zero.'
-       WRITE(standardMessageUnit,'(A,I3)') 
+       WRITE(standardMessageUnit,'(A,I6,A)')
+     &      'S/R LOOK_FOR_NEG_SALINITY: found',localWarning,
+     &      ' negative salinity values and reset them to zero.'
+       WRITE(standardMessageUnit,'(A,I3)')
      &      'S/R LOOK_FOR_NEG_SALINITY: current level is k = ', k
       ENDIF
 
-      RETURN 
+      RETURN
       END
