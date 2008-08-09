@@ -1,24 +1,25 @@
-C$Header: /u/gcmpack/MITgcm/model/src/seawater.F,v 1.1 2008/02/27 19:42:02 mlosch Exp $
+C$Header: /u/gcmpack/MITgcm/model/src/seawater.F,v 1.2 2008/08/09 00:51:34 jmc Exp $
 C$Name:  $
 
 #include "CPP_OPTIONS.h"
-C
-C     This file contains routines that compute quantities related to
-C     seawater:
-C     find_rho_scalar: in-situ density for individual points
-C     sw_ptmp: function to compute potential temperature
-C     sw_adtg: function to compute adiabatic tmperature gradient
-C              used by sw_ptmp
-C     
-      SUBROUTINE FIND_RHO_SCALAR( 
+
+C--  File seawater.F: routines that compute quantities related to seawater.
+C--   Contents
+C--   o FIND_RHO_SCALAR: in-situ density for individual points
+C--   o SW_PTMP: function to compute potential temperature
+C--   o SW_TEMP: function to compute potential temperature
+C--   o SW_ADTG: function to compute adiabatic tmperature gradient
+C--              used by sw_ptmp
+
+      SUBROUTINE FIND_RHO_SCALAR(
      I     tLoc, sLoc, pLoc,
      O     rhoLoc,
      I     myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o SUBROUTINE FIND_RHO_SCALAR                                   
-C     |   Calculates [rho(S,T,p)-rhoConst] 
+C     | o SUBROUTINE FIND_RHO_SCALAR
+C     |   Calculates [rho(S,T,p)-rhoConst]
 C     *==========================================================*
 C     \ev
 
@@ -64,11 +65,11 @@ CEOP
       t2 = t1*t1
       t3 = t2*t1
       t4 = t3*t1
-      
+
       s1  = sLoc
       IF ( s1 .LT. 0. _d 0 ) THEN
 C     issue a warning
-         WRITE(msgBuf,'(A,E13.5)') 
+         WRITE(msgBuf,'(A,E13.5)')
      &        ' FIND_RHO_SCALAR:   WARNING, salinity = ', s1
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                       SQUEEZE_RIGHT , myThid )
@@ -87,11 +88,11 @@ c        rhoLoc = 0. _d  0
 
 C     this is not correct, there is a field eosSig0 which should be use here
 C     but I DO not intent to include the reference level in this routine
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &        ' FIND_RHO_SCALAR: for POLY3, the density is not'
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                       SQUEEZE_RIGHT , myThid )
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &         '                 computed correctly in this routine'
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                       SQUEEZE_RIGHT , myThid )
@@ -102,20 +103,20 @@ C     but I DO not intent to include the reference level in this routine
 C     nonlinear equation of state in pressure coordinates
 
          s3o2 = s1*SQRT(s1)
-         
+
          p1 = pLoc*SItoBar
          p2 = p1*p1
 
 C     density of freshwater at the surface
-         rfresh = 
-     &          eosJMDCFw(1) 
+         rfresh =
+     &          eosJMDCFw(1)
      &        + eosJMDCFw(2)*t1
      &        + eosJMDCFw(3)*t2
      &        + eosJMDCFw(4)*t3
      &        + eosJMDCFw(5)*t4
      &        + eosJMDCFw(6)*t4*t1
 C     density of sea water at the surface
-         rsalt = 
+         rsalt =
      &        s1*(
      &             eosJMDCSw(1)
      &           + eosJMDCSw(2)*t1
@@ -133,7 +134,7 @@ C     density of sea water at the surface
          rhoP0 = rfresh + rsalt
 
 C     secant bulk modulus of fresh water at the surface
-         bMfresh = 
+         bMfresh =
      &             eosJMDCKFw(1)
      &           + eosJMDCKFw(2)*t1
      &           + eosJMDCKFw(3)*t2
@@ -151,7 +152,7 @@ C     secant bulk modulus of sea water at the surface
      &           + eosJMDCKSw(7)*t2
      &           )
 C     secant bulk modulus of sea water at pressure p
-         bMpres = 
+         bMpres =
      &        p1*( eosJMDCKP(1)
      &           + eosJMDCKP(2)*t1
      &           + eosJMDCKP(3)*t2
@@ -172,44 +173,44 @@ C     secant bulk modulus of sea water at pressure p
      &           )
 
          bulkMod = bMfresh + bMsalt + bMpres
-         
+
 C     density of sea water at pressure p
          rhoLoc = rhoP0/(1. _d 0 - p1/bulkMod) - rhoConst
 
       ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
 
-         sp5 = SQRT(s1) 
-            
+         sp5 = SQRT(s1)
+
          p1   = pLoc*SItodBar
          p1t1 = p1*t1
 
          rhoNum = eosMDJWFnum(0)
-     &        + t1*(eosMDJWFnum(1) 
-     &        +     t1*(eosMDJWFnum(2) + eosMDJWFnum(3)*t1) )  
+     &        + t1*(eosMDJWFnum(1)
+     &        +     t1*(eosMDJWFnum(2) + eosMDJWFnum(3)*t1) )
      &        + s1*(eosMDJWFnum(4)
-     &        +     eosMDJWFnum(5)*t1  + eosMDJWFnum(6)*s1)      
-     &        + p1*(eosMDJWFnum(7) + eosMDJWFnum(8)*t2 
-     &        +     eosMDJWFnum(9)*s1 
+     &        +     eosMDJWFnum(5)*t1  + eosMDJWFnum(6)*s1)
+     &        + p1*(eosMDJWFnum(7) + eosMDJWFnum(8)*t2
+     &        +     eosMDJWFnum(9)*s1
      &        +     p1*(eosMDJWFnum(10) + eosMDJWFnum(11)*t2) )
 
-            
+
          den = eosMDJWFden(0)
      &        + t1*(eosMDJWFden(1)
      &        +     t1*(eosMDJWFden(2)
      &        +         t1*(eosMDJWFden(3) + t1*eosMDJWFden(4) ) ) )
      &        + s1*(eosMDJWFden(5)
-     &        +     t1*(eosMDJWFden(6) 
-     &        +         eosMDJWFden(7)*t2) 
-     &        +     sp5*(eosMDJWFden(8) + eosMDJWFden(9)*t2) ) 
+     &        +     t1*(eosMDJWFden(6)
+     &        +         eosMDJWFden(7)*t2)
+     &        +     sp5*(eosMDJWFden(8) + eosMDJWFden(9)*t2) )
      &        + p1*(eosMDJWFden(10)
      &        +     p1t1*(eosMDJWFden(11)*t2 + eosMDJWFden(12)*p1) )
-            
-         rhoDen = 1.0/(epsln+den) 
+
+         rhoDen = 1.0/(epsln+den)
 
          rhoLoc = rhoNum*rhoDen - rhoConst
 
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
-C     
+C
       ELSE
        WRITE(msgBuf,'(3A)')
      &        ' FIND_RHO_SCALAR : equationOfState = "',
@@ -218,12 +219,12 @@ C
        STOP 'ABNORMAL END: S/R FIND_RHO_SCALAR'
       ENDIF
 
-      RETURN 
+      RETURN
       END
 
 C=================================================================
 
-      _RL function SW_PTMP  (S,T,P,PR)
+      _RL FUNCTION SW_PTMP  (S,T,P,PR)
 
 c     ==================================================================
 c     SUBROUTINE SW_PTMP
@@ -287,7 +288,7 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *=============================================================*
 C     | S/R  SW_TEMP
-C     | o compute in-situ temperature from potential temperature 
+C     | o compute in-situ temperature from potential temperature
 C     *=============================================================*
 C
 C     REFERENCES:
@@ -295,7 +296,7 @@ C     Fofonoff, P. and Millard, R.C. Jr
 C     Unesco 1983. Algorithms for computation of fundamental properties of
 C     seawater, 1983. _Unesco Tech. Pap. in Mar. Sci._, No. 44, 53 pp.
 C     Eqn.(31) p.39
-C     
+C
 C     Bryden, H. 1973.
 C     "New Polynomials for thermal expansion, adiabatic temperature gradient
 C     and potential temperature of sea water."
@@ -313,7 +314,7 @@ CML#include "GRID.h"
 CML#include "DYNVARS.h"
 CML#include "FFIELDS.h"
 CML#include "SHELFICE.h"
- 
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     s      :: salinity
@@ -329,7 +330,7 @@ C     myThid :: thread number for this instance of the routine.
       INTEGER myThid
 CEOP
 
-C     !LOCAL VARIABLES 
+C     !LOCAL VARIABLES
 C     === Local variables ===
       _RL del_P ,del_th, th, q
       _RL onehalf, two, three
@@ -365,7 +366,7 @@ c theta4
 
 C======================================================================
 
-      _RL function SW_ADTG  (S,T,P)
+      _RL FUNCTION SW_ADTG  (S,T,P)
 
 c     ==================================================================
 c     SUBROUTINE SW_ADTG
@@ -411,4 +412,5 @@ c     ==================================================================
      &     + (b0 + b1*T)*(S-sref)
      &     + ( (c0 + (c1 + (c2 + c3*T)*T)*T) + (d0 + d1*T)*(S-sref) )*P
      &     + (  e0 + (e1 + e2*T)*T )*P*P
+      return
       end
