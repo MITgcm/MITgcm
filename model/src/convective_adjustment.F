@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.31 2008/06/19 17:21:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.32 2008/08/11 22:25:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -134,22 +134,24 @@ CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k,key=kkey,byte=isbyte
 CADJ STORE convectcount(:,:,k-1) = comlev1_bibj_k,key=kkey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
-            CALL FIND_RHO(
-     I           bi,bj,iMin,iMax,jMin,jMax,K-1,K+deltaK,
-     I           theta,salt,
+            CALL FIND_RHO_2D(
+     I           iMin, iMax, jMin, jMax, K+deltaK,
+     I           theta(1-OLx,1-OLy,K-1,bi,bj),
+     I           salt (1-OLx,1-OLy,K-1,bi,bj),
      O           rhoKm1,
-     I           myThid )
+     I           K-1, bi, bj, myThid )
 
 C-          Density of K layer (below W(K)) reference to K-1 T-level.
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-            CALL FIND_RHO(
-     I           bi,bj,iMin,iMax,jMin,jMax,K,K+deltaK,
-     I           theta,salt,
+            CALL FIND_RHO_2D(
+     I           iMin, iMax, jMin, jMax, K+deltaK,
+     I           theta(1-OLx,1-OLy,K,bi,bj),
+     I           salt (1-OLx,1-OLy,K,bi,bj),
      O           rhoK,
-     I           myThid )
+     I           K, bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rhoKm1(:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte

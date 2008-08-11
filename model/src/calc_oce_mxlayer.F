@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.2 2007/06/20 23:06:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.3 2008/08/11 22:25:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -99,15 +99,16 @@ c       hMixCriteria  = -0.8 _d 0
            rhoKm1(i,j) = rhoSurf(i,j)
            rhoMxL(i,j) = rhoSurf(i,j)
      &                 + MAX( rhoMxL(i,j)*hMixCriteria, dRhoSmall )
-           hMixLayer(i,j,bi,bj) = rF(1)-R_low(I,J,bi,bj)
+           hMixLayer(i,j,bi,bj) = rF(1)-R_low(i,j,bi,bj)
          ENDDO
         ENDDO
         DO k = 2,Nr
 C-    potential density (reference level = surface level)
-         CALL FIND_RHO(
-     I             bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K, 1,
-     I             theta, salt,
-     O             rhoLoc, myThid )
+         CALL FIND_RHO_2D(
+     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1,
+     I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
+     O        rhoLoc,
+     I        k, bi, bj, myThid )
 
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
@@ -135,7 +136,7 @@ C     where the local stratification exceed the mean stratification above
 C     (from surface down to here) by factor hMixCriteria
 
 c       hMixCriteria  = 2. _d 0
-C-Note: dRhoSmall is hard coded for now but should become run-time parameter 
+C-Note: dRhoSmall is hard coded for now but should become run-time parameter
         dRhoSmall = 1. _d -2
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
@@ -150,10 +151,11 @@ C-Note: dRhoSmall is hard coded for now but should become run-time parameter
         ENDDO
         DO k = 2,Nr-1
 C-    potential density (reference level = surface level)
-         CALL FIND_RHO(
-     I             bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K, 1,
-     I             theta, salt,
-     O             rhoLoc, myThid )
+         CALL FIND_RHO_2D(
+     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1,
+     I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
+     O        rhoLoc,
+     I        k, bi, bj, myThid )
 
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx

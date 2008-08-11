@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.35 2007/02/05 03:20:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.36 2008/08/11 22:25:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -16,19 +16,19 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE CALC_PHI_HYD                                  |
-C     | o Integrate the hydrostatic relation to find the Hydros. | 
+C     | o Integrate the hydrostatic relation to find the Hydros. |
 C     *==========================================================*
 C     |    Potential (ocean: Pressure/rho ; atmos = geopotential)
 C     | On entry:
 C     |   tFld,sFld     are the current thermodynamics quantities
 C     |                 (unchanged on exit)
 C     |   phiHydF(i,j) is the hydrostatic Potential anomaly
-C     |                at middle between tracer points k-1,k 
+C     |                at middle between tracer points k-1,k
 C     | On exit:
 C     |   phiHydC(i,j) is the hydrostatic Potential anomaly
 C     |                at cell centers (tracer points), level k
 C     |   phiHydF(i,j) is the hydrostatic Potential anomaly
-C     |                at middle between tracer points k,k+1 
+C     |                at middle between tracer points k,k+1
 C     |   dPhiHydX,Y   hydrostatic Potential gradient (X&Y dir)
 C     |                at cell centers (tracer points), level k
 C     | integr_GeoPot allows to select one integration method
@@ -51,7 +51,7 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi, bj, k  :: tile and level indices 
+C     bi, bj, k  :: tile and level indices
 C     iMin,iMax,jMin,jMax :: computational domain
 C     tFld       :: potential temperature
 C     sFld       :: salinity
@@ -72,7 +72,7 @@ c     _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL myTime
       INTEGER myIter, myThid
-      
+
 #ifdef INCLUDE_PHIHYD_CALCULATION_CODE
 
 C     !LOCAL VARIABLES:
@@ -92,13 +92,13 @@ CEOP
       IF (addSurfPhiAnom) surfPhiFac = 1.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C  Atmosphere:  
+C  Atmosphere:
 C integr_GeoPot => select one option for the integration of the Geopotential:
 C   = 0 : Energy Conserving Form, accurate with Topo full cell;
 C   = 1 : Finite Volume Form, with Part-Cell, linear in P by Half level;
-C   =2,3: Finite Difference Form, with Part-Cell, 
+C   =2,3: Finite Difference Form, with Part-Cell,
 C         linear in P between 2 Tracer levels.
-C       can handle both cases: Tracer lev at the middle of InterFace_W 
+C       can handle both cases: Tracer lev at the middle of InterFace_W
 C                          and InterFace_W at the middle of Tracer lev;
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -119,7 +119,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--   Initialize phiHydF to zero : 
+C--   Initialize phiHydF to zero :
 C     note: atmospheric_loading or Phi_topo anomaly are incorporated
 C           later in S/R calc_grad_phi_hyd
       IF (k.EQ.1) THEN
@@ -145,11 +145,14 @@ C---    Calculate density
 CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax, k, k,
-     &                 tFld, sFld,
-     &                 alphaRho, myThid)
+      CALL FIND_RHO_2D(
+     I          iMin, iMax, jMin, jMax, k,
+     I          tFld(1-OLx,1-OLy,k,bi,bj), sFld(1-OLx,1-OLy,k,bi,bj),
+     O          alphaRho,
+     I          k, bi, bj, myThid )
+
 #ifdef ALLOW_SHELFICE
-C     mask rho, so that there is no contribution of phiHyd from 
+C     mask rho, so that there is no contribution of phiHyd from
 C     overlying shelfice (whose density we do not know)
         IF ( useShelfIce ) THEN
          DO j=jMin,jMax
@@ -228,7 +231,7 @@ C
 
 C  --  end if integr_GeoPot = ...
        ENDIF
-        
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSEIF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
 C       This is the hydrostatic pressure calculation for the Ocean
@@ -244,9 +247,11 @@ C--     Calculate density
 CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax, k, k,
-     &                 tFld, sFld,
-     &                 alphaRho, myThid)
+        CALL FIND_RHO_2D(
+     I            iMin, iMax, jMin, jMax, k,
+     I            tFld(1-OLx,1-OLy,k,bi,bj), sFld(1-OLx,1-OLy,k,bi,bj),
+     O            alphaRho,
+     I            k, bi, bj, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE alphaRho (:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -283,7 +288,7 @@ C
              ddRloc = ddRloc + surfPhiFac*etaH(i,j,bi,bj)
 #endif
              phiHydC(i,j) = ddRloc*alphaRho(i,j)
-c--to reproduce results of c48d_post: uncomment those 4+1 lines 
+c--to reproduce results of c48d_post: uncomment those 4+1 lines
 c            phiHydC(i,j)=phiHydF(i,j)
 c    &          +(hFacC(i,j,k,bi,bj)-half)*drF(k)*alphaRho(i,j)
 c            phiHydF(i,j)=phiHydF(i,j)
@@ -344,7 +349,7 @@ C--     virtual potential temperature anomaly (including water vapour effect)
         DO j=jMin,jMax
          DO i=iMin,iMax
           alphaRho(i,j)=maskC(i,j,k,bi,bj)
-     &             *( tFld(i,j,k,bi,bj)*(sFld(i,j,k,bi,bj)*atm_Rq+one) 
+     &             *( tFld(i,j,k,bi,bj)*(sFld(i,j,k,bi,bj)*atm_Rq+one)
      &               -tRef(k) )
          ENDDO
         ENDDO
@@ -355,7 +360,7 @@ C---    Integrate d Phi / d pi
 C  --  Energy Conserving Form, accurate with Full cell topo  --
 C------------ The integration for the first level phi(k=1) is the same
 C             for both the "finite volume" and energy conserving methods.
-C    *NOTE* o Working with geopotential Anomaly, the geopotential boundary 
+C    *NOTE* o Working with geopotential Anomaly, the geopotential boundary
 C             condition is simply Phi-prime(Ro_surf)=0.
 C           o convention ddPI > 0 (same as drF & drC)
 C-----------------------------------------------------------------------
@@ -371,7 +376,7 @@ C-----------------------------------------------------------------------
      &                   -((rF(k+1)/atm_Po)**atm_kappa) )
          ELSE
            ddPIp=atm_Cp*( ((rC( k )/atm_Po)**atm_kappa)
-     &                   -((rC(k+1)/atm_Po)**atm_kappa) )*half 
+     &                   -((rC(k+1)/atm_Po)**atm_kappa) )*half
          ENDIF
 C-------- This discretization is the energy conserving form
          DO j=jMin,jMax
@@ -390,7 +395,7 @@ C  Finite Volume formulation consistent with Partial Cell, linear in p by piece
 C   Note: a true Finite Volume form should be linear between 2 Interf_W :
 C     phi_C = (phi_W_k+ phi_W_k+1)/2 ; but not accurate in Stratosphere (low p)
 C   also: if Interface_W at the middle between tracer levels, this form
-C     is close to the Energy Cons. form in the Interior, except for the 
+C     is close to the Energy Cons. form in the Interior, except for the
 C     non-linearity in PI(p)
 C---------
            ddPIm=atm_Cp*( ((rF( k )/atm_Po)**atm_kappa)
@@ -417,13 +422,13 @@ C-----------------------------------------------------------------------
 
        ELSEIF ( integr_GeoPot.EQ.2
      &     .OR. integr_GeoPot.EQ.3 ) THEN
-C  --  Finite Difference Form, with Part-Cell Topo, 
+C  --  Finite Difference Form, with Part-Cell Topo,
 C       works with Interface_W  at the middle between 2.Tracer_Level
 C        and  with Tracer_Level at the middle between 2.Interface_W.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C  Finite Difference formulation consistent with Partial Cell,
 C   Valid & accurate if Interface_W at middle between tracer levels
-C   linear in p between 2 Tracer levels ; conserve energy in the Interior 
+C   linear in p between 2 Tracer levels ; conserve energy in the Interior
 C---------
          IF (k.EQ.1) THEN
            ddPIm=atm_Cp*( ((rF( k )/atm_Po)**atm_kappa)
@@ -437,7 +442,7 @@ C---------
      &                   -((rF(k+1)/atm_Po)**atm_kappa) )
          ELSE
            ddPIp=atm_Cp*( ((rC( k )/atm_Po)**atm_kappa)
-     &                   -((rC(k+1)/atm_Po)**atm_kappa) )*half 
+     &                   -((rC(k+1)/atm_Po)**atm_kappa) )*half
          ENDIF
          rec_dRm = one/(rF(k)-rC(k))
          rec_dRp = one/(rC(k)-rF(k+1))
@@ -477,7 +482,7 @@ C       = Top atmosphere height (Atmos, P-coord.)
         CALL DIAGS_PHI_RLOW(
      I                      k, bi, bj, iMin,iMax, jMin,jMax,
      I                      phiHydF, phiHydC, alphaRho, tFld, sFld,
-     I                      myTime, myIter, myThid)  
+     I                      myTime, myIter, myThid)
       ENDIF
 
 C---   Diagnose Full Hydrostatic Potential at cell center level
@@ -486,12 +491,12 @@ C---   Diagnose Full Hydrostatic Potential at cell center level
      I                      phiHydC,
      I                      myTime, myIter, myThid)
 
-      IF (momPressureForcing) THEN 
+      IF (momPressureForcing) THEN
         CALL CALC_GRAD_PHI_HYD(
      I                         k, bi, bj, iMin,iMax, jMin,jMax,
      I                         phiHydC, alphaRho, tFld, sFld,
      O                         dPhiHydX, dPhiHydY,
-     I                         myTime, myIter, myThid)  
+     I                         myTime, myIter, myThid)
       ENDIF
 
 #endif /* INCLUDE_PHIHYD_CALCULATION_CODE */

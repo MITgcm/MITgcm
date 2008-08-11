@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.67 2008/06/11 18:29:08 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.68 2008/08/11 22:25:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -362,28 +362,30 @@ C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
      &         .OR. useSALT_PLUME .OR. doDiagsRho.GE.1 ) THEN
 #ifdef ALLOW_DEBUG
             IF ( debugLevel .GE. debLevB )
-     &       CALL DEBUG_CALL('FIND_RHO',myThid)
+     &       CALL DEBUG_CALL('FIND_RHO_2D',myThid)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-            CALL FIND_RHO(
-     I        bi, bj, iMin, iMax, jMin, jMax, k, k,
-     I        theta, salt,
-     O        rhoK,
-     I        myThid )
+            CALL FIND_RHO_2D(
+     I                 iMin, iMax, jMin, jMax, k,
+     I                 theta(1-OLx,1-OLy,k,bi,bj),
+     I                 salt (1-OLx,1-OLy,k,bi,bj),
+     O                 rhoK,
+     I                 k, bi, bj, myThid )
 
             IF (k.GT.1) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-             CALL FIND_RHO(
-     I        bi, bj, iMin, iMax, jMin, jMax, k-1, k,
-     I        theta, salt,
-     O        rhoKm1,
-     I        myThid )
+             CALL FIND_RHO_2D(
+     I                 iMin, iMax, jMin, jMax, k,
+     I                 theta(1-OLx,1-OLy,k-1,bi,bj),
+     I                 salt (1-OLx,1-OLy,k-1,bi,bj),
+     O                 rhoKm1,
+     I                 k-1, bi, bj, myThid )
             ENDIF
 #ifdef ALLOW_DEBUG
             IF ( debugLevel .GE. debLevB )
