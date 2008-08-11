@@ -1,9 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.16 2008/01/24 17:22:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.17 2008/08/11 01:19:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-#define EXCLUDE_EOS_CHECK
+#undef INCLUDE_EOS_CHECK
 
+C--  File ini_eos.F: Routines to initialise Equation of State
+C--   Contents
+C--   o INI_EOS
+C--   o EOS_CHECK
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: INI_EOS
 C     !INTERFACE:
@@ -23,8 +29,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "EOS.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -249,7 +253,7 @@ C     5. secant bulk modulus K of sea water at p
 
       ELSE
 
-         WRITE(msgbuf,'(3a)') ' INI_EOS: equationOfState = "',
+         WRITE(msgbuf,'(3A)') ' INI_EOS: equationOfState = "',
      &        equationOfState,'"'
          CALL PRINT_ERROR( msgbuf, myThid )
          STOP 'ABNORMAL END: S/R INI_EOS'
@@ -258,7 +262,7 @@ C     5. secant bulk modulus K of sea water at p
 
 C--   Check EOS initialisation:
 
-      CALL CHECK_EOS( myThid )
+      CALL EOS_CHECK( myThid )
 
       _END_MASTER( myThid )
       _BARRIER
@@ -267,12 +271,12 @@ C--   Check EOS initialisation:
       END
 
 CBOP
-C     !ROUTINE: CHECK_EOS
+C     !ROUTINE: EOS_CHECK
 C     !INTERFACE:
-      SUBROUTINE CHECK_EOS( myThid )
+      SUBROUTINE EOS_CHECK( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE CHECK_EOS
+C     | SUBROUTINE EOS_CHECK
 C     | o check the equation of state.
 C     *==========================================================*
 C     \ev
@@ -284,34 +288,38 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "EOS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of CHECK_EOS
+C     myThid ::  Number of this instance of EOS_CHECK
       INTEGER myThid
 
-#ifndef EXCLUDE_EOS_CHECK
+#ifdef INCLUDE_EOS_CHECK
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi,bj  - Loop counters
-C     I,J,K
+C     i,j,k
       INTEGER bi, bj
-      INTEGER imin, imax, jmin, jmax
+      INTEGER iMin, iMax, jMin, jMax
       INTEGER  i, j, k
-      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoLoc (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL psave
 
       INTEGER ncheck, kcheck
       PARAMETER ( ncheck = 13 )
-      _RL tloc(ncheck), ptloc(ncheck), sloc(ncheck), ploc(ncheck)
-      _RL rloc(ncheck), bloc(ncheck)
+      _RL tLoc(ncheck), ptLoc(ncheck), sLoc(ncheck), pLoc(ncheck)
+      _RL rLoc(ncheck), bLoc(ncheck)
+      _RS mskSave
+      _RS rC_Save
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      DATA tloc
+      DATA tLoc
      &     /3.25905152915860 _d 0, 20.38687090048638 _d 0,
      &     25.44820830309568 _d 0, 20.17368557065936 _d 0,
      &     13.43397459640398 _d 0,
@@ -319,7 +327,7 @@ C     I,J,K
      &      5.               _d 0, 25.               _d 0,
      &      5.               _d 0, 25.               _d 0,
      &      5.               _d 0, 25.               _d 0/,
-     &     ptloc
+     &     ptLoc
      &     /3.               _d 0, 20.               _d 0,
      &     25.               _d 0, 20.               _d 0,
      &     12.               _d 0,
@@ -327,7 +335,7 @@ C     I,J,K
      &      5.               _d 0, 25.               _d 0,
      &      4.03692566635316 _d 0, 22.84661726775120 _d 0,
      &      3.62720389416752 _d 0, 22.62420229124846 _d 0/
-     &     sloc
+     &     sLoc
      &     /35.5 _d 0, 35. _d 0,
      &      35.0 _d 0, 20. _d 0,
      &      40.0 _d 0,
@@ -335,7 +343,7 @@ C     I,J,K
      &      35.  _d 0, 35. _d 0,
      &       0.  _d 0,  0. _d 0,
      &      35.  _d 0, 35. _d 0/
-     &     ploc
+     &     pLoc
      &     /300. _d 5,  200. _d 5,
      &      200. _d 5,  100. _d 5,
      &      800. _d 5,
@@ -343,7 +351,7 @@ C     I,J,K
      &        0. _d 0,    0. _d 0,
      &     1000. _d 5, 1000. _d 5,
      &     1000. _d 5, 1000. _d 5/
-      DATA rloc
+      DATA rLoc
      &     /1041.83267  _d 0, 1033.213387 _d 0,
      &      1031.654229 _d 0, 1017.726743 _d 0,
      &      1062.928258 _d 0,
@@ -351,7 +359,7 @@ C     I,J,K
      &      1027.67547  _d 0, 1023.34306  _d 0,
      &      1044.12802  _d 0, 1037.90204  _d 0,
      &      1069.48914  _d 0, 1062.53817  _d 0/
-     &     bloc
+     &     bLoc
      &     /   -1.00000 _d 0,    -1.00000 _d 0,
      &         -1.00000 _d 0,    -1.00000 _d 0,
      &         -1.00000 _d 0,
@@ -364,74 +372,91 @@ C     I,J,K
       bi   = 1
       bj   = 1
       k    = 1
-      imin = 1
-      imax = 1
-      jmin = 1
-      jmax = 1
+      iMin = 1
+      iMax = 1
+      jMin = 1
+      jMax = 1
       i    = 1
       j    = 1
       IF ( equationOfState.NE.'LINEAR'
-     &     .AND. equationOfState.NE.'POLY3' ) THEN
+     &     .AND. equationOfState.NE.'POLY3'
+     &     .AND. equationOfState.NE.'IDEALG' ) THEN
 C     check nonlinear EOS
-         WRITE(msgBuf,'(a,a)')
-     &        'check_eos: Check the equation of state: Type ',
+        WRITE(msgBuf,'(A,A)')
+     &        'EOS_CHECK: Check the equation of state: Type ',
      &        equationOfState
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
-         psave = pressure(i,j,k,bi,bj)
-         DO kcheck = 1,ncheck
-            pressure(i,j,k,bi,bj) = ploc(kcheck)
-            IF ( equationOfState.NE.'UNESCO' ) THEN
-               tFld(i,j,k,bi,bj) = ptloc(kcheck)
-            ELSE
-               tFld(i,j,k,bi,bj) = tloc(kcheck)
-            ENDIF
-            sFld(i,j,k,bi,bj)    = sloc(kcheck)
-            rholoc(i,j)          =  0. _d 0
-            bulkMod(i,j)         = -1. _d 0
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT , myThid )
+C-    to get the right presure out of S/R PRESSURE_FOR_EOS:
+        mskSave = maskC(i,j,k,bi,bj)
+        rC_Save = rC(k)
+        maskC(i,j,k,bi,bj) = 1.
+        totPhiHyd(i,j,k,bi,bj) = 0.
+C-    + set rC accordingly
+        DO kcheck = 1,ncheck
+          IF ( usingZCoords ) THEN
+            rC(k) = -pLoc(kcheck)*recip_rhoConst*recip_gravity
+          ELSE
+            rC(k) =  pLoc(kcheck)
+          ENDIF
+          IF ( equationOfState.NE.'UNESCO' ) THEN
+             tFld(i,j) = ptLoc(kcheck)
+          ELSE
+             tFld(i,j) = tLoc(kcheck)
+          ENDIF
+          sFld(i,j)    = sLoc(kcheck)
+          pFld(i,j)    = pLoc(kcheck)
+          rhoLoc(i,j)  =  0. _d 0
 
-            CALL FIND_RHO(
-     &           bi, bj, iMin, iMax, jMin, jMax,  k, k,
-     &           tFld, sFld, rholoc, myThid )
+          CALL FIND_RHO_2D(
+     I           iMin, iMax, jMin, jMax, k,
+     I           tFld, sFld,
+     O           rhoLoc,
+     I           k, bi, bj, myThid )
 
+          IF ( equationOfState.EQ.'MDJWF' ) THEN
+            bulkMod(i,j) = -1. _d 0
+          ELSE
             CALL FIND_BULKMOD(
-     &           bi, bj, imin, imax, jmin, jmax, k, k,
-     &           tFld, sFld, bulkMod, myThid )
+     I           iMin, iMax, jMin, jMax,
+     I           pFld, tFld, sFld,
+     O           bulkMod,
+     I           myThid )
+          ENDIF
 
-            WRITE(msgBuf,
-     &           '(a4,f4.1,a5,f4.1,a6,f5.0,a5,a3,f10.5,1x,f11.5)')
-     &           'rho(', sFld(i,j,k,bi,bj), ' PSU,',
-     &           tFld(i,j,k,bi,bj), ' degC,',
-c    &           pressure(i,j,k,bi,bj)*SItoBar, ' bar)',' = ',
-     &           rloc(kcheck), bloc(kcheck)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &           SQUEEZE_RIGHT , myThid )
-            WRITE(msgBuf,'(a14,a22,f10.5,1x,f11.5)')
-     &           'rho(find_rho) ',
-     &           ' = ', rholoc(i,j)+rhoConst, bulkMod(i,j)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &           SQUEEZE_RIGHT , myThid )
+          WRITE(msgBuf,'(2(A,F4.1),A,F5.0,2A,F10.5,1X,F11.5)')
+     &         'rho(', sFld(i,j), ' PSU,',
+     &         tFld(i,j), ' degC,',
+     &         pLoc(kcheck)*SItoBar, ' bar)',
+     &         ' = ', rLoc(kcheck), bLoc(kcheck)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &         SQUEEZE_RIGHT , myThid )
+          WRITE(msgBuf,'(A,F10.5,1X,F11.5)')
+     &         ' rho(find_rho_2d)     = ',
+     &         rhoLoc(i,j)+rhoConst, bulkMod(i,j)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &         SQUEEZE_RIGHT , myThid )
 
-            CALL FIND_RHO_SCALAR( tFld(i,j,k,bi,bj), sLoc(kcheck),
-     &           pLoc(kcheck), rhoLoc(i,j), myThid )
-            bulkMod(i,j) = 0. _d 0
-            WRITE(msgBuf,'(a21,a15,f10.5,1x,f11.5)')
-     &           'rho(find_rho_scalar) ',
-     &           ' = ', rholoc(i,j)+rhoConst, bulkMod(i,j)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &           SQUEEZE_RIGHT , myThid )
+          CALL FIND_RHO_SCALAR( tFld(i,j), sLoc(kcheck),
+     &         pLoc(kcheck), rhoLoc(i,j), myThid )
+          WRITE(msgBuf,'(A,F10.5,1X,F11.5)')
+     &         ' rho(find_rho_scalar) = ',
+     &         rhoLoc(i,j)+rhoConst
+c    &         rhoLoc(i,j)+rhoConst, bulkMod(i,j)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &         SQUEEZE_RIGHT , myThid )
 
-         ENDDO
+        ENDDO
 C     end check nonlinear EOS
-c        pressure(i,j,k,bi,bj) = psave
+        maskC(i,j,k,bi,bj) = mskSave
+        rC(k) = rC_Save
 
-         WRITE(msgBuf,'(A)') 'end check the equation of state'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
+        WRITE(msgBuf,'(A)') 'EOS_CHECK: Done'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT , myThid )
 
       ENDIF
-#endif /* EXCLUDE_EOS_CHECK */
+#endif /* INCLUDE_EOS_CHECK */
 
       RETURN
       END
-
