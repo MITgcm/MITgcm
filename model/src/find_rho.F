@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.35 2008/08/09 01:02:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.36 2008/08/11 22:33:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,6 @@ C $Name:  $
 
 C--  File find_rho.F: Routines to compute density
 C--   Contents
-C--   o FIND_RHO
 C--   o FIND_RHO_2D
 C--   o FIND_RHOP0
 C--   o FIND_BULKMOD
@@ -16,66 +15,12 @@ C--   o LOOK_FOR_NEG_SALINITY
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: FIND_RHO
-C     !INTERFACE:
-      SUBROUTINE FIND_RHO(
-     I      bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
-     I      tFld, sFld,
-     O      rholoc,
-     I      myThid )
-
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | o SUBROUTINE FIND_RHO
-C     |   Calculates [rho(S,T,z)-rhoConst] of a slice
-C     *==========================================================*
-C     |
-C     | k - is the Theta/Salt level
-C     | kRef - determines pressure reference level
-C     |        (not used in 'LINEAR' mode)
-C     |
-C     *==========================================================*
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-C     == Global variables ==
-#include "SIZE.h"
-#include "EEPARAMS.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     k    :: Level of Theta/Salt slice
-C     kRef :: Pressure reference level
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER k
-      INTEGER kRef
-      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL rholoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      INTEGER myThid
-
-C     !LOCAL VARIABLES:
-C     == Local variables ==
-CEOP
-
-      CALL FIND_RHO_2D(
-     I      iMin, iMax, jMin, jMax, kRef,
-     I      tFld(1-OLx,1-OLy,k,bi,bj), sFld(1-OLx,1-OLy,k,bi,bj),
-     O      rholoc,
-     I      k, bi, bj, myThid )
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP
 C     !ROUTINE: FIND_RHO_2D
 C     !INTERFACE:
       SUBROUTINE FIND_RHO_2D(
      I                iMin, iMax, jMin, jMax, kRef,
      I                tFld, sFld,
-     O                rholoc,
+     O                rhoLoc,
      I                k, bi, bj, myThid )
 
 C     !DESCRIPTION: \bv
@@ -97,7 +42,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "EOS.h"
-c#include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -107,7 +51,7 @@ C     kRef :: Pressure reference level
       INTEGER kRef
       _RL tFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rholoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER k, bi, bj
       INTEGER myThid
 
@@ -126,7 +70,7 @@ CEOP
 #ifdef ALLOW_AUTODIFF_TAMC
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        rholoc(i,j)  = 0. _d 0
+        rhoLoc(i,j)  = 0. _d 0
         rhoP0(i,j)   = 0. _d 0
         bulkMod(i,j) = 0. _d 0
        ENDDO
@@ -153,7 +97,7 @@ C **********
 
        DO j=jMin,jMax
         DO i=iMin,iMax
-         rholoc(i,j)=rhoNil*(
+         rhoLoc(i,j)=rhoNil*(
      &     sBeta*(sFld(i,j)-refSalt)
      &   -tAlpha*(tFld(i,j)-refTemp) )
      &        + dRho
@@ -191,7 +135,7 @@ C **********
      &    +eosC(8,kRef)*tP      *sP*sP
      &    +eosC(9,kRef)         *sP*sP*sP
 #endif
-         rholoc(i,j)=sigRef+deltaSig
+         rhoLoc(i,j)=sigRef+deltaSig
         ENDDO
        ENDDO
 
@@ -216,17 +160,15 @@ C     nonlinear equation of state in pressure coordinates
      O             bulkMod,
      I             myThid )
 
-#ifdef ALLOW_AUTODIFF_TAMC
+c#ifdef ALLOW_AUTODIFF_TAMC
 cph can not DO storing here since find_rho is called multiple times;
 cph additional recomp. should be acceptable
-cphCADJ STORE rhoP0(:,:)   = comlev1_bibj_k ,  key=kkey , byte=isbyte
-cphCADJ STORE bulkMod(:,:) = comlev1_bibj_k ,  key=kkey , byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
+c#endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
 
 C     density of sea water at pressure p
-            rholoc(i,j) = rhoP0(i,j)
+            rhoLoc(i,j) = rhoP0(i,j)
      &              /(1. _d 0 -
      &              locPres(i,j)*SItoBar/bulkMod(i,j) )
      &              - rhoConst
@@ -252,15 +194,14 @@ C     density of sea water at pressure p
      I             locPres, tFld, sFld,
      O             rhoDen,
      I             myThid )
-#ifdef ALLOW_AUTODIFF_TAMC
+
+c#ifdef ALLOW_AUTODIFF_TAMC
 cph can not DO storing here since find_rho is called multiple times;
 cph additional recomp. should be acceptable
-cphCADJ STORE rhoNum(:,:) = comlev1_bibj_k ,  key=kkey , byte=isbyte
-cphCADJ STORE rhoDen(:,:) = comlev1_bibj_k ,  key=kkey , byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
+c#endif /* ALLOW_AUTODIFF_TAMC */
          DO j=jMin,jMax
           DO i=iMin,iMax
-            rholoc(i,j) = rhoNum(i,j)*rhoDen(i,j) - rhoConst
+            rhoLoc(i,j) = rhoNum(i,j)*rhoDen(i,j) - rhoConst
           ENDDO
          ENDDO
 
@@ -643,7 +584,6 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
