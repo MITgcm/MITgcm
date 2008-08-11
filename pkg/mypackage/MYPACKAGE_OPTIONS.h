@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/MYPACKAGE_OPTIONS.h,v 1.2 2008/01/27 20:52:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/MYPACKAGE_OPTIONS.h,v 1.3 2008/08/11 22:31:36 jmc Exp $
 C $Name:  $
 
-C CPP options file for GM/Redi package
+C CPP options file for MYPACKAGE
 C
-C Use this file for selecting options within the GM/Redi package
+C Use this file for selecting options within package "MyPackage"
 
 #ifndef MYPACKAGE_OPTIONS_H
 #define MYPACKAGE_OPTIONS_H
