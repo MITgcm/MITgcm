@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.11 2007/02/01 17:14:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.12 2008/08/11 22:28:06 jmc Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: SBO_CALC
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE SBO_CALC( myCurrentTime, myIter, myThid )
+      SUBROUTINE SBO_CALC( myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
 C     /==========================================================\
@@ -125,10 +125,10 @@ C     === Global variables ===
 
 C !INPUT PARAMETERS: ===================================================
 C     == Routine arguments ==
-C     myCurrentTime - Current time of simulation ( s )
-C     myIter        - Iteration number
-C     myThid        - Number of this instance of SBO_CALC
-      _RL     myCurrentTime
+C     myTime  :: Current time of simulation ( s )
+C     myIter  :: Iteration number
+C     myThid  :: Number of this instance of SBO_CALC
+      _RL     myTime
       INTEGER myIter, myThid
 
 #ifdef ALLOW_SBO
@@ -183,7 +183,7 @@ c     initialize variables to be computed
       sboarea     = 0.0
       sboempmrwet = 0.0
       sboqnetwet  = 0.0
-      
+
       DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
             DO J = 1-OLy, sNy+OLy
@@ -201,11 +201,12 @@ c     loop over all grid points, accumulating mass, com, oam, and obp
           do K = 0, Nr
             kn0 = max(K,1)
 
-            CALL FIND_RHO(
-     I           bi, bj, 1, sNx, 1, sNy, Kn0, Kn0,
-     I           theta, salt,
+            CALL FIND_RHO_2D(
+     I           1, sNx, 1, sNy, Kn0,
+     I           theta(1-OLx,1-OLy,Kn0,bi,bj),
+     I           salt(1-OLx,1-OLy,Kn0,bi,bj),
      O           rhoK,
-     I           myThid )
+     I           Kn0, bi, bj, myThid )
 
 c--
             do J = 1, sNy

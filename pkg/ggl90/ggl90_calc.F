@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.7 2006/06/06 22:15:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.8 2008/08/11 22:28:06 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -60,7 +60,7 @@ C     K, Kp1, km1, kSurf, kBottom  - vertical loop indices
 C     ab15, ab05       - weights for implicit timestepping
 C     uStarSquare      - square of friction velocity
 C     verticalShear    - (squared) vertical shear of horizontal velocity
-C     Nsquare          - squared buoyancy freqency 
+C     Nsquare          - squared buoyancy freqency
 C     RiNumber         - local Richardson number
 C     KappaM           - (local) viscosity parameter (eq.10)
 C     KappaH           - (local) diffusivity parameter for temperature (eq.11)
@@ -113,7 +113,7 @@ CEOP
 
 C     set separate time step (should be deltaTtracer)
       deltaTggl90 = dTtracerLev(1)
-C     
+C
       kSurf = 1
 C     implicit timestepping weights for dissipation
       ab15 =  1.5 _d 0
@@ -131,14 +131,14 @@ C     Initialize local fields
          GGL90mixingLength(I,J,K) = GGL90mixingLengthMin
              rMixingLength(I,J,K) = 0. _d 0
         ENDDO
-       ENDDO	
+       ENDDO
       ENDDO
       DO J=1-Oly,sNy+Oly
        DO I=1-Olx,sNx+Olx
-	rhoK    (I,J) = 0. _d 0
-	rhoKm1  (I,J) = 0. _d 0
+        rhoK    (I,J) = 0. _d 0
+        rhoKm1  (I,J) = 0. _d 0
         totalDepth(I,J)   = 0. _d 0
-        IF ( recip_Rcol(I,J,bi,bj) .NE. 0. ) 
+        IF ( recip_Rcol(I,J,bi,bj) .NE. 0. )
      &       totalDepth(I,J) = 1./recip_Rcol(I,J,bi,bj)
        ENDDO
       ENDDO
@@ -147,16 +147,17 @@ C     start k-loop
       DO K = 2, Nr
        Km1 = K-1
        Kp1 = MIN(Nr,K+1)
-       CALL FIND_RHO(
-     I      bi, bj, iMin, iMax, jMin, jMax, Km1, K,
-     I      theta, salt,
+       CALL FIND_RHO_2D(
+     I      iMin, iMax, jMin, jMax, K,
+     I      theta(1-OLx,1-OLy,Km1,bi,bj), salt(1-OLx,1-OLy,Km1,bi,bj),
      O      rhoKm1,
-     I      myThid )
-       CALL FIND_RHO(
-     I      bi, bj, iMin, iMax, jMin, jMax, K, K,
-     I      theta, salt,
+     I      Km1, bi, bj, myThid )
+
+       CALL FIND_RHO_2D(
+     I      iMin, iMax, jMin, jMax, K,
+     I      theta(1-OLx,1-OLy,K,bi,bj), salt(1-OLx,1-OLy,K,bi,bj),
      O      rhoK,
-     I      myThid )
+     I      K, bi, bj, myThid )
        DO J=jMin,jMax
         DO I=iMin,iMax
          SQRTTKE=SQRT( GGL90TKE(I,J,K,bi,bj) )
@@ -179,13 +180,13 @@ C     compute Prandtl number (always greater than 0)
          IF ( RiNumber .GE. 0.2 ) prTemp = 5.0 * RiNumber
          TKEPrandtlNumber(I,J,K) = MIN(10.0 _d 0,prTemp)
 C     mixing length
-         GGL90mixingLength(I,J,K) = 
-     &        SQRTTKE/SQRT( MAX(Nsquare,GGL90eps) ) 
+         GGL90mixingLength(I,J,K) =
+     &        SQRTTKE/SQRT( MAX(Nsquare,GGL90eps) )
 C     impose upper bound for mixing length (total depth)
-         GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K), 
+         GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K),
      &        totalDepth(I,J))
 C     impose minimum mixing length (to avoid division by zero)
-         GGL90mixingLength(I,J,K) = MAX(GGL90mixingLength(I,J,K), 
+         GGL90mixingLength(I,J,K) = MAX(GGL90mixingLength(I,J,K),
      &        GGL90mixingLengthMin)
          rMixingLength(I,J,K) = 1. _d 0 /GGL90mixingLength(I,J,K)
 C     viscosity of last timestep
@@ -194,19 +195,19 @@ C     viscosity of last timestep
 C     dissipation term
          TKEdissipation = ab05*GGL90ceps
      &        *SQRTTKE*rMixingLength(I,J,K)
-     &        *GGL90TKE(I,J,K,bi,bj)      
+     &        *GGL90TKE(I,J,K,bi,bj)
 C     sum up contributions to form the right hand side
-         gTKE(I,J,K) = GGL90TKE(I,J,K,bi,bj) 
+         gTKE(I,J,K) = GGL90TKE(I,J,K,bi,bj)
      &        + deltaTggl90*(
      &        + KappaM*verticalShear
      &        - KappaM*Nsquare/TKEPrandtlNumber(I,J,K)
-     &        - TKEdissipation 
+     &        - TKEdissipation
      &        )
-        ENDDO	
+        ENDDO
        ENDDO
       ENDDO
-C     horizontal diffusion of TKE (requires an exchange in 
-C	do_fields_blocking_exchanges)
+C     horizontal diffusion of TKE (requires an exchange in
+C      do_fields_blocking_exchanges)
 #ifdef ALLOW_GGL90_HORIZDIFF
       IF ( GGL90diffTKEh .GT. 0. _d 0 ) THEN
        DO K=2,Nr
@@ -218,7 +219,7 @@ C     common factors
           yA(i,j) = _dxG(i,j,bi,bj)
      &         *drF(k)*_hFacS(i,j,k,bi,bj)
          ENDDO
-        ENDDO	
+        ENDDO
 C     Compute diffusive fluxes
 C     ... across x-faces
         DO j=1-Oly,sNy+Oly
@@ -243,18 +244,18 @@ C     ... across y-faces
      &      *CosFacV(j,bi,bj)
 #endif /* ISOTROPIC_COS_SCALING */
          ENDDO
-        ENDDO	
+        ENDDO
 C     Compute divergence of fluxes
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
           gTKE(i,j,k)=gTKE(i,j,k)
      &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)*recip_rA(i,j,bi,bj)
      &         *( (dfx(i+1,j)-dfx(i,j))
-     &           +(dfy(i,j+1)-dfy(i,j)) 
+     &           +(dfy(i,j+1)-dfy(i,j))
      &           )
-         ENDDO	
+         ENDDO
         ENDDO
-C	end of k-loop
+C       end of k-loop
        ENDDO
 C     end if GGL90diffTKEh .eq. 0.
       ENDIF
@@ -268,7 +269,7 @@ C     set up matrix
 C--   Lower diagonal
       DO j=jMin,jMax
        DO i=iMin,iMax
-         a(i,j,1) = 0. _d 0 
+         a(i,j,1) = 0. _d 0
        ENDDO
       ENDDO
       DO k=2,Nr
@@ -317,14 +318,14 @@ C     end set up matrix
 
 C
 C     Apply boundary condition
-C     
+C
       DO J=jMin,jMax
        DO I=iMin,iMax
 C     estimate friction velocity uStar from surface forcing
-        uStarSquare = SQRT( 
+        uStarSquare = SQRT(
      &         ( .5*( surfaceForcingU(I,  J,  bi,bj)
      &              + surfaceForcingU(I+1,J,  bi,bj) ) )**2
-     &       + ( .5*( surfaceForcingV(I,  J,  bi,bj) 
+     &       + ( .5*( surfaceForcingV(I,  J,  bi,bj)
      &              + surfaceForcingV(I,  J+1,bi,bj) ) )**2
      &                     )
 C     Dirichlet surface boundary condition for TKE
@@ -332,10 +333,10 @@ C     Dirichlet surface boundary condition for TKE
      &                     *maskC(I,J,kSurf,bi,bj)
 C     Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
         kBottom   = MIN(MAX(kLowC(I,J,bi,bj),1),Nr)
-        gTKE(I,J,kBottom) = gTKE(I,J,kBottom) 
+        gTKE(I,J,kBottom) = gTKE(I,J,kBottom)
      &       - GGL90TKEbottom*c(I,J,kBottom)
        ENDDO
-      ENDDO	
+      ENDDO
 C
 C     solve tri-diagonal system, and store solution on gTKE (previously rhs)
 C
@@ -345,21 +346,21 @@ C
      I     myThid )
 C
 C     now update TKE
-C     
+C
       DO K=1,Nr
        DO J=jMin,jMax
         DO I=iMin,iMax
 C     impose minimum TKE to avoid numerical undershoots below zero
-         GGL90TKE(I,J,K,bi,bj) = MAX( gTKE(I,J,K), GGL90TKEmin ) 
+         GGL90TKE(I,J,K,bi,bj) = MAX( gTKE(I,J,K), GGL90TKEmin )
      &        * maskC(I,J,K,bi,bj)
         ENDDO
        ENDDO
-      ENDDO	
+      ENDDO
 C
 C     end of time step
 C     ===============================
 C     compute viscosity coefficients
-C     
+C
       DO K=2,Nr
        DO J=jMin,jMax
         DO I=iMin,iMax
@@ -376,9 +377,9 @@ C     Set a maximum and mask land point
          GGL90diffKr(I,J,K,bi,bj) = MIN(KappaH,GGL90diffMax)
      &        * maskC(I,J,K,bi,bj)
         ENDDO
-       ENDDO 
+       ENDDO
 C     end third k-loop
-      ENDDO	
+      ENDDO
 
 #endif /* ALLOW_GGL90 */
 

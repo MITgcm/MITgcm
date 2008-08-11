@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.37 2007/12/21 02:54:34 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.38 2008/08/11 22:28:06 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -1502,11 +1502,11 @@ c calculate density, alpha, beta in surface layer, and set dbsfc to zero
 CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
 CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
-      call FIND_RHO(
-     I     bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1,
-     I     theta, salt,
+      CALL FIND_RHO_2D(
+     I     1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1,
+     I     theta(1-OLx,1-OLy,1,bi,bj), salt(1-OLx,1-OLy,1,bi,bj),
      O     WORK1,
-     I     myThid )
+     I     1, bi, bj, myThid )
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
 CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
 CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
@@ -1552,31 +1552,31 @@ CHPF$  INDEPENDENT, NEW (RHOK,RHOKM1,RHO1K,WORK1,WORK2)
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k, key=kkppkey
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k, key=kkppkey
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
-         call FIND_RHO(
-     I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K, K,
-     I        theta, salt,
+         CALL FIND_RHO_2D(
+     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k,
+     I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
      O        RHOK,
-     I        myThid )
+     I        k, bi, bj, myThid )
 
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
 CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_kpp_k, key=kkppkey
 CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_kpp_k, key=kkppkey
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
-         call FIND_RHO(
-     I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, K-1, K,
-     I        theta, salt,
+         CALL FIND_RHO_2D(
+     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k,
+     I        theta(1-OLx,1-OLy,k-1,bi,bj),salt(1-OLx,1-OLy,k-1,bi,bj),
      O        RHOKM1,
-     I        myThid )
+     I        k-1, bi, bj, myThid )
 
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
 CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
 CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
-         call FIND_RHO(
-     I        bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, K,
-     I        theta, salt,
+         CALL FIND_RHO_2D(
+     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k,
+     I        theta(1-OLx,1-OLy,1,bi,bj), salt(1-OLx,1-OLy,1,bi,bj),
      O        RHO1K,
-     I        myThid )
+     I        1, bi, bj, myThid )
 
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
 CADJ STORE rhok  (:,:)          = comlev1_kpp_k, key=kkppkey
@@ -1608,14 +1608,18 @@ CADJ STORE rho1k (:,:)          = comlev1_kpp_k, key=kkppkey
 c     work1 - density of t(k-1)  & s(k-1) at depth 1
 c     work2 - density of t(k  )  & s(k  ) at depth 1
 c     work3 - density of t(1)-.8 & s(1  ) at depth 1
-            call FIND_RHO(
-     I           bi, bj, 1, sNx, 1, sNy, K-1, 1, theta, salt,
+            CALL FIND_RHO_2D(
+     I           1, sNx, 1, sNy, 1,
+     I           theta(1-OLx,1-OLy,k-1,bi,bj),
+     I           salt (1-OLx,1-OLy,k-1,bi,bj),
      O           WORK1,
-     I           myThid )
-            call FIND_RHO(
-     I           bi, bj, 1, sNx, 1, sNy, K  , 1, theta, salt,
+     I           k-1, bi, bj, myThid )
+            CALL FIND_RHO_2D(
+     I           1, sNx, 1, sNy, 1,
+     I           theta(1-OLx,1-OLy,k,bi,bj),
+     I           salt (1-OLx,1-OLy,k,bi,bj),
      O           WORK2,
-     I           myThid )
+     I           k, bi, bj, myThid )
             DO J = 1, sNy
                DO I = 1, sNx
                   IF ( k .LE. klowC(I,J,bi,bj) .AND.

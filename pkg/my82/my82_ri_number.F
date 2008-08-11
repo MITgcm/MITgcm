@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_ri_number.F,v 1.3 2007/08/23 19:13:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_ri_number.F,v 1.4 2008/08/11 22:28:06 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: MY82_RI_NUMBER
 
 C !INTERFACE: ==========================================================
       subroutine MY82_RI_NUMBER(
-     I     bi, bj, K, iMin, iMax, jMin, jMax, 
+     I     bi, bj, K, iMin, iMax, jMin, jMax,
      O     RiNumber, buoyFreq, vertShear,
      I     myTime, myThid )
 
@@ -41,7 +41,7 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C Routine arguments
 C     bi, bj - array indices on which to apply calculations
-C     iMin, iMax, jMin, jMax 
+C     iMin, iMax, jMin, jMax
 C            - array boundaries
 C     k      - depth level
 C     myTime - Current time in simulation
@@ -64,7 +64,7 @@ C     tempu, tempv - temporary variables
 C     rhoK, rhoKm1 - Density below and above current interface
 C     epsilon      - small number
       INTEGER I,J,Km1
-      _RL        p5    , p125      
+      _RL        p5    , p125
       PARAMETER( p5=0.5D0, p125=0.125D0 )
       _RL tempu, tempv
       _RL epsilon
@@ -74,7 +74,7 @@ C     epsilon      - small number
 #ifdef MY82_SMOOTH_RI
       _RL RiTmp   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* MY82_SMOOTH_RI */
-CEOP     
+CEOP
 
       Km1   = MAX(1,K-1)
 C     Not sure what is correct for pressure coordinates:
@@ -92,16 +92,16 @@ CML      ELSE
 CML       STOP 'MY82_RI_NUMBER: We should never reach this point'
 CML      ENDIF
 C     preparation: find density a kth and k-1st level
-      CALL FIND_RHO(
-     I     bi, bj, iMin, iMax, jMin, jMax, Km1, K,
-     I     theta, salt,
+      CALL FIND_RHO_2D(
+     I     iMin, iMax, jMin, jMax, K,
+     I     theta(1-OLx,1-OLy,Km1,bi,bj), salt(1-OLx,1-OLy,Km1,bi,bj),
      O     rhoKm1,
-     I     myThid )
-      CALL FIND_RHO(
-     I     bi, bj, iMin, iMax, jMin, jMax, K, K,
-     I     theta, salt,
+     I     Km1, bi, bj, myThid )
+      CALL FIND_RHO_2D(
+     I     iMin, iMax, jMin, jMax, K,
+     I     theta(1-OLx,1-OLy,K,bi,bj), salt(1-OLx,1-OLy,K,bi,bj),
      O     rhoK,
-     I     myThid )
+     I     K, bi, bj, myThid )
 
 C     first step:  calculate flux Richardson number.
 C     calculate (du/dz)^2 + (dv/dz)^2 on W (between T) points.
@@ -120,29 +120,29 @@ C     calculate g*(drho/dz)/rho0= -N^2  .
 C
         buoyFreq(I,J) = gravity*mass2rUnit *
      &       (rhoKm1(I,J) - rhoK(I,J))*recip_drC(K)
-C     
+C
 C     calculates gradient Richardson number, bounded by
 C     a very large negative value.
-C     
+C
         RiNumber(I,J) = -buoyFreq(I,J)/max(vertShear(I,J),epsilon)
-        
+
        ENDDO
       ENDDO
-      
+
 #ifdef MY82_SMOOTH_RI
 C     average Richardson number horizontally
       DO J=jMin,jMax
        DO I=iMin,iMax
         RiTmp(I,J) = RiNumber(I,J)
        ENDDO
-      ENDDO	
+      ENDDO
       DO J=1-Oly+1,sNy+Oly-1
        DO I=1-Olx+1,sNx+Olx-1
-        RiNumber(I,J) = p5*RiTmp(I,J) 
-     &       + p125*RiTmp(I-1,J) + p125*RiTmp(I+1,J) 
-     &       + p125*RiTmp(I,J-1) + p125*RiTmp(I,J+1) 
+        RiNumber(I,J) = p5*RiTmp(I,J)
+     &       + p125*RiTmp(I-1,J) + p125*RiTmp(I+1,J)
+     &       + p125*RiTmp(I,J-1) + p125*RiTmp(I,J+1)
        ENDDO
-      ENDDO	
+      ENDDO
 #endif /* MY82_SMOOTH_RI */
 
 #endif /* ALLOW_MY82 */
