@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1013 2008/08/05 15:58:18 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1014 2008/08/11 22:45:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o change FIND_RHO to FIND_RHO_2D : 
+  pass arguments tFld & sFld as local (tile) 2D-arrays ; +fix EOS_CHECK.
+o new pkg: cheapaml
 
 checkpoint61b
 o exch2: 
