@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.11 2008/04/24 21:35:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.12 2008/08/11 17:41:05 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -44,7 +44,7 @@ C  istate               :: 0=initial call, 1=subsequent calls
 
 C !LOCAL VARIABLES: ====================================================
        INTEGER bi, bj, I,J,k
-       INTEGER it, ntim
+       INTEGER ntim, iUnit
 c
        _RL total_flux
        _RL total_ocean_carbon_old
@@ -86,8 +86,8 @@ c default - set only once
           ENDDO
          ENDDO
 
-         ENDDO
         ENDDO
+       ENDDO
       endif
 
 c user specified value - set only once
@@ -101,8 +101,8 @@ c user specified value - set only once
           ENDDO
          ENDDO
 
-         ENDDO
         ENDDO
+       ENDDO
       endif
 
 c read from a file (note:
@@ -128,7 +128,6 @@ c         print*,'weights',ntim, aWght, bWght, tmp
 
             DO j=1-OLy,sNy+OLy
              DO i=1-OLx,sNx+OLx
-
                AtmospCO2(i,j,bi,bj)=tmp
              ENDDO
             ENDDO
@@ -170,7 +169,7 @@ c for 278ppmv we need total_atmos_carbon=4.9206e+16
           DO j=1,sNy
             if (istate.gt.0) then
               total_flux=total_flux+FluxCO2(i,j,bi,bj)*rA(i,j,bi,bj)*
-     &                        hFacC(i,j,1,bi,bj)*dTtracerLev(1)
+     &                        maskC(i,j,1,bi,bj)*dTtracerLev(1)
             endif
             DO k=1,nR
               total_ocean_carbon= total_ocean_carbon+
@@ -191,12 +190,10 @@ c for 278ppmv we need total_atmos_carbon=4.9206e+16
 
        if (istate.eq.0) then
 c use value read in dic_init_fixed
-       total_atmos_carbon=total_atmos_carbon_ini
-       atpco2=atpco2_ini
+          total_atmos_carbon=total_atmos_carbon_ini
        else
 c calculate new atmos pCO2
           total_atmos_carbon=total_atmos_carbon - total_flux
-          atpco2=total_atmos_carbon/total_atmos_moles
 c write out if time for a new pickup
           permCheckPoint = .FALSE.
           permCheckPoint =
@@ -209,15 +206,16 @@ c write out if time for a new pickup
 C     Going to really do some IO. Make everyone except master thread wait.
             _BARRIER
 c write values to new pickup
-            open(26,file=fn,status='new')
-            write(26,*) total_atmos_carbon, atpco2
-            close(26)
+
+            CALL MDSFINDUNIT( iUnit, myThid )
+            open(iUnit,file=fn,status='new')
+            write(iUnit,*) total_atmos_carbon, atpco2
+            close(iUnit)
 
           endif
        endif
 
-
-      atpco2=total_atmos_carbon/total_atmos_moles
+       atpco2=total_atmos_carbon/total_atmos_moles
 
 c     print*,'QQpCO2', total_atmos_carbon, atpco2, total_ocean_carbon,
 c    &                 total_flux
@@ -231,8 +229,8 @@ c    &                 total_flux
           ENDDO
          ENDDO
 
-         ENDDO
         ENDDO
+       ENDDO
 
       print*,'QQ atmos C, total, pCo2', total_atmos_carbon, atpco2
       total_carbon=total_atmos_carbon + total_ocean_carbon
