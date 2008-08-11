@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs_ageos.F,v 1.2 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs_ageos.F,v 1.3 2008/08/11 22:29:55 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -234,8 +234,16 @@ cgg    All these points need to be wet.
             enddo
 
             do k = 1,nr
-              call find_rho(bi,bj,imin,imax,jmin,jmax,k,k,
-     &                      tbar,sbar,rholoc,mythid)
+
+C-- jmc: both calls below are wrong if more than 1 tile => stop here
+       IF ( bi.NE.1 .OR. bj.NE.1 ) 
+     &  STOP 'COST_OBCS_AGEOS wrong with more than 1 tile/proc'
+              call find_rho_2d(
+     I                         iMin, iMax, jMin, jMax, k,
+     I                         tbar(1-OLx,1-OLy,k,bi,bj), 
+     I                         sbar(1-OLx,1-OLy,k,bi,bj),
+     O                         rholoc,
+     I                         k, bi, bj, myThid )
               _EXCH_XY_R8(rholoc , myThid)
 
 cgg   Compute centered difference horizontal gradient on bdy.
@@ -294,8 +302,13 @@ cgg    All these points need to be wet.
 
             do k = 1,nr
 
-              call find_rho(bi,bj,imin,imax,jmin,jmax,k,k,
-     &                      tbar,sbar,rholoc,mythid)
+              call find_rho_2d(
+     I                         iMin, iMax, jMin, jMax, k,
+     I                         tbar(1-OLx,1-OLy,k,bi,bj), 
+     I                         sbar(1-OLx,1-OLy,k,bi,bj),
+     O                         rholoc,
+     I                         k, bi, bj, myThid )
+
               _EXCH_XY_R8(rholoc , myThid)
 
 cgg   Compute centered difference horizontal gradient on bdy.
@@ -353,8 +366,12 @@ cgg    All these points need to be wet.
 
             do k = 1,nr
 
-              call find_rho(bi,bj,imin,imax,jmin,jmax,k,k,
-     &                      tbar,sbar,rholoc,mythid)
+              call find_rho_2d(
+     I                         iMin, iMax, jMin, jMax, k,
+     I                         tbar(1-OLx,1-OLy,k,bi,bj), 
+     I                         sbar(1-OLx,1-OLy,k,bi,bj),
+     O                         rholoc,
+     I                         k, bi, bj, myThid )
               _EXCH_XY_R8(rholoc , myThid)
 
 cgg   Compute centered difference horizontal gradient on bdy.
@@ -412,8 +429,12 @@ cgg    All these points need to be wet.
 
             do k = 1,nr
 
-              call find_rho(bi,bj,imin,imax,jmin,jmax,k,k,
-     &                      tbar,sbar,rholoc,mythid)
+              call find_rho_2d(
+     I                         iMin, iMax, jMin, jMax, k,
+     I                         tbar(1-OLx,1-OLy,k,bi,bj), 
+     I                         sbar(1-OLx,1-OLy,k,bi,bj),
+     O                         rholoc,
+     I                         k, bi, bj, myThid )
               _EXCH_XY_R8(rholoc , myThid)
 
 cgg   Compute centered difference horizontal gradient on bdy.
