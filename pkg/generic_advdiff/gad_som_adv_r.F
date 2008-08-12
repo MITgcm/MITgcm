@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_r.F,v 1.4 2008/05/09 21:43:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_adv_r.F,v 1.5 2008/08/12 22:25:21 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -40,8 +40,7 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "SURFACE.h"
-c #include "GRID.h"
+#include "GRID.h"
 #include "GAD.h"
 
 C !INPUT PARAMETERS: ===================================================
