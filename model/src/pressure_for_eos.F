@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/pressure_for_eos.F,v 1.2 2004/10/19 02:39:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/pressure_for_eos.F,v 1.3 2008/08/12 22:26:39 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -26,7 +26,6 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==

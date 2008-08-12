@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.3 2008/08/11 22:25:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.4 2008/08/12 22:26:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -24,7 +24,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "SURFACE.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_GMREDI
 # include "GMREDI.h"
