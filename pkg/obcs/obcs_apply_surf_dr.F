@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_surf_dr.F,v 1.1 2002/01/30 04:22:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_surf_dr.F,v 1.2 2008/08/12 22:42:27 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE OBCS_APPLY_SURF_DR(
-     I                bi, bj, ksurfC, ksurfW, ksurfS,
+     I                bi, bj,
      U                hFac_FldC, hFac_FldW, hFac_FldS,
      I                myThid )
 C     /==========================================================\
@@ -20,9 +20,6 @@ C     == Global variables ==
 
 C     == Routine Arguments ==
       INTEGER bi,bj
-      INTEGER ksurfC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)  
-      INTEGER ksurfW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)  
-      INTEGER ksurfS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)  
       _RS hFac_FldC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS hFac_FldW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS hFac_FldS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
