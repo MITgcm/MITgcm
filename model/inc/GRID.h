@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.33 2006/12/05 05:18:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.34 2008/08/12 22:24:40 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -299,7 +299,6 @@ CEOP
 C     Macros that override/modify standard definitions
 #include "GRID_MACROS.h"
 
-C
 C--   COMMON /GRID_R/ REAL valued grid defining variables.
 C     dxC    - Cell center separation in X across western cell wall (m)
 C     dxG    - Cell face separation in X along southern cell wall (m)
@@ -315,7 +314,6 @@ C     Rcolumn  -Total thickness (in r_unit) of the fluid column
 C     R_low  - base of fluid in r_unit (Depth(m) / Pressure(Pa) at top Atmos.)
 C     xx_r_low - in TAF-sense active replacement of R_low
 C     Ro_surf- surface reference (at rest) position, r_unit.
-C     klowC  - index of the lowest "wet cell" (2D)
 C     hFac   - Fraction of cell in vertical which is open i.e how 
 C              "lopped" a cell is (dimensionless scale factor).
 C              Note: The code needs terms like MIN(hFac,hFac(I+1))
@@ -376,8 +374,6 @@ C                  at cell center: alpha=(Eastward_dir,grid_uVel_dir)=(North_d,v
 C     fCori     :: Coriolis parameter at grid Center point
 C     fCoriG    :: Coriolis parameter at grid Corner point
 C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
-      COMMON /GRID_I/ klowC
-      INTEGER klowC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /GRID_R/
      &  cosFacU, cosFacV, sqCosFacU, sqCosFacV,
@@ -474,4 +470,19 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS fCori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriCos(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+C--   COMMON /GRID_I/ INTEGER valued grid defining variables.
+C     kSurfC  :: vertical index of the surface tracer cell
+C     kSurfW  :: vertical index of the surface U point
+C     kSurfS  :: vertical index of the surface V point
+C     kLowC   :: index of the r-lowest "wet cell" (2D)
+C IMPORTANT: ksurfC,W,S = Nr+1 and kLowC = 0 where the fluid column
+C            is empty (continent)
+      COMMON /GRID_I/
+     &  kSurfC, kSurfW, kSurfS,
+     &  kLowC
+      INTEGER kSurfC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER kSurfW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER kSurfS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER kLowC (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 

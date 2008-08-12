@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.14 2007/01/02 20:52:07 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.15 2008/08/12 22:24:40 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -27,16 +27,6 @@ C     phi0surf :: starting point for integrating phi_Hyd
       _RL  recip_Bo(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  topoZ   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  phi0surf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-C--   COMMON /SURF_INDEX/ Common block for surface related index
-C     ksurfC ::  vertical index of the surface tracer cell
-C     ksurfW ::  vertical index of the surface U point 
-C     ksurfS ::  vertical index of the surface V point 
-C IMPORTANT:  ksurfC,W,S = Nr+1  where the fluid column is empty (continent)
-      COMMON /SURF_INDEX/ ksurfC, ksurfW, ksurfS
-      INTEGER ksurfC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER ksurfW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER ksurfS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C--   COMMON /SURF_CORREC/ Common block for correction of source/sink of 
 C--                        Tracer due to W at the surface with Linear
