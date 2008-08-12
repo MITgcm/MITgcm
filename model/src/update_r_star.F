@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_r_star.F,v 1.6 2007/01/30 03:18:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_r_star.F,v 1.7 2008/08/12 22:42:33 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -76,7 +76,7 @@ CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
 C-- Apply OBC to rStar_Factor_W,S before updating hFacW,S
         IF (useOBCS) THEN
          CALL OBCS_APPLY_R_STAR(
-     I                    bi, bj, ksurfC, ksurfW, ksurfS,
+     I                    bi, bj,
      U                    rStarFacC, rStarFacW, rStarFacS,
      I                    myTime, myIter, myThid )
         ENDIF
