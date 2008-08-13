@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.5 2006/03/17 03:23:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.6 2008/08/13 18:53:14 stephd Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -30,7 +30,7 @@ C--   Bulk Formula parameter
      &         UvelFile, VvelFile, WvelFile, ThetFile,
      &         SaltFile, ConvFile, GMwxFile, GMwyFile,
      &         GMwzFile, HfluxFile, SfluxFile, KPP_DiffSFile,
-     &         KPP_ghatFile
+     &         KPP_ghatFile, ICEFile
 
       NAMELIST /OFFLINE_PARM02/
      &         offlineIter0, offlineOffsetIter,
@@ -69,6 +69,7 @@ C--   Default values
       SFluxFile=' '
       KPP_DiffSFile=' '
       KPP_ghatFile=' '
+      ICEFile=' '
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=OFFLINE_PARM01)

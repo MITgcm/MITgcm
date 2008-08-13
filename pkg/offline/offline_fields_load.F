@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.12 2007/11/08 22:26:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.13 2008/08/13 18:53:14 stephd Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -72,10 +72,10 @@ C     aWght, bWght :: Interpolation weights
       COMMON /OFFLINEFFIELDS/
      &                 uvel0, vvel0, wvel0, tave0, save0,
      &                 conv0, gmkx0, gmky0, gmkz0, hflx0,
-     &                 sflx0, kdfs0, kght0,
+     &                 sflx0, kdfs0, kght0, icem0,
      &                 uvel1, vvel1, wvel1, tave1, save1,
      &                 conv1, gmkx1, gmky1, gmkz1, hflx1,
-     &                 sflx1, kdfs1, kght1
+     &                 sflx1, kdfs1, kght1, icem1
       _RS  uvel0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  uvel1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  vvel0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -98,6 +98,8 @@ C     aWght, bWght :: Interpolation weights
       _RS  hflx1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sflx0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sflx1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  icem0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  icem1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  kdfs0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  kdfs1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  kght0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -126,6 +128,7 @@ C First call requires that we initialize everything to zero for safety
        CALL LEF_ZERO3( gmkz0 ,myThid )
        CALL LEF_ZERO2( hflx0 ,myThid )
        CALL LEF_ZERO2( sflx0 ,myThid )
+       CALL LEF_ZERO2( icem0 ,myThid )
        CALL LEF_ZERO3( kdfs0 ,myThid )
        CALL LEF_ZERO3( kght0 ,myThid )
        CALL LEF_ZERO3( uvel1 ,myThid )
@@ -139,6 +142,7 @@ C First call requires that we initialize everything to zero for safety
        CALL LEF_ZERO3( gmkz1 ,myThid )
        CALL LEF_ZERO2( hflx1 ,myThid )
        CALL LEF_ZERO2( sflx1 ,myThid )
+       CALL LEF_ZERO2( icem1 ,myThid )
        CALL LEF_ZERO3( kdfs1 ,myThid )
        CALL LEF_ZERO3( kght1 ,myThid )
       ENDIF
@@ -303,6 +307,17 @@ c       print*,'OFFLINE READ', fn
         CALL READ_REC_3D_RS( fn, prec,  1, sflx1, 1, myIter, myThid )
        ENDIF
 
+       IF (IceFile      .NE. ' ') THEN
+        I1=IFNBLNK(IceFile)
+        I2=ILNBLNK(IceFile)
+        WRITE(fn,'(A,A,I10.10)') IceFile(I1:I2),'.',
+     &        intime0*Ifprd +offlineIter0
+        CALL READ_REC_3D_RS( fn, prec,  1, icem0, 1, myIter, myThid )
+        WRITE(fn,'(A,A,I10.10)') IceFile(I1:I2),'.',
+     &        intime1*Ifprd +offlineIter0
+        CALL READ_REC_3D_RS( fn, prec,  1, icem1, 1, myIter, myThid )
+       ENDIF
+
 #ifdef ALLOW_KPP
        IF (KPP_DiffSFile      .NE. ' ') THEN
         I1=IFNBLNK(KPP_DiffSFile)
@@ -347,6 +362,8 @@ c       print*,'OFFLINE READ', fn
        _EXCH_XY_R4(hflx1 , myThid )
        _EXCH_XY_R4(sflx0, myThid )
        _EXCH_XY_R4(sflx1, myThid )
+       _EXCH_XY_R4(icem0, myThid )
+       _EXCH_XY_R4(icem1, myThid )
        _EXCH_XYZ_R4(kdfs0 , myThid )
        _EXCH_XYZ_R4(kdfs1 , myThid )
        _EXCH_XYZ_R4(kght0, myThid )
@@ -390,6 +407,10 @@ C--   Interpolate uvel, vvel, wvel
      &                       +aWght*sflx1(i,j,bi,bj)
           surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
      &        *rUnit2mass
+
+          ICEM(i,j,bi,bj) =  bWght*icem0(i,j,bi,bj)
+     &                       +aWght*icem1(i,j,bi,bj)
+
 #ifdef ALLOW_KPP
           KPPdiffKzS(i,j,k,bi,bj) = bWght*kdfs0(i,j,k,bi,bj)
      &                       +aWght*kdfs1(i,j,k,bi,bj)
