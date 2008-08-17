@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.219 2008/08/05 21:55:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.220 2008/08/17 02:06:04 jmc Exp $
 C $Name:  $
 C
 
@@ -847,55 +847,57 @@ C             derived from the orography. Implemented: 0,1 (see INI_P_GROUND)
       INTEGER integr_GeoPot, selectFindRoSurf
 
 C Logical flags for selecting packages
+      LOGICAL useGAD
+      LOGICAL useOBCS
+      LOGICAL useSHAP_FILT
+      LOGICAL useZONAL_FILT
       LOGICAL useOPPS
       LOGICAL usePP81
       LOGICAL useMY82
       LOGICAL useGGL90
       LOGICAL useKPP
-      LOGICAL useGAD
       LOGICAL useGMRedi
-      LOGICAL useOBCS
-      LOGICAL useAIM
-      LOGICAL useLand
+      LOGICAL useDOWN_SLOPE
       LOGICAL useCAL
       LOGICAL useEXF
+      LOGICAL useBulkForce
       LOGICAL useEBM
+      LOGICAL useCheapAML
       LOGICAL useGrdchk
       LOGICAL useECCO
-      LOGICAL useSHAP_FILT
-      LOGICAL useZONAL_FILT
+      LOGICAL useSBO
       LOGICAL useFLT
       LOGICAL usePTRACERS
       LOGICAL useGCHEM
       LOGICAL useRBCS
       LOGICAL useOffLine
       LOGICAL useMATRIX
-      LOGICAL useSBO
       LOGICAL useSEAICE
+      LOGICAL useSALT_PLUME
       LOGICAL useShelfIce
       LOGICAL useThSIce
       LOGICAL useATM2d
-      LOGICAL useBulkForce
-      LOGICAL usefizhi
-      LOGICAL usegridalt
+      LOGICAL useAIM
+      LOGICAL useLand
+      LOGICAL useFizhi
+      LOGICAL useGridAlt
       LOGICAL useDiagnostics
-      LOGICAL useMNC
       LOGICAL useREGRID
+      LOGICAL useMNC
       LOGICAL useRunClock
       LOGICAL useEMBED_FILES
       LOGICAL useMYPACKAGE
-      LOGICAL useSALT_PLUME
-      LOGICAL useCheapAML
       COMMON /PARM_PACKAGES/
+     &        useGAD, useOBCS, useSHAP_FILT, useZONAL_FILT,
      &        useOPPS, usePP81, useMY82, useGGL90, useKPP,
-     &        useGAD, useGMRedi, useOBCS, useAIM, useLand,
-     &        useCAL, useEXF, useEBM, useGrdchk, useECCO,
-     &        useSHAP_FILT, useZONAL_FILT, useFLT,
+     &        useGMRedi, useDOWN_SLOPE,
+     &        useCAL, useEXF, useBulkForce, useEBM, useCheapAML,
+     &        useGrdchk, useECCO, useSBO, useFLT,
      &        usePTRACERS, useGCHEM, useRBCS, useOffLine, useMATRIX,
-     &        useSBO, useSEAICE, useShelfIce,
-     &        useThSIce, useATM2D, useBulkForce,
-     &        usefizhi, usegridalt, useDiagnostics, useMNC, useREGRID,
-     &        useRunClock, useEMBED_FILES, useSALT_PLUME, useCheapAML,
+     &        useSEAICE, useSALT_PLUME, useShelfIce, useThSIce,
+     &        useATM2D, useAIM, useLand, useFizhi, useGridAlt,
+     &        useDiagnostics, useREGRID, useMNC,
+     &        useRunClock, useEMBED_FILES,
      &        useMYPACKAGE
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
