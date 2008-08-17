@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.56 2008/08/05 22:02:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.57 2008/08/17 02:08:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -12,16 +12,16 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE PACKAGES_READPARMS                             
-C     | o Read runtime package configuration parameters           
+C     | SUBROUTINE PACKAGES_READPARMS
+C     | o Read runtime package configuration parameters
 C     *==========================================================*
-C     |   Packages can have internal runtime configuration        
-C     |   parameters. A package provides a routine                
-C     |   ${PKGNAME}_READ_PARMS to read these parameters. In      
-C     |   general this routine should read parameters from a file 
-C     |   called data.${pkgname}.                                 
-C     |   This routine (S/R PACKAGES_READPARMS) calls per-package 
-C     |   parameter reading routines.                             
+C     |   Packages can have internal runtime configuration
+C     |   parameters. A package provides a routine
+C     |   ${PKGNAME}_READ_PARMS to read these parameters. In
+C     |   general this routine should read parameters from a file
+C     |   called data.${pkgname}.
+C     |   This routine (S/R PACKAGES_READPARMS) calls per-package
+C     |   parameter reading routines.
 C     *==========================================================*
 C     \ev
 
@@ -35,6 +35,8 @@ C       |
 C       |-- CAL_READPARMS
 C       |
 C       |-- GMREDI_READPARMS
+C       |
+C       |-- DWNSLP_READPARMS
 C       |
 C       |-- KPP_READPARMS
 C       |
@@ -136,12 +138,17 @@ C--   Initialize RUNCLOCK parameters
 
 #ifdef ALLOW_CAL
 C--   Initialise the calendar package.
-      IF ( useCAL ) call cal_readparms( myThid )
+      IF ( useCAL ) CALL CAL_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_GMREDI
 C--   Initialize GM/Redi parameters
       IF (useGMRedi) CALL GMREDI_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_DOWN_SLOPE
+C--   Initialize Down-Slope flow parameters
+      IF (useDOWN_SLOPE) CALL DWNSLP_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_KPP
@@ -197,7 +204,7 @@ C--   Initialize SHELFICE parameters
 #endif
 
 #ifdef ALLOW_OFFLINE
-      call OFFLINE_READPARMS( myThid )
+      CALL OFFLINE_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_BULK_FORCE
@@ -232,48 +239,48 @@ C -- initialize Therm.Sea-Ice parameters
 
 #ifdef ALLOW_CHEAPAML
 C -- initialize cheapaml parameters
-      IF (useCheapAml) CALL CHEAPAML_READPARMS( myThid )
+      IF (useCheapAML) CALL CHEAPAML_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_CTRL
 C--   Initialise the optim. parameters.
-      call optim_readparms( myThid )
+      CALL OPTIM_READPARMS( myThid )
 C--   Initialise the control parameters
-      call ctrl_readparms( myThid )
+      CALL CTRL_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_COST
 C--   Initialise the cost parameters
-      call cost_readparms( mythid )
+      CALL COST_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_GRDCHK
 C--   Initialise gradient check parameters
-      if (useGrdchk) call grdchk_readparms( myThid )
+      if (useGrdchk) CALL GRDCHK_READPARMS( myThid )
 #endif
 
 C--   Custom routine to set forcing fields.
 #ifdef ALLOW_EXF
-      IF (useEXF) call exf_readparms  ( mythid )
+      IF (useEXF) CALL EXF_READPARMS  ( myThid )
 #endif
 
 #ifdef ALLOW_EBM
-      IF (useEBM) call ebm_readparms( mythid )
+      IF (useEBM) CALL EBM_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_SMOOTH
 c--   Initialize SMOOTH package parameters
-      call smooth_readparms ( myThid )
+      CALL SMOOTH_READPARMS ( myThid )
 #endif
 
 #ifdef ALLOW_ECCO
 c--   Initialize ECCO package parameters
-      call ecco_readparms ( myThid )
+      CALL ECCO_READPARMS ( myThid )
 #endif
 
 #ifdef ALLOW_PROFILES
 c--   Initialize PROFILES package parameters
-      call profiles_readparms ( myThid )
+      CALL PROFILES_READPARMS ( myThid )
 #endif
 
 #ifdef COMPONENT_MODULE
@@ -281,12 +288,10 @@ C--   set Coupling parameters
       IF ( useCoupler ) CALL CPL_READPARMS( myThid )
 #endif /* COMPONENT_MODULE */
 
-CAMM
 #ifdef ALLOW_FIZHI
 C--   set model date and time and other fizhi parameters
-      IF ( usefizhi ) call fizhi_readparms(myThid )
+      IF ( useFizhi ) CALL FIZHI_READPARMS( myThid )
 #endif /* ALLOW_FIZHI */
-CAMM
 
 #ifdef ALLOW_DIAGNOSTICS
 C--   set diagnostics choices

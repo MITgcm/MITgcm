@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.68 2008/08/11 22:25:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.69 2008/08/17 02:08:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,8 +36,8 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
 #endif
@@ -103,6 +103,9 @@ C     i,j,k         :: loop indices
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif /* ALLOW_DIAGNOSTICS */
+#ifdef ALLOW_DOWN_SLOPE
+      _RL rhoInSitu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif /* ALLOW_DOWN_SLOPE */
 
 CEOP
 
@@ -130,6 +133,7 @@ C--   dummy statement to end declaration part
      &       DIAGNOSTICS_IS_ON('DRHODR  ',myThid) ) doDiagsRho = 1
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+
 
 #ifdef ALLOW_SEAICE
       IF ( useSEAICE ) THEN
@@ -276,18 +280,20 @@ C     just ensure that all memory references are to valid floating
 C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
 
+#ifdef ALLOW_AUTODIFF_TAMC
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          rhoK   (i,j)   = 0. _d 0
           rhoKm1 (i,j)   = 0. _d 0
+          rhoK   (i,j)   = 0. _d 0
           rhoKp1 (i,j)   = 0. _d 0
          ENDDO
         ENDDO
+#endif /* ALLOW_AUTODIFF_TAMC */
 
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-C This is currently also used by IVDC and Diagnostics
+C This is currently used by GMRedi, IVDC, MXL-depth  and Diagnostics
            sigmaX(i,j,k) = 0. _d 0
            sigmaY(i,j,k) = 0. _d 0
            sigmaR(i,j,k) = 0. _d 0
@@ -351,10 +357,19 @@ C--     Start of diagnostic loop
 #ifdef ALLOW_AUTODIFF_TAMC
 C? Patrick, is this formula correct now that we change the loop range?
 C? Do we still need this?
-cph kkey formula corrected. 
+cph kkey formula corrected.
 cph Needed for rhoK, rhoKm1, in the case useGMREDI.
          kkey = (itdkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_DOWN_SLOPE
+          IF ( useDOWN_SLOPE ) THEN
+            CALL DWNSLP_CALC_RHO(
+     I                  theta, salt,
+     O                  rhoK, rhoInSitu,
+     I                  k, bi, bj, myTime, myIter, myThid )
+          ENDIF
+#endif /* ALLOW_DOWN_SLOPE */
 
 C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
@@ -364,17 +379,19 @@ C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
             IF ( debugLevel .GE. debLevB )
      &       CALL DEBUG_CALL('FIND_RHO_2D',myThid)
 #endif
+            IF ( .NOT.useDOWN_SLOPE ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-            CALL FIND_RHO_2D(
+             CALL FIND_RHO_2D(
      I                 iMin, iMax, jMin, jMax, k,
      I                 theta(1-OLx,1-OLy,k,bi,bj),
      I                 salt (1-OLx,1-OLy,k,bi,bj),
      O                 rhoK,
      I                 k, bi, bj, myThid )
 
+            ENDIF
             IF (k.GT.1) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -403,12 +420,12 @@ cph Avoid variable aliasing for adjoint !!!
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifdef GMREDI_WITH_STABLE_ADJOINT 
+#ifdef GMREDI_WITH_STABLE_ADJOINT
 cgf zero out adjoint fields to stabilize pkg/gmredi adjoint
 cgf -> cuts adjoint dependency from slope to state
-      CALL ZERO_ADJ_LOC( Nr, sigmaX, myThid)
-      CALL ZERO_ADJ_LOC( Nr, sigmaY, myThid)
-      CALL ZERO_ADJ_LOC( Nr, sigmaR, myThid)
+            CALL ZERO_ADJ_LOC( Nr, sigmaX, myThid)
+            CALL ZERO_ADJ_LOC( Nr, sigmaY, myThid)
+            CALL ZERO_ADJ_LOC( Nr, sigmaR, myThid)
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
           ENDIF
@@ -438,7 +455,7 @@ C--     end of diagnostic k loop (Nr:1)
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE IVDConvCount(:,:,:,bi,bj) 
+CADJ STORE IVDConvCount(:,:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 #endif
 
@@ -571,7 +588,7 @@ C--     Compute GGL90 mixing coefficients
         ENDIF
 #endif /* ALLOW_TIMEAVE */
 
-#ifdef  ALLOW_GMREDI
+#ifdef ALLOW_GMREDI
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef GM_EXCLUDE_CLIPPING
 cph storing here is needed only for one GMREDI_OPTIONS:
@@ -591,24 +608,35 @@ C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
      &     CALL DEBUG_CALL('GMREDI_CALC_TENSOR',myThid)
 #endif
           CALL GMREDI_CALC_TENSOR(
-c    I             bi, bj, iMin, iMax, jMin, jMax,
-c    I             sigmaX, sigmaY, sigmaR,
-c    I             myThid )
      I             iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             bi, bj, myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
         ELSE
           CALL GMREDI_CALC_TENSOR_DUMMY(
-c    I             bi, bj, iMin, iMax, jMin, jMax,
-c    I             sigmaX, sigmaY, sigmaR,
-c    I             myThid )
      I             iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             bi, bj, myTime, myIter, myThid )
 #endif /* ALLOW_AUTODIFF_TAMC */
         ENDIF
-#endif  /* ALLOW_GMREDI */
+#endif /* ALLOW_GMREDI */
+
+#ifdef ALLOW_DOWN_SLOPE
+        IF ( useDOWN_SLOPE ) THEN
+C--     Calculate Downsloping Flow for Down_Slope parameterization
+         IF ( usingPCoords ) THEN
+          CALL DWNSLP_CALC_FLOW(
+     I                bi, bj, kSurfC,
+     I                rhoInSitu,
+     I                myTime, myIter, myThid )
+         ELSE
+          CALL DWNSLP_CALC_FLOW(
+     I                bi, bj, kLowC,
+     I                rhoInSitu,
+     I                myTime, myIter, myThid )
+         ENDIF
+        ENDIF
+#endif /* ALLOW_DOWN_SLOPE */
 
 #ifndef ALLOW_AUTODIFF_TAMC
 C---  if fluid Is Water: end

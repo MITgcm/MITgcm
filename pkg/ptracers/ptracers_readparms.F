@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.30 2008/04/05 18:22:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.31 2008/08/17 02:09:36 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -104,7 +104,8 @@ C     Set defaults values for parameters in PTRACERS.h
         ENDDO
         PTRACERS_EvPrRn(iTracer)=UNSET_RL
         PTRACERS_useGMRedi(iTracer)=useGMRedi
-        PTRACERS_useKPP(iTracer)=useKPP
+        PTRACERS_useGMRedi(iTracer)=useGMRedi
+        PTRACERS_useDWNSLP(iTracer)=useDOWN_SLOPE
         PTRACERS_initialFile(iTracer)=' '
         DO ic = 1,MAX_LEN_FNAM
           PTRACERS_names(iTracer)(ic:ic) = ' '
@@ -200,6 +201,15 @@ C     Check that enough parameters were specified
           CALL PRINT_ERROR( msgBuf, myThid )
           WRITE(msgBuf,'(A,L5,A)')
      &     'PTRACERS_READPARMS: But not useGMRedi (=',useGMRedi,')'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+        ENDIF
+        IF ( PTRACERS_useDWNSLP(iTracer) .AND. .NOT.useDOWN_SLOPE ) THEN
+          WRITE(msgBuf,'(2A,I3,A)') 'PTRACERS_READPARMS:',
+     &     ' pTracers_useDWNSLP(',iTracer,' ) is TRUE'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(2A,L5,A)') 'PTRACERS_READPARMS:',
+     &     ' But not useDOWN_SLOPE (=', useDOWN_SLOPE, ')'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
         ENDIF
@@ -305,6 +315,8 @@ C--   Print a summary of pTracer parameter values:
      &     'PTRACERS_diffKrNr =', ' /* Vertical Diffusivity */')
         CALL WRITE_0D_L( PTRACERS_useGMRedi(iTracer), INDEX_NONE,
      &     'PTRACERS_useGMRedi =', ' /* apply GM-Redi */')
+        CALL WRITE_0D_L( PTRACERS_useDWNSLP(iTracer), INDEX_NONE,
+     &     'PTRACERS_useDWNSLP =', ' /* apply DOWN-SLOPE Flow */')
         CALL WRITE_0D_L( PTRACERS_useKPP(iTracer), INDEX_NONE,
      &     'PTRACERS_useKPP =', ' /* apply KPP scheme */')
         CALL WRITE_1D_R8( PTRACERS_ref(1,iTracer), Nr, INDEX_K,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.43 2008/04/07 21:15:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.44 2008/08/17 02:08:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -161,6 +161,11 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useGMRedi) CALL GMREDI_CHECK( myThid )
 #else
       IF (useGMRedi) CALL PACKAGES_ERROR_MSG('GMRedi',' ',myThid)
+#endif
+
+#ifndef ALLOW_DOWN_SLOPE
+      IF (useDOWN_SLOPE)
+     &            CALL PACKAGES_ERROR_MSG('DOWN_SLOPE',' ',myThid)
 #endif
 
 #ifdef ALLOW_OBCS
