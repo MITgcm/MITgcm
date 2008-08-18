@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.31 2008/08/17 02:09:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.32 2008/08/18 14:34:43 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -58,6 +58,7 @@ C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
      &     PTRACERS_ref,
      &     PTRACERS_EvPrRn,
      &     PTRACERS_useGMRedi,
+     &     PTRACERS_useDWNSLP,
      &     PTRACERS_useKPP,
      &     PTRACERS_Iter0,
      &     PTRACERS_numInUse,
