@@ -1,0 +1,92 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef = 15*20.,
+ sRef = 15*35.,
+ viscAr=1.E-3,
+ viscAh=5.E5,
+ diffKhT=0.,
+ diffKrT=3.E-5,
+ diffKhS=0.,
+ diffKrS=3.E-5,
+ rhoConst=1035.,
+ rhoConstFresh=1000.,
+ gravity=9.81,
+ eosType='JMD95P',
+ ivdc_kappa=100.,
+ implicitDiffusion=.TRUE.,
+ allowFreezing=.TRUE.,
+ exactConserv=.TRUE.,
+ useRealFreshWaterFlux=.TRUE.,
+ useCDscheme=.TRUE.,
+ quasiHydrostatic=.TRUE.,
+ useNHMTerms=.TRUE.,
+# turn on looped cells
+ hFacMin=.05,
+ hFacMindr=50.,
+# set precision of data files
+ readBinaryPrec=32,
+#debugMode=.TRUE.,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=500,
+ cg2dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=36000,
+ nTimeSteps=10,
+# 100 years of integration will yield a reasonable flow field
+# startTime =          0.,
+# endTime   = 3110400000.,
+ deltaTmom = 1800.,
+ tauCD =     321428.,
+ deltaTtracer= 86400.,
+ deltaTClock = 86400.,
+ deltaTfreesurf= 86400.,
+ abEps = 0.1,
+ pickupStrictlyMatch=.FALSE.,
+ pChkptFreq=1555200000.,
+ ChkptFreq=  311040000.,
+ dumpFreq=   311040000.,
+#monitorFreq=31104000.,
+ monitorFreq=1.,
+# 2 months restoring timescale for temperature
+ tauThetaClimRelax=  5184000.,
+# 6 months restoring timescale for salinity
+ tauSaltClimRelax = 15552000.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2592000.,
+ externForcingCycle=31104000.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ delR= 50.,  70., 100., 140., 190.,
+      240., 290., 340., 390., 440.,
+      490., 540., 590., 640., 690.,
+ phiMin=-80.,
+ dySpacing=4.,
+ dxSpacing=4.,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile=      'bathymetry.bin',
+ hydrogThetaFile='lev_t.bin',
+ hydrogSaltFile= 'lev_s.bin',
+ zonalWindFile=  'trenberth_taux.bin',
+ meridWindFile=  'trenberth_tauy.bin',
+ thetaClimFile=  'lev_sst.bin',
+ saltClimFile=   'lev_sss.bin',
+ surfQFile=      'ncep_qnet.bin',
+ the_run_name=   'global_ocean.90x40x15',
+ EmPmRFile=      'ncep_emp.bin',
+ &

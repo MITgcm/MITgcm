@@ -1,0 +1,12 @@
+# DOWN_SLOPE package parameters (lines beginning "#" are comments):
+#   DWNSLP_slope  :: fixed slope (=0 => use the local slope)
+#   DWNSLP_rec_mu :: reciprol friction parameter (unit = time scale [s])
+#         used to compute the flow: U=dy*dz*(slope * g/mu * dRho / rho0)
+#   dwnslp_drFlow :: max. thickness [m] of the effective downsloping flow layer
+ &DWNSLP_PARM01
+  DWNSLP_slope = 5.E-3,
+  DWNSLP_rec_mu= 1.E+4,
+  DWNSLP_drFlow= 30.,
+# temp_useDWNSLP=.TRUE.,
+# salt_useDWNSLP=.FALSE.,
+ &

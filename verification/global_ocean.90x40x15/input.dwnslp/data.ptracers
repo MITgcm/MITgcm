@@ -1,0 +1,14 @@
+# This set-up makes is supposed to immitate salt. That is, PTRACER(:,:,:,1) 
+# should look exactly like S(:,:,:).
+ &PTRACERS_PARM01
+ PTRACERS_numInUse=1,
+ PTRACERS_Iter0 = 36000,
+#-- for each tracer
+ PTRACERS_advScheme(1)=2,
+ PTRACERS_diffKh(1)=0.E3,
+ PTRACERS_diffKr(1)=3.E-5,
+#PTRACERS_useDWNSLP(1)=.FALSE.,
+ PTRACERS_initialFile(1)='lev_s.bin',
+#EH3 added for MNC
+ PTRACERS_names(1)='salt_mimic',
+ &

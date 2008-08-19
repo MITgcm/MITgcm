@@ -1,0 +1,9 @@
+# Packages (lines beginning "#" are comments)
+ &PACKAGES
+ useGMRedi=.TRUE.,
+ useDOWN_SLOPE=.TRUE.,
+ usePTRACERS=.TRUE.,
+ useDiagnostics=.TRUE.,
+#useSBO=.TRUE.,
+#useMNC=.TRUE.,
+ &
