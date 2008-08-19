@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.116 2008/06/26 14:41:33 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.117 2008/08/19 18:29:12 jmc Exp $
 #  $Name:  $
 #
 
@@ -179,31 +179,6 @@ testoutput_var()
     return $digits_of_similarity
 }
 
-check_for_add_mon_output()
-{
-    # Check for additional types of monitor output
-    if test "x$1" = x ; then
-	return
-    fi
-
-    for ii in $PTRACERS_NUM ; do
-	eval "HAVE_PTR0"$ii"=f"
-    done
-
-    ptr_add="trcstat_ptracerXX_min trcstat_ptracerXX_max"
-    ptr_add="$ptr_add trcstat_ptracerXX_mean trcstat_ptracerXX_sd"
-    for ii in $PTRACERS_NUM ; do
-	for jj in $ptr_add ; do
-	    name=`eval "echo $jj | sed -e 's|XX|0"$ii"|g'"`
-	    tst=`grep $name $1 | wc -l | awk '{print $1}'`
-	    if test ! "x$tst" = x0 ; then
-		eval "HAVE_PTR0"$ii"=t"
-	    fi
-	done
-	#  eval 'echo "HAVE_PTR0'$ii' = $HAVE_PTR0'$ii'"'
-    done
-}
-
 testoutput_run()
 {
     # testoutput_run directory subdir reference_output
@@ -221,11 +196,29 @@ testoutput_run()
         listVar=`echo $listChk | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' \
                                | sed 's/+//g' | sed "s/^$sVar//"`
 	if [ $debug -gt 0 ]; then echo "testoutput_run: listVar(I)='$listVar'" 1>&2 ; fi
- 	for ii in 1 2 3 4 5 6 7 8 9 ; do
-	  tst=`eval 'echo "$HAVE_PTR0'$ii'"'`
-	 #echo "-- ptr test=" $tst "number of var=" `echo $listVar | awk '{print NF}'` 1>&2
- 	  if test "x$tst" != xt ; then listVar=`echo "$listVar" | sed "s/ pt$ii..//g"` ; fi
-        done
+        # check for ptracer output in reference_output file :
+        outpref=$1/results/$3
+	ptr_mon="trcstat_ptracerXX_min trcstat_ptracerXX_max"
+	ptr_mon="$ptr_mon trcstat_ptracerXX_mean trcstat_ptracerXX_sd"
+	for ii in $PTRACERS_NUM ; do
+	    ptrfound=0
+	    for jj in $ptr_mon ; do
+		name=`eval "echo $jj | sed -e 's|XX|0"$ii"|g'"`
+		tst=`grep $name $outpref | wc -l | awk '{print $1}'`
+		if test ! "x$tst" = x0 ; then ptrfound=1 ; fi
+	    done
+	    if test $ptrfound = '1' ; then
+		eval "HAVE_PTR0"$ii"=t"
+	    else
+		eval "HAVE_PTR0"$ii"=f"
+	      if test "x$ADM" = x ; then
+	      # remove this ptr from the list of output variable to check
+	      # echo "-- ptr test=" $tst "number of var=" `echo $listVar | awk '{print NF}'` 1>&2
+		listVar=`echo "$listVar" | sed "s/ pt$ii..//g"`
+	      fi
+	    fi
+	#   eval 'echo "HAVE_PTR0'$ii' = $HAVE_PTR0'$ii'"' 1>&2
+	done
         tst=`echo $sVar $listVar | awk '{ for(i=2;i<=NF;i++){if($i==$1)t+=1}; print t }'`
         if test $tst != 1 ; then
           if test $tst = 0 ; then echo "==> WARNING: selected var >$sVar< not found" 1>&2
@@ -763,7 +756,7 @@ DELDIR=
 
 ADM=
 
-# Additional monitor types
+# list of pTracers to check for monitor output
 PTRACERS_NUM="1 2 3 4 5"
 
 MATCH_CRIT=13
@@ -1059,14 +1052,11 @@ if test "x$ADM" = x ; then
     line_3="N n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d"
     line_4="2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  ."
     for ii in $PTRACERS_NUM ; do
-	#  tst=`eval 'echo $HAVE_PTR0'$ii`
-	#  if test "x$tst" = xt ; then
 	line_0="$line_0  --PTR 0"$ii"--"
 	line_1="$line_1        m  s"
 	line_2="$line_2  m  m  e  ."
 	line_3="$line_3  i  a  a  d"
 	line_4="$line_4  n  x  n  ."
-	#  fi
     done
     echo "$line_0" | tee -a $SUMMARY
     echo "$line_1" | tee -a $SUMMARY
@@ -1127,11 +1117,8 @@ for dir in $TESTDIRS ; do
 	echo "can't read \"$fout\" -- skipping $dir"
 	continue
     fi
-    if test "x$ADM" = x ; then
-	check_for_add_mon_output  $fout
-    fi
 
-    # Check for additional types of monitor output
+    # Check for specific files for particular type of run
 
     if test ! -r $CODE_DIR"/SIZE.h_mpi" -a "x$MPI" = "xt" ; then
 	echo "can't find \"$CODE_DIR/SIZE.h_mpi\" -- skipping $dir"
