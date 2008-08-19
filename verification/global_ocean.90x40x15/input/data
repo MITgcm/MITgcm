@@ -12,7 +12,7 @@
  diffKrT=3.E-5,
  diffKhS=0.,
  diffKrS=3.E-5,
- rhonil=1035.,
+ rhoConst=1035.,
  rhoConstFresh=1000.,
  gravity=9.81,
  eosType='JMD95P',
@@ -54,8 +54,6 @@
  pChkptFreq= 311040000.,
  dumpFreq=   311040000.,
  dumpFreq=   864000.,
- taveFreq=   311040000.,
- taveFreq=   864000.,
 #monitorFreq=31104000.,
  monitorFreq=1.,
 # 2 months restoring timescale for temperature

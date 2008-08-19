@@ -1,7 +1,7 @@
 # Packages (lines beginning "#" are comments)
  &PACKAGES
  useGMRedi=.TRUE.,
-# usePTRACERS=.TRUE.,
  useSBO=.TRUE.,
+ useDiagnostics=.TRUE.,
  useMNC=.TRUE.,
  &
