@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.37 2008/03/28 18:48:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.38 2008/08/21 16:01:21 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -69,18 +69,18 @@ C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
      &                   etaH
       _RL  etaH  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-cph(
-cph the following block will eventually move to a separate
-cph header file containing requires anomaly fields of control vars.
-cph
-#if (defined ALLOW_3D_DIFFKR || \
-     (defined (ALLOW_AUTODIFF) && defined (ALLOW_DIFFKR_CONTROL)))
+#ifdef ALLOW_3D_DIFFKR
 C     diffKr :: full 3D specification of Laplacian diffusion coeff.
 C               for mixing of tracers vertically ( units of r^2/s )
       COMMON /DYNVARS_DIFFKR/
      &                       diffKr
       _RL  diffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
+
+cph(
+cph the following block will eventually move to a separate
+cph header file containing requires anomaly fields of control vars.
+cph
 #if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
       COMMON /DYNVARS_KAPGM/
      &                       kapgm
@@ -104,6 +104,14 @@ C     BL79LatArray :: is used for latitudinal dependence of
 C                     BryanLewis79 vertical diffusivity
       COMMON /DYNVARS_BL79LatArray/ BL79LatArray
       _RL BL79LatArray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+
+#ifdef ALLOW_ADDFLUID
+C     addMass   :: source (<0: sink) of fluid in the domain interior
+C                  in mass per unit of time [kg/s]
+C                  (generalisation of oceanic real fresh-water flux)
+      COMMON /DYNVARS_ADD_FLUID/ addMass
+      _RL addMass(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 C     diagnostic variables:
