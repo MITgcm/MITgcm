@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.32 2008/08/18 14:34:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.33 2008/08/21 15:16:01 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -105,8 +105,8 @@ C     Set defaults values for parameters in PTRACERS.h
         ENDDO
         PTRACERS_EvPrRn(iTracer)=UNSET_RL
         PTRACERS_useGMRedi(iTracer)=useGMRedi
-        PTRACERS_useGMRedi(iTracer)=useGMRedi
         PTRACERS_useDWNSLP(iTracer)=useDOWN_SLOPE
+        PTRACERS_useKPP(iTracer)   =useKPP
         PTRACERS_initialFile(iTracer)=' '
         DO ic = 1,MAX_LEN_FNAM
           PTRACERS_names(iTracer)(ic:ic) = ' '
