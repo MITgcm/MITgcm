@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/CPP_OPTIONS.h,v 1.2 2008/01/18 03:39:26 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/CPP_OPTIONS.h,v 1.3 2008/08/21 16:03:22 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -35,6 +35,15 @@ C o Execution environment support options
 # include "ECCO_CPPOPTIONS.h"
 #endif
 
-#endif /* CPP_OPTIONS_H */
+C o Allow full 3D specification of vertical diffusivity
+#ifdef ALLOW_DIFFKR_CONTROL
+C - Need to be defined if using DIFFKR_CONTROL
+C   (alternatively, could have put this in ECCO_CPPOPTIONS)
+#define ALLOW_3D_DIFFKR
+#else
+C - otherwise, can be turned on or off hereafter:
+#undef  ALLOW_3D_DIFFKR
+#endif /* ALLOW_DIFFKR_CONTROL */
 
+#endif /* CPP_OPTIONS_H */
 

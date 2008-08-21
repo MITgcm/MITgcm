@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/CPP_OPTIONS.h,v 1.1 2006/12/15 18:11:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/CPP_OPTIONS.h,v 1.2 2008/08/21 16:03:22 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -55,6 +55,16 @@ cph     defined (ALLOW_ECCO) || \
 cph     defined (ALLOW_EXF))
 #include "ECCO_CPPOPTIONS.h"
 cph#endif
+
+C o Allow full 3D specification of vertical diffusivity
+#ifdef ALLOW_DIFFKR_CONTROL
+C - Need to be defined if using DIFFKR_CONTROL
+C   (alternatively, could have put this in ECCO_CPPOPTIONS)
+#define ALLOW_3D_DIFFKR
+#else
+C - otherwise, can be turned on or off hereafter:
+#undef  ALLOW_3D_DIFFKR
+#endif /* ALLOW_DIFFKR_CONTROL */
 
 #endif /* CPP_OPTIONS_H */
 

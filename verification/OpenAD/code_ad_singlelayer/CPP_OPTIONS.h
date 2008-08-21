@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad_singlelayer/CPP_OPTIONS.h,v 1.1 2007/05/10 16:29:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad_singlelayer/CPP_OPTIONS.h,v 1.2 2008/08/21 16:03:22 jmc Exp $
 C $Name:  $
 
 C CPP flags controlling which code in included in the files that
@@ -39,6 +39,15 @@ C o Execution environment support options
 # include "ECCO_CPPOPTIONS.h"
 #endif
 
-#endif /* CPP_OPTIONS_H */
+C o Allow full 3D specification of vertical diffusivity
+#ifdef ALLOW_DIFFKR_CONTROL
+C - Need to be defined if using DIFFKR_CONTROL
+C   (alternatively, could have put this in ECCO_CPPOPTIONS)
+#define ALLOW_3D_DIFFKR
+#else
+C - otherwise, can be turned on or off hereafter:
+#undef  ALLOW_3D_DIFFKR
+#endif /* ALLOW_DIFFKR_CONTROL */
 
+#endif /* CPP_OPTIONS_H */
 

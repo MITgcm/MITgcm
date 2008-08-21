@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/CPP_OPTIONS.h,v 1.6 2008/05/09 18:42:27 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/CPP_OPTIONS.h,v 1.7 2008/08/21 16:03:21 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -38,5 +38,15 @@ C o Execution environment support options
 #ifdef ALLOW_AUTODIFF
 # include "ECCO_CPPOPTIONS.h"
 #endif
+
+C o Allow full 3D specification of vertical diffusivity
+#ifdef ALLOW_DIFFKR_CONTROL
+C - Need to be defined if using DIFFKR_CONTROL
+C   (alternatively, could have put this in ECCO_CPPOPTIONS)
+#define ALLOW_3D_DIFFKR
+#else
+C - otherwise, can be turned on or off hereafter:
+#undef  ALLOW_3D_DIFFKR
+#endif /* ALLOW_DIFFKR_CONTROL */
 
 #endif /* CPP_OPTIONS_H */

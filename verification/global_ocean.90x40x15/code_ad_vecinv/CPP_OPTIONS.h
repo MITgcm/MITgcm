@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_vecinv/Attic/CPP_OPTIONS.h,v 1.10 2003/11/04 21:39:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_vecinv/Attic/CPP_OPTIONS.h,v 1.11 2008/08/21 16:03:21 jmc Exp $
 C $Name:  $
 
 C CPP flags controlling which code in included in the files that
@@ -39,6 +39,16 @@ C o Execution environment support options
 #ifdef ALLOW_AUTODIFF
 # include "ECCO_CPPOPTIONS.h"
 #endif
+
+C o Allow full 3D specification of vertical diffusivity
+#ifdef ALLOW_DIFFKR_CONTROL
+C - Need to be defined if using DIFFKR_CONTROL
+C   (alternatively, could have put this in ECCO_CPPOPTIONS)
+#define ALLOW_3D_DIFFKR
+#else
+C - otherwise, can be turned on or off hereafter:
+#undef  ALLOW_3D_DIFFKR
+#endif /* ALLOW_DIFFKR_CONTROL */
 
 #endif /* CPP_OPTIONS_H */
 
