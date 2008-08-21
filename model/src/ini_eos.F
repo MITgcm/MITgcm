@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.18 2008/08/21 13:44:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.19 2008/08/21 14:25:34 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -426,12 +426,17 @@ C-    + set rC accordingly
 
           IF ( kcheck .EQ. 1 ) THEN
            WRITE(msgBuf,'(A)') 
+     &          'EOS_CHECK: check values for eosType=JMD95:'
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &          SQUEEZE_RIGHT , myThid )
+          ELSEIF ( kcheck .EQ. 2 ) THEN
+           WRITE(msgBuf,'(A)') 
      &          'EOS_CHECK: check values for eosType=MDJWF:'
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT , myThid )
           ELSEIF ( kcheck .EQ. 6 ) THEN
            WRITE(msgBuf,'(A)') 
-     &          'EOS_CHECK: check values for eosType=JMD95:'
+     &          'EOS_CHECK: check values for eosType=UNESCO:'
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &          SQUEEZE_RIGHT , myThid )
           ENDIF
