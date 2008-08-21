@@ -26,13 +26,13 @@
 #ivdc_kappa=10.,
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
- eosType='LINEAR',
-#eosType='MDJWF',
+#eosType='LINEAR',
+ eosType='MDJWF',
  hFacMin=0.05,
  readBinaryPrec=64,
  bottomDragLinear=0.E-4,
  debugLevel=1,
- tempAdvection=.false.,
+ tempAdvection=.FALSE.,
  tempAdvScheme=33,
  &
 
