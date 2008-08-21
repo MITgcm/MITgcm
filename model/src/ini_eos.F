@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.17 2008/08/11 01:19:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.18 2008/08/21 13:44:53 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -378,7 +378,7 @@ C     i,j,k
       jMax = 1
       i    = 1
       j    = 1
-      IF ( equationOfState.NE.'LINEAR'
+      IF (       equationOfState.NE.'LINEAR'
      &     .AND. equationOfState.NE.'POLY3'
      &     .AND. equationOfState.NE.'IDEALG' ) THEN
 C     check nonlinear EOS
@@ -387,7 +387,7 @@ C     check nonlinear EOS
      &        equationOfState
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT , myThid )
-C-    to get the right presure out of S/R PRESSURE_FOR_EOS:
+C-    to get the right pressure out of S/R PRESSURE_FOR_EOS:
         mskSave = maskC(i,j,k,bi,bj)
         rC_Save = rC(k)
         maskC(i,j,k,bi,bj) = 1.
@@ -424,6 +424,17 @@ C-    + set rC accordingly
      I           myThid )
           ENDIF
 
+          IF ( kcheck .EQ. 1 ) THEN
+           WRITE(msgBuf,'(A)') 
+     &          'EOS_CHECK: check values for eosType=MDJWF:'
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &          SQUEEZE_RIGHT , myThid )
+          ELSEIF ( kcheck .EQ. 6 ) THEN
+           WRITE(msgBuf,'(A)') 
+     &          'EOS_CHECK: check values for eosType=JMD95:'
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &          SQUEEZE_RIGHT , myThid )
+          ENDIF
           WRITE(msgBuf,'(2(A,F4.1),A,F5.0,2A,F10.5,1X,F11.5)')
      &         'rho(', sFld(i,j), ' PSU,',
      &         tFld(i,j), ' degC,',
@@ -432,7 +443,7 @@ C-    + set rC accordingly
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &         SQUEEZE_RIGHT , myThid )
           WRITE(msgBuf,'(A,F10.5,1X,F11.5)')
-     &         ' rho(find_rho_2d)     = ',
+     &         ' rho(find_rho_2d)                 = ',
      &         rhoLoc(i,j)+rhoConst, bulkMod(i,j)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &         SQUEEZE_RIGHT , myThid )
@@ -440,7 +451,7 @@ C-    + set rC accordingly
           CALL FIND_RHO_SCALAR( tFld(i,j), sLoc(kcheck),
      &         pLoc(kcheck), rhoLoc(i,j), myThid )
           WRITE(msgBuf,'(A,F10.5,1X,F11.5)')
-     &         ' rho(find_rho_scalar) = ',
+     &         ' rho(find_rho_scalar)             = ',
      &         rhoLoc(i,j)+rhoConst
 c    &         rhoLoc(i,j)+rhoConst, bulkMod(i,j)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
