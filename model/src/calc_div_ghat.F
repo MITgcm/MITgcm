@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.21 2006/02/23 20:55:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.22 2008/08/22 16:04:48 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,10 +7,9 @@ CBOP
 C     !ROUTINE: CALC_DIV_GHAT
 C     !INTERFACE:
       SUBROUTINE CALC_DIV_GHAT(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,
-     I        xA,yA,
-     U        cg2d_b,
-     I        myThid)
+     I                bi,bj,k,
+     U                cg2d_b, cg3d_b,
+     I                myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R CALC_DIV_GHAT
@@ -26,35 +25,48 @@ C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "SOLVE_FOR_PRESSURE3D.h"
+#include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     bi, bj  :: tile indices
-C     iMin, iMax, jMin, jMax :: Range of points for which calculation
-C                               results will be set.
 C     k       :: Index of layer.
-C     xA, yA  :: Cell face areas
 C     cg2d_b  :: Conjugate Gradient 2-D solver : Right-hand side vector
+C     cg3d_b  :: Conjugate Gradient 3-D solver : Right-hand side vector
 C     myThid  :: Instance number for this call of CALC_DIV_GHAT
-      INTEGER bi,bj, iMin,iMax,jMin,jMax
+      INTEGER bi,bj
       INTEGER k
-      _RS xA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS yA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c#ifdef ALLOW_NONHYDROSTATIC
+      _RL cg3d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+c#else
+c     _RL cg3d_b(1)
+c#endif
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     i,j :: Loop counters
-C     pf  :: Intermediate array for building RHS source term.
+C     i,j    :: Loop counters
+C     xA, yA :: Cell vertical face areas
+C     pf     :: Intermediate array for building RHS source term.
       INTEGER i,j
+      _RS xA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS yA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
+
+C     Calculate vertical face areas
+      DO j=1,sNy+1
+        DO i=1,sNx+1
+          xA(i,j) = _dyG(i,j,bi,bj)*deepFacC(k)
+     &              *drF(k)*_hFacW(i,j,k,bi,bj)*rhoFacC(k)
+          yA(i,j) = _dxG(i,j,bi,bj)*deepFacC(k)
+     &              *drF(k)*_hFacS(i,j,k,bi,bj)*rhoFacC(k)
+        ENDDO
+      ENDDO
 
 C--   Pressure equation source term
 C     Term is the vertical integral of the divergence of the
@@ -83,9 +95,9 @@ C      => Filtering of uVel,vVel is necessary
 C-- Now the filter are applied in the_correction_step().
 C   We have left this code here to indicate where the filters used to be
 C   in the algorithm before JMC moved them to after the pressure solver.
-C- 
+C-
 C#ifdef ALLOW_ZONAL_FILT
-C        IF (zonal_filt_lat.LT.90.) THEN 
+C        IF (zonal_filt_lat.LT.90.) THEN
 C          CALL ZONAL_FILTER(
 C     &      uVel, hFacW, 1-1, sNy+1, k, k, bi, bj, 1, myThid)
 C          CALL ZONAL_FILTER(
@@ -95,7 +107,7 @@ C#endif
         DO j=1,sNy
          DO i=1,sNx+1
           pf(i,j) = ( implicDiv2Dflow * gU(i,j,k,bi,bj)
-     &          + (1.-implicDiv2Dflow) * uVel(i,j,k,bi,bj)
+     &     + (1. _d 0-implicDiv2Dflow)* uVel(i,j,k,bi,bj)
      &               ) * xA(i,j) / deltaTmom
          ENDDO
         ENDDO
@@ -138,7 +150,7 @@ C     Explicit+Implicit part of the Barotropic Flow Divergence
         DO j=1,sNy+1
          DO i=1,sNx
           pf(i,j) = ( implicDiv2Dflow * gV(i,j,k,bi,bj)
-     &          + (1.-implicDiv2Dflow) * vVel(i,j,k,bi,bj)
+     &     + (1. _d 0-implicDiv2Dflow)* vVel(i,j,k,bi,bj)
      &               ) * yA(i,j) / deltaTmom
          ENDDO
         ENDDO

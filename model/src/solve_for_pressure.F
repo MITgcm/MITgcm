@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.62 2007/10/15 15:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.63 2008/08/22 16:04:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,8 +55,6 @@ C     myThid :: Thread number for this instance of SOLVE_FOR_PRESSURE
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k,bi,bj
-      _RS uf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RS vf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL firstResidual,lastResidual
       _RL tmpFac
       _RL sumEmP, tileEmP
@@ -68,12 +66,18 @@ C     == Local variables ==
       INTEGER kp1
       _RL     wFacKm, wFacKp
       LOGICAL zeroPsNH
+      _RL     uf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL     vf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+#else
+      _RL     cg3d_b(1)
 #endif
 CEOP
 
 #ifdef ALLOW_NONHYDROSTATIC
 c       zeroPsNH = .FALSE.
         zeroPsNH = exactConserv
+#else
+        cg3d_b(1) = 0.
 #endif
 
 C deepAtmosphere & useRealFreshWaterFlux: only valid if deepFac2F(ksurf)=1
@@ -146,20 +150,11 @@ C--   Save previous solution & Initialise Vector solution and source term :
         ENDIF
 C- RHS: similar to the divergence of the vertically integrated mass transport:
 C       del_i { Sum_k [ rhoFac.(dr.hFac).(dy.deepFac).(u*) ] }  / deltaT
-        DO K=Nr,1,-1
-         DO j=1,sNy+1
-          DO i=1,sNx+1
-           uf(i,j) = _dyG(i,j,bi,bj)*deepFacC(k)
-     &               *drF(k)*_hFacW(i,j,k,bi,bj)*rhoFacC(k)
-           vf(i,j) = _dxG(i,j,bi,bj)*deepFacC(k)
-     &               *drF(k)*_hFacS(i,j,k,bi,bj)*rhoFacC(k)
-          ENDDO
-         ENDDO
+        DO k=Nr,1,-1
          CALL CALC_DIV_GHAT(
-     I       bi,bj,1,sNx,1,sNy,K,
-     I       uf,vf,
-     U       cg2d_b,
-     I       myThid)
+     I                       bi,bj,k,
+     U                       cg2d_b, cg3d_b,
+     I                       myThid )
         ENDDO
        ENDDO
       ENDDO
@@ -231,26 +226,26 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
         IF (useOBCS) THEN
          DO i=1,sNx
 C Northern boundary
-          IF (OB_Jn(I,bi,bj).NE.0) THEN
-           cg2d_b(I,OB_Jn(I,bi,bj),bi,bj)=0.
-           cg2d_x(I,OB_Jn(I,bi,bj),bi,bj)=0.
+          IF (OB_Jn(i,bi,bj).NE.0) THEN
+           cg2d_b(i,OB_Jn(i,bi,bj),bi,bj)=0.
+           cg2d_x(i,OB_Jn(i,bi,bj),bi,bj)=0.
           ENDIF
 C Southern boundary
-          IF (OB_Js(I,bi,bj).NE.0) THEN
-           cg2d_b(I,OB_Js(I,bi,bj),bi,bj)=0.
-           cg2d_x(I,OB_Js(I,bi,bj),bi,bj)=0.
+          IF (OB_Js(i,bi,bj).NE.0) THEN
+           cg2d_b(i,OB_Js(i,bi,bj),bi,bj)=0.
+           cg2d_x(i,OB_Js(i,bi,bj),bi,bj)=0.
           ENDIF
          ENDDO
          DO j=1,sNy
 C Eastern boundary
-          IF (OB_Ie(J,bi,bj).NE.0) THEN
-           cg2d_b(OB_Ie(J,bi,bj),J,bi,bj)=0.
-           cg2d_x(OB_Ie(J,bi,bj),J,bi,bj)=0.
+          IF (OB_Ie(j,bi,bj).NE.0) THEN
+           cg2d_b(OB_Ie(j,bi,bj),j,bi,bj)=0.
+           cg2d_x(OB_Ie(j,bi,bj),j,bi,bj)=0.
           ENDIF
 C Western boundary
-          IF (OB_Iw(J,bi,bj).NE.0) THEN
-           cg2d_b(OB_Iw(J,bi,bj),J,bi,bj)=0.
-           cg2d_x(OB_Iw(J,bi,bj),J,bi,bj)=0.
+          IF (OB_Iw(j,bi,bj).NE.0) THEN
+           cg2d_b(OB_Iw(j,bi,bj),j,bi,bj)=0.
+           cg2d_x(OB_Iw(j,bi,bj),j,bi,bj)=0.
           ENDIF
          ENDDO
         ENDIF
@@ -351,22 +346,22 @@ C     see CG3D.h for the interface to this routine.
          IF (useOBCS) THEN
           DO i=1,sNx+1
 C Northern boundary
-          IF (OB_Jn(I,bi,bj).NE.0) THEN
-           vf(I,OB_Jn(I,bi,bj))=0.
+          IF (OB_Jn(i,bi,bj).NE.0) THEN
+           vf(i,OB_Jn(i,bi,bj))=0.
           ENDIF
 C Southern boundary
-          IF (OB_Js(I,bi,bj).NE.0) THEN
-           vf(I,OB_Js(I,bi,bj)+1)=0.
+          IF (OB_Js(i,bi,bj).NE.0) THEN
+           vf(i,OB_Js(i,bi,bj)+1)=0.
           ENDIF
           ENDDO
           DO j=1,sNy+1
 C Eastern boundary
-          IF (OB_Ie(J,bi,bj).NE.0) THEN
-           uf(OB_Ie(J,bi,bj),J)=0.
+          IF (OB_Ie(j,bi,bj).NE.0) THEN
+           uf(OB_Ie(j,bi,bj),j)=0.
           ENDIF
 C Western boundary
-          IF (OB_Iw(J,bi,bj).NE.0) THEN
-           uf(OB_Iw(J,bi,bj)+1,J)=0.
+          IF (OB_Iw(j,bi,bj).NE.0) THEN
+           uf(OB_Iw(j,bi,bj)+1,J)=0.
           ENDIF
           ENDDO
          ENDIF
@@ -389,23 +384,23 @@ C-       Other than Z coordinate: no assumption on surface level index
             ENDDO
            ENDDO
          ENDIF
-         K=1
+         k=1
          kp1 = MIN(k+1,Nr)
          wFacKp = deepFac2F(kp1)*rhoFacF(kp1)
          IF (k.GE.Nr) wFacKp = 0.
          DO j=1,sNy
           DO i=1,sNx
             cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &       +drF(K)*dyG(i+1,j,bi,bj)*_hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
-     &       -drF(K)*dyG( i ,j,bi,bj)*_hFacW( i ,j,k,bi,bj)*uf( i ,j)
-     &       +drF(K)*dxG(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
-     &       -drF(K)*dxG(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)*vf(i, j )
+     &       +drF(k)*dyG(i+1,j,bi,bj)*_hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
+     &       -drF(k)*dyG( i ,j,bi,bj)*_hFacW( i ,j,k,bi,bj)*uf( i ,j)
+     &       +drF(k)*dxG(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
+     &       -drF(k)*dxG(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)*vf(i, j )
      &       +( tmpFac*etaN(i,j,bi,bj)/deltaTfreesurf
      &         -wVel(i,j,kp1,bi,bj)*wFacKp
      &        )*_rA(i,j,bi,bj)/deltaTmom
           ENDDO
          ENDDO
-         DO K=2,Nr
+         DO k=2,Nr
           kp1 = MIN(k+1,Nr)
 C-       deepFac & rhoFac cancel with the ones in uf[=del_i(Phi)/dx],vf ;
 C        both appear in wVel term, but at 2 different levels
@@ -415,10 +410,10 @@ C        both appear in wVel term, but at 2 different levels
           DO j=1,sNy
            DO i=1,sNx
             cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &       +drF(K)*dyG(i+1,j,bi,bj)*_hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
-     &       -drF(K)*dyG( i ,j,bi,bj)*_hFacW( i ,j,k,bi,bj)*uf( i ,j)
-     &       +drF(K)*dxG(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
-     &       -drF(K)*dxG(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)*vf(i, j )
+     &       +drF(k)*dyG(i+1,j,bi,bj)*_hFacW(i+1,j,k,bi,bj)*uf(i+1,j)
+     &       -drF(k)*dyG( i ,j,bi,bj)*_hFacW( i ,j,k,bi,bj)*uf( i ,j)
+     &       +drF(k)*dxG(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
+     &       -drF(k)*dxG(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)*vf(i, j )
      &       +( wVel(i,j, k ,bi,bj)*wFacKm*maskC(i,j,k-1,bi,bj)
      &         -wVel(i,j,kp1,bi,bj)*wFacKp
      &        )*_rA(i,j,bi,bj)/deltaTmom
@@ -429,25 +424,25 @@ C        both appear in wVel term, but at 2 different levels
 
 #ifdef ALLOW_OBCS
          IF (useOBCS) THEN
-          DO K=1,Nr
+          DO k=1,Nr
           DO i=1,sNx
 C Northern boundary
-          IF (OB_Jn(I,bi,bj).NE.0) THEN
-           cg3d_b(I,OB_Jn(I,bi,bj),K,bi,bj)=0.
+          IF (OB_Jn(i,bi,bj).NE.0) THEN
+           cg3d_b(i,OB_Jn(i,bi,bj),k,bi,bj)=0.
           ENDIF
 C Southern boundary
-          IF (OB_Js(I,bi,bj).NE.0) THEN
-           cg3d_b(I,OB_Js(I,bi,bj),K,bi,bj)=0.
+          IF (OB_Js(i,bi,bj).NE.0) THEN
+           cg3d_b(i,OB_Js(i,bi,bj),k,bi,bj)=0.
           ENDIF
           ENDDO
           DO j=1,sNy
 C Eastern boundary
-          IF (OB_Ie(J,bi,bj).NE.0) THEN
-           cg3d_b(OB_Ie(J,bi,bj),J,K,bi,bj)=0.
+          IF (OB_Ie(j,bi,bj).NE.0) THEN
+           cg3d_b(OB_Ie(j,bi,bj),j,k,bi,bj)=0.
           ENDIF
 C Western boundary
-          IF (OB_Iw(J,bi,bj).NE.0) THEN
-           cg3d_b(OB_Iw(J,bi,bj),J,K,bi,bj)=0.
+          IF (OB_Iw(j,bi,bj).NE.0) THEN
+           cg3d_b(OB_Iw(j,bi,bj),j,k,bi,bj)=0.
           ENDIF
           ENDDO
           ENDDO
