@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.221 2008/08/21 19:35:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.222 2008/08/24 21:28:10 jmc Exp $
 C $Name:  $
 C
 
@@ -145,6 +145,9 @@ C     nonlinFreeSurf      :: option related to non-linear free surface
 C                           =0 Linear free surface ; >0 Non-linear
 C     select_rStar        :: option related to r* vertical coordinate
 C                           =0 (default) use r coord. ; > 0 use r*
+C     selectAddFluid      :: option to add mass source/sink of fluid in the interior
+C                            (3-D generalisation of oceanic real-fresh water flux)
+C                           =0 off ; =1 add fluid ; =-1 virtual flux (no mass added)
 C     momForcingOutAB     :: =1: take momentum forcing contribution
 C                           out of (=0: in) Adams-Bashforth time stepping.
 C     tracForcingOutAB    :: =1: take tracer (Temp,Salt,pTracers) forcing contribution
@@ -168,6 +171,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
      &        writeStatePrec,
      &        writeBinaryPrec, readBinaryPrec,
      &        nonlinFreeSurf, select_rStar,
+     &        selectAddFluid,
      &        momForcingOutAB, tracForcingOutAB,
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
@@ -186,6 +190,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
       INTEGER readBinaryPrec
       INTEGER nonlinFreeSurf
       INTEGER select_rStar
+      INTEGER selectAddFluid
       INTEGER momForcingOutAB, tracForcingOutAB
       INTEGER tempAdvScheme, tempVertAdvScheme
       INTEGER saltAdvScheme, saltVertAdvScheme
@@ -262,7 +267,6 @@ C                       and off.
 C     useRealFreshWaterFlux :: if True (=Natural BCS), treats P+R-E flux
 C                         as a real Fresh Water (=> changes the Sea Level)
 C                         if F, converts P+R-E to salt flux (no SL effect)
-C     useAddFluid    :: add mass source or sink of fluid in the interior
 C- Time-stepping params:
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implicit free surface
@@ -337,7 +341,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & momStepping, tempStepping, saltStepping,
      & tempAdvection, tempIsActiveTr, tempForcing,
      & saltAdvection, saltIsActiveTr, saltForcing,
-     & useRealFreshWaterFlux, useAddFluid,
+     & useRealFreshWaterFlux,
      & rigidLid, implicitFreeSurface, exactConserv, linFSConserveTr,
      & uniformLin_PhiSurf,
      & quasiHydrostatic, nonHydrostatic,
@@ -386,7 +390,6 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL saltIsActiveTr
       LOGICAL saltForcing
       LOGICAL useRealFreshWaterFlux
-      LOGICAL useAddFluid
       LOGICAL useFullLeith
       LOGICAL useStrainTensionVisc
       LOGICAL useAreaViscLength
