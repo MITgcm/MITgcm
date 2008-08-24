@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.215 2008/07/18 16:49:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.216 2008/08/24 21:32:17 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -173,7 +173,7 @@ C--   Continuous equation parameters
      & momPressureForcing, metricTerms, vectorInvariantMomentum,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
-     & implicSurfPress, implicDiv2DFlow,
+     & implicSurfPress, implicDiv2Dflow,
      & implicitFreeSurface, rigidLid, freeSurfFac, hFacMin, hFacMinDz,
      & exactConserv, linFSConserveTr, uniformLin_PhiSurf,
      & nonlinFreeSurf, hFacInf, hFacSup, select_rStar,
@@ -197,7 +197,7 @@ C--   Continuous equation parameters
      & useCDscheme, useJamartWetPoints, useJamartMomAdv, useNHMTerms,
      & selectVortScheme, upwindVorticity, highOrderVorticity,
      & SadournyCoriolis, useAbsVorticity, upwindShear, selectKEscheme,
-     & useRealFreshWaterFlux, convertFW2Salt,
+     & selectAddFluid, useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & zonal_filt_lat,
      & inAdExact, smoothAbsFuncRange,
@@ -553,6 +553,7 @@ C--   z,p,r coord input switching.
       IF (convertFW2Salt.EQ.UNSET_RL) THEN
         convertFW2Salt = 35.
         IF (useRealFreshWaterFlux) convertFW2Salt=-1
+        IF ( selectAddFluid.GE.1 ) convertFW2Salt=-1
       ENDIF
 
       IF ( SadournyCoriolis ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.19 2007/11/28 00:18:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.20 2008/08/24 21:32:17 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -9,8 +9,8 @@ C     !INTERFACE:
       SUBROUTINE INI_DYNVARS( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_DYNVARS                                    
-C     | o Initialise to zero all DYNVARS.h arrays                  
+C     | SUBROUTINE INI_DYNVARS
+C     | o Initialise to zero all DYNVARS.h arrays
 C     *==========================================================*
 C     | Sets all the State variables to zero.
 C     | Sets all the Gs (arrays used for multi-level time-stepping)
@@ -28,15 +28,15 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_UVEL 
+C     myThid  :: my Thread Id. number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj  - Loop counters
-C     I,J,K
+C     bi,bj   :: tile indices
+C     I,J,K   :: loop index
       INTEGER bi, bj
-      INTEGER  I,  J, K
+      INTEGER I, J, K
 CEOP
 
 C--   Over all tiles
@@ -73,9 +73,11 @@ C-      3D arrays
            gtNm1(I,J,K,bi,bj) =0. _d 0
            gsNm1(I,J,K,bi,bj) =0. _d 0
 #endif
-
            totPhiHyd(I,J,K,bi,bj)=0. _d 0
            IVDConvCount(i,j,k,bi,bj) = 0. _d 0
+#ifdef ALLOW_ADDFLUID
+           addMass(I,J,K,bi,bj) = 0. _d 0
+#endif
           ENDDO
          ENDDO
         ENDDO

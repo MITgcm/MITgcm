@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.139 2008/05/30 03:05:21 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.140 2008/08/24 21:32:17 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -204,7 +204,7 @@ C--   Set (free)surface-related parameters
       implicitFreeSurface = .FALSE.
       rigidLid            = .FALSE.
       implicSurfPress     = 1. _d 0
-      implicDiv2DFlow     = 1. _d 0
+      implicDiv2Dflow     = 1. _d 0
       exactConserv        = .FALSE.
       linFSConserveTr     = .FALSE.
       uniformLin_PhiSurf  = .TRUE.
@@ -212,6 +212,7 @@ C--   Set (free)surface-related parameters
       hFacInf             = 0.2 _d 0
       hFacSup             = 2.0 _d 0
       select_rStar        = 0
+      selectAddFluid      = 0
       useRealFreshWaterFlux = .FALSE.
       temp_EvPrRn = UNSET_RL
       salt_EvPrRn = 0.

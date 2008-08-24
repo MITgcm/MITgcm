@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.109 2008/05/05 23:11:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.110 2008/08/24 21:32:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -276,17 +276,20 @@ C     ycoord :: varying parameters.
       CALL WRITE_0D_I( select_rStar, INDEX_NONE,
      &'select_rStar =',
      &' /* r* Vertical coord. options (=0 r coord.; > 0 uses r*) */')
+      CALL WRITE_0D_I( selectAddFluid, INDEX_NONE,
+     &'selectAddFluid =',
+     &' /* option for mass source/sink of fluid (=0: off) */')
       CALL WRITE_0D_L( useRealFreshWaterFlux, INDEX_NONE,
      &'useRealFreshWaterFlux =',
-     &'   /* Real Fresh Water Flux on/off flag*/')
-      IF (useRealFreshWaterFlux .AND. nonlinFreeSurf.GT.0) THEN
+     &' /* Real Fresh Water Flux on/off flag*/')
       CALL WRITE_0D_R8( temp_EvPrRn, INDEX_NONE,
      &'temp_EvPrRn =',
      &' /* Temp. of Evap/Prec/R (UNSET=use local T)(oC)*/')
       CALL WRITE_0D_R8( salt_EvPrRn, INDEX_NONE,
      &'salt_EvPrRn =',
      &' /* Salin. of Evap/Prec/R (UNSET=use local S)(ppt)*/')
-      ELSE
+      IF ( .NOT.useRealFreshWaterFlux .OR. selectAddFluid.EQ.-1
+     &                                .OR. nonlinFreeSurf.LE.0 ) THEN
       CALL WRITE_0D_R8( convertFW2Salt, INDEX_NONE,
      &'convertFW2Salt =',
      &' /* convert F.W. Flux to Salt Flux (-1=use local S)(ppt)*/')
