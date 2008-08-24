@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.69 2008/08/17 02:08:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.70 2008/08/24 21:44:56 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -222,9 +222,7 @@ C--   Freeze water at the surface
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta = comlev1, key = ikey_dynamics
 #endif
-      IF ( allowFreezing
-     &                   .AND. .NOT. useSEAICE
-     &                   .AND. .NOT. useThSIce ) THEN
+      IF ( allowFreezing ) THEN
         CALL FREEZE_SURFACE(  myTime, myIter, myThid )
       ENDIF
 
