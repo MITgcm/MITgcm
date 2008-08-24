@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1017 2008/08/22 16:06:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1018 2008/08/24 22:03:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add option ALLOW_ADDFLUID and run-time selector "selectAddFluid" 
+  to add mass source/sink of fluid in the interior (3-D generalisation 
+  of oceanic real-fresh water flux).
+o pkg/monitor: fix recip_dr argument in mon_advcflw2 call (-> advcfl_W_hf_max)
 o vermix test experiment: switch from LINEAR EOS to MDJWF (not tested before)
 o new pkg: down_slope
   density-driven downsloping flow parameterisation (Tellus, 1999, 412-430).
