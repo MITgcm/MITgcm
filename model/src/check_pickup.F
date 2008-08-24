@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/check_pickup.F,v 1.2 2007/10/29 18:18:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/check_pickup.F,v 1.3 2008/08/24 21:38:19 jmc Exp $
 C $Name:  $
 
 c#include "PACKAGES_CONFIG.h"
@@ -117,6 +117,13 @@ C     (no serious problems expected if missing, but get a non-perfect restart)
      &      'restart with 1rst guess == 0 for CG3D solver'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
+         ELSEIF ( missFldList(j).EQ.'AddMass '
+     &               .AND. selectAddFluid.EQ.2 ) THEN 
+          IF ( .NOT.pickupStrictlyMatch ) THEN
+           WRITE(msgBuf,'(4A)') '** WARNINGS ** CHECK_PICKUP: ',
+     &      'restart with AddMass == 0'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
 
 C-    Absolutely needed fields:
          ELSEIF ( missFldList(j).EQ.'Uvel    ' .OR.
@@ -129,8 +136,9 @@ C-    Absolutely needed fields:
      &       'cannot restart without field "',missFldList(j),'"'
            CALL PRINT_ERROR( msgBuf, myThid )
 
-C-    fields needed for restart (alternative not presentlently implemented)
+C-    fields needed for restart (alternative not presently implemented)
          ELSEIF ( missFldList(j).EQ.'PhiHyd  ' .OR.
+     &            missFldList(j).EQ.'AddMass ' .OR.
      &            missFldList(j).EQ.'dEtaHdt ' .OR.
      &            missFldList(j).EQ.'EtaH    ' ) THEN
            stopFlag = .TRUE.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.11 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.12 2008/08/24 21:38:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,9 +7,9 @@ CBOP
 C     !ROUTINE: INTEGRATE_FOR_W
 C     !INTERFACE:
       SUBROUTINE INTEGRATE_FOR_W(
-     I        bi,bj,k,uFld,vFld,
-     O        wFld,
-     I        myThid)
+     I                     bi, bj, k, uFld, vFld, mFld,
+     O                     wFld,
+     I                     myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -30,19 +30,27 @@ C     == GLobal variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     uFld, vFld :: Zonal and meridional flow
+C     mFld       :: added mass
 C     wFld       :: Vertical flow
       INTEGER bi,bj,k
       _RL  uFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+c#ifdef ALLOW_ADDFLUID
+      _RL  mFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+c#else
+c     _RL  mFld (1)
+c#endif
       _RL  wFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     uTrans, vTrans :: Temps. for volume transports
+C     conv2d         :: horizontal transport convergence [m^3/s]
       INTEGER i,j
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL conv2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 C--   Calculate velocity field "volume transports" through
@@ -57,6 +65,22 @@ C     tracer cell faces (anelastic: scaled as a mass transport).
      &                *drF(k)*_hFacS(i,j,k,bi,bj)
         ENDDO
       ENDDO
+      DO j=1,sNy
+        DO i=1,sNx
+          conv2d(i,j) = -( uTrans(i+1,j)-uTrans(i,j)
+     &                    +vTrans(i,j+1)-vTrans(i,j) )
+        ENDDO
+      ENDDO
+#ifdef ALLOW_ADDFLUID
+      IF ( selectAddFluid.GE.1 ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+          conv2d(i,j) = conv2d(i,j)
+     &                + mFld(i,j,k,bi,bj)*mass2rUnit
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* ALLOW_ADDFLUID */
 
 C--   Calculate vertical "volume transport" through face k
 C     between tracer cell k-1 & k
@@ -72,9 +96,7 @@ C-  o Rigid-Lid case: zero at lower and upper boundaries
           DO j=1,sNy
            DO i=1,sNx
              wFld(i,j,k,bi,bj) =
-     &                -( uTrans(i+1,j)-uTrans(i,j)
-     &                  +vTrans(i,j+1)-vTrans(i,j)
-     &                 )*recip_rA(i,j,bi,bj)
+     &          conv2d(i,j)*recip_rA(i,j,bi,bj)
      &         *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
      &         *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO
@@ -84,9 +106,7 @@ C-  o Rigid-Lid case: zero at lower and upper boundaries
            DO i=1,sNx
              wFld(i,j,k,bi,bj) =
      &        ( wFld(i,j,k+1,bi,bj)*deepFac2F(k+1)*rhoFacF(k+1)
-     &                -( uTrans(i+1,j)-uTrans(i,j)
-     &                  +vTrans(i,j+1)-vTrans(i,j)
-     &                 )*recip_rA(i,j,bi,bj)
+     &         +conv2d(i,j)*recip_rA(i,j,bi,bj)
      &        )*maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
      &         *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO
@@ -102,10 +122,8 @@ C note: not implemented neither for anelastic nor deep-model.
           DO j=1,sNy
            DO i=1,sNx
              wFld(i,j,k,bi,bj) =
-     &        (       -( uTrans(i+1,j)-uTrans(i,j)
-     &                  +vTrans(i,j+1)-vTrans(i,j)
-     &                 )*recip_rA(i,j,bi,bj)
-     &          - rStarDhCDt(i,j,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
+     &        ( conv2d(i,j)*recip_rA(i,j,bi,bj)
+     &         -rStarDhCDt(i,j,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
      &        )*maskC(i,j,k,bi,bj)
            ENDDO
           ENDDO
@@ -114,10 +132,8 @@ C note: not implemented neither for anelastic nor deep-model.
            DO i=1,sNx
              wFld(i,j,k,bi,bj) =
      &        ( wFld(i,j,k+1,bi,bj)
-     &                -( uTrans(i+1,j)-uTrans(i,j)
-     &                  +vTrans(i,j+1)-vTrans(i,j)
-     &                 )*recip_rA(i,j,bi,bj)
-     &          - rStarDhCDt(i,j,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
+     &         +conv2d(i,j)*recip_rA(i,j,bi,bj)
+     &         -rStarDhCDt(i,j,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
      &        )*maskC(i,j,k,bi,bj)
            ENDDO
           ENDDO
@@ -131,9 +147,7 @@ C      non zero at surface ; zero under-ground and at r_lower boundary
           DO j=1,sNy
            DO i=1,sNx
              wFld(i,j,k,bi,bj) =
-     &              -( uTrans(i+1,j)-uTrans(i,j)
-     &                +vTrans(i,j+1)-vTrans(i,j)
-     &               )*recip_rA(i,j,bi,bj)
+     &          conv2d(i,j)*recip_rA(i,j,bi,bj)
      &         *maskC(i,j,k,bi,bj)
      &         *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO
@@ -143,9 +157,7 @@ C      non zero at surface ; zero under-ground and at r_lower boundary
            DO i=1,sNx
              wFld(i,j,k,bi,bj) =
      &        ( wFld(i,j,k+1,bi,bj)*deepFac2F(k+1)*rhoFacF(k+1)
-     &              -( uTrans(i+1,j)-uTrans(i,j)
-     &                +vTrans(i,j+1)-vTrans(i,j)
-     &               )*recip_rA(i,j,bi,bj)
+     &         +conv2d(i,j)*recip_rA(i,j,bi,bj)
      &        )*maskC(i,j,k,bi,bj)
      &         *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.3 2007/10/29 18:17:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.4 2008/08/24 21:38:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -354,6 +354,13 @@ C-      read Full Pressure for EOS in pressure:
      &                                     nj, fp, Nr, myIter, myThid )
         ENDIF
 #endif
+#ifdef ALLOW_ADDFLUID
+C-    read mass source/sink of fluid
+        IF ( selectAddFluid.GE.1 ) THEN
+          CALL READ_MFLDS_3D_RL( 'AddMass ', addMass,
+     &                                     nj, fp, Nr, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_ADDFLUID */
 
 C---    read 2-D fields, starting with Eta:
           nj = nj*Nr

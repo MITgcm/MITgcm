@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.20 2007/10/15 15:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.21 2008/08/24 21:38:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,8 +59,11 @@ C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
       _RL uTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL vTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL hDivFlow(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL facEmP
-#endif
+      _RL facEmP, facMass
+#endif /* EXACT_CONSERV */
+#ifndef ALLOW_ADDFLUID
+      _RL addMass(1)
+#endif /* ndef ALLOW_ADDFLUID */
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -68,18 +71,23 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef EXACT_CONSERV
       IF (exactConserv) THEN
 
+       facEmP = 0.
+       IF ( fluidIsWater.AND.useRealFreshWaterFlux ) facEmP=mass2rUnit
+       facMass = 0.
+       IF ( selectAddFluid.GE.1 ) facMass = mass2rUnit
+
 C--   Compute the Divergence of The Barotropic Flow :
 
 C-    Initialise
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
          hDivFlow(i,j)      = 0. _d 0
          utrans(i,j)        = 0. _d 0
          vtrans(i,j)        = 0. _d 0
+        ENDDO
        ENDDO
-      ENDDO
 
-      DO k=1,Nr
+       DO k=1,Nr
 
 C-    Calculate velocity field "volume transports" through tracer cell faces
 C     anelastic: uTrans,vTrans are scaled by rhoFacC (~ mass transport).
@@ -100,19 +108,20 @@ C-    Integrate vertically the Horizontal Divergence
            hDivFlow(i,j) = hDivFlow(i,j)
      &       +maskC(i,j,k,bi,bj)*( uTrans(i+1,j)-uTrans(i,j)
      &                            +vTrans(i,j+1)-vTrans(i,j) )
+#ifdef ALLOW_ADDFLUID
+     &       -facMass*addMass(i,j,k,bi,bj)
+#endif /* ALLOW_ADDFLUID */
          ENDDO
         ENDDO
 
 C-    End DO k=1,Nr
-      ENDDO
+       ENDDO
 
 C------------------------------------
 C note: deep-model not implemented for P-coordinate + realFreshWaterFlux ;
 C       anelastic: always assumes that rhoFacF(1) = 1
-       facEmP = 0.
-       IF (useRealFreshWaterFlux) facEmP = mass2rUnit
        IF ( myTime.EQ.startTime .AND. myTime.NE.baseTime
-     &                          .AND. useRealFreshWaterFlux) THEN
+     &       .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
 
 C     needs previous time-step value of E-P-R, that has not been loaded
 C     and was not in old pickup-file ; try to use etaN & etaH instead.
@@ -214,13 +223,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--    Integrate continuity vertically for vertical velocity
 
        CALL INTEGRATE_FOR_W(
-     I                       bi, bj, k, uFld, vFld,
+     I                       bi, bj, k, uFld, vFld, addMass,
      O                       wVel,
      I                       myThid )
 
 #ifdef EXACT_CONSERV
-       IF ( k.EQ.Nr .AND. myTime.NE.baseTime .AND.
-     &      useRealFreshWaterFlux .AND. usingPCoords ) THEN
+       IF ( k.EQ.Nr .AND. myTime.NE.baseTime .AND. usingPCoords
+     &       .AND. fluidIsWater .AND. useRealFreshWaterFlux ) THEN
 
           DO j=1,sNy
            DO i=1,sNx
