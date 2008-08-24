@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.44 2008/01/08 00:28:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.45 2008/08/24 21:22:52 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -149,11 +149,11 @@ C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
 C       Print the numerical stablility parameters for current state
         CALL MON_SET_PREF('advcfl',myThid)
         dT=MAX(dTtracerLev(1),deltaTmom)
-        CALL MON_ADVCFL('_uvel',uVel,recip_dxc,dT,myThid)
-        CALL MON_ADVCFL('_vvel',vVel,recip_dyc,dT,myThid)
-        CALL MON_ADVCFLW('_wvel',wVel,recip_drc,dT,myThid)
+        CALL MON_ADVCFL( '_uvel', uVel,recip_dxC,dT,myThid )
+        CALL MON_ADVCFL( '_vvel', vVel,recip_dyC,dT,myThid )
+        CALL MON_ADVCFLW('_wvel', wVel,recip_drC,dT,myThid )
         CALL MON_ADVCFLW2('_W_hf',wVel,recip_hFacC,
-     &       recip_drC,dT,myThid)
+     &                                 recip_drF,dT,myThid )
 
 C       Print stats for KE
         CALL MON_KE(myIter, myThid)
