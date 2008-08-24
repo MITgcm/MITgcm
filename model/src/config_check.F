@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.49 2008/04/07 21:15:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.50 2008/08/24 21:47:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -42,8 +42,7 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
 
 C     o If diffKrFile is set, then we should make sure the corresponing
 C       code is being compiled
-#if !(defined ALLOW_3D_DIFFKR || \
-      (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
+#ifndef ALLOW_3D_DIFFKR
       IF (diffKrFile.NE.' ') THEN
         WRITE(msgBuf,'(A)')
      &  'CONFIG_CHECK: diffKrFile is set but never used.'
@@ -167,6 +166,18 @@ C       code is being compiled
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
 #endif
+
+#ifndef ALLOW_ADDFLUID
+      IF ( selectAddFluid.NE.0 ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: #undef ALLOW_ADDFLUID and'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A,I4,A)') 'CONFIG_CHECK: selectAddFluid=',
+     &                           selectAddFluid, ' is not zero'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif /* ALLOW_ADDFLUID */
 
 C     o If pLoadFile is set, then we should make sure the corresponing
 C       code is being compiled
@@ -301,7 +312,7 @@ C--   Free-surface related limitations:
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
-      IF ( (implicSurfPress.NE.1. .OR. implicDiv2DFlow.NE.1.)
+      IF ( (implicSurfPress.NE.1. .OR. implicDiv2Dflow.NE.1.)
      &    .AND. nonHydrostatic ) THEN
         WRITE(msgBuf,'(A,A)') 'CONFIG_CHECK: nonHydrostatic',
      & ' NOT SAFE with non-fully implicit Barotropic solver'
@@ -334,12 +345,6 @@ C--   Free-surface related limitations:
 
 C- note : not implemented in checkpoint48b but it's done now (since 01-28-03)
 c     IF (select_rStar.GT.0 .AND. useOBCS ) THEN
-c       WRITE(msgBuf,'(A)')
-c    &   'CONFIG_CHECK: r* Coordinate not yet implemented'
-c       CALL PRINT_ERROR( msgBuf , 1)
-c       WRITE(msgBuf,'(A)')
-c    &   'CONFIG_CHECK: in OBC package'
-c       CALL PRINT_ERROR( msgBuf , 1)
 c       STOP 'ABNORMAL END: S/R CONFIG_CHECK'
 c     ENDIF
 
@@ -367,7 +372,7 @@ c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
       ENDIF
 
       IF ( useRealFreshWaterFlux .AND. exactConserv
-     &     .AND. implicDiv2DFlow.EQ.0. _d 0
+     &     .AND. implicDiv2Dflow.EQ.0. _d 0
      &     .AND. startTime.NE.baseTime .AND. usePickupBeforeC54 ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: RealFreshWaterFlux+implicSurfP=0+exactConserv:'
@@ -379,9 +384,9 @@ c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
       ENDIF
 
       IF ( useRealFreshWaterFlux .AND. .NOT.exactConserv
-     &     .AND. implicDiv2DFlow.NE.1. ) THEN
+     &     .AND. implicDiv2Dflow.NE.1. ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: **WARNNING** ',
-     &   'RealFreshWater & implicDiv2DFlow < 1'
+     &   'RealFreshWater & implicDiv2Dflow < 1'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: works better',
@@ -414,6 +419,35 @@ c     IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
      &                    SQUEEZE_RIGHT , myThid)
       ENDIF
 #endif /* EXACT_CONSERV */
+
+      IF ( selectAddFluid.LT.-1 .OR. selectAddFluid.GT.2 ) THEN
+        WRITE(msgBuf,'(A,I10,A)') 'CONFIG_CHECK: selectAddFluid=',
+     &                             selectAddFluid, ' not allowed'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &       'should be =0 (Off), 1,2 (Add Mass) or -1 (Virtual Flux)'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+      IF ( selectAddFluid.GE.1 .AND. rigidLid ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: selectAddFluid > 0 not compatible with'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: rigidLid (meaningless in that case)'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+      IF ( selectAddFluid.GE.1 .AND. .NOT.staggerTimeStep ) THEN
+        WRITE(msgBuf,'(2A)') '**WARNNING** ',
+     &   'CONFIG_CHECK: synchronous time-stepping =>'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(2A)') '**WARNNING** ',
+     &   '1 time-step mismatch in AddFluid effects on T & S'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+      ENDIF
 
 C--   Momentum related limitations:
       IF ( vectorInvariantMomentum.AND.momStepping ) THEN
@@ -516,6 +550,14 @@ C--   Packages conflict
         WRITE(msgBuf,'(2A)')
      &       'CONFIG_CHECK: cannot set useMATRIX without ',
      &       'setting usePTRACERS'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+      IF ( (useSEAICE .OR. useThSIce) .AND. allowFreezing ) THEN
+        WRITE(msgBuf,'(2A)')
+     &       'CONFIG_CHECK: cannot set allowFreezing',
+     &       ' with pkgs SEAICE or THSICE'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
