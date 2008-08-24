@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.17 2007/08/30 15:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.18 2008/08/24 21:50:12 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -259,6 +259,9 @@ CADJ STORE fv(:,:,bi,bj) = comlev1_bibj, key=iicekey, byte=isbyte
 C--  end bi,bj loop
        ENDDO
       ENDDO
+
+C     add a small piece of code to check AddFluid implementation:
+c#include "thsice_test_addfluid.h"
 
       IF ( useSEAICE .OR. thSIceAdvScheme.GT.0 ) THEN
 C--   Exchange fields that are advected by seaice dynamics
