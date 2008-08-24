@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.53 2008/05/30 02:45:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.54 2008/08/24 21:46:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -287,6 +287,36 @@ C--   Forcing term
      &                      myTime, myThid )
 #endif /* ALLOW_FIZHI */
 
+#ifdef ALLOW_ADDFLUID
+      IF ( selectAddFluid.NE.0 .AND. temp_EvPrRn.NE.UNSET_RL ) THEN
+C-    for now, use same fluid properties as for E-P-R
+       IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
+     &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
+     &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
+     &          *( temp_EvPrRn - theta(i,j,kLev,bi,bj) )
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
+          ENDDO
+         ENDDO
+       ELSE
+         DO j=1,sNy
+          DO i=1,sNx
+            gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
+     &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
+     &          *( temp_EvPrRn - tRef(kLev) )
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
+          ENDDO
+         ENDDO
+       ENDIF
+      ENDIF
+#endif /* ALLOW_ADDFLUID */
+
 C     Add heat in top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=1,sNy
@@ -298,8 +328,6 @@ C     Add heat in top-layer
        ENDDO
       ENDIF
 
-cph#ifndef ALLOW_AUTODIFF_TAMC
-cph I didnt put this ifndef here.
       IF (linFSConserveTr) THEN
        DO j=1,sNy
         DO i=1,sNx
@@ -310,7 +338,6 @@ cph I didnt put this ifndef here.
         ENDDO
        ENDDO
       ENDIF
-cph#endif /* ndfef ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce )
@@ -439,6 +466,36 @@ C--   Forcing term
      &                      myTime, myThid )
 #endif /* ALLOW_FIZHI */
 
+#ifdef ALLOW_ADDFLUID
+      IF ( selectAddFluid.NE.0 .AND. salt_EvPrRn.NE.UNSET_RL ) THEN
+C-    for now, use same fluid properties as for E-P-R
+       IF ( ( selectAddFluid.GE.1 .AND. nonlinFreeSurf.GT.0 )
+     &      .OR. convertFW2Salt.EQ.-1. _d 0 ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
+     &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
+     &          *( salt_EvPrRn - salt(i,j,kLev,bi,bj) )
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
+          ENDDO
+         ENDDO
+       ELSE
+         DO j=1,sNy
+          DO i=1,sNx
+            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
+     &        + addMass(i,j,kLev,bi,bj)*mass2rUnit
+     &          *( salt_EvPrRn - sRef(kLev) )
+     &          *recip_rA(i,j,bi,bj)
+     &          *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+C    &          *recip_deepFac2C(kLev)*recip_rhoFacC(kLev)
+          ENDDO
+         ENDDO
+       ENDIF
+      ENDIF
+#endif /* ALLOW_ADDFLUID */
+
 C     Add fresh-water in top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=1,sNy
@@ -450,8 +507,6 @@ C     Add fresh-water in top-layer
        ENDDO
       ENDIF
 
-cph#ifndef ALLOW_AUTODIFF_TAMC
-cph I didnt put this ifndef here.
       IF (linFSConserveTr) THEN
        DO j=1,sNy
         DO i=1,sNx
@@ -462,7 +517,6 @@ cph I didnt put this ifndef here.
         ENDDO
        ENDDO
       ENDIF
-cph#endif /* ndfef ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce )
