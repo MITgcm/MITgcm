@@ -1,13 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/ini_vel.F,v 1.1 2001/09/13 20:06:19 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/ini_vel.F,v 1.2 2008/08/24 23:16:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: INI_VEL
+C     !INTERFACE:
       SUBROUTINE INI_VEL( myThid )
+
+C     !DESCRIPTION: \bv
+C     *=================================================================
+C     | SUBROUTINE INI_VEL
+C     | o Initialize flow field (either to zero or from input files)
+C     *=================================================================
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
-
-C     Initialize 3D flow field (either to zero or from input files)
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -15,13 +24,17 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_UVEL 
+C     myThid ::  Number of this instance of INI_VEL
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj,i,j,k - Loop counters
+C     i,j,k  :: Loop counters
+C     bi,bj  :: tile indices
       INTEGER bi,bj,i,j,k
+CEOP
 
 C--   Initialise velocity fields to zero
 C
@@ -35,28 +48,24 @@ C
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           uVel(i,j,k,bi,bj)=1.
-           vVel(i,j,k,bi,bj)=1.
-           wVel(i,j,k,bi,bj)=0.
+           uVel(i,j,k,bi,bj)=1. _d 0
+           vVel(i,j,k,bi,bj)=1. _d 0
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
+      IF (uVelInitFile .NE. ' ' .OR. vVelInitFile .NE. ' ') THEN
+       _BARRIER
 C     Read an initial state for each component if required
-      IF (uVelInitFile .NE. ' ') THEN
-       _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XYZ_RL( uVelInitFile, ' ', uVel, 0, myThid )
-       _END_MASTER(myThid)
-c      _EXCH_XYZ_R8(uVel  , myThid )
-      ENDIF
+       IF (uVelInitFile .NE. ' ')
+     & CALL READ_FLD_XYZ_RL( uVelInitFile, ' ', uVel, 0, myThid )
 
-      IF (vVelInitFile .NE. ' ') THEN
-       _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XYZ_RL( vVelInitFile, ' ', vVel, 0, myThid )
-       _END_MASTER(myThid)
-c      _EXCH_XYZ_R8(vVel  , myThid )
+       IF (vVelInitFile .NE. ' ')
+     & CALL READ_FLD_XYZ_RL( vVelInitFile, ' ', vVel, 0, myThid )
+
+       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
       ENDIF
 
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -68,18 +77,9 @@ c      _EXCH_XYZ_R8(vVel  , myThid )
            vVel(i,j,k,bi,bj)=vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
           ENDDO
          ENDDO
-         CALL INTEGRATE_FOR_W(
-     I                        bi, bj, k, uVel, vVel,
-     O                        wVel,
-     I                        myThid )
         ENDDO
        ENDDO
       ENDDO
-
-c     IF (uVelInitFile .NE. ' ' .OR. vVelInitFile .NE. ' ') THEN
-       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
-       _EXCH_XYZ_R8(wVel,myThid)
-c     ENDIF
 
       RETURN
       END
