@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_pgi.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_pgi.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.7 2008/08/28 03:59:20 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_pgi_mpi,v 1.8 2008/08/28 18:35:42 jmc Exp $
 # $Name:  $
 
 umask 0022
@@ -64,7 +64,7 @@ if [ $checkOut -eq 2 ] ; then
   /usr/bin/find $gcmDIR -type f | xargs chmod g+r
 else
   if test -e $gcmDIR/verification ; then
-     echo "dir $gcmDIR exist"
+     echo "dir $gcmDIR/verification exist"
   else
      echo "no dir $gcmDIR/verification => exit"
      exit
@@ -72,6 +72,6 @@ else
 fi
 
 cd $gcmDIR/verification
-echo ./testreport $options -of $OPTFILE -command "$EXE" -odir aces-$sfx
+echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir aces-$sfx
 ./testreport $options -of $OPTFILE -command "$EXE" -odir aces-$sfx
 
