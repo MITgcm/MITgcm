@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_tuv.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_tuv.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.3 2008/05/22 22:32:48 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_op64_tuv,v 1.4 2008/08/28 03:59:20 jmc Exp $
 # $Name:  $
 
 umask 0022
@@ -33,7 +33,24 @@ checkOut=1
 # EOF
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
-if test $checkOut = '1' ; then
+#- check for disk space:
+dsp=`df . | tail -1 | awk '{print $5}' | sed 's/%$//'`
+if [ $dsp -gt 99 ] ; then
+  echo 'Not enough space on this disk => do not run testreport.'
+  df .
+  exit
+fi
+if [ $checkOut -eq 1 ] ; then
+  if test -d $gcmDIR/CVS ; then
+    echo "cvs update of dir $gcmDIR :"
+    ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d )
+    /bin/rm -rf $gcmDIR/verification/tr_aces-${sfx}_????????_?
+  else
+    echo "no dir: $gcmDIR/CVS => try a fresh check-out"
+    checkOut=2
+  fi
+fi
+if [ $checkOut -eq 2 ] ; then
   if test -e $gcmDIR ; then
      rm -rf $gcmDIR
   fi

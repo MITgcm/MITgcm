@@ -1,10 +1,11 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.7 2008/02/26 21:52:16 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.8 2008/08/28 03:59:20 jmc Exp $
 # $Name:  $
 
 echo -n '-- Starting: '
 date
+start=`date +%Y%m%d`
 if test $# = 0
 then
   tst_list='gnu ifc pgi mth tuv'
@@ -89,20 +90,28 @@ while test $count != 0 ; do
         ready_to_send=`$QSTAT -a | grep $USER | grep $JOB | wc -l`
 
         if test "x_$ready_to_send" = x_0 ; then
-            pat="/tmp/tr_aces-$i"'*'
-            rm -rf $pat
             run_dir=${TST_DIR}"/MITgcm_"$i"/verification"
-            tdir=`ls -1 $run_dir | grep -v tr_out | grep '^tr_aces' | head -1`
-            if test ! "x$tdir" = x ; then
-                ( cd $run_dir ; tar -czf "/tmp/tr_aces-"$i".tar.gz" ./$tdir )
+            tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^tr_aces' | head -1`
+            #- check this is the right output
+            chk=`echo $tdir | grep -c $start`
+            if test $chk = '0' ; then
+              curday=`date +%Y%m%d`
+              chk=`echo $tdir | grep -c $curday`
+            fi
+            if test "x$tdir" = x ; then
+              echo "Output not found so no email sent for $i"
+            elif test $chk = '0' ; then
+              echo "tdir='$tdir'"
+              echo "Output do not match so no email sent for $i"
+            else
+              rm -f "/tmp/tr_aces-"$i".tar.gz"
+              ( cd $run_dir ; tar -czf "/tmp/tr_aces-"$i".tar.gz" ./$tdir )
               if test "x$HAVE_MPACK" = xt ; then
                 $MPACK -s MITgcm-test -m 3555000 "/tmp/tr_aces-"$i".tar.gz" jmc@mitgcm.org
                 echo "Email sent for $i"
               else
                 echo "no email sent for $i (no mpack)"
               fi
-            else
-                echo "Output not found so no email sent for $i"
             fi
             eval M_$i=done
             count=`expr $count - 1`
