@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.117 2008/08/19 18:29:12 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.118 2008/08/28 17:12:10 jmc Exp $
 #  $Name:  $
 #
 
@@ -988,7 +988,11 @@ fi
 
 #  Create a uniquely named directory to store results
 CMDLINE=$0
-for xx in "$@" ; do CMDLINE="$CMDLINE '$xx'" ; done
+for xx in "$@" ; do nw=`echo $xx | wc -w`
+    if test $nw = '1' ; then CMDLINE="$CMDLINE $xx"
+                        else CMDLINE="$CMDLINE '$xx'" ; fi
+done
+#for xx in "$@" ; do CMDLINE="$CMDLINE '$xx'" ; done
 MACH=`hostname`
 UNAMEA=`uname -a`
 DATE=`date +%Y%m%d`
