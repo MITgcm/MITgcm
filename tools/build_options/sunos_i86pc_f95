@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_i86pc_f95,v 1.1 2008/09/02 11:55:06 mlosch Exp $
+#  $Name:  $  
+#
+# tested on 
+# uname -a: SunOS solasrv4 5.10 Generic_127128-11 i86pc i386 i86pc
+# with f95: Sun Fortran 95 8.3 SunOS_i386 Patch 127002-04 2008/04/16
+
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
+S64='$(TOOLSDIR)/set64bitConst.sh'
+DEFINES='-DWORDLENGTH=4'
+#AWK='gawk'
+MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
+#MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
+#MAKE='gmake'
+CPP='/usr/ccs/lib/cpp -P'
+FC='f95'
+# This is an example of how to specify where your 
+# netcdf libraries and include files are; 
+# in this particular example, they are in 
+# /opt/netcdf-3.6.2/libs and /opt/netcdf-3.6.2/include.
+INCLUDES='-I/opt/netcdf-3.6.2/include'
+LIBS='-L/opt/netcdf-3.6.2/lib'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS='-stackvar -explicitpar -vpara -e -u -noautopar -xfilebyteorder=big16:%all'
+    FFLAGS=$FFLAGS' -xtypemap=real:64,double:64,integer:32'
+    FOPTIM='-dalign -O4 -xarch=native -fsimple=2'
+    CFLAGS='-dalign -xO4 -xarch=native'
+else
+    #  Try to follow IEEE-754
+    FFLAGS='-e -u -fsimple=0 -xfilebyteorder=big16:%all'
+    FFLAGS=$FFLAGS' -xtypemap=real:64,double:64,integer:32'
+    FOPTIM='-O0'
+    CFLAGS='-xO0'
+fi
+NOOPTFLAGS='-dalign -O0'
+
