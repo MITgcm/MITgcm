@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.9 2007/05/10 21:15:52 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.10 2008/09/02 22:04:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,33 +59,33 @@ C     Dump files and restart average computation if needed
 
 C       Normalize by integrated time
         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-            CALL TIMEAVE_NORMALIZ(SLPtave,CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(HFtave ,CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(QSWtave,CPL_TimeAve,1,bi,bj,myThid)
-c           CALL TIMEAVE_NORMALIZ(QLTtave,CPL_TimeAve,1,bi,bj,myThid)
-c           CALL TIMEAVE_NORMALIZ(QSNtave,CPL_TimeAve,1,bi,bj,myThid)
-c           CALL TIMEAVE_NORMALIZ(QLWtave,CPL_TimeAve,1,bi,bj,myThid)
-c           CALL TIMEAVE_NORMALIZ(UGtave ,CPL_TimeAve,1,bi,bj,myThid)
-c           CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(TXtave ,CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(TYtave ,CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(FWtave ,CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(SFxtave,CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(SICtave,CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(MXLtave,CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(SSTtave,CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(SSStave,CPL_TimeAve,1,bi,bj,myThid)
-            CALL TIMEAVE_NORMALIZ(vSqtave,CPL_TimeAve,1,bi,bj,myThid)
-            IF ( ocnCpl_exchange_DIC ) THEN
-              CALL TIMEAVE_NORMALIZ(aCO2tave, CPL_TimeAve,1,bi,bj,myThid)
-              CALL TIMEAVE_NORMALIZ(sWSpdtave,CPL_TimeAve,1,bi,bj,myThid)
-              CALL TIMEAVE_NORMALIZ(iceftave, CPL_TimeAve,1,bi,bj,myThid)
-              CALL TIMEAVE_NORMALIZ(fCO2tave, CPL_TimeAve,1,bi,bj,myThid)
-            ENDIF
-          ENDDO
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+           CALL TIMEAVE_NORMALIZ(SLPtave,CPL_TimeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZ(HFtave ,CPL_TimeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZ(QSWtave,CPL_TimeAve,1,bi,bj,myThid)
+c          CALL TIMEAVE_NORMALIZ(QLTtave,CPL_TimeAve,1,bi,bj,myThid)
+c          CALL TIMEAVE_NORMALIZ(QSNtave,CPL_TimeAve,1,bi,bj,myThid)
+c          CALL TIMEAVE_NORMALIZ(QLWtave,CPL_TimeAve,1,bi,bj,myThid)
+c          CALL TIMEAVE_NORMALIZ(UGtave ,CPL_TimeAve,1,bi,bj,myThid)
+c          CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZ(TXtave ,CPL_TimeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZ(TYtave ,CPL_TimeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZ(FWtave ,CPL_TimeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZ(SFxtave,CPL_TimeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZ(SICtave,CPL_TimeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZ(MXLtave,CPL_TimeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZ(SSTtave,CPL_TimeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZ(SSStave,CPL_TimeAve,1,bi,bj,myThid)
+           CALL TIMEAVE_NORMALIZ(vSqtave,CPL_TimeAve,1,bi,bj,myThid)
+           IF ( ocnCpl_exchange_DIC ) THEN
+            CALL TIMEAVE_NORMALIZ(aCO2tave, CPL_TimeAve,1,bi,bj,myThid)
+            CALL TIMEAVE_NORMALIZ(sWSpdtave,CPL_TimeAve,1,bi,bj,myThid)
+            CALL TIMEAVE_NORMALIZ(iceftave, CPL_TimeAve,1,bi,bj,myThid)
+            CALL TIMEAVE_NORMALIZ(fCO2tave, CPL_TimeAve,1,bi,bj,myThid)
+           ENDIF
+         ENDDO
         ENDDO
-        
+
         IF (cpl_timeave_mdsio) THEN
 
           _BARRIER
