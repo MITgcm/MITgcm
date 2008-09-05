@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.31 2006/11/28 22:47:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.32 2008/09/05 20:15:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -14,6 +14,15 @@ C     These arrays are used throughout the code in evaluating gradients,
 C     integrals and spatial avarages. This routine is called separately
 C     by each thread and initializes only the region of the domain it is
 C     "responsible" for.
+
+C     !CALLING SEQUENCE:
+C     INI_GRID
+C      |   -- LOAD_GRID_SPACING
+C      |   -- INI_VERTICAL_GRID
+C      |    / INI_CARTESIAN_GRID
+C      |   /  INI_SPHERICAL_POLAR_GRID
+C      |   \  INI_CURVILINEAR_GRID
+C      |    \ INI_CYLINDER_GRID
 
 C     !USES:
       IMPLICIT NONE
@@ -46,11 +55,6 @@ C     msgBuf  :: Informational/error message buffer
 
 C     load grid spacing (vector) from files
       CALL LOAD_GRID_SPACING( myThid )
-
-C     Set up reference vertical profile (vector) for state variables
-C jmc: this call will not stay here but will move to S/R INITIALISE_FIXED
-C      (a better place) once anelatic initialisation is cleaned-up.
-      CALL INI_REFERENCE_STATE( myThid )
 
 C     Set up vertical grid and coordinate system
       CALL INI_VERTICAL_GRID( myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.48 2008/04/07 21:12:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.49 2008/09/05 20:15:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,16 +11,16 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INITIALISE_FIXED                               
-C     | o Routine for setting fixed model arrays such as          
-C     |   topography, grid, solver matrices, etc.                 
+C     | SUBROUTINE INITIALISE_FIXED
+C     | o Routine for setting fixed model arrays such as
+C     |   topography, grid, solver matrices, etc.
 C     *==========================================================*
-C     | INITIALISE_FIXED is invoked at the start of the model to  
-C     | set fixed model arrays. It reads data from an input file  
-C     | and from various binary files.                            
-C     | Each thread invokes an instance of this routine as does   
-C     | each process in a multi-process parallel environment like 
-C     | MPI.                                                      
+C     | INITIALISE_FIXED is invoked at the start of the model to
+C     | set fixed model arrays. It reads data from an input file
+C     | and from various binary files.
+C     | Each thread invokes an instance of this routine as does
+C     | each process in a multi-process parallel environment like
+C     | MPI.
 C     *==========================================================*
 C     \ev
 
@@ -45,9 +45,13 @@ C      |-- MON_INIT
 C      |
 C      |-- INI_GRID
 C      |
+C      |-- LOAD_REF_FILES
+C      |
 C      |-- INI_EOS
 C      |
-C      |-- INI_PHIREF
+C      |-- SET_REF_STATE
+C      |
+C      |-- SET_GRID_FACTORS
 C      |
 C      |-- INI_DEPTHS
 C      |
@@ -122,11 +126,17 @@ C--   Set model grid.
 C     Variables defining model grid spacing are defined.
       CALL INI_GRID( myThid )
 
+C--   Load reference profiles from files
+      CALL LOAD_REF_FILES( myThid )
+
 C--   Set equation of state parameters.
       CALL INI_EOS( myThid )
 
-C--   Set pressure/geopotential reference profile
-      CALL INI_PHIREF( myThid )
+C--   Set reference state (vertical reference profiles)
+      CALL SET_REF_STATE( myThid )
+
+C--   Set remaining grid factors
+      CALL SET_GRID_FACTORS( myThid )
 
 C--   Initialise map of depths
       CALL INI_DEPTHS( myThid )

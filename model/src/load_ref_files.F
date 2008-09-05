@@ -1,18 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_reference_state.F,v 1.2 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_ref_files.F,v 1.1 2008/09/05 20:15:28 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: INI_REFERENCE_STATE
+C     !ROUTINE: LOAD_REF_FILES
 C     !INTERFACE:
-      SUBROUTINE INI_REFERENCE_STATE( myThid )
+      SUBROUTINE LOAD_REF_FILES( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_REF_STATE
-C     | o Initialise reference vertical profile for state
-C     |   variables (Pot.Temp., Salinity/Specif.Humid., ....)
+C     | SUBROUTINE LOAD_REF_FILES
+C     | o Read reference vertical profile from files
+C     |   (Pot.Temp., Salinity/Specif.Humid., density ... )
 C     *==========================================================*
 C     \ev
 
@@ -38,7 +38,6 @@ C     tmp8vRef   :: temporary arrays to read in ref. vertical profile
 C     iUnit      :: Work variable for IO unit number
       REAL*4 tmp4vRef(Nr)
       REAL*8 tmp8vRef(Nr)
-      _RL    rhoRef(Nr)
       _RL    tracerDefault
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
@@ -61,8 +60,8 @@ C-    set default vertical profile for temperature: tRef
 C-    check for multiple definitions:
         DO k=1,Nr
          IF (tRef(k).NE.UNSET_RL) THEN
-          WRITE(msgBuf,'(A,I4,A)')
-     &      'S/R INI_PARMS: Cannot set both tRef(k=',k,') and tRefFile'
+          WRITE(msgBuf,'(2A,I4,A)') 'S/R LOAD_REF_FILES:',
+     &      ' Cannot set both tRef(k=', k, ') and tRefFile'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R INI_PARMS'
          ENDIF
@@ -95,7 +94,7 @@ C-    read from file:
            tRef(k) = tmp8vRef(k)
          ENDDO
         ENDIF
-        WRITE(msgBuf,'(3A)') 'S/R INI_REFERENCE_STATE:',
+        WRITE(msgBuf,'(3A)') 'S/R LOAD_REF_FILES:',
      &    ' tRef loaded from file: ', tRefFile(1:kLen)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid )
@@ -114,8 +113,8 @@ C-    set default vertical profile for salinity/water-vapour: sRef
 C-    check for multiple definitions:
         DO k=1,Nr
          IF (sRef(k).NE.UNSET_RL) THEN
-          WRITE(msgBuf,'(A,I4,A)')
-     &      'S/R INI_PARMS: Cannot set both sRef(k=',k,') and sRefFile'
+          WRITE(msgBuf,'(2A,I4,A)') 'S/R LOAD_REF_FILES:',
+     &      ' Cannot set both sRef(k=', k, ') and sRefFile'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R INI_PARMS'
          ENDIF
@@ -148,7 +147,7 @@ C-    read from file:
            sRef(k) = tmp8vRef(k)
          ENDDO
         ENDIF
-        WRITE(msgBuf,'(3A)') 'S/R INI_REFERENCE_STATE:',
+        WRITE(msgBuf,'(3A)') 'S/R LOAD_REF_FILES:',
      &    ' sRef loaded from file: ', sRefFile(1:kLen)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid )
@@ -168,7 +167,7 @@ C-    read from file:
         CALL MDS_BYTESWAPR4( Nr, tmp4vRef )
 #endif
          DO k=1,Nr
-           rhoRef(k) = tmp4vRef(k)
+           rho1Ref(k) = tmp4vRef(k)
          ENDDO
         ELSEIF (readBinaryPrec.EQ.precFloat64) THEN
          OPEN(iUnit, FILE=rhoRefFile(1:kLen), STATUS='OLD',
@@ -179,46 +178,13 @@ C-    read from file:
          CALL MDS_BYTESWAPR8( Nr, tmp8vRef )
 #endif
          DO k=1,Nr
-           rhoRef(k) = tmp8vRef(k)
+           rho1Ref(k) = tmp8vRef(k)
          ENDDO
         ENDIF
-        WRITE(msgBuf,'(3A)') 'S/R INI_REFERENCE_STATE:',
-     &    ' rhoRef loaded from file: ', rhoRefFile(1:kLen)
+        WRITE(msgBuf,'(3A)') 'S/R LOAD_REF_FILES:',
+     &    ' rho1Ref loaded from file: ', rhoRefFile(1:kLen)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid)
-      ENDIF
-
-C--   Initialise density factor for anelastic formulation:
-      DO k=1,Nr
-        rhoFacC(k) = 1. _d 0
-        recip_rhoFacC(k) = 1. _d 0
-      ENDDO
-      DO k=1,Nr+1
-        rhoFacF(k) = 1. _d 0
-        recip_rhoFacF(k) = 1. _d 0
-      ENDDO
-
-      IF ( usingZCoords .AND. rhoRefFile .NE. ' ' ) THEN
-C--   anelastic formulation : set density factor from reference density profile
-C       surface-interface rho-factor has to be 1:
-        rhoFacF(1)   = 1. _d 0
-C       rhoFac(k) = density ratio between layer k and top interface
-        DO k=1,Nr
-          rhoFacC(k) = rhoRef(k)/rhoConst
-        ENDDO
-        DO k=2,Nr
-          rhoFacF(k) = (rhoFacC(k-1)*delR(k)+rhoFacC(k)*delR(k-1))
-     &               / (delR(k)+delR(k-1))
-        ENDDO
-C       extrapolate down to the bottom:
-        rhoFacF(Nr+1)= 2. _d 0*rhoFacC(Nr) - rhoFacF(Nr)
-C-      set reciprocal rho-factor:
-        DO k=1,Nr
-          recip_rhoFacC(k) = 1. _d 0/rhoFacC(k)
-        ENDDO
-        DO k=1,Nr+1
-          recip_rhoFacF(k) = 1. _d 0/rhoFacF(k)
-        ENDDO
       ENDIF
 
       _END_MASTER(myThid)

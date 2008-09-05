@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.18 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.19 2008/09/05 20:15:28 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -161,46 +161,6 @@ C-    Calculate reciprol vertical grid spacing :
        recip_drC(k)   = 1. _d 0/drC(k)
        recip_drF(k)   = 1. _d 0/drF(k)
       ENDDO
-
-C--   Calculate horizontal grid factor for the deep model (<=> dropping the
-C      shallow atmosphere approximation): only function of the vertical index
-C-    first: initialise deep-model grid factor:
-      DO k=1,Nr
-        deepFacC(k) = 1. _d 0
-        deepFac2C(k)= 1. _d 0
-        recip_deepFacC(k) = 1. _d 0
-        recip_deepFac2C(k)= 1. _d 0
-      ENDDO
-      DO k=1,Nr+1
-        deepFacF(k) = 1. _d 0
-        deepFac2F(k)= 1. _d 0
-        recip_deepFacF(k) = 1. _d 0
-        recip_deepFac2F(k)= 1. _d 0
-      ENDDO
-      IF ( deepAtmosphere ) THEN
-C-    set deep-model grid factor:
-       IF ( usingZCoords ) THEN
-        DO k=1,Nr
-          deepFacC(k) = (rSphere+rC(k))*recip_rSphere
-          deepFac2C(k)  = deepFacC(k)*deepFacC(k)
-        ENDDO
-        DO k=1,Nr+1
-          deepFacF(k) = (rSphere+rF(k))*recip_rSphere
-          deepFac2F(k)  = deepFacF(k)*deepFacF(k)
-        ENDDO
-       ELSE
-        STOP 'INI_VERTICAL_GRID: setting deepFac is not coded'
-       ENDIF
-C-    set reciprocal of deep-model grid factor:
-       DO k=1,Nr
-        recip_deepFacC(k) = 1. _d 0/deepFacC(k)
-        recip_deepFac2C(k)= 1. _d 0/deepFac2C(k)
-       ENDDO
-       DO k=1,Nr+1
-        recip_deepFacF(k) = 1. _d 0/deepFacF(k)
-        recip_deepFac2F(k)= 1. _d 0/deepFac2F(k)
-       ENDDO
-      ENDIF
 
       _END_MASTER(myThid)
       _BARRIER

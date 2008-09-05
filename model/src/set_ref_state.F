@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_phiref.F,v 1.5 2007/03/12 23:43:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.1 2008/09/05 20:15:28 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: INI_PHIREF
+C     !ROUTINE: SET_REF_STATE
 C     !INTERFACE:
-      SUBROUTINE INI_PHIREF(
-     I                       myThid )
+      SUBROUTINE SET_REF_STATE(
+     I                          myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_PHIREF
+C     | SUBROUTINE SET_REF_STATE
 C     | o Set reference potential at level center and
 C     |   level interface, using tRef,sRef profiles.
 C     | note: use same discretisation as in calc_phi_hyd
@@ -47,6 +47,7 @@ CEOP
 
       _BEGIN_MASTER( myThid )
 
+C--   Initialise:
       DO k=1,2*Nr
         phiRef(k) = 0.
       ENDDO
@@ -65,34 +66,42 @@ CEOP
         wUnit2rVel(k) = 1. _d 0
       ENDDO
 
+C--   Initialise density factor for anelastic formulation:
+      DO k=1,Nr
+        rhoFacC(k) = 1. _d 0
+        recip_rhoFacC(k) = 1. _d 0
+      ENDDO
+      DO k=1,Nr+1
+        rhoFacF(k) = 1. _d 0
+        recip_rhoFacF(k) = 1. _d 0
+      ENDDO
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( eosType.EQ.'POLY3' ) THEN
        IF ( implicitIntGravWave ) THEN
-         WRITE(msgBuf,'(A)')
-     &    'INI_PHIREF: need to compute reference density for Impl.IGW'
+         WRITE(msgBuf,'(2A)') 'SET_REF_STATE:',
+     &    ' need to compute reference density for Impl.IGW'
          CALL PRINT_ERROR( msgBuf , myThid )
-         WRITE(msgBuf,'(2A)')
-     &    'INI_PHIREF: but FIND_RHO_SCALAR(EOS="POLY3")',
-     &    ' not (yet) implemented'
+         WRITE(msgBuf,'(2A)') 'SET_REF_STATE:',
+     &    ' but FIND_RHO_SCALAR(EOS="POLY3") not (yet) implemented'
          CALL PRINT_ERROR( msgBuf , myThid )
-         STOP 'ABNORMAL END: S/R INI_PHIREF'
+         STOP 'ABNORMAL END: S/R SET_REF_STATE'
        ELSEIF ( nonHydrostatic .AND.
      &          buoyancyRelation .EQ. 'OCEANICP' ) THEN
-         WRITE(msgBuf,'(A)')
-     &    'INI_PHIREF: need to compute reference density for Non-Hyd'
+         WRITE(msgBuf,'(2A)') 'SET_REF_STATE:',
+     &    ' need to compute reference density for Non-Hyd'
          CALL PRINT_ERROR( msgBuf , myThid )
-         WRITE(msgBuf,'(2A)')
-     &    'INI_PHIREF: but FIND_RHO_SCALAR(EOS="POLY3")',
-     &    ' not (yet) implemented'
+         WRITE(msgBuf,'(2A)') 'SET_REF_STATE:',
+     &    ' but FIND_RHO_SCALAR(EOS="POLY3") not (yet) implemented'
          CALL PRINT_ERROR( msgBuf , myThid )
-         STOP 'ABNORMAL END: S/R INI_PHIREF'
+         STOP 'ABNORMAL END: S/R SET_REF_STATE'
        ELSE
-         WRITE(msgBuf,'(A)')
-     &    'INI_PHIREF: Unable to compute reference stratification'
+         WRITE(msgBuf,'(2A)') 'SET_REF_STATE:',
+     &    ' Unable to compute reference stratification'
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                       SQUEEZE_RIGHT , myThid )
-         WRITE(msgBuf,'(A)')
-     &    'INI_PHIREF:  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros'
+         WRITE(msgBuf,'(2A)') 'SET_REF_STATE:',
+     &    '  with EOS="POLY3" ; set dBdrRef(1:Nr) to zeros'
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                       SQUEEZE_RIGHT , myThid)
        ENDIF
@@ -242,8 +251,33 @@ C------
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
-        STOP 'INI_PHIREF: Bad value of buoyancyRelation !'
+        STOP 'SET_REF_STATE: Bad value of buoyancyRelation !'
 C--   endif buoyancyRelation
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( usingZCoords .AND. rhoRefFile .NE. ' ' ) THEN
+C--   anelastic formulation : set density factor from reference density profile
+C       surface-interface rho-factor has to be 1:
+        rhoFacF(1)   = 1. _d 0
+C       rhoFac(k) = density ratio between layer k and top interface
+        DO k=1,Nr
+          rhoFacC(k) = rho1Ref(k)/rhoConst
+        ENDDO
+        DO k=2,Nr
+          rhoFacF(k) = (rhoFacC(k-1)*delR(k)+rhoFacC(k)*delR(k-1))
+     &               / (delR(k)+delR(k-1))
+        ENDDO
+C       extrapolate down to the bottom:
+        rhoFacF(Nr+1)= 2. _d 0*rhoFacC(Nr) - rhoFacF(Nr)
+C-      set reciprocal rho-factor:
+        DO k=1,Nr
+          recip_rhoFacC(k) = 1. _d 0/rhoFacC(k)
+        ENDDO
+        DO k=1,Nr+1
+          recip_rhoFacF(k) = 1. _d 0/rhoFacF(k)
+        ENDDO
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -253,13 +287,13 @@ C--   Write to check :
        WRITE(msgBuf,'(A)') ' '
        CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A)')
-     &  'INI_PHIREF: PhiRef/g [m] at level Center (integer)'
+     &  'SET_REF_STATE: PhiRef/g [m] at level Center (integer)'
        CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A)')
      &  '                     and at level Interface (half-int.) :'
        CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
        DO k=1,2*Nr+1
-        WRITE(msgBuf,'(A,F5.1,A,F10.1,A,F12.3)')
+        WRITE(msgBuf,'(A,F8.1,A,F10.1,A,F13.3)')
      &    ' K=',k*0.5,'  ;  r=',rHalf(k),'  ;  phiRef/g=',
      &    phiRef(k)*recip_gravity
         CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
