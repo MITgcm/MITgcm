@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.222 2008/08/24 21:28:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.223 2008/09/05 19:55:56 jmc Exp $
 C $Name:  $
 C
 
@@ -482,6 +482,7 @@ C     rhoConst  :: Vertically constant reference density
 C     rhoFacC   :: normalized (by rhoConst) reference density at cell-Center
 C     rhoFacF   :: normalized (by rhoConst) reference density at cell-interFace
 C     rhoConstFresh :: Constant reference density for fresh water (rain)
+C     rho1Ref   :: reference vertical profile for density
 C     tRef      :: reference vertical profile for potential temperature
 C     sRef      :: reference vertical profile for salinity/specific humidity
 C     phiRef    :: reference potential (pressure/rho, geopotential) profile
@@ -685,7 +686,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & gravity, recip_gravity, gBaro,
      & rhonil, recip_rhonil, rhoConst, recip_rhoConst,
      & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF,
-     & rhoConstFresh, tRef, sRef, phiRef, dBdrRef,
+     & rhoConstFresh, rho1Ref, tRef, sRef, phiRef, dBdrRef,
      & rVel2wUnit, wUnit2rVel, mass2rUnit, rUnit2mass,
      & baseTime, startTime, endTime,
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
@@ -778,6 +779,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL rhoFacC(Nr),   recip_rhoFacC(Nr)
       _RL rhoFacF(Nr+1), recip_rhoFacF(Nr+1)
       _RL rhoConstFresh
+      _RL rho1Ref(Nr)
       _RL tRef(Nr)
       _RL sRef(Nr)
       _RL phiRef(2*Nr+1)
