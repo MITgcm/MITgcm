@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1019 2008/08/30 16:37:48 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1020 2008/09/06 17:55:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o add initialisation of deepFac if using Pcoords (new S/R set_grid_factors)
+  and rename:
+  ini_phiref.F          --> set_ref_state.F  (+ set anelastic factors)
+  ini_reference_state.F --> load_ref_files.F (- set anelastic factors)
+o change FIND_RHO_SCALAR : return rho (instead of rho - rhoConst)
 
 checkpoint61c
 o add option ALLOW_ADDFLUID and run-time selector "selectAddFluid" 
