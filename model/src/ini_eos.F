@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.19 2008/08/21 14:25:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.20 2008/09/06 17:42:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -457,8 +457,7 @@ C-    + set rC accordingly
      &         pLoc(kcheck), rhoLoc(i,j), myThid )
           WRITE(msgBuf,'(A,F10.5,1X,F11.5)')
      &         ' rho(find_rho_scalar)             = ',
-     &         rhoLoc(i,j)+rhoConst
-c    &         rhoLoc(i,j)+rhoConst, bulkMod(i,j)
+     &         rhoLoc(i,j)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &         SQUEEZE_RIGHT , myThid )
 

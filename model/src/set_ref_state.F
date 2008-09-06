@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.1 2008/09/05 20:15:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.2 2008/09/06 17:42:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -114,7 +114,6 @@ C--   Compute reference density profile and reference stratification
           CALL FIND_RHO_SCALAR(
      I                          tRef(k), sRef(k), pLoc,
      O                          rhoRef(k), myThid )
-          rhoRef(k) = rhoRef(k) + rhoConst
         ENDDO
 
 C--   Compute reference stratification: N^2 = -(g/rho_c) * d.rho/dz @ const. p
@@ -147,7 +146,6 @@ C--   Compute reference density profile
           CALL FIND_RHO_SCALAR(
      I                          tRef(k), sRef(k), pLoc,
      O                          rhoRef(k), myThid )
-          rhoRef(k) = rhoRef(k) + rhoConst
         ENDDO
 
 C--   Compute reference stratification: -d.alpha/dp @ constant p
@@ -162,13 +160,12 @@ C--   Compute reference stratification: -d.alpha/dp @ constant p
      O                             rhoUp, myThid )
           IF ( k.GE.2 .AND. k.LE.Nr ) THEN
             dBdrRef(k) = (rhoDw - rhoUp)*recip_drC(k)
-     &                 / (rhoDw+rhoConst)
-     &                 / (rhoUp+rhoConst)
-            rhoLoc = rhoConst + ( rhoDw + rhoUp )*0.5 _d 0
+     &                 / (rhoDw*rhoUp)
+            rhoLoc = ( rhoDw + rhoUp )*0.5 _d 0
           ELSEIF ( k.EQ.1 ) THEN
-            rhoLoc = rhoConst + rhoUp
+            rhoLoc = rhoUp
           ELSE
-            rhoLoc = rhoConst + rhoDw
+            rhoLoc = rhoDw
           ENDIF
 C--   Units convertion factor for vertical velocity:
 C       wUnit2rVel = gravity*rhoRef : rVel  [Pa/s] = wSpeed [m/s] * wUnit2rVel
@@ -266,8 +263,8 @@ C       rhoFac(k) = density ratio between layer k and top interface
           rhoFacC(k) = rho1Ref(k)/rhoConst
         ENDDO
         DO k=2,Nr
-          rhoFacF(k) = (rhoFacC(k-1)*delR(k)+rhoFacC(k)*delR(k-1))
-     &               / (delR(k)+delR(k-1))
+          rhoFacF(k) = (rhoFacC(k-1)*drF(k)+rhoFacC(k)*drF(k-1))
+     &               / (drF(k)+drF(k-1))
         ENDDO
 C       extrapolate down to the bottom:
         rhoFacF(Nr+1)= 2. _d 0*rhoFacC(Nr) - rhoFacF(Nr)
@@ -293,7 +290,7 @@ C--   Write to check :
      &  '                     and at level Interface (half-int.) :'
        CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
        DO k=1,2*Nr+1
-        WRITE(msgBuf,'(A,F8.1,A,F10.1,A,F13.3)')
+        WRITE(msgBuf,'(A,F5.1,A,F15.1,A,F13.3)')
      &    ' K=',k*0.5,'  ;  r=',rHalf(k),'  ;  phiRef/g=',
      &    phiRef(k)*recip_gravity
         CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )

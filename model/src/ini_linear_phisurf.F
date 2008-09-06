@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.13 2007/03/12 23:44:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.14 2008/09/06 17:42:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -76,7 +76,7 @@ C    p-coord (z2rUnit=rho*g): Bo_surf = 1/rho(Tref(ksurf),pSurf_0)
 C   Note: on Phi_surf splitting : Non-linear Time-dependent effects on B_surf
 C   [through eta & (T-tRef)_surf] are included in PhiHyd rather than in Bo_surf
 C--
-      IF ( buoyancyRelation .eq. 'OCEANIC' ) THEN
+      IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
 C-  gBaro = gravity (except for External mode test with reduced gravity)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -102,7 +102,7 @@ c            recip_Bo(I,J,bi,bj) = wUnit2rVel(1)*recip_gravity
           ENDDO
          ENDDO
         ENDDO
-      ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN
+      ELSEIF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO J=1-Oly,sNy+Oly
@@ -114,7 +114,6 @@ c            recip_Bo(I,J,bi,bj) = wUnit2rVel(1)*recip_gravity
              CALL FIND_RHO_SCALAR(
      I            tRef(k), sRef(k), pLoc,
      O            rhoLoc, myThid )
-             rhoLoc = rhoLoc + rhoConst
              IF ( rhoLoc .EQ. 0. _d 0 ) THEN
               Bo_surf(I,J,bi,bj) = 0. _d 0
              ELSE
@@ -129,7 +128,7 @@ c            recip_Bo(I,J,bi,bj) = wUnit2rVel(1)*recip_gravity
           ENDDO
          ENDDO
         ENDDO
-      ELSEIF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
+      ELSEIF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
 C-  use a linearized (in ps) Non-uniform relation : Bo_surf(Po_surf,tRef_surf)
 C--- Bo = d/d_p(Phi_surf) = tRef_surf*d/d_p(PI) ; PI = Cp*(p/Po)^kappa
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -160,8 +159,8 @@ C--   Update overlap regions (jmc: is it really needed ?)
       _EXCH_XY_R8(Bo_surf, myThid)
       _EXCH_XY_R8(recip_Bo, myThid)
 
-      IF ( ( buoyancyRelation .eq. 'ATMOSPHERIC' .OR.
-     &       buoyancyRelation .eq. 'OCEANICP'         )
+      IF ( ( buoyancyRelation .EQ. 'ATMOSPHERIC' .OR.
+     &       buoyancyRelation .EQ. 'OCEANICP'         )
      &       .AND. .NOT.uniformLin_PhiSurf              ) THEN
 
 C--     EXCH (above) contains barrier calls
@@ -185,7 +184,7 @@ C                               or topographic geopotential anom. (p-coord)
          ENDDO
         ENDDO
 
-      IF ( buoyancyRelation .eq. 'ATMOSPHERIC'
+      IF ( buoyancyRelation .EQ. 'ATMOSPHERIC'
      &                   .AND. topoFile.NE.' ' ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC

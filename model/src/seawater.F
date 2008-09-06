@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/model/src/seawater.F,v 1.2 2008/08/09 00:51:34 jmc Exp $
+C$Header: /u/gcmpack/MITgcm/model/src/seawater.F,v 1.3 2008/09/06 17:42:27 jmc Exp $
 C$Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -19,7 +19,7 @@ C--              used by sw_ptmp
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o SUBROUTINE FIND_RHO_SCALAR
-C     |   Calculates [rho(S,T,p)-rhoConst]
+C     |   Calculates rho(S,T,p)
 C     *==========================================================*
 C     \ev
 
@@ -81,7 +81,7 @@ C     issue a warning
          rholoc = rhoNil*(
      &                      sBeta *(sLoc-sRef(1))
      &                     -tAlpha*(tLoc-tRef(1))
-     &                   ) + (rhoNil-rhoConst)
+     &                   ) + rhoNil
 c        rhoLoc = 0. _d  0
 
       ELSEIF (equationOfState.EQ.'POLY3') THEN
@@ -175,7 +175,7 @@ C     secant bulk modulus of sea water at pressure p
          bulkMod = bMfresh + bMsalt + bMpres
 
 C     density of sea water at pressure p
-         rhoLoc = rhoP0/(1. _d 0 - p1/bulkMod) - rhoConst
+         rhoLoc = rhoP0/(1. _d 0 - p1/bulkMod)
 
       ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
 
@@ -207,7 +207,7 @@ C     density of sea water at pressure p
 
          rhoDen = 1.0/(epsln+den)
 
-         rhoLoc = rhoNum*rhoDen - rhoConst
+         rhoLoc = rhoNum*rhoDen
 
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
 C
