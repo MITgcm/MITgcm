@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.36 2008/08/11 22:25:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.37 2008/09/08 21:45:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -154,7 +154,16 @@ CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_SHELFICE
 C     mask rho, so that there is no contribution of phiHyd from
 C     overlying shelfice (whose density we do not know)
-        IF ( useShelfIce ) THEN
+        IF ( useShelfIce .AND. useDOWN_SLOPE ) THEN
+C- note: does not work for down_slope pkg which needs rho below the bottom.
+C    setting rho=0 above the ice-shelf base is enough (and works in both cases)
+C    but might be slower (--> keep original masking if not using down_slope pkg)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           IF ( k.LT.kSurfC(i,j,bi,bj) ) alphaRho(i,j) = 0. _d 0
+          ENDDO
+         ENDDO
+        ELSEIF ( useShelfIce ) THEN
          DO j=jMin,jMax
           DO i=iMin,iMax
            alphaRho(i,j) = alphaRho(i,j)*maskC(i,j,k,bi,bj)
@@ -282,7 +291,7 @@ C---------- This discretization is the "finite volume" form
 C           which has not been used to date since it does not
 C           conserve KE+PE exactly even though it is more natural
 C
-           IF (k.EQ.ksurfC(i,j,bi,bj)) THEN
+           IF (k.EQ.kSurfC(i,j,bi,bj)) THEN
              ddRloc = Ro_surf(i,j,bi,bj)-rC(k)
 #ifdef NONLIN_FRSURF
              ddRloc = ddRloc + surfPhiFac*etaH(i,j,bi,bj)
@@ -321,7 +330,7 @@ C  --  Finite Difference Form, with Part-Cell Bathy
 
 C---------- This discretization is the "energy conserving" form
 
-           IF (k.EQ.ksurfC(i,j,bi,bj)) THEN
+           IF (k.EQ.kSurfC(i,j,bi,bj)) THEN
              ddRloc = Ro_surf(i,j,bi,bj)-rC(k)
 #ifdef NONLIN_FRSURF
              ddRloc = ddRloc + surfPhiFac*etaH(i,j,bi,bj)
@@ -404,7 +413,7 @@ C---------
      &                   -((rF(k+1)/atm_Po)**atm_kappa) )
          DO j=jMin,jMax
           DO i=iMin,iMax
-           IF (k.EQ.ksurfC(i,j,bi,bj)) THEN
+           IF (k.EQ.kSurfC(i,j,bi,bj)) THEN
              ddRloc = Ro_surf(i,j,bi,bj)-rC(k)
 #ifdef NONLIN_FRSURF
              ddRloc = ddRloc + surfPhiFac*etaH(i,j,bi,bj)
@@ -448,7 +457,7 @@ C---------
          rec_dRp = one/(rC(k)-rF(k+1))
          DO j=jMin,jMax
           DO i=iMin,iMax
-           IF (k.EQ.ksurfC(i,j,bi,bj)) THEN
+           IF (k.EQ.kSurfC(i,j,bi,bj)) THEN
              ddRloc = Ro_surf(i,j,bi,bj)-rC(k)
 #ifdef NONLIN_FRSURF
              ddRloc = ddRloc + surfPhiFac*etaH(i,j,bi,bj)
