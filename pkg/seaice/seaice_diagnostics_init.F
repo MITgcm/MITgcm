@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.12 2007/12/06 07:42:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.13 2008/09/09 07:04:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -94,7 +94,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       diagName  = 'SIatmFW '
       diagTitle = 'Net freshwater flux from the atmosphere (+=down)'
-      diagUnits = 'm/s             '
+      diagUnits = 'kg/m^2/s        '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )

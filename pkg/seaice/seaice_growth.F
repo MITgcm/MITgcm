@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.47 2008/03/27 19:49:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.48 2008/09/09 07:04:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -598,11 +598,11 @@ C NOW GET FRESH WATER FLUX
      &         )*rhoConstFresh
 #ifdef ALLOW_DIAGNOSTICS
           frWtrAtm(I,J)   = maskC(I,J,kSurface,bi,bj)*(
-     &           PRECIP(I,J,bi,bj)
+     &           PRECIP(I,J,bi,bj) 
      &         - EVAP(I,J,bi,bj)
      &               *( ONE - AREA(I,J,2,bi,bj) )
      &         + RUNOFF(I,J,bi,bj)
-     &         )
+     &         )*rhoConstFresh
 #endif /* ALLOW_DIAGNOSTICS */
 
          ENDDO
@@ -713,7 +713,7 @@ C Add YNEG contribution to QNET
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL(frWtrAtm,'SIatmFW ',0,1 ,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(frWtrAtm,'SIatmFW ',0,1,3,bi,bj,myThid)
         ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
