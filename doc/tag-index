@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1020 2008/09/06 17:55:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1021 2008/09/09 07:26:01 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix a bug in diagnostic SIatmFW and changed the units from m/s to kg/m^2/s
 o add initialisation of deepFac if using Pcoords (new S/R set_grid_factors)
   and rename:
   ini_phiref.F          --> set_ref_state.F  (+ set anelastic factors)
