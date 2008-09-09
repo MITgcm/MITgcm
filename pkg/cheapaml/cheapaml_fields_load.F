@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.2 2008/09/09 18:38:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.3 2008/09/09 19:05:20 jmc Exp $
 C $Name:  $
 #include "CHEAPAML_OPTIONS.h"
 
@@ -103,75 +103,75 @@ c for the MITGCM.
          endif
          xsolph=myTime*2.d0*3.14159 _d 0/365. _d 0/86400. _d 0
          xinxx=cos(xsolph+xphaseinit+3.14159 _d 0)
-      DO bj=1,nSy
-         DO bi=1,nSx
-            DO j=1,sNy
-               DO i=1,sNx
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
                   jG = myYGlobalLo-1+(bj-1)*sNy+j
             local=225.d0+dsolms*xinxx-float((jg-1))/float((ny-1))*
      &        (37.5d0-dsolmn*xinxx)
             if ( jG .le. 3 ) local = local + 200
                   Solar(i,j,bi,bj) = local
-               ENDDO
-            ENDDO
+             ENDDO
+           ENDDO
+          ENDDO
          ENDDO
-      ENDDO
-       _EXCH_XY_RS(solar, mythid)
+         _EXCH_XY_RS(solar, mythid)
 c relaxation temperature in radiative equilibrium
-      DO bj=1,nSy
-         DO bi=1,nSx
-            DO j=1,sNy
-               DO i=1,sNx
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
           jG = myYGlobalLo-1+(bj-1)*sNy+j
           local=solar(i,j,bi,bj)
           local=(2.d0*local/stefan)**(0.25d0)-273.16
           bump=-5.d0*EXP(-(float(jg-127)*float(jg-127))/1920.0)
           local=local+bump
           TR(i,j,bi,bj) = local
-               ENDDO
             ENDDO
+           ENDDO
+          ENDDO
          ENDDO
-      ENDDO
-      _EXCH_XY_RS(TR, mythid)
+         _EXCH_XY_RS(TR, mythid)
 c default specific humidity profile to 80% relative humidity
-      DO bj=1,nSy
-         DO bi=1,nSx
-            DO j=1,sNy
-               DO i=1,sNx
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
 c                  jG = myYGlobalLo-1+(bj-1)*sNy+j
                   local = Tr(i,j,bi,bj)+273.16d0
               ssqa = ssq0*exp( lath*(ssq1-ssq2/local)) / p0
                   qr(i,j,bi,bj) = 0.8d0*ssqa
-               ENDDO
             ENDDO
+           ENDDO
+          ENDDO
          ENDDO
-      ENDDO
-      _EXCH_XY_RS(qr, mythid)
+         _EXCH_XY_RS(qr, mythid)
 c u wind field
-      DO bj=1,nSy
-         DO bi=1,nSx
-            DO j=1,sNy
-               DO i=1,sNx
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
                   jG = myYGlobalLo-1+(bj-1)*sNy+j
                   local=-5.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
                   uwind(i,j,bi,bj) = local
-               ENDDO
             ENDDO
+           ENDDO
+          ENDDO
          ENDDO
-      ENDDO
-      _EXCH_XY_RS(uwind, mythid)
+         _EXCH_XY_RS(uwind, mythid)
 c v wind field
-      DO bj=1,nSy
-         DO bi=1,nSx
-            DO j=1,sNy
-               DO i=1,sNx
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
                   jG = myYGlobalLo-1+(bj-1)*sNy+j
                   vwind(i,j,bi,bj) = 0.d0
-               ENDDO
             ENDDO
+           ENDDO
+          ENDDO
          ENDDO
-      ENDDO
-      _EXCH_XY_RS(vwind, mythid)
+         _EXCH_XY_RS(vwind, mythid)
       ELSE
 
 c here for usual interpolative forcings
@@ -187,6 +187,7 @@ C First call requires that we initialize everything to zero for safety
        CALL LEF_ZERO( uwind1 ,myThid )
        CALL LEF_ZERO( vwind0 ,myThid )
        CALL LEF_ZERO( vwind1 ,myThid )
+       _BARRIER
       ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
@@ -211,8 +212,6 @@ c     aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
      &  Iftm-Ifprd*(intime0-1) .EQ. 0
      &  .OR. myIter .EQ. nIter0
      & ) THEN
-
-       _BEGIN_MASTER(myThid)
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
@@ -249,8 +248,6 @@ C      data for the period ahead and the period behind myTime.
      &       myIter,myThid )
       ENDIF
 
-       _END_MASTER(myThid)
-C
        _EXCH_XY_R4(trair0 , myThid )
        _EXCH_XY_R4(qrair0 , myThid )
        _EXCH_XY_R4(solar0 , myThid )
@@ -290,66 +287,66 @@ c end of periodic forcing options, on to steady option
        IF ( myIter .EQ. nIter0 ) THEN
         IF ( SolarFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RS( SolarFile,solar,' ',0,myThid )
-      ELSE
-      DO bj=1,nSy
-         DO bi=1,nSx
-            DO j=1,sNy
-               DO i=1,sNx
+        ELSE
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
                   jG = myYGlobalLo-1+(bj-1)*sNy+j
            local=225.d0-float((jg-1))/float((ny-1))*37.5d0
            IF ( jG .le. 3 ) local =local + 200
                   Solar(i,j,bi,bj) = local
-               ENDDO
             ENDDO
+           ENDDO
+          ENDDO
          ENDDO
-      ENDDO
-      _EXCH_XY_RS(solar, mythid)
-      ENDIF
+        ENDIF
+        _EXCH_XY_RS(solar, mythid)
         IF ( TrFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RS( TrFile,tr,' ',0,myThid )
-      ELSE
-      DO bj=1,nSy
-         DO bi=1,nSx
-            DO j=1,sNy
-               DO i=1,sNx
+        ELSE
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
         jG = myYGlobalLo-1+(bj-1)*sNy+j
         local=solar(i,j,bi,bj)
         local=(2.d0*local/stefan)**(0.25d0)-273.16
         bump=-5.d0*EXP(-(float(jg-127)*float(jg-127))/1920.0)
         local=local+bump
                   TR(i,j,bi,bj) = local
-               ENDDO
             ENDDO
+           ENDDO
+          ENDDO
          ENDDO
-      ENDDO
-      _EXCH_XY_RS(TR, mythid)
         ENDIF
+        _EXCH_XY_RS(TR, mythid)
 c do specific humidity
         IF ( QrFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RS( QrFile,qr,' ',0,myThid )
-      ELSE
+        ELSE
 c default specific humidity profile to 80% relative humidity
-      DO bj=1,nSy
-         DO bi=1,nSx
-            DO j=1,sNy
-               DO i=1,sNx
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
 c                  jG = myYGlobalLo-1+(bj-1)*sNy+j
                   local = Tr(i,j,bi,bj)+273.16d0
               ssqa = ssq0*exp( lath*(ssq1-ssq2/local)) / p0
                   qr(i,j,bi,bj) = 0.8d0*ssqa
-               ENDDO
             ENDDO
+           ENDDO
+          ENDDO
          ENDDO
-      ENDDO
-      _EXCH_XY_RS(qr, mythid)
         ENDIF
+        _EXCH_XY_RS(qr, mythid)
         IF ( UWindFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RS( UWindFile,uwind,' ',0,myThid )
-      ELSE
-      DO bj=1,nSy
-         DO bi=1,nSx
-            DO j=1,sNy
-               DO i=1,sNx
+        ELSE
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
                   jG = myYGlobalLo-1+(bj-1)*sNy+j
 c mod for debug
 c to return to original code, uncomment following line
@@ -357,27 +354,27 @@ c comment out 2nd line
                   local=-5.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
 c                 local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
                   uwind(i,j,bi,bj) = local
-               ENDDO
             ENDDO
+           ENDDO
+          ENDDO
          ENDDO
-      ENDDO
-      _EXCH_XY_RS(uwind, mythid)
+         _EXCH_XY_RS(uwind, mythid)
         ENDIF
         IF ( VWindFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RS( VWindFile,vwind,' ',0,myThid )
-      ELSE
-      DO bj=1,nSy
-         DO bi=1,nSx
-            DO j=1,sNy
-               DO i=1,sNx
+        ELSE
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
                   jG = myYGlobalLo-1+(bj-1)*sNy+j
                   vwind(i,j,bi,bj) = 0.d0
-               ENDDO
             ENDDO
+           ENDDO
+          ENDDO
          ENDDO
-      ENDDO
-      _EXCH_XY_RS(vwind, mythid)
         ENDIF
+        _EXCH_XY_RS(vwind, mythid)
        ENDIF
 
 C endif for periodicForcing
