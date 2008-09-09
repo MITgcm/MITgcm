@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.11 2007/06/15 05:04:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.12 2008/09/09 17:14:48 heimbach Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -73,18 +73,18 @@ c--   == end of interface ==
       DO bj=1,nSy
        DO bi=1,nSx
 
-      profiles_curfile_buff(bi,bj)=0
+        profiles_curfile_buff(bi,bj)=0
 
-      do m=1,NLEVELMAX
-      do l=1,1000
-      do k=1,NVARMAX
-      profiles_data_buff(m,l,k,bi,bj)=0
-      profiles_weight_buff(m,l,k,bi,bj)=0
-      enddo
-      enddo
-      enddo
+        do m=1,NLEVELMAX
+         do l=1,1000
+          do k=1,NVARMAX
+           profiles_data_buff(m,l,k,bi,bj)=0
+           profiles_weight_buff(m,l,k,bi,bj)=0
+          enddo
+         enddo
+        enddo
  
-      do num_file=1,NFILESPROFMAX
+        do num_file=1,NFILESPROFMAX
 
       IL  = ILNBLNK( profilesfiles(num_file) )
       if (IL.NE.0) then
@@ -145,8 +145,8 @@ c2) read the dates and positions :
       err = NF_INQ_VARID(fid,'prof_lat', varid3 )
 
       if (err.NE.NF_NOERR) then
-            WRITE(errorMessageUnit,'(A,/,A)')
-     & 'ERROR in PROFILES_INIT_FIXED: ',
+            WRITE(errorMessageUnit,'(A,X,I4.4,/,A)')
+     & 'ERROR in PROFILES_INIT_FIXED: ', num_file,
      & '.nc file is not in the ECCO format'
       stopProfiles=1. _d 0
       endif
@@ -161,8 +161,8 @@ c3) read interpolattion information (grid points, coeffs, etc.)
            err = NF_INQ_VARID(fid,'prof_interp_i',varid_intp4)
            err = NF_INQ_VARID(fid,'prof_interp_j',varid_intp5)
       if (err.NE.NF_NOERR) then
-            WRITE(errorMessageUnit,'(A,/,A)')
-     & 'ERROR in PROFILES_INIT_FIXED: ',
+            WRITE(errorMessageUnit,'(A,X,I4.4,/,A)')
+     & 'ERROR in PROFILES_INIT_FIXED: ', num_file,
      & 'no interpolation information found in .nc file'
       stopGenericGrid=2. _d 0
       endif
@@ -208,8 +208,8 @@ c5.1) read a chunk
      & (vec_start(2).LE.0).OR.
      & (vec_count(2)+vec_start(2)-1.GT.ProfNo(num_file,bi,bj)) ) 
      & then
-            WRITE(errorMessageUnit,'(A)')
-     & 'ERROR in PROFILES_INIT_FIXED: 1'
+            WRITE(errorMessageUnit,'(A,X,I4.4)')
+     & 'ERROR in PROFILES_INIT_FIXED: #1', num_file
       stopProfiles=1. _d 0
       endif
 
@@ -223,8 +223,8 @@ c5.1) read a chunk
      & vec_count(2), tmp_lat2)
 
       if (err.NE.NF_NOERR) then
-            WRITE(errorMessageUnit,'(A)')
-     & 'ERROR in PROFILES_INIT_FIXED: 2'
+            WRITE(errorMessageUnit,'(A,X,I4.4)')
+     & 'ERROR in PROFILES_INIT_FIXED: #2', num_file
       stopProfiles=1. _d 0 
       endif 
 
@@ -279,8 +279,8 @@ c5.2) loop through this chunk
         prof_lat(num_file,length_for_tile,bi,bj)=tmp_lat2(k)
         prof_ind_glob(num_file,length_for_tile,bi,bj)=k+1000*(kk-1)
         if (length_for_tile.EQ.NOBSGLOB) then
-            WRITE(errorMessageUnit,'(A,/,3A)')
-     & 'ERROR in PROFILES_INIT_FIXED: ',
+            WRITE(errorMessageUnit,'(A,X,I4.4/,3A)')
+     & 'ERROR in PROFILES_INIT_FIXED: ', num_file,
      & 'Max number of profiles reached for this tile.',
      & 'You want to increase NOBSGLOB',
      & 'or split the data file (less memory cost)'
@@ -298,8 +298,8 @@ c5.2) loop through this chunk
          prof_lat(num_file,length_for_tile,bi,bj)=tmp_lat2(k)
          prof_ind_glob(num_file,length_for_tile,bi,bj)=k+1000*(kk-1)
          if (length_for_tile.EQ.NOBSGLOB) then
-            WRITE(errorMessageUnit,'(A,/,3A)')
-     & 'ERROR in PROFILES_INIT_FIXED: ',
+            WRITE(errorMessageUnit,'(A,X,I4.4/,3A)')
+     & 'ERROR in PROFILES_INIT_FIXED: ', num_file,
      & 'Max number of profiles reached for this tile. ',
      & 'You want to increase NOBSGLOB ',
      & 'or split the data file (less memory cost). '
@@ -334,8 +334,8 @@ c more test of the inputs: is the offline-computed
 c interpolation information consistent (self and with grid)
        if ( (tmp_i(k,q).LT.0).OR.(tmp_j(k,q).LT.0)
      & .OR.(tmp_i(k,q).GT.sNx+1).OR.(tmp_j(k,q).GT.sNy+1) ) then
-            WRITE(errorMessageUnit,'(A,/,A)')
-     & 'ERROR in PROFILES_INIT_FIXED: ',
+            WRITE(errorMessageUnit,'(A,X,I4.4/,A)')
+     & 'ERROR in PROFILES_INIT_FIXED: ', num_file,
      & 'You have out of tile+1PointOverlap interpolation points. '
        stopGenericGrid=1. _d 0
        endif
@@ -344,8 +344,8 @@ c interpolation information consistent (self and with grid)
      & .OR.((tmp_i(k,q).EQ.sNx+1).AND.(tmp_j(k,q).EQ.sNy+1))
      & .OR.((tmp_i(k,q).EQ.0).AND.(tmp_j(k,q).EQ.sNy+1))
      & .OR.((tmp_i(k,q).EQ.sNx+1).AND.(tmp_j(k,q).EQ.0)) ) then
-            WRITE(errorMessageUnit,'(A,/,A,/,A,/,2I4,3f5.2)')
-     & 'ERROR in PROFILES_INIT_FIXED: ',
+            WRITE(errorMessageUnit,'(A,X,I4.4/,A,/,A,/,2I4,3f5.2)')
+     & 'ERROR in PROFILES_INIT_FIXED: ', num_file,
      & 'You are using overlap corner values in interpolation. ',
      & 'Sure that you trust these? If so: comment these 3 lines. ',
      & k,q,tmp_i(k,q),tmp_j(k,q),tmp_weights(k,q)
@@ -353,8 +353,8 @@ c interpolation information consistent (self and with grid)
        endif
        endif
        if ( (tmp_weights(k,q).LT.0).OR.(tmp_weights(k,q).GT.1) ) then
-            WRITE(errorMessageUnit,'(A,/,A,/,2I4,f5.2)')
-     & 'ERROR in PROFILES_INIT_FIXED: ',
+            WRITE(errorMessageUnit,'(A,X,I4.4/,A,/,2I4,f5.2)')
+     & 'ERROR in PROFILES_INIT_FIXED: ', num_file,
      & 'You have excessive interpolation coefficients. ',
      & k,q,tmp_weights(k,q)
        stopGenericGrid=1. _d 0
@@ -363,8 +363,8 @@ c interpolation information consistent (self and with grid)
        enddo
 
        if ( abs(tmp_sum_weights -1. ) .GT. 0.0001 ) then
-            WRITE(errorMessageUnit,'(A,/,A,/,I4,f5.2)')
-     & 'ERROR in PROFILES_INIT_FIXED: ',
+            WRITE(errorMessageUnit,'(A,X,I4.4/,A,/,I4,f5.2)')
+     & 'ERROR in PROFILES_INIT_FIXED: ', num_file,
      & 'Interpolation coefficients do not sum to one. ',
      & k,tmp_sum_weights
        stopGenericGrid=1. _d 0
