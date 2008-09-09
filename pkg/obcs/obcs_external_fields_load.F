@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.10 2007/11/08 22:26:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.11 2008/09/09 19:58:26 jmc Exp $
 C $Name:  $
 #include "OBCS_OPTIONS.h"
 
@@ -103,7 +103,6 @@ c     aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
      & ) THEN
 
        _BARRIER
-       _BEGIN_MASTER(myThid)
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
@@ -279,7 +278,6 @@ C     end if (usePTRACERS)
       STOP 'ABNORMAL END: OBCS_EXTERNAL_FIELDS_LOAD: NEEDS MSDIO PKG'
 #endif /* ALLOW_MDSIO */
 
-       _END_MASTER(myThid)
 C
 C     At this point in external_fields_load the input fields are exchanged.
 C     However, we do not have exchange routines for vertical
@@ -298,7 +296,6 @@ C     if not periodicForcing
 C     read boundary values once and for all
        IF ( myIter .EQ. nIter0 ) THEN
         _BARRIER
-        _BEGIN_MASTER(myThid)
 C      Read constant boundary conditions only for myIter = nIter0
         WRITE(msgBuf,'(1X,A,I10,1P1E20.12)')
      &       'OBCS_EXTERNAL_FIELDS_LOAD: Reading initial data:',
@@ -427,7 +424,6 @@ C     end if (usePTRACERS)
 #else /* ALLOW_MDSIO */
       STOP 'ABNORMAL END: OBCS_EXTERNAL_FIELDS_LOAD: NEEDS MSDIO PKG'
 #endif /* ALLOW_MDSIO */
-        _END_MASTER(myThid)
         _BARRIER
 C     endif myIter .EQ. nIter0
        ENDIF

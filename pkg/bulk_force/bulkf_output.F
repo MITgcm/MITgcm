@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_output.F,v 1.1 2006/05/09 19:09:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_output.F,v 1.2 2008/09/09 19:58:26 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -80,8 +80,9 @@ C      Normalize by integrated time
         ENDDO
        ENDDO
 
+C--    wait for all threads to finish normalization
+       _BARRIER
 
-       _BEGIN_MASTER(myThid)
        WRITE(suff,'(I10.10)') myIter
 
        CALL WRITE_FLD_XY_RL('BULK_Qnet.',suff,BULK_Qnet_AVE,
@@ -106,8 +107,9 @@ C      Normalize by integrated time
      &     BULK_solar_AVE,myIter,myThid)
        CALL WRITE_FLD_XY_RL('BULK_ssq.',suff,
      &     BULK_ssq_AVE,myIter,myThid)
-       _END_MASTER(myThid)
 
+C--    all threads wait for writing to finish before resetting array
+       _BARRIER
 
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.10 2008/04/08 20:21:35 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.11 2008/09/09 19:58:26 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -38,8 +38,6 @@ c
       _RL po4costm, o2costm, sumvolm
 c
 c calculate costfunction
-
-        _BEGIN_MASTER(myThid)
 
        sumvol= 0. _d 0
        po4cost= 0. _d 0
@@ -114,8 +112,6 @@ cswdmonth-end
         totcost=po4cost+o2cost+po4costm+o2costm
 
         print*,'COST ',totcost, po4cost, o2cost,po4costm,o2costm
-
-       _END_MASTER(myThid)
 c
 #endif
       RETURN

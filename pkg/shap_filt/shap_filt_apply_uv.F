@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.8 2006/08/29 17:03:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.9 2008/09/09 19:58:27 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -113,13 +113,11 @@ C               are directly proportional to Delta-U,V due to the Filter
      &     DIFFERENT_MULTIPLE(Shap_diagFreq,myTime,deltaTClock)
      &       ) THEN
            _BARRIER
-           _BEGIN_MASTER( myThid )
            WRITE(suff,'(I10.10)') myIter
            CALL WRITE_FLD_XYZ_RL( 'shap_dU.', suff, Shap_tmpFld1,
      &                             myIter,myThid)
            CALL WRITE_FLD_XYZ_RL( 'shap_dV.', suff, Shap_tmpFld2,
      &                             myIter,myThid)
-           _END_MASTER( myThid )
            _BARRIER
           ENDIF
 

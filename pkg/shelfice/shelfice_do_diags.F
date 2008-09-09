@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_do_diags.F,v 1.4 2007/03/14 15:50:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_do_diags.F,v 1.5 2008/09/09 19:58:27 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
 
       SUBROUTINE SHELFICE_DO_DIAGS( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE SHELFICE_DO_DIAGS                               |
-C     | o Do SHELFICE diagnostic output.                           |
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE SHELFICE_DO_DIAGS
+C     | o Do SHELFICE diagnostic output.
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -38,12 +38,12 @@ C     == Local variables ==
       ELSE
         pf(1:1) = 'R'
       ENDIF
-      
+
       IF (SHELFICEwriteState) THEN
 
        IF ( DIFFERENT_MULTIPLE(SHELFICE_dumpFreq,myTime,deltaTClock)
      &      ) THEN
-            
+
 #ifdef ALLOW_MNC
         IF ( useMNC .AND. SHELFICE_dump_mnc ) THEN
          CALL MNC_CW_SET_UDIM('shelfice', -1, myThid)
@@ -61,15 +61,13 @@ C     == Local variables ==
         IF (SHELFICE_dump_mdsio) THEN
          WRITE(suff,'(I10.10)') myIter
          _BARRIER
-         _BEGIN_MASTER( myThid )
          CALL WRITE_FLD_XY_RS( 'SHICE_fwFlux.',suff,
      &        shelficeFreshWaterFlux,myIter,myThid)
          CALL WRITE_FLD_XY_RS( 'SHICE_heatFlux.',suff,
      &        shelficeHeatFlux,myIter,myThid)
-         _END_MASTER( myThid )
          _BARRIER
         ENDIF
-        
+
        ENDIF
       ENDIF
 
@@ -89,7 +87,7 @@ C--   Time-cumulations
      &         shelfice_frshFluxtave(i,j,1,bi,bj)
      &         + shelficeFreshWaterFlux(i,j,bi,bj) *deltaTclock
           shelfice_heatFluxtave(i,j,1,bi,bj) =
-     &         shelfice_heatFluxtave(i,j,1,bi,bj) 
+     &         shelfice_heatFluxtave(i,j,1,bi,bj)
      &         + shelficeHeatFlux(i,j,bi,bj)  *deltaTclock
          ENDDO
         ENDDO
@@ -100,7 +98,7 @@ C--   Time-cumulations
 C     Dump files and restart average computation if needed
       dumpFiles = .FALSE.
       IF ( myIter .NE. nIter0 ) THEN
-        dumpFiles = 
+        dumpFiles =
      &     DIFFERENT_MULTIPLE(SHELFICE_taveFreq,myTime,deltaTClock)
 #ifdef ALLOW_CAL
         IF ( useCAL ) THEN
@@ -110,7 +108,7 @@ C     Dump files and restart average computation if needed
         ENDIF
 #endif
       ENDIF
-      
+
       IF (dumpFiles) THEN
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -140,15 +138,13 @@ C     &        myTime,myThid)
        IF (SHELFICE_tave_mdsio) THEN
         WRITE(suff,'(I10.10)') myIter
         _BARRIER
-        _BEGIN_MASTER( myThid )
         CALL WRITE_FLD_XY_RL('SHICE_fwFluxtave.',suff,
      &       shelfice_frshFluxtave,myIter,myThid)
         CALL WRITE_FLD_XY_RL('SHICE_heatFluxtave.',suff,
      &       shelfice_heatFluxtave ,myIter,myThid)
-        _END_MASTER( myThid )
         _BARRIER
        ENDIF
-       
+
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -157,7 +153,7 @@ C      Reset averages to zero
          SHELFICE_TimeAve(1,bi,bj) = 0. _d 0
         ENDDO
        ENDDO
-       
+
       ENDIF
 C     ( SHELFICE_taveFreq .GT. 0 )
       ENDIF

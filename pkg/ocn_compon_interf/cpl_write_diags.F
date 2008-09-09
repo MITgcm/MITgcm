@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.10 2008/09/02 22:04:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.11 2008/09/09 19:58:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -89,7 +89,6 @@ c          CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
         IF (cpl_timeave_mdsio) THEN
 
           _BARRIER
-          _BEGIN_MASTER( myThid )
           gf = globalFiles
           WRITE(fn,'(A,I10.10)') 'cplFldtave.',myIter
           CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
@@ -126,7 +125,6 @@ c          CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
             CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
      &         1, fCO2tave , 16, myIter, myThid )
           ENDIF
-          _END_MASTER( myThid )
           _BARRIER
 
         ENDIF
