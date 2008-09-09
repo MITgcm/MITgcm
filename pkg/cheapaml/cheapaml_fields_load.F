@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.1 2008/08/05 21:49:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.2 2008/09/09 18:38:46 jmc Exp $
 C $Name:  $
 #include "CHEAPAML_OPTIONS.h"
- 
+
 C     !ROUTINE: CHEAPAML_FIELDS_LOAD
 C     !INTERFACE:
       SUBROUTINE CHEAPAML_FIELDS_LOAD( myTime, myIter, myThid )
 C     *==========================================================*
-C     | SUBROUTINE CHEAPAML_FIELDS_LOAD                           
-C     | o Control reading of fields from external source.         
+C     | SUBROUTINE CHEAPAML_FIELDS_LOAD
+C     | o Control reading of fields from external source.
 C     *==========================================================*
 
 C     !USES:
@@ -24,7 +24,7 @@ C #include "BULKF.h"
 #include "THSICE_VARS.h"
 #endif
 #include "CHEAPAML.h"
- 
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
@@ -34,15 +34,15 @@ C     dsolms - Solar variation at Southern boundary
 C     dsolmn - Solar variation at Northern boundary
 c     xphaseinit - user input initial phase of year relative
 c     to mid winter.  E.G. xphaseinit = pi implies time zero
-c     is mid summer.  
+c     is mid summer.
       INTEGER myThid
       _RL     myTime
       _RL     local ,bump
 c      _RL     dsolms,dsolmn
 c      _RL     xphaseinit
       INTEGER myIter
-	INTEGER jg
- 
+      INTEGER jg
+
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
 C     trair[01]  :: Relaxation temp. profile for air temperature
@@ -57,7 +57,7 @@ C     aWght, bWght :: Interpolation weights
      &                 trair1,
      &                 qrair0,
      &                 qrair1
- 
+
       _RS  trair0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  trair1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  qrair0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -72,12 +72,12 @@ C     aWght, bWght :: Interpolation weights
       INTEGER bi,bj,i,j,intime0,intime1
       _RL aWght,bWght,rdt
       _RL ssq0,ssq1,ssq2,lath,p0,ssqa,q
-c xsolph - phase of year, assuming time zero is mid winter 
+c xsolph - phase of year, assuming time zero is mid winter
 c xinxx - cos ( xsolph )
       _RL xsolph,xinxx
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 c coefficients used to compute saturation specific humidity
-      DATA   ssq0,           ssq1,           ssq2 
+      DATA   ssq0,           ssq1,           ssq2
      &     / 3.797915 _d 0 , 7.93252 _d -6 , 2.166847 _d -3 /
 
 c latent heat (J/kg)
@@ -92,7 +92,7 @@ c sea level pressure
 c the objective here is to give cheapaml a default periodic forcing
 c consisting only of annually varying solar forcing, and thus Trelaxation
 c variation.  everything else, relative humidity, wind, are fixed.  This
-c keys off of solardata.  if a solar data file exists, the model will 
+c keys off of solardata.  if a solar data file exists, the model will
 c assume there are files to be read and interpolated between, as is standard
 c for the MITGCM.
 
@@ -100,9 +100,9 @@ c for the MITGCM.
          if ( myIter .EQ. nIter0 )then
          WRITE(*,*)
      &  'S/R  Assuming Standard Annually Varying Solar Forcing'
-         endif	
-	     xsolph=myTime*2.d0*3.14159 _d 0/365. _d 0/86400. _d 0
-	     xinxx=cos(xsolph+xphaseinit+3.14159 _d 0)
+         endif
+         xsolph=myTime*2.d0*3.14159 _d 0/365. _d 0/86400. _d 0
+         xinxx=cos(xsolph+xphaseinit+3.14159 _d 0)
       DO bj=1,nSy
          DO bi=1,nSx
             DO j=1,sNy
@@ -132,7 +132,7 @@ c relaxation temperature in radiative equilibrium
             ENDDO
          ENDDO
       ENDDO
-	_EXCH_XY_RS(TR, mythid)
+      _EXCH_XY_RS(TR, mythid)
 c default specific humidity profile to 80% relative humidity
       DO bj=1,nSy
          DO bi=1,nSx
@@ -146,20 +146,20 @@ c                  jG = myYGlobalLo-1+(bj-1)*sNy+j
             ENDDO
          ENDDO
       ENDDO
-	_EXCH_XY_RS(qr, mythid)
+      _EXCH_XY_RS(qr, mythid)
 c u wind field
       DO bj=1,nSy
          DO bi=1,nSx
             DO j=1,sNy
                DO i=1,sNx
                   jG = myYGlobalLo-1+(bj-1)*sNy+j
-	local=-5.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
+                  local=-5.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
                   uwind(i,j,bi,bj) = local
                ENDDO
             ENDDO
          ENDDO
       ENDDO
-	_EXCH_XY_RS(uwind, mythid)
+      _EXCH_XY_RS(uwind, mythid)
 c v wind field
       DO bj=1,nSy
          DO bi=1,nSx
@@ -171,8 +171,8 @@ c v wind field
             ENDDO
          ENDDO
       ENDDO
-	_EXCH_XY_RS(vwind, mythid)
-	else
+      _EXCH_XY_RS(vwind, mythid)
+      ELSE
 
 c here for usual interpolative forcings
 C First call requires that we initialize everything to zero for safety
@@ -229,25 +229,25 @@ C      data for the period ahead and the period behind myTime.
      &       myIter,myThid )
        CALL READ_REC_XY_RS( TRFile,trair1,intime1,
      &       myIter,myThid )
-	ENDIF
+      ENDIF
       IF ( QrFile .NE. ' '  ) THEN
        CALL READ_REC_XY_RS( QrFile,qrair0,intime0,
      &       myIter,myThid )
        CALL READ_REC_XY_RS( QrFile,qrair1,intime1,
      &       myIter,myThid )
-	ENDIF
+      ENDIF
       IF ( UWindFile .NE. ' '  ) THEN
        CALL READ_REC_XY_RS( UWindFile,uwind0,intime0,
      &       myIter,myThid )
        CALL READ_REC_XY_RS( UWindFile,uwind1,intime1,
      &       myIter,myThid )
-	ENDIF
+      ENDIF
       IF ( VWindFile .NE. ' '  ) THEN
        CALL READ_REC_XY_RS( VWindFile,vwind0,intime0,
      &       myIter,myThid )
        CALL READ_REC_XY_RS( VWindFile,vwind1,intime1,
      &       myIter,myThid )
-	ENDIF
+      ENDIF
 
        _END_MASTER(myThid)
 C
@@ -269,28 +269,28 @@ C--   Interpolate TR, QR, SOLAR
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          TR(i,j,bi,bj)   = bWght*trair0(i,j,bi,bj)  
+          TR(i,j,bi,bj)   = bWght*trair0(i,j,bi,bj)
      &                     +aWght*trair1(i,j,bi,bj)   !+273.15
-          qr(i,j,bi,bj)   = bWght*qrair0(i,j,bi,bj)  
-     &                     +aWght*qrair1(i,j,bi,bj)  
-          uwind(i,j,bi,bj)   = bWght*uwind0(i,j,bi,bj)  
-     &                     +aWght*uwind1(i,j,bi,bj)   
-          vwind(i,j,bi,bj)   = bWght*vwind0(i,j,bi,bj)  
-     &                     +aWght*vwind1(i,j,bi,bj)   
-          solar(i,j,bi,bj)   = bWght*solar0(i,j,bi,bj)  
-     &                     +aWght*solar1(i,j,bi,bj)   
+          qr(i,j,bi,bj)   = bWght*qrair0(i,j,bi,bj)
+     &                     +aWght*qrair1(i,j,bi,bj)
+          uwind(i,j,bi,bj)   = bWght*uwind0(i,j,bi,bj)
+     &                     +aWght*uwind1(i,j,bi,bj)
+          vwind(i,j,bi,bj)   = bWght*vwind0(i,j,bi,bj)
+     &                     +aWght*vwind1(i,j,bi,bj)
+          solar(i,j,bi,bj)   = bWght*solar0(i,j,bi,bj)
+     &                     +aWght*solar1(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-	endif
+      ENDIF
 c end of periodic forcing options, on to steady option
 
       ELSE
        IF ( myIter .EQ. nIter0 ) THEN
         IF ( SolarFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RS( SolarFile,solar,' ',0,myThid )
-	ELSE
+      ELSE
       DO bj=1,nSy
          DO bi=1,nSx
             DO j=1,sNy
@@ -303,18 +303,18 @@ c end of periodic forcing options, on to steady option
             ENDDO
          ENDDO
       ENDDO
-	_EXCH_XY_RS(solar, mythid)
-        ENDIF
+      _EXCH_XY_RS(solar, mythid)
+      ENDIF
         IF ( TrFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RS( TrFile,tr,' ',0,myThid )
-	ELSE
+      ELSE
       DO bj=1,nSy
          DO bi=1,nSx
             DO j=1,sNy
                DO i=1,sNx
         jG = myYGlobalLo-1+(bj-1)*sNy+j
-	    local=solar(i,j,bi,bj)
-	    local=(2.d0*local/stefan)**(0.25d0)-273.16
+        local=solar(i,j,bi,bj)
+        local=(2.d0*local/stefan)**(0.25d0)-273.16
         bump=-5.d0*EXP(-(float(jg-127)*float(jg-127))/1920.0)
         local=local+bump
                   TR(i,j,bi,bj) = local
@@ -322,12 +322,12 @@ c end of periodic forcing options, on to steady option
             ENDDO
          ENDDO
       ENDDO
-	_EXCH_XY_RS(TR, mythid)
+      _EXCH_XY_RS(TR, mythid)
         ENDIF
 c do specific humidity
         IF ( QrFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RS( QrFile,qr,' ',0,myThid )
-	ELSE
+      ELSE
 c default specific humidity profile to 80% relative humidity
       DO bj=1,nSy
          DO bi=1,nSx
@@ -341,11 +341,11 @@ c                  jG = myYGlobalLo-1+(bj-1)*sNy+j
             ENDDO
          ENDDO
       ENDDO
-	_EXCH_XY_RS(qr, mythid)
+      _EXCH_XY_RS(qr, mythid)
         ENDIF
         IF ( UWindFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RS( UWindFile,uwind,' ',0,myThid )
-	ELSE
+      ELSE
       DO bj=1,nSy
          DO bi=1,nSx
             DO j=1,sNy
@@ -354,18 +354,18 @@ c                  jG = myYGlobalLo-1+(bj-1)*sNy+j
 c mod for debug
 c to return to original code, uncomment following line
 c comment out 2nd line
-	local=-5.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
-c	local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
+                  local=-5.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
+c                 local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
                   uwind(i,j,bi,bj) = local
                ENDDO
             ENDDO
          ENDDO
       ENDDO
-	_EXCH_XY_RS(uwind, mythid)
+      _EXCH_XY_RS(uwind, mythid)
         ENDIF
         IF ( VWindFile .NE. ' '  ) THEN
          CALL READ_FLD_XY_RS( VWindFile,vwind,' ',0,myThid )
-	ELSE
+      ELSE
       DO bj=1,nSy
          DO bi=1,nSx
             DO j=1,sNy
@@ -376,9 +376,10 @@ c	local=0.d0*cos(2.d0*pi*float(jg-1)/(float(ny-1)))
             ENDDO
          ENDDO
       ENDDO
-	_EXCH_XY_RS(vwind, mythid)
+      _EXCH_XY_RS(vwind, mythid)
         ENDIF
        ENDIF
+
 C endif for periodicForcing
       ENDIF
 
