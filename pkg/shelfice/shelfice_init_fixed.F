@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_init.F,v 1.6 2008/02/27 04:35:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.1 2008/09/10 09:18:35 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -20,7 +20,7 @@ C     === Global variables ===
 #include "SHELFICE.h"
 
 C     === Routine arguments ===
-C     myThid -  Number of this instance of SHELFICE_INIT
+C     myThid -  Number of this instance of SHELFICE_INIT_FIXED
       INTEGER myThid
 
 #ifdef ALLOW_SHELFICE
@@ -36,7 +36,9 @@ C     I,J,K,bi,bj - Loop counters
 #endif /* ALLOW_DIAGNOSTICS */
 
 C-----------------------------------------------------------------------
-C Initialize SHELFICE variables kTopC
+C--   Initialize SHELFICE variables kTopC
+C--   kTopC is the same as kSurfC, except for places over land.
+C--   Over land (completely dry cells), kTop = 0, while kSurfC = Nr+1
 C-----------------------------------------------------------------------
 
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -48,23 +50,10 @@ C-----------------------------------------------------------------------
            IF ( maskC(I,J,K,bi,bj) .NE. 0. _d 0 )
      &          kTopC(I,J,bi,bj) = K
           ENDDO
-          shelficeLoadAnomaly   (i,j,bi,bj) = 0. _d 0
-          shelficeForcingT      (i,j,bi,bj) = 0. _d 0
-          shelficeForcingS      (i,j,bi,bj) = 0. _d 0
-          shelficeHeatFlux      (i,j,bi,bj) = 0. _d 0
-          shelficeFreshWaterFlux(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-      IF ( SHELFICEloadAnomalyFile .NE. ' ' ) THEN
-C-    must wait for initialisation to be finished before master loads from file
-       _BARRIER
-       CALL READ_FLD_XY_RS( SHELFICEloadAnomalyFile, ' ',
-     &      shelficeLoadAnomaly, 0, myThid )
-C-    EXCH call implicitly contains Barrier: no need for an other one.
-       _EXCH_XY_R4( shelficeLoadAnomaly, myThid )
-      ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
@@ -101,3 +90,4 @@ C-    EXCH call implicitly contains Barrier: no need for an other one.
 
       RETURN
       END
+
