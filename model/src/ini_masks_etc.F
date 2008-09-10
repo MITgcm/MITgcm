@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.36 2008/08/02 22:44:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.37 2008/09/10 09:19:22 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -125,39 +125,25 @@ C      o Impose minimum fraction and/or size (dimensional)
           ENDDO
          ENDDO
         ENDDO
+       ENDDO
+      ENDDO
 
 #ifdef ALLOW_SHELFICE
-C--   compute contributions of shelf ice to looping factors
-        IF ( useShelfIce ) THEN
-        DO K=1, Nr
-         hFacMnSz=max( hFacMin, min(hFacMinDr*recip_drF(k),1. _d 0) )
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-C      o Non-dimensional distance between grid boundary and model surface
-           hFacCtmp = (rF(k)-R_shelfIce(I,J,bi,bj))*recip_drF(K)
-C      o Reduce the previous fraction : substract the outside part.
-           hFacCtmp = hFacC(I,J,K,bi,bj) - max( hFacCtmp, 0. _d 0)
-C      o set to zero if empty Column :
-           hFacCtmp = max( hFacCtmp, 0. _d 0)
-C      o Impose minimum fraction and/or size (dimensional)
-           IF (hFacCtmp.LT.hFacMnSz) THEN
-            IF (hFacCtmp.LT.hFacMnSz*0.5) THEN
-             hFacC(I,J,K,bi,bj)=0.
-            ELSE
-             hFacC(I,J,K,bi,bj)=hFacMnSz
-            ENDIF
-           ELSE
-             hFacC(I,J,K,bi,bj)=hFacCtmp
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-        ENDIF
+      IF ( useShelfIce ) THEN
+C--   Modify lopping factor hFacC : Remove part outside of the domain
+C     taking into account the Reference (=at rest) Surface Position Ro_shelfIce
+       CALL SHELFICE_UPDATE_MASKS( 
+     I     rF, recip_drF,
+     U     hFacC, 
+     I     myThid )
+      ENDIF
 #endif /* ALLOW_SHELFICE */
 
 C-  Re-calculate Reference surface position, taking into account hFacC
 C   initialize Total column fluid thickness and surface k index
 C       Note: if no fluid (continent) ==> ksurf = Nr+1
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
           tmpfld(I,J,bi,bj) = 0.

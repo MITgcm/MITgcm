@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.40 2008/04/24 08:23:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.41 2008/09/10 09:19:22 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,9 +37,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
-#endif /* ALLOW_SHELFICE */
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
 #endif
@@ -82,9 +79,6 @@ C------
           R_low(i,j,bi,bj)   = 0. _d 0
           Ro_surf(i,j,bi,bj) = 0. _d 0
           topoZ(i,j,bi,bj)   = 0. _d 0
-#ifdef ALLOW_SHELFICE
-          R_shelfIce(i,j,bi,bj) = 0. _d 0
-#endif /* ALLOW_SHELFICE */
          ENDDO
         ENDDO
        ENDDO
@@ -270,42 +264,7 @@ c     CALL WRITE_FLD_XY_RS('Ro_surf',' ',Ro_surf,0,myThid)
 #ifdef ALLOW_SHELFICE
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( useShelfIce ) THEN
-C------
-C   4) Set R_shelfIce = the Lower (in r sense) boundary of floating shelfice :
-C------
-      IF (usingPCoords .OR. shelfIceFile .EQ. ' ') THEN
-C- e.g., atmosphere : R_low = Top of atmosphere
-C-            ocean : R_low = Bottom
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           R_shelfIce(i,j,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ELSE
-C Read the shelfIce draught using the mid-level I/O pacakage read_write_rec
-C The 0 is the "iteration" argument. The 1 is the record number.
-        CALL READ_REC_XY_RS( shelfIceFile, R_shelfIce, 1, 0, myThid )
-C Read the shelfIce draught using the mid-level I/O pacakage read_write_fld
-C The 0 is the "iteration" argument. The ' ' is an empty suffix
-C        CALL READ_FLD_XY_RS( shelfIceFile, ' ', R_shelfIce, 0, myThid )
-c       CALL READ_FLD_XY_RS( bathyFile, ' ', R_low, 0, myThid )
-C Read the selfIce draught using the low-level I/O package
-c       CALL MDSREADFIELD( shelfIceFile, readBinaryPrec,
-c    &                     'RS', 1, R_selfIce, 1, myThid )
-
-      ENDIF
-C- end setup R_shelfIce in the interior
-
-C- fill in the overlap (+ BARRIER):
-      _EXCH_XY_R4(R_shelfIce, myThid )
-
-c     CALL PLOT_FIELD_XYRS(R_selfIce,'Shelf ice draught (ini_depths)',
-c    &     1,myThid)
-CML      CALL WRITE_FLD_XY_RS( 'R_shelfIce' ,' ', R_shelfIce, 0,myThid)
+       CALL SHELFICE_INI_DEPTH( myThid )
       ENDIF
 #endif /* ALLOW_SHELFICE */
 
