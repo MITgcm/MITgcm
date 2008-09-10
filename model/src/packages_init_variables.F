@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.68 2008/08/17 02:07:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.69 2008/09/10 09:18:57 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,6 +40,8 @@ C       |
 C       |-- GGL90_INIT
 C       |
 C       |-- SEAICE_INIT_VARIA
+C       |
+C       |-- SHELFICE_INIT_VARIA
 C       |
 C       |-- PTRACERS_INIT_VARIA
 C       |
@@ -201,6 +203,15 @@ cph# ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
 cph# endif
 #endif /* ALLOW_SEAICE */
+
+#ifdef ALLOW_SHELFICE
+      IF (useShelfIce) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_VARIA',myThid)
+# endif
+       CALL SHELFICE_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_SHELFICE */
 
 cph-- moved further down
 cph#ifdef ALLOW_OBCS
