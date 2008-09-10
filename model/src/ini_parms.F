@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.216 2008/08/24 21:32:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.217 2008/09/10 08:55:11 mlosch Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -130,6 +130,10 @@ C     rkFac      :: removed from namelist ; replaced by -rkSign
 C     nRetired :: Counter used to trap gracefully namelists containing "retired"
 C              :: parameters. These are parameters that are either no-longer used
 C                 or that have moved to a different input file and/or namelist.
+C Namelist PARM05:
+C     shelfIceFile :: File containing the topography of the shelfice draught
+C                     (replaced by SHELFICEtopoFile in SHELFICE.h)
+
       LOGICAL tempDiffusion, saltDiffusion
       INTEGER tracerAdvScheme
       _RL trac_EvPrRn
@@ -143,6 +147,7 @@ C-
 C-
       LOGICAL groundAtK1
       _RL rkFac
+      CHARACTER*(MAX_LEN_FNAM) shelfIceFile
       INTEGER nRetired
 
 C--   Continuous equation parameters
@@ -287,6 +292,7 @@ C--   Initialise retired parameters to unlikely value
       calendarDumps   = .FALSE.
       rkFac           = UNSET_RL
       groundAtK1      = .FALSE.
+      shelfIceFile    = ' '
 
 C--   Open the parameter file
 #if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
@@ -1215,6 +1221,14 @@ C--   Input files
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM05 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+C     Check for retired parameters still being used
+      IF ( shelfIceFile .NE. ' ' ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: "shelfIceFile" is not allowed in "data", ',
+     &  'substitute "SHELFICEtopoFile" in data.shelfice'
+       CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 
 C--   Set Units conversion factor required to incorporate

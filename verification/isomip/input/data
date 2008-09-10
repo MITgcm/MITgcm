@@ -67,5 +67,4 @@
 # Input datasets
  &PARM05
  bathyFile='bathy.box',
- shelfIceFile='icetopo.exp1',
  &

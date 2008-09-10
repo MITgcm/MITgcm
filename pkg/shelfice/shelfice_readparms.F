@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.6 2007/10/10 09:26:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.7 2008/09/10 08:55:12 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -52,7 +52,7 @@ CEOP
      &     SHELFICE_taveFreq,
      &     SHELFICE_tave_mnc,
      &     SHELFICE_dump_mnc,
-     &     SHELFICEloadAnomalyFile
+     &     SHELFICEtopoFile, SHELFICEloadAnomalyFile
 
       _BEGIN_MASTER(myThid)
 
@@ -65,6 +65,7 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEconserve         = .FALSE.
       SHELFICEboundaryLayer    = .FALSE.
       SHELFICEloadAnomalyFile  = ' '
+      SHELFICEtopoFile         = ' '
       SHELFICElatentHeat       =  334.0 _d 3
       SHELFICEHeatCapacity_Cp  = 2000.0 _d 0
       recip_SHELFICElatentHeat =    0.0 _d 0
