@@ -51,5 +51,4 @@ cost_ctdtclim.f
 cost_ctdsclim.f                 
 cost_curmtr.f
 ecco_cost_final.f
-ecco_cost_init_barfiles.f
 ecco_cost_init_varia.f
