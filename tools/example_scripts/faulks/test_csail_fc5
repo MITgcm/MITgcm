@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail_fc5,v 1.5 2007/11/30 17:05:50 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail_fc5,v 1.6 2008/09/11 15:02:06 jmc Exp $
 
 #  Ed Hill
 
@@ -71,12 +71,21 @@ echo
 
 echo "Running testreport using:"
 export PGI=/usr/local/pkg/pgi/pgi-6.1-5
-comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a jmc@mitgcm.org"
+comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -dd"
 echo "  \"$comm\""
 echo "======================"
 echo
-$comm > $tdir/output_pgi 2>&1
-tail -100 $tdir/output_pgi
+$comm > $tdir/output_pgi_1 2>&1
+tail -100 $tdir/output_pgi_1
+#- run 2 times to increase chances to catch pgi licence
+comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a jmc@mitgcm.org -q"
+echo "  \"$comm\""
+echo "======================"
+echo
+$comm > $tdir/output_pgi_2 2>&1
+tail -100 $tdir/output_pgi_2
+
+echo
 
 echo
 echo "======================"
