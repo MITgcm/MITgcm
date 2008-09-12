@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.41 2008/09/10 09:19:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.42 2008/09/12 07:22:34 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -260,13 +260,6 @@ c          IF ( jG .EQ. Ny )  R_low(i,j,bi,bj) = 0.
      &           -1, myThid )
       ENDIF
 c     CALL WRITE_FLD_XY_RS('Ro_surf',' ',Ro_surf,0,myThid)
-
-#ifdef ALLOW_SHELFICE
-c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      IF ( useShelfIce ) THEN
-       CALL SHELFICE_INI_DEPTH( myThid )
-      ENDIF
-#endif /* ALLOW_SHELFICE */
 
 C--   Everyone else must wait for the depth to be loaded
 C-    note: might not be necessary since all single-thread IO above
