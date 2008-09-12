@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.37 2008/09/10 09:19:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.38 2008/09/12 07:26:42 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,13 +29,10 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
-#endif /* ALLOW_SHELFICE */
 #ifdef ALLOW_EXCH2
 # include "W2_EXCH2_TOPOLOGY.h"
 # include "W2_EXCH2_PARAMS.h"
-#endif
+#endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
