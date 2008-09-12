@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_update_masks.F,v 1.1 2008/09/12 07:21:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_update_masks.F,v 1.2 2008/09/12 14:07:02 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -39,6 +39,7 @@ C     I,J    - Loop counters
       INTEGER bi, bj
       INTEGER  I, J
 CEOP
+      STOP 'SHELFICE_INI_DEPTH no longer called (not maintained)'
 
 C     initialize R_shelfIce
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -76,9 +77,9 @@ C- fill in the overlap (+ BARRIER):
 CBOP
 C     !ROUTINE: SHELFICE_UPDATE_MASKS
 C     !INTERFACE:
-      SUBROUTINE SHELFICE_UPDATE_MASKS( 
+      SUBROUTINE SHELFICE_UPDATE_MASKS(
      I     rF, recip_drF,
-     U     hFacC, 
+     U     hFacC,
      I     myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -123,26 +124,24 @@ CEOP
 C     initialize R_shelfIce
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
           R_shelfIce(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-C     
+
       IF ( SHELFICEtopoFile .NE. ' ' ) THEN
+       _BARRIER
 C Read the shelfIce draught using the mid-level I/O pacakage read_write_rec
 C The 0 is the "iteration" argument. The 1 is the record number.
        CALL READ_REC_XY_RS( SHELFICEtopoFile, R_shelfIce,
      &      1, 0, myThid )
 C Read the shelfIce draught using the mid-level I/O pacakage read_write_fld
 C The 0 is the "iteration" argument. The ' ' is an empty suffix
-C      CALL READ_FLD_XY_RS( SHELFICEtopoFile, ' ', R_shelfIce, 
+C      CALL READ_FLD_XY_RS( SHELFICEtopoFile, ' ', R_shelfIce,
 C    &      0, myThid )
-C Read the selfIce draught using the low-level I/O package
-c      CALL MDSREADFIELD( SHELFICEtopoFile, readBinaryPrec,
-c    &                     'RS', 1, R_selfIce, 1, myThid )
       ENDIF
 C- end setup R_shelfIce in the interior
 
