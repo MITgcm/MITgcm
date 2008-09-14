@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_read_pickup.F,v 1.2 2008/05/09 21:43:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_read_pickup.F,v 1.3 2008/09/14 18:41:55 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -37,12 +37,17 @@ C     n       :: 2nd.O. moment loop index
 C     iRec    :: record number
 C     fn      :: character buffer for creating filename
 C     prec    :: precision of pickup files
-      INTEGER n,prec,iRec
-      CHARACTER*(MAX_LEN_MBUF) fn
+      INTEGER n, prec, iRec
+      CHARACTER*(MAX_LEN_FNAM) fn, filNam
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER ioUnit
+      LOGICAL fileExist
 CEOP
 
 C-    Need to synchronize here before doing master-thread IO
-      _BARRIER
+C note: not presently needed (synchronized through MDS_CHECK4FILE call)
+c     _BARRIER
+      ioUnit = errorMessageUnit
 
 #ifdef ALLOW_MNC
       IF ( useMNC .AND. pickup_read_mnc ) THEN
@@ -70,14 +75,35 @@ C--   Pot. Temp. 2nd.Order moments
         ELSE
           WRITE(fn,'(A,A10)') 'pickup_somT.', pickupSuff
         ENDIF
-        prec = precFloat64
-C       Read 2nd Order moments as consecutive records
-        DO n=1,nSOM
-          iRec = n
-          CALL READ_REC_3D_RL( fn, prec, Nr,
-     O              som_T(1-Olx,1-Oly,1,1,1,n),
-     I              iRec, myIter, myThid )
-        ENDDO
+
+C-      First check if pickup file exist
+        CALL MDS_CHECK4FILE(
+     I                       fn, '.data', 'GAD_READ_PICKUP',
+     O                       filNam, fileExist,
+     I                       myThid )
+
+        IF ( fileExist ) THEN
+C-      Read 2nd Order moments as consecutive records
+          prec = precFloat64
+          DO n=1,nSOM
+            iRec = n
+            CALL READ_REC_3D_RL( fn, prec, Nr,
+     O                som_T(1-Olx,1-Oly,1,1,1,n),
+     I                iRec, myIter, myThid )
+          ENDDO
+        ELSE
+          IF ( pickupStrictlyMatch ) THEN
+            WRITE(msgBuf,'(4A)') 'GAD_READ_PICKUP: ',
+     &        'try with " pickupStrictlyMatch=.FALSE.,"',
+     &        ' in file: "data", NameList: "PARM03"'
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+            STOP 'ABNORMAL END: S/R GAD_READ_PICKUP'
+          ELSE
+            WRITE(msgBuf,'(2A)') 'WARNING >> GAD_READ_PICKUP: ',
+     &        'approximated restart: reset SOM_T to zero'
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
+        ENDIF
 
       ENDIF
 
@@ -90,14 +116,35 @@ C--   Salinity 2nd.Order moments
         ELSE
           WRITE(fn,'(A,A10)') 'pickup_somS.', pickupSuff
         ENDIF
-        prec = precFloat64
-C       Read 2nd Order moments as consecutive records
-        DO n=1,nSOM
-          iRec = n
-          CALL READ_REC_3D_RL( fn, prec, Nr,
-     O         som_S(1-Olx,1-Oly,1,1,1,n),
-     I         iRec, myIter, myThid )
-        ENDDO
+
+C-      First check if pickup file exist
+        CALL MDS_CHECK4FILE(
+     I                       fn, '.data', 'GAD_READ_PICKUP',
+     O                       filNam, fileExist,
+     I                       myThid )
+
+        IF ( fileExist ) THEN
+C-      Read 2nd Order moments as consecutive records
+          prec = precFloat64
+          DO n=1,nSOM
+            iRec = n
+            CALL READ_REC_3D_RL( fn, prec, Nr,
+     O                som_S(1-Olx,1-Oly,1,1,1,n),
+     I                iRec, myIter, myThid )
+          ENDDO
+        ELSE
+          IF ( pickupStrictlyMatch ) THEN
+            WRITE(msgBuf,'(4A)') 'GAD_READ_PICKUP: ',
+     &        'try with " pickupStrictlyMatch=.FALSE.,"',
+     &        ' in file: "data", NameList: "PARM03"'
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+            STOP 'ABNORMAL END: S/R GAD_READ_PICKUP'
+          ELSE
+            WRITE(msgBuf,'(2A)') 'WARNING >> GAD_READ_PICKUP: ',
+     &        'approximated restart: reset SOM_S to zero'
+            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
+        ENDIF
 
       ENDIF
 
