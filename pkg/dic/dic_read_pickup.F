@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_pickup.F,v 1.5 2008/04/10 00:49:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_pickup.F,v 1.6 2008/09/14 01:49:07 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -24,18 +24,13 @@ C     myThid  :: my Thread Id number
 #ifdef DIC_BIOTIC
 
 C     !FUNCTIONS
-      INTEGER  IFNBLNK, ILNBLNK
-      EXTERNAL IFNBLNK, ILNBLNK
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      CHARACTER*(MAX_LEN_FNAM) fn, dFileName
+      CHARACTER*(MAX_LEN_FNAM) fn, filNam
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      LOGICAL fileExist, shareExist
-      INTEGER iG, jG
-      INTEGER fp, iL, i, ioUnit
-
-      COMMON / LOCAL_DIC_PICKUP / shareExist
+      LOGICAL fileExist
+      INTEGER fp, ioUnit
 CEOP
 
       pH_isLoaded =.FALSE.
@@ -49,54 +44,13 @@ C--   pickup file name :
       ENDIF
       fp = precFloat64
 
-      _BARRIER
-      _BEGIN_MASTER( myThid )
-
 C--   First check if pickup file exist
-      fileExist = .FALSE.
-      iL = ILNBLNK(fn)
-      IF ( .NOT.fileExist ) THEN
-C-    look for file = {fn}
-        WRITE(dFileName,'(A)') fn(1:iL)
-        i = iL
-        INQUIRE( FILE=dFileName, EXIST=fileExist )
-      ENDIF
-      IF ( .NOT.fileExist ) THEN
-C-    look for file = {fn}'.data'
-        WRITE(dFileName,'(2A)') fn(1:iL), '.data'
-        i = iL + 5
-        INQUIRE( FILE=dFileName, EXIST=fileExist )
-      ENDIF
-      IF ( .NOT.fileExist ) THEN
-C-    look for file = {fn}'.{iG}.{jG}.meta'
-        iG = 1+(myXGlobalLo-1)/sNx
-        jG = 1+(myYGlobalLo-1)/sNy
-        WRITE(dFileName,'(2A,I3.3,A,I3.3,A)')
-     &                fn(1:iL), '.', iG, '.', jG, '.data'
-        i = iL + 5 + 8
-        INQUIRE( FILE=dFileName, EXIST=fileExist )
-      ENDIF
-      IF ( .NOT.fileExist ) THEN
-C-    look for file = {fn}'.001.001.data'
-        WRITE(dFileName,'(2A)') fn(1:iL), '.001.001.data'
-        i = iL + 5 + 8
-        INQUIRE( FILE=dFileName, EXIST=fileExist )
-      ENDIF
-      shareExist = fileExist
+      CALL MDS_CHECK4FILE(
+     I                     fn, '.data', 'DIC_READ_PICKUP',
+     O                     filNam, fileExist,
+     I                     myThid )
 
-      IF ( .NOT.fileExist ) THEN
-        WRITE(msgBuf,'(4A)') 'WARNING >> DIC_READ_PICKUP: file: ',
-     &          fn(1:iL), ' , .data , ', dFileName(1:i)
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(A)')
-     &           'WARNING >> DIC_READ_PICKUP: Files DO not exist'
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      ENDIF
-
-      _END_MASTER( myThid )
-      _BARRIER
-
-      IF ( shareExist ) THEN
+      IF ( fileExist ) THEN
 C--   Read pickup file
         CALL READ_REC_3D_RL( fn, fp, 1, pH, 1, myIter, myThid )
         pH_isLoaded = .TRUE.
