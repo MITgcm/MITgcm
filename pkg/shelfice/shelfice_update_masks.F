@@ -1,78 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_update_masks.F,v 1.2 2008/09/12 14:07:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_update_masks.F,v 1.3 2008/09/15 12:42:04 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
-
-CBOP
-C     !ROUTINE: SHELFICE_INI_DEPTH
-C     !INTERFACE:
-      SUBROUTINE SHELFICE_INI_DEPTH( myThid )
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE SHELFICE_INI_DEPTH
-C     | o define R_shelfIce ( the Lower (in r sense) boundary of 
-C     |   floating shelfice )
-C     *==========================================================*
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-C     === Global variables ===
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
-#endif /* ALLOW_SHELFICE */
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myThid -  Number of this instance of SHELFICE_INI_DEPTH
-      INTEGER myThid
-CEndOfInterface
-
-#ifdef ALLOW_SHELFICE
-C     !LOCAL VARIABLES:
-C     == Local variables ==
-C     bi,bj  - Tile indices
-C     I,J    - Loop counters
-      INTEGER bi, bj
-      INTEGER  I, J
-CEOP
-      STOP 'SHELFICE_INI_DEPTH no longer called (not maintained)'
-
-C     initialize R_shelfIce
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-          R_shelfIce(i,j,bi,bj) = 0. _d 0
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-C     
-      IF ( SHELFICEtopoFile .NE. ' ' ) THEN
-C Read the shelfIce draught using the mid-level I/O pacakage read_write_rec
-C The 0 is the "iteration" argument. The 1 is the record number.
-       CALL READ_REC_XY_RS( SHELFICEtopoFile, R_shelfIce, 
-     &      1, 0, myThid )
-C Read the shelfIce draught using the mid-level I/O pacakage read_write_fld
-C The 0 is the "iteration" argument. The ' ' is an empty suffix
-C      CALL READ_FLD_XY_RS( SHELFICEtopoFile, ' ', R_shelfIce, 
-C    &      0, myThid )
-C Read the selfIce draught using the low-level I/O package
-c      CALL MDSREADFIELD( SHELFICEtopoFile, readBinaryPrec,
-c    &                     'RS', 1, R_selfIce, 1, myThid )
-      ENDIF
-C- end setup R_shelfIce in the interior
-
-C- fill in the overlap (+ BARRIER):
-      _EXCH_XY_R4(R_shelfIce, myThid )
-#endif /* ALLOW_SHELFICE */
-
-      RETURN
-      END
 
 CBOP
 C     !ROUTINE: SHELFICE_UPDATE_MASKS
