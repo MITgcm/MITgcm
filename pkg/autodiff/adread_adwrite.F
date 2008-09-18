@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.6 2007/10/08 23:50:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.7 2008/09/18 05:03:00 heimbach Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "AUTODIFF_OPTIONS.h"
 
 c     ==================================================================
@@ -125,6 +126,7 @@ C     !LOCAL VARIABLES:
 c     == local variables ==
       character*(7) itername
       character*(MAX_LEN_FNAM) fname
+      character*(MAX_LEN_MBUF) msgBuf
       integer il
       integer bx,by
 
@@ -134,6 +136,12 @@ c     == functions ==
 
 c     == end of interface ==
 CEOP
+
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_ENTER('ADREAD',myThid)
+#endif
+          
 
       write(fname(1:MAX_LEN_FNAM),'(a)') ' '
       write(itername,'(a,i4.4)') '.it',optimcycle
@@ -145,12 +153,26 @@ CEOP
       _BEGIN_MASTER( mythid )
         by = myByLo(myThid)
         bx = myBxLo(myThid)
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB ) THEN
+         WRITE(msgBuf,'(A,A)')
+     &     'ADREAD: call mdsreadvector for fname = ',
+     &     fname(1:il+7)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid)
+      ENDIF
+#endif
         call mdsreadvector( fname, size*8, 'RL',
      &                      length, var, bx, by, irec, mythid )
       _END_MASTER( mythid )
 
 c     Everyone must wait for the read operation to be completed.
       _BARRIER
+
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_LEAVE('ADREAD',myThid)
+#endif
 
       return
       end
@@ -223,6 +245,7 @@ C     !LOCAL VARIABLES:
 c     == local variables ==
       character*(7) itername
       character*(MAX_LEN_FNAM) fname
+      character*(MAX_LEN_MBUF) msgBuf
       integer il
       integer bx,by
       logical globalfile
@@ -233,6 +256,11 @@ c     == functions ==
 
 c     == end of interface ==
 CEOP
+
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_ENTER('ADWRITE',myThid)
+#endif
 
       globalfile = .false.
       il         = ilnblnk( name )
@@ -245,12 +273,26 @@ CEOP
       _BEGIN_MASTER( mythid )
         by = myByLo(myThid)
         bx = myBxLo(myThid)
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB ) THEN
+         WRITE(msgBuf,'(A,A)')
+     &     'ADWRITE: call mdswritevector for fname = ',
+     &     fname(1:il+7)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid)
+      ENDIF
+#endif
         call mdswritevector( fname, size*8, globalfile, 'RL',
      &                       length, var, bx, by, irec, 0, mythid )
       _END_MASTER( mythid )
 
 c     Everyone must wait for the write operation to be completed.
       _BARRIER
+
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_LEAVE('ADWRITE',myThid)
+#endif
 
       return
       end
