@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.26 2008/03/28 18:48:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.27 2008/09/21 18:02:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -33,7 +33,7 @@ C     !LOCAL VARIABLES:
 C     msgBuf :: Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_FNAM) namBuf
-      INTEGER   pIL
+      INTEGER   iL, pIL
 CEOP
 
 C-    Safety check:
@@ -95,9 +95,15 @@ C-    Flags specific to RW and MDSIO
 
 C-    now we make local directories with myProcessStr appended
       IF ( mdsioLocalDir .NE. ' ' ) THEN
-        pIL = ILNBLNK( mdsioLocalDir )
-        namBuf(1:pIL) = mdsioLocalDir(1:pIL)
-        WRITE(mdsioLocalDir,'(3A)') namBuf(1:pIL),myProcessStr(1:4),'/'
+        iL = ILNBLNK( mdsioLocalDir )
+        WRITE(namBuf,'(3A)')
+     &         ' mkdir -p ', mdsioLocalDir(1:iL),myProcessStr(1:4)
+        pIL = 1 + ILNBLNK( namBuf )
+        WRITE(standardMessageUnit,'(3A)')
+     &  '==> SYSTEM CALL (from INI_MODEL_IO): >',namBuf(1:pIL),'<'
+        CALL SYSTEM( namBuf(1:pIL) )
+        namBuf(1:iL) = mdsioLocalDir(1:iL)
+        WRITE(mdsioLocalDir,'(3A)') namBuf(1:iL),myProcessStr(1:4),'/'
       ENDIF
 
 C-    Initialise MFLDS variables in common block
