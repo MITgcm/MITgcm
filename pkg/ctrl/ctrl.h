@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.44 2008/02/02 02:34:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.45 2008/09/22 21:19:37 heimbach Exp $
 C $Name:  $
 
 
@@ -743,8 +743,10 @@ c     xx_obcssperiod - sampling interval
      &       xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
      &       xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
      &       xx_evap_remo_intercept, xx_evap_remo_slope,
-     &       xx_snowprecip_remo_intercept, xx_snowprecip_remo_slope,
-     &       xx_apressure_remo_intercept, xx_apressure_remo_slope,
+     &       xx_snowprecip_remo_intercept, 
+     &       xx_snowprecip_remo_slope,
+     &       xx_apressure_remo_intercept, 
+     &       xx_apressure_remo_slope,
      &       xx_runoff_remo_intercept, xx_runoff_remo_slope,
      &       xx_uwind_remo_intercept, xx_uwind_remo_slope,
      &       xx_vwind_remo_intercept, xx_vwind_remo_slope
@@ -761,8 +763,10 @@ c     xx_obcssperiod - sampling interval
       _RL xx_lwflux_remo_intercept, xx_lwflux_remo_slope
       _RL xx_lwdown_remo_intercept, xx_lwdown_remo_slope
       _RL xx_evap_remo_intercept, xx_evap_remo_slope
-      _RL xx_snowprecip_remo_intercept, xx_snowprecip_remo_slope
-      _RL xx_apressure_remo_intercept, xx_apressure_remo_slope
+      _RL xx_snowprecip_remo_intercept
+      _RL xx_snowprecip_remo_slope
+      _RL xx_apressure_remo_intercept
+      _RL xx_apressure_remo_slope
       _RL xx_runoff_remo_intercept, xx_runoff_remo_slope
       _RL xx_uwind_remo_intercept, xx_uwind_remo_slope
       _RL xx_vwind_remo_intercept, xx_vwind_remo_slope
