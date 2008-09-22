@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.38 2008/08/21 16:01:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.39 2008/09/22 17:53:21 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -16,14 +16,15 @@ C     | each prognostic variable.
 C     *==========================================================*
 C     \ev
 CEOP
-C
-C     etaN  - free-surface r-anomaly (r unit) at current time level
-C     uVel  - zonal velocity (m/s, i=1 held at western face)
-C     vVel  - meridional velocity (m/s, j=1 held at southern face)
-C     theta - potential temperature (oC, held at pressure/tracer point)
-C     salt  - salinity (ppt, held at pressure/tracer point)
-C     gX, gxNm1 - Time tendencies at current and previous time levels.
-C     etaH   - surface r-anomaly, advanced in time consistently
+
+C     State Variables:
+C     etaN  :: free-surface r-anomaly (r unit) at current time level
+C     uVel  :: zonal velocity (m/s, i=1 held at western face)
+C     vVel  :: meridional velocity (m/s, j=1 held at southern face)
+C     theta :: potential temperature (oC, held at pressure/tracer point)
+C     salt  :: salinity (ppt, held at pressure/tracer point)
+C     gX, gxNm1 :: Time tendencies at current and previous time levels.
+C     etaH  :: surface r-anomaly, advanced in time consistently
 C              with 2.D flow divergence (Exact-Conservation):
 C                etaH^n+1 = etaH^n - delta_t*Div.(H^n U^n)
 C  note: a) used with "exactConserv" but strictly necessary for NonLinFreeSurf
@@ -114,21 +115,24 @@ C                  (generalisation of oceanic real fresh-water flux)
       _RL addMass(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
-C     diagnostic variables:
+C     Diagnostic Variables:
 C     phiHydLow    :: Phi-Hydrostatic at r-lower boundary
 C                     (bottom in z-coordinates, top in p-coordinates)
 C     totPhiHyd    :: total hydrostatic Potential (anomaly, for now),
 C                     at cell center level ; includes surface contribution.
 C                     (for diagnostic + used in Z-coord with EOS_funct_P)
+C     rhoInSitu    :: In-Situ density anomaly [kg/m^3] at cell center level.
 C     hMixLayer    :: Mixed layer depth [m]
 C                     (for diagnostic + used GMRedi "fm07")
 C     IVDConvCount :: Impl.Vert.Diffusion convection counter:
 C                     = 0 (not convecting) or 1 (convecting)
       COMMON /DYNVARS_DIAG/
      &                       phiHydLow, totPhiHyd,
+     &                       rhoInSitu,
      &                       hMixLayer, IVDConvCount
       _RL  phiHydLow(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  totPhiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  rhoInSitu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  hMixLayer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  IVDConvCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
