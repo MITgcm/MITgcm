@@ -22,6 +22,7 @@ correction_step.f
 cycle_tracer.f	
 diags_phi_hyd.f	
 diags_phi_rlow.f	
+diags_rho.f
 do_atmospheric_phys.f
 do_fields_blocking_exchanges.f
 do_oceanic_phys.f
