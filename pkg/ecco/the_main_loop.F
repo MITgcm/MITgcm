@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.75 2008/06/24 17:57:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.76 2008/09/22 21:24:08 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -610,6 +610,7 @@ CADJ STORE salt  = comlev1, key = ikey_dynamics
 cph needed to be moved here from do_oceanic_physics
 cph to be visible down the road
 c
+CADJ STORE rhoInSitu          = comlev1, key = ikey_dynamics
 CADJ STORE surfaceForcingS    = comlev1, key = ikey_dynamics
 CADJ STORE surfaceForcingT    = comlev1, key = ikey_dynamics
 CADJ STORE surfaceForcingTice = comlev1, key = ikey_dynamics
