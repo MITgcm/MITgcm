@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.37 2008/09/08 21:45:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.38 2008/09/22 17:55:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
      I                         tFld, sFld,
      U                         phiHydF,
      O                         phiHydC, dPhiHydX, dPhiHydY,
-     I                         myTime, myIter, myThid)
+     I                         myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE CALC_PHI_HYD                                  |
@@ -135,21 +135,30 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C       This is the hydrostatic pressure calculation for the Ocean
 C       which uses the FIND_RHO() routine to calculate density
 C       before integrating g*rho over the current layer/interface
-#ifdef      ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC
 CADJ GENERAL
-#endif      /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
+        IF ( implicitIntGravWave .OR. myIter.LT.0 ) THEN
 C---    Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
-        kkey = (ikey-1)*Nr + k
+          kkey = (ikey-1)*Nr + k
 CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-      CALL FIND_RHO_2D(
-     I          iMin, iMax, jMin, jMax, k,
-     I          tFld(1-OLx,1-OLy,k,bi,bj), sFld(1-OLx,1-OLy,k,bi,bj),
-     O          alphaRho,
-     I          k, bi, bj, myThid )
+          CALL FIND_RHO_2D(
+     I              iMin, iMax, jMin, jMax, k,
+     I              tFld(1-OLx,1-OLy,k,bi,bj),
+     I              sFld(1-OLx,1-OLy,k,bi,bj),
+     O              alphaRho,
+     I              k, bi, bj, myThid )
+        ELSE
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             alphaRho(i,j) = rhoInSitu(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
 
 #ifdef ALLOW_SHELFICE
 C     mask rho, so that there is no contribution of phiHyd from
@@ -171,11 +180,6 @@ C    but might be slower (--> keep original masking if not using down_slope pkg)
          ENDDO
         ENDIF
 #endif /* ALLOW_SHELFICE */
-
-#ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics )
-     &   CALL DIAGNOSTICS_FILL(alphaRho,'RHOAnoma',k,1,2,bi,bj,myThid)
-#endif
 
 #ifdef ALLOW_MOM_COMMON
 C Quasi-hydrostatic terms are added in as if they modify the buoyancy
@@ -250,25 +254,29 @@ C       before integrating (1/rho)'*dp over the current layer/interface
 CADJ GENERAL
 #endif      /* ALLOW_AUTODIFF_TAMC */
 
+        IF ( implicitIntGravWave .OR. myIter.LT.0 ) THEN
 C--     Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
-            kkey = (ikey-1)*Nr + k
+          kkey = (ikey-1)*Nr + k
 CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-        CALL FIND_RHO_2D(
-     I            iMin, iMax, jMin, jMax, k,
-     I            tFld(1-OLx,1-OLy,k,bi,bj), sFld(1-OLx,1-OLy,k,bi,bj),
-     O            alphaRho,
-     I            k, bi, bj, myThid )
+          CALL FIND_RHO_2D(
+     I              iMin, iMax, jMin, jMax, k,
+     I              tFld(1-OLx,1-OLy,k,bi,bj),
+     I              sFld(1-OLx,1-OLy,k,bi,bj),
+     O              alphaRho,
+     I              k, bi, bj, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE alphaRho (:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics )
-     &   CALL DIAGNOSTICS_FILL(alphaRho,'RHOAnoma',k,1,2,bi,bj,myThid)
-#endif
+        ELSE
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             alphaRho(i,j) = rhoInSitu(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
 
 C--     Calculate specific volume anomaly : alpha' = 1/rho - alpha_Cst
         DO j=jMin,jMax

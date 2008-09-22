@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.20 2008/08/24 21:32:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.21 2008/09/22 17:55:16 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -74,6 +74,7 @@ C-      3D arrays
            gsNm1(I,J,K,bi,bj) =0. _d 0
 #endif
            totPhiHyd(I,J,K,bi,bj)=0. _d 0
+           rhoInSitu(I,J,K,bi,bj)=0. _d 0
            IVDConvCount(i,j,k,bi,bj) = 0. _d 0
 #ifdef ALLOW_ADDFLUID
            addMass(I,J,K,bi,bj) = 0. _d 0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.70 2008/08/24 21:44:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.71 2008/09/22 17:55:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -90,7 +90,6 @@ C     bi, bj        :: tile indices
 C     i,j,k         :: loop indices
       _RL rhoKp1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoKm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rhoK    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -103,9 +102,6 @@ C     i,j,k         :: loop indices
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif /* ALLOW_DIAGNOSTICS */
-#ifdef ALLOW_DOWN_SLOPE
-      _RL rhoInSitu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#endif /* ALLOW_DOWN_SLOPE */
 
 CEOP
 
@@ -122,15 +118,12 @@ C--   dummy statement to end declaration part
       doDiagsRho = 0
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics .AND. fluidIsWater ) THEN
-        IF ( DIAGNOSTICS_IS_ON('RHOANOSQ',myThid) .OR.
-     &       DIAGNOSTICS_IS_ON('URHOMASS',myThid) .OR.
-     &       DIAGNOSTICS_IS_ON('VRHOMASS',myThid) .OR.
-     &       DIAGNOSTICS_IS_ON('WRHOMASS',myThid) .OR.
-     &       DIAGNOSTICS_IS_ON('WRHOMASS',myThid) ) doDiagsRho = 2
-        IF ( doDiagsRho.EQ.0 .AND.
-     &       DIAGNOSTICS_IS_ON('MXLDEPTH',myThid) ) doDiagsRho = 1
-        IF ( doDiagsRho.EQ.0 .AND.
-     &       DIAGNOSTICS_IS_ON('DRHODR  ',myThid) ) doDiagsRho = 1
+        IF ( DIAGNOSTICS_IS_ON('WRHOMASS',myThid) ) 
+     &       doDiagsRho = doDiagsRho + 1
+        IF ( DIAGNOSTICS_IS_ON('DRHODR  ',myThid) )
+     &       doDiagsRho = doDiagsRho + 2
+        IF ( DIAGNOSTICS_IS_ON('MXLDEPTH',myThid) )
+     &       doDiagsRho = doDiagsRho + 4
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -282,7 +275,6 @@ C     uninitialised but inert locations.
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           rhoKm1 (i,j)   = 0. _d 0
-          rhoK   (i,j)   = 0. _d 0
           rhoKp1 (i,j)   = 0. _d 0
          ENDDO
         ENDDO
@@ -298,6 +290,7 @@ C This is currently used by GMRedi, IVDC, MXL-depth  and Diagnostics
 #ifdef ALLOW_AUTODIFF_TAMC
 cph all the following init. are necessary for TAF
 cph although some of these are re-initialised later.
+c          rhoInSitu(i,j,k,bi,bj) = 0.
            IVDConvCount(i,j,k,bi,bj) = 0.
 # ifdef ALLOW_GMREDI
            Kwx(i,j,k,bi,bj)  = 0. _d 0
@@ -357,15 +350,34 @@ C? Patrick, is this formula correct now that we change the loop range?
 C? Do we still need this?
 cph kkey formula corrected.
 cph Needed for rhoK, rhoKm1, in the case useGMREDI.
-         kkey = (itdkey-1)*Nr + k
+          kkey = (itdkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+C--   Always compute density (stored in common block) here; even when it is not
+C     needed here, will be used anyway in calc_phi_hyd (data flow easier this way)
+#ifdef ALLOW_DEBUG
+          IF ( debugLevel .GE. debLevB )
+     &       CALL DEBUG_CALL('FIND_RHO_2D',myThid)
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_DOWN_SLOPE
           IF ( useDOWN_SLOPE ) THEN
             CALL DWNSLP_CALC_RHO(
      I                  theta, salt,
-     O                  rhoK, rhoInSitu,
+     O                  rhoInSitu(1-OLx,1-OLy,k,bi,bj),
      I                  k, bi, bj, myTime, myIter, myThid )
+          ELSE
+#endif /* ALLOW_DOWN_SLOPE */
+            CALL FIND_RHO_2D(
+     I                iMin, iMax, jMin, jMax, k,
+     I                theta(1-OLx,1-OLy,k,bi,bj),
+     I                salt (1-OLx,1-OLy,k,bi,bj),
+     O                rhoInSitu(1-OLx,1-OLy,k,bi,bj),
+     I                k, bi, bj, myThid )
+#ifdef ALLOW_DOWN_SLOPE
           ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
 
@@ -373,23 +385,6 @@ C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
           IF ( useGMRedi .OR. (k.GT.1 .AND. ivdc_kappa.NE.0.)
      &         .OR. useSALT_PLUME .OR. doDiagsRho.GE.1 ) THEN
-#ifdef ALLOW_DEBUG
-            IF ( debugLevel .GE. debLevB )
-     &       CALL DEBUG_CALL('FIND_RHO_2D',myThid)
-#endif
-            IF ( .NOT.useDOWN_SLOPE ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-             CALL FIND_RHO_2D(
-     I                 iMin, iMax, jMin, jMax, k,
-     I                 theta(1-OLx,1-OLy,k,bi,bj),
-     I                 salt (1-OLx,1-OLy,k,bi,bj),
-     O                 rhoK,
-     I                 k, bi, bj, myThid )
-
-            ENDIF
             IF (k.GT.1) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -409,12 +404,12 @@ CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 cph Avoid variable aliasing for adjoint !!!
             DO j=jMin,jMax
              DO i=iMin,iMax
-              rhoKp1(i,j) = rhoK(i,j)
+              rhoKp1(i,j) = rhoInSitu(i,j,k,bi,bj)
              ENDDO
             ENDDO
             CALL GRAD_SIGMA(
      I             bi, bj, iMin, iMax, jMin, jMax, k,
-     I             rhoK, rhoKm1, rhoKp1,
+     I             rhoInSitu(1-OLx,1-OLy,k,bi,bj), rhoKm1, rhoKp1,
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -437,15 +432,16 @@ c ==> should use sigmaR !!!
 #endif
             CALL CALC_IVDC(
      I        bi, bj, iMin, iMax, jMin, jMax, k,
-     I        rhoKm1, rhoK,
+     I        rhoKm1, rhoInSitu(1-OLx,1-OLy,k,bi,bj),
      I        myTime, myIter, myThid)
           ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
-          IF ( doDiagsRho.GE.2 ) THEN
-            CALL DIAGS_RHO( k, bi, bj,
-     I                      rhoK, rhoKm1,
-     I                      myTime, myIter, myThid)
+          IF ( MOD(doDiagsRho,2).EQ.1 ) THEN
+            CALL DIAGS_RHO_L( k, bi, bj,
+     I                        rhoInSitu(1-OLx,1-OLy,k,bi,bj),
+     I                        rhoKm1, wVel, 
+     I                        myTime, myIter, myThid )
           ENDIF
 #endif
 
@@ -458,20 +454,22 @@ CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 #endif
 
 C--     Diagnose Mixed Layer Depth:
-        IF ( useGMRedi .OR. doDiagsRho.GE.1 ) THEN
-          CALL CALC_OCE_MXLAYER( rhoK, sigmaR,
-     &              bi, bj, myTime, myIter, myThid )
+        IF ( useGMRedi .OR. doDiagsRho.GE.4 ) THEN
+          CALL CALC_OCE_MXLAYER(
+     I              rhoInSitu(1-OLx,1-OLy,1,bi,bj), sigmaR,
+     I              bi, bj, myTime, myIter, myThid )
         ENDIF
 
 #ifdef ALLOW_SALT_PLUME
         IF ( useSALT_PLUME ) THEN
-          CALL SALT_PLUME_CALC_DEPTH( rhoK, sigmaR,
-     &              bi, bj, myTime, myIter, myThid )
+          CALL SALT_PLUME_CALC_DEPTH(
+     I              rhoInSitu(1-OLx,1-OLy,1,bi,bj), sigmaR,
+     I              bi, bj, myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_DIAGNOSTICS
-        IF ( doDiagsRho.GE.1 ) THEN
+        IF ( MOD(doDiagsRho,4).GE.2 ) THEN
           CALL DIAGNOSTICS_FILL (sigmaR, 'DRHODR  ', 0, Nr,
      &         2, bi, bj, myThid)
         ENDIF
@@ -624,13 +622,11 @@ C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
 C--     Calculate Downsloping Flow for Down_Slope parameterization
          IF ( usingPCoords ) THEN
           CALL DWNSLP_CALC_FLOW(
-     I                bi, bj, kSurfC,
-     I                rhoInSitu,
+     I                bi, bj, kSurfC, rhoInSitu,
      I                myTime, myIter, myThid )
          ELSE
           CALL DWNSLP_CALC_FLOW(
-     I                bi, bj, kLowC,
-     I                rhoInSitu,
+     I                bi, bj, kLowC, rhoInSitu,
      I                myTime, myIter, myThid )
          ENDIF
         ENDIF
@@ -666,11 +662,14 @@ C--   end bi,bj loops.
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( fluidIsWater .AND. useDiagnostics ) THEN
+        CALL DIAGS_RHO_G( 
+     I                    rhoInSitu, uVel, vVel,
+     I                    myTime, myIter, myThid )
         CALL DIAGS_OCEANIC_SURF_FLUX( myTime, myIter, myThid )
       ENDIF
       IF ( ivdc_kappa.NE.0 .AND. useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL( IVDConvCount,'CONVADJ ',
-     &                         0, Nr, 0, 1, 1, myThid )
+        CALL DIAGNOSTICS_FILL( IVDConvCount, 'CONVADJ ',
+     &                               0, Nr, 0, 1, 1, myThid )
       ENDIF
 #endif
 

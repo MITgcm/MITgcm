@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.10 2007/01/31 22:26:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.11 2008/09/22 17:55:16 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -114,7 +114,7 @@ C     for each level save old pressure and compute new pressure
      I          theta, salt,
      U          phiHydF,
      O          phiHydC, dPhiHydX, dPhiHydY,
-     I          startTime, nIter0, myThid)
+     I          startTime, -1, myThid )
 C     compute convergence criterion
            DO j=1,sNy
             DO i=1,sNx
