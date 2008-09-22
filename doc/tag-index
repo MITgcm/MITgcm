@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1023 2008/09/16 21:24:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1024 2008/09/22 18:00:25 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o store 3-D (in-situ) density in commom block (DYNVARS.h)
+ - save 1 rho computation.
+ - no longer modify T & S inland when using down_slope pkg.
 o gad_som : allow to switch to SOM advection for T & S without corresponding 
   pickup files (using new S/R: MDS_CHECK4FILE).
 o keep removing _BEGIN/_END_MASTER between MDSIO S/R call
