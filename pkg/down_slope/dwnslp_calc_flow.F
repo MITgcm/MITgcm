@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_flow.F,v 1.1 2008/08/17 02:01:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_flow.F,v 1.2 2008/09/22 17:57:05 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -7,8 +7,7 @@ CBOP
 C     !ROUTINE: DWNSLP_CALC_FLOW
 C     !INTERFACE:
       SUBROUTINE DWNSLP_CALC_FLOW(
-     I                             bi, bj, kBottom,
-     I                             rhoInSitu,
+     I                             bi, bj, kBottom, rho3d,
      I                             myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -33,13 +32,13 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     bi,bj     :: Tile indices
 C     kBottom   :: Vertical index of bottom grid cell.
-C     rhoInSitu :: In-situ density [kg/m3] computed at z=rC ;
+C     rho3d     :: In-situ density [kg/m3] computed at z=rC ;
 C     myTime    :: Current time in simulation
 C     myIter    :: Current time-step number
 C     myThid    :: my Thread Id number
       INTEGER bi, bj
-      INTEGER kBottom  ( xySize, nSx,nSy )
-      _RL     rhoInSitu( xySize, Nr )
+      INTEGER kBottom( xySize, nSx,nSy )
+      _RL     rho3d  ( xySize, Nr,nSx,nSy )
       _RL     myTime
       INTEGER myIter, myThid
 
@@ -101,16 +100,16 @@ C- detect density dradient along the slope => Downsloping flow
         ijs = ijd + ijr
         kshelf = kBottom(ijs,bi,bj)
 
-        dRhoH = rhoInSitu(ijs,kshelf)
-     &         -rhoInSitu(ijd,kshelf)
+        dRhoH = rho3d(ijs,kshelf,bi,bj)
+     &         -rho3d(ijd,kshelf,bi,bj)
 c       IF ( dRhoH.GT.0. _d 0 ) THEN
-        IF ( rhoInSitu(ijs,kshelf+1).GT.rhoInSitu(ijd,kshelf+1)
+        IF ( rho3d(ijs,kshelf+1,bi,bj).GT.rho3d(ijd,kshelf+1,bi,bj)
      &    .AND. dRhoH.GT.0. _d 0 ) THEN
 
 C- search for deepest level where Rho_shelf > Rho_deep
           kdeep = kshelf
           DO k=kshelf+1,kBottom(ijd,bi,bj),downward
-           IF ( rhoInSitu(ijs,k).GT.rhoInSitu(ijd,k) ) kdeep = k
+           IF ( rho3d(ijs,k,bi,bj).GT.rho3d(ijd,k,bi,bj) ) kdeep = k
           ENDDO
           DWNSLP_deepK(n,bi,bj) = kdeep
 
@@ -160,9 +159,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
-c     IF ( useDiagnostics ) THEN
-c       CALL DIAGNOSTICS_FILL(rhoInSitu,'RHOAnExt',0,Nr,2,bi,bj,myThid)
-c     ENDIF
       IF ( doDiagDwnSlpFlow ) THEN
         CALL DIAGNOSTICS_FILL( uFlow, 'DSLPuFlw', 0,1,2,bi,bj,myThid )
         CALL DIAGNOSTICS_FILL( vFlow, 'DSLPvFlw', 0,1,2,bi,bj,myThid )

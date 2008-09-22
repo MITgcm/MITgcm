@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_rho.F,v 1.1 2008/08/17 02:01:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_rho.F,v 1.2 2008/09/22 17:57:05 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !ROUTINE: DWNSLP_CALC_RHO
 C     !INTERFACE:
       SUBROUTINE DWNSLP_CALC_RHO(
      I                tFld, sFld,
-     O                rhoLoc, rhoInSitu,
+     O                rhoLoc,
      I                k, bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -36,7 +36,6 @@ C     === Routine arguments ===
 C     tFld      :: Pot.Temperature (3-D array)
 C     sFld      :: Salinity (3-D array)
 C     rhoLoc    :: In-situ density [kg/m3] (2-D array) computed at z=rC ;
-C     rhoInSitu :: In-situ density [kg/m3] (3-D array) computed at z=rC ;
 C     k         :: current vertical index
 C     bi,bj     :: Tile indices
 C     myTime    :: Current time in simulation
@@ -45,7 +44,6 @@ C     myThid    :: my Thread Id number
       _RL     tFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL     sFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL     rhoLoc   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL     rhoInSitu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER k, bi, bj
       _RL     myTime
       INTEGER myIter, myThid
@@ -74,11 +72,11 @@ C-    same as above, using min,max:
          tLoc(i,j) = tFld(i,j,kl,bi,bj)
          sLoc(i,j) = sFld(i,j,kl,bi,bj)
 C---- This is a hack to get the right full pressure (from calc_phi_hyd)
-C     in EOS when using if useDynP_inEos_Zc ; the way to go arround would
+C     in EOS when using useDynP_inEos_Zc ; the way to go arround would
 C     be to store rhoInSitu in a common block and use it in calc_phi_hyd
 C     (would also save one 3-D EOS computation + T & S storage for TAF).
-          tFld(i,j,k,bi,bj) = tLoc(i,j)
-          sFld(i,j,k,bi,bj) = sLoc(i,j)
+c         tFld(i,j,k,bi,bj) = tLoc(i,j)
+c         sFld(i,j,k,bi,bj) = sLoc(i,j)
 C----
        ENDDO
       ENDDO
@@ -88,12 +86,6 @@ C----
      I      tLoc, sLoc,
      O      rhoLoc,
      I      k, bi, bj, myThid )
-
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-         rhoInSitu(i,j,k) = rhoLoc(i,j)
-       ENDDO
-      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
