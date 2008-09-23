@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.5 2008/03/28 03:49:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.6 2008/09/23 06:13:59 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -83,6 +83,8 @@ c--   == end of interface ==
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
+
+#ifndef AUTODIFF_USE_OLDSTORE_2D
 C-      2D arrays
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
@@ -127,6 +129,9 @@ C-      2D arrays
 #endif
          ENDDO
         ENDDO
+#endif /* AUTODIFF_USE_OLDSTORE_2D */
+
+#ifndef AUTODIFF_USE_OLDSTORE_3D
 C-      3D arrays
         DO K=1,Nr
          DO J=1-Oly,sNy+Oly
@@ -146,9 +151,11 @@ C-      3D arrays
           ENDDO
          ENDDO
         ENDDO
+#endif /* AUTODIFF_USE_OLDSTORE_3D */
+
        ENDDO
       ENDDO
-       
+   
 #ifdef ALLOW_EXF
 
 C--   Over all tiles

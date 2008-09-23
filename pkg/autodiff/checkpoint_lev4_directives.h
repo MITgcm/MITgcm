@@ -1,13 +1,69 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.14 2008/06/21 13:49:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.15 2008/09/23 06:13:59 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
 c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
-
-CADJ STORE StoreDynVars3D     = tapelev4, key = ilev_4
+#ifdef AUTODIFF_USE_OLDSTORE_2D
+c
+CADJ STORE etan  = tapelev4, key = ilev_4
+CADJ STORE surfaceforcingTice = tapelev4, key = ilev_4
+CADJ STORE taux0 = tapelev4, key = ilev_4
+CADJ STORE taux1 = tapelev4, key = ilev_4
+CADJ STORE tauy0 = tapelev4, key = ilev_4
+CADJ STORE tauy1 = tapelev4, key = ilev_4
+CADJ STORE qnet0 = tapelev4, key = ilev_4
+CADJ STORE qnet1 = tapelev4, key = ilev_4
+CADJ STORE empmr0 = tapelev4, key = ilev_4
+CADJ STORE empmr1 = tapelev4, key = ilev_4
+CADJ STORE sst0 = tapelev4, key = ilev_4
+CADJ STORE sst1 = tapelev4, key = ilev_4
+CADJ STORE sss0 = tapelev4, key = ilev_4
+CADJ STORE sss1 = tapelev4, key = ilev_4
+CADJ STORE saltflux0 = tapelev4, key = ilev_4
+CADJ STORE saltflux1 = tapelev4, key = ilev_4
+#ifdef SHORTWAVE_HEATING
+CADJ STORE qsw0 = tapelev4, key = ilev_4
+CADJ STORE qsw1 = tapelev4, key = ilev_4
+#endif
+#ifdef ATMOSPHERIC_LOADING
+CADJ STORE pload0 = tapelev4, key = ilev_4
+CADJ STORE pload1 = tapelev4, key = ilev_4
+#endif
+#ifdef EXACT_CONSERV
+CADJ STORE etaH = tapelev4, key = ilev_4
+CADJ STORE dEtaHdt = tapelev4, key = ilev_4
+CADJ STORE PmEpR = tapelev4, key = ilev_4
+#endif
+c
+#else /* ndef AUTODIFF_USE_OLDSTORE_2D */
+c
 CADJ STORE StoreDynVars2D     = tapelev4, key = ilev_4
+c
+#endif /* AUTODIFF_USE_OLDSTORE_2D */
+c
+#ifdef AUTODIFF_USE_OLDSTORE_3D
+c
+CADJ STORE gs  = tapelev4, key = ilev_4
+CADJ STORE gt  = tapelev4, key = ilev_4             
+CADJ STORE gtnm1  = tapelev4, key = ilev_4             
+CADJ STORE gsnm1  = tapelev4, key = ilev_4             
+CADJ STORE gunm1  = tapelev4, key = ilev_4             
+CADJ STORE gvnm1  = tapelev4, key = ilev_4             
+CADJ STORE theta  = tapelev4, key = ilev_4             
+CADJ STORE salt  = tapelev4, key = ilev_4             
+CADJ STORE uvel  = tapelev4, key = ilev_4             
+CADJ STORE vvel  = tapelev4, key = ilev_4     
+CADJ STORE wvel  = tapelev4, key = ilev_4
+CADJ STORE totphihyd  = tapelev4, key = ilev_4
+c
+#else /* ndef AUTODIFF_USE_OLDSTORE_3D */
+c
+CADJ STORE StoreDynVars3D     = tapelev4, key = ilev_4
+c
+#endif /* AUTODIFF_USE_OLDSTORE_3D */
+
 cnewCADJ STORE ivdconvcount       = tapelevx, key = ilev_x
 
 #ifdef EXACT_CONSERV
