@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.8 2008/09/23 06:13:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.9 2008/09/24 19:35:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -280,8 +280,8 @@ CEOP
      &     fname(1:il+7)
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT , myThid)
-         WRITE(msgBuf,'(A,4I)')
-     &     'ADWRITE: ph ', length, bx, by, irec
+         WRITE(msgBuf,'(A,I12,4I6)')
+     &     'ADWRITE: ph', length, bx, by, irec
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT , myThid)
       ENDIF
