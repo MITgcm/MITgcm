@@ -1,4 +1,6 @@
 # GM+Redi package parameters:
+#     GM_Small_Number  :: epsilon used in computing the slope
+#     GM_slopeSqCutoff :: slope^2 cut-off value 
 
 #-from MOM :
 # GM_background_K: 	G & Mc.W  diffusion coefficient
@@ -13,16 +15,20 @@
 # GM_AdvForm     :	turn on GM Advective form       (default=Skew flux form)
 
  &GM_PARM01 
-  GM_background_K    = 800.,
-  GM_taper_scheme    = 'gkw91',
-  GM_maxSlope        = 1.e-2,
+  GM_Small_Number  = 1.D-20,
+  GM_slopeSqCutoff = 1.D+08, 
+  GM_AdvForm         = .FALSE.,
+  GM_background_K    = 1.D+3,
+  GM_taper_scheme    = 'dm95',
+  GM_maxSlope        = 1.D-2,
   GM_Kmin_horiz      = 50.,
-  GM_Scrit           = 4.e-3,
-  GM_Sd              = 1.e-3,
-# GM_Visbeck_alpha   = 0.,
-# GM_Visbeck_length  = 2.e+5,
-# GM_Visbeck_depth   = 1.e+3,
-# GM_Visbeck_maxval_K= 2.5e+3,
+  GM_Scrit           = 4.D-3,
+  GM_Sd              = 1.D-3,
+#  GM_Visbeck_alpha   = 1.5D-2,
+  GM_Visbeck_alpha   = 0.,
+  GM_Visbeck_length  = 2.D+5,
+  GM_Visbeck_depth   = 1.D+3,
+  GM_Visbeck_maxval_K= 2.5D+3,
  &
 
 

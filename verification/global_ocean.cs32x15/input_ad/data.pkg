@@ -1,6 +1,6 @@
 # Packages
  &PACKAGES
-# useGMRedi=.TRUE.,
+ useGMRedi=.TRUE.,
 #useDiagnostics=.TRUE.,
 #useMNC=.TRUE.,
  useGrdchk=.TRUE.,
