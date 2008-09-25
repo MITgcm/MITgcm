@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.3 2008/05/09 18:42:27 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/Attic/ECCO_CPPOPTIONS.h,v 1.4 2008/09/25 21:15:10 heimbach Exp $
 C $Name:  $
 
 C ********************************************************************
@@ -13,6 +13,9 @@ C
 #define ALLOW_AUTODIFF_TAMC
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
+C
+C       >>> Extract adjoint state
+#define ALLOW_AUTODIFF_MONITOR
 
 C ********************************************************************
 C ***                     Calender Package                         ***
