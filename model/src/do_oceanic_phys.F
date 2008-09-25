@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.72 2008/09/22 21:24:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.73 2008/09/25 14:52:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -259,11 +259,12 @@ CHPF$ INDEPENDENT
           itdkey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
-#else  /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF_TAMC */
+#if ( !defined (ALLOW_AUTODIFF_TAMC) || !defined (ALLOW_KPP) )
 C     if fluid is not water, by-pass find_rho, gmredi, surfaceForcing
 C     and all vertical mixing schemes, but keep OBCS_CALC
         IF ( fluidIsWater ) THEN
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif
 
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
@@ -633,7 +634,7 @@ C--     Calculate Downsloping Flow for Down_Slope parameterization
         ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
 
-#ifndef ALLOW_AUTODIFF_TAMC
+#if ( !defined (ALLOW_AUTODIFF_TAMC) || !defined (ALLOW_KPP) )
 C---  if fluid Is Water: end
         ENDIF
 #endif
