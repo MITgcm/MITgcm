@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.160 2008/08/05 22:02:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.161 2008/09/25 16:08:24 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -361,6 +361,7 @@ CADJ STORE salt  = comlev1, key = ikey_dynamics
 cph needed to be moved here from do_oceanic_physics
 cph to be visible down the road
 c
+CADJ STORE rhoInSitu          = comlev1, key = ikey_dynamics
 CADJ STORE surfaceForcingS    = comlev1, key = ikey_dynamics
 CADJ STORE surfaceForcingT    = comlev1, key = ikey_dynamics
 CADJ STORE surfaceForcingTice = comlev1, key = ikey_dynamics
