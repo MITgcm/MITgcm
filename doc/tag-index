@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1024 2008/09/22 18:00:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1025 2008/09/25 16:10:48 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61d
+o adjoint modifs
+  - adapt to new field rhoInSitu
+  - allow to revert from StoreDynVars2D, StoreDynVars3D
+    to individual fields
+    (switches AUTODIFF_USE_OLDSTORE_2D, AUTODIFF_USE_OLDSTORE_3D)
 o store 3-D (in-situ) density in commom block (DYNVARS.h)
  - save 1 rho computation.
  - no longer modify T & S inland when using down_slope pkg.
