@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/KPP_OPTIONS.h,v 1.6 2007/10/09 02:29:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/KPP_OPTIONS.h,v 1.7 2008/09/26 21:42:40 dfer Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -16,19 +16,6 @@ C     \==========================================================/
 #ifdef ALLOW_KPP
 
 #include "CPP_OPTIONS.h"
-
-C o Set precision for KPP variables (Real*4 or Real*8)
-#define _KPP_RL Real*8
-
-C o When set, use exchange calls rather than recomputation
-C   to obtain KPP parameters in overlap region.  This option
-C   was added to reduce stack size requirements on the
-C   Origin 2000.  It decreases memory and computation
-C   requirements at the expense of increased communications.
-C   For a 64-processor 360x224x46 MPI configuration on the
-C   Exemplar or Origin 2000, wall clock time is about the
-C   same whether FRUGAL_KPP is turned on or off.
-#define FRUGAL_KPP
 
 C o When set, smooth zonal shear meridionally and
 C   meridional shear zonally with 121 filters
@@ -55,19 +42,11 @@ C   estimating a surface velocity that is independent of first
 C   level thickness in the model.
 #undef KPP_ESTIMATE_UREF
 
-C o Include/exclude various time-averaged diagnostic output
-C   for saving storage space
-#ifdef  INCLUDE_DIAGNOSTICS_INTERFACE_CODE
-#define INCLUDE_DIAGNOSTICS_KPP
-#undef  INCLUDE_DIAGNOSTICS_KPPDIFFKZSTAVE
-#endif
-
 C o Include/exclude KPP non/local transport terms
 #define KPP_GHAT
 
-cph(
+C o Exclude Interior shear instability mixing
 #undef EXCLUDE_KPP_SHEAR_MIX
-cph)
 
 #endif /* ALLOW_KPP */
 #endif /* KPP_OPTIONS_H */
