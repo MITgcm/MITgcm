@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1025 2008/09/25 16:10:48 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1026 2008/09/29 14:05:54 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg ggl90:
+      - add missing sqrt(2) factor in computation of mixing length 
+        scale in ggl90_calc.F
+        (see Eq. (2.35) in Blanke and Delecluse, JPO, 1993)
 
 checkpoint61d
 o adjoint modifs
