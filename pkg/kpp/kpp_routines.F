@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.38 2008/08/11 22:28:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.39 2008/09/29 15:02:08 dfer Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -874,7 +874,7 @@ CADJ store diffus(:,:,1) = kpp_ri_tape_mr
 CADJ &  , key=mr, shape=(/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2 /)
 
          call z121 (
-     U     diffus(1,0,1)
+     U     diffus(1,0,1),
      I     myThid )
       end do
 #endif
