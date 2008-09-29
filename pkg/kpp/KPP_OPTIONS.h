@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.15 2007/04/23 21:09:19 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.16 2008/09/29 18:35:53 dfer Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -50,6 +50,9 @@ C o Exclude Interior shear instability mixing
 C o Avoid as many as possible AD recomputations
 C   usually not necessary, but useful for testing
 #undef KPP_AUTODIFF_EXCESSIVE_STORE
+
+C o Vertically smooth Ri (for interior shear mixing)
+#undef ALLOW_KPP_VERTICALLY_SMOOTH
 
 #endif /* ALLOW_KPP */
 #endif /* KPP_OPTIONS_H */
