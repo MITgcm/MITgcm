@@ -3,5 +3,4 @@
 # ECCO parameters
 # ***************
  &ECCO_PARMS
- expId = 'MIT_CE_000',
  &
