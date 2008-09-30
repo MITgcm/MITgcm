@@ -51,6 +51,10 @@ CPPFLAGS = -DREAL_BYTE=4		\
 # default is (Linux)
 FC              = f77
 
+# ifort compilers
+#FC              = ifort
+#FFLAGS          = -mp -132 -r8 -i4 -w95 -W0 -WB -CB -fpe0 -traceback -convert big_endian -assume byterecl
+
 # SGI o3k IRIX64
 #FC              = f77
 #FFLAGS          = -extend_source -bytereclen -mips4 -r8 -static
