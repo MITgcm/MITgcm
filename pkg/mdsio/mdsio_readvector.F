@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.10 2006/06/07 21:13:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.11 2008/09/30 22:39:25 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -289,25 +289,25 @@ C Otherwise stop program.
 #ifdef _BYTESWAPIO
            call MDS_BYTESWAPR4( vec_size, xy_buffer_r4 )
 #endif
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+cph#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
 c
-#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+cph#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
            DO L=1,narr*nPx*nPy
             global(L) = xy_buffer_r4(L)
            ENDDO
-#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+cph#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
           elseif (filePrec .eq. precFloat64) then
            read(dUnit,rec=irec) xy_buffer_r8
 #ifdef _BYTESWAPIO
            call MDS_BYTESWAPR8( vec_size, xy_buffer_r8 )
 #endif
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+cph#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
 c
-#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+cph#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
            DO L=1,narr*nPx*nPy
             global(L) = xy_buffer_r8(L)
            ENDDO
-#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+cph#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
           else
            write(msgbuf,'(a)')
      &            ' MDSREADFIELD: illegal value for filePrec'
