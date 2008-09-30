@@ -16,10 +16,10 @@ cd verification/natl_box_adjoint
 gunzip results*/output*.gz
 mkdir exe
 cd input
-wget -nd -r -A"PH*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgcm/verification/natl_box_adjoint/input
+wget -nd -r -A"PH*" http://batsi.mit.edu/datasets/MITgcm_input_files/MITgcm/verification/natl_box_adjoint/input
 cd ../input_seaice
-wget -nd -r -A"*labsea*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgcm/verification/natl_box_adjoint/input_seaice
-wget -nd -r -A"pickup*" http://channel.mit.edu/datasets/MITgcm_input_files/MITgcm/verification/natl_box_adjoint/input_seaice
+wget -nd -r -A"*labsea*" http://batsi.mit.edu/datasets/MITgcm_input_files/MITgcm/verification/natl_box_adjoint/input_seaice
+wget -nd -r -A"pickup*" http://batsi.mit.edu/datasets/MITgcm_input_files/MITgcm/verification/natl_box_adjoint/input_seaice
 >>>>>>>>>>>>>>>>>>>> DO THESE THINGS FIRST <<<<<<<<<<<<<<<<<<<<
 
 ####################
