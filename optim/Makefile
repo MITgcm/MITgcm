@@ -44,6 +44,7 @@ EXECUTABLE      = $(EXEDIR)optim.x
 CPPFLAGS = -DREAL_BYTE=4		\
 	-DMAX_INDEPEND=1000000		\
 	-D_RL='double precision'	\
+	-D_RS='double precision'	\
 	-D$(OPTMODE)
 
 #                -DMAX_INDEPEND=293570968        \
