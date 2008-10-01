@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.6 2005/11/01 04:09:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.7 2008/10/01 14:51:48 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -71,6 +71,9 @@ c     == local variables ==
       ncvarnrmax(ivarindex)    = ncvarnrmax_loc
       ncvargrd  (ivarindex)    = ncvargrd_loc
 
+cph add following flag to make pack/unpack only less error-prone
+#ifndef CTRL_DO_PACK_UNPACK_ONLY
+
       call ctrl_set_fname( xx_fname, fname, mythid )
 
       inquire( file='costfinal', exist=exst )
@@ -115,6 +118,8 @@ c-- for DIVA, avoid rorward-related output in adjoint part
 #endif
 
       ENDIF
+
+#endif /* CTRL_DO_PACK_UNPACK_ONLY */
 
       _END_MASTER( mythid )
 
