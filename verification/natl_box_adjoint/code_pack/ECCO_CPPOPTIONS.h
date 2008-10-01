@@ -7,21 +7,10 @@ C ********************************************************************
 C ***                         ECCO Package                         ***
 C ********************************************************************
 C
-C o include dump of snap shots for checks
-#define ALLOW_SNAPSHOTS
-
-#undef  ALLOW_ECCO_FORWARD_RUN
+C       >>> Important flags for pack/unpack only setup:
+#define CTRL_DO_PACK_UNPACK_ONLY
 #define  ALLOW_ECCO_OPTIMIZATION
-
-C       >>> Do a long protocol.
-#undef ECCO_VERBOSE
-
-C       >>> Just do a "dry" run ( useful for testing ).
-#undef  ALLOW_NO_DYNAMICS
-C       >>> Use the Yearly-Monthly-Daily-Stepping call tree.
-#undef  ALLOW_YMDS_TREE
-C       >>> Do not call stepping
-#define ALLOW_STEPPING_CALL
+#define ALLOW_DIVIDED_ADJOINT
 
 C ********************************************************************
 C ***                  Adjoint Support Package                     ***
@@ -36,9 +25,6 @@ C
 C
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
-C
-C o use divided adjoint to split adjoint computations
-#define ALLOW_DIVIDED_ADJOINT
 
 C ********************************************************************
 C ***                     Calendar Package                         ***
