@@ -84,7 +84,7 @@
 
 # Input datasets
  &PARM05
- topoFile       ='topog.bin',
+ bathyFile      ='topog.bin',
  pLoadFile      ='deltageopotjmd95.bin',
  hydrogThetaFile='lev_t.bin',
  hydrogSaltFile ='lev_s.bin',
