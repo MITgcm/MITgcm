@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.2 2008/09/06 17:42:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.3 2008/10/02 00:34:21 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -250,6 +250,25 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
         STOP 'SET_REF_STATE: Bad value of buoyancyRelation !'
 C--   endif buoyancyRelation
+      ENDIF
+
+C--   fill-in phiRef array (presently not used)
+      IF ( buoyancyRelation.EQ.'OCEANIC' ) THEN
+c       phiRef(1) = gravitySign*gravity*(rF(1)-Ro_SeaLevel)
+        phiRef(1) = 0. _d 0
+        DO k=1,Nr
+          phiRef(2*k)   = gravitySign*gravity*(rC(k) - Ro_SeaLevel)
+          phiRef(2*k+1) = gravitySign*gravity*(rF(k+1)-Ro_SeaLevel)
+        ENDDO
+      ELSEIF ( buoyancyRelation.EQ.'OCEANICP' ) THEN
+C     should be : phiRef = phi_Origin - (rC - Ro_SeaLevel)/rhoConst
+C-    but since the reference geopotential "phi_Origin" @ p = rF(k=1)
+C     is not currently stored, we only get a relative geopotential:
+        phiRef(1) = -recip_rhoConst*rF(1)
+        DO k=1,Nr
+          phiRef(2*k)   = -recip_rhoConst*rC(k)
+          phiRef(2*k+1) = -recip_rhoConst*rF(k+1)
+        ENDDO
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
