@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.42 2008/09/12 07:22:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.43 2008/10/02 00:33:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -162,7 +162,7 @@ C------ set default value:
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1,sNy
            DO i=1,sNx
-            Ro_surf(i,j,bi,bj) = Ro_SeaLevel
+            Ro_surf(i,j,bi,bj) = rF(1)
            ENDDO
           ENDDO
          ENDDO
@@ -190,6 +190,13 @@ c         CALL WRITE_FLD_XY_RS( 'topo_Z',' ',topoZ,0,myThid)
 c         _BARRIER
 C         This I/O is now done in write_grid.F
 c         CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,0,myThid)
+
+        ELSEIF ( buoyancyRelation.EQ.'OCEANICP' ) THEN
+
+          WRITE(msgBuf,'(A,A)') 'S/R INI_DEPTHS: ',
+     &     'from topoFile (in m) to ref.bottom pressure: Not yet coded'
+          CALL PRINT_ERROR( msgBuf , myThid)
+          STOP 'ABNORMAL END: S/R INI_DEPTHS'
 
         ELSE
 C----
@@ -247,7 +254,7 @@ c          IF ( iG .EQ. Nx )  R_low(i,j,bi,bj) = 0.
 C          Test for northern edge
 c          IF ( jG .EQ. Ny )  R_low(i,j,bi,bj) = 0.
            IF (usingSphericalPolarGrid .AND. ABS(yC(I,J,bi,bj)).GE.90. )
-     &       R_low(I,J,bi,bj) = Ro_SeaLevel
+     &       R_low(I,J,bi,bj) = rF(1)
           ENDDO
          ENDDO
         ENDDO
