@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.73 2008/09/25 14:52:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.74 2008/10/03 02:26:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -118,7 +118,7 @@ C--   dummy statement to end declaration part
       doDiagsRho = 0
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics .AND. fluidIsWater ) THEN
-        IF ( DIAGNOSTICS_IS_ON('WRHOMASS',myThid) ) 
+        IF ( DIAGNOSTICS_IS_ON('WRHOMASS',myThid) )
      &       doDiagsRho = doDiagsRho + 1
         IF ( DIAGNOSTICS_IS_ON('DRHODR  ',myThid) )
      &       doDiagsRho = doDiagsRho + 2
@@ -259,12 +259,11 @@ CHPF$ INDEPENDENT
           itdkey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
-#endif /* ALLOW_AUTODIFF_TAMC */
-#if ( !defined (ALLOW_AUTODIFF_TAMC) || !defined (ALLOW_KPP) )
+#else  /* ALLOW_AUTODIFF_TAMC */
 C     if fluid is not water, by-pass find_rho, gmredi, surfaceForcing
 C     and all vertical mixing schemes, but keep OBCS_CALC
         IF ( fluidIsWater ) THEN
-#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
@@ -361,6 +360,7 @@ C     needed here, will be used anyway in calc_phi_hyd (data flow easier this wa
      &       CALL DEBUG_CALL('FIND_RHO_2D',myThid)
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
+          IF ( fluidIsWater ) THEN
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -381,6 +381,16 @@ CADJ STORE salt(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_DOWN_SLOPE
           ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
+#ifdef ALLOW_AUTODIFF_TAMC
+          ELSE
+C-        fluid is not water:
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              rhoInSitu(i,j,k,bi,bj) = 0.
+            ENDDO
+           ENDDO
+          ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
@@ -442,7 +452,7 @@ c ==> should use sigmaR !!!
           IF ( MOD(doDiagsRho,2).EQ.1 ) THEN
             CALL DIAGS_RHO_L( k, bi, bj,
      I                        rhoInSitu(1-OLx,1-OLy,k,bi,bj),
-     I                        rhoKm1, wVel, 
+     I                        rhoKm1, wVel,
      I                        myTime, myIter, myThid )
           ENDIF
 #endif
@@ -634,7 +644,7 @@ C--     Calculate Downsloping Flow for Down_Slope parameterization
         ENDIF
 #endif /* ALLOW_DOWN_SLOPE */
 
-#if ( !defined (ALLOW_AUTODIFF_TAMC) || !defined (ALLOW_KPP) )
+#ifndef ALLOW_AUTODIFF_TAMC
 C---  if fluid Is Water: end
         ENDIF
 #endif
@@ -664,7 +674,7 @@ C--   end bi,bj loops.
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( fluidIsWater .AND. useDiagnostics ) THEN
-        CALL DIAGS_RHO_G( 
+        CALL DIAGS_RHO_G(
      I                    rhoInSitu, uVel, vVel,
      I                    myTime, myIter, myThid )
         CALL DIAGS_OCEANIC_SURF_FLUX( myTime, myIter, myThid )
