@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.16 2008/05/30 02:50:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.17 2008/10/07 20:15:27 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -59,31 +59,44 @@ CEOP
 
 C- print out some kee parameters :
        CALL WRITE_0D_L( GM_AdvForm, INDEX_NONE,
-     &  'GM_AdvForm =', '  /* if FALSE => use SkewFlux Form */')
+     &  'GM_AdvForm =', '     /* if FALSE => use SkewFlux Form */')
        CALL WRITE_0D_L( GM_InMomAsStress, INDEX_NONE,
-     &  'GM_InMomAsStress =', '  /* if TRUE => apply as Eddy Stress */')
+     &  'GM_InMomAsStress =', ' /* if TRUE => apply as Eddy Stress */')
        CALL WRITE_0D_L( GM_AdvSeparate, INDEX_NONE,
      & 'GM_AdvSeparate =',' /* Calc Bolus & Euler Adv. separately */')
        CALL WRITE_0D_L( GM_ExtraDiag, INDEX_NONE,
-     &  'GM_ExtraDiag =','  /* Tensor Extra Diag (line 1&2) non 0 */')
+     &  'GM_ExtraDiag =','   /* Tensor Extra Diag (line 1&2) non 0 */')
        CALL WRITE_0D_R8( GM_isopycK, INDEX_NONE, 'GM_isopycK =',
-     &  '   /* Background Isopyc. Diffusivity ( m^2/s ) */')
+     &  '    /* Background Isopyc. Diffusivity [m^2/s] */')
        CALL WRITE_0D_R8( GM_background_K*GM_skewflx, INDEX_NONE,
-     &  ' GM_skewflx*K =',
-     &  '   /* Background GM_SkewFlx Diffusivity ( m^2/s ) */')
+     &  'GM_skewflx*K =',
+     &  '  /* Background GM_SkewFlx Diffusivity [m^2/s] */')
        CALL WRITE_0D_R8( GM_background_K*GM_advect, INDEX_NONE,
-     &  ' GM_advec*K =',
-     &  '   /* Backg. GM-Advec(=Bolus) Diffusivity ( m^2/s ) */')
+     &  'GM_advec*K =',
+     &  '    /* Backg. GM-Advec(=Bolus) Diffusivity [m^2/s]*/')
+       CALL WRITE_0D_R8( GM_background_K*GM_advect, INDEX_NONE,
+     &  'GM_Kmin_horiz =',
+     &  ' /* Minimum Horizontal Diffusivity [m^2/s] */')
        CALL WRITE_0D_R8( GM_Visbeck_alpha, INDEX_NONE,
-     &  ' GM_Visbeck_alpha =','   /* Visbeck alpha coeff. ( ) */')
-       WRITE(msgBuf,'(A,A40)')' Tapering/Cliping : ',GM_taper_scheme
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+     &  'GM_Visbeck_alpha =', ' /* Visbeck alpha coeff. [-] */')
        CALL WRITE_0D_R8( GM_Small_Number, INDEX_NONE,
-     &  ' GM_Small_Number =','  /* epsilon used in slope calc */')
+     &  'GM_Small_Number =', '  /* epsilon used in slope calc */')
        CALL WRITE_0D_R8( GM_slopeSqCutoff, INDEX_NONE,
-     &  ' GM_slopeSqCutoff =', '  /* Slope^2 cut-off value */')
-
+     &  'GM_slopeSqCutoff =', ' /* Slope^2 cut-off value */')
+       CALL WRITE_0D_C( GM_taper_scheme, 0, INDEX_NONE,
+     &  'GM_taper_scheme =',
+     &  '  /* Type of Tapering/Clipping scheme */')
+       CALL WRITE_0D_R8( GM_maxSlope, INDEX_NONE,
+     &  'GM_maxSlope =', '  /* Maximum Slope (Tapering/Clipping) */')
+       CALL WRITE_0D_R8( GM_facTrL2dz, INDEX_NONE,
+     &  'GM_facTrL2dz =',
+     &  ' /* Minimum Trans.Layer Thick. (factor of dz) */')
+       CALL WRITE_0D_R8( GM_facTrL2ML, INDEX_NONE,
+     &  'GM_facTrL2ML =',
+     &  ' /* Max.Trans.Layer Thick. (factor of MxL Depth)*/')
+       CALL WRITE_0D_R8( GM_maxTransLay, INDEX_NONE,
+     &  'GM_maxTransLay =',
+     &  ' /* Maximum Transition Layer Thickness [m] */')
 
 C--  Check parameters:
 

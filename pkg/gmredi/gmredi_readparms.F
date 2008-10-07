@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.17 2008/05/30 02:50:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.18 2008/10/07 20:15:27 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -56,17 +56,16 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_Visbeck_length,
      &          GM_Visbeck_depth,
      &          GM_Visbeck_maxval_K,
-     &          GM_Scrit,
-     &          GM_Sd,
+     &          GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
+     &          GM_Scrit, GM_Sd,
      &          GM_MNC
-c     &          GM_dumpFreq,
-c     &          GM_taveFreq
 
       _BEGIN_MASTER(myThid)
 
-C--   GMREDI_READPARMS has been called so we know that
-C     the package is active.
-      GMRediIsOn = .TRUE.
+C--   GMREDI_READPARMS has been called so we know that the package is active.
+C note: cannot test for GMRediIsOn outside GM-redi S/R (since is in GMREDI.h)
+C       + is not initialized (if useGMRedi=F) => useless => removed
+c     GMRediIsOn = .TRUE.
 
 C--   Default values GM/Redi
       GM_AdvForm          = .FALSE.
@@ -79,6 +78,9 @@ C--   Default values GM/Redi
       GM_Small_Number     = 1. _d -20
       GM_slopeSqCutoff    = 1. _d +48
       GM_taper_scheme     = ' '
+      GM_facTrL2dz        = 1.
+      GM_facTrL2ML        = 5.
+      GM_maxTransLay      = 500.
       GM_Scrit            = 0.004 _d 0
       GM_Sd               = 0.001 _d 0
       GM_MNC              = useMNC
@@ -113,8 +115,8 @@ C     Default value for GM_isopycK is equal to GM_background_K :
       IF (GM_isopycK.EQ.-999.) GM_isopycK = GM_background_K
 
 C     Some constants
-      GM_rMaxSlope=0.
-      if (GM_maxSlope.ne.0.) GM_rMaxSlope=1. / GM_maxSlope
+      GM_rMaxSlope = 0.
+      if (GM_maxSlope.NE.0.) GM_rMaxSlope = 1. _d 0 / GM_maxSlope
 
       IF (GM_AdvForm) THEN
         GM_skewflx = 0.

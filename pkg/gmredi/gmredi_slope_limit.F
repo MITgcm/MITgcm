@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.28 2008/10/07 13:53:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.29 2008/10/07 20:15:27 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -117,15 +117,7 @@ C     == Local variables ==
       INTEGER i,j
       _RL dTransLay, DoverLamb
       _RL taperFctLoc, taperFctHat
-      _RL  facTrL2dz, facTrL2ML
-      _RL  maxTransLay
       _RL  minTransLay
-c     facTrL2dz = 1. _d 0
-c     facTrL2ML = 1. _d 0
-c     maxTransLay = 100. _d 0
-      facTrL2dz = 0. _d 0
-      facTrL2ML = 5. _d 0
-      maxTransLay = 500. _d 0
 
 #ifdef ALLOW_AUTODIFF_TAMC
       act1 = bi - myBxLo(myThid)
@@ -332,9 +324,9 @@ C-        Above bottom:
 
 C-    b) Set Transition Layer Depth:
         IF ( k.EQ.1 ) THEN
-          minTransLay = facTrL2dz*( depthZ(k) - depthZ(k+1) )
+          minTransLay = GM_facTrL2dz*( depthZ(k) - depthZ(k+1) )
         ELSE
-          minTransLay = facTrL2dz*( depthZ(k-1) - depthZ(k) )
+          minTransLay = GM_facTrL2dz*( depthZ(k-1) - depthZ(k) )
         ENDIF
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
@@ -345,7 +337,7 @@ C-     ensure that transition layer is at least as thick than current level and
 C      not thicker than the larger of the 2 : maxTransLay and facTrL2ML*hMixLay
             dTransLay =
      &        MIN( MAX( tmpFld(i,j), minTransLay ),
-     &             MAX( facTrL2ML*hMixLay(i,j), maxTransLay ) )
+     &             MAX( GM_facTrL2ML*hMixLay(i,j), GM_maxTransLay ) )
             IF ( k.GE.kLow(i,j) ) THEN
 C-     bottom & below & 1rst level above the bottom :
               recipLambda(i,j) = 0. _d 0
