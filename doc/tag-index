@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1026 2008/09/29 14:05:54 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1027 2008/10/07 20:59:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o gmredi(fm07): 
+  - add lower limit on Transition layer thickness D + lower limit on D/lambda
+  - allow to set few more params from data.gmredi
 o pkg ggl90:
       - add missing sqrt(2) factor in computation of mixing length 
         scale in ggl90_calc.F
