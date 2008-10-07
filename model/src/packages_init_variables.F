@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.69 2008/09/10 09:18:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.70 2008/10/07 19:41:49 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,7 +37,7 @@ C       |-- PP81_INIT
 C       |
 C       |-- MY82_INIT_VARIA
 C       |
-C       |-- GGL90_INIT
+C       |-- GGL90_INIT_VARIA
 C       |
 C       |-- SEAICE_INIT_VARIA
 C       |
@@ -183,10 +183,10 @@ C--   Initialize MY82 vertical mixing scheme.
 #ifdef ALLOW_GGL90
 C--   Initialize GGL90 vertical mixing scheme.
       IF (useGGL90) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GGL90_INIT',myThid)
-# endif
-       CALL GGL90_INIT( myThid )
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('GGL90_INIT_VARIA',myThid)
+#endif
+       CALL GGL90_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_GGL90 */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.64 2008/08/17 02:08:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.65 2008/10/07 19:41:49 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,6 +39,8 @@ C       |
 C       |-- KPP_INIT_FIXED
 C       |
 C       |-- MY82_INIT_FIXED
+C       |
+C       |-- GGL90_INIT_FIXED
 C       |
 C       |-- OPPS_INIT
 C       |
@@ -163,6 +165,13 @@ C--   Initialize fixed arrays for KPP
 C--   Initialize fixed arrays for MY82
       IF ( useMY82 ) THEN
        CALL MY82_INIT_FIXED( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_GGL90
+C--   Initialize fixed arrays for GGL90
+      IF ( useGGL90 ) THEN
+       CALL GGL90_INIT_FIXED( myThid )
       ENDIF
 #endif
 
