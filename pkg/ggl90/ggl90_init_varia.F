@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/Attic/ggl90_init.F,v 1.4 2007/10/19 03:20:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_varia.F,v 1.1 2008/10/07 19:30:54 dfer Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
 
-      SUBROUTINE GGL90_INIT( myThid )
+      SUBROUTINE GGL90_INIT_VARIA( myThid )
 
       IMPLICIT NONE
 C     === Global variables ===
