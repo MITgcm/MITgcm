@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.8 2006/06/08 14:21:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.9 2008/10/07 20:20:18 dfer Exp $
 C $Name:  $
 #include "GGL90_OPTIONS.h"
 
@@ -68,8 +68,8 @@ C     Blanke and Delecluse (1993, JPO) use
 C     Blanke and Delecluse (1993, JPO) use
       GGL90TKEsurfMin      = 1.0 _d -04
       GGL90TKEbottom       = UNSET_RL
-      GGL90viscMax         = 1.0 _d 0
-      GGL90diffMax         = 1.0 _d 1
+      GGL90viscMax         = 1. _d 2
+      GGL90diffMax         = 1. _d 2
       GGL90diffTKEh        = 0.0 _d 0
       GGL90mixingLengthMin = 1.0 _d -08
       GGL90TKEFile         = ' '
