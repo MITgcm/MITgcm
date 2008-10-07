@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.9 2008/09/29 13:47:23 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.10 2008/10/07 19:35:10 dfer Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -65,7 +65,6 @@ C     RiNumber         - local Richardson number
 C     KappaM           - (local) viscosity parameter (eq.10)
 C     KappaH           - (local) diffusivity parameter for temperature (eq.11)
 C     KappaE           - (local) diffusivity parameter for TKE (eq.15)
-C     buoyFreq         - buoyancy freqency
 C     TKEdissipation   - dissipation of TKE
 C     GGL90mixingLength- mixing length of scheme following Banke+Delecuse
 C         rMixingLength- inverse of mixing length
@@ -138,7 +137,7 @@ C     Initialize local fields
         rhoK    (I,J) = 0. _d 0
         rhoKm1  (I,J) = 0. _d 0
         totalDepth(I,J)   = 0. _d 0
-        IF ( recip_Rcol(I,J,bi,bj) .NE. 0. )
+        IF ( recip_Rcol(I,J,bi,bj) .NE. 0. _d 0 )
      &       totalDepth(I,J) = 1./recip_Rcol(I,J,bi,bj)
        ENDDO
       ENDDO
@@ -167,18 +166,18 @@ C
          Nsquare = - gravity*recip_rhoConst*recip_drC(K)
      &        * ( rhoKm1(I,J) - rhoK(I,J) )*maskC(I,J,K,bi,bj)
 C     vertical shear term (dU/dz)^2+(dV/dz)^2
-         tempu= .5*(  uVel(I,J,Km1,bi,bj)+uVel(I+1,J,Km1,bi,bj)
-     &             - (uVel(I,J,K  ,bi,bj)+uVel(I+1,J,K  ,bi,bj)) )
+         tempu= .5 _d 0*( uVel(I,J,Km1,bi,bj)+uVel(I+1,J,Km1,bi,bj)
+     &                 -( uVel(I,J,K  ,bi,bj)+uVel(I+1,J,K  ,bi,bj)) )
      &        *recip_drC(K)
-         tempv= .5*(  vVel(I,J,Km1,bi,bj)+vVel(I,J+1,Km1,bi,bj)
-     &             - (vVel(I,J,K  ,bi,bj)+vVel(I,J+1,K  ,bi,bj)) )
+         tempv= .5 _d 0*( vVel(I,J,Km1,bi,bj)+vVel(I,J+1,Km1,bi,bj)
+     &                 -( vVel(I,J,K  ,bi,bj)+vVel(I,J+1,K  ,bi,bj)) )
      &        *recip_drC(K)
          verticalShear = tempU*tempU + tempV*tempV
          RiNumber   = MAX(Nsquare,0. _d 0)/(verticalShear+GGL90eps)
 C     compute Prandtl number (always greater than 0)
          prTemp = 1. _d 0
-         IF ( RiNumber .GE. 0.2 ) prTemp = 5.0 * RiNumber
-         TKEPrandtlNumber(I,J,K) = MIN(10.0 _d 0,prTemp)
+         IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
+         TKEPrandtlNumber(I,J,K) = MIN(10. _d 0,prTemp)
 C     mixing length
          GGL90mixingLength(I,J,K) = SQRTTWO *
      &        SQRTTKE/SQRT( MAX(Nsquare,GGL90eps) )
@@ -191,7 +190,19 @@ C     impose minimum mixing length (to avoid division by zero)
          rMixingLength(I,J,K) = 1. _d 0 /GGL90mixingLength(I,J,K)
 C     viscosity of last timestep
          KappaM = GGL90ck*GGL90mixingLength(I,J,K)*SQRTTKE
+         KappaH = KappaM/TKEPrandtlNumber(I,J,K)
+
+C     Set a minium (= background) and maximum value
+         KappaM = MAX(KappaM,viscAr)
+         KappaH = MAX(KappaH,diffKrNrT(k))
+         KappaM = MIN(KappaM,GGL90viscMax)
+         KappaH = MIN(KappaH,GGL90diffMax)
+
+C     Mask land points and save
          KappaE(I,J,K) = KappaM*GGL90alpha
+         GGL90viscAr(I,J,K,bi,bj) = KappaM * maskC(I,J,K,bi,bj)
+         GGL90diffKr(I,J,K,bi,bj) = KappaH * maskC(I,J,K,bi,bj)
+
 C     dissipation term
          TKEdissipation = ab05*GGL90ceps
      &        *SQRTTKE*rMixingLength(I,J,K)
@@ -200,7 +211,8 @@ C     sum up contributions to form the right hand side
          gTKE(I,J,K) = GGL90TKE(I,J,K,bi,bj)
      &        + deltaTggl90*(
      &        + KappaM*verticalShear
-     &        - KappaM*Nsquare/TKEPrandtlNumber(I,J,K)
+     &        - KappaH*Nsquare
+c    &        - KappaM*Nsquare/TKEPrandtlNumber(I,J,K)
      &        - TKEdissipation
      &        )
         ENDDO
@@ -223,7 +235,7 @@ C     common factors
 C     Compute diffusive fluxes
 C     ... across x-faces
         DO j=1-Oly,sNy+Oly
-         dfx(1-Olx,j)=0.
+         dfx(1-Olx,j)=0. _d 0
          DO i=1-Olx+1,sNx+Olx
           dfx(i,j) = -GGL90diffTKEh*xA(i,j)
      &      *_recip_dxC(i,j,bi,bj)
@@ -233,7 +245,7 @@ C     ... across x-faces
         ENDDO
 C     ... across y-faces
         DO i=1-Olx,sNx+Olx
-         dfy(i,1-Oly)=0.
+         dfy(i,1-Oly)=0. _d 0
         ENDDO
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx,sNx+Olx
@@ -278,9 +290,9 @@ C--   Lower diagonal
         DO i=iMin,iMax
          a(i,j,k) = -deltaTggl90
      &        *recip_drF(km1)*recip_hFacI(i,j,k,bi,bj)
-     &        *.5*(KappaE(i,j, k )+KappaE(i,j,km1))
+     &        *.5 _d 0*(KappaE(i,j, k )+KappaE(i,j,km1))
      &        *recip_drC(k)
-          IF (recip_hFacI(i,j,km1,bi,bj).EQ.0.) a(i,j,k)=0.
+          IF (recip_hFacI(i,j,km1,bi,bj).EQ.0. _d 0) a(i,j,k)=0. _d 0
         ENDDO
        ENDDO
       ENDDO
@@ -298,9 +310,9 @@ CML      DO k=1,Nr-1
         DO i=iMin,iMax
           c(i,j,k) = -deltaTggl90
      &        *recip_drF( k )*recip_hFacI(i,j,k,bi,bj)
-     &               *.5*(KappaE(i,j,k)+KappaE(i,j,kp1))
+     &               *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
      &        *recip_drC(k)
-          IF (recip_hFacI(i,j,kp1,bi,bj).EQ.0.) c(i,j,k)=0.
+          IF (recip_hFacI(i,j,kp1,bi,bj).EQ.0. _d 0) c(i,j,k)=0. _d 0
         ENDDO
        ENDDO
       ENDDO
@@ -323,9 +335,9 @@ C
        DO I=iMin,iMax
 C     estimate friction velocity uStar from surface forcing
         uStarSquare = SQRT(
-     &         ( .5*( surfaceForcingU(I,  J,  bi,bj)
+     &    ( .5 _d 0*( surfaceForcingU(I,  J,  bi,bj)
      &              + surfaceForcingU(I+1,J,  bi,bj) ) )**2
-     &       + ( .5*( surfaceForcingV(I,  J,  bi,bj)
+     &  + ( .5 _d 0*( surfaceForcingV(I,  J,  bi,bj)
      &              + surfaceForcingV(I,  J+1,bi,bj) ) )**2
      &                     )
 C     Dirichlet surface boundary condition for TKE
@@ -361,25 +373,40 @@ C     end of time step
 C     ===============================
 C     compute viscosity coefficients
 C
-      DO K=2,Nr
-       DO J=jMin,jMax
-        DO I=iMin,iMax
+c      DO K=2,Nr
+c       DO J=jMin,jMax
+c        DO I=iMin,iMax
 C     Eq. (11), (18) and (21)
-         KappaM = GGL90ck*GGL90mixingLength(I,J,K)*
-     &                  SQRT( GGL90TKE(I,J,K,bi,bj) )
-         KappaH = KappaM/TKEPrandtlNumber(I,J,K)
+c         KappaM = GGL90ck*GGL90mixingLength(I,J,K)*
+c     &                  SQRT( GGL90TKE(I,J,K,bi,bj) )
+c         KappaH = KappaM/TKEPrandtlNumber(I,J,K)
 C     Set a minium (= background) value
-         KappaM = MAX(KappaM,viscAr)
-         KappaH = MAX(KappaH,diffKrNrT(k))
+c         KappaM = MAX(KappaM,viscAr)
+c         KappaH = MAX(KappaH,diffKrNrT(k))
 C     Set a maximum and mask land point
-         GGL90viscAr(I,J,K,bi,bj) = MIN(KappaM,GGL90viscMax)
-     &        * maskC(I,J,K,bi,bj)
-         GGL90diffKr(I,J,K,bi,bj) = MIN(KappaH,GGL90diffMax)
-     &        * maskC(I,J,K,bi,bj)
-        ENDDO
-       ENDDO
+c        GGL90viscAr(I,J,K,bi,bj) = MIN(KappaM,GGL90viscMax)
+c    &        * maskC(I,J,K,bi,bj)
+c        GGL90diffKr(I,J,K,bi,bj) = MIN(KappaH,GGL90diffMax)
+c    &        * maskC(I,J,K,bi,bj)
+c        ENDDO
+c       ENDDO
 C     end third k-loop
-      ENDDO
+c      ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+         CALL DIAGNOSTICS_FILL( GGL90TKE   ,'GGL90TKE',
+     &                          0,Nr, 1, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( GGL90viscAr,'GGL90Ar ',
+     &                          0,Nr, 1, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( GGL90diffKr,'GGL90Kr ',
+     &                          0,Nr, 1, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( TKEPrandtlNumber ,'GGL90Prl',
+     &                          0,Nr, 2, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL( GGL90mixingLength,'GGL90Lmx',
+     &                          0,Nr, 2, bi, bj, myThid )
+      ENDIF
+#endif
 
 #endif /* ALLOW_GGL90 */
 
