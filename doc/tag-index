@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1028 2008/10/07 22:40:55 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1029 2008/10/08 00:31:29 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -10,7 +10,7 @@ o pkg ggl90:
   - default value of GGL90viscMax/GGL90diffMax larger and equal (to
     have Prandlt =1)
 o gmredi(fm07): 
-  - add lower limit on Transition layer thickness D + lower limit on D/lambda
+  - add lower limit on Transition layer thickness + lower limit on 1/lambda
   - allow to set few more params from data.gmredi
 o pkg ggl90:
       - add missing sqrt(2) factor in computation of mixing length 
