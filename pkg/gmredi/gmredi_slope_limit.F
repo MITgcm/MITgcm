@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.29 2008/10/07 20:15:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.30 2008/10/08 00:28:59 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -115,9 +115,9 @@ C     == Local variables ==
       _RL fpi
       PARAMETER( fpi = PI )
       INTEGER i,j
-      _RL dTransLay, DoverLamb
+      _RL dTransLay, rLambMin, DoverLamb
       _RL taperFctLoc, taperFctHat
-      _RL  minTransLay
+      _RL minTransLay
 
 #ifdef ALLOW_AUTODIFF_TAMC
       act1 = bi - myBxLo(myThid)
@@ -355,6 +355,11 @@ C      and compute inverse length scale "1/Lambda" from slope vert. grad
               ELSE
                 recipLambda(i,j) = 0. _d 0
               ENDIF
+C      slope^2 & Kwz should remain > 0 : prevent too large negative D/lambda
+              IF ( hMixLay(i,j)+depthZ(k+1).LT.0. ) THEN
+                rLambMin = 1. _d 0 /( hMixLay(i,j)+depthZ(k+1) )
+                recipLambda(i,j) = MAX( recipLambda(i,j), rLambMin )
+              ENDIF
             ELSE
 C-     Still below Trans. layer: store slope & slope vert. grad.
               recipLambda(i,j) = ( MIN( SlopeMod(i,j), GM_maxSlope )
@@ -373,10 +378,7 @@ C      (in Mixed-Layer / in Transition Layer / below Transition Layer)
           IF ( hTransLay(i,j).GT.0. _d 0 ) THEN
 C-        already above base of transition layer:
 
-C         slope^2 & Kwz should remain > 0 : prevent too large negative D/lambda
             DoverLamb = (hTransLay(i,j)-hMixLay(i,j))*recipLambda(i,j)
-            DoverLamb = MAX( DoverLamb, -1. _d 0 )
-
             IF ( -depthZ(k).LE.hMixLay(i,j) ) THEN
 C-        compute tapering function -G(z) in the mixed Layer:
               taperFctLoc =
