@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.48 2008/09/09 07:04:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.49 2008/10/11 20:37:05 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -84,13 +84,6 @@ C     QSWI   - short wave heat flux under ice in W/m^2
       _RL QSWI          (1:sNx,1:sNy)
 C     
       _RL HCORR         (1:sNx,1:sNy)
-C     saltWtrIce contains m of salty ice melted (<0) or created (>0)
-      _RL saltWtrIce    (1:sNx,1:sNy)
-C     frWtrIce contains m of freshwater ice melted (<0) or created (>0)
-C     that is, ice due to precipitation or snow
-      _RL frWtrIce      (1:sNx,1:sNy)
-C     frWtrAtm contains freshwater flux from the atmosphere
-      _RL frWtrAtm      (1:sNx,1:sNy)
 C     actual ice thickness with upper and lower limit
       _RL HICE          (1:sNx,1:sNy)
 C     actual snow thickness
@@ -169,9 +162,6 @@ CADJ &                         key = iicekey, byte = isbyte
           QSWO (I,J)      = 0.0 _d 0
           QSWI (I,J)      = 0.0 _d 0
           HCORR(I,J)      = 0.0 _d 0
-          saltWtrIce(I,J) = 0.0 _d 0
-          frWtrIce(I,J)   = 0.0 _d 0
-          frWtrAtm(I,J)   = 0.0 _d 0
           RESID_HEAT(I,J) = 0.0 _d 0
 #ifdef SEAICE_SALINITY
           saltFluxAdjust(I,J) = 0.0 _d 0
@@ -180,6 +170,13 @@ CADJ &                         key = iicekey, byte = isbyte
           FICEP(I,J)      = 0.0 _d 0
           QSWIP(I,J)      = 0.0 _d 0
 #endif
+         ENDDO
+        ENDDO
+        DO J=1-oLy,sNy+oLy
+         DO I=1-oLx,sNx+oLx
+          saltWtrIce(I,J,bi,bj) = 0.0 _d 0
+          frWtrIce(I,J,bi,bj)   = 0.0 _d 0
+          frWtrAtm(I,J,bi,bj)   = 0.0 _d 0
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -358,7 +355,8 @@ C     Melt (availHeat>0) or create (availHeat<0) sea ice
 C     
           YNEG(I,J,bi,bj)   = hEffOld(I,J)    - HEFF(I,J,1,bi,bj)
 C     
-          saltWtrIce(I,J)   = saltWtrIce(I,J) - YNEG(I,J,bi,bj)
+          saltWtrIce(I,J,bi,bj)   = saltWtrIce(I,J,bi,bj) 
+     &                              - YNEG(I,J,bi,bj)
           RESID_HEAT(I,J)   = availHeat(I,J)  - YNEG(I,J,bi,bj)
 C     YNEG now contains m of ice melted (>0) or created (<0)
 C     saltWtrIce contains m of ice melted (<0) or created (>0)
@@ -408,7 +406,8 @@ C     not enough heat to melt all snow; use up all heat flux FICE
             HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)-GHEFF(I,J)/QS
 C     SNOW CONVERTED INTO WATER AND THEN INTO equivalent m of ICE melt
 C     The factor 1/ICE2SNOW converts m of snow to m of sea-ice
-            frWtrIce(I,J) = frWtrIce(I,J) - GHEFF(I,J)/(QS*ICE2SNOW)
+            frWtrIce(I,J,bi,bj) = 
+     &       frWtrIce(I,J,bi,bj) - GHEFF(I,J)/(QS*ICE2SNOW)
             FICE    (I,J) = ZERO
            ELSE
 C     enought heat to melt snow completely;
@@ -416,7 +415,7 @@ C     compute remaining heat flux that will melt ice
             FICE(I,J)=-(GHEFF(I,J)-snowEnergy)/
      &           SEAICE_deltaTtherm/AREA(I,J,2,bi,bj)
 C     convert all snow to melt water (fresh water flux)
-            frWtrIce(I,J) = frWtrIce(I,J)
+            frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj)
      &           -HSNOW(I,J,bi,bj)/ICE2SNOW
             HSNOW(I,J,bi,bj)=0.0 _d 0
            END IF
@@ -500,7 +499,7 @@ C     (that is, cannot melt more than all the ice)
 C     growthHEFF < 0 means melting
           HEFF(I,J,1,bi,bj)= HEFF(I,J,1,bi,bj) + growthHEFF
 C     add effective growth to fresh water of ice
-          saltWtrIce(I,J)  = saltWtrIce(I,J)   + growthHEFF
+          saltWtrIce(I,J,bi,bj)  = saltWtrIce(I,J,bi,bj) + growthHEFF
 
 C     now calculate QNETI under ice (if any) as the difference between
 C     the available "heat flux" growthNeg and the actual growthHEFF;
@@ -524,7 +523,7 @@ C     frWtrIce > 0 for more ice (corresponds to an upward "fresh water flux"),
 C     so that here the rain is added *as if* it is melted ice (which is not 
 C     true, but just a trick; physically the rain just runs as water 
 C     through the ice into the ocean)
-           frWtrIce(I,J) = frWtrIce(I,J)
+           frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj)
      &            -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*
      &            SEAICE_deltaTtherm/ICE2WATR
           ENDIF
@@ -566,7 +565,7 @@ CADJ &                        key = iicekey, byte = isbyte
           IF( RESID_HEAT(I,J) .GT. ZERO .AND.
      &       HSNOW(I,J,bi,bj) .GT. ZERO ) THEN
            HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)-GHEFF(I,J)*SDF*ICE2WATR
-           frWtrIce(I,J)    = frWtrIce(I,J)   -GHEFF(I,J)
+           frWtrIce(I,J,bi,bj)    = frWtrIce(I,J,bi,bj)-GHEFF(I,J)
           ENDIF
          ENDDO
         ENDDO
@@ -593,11 +592,11 @@ C NOW GET FRESH WATER FLUX
 #ifdef ALLOW_RUNOFF
      &         - RUNOFF(I,J,bi,bj)
 #endif /* ALLOW_RUNOFF */
-     &         + frWtrIce(I,J)*ICE2WATR/SEAICE_deltaTtherm
-     &         + saltWtrIce(I,J)*ICE2WATR/SEAICE_deltaTtherm
+     &         + frWtrIce(I,J,bi,bj)*ICE2WATR/SEAICE_deltaTtherm
+     &         + saltWtrIce(I,J,bi,bj)*ICE2WATR/SEAICE_deltaTtherm
      &         )*rhoConstFresh
 #ifdef ALLOW_DIAGNOSTICS
-          frWtrAtm(I,J)   = maskC(I,J,kSurface,bi,bj)*(
+          frWtrAtm(I,J,bi,bj)   = maskC(I,J,kSurface,bi,bj)*(
      &           PRECIP(I,J,bi,bj) 
      &         - EVAP(I,J,bi,bj)
      &               *( ONE - AREA(I,J,2,bi,bj) )
@@ -631,20 +630,24 @@ CADJ &                        key = iicekey, byte = isbyte
         DO J=1,sNy
          DO I=1,sNx
 C saltWtrIce > 0 : m of sea ice that is created
-          IF ( saltWtrIce(I,J) .GE. 0.0 ) THEN
-             saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
+          IF ( saltWtrIce(I,J,bi,bj) .GE. 0.0 ) THEN
+             saltFlux(I,J,bi,bj) = 
+     &            HEFFM(I,J,bi,bj)*saltWtrIce(I,J,bi,bj)*
      &            ICE2WATR*rhoConstFresh*SEAICE_salinity*
      &            salt(I,j,kSurface,bi,bj)/SEAICE_deltaTtherm
 #ifdef ALLOW_SALT_PLUME
 C saltPlumeFlux is defined only during freezing:
-             saltPlumeFlux(I,J,bi,bj)=HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
+             saltPlumeFlux(I,J,bi,bj)=
+     &            HEFFM(I,J,bi,bj)*saltWtrIce(I,J,bi,bj)*
      &            ICE2WATR*rhoConstFresh*(1-SEAICE_salinity)*
      &            salt(I,j,kSurface,bi,bj)/SEAICE_deltaTtherm
 #endif /* ALLOW_SALT_PLUME */
 C saltWtrIce < 0 : m of sea ice that is melted
           ELSE
-             saltFlux(I,J,bi,bj) = HEFFM(I,J,bi,bj)*saltWtrIce(I,J)*
-     &            HSALT(I,J,bi,bj)/(HEFF(I,J,1,bi,bj)-saltWtrIce(I,J))/
+             saltFlux(I,J,bi,bj) = 
+     &            HEFFM(I,J,bi,bj)*saltWtrIce(I,J,bi,bj)*
+     &            HSALT(I,J,bi,bj)/
+     &            (HEFF(I,J,1,bi,bj)-saltWtrIce(I,J,bi,bj))/
      &            SEAICE_deltaTtherm
 #ifdef ALLOW_SALT_PLUME
              saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
@@ -710,12 +713,6 @@ C Add YNEG contribution to QNET
      &         *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
          ENDDO
         ENDDO
-
-#ifdef ALLOW_DIAGNOSTICS
-        IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL(frWtrAtm,'SIatmFW ',0,1,3,bi,bj,myThid)
-        ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef SEAICE_DEBUG
        CALL PLOT_FIELD_XYRL( QSW,'Current QSW ', myIter, myThid )

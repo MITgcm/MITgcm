@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.31 2008/04/08 03:01:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.32 2008/10/11 20:37:05 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -129,6 +129,9 @@ C--   Initialise all variables in common blocks:
           uHeffExportCell(i,j,bi,bj) = 0. _d 0
           vHeffExportCell(i,j,bi,bj) = 0. _d 0
 #endif
+          saltWtrIce(i,j,bi,bj) = 0. _d 0
+          frWtrIce(i,j,bi,bj)   = 0. _d 0
+          frWtrAtm(i,j,bi,bj)   = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
