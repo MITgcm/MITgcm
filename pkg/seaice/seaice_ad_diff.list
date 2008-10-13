@@ -22,6 +22,7 @@ seaice_write_pickup.f
 seaice_readparms.f
 lsr.f
 seaice_cost_accumulate_mean.f
+seaice_cost_areasst.f
 seaice_cost_driver.f
 seaice_cost_export.f
 seaice_cost_final.f
