@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.30 2008/10/08 00:28:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.31 2008/10/16 16:25:17 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -99,9 +99,6 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      _RL Small_Taper
-      PARAMETER(Small_Taper=1.D+03)
-
 #ifdef GMREDI_WITH_STABLE_ADJOINT
       _RL slopeTmpSpec,slopeMaxSpec
 #endif
@@ -118,6 +115,10 @@ C     == Local variables ==
       _RL dTransLay, rLambMin, DoverLamb
       _RL taperFctLoc, taperFctHat
       _RL minTransLay
+
+C-   need to put this one in GM namelist :
+      _RL GM_bigSlope
+      GM_bigSlope = 1. _d +02
 
 #ifdef ALLOW_AUTODIFF_TAMC
       act1 = bi - myBxLo(myThid)
@@ -168,12 +169,12 @@ cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
          DO i=1-Olx+1,sNx+Olx-1
           IF ( dSigmaDr(i,j) .EQ. 0. ) THEN
            IF ( dSigmaDx(i,j) .NE. 0. ) THEN
-            SlopeX(i,j) = SIGN(Small_taper,dSigmaDx(i,j))
+            SlopeX(i,j) = SIGN( GM_bigSlope, dSigmaDx(i,j) )
            ELSE
             SlopeX(i,j) = 0. _d 0
            ENDIF
            IF ( dSigmaDy(i,j) .NE. 0. ) THEN
-            SlopeY(i,j) = SIGN(Small_taper,dSigmaDy(i,j))
+            SlopeY(i,j) = SIGN( GM_bigSlope, dSigmaDy(i,j) )
            ELSE
             SlopeY(i,j) = 0. _d 0
            ENDIF
@@ -421,7 +422,9 @@ C-        safer to limit the slope (even if it might never exceed GM_maxSlope)
             SlopeX(i,j) = SlopeX(i,j)*Smod*taperFctLoc
             SlopeY(i,j) = SlopeY(i,j)*Smod*taperFctLoc
 c           SlopeSqr(i,j) = Smod*Smod*taperFctHat
-            SlopeSqr(i,j) = baseSlope(i,j)*Smod*taperFctHat
+c           SlopeSqr(i,j) = baseSlope(i,j)*Smod*taperFctHat
+            SlopeSqr(i,j) = MIN( baseSlope(i,j), GM_bigSlope )
+     &                     *Smod*taperFctHat
 
           ELSE
 C--       Still below base of transition layer:
@@ -431,7 +434,9 @@ C-        safer to limit the slope:
             SlopeX(i,j) = SlopeX(i,j)*Smod
             SlopeY(i,j) = SlopeY(i,j)*Smod
 c           SlopeSqr(i,j) = Smod*Smod
-            SlopeSqr(i,j) = SlopeMod(i,j)*Smod
+c           SlopeSqr(i,j) = SlopeMod(i,j)*Smod
+            SlopeSqr(i,j) = MIN( SlopeMod(i,j), GM_bigSlope )
+     &                     *Smod
 
 C--       end if baseSlope > 0 / else => above/below base of Trans. Layer
           ENDIF
@@ -523,12 +528,12 @@ cnostore CADJ STORE dSigmaDr(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
          DO i=1-Olx+1,sNx+Olx-1
           IF ( dSigmaDr(i,j) .EQ. 0. ) THEN
            IF ( dSigmaDx(i,j) .NE. 0. ) THEN
-            SlopeX(i,j) = SIGN(Small_taper,dSigmaDx(i,j))
+            SlopeX(i,j) = SIGN( GM_bigSlope, dSigmaDx(i,j) )
            ELSE
             SlopeX(i,j) = 0. _d 0
            ENDIF
            IF ( dSigmaDy(i,j) .NE. 0. ) THEN
-            SlopeY(i,j) = SIGN(Small_taper,dSigmaDy(i,j))
+            SlopeY(i,j) = SIGN( GM_bigSlope, dSigmaDy(i,j) )
            ELSE
             SlopeY(i,j) = 0. _d 0
            ENDIF
@@ -573,6 +578,7 @@ C-      Simplest adiabatic tapering = Smax/Slope (linear)
           ELSE IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
      &             SlopeSqr(i,j) .LT. GM_slopeSqCutoff )  THEN
            taperFct(i,j) = SQRT(maxSlopeSqr / SlopeSqr(i,j))
+           slopeSqr(i,j) = MIN( slopeSqr(i,j),GM_bigSlope*GM_bigSlope )
           ENDIF
 
          ENDDO
