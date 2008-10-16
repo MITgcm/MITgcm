@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1029 2008/10/08 00:31:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1030 2008/10/16 18:38:55 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg gmredi, linear & fm07 tapering: put an upper limit on Slope^2 so that Kwz
+  does not become too large (to avoid precision problems in implicit-diffusion 
+  solver); update ideal_2D_oce output.
 o pkg ggl90:
   - in ggl90_cal.F: compute only one set of visc/diff, used to
     step forward TKE/T/S/momentum
