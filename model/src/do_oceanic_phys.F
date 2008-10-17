@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.74 2008/10/03 02:26:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.75 2008/10/17 18:37:10 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -69,6 +69,9 @@ C     == Global variables ===
 # endif
 # ifdef ALLOW_SEAICE
 #  include "SEAICE.h"
+# endif
+# ifdef ALLOW_SALT_PLUME
+#  include "SALT_PLUME.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -318,6 +321,16 @@ c          rhoInSitu(i,j,k,bi,bj) = 0.
 # endif /* ALLOW_KPP */
 #endif /* ALLOW_AUTODIFF_TAMC */
           ENDDO
+         ENDDO
+        ENDDO
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_SALT_PLUME
+          saltPlumeDepth(i,j,bi,bj) = 0. _d 0
+          saltPlumeFlux(i,j,bi,bj)  = 0. _d 0
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
          ENDDO
         ENDDO
 
