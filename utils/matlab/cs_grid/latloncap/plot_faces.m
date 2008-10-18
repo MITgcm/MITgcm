@@ -9,7 +9,7 @@ function plot_faces(nfg,vF,k,ccB,rgbDim);
 %  b) of simple array "vF" in compact format (with cs-grid dimensions =
 %     rgbDim = [nr ng nb] )
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/latloncap/plot_faces.m,v 1.1 2007/05/04 15:16:34 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/latloncap/plot_faces.m,v 1.2 2008/10/18 18:49:53 jmc Exp $
 % $Name:  $
 
 if nargin < 4, ccB=[0 0]; end
@@ -37,7 +37,7 @@ else
 % set default for nr,ng,nb (only used for compact fmt):
 %  rgbDim=[360 90 90];
    n1=dim0(1); n2=dim0(2);
-   n2=n2-n1; if rem(n2,4) ~= 0, n2=n2-n1; end
+   n2=n2-n1; if rem(n2,4*n1) ~= 0, n2=n2-n1; end
    if rem(n2,4) ~= 0,
      error('compact fmt input => Need grid 3 dims (rgbDim, 5th Arg)')
    end
