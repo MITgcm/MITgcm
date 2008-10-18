@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.8 2007/10/09 00:10:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_driver.F,v 1.9 2008/10/18 12:57:43 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -60,6 +60,8 @@ cph      if (useSEAICE) then
 
 #ifdef ALLOW_SEAICE_COST_SMR_AREA
 
+# ifndef ALLOW_SEAICE_COST_AREASST
+
       write(msgbuf,'(a)') 'ph-cost call cost_smrarea'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
@@ -87,6 +89,8 @@ cph)
      &     'ph-cost smrarea ', objf_smrarea(1,1), num_smrarea(1,1)
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
+
+# endif /* ALLOW_SEAICE_COST_AREASST */
 
 #endif
 
