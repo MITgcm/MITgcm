@@ -1,6 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.10 2008/10/18 12:42:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.11 2008/10/18 12:52:20 heimbach Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
+#include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
 
 

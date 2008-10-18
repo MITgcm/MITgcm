@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.12 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.13 2008/10/18 12:52:20 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -36,6 +36,9 @@ c     == global variables ==
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "ecco_cost.h"
+#ifdef ALLOW_SEAICE
+# include "SEAICE_COST.h"
+#endif
 
 c     == routine arguments ==
 
@@ -48,6 +51,7 @@ c     == local variables ==
 
       integer nnzbar
       integer nnzobs
+      integer nrecloc
       _RL spminloc
       _RL spmaxloc
       _RL spzeroloc
@@ -211,6 +215,37 @@ cph      call cost_sss   ( myiter, mytime, mythid )
 
 #if (defined (ALLOW_PROFILES) && defined (ALLOW_PROFILES_CONTRIBUTION))
        CALL cost_profiles( myiter, mytime, mythid)
+#endif
+
+#ifdef ALLOW_SEAICE_COST_SMR_AREA
+# ifdef ALLOW_SEAICE_COST_AREASST
+
+      write(msgbuf,'(a)') 'ph-cost call seaice_cost_areasst'
+      call print_message( msgbuf, standardmessageunit,
+     &     SQUEEZE_RIGHT , mythid)
+      nnzbar = 1
+      nnzobs = 1
+      nrecloc = ndaysrec
+      spminloc = 0.
+      spmaxloc = 1.
+      spzeroloc = -9999.
+      localperiod = 86400.
+      call seaice_cost_areasst(
+     &     nnzbar, smrareabarfile, smrareabar, xx_smrareabar_mean_dummy,
+     &     nnzobs, smrareadatfile, smrareadat, mult_smrarea,
+     &     nrecloc, modelstartdate, localperiod,
+     &     maskC, wsmrarea,
+     &     spminloc, spmaxloc, spzeroloc,
+     &     objf_smrarea, num_smrarea,
+     &     myiter, mytime, mythid )
+
+      write(msgbuf,'(a,1P2E18.10)')
+     & 'ph-cost seaice_cost_areasst ', 
+     & objf_smrarea(1,1), num_smrarea(1,1)
+      call print_message( msgbuf, standardmessageunit,
+     &     SQUEEZE_RIGHT , mythid)
+
+# endif /* ALLOW_SEAICE_COST_AREASST */
 #endif
 
       end
