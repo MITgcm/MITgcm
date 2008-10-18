@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.21 2008/02/05 12:49:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.22 2008/10/18 12:42:30 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -157,6 +157,14 @@ c--   Get the time flags and record numbers for the time averaging.
      &     first, last, startofmonth, endofmonth, inmonth,
      &     sum1mon, monrec, 1, mythid )
 #endif
+#endif
+
+#ifdef ALLOW_SEAICE_COST_AREASST
+      call cost_averagesgeneric(
+     &     sstbarfile,
+     &     sstbar, theta(1-Olx,1-Oly,1,1,1), xx_sstbar_mean_dummy,
+     &     first, last, startofday, endofday, inday,
+     &     sum1day, dayrec, 1, mythid )
 #endif
 
 #if (defined (ALLOW_SALT_COST_CONTRIBUTION) || \

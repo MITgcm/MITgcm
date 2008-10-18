@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.9 2008/02/05 12:49:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.10 2008/10/18 12:42:30 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -54,6 +54,7 @@ c     == local variables ==
       character*(128) fnamepsbar
       character*(128) fnametbar
       character*(128) fnamesbar
+      character*(128) fnamesstbar
       character*(128) fnameubar
       character*(128) fnamevbar
       character*(128) fnamewbar
@@ -66,6 +67,7 @@ c
       character*(128) adfnamepsbar
       character*(128) adfnametbar
       character*(128) adfnamesbar
+      character*(128) adfnamesstbar
       character*(128) adfnameubar
       character*(128) adfnamevbar
       character*(128) adfnamewbar
@@ -193,6 +195,23 @@ c     &                        optimcycle, mythid, xx_tbar_mean_dummy )
 #endif
       enddo
 #endif
+#endif
+
+#ifdef ALLOW_SEAICE_COST_AREASST
+c--   Save tbar on file.
+      ilt=ilnblnk( sstbarfile )
+      write(fnamesstbar,'(2a,i10.10)')
+     &     sstbarfile(1:ilt), '.', optimcycle
+      write(adfnamesstbar,'(3a,i10.10)')
+     &     yadprefix, sstbarfile(1:ilt), '.', optimcycle
+      do irec = 1,ndaysrec
+c        call active_write_xy( fnamesstbar, tmpfld2d, irec,
+c     &                        optimcycle, mythid, xx_sstbar_mean_dummy )
+#ifndef ALLOW_TANGENTLINEAR_RUN
+         call active_write_xy( adfnamesstbar, tmpfld2d, irec,
+     &                        optimcycle, mythid, xx_sstbar_mean_dummy )
+#endif
+       enddo
 #endif
 
 #if (defined (ALLOW_SALT_COST_CONTRIBUTION) || \

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.35 2008/02/02 02:34:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.36 2008/10/18 12:42:30 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -42,7 +42,7 @@ c     == end of interface ==
 c--   Read the namelist input.
       namelist /ecco_cost_nml/
      &                   data_errfile,
-     &                   tbarfile, sbarfile,
+     &                   tbarfile, sbarfile,sstbarfile,
      &                   psbarfile, bpbarfile,
      &                   ubarfile, vbarfile, wbarfile,
      &                   tauxbarfile, tauybarfile,
@@ -135,6 +135,7 @@ c--     Set default values.
         data_errfile          =    ' '
         tbarfile              =    'tbar'
         sbarfile              =    'sbar'
+	sstbarfile            =    'sstbar'
         psbarfile             =    'psbar'
         bpbarfile             =    'bpbar'
         ubarfile              =    'ubar'
