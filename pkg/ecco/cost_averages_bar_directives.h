@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averages_bar_directives.h,v 1.4 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averages_bar_directives.h,v 1.5 2008/10/18 12:41:20 heimbach Exp $
 C $Name:  $
 
 c
@@ -10,6 +10,7 @@ c
 CADJ STORE xx_psbar_mean_dummy = onetape
 CADJ STORE xx_tbar_mean_dummy  = onetape
 CADJ STORE xx_sbar_mean_dummy  = onetape
+CADJ STORE xx_sstbar_mean_dummy  = onetape
 CADJ STORE xx_ubar_mean_dummy  = onetape
 CADJ STORE xx_vbar_mean_dummy  = onetape
 CADJ STORE xx_wbar_mean_dummy  = onetape
