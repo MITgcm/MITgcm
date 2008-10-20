@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.139 2007/11/05 18:52:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.140 2008/10/20 23:51:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -139,9 +139,9 @@ C      |-- DEBUG_STATS_RL
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid - Thread number for this instance of the routine.
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: Thread number for this instance of the routine.
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -162,8 +162,8 @@ C     phiSurfX,  ::  gradient of Surface potential (Pressure/rho, ocean)
 C     phiSurfY             or geopotential (atmos) in X and Y direction
 C     guDissip   :: dissipation tendency (all explicit terms), u component
 C     gvDissip   :: dissipation tendency (all explicit terms), v component
-C     KappaRU:: vertical viscosity
-C     KappaRV:: vertical viscosity
+C     KappaRU    :: vertical viscosity
+C     KappaRV    :: vertical viscosity
 C     iMin, iMax     - Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj
@@ -287,21 +287,21 @@ C     just ensure that all memory references are to valid floating
 C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
 
+#ifdef ALLOW_AUTODIFF_TAMC
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            KappaRU(i,j,k) = 0. _d 0
            KappaRV(i,j,k) = 0. _d 0
-#ifdef ALLOW_AUTODIFF_TAMC
 cph(
 c--   need some re-initialisation here to break dependencies
 cph)
            gU(i,j,k,bi,bj) = 0. _d 0
            gV(i,j,k,bi,bj) = 0. _d 0
-#endif
           ENDDO
          ENDDO
         ENDDO
+#endif /* ALLOW_AUTODIFF_TAMC */
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           fVerU  (i,j,1) = 0. _d 0
@@ -359,13 +359,20 @@ CADJ &                 = comlev1_bibj, key=idynkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
-C--      Calculate the total vertical diffusivity
+C--     Calculate the total vertical viscosity
+        CALL CALC_VISCOSITY(
+     I            bi,bj, iMin,iMax,jMin,jMax,
+     O            KappaRU, KappaRV,
+     I            myThid )
+#else
         DO k=1,Nr
-         CALL CALC_VISCOSITY(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,
-     O        KappaRU,KappaRV,
-     I        myThid)
-       ENDDO
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           KappaRU(i,j,k) = 0. _d 0
+           KappaRV(i,j,k) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
