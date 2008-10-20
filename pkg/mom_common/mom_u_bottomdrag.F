@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.7 2008/01/18 21:16:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.8 2008/10/20 21:40:22 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -25,8 +25,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-cgf bottomdragfld (ALLOW_BOTTOMDRAG_CONTROL) is defined in DYNVARS.h
-#include "DYNVARS.h"
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+# include "DYNVARS.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -48,7 +49,7 @@ C  uDragTerms           :: drag term
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
 C  Kp1                  :: =k+1 for k<Nr, =Nr for k>=Nr
-      INTEGER I,J,kDown,kDownC,kBottom
+      INTEGER i,j,kDown,kDownC,kBottom
       _RL viscFac
       _RL rdrckp1,maskDown
 CEOP
@@ -62,7 +63,7 @@ C-  No-slip BCs impose a drag at bottom
        kBottom = 1
        kDown   = max(k-1,kBottom)
        kDownC  = k
-      ENDIF	
+      ENDIF
       rdrckp1=recip_drC(kDownC)
       IF (k.EQ.kBottom) rdrckp1=recip_drF(k)
       viscFac=0.
@@ -73,10 +74,9 @@ C-  No-slip BCs impose a drag at bottom
         IF (k.EQ.kBottom) maskDown=0.
         uDragTerms(i,j)=
      &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &   *( 
+     &   *(
      &      2.*KappaRU(i,j,kDownC)*rdrckp1*viscFac
-#if (defined (ALLOW_AUTODIFF_TAMC) && \
-    defined (ALLOW_BOTTOMDRAG_CONTROL))
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
      &     + bottomdragfld(i,j,bi,bj)
 #else
      &     + bottomDragLinear
@@ -85,7 +85,7 @@ C-  No-slip BCs impose a drag at bottom
         IF ( (KE(i,j)+KE(i-1,j)) .NE. 0. ) THEN
          uDragTerms(i,j)=uDragTerms(i,j)
      &    -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &    *bottomDragQuadratic*sqrt(KE(i,j)+KE(i-1,j))
+     &    *bottomDragQuadratic*SQRT(KE(i,j)+KE(i-1,j))
      &    *(1.-maskDown)*uFld(i,j)
         ENDIF
        ENDDO

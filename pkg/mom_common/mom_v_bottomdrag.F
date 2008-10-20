@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_bottomdrag.F,v 1.7 2008/01/18 21:16:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_bottomdrag.F,v 1.8 2008/10/20 21:40:22 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -7,8 +7,8 @@ crg butterflies
 crg using undefined values of kapparv in mom_v_bottomdrag
 crg mom_v_bottomdrag must have iMin,iMax,jMin,jMax as arguments
 crg and only use values being calculated in calc_viscosity
-crg There are probably many more routines in mom_fluxform and mom_vecin
-crg using undefined values.
+C jmc: comment above already did not apply when checked-in (2003/03/07):
+C      kapparu & v fully initialised in calc_viscosity after 2002/05/30.
 
 CBOP
 C !ROUTINE: MOM_V_BOTTOMDRAG
@@ -32,8 +32,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-cgf bottomdragfld (ALLOW_BOTTOMDRAG_CONTROL) is defined in DYNVARS.h
-#include "DYNVARS.h"
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+# include "DYNVARS.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -56,7 +57,7 @@ C  vDragTerms           :: drag term
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
 C  Kp1                  :: =k+1 for k<Nr, =Nr for k>=Nr
-      INTEGER I,J,kDown,kDownC,kBottom
+      INTEGER i,j,kDown,kDownC,kBottom
       _RL rdrckp1,maskDown
 CEOP
 
@@ -80,10 +81,9 @@ C-  No-slip BCs impose a drag at bottom
         IF (k.EQ.kBottom) maskDown=0.
         vDragTerms(i,j)=
      &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &   *( 
+     &   *(
      &      2.*KappaRV(i,j,kDownC)*rdrckp1*viscFac
-#if (defined (ALLOW_AUTODIFF_TAMC) && \
-    defined (ALLOW_BOTTOMDRAG_CONTROL))
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
      &     + bottomdragfld(i,j,bi,bj)
 #else
      &     + bottomDragLinear
@@ -92,7 +92,7 @@ C-  No-slip BCs impose a drag at bottom
         IF ( (KE(i,j)+KE(i,j-1)) .NE. 0. ) THEN
          vDragTerms(i,j)=vDragTerms(i,j)
      &    -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &    *bottomDragQuadratic*sqrt(KE(i,j)+KE(i,j-1))
+     &    *bottomDragQuadratic*SQRT(KE(i,j)+KE(i,j-1))
      &    *(1.-maskDown)*vFld(i,j)
         ENDIF
        ENDDO
