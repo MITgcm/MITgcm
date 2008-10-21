@@ -1,11 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.32 2008/03/28 18:48:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.33 2008/10/21 22:10:55 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 #ifdef ALLOW_KPP
 # include "KPP_OPTIONS.h"
 #endif
-#undef OLD_VISBECK_CALC
 
 CBOP
 C     !ROUTINE: GMREDI_CALC_TENSOR
@@ -87,15 +86,13 @@ C     == Local variables ==
 
 #ifdef GM_VISBECK_VARIABLE_K
 #ifdef OLD_VISBECK_CALC
-      _RL deltaH,zero_rs
-      PARAMETER(zero_rs=0.D0)
-      _RL N2,SN
       _RL Ssq(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #else
       _RL dSigmaH
-      _RL deltaH, integrDepth
-      _RL Sloc, M2loc, SNloc
+      _RL Sloc, M2loc
 #endif
+      _RL deltaH, integrDepth
+      _RL N2loc, SNloc
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -310,7 +307,7 @@ C       If positive we limit this to the distance from center above
 C       Now we convert deltaH to a non-dimensional fraction
            deltaH = deltaH/( integrDepth+rC(1) )
 
-C--      compute: ( M^2 * S )^1/2   (= M^2 / N since S=M^2/N^2 )
+C--      compute: ( M^2 * S )^1/2   (= S*N since S=M^2/N^2 )
            dSigmaH = dSigmaDx(i,j)*dSigmaDx(i,j)
      &             + dSigmaDy(i,j)*dSigmaDy(i,j)
            IF ( dSigmaH .GT. 0. _d 0 ) THEN
@@ -321,8 +318,14 @@ C-       compute slope, limited by GM_maxSlope:
              ELSE
               Sloc = GM_maxSlope
              ENDIF
-             M2loc = Gravity*recip_RhoConst*dSigmaH
-             SNloc = SQRT( Sloc*M2loc )
+             M2loc = gravity*recip_rhoConst*dSigmaH
+c            SNloc = SQRT( Sloc*M2loc )
+             N2loc = -gravity*recip_rhoConst*dSigmaDr(i,j)
+             IF ( N2loc.GT.0. _d 0 ) THEN
+               SNloc = Sloc*SQRT(N2loc)
+             ELSE
+               SNloc = 0. _d 0
+             ENDIF
            ELSE
              SNloc = 0. _d 0
            ENDIF
@@ -389,18 +392,19 @@ C       which is used in the "variable K" parameterisaton.
 C       Distance between interface above layer and the integration depth
         deltaH=abs(GM_Visbeck_depth)-abs(rF(k))
 C       If positive we limit this to the layer thickness
-        deltaH=min(deltaH,drF(k))
+        integrDepth = drF(k)
+        deltaH=min(deltaH,integrDepth)
 C       If negative then we are below the integration level
-        deltaH=max(deltaH,zero_rs)
+        deltaH=max(deltaH, 0. _d 0)
 C       Now we convert deltaH to a non-dimensional fraction
         deltaH=deltaH/GM_Visbeck_depth
 
-        IF (K.eq.2) VisbeckK(i,j,bi,bj)=0.
         IF ( Ssq(i,j).NE.0. .AND. dSigmaDr(i,j).NE.0. ) THEN
-         N2= -Gravity*recip_RhoConst*dSigmaDr(i,j)
-         SN=sqrt(Ssq(i,j)*N2)
-         VisbeckK(i,j,bi,bj)=VisbeckK(i,j,bi,bj)+deltaH
-     &      *GM_Visbeck_alpha*GM_Visbeck_length*GM_Visbeck_length*SN
+         N2loc = -gravity*recip_rhoConst*dSigmaDr(i,j)
+         SNloc = SQRT(Ssq(i,j)*N2loc )
+         VisbeckK(i,j,bi,bj) = VisbeckK(i,j,bi,bj)
+     &       +deltaH*GM_Visbeck_alpha
+     &              *GM_Visbeck_length*GM_Visbeck_length*SNloc
         ENDIF
 
         ENDDO
@@ -450,7 +454,7 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #else
          Kgm_tmp = GM_isopycK
 #endif
-#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
+#ifdef ALLOW_KAPGM_CONTROL
      &           + GM_skewflx*kapgm(i,j,k,bi,bj)
 #else
      &           + GM_skewflx*GM_background_K
@@ -461,7 +465,7 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
          Kwx(i,j,k,bi,bj)= Kgm_tmp*Kwx(i,j,k,bi,bj)
          Kwy(i,j,k,bi,bj)= Kgm_tmp*Kwy(i,j,k,bi,bj)
 #ifdef ALLOW_KAPREDI_CONTROL
-         Kwz(i,j,k,bi,bj)= ( kapredi(i,j,k,bi,bj) 
+         Kwz(i,j,k,bi,bj)= ( kapredi(i,j,k,bi,bj)
 #else
          Kwz(i,j,k,bi,bj)= ( GM_isopycK
 #endif
@@ -609,7 +613,7 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #else
      &     ( GM_isopycK
 #endif
-#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
+#ifdef ALLOW_KAPGM_CONTROL
      &     - GM_skewflx*kapgm(i,j,k,bi,bj)
 #else
      &     - GM_skewflx*GM_background_K
@@ -795,9 +799,9 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_KAPREDI_CONTROL
      &     ( kapredi(i,j,k,bi,bj)
 #else
-     &     ( GM_isopycK 
+     &     ( GM_isopycK
 #endif
-#if (defined (ALLOW_AUTODIFF) && defined (ALLOW_KAPGM_CONTROL))
+#ifdef ALLOW_KAPGM_CONTROL
      &     - GM_skewflx*kapgm(i,j,k,bi,bj)
 #else
      &     - GM_skewflx*GM_background_K
