@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_bottomdrag.F,v 1.8 2008/10/20 21:40:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_bottomdrag.F,v 1.9 2008/10/21 18:04:16 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -47,7 +47,6 @@ C  myThid               :: thread number
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL viscFac
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -58,7 +57,8 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
 C  Kp1                  :: =k+1 for k<Nr, =Nr for k>=Nr
       INTEGER i,j,kDown,kDownC,kBottom
-      _RL rdrckp1,maskDown
+      _RL viscFac, dragFac
+      _RL rdrckp1, maskDown
 CEOP
 
 C-  No-slip BCs impose a drag at bottom
@@ -66,10 +66,15 @@ C-  No-slip BCs impose a drag at bottom
        kBottom = Nr
        kDown   = min(k+1,kBottom)
        kDownC  = kDown
+c      dragFac = mass2rUnit*rhoConst
+c      dragFac = wUnit2rVel(k+1)
+       dragFac = 1. _d 0
       ELSE
        kBottom = 1
        kDown   = max(k-1,kBottom)
        kDownC  = k
+       dragFac = mass2rUnit*rhoConst
+c      dragFac = wUnit2rVel(k)
       ENDIF
       rdrckp1=recip_drC(kDownC)
       viscFac=0.
@@ -84,15 +89,15 @@ C-  No-slip BCs impose a drag at bottom
      &   *(
      &      2.*KappaRV(i,j,kDownC)*rdrckp1*viscFac
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-     &     + bottomdragfld(i,j,bi,bj)
+     &     + bottomdragfld(i,j,bi,bj)*dragFac
 #else
-     &     + bottomDragLinear
+     &     + bottomDragLinear*dragFac
 #endif
      &    )*(1.-maskDown)*vFld(i,j)
         IF ( (KE(i,j)+KE(i,j-1)) .NE. 0. ) THEN
          vDragTerms(i,j)=vDragTerms(i,j)
      &    -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &    *bottomDragQuadratic*SQRT(KE(i,j)+KE(i,j-1))
+     &    *bottomDragQuadratic*SQRT(KE(i,j)+KE(i,j-1))*dragFac
      &    *(1.-maskDown)*vFld(i,j)
         ENDIF
        ENDDO

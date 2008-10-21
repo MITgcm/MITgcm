@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.8 2008/10/20 21:40:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.9 2008/10/21 18:04:16 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -50,8 +50,8 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
 C  Kp1                  :: =k+1 for k<Nr, =Nr for k>=Nr
       INTEGER i,j,kDown,kDownC,kBottom
-      _RL viscFac
-      _RL rdrckp1,maskDown
+      _RL viscFac, dragFac
+      _RL rdrckp1, maskDown
 CEOP
 
 C-  No-slip BCs impose a drag at bottom
@@ -59,10 +59,15 @@ C-  No-slip BCs impose a drag at bottom
        kBottom = Nr
        kDown   = min(k+1,kBottom)
        kDownC  = kDown
+c      dragFac = mass2rUnit*rhoConst
+c      dragFac = wUnit2rVel(k+1)
+       dragFac = 1. _d 0
       ELSE
        kBottom = 1
        kDown   = max(k-1,kBottom)
        kDownC  = k
+       dragFac = mass2rUnit*rhoConst
+c      dragFac = wUnit2rVel(k)
       ENDIF
       rdrckp1=recip_drC(kDownC)
       IF (k.EQ.kBottom) rdrckp1=recip_drF(k)
@@ -77,15 +82,15 @@ C-  No-slip BCs impose a drag at bottom
      &   *(
      &      2.*KappaRU(i,j,kDownC)*rdrckp1*viscFac
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-     &     + bottomdragfld(i,j,bi,bj)
+     &     + bottomdragfld(i,j,bi,bj)*dragFac
 #else
-     &     + bottomDragLinear
+     &     + bottomDragLinear*dragFac
 #endif
      &    )*(1.-maskDown)*uFld(i,j)
         IF ( (KE(i,j)+KE(i-1,j)) .NE. 0. ) THEN
          uDragTerms(i,j)=uDragTerms(i,j)
      &    -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &    *bottomDragQuadratic*SQRT(KE(i,j)+KE(i-1,j))
+     &    *bottomDragQuadratic*SQRT(KE(i,j)+KE(i-1,j))*dragFac
      &    *(1.-maskDown)*uFld(i,j)
         ENDIF
        ENDDO
