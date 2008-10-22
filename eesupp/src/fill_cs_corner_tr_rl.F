@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/fill_cs_corner_tr_rl.F,v 1.3 2007/08/16 02:11:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/fill_cs_corner_tr_rl.F,v 1.4 2008/10/22 00:23:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -10,7 +10,7 @@ C     !ROUTINE: FILL_CS_CORNER_TR_RL
 
 C     !INTERFACE:
       SUBROUTINE FILL_CS_CORNER_TR_RL(
-     I     fill4dirX, withSigns,
+     I     fill4dir, withSigns,
      U     trFld,
      I     bi,bj, myThid)
 
@@ -22,7 +22,7 @@ C     |   for a tracer variable (center of grid cell)
 C     *==========================================================*
 C     | o the corner halo region is filled with valid values
 C     |   in order to compute (later on) gradient in X or Y
-C     |   direction, on a wide stencil.
+C     |   direction on a wide stencil.
 C     *==========================================================*
 
 C     !USES:
@@ -39,13 +39,15 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C
-C     fill4dirX :: True = prepare for X direction calculations
-C                  otherwise, prepare for Y direction
+C     fill4dir  :: = 0 fill corner with zeros
+C                  = 1 copy to prepare for X direction calculations
+C                  = 2 copy to prepare for Y direction calculations
+C                  = 3 fill corner with averaged value
 C     withSigns :: True = account for sign of X & Y directions
 C     trFld     :: tracer field array with empty corners to fill
 C     bi,bj     :: tile indices
 C     myThid    :: thread number
-      LOGICAL fill4dirX
+      INTEGER fill4dir
       LOGICAL withSigns
       _RL trFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj
@@ -88,7 +90,39 @@ CEOP
        northEastCorner = .TRUE.
 #endif
 
-       IF ( fill4dirX ) THEN
+       IF ( fill4dir .EQ. 0 ) THEN
+C--    Just fill corner with zero (e.g., used for 6 tracer points average)
+
+         IF ( southWestCorner ) THEN
+          DO j=1,OLy
+           DO i=1,OLx
+            trFld( 1-i , 1-j ) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( southEastCorner ) THEN
+          DO j=1,OLy
+           DO i=1,OLx
+            trFld(sNx+i, 1-j ) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( northWestCorner ) THEN
+          DO j=1,OLy
+           DO i=1,OLx
+            trFld( 1-i ,sNy+j) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( northEastCorner ) THEN
+          DO j=1,OLy
+           DO i=1,OLx
+            trFld(sNx+i,sNy+j) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDIF
+
+       ELSEIF ( fill4dir .EQ. 1 ) THEN
 C--    Internal exchange for calculations in X
 
 C-     For cube face corners we need to duplicate the
@@ -159,7 +193,7 @@ C                      |   x T(sNx+1,    0)
 
 C--   End of X direction ; start Y direction case.
 
-       ELSE
+       ELSEIF ( fill4dir .EQ. 2 ) THEN
 C--    Internal exchange for calculations in Y
 
 C-     For cube face corners we need to duplicate the
@@ -228,6 +262,8 @@ C         x T(sNx,0) =====>x T(sNx+1,    0)
          ENDIF
 
 C-     End of Y direction case.
+       ELSE
+         STOP 'FILL_CS_CORNER_TR_RL: fill4dir has illegal value'
        ENDIF
 
 C--   End useCubedSphereExchange
