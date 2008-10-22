@@ -1,21 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1031 2008/10/21 18:07:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1032 2008/10/22 00:19:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o gmredi (Visbeck-variable-K):
+  - fix the "OLD_VISBECK_CALC" option + move the #undef to GMREDI_OPTIONS.h
+  - change computation of Visbeck-K where Slope > Smax :        
+    now: N*min(Slope,Smax) (similar to OLD_VISBECK_CALC with gkw91 taperFct)
+    previously was: M*sqrt(min(Slope,Smax)) ; update ideal_2D_oce output.
 o bottom-drag in P-coord.: change units of bottomDragLinear & bottomDragQuadratic
   to be the same as with Z-coord. (i.e., m/s & no-units respectively).
 o calc_viscosity: fix index range (was wrong for CD-Scheme & explicit Visc)
 o pkg gmredi, linear & fm07 tapering: put an upper limit on Slope^2 so that Kwz
-  does not become too large (to avoid precision problems in implicit-diffusion 
+  does not become too large (to avoid precision problems in implicit-diffusion
   solver); update ideal_2D_oce output.
 o pkg ggl90:
   - in ggl90_cal.F: compute only one set of visc/diff, used to
     step forward TKE/T/S/momentum
   - default value of GGL90viscMax/GGL90diffMax larger and equal (to
     have Prandlt =1)
-o gmredi(fm07): 
+o gmredi (fm07):
   - add lower limit on Transition layer thickness + lower limit on 1/lambda
   - allow to set few more params from data.gmredi
 o pkg ggl90:
