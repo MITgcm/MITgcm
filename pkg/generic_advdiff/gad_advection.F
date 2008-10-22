@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.57 2008/02/08 20:03:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.58 2008/10/22 00:28:47 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -362,7 +362,7 @@ C-     Internal exchange for calculations in X
 #else
         IF ( overlapOnly ) THEN
 #endif
-         CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+         CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                              localTij, bi,bj, myThid )
         ENDIF
 
@@ -402,7 +402,7 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 
 C-     Internal exchange for next calculations in Y
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
-         CALL FILL_CS_CORNER_TR_RL( .FALSE., .FALSE.,
+         CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                              localTij, bi,bj, myThid )
         ENDIF
 
@@ -525,7 +525,7 @@ C-     Internal exchange for calculations in Y
 #else
         IF ( overlapOnly ) THEN
 #endif
-         CALL FILL_CS_CORNER_TR_RL( .FALSE., .FALSE.,
+         CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                              localTij, bi,bj, myThid )
         ENDIF
 
@@ -572,7 +572,7 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 
 C-     Internal exchange for next calculations in X
         IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
-         CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+         CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                              localTij, bi,bj, myThid )
         ENDIF
 

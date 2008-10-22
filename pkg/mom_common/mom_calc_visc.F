@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.35 2008/04/22 22:50:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.36 2008/10/22 00:28:47 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -284,7 +284,7 @@ C-       gradient in x direction:
 cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
          IF (useCubedSphereExchange) THEN
 C        to compute d/dx(hDiv), fill corners with appropriate values:
-           CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+           CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                                hDiv, bi,bj, myThid )
          ENDIF
 cph-exch2#endif
@@ -298,7 +298,7 @@ C-       gradient in y direction:
 cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
          IF (useCubedSphereExchange) THEN
 C        to compute d/dy(hDiv), fill corners with appropriate values:
-           CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+           CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                                hDiv, bi,bj, myThid )
          ENDIF
 cph-exch2#endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.7 2008/02/07 23:59:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.8 2008/10/22 00:28:47 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -294,10 +294,10 @@ C-     Advective flux in X
 #ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in X
          IF ( overlapOnly ) THEN
-          CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+          CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                               iceFld, bi,bj, myThid )
           IF ( .NOT.useGridVolume )
-     &    CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+     &    CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
 #endif
@@ -351,10 +351,10 @@ C-     Compute CFL number
 #ifndef ALLOW_AUTODIFF_TAMC
 C--   Internal exchange for next calculations in Y
          IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
-          CALL FILL_CS_CORNER_TR_RL( .FALSE., .FALSE.,
+          CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                               iceFld, bi,bj, myThid )
           IF ( .NOT.useGridVolume )
-     &    CALL FILL_CS_CORNER_TR_RL( .FALSE., .FALSE.,
+     &    CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
 #endif
@@ -508,10 +508,10 @@ C-     Advective flux in Y
 #ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in Y
          IF ( overlapOnly ) THEN
-          CALL FILL_CS_CORNER_TR_RL( .FALSE., .FALSE.,
+          CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                               iceFld, bi,bj, myThid )
           IF ( .NOT.useGridVolume )
-     &    CALL FILL_CS_CORNER_TR_RL( .FALSE., .FALSE.,
+     &    CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
 #endif
@@ -564,10 +564,10 @@ C-     Compute CFL number
 
 #ifndef ALLOW_AUTODIFF_TAMC
          IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
-          CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+          CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                               iceFld, bi,bj, myThid )
           IF ( .NOT.useGridVolume )
-     &    CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+     &    CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                               iceVol, bi,bj, myThid )
          ENDIF
 #endif

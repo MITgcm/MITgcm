@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.14 2007/11/28 16:24:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.15 2008/10/22 00:28:47 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -201,7 +201,7 @@ C-       replace derivatives in physical space of Div & Vort by computational on
            IF ( .NOT.Shap_alwaysExchUV
      &          .AND. useCubedSphereExchange ) THEN
 C          to compute d/dx(hDiv), fill corners with appropriate values:
-             CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+             CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                                  hDiv, bi,bj, myThid )
            ENDIF
 #endif
@@ -217,7 +217,7 @@ C          to compute d/dx(hDiv), fill corners with appropriate values:
            IF ( .NOT.Shap_alwaysExchUV
      &          .AND. useCubedSphereExchange ) THEN
 C          to compute d/dy(hDiv), fill corners with appropriate values:
-             CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+             CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                                  hDiv, bi,bj, myThid )
            ENDIF
 #endif

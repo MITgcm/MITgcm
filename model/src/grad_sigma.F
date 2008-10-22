@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/grad_sigma.F,v 1.8 2007/08/16 02:13:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/grad_sigma.F,v 1.9 2008/10/22 00:26:20 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -58,7 +58,7 @@ C-    safer to work on a local copy of rhoK (before a partial update)
 C-    Internal exchange for calculations in X
 cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF ( useCubedSphereExchange ) THEN
-        CALL FILL_CS_CORNER_TR_RL( .TRUE., .FALSE.,
+        CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
      &                             rhoLoc, bi,bj, myThid )
       ENDIF
 cph-exch2#endif
@@ -73,7 +73,7 @@ cph-exch2#endif
 C-    Internal exchange for calculations in Y
 cph-exch2#ifndef ALLOW_AUTODIFF_TAMC
       IF ( useCubedSphereExchange ) THEN
-        CALL FILL_CS_CORNER_TR_RL(.FALSE., .FALSE.,
+        CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
      &                             rhoLoc, bi,bj, myThid )
       ENDIF
 cph-exch2#endif
