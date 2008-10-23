@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.47 2007/12/27 21:26:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.48 2008/10/23 18:13:51 dfer Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -260,12 +260,10 @@ c              - salt expansion coefficient without 1/rho factor
 c                d(rho{k,k})/d(S(k))                         (kg/m^3/PSU)
 c------------------------------------------------------------------------
 
-      CALL TIMER_START('STATEKPP      [KPP_CALC]', myThid)
       CALL STATEKPP(
      O     work2, dbloc, Ritop,
      O     TTALPHA, SSBETA,
      I     ikppkey, bi, bj, myThid )
-      CALL TIMER_STOP ('STATEKPP      [KPP_CALC]', myThid)
 
       DO k = 1, Nr
          DO j = 1-OLy, sNy+OLy
@@ -493,7 +491,6 @@ c     matching diffusivities at bottom of KPP PBL
             work2(i,j) = Fcori(i,j,bi,bj)
          ENDDO
       ENDDO
-      CALL TIMER_START('KPPMIX [KPP_CALC]', myThid)
       CALL KPPMIX (
      I       work1, shsq, dVsq, ustar
      I     , maskC(1-Olx,1-Oly,1,bi,bj)
@@ -509,7 +506,6 @@ c     matching diffusivities at bottom of KPP PBL
      U     , ghat
      O     , hbl
      I     , mytime, myIter, mythid )
-      CALL TIMER_STOP ('KPPMIX [KPP_CALC]', myThid)
 
 c-----------------------------------------------------------------------
 c     zero out land values and transfer to global variables
