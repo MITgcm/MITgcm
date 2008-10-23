@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.39 2008/09/29 15:02:08 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.40 2008/10/23 18:11:00 dfer Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -243,7 +243,7 @@ C     mixing coefficients blmc to pure Ri-number based mixing
                diffus(i,k,2) = max ( blmc(i,k,2), diffusKzS(i,Nr) )
                diffus(i,k,3) = max ( blmc(i,k,3), diffusKzT(i,Nr) )
             else
-               ghat(i,k) = 0.
+               ghat(i,k) = 0. _d 0
             endif
          end do
       end do
@@ -362,6 +362,7 @@ c wm, ws    : turbulent velocity scales         (m/s)
 #ifdef ALLOW_DIAGNOSTICS
 c     KPPBFSFC - Bo+radiation absorbed to d=hbf*hbl + plume (m^2/s^3)
       _RL KPPBFSFC(imt,Nr)
+      _RL KPPRi(imt,Nr)
 #endif /* ALLOW_DIAGNOSTICS */
 
 c find bulk Richardson number at every grid level until > Ricr
@@ -376,7 +377,7 @@ c       kbl(i)=kmtj(i) and hbl(i)=-zgrid(kmtj(i))
 c     initialize hbl and kbl to bottomed out values
 
       do i = 1, imt
-         Rib(i,1) = 0.0
+         Rib(i,1) = 0. _d 0
          kbl(i) = max(kmtj(i),1)
          hbl(i) = -zgrid(kbl(i))
       end do
@@ -384,7 +385,8 @@ c     initialize hbl and kbl to bottomed out values
 #ifdef ALLOW_DIAGNOSTICS
       do kl = 1, Nr
          do i = 1, imt
-            KPPBFSFC(i,kl) = 0.0
+            KPPBFSFC(i,kl) = 0. _d 0
+            KPPRi(i,kl) = 0. _d 0
          enddo
       enddo
 #endif /* ALLOW_DIAGNOSTICS */
@@ -464,8 +466,8 @@ c-----------------------------------------------------------------------
      1           ( dbloc(i,kl-1) / (zgrid(kl-1)-zgrid(kl  ))+
      2             dbloc(i,kl  ) / (zgrid(kl  )-zgrid(kl+1)))
 
-            if (bvsq .eq. 0.) then
-              vtsq = 0.0
+            if (bvsq .eq. 0. _d 0) then
+              vtsq = 0. _d 0
             else
               vtsq = -zgrid(kl) * ws(i) * sqrt(abs(bvsq)) * Vtc
             endif
@@ -485,12 +487,16 @@ c
             tempVar1  = dvsq(i,kl) + vtsq           
             tempVar2 = max(tempVar1, phepsi)
             Rib(i,kl) = Ritop(i,kl) / tempVar2
+#ifdef ALLOW_DIAGNOSTICS
+            KPPRi(i,kl) = Rib(i,kl) 
+#endif
 
          end do
       end do
 
 #ifdef ALLOW_DIAGNOSTICS
          CALL DIAGNOSTICS_FILL(KPPBFSFC,'KPPbfsfc',0,Nr,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(KPPRi   ,'KPPRi   ',0,Nr,0,1,1,myThid)
 #endif /* ALLOW_DIAGNOSTICS */
 
 cph(
@@ -826,8 +832,8 @@ CADJ INIT kpp_ri_tape_mr = common, 1
 #endif
 
 c constants
-      c1 = 1.0
-      c0 = 0.0
+      c1 = 1. _d 0
+      c0 = 0. _d 0
 
 c-----------------------------------------------------------------------
 c     compute interior gradient Ri at all interfaces ki=1,Nr, (not surface)

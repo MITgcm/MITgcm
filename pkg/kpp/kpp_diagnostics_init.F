@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.3 2007/12/21 02:54:34 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.4 2008/10/23 18:11:00 dfer Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -103,6 +103,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         diagName  = 'KPPbfsfc'
         diagTitle = 'Bo+radiation absorbed to d=hbf*hbl + plume'
         diagUnits = 'm^2/s^3         '
+        diagCode  = 'SM P    UR      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'KPPRi   '
+        diagTitle = 'Bulk Richardson number'
+        diagUnits = 'non-dimensional '
         diagCode  = 'SM P    UR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
