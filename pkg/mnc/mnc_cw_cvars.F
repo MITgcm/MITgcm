@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.11 2008/06/20 20:36:58 utke Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.12 2008/10/25 20:36:34 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -400,8 +400,13 @@ C       unknown grid type
       IF ( doit .EQ. 1 ) THEN
 
         CALL MNC_FILE_REDEF(fname, myThid)
+#ifdef REAL4_IS_SLOW
         err = NF_DEF_VAR(fid, cvname, NF_DOUBLE, 
      &       nids, cv_did, vid)
+#else
+        err = NF_DEF_VAR(fid, cvname, NF_FLOAT, 
+     &       nids, cv_did, vid)
+#endif /* REAL4_IS_SLOW */
         i = ILNBLNK( fname )
         write(msgbuf,'(5a)') 'defining coordinate variable ''', 
      &       cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
@@ -433,8 +438,13 @@ C     add attributes if set
         ENDIF
 C     
         CALL MNC_FILE_ENDDEF(fname, myThid)
+#ifdef REAL4_IS_SLOW
         err = NF_PUT_VARA_DOUBLE(fid, vid, 
      &       cv_start, cv_count, rtmp)
+#else
+        err = NF_PUT_VARA_REAL(fid, vid, 
+     &       cv_start, cv_count, rtmp)
+#endif /* REAL4_IS_SLOW */
         write(msgbuf,'(5a)') 'writing coordinate variable ''', 
      &       cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
         CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
