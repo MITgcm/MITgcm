@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_g77,v 1.5 2006/02/13 13:11:19 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_g77,v 1.6 2008/10/25 17:13:49 mlosch Exp $
 #
 # tested on G4-PowerBook, 1GHz
 # cc-compiler is available only with the Apple Developer Tools, 
@@ -11,7 +11,6 @@
 CPP='/usr/bin/cpp -traditional -P'
 FC=g77
 LINK=g77
-NOOPTFLAGS='-O0'
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 #EH3 MAKEDEPEND='${TOOLSDIR}/xmakedepend'
@@ -28,5 +27,15 @@ else
     FFLAGS='-Wimplicit -Wunused -ffloat-store'
     FOPTIM='-O0'
 fi
+#ifndef REAL4_IS_SLOW
+# _RS expands into real*4 and statements such as 
+# MAX(ABS(aV3d),myNorm) in ini_cg3d.F do not work with 'g77 -O3',
+# so we have to lower the optimization level here to -O1;
+# not clear why this is so, similar statements do work in ini_cg2d.F
+#NOOPTFILES='ini_cg3d.F'
+#NOOPTFLAGS='-O1 -funroll-loops'
+#else
+NOOPTFLAGS=-O0
+#endif /* REAL4_IS_SLOW */
 
 
