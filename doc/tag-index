@@ -1,8 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1033 2008/10/23 15:31:34 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1034 2008/10/25 20:49:22 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o fix CPP-flag REAL4_IS_SLOW, when _RS expands into real*4 
+  (#undef REAL4_IS_SLOW)
+ - pkg/mnc/mnc_cw_cvars.F: write _RS-grid variable as netcdf-real*4 
+   coordinate variable
+ - pkg/monitor/monitor.F: call mon_printstats_rs for _RS variables 
+   (surface forcing fields), removes some of the functionality
+ - model/src/write_grid.F: write _RS variables as RS-netcdf variables 
+ - model/src/diags_oceanic_surf_flux.F: fix a few diagnostics, but 
+   probably not all: copy _RS surface flux fields to RL field before 
+   calling DIAGNOSTICS_FILL
 
 checkpoint61e
 o gmredi (Visbeck-variable-K):
