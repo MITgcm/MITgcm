@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.8 2007/10/01 13:28:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.9 2008/10/25 20:40:51 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,6 +56,7 @@ C-    Time Averages of surface fluxes
         ks=1
        ENDIF
 
+#ifdef REAL4_IS_SLOW
 C-    taux (surface momentum flux [Pa=N/m2], positive <-> increase u)
        CALL DIAGNOSTICS_SCALE_FILL( fu,foFacMom,1,
      &                             'oceTAUX ',0, 1,0,1,1,myThid )
@@ -91,6 +92,67 @@ C-    Qsw (= net short-wave into the ocean, +=down, [W/m2])
        CALL DIAGNOSTICS_SCALE_FILL( Qsw,tmpFac,1,
      &                             'oceQsw  ',0, 1,0,1,1,myThid )
 #endif
+#else /* _RS -> Real*4, requires copying to a Real*8 field */
+C-    taux (surface momentum flux [Pa=N/m2], positive <-> increase u)
+      IF ( DIAGNOSTICS_IS_ON('oceTAUX ',myThid) ) THEN
+       CALL RS2RL_XY( fu, tmp1k, myTime, myIter, myThid )
+       CALL DIAGNOSTICS_SCALE_FILL( tmp1k,foFacMom,1,
+     &                             'oceTAUX ',0, 1,0,1,1,myThid )
+      ENDIF
+
+C-    tauy (surface momentum flux [Pa=N/m2], positive <-> increase v)
+      IF ( DIAGNOSTICS_IS_ON('oceTAUY ',myThid) ) THEN
+       CALL RS2RL_XY( fv, tmp1k, myTime, myIter, myThid )
+       CALL DIAGNOSTICS_SCALE_FILL( tmp1k,foFacMom,1,
+     &                             'oceTAUY ',0, 1,0,1,1,myThid )
+      ENDIF
+
+C-    pLoad (Atmospheric pressure loading [Pa=N/m2])
+      IF ( DIAGNOSTICS_IS_ON('atmPload',myThid) ) THEN
+       CALL RS2RL_XY( pLoad, tmp1k, myTime, myIter, myThid )
+       CALL DIAGNOSTICS_FILL( tmp1k,'atmPload',0,1,0,1,1,myThid )
+      ENDIF
+
+C-    sea-ice loading (expressed in Mass of ice+snow / area unit, [kg/m2])
+      IF ( DIAGNOSTICS_IS_ON('sIceLoad',myThid) ) THEN
+       CALL RS2RL_XY( sIceLoad, tmp1k, myTime, myIter, myThid )
+       CALL DIAGNOSTICS_FILL( tmp1k,'sIceLoad',0,1,0,1,1,myThid )
+      ENDIF
+
+C-    net Fresh Water flux into the ocean (+=down), [kg/m2/s]
+      IF ( DIAGNOSTICS_IS_ON('oceFWflx',myThid) ) THEN
+       CALL RS2RL_XY( EmPmR, tmp1k, myTime, myIter, myThid )
+       tmpFac = -1. _d 0
+       CALL DIAGNOSTICS_SCALE_FILL( tmp1k,tmpFac,1,
+     &                             'oceFWflx',0, 1,0,1,1,myThid )
+      ENDIF
+
+C-    net Salt flux into the ocean (+=down), [psu.kg/m2/s ~ g/m2/s]
+      IF ( DIAGNOSTICS_IS_ON('oceSflux',myThid) ) THEN
+       CALL RS2RL_XY( saltFlux, tmp1k, myTime, myIter, myThid )
+       tmpFac = -1. _d 0
+       CALL DIAGNOSTICS_SCALE_FILL( tmp1k,tmpFac,1,
+     &                             'oceSflux',0, 1,0,1,1,myThid )
+      ENDIF
+
+C-    Qnet (= net heat flux into the ocean, +=down, [W/m2])
+      IF ( DIAGNOSTICS_IS_ON('oceQnet ',myThid) ) THEN
+       CALL RS2RL_XY( Qnet, tmp1k, myTime, myIter, myThid )
+       tmpFac = -1. _d 0
+       CALL DIAGNOSTICS_SCALE_FILL( tmp1k,tmpFac,1,
+     &                             'oceQnet ',0, 1,0,1,1,myThid )
+      ENDIF
+
+#ifdef SHORTWAVE_HEATING
+C-    Qsw (= net short-wave into the ocean, +=down, [W/m2])
+      IF ( DIAGNOSTICS_IS_ON('oceQsw  ',myThid) ) THEN
+       CALL RS2RL_XY( Qsw, tmp1k, myTime, myIter, myThid )
+       tmpFac = -1. _d 0
+       CALL DIAGNOSTICS_SCALE_FILL( tmp1k,tmpFac,1,
+     &                             'oceQsw  ',0, 1,0,1,1,myThid )
+      ENDIF
+#endif
+#endif /* REAL4_IS_SLOW */
 
 C-    oceFreez (= heating from freezing of sea-water, if allowFreezing=T)
        tmpFac = HeatCapacity_Cp*rUnit2mass
@@ -168,3 +230,56 @@ C-    SFLUX (=total salt flux, match salt-content variations [g/m2/s])
 
       RETURN
       END
+
+#ifdef ALLOW_DIAGNOSTICS
+#ifndef REAL4_IS_SLOW
+CBOP
+C     !ROUTINE: RS2RL_XY
+C     !INTERFACE:
+      SUBROUTINE RS2RL_XY( arr2dRS, arr2dRL, myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE RS2RL_XY
+C     | o Returns _RS (if real*4) array as _RL (real*8) array
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: Thread number for this instance of the routine.
+      _RS arr2dRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL arr2dRL(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
+CEOP
+
+C     !LOCAL VARIABLES:
+C     i,j,bi,bj :: loop indices
+      INTEGER i,j,bi,bj
+
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1,sNy
+          DO i = 1,sNx
+           arr2dRL(i,j,bi,bj) = DBLE(arr2dRS(i,j,bi,bj))
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+       RETURN
+       END
+#endif /* ndef REAL4_IS_SLOW */
+#endif /* ALLOW_DIAGNOSTICS */
+
