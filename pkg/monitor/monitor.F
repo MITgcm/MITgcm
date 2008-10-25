@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.45 2008/08/24 21:22:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.46 2008/10/25 20:38:30 mlosch Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -131,6 +131,7 @@ C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
 C       Print the basic statistics of external forcing
         IF ( monitorSelect.GE.3 ) THEN
          CALL MON_SET_PREF('extforcing',myThid)
+#ifdef REAL4_IS_SLOW
          CALL MON_PRINTSTATS_RL(1,Qnet,'_qnet',
      &        maskH,maskH,rA ,drF,myThid)
          CALL MON_PRINTSTATS_RL(1,Qsw,'_qsw',
@@ -144,6 +145,17 @@ C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
           CALL MON_PRINTSTATS_RL(1,fv,'_fv',
      &         maskS,maskS,rAs,drF,myThid)
          ENDIF
+#else
+C     in this case the forcing fields are single precision reals
+         CALL MON_PRINTSTATS_RS(1,Qnet,'_qnet',myThid)
+         CALL MON_PRINTSTATS_RS(1,Qsw,'_qsw',myThid)
+         CALL MON_PRINTSTATS_RS(1,EmPmR,'_empmr',myThid)
+         IF ( nSx.EQ.1 .AND. nSy.EQ.1 .AND. usingZCoords ) THEN
+C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
+          CALL MON_PRINTSTATS_RS(1,fu,'_fu',myThid)
+          CALL MON_PRINTSTATS_RS(1,fv,'_fv',myThid)
+         ENDIF
+#endif /* REAL4_IS_SLOW */
         ENDIF
 
 C       Print the numerical stablility parameters for current state
