@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.23 2008/06/01 03:48:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.24 2008/10/25 20:39:30 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -140,6 +140,7 @@ C       Write the GRID.h variables to a file
         CALL MNC_CW_SET_UDIM(bfname, 0, myThid)
         CALL MNC_CW_SET_CITER(bfname, 2, -1, -1, -1, myThid)
         CALL MNC_CW_SET_UDIM(bfname, 1, myThid)
+#ifdef REAL4_IS_SLOW
         CALL MNC_CW_RL_W('D',bfname,0,0,'RC',rC,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'RF',rF,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'RU',rF(2),myThid)
@@ -178,6 +179,47 @@ c       CALL MNC_CW_RL_W('D',bfname,0,0,'YV',yG,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'HFacC',HFacC,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'HFacW',HFacW,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'HFacS',HFacS,myThid)
+#else
+C     everything become real*4
+        CALL MNC_CW_RS_W('D',bfname,0,0,'RC',rC,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'RF',rF,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'RU',rF(2),myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'RL',rF,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'drC',drC,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'drF',drF,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'XC',xC,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'YC',yC,myThid)
+c       CALL MNC_CW_RS_W('D',bfname,0,0,'XU',xG,myThid)
+c       CALL MNC_CW_RS_W('D',bfname,0,0,'YU',yC,myThid)
+c       CALL MNC_CW_RS_W('D',bfname,0,0,'XV',xC,myThid)
+c       CALL MNC_CW_RS_W('D',bfname,0,0,'YV',yG,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'XG',xG,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'YG',yG,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'dxC',dxC,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'dyC',dyC,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'dxF',dxF,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'dyF',dyF,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'dxG',dxG,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'dyG',dyG,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'dxV',dxV,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'dyU',dyU,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'rA',rA,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'rAw',rAw,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'rAs',rAs,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'rAz',rAz,myThid)
+        IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
+          CALL MNC_CW_RS_W('D',bfname,0,0,'AngleCS',angleCosC,myThid)
+          CALL MNC_CW_RS_W('D',bfname,0,0,'AngleSN',angleSinC,myThid)
+        ENDIF
+        CALL MNC_CW_RS_W('D',bfname,0,0,'fCori',fCori,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'fCoriG',fCoriG,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'R_low',R_low,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'Ro_surf',Ro_surf,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'Depth',tmpfld,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'HFacC',HFacC,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'HFacW',HFacW,myThid)
+        CALL MNC_CW_RS_W('D',bfname,0,0,'HFacS',HFacS,myThid)
+#endif /* REAL4_IS_SLOW */
 
         _END_MASTER(myThid)
 
