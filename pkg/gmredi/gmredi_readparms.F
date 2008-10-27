@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.18 2008/10/07 20:15:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.19 2008/10/27 22:03:47 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -52,10 +52,10 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_maxSlope,
      &          GM_Kmin_horiz,
      &          GM_Small_Number, GM_slopeSqCutoff,
-     &          GM_Visbeck_alpha,
-     &          GM_Visbeck_length,
+     &          GM_Visbeck_alpha, GM_Visbeck_length,
      &          GM_Visbeck_depth,
-     &          GM_Visbeck_maxval_K,
+     &          GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
+     &          GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
      &          GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &          GM_Scrit, GM_Sd,
      &          GM_MNC
@@ -73,7 +73,7 @@ C--   Default values GM/Redi
       GM_InMomAsStress    = .FALSE.
       GM_isopycK          = -999.
       GM_background_K     = 0. _d 0
-      GM_maxslope         = 1. _d -2
+      GM_maxSlope         = 1. _d -2
       GM_Kmin_horiz       = 0. _d 0
       GM_Small_Number     = 1. _d -20
       GM_slopeSqCutoff    = 1. _d +48
@@ -93,7 +93,10 @@ C--   Default values Visbeck
       GM_Visbeck_alpha    =    0. _d 0
       GM_Visbeck_length   =  200. _d 3
       GM_Visbeck_depth    = 1000. _d 0
-      GM_Visbeck_maxval_K = 2500. _d 0
+      GM_Visbeck_minDepth =    0. _d 0
+      GM_Visbeck_maxSlope = UNSET_RL
+      GM_Visbeck_minVal_K =    0. _d 0
+      GM_Visbeck_maxVal_K = 2500. _d 0
 
       WRITE(msgBuf,'(A)') ' GM_READPARMS: opening data.gmredi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -113,6 +116,10 @@ C     Close the open data file
 
 C     Default value for GM_isopycK is equal to GM_background_K :
       IF (GM_isopycK.EQ.-999.) GM_isopycK = GM_background_K
+
+C     Default value for GM_Visbeck_maxSlope is equal to GM_maxSlope :
+      IF ( GM_Visbeck_maxSlope .EQ. UNSET_RL )
+     &     GM_Visbeck_maxSlope = GM_maxSlope
 
 C     Some constants
       GM_rMaxSlope = 0.

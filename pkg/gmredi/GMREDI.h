@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.15 2008/10/07 20:15:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.16 2008/10/27 22:03:46 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -8,8 +8,8 @@ C---  GM/Redi package parameters
 C--   Numerical Constant
       _RL op5
       _RL op25
-      PARAMETER( op5 = 0.5D0 )
-      PARAMETER( op25 = 0.25D0 )
+      PARAMETER( op5  = 0.5 _d 0 )
+      PARAMETER( op25 = 0.25 _d 0 )
 
 C--   GM/Redi Logical-type parameters
       LOGICAL GM_AdvForm
@@ -49,7 +49,10 @@ C     GM_maxTransLay :: maximum Trans. Layer Thick. [m]
       _RL GM_Visbeck_alpha
       _RL GM_Visbeck_length
       _RL GM_Visbeck_depth
-      _RL GM_Visbeck_maxval_K
+      _RL GM_Visbeck_minDepth
+      _RL GM_Visbeck_maxSlope
+      _RL GM_Visbeck_minVal_K
+      _RL GM_Visbeck_maxVal_K
       _RL GM_facTrL2dz
       _RL GM_facTrL2ML
       _RL GM_maxTransLay
@@ -60,10 +63,10 @@ C     GM_maxTransLay :: maximum Trans. Layer Thick. [m]
      &                   GM_maxSlope,
      &                   GM_Kmin_horiz,
      &                   GM_Small_Number, GM_slopeSqCutoff,
-     &                   GM_Visbeck_alpha,
-     &                   GM_Visbeck_length,
+     &                   GM_Visbeck_alpha, GM_Visbeck_length,
      &                   GM_Visbeck_depth,
-     &                   GM_Visbeck_maxval_K,
+     &                   GM_Visbeck_minDepth, GM_Visbeck_maxSlope,
+     &                   GM_Visbeck_minVal_K, GM_Visbeck_maxVal_K,
      &                   GM_facTrL2dz, GM_facTrL2ML, GM_maxTransLay,
      &                   GM_Scrit, GM_Sd
 
