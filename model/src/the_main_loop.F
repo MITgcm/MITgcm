@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.96 2008/04/25 01:34:40 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.97 2008/10/27 20:33:35 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -97,6 +97,9 @@ c They provide the fields to be stored.
 #  ifdef ALLOW_SEAICE
 #   include "SEAICE.h"
 #   include "SEAICE_COST.h"
+#  endif
+#  ifdef ALLOW_SALT_PLUME
+#   include "SALT_PLUME.h"
 #  endif
 #  ifdef ALLOW_THSICE
 #   include "THSICE_SIZE.h"
