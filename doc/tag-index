@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1034 2008/10/25 20:49:22 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1035 2008/10/27 05:16:06 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -14,6 +14,8 @@ o fix CPP-flag REAL4_IS_SLOW, when _RS expands into real*4
  - model/src/diags_oceanic_surf_flux.F: fix a few diagnostics, but 
    probably not all: copy _RS surface flux fields to RL field before 
    calling DIAGNOSTICS_FILL
+ - model/inc/CPP_EEMACROS.h: make the _EXCH_*_RS macros expand into 
+   real*4 (CALL EXCH_*_RS) versions.
 
 checkpoint61e
 o gmredi (Visbeck-variable-K):
