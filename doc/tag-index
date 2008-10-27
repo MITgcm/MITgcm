@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1035 2008/10/27 05:16:06 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1036 2008/10/27 20:15:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -16,6 +16,8 @@ o fix CPP-flag REAL4_IS_SLOW, when _RS expands into real*4
    calling DIAGNOSTICS_FILL
  - model/inc/CPP_EEMACROS.h: make the _EXCH_*_RS macros expand into 
    real*4 (CALL EXCH_*_RS) versions.
+ - tested in 2 experiments: inverted_barometer & solid-body.cs-32x32x1
+   (generate new output).
 
 checkpoint61e
 o gmredi (Visbeck-variable-K):
