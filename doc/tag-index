@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1036 2008/10/27 20:15:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1037 2008/10/27 22:52:15 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o gmredi (Visbeck-variable-K):
+ - add more parameters to Visbeck-variable-K.
+ - use a 5 points average for dSigmaR in Visbeck-K calculation
+   (more "homogenous": same stencil and same weights as in dSigmaH)
+ - update output of ideal_2D_oce experiment.
 o fix CPP-flag REAL4_IS_SLOW, when _RS expands into real*4 
   (#undef REAL4_IS_SLOW)
  - pkg/mnc/mnc_cw_cvars.F: write _RS-grid variable as netcdf-real*4 
