@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.33 2008/10/21 22:10:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.34 2008/10/27 22:13:12 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -88,12 +88,13 @@ C     == Local variables ==
 #ifdef OLD_VISBECK_CALC
       _RL Ssq(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #else
-      _RL dSigmaH
+      _RL dSigmaH, dSigmaR
       _RL Sloc, M2loc
 #endif
+      _RL recipMaxSlope
       _RL deltaH, integrDepth
       _RL N2loc, SNloc
-#endif
+#endif /* GM_VISBECK_VARIABLE_K */
 
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL  doDiagRediFlx
@@ -129,6 +130,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
 #ifdef GM_VISBECK_VARIABLE_K
+      recipMaxSlope = 0. _d 0
+      IF ( GM_Visbeck_maxSlope.GT.0. _d 0 ) THEN
+        recipMaxSlope = 1. _d 0 / GM_Visbeck_maxSlope
+      ENDIF
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
         VisbeckK(i,j,bi,bj) = 0. _d 0
@@ -255,7 +260,7 @@ C-- 1rst loop on k : compute Tensor Coeff. at W points.
 # endif
         ENDDO
        ENDDO
-#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
        DO j=1-Oly+1,sNy+Oly-1
         DO i=1-Olx+1,sNx+Olx-1
@@ -266,23 +271,20 @@ C      Gradient of Sigma at rVel points
          dSigmaDy(i,j)=op25*( sigmaY(i,j+1,k-1)+sigmaY(i,j,k-1)
      &                       +sigmaY(i,j+1, k )+sigmaY(i,j, k )
      &                      )*maskC(i,j,k,bi,bj)
-         dSigmaDr(i,j)=sigmaR(i,j,k)
+c        dSigmaDr(i,j)=sigmaR(i,j,k)
         ENDDO
        ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE baseSlope(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE hTransLay(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE recipLambda(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef GM_VISBECK_VARIABLE_K
 #ifndef OLD_VISBECK_CALC
        IF ( GM_Visbeck_alpha.GT.0. .AND.
      &      -rC(k-1).LT.GM_Visbeck_depth ) THEN
+
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          dSigmaDr(i,j) = MIN( sigmaR(i,j,k), 0. _d 0 )
+         ENDDO
+        ENDDO
 
 C--     Depth average of f/sqrt(Ri) = M^2/N^2 * N
 C       M^2 and N^2 are horizontal & vertical gradient of buoyancy.
@@ -298,6 +300,8 @@ C       GM_Visbeck_depth, whatever is the shallower.
            integrDepth = -rC( kLowC(i,j,bi,bj) )
 C-      in 2 steps to avoid mix of RS & RL type in min fct. arguments
            integrDepth = MIN( integrDepth, GM_Visbeck_depth )
+C-      to recover "old-visbeck" form with Visbeck_minDepth = Visbeck_depth
+           integrDepth = MAX( integrDepth, GM_Visbeck_minDepth )
 C       Distance between level center above and the integration depth
            deltaH = integrDepth + rC(k-1)
 C       If negative then we are below the integration level
@@ -308,19 +312,33 @@ C       Now we convert deltaH to a non-dimensional fraction
            deltaH = deltaH/( integrDepth+rC(1) )
 
 C--      compute: ( M^2 * S )^1/2   (= S*N since S=M^2/N^2 )
+C        a 5 points average gives a more "homogeneous" formulation
+C        (same stencil and same weights as for dSigmaH calculation)
+           dSigmaR = ( dSigmaDr(i,j)*4. _d 0
+     &               + dSigmaDr(i-1,j)
+     &               + dSigmaDr(i+1,j)
+     &               + dSigmaDr(i,j-1)
+     &               + dSigmaDr(i,j+1)
+     &               )/( 4. _d 0
+     &                 + maskC(i-1,j,k,bi,bj)
+     &                 + maskC(i+1,j,k,bi,bj)
+     &                 + maskC(i,j-1,k,bi,bj)
+     &                 + maskC(i,j+1,k,bi,bj)
+     &                 )
            dSigmaH = dSigmaDx(i,j)*dSigmaDx(i,j)
      &             + dSigmaDy(i,j)*dSigmaDy(i,j)
            IF ( dSigmaH .GT. 0. _d 0 ) THEN
              dSigmaH = SQRT( dSigmaH )
-C-       compute slope, limited by GM_maxSlope:
-             IF ( -dSigmaDr(i,j).GT.dSigmaH*GM_rMaxSlope ) THEN
-              Sloc = dSigmaH / ( -dSigmaDr(i,j) )
+C-       compute slope, limited by GM_Visbeck_maxSlope:
+             IF ( -dSigmaR.GT.dSigmaH*recipMaxSlope ) THEN
+              Sloc = dSigmaH / ( -dSigmaR )
              ELSE
-              Sloc = GM_maxSlope
+              Sloc = GM_Visbeck_maxSlope
              ENDIF
              M2loc = gravity*recip_rhoConst*dSigmaH
 c            SNloc = SQRT( Sloc*M2loc )
-             N2loc = -gravity*recip_rhoConst*dSigmaDr(i,j)
+             N2loc = -gravity*recip_rhoConst*dSigmaR
+c            N2loc = -gravity*recip_rhoConst*dSigmaDr(i,j)
              IF ( N2loc.GT.0. _d 0 ) THEN
                SNloc = Sloc*SQRT(N2loc)
              ELSE
@@ -338,6 +356,20 @@ c            SNloc = SQRT( Sloc*M2loc )
        ENDIF
 #endif /* ndef OLD_VISBECK_CALC */
 #endif /* GM_VISBECK_VARIABLE_K */
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         dSigmaDr(i,j)=sigmaR(i,j,k)
+        ENDDO
+       ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE dSigmaDx(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dSigmaDy(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dSigmaDr(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE baseSlope(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE hTransLay(:,:)      = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE recipLambda(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Calculate slopes for use in tensor, taper and/or clip
        CALL GMREDI_SLOPE_LIMIT(
@@ -425,7 +457,8 @@ C-     Limit range that KapGM can take
        DO j=1-Oly+1,sNy+Oly-1
         DO i=1-Olx+1,sNx+Olx-1
          VisbeckK(i,j,bi,bj)=
-     &       MIN(VisbeckK(i,j,bi,bj),GM_Visbeck_maxval_K)
+     &       MIN( MAX( VisbeckK(i,j,bi,bj), GM_Visbeck_minVal_K ),
+     &            GM_Visbeck_maxVal_K )
         ENDDO
        ENDDO
       ENDIF
