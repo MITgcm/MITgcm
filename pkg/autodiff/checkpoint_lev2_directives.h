@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.41 2008/09/23 06:13:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.42 2008/10/27 20:45:01 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -112,6 +112,10 @@ CADJ &     = tapelev2, key = ilev_2
 #ifdef ALLOW_OBCS
 # include "obcs_ad_check_lev2_dir.h"
 #endif  /* ALLOW_OBCS */
+
+#ifdef ALLOW_SALT_PLUME
+# include "salt_plume_ad_check_lev2_dir.h"
+#endif
 
 #ifdef ALLOW_SEAICE
 # include "seaice_ad_check_lev2_dir.h"
