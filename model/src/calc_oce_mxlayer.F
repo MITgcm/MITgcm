@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.4 2008/08/12 22:26:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.5 2008/10/29 22:28:51 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -65,7 +65,9 @@ CEOP
 
       calcMixLayerDepth = .FALSE.
 #ifdef ALLOW_GMREDI
-      IF ( useGMRedi ) calcMixLayerDepth = GM_taper_scheme.EQ.'fm07'
+      IF ( useGMRedi ) THEN
+       IF ( .NOT.useKPP ) calcMixLayerDepth = GM_taper_scheme.EQ.'fm07'
+      ENDIF
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics.AND. .NOT.calcMixLayerDepth ) THEN
