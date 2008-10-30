@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1037 2008/10/27 22:52:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1038 2008/10/30 23:38:41 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o kpp: retire KPPmld diagnostics --> use MXLDEPTH instead
 o gmredi (Visbeck-variable-K):
  - add more parameters to Visbeck-variable-K.
  - use a 5 points average for dSigmaR in Visbeck-K calculation
