@@ -124,8 +124,8 @@
    filename(27) = 'DKPPhbl ',
 #---
   frequency(28) = 2635200.0,
-   fields(1,28) = 'KPPmld  ',
-   filename(28) = 'DKPPmld ',
+   fields(1,28) = 'MXLDEPTH',
+   filename(28) = 'DMXLD   ',
 #---
   frequency(29) = 2635200.0,
    fields(1,29) = 'TAUX    ',

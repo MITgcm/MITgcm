@@ -32,8 +32,8 @@
    fields(1,6) = 'KPPfrac ',
    filename(6) = 'KPPfrac',
   frequency(7) = -86400.,
-   fields(1,7) = 'KPPmld  ',
-   filename(7) = 'KPPmld',
+   fields(1,7) = 'MXLDEPTH',
+   filename(7) = 'MXLDEPTH',
  &
 
 # Parameter for Diagnostics of per level statistics:

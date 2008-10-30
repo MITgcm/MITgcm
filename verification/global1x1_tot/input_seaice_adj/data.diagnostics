@@ -124,8 +124,8 @@
 ##   filename(27) = 'DKPPhbl ',
 #---
 ##  frequency(28) = 204984000.0,
-##   fields(1,28) = 'KPPmld  ',
-##   filename(28) = 'DKPPmld ',
+##   fields(1,28) = 'MXLDEPTH',
+##   filename(28) = 'DMXLD   ',
 #---
   frequency(29) = 204984000.0,
    fields(1,29) = 'oceTAUX ',

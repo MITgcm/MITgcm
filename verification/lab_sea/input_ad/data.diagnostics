@@ -85,8 +85,8 @@
    filename(17) = 'KPPhbl  ',
 #
   frequency(18) = 36000.,
-   fields(1,18) = 'KPPmld  ',
-   filename(18) = 'KPPmld  ',
+   fields(1,18) = 'MXLDEPTH',
+   filename(18) = 'MXLDEPTH',
 #
   frequency(19) = 36000.,
    fields(1,19) = 'KPPghat ',
