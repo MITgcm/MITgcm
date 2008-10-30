@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.16 2007/10/19 19:11:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.17 2008/10/30 18:51:36 dfer Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -207,15 +207,6 @@ C       Define grid types for KPP variables
         CALL MNC_CW_ADD_VATTR_TEXT('KPPHBL','long_name',
      &       'KPP_boundary_layer_depth', myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('KPPHBL',
-     &       'coordinates','XC YC iter', myThid)
-
-        CALL MNC_CW_ADD_VNAME('KPPMLD', 'Cen_xy_Hn__-__t',
-     &       3,4, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPMLD','units','m',
-     &       myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPMLD','long_name',
-     &       'KPP_mixed_layer_depth', myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('KPPMLD',
      &       'coordinates','XC YC iter', myThid)
 
         CALL MNC_CW_ADD_VNAME('KPPFRAC', 'Cen_xy_Hn__-__t',
