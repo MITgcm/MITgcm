@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.6 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.7 2008/10/30 18:52:54 dfer Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -72,7 +72,8 @@ C        Search all possible model diagnostics
          IF ( .NOT.found ) THEN
            CALL DIAGNOSTICS_LIST_CHECK(
      O                      ndCount,
-     I                      ld,md,diagSt_nbFlds,diagSt_Flds,myThid)
+     I                      ld,md, diagSt_nbLists,
+     I                      diagSt_nbFlds,diagSt_Flds,myThid)
            IF ( ndCount.EQ.0 ) THEN
              WRITE(msgBuf,'(3A)') 'DIAGSTATS_SET_POINTERS: ',
      &                     diagSt_Flds(md,ld),' is not a Diagnostic'
