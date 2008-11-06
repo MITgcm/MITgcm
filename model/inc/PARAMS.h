@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.224 2008/09/10 08:55:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.225 2008/11/06 01:23:53 dfer Exp $
 C $Name:  $
 C
 
@@ -642,7 +642,8 @@ C     salt_EvPrRn :: salinity of Rain & Evap.
 C        (notes: a) tracer content of Rain/Evap only used if both
 C                     NonLin_FrSurf & useRealFreshWater are set.
 C                b) use model surface (local) value if set to UNSET_RL)
-C     hMixCrit    :: criteria for mixed-layer diagnostic
+C     hMixCriteria:: criteria for mixed-layer diagnostic
+C     dRhoSmall   :: parameter for mixed-layer diagnostic
 C     ivdc_kappa  :: implicit vertical diffusivity for convection [m^2/s]
 C     Ro_SeaLevel :: standard position of Sea-Level in "R" coordinate, used as
 C                    starting value (k=1) for vertical coordinate (rf(1)=Ro_SeaLevel)
@@ -695,7 +696,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & externForcingCycle, externForcingPeriod,
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
      & hFacMinDr, hFacMinDp,
-     & ivdc_kappa, hMixCriteria, Ro_SeaLevel,
+     & ivdc_kappa, hMixCriteria, dRhoSmall, Ro_SeaLevel,
      & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
      & smoothAbsFuncRange,
      & tCylIn, tCylOut,
@@ -816,6 +817,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL salt_EvPrRn
       _RL ivdc_kappa
       _RL hMixCriteria
+      _RL dRhoSmall
       _RL Ro_SeaLevel
       _RL sideDragFactor
       _RL bottomDragLinear

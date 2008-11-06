@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.111 2008/10/21 18:05:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.112 2008/11/06 01:22:59 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -184,6 +184,8 @@ C     ycoord :: varying parameters.
      &  //rUnits//'^2/s ) */')
       CALL WRITE_0D_R8( hMixCriteria, INDEX_NONE,'hMixCriteria=',
      & '  /* Criteria for mixed-layer diagnostic */')
+      CALL WRITE_0D_R8( dRhoSmall, INDEX_NONE,'dRhoSmall=',
+     & '  /* Parameter for mixed-layer diagnostic */')
       CALL WRITE_0D_C( eosType, 0, INDEX_NONE, 'eosType =',
      & '  /* Type of Equation of State */')
       CALL WRITE_0D_R8( tAlpha,  INDEX_NONE,'tAlpha =',

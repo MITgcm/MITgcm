@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.5 2008/10/29 22:28:51 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.6 2008/11/06 01:22:59 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,7 +56,7 @@ C     i,j :: Loop counters
       INTEGER i,j,k
       LOGICAL calcMixLayerDepth
       INTEGER method
-      _RL     dRhoSmall, rhoBigNb
+      _RL     rhoBigNb
       _RL     rhoMxL(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     rhoLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -89,7 +89,7 @@ C       surface density plus Delta_Rho = hMixCriteria * Alpha(surf)
 C     = density of water which is -hMixCriteria colder than surface water
 
 c       hMixCriteria  = -0.8 _d 0
-        dRhoSmall = 1. _d -6
+c       dRhoSmall = 1. _d -6
         rhoBigNb  = rhoConst*1. _d 10
         CALL FIND_ALPHA(
      I            bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1,
@@ -136,9 +136,8 @@ C--   Second method :
 C     where the local stratification exceed the mean stratification above
 C     (from surface down to here) by factor hMixCriteria
 
-c       hMixCriteria  = 2. _d 0
-C-Note: dRhoSmall is hard coded for now but should become run-time parameter
-        dRhoSmall = 1. _d -2
+c       hMixCriteria  = 1.5 _d 0
+c       dRhoSmall = 1. _d -2
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
            IF ( klowC(i,j,bi,bj) .GT. 0 ) THEN
