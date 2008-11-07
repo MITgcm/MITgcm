@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_map_exf.F,v 1.5 2007/05/31 15:19:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_map_exf.F,v 1.6 2008/11/07 20:43:16 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -88,20 +88,20 @@ C     i,j   :: current grid point indices
         ENDDO
        ENDDO
       ELSE
-C     If specific snow precipitiation is now available, use
+C     If specific snow precipitiation is not available, use
 C     precipitation when ever the air temperature is below 0 degC
        DO j = jMin, jMax
         DO i = iMin, iMax
          IF ( iceMsk(i,j,bi,bj).GT.0. _d 0
      &        .AND. atemp(i,j,bi,bj).LE.cen2kel )  THEN
-CML     &        .AND. atemp(i,j,bi,bj).LE.Tf0kel )  THEN
+cML     &        .AND. atemp(i,j,bi,bj).LE.Tf0kel )  THEN
           snowPrc(i,j) = precip(i,j,bi,bj)*rhoConstFresh
          ENDIF
         ENDDO
        ENDDO
       ENDIF
 #else /* ALLOW_ATM_TEMP */
-        STOP 'ABNORMAL END: S/R THSICE_MAP_EXF: ATM_TEMP undef'
+      STOP 'ABNORMAL END: S/R THSICE_MAP_EXF: ATM_TEMP undef'
 #endif /* ALLOW_ATM_TEMP */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
