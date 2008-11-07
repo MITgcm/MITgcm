@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.175 2008/11/06 11:56:20 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.176 2008/11/07 04:34:19 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2216,19 +2216,19 @@ fi
 
 #  Here, we build the list of files to be "run through" the adjoint
 #  compiler.
-if test -f ./ad_files ; then
-    rm -f ./ad_files
+if test -f ./adSrcFiles.tmp ; then
+    rm -f ./adSrcFiles.tmp
 fi
 echo "  Creating the list of files for the adjoint compiler."
 for i in $SOURCEDIRS ; do
     list_files=`( cd $i && ls -1 *.list 2>/dev/null )`
     for j in $list_files ; do
-	cat $i/$j >> ad_files
+	cat $i/$j >> adSrcFiles.tmp
     done
 done
 if test ! "x"$FS = "x.f" ; then
-    cat ad_files | sed -e "s/\.f/.$FS/g" > ad_files_f
-    mv -f ad_files_f ad_files
+    cat adSrcFiles.tmp | sed -e "s/\.f/.$FS/g" > adSrcFiles.tmp_f
+    mv -f adSrcFiles.tmp_f adSrcFiles.tmp
 fi
 
 echo
@@ -2286,18 +2286,63 @@ if test ! -r ".links.tmp/foo" ; then
     exit 1
 fi
 rm -f .links.tmp/foo
+
+if test "x$OPENAD" != x ; then 
+    OAD_DONT_COMPILE="/dev/null"
+    OAD_DONT_TRANSFORM="/dev/null"
+    OAD_KEEP_ORIGINAL="/dev/null"
+    OAD_CB2M_FILES="/dev/null"
+    echo "  looking for dontCompile file:  "
+    for i in "." $MODS ; do
+	if test -r $i"/dontCompile" ; then
+	    OAD_DONT_COMPILE=$i"/dontCompile"
+	    echo "     found $OAD_DONT_COMPILE"
+	    break
+	fi
+    done
+    echo "  looking for dontTransform file:  "
+    for i in "." $MODS ; do
+	if test -r $i"/dontTransform" ; then
+	    OAD_DONT_TRANSFORM=$i"/dontTransform"
+	    echo "     found $OAD_DONT_TRANSFORM"
+	    break
+	fi
+    done
+    echo "  looking for keepOriginal file:  "
+    for i in "." $MODS ; do
+	if test -r $i"/keepOriginal" ; then
+	    OAD_KEEP_ORIGINAL=$i"/keepOriginal"
+	    echo "     found $OAD_KEEP_ORIGINAL"
+	    break
+	fi
+    done
+    echo "  looking for cb2mFiles:  "
+    for i in "." $MODS ; do
+	if test -r $i"/cb2mFiles" ; then
+	    OAD_CB2M_FILES=$i"/cb2mFiles"
+	    echo "     found $OAD_CB2M_FILES"
+	    break
+	fi
+    done
+    echo "   OpenAD exceptions:  "
+fi
+
 echo "# This section creates symbolic links" > srclinks.tmp
 echo "" >> srclinks.tmp
-printf 'SRCFILES = '    > srclist.inc
-printf 'CSRCFILES = '   > csrclist.inc
-printf 'F90SRCFILES = ' > f90srclist.inc
-printf 'HEADERFILES = ' > hlist.inc
-printf 'AD_FLOW_FILES = ' > ad_flow_files.inc
+printf 'F77_SRC_FILES = ' > F77srclist.tmp
+printf 'NON_AD_F77_SRC_FILES = ' > nonADF77srclist.tmp
+printf 'C_SRC_FILES = '   > csrclist.tmp
+printf 'F90_SRC_FILES = ' > F90srclist.tmp
+printf 'H_SRC_FILES = '   > hsrclist.tmp
+printf 'AD_FLOW_FILES = ' > ad_flow_files.tmp
 alldirs="$SOURCEDIRS $INCLUDEDIRS ."
 for d in $alldirs ; do
     deplist=
     sfiles=`( cd $d; echo *.[h,c,F] *.flow )`
     sfiles=`( echo $sfiles; cd $d; echo *.F90 )`
+    if test "x$OPENAD" != x ; then 
+	sfiles=`( echo $sfiles | grep -v _cb2m\. )`
+    fi
     for sf in $sfiles ; do
 	if test ! -r ".links.tmp/$sf" ; then
 	    if test -f "$d/$sf" ; then
@@ -2332,47 +2377,77 @@ for d in $alldirs ; do
 		if test "x$ignore_f" = xf ; then
 		    extn=`echo $sf | $AWK -F. '{print $NF}'`
 		    case $extn in
-			F)
-			    echo    " \\"  >> srclist.inc
-			    printf " $sf" >> srclist.inc
-			    ;;
-			F90)
-			    echo    " \\"  >> f90srclist.inc
-			    printf " $sf" >> f90srclist.inc
-			    ;;
-			c)
-			    echo    " \\"  >> csrclist.inc
-			    printf " $sf" >> csrclist.inc
-			    ;;
-			h)
-			    echo    " \\"  >> hlist.inc
-			    printf " $sf" >> hlist.inc
-			    ;;
-			flow)
-			    echo    " \\"  >> ad_flow_files.inc
-			    printf " $sf" >> ad_flow_files.inc
-			    ;;
-		    esac
-		fi
+		      F)
+			echo    " \\"  >> F77srclist.tmp
+			printf " $sf" >> F77srclist.tmp
+			if test "x$OPENAD" != x ; then 
+			    basename=${sf%%.F}
+			    isAD=`egrep ^$basename.f'[ 	]*' adSrcFiles.tmp`
+			    if test -z "$isAD" ; then 
+				toBeIgnored=`egrep ^$basename'[      ]*' ${OAD_DONT_COMPILE}`
+				if test -z "$toBeIgnored" ; then 
+				    echo    " \\"  >> nonADF77srclist.tmp
+				    printf " $sf" >> nonADF77srclist.tmp
+				else 
+				    echo "    not to be compiled   :  $sf"
+				fi
+			    else # file is initially listed as an AD file we want to exclude it 
+				 # or we want to retain the untransformed version
+				notToBeTransformed=`egrep ^$basename'[      ]*' ${OAD_DONT_TRANSFORM}`
+				untransformedVersionToBeKept=`egrep ^$basename'[      ]*' ${OAD_KEEP_ORIGINAL}`
+				if test -n "$notToBeTransformed"; then 
+				    echo "    not to be transformed:  $sf"
+				fi
+				if test -n "$untransformedVersionToBeKept" ; then
+				    echo "    original to be kept  :  $sf"
+				fi    
+				if test -n "$notToBeTransformed" -o -n "$untransformedVersionToBeKept" ; then
+				    echo    " \\"  >> nonADF77srclist.tmp
+				    printf " $sf" >> nonADF77srclist.tmp
+				fi
+			    fi
+			fi
+			;;
+		    F90)
+			echo    " \\"  >> F90srclist.tmp
+			printf " $sf" >> F90srclist.tmp
+			;;
+		    c)
+			echo    " \\"  >> csrclist.tmp
+			printf " $sf" >> csrclist.tmp
+			;;
+		    h)
+			echo    " \\"  >> hsrclist.tmp
+			printf " $sf" >> hsrclist.tmp
+			;;
+  		    flow)
+			echo    " \\"  >> ad_flow_files.tmp
+			printf " $sf" >> ad_flow_files.tmp
+			;;
+		   esac
+	        fi
 	    fi
 	fi
     done
     if test "x$deplist" != x ; then
-	echo "" >> srclinks.tmp
+      if test "$d" != "." ; then
+  	echo "" >> srclinks.tmp
 	echo "#  These files are linked from $d" >> srclinks.tmp
 	echo "$deplist :" >> srclinks.tmp
 # We need to make sure that the link isn't already there.
 # This may happen when make thinks that a header file has to be "remade"
 # because a module it depends on has changed.  In this case we do nothing.
 	printf "\tif [ ! -L \$@ ]; then \$(LN) %s/\$@ \$@; fi\n" $d >> srclinks.tmp
+      fi
     fi
 done
 rm -rf .links.tmp
-echo "" >> srclist.inc
-echo "" >> csrclist.inc
-echo "" >> f90srclist.inc
-echo "" >> hlist.inc
-echo "" >> ad_flow_files.inc
+echo "" >> F77srclist.tmp
+echo "" >> nonADF77srclist.tmp
+echo "" >> csrclist.tmp
+echo "" >> F90srclist.tmp
+echo "" >> hsrclist.tmp
+echo "" >> ad_flow_files.tmp
 
 if test -f $MAKEFILE ; then
     mv -f $MAKEFILE "$MAKEFILE.bak"
@@ -2472,6 +2547,7 @@ FOPTIM = ${FOPTIM}
 # Optim./debug for FC
 F90FLAGS = ${F90FLAGS}
 F90OPTIM = ${F90OPTIM}
+F90FIXEDFORMAT = ${F90FIXEDFORMAT}
 # Flags for CC
 CFLAGS = ${CFLAGS}
 # Files that should not be optimized
@@ -2484,31 +2560,40 @@ MAKEFILE=${MAKEFILE}
 
 EOF
 
-cat srclist.inc       >> $MAKEFILE
-cat csrclist.inc      >> $MAKEFILE
-cat f90srclist.inc    >> $MAKEFILE
-cat hlist.inc         >> $MAKEFILE
-cat ad_flow_files.inc >> $MAKEFILE
+cat F77srclist.tmp      >> $MAKEFILE
+cat nonADF77srclist.tmp >> $MAKEFILE
+cat csrclist.tmp        >> $MAKEFILE
+cat F90srclist.tmp      >> $MAKEFILE
+cat hsrclist.tmp        >> $MAKEFILE
+cat ad_flow_files.tmp   >> $MAKEFILE
+
+rm -f F77srclist.tmp nonADF77srclist.tmp csrclist.tmp F90srclist.tmp hsrclist.tmp ad_flow_files.tmp
+
 echo >> $MAKEFILE
-echo 'F77FILES =  $(SRCFILES:.F=.'$FS')'      >> $MAKEFILE
-echo 'F90FILES =  $(F90SRCFILES:.F90=.'$FS90')' >> $MAKEFILE
-echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o) $(F90SRCFILES:.F90=.o)' >> $MAKEFILE
+
+# add definitions for preprocessed sources 
+# and note that not all systems allow case sensitive extensions 
+# hence the $FS and $FS90 here. 
+# for fixed format f90 files we use ff90 or FF90 resp 
+# but these are not expected to be the original source files
+
+echo 'F77_PP_SRC_FILES = $(F77_SRC_FILES:.F=.'$FS')'      >> $MAKEFILE
+echo 'F90_PP_SRC_FILES = $(F90_SRC_FILES:.F90=.'$FS90')' >> $MAKEFILE
+echo 'OBJFILES= $(F77_SRC_FILES:.F=.o) $(C_SRC_FILES:.c=.o) $(F90_SRC_FILES:.F90=.o)' >> $MAKEFILE
 echo 'FLOFILES =  $(AD_FLOW_FILES:.flow=.flowdir)' >> $MAKEFILE
 echo >> $MAKEFILE
 echo '.SUFFIXES:' >> $MAKEFILE
-echo '.SUFFIXES: .o .'$FS' .p .F .c .'$FS90' .F90 .flowdir .flow' >> $MAKEFILE
-rm -f srclist.inc csrclist.inc hlist.inc flist.tmp clist.tmp f90srclist.inc
-rm -f ad_flow_files.inc
+echo '.SUFFIXES: .o .'$FS' .p .F .c .f'$FS90' .'$FS90' .FF90 .F90 .flowdir .flow' >> $MAKEFILE
 
 cat >>$MAKEFILE <<EOF
 
 all: \$(EXECUTABLE)
-\$(EXECUTABLE): \$(SPECIAL_FILES) \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(OBJFILES) \$(EMBEDDED_FILES)
+\$(EXECUTABLE): \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(OBJFILES) \$(EMBEDDED_FILES)
 	@echo Creating \$@ ...
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(LIBS)
 depend:
 	@make links
-	\$(MAKEDEPEND) -o .$FS \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
+	\$(MAKEDEPEND) -o .$FS \$(DEFINES) \$(INCLUDES) \$(F77_SRC_FILES)
 	\$(TOOLSDIR)/f90mkdepend >> \$(MAKEFILE)
 	-rm -f makedepend.out
 
@@ -2518,9 +2603,9 @@ libmitgcmuv.a: \$(OBJFILES)
 	ar rcv libmitgcmuv.a \$(OBJFILES)
 	ar d   libmitgcmuv.a main.o
 
-links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(SPECIAL_FILES)
+links: \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(SPECIAL_FILES)
 
-small_f: \$(F77FILES) \$(F90FILES)
+small_f: \$(F77_PP_SRC_FILES) \$(F90_PP_SRC_FILES)
 
 output.txt: \$(EXECUTABLE)
 	@printf 'running ... '
@@ -2530,6 +2615,8 @@ clean:
 	-rm -rf *.p *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template
 	-rm -rf *.o
 	-rm -rf *.$FS *.flowdir
+	-rm -rf *.f$FS90 *_mod.h *_mod.F90 *.FF90 *.mod-whirl ad_input*
+	-rm -rf temp.sed reslice.dat 
 Clean:
 	@make clean
 	@make cleanlinks
@@ -2551,7 +2638,7 @@ makefile:
 cleanlinks:
 	-find . -type l -exec rm {} \;
 
-# Special targets (SPECIAL_FILES) which are create by make
+# Special targets (SPECIAL_FILES) which are created by make
 ${PACKAGES_DOT_H}:
 	@echo Creating \$@ ...
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -bPACKAGES_CONFIG_H "Disabled packages:" \$(DISABLED_PACKAGES) " " "Enabled packages:" \$(ENABLED_PACKAGES) > \$@
@@ -2576,10 +2663,10 @@ if test "x$EMBED_SRC" = xt ; then
 
 decode_files.o : EMBEDDED_FILES.h
 
-##  \$(F77FILES) 
-all_fF.tar.gz : \$(SPECIAL_FILES) \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(F77FILES) Makefile
+##  \$(F77_PP_SRC_FILES) 
+all_fF.tar.gz : \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_PP_SRC_FILES) Makefile
 	@echo Creating \$@ ...
-	-tar -hcf all_fF.tar \$(SPECIAL_FILES) \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(F77FILES) Makefile
+	-tar -hcf all_fF.tar \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FILES) \$(F90_SRC_FILES) \$(F77_PP_SRC_FILES) Makefile
 	-rm -f all_fF.tar.gz
 	-gzip all_fF.tar
 
@@ -2595,16 +2682,21 @@ cat >>$MAKEFILE <<EOF
 # The normal chain of rules is (  .F - .$FS - .o  )
 
 ## This nullifies any default implicit rules concerning these two file types:
-## %.o : %.F
+%.o : %.F
 
 .F.$FS:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 .$FS.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
-.F.o:
-	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
-.F90.o:   
+.F90.$FS90:
+	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
+.FF90.f$FS90:
+	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
+.$FS90.o:
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$<
+.f$FS90.o:
+	cp \$< \$(basename  \$<).f90
+	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$(F90FIXEDFORMAT) \$(basename  \$<).f90
 .c.o:
 	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) -c \$<
 .flow.flowdir:
@@ -2616,8 +2708,15 @@ cat >>$MAKEFILE <<EOF
 .p.$FS:
 	\$(KPP) \$(KFLAGS1)\$@ \$(KFLAGS2) \$<
 
+EOF
+
 #=========================================
 #===  Automatic Differentiation Rules  ===
+#===  for TAMC/TAF  ======================
+
+if test "x$OPENAD" == x ; then 
+
+cat >>$MAKEFILE <<EOF
 
 TAMC           = ${TAMC}
 TAF            = ${TAF}
@@ -2641,13 +2740,13 @@ done
 echo "  Add the source list for AD code generation"
 echo >> $MAKEFILE
 printf "AD_FILES = " >> $MAKEFILE
-AD_FILES=`cat ad_files`
+AD_FILES=`cat adSrcFiles.tmp`
 for i in $AD_FILES ; do
     echo    " \\" >> $MAKEFILE
     printf " $i" >> $MAKEFILE
 done
 echo >> $MAKEFILE
-rm -f ad_files
+rm -f adSrcFiles.tmp
 
 cat >>$MAKEFILE <<EOF
 
@@ -2656,11 +2755,11 @@ adall: \$(EXE_AD)
 adtaf: ad_taf_output.$FS
 adtamc: ad_tamc_output.$FS
 
-ad_input_code.$FS: \$(AD_FILES) \$(HEADERFILES)
+ad_input_code.$FS: \$(AD_FILES) \$(H_SRC_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -DALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN -UALLOW_ECCO_OPTIMIZATION > ad_config.template
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	-rm -f ad_config.template
-	@make \$(F77FILES)
+	@make \$(F77_PP_SRC_FILES)
 	@make \$(FLOFILES)
 	cat \$(FLOFILES) \$(AD_FILES) > ad_input_code.$FS
 
@@ -2695,11 +2794,11 @@ ftlall: ftl_taf
 ftltaf: ftl_taf_output.$FS
 ftltamc: ftl_tamc_output.$FS
 
-ftl_input_code.$FS: \$(AD_FILES) \$(HEADERFILES)
+ftl_input_code.$FS: \$(AD_FILES) \$(H_SRC_FILES)
 	@$BASH\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -UALLOW_ADJOINT_RUN -DALLOW_TANGENTLINEAR_RUN -UALLOW_ECCO_OPTIMIZATION > ftl_config.template
 	cmp ftl_config.template AD_CONFIG.h || cat ftl_config.template > AD_CONFIG.h
 	-rm -f ftl_config.template
-	@make \$(F77FILES)
+	@make \$(F77_PP_SRC_FILES)
 	@make \$(AD_FLOW_FILES)
 	cat \$(AD_FLOW_FILES) \$(AD_FILES) > ftl_input_code.$FS
 
@@ -2748,9 +2847,243 @@ svd_touch:
 	cmp ftl_config.template AD_CONFIG.h || cat ftl_config.template > AD_CONFIG.h
 	-rm -f ftl_config.template
 
-#=========================================
+EOF
+
+fi 
+
+#===  for OpenAD  ========================
+
+if test "x$OPENAD" != x ; then 
+
+# ============ begin OpenAD specific section ==============
+
+cat >>$MAKEFILE <<EOF
+
+# all the source files linked from the various locations: 
+ALL_LINKED_FILES= \
+\$(F77_SRC_FILES) \
+\$(C_SRC_FILES) \
+\$(H_SRC_FILES) \
+\$(F90_SRC_FILES) \
+\$(SPECIAL_FILES)
+
+ifndef OPENADROOT
+  \$(error "Error:  environment variable OPENADROOT not defined!")
+endif
+
+ifndef XAIFSCHEMAROOT
+  \$(error "Error:  environment variable XAIFSCHEMAROOT not defined!")
+endif
+
+ifndef XAIFBOOSTERROOT
+  \$(error "Error:  environment variable XAIFBOOSTERROOT not defined!")
+endif
 
 EOF
+
+echo "  Add the source list for common block to module conversion "
+echo >> $MAKEFILE
+printf "CB2M_F90_SRC_NAMES = " >> $MAKEFILE
+for i in `cat ${OAD_CB2M_FILES}` ; do
+  echo    " \\" >> $MAKEFILE
+  printf " $i" >> $MAKEFILE
+done
+echo >> $MAKEFILE
+
+echo "  Add the source list for AD code generation"
+echo >> $MAKEFILE
+printf "AD_FILES = " >> $MAKEFILE
+for i in `cat ${OAD_CB2M_FILES}` ; do
+  echo    " \\" >> $MAKEFILE
+  printf " ${i}_mod.f$FS90" >> $MAKEFILE
+done
+AD_FILES=`cat adSrcFiles.tmp`
+for i in $AD_FILES ; do
+  basename=${i%%.f}
+  toBeIgnored=`egrep ^$basename'[      ]*' ${OAD_DONT_COMPILE} ${OAD_DONT_TRANSFORM}`
+  if test -z "$toBeIgnored" ; then
+    echo    " \\" >> $MAKEFILE
+    printf " $i" >> $MAKEFILE
+  fi
+done
+echo >> $MAKEFILE
+rm -f adSrcFiles.tmp
+
+cat >>$MAKEFILE <<EOF
+
+adAll: \$(EXE_AD) 
+.PHONY: adAll
+
+CB2M_F90_PP_SRC_FILES=\$(addsuffix _mod.f$FS90, \$(CB2M_F90_SRC_NAMES))
+
+.PRECIOUS: \$(CB2M_F90_PP_SRC_FILES) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.f$FS90)
+
+.PHONY: adDepend
+adDepend: \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) \$(addsuffix _mod.FF90, \$(CB2M_F90_SRC_NAMES)) \$(F77_SRC_FILES:.F=_cb2m.FF90)
+	\$(MAKEDEPEND) -o .$FS \$(DEFINES) \$(INCLUDES) \$(F77_SRC_FILES)
+	\$(TOOLSDIR)/f90mkdepend >> \$(MAKEFILE)
+	-rm -f makedepend.out
+
+OPENAD_SUPPORT_F90_SRC_FILES = \
+w2f__types.F90 \
+OAD_active.F90 \
+OAD_cp.F90 \
+OAD_rev.F90 \
+OAD_tape.F90         
+
+OPENAD_SUPPORT_C_SRC_FILES = \
+iaddr.c \
+timeRatio.c
+
+f95_test_mods.f90: \$(OPENAD_SUPPORT_F90_SRC_FILES:F90=$FS90)
+	cat \$^ > \$@
+
+f95_test.f90: all_mods.xb.x2w.w2f.pp.f$FS90 \$(NON_AD_F77_SRC_FILES:.F=_cb2m.f$FS90) ad_input_code.w2f.canon.xb.x2w.w2f.rs.pp.f$FS90 
+	cat \$^ > \$@
+
+f95_test.out: f95_test_mods.f90 f95_test.f90
+	f95 -fixed -w=unused -maxcontin=132 -c f95_test_mods.f90 > \$@ 2>&1
+	f95 -fixed -w=unused -maxcontin=132 -c -fixed f95_test.f90 >> \$@ 2>&1
+
+AD_OBJ_FILES=\$(OPENAD_SUPPORT_F90_SRC_FILES:.F90=.o) \$(OPENAD_SUPPORT_C_SRC_FILES:.c=.o) all_mods.xb.x2w.w2f.pp.o  ad_input_code.w2f.canon.xb.x2w.w2f.rs.pp.o \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC_FILES:.c=.o) \$(F90_SRC_FILES:.F90=.o)
+
+\$(EXE_AD): \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) \$(AD_OBJ_FILES)
+	@echo Creating \$@ ...
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(AD_OBJ_FILES) \$(LIBS)
+
+# makefile debug rule
+openad: ad_input_code.w2f.canon.xb.x2w.w2f.rs.pp.f$FS90
+.PHONY: openad
+
+# create the module files 
+%_mod.FF90 : %.h ../OAD_support/cb2mGetModules.csh ../OAD_support/cb2mGetModules.awk 
+	../OAD_support/cb2mGetModules.csh $< ../OAD_support/cb2mGetModules.awk
+
+# create the header files 
+%_mod.h : %.h ../OAD_support/cb2mGetHeaders.csh ../OAD_support/cb2mGetHeaders.awk 
+	../OAD_support/cb2mGetHeaders.csh $< ../OAD_support/cb2mGetHeaders.awk \$(CB2M_F90_SRC_NAMES)
+
+# change everybody else to use the new module files:
+%_cb2m.FF90 : %.F ../OAD_support/cb2mUseModules.bash
+	../OAD_support/cb2mUseModules.bash $< ${MPI}
+
+# makefile debug rule
+small_f: \$(CB2M_F90_PP_SRC_FILES)
+.PHONY: small_f
+
+ad_output.txt: \$(EXE_AD)
+	@printf 'linking data files ... '
+	\$(LN) -f ../input_ad/data* ../input_ad/eedata .
+	\$(LN) -f ../../global_ocean.90x40x15/input/*.bin .
+	@printf 'running ... '
+	@./\$(EXE_AD) > \$@
+
+CB2M_AD_FILES=\$(AD_FILES:.f=_cb2m.f$FS90)
+ad_input_code.f$FS90: ../OAD_support/maxMinDefs.f \$(CB2M_AD_FILES) 
+	cat \$^ > \$@
+
+# strip all comments and blanks to reduce 
+# the file size in order to reduce perl's memory requirements 
+ad_input_code_sf.f$FS90 : ad_input_code.f$FS90 
+	cat \$^ | sed -f ../OAD_support/strip.sed | sed -f ../OAD_support/stop2print.sed > \$@
+
+# mfef90 preprocessing
+# expand statement functions 
+# expose mfef90 specific substring handling 
+# add the w2f__types module
+ad_input_code_sf.w2f.f$FS90: ad_input_code_sf.f$FS90 mfef90 whirl2f whirl2f_be w2f__types.f90
+	./mfef90 -r8 -z -F -N132 \$< 
+	mv \$<.B \$(basename \$<).B 
+	./whirl2f -openad \$(basename \$<).B
+	cat w2f__types.f90 \$(basename \$<).w2f.f > \$@
+
+# canonicalizer
+ad_input_code_sf.w2f.canon.f$FS90: ad_input_code_sf.w2f.f$FS90 canon.v1.py
+	python canon.v1.py --r8 \$< > \$@
+
+# F -> WHIRL
+# note that the canonicalized version cuts off at col 72 
+# doing this also for string constants which is ok as long 
+# as we are in fixed mode and cut of exactly there. 
+# Otherwise mfef90 patches in spaces to fill up to 72 (or 132) 
+# characters respectively.
+ad_input_code_sf.w2f.canon.B: ad_input_code_sf.w2f.canon.f$FS90 mfef90
+	./mfef90 -r8 -z -F \$<
+	mv \$<.B \$@
+
+# WHIRL -> XAIF
+ad_input_code_sf.w2f.canon.xaif : ad_input_code_sf.w2f.canon.B whirl2xaif
+	./whirl2xaif -s -n --debug 1 -o \$@ \$<
+
+# XAIF -> XAIF'
+ad_input_code_sf.w2f.canon.xb.xaif : ad_input_code_sf.w2f.canon.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd openad_adm
+	./openad_adm -f -t forward_step -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I -r
+
+# XAIF' -> WHIRL'
+ad_input_code_sf.w2f.canon.xb.x2w.B : ad_input_code_sf.w2f.canon.xb.xaif xaif2whirl
+	./xaif2whirl --debug 1 --structured ad_input_code_sf.w2f.canon.B \$<
+
+# WHIRL' -> F'
+ad_input_code_sf.w2f.canon.xb.x2w.w2f.f$FS90: ad_input_code_sf.w2f.canon.xb.x2w.B whirl2f whirl2f_be
+	./whirl2f -FLIST:ftn_file=\$@ -openad \$< 
+
+# undo slice hiding 
+# insert template directives
+ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.f$FS90: ad_input_code_sf.w2f.canon.xb.x2w.w2f.f$FS90 reslicer.py ../OAD_support/insertTemplateDir.bash
+	python reslicer.py \$< > \$<.1
+	../OAD_support/insertTemplateDir.bash \$<.1  \$@
+	rm \$<.1
+
+# postprocess F'
+ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.pp.f$FS90: ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.f$FS90 multi-pp.pl ../OAD_support/ad_inline.f \$(wildcard ../OAD_support/ad_template.*.f)
+	perl multi-pp.pl -inline=../OAD_support/ad_inline.f \$<
+	# the postprocessor still gets the name wrong
+	cat \$<.pp | sed 's/RETURN//' > \$@
+
+# extract all transformed modules 
+all_mods.xb.x2w.w2f.pp.f$FS90: ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.pp.f$FS90
+	cat \$< | sed -n '/MODULE /,/END MODULE/p' > \$@
+
+# remove the transformed globals module from the 
+# transformed ad_input_code file
+# and remove for now the duplicate variables
+# and fix 2 data statements
+ad_input_code.w2f.canon.xb.x2w.w2f.rs.pp.f$FS90: ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.pp.f$FS90 
+	cat \$< | sed '/MODULE /,/END MODULE/d' | sed '/^      INTEGER(w2f__i4) DOLOOP_UB/d' > \$@
+
+# setup some links
+%.xsd:
+	\$(LN) \${XAIFSCHEMAROOT}/schema/\$@ .
+
+mfef90: 
+	\$(LN) \${OPEN64ROOT}/crayf90/sgi/mfef90 .
+
+# link the support files:
+\$(OPENAD_SUPPORT_F90_SRC_FILES) \$(OPENAD_SUPPORT_C_SRC_FILES): 
+	\$(LN) ../OAD_support/\$@ .
+
+whirl2xaif xaif2whirl: 
+	\$(LN) \${OPENADFORTTK}/bin/\$@ .
+
+%.pl: 
+	\$(LN) \${OPENADFORTTK}/bin/\$@ .
+
+%.py: 
+	\$(LN) \${OPENADROOT}/OpenADFortTk/tools/canonicalize/\$@ .
+
+whirl2f whirl2f_be:
+	\$(LN) \${OPEN64ROOT}/whirl2f/\$@ .
+
+openad_adm:
+	\$(LN) \${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/test/t \$@
+
+# ============ end OpenAD specific section ==============
+
+EOF
+
+fi
+
+#=========================================
 
 if test "x$EXEHOOK" != x ; then
     printf "\nexehook:\n\t%s\n" $EXEHOOK >> $MAKEFILE
