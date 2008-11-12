@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# tested on pleiades using:
+# module purge
+# module load modules comp/intel/10.1.011_64  mpi/mpt.1.20+patch10520
+
+
+CPP='/lib/cpp  -traditional -P'
+FC=ifort
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+
+LIBS='-lmpi'
+INCLUDES='-I/nasa/sgi/mpt/1.20+patch10520/include'
+INCLUDEDIRS='/nasa/sgi/mpt/1.20+patch10520/include'
+MPIINCLUDEDIR='/nasa/sgi/mpt/1.20+patch10520/include'
+MPI_HEADER_FILES='mpif.h mpiof.h mpif_parameters.h'
+MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h ./mpi_headers/mpif_parameters.h'
+#PAPIINC='-I/usr/local/include'
+#PAPILIB='-L/usr/local/lib -lpapi'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS='-fp-model precise -132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+    FOPTIM='-O3 -align'
+    NOOPTFLAGS='-O1'
+    NOOPTFILES='phy_radiat.F fizhi_lsm.F fizhi_clockstuff.F'
+else
+    #  Try to follow IEEE-754
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+    FOPTIM='-O0 -noalign'
+fi
+
