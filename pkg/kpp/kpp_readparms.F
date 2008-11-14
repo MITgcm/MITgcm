@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.17 2008/10/30 18:51:36 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.18 2008/11/14 21:34:48 dfer Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -17,7 +17,6 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
 #include "KPP_PARAMS.h"
 
 C     !INPUT PARAMETERS:
@@ -68,11 +67,7 @@ C--   set default KPP vertical mixing parameters
       KPPmixingMaps = .FALSE.
       KPPwriteState = .FALSE.
       KPP_ghatUseTotalDiffus = .FALSE.
-      IF ( setCenterDr ) THEN
-        minKPPhbl   = delRc(1)
-      ELSE
-        minKPPhbl   = delR(1)*0.5
-      ENDIF
+      minKPPhbl = UNSET_RL
 
 C-----------------------------------------------------------------------
 C define some non-dimensional constants and
