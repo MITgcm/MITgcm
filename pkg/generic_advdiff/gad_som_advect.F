@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.4 2008/05/09 22:32:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.5 2008/11/14 22:04:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -81,7 +81,6 @@ C  afy           :: 2-D array for horizontal advective flux, y direction
 C  afr           :: 2-D array for vertical advective flux
 C  fVerT         :: 2 1/2D arrays for vertical advective flux
 C  localTij      :: 2-D array, temporary local copy of tracer fld
-C  localTijk     :: 3-D array, temporary local copy of tracer fld
 C  calc_fluxes_X :: logical to indicate to calculate fluxes in X dir
 C  calc_fluxes_Y :: logical to indicate to calculate fluxes in Y dir
 C  interiorOnly  :: only update the interior of myTile, but not the edges
@@ -107,7 +106,6 @@ C  msgBuf        :: Informational/error meesage buffer
       _RL afy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 ccc   _RL localTij(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-c     _RL localTijk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  smVol  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  smTr0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  alp    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -135,7 +133,7 @@ c     _RL localTijk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  fp_yz  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL  fn_yz  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL  smCorners(OLx,OLy,4,-1:nSOM)
-      _RL  localTr
+c     _RL  localTr
       LOGICAL calc_fluxes_X, calc_fluxes_Y
       LOGICAL interiorOnly, overlapOnly
       INTEGER limiter
@@ -438,18 +436,19 @@ C--   End of ipass loop
 C-    explicit advection is done ; store tendency in gTracer:
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          localTr = smTr0(i,j,k)/smVol(i,j,k)
-          gTracer(i,j,k,bi,bj) = ( localTr - tracer(i,j,k,bi,bj) )
-     &                         / dTtracerLev(k)
+C--  without rescaling of tendencies:
+c         localTr = smTr0(i,j,k)/smVol(i,j,k)
+c         gTracer(i,j,k,bi,bj) = ( localTr - tracer(i,j,k,bi,bj) )
+c    &                         / dTtracerLev(k)
+C--  consistent with rescaling of tendencies (in FREESURF_RESCALE_G):
+          gTracer(i,j,k,bi,bj) =
+     &          ( smTr0(i,j,k) - tracer(i,j,k,bi,bj)*smVol(i,j,k) )
+     &            *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
+     &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+     &            *recip_rhoFacC(k)
+     &            /dTtracerLev(k)
          ENDDO
         ENDDO
-       ELSE
-C-    horizontal advection done; store intermediate result in 3D array:
-c       DO j=1-OLy,sNy+OLy
-c        DO i=1-OLx,sNx+OLx
-c         localTijk(i,j,k)=localTij(i,j)
-c        ENDDO
-c       ENDDO
        ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -616,13 +615,17 @@ C-    Compute vertical advective flux in the interior:
 C--   Compute new tracer value and store tracer tendency
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          localTr = smTr0(i,j,k)
+C--  without rescaling of tendencies:
+c         localTr = smTr0(i,j,k)/smVol(i,j,k)
+c         gTracer(i,j,k,bi,bj) = ( localTr - tracer(i,j,k,bi,bj) )
+c    &                         / dTtracerLev(k)
+C--  consistent with rescaling of tendencies (in FREESURF_RESCALE_G):
+          gTracer(i,j,k,bi,bj) =
+     &          ( smTr0(i,j,k) - tracer(i,j,k,bi,bj)*smVol(i,j,k) )
      &            *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
      &            *recip_rhoFacC(k)
-c         localTr = smTr0(i,j,k)/smVol(i,j,k)
-          gTracer(i,j,k,bi,bj) = ( localTr - tracer(i,j,k,bi,bj) )
-     &                         / dTtracerLev(k)
+     &            /dTtracerLev(k)
          ENDDO
         ENDDO
 
