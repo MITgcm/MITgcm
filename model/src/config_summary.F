@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.112 2008/11/06 01:22:59 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.113 2008/11/14 03:04:09 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -186,6 +186,8 @@ C     ycoord :: varying parameters.
      & '  /* Criteria for mixed-layer diagnostic */')
       CALL WRITE_0D_R8( dRhoSmall, INDEX_NONE,'dRhoSmall=',
      & '  /* Parameter for mixed-layer diagnostic */')
+      CALL WRITE_0D_R8( hMixSmooth, INDEX_NONE,'hMixSmooth=',
+     & '  /* Smoothing parameter for mixed-layer diagnostic */')
       CALL WRITE_0D_C( eosType, 0, INDEX_NONE, 'eosType =',
      & '  /* Type of Equation of State */')
       CALL WRITE_0D_R8( tAlpha,  INDEX_NONE,'tAlpha =',

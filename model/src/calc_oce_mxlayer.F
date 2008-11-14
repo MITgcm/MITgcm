@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.6 2008/11/06 01:22:59 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.7 2008/11/14 03:04:09 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -184,6 +184,31 @@ C-    potential density (reference level = surface level)
 
        ELSE
         STOP 'S/R CALC_OCE_MXLAYER: invalid method'
+       ENDIF
+
+       IF ( hMixSmooth .GT. 0. _d 0 ) THEN
+        tmpFac = (1. _d 0 - hMixSmooth ) / 4. _d 0
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
+            rhoLoc(i,j)=(hMixSmooth *   hMixLayer(i,j,bi,bj)   +
+     &                       tmpFac * ( hMixLayer(i-1,j,bi,bj) +
+     &                                  hMixLayer(i+1,j,bi,bj) +
+     &                                  hMixLayer(i,j-1,bi,bj) +
+     &                                  hMixLayer(i,j+1,bi,bj) )
+     &                  )
+     &                 /(hMixSmooth +
+     &                       tmpFac * ( maskC(i-1,j,1,bi,bj) + 
+     &                                  maskC(i+1,j,1,bi,bj) +
+     &                                  maskC(i,j-1,1,bi,bj) + 
+     &                                  maskC(i,j+1,1,bi,bj) )
+     &                  ) * maskC(i,j,1,bi,bj)
+         ENDDO
+        ENDDO
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
+            hMixLayer(i,j,bi,bj) = rhoLoc(i,j)
+         ENDDO
+        ENDDO
        ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS

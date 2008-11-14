@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.142 2008/11/06 01:22:59 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.143 2008/11/14 03:04:09 dfer Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -181,6 +181,7 @@ Cml      sBeta               = 7.4 _d -4
       ivdc_kappa          = 0. _d 0
       hMixCriteria        = -.8 _d 0
       dRhoSmall           = 1. _d -6
+      hMixSmooth          = 0. _d 0
       usePickupBeforeC54    = .FALSE.
       debugMode             = .FALSE.
       tempAdvScheme       = 2

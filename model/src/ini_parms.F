@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.218 2008/11/06 01:22:59 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.219 2008/11/14 03:04:09 dfer Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -195,7 +195,7 @@ C--   Continuous equation parameters
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, useOldFreezing, ivdc_kappa, 
-     & hMixCriteria, dRhoSmall,
+     & hMixCriteria, dRhoSmall, hMixSmooth,
      & usePickupBeforeC35, usePickupBeforeC54, debugMode, debugLevel,
      & tempAdvScheme, tempVertAdvScheme,
      & saltAdvScheme, saltVertAdvScheme, tracerAdvScheme,
