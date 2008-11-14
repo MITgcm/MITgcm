@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.176 2008/11/07 04:34:19 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.177 2008/11/14 01:34:19 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2682,7 +2682,7 @@ cat >>$MAKEFILE <<EOF
 # The normal chain of rules is (  .F - .$FS - .o  )
 
 ## This nullifies any default implicit rules concerning these two file types:
-%.o : %.F
+## %.o : %.F
 
 .F.$FS:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
