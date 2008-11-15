@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.13 2008/02/05 15:13:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.14 2008/11/15 19:51:41 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -132,64 +132,64 @@ C----------------------------------------------------------------------
       udiag(10) = 'user-defined    '
       gdiag(10) = 'SM      L1      '
 
-      cdiag(11)  = 'UDIAG1  '
-      tdiag(11)  = 'User-Defined Upper-Air Diagnostic #1'
-      udiag(11)  = 'user-defined    '
-      gdiag(11)  = 'SM      ML      '
+      cdiag(11) = 'UDIAG1  '
+      tdiag(11) = 'User-Defined Model-level Diagnostic #1  '
+      udiag(11) = 'user-defined    '
+      gdiag(11) = 'SM      MR      '
 
-      cdiag(12)  = 'UDIAG2  '
-      tdiag(12)  = 'User-Defined Upper-Air Diagnostic #2'
-      udiag(12)  = 'user-defined    '
-      gdiag(12)  = 'SM      ML      '
+      cdiag(12) = 'UDIAG2  '
+      tdiag(12) = 'User-Defined Model-level Diagnostic #2  '
+      udiag(12) = 'user-defined    '
+      gdiag(12) = 'SM      MR      '
 
       cdiag(13) = 'UDIAG3  '
-      tdiag(13) = 'User-Defined Upper-Air Diagnostic #3    '
+      tdiag(13) = 'User-Defined Model-level Diagnostic #3  '
       udiag(13) = 'user-defined    '
-      gdiag(13) = 'SM      ML      '
+      gdiag(13) = 'SM      MR      '
 
       cdiag(14) = 'UDIAG4  '
-      tdiag(14) = 'User-Defined Upper-Air Diagnostic #4    '
+      tdiag(14) = 'User-Defined Model-level Diagnostic #4  '
       udiag(14) = 'user-defined    '
-      gdiag(14) = 'SM      ML      '
+      gdiag(14) = 'SM      MR      '
 
       cdiag(15) = 'UDIAG5  '
-      tdiag(15) = 'User-Defined Upper-Air Diagnostic #5    '
+      tdiag(15) = 'User-Defined Model-level Diagnostic #5  '
       udiag(15) = 'user-defined    '
-      gdiag(15) = 'SM      ML      '
+      gdiag(15) = 'SM      MR      '
 
       cdiag(16) = 'UDIAG6  '
-      tdiag(16) = 'User-Defined Upper-Air Diagnostic #6    '
+      tdiag(16) = 'User-Defined Phys-level Diagnostic #6   '
       udiag(16) = 'user-defined    '
       gdiag(16) = 'SM      ML      '
 
       cdiag(17) = 'UDIAG7  '
-      tdiag(17) = 'User-Defined Upper-Air Diagnostic #7    '
+      tdiag(17) = 'User-Defined Phys-level Diagnostic #7   '
       udiag(17) = 'user-defined    '
       gdiag(17) = 'SM      ML      '
 
       cdiag(18) = 'UDIAG8  '
-      tdiag(18) = 'User-Defined Upper-Air Diagnostic #8    '
+      tdiag(18) = 'User-Defined Phys-level Diagnostic #8   '
       udiag(18) = 'user-defined    '
       gdiag(18) = 'SM      ML      '
 
       cdiag(19) = 'UDIAG9  '
-      tdiag(19) = 'User-Defined Upper-Air Diagnostic #9    '
+      tdiag(19) = 'User-Defined Phys-level Diagnostic #9   '
       udiag(19) = 'user-defined    '
       gdiag(19) = 'SM      ML      '
 
       cdiag(20) = 'UDIAG10 '
-      tdiag(20) = 'User-Defined Upper-Air Diagnostic #10   '
+      tdiag(20) = 'User-Defined Phys-level Diagnostic #10  '
       udiag(20) = 'user-defined    '
       gdiag(20) = 'SM      ML      '
 
       cdiag(21) = 'SDIAGC  '
-      tdiag(21) = 'User-Defined Counted Surface Diagnostic         '
+      tdiag(21) = 'User-Defined Counted Surface Diagnostic '
       udiag(21) = 'user-defined    '
       gdiag(21) = 'SM  C   L1      '
       hdiag(21) =  22
 
       cdiag(22) = 'SDIAGCC '
-      tdiag(22) = 'User-Defined Counted Surface Diagnostic Counter'
+      tdiag(22) = 'User-Defined Surface Diagnostic Counter '
       udiag(22) = 'count           '
       gdiag(22) = 'SM      L1      '
 
