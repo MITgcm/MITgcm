@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.34 2008/05/27 00:08:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.35 2008/11/15 19:52:32 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -686,16 +686,16 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'TOTUTEND'
-      diagTitle = 'Tendency of Zonal Component of Velocity (m/s^2)'
-      diagUnits = 'm/s^2           '
+      diagTitle = 'Tendency of Zonal Component of Velocity'
+      diagUnits = 'm/s/day         '
       diagCode  = 'UU      MR      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'TOTVTEND'
-      diagTitle = 'Tendency of Meridional Component of Velocity (m/s^2)'
-      diagUnits = 'm/s^2           '
+      diagTitle = 'Tendency of Meridional Component of Velocity'
+      diagUnits = 'm/s/day         '
       diagCode  = 'VV      MR      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -703,14 +703,14 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
 
       diagName  = 'TOTTTEND'
       diagTitle = 'Tendency of Potential Temperature'
-      diagUnits = DIAGS_MK_UNITS( tUnit4c//'/s', myThid )
+      diagUnits = DIAGS_MK_UNITS( tUnit4c//'/day', myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'TOTSTEND'
       diagTitle = DIAGS_MK_TITLE('Tendency of '//sTitle, myThid )
-      diagUnits = DIAGS_MK_UNITS( sUnit4c//'/s', myThid )
+      diagUnits = DIAGS_MK_UNITS( sUnit4c//'/day', myThid )
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
