@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.3 2006/06/16 14:44:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.4 2008/11/15 18:46:03 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -64,7 +64,7 @@ C                    without topography)
       EXTERNAL smoothMin_R4
 # endif /* USE_SMOOTH_MIN */
 #else
-      _RL hFacZOpen
+      _RS     hFacZOpen
       INTEGER hZoption
       LOGICAL northWestCorner, northEastCorner,
      &        southWestCorner, southEastCorner
