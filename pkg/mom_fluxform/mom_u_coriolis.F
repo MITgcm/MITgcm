@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_coriolis.F,v 1.8 2006/12/05 05:29:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_coriolis.F,v 1.9 2008/11/16 17:25:26 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: MOM_U_CORIOLIS
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE MOM_U_CORIOLIS( 
+      SUBROUTINE MOM_U_CORIOLIS(
      I        bi,bj,k,vFld,
      U        uCoriolisTerm,
      I        myThid)
@@ -31,7 +31,7 @@ C  bi,bj                :: tile indices
 C  k                    :: vertical level
 C  vFld                 :: meridional flow
 C  myThid               :: thread number
-      INTEGER bi,bj,K
+      INTEGER bi,bj,k
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
@@ -41,9 +41,9 @@ C  uCoriolisTerm        :: Coriolis term
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
-      INTEGER I,J
-      _RL one
-      PARAMETER(one=1.d0)
+      INTEGER i,j
+      _RS one
+      PARAMETER( one = 1. _d 0 )
 CEOP
 
       IF (useEnergyConservingCoriolis) THEN
@@ -79,8 +79,9 @@ C         "Numerical Boundary Layers and Spurious Residual Flows"
        DO j=1-Oly,sNy+Oly-1
         DO i=1-Olx+1,sNx+Olx
          uCoriolisTerm(i,j) = uCoriolisTerm(i,j)
-     & *4.d0/max(one, maskS( i , j ,k,bi,bj)+maskS( i ,j+1,k,bi,bj)
-     &               +maskS(i-1, j ,k,bi,bj)+maskS(i-1,j+1,k,bi,bj) )
+     &   *4. _d 0/MAX( one,
+     &                 maskS( i , j ,k,bi,bj)+maskS( i ,j+1,k,bi,bj)
+     &                +maskS(i-1, j ,k,bi,bj)+maskS(i-1,j+1,k,bi,bj) )
         ENDDO
        ENDDO
       ENDIF
