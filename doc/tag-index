@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1039 2008/11/14 22:09:04 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1040 2008/11/17 23:13:41 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf: add parameter for extrapolation of temp up to the surface 
+   and option to prevent negative evap (in bulk_largeyeager04 only).
 o Prather Advection scheme: fix tracer conservation for divergent flow
   (e.g., when using NonLin Free-Surface).
 o kpp: retire KPPmld diagnostics --> use MXLDEPTH instead
