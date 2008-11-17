@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_CONSTANTS.h,v 1.4 2007/05/08 03:48:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_CONSTANTS.h,v 1.5 2008/11/17 23:08:29 jmc Exp $
 C $Name:  $
 c
 c
@@ -29,14 +29,14 @@ c     exf_two    2.0
       _RL exf_one
       _RL exf_two
 
-      parameter(
-     &              exf_half =  0.5d0 ,
-     &              exf_one  =  1.0d0 ,
-     &              exf_two  =  2.0d0
+      PARAMETER(
+     &              exf_half =  0.5 _d 0 ,
+     &              exf_one  =  1.0 _d 0 ,
+     &              exf_two  =  2.0 _d 0
      &         )
 
-      real       exf_undef
-      parameter( exf_undef = -9000. )
+c     real       exf_undef
+c     PARAMETER( exf_undef = -9000. )
 
 c     2. physical constants
 
@@ -45,8 +45,8 @@ c                        sigma = (2*pi^5*k^4)/(15*h^3*c^2)
 c     karman          :: von Karman constant
       _RL    stefanBoltzmann
       _RL    karman
-      parameter ( stefanBoltzmann = 5.670D-8 )
-      parameter ( karman = 0.4d0 )
+      PARAMETER ( stefanBoltzmann = 5.670 _d -8 )
+      PARAMETER ( karman = 0.4 _d 0 )
 
 c     3. empirical parameters
 
@@ -71,11 +71,11 @@ c      ustofu11     - ustar = 0.3818 m/s, corresponding to u = 11 m/s
       _RL u11
       _RL ustofu11
 
-      parameter (
-     &            ustofu11    =         0.381800d0 ,
-     &            u11         =        11.      d0 ,
-     &            clindrag_1  =         0.000065d0 ,
-     &            clindrag_2  =         0.000490d0 ,
+      PARAMETER (
+     &            ustofu11    =         0.381800 _d 0 ,
+     &            u11         =        11.       _d 0 ,
+     &            clindrag_1  =         0.000065 _d 0 ,
+     &            clindrag_2  =         0.000490 _d 0 ,
      &            cquadrag_1  = clindrag_1/u11/2 ,
      &            cquadrag_2  = clindrag_1*u11/2 + clindrag_2
      &          )
@@ -87,11 +87,12 @@ c                    evaluation of the bulk surface fluxes. The ncom
 c                    model uses 2 hardwired interation steps (loop
 c                    unrolled).
 c
-      integer     niter_bulk
-      parameter ( niter_bulk = 2 )
+      INTEGER     niter_bulk
+      PARAMETER ( niter_bulk = 2 )
 
 C     5. other constants or parameters
 
+C     COMMON /EXF_PARAM_R_2/
 C     cen2kel      :: conversion of deg. Centigrade to Kelvin
 C     gravity_mks  :: gravitational acceleration [m/s^2]
 C     atmrho       :: mean atmospheric density [kg/m^3]
@@ -104,6 +105,8 @@ C     humid_fac    :: constant entering the evaluation of the virtual
 C                     temperature
 C     gamma_blk    :: adiabatic lapse rate
 C     saltsat      :: reduction of saturation vapor pressure over salt water
+C     sstExtrapol  :: extrapolation coeff from 1rst 2 levels up to surface
+C  snow_emissivity :: longwave  snow  emissivity [-] (with pkg thsice/seaice)
 C-- to evaluate turbulent transfert coefficients:
 C     cdrag_[n]    :: n = 1,2,3 coefficients used to evaluate
 C                     drag coefficient
@@ -137,6 +140,7 @@ C  snow_emissivity :: longwave  snow  emissivity [-] (with pkg thsice/seaice)
       _RL    humid_fac
       _RL    gamma_blk
       _RL    saltsat
+      _RL    sstExtrapol
       _RL    cdrag_1,    cdrag_2,     cdrag_3
       _RL    cstanton_1, cstanton_2
       _RL    cdalton
@@ -155,7 +159,7 @@ C  snow_emissivity :: longwave  snow  emissivity [-] (with pkg thsice/seaice)
       _RL    ice_emissivity
       _RL    snow_emissivity
 
-      COMMON /exf_param_r_2/
+      COMMON /EXF_PARAM_R_2/
      &       cen2kel,
      &       gravity_mks,
      &       atmrho,
@@ -167,6 +171,7 @@ C  snow_emissivity :: longwave  snow  emissivity [-] (with pkg thsice/seaice)
      &       humid_fac,
      &       gamma_blk,
      &       saltsat,
+     &       sstExtrapol,
      &       cdrag_1,    cdrag_2,    cdrag_3,
      &       cstanton_1, cstanton_2,
      &       cdalton,

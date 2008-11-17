@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.51 2008/06/11 18:55:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.52 2008/11/17 23:08:29 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -72,12 +72,12 @@ c     Surface flux data.
      &          exf_iprec,         exf_yftype,   exf_monFreq,
      & useExfYearlyFields,  twoDigitYear,   useExfCheckRange,
      & useStabilityFct_overIce, readStressOnAgrid, readStressOnCgrid,
-     &    useRelativeWind,
+     &    useRelativeWind, noNegativeEvap,
      & hu, ht, umin, atmrho, atmcp, cen2kel, gravity_mks,
      & cdrag_1, cdrag_2, cdrag_3, cstanton_1, cstanton_2, cdalton,
      & flamb, flami, zolmin, zref,
      & cvapor_fac, cvapor_exp, cvapor_fac_ice, cvapor_exp_ice,
-     & humid_fac, gamma_blk, saltsat, psim_fac
+     & humid_fac, gamma_blk, saltsat, sstExtrapol, psim_fac
 
       NAMELIST /EXF_NML_02/
      &          hfluxfile,          atempfile,       aqhfile,
@@ -207,6 +207,7 @@ c     Set default values.
       readStressOnAgrid  = .FALSE.
       readStressOnCgrid  = .FALSE.
       useRelativeWind    = .FALSE.
+      noNegativeEvap     = .FALSE.
 
 C-  default value should be set to main model parameter:
 c     cen2kel     =  celsius2K
@@ -227,6 +228,7 @@ c     humid_fac   =  atm_Rq     <- default is zero !!!
       humid_fac      =        0.606  _d 0
       gamma_blk      =        0.010  _d 0
       saltsat        =        0.980  _d 0
+      sstExtrapol    =        0.0    _d 0
       cdrag_1        =        0.0027000 _d 0
       cdrag_2        =        0.0001420 _d 0
       cdrag_3        =        0.0000764 _d 0

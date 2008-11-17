@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.17 2008/06/11 18:55:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.18 2008/11/17 23:08:30 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -133,6 +133,10 @@ C--   Print general parameters:
      &  ' /* adiabatic lapse rate [?] */')
       CALL WRITE_0D_R8( saltsat, INDEX_NONE, 'saltsat =',
      &  ' /* reduction of Qsat over salty water [-] */')
+      CALL WRITE_0D_L( noNegativeEvap,INDEX_NONE,'noNegativeEvap =',
+     &  ' /* prevent negative Evaporation */')
+      CALL WRITE_0D_R8( sstExtrapol, INDEX_NONE, 'sstExtrapol =',
+     &  ' /* extrapolation coeff from lev. 1 & 2 to surf [-] */')
       CALL WRITE_0D_R8( cdrag_1, INDEX_NONE, 'cDrag_1 =',
      &  ' /* coef used in drag calculation [?] */')
       CALL WRITE_0D_R8( cdrag_2, INDEX_NONE, 'cDrag_2 =',

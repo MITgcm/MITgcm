@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulk_largeyeager04.F,v 1.4 2007/05/14 19:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_bulk_largeyeager04.F,v 1.5 2008/11/17 23:08:30 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -82,7 +82,7 @@ C     ssq      :: saturation specific humidity [kg/kg] in eq. with Sea-Surface w
       _RL ustar              ! friction velocity [m/s]
       _RL tstar              ! turbulent temperature scale [K]
       _RL qstar              ! turbulent humidity scale  [kg/kg]
-      _RL ssttmp
+      _RL SSTtmp
       _RL ssq
       _RL rd                 ! = sqrt(Cd)          [-]
       _RL re                 ! = Ce / sqrt(Cd)     [-]
@@ -157,8 +157,13 @@ CHPF$  INDEPENDENT
 #ifdef ALLOW_ATM_TEMP
 
 C-   Surface Temp.
-          ssttmp = theta(i,j,1,bi,bj)
-          Tsf = ssttmp + cen2kel
+          Tsf = theta(i,j,1,bi,bj) + cen2kel
+          IF ( sstExtrapol.GT.0. _d 0 ) THEN
+            SSTtmp = sstExtrapol
+     &             *( theta(i,j,1,bi,bj)-theta(i,j,2,bi,bj) )
+     &             *  maskC(i,j,2,bi,bj)
+            Tsf = Tsf + MAX( SSTtmp, 0. _d 0 )
+          ENDIF
           Ts2 = Tsf*Tsf
 C-   Wind speed
           ws  = wspeed(i,j,bi,bj)
@@ -174,6 +179,8 @@ c
             ssq = saltsat*tmpbulk/atmrho
             deltap = atemp(i,j,bi,bj) + gamma_blk*ht - Tsf
             delq   = aqh(i,j,bi,bj) - ssq
+C--  no negative evaporation over ocean:
+            IF ( noNegativeEvap ) delq   = MIN( 0. _d 0, delq )
 
 C--  initial guess for exchange coefficients:
 C    take U_N = del.U ; stability from del.Theta ;
