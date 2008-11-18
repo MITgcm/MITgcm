@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/phys2dyn.F,v 1.6 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/phys2dyn.F,v 1.7 2008/11/18 21:39:38 jmc Exp $
 C $Name:  $
 
       subroutine phys2dyn(qphy,pephy,im1,im2,jm1,jm2,lmphy,Nsx,Nsy,
@@ -36,6 +36,7 @@ C   1) This algorithm assumes that the output (physics) grid levels
 C      fit exactly into the input (dynamics) grid levels
 C***********************************************************************
       implicit none
+cinterp1 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
       integer  im1, im2, jm1, jm2, lmdyn, lmphy, Nsx, Nsy
@@ -48,9 +49,22 @@ C***********************************************************************
       integer Lbot(im1:im2,jm1:jm2,Nsx,Nsy)
 
       integer  i,j,L,Lout1,Lout1p1,Lout2,Lphy
-      _RL getcon, kappa, dpkephy, dpkedyn, sum
+      _RL dpkephy, dpkedyn, sum
 
-      kappa = getcon('KAPPA')
+cinterp1  _RL kappa
+#ifdef ALLOW_FIZHI
+cinterp1  _RL getcon
+#else
+cinterp1 #include 'SIZE.h'
+cinterp1 #include 'EEPARAMS.h'
+cinterp1 #include 'PARAMS.h'
+#endif
+
+#ifdef ALLOW_FIZHI
+cinterp1  kappa = getcon('KAPPA')
+#else
+cinterp1  kappa = atm_kappa
+#endif
 
 c do loop for all dynamics (output) levels
       do L = 1,lmdyn

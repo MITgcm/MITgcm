@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/dyn2phys.F,v 1.5 2006/06/05 18:41:30 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/dyn2phys.F,v 1.6 2008/11/18 21:39:38 jmc Exp $
 C $Name:  $
 
       subroutine dyn2phys(qdyn,pedyn,im1,im2,jm1,jm2,lmdyn,Nsx,Nsy,
@@ -40,6 +40,7 @@ C   1) This algorithm assumes that the output (physics) grid levels
 C      fit exactly into the input (dynamics) grid levels
 C***********************************************************************
       implicit none
+cinterp1 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
       integer  im1, im2, jm1, jm2, lmdyn, lmphy, Nsx, Nsy, flg
@@ -56,9 +57,20 @@ C***********************************************************************
       _RL pphy(im1:im2,jm1:jm2,lmphy)
       _RL dpkedyn, dpkephy, windsum, qd
       integer  i,j,L,Lout1,Lout2,Lphy
-      _RL getcon, kappa
+cinterp1  _RL kappa
+#ifdef ALLOW_FIZHI
+cinterp1  _RL getcon
+#else
+cinterp1 #include 'SIZE.h'
+cinterp1 #include 'EEPARAMS.h'
+cinterp1 #include 'PARAMS.h'
+#endif
 
-      kappa = getcon('KAPPA')
+#ifdef ALLOW_FIZHI
+cinterp1  kappa = getcon('KAPPA')
+#else
+cinterp1  kappa = atm_kappa
+#endif
 
 C define physics grid mid level pressures
       do Lphy = 1,lmphy
