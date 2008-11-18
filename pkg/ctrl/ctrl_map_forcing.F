@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.11 2008/01/15 19:56:27 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.12 2008/11/18 16:47:15 utke Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -91,7 +91,13 @@ c--   tauu0.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
+# ifdef ALLOW_AUTODIFF_OPENAD
+              fu(i,j,bi,bj) = fu(i,j,bi,bj) + 
+     &                        xx_tauu0(i,j,bi,bj) +
+     &                        tmpfld2d(i,j,bi,bj)
+#else
               fu(i,j,bi,bj) = fu(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
+#endif
             enddo
           enddo
         enddo
@@ -110,7 +116,13 @@ c--   tauv0.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
+# ifdef ALLOW_AUTODIFF_OPENAD
+              fv(i,j,bi,bj) = fv(i,j,bi,bj) + 
+     &                        xx_tauv0(i,j,bi,bj) +
+     &                        tmpfld2d(i,j,bi,bj)
+#else
               fv(i,j,bi,bj) = fv(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
+#endif
             enddo
           enddo
         enddo
@@ -129,7 +141,13 @@ c--   sflux0.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
+# ifdef ALLOW_AUTODIFF_OPENAD
+              empmr(i,j,bi,bj) = empmr(i,j,bi,bj) +
+     &                           xx_sflux0(i,j,bi,bj) + 
+     &                           tmpfld2d(i,j,bi,bj)
+#else
               empmr(i,j,bi,bj) = empmr(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
+#endif
             enddo
           enddo
         enddo
@@ -148,7 +166,13 @@ c--   hflux0.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
+# ifdef ALLOW_AUTODIFF_OPENAD
+              qnet(i,j,bi,bj) = qnet(i,j,bi,bj) + 
+     &                          xx_hflux0(i,j,bi,bj) + 
+     &                          tmpfld2d(i,j,bi,bj)
+#else
               qnet(i,j,bi,bj) = qnet(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
+#endif
             enddo
           enddo
         enddo
