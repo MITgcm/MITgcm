@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.6 2006/01/23 22:31:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.7 2008/11/18 21:41:06 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -73,6 +73,12 @@ C     myThid      :: my Thread Id number
       INTEGER myThid
 CEOP
 
+C     !FUNCTIONS:
+#ifdef ALLOW_FIZHI
+      _RL   getcon
+      EXTERNAL getcon
+#endif
+
 C     !LOCAL VARIABLES:
 C     i,j    :: loop indices
       INTEGER i, n, km, kFr, kRegMsk
@@ -83,18 +89,18 @@ C     i,j    :: loop indices
       _RL statLoc(0:nStats)
       _RL drLoc
       _RL specialVal
-      _RL getcon
-      EXTERNAL getcon
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       useWeight = .FALSE.
       exclSpVal = .FALSE.
       specialVal = 0.
+#ifdef ALLOW_FIZHI
       IF ( useFIZHI ) THEN
         exclSpVal = .TRUE.
         specialVal = getcon('UNDEF')
       ENDIF
+#endif
       kFr = MIN(kIn,sizF)
 
       DO n=0,nRegions

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/getcon.F,v 1.10 2006/11/14 22:41:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getcon.F,v 1.3 2008/11/18 21:37:57 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

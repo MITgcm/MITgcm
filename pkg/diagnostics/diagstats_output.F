@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.8 2008/02/05 15:13:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.9 2008/11/18 21:41:06 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -41,16 +41,21 @@ C     myThid  :: my Thread Id number
       INTEGER listId, myIter, myThid
 CEOP
 
+C     !FUNCTIONS:
+c     INTEGER ILNBLNK
+c     EXTERNAL ILNBLNK
+#ifdef ALLOW_FIZHI
+      _RL   getcon
+      EXTERNAL getcon
+#endif
+
 C     !LOCAL VARIABLES:
       INTEGER j, m, ndId, iSp, iSm
       CHARACTER*10 gcode
       INTEGER mate
       _RL statGlob(0:nStats,0:nLev,0:nRegions)
       _RL tmp_Glob(0:nStats,0:nLev)
-      _RL undef, getcon
-      EXTERNAL getcon
-c     INTEGER ILNBLNK
-c     EXTERNAL ILNBLNK
+      _RL undef
 
       INTEGER ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -58,7 +63,10 @@ c     EXTERNAL ILNBLNK
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       ioUnit= standardMessageUnit
-      undef = getcon('UNDEF')
+      undef = UNSET_RL
+#ifdef ALLOW_FIZHI
+      IF ( useFIZHI ) undef = getcon('UNDEF')
+#endif
 
       DO m = 1,diagSt_nbFlds(listId)
        ndId = jSdiag(m,listId)

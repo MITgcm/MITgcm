@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.26 2008/08/16 17:28:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.27 2008/11/18 21:41:06 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -69,6 +69,7 @@ C-      No counter diagnostics => average = Sum / ndiag :
           factor = FLOAT(ndiag(ip,bi,bj))
           IF (ndiag(ip,bi,bj).NE.0) factor = 1. _d 0 / factor
 
+#ifdef ALLOW_FIZHI
           DO j = 1,sNy+1
             DO i = 1,sNx+1
               IF ( qdiag(i,j,ipnt,bi,bj) .LE. undef ) THEN
@@ -78,6 +79,13 @@ C-      No counter diagnostics => average = Sum / ndiag :
               ENDIF
             ENDDO
           ENDDO
+#else /* ALLOW_FIZHI */
+          DO j = 1,sNy+1
+            DO i = 1,sNx+1
+              qtmp(i,j) = qdiag(i,j,ipnt,bi,bj)*factor
+            ENDDO
+          ENDDO
+#endif /* ALLOW_FIZHI */
 
         ELSE
 C-      With counter diagnostics => average = Sum / counter:

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.8 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.9 2008/11/18 21:41:07 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -65,15 +65,21 @@ C ===============
       INTEGER kd, kd0, ksgn, kStore
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       integer i,offset,Lena,newindx,jindx
-      _RL undef,getcon
+      _RL undef
       INTEGER iSp, ndId, j,l
       INTEGER region2fill(0:nRegions)
       _RL     scaleFact
       _RL     gridField(sNx*sNy,nlevs), gridFrac(sNx*sNy)
 
+#ifdef ALLOW_FIZHI
+      _RL   getcon
+      EXTERNAL getcon
+#endif
+
 C Run through list of active diagnostics to make sure
 C we are trying to fill a valid diagnostic
 
+      undef = UNSET_RL
       ndiagnum = 0
       ipointer = 0
       DO n=1,nlists
@@ -143,7 +149,9 @@ C-      Check for consistency with Nb of levels reserved in storage array
        DO k = kFirst,kLast
         kd = kd0 + ksgn*k
         if( check ) then
+#ifdef ALLOW_FIZHI
          undef = getcon('UNDEF')
+#endif
          do i= 1,Lena
           jindx = 1 + int((indx(i+offset-1)-1)/sNx)
           newindx = indx(i+offset-1)+(jindx-1)*2*Olx
@@ -228,7 +236,9 @@ C-    Fill local array with grid-space field after conversion.
          gridField(i,k)= 0.
         ENDDO
         if( check ) then
+#ifdef ALLOW_FIZHI
          undef = getcon('UNDEF')
+#endif
          do i= 1,Lena
           newindx = indx(i+offset-1)
           if(gridField(newindx,k).eq.undef

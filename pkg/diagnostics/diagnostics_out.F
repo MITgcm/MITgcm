@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.39 2008/05/27 08:37:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.40 2008/11/18 21:41:06 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -38,6 +38,14 @@ C     myThid  :: my Thread Id number
       INTEGER listId, myIter, myThid
 CEOP
 
+C     !FUNCTIONS:
+      INTEGER ILNBLNK
+      EXTERNAL ILNBLNK
+#ifdef ALLOW_FIZHI
+      _RL   getcon
+      EXTERNAL getcon
+#endif
+
 C     !LOCAL VARIABLES:
 C     i,j,k :: loop indices
 C     lm    :: loop index (averageCycle)
@@ -59,11 +67,8 @@ C              diagnostic storage qdiag into it.
       INTEGER md, ndId, ip, im
       INTEGER mate, mVec
       CHARACTER*10 gcode
-      _RL undef, getcon
+      _RL undef
       _RL tmpLev
-      EXTERNAL getcon
-      INTEGER ILNBLNK
-      EXTERNAL ILNBLNK
       INTEGER ilen
 
       INTEGER ioUnit
@@ -98,7 +103,11 @@ C              diagnostic storage qdiag into it.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       ioUnit= standardMessageUnit
+      undef = UNSET_RL
+#ifdef ALLOW_FIZHI
+c     IF ( useFIZHI ) undef = getcon('UNDEF')
       undef = getcon('UNDEF')
+#endif
       WRITE(suff,'(I10.10)') myIter
       ilen = ILNBLNK(fnames(listId))
       WRITE( fn, '(A,A,A)' ) fnames(listId)(1:ilen),'.',suff(1:10)
@@ -156,9 +165,9 @@ C       beginning and ending times for each diagnostics period
      &       'Idicies of vertical levels within the source arrays',
      &       myThid)
 C     suppress the missing value attribute (iflag = 0)
-        IF (useMissingValue) 
+        IF (useMissingValue)
      &       CALL MNC_CW_VATTR_MISSING('diag_levels', 0,
-     I       misval_r8, misval_r4, misval_int, 
+     I       misval_r8, misval_r4, misval_int,
      I       myThid )
 
         CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
@@ -221,7 +230,7 @@ C         for averaged levels.
 C     suppress the missing value attribute (iflag = 0)
           IF (useMissingValue)
      &         CALL MNC_CW_VATTR_MISSING(dn(1), 0,
-     I         misval_r8, misval_r4, misval_int, 
+     I         misval_r8, misval_r4, misval_int,
      I         myThid )
           CALL MNC_CW_RS_W('D',diag_mnc_bn,0,0, dn(1), ztmp, myThid)
           CALL MNC_CW_DEL_VNAME(dn(1), myThid)
@@ -473,7 +482,7 @@ C     Missing values only for scalar diagnostics at mass points (so far)
             IF ( useMisValForThisDiag ) THEN
 C     assign missing values and set flag for adding the netCDF atttibute
              CALL MNC_CW_VATTR_MISSING(cdiag(ndId), 2,
-     I            misval_r8, misval_r4, misval_int, 
+     I            misval_r8, misval_r4, misval_int,
      I            myThid )
 C     and now use the missing values for masking out the land points
              DO bj = myByLo(myThid), myByHi(myThid)
@@ -494,10 +503,10 @@ C     suppress the missing value attribute (iflag = 0)
 C     Note: We have to call the following subroutine for each mnc that has
 C     been created "on the fly" by mnc_cw_add_vname and will be deleted
 C     by mnc_cw_del_vname, because all of these variables use the same
-C     identifier so that mnc_cw_vfmv(indv) needs to be overwritten for 
+C     identifier so that mnc_cw_vfmv(indv) needs to be overwritten for
 C     each of these variables
              CALL MNC_CW_VATTR_MISSING(cdiag(ndId), 0,
-     I            misval_r8, misval_r4, misval_int, 
+     I            misval_r8, misval_r4, misval_int,
      I            myThid )
             ENDIF
 
