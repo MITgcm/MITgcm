@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.177 2008/11/14 01:34:19 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.178 2008/11/18 22:11:07 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2616,7 +2616,7 @@ clean:
 	-rm -rf *.o
 	-rm -rf *.$FS *.flowdir
 	-rm -rf *.f$FS90 *_mod.h *_mod.F90 *.FF90 *.mod-whirl ad_input*
-	-rm -rf temp.sed reslice.dat 
+	-rm -rf temp.sed
 Clean:
 	@make clean
 	@make cleanlinks
@@ -2938,21 +2938,21 @@ timeRatio.c
 f95_test_mods.f90: \$(OPENAD_SUPPORT_F90_SRC_FILES:F90=$FS90)
 	cat \$^ > \$@
 
-f95_test.f90: all_mods.xb.x2w.w2f.pp.f$FS90 \$(NON_AD_F77_SRC_FILES:.F=_cb2m.f$FS90) ad_input_code.w2f.canon.xb.x2w.w2f.rs.pp.f$FS90 
+f95_test.f90: all_mods.xb.x2w.w2f.pp.f$FS90 \$(NON_AD_F77_SRC_FILES:.F=_cb2m.f$FS90) ad_input_code.w2f.pre.xb.x2w.w2f.td.pp.f$FS90 
 	cat \$^ > \$@
 
 f95_test.out: f95_test_mods.f90 f95_test.f90
 	f95 -fixed -w=unused -maxcontin=132 -c f95_test_mods.f90 > \$@ 2>&1
 	f95 -fixed -w=unused -maxcontin=132 -c -fixed f95_test.f90 >> \$@ 2>&1
 
-AD_OBJ_FILES=\$(OPENAD_SUPPORT_F90_SRC_FILES:.F90=.o) \$(OPENAD_SUPPORT_C_SRC_FILES:.c=.o) all_mods.xb.x2w.w2f.pp.o  ad_input_code.w2f.canon.xb.x2w.w2f.rs.pp.o \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC_FILES:.c=.o) \$(F90_SRC_FILES:.F90=.o)
+AD_OBJ_FILES=\$(OPENAD_SUPPORT_F90_SRC_FILES:.F90=.o) \$(OPENAD_SUPPORT_C_SRC_FILES:.c=.o) all_mods.xb.x2w.w2f.pp.o  ad_input_code.w2f.pre.xb.x2w.w2f.td.pp.o \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC_FILES:.c=.o) \$(F90_SRC_FILES:.F90=.o)
 
 \$(EXE_AD): \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) \$(AD_OBJ_FILES)
 	@echo Creating \$@ ...
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(AD_OBJ_FILES) \$(LIBS)
 
 # makefile debug rule
-openad: ad_input_code.w2f.canon.xb.x2w.w2f.rs.pp.f$FS90
+openad: ad_input_code.w2f.pre.xb.x2w.w2f.td.pp.f$FS90
 .PHONY: openad
 
 # create the module files 
@@ -2998,8 +2998,8 @@ ad_input_code_sf.w2f.f$FS90: ad_input_code_sf.f$FS90 mfef90 whirl2f whirl2f_be w
 	cat w2f__types.f90 \$(basename \$<).w2f.f > \$@
 
 # canonicalizer
-ad_input_code_sf.w2f.canon.f$FS90: ad_input_code_sf.w2f.f$FS90 canon.v1.py
-	python canon.v1.py --r8 \$< > \$@
+ad_input_code_sf.w2f.pre.f$FS90: ad_input_code_sf.w2f.f$FS90 preProcess.py
+	./preProcess.py -H \$< -o \$@
 
 # F -> WHIRL
 # note that the canonicalized version cuts off at col 72 
@@ -3007,48 +3007,45 @@ ad_input_code_sf.w2f.canon.f$FS90: ad_input_code_sf.w2f.f$FS90 canon.v1.py
 # as we are in fixed mode and cut of exactly there. 
 # Otherwise mfef90 patches in spaces to fill up to 72 (or 132) 
 # characters respectively.
-ad_input_code_sf.w2f.canon.B: ad_input_code_sf.w2f.canon.f$FS90 mfef90
+ad_input_code_sf.w2f.pre.B: ad_input_code_sf.w2f.pre.f$FS90 mfef90
 	./mfef90 -r8 -z -F \$<
 	mv \$<.B \$@
 
 # WHIRL -> XAIF
-ad_input_code_sf.w2f.canon.xaif : ad_input_code_sf.w2f.canon.B whirl2xaif
+ad_input_code_sf.w2f.pre.xaif : ad_input_code_sf.w2f.pre.B whirl2xaif
 	./whirl2xaif -s -n --debug 1 -o \$@ \$<
 
 # XAIF -> XAIF'
-ad_input_code_sf.w2f.canon.xb.xaif : ad_input_code_sf.w2f.canon.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd openad_adm
+ad_input_code_sf.w2f.pre.xb.xaif : ad_input_code_sf.w2f.pre.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd openad_adm
 	./openad_adm -f -t forward_step -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I -r
 
 # XAIF' -> WHIRL'
-ad_input_code_sf.w2f.canon.xb.x2w.B : ad_input_code_sf.w2f.canon.xb.xaif xaif2whirl
-	./xaif2whirl --debug 1 --structured ad_input_code_sf.w2f.canon.B \$<
+ad_input_code_sf.w2f.pre.xb.x2w.B : ad_input_code_sf.w2f.pre.xb.xaif xaif2whirl
+	./xaif2whirl --debug 1 --structured ad_input_code_sf.w2f.pre.B \$<
 
 # WHIRL' -> F'
-ad_input_code_sf.w2f.canon.xb.x2w.w2f.f$FS90: ad_input_code_sf.w2f.canon.xb.x2w.B whirl2f whirl2f_be
+ad_input_code_sf.w2f.pre.xb.x2w.w2f.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.B whirl2f whirl2f_be
 	./whirl2f -FLIST:ftn_file=\$@ -openad \$< 
 
-# undo slice hiding 
 # insert template directives
-ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.f$FS90: ad_input_code_sf.w2f.canon.xb.x2w.w2f.f$FS90 reslicer.py ../OAD_support/insertTemplateDir.bash
-	python reslicer.py \$< > \$<.1
-	../OAD_support/insertTemplateDir.bash \$<.1  \$@
-	rm \$<.1
+ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.f$FS90 ../OAD_support/insertTemplateDir.bash
+	../OAD_support/insertTemplateDir.bash \$< \$@
 
 # postprocess F'
-ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.pp.f$FS90: ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.f$FS90 multi-pp.pl ../OAD_support/ad_inline.f \$(wildcard ../OAD_support/ad_template.*.f)
+ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.pp.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90 multi-pp.pl ../OAD_support/ad_inline.f \$(wildcard ../OAD_support/ad_template.*.f)
 	perl multi-pp.pl -inline=../OAD_support/ad_inline.f \$<
 	# the postprocessor still gets the name wrong
 	cat \$<.pp | sed 's/RETURN//' > \$@
 
 # extract all transformed modules 
-all_mods.xb.x2w.w2f.pp.f$FS90: ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.pp.f$FS90
+all_mods.xb.x2w.w2f.pp.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.pp.f$FS90
 	cat \$< | sed -n '/MODULE /,/END MODULE/p' > \$@
 
 # remove the transformed globals module from the 
 # transformed ad_input_code file
 # and remove for now the duplicate variables
 # and fix 2 data statements
-ad_input_code.w2f.canon.xb.x2w.w2f.rs.pp.f$FS90: ad_input_code_sf.w2f.canon.xb.x2w.w2f.rs.pp.f$FS90 
+ad_input_code.w2f.pre.xb.x2w.w2f.td.pp.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.pp.f$FS90 
 	cat \$< | sed '/MODULE /,/END MODULE/d' | sed '/^      INTEGER(w2f__i4) DOLOOP_UB/d' > \$@
 
 # setup some links
@@ -3068,8 +3065,8 @@ whirl2xaif xaif2whirl:
 %.pl: 
 	\$(LN) \${OPENADFORTTK}/bin/\$@ .
 
-%.py: 
-	\$(LN) \${OPENADROOT}/OpenADFortTk/tools/canonicalize/\$@ .
+preProcess.py: 
+	\$(LN) \${OPENADFORTTK_BASE}/tools/SourceProcessing/\$@ .
 
 whirl2f whirl2f_be:
 	\$(LN) \${OPEN64ROOT}/whirl2f/\$@ .
