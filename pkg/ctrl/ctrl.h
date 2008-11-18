@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.45 2008/09/22 21:19:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.46 2008/11/18 16:45:02 utke Exp $
 C $Name:  $
 
 
@@ -282,11 +282,23 @@ c     TAMC sees xx_..._dummy
      &      , xx_uvel
      &      , xx_vvel
      &      , xx_etan
+# ifdef ALLOW_DIFFKR_CONTROL
+     &      , xx_diffkr
+# endif
+# ifdef ALLOW_KAPGM_CONTROL
+     &      , xx_kapgm
+# endif
       _RL xx_theta(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_salt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_uvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_vvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL xx_etan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+# ifdef ALLOW_DIFFKR_CONTROL
+      _RL xx_diffkr(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+# endif
+# ifdef ALLOW_KAPGM_CONTROL
+      _RL xx_kapgm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+# endif
 #endif
 
 
@@ -316,7 +328,7 @@ c     xx_tauu1 - zonal wind stress record after  current date.
 c     xx_tauv0 - meridional wind stress record before current date.
 c     xx_tauv1 - meridional wind stress record after  current date.
 
-#if     (defined  (ALLOW_HFLUX_CONTROL))
+#if     (defined  (ALLOW_HFLUX_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined  (ALLOW_HFLUX0_CONTROL)))
       common /controlaux_hflux_r/
      &                      xx_hflux0,
      &                      xx_hflux1
@@ -326,7 +338,7 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_atemp1
 #endif
 
-#if     (defined  (ALLOW_SFLUX_CONTROL))
+#if     (defined  (ALLOW_SFLUX_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined  (ALLOW_SFLUX0_CONTROL)))
       common /controlaux_swflux_r/
      &                      xx_sflux0,
      &                      xx_sflux1
@@ -336,7 +348,7 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_aqh1
 #endif
 
-#if     (defined  (ALLOW_USTRESS_CONTROL))
+#if     (defined  (ALLOW_USTRESS_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_TAUU0_CONTROL)))
       common /controlaux_ustress_r/
      &                      xx_tauu0,
      &                      xx_tauu1
@@ -346,7 +358,7 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_uwind1
 #endif
 
-#if     (defined  (ALLOW_VSTRESS_CONTROL))
+#if     (defined  (ALLOW_VSTRESS_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_TAUV0_CONTROL)))
       common /controlaux_vstress_r/
      &                      xx_tauv0,
      &                      xx_tauv1
@@ -445,28 +457,28 @@ c     xx_tauv1 - meridional wind stress record after  current date.
      &                      xx_sss1
 #endif
 
-#if     (defined  (ALLOW_HFLUX_CONTROL))
+#if     (defined  (ALLOW_HFLUX_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_HFLUX0_CONTROL)))
       _RL xx_hflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_hflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #elif   (defined  (ALLOW_ATEMP_CONTROL))
       _RL xx_atemp0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_atemp1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
-#if     (defined  (ALLOW_SFLUX_CONTROL))
+#if     (defined  (ALLOW_SFLUX_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_SFLUX0_CONTROL)))
       _RL xx_sflux0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_sflux1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #elif   (defined  (ALLOW_AQH_CONTROL))
       _RL xx_aqh0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_aqh1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
-#if     (defined  (ALLOW_USTRESS_CONTROL))
+#if     (defined  (ALLOW_USTRESS_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_TAUU0_CONTROL)))
       _RL xx_tauu0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_tauu1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #elif   (defined  (ALLOW_UWIND_CONTROL))
       _RL xx_uwind0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_uwind1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
-#if     (defined  (ALLOW_VSTRESS_CONTROL))
+#if     (defined  (ALLOW_VSTRESS_CONTROL) || (defined (ALLOW_AUTODIFF_OPENAD) && defined (ALLOW_TAUV0_CONTROL)))
       _RL xx_tauv0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xx_tauv1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #elif   (defined  (ALLOW_VWIND_CONTROL))
