@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_i86pc_f95,v 1.1 2008/09/02 11:55:06 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_i86pc_f95,v 1.2 2008/11/20 13:19:51 mlosch Exp $
 #  $Name:  $  
 #
 # tested on 
@@ -26,15 +26,15 @@ LIBS='-L/opt/netcdf-3.6.2/lib'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS='-stackvar -explicitpar -vpara -e -u -noautopar -xfilebyteorder=big16:%all'
+    FFLAGS='-e -u -xfilebyteorder=big16:%all'
     FFLAGS=$FFLAGS' -xtypemap=real:64,double:64,integer:32'
     FOPTIM='-dalign -O4 -xarch=native -fsimple=2'
     CFLAGS='-dalign -xO4 -xarch=native'
 else
     #  Try to follow IEEE-754
-    FFLAGS='-e -u -fsimple=0 -xfilebyteorder=big16:%all'
+    FFLAGS='-e -u -xfilebyteorder=big16:%all'
     FFLAGS=$FFLAGS' -xtypemap=real:64,double:64,integer:32'
-    FOPTIM='-O0'
+    FOPTIM='-O0 -fsimple=0'
     CFLAGS='-xO0'
 fi
 NOOPTFLAGS='-dalign -O0'
