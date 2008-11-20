@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.21 2007/09/13 08:03:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.22 2008/11/20 21:45:19 jmc Exp $
 C $Name:  $
 
 C     for an alternative discretization of d/dx[ (zeta-eta) dV/dy]
@@ -104,9 +104,9 @@ C SOLVE FOR UICE
 cph That's an important one! Note, that
 cph * lsr is called twice, thus the icall index
 cph * this storing is still outside the iteration loop
-CADJ STORE uice = comlev1_lsr, 
+CADJ STORE uice = comlev1_lsr,
 CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
-CADJ STORE vice = comlev1_lsr, 
+CADJ STORE vice = comlev1_lsr,
 CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -150,7 +150,7 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
      &         )*0.5 _d 0 * _recip_dxV(I,J,bi,bj) * UVM(I,J,bi,bj)
           AA3=  0.5 _d 0 *(ETA(I-1,J  ,bi,bj)+ETA(I,J  ,bi,bj))
           AA4=  0.5 _d 0 *(ETA(I-1,J-1,bi,bj)+ETA(I,J-1,bi,bj))
-          AA5= -(AA3-AA4) * _tanPhiAtV(I,J,bi,bj) 
+          AA5= -(AA3-AA4) * _tanPhiAtV(I,J,bi,bj)
      &         * _recip_dyU(I,J,bi,bj)*recip_rSphere
           AA6=TWO*ETAMEAN(I,J,bi,bj) *recip_rSphere*recip_rSphere
      &          * _tanPhiAtV(I,J,bi,bj)  * _tanPhiAtV(I,J,bi,bj)
@@ -190,7 +190,7 @@ C     now set up right-hand side
 #ifdef SEAICE_TEST
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
-          vtmp(i,j) = quart * ( 
+          vtmp(i,j) = quart * (
      &         vicec(i,j,bi,bj) + vicec(i+1,j,bi,bj) )
           vtmp(i,j)= vtmp(i,j) + quart * (
      &         vicec(i,j+1,bi,bj) + vicec(i+1,j+1,bi,bj) )
@@ -202,10 +202,10 @@ C     now set up right-hand side
           FXY(I,J,bi,bj)=DRAGA(I,J,bi,bj)*VICEC(I,J,bi,bj)
      &         +FORCEX(I,J,bi,bj)
 #ifdef SEAICE_TEST
-     &        + ( 0.5 _d 0 * 
+     &        + ( 0.5 _d 0 *
      &         (zetaMinusEta(i,j,bi,bj)+zetaMinusEta(i,j-1,bi,bj))
      &         *(vtmp(i,j)-vtmp(i,j-1)) * _recip_dyC(i,j,bi,bj)
-     &          - 0.5 _d 0 * 
+     &          - 0.5 _d 0 *
      &         (zetaMinusEta(i-1,j,bi,bj)+zetaMinusEta(i-1,j-1,bi,bj))
      &         *(vtmp(i-1,j)-vtmp(i-1,j-1)) * _recip_dyC(i-1,j,bi,bj)
      &         ) * _recip_dxV(i,j,bi,bj)
@@ -214,7 +214,7 @@ C     now set up right-hand side
      &           + zetaMinusEta(I  ,J-1,bi,bj) * dVdy(I  ,J-1)
      &           - zetaMinusEta(I-1,J  ,bi,bj) * dVdy(I-1,J  )
      &           - zetaMinusEta(I-1,J-1,bi,bj) * dVdy(I-1,J-1)
-     &         )* 0.5 _d 0 * _recip_dxV(I,J,bi,bj) 
+     &         )* 0.5 _d 0 * _recip_dxV(I,J,bi,bj)
 #endif
      &
      &         + ( ETA         (I  ,J  ,bi,bj) * dVdx(I  ,J  )
@@ -262,7 +262,6 @@ C     now set up right-hand side
       ENDDO
 
 C NOW DO ITERATION
-100   CONTINUE
 
 cph--- iteration starts here
 cph--- need to kick out goto
@@ -272,11 +271,9 @@ C ITERATION START -----------------------------------------------------
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ LOOP = iteration uice
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-      DO 8000 M=1, solv_max_iters
-cph(
+      DO M=1, solv_max_iters
       IF ( phexit .EQ. -1 ) THEN
-cph)
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C NOW SET U(3)=U(1)
@@ -286,7 +283,7 @@ C NOW SET U(3)=U(1)
          END DO
         END DO
 
-        DO 1200 J=1,sNy
+        DO J=1,sNy
          DO I=1,sNx
           IF(I.EQ.1) THEN
            AA2=(etaPlusZeta(I-1,J-1,bi,bj) * _recip_dxF(I-1,J-1,bi,bj)
@@ -327,15 +324,15 @@ C NOW SET U(3)=U(1)
      &        +WFAU*(URT(I)-UICE(I,J,3,bi,bj))
          END DO
 
-1200    CONTINUE
+        END DO
 
        ENDDO
       ENDDO
 
       IF(MOD(M,SOLV_NCHECK).EQ.0) THEN
+       S1=ZERO
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         S1=ZERO
          DO J=1,sNy
           DO I=1,sNx
            UERR(I,J,bi,bj)=(UICE(I,J,1,bi,bj)-UICE(I,J,3,bi,bj))
@@ -343,28 +340,21 @@ C NOW SET U(3)=U(1)
            S1=MAX(ABS(UERR(I,J,bi,bj)),S1)
           END DO
          END DO
-         _GLOBAL_MAX_R8( S1, myThid )
         ENDDO
        ENDDO
+       _GLOBAL_MAX_R8( S1, myThid )
 C SAFEGUARD AGAINST BAD FORCING ETC
        IF(M.GT.1.AND.S1.GT.S1A) WFAU=WFAU2
        S1A=S1
        IF(S1.LT.LSR_ERROR) THEN
         ICOUNT1=M
-cph(
-cph        GO TO 8001
         phexit = 1
-cph)
        END IF
       END IF
       CALL EXCH_3D_RL( UICE, 3, myThid )
 
-cph(
-      END IF
-cph)
-
-8000  CONTINUE
-cph 8001  CONTINUE
+      ENDIF
+      ENDDO
 C ITERATION END -----------------------------------------------------
 
       IF ( debugLevel .GE. debLevB ) THEN
@@ -390,7 +380,7 @@ C NOW FOR VICE
      &          *_recip_dxV(I,J,bi,bj) * _recip_dxV(I,J,bi,bj)
           AA5=(zetaMinusEta(I-1,J  ,bi,bj) + zetaMinusEta(I,J  ,bi,bj)
      &        -zetaMinusEta(I-1,J-1,bi,bj) - zetaMinusEta(I,J-1,bi,bj)
-     &          )* _tanPhiAtV(I,J,bi,bj) 
+     &          )* _tanPhiAtV(I,J,bi,bj)
      &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
 
           AA6=TWO*ETAMEAN(I,J,bi,bj) * recip_rSphere*recip_rSphere
@@ -399,15 +389,15 @@ C NOW FOR VICE
          AV(I,J,bi,bj)=(
      &         - AA2
      &         - (ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
-     &          * _tanPhiAtV(I,J-1,bi,bj) 
+     &          * _tanPhiAtV(I,J-1,bi,bj)
      &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &         -ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
      &          * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &         )*UVM(I,J,bi,bj)
          CV(I,J,bi,bj)=(
-     &         -AA1 
+     &         -AA1
      &        +(ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
-     &         * _tanPhiAtV(I,J+1,bi,bj) 
+     &         * _tanPhiAtV(I,J+1,bi,bj)
      &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &        +ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
      &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
@@ -443,7 +433,7 @@ C     now set up right-hand-side
 #ifdef SEAICE_TEST
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
-          utmp(i,j) = quart * ( 
+          utmp(i,j) = quart * (
      &         uicec(i,j,bi,bj) + uicec(i+1,j,bi,bj) )
           utmp(i,j)= utmp(i,j) + quart * (
      &         uicec(i,j+1,bi,bj) + uicec(i+1,j+1,bi,bj) )
@@ -456,10 +446,10 @@ C     now set up right-hand-side
      &        +FORCEY(I,J,bi,bj)
      &
 #ifdef SEAICE_TEST
-     &        + ( 0.5 _d 0 * 
+     &        + ( 0.5 _d 0 *
      &         (zetaMinusEta(i,j,bi,bj)+zetaMinusEta(i-1,j,bi,bj))
      &         *(utmp(i,j)-utmp(i-1,j)) * _recip_dxC(i,j,bi,bj)
-     &          - 0.5 _d 0 * 
+     &          - 0.5 _d 0 *
      &         (zetaMinusEta(i,j-1,bi,bj)+zetaMinusEta(i-1,j-1,bi,bj))
      &         *(utmp(i,j-1)-utmp(i-1,j-1)) * _recip_dxC(i,j-1,bi,bj)
      &         ) * _recip_dyU(i,j,bi,bj)
@@ -470,7 +460,7 @@ C     now set up right-hand-side
      &           - zetaMinusEta(I-1,J-1,bi,bj) * dUdx(I-1,J-1)
      &         )* 0.5 _d 0 * _recip_dyU(I,J,bi,bj)
 #endif
-     &         
+     &
      &        + ( ETA          (I  ,J  ,bi,bj) * dUdy(I  ,J  )
      &         +  ETA          (I  ,J-1,bi,bj) * dUdy(I  ,J-1)
      &         -  ETA          (I-1,J  ,bi,bj) * dUdy(I-1,J  )
@@ -506,7 +496,6 @@ C     now set up right-hand-side
       ENDDO
 
 C NOW DO ITERATION
-300   CONTINUE
 
 cph--- iteration starts here
 cph--- need to kick out goto
@@ -516,18 +505,16 @@ C ITERATION START -----------------------------------------------------
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ LOOP = iteration vice
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-      DO 9000 M=1, solv_max_iters
-cph(
+      DO M=1, solv_max_iters
       IF ( phexit .EQ. -1 ) THEN
-cph)
+
 C NOW SET U(3)=U(1)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
         DO J=1,sNy
          DO I=1,sNx
-          VICE(I,J,3,bi,bj)=VICE(I,J,1,bi,bj) 
+          VICE(I,J,3,bi,bj)=VICE(I,J,1,bi,bj)
          END DO
         END DO
 
@@ -535,13 +522,13 @@ C NOW SET U(3)=U(1)
          DO J=1,sNy
            IF(J.EQ.1) THEN
             AA2= _recip_dyU(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
-     &           * 0.5 _d 0 *( 
+     &           * 0.5 _d 0 *(
      &           etaPlusZeta(I-1,J-1,bi,bj) + etaPlusZeta(I,J-1,bi,bj)
      &           )
               AA3=( AA2
      &         +( ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj) )
      &         * _tanPhiAtV(I,J-1,bi,bj)
-     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere 
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &         + ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
      &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere )
      &         *VICE(I,J-1,1,bi,bj)*UVM(I,J,bi,bj)
@@ -553,7 +540,7 @@ C NOW SET U(3)=U(1)
             AA3=( AA1
      &         -( ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
      &         * _tanPhiAtV(I,J+1,bi,bj)
-     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere 
+     &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &         - ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
      &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere )
      &         *VICE(I,J+1,1,bi,bj)*UVM(I,J,bi,bj)
@@ -591,9 +578,9 @@ C NOW SET U(3)=U(1)
       ENDDO
 
       IF(MOD(M,SOLV_NCHECK).EQ.0) THEN
+       S2=ZERO
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         S2=ZERO
          DO J=1,sNy
           DO I=1,sNx
            UERR(I,J,bi,bj)=(VICE(I,J,1,bi,bj)-VICE(I,J,3,bi,bj))
@@ -601,29 +588,22 @@ C NOW SET U(3)=U(1)
            S2=MAX(ABS(UERR(I,J,bi,bj)),S2)
           END DO
          END DO
-         _GLOBAL_MAX_R8( S2, myThid )
         ENDDO
        ENDDO
+       _GLOBAL_MAX_R8( S2, myThid )
 C SAFEGUARD AGAINST BAD FORCING ETC
        IF(M.GT.1.AND.S2.GT.S2A) WFAV=WFAV2
        S2A=S2
        IF(S2.LT.LSR_ERROR) THEN
         ICOUNT2=M
-cph(
-cph        GO TO 9001
         phexit = 1
-cph)
        END IF
       END IF
 
       CALL EXCH_3D_RL( VICE, 3, myThid )
 
-cph(
-      END IF
-cph)
-
-9000  CONTINUE
-cph 9001  CONTINUE
+      ENDIF
+      ENDDO
 C ITERATION END -----------------------------------------------------
 
       IF ( debugLevel .GE. debLevB ) THEN

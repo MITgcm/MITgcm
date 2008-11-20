@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.29 2008/01/17 23:18:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.30 2008/11/20 21:45:19 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -397,7 +397,6 @@ C     - 2*eta*(tanphi/a) * dV/dx
       ENDDO
 
 C NOW DO ITERATION
-100   CONTINUE
 
 cph--- iteration starts here
 cph--- need to kick out goto
@@ -407,11 +406,9 @@ C ITERATION START -----------------------------------------------------
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ LOOP = iteration uice
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-      DO 8000 M=1, solv_max_iters
-cph(
+      DO M=1, solv_max_iters
       IF ( phexit .EQ. -1 ) THEN
-cph)
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C NOW SET U(3)=U(1)
@@ -481,9 +478,9 @@ C     end bi,bj-loops
       ENDDO
 
       IF(MOD(M,SOLV_NCHECK).EQ.0) THEN
+       S1=ZERO
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         S1=ZERO
          DO J=1,sNy
           DO I=1,sNx
            UERR=(uIce(I,J,1,bi,bj)-uIce(I,J,3,bi,bj))
@@ -491,28 +488,21 @@ C     end bi,bj-loops
            S1=MAX(ABS(UERR),S1)
           END DO
          END DO
-         _GLOBAL_MAX_R8( S1, myThid )
         ENDDO
        ENDDO
+       _GLOBAL_MAX_R8( S1, myThid )
 C SAFEGUARD AGAINST BAD FORCING ETC
        IF(M.GT.1.AND.S1.GT.S1A) WFAU=WFAU2
        S1A=S1
        IF(S1.LT.LSR_ERROR) THEN
         ICOUNT1=M
-cph(
-cph        GO TO 8001
         phexit = 1
-cph)
        END IF
       END IF
       CALL EXCH_UV_3D_RL( uIce, vIce, .TRUE., 3, myThid )
 
-cph(
-      END IF
-cph)
-
-8000  CONTINUE
-cph 8001  CONTINUE
+      ENDIF
+      ENDDO
 C ITERATION END -----------------------------------------------------
 
       IF ( debugLevel .GE. debLevB ) THEN
@@ -662,7 +652,6 @@ C     + 2*eta*(tanphi/a) dU/dx
       ENDDO
 
 C NOW DO ITERATION
-300   CONTINUE
 
 cph--- iteration starts here
 cph--- need to kick out goto
@@ -672,11 +661,9 @@ C ITERATION START -----------------------------------------------------
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ LOOP = iteration vice
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-      DO 9000 M=1, solv_max_iters
-cph(
+      DO M=1, solv_max_iters
       IF ( phexit .EQ. -1 ) THEN
-cph)
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C NOW SET V(3)=V(1)
@@ -744,9 +731,9 @@ C     end bi,bj-loops
       ENDDO
 
       IF(MOD(M,SOLV_NCHECK).EQ.0) THEN
+       S2=ZERO
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         S2=ZERO
          DO J=1,sNy
           DO I=1,sNx
            UERR=(vIce(I,J,1,bi,bj)-vIce(I,J,3,bi,bj))
@@ -754,29 +741,22 @@ C     end bi,bj-loops
            S2=MAX(ABS(UERR),S2)
           END DO
          END DO
-         _GLOBAL_MAX_R8( S2, myThid )
         ENDDO
        ENDDO
+       _GLOBAL_MAX_R8( S2, myThid )
 C SAFEGUARD AGAINST BAD FORCING ETC
        IF(M.GT.1.AND.S2.GT.S2A) WFAV=WFAV2
        S2A=S2
        IF(S2.LT.LSR_ERROR) THEN
         ICOUNT2=M
-cph(
-cph        GO TO 9001
         phexit = 1
-cph)
        END IF
       END IF
 
       CALL EXCH_UV_3D_RL( uIce, vIce, .TRUE., 3, myThid )
 
-cph(
-      END IF
-cph)
-
-9000  CONTINUE
-cph 9001  CONTINUE
+      ENDIF
+      ENDDO
 C ITERATION END -----------------------------------------------------
 
       IF ( debugLevel .GE. debLevB ) THEN
