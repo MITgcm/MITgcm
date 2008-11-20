@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1041 2008/11/19 01:56:41 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1042 2008/11/20 22:52:06 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice, LSR solver: fix bug in GLOBAL_MAX calls ; 
+  update results of global_ocean.cs32x15.icedyn test.
 o move getcon.F from model/src to pkg/fizhi.
 o pkg/exf: add parameter for extrapolation of temp up to the surface 
    and option to prevent negative evap (in bulk_largeyeager04 only).
