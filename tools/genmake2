@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.178 2008/11/18 22:11:07 utke Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.179 2008/11/21 16:15:00 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1402,8 +1402,14 @@ if test ! -d ${ROOTDIR} ; then
 fi
 
 #  Find the MITgcm ${THISVER}
-if test -f "${ROOTDIR}/doc/tag-index" ; then
-    THISVER=`grep '^checkpoint' ${ROOTDIR}/doc/tag-index | head -1`
+version_file="${ROOTDIR}/doc/tag-index"
+if test -f $version_file ; then
+    THISVER=`grep '^checkpoint' $version_file | head -1`
+#-  remove ./BUILD_INFO.h file if older than version_file
+    if test -f ./BUILD_INFO.h -a ./BUILD_INFO.h -ot $version_file ; then
+	echo "  remove ./BUILD_INFO.h (older than ${version_file})"
+	rm -f ./BUILD_INFO.h
+    fi
 fi
 
 if test "x$MAKEFILE" = x ; then
