@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1042 2008/11/20 22:52:06 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1043 2008/11/21 16:47:29 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61f
 o pkg/seaice, LSR solver: fix bug in GLOBAL_MAX calls ; 
   update results of global_ocean.cs32x15.icedyn test.
 o move getcon.F from model/src to pkg/fizhi.
