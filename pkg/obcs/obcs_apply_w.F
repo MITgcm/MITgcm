@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.4 2005/12/07 23:55:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.5 2008/11/26 15:26:47 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -83,7 +83,7 @@ C Eastern boundary
        ENDIF
       ENDDO
 #endif
-#ifdef ALLOW_OBCS_SOUTH
+#ifdef ALLOW_OBCS_WEST
       DO J=1-Oly,sNy+Oly
 C Western boundary
        I_obc=OB_Iw(J,bi,bj)
