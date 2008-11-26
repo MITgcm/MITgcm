@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_2d.F,v 1.8 2007/07/19 15:34:50 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_2d.F,v 1.9 2008/11/26 08:41:49 mlosch Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -54,6 +54,9 @@ C--   Process 0 fills-in its local data
          DO bj=1,nSy
             DO bi=1,nSx
                DO j=1,sNy
+#ifdef TARGET_NEC_SX
+!cdir novector
+#endif
                   DO i=1,sNx
                      iG = mpi_myXGlobalLo(npe+1)-1+(bi-1)*sNx+i
                      jG = mpi_myYGlobalLo(npe+1)-1+(bj-1)*sNy+j
@@ -76,6 +79,9 @@ C--   Process 0 gathers the local arrays into a global array.
             DO bj=1,nSy
                DO bi=1,nSx
                   DO j=1,sNy
+#ifdef TARGET_NEC_SX
+!cdir novector
+#endif
                      DO i=1,sNx
                         iG = mpi_myXGlobalLo(npe+1)-1+(bi-1)*sNx+i
                         jG = mpi_myYGlobalLo(npe+1)-1+(bj-1)*sNy+j
