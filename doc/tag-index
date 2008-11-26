@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1043 2008/11/21 16:47:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1044 2008/11/26 08:42:28 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o gather_2d.F/scatter_2d.F: suppress vectorisation on NEC SX in respond to
+  a still unfixed compiler/optimization bug
 
 checkpoint61f
 o pkg/seaice, LSR solver: fix bug in GLOBAL_MAX calls ; 
