@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1044 2008/11/26 08:42:28 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1045 2008/11/26 15:27:02 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs: fix a CPP-flag, bug reported by Jeff Blundell
 o gather_2d.F/scatter_2d.F: suppress vectorisation on NEC SX in respond to
   a still unfixed compiler/optimization bug
 
