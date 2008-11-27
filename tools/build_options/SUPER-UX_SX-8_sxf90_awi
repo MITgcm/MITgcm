@@ -1,0 +1,60 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90_awi,v 1.1 2008/11/27 07:45:28 mlosch Exp $
+#
+# for cross compiling on sx8.awi.de
+# uname -a: 
+# Linux sx8 2.6.5-7.282-default #1 SMP Tue Aug 29 10:40:40 UTC 2006 ia64 ia64 ia64 GNU/Linux#
+
+# nec use
+CPP='/lib/cpp -traditional -P'
+DEFINES='-DTARGET_NEC_SX -DWORDLENGTH=1 -DHAVE_CLOC -UHAVE_SIGREG -DSEAICE_VECTORIZE_LSR -DCG2D_OUTERLOOPITERS=10'
+FC='sxmpif90'
+CC='sxcc -sx8r'
+
+RMFILES='*.L'
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  X ## _"
+LINK='sxf90'
+#LINK='sxmpif90 -p' # with profiler
+FFLAGS='-Pstack -sx8r'
+# automatic inlining for routines < 50 lines (default) and in the same file 
+# where they are to be inlined (we do not have too many of those)
+FFLAGS=$FFLAGS' -pi'
+# This is how you inline external routines if they are longer than 50 lines 
+# and live in a separate file (the actual routines depend on the packages 
+# used, therefore there are only a few examples here); unfortunately, these 
+# flags break the genmake2 tests, so you will have to include them into the
+# makefile by hand
+FEXTRAFLAGS='-pi auto fullmsg exp=barrier,ucase,timestep_tracer,ilnblnk,ifnblnk,cycle_tracer,pressure_for_eos,sw_temp,sw_ptmp rexp=fool_the_compiler,bar2,sw_adtg expin=barrier.F,timestep_tracer.F,fool_the_compiler.F,bar2.F,utils.F,cycle_tracer.F,pressure_for_eos.F,seawater.F'
+# additional candidates for inlining are parts of packages that are not 
+# always used, therefore use this at your own risk:
+#FEXTRAFLAGS=${FEXTRAFLAGS}' -pi fullmsg exp= expin='
+# additional options:
+# include a formated code listing and a listing of compiler transformations 
+# in *.L files
+#FFLAGS=$FFLAGS' -R2'
+# assume a loop count of 5,000,000 instead of estimating it from field
+# declarations and include details messages about vectorization (if -R2 
+# specified)
+#FFLAGS=$FFLAGS' -Wf "-pvctl noassume loopcnt=5000000 fullmsg"'
+# trace output for performance analysis
+#FFLAGS=$FFLAGS' -ftrace'
+# default automatic optimization level
+#FOPTIM='-C vopt' 
+if test "x$IEEE" = x ; then
+ # highest automatic optimization level, handle with care
+ FOPTIM='-C hopt'
+
+ # these files require lower optimization
+ NOOPTFILES='ini_forcing.F mom_calc_visc.F'
+ NOOPTFLAGS='-C vopt'
+else
+ #  Try to follow IEEE-754
+ # highest automatic optimization level, handle with care
+ FOPTIM='-C vsafe'
+fi
+
+# awi specific paths and stuff
+INCLUDES='-I/SX/usr/include -I/sx8/user2/awisoft/sx8/netcdf-4.0/dw/include'
+LIBS='-L/sx8/user2/awisoft/sx8/netcdf-4.0/dw/lib -lnetcdf'
+
