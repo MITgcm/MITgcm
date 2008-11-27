@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.11 2008/11/25 15:52:39 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.12 2008/11/27 07:43:22 mlosch Exp $
 #
 # for cross compiling on sx8.awi.de
 # uname -a: 
@@ -37,9 +37,6 @@ FEXTRAFLAGS='-pi auto fullmsg exp=barrier,ucase,timestep_tracer,ilnblnk,ifnblnk,
 # declarations and include details messages about vectorization (if -R2 
 # specified)
 #FFLAGS=$FFLAGS' -Wf "-pvctl noassume loopcnt=5000000 fullmsg"'
-# define basic storage unit as 8 bytes (default is 4); does not work with 
-# netCDF (library needs recompilation, accordingly)
-#FFLAGS=$FFLAGS' -ew'   
 # trace output for performance analysis
 #FFLAGS=$FFLAGS' -ftrace'
 # default automatic optimization level
@@ -58,14 +55,10 @@ else
 fi
 
 # awi specific paths and stuff
-#NETCDFINC='-I/sx8/user2/awisoft/sx8/netcdf-3.6.2/include'
-#NETCDFLIB='-L/sx8/user2/awisoft/sx8/netcdf-3.6.2/lib -lnetcdf'
-#NETCDFINC='-I/sx8/user2/awisoft/sx8/netcdf-3.6.1/include'
-#NETCDFLIB='-L/sx8/user2/awisoft/sx8/netcdf-3.6.1/lib -lnetcdf'
-#INCLUDES='-I/SX/usr/include '$NETCDFINC
-#LIBS=$NETCDFLIB
-INCLUDES='-I/SX/usr/include -I/home/sx8/sx8bench/netcdf/include'
-LIBS='-L/home/sx8/sx8bench/netcdf/lib -lnetcdf'
+#INCLUDES='-I/SX/usr/include -I/home/sx8/sx8bench/netcdf/include'
+#LIBS='-L/home/sx8/sx8bench/netcdf/lib -lnetcdf'
+INCLUDES='-I/SX/usr/include -I/sx8/user2/awisoft/sx8/netcdf-4.0/dw/include'
+LIBS='-L/sx8/user2/awisoft/sx8/netcdf-4.0/dw/lib -lnetcdf'
 # this is needed for compiling on the compute nodes
 INCLUDES=$INCLUDES' -I/SX/opt/mpisx/inst/usr/include'
 
