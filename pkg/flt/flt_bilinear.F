@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_bilinear.F,v 1.2 2004/09/07 16:19:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_bilinear.F,v 1.3 2008/12/03 01:34:51 jmc Exp $
 C $Name:  $
 
-#include "FLT_CPPOPTIONS.h"
+#include "FLT_OPTIONS.h"
 
-      subroutine  flt_bilinear(
+      subroutine flt_bilinear (
      I                         xp,
      I                         yp,
      O                         uu,
@@ -45,6 +45,12 @@ c     == local variables ==
 
 c     == end of interface ==
 
+      IF ( kp.LT.1 .OR. kp.GT.Nr ) THEN
+c           WRITE(msgbuf,'(A,I8)')
+c    &        ' FLT_BILINEAR: illegal value for kp=',kp
+c           CALL PRINT_ERROR( msgbuf, myThid )
+            STOP 'ABNORMAL END: S/R FLT_BILINEAR'
+      ENDIF
       nnx = int(xp)
       nny = int(yp)
       dx = xp - float(nnx)
@@ -57,34 +63,34 @@ c nu=3 for v
 c nu=4 for w
 c
       if (nu.eq.1.or.nu.eq.4) then
-	nfx = nnx
-	nfy = nny
-	ddx = dx
-	ddy = dy
+        nfx = nnx
+        nfy = nny
+        ddx = dx
+        ddy = dy
       endif
 c
       if (nu.eq.2) then
-	if (dx.le.0.5) then
-	   nfx = nnx
-	   ddx = dx + 0.5
-	else
-	   nfx = nnx + 1
-	   ddx = dx - 0.5
-	endif
-	nfy = nny
-	ddy = dy
+        if (dx.le.0.5) then
+           nfx = nnx
+           ddx = dx + 0.5
+        else
+           nfx = nnx + 1
+           ddx = dx - 0.5
+        endif
+        nfy = nny
+        ddy = dy
       endif
 c
       if (nu.eq.3) then
-	if (dy.le.0.5) then
-	  nfy = nny
-	  ddy = dy + 0.5
-	else
-	  nfy = nny + 1
-	  ddy = dy - 0.5
-	endif
-	nfx = nnx
-	ddx = dx
+        if (dy.le.0.5) then
+          nfy = nny
+          ddy = dy + 0.5
+        else
+          nfy = nny + 1
+          ddy = dy - 0.5
+        endif
+        nfx = nnx
+        ddx = dx
       endif
 c
 c
@@ -194,54 +200,54 @@ c Velocities are face quantities and must therefore be treated differently
 c
 c if the variable is T,S
       if (nu.eq.1) then
-	nfx = nnx
-	ddx = dx
-	nfy = nny
-	ddy = dy
-	nfz = nnz
-	ddz = dz
+        nfx = nnx
+        ddx = dx
+        nfy = nny
+        ddy = dy
+        nfz = nnz
+        ddz = dz
       endif
 c if the variable is u 
       if (nu.eq.2) then
-	if (dx.le.0.5) then
-	   nfx = nnx
-	   ddx = dx + 0.5
-	else
-	   nfx = nnx + 1
-	   ddx = dx - 0.5
-	endif
-	nfy = nny
-	ddy = dy
-	nfz = nnz
-	ddz = dz
+        if (dx.le.0.5) then
+           nfx = nnx
+           ddx = dx + 0.5
+        else
+           nfx = nnx + 1
+           ddx = dx - 0.5
+        endif
+        nfy = nny
+        ddy = dy
+        nfz = nnz
+        ddz = dz
       endif
 c if the variable is v
       if (nu.eq.3) then
-	nfx = nnx
-	ddx = dx
-	if (dy.le.0.5) then
-	  nfy = nny
-	  ddy = dy + 0.5
-	else
-	  nfy = nny + 1
-	  ddy = dy - 0.5
-	endif
-	nfz = nnz
-	ddz = dz
+        nfx = nnx
+        ddx = dx
+        if (dy.le.0.5) then
+          nfy = nny
+          ddy = dy + 0.5
+        else
+          nfy = nny + 1
+          ddy = dy - 0.5
+        endif
+        nfz = nnz
+        ddz = dz
       endif
 c if the variable is w
       if (nu.eq.4) then
-	nfx = nnx
-	ddx = dx
-	nfy = nny
-	ddy = dy
-	if (dz.le.0.5) then
-	  nfz = nnz
-	  ddz = dz + 0.5
-	else
-	  nfz = nnz + 1
-	  ddz = dz - 0.5
-	endif
+        nfx = nnx
+        ddx = dx
+        nfy = nny
+        ddy = dy
+        if (dz.le.0.5) then
+          nfz = nnz
+          ddz = dz + 0.5
+        else
+          nfz = nnz + 1
+          ddz = dz - 0.5
+        endif
       endif
 c
 c if we are near or over the edge, limit nfx/y/z
@@ -338,34 +344,34 @@ c nu=3 for v
 c nu=4 for w
 c
       if (nu.eq.1.or.nu.eq.4) then
-	nfx = nnx
-	nfy = nny
-	ddx = dx
-	ddy = dy
+        nfx = nnx
+        nfy = nny
+        ddx = dx
+        ddy = dy
       endif
 c
       if (nu.eq.2) then
-	if (dx.le.0.5) then
-	   nfx = nnx
-	   ddx = dx + 0.5
-	else
-	   nfx = nnx + 1
-	   ddx = dx - 0.5
-	endif
-	nfy = nny
-	ddy = dy
+        if (dx.le.0.5) then
+           nfx = nnx
+           ddx = dx + 0.5
+        else
+           nfx = nnx + 1
+           ddx = dx - 0.5
+        endif
+        nfy = nny
+        ddy = dy
       endif
 c
       if (nu.eq.3) then
-	if (dy.le.0.5) then
-	  nfy = nny
-	  ddy = dy + 0.5
-	else
-	  nfy = nny + 1
-	  ddy = dy - 0.5
-	endif
-	nfx = nnx
-	ddx = dx
+        if (dy.le.0.5) then
+          nfy = nny
+          ddy = dy + 0.5
+        else
+          nfy = nny + 1
+          ddy = dy - 0.5
+        endif
+        nfx = nnx
+        ddx = dx
       endif
 c
 cab change start
