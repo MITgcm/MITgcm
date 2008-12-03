@@ -41,10 +41,11 @@
 # Time stepping parameters
  &PARM03
  niter0=0,
- nTimeSteps=144,
+ nTimeSteps=18,
  deltaT=600.0,
  abEps=0.1,
  dumpFreq=432000.,
+ monitorFreq=3600.,
  &
 
 # Gridding parameters
