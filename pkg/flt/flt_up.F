@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_up.F,v 1.1 2001/09/13 17:43:56 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_up.F,v 1.2 2008/12/03 01:32:35 jmc Exp $
 C $Name:  $
 
-#include "FLT_CPPOPTIONS.h"
+#include "FLT_OPTIONS.h"
 
       subroutine flt_up (
      I                    myCurrentIter, 
@@ -81,7 +81,7 @@ c (1) read actual number floats from file (if exists)
      &              fn(1:IL),'.',iG,'.',jG,'.data'
          inquire( file=dataFname, exist=exst )
          if (exst) then
-            call mdsreadvector_flt(fn,globalFile,64,'RL',
+            CALL FLT_MDSREADVECTOR(fn,globalFile,64,'RL',
      &                             imax,tmp,bi,bj,1,mythid)
             npart_read  = tmp(1)
             npart_times = tmp(5)

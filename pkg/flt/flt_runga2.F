@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.7 2007/03/24 02:23:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.8 2008/12/03 01:32:35 jmc Exp $
 C $Name:  $
 
-#include "FLT_CPPOPTIONS.h"
+#include "FLT_OPTIONS.h"
 
       subroutine flt_runga2 (
      I                        myCurrentIter, 

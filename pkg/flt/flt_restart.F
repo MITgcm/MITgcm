@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_restart.F,v 1.1 2001/09/13 17:43:56 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_restart.F,v 1.2 2008/12/03 01:32:35 jmc Exp $
 C $Name:  $
 
-#include "FLT_CPPOPTIONS.h"
+#include "FLT_OPTIONS.h"
 
 
       subroutine flt_restart (

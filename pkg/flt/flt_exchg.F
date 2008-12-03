@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.3 2007/10/09 00:04:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.4 2008/12/03 01:32:35 jmc Exp $
 C $Name:  $
 
 C /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.1 2001/09/13 17:43:55 adcroft Exp
 C checkpoint52h_pre
 
-#include "FLT_CPPOPTIONS.h"
+#include "FLT_OPTIONS.h"
 
       subroutine flt_exchg (
      I                       myCurrentIter,

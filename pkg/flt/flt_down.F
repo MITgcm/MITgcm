@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_down.F,v 1.1 2001/09/13 17:43:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_down.F,v 1.2 2008/12/03 01:32:35 jmc Exp $
 C $Name:  $
 
-#include "FLT_CPPOPTIONS.h"
+#include "FLT_OPTIONS.h"
 
       subroutine flt_down (
      I                      myCurrentIter, 

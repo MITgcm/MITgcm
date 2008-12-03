@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.2 2007/10/09 00:04:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.3 2008/12/03 01:32:35 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "FLT_OPTIONS.h"
 #ifdef ALLOW_FLT
-#include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_SEND_PUT_VEC_X( arrayE, arrayW,
      I            myd1, myThid )
@@ -380,13 +379,13 @@ C     per process preemption is not a problem.
       RETURN
       END
 
-#else
+#else /* ALLOW_FLT */
       SUBROUTINE EXCH_RL_SEND_PUT_VEC_X( myThid )
       INTEGER myThid
-      return
-      end
+      RETURN
+      END
       SUBROUTINE EXCH_RL_SEND_PUT_VEC_Y(  myThid )
       INTEGER myThid
-      return
-      end
-#endif
+      RETURN
+      END
+#endif /* ALLOW_FLT */

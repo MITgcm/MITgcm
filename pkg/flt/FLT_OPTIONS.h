@@ -1,5 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/FLT_CPPOPTIONS.h,v 1.2 2004/09/07 16:19:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT_OPTIONS.h,v 1.1 2008/12/03 01:32:35 jmc Exp $
 C $Name:  $
+
+C CPP options file for FLT package
+
+#ifndef FLT_OPTIONS_H
+#define FLT_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#ifdef ALLOW_FLT
 
 #include "CPP_OPTIONS.h"
 
@@ -17,4 +24,5 @@ c
 #define ALLOW_FLT_3D_NOISE
 #endif
 
-
+#endif /* ALLOW_FLT */
+#endif /* FLT_OPTIONS_H */
