@@ -9,7 +9,7 @@ function [flt,data,header] = read_flt_traj(fName)
 % >> for k=1:126;plot(flts(k).x/1e3,flts(k).y/1e3);hold on;end;hold off
 
 imax=10;		% record size
-ieee='n';		% IEEE format
+ieee='b';		% IEEE big-endian format
 bytesPerRec=imax*8;	% 8 bytes per real*8
 
 fls=dir([fName '.*data']);

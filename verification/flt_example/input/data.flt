@@ -5,5 +5,5 @@
  flt_int_traj =  3600.,
  flt_int_prof =  10800.,
  flt_noise    = 0.0,
- flt_file     = 'float_pos.input',
+ flt_file     = 'float_pos.inp_b',
  &
