@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.1 2001/09/13 17:43:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.2 2008/12/03 01:35:42 jmc Exp $
 C $Name:  $
 
-#include "FLT_CPPOPTIONS.h"
+#include "FLT_OPTIONS.h"
 
 c     ==================================================================
 c
@@ -10,10 +10,10 @@ c
 c     Main Routines:
 c
 c     o flt_main      - Integrates the floats forward and stores
-c                       positions and vertical profiles at specific 
+c                       positions and vertical profiles at specific
 c                       time intervals.
 c     o flt_init      - Initialise the floats
-c     o flt_restart   - Writes restart data to file. 
+c     o flt_restart   - Writes restart data to file.
 c
 c     Second Level Subroutines:
 c
@@ -29,10 +29,10 @@ c     o flt_functions - contains some functions
 c     o flt_mdsreadvector - modified mdsreadvector to read files
 c
 c     ToDo:
-c     
-c     o avoid exchanges when arrays empty 
+c
+c     o avoid exchanges when arrays empty
 c     o 3D advection of floats
-c      
+c
 c     ==================================================================
 c
 c     Documentation:
@@ -41,7 +41,7 @@ c     To be made....
 c
 c
 c     started: Arne Biastoch abiastoch@ucsd.edu 10-Jan-2000
-c              (adopted from version written by Detlef Stammer 
+c              (adopted from version written by Detlef Stammer
 c               for the old model code)
 c
 c     changed: Arne Biastoch abiastoch@ucsd.edu 21-JUN-2001
@@ -49,80 +49,85 @@ c
 c     ==================================================================
 
 
-      subroutine flt_main (
-     I                      myCurrentIter, 
-     I                      myCurrentTime, 
+      SUBROUTINE FLT_MAIN (
+     I                      myIter,
+     I                      myTime,
      I                      myThid
      &                     )
 
-c     ==================================================================
-c     SUBROUTINE flt_main
-c     ==================================================================
-c
-c     o This routine steps floats forward in time and samples the model
-c       state at float position every flt_int_traj time steps.
-c       Also moves the float up and down and samples vertical profiles.
-c
-c     o Uses  2nd or fourth order runga-kutta 
-c     o Spatial interpolation is bilinear close to boundaries and otherwise
-c       a polynomial interpolation.
-c     o Particles are kept in grid space (with position of dp taken as 
-c       x(south), y(east) grid cell point)
-c     o Calls profile every flt_int_prof time steps; in that event the 
-c       profile over the whole water column is written to file and the
-c       float might be moved upwards to the surface (depending on its
-c       configuration).
-cc
-c     ==================================================================
-c     SUBROUTINE flt_main
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE FLT_MAIN
+C     ==================================================================
+C
+C     o This routine steps floats forward in time and samples the model
+C       state at float position every flt_int_traj time steps.
+C       Also moves the float up and down and samples vertical profiles.
+C
+C     o Uses  2nd or fourth order runga-kutta
+C     o Spatial interpolation is bilinear close to boundaries and otherwise
+C       a polynomial interpolation.
+C     o Particles are kept in grid space (with position of dp taken as
+C       x(south), y(east) grid cell point)
+C     o Calls profile every flt_int_prof time steps; in that event the
+C       profile over the whole water column is written to file and the
+C       float might be moved upwards to the surface (depending on its
+C       configuration).
+Cc
+C     ==================================================================
+C     SUBROUTINE FLT_MAIN
+C     ==================================================================
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "FLT.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
 
-c     mythid - thread number for this instance of the routine.
+C     mythid - thread number for this instance of the routine.
 
-      INTEGER myCurrentIter, myThid
-      _RL myCurrentTime
+      INTEGER myIter, myThid
+      _RL myTime
 
-c     integration of the float trajectories
-c
+C     integration of the float trajectories
+
+c         write(0,*) ' bf call flt_runga2', myIter
          CALL TIMER_START('FLOATS RUNGA2      [FLT  LOOP]',myThid)
-         call flt_runga2(myCurrentIter,myCurrentTime,myThid)
+         call flt_runga2( myIter, myTime, myThid )
          CALL TIMER_STOP ('FLOATS RUNGA2      [FLT  LOOP]',myThid)
+c         write(0,*) ' af call flt_runga2', myIter
 
-c     check if exchanges between tiles are necessary
-c
+C     check if exchanges between tiles are necessary
+
          if (Nx .ne. sNx .or. Ny .ne. sNy) then
             CALL TIMER_START('FLOATS EXCHG       [FLT  LOOP]',myThid)
-            call flt_exchg(myCurrentIter,myCurrentTime,myThid)
+            call flt_exchg( myIter, myTime, myThid )
             CALL TIMER_STOP ('FLOATS EXCHG       [FLT  LOOP]',myThid)
          endif
 
-c     store profiles every flt_int_prof time steps:
-c     and move floats up and down 
-c
+C     store profiles every flt_int_prof time steps:
+C     and move floats up and down
 
-         if (mod(myCurrentTime,flt_int_prof).eq.0.) then
+         if (mod(myTime,flt_int_prof).eq.0.) then
             CALL TIMER_START('FLOATS UP          [FLT  LOOP]',myThid)
-            call flt_up(myCurrentIter,myCurrentTime,myThid)
+            call flt_up( myIter, myTime, myThid )
             CALL TIMER_STOP ('FLOATS UP          [FLT  LOOP]',myThid)
          endif
 
+c         write(0,*) ' bf call flt_down', myIter
             CALL TIMER_START('FLOATS DOWN        [FLT  LOOP]',myThid)
-            call flt_down(MyCurrentIter,myCurrentTime,myThid)
+            call flt_down( myIter, myTime, myThid )
             CALL TIMER_STOP ('FLOATS DOWN        [FLT  LOOP]',myThid)
+c         write(0,*) ' af call flt_down', myIter
 
-c     store particles every flt_int_traj timesteps:
-c
-         if (mod(myCurrentTime,flt_int_traj).eq.0.) then
+C     store particles every flt_int_traj timesteps:
+
+         if (mod(myTime,flt_int_traj).eq.0.) then
+c         write(0,*) ' bf call flt_traj', myIter
             CALL TIMER_START('FLOATS TRAJ        [FLT  LOOP]',myThid)
-            call flt_traj(myCurrentIter,myCurrentTime,myThid)
+            call flt_traj( myIter, myTime, myThid )
             CALL TIMER_STOP ('FLOATS TRAJ        [FLT  LOOP]',myThid)
+c         write(0,*) ' af call flt_traj', myIter
          endif
 
-      return
-      end
+      RETURN
+      END
