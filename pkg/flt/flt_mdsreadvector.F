@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_mdsreadvector.F,v 1.2 2008/12/03 01:43:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_mdsreadvector.F,v 1.3 2008/12/03 02:34:10 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -138,7 +138,7 @@ c       ENDIF
 
 C If we are reading from a global file then we open it here
       IF (globalFile) THEN
-       IF ( debugLevel.GE.debLevA ) THEN
+       IF ( debugLevel.GE.debLevB ) THEN
         WRITE(msgbuf,'(A,A)')
      &   ' FLT_MDSREADVECTOR: opening global file: ',dataFName(1:iLfn)
         CALL PRINT_MESSAGE( msgbuf, standardmessageunit,
@@ -164,7 +164,7 @@ C If we are reading from a tiled MDS file then we open each one here
 C Of course, we only open the file IF the tile is "active"
 C (This is a place-holder for the active/passive mechanism)
          IF (exst) THEN
-          IF ( debugLevel.GE.debLevA ) THEN
+          IF ( debugLevel.GE.debLevB ) THEN
            WRITE(msgbuf,'(A,A)')
      &      ' FLT_MDSREADVECTOR: opening file: ',dataFName(1:iLfn)
            CALL PRINT_MESSAGE( msgbuf, standardmessageunit,
