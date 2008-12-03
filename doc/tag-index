@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1045 2008/11/26 15:27:02 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1046 2008/12/03 02:45:22 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/flt:
+  - move FLT_CPPOPTIONS.h to FLT_OPTIONS.h (standard name)
+   + make OPTIONS file more standard.
+  - rename S/R MDSREADVECTOR_FLT to FLT_MDSREADVECTOR (to mach src file name)
+  - fix _BYTESWAPIO CPP-Flag
+  - standard reading of file-parameter "data.flt"
+  still need to fix _BYTESWAPIO in pkg/mdsio/mdsio_writevector.F
 o pkg/obcs: fix a CPP-flag, bug reported by Jeff Blundell
 o gather_2d.F/scatter_2d.F: suppress vectorisation on NEC SX in respond to
   a still unfixed compiler/optimization bug
