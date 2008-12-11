@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.179 2008/11/21 16:15:00 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.180 2008/12/11 17:50:56 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -3005,7 +3005,7 @@ ad_input_code_sf.w2f.f$FS90: ad_input_code_sf.f$FS90 mfef90 whirl2f whirl2f_be w
 
 # canonicalizer
 ad_input_code_sf.w2f.pre.f$FS90: ad_input_code_sf.w2f.f$FS90 preProcess.py
-	./preProcess.py -H \$< -o \$@
+	./preProcess.py --mode=reverse \$< -o \$@
 
 # F -> WHIRL
 # note that the canonicalized version cuts off at col 72 
