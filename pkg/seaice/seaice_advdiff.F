@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.28 2007/12/21 01:32:35 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.29 2008/12/17 03:33:30 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -301,6 +301,39 @@ C     now do the "explicit" time step
         ENDIF
 #endif /* SEAICE_SALINITY */
 
+#ifdef SEAICE_AGE
+C--   Sea Ice Age
+        IF ( SEAICEadvAge ) THEN
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           iceFld(i,j) = IceAge(i,j,bi,bj)
+          ENDDO
+         ENDDO
+         CALL SEAICE_ADVECTION(
+     I        GAD_AGE, SEAICEadvSchAge,
+     I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
+     I        uTrans, vTrans, iceFld, recip_heff,
+     O        gFld, afx, afy,
+     I        bi, bj, myTime, myIter, myThid )
+         IF ( diff1 .GT. 0. _d 0 ) THEN
+C--   Add tendency due to diffusion
+          CALL SEAICE_DIFFUSION(
+     I         GAD_AGE,
+     I         IceAge(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
+     U         gFld,
+     I         bi, bj, myTime, myIter, myThid )
+         ENDIF
+C     now do the "explicit" time step
+         DO j=1,sNy
+          DO i=1,sNx
+           IceAge(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
+     &          IceAge(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
+     &          )
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* SEAICE_AGE */
+
 C---   end bi,bj loops
        ENDDO
       ENDDO
@@ -374,6 +407,35 @@ C     with LAD=1 (Leapfrog).
         ENDDO
        ENDIF
 #endif /* SEAICE_SALINITY */
+
+#ifdef SEAICE_AGE
+C     another fudge: copy 2D field IceAge to 3D field fld3d to be able to
+C     use ADVECT. Works only with LAD=2 (Backward Euler scheme) and NOT
+C     with LAD=1 (Leapfrog).
+       IF ( SEAICEadvAge ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            fld3d(I,J,3,bi,bj) = 0. _d 0
+            fld3d(I,J,2,bi,bj) = IceAge(I,J,bi,bj)
+            fld3d(I,J,1,bi,bj) = IceAge(I,J,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL ADVECT( uc, vc, fld3d, HEFFM, myThid )
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            IceAge(I,J,bi,bj) = fld3d(I,J,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* SEAICE_AGE */
 
 C--   end if multiDimAdvection
       ENDIF

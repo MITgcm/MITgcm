@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.65 2008/03/27 19:53:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.66 2008/12/17 03:33:30 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -136,7 +136,7 @@ C--   (called from DO_OCEANIC_PHYSICS) take care of this
 
 C NOW DO ADVECTION and DIFFUSION
       IF ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow
-     &        .OR. SEAICEadvSalt ) THEN
+     &        .OR. SEAICEadvSalt .OR. SEAICEadvAge ) THEN
 #ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB )
      &      CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
@@ -188,6 +188,9 @@ C--   Update overlap regions for a bunch of stuff
        _EXCH_XY_R8( HSNOW,  myThid )
 #ifdef SEAICE_SALINITY
        _EXCH_XY_R8( HSALT,  myThid )
+#endif
+#ifdef SEAICE_AGE
+       _EXCH_XY_R8( IceAge,  myThid )
 #endif
        _EXCH_XY_R4(EmPmR, myThid )
        _EXCH_XY_R4(saltFlux, myThid )

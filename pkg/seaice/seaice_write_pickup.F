@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.1 2007/11/25 21:39:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_write_pickup.F,v 1.2 2008/12/17 03:33:30 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -106,6 +106,12 @@ C---  continue to write 2-D fields:
         nj = nj-1
         CALL WRITE_REC_3D_RL( fn, fp,  1, HSALT , nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'siHSALT '
+#endif
+#ifdef SEAICE_AGE
+        j = j + 1
+        nj = nj-1
+        CALL WRITE_REC_3D_RL( fn, fp,  1, ICEAGE, nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'siAGE   '
 #endif
        ENDIF
 

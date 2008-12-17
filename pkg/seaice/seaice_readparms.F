@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.65 2008/04/22 15:28:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.66 2008/12/17 03:33:30 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -43,10 +43,12 @@ C--   SEAICE parameters
      & SEAICEuseEVPpickup, SEAICEuseFluxForm,
      & useHB87stressCoupling, SEAICEuseFlooding, usePW79thermodynamics,
      & SEAICErestoreUnderIce,
-     & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow, SEAICEadvSalt,
+     & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow,
+     & SEAICEadvSalt, SEAICEadvAge,
      & SEAICE_clipVelocities, SEAICE_maskRHS, SEAICE_no_slip,
      & LAD, IMAX_TICE, SEAICEadvScheme, SEAICEadvSchArea, 
-     & SEAICEadvSchHeff, SEAICEadvSchSnow, SEAICEadvSchSalt,
+     & SEAICEadvSchHeff, SEAICEadvSchSnow,
+     & SEAICEadvSchSalt, SEAICEadvSchAge,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
      & SEAICE_evpDampC, SEAICE_zetaMin, 
@@ -62,7 +64,7 @@ C--   SEAICE parameters
      & SEAICE_salinity, SEAICEstressFactor,
      & SEAICE_gamma_t, SEAICE_gamma_t_frz,
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
-     & AreaFile, HeffFile, HsnowFile, HsaltFile,
+     & AreaFile, HeffFile, HsnowFile, HsaltFile, IceAgeFile,
      & LSR_ERROR, DIFF1, A22, HO,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
@@ -112,6 +114,7 @@ C--   set default sea ice parameters
       SEAICEadvArea      = .TRUE.
       SEAICEadvSnow      = .FALSE.
       SEAICEadvSalt      = .FALSE.
+      SEAICEadvAge       = .FALSE.
       SEAICEuseFlooding  = .FALSE.
       SEAICE_no_slip     = .FALSE.
       SEAICE_clipVelocities = .TRUE.
@@ -121,6 +124,7 @@ C--   set default sea ice parameters
       SEAICEadvSchHeff   = UNSET_I
       SEAICEadvSchSnow   = UNSET_I
       SEAICEadvSchSalt   = UNSET_I
+      SEAICEadvSchAge    = UNSET_I
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = UNSET_RL
@@ -176,6 +180,7 @@ C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
       AreaFile   = ' '
       HsnowFile  = ' '
       HsaltFile  = ' '
+      IceAgeFile = ' '
       HeffFile   = ' '
       LAD        = 2
       IMAX_TICE  = 10
@@ -313,6 +318,7 @@ C     so we reset them here
        SEAICEadvArea         = .FALSE.
        SEAICEadvSnow         = .FALSE.    
        SEAICEadvSalt         = .FALSE.    
+       SEAICEadvAge          = .FALSE.    
       ENDIF
 C     Set advection schemes to some sensible values if not done 
 C     in data.seaice
@@ -326,6 +332,8 @@ C     in data.seaice
      &     SEAICEadvSchSnow = SEAICEadvSchHeff
       IF ( SEAICEadvSchSalt .EQ. UNSET_I )
      &     SEAICEadvSchSalt = SEAICEadvSchHeff
+      IF ( SEAICEadvSchAge  .EQ. UNSET_I )
+     &     SEAICEadvSchAge  = SEAICEadvSchHeff
 
       IF ( SEAICE_EPS_SQ .EQ. -99999. )
      &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS

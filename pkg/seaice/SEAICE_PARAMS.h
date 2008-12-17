@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.53 2008/04/22 15:28:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.54 2008/12/17 03:33:29 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -30,6 +30,8 @@ C     SEAICEadvSnow     :: turn on advection of snow (does not work with
 C                          non-default Leap-frog scheme for advection)
 C     SEAICEadvSalt     :: turn on advection of salt (does not work with
 C                          non-default Leap-frog scheme for advection)
+C     SEAICEadvAge      :: turn on advection of ice age (does not work with
+C                          non-default Leap-frog scheme for advection)
 C     useHB87stressCoupling :: use an intergral over ice and ocean surface
 C                          layer to define surface stresses on ocean
 C                          following Hibler and Bryan (1987, JPO)
@@ -51,7 +53,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseTEM,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
      &     SEAICEadvHeff, SEAICEadvArea,
-     &     SEAICEadvSnow, SEAICEadvSalt,
+     &     SEAICEadvSnow, SEAICEadvSalt, SEAICEadvAge,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
      &     usePW79thermodynamics, SEAICErestoreUnderIce,
      &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
@@ -62,7 +64,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseTEM,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
      &     SEAICEadvHeff, SEAICEadvArea,
-     &     SEAICEadvSnow, SEAICEadvSalt,
+     &     SEAICEadvSnow, SEAICEadvSalt, SEAICEadvAge,
      &     SEAICEuseFluxForm, useHB87stressCoupling,
      &     usePW79thermodynamics, SEAICErestoreUnderIce,
      &     SEAICE_no_slip, SEAICE_clipVelocities, SEAICE_maskRHS,
@@ -79,6 +81,7 @@ C     SEAICEadvSchHeff - sets the advection scheme for effective thickness
 C                        (=volume), snow thickness, and salt if available
 C     SEAICEadvSchSnow - sets the advection scheme for snow on sea-ice
 C     SEAICEadvSchSalt - sets the advection scheme for sea ice salinity
+C     SEAICEadvSchAge  - sets the advection scheme for sea ice age
 C
       INTEGER LAD, IMAX_TICE
       INTEGER SEAICEadvScheme
@@ -86,18 +89,21 @@ C
       INTEGER SEAICEadvSchHeff
       INTEGER SEAICEadvSchSnow
       INTEGER SEAICEadvSchSalt
+      INTEGER SEAICEadvSchAge
       COMMON /SEAICE_PARM_I/ 
      &     LAD, IMAX_TICE,
      &     SEAICEadvScheme,
      &     SEAICEadvSchArea,
      &     SEAICEadvSchHeff,
      &     SEAICEadvSchSnow,
-     &     SEAICEadvSchSalt
+     &     SEAICEadvSchSalt,
+     &     SEAICEadvSchAge
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
 C     AreaFile        - File containing initial sea-ice concentration
 C     HsnowFile       - File containing initial snow thickness
 C     HsaltFile       - File containing initial sea ice salt content
+C     IceAgeFile      - File containing initial sea ice age
 C     HeffFile        - File containing initial sea-ice thickness
 C        !!! NOTE !!! Initial sea-ice thickness can also be set using
 C        SEAICE_initialHEFF below.  But a constant initial condition
@@ -107,8 +113,10 @@ C
       CHARACTER*(MAX_LEN_FNAM) AreaFile
       CHARACTER*(MAX_LEN_FNAM) HsnowFile
       CHARACTER*(MAX_LEN_FNAM) HsaltFile
+      CHARACTER*(MAX_LEN_FNAM) IceAgeFile
       CHARACTER*(MAX_LEN_FNAM) HeffFile
-      COMMON /SEAICE_PARM_C/ HeffFile, HsnowFile, HsaltFile, AreaFile
+      COMMON /SEAICE_PARM_C/
+     &     AreaFile, HsnowFile, HsaltFile, IceAgeFile, HeffFile
 
 C--   COMMON /SEAICE_PARM_RL/ Real valued parameters of sea ice model.
 C     SEAICE_deltaTtherm - Seaice timestep for thermodynamic equations (s)
@@ -173,20 +181,6 @@ C     DIFF1              - parameter used in advect.F
 C     A22                - parameter used in growth.F
 C     HO                 - demarcation thickness between thin and
 C                          thick ice: HO is a key ice-growth parameter
-C     WindForcingStart   - Time of first  wind forcing record  (s)
-C     WindForcingEnd     - Time of last   wind forcing record  (s)
-C     WindForcingPeriod  - Period between wind forcing records (s)
-C     FluxForcingStart   - Time of first  flux forcing record  (s)
-C     FluxForcingEnd     - Time of last   flux forcing record  (s)
-C     FluxForcingPeriod  - Period between flux forcing records (s)
-C     SSTForcingStart    - Time of first  SST  forcing record  (s)
-C     SSTForcingEnd      - Time of last   SST  forcing record  (s)
-C     SSTForcingPeriod   - Period between SST  forcing records (s)
-C     SSSForcingStart    - Time of first  SSS  forcing record  (s)
-C     SSSForcingEnd      - Time of last   SSS  forcing record  (s)
-C     SSSForcingPeriod   - Period between SSS  forcing records (s)
-C     StartingYear       - Starting year of integration
-C     EndingYear         - Ending year of integration
 C     SEAICE_airTurnAngle   - turning angles of air-ice interfacial stress 
 C     SEAICE_waterTurnAngle - and ice-water interfacial stress (in degrees)
 C
@@ -204,11 +198,6 @@ C
       _RL SEAICE_gamma_t, SEAICE_gamma_t_frz
       _RL SEAICE_availHeatFrac, SEAICE_availHeatFracFrz
       _RL OCEAN_drag, LSR_ERROR, DIFF1, A22, HO
-      _RL WindForcingStart, WindForcingEnd, WindForcingPeriod
-      _RL FluxForcingStart, FluxForcingEnd, FluxForcingPeriod
-      _RL SSTForcingStart,  SSTForcingEnd,  SSTForcingPeriod
-      _RL SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod
-      _RL StartingYear,     EndingYear
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
       _RL SEAICE_elasticParm, SEAICE_evpTauRelax
       _RL SEAICE_evpDampC, SEAICE_zetaMin
@@ -229,11 +218,6 @@ C
      &    SEAICE_gamma_t, SEAICE_gamma_t_frz,
      &    SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      &    OCEAN_drag, LSR_ERROR, DIFF1, A22, HO,
-     &    WindForcingStart, WindForcingEnd, WindForcingPeriod,
-     &    FluxForcingStart, FluxForcingEnd, FluxForcingPeriod,
-     &    SSTForcingStart,  SSTForcingEnd,  SSTForcingPeriod,
-     &    SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod,
-     &    StartingYear,     EndingYear,
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
@@ -257,13 +241,15 @@ C--   Constants used by sea-ice model
       parameter ( QUART = 0.25 _d 0, HALF = 0.5 _d 0 ) 
 
 C--   identifiers for advected properties
-      INTEGER GAD_HEFF,GAD_AREA,GAD_QICE1,GAD_QICE2,GAD_SNOW,GAD_SALT
+      INTEGER GAD_HEFF,GAD_AREA,GAD_QICE1,GAD_QICE2,GAD_SNOW
+      INTEGER GAD_SALT,GAD_AGE
       PARAMETER ( GAD_HEFF  = 101, 
      &            GAD_AREA  = 102,
      &            GAD_QICE1 = 103,
      &            GAD_QICE2 = 104,
      &            GAD_SNOW  = 105,
-     &            GAD_SALT  = 106 )
+     &            GAD_SALT  = 106,
+     &            GAD_AGE   = 107 )
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.27 2008/04/21 11:36:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.28 2008/12/17 03:33:30 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -30,7 +30,7 @@ C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL checkAdvSchArea, checkAdvSchHeff, checkAdvSchSnow
-      LOGICAL checkAdvSchSalt
+      LOGICAL checkAdvSchSalt, checkAdvSchAge
 
       _BEGIN_MASTER(myThid)
 
@@ -80,10 +80,19 @@ C--   Check advection schemes
      &     SEAICEadvSchSalt.NE.ENUM_DST3 .AND.
      &     SEAICEadvSchSalt.NE.ENUM_DST3_FLUX_LIMIT .AND.
      &     SEAICEadvSchSalt.NE.ENUM_OS7MP ) 
+      checkAdvSchAge  = SEAICEadvAge  .AND. (
+     &     SEAICEadvSchAge .NE.ENUM_UPWIND_1RST .AND.
+     &     SEAICEadvSchAge .NE.ENUM_CENTERED_2ND .AND.
+     &     SEAICEadvSchAge .NE.ENUM_DST2 .AND.
+     &     SEAICEadvSchAge .NE.ENUM_FLUX_LIMIT .AND.
+     &     SEAICEadvSchAge .NE.ENUM_DST3 .AND.
+     &     SEAICEadvSchAge .NE.ENUM_DST3_FLUX_LIMIT .AND.
+     &     SEAICEadvSchAge .NE.ENUM_OS7MP ) 
       IF ( checkAdvSchArea .OR. checkAdvSchHeff .OR. 
-     &     checkAdvSchSnow .OR. checkAdvSchSalt ) THEN
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     & ' allowed advection schemes for heff, area, snow and salt are: '
+     &     checkAdvSchSnow .OR. checkAdvSchSalt .OR.
+     &     checkAdvSchAge ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: allowed advection schemes',
+     &          ' for heff, area, snow, salt, and ice age are: '
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,7I3)') 'SEAICE_CHECK:',
      &      ENUM_UPWIND_1RST, ENUM_CENTERED_2ND, ENUM_DST2,
@@ -104,6 +113,8 @@ C--   Check advection schemes
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
      &      ' SEAICEadvSchSalt = ',  SEAICEadvSchSalt
+       WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
+     &      ' SEAICEadvSchAge  = ',  SEAICEadvSchAge
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
@@ -119,6 +130,15 @@ C--   SEAICEadvSnow does not work with LAD = 1
 
 C--   SEAICEadvSalt does not work with LAD = 1
       IF (SEAICEadvSalt .AND. SEAICEadvSchSalt .EQ. 2
+     &     .AND. LAD .EQ. 1) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     & ' 2nd order salt advection does not work with Leap frog (LAD==1)'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
+C--   SEAICEadvAge does not work with LAD = 1
+      IF (SEAICEadvAge .AND. SEAICEadvSchAge .EQ. 2
      &     .AND. LAD .EQ. 1) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      & ' 2nd order salt advection does not work with Leap frog (LAD==1)'

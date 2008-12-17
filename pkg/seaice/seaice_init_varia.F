@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.32 2008/10/11 20:37:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.33 2008/12/17 03:33:30 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -117,6 +117,9 @@ C--   Initialise all variables in common blocks:
           HSNOW(i,j,bi,bj)  = 0. _d 0
 #ifdef SEAICE_SALINITY
           HSALT(i,j,bi,bj)  = 0. _d 0
+#endif
+#ifdef SEAICE_AGE
+          ICEAGE(i,j,bi,bj) = 0. _d 0
 #endif
           HEFFM(i,j,bi,bj)  = 0. _d 0
           YNEG (i,j,bi,bj)  = 0. _d 0
@@ -420,6 +423,23 @@ C--   Read initial sea ice salinity from file if available.
         ENDDO
        ENDIF
 #endif /* SEAICE_SALINITY */
+
+#ifdef SEAICE_AGE
+C--   Read initial sea ice age from file if available.
+       IF ( IceAgeFile .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RL( IceAgeFile, ' ', ZETA, 0, myThid )
+        _EXCH_XY_R8(ZETA,myThid)
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            ICEAGE(i,j,bi,bj) = ZETA(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* SEAICE_AGE */
 
       ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.1 2007/11/25 21:39:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.2 2008/12/17 03:33:30 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -161,6 +161,10 @@ c       nj = nj * 3 + 1
 #endif /* SEAICE_ALLOW_EVP */
 #ifdef SEAICE_SALINITY
         CALL READ_REC_3D_RL( fn, fp, 1, HSALT    , nj, nIter0, myThid )
+        nj = nj + 1
+#endif
+#ifdef SEAICE_AGE
+        CALL READ_REC_3D_RL( fn, fp, 1, ICEAGE   , nj, nIter0, myThid )
 #endif
 
        ELSE
@@ -193,6 +197,10 @@ C--    continue with 2-D fields:
      &                                      nj, fp, 1, nIter0, myThid )
 #ifdef SEAICE_SALINITY
          CALL READ_MFLDS_3D_RL( 'siHSALT ', HSALT,
+     &                                      nj, fp, 1, nIter0, myThid )
+#endif
+#ifdef SEAICE_AGE
+         CALL READ_MFLDS_3D_RL( 'siAGE   ', ICEAGE,
      &                                      nj, fp, 1, nIter0, myThid )
 #endif
         ENDIF
@@ -258,6 +266,9 @@ c      _EXCH_XY_R8(YNEG , myThid )
 #endif /* SEAICE_CGRID SEAICE_ALLOW_EVP */
 #ifdef SEAICE_SALINITY
        _EXCH_XY_R8(HSALT, myThid )
+#endif
+#ifdef SEAICE_AGE
+       _EXCH_XY_R8(ICEAGE, myThid )
 #endif
 
       RETURN
