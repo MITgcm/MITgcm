@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.29 2008/12/17 03:33:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.30 2008/12/17 06:14:50 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -452,7 +452,13 @@ C     somewhere after doing the advection)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           AREA(I,J,1,bi,bj) = MIN(ONE, AREA(I,J,1,bi,bj))
+           IF ( AREA(I,J,1,bi,bj) .GT. ONE ) THEN
+#ifdef SEAICE_AGE
+C     avoid ridging of age
+            IceAge(I,J,bi,bj) = IceAge(I,J,bi,bj) / AREA(I,J,1,bi,bj)
+#endif
+            AREA(I,J,1,bi,bj) = ONE
+           ENDIF
           ENDDO
          ENDDO
         ENDDO

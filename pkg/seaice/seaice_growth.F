@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.50 2008/12/17 03:33:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.51 2008/12/17 06:14:50 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -826,7 +826,8 @@ C     Sources and sinks for sea ice age
         DO J=1,sNy
          DO I=1,sNx
           IF ( AREA(I,J,1,bi,bj) .GT. 0.15 ) THEN
-           IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj) + SEAICE_deltaTtherm
+           IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj) +
+     &          AREA(I,J,1,bi,bj) * SEAICE_deltaTtherm
           ELSE
            IceAge(i,j,bi,bj) = ZERO
           ENDIF
