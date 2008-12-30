@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint61e
-(PID.TID 0000.0001) // Build user:        dfer
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint61g
+(PID.TID 0000.0001) // Build user:        jmc
 (PID.TID 0000.0001) // Build host:        faulks
-(PID.TID 0000.0001) // Build date:        Thu Nov 20 17:37:24 EST 2008
+(PID.TID 0000.0001) // Build date:        Mon Dec 29 21:21:34 EST 2008
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -11808,9 +11808,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    1    1    1    1    1    1    1   0.509071982062E-01 0.509071989555E-01 0.509071974568E-01
- grad-res     0    1    1    1   25    1    1    1   0.749377218654E-05 0.749375554665E-05 0.222049585530E-05
+ grad-res     0    1    1    1   25    1    1    1   0.749377788757E-05 0.749375554665E-05 0.298126306764E-05
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    7.49377218654041E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    7.49377788757358E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  1, ichknum =  1
  ph-grd -->hit<--  2 1 1 1
@@ -12441,9 +12441,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    2    2    1    1    1    1    1   0.509071982062E-01 0.509071977382E-01 0.509071986741E-01
- grad-res     0    2    2    2   25    1    1    1   -.467927299735E-05 -.467963719858E-05 -.778328668152E-04
+ grad-res     0    2    2    2   25    1    1    1   -.467928412964E-05 -.467963719858E-05 -.754536220831E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -4.67927299734712E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -4.67928412964277E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  2, ichknum =  2
  ph-grd -->hit<--  3 1 1 1
@@ -13074,9 +13074,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    3    3    1    1    1    1    1   0.509071982062E-01 0.509071977689E-01 0.509071986434E-01
- grad-res     0    3    3    3   25    1    1    1   -.437063276705E-05 -.437250454594E-05 -.428262676727E-03
+ grad-res     0    3    3    3   25    1    1    1   -.437083369267E-05 -.437250454594E-05 -.382273356667E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -4.37063276704749E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -4.37083369266817E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  3, ichknum =  3
  ph-grd -->hit<--  4 1 1 1
@@ -13707,9 +13707,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    4    4    1    1    1    1    1   0.509071982062E-01 0.509071982523E-01 0.509071981600E-01
- grad-res     0    4    4    4   25    1    1    1   0.462347048633E-06 0.461980939614E-06 0.791848935150E-03
+ grad-res     0    4    4    4   25    1    1    1   0.462340817856E-06 0.461980939614E-06 0.778383018995E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    4.62347048632600E-07
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    4.62340817856078E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  4, ichknum =  4
  ph-grd -->hit<--  5 1 1 1
@@ -14340,9 +14340,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    5    5    1    1    1    1    1   0.509071982062E-01 0.509071988178E-01 0.509071975945E-01
- grad-res     0    5    5    5   25    1    1    1   0.611643810811E-05 0.611649907806E-05 -.996821076127E-05
+ grad-res     0    5    5    5   25    1    1    1   0.611644824312E-05 0.611649907806E-05 -.831118607891E-05
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    6.11643810811294E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    6.11644824311762E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  5, ichknum =  5
  ph-grd -->hit<--  1 2 1 1
@@ -14973,9 +14973,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    6    1    2    1    1    1    1   0.509071982062E-01 0.509071983418E-01 0.509071980705E-01
- grad-res     0    6    6    6   25    1    1    1   0.135639662003E-05 0.135653665384E-05 -.103239572434E-03
+ grad-res     0    6    6    6   25    1    1    1   0.135640535589E-05 0.135653665384E-05 -.967984627678E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.35639662003329E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.35640535588705E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  6, ichknum =  6
  ph-grd -->hit<--  2 2 1 1
@@ -15606,9 +15606,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    7    2    2    1    1    1    1   0.509071982062E-01 0.509071982380E-01 0.509071981743E-01
- grad-res     0    7    7    7   25    1    1    1   0.317811985248E-06 0.318144399714E-06 -.104594691369E-02
+ grad-res     0    7    7    7   25    1    1    1   0.317833265773E-06 0.318144399714E-06 -.978921888031E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    3.17811985248456E-07
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    3.17833265772951E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  7, ichknum =  7
  ph-grd -->hit<--  3 2 1 1
@@ -16239,9 +16239,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    8    3    2    1    1    1    1   0.509071982062E-01 0.509071986407E-01 0.509071977716E-01
- grad-res     0    8    8    8   25    1    1    1   0.434637278567E-05 0.434576277741E-05 0.140348811252E-03
+ grad-res     0    8    8    8   25    1    1    1   0.434611527906E-05 0.434576277741E-05 0.811072937297E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    4.34637278566722E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    4.34611527906202E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  8, ichknum =  8
  ph-grd -->hit<--  4 2 1 1
@@ -16872,9 +16872,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0    9    4    2    1    1    1    1   0.509071982062E-01 0.509071981442E-01 0.509071982681E-01
- grad-res     0    9    9    9   25    1    1    1   -.619736109186E-06 -.619306966820E-06 0.692459838272E-03
+ grad-res     0    9    9    9   25    1    1    1   -.619713099253E-06 -.619306966820E-06 0.655355572350E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -6.19736109186271E-07
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -6.19713099253186E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  9, ichknum =  9
  ph-grd -->hit<--  5 2 1 1
@@ -17505,9 +17505,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   10    5    2    1    1    1    1   0.509071982062E-01 0.509071983153E-01 0.509071980970E-01
- grad-res     0   10   10   10   25    1    1    1   0.109131876718E-05 0.109146025551E-05 -.129648950191E-03
+ grad-res     0   10   10   10   25    1    1    1   0.109132588337E-05 0.109146025551E-05 -.123127421483E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.09131876717650E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.09132588336698E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  10, ichknum =  10
  ph-grd -->hit<--  1 3 1 1
@@ -18138,9 +18138,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   11    1    3    1    1    1    1   0.509071982062E-01 0.509071983190E-01 0.509071980933E-01
- grad-res     0   11   11   11   25    1    1    1   0.112864357081E-05 0.112844525391E-05 0.175712603003E-03
+ grad-res     0   11   11   11   25    1    1    1   0.112863032059E-05 0.112844525391E-05 0.163974584676E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.12864357080590E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.12863032059428E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  11, ichknum =  11
  ph-grd -->hit<--  2 3 1 1
@@ -18771,9 +18771,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   12    2    3    1    1    1    1   0.509071982062E-01 0.509071981448E-01 0.509071982675E-01
- grad-res     0   12   12   12   25    1    1    1   -.612898510179E-06 -.613150051565E-06 -.410412787476E-03
+ grad-res     0   12   12   12   25    1    1    1   -.612913591008E-06 -.613150051565E-06 -.385797541481E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -6.12898510178923E-07
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -6.12913591008374E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  12, ichknum =  12
  ph-grd -->hit<--  3 3 1 1
@@ -19404,9 +19404,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   13    3    3    1    1    1    1   0.509071982062E-01 0.509071985073E-01 0.509071979050E-01
- grad-res     0   13   13   13   25    1    1    1   0.301401769750E-05 0.301133947639E-05 0.888588382159E-03
+ grad-res     0   13   13   13   25    1    1    1   0.301354900258E-05 0.301133947639E-05 0.733197367769E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    3.01401769749827E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    3.01354900258499E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  13, ichknum =  13
  ph-grd -->hit<--  4 3 1 1
@@ -20037,9 +20037,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   14    4    3    1    1    1    1   0.509071982062E-01 0.509071979744E-01 0.509071984379E-01
- grad-res     0   14   14   14   25    1    1    1   -.231773616074E-05 -.231793577388E-05 -.861241841930E-04
+ grad-res     0   14   14   14   25    1    1    1   -.231773627218E-05 -.231793577388E-05 -.860760985835E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.31773616074072E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.31773627218088E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  14, ichknum =  14
  ph-grd -->hit<--  5 3 1 1
@@ -20670,9 +20670,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   15    5    3    1    1    1    1   0.509071982062E-01 0.509071979902E-01 0.509071984221E-01
- grad-res     0   15   15   15   25    1    1    1   -.215909997254E-05 -.215929392422E-05 -.898298727614E-04
+ grad-res     0   15   15   15   25    1    1    1   -.215910802957E-05 -.215929392422E-05 -.860978934121E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.15909997254406E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.15910802956688E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  15, ichknum =  15
  ph-grd -->hit<--  1 4 1 1
@@ -21303,9 +21303,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   16    1    4    1    1    1    1   0.509071982062E-01 0.509071982241E-01 0.509071981882E-01
- grad-res     0   16   16   16   25    1    1    1   0.179069416988E-06 0.179289812163E-06 -.123078066006E-02
+ grad-res     0   16   16   16   25    1    1    1   0.179081973516E-06 0.179289812163E-06 -.116057827136E-02
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.79069416988070E-07
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.79081973516054E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  16, ichknum =  16
  ph-grd -->hit<--  2 4 1 1
@@ -21936,9 +21936,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   17    2    4    1    1    1    1   0.509071982062E-01 0.509071983329E-01 0.509071980794E-01
- grad-res     0   17   17   17   25    1    1    1   0.126703476446E-05 0.126734719941E-05 -.246587507449E-03
+ grad-res     0   17   17   17   25    1    1    1   0.126704929452E-05 0.126734719941E-05 -.235117047716E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.26703476446293E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.26704929451792E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  17, ichknum =  17
  ph-grd -->hit<--  3 4 1 1
@@ -22569,9 +22569,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   18    3    4    1    1    1    1   0.509071982062E-01 0.509071987346E-01 0.509071976777E-01
- grad-res     0   18   18   18   25    1    1    1   0.528181362088E-05 0.528457447940E-05 -.522710327389E-03
+ grad-res     0   18   18   18   25    1    1    1   0.528181668837E-05 0.528457447940E-05 -.522129258280E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    5.28181362087581E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    5.28181668837291E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  18, ichknum =  18
  ph-grd -->hit<--  4 4 1 1
@@ -23202,9 +23202,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   19    4    4    1    1    1    1   0.509071982062E-01 0.509071981790E-01 0.509071982333E-01
- grad-res     0   19   19   19   25    1    1    1   -.271535242236E-06 -.271280012343E-06 0.939951261518E-03
+ grad-res     0   19   19   19   25    1    1    1   -.271513193836E-06 -.271280012343E-06 0.858821958140E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.71535242236265E-07
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.71513193835569E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  19, ichknum =  19
  ph-grd -->hit<--  5 4 1 1
@@ -23835,9 +23835,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   20    5    4    1    1    1    1   0.509071982062E-01 0.509071980912E-01 0.509071983211E-01
- grad-res     0   20   20   20   25    1    1    1   -.114981380073E-05 -.114964461562E-05 0.147141312216E-03
+ grad-res     0   20   20   20   25    1    1    1   -.114980290846E-05 -.114964461562E-05 0.137669547919E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -1.14981380072817E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -1.14980290846333E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  20, ichknum =  20
  ph-grd -->hit<--  1 5 1 1
@@ -24468,9 +24468,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   21    1    5    1    1    1    1   0.509071982062E-01 0.509071977388E-01 0.509071986735E-01
- grad-res     0   21   21   21   25    1    1    1   -.467382628136E-05 -.467367360091E-05 0.326671213284E-04
+ grad-res     0   21   21   21   25    1    1    1   -.467381057807E-05 -.467367360091E-05 0.293073838120E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -4.67382628135807E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -4.67381057806834E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  21, ichknum =  21
  ph-grd -->hit<--  2 5 1 1
@@ -25101,9 +25101,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   22    2    5    1    1    1    1   0.509071982062E-01 0.509071986631E-01 0.509071977492E-01
- grad-res     0   22   22   22   25    1    1    1   0.457004223183E-05 0.456983645369E-05 0.450276220944E-04
+ grad-res     0   22   22   22   25    1    1    1   0.457003965942E-05 0.456983645369E-05 0.444647623251E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    4.57004223182848E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    4.57003965942118E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  22, ichknum =  22
  ph-grd -->hit<--  3 5 1 1
@@ -25734,9 +25734,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   23    3    5    1    1    1    1   0.509071982062E-01 0.509071992155E-01 0.509071971968E-01
- grad-res     0   23   23   23   25    1    1    1   0.100922584369E-04 0.100933886249E-04 -.111985635343E-03
+ grad-res     0   23   23   23   25    1    1    1   0.100921756447E-04 0.100933886249E-04 -.120190156248E-03
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.00922584369257E-05
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.00921756447312E-05
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  23, ichknum =  23
  ph-grd -->hit<--  4 5 1 1
@@ -26367,9 +26367,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   24    4    5    1    1    1    1   0.509071982062E-01 0.509071979867E-01 0.509071984256E-01
- grad-res     0   24   24   24   25    1    1    1   -.219467569126E-05 -.219474591279E-05 -.319963133155E-04
+ grad-res     0   24   24   24   25    1    1    1   -.219466379717E-05 -.219474591279E-05 -.374160361103E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.19467569125586E-06
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -2.19466379716701E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  24, ichknum =  24
  ph-grd -->hit<--  5 5 1 1
@@ -27000,9 +27000,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_depth.0000000000.001.001.data
 grad-res -------------------------------
  grad-res     0   25    5    5    1    1    1    1   0.509071982062E-01 0.509071969914E-01 0.509071994209E-01
- grad-res     0   25   25   25   25    1    1    1   -.121475652448E-04 -.121473388986E-04 0.186330467790E-04
+ grad-res     0   25   25   25   25    1    1    1   -.121475485330E-04 -.121473388986E-04 0.172573388648E-04
 (PID.TID 0000.0001)   ADM  precision_derivative_cost =    5.09071982061515E-02
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -1.21475652448007E-05
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =   -1.21475485330107E-05
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  25, ichknum =  25
 (PID.TID 0000.0001) 
@@ -27015,79 +27015,79 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk output:            procId               I        ITILEPOS        JTILEPOS           LAYER            X(I)      X(I)+/-EPS
 (PID.TID 0000.0001) grdchk output:                                FC             FC1             FC2 FC1-FC2/(2*EPS)    ADJ GRAD(FC)   1-FDGRD/ADGRD
 (PID.TID 0000.0001) grdchk output:                 0               1               1               1               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071990E-01 0.509071975E-01 0.749375555E-05 0.749377219E-05 0.222049586E-05
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071990E-01 0.509071975E-01 0.749375555E-05 0.749377789E-05 0.298126307E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               2               2               1               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071977E-01 0.509071987E-01 -.467963720E-05 -.467927300E-05 -.778328668E-04
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071977E-01 0.509071987E-01 -.467963720E-05 -.467928413E-05 -.754536221E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               3               3               1               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071978E-01 0.509071986E-01 -.437250455E-05 -.437063277E-05 -.428262677E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071978E-01 0.509071986E-01 -.437250455E-05 -.437083369E-05 -.382273357E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               4               4               1               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071983E-01 0.509071982E-01 0.461980940E-06 0.462347049E-06 0.791848935E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071983E-01 0.509071982E-01 0.461980940E-06 0.462340818E-06 0.778383019E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               5               5               1               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071988E-01 0.509071976E-01 0.611649908E-05 0.611643811E-05 -.996821076E-05
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071988E-01 0.509071976E-01 0.611649908E-05 0.611644824E-05 -.831118608E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               6               1               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071983E-01 0.509071981E-01 0.135653665E-05 0.135639662E-05 -.103239572E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071983E-01 0.509071981E-01 0.135653665E-05 0.135640536E-05 -.967984628E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               7               2               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071982E-01 0.509071982E-01 0.318144400E-06 0.317811985E-06 -.104594691E-02
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071982E-01 0.509071982E-01 0.318144400E-06 0.317833266E-06 -.978921888E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               8               3               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071986E-01 0.509071978E-01 0.434576278E-05 0.434637279E-05 0.140348811E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071986E-01 0.509071978E-01 0.434576278E-05 0.434611528E-05 0.811072937E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               9               4               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071981E-01 0.509071983E-01 -.619306967E-06 -.619736109E-06 0.692459838E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071981E-01 0.509071983E-01 -.619306967E-06 -.619713099E-06 0.655355572E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              10               5               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071983E-01 0.509071981E-01 0.109146026E-05 0.109131877E-05 -.129648950E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071983E-01 0.509071981E-01 0.109146026E-05 0.109132588E-05 -.123127421E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              11               1               3               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071983E-01 0.509071981E-01 0.112844525E-05 0.112864357E-05 0.175712603E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071983E-01 0.509071981E-01 0.112844525E-05 0.112863032E-05 0.163974585E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              12               2               3               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071981E-01 0.509071983E-01 -.613150052E-06 -.612898510E-06 -.410412787E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071981E-01 0.509071983E-01 -.613150052E-06 -.612913591E-06 -.385797541E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              13               3               3               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071985E-01 0.509071979E-01 0.301133948E-05 0.301401770E-05 0.888588382E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071985E-01 0.509071979E-01 0.301133948E-05 0.301354900E-05 0.733197368E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              14               4               3               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071980E-01 0.509071984E-01 -.231793577E-05 -.231773616E-05 -.861241842E-04
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071980E-01 0.509071984E-01 -.231793577E-05 -.231773627E-05 -.860760986E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              15               5               3               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071980E-01 0.509071984E-01 -.215929392E-05 -.215909997E-05 -.898298728E-04
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071980E-01 0.509071984E-01 -.215929392E-05 -.215910803E-05 -.860978934E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              16               1               4               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071982E-01 0.509071982E-01 0.179289812E-06 0.179069417E-06 -.123078066E-02
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071982E-01 0.509071982E-01 0.179289812E-06 0.179081974E-06 -.116057827E-02
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              17               2               4               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071983E-01 0.509071981E-01 0.126734720E-05 0.126703476E-05 -.246587507E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071983E-01 0.509071981E-01 0.126734720E-05 0.126704929E-05 -.235117048E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              18               3               4               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071987E-01 0.509071977E-01 0.528457448E-05 0.528181362E-05 -.522710327E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071987E-01 0.509071977E-01 0.528457448E-05 0.528181669E-05 -.522129258E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              19               4               4               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071982E-01 0.509071982E-01 -.271280012E-06 -.271535242E-06 0.939951262E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071982E-01 0.509071982E-01 -.271280012E-06 -.271513194E-06 0.858821958E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              20               5               4               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071981E-01 0.509071983E-01 -.114964462E-05 -.114981380E-05 0.147141312E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071981E-01 0.509071983E-01 -.114964462E-05 -.114980291E-05 0.137669548E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              21               1               5               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071977E-01 0.509071987E-01 -.467367360E-05 -.467382628E-05 0.326671213E-04
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071977E-01 0.509071987E-01 -.467367360E-05 -.467381058E-05 0.293073838E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              22               2               5               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071987E-01 0.509071977E-01 0.456983645E-05 0.457004223E-05 0.450276221E-04
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071987E-01 0.509071977E-01 0.456983645E-05 0.457003966E-05 0.444647623E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              23               3               5               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071992E-01 0.509071972E-01 0.100933886E-04 0.100922584E-04 -.111985635E-03
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071992E-01 0.509071972E-01 0.100933886E-04 0.100921756E-04 -.120190156E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              24               4               5               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071980E-01 0.509071984E-01 -.219474591E-05 -.219467569E-05 -.319963133E-04
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071980E-01 0.509071984E-01 -.219474591E-05 -.219466380E-05 -.374160361E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0              25               5               5               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071970E-01 0.509071994E-01 -.121473389E-04 -.121475652E-04 0.186330468E-04
+(PID.TID 0000.0001) grdchk output:                   0.509071982E-01 0.509071970E-01 0.509071994E-01 -.121473389E-04 -.121475485E-04 0.172573389E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -27095,153 +27095,153 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  21.1997761
-(PID.TID 0000.0001)         System time:  1.29280302
-(PID.TID 0000.0001)     Wall clock time:  37.5744939
+(PID.TID 0000.0001)           User time:  21.0817946
+(PID.TID 0000.0001)         System time:  0.76488399
+(PID.TID 0000.0001)     Wall clock time:  21.8506401
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.0459930002
-(PID.TID 0000.0001)         System time:  0.0219959999
-(PID.TID 0000.0001)     Wall clock time:  0.361101151
+(PID.TID 0000.0001)           User time:  0.0449930001
+(PID.TID 0000.0001)         System time:  0.00699900044
+(PID.TID 0000.0001)     Wall clock time:  0.052200079
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:  2.24265892
-(PID.TID 0000.0001)         System time:  0.128981
-(PID.TID 0000.0001)     Wall clock time:  3.46844006
+(PID.TID 0000.0001)           User time:  2.25365788
+(PID.TID 0000.0001)         System time:  0.0539919985
+(PID.TID 0000.0001)     Wall clock time:  2.30729294
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.732902892
-(PID.TID 0000.0001)         System time:  0.0439932197
-(PID.TID 0000.0001)     Wall clock time:  0.633867264
+(PID.TID 0000.0001)           User time:  0.629883148
+(PID.TID 0000.0001)         System time:  0.0349961147
+(PID.TID 0000.0001)     Wall clock time:  0.61715579
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.252963863
-(PID.TID 0000.0001)         System time:  0.0189960599
-(PID.TID 0000.0001)     Wall clock time:  0.219789743
+(PID.TID 0000.0001)           User time:  0.218970604
+(PID.TID 0000.0001)         System time:  0.0159981176
+(PID.TID 0000.0001)     Wall clock time:  0.213482857
 (PID.TID 0000.0001)          No. starts: 5400
 (PID.TID 0000.0001)           No. stops: 5400
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.152981699
-(PID.TID 0000.0001)         System time:  0.0129980519
-(PID.TID 0000.0001)     Wall clock time:  0.211776733
+(PID.TID 0000.0001)           User time:  0.152971879
+(PID.TID 0000.0001)         System time:  0.0159970038
+(PID.TID 0000.0001)     Wall clock time:  0.204899788
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.04682348
-(PID.TID 0000.0001)         System time:  0.0139972866
-(PID.TID 0000.0001)     Wall clock time:  0.977082253
+(PID.TID 0000.0001)           User time:  1.02384889
+(PID.TID 0000.0001)         System time:  0.0139980465
+(PID.TID 0000.0001)     Wall clock time:  1.00774431
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.50164378
-(PID.TID 0000.0001)         System time:  0.0109990686
-(PID.TID 0000.0001)     Wall clock time:  2.71368694
+(PID.TID 0000.0001)           User time:  2.64964481
+(PID.TID 0000.0001)         System time:  0.015997
+(PID.TID 0000.0001)     Wall clock time:  2.71763182
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  5.48712432
-(PID.TID 0000.0001)         System time:  0.0269960463
-(PID.TID 0000.0001)     Wall clock time:  5.45843577
+(PID.TID 0000.0001)           User time:  5.45416436
+(PID.TID 0000.0001)         System time:  0.0249969289
+(PID.TID 0000.0001)     Wall clock time:  5.47162795
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.78561029
-(PID.TID 0000.0001)         System time:  0.0149991512
-(PID.TID 0000.0001)     Wall clock time:  2.96541333
+(PID.TID 0000.0001)           User time:  2.92755166
+(PID.TID 0000.0001)         System time:  0.0139960647
+(PID.TID 0000.0001)     Wall clock time:  2.98567772
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.593882948
-(PID.TID 0000.0001)         System time:  0.013997063
-(PID.TID 0000.0001)     Wall clock time:  0.478668928
+(PID.TID 0000.0001)           User time:  0.491930574
+(PID.TID 0000.0001)         System time:  0.013998121
+(PID.TID 0000.0001)     Wall clock time:  0.481102228
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.180960774
-(PID.TID 0000.0001)         System time:  0.00799880922
-(PID.TID 0000.0001)     Wall clock time:  0.283969641
+(PID.TID 0000.0001)           User time:  0.235969782
+(PID.TID 0000.0001)         System time:  0.0139960926
+(PID.TID 0000.0001)     Wall clock time:  0.2865839
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.941870824
-(PID.TID 0000.0001)         System time:  0.0159990042
-(PID.TID 0000.0001)     Wall clock time:  0.85370326
+(PID.TID 0000.0001)           User time:  0.900858827
+(PID.TID 0000.0001)         System time:  0.0189969987
+(PID.TID 0000.0001)     Wall clock time:  0.868405104
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.185963795
-(PID.TID 0000.0001)         System time:  0.0119968653
-(PID.TID 0000.0001)     Wall clock time:  0.208178997
+(PID.TID 0000.0001)           User time:  0.159969658
+(PID.TID 0000.0001)         System time:  0.0109999701
+(PID.TID 0000.0001)     Wall clock time:  0.206501484
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.44793763
-(PID.TID 0000.0001)         System time:  0.0109980814
-(PID.TID 0000.0001)     Wall clock time:  0.510403872
+(PID.TID 0000.0001)           User time:  0.483955495
+(PID.TID 0000.0001)         System time:  0.0149960089
+(PID.TID 0000.0001)     Wall clock time:  0.511300802
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.45192638
-(PID.TID 0000.0001)         System time:  0.0159970522
-(PID.TID 0000.0001)     Wall clock time:  0.395033121
+(PID.TID 0000.0001)           User time:  0.403937332
+(PID.TID 0000.0001)         System time:  0.0139960051
+(PID.TID 0000.0001)     Wall clock time:  0.391731501
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.345937282
-(PID.TID 0000.0001)         System time:  0.228965927
-(PID.TID 0000.0001)     Wall clock time:  3.90283346
+(PID.TID 0000.0001)           User time:  0.301950067
+(PID.TID 0000.0001)         System time:  0.105980858
+(PID.TID 0000.0001)     Wall clock time:  0.384959221
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.29595089
-(PID.TID 0000.0001)         System time:  0.193965822
-(PID.TID 0000.0001)     Wall clock time:  7.00275373
+(PID.TID 0000.0001)           User time:  0.258961163
+(PID.TID 0000.0001)         System time:  0.0989881828
+(PID.TID 0000.0001)     Wall clock time:  0.396071672
 (PID.TID 0000.0001)          No. starts: 5200
 (PID.TID 0000.0001)           No. stops: 5200
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK           [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  0.00100016594
 (PID.TID 0000.0001)         System time:  0.000999003649
-(PID.TID 0000.0001)     Wall clock time:  0.00788283348
+(PID.TID 0000.0001)     Wall clock time:  0.00198698044
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK     [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.000999927521
-(PID.TID 0000.0001)         System time:  0.00299999118
-(PID.TID 0000.0001)     Wall clock time:  0.00769305229
+(PID.TID 0000.0001)           User time:  0.00199890137
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.00191283226
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  18.9091241
-(PID.TID 0000.0001)         System time:  1.13782702
-(PID.TID 0000.0001)     Wall clock time:  33.728889
+(PID.TID 0000.0001)           User time:  18.7801447
+(PID.TID 0000.0001)         System time:  0.702893987
+(PID.TID 0000.0001)     Wall clock time:  19.4869709
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.538928032
-(PID.TID 0000.0001)         System time:  0.298953876
-(PID.TID 0000.0001)     Wall clock time:  4.69341826
+(PID.TID 0000.0001)           User time:  0.439935446
+(PID.TID 0000.0001)         System time:  0.111983821
+(PID.TID 0000.0001)     Wall clock time:  0.553824425
 (PID.TID 0000.0001)          No. starts: 50
 (PID.TID 0000.0001)           No. stops: 50
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  18.3062127
-(PID.TID 0000.0001)         System time:  0.772880867
-(PID.TID 0000.0001)     Wall clock time:  28.6024852
+(PID.TID 0000.0001)           User time:  18.2972169
+(PID.TID 0000.0001)         System time:  0.572913095
+(PID.TID 0000.0001)     Wall clock time:  18.8721142
 (PID.TID 0000.0001)          No. starts: 50
 (PID.TID 0000.0001)           No. stops: 50
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  18.0912514
-(PID.TID 0000.0001)         System time:  0.763882801
-(PID.TID 0000.0001)     Wall clock time:  28.3077993
+(PID.TID 0000.0001)           User time:  18.0132682
+(PID.TID 0000.0001)         System time:  0.563914023
+(PID.TID 0000.0001)     Wall clock time:  18.5831573
 (PID.TID 0000.0001)          No. starts: 5000
 (PID.TID 0000.0001)           No. stops: 5000
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.00399971008
+(PID.TID 0000.0001)           User time:  0.00399827957
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00442481041
+(PID.TID 0000.0001)     Wall clock time:  0.00409865379
 (PID.TID 0000.0001)          No. starts: 50
 (PID.TID 0000.0001)           No. stops: 50
 (PID.TID 0000.0001) // ======================================================
