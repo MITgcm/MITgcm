@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.15 2007/05/14 22:53:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.16 2008/12/30 00:14:05 jahn Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -79,6 +79,9 @@ C Routine arguments
       _RL arr_gl(sNx,nSx,nPx,sNy,nSy,nPy,Nr)
       integer irecord
       integer myThid
+
+#ifdef ALLOW_CTRL
+
 C Functions
       integer ILNBLNK
       integer MDS_RECLEN
@@ -409,6 +412,7 @@ c      end of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
 
       _END_MASTER( myThid )
 
+#endif /* ALLOW_CTRL */
 C     ------------------------------------------------------------------
       return
       end
@@ -480,6 +484,9 @@ cph)
       integer irecord
       integer myIter
       integer myThid
+
+#ifdef ALLOW_CTRL
+
 C Functions
       integer ILNBLNK
       integer MDS_RECLEN
@@ -759,6 +766,7 @@ C endif useSingleCpuIO
 #endif /* ALLOW_USE_MPI */
 cph-usesingle)
 
+#endif /* ALLOW_CTRL */
 C     ------------------------------------------------------------------
       return
       end
@@ -817,6 +825,9 @@ C Routine arguments
       _RL arr_gl(sNx,nSx,nPx,sNy,nSy,nPy,nLocz)
       integer irecord
       integer myThid
+
+#ifdef ALLOW_CTRL
+
 C Functions
       integer ILNBLNK
       integer MDS_RECLEN
@@ -1147,6 +1158,7 @@ c      end of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
 
       _END_MASTER( myThid )
 
+#endif /* ALLOW_CTRL */
 C     ------------------------------------------------------------------
       return
       end
@@ -1219,6 +1231,9 @@ cph)
       integer irecord
       integer myIter
       integer myThid
+
+#ifdef ALLOW_CTRL
+
 C Functions
       integer ILNBLNK
       integer MDS_RECLEN
@@ -1497,6 +1512,7 @@ C endif useSingleCpuIO
       endif
 #endif /* ALLOW_USE_MPI */
 
+#endif /* ALLOW_CTRL */
 C     ------------------------------------------------------------------
       return
       end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.9 2008/09/30 22:39:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.10 2008/12/30 00:14:05 jahn Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -57,6 +57,8 @@ C Routine arguments
 ce
       integer bi,bj
 ce
+
+#if defined(ALLOW_AUTODIFF) || defined(ALLOW_FLT)
 
 C Functions
       integer ILNBLNK
@@ -342,6 +344,8 @@ C Create meta-file for global file
 C endif useSingleCpuIO
       endif
 #endif /* ALLOW_USE_MPI */
+
+#endif /* defined(ALLOW_AUTODIFF) || defined(ALLOW_FLT) */
 
 C     ------------------------------------------------------------------
       return

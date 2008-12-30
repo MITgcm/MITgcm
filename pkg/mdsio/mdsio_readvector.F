@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.11 2008/09/30 22:39:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.12 2008/12/30 00:14:05 jahn Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -51,6 +51,8 @@ ce
       integer bi,bj
 ce
 
+#if defined(ALLOW_AUTODIFF) || defined(ALLOW_FLT)
+ 
 C Functions
       integer ILNBLNK
       integer MDS_RECLEN
@@ -337,6 +339,8 @@ c      ENDDO k=1,nNz
 
       endif
 c     endif ( useSingleCPUIO )
+
+#endif /* defined(ALLOW_AUTODIFF) || defined(ALLOW_FLT) */
 
       return
       end
