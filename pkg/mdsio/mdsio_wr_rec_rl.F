@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_rec_rl.F,v 1.1 2008/12/30 02:00:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_rec_rl.F,v 1.2 2008/12/30 17:49:16 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
-#define REPRODUCE_BOTTOM_CTRL_OLDRESULTS
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
