@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.4 2007/11/13 19:37:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.5 2008/12/30 00:13:35 jahn Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -112,20 +112,12 @@ C !LOCAL VARIABLES:
       INTEGER irec,dUnit,IL,pIL
       INTEGER dimList(3,3), nDims, map2gl(2)
       INTEGER iGjLoc, jGjLoc
-      INTEGER x_size,y_size,length_of_rec
+      INTEGER length_of_rec
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
       INTEGER iG_IO,jG_IO,npe, loc_xGlobalLo, loc_yGlobalLo
-      PARAMETER ( x_size = exch2_domain_nxt * sNx )
-      PARAMETER ( y_size = exch2_domain_nyt * sNy )
-#else
-      PARAMETER ( x_size = Nx )
-      PARAMETER ( y_size = Ny )
 #endif
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
-      Real*4 xy_buffer_r4(x_size,y_size)
-      Real*8 xy_buffer_r8(x_size,y_size)
-      Real*8 globalBuf(Nx,Ny)
 #ifdef ALLOW_EXCH2
 c     INTEGER tGy,tGx,tNy,tNx,tN
       INTEGER tGy,tGx,    tNx,tN
