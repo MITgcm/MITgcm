@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.25 2008/10/26 11:09:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.26 2008/12/30 02:14:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -103,25 +103,25 @@ C     Write 3D geometry arrays
 
 #ifdef ALLOW_MDSIO
 C     Write vertical grid arrays
-        CALL MDSWRITEVEC_LOC_RS('RC', writeBinaryPrec, Nr, rC,
+        CALL MDS_WRITEVEC_LOC('RC', writeBinaryPrec, 'RS', Nr, rC,
      &                                0,0, 1, -1, myThid)
-        CALL MDSWRITEVEC_LOC_RS('RF', writeBinaryPrec,1+Nr, rF,
+        CALL MDS_WRITEVEC_LOC('RF', writeBinaryPrec, 'RS',1+Nr,rF,
      &                                0,0, 1, -1, myThid)
-        CALL MDSWRITEVEC_LOC_RS('DRC',writeBinaryPrec, Nr, drC,
+        CALL MDS_WRITEVEC_LOC('DRC',writeBinaryPrec, 'RS', Nr, drC,
      &                                0,0, 1, -1, myThid)
-        CALL MDSWRITEVEC_LOC_RS('DRF',writeBinaryPrec, Nr, drF,
+        CALL MDS_WRITEVEC_LOC('DRF',writeBinaryPrec, 'RS', Nr, drF,
      &                                0,0, 1, -1, myThid)
 C--  comment out the "if": also usefull for the Ocean (to get the full Presure)
 c       IF (buoyancyRelation .EQ. 'ATMOSPHERIC') THEN
         DO k=1,Nr+1
           tmpVar(k) = phiRef(2*k-1)
         ENDDO
-        CALL MDSWRITEVEC_LOC_RS('PHrefF', writeBinaryPrec, 1+Nr,
+        CALL MDS_WRITEVEC_LOC('PHrefF', writeBinaryPrec, 'RS',1+Nr,
      &                            tmpVar, 0, 0, 1, -1, myThid)
         DO k=1,Nr
           tmpVar(k) = phiRef(2*k)
         ENDDO
-        CALL MDSWRITEVEC_LOC_RS('PHrefC', writeBinaryPrec, Nr,
+        CALL MDS_WRITEVEC_LOC('PHrefC', writeBinaryPrec, 'RS', Nr,
      &                            tmpVar, 0, 0, 1, -1, myThid)
 c       ENDIF
 #endif /* ALLOW_MDSIO */
