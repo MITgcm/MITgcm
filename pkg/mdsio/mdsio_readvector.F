@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.12 2008/12/30 00:14:05 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.13 2008/12/30 02:07:01 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -13,18 +13,18 @@ C $Name:  $
      I   bj,
      I   irecord,
      I   myThid )
-C
+
 C Arguments:
 C
-C fName		string	base name for file to read
-C filePrec	integer	number of bits per word in file (32 or 64)
-C arrType	char(2)	declaration of "arr": either "RS" or "RL"
-C narr		integer	size of third dimension: normally either 1 or Nr
-C arr		RS/RL	array to read into, arr(narr)
-ce bi           integer x tile index
-ce bj           integer y tile index
-C irecord	integer	record number to read
-C myThid	integer thread identifier
+C fName    string  :: base name for file to read
+C filePrec integer :: number of bits per word in file (32 or 64)
+C arrType  char(2) :: declaration of "arr": either "RS" or "RL"
+C narr     integer :: size of third dimension: normally either 1 or Nr
+C arr       RS/RL  :: array to read into, arr(narr)
+c bi       integer :: x tile index
+c bj       integer :: y tile index
+C irecord  integer :: record number to read
+C myThid   integer :: thread identifier
 C
 C Created: 03/26/99 eckert@mit.edu
 C Modified: 03/29/99 adcroft@mit.edu + eckert@mit.edu
@@ -32,44 +32,41 @@ C           Fixed to work work with _RS and _RL declarations
 C Modified: 07/27/99 eckert@mit.edu
 C           Customized  for state estimation (--> active_file_control.F)
 
-      implicit none
-C Global variables / common blocks
+      IMPLICIT NONE
+C Global variables / COMMON blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "EESUPPORT.h"
 
 C Routine arguments
-      character*(*) fName
-      integer filePrec
-      character*(2) arrType
-      integer narr
+      CHARACTER*(*) fName
+      INTEGER filePrec
+      CHARACTER*(2) arrType
+      INTEGER narr
       _RL arr(narr)
-      integer irecord
-      integer myThid
-ce
-      integer bi,bj
-ce
+      INTEGER bi,bj
+      INTEGER irecord
+      INTEGER myThid
 
 #if defined(ALLOW_AUTODIFF) || defined(ALLOW_FLT)
- 
+
 C Functions
-      integer ILNBLNK
-      integer MDS_RECLEN
+      INTEGER ILNBLNK
+      INTEGER MDS_RECLEN
 C Local variables
-      character*(MAX_LEN_FNAM) dataFName,pfName
-      integer iG,jG,irec,dUnit,IL,pIL
-      logical exst
-      logical globalFile,fileIsOpen
-      integer length_of_rec
-      character*(max_len_mbuf) msgbuf
+      CHARACTER*(MAX_LEN_FNAM) dataFName,pfName
+      INTEGER iG,jG,irec,dUnit,IL,pIL
+      LOGICAL exst
+      LOGICAL globalFile,fileIsOpen
+      INTEGER length_of_rec
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 cph(
 cph Deal with useSingleCpuIO
 cph Not extended here for EXCH2
-      integer k,l
-      integer nNz
-      integer vec_size
+      INTEGER k,l
+      INTEGER vec_size
       Real*4 xy_buffer_r4(narr*nPx*nPy)
       Real*8 xy_buffer_r8(narr*nPx*nPy)
       Real*8 global   (narr*nPx*nPy)
@@ -78,22 +75,20 @@ cph)
 C     ------------------------------------------------------------------
 
       vec_size = narr*nPx*nPy
-      nNz = 1
-      
-C Only do I/O if I am the master thread
+
+C Only DO I/O IF I am the master thread
       _BEGIN_MASTER( myThid )
 
 C Record number must be >= 1
-      if (irecord .LT. 1) then
-       write(msgbuf,'(a,i9.8)')
+      IF (irecord .LT. 1) THEN
+       WRITE(msgBuf,'(A,I9.8)')
      &   ' MDSREADVECTOR: argument irecord = ',irecord
-       call print_message( msgbuf, standardmessageunit,
-     &                     SQUEEZE_RIGHT , mythid)
-       write(msgbuf,'(a)')
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
      &   ' MDSREADVECTOR: invalid value for irecord'
-       call print_error( msgbuf, mythid )
-       stop 'ABNORMAL END: S/R MDSREADVECTOR'
-      endif
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R MDSREADVECTOR'
+      ENDIF
 
 C Assume nothing
       globalFile = .FALSE.
@@ -102,137 +97,138 @@ C Assume nothing
       pIL = ILNBLNK( mdsioLocalDir )
 
 C Assign special directory
-      if ( mdsioLocalDir .NE. ' ' ) then
-       write(pFname,'(2a)') 
+      IF ( mdsioLocalDir .NE. ' ' ) THEN
+       WRITE(pfName,'(2A)')
      &  mdsioLocalDir(1:pIL), fName(1:IL)
-      else
-       pFname= fName
-      endif
+      ELSE
+       pfName= fName
+      ENDIF
       pIL=ILNBLNK( pfName )
 
 C Assign a free unit number as the I/O channel for this routine
-      call MDSFINDUNIT( dUnit, mythid )
+      CALL MDSFINDUNIT( dUnit, myThid )
 
-      if ( .not. useSingleCPUIO ) then
+      IF ( .not. useSingleCPUIO ) THEN
 
 C Check first for global file with simple name (ie. fName)
       dataFName = fName
-      inquire( file=dataFname, exist=exst )
-      if (exst) then
-       if ( debugLevel .GE. debLevB ) then
-        write(msgbuf,'(a,a)')
+      INQUIRE( file=dataFName, exist=exst )
+      IF (exst) THEN
+       IF ( debugLevel .GE. debLevB ) THEN
+        WRITE(msgBuf,'(A,A)')
      &   ' MDSREADVECTOR: opening global file: ',dataFName(1:IL)
-        call print_message( msgbuf, standardmessageunit,
-     &                     SQUEEZE_RIGHT , mythid)
-       endif
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+       ENDIF
        globalFile = .TRUE.
-      endif
+      ENDIF
 
 C If negative check for global file with MDS name (ie. fName.data)
-      if (.NOT. globalFile) then
-       write(dataFname,'(2a)') fName(1:IL),'.data'
-       inquire( file=dataFname, exist=exst )
-       if (exst) then
-        if ( debugLevel .GE. debLevB ) then
-         write(msgbuf,'(a,a)')
+      IF (.NOT. globalFile) THEN
+       WRITE(dataFName,'(2A)') fName(1:IL),'.data'
+       INQUIRE( file=dataFName, exist=exst )
+       IF (exst) THEN
+        IF ( debugLevel .GE. debLevB ) THEN
+         WRITE(msgBuf,'(A,A)')
      &     ' MDSREADVECTOR: opening global file: ',dataFName(1:IL+5)
-         call print_message( msgbuf, standardmessageunit,
-     &                       SQUEEZE_RIGHT , mythid)
-        endif
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid )
+        ENDIF
         globalFile = .TRUE.
-       endif
-      endif
+       ENDIF
+      ENDIF
 
 C If we are reading from a global file then we open it here
-      if (globalFile) then
-       length_of_rec=MDS_RECLEN( filePrec, narr, mythid )
-       open( dUnit, file=dataFName, status='old',
+      IF (globalFile) THEN
+       length_of_rec=MDS_RECLEN( filePrec, narr, myThid )
+       OPEN( dUnit, file=dataFName, status='old',
      &      access='direct', recl=length_of_rec )
        fileIsOpen=.TRUE.
-      endif
+      ENDIF
 
 C Loop over all tiles
-ce      do bj=1,nSy
-ce       do bi=1,nSx
+c     DO bj=1,nSy
+c      DO bi=1,nSx
 C If we are reading from a tiled MDS file then we open each one here
-        if (.NOT. globalFile) then
+        IF (.NOT. globalFile) THEN
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(dataFname,'(2a,i3.3,a,i3.3,a)')
+         WRITE(dataFName,'(2A,I3.3,A,I3.3,A)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.data'
-         inquire( file=dataFname, exist=exst )
-C Of course, we only open the file if the tile is "active"
+         INQUIRE( file=dataFName, exist=exst )
+C Of course, we only open the file IF the tile is "active"
 C (This is a place-holder for the active/passive mechanism)
-         if (exst) then
-          if ( debugLevel .GE. debLevB ) then
-           write(msgbuf,'(a,a)')
+         IF (exst) THEN
+          IF ( debugLevel .GE. debLevB ) THEN
+           WRITE(msgBuf,'(A,A)')
      &      ' MDSREADVECTOR: opening file: ',dataFName(1:pIL+13)
-           call print_message( msgbuf, standardmessageunit,
-     &                        SQUEEZE_RIGHT , mythid)
-          endif
-          length_of_rec=MDS_RECLEN( filePrec, narr, mythid )
-          open( dUnit, file=dataFName, status='old',
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT , myThid )
+          ENDIF
+          length_of_rec=MDS_RECLEN( filePrec, narr, myThid )
+          OPEN( dUnit, file=dataFName, status='old',
      &        access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
-         else
+         ELSE
           fileIsOpen=.FALSE.
-          write(msgbuf,'(4a)')
+          WRITE(msgBuf,'(4A)')
      &      ' MDSREADVECTOR: opening file: ',fName(1:IL),
      &                                 ' , ',dataFName(1:pIL+13)
-          call print_message( msgbuf, standardmessageunit,
-     &                        SQUEEZE_RIGHT , mythid)
-          write(msgbuf,'(a)')
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A)')
      &      ' MDSREADVECTOR: un-active tiles not implemented yet'
-          call print_error( msgbuf, mythid )
-          stop 'ABNORMAL END: S/R MDSREADVECTOR'
-         endif
-        endif
-        if (fileIsOpen) then
-          if (globalFile) then
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R MDSREADVECTOR'
+         ENDIF
+        ENDIF
+        IF (fileIsOpen) THEN
+          IF (globalFile) THEN
             iG   = myXGlobalLo-1+(bi-1)*sNx
             jG   = myYGlobalLo-1+(bj-1)*sNy
             irec = 1 + int(iG/sNx) + (jG/sNy)*nSx*nPx +
      &             (irecord-1)*nSx*nPx*nSy*nPy
-          else
+          ELSE
             iG   = 0
             jG   = 0
             irec = irecord
-          endif
-          if (filePrec .eq. precFloat32) then
-           call MDS_READ_RS_VEC( dUnit, irec, narr, arr, myThid )
-          elseif (filePrec .eq. precFloat64) then
-           call MDS_READ_RL_VEC( dUnit, irec, narr, arr, myThid )
-          else
-            write(msgbuf,'(a)')
-     &        ' MDSREADVECTOR: illegal value for filePrec'
-            call print_error( msgbuf, mythid )
-            stop 'ABNORMAL END: S/R MDSREADVECTOR'
-          endif
-          if (.NOT. globalFile) then
-            close( dUnit )
+          ENDIF
+          IF ( arrType.EQ.'RS' ) THEN
+            CALL MDS_RD_REC_RS( arr, xy_buffer_r4, xy_buffer_r8,
+     I                          filePrec, dUnit, irec, narr, myThid )
+          ELSEIF ( arrType.EQ.'RL' ) THEN
+            CALL MDS_RD_REC_RL( arr, xy_buffer_r4, xy_buffer_r8,
+     I                          filePrec, dUnit, irec, narr, myThid )
+          ELSE
+            WRITE(msgBuf,'(A)')
+     &          ' MDSREADVECTOR: illegal value for arrType'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R MDSREADVECTOR'
+          ENDIF
+          IF (.NOT. globalFile) THEN
+            CLOSE( dUnit )
             fileIsOpen = .FALSE.
-          endif
-        endif
+          ENDIF
+        ENDIF
 C End of bi,bj loops
-ce       enddo
-ce      enddo
+c      ENDDO
+c     ENDDO
 
 C If global file was opened then close it
-      if (fileIsOpen .AND. globalFile) then
-        close( dUnit )
+      IF (fileIsOpen .AND. globalFile) THEN
+        CLOSE( dUnit )
         fileIsOpen = .FALSE.
-      endif
+      ENDIF
 
       _END_MASTER( myThid )
 
-      endif
-c     endif ( .not. useSingleCPUIO )
+      ENDIF
+C     end-if ( .not. useSingleCPUIO )
 
 
 C     ------------------------------------------------------------------
 
 
-      if ( useSingleCPUIO ) then
+      IF ( useSingleCPUIO ) THEN
 
 C master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
@@ -244,35 +240,36 @@ C master thread of process 0, only, opens a global file
 
 C Check first for global file with simple name (ie. fName)
          dataFName = fName
-         inquire( file=dataFname, exist=exst )
-         if (exst) globalFile = .TRUE.
+         INQUIRE( file=dataFName, exist=exst )
+         IF (exst) globalFile = .TRUE.
 
 C If negative check for global file with MDS name (ie. fName.data)
-         if (.NOT. globalFile) then
-          write(dataFname,'(2a)') fName(1:IL),'.data'
-          inquire( file=dataFname, exist=exst )
-          if (exst) globalFile = .TRUE.
-         endif
+         IF (.NOT. globalFile) THEN
+          WRITE(dataFName,'(2a)') fName(1:IL),'.data'
+          INQUIRE( file=dataFName, exist=exst )
+          IF (exst) globalFile = .TRUE.
+         ENDIF
 
 C If global file is visible to process 0, then open it here.
 C Otherwise stop program.
-         if ( globalFile) then
-          length_of_rec=MDS_RECLEN( filePrec, vec_size, mythid )
-          open( dUnit, file=dataFName, status='old',
+         IF ( globalFile) THEN
+          length_of_rec=MDS_RECLEN( filePrec, vec_size, myThid )
+          OPEN( dUnit, file=dataFName, status='old',
      &         access='direct', recl=length_of_rec )
-         else
-          write(msgbuf,'(2a)') 
-     &      ' MDSREADFIELD: filename: ',dataFName(1:IL)
-          call print_message( msgbuf, standardmessageunit,
-     &                        SQUEEZE_RIGHT , mythid)
-          call print_error( msgbuf, mythid )
-          write(msgbuf,'(a)')
-     &      ' MDSREADFIELD: File does not exist'
-          call print_message( msgbuf, standardmessageunit,
-     &                        SQUEEZE_RIGHT , mythid)
-          call print_error( msgbuf, mythid )
-          stop 'ABNORMAL END: S/R MDSREADFIELD'
-         endif
+         ELSE
+          WRITE(msgBuf,'(2A)')
+     &      ' MDSREADVECTOR: filename: ',dataFName(1:IL)
+C-jmc: why double print (stdout + stderr) ?
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT , myThid )
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A)')
+     &      ' MDSREADVECTOR: File does not exist'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT , myThid )
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R MDSREADVECTOR'
+         ENDIF
 
         ENDIF
        _END_MASTER( myThid )
@@ -286,10 +283,10 @@ C Otherwise stop program.
          IF ( .TRUE. ) THEN
 #endif /* ALLOW_USE_MPI */
           irec = irecord
-          if (filePrec .eq. precFloat32) then
-           read(dUnit,rec=irec) xy_buffer_r4
+          IF (filePrec .EQ. precFloat32) THEN
+           READ(dUnit,rec=irec) xy_buffer_r4
 #ifdef _BYTESWAPIO
-           call MDS_BYTESWAPR4( vec_size, xy_buffer_r4 )
+           CALL MDS_BYTESWAPR4( vec_size, xy_buffer_r4 )
 #endif
 cph#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
 c
@@ -298,10 +295,10 @@ cph#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
             global(L) = xy_buffer_r4(L)
            ENDDO
 cph#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
-          elseif (filePrec .eq. precFloat64) then
-           read(dUnit,rec=irec) xy_buffer_r8
+          ELSEIF (filePrec .EQ. precFloat64) THEN
+           READ(dUnit,rec=irec) xy_buffer_r8
 #ifdef _BYTESWAPIO
-           call MDS_BYTESWAPR8( vec_size, xy_buffer_r8 )
+           CALL MDS_BYTESWAPR8( vec_size, xy_buffer_r8 )
 #endif
 cph#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
 c
@@ -310,80 +307,37 @@ cph#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
             global(L) = xy_buffer_r8(L)
            ENDDO
 cph#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
-          else
-           write(msgbuf,'(a)')
-     &            ' MDSREADFIELD: illegal value for filePrec'
-           call print_error( msgbuf, mythid )
-           stop 'ABNORMAL END: S/R MDSREADFIELD'
-          endif
+          ELSE
+           WRITE(msgBuf,'(A)')
+     &            ' MDSREADVECTOR: illegal value for filePrec'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R MDSREADVECTOR'
+          ENDIF
          ENDIF
         _END_MASTER( myThid )
-        CALL SCATTER_VECTOR( narr,global,local,mythid )
-        if (arrType .eq. 'RS') then
-           call PASStoRSvector( local,arr,narr,k,nNz,mythid )
-        elseif (arrType .eq. 'RL') then
-           call PASStoRLvector( local,arr,narr,k,nNz,mythid )
-        else
-           write(msgbuf,'(a)')
-     &          ' MDSREADFIELD: illegal value for arrType'
-           call print_error( msgbuf, mythid )
-           stop 'ABNORMAL END: S/R MDSREADFIELD'
-        endif
+        CALL SCATTER_VECTOR( narr,global,local,myThid )
+        IF ( arrType.EQ.'RS' ) THEN
+           CALL MDS_BUFFERtoRS( local, arr, narr, .TRUE., myThid )
+        ELSEIF ( arrType.EQ.'RL' ) THEN
+           CALL MDS_BUFFERtoRL( local, arr, narr, .TRUE., myThid )
+        ELSE
+           WRITE(msgBuf,'(A)')
+     &          ' MDSREADVECTOR: illegal value for arrType'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R MDSREADVECTOR'
+        ENDIF
 
        ENDDO
-c      ENDDO k=1,nNz
+C      end-do k=1,1
 
        _BEGIN_MASTER( myThid )
-        close( dUnit )
+        CLOSE( dUnit )
        _END_MASTER( myThid )
 
-      endif
-c     endif ( useSingleCPUIO )
+      ENDIF
+C     end-if ( useSingleCPUIO )
 
 #endif /* defined(ALLOW_AUTODIFF) || defined(ALLOW_FLT) */
 
-      return
-      end
-
-
-C     ==================================================================
-
-      subroutine passToRSvector(local,arr,narr,k,nNz,mythid)
-      implicit none
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-      integer narr
-      _RL local(narr)
-      _RS arr(narr)
-      integer k,nNz
-      integer mythid
-
-      integer L
-
-      DO L=1,narr
-         arr(L) = local(L)
-      ENDDO
-
-      return
-      end
-
-      subroutine passToRLvector(local,arr,narr,k,nNz,mythid)
-      implicit none
-#include "EEPARAMS.h"
-#include "SIZE.h"
-
-      integer narr
-      _RL local(narr)
-      _RL arr(narr)
-      integer k,nNz
-      integer mythid
-
-      integer L
-
-      DO L=1,narr
-         arr(L) = local(L)
-      ENDDO
-
-      return
-      end
+      RETURN
+      END
