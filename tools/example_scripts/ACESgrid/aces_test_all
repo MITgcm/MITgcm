@@ -1,11 +1,21 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.8 2008/08/28 03:59:20 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.9 2008/12/30 16:01:11 jmc Exp $
 # $Name:  $
+
+# action =2 : submit test jobs ; =1 : get jobs output ; =3 : do both
+case $1 in
+ '-subOnly') action=2 ; shift ;;
+ '-getOnly') action=1 ; shift ;;
+ '-sub+get') action=3 ; shift ;;
+          *) action=3 ;;
+esac
+#echo "action= $action , Arg= $# "
 
 echo -n '-- Starting: '
 date
 start=`date +%Y%m%d`
+
 if test $# = 0
 then
   tst_list='gnu ifc pgi mth tuv'
@@ -32,15 +42,31 @@ do
   if test -f MITgcm_tools/example_scripts/ACESgrid/aces_test_$sfx ; then
     JOB="tst_"$i
     job_exist=`$QSTAT -a | grep $USER | grep $JOB | wc -l`
-    if test "x_$job_exist" = x_0 ; then
-      $QSUB MITgcm_tools/example_scripts/ACESgrid/aces_test_$sfx
-      eval M_$i='submitted'
-      nbtst=`expr $nbtst + 1`
-    else 
-      echo $JOB
-      $QSTAT -a | grep $USER | grep $JOB
-      echo 'job already exist => skip this test'
-      eval M_$i='skipped'
+    if [ $action -ge 2 ] ; then 
+    #-- to submit job
+      if test "x_$job_exist" = x_0 ; then
+        $QSUB MITgcm_tools/example_scripts/ACESgrid/aces_test_$sfx
+        eval M_$i='submitted'
+        nbtst=`expr $nbtst + 1`
+      else 
+        echo $JOB
+        $QSTAT -a | grep $USER | grep $JOB
+        echo 'job already exist => skip this test'
+        eval M_$i='skipped'
+      fi
+    else
+    #-- to get outp back:
+      if test "x_$job_exist" = x_0 ; then
+        echo -n 'did not find any job: '
+        echo $JOB
+        eval M_$i='skipped'
+      else 
+        echo -n 'found a job: '
+        echo $JOB
+        $QSTAT -a | grep $USER | grep $JOB
+        eval M_$i='submitted'
+        nbtst=`expr $nbtst + 1`
+      fi
     fi
   else 
     echo 'no file:' aces_test_$sfx 'to submit'
@@ -48,13 +74,16 @@ do
   fi
 done
 
+if test $action = 2 ; then 
+  count=0
+else
 #date_str=`date +%Y%m%d`"_0"
 
-MPACKDIR=`dirname $MPACK`
+  MPACKDIR=`dirname $MPACK`
 #- build the mpack utility (from build_mpack in testreport):
-( cd $MPACKDIR && ./configure && make ) > TTT.build_mpack.$$ 2>&1
-RETVAL=$?
-if test "x$RETVAL" != x0 ; then
+  ( cd $MPACKDIR && ./configure && make ) > TTT.build_mpack.$$ 2>&1
+  RETVAL=$?
+  if test "x$RETVAL" != x0 ; then
     echo
     echo "Error building the mpack tools at: $MPACK_DIR"
     if test -x $MPACK ; then
@@ -63,7 +92,7 @@ if test "x$RETVAL" != x0 ; then
     else
        HAVE_MPACK=f
     fi
-else
+  else
     if test -x $MPACK ; then
        rm -f TTT.build_mpack.$$
        HAVE_MPACK=t
@@ -72,11 +101,14 @@ else
        echo " $MPACK not executable"
        HAVE_MPACK=f
     fi
-fi
-echo
+  fi
+  echo
 
+  count=$nbtst
+fi
+
+#- when it's done, retrieve output and send e-mail
 minutes=0
-count=$nbtst
 while test $count != 0 ; do
 
     sleep 600
