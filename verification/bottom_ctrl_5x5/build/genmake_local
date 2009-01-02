@@ -1,2 +1,2 @@
 AD_OPTFILE='../code_ad/adjoint_staf'
-OPTFILE='../code_ad/linux_ia32_g77'
+USE_EXTENDED_SRC='t'
