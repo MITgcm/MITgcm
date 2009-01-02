@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.24 2008/02/25 18:59:37 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.25 2009/01/02 20:40:42 jmc Exp $
 #  $Name:  $
 #
 
@@ -11,6 +11,7 @@ DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
 # CPP='gcc -E -traditional -P -'
 CPP='cpp  -traditional -P'
 NOOPTFLAGS='-O0'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
