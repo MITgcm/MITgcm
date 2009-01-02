@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.180 2008/12/11 17:50:56 utke Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.181 2009/01/02 20:32:21 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1046,6 +1046,8 @@ INCLUDES="-I. $INCLUDES"
 FFLAGS=
 FOPTIM=
 FEXTRAFLAGS=
+USE_EXTENDED_SRC=
+EXTENDED_SRC_FLAG=
 CFLAGS=
 KFLAGS1=
 KFLAGS2=
@@ -1645,6 +1647,11 @@ if test ! "x$GSL" = x ; then
       DEFINES="$DEFINES -DUSE_GSL_IEEE"
       INCLUDES="$INCLUDES $GSLINC"
       LIBS="$LIBS $GSLLIB"
+fi
+#- if USE_EXTENDED_SRC is set, add EXTENDED_SRC_FLAG to FFLAGS :
+if test ! "x$USE_EXTENDED_SRC" = x ; then
+      FFLAGS="$FFLAGS $EXTENDED_SRC_FLAG"
+      F90FIXEDFORMAT="$F90FIXEDFORMAT $EXTENDED_SRC_FLAG"
 fi
 
 printf "\n===  Checking system libraries  ===\n"
