@@ -1,12 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1048 2008/12/30 18:00:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1049 2009/01/04 01:25:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/flt:
+ - do some cleaning and fix the restart ;
+ - add output.txt in flt_example/results to get this pkg tested.
+o genmake2: add an EXTENDED_SRC option and flag.
+   for now, cannot be turned on on command line (only through genmake_local)
 o pkg/mdsio: read/write vector:
  - singleCpuIO: fix RL/RS in MDSWRITEVECTOR by calling new S/R MDS_BUFFERtoRL/RS
- - singleCpuIO=F: fix arrType & filePrec & _BYTESWAPIO in both MDSREADVECTOR 
+ - singleCpuIO=F: fix arrType & filePrec & _BYTESWAPIO in both MDSREADVECTOR
    & MDSWRITEVECTOR by calling new S/R MDS_RD/WR_VEC_RL/RS.
  - affects gradient of test-exp "bottom_ctrl_5x5" (not due to _BYTESWAPIO)
   (drop to 4 digits matching for grad). But this test does not look very
