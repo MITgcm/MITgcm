@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.5 2009/01/04 00:58:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.6 2009/01/04 21:01:48 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -38,8 +38,9 @@ C     == routine arguments ==
 C     == local variables ==
 
       INTEGER bi, bj, ic
-      INTEGER ip, jp
+      INTEGER ip, jp, jl, npNew
       INTEGER icountE, icountW, icountN, icountS
+      INTEGER deleteList(max_npart_exch*2)
       INTEGER imax, imax2, m, iG, jG
       _RL xlo, xhi, ylo, yhi
       PARAMETER(imax=9)
@@ -74,6 +75,7 @@ C initialize buffers
 
            icountE=0
            icountW=0
+           jl = 0
 
            iG = myXGlobalLo + (bi-1)*sNx
            xlo = xc(1,  1,  bi,bj) - delX(iG)
@@ -96,25 +98,15 @@ C initialize buffers
                fltbuf_sendE(ic+8,bi,bj) =    itop(ip,bi,bj)
                fltbuf_sendE(ic+9,bi,bj) =    tend(ip,bi,bj)
 
-C-- jmc: we have a problem here when the last float of the list
-C        is also outside [xlo,xhi] : This needs a fix.
-               jp = npart_tile(bi,bj)
-               npart (ip,bi,bj) =  npart (jp,bi,bj)
-               tstart(ip,bi,bj) =  tstart(jp,bi,bj)
-               xpart (ip,bi,bj) =  xpart (jp,bi,bj)
-               ypart (ip,bi,bj) =  ypart (jp,bi,bj)
-               kpart (ip,bi,bj) =  kpart (jp,bi,bj)
-               kfloat(ip,bi,bj) =  kfloat(jp,bi,bj)
-               iup   (ip,bi,bj) =  iup   (jp,bi,bj)
-               itop  (ip,bi,bj) =  itop  (jp,bi,bj)
-               tend  (ip,bi,bj) =  tend  (jp,bi,bj)
-
-               npart_tile(bi,bj) = jp - 1
+C tag this float to be removed:
+               jl = jl + 1
+               deleteList(jl) = ip
+               npart(ip,bi,bj) = 0.
 
               ENDIF
              ENDIF
 
-             IF ( xpart(ip,bi,bj).LE.xlo ) THEN
+             IF ( xpart(ip,bi,bj).LT.xlo ) THEN
               icountW=icountW+1
               IF ( icountW.LE.max_npart_exch ) THEN
 
@@ -129,18 +121,10 @@ C        is also outside [xlo,xhi] : This needs a fix.
                fltbuf_sendW(ic+8,bi,bj) =    itop(ip,bi,bj)
                fltbuf_sendW(ic+9,bi,bj) =    tend(ip,bi,bj)
 
-               jp = npart_tile(bi,bj)
-               npart (ip,bi,bj) =  npart (jp,bi,bj)
-               tstart(ip,bi,bj) =  tstart(jp,bi,bj)
-               xpart (ip,bi,bj) =  xpart (jp,bi,bj)
-               ypart (ip,bi,bj) =  ypart (jp,bi,bj)
-               kpart (ip,bi,bj) =  kpart (jp,bi,bj)
-               kfloat(ip,bi,bj) =  kfloat(jp,bi,bj)
-               iup   (ip,bi,bj) =  iup   (jp,bi,bj)
-               itop  (ip,bi,bj) =  itop  (jp,bi,bj)
-               tend  (ip,bi,bj) =  tend  (jp,bi,bj)
-
-               npart_tile(bi,bj) = jp - 1
+C tag this float to be removed:
+               jl = jl + 1
+               deleteList(jl) = ip
+               npart(ip,bi,bj) = 0.
 
               ENDIF
              ENDIF
@@ -163,6 +147,28 @@ C        is also outside [xlo,xhi] : This needs a fix.
            IF ( icountE.GT.max_npart_exch
      &     .OR. icountW.GT.max_npart_exch ) THEN
              STOP 'ABNORMAL END: S/R FLT_EXCHG'
+           ENDIF
+           IF ( (icountE+icountW).GT.0 ) THEN
+C Remove from this tile-list, floats which have been sent to an other tile
+             npNew = npart_tile(bi,bj) - (icountE+icountW)
+             jl = 0
+             DO jp = npNew+1,npart_tile(bi,bj)
+              IF ( npart(jp,bi,bj).NE.0. _d 0 ) THEN
+                jl = jl + 1
+                ip = deleteList(jl)
+C        copy: ip <-- jp
+                npart (ip,bi,bj) =  npart (jp,bi,bj)
+                tstart(ip,bi,bj) =  tstart(jp,bi,bj)
+                xpart (ip,bi,bj) =  xpart (jp,bi,bj)
+                ypart (ip,bi,bj) =  ypart (jp,bi,bj)
+                kpart (ip,bi,bj) =  kpart (jp,bi,bj)
+                kfloat(ip,bi,bj) =  kfloat(jp,bi,bj)
+                iup   (ip,bi,bj) =  iup   (jp,bi,bj)
+                itop  (ip,bi,bj) =  itop  (jp,bi,bj)
+                tend  (ip,bi,bj) =  tend  (jp,bi,bj)
+              ENDIF
+             ENDDO
+             npart_tile(bi,bj) = npNew
            ENDIF
 
          ENDDO
@@ -264,6 +270,7 @@ C initialize buffers
 
            icountN=0
            icountS=0
+           jl = 0
 
            jG = myYGlobalLo + (bj-1)*sNy
            ylo = yc(1,  1,  bi,bj) - delY(jG)
@@ -271,7 +278,7 @@ C initialize buffers
 
            DO ip=1,npart_tile(bi,bj)
 
-             IF (ypart(ip,bi,bj) .GE. yhi) THEN
+             IF ( ypart(ip,bi,bj).GE.yhi ) THEN
               icountN=icountN+1
               IF ( icountN.LE.max_npart_exch ) THEN
 
@@ -286,18 +293,10 @@ C initialize buffers
                fltbuf_sendE(ic+8,bi,bj) =    itop(ip,bi,bj)
                fltbuf_sendE(ic+9,bi,bj) =    tend(ip,bi,bj)
 
-               jp = npart_tile(bi,bj)
-               npart (ip,bi,bj) =  npart (jp,bi,bj)
-               tstart(ip,bi,bj) =  tstart(jp,bi,bj)
-               xpart (ip,bi,bj) =  xpart (jp,bi,bj)
-               ypart (ip,bi,bj) =  ypart (jp,bi,bj)
-               kpart (ip,bi,bj) =  kpart (jp,bi,bj)
-               kfloat(ip,bi,bj) =  kfloat(jp,bi,bj)
-               iup   (ip,bi,bj) =  iup   (jp,bi,bj)
-               itop  (ip,bi,bj) =  itop  (jp,bi,bj)
-               tend  (ip,bi,bj) =  tend  (jp,bi,bj)
-
-               npart_tile(bi,bj) = jp - 1
+C tag this float to be removed:
+               jl = jl + 1
+               deleteList(jl) = ip
+               npart(ip,bi,bj) = 0.
 
 c             ELSE
 c              WRITE(msgBuf,'(2A,2I4,I6,A,2F17.6))') ' FLT_EXCHG,N:',
@@ -307,7 +306,7 @@ c              CALL PRINT_ERROR( msgBuf, myThid )
               ENDIF
              ENDIF
 
-             IF (ypart(ip,bi,bj) .LE. ylo) THEN
+             IF ( ypart(ip,bi,bj).LT.ylo ) THEN
               icountS=icountS+1
               IF ( icountS.LE.max_npart_exch ) THEN
 
@@ -322,18 +321,10 @@ c              CALL PRINT_ERROR( msgBuf, myThid )
                fltbuf_sendW(ic+8,bi,bj) =    itop(ip,bi,bj)
                fltbuf_sendW(ic+9,bi,bj) =    tend(ip,bi,bj)
 
-               jp = npart_tile(bi,bj)
-               npart (ip,bi,bj) =  npart (jp,bi,bj)
-               tstart(ip,bi,bj) =  tstart(jp,bi,bj)
-               xpart (ip,bi,bj) =  xpart (jp,bi,bj)
-               ypart (ip,bi,bj) =  ypart (jp,bi,bj)
-               kpart (ip,bi,bj) =  kpart (jp,bi,bj)
-               kfloat(ip,bi,bj) =  kfloat(jp,bi,bj)
-               iup   (ip,bi,bj) =  iup   (jp,bi,bj)
-               itop  (ip,bi,bj) =  itop  (jp,bi,bj)
-               tend  (ip,bi,bj) =  tend  (jp,bi,bj)
-
-               npart_tile(bi,bj) = jp - 1
+C tag this float to be removed:
+               jl = jl + 1
+               deleteList(jl) = ip
+               npart(ip,bi,bj) = 0.
 
 c             ELSE
 c              WRITE(msgBuf,'(2A,2I4,I6,A,2F17.6))') ' FLT_EXCHG,S:',
@@ -357,11 +348,33 @@ c              CALL PRINT_ERROR( msgBuf, myThid )
      &         ' icountS=', icountS,
      &         ' > max_npart_exch=', max_npart_exch
              CALL PRINT_ERROR( msgBuf, myThid )
-             write(0,*) myYGlobalLo,jG,delY(jG),yc(1,1,bi,bj),ylo
+c            write(0,*) myYGlobalLo,jG,delY(jG),yc(1,1,bi,bj),ylo
            ENDIF
            IF ( icountN.GT.max_npart_exch
      &     .OR. icountS.GT.max_npart_exch ) THEN
              STOP 'ABNORMAL END: S/R FLT_EXCHG'
+           ENDIF
+           IF ( (icountN+icountS).GT.0 ) THEN
+C Remove from this tile-list, floats which have been sent to an other tile
+             npNew = npart_tile(bi,bj) - (icountN+icountS)
+             jl = 0
+             DO jp = npNew+1,npart_tile(bi,bj)
+              IF ( npart(jp,bi,bj).NE.0. _d 0 ) THEN
+                jl = jl + 1
+                ip = deleteList(jl)
+C        copy: ip <-- jp
+                npart (ip,bi,bj) =  npart (jp,bi,bj)
+                tstart(ip,bi,bj) =  tstart(jp,bi,bj)
+                xpart (ip,bi,bj) =  xpart (jp,bi,bj)
+                ypart (ip,bi,bj) =  ypart (jp,bi,bj)
+                kpart (ip,bi,bj) =  kpart (jp,bi,bj)
+                kfloat(ip,bi,bj) =  kfloat(jp,bi,bj)
+                iup   (ip,bi,bj) =  iup   (jp,bi,bj)
+                itop  (ip,bi,bj) =  itop  (jp,bi,bj)
+                tend  (ip,bi,bj) =  tend  (jp,bi,bj)
+              ENDIF
+             ENDDO
+             npart_tile(bi,bj) = npNew
            ENDIF
 
          ENDDO
