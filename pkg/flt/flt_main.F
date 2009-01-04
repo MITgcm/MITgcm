@@ -1,59 +1,56 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.2 2008/12/03 01:35:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.3 2009/01/04 00:58:23 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
 
-c     ==================================================================
-c
-c     Float Package for the MIT Model
-c
-c     Main Routines:
-c
-c     o flt_main      - Integrates the floats forward and stores
-c                       positions and vertical profiles at specific
-c                       time intervals.
-c     o flt_init      - Initialise the floats
-c     o flt_restart   - Writes restart data to file.
-c
-c     Second Level Subroutines:
-c
-c     o flt_runga2    - Second order Runga-Kutta inetgration (default)
-c     o flt_exchg     - Does a new distribution of floats over tiles
-c                       after every integration step.
-c     o flt_up        - moves float to the surface (if flag is set)
-c                       and stores profiles to file
-c     o flt_down      - moves float to its target depth (if flag is set)
-c     o flt_traj      - stores positions and data to file
-c     o flt_bilinear  - contains blinear interpolation scheme
-c     o flt_functions - contains some functions
-c     o flt_mdsreadvector - modified mdsreadvector to read files
-c
-c     ToDo:
-c
-c     o avoid exchanges when arrays empty
-c     o 3D advection of floats
-c
-c     ==================================================================
-c
-c     Documentation:
-c
-c     To be made....
-c
-c
-c     started: Arne Biastoch abiastoch@ucsd.edu 10-Jan-2000
-c              (adopted from version written by Detlef Stammer
-c               for the old model code)
-c
-c     changed: Arne Biastoch abiastoch@ucsd.edu 21-JUN-2001
-c
-c     ==================================================================
+C     ==================================================================
+C
+C     Float Package for the MIT Model
+C
+C     Main Routines:
+C
+C     o flt_main      - Integrates the floats forward and stores
+C                       positions and vertical profiles at specific
+C                       time intervals.
+C     o flt_init      - Initialise the floats
+C     o flt_restart   - Writes restart data to file (=> renamed: flt_write_pickup)
+C
+C     Second Level Subroutines:
+C
+C     o flt_runga2    - Second order Runga-Kutta inetgration (default)
+C     o flt_exchg     - Does a new distribution of floats over tiles
+C                       after every integration step.
+C     o flt_up        - moves float to the surface (if flag is set)
+C                       and stores profiles to file
+C     o flt_down      - moves float to its target depth (if flag is set)
+C     o flt_traj      - stores positions and data to file
+C     o flt_bilinear  - contains blinear interpolation scheme
+C     o flt_functions - contains some functions
+C     o flt_mdsreadvector - modified mdsreadvector to read files
+C
+C     ToDo:
+C
+C     o avoid exchanges when arrays empty
+C     o 3D advection of floats
+C
+C     ==================================================================
+C
+C     Documentation:
+C
+C     To be made....
+C
+C
+C     started: Arne Biastoch abiastoch@ucsd.edu 10-Jan-2000
+C              (adopted from version written by Detlef Stammer
+C               for the old model code)
+C
+C     changed: Arne Biastoch abiastoch@ucsd.edu 21-JUN-2001
+C
+C     ==================================================================
 
 
       SUBROUTINE FLT_MAIN (
-     I                      myIter,
-     I                      myTime,
-     I                      myThid
-     &                     )
+     I                      myTime, myIter, myThid )
 
 C     ==================================================================
 C     SUBROUTINE FLT_MAIN
@@ -83,51 +80,51 @@ C     ==================================================================
 
 C     == routine arguments ==
 
-C     mythid - thread number for this instance of the routine.
+C     myThid - thread number for this instance of the routine.
 
-      INTEGER myIter, myThid
       _RL myTime
+      INTEGER myIter, myThid
 
 C     integration of the float trajectories
 
-c         write(0,*) ' bf call flt_runga2', myIter
+c         WRITE(0,*) ' bf call flt_runga2', myIter
          CALL TIMER_START('FLOATS RUNGA2      [FLT  LOOP]',myThid)
-         call flt_runga2( myIter, myTime, myThid )
+         CALL FLT_RUNGA2( myTime, myIter, myThid )
          CALL TIMER_STOP ('FLOATS RUNGA2      [FLT  LOOP]',myThid)
-c         write(0,*) ' af call flt_runga2', myIter
+c         WRITE(0,*) ' af call flt_runga2', myIter
 
 C     check if exchanges between tiles are necessary
 
-         if (Nx .ne. sNx .or. Ny .ne. sNy) then
+         IF (Nx .NE. sNx .OR. Ny .NE. sNy) THEN
             CALL TIMER_START('FLOATS EXCHG       [FLT  LOOP]',myThid)
-            call flt_exchg( myIter, myTime, myThid )
+            CALL FLT_EXCHG( myTime, myIter, myThid )
             CALL TIMER_STOP ('FLOATS EXCHG       [FLT  LOOP]',myThid)
-         endif
+         ENDIF
 
 C     store profiles every flt_int_prof time steps:
 C     and move floats up and down
 
-         if (mod(myTime,flt_int_prof).eq.0.) then
+         IF ( MOD(myTime,flt_int_prof).EQ.0. ) THEN
             CALL TIMER_START('FLOATS UP          [FLT  LOOP]',myThid)
-            call flt_up( myIter, myTime, myThid )
+            CALL FLT_UP( myTime, myIter, myThid )
             CALL TIMER_STOP ('FLOATS UP          [FLT  LOOP]',myThid)
-         endif
+         ENDIF
 
-c         write(0,*) ' bf call flt_down', myIter
+c         WRITE(0,*) ' bf call flt_down', myIter
             CALL TIMER_START('FLOATS DOWN        [FLT  LOOP]',myThid)
-            call flt_down( myIter, myTime, myThid )
+            CALL FLT_DOWN( myTime, myIter, myThid )
             CALL TIMER_STOP ('FLOATS DOWN        [FLT  LOOP]',myThid)
-c         write(0,*) ' af call flt_down', myIter
+c         WRITE(0,*) ' af call flt_down', myIter
 
 C     store particles every flt_int_traj timesteps:
 
-         if (mod(myTime,flt_int_traj).eq.0.) then
-c         write(0,*) ' bf call flt_traj', myIter
+         IF ( MOD(myTime,flt_int_traj).EQ.0. ) THEN
+c         WRITE(0,*) ' bf call flt_traj', myIter
             CALL TIMER_START('FLOATS TRAJ        [FLT  LOOP]',myThid)
-            call flt_traj( myIter, myTime, myThid )
+            CALL FLT_TRAJ( myTime, myIter, myThid )
             CALL TIMER_STOP ('FLOATS TRAJ        [FLT  LOOP]',myThid)
-c         write(0,*) ' af call flt_traj', myIter
-         endif
+c         WRITE(0,*) ' af call flt_traj', myIter
+         ENDIF
 
       RETURN
       END

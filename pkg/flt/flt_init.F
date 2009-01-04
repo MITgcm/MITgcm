@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_init.F,v 1.3 2008/12/03 01:46:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_init.F,v 1.4 2009/01/04 00:58:23 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
 
-      SUBROUTINE flt_init ( myIter, myTime, myThid  )
+      SUBROUTINE FLT_INIT ( myThid  )
 
 C     ==================================================================
 C     SUBROUTINE flt_init
@@ -33,8 +33,7 @@ C     ==================================================================
 C     == routine arguments ==
 
 C     myThid - thread number for this instance of the routine.
-      _RL myTime
-      INTEGER myIter, myThid
+      INTEGER myThid
 
 C-    Functions:
       INTEGER  IFNBLNK
@@ -43,23 +42,23 @@ C-    Functions:
       EXTERNAL ILNBLNK
 
 C     == local variables ==
-      INTEGER ip, iG, jG
+      INTEGER bi, bj
+      INTEGER ip, iG, jG, iL
       INTEGER imax
       PARAMETER(imax=9)
       _RL tmp(imax)
-      INTEGER bi, bj, xx, yy
       _RL xlo, xhi, ylo, yhi
 
       LOGICAL globalFile
+      CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER K, I, J, IL, iUnit
-      INTEGER errIO
-      CHARACTER*(MAX_LEN_PREC) record
+      INTEGER iUnit
 
 C     number of active record in the file (might be lower than the
 C     total number of records because the tile could have contained
 C     more floats at an earlier restart
-      _RL npart_read, npart_dist
+      INTEGER npart_read
+      _RL     npart_dist
 
       NAMELIST /flt_nml/ flt_int_traj, flt_int_prof, flt_noise
      &                  ,flt_file
@@ -67,7 +66,7 @@ C     more floats at an earlier restart
 C     == end of interface ==
 
 C-    all threads initialise local var:
-      npart_read = 0.
+      npart_read = 0
       npart_dist = 0.
 
       _BEGIN_MASTER(myThid)
@@ -103,28 +102,43 @@ C DO some checks
        STOP 'ABNORMAL END: S/R FLT_INIT'
       ENDIF
 
+C read floats initial condition from file
+      IF ( nIter0.EQ.0 ) THEN
+        fn = flt_file
+      ELSE
+        WRITE(fn,'(A,I10.10)') 'pickup_flt.', nIter0
+      ENDIF
+      iL = ILNBLNK(fn)
+      WRITE(msgBuf,'(2A)') 'FLT_INIT: reading Floats from: ',fn(1:iL)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+
       DO bj = 1,nSy
-        DO bi = 1,nSx
+       DO bi = 1,nSx
 
 C (1) read actual number floats from file
-          CALL FLT_MDSREADVECTOR(flt_file,globalFile,64,'RL',
-     &                           imax,tmp,bi,bj,1,myThid)
-          npart_read = tmp(1)
-          max_npart  = tmp(6)
-          WRITE(0,*) 'npart_read,max_npart=',npart_read,max_npart
+         CALL FLT_MDSREADVECTOR( fn, globalFile, precFloat64, 'RL',
+     &                            imax, tmp, bi, bj, 1, myThid )
+         WRITE(msgBuf,'(A,2I4,A,1P2E15.8)')
+     &    ' bi,bj=', bi, bj, ' , npart,max_npart=', tmp(1), tmp(6)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         npart_read = NINT(tmp(1))
+         max_npart  = tmp(6)
 
-          IF (globalFile) THEN
-             npart_tile(bi,bj) = 0
-          ELSE
-             npart_tile(bi,bj) = INT(npart_read)
-          ENDIF
+         IF (globalFile) THEN
+           npart_tile(bi,bj) = 0
+         ELSE
+           npart_tile(bi,bj) = npart_read
+           npart_read = MIN( npart_read, max_npart_tile )
+         ENDIF
 
-          DO ip=1,INT(npart_read)
+         DO ip=1,npart_read
 
-          CALL FLT_MDSREADVECTOR(flt_file,globalFile,64,'RL',
-     &                           imax,tmp,bi,bj,ip+1,myThid)
+           CALL FLT_MDSREADVECTOR( fn, globalFile, precFloat64, 'RL',
+     &                             imax, tmp, bi, bj, ip+1, myThid )
 
-          IF (globalFile) THEN
+           IF (globalFile) THEN
 
 C     check IF floats are existing on tile. If not, set to zero
 C     use southern/western side for axis information
@@ -146,52 +160,64 @@ C           could imply wrong values
             IF (tmp(3) .GE. xlo .AND. tmp(3) .LE. xhi .AND.
      &          tmp(4) .GE. ylo .AND. tmp(4) .LE. yhi) THEN
 
-               npart_tile(bi,bj) = npart_tile(bi,bj) + 1
-               IF (npart_tile(bi,bj) .GT. max_npart_tile)
-     &         STOP ' max_npart_tile too low. STOP in flt_init'
+             npart_tile(bi,bj) = npart_tile(bi,bj) + 1
+             IF ( npart_tile(bi,bj).LE.max_npart_tile ) THEN
 
               npart(npart_tile(bi,bj),bi,bj)  = tmp(1)
-             tstart(npart_tile(bi,bj),bi,bj)  = tmp(2)
+              tstart(npart_tile(bi,bj),bi,bj) = tmp(2)
               xpart(npart_tile(bi,bj),bi,bj)  = tmp(3)
               ypart(npart_tile(bi,bj),bi,bj)  = tmp(4)
               kpart(npart_tile(bi,bj),bi,bj)  = tmp(5)
-             kfloat(npart_tile(bi,bj),bi,bj)  = tmp(6)
-                iup(npart_tile(bi,bj),bi,bj)  = tmp(7)
-               itop(npart_tile(bi,bj),bi,bj)  = tmp(8)
-               tend(npart_tile(bi,bj),bi,bj)  = tmp(9)
-              ENDIF
-
-c            ELSE
-
-c              npart(ip,bi,bj)  = tmp(1)
-c             tstart(ip,bi,bj)  = tmp(2)
-c              xpart(ip,bi,bj)  = tmp(3)
-c              ypart(ip,bi,bj)  = tmp(4)
-c              kpart(ip,bi,bj)  = tmp(5)
-c             kfloat(ip,bi,bj)  = tmp(6)
-c                iup(ip,bi,bj)  = tmp(7)
-c               itop(ip,bi,bj)  = tmp(8)
-c               tend(ip,bi,bj)  = tmp(9)
-
+              kfloat(npart_tile(bi,bj),bi,bj) = tmp(6)
+              iup(  npart_tile(bi,bj),bi,bj)  = tmp(7)
+              itop( npart_tile(bi,bj),bi,bj)  = tmp(8)
+              tend( npart_tile(bi,bj),bi,bj)  = tmp(9)
+             ENDIF
             ENDIF
 
-          ENDDO
+           ELSE
+C     not a global file: assume that all particles from this tiled-file
+C     belong to this current tile (=> do not no check)
 
-          npart_dist = npart_dist + DBLE(npart_tile(bi,bj))
-        ENDDO
+              npart(ip,bi,bj)  = tmp(1)
+              tstart(ip,bi,bj) = tmp(2)
+              xpart(ip,bi,bj)  = tmp(3)
+              ypart(ip,bi,bj)  = tmp(4)
+              kpart(ip,bi,bj)  = tmp(5)
+              kfloat(ip,bi,bj) = tmp(6)
+              iup(  ip,bi,bj)  = tmp(7)
+              itop( ip,bi,bj)  = tmp(8)
+              tend( ip,bi,bj)  = tmp(9)
+
+           ENDIF
+
+         ENDDO
+         npart_dist = npart_dist + DBLE(npart_tile(bi,bj))
+         IF ( npart_tile(bi,bj).GT.max_npart_tile ) THEN
+           WRITE(msgBuf,'(2A,2I4,2(A,I8))') 'FLT_INIT:',
+     &       ' bi,bj=', bi, bj,
+     &       ' npart_tile=', npart_tile(bi,bj),
+     &       ' > max_npart_tile=', max_npart_tile
+           CALL PRINT_ERROR( msgBuf , myThid)
+           STOP 'ABNORMAL END: S/R FLT_INIT'
+         ENDIF
+
+       ENDDO
       ENDDO
       _END_MASTER( myThid )
       _BARRIER
 
       _GLOBAL_SUM_R8( npart_dist, myThid )
-      IF (.NOT. globalFile) _GLOBAL_SUM_R8(npart_read,myThid)
 
       _BEGIN_MASTER( myThid )
-      IF (myProcId .EQ. 0) THEN
-         WRITE(errormessageunit,*) '    max _npart: ',max_npart
-         WRITE(errormessageunit,*) 'sum npart_read: ',npart_read
-         WRITE(errormessageunit,*) 'sum npart_tile: ',npart_dist
-      ENDIF
+        WRITE(msgBuf,'(A,2(A,I9))') 'FLT_INIT:',
+     &          ' max npart=', NINT(max_npart),
+     &   ' , sum npart_tile=', NINT(npart_dist)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(A)') ' '
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
       _END_MASTER( myThid )
 
       RETURN

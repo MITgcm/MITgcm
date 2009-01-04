@@ -1,28 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_up.F,v 1.2 2008/12/03 01:32:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_up.F,v 1.3 2009/01/04 00:58:23 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
 
-      subroutine flt_up (
-     I                    myCurrentIter, 
-     I                    myCurrentTime, 
-     I                    myThid
-     &                   )
+      SUBROUTINE FLT_UP (
+     I                    myTime, myIter, myThid )
 
-c     ==================================================================
-c     SUBROUTINE flt_up
-c     ==================================================================
-c
-c     o This routine moves particles vertical from the target depth to 
-c       the surface and samples the model state over the full water 
-c       column at horizontal float position every flt_int_prof time steps 
-c       and writes output.
-c
-c     ==================================================================
-c     SUBROUTINE flt_up
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE flt_up
+C     ==================================================================
+C
+C     o This routine moves particles vertical from the target depth to
+C       the surface and samples the model state over the full water
+C       column at horizontal float position every flt_int_prof time steps
+C       and writes output.
+C
+C     ==================================================================
+C     SUBROUTINE flt_up
+C     ==================================================================
 
-c     == global variables ==
+C     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
@@ -33,178 +30,173 @@ c     == global variables ==
 #include "SOLVE_FOR_PRESSURE.h"
 c#include "UNITS.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
 
-      INTEGER myCurrentIter, myThid
-      _RL myCurrentTime
+      _RL myTime
+      INTEGER myIter, myThid
+
+C     == local variables ==
       INTEGER bi, bj
 
-c     == local variables ==
-
-      integer imax
-      parameter (imax=(6+4*Nr))
-      integer ip, k
-      _RL xx, yy, xlo, xhi, ylo, yhi
+      INTEGER imax
+      PARAMETER (imax=(6+4*Nr))
+      INTEGER ip, k
+      _RL xx, yy
       _RL uu,vv,tt,ss, pp
       _RL global2local_i
       _RL global2local_j
-      integer irecord
+      INTEGER irecord
       _RL tmp(imax)
 
       _RL npart_read,npart_times
 
       CHARACTER*(MAX_LEN_FNAM) fn
-      character*(max_len_mbuf) msgbuf
 
 C Functions
-      integer ILNBLNK
+      INTEGER ILNBLNK
 C Local variables
-      character*(80) dataFName
-      integer iG,jG,IL
-      logical exst
-      logical globalFile
+      CHARACTER*(80) dataFName
+      INTEGER iG,jG,IL
+      LOGICAL exst
+      LOGICAL globalFile
 
-c     == end of interface ==
+C     == end of interface ==
 
       fn = 'float_profiles'
-
 
       DO bj=myByLo(myThid),myByHi(myThid)
       DO bi=myBxLo(myThid),myBxHi(myThid)
 
-c
-c (1) read actual number floats from file (if exists)
+C (1) read actual number floats from file (if exists)
          IL=ILNBLNK( fn )
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         WRITE(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
      &              fn(1:IL),'.',iG,'.',jG,'.data'
-         inquire( file=dataFname, exist=exst )
-         if (exst) then
+         INQUIRE( file=dataFname, exist=exst )
+         IF (exst) THEN
             CALL FLT_MDSREADVECTOR(fn,globalFile,64,'RL',
      &                             imax,tmp,bi,bj,1,mythid)
             npart_read  = tmp(1)
             npart_times = tmp(5)
-         else
+         ELSE
             npart_read  = 0.
             npart_times = 0.
-            tmp(2)      = myCurrentTime
-         endif
+            tmp(2)      = myTime
+         ENDIF
 
-c
-c the standard routine mdswritevector can be used here
-c (2) write new actual number floats and time into file
-c
-c total number of records in this file
+C the standard routine mdswritevector can be used here
+C (2) write new actual number floats and time into file
+C
+C total number of records in this file
          tmp(1) = DBLE(npart_tile(bi,bj))+npart_read
-c first time of writing floats (do not change when written)
+C first time of writing floats (do not change when written)
 c        tmp(2) = tmp(2)
-c current time
-         tmp(3) = myCurrentTime
-c timestep
+C current time
+         tmp(3) = myTime
+C timestep
          tmp(4) = flt_int_prof
-c total number of timesteps
+C total number of timesteps
          tmp(5) = npart_times + 1.
-c total number of floats
+C total number of floats
          tmp(6) = max_npart
-         do ip=7,imax
+         DO ip=7,imax
             tmp(ip) = 0.
-         enddo
-         call mdswritevector(fn,64,.false.,'RL',imax,tmp,bi,bj,1,
-     &                     myCurrentIter,mythid)
+         ENDDO
+         CALL MDSWRITEVECTOR(fn,64,.false.,'RL',imax,tmp,bi,bj,1,
+     &                     myIter,mythid)
 
-         do ip=1,npart_tile(bi,bj)
+         DO ip=1,npart_tile(bi,bj)
 
-c     Move float to the surface
-c
-         if(
-     &  (                       myCurrentTime.ge.tstart(ip,bi,bj))
-     &   .and.
-     &  (tend(ip,bi,bj).eq.-1..or.myCurrentTime.le.tend(ip,bi,bj))
-     &   .and.
-     &  (kpart(ip,bi,bj) .eq. kfloat(ip,bi,bj))
-     &   .and.
-     &  (iup(ip,bi,bj)   .gt. 0.)
-     &      ) then
+C     Move float to the surface
 
-c         if(myCurrentTime   .ge. tstart(ip,bi,bj) .and.
-c     &      myCurrentTime   .le.   tend(ip,bi,bj) .and.
-c     &      kpart(ip,bi,bj) .eq. kfloat(ip,bi,bj) .and.
-c     &      iup(ip,bi,bj)   .gt. 0.) then
+         IF (
+     &  (                       myTime.GE.tstart(ip,bi,bj))
+     &   .AND.
+     &  (tend(ip,bi,bj).EQ.-1..OR.myTime.LE.tend(ip,bi,bj))
+     &   .AND.
+     &  (kpart(ip,bi,bj) .EQ. kfloat(ip,bi,bj))
+     &   .AND.
+     &  (iup(ip,bi,bj)   .GT. 0.)
+     &      ) THEN
 
-            if(mod(myCurrentTime,iup(ip,bi,bj)).eq.0.)
+c         IF (myTime   .GE. tstart(ip,bi,bj) .AND.
+c     &      myTime   .LE.   tend(ip,bi,bj) .AND.
+c     &      kpart(ip,bi,bj) .EQ. kfloat(ip,bi,bj) .AND.
+c     &      iup(ip,bi,bj)   .GT. 0.) THEN
+
+            IF (mod(myTime,iup(ip,bi,bj)).EQ.0.)
      &      kpart(ip,bi,bj) = flt_surf
 
-         endif
+         ENDIF
 
-c     If float has died move to level 0
-c
-         if(
-     &  (tend(ip,bi,bj).ne.-1..and.myCurrentTime.gt.tend(ip,bi,bj))
-     &      ) then
+C     If float has died move to level 0
+
+         IF (
+     &  (tend(ip,bi,bj).NE.-1..AND.myTime.GT.tend(ip,bi,bj))
+     &      ) THEN
 
             kpart(ip,bi,bj) = 0.
 
-         endif
+         ENDIF
 
-c     Convert to local indices
-c
+C     Convert to local indices
+
             xx=global2local_i(xpart(ip,bi,bj),bi,bj,mythid)
             yy=global2local_j(ypart(ip,bi,bj),bi,bj,mythid)
 
-            tmp(1)  = npart(ip,bi,bj)  
-            tmp(2)  = myCurrentTime
-            tmp(3)  = xpart(ip,bi,bj)  
-            tmp(4)  = ypart(ip,bi,bj) 
+            tmp(1)  = npart(ip,bi,bj)
+            tmp(2)  = myTime
+            tmp(3)  = xpart(ip,bi,bj)
+            tmp(4)  = ypart(ip,bi,bj)
             tmp(5)  = kpart(ip,bi,bj)
 
-         if(
-     &  (                         myCurrentTime.ge.tstart(ip,bi,bj))
-     &   .and.
-     &  (tend(ip,bi,bj).eq.-1..or.myCurrentTime.le.tend(ip,bi,bj))
-     &      ) then
+         IF (
+     &  (                         myTime.GE.tstart(ip,bi,bj))
+     &   .AND.
+     &  (tend(ip,bi,bj).EQ.-1..OR.myTime.LE.tend(ip,bi,bj))
+     &      ) THEN
 
-c            if(tstart(ip,bi,bj) .ne. -1.              .and.
-c     &         myCurrentTime    .ge. tstart(ip,bi,bj) .and.
-c     &         myCurrentTime    .le.   tend(ip,bi,bj)) then
+c            IF (tstart(ip,bi,bj) .NE. -1.              .AND.
+c     &         myTime    .GE. tstart(ip,bi,bj) .AND.
+c     &         myTime    .LE.   tend(ip,bi,bj)) THEN
 
-               call flt_bilinear2d(xx,yy,pp,cg2d_x,1,bi,bj)
+               CALL flt_bilinear2d(xx,yy,pp,cg2d_x,1,bi,bj)
                tmp(6)   = pp
 
-            do k=1,Nr
-               call flt_bilinear  (xx,yy,uu,k,uVel,  2,bi,bj)
-               call flt_bilinear  (xx,yy,vv,k,vVel,  3,bi,bj)
-               call flt_bilinear  (xx,yy,tt,k,theta, 1,bi,bj)
-               call flt_bilinear  (xx,yy,ss,k,salt,  1,bi,bj)
+            DO k=1,Nr
+               CALL flt_bilinear  (xx,yy,uu,k,uVel,  2,bi,bj)
+               CALL flt_bilinear  (xx,yy,vv,k,vVel,  3,bi,bj)
+               CALL flt_bilinear  (xx,yy,tt,k,theta, 1,bi,bj)
+               CALL flt_bilinear  (xx,yy,ss,k,salt,  1,bi,bj)
                tmp(6+k)      = uu
                tmp(6+1*Nr+k) = vv
                tmp(6+2*Nr+k) = tt
                tmp(6+3*Nr+k) = ss
-            enddo
+            ENDDO
 
-            else
+            ELSE
                tmp(6)   = flt_nan
 
-            do k=1,Nr
+            DO k=1,Nr
                tmp(6+k)      = flt_nan
                tmp(6+1*Nr+k) = flt_nan
                tmp(6+2*Nr+k) = flt_nan
                tmp(6+3*Nr+k) = flt_nan
-            enddo
-            endif
+            ENDDO
+            ENDIF
 
-c
-c the standard routine mdswritevector can be used here
-c (3) write float positions into file
+C the standard routine mdswritevector can be used here
+C (3) write float positions into file
             irecord=npart_read+ip+1
-            call mdswritevector(fn,64,.false.,'RL',imax,tmp,bi,bj,
-     &                        irecord,myCurrentIter,mythid)
+            CALL mdswritevector(fn,64,.false.,'RL',imax,tmp,bi,bj,
+     &                        irecord,myIter,mythid)
 
-         enddo
+         ENDDO
 
       ENDDO
       ENDDO
 
-      return
-      end
+      RETURN
+      END
 

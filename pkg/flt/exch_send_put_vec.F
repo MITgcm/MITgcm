@@ -1,8 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.3 2008/12/03 01:32:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.4 2009/01/04 00:58:23 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
-#ifdef ALLOW_FLT
+
+C--   Contents
+C--   o EXCH_RL_SEND_PUT_VEC_X
+C--   o EXCH_RL_SEND_PUT_VEC_Y
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE EXCH_RL_SEND_PUT_VEC_X( arrayE, arrayW,
      I            myd1, myThid )
@@ -25,15 +30,13 @@ C     == Routine arguments ==
 C     arrayE - Array to be exchanged.
 C     arrayW
 C     myd1   - sizes.
-C     myd2
 C     myThid            - Thread number of this instance of S/R EXCH...
       INTEGER myd1
-      INTEGER myd2
       _RL arrayE(myd1, nSx, nSy), arrayW(myd1, nSx, nSy)
-      INTEGER theSimulationMode
       INTEGER myThid
 CEndOfInterface
 
+#ifdef ALLOW_FLT
 C     == Local variables ==
 C     I, J                       - Loop counters and extents
 C     bi, bj
@@ -44,7 +47,7 @@ C     theSize
 C     westCommMode               - Working variables holding type
 C     eastCommMode                 of communication a particular
 C                                  tile face uses.
-      INTEGER I, J
+      INTEGER I
       INTEGER bi, bj, biW, bjW, biE, bjE
       INTEGER westCommMode
       INTEGER eastCommMode
@@ -192,8 +195,11 @@ C     is much too slow and if we own the machine and have one thread
 C     per process preemption is not a problem.
       IF ( exchNeedsMemSync  ) CALL MEMSYNC
 
+#endif /* ALLOW_FLT */
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE EXCH_RL_SEND_PUT_VEC_Y( arrayN, arrayS,
      I            myd1, myThid )
@@ -216,14 +222,13 @@ C     == Routine arguments ==
 C     arrayN - Array to be exchanged.
 C     arrayS
 C     myd1   - sizes.
-C     myd2
 C     myThid            - Thread number of this instance of S/R EXCH...
       INTEGER myd1
-      INTEGER myd2
       _RL arrayN(myd1, nSx, nSy), arrayS(myd1, nSx, nSy)
       INTEGER myThid
 CEndOfInterface
 
+#ifdef ALLOW_FLT
 C     == Local variables ==
 C     I, J                       - Loop counters and extents
 C     bi, bj
@@ -234,7 +239,7 @@ C     theSize
 C     westCommMode               - Working variables holding type
 C     eastCommMode                 of communication a particular
 C                                  tile face uses.
-      INTEGER I, J
+      INTEGER I
       INTEGER bi, bj, biS, bjS, biN, bjN
       INTEGER southCommMode
       INTEGER northCommMode
@@ -376,16 +381,6 @@ C     is much too slow and if we own the machine and have one thread
 C     per process preemption is not a problem.
       IF ( exchNeedsMemSync  ) CALL MEMSYNC
 
-      RETURN
-      END
-
-#else /* ALLOW_FLT */
-      SUBROUTINE EXCH_RL_SEND_PUT_VEC_X( myThid )
-      INTEGER myThid
-      RETURN
-      END
-      SUBROUTINE EXCH_RL_SEND_PUT_VEC_Y(  myThid )
-      INTEGER myThid
-      RETURN
-      END
 #endif /* ALLOW_FLT */
+      RETURN
+      END

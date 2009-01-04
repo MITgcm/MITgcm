@@ -1,76 +1,73 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_down.F,v 1.2 2008/12/03 01:32:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_down.F,v 1.3 2009/01/04 00:58:23 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
 
-      subroutine flt_down (
-     I                      myCurrentIter, 
-     I                      myCurrentTime, 
-     I                      myThid
-     &                     )   
+      SUBROUTINE FLT_DOWN (
+     I                      myTime, myIter, myThid )
 
-c     ==================================================================
-c     SUBROUTINE flt_down
-c     ==================================================================
-c
-c     o This routine moves particles vertical from the surface to 
-c       the target depth
-c
-c     ==================================================================
-c     SUBROUTINE flt_down
-c     ==================================================================
+C     ==================================================================
+C     SUBROUTINE flt_down
+C     ==================================================================
+C
+C     o This routine moves particles vertical from the surface to
+C       the target depth
+C
+C     ==================================================================
+C     SUBROUTINE flt_down
+C     ==================================================================
 
-c     == global variables ==
+C     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "FLT.h"
 
-c     == routine arguments ==
+C     == routine arguments ==
 
-      INTEGER myCurrentIter, myThid
-      _RL myCurrentTime
+      _RL myTime
+      INTEGER myIter, myThid
+
+C     == local variables ==
+
       INTEGER bi, bj
+      INTEGER ip
 
-c     == local variables ==
-
-      integer ip
-
-c     == end of interface ==
+C     == end of interface ==
 
 
       DO bj=myByLo(myThid),myByHi(myThid)
       DO bi=myBxLo(myThid),myBxHi(myThid)
 
-      do ip=1,npart_tile(bi,bj)
+      DO ip=1,npart_tile(bi,bj)
 
-         if(
-     &  (                             myCurrentTime.ge.tstart(ip,bi,bj))
-     &   .and.
-     &  (  tend(ip,bi,bj).eq.-1. .or. myCurrentTime.le.  tend(ip,bi,bj))
-     &   .and.
-     &  (kpart(ip,bi,bj) .le. flt_surf)
-     &   .and.
-     &  (iup(ip,bi,bj)   .gt. 0.)
-     &      ) then
+         IF (
+     &  (                             myTime.GE.tstart(ip,bi,bj))
+     &   .AND.
+     &  (  tend(ip,bi,bj).EQ.-1. .OR. myTime.LE.  tend(ip,bi,bj))
+     &   .AND.
+     &  (kpart(ip,bi,bj) .LE. flt_surf)
+     &   .AND.
+     &  (iup(ip,bi,bj)   .GT. 0.)
+     &      ) THEN
 
-c         if(tstart(ip,bi,bj) .ne. -1.              .and.
-c     &      myCurrentTime    .ge. tstart(ip,bi,bj) .and.
-c     &      myCurrentTime    .le.   tend(ip,bi,bj) .and.
-c     &      kpart(ip,bi,bj) .eq. flt_surf .and.
-c     &      iup(ip,bi,bj)   .gt. 0.) then
+c         IF (tstart(ip,bi,bj) .NE. -1.              .AND.
+c     &      myTime    .GE. tstart(ip,bi,bj) .AND.
+c     &      myTime    .LE.   tend(ip,bi,bj) .AND.
+c     &      kpart(ip,bi,bj) .EQ. flt_surf .AND.
+c     &      iup(ip,bi,bj)   .GT. 0.) THEN
 
-c     move float to the target depth
-c
-            if(mod(myCurrentTime,iup(ip,bi,bj)).eq.itop(ip,bi,bj))
+C     move float to the target depth
+
+            IF (mod(myTime,iup(ip,bi,bj)).EQ.itop(ip,bi,bj))
      &      kpart(ip,bi,bj) = kfloat(ip,bi,bj)
 
-         endif
-      enddo
+         ENDIF
+      ENDDO
 
       ENDDO
       ENDDO
 
-      return
-      end
+      RETURN
+      END
 
