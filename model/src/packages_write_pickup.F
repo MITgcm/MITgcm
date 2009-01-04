@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.34 2008/08/05 22:02:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.35 2009/01/04 01:00:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -108,7 +108,8 @@ c      ENDIF
 #ifdef ALLOW_FLT
 C     Write restart file for floats
       IF (useFLT) THEN
-        CALL FLT_RESTART(myTime, myIter, myThid)
+        CALL FLT_WRITE_PICKUP(
+     &                  suffix, myTime, myIter, myThid )
       ENDIF
 #endif
 

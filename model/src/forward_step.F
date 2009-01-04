@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.163 2008/10/28 01:39:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.164 2009/01/04 01:00:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -776,7 +776,7 @@ C--   Do "blocking" sends and receives for field "overlap" terms
 C--   Calculate float trajectories
       IF (useFLT) THEN
         CALL TIMER_START('FLOATS            [FORWARD_STEP]',myThid)
-        CALL FLT_MAIN(myIter,myTime, myThid)
+        CALL FLT_MAIN( myTime, myIter, myThid )
         CALL TIMER_STOP ('FLOATS            [FORWARD_STEP]',myThid)
       ENDIF
 #endif

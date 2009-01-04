@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.65 2008/10/07 19:41:49 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.66 2009/01/04 01:00:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -189,8 +189,7 @@ C--   Initialize fixed arrays for OBCS
 #ifdef ALLOW_FLT
 C--   Initialise Float positions
       IF (useFLT) THEN
-       CALL FLT_INIT(nIter0,startTime,myThid )
-      _BARRIER
+       CALL FLT_INIT( myThid )
       ENDIF
 #endif
 
