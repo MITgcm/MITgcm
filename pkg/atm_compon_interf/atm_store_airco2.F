@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/atm_store_airco2.F,v 1.1 2007/06/18 21:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/atm_store_airco2.F,v 1.2 2009/01/05 15:19:17 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_AIM
+# include "AIM_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: ATM_STORE_AIRCO2
@@ -24,15 +27,18 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ==
-#include "SIZE.h"
+#ifdef ALLOW_AIM
+# include "AIM_SIZE.h"
+#else
+# include "SIZE.h"
+#endif
 
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
-c#ifdef ALLOW_AIM
-c#include "AIM_SIZE.h"
-c#include "com_physvar.h"
-c#endif
+#ifdef ALLOW_AIM
+#include "AIM_CO2.h"
+#endif
 C     == Global variables for coupling interface ==
 #include "ATMCPL.h"
 
@@ -49,23 +55,25 @@ C     myThid :: my Thread Id number
 CEOP
 
 #ifdef ALLOW_AIM
+#ifdef ALLOW_AIM_CO2
 C     == Local variables ==
 C     i,j :: Loop counters
       INTEGER i,j, ij
       _RL cplTimeFraction
 
-C     o Accumulate Sea-Ice Mass from thSIce pkg that will be exported
-C       to the coupling layer. seaIceMass is per surface unit, in kg/m2.
+C     o Accumulate atmospheric CO2 from Aim pkg that will be exported
+C       to the coupling layer.
        cplTimeFraction = 1. _d 0 / DFLOAT(cplSendFrq_iter)
        airCO2Time(bi,bj) = airCO2Time(bi,bj) + cplTimeFraction
        DO j=1,sNy
          DO i=1,sNx
           ij = i + (j-1)*sNx
           airCO2(i,j,bi,bj) = airCO2(i,j,bi,bj)
-c    &                      + aim_CO2(ij,myThid)*cplTimeFraction
+     &                      + aim_CO2(ij,myThid)*cplTimeFraction
          ENDDO
        ENDDO
 
+#endif
 #endif /* ALLOW_AIM */
 
       RETURN

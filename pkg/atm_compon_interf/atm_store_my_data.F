@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_my_data.F,v 1.3 2007/06/18 21:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_my_data.F,v 1.4 2009/01/05 15:19:17 dfer Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -67,6 +67,7 @@ c     CALL ATM_STORE_TAUY(       bi,bj, myTime, myIter, myThid )
         CALL ATM_STORE_WSPEED(   bi,bj, myTime, myIter, myThid )
         IF ( useThSIce )
      &  CALL ATM_STORE_FRACICE(  bi,bj, myTime, myIter, myThid )
+        CALL ATM_STORE_AIRCO2(   bi,bj, myTime, myIter, myThid )
       ENDIF
 
 #endif /* COMPONENT_MODULE */
