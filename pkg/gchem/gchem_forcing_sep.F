@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.24 2008/04/09 22:16:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.25 2009/01/05 15:26:02 dfer Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -120,6 +120,7 @@ cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
 
 #ifdef ALLOW_DIC
        CALL DIC_ATMOS( 1, myTime, myIter, myThid )
+       CALL DIC_STORE_FLUXCO2( myTime, myIter, myThid )
 #endif
 
 #endif /* GCHEM_SEPARATE_FORCING */
