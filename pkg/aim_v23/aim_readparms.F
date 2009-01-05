@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.14 2007/02/08 17:41:37 enderton Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.15 2009/01/05 15:15:33 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -29,6 +29,10 @@ C     == Global variables ===
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
+#ifdef ALLOW_AIM_CO2
+#include "AIM_CO2.h"
+#endif
+
 
 C-   Physical constants + functions of sigma and latitude
 c #include "com_physcon.h"
@@ -205,6 +209,10 @@ C      SEGRAD = minimum gradient of dry static energy (d_DSE/d_phi)
       NAMELIST /AIM_PAR_VDI/
      &    TRSHC, TRVDI, TRVDS, RHGRAD, SEGRAD
 
+#ifdef ALLOW_AIM_CO2
+      NAMELIST /AIM_PAR_CO2/ atm_pCO2, Aim_CO2_Flag
+#endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
@@ -250,6 +258,10 @@ C      > TimePeriod/deltaT -> jump from one month to the next one
       aim_taveFreq = taveFreq
       aim_diagFreq = dumpFreq
       aim_tendFreq = 0.
+#ifdef ALLOW_AIM_CO2
+      atm_pCO2     = 326. _d -6
+      Aim_CO2_Flag = 1
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -281,6 +293,11 @@ C-    Constants for radiation
 
 C-    Constants for vertical diffusion and sh. conv.
       READ(UNIT=iUnit,NML=AIM_PAR_VDI)
+
+#ifdef ALLOW_AIM_CO2
+C-    Constants for CO2
+      READ(UNIT=iUnit,NML=AIM_PAR_CO2)
+#endif
 
       WRITE(msgBuf,'(A)')
      &   ' AIM_READ_PHYSPARMS: finished reading data.aimphys'
@@ -530,6 +547,16 @@ C- namelist AIM_PAR_VDI:
      &  '   /* max gradient of rel.humidity (d_RH/d_sigma)*/')
        CALL WRITE_0D_R8( RHGRAD,INDEX_NONE,'AIM_VDI: RHGRAD =',
      &  '   /* max grad. of dry static Energy(d_DSE/d_phi)*/')
+
+#ifdef ALLOW_AIM_CO2
+C- namelist AIM_PAR_CO2:
+       CALL WRITE_0D_I( Aim_CO2_Flag, INDEX_NONE,
+     &                 'AIM_PAR_CO2: Aim_CO2_Flag =',
+     &  ' /* CO2 flag, 1: prescribed, 2: interactive  */')
+       CALL WRITE_0D_R8( atm_pCO2,    INDEX_NONE,
+     &                 'AIM_PAR_CO2: atm_pCO2 =',
+     &  ' /* pCO2 when prescribed or IC when interactive */')
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

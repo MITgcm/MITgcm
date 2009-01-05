@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.14 2007/06/18 21:30:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.15 2009/01/05 15:15:33 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -101,6 +101,10 @@ C     includes some parts of S/R FORDATE from F.Molteni SPEDDY code (ver23)
      U                  tYear,
      O                  aim_sWght0, aim_sWght1,
      I                  bi, bj, myTime, myIter, myThid )
+
+#ifdef ALLOW_AIM_CO2
+      CALL AIM_DO_CO2( bi, bj, myTime, myIter, myThid )
+#endif
 
 C--   Set surface geopotential: (g * orographic height)
       DO j=1,sNy

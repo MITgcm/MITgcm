@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.8 2008/02/05 15:37:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.9 2009/01/05 15:15:33 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -352,6 +352,24 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagCode  = 'SM P    L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef ALLOW_AIM_CO2
+      diagName  = 'aim_pCO2'
+      diagTitle = 'Atmospheric CO2'
+      diagUnits = 'ppm             '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
+
+cdfer
+cdfer      diagName  = 'FSOL    '
+cdfer      diagTitle = 'Incoming Solar radiation'
+cdfer      diagUnits = 'W/m^2           '
+cdfer      diagCode  = 'SM P    L1      '
+cdfer      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+cdfer     I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+cdfer
 
 #endif /* ALLOW_DIAGNOSTICS */
 
