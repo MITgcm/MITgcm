@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.3 2008/05/09 00:23:01 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.4 2009/01/06 19:01:32 dfer Exp $
 #
 # tested on MacBook Pro
 # on 28-Nov-2006
@@ -10,6 +10,7 @@ FC=gfortran
 ###CC=gcc
 LINK=gfortran
 NOOPTFLAGS='-O0'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 #EH3 MAKEDEPEND='${TOOLSDIR}/xmakedepend'
@@ -31,6 +32,8 @@ LIBS='-L/sw/lib'
 if test "x$IEEE" = x ; then
     FFLAGS='-Wunused -Wuninitialized -fsecond-underscore'
     FOPTIM='-O3 -funroll-loops'
+    NOOPTFLAGS='-O2 -funroll-loops'
+    NOOPTFILES='gad_c4_adv_x.F gad_u3_adv_x.F'
 else
     FFLAGS='-Wunused -ffloat-store -fsecond-underscore'
     FOPTIM='-O0'
