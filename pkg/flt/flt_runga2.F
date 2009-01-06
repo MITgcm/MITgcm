@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.9 2009/01/04 00:58:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.10 2009/01/06 19:21:20 dfer Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -110,7 +110,7 @@ C expects it to be just a normal kpart type variable.
                         zz=kpart(ip,bi,bj)
                         CALL flt_trilinear(xx,yy,zz,uu,uVel,2,bi,bj)
                         CALL flt_trilinear(xx,yy,zz,vv,vVel,3,bi,bj)
-                        CALL flt_trilinear(zz,yy,zz,ww,wVel,4,bi,bj)
+                        CALL flt_trilinear(xx,yy,zz,ww,wVel,4,bi,bj)
                         zt=zz+0.5*deltaTmom*ww*scalez
                      ELSE
 #endif
