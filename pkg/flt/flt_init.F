@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_init.F,v 1.4 2009/01/04 00:58:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_init.F,v 1.5 2009/01/07 23:14:41 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -43,7 +43,8 @@ C-    Functions:
 
 C     == local variables ==
       INTEGER bi, bj
-      INTEGER ip, iG, jG, iL
+      INTEGER ip, iL
+c     INTEGER iG, jG
       INTEGER imax
       PARAMETER(imax=9)
       _RL tmp(imax)
@@ -126,6 +127,32 @@ C (1) read actual number floats from file
          npart_read = NINT(tmp(1))
          max_npart  = tmp(6)
 
+C     note: The possible area for a float has to be extended to the
+C           space "between" two T points, i.e. xc(sNx) of one tile
+C           and xc(1) of the neighboring tile. This cannot be solved
+C           by simply using xc(sNx+1) or xc(0) because periodicity
+C           could imply wrong values
+c        iG = myXGlobalLo + (bi-1)*sNx
+c        jG = myYGlobalLo + (bj-1)*sNy
+c        xlo = xC(1,  1,bi,bj) - delX(iG)*0.5
+c        xhi = xC(sNx,1,bi,bj) + delX(iG+sNx-1)*0.5
+c        ylo = yC(1,  1,bi,bj) - delY(jG)*0.5
+c        yhi = yC(1,sNy,bi,bj) + delY(jG+sNy-1)*0.5
+C     just using Edge position (xG,yG):
+         xlo = xG(  1,  1,bi,bj)
+         xhi = xG(sNx+1,1,bi,bj)
+         ylo = yG(1,  1,  bi,bj)
+         yhi = yG(1,sNy+1,bi,bj)
+
+         WRITE(msgBuf,'(A,2I4,A,2F18.8)')
+     &    ' bi,bj=', bi, bj, ' , xlo,xhi=', xlo, xhi
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(A,2I4,A,2F18.8)')
+     &    ' bi,bj=', bi, bj, ' , ylo,yhi=', ylo, yhi
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+
          IF (globalFile) THEN
            npart_tile(bi,bj) = 0
          ELSE
@@ -143,22 +170,8 @@ C (1) read actual number floats from file
 C     check IF floats are existing on tile. If not, set to zero
 C     use southern/western side for axis information
 
-C     note: The possible area for a float has to extended to the
-C           space "between" two T points, i.e. xc(sNx) of one tile
-C           and xc(1) of the neighboring tile. This cannot be solved
-C           by simply using xc(sNx+1) or xc(0) because periodicity
-C           could imply wrong values
-
-            iG = myXGlobalLo + (bi-1)*sNx
-            jG = myYGlobalLo + (bj-1)*sNy
-
-            xlo = xc(1,  1,  bi,bj) - delX(iG)*0.5
-            xhi = xc(sNx,1,bi,bj)   + delX(iG+sNx-1)*0.5
-            ylo = yc(1,  1,  bi,bj) - delY(jG)*0.5
-            yhi = yc(1,sNy,bi,bj)   + delY(jG+sNy-1)*0.5
-
-            IF (tmp(3) .GE. xlo .AND. tmp(3) .LE. xhi .AND.
-     &          tmp(4) .GE. ylo .AND. tmp(4) .LE. yhi) THEN
+            IF (tmp(3) .GE. xlo .AND. tmp(3) .LT. xhi .AND.
+     &          tmp(4) .GE. ylo .AND. tmp(4) .LT. yhi) THEN
 
              npart_tile(bi,bj) = npart_tile(bi,bj) + 1
              IF ( npart_tile(bi,bj).LE.max_npart_tile ) THEN
