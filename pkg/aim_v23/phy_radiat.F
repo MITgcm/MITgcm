@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.4 2007/08/10 03:09:07 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.5 2009/01/07 14:57:04 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -371,12 +371,16 @@ C      weighted average according to land/sea/sea-ice fraction:
 C
 C     4.2  Absorption of upward flux
 C
-      DO J=1,NGP
-       DO K=kGrd(J),1,-1
+      DO K=NLEV,1,-1
+       DO J=1,NGP
+        IF ( K .LE. kGrd(J) ) THEN
          DFABS(J,K)=DFABS(J,K)+FLUX(J,1)
          FLUX (J,1)=TAU2(J,K,1)*FLUX(J,1)
          DFABS(J,K)=DFABS(J,K)-FLUX(J,1)
          FLUX (J,1)=FLUX(J,1)+FREFL(J,K)
+        ELSE
+         DFABS(J,K)= 0. _d 0
+        ENDIF
        ENDDO
       ENDDO
 C
