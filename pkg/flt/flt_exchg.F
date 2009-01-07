@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.6 2009/01/04 21:01:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.7 2009/01/07 23:17:23 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -41,7 +41,8 @@ C     == local variables ==
       INTEGER ip, jp, jl, npNew
       INTEGER icountE, icountW, icountN, icountS
       INTEGER deleteList(max_npart_exch*2)
-      INTEGER imax, imax2, m, iG, jG
+      INTEGER imax, imax2, m
+c     INTEGER iG, jG
       _RL xlo, xhi, ylo, yhi
       PARAMETER(imax=9)
       PARAMETER(imax2=imax*max_npart_exch)
@@ -56,7 +57,9 @@ C     buffer for sending/receiving variables (E/W are also used for S/N)
 C     == end of interface ==
 
 Caw Check if there are eastern/western tiles
-      IF ( Nx.NE.sNx ) THEN
+c     IF ( Nx.NE.sNx ) THEN
+C--   for periodic domain, condition above is wrong ; needs a better test
+      IF ( .TRUE. ) THEN
 
 C--   Choose floats that have to exchanged with eastern and western tiles
 C     and pack to arrays
@@ -65,7 +68,6 @@ C     and pack to arrays
          DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C initialize buffers
-
            DO m=1,imax2
              fltbuf_sendE(m,bi,bj) = 0.
              fltbuf_sendW(m,bi,bj) = 0.
@@ -77,9 +79,11 @@ C initialize buffers
            icountW=0
            jl = 0
 
-           iG = myXGlobalLo + (bi-1)*sNx
-           xlo = xc(1,  1,  bi,bj) - delX(iG)
-           xhi = xc(sNx,1,bi,bj)   + delX(iG+sNx-1)
+c          iG = myXGlobalLo + (bi-1)*sNx
+c          xlo = xc(1,  1,  bi,bj) - delX(iG)
+c          xhi = xc(sNx,1,bi,bj)   + delX(iG+sNx-1)
+           xlo = xG(  1,  1,bi,bj)
+           xhi = xG(sNx+1,1,bi,bj)
 
            DO ip=1,npart_tile(bi,bj)
 
@@ -174,11 +178,14 @@ C        copy: ip <-- jp
          ENDDO
         ENDDO
 
-C--   "Put" east and west edges.
-        CALL EXCH_RL_SEND_PUT_VEC_X( fltbuf_sendE, fltbuf_sendW,
+C--   Send or Put east and west edges.
+        CALL EXCH_RL_SEND_PUT_VEC_X(
+     I                               fltbuf_sendE, fltbuf_sendW,
+     O                               fltbuf_recvE, fltbuf_recvW,
      I                               imax2, myThid )
 C--   Receive east/west arrays
-        CALL EXCH_RL_RECV_GET_VEC_X( fltbuf_recvE, fltbuf_recvW,
+        CALL EXCH_RL_RECV_GET_VEC_X(
+     U                               fltbuf_recvE, fltbuf_recvW,
      I                               imax2, myThid )
 
 C--   Unpack arrays on new tiles
@@ -254,7 +261,9 @@ C--   Choose floats that have to exchanged with northern and southern tiles
 C     and pack to arrays
 
 Caw Check if there are northern/southern tiles
-      IF ( Ny.NE.sNy ) THEN
+c     IF ( Ny.NE.sNy ) THEN
+C--   for periodic domain, condition above is wrong ; needs a better test
+      IF ( .TRUE. ) THEN
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -272,9 +281,11 @@ C initialize buffers
            icountS=0
            jl = 0
 
-           jG = myYGlobalLo + (bj-1)*sNy
-           ylo = yc(1,  1,  bi,bj) - delY(jG)
-           yhi = yc(1,sNy,bi,bj)   + delY(jG+sNy-1)
+c          jG = myYGlobalLo + (bj-1)*sNy
+c          ylo = yc(1,  1,  bi,bj) - delY(jG)
+c          yhi = yc(1,sNy,bi,bj)   + delY(jG+sNy-1)
+           ylo = yG(1,  1,  bi,bj)
+           yhi = yG(1,sNy+1,bi,bj)
 
            DO ip=1,npart_tile(bi,bj)
 
@@ -348,7 +359,6 @@ c              CALL PRINT_ERROR( msgBuf, myThid )
      &         ' icountS=', icountS,
      &         ' > max_npart_exch=', max_npart_exch
              CALL PRINT_ERROR( msgBuf, myThid )
-c            write(0,*) myYGlobalLo,jG,delY(jG),yc(1,1,bi,bj),ylo
            ENDIF
            IF ( icountN.GT.max_npart_exch
      &     .OR. icountS.GT.max_npart_exch ) THEN
@@ -380,12 +390,15 @@ C        copy: ip <-- jp
          ENDDO
         ENDDO
 
-C     "Put" north and south arrays.
-        CALL EXCH_RL_SEND_PUT_VEC_Y( fltbuf_sendE, fltbuf_sendW,
+C     Send or Put north and south arrays.
+        CALL EXCH_RL_SEND_PUT_VEC_Y(
+     I                               fltbuf_sendE, fltbuf_sendW,
+     O                               fltbuf_recvE, fltbuf_recvW,
      I                               imax2, myThid )
 
 C     Receive north and south arrays
-        CALL EXCH_RL_RECV_GET_VEC_Y( fltbuf_recvE, fltbuf_recvW,
+        CALL EXCH_RL_RECV_GET_VEC_Y(
+     U                               fltbuf_recvE, fltbuf_recvW,
      I                               imax2, myThid )
 
 C--   Unpack arrays on new tiles

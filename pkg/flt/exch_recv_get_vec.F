@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_recv_get_vec.F,v 1.3 2009/01/04 00:58:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_recv_get_vec.F,v 1.4 2009/01/07 23:17:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -9,8 +9,9 @@ C--   o EXCH_RL_RECV_GET_VEC_Y
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE EXCH_RL_RECV_GET_VEC_X( arrayE, arrayW,
-     I            myd1, myThid )
+      SUBROUTINE EXCH_RL_RECV_GET_VEC_X(
+     U                        arrayE, arrayW,
+     I                        myd1, myThid )
 C     /==========================================================\
 C     | SUBROUTINE RECV_RL_GET_X                                 |
 C     | o "Send" or "put" X edges for RL array.                  |
@@ -50,8 +51,8 @@ C     theSize
 C     westCommMode               - Working variables holding type
 C     eastCommMode                 of communication a particular
 C                                  tile face uses.
-      INTEGER I
-      INTEGER bi, bj, biW, bjW, biE, bjE
+      INTEGER bi, bj
+c     INTEGER biW, bjW, biE, bjE
       INTEGER westCommMode
       INTEGER eastCommMode
       INTEGER spinCount
@@ -76,10 +77,10 @@ C--   iii. Set data read flag + memory sync.
        DO bi=myBxLo(myThid),myBxHi(myThid)
         westCommMode  = _tileCommModeW(bi,bj)
         eastCommMode  = _tileCommModeE(bi,bj)
-        biE =  _tileBiE(bi,bj)
-        bjE =  _tileBjE(bi,bj)
-        biW =  _tileBiW(bi,bj)
-        bjW =  _tileBjW(bi,bj)
+c       biE =  _tileBiE(bi,bj)
+c       bjE =  _tileBjE(bi,bj)
+c       biW =  _tileBiW(bi,bj)
+c       bjW =  _tileBjW(bi,bj)
         IF ( westCommMode .EQ. COMM_MSG ) THEN
 #ifdef ALLOW_USE_MPI
 #ifndef ALWAYS_USE_MPI
@@ -173,37 +174,14 @@ C        Update statistics
        ENDDO
       ENDIF
 
-C--   Read from the buffers
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-
-        biE =  _tileBiE(bi,bj)
-        bjE =  _tileBjE(bi,bj)
-        biW =  _tileBiW(bi,bj)
-        bjW =  _tileBjW(bi,bj)
-        westCommMode = _tileCommModeW(bi,bj)
-        eastCommMode = _tileCommModeE(bi,bj)
-         IF ( eastCommMode .EQ. COMM_GET ) THEN
-          DO I=1,myd1
-             arrayE(I,bi,bj) = arrayW(I,biE,bjE)
-           ENDDO
-         ENDIF
-         IF ( westCommMode .EQ. COMM_GET ) THEN
-          DO I=1,myd1
-             arrayW(I,bi,bj) = arrayE(I,biW,bjW)
-          ENDDO
-         ENDIF
-
-       ENDDO
-      ENDDO
-
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE EXCH_RL_RECV_GET_VEC_Y( arrayN, arrayS,
-     I            myd1, myThid )
+      SUBROUTINE EXCH_RL_RECV_GET_VEC_Y(
+     U                        arrayN, arrayS,
+     I                        myd1, myThid )
 C     /==========================================================\
 C     | SUBROUTINE RECV_RL_GET_Y                                 |
 C     | o "Send" or "put" Y edges for RL array.                  |
@@ -242,8 +220,8 @@ C     theSize
 C     southCommMode               - Working variables holding type
 C     northCommMode                 of communication a particular
 C                                  tile face uses.
-      INTEGER I
-      INTEGER bi, bj, biS, bjS, biN, bjN
+      INTEGER bi, bj
+c     INTEGER biS, bjS, biN, bjN
       INTEGER southCommMode
       INTEGER northCommMode
       INTEGER spinCount
@@ -268,10 +246,10 @@ C--   iii. Set data read flag + memory sync.
        DO bi=myBxLo(myThid),myBxHi(myThid)
         southCommMode  = _tileCommModeS(bi,bj)
         northCommMode  = _tileCommModeN(bi,bj)
-        biN =  _tileBiN(bi,bj)
-        bjN =  _tileBjN(bi,bj)
-        biS =  _tileBiS(bi,bj)
-        bjS =  _tileBjS(bi,bj)
+c       biN =  _tileBiN(bi,bj)
+c       bjN =  _tileBjN(bi,bj)
+c       biS =  _tileBiS(bi,bj)
+c       bjS =  _tileBjS(bi,bj)
         IF ( southCommMode .EQ. COMM_MSG ) THEN
 #ifdef ALLOW_USE_MPI
 #ifndef ALWAYS_USE_MPI
@@ -356,30 +334,5 @@ C        Update statistics
        ENDDO
       ENDIF
 
-C--   Read from the buffers
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-
-        biN =  _tileBiN(bi,bj)
-        bjN =  _tileBjN(bi,bj)
-        biS =  _tileBiS(bi,bj)
-        bjS =  _tileBjS(bi,bj)
-        southCommMode = _tileCommModeS(bi,bj)
-        northCommMode = _tileCommModeN(bi,bj)
-         IF ( southCommMode .EQ. COMM_GET ) THEN
-          DO I=1,myd1
-             arrayN(I,bi,bj) = arrayS(I,biN,bjN)
-           ENDDO
-         ENDIF
-         IF ( southCommMode .EQ. COMM_GET ) THEN
-          DO I=1,myd1
-             arrayS(I,bi,bj) = arrayN(I,biS,bjS)
-          ENDDO
-         ENDIF
-
-       ENDDO
-      ENDDO
-
       RETURN
       END
-

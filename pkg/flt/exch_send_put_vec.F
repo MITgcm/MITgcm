@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.4 2009/01/04 00:58:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.5 2009/01/07 23:17:23 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -9,8 +9,10 @@ C--   o EXCH_RL_SEND_PUT_VEC_Y
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE EXCH_RL_SEND_PUT_VEC_X( arrayE, arrayW,
-     I            myd1, myThid )
+      SUBROUTINE EXCH_RL_SEND_PUT_VEC_X(
+     I                        arrayE, arrayW,
+     O                        bufRecE, bufRecW,
+     I                        myd1, myThid )
 C     /==========================================================\
 C     | SUBROUTINE EXCH_RL_SEND_PUT_X                            |
 C     | o "Send" or "put" X edges for RL array.                  |
@@ -32,7 +34,8 @@ C     arrayW
 C     myd1   - sizes.
 C     myThid            - Thread number of this instance of S/R EXCH...
       INTEGER myd1
-      _RL arrayE(myd1, nSx, nSy), arrayW(myd1, nSx, nSy)
+      _RL  arrayE(myd1,nSx,nSy),  arrayW(myd1,nSx,nSy)
+      _RL bufRecE(myd1,nSx,nSy), bufRecW(myd1,nSx,nSy)
       INTEGER myThid
 CEndOfInterface
 
@@ -111,11 +114,11 @@ c     &                  exchReqVIdX(exchVReqsX(1,bi,bj),1,bi,bj), mpiRc)
 #endif /* ALLOW_USE_MPI */
          eastRecvAck(1,biW,bjW) = 1.
         ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
+c         write(0,*) 'SEND_PUT_VEC_X: copy E:',biW,bjW,' <- W:',bi,bj
           DO I=1,myd1
-            arrayE(I,biW,bjW) = arrayW(I,bi,bj)
+            bufRecE(I,biW,bjW) = arrayW(I,bi,bj)
           ENDDO
-        ELSEIF ( westCommMode .NE. COMM_NONE
-     &   .AND.   westCommMode .NE. COMM_GET ) THEN
+        ELSEIF ( westCommMode .NE. COMM_NONE ) THEN
          STOP ' S/R EXCH: Invalid commW mode.'
         ENDIF
 
@@ -141,18 +144,18 @@ c         endif
          CALL MPI_Isend(arrayE(1,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc)
-c     &                  exchReqVIdX(exchVReqsX(1,bi,bj),1,bi,bj), mpiRc)
+c    &                  exchReqVIdX(exchVReqsX(1,bi,bj),1,bi,bj), mpiRc)
 #ifndef ALWAYS_USE_MPI
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
          westRecvAck(1,biE,bjE) = 1.
         ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
+c         write(0,*) 'SEND_PUT_VEC_X: copy W:',biE,bjE,' <- E:',bi,bj
           DO I=1,myd1
-            arrayW(I,biE,bjE) = arrayE(I,bi,bj)
+            bufRecW(I,biE,bjE) = arrayE(I,bi,bj)
           ENDDO
-        ELSEIF ( eastCommMode .NE. COMM_NONE
-     &   .AND.   eastCommMode .NE. COMM_GET  ) THEN
+        ELSEIF ( eastCommMode .NE. COMM_NONE ) THEN
          STOP ' S/R EXCH: Invalid commE mode.'
         ENDIF
 
@@ -201,8 +204,10 @@ C     per process preemption is not a problem.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE EXCH_RL_SEND_PUT_VEC_Y( arrayN, arrayS,
-     I            myd1, myThid )
+      SUBROUTINE EXCH_RL_SEND_PUT_VEC_Y(
+     I                        arrayN, arrayS,
+     O                        bufRecN, bufRecS,
+     I                        myd1, myThid )
 C     /==========================================================\
 C     | SUBROUTINE EXCH_RL_SEND_PUT_Y                            |
 C     | o "Send" or "put" Y edges for RL array.                  |
@@ -224,7 +229,8 @@ C     arrayS
 C     myd1   - sizes.
 C     myThid            - Thread number of this instance of S/R EXCH...
       INTEGER myd1
-      _RL arrayN(myd1, nSx, nSy), arrayS(myd1, nSx, nSy)
+      _RL  arrayN(myd1,nSx,nSy),  arrayS(myd1,nSx,nSy)
+      _RL bufRecN(myd1,nSx,nSy), bufRecS(myd1,nSx,nSy)
       INTEGER myThid
 CEndOfInterface
 
@@ -303,11 +309,11 @@ c     &                  exchReqVIdY(exchVReqsY(1,bi,bj),1,bi,bj), mpiRc)
 #endif /* ALLOW_USE_MPI */
          northRecvAck(1,biS,bjS) = 1.
         ELSEIF ( southCommMode .EQ. COMM_PUT  ) THEN
+c         write(0,*) 'SEND_PUT_VEC_Y: copy N:',biS,bjS,' <- S:',bi,bj
           DO I=1,myd1
-            arrayN(I,biS,bjS) = arrayS(I,bi,bj)
+            bufRecN(I,biS,bjS) = arrayS(I,bi,bj)
           ENDDO
-        ELSEIF ( southCommMode .NE. COMM_NONE
-     &   .AND.   southCommMode .NE. COMM_GET ) THEN
+        ELSEIF ( southCommMode .NE. COMM_NONE ) THEN
          STOP ' S/R EXCH: Invalid commS mode.'
         ENDIF
 
@@ -334,11 +340,11 @@ c     &                  exchReqVIdY(exchVReqsY(1,bi,bj),1,bi,bj), mpiRc)
 #endif /* ALLOW_USE_MPI */
          southRecvAck(1,biN,bjN) = 1.
         ELSEIF ( northCommMode .EQ. COMM_PUT  ) THEN
+c         write(0,*) 'SEND_PUT_VEC_Y: copy S:',biN,bjN,' <- N:',bi,bj
           DO I=1,myd1
-            arrayS(I,biN,bjN) = arrayN(I,bi,bj)
+            bufRecS(I,biN,bjN) = arrayN(I,bi,bj)
           ENDDO
-        ELSEIF ( northCommMode .NE. COMM_NONE
-     &   .AND.   northCommMode .NE. COMM_GET  ) THEN
+        ELSEIF ( northCommMode .NE. COMM_NONE ) THEN
          STOP ' S/R EXCH: Invalid commN mode.'
         ENDIF
 
