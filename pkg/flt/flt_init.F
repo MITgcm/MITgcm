@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_init.F,v 1.5 2009/01/07 23:14:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_init.F,v 1.6 2009/01/08 19:40:41 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -48,7 +48,7 @@ c     INTEGER iG, jG
       INTEGER imax
       PARAMETER(imax=9)
       _RL tmp(imax)
-      _RL xlo, xhi, ylo, yhi
+      _RL xLo, xHi, yLo, yHi
 
       LOGICAL globalFile
       CHARACTER*(MAX_LEN_FNAM) fn
@@ -103,7 +103,43 @@ C DO some checks
        STOP 'ABNORMAL END: S/R FLT_INIT'
       ENDIF
 
+      _END_MASTER(myThid)
+
+C Set domain dependent constants:
+      xLo = -xG( 1,  1,1,1)
+      xHi = xG(sNx+1,1,1,1)
+      yLo = -yG(1, 1,  1,1)
+      yHi = yG(1,sNy+1,1,1)
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+         xLo = MAX( xLo, -xG(1,1,bi,bj) )
+         xHi = MAX( xHi, xG(sNx+1,1,bi,bj) )
+         yLo = MAX( yLo, -yG(1,1,bi,bj) )
+         yHi = MAX( yHi, yG(1,sNy+1,bi,bj) )
+       ENDDO
+      ENDDO
+      _GLOBAL_MAX_R8( xLo, myThid )
+      _GLOBAL_MAX_R8( xHi, myThid )
+      _GLOBAL_MAX_R8( yLo, myThid )
+      _GLOBAL_MAX_R8( yHi, myThid )
+
+      _BEGIN_MASTER(myThid)
+       flt_xLo = -xLo
+       flt_xHi =  xHi
+       flt_yLo = -yLo
+       flt_yHi =  yHi
+       WRITE(msgBuf,'(A,2F18.8)')
+     &    '  FLT_xLo,xHi=', xLo, xHi
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(A,2F18.8)')
+     &    '  FLT_yLo,yHi=', yLo, yHi
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+      _END_MASTER(myThid)
+
 C read floats initial condition from file
+      _BEGIN_MASTER(myThid)
       IF ( nIter0.EQ.0 ) THEN
         fn = flt_file
       ELSE
@@ -139,17 +175,17 @@ c        xhi = xC(sNx,1,bi,bj) + delX(iG+sNx-1)*0.5
 c        ylo = yC(1,  1,bi,bj) - delY(jG)*0.5
 c        yhi = yC(1,sNy,bi,bj) + delY(jG+sNy-1)*0.5
 C     just using Edge position (xG,yG):
-         xlo = xG(  1,  1,bi,bj)
-         xhi = xG(sNx+1,1,bi,bj)
-         ylo = yG(1,  1,  bi,bj)
-         yhi = yG(1,sNy+1,bi,bj)
+         xLo = xG(  1,  1,bi,bj)
+         xHi = xG(sNx+1,1,bi,bj)
+         yLo = yG(1,  1,  bi,bj)
+         yHi = yG(1,sNy+1,bi,bj)
 
          WRITE(msgBuf,'(A,2I4,A,2F18.8)')
-     &    ' bi,bj=', bi, bj, ' , xlo,xhi=', xlo, xhi
+     &    ' bi,bj=', bi, bj, ' , xLo,xHi=', xLo, xHi
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
          WRITE(msgBuf,'(A,2I4,A,2F18.8)')
-     &    ' bi,bj=', bi, bj, ' , ylo,yhi=', ylo, yhi
+     &    ' bi,bj=', bi, bj, ' , yLo,yHi=', yLo, yHi
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
 

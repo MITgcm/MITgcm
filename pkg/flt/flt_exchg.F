@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.7 2009/01/07 23:17:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.8 2009/01/08 19:40:41 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -24,11 +24,9 @@ C     == global variables ==
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "EXCH.h"
-#include "FLT.h"
-#include "GRID.h"
 #include "PARAMS.h"
+#include "GRID.h"
+#include "FLT.h"
 
 C     == routine arguments ==
 
@@ -43,7 +41,7 @@ C     == local variables ==
       INTEGER deleteList(max_npart_exch*2)
       INTEGER imax, imax2, m
 c     INTEGER iG, jG
-      _RL xlo, xhi, ylo, yhi
+      _RL xlo, xhi, ylo, yhi, xNew, yNew
       PARAMETER(imax=9)
       PARAMETER(imax2=imax*max_npart_exch)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -90,11 +88,14 @@ c          xhi = xc(sNx,1,bi,bj)   + delX(iG+sNx-1)
              IF ( xpart(ip,bi,bj).GE.xhi ) THEN
               icountE=icountE+1
               IF ( icountE.LE.max_npart_exch ) THEN
+               xNew = xpart(ip,bi,bj)
+C-         apply cyclic BC
+               IF ( xNew.GE.flt_xHi ) xNew = xNew - flt_xHi + flt_xLo
 
                ic=(icountE-1)*imax
                fltbuf_sendE(ic+1,bi,bj) =   npart(ip,bi,bj)
                fltbuf_sendE(ic+2,bi,bj) =  tstart(ip,bi,bj)
-               fltbuf_sendE(ic+3,bi,bj) =   xpart(ip,bi,bj)
+               fltbuf_sendE(ic+3,bi,bj) =   xNew
                fltbuf_sendE(ic+4,bi,bj) =   ypart(ip,bi,bj)
                fltbuf_sendE(ic+5,bi,bj) =   kpart(ip,bi,bj)
                fltbuf_sendE(ic+6,bi,bj) =  kfloat(ip,bi,bj)
@@ -113,11 +114,14 @@ C tag this float to be removed:
              IF ( xpart(ip,bi,bj).LT.xlo ) THEN
               icountW=icountW+1
               IF ( icountW.LE.max_npart_exch ) THEN
+               xNew = xpart(ip,bi,bj)
+C-         apply cyclic BC
+               IF ( xNew.LT.flt_xLo ) xNew = xNew + flt_xHi - flt_xLo
 
                ic=(icountW-1)*imax
                fltbuf_sendW(ic+1,bi,bj) =   npart(ip,bi,bj)
                fltbuf_sendW(ic+2,bi,bj) =  tstart(ip,bi,bj)
-               fltbuf_sendW(ic+3,bi,bj) =   xpart(ip,bi,bj)
+               fltbuf_sendW(ic+3,bi,bj) =   xNew
                fltbuf_sendW(ic+4,bi,bj) =   ypart(ip,bi,bj)
                fltbuf_sendW(ic+5,bi,bj) =   kpart(ip,bi,bj)
                fltbuf_sendW(ic+6,bi,bj) =  kfloat(ip,bi,bj)
@@ -292,12 +296,15 @@ c          yhi = yc(1,sNy,bi,bj)   + delY(jG+sNy-1)
              IF ( ypart(ip,bi,bj).GE.yhi ) THEN
               icountN=icountN+1
               IF ( icountN.LE.max_npart_exch ) THEN
+               yNew = ypart(ip,bi,bj)
+C-         apply cyclic BC
+               IF ( yNew.GE.flt_yHi ) yNew = yNew - flt_yHi + flt_yLo
 
                ic=(icountN-1)*imax
                fltbuf_sendE(ic+1,bi,bj) =   npart(ip,bi,bj)
                fltbuf_sendE(ic+2,bi,bj) =  tstart(ip,bi,bj)
                fltbuf_sendE(ic+3,bi,bj) =   xpart(ip,bi,bj)
-               fltbuf_sendE(ic+4,bi,bj) =   ypart(ip,bi,bj)
+               fltbuf_sendE(ic+4,bi,bj) =   yNew
                fltbuf_sendE(ic+5,bi,bj) =   kpart(ip,bi,bj)
                fltbuf_sendE(ic+6,bi,bj) =  kfloat(ip,bi,bj)
                fltbuf_sendE(ic+7,bi,bj) =     iup(ip,bi,bj)
@@ -320,12 +327,15 @@ c              CALL PRINT_ERROR( msgBuf, myThid )
              IF ( ypart(ip,bi,bj).LT.ylo ) THEN
               icountS=icountS+1
               IF ( icountS.LE.max_npart_exch ) THEN
+               yNew = ypart(ip,bi,bj)
+C-         apply cyclic BC
+               IF ( yNew.LT.flt_yLo ) yNew = yNew + flt_yHi - flt_yLo
 
                ic=(icountS-1)*imax
                fltbuf_sendW(ic+1,bi,bj) =   npart(ip,bi,bj)
                fltbuf_sendW(ic+2,bi,bj) =  tstart(ip,bi,bj)
                fltbuf_sendW(ic+3,bi,bj) =   xpart(ip,bi,bj)
-               fltbuf_sendW(ic+4,bi,bj) =   ypart(ip,bi,bj)
+               fltbuf_sendW(ic+4,bi,bj) =   yNew
                fltbuf_sendW(ic+5,bi,bj) =   kpart(ip,bi,bj)
                fltbuf_sendW(ic+6,bi,bj) =  kfloat(ip,bi,bj)
                fltbuf_sendW(ic+7,bi,bj) =     iup(ip,bi,bj)
