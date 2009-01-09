@@ -1,63 +1,76 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.5 2009/01/07 23:17:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.6 2009/01/09 21:08:27 jmc Exp $
 C $Name:  $
 
-#include "FLT_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
+#undef DBUG_EXCH_VEC
 
 C--   Contents
 C--   o EXCH_RL_SEND_PUT_VEC_X
 C--   o EXCH_RL_SEND_PUT_VEC_Y
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C !ROUTINE: EXCH_RL_SEND_PUT_VEC_X
 
+C !INTERFACE:
       SUBROUTINE EXCH_RL_SEND_PUT_VEC_X(
      I                        arrayE, arrayW,
      O                        bufRecE, bufRecW,
      I                        myd1, myThid )
-C     /==========================================================\
-C     | SUBROUTINE EXCH_RL_SEND_PUT_X                            |
-C     | o "Send" or "put" X edges for RL array.                  |
-C     |==========================================================|
-C     | Routine that invokes actual message passing send or      |
-C     | direct "put" of data to update X faces of an XY[R] array.|
-C     \==========================================================/
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE EXCH_RL_SEND_PUT_VEC_X
+C     | o "Send" or "put" X edges for RL array.
+C     *==========================================================*
+C     | Routine that invokes actual message passing send or
+C     | direct "put" of data to update buffer in X direction
+C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-#include "FLT.h"
 #include "EXCH.h"
-C     == Routine arguments ==
-C     arrayE - Array to be exchanged.
-C     arrayW
-C     myd1   - sizes.
-C     myThid            - Thread number of this instance of S/R EXCH...
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     arrayE        :: Input buffer array to send to Eastern Neighbour
+C     arrayW        :: Input buffer array to send to Western Neighbour
+C     bufRecE       :: buffer array to collect Eastern Neighbour values
+C     bufRecW       :: buffer array to collect Western Neighbour values
+C     myd1          :: size
+C     myThid        :: my Thread Id. number
       INTEGER myd1
       _RL  arrayE(myd1,nSx,nSy),  arrayW(myd1,nSx,nSy)
       _RL bufRecE(myd1,nSx,nSy), bufRecW(myd1,nSx,nSy)
       INTEGER myThid
-CEndOfInterface
+CEOP
 
-#ifdef ALLOW_FLT
-C     == Local variables ==
-C     I, J                       - Loop counters and extents
-C     bi, bj
-C     biW, bjW                   - West tile indices
-C     biE, bjE                   - East tile indices
-C     theProc, theTag, theType,  - Variables used in message building
-C     theSize
-C     westCommMode               - Working variables holding type
-C     eastCommMode                 of communication a particular
-C                                  tile face uses.
+C     !LOCAL VARIABLES:
+C     I             :: Loop counters
+C     bi, bj        :: tile indices
+C     biW, bjW      :: West tile indices
+C     biE, bjE      :: East tile indices
+C     theProc       :: \
+C     theTag        ::  \
+C     theType       ::  / Variables used in message building
+C     theSize       :: /
+C     westCommMode  :: variables holding type of communication
+C     eastCommMode  ::  a particular tile face uses.
       INTEGER I
       INTEGER bi, bj, biW, bjW, biE, bjE
       INTEGER westCommMode
       INTEGER eastCommMode
-
 #ifdef ALLOW_USE_MPI
       INTEGER theProc, theTag, theType, theSize, mpiRc
 #endif
+#ifdef DBUG_EXCH_VEC
+      INTEGER ioUnit
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Write data to exchange buffer
 C     Various actions are possible depending on the communication mode
 C     as follows:
@@ -80,7 +93,14 @@ C                tile
 C                Write data-ready Ack for west edge of east-neighbor
 C                tile
 C                Sync. memory
-C
+
+#ifdef DBUG_EXCH_VEC
+      ioUnit = errorMessageUnit
+      WRITE(ioUnit,'(A,2L5)')
+     &    'SEND_PUT_X: exchNeedsMemsync,exchUsesBarrier=',
+     &     exchNeedsMemsync,exchUsesBarrier
+#endif
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -101,18 +121,21 @@ C        Send the data
          theProc = tilePidW(bi,bj)
          theTag  = _tileTagSendW(bi,bj)
          theSize = myd1
-         theType = MPI_DOUBLE_PRECISION
-c         exchVReqsX(1,bi,bj) = exchVReqsX(1,bi,bj)+1
+         theType = _MPI_TYPE_RL
          exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
+#ifdef DBUG_EXCH_VEC
+          write(ioUnit,'(A,7I5,I8)') 'qq1xW: ',myProcId,bi,bj,
+     &       theProc,theTag, exchNReqsX(1,bi,bj),
+     &       exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), theSize
+#endif
          CALL MPI_Isend(arrayW(1,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc)
-c     &                  exchReqVIdX(exchVReqsX(1,bi,bj),1,bi,bj), mpiRc)
 #ifndef ALWAYS_USE_MPI
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-         eastRecvAck(1,biW,bjW) = 1.
+         eastRecvAck(1,biW,bjW) = 1
         ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
 c         write(0,*) 'SEND_PUT_VEC_X: copy E:',biW,bjW,' <- W:',bi,bj
           DO I=1,myd1
@@ -132,24 +155,25 @@ C        Send the data
          theProc = tilePidE(bi,bj)
          theTag  = _tileTagSendE(bi,bj)
          theSize = myd1
-         theType = MPI_DOUBLE_PRECISION
-c         exchVReqsX(1,bi,bj) = exchVReqsX(1,bi,bj)+1
+         theType = _MPI_TYPE_RL
          exchNReqsX(1,bi,bj) = exchNReqsX(1,bi,bj)+1
+#ifdef DBUG_EXCH_VEC
 c         if (theProc .eq. 2 .or. theProc .eq. 4) then
 c         if (arrayE(1,bi,bj) .ne. 0.) then
-c            write(errormessageunit,*) 'qq1y: ',myprocid,
-c     &      theProc,theTag,theSize,(arrayE(i,bi,bj),i=1,32)
+          write(ioUnit,'(A,7I5,I8)') 'qq1xE: ',myProcId,bi,bj,
+     &       theProc,theTag, exchNReqsX(1,bi,bj),
+     &       exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), theSize
 c         endif
 c         endif
+#endif
          CALL MPI_Isend(arrayE(1,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc)
-c    &                  exchReqVIdX(exchVReqsX(1,bi,bj),1,bi,bj), mpiRc)
 #ifndef ALWAYS_USE_MPI
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-         westRecvAck(1,biE,bjE) = 1.
+         westRecvAck(1,biE,bjE) = 1
         ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
 c         write(0,*) 'SEND_PUT_VEC_X: copy W:',biE,bjE,' <- E:',bi,bj
           DO I=1,myd1
@@ -179,10 +203,10 @@ C     overlap region data that will be exchanged is up to date.
         bjW = _tileBjW(bi,bj)
         westCommMode = _tileCommModeW(bi,bj)
         eastCommMode = _tileCommModeE(bi,bj)
-        IF ( westCommMode .EQ. COMM_PUT ) eastRecvAck(1,biW,bjW) = 1.
-        IF ( eastCommMode .EQ. COMM_PUT ) westRecvAck(1,biE,bjE) = 1.
-        IF ( westCommMode .EQ. COMM_GET ) eastRecvAck(1,biW,bjW) = 1.
-        IF ( eastCommMode .EQ. COMM_GET ) westRecvAck(1,biE,bjE) = 1.
+        IF ( westCommMode .EQ. COMM_PUT ) eastRecvAck(1,biW,bjW) = 1
+        IF ( eastCommMode .EQ. COMM_PUT ) westRecvAck(1,biE,bjE) = 1
+        IF ( westCommMode .EQ. COMM_GET ) eastRecvAck(1,biW,bjW) = 1
+        IF ( eastCommMode .EQ. COMM_GET ) westRecvAck(1,biE,bjE) = 1
        ENDDO
       ENDDO
 
@@ -198,61 +222,76 @@ C     is much too slow and if we own the machine and have one thread
 C     per process preemption is not a problem.
       IF ( exchNeedsMemSync  ) CALL MEMSYNC
 
-#endif /* ALLOW_FLT */
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C !ROUTINE: EXCH_RL_SEND_PUT_VEC_Y
 
+C !INTERFACE:
       SUBROUTINE EXCH_RL_SEND_PUT_VEC_Y(
      I                        arrayN, arrayS,
      O                        bufRecN, bufRecS,
      I                        myd1, myThid )
-C     /==========================================================\
-C     | SUBROUTINE EXCH_RL_SEND_PUT_Y                            |
-C     | o "Send" or "put" Y edges for RL array.                  |
-C     |==========================================================|
-C     | Routine that invokes actual message passing send or      |
-C     | direct "put" of data to update X faces of an XY[R] array.|
-C     \==========================================================/
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE EXCH_RL_SEND_PUT_VEC_Y
+C     | o "Send" or "put" Y edges for RL array.
+C     *==========================================================*
+C     | Routine that invokes actual message passing send or
+C     | direct "put" of data to update buffer in Y direction
+C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-#include "FLT.h"
 #include "EXCH.h"
-C     == Routine arguments ==
-C     arrayN - Array to be exchanged.
-C     arrayS
-C     myd1   - sizes.
-C     myThid            - Thread number of this instance of S/R EXCH...
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     arrayN        :: buffer array to collect Northern Neighbour values
+C     arrayS        :: buffer array to collect Southern Neighbour values
+C     myd1          :: size
+C     myThid        :: my Thread Id. number
+C     arrayN        :: Input buffer array to send to Northern Neighbour
+C     arrayS        :: Input buffer array to send to Southern Neighbour
+C     bufRecN       :: buffer array to collect Northern Neighbour values
+C     bufRecS       :: buffer array to collect Southern Neighbour values
+C     myd1          :: size
+C     myThid        :: my Thread Id. number
       INTEGER myd1
       _RL  arrayN(myd1,nSx,nSy),  arrayS(myd1,nSx,nSy)
       _RL bufRecN(myd1,nSx,nSy), bufRecS(myd1,nSx,nSy)
       INTEGER myThid
-CEndOfInterface
+CEOP
 
-#ifdef ALLOW_FLT
-C     == Local variables ==
-C     I, J                       - Loop counters and extents
-C     bi, bj
-C     biN, bjN                   - North tile indices
-C     biS, bjS                   - South tile indices
-C     theProc, theTag, theType,  - Variables used in message building
-C     theSize
-C     westCommMode               - Working variables holding type
-C     eastCommMode                 of communication a particular
-C                                  tile face uses.
+C     !LOCAL VARIABLES:
+C     I             :: Loop index
+C     bi, bj        :: tile indices
+C     biS, bjS      :: South tile indices
+C     biN, bjN      :: North tile indices
+C     theProc       :: \
+C     theTag        ::  \
+C     theType       ::  / Variables used in message building
+C     theSize       :: /
+C     southCommMode :: variables holding type of communication
+C     northCommMode ::  a particular tile face uses.
       INTEGER I
       INTEGER bi, bj, biS, bjS, biN, bjN
       INTEGER southCommMode
       INTEGER northCommMode
-
 #ifdef ALLOW_USE_MPI
       INTEGER theProc, theTag, theType, theSize, mpiRc
 #endif
+#ifdef DBUG_EXCH_VEC
+      INTEGER ioUnit
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Write data to exchange buffer
 C     Various actions are possible depending on the communication mode
 C     as follows:
@@ -275,7 +314,11 @@ C                tile
 C                Write data-ready Ack for west edge of north-neighbor
 C                tile
 C                Sync. memory
-C
+
+#ifdef DBUG_EXCH_VEC
+      ioUnit = errorMessageUnit
+#endif
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -296,18 +339,16 @@ C        Send the data
          theProc = tilePidS(bi,bj)
          theTag  = _tileTagSendS(bi,bj)
          theSize = myd1
-         theType = MPI_DOUBLE_PRECISION
-c         exchVReqsY(1,bi,bj) = exchVReqsY(1,bi,bj)+1
+         theType = _MPI_TYPE_RL
          exchNReqsY(1,bi,bj) = exchNReqsY(1,bi,bj)+1
          CALL MPI_Isend(arrayS(1,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdY(exchNReqsY(1,bi,bj),1,bi,bj), mpiRc)
-c     &                  exchReqVIdY(exchVReqsY(1,bi,bj),1,bi,bj), mpiRc)
 #ifndef ALWAYS_USE_MPI
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-         northRecvAck(1,biS,bjS) = 1.
+         northRecvAck(1,biS,bjS) = 1
         ELSEIF ( southCommMode .EQ. COMM_PUT  ) THEN
 c         write(0,*) 'SEND_PUT_VEC_Y: copy N:',biS,bjS,' <- S:',bi,bj
           DO I=1,myd1
@@ -327,18 +368,16 @@ C        Send the data
          theProc = tilePidN(bi,bj)
          theTag  = _tileTagSendN(bi,bj)
          theSize = myd1
-         theType = MPI_DOUBLE_PRECISION
-c         exchVReqsY(1,bi,bj) = exchVReqsY(1,bi,bj)+1
+         theType = _MPI_TYPE_RL
          exchNReqsY(1,bi,bj) = exchNReqsY(1,bi,bj)+1
          CALL MPI_Isend(arrayN(1,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdY(exchNReqsY(1,bi,bj),1,bi,bj), mpiRc)
-c     &                  exchReqVIdY(exchVReqsY(1,bi,bj),1,bi,bj), mpiRc)
 #ifndef ALWAYS_USE_MPI
          ENDIF
 #endif
 #endif /* ALLOW_USE_MPI */
-         southRecvAck(1,biN,bjN) = 1.
+         southRecvAck(1,biN,bjN) = 1
         ELSEIF ( northCommMode .EQ. COMM_PUT  ) THEN
 c         write(0,*) 'SEND_PUT_VEC_Y: copy S:',biN,bjN,' <- N:',bi,bj
           DO I=1,myd1
@@ -366,12 +405,12 @@ C     overlap region data that will be exchanged is up to date.
         bjN = _tileBjN(bi,bj)
         biS = _tileBiS(bi,bj)
         bjS = _tileBjS(bi,bj)
-        southCommMode = _tileCommModeE(bi,bj)
+        southCommMode = _tileCommModeS(bi,bj)
         northCommMode = _tileCommModeN(bi,bj)
-        IF ( southCommMode .EQ. COMM_PUT ) northRecvAck(1,biS,bjS) = 1.
-        IF ( northCommMode .EQ. COMM_PUT ) southRecvAck(1,biN,bjN) = 1.
-        IF ( southCommMode .EQ. COMM_GET ) northRecvAck(1,biS,bjS) = 1.
-        IF ( northCommMode .EQ. COMM_GET ) southRecvAck(1,biN,bjN) = 1.
+        IF ( southCommMode .EQ. COMM_PUT ) northRecvAck(1,biS,bjS) = 1
+        IF ( northCommMode .EQ. COMM_PUT ) southRecvAck(1,biN,bjN) = 1
+        IF ( southCommMode .EQ. COMM_GET ) northRecvAck(1,biS,bjS) = 1
+        IF ( northCommMode .EQ. COMM_GET ) southRecvAck(1,biN,bjN) = 1
        ENDDO
       ENDDO
 
@@ -387,6 +426,5 @@ C     is much too slow and if we own the machine and have one thread
 C     per process preemption is not a problem.
       IF ( exchNeedsMemSync  ) CALL MEMSYNC
 
-#endif /* ALLOW_FLT */
       RETURN
       END
