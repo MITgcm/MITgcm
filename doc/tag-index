@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1050 2009/01/05 16:40:50 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1051 2009/01/09 21:58:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/flt:
+ - improve criteria for finding which tile owns a float.
+ - fix FLT_EXCH for case without MPI ; apply cyclic BC + fix also the MPI case.
 o Add well-mixed CO2 box in aim_v23 (which includes changes in pkg
   aim_compon_interf, ocn_compon_interf, gchem, and dic to get coupling
   with ocean biogeo)
