@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/mds_reclen.F,v 1.2 2008/07/20 12:25:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/mds_reclen.F,v 1.3 2009/01/09 22:51:13 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
       INTEGER FUNCTION MDS_RECLEN( filePrec, nnn, myThid )
 C IN:
-C   filePrec	integer - precision of file in bits
-C   nnn		integer - number of elements in record
-C   myThid	integer - my thread id number
+C   filePrec    integer :: precision of file in bits
+C   nnn         integer :: number of elements in record
+C   myThid      integer :: my thread id number
 C OUT:
-C   MDS_RECLEN  integer - appropriate length of record in bytes or words
+C   MDS_RECLEN  integer :: appropriate length of record in bytes or words
 C
 C Created: 03/29/99 eckert@mit.edu + adcroft@mit.edu
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_y.template,v 1.12 2008/07/15 04:00:33 utke Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_y.template,v 1.13 2009/01/09 22:51:12 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -95,7 +95,7 @@ CEOP
       IF ( usingMPI ) THEN
 #endif
 C      Set default behavior to have MPI comms done by a single thread.
-C      Most MPI implementations don't support concurrent comms from
+C      Most MPI implementations do not support concurrent comms from
 C      several threads.
        IF ( nThreads .GT. 1 ) THEN
         _BARRIER
@@ -196,7 +196,7 @@ C--   iii. Set data read flag + memory sync.
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 # else
-	 pReqI=exchNReqsY(1,bi,bj)+1
+         pReqI=exchNReqsY(1,bi,bj)+1
          CALL ampi_recv_RX( 
      & northRecvBuf_RX(1,eBl,bi,bj) , 
      & theSize , 
@@ -240,7 +240,7 @@ C         ENDIF
           IF ( southRecvAck(eBl,bi,bj) .EQ. 0 ) GOTO 10
           IF ( northRecvAck(eBl,bi,bj) .EQ. 0 ) GOTO 10
 # else
-	 do while ((southRecvAck(eBl,bi,bj) .EQ. 0. 
+         do while ((southRecvAck(eBl,bi,bj) .EQ. 0. 
      &             .or. 
      &              northRecvAck(eBl,bi,bj) .EQ. 0. )) 
           CALL FOOL_THE_COMPILER( spinCount )

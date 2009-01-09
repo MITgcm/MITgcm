@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/master_cpu_io.F,v 1.1 2006/10/17 18:15:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/master_cpu_io.F,v 1.2 2009/01/09 22:51:12 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -25,7 +25,7 @@ C Global variables
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C   myThid	  :: my Thread number Id.
+C   myThid        :: my Thread Id number
 C   MASTER_CPU_IO :: true if master thread
 C                    and, if using SingleCPUIOS, if master CPU
       INTEGER myThid

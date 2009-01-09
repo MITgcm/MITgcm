@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_x.template,v 1.12 2008/07/15 04:00:33 utke Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_x.template,v 1.13 2009/01/09 22:51:12 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -119,7 +119,7 @@ CEOP
       IF ( usingMPI ) THEN
 #endif
 C      Set default behavior to have MPI comms done by a single thread.
-C      Most MPI implementations don't support concurrent comms from
+C      Most MPI implementations do not support concurrent comms from
 C      several threads.
        IF ( nThreads .GT. 1 ) THEN
         _BARRIER
@@ -215,7 +215,7 @@ C        Send the data
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc )
 # else
-	 pReqI=exchNReqsX(1,bi,bj)+1
+         pReqI=exchNReqsX(1,bi,bj)+1
          CALL ampi_isend_RX(
      & westSendBuf_RX(1,eBl,bi,bj), 
      & theSize, 
@@ -276,7 +276,7 @@ C        Send the data
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdX(exchNReqsX(1,bi,bj),1,bi,bj), mpiRc )
 # else
-	 pReqI=exchNReqsX(1,bi,bj)+1
+         pReqI=exchNReqsX(1,bi,bj)+1
          CALL ampi_isend_RX(
      & eastSendBuf_RX(1,eBl,bi,bj) , 
      & theSize , 

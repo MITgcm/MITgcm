@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/mds_byteswapr8.F,v 1.2 2006/11/22 09:43:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/mds_byteswapr8.F,v 1.3 2009/01/09 22:51:13 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
       subroutine MDS_BYTESWAPR8( n, arr )
 C IN:
-C   n		integer - Number of 8-byte words in arr
+C   n    integer :: Number of 8-byte words in arr
 C IN/OUT:
-C   arr		real*8  - Array declared as real*4(n)
+C   arr  real*8  :: Array declared as real*8(n)
 C
 C Created: 05/05/99 adcroft@mit.edu (This is an unfortunate hack!!)
 

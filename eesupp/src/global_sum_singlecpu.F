@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum_singlecpu.F,v 1.1 2008/01/08 23:53:47 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum_singlecpu.F,v 1.2 2009/01/09 22:51:12 jmc Exp $
 C $Name:  $
 
 C--   File global_sum_singlecpu.F: Routines that perform global sum
@@ -75,12 +75,12 @@ C--   Master thread cannot start until everyone is ready:
 #endif
 
 C--   Process 0 sums the global array
-	sumAll = 0.d0
-	DO J=1,Ny
-	 DO I=1,Nx
-	  sumAll = sumAll + globalBuf(I,J)
-	 ENDDO
-	ENDDO
+        sumAll = 0. _d 0
+        DO J=1,Ny
+         DO I=1,Nx
+          sumAll = sumAll + globalBuf(I,J)
+         ENDDO
+        ENDDO
 
 #ifdef ALLOW_USE_MPI
 C--   Process 0 sends result to all other processes

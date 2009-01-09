@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/mds_byteswapi4.F,v 1.2 2006/11/22 09:43:27 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/mds_byteswapi4.F,v 1.3 2009/01/09 22:51:13 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
       subroutine MDS_BYTESWAPI4( n, arr )
 C IN:
-C   n		integer - Number of 4-byte words in arr
+C   n      integer    :: Number of 4-byte words in arr
 C IN/OUT:
-C   arr		integer*4  - Array declared as integer*4(n)
+C   arr    integer*4  :: Array declared as integer*4(n)
 C
 C Created: 05/05/99 adcroft@mit.edu (This is an unfortunate hack!!)
 
