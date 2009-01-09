@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.8 2009/01/08 19:40:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.9 2009/01/09 20:59:36 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
+#undef DBUG_EXCH_VEC
 
       SUBROUTINE FLT_EXCHG (
      I                       myTime, myIter, myThid )
@@ -183,14 +184,24 @@ C        copy: ip <-- jp
         ENDDO
 
 C--   Send or Put east and west edges.
+
+#ifdef DBUG_EXCH_VEC
+        WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH: 0x', myIter
+#endif
         CALL EXCH_RL_SEND_PUT_VEC_X(
      I                               fltbuf_sendE, fltbuf_sendW,
      O                               fltbuf_recvE, fltbuf_recvW,
      I                               imax2, myThid )
+#ifdef DBUG_EXCH_VEC
+        WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH: 1x', myIter
+#endif
 C--   Receive east/west arrays
         CALL EXCH_RL_RECV_GET_VEC_X(
      U                               fltbuf_recvE, fltbuf_recvW,
      I                               imax2, myThid )
+#ifdef DBUG_EXCH_VEC
+        WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH: 2x', myIter
+#endif
 
 C--   Unpack arrays on new tiles
 
@@ -401,15 +412,24 @@ C        copy: ip <-- jp
         ENDDO
 
 C     Send or Put north and south arrays.
+#ifdef DBUG_EXCH_VEC
+        WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH: 0y', myIter
+#endif
         CALL EXCH_RL_SEND_PUT_VEC_Y(
      I                               fltbuf_sendE, fltbuf_sendW,
      O                               fltbuf_recvE, fltbuf_recvW,
      I                               imax2, myThid )
-
+#ifdef DBUG_EXCH_VEC
+        WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH: 1y', myIter
+#endif
 C     Receive north and south arrays
         CALL EXCH_RL_RECV_GET_VEC_Y(
      U                               fltbuf_recvE, fltbuf_recvW,
      I                               imax2, myThid )
+#ifdef DBUG_EXCH_VEC
+        WRITE(errorMessageUnit,'(A,I8)') 'FLT_EXCH: 2y', myIter
+c       STOP 'FLT_EXCHG: Normal End'
+#endif
 
 C--   Unpack arrays on new tiles
 
