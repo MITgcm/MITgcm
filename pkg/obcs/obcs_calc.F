@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.18 2008/04/28 14:25:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.19 2009/01/12 10:10:00 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -377,7 +377,7 @@ C ------------------------------------------------------------------------------
        Tr_T = 0. _d 0
        Ar_T = 0. _d 0
        DO K=1,Nr
-        DO J=1-Oly,sNy+Oly
+        DO J=1,sNy
          I_obc=OB_Ie(J,bi,bj)
          IF (I_obc.ne.0) THEN
           Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
@@ -406,7 +406,7 @@ c          OBEv(J,K,bi,bj) = 0.
        Tr_T = 0. _d 0
        Ar_T = 0. _d 0
        DO K=1,Nr
-        DO J=1-Oly,sNy+Oly
+        DO J=1,sNy
          I_obc=OB_Iw(J,bi,bj)
          IF (I_obc.ne.0) THEN
           Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
@@ -435,7 +435,7 @@ c          OBWv(J,K,bi,bj) = 0.
        Tr_T = 0. _d 0
        Ar_T = 0. _d 0
        DO K=1,Nr
-        DO I=1-Olx,sNx+Olx
+        DO I=1,sNx
          J_obc=OB_Jn(I,bi,bj)
          IF (J_obc.ne.0) THEN
           Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
@@ -464,7 +464,7 @@ c          OBNu(I,K,bi,bj) = 0.
        Tr_T = 0. _d 0
        Ar_T = 0. _d 0
        DO K=1,Nr
-        DO I=1-Olx,sNx+Olx
+        DO I=1,sNx
          J_obc=OB_Js(I,bi,bj)
          IF (J_obc.ne.0) THEN
           Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
