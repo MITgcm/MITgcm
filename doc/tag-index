@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1051 2009/01/09 21:58:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1052 2009/01/12 10:10:19 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs: fix loop ranges for balancing code
 o pkg/flt:
  - improve criteria for finding which tile owns a float.
  - fix FLT_EXCH for case without MPI ; apply cyclic BC + fix also the MPI case.
