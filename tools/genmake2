@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.182 2009/01/14 17:02:01 utke Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.183 2009/01/14 20:08:40 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -3029,8 +3029,8 @@ ad_input_code_sf.w2f.pre.xaif : ad_input_code_sf.w2f.pre.B whirl2xaif
 	./whirl2xaif -s -n --debug 1 -o \$@ \$<
 
 # XAIF -> XAIF'
-ad_input_code_sf.w2f.pre.xb.xaif : ad_input_code_sf.w2f.pre.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd openad_adm
-	./openad_adm -f -t forward_step -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I -r
+ad_input_code_sf.w2f.pre.xb.xaif : ad_input_code_sf.w2f.pre.xaif xaif.xsd xaif_base.xsd xaif_inlinable_intrinsics.xsd xaif_derivative_propagator.xsd xaif_output.xsd oadDriver
+	./oadDriver -f -t forward_step -i \$< -c \${XAIFSCHEMAROOT}/schema/examples/inlinable_intrinsics.xaif -o \$@ -I -r
 
 # XAIF' -> WHIRL'
 ad_input_code_sf.w2f.pre.xb.x2w.B : ad_input_code_sf.w2f.pre.xb.xaif xaif2whirl
@@ -3084,8 +3084,8 @@ preProcess.py:
 whirl2f whirl2f_be:
 	\$(LN) \${OPEN64ROOT}/whirl2f/\$@ .
 
-openad_adm:
-	\$(LN) \${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/test/t \$@
+oadDriver:
+	\$(LN) \${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/driver/oadDriver \$@
 
 # ============ end OpenAD specific section ==============
 
