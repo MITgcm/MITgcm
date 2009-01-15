@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.1 2008/09/10 09:18:35 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.2 2009/01/15 10:15:20 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -58,28 +58,28 @@ C-----------------------------------------------------------------------
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
        diagName  = 'SHIfwFlx'
-       diagTitle = 'SHELFICE fresh water flux (positive upward)'
+       diagTitle = 'Ice shelf fresh water flux (positive upward)'
        diagUnits = 'kg/m^2/s        '
-       diagCode  = 'SM      M1      '
+       diagCode  = 'SM      MS      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, myThid )
 
        diagName  = 'SHIhtFlx'
-       diagTitle = 'SHELFICE heat flux  (positive upward)'
+       diagTitle = 'Ice shelf heat flux  (positive upward)'
        diagUnits = 'W/m^2           '
-       diagCode  = 'SM      M1      '
+       diagCode  = 'SM      MS      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, myThid )
 
-       diagName  = 'USHIDrag'
-       diagTitle = 'U momentum tendency from Shelfice Drag'
+       diagName  = 'SHIUDrag'
+       diagTitle = 'U momentum tendency from ice shelf drag'
        diagUnits = 'm/s^2           '
        WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I              diagName, diagCode, diagUnits, diagTitle, myThid )
 
-       diagName  = 'VSHIDrag'
-       diagTitle = 'V momentum tendency from Shelfice Drag'
+       diagName  = 'SHIVDrag'
+       diagTitle = 'V momentum tendency from ice shelf drag'
        diagUnits = 'm/s^2           '
        WRITE(diagCode,'(A,I3.3,A)') 'VV   ', diagNum, 'MR      '
        CALL DIAGNOSTICS_ADD2LIST( diagNum,
