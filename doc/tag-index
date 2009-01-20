@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1052 2009/01/12 10:10:19 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1053 2009/01/20 00:34:15 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/my82: add missing "_d 0" ; update output of exp. vermix.my82
 o pkg/obcs: fix loop ranges for balancing code
 o pkg/flt:
  - improve criteria for finding which tile owns a float.
