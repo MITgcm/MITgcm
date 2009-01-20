@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc_visc.F,v 1.2 2007/07/31 23:01:58 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc_visc.F,v 1.3 2009/01/20 00:26:04 jmc Exp $
 C $Name:  $
 #include "MY82_OPTIONS.h"
 
-      SUBROUTINE MY82_CALC_VISC( 
+      SUBROUTINE MY82_CALC_VISC(
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      U        KappaRU,KappaRV,
      I        myThid)
@@ -18,8 +18,8 @@ C     == GLobal variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
+#include "MY82.h"
 
 C     == Routine arguments ==
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
@@ -31,7 +31,6 @@ C
       INTEGER myThid
 
 #ifdef ALLOW_MY82
-#include "MY82.h"
 
 C     == Local variables ==
 C     I, J, K - Loop counters
@@ -41,7 +40,7 @@ CEOP
        DO i=iMin,iMax
         KappaRU(i,j,k) = max ( KappaRU(i,j,k),
      &         KappaRU(i,j,k) - viscAr + _maskW(i,j,k,bi,bj) *
-     &         0.5*(MYviscAr(i,j,k,bi,bj)+MYviscAr(i-1,j,k,bi,bj)) )
+     &    0.5 _d 0*(MYviscAr(i,j,k,bi,bj)+MYviscAr(i-1,j,k,bi,bj)) )
        ENDDO
       ENDDO
 
@@ -49,7 +48,7 @@ CEOP
        DO i=iMin,iMax
         KappaRV(i,j,k) = max ( KappaRV(i,j,k),
      &         KappaRV(i,j,k) - viscAr + _maskS(i,j,k,bi,bj) *
-     &         0.5*(MYviscAr(i,j,k,bi,bj)+MYviscAr(i,j-1,k,bi,bj)) )
+     &    0.5 _d 0*(MYviscAr(i,j,k,bi,bj)+MYviscAr(i,j-1,k,bi,bj)) )
        ENDDO
       ENDDO
 

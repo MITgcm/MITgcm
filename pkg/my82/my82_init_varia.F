@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_init_varia.F,v 1.1 2008/04/14 09:42:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_init_varia.F,v 1.2 2009/01/20 00:26:04 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -32,14 +32,14 @@ C     i,j,k,bi,bj - Loop counters
       _RL gam1, gam2
 
 C     magic parameters( M. Satoh, p. 314)
-      gam1 = 1./3.-2.*A1/B1
-      gam2 = (B2+6.*A1)/B1
-      alpha1 = 3.*A2*gam1
-      alpha2 = 3.*A2*(gam1+gam2)
+      gam1 = 1. _d 0/3. _d 0 - 2. _d 0 *A1/B1
+      gam2 = (B2+6. _d 0*A1)/B1
+      alpha1 = 3. _d 0 *A2*gam1
+      alpha2 = 3. _d 0 *A2*(gam1+gam2)
       beta1  = A1*B1*(gam1-C1)
-      beta2  = A1*(B1*(gam1-C1) + 6.*A1 + 3.*A2)
+      beta2  = A1*(B1*(gam1-C1) + 6. _d 0 *A1 + 3. _d 0 *A2)
       beta3  = A2*B1*gam1
-      beta4  = A2*(B1*(gam1+gam2) - 3.*A1)
+      beta4  = A2*(B1*(gam1+gam2) - 3. _d 0 *A1)
 
 C-----------------------------------------------------------------------
 C Initialize MY82 variables MYviscAr, MYdiffKrT

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc.F,v 1.4 2005/05/30 07:41:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc.F,v 1.5 2009/01/20 00:26:04 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -31,16 +31,10 @@ C !USES: ============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 #include "MY82.h"
-#include "FFIELDS.h"
+c#include "FFIELDS.h"
 #include "GRID.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
-#include "tamc_keys.h"
-#else /* ALLOW_AUTODIFF_TAMC */
-      integer ikppkey
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================
 c Routine arguments
@@ -48,8 +42,8 @@ c     bi, bj - array indices on which to apply calculations
 c     myTime - Current time in simulation
 
       INTEGER bi, bj
-      INTEGER myThid
       _RL     myTime
+      INTEGER myThid
 
 #ifdef ALLOW_MY82
 
@@ -80,8 +74,8 @@ CEOP
 C     Initialize local fields
       DO J=1-Oly,sNy+Oly
        DO I=1-Olx,sNx+Olx
-	GH(I,J) = 0. _d 0
-	GM(I,J) = 0. _d 0
+        GH(I,J) = 0. _d 0
+        GM(I,J) = 0. _d 0
        ENDDO
       ENDDO
       DO K = 1, Nr
@@ -91,13 +85,13 @@ C     Initialize local fields
          SM(I,J,K)  = 0. _d 0
          tke(I,J,K) = 0. _d 0
         ENDDO
-       ENDDO	
+       ENDDO
       ENDDO
 C     first k-loop
 C     compute turbulent kinetic energy from richardson number
       DO K = 2, Nr
        CALL MY82_RI_NUMBER(
-     I      bi, bj, K, iMin, iMax, jMin, jMax, 
+     I      bi, bj, K, iMin, iMax, jMin, jMax,
      O      RiNumber, GH, GM,
      I      myTime, myThid )
        DO J=jMin,jMax
@@ -106,10 +100,10 @@ C     compute turbulent kinetic energy from richardson number
          btmp   = beta1+beta4*RiTmp
 C     M. Satoh, Atmospheric Circulation Dynamics and General
 C     Circulation models, Springer, 2004: Eq. (11.3.60)
-         RiFlux = ( btmp - SQRT(btmp*btmp - 4.*beta2*beta3*RiTmp) )
-     &        /(2.*beta2)
+         RiFlux =( btmp - SQRT(btmp*btmp - 4. _d 0 *beta2*beta3*RiTmp) )
+     &        /(2. _d 0*beta2)
 C     M. Satoh: Eq. (11.3.58)
-         SHtmp       = (alpha1-alpha2*RiFlux)/(1.-RiFlux)
+         SHtmp       = (alpha1-alpha2*RiFlux)/(1. _d 0-RiFlux)
          SH(I,J,K)   = SHtmp
          SM(I,J,K)   = SHtmp*(beta1-beta2*RiFlux)/(beta3-beta4*RiFlux)
 C     M. Satoh: Eq. (11.3.53/55)
@@ -123,9 +117,9 @@ CML     &      SH(I,J,K), SM(I,J,K), GH(I,J), GM(I,J), tke(I,J,K)
         ENDDO
        ENDDO
 C     end of first k-loop
-      ENDDO	
+      ENDDO
 
-C     re-initilialize GM and GH for abuse, they no longer have 
+C     re-initilialize GM and GH for abuse, they no longer have
 C     the meaning of shear and negative  buoyancy frequency
       DO J=jMin,jMax
        DO I=iMin,iMax
@@ -141,7 +135,7 @@ C     begin second k-loop
        DO J=jMin,jMax
         DO I=iMin,iMax
          GM(I,J) = GM(I,J) + tke(I,J,K)*rF(K)
-         GH(I,J) = GH(I,J) + tke(I,J,K)      
+         GH(I,J) = GH(I,J) + tke(I,J,K)
         ENDDO
        ENDDO
 C     end of second k-loop
@@ -155,7 +149,7 @@ C     compute boundary length scale MYhbl
          MYhbl(I,J,bi,bj) = -GM(I,J)/GH(I,J)*MYhblScale
         ENDIF
        ENDDO
-      ENDDO 
+      ENDDO
 C     begin third k-loop
       DO K = 1, Nr
 C     integrate tke to find integral length scale
@@ -175,12 +169,11 @@ C     Set a maximum and mask land point
          MYdiffKr(I,J,K,bi,bj) = MIN(MYdiffKr(I,J,K,bi,bj),MYdiffMax)
      &        * maskC(I,J,K,bi,bj)
         ENDDO
-       ENDDO 
+       ENDDO
 C     end third k-loop
-      ENDDO	
+      ENDDO
 
 #endif /* ALLOW_MY82 */
 
       RETURN
       END
-

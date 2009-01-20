@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_ri_number.F,v 1.4 2008/08/11 22:28:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_ri_number.F,v 1.5 2009/01/20 00:26:04 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -31,12 +31,6 @@ C !USES: ===============================================================
 #include "DYNVARS.h"
 #include "MY82.h"
 #include "GRID.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
-#include "tamc_keys.h"
-#else /* ALLOW_AUTODIFF_TAMC */
-      integer ikppkey
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================
 C Routine arguments
@@ -107,10 +101,10 @@ C     first step:  calculate flux Richardson number.
 C     calculate (du/dz)^2 + (dv/dz)^2 on W (between T) points.
       DO J= jMin, jMax
        DO I = iMin, iMax
-        tempu= .5*(  uVel(I,J,Km1,bi,bj)+uVel(I+1,J,Km1,bi,bj)
+        tempu= .5 _d 0*(  uVel(I,J,Km1,bi,bj)+uVel(I+1,J,Km1,bi,bj)
      &            - (uVel(I,J,K  ,bi,bj)+uVel(I+1,J,K  ,bi,bj)) )
      &       *recip_drC(K)
-        tempv= .5*(  vVel(I,J,Km1,bi,bj)+vVel(I,J+1,Km1,bi,bj)
+        tempv= .5 _d 0*(  vVel(I,J,Km1,bi,bj)+vVel(I,J+1,Km1,bi,bj)
      &            - (vVel(I,J,K  ,bi,bj)+vVel(I,J+1,K  ,bi,bj)) )
      &       *recip_drC(K)
         vertShear(I,J) = tempu*tempu+tempv*tempv
@@ -149,4 +143,3 @@ C     average Richardson number horizontally
 
       RETURN
       END
-

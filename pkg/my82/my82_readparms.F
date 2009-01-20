@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_readparms.F,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_readparms.F,v 1.2 2009/01/20 00:26:04 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -20,7 +20,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
+C  myThid       :: thread number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -29,15 +29,15 @@ C  none
 #ifdef ALLOW_MY82
 
 C !LOCAL VARIABLES: ====================================================
-C  iUnit		:: unit number for I/O
-C  msgBuf		:: message buffer
+C  iUnit        :: unit number for I/O
+C  msgBuf       :: message buffer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       NAMELIST /MY_PARM01/
-     &     MYviscMax, 
-     &     MYdiffMax, 
+     &     MYviscMax,
+     &     MYdiffMax,
      &     MYhblScale,
      &     MYdumpFreq,
      &     MYMixingMaps,
@@ -51,8 +51,8 @@ C internal flag to indicate we are in business
 C Set defaults values for parameters in MY82.h
       MYviscMax    = 1. _d 0
       MYdiffMax    = 1. _d 0
-      MYhblScale   = 0.1
-      RiMax        = 0.1950
+      MYhblScale   = 0.1 _d 0
+      RiMax        = 0.1950 _d 0
       MYdumpFreq   = dumpFreq
       MYtaveFreq   = taveFreq
       MYMixingMaps = .FALSE.
@@ -80,7 +80,7 @@ C Close the open data file
 C Everyone else must wait for the parameters to be loaded
       _BARRIER
 
-C Now set-up any remaining parameters that result from the input parameters 
+C Now set-up any remaining parameters that result from the input parameters
       IF ( MYviscMax .LE. 0. ) THEN
        WRITE(msgBuf,'(A)') 'MYviscMax must be greater than zero'
        CALL PRINT_ERROR( msgBuf , 1)
