@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.17 2008/05/26 23:53:39 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/faulks/Attic/test_csail,v 1.18 2009/01/23 20:26:31 jmc Exp $
 
 #  Ed Hill
 
@@ -14,36 +14,58 @@ OPTFILE=
 TESTDIR="/scratch/jmc/test_"`hostname`
 IEEE="-ieee"
 MC=10
-
+checkOut=1
+tst_list='g77 adm ifc pgi+rs'
 
 #  Turn off stack limit for FIZHI
 ulimit -s unlimited
 
-echo -n "Creating a temp directory ..."
 mach=`hostname`
 tdir=$TESTDIR
-if test -e $tdir
-then test -e $tdir/MITgcm  &&  rm -rf $tdir/MITgcm
-else mkdir $tdir
+if test $checkOut = '0' ; then
+ if test -e $tdir/MITgcm/CVS ; then
+  echo $tdir/MITgcm/CVS 'exist'
+  echo -n "Update the MITgcm code from CVS pserver..."
+  cd $tdir/MITgcm
+  cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d > /dev/null
+  echo "  done"
+  cd $tdir
+ else 
+  echo -n $tdir/MITgcm 'missing ; '
+  checkOut=1
+ fi
 fi
-echo "  done"
+if test $checkOut = '1' ; then
+  echo -n "Creating a temp directory ..."
+  if test -e $tdir
+  then test -e $tdir/MITgcm  &&  rm -rf $tdir/MITgcm
+  else mkdir $tdir
+  fi
+  echo "  done"
+  echo -n "Downloading the MITgcm code from CVS pserver..."
+  cd $tdir
+ #export CVSROOT='/u/gcmpack'
+ #export CVSROOT=':ext:@mitgcm.org:/u/gcmpack'
+ #export CVS_RSH='ssh'
+ #cvs co -P MITgcm > /dev/null
+  cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null
+  echo "  done"
+fi
 
-#- clean-up old output files
-rm -f $tdir/output_*
+#------------------------------------------------------------------------
 
-echo -n "Downloading the MITgcm code from CVS pserver..."
-cd $tdir
-#export CVSROOT='/u/gcmpack'
-#export CVSROOT=':ext:@mitgcm.org:/u/gcmpack'
-#export CVS_RSH='ssh'
-#cvs co -P MITgcm > /dev/null
-cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co -P MITgcm > /dev/null
-echo "  done"
+for tt in $tst_list
+do
 
-new_dir='MITgcm_g77'
-test -e $new_dir  &&  rm -rf $new_dir
-mkdir $new_dir
+ if test $tt = 'g77' -o $tt = 'g77+rs'
+ then
 
+  typ=`echo $tt | sed 's/+rs//'`
+  #- clean-up old output files
+  rm -f $tdir/output_${typ}*
+  new_dir="MITgcm_$typ"
+  test -e $new_dir  &&  rm -rf $new_dir
+  mkdir $new_dir
   echo "================================================================"
   pushd $new_dir
   cp -ra ../MITgcm/* .
@@ -55,24 +77,34 @@ mkdir $new_dir
   fi
   echo "  \"$comm\""
   echo "======================"
-  $comm > $tdir/output_g77 2>&1
-  tail -100 $tdir/output_g77
+  $comm > $tdir/output_$typ 2>&1
+  tail -100 $tdir/output_$typ
   echo
 #-- also test restart (test 2+2=4)
-# echo "testing restart using:"
-# comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
-# echo "  \"$comm\""
-# echo "======================"
-# $comm > $tdir/output_2+2 2>&1
-##tail -100 $tdir/output_2+2
-# echo ; cat tst_2+2_out.txt
-# echo
+  if test $tt != $typ
+  then
+   echo "testing restart using:"
+   comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
+   echo "  \"$comm\""
+   echo "======================"
+   $comm > $tdir/output_2+2 2>&1
+  #tail -100 $tdir/output_2+2
+   echo ; cat tst_2+2_out.txt
+   echo
+  fi
   popd
 
-new_dir='MITgcm_adm'
-test -e $new_dir  &&  rm -rf $new_dir
-mkdir $new_dir
+ fi
 
+ if test $tt = 'adm'
+ then
+
+  typ=`echo $tt | sed 's/+rs//'`
+  #- clean-up old output files
+  rm -f $tdir/output_${typ}*
+  new_dir="MITgcm_$typ"
+  test -e $new_dir  &&  rm -rf $new_dir
+  mkdir $new_dir
   echo "================================================================"
   pushd $new_dir
   cp -ra ../MITgcm/* .
@@ -84,15 +116,22 @@ mkdir $new_dir
   fi
   echo "  \"$comm\""
   echo "======================"
-  $comm > $tdir/output_adm 2>&1
-  tail -60 $tdir/output_adm
+  $comm > $tdir/output_$typ 2>&1
+  tail -60 $tdir/output_$typ
   echo
   popd
 
-new_dir='MITgcm_ifort'
-test -e $new_dir  &&  rm -rf $new_dir
-mkdir $new_dir
+ fi
 
+ if test $tt = 'ifc' -o $tt = 'ifc+rs'
+ then
+
+  typ=`echo $tt | sed 's/+rs//'`
+  #- clean-up old output files
+  rm -f $tdir/output_${typ}*
+  new_dir="MITgcm_$typ"
+  test -e $new_dir  &&  rm -rf $new_dir
+  mkdir $new_dir
   echo "================================================================"
   pushd $new_dir
   cp -ra ../MITgcm/* .
@@ -101,24 +140,34 @@ mkdir $new_dir
   comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_ifort+authors_v9 -a jmc@mitgcm.org"
   echo "  \"$comm\""
   echo "======================"
-  $comm > $tdir/output_ifc 2>&1
-  tail -100 $tdir/output_ifc
+  $comm > $tdir/output_$typ 2>&1
+  tail -100 $tdir/output_$typ
   echo
 #-- also test restart (test 2+2=4)
-# echo "testing restart using:"
-# comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
-# echo "  \"$comm\""
-# echo "======================"
-# $comm > $tdir/output_2+2 2>&1
-##tail -100 $tdir/output_2+2
-# echo ; cat tst_2+2_out.txt
-# echo
+  if test $tt != $typ
+  then
+   echo "testing restart using:"
+   comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
+   echo "  \"$comm\""
+   echo "======================"
+   $comm > $tdir/output_2+2 2>&1
+  #tail -100 $tdir/output_2+2
+   echo ; cat tst_2+2_out.txt
+   echo
+  fi
   popd
 
-new_dir='MITgcm_pgi'
-test -e $new_dir  &&  rm -rf $new_dir
-mkdir $new_dir
+ fi
 
+ if test $tt = 'pgi' -o $tt = 'pgi+rs'
+ then
+
+  typ=`echo $tt | sed 's/+rs//'`
+  #- clean-up old output files
+  rm -f $tdir/output_${typ}*
+  new_dir="MITgcm_$typ"
+  test -e $new_dir  &&  rm -rf $new_dir
+  mkdir $new_dir
   echo "================================================================"
   pushd $new_dir
   cp -ra ../MITgcm/* .
@@ -128,24 +177,31 @@ mkdir $new_dir
   comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -dd"
   echo "  \"$comm\""
   echo "======================"
-  $comm > $tdir/output_pgi_1 2>&1
-  tail -100 $tdir/output_pgi_1
+  $comm > $tdir/output_${typ}_1 2>&1
+  tail -100 $tdir/output_${typ}_1
   echo
   echo "Running testreport using:"
  #cd verification
   comm="./testreport -match $MC -of ../tools/build_options/linux_ia32_pgf77+authors_fc5 -a jmc@mitgcm.org -q"
   echo "  \"$comm\""
   echo "======================"
-  $comm > $tdir/output_pgi_2 2>&1
-  tail -100 $tdir/output_pgi_2
+  $comm > $tdir/output_${typ}_2 2>&1
+  tail -100 $tdir/output_${typ}_2
   echo
 #-- also test restart (test 2+2=4)
-  echo "testing restart using:"
-  comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
-  echo "  \"$comm\""
-  echo "======================"
-  $comm > $tdir/output_2+2 2>&1
- #tail -100 $tdir/output_2+2
-  echo ; cat tst_2+2_out.txt
-  echo
+  if test $tt != $typ
+  then
+   echo "testing restart using:"
+   comm="../tools/do_tst_2+2 -a jmc@mitgcm.org"
+   echo "  \"$comm\""
+   echo "======================"
+   $comm > $tdir/output_2+2 2>&1
+  #tail -100 $tdir/output_2+2
+   echo ; cat tst_2+2_out.txt
+   echo
+  fi
   popd
+
+ fi
+
+done
