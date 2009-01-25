@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.27 2008/11/18 21:41:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.28 2009/01/25 17:00:20 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -150,8 +150,16 @@ C     !LOCAL VARIABLES:
 C ===============
       INTEGER m, n
       INTEGER bi, bj
-      INTEGER ipt
+      INTEGER ipt, ndId
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      IF ( biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
+        bi = myBxLo(myThid)
+        bj = myByLo(myThid)
+      ELSE
+        bi = MIN(biArg,nSx)
+        bj = MIN(bjArg,nSy)
+      ENDIF
 
 C--   Run through list of active diagnostics to find which counter
 C     to increment (needs to be a valid & active diagnostic-counter)
@@ -159,7 +167,9 @@ C     to increment (needs to be a valid & active diagnostic-counter)
        DO m=1,nActive(n)
         IF ( chardiag.EQ.flds(m,n) .AND. idiag(m,n).GT.0 ) THEN
          ipt = idiag(m,n)
-         IF (ndiag(ipt,1,1).GE.0) THEN
+         IF (ndiag(ipt,bi,bj).GE.0) THEN
+          ndId = jdiag(m,n)
+          ipt = ipt + pdiag(n,bi,bj)*kdiag(ndId)
 C-    Increment the counter for the diagnostic
           IF ( biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
            DO bj=myByLo(myThid), myByHi(myThid)
@@ -168,8 +178,6 @@ C-    Increment the counter for the diagnostic
             ENDDO
            ENDDO
           ELSE
-             bi = MIN(biArg,nSx)
-             bj = MIN(bjArg,nSy)
              ndiag(ipt,bi,bj) = ndiag(ipt,bi,bj) + 1
           ENDIF
 C-    Increment is done
