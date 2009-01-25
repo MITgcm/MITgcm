@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.3 2009/01/04 00:58:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.4 2009/01/25 21:09:59 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -95,34 +95,34 @@ c         WRITE(0,*) ' af call flt_runga2', myIter
 
 C     check if exchanges between tiles are necessary
 
-         IF (Nx .NE. sNx .OR. Ny .NE. sNy) THEN
-            CALL TIMER_START('FLOATS EXCHG       [FLT  LOOP]',myThid)
-            CALL FLT_EXCHG( myTime, myIter, myThid )
-            CALL TIMER_STOP ('FLOATS EXCHG       [FLT  LOOP]',myThid)
-         ENDIF
+c        IF (Nx .NE. sNx .OR. Ny .NE. sNy) THEN
+         CALL TIMER_START('FLOATS EXCHG       [FLT  LOOP]',myThid)
+         CALL FLT_EXCHG( myTime, myIter, myThid )
+         CALL TIMER_STOP ('FLOATS EXCHG       [FLT  LOOP]',myThid)
+c        ENDIF
 
 C     store profiles every flt_int_prof time steps:
 C     and move floats up and down
 
          IF ( MOD(myTime,flt_int_prof).EQ.0. ) THEN
-            CALL TIMER_START('FLOATS UP          [FLT  LOOP]',myThid)
-            CALL FLT_UP( myTime, myIter, myThid )
-            CALL TIMER_STOP ('FLOATS UP          [FLT  LOOP]',myThid)
+           CALL TIMER_START('FLOATS UP          [FLT  LOOP]',myThid)
+           CALL FLT_UP( myTime, myIter, myThid )
+           CALL TIMER_STOP ('FLOATS UP          [FLT  LOOP]',myThid)
          ENDIF
 
 c         WRITE(0,*) ' bf call flt_down', myIter
-            CALL TIMER_START('FLOATS DOWN        [FLT  LOOP]',myThid)
-            CALL FLT_DOWN( myTime, myIter, myThid )
-            CALL TIMER_STOP ('FLOATS DOWN        [FLT  LOOP]',myThid)
+           CALL TIMER_START('FLOATS DOWN        [FLT  LOOP]',myThid)
+           CALL FLT_DOWN( myTime, myIter, myThid )
+           CALL TIMER_STOP ('FLOATS DOWN        [FLT  LOOP]',myThid)
 c         WRITE(0,*) ' af call flt_down', myIter
 
 C     store particles every flt_int_traj timesteps:
 
          IF ( MOD(myTime,flt_int_traj).EQ.0. ) THEN
 c         WRITE(0,*) ' bf call flt_traj', myIter
-            CALL TIMER_START('FLOATS TRAJ        [FLT  LOOP]',myThid)
-            CALL FLT_TRAJ( myTime, myIter, myThid )
-            CALL TIMER_STOP ('FLOATS TRAJ        [FLT  LOOP]',myThid)
+           CALL TIMER_START('FLOATS TRAJ        [FLT  LOOP]',myThid)
+           CALL FLT_TRAJ( myTime, myIter, myThid )
+           CALL TIMER_STOP ('FLOATS TRAJ        [FLT  LOOP]',myThid)
 c         WRITE(0,*) ' af call flt_traj', myIter
          ENDIF
 
