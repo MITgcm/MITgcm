@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.40 2008/11/18 21:41:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.41 2009/01/25 20:22:57 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -80,6 +80,7 @@ C              diagnostic storage qdiag into it.
       LOGICAL glf
 #endif
 #ifdef ALLOW_MNC
+      INTEGER ll, llMx, jj, jjMx
       INTEGER ii
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
       INTEGER CW_DIMS, NLEN
@@ -113,68 +114,82 @@ c     IF ( useFIZHI ) undef = getcon('UNDEF')
       WRITE( fn, '(A,A,A)' ) fnames(listId)(1:ilen),'.',suff(1:10)
 
 #ifdef ALLOW_MNC
+C-- this is a trick to reverse the order of the loops on md (= field)
+C   and lm (= averagePeriod): binary output: lm loop inside md loop ;
+C                                 mnc ouput: md loop inside lm loop.
       IF (useMNC .AND. diag_mnc) THEN
+        jjMx = averageCycle(listId)
+        llMx = 1
+      ELSE
+        jjMx = 1
+        llMx = averageCycle(listId)
+      ENDIF
+      DO jj=1,jjMx
+
+       IF (useMNC .AND. diag_mnc) THEN
 C     Handle missing value attribute (land points)
-       useMissingValue = .FALSE.
+         useMissingValue = .FALSE.
 #ifdef DIAGNOSTICS_MISSING_VALUE
-       useMissingValue = .TRUE.
+         useMissingValue = .TRUE.
 #endif /* DIAGNOSTICS_MISSING_VALUE */
-       IF ( misvalFlt(listId) .NE. UNSET_RL ) THEN
-        misvalLoc = misvalFlt(listId)
-       ELSE
-        misvalLoc = undef
-       ENDIF
+         IF ( misvalFlt(listId) .NE. UNSET_RL ) THEN
+          misvalLoc = misvalFlt(listId)
+         ELSE
+          misvalLoc = undef
+         ENDIF
 C     Defaults to UNSET_I
-       misvalIntLoc = misvalInt(listId)
-       DO ii=1,2
-C       misval_r4(ii)  = UNSET_FLOAT4
-C       misval_r8(ii)  = UNSET_FLOAT8
-        misval_r4(ii)  = misvalLoc
-        misval_r8(ii)  = misvalLoc
-        misval_int(ii) = UNSET_I
-       ENDDO
-        DO i = 1,MAX_LEN_FNAM
-          diag_mnc_bn(i:i) = ' '
-        ENDDO
-        DO i = 1,NLEN
-          dn_blnk(i:i) = ' '
-        ENDDO
-        WRITE( diag_mnc_bn, '(A)' ) fnames(listId)(1:ilen)
+         misvalIntLoc = misvalInt(listId)
+         DO ii=1,2
+C         misval_r4(ii)  = UNSET_FLOAT4
+C         misval_r8(ii)  = UNSET_FLOAT8
+          misval_r4(ii)  = misvalLoc
+          misval_r8(ii)  = misvalLoc
+          misval_int(ii) = UNSET_I
+         ENDDO
+         DO i = 1,MAX_LEN_FNAM
+           diag_mnc_bn(i:i) = ' '
+         ENDDO
+         DO i = 1,NLEN
+           dn_blnk(i:i) = ' '
+         ENDDO
+         WRITE( diag_mnc_bn, '(A)' ) fnames(listId)(1:ilen)
 
 C       Update the record dimension by writing the iteration number
-        CALL MNC_CW_SET_UDIM(diag_mnc_bn, -1, myThid)
-        CALL MNC_CW_RL_W_S('D',diag_mnc_bn,0,0,'T',myTime,myThid)
-        CALL MNC_CW_SET_UDIM(diag_mnc_bn, 0, myThid)
-        CALL MNC_CW_I_W_S('I',diag_mnc_bn,0,0,'iter',myIter,myThid)
+         klev = myIter + jj - jjMx
+         tmpLev = myTime + deltaTClock*(jj -jjMx)
+         CALL MNC_CW_SET_UDIM(diag_mnc_bn, -1, myThid)
+         CALL MNC_CW_RL_W_S('D',diag_mnc_bn,0,0,'T',tmpLev,myThid)
+         CALL MNC_CW_SET_UDIM(diag_mnc_bn, 0, myThid)
+         CALL MNC_CW_I_W_S('I',diag_mnc_bn,0,0,'iter',klev,myThid)
 
 C       NOTE: at some point it would be a good idea to add a time_bounds
 C       variable that has dimension (2,T) and clearly denotes the
 C       beginning and ending times for each diagnostics period
 
-        dn(1)(1:NLEN) = dn_blnk(1:NLEN)
-        WRITE(dn(1),'(a,i6.6)') 'Zmd', nlevels(listId)
-        dim(1) = nlevels(listId)
-        ib(1)  = 1
-        ie(1)  = nlevels(listId)
+         dn(1)(1:NLEN) = dn_blnk(1:NLEN)
+         WRITE(dn(1),'(a,i6.6)') 'Zmd', nlevels(listId)
+         dim(1) = nlevels(listId)
+         ib(1)  = 1
+         ie(1)  = nlevels(listId)
 
-        CALL MNC_CW_ADD_GNAME('diag_levels', 1,
-     &       dim, dn, ib, ie, myThid)
-        CALL MNC_CW_ADD_VNAME('diag_levels', 'diag_levels',
-     &       0,0, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('diag_levels','description',
-     &       'Idicies of vertical levels within the source arrays',
-     &       myThid)
+         CALL MNC_CW_ADD_GNAME('diag_levels', 1,
+     &        dim, dn, ib, ie, myThid)
+         CALL MNC_CW_ADD_VNAME('diag_levels', 'diag_levels',
+     &        0,0, myThid)
+         CALL MNC_CW_ADD_VATTR_TEXT('diag_levels','description',
+     &        'Idicies of vertical levels within the source arrays',
+     &        myThid)
 C     suppress the missing value attribute (iflag = 0)
-        IF (useMissingValue)
+         IF (useMissingValue)
      &       CALL MNC_CW_VATTR_MISSING('diag_levels', 0,
      I       misval_r8, misval_r4, misval_int,
      I       myThid )
 
-        CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
-     &       'diag_levels', levs(1,listId), myThid)
+         CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
+     &        'diag_levels', levs(1,listId), myThid)
 
-        CALL MNC_CW_DEL_VNAME('diag_levels', myThid)
-        CALL MNC_CW_DEL_GNAME('diag_levels', myThid)
+         CALL MNC_CW_DEL_VNAME('diag_levels', myThid)
+         CALL MNC_CW_DEL_GNAME('diag_levels', myThid)
 
 #ifdef DIAG_MNC_COORD_NEEDSWORK
 C       This part has been placed in an #ifdef because, as its currently
@@ -190,12 +205,12 @@ C       as: Z[uml]td000000 where the 't' is the type as specified by
 C       gdiag(10)
 
 C       Now define:  Zmdxxxxxx, Zudxxxxxx, Zldxxxxxx
-        ctmp(1:5) = 'mul  '
-        DO i = 1,3
-          dn(1)(1:NLEN) = dn_blnk(1:NLEN)
-          WRITE(dn(1),'(3a,i6.6)') 'Z',ctmp(i:i),'d',nlevels(listId)
-          CALL MNC_CW_ADD_GNAME(dn(1), 1, dim, dn, ib, ie, myThid)
-          CALL MNC_CW_ADD_VNAME(dn(1), dn(1), 0,0, myThid)
+         ctmp(1:5) = 'mul  '
+         DO i = 1,3
+           dn(1)(1:NLEN) = dn_blnk(1:NLEN)
+           WRITE(dn(1),'(3a,i6.6)') 'Z',ctmp(i:i),'d',nlevels(listId)
+           CALL MNC_CW_ADD_GNAME(dn(1), 1, dim, dn, ib, ie, myThid)
+           CALL MNC_CW_ADD_VNAME(dn(1), dn(1), 0,0, myThid)
 
 C         The following three ztmp() loops should eventually be modified
 C         to reflect the fractional nature of levs(j,l) -- they should
@@ -205,45 +220,45 @@ C                      + ( rC(INT(FLOOR(levs(j,l))))
 C                          + rC(INT(CEIL(levs(j,l)))) )
 C                        / ( levs(j,l) - FLOOR(levs(j,l)) )
 C         for averaged levels.
-          IF (i .EQ. 1) THEN
-            DO j = 1,nlevels(listId)
-              ztmp(j) = rC(NINT(levs(j,listId)))
-            ENDDO
-            CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
-     &           'Dimensional coordinate value at the mid point',
-     &           myThid)
-          ELSEIF (i .EQ. 2) THEN
-            DO j = 1,nlevels(listId)
-              ztmp(j) = rF(NINT(levs(j,listId)) + 1)
-            ENDDO
-            CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
-     &           'Dimensional coordinate value at the upper point',
-     &           myThid)
-          ELSEIF (i .EQ. 3) THEN
-            DO j = 1,nlevels(listId)
-              ztmp(j) = rF(NINT(levs(j,listId)))
-            ENDDO
-            CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
-     &           'Dimensional coordinate value at the lower point',
-     &           myThid)
-          ENDIF
+           IF (i .EQ. 1) THEN
+             DO j = 1,nlevels(listId)
+               ztmp(j) = rC(NINT(levs(j,listId)))
+             ENDDO
+             CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
+     &            'Dimensional coordinate value at the mid point',
+     &            myThid)
+           ELSEIF (i .EQ. 2) THEN
+             DO j = 1,nlevels(listId)
+               ztmp(j) = rF(NINT(levs(j,listId)) + 1)
+             ENDDO
+             CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
+     &            'Dimensional coordinate value at the upper point',
+     &            myThid)
+           ELSEIF (i .EQ. 3) THEN
+             DO j = 1,nlevels(listId)
+               ztmp(j) = rF(NINT(levs(j,listId)))
+             ENDDO
+             CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
+     &            'Dimensional coordinate value at the lower point',
+     &            myThid)
+           ENDIF
 C     suppress the missing value attribute (iflag = 0)
-          IF (useMissingValue)
-     &         CALL MNC_CW_VATTR_MISSING(dn(1), 0,
-     I         misval_r8, misval_r4, misval_int,
-     I         myThid )
-          CALL MNC_CW_RS_W('D',diag_mnc_bn,0,0, dn(1), ztmp, myThid)
-          CALL MNC_CW_DEL_VNAME(dn(1), myThid)
-          CALL MNC_CW_DEL_GNAME(dn(1), myThid)
-        ENDDO
+           IF (useMissingValue)
+     &          CALL MNC_CW_VATTR_MISSING(dn(1), 0,
+     I          misval_r8, misval_r4, misval_int,
+     I          myThid )
+           CALL MNC_CW_RS_W('D',diag_mnc_bn,0,0, dn(1), ztmp, myThid)
+           CALL MNC_CW_DEL_VNAME(dn(1), myThid)
+           CALL MNC_CW_DEL_GNAME(dn(1), myThid)
+         ENDDO
 #endif /*  DIAG_MNC_COORD_NEEDSWORK  */
 
-      ENDIF
+       ENDIF
 #endif /*  ALLOW_MNC  */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      DO md = 1,nfields(listId)
+       DO md = 1,nfields(listId)
         ndId = jdiag(md,listId)
         gcode = gdiag(ndId)(1:10)
         mate = 0
@@ -257,7 +272,12 @@ C-      Check for Mate of a Vector Diagnostic
         ENDIF
         IF ( idiag(md,listId).NE.0 .AND. gcode(5:5).NE.'D' ) THEN
 C--     Start processing 1 Fld :
+#ifdef ALLOW_MNC
+         DO ll=1,llMx
+          lm = jj+ll-1
+#else
          DO lm=1,averageCycle(listId)
+#endif
 
           ip = ABS(idiag(md,listId)) + kdiag(ndId)*(lm-1)
           im = mdiag(md,listId)
@@ -510,10 +530,9 @@ C     each of these variables
      I            myThid )
             ENDIF
 
-            IF ( ( (writeBinaryPrec .EQ. precFloat32)
-     &           .AND. (fflags(listId)(1:1) .NE. 'D')
-     &           .AND. (fflags(listId)(1:1) .NE. 'R') )
-     &           .OR. (fflags(listId)(1:1) .EQ. 'R')) THEN
+            IF (  ((writeBinaryPrec .EQ. precFloat32)
+     &            .AND. (fflags(listId)(1:1) .NE. 'D'))
+     &             .OR. (fflags(listId)(1:1) .EQ. 'R') ) THEN
               CALL MNC_CW_RL_W('R',diag_mnc_bn,0,0,
      &             cdiag(ndId), qtmp1, myThid)
             ELSEIF ( (writeBinaryPrec .EQ. precFloat64)
@@ -530,10 +549,16 @@ C     each of these variables
           ENDIF
 #endif /*  ALLOW_MNC  */
 
+C--      end loop on lm (or ll if ALLOW_MNC) counter
          ENDDO
 C--     end of Processing Fld # md
         ENDIF
+       ENDDO
+
+#ifdef ALLOW_MNC
+C--   end loop on jj counter
       ENDDO
+#endif
 
 #ifdef ALLOW_MDSIO
       IF (diag_mdsio) THEN
