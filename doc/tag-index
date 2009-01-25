@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1053 2009/01/20 00:34:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1054 2009/01/25 20:26:00 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics with "periodic averaging diagnostics":
+  fix S/R DIAGNOSTICS_COUNT ; hack diagnostics_out.F to get NetCDF output. 
 o pkg/my82: add missing "_d 0" ; update output of exp. vermix.my82
 o pkg/obcs: fix loop ranges for balancing code
 o pkg/flt:
