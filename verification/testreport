@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.118 2008/08/28 17:12:10 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.119 2009/01/26 04:09:34 jmc Exp $
 #  $Name:  $
 #
 
@@ -566,52 +566,52 @@ runmodel()
 	echo
 	if test -L $EXECUTABLE -a -x "../"$builddir"/"$EXECUTABLE ; then
 	    diff -q $EXECUTABLE "../"$builddir"/"$EXECUTABLE > /dev/null 2>&1
-	    outD=$? ; if test $outD != 0 ; then rm -f $EXECUTABLE ; rm -f run.log ; fi
+	    outD=$? ; if test $outD != 0 ; then rm -f $EXECUTABLE ; fi
 	fi
         if test ! -x $EXECUTABLE -a -x "../"$builddir"/"$EXECUTABLE ; then
-	    echo " link" $EXECUTABLE "from dir ../"$builddir > run.log_00
+	    echo " link" $EXECUTABLE "from dir ../"$builddir > run.log_tmp
 	    ln -sf "../"$builddir"/"$EXECUTABLE .
 	fi
         if test ! -x $EXECUTABLE ; then
-		rm -f run.log ; touch run.log
-		if test -f run.log_00 ; then cat run.log_00 >> run.log ; fi
-		echo " no executable:" $EXECUTABLE >> run.log
+		rm -f $RUNLOG ; touch $RUNLOG
+		if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
+		echo " no executable:" $EXECUTABLE >> $RUNLOG
 		RETVAL=8
 		ENDVAL=-1
 	else
             if test ! -f $OUTPUTFILE -o $OUTPUTFILE -ot $EXECUTABLE ; then
               # output do not exist or is older than executable:
-		rm -f run.log ; touch run.log
-		if test -f run.log_00 ; then cat run.log_00 >> run.log ; fi
-		( eval $COMMAND ) >> run.log 2>&1
+		rm -f $RUNLOG ; touch $RUNLOG
+		if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
+		( eval $COMMAND ) >> $RUNLOG 2>&1
 		RETVAL=$?
 	    else
 		RETVAL=0
-		if test -f run.log ; then
-		    if test -f run.log_00 ; then cat run.log_00 >> run.log ; fi
-     		    echo "---------->> $OUTPUTFILE is up to date " >> run.log 2>&1
+		if test -f $RUNLOG ; then
+		    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
+     		    echo "---------->> $OUTPUTFILE is up to date " >> $RUNLOG 2>&1
 		else 
-		    touch run.log
-		    if test -f run.log_00 ; then cat run.log_00 >> run.log ; fi
-     		    echo "---------->> $OUTPUTFILE is up to date " >> run.log 2>&1
-     		    echo " no previous run.log: assume NORMAL END" >> run.log 2>&1
+		    touch $RUNLOG
+		    if test -f run.log_tmp ; then cat run.log_tmp >> $RUNLOG ; fi
+     		    echo "---------->> $OUTPUTFILE is up to date " >> $RUNLOG 2>&1
+     		    echo " no previous $RUNLOG: assume NORMAL END" >> $RUNLOG 2>&1
 		fi
 	    fi
-	    ENDVAL=`cat run.log | grep -v 'ABNORMAL END' | grep -c 'NORMAL END'`
+	    ENDVAL=`cat $RUNLOG | grep -v 'ABNORMAL END' | grep -c 'NORMAL END'`
 	fi
-	rm -f run.log_00
+	rm -f run.log_tmp
 	#if test "x$RETVAL" = x0 ; then
 	if [ $RETVAL -eq 0 -a $ENDVAL -gt 0 ] ; then
-	    tail run.log
+	    tail $RUNLOG
 	    echo successful 1>&2
 	    # === Reduce the size of the testing emails!
 	    #cp $OUTPUTFILE $CDIR"/"$OUTPUTFILE
             if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	    return 0
 	else
-	    tail run.log
+	    tail $RUNLOG
 	    echo failed '(run:' $RETVAL ' end:' $ENDVAL ')' 1>&2
-	    cp run.log $CDIR"/run.log"
+	    cp $RUNLOG $CDIR"/"$RUNLOG
             if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	    return 1
 	fi
@@ -950,6 +950,7 @@ if test "x$OPTFILE" = xNONE -a "x$MITGCM_OF" != x ; then
     OPTFILE=$MITGCM_OF
 fi
 
+RUNLOG="run.log"
 OUTPUTFILE=$ref_outp
 if test "x$COMMAND" = x ; then
     COMMAND="./$EXECUTABLE > $OUTPUTFILE"
