@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cylinder_grid.F,v 1.4 2006/08/30 17:12:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cylinder_grid.F,v 1.5 2009/01/27 15:35:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -42,7 +42,7 @@ C     == Local variables ==
 C     xG, yG - Global coordinate location.
 C     xBase  - South-west corner location for process.
 C     yBase
-C     zUpper - Work arrays for upper and lower 
+C     zUpper - Work arrays for upper and lower
 C     zLower   cell-face heights.
 C     phi    - Temporary scalar
 C     iG, jG - Global coordinate index. Usually used to hold
@@ -72,7 +72,7 @@ C     >    I dont understand why we would ever have to multiply the
 C     >    overlap by the total domain size e.g
 C     >    OLx*Nx, OLy*Ny.
 C     >    Can anybody explain? Lines are in ini_spherical_polar_grid.F.
-C     >    Surprised the code works if its wrong, so I am puzzled.        
+C     >    Surprised the code works if its wrong, so I am puzzled.
 C     jmc replied:
 C     Yes, I can explain this since I put this modification to work
 C     with small domain (where Oly > Ny, as for instance, zonal-average
@@ -82,7 +82,7 @@ C     and jGl(J,bj) since we take mod(a+OLx*Nx,Nx) and mod(b+OLy*Ny,Ny).
 C     But in case a or b is negative, then the FORTRAN function "mod"
 C     does not return the matematical value of the "modulus" function,
 C     and this is not good for your purpose.
-C     This is why I add +OLx*Nx and +OLy*Ny to be sure that the 1rst 
+C     This is why I add +OLx*Nx and +OLy*Ny to be sure that the 1rst
 C     argument of the mod function is positive.
       INTEGER iGl,jGl
       iGl(I,bi) = 1+mod(myXGlobalLo-1+(bi-1)*sNx+I+Olx*Nx-1,Nx)
@@ -99,7 +99,7 @@ C--     "Global" index (place holder)
         iG = myXGlobalLo + (bi-1)*sNx
 
 C--   First find coordinate of tile corner (meaning outer corner of halo)
-        xG0 = thetaMin
+        xG0 = xgOrigin
 C       Find the X-coordinate of the outer grid-line of the "real" tile
         DO i=1, iG-1
          xG0 = xG0 + delX(i)
@@ -109,7 +109,7 @@ C       Back-step to the outer grid-line of the "halo" region
          xG0 = xG0 - delX( 1+mod(Olx*Nx-1+iG-i,Nx) )
         ENDDO
 C       Find the Y-coordinate of the outer grid-line of the "real" tile
-        yG0 = phiMin
+        yG0 = ygOrigin
         DO j=1, jG-1
          yG0 = yG0 + delY(j)
         ENDDO
@@ -144,9 +144,9 @@ C--     Calculate [xC,yC], coordinates of cell centers
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
 C         by averaging
-          xC(I,J,bi,bj) = 0.25*( 
+          xC(I,J,bi,bj) = 0.25*(
      &     xGloc(I,J)+xGloc(I+1,J)+xGloc(I,J+1)+xGloc(I+1,J+1) )
-          yC(I,J,bi,bj) = 0.25*( 
+          yC(I,J,bi,bj) = 0.25*(
      &     yGloc(I,J)+yGloc(I+1,J)+yGloc(I,J+1)+yGloc(I+1,J+1) )
          ENDDO
         ENDDO
@@ -212,7 +212,7 @@ C         by averaging (method I)
 
 
 
-C--     Calculate vertical face area 
+C--     Calculate vertical face area
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
 C-      All r(dr)(dtheta)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.143 2008/11/14 03:04:09 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.144 2009/01/27 15:35:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -60,18 +60,18 @@ C-    Horizontal gridding
       delYFile            = ' '
       horizGridFile       = ' '
       deepAtmosphere      = .FALSE.
-C     In cartesian coords distances are in metres
-      usingCartesianGrid  = .FALSE.
+      xgOrigin            = UNSET_RL
+      ygOrigin            = UNSET_RL
       DO i=1,Nx
        delX(i)            = UNSET_RL
       ENDDO
       DO j=1,Ny
        delY(j)            = UNSET_RL
       ENDDO
+C     In cartesian coords distances are in metres
+      usingCartesianGrid  = .FALSE.
 C     In spherical polar distances are in degrees
       usingSphericalPolarGrid = .FALSE.
-      phiMin              = 0.0
-      thetaMin            = 0.
       rSphere             = 6370. _d 3
 C     General curvilinear coordinate system
       usingCurvilinearGrid= .FALSE.

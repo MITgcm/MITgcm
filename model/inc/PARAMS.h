@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.226 2008/11/14 03:06:11 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.227 2009/01/27 15:35:27 jmc Exp $
 C $Name:  $
 C
 
@@ -501,39 +501,40 @@ C     rUnit2mass :: units conversion factor (surface forcing),
 C                :: from vertical r-coordinate unit to mass per unit area [kg/m2].
 C                :: z-coord: = rhoConst  ( [m] * rho = [kg/m2] ) ;
 C                :: p-coord: = 1/gravity ( [Pa] /  g = [kg/m2] ) ;
-C     phiMin    :: Latitude of southern most cell face.
-C     thetaMin  :: Longitude of western most cell face (this
-C                 is an "inert" parameter but it is included
-C                 to make geographical references simple.)
-C     rSphere   :: Radius of sphere for a spherical polar grid ( m ).
+C     xgOrigin   :: Origin of the X-axis (Cartesian Grid) / Longitude of Western
+C                :: most cell face (Lat-Lon grid) (Note: this is an "inert"
+C                :: parameter but it makes geographical references simple.)
+C     ygOrigin   :: Origin of the Y-axis (Cartesian Grid) / Latitude of Southern
+C                :: most face (Lat-Lon grid).
+C     rSphere    :: Radius of sphere for a spherical polar grid ( m ).
 C     recip_rSphere  :: Reciprocal radius of sphere ( m ).
-C     f0        :: Reference coriolis parameter ( 1/s )
-C                 ( Southern edge f for beta plane )
-C     beta      :: df/dy ( s^-1.m^-1 )
-C     omega     :: Angular velocity ( rad/s )
+C     f0         :: Reference coriolis parameter ( 1/s )
+C                   ( Southern edge f for beta plane )
+C     beta       :: df/dy ( s^-1.m^-1 )
+C     omega      :: Angular velocity ( rad/s )
 C     rotationPeriod :: Rotation period (s) (= 2.pi/omega)
-C     viscAr    :: Eddy viscosity coeff. for mixing of
-C                 momentum vertically ( units of r^2/s )
-C     viscAh    :: Eddy viscosity coeff. for mixing of
-C                 momentum laterally ( m^2/s )
-C     viscAhW   :: Eddy viscosity coeff. for mixing of vertical
-C                 momentum laterally, no effect for hydrostatic
-C                 model, defaults to viscAh if unset ( m^2/s )
-C                 Not used if variable horiz. viscosity is used.
-C     viscA4    :: Biharmonic viscosity coeff. for mixing of
-C                 momentum laterally ( m^4/s )
-C     viscA4W   :: Biharmonic viscosity coeff. for mixing of vertical
-C                 momentum laterally, no effect for hydrostatic
-C                 model, defaults to viscA4 if unset ( m^2/s )
-C                 Not used if variable horiz. viscosity is used.
-C     viscAhD   :: Eddy viscosity coeff. for mixing of momentum laterally
-C                  (act on Divergence part) ( m^2/s )
-C     viscAhZ   :: Eddy viscosity coeff. for mixing of momentum laterally
-C                  (act on Vorticity  part) ( m^2/s )
-C     viscA4D   :: Biharmonic viscosity coeff. for mixing of momentum laterally
-C                  (act on Divergence part) ( m^4/s )
-C     viscA4Z   :: Biharmonic viscosity coeff. for mixing of momentum laterally
-C                  (act on Vorticity  part) ( m^4/s )
+C     viscAr     :: Eddy viscosity coeff. for mixing of
+C                   momentum vertically ( units of r^2/s )
+C     viscAh     :: Eddy viscosity coeff. for mixing of
+C                   momentum laterally ( m^2/s )
+C     viscAhW    :: Eddy viscosity coeff. for mixing of vertical
+C                   momentum laterally, no effect for hydrostatic
+C                   model, defaults to viscAh if unset ( m^2/s )
+C                   Not used if variable horiz. viscosity is used.
+C     viscA4     :: Biharmonic viscosity coeff. for mixing of
+C                   momentum laterally ( m^4/s )
+C     viscA4W    :: Biharmonic viscosity coeff. for mixing of vertical
+C                   momentum laterally, no effect for hydrostatic
+C                   model, defaults to viscA4 if unset ( m^2/s )
+C                   Not used if variable horiz. viscosity is used.
+C     viscAhD    :: Eddy viscosity coeff. for mixing of momentum laterally
+C                   (act on Divergence part) ( m^2/s )
+C     viscAhZ    :: Eddy viscosity coeff. for mixing of momentum laterally
+C                   (act on Vorticity  part) ( m^2/s )
+C     viscA4D    :: Biharmonic viscosity coeff. for mixing of momentum laterally
+C                   (act on Divergence part) ( m^4/s )
+C     viscA4Z    :: Biharmonic viscosity coeff. for mixing of momentum laterally
+C                   (act on Vorticity  part) ( m^4/s )
 C     viscC2leith  :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC2leithD :: Modified Leith non-dimensional visc. factor (grad(div))
 C     viscC4leith  :: Leith non-dimensional viscosity factor (grad(vort))
@@ -666,7 +667,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & delR, delRc, delX, delY,
      & deltaT, deltaTmom, dTtracerLev, deltaTfreesurf, deltaTClock,
      & abEps, alph_AB, beta_AB,
-     & phiMin, thetaMin, rSphere, recip_RSphere, f0, beta,
+     & xgOrigin, ygOrigin, rSphere, recip_RSphere, f0, beta,
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC2leithD,
@@ -717,8 +718,8 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL dTtracerLev(Nr)
       _RL deltaTfreesurf
       _RL abEps, alph_AB, beta_AB
-      _RL phiMin
-      _RL thetaMin
+      _RL xgOrigin
+      _RL ygOrigin
       _RL rSphere
       _RL recip_rSphere
       _RL f0

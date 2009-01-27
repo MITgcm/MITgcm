@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.219 2008/11/14 03:04:09 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.220 2009/01/27 15:35:27 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -106,6 +106,9 @@ C     diffKpS :: Laplacian diffusion coeff. for mixing of salt vertically ( Pa^2
       _RL diffKrS
 
 C     Retired main data file parameters. Kept here to trap use of old data files.
+C     nRetired :: Counter used to trap gracefully namelists containing "retired"
+C              :: parameters. These are parameters that are either no-longer used
+C                 or that have moved to a different input file and/or namelist.
 C Namelist PARM01:
 C     tracerAdvScheme :: tracer advection scheme (old passive tracer code)
 C     trac_EvPrRn :: tracer conc. in Rain & Evap (old passive tracer code)
@@ -127,13 +130,13 @@ C     calendarDumps  :: moved to package "cal" (calendar)
 C Namelist PARM04:
 C     groundAtK1 :: put the surface(k=1) at the ground (replaced by usingPCoords)
 C     rkFac      :: removed from namelist ; replaced by -rkSign
-C     nRetired :: Counter used to trap gracefully namelists containing "retired"
-C              :: parameters. These are parameters that are either no-longer used
-C                 or that have moved to a different input file and/or namelist.
+C     thetaMin   :: unfortunate variable name ; replaced by xgOrigin
+C     phiMin     :: unfortunate variable name ; replaced by ygOrigin
 C Namelist PARM05:
 C     shelfIceFile :: File containing the topography of the shelfice draught
 C                     (replaced by SHELFICEtopoFile in SHELFICE.h)
 
+      INTEGER nRetired
       LOGICAL tempDiffusion, saltDiffusion
       INTEGER tracerAdvScheme
       _RL trac_EvPrRn
@@ -147,8 +150,8 @@ C-
 C-
       LOGICAL groundAtK1
       _RL rkFac
+      _RL thetaMin, phiMin
       CHARACTER*(MAX_LEN_FNAM) shelfIceFile
-      INTEGER nRetired
 
 C--   Continuous equation parameters
       NAMELIST /PARM01/
@@ -194,7 +197,7 @@ C--   Continuous equation parameters
      & rhoConst, rhoConstFresh, buoyancyRelation, HeatCapacity_Cp,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
-     & allowFreezing, useOldFreezing, ivdc_kappa, 
+     & allowFreezing, useOldFreezing, ivdc_kappa,
      & hMixCriteria, dRhoSmall, hMixSmooth,
      & usePickupBeforeC35, usePickupBeforeC54, debugMode, debugLevel,
      & tempAdvScheme, tempVertAdvScheme,
@@ -238,12 +241,13 @@ C--   Time stepping parammeters
 C--   Gridding parameters
       NAMELIST /PARM04/
      & usingCartesianGrid, usingCylindricalGrid,
-     & dxSpacing, dySpacing, delX, delY, delXFile, delYFile,
-     & usingSphericalPolarGrid, phiMin, thetaMin, rSphere,
-     & usingCurvilinearGrid, horizGridFile, deepAtmosphere,
+     & usingSphericalPolarGrid, usingCurvilinearGrid,
+     & xgOrigin, ygOrigin, dxSpacing, dySpacing,
+     & delX, delY, delXFile, delYFile, horizGridFile,
+     & phiEuler, thetaEuler, psiEuler,
+     & rSphere, deepAtmosphere,
      & Ro_SeaLevel, delZ, delP, delR, delRc, delRFile, delRcFile,
-     & rkFac, groundAtK1,
-     & phiEuler, thetaEuler, psiEuler
+     & rkFac, groundAtK1, thetaMin, phiMin
 
 C--   Input files
       NAMELIST /PARM05/
@@ -293,6 +297,8 @@ C--   Initialise retired parameters to unlikely value
       calendarDumps   = .FALSE.
       rkFac           = UNSET_RL
       groundAtK1      = .FALSE.
+      thetaMin        = UNSET_RL
+      phiMin          = UNSET_RL
       shelfIceFile    = ' '
 
 C--   Open the parameter file
@@ -1007,6 +1013,25 @@ C     In spherical polar distances are in degrees
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 
+C     temporary backward compatibility:
+      IF ( thetaMin.NE.UNSET_RL .AND. xgOrigin .EQ. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   '** WARNING ** INI_PARMS: thetaMin no longer supported',
+     &   ' <= replaced by xgOrigin'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        xgOrigin = thetaMin
+        thetaMin = UNSET_RL
+      ENDIF
+      IF ( phiMin .NE. UNSET_RL .AND. ygOrigin .EQ. UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   '** WARNING ** INI_PARMS:   phiMin no longer supported',
+     &   ' <= replaced by ygOrigin'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        ygOrigin = phiMin
+        phiMin   = UNSET_RL
+      ENDIF
 C     Check for retired parameters still being used
       IF ( rkFac .NE. UNSET_RL ) THEN
        nRetired = nRetired+1
@@ -1020,6 +1045,20 @@ c      nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: "groundAtK1" is set according to vertical ',
      &  ' coordinate and is no longer allowed in file "data".'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( thetaMin .NE. UNSET_RL ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: "thetaMin" no longer allowed,',
+     &  ' has been replaced by "xgOrigin"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( phiMin .NE. UNSET_RL ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: "phiMin" no longer allowed,',
+     &  ' has been replaced by "ygOrigin"'
        CALL PRINT_ERROR( msgBuf, myThid )
       ENDIF
 
@@ -1084,6 +1123,24 @@ C-     No horizontal grid is specified => use Cartesian grid as default:
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        usingCartesianGrid = .TRUE.
+      ENDIF
+C--   Default origin for  X & Y axis (longitude & latitude origin):
+      IF ( xgOrigin .EQ. UNSET_RL ) xgOrigin = 0.
+      IF ( ygOrigin .EQ. UNSET_RL ) THEN
+        IF ( usingSphericalPolarGrid )  THEN
+          ygOrigin = 0.
+        ELSEIF ( usingCartesianGrid )   THEN
+          ygOrigin = 0.
+        ELSEIF ( usingCylindricalGrid ) THEN
+          ygOrigin = 0.
+        ELSEIF ( usingCurvilinearGrid ) THEN
+          ygOrigin = 0.
+        ELSE
+          WRITE(msgBuf,'(A)')
+     &    'S/R INI_PARMS: found no coordinate system to set ygOrigin'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R INI_PARMS'
+        ENDIF
       ENDIF
 C--   Make metric term & Coriolis settings consistent with underlying grid.
       IF ( usingCartesianGrid ) THEN

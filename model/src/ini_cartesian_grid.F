@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.20 2006/10/17 18:52:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.21 2009/01/27 15:35:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -9,35 +9,35 @@ C     !INTERFACE:
       SUBROUTINE INI_CARTESIAN_GRID( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_CARTESIAN_GRID                             
-C     | o Initialise model coordinate system                      
+C     | SUBROUTINE INI_CARTESIAN_GRID
+C     | o Initialise model coordinate system
 C     *==========================================================*
-C     | The grid arrays, initialised here, are used throughout 
-C     | the code in evaluating gradients, integrals and spatial 
-C     | avarages. This routine   
-C     | is called separately by each thread and initialises only   
-C     | the region of the domain it is "responsible" for.         
-C     | Notes:                                                    
-C     | Two examples are included. One illustrates the            
-C     | initialisation of a cartesian grid (this routine). 
-C     | The other shows the   
-C     | inialisation of a spherical polar grid. Other orthonormal 
-C     | grids can be fitted into this design. In this case        
-C     | custom metric terms also need adding to account for the   
-C     | projections of velocity vectors onto these grids.         
-C     | The structure used here also makes it possible to         
-C     | implement less regular grid mappings. In particular       
-C     | o Schemes which leave out blocks of the domain that are   
-C     |   all land could be supported.                            
-C     | o Multi-level schemes such as icosohedral or cubic        
-C     |   grid projections onto a sphere can also be fitted       
-C     |   within the strategy we use.                             
-C     |   Both of the above also require modifying the support    
-C     |   routines that map computational blocks to simulation    
-C     |   domain blocks.                                          
-C     | Under the cartesian grid mode primitive distances in X    
-C     | and Y are in metres. Disktance in Z are in m or Pa        
-C     | depending on the vertical gridding mode.                  
+C     | The grid arrays, initialised here, are used throughout
+C     | the code in evaluating gradients, integrals and spatial
+C     | avarages. This routine
+C     | is called separately by each thread and initialises only
+C     | the region of the domain it is "responsible" for.
+C     | Notes:
+C     | Two examples are included. One illustrates the
+C     | initialisation of a cartesian grid (this routine).
+C     | The other shows the
+C     | inialisation of a spherical polar grid. Other orthonormal
+C     | grids can be fitted into this design. In this case
+C     | custom metric terms also need adding to account for the
+C     | projections of velocity vectors onto these grids.
+C     | The structure used here also makes it possible to
+C     | implement less regular grid mappings. In particular
+C     | o Schemes which leave out blocks of the domain that are
+C     |   all land could be supported.
+C     | o Multi-level schemes such as icosohedral or cubic
+C     |   grid projections onto a sphere can also be fitted
+C     |   within the strategy we use.
+C     |   Both of the above also require modifying the support
+C     |   routines that map computational blocks to simulation
+C     |   domain blocks.
+C     | Under the cartesian grid mode primitive distances in X
+C     | and Y are in metres. Disktance in Z are in m or Pa
+C     | depending on the vertical gridding mode.
 C     *==========================================================*
 C     \ev
 
@@ -51,7 +51,7 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_CARTESIAN_GRID
+C     myThid  ::  Number of this instance of INI_CARTESIAN_GRID
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -78,7 +78,7 @@ C--     "Global" index (place holder)
         iG = myXGlobalLo + (bi-1)*sNx
 
 C--   First find coordinate of tile corner (meaning outer corner of halo)
-        xG0 = 0.
+        xG0 = xgOrigin
 C       Find the X-coordinate of the outer grid-line of the "real" tile
         DO i=1, iG-1
          xG0 = xG0 + delX(i)
@@ -88,7 +88,7 @@ C       Back-step to the outer grid-line of the "halo" region
          xG0 = xG0 - delX( 1+mod(Olx*Nx-1+iG-i,Nx) )
         ENDDO
 C       Find the Y-coordinate of the outer grid-line of the "real" tile
-        yG0 = 0.
+        yG0 = ygOrigin
         DO j=1, jG-1
          yG0 = yG0 + delY(j)
         ENDDO
@@ -188,7 +188,7 @@ c         dYU(I,J,bi,bj) = 0.5*(dYC(I,J,bi,bj)+dYC(I-1,J,bi,bj))
          ENDDO
         ENDDO
 
-C--     Calculate vertical face area 
+C--     Calculate vertical face area
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
           rA (I,J,bi,bj) = dxF(I,J,bi,bj)*dyF(I,J,bi,bj)
@@ -211,8 +211,9 @@ C--     Cosine(lat) scaling
          sqcosFacV(J,bi,bj)=1.
         ENDDO
 
-       ENDDO ! bi
-      ENDDO ! bj
+C--   end bi,bj loops
+       ENDDO
+      ENDDO
 
 C--   Set default (=whole domain) for where relaxation to climatology applies
       _BEGIN_MASTER(myThid)
@@ -222,7 +223,7 @@ C--   Set default (=whole domain) for where relaxation to climatology applies
           latBandClimRelax = latBandClimRelax + delY(j)
         ENDDO
         latBandClimRelax = latBandClimRelax*3. _d 0
-      ENDIF 
+      ENDIF
       _END_MASTER(myThid)
 
       RETURN
