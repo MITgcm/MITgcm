@@ -42,8 +42,8 @@
  &PARM04
  usingSphericalPolarGrid=.TRUE.,
  delZ= 50.,
- phiMin=-90.,
- delY=6.,42*4.,6.
+ ygOrigin=-90.,
+ delY=6.,42*4.,6.,
  delX=90*4.,
  &
 

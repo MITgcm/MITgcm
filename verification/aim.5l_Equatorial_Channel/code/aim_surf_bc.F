@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.5 2006/10/18 20:44:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.6 2009/01/27 15:38:07 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -71,8 +71,8 @@ c     _RL DALB, alb_sea
 C_EqCh: start
       CHARACTER*(MAX_LEN_MBUF) suff
       _RL xBump, yBump, dxBump, dyBump
-      xBump = thetaMin + delX(1)*64.
-      yBump = phiMin   + delY(1)*11.5
+      xBump = xgOrigin + delX(1)*64.
+      yBump = ygOrigin   + delY(1)*11.5
       dxBump=  delX(1)*12.
       dyBump=  delY(1)*6.
 C_EqCh: Fix solar insolation with Sun directly overhead on Equator

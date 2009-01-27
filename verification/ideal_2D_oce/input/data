@@ -65,13 +65,12 @@
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.TRUE.,
  delRc= 20.,  60.,  85., 120., 165., 215., 265., 315.,
        365., 415., 465., 515., 565., 615., 665., 350.,
- phiMin=-84.,
- delY=56*3,
- delX=1*3,
+ ygOrigin=-84.,
+ delY=56*3.,
+ delX=1*3.,
  &
 
 # Input datasets

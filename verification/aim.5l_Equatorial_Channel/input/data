@@ -58,7 +58,7 @@
  delY=23*2.8125,
  delR=100.E2, 250.E2, 300.E2, 200.E2, 150.E2,
  Ro_SeaLevel=1.E5,
- phiMin=-32.34375,
+ ygOrigin=-32.34375,
  rSphere=6370.E3,
  &
 

@@ -54,7 +54,7 @@
  dXspacing=3.,
  dYspacing=0.01,
  delZ=29*0.005,
- phiMin=0.07,
+ ygOrigin=0.07,
  &
 
 # Input datasets

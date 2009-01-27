@@ -55,9 +55,8 @@
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.TRUE.,
- phiMin = -80.0,
+ ygOrigin = -80.0,
  delX=50*0.3,
  delY=100*0.1,
  delZ=30*30.0,

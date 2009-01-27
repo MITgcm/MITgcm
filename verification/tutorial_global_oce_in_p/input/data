@@ -69,7 +69,6 @@
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.TRUE.,
  dXspacing=4.,
  dYspacing=4.,
@@ -79,7 +78,7 @@
       3960063.245801, 3446790.312651, 2935781.405664,
       2426722.705046, 1919291.315988, 1413156.804970,
       1008846.750166,  705919.025481,  504089.693499,
- phiMin=-80.,
+ ygOrigin=-80.,
  &
 
 # Input datasets

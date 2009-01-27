@@ -57,7 +57,7 @@
  delR=120*25.E+3,
  delX=1*10.,
  delY=160*1.,
- phiMin=-80.,
+ ygOrigin=-80.,
  &
 
 # Input datasets

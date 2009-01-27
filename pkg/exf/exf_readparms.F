@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.52 2008/11/17 23:08:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.53 2009/01/27 15:37:03 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -29,7 +29,7 @@ c              - moved relaxation and climatology to extra routines
 c              Patrick Heimbach, heimbach@mit.edu  04-May-2000
 c              - added obcs parameters
 c     changed: Virginie Thierry, vthierry@ucsd.edu 04-June-2001
-c              - added new obcs parameters (for each boundaries) 
+c              - added new obcs parameters (for each boundaries)
 c     included runoff D. Stammer, Nov. 25, 2001
 c     included pressure forcing. heimbach@mit.edu 05-Nov-2002
 c     added "repeatPeriod" for cycling of forcing datasets 19-Dec-2002
@@ -86,7 +86,7 @@ c     Surface flux data.
      &     snowprecipfile,          uwindfile,     vwindfile,
      &         wspeedfile,         swfluxfile,    lwfluxfile,
      &      apressurefile,         swdownfile,    lwdownfile,
-     &       areamaskfile,        climsstfile,   climsssfile,      
+     &       areamaskfile,        climsstfile,   climsssfile,
      &    hfluxstartdate1,    hfluxstartdate2,   hfluxperiod,
      &    atempstartdate1,    atempstartdate2,   atempperiod,
      &      aqhstartdate1,      aqhstartdate2,     aqhperiod,
@@ -122,7 +122,7 @@ c     Surface flux data.
      &  exf_outscal_hflux,  exf_outscal_ustress, exf_outscal_vstress,
      & exf_outscal_swflux,  exf_outscal_sst,     exf_outscal_sss,
      &  exf_outscal_sflux,  exf_outscal_apressure,
-     &  hfluxconst, atempconst, aqhconst, sfluxconst, evapconst, 
+     &  hfluxconst, atempconst, aqhconst, sfluxconst, evapconst,
      &  precipconst, snowprecipconst, runoffconst, ustressconst,
      &  vstressconst, uwindconst, vwindconst, wspeedconst, swfluxconst,
      &  lwfluxconst, swdownconst, lwdownconst, apressureconst,
@@ -181,9 +181,9 @@ c     Surface flux data.
      & apressure_lat0,apressure_lat_inc,apressure_nlat,
      & areamask_lon0,areamask_lon_inc,areamask_nlon,
      & areamask_lat0,areamask_lat_inc,areamask_nlat,
-     & climsst_lon0, climsst_lon_inc, climsst_nlon, 
+     & climsst_lon0, climsst_lon_inc, climsst_nlon,
      & climsst_lat0, climsst_lat_inc, climsst_nlat,
-     & climsss_lon0, climsss_lon_inc, climsss_nlon, 
+     & climsss_lon0, climsss_lon_inc, climsss_nlon,
      & climsss_lat0, climsss_lat_inc, climsss_nlat
 #endif
 
@@ -450,7 +450,7 @@ c     Data files.
       lwfluxfile         = ' '
       swdownfile         = ' '
       lwdownfile         = ' '
-      apressurefile      = ' ' 
+      apressurefile      = ' '
       areamaskfile       = ' '
       climsstfile        = ' '
       climsssfile        = ' '
@@ -528,44 +528,44 @@ c     Output scaling factors.
       exf_outscal_apressure=  1. _d 0
 
 #ifdef USE_EXF_INTERPOLATION
-      ustress_lon0   = thetaMin
-      uwind_lon0     = thetaMin 
-      vstress_lon0   = thetaMin + delX(1)*exf_half
-      hflux_lon0     = thetaMin + delX(1)*exf_half
-      sflux_lon0     = thetaMin + delX(1)*exf_half
-      swflux_lon0    = thetaMin + delX(1)*exf_half
-      runoff_lon0    = thetaMin + delX(1)*exf_half 
-      atemp_lon0     = thetaMin + delX(1)*exf_half
-      aqh_lon0       = thetaMin + delX(1)*exf_half 
-      evap_lon0      = thetaMin + delX(1)*exf_half
-      precip_lon0    = thetaMin + delX(1)*exf_half 
-      snowprecip_lon0= thetaMin + delX(1)*exf_half 
-      vwind_lon0     = thetaMin + delX(1)*exf_half 
-      wspeed_lon0    = thetaMin + delX(1)*exf_half 
-      lwflux_lon0    = thetaMin + delX(1)*exf_half 
-      swdown_lon0    = thetaMin + delX(1)*exf_half 
-      lwdown_lon0    = thetaMin + delX(1)*exf_half 
-      apressure_lon0 = thetaMin + delX(1)*exf_half
-      areamask_lon0  = thetaMin + delX(1)*exf_half
-      vstress_lat0   = phimin
-      vwind_lat0     = phimin
-      wspeed_lat0    = phimin
-      ustress_lat0   = phimin   + delY(1)*exf_half
-      hflux_lat0     = phimin   + delY(1)*exf_half
-      sflux_lat0     = phimin   + delY(1)*exf_half
-      runoff_lat0    = phimin   + delY(1)*exf_half
-      swflux_lat0    = phimin   + delY(1)*exf_half
-      atemp_lat0     = phimin   + delY(1)*exf_half
-      aqh_lat0       = phimin   + delY(1)*exf_half
-      evap_lat0      = phimin   + delY(1)*exf_half
-      precip_lat0    = phimin   + delY(1)*exf_half
-      snowprecip_lat0= phimin   + delY(1)*exf_half
-      uwind_lat0     = phimin   + delY(1)*exf_half
-      lwflux_lat0    = phimin   + delY(1)*exf_half
-      swdown_lat0    = phimin   + delY(1)*exf_half
-      lwdown_lat0    = phimin   + delY(1)*exf_half
-      apressure_lat0 = phimin   + delY(1)*exf_half
-      areamask_lat0 = phimin   + delY(1)*exf_half
+      ustress_lon0   = xgOrigin
+      uwind_lon0     = xgOrigin
+      vstress_lon0   = xgOrigin + delX(1)*exf_half
+      hflux_lon0     = xgOrigin + delX(1)*exf_half
+      sflux_lon0     = xgOrigin + delX(1)*exf_half
+      swflux_lon0    = xgOrigin + delX(1)*exf_half
+      runoff_lon0    = xgOrigin + delX(1)*exf_half
+      atemp_lon0     = xgOrigin + delX(1)*exf_half
+      aqh_lon0       = xgOrigin + delX(1)*exf_half
+      evap_lon0      = xgOrigin + delX(1)*exf_half
+      precip_lon0    = xgOrigin + delX(1)*exf_half
+      snowprecip_lon0= xgOrigin + delX(1)*exf_half
+      vwind_lon0     = xgOrigin + delX(1)*exf_half
+      wspeed_lon0    = xgOrigin + delX(1)*exf_half
+      lwflux_lon0    = xgOrigin + delX(1)*exf_half
+      swdown_lon0    = xgOrigin + delX(1)*exf_half
+      lwdown_lon0    = xgOrigin + delX(1)*exf_half
+      apressure_lon0 = xgOrigin + delX(1)*exf_half
+      areamask_lon0  = xgOrigin + delX(1)*exf_half
+      vstress_lat0   = ygOrigin
+      vwind_lat0     = ygOrigin
+      wspeed_lat0    = ygOrigin
+      ustress_lat0   = ygOrigin + delY(1)*exf_half
+      hflux_lat0     = ygOrigin + delY(1)*exf_half
+      sflux_lat0     = ygOrigin + delY(1)*exf_half
+      runoff_lat0    = ygOrigin + delY(1)*exf_half
+      swflux_lat0    = ygOrigin + delY(1)*exf_half
+      atemp_lat0     = ygOrigin + delY(1)*exf_half
+      aqh_lat0       = ygOrigin + delY(1)*exf_half
+      evap_lat0      = ygOrigin + delY(1)*exf_half
+      precip_lat0    = ygOrigin + delY(1)*exf_half
+      snowprecip_lat0= ygOrigin + delY(1)*exf_half
+      uwind_lat0     = ygOrigin + delY(1)*exf_half
+      lwflux_lat0    = ygOrigin + delY(1)*exf_half
+      swdown_lat0    = ygOrigin + delY(1)*exf_half
+      lwdown_lat0    = ygOrigin + delY(1)*exf_half
+      apressure_lat0 = ygOrigin + delY(1)*exf_half
+      areamask_lat0  = ygOrigin + delY(1)*exf_half
       ustress_nlon   = Nx
       ustress_nlat   = Ny
       vstress_nlon   = Nx
@@ -602,8 +602,8 @@ c     Output scaling factors.
       lwdown_nlat    = Ny
       apressure_nlon = Nx
       apressure_nlat = Ny
-      areamask_nlon = Nx
-      areamask_nlat = Ny
+      areamask_nlon  = Nx
+      areamask_nlat  = Ny
       Ustress_lon_inc   = delX(1)
       vstress_lon_inc   = delX(1)
       hflux_lon_inc     = delX(1)
@@ -622,11 +622,11 @@ c     Output scaling factors.
       swdown_lon_inc    = delX(1)
       lwdown_lon_inc    = delX(1)
       apressure_lon_inc = delX(1)
-      areamask_lon_inc = delX(1)
-      climsst_lon0    = thetaMin + delX(1)*exf_half
-      climsss_lon0    = thetaMin + delX(1)*exf_half
-      climsst_lat0    = phimin   + delY(1)*exf_half
-      climsss_lat0    = phimin   + delY(1)*exf_half
+      areamask_lon_inc  = delX(1)
+      climsst_lon0    = xgOrigin + delX(1)*exf_half
+      climsss_lon0    = xgOrigin + delX(1)*exf_half
+      climsst_lat0    = ygOrigin + delY(1)*exf_half
+      climsss_lat0    = ygOrigin + delY(1)*exf_half
       climsst_nlon    = Nx
       climsst_nlat    = Ny
       climsss_nlon    = Nx
@@ -692,28 +692,28 @@ c     Next, read the forcing data file.
      O                          iUnit,
      I                          myThid )
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: reading EXF_NML_01'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
       READ(  iUnit, nml = EXF_NML_01 )
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: reading EXF_NML_02'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
       READ(  iUnit, nml = EXF_NML_02 )
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: reading EXF_NML_03'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
       READ(  iUnit, nml = EXF_NML_03 )
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: reading EXF_NML_04'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
       READ(  iUnit, nml = EXF_NML_04 )
 #ifdef ALLOW_OBCS
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: reading EXF_NML_OBCS'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
@@ -732,7 +732,7 @@ c     Next, read the forcing data file.
       IF(siobWperiod    .EQ.UNSET_RL) siobWperiod     = obcsWperiod
 #endif
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: finished reading data.exf'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                SQUEEZE_RIGHT , 1)

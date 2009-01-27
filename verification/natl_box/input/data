@@ -101,7 +101,7 @@
 #   delX                    - Zonal grid spacing         (degrees)
 #   delY                    - Meridional grid spacing    (degrees)
 #   delZ                    - Vertical grid spacing      (m)
-#   phiMin                  - Southern boundary latitude (degrees)
+#   ygOrigin                - Southern boundary latitude (degrees)
 #
  &PARM04
  usingSphericalPolarGrid = .TRUE.,
@@ -110,8 +110,8 @@
  delZ= 10., 10., 15., 20., 20., 25., 35., 50., 75.,
        100., 150., 200., 275., 350., 415., 450.,
        500., 500., 500., 500., 500., 500., 500.,
- phiMin = 10.,
- thetaMin= -42.,
+ ygOrigin = 10.,
+ xgOrigin= -42.,
  &
 
 # Input datasets

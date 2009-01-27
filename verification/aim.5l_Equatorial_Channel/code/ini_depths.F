@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/ini_depths.F,v 1.11 2006/10/18 20:44:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/ini_depths.F,v 1.12 2009/01/27 15:38:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -215,7 +215,7 @@ C          Test for northern edge
 c          IF ( jG .EQ. Ny )  Ro_surf(i,j,bi,bj) = 0.
 c- Domain : Symetric % Eq. & closed at N & S boundaries:
            IF (usingSphericalPolarGrid .AND.
-     &         ABS(yC(I,J,bi,bj)).GE.-phiMin)
+     &         ABS(yC(I,J,bi,bj)).GE.-ygOrigin)
      &       Ro_surf(I,J,bi,bj) = rF(Nr+1)
            IF (usingSphericalPolarGrid .AND. ABS(yC(I,J,bi,bj)).GE.90. )
      &       Ro_surf(I,J,bi,bj) = rF(Nr+1)
@@ -236,7 +236,7 @@ C          Test for northern edge
 c          IF ( jG .EQ. Ny )  R_low(i,j,bi,bj) = 0.
 c- Domain : Symetric % Eq. & closed at N & S boundaries:
            IF (usingSphericalPolarGrid .AND.
-     &         ABS(yC(I,J,bi,bj)).GE.-phiMin)
+     &         ABS(yC(I,J,bi,bj)).GE.-ygOrigin)
      &       R_low(I,J,bi,bj) = Ro_SeaLevel
            IF (usingSphericalPolarGrid .AND. ABS(yC(I,J,bi,bj)).GE.90. )
      &       R_low(I,J,bi,bj) = Ro_SeaLevel

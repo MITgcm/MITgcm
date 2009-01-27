@@ -70,12 +70,11 @@
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.TRUE.,
  delR= 50., 70., 100., 140., 190.,
        240., 290., 340., 390., 440.,
        490., 540., 590., 640., 690.,
- phiMin=-80.,
+ ygOrigin=-80.,
  dySpacing=4.,
  dxSpacing=4.,
  &

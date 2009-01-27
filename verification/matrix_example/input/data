@@ -72,11 +72,9 @@
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- usingSphericalPolarGrid=.FALSE.,
  delX=31*50E3,
  delY=31*50E3,
  delR=5000.,
-# phiMin=0.,
  &
 
 # Input datasets

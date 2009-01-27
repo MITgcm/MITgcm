@@ -111,13 +111,11 @@
 # Gridding parameters
 # *******************
  &PARM04
- usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.TRUE.,
  delX=360*1.E0,
  delY=160*1.E0,
  delZ=10.,10.,15.,20.,20.,25.,35.,50.,75.,100.,150.,200.,275.,350.,415.,450.,500.,500.,500.,500.,500.,500.,500.,
- phimin=-80.,
- thetamin=0.,
+ ygOrigin=-80.,
  &
 
 # **********

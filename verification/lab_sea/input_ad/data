@@ -123,22 +123,20 @@
 # Gridding parameters
 #
 #   usingSphericalPolarGrid - On/Off flag for spherical polar coordinates
-#   usingCartesianGrid      - On/Off flag for selecting cartesian coordinates
 #   delX                    - Zonal grid spacing         (degrees)
 #   delY                    - Meridional grid spacing    (degrees)
 #   delZ                    - Vertical grid spacing      (m)
-#   phiMin                  - Southern boundary latitude (degrees)
+#   ygOrigin                - Southern boundary latitude (degrees)
 #
  &PARM04
- usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.TRUE.,
  delX=20*2.E0,
  delY=16*2.E0,
  delZ= 10., 10., 15., 20., 20., 25., 35., 50., 75.,
        100., 150., 200., 275., 350., 415., 450.,
        500., 500., 500., 500., 500., 500., 500.
- phimin=46.,
- thetamin=280.,
+ ygOrigin=46.,
+ xgOrigin=280.,
  rSphere         = 6371.D3
  &
 
