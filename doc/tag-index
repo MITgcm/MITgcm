@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1055 2009/01/27 14:22:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1056 2009/01/27 15:41:52 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o rename thetaMin,phiMin -> xgOrigin,ygOrigin
+  (maintain temporary backward compatibility, until next checkpoint)
 
 checkpoint61h
 o pkg/diagnostics with "periodic averaging diagnostics":
