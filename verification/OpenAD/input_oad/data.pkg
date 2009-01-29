@@ -1,0 +1,10 @@
+#
+# ********
+# Packages
+# ********
+ &PACKAGES
+ useGMRedi    = .TRUE.,
+ useKPP       = .FALSE.,
+ useGrdchk    = .TRUE.,
+ useMNC       = .FALSE.,
+ &
