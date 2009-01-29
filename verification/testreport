@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.119 2009/01/26 04:09:34 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.120 2009/01/29 21:45:43 utke Exp $
 #  $Name:  $
 #
 
@@ -30,6 +30,7 @@ usage()
     echo "                             Bourne-compatible \"sh\" shell"
     echo "                             (DEF=\"\" for \"bash\")"
     echo "  (-adm|-ad)               perform an adjoint run"
+    echo "  (-oad)                   perform an OpenAD adjoint run"
     echo "  (-command) STRING        command to run"
     echo "                             (DEF=\"make output.txt\")"
     echo "  (-m|-make) STRING        command to use for \"make\""
@@ -211,7 +212,7 @@ testoutput_run()
 		eval "HAVE_PTR0"$ii"=t"
 	    else
 		eval "HAVE_PTR0"$ii"=f"
-	      if test "x$ADM" = x ; then
+	      if test "x$ADM" = x -a "x$OADM" = x; then
 	      # remove this ptr from the list of output variable to check
 	      # echo "-- ptr test=" $tst "number of var=" `echo $listVar | awk '{print NF}'` 1>&2
 		listVar=`echo "$listVar" | sed "s/ pt$ii..//g"`
@@ -314,10 +315,12 @@ genmakemodel()
 	(
 	    cd $1;
 	    command="$GENMAKE2  -ds -m $MAKE"
-	    if test "x$ADM" = x ; then
-		command="$command --mods=../code"
-	    else
+	    if test "x$ADM" = xt ; then
 		command="$command --mods=../code_ad"
+	    elif test "x$OADM" = xt ; then
+		command="$command -adof ../../../tools/adjoint_options/adjoint_oad -mods '../code_oad ../../OpenAD/code_oad_all'"
+	    else
+		command="$command --mods=../code"
 	    fi
 	    if test "x$OPTFILE" != xNONE ; then
 		command="$command --optfile=$OPTFILE"
@@ -342,7 +345,8 @@ genmakemodel()
 	    fi
 	    fi
 	    printf 'genmake ... ' 1>&2
-	    $command > make.log 2>&1
+	    # $command > make.log 2>&1
+	    eval $command > make.log 2>&1
 	    RETVAL=$?
 	    #  Reduce the size of the testing emails!
 	    head -100 Makefile > $CDIR/Makefile_head
@@ -437,14 +441,16 @@ makemodel()
 	cd $1;
 	if test -r Makefile ; then
 	    printf 'make ... ' 1>&2
-	    if test "x$ADM" = x ; then
+	    if test "x$ADM" = xt ; then
+		$MAKE adall >> make.log 2>&1
+	    elif test "x$OADM" = xt ; then
+		$MAKE adAll >> make.log 2>&1
+            else
 		if test "x$JOBS" = x ; then
 		    $MAKE >> make.log 2>&1
 		else
 		    $MAKE -j $JOBS >> make.log 2>&1
 		fi
-	    else
-		$MAKE adall >> make.log 2>&1
 	    fi
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
@@ -755,6 +761,7 @@ OUTDIR=
 DELDIR=
 
 ADM=
+OADM=
 
 # list of pTracers to check for monitor output
 PTRACERS_NUM="1 2 3 4 5"
@@ -856,6 +863,8 @@ for ac_option ; do
 
 	-adm | -ad) ADM=t ;;
 
+	-oad) OADM=t; NODEPEND=t ;;
+
 	-ieee) IEEE=true ;;
 	-noieee) IEEE= ;;
         -gsl) GSL=t ;;
@@ -897,6 +906,11 @@ if test "x$ADM" = xt ; then
     code_dir=code_ad
     inputdir=input_ad
     ref_outp="output_adm.txt"
+    EXECUTABLE="mitgcmuv_ad"
+elif test "x$OADM" = xt ; then
+    code_dir=code_oad
+    inputdir=input_oad
+    ref_outp="output_oadm.txt"
     EXECUTABLE="mitgcmuv_ad"
 else
     code_dir=code
@@ -965,7 +979,7 @@ echo "OK (COMMAND= $COMMAND )"
 #  (use default or load experiment-specific list from file "tr_checklist")
 # content : 1rst = main variable used to decide if it pass or FAIL
 #         others = number of matching digits to be printed in summary.txt
-if test "x$ADM" = x ; then
+if test "x$ADM" = x -a "x$OADM" = x; then
     DEF_CHECK_LIST='PS PS T+ S+ U+ V+ pt1+ pt2+ pt3+ pt4+ pt5+'
     EMPTY_RESULTS='.. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ..'
     LEN_CHECK_LIST=`echo $DEF_CHECK_LIST | sed 's/ [a-zA-Z0-9]*+/&mn &mx &av &sd/g' | awk '{print NF-1}'`
@@ -1046,7 +1060,7 @@ else
 fi
 echo
 echo >> $SUMMARY
-if test "x$ADM" = x ; then
+if test "x$ADM" = x -a "x$OADM" = x; then
     if [ $MATCH_CRIT -lt 10 ] ; 
     then line_0="default  "$MATCH_CRIT ; 
     else line_0="default "$MATCH_CRIT ; fi
