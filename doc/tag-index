@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1056 2009/01/27 15:41:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1057 2009/01/30 14:31:18 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90: a few modifications:
+ - fix bottom boundary condition, and interpolation of KappaE
+   near top and bottom
+ - use same set of viscosity/diffusivity for TKE/momnetum/tracer 
+ - add smoothing option as in Blanke and Delecluse (1993) (--> ALLOW_GGL90_SMOOTH)
+ - add a few options for mixing-length upper limit (--> mxlMaxFlag)  
 o rename thetaMin,phiMin -> xgOrigin,ygOrigin
   (maintain temporary backward compatibility, until next checkpoint)
 
