@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.10 2008/10/07 19:35:10 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.11 2009/01/30 02:23:56 dfer Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -78,12 +78,15 @@ C     gTKE             - right hand side of implicit equation
       _RL     uStarSquare
       _RL     verticalShear
       _RL     KappaM, KappaH
-      _RL     Nsquare
+c     _RL     Nsquare
+      _RL     Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     deltaTggl90
-      _RL     SQRTTKE
+c     _RL     SQRTTKE
+      _RL     SQRTTKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     RiNumber
       _RL     TKEdissipation
       _RL     tempU, tempV, prTemp
+      _RL     MaxLength
       _RL     TKEPrandtlNumber (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     GGL90mixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL         rMixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -104,6 +107,12 @@ C     dfx, dfy - diffusive flux across lateral faces
       _RL     dfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     dfy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_GGL90_HORIZDIFF */
+#ifdef ALLOW_GGL90_SMOOTH
+      _RL p4, p8, p16, tmpdiffKrS
+      p4=0.25 _d 0
+      p8=0.125 _d 0
+      p16=0.0625 _d 0
+#endif
 CEOP
       iMin = 2-OLx
       iMax = sNx+OLx-1
@@ -136,16 +145,14 @@ C     Initialize local fields
        DO I=1-Olx,sNx+Olx
         rhoK    (I,J) = 0. _d 0
         rhoKm1  (I,J) = 0. _d 0
-        totalDepth(I,J)   = 0. _d 0
-        IF ( recip_Rcol(I,J,bi,bj) .NE. 0. _d 0 )
-     &       totalDepth(I,J) = 1./recip_Rcol(I,J,bi,bj)
+        totalDepth(I,J) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
        ENDDO
       ENDDO
 
 C     start k-loop
       DO K = 2, Nr
        Km1 = K-1
-       Kp1 = MIN(Nr,K+1)
+c      Kp1 = MIN(Nr,K+1)
        CALL FIND_RHO_2D(
      I      iMin, iMax, jMin, jMax, K,
      I      theta(1-OLx,1-OLy,Km1,bi,bj), salt(1-OLx,1-OLy,Km1,bi,bj),
@@ -159,37 +166,112 @@ C     start k-loop
      I      K, bi, bj, myThid )
        DO J=jMin,jMax
         DO I=iMin,iMax
-         SQRTTKE=SQRT( GGL90TKE(I,J,K,bi,bj) )
+         SQRTTKE(i,j,k)=SQRT( GGL90TKE(I,J,K,bi,bj) )
 C
 C     buoyancy frequency
 C
-         Nsquare = - gravity*recip_rhoConst*recip_drC(K)
+         Nsquare(i,j,k) = - gravity*recip_rhoConst*recip_drC(K)
      &        * ( rhoKm1(I,J) - rhoK(I,J) )*maskC(I,J,K,bi,bj)
+cC     vertical shear term (dU/dz)^2+(dV/dz)^2
+c         tempU= .5 _d 0*( uVel(I,J,Km1,bi,bj)+uVel(I+1,J,Km1,bi,bj)
+c     &                 -( uVel(I,J,K  ,bi,bj)+uVel(I+1,J,K  ,bi,bj)) )
+c     &        *recip_drC(K)
+c         tempV= .5 _d 0*( vVel(I,J,Km1,bi,bj)+vVel(I,J+1,Km1,bi,bj)
+c     &                 -( vVel(I,J,K  ,bi,bj)+vVel(I,J+1,K  ,bi,bj)) )
+c     &        *recip_drC(K)
+c         verticalShear = tempU*tempU + tempV*tempV
+c         RiNumber   = MAX(Nsquare(i,j,k),0. _d 0)/(verticalShear+GGL90eps)
+cC     compute Prandtl number (always greater than 0)
+c         prTemp = 1. _d 0
+c         IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
+c         TKEPrandtlNumber(I,J,K) = MIN(10. _d 0,prTemp)
+C     mixing length
+         GGL90mixingLength(I,J,K) = SQRTTWO *
+     &        SQRTTKE(i,j,k)/SQRT( MAX(Nsquare(i,j,k),GGL90eps) )
+        ENDDO
+       ENDDO
+      ENDDO
+
+C- Impose upper bound for mixing length (total depth)
+      IF ( mxlMaxFlag .EQ. 0 ) THEN
+       DO k=2,Nr
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          MaxLength=totalDepth(I,J)
+          GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K),
+     &        MaxLength)
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSEIF ( mxlMaxFlag .EQ. 1 ) THEN
+       DO k=2,Nr
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          MaxLength=MIN(Ro_surf(I,J,bi,bj)-rF(k),rF(k)-R_low(I,J,bi,bj))
+c         MaxLength=MAX(MaxLength,20. _d 0)
+          GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K),
+     &        MaxLength)
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSEIF ( mxlMaxFlag .EQ. 2 ) THEN
+       DO k=2,Nr
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K),
+     &        GGL90mixingLength(I,J,K-1)+drF(k-1))
+         ENDDO
+        ENDDO
+       ENDDO
+       DO J=jMin,jMax
+        DO I=iMin,iMax
+          GGL90mixingLength(I,J,Nr) = MIN(GGL90mixingLength(I,J,Nr),
+     &       GGL90mixingLengthMin+drF(Nr))
+        ENDDO
+       ENDDO
+       DO k=Nr-1,2,-1
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K),
+     &        GGL90mixingLength(I,J,K+1)+drF(k))
+         ENDDO 
+        ENDDO  
+       ENDDO
+      ELSE
+       STOP 'GGL90_CALC: Wrong mxlMaxFlag (mixing lenght limit)'
+      ENDIF
+
+C- Impose minimum mixing length (to avoid division by zero)
+      DO k=2,Nr
+       DO J=jMin,jMax
+        DO I=iMin,iMax
+         GGL90mixingLength(I,J,K) = MAX(GGL90mixingLength(I,J,K),
+     &        GGL90mixingLengthMin)
+         rMixingLength(I,J,K) = 1. _d 0 /GGL90mixingLength(I,J,K)
+        ENDDO
+       ENDDO
+      ENDDO
+
+      DO k=2,Nr
+       Km1 = K-1
+       DO J=jMin,jMax
+        DO I=iMin,iMax
 C     vertical shear term (dU/dz)^2+(dV/dz)^2
-         tempu= .5 _d 0*( uVel(I,J,Km1,bi,bj)+uVel(I+1,J,Km1,bi,bj)
+         tempU= .5 _d 0*( uVel(I,J,Km1,bi,bj)+uVel(I+1,J,Km1,bi,bj)
      &                 -( uVel(I,J,K  ,bi,bj)+uVel(I+1,J,K  ,bi,bj)) )
      &        *recip_drC(K)
-         tempv= .5 _d 0*( vVel(I,J,Km1,bi,bj)+vVel(I,J+1,Km1,bi,bj)
+         tempV= .5 _d 0*( vVel(I,J,Km1,bi,bj)+vVel(I,J+1,Km1,bi,bj)
      &                 -( vVel(I,J,K  ,bi,bj)+vVel(I,J+1,K  ,bi,bj)) )
      &        *recip_drC(K)
          verticalShear = tempU*tempU + tempV*tempV
-         RiNumber   = MAX(Nsquare,0. _d 0)/(verticalShear+GGL90eps)
+         RiNumber   = MAX(Nsquare(i,j,k),0. _d 0)/(verticalShear+GGL90eps)
 C     compute Prandtl number (always greater than 0)
          prTemp = 1. _d 0
          IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
          TKEPrandtlNumber(I,J,K) = MIN(10. _d 0,prTemp)
-C     mixing length
-         GGL90mixingLength(I,J,K) = SQRTTWO *
-     &        SQRTTKE/SQRT( MAX(Nsquare,GGL90eps) )
-C     impose upper bound for mixing length (total depth)
-         GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K),
-     &        totalDepth(I,J))
-C     impose minimum mixing length (to avoid division by zero)
-         GGL90mixingLength(I,J,K) = MAX(GGL90mixingLength(I,J,K),
-     &        GGL90mixingLengthMin)
-         rMixingLength(I,J,K) = 1. _d 0 /GGL90mixingLength(I,J,K)
-C     viscosity of last timestep
-         KappaM = GGL90ck*GGL90mixingLength(I,J,K)*SQRTTKE
+
+C     viscosity and diffusivity
+         KappaM = GGL90ck*GGL90mixingLength(I,J,K)*SQRTTKE(i,j,k)
          KappaH = KappaM/TKEPrandtlNumber(I,J,K)
 
 C     Set a minium (= background) and maximum value
@@ -198,26 +280,26 @@ C     Set a minium (= background) and maximum value
          KappaM = MIN(KappaM,GGL90viscMax)
          KappaH = MIN(KappaH,GGL90diffMax)
 
-C     Mask land points and save
-         KappaE(I,J,K) = KappaM*GGL90alpha
+C     Mask land points and storage
          GGL90viscAr(I,J,K,bi,bj) = KappaM * maskC(I,J,K,bi,bj)
          GGL90diffKr(I,J,K,bi,bj) = KappaH * maskC(I,J,K,bi,bj)
+         KappaE(I,J,K) = GGL90alpha * GGL90viscAr(I,J,K,bi,bj)
 
 C     dissipation term
          TKEdissipation = ab05*GGL90ceps
-     &        *SQRTTKE*rMixingLength(I,J,K)
+     &        *SQRTTKE(i,j,k)*rMixingLength(I,J,K)
      &        *GGL90TKE(I,J,K,bi,bj)
 C     sum up contributions to form the right hand side
          gTKE(I,J,K) = GGL90TKE(I,J,K,bi,bj)
      &        + deltaTggl90*(
      &        + KappaM*verticalShear
-     &        - KappaH*Nsquare
-c    &        - KappaM*Nsquare/TKEPrandtlNumber(I,J,K)
+     &        - KappaH*Nsquare(i,j,k)
      &        - TKEdissipation
      &        )
         ENDDO
        ENDDO
       ENDDO
+
 C     horizontal diffusion of TKE (requires an exchange in
 C      do_fields_blocking_exchanges)
 #ifdef ALLOW_GGL90_HORIZDIFF
@@ -285,14 +367,14 @@ C--   Lower diagonal
        ENDDO
       ENDDO
       DO k=2,Nr
-       km1=MAX(1,k-1)
+       km1=max(2,k-1)
        DO j=jMin,jMax
         DO i=iMin,iMax
          a(i,j,k) = -deltaTggl90
-     &        *recip_drF(km1)*recip_hFacI(i,j,k,bi,bj)
+c     &        *recip_drF(km1)*recip_hFacI(i,j,k,bi,bj)
+     &        *recip_drF(k-1)*recip_hFacC(i,j,k-1,bi,bj)
      &        *.5 _d 0*(KappaE(i,j, k )+KappaE(i,j,km1))
-     &        *recip_drC(k)
-          IF (recip_hFacI(i,j,km1,bi,bj).EQ.0. _d 0) a(i,j,k)=0. _d 0
+     &        *recip_drC(k)*maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
         ENDDO
        ENDDO
       ENDDO
@@ -300,19 +382,17 @@ C--   Upper diagonal
       DO j=jMin,jMax
        DO i=iMin,iMax
          c(i,j,1)  = 0. _d 0
-         c(i,j,Nr) = 0. _d 0
        ENDDO
       ENDDO
-CML      DO k=1,Nr-1
-      DO k=2,Nr-1
-       kp1=min(Nr,k+1)
+      DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
+          kp1=min(klowC(i,j,bi,bj),k+1)
           c(i,j,k) = -deltaTggl90
-     &        *recip_drF( k )*recip_hFacI(i,j,k,bi,bj)
-     &               *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
-     &        *recip_drC(k)
-          IF (recip_hFacI(i,j,kp1,bi,bj).EQ.0. _d 0) c(i,j,k)=0. _d 0
+c     &        *recip_drF( k )*recip_hFacI(i,j,k,bi,bj)
+     &        *recip_drF( k ) * recip_hFacC(i,j,k,bi,bj)
+     &        *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
+     &        *recip_drC(k)*maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
         ENDDO
        ENDDO
       ENDDO
@@ -322,7 +402,7 @@ C--   Center diagonal
         DO i=iMin,iMax
           b(i,j,k) = 1. _d 0 - c(i,j,k) - a(i,j,k)
      &        + ab15*deltaTggl90*GGL90ceps*SQRT(GGL90TKE(I,J,K,bi,bj))
-     &        *rMixingLength(I,J,K)
+     &        *rMixingLength(I,J,K)*maskC(i,j,k,bi,bj)
          ENDDO
        ENDDO
       ENDDO
@@ -344,9 +424,10 @@ C     Dirichlet surface boundary condition for TKE
         gTKE(I,J,kSurf) = MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare)
      &                     *maskC(I,J,kSurf,bi,bj)
 C     Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
-        kBottom   = MIN(MAX(kLowC(I,J,bi,bj),1),Nr)
+        kBottom   = MAX(kLowC(I,J,bi,bj),1)
         gTKE(I,J,kBottom) = gTKE(I,J,kBottom)
-     &       - GGL90TKEbottom*c(I,J,kBottom)
+     &                    - GGL90TKEbottom*c(I,J,kBottom)
+        c(I,J,kBottom) = 0. _d 0
        ENDDO
       ENDDO
 C
@@ -368,30 +449,42 @@ C     impose minimum TKE to avoid numerical undershoots below zero
         ENDDO
        ENDDO
       ENDDO
-C
+
 C     end of time step
 C     ===============================
-C     compute viscosity coefficients
-C
-c      DO K=2,Nr
-c       DO J=jMin,jMax
-c        DO I=iMin,iMax
-C     Eq. (11), (18) and (21)
-c         KappaM = GGL90ck*GGL90mixingLength(I,J,K)*
-c     &                  SQRT( GGL90TKE(I,J,K,bi,bj) )
-c         KappaH = KappaM/TKEPrandtlNumber(I,J,K)
-C     Set a minium (= background) value
-c         KappaM = MAX(KappaM,viscAr)
-c         KappaH = MAX(KappaH,diffKrNrT(k))
-C     Set a maximum and mask land point
-c        GGL90viscAr(I,J,K,bi,bj) = MIN(KappaM,GGL90viscMax)
-c    &        * maskC(I,J,K,bi,bj)
-c        GGL90diffKr(I,J,K,bi,bj) = MIN(KappaH,GGL90diffMax)
-c    &        * maskC(I,J,K,bi,bj)
-c        ENDDO
-c       ENDDO
-C     end third k-loop
-c      ENDDO
+
+#ifdef ALLOW_GGL90_SMOOTH
+      DO K=1,Nr
+       DO J=jMin,jMax
+        DO I=iMin,iMax
+         tmpdiffKrS=
+     &  (
+     &   p4 *  GGL90viscAr(i  ,j  ,k,bi,bj) * mskCor(i  ,j  ,bi,bj)
+     &  +p8 *( GGL90viscAr(i-1,j  ,k,bi,bj) * mskCor(i-1,j  ,bi,bj)
+     &       + GGL90viscAr(i  ,j-1,k,bi,bj) * mskCor(i  ,j-1,bi,bj)
+     &       + GGL90viscAr(i+1,j  ,k,bi,bj) * mskCor(i+1,j  ,bi,bj)
+     &       + GGL90viscAr(i  ,j+1,k,bi,bj) * mskCor(i  ,j+1,bi,bj))
+     &  +p16*( GGL90viscAr(i+1,j+1,k,bi,bj) * mskCor(i+1,j+1,bi,bj)
+     &       + GGL90viscAr(i+1,j-1,k,bi,bj) * mskCor(i+1,j-1,bi,bj)
+     &       + GGL90viscAr(i-1,j+1,k,bi,bj) * mskCor(i-1,j+1,bi,bj)
+     &       + GGL90viscAr(i-1,j-1,k,bi,bj) * mskCor(i-1,j-1,bi,bj))
+     &  )
+     & /(p4
+     &  +p8 *(       maskC(i-1,j  ,k,bi,bj) * mskCor(i-1,j  ,bi,bj)
+     &       +       maskC(i  ,j-1,k,bi,bj) * mskCor(i  ,j-1,bi,bj)
+     &       +       maskC(i+1,j  ,k,bi,bj) * mskCor(i+1,j  ,bi,bj)
+     &       +       maskC(i  ,j+1,k,bi,bj) * mskCor(i  ,j+1,bi,bj))
+     &  +p16*(       maskC(i+1,j+1,k,bi,bj) * mskCor(i+1,j+1,bi,bj)
+     &       +       maskC(i+1,j-1,k,bi,bj) * mskCor(i+1,j-1,bi,bj)
+     &       +       maskC(i-1,j+1,k,bi,bj) * mskCor(i-1,j+1,bi,bj)
+     &       +       maskC(i-1,j-1,k,bi,bj) * mskCor(i-1,j-1,bi,bj))
+     &  )*maskC(i,j,k,bi,bj)*mskCor(i,j,bi,bj)
+     &   /TKEPrandtlNumber(i,j,k)
+         GGL90diffKrS(I,J,K,bi,bj)= MAX( tmpdiffKrS , diffKrNrT(k) )
+        ENDDO
+       ENDDO
+      ENDDO
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

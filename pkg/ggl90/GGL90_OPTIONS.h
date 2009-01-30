@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90_OPTIONS.h,v 1.3 2007/07/31 23:01:58 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90_OPTIONS.h,v 1.4 2009/01/30 02:23:56 dfer Exp $
 C $Name:  $
 C     /=============================================================\
 C     | GGL90_OPTIONS.h                                             |
@@ -19,7 +19,9 @@ C     \=============================================================/
 C     Enable horizontal diffusion of TKE. The orignal OPA code does not use
 C     horizontal diffusion but uses some sort of horizontal averaging
 C     for viscosity and diffusivity.
-#define ALLOW_GGL90_HORIZDIFF
+#undef ALLOW_GGL90_HORIZDIFF
+
+#undef ALLOW_GGL90_SMOOTH
 
 #endif /* ALLOW_GGL90 */
 #endif /* GGL90_OPTIONS_H */

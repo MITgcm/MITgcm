@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_varia.F,v 1.1 2008/10/07 19:30:54 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_varia.F,v 1.2 2009/01/30 02:23:56 dfer Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -44,10 +44,10 @@ CML           GGL90TKE(I,J,K,bi,bj)=0. _d 0
 C
 C     hfacs for w (=tke) control volume
 C     
-         recip_hFacI(I,J,K,bi,bj) = .5*hFacC(I,J,Km1,bi,bj)
-     &        + MIN(.5 _d 0,hFacC(I,J,K,bi,bj))
-         IF ( recip_hFacI(I,J,K,bi,bj) .NE. 0. _d 0 )
-     &        recip_hFacI(I,J,K,bi,bj) = 1./recip_hFacI(I,J,K,bi,bj)
+c         recip_hFacI(I,J,K,bi,bj) = .5 _d 0*hFacC(I,J,Km1,bi,bj)
+c     &        + MIN(.5 _d 0,hFacC(I,J,K,bi,bj))
+c         IF ( recip_hFacI(I,J,K,bi,bj) .NE. 0. _d 0 )
+c     &        recip_hFacI(I,J,K,bi,bj)=1. _d 0/recip_hFacI(I,J,K,bi,bj)
           ENDDO
          ENDDO
         ENDDO
