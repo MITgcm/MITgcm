@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1057 2009/01/30 14:31:18 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1058 2009/01/31 22:26:31 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/flt:
+ - replace FLT_INIT by 3-steps standard initialization S/R: readparms,
+   init_fixed & ini_varia.
 o pkg/ggl90: a few modifications:
  - fix bottom boundary condition, and interpolation of KappaE
    near top and bottom
