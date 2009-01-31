@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_init.F,v 1.6 2009/01/08 19:40:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.1 2009/01/31 22:21:31 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
 
-      SUBROUTINE FLT_INIT ( myThid  )
+      SUBROUTINE FLT_INIT_VARIA ( myThid  )
 
 C     ==================================================================
-C     SUBROUTINE flt_init
+C     SUBROUTINE FLT_INIT_VARIA
 C     ==================================================================
 C
 C     o This routine initializes the start/restart positions.
@@ -21,7 +21,7 @@ C       that exist on the specific tile into the local array.
 C     o At the end the float positions are written to the trajectory file
 C
 C     ==================================================================
-C     SUBROUTINE flt_init
+C     SUBROUTINE FLT_INIT_VARIA
 C     ==================================================================
 
 #include "EEPARAMS.h"
@@ -36,8 +36,6 @@ C     myThid - thread number for this instance of the routine.
       INTEGER myThid
 
 C-    Functions:
-      INTEGER  IFNBLNK
-      EXTERNAL IFNBLNK
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
@@ -53,7 +51,6 @@ c     INTEGER iG, jG
       LOGICAL globalFile
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit
 
 C     number of active record in the file (might be lower than the
 C     total number of records because the tile could have contained
@@ -61,82 +58,11 @@ C     more floats at an earlier restart
       INTEGER npart_read
       _RL     npart_dist
 
-      NAMELIST /flt_nml/ flt_int_traj, flt_int_prof, flt_noise
-     &                  ,flt_file
-
 C     == end of interface ==
 
 C-    all threads initialise local var:
       npart_read = 0
       npart_dist = 0.
-
-      _BEGIN_MASTER(myThid)
-
-C     Set default values.
-      flt_int_traj =  3600.
-      flt_int_prof = 43200.
-      flt_noise    = 0.0
-      flt_file     = 'float_pos'
-
-      WRITE(msgBuf,'(A)') ' FLT_INIT: opening data.flt'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      CALL OPEN_COPY_DATA_FILE(
-     I                          'data.flt', 'FLT_INIT',
-     O                          iUnit,
-     I                          myThid )
-
-C     Read parameters from open data file
-      READ(UNIT=iUnit,NML=FLT_NML)
-      WRITE(msgBuf,'(A)') ' FLT_INIT: finished reading data.flt'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-C     Close the open data file
-      CLOSE(iUnit)
-
-C DO some checks
-      IF ( useFLT .AND. useOBCS ) THEN
-       WRITE(msgBuf,'(A,A)')
-     &  'S/R FLT_INIT: Integrating floats is currently not possible',
-     &  'in combination with open boundaries.'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       STOP 'ABNORMAL END: S/R FLT_INIT'
-      ENDIF
-
-      _END_MASTER(myThid)
-
-C Set domain dependent constants:
-      xLo = -xG( 1,  1,1,1)
-      xHi = xG(sNx+1,1,1,1)
-      yLo = -yG(1, 1,  1,1)
-      yHi = yG(1,sNy+1,1,1)
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-         xLo = MAX( xLo, -xG(1,1,bi,bj) )
-         xHi = MAX( xHi, xG(sNx+1,1,bi,bj) )
-         yLo = MAX( yLo, -yG(1,1,bi,bj) )
-         yHi = MAX( yHi, yG(1,sNy+1,bi,bj) )
-       ENDDO
-      ENDDO
-      _GLOBAL_MAX_R8( xLo, myThid )
-      _GLOBAL_MAX_R8( xHi, myThid )
-      _GLOBAL_MAX_R8( yLo, myThid )
-      _GLOBAL_MAX_R8( yHi, myThid )
-
-      _BEGIN_MASTER(myThid)
-       flt_xLo = -xLo
-       flt_xHi =  xHi
-       flt_yLo = -yLo
-       flt_yHi =  yHi
-       WRITE(msgBuf,'(A,2F18.8)')
-     &    '  FLT_xLo,xHi=', xLo, xHi
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-         WRITE(msgBuf,'(A,2F18.8)')
-     &    '  FLT_yLo,yHi=', yLo, yHi
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-      _END_MASTER(myThid)
 
 C read floats initial condition from file
       _BEGIN_MASTER(myThid)
@@ -146,7 +72,8 @@ C read floats initial condition from file
         WRITE(fn,'(A,I10.10)') 'pickup_flt.', nIter0
       ENDIF
       iL = ILNBLNK(fn)
-      WRITE(msgBuf,'(2A)') 'FLT_INIT: reading Floats from: ',fn(1:iL)
+      WRITE(msgBuf,'(2A)')
+     &   'FLT_INIT_VARIA: reading Floats from: ', fn(1:iL)
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
@@ -243,12 +170,12 @@ C     belong to this current tile (=> do not no check)
          ENDDO
          npart_dist = npart_dist + DBLE(npart_tile(bi,bj))
          IF ( npart_tile(bi,bj).GT.max_npart_tile ) THEN
-           WRITE(msgBuf,'(2A,2I4,2(A,I8))') 'FLT_INIT:',
+           WRITE(msgBuf,'(2A,2I4,2(A,I8))') 'FLT_INIT_VARIA:',
      &       ' bi,bj=', bi, bj,
      &       ' npart_tile=', npart_tile(bi,bj),
      &       ' > max_npart_tile=', max_npart_tile
            CALL PRINT_ERROR( msgBuf , myThid)
-           STOP 'ABNORMAL END: S/R FLT_INIT'
+           STOP 'ABNORMAL END: S/R FLT_INIT_VARIA'
          ENDIF
 
        ENDDO
@@ -259,7 +186,7 @@ C     belong to this current tile (=> do not no check)
       _GLOBAL_SUM_R8( npart_dist, myThid )
 
       _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(A,2(A,I9))') 'FLT_INIT:',
+        WRITE(msgBuf,'(A,2(A,I9))') 'FLT_INIT_VARIA:',
      &          ' max npart=', NINT(max_npart),
      &   ' , sum npart_tile=', NINT(npart_dist)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
