@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.57 2008/08/17 02:08:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.58 2009/01/31 22:22:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -93,6 +93,10 @@ C       |
 C       |-- SMOOTH_READPARMS
 C       |
 C       |-- ECCO_READPARMS
+C       |
+C       |-- PROFILES_READPARMS
+C       |
+C       |-- FLT_READPARMS
 C       |
 C       |-- CPL_READPARMS
 C       |
@@ -282,6 +286,10 @@ c--   Initialize ECCO package parameters
 c--   Initialize PROFILES package parameters
       CALL PROFILES_READPARMS ( myThid )
 #endif
+
+#ifdef ALLOW_FLT
+      IF ( useFLT ) CALL FLT_READPARMS( myThid )
+#endif /* ALLOW_FLT */
 
 #ifdef COMPONENT_MODULE
 C--   set Coupling parameters

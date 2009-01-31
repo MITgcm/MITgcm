@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.66 2009/01/04 01:00:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.67 2009/01/31 22:22:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -46,8 +46,6 @@ C       |-- OPPS_INIT
 C       |
 C       |-- OBCS_INIT_FIXED
 C       |
-C       |-- FLT_INIT
-C       |
 C       |-- TIMEAVE_INIT_FIXED
 C       |
 C       |-- SHAP_FILT_INIT_FIZED
@@ -66,7 +64,11 @@ C       |-- SEAICE_COST_INIT_FIXED
 C       |
 C       |-- ECCO_COST_INIT_FIXED
 C       |
+C       |-- PROFILES_INIT_FIXED
+C       |
 C       |-- CTRL_INIT
+C       |
+C       |-- FLT_INIT_FIXED
 C       |
 C       |-- PTRACERS_INIT_FIXED
 C       |
@@ -186,13 +188,6 @@ C--   Initialize fixed arrays for OBCS
       ENDIF
 #endif
 
-#ifdef ALLOW_FLT
-C--   Initialise Float positions
-      IF (useFLT) THEN
-       CALL FLT_INIT( myThid )
-      ENDIF
-#endif
-
 #ifdef ALLOW_TIMEAVE
 C     IF (useTIMEAVE) THEN
       IF ( taveFreq.GT.0. ) THEN
@@ -211,7 +206,6 @@ C--   Shapiro filter initialisation
 C--   Latitude circle filter initialisation
       IF (useZONAL_FILT) THEN
        CALL ZONAL_FILT_INIT(myThid)
-      _BARRIER
       ENDIF
 #endif
 
@@ -263,13 +257,16 @@ C--   in order to provide the weight files
 #ifdef ALLOW_AUTODIFF
 C--   Initialise the control variables
       CALL CTRL_INIT( myThid )
-      _BARRIER
 #endif
 
 #ifdef ALLOW_ADMTLM
 C--   Initialise ADMTLM
       CALL CTRL_ADMTLM( myThid )
-      _BARRIER
+#endif
+
+#ifdef ALLOW_FLT
+C--   Initialise fixed array for Float pkg
+      IF ( useFLT ) CALL FLT_INIT_FIXED( myThid )
 #endif
 
 #ifdef ALLOW_PTRACERS
