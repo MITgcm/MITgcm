@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.9 2009/01/09 20:59:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.10 2009/02/01 20:48:50 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -8,21 +8,17 @@ C $Name:  $
      I                       myTime, myIter, myThid )
 
 C     ==================================================================
-C     SUBROUTINE flt_exchg
+C     SUBROUTINE FLT_EXCHG
 C     ==================================================================
-C
 C     o Exchange particles between tiles.
-C
 C     started: Arne Biastoch
-C
 C     changed: Antti Westerlund antti.westerlund@helsinki.fi 2004.06.10
-C
 C     ==================================================================
-C     SUBROUTINE flt_exchg
-C     ==================================================================
+
+C     !USES:
+      IMPLICIT NONE
 
 C     == global variables ==
-
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -30,12 +26,10 @@ C     == global variables ==
 #include "FLT.h"
 
 C     == routine arguments ==
-
       _RL myTime
       INTEGER myIter, myThid
 
 C     == local variables ==
-
       INTEGER bi, bj, ic
       INTEGER ip, jp, jl, npNew
       INTEGER icountE, icountW, icountN, icountS

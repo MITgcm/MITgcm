@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.2 2009/01/04 01:14:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.3 2009/02/01 20:48:50 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -10,18 +10,16 @@ C $Name:  $
 C     ==================================================================
 C     SUBROUTINE FLT_WRITE_PICKUP
 C     ==================================================================
-C
 C     o This routine writes the actual float positions to a local files
 C       that can be used as restarts
-C
 C     ==================================================================
-C     SUBROUTINE FLT_WRITE_PICKUP
-C     ==================================================================
+
+C     !USES:
+      IMPLICIT NONE
 
 C     == global variables ==
-
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FLT.h"
 
@@ -54,7 +52,7 @@ C     == end of interface ==
       npart_dist = 0.
 
       DO bj=myByLo(myThid),myByHi(myThid)
-      DO bi=myBxLo(myThid),myBxHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C the standard routine mdswritevector can be used here
 C (1) write actual number floats and time into file
@@ -71,7 +69,7 @@ C (1) write actual number floats and time into file
             CALL MDSWRITEVECTOR( fn, precFloat64, .FALSE., 'RL',
      &                           imax,tmp, bi,bj, 1, myIter,myThid )
 
-         DO ip=1,npart_tile(bi,bj)
+          DO ip=1,npart_tile(bi,bj)
 
             tmp(1) =   npart(ip,bi,bj)
             tmp(2) =  tstart(ip,bi,bj)
@@ -89,11 +87,11 @@ C (2) write float positions into file
             CALL MDSWRITEVECTOR( fn, precFloat64, .FALSE., 'RL',
      &                           imax,tmp, bi,bj,ip+1, myIter,myThid )
 
-         ENDDO
+          ENDDO
 
-         npart_dist = npart_dist + DBLE(npart_tile(bi,bj))
+          npart_dist = npart_dist + DBLE(npart_tile(bi,bj))
 
-       ENDDO
+        ENDDO
        ENDDO
 
        _GLOBAL_SUM_R8( npart_dist, myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.1 2009/01/31 22:21:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.2 2009/02/01 20:48:50 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -8,7 +8,6 @@ C $Name:  $
 C     ==================================================================
 C     SUBROUTINE FLT_INIT_VARIA
 C     ==================================================================
-C
 C     o This routine initializes the start/restart positions.
 C       It does the following:
 C     o First it checks for local files. These are supposed to be restarts
@@ -19,10 +18,10 @@ C       is an initialization. In that case it reads a global file
 C       (that has the same format as local files) and sorts those floats
 C       that exist on the specific tile into the local array.
 C     o At the end the float positions are written to the trajectory file
-C
 C     ==================================================================
-C     SUBROUTINE FLT_INIT_VARIA
-C     ==================================================================
+
+C     !USES:
+      IMPLICIT NONE
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
@@ -31,23 +30,20 @@ C     ==================================================================
 #include "PARAMS.h"
 
 C     == routine arguments ==
-
 C     myThid - thread number for this instance of the routine.
       INTEGER myThid
 
-C-    Functions:
+C     == Functions ==
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
 C     == local variables ==
       INTEGER bi, bj
       INTEGER ip, iL
-c     INTEGER iG, jG
       INTEGER imax
       PARAMETER(imax=9)
       _RL tmp(imax)
       _RL xLo, xHi, yLo, yHi
-
       LOGICAL globalFile
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf

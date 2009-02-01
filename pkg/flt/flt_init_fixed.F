@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_fixed.F,v 1.1 2009/01/31 22:21:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_fixed.F,v 1.2 2009/02/01 20:48:50 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -8,21 +8,11 @@ C $Name:  $
 C     ==================================================================
 C     SUBROUTINE FLT_INIT_FIXED
 C     ==================================================================
-C
-C     o This routine initializes the start/restart positions.
-C       It does the following:
-C     o First it checks for local files. These are supposed to be restarts
-C       from a previous integration. The floats can therefore be read in
-C       without any further check (because they exist on the specific tile).
-C     o If no local files are available the routine assumes that this
-C       is an initialization. In that case it reads a global file
-C       (that has the same format as local files) and sorts those floats
-C       that exist on the specific tile into the local array.
-C     o At the end the float positions are written to the trajectory file
-C
+C     o initializes Fixed array
 C     ==================================================================
-C     SUBROUTINE flt_init
-C     ==================================================================
+
+C     !USES:
+      IMPLICIT NONE
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -31,14 +21,12 @@ C     ==================================================================
 #include "FLT.h"
 
 C     == routine arguments ==
-
 C     myThid - thread number for this instance of the routine.
       INTEGER myThid
 
 C     == local variables ==
       INTEGER bi, bj
       _RL xLo, xHi, yLo, yHi
-
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C     == end of interface ==

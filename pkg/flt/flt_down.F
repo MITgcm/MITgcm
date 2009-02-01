@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_down.F,v 1.3 2009/01/04 00:58:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_down.F,v 1.4 2009/02/01 20:48:50 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -7,39 +7,34 @@ C $Name:  $
      I                      myTime, myIter, myThid )
 
 C     ==================================================================
-C     SUBROUTINE flt_down
+C     SUBROUTINE FLT_DOWN
 C     ==================================================================
-C
 C     o This routine moves particles vertical from the surface to
 C       the target depth
-C
 C     ==================================================================
-C     SUBROUTINE flt_down
-C     ==================================================================
+
+C     !USES:
+      IMPLICIT NONE
 
 C     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "FLT.h"
 
 C     == routine arguments ==
-
       _RL myTime
       INTEGER myIter, myThid
 
 C     == local variables ==
-
       INTEGER bi, bj
       INTEGER ip
 
 C     == end of interface ==
 
-
       DO bj=myByLo(myThid),myByHi(myThid)
-      DO bi=myBxLo(myThid),myBxHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
-      DO ip=1,npart_tile(bi,bj)
+        DO ip=1,npart_tile(bi,bj)
 
          IF (
      &  (                             myTime.GE.tstart(ip,bi,bj))
@@ -59,13 +54,13 @@ c     &      iup(ip,bi,bj)   .GT. 0.) THEN
 
 C     move float to the target depth
 
-            IF (mod(myTime,iup(ip,bi,bj)).EQ.itop(ip,bi,bj))
+           IF (mod(myTime,iup(ip,bi,bj)).EQ.itop(ip,bi,bj))
      &      kpart(ip,bi,bj) = kfloat(ip,bi,bj)
 
          ENDIF
-      ENDDO
+        ENDDO
 
-      ENDDO
+       ENDDO
       ENDDO
 
       RETURN

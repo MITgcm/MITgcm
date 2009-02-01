@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_readparms.F,v 1.1 2009/01/31 22:21:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_readparms.F,v 1.2 2009/02/01 20:48:50 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -8,9 +8,11 @@ C $Name:  $
 C     ==================================================================
 C     SUBROUTINE FLT_READPARMS
 C     ==================================================================
-C
 C     o read float-pkg parameters from file "data.flt"
-C
+C     ==================================================================
+
+C     !USES:
+      IMPLICIT NONE
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -18,7 +20,6 @@ C
 #include "FLT.h"
 
 C     == routine arguments ==
-
 C     myThid - thread number for this instance of the routine.
       INTEGER myThid
 
