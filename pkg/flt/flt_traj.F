@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_traj.F,v 1.3 2009/01/04 00:58:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_traj.F,v 1.4 2009/02/01 21:10:51 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -10,49 +10,42 @@ C $Name:  $
 C     ==================================================================
 C     SUBROUTINE FLT_TRAJ
 C     ==================================================================
-C
 C     o This routine samples the model state at float position every
 C       flt_int_traj time steps and writes output.
-C
 C     ==================================================================
-C     SUBROUTINE FLT_TRAJ
-C     ==================================================================
+
+C     !USES:
+      IMPLICIT NONE
 
 C     == global variables ==
-
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "SOLVE_FOR_PRESSURE.h"
 #include "FLT.h"
-c#include "UNITS.h"
 
 C     == routine arguments ==
-
       _RL myTime
       INTEGER myIter, myThid
+
+C     === Functions ==
+      INTEGER ILNBLNK
+      _RL global2local_i
+      _RL global2local_j
 
 C     == local variables ==
       INTEGER bi, bj, imax
       PARAMETER (imax=10)
-
       INTEGER ip, kp, ii
       _RL xx, yy
       _RL uu,vv,tt,ss, pp
-      _RL global2local_i
-      _RL global2local_j
 
       INTEGER irecord
       _RL tmp(imax)
       _RL npart_read,npart_times
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-C Functions
-      INTEGER ILNBLNK
-C Local variables
       CHARACTER*(80) dataFName
       INTEGER iG,jG,IL
       LOGICAL exst
@@ -62,9 +55,8 @@ C     == end of interface ==
 
       fn = 'float_trajectories'
 
-
       DO bj=myByLo(myThid),myByHi(myThid)
-      DO bi=myBxLo(myThid),myBxHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C (1) read actual number floats from file (if exists)
          IL=ILNBLNK( fn )
@@ -110,22 +102,16 @@ C total number of floats
 
             xx=global2local_i(xpart(ip,bi,bj),bi,bj,myThid)
             yy=global2local_j(ypart(ip,bi,bj),bi,bj,myThid)
-            kp =  INT(kpart(ip,bi,bj))
+            kp = NINT(kpart(ip,bi,bj))
             tmp(1)  = npart(ip,bi,bj)
             tmp(2)  = myTime
             tmp(3)  = xpart(ip,bi,bj)
             tmp(4)  = ypart(ip,bi,bj)
             tmp(5)  = kpart(ip,bi,bj)
 
-            IF (
-     &           ( myTime.GE.tstart(ip,bi,bj))
-     &       .AND.
+            IF ( ( myTime.GE.tstart(ip,bi,bj)) .AND.
      &           ( tend(ip,bi,bj).EQ.-1. .OR. myTime.LE.tend(ip,bi,bj))
      &         ) THEN
-
-c           if (tstart(ip,bi,bj) .NE. -1.              .AND.
-c     &         myTime    .GE. tstart(ip,bi,bj) .AND.
-c     &         myTime    .LE.   tend(ip,bi,bj)) THEN
 
               IF ( kp.LT.1 .OR. kp.GT.Nr ) THEN
                 WRITE(msgBuf,'(2A,I8)') '** WARNING ** FLT_TRAJ: ',
@@ -138,15 +124,15 @@ c     &         myTime    .LE.   tend(ip,bi,bj)) THEN
      &                              SQUEEZE_RIGHT, myThid )
 c               CALL PRINT_ERROR( msgBuf, myThid )
 c               STOP 'ABNORMAL END: S/R FLT_TRAJ'
-              ENDIF
 C-- jmc: not sure if this is right but added to avoid Pb in FLT_BILINEAR:
-              kp = MIN( MAX(kp,1), Nr)
+                kp = MIN( MAX(kp,1), Nr)
+              ENDIF
 
-              CALL FLT_BILINEAR  (xx,yy,uu,kp,uVel,  2,bi,bj)
-              CALL FLT_BILINEAR  (xx,yy,vv,kp,vVel,  3,bi,bj)
-              CALL FLT_BILINEAR2D(xx,yy,pp,   cg2d_x,1,bi,bj)
-              CALL FLT_BILINEAR  (xx,yy,tt,kp,theta, 1,bi,bj)
-              CALL FLT_BILINEAR  (xx,yy,ss,kp,salt,  1,bi,bj)
+              CALL FLT_BILINEAR  (xx,yy,uu,uVel,  kp,1,bi,bj,myThid)
+              CALL FLT_BILINEAR  (xx,yy,vv,vVel,  kp,2,bi,bj,myThid)
+              CALL FLT_BILINEAR2D(xx,yy,pp,etaN,     0,bi,bj,myThid)
+              CALL FLT_BILINEAR  (xx,yy,tt,theta, kp,0,bi,bj,myThid)
+              CALL FLT_BILINEAR  (xx,yy,ss,salt,  kp,0,bi,bj,myThid)
 
               tmp(6)   = uu
               tmp(7)   = vv
@@ -165,13 +151,13 @@ C the standard routine mdswritevector can be used here
 C (3) WRITE float positions into file
 
             irecord=npart_read+ip+1
-            CALL MDSWRITEVECTOR(fn,64,.false.,'RL',imax,tmp,bi,bj,
+            CALL MDSWRITEVECTOR(fn,64,.FALSE.,'RL',imax,tmp,bi,bj,
      &                          irecord,myIter,myThid)
 
          ENDDO
 
        ENDDO
-       ENDDO
+      ENDDO
 
       RETURN
       END
