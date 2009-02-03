@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.11 2008/12/30 02:09:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.12 2009/02/03 23:10:28 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -57,7 +57,7 @@ C Routine arguments
       INTEGER myIter
       INTEGER myThid
 
-#if defined(ALLOW_AUTODIFF) || defined(ALLOW_FLT)
+#ifdef ALLOW_AUTODIFF
 
 C Functions
       INTEGER ILNBLNK
@@ -363,7 +363,7 @@ C End-if useSingleCpuIO
       ENDIF
 #endif /* ALLOW_USE_MPI */
 
-#endif /* defined(ALLOW_AUTODIFF) || defined(ALLOW_FLT) */
+#endif /* ALLOW_AUTODIFF */
 
 C     ------------------------------------------------------------------
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.13 2008/12/30 02:07:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.14 2009/02/03 23:10:28 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -49,7 +49,7 @@ C Routine arguments
       INTEGER irecord
       INTEGER myThid
 
-#if defined(ALLOW_AUTODIFF) || defined(ALLOW_FLT)
+#ifdef ALLOW_AUTODIFF
 
 C Functions
       INTEGER ILNBLNK
@@ -337,7 +337,7 @@ C      end-do k=1,1
       ENDIF
 C     end-if ( useSingleCPUIO )
 
-#endif /* defined(ALLOW_AUTODIFF) || defined(ALLOW_FLT) */
+#endif /* ALLOW_AUTODIFF */
 
       RETURN
       END
