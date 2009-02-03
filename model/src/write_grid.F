@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.26 2008/12/30 02:14:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.27 2009/02/03 22:59:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -22,7 +22,9 @@ C     INITIALIZE_FIXED
 C       |
 C       |-- WRITE_GRID
 
+C     !USES:
       IMPLICIT NONE
+
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -41,12 +43,9 @@ C               loaded in multi-threaded way but written by single (master)
 C               thread => needs to be in common to be shared by all threads
       COMMON / LOCAL_WRITE_GRID / tmpfld
       _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER i,j,bi,bj
-      LOGICAL writegrid_mdsio
-#ifdef ALLOW_MDSIO
-      INTEGER k
       _RS tmpVar(Nr+1)
-#endif
+      INTEGER i,j,k,bi,bj
+      LOGICAL writegrid_mdsio
 #ifdef ALLOW_MNC
       CHARACTER*(4) bfname
 #endif
@@ -101,30 +100,22 @@ C     Write 3D geometry arrays
         IF (buoyancyRelation .EQ. 'ATMOSPHERIC')
      &     CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,-1,myThid)
 
-#ifdef ALLOW_MDSIO
 C     Write vertical grid arrays
-        CALL MDS_WRITEVEC_LOC('RC', writeBinaryPrec, 'RS', Nr, rC,
-     &                                0,0, 1, -1, myThid)
-        CALL MDS_WRITEVEC_LOC('RF', writeBinaryPrec, 'RS',1+Nr,rF,
-     &                                0,0, 1, -1, myThid)
-        CALL MDS_WRITEVEC_LOC('DRC',writeBinaryPrec, 'RS', Nr, drC,
-     &                                0,0, 1, -1, myThid)
-        CALL MDS_WRITEVEC_LOC('DRF',writeBinaryPrec, 'RS', Nr, drF,
-     &                                0,0, 1, -1, myThid)
+        CALL WRITE_GLVEC_RS( 'RC', ' ', rC,  Nr, -1, myThid )
+        CALL WRITE_GLVEC_RS( 'RF', ' ', rF, 1+Nr,-1, myThid )
+        CALL WRITE_GLVEC_RS( 'DRC',' ', drC, Nr, -1, myThid )
+        CALL WRITE_GLVEC_RS( 'DRF',' ', drF, Nr, -1, myThid )
 C--  comment out the "if": also usefull for the Ocean (to get the full Presure)
 c       IF (buoyancyRelation .EQ. 'ATMOSPHERIC') THEN
         DO k=1,Nr+1
           tmpVar(k) = phiRef(2*k-1)
         ENDDO
-        CALL MDS_WRITEVEC_LOC('PHrefF', writeBinaryPrec, 'RS',1+Nr,
-     &                            tmpVar, 0, 0, 1, -1, myThid)
+        CALL WRITE_GLVEC_RS( 'PHrefF',' ',tmpVar,1+Nr,-1, myThid )
         DO k=1,Nr
           tmpVar(k) = phiRef(2*k)
         ENDDO
-        CALL MDS_WRITEVEC_LOC('PHrefC', writeBinaryPrec, 'RS', Nr,
-     &                            tmpVar, 0, 0, 1, -1, myThid)
+        CALL WRITE_GLVEC_RS( 'PHrefC',' ',tmpVar, Nr, -1, myThid )
 c       ENDIF
-#endif /* ALLOW_MDSIO */
 
       ENDIF
 
