@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.3 2009/02/01 20:48:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.4 2009/02/03 23:05:46 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -39,6 +39,7 @@ C     == Functions ==
 C     == local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER ioUnit, irecord
       INTEGER bi, bj, imax, iLen
       PARAMETER(imax=9)
       INTEGER ip
@@ -54,20 +55,23 @@ C     == end of interface ==
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-C the standard routine mdswritevector can be used here
+C the standard routine mds_writevec_loc can be used here
 C (1) write actual number floats and time into file
 
-            tmp(1) = npart_tile(bi,bj)
-            tmp(2) = myIter
-            tmp(3) = myTime
-            tmp(4) = 0.
-            tmp(5) = 0.
-            tmp(6) = max_npart
-            tmp(7) = 0.
-            tmp(8) = 0.
-            tmp(9) = 0.
-            CALL MDSWRITEVECTOR( fn, precFloat64, .FALSE., 'RL',
-     &                           imax,tmp, bi,bj, 1, myIter,myThid )
+          tmp(1) = npart_tile(bi,bj)
+          tmp(2) = myIter
+          tmp(3) = myTime
+          tmp(4) = 0.
+          tmp(5) = 0.
+          tmp(6) = max_npart
+          tmp(7) = 0.
+          tmp(8) = 0.
+          tmp(9) = 0.
+
+          ioUnit = -1
+          CALL MDS_WRITEVEC_LOC( fn, precFloat64, ioUnit,
+     &                           'RL', imax, tmp,
+     &                           bi,bj,-1, myIter, myThid )
 
           DO ip=1,npart_tile(bi,bj)
 
@@ -81,13 +85,15 @@ C (1) write actual number floats and time into file
             tmp(8) =    itop(ip,bi,bj)
             tmp(9) =    tend(ip,bi,bj)
 
-C the standard routine mdswritevector can be used here
 C (2) write float positions into file
-
-            CALL MDSWRITEVECTOR( fn, precFloat64, .FALSE., 'RL',
-     &                           imax,tmp, bi,bj,ip+1, myIter,myThid )
+            irecord = ip+1
+            IF ( ip.NE.npart_tile(bi,bj) ) irecord = -irecord
+            CALL MDS_WRITEVEC_LOC( fn, precFloat64, ioUnit,
+     &                             'RL', imax, tmp,
+     &                             bi,bj,irecord, myIter, myThid )
 
           ENDDO
+          CLOSE( ioUnit )
 
           npart_dist = npart_dist + DBLE(npart_tile(bi,bj))
 
