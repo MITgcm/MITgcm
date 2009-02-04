@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_glvec_rs.F,v 1.1 2009/02/03 22:21:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_glvec_rs.F,v 1.2 2009/02/04 22:55:51 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -54,7 +54,7 @@ C     e.g. U.0000000100
       ENDIF
 
       ioUnit = 0
-      fType ='RL'
+      fType ='RS'
       bi = 0
       bj = 0
       iRec = 1
