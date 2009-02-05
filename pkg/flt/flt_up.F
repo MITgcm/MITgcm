@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_up.F,v 1.5 2009/02/03 23:05:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_up.F,v 1.6 2009/02/05 01:01:48 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -34,13 +34,16 @@ C     == Functions ==
       INTEGER ILNBLNK
       _RL global2local_i
       _RL global2local_j
+      _RL FLT_MAP_K2R
+      EXTERNAL ILNBLNK
+      EXTERNAL FLT_MAP_K2R
 
 C     == local variables ==
       INTEGER bi, bj
       INTEGER imax
-      PARAMETER (imax=(6+4*Nr))
-      INTEGER ip, k
-      _RL xx, yy
+      PARAMETER (imax=(9+4*Nr))
+      INTEGER ip, k, ii
+      _RL ix, jy, i0x, j0y, zz
       _RL uu,vv,tt,ss, pp
       INTEGER ioUnit, irecord
       _RL tmp(imax)
@@ -67,7 +70,7 @@ C (1) read actual number floats from file (if exists)
          INQUIRE( file=dataFname, exist=exst )
          IF (exst) THEN
             CALL FLT_MDSREADVECTOR(fn,globalFile,precFloat64,'RL',
-     &                             imax,tmp,bi,bj,1,mythid)
+     &                             imax,tmp,bi,bj,1,myThid)
             npart_read  = tmp(1)
             npart_times = tmp(5)
          ELSE
@@ -91,100 +94,84 @@ C total number of timesteps
          tmp(5) = npart_times + 1.
 C total number of floats
          tmp(6) = max_npart
-         DO ip=7,imax
-            tmp(ip) = 0.
+         DO ii=7,imax
+            tmp(ii) = 0.
          ENDDO
          ioUnit = -1
          CALL MDS_WRITEVEC_LOC( fn, precFloat64, ioUnit,
      &                          'RL', imax, tmp,
      &                          bi,bj,-1, myIter, myThid )
 
+         i0x = DFLOAT( myXGlobalLo-1 + (bi-1)*sNx )
+         j0y = DFLOAT( myYGlobalLo-1 + (bj-1)*sNy )
          DO ip=1,npart_tile(bi,bj)
 
 C     Move float to the surface
+           IF ( myTime.GE.tstart(ip,bi,bj) .AND.
+     &         (tend(ip,bi,bj).EQ.-1..OR.myTime.LE.tend(ip,bi,bj))
+     &         .AND.
+     &          kpart(ip,bi,bj).EQ.kfloat(ip,bi,bj) .AND.
+     &          iup(ip,bi,bj).GT.0.
+     &        ) THEN
 
-         IF (
-     &  (                       myTime.GE.tstart(ip,bi,bj))
-     &   .AND.
-     &  (tend(ip,bi,bj).EQ.-1..OR.myTime.LE.tend(ip,bi,bj))
-     &   .AND.
-     &  (kpart(ip,bi,bj) .EQ. kfloat(ip,bi,bj))
-     &   .AND.
-     &  (iup(ip,bi,bj)   .GT. 0.)
-     &      ) THEN
+             IF ( MOD(myTime,iup(ip,bi,bj)).EQ.0.)
+     &       kpart(ip,bi,bj) = flt_surf
 
-c         IF (myTime   .GE. tstart(ip,bi,bj) .AND.
-c     &      myTime   .LE.   tend(ip,bi,bj) .AND.
-c     &      kpart(ip,bi,bj) .EQ. kfloat(ip,bi,bj) .AND.
-c     &      iup(ip,bi,bj)   .GT. 0.) THEN
-
-            IF (mod(myTime,iup(ip,bi,bj)).EQ.0.)
-     &      kpart(ip,bi,bj) = flt_surf
-
-         ENDIF
+           ENDIF
 
 C     If float has died move to level 0
-
-         IF (
-     &  (tend(ip,bi,bj).NE.-1..AND.myTime.GT.tend(ip,bi,bj))
-     &      ) THEN
-
-            kpart(ip,bi,bj) = 0.
-
-         ENDIF
+           IF ( tend(ip,bi,bj).NE.-1..AND.myTime.GT.tend(ip,bi,bj)
+     &        ) THEN
+             kpart(ip,bi,bj) = 0.
+           ENDIF
 
 C     Convert to local indices
+           ix=global2local_i(xpart(ip,bi,bj),bi,bj,myThid )
+           jy=global2local_j(ypart(ip,bi,bj),bi,bj,myThid )
+           zz = FLT_MAP_K2R( kpart(ip,bi,bj),bi,bj,myThid )
 
-            xx=global2local_i(xpart(ip,bi,bj),bi,bj,mythid)
-            yy=global2local_j(ypart(ip,bi,bj),bi,bj,mythid)
+           tmp(1) = npart(ip,bi,bj)
+           tmp(2) = myTime
+           tmp(3) = xpart(ip,bi,bj)
+           tmp(4) = ypart(ip,bi,bj)
+           tmp(5) = zz
+           tmp(6) = ix + i0x
+           tmp(7) = jy + j0y
+           tmp(8) = kpart(ip,bi,bj)
 
-            tmp(1)  = npart(ip,bi,bj)
-            tmp(2)  = myTime
-            tmp(3)  = xpart(ip,bi,bj)
-            tmp(4)  = ypart(ip,bi,bj)
-            tmp(5)  = kpart(ip,bi,bj)
-
-         IF (
-     &  (                         myTime.GE.tstart(ip,bi,bj))
-     &   .AND.
-     &  (tend(ip,bi,bj).EQ.-1..OR.myTime.LE.tend(ip,bi,bj))
-     &      ) THEN
+           IF ( myTime.GE.tstart(ip,bi,bj) .AND.
+     &         (tend(ip,bi,bj).EQ.-1..OR.myTime.LE.tend(ip,bi,bj))
+     &        ) THEN
 
 c            IF (tstart(ip,bi,bj) .NE. -1.              .AND.
 c     &         myTime    .GE. tstart(ip,bi,bj) .AND.
 c     &         myTime    .LE.   tend(ip,bi,bj)) THEN
 
-               CALL FLT_BILINEAR2D(xx,yy,pp,etaN,0,bi,bj,myThid)
-               tmp(6)   = pp
+             CALL FLT_BILINEAR2D(ix,jy,pp,etaN,0,bi,bj,myThid)
+             tmp(9)   = pp
+             DO k=1,Nr
+               CALL FLT_BILINEAR  (ix,jy,uu,uVel,  k,1,bi,bj,myThid)
+               CALL FLT_BILINEAR  (ix,jy,vv,vVel,  k,2,bi,bj,myThid)
+               CALL FLT_BILINEAR  (ix,jy,tt,theta, k,0,bi,bj,myThid)
+               CALL FLT_BILINEAR  (ix,jy,ss,salt,  k,0,bi,bj,myThid)
+               tmp(9+k)      = uu
+               tmp(9+1*Nr+k) = vv
+               tmp(9+2*Nr+k) = tt
+               tmp(9+3*Nr+k) = ss
+             ENDDO
 
-            DO k=1,Nr
-               CALL FLT_BILINEAR  (xx,yy,uu,uVel,  k,1,bi,bj,myThid)
-               CALL FLT_BILINEAR  (xx,yy,vv,vVel,  k,2,bi,bj,myThid)
-               CALL FLT_BILINEAR  (xx,yy,tt,theta, k,0,bi,bj,myThid)
-               CALL FLT_BILINEAR  (xx,yy,ss,salt,  k,0,bi,bj,myThid)
-               tmp(6+k)      = uu
-               tmp(6+1*Nr+k) = vv
-               tmp(6+2*Nr+k) = tt
-               tmp(6+3*Nr+k) = ss
-            ENDDO
-
-            ELSE
-               tmp(6)   = flt_nan
-
-            DO k=1,Nr
-               tmp(6+k)      = flt_nan
-               tmp(6+1*Nr+k) = flt_nan
-               tmp(6+2*Nr+k) = flt_nan
-               tmp(6+3*Nr+k) = flt_nan
-            ENDDO
-            ENDIF
+           ELSE
+             DO ii=9,imax
+               tmp(ii) = flt_nan
+             ENDDO
+           ENDIF
 
 C (3) write float positions into file
-            irecord = npart_read+ip+1
-            IF ( ip.NE.npart_tile(bi,bj) ) irecord = -irecord
-            CALL MDS_WRITEVEC_LOC( fn, precFloat64, ioUnit,
-     &                             'RL', imax, tmp,
-     &                             bi,bj,irecord, myIter, myThid )
+           irecord = npart_read+ip+1
+           IF ( ip.NE.npart_tile(bi,bj) ) irecord = -irecord
+           CALL MDS_WRITEVEC_LOC( fn, precFloat64, ioUnit,
+     &                            'RL', imax, tmp,
+     &                            bi,bj,irecord, myIter, myThid )
 
          ENDDO
          CLOSE( ioUnit )

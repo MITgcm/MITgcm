@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_traj.F,v 1.5 2009/02/03 23:05:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_traj.F,v 1.6 2009/02/05 01:01:48 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -33,13 +33,16 @@ C     === Functions ==
       INTEGER ILNBLNK
       _RL global2local_i
       _RL global2local_j
+      _RL FLT_MAP_K2R
+      EXTERNAL ILNBLNK
+      EXTERNAL FLT_MAP_K2R
 
 C     == local variables ==
       INTEGER bi, bj, imax
-      PARAMETER (imax=10)
+      PARAMETER (imax=13)
       INTEGER ip, kp, ii
-      _RL xx, yy
-      _RL uu,vv,tt,ss, pp
+      _RL ix, jy, i0x, j0y, zz
+      _RL uu, vv, tt, ss, pp
 
       INTEGER ioUnit, irecord
       _RL tmp(imax)
@@ -91,8 +94,8 @@ C total number of timesteps
          tmp(5) = npart_times + 1.
 C total number of floats
          tmp(6) = max_npart
-         DO ip=7,imax
-            tmp(ip) = 0.
+         DO ii=7,imax
+            tmp(ii) = 0.
          ENDDO
 
          ioUnit = -1
@@ -100,16 +103,22 @@ C total number of floats
      &                          'RL', imax, tmp,
      &                           bi,bj,-1, myIter, myThid )
 
+         i0x = DFLOAT( myXGlobalLo-1 + (bi-1)*sNx )
+         j0y = DFLOAT( myYGlobalLo-1 + (bj-1)*sNy )
          DO ip=1,npart_tile(bi,bj)
 
-            xx=global2local_i(xpart(ip,bi,bj),bi,bj,myThid)
-            yy=global2local_j(ypart(ip,bi,bj),bi,bj,myThid)
+            ix=global2local_i(xpart(ip,bi,bj),bi,bj,myThid)
+            jy=global2local_j(ypart(ip,bi,bj),bi,bj,myThid)
+            zz = FLT_MAP_K2R( kpart(ip,bi,bj),bi,bj,myThid)
             kp = NINT(kpart(ip,bi,bj))
             tmp(1)  = npart(ip,bi,bj)
             tmp(2)  = myTime
             tmp(3)  = xpart(ip,bi,bj)
             tmp(4)  = ypart(ip,bi,bj)
-            tmp(5)  = kpart(ip,bi,bj)
+            tmp(5)  = zz
+            tmp(6)  = ix + i0x
+            tmp(7)  = jy + j0y
+            tmp(8)  = kpart(ip,bi,bj)
 
             IF ( ( myTime.GE.tstart(ip,bi,bj)) .AND.
      &           ( tend(ip,bi,bj).EQ.-1. .OR. myTime.LE.tend(ip,bi,bj))
@@ -130,23 +139,23 @@ C-- jmc: not sure if this is right but added to avoid Pb in FLT_BILINEAR:
                 kp = MIN( MAX(kp,1), Nr)
               ENDIF
 
-              CALL FLT_BILINEAR  (xx,yy,uu,uVel,  kp,1,bi,bj,myThid)
-              CALL FLT_BILINEAR  (xx,yy,vv,vVel,  kp,2,bi,bj,myThid)
-              CALL FLT_BILINEAR2D(xx,yy,pp,etaN,     0,bi,bj,myThid)
-              CALL FLT_BILINEAR  (xx,yy,tt,theta, kp,0,bi,bj,myThid)
-              CALL FLT_BILINEAR  (xx,yy,ss,salt,  kp,0,bi,bj,myThid)
+              CALL FLT_BILINEAR  (ix,jy,uu,uVel,  kp,1,bi,bj,myThid)
+              CALL FLT_BILINEAR  (ix,jy,vv,vVel,  kp,2,bi,bj,myThid)
+              CALL FLT_BILINEAR2D(ix,jy,pp,etaN,     0,bi,bj,myThid)
+              CALL FLT_BILINEAR  (ix,jy,tt,theta, kp,0,bi,bj,myThid)
+              CALL FLT_BILINEAR  (ix,jy,ss,salt,  kp,0,bi,bj,myThid)
 
-              tmp(6)   = uu
-              tmp(7)   = vv
-              tmp(8)   = tt
-              tmp(9)   = ss
-              tmp(10)  = pp
+              tmp( 9) = pp
+              tmp(10) = uu
+              tmp(11) = vv
+              tmp(12) = tt
+              tmp(13) = ss
             ELSE
-              tmp(6)   = flt_nan
-              tmp(7)   = flt_nan
-              tmp(8)   = flt_nan
-              tmp(9)   = flt_nan
-              tmp(10)  = flt_nan
+              tmp( 9) = flt_nan
+              tmp(10) = flt_nan
+              tmp(11) = flt_nan
+              tmp(12) = flt_nan
+              tmp(13) = flt_nan
             ENDIF
 
 C (3) WRITE float positions into file
