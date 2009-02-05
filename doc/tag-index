@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1060 2009/02/03 23:36:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1061 2009/02/05 01:39:48 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -14,6 +14,8 @@ o pkg/flt:
    move flt_bilinear.F -> flt_interp_linear.F ; add arg. myThid.
  - fix some indices (mainly vertical index) ; add IMPLICIT NONE.
  - more efficient I/O, using new options of MDS_WRITEVEC_LOC S/R.
+ - add vert. coordinate & horiz. indices to output files.
+ - change vertical position in initial condition, from index to depth [m].
 o pkg/ggl90: a few modifications:
  - fix bottom boundary condition, and interpolation of KappaE
    near top and bottom
