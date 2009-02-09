@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.15 2008/02/27 23:32:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.16 2009/02/09 17:15:32 mlosch Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -50,11 +50,12 @@ C     theta/saltFreeze :: temperature and salinity of water at the
 C                         ice-ocean interface (at the freezing point)
 C     freshWaterFlux   :: local variable for fresh water melt flux due to 
 C                         melting in kg/m^2/s (negative density x melt rate) 
+C     convertFW2SaltLoc:: local copy of convertFW2Salt
 C     cFac             :: 1 for conservative form, 0, otherwise
 C     auxiliary variables and abbreviations:
 C     a0, a1, a2, b, c0
 C     eps1, eps2, eps3, eps4, eps5, eps6, eps7
-C     atmp, btmp, aqe, bqe, cqe, discrim, recip_aqe
+C     aqe, bqe, cqe, discrim, recip_aqe
 C     drKp1, recip_drLoc
       INTEGER I,J,K,Kp1
       INTEGER bi,bj
@@ -62,11 +63,10 @@ C     drKp1, recip_drLoc
       _RL sLoc(1:sNx,1:sNy)
       _RL pLoc(1:sNx,1:sNy)
       _RL thetaFreeze, saltFreeze
-      _RL freshWaterFlux
+      _RL freshWaterFlux, convertFW2SaltLoc
       _RL a0, a1, a2, b, c0
       _RL eps1, eps2, eps3, eps4, eps5, eps6, eps7
-      _RL cFac
-      _RL atmp, btmp
+      _RL cFac, rFac
       _RL aqe, bqe, cqe, discrim, recip_aqe
       _RL drKp1, recip_drLoc
 
@@ -75,6 +75,12 @@ C     drKp1, recip_drLoc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+C     are we doing the conservative form of Jenkins et al. (2001)?
+      cFac = 0. _d 0
+      IF ( SHELFICEconserve ) cFac = 1. _d 0
+C     with "real fresh water flux" (affecting ETAN), there is more to modify
+      rFac = 1. _d 0
+      IF ( SHELFICEconserve .AND. useRealFreshWaterFlux ) rFac = 0. _d 0
 C     linear dependence of freezing point on salinity
       a0 = -0.0575   _d  0
       a1 =  0.0      _d -0
@@ -90,6 +96,10 @@ C     non-linear dependence of freezing point on salinity
        b  = -7.53     _d -4
        c0 = 0. _d 0
       ENDIF
+      convertFW2SaltLoc = convertFW2Salt
+C     hardcoding this value here is OK because it only applies to ISOMIP
+C     where this value is part of the protocol
+      IF ( convertFW2SaltLoc .EQ. -1. ) convertFW2SaltLoc = 33.4 _d 0
 #endif ALLOW_ISOMIP_TD
 
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -168,15 +178,11 @@ C--   compute surface tendencies
             shelficeForcingT(i,j,bi,bj) =
      &           - shelfIceHeatFlux(I,J,bi,bj)
      &           *recip_Cp*mass2rUnit
-            IF (convertFW2Salt .EQ. -1.) THEN
-             shelficeForcingS(i,j,bi,bj) = 
-     &            shelfIceFreshWaterFlux(I,J,bi,bj)
-     &            * salt(I,J,K,bi,bj) * mass2rUnit
-            ELSE
-             shelficeForcingS(i,j,bi,bj) = 
-     &            shelfIceFreshWaterFlux(I,J,bi,bj)
-     &            * convertFW2Salt * mass2rUnit
-            ENDIF
+     &           - cFac * shelfIceFreshWaterFlux(I,J,bi,bj)*mass2rUnit 
+     &           * ( thetaFreeze - tLoc(I,J) )
+            shelficeForcingS(i,j,bi,bj) = 
+     &           shelfIceFreshWaterFlux(I,J,bi,bj) * mass2rUnit
+     &           * ( cFac*sLoc(I,J) + (1. _d 0-cFac)*convertFW2SaltLoc )
 C--   stress at the ice/water interface is computed in separate
 C     routines that are called from mom_fluxform/mom_vecinv
            ELSE
@@ -196,9 +202,6 @@ C     Hellmer, H., 1989, A two-dimensional model for the thermohaline
 C     circulation under an ice shelf, Reports on Polar Research, No. 60
 C     (in German).
 
-C     are we doing the conservative form of Jenkins et al. (2001)?
-         cFac = 0. _d 0
-         IF( SHELFICEconserve ) cFac = 1. _d 0
 C     a few abbreviations
          eps1 = rUnit2mass*HeatCapacity_Cp*SHELFICEheatTransCoeff
          eps2 = rUnit2mass*SHELFICElatentHeat*SHELFICEsaltTransCoeff
@@ -218,13 +221,11 @@ C     only make sense in connection with my notes on this (M.Losch)
             eps4 = b*pLoc(I,J) + c0
             eps6 = eps4 - tLoc(I,J)
             eps7 = eps4 - SHELFICEthetaSurface
-            atmp = a0*( eps1 + eps3 - eps5 )
-            btmp = eps1*eps6 + eps3*eps7
-            aqe = a0  *(eps1+eps3) + cFac*atmp
+            aqe = a0  *(eps1+eps3)
             recip_aqe = 0. _d 0
             IF ( aqe .NE. 0. _d 0 ) recip_aqe = 0.5 _d 0/aqe
-            bqe = btmp-eps2 + cFac*(btmp - eps5*eps6 - sLoc(I,J)*atmp)
-            cqe = eps2*sLoc(I,J)  - cFac*( btmp - eps5*eps6 )*sLoc(I,J)
+            bqe = eps1*eps6 + eps3*eps7 - eps2
+            cqe = eps2*sLoc(I,J)
             discrim = bqe*bqe - 4. _d 0*aqe*cqe
 #undef ALLOW_SHELFICE_DEBUG
 #ifdef ALLOW_SHELFICE_DEBUG
@@ -260,24 +261,28 @@ C     only make sense in connection with my notes on this (M.Losch)
             saltFreeze = (- bqe - SQRT(discrim))*recip_aqe
             IF ( saltFreeze .LT. 0. _d 0 )
      &           saltFreeze = (- bqe + SQRT(discrim))*recip_aqe
+            thetaFreeze = a0*saltFreeze + eps4
 C--   upward fresh water flux due to melting (in kg/m^2/s)
             freshWaterFlux = rUnit2mass*SHELFICEsaltTransCoeff
-     &           * ( saltFreeze - sLoc(I,J) )
-     &           /( saltFreeze + cFac*( saltFreeze - sLoc(I,J) ) )
+     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze 
 C--   Calculate the upward heat and fresh water fluxes;
 C--   MITgcm sign conventions: downward (negative) fresh water flux 
 C--   implies melting and due to upward (positive) heat flux
             shelfIceHeatFlux(I,J,bi,bj) = 
-     &           ( eps3*( tLoc(I,J) - SHELFICEthetaSurface )
-     &           - freshWaterFlux*SHELFICElatentHeat )
+     &           ( eps3*( thetaFreeze - SHELFICEthetaSurface )
+     &           -  cFac*freshWaterFlux*( SHELFICElatentHeat 
+     &             - HeatCapacity_Cp*( thetaFreeze - rFac*tLoc(I,J) ) )
+     &           )
             shelfIceFreshWaterFlux(I,J,bi,bj) = freshWaterFlux
 C--   compute surface tendencies
             shelficeForcingT(i,j,bi,bj) =
-     &           - shelfIceHeatFlux(I,J,bi,bj)
-     &           * recip_Cp * mass2rUnit
+     &           ( SHELFICEheatTransCoeff 
+     &           - cFac*shelfIceFreshWaterFlux(I,J,bi,bj)*mass2rUnit )
+     &           * ( thetaFreeze - tLoc(I,J) ) 
             shelficeForcingS(i,j,bi,bj) = 
-     &           shelfIceFreshWaterFlux(I,J,bi,bj)
-     &           * saltFreeze * mass2rUnit
+     &           ( SHELFICEsaltTransCoeff 
+     &           - cFac*shelfIceFreshWaterFlux(I,J,bi,bj)*mass2rUnit )
+     &           * ( saltFreeze - sLoc(I,J) ) 
            ELSE
             shelfIceHeatFlux      (I,J,bi,bj) = 0. _d 0
             shelfIceFreshWaterFlux(I,J,bi,bj) = 0. _d 0
