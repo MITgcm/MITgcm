@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_functions.F,v 1.4 2009/01/04 00:58:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_functions.F,v 1.5 2009/02/10 18:54:43 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -44,7 +44,7 @@ C     == end of interface ==
 
          iG = myXGlobalLo + (bi-1)*sNx
          xlo = xc(i,  1,bi,bj)
-         IF (i.EQ.0)   xlo = xc(i,1,bi,bj)-delX(iG)
+         IF (i.EQ.0)   xlo = xc(i+1,1,bi,bj)-delX(iG)
          xhi = xc(i+1,1,bi,bj)
          IF (i.EQ.sNx) xhi = xc(i,1,bi,bj)+delX(iG+i-1)
 
@@ -103,7 +103,7 @@ C     == end of interface ==
 
          jG = myYGlobalLo + (bj-1)*sNy
          ylo = yc(1,j,  bi,bj)
-         IF (j.EQ.0)   ylo = yc(1,j,bi,bj)-delY(jG)
+         IF (j.EQ.0)   ylo = yc(1,j+1,bi,bj)-delY(jG)
          yhi = yc(1,j+1,bi,bj)
          IF (j.EQ.sNy) yhi = yc(1,j,bi,bj)+delY(jG+j-1)
 
