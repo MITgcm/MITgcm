@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_mapping.F,v 1.1 2009/02/05 01:07:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_mapping.F,v 1.2 2009/02/10 17:29:32 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -59,7 +59,7 @@ C     == end of interface ==
           IF ( ix.EQ.-1. _d 0 ) THEN
            IF ( xG(i,j,bi,bj).LE.xx .AND. xx.LT.xG(i+1,j,bi,bj) ) THEN
              dist = xG(i+1,j,bi,bj) - xG(i,j,bi,bj)
-             fm = ( xx - xG(i,1,bi,bj) ) / dist
+             fm = ( xx - xG(i,j,bi,bj) ) / dist
              ix = DFLOAT(i)+fm-0.5 _d 0
            ENDIF
           ENDIF
@@ -70,7 +70,7 @@ C     == end of interface ==
           IF ( jy.EQ.-1. _d 0 ) THEN
            IF ( yG(i,j,bi,bj).LE.yy .AND. yy.LT.yG(i,j+1,bi,bj) ) THEN
              dist = yG(i,j+1,bi,bj) - yG(i,j,bi,bj)
-             fm = ( yy - yG(i,1,bi,bj) ) / dist
+             fm = ( yy - yG(i,j,bi,bj) ) / dist
              jy = DFLOAT(j)+fm-0.5 _d 0
            ENDIF
           ENDIF
