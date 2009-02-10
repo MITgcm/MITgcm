@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_traj.F,v 1.6 2009/02/05 01:01:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_traj.F,v 1.7 2009/02/10 21:30:21 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -31,8 +31,6 @@ C     == routine arguments ==
 
 C     === Functions ==
       INTEGER ILNBLNK
-      _RL global2local_i
-      _RL global2local_j
       _RL FLT_MAP_K2R
       EXTERNAL ILNBLNK
       EXTERNAL FLT_MAP_K2R
@@ -41,7 +39,7 @@ C     == local variables ==
       INTEGER bi, bj, imax
       PARAMETER (imax=13)
       INTEGER ip, kp, ii
-      _RL ix, jy, i0x, j0y, zz
+      _RL ix, jy, i0x, j0y, xx, yy, zz
       _RL uu, vv, tt, ss, pp
 
       INTEGER ioUnit, irecord
@@ -107,14 +105,16 @@ C total number of floats
          j0y = DFLOAT( myYGlobalLo-1 + (bj-1)*sNy )
          DO ip=1,npart_tile(bi,bj)
 
-            ix=global2local_i(xpart(ip,bi,bj),bi,bj,myThid)
-            jy=global2local_j(ypart(ip,bi,bj),bi,bj,myThid)
-            zz = FLT_MAP_K2R( kpart(ip,bi,bj),bi,bj,myThid)
+            ix = ipart(ip,bi,bj)
+            jy = jpart(ip,bi,bj)
+            CALL FLT_MAP_IJLOCAL2XY( xx, yy,
+     I                               ix, jy, bi,bj, myThid )
+            zz = FLT_MAP_K2R( kpart(ip,bi,bj),bi,bj,myThid )
             kp = NINT(kpart(ip,bi,bj))
             tmp(1)  = npart(ip,bi,bj)
             tmp(2)  = myTime
-            tmp(3)  = xpart(ip,bi,bj)
-            tmp(4)  = ypart(ip,bi,bj)
+            tmp(3)  = xx
+            tmp(4)  = yy
             tmp(5)  = zz
             tmp(6)  = ix + i0x
             tmp(7)  = jy + j0y

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.3 2009/02/05 01:31:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.4 2009/02/10 21:30:21 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -46,7 +46,7 @@ C     == local variables ==
       PARAMETER(imax=9)
       _RL tmp(imax)
       _RL xLo, xHi, yLo, yHi
-      _RL zz
+      _RL ix, jy, kz
       LOGICAL globalFile
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -89,23 +89,11 @@ C (1) read actual number floats from file
          npart_read = NINT(tmp(1))
          max_npart  = tmp(6)
 
-C     note: The possible area for a float has to be extended to the
-C           space "between" two T points, i.e. xc(sNx) of one tile
-C           and xc(1) of the neighboring tile. This cannot be solved
-C           by simply using xc(sNx+1) or xc(0) because periodicity
-C           could imply wrong values
-c        iG = myXGlobalLo + (bi-1)*sNx
-c        jG = myYGlobalLo + (bj-1)*sNy
-c        xlo = xC(1,  1,bi,bj) - delX(iG)*0.5
-c        xhi = xC(sNx,1,bi,bj) + delX(iG+sNx-1)*0.5
-c        ylo = yC(1,  1,bi,bj) - delY(jG)*0.5
-c        yhi = yC(1,sNy,bi,bj) + delY(jG+sNy-1)*0.5
 C     just using Edge position (xG,yG):
          xLo = xG(  1,  1,bi,bj)
          xHi = xG(sNx+1,1,bi,bj)
          yLo = yG(1,  1,  bi,bj)
          yHi = yG(1,sNy+1,bi,bj)
-
          WRITE(msgBuf,'(A,2I4,A,2F18.8)')
      &    ' bi,bj=', bi, bj, ' , xLo,xHi=', xLo, xHi
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -127,21 +115,21 @@ C     just using Edge position (xG,yG):
            CALL FLT_MDSREADVECTOR( fn, globalFile, precFloat64, 'RL',
      &                             imax, tmp, bi, bj, ip+1, myThid )
 
-           IF (globalFile) THEN
+           IF ( globalFile .AND. nIter0.EQ.0 ) THEN
 
 C     check IF floats are existing on tile. If not, set to zero
 C     use southern/western side for axis information
 
-            IF (tmp(3) .GE. xlo .AND. tmp(3) .LT. xhi .AND.
-     &          tmp(4) .GE. ylo .AND. tmp(4) .LT. yhi) THEN
+            IF (tmp(3) .GE. xLo .AND. tmp(3) .LT. xHi .AND.
+     &          tmp(4) .GE. yLo .AND. tmp(4) .LT. yHi) THEN
 
              npart_tile(bi,bj) = npart_tile(bi,bj) + 1
              IF ( npart_tile(bi,bj).LE.max_npart_tile ) THEN
 
               npart(npart_tile(bi,bj),bi,bj)  = tmp(1)
               tstart(npart_tile(bi,bj),bi,bj) = tmp(2)
-              xpart(npart_tile(bi,bj),bi,bj)  = tmp(3)
-              ypart(npart_tile(bi,bj),bi,bj)  = tmp(4)
+              ipart(npart_tile(bi,bj),bi,bj)  = tmp(3)
+              jpart(npart_tile(bi,bj),bi,bj)  = tmp(4)
               kpart(npart_tile(bi,bj),bi,bj)  = tmp(5)
               kfloat(npart_tile(bi,bj),bi,bj) = tmp(6)
               iup(  npart_tile(bi,bj),bi,bj)  = tmp(7)
@@ -150,14 +138,20 @@ C     use southern/western side for axis information
              ENDIF
             ENDIF
 
+           ELSEIF ( globalFile ) THEN
+            WRITE(msgBuf,'(2A)') 'FLT_INIT_VARIA:',
+     &                           ' global pickup not supported'
+            CALL PRINT_ERROR( msgBuf , myThid)
+            STOP 'ABNORMAL END: S/R FLT_INIT_VARIA'
+
            ELSE
 C     not a global file: assume that all particles from this tiled-file
 C     belong to this current tile (=> do not no check)
 
               npart(ip,bi,bj)  = tmp(1)
               tstart(ip,bi,bj) = tmp(2)
-              xpart(ip,bi,bj)  = tmp(3)
-              ypart(ip,bi,bj)  = tmp(4)
+              ipart(ip,bi,bj)  = tmp(3)
+              jpart(ip,bi,bj)  = tmp(4)
               kpart(ip,bi,bj)  = tmp(5)
               kfloat(ip,bi,bj) = tmp(6)
               iup(  ip,bi,bj)  = tmp(7)
@@ -169,10 +163,14 @@ C     belong to this current tile (=> do not no check)
          ENDDO
 
          IF ( nIter0.EQ.0 ) THEN
-C--   Convert z -> k (for initial condition only)
+C--   for initial condition only, convert coordinates to index map:
            DO ip=1,npart_tile(bi,bj)
-             zz = kpart(ip,bi,bj)
-             kpart(ip,bi,bj) = FLT_MAP_R2K( zz, bi, bj, myThid )
+             CALL FLT_MAP_XY2IJLOCAL( ix, jy,
+     I                ipart(ip,bi,bj),jpart(ip,bi,bj),bi,bj,myThid )
+             kz = FLT_MAP_R2K( kpart(ip,bi,bj), bi, bj, myThid )
+             ipart(ip,bi,bj) = ix
+             jpart(ip,bi,bj) = jy
+             kpart(ip,bi,bj) = kz
            ENDDO
          ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT.h,v 1.2 2009/01/08 19:40:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT.h,v 1.3 2009/02/10 21:30:21 jmc Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -40,7 +40,7 @@ C     Full domain extension:
 C     flt_xLo     :: Full domain lower X boundary
 C     flt_xHi     :: Full domain upper X boundary
 C     flt_yLo     :: Full domain lower Y boundary
-C     flt_yHi     :: Full domain upper X boundary
+C     flt_yHi     :: Full domain upper Y boundary
 C
       _RL    flt_xLo, flt_xHi, flt_yLo, flt_yHi
       COMMON / FLT_CONST_R /
@@ -95,24 +95,23 @@ C                          beginning
 C     tend        :: end date of integration of float, in s.
 C                    Note: If tend=-1 floats are integrated till the end of
 C                          integration
-C     xpart       :: x position of float (in units of XC)
-C     ypart       :: y position of float (in units of YC)
-C     kpart       :: vertical level of float (might be decimal
-C                    number in case of 3D floats)
+C     ipart       :: horiz. position of float : 1rst decimal (local) index
+C     jpart       :: horiz. position of float :  2nd decimal (local) index
+C     kpart       :: vertical level of float (decimal number in case of 3D float)
 C     kfloat      :: target depth of float.
-C     iup         :: flag IF the float
-C                    should profile   ( >  0 = RETURN  cycle, in s, to surface)
-C                    remain at depth  ( =  0 )
-C                    is a 3D float    ( = -1 )
-C                    should be advected WITHOUT additional noise ( = -2 ).
+C     iup         :: type of float :
+C                  o should profile   ( >  0 = return  cycle, in s, to surface)
+C                  o remain at depth  ( =  0 )
+C                  o is a 3D float    ( = -1 )
+C                  o should be advected without additional noise ( = -2 ).
 C                    This implies that the float is non-profiling
-C                    is a mooring     ( = -3 ), i.e. the float is not advected
+C                  o is a mooring     ( = -3 ), i.e. the float is not advected
 C     itop        :: time of float the surface, in s
       _RL     npart(max_npart_tile,nSx,nSy)
       _RL    tstart(max_npart_tile,nSx,nSy)
       _RL      tend(max_npart_tile,nSx,nSy)
-      _RL     xpart(max_npart_tile,nSx,nSy)
-      _RL     ypart(max_npart_tile,nSx,nSy)
+      _RL     ipart(max_npart_tile,nSx,nSy)
+      _RL     jpart(max_npart_tile,nSx,nSy)
       _RL     kpart(max_npart_tile,nSx,nSy)
       _RL    kfloat(max_npart_tile,nSx,nSy)
       _RL       iup(max_npart_tile,nSx,nSy)
@@ -120,7 +119,7 @@ C     itop        :: time of float the surface, in s
 
       COMMON / FLT_STATE_VAR /
      &       npart, tstart, tend,
-     &       xpart, ypart, kpart,
+     &       ipart, jpart, kpart,
      &       kfloat, iup, itop
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

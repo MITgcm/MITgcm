@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.4 2009/02/03 23:05:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.5 2009/02/10 21:30:21 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -77,8 +77,8 @@ C (1) write actual number floats and time into file
 
             tmp(1) =   npart(ip,bi,bj)
             tmp(2) =  tstart(ip,bi,bj)
-            tmp(3) =   xpart(ip,bi,bj)
-            tmp(4) =   ypart(ip,bi,bj)
+            tmp(3) =   ipart(ip,bi,bj)
+            tmp(4) =   jpart(ip,bi,bj)
             tmp(5) =   kpart(ip,bi,bj)
             tmp(6) =  kfloat(ip,bi,bj)
             tmp(7) =     iup(ip,bi,bj)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.10 2009/02/01 20:48:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exchg.F,v 1.11 2009/02/10 21:30:21 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -36,7 +36,7 @@ C     == local variables ==
       INTEGER deleteList(max_npart_exch*2)
       INTEGER imax, imax2, m
 c     INTEGER iG, jG
-      _RL xlo, xhi, ylo, yhi, xNew, yNew
+      _RL ilo, ihi, jlo, jhi, iNew, jNew
       PARAMETER(imax=9)
       PARAMETER(imax2=imax*max_npart_exch)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -72,26 +72,21 @@ C initialize buffers
            icountW=0
            jl = 0
 
-c          iG = myXGlobalLo + (bi-1)*sNx
-c          xlo = xc(1,  1,  bi,bj) - delX(iG)
-c          xhi = xc(sNx,1,bi,bj)   + delX(iG+sNx-1)
-           xlo = xG(  1,  1,bi,bj)
-           xhi = xG(sNx+1,1,bi,bj)
+           ilo = 0.5 _d 0
+           ihi = 0.5 _d 0 + DFLOAT(sNx)
 
            DO ip=1,npart_tile(bi,bj)
 
-             IF ( xpart(ip,bi,bj).GE.xhi ) THEN
+             IF ( ipart(ip,bi,bj).GE.ihi ) THEN
               icountE=icountE+1
               IF ( icountE.LE.max_npart_exch ) THEN
-               xNew = xpart(ip,bi,bj)
-C-         apply cyclic BC
-               IF ( xNew.GE.flt_xHi ) xNew = xNew - flt_xHi + flt_xLo
 
-               ic=(icountE-1)*imax
+               ic = (icountE-1)*imax
+               iNew = ipart(ip,bi,bj) - DFLOAT(sNx)
                fltbuf_sendE(ic+1,bi,bj) =   npart(ip,bi,bj)
                fltbuf_sendE(ic+2,bi,bj) =  tstart(ip,bi,bj)
-               fltbuf_sendE(ic+3,bi,bj) =   xNew
-               fltbuf_sendE(ic+4,bi,bj) =   ypart(ip,bi,bj)
+               fltbuf_sendE(ic+3,bi,bj) =   iNew
+               fltbuf_sendE(ic+4,bi,bj) =   jpart(ip,bi,bj)
                fltbuf_sendE(ic+5,bi,bj) =   kpart(ip,bi,bj)
                fltbuf_sendE(ic+6,bi,bj) =  kfloat(ip,bi,bj)
                fltbuf_sendE(ic+7,bi,bj) =     iup(ip,bi,bj)
@@ -106,18 +101,16 @@ C tag this float to be removed:
               ENDIF
              ENDIF
 
-             IF ( xpart(ip,bi,bj).LT.xlo ) THEN
+             IF ( ipart(ip,bi,bj).LT.ilo ) THEN
               icountW=icountW+1
               IF ( icountW.LE.max_npart_exch ) THEN
-               xNew = xpart(ip,bi,bj)
-C-         apply cyclic BC
-               IF ( xNew.LT.flt_xLo ) xNew = xNew + flt_xHi - flt_xLo
 
-               ic=(icountW-1)*imax
+               ic = (icountW-1)*imax
+               iNew = ipart(ip,bi,bj) + DFLOAT(sNx)
                fltbuf_sendW(ic+1,bi,bj) =   npart(ip,bi,bj)
                fltbuf_sendW(ic+2,bi,bj) =  tstart(ip,bi,bj)
-               fltbuf_sendW(ic+3,bi,bj) =   xNew
-               fltbuf_sendW(ic+4,bi,bj) =   ypart(ip,bi,bj)
+               fltbuf_sendW(ic+3,bi,bj) =   iNew
+               fltbuf_sendW(ic+4,bi,bj) =   jpart(ip,bi,bj)
                fltbuf_sendW(ic+5,bi,bj) =   kpart(ip,bi,bj)
                fltbuf_sendW(ic+6,bi,bj) =  kfloat(ip,bi,bj)
                fltbuf_sendW(ic+7,bi,bj) =     iup(ip,bi,bj)
@@ -162,8 +155,8 @@ C Remove from this tile-list, floats which have been sent to an other tile
 C        copy: ip <-- jp
                 npart (ip,bi,bj) =  npart (jp,bi,bj)
                 tstart(ip,bi,bj) =  tstart(jp,bi,bj)
-                xpart (ip,bi,bj) =  xpart (jp,bi,bj)
-                ypart (ip,bi,bj) =  ypart (jp,bi,bj)
+                ipart (ip,bi,bj) =  ipart (jp,bi,bj)
+                jpart (ip,bi,bj) =  jpart (jp,bi,bj)
                 kpart (ip,bi,bj) =  kpart (jp,bi,bj)
                 kfloat(ip,bi,bj) =  kfloat(jp,bi,bj)
                 iup   (ip,bi,bj) =  iup   (jp,bi,bj)
@@ -211,8 +204,8 @@ C--   Unpack arrays on new tiles
                jp = npart_tile(bi,bj)
                npart( jp,bi,bj) = fltbuf_recvE(ic+1,bi,bj)
                tstart(jp,bi,bj) = fltbuf_recvE(ic+2,bi,bj)
-               xpart( jp,bi,bj) = fltbuf_recvE(ic+3,bi,bj)
-               ypart( jp,bi,bj) = fltbuf_recvE(ic+4,bi,bj)
+               ipart( jp,bi,bj) = fltbuf_recvE(ic+3,bi,bj)
+               jpart( jp,bi,bj) = fltbuf_recvE(ic+4,bi,bj)
                kpart( jp,bi,bj) = fltbuf_recvE(ic+5,bi,bj)
                kfloat(jp,bi,bj) = fltbuf_recvE(ic+6,bi,bj)
                iup(   jp,bi,bj) = fltbuf_recvE(ic+7,bi,bj)
@@ -240,8 +233,8 @@ C--   Unpack arrays on new tiles
                jp = npart_tile(bi,bj)
                npart( jp,bi,bj) = fltbuf_recvW(ic+1,bi,bj)
                tstart(jp,bi,bj) = fltbuf_recvW(ic+2,bi,bj)
-               xpart( jp,bi,bj) = fltbuf_recvW(ic+3,bi,bj)
-               ypart( jp,bi,bj) = fltbuf_recvW(ic+4,bi,bj)
+               ipart( jp,bi,bj) = fltbuf_recvW(ic+3,bi,bj)
+               jpart( jp,bi,bj) = fltbuf_recvW(ic+4,bi,bj)
                kpart( jp,bi,bj) = fltbuf_recvW(ic+5,bi,bj)
                kfloat(jp,bi,bj) = fltbuf_recvW(ic+6,bi,bj)
                iup(   jp,bi,bj) = fltbuf_recvW(ic+7,bi,bj)
@@ -290,26 +283,21 @@ C initialize buffers
            icountS=0
            jl = 0
 
-c          jG = myYGlobalLo + (bj-1)*sNy
-c          ylo = yc(1,  1,  bi,bj) - delY(jG)
-c          yhi = yc(1,sNy,bi,bj)   + delY(jG+sNy-1)
-           ylo = yG(1,  1,  bi,bj)
-           yhi = yG(1,sNy+1,bi,bj)
+           jlo = 0.5 _d 0
+           jhi = 0.5 _d 0 + DFLOAT(sNy)
 
            DO ip=1,npart_tile(bi,bj)
 
-             IF ( ypart(ip,bi,bj).GE.yhi ) THEN
+             IF ( jpart(ip,bi,bj).GE.jhi ) THEN
               icountN=icountN+1
               IF ( icountN.LE.max_npart_exch ) THEN
-               yNew = ypart(ip,bi,bj)
-C-         apply cyclic BC
-               IF ( yNew.GE.flt_yHi ) yNew = yNew - flt_yHi + flt_yLo
 
-               ic=(icountN-1)*imax
+               ic = (icountN-1)*imax
+               jNew = jpart(ip,bi,bj) - DFLOAT(sNy)
                fltbuf_sendE(ic+1,bi,bj) =   npart(ip,bi,bj)
                fltbuf_sendE(ic+2,bi,bj) =  tstart(ip,bi,bj)
-               fltbuf_sendE(ic+3,bi,bj) =   xpart(ip,bi,bj)
-               fltbuf_sendE(ic+4,bi,bj) =   yNew
+               fltbuf_sendE(ic+3,bi,bj) =   ipart(ip,bi,bj)
+               fltbuf_sendE(ic+4,bi,bj) =   jNew
                fltbuf_sendE(ic+5,bi,bj) =   kpart(ip,bi,bj)
                fltbuf_sendE(ic+6,bi,bj) =  kfloat(ip,bi,bj)
                fltbuf_sendE(ic+7,bi,bj) =     iup(ip,bi,bj)
@@ -324,23 +312,21 @@ C tag this float to be removed:
 c             ELSE
 c              WRITE(msgBuf,'(2A,2I4,I6,A,2F17.6))') ' FLT_EXCHG,N:',
 c    &         ' bi,bj,ip=', bi, bj, ip,
-c    &         ' yp,yHi=', ypart(ip,bi,bj), yhi
+c    &         ' yp,yHi=', jpart(ip,bi,bj), jhi
 c              CALL PRINT_ERROR( msgBuf, myThid )
               ENDIF
              ENDIF
 
-             IF ( ypart(ip,bi,bj).LT.ylo ) THEN
+             IF ( jpart(ip,bi,bj).LT.jlo ) THEN
               icountS=icountS+1
               IF ( icountS.LE.max_npart_exch ) THEN
-               yNew = ypart(ip,bi,bj)
-C-         apply cyclic BC
-               IF ( yNew.LT.flt_yLo ) yNew = yNew + flt_yHi - flt_yLo
 
-               ic=(icountS-1)*imax
+               ic = (icountS-1)*imax
+               jNew = jpart(ip,bi,bj) + DFLOAT(sNy)
                fltbuf_sendW(ic+1,bi,bj) =   npart(ip,bi,bj)
                fltbuf_sendW(ic+2,bi,bj) =  tstart(ip,bi,bj)
-               fltbuf_sendW(ic+3,bi,bj) =   xpart(ip,bi,bj)
-               fltbuf_sendW(ic+4,bi,bj) =   yNew
+               fltbuf_sendW(ic+3,bi,bj) =   ipart(ip,bi,bj)
+               fltbuf_sendW(ic+4,bi,bj) =   jNew
                fltbuf_sendW(ic+5,bi,bj) =   kpart(ip,bi,bj)
                fltbuf_sendW(ic+6,bi,bj) =  kfloat(ip,bi,bj)
                fltbuf_sendW(ic+7,bi,bj) =     iup(ip,bi,bj)
@@ -355,7 +341,7 @@ C tag this float to be removed:
 c             ELSE
 c              WRITE(msgBuf,'(2A,2I4,I6,A,2F17.6))') ' FLT_EXCHG,S:',
 c    &         ' bi,bj,ip=', bi, bj, ip,
-c    &         ' yp,yLo=', ypart(ip,bi,bj), ylo
+c    &         ' yp,yLo=', jpart(ip,bi,bj), jlo
 c              CALL PRINT_ERROR( msgBuf, myThid )
               ENDIF
              ENDIF
@@ -390,8 +376,8 @@ C Remove from this tile-list, floats which have been sent to an other tile
 C        copy: ip <-- jp
                 npart (ip,bi,bj) =  npart (jp,bi,bj)
                 tstart(ip,bi,bj) =  tstart(jp,bi,bj)
-                xpart (ip,bi,bj) =  xpart (jp,bi,bj)
-                ypart (ip,bi,bj) =  ypart (jp,bi,bj)
+                ipart (ip,bi,bj) =  ipart (jp,bi,bj)
+                jpart (ip,bi,bj) =  jpart (jp,bi,bj)
                 kpart (ip,bi,bj) =  kpart (jp,bi,bj)
                 kfloat(ip,bi,bj) =  kfloat(jp,bi,bj)
                 iup   (ip,bi,bj) =  iup   (jp,bi,bj)
@@ -439,8 +425,8 @@ C--   Unpack arrays on new tiles
                jp = npart_tile(bi,bj)
                npart( jp,bi,bj) = fltbuf_recvE(ic+1,bi,bj)
                tstart(jp,bi,bj) = fltbuf_recvE(ic+2,bi,bj)
-               xpart( jp,bi,bj) = fltbuf_recvE(ic+3,bi,bj)
-               ypart( jp,bi,bj) = fltbuf_recvE(ic+4,bi,bj)
+               ipart( jp,bi,bj) = fltbuf_recvE(ic+3,bi,bj)
+               jpart( jp,bi,bj) = fltbuf_recvE(ic+4,bi,bj)
                kpart( jp,bi,bj) = fltbuf_recvE(ic+5,bi,bj)
                kfloat(jp,bi,bj) = fltbuf_recvE(ic+6,bi,bj)
                iup(   jp,bi,bj) = fltbuf_recvE(ic+7,bi,bj)
@@ -468,8 +454,8 @@ C--   Unpack arrays on new tiles
                jp = npart_tile(bi,bj)
                npart( jp,bi,bj) = fltbuf_recvW(ic+1,bi,bj)
                tstart(jp,bi,bj) = fltbuf_recvW(ic+2,bi,bj)
-               xpart( jp,bi,bj) = fltbuf_recvW(ic+3,bi,bj)
-               ypart( jp,bi,bj) = fltbuf_recvW(ic+4,bi,bj)
+               ipart( jp,bi,bj) = fltbuf_recvW(ic+3,bi,bj)
+               jpart( jp,bi,bj) = fltbuf_recvW(ic+4,bi,bj)
                kpart( jp,bi,bj) = fltbuf_recvW(ic+5,bi,bj)
                kfloat(jp,bi,bj) = fltbuf_recvW(ic+6,bi,bj)
                iup(   jp,bi,bj) = fltbuf_recvW(ic+7,bi,bj)
