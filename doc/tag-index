@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1063 2009/02/10 22:23:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1064 2009/02/12 07:53:34 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src/ini_curvilinear_grid.F: check in hack for SX8 compiler
+  to make sure that recip_dxV and recip_dyU are never zero, until we 
+  have a proper exchange for them. Most compilers do not seem
+  to mind divisions by zero in the overlaps, as long as the results are
+  not used anywhere, but sxf90 does. 
 o pkg/shelfice: fix bug with SHELFICEconserve flag, prepare for 
   real fresh water flux (not yet)
 o pkg/mdsio & rw:
