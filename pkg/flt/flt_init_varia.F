@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.4 2009/02/10 21:30:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.5 2009/02/13 04:23:50 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -23,11 +23,10 @@ C     ==================================================================
 C     !USES:
       IMPLICIT NONE
 
-#include "EEPARAMS.h"
 #include "SIZE.h"
-#include "FLT.h"
-#include "GRID.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "FLT.h"
 
 C     == routine arguments ==
 C     myThid - thread number for this instance of the routine.
@@ -45,8 +44,8 @@ C     == local variables ==
       INTEGER imax
       PARAMETER(imax=9)
       _RL tmp(imax)
-      _RL xLo, xHi, yLo, yHi
       _RL ix, jy, kz
+      _RL iLo, iHi, jLo, jHi
       LOGICAL globalFile
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -79,6 +78,12 @@ C read floats initial condition from file
       DO bj = 1,nSy
        DO bi = 1,nSx
 
+C     tile boundary on index map:
+         iLo = 0.5 _d 0
+         iHi = 0.5 _d 0 + DFLOAT(sNx)
+         jLo = 0.5 _d 0
+         jHi = 0.5 _d 0 + DFLOAT(sNy)
+
 C (1) read actual number floats from file
          CALL FLT_MDSREADVECTOR( fn, globalFile, precFloat64, 'RL',
      &                            imax, tmp, bi, bj, 1, myThid )
@@ -88,20 +93,6 @@ C (1) read actual number floats from file
      &                       SQUEEZE_RIGHT, myThid )
          npart_read = NINT(tmp(1))
          max_npart  = tmp(6)
-
-C     just using Edge position (xG,yG):
-         xLo = xG(  1,  1,bi,bj)
-         xHi = xG(sNx+1,1,bi,bj)
-         yLo = yG(1,  1,  bi,bj)
-         yHi = yG(1,sNy+1,bi,bj)
-         WRITE(msgBuf,'(A,2I4,A,2F18.8)')
-     &    ' bi,bj=', bi, bj, ' , xLo,xHi=', xLo, xHi
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-         WRITE(msgBuf,'(A,2I4,A,2F18.8)')
-     &    ' bi,bj=', bi, bj, ' , yLo,yHi=', yLo, yHi
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
 
          IF (globalFile) THEN
            npart_tile(bi,bj) = 0
@@ -115,26 +106,35 @@ C     just using Edge position (xG,yG):
            CALL FLT_MDSREADVECTOR( fn, globalFile, precFloat64, 'RL',
      &                             imax, tmp, bi, bj, ip+1, myThid )
 
+           IF ( nIter0.EQ.0 ) THEN
+C--   For initial condition only, convert coordinates to index map:
+             CALL FLT_MAP_XY2IJLOCAL( ix, jy,
+     I                    tmp(3), tmp(4),bi,bj,myThid )
+             kz = FLT_MAP_R2K( tmp(5), bi, bj, myThid )
+           ELSE
+             ix = tmp(3)
+             jy = tmp(4)
+             kz = tmp(5)
+           ENDIF
+
            IF ( globalFile .AND. nIter0.EQ.0 ) THEN
+C     Check if floats are existing on tile. If not, jump to next float
 
-C     check IF floats are existing on tile. If not, set to zero
-C     use southern/western side for axis information
-
-            IF (tmp(3) .GE. xLo .AND. tmp(3) .LT. xHi .AND.
-     &          tmp(4) .GE. yLo .AND. tmp(4) .LT. yHi) THEN
-
+            IF ( ix.GE.iLo .AND. ix.LT.iHi .AND.
+     &           jy.GE.jLo .AND. jy.LT.jHi ) THEN
              npart_tile(bi,bj) = npart_tile(bi,bj) + 1
              IF ( npart_tile(bi,bj).LE.max_npart_tile ) THEN
 
-              npart(npart_tile(bi,bj),bi,bj)  = tmp(1)
+              npart( npart_tile(bi,bj),bi,bj) = tmp(1)
               tstart(npart_tile(bi,bj),bi,bj) = tmp(2)
-              ipart(npart_tile(bi,bj),bi,bj)  = tmp(3)
-              jpart(npart_tile(bi,bj),bi,bj)  = tmp(4)
-              kpart(npart_tile(bi,bj),bi,bj)  = tmp(5)
+              ipart( npart_tile(bi,bj),bi,bj) = ix
+              jpart( npart_tile(bi,bj),bi,bj) = jy
+              kpart( npart_tile(bi,bj),bi,bj) = kz
               kfloat(npart_tile(bi,bj),bi,bj) = tmp(6)
-              iup(  npart_tile(bi,bj),bi,bj)  = tmp(7)
-              itop( npart_tile(bi,bj),bi,bj)  = tmp(8)
-              tend( npart_tile(bi,bj),bi,bj)  = tmp(9)
+              iup(   npart_tile(bi,bj),bi,bj) = tmp(7)
+              itop(  npart_tile(bi,bj),bi,bj) = tmp(8)
+              tend(  npart_tile(bi,bj),bi,bj) = tmp(9)
+
              ENDIF
             ENDIF
 
@@ -161,18 +161,6 @@ C     belong to this current tile (=> do not no check)
            ENDIF
 
          ENDDO
-
-         IF ( nIter0.EQ.0 ) THEN
-C--   for initial condition only, convert coordinates to index map:
-           DO ip=1,npart_tile(bi,bj)
-             CALL FLT_MAP_XY2IJLOCAL( ix, jy,
-     I                ipart(ip,bi,bj),jpart(ip,bi,bj),bi,bj,myThid )
-             kz = FLT_MAP_R2K( kpart(ip,bi,bj), bi, bj, myThid )
-             ipart(ip,bi,bj) = ix
-             jpart(ip,bi,bj) = jy
-             kpart(ip,bi,bj) = kz
-           ENDDO
-         ENDIF
 
          npart_dist = npart_dist + DBLE(npart_tile(bi,bj))
          IF ( npart_tile(bi,bj).GT.max_npart_tile ) THEN
