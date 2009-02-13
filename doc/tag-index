@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1066 2009/02/13 17:17:58 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1067 2009/02/13 22:05:20 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o autodiff
+  new CPP option ALLOW_TAMC_SINGLEPREC_COMLEV
+  allows to switch to single-prec common blocks;
+  corresponding switch occurs in tamc.h, integer isbyte
+  TAF store directivs "byte" and "kind" seem equivalent;
+  Most tamc.h have been updated correspondingly.
 
 checkpoint61i
 o autodiff:
