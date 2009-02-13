@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.38 2008/09/22 17:55:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.39 2009/02/13 21:56:48 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -143,8 +143,10 @@ CADJ GENERAL
 C---    Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
           kkey = (ikey-1)*Nr + k
-CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ &     kind = isbyte
+CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ &     kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL FIND_RHO_2D(
      I              iMin, iMax, jMin, jMax, k,
@@ -258,8 +260,10 @@ CADJ GENERAL
 C--     Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
           kkey = (ikey-1)*Nr + k
-CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ &     kind = isbyte
+CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ &     kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL FIND_RHO_2D(
      I              iMin, iMax, jMin, jMax, k,
@@ -268,7 +272,8 @@ CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      O              alphaRho,
      I              k, bi, bj, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE alphaRho (:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE alphaRho (:,:) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ &     kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         ELSE
           DO j=jMin,jMax

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.5 2006/05/03 23:34:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.6 2009/02/13 21:56:48 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -143,7 +143,7 @@ C--   Filter (and exchange)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
-CADJ STORE uvel, vvel  = comlev1, key = ikey_dynamics
+CADJ STORE uvel, vvel  = comlev1, key = ikey_dynamics, byte = isbyte
 # endif
 #endif
       DO bj=myByLo(myThid),myByHi(myThid)

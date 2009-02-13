@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.140 2008/10/20 23:51:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.141 2009/02/13 21:56:48 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -336,7 +336,7 @@ C--     Start computation of dynamics
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE wvel (:,:,:,bi,bj) = 
-CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
+CADJ &     comlev1_bibj, key=idynkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Explicit part of the Surface Potentiel Gradient (add in TIMESTEP)

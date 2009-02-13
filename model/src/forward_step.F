@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.164 2009/01/04 01:00:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.165 2009/02/13 21:56:48 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -206,8 +206,10 @@ C--   Call driver to load external forcing fields from file
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
 cph Important STORE that avoids hidden recomp. of load_fields_driver
-CADJ STORE theta      = comlev1, key = ikey_dynamics
-CADJ STORE uvel, vvel = comlev1, key = ikey_dynamics
+CADJ STORE theta      = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE uvel, vvel = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #endif
       CALL TIMER_START('LOAD_FIELDS_DRIVER  [FORWARD_STEP]',myThid)
       CALL LOAD_FIELDS_DRIVER( myTime, myIter, myThid )
@@ -286,23 +288,29 @@ C--     Step forward fields and calculate time tendency terms.
       CALL TIMER_STOP ('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surfaceforcingtice    = comlev1, key = ikey_dynamics
+CADJ STORE surfaceforcingtice    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # ifdef ALLOW_KPP
-CADJ STORE uvel               = comlev1, key = ikey_dynamics
-CADJ STORE vvel               = comlev1, key = ikey_dynamics
+CADJ STORE uvel               = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE vvel               = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 # ifdef EXACT_CONSERV
 cphCADJ STORE empmr              = comlev1, key = ikey_dynamics
 cphCADJ STORE pmepr              = comlev1, key = ikey_dynamics
 # endif
 # ifdef ALLOW_PTRACERS
-CADJ STORE ptracer               = comlev1, key = ikey_dynamics
+CADJ STORE ptracer               = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 cph-test
-CADJ STORE hFacC                 = comlev1, key = ikey_dynamics
+CADJ STORE hFacC                 = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #  ifndef DISABLE_RSTAR_CODE
-CADJ STORE rstarexpc             = comlev1, key = ikey_dynamics
+CADJ STORE rstarexpc             = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -318,9 +326,11 @@ CADJ STORE rstarexpc             = comlev1, key = ikey_dynamics
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE EmPmR    = comlev1, key = ikey_dynamics
+CADJ STORE EmPmR    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # ifdef EXACT_CONSERV
-CADJ STORE pmepr    = comlev1, key = ikey_dynamics
+CADJ STORE pmepr    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 #else
       ENDIF
@@ -329,26 +339,36 @@ CADJ STORE pmepr    = comlev1, key = ikey_dynamics
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
 cph-test
-CADJ STORE hFac_surfC         = comlev1, key = ikey_dynamics
-CADJ STORE hfac_surfs         = comlev1, key = ikey_dynamics
-CADJ STORE hfac_surfw         = comlev1, key = ikey_dynamics
+CADJ STORE hFac_surfC         = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hfac_surfs         = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hfac_surfw         = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE hFacC, hFacS, hFacW
-CADJ &     = comlev1, key = ikey_dynamics
+CADJ &     = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW
-CADJ &     = comlev1, key = ikey_dynamics
+CADJ &     = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 c
-CADJ STORE surfaceforcingu = comlev1, key = ikey_dynamics
-CADJ STORE surfaceforcingv = comlev1, key = ikey_dynamics
+CADJ STORE surfaceforcingu = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE surfaceforcingv = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_GCHEM
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ptracer  = comlev1, key = ikey_dynamics
-CADJ STORE theta  = comlev1, key = ikey_dynamics
-CADJ STORE salt  = comlev1, key = ikey_dynamics
+CADJ STORE ptracer  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE theta  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE salt  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #endif
       IF ( useGCHEM ) THEN
 #ifdef ALLOW_DEBUG
@@ -365,43 +385,60 @@ CADJ STORE salt  = comlev1, key = ikey_dynamics
 cph needed to be moved here from do_oceanic_physics
 cph to be visible down the road
 c
-CADJ STORE rhoInSitu          = comlev1, key = ikey_dynamics
-CADJ STORE surfaceForcingS    = comlev1, key = ikey_dynamics
-CADJ STORE surfaceForcingT    = comlev1, key = ikey_dynamics
-CADJ STORE surfaceForcingTice = comlev1, key = ikey_dynamics
-ctest(
-CADJ STORE IVDConvCount       = comlev1, key = ikey_dynamics
-ctest)
+CADJ STORE rhoInSitu          = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE surfaceForcingS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE surfaceForcingT    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE surfaceForcingTice = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE IVDConvCount       = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # ifdef ALLOW_PTRACERS
-CADJ STORE surfaceForcingPTr  = comlev1, key = ikey_dynamics
+CADJ STORE surfaceForcingPTr  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 c
 # ifdef ALLOW_GMREDI
-CADJ STORE Kwx                = comlev1, key = ikey_dynamics
-CADJ STORE Kwy                = comlev1, key = ikey_dynamics
-CADJ STORE Kwz                = comlev1, key = ikey_dynamics
+CADJ STORE Kwx                = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE Kwy                = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE Kwz                = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #  ifdef GM_BOLUS_ADVEC
-CADJ STORE GM_PsiX            = comlev1, key = ikey_dynamics
-CADJ STORE GM_PsiY            = comlev1, key = ikey_dynamics
+CADJ STORE GM_PsiX            = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE GM_PsiY            = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #  endif
 # endif
 c
 # ifdef ALLOW_KPP
-CADJ STORE KPPghat            = comlev1, key = ikey_dynamics
-CADJ STORE KPPfrac            = comlev1, key = ikey_dynamics
-CADJ STORE KPPdiffKzS         = comlev1, key = ikey_dynamics
-CADJ STORE KPPdiffKzT         = comlev1, key = ikey_dynamics
+CADJ STORE KPPghat            = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE KPPfrac            = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE KPPdiffKzS         = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE KPPdiffKzT         = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 c
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-CADJ STORE theta,salt,wvel          = comlev1, key = ikey_dynamics
-CADJ STORE etaH               = comlev1, key = ikey_dynamics
+CADJ STORE theta,salt,wvel          = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE etaH               = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #  ifdef ALLOW_CD_CODE
-CADJ STORE etanm1             = comlev1, key = ikey_dynamics
+CADJ STORE etanm1             = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #  endif
 #  ifndef DISABLE_RSTAR_CODE
 cph-test
-CADJ STORE rstarexpc = comlev1, key = ikey_dynamics
+CADJ STORE rstarexpc = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #  endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -411,9 +448,8 @@ CADJ STORE rstarexpc = comlev1, key = ikey_dynamics
         IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('THERMODYNAMICS',myThid)
 #endif
-cph-adj-test(
-CADJ STORE salt               = comlev1, key = ikey_dynamics
-cph-adj-test)
+CADJ STORE salt               = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
         CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',myThid)
         CALL THERMODYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('THERMODYNAMICS      [FORWARD_STEP]',myThid)
@@ -446,25 +482,38 @@ C      Read in coupling data that I import.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-CADJ STORE hFacC          = comlev1, key = ikey_dynamics
-CADJ STORE hFacS          = comlev1, key = ikey_dynamics
-CADJ STORE hFacW          = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics
-CADJ STORE etaN           = comlev1, key = ikey_dynamics
+CADJ STORE hFacC          = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacS          = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacW          = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE etaN           = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 c
 #  ifndef DISABLE_RSTAR_CODE
-CADJ STORE rstarFacC    = comlev1, key = ikey_dynamics
-CADJ STORE rstarFacS    = comlev1, key = ikey_dynamics
-CADJ STORE rstarFacW    = comlev1, key = ikey_dynamics
+CADJ STORE rstarFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE rstarFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE rstarFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 c
 CADJ STORE h0facc,h0facs,h0facw  
-CADJ &     = comlev1, key = ikey_dynamics
+CADJ &     = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt 
-CADJ &     = comlev1, key = ikey_dynamics
+CADJ &     = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 CADJ STORE rstarexpc,rstarexps,rstarexpw 
-CADJ &     = comlev1, key = ikey_dynamics
+CADJ &     = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #  endif
 # endif
 #endif
@@ -485,7 +534,8 @@ C--   Step forward fields and calculate time tendency terms.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
-CADJ STORE gU, gV  = comlev1, key = ikey_dynamics
+CADJ STORE gU, gV  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 #endif
 
@@ -521,37 +571,52 @@ C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
        IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 # ifdef ALLOW_AUTODIFF_TAMC
-cph-test
-CADJ STORE hFacC    = comlev1, key = ikey_dynamics
-CADJ STORE hFacS    = comlev1, key = ikey_dynamics
-CADJ STORE hFacW    = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics
+CADJ STORE hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 c
-CADJ STORE rstarFacC    = comlev1, key = ikey_dynamics
-CADJ STORE rstarFacS    = comlev1, key = ikey_dynamics
-CADJ STORE rstarFacW    = comlev1, key = ikey_dynamics
+CADJ STORE rstarFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE rstarFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE rstarFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 c
-CADJ STORE h0facc,h0facs,h0facw  = comlev1, key = ikey_dynamics
+CADJ STORE h0facc,h0facs,h0facw  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
         CALL TIMER_START('UPDATE_R_STAR       [FORWARD_STEP]',myThid)
         CALL UPDATE_R_STAR( myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_R_STAR       [FORWARD_STEP]',myThid)
 # ifdef ALLOW_AUTODIFF_TAMC
-cph-test
-CADJ STORE hFacC    = comlev1, key = ikey_dynamics
-CADJ STORE hFacS    = comlev1, key = ikey_dynamics
-CADJ STORE hFacW    = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics
+CADJ STORE hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 # endif /* DISABLE_RSTAR_CODE */
        ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hFac_surfC, hFac_surfS, hFac_surfW 
-CADJ &     = comlev1, key = ikey_dynamics
+CADJ &     = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #endif
         CALL TIMER_START('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
         CALL UPDATE_SURF_DR( myTime, myIter, myThid )
@@ -559,13 +624,18 @@ CADJ &     = comlev1, key = ikey_dynamics
        ENDIF
       ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
-cph-test
-CADJ STORE hFacC    = comlev1, key = ikey_dynamics
-CADJ STORE hFacS    = comlev1, key = ikey_dynamics
-CADJ STORE hFacW    = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics
-CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics
+CADJ STORE hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacC    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacS    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE recip_hFacW    = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 C-    update also CG2D matrix (and preconditioner)
       IF ( momStepping .AND. nonlinFreeSurf.GT.2 ) THEN
@@ -609,9 +679,11 @@ C     three-dimensional for non-hydrostatic and/or IGW scheme.
 #ifdef ALLOW_AUTODIFF_TAMC
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE uvel, vvel
-CADJ &     = comlev1, key = ikey_dynamics
+CADJ &     = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 CADJ STORE empmr,hfacs,hfacw
-CADJ &     = comlev1, key = ikey_dynamics
+CADJ &     = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 #endif
         CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
@@ -628,7 +700,8 @@ C--   Correct divergence in flow field and cycle time-stepping momentum
 #  ifndef DISABLE_RSTAR_CODE
 cph-test
 cph not clear, why this one
-CADJ STORE h0facc = comlev1, key = ikey_dynamics
+CADJ STORE h0facc = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #  endif
 # endif
 # ifdef ALLOW_DEPTH_CONTROL
@@ -657,7 +730,8 @@ C--   Update etaH(n+1) :
 # ifndef DISABLE_RSTAR_CODE
 #  ifdef ALLOW_AUTODIFF_TAMC
 cph-test
-CADJ STORE rstarfacc,rstarfacs,rstarfacw = comlev1, key = ikey_dynamics
+CADJ STORE rstarfacc,rstarfacs,rstarfacw = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #  endif
 C--   r* : compute the future level thickness according to etaH(n+1)
         CALL TIMER_START('CALC_R_STAR         [FORWARD_STEP]',myThid)
@@ -667,15 +741,18 @@ C--   r* : compute the future level thickness according to etaH(n+1)
       ELSEIF ( nonlinFreeSurf.GT.0) THEN
 C--   compute the future surface level thickness according to etaH(n+1)
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE etaH          = comlev1, key = ikey_dynamics
+CADJ STORE etaH          = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
         CALL TIMER_START('CALC_SURF_DR      [FORWARD_STEP]',myThid)
         CALL CALC_SURF_DR(etaH, myTime, myIter, myThid )
         CALL TIMER_STOP ('CALC_SURF_DR      [FORWARD_STEP]',myThid)
       ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hFac_surfC       = comlev1, key = ikey_dynamics
-CADJ STORE salt,theta,vvel  = comlev1, key = ikey_dynamics
+CADJ STORE hFac_surfC       = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE salt,theta,vvel  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 #endif /* NONLIN_FRSURF */
 
@@ -714,7 +791,8 @@ C---+--------+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_AUTODIFF_TAMC
 cph This is needed because convective_adjustment calls
 cph find_rho which may use pressure()
-CADJ STORE totphihyd  = comlev1, key = ikey_dynamics
+CADJ STORE totphihyd  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #endif
 C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
       CALL TIMER_START('TRC_CORRECTION_STEP [FORWARD_STEP]',myThid)
@@ -725,9 +803,12 @@ C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
 C     Add separate timestepping of chemical/biological/forcing
 C     of ptracers here in GCHEM_FORCING_SEP
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ptracer  = comlev1, key = ikey_dynamics
-CADJ STORE theta  = comlev1, key = ikey_dynamics
-CADJ STORE salt  = comlev1, key = ikey_dynamics
+CADJ STORE ptracer  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE theta  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE salt  = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #endif
       IF ( useGCHEM ) THEN
 #ifdef ALLOW_DEBUG

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.123 2008/08/17 02:08:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.124 2009/02/13 21:56:48 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -206,7 +206,7 @@ C-- Compute correction at the surface for Lin Free Surf.
 #endif
       IF (linFSConserveTr) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta,salt,wvel = comlev1, key = ikey_dynamics
+CADJ STORE theta,salt,wvel = comlev1, key = ikey_dynamics, byte=isbyte
 #endif
        CALL CALC_WSURF_TR(theta,salt,wVel,
      &                    myTime,myIter,myThid)

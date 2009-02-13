@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.49 2007/10/19 14:41:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.50 2009/02/13 21:56:48 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -130,9 +130,11 @@ C--   the kDown is still required
       fVerS(1,1,kDown) = fVerS(1,1,kDown)
 # ifdef NONLIN_FRSURF
 CADJ STORE fVerS(:,:,:) =
-CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ &     kind = isbyte
 CADJ STORE gsNm1(:,:,k,bi,bj) =
-CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ &     kind = isbyte
 # endif
 #endif
 
