@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.51 2008/12/17 06:14:50 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.52 2009/02/13 21:59:17 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -233,14 +233,14 @@ CML          UG(I,J) = MAX(SEAICE_EPS,wspeed(I,J,bi,bj))
 
 
 #ifdef ALLOW_AUTODIFF_TAMC
-cphCADJ STORE heff   = comlev1, key = ikey_dynamics
-cphCADJ STORE hsnow  = comlev1, key = ikey_dynamics
-cphCADJ STORE uwind  = comlev1, key = ikey_dynamics
-cphCADJ STORE vwind  = comlev1, key = ikey_dynamics
+cphCADJ STORE heff   = comlev1, key = ikey_dynamics, byte = isbyte
+cphCADJ STORE hsnow  = comlev1, key = ikey_dynamics, byte = isbyte
+cphCADJ STORE uwind  = comlev1, key = ikey_dynamics, byte = isbyte
+cphCADJ STORE vwind  = comlev1, key = ikey_dynamics, byte = isbyte
 c
-CADJ STORE tice   = comlev1, key = ikey_dynamics
+CADJ STORE tice   = comlev1, key = ikey_dynamics, byte = isbyte
 # ifdef SEAICE_MULTICATEGORY
-CADJ STORE tices  = comlev1, key = ikey_dynamics
+CADJ STORE tices  = comlev1, key = ikey_dynamics, byte = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -366,8 +366,8 @@ C     RESID_HEAT is residual heat above freezing in equivalent m of ice
 
 cph(
 #ifdef ALLOW_AUTODIFF_TAMC
-cphCADJ STORE heff   = comlev1, key = ikey_dynamics
-cphCADJ STORE hsnow  = comlev1, key = ikey_dynamics
+cphCADJ STORE heff   = comlev1, key = ikey_dynamics, byte = isbyte
+cphCADJ STORE hsnow  = comlev1, key = ikey_dynamics, byte = isbyte
 #endif
 cph)
 c

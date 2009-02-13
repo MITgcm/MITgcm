@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.30 2008/11/20 21:45:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.31 2009/02/13 21:59:17 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -125,9 +125,9 @@ C SET SOME VALUES
 cph That's an important one! Note, that
 cph * lsr is called twice, thus the icall index
 cph * this storing is still outside the iteration loop
-CADJ STORE uice = comlev1_lsr,
+CADJ STORE uice = comlev1_lsr, kind=isbyte,
 CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
-CADJ STORE vice = comlev1_lsr,
+CADJ STORE vice = comlev1_lsr, kind=isbyte,
 CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
 

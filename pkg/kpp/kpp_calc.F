@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.48 2008/10/23 18:13:51 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.49 2009/02/13 21:58:36 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -116,7 +116,6 @@ C !USES: ===============================================================
 # include "tamc.h"
 # include "tamc_keys.h"
 #else /* ALLOW_AUTODIFF_TAMC */
-      integer ikppkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       EXTERNAL DIFFERENT_MULTIPLE
@@ -203,6 +202,7 @@ cph)
 
       _RL tempvar2
       integer i, j, k, kp1, km1, im1, ip1, jm1, jp1
+      integer ikppkey
 
 #ifdef KPP_ESTIMATE_UREF
       _RL tempvar1, dBdz1, dBdz2, ustarX, ustarY

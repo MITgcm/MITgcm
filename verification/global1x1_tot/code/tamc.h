@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/tamc.h,v 1.5 2007/10/09 02:29:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/tamc.h,v 1.6 2009/02/13 22:00:04 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -119,7 +119,7 @@ c     and writing data.
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey,
-     &        itdkey, idynkey, igmkey, ikppkey
+     &        itdkey, idynkey, igmkey
 
 c     ==================================================================
 c     END OF HEADER TAMC

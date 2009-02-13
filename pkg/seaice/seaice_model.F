@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.66 2008/12/17 03:33:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.67 2009/02/13 21:59:17 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -77,28 +77,28 @@ C--   Map thSice-variables to HEFF and AREA
 #endif /* ALLOW_THSICE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uwind = comlev1, key = ikey_dynamics
-CADJ STORE vwind = comlev1, key = ikey_dynamics
-CADJ STORE heff  = comlev1, key = ikey_dynamics
-CADJ STORE heffm = comlev1, key = ikey_dynamics
-CADJ STORE area  = comlev1, key = ikey_dynamics
+CADJ STORE uwind = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vwind = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE heffm = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef SEAICE_ALLOW_DYNAMICS
 #  ifdef SEAICE_CGRID
-CADJ STORE seaicemasku    = comlev1, key = ikey_dynamics
-CADJ STORE seaicemaskv    = comlev1, key = ikey_dynamics
-CADJ STORE fu    = comlev1, key = ikey_dynamics
-CADJ STORE fv    = comlev1, key = ikey_dynamics
-CADJ STORE uice  = comlev1, key = ikey_dynamics
-CADJ STORE vice  = comlev1, key = ikey_dynamics
-CADJ STORE eta   = comlev1, key = ikey_dynamics
-CADJ STORE zeta  = comlev1, key = ikey_dynamics
+CADJ STORE seaicemasku = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE seaicemaskv = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE fu    = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE fv    = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uice  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vice  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE eta   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE zeta  = comlev1, key=ikey_dynamics, kind=isbyte
 cph(
-CADJ STORE dwatn    = comlev1, key = ikey_dynamics
-cccCADJ STORE press0   = comlev1, key = ikey_dynamics
-cccCADJ STORE taux   = comlev1, key = ikey_dynamics
-cccCADJ STORE tauy  = comlev1, key = ikey_dynamics
-cccCADJ STORE zmax   = comlev1, key = ikey_dynamics
-cccCADJ STORE zmin  = comlev1, key = ikey_dynamics
+CADJ STORE dwatn    = comlev1, key=ikey_dynamics, kind=isbyte
+cccCADJ STORE press0   = comlev1, key=ikey_dynamics, kind=isbyte
+cccCADJ STORE taux   = comlev1, key=ikey_dynamics, kind=isbyte
+cccCADJ STORE tauy  = comlev1, key=ikey_dynamics, kind=isbyte
+cccCADJ STORE zmax   = comlev1, key=ikey_dynamics, kind=isbyte
+cccCADJ STORE zmin  = comlev1, key=ikey_dynamics, kind=isbyte
 cph)
 #  endif
 # endif
@@ -144,18 +144,18 @@ C NOW DO ADVECTION and DIFFUSION
        CALL SEAICE_ADVDIFF( myTime, myIter, myThid )
       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heffm  = comlev1, key = ikey_dynamics
+CADJ STORE heffm  = comlev1, key=ikey_dynamics, kind=isbyte
 cph-test(
-cphCADJ STORE heff   = comlev1, key = ikey_dynamics
-cphCADJ STORE area   = comlev1, key = ikey_dynamics
-cphCADJ STORE hsnow  = comlev1, key = ikey_dynamics
-cphCADJ STORE qnet   = comlev1, key = ikey_dynamics
-cphCADJ STORE qsw    = comlev1, key = ikey_dynamics
-cphCADJ STORE tice   = comlev1, key = ikey_dynamics
+cphCADJ STORE heff   = comlev1, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE area   = comlev1, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE hsnow  = comlev1, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE qnet   = comlev1, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE qsw    = comlev1, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE tice   = comlev1, key=ikey_dynamics, kind=isbyte
 cph-test)
 # ifdef SEAICE_ALLOW_DYNAMICS
-cphCADJ STORE uice   = comlev1, key = ikey_dynamics
-cphCADJ STORE vice   = comlev1, key = ikey_dynamics
+cphCADJ STORE uice   = comlev1, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE vice   = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

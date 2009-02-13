@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.30 2008/12/17 06:14:50 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.31 2009/02/13 21:59:17 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -132,8 +132,8 @@ C     timelevel 3 is the total diffusion tendency * deltaT
 C                 (empty if no diffusion)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uc     = comlev1, key = ikey_dynamics
-CADJ STORE vc     = comlev1, key = ikey_dynamics
+CADJ STORE uc     = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE vc     = comlev1, key = ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -345,8 +345,8 @@ C---   end bi,bj loops
 C--   if not multiDimAdvection
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uc   = comlev1, key = ikey_dynamics
-CADJ STORE vc   = comlev1, key = ikey_dynamics
+CADJ STORE uc   = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
        IF ( SEAICEadvHEff ) CALL ADVECT( uc, vc, HEFF, HEFFM, myThid )
@@ -442,7 +442,7 @@ C--   end if multiDimAdvection
 C--   end if SEAICEuseDynamics
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE AREA   = comlev1, key = ikey_dynamics
+CADJ STORE AREA   = comlev1, key = ikey_dynamics, kind=isbyte
 #endif
       IF ( .NOT. usePW79thermodynamics ) THEN
 C     Hiblers "ridging function": Do it now if not in seaice_growth

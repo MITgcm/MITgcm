@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.41 2008/10/30 18:51:36 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.42 2009/02/13 21:58:36 heimbach Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "KPP_OPTIONS.h"
 
 C-- File kpp_routines.F: subroutines needed to implement
@@ -52,6 +53,9 @@ c-----------------------------------------------------------------------
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "KPP_PARAMS.h"
+#ifdef ALLOW_AUTODIFF
+# include "tamc.h"
+#endif
 
 c input
 c   myTime :: Current time in simulation
@@ -142,8 +146,8 @@ c-----------------------------------------------------------------------
 
 cph(
 cph these storings avoid recomp. of Ri_iwmix
-CADJ STORE ghat  = comlev1_kpp, key = ikppkey
-CADJ STORE dbloc = comlev1_kpp, key = ikppkey
+CADJ STORE ghat  = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE dbloc = comlev1_kpp, key=ikppkey, kind=isbyte
 cph)
       call Ri_iwmix (
      I       kmtj, shsq, dbloc, ghat
@@ -154,10 +158,10 @@ cph)
 cph(
 cph these storings avoid recomp. of Ri_iwmix
 cph DESPITE TAFs 'not necessary' warning!
-CADJ STORE dbloc  = comlev1_kpp, key = ikppkey
-CADJ STORE shsq   = comlev1_kpp, key = ikppkey
-CADJ STORE ghat   = comlev1_kpp, key = ikppkey
-CADJ STORE diffus = comlev1_kpp, key = ikppkey
+CADJ STORE dbloc  = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE shsq   = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE ghat   = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE diffus = comlev1_kpp, key=ikppkey, kind=isbyte
 cph)
 
 c-----------------------------------------------------------------------
@@ -190,7 +194,8 @@ c-----------------------------------------------------------------------
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
      I     , myTime, myIter, myThid )
 
-CADJ STORE hbl,bfsfc,stable,casea,kbl = comlev1_kpp, key = ikppkey
+CADJ STORE hbl,bfsfc,stable,casea,kbl = comlev1_kpp, 
+CADJ &     key=ikppkey, kind=isbyte
 
 c-----------------------------------------------------------------------
 c compute boundary layer diffusivities
@@ -201,8 +206,10 @@ c-----------------------------------------------------------------------
      O     , dkm1, blmc, ghat, sigma, ikppkey
      I     , myThid )
 cph(
-CADJ STORE dkm1,blmc,ghat = comlev1_kpp, key = ikppkey
-CADJ STORE hbl, kbl, diffus, casea = comlev1_kpp, key = ikppkey
+CADJ STORE dkm1,blmc,ghat = comlev1_kpp, 
+CADJ &     key=ikppkey, kind=isbyte
+CADJ STORE hbl, kbl, diffus, casea = comlev1_kpp, 
+CADJ &     key=ikppkey, kind=isbyte
 cph)
 
 c-----------------------------------------------------------------------
@@ -217,7 +224,7 @@ c-----------------------------------------------------------------------
 
 cph(
 cph avoids recomp. of enhance
-CADJ STORE blmc = comlev1_kpp, key = ikppkey
+CADJ STORE blmc = comlev1_kpp, key=ikppkey, kind=isbyte
 cph)
 
 c-----------------------------------------------------------------------
@@ -293,6 +300,9 @@ c
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "KPP_PARAMS.h"
+#ifdef ALLOW_AUTODIFF
+# include "tamc.h"
+#endif
 
 c input
 c------
@@ -402,12 +412,12 @@ c     compute bfsfc = sw fraction at hbf * zgrid
          do i = 1, imt
             worka(i) = zgrid(kl)
          end do
-CADJ store worka = comlev1_kpp_k, key = kkppkey
+CADJ store worka = comlev1_kpp_k, key = kkppkey, kind=isbyte
          call SWFRAC(
      I       imt, hbf, 
      U       worka,
      I       myTime, myIter, myThid )
-CADJ store worka = comlev1_kpp_k, key = kkppkey
+CADJ store worka = comlev1_kpp_k, key = kkppkey, kind=isbyte
 
          do i = 1, imt
 
@@ -454,7 +464,7 @@ c-----------------------------------------------------------------------
          call wscale (
      I        sigma, casea, ustar, bfsfc,
      O        wm, ws, myThid )
-CADJ store ws = comlev1_kpp_k, key = kkppkey
+CADJ store ws = comlev1_kpp_k, key = kkppkey, kind=isbyte
 
          do i = 1, imt
 
@@ -503,7 +513,8 @@ cph(
 cph  without this store, there is a recomputation error for
 cph  rib in adbldepth (probably partial recomputation problem)    
 CADJ store Rib = comlev1_kpp
-CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr /)
+CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr /)
 cph)
 
       do kl = 2, Nr
@@ -513,7 +524,8 @@ cph)
       end do
 
 CADJ store kbl = comlev1_kpp
-CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
       do i = 1, imt
          kl = kbl(i)
@@ -526,7 +538,8 @@ c     linearly interpolate to find hbl where Rib = Ricr
       end do
 
 CADJ store hbl = comlev1_kpp
-CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c-----------------------------------------------------------------------
 c     find stability and buoyancy forcing for boundary layer
@@ -536,13 +549,15 @@ c-----------------------------------------------------------------------
          worka(i) = hbl(i)
       end do
 CADJ store worka = comlev1_kpp
-CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       call SWFRAC(
      I       imt, minusone, 
      U       worka,
      I       myTime, myIter, myThid )
 CADJ store worka = comlev1_kpp
-CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
       do i = 1, imt
          bfsfc(i)  = bo(i) + bosol(i) * (1. - worka(i))
@@ -563,7 +578,8 @@ CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 CADJ store bfsfc = comlev1_kpp
-CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c--   ensure bfsfc is never 0
       do i = 1, imt
@@ -574,7 +590,8 @@ c--   ensure bfsfc is never 0
 cph(
 cph  added stable to store list to avoid extensive recomp.
 CADJ store bfsfc, stable = comlev1_kpp
-CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 cph)
 
 c-----------------------------------------------------------------------
@@ -593,7 +610,8 @@ c-----------------------------------------------------------------------
          end if
       end do
 CADJ store hbl = comlev1_kpp
-CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
       do i = 1, imt
          hbl(i) = max(hbl(i),minKPPhbl)
@@ -601,7 +619,8 @@ CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       end do
 
 CADJ store hbl = comlev1_kpp
-CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c-----------------------------------------------------------------------
 c      find new kbl
@@ -623,13 +642,15 @@ c-----------------------------------------------------------------------
          worka(i) = hbl(i)
       end do
 CADJ store worka = comlev1_kpp
-CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       call SWFRAC(
      I     imt, minusone, 
      U     worka,
      I     myTime, myIter, myThid )
 CADJ store worka = comlev1_kpp
-CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
  
       do i = 1, imt
          bfsfc(i) = bo(i) + bosol(i) * (1. - worka(i))
@@ -650,7 +671,8 @@ CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 CADJ store bfsfc = comlev1_kpp
-CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c--   ensures bfsfc is never 0
       do i = 1, imt
@@ -791,6 +813,9 @@ c     to static instability (local Richardson number < 0).
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "KPP_PARAMS.h"
+#ifdef ALLOW_AUTODIFF
+# include "tamc.h"
+#endif
 
 c  input
 c     kmtj   (imt)         number of vertical layers on this row
@@ -869,7 +894,7 @@ C     break data flow dependence on diffus
             endif
          end do
       end do
-CADJ store diffus = comlev1_kpp, key = ikppkey
+CADJ store diffus = comlev1_kpp, key=ikppkey, kind=isbyte
 
 c-----------------------------------------------------------------------
 c     vertically smooth Ri
@@ -1130,6 +1155,9 @@ c
 
 #include "SIZE.h"
 #include "KPP_PARAMS.h"
+#ifdef ALLOW_AUTODIFF
+# include "tamc.h"
+#endif
 
 c input
 c     ustar (imt)                 surface friction velocity             (m/s)
@@ -1187,19 +1215,19 @@ c-----------------------------------------------------------------------
          sigma(i) = stable(i) * 1.0 + (1. - stable(i)) * epsilon
       end do
 
-CADJ STORE sigma = comlev1_kpp, key = ikppkey
+CADJ STORE sigma = comlev1_kpp, key=ikppkey, kind=isbyte
       call wscale (
      I        sigma, hbl, ustar, bfsfc,
      O        wm, ws, myThid )
-CADJ STORE wm = comlev1_kpp, key = ikppkey
-CADJ STORE ws = comlev1_kpp, key = ikppkey
+CADJ STORE wm = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE ws = comlev1_kpp, key=ikppkey, kind=isbyte
 
       do i = 1, imt
          wm(i) = sign(eins,wm(i))*max(phepsi,abs(wm(i)))
          ws(i) = sign(eins,ws(i))*max(phepsi,abs(ws(i)))
       end do
-CADJ STORE wm = comlev1_kpp, key = ikppkey
-CADJ STORE ws = comlev1_kpp, key = ikppkey
+CADJ STORE wm = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE ws = comlev1_kpp, key=ikppkey, kind=isbyte
 
       do i = 1, imt
 
@@ -1244,12 +1272,12 @@ c-----------------------------------------------------------------------
  
       end do
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE gat1m = comlev1_kpp, key = ikppkey
-CADJ STORE gat1s = comlev1_kpp, key = ikppkey
-CADJ STORE gat1t = comlev1_kpp, key = ikppkey
-CADJ STORE dat1m = comlev1_kpp, key = ikppkey
-CADJ STORE dat1s = comlev1_kpp, key = ikppkey
-CADJ STORE dat1t = comlev1_kpp, key = ikppkey
+CADJ STORE gat1m = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE gat1s = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE gat1t = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE dat1m = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE dat1s = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE dat1t = comlev1_kpp, key=ikppkey, kind=isbyte
 #endif
       do i = 1, imt
          dat1m(i) = min(dat1m(i),p0)
@@ -1257,9 +1285,9 @@ CADJ STORE dat1t = comlev1_kpp, key = ikppkey
          dat1t(i) = min(dat1t(i),p0) 
       end do
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE dat1m = comlev1_kpp, key = ikppkey
-CADJ STORE dat1s = comlev1_kpp, key = ikppkey
-CADJ STORE dat1t = comlev1_kpp, key = ikppkey
+CADJ STORE dat1m = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE dat1s = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE dat1t = comlev1_kpp, key=ikppkey, kind=isbyte
 #endif
 
       do ki = 1, Nr
@@ -1330,15 +1358,15 @@ c-----------------------------------------------------------------------
       end do
 
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE wm = comlev1_kpp, key = ikppkey
-CADJ STORE ws = comlev1_kpp, key = ikppkey
+CADJ STORE wm = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE ws = comlev1_kpp, key=ikppkey, kind=isbyte
 #endif
-CADJ STORE sigma = comlev1_kpp, key = ikppkey
+CADJ STORE sigma = comlev1_kpp, key=ikppkey, kind=isbyte
       call wscale (
      I        sigma, hbl, ustar, bfsfc,
      O        wm, ws, myThid )
-CADJ STORE wm = comlev1_kpp, key = ikppkey
-CADJ STORE ws = comlev1_kpp, key = ikppkey
+CADJ STORE wm = comlev1_kpp, key=ikppkey, kind=isbyte
+CADJ STORE ws = comlev1_kpp, key=ikppkey, kind=isbyte
 
       do i = 1, imt
          sig = -zgrid(kbl(i)-1) / hbl(i)
@@ -1464,6 +1492,9 @@ c-----------------------------------------------------------------------
 #include "KPP_PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#ifdef ALLOW_AUTODIFF
+# include "tamc.h"
+#endif
 
 c-------------- Routine arguments -----------------------------------------
       INTEGER bi, bj, myThid
@@ -1499,8 +1530,10 @@ c calculate density, alpha, beta in surface layer, and set dbsfc to zero
       kkppkey = (ikppkey-1)*Nr + 1
 
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
-CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
+CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k,
+CADJ &     key=kkppkey, kind=isbyte
+CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k,
+CADJ &     key=kkppkey, kind=isbyte
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
       CALL FIND_RHO_2D(
      I     1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1,
@@ -1508,8 +1541,10 @@ CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
      O     WORK1,
      I     1, bi, bj, myThid )
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
-CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
+CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k, 
+CADJ &     key=kkppkey, kind=isbyte
+CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k,
+CADJ &     key=kkppkey, kind=isbyte
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
 
       call FIND_ALPHA(
@@ -1537,8 +1572,10 @@ CHPF$  INDEPENDENT, NEW (RHOK,RHOKM1,RHO1K,WORK1,WORK2)
       kkppkey = (ikppkey-1)*Nr + k
 
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k, key=kkppkey
-CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k, key=kkppkey
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k,
+CADJ &     key=kkppkey, kind=isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k,
+CADJ &     key=kkppkey, kind=isbyte
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
          CALL FIND_RHO_2D(
      I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k,
@@ -1547,8 +1584,10 @@ CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k, key=kkppkey
      I        k, bi, bj, myThid )
 
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_kpp_k, key=kkppkey
-CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_kpp_k, key=kkppkey
+CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_kpp_k,
+CADJ &     key=kkppkey, kind=isbyte
+CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_kpp_k,
+CADJ &     key=kkppkey, kind=isbyte
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
          CALL FIND_RHO_2D(
      I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k,
@@ -1557,8 +1596,10 @@ CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_kpp_k, key=kkppkey
      I        k-1, bi, bj, myThid )
 
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
-CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
+CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k,
+CADJ &     key=kkppkey, kind=isbyte
+CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k,
+CADJ &     key=kkppkey, kind=isbyte
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
          CALL FIND_RHO_2D(
      I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, k,
@@ -1567,9 +1608,12 @@ CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k, key=kkppkey
      I        1, bi, bj, myThid )
 
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE rhok  (:,:)          = comlev1_kpp_k, key=kkppkey
-CADJ STORE rhokm1(:,:)          = comlev1_kpp_k, key=kkppkey
-CADJ STORE rho1k (:,:)          = comlev1_kpp_k, key=kkppkey
+CADJ STORE rhok  (:,:)          = comlev1_kpp_k,
+CADJ &     key=kkppkey, kind=isbyte
+CADJ STORE rhokm1(:,:)          = comlev1_kpp_k,
+CADJ &     key=kkppkey, kind=isbyte
+CADJ STORE rho1k (:,:)          = comlev1_kpp_k,
+CADJ &     key=kkppkey, kind=isbyte
 #endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
 
          call FIND_ALPHA(

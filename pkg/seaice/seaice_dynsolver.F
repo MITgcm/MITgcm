@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.30 2008/01/21 17:58:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.31 2009/02/13 21:59:17 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -70,8 +70,8 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
        ENDDO
       ENDDO
 C
-CADJ STORE uice = comlev1, key=ikey_dynamics
-CADJ STORE vice = comlev1, key=ikey_dynamics
+CADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (
@@ -142,8 +142,8 @@ C     initialise fields
       ENDDO
 
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uice = comlev1, key=ikey_dynamics
-CADJ STORE vice = comlev1, key=ikey_dynamics
+CADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
 C--   interface of dynamics with atmopheric forcing fields (wind/stress)
       CALL SEAICE_GET_DYNFORCING (
@@ -211,8 +211,8 @@ C--   now set up ice pressure and viscosities
 
 #ifdef SEAICE_ALLOW_EVP
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uice = comlev1, key=ikey_dynamics
-CADJ STORE vice = comlev1, key=ikey_dynamics
+CADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
        IF ( SEAICEuseEVP ) THEN
         CALL SEAICE_EVP( myTime, myIter, myThid )
@@ -235,20 +235,20 @@ C NOW DO PREDICTOR TIME STEP
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uicec = comlev1, key=ikey_dynamics
-CADJ STORE vicec = comlev1, key=ikey_dynamics
+CADJ STORE uicec = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vicec = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef SEAICE_ALLOW_EVP
-cphCADJ STORE uice = comlev1, key=ikey_dynamics
-cphCADJ STORE vice = comlev1, key=ikey_dynamics
+cphCADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif
 C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
        CALL SEAICE_LSR( 1, myTime, myIter, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-cphCADJ STORE uice = comlev1, key=ikey_dynamics
-cphCADJ STORE vice = comlev1, key=ikey_dynamics
-cphCADJ STORE uicec = comlev1, key=ikey_dynamics
-cphCADJ STORE vicec = comlev1, key=ikey_dynamics
+cphCADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE uicec = comlev1, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE vicec = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 
 C NOW DO MODIFIED EULER STEP
@@ -279,8 +279,8 @@ C End of IF (DIFFERENT_MULTIPLE ...
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uice  = comlev1, key=ikey_dynamics
-CADJ STORE vice  = comlev1, key=ikey_dynamics
+CADJ STORE uice  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vice  = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C Calculate ocean surface stress
@@ -289,8 +289,8 @@ C Calculate ocean surface stress
 #ifdef SEAICE_ALLOW_DYNAMICS
       IF ( SEAICEuseDYNAMICS .AND. SEAICE_clipVelocities) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uice = comlev1, key=ikey_dynamics
-CADJ STORE vice = comlev1, key=ikey_dynamics
+CADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 c Put a cap on ice velocity
 c limit velocity to 0.40 m s-1 to avoid potential CFL violations

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.58 2008/10/22 00:28:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.59 2009/02/13 21:58:36 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -250,7 +250,7 @@ C--   Start of k loop for horizontal fluxes
 #ifdef ALLOW_AUTODIFF_TAMC
          kkey = (igadkey-1)*Nr + k
 CADJ STORE tracer(:,:,k,bi,bj) =
-CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Get temporary terms used by tendency routines
@@ -343,9 +343,9 @@ C
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 CADJ STORE af(:,:)  =
-CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
@@ -369,7 +369,7 @@ C-     Internal exchange for calculations in X
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -506,9 +506,9 @@ C
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 CADJ STORE af(:,:)  =
-CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 C
@@ -539,7 +539,7 @@ C-     Advective flux in Y
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
-CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -726,9 +726,9 @@ c       kp1=min(Nr,k+1)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rtrans(:,:)  =
-CADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+CADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
 cphCADJ STORE wfld(:,:)  =
-cphCADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphCADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif
 
 C-- Compute Vertical transport
@@ -743,7 +743,7 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cphmultiCADJ STORE wfld(:,:)  =
-cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C- Surface interface :
@@ -760,7 +760,7 @@ C- Surface interface :
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cphmultiCADJ STORE wfld(:,:)  =
-cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphmultiCADJ &     comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C- Interior interface :
@@ -785,9 +785,9 @@ C--   Residual transp = Bolus transp + Eulerian transp
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cphmultiCADJ STORE localTijk(:,:,k)
-cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, kind=isbyte
 cphmultiCADJ STORE rTrans(:,:)
-cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    Compute vertical advective flux in the interior:
@@ -823,15 +823,15 @@ C- end Surface/Interior if bloc
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cphmultiCADJ STORE rTrans(:,:)
-cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, kind=isbyte
 cphmultiCADJ STORE rTranskp1(:,:)
-cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+cphmultiCADJ &     = comlev1_bibj_k_gad, key=kkey, kind=isbyte
 cph --- following storing of fVerT is critical for correct
 cph --- gradient with multiDimAdvection
 cph --- Without it, kDown component is not properly recomputed
 cph --- This is a TAF bug (and no warning available)
 CADJ STORE fVerT(:,:,:)
-CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
+CADJ &     = comlev1_bibj_k_gad, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Divergence of vertical fluxes
