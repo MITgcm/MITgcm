@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1065 2009/02/13 15:05:19 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1066 2009/02/13 17:17:58 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61i
+o autodiff:
+  fix autodiff_sore/_restore indices for obcs
+  (spotted by I. Hoteit, M. Mazloff)
 o pkg/autodiff, pkg/ctrl:
   Add flag to reduce all tapelev I/O to single-prec. 
   In data.ctrl set
