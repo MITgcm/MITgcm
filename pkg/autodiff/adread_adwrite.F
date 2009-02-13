@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.9 2008/09/24 19:35:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.10 2009/02/13 15:02:00 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -117,7 +117,7 @@ c     irec   -  record number to be written.
       integer len
       integer tid
       integer vid
-      integer size
+      integer size, sizetmp
       integer length
       integer irec
       _RL     var(length)
@@ -137,11 +137,18 @@ c     == functions ==
 c     == end of interface ==
 CEOP
 
+      sizetmp = 8
+
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_ENTER('ADREAD',myThid)
 #endif
-          
+
+      IF ( doSinglePrecTapelev ) THEN
+       sizetmp = 4
+      ELSE
+       sizetmp = 8
+      ENDIF
 
       write(fname(1:MAX_LEN_FNAM),'(a)') ' '
       write(itername,'(a,i4.4)') '.it',optimcycle
@@ -155,14 +162,14 @@ CEOP
         bx = myBxLo(myThid)
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) THEN
-         WRITE(msgBuf,'(A,A)')
-     &     'ADREAD: call mdsreadvector for fname = ',
-     &     fname(1:il+7)
+         WRITE(msgBuf,'(A,I3,A)')
+     &     'ADREAD: call mdsreadvector for size, fname = ',
+     &      sizetmp, fname(1:il+7)
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT , myThid)
       ENDIF
 #endif
-        call mdsreadvector( fname, size*8, 'RL',
+        call mdsreadvector( fname, sizetmp*8, 'RL',
      &                      length, var, bx, by, irec, mythid )
       _END_MASTER( mythid )
 
@@ -236,7 +243,7 @@ c     irec   -  record number to be written.
       integer len
       integer tid
       integer vid
-      integer size
+      integer size, sizetmp
       integer length
       integer irec
       _RL     var(length)
@@ -257,10 +264,18 @@ c     == functions ==
 c     == end of interface ==
 CEOP
 
+      sizetmp = 8
+
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_ENTER('ADWRITE',myThid)
 #endif
+
+      IF ( doSinglePrecTapelev ) THEN
+       sizetmp = 4
+      ELSE
+       sizetmp = 8
+      ENDIF
 
       globalfile = .false.
       il         = ilnblnk( name )
@@ -275,9 +290,9 @@ CEOP
         bx = myBxLo(myThid)
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) THEN
-         WRITE(msgBuf,'(A,A)')
-     &     'ADWRITE: call mdswritevector for fname = ',
-     &     fname(1:il+7)
+         WRITE(msgBuf,'(A,I3,A)')
+     &     'ADWRITE: call mdswritevector for size, fname = ',
+     &     sizetmp, fname(1:il+7)
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT , myThid)
          WRITE(msgBuf,'(A,I12,4I6)')
@@ -286,7 +301,7 @@ CEOP
      &                       SQUEEZE_RIGHT , myThid)
       ENDIF
 #endif
-        call mdswritevector( fname, size*8, globalfile, 'RL',
+        call mdswritevector( fname, sizetmp*8, globalfile, 'RL',
      &                       length, var, bx, by, irec, 0, mythid )
       _END_MASTER( mythid )
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.46 2008/11/18 16:45:02 utke Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.47 2009/02/13 15:02:00 heimbach Exp $
 C $Name:  $
 
 
@@ -66,6 +66,7 @@ cph Need to put this in namelist at some point!
      &                       doZscalePack,
      &                       doMainUnpack,
      &                       doMainPack,
+     &                       doSinglePrecTapelev,
      &                       doAdmtlmBypassAD
 
       logical doInitXX
@@ -75,6 +76,7 @@ cph Need to put this in namelist at some point!
       logical doZscalePack
       logical doMainUnpack
       logical doMainPack
+      logical doSinglePrecTapelev
       logical doAdmtlmBypassAD
 
       common /controlvars_i/

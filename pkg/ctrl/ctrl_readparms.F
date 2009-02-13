@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.30 2008/06/26 18:11:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.31 2009/02/13 15:02:00 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -129,6 +129,7 @@ c--   Read the namelist input.
      &  doPackDiag,
      &  doZscaleUnpack, doZscalePack,
      &  doMainUnpack, doMainPack,
+     &  doSinglePrecTapelev,
      &  doAdmtlmBypassAD,
      &  delZexp, forcingPrecond
 cHFLUXM_CONTROL
@@ -153,6 +154,7 @@ c--     Set default values.
         doZscalePack        = .FALSE.
         doMainUnpack        = .TRUE.
         doMainPack          = .TRUE.
+        doSinglePrecTapelev = .FALSE.
         doAdmtlmBypassAD    = .FALSE.
 
         delZexp = 0.
