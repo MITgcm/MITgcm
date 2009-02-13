@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_traj.F,v 1.7 2009/02/10 21:30:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_traj.F,v 1.8 2009/02/13 04:22:22 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -21,7 +21,6 @@ C     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
 #include "DYNVARS.h"
 #include "FLT.h"
 

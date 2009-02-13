@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_up.F,v 1.7 2009/02/10 21:30:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_up.F,v 1.8 2009/02/13 04:22:22 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -22,7 +22,6 @@ C     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
 #include "DYNVARS.h"
 #include "FLT.h"
 
@@ -123,8 +122,6 @@ C     If float has died move to level 0
              kpart(ip,bi,bj) = 0.
            ENDIF
 
-c          CALL FLT_MAP_XY2IJLOCAL( ix, jy,
-c    I                 ipart(ip,bi,bj),jpart(ip,bi,bj),bi,bj,myThid)
 C     Convert to coordinates
            ix = ipart(ip,bi,bj)
            jy = jpart(ip,bi,bj)
@@ -144,10 +141,6 @@ C     Convert to coordinates
            IF ( myTime.GE.tstart(ip,bi,bj) .AND.
      &         (tend(ip,bi,bj).EQ.-1..OR.myTime.LE.tend(ip,bi,bj))
      &        ) THEN
-
-c            IF (tstart(ip,bi,bj) .NE. -1.              .AND.
-c     &         myTime    .GE. tstart(ip,bi,bj) .AND.
-c     &         myTime    .LE.   tend(ip,bi,bj)) THEN
 
              CALL FLT_BILINEAR2D(ix,jy,pp,etaN,0,bi,bj,myThid)
              tmp(9)   = pp

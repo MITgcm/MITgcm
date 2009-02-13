@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_mapping.F,v 1.2 2009/02/10 17:29:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_mapping.F,v 1.3 2009/02/13 04:22:22 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -75,10 +75,6 @@ C     == end of interface ==
            ENDIF
           ENDIF
         ENDDO
-
-        IF ( ix .EQ. -1. _d 0 .OR. jy .EQ. -1. _d 0 ) THEN
-          STOP 'FLT_MAP_XY2IJLOCAL: Fail in finding ix,jy'
-        ENDIF
 
       ELSE
         STOP 'FLT_MAP_XY2IJLOCAL: not yet coded for this grid'
