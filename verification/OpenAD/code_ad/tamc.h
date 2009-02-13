@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/tamc.h,v 1.8 2009/02/13 21:52:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/tamc.h,v 1.9 2009/02/13 21:52:16 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
