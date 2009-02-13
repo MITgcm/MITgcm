@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.8 2008/06/20 21:43:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/ECCO_CPPOPTIONS.h,v 1.9 2009/02/13 21:27:24 heimbach Exp $
 C $Name:  $
 
 C
@@ -130,6 +130,7 @@ C ***               Control vector Package                         ***
 C ********************************************************************
 C
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO
+#undef  ALLOW_TAMC_SINGLEPREC_COMLEV
 
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.11 2008/06/20 21:43:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.12 2009/02/13 21:27:24 heimbach Exp $
 C $Name:  $
 
 C CPP flags controlling which code is included in the files that
@@ -54,6 +54,8 @@ C ***               Control vector Package                         ***
 C ********************************************************************
 C 
 #undef  ALLOW_NONDIMENSIONAL_CONTROL_IO
+#undef ALLOW_TAMC_SINGLEPREC_COMLEV
+
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
 #define ALLOW_SALT0_CONTROL
