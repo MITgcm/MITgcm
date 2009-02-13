@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/tamc.h,v 1.2 2008/05/02 15:16:41 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/tamc.h,v 1.3 2009/02/13 21:52:16 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -103,7 +103,12 @@ c     and writing data.
       integer iloop_daily
 
       INTEGER    isbyte
+#ifdef ALLOW_TAMC_SINGLEPREC_COMLEV
+      PARAMETER( isbyte      = 4 )
+#else
       PARAMETER( isbyte      = 8 )
+#endif
+
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
 #ifndef ALLOW_PTRACERS
@@ -116,7 +121,7 @@ c     and writing data.
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey, 
-     &        itdkey, idynkey, igmkey, ikppkey, iptrkey
+     &        itdkey, idynkey, igmkey, iptrkey
 
 c     ================================================================
 c     END OF HEADER TAMC

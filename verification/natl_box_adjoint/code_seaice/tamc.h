@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code_seaice/Attic/tamc.h,v 1.4 2006/05/06 18:02:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code_seaice/Attic/tamc.h,v 1.5 2009/02/13 21:53:17 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -14,8 +14,8 @@ c
 c     started: Christian Eckert eckert@mit.edu  04-Feb-1999
 c
 c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
-c              - New parameter nlevchk_0 for dimensionalising common
-c                blocks in the undef ALLOW_TAMC_CHECKPOINTING case
+c              - New parameter nlevchk_0 for dimensionalising
+c                common blocks in the undef ALLOW_TAMC_CHECKPOINTING case
 c              - nhreads_chkpt was declared at the wrong place
 c
 c
@@ -34,12 +34,12 @@ c
 c     nyears_chkpt   - Number of calendar years affected by the assimilation
 c                      experiment; nyears_chkpt has to be at least equal to
 c                      the result of cal_IntYears(mythid).
-c     nmonths_chkpt  - Number of months per year; nmonth_chkpt has to
-c                      be at least equal to nmonthyear.
-c     ndays_chkpt    - Number of days per month; nday_chkpt has to be
-c                      at least equal to nmaxdaymonth.
-c     nsteps_chkpt   - Number of steps per day; nsteps_chkpt has to
-c                      be at least equal to cal_nStepDay(mythid)
+c     nmonths_chkpt  - Number of months per year; nmonth_chkpt has to be at
+c                      least equal to nmonthyear.
+c     ndays_chkpt    - Number of days per month; nday_chkpt has to be at least
+c                      equal to nmaxdaymonth.
+c     nsteps_chkpt   - Number of steps per day; nsteps_chkpt has to be at
+c                      least equal to cal_nStepDay(mythid)
 c     ncheck_chkpt   - Number of innermost checkpoints.
 c
 c     ngeom_chkpt    - Geometry factor.
@@ -62,18 +62,20 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
       integer    nchklev_1
-      parameter( nchklev_1      =   24 )
+      parameter( nchklev_1      =    6 )
       integer    nchklev_2
-      parameter( nchklev_2      =   3330 )
+      parameter( nchklev_2      =    4 )
       integer    nchklev_3
-      parameter( nchklev_3      =   40 )
+      parameter( nchklev_3      =    3 )
+      integer    nchklev_4
+      parameter( nchklev_4      =    2 )
 
 c--   Note always check for the correct sizes of the common blocks!
 
 #else /* ALLOW_TAMC_CHECKPOINTING undefined */
 
       integer    nchklev_0
-      parameter( nchklev_0      =   48 )
+      parameter( nchklev_0      =  64800 )
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
 
@@ -103,9 +105,14 @@ c     and writing data.
       integer iloop_daily
 
       INTEGER    isbyte
-      PARAMETER( isbyte    = 4 )
+#ifdef ALLOW_TAMC_SINGLEPREC_COMLEV
+      PARAMETER( isbyte      = 4 )
+#else
+      PARAMETER( isbyte      = 8 )
+#endif
+
       INTEGER    maximpl
-      PARAMETER( maximpl   = 6 )
+      PARAMETER( maximpl     = 6 )
 #ifdef ALLOW_PTRACERS
 cph moved this to PTRACERS_SIZE.h
 cph      INTEGER    maxpass
@@ -115,12 +122,12 @@ cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
       PARAMETER( maxpass     = 2 )
 #endif
       INTEGER    maxcube
-      PARAMETER( maxcube   = 1 )
+      PARAMETER( maxcube     = 1 )
 
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey, 
-     &        itdkey, idynkey, igmkey, ikppkey
+     &        itdkey, idynkey, igmkey
 
 c     ================================================================
 c     END OF HEADER TAMC
