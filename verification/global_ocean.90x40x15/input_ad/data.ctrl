@@ -4,6 +4,7 @@
 # ECCO controlvariables
 # *********************
  &CTRL_NML
+# doSinglePrecTapelev= .FALSE.,
  xx_theta_file      = 'xx_theta',
  xx_salt_file       = 'xx_salt',
  xx_tr1_file        = 'xx_tr1',
