@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1064 2009/02/12 07:53:34 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1065 2009/02/13 15:05:19 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff, pkg/ctrl:
+  Add flag to reduce all tapelev I/O to single-prec. 
+  In data.ctrl set
+    doSinglePrecTapelev = .TRUE.
 o model/src/ini_curvilinear_grid.F: check in hack for SX8 compiler
   to make sure that recip_dxV and recip_dyU are never zero, until we 
   have a proper exchange for them. Most compilers do not seem
