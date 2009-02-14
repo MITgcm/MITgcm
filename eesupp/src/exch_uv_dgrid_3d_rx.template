@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_dgrid_3d_rx.template,v 1.1 2007/08/17 18:34:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_uv_dgrid_3d_rx.template,v 1.2 2009/02/14 16:06:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -87,7 +87,7 @@ c    I            exchWidthX, exchWidthY,
 c    I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
 
 C- note: can substitute the low-level S/R calls above with:
-      CALL EXCH_UV_3D_RL(
+      CALL EXCH_UV_3D_RX(
      U                     vPhi, uPhi,
      I                     .FALSE., myNz, myThid )
 
