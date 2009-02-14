@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.38 2009/02/13 16:58:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.39 2009/02/14 23:33:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -383,11 +383,7 @@ c     fp = readBinaryPrec
       CALL EXCH_XY_RS(rA,myThid )
       CALL EXCH_Z_3D_RS( xG, 1, myThid )
       CALL EXCH_Z_3D_RS( yG, 1, myThid )
-#ifdef ALLOW_EXCH2
-# ifndef ALLOW_AUTODIFF_TAMC
-      CALL EXCH2_UV_BGRID_3D_RS( dxV, dyU, .FALSE., 1, myThid)
-# endif
-#endif
+      CALL EXCH_UV_BGRID_3D_RS( dxV, dyU, .FALSE., 1, myThid)
       CALL EXCH_Z_3D_RS( rAz, 1, myThid )
       CALL EXCH_UV_XY_RS(dxC,dyC,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(rAw,rAs,.FALSE.,myThid)
