@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1067 2009/02/13 22:05:20 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1068 2009/02/16 09:13:18 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf: add capability to bypass interpolation for runoff
+  by setting yet another CPP-flag
 o autodiff
   new CPP option ALLOW_TAMC_SINGLEPREC_COMLEV
   allows to switch to single-prec common blocks;
@@ -2369,7 +2371,7 @@ o add two new packages
   - my82 (Mellor and Yamada, 1982) level 2 turbulence closure scheme
   - these scheme operate in a similar manner as KPP (without ghat, of 
     course), however there is only one diffusivity that is used for both
-    temperature and salinity (and passive tracers)ç
+    temperature and salinity (and passive tracers)
 o add offline package
 o add "verification/dic_example" which contains a dic-gchem-ptracer setup
   provided by Stephanie Dutkiewicz
