@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.13 2008/06/11 18:55:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.14 2009/02/16 09:10:18 mlosch Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -154,6 +154,11 @@ C   Relaxation to monthly climatologies.
 C   Use spatial interpolation to interpolate
 C   forcing files from input grid to model grid.
 #undef USE_EXF_INTERPOLATION
+C   runoff is a special case for which one might want to bypass
+C   interpolation from an input grid
+#ifdef USE_EXF_INTERPOLATION
+# undef USE_NO_INTERP_RUNOFF
+#endif
 
 #define EXF_INTERP_USE_DYNALLOC
 #if ( defined (EXF_INTERP_USE_DYNALLOC) & defined (USING_THREADS) )

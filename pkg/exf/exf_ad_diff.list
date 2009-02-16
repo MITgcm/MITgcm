@@ -13,6 +13,7 @@ exf_interp.f
 exf_mapfields.f
 exf_radiation.f
 exf_set_gen.f
+exf_set_runoff.f
 exf_set_obcs.f
 exf_set_uv.f
 exf_swapffields.f

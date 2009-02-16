@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.41 2008/06/11 18:55:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.42 2009/02/16 09:10:18 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -329,6 +329,14 @@ c     fractional ice-covered area MASK
 
 #ifdef ALLOW_RUNOFF
 c     Runoff
+#ifdef USE_NO_INTERP_RUNOFF
+      call exf_set_runoff  (
+     &     runofffile, runoffstartdate, runoffperiod, 
+     &     exf_inscal_runoff,
+     &     runoff_exfremo_intercept, runoff_exfremo_slope,
+     &     runoff, runoff0, runoff1, runoffmask, 
+     &     mytime, myiter, mythid )
+#else /* ndef USE_NO_INTERP_RUNOFF */
       call exf_set_gen  (
      &     runofffile, runoffstartdate, runoffperiod, 
      &     exf_inscal_runoff,
@@ -340,6 +348,7 @@ c     Runoff
      &     interp_method,
 #endif
      &     mytime, myiter, mythid )
+#endif /* def USE_NO_INTERP_RUNOFF */
 #endif
 
 c-- Control variables for atmos. state
