@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.19 2008/01/29 11:25:53 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.20 2009/02/19 09:24:07 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -101,7 +101,7 @@ c     == external ==
 
 c     == end of interface ==
 
-      IF ( usingCurvilinearGrid ) THEN
+      IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
 
         if ( uvecfile .NE. ' ' .and. vvecfile .NE. ' ' ) then
 
@@ -289,7 +289,7 @@ c     Interpolate linearly onto the current time.
         endif
 
       ELSE
-c     IF ( .NOT. usingCurvilinearGrid )
+c     IF ( .NOT. ( usingCurvilinearGrid .OR rotateGrid ) )
 
        interp_method=12
         call exf_set_gen(
