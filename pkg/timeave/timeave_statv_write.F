@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.38 2006/08/06 23:30:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.39 2009/02/19 03:06:52 dfer Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -234,8 +234,7 @@ C-          normal case: 1 message is enough
           CALL MNC_CW_I_W_S('I','tave',0,0,'iter', myIter, myThid)
 C         CALL MNC_CW_RL_W_S('D','tave',0,0,'model_time',myTime,myThid)
           CALL MNC_CW_RL_W(pf,'tave',0,0,'ETAtave',etatave,myThid)
-C         EH3: something is wrong here...
-C         CALL MNC_CW_RL_W(pf,'tave',0,0,'Eta2tave',Eta2tave,myThid)
+          CALL MNC_CW_RL_W(pf,'tave',0,0,'Eta2tave',Eta2tave,myThid)
           CALL MNC_CW_RL_W(pf,'tave',0,0,'Ttave',thetatave,myThid)
           CALL MNC_CW_RL_W(pf,'tave',0,0,'Stave',salttave,myThid)
           CALL MNC_CW_RL_W(pf,'tave',0,0,'uVeltave',uVeltave,myThid)
