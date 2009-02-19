@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1068 2009/02/16 09:13:18 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1069 2009/02/19 09:24:23 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf: fix a serious bug in exf_set_uv.F: do a rotation of the 
+  interpolated wind field not only for curvilineargrid=.true., but also 
+  for a rotated grid (rotateGrid=.true.)
 o pkg/exf: add capability to bypass interpolation for runoff
   by setting yet another CPP-flag
 o autodiff
