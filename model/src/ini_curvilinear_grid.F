@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.39 2009/02/14 23:33:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.40 2009/02/19 00:41:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,8 +51,7 @@ C     == Local variables ==
 #endif
 #ifndef OLD_GRID_IO
       INTEGER fp
-      INTEGER myTile
-      INTEGER iG, iL, iLen
+      INTEGER iG, jG, iL, iLen
       CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) tmpBuf
       INTEGER  ILNBLNK
@@ -273,13 +272,18 @@ c     fp = readBinaryPrec
 
       DO bj = 1,nSy
        DO bi = 1,nSx
-        iG = bi+(myXGlobalLo-1)/sNx
-        myTile = iG
 #ifdef ALLOW_EXCH2
-        myTile = W2_myTileList(bi)
-        iG = exch2_myface(myTile)
+C-    Use face number:
+        jG = W2_myTileList(bi)
+        iG = exch2_myface(jG)
+        WRITE(tmpBuf,'(A,I4)') 'tile:',jG
+#else
+C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
+        iG = bi+(myXGlobalLo-1)/sNx
+        jG = bj+(myYGlobalLo-1)/sNy
+        WRITE(tmpBuf,'(2(A,I3))') 'tile:',iG,' ,',jG
+        iG = iG + (jG-1)*(nSx*nPx)
 #endif
-        WRITE(tmpBuf,'(A,I4)') 'tile:',myTile
 
         iLen = ILNBLNK(horizGridFile)
         IF ( iLen .EQ. 0 ) THEN
