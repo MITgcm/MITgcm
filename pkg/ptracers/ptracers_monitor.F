@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.15 2007/11/10 22:09:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.16 2009/02/19 01:42:15 dfer Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -73,12 +73,12 @@ C     & mon_write_mnc (since it's the only thread that uses those flags):
             CALL MNC_CW_APPEND_VNAME(
      &           'T', '-_-_--__-__t', 0,0, myThid)
             CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
-            CALL MNC_CW_I_W_S(
-     &          'I',mon_fname,1,1,'T', myIter, myThid)
+            CALL MNC_CW_RL_W_S(
+     &          'D',mon_fname,1,1,'T', myTime, myThid)
             CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
             mon_write_mnc = .TRUE.
           ENDIF
-#endif /*  ALLOW_MNC  */
+#endif /* ALLOW_MNC */
 
           IF ( mon_write_stdout ) THEN
             WRITE(msgBuf,'(2A)') '// ==========================',
