@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.33 2008/10/18 12:42:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.34 2009/02/20 15:27:50 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -228,7 +228,7 @@ c             intantaneous field.
 
 #ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
       INTEGER maxNumDays
-      PARAMETER ( maxNumDays = 5480 )
+      PARAMETER ( maxNumDays = 5844 )
       common /averages_transp_r/
      &                     transpbar
      &                   , transpobs
