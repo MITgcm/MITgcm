@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.24 2008/04/09 22:13:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.25 2009/02/23 03:00:10 dfer Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -182,7 +182,7 @@ C determine inorganic carbon chem coefficients
              surfphos(i,j)= PTRACER(i,j,klev,bi,bj,3)
      &                          * maskC(i,j,kLev,bi,bj)
 #else
-             surfalk(i,j) = 2.366595 _d 0 * salt(i,j,kLev,bi,bj)/gsm_s
+             surfalk(i,j) = 2.366595 _d 0 * salt(i,j,kLev,bi,bj)/35. _d 0
      &                          * maskC(i,j,kLev,bi,bj)
              surfphos(i,j)= 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
 #endif
