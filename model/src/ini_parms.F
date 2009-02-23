@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.220 2009/01/27 15:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.221 2009/02/23 00:59:47 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -1013,25 +1013,6 @@ C     In spherical polar distances are in degrees
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 
-C     temporary backward compatibility:
-      IF ( thetaMin.NE.UNSET_RL .AND. xgOrigin .EQ. UNSET_RL ) THEN
-        WRITE(msgBuf,'(2A)')
-     &   '** WARNING ** INI_PARMS: thetaMin no longer supported',
-     &   ' <= replaced by xgOrigin'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
-        xgOrigin = thetaMin
-        thetaMin = UNSET_RL
-      ENDIF
-      IF ( phiMin .NE. UNSET_RL .AND. ygOrigin .EQ. UNSET_RL ) THEN
-        WRITE(msgBuf,'(2A)')
-     &   '** WARNING ** INI_PARMS:   phiMin no longer supported',
-     &   ' <= replaced by ygOrigin'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
-        ygOrigin = phiMin
-        phiMin   = UNSET_RL
-      ENDIF
 C     Check for retired parameters still being used
       IF ( rkFac .NE. UNSET_RL ) THEN
        nRetired = nRetired+1
