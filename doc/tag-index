@@ -1,14 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1069 2009/02/19 09:24:23 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1070 2009/02/23 01:27:48 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o remove backward compatibility for thetaMin,phiMin 
+  (replaced by xgOrigin,ygOrigin on Jan 27, 2009)
 o pkg/exf: fix a serious bug in exf_set_uv.F: do a rotation of the 
   interpolated wind field not only for curvilineargrid=.true., but also 
   for a rotated grid (rotateGrid=.true.)
 o pkg/exf: add capability to bypass interpolation for runoff
   by setting yet another CPP-flag
+o eesupp/src, B-grid exchange:
+  add simple (6 tiles, non MPI) CS exch + standard interface S/R.
 o autodiff
   new CPP option ALLOW_TAMC_SINGLEPREC_COMLEV
   allows to switch to single-prec common blocks;
@@ -24,11 +28,8 @@ o pkg/autodiff, pkg/ctrl:
   Add flag to reduce all tapelev I/O to single-prec. 
   In data.ctrl set
     doSinglePrecTapelev = .TRUE.
-o model/src/ini_curvilinear_grid.F: check in hack for SX8 compiler
-  to make sure that recip_dxV and recip_dyU are never zero, until we 
-  have a proper exchange for them. Most compilers do not seem
-  to mind divisions by zero in the overlaps, as long as the results are
-  not used anywhere, but sxf90 does. 
+o model/src/ini_curvilinear_grid.F, new grid-file format without EXCH2:
+  check in hack for SX8 compiler (for dxV, dyU); remove it afterwards.
 o pkg/shelfice: fix bug with SHELFICEconserve flag, prepare for 
   real fresh water flux (not yet)
 o pkg/mdsio & rw:
