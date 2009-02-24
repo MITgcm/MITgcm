@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_fourth_level_loop.F,v 1.1 2009/01/29 21:46:50 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_fourth_level_loop.F,v 1.2 2009/02/24 21:40:24 utke Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -98,7 +98,10 @@ C     == Local variables ==
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('THE_FOURTH_LEVEL_LOOP',myThid)
 #endif
-      print *, 'JU: THE_FOURTH_LEVEL_LOOP(',ilev_4,')'
+#ifdef OAD_DEBUG_JOINT
+      write(standardmessageunit,'(A,1(I6,A))')
+     + 'OAD: THE_FOURTH_LEVEL_LOOP(',iLev_4,')'
+#endif
       do ilev_3 = 1,uCheckLev3
          if (theCurrentStep .le. nTimeSteps) then
 #ifdef ALLOW_DEBUG
@@ -198,7 +201,10 @@ C     == Local variables ==
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('THE_FOURTH_LEVEL_PLAIN',myThid)
 #endif
-      print *, 'JU: THE_FOURTH_LEVEL_PLAIN()'
+#ifdef OAD_DEBUG_JOINT
+      write(standardmessageunit,'(A)')
+     + 'OAD: THE_FOURTH_LEVEL_PLAIN()'
+#endif
       if (uCheckLev3 .gt. 0 ) then 
          do ilev_3 = 1,uCheckLev3
             if (theCurrentStep .le. nTimeSteps) then

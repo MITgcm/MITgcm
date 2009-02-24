@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_second_level_loop.F,v 1.1 2009/01/29 21:46:50 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_second_level_loop.F,v 1.2 2009/02/24 21:40:24 utke Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -100,7 +100,10 @@ C     == Local variables ==
       IF (debugMode) CALL DEBUG_ENTER('THE_SECOND_LEVEL_LOOP',myThid)
 #endif
 
-      print *, 'JU: THE_SECOND_LEVEL_LOOP(',iLev_4,',',iLev_3,',',iLev_2,')'
+#ifdef OAD_DEBUG_JOINT
+      write(standardmessageunit,'(A,3(I6,A))')
+     + 'OAD: THE_SECOND_LEVEL_LOOP(',iLev_4,',',iLev_3,',',iLev_2,')'
+#endif
       do ilev_1 = 1,uCheckLev1
          testStep = ilev_1 
      &        + (ilev_2-1)*uCheckLev1 
@@ -204,7 +207,10 @@ C     == Local variables ==
       IF (debugMode) CALL DEBUG_ENTER('THE_SECOND_LEVEL_PLAIN',myThid)
 #endif
 
-      print *, 'JU: THE_SECOND_LEVEL_PLAIN()'
+#ifdef OAD_DEBUG_JOINT
+      write(standardmessageunit,'(A)')
+     + 'OAD: THE_SECOND_PLAIN()'
+#endif
       do ilev_1 = 1,uCheckLev1
          testStep = ilev_1 
          if ( theCurrentStep .le. nTimeSteps ) then

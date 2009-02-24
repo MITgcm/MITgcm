@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_model_main.F,v 1.1 2009/01/29 21:46:50 utke Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad_all/Attic/the_model_main.F,v 1.2 2009/02/24 21:40:24 utke Exp $
 
 CBOI
 C
@@ -629,12 +629,15 @@ C--   Call time stepping loop of full model
       our_rev_mode%plain=.TRUE.
       our_rev_mode%tape=.FALSE.
       our_rev_mode%adjoint=.FALSE.
+#ifdef OAD_DEBUG
       do i1=1-olx,snx+olx
 	do i2=1-oly,sny+oly
 	  do i3=1,nr
 	    do i4=1,nsx
 	      do i5=1,nsy
-                 write (*,'(A,5(I3,A),E25.17E3,A,E25.17E3)') 'JU: (',
+                 write (standardmessageunit,
+     +'(A,5(I3,A),E25.17E3,A,E25.17E3)') 
+     +'OAD: (',
      +i1,',',i2,',',i3,',',i4,',',i5,') salt/theta ',
      +xx_salt(i1,i2,i3,i4,i5)%d,'/',xx_theta(i1,i2,i3,i4,i5)%d
               end do
@@ -642,6 +645,7 @@ C--   Call time stepping loop of full model
           end do 
         end do
       end do
+#endif
 C     Temporarily change setting of writeBinaryPrec
       tmpprec = writeBinaryPrec
       writeBinaryPrec = ctrlprec
