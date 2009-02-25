@@ -8,19 +8,19 @@ function [flt,data,header] = read_flt_traj(fName)
 % >> plot( flts(3).time, flts(3).x/1e3 )
 % >> for k=1:126;plot(flts(k).x/1e3,flts(k).y/1e3);hold on;end;hold off
 
-% $Header: /u/gcmpack/MITgcm/verification/flt_example/input/read_flt_traj.m,v 1.4 2009/02/05 01:03:33 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/verification/flt_example/input/read_flt_traj.m,v 1.5 2009/02/25 01:41:00 dfer Exp $
 % $Name:  $
 
-imax=13;		% record size
-ieee='b';		% IEEE big-endian format
-bytesPerRec=imax*8;	% 8 bytes per real*8
+imax=13;                  % record size
+ieee='b';                 % IEEE big-endian format
+bytesPerRec=imax*8;       % 8 bytes per real*8
 
 [I]=strfind(fName,'/');
 if length(I) == 0,
  bDr='';
 else
  fprintf(' found Dir Sep in file name (');
- fprintf(' %i',I); 
+ fprintf(' %i',I);
  bDr=fName(1:I(end));
  fprintf(' ) ; load files from Dir "%s"\n',bDr);
 end
