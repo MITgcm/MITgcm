@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.39 2008/04/22 22:20:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.40 2009/02/27 01:47:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,8 +59,6 @@ C     iMin,iMax
 C     jMin,jMax
 C     xA            :: W-Cell face area normal to X
 C     yA            :: W-Cell face area normal to Y
-C     rMinW,rMaxW   :: column boundaries (r-units) at Western  Edge
-C     rMinS,rMaxS   :: column boundaries (r-units) at Southern Edge
 C     rThickC_W     :: thickness (in r-units) of W-Cell at Western Edge
 C     rThickC_S     :: thickness (in r-units) of W-Cell at Southern Edge
 C     rThickC_C     :: thickness (in r-units) of W-Cell (centered on W pt)
@@ -71,14 +69,13 @@ C     flxAdvUp      :: vertical mom. advective   flux, vertical direction (@ lev
 C     flxDisUp      :: vertical mom. dissipation flux, vertical direction (@ level k-1)
 C     flx_Dn        :: vertical momentum flux, vertical direction (@ level k)
 C     gwDiss        :: vertical momentum dissipation tendency
+C     gwAdd         :: other tendencies (Coriolis, Metric-terms)
+C     del2w         :: laplacian of wVel
+C     wFld          :: local copy of wVel
 C     i,j,k         :: Loop counters
       INTEGER iMin,iMax,jMin,jMax
       _RS    xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS    yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS    rMinW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS    rMaxW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS    rMinS (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS    rMaxS (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    rThickC_W    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    rThickC_S    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    rThickC_C    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -91,6 +88,7 @@ C     i,j,k         :: Loop counters
       _RL    gwDiss(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    gwAdd (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    del2w (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    wFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER i,j,k, kp1
       _RL  wOverride
       _RL  tmp_WbarZ
@@ -136,6 +134,14 @@ C-    Initialise gwDiss to zero
          gwDiss(i,j) = 0.
        ENDDO
       ENDDO
+      IF (momViscosity) THEN
+C-    Initialize del2w to zero:
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+           del2w(i,j) = 0. _d 0
+         ENDDO
+        ENDDO
+      ENDIF
 
 C--   Boundaries condition at top
       DO j=1-OLy,sNy+OLy
@@ -144,21 +150,6 @@ C--   Boundaries condition at top
          flxDisUp(i,j) = 0.
        ENDDO
       ENDDO
-C--   column boundaries :
-      IF (momViscosity) THEN
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx+1,sNx+Olx
-           rMaxW(i,j) = MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
-           rMinW(i,j) = MAX(   R_low(i-1,j,bi,bj),   R_low(i,j,bi,bj) )
-         ENDDO
-        ENDDO
-        DO j=1-Oly+1,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-           rMaxS(i,j) = MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
-           rMinS(i,j) = MAX(   R_low(i,j-1,bi,bj),   R_low(i,j,bi,bj) )
-         ENDDO
-        ENDDO
-      ENDIF
 
 C---  Sweep down column
       DO k=2,Nr
@@ -196,8 +187,8 @@ C-    valid in z & p coord.; also accurate if Interface @ middle between 2 cente
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx+1,sNx+Olx
            rThickC_W(i,j) = MAX( zeroRS,
-     &                           MIN( rMaxW(i,j), rC(k-1) )
-     &                          -MAX( rMinW(i,j), rC(k)   )
+     &                           MIN( rSurfW(i,j,bi,bj), rC(k-1) )
+     &                          -MAX(  rLowW(i,j,bi,bj), rC(k)   )
      &                         )
 C     W-Cell Western face area:
            xA(i,j) = _dyG(i,j,bi,bj)*rThickC_W(i,j)
@@ -207,8 +198,8 @@ c    &                              *deepFacF(k)
          DO j=1-Oly+1,sNy+Oly
           DO i=1-Olx,sNx+Olx
            rThickC_S(i,j) = MAX( zeroRS,
-     &                           MIN( rMaxS(i,j), rC(k-1) )
-     &                          -MAX( rMinS(i,j), rC(k)   )
+     &                           MIN( rSurfS(i,j,bi,bj), rC(k-1) )
+     &                          -MAX(  rLowS(i,j,bi,bj), rC(k)   )
      &                         )
 C     W-Cell Southern face area:
            yA(i,j) = _dxG(i,j,bi,bj)*rThickC_S(i,j)
@@ -261,27 +252,45 @@ c          ENDIF
 
 C--   horizontal bi-harmonic dissipation
         IF (momViscosity .AND. viscA4W.NE.0. ) THEN
+
+C-    local copy of wVel:
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+             wFld(i,j) = wVel(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
 C-    calculate the horizontal Laplacian of vertical flow
 C     Zonal flux d/dx W
+          IF ( useCubedSphereExchange ) THEN
+C     to compute d/dx(W), fill corners with appropriate values:
+            CALL FILL_CS_CORNER_TR_RL( 1, .FALSE.,
+     &                                 wFld, bi,bj, myThid )
+          ENDIF
           DO j=1-Oly,sNy+Oly
            flx_EW(1-Olx,j)=0.
            DO i=1-Olx+1,sNx+Olx
             flx_EW(i,j) =
-     &              (wVel(i,j,k,bi,bj)-wVel(i-1,j,k,bi,bj))
+     &               ( wFld(i,j) - wFld(i-1,j) )
      &              *_recip_dxC(i,j,bi,bj)*xA(i,j)
 #ifdef COSINEMETH_III
      &              *sqCosFacU(j,bi,bj)
 #endif
            ENDDO
           ENDDO
+
 C     Meridional flux d/dy W
+          IF ( useCubedSphereExchange ) THEN
+C     to compute d/dy(W), fill corners with appropriate values:
+            CALL FILL_CS_CORNER_TR_RL( 2, .FALSE.,
+     &                                 wFld, bi,bj, myThid )
+          ENDIF
           DO i=1-Olx,sNx+Olx
            flx_NS(i,1-Oly)=0.
           ENDDO
           DO j=1-Oly+1,sNy+Oly
            DO i=1-Olx,sNx+Olx
             flx_NS(i,j) =
-     &              (wVel(i,j,k,bi,bj)-wVel(i,j-1,k,bi,bj))
+     &               ( wFld(i,j) - wFld(i,j-1) )
      &              *_recip_dyC(i,j,bi,bj)*yA(i,j)
 #ifdef ISOTROPIC_COS_SCALING
 #ifdef COSINEMETH_III
@@ -292,35 +301,16 @@ C     Meridional flux d/dy W
           ENDDO
 
 C     del^2 W
-C     Difference of zonal fluxes ...
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx-1
-            del2w(i,j)=flx_EW(i+1,j)-flx_EW(i,j)
-           ENDDO
-           del2w(sNx+Olx,j)=0.
-          ENDDO
-
-C     ... add difference of meridional fluxes and divide by volume
+C     Divergence of horizontal fluxes
           DO j=1-Oly,sNy+Oly-1
-           DO i=1-Olx,sNx+Olx
-            del2w(i,j) = ( del2w(i,j)
-     &                    +(flx_NS(i,j+1)-flx_NS(i,j))
+           DO i=1-Olx,sNx+Olx-1
+            del2w(i,j) = ( ( flx_EW(i+1,j)-flx_EW(i,j) )
+     &                    +( flx_NS(i,j+1)-flx_NS(i,j) )
      &                   )*recip_rA(i,j,bi,bj)*recip_rThickC(i,j)
      &                    *recip_deepFac2F(k)
            ENDDO
           ENDDO
-C-- No-slip BCs impose a drag at walls...
-CML ************************************************************
-CML   No-slip Boundary conditions for bi-harmonic dissipation
-CML   need to be implemented here!
-CML ************************************************************
-        ELSEIF (momViscosity) THEN
-C-    Initialize del2w to zero:
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            del2w(i,j) = 0. _d 0
-           ENDDO
-          ENDDO
+C end if biharmonic viscosity
         ENDIF
 
         IF (momViscosity) THEN
@@ -504,10 +494,18 @@ C--          prepare for next level (k+1)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( diagDiss )  CALL DIAGNOSTICS_FILL( gwDiss, 'Wm_Diss ',
-     &                                        k, 1, 2, bi,bj, myThid )
-      IF ( diagAdvec ) CALL DIAGNOSTICS_FILL( gW, 'Wm_Advec',
-     &                                        k,Nr, 1, bi,bj, myThid )
+        IF ( diagDiss )  THEN
+          CALL DIAGNOSTICS_FILL( gwDiss, 'Wm_Diss ',
+     &                           k, 1, 2, bi,bj, myThid )
+C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
+C        does it only if k=1 (never the case here)
+          IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT('Wm_Diss ',bi,bj,myThid)
+        ENDIF
+        IF ( diagAdvec ) THEN
+          CALL DIAGNOSTICS_FILL( gW, 'Wm_Advec',
+     &                           k,Nr, 1, bi,bj, myThid )
+          IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT('Wm_Advec',bi,bj,myThid)
+        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 C--   Dissipation term inside the Adams-Bashforth:
