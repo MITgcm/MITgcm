@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.40 2009/02/19 00:41:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.41 2009/02/27 00:32:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -407,11 +407,11 @@ C--   Stop if Angle have not been loaded but are needed :
       ENDIF
       _END_MASTER(myThid)
 
-c     CALL WRITE_FULLARRAY_RL('dxV',dxV,1,0,0,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('dyU',dyU,1,0,0,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('rAz',rAz,1,0,0,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('xG',xG,1,0,0,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('yG',yG,1,0,0,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('dxV',dxV,1,0,0,1,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('dyU',dyU,1,0,0,1,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('rAz',rAz,1,0,0,1,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('xG' ,xG ,1,0,0,1,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('yG' ,yG ,1,0,0,1,0,myThid)
 
 C--   Now let's look at all these beasts
       IF ( debugLevel .GE. debLevB ) THEN
