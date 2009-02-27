@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_depth_ini.F,v 1.2 2007/05/14 22:02:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_depth_ini.F,v 1.3 2009/02/27 03:07:50 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -128,7 +128,7 @@ C--
 
 c--   Update the tile edges.
 
-      _EXCH_XYZ_R8( xx_r_low, myThid )
+      _EXCH_XY_R8( xx_r_low, myThid )
 
 #endif /* ALLOW_DEPTH_CONTROL */
 
