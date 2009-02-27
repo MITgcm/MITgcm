@@ -1,7 +1,18 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.1 2007/12/25 22:07:54 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.2 2009/02/27 22:58:57 jmc Exp $
 # $Name:  $
+
+run_mpi()
+{
+#   run_mpi output_file
+    echo "execute: '$RUNMPI'"
+    $RUNMPI
+    if test $# = 1
+    then  mv STDOUT.0000  $1
+    echo 'mv STDOUT.0000' $1
+    fi
+}
 
 rnp_loc()
 {
@@ -19,25 +30,11 @@ rnp_loc()
 
 #---------------------------
 
-#- default:
-Nit=2
-prt=1    # 1 = print some informations ; 2 = print more informations
-action=1
-cmd='mv -f'
-tmpDir='temp_tst'
-
-#- executable:
-mpi=0
-if [ $mpi -ge 1 ]
-then gcmExc=run_ifc_mpi
-else gcmExc=mitgcmuv
-fi
-
 #- exit status:
 # 0 -> test is successful
-# 1 -> fail in 1rst run 
-# 2 -> fail in 2nd  run 
-# 3 -> fail in 3rd  run 
+# 1 -> fail in 1rst run
+# 2 -> fail in 2nd  run
+# 3 -> fail in 3rd  run
 # 4 -> pickup*.data (written at the end of 2+2 & 4 it run) are different
 # 5 -> pickup*.meta (written at the end of 2+2 & 4 it run) are different
 # 6 -> missing 'data.tst' file (removed or not yet generated ?)
@@ -45,43 +42,80 @@ fi
 # 8 -> missing information (in standard output of previous run) about pickup
 # 9 -> error in argument list
 
+#- default:
+Nit=2
+prt=1    # 1 = print some informations ; 2 = print more informations
+action=1
+cmdMV='mv -f'
+tmpDir='temp_tst'
+
+#- default executable, command-line , using MPI:
+gcmEXE=./mitgcmuv
+cmdEXE=
+mpi=0
+
 nArg=$#
-if [ $nArg -ge 3 ]
-then
- if test $2 = '-exe' ; then gcmExc=$3 ; nArg=`expr $nArg - 2` ; fi
- if test $1 = '-exe' ; then gcmExc=$2 ; shift ; shift ; nArg=$# ; fi
-fi
+prev=
+for xx ; do
+  #echo "xx='$xx'"
+  # If the previous option needs an argument, assign it.
+  if test -n "$prev"; then
+    eval "$prev=\$xx"
+    prev=
+    nArg=`expr $nArg - 2`
+    continue
+  fi
+
+  case $xx in
+  -mpi     ) mpi=1 ; nArg=`expr $nArg - 1` ;;
+  -exe     ) prev=gcmEXE ;;
+  -command ) prev=cmdEXE ;;
+          *) flag=$xx ;;
+  esac
+done
+echo "cmdEXE='$cmdEXE' ; RUNMPI='$RUNMPI'"
+echo "nArg=$nArg ; mpi=$mpi ; flag='$flag'"
 
 case $nArg in
   1) ;;
-   *) echo "Usage: `basename $0` flag [-exe EXECUTABLE]"
+   *) echo "Usage: `basename $0` flag [-mpi] [-exe EXECUTABLE] [-command COMMAND]"
       echo " Check restart: compare 1 run of 2 x $Nit it long"
       echo "     with 2 consecutive runs of $Nit it long each"
       echo " where: flag = 0 -> prepare (from a previous run) pickup & data files"
-      echo "        flag = 1 -> do the 3 runs (with EXECUTABLE, default=mitgcmuv)"
+      echo "        flag = 1 -> do the 3 runs (using COMMAND"
+      echo "                         or simply using EXECUTABLE, default=$gcmEXE)"
       echo "        flag = 2 -> compare std_outp"
       echo "        flag = 3 -> compare pickup files"
       echo "        flag = 4 -> clean-up output files"
       echo "      flag = All -> do 0,1,2,3,4 sequentially"
       exit 9 ;;
 esac
-flag=$1
 
+#-- set the run-command :
+if test "x$cmdEXE" = x
+then
+    RUNMPI="mpirun -machinefile ../../mf -v -np 2 $gcmEXE"
+    cmdEXE=$gcmEXE
+else
+    RUNMPI="$cmdEXE"
+fi
+if [ $mpi -ge 1 ] ; then cmdEXE=run_mpi ; fi
+echo "cmdEXE='$cmdEXE' ; RUNMPI='$RUNMPI'"
 #=========================
 
 if test $flag = '0' -o $flag = 'All' ; then
 #----------------------------------------------------------------------
 # last pickup written (from previous run):
-if [ $mpi -ge 1 ] 
+if [ $mpi -ge 1 ]
 then outpRun='STDOUT.0000'
 else outpRun='output.txt'
 fi
-if test -r $outpRun 
+if test -r $outpRun
 then
 # grep ' %CHECKPOINT ' $outpRun | tail -1
   lastPick=`grep ' %CHECKPOINT ' $outpRun | sed 's/^.*%CHECKPOINT //' | tail -1`
-  if test "x$lastPick" = x 
-  then 
+  if test "x$lastPick" = x
+  then
     echo "no pickup information written in '$outpRun' from previous run"
     exit 8
   else
@@ -89,7 +123,7 @@ then
     zz=`echo $lastPick | awk '{print $2}'`
     echo "from previous run std.outp, lastPick='$lastPick' ; iter='$iter' ; zz='$zz'"
   fi
-else 
+else
   echo "no standard output file '$outpRun' from previous run"
   exit 7
 fi
@@ -112,8 +146,8 @@ else
     for xx in $listF
     do
       new=`echo $xx | sed "s/^$yy\.$zz/$yy\.$sufx/"`
-      if [ $prt -ge 2 ] ; then echo '  '$cmd $xx $new ; fi
-      if test $action = 1 ; then    $cmd $xx $new ; fi
+      if [ $prt -ge 2 ] ; then echo '  '$cmdMV $xx $new ; fi
+      if test $action = 1 ; then    $cmdMV $xx $new ; fi
     done
   done
  fi
@@ -149,7 +183,7 @@ mv -f data.tmp_$$ data.tst
 sed "/^ *\&PARM03/a \ nIter0=$iter," data.tst > data.tmp_$$
 mv -f data.tmp_$$ data.tst
 echo "prepare file 'data.tst' : done"
-if  [ $prt -ge 1 ] ; then 
+if  [ $prt -ge 1 ] ; then
   echo ' diff data.tst data' ; diff data.tst data ; echo ' ' ;
 fi
 #---- clean up current dir: move output to temp_tst dir:
@@ -159,6 +193,7 @@ if test $action = 1 ; then
  mv -f *.data $tmpDir
  mv -f *.meta $tmpDir
  mv -f *.txt $tmpDir
+ mv -f STD???.0[0-9][0-9][0-9] $tmpDir
  listS=`ls $tmpDir/pickup*.${sufx}* 2> /dev/null | head -1`
  if test "x$listS" != x ; then mv $tmpDir/pickup*.${sufx}* . ; fi
 #- move main parameter file "data":
@@ -177,7 +212,7 @@ if test $action = 1 ; then
     for ll in $listN
     do
       sed "$ll s/^./#&/" data.pkg > data.tmp_$$
-      if  [ $prt -ge 1 ] ; then echo ' changes in data.pkg' 
+      if  [ $prt -ge 1 ] ; then echo ' changes in data.pkg'
         diff data.tmp_$$ data.pkg ; echo ' ' ; fi
       mv -f data.tmp_$$ data.pkg
     done
@@ -213,7 +248,7 @@ num1c=`printf "%10.10i\n" $num1`
 num2c=`printf "%10.10i\n" $num2`
 echo " start-end iter: $num0 , $num1 , $num2"
 echo " sufix: '$num0c' '$num1c' '$num2c'"
-echo ' gcmExc='$gcmExc
+echo ' cmdEXE='$cmdEXE
 #exit
 #---------------------------
 
@@ -238,8 +273,8 @@ rm -f STDERR.0000
 cp -p data.tst data
 echo '==> START RUN 2 x' $Nit 'it'
 if [ $mpi -ge 1 ]
-then ./$gcmExc std_outp.2it > TTT.out.2it 2>&1
-else ./$gcmExc > std_outp.2it
+then $cmdEXE std_outp.2it > TTT.out.2it 2>&1
+else $cmdEXE > std_outp.2it
 fi
 mv STDERR.0000 std__err.2it
 out=`egrep -c 'STOP ABNORMAL END' std_outp.2it`
@@ -263,8 +298,8 @@ if test "x$listS" != x ; then mv $dir1/pickup*.${num0c}* . ; fi
 sed "s/^ nTimeSteps=$Dbl/ nTimeSteps=$Nit/g" data.tst > data
 echo '==> START RUN 1iA'
 if [ $mpi -ge 1 ]
-then ./$gcmExc std_outp.1iA > TTT.out.1iA 2>&1
-else ./$gcmExc > std_outp.1iA
+then $cmdEXE std_outp.1iA > TTT.out.1iA 2>&1
+else $cmdEXE > std_outp.1iA
 fi
 mv STDERR.0000 std__err.1iA
 out=`egrep -c 'STOP ABNORMAL END' std_outp.1iA`
@@ -288,8 +323,8 @@ sed "s/^ nIter0=$num0/ nIter0=$num1/g" data > data.tmp
 mv -f data.tmp data
 echo '==> START RUN 1iB'
 if [ $mpi -ge 1 ]
-then ./$gcmExc std_outp.1iB > TTT.out.1iB 2>&1
-else ./$gcmExc > std_outp.1iB
+then $cmdEXE std_outp.1iB > TTT.out.1iB 2>&1
+else $cmdEXE > std_outp.1iB
 fi
 mv STDERR.0000 std__err.1iB
 out=`egrep -c 'STOP ABNORMAL END' std_outp.1iB`
@@ -329,7 +364,7 @@ fi
 
 if test $flag = '3' -o $flag = 'All' ; then
 #----------------------------------------------------------------------
-echo ' ' 
+echo ' '
 echo "== diff pickup files : end of 1rst run (2x$Nit it) & end of 3rd run (2nd $Nit it)"
 listP=`( cd $dir1 ; ls pickup*.$num2c* | sed 's/\..*//g' | uniq )`
 chkmeta='Y'
@@ -351,7 +386,7 @@ do
     echo ' diff' $dir1/$zz.$xx.meta $dir3
     diff $dir1/$zz.$xx.meta $dir3
     out=$?
-    if test $out != 0 ; then 
+    if test $out != 0 ; then
      echo 'Diff outp=' $out ' ==> stop'
      exit 5
     fi
@@ -363,7 +398,7 @@ fi
 
 if test $flag = '4' -o $flag = 'All' ; then
 #-------------
-echo ' ' 
+echo ' '
 echo "== clean-up and reset :"
  echo '--> remove output dir and output files:'
  echo ' rm -rf' $dir1 $dir2 $dir3

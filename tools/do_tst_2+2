@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.2 2008/01/09 22:02:03 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.3 2009/02/27 22:58:57 jmc Exp $
 # $Name:  $
 
 usage()
@@ -12,6 +12,8 @@ usage()
         echo "  -help         : print usage"
         echo "  -t   LIST_EXP : only check experiments in LIST_EXP"
         echo "  -skd LIST_EXP : skip experiments in LIST_EXP"
+        echo "  -exe  COMMAND : use COMMAND to run the tests"
+        echo "  -mpi          : run the tests using MPI"
         echo "  -o     STRING : used to build output directory name"
         echo "                      (DEF=\"hostname\")"
         echo "  -a,-A  STRING : email address to send output to"
@@ -24,10 +26,12 @@ usage()
 CLEAN=0
 TESTDIRS=
 SKIPDIRS=
+SCRIPT='../tools/tst_2+2'
+COMMAND=
+mpi=0
 OUTDIR=`hostname`
 SAVELOG=0
 ADDRESS=
-SCRIPT='../tools/tst_2+2'
 MPACK="../tools/mpack-1.6/mpack"
 here=`pwd`
 yy=
@@ -42,6 +46,8 @@ do
       -clean) CLEAN=1 ;;
       -t    ) yy=TESTDIRS ;;
       -skd  ) yy=SKIPDIRS ;;
+      -exe  ) yy=COMMAND ;;
+      -mpi  ) mpi=1 ;;
       -a    ) yy=ADDRESS ;;
       -A    ) yy=ADDRESS ; SAVELOG=1 ;;
       -o    ) yy=OUTDIR ;;
@@ -128,13 +134,20 @@ echo  >> $SUMMARY
 echo 'P. Run  Result     experiment'  >> $SUMMARY
 echo '  1 2 3'  >> $SUMMARY
 
+#-- For MPI test:
+RUNOUTP="output.txt"
+if [ $mpi -ge 1 ] ; then
+  SCRIPT="$SCRIPT -mpi"
+  RUNOUTP="STDOUT.0000"
+fi
+
 for xx in $LIST
 do
   echo ==============================================================================
   listD='run '`(cd $xx/results ; ls output.*.txt 2> /dev/null | sed 's/^output\./tr_run./g' | sed 's/\.txt$//g' )`
   for yy in $listD
   do
-    if test -f $xx/$yy/output.txt ; then
+    if test -f $xx/$yy/$RUNOUTP ; then
       if test "x$OPTFILE" = x -a -f $xx/build/Makefile ; then
         comm=`grep '^# OPTFILE=' $xx/build/Makefile 2>/dev/null | head -1 | sed 's/^# //'`
         echo "from '$xx/build/Makefile', extract:" > $DRESULTS/genmake_state
@@ -146,9 +159,16 @@ do
       echo -n "Entering $xx/$yy :"
       cd $xx/$yy
       pwd > outp.tst_2+2.log
-      echo $SCRIPT All >> outp.tst_2+2.log ; echo ' ' >> outp.tst_2+2.log
-      $SCRIPT All >> outp.tst_2+2.log 2>&1
-      out=$?
+      if test "x$COMMAND" = x ; then
+        echo $SCRIPT All >> outp.tst_2+2.log ; echo ' ' >> outp.tst_2+2.log
+        $SCRIPT All >> outp.tst_2+2.log 2>&1
+        out=$?
+      else
+        echo "$SCRIPT All -command \"$COMMAND\"" >> outp.tst_2+2.log
+        echo ' ' >> outp.tst_2+2.log
+        $SCRIPT All -command "$COMMAND" >> outp.tst_2+2.log 2>&1
+        out=$?
+      fi
       case $out in
        0 ) echo ' pass test 2+2=4'
            echo "Y Y Y Y  pass   <- $nam" >> ../../$SUMMARY ;;
