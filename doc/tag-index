@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1071 2009/02/27 02:05:04 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1072 2009/02/27 03:22:34 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  fix bug in ctrl_depth_ini.F (EXCH_XYZ was applied to 2-D field xx_r_low)
 o non-hydrostatic (calc_gw.F):
   fix viscA4 on CS-grid + fix diagnostics: Wm_Diss & Wm_Advec
   update output of exp. global_ocean.cs32x15.viscA4
