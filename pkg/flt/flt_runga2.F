@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.13 2009/02/10 21:30:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.14 2009/02/27 00:44:47 dfer Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -133,14 +133,14 @@ C When using this alternative scheme the noise probably should not be added twic
 C ix and itx are in indices. Therefore it is necessary to multiply
 C with a grid scale factor.
 
-              itx=ix+0.5*deltaTmom*uu*scalex
-              jty=jy+0.5*deltaTmom*vv*scaley
+              itx=ix+0.5*flt_deltaT*uu*scalex
+              jty=jy+0.5*flt_deltaT*vv*scaley
 
 C     Second step
 
 #ifdef ALLOW_3D_FLT
               IF (iup(ip,bi,bj).EQ.-1.) THEN
-                ktz=kz+0.5*deltaTmom*ww*scalez
+                ktz=kz+0.5*flt_deltaT*ww*scalez
                 CALL FLT_TRILINEAR(itx,jty,ktz,u1,uVel,1,bi,bj,myThid)
                 CALL FLT_TRILINEAR(itx,jty,ktz,v1,vVel,2,bi,bj,myThid)
                 CALL FLT_TRILINEAR(itx,jty,ktz,w1,wVel,4,bi,bj,myThid)
@@ -182,13 +182,13 @@ C ipart is in coordinates. Therefore it is necessary to multiply
 C with a grid scale factor divided by the number grid points per
 C geographical coordinate.
               ipart(ip,bi,bj) = ipart(ip,bi,bj)
-     &                        + deltaTmom*u1*scalex
+     &                        + flt_deltaT*u1*scalex
               jpart(ip,bi,bj) = jpart(ip,bi,bj)
-     &                        + deltaTmom*v1*scaley
+     &                        + flt_deltaT*v1*scaley
 #ifdef ALLOW_3D_FLT
               IF (iup(ip,bi,bj).EQ.-1.) THEN
                 kpart(ip,bi,bj) = kpart(ip,bi,bj)
-     &                          + deltaTmom*w1*scalez
+     &                          + flt_deltaT*w1*scalez
               ENDIF
 #endif /* ALLOW_3D_FLT */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT.h,v 1.3 2009/02/10 21:30:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT.h,v 1.4 2009/02/27 00:44:47 dfer Exp $
 C $Name:  $
 
 C     ==================================================================
@@ -51,6 +51,8 @@ C== Parameters ==
 C     flt_noise   :: range of noise added to the velocity component
 C                    (randomly). The noise can be added or subtracted,
 C                    the range is +/- flt_noise/2
+C    flt_deltaT   :: time-step to step forward floats (in flt_runga2.F)
+C                    default is deltaTClock
 C    flt_int_traj :: period between storing model state at float position, in s
 C    flt_int_prof :: period between float vertical profiles, in s
 C
@@ -61,10 +63,10 @@ C           for return ing to the surface is called in the profiling routine
 C           flt_int_prof has to be the minimum of all iup(max_npart).
 C           The subsampling of profiles can be done later in the analysis.
 C
-      _RL flt_noise
+      _RL flt_noise, flt_deltaT
       _RL flt_int_traj, flt_int_prof
       COMMON / FLT_PARAM_R /
-     &       flt_noise,
+     &       flt_noise, flt_deltaT,
      &       flt_int_traj, flt_int_prof
 
 C     flt_file    :: name of the file containing the initial positions.
