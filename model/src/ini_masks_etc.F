@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.38 2008/09/12 07:26:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.39 2009/02/27 01:05:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,9 +129,9 @@ C      o Impose minimum fraction and/or size (dimensional)
       IF ( useShelfIce ) THEN
 C--   Modify lopping factor hFacC : Remove part outside of the domain
 C     taking into account the Reference (=at rest) Surface Position Ro_shelfIce
-       CALL SHELFICE_UPDATE_MASKS( 
+       CALL SHELFICE_UPDATE_MASKS(
      I     rF, recip_drF,
-     U     hFacC, 
+     U     hFacC,
      I     myThid )
       ENDIF
 #endif /* ALLOW_SHELFICE */
@@ -274,6 +274,42 @@ C     We should really supply a flag for doing this.
         ENDDO
        ENDDO
       ENDDO
+
+#ifdef ALLOW_NONHYDROSTATIC
+C     rLow & reference rSurf at Western & Southern edges (U and V points)
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        I = 1-OlX
+        DO J=1-Oly,sNy+Oly
+           rLowW (i,j,bi,bj) = 0.
+           rSurfW(i,j,bi,bj) = 0.
+        ENDDO
+        J = 1-Oly
+        DO I=1-Olx,sNx+Olx
+           rLowS (i,j,bi,bj) = 0.
+           rSurfS(i,j,bi,bj) = 0.
+        ENDDO
+        DO J=1-Oly,sNy+Oly
+         DO I=2-Olx,sNx+Olx
+           rSurfW(i,j,bi,bj) =
+     &           MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
+           rLowW(i,j,bi,bj)  =
+     &           MAX(   R_low(i-1,j,bi,bj),   R_low(i,j,bi,bj) )
+         ENDDO
+        ENDDO
+        DO J=2-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
+           rSurfS(i,j,bi,bj) =
+     &           MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
+           rLowS(i,j,bi,bj)  =
+     &           MAX(   R_low(i,j-1,bi,bj),   R_low(i,j,bi,bj) )
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      CALL EXCH_UV_XY_RS( rSurfW, rSurfS, .FALSE., myThid )
+      CALL EXCH_UV_XY_RS( rLowW,  rLowS,  .FALSE., myThid )
+#endif /* ALLOW_NONHYDROSTATIC */
 
 C-    Write to disk: Total Column Thickness & hFac(C,W,S):
       _BARRIER
