@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/write_fullarray_rl.F,v 1.4 2007/11/13 01:23:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/write_fullarray_rl.F,v 1.5 2009/02/27 00:31:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,7 +7,8 @@ CBOP
 C     !ROUTINE: WRITE_FULLARRAY_RL
 C     !INTERFACE:
       SUBROUTINE WRITE_FULLARRAY_RL( fnam, fld, kSize,
-     I                               biArg, bjArg, myIter, myThid )
+     I                               biArg, bjArg,
+     I                               iRec, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -15,7 +16,7 @@ C     | SUBROUTINE WRITE_FULLARRAY
 C     | write full array (including the overlap) to binary files
 C     *==========================================================*
 C     | Only used for debugging purpose.
-C     |  can write local array (with no bi,bj) corresponding to 
+C     |  can write local array (with no bi,bj) corresponding to
 C     |      tile biArg,bjArg
 C     |  or global array (with bi,bj) (called with biArg=bjArg=0)
 C     | Warning: does not explicitly do the byte-swapping
@@ -35,6 +36,7 @@ C     == Routine arguments ==
       CHARACTER*(*) fnam
       INTEGER kSize
       INTEGER biArg, bjArg
+      INTEGER iRec
       INTEGER myIter
       INTEGER myThid
       _RL fld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSize,nSx,nSy)
@@ -48,8 +50,8 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(2) fType
       INTEGER i,j,k,bi,bj,iG,jG
-      INTEGER s1Lo,s1Hi, dUnit, filePrec, length_of_rec
-      CHARACTER*(80) fullName
+      INTEGER s1Lo,s1Hi, dUnit, filePrec, length_of_rec, kRec
+      CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
 
 
@@ -87,9 +89,10 @@ c    &                        k=1,kSize)
          OPEN( dUnit, file=fullName, status='unknown',
      &         access='direct', recl=length_of_rec )
          DO k = 1,kSize
-           WRITE(dUnit,rec=k) (( fld(i,j,k,bi,bj),
-     &                               i=1-Olx,sNx+Olx),
-     &                               j=1-Oly,sNy+Oly )
+           kRec = k + (iRec-1)*kSize
+           WRITE(dUnit,rec=kRec) (( fld(i,j,k,bi,bj),
+     &                                i=1-Olx,sNx+Olx),
+     &                                j=1-Oly,sNy+Oly )
          ENDDO
          CLOSE(dUnit)
 
@@ -115,9 +118,10 @@ c    &                       k=1,kSize)
          OPEN( dUnit, file=fullName, status='unknown',
      &         access='direct', recl=length_of_rec )
          DO k = 1,kSize
-           WRITE(dUnit,rec=k) (( fld(i,j,k,1,1),
-     &                               i=1-Olx,sNx+Olx),
-     &                               j=1-Oly,sNy+Oly )
+           kRec = k + (iRec-1)*kSize
+           WRITE(dUnit,rec=kRec) (( fld(i,j,k,1,1),
+     &                                i=1-Olx,sNx+Olx),
+     &                                j=1-Oly,sNy+Oly )
          ENDDO
          CLOSE(dUnit)
 
