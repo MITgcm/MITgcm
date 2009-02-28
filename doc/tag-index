@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1072 2009/02/27 03:22:34 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1073 2009/02/28 16:57:04 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: fix a bug for the rare case of SEAICE_VECTORIZE_LSR
 o pkg/ctrl:
   fix bug in ctrl_depth_ini.F (EXCH_XYZ was applied to 2-D field xx_r_low)
 o non-hydrostatic (calc_gw.F):
