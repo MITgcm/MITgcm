@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_ifc.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_ifc.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.8 2008/08/28 18:35:42 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.9 2009/02/28 20:54:33 jmc Exp $
 # $Name:  $
 
 umask 0022
@@ -46,9 +46,10 @@ if [ $dsp -gt 99 ] ; then
 fi
 if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
+    ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d )
-    /bin/rm -rf $gcmDIR/verification/tr_aces-${sfx}_????????_?
+    /bin/rm -rf $gcmDIR/verification/??_aces-${sfx}_????????_?
   else
     echo "no dir: $gcmDIR/CVS => try a fresh check-out"
     checkOut=2
@@ -74,4 +75,7 @@ fi
 cd $gcmDIR/verification
 echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir aces-$sfx
 ./testreport $options -of $OPTFILE -command "$EXE" -odir aces-$sfx
+
+echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o aces-$sfx -a NONE
+../tools/do_tst_2+2 -mpi -exe "$EXE" -o aces-$sfx -a NONE
 

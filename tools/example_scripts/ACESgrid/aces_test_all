@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.9 2008/12/30 16:01:11 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_all,v 1.10 2009/02/28 20:54:33 jmc Exp $
 # $Name:  $
 
 # action =2 : submit test jobs ; =1 : get jobs output ; =3 : do both
@@ -122,17 +122,17 @@ while test $count != 0 ; do
         ready_to_send=`$QSTAT -a | grep $USER | grep $JOB | wc -l`
 
         if test "x_$ready_to_send" = x_0 ; then
-            run_dir=${TST_DIR}"/MITgcm_"$i"/verification"
-            tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^tr_aces' | head -1`
+          run_dir=${TST_DIR}"/MITgcm_"$i"/verification"
+#-      results output:
+          tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^tr_aces' | head -1`
+          if test "x$tdir" != x ; then
             #- check this is the right output
             chk=`echo $tdir | grep -c $start`
             if test $chk = '0' ; then
               curday=`date +%Y%m%d`
               chk=`echo $tdir | grep -c $curday`
             fi
-            if test "x$tdir" = x ; then
-              echo "Output not found so no email sent for $i"
-            elif test $chk = '0' ; then
+            if test $chk = '0' ; then
               echo "tdir='$tdir'"
               echo "Output do not match so no email sent for $i"
             else
@@ -145,9 +145,38 @@ while test $count != 0 ; do
                 echo "no email sent for $i (no mpack)"
               fi
             fi
-            eval M_$i=done
-            count=`expr $count - 1`
-            chmod 644 output/tst_$i.std*
+          else
+              echo "Output not found so no email sent for $i"
+          fi
+#-      restart output:
+          tdir=`ls -1 -t $run_dir | grep -v tr_out | grep '^rs_aces' | head -1`
+          if test "x$tdir" != x ; then
+            #- check this is the right output
+            chk=`echo $tdir | grep -c $start`
+            if test $chk = '0' ; then
+              curday=`date +%Y%m%d`
+              chk=`echo $tdir | grep -c $curday`
+            fi
+            if test $chk = '0' ; then
+              echo "tdir='$tdir'"
+              echo "Restart output do not match so no email sent for $i"
+            else
+              rm -f "/tmp/rs_aces-"$i".tar.gz"
+              ( cd $run_dir ; tar -czf "/tmp/rs_aces-"$i".tar.gz" ./$tdir )
+              if test "x$HAVE_MPACK" = xt ; then
+                $MPACK -s MITgcm-test -m 3555000 "/tmp/rs_aces-"$i".tar.gz" jmc@mitgcm.org
+                echo "Email sent for restart $i"
+              else
+                echo "no email sent for restart $i (no mpack)"
+              fi
+            fi
+          else
+              echo "Restart output not found for $i"
+          fi
+#-      record successful sending
+          eval M_$i=done
+          count=`expr $count - 1`
+          chmod 644 output/tst_$i.std*
         fi
       fi
     done
