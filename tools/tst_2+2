@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.3 2009/02/28 18:55:48 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.4 2009/02/28 20:56:07 jmc Exp $
 # $Name:  $
 
 rnp_loc()
@@ -63,8 +63,8 @@ for xx ; do
           *) flag=$xx ;;
   esac
 done
-echo "cmdEXE='$cmdEXE' ; RUNMPI='$RUNMPI'"
-echo "nArg=$nArg ; mpi=$mpi ; flag='$flag'"
+#echo "cmdEXE='$cmdEXE'"
+#echo "nArg=$nArg ; mpi=$mpi ; flag='$flag'"
 
 case $nArg in
   1) ;;
@@ -90,8 +90,6 @@ then
     cmdEXE=$gcmEXE
   fi
 fi
-#if [ $mpi -ge 1 ] ; then cmdEXE=run_mpi ; fi
-#echo "cmdEXE='$cmdEXE' ; RUNMPI='$RUNMPI'"
 echo "cmdEXE='$cmdEXE'"
 #=========================
 
@@ -315,7 +313,7 @@ do
 done
 mv *.0??.0??.* $dir2
 txtF=`ls -1 *.txt STD???.00?? 2> /dev/null`
-mv R?.data R?.meta DR?.data DR?.meta $txtF $dir2
+mv R?.data R?.meta DR?.data DR?.meta PHref{C,F}.??ta $txtF $dir2
 listS=`ls $dir2/pickup*.${num0c}* 2> /dev/null | head -1`
 if test "x$listS" != x ; then mv $dir2/pickup*.${num0c}* . ; fi
 #---  3rd run ( Nit iter , restart from 2nd )
@@ -344,7 +342,7 @@ do
 done
 mv *.0??.0??.* $dir3
 txtF=`ls -1 *.txt STD???.00?? 2> /dev/null`
-mv R?.data R?.meta DR?.data DR?.meta $txtF $dir3
+mv R?.data R?.meta DR?.data DR?.meta PHref{C,F}.??ta $txtF $dir3
 listS=`ls $dir3/pickup*.${num0c}* 2> /dev/null | head -1`
 if test "x$listS" != x ; then mv $dir3/pickup*.${num0c}* . ; fi
 rm $dir3/pickup*.$num1c.*
