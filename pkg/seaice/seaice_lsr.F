@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.32 2009/02/28 16:57:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.33 2009/03/01 15:15:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -88,11 +88,15 @@ C     strain rate tensor
       _RL SINWAT, COSWAT
       _RL TEMPVAR
       _RL UERR
-      INTEGER tLev
+      INTEGER tLev, iMin, iMax, jMin, jMax
 #ifdef SEAICE_VECTORIZE_LSR
+C     in this case, the copy of u(3)=u(1)/v(3)=v(1) needs to include
+C     part of the overlap, because the overlap of u/v(tlev) is used
       PARAMETER ( tLev = 3 )
+      PARAMETER ( iMin = 0, iMax = sNx+1, jMin = 0, jMax = sNy+1 )
 #else
       PARAMETER ( tLev = 1 )
+      PARAMETER ( iMin = 1, iMax = sNx, jMin = 1, jMax = sNy )
 #endif
 
 
@@ -412,11 +416,7 @@ CADJ LOOP = iteration uice
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C NOW SET U(3)=U(1)
-#ifdef SEAICE_VECTORIZE_LSR
-        DO J=0,sNy+1
-#else
-        DO J=1,sNy
-#endif
+        DO J=jMin,jMax
          DO I=1,sNx
           uIce(I,J,3,bi,bj)=uIce(I,J,1,bi,bj)
          END DO
@@ -672,11 +672,7 @@ CADJ LOOP = iteration vice
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C NOW SET V(3)=V(1)
         DO J=1,sNy
-#ifdef SEAICE_VECTORIZE_LSR
-         DO I=0,sNx+1
-#else
-         DO I=1,sNx
-#endif
+         DO I=iMin,iMax
           vIce(I,J,3,bi,bj)=vIce(I,J,1,bi,bj)
          END DO
         END DO
