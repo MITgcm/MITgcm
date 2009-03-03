@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.4 2009/02/28 20:56:07 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.5 2009/03/03 20:59:40 jmc Exp $
 # $Name:  $
 
 rnp_loc()
@@ -135,7 +135,7 @@ else
     listF=`ls -1 $yy.${zz}*`
     for xx in $listF
     do
-      new=`echo $xx | sed "s/^$yy\.$zz/$yy\.$sufx/"`
+      new=`echo $xx | sed "s/^$yy\.$zz/$yy.$sufx/"`
       if [ $prt -ge 2 ] ; then echo '  '$cmdMV $xx $new ; fi
       if test $action = 1 ; then    $cmdMV $xx $new ; fi
     done
