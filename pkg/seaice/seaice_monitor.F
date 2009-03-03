@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.15 2008/12/17 03:33:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.16 2009/03/03 14:05:12 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -66,8 +66,8 @@ C     & mon_write_mnc (since it's the only thread that uses those flags):
             CALL MNC_CW_APPEND_VNAME(
      &           'T', '-_-_--__-__t', 0,0, myThid)
             CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
-            CALL MNC_CW_I_W_S(
-     &          'I',mon_fname,1,1,'T', myIter, myThid)
+            CALL MNC_CW_RL_W_S(
+     &          'D',mon_fname,1,1,'T', myTime, myThid)
             CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
             mon_write_mnc = .TRUE.
           ENDIF

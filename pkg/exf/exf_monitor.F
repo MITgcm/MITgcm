@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.18 2008/06/11 18:55:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.19 2009/03/03 14:05:25 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -71,8 +71,8 @@ C     & mon_write_mnc (since it's the only thread that uses those flags):
             CALL MNC_CW_APPEND_VNAME(
      &           'T', '-_-_--__-__t', 0,0, myThid)
             CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
-            CALL MNC_CW_I_W_S(
-     &          'I',mon_fname,1,1,'T', myIter, myThid)
+            CALL MNC_CW_RL_W_S(
+     &          'D',mon_fname,1,1,'T', myTime, myThid)
             CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
             mon_write_mnc = .TRUE.
           ENDIF
