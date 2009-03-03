@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.12 2008/10/25 20:36:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.13 2009/03/03 10:01:24 mlosch Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -68,6 +68,15 @@ C     variables for text attributes
 #ifdef ALLOW_EXCH2
       xtmin = exch2_tbasex(W2_myTileList(bi))
       ytmin = exch2_tbasey(W2_myTileList(bi))
+#else
+      IF ( .NOT. useCubedSphereExchange ) THEN
+C     make sure for a non-cubed-sphere curvi-linear grid,
+C     that the X/Y coordinate variables are monotonous
+C     bi+(myXGlobalLo-1)/sNx is the i-tile number
+C     bj+(myYGlobalLo-1)/sNy is the j-tile number
+       xtmin = sNx * ( bi+(myXGlobalLo-1)/sNx - 1 )
+       ytmin = sNy * ( bj+(myYGlobalLo-1)/sNy - 1 )
+      ENDIF
 #endif
       doit = 1
       nids = 1
