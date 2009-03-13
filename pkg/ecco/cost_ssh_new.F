@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_new.F,v 1.2 2009/03/13 06:00:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_new.F,v 1.3 2009/03/13 07:23:24 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -82,9 +82,12 @@ c     == local variables ==
       _RL sumers ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
       _RL sumgfo ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
 
-      _RL wwwtp  ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
-      _RL wwwers ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
-      _RL wwwgfo ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+      _RL wwwtp1  ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+      _RL wwwers1 ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+      _RL wwwgfo1 ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+      _RL wwwtp2  ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+      _RL wwwers2 ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+      _RL wwwgfo2 ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
       _RL junk
 
       character*(80) fname
@@ -133,9 +136,12 @@ c--   ============
               sumtp(i,j,bi,bj)  = 0. _d 0
               sumers(i,j,bi,bj) = 0. _d 0
               sumgfo(i,j,bi,bj) = 0. _d 0
-              wwwtp(i,j,bi,bj)  = 0. _d 0
-              wwwers(i,j,bi,bj) = 0. _d 0
-              wwwgfo(i,j,bi,bj) = 0. _d 0
+              wwwtp1(i,j,bi,bj)  = 0. _d 0
+              wwwers1(i,j,bi,bj) = 0. _d 0
+              wwwgfo1(i,j,bi,bj) = 0. _d 0
+              wwwtp2(i,j,bi,bj)  = 0. _d 0
+              wwwers2(i,j,bi,bj) = 0. _d 0
+              wwwgfo2(i,j,bi,bj) = 0. _d 0
             enddo
           enddo
         enddo
@@ -153,16 +159,19 @@ c--     Compute the mean over all psbar records.
      &                       xx_psbar_mean_dummy )
 
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
-        if ( tpTimeMask(irec) .NE. 0. )
-     &       call cost_readtopex( irec, mythid )
+cph these if would be more efficient, but need recomputations
+c        if ( tpTimeMask(irec) .NE. 0. )
+        call cost_readtopex( irec, mythid )
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
-        if ( ersTimeMask(irec) .NE. 0. )
-     &       call cost_readers( irec, mythid )
+cph these if would be more efficient, but need recomputations
+c        if ( ersTimeMask(irec) .NE. 0. )
+        call cost_readers( irec, mythid )
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
-        if ( gfoTimeMask(irec) .NE. 0. )
-     &       call cost_readgfo( irec, mythid )
+cph these if would be more efficient, but need recomputations
+c        if ( gfoTimeMask(irec) .NE. 0. )
+        call cost_readgfo( irec, mythid )
 #endif
 
         do bj = jtlo,jthi
@@ -211,21 +220,21 @@ c--   END loop over records for the first time.
                if ( sumtp(i,j,bi,bj) .NE. 0. ) then
                   psmeantp(i,j,bi,bj) = psmeantp(i,j,bi,bj) /
      &                 sumtp(i,j,bi,bj)
-                  wwwtp(i,j,bi,bj) = 1. _d 0
+                  wwwtp1(i,j,bi,bj) = 1. _d 0
                endif
 #endif
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
                if ( sumers(i,j,bi,bj) .NE. 0. ) then
                   psmeaners(i,j,bi,bj) = psmeaners(i,j,bi,bj) /
      &                 sumers(i,j,bi,bj)
-                  wwwers(i,j,bi,bj) = 1. _d 0
+                  wwwers1(i,j,bi,bj) = 1. _d 0
                endif
 #endif
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
                if ( sumgfo(i,j,bi,bj) .NE. 0. ) then
                   psmeangfo(i,j,bi,bj) = psmeangfo(i,j,bi,bj) /
      &                 sumgfo(i,j,bi,bj)
-                  wwwgfo(i,j,bi,bj) = 1. _d 0
+                  wwwgfo1(i,j,bi,bj) = 1. _d 0
                endif
 #endif
               enddo
@@ -333,7 +342,7 @@ c--   Loop over records for the second time.
             do j = jmin,jmax
               do i = imin,imax
 c--             The array psobs contains SSH anomalies.
-                wwwtp(i,j,bi,bj) = wwwtp(i,j,bi,bj)
+                wwwtp2(i,j,bi,bj) = wwwtp1(i,j,bi,bj)
      &                             *wtp(i,j,bi,bj)
      &                             *tpmask(i,j,bi,bj)
      &                             *cosphi(i,j,bi,bj)
@@ -341,16 +350,16 @@ c--             The array psobs contains SSH anomalies.
                 junk = ( psbar(i,j,bi,bj)
      &                   - psmeantp(i,j,bi,bj) - tpobs(i,j,bi,bj) )
                 objf_tp(bi,bj) = objf_tp(bi,bj)
-     &              + junk*junk*wwwtp(i,j,bi,bj)
-                if ( wwwtp(i,j,bi,bj) .ne. 0. )
+     &              + junk*junk*wwwtp2(i,j,bi,bj)
+                if ( wwwtp2(i,j,bi,bj) .ne. 0. )
      &               num_tp(bi,bj) = num_tp(bi,bj) + 1. _d 0
 #else
                 if (tpmeanmask(i,j,bi,bj)*tpmask(i,j,bi,bj)
-     &                  *wp(i,j,bi,bj)*wwwtp(i,j,bi,bj) .ne.0.) then
+     &                  *wp(i,j,bi,bj)*wwwtp2(i,j,bi,bj) .ne.0.) then
                 junk       = ( psbar(i,j,bi,bj) -
      &                 (tpobs(i,j,bi,bj)+tpmean(i,j,bi,bj)-offset) )
                 objf_tp(bi,bj) = objf_tp(bi,bj)
-     &              +junk*junk/( 1/wp(i,j,bi,bj)+1/wwwtp(i,j,bi,bj) )
+     &              +junk*junk/( 1/wp(i,j,bi,bj)+1/wwwtp2(i,j,bi,bj) )
                 num_tp(bi,bj) = num_tp(bi,bj) + 1. _d 0
                 endif
 #endif /* ALLOW_SSH_TOT */
@@ -362,7 +371,7 @@ c--             The array psobs contains SSH anomalies.
             do j = jmin,jmax
               do i = imin,imax
 c--             The array ersobs contains SSH anomalies.
-                wwwers(i,j,bi,bj) = wwwers(i,j,bi,bj)
+                wwwers2(i,j,bi,bj) = wwwers1(i,j,bi,bj)
      &                              *wers(i,j,bi,bj)
      &                              *ersmask(i,j,bi,bj)
      &                              *cosphi(i,j,bi,bj)
@@ -370,16 +379,16 @@ c--             The array ersobs contains SSH anomalies.
                 junk = ( psbar(i,j,bi,bj) 
      &                   - psmeaners(i,j,bi,bj) - ersobs(i,j,bi,bj) )
                 objf_ers(bi,bj) = objf_ers(bi,bj)
-     &              + junk*junk*wwwers(i,j,bi,bj)
-                if ( wwwers(i,j,bi,bj) .ne. 0. )
+     &              + junk*junk*wwwers2(i,j,bi,bj)
+                if ( wwwers2(i,j,bi,bj) .ne. 0. )
      &               num_ers(bi,bj) = num_ers(bi,bj) + 1. _d 0
 #else
                 if (tpmeanmask(i,j,bi,bj)*ersmask(i,j,bi,bj)
-     &                  *wp(i,j,bi,bj)*wwwers(i,j,bi,bj) .ne.0.) then
+     &                  *wp(i,j,bi,bj)*wwwers2(i,j,bi,bj) .ne.0.) then
                 junk       = ( psbar(i,j,bi,bj) -
      &                 (ersobs(i,j,bi,bj)+tpmean(i,j,bi,bj)-offset) )
                 objf_ers(bi,bj) = objf_ers(bi,bj)
-     &              +junk*junk/( 1/wp(i,j,bi,bj)+1/wwwers(i,j,bi,bj) )
+     &              +junk*junk/( 1/wp(i,j,bi,bj)+1/wwwers2(i,j,bi,bj) )
                 num_ers(bi,bj) = num_ers(bi,bj) + 1. _d 0
                 endif
 #endif /* ALLOW_SSH_TOT */
@@ -391,7 +400,7 @@ c--             The array ersobs contains SSH anomalies.
             do j = jmin,jmax
               do i = imin,imax
 c--             The array gfoobs contains SSH anomalies.
-                wwwgfo(i,j,bi,bj) = wwwgfo(i,j,bi,bj)
+                wwwgfo2(i,j,bi,bj) = wwwgfo1(i,j,bi,bj)
      &                        *wgfo(i,j,bi,bj)
      &                        *gfomask(i,j,bi,bj)
      &                        *cosphi(i,j,bi,bj)
@@ -399,16 +408,16 @@ c--             The array gfoobs contains SSH anomalies.
                 junk = ( psbar(i,j,bi,bj)
      &                   - psmeangfo(i,j,bi,bj) - gfoobs(i,j,bi,bj) )
                 objf_gfo(bi,bj) = objf_gfo(bi,bj)
-     &              + junk*junk*wwwgfo(i,j,bi,bj)
-                if ( wwwgfo(i,j,bi,bj) .ne. 0. )
+     &              + junk*junk*wwwgfo2(i,j,bi,bj)
+                if ( wwwgfo2(i,j,bi,bj) .ne. 0. )
      &               num_gfo(bi,bj) = num_gfo(bi,bj) + 1. _d 0
 #else
                 if (tpmeanmask(i,j,bi,bj)*gfomask(i,j,bi,bj)
-     &                  *wp(i,j,bi,bj)*wwwgfo(i,j,bi,bj) .ne.0.) then
+     &                  *wp(i,j,bi,bj)*wwwgfo2(i,j,bi,bj) .ne.0.) then
                 junk       = ( psbar(i,j,bi,bj) -
      &                 (gfoobs(i,j,bi,bj)+tpmean(i,j,bi,bj)-offset) )
                 objf_gfo(bi,bj) = objf_gfo(bi,bj)
-     &              +junk*junk/( 1/wp(i,j,bi,bj)+1/wwwgfo(i,j,bi,bj) )
+     &              +junk*junk/( 1/wp(i,j,bi,bj)+1/wwwgfo2(i,j,bi,bj) )
                 num_gfo(bi,bj) = num_gfo(bi,bj) + 1. _d 0
                 endif
 #endif /* ALLOW_SSH_TOT */
