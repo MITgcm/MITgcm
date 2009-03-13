@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.79 2009/03/13 01:58:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.80 2009/03/13 06:00:31 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -453,6 +453,10 @@ c--     Set the model iteration counter and the model time.
 #ifdef ALLOW_DIAGNOSTICS
 C--   State-variables diagnostics
       IF ( useDiagnostics ) THEN
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('DO_STATEVARS_DIAGS',myThid)
+#endif
 C--   Switch on/off diagnostics for snap-shot output:
         CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
         CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
@@ -463,6 +467,10 @@ C--   Switch on/off diagnostics for snap-shot output:
 
 #ifdef ALLOW_PROFILES
 c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('profiles_inloop',myThid)
+#endif
         call timer_start('PROFILES_INLOOP       [ECCO MAIN]', mythid)
         call profiles_inloop( mytime, mythid )
         call timer_stop ('PROFILES_INLOOP       [ECCO MAIN]', mythid)
@@ -470,9 +478,13 @@ c--     Accumulate in-situ time averages of temperature, salinity, and SSH.
 
 #ifdef ALLOW_COST
 
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesfields',myThid)
+#endif
 c--     Accumulate time averages of temperature, salinity
         call timer_start('COST_AVERAGESFIELDS   [ECCO MAIN]', mythid)
-        call cost_averagesFields( mytime, mythid )
+        call cost_averagesfields( mytime, mythid )
         call timer_stop ('COST_AVERAGESFIELDS   [ECCO MAIN]', mythid)
 
 
@@ -818,6 +830,10 @@ CADJ STORE empmr,hfacs,hfacw
 CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('SOLVE_FOR_PRESSURE',myThid)
+#endif
         CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
         CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
         CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
@@ -827,6 +843,10 @@ CADJ &     = comlev1, key=ikey_dynamics, kind=isbyte
 C--   Correct divergence in flow field and cycle time-stepping momentum
 c     IF ( momStepping ) THEN
 #ifndef ALLOW_OFFLINE
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('MOMENTUM_CORRECTION_STEP',myThid)
+#endif
         CALL TIMER_START('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
         CALL MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
         CALL TIMER_STOP ('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
@@ -838,6 +858,10 @@ c     ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
 cph-test
 cphCADJ STORE etaH          = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('UPDATE_ETAH',myThid)
 #endif
 C--   Update etaH(n+1) :
         CALL TIMER_START('UPDATE_ETAH        [FORWARD_STEP]',mythid)
@@ -908,6 +932,10 @@ cph This is needed because convective_adjustment calls
 cph find_rho which may use pressure()
 CADJ STORE totphihyd  = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('TRACERS_CORRECTION_STEP',myThid)
+#endif
 C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
         CALL TIMER_START('TS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
         CALL TRACERS_CORRECTION_STEP(myTime, myIter, myThid)
@@ -937,6 +965,10 @@ c     CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 c     CALL DO_GTERM_BLOCKING_EXCHANGES( myThid )
 c     CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &        CALL DEBUG_CALL('DO_FIELDS_BLOCKING_EXCHANGES',myThid)
+#endif /* ALLOW_DEBUG */
 C--   Do "blocking" sends and receives for field "overlap" terms
       CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
@@ -944,6 +976,10 @@ C--   Do "blocking" sends and receives for field "overlap" terms
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &        CALL DEBUG_CALL('DO_STATEVARS_DIAGS',myThid)
+#endif /* ALLOW_DEBUG */
        CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
        CALL DO_STATEVARS_DIAGS( myTime, 2, myIter, myThid )
        CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
@@ -964,6 +1000,10 @@ C--   Calculate float trajectories
 #endif
 
 #ifdef ALLOW_TIMEAVE
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &        CALL DEBUG_CALL('DO_STATEVARS_TAVE',myThid)
+#endif /* ALLOW_DEBUG */
 C--   State-variables time-averaging
       CALL TIMER_START('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
       CALL DO_STATEVARS_TAVE( myTime, myIter, myThid )
@@ -972,6 +1012,10 @@ C--   State-variables time-averaging
 
 #ifndef ALLOW_OFFLINE
 #ifdef ALLOW_MONITOR
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &        CALL DEBUG_CALL('MONITOR',myThid)
+#endif /* ALLOW_DEBUG */
 C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
       CALL MONITOR( myIter, myTime, myThid )
@@ -979,6 +1023,10 @@ C--   Check status of solution (statistics, cfl, etc...)
 #endif /* ALLOW_MONITOR */
 #endif
 
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &        CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
+#endif /* ALLOW_DEBUG */
 C--   Do IO if needed.
 #ifdef ALLOW_OFFLINE
       CALL TIMER_START('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
@@ -994,8 +1042,16 @@ C--   Do IO if needed.
 # ifdef HAVE_SIGREG
       IF ( useSIGREG ) THEN
         IF ( i_got_signal .GT. 0 ) THEN
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &        CALL DEBUG_CALL('PACKAGES_WRITE_PICKUP',myThid)
+#endif /* ALLOW_DEBUG */
           CALL PACKAGES_WRITE_PICKUP(
      I         .TRUE., myTime, myIter, myThid )
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &        CALL DEBUG_CALL('WRITE_PICKUP',myThid)
+#endif /* ALLOW_DEBUG */
           CALL WRITE_PICKUP(
      I         .TRUE., myTime, myIter, myThid )
           STOP 'Checkpoint completed -- killed by signal handler'
@@ -1003,6 +1059,10 @@ C--   Do IO if needed.
       ENDIF
 # endif /* HAVE_SIGREG */
 C--   Save state for restarts
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &        CALL DEBUG_CALL('DO_WRITE_PICKUP',myThid)
+#endif /* ALLOW_DEBUG */
       CALL TIMER_START('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
       CALL DO_WRITE_PICKUP(
      I               .FALSE., myTime, myIter, myThid )
@@ -1014,6 +1074,11 @@ C--   Save state for restarts
         CALL SHOWFLOPS_INLOOP( iloop, mythid )
         CALL TIMER_STOP ('SHOWFLOPS_INLOOP   [THE_MAIN_LOOP]', mythid)
 #endif
+
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &        CALL DEBUG_CALL('END OF TIMESTEP',myThid)
+#endif /* ALLOW_DEBUG */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_TAMC_CHECKPOINTING

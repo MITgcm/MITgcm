@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.35 2009/03/13 01:58:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.36 2009/03/13 06:00:31 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -37,7 +37,7 @@ c     =============================
       INTEGER NGENCOST
       PARAMETER ( NGENCOST=10 )
 
-  c     Number of days: (hard-coded to set up some vector dimensions
+c     Number of days: (hard-coded to set up some vector dimensions
 c     =============================
       INTEGER maxNumDays
       PARAMETER ( maxNumDays = 5844 )

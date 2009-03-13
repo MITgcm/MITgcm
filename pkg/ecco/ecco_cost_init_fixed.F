@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.12 2009/03/13 01:58:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.13 2009/03/13 06:00:31 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -184,7 +184,7 @@ c--   Read flags for picking SSH time averages
        gfoTimeMask(irec) = 1. _d 0
       enddo
 c
-     _BEGIN_MASTER(myThid)
+      _BEGIN_MASTER(myThid)
 c
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
       if ( tpTimeMaskFile .NE. ' ' ) then
