@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.11 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.12 2009/03/13 01:58:37 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -143,6 +143,12 @@ cph!!!
 #endif
 
 #ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
+      do irec = 1, ndaysrec
+       wtransp(irec)   = 0. _d 0
+       transpobs(irec) = 0. _d 0
+      enddo
+
+      if ( costTranspDataFile .NE. ' ' ) then
       _BEGIN_MASTER(myThid)
       ilo = ifnblnk(costTranspDataFile)
       ihi = ilnblnk(costTranspDataFile)
@@ -159,14 +165,75 @@ c-- 3rd: uncertainty in m/s
          read(gwunit,*) transpobs(irec), dummy, wtransp(irec)
 c-- convert std.dev. to weight
          if ( wtransp(irec) .NE. 0. )
-     &        wtransp(irec) =1./(wtransp(irec)*wtransp(irec))
+     &        wtransp(irec) =1.0/(wtransp(irec)*wtransp(irec))
 c-- set weight to zero for missing values
          if ( transpobs(irec) .EQ. missingObsFlag )
-     &        wtransp(irec) = 0.
+     &        wtransp(irec) = 0. _d 0
       enddo
       _END_MASTER(myThid)
       _BARRIER
+      endif
 #endif /* ALLOW_TRANSPORT_COST_CONTRIBUTION */
+
+#ifdef ALLOW_SSH_COST_CONTRIBUTION
+
+c--   Read flags for picking SSH time averages
+      do irec = 1, ndaysrec
+       tpTimeMask(irec)  = 1. _d 0
+       ersTimeMask(irec) = 1. _d 0
+       gfoTimeMask(irec) = 1. _d 0
+      enddo
+c
+     _BEGIN_MASTER(myThid)
+c
+#ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
+      if ( tpTimeMaskFile .NE. ' ' ) then
+       ilo = ifnblnk(tpTimeMaskFile)
+       ihi = ilnblnk(tpTimeMaskFile)
+       CALL OPEN_COPY_DATA_FILE(
+     I                          tpTimeMaskFile(ilo:ihi),
+     I                          'cost_ssh tp',
+     O                          gwunit,
+     I                          myThid )
+       do irec = 1, ndaysrec
+        read(gwunit,*) tpTimeMask(irec)
+       enddo
+      endif
+#endif
+c
+#ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
+      if ( ersTimeMaskFile .NE. ' ' ) then
+       ilo = ifnblnk(ersTimeMaskFile)
+       ihi = ilnblnk(ersTimeMaskFile)
+       CALL OPEN_COPY_DATA_FILE(
+     I                          ersTimeMaskFile(ilo:ihi),
+     I                          'cost_ssh ers',
+     O                          gwunit,
+     I                          myThid )
+       do irec = 1, ndaysrec
+        read(gwunit,*) ersTimeMask(irec)
+       enddo
+      endif
+#endif
+c
+#ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
+      if ( gfoTimeMaskFile .NE. ' ' ) then
+       ilo = ifnblnk(gfoTimeMaskFile)
+       ihi = ilnblnk(gfoTimeMaskFile)
+       CALL OPEN_COPY_DATA_FILE(
+     I                          gfoTimeMaskFile(ilo:ihi),
+     I                          'cost_ssh gfo',
+     O                          gwunit,
+     I                          myThid )
+       do irec = 1, ndaysrec
+        read(gwunit,*) gfoTimeMask(irec)
+       enddo
+      endif
+#endif
+c
+      _END_MASTER(myThid)
+      _BARRIER
+#endif
 
 c--   Summarize the cost function's setup.
       _BEGIN_MASTER( mythid )

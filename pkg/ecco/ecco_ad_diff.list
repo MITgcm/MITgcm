@@ -29,6 +29,7 @@ cost_salt.f
 cost_salt0.f                    
 cost_scat.f                     
 cost_ssh.f                      
+cost_ssh_new.f
 cost_ssh_mean.f                 
 cost_tau_eddy.f
 cost_kapgm.f

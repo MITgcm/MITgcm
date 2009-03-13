@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.36 2008/10/18 12:42:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.37 2009/03/13 01:58:37 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -47,16 +47,14 @@ c--   Read the namelist input.
      &                   ubarfile, vbarfile, wbarfile,
      &                   tauxbarfile, tauybarfile,
      &                   hfluxbarfile, sfluxbarfile,
-     &                   costTranspDataFile,
-     &                   using_topex,
+     &                   costTranspDataFile,  topexmeanfile,
+     &                   using_topex, using_ers, using_gfo,
      &                   topexstartdate1, topexstartdate2,
-     &                   topexperiod, topexfile, topexmeanfile,
-     &                   topexintercept, topexslope,
-     &                   using_ers,
-     &                   ersstartdate1, ersstartdate2,
+     &                   topexperiod, topexfile, tpTimeMaskFile,
+     &                   topexintercept, topexslope, ersTimeMaskFile,
+     &                   ersstartdate1, ersstartdate2, gfoTimeMaskFile,
      &                   ersperiod, ersfile,
      &                   ersintercept, ersslope,
-     &                   using_gfo,
      &                   gfostartdate1, gfostartdate2,
      &                   gfoperiod, gfofile,
      &                   gfointercept, gfoslope,
@@ -69,10 +67,8 @@ c--   Read the namelist input.
      &                   sststartdate1, sststartdate2, sstdatfile,
      &                   sssstartdate1, sssstartdate2, sssdatfile,
      &                   bpstartdate1, bpstartdate2, bpdatfile,
-     &                   tdatfile, sdatfile,
-     &                   ctdtfile, ctdsfile,
-     &                   ctdtclimfile, ctdsclimfile,
-     &                   xbtfile,
+     &                   tdatfile, sdatfile, ctdtfile, ctdsfile,
+     &                   ctdtclimfile, ctdsclimfile, xbtfile,
      &                   argotstartdate1, argotstartdate2, argotfile,
      &                   argosstartdate1, argosstartdate2, argosfile,
      &                   udriftfile, vdriftfile,
@@ -237,12 +233,16 @@ c--     Set default values.
         bottomdrag_errfile    =    ' '
         edtau_errfile         =    ' '
         kapgm_errfile         =    ' '
-        kapredi_errfile         =    ' '
+        kapredi_errfile       =    ' '
         diffkr_errfile        =    ' '
         do k=1,NGENCOST
-        gencost_datafile(k)    =    ' '
-        gencost_errfile(k)    =    ' '
+         gencost_datafile(k)  =    ' '
+         gencost_errfile(k)   =    ' '
         enddo
+        tpTimeMaskFile        =    ' '
+        ersTimeMaskFile       =    ' '
+        gfoTimeMaskFile       =    ' '
+
         mult_hflux            =      0. _d 0
         mult_sflux            =      0. _d 0
         mult_hfluxmm          =      0. _d 0

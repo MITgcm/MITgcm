@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.34 2009/02/20 15:27:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.35 2009/03/13 01:58:37 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -36,6 +36,11 @@ c     Number of Generic Cost terms:
 c     =============================
       INTEGER NGENCOST
       PARAMETER ( NGENCOST=10 )
+
+  c     Number of days: (hard-coded to set up some vector dimensions
+c     =============================
+      INTEGER maxNumDays
+      PARAMETER ( maxNumDays = 5844 )
 
 c     Averaged Fields:
 c     ================
@@ -227,8 +232,6 @@ c             intantaneous field.
       character*(MAX_LEN_FNAM) costTranspDataFile
 
 #ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
-      INTEGER maxNumDays
-      PARAMETER ( maxNumDays = 5844 )
       common /averages_transp_r/
      &                     transpbar
      &                   , transpobs
@@ -1451,6 +1454,20 @@ c     sshperiod      - sampling interval for the sea surface height data.
       _RL topexslope
       _RL ersslope
       _RL gfoslope
+
+#ifdef ALLOW_SSH_COST_CONTRIBUTION
+      common /ecco_ssh_daymask_r/
+     &       tpTimeMask, ersTimeMask, gfoTimeMask
+      _RL tpTimeMask(maxNumDays)
+      _RL ersTimeMask(maxNumDays)
+      _RL gfoTimeMask(maxNumDays)
+#endif
+
+      common /ecco_ssh_daymask_c/
+     &       tpTimeMaskFile, ersTimeMaskFile, gfoTimeMaskFile
+      character*(MAX_LEN_FNAM) tpTimeMaskFile
+      character*(MAX_LEN_FNAM) ersTimeMaskFile
+      character*(MAX_LEN_FNAM) gfoTimeMaskFile
 
 c     ==================================================================
 c     END OF HEADER COST

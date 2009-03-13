@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.78 2009/02/13 21:58:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.79 2009/03/13 01:58:37 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1115,9 +1115,15 @@ c--   Compute cost function contribution of SSH.
       IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('cost_ssh',myThid)
 # endif
+# ifdef ALLOW_NEW_SSH_COST
+      call timer_start('cost_ssh_new       [ECCO SPIN-DOWN]', mythid)
+      call cost_ssh_new( myiter, mytime, mythid )
+      call timer_stop ('cost_ssh_new       [ECCO SPIN-DOWN]', mythid)
+# else
       call timer_start('cost_ssh           [ECCO SPIN-DOWN]', mythid)
       call cost_ssh( myiter, mytime, mythid )
       call timer_stop ('cost_ssh           [ECCO SPIN-DOWN]', mythid)
+# endif
 # ifdef ALLOW_AUTODIFF_TAMC
 #  ifdef ALLOW_PROFILES
 CADJ STORE prof_etan_mean = tapelev_init, key=1
