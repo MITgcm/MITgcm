@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.14 2009/03/14 11:53:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.15 2009/03/14 12:12:12 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -232,6 +232,22 @@ c
        enddo
       endif
 #endif
+c
+       do irec = 1, ndaysrec
+        if ( 
+     &   ( tpTimeMask(irec).NE.0. .AND. tpTimeMask(irec).NE.1. ) .OR.
+     &   ( ersTimeMask(irec).NE.0. .AND. ersTimeMask(irec).NE.1. ) .OR.
+     &   ( ersTimeMask(irec).NE.0. .AND. ersTimeMask(irec).NE.1. ) )
+     &  then
+           WRITE(msgBuf,'(2A,I)')
+     &        'ecco_cost_init_fixed: (SSH)TimeMask not 0. or 1. ',
+     &        'for irec (=day) ', irec
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &          SQUEEZE_RIGHT , myThid )
+           CALL PRINT_ERROR( msgBuf , myThid )
+           STOP 'ABNORMAL END: S/R ECCO_COST_INIT_FIXED'
+        endif
+       enddo
 c
       _END_MASTER(myThid)
       _BARRIER
