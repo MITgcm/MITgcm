@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.3 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.4 2009/03/14 11:53:41 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -50,7 +50,7 @@ c     == routine arguments ==
       logical endofloc
       logical inloc
 
-      character*(128) localbarfile
+      character*(MAX_LEN_FNAM) localbarfile
 
 c     == local variables ==
 

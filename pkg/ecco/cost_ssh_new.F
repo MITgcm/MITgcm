@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_new.F,v 1.3 2009/03/13 07:23:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_new.F,v 1.4 2009/03/14 11:53:41 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -183,7 +183,7 @@ c        if ( gfoTimeMask(irec) .NE. 0. )
 #ifdef ALLOW_SSH_TPANOM_COST_CONTRIBUTION
                 if ( tpmask(i,j,bi,bj)*wtp(i,j,bi,bj)
      &               *tpTimeMask(irec) .NE. 0. ) then
-                   psmeantp(i,j,bi,bj) = psmean(i,j,bi,bj) +
+                   psmeantp(i,j,bi,bj) = psmeantp(i,j,bi,bj) +
      &                 psbar(i,j,bi,bj)
                    sumtp(i,j,bi,bj) = sumtp(i,j,bi,bj) + 1. _d 0
                 endif
@@ -191,7 +191,7 @@ c        if ( gfoTimeMask(irec) .NE. 0. )
 #ifdef ALLOW_SSH_ERSANOM_COST_CONTRIBUTION
                 if ( ersmask(i,j,bi,bj)*wers(i,j,bi,bj)
      &               *ersTimeMask(irec) .NE. 0. ) then
-                   psmeaners(i,j,bi,bj) = psmean(i,j,bi,bj) +
+                   psmeaners(i,j,bi,bj) = psmeaners(i,j,bi,bj) +
      &                 psbar(i,j,bi,bj)
                    sumers(i,j,bi,bj) = sumers(i,j,bi,bj) + 1. _d 0
                 endif
@@ -199,7 +199,7 @@ c        if ( gfoTimeMask(irec) .NE. 0. )
 #ifdef ALLOW_SSH_GFOANOM_COST_CONTRIBUTION
                 if ( gfomask(i,j,bi,bj)*wgfo(i,j,bi,bj)
      &               *gfoTimeMask(irec) .NE. 0. ) then
-                   psmeangfo(i,j,bi,bj) = psmean(i,j,bi,bj) +
+                   psmeangfo(i,j,bi,bj) = psmeangfo(i,j,bi,bj) +
      &                 psbar(i,j,bi,bj)
                    sumgfo(i,j,bi,bj) = sumgfo(i,j,bi,bj) + 1. _d 0
                 endif

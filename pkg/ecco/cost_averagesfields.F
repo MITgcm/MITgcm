@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.23 2008/10/18 13:12:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.24 2009/03/14 11:53:41 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -119,6 +119,10 @@ c     == end of interface ==
 
 c--   Get the time flags and record numbers for the time averaging.
 
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesflags',myThid)
+#endif
       call cost_averagesflags(
      I                    myiter,     mytime,       mythid,
      O                    first,      last,
@@ -131,6 +135,10 @@ c--   Get the time flags and record numbers for the time averaging.
      &                  )
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesgeneric psbar',myThid)
+#endif
       call cost_averagesgeneric(
      &     psbarfile,
      &     psbar, etan, xx_psbar_mean_dummy,
@@ -144,6 +152,10 @@ c--   Get the time flags and record numbers for the time averaging.
      defined (ALLOW_ARGO_THETA_COST_CONTRIBUTION) || \
      defined (ALLOW_DRIFT_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesgeneric tbar',myThid)
+#endif
       call cost_averagesgeneric(
      &     tbarfile,
      &     tbar, theta, xx_tbar_mean_dummy,
@@ -160,6 +172,10 @@ c--   Get the time flags and record numbers for the time averaging.
 #endif
 
 #ifdef ALLOW_SEAICE_COST_AREASST
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesgeneric sstbar',myThid)
+#endif
       call cost_averagesgeneric(
      &     sstbarfile,
      &     sstbar, theta(1-Olx,1-Oly,1,1,1), xx_sstbar_mean_dummy,
@@ -172,6 +188,10 @@ c--   Get the time flags and record numbers for the time averaging.
      defined (ALLOW_ARGO_SALT_COST_CONTRIBUTION) || \
      defined (ALLOW_DRIFT_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesgeneric sbar',myThid)
+#endif
       call cost_averagesgeneric(
      &     sbarfile,
      &     sbar, salt, xx_sbar_mean_dummy,
@@ -351,6 +371,10 @@ c     &     hfluxbar, qnet, xx_hflux_mean_dummy,
 c     &     first, last, .false., .false., intmp,
 c     &     ntimesteps, 1, 1, mythid )
 cph: switch to annual means:
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesgeneric hfluxbar',myThid)
+#endif
       call cost_averagesgeneric(
      &     hfluxbarfile,
      &     hfluxbar, qnet, xx_hflux_mean_dummy,
@@ -361,12 +385,20 @@ cph: switch to annual means:
 #ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
 cph: these are annual means
 # ifndef ALLOW_SEAICE
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesgeneric sfluxbar',myThid)
+#endif
       call cost_averagesgeneric(
      &     sfluxbarfile,
      &     sfluxbar, empmr, xx_sflux_mean_dummy,
      &     first, last, startofyear, endofyear, inyear,
      &     sum1year, yearrec, 1, mythid )
 # else
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesgeneric sfluxbar',myThid)
+#endif
       call cost_averagesgeneric(
      &     sfluxbarfile,
      &     sfluxbar, frWtrAtm, xx_sflux_mean_dummy,
@@ -386,6 +418,10 @@ cph: these are annual means
 #ifdef ALLOW_SEAICE
       if (useSEAICE) then
 # ifdef ALLOW_SEAICE_COST_SMR_AREA
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesgeneric smrareabar',myThid)
+#endif
       call cost_averagesgeneric(
      &     smrareabarfile,
      &     smrareabar, area, xx_smrareabar_mean_dummy,
@@ -437,6 +473,11 @@ cph   In the mean time increment ad hoc during day
          endif
         enddo
        enddo
+#endif
+
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesgeneric leave',myThid)
 #endif
 
       return

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.13 2009/03/13 06:00:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.14 2009/03/14 11:53:41 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -121,6 +121,8 @@ c--     ... ARGO data.
       _END_MASTER( mythid )
 
 #endif /* ALLOW_CAL */
+
+      call ecco_check( myThid )
 
 c--   Get the weights that are to be used for the individual cost
 c--   function contributions.
