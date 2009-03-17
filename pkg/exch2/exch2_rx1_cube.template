@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube.template,v 1.5 2008/07/29 20:25:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube.template,v 1.6 2009/03/17 18:41:33 jahn Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -110,7 +110,7 @@ C     Post sends as messages or buffer copies
         i1Lo  = 1-myOLw
         i1Hi  = sNx+myOLe
         j1Lo  = 1-myOLs
-        j1Hi  = sNy+myOLs
+        j1Hi  = sNy+myOLn
         k1Lo  = 1
         k1Hi  = myNz
         bi1Lo = I
@@ -157,7 +157,7 @@ C     Receive messages or extract buffer copies
         i1Lo  = 1-myOLw
         i1Hi  = sNx+myOLe
         j1Lo  = 1-myOLs
-        j1Hi  = sNy+myOLs
+        j1Hi  = sNy+myOLn
         k1Lo  = 1
         k1Hi  = myNz
         bi1Lo = I
