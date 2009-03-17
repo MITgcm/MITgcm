@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.52 2009/02/13 21:59:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.53 2009/03/17 10:21:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -117,7 +117,7 @@ C     local copy of AREA
 C     FREEZING TEMP. OF SEA WATER (deg C)
       TBC          = SEAICE_freeze
 C     RATIO OF WATER DESITY TO SNOW DENSITY
-      SDF          = 1000.0 _d 0/330.0 _d 0
+      SDF          = 1000.0 _d 0/SEAICE_rhoSnow
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
       ICE2SNOW     = SDF * ICE2WATR
 C     HEAT OF FUSION OF ICE (m^3/J)

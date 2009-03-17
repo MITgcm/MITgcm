@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.54 2008/12/17 03:33:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.55 2009/03/17 10:21:56 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -75,6 +75,9 @@ C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
 C     LAD        - time stepping used for sea-ice advection:
 C                  1 = LEAPFROG,  2 = BACKWARD EULER.
 C     IMAX_TICE  - number of iterations for ice heat budget   10
+C     SOLV_MAX_ITERS   - maximum number of allowed solver iterations
+C     SOLV_NCHECK      - iteration interval for solver convergence test
+C     NPSEUDOTIMESTEPS - number of extra pseudo time steps (default = 0)
 C     SEAICEadvScheme  - sets the advection scheme for thickness and area
 C     SEAICEadvSchArea - sets the advection scheme for area
 C     SEAICEadvSchHeff - sets the advection scheme for effective thickness 
@@ -84,6 +87,7 @@ C     SEAICEadvSchSalt - sets the advection scheme for sea ice salinity
 C     SEAICEadvSchAge  - sets the advection scheme for sea ice age
 C
       INTEGER LAD, IMAX_TICE
+      INTEGER SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS
       INTEGER SEAICEadvScheme
       INTEGER SEAICEadvSchArea
       INTEGER SEAICEadvSchHeff
@@ -92,6 +96,7 @@ C
       INTEGER SEAICEadvSchAge
       COMMON /SEAICE_PARM_I/ 
      &     LAD, IMAX_TICE,
+     &     SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
      &     SEAICEadvScheme,
      &     SEAICEadvSchArea,
      &     SEAICEadvSchHeff,
@@ -133,6 +138,7 @@ C     SEAICE_taveFreq    - SEAICE time-averaging frequency.            (s)
 C     SEAICE_initialHEFF - initial sea-ice thickness                   (m)
 C     SEAICE_rhoAir      - density of air                              (kg/m^3)
 C     SEAICE_rhoIce      - density of sea ice                          (kg/m^3)
+C     SEAICE_rhoSnow     - density of snow                             (kg/m^3)
 C     ICE2WATR           - ratio of sea ice density to water density
 C     SEAICE_drag        - air-ice drag coefficient
 C     OCEAN_drag         - air-ocean drag coefficient
@@ -187,7 +193,7 @@ C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
       _RL SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq
       _RL SEAICE_initialHEFF
-      _RL SEAICE_rhoAir, SEAICE_rhoIce, ICE2WATR
+      _RL SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR
       _RL SEAICE_drag, SEAICE_waterDrag,  SEAICE_dryIceAlb
       _RL SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb
       _RL SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen
@@ -207,7 +213,7 @@ C
      &    SEAICE_evpDampC, SEAICE_zetaMin,
      &    SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      &    SEAICE_initialHEFF,
-     &    SEAICE_rhoAir, SEAICE_rhoIce, ICE2WATR,
+     &    SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      &    SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      &    SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
      &    SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,

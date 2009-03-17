@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.66 2008/12/17 03:33:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.67 2009/03/17 10:21:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -54,7 +54,7 @@ C--   SEAICE parameters
      & SEAICE_evpDampC, SEAICE_zetaMin, 
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq, 
      & SEAICE_initialHEFF,
-     & SEAICE_rhoAir, SEAICE_rhoIce, ICE2WATR,
+     & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      & SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
      & SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
@@ -65,6 +65,7 @@ C--   SEAICE parameters
      & SEAICE_gamma_t, SEAICE_gamma_t_frz,
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      & AreaFile, HeffFile, HsnowFile, HsaltFile, IceAgeFile,
+     & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
      & LSR_ERROR, DIFF1, A22, HO,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
@@ -148,6 +149,7 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this
       SEAICE_initialHEFF = ZERO
       SEAICE_rhoAir      = 1.3    _d 0
       SEAICE_rhoIce      = 0.91   _d +03
+      SEAICE_rhoSnow     = 330.   _d 0
       ICE2WATR           = UNSET_RL
       SEAICE_drag        = 0.002  _d 0
       OCEAN_drag         = 0.001  _d 0
@@ -184,6 +186,9 @@ C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
       HeffFile   = ' '
       LAD        = 2
       IMAX_TICE  = 10
+      SOLV_MAX_ITERS = 1500
+      SOLV_NCHECK= 2
+      NPSEUDOTIMESTEPS = 0
       LSR_ERROR  = 0.0001    _d 0
       DIFF1      = .002      _d 0
       DIFF1      = 2.0*DIFF1
