@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1075 2009/03/03 14:07:45 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1076 2009/03/17 10:22:09 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: turn a few hard wired parameters into run time parameters
 o pkg/seaice/exf/monitor: turn netcdf coordinate variable T into model 
   time in seconds as promised by the usints in seaice_monitor and exf_monitor
 o pkg/mnc: fix the coordinate variables for multi-tile curvi-linear grids
