@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.55 2009/03/17 10:21:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.56 2009/03/18 12:53:33 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -21,6 +21,8 @@ C                          non-EVP pickup files.  Default is true.
 C                          Applied only if SEAICEuseEVP=.TRUE.
 C     SEAICEuseFluxForm :: use flux form for advection and diffusion
 C                          of seaice
+C     SEAICEuseMetricTerms :: use metric terms for dynamics solver
+C                          (default = .true. )
 C     SEAICEuseFlooding :: turn on scheme to convert submerged snow into ice
 C     SEAICEadvHeff     :: turn on advection of effective thickness 
 C                          (default = .true.)
@@ -51,6 +53,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       LOGICAL
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseTEM,
+     &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
      &     SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt, SEAICEadvAge,
@@ -62,6 +65,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
       COMMON /SEAICE_PARM_L/
      &     SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseEVP,
      &     SEAICEuseTEM,
+     &     SEAICEuseMetricTerms,
      &     SEAICEuseEVPpickup, SEAICEuseFlooding, 
      &     SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt, SEAICEadvAge,

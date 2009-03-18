@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.23 2009/03/17 10:21:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.24 2009/03/18 12:53:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -73,6 +73,8 @@ C     == end of interface ==
 #ifdef SEAICE_CGRID
       CALL WRITE_0D_L ( SEAICEuseTEM, INDEX_NONE,
      & 'SEAICEuseTEM      =', ' /* use truncated ellipse rheology */')
+      CALL WRITE_0D_L ( SEAICEuseMetricTerms, INDEX_NONE,
+     & 'SEAICEuseMetricTerms =', ' /* use metric terms */')
 #ifdef SEAICE_ALLOW_EVP
       CALL WRITE_0D_L ( SEAICEuseEVP, INDEX_NONE,
      & 'SEAICEuseEVP      =', ' /* use EVP solver */')

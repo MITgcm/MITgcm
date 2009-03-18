@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.67 2009/03/17 10:21:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.68 2009/03/18 12:53:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,6 +41,7 @@ C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseTEM,
      & SEAICEuseEVPpickup, SEAICEuseFluxForm,
+     & SEAICEuseMetricTerms,
      & useHB87stressCoupling, SEAICEuseFlooding, usePW79thermodynamics,
      & SEAICErestoreUnderIce,
      & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow,
@@ -106,6 +107,7 @@ C--   set default sea ice parameters
       SEAICEuseDYNAMICS  = .FALSE.
 #endif
       SEAICEuseTEM       = .FALSE.
+      SEAICEuseMetricTerms = .TRUE.
       SEAICEuseEVPpickup = .TRUE.
       SEAICEuseFluxForm  = .FALSE.
       SEAICErestoreUnderIce = .FALSE.
