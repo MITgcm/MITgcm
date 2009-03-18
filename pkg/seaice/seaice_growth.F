@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.53 2009/03/17 10:21:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.54 2009/03/18 14:02:25 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -219,15 +219,15 @@ C NOW DETERMINE MIXED LAYER TEMPERATURE
 C THERMAL WIND OF ATMOSPHERE
         DO J=1,sNy
          DO I=1,sNx
-CMLC     this seems to be more natural as we do compute the wind speed in 
-CMLC     pkg/exf/exf_wind.F, but it changes the results
-CML          UG(I,J) = MAX(SEAICE_EPS,wspeed(I,J,bi,bj))
-          SPEED_SQ = UWIND(I,J,bi,bj)**2 + VWIND(I,J,bi,bj)**2
-          IF ( SPEED_SQ .LE. SEAICE_EPS_SQ ) THEN
-             UG(I,J)=SEAICE_EPS
-          ELSE
-             UG(I,J)=SQRT(SPEED_SQ)
-          ENDIF
+C     copy the wind speed computed in exf_wind.F to UG
+          UG(I,J) = MAX(SEAICE_EPS,wspeed(I,J,bi,bj))
+CML   this is the old code, which does the same
+CML          SPEED_SQ = UWIND(I,J,bi,bj)**2 + VWIND(I,J,bi,bj)**2
+CML          IF ( SPEED_SQ .LE. SEAICE_EPS_SQ ) THEN
+CML             UG(I,J)=SEAICE_EPS
+CML          ELSE
+CML             UG(I,J)=SQRT(SPEED_SQ)
+CML          ENDIF
          ENDDO
         ENDDO
 
