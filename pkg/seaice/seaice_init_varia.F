@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.35 2009/03/18 13:48:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.36 2009/03/18 14:35:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -516,7 +516,7 @@ C---  Complete initialization
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            sIceLoad(i,j,bi,bj) = HEFF(i,j,1,bi,bj)*SEAICE_rhoIce
-     &                         + HSNOW(i,j,bi,bj)* 330. _d 0
+     &                         + HSNOW(i,j,bi,bj)*SEAICE_rhoSnow
 
           ENDDO
          ENDDO

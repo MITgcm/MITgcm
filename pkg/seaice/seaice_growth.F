@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.54 2009/03/18 14:02:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.55 2009/03/18 14:35:37 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -787,7 +787,7 @@ C     use (abuse) GHEFF to diagnose the total thermodynamic growth rate
 C     convert snow to ice if submerged
          DO J=1,sNy
           DO I=1,sNx
-           hDraft     = (HSNOW(I,J,bi,bj)*330. _d 0
+           hDraft     = (HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
      &              +HEFF(I,J,1,bi,bj)*SEAICE_rhoIce)/1000. _d 0
 C     here GEFF is the gain of ice due to flooding
            GHEFF(I,J) = hDraft - MIN(hDraft,HEFF(I,J,1,bi,bj))
@@ -816,7 +816,7 @@ C     turn GHEFF into a rate
          DO J=1,sNy
           DO I=1,sNx
            sIceLoad(i,j,bi,bj) = HEFF(I,J,1,bi,bj)*SEAICE_rhoIce
-     &                         + HSNOW(I,J,bi,bj)* 330. _d 0
+     &                         + HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
           ENDDO
          ENDDO
         ENDIF

@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.3 2008/06/25 21:44:17 heimbach Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.4 2009/03/18 14:35:38 mlosch Exp $
 C     $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -189,7 +189,7 @@ c     Freshwater density (KG M^-3)
       RHOFW = 1000.0
 
 C     Snow density
-      RHOSN = 330.0
+      RHOSN = SEAICE_rhoSnow
 
 C     Heat capacity of seawater (J m^-3 K^-1)
       CPW = 4010.0
@@ -1076,7 +1076,7 @@ CADJ &                         key = iicekey, byte = isbyte
                DO J=1,sNy
                   DO I=1,sNx
                      sIceLoad(i,j,bi,bj) = HEFF(I,J,1,bi,bj)*
-     &                    SEAICE_rhoIce + HSNOW(I,J,bi,bj)* 330. _d 0
+     &                 SEAICE_rhoIce + HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
                   ENDDO
                ENDDO
             ENDIF
