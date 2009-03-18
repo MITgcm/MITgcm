@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.21 2008/01/17 23:18:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.22 2009/03/18 10:26:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -119,22 +119,11 @@ C     evaluate divergence of stress and apply to forcing
      &           + sig12(I  ,J+1) * _dxV(I  ,J+1,bi,bj)
      &           - sig12(I  ,J  ) * _dxV(I  ,J  ,bi,bj)
      &           ) * recip_rAw(I,J,bi,bj)
-     &           -
-     &           ( sig12(I,J) + sig12(I,J+1) )
-     &           * _tanPhiAtU(I,J,bi,bj) * recip_rSphere
-     &           +
-     &           ( sig22(I,J) + sig22(I-1,J) ) * 0.5 _d 0
-     &           * _tanPhiAtU(I,J,bi,bj) * recip_rSphere
-C     one metric term  missing for general curvilinear coordinates
             FY = ( sig22(I  ,J  ) * _dxF(I  ,J  ,bi,bj)
      &           - sig22(I  ,J-1) * _dxF(I  ,J-1,bi,bj)
      &           + sig12(I+1,J  ) * _dyU(I+1,J  ,bi,bj)
      &           - sig12(I  ,J  ) * _dyU(I  ,J  ,bi,bj)
      &           ) * recip_rAs(I,J,bi,bj)
-     &           -
-     &           ( sig22(I,J) + sig22(I,J-1) ) * 0.5 _d 0
-     &           * _tanPhiAtV(I,J,bi,bj) * recip_rSphere
-C     two metric terms missing for general curvilinear coordinates
 C     average wind stress over ice and ocean and apply averaged wind
 C     stress and internal ice stresses to surface layer of ocean
             areaW = 0.5 * (AREA(I,J,1,bi,bj) + AREA(I-1,J,1,bi,bj))
