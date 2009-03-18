@@ -10,7 +10,8 @@
 # does not have an effect here
 # for backward compatibility turn off advection
 # of snow
- SEAICE_advSnow = .FALSE.,
+ SEAICEadvSnow = .FALSE.,
+ SEAICEuseFlooding = .FALSE.,
  &
 #
  &SEAICE_PARM02
