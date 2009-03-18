@@ -1,8 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1077 2009/03/17 20:01:12 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1078 2009/03/18 10:30:46 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint61k
+o pkg/seaice: a few bug fixes mostly concerning the metric terms:
+  seaice_lsr: fixed a few metric terms,
+              affects lab_sea.lsr, lab_sea.salt_plume, seaice_obcs
+              add more debugging diagnostics
+  seaice_evp: removed superfluous many metric terms of FV discretization
+              of stress divergence
+              affects lab_sea, lab_sea.hb87
+  seaice_ocean_stress: removed superfluous many metric terms of FV discretization
+              of stress divergence for non-evp solver 
+              (this part is not tested anywhere)
+  seaice_calc_strainrates: fixed a bug in no-slip boundary conditions,
+              they were effectively only half slip
+              affects lab_sea.hb87
+  updated all relevant verification experiments
 
 checkpoint61j
 o pkg/seaice: turn a few hard wired parameters into run time parameters
