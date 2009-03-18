@@ -1,8 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1078 2009/03/18 10:30:46 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1079 2009/03/18 14:04:14 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: 
+  Major overhaul of the LSOR solver: change discretization from original
+  finite differences to finite volume. The old routine is still in the
+  file seaice_lsr.F and can be turned on with the CPP-flag
+  SEAICE_OLD_AND_BAD_DISCRETIZATION
+  Along with this change, the discretization of the strain rates is changed.
+  The same flag turns on the old discretization in seaice_calc_strainrates.F
+  All verification experiments with seaice are affected (except for 
+  seaice_exf_offline); global_ocean.cs32x15/input.icedyn recovers the old
+  results by setting the above flag.
+  Further changes involve changes in defaults:
+  - ALLOW_FLOODING is defined and turned on by default
+  - SEAICE_advSnow = .true. is now the default
+  - B-grid, and thus not tested: SEAICE_TEST_ICE_STRESS_1/EXPLICIT_SSH_SLOPE
+    is defined, SEAICE_TEST_ICE_STRESS_1 is renamed into SEAICE_BICE_STRESS
+  - seaice_growth: replace computation of UG by a simple copy from wspeed
 
 checkpoint61k
 o pkg/seaice: a few bug fixes mostly concerning the metric terms:
