@@ -7,4 +7,6 @@
  LSR_ERROR        = 1.E-12,
 #SEAICE_deltaTevp = 60.,
 #SEAICEuseDynamics = .FALSE.,
+# for backward compatibility only
+ SEAICEuseFlooding  = .FALSE.,
  &
