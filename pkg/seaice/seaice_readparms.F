@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.68 2009/03/18 12:53:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.69 2009/03/18 13:48:53 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -115,10 +115,14 @@ C--   set default sea ice parameters
       usePW79thermodynamics = .TRUE.
       SEAICEadvHeff      = .TRUE.    
       SEAICEadvArea      = .TRUE.
-      SEAICEadvSnow      = .FALSE.
+      SEAICEadvSnow      = .TRUE.
       SEAICEadvSalt      = .FALSE.
       SEAICEadvAge       = .FALSE.
+#ifdef ALLOW_SEAICE_FLOODING
+      SEAICEuseFlooding  = .TRUE.
+#else
       SEAICEuseFlooding  = .FALSE.
+#endif /* ALLOW_SEAICE_FLOODING */
       SEAICE_no_slip     = .FALSE.
       SEAICE_clipVelocities = .TRUE.
       SEAICE_maskRHS     = .FALSE.

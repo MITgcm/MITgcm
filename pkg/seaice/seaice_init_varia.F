@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.34 2009/03/18 12:56:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.35 2009/03/18 13:48:53 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -307,9 +307,9 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
 C--   Choose a proxy level for geostrophic velocity,
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-#ifdef SEAICE_TEST_ICE_STRESS_1
+#ifdef SEAICE_BICE_STRESS
           KGEO(i,j,bi,bj) = 1
-#else /* SEAICE_TEST_ICE_STRESS_1 */
+#else /* SEAICE_BICE_STRESS */
           IF (klowc(i,j,bi,bj) .LT. 2) THEN
            KGEO(i,j,bi,bj) = 1
           ELSE
@@ -319,7 +319,7 @@ C--   Choose a proxy level for geostrophic velocity,
               KGEO(i,j,bi,bj) = KGEO(i,j,bi,bj) + 1
            ENDDO
           ENDIF
-#endif /* SEAICE_TEST_ICE_STRESS_1 */
+#endif /* SEAICE_BICE_STRESS */
          ENDDO
         ENDDO
 #endif /* SEAICE_CGRID */
