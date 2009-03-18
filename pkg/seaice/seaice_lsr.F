@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.34 2009/03/17 10:21:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.35 2009/03/18 10:28:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -14,6 +14,10 @@ C     |   Written by Jinlun Zhang, PSC/UW, Feb-2001              |
 C     |                     zhang@apl.washington.edu             |
 C     |==========================================================|
 C     | C-grid version by Martin Losch                           |
+C     | in this version, only metric terms for spherical polar   |
+C     | grids are taken into account, therefore we can use       |
+C     | tanPhiAtC = tanPhiAtU and tanPhiAtZ = tanPhiAtV          |
+C     | in future versions this hack will be removed             |
 C     \==========================================================/
       IMPLICIT NONE
 
@@ -51,7 +55,7 @@ C     i,j,bi,bj - Loop counters
       INTEGER phexit
 
       _RL  WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
-      _RL  AA1, AA2, AA3, AA4, AA5, AA6, AA7, S1, S2, S1A, S2A
+      _RL  AA1, AA2, AA3, AA4, AA5, AA6, AA7, AA8, S1, S2, S1A, S2A
       _RL  seaiceSlipFactor, hFacM, hFacP
 
       _RL AU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -84,6 +88,7 @@ C     strain rate tensor
       _RL dUdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dVdx     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dVdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL uMeanZ   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
       _RL SINWAT, COSWAT
       _RL TEMPVAR
@@ -99,8 +104,10 @@ C     part of the overlap, because the overlap of u/v(tlev) is used
       PARAMETER ( iMin = 1, iMax = sNx, jMin = 1, jMax = sNy )
 #endif
 
-
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+#ifdef ALLOW_DEBUG
+      _RL ARR  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+#endif
 
 C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
@@ -275,14 +282,33 @@ C     (d/dy)[eta*(d/dy)] U (also on UVRT1/2)
      &         * _recip_dyG(I,J,bi,bj)
           AA4 = etaMeanZ(I,J+1,bi,bj) * _recip_dyU(I,J+1,bi,bj)
      &         * _recip_dyG(I,J,bi,bj)
-C     (d/dy)[tanphi/a)] U (also on UVRT1/2)
+C     (d/dy)[eta*tanphi/a)] U (also on UVRT1/2)
           AA5 = etaMeanZ(I,J  ,bi,bj) * _recip_dyG(I,J,bi,bj)
-     &         * 0.5 _d 0 * _tanPhiAtU(I,J,bi,bj) * recip_rSphere
+     &         * 0.5 _d 0 * _tanPhiAtV(I,J,  bi,bj) * recip_rSphere
           AA6 = etaMeanZ(I,J+1,bi,bj) * _recip_dyG(I,J,bi,bj)
-     &         * 0.5 _d 0 * _tanPhiAtU(I,J+1,bi,bj) * recip_rSphere
+     &         * 0.5 _d 0 * _tanPhiAtV(I,J+1,bi,bj) * recip_rSphere
 C     2*eta*(tanphi/a) * ( tanphi/a ) U
           AA7 = TWO*etaMeanU(I,J,bi,bj)*recip_rSphere*recip_rSphere
      &         * _tanPhiAtU(I,J,bi,bj)  * _tanPhiAtU(I,J,bi,bj)
+C     - 2*eta*(tanphi/a) * (d/dy) U
+          AA8 = - TWO*etaMeanU(I,J,bi,bj) * _tanPhiAtU(I,J,bi,bj)
+     &         *recip_rSphere
+     &         * 1.0 _d 0 / ( _dyU(I,J,bi,bj) + _dyU(I,J+1,bi,bj) )
+CMLCML  now we discretize U * (d/dy) eta*(tanphi/a) - eta*(tanphi/a) * (d/dy) U
+CMLCML  instead of (d/dy)[eta*tanphi/a)] U - 2*eta*(tanphi/a) * (d/dy) U
+CMLC     (d/dy)[eta*tanphi/a)] U (also on UVRT1/2)
+CML          AA5 = 0. _d 0
+CML          AA6 = 0. _d 0
+CMLC     U * (d/dy) eta*(tanphi/a) 
+CML          AA7 = AA7 + 
+CML     &         ( etaMeanZ(I,J+1,bi,bj) * _tanPhiAtV(I,J+1,bi,bj)  
+CML     &         - etaMeanZ(I,J  ,bi,bj) * _tanPhiAtV(I,J  ,bi,bj) )
+CML     &         * _recip_dyG(I,J,bi,bj) * recip_rSphere
+CMLC     - eta*(tanphi/a) * (d/dy) U
+CML          AA8 = - etaMeanU(I,J,bi,bj) * _tanPhiAtU(I,J,bi,bj)
+CML     &         *recip_rSphere
+CML     &         * 1.0 _d 0 / ( _dyU(I,J,bi,bj) + _dyU(I,J+1,bi,bj) )
+C
           AU(I,J,bi,bj)=-AA2
           CU(I,J,bi,bj)=-AA1
           BU(I,J,bi,bj)=(ONE - seaiceMaskU(I,J,bi,bj))
@@ -292,15 +318,9 @@ C     2*eta*(tanphi/a) * ( tanphi/a ) U
      &         + 0.5 _d 0*( DRAGS(I,J,bi,bj) + DRAGS(I-1,J,bi,bj) )
      &         )* seaiceMaskU(I,J,bi,bj)
 C     coefficients of uIce(I,J-1)
-          UVRT1(I,J,bi,bj)= AA3 - AA5
-     &         + TWO*etaMeanU(I,J,bi,bj) * _tanPhiAtU(I,J,bi,bj)
-     &         * 1.0 _d 0 / ( _dyU(I,J,bi,bj) + _dyU(I,J+1,bi,bj) )
-     &         *recip_rSphere
+          UVRT1(I,J,bi,bj)= AA3 - AA5 - AA8
 C     coefficients of uIce(I,J+1)
-          UVRT2(I,J,bi,bj)= AA4 + AA6
-     &         - TWO*etaMeanU(I,J,bi,bj) * _tanPhiAtU(I,J,bi,bj)
-     &         * 1.0 _d 0 / ( _dyU(I,J,bi,bj) + _dyU(I,J+1,bi,bj) )
-     &         *recip_rSphere
+          UVRT2(I,J,bi,bj)= AA4 + AA6 + AA8
          ENDDO
         ENDDO
 
@@ -356,6 +376,7 @@ C     free slip conditions are taken care of by masking dVdx
           ENDDO
          ENDDO
         ENDIF
+
         DO J=1,sNy
          DO I=1,sNx
 C     coriolis and other forcing
@@ -377,26 +398,37 @@ C     + d/dy[ eta dV/x ]
      &         ) * _recip_dyG(I,J,bi,bj)
 C     - d/dx[ (eta+zeta) * v * (tanphi/a) ]
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) - (
-     &           etaPlusZeta(I  ,J  ,bi,bj)
+     &           etaPlusZeta(I  ,J,bi,bj) * _tanPhiAtU(I  ,J,bi,bj)
      &         * 0.5 _d 0 * (vIceC(I  ,J,bi,bj)+vIceC(I  ,J+1,bi,bj))
-     &         * 0.5 _d 0 * ( _tanPhiAtU(I  ,J,bi,bj)
-     &                      + _tanPhiAtU(I+1,J,bi,bj) )
-     &         - etaPlusZeta(I-1,J,bi,bj)
+     &         - etaPlusZeta(I-1,J,bi,bj) * _tanPhiAtU(I-1,J,bi,bj)
      &         * 0.5 _d 0 * (vIceC(I-1,J,bi,bj)+vIceC(I-1,J+1,bi,bj))
-     &         * 0.5 _d 0 * ( _tanPhiAtU(I-1,J,bi,bj)
-     &                      + _tanPhiAtU(I  ,J,bi,bj) )
      &         )* _recip_dxC(I,J,bi,bj)*recip_rSphere
 C     - 2*eta*(tanphi/a) * dV/dx
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) -
-     &         TWO * etaMeanU(I,J,bi,bj) * _tanPhiAtV(I,J,bi,bj)
-     &         *recip_rSphere
-     &         *( dVdx(I,J+1) + dVdx(I,J) ) * 0.5 _d 0
+     &         TWO * etaMeanU(I,J,bi,bj) 
+     &         * _tanPhiAtU(I,J,bi,bj) * recip_rSphere
+     &         * 0.5 _d 0 * ( dVdx(I,J+1) + dVdx(I,J) ) 
          END DO
         END DO
-
+C     end bi/bj-loops
        ENDDO
       ENDDO
 
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            ARR(i,j,bi,bj)=UICE(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       CALL DEBUG_STATS_RL(1,ARR,'UICE before iteration (SEAICE_LSR)',
+     &      myThid)
+      ENDIF
+#endif /* ALLOW_DEBUG */
 C NOW DO ITERATION
 
 cph--- iteration starts here
@@ -457,7 +489,7 @@ C     start a new loop with reversed order to support automatic vectorization
 #endif /* SEAICE_VECTORIZE_LSR */
           CUU(I,J)=CUU(I,J)/(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
           URT(I,J)=(URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))
-     &         /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
+     &        /(BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J))
          END DO
 #ifdef SEAICE_VECTORIZE_LSR
         END DO
@@ -506,11 +538,25 @@ C SAFEGUARD AGAINST BAD FORCING ETC
       ENDDO
 C ITERATION END -----------------------------------------------------
 
+#ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) THEN
        _BEGIN_MASTER( myThid )
         write(*,'(A,I6,1P2E22.14)')' U lsr iters, error = ',ICOUNT1,S1
        _END_MASTER( myThid )
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            ARR(i,j,bi,bj)=UICE(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       CALL DEBUG_STATS_RL(1,ARR,'UICE after iteration (SEAICE_LSR)',
+     &      myThid)
+       IF (S1.EQ.0.D0)STOP'u-iteration did not converge'
       ENDIF
+#endif /* ALLOW_DEBUG */
 
 C NOW FOR vIce
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -530,9 +576,9 @@ C     d/dx [eta d/dx] V
           AA4= etaMeanZ(I  ,J,bi,bj)
      &          *_recip_dxG(I,J,bi,bj) * _recip_dxV(I  ,J,bi,bj)
 C     d/dy [(zeta-eta) tanphi/a] V
-          AA5= zetaMinusEta(I,J  ,bi,bj) * tanPhiAtU(I,J  ,bi,bj)
+          AA5= zetaMinusEta(I,J  ,bi,bj) * _tanPhiAtU(I,J,  bi,bj)
      &         * _recip_dyC(I,J,bi,bj)*recip_rSphere * 0.5 _d 0
-          AA6= zetaMinusEta(I,J-1,bi,bj) * tanPhiAtU(I,J-1,bi,bj)
+          AA6= zetaMinusEta(I,J-1,bi,bj) * _tanPhiAtU(I,J-1,bi,bj)
      &         * _recip_dyC(I,J,bi,bj)*recip_rSphere * 0.5 _d 0
 C     2*eta tanphi/a ( - tanphi/a - d/dy) V
           AA7=TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
@@ -548,7 +594,7 @@ C
      &         + AA5
      &         + AA7*1.0 _d 0 / ( _dyF(I,J,bi,bj) + _dyF(I,J-1,bi,bj) )
      &         )* seaiceMaskV(I,J,bi,bj)
-          BV(I,J,bi,bj)= (ONE- seaiceMaskV(I,J,bi,bj))
+          BV(I,J,bi,bj)= (ONE - seaiceMaskV(I,J,bi,bj))
      &         +( (AA1+AA2) + (AA3+AA4)  + (AA5-AA6)
      &         + AA7 * _tanPhiAtV(I,J,bi,bj)*recip_rSphere
      &         + seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
@@ -604,15 +650,37 @@ C     now set up right-hand-side
         IF ( SEAICE_no_slip ) THEN
 C     no slip boundary conditions
 C     free slip conditions are taken care of by masking dUdy
-         DO J=0,sNy
+         DO J=1,sNy
           DO I=1,sNx+1
-           hFacM = seaiceMaskU(i,j,bi,bj) - seaiceMaskU(i,j-1,bi,bj)
+           hFacM = seaiceMaskU(I,J,bi,bj) - seaiceMaskU(I,J-1,bi,bj)
            dUdy(I,J) = dUdy(I,J)
      &          + ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
      &          * _recip_dyU(I,J,bi,bj) * hFacM * 2. _d 0
           ENDDO
          ENDDO
         ENDIF
+C     average of uIce on vorticity (Z) points, no slip boundary
+C     conditions (u(j)+u(j-1)=0) are take care of by masking
+        DO J=1,sNy
+         DO I=1,sNx+1
+          uMeanZ(I,J) = 
+     &         0.5 _d 0 * ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
+     &         *seaiceMaskU(I,J,bi,bj)*seaiceMaskU(I,J-1,bi,bj)
+         ENDDO
+        ENDDO
+        IF ( .NOT. SEAICE_no_slip ) THEN
+C     for free slip (u(j)-u(j-1)=0) 0.5*(u(j)+u(j-1)) is either u(j) or u(j-1)
+         DO J=1,sNy
+          DO I=1,sNx+1
+           uMeanZ(I,J) = uMeanZ(I,J)
+     &          + uIceC(I,J  ,bi,bj) * seaiceMaskU(I,J  ,bi,bj)
+     &          * ( 1. _d 0 - seaiceMaskU(I,J-1,bi,bj) )
+     &          + uIceC(I,J-1,bi,bj) * seaiceMaskU(I,J-1,bi,bj)
+     &          * ( 1. _d 0 - seaiceMaskU(I,J  ,bi,bj))
+          ENDDO
+         ENDDO
+        ENDIF
+
         DO J=1,sNy
          DO I=1,sNx
 C     coriols and other foring
@@ -634,23 +702,37 @@ C     + d/dx[ eta dU/dy ]
      &         * _recip_dxG(I,J,bi,bj)
 C     + d/dx[ eta * (tanphi/a) * U ]
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) + (
-     &         etaMeanZ(I+1,J,bi,bj) * 0.5 _d 0 *
-     &         ( uIceC(I+1,J  ,bi,bj) * _tanPhiAtU(I+1,J  ,bi,bj)
-     &         + uIceC(I+1,J-1,bi,bj) * _tanPhiAtU(I+1,J-1,bi,bj) )
-     &         - etaMeanZ(I  ,J,bi,bj) * 0.5 _d 0 *
-     &         ( uIceC(I  ,J  ,bi,bj) * _tanPhiAtU(I  ,J  ,bi,bj)
-     &         + uIceC(I  ,J-1,bi,bj) * _tanPhiAtU(I  ,J  ,bi,bj) )
+     &           etaMeanZ(I+1,J,bi,bj) * _tanPhiAtV(I+1,J,bi,bj) 
+     &         * uMeanZ(I+1,J)
+     &         - etaMeanZ(I  ,J,bi,bj) * _tanPhiAtV(I  ,J,bi,bj)
+     &         * uMeanZ(I  ,J)
      &         ) *  _recip_dxG(I,J,bi,bj)*recip_rSphere
 C     + 2*eta*(tanphi/a) dU/dx
           FXY(I,J,bi,bj)=FXY(I,J,bi,bj) +
-     &        TWO * etaMeanV(I,J,bi,bj)*TWO  * _tanPhiAtV(I,J,bi,bj)
-     &         *recip_rSphere
-     &         * ( dUdx(I,J) + dUdx(I,J-1) ) * 0.5 _d 0
+     &        TWO * etaMeanV(I,J,bi,bj)
+     &         * _tanPhiAtV(I,J,bi,bj)*recip_rSphere
+     &         * 0.5 _d 0 * ( dUdx(I,J) + dUdx(I,J-1) ) 
          END DO
         END DO
-
+C     end bi/bj-loops
        ENDDO
       ENDDO
+
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            ARR(i,j,bi,bj)=VICE(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       CALL DEBUG_STATS_RL(1,ARR,'VICE before iteration (SEAICE_LSR)',
+     &      myThid)
+      ENDIF
+#endif /* ALLOW_DEBUG */
 
 C NOW DO ITERATION
 
@@ -680,7 +762,7 @@ C NOW SET V(3)=V(1)
            AA2= etaPlusZeta(I,J-1,bi,bj)
      &          * _recip_dyF(I,J-1,bi,bj) * _recip_dyC(I,J,bi,bj)
            AA3=( AA2
-     &          + zetaMinusEta(I,J-1,bi,bj) * tanPhiAtU(I,J-1,bi,bj)
+     &          + zetaMinusEta(I,J-1,bi,bj) * _tanPhiAtU(I,J-1,bi,bj)
      &          * _recip_dyC(I,J,bi,bj)*recip_rSphere
      &          + TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
      &          * _tanPhiAtV(I,J,bi,bj)
@@ -690,7 +772,7 @@ C NOW SET V(3)=V(1)
            AA1= etaPlusZeta(I,J  ,bi,bj)
      &          *_recip_dyF(I,J  ,bi,bj) * _recip_dyC(I,J,bi,bj)
            AA3=( AA1
-     &          - zetaMinusEta(I,J  ,bi,bj) * tanPhiAtU(I,J  ,bi,bj)
+     &          - zetaMinusEta(I,J  ,bi,bj) * _tanPhiAtU(I,J,  bi,bj)
      &          * _recip_dyC(I,J,bi,bj)*recip_rSphere
      &          - TWO*etaMeanV(I,J,bi,bj) * recip_rSphere
      &          * _tanPhiAtV(I,J,bi,bj)
@@ -760,11 +842,25 @@ C SAFEGUARD AGAINST BAD FORCING ETC
       ENDDO
 C ITERATION END -----------------------------------------------------
 
+#ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) THEN
        _BEGIN_MASTER( myThid )
         write(*,'(A,I6,1P2E22.14)')' V lsr iters, error = ',ICOUNT2,S2
        _END_MASTER( myThid )
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            ARR(i,j,bi,bj)=VICE(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       CALL DEBUG_STATS_RL(1,ARR,'VICE after iteration (SEAICE_LSR)',
+     &      myThid)
+       IF (S2.EQ.0.D0)STOP'v-iteration did not converge'
       ENDIF
+#endif /* ALLOW_DEBUG */
 
 C     APPLY MASKS
       DO bj=myByLo(myThid),myByHi(myThid)
