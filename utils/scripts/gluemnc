@@ -89,6 +89,44 @@ done
 
 prels=$sprels
 
+# ML: determine the coordinate variable (this is hack for the unlikely
+# case that we do not have X or Y as coordinate variables; this can
+# happen, when only U-point or V-point variables are written to a
+# diagnostics stream; I do not know if this always works, but it works for me)
+echo Determine a usable coordinate variable
+somefile=${prels}.t001.nc
+# first try X and Y
+Xcoord=X
+Ycoord=Y
+Xtest=$(ncdump -vX -l 10000 $somefile | grep "X = ")
+Ytest=$(ncdump -vY -l 10000 $somefile | grep "Y = ")
+if [ ${#Xtest} = 0 ]; then
+    echo "X not found, trying Xp1"
+    Xtest=$(ncdump -vXp1 -l 10000 $somefile | grep "Xp1 = ")
+    Xcoord=Xp1
+fi
+if [ ${#Xtest} = 0 ]; then
+    echo "no X-coordinate found"
+    Xcoord=
+fi
+if [ ${#Ytest} = 0 ]; then
+    echo "Y not found, trying Yp1"
+    Ytest=$(ncdump -vYp1 -l 10000 $somefile | grep "Yp1 = ")
+    Ycoord=Yp1
+fi
+if [ ${#Ytest} = 0 ]; then
+    echo "no Y-coordinate found"
+    Ycoord=
+fi
+if [ ${#Xcoord} = 0 ]; then
+    echo cannot continue
+    exit
+fi
+if [ ${#Ycoord} = 0 ]; then
+    echo cannot continue
+    exit
+fi
+
 for somepre in $prels
 do
   echo Making $somepre.glob.nc...
@@ -99,13 +137,13 @@ do
   do
     if [ "${somefile%.t???.nc}" = "$somepre" ]; then
       echo Scanning $somefile...
-      Xs=$(ncdump -vX -l 10000 $somefile | grep "X = ")
+      Xs=$(ncdump -v${Xcoord} -l 10000 $somefile | grep "${Xcoord} = ")
       Xs=${Xs#*;}
       Xs=${Xs%;*}
       Xs=$(echo $Xs | sed s/' '//g)
       Xsls=$Xsls$Xs" "
 
-      Ys=$(ncdump -vY -l 10000 $somefile | grep "Y = ")
+      Ys=$(ncdump -v${Ycoord} -l 10000 $somefile | grep "${Ycoord} = ")
       Ys=${Ys#*;}
       Ys=${Ys%;*}
       Ys=$(echo $Ys | sed s/' '//g)
@@ -171,7 +209,7 @@ do
     for somefile in $@
     do
       if [ "${somefile%.t???.nc}" = "$somepre" ]; then
-        Xs=$(ncdump -vX -l 10000 $somefile | grep "X = ")
+        Xs=$(ncdump -v${Xcoord} -l 10000 $somefile | grep "${Xcoord} = ")
         Xs=${Xs#*;}
         Xs=${Xs%;*}
         Xs=$(echo $Xs | sed s/' '//g)
