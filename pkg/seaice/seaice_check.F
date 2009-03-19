@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.28 2008/12/17 03:33:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.29 2009/03/19 11:55:00 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -276,6 +276,22 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif
+
+#if !defined(SEAICE_CGRID)
+#ifdef SEAICE_TEST_ICE_STRESS_1
+       WRITE(msgBuf,'(A)')
+     &  'SEAICE_CHECK: Only relevant for B-grid:'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'SEAICE_CHECK: SEAICE_TEST_ICE_STRESS_1 is replaced by'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'SEAICE_CHECK: SEAICE_BICE_STRESS (defined by default)'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif / * SEAICE_TEST_ICE_STRESS_1 */      
+#endif / * SEAICE_CGRID not defined */
+
       _END_MASTER(myThid)
 
       RETURN
