@@ -23,4 +23,6 @@
       HsnowFile          = 'HSNOW.0000001000.data',
       HsaltFile          = 'HSALT.0000001000.data',
       HeffFile           = 'HEFF.0000001000.data',
+# only for backward compatibility
+ SEAICE_clipVelocities = .TRUE.,
  &

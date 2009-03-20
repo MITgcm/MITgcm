@@ -8,5 +8,6 @@
 #SEAICE_deltaTevp = 60.,
 #SEAICEuseDynamics = .FALSE.,
 # for backward compatibility only
+ SEAICE_clipVelocities = .TRUE.,
  SEAICEuseFlooding  = .FALSE.,
  &
