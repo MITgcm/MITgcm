@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.70 2009/03/19 11:45:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.71 2009/03/20 16:04:07 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -124,7 +124,7 @@ C--   set default sea ice parameters
       SEAICEuseFlooding  = .FALSE.
 #endif /* ALLOW_SEAICE_FLOODING */
       SEAICE_no_slip     = .FALSE.
-      SEAICE_clipVelocities = .TRUE.
+      SEAICE_clipVelocities = .FALSE.
       SEAICE_maskRHS     = .FALSE.
       SEAICEadvScheme    = 2
       SEAICEadvSchArea   = UNSET_I
