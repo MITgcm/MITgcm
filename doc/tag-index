@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1080 2009/03/19 11:45:36 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1081 2009/03/20 16:04:38 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -19,6 +19,8 @@ o pkg/seaice:
   - SEAICE_advSnow = .true. is now the default
   - SEAICE_advSalt = .true. is now the default
   - SEAICE_advAge  = .true. is now the default
+  - SEAICE_clipVelocities  = .false. is now the default 
+                                     (as per J. Zhang's recommendation)
   - B-grid, and thus not tested: SEAICE_TEST_ICE_STRESS_1/EXPLICIT_SSH_SLOPE
     is defined, SEAICE_TEST_ICE_STRESS_1 is renamed into SEAICE_BICE_STRESS
   - seaice_growth: replace computation of UG by a simple copy from wspeed
