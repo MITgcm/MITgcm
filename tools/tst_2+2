@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.5 2009/03/03 20:59:40 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.6 2009/03/23 23:28:13 jmc Exp $
 # $Name:  $
 
 rnp_loc()
@@ -146,7 +146,7 @@ fi
 echo "prepare parameter file 'data.tst' :"
 cp -p -f data data.tst
 listOut='startTime endTime nIter0 nTimeSteps nEndIter chkPtFreq pChkPtFreq globalFiles'
-listOut=$listOut' useSingleCpuIO pickupSuff usePickupBeforeC54 mdsioLocalDir'
+listOut=$listOut' pickupSuff usePickupBeforeC54 mdsioLocalDir'
 #- comment out (in data.tst) all parameters from list: 'listOut'
 for yy in $listOut
 do
@@ -274,18 +274,19 @@ mv STDERR.0000 std__err.2it
 out=`egrep -c 'STOP ABNORMAL END' std_outp.2it`
 if test $out != 0
 then echo "==> RUN 2 x $Nit it : ABNORMAL END => exit" ; exit 1 ; fi
-if test -f $pref.ckptA.001.001.data
-then echo "==>  END  RUN 2 x $Nit it"
-else echo "==> RUN 2 x $Nit it STOP without writing $pref => exit" ; exit 1 ; fi
+listF=`ls -1 $pref.ckptA*.data 2> /dev/null`
+if test "x$listF" = x
+then echo "==> RUN 2 x $Nit it STOP without writing $pref => exit" ; exit 1
+else echo "==>  END  RUN 2 x $Nit it" ; fi
 listP=`ls pickup*.ckptA* | sed 's/\..*//g' | uniq`
 echo ' listP=' $listP
 for xx in $listP
 do
   rnp_loc $xx.ckptA $xx.$num2c
 done
-mv *.0??.0??.* $dir1
+mv *.data *.meta $dir1
 txtF=`ls -1 *.txt STD???.00?? 2> /dev/null`
-mv R?.data R?.meta DR?.data DR?.meta PHref{C,F}.??ta $txtF $dir1
+if test "x$txtF" != x ; then mv $txtF $dir1 ; fi
 listS=`ls $dir1/pickup*.${num0c}* 2> /dev/null | head -1`
 if test "x$listS" != x ; then mv $dir1/pickup*.${num0c}* . ; fi
 #---  2nd run ( Nit iter , restart from same Iter = num0 as 1rst run )
@@ -304,16 +305,17 @@ mv STDERR.0000 std__err.1iA
 out=`egrep -c 'STOP ABNORMAL END' std_outp.1iA`
 if test $out != 0
 then echo "==> RUN 1iA : ABNORMAL END => exit" ; exit 2 ; fi
-if test -f $pref.ckptA.001.001.data
-then echo "==>  END  RUN 1iA"
-else echo "==> RUN 1iA STOP without writing $pref => exit" ; exit 2 ; fi
+listF=`ls -1 $pref.ckptA*.data 2> /dev/null`
+if test "x$listF" = x
+then echo "==> RUN 1iA STOP without writing $pref => exit" ; exit 2
+else echo "==>  END  RUN 1iA" ; fi
 for xx in $listP
 do
  rnp_loc $xx.ckptA $xx.$num1c
 done
-mv *.0??.0??.* $dir2
+mv *.data *.meta $dir2
 txtF=`ls -1 *.txt STD???.00?? 2> /dev/null`
-mv R?.data R?.meta DR?.data DR?.meta PHref{C,F}.??ta $txtF $dir2
+if test "x$txtF" != x ; then mv $txtF $dir2 ; fi
 listS=`ls $dir2/pickup*.${num0c}* 2> /dev/null | head -1`
 if test "x$listS" != x ; then mv $dir2/pickup*.${num0c}* . ; fi
 #---  3rd run ( Nit iter , restart from 2nd )
@@ -333,16 +335,17 @@ mv STDERR.0000 std__err.1iB
 out=`egrep -c 'STOP ABNORMAL END' std_outp.1iB`
 if test $out != 0
 then echo "==> RUN 1iB : ABNORMAL END => exit" ; exit 3 ; fi
-if test -f $pref.ckptA.001.001.data
-then echo "==>  END  RUN 1iB"
-else echo "==> RUN 1iB STOP without writing $pref => exit" ; exit 3 ; fi
+listF=`ls -1 $pref.ckptA*.data 2> /dev/null`
+if test "x$listF" = x
+then echo "==> RUN 1iB STOP without writing $pref => exit" ; exit 3
+else echo "==>  END  RUN 1iB" ; fi
 for xx in $listP
 do
  rnp_loc $xx.ckptA $xx.$num2c
 done
-mv *.0??.0??.* $dir3
+mv *.data *.meta $dir3
 txtF=`ls -1 *.txt STD???.00?? 2> /dev/null`
-mv R?.data R?.meta DR?.data DR?.meta PHref{C,F}.??ta $txtF $dir3
+if test "x$txtF" != x ; then mv $txtF $dir3 ; fi
 listS=`ls $dir3/pickup*.${num0c}* 2> /dev/null | head -1`
 if test "x$listS" != x ; then mv $dir3/pickup*.${num0c}* . ; fi
 rm $dir3/pickup*.$num1c.*
@@ -373,21 +376,21 @@ listP=`( cd $dir1 ; ls pickup*.$num2c* | sed 's/\..*//g' | uniq )`
 chkmeta='Y'
 for yy in $listP
 do
- listY=`(cd $dir1 ; ls $yy.$num2c.*.data | sed "s/$yy\.$num2c\.//" | sed "s/\.data//")`
+ listY=`(cd $dir1 ; ls $yy.$num2c*.data | sed "s/$yy\.$num2c//" | sed "s/data$//")`
  zz=$yy.$num2c
  echo '--> file='$zz', listY='$listY
  for xx in $listY
  do
-   echo ' diff' $dir1/$zz.$xx.data $dir3
-   diff $dir1/$zz.$xx.data $dir3
+   echo ' diff' $dir1/$zz${xx}data $dir3
+   diff $dir1/$zz${xx}data $dir3
    out=$?
    if test $out != 0 ; then
     echo 'Diff outp=' $out ' ==> stop'
     exit 4
    fi
-   if test $chkmeta = 'Y' -a -f $dir1/$zz.$xx.meta ; then
-    echo ' diff' $dir1/$zz.$xx.meta $dir3
-    diff $dir1/$zz.$xx.meta $dir3
+   if test $chkmeta = 'Y' -a -f $dir1/$zz${xx}meta ; then
+    echo ' diff' $dir1/$zz${xx}meta $dir3
+    diff $dir1/$zz${xx}meta $dir3
     out=$?
     if test $out != 0 ; then
      echo 'Diff outp=' $out ' ==> stop'
