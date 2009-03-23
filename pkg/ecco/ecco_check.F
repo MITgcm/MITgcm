@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.5 2009/03/13 01:58:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.6 2009/03/23 23:29:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -41,7 +41,7 @@ C     msgBuf      - Informational/error meesage buffer
       _BEGIN_MASTER(myThid)
 
       IF ( ndaysrec .GT. maxNumDays ) THEN
-       WRITE(msgBuf,'(2A,2I)')
+       WRITE(msgBuf,'(2A,2I10)')
      &        'ECCO_CHECK: for ALLOW_TRANSPORT_COST_CONTRIBUTION: ',
      &        'ndaysrec > maxNumDays in ecco_cost.h ',
      &        ndaysrec, maxNumDays

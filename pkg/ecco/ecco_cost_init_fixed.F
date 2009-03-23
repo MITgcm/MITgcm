@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.16 2009/03/17 15:35:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.17 2009/03/23 23:29:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -240,7 +240,7 @@ c
      &   ( ersTimeMask(irec).NE.0. .AND. ersTimeMask(irec).NE.1. ) .OR.
      &   ( ersTimeMask(irec).NE.0. .AND. ersTimeMask(irec).NE.1. ) )
      &  then
-           WRITE(msgBuf,'(2A,I)')
+           WRITE(msgBuf,'(2A,I10)')
      &        'ecco_cost_init_fixed: (SSH)TimeMask not 0. or 1. ',
      &        'for irec (=day) ', irec
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
