@@ -5,6 +5,13 @@
       SEAICE_deltaTtherm = 3600.,
       SEAICE_deltaTdyn   = 3600.,
       SEAICEuseDYNAMICS  =.FALSE.,
+#-- According to Martin, SEAICE_clipVelocities is not recommended
+#     SEAICE_clipVelocities=.TRUE.,
+      SEAICEadvSalt      =.FALSE.,
+      SEAICEadvAge       =.FALSE.,
+      SEAICEadvSnow      =.FALSE.,
+#     SEAICEuseFlooding  =.FALSE.,
+#-- above: to reproduce old results
       LSR_ERROR          = 1.E-12,
       ICE2WATR           = 0.92,
  &
