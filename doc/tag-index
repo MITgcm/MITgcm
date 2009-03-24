@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1081 2009/03/20 16:04:38 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1082 2009/03/24 21:00:08 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -39,7 +39,8 @@ o pkg/seaice: a few bug fixes mostly concerning the metric terms:
   seaice_calc_strainrates: fixed a bug in no-slip boundary conditions,
               they were effectively only half slip
               affects lab_sea.hb87
-  updated all relevant verification experiments
+  updated all relevant verification experiments (except lab_sea//output_adm.txt
+    which was left over, but fails at level 7 & 6)
 
 checkpoint61j
 o pkg/seaice: turn a few hard wired parameters into run time parameters
