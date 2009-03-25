@@ -1,4 +1,0 @@
-
-50 22 * * *  cd /u/edhill/local/bin/MITgcm/tools && cvs -q up -d -P
-05 1 * * *  /u/edhill/local/bin/test_lcs
-
