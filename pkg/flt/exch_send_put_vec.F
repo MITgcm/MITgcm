@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.6 2009/01/09 21:08:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.7 2009/03/26 22:21:11 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -53,10 +53,10 @@ C     I             :: Loop counters
 C     bi, bj        :: tile indices
 C     biW, bjW      :: West tile indices
 C     biE, bjE      :: East tile indices
-C     theProc       :: \
-C     theTag        ::  \
-C     theType       ::  / Variables used in message building
-C     theSize       :: /
+C     theProc       :: Variables used in message building
+C     theTag        :: Variables used in message building
+C     theType       :: Variables used in message building
+C     theSize       :: Variables used in message building
 C     westCommMode  :: variables holding type of communication
 C     eastCommMode  ::  a particular tile face uses.
       INTEGER I
@@ -274,10 +274,10 @@ C     I             :: Loop index
 C     bi, bj        :: tile indices
 C     biS, bjS      :: South tile indices
 C     biN, bjN      :: North tile indices
-C     theProc       :: \
-C     theTag        ::  \
-C     theType       ::  / Variables used in message building
-C     theSize       :: /
+C     theProc       :: Variables used in message building
+C     theTag        :: Variables used in message building
+C     theType       :: Variables used in message building   
+C     theSize       :: Variables used in message building
 C     southCommMode :: variables holding type of communication
 C     northCommMode ::  a particular tile face uses.
       INTEGER I
