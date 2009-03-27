@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1082 2009/03/24 21:00:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1083 2009/03/27 00:09:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o lab_sea experiment: change from 2x1 tiles to 2x2 tiles and regenerate output
+o pkg/seaice: fix bug in new version of S/R SEAICE_LSR.F: 
+   update lab_sea.lsr & lab_sea.salt_plume results
 o pkg/seaice: 
   Major overhaul of the LSOR solver: change discretization from original
   finite differences to finite volume. The old routine is still in the
