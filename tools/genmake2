@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.185 2009/03/27 20:18:07 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.186 2009/03/29 19:09:24 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1807,8 +1807,9 @@ for d in $MODS ; do
 	    if test -L $name ; then
 	      cmp $d/$ii $name > /dev/null 2>&1
 	      RETVAL=$?
-	      xx=`echo $MPI_LNKF | grep -c $name`
- 	      if test "x$RETVAL" != x0 -a $xx == 0 ; then
+	      yy=0 ; 
+	      for xx in $MPI_LNKF ; do if test $xx = $name ; then yy=1 ; fi ; done
+ 	      if test "x$RETVAL" != x0 -a $yy = 0 ; then
 	      # remove sym-link if different and has not just been linked
 		printf "Un-link + "
 		rm -f $name
@@ -1821,7 +1822,7 @@ for d in $MODS ; do
 	    if ! test -f $name ; then
 	      # make sym-link and keep record of it
 		printf "Linking $ii to $name ; "
-		ln -s $d/$ii $name
+		ln -sf $d/$ii $name
 		MPI_LNKF="$MPI_LNKF $name"
 	    fi
 	  fi
@@ -1830,6 +1831,7 @@ for d in $MODS ; do
     fi
 done
 echo
+#echo "MPI_LNKF='$MPI_LNKF'"
 
 if test "x${PLATFORM}" = x ; then
     PLATFORM=$p_PLATFORM
@@ -2769,7 +2771,7 @@ EOF
 #===  Automatic Differentiation Rules  ===
 #===  for TAMC/TAF  ======================
 
-if test "x$OPENAD" == x ; then 
+if test "x$OPENAD" = x ; then 
 
 cat >>$MAKEFILE <<EOF
 
