@@ -1,17 +1,15 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.4 2009/03/25 15:17:47 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran,v 1.5 2009/03/29 23:20:28 jmc Exp $
 #  $Name:  $
 #
 
-#  Tested with gcc-gfortran v4.0.x as shipped with Fedora Core 4.
-#  It fixes the ' \' versus ' &' terminator problem but some 
-#  namelist problems remain.  The biggest seems to be the inability
-#  of current gfortran versions to support namelist syntax such as:
-#
+#  Tested with gcc-gfortran v4.1.x as shipped with Fedora Core 6,7,8
+#         with gcc-gfortran v4.3.x as shipped with Fedora Core 9,10
+#  It fixes the ' \' versus ' &' terminator ;
+#  with older versions (v4.0): namelist problems with syntax such as:
 #     fields(1,1) = 'UVELSLT ','VVELSLT ','WVELSLT ',
-#
-#  which results in run-time errors.
+#      which results in run-time errors.)
 
 
 FC=gfortran
@@ -36,7 +34,12 @@ if test "x$IEEE" = x ; then
     FOPTIM='-O3 -funroll-loops'
 else
     #  Try to follow IEEE-754
+    FFLAGS="$FFLAGS -Waliasing -Wampersand -Wnonstd-intrinsics -Wsurprising -Wline-truncation"
+#   to get plenty of warnings :
+#   FFLAGS="$FFLAGS -Wconversion -Wimplicit-interface -Wunused-labels"
     FOPTIM='-O0'
+#   for automatic testing with testreport (but no relation with IEEE arithmetic):
+    FOPTIM="$FOPTIM -g -ffpe-trap=invalid,zero,overflow -fbounds-check"
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
