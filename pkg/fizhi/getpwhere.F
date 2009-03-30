@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.7 2009/03/30 02:14:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.8 2009/03/30 14:31:41 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -117,12 +117,6 @@ c define the rest of the mid pressures from the dynamics levels
        WRITE(ioUnit,'(10F10.4)') (pref(L),L=1,ntry)
        WRITE(ioUnit,'(A)') 'rF_pmid:'
        WRITE(ioUnit,'(10F10.4)') rF_pmid
-       IF ( upperBnd.LT.Nrphys-1 ) THEN
-         WRITE(ioUnit,'(A)')
-     &        'ERROR: exeeds upper bound of "rF_pmid" array'
-         STOP 'ABNORMAL END: S/R GETPWHERE'
-       ENDIF
-       WRITE(ioUnit,'(A)') '===== GETPWHERE: CHECK end   ====='
 #endif /* CHECK_GETPWHERE */
        if(rF_pmid(dynlev).ge.pref(ntry)-25.) then
         do L = ntry+1,Nrphys-1
@@ -147,6 +141,23 @@ c and now flip the level numbers for the top down counting in fizhi
 c
         levpressures(n) = Nrphys+1-plevref(n)
        enddo
+
+#ifdef CHECK_GETPWHERE
+       WRITE(ioUnit,'(2(A,I5),A)') ' numpress=', numpress,
+     &                      ' , Up-Bnd=', upperBnd,
+     &                      ' , pref(ntry:Nrphys):'
+       WRITE(ioUnit,'(10F10.4)') (pref(L),L=ntry,Nrphys)
+       WRITE(ioUnit,'(A)') 'pressures:'
+       WRITE(ioUnit,'(10F10.4)') pressures
+       WRITE(ioUnit,'(A)') 'levpressures:'
+       WRITE(ioUnit,'(20I5)') levpressures
+       IF ( upperBnd.LT.Nrphys-1 ) THEN
+         WRITE(ioUnit,'(A)')
+     &   'ERROR: exeeding "rF_pmid" array bounds => pref ill defined'
+c        STOP 'ABNORMAL END: S/R GETPWHERE'
+       ENDIF
+       WRITE(ioUnit,'(A)') '===== GETPWHERE: CHECK end   ====='
+#endif /* CHECK_GETPWHERE */
 
        return
        end
