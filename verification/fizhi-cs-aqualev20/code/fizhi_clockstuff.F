@@ -1,21 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/Attic/fizhi_clockstuff.F,v 1.2 2007/03/13 15:38:59 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/Attic/fizhi_clockstuff.F,v 1.3 2009/03/30 02:15:42 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
       subroutine set_alarm (tag,datein,timein,freq)
-C***********************************************************************        
-C  Purpose                                                                      
-C  -------                                                                      
+C***********************************************************************
+C  Purpose
+C  -------
 C     Utility to Set Internal Alarms
 C
-C  Argument Description                                                         
-C  --------------------                                                          
+C  Argument Description
+C  --------------------
 C     tag ....... Character String Tagging Alarm Process
 C     date ...... Begining Date for Alarm
 C     time ...... Begining Time for Alarm
 C     freq ...... Repeating Frequency Interval for Alarm
 C
-C***********************************************************************        
+C***********************************************************************
 
       implicit none
       character*(*) tag
@@ -98,9 +98,9 @@ c      integer  mpi_comm_model,ierror
       end
 
       subroutine get_alarm (tag,datein,timein,freq,tleft)
-C***********************************************************************        
-C  Purpose                                                                      
-C  -------                                                                      
+C***********************************************************************
+C  Purpose
+C  -------
 C     Utility to Get Internal Alarm Information
 C
 C  Input
@@ -114,7 +114,7 @@ C     timein ...... Begining  Time for Alarm
 C     freq ........ Frequency Interval for Alarm
 C     tleft ....... Time Remaining (seconds) before Alarm is TRUE
 C
-C***********************************************************************        
+C***********************************************************************
 
       implicit none
       character*(*) tag
@@ -361,7 +361,8 @@ C***********************************************************************
 
       INTEGER YEAR, MONTH, DAY
 
-      INTEGER  MNDY(12,4)
+c     INTEGER  MNDY(12,4)
+      INTEGER  MNDY(12*4)
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
      .           397,34*0 /
 
@@ -380,7 +381,8 @@ C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *
 C***********************************************************************
 
       DO I=15,48
-      MNDY(I,1) = MNDY(I-12,1) + 365
+c     MNDY(I,1) = MNDY(I-12,1) + 365
+        MNDY(I) = MNDY(I-12) + 365
       ENDDO
 
 C***********************************************************************
@@ -394,13 +396,15 @@ C***********************************************************************
       MONTH  = MOD(NYMD,10000) / 100
       DAY    = MOD(NYMD,100)
 
-      IDAY   = MNDY( MONTH ,MOD(YEAR ,4)+1 )
+c     IDAY   = MNDY( MONTH ,MOD(YEAR ,4)+1 )
+      IDAY   = MNDY( MONTH +12*MOD(YEAR ,4) )
       month = month + nsegm
       If( month.gt.12 ) then
       month = month - 12
       year = year + 1
       endif
-      IDAY2  = MNDY( MONTH ,MOD(YEAR ,4)+1 )
+c     IDAY2  = MNDY( MONTH ,MOD(YEAR ,4)+1 )
+      IDAY2  = MNDY( MONTH +12*MOD(YEAR ,4) )
 
                     nday = iday2-iday
       if(nday.lt.0) nday = nday + 1461
@@ -426,10 +430,10 @@ c -------------------------------------------------
       return
       end
 
-      subroutine interp_time ( nymd ,nhms , 
+      subroutine interp_time ( nymd ,nhms ,
      .                         nymd1,nhms1, nymd2,nhms2, fac1,fac2 )
-C***********************************************************************        
-C                                                                               
+C***********************************************************************
+C
 C  PURPOSE:
 C  ========
 C    Compute interpolation factors, fac1 & fac2, to be used in the
@@ -440,84 +444,84 @@ C    where:
 C               q(i,j) => Boundary Data valid    at (nymd  , nhms )
 C              q1(i,j) => Boundary Data centered at (nymd1 , nhms1)
 C              q2(i,j) => Boundary Data centered at (nymd2 , nhms2)
-C                                                                               
-C  INPUT:                                                                       
-C  ======                                                                       
+C
+C  INPUT:
+C  ======
 C    nymd     : Date (yymmdd) of Current Timestep
 C    nhms     : Time (hhmmss) of Current Timestep
 C    nymd1    : Date (yymmdd) of Boundary Data 1
 C    nhms1    : Time (hhmmss) of Boundary Data 1
 C    nymd2    : Date (yymmdd) of Boundary Data 2
 C    nhms2    : Time (hhmmss) of Boundary Data 2
-C                                                                               
-C  OUTPUT:                                                                      
-C  =======                                                                      
+C
+C  OUTPUT:
+C  =======
 C    fac1     : Interpolation factor for Boundary Data 1
 C    fac2     : Interpolation factor for Boundary Data 2
-C                                                                               
-C                                                                               
-C***********************************************************************        
+C
+C
+C***********************************************************************
       implicit none
 
       integer nhms,nymd,nhms1,nymd1,nhms2,nymd2
       _RL getcon, fac1,fac2
-                                                                                
+
       INTEGER  YEAR , MONTH , DAY , SEC
       INTEGER  YEAR1, MONTH1, DAY1, SEC1
       INTEGER  YEAR2, MONTH2, DAY2, SEC2
 
       _RL time00, time1, time2
-                                                                                
-      INTEGER    DAYSCY                                                         
+
+      INTEGER    DAYSCY
       parameter ( dayscy   = 365*4 + 1 )
 
-      INTEGER MNDY(12,4)              
-                                                                                
-      LOGICAL FIRST                                                             
-      DATA    FIRST/.TRUE./                                                     
-                                                                                
-      DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,                
+      INTEGER MNDY(12*4)
+
+      LOGICAL FIRST
+      DATA    FIRST/.TRUE./
+
+      DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
      .           397,34*0 /
 
       integer i,nsecf
-                                                                                
-C***********************************************************************        
-C*                         SET TIME BOUNDARIES                         *        
-C***********************************************************************        
-                                                                                
+
+C***********************************************************************
+C*                         SET TIME BOUNDARIES                         *
+C***********************************************************************
+
       YEAR   = NYMD / 10000
       MONTH  = MOD(NYMD,10000) / 100
       DAY    = MOD(NYMD,100)
       SEC    = NSECF(NHMS)
-                                                                                
+
       YEAR1  = NYMD1 / 10000
       MONTH1 = MOD(NYMD1,10000) / 100
       DAY1   = MOD(NYMD1,100)
       SEC1   = NSECF(NHMS1)
-                                                                                
+
       YEAR2  = NYMD2 / 10000
       MONTH2 = MOD(NYMD2,10000) / 100
       DAY2   = MOD(NYMD2,100)
       SEC2   = NSECF(NHMS2)
-                                                                                
-C***********************************************************************        
-C*                    COMPUTE DAYS IN 4-YEAR CYCLE                     *        
-C***********************************************************************        
-                                                                                
+
+C***********************************************************************
+C*                    COMPUTE DAYS IN 4-YEAR CYCLE                     *
+C***********************************************************************
+
       IF(FIRST) THEN
       DO I=15,48
-      MNDY(I,1) = MNDY(I-12,1) + 365
+        MNDY(I) = MNDY(I-12) + 365
       ENDDO
       FIRST=.FALSE.
       ENDIF
-                                                                                
-C***********************************************************************        
-C*                     COMPUTE INTERPOLATION FACTORS                   *        
-C***********************************************************************        
-                                                                                
-      time00  = DAY  + MNDY(MONTH ,MOD(YEAR ,4)+1) + float(sec )/86400.
-      time1 = DAY1 + MNDY(MONTH1,MOD(YEAR1,4)+1) + float(sec1)/86400.
-      time2 = DAY2 + MNDY(MONTH2,MOD(YEAR2,4)+1) + float(sec2)/86400.
+
+C***********************************************************************
+C*                     COMPUTE INTERPOLATION FACTORS                   *
+C***********************************************************************
+
+      time00 = DAY + MNDY(MONTH +12*MOD(YEAR ,4)) + float(sec )/86400.
+      time1 = DAY1 + MNDY(MONTH1+12*MOD(YEAR1,4)) + float(sec1)/86400.
+      time2 = DAY2 + MNDY(MONTH2+12*MOD(YEAR2,4)) + float(sec2)/86400.
 
       if( time00 .lt.time1 ) time00  = time00  + dayscy
       if( time2.lt.time1 ) time2 = time2 + dayscy
@@ -548,27 +552,27 @@ C***********************************************************************
       NSEC = NSEC - 86400
       NYMD = INCYMD (NYMD,1)
       ENDDO
-      ENDIF   
-               
+      ENDIF
+
       IF (NSEC.EQ.86400)  THEN
       NSEC = 0
       NYMD = INCYMD (NYMD,1)
-      ENDIF   
-               
+      ENDIF
+
       IF (NSEC.LT.00000)  THEN
       DO WHILE (NSEC.LT.0)
       NSEC = 86400 + NSEC
       NYMD = INCYMD (NYMD,-1)
       ENDDO
-      ENDIF   
-               
+      ENDIF
+
       NHMS = NHMSF (NSEC)
-      ENDIF   
+      ENDIF
 
       NYMD = 20040321
 
-      RETURN  
-      END    
+      RETURN
+      END
 
       subroutine tic_time (mymd,mhms,ndt)
 C***********************************************************************
@@ -591,44 +595,44 @@ C***********************************************************************
       NSEC = NSEC - 86400
       NYMD = INCYMD (NYMD,1)
       ENDDO
-      ENDIF   
-               
+      ENDIF
+
       IF (NSEC.EQ.86400)  THEN
       NSEC = 0
       NYMD = INCYMD (NYMD,1)
-      ENDIF   
-               
+      ENDIF
+
       IF (NSEC.LT.00000)  THEN
       DO WHILE (NSEC.LT.0)
       NSEC = 86400 + NSEC
       NYMD = INCYMD (NYMD,-1)
       ENDDO
-      ENDIF   
-               
+      ENDIF
+
       NHMS = NHMSF (NSEC)
-      ENDIF   
+      ENDIF
 
 c Pass Back Current Updated Time
 c ------------------------------
       mymd = nymd
       mhms = nhms
 
-      RETURN  
-      END    
+      RETURN
+      END
 
-      FUNCTION NALARM (MHMS,NYMD,NHMS,NYMD0,NHMS0)                              
-C***********************************************************************        
-C  PURPOSE                                                                      
-C     COMPUTES MODULO-FRACTION BETWEEN MHHS AND TOTAL TIME                      
-C  USAGE                                                                        
-C  ARGUMENTS   DESCRIPTION                                                      
-C     MHMS     INTERVAL FREQUENCY (HHMMSS)                                      
-C     NYMD     CURRENT   YYMMDD                                                 
-C     NHMS     CURRENT   HHMMSS                                                 
-C     NYMD0    BEGINNING YYMMDD                                                 
-C     NHMS0    BEGINNING HHMMSS                                                 
-C                                                                               
-C***********************************************************************        
+      FUNCTION NALARM (MHMS,NYMD,NHMS,NYMD0,NHMS0)
+C***********************************************************************
+C  PURPOSE
+C     COMPUTES MODULO-FRACTION BETWEEN MHHS AND TOTAL TIME
+C  USAGE
+C  ARGUMENTS   DESCRIPTION
+C     MHMS     INTERVAL FREQUENCY (HHMMSS)
+C     NYMD     CURRENT   YYMMDD
+C     NHMS     CURRENT   HHMMSS
+C     NYMD0    BEGINNING YYMMDD
+C     NHMS0    BEGINNING HHMMSS
+C
+C***********************************************************************
       implicit none
 
       integer nalarm,MHMS,NYMD,NHMS,NYMD0,NHMS0
@@ -639,23 +643,23 @@ C***********************************************************************
 
       INTEGER YEAR, MONTH, DAY, SEC, YEAR0, MONTH0, DAY0, SEC0
 
-      integer MNDY(12,4)
+      integer MNDY(12*4)
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
      .           397,34*0 /
 
       integer i,nsecf,iday,iday0,nsec,nsec0,ntime
 
-C***********************************************************************        
-C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *        
-C***********************************************************************        
+C***********************************************************************
+C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *
+C***********************************************************************
 
       DO I=15,48
-      MNDY(I,1) = MNDY(I-12,1) + 365
+        MNDY(I) = MNDY(I-12) + 365
       ENDDO
 
-C***********************************************************************        
-C*                   SET CURRENT AND BEGINNING TIMES                   *        
-C***********************************************************************        
+C***********************************************************************
+C*                   SET CURRENT AND BEGINNING TIMES                   *
+C***********************************************************************
 
       YEAR   = NYMD / 10000
       MONTH  = MOD(NYMD,10000) / 100
@@ -667,37 +671,37 @@ C***********************************************************************
       DAY0   = MOD(NYMD0,100)
       SEC0   = NSECF(NHMS0)
 
-C***********************************************************************        
-C*      COMPUTE POSITIONS IN CYCLE FOR CURRENT AND BEGINNING TIMES     *        
-C***********************************************************************        
-                                                                                
-      IDAY   = (DAY -1) + MNDY( MONTH ,MOD(YEAR ,4)+1 )                         
-      IDAY0  = (DAY0-1) + MNDY( MONTH0,MOD(YEAR0,4)+1 )                         
-                                                                                
-      NSEC   = IDAY *NSDAY + SEC                                                
-      NSEC0  = IDAY0*NSDAY + SEC0                                               
-                                                                                
-                       NTIME  = NSEC-NSEC0                                      
-      IF (NTIME.LT.0 ) NTIME  = NTIME + NCYCLE                                  
-                       NALARM = NTIME                                           
-      IF ( MHMS.NE.0 ) NALARM = MOD( NALARM,NSECF(MHMS) )                       
-                                                                                
-      RETURN                                                                    
-      END                                                                       
+C***********************************************************************
+C*      COMPUTE POSITIONS IN CYCLE FOR CURRENT AND BEGINNING TIMES     *
+C***********************************************************************
 
-      FUNCTION NALARM2(MHMS,NYMD,NHMS,NYMD0,NHMS0)                              
-C***********************************************************************        
-C  PURPOSE                                                                      
-C     COMPUTES MODULO-FRACTION BETWEEN MHHS AND TOTAL TIME                      
-C  USAGE                                                                        
-C  ARGUMENTS   DESCRIPTION                                                      
-C     MHMS     INTERVAL FREQUENCY (MMDDHHMMSS)                                      
-C     NYMD     CURRENT   YYMMDD                                                 
-C     NHMS     CURRENT   HHMMSS                                                 
-C     NYMD0    BEGINNING YYMMDD                                                 
-C     NHMS0    BEGINNING HHMMSS                                                 
-C                                                                               
-C***********************************************************************        
+      IDAY   = (DAY -1) + MNDY( MONTH +12*MOD(YEAR ,4) )
+      IDAY0  = (DAY0-1) + MNDY( MONTH0+12*MOD(YEAR0,4) )
+
+      NSEC   = IDAY *NSDAY + SEC
+      NSEC0  = IDAY0*NSDAY + SEC0
+
+                       NTIME  = NSEC-NSEC0
+      IF (NTIME.LT.0 ) NTIME  = NTIME + NCYCLE
+                       NALARM = NTIME
+      IF ( MHMS.NE.0 ) NALARM = MOD( NALARM,NSECF(MHMS) )
+
+      RETURN
+      END
+
+      FUNCTION NALARM2(MHMS,NYMD,NHMS,NYMD0,NHMS0)
+C***********************************************************************
+C  PURPOSE
+C     COMPUTES MODULO-FRACTION BETWEEN MHHS AND TOTAL TIME
+C  USAGE
+C  ARGUMENTS   DESCRIPTION
+C     MHMS     INTERVAL FREQUENCY (MMDDHHMMSS)
+C     NYMD     CURRENT   YYMMDD
+C     NHMS     CURRENT   HHMMSS
+C     NYMD0    BEGINNING YYMMDD
+C     NHMS0    BEGINNING HHMMSS
+C
+C***********************************************************************
       implicit none
 
       integer nalarm2,MHMS,NYMD,NHMS,NYMD0,NHMS0
@@ -708,7 +712,7 @@ C***********************************************************************
 
       INTEGER YEAR, MONTH, DAY, SEC, YEAR0, MONTH0, DAY0, SEC0
 
-      integer MNDY(12,4)
+      integer MNDY(12*4)
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
      .           397,34*0 /
       INTEGER NDPM(12)
@@ -719,17 +723,17 @@ C***********************************************************************
       integer iloop
       integer testnymd,testnhms,testndpm
 
-C***********************************************************************        
-C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *        
-C***********************************************************************        
+C***********************************************************************
+C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *
+C***********************************************************************
 
       DO I=15,48
-      MNDY(I,1) = MNDY(I-12,1) + 365
+        MNDY(I) = MNDY(I-12) + 365
       ENDDO
 
-C***********************************************************************        
-C*                   SET CURRENT AND BEGINNING TIMES                   *        
-C***********************************************************************        
+C***********************************************************************
+C*                   SET CURRENT AND BEGINNING TIMES                   *
+C***********************************************************************
 
       YEAR   = NYMD / 10000
       MONTH  = MOD(NYMD,10000) / 100
@@ -741,19 +745,19 @@ C***********************************************************************
       DAY0   = MOD(NYMD0,100)
       SEC0   = NSECF(NHMS0)
 
-C***********************************************************************        
-C*      COMPUTE POSITIONS IN CYCLE FOR CURRENT AND BEGINNING TIMES     *        
-C***********************************************************************        
-                                                                                
-      IDAY   = (DAY -1) + MNDY( MONTH ,MOD(YEAR ,4)+1 )                         
-      IDAY0  = (DAY0-1) + MNDY( MONTH0,MOD(YEAR0,4)+1 )                         
-                                                                                
-      NSEC   = IDAY *NSDAY + SEC                                                
-      NSEC0  = IDAY0*NSDAY + SEC0                                               
-                                                                                
-      NTIME  = NSEC-NSEC0                                      
+C***********************************************************************
+C*      COMPUTE POSITIONS IN CYCLE FOR CURRENT AND BEGINNING TIMES     *
+C***********************************************************************
+
+      IDAY   = (DAY -1) + MNDY( MONTH +12*MOD(YEAR ,4) )
+      IDAY0  = (DAY0-1) + MNDY( MONTH0+12*MOD(YEAR0,4) )
+
+      NSEC   = IDAY *NSDAY + SEC
+      NSEC0  = IDAY0*NSDAY + SEC0
+
+      NTIME  = NSEC-NSEC0
       IF(NTIME.LT.0) NTIME  = NTIME + NCYCLE
-      NALARM2 = NTIME                                           
+      NALARM2 = NTIME
       IF(MHMS.NE.0)NALARM2 = MOD( NALARM2,NSECF(MHMS) )
       IF(MHMS.GE.1000000) THEN
        testnymd=nymd0
@@ -785,32 +789,32 @@ C***********************************************************************
          testnymd = testnymd + 10000 - 1200
         endif
         sec0 = nsecf(testnhms)
-        iday0 = (day0-1) + mndy(month0,mod(year0,4)+1)
+        iday0 = (day0-1) + MNDY(month0+12*mod(year0,4) )
         nsec0 = iday0 *nsday + sec0
-        if( (testnymd.gt.nymd) .or. 
+        if( (testnymd.gt.nymd) .or.
      .         (testnymd.eq.testnymd) .and. (testnhms.gt.nhms) )
      .                    go to 200
         nalarm2 = nsec-nsec0
        enddo
  200   continue
       ENDIF
-                                                                                
-      RETURN                                                                    
-      END                                                                       
 
-      FUNCTION INCYMD (NYMD,M)                                                  
-C***********************************************************************        
-C  PURPOSE                                                                      
-C     INCYMD:  NYMD CHANGED BY ONE DAY                                          
-C     MODYMD:  NYMD CONVERTED TO JULIAN DATE                                    
+      RETURN
+      END
+
+      FUNCTION INCYMD (NYMD,M)
+C***********************************************************************
+C  PURPOSE
+C     INCYMD:  NYMD CHANGED BY ONE DAY
+C     MODYMD:  NYMD CONVERTED TO JULIAN DATE
 C  DESCRIPTION OF INPUT VARIABLES
-C     NYMD     CURRENT DATE IN YYMMDD FORMAT                                    
-C     M        +/- 1 (DAY ADJUSTMENT)                                           
-C                                                                               
-C***********************************************************************        
+C     NYMD     CURRENT DATE IN YYMMDD FORMAT
+C     M        +/- 1 (DAY ADJUSTMENT)
+C
+C***********************************************************************
       implicit none
       integer incymd,nymd,m
-                                                                                
+
       integer ny,nm,nd,ny00,modymd
 
       INTEGER NDPM(12)
@@ -818,13 +822,13 @@ C***********************************************************************
       LOGICAL LEAP
       DATA NY00 /1900 /
       LEAP(NY) = MOD(NY,4).EQ.0 .AND. (NY.NE.0 .OR. MOD(NY00,400).EQ.0)
-                                                                                
-C***********************************************************************        
-C                                                                               
+
+C***********************************************************************
+C
       NY = NYMD / 10000
       NM = MOD(NYMD,10000) / 100
       ND = MOD(NYMD,100) + M
-                                                                                
+
       IF (ND.EQ.0) THEN
       NM = NM - 1
       IF (NM.EQ.0) THEN
@@ -834,7 +838,7 @@ C
       ND = NDPM(NM)
       IF (NM.EQ.2 .AND. LEAP(NY))  ND = 29
       ENDIF
-                                                                                
+
       IF (ND.EQ.29 .AND. NM.EQ.2 .AND. LEAP(NY))  GO TO 20
 
       IF (ND.GT.NDPM(NM)) THEN
@@ -845,29 +849,29 @@ C
           NY = NY + 1
       ENDIF
       ENDIF
-                                                                                
+
    20 CONTINUE
       INCYMD = NY*10000 + NM*100 + ND
 
       RETURN
-                                                                                
-C***********************************************************************        
-C                      E N T R Y    M O D Y M D                                 
-C***********************************************************************        
-                                                                                
+
+C***********************************************************************
+C                      E N T R Y    M O D Y M D
+C***********************************************************************
+
       ENTRY MODYMD (NYMD)
 
       NY = NYMD / 10000
       NM = MOD(NYMD,10000) / 100
       ND = MOD(NYMD,100)
-                                                                                
+
    40 CONTINUE
       IF (NM.LE.1)  GO TO 60
       NM = NM - 1
       ND = ND + NDPM(NM)
       IF (NM.EQ.2 .AND. LEAP(NY))  ND = ND + 1
       GO TO 40
-                                                                                
+
    60 CONTINUE
       MODYMD = ND
 
@@ -924,7 +928,9 @@ c ---------------
       parameter ( six   = 6.0 )
       parameter ( dayscy   = 365*4 + 1 )
 
-      _RL      TH(DAYSCY),T0,T1,T2,T3,T4,FUN,Y,MNDY(12,4)
+c     _RL      TH(DAYSCY),T0,T1,T2,T3,T4,FUN,Y,MNDY(12,4)
+      _RL      TH(DAYSCY),T0,T1,T2,T3,T4,FUN,Y
+      INTEGER  MNDY(12*4)
 
       LOGICAL FIRST
       DATA    FIRST/.TRUE./
@@ -963,7 +969,7 @@ C***********************************************************************
 
       IF(FIRST) THEN
            DO 100 I=15,48
-           MNDY(I,1) = MNDY(I-12,1) + 365
+             MNDY(I) = MNDY(I-12) + 365
 100        CONTINUE
 
            KM  = INT(EQNX) + 1
@@ -992,7 +998,7 @@ C***********************************************************************
 C*            COMPUTE EARTH-SUN DISTANCE TO CURRENT SECOND             *
 C***********************************************************************
 
-      IDAY   = DAY + MNDY(MONTH,MOD(YEAR,4)+1)
+      IDAY   = DAY + MNDY(MONTH+12*MOD(YEAR,4) )
       IDAYP1 = MOD( IDAY,DAYSCY) + 1
       THM    = MOD( TH(IDAY)  ,TWO*PI)
       THP    = MOD( TH(IDAYP1),TWO*PI)
@@ -1117,21 +1123,21 @@ c -------------------------------------------------------------
 
       return
       end
-      subroutine time2freq2(MMDD,NYMD,NHMS,timeleft)                              
-C***********************************************************************        
-C  PURPOSE                                                                      
+      subroutine time2freq2(MMDD,NYMD,NHMS,timeleft)
+C***********************************************************************
+C  PURPOSE
 C     COMPUTES TIME IN SECONDS UNTIL WE REACH THE NEXT MMDD
 C       (ASSUME that the target time is 0Z)
-C                                                                               
-C  ARGUMENTS   DESCRIPTION                                                      
-C     MMDD     FREQUENCY (MMDDHHMMSS)                                      
-C     NYMD     CURRENT   YYMMDD                                                 
-C     NHMS     CURRENT   HHMMSS                                                 
+C
+C  ARGUMENTS   DESCRIPTION
+C     MMDD     FREQUENCY (MMDDHHMMSS)
+C     NYMD     CURRENT   YYMMDD
+C     NHMS     CURRENT   HHMMSS
 C     TIMELEFT TIME LEFT (SECONDS)
-C                                                                               
+C
 C  NOTES - Only used when the frequency is in units of months
-C          Assumes that we always want to be at a month boundary                
-C***********************************************************************        
+C          Assumes that we always want to be at a month boundary
+C***********************************************************************
       implicit none
 
       integer mmdd,nymd,nhms,timeleft,daysleft
@@ -1139,33 +1145,33 @@ C***********************************************************************
 
       integer nsday
       PARAMETER ( NSDAY  = 86400 )
-      integer year, month, day, sec 
+      integer year, month, day, sec
       integer yearnext, monthnext, daynext, secnext
       integer i,nsecf2,nsecf,iday,idaynext,nsec,nsecnext,ntime
       integer testnymd
-      integer MNDY(12,4)
+      integer MNDY(12*4)
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
      .           397,34*0 /
 
-C***********************************************************************        
-C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *        
-C***********************************************************************        
+C***********************************************************************
+C*                 COMPUTE # OF DAYS IN A 4-YEAR CYCLE                 *
+C***********************************************************************
       DO I=15,48
-      MNDY(I,1) = MNDY(I-12,1) + 365
+        MNDY(I) = MNDY(I-12) + 365
       ENDDO
-C***********************************************************************        
-C*                   SET CURRENT TIME ELEMENTS                                 *        
-C***********************************************************************        
+C***********************************************************************
+C*                   SET CURRENT TIME ELEMENTS                                 *
+C***********************************************************************
       YEAR   = NYMD / 10000
       MONTH  = MOD(NYMD,10000) / 100
       DAY    = MOD(NYMD,100)
       SEC    = NSECF(NHMS)
-C***********************************************************************        
-C*      COMPUTE POSITIONS IN CYCLE FOR CURRENT AND BEGINNING TIMES     *        
-C***********************************************************************        
-      IDAY   = (DAY -1) + MNDY( MONTH ,MOD(YEAR ,4)+1 )                         
-      NSEC   = IDAY *NSDAY + SEC                                                
-                                                                                
+C***********************************************************************
+C*      COMPUTE POSITIONS IN CYCLE FOR CURRENT AND BEGINNING TIMES     *
+C***********************************************************************
+      IDAY   = (DAY -1) + MNDY( MONTH +12*MOD(YEAR ,4) )
+      NSEC   = IDAY *NSDAY + SEC
+
       testnymd=nymd + mmdd
       yearnext=testnymd/10000
       monthnext=mod(testnymd,10000)/100
@@ -1175,11 +1181,11 @@ C***********************************************************************
        yearnext = yearnext + 1
       endif
       testnymd = yearnext*10000 + monthnext*100 + daynext
-      idaynext = mndy(monthnext,mod(yearnext,4)+1)
+      idaynext = MNDY(monthnext+12*mod(yearnext,4) )
       daysleft = idaynext - iday
       if(daysleft.lt.0) daysleft = daysleft + 1461
 
       timeleft = daysleft * nsday - sec
-                                                                                
-      RETURN                                                                    
-      END                                                                       
+
+      RETURN
+      END
