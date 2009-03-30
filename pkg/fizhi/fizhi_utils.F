@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.15 2005/06/16 16:46:12 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.16 2009/03/30 02:14:48 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -27,7 +27,7 @@ C          FROM TURBULENCE STATISTICS
 C **********************************************************************
       implicit none
       _RL arg,errf
- 
+
       _RL aa1,aa2,aa3,aa4,aa5,pp,x2,x3,x4,x5
       PARAMETER ( AA1  =   0.254829592 )
       PARAMETER ( AA2  =  -0.284496736 )
@@ -39,118 +39,118 @@ C **********************************************************************
       PARAMETER ( X3   =   AA3 / AA2   )
       PARAMETER ( X4   =   AA5 / AA3   )
       PARAMETER ( X5   =   AA5 / AA4   )
- 
+
       _RL aarg,tt
-      
+
       ERRF = 1.
       AARG=ABS(ARG)
- 
+
       IF ( AARG .LT. 4.0 )  THEN
        TT = 1./(1.+PP*AARG)
        ERRF = 1. -
      1  (AA1*TT*(1.+X2*TT*(1.+X3*TT*(1.+X4*TT*(1.+X5*TT)))))
      2   * EXP(-AARG*AARG)
       ENDIF
- 
+
       IF ( ARG .LT. 0.0 )  ERRF = -ERRF
- 
+
       RETURN
       END
 
-      SUBROUTINE STRIP(A,B,IA,IB,L,K)                                           
+      SUBROUTINE STRIP(A,B,IA,IB,L,K)
       implicit none
       integer ia,ib,L,K
-      _RL A(IA,L), B(IB,L)                                                
-      
-      INTEGER OFFSET,Lena,i,j
-                                                                                
-      OFFSET = IB*(K-1)                                                         
-      Lena    = MIN(IB,IA-OFFSET)                                                
-      OFFSET = OFFSET+1                                                         
-                                                                                
-      IF(Lena.EQ.IB) THEN                                                        
-        DO 100 J=1,L                                                            
-        DO 100 I=1,Lena                                                          
-        B(I,J) = A(I+OFFSET-1,J)                                                
-100     CONTINUE                                                                
-      ELSE                                                                      
-        DO 200 J=1,L                                                            
-        DO 300 I=1,Lena                                                          
-        B(I,J) = A(I+OFFSET-1,J)                                                
-300     CONTINUE                                                                
-        DO 400 I=1,IB-Lena                                                       
-        B(Lena+I,J) = A(Lena+OFFSET-1,J)                                            
-400     CONTINUE                                                                
-200     CONTINUE                                                                
-      ENDIF                                                                     
-                                                                                
-      RETURN                                                                    
-      END                                                                       
-      SUBROUTINE STRIPINT(A,B,IA,IB,L,K)                                           
-      implicit none
-      integer ia,ib,L,K
-      INTEGER A(IA,L), B(IB,L)                                                
-      
-      INTEGER OFFSET,Lena,i,j
-                                                                                
-      OFFSET = IB*(K-1)                                                         
-      Lena    = MIN(IB,IA-OFFSET)                                                
-      OFFSET = OFFSET+1                                                         
-                                                                                
-      IF(Lena.EQ.IB) THEN                                                        
-        DO 100 J=1,L                                                            
-        DO 100 I=1,Lena                                                          
-        B(I,J) = A(I+OFFSET-1,J)                                                
-100     CONTINUE                                                                
-      ELSE                                                                      
-        DO 200 J=1,L                                                            
-        DO 300 I=1,Lena                                                          
-        B(I,J) = A(I+OFFSET-1,J)                                                
-300     CONTINUE                                                                
-        DO 400 I=1,IB-Lena                                                       
-        B(Lena+I,J) = A(Lena+OFFSET-1,J)                                            
-400     CONTINUE                                                                
-200     CONTINUE                                                                
-      ENDIF                                                                     
-                                                                                
-      RETURN                                                                    
-      END                                                                       
-      SUBROUTINE PASTE(B,A,IB,IA,L,K)                                           
-      implicit none
-      integer ia,ib,L,K
-      _RL A(IA,L), B(IB,L)                                                
+      _RL A(IA,L), B(IB,L)
 
       INTEGER OFFSET,Lena,i,j
-                                                                                
-      OFFSET = IB*(K-1)                                                         
-      Lena    = MIN(IB,IA-OFFSET)                                                
-      OFFSET = OFFSET+1                                                         
-                                                                                
-      DO 100 J=1,L                                                              
-      DO 100 I=1,Lena                                                            
-      A(I+OFFSET-1,J) = B(I,J)                                                  
-100   CONTINUE                                                                  
-                                                                                
-      RETURN                                                                    
-      END                                                                       
-      SUBROUTINE PSTBMP(B,A,IB,IA,L,K)                                          
+
+      OFFSET = IB*(K-1)
+      Lena    = MIN(IB,IA-OFFSET)
+      OFFSET = OFFSET+1
+
+      IF(Lena.EQ.IB) THEN
+        DO 100 J=1,L
+        DO 100 I=1,Lena
+        B(I,J) = A(I+OFFSET-1,J)
+100     CONTINUE
+      ELSE
+        DO 200 J=1,L
+        DO 300 I=1,Lena
+        B(I,J) = A(I+OFFSET-1,J)
+300     CONTINUE
+        DO 400 I=1,IB-Lena
+        B(Lena+I,J) = A(Lena+OFFSET-1,J)
+400     CONTINUE
+200     CONTINUE
+      ENDIF
+
+      RETURN
+      END
+      SUBROUTINE STRIPINT(A,B,IA,IB,L,K)
       implicit none
       integer ia,ib,L,K
-      _RL A(IA,L), B(IB,L)                                                
+      INTEGER A(IA,L), B(IB,L)
 
       INTEGER OFFSET,Lena,i,j
-                                                                                
-      OFFSET = IB*(K-1)                                                         
-      Lena    = MIN(IB,IA-OFFSET)                                                
-      OFFSET = OFFSET+1                                                         
-                                                                                
-      DO 100 J=1,L                                                              
-      DO 100 I=1,Lena                                                            
-      A(I+OFFSET-1,J) = A(I+OFFSET-1,J) + B(I,J)                                
-100   CONTINUE                                                                  
-C                                                                               
-      RETURN                                                                    
-      END                                                                       
+
+      OFFSET = IB*(K-1)
+      Lena    = MIN(IB,IA-OFFSET)
+      OFFSET = OFFSET+1
+
+      IF(Lena.EQ.IB) THEN
+        DO 100 J=1,L
+        DO 100 I=1,Lena
+        B(I,J) = A(I+OFFSET-1,J)
+100     CONTINUE
+      ELSE
+        DO 200 J=1,L
+        DO 300 I=1,Lena
+        B(I,J) = A(I+OFFSET-1,J)
+300     CONTINUE
+        DO 400 I=1,IB-Lena
+        B(Lena+I,J) = A(Lena+OFFSET-1,J)
+400     CONTINUE
+200     CONTINUE
+      ENDIF
+
+      RETURN
+      END
+      SUBROUTINE PASTE(B,A,IB,IA,L,K)
+      implicit none
+      integer ia,ib,L,K
+      _RL A(IA,L), B(IB,L)
+
+      INTEGER OFFSET,Lena,i,j
+
+      OFFSET = IB*(K-1)
+      Lena    = MIN(IB,IA-OFFSET)
+      OFFSET = OFFSET+1
+
+      DO 100 J=1,L
+      DO 100 I=1,Lena
+      A(I+OFFSET-1,J) = B(I,J)
+100   CONTINUE
+
+      RETURN
+      END
+      SUBROUTINE PSTBMP(B,A,IB,IA,L,K)
+      implicit none
+      integer ia,ib,L,K
+      _RL A(IA,L), B(IB,L)
+
+      INTEGER OFFSET,Lena,i,j
+
+      OFFSET = IB*(K-1)
+      Lena    = MIN(IB,IA-OFFSET)
+      OFFSET = OFFSET+1
+
+      DO 100 J=1,L
+      DO 100 I=1,Lena
+      A(I+OFFSET-1,J) = A(I+OFFSET-1,J) + B(I,J)
+100   CONTINUE
+C
+      RETURN
+      END
       SUBROUTINE STRINT(A,B,IA,IB,L,K)
       implicit none
       integer ia,ib,L,K
@@ -206,9 +206,9 @@ C***********************************************************************
       LOGICAL LDQDT
 
       _RL AIRMW, H2OMW
-      
-      PARAMETER ( AIRMW  = 28.97      )                                         
-      PARAMETER ( H2OMW  = 18.01      )                                         
+
+      PARAMETER ( AIRMW  = 28.97      )
+      PARAMETER ( H2OMW  = 18.01      )
 
       _RL ESFAC, ERFAC
       PARAMETER ( ESFAC = H2OMW/AIRMW       )
@@ -314,7 +314,7 @@ c ********************************************************
 
       _RL TMAX, TICE
       PARAMETER ( TMAX=323.15, TICE=273.16)
-      
+
       _RL T, D, W, QX, DQX
       T = MIN(TT,TMAX) - TICE
       DQX = 0.
@@ -470,13 +470,13 @@ cfpp$ expand (qsat)
       offset = ib*(k-1)
       Lena    = min(ib,irun-offset)
       offset = offset+1
-               
+
       do 100 j=1,L
       do 100 i=1,Lena
       a(i+offset-1,j) = a(i+offset-1,j) + float(b(i,j))
 100   continue
-      return  
-      end        
+      return
+      end
 
 
       subroutine pstbmpit(b,a,ib,ia,irun,l,k)
@@ -488,20 +488,20 @@ cfpp$ expand (qsat)
       offset = ib*(k-1)
       Lena    = min(ib,irun-offset)
       offset = offset+1
-               
+
       do 100 j=1,L
       do 100 i=1,Lena
       a(i+offset-1,j) = a(i+offset-1,j) + b(i,j)
 100   continue
-      return  
-      end        
+      return
+      end
 
       subroutine strip2tile(a,indx,b,irun,ia,ib,levs,npeice)
 c-----------------------------------------------------------------------
 c subroutine strip2tile - extract one processors worth of grid points
 c                         from a grid space array to a stripped tile
 c                         space array
-c 
+c
 c  input:
 c      a      - array to be stripped FROM [ia,levs]
 c      indx   - array of horizontal indeces of grid points to convert to
@@ -548,13 +548,13 @@ c-----------------------------------------------------------------------
 c subroutine paste2grd - paste one processors worth of grid points
 c                        from a stripped tile array to a grid
 c                        space array
-c 
+c
 c  input:
 c      b      - array to be pasted back into grid space [ib,levs]
 c      indx   - array of horizontal indeces of grid points to convert to
 c               tile space[numpts]
 c      chfr   - fractional area covered by the tile [ib]
-c      ib     - inner dimension of source array AND number of points in 
+c      ib     - inner dimension of source array AND number of points in
 c               array a that need to be pasted
 c      numpts - total number of points which were stripped
 c      ia     - inner of dimension of target array
@@ -593,13 +593,13 @@ c-----------------------------------------------------------------------
 c subroutine paste2grd - paste one processors worth of grid points
 c                        from a stripped tile array to a grid
 c                        space array
-c 
+c
 c  input:
 c      b      - array to be pasted back into grid space [ib,levs]
 c      indx   - array of horizontal indeces of grid points to convert to
 c               tile space[numpts]
 c      chfr   - fractional area covered by the tile [ib]
-c      ib     - inner dimension of source array AND number of points in 
+c      ib     - inner dimension of source array AND number of points in
 c               array a that need to be pasted
 c      numpts - total number of points which were stripped
 c      ia     - inner of dimension of target array
@@ -654,13 +654,15 @@ c-----------------------------------------------------------------------
       implicit none
       integer im,jm,mxchps,nchp
       integer igrd(mxchps)
-      _RL A(IM,JM), B(MXCHPS)
+c     _RL A(IM,JM), B(MXCHPS)
+      _RL A(IM*JM), B(MXCHPS)
 
       integer i
 
       IF(NCHP.GE.0) THEN
         DO I=1,NCHP
-         B(I) = A(IGRD(I),1)
+c        B(I) = A(IGRD(I),1)
+         B(I) = A(IGRD(I))
         ENDDO
       ELSE
         PRINT *, 'ERROR IN GRD2MSC'
@@ -677,22 +679,27 @@ c-----------------------------------------------------------------------
       parameter (zero = 0.)
       integer im,jm,mxchps,nchp
       integer igrd(mxchps)
-      _RL A(IM,JM), B(MXCHPS), CHFR(MXCHPS), FRACG(IM,JM)
+c     _RL A(IM,JM), B(MXCHPS), CHFR(MXCHPS), FRACG(IM,JM)
+      _RL A(IM*JM), B(MXCHPS), CHFR(MXCHPS), FRACG(IM*JM)
 
-      _RL VT1(IM,JM)
+c     _RL VT1(IM,JM)
+      _RL VT1(IM*JM)
       integer i
 
       IF(NCHP.GE.0) THEN
         DO I=1,IM*JM
-         VT1(I,1) = ZERO
+c        VT1(I,1) = ZERO
+         VT1(I) = ZERO
         ENDDO
 
         DO I=1,NCHP
-         VT1(IGRD(I),1) = VT1(IGRD(I),1) + B(I)*CHFR(I)
+c        VT1(IGRD(I),1) = VT1(IGRD(I),1) + B(I)*CHFR(I)
+         VT1(IGRD(I)) = VT1(IGRD(I)) + B(I)*CHFR(I)
         ENDDO
 
         DO I=1,IM*JM
-         A(I,1) = A(I,1)*(ONE-FRACG(I,1)) + VT1(I,1)
+c        A(I,1) = A(I,1)*(ONE-FRACG(I,1)) + VT1(I,1)
+         A(I) = A(I)*(ONE-FRACG(I)) + VT1(I)
         ENDDO
       ELSE
         PRINT *, 'ERROR IN MSC2GRD'
@@ -739,48 +746,48 @@ C*********************************************************************
 
 
       data vgz0  /
-     1   2.6530, 2.6530, 2.6530, 2.6530, 2.6530, 2.6530, 2.6530, 
-     1   2.6530, 2.6530, 2.6530, 2.6530, 2.6530,  
+     1   2.6530, 2.6530, 2.6530, 2.6530, 2.6530, 2.6530, 2.6530,
+     1   2.6530, 2.6530, 2.6530, 2.6530, 2.6530,
      2   0.5200, 0.5200, 0.6660, 0.9100, 1.0310, 1.0440, 1.0420,
-     2   1.0370, 1.0360, 0.9170, 0.6660, 0.5200, 
+     2   1.0370, 1.0360, 0.9170, 0.6660, 0.5200,
      3   1.1120, 1.1030, 1.0880, 1.0820, 1.0760, 1.0680, 1.0730,
-     3   1.0790, 1.0820, 1.0880, 1.1030, 1.1120, 
+     3   1.0790, 1.0820, 1.0880, 1.1030, 1.1120,
      4   0.0777, 0.0778, 0.0778, 0.0779, 0.0778, 0.0771, 0.0759,
-     4   0.0766, 0.0778, 0.0779, 0.0778, 0.0778, 
+     4   0.0766, 0.0778, 0.0779, 0.0778, 0.0778,
      5   0.2450, 0.2450, 0.2270, 0.2000, 0.2000, 0.2000, 0.2000,
-     5   0.267,  0.292,  0.280,  0.258,  0.2450,  
+     5   0.267,  0.292,  0.280,  0.258,  0.2450,
      6   0.0752, 0.0752, 0.0752, 0.0752, 0.0752, 0.0757, 0.0777,
-     6   0.0778, 0.0774, 0.0752, 0.0752, 0.0752, 
-     7   0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 
-     7   0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 
-     8   0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 
-     8   0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 
-     9   0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 
+     6   0.0778, 0.0774, 0.0752, 0.0752, 0.0752,
+     7   0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112,
+     7   0.0112, 0.0112, 0.0112, 0.0112, 0.0112,
+     8   0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112,
+     8   0.0112, 0.0112, 0.0112, 0.0112, 0.0112,
+     9   0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112,
      9   0.0112, 0.0112, 0.0112, 0.0112, 0.0112,
-     1   0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 
+     1   0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112, 0.0112,
      1   0.0112, 0.0112, 0.0112, 0.0112, 0.0112
      &  /
 
 
       data vgrd    /
      1   285.87, 285.87, 285.87, 285.87, 285.87, 285.87, 285.87,
-     1   285.87, 285.87, 285.87, 285.87, 285.87, 
+     1   285.87, 285.87, 285.87, 285.87, 285.87,
      2   211.32, 211.32, 218.78, 243.40, 294.87, 345.90, 355.18,
-     2   341.84, 307.22, 244.84, 218.78, 211.32, 
-     3   565.41, 587.05, 623.46, 638.13, 652.86, 675.04, 660.24, 
-     3   645.49, 638.13, 623.46, 587.05, 565.41, 
+     2   341.84, 307.22, 244.84, 218.78, 211.32,
+     3   565.41, 587.05, 623.46, 638.13, 652.86, 675.04, 660.24,
+     3   645.49, 638.13, 623.46, 587.05, 565.41,
      4    24.43,  24.63,  24.80,  24.96,  25.72,  27.74,  30.06,
-     4    28.86,  25.90,  25.11,  24.80,  24.63, 
+     4    28.86,  25.90,  25.11,  24.80,  24.63,
      5   103.60, 103.60, 102.35, 100.72, 100.72, 100.72, 100.72,
-     5   105.30, 107.94, 106.59, 104.49, 103.60, 
+     5   105.30, 107.94, 106.59, 104.49, 103.60,
      6    22.86,  22.86,  22.86,  22.86,  22.86,  23.01,  24.36,
-     6    24.69,  24.04,  22.86,  22.86,  22.86, 
+     6    24.69,  24.04,  22.86,  22.86,  22.86,
      7    23.76,  23.76,  23.76,  23.76,  23.76,  23.76,  23.76,
-     7    23.76,  23.76,  23.76,  23.76,  23.76, 
+     7    23.76,  23.76,  23.76,  23.76,  23.76,
      8    23.76,  23.76,  23.76,  23.76,  23.76,  23.76,  23.76,
-     8    23.76,  23.76,  23.76,  23.76,  23.76, 
+     8    23.76,  23.76,  23.76,  23.76,  23.76,
      9    23.76,  23.76,  23.76,  23.76,  23.76,  23.76,  23.76,
-     9    23.76,  23.76,  23.76,  23.76,  23.76, 
+     9    23.76,  23.76,  23.76,  23.76,  23.76,
      1    23.76,  23.76,  23.76,  23.76,  23.76,  23.76,  23.76,
      1    23.76,  23.76,  23.76,  23.76,  23.76
      &  /
@@ -790,7 +797,7 @@ C*********************************************************************
      1   19737.8, 19737.8, 19737.8, 19737.8, 19737.8,
      2    5010.0,  5010.0,  5270.0,  6200.0,  8000.0,  9700.0,  9500.0,
      2    8400.0,  6250.0,  5270.0,  5010.0,  5010.0,
-     3    9000.0,  9200.0,  9533.3,  9666.7,  9800.0,  9866.7,  9733.3, 
+     3    9000.0,  9200.0,  9533.3,  9666.7,  9800.0,  9866.7,  9733.3,
      3    9666.7,  9533.3,  9200.0,  9000.0,  9000.0,
      4    5500.0,  5625.0,  5750.0,  5875.0,  6625.0,  8750.0,  9375.0,
      4    6875.0,  6000.0,  5750.0,  5625.0,  5500.0,
@@ -811,25 +818,25 @@ C*********************************************************************
 
       data vgdd  /
      1   27.37,   27.37,   27.37,   27.37,   27.37,   27.37,  27.37,
-     1   27.37,   27.37,   27.37,   27.37,   27.37, 
+     1   27.37,   27.37,   27.37,   27.37,   27.37,
      2   13.66,   13.66,   14.62,   15.70,   16.33,   16.62,   16.66,
-     2   16.60,   16.41,   15.73,   14.62,   13.66, 
+     2   16.60,   16.41,   15.73,   14.62,   13.66,
      3   13.76,   13.80,   13.86,   13.88,   13.90,   13.93,   13.91,
-     3   13.89,   13.88,   13.86,   13.80,   13.76, 
+     3   13.89,   13.88,   13.86,   13.80,   13.76,
      4    0.218,   0.227,   0.233,   0.239,   0.260,   0.299,   0.325,
-     4    0.313,   0.265,   0.244,   0.233,   0.227,  
+     4    0.313,   0.265,   0.244,   0.233,   0.227,
      5    2.813,   2.813,   2.662,   2.391,   2.391,   2.391,   2.391,
-     5    2.975,   3.138,   3.062,   2.907,   2.813,  
+     5    2.975,   3.138,   3.062,   2.907,   2.813,
      6    0.10629, 0.10629, 0.10629, 0.10629, 0.10629, 0.12299, 0.21521,
-     6    0.22897, 0.19961, 0.10629, 0.10629, 0.10629,  
+     6    0.22897, 0.19961, 0.10629, 0.10629, 0.10629,
      7    0.0001,  0.0001,  0.0001,  0.0001,  0.0001,  0.0001,  0.0001,
-     7    0.0001,  0.0001,  0.0001,  0.0001,  0.0001, 
+     7    0.0001,  0.0001,  0.0001,  0.0001,  0.0001,
      8    0.0001,  0.0001,  0.0001,  0.0001,  0.0001,  0.0001,  0.0001,
-     8    0.0001,  0.0001,  0.0001,  0.0001,  0.0001, 
+     8    0.0001,  0.0001,  0.0001,  0.0001,  0.0001,
      9    0.0001,  0.0001,  0.0001,  0.0001,  0.0001,  0.0001,  0.0001,
      9    0.0001,  0.0001,  0.0001,  0.0001,  0.0001,
      1    0.0001,  0.0001,  0.0001,  0.0001,  0.0001,  0.0001,  0.0001,
-     1    0.0001,  0.0001,  0.0001,  0.0001,  0.0001 
+     1    0.0001,  0.0001,  0.0001,  0.0001,  0.0001
      &  /
 
 
@@ -843,9 +850,9 @@ C*********************************************************************
 
       data vgroca /
      &  0.384E-6, 0.384E-6, 0.384E-6, 0.384E-6, 0.384E-6, 0.384E-6,
-     &   .1E-6, .1E-6, .1E-6, .1E-6  / 
+     &   .1E-6, .1E-6, .1E-6, .1E-6  /
 
-      data vgrotd /1.00,1.00,0.50,0.50,0.50,0.20,0.10,0.10,0.10,0.10/ 
+      data vgrotd /1.00,1.00,0.50,0.50,0.50,0.20,0.10,0.10,0.10,0.10/
 
       data vgrdrs  /
      &   0.75E13, 0.75E13, 0.75E13, 0.40E13, 0.75E13, 0.75E13,
@@ -878,7 +885,7 @@ C*********************************************************************
       sqsc(i) = sqrt (1. - scat)
 
       d       = vgdd(k2,ityp(i))*facp + vgdd(k1,ityp(i))*facm
-      ufac(i) = log( (vgz2(ityp(i)) - d) / zoch(i) ) 
+      ufac(i) = log( (vgz2(ityp(i)) - d) / zoch(i) )
      *        / log(  pblzet             / zoch(i) )
 
       z2ch(i) = vgz2(ityp (i))
@@ -916,9 +923,9 @@ C***********************************************************************
 
       _RL akap1,getcon
       integer i,j,L
- 
+
       akap1 = 1.0 + getcon('KAPPA')
-                  
+
       do L = 1,lm
       do j = 1,jm
       do i = 1,im

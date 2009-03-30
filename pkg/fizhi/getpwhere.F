@@ -1,19 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.6 2007/07/08 20:24:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.7 2009/03/30 02:14:48 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
+#define CHECK_GETPWHERE
        subroutine getpwhere(myThid,numpress,pressures,levpressures)
 c***********************************************************************
 c subroutine getpwhere
-c 
-c Purpose: Approximate (!) the level at which the mid-level pressure 
+c
+c Purpose: Approximate (!) the level at which the mid-level pressure
 c          is less than (ie, above in the atmosphere) a given value.
 c
 c Algorithm: Assume surface pressure of 1000 mb, and the pressure
 c          thicknesses set in make_phys_grid, with drF thicknesses above
 c
 c Need:    Information about the dynamics grid vertical spacing
-c     
+c
 c Input:   myThid       - process(or) number
 c          numpres      - Number of pressures to process
 c          pressures    - Pressure values to find levels for
@@ -31,14 +32,22 @@ c
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "GRID.h"
+#ifdef CHECK_GETPWHERE
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#endif /* CHECK_GETPWHERE */
 
        integer myThid,numpress
        _RL pressures(numpress)
        integer levpressures(numpress)
 c
+#ifdef CHECK_GETPWHERE
+       INTEGER ioUnit, upperBnd
+c      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif /* CHECK_GETPWHERE */
        integer n,L,dynlev
 c Code that MUST correspond to make_phys_grid in the gridalt package!
-c Require 12 bottom levels (300 mb worth) for the physics, 
+c Require 12 bottom levels (300 mb worth) for the physics,
 c    Counting from bottom to top, the dp's are:
        integer ntry,ntry10,ntry40
        parameter (ntry40=15)
@@ -46,7 +55,7 @@ c    Counting from bottom to top, the dp's are:
        _RL dptry(ntry40), dptry10(ntry10), dptry40(ntry40)
        _RL dptry_pedge(ntry40+1)
        _RL rF_pmid(Nr),rF_edge(Nr+1)
-       _RL pref(Nrphys) 
+       _RL pref(Nrphys)
        integer plevref(Nrphys)
        data dptry10 /3.00, 6.00,10.00,14.00,17.00,25.00,
      .              25.00,25.00,25.00,50.00,50.00,50.00/
@@ -91,6 +100,30 @@ c define the rest of the mid pressures from the dynamics levels
        do L = 1,Nr
         if(rF_pmid(L).ge.pref(ntry)) dynlev = L
        enddo
+#ifdef CHECK_GETPWHERE
+       ioUnit = errorMessageUnit
+       IF ( rF_pmid(dynlev).ge.pref(ntry)-25. ) THEN
+         upperBnd = ntry+Nr-dynlev
+       ELSE
+         upperBnd = ntry+Nr-dynlev-1
+       ENDIF
+       WRITE(ioUnit,'(A)') '===== GETPWHERE: CHECK start ====='
+       WRITE(ioUnit,'(3(A,I6),A)') '  Nr =', Nr,
+     &                        ' , Nrphys=', Nrphys,
+     &                        ' , ntry  =', ntry
+       WRITE(ioUnit,'(2(A,I5),A)') ' dynlev=', dynlev,
+     &                      ' , Up-Bnd=', upperBnd,
+     &                      ' , pref(1:ntry):'
+       WRITE(ioUnit,'(10F10.4)') (pref(L),L=1,ntry)
+       WRITE(ioUnit,'(A)') 'rF_pmid:'
+       WRITE(ioUnit,'(10F10.4)') rF_pmid
+       IF ( upperBnd.LT.Nrphys-1 ) THEN
+         WRITE(ioUnit,'(A)')
+     &        'ERROR: exeeds upper bound of "rF_pmid" array'
+         STOP 'ABNORMAL END: S/R GETPWHERE'
+       ENDIF
+       WRITE(ioUnit,'(A)') '===== GETPWHERE: CHECK end   ====='
+#endif /* CHECK_GETPWHERE */
        if(rF_pmid(dynlev).ge.pref(ntry)-25.) then
         do L = ntry+1,Nrphys-1
          pref(L) = rF_pmid(dynlev+L-ntry)

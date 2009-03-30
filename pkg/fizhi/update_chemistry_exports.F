@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.12 2005/03/15 21:38:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.13 2009/03/30 02:14:48 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -86,7 +86,7 @@ c                                         (even though dpphy counted bottom up)
          oz1(j,L) = ozone(j,L,imns)*facm + ozone(j,L,ipls)*facp
         enddo
         enddo
-                                                                             
+
         do L = 1,nlevsq
         do j = 1,nlatsq
          strq1(j,L) = stratq(j,L,imns)*facm + stratq(j,L,ipls)*facp
@@ -149,12 +149,12 @@ C     xlat ...... Latitude in Degrees
 C     nlevs ..... Vertical   Dimension
 C     pres ...... PRES (IM,JM,nlevs) Three-dimensional array of pressures
 C     qz_in ..... Model Moisture (kg/kg mass mixing radtio)
-C     qz_out .... Combination of Chemistry Moisture and Model Moisture 
+C     qz_out .... Combination of Chemistry Moisture and Model Moisture
 C                 (kg/kg mass mixing ratio)
 C
 C***********************************************************************
 
-      implicit none 
+      implicit none
       integer nwatlevs,nwatlats
       integer bi,bj
       _RL stratq ( nwatlats,nwatlevs )
@@ -186,7 +186,7 @@ c ---------------
 C **********************************************************************
 C ****         Interpolate Moisture data to model latitudes          ***
 C **********************************************************************
- 
+
       DO 32 k = 1, nwatlevs
         DO 34   i = 1,irun
 
@@ -222,7 +222,7 @@ C **********************************************************************
 C **********************************************************************
 C ****     Interpolate Latitude Moisture data to model pressures     ***
 C **********************************************************************
- 
+
       DO 40 L2 = 1,nlevs
 
         DO 44 i= 1, irun
@@ -394,8 +394,11 @@ C **********************************************************************
 C ****     CONVERT FROM VOLUME MIXING RATIO TO MASS MIXING RATIO     ***
 C **********************************************************************
 
-      DO 60 I=1,IRUN*NLEVS
-      ozrad (I,1) = ozrad(I,1) * VOLTOMAS
+      DO 60 L2=1,NLEVS
+      DO 60 I=1,IRUN
+c     DO 60 I=1,IRUN*NLEVS
+c     ozrad (I,1) = ozrad(I,1) * VOLTOMAS
+      ozrad (I,L2) = ozrad(I,L2) * VOLTOMAS
   60  CONTINUE
 
       RETURN
