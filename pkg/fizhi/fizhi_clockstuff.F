@@ -1,7 +1,29 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.28 2009/03/30 02:14:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.29 2009/04/01 23:10:20 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
+
+C--  File fizhi_clockstuff.F:
+C--   Contents
+C--   o SET_ALARM
+C--   o GET_ALARM
+C--   o ALARM      (function)
+C--   o ALARM2     (function)
+C--   o ALARM2NEXT (function)
+C--   o SET_TIME
+C--   o GET_TIME
+C--   o NSECF      (function)
+C--   o NHMSF      (function)
+C--   o NSECF2     (function)
+C--   o FIXDATE
+C--   o INTERP_TIME
+C--   o TICK
+C--   o TIC_TIME
+C--   o TIME_BOUND
+C--   o TIME2FREQ2
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       subroutine set_alarm (tag,datein,timein,freq)
 C***********************************************************************
 C  Purpose
@@ -21,33 +43,14 @@ C***********************************************************************
       character*(*) tag
       integer       freq,datein,timein
 
-#ifdef ALLOW_USE_MPI
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#endif
-
 #include "chronos.h"
-
-#ifdef ALLOW_USE_MPI
-c MPI Utilities
-c -------------
-c#include "mpif.h"
-c      integer  mpi_comm_model,ierror
-      integer  ierror
-#endif
 
       integer myid
       logical first,set
       data          first /.true./
-
       integer n
-#ifdef ALLOW_USE_MPI
-      call mpi_comm_rank ( mpi_comm_model,myid,ierror )
-#else
-      myid = 1
-#endif
 
+      myid = 1
       if(first) then
          ntags    = 1
           tags(1) = tag
@@ -120,48 +123,29 @@ C***********************************************************************
       character*(*) tag
       integer freq,datein,timein,tleft
 
-#ifdef ALLOW_USE_MPI
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#endif
-
 #include "chronos.h"
-
-#ifdef ALLOW_USE_MPI
-c MPI Utilities
-c -------------
-c#include "mpif.h"
-c      integer  mpi_comm_model,ierror
-      integer  ierror
-#endif
 
       logical set,alarm
       external alarm
       integer myid,n,nalarm,nsecf
 
-#ifdef ALLOW_USE_MPI
-      call mpi_comm_rank ( mpi_comm_model,myid,ierror )
-#else
       myid = 1
-#endif
-
       set = .false.
       do n=1,ntags
-      if(tag.eq.tags(n)) then
-       freq  = freqs(n)
-       datein  = dates(n)
-       timein  = times(n)
+       if (tag.eq.tags(n)) then
+         freq   = freqs(n)
+         datein = dates(n)
+         timein = times(n)
 
-       if( alarm(tag) ) then
-       tleft = 0
-       else
-       call get_time (nymd,nhms)
-       tleft = nsecf(freq) - nalarm(freq,nymd,nhms,datein,timein )
+         if ( alarm(tag) ) then
+          tleft = 0
+         else
+          call get_time (nymd,nhms)
+          tleft = nsecf(freq) - nalarm(freq,nymd,nhms,datein,timein )
+         endif
+
+         set = .true.
        endif
-
-       set = .true.
-      endif
       enddo
 
       if(.not.set) then
@@ -175,73 +159,70 @@ c      integer  mpi_comm_model,ierror
       return
       end
 
-      function alarm (tag)
+      LOGICAL FUNCTION ALARM (tag)
       implicit none
       character*(*) tag
-      integer datein,timein
-      logical alarm
 #include "chronos.h"
 
-      integer n,modalarm,nalarm,freq,date0,time0
-      modalarm(freq,date0,time0)=nalarm(freq,datein,timein,date0,time0)
+      integer datein,timein
+      integer n,nalarm
+      external nalarm
 
       call get_time (datein,timein)
 
       alarm = .false.
       do n=1,ntags
-      if( tags(n).eq.tag  ) then
-          if( freqs(n).eq.0 ) then
+       if( tags(n).eq.tag  ) then
+        if( freqs(n).eq.0 ) then
           alarm = (dates(n).eq.datein) .and. (times(n).eq.timein)
-          else
+        else
           alarm = ( datein.gt.dates(n) .or.
-     .             (datein.eq.dates(n) .and. timein.ge.times(n)) ) .and.
-     .              modalarm( freqs(n),dates(n),times(n) ).eq.0
-          endif
-      endif
+     &             (datein.eq.dates(n) .and. timein.ge.times(n)) )
+     &    .and. nalarm( freqs(n),datein,timein,dates(n),times(n) ).eq.0
+        endif
+       endif
       enddo
 
       return
       end
 
-      function alarm2 (tag)
+      LOGICAL FUNCTION ALARM2 (tag)
       implicit none
       character*(*) tag
-      integer datein,timein
-      logical alarm2
 #include "chronos.h"
 
-      integer n,modalarm,nalarm,nalarm2,freq,date0,time0
-      modalarm(freq,date0,time0)=nalarm2(freq,datein,timein,date0,time0)
+      integer datein,timein
+      integer n,nalarm2
+      external nalarm2
 
       call get_time (datein,timein)
 
       alarm2 = .false.
       do n=1,ntags
-      if( tags(n).eq.tag  ) then
-          if( freqs(n).eq.0 ) then
+       if( tags(n).eq.tag  ) then
+        if( freqs(n).eq.0 ) then
           alarm2 = (dates(n).eq.datein) .and. (times(n).eq.timein)
-          else
+        else
           alarm2 = ( datein.gt.dates(n) .or.
-     .             (datein.eq.dates(n) .and. timein.ge.times(n)) ) .and.
-     .              modalarm( freqs(n),dates(n),times(n) ).eq.0
-          endif
-      endif
+     &              (datein.eq.dates(n) .and. timein.ge.times(n)) )
+     &    .and. nalarm2( freqs(n),datein,timein,dates(n),times(n) ).eq.0
+        endif
+       endif
       enddo
 
       return
       end
 
-      function alarm2next (tag,deltat)
+      LOGICAL FUNCTION ALARM2NEXT (tag,deltat)
       implicit none
       character*(*) tag
       _RL deltat
-      integer datein,timein,ndt
-      integer dateminus,timeminus
-      logical alarm2next
 #include "chronos.h"
 
-      integer n,modalarm,nalarm,nalarm2,freq,date0,time0
-      modalarm(freq,date0,time0)=nalarm2(freq,datein,timein,date0,time0)
+      integer datein,timein,ndt
+      integer dateminus,timeminus
+      integer n,nalarm2
+      external nalarm2
 
       ndt = int(deltat)
       call get_time (dateminus,timeminus)
@@ -251,15 +232,15 @@ c      integer  mpi_comm_model,ierror
 
       alarm2next = .false.
       do n=1,ntags
-      if( tags(n).eq.tag  ) then
-          if( freqs(n).eq.0 ) then
+       if( tags(n).eq.tag  ) then
+        if( freqs(n).eq.0 ) then
           alarm2next = (dates(n).eq.datein) .and. (times(n).eq.timein)
-          else
+        else
           alarm2next = ( datein.gt.dates(n) .or.
-     .             (datein.eq.dates(n) .and. timein.ge.times(n)) ) .and.
-     .              modalarm( freqs(n),dates(n),times(n) ).eq.0
-          endif
-      endif
+     &                  (datein.eq.dates(n) .and. timein.ge.times(n)) )
+     &    .and. nalarm2( freqs(n),datein,timein,dates(n),times(n) ).eq.0
+        endif
+       endif
       enddo
 
       return
@@ -269,28 +250,11 @@ c      integer  mpi_comm_model,ierror
       implicit none
       integer  datein,timein
 
-#ifdef ALLOW_USE_MPI
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#endif
-
 #include "chronos.h"
 
-#ifdef ALLOW_USE_MPI
-c MPI Utilities
-c -------------
-c#include "mpif.h"
-c      integer  mpi_comm_model,ierror
-      integer  ierror
-#endif
       integer myid
 
-#ifdef ALLOW_USE_MPI
-      call mpi_comm_rank ( mpi_comm_model,myid,ierror )
-#else
       myid = 1
-#endif
       if(  myid.eq.1 ) then
       print *, 'Setting Clock'
       print *, 'Date: ',datein
@@ -419,8 +383,8 @@ c     IDAY2  = MNDY( MONTH ,MOD(YEAR ,4)+1 )
       implicit none
       integer nymd
 
-c Modify 6-digit YYMMDD for dates between 1950-2050
-c -------------------------------------------------
+C Modify 6-digit YYMMDD for dates between 1950-2050
+C -------------------------------------------------
       if (nymd .lt. 500101) then
         nymd = 20000000 + nymd
       else if (nymd .le. 991231) then
@@ -464,7 +428,7 @@ C***********************************************************************
       implicit none
 
       integer nhms,nymd,nhms1,nymd1,nhms2,nymd2
-      _RL getcon, fac1,fac2
+      _RL fac1,fac2
 
       INTEGER  YEAR , MONTH , DAY , SEC
       INTEGER  YEAR1, MONTH1, DAY1, SEC1
@@ -569,6 +533,10 @@ C***********************************************************************
       NHMS = NHMSF (NSEC)
       ENDIF
 
+#ifdef FIZHI_USE_FIXED_DAY
+      NYMD = 20040321
+#endif
+
       RETURN
       END
 
@@ -610,8 +578,8 @@ C***********************************************************************
       NHMS = NHMSF (NSEC)
       ENDIF
 
-c Pass Back Current Updated Time
-c ------------------------------
+C Pass Back Current Updated Time
+C ------------------------------
       mymd = nymd
       mhms = nhms
 
@@ -716,7 +684,7 @@ C***********************************************************************
       INTEGER NDPM(12)
       DATA NDPM /31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/
 
-      integer i,nsecf2,nsecf,iday,iday0,nsec,nsec0,ntime
+      integer i,nsecf,iday,iday0,nsec,nsec0,ntime
       integer NHMMSS,NMMDD
       integer iloop
       integer testnymd,testnhms,testndpm
@@ -906,13 +874,13 @@ C***********************************************************************
 
       implicit none
 
-c Input Variables
-c ---------------
+C Input Variables
+C ---------------
       integer nymd, nhms, irun
       _RL getcon, cosz(irun), alat(irun), alon(irun), ra
 
-c Local Variables
-c ---------------
+C Local Variables
+C ---------------
       integer year, day, sec, month, iday, idayp1
       integer dayscy
       integer i,nsecf,k,km,kp
@@ -926,7 +894,6 @@ c ---------------
       parameter ( six   = 6.0 )
       parameter ( dayscy   = 365*4 + 1 )
 
-c     _RL      TH(DAYSCY),T0,T1,T2,T3,T4,FUN,Y,MNDY(12,4)
       _RL      TH(DAYSCY),T0,T1,T2,T3,T4,FUN,Y
       INTEGER  MNDY(12*4)
 
@@ -1048,8 +1015,8 @@ C***********************************************************************
       implicit none
       integer  nymd,nhms, nymd1,nhms1, nymd2,nhms2
 
-c Local Variables
-c ---------------
+C Local Variables
+C ---------------
       integer  month,day,nyear,midmon1,midmon,midmon2
       integer  imnm,imnp
       INTEGER  DAYS(14), daysm, days0, daysp
@@ -1070,8 +1037,8 @@ C*********************************************************************
       days0  = days(month+1)
       daysp  = days(month+2)
 
-c Check for Leap Year
-c -------------------
+C Check for Leap Year
+C -------------------
       nyear = nymd/10000
       if( 4*(nyear/4).eq.nyear ) then
       if( month.eq.3 ) daysm = daysm+1
@@ -1104,12 +1071,12 @@ c -------------------
          call tick ( nymd2,nhms2,       midmon2*86400 )
       ENDIF
 
-c -------------------------------------------------------------
-c Note:  At this point, imnm & imnp range between 01-14, where
-c        01    -> Previous years December
-c        02-13 -> Current  years January-December
-c        14    -> Next     years January
-c -------------------------------------------------------------
+C -------------------------------------------------------------
+C Note:  At this point, imnm & imnp range between 01-14, where
+C        01    -> Previous years December
+C        02-13 -> Current  years January-December
+C        14    -> Next     years January
+C -------------------------------------------------------------
 
       imnm = imnm-1
       imnp = imnp-1
@@ -1139,13 +1106,12 @@ C***********************************************************************
       implicit none
 
       integer mmdd,nymd,nhms,timeleft,daysleft
-      _RL getcon
 
       integer nsday
       PARAMETER ( NSDAY  = 86400 )
       integer year, month, day, sec
-      integer yearnext, monthnext, daynext, secnext
-      integer i,nsecf2,nsecf,iday,idaynext,nsec,nsecnext,ntime
+      integer yearnext, monthnext, daynext
+      integer i,nsecf,iday,idaynext,nsec
       integer testnymd
       integer MNDY(12*4)
       DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
