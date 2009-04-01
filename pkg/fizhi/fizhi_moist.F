@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.36 2006/09/06 16:56:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.37 2009/04/01 23:32:07 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -14,16 +14,16 @@ C $Name:  $
 
        implicit none
 
-c Input Variables
-c ---------------
+C Input Variables
+C ---------------
       integer im,jm,lm
       integer ndmoist,istrip,npcs
-      integer bi,bj,ntracerin,ptracer         
+      integer bi,bj,ntracerin,ptracer
       integer lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup
       _RL pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1),dpres(im,jm,lm)
       _RL pkht(im,jm,lm+1),pkl(im,jm,lm)
-      _RL tz(im,jm,lm),qz(im,jm,lm,ntracerin)       
-      _RL uz(im,jm,lm),vz(im,jm,lm)       
+      _RL tz(im,jm,lm),qz(im,jm,lm,ntracerin)
+      _RL uz(im,jm,lm),vz(im,jm,lm)
       _RL qqz(im,jm,lm)
       _RL dumoist(im,jm,lm),dvmoist(im,jm,lm)
       _RL dtmoist(im,jm,lm),dqmoist(im,jm,lm,ntracerin)
@@ -40,8 +40,8 @@ c ---------------
       logical lpnt
       integer myid
 
-c Local Variables
-c ---------------
+C Local Variables
+C ---------------
       integer    ncrnd,nsecf
 
       _RL       fracqq, rh, dum
@@ -70,8 +70,8 @@ c ---------------
       _RL  qqcolmax(im,jm)
       integer levpbl(im,jm)
 
-c Gathered Arrays for Variable Cloud Base
-c ---------------------------------------
+C Gathered Arrays for Variable Cloud Base
+C ---------------------------------------
       _RL    raincgath(im*jm)
       _RL     pigather(im*jm)
       _RL     thgather(im*jm,lm)
@@ -93,8 +93,8 @@ c ---------------------------------------
       integer  pblindex(im*jm)
       integer levgather(im*jm)
 
-c Stripped Arrays
-c ---------------
+C Stripped Arrays
+C ---------------
       _RL saveth (istrip,lm)
       _RL saveq  (istrip,lm)
       _RL saveu  (istrip,lm,ntracerin+2-ptracer)
@@ -147,7 +147,7 @@ c ---------------
       external diagnostics_is_on
       _RL tmpdiag(im,jm),tmpdiag2(im,jm)
 #endif
- 
+
 C **********************************************************************
 C ****                     INITIALIZATION                           ****
 C **********************************************************************
@@ -166,21 +166,21 @@ C Add U and V components to tracer array for cumulus friction
       TMINV  = 1. /  TMSTP
 
 C Minimum Large-Scale Cloud Fraction at rhcrit
-      alpha  = 0.80         
+      alpha  = 0.80
 C Difference in fraction between SR and LS Threshold
-      offset = 0.10         
+      offset = 0.10
 C Large-Scale Relative Humidity Threshold above 600 mb
-      rhmin  = 0.95         
+      rhmin  = 0.95
 C Maximum Cloud Fraction associated with RAS
-      rasmax = 1.00         
+      rasmax = 1.00
 
 cc        nn = 3*3600.0/tmstp + 1
           nn = 3*1800.0/tmstp + 1
 C Threshold for Cloud Fraction Memory
-cc    cldmin = rasmax*(1.0-tmstp/3600.)**nn   
-      cldmin = rasmax*(1.0-tmstp/1800.)**nn   
+cc    cldmin = rasmax*(1.0-tmstp/3600.)**nn
+      cldmin = rasmax*(1.0-tmstp/1800.)**nn
 C Threshold for Cloud Liquid Water Memory
-      watmin = 1.0e-8                         
+      watmin = 1.0e-8
 
       SDAY   = GETCON('SDAY')
       GRAV   = GETCON('GRAVITY')
@@ -196,8 +196,8 @@ C Threshold for Cloud Liquid Water Memory
       tice     = getcon('FREEZING-POINT')
       PI       = 4.*atan(1.)
 
-c Determine Total number of Random Clouds to Check
-c ---------------------------------------------
+C Determine Total number of Random Clouds to Check
+C ---------------------------------------------
       ncrnd = (lm-nltop+1)/2
 
       if(first .and. myid.eq.1 .and. bi.eq.1 ) then
@@ -210,8 +210,8 @@ c ---------------------------------------------
        first = .false.
       endif
 
-c And now find PBL depth - the level where qq = fracqq * qq at surface
-c --------------------------------------------------------------------
+C And now find PBL depth - the level where qq = fracqq * qq at surface
+C --------------------------------------------------------------------
       do j = 1,jm
       do i = 1,im
        qqcolmin(i,j) = qqz(i,j,lm)*fracqq
@@ -242,8 +242,8 @@ c --------------------------------------------------------------------
       enddo
 
 
-c Set up the array of indeces of subcloud levels for the gathering
-c ----------------------------------------------------------------
+C Set up the array of indeces of subcloud levels for the gathering
+C ----------------------------------------------------------------
       indx = 0
       do L = nsubmin,nltop,-1
        do j = 1,jm
@@ -257,21 +257,36 @@ c ----------------------------------------------------------------
       enddo
 
       do indx = 1,im*jm
-       levgather(indx) = levpbl(pblindex(indx),1)
-        pigather(indx) =     pz(pblindex(indx),1)
-        pkegather(indx,lm+1) = pkht(pblindex(indx),1,lm+1)
-        plegather(indx,lm+1) = plze(pblindex(indx),1,lm+1)
+c      levgather(indx) = levpbl(pblindex(indx),1)
+c       pigather(indx) =     pz(pblindex(indx),1)
+c       pkegather(indx,lm+1) = pkht(pblindex(indx),1,lm+1)
+c       plegather(indx,lm+1) = plze(pblindex(indx),1,lm+1)
+        j = 1+INT((pblindex(indx)-1)/im)
+        i = 1+MOD((pblindex(indx)-1),im)
+       levgather(indx) = levpbl(i,j)
+        pigather(indx) =     pz(i,j)
+        pkegather(indx,lm+1) = pkht(i,j,lm+1)
+        plegather(indx,lm+1) = plze(i,j,lm+1)
       enddo
 
       do L = 1,lm
        do indx = 1,im*jm
-         thgather(indx,L) = tz(pblindex(indx),1,L)
-         shgather(indx,L) = qz(pblindex(indx),1,L,1)
-        pkegather(indx,L) = pkht(pblindex(indx),1,L)
-        pkzgather(indx,L) = pkl(pblindex(indx),1,L)
-        plegather(indx,L) = plze(pblindex(indx),1,L)
-        plzgather(indx,L) = plz(pblindex(indx),1,L)
-         dpgather(indx,L) = dpres(pblindex(indx),1,L)
+c        thgather(indx,L) = tz(pblindex(indx),1,L)
+c        shgather(indx,L) = qz(pblindex(indx),1,L,1)
+c       pkegather(indx,L) = pkht(pblindex(indx),1,L)
+c       pkzgather(indx,L) = pkl(pblindex(indx),1,L)
+c       plegather(indx,L) = plze(pblindex(indx),1,L)
+c       plzgather(indx,L) = plz(pblindex(indx),1,L)
+c        dpgather(indx,L) = dpres(pblindex(indx),1,L)
+        j = 1+INT((pblindex(indx)-1)/im)
+        i = 1+MOD((pblindex(indx)-1),im)
+         thgather(indx,L) = tz(i,j,L)
+         shgather(indx,L) = qz(i,j,L,1)
+        pkegather(indx,L) = pkht(i,j,L)
+        pkzgather(indx,L) = pkl(i,j,L)
+        plegather(indx,L) = plze(i,j,L)
+        plzgather(indx,L) = plz(i,j,L)
+         dpgather(indx,L) = dpres(i,j,L)
        enddo
       enddo
 C General Tracers
@@ -279,7 +294,10 @@ C----------------
       do nt = 1,ntracerin-ptracer
       do L = 1,lm
        do indx = 1,im*jm
-        ugather(indx,L,nt) = qz(pblindex(indx),1,L,nt+ptracer)
+c       ugather(indx,L,nt) = qz(pblindex(indx),1,L,nt+ptracer)
+        j = 1+INT((pblindex(indx)-1)/im)
+        i = 1+MOD((pblindex(indx)-1),im)
+        ugather(indx,L,nt) = qz(i,j,L,nt+ptracer)
        enddo
       enddo
       enddo
@@ -289,22 +307,26 @@ C Cumulus Friction - load u and v wind components into tracer array
 C------------------------------------------------------------------
       do L = 1,lm
        do indx = 1,im*jm
-        ugather(indx,L,ntracerin-ptracer+1) = uz(pblindex(indx),1,L)
-        ugather(indx,L,ntracerin-ptracer+2) = vz(pblindex(indx),1,L)
+c       ugather(indx,L,ntracerin-ptracer+1) = uz(pblindex(indx),1,L)
+c       ugather(indx,L,ntracerin-ptracer+2) = vz(pblindex(indx),1,L)
+        j = 1+INT((pblindex(indx)-1)/im)
+        i = 1+MOD((pblindex(indx)-1),im)
+        ugather(indx,L,ntracerin-ptracer+1) = uz(i,j,L)
+        ugather(indx,L,ntracerin-ptracer+2) = vz(i,j,L)
        enddo
       enddo
 
       endif
 
-c bump the counter for number of calls to convection
-c --------------------------------------------------
+C bump the counter for number of calls to convection
+C --------------------------------------------------
                         iras = iras + 1
-      if( iras.ge.1e9 ) iras = 1 
+      if( iras.ge.1e9 ) iras = 1
 
-c select the 'random' cloud detrainment levels for RAS
-c ----------------------------------------------------
+C select the 'random' cloud detrainment levels for RAS
+C ----------------------------------------------------
       call rndcloud(iras,ncrnd,rnd,myid)
- 
+
       do l=1,lm
       do j=1,jm
       do i=1,im
@@ -382,8 +404,8 @@ C   Otherwise loop over different subcloud layer depths
 
        nsubcl = depths(iloop)
 
-c Compute sub-cloud values for Temperature and Spec.Hum.
-c ------------------------------------------------------
+C Compute sub-cloud values for Temperature and Spec.Hum.
+C ------------------------------------------------------
        DO 600 I=num,num+nindeces(nsubcl)-1
         TMP1(I,2) = 0.
         TMP1(I,3) = 0.
@@ -402,8 +424,8 @@ c ------------------------------------------------------
         SHL(I,NSUBCL) = TMP1(I,3)*TMP1(I,4)
  603   CONTINUE
 
-c Save initial value of tracers and compute sub-cloud value
-c ---------------------------------------------------------
+C Save initial value of tracers and compute sub-cloud value
+C ---------------------------------------------------------
        DO NT = 1,ntracer-ptracer
           do  L = 1,lm
           do  i = num,num+nindeces(nsubcl)-1
@@ -424,8 +446,8 @@ c ---------------------------------------------------------
           ENDDO
        ENDDO
 
-c Compute Pressure Arrays for RAS
-c -------------------------------
+C Compute Pressure Arrays for RAS
+C -------------------------------
        DO 111 L=1,lm
        DO 112 I=num,num+nindeces(nsubcl)-1
         TMP4(I,L) = PLE(I,L)
@@ -450,9 +472,9 @@ c -------------------------------
 
       do i=num,num+nindeces(nsubcl)-1
 C Temperature at top of sub-cloud layer
-      tmp2(i,1) = TH(i,NSUBCL) * PLKE(i,NSUBCL)/P0KAPPA   
+      tmp2(i,1) = TH(i,NSUBCL) * PLKE(i,NSUBCL)/P0KAPPA
 C Pressure    at top of sub-cloud layer
-      tmp2(i,2) = tmp4(i,nsubcl)                          
+      tmp2(i,2) = tmp4(i,nsubcl)
       enddo
 
       do i=num,num+nindeces(nsubcl)-1
@@ -476,7 +498,7 @@ C  Compute RH threshold for Large-scale condensation
 C  Used in Slingo-Ritter clouds as well - define offset between SR and LS
 
 C Top level of atan func above this rh_threshold = rhmin
-      pup = 600.		
+      pup = 600.
       do i=num,num+nindeces(nsubcl)-1
        do L = nsubcl, lm
          rhcrit(i,L) = 1.
@@ -487,16 +509,16 @@ C Top level of atan func above this rh_threshold = rhmin
          rhcrit(i,L) = rhmin
         else
          ppbl = pl(i,nsubcl)
-         rhcrit(i,L) = rhmin + (1.-rhmin)/(19.) * 
+         rhcrit(i,L) = rhmin + (1.-rhmin)/(19.) *
      .      ((atan( (2.*(pcheck-pup)/(ppbl-pup)-1.) *
-     .       tan(20.*pi/21.-0.5*pi) ) 
+     .       tan(20.*pi/21.-0.5*pi) )
      .        + 0.5*pi) * 21./pi - 1.)
         endif
        enddo
       enddo
 
-c Save Initial Values of Temperature and Specific Humidity
-c --------------------------------------------------------
+C Save Initial Values of Temperature and Specific Humidity
+C --------------------------------------------------------
       do L = 1,lm
       do i = num,num+nindeces(nsubcl)-1
         saveth(i,L) = th (i,L)
@@ -513,8 +535,8 @@ c --------------------------------------------------------
      4, cldmas(num,nltop), detrain(num,nltop)
      8, cp,grav,rkappa,alhl,rhfrac(num),rasmax )
 
-c Compute Diagnostic CLDMAS in RAS Subcloud Layers
-c ------------------------------------------------
+C Compute Diagnostic CLDMAS in RAS Subcloud Layers
+C ------------------------------------------------
        do L=nsubcl,lm
        do I=num,num+nindeces(nsubcl)-1
         dum = dp(i,L)/(ple(i,lm+1)-ple(i,nsubcl))
@@ -522,8 +544,8 @@ c ------------------------------------------------
        enddo
        enddo
 
-c Update Theta and Moisture due to RAS
-c ------------------------------------
+C Update Theta and Moisture due to RAS
+C ------------------------------------
        DO L=1,nsubcl
        DO I=num,num+nindeces(nsubcl)-1
         CVTH(I,L) =  (TH (I,L) - saveth(i,l))
@@ -550,8 +572,8 @@ c ------------------------------------
        ENDDO
        ENDDO
 
-c Compute Tracer Tendency due to RAS
-c ----------------------------------
+C Compute Tracer Tendency due to RAS
+C ----------------------------------
        do nt = 1,ntracer-ptracer
         DO L=1,nsubcl-1
         DO I=num,num+nindeces(nsubcl)-1
@@ -561,7 +583,7 @@ c ----------------------------------
         DO L=nsubcl,lm
         DO I=num,num+nindeces(nsubcl)-1
          if( usubcl(i,nt).ne.0.0 ) then
-          cvu(i,L,nt) = ( ul(i,nsubcl,nt)-usubcl(i,nt) ) * 
+          cvu(i,L,nt) = ( ul(i,nsubcl,nt)-usubcl(i,nt) ) *
      .                     ( saveu(i,L,nt)/usubcl(i,nt) )*sp(i)*tminv
          else
           cvu(i,L,nt) = 0.0
@@ -570,8 +592,8 @@ c ----------------------------------
         ENDDO
        enddo
 
-c Compute Diagnostic PSUBCLD (Subcloud Layer Pressure)
-c ----------------------------------------------------
+C Compute Diagnostic PSUBCLD (Subcloud Layer Pressure)
+C ----------------------------------------------------
        do i=num,num+nindeces(nsubcl)-1
                              lras = .false.
        do L=nltop,nsubcl
@@ -579,12 +601,12 @@ c ----------------------------------------------------
        enddo
        psubcld    (i) = 0.0
        psubcld_cnt(i) = 0.0
-       if( lras ) then 
+       if( lras ) then
        psubcld    (i) = sp(i)+ptop-ple(i,nsubcl)
        psubcld_cnt(i) = 1.0
        endif
        enddo
-      
+
 
 C End of subcloud layer depth loop (iloop)
 
@@ -616,7 +638,7 @@ C **********************************************************************
 C *********************************************************************
 C ****         RE-EVAPORATION OF PENETRATING CONVECTIVE RAIN       ****
 C *********************************************************************
- 
+
       CALL STRIP ( thgather,TH ,im*jm,ISTRIP,lm,NN)
       CALL STRIP ( shgather,SHL,im*jm,ISTRIP,lm,NN)
       DO L=1,lm
@@ -628,7 +650,7 @@ C *********************************************************************
        saveq (I,L) = SHL(I,L)
       ENDDO
       ENDDO
- 
+
        CALL RNEVP (NN,ISTRIP,lm,TL,SHL,PCPEN,PL,CLFRAC,SP,DP,PLKE,
      .  PLK,TH,TMP1,TMP2,TMP3,ITMP1,ITMP2,PCNET,PRECIP,
      .  CLSBTH,TMSTP,one,cp,grav,alhl,gamfac,cldlz,rhcrit,offset,alpha)
@@ -650,7 +672,7 @@ C **********************************************************************
        CALL PSTBMP(TMP1(1,L),deltgather(1,L),ISTRIP,im*jm,1,NN)
 
 C Paste rain evap tendencies into arrays for diagnostic output
-c ------------------------------------------------------------
+C ------------------------------------------------------------
        DO I =1,ISTRIP
         TMP1(I,L) = ((TL(I,L)/PLK(I,L))-saveth(i,l))*plk(i,l)*sday*tminv
        ENDDO
@@ -664,7 +686,7 @@ c ------------------------------------------------------------
       ENDDO
 
 C *********************************************************************
-C          Add Non-Precipitating Clouds where the relative 
+C          Add Non-Precipitating Clouds where the relative
 C                     humidity is less than 100%
 C               Apply Cloud Top Entrainment Instability
 C *********************************************************************
@@ -692,13 +714,13 @@ C *********************************************************************
       call paste (  cldlz,cldwater,istrip,im*jm,lm,nn )
       call paste ( clsbth,   cldls,istrip,im*jm,lm,nn )
       call paste ( clboth,   cpen ,istrip,im*jm,lm,nn )
- 
-c compute Total Accumulated Precip for Landsurface Model
-c ------------------------------------------------------
+
+C compute Total Accumulated Precip for Landsurface Model
+C ------------------------------------------------------
       do i = 1,istrip
 C  Initialize Rainlsp, Rainconv and Snowfall
-      tmp1(i,1) = 0.0   
-      tmp1(i,2) = 0.0 
+      tmp1(i,1) = 0.0
+      tmp1(i,2) = 0.0
       tmp1(i,3) = 0.0
       enddo
 
@@ -707,14 +729,14 @@ C  Initialize Rainlsp, Rainconv and Snowfall
       tmp1(i,1) = PRECIP(I)
       tmp1(i,2) = pcnet(i)
       enddo
-c
-c  check whether there is snow
-c-------------------------------------------------------
-c  snow algorthm:
-c  if temperature profile from the surface level to 700 mb 
-c  uniformaly c  below zero, then precipitation (total) is 
-c  snowfall.  Else there is no snow.
-c-------------------------------------------------------
+C
+C  check whether there is snow
+C-------------------------------------------------------
+C  snow algorthm:
+C  if temperature profile from the surface level to 700 mb
+C  uniformaly c  below zero, then precipitation (total) is
+C  snowfall.  Else there is no snow.
+C-------------------------------------------------------
 
         do i = 1,istrip
           snowcrit=0
@@ -729,7 +751,7 @@ c-------------------------------------------------------
             tmp1(i,2)=0.0
           endif
         enddo
-  
+
       CALL paste (tmp1(1,1), lsp_new,ISTRIP,im*jm,1,NN)
       CALL paste (tmp1(1,2),conv_new,ISTRIP,im*jm,1,NN)
       CALL paste (tmp1(1,3),snow_new,ISTRIP,im*jm,1,NN)
@@ -742,20 +764,20 @@ C *********************************************************************
  1000 CONTINUE
 
 C Large Scale Rainfall, Conv rain, and snowfall
-c ---------------------------------------------
+C ---------------------------------------------
       call back2grd ( lsp_new,pblindex, lsp_new,im*jm)
       call back2grd (conv_new,pblindex,conv_new,im*jm)
       call back2grd (snow_new,pblindex,snow_new,im*jm)
       call back2grd (raincgath,pblindex,raincgath,im*jm)
 
-c Subcloud Layer Pressure
-c -----------------------
+C Subcloud Layer Pressure
+C -----------------------
       call back2grd (psubcldg ,pblindex,psubcldg ,im*jm)
       call back2grd (psubcldgc,pblindex,psubcldgc,im*jm)
 
       do L = 1,lm
 C Delta theta,q, convective, max and ls clouds
-c --------------------------------------------
+C --------------------------------------------
        call back2grd (deltgather(1,L),pblindex, dtmoist(1,1,L)  ,im*jm)
        call back2grd (delqgather(1,L),pblindex, dqmoist(1,1,L,1),im*jm)
        call back2grd (    cpen(1,1,L),pblindex,    cpen(1,1,L)  ,im*jm)
@@ -764,7 +786,7 @@ c --------------------------------------------
        call back2grd ( pkzgather(1,L),pblindex, pkzgather(1,L)  ,im*jm)
 
 C Diagnostics:
-c ------------
+C ------------
        call back2grd(tmpgather(1,L),pblindex,
      .                                            tmpgather(1,L),im*jm)
        call back2grd(pkegather(1,L),pblindex,
@@ -777,8 +799,8 @@ c ------------
      .                                              cldsr(1,1,L),im*jm)
       enddo
 
-c General Tracers
-c ---------------
+C General Tracers
+C ---------------
       do nt = 1,ntracerin-ptracer
        do L = 1,lm
        call back2grd (delugather(1,L,nt),pblindex,
@@ -788,8 +810,8 @@ c ---------------
 
       if(cumfric) then
 
-c U and V for cumulus friction
-c ----------------------------
+C U and V for cumulus friction
+C ----------------------------
       do L = 1,lm
        call back2grd (delugather(1,L,ntracerin-ptracer+1),pblindex,
      .                                 dumoist(1,1,L),im*jm)
@@ -821,16 +843,16 @@ C **********************************************************************
 
 #ifdef ALLOW_DIAGNOSTICS
 
-c Sub-Cloud Layer
-c -------------------------
+C Sub-Cloud Layer
+C -------------------------
       if(diagnostics_is_on('PSUBCLD ',myid) .and.
      .                 diagnostics_is_on('PSUBCLDC',myid) ) then
        call diagnostics_fill(psubcldg,'PSUBCLD ',0,1,3,bi,bj,myid)
        call diagnostics_fill(psubcldgc,'PSUBCLDC',0,1,3,bi,bj,myid)
       endif
 
-c Non-Precipitating Cloud Fraction
-c --------------------------------
+C Non-Precipitating Cloud Fraction
+C --------------------------------
       if(diagnostics_is_on('CLDNP   ',myid) ) then
        do L=1,lm
        do j=1,jm
@@ -842,8 +864,8 @@ c --------------------------------
       enddo
       endif
 
-c Moist Processes Heating Rate
-c ----------------------------
+C Moist Processes Heating Rate
+C ----------------------------
       if(diagnostics_is_on('MOISTT  ',myid) ) then
        do L=1,lm
        do j=1,jm
@@ -856,8 +878,8 @@ c ----------------------------
       enddo
       endif
 
-c Moist Processes Moistening Rate
-c -------------------------------
+C Moist Processes Moistening Rate
+C -------------------------------
       if(diagnostics_is_on('MOISTQ  ',myid) ) then
        do L=1,lm
        do j=1,jm
@@ -869,8 +891,8 @@ c -------------------------------
       enddo
       endif
 
-c Moist Processes U-tendency
-c ----------------------------
+C Moist Processes U-tendency
+C ----------------------------
       if(diagnostics_is_on('MOISTU  ',myid) ) then
        do L=1,lm
        do j=1,jm
@@ -882,8 +904,8 @@ c ----------------------------
       enddo
       endif
 
-c Moist Processes V-tendency
-c ----------------------------
+C Moist Processes V-tendency
+C ----------------------------
       if(diagnostics_is_on('MOISTV  ',myid) ) then
        do L=1,lm
        do j=1,jm
@@ -895,8 +917,8 @@ c ----------------------------
       enddo
       endif
 
-c Cloud Mass Flux
-c ---------------
+C Cloud Mass Flux
+C ---------------
       if(diagnostics_is_on('CLDMAS  ',myid) ) then
        do L=1,lm
        do j=1,jm
@@ -909,8 +931,8 @@ c ---------------
        enddo
       endif
 
-c Detrained Cloud Mass Flux
-c -------------------------
+C Detrained Cloud Mass Flux
+C -------------------------
       if(diagnostics_is_on('DTRAIN  ',myid) ) then
        do L=1,lm
        do j=1,jm
@@ -923,8 +945,8 @@ c -------------------------
        enddo
       endif
 
-c Grid-Scale Condensational Heating Rate
-c --------------------------------------
+C Grid-Scale Condensational Heating Rate
+C --------------------------------------
       if(diagnostics_is_on('DTLS    ',myid) ) then
        do L=1,lm
        do j=1,jm
@@ -937,8 +959,8 @@ c --------------------------------------
        enddo
       endif
 
-c Grid-Scale Condensational Moistening Rate
-c -----------------------------------------
+C Grid-Scale Condensational Moistening Rate
+C -----------------------------------------
       if(diagnostics_is_on('DQLS    ',myid) ) then
        do L=1,lm
        do j=1,jm
@@ -951,20 +973,20 @@ c -----------------------------------------
        enddo
       endif
 
-c Total Precipitation
-c -------------------
+C Total Precipitation
+C -------------------
       if(diagnostics_is_on('PREACC  ',myid) ) then
        do j=1,jm
        do i=1,im
-        tmpdiag(i,j) = (lsp_new(I,j) + snow_new(I,j) + conv_new(i,j)) 
+        tmpdiag(i,j) = (lsp_new(I,j) + snow_new(I,j) + conv_new(i,j))
      .                                                    *sday*tminv
        enddo
        enddo
        call diagnostics_fill(tmpdiag,'PREACC  ',0,1,3,bi,bj,myid)
       endif
 
-c Convective Precipitation
-c ------------------------
+C Convective Precipitation
+C ------------------------
       if(diagnostics_is_on('PRECON  ',myid) ) then
        do j=1,jm
        do i=1,im
@@ -1007,27 +1029,32 @@ C **********************************************************************
       enddo
       enddo
 
-c Set Moist-Process Memory Coefficient
-c ------------------------------------
-C     cldras_mem = 1.0-tmstp/ 3600.0
+C Set Moist-Process Memory Coefficient
+C ------------------------------------
+      cldras_mem = 1.0-tmstp/ 3600.0
       cldras_mem = 1.0-tmstp/ 1800.0
-C     cldlsp_mem = 1.0-tmstp/(3600.0*3)
+      cldlsp_mem = 1.0-tmstp/(3600.0*3)
       cldlsp_mem = 1.0-tmstp/(1800.0)
 
       do L = 1,lm
-      do i = 1,im*jm
-       plev = pl(i,L)
- 
-c Compute Time-averaged Cloud and Water Amounts for Longwave Radiation
-c --------------------------------------------------------------------
-       watnow = cldwater(i,1,L)
+      do j = 1,jm
+      do i = 1,im
+C- to recover old code, replace the 2 lines above by the 2 commented below:
+c     do j = 1,1
+c     do i = 1,im*jm
+       indx = (j-1)*im + i
+       plev = pl(indx,L)
+
+C Compute Time-averaged Cloud and Water Amounts for Longwave Radiation
+C --------------------------------------------------------------------
+       watnow = cldwater(i,j,L)
        if( plev.le.500.0 ) then
-          cldras = min( max( cldras_lw(i,1,L)*cldras_mem,cpen(i,1,L)),
+          cldras = min( max( cldras_lw(i,j,L)*cldras_mem,cpen(i,j,L)),
      $         1.0 _d 0)
        else
         cldras = 0.0
        endif
-       cldlsp = min( max( cldlsp_lw(i,1,L)*cldlsp_mem,cldls(i,1,L)),
+       cldlsp = min( max( cldlsp_lw(i,j,L)*cldlsp_mem,cldls(i,j,L)),
      $      1.0 _d 0)
 
        if( cldras.lt.cldmin ) cldras = 0.0
@@ -1035,22 +1062,22 @@ c --------------------------------------------------------------------
 
        cldnow = max( cldlsp,cldras )
 
-       lwlz(i,1,L) = ( nlwlz*lwlz(i,1,L) + watnow)/(nlwlz +1)
-       cldtot_lw(i,1,L) = (nlwcld*cldtot_lw(i,1,L) + cldnow)/(nlwcld+1)
-       cldlsp_lw(i,1,L) = (nlwcld*cldlsp_lw(i,1,L) + cldlsp)/(nlwcld+1)
-       cldras_lw(i,1,L) = (nlwcld*cldras_lw(i,1,L) + cldras)/(nlwcld+1)
+       lwlz(i,j,L) = ( nlwlz*lwlz(i,j,L) + watnow)/(nlwlz +1)
+       cldtot_lw(i,j,L) = (nlwcld*cldtot_lw(i,j,L) + cldnow)/(nlwcld+1)
+       cldlsp_lw(i,j,L) = (nlwcld*cldlsp_lw(i,j,L) + cldlsp)/(nlwcld+1)
+       cldras_lw(i,j,L) = (nlwcld*cldras_lw(i,j,L) + cldras)/(nlwcld+1)
 
- 
-c Compute Time-averaged Cloud and Water Amounts for Shortwave Radiation
-c ---------------------------------------------------------------------
-       watnow = cldwater(i,1,L)
+
+C Compute Time-averaged Cloud and Water Amounts for Shortwave Radiation
+C ---------------------------------------------------------------------
+       watnow = cldwater(i,j,L)
        if( plev.le.500.0 ) then
-          cldras = min( max(cldras_sw(i,1,L)*cldras_mem, cpen(i,1,L)),
+          cldras = min( max(cldras_sw(i,j,L)*cldras_mem, cpen(i,j,L)),
      $         1.0 _d 0)
        else
         cldras = 0.0
        endif
-       cldlsp = min( max(cldlsp_sw(i,1,L)*cldlsp_mem,cldls(i,1,L)),
+       cldlsp = min( max(cldlsp_sw(i,j,L)*cldlsp_mem,cldls(i,j,L)),
      $      1.0 _d 0)
 
        if( cldras.lt.cldmin ) cldras = 0.0
@@ -1058,32 +1085,33 @@ c ---------------------------------------------------------------------
 
        cldnow = max( cldlsp,cldras )
 
-       swlz(i,1,L) = ( nswlz*swlz(i,1,L) + watnow)/(nswlz +1)
-       cldtot_sw(i,1,L) = (nswcld*cldtot_sw(i,1,L) + cldnow)/(nswcld+1)
-       cldlsp_sw(i,1,L) = (nswcld*cldlsp_sw(i,1,L) + cldlsp)/(nswcld+1)
-       cldras_sw(i,1,L) = (nswcld*cldras_sw(i,1,L) + cldras)/(nswcld+1)
+       swlz(i,j,L) = ( nswlz*swlz(i,j,L) + watnow)/(nswlz +1)
+       cldtot_sw(i,j,L) = (nswcld*cldtot_sw(i,j,L) + cldnow)/(nswcld+1)
+       cldlsp_sw(i,j,L) = (nswcld*cldlsp_sw(i,j,L) + cldlsp)/(nswcld+1)
+       cldras_sw(i,j,L) = (nswcld*cldras_sw(i,j,L) + cldras)/(nswcld+1)
 
- 
-c Compute Instantaneous Low-Mid-High Maximum Overlap Cloud Fractions
-c ----------------------------------------------------------------------
 
-       if( L.lt.midlevel ) cldhi (i,1) = max( cldnow,cldhi (i,1) )
+C Compute Instantaneous Low-Mid-High Maximum Overlap Cloud Fractions
+C ----------------------------------------------------------------------
+
+       if( L.lt.midlevel ) cldhi (i,j) = max( cldnow,cldhi (i,j) )
        if( L.ge.midlevel  .and.
-     .      L.lt.lowlevel ) cldmid(i,1) = max( cldnow,cldmid(i,1) )
-       if( L.ge.lowlevel ) cldlow(i,1) = max( cldnow,cldlow(i,1) )
+     .      L.lt.lowlevel ) cldmid(i,j) = max( cldnow,cldmid(i,j) )
+       if( L.ge.lowlevel ) cldlow(i,j) = max( cldnow,cldlow(i,j) )
 
-c Compute Cloud-Top Temperature and Pressure
-c ------------------------------------------
-       cldtmp(i,1) =  cldtmp(i,1) + cldnow*pkzgather(i,L)
-     .             *  ( tz(i,1,L) + dtmoist(i,1,L)*tmstp/pz(i,1) )
-       cldprs(i,1) =  cldprs(i,1) + cldnow*plev
-       tmpimjm(i,1) = tmpimjm(i,1) + cldnow
+C Compute Cloud-Top Temperature and Pressure
+C ------------------------------------------
+       cldtmp(i,j) =  cldtmp(i,j) + cldnow*pkzgather(i,L)
+     .             *  ( tz(i,j,L) + dtmoist(i,j,L)*tmstp/pz(i,j) )
+       cldprs(i,j) =  cldprs(i,j) + cldnow*plev
+       tmpimjm(i,j) = tmpimjm(i,j) + cldnow
 
       enddo
       enddo
- 
-c Compute Instantaneous Total 2-D Cloud Fraction
-c ----------------------------------------------
+      enddo
+
+C Compute Instantaneous Total 2-D Cloud Fraction
+C ----------------------------------------------
       do j = 1,jm
       do i = 1,im
       totcld(i,j) = 1.0 - (1.-cldhi (i,j))
@@ -1091,7 +1119,7 @@ c ----------------------------------------------
      .                  * (1.-cldlow(i,j))
       enddo
       enddo
-       
+
 
 C **********************************************************************
 C ***       Fill Cloud Top Pressure and Temperature Diagnostic       ***
@@ -1101,8 +1129,8 @@ C **********************************************************************
       if(diagnostics_is_on('CLDTMP  ',myid) .and.
      .                 diagnostics_is_on('CTTCNT  ',myid) ) then
        do j=1,jm
-       do i=1,im 
-        if( cldtmp(i,j).gt.0. ) then               
+       do i=1,im
+        if( cldtmp(i,j).gt.0. ) then
          tmpdiag(i,j) = cldtmp(i,j)*totcld(i,j)/tmpimjm(i,j)
          tmpdiag2(i,j) = totcld(i,j)
         else
@@ -1118,8 +1146,8 @@ C **********************************************************************
       if(diagnostics_is_on('CLDPRS  ',myid) .and.
      .                 diagnostics_is_on('CTPCNTC ',myid) ) then
        do j=1,jm
-       do i=1,im 
-        if( cldprs(i,j).gt.0. ) then               
+       do i=1,im
+        if( cldprs(i,j).gt.0. ) then
          tmpdiag(i,j) = cldprs(i,j)*totcld(i,j)/tmpimjm(i,j)
          tmpdiag2(i,j) = totcld(i,j)
         else
@@ -1133,11 +1161,11 @@ C **********************************************************************
       endif
 
 #endif
-   
+
 C **********************************************************************
 C ****                      INCREMENT COUNTERS                      ****
 C **********************************************************************
- 
+
        nlwlz    = nlwlz    + 1
        nswlz    = nswlz    + 1
 
@@ -1177,12 +1205,12 @@ C Local Variables
      *,         ETA(lng,K), HOI(lng,K)
      *,         PRH(lng,K), PRI(lng,K)
       _RL HST(lng,K), QOL(lng,K), GMH(lng,K)
- 
+
       _RL TX1(lng), TX2(lng), TX3(lng), TX4(lng), TX5(lng)
      *,         TX6(lng), TX7(lng), TX8(lng), TX9(lng)
      *,         TX11(lng), TX12(lng), TX13(lng), TX14(lng,ntracedim)
      *,         TX15(lng)
-     *,         WFN(lng) 
+     *,         WFN(lng)
       integer IA1(lng), IA2(lng), IA3(lng)
       _RL cloudn(lng), pcu(lng)
 
@@ -1209,7 +1237,7 @@ C Local Variables
        rains(i,l) = 0.
       enddo
       enddo
- 
+
       p00 = 1000.
       crtmsf = 0.
 
@@ -1229,7 +1257,7 @@ C we want the ras adjustment time scale to be one half hour (indep of dt)
 C
        KPRV  = KM1
 C Removed KRMAX parameter
-       KCR   = MIN(KM1,nlayr-2)     
+       KCR   = MIN(KM1,nlayr-2)
        KFX   = KM1 - KCR
        NCMX  = KFX + NCRND
 C
@@ -1259,8 +1287,8 @@ C
        ENDIF
        IB = IC(NC)
 
-c Initialize Cloud Fraction Array
-c -------------------------------
+C Initialize Cloud Fraction Array
+C -------------------------------
       do i = 1,lenc
       cloudn(i) = 0.0
       enddo
@@ -1276,28 +1304,28 @@ c -------------------------------
      *,           IA1,IA2,IA3,rhfrac)
 
 C Compute fraction of grid box into which rain re-evap occurs (clf)
-c -----------------------------------------------------------------
+C -----------------------------------------------------------------
       do i = 1,lenc
 
-c mass in detrainment layer
-c -------------------------
+C mass in detrainment layer
+C -------------------------
        tx1(i) = cmb2pa *  (prs(i,ib+1) - prs(i,ib))/(grav*dt)
 
-c ratio of detraining cloud mass to mass in detrainment layer
-c -----------------------------------------------------------
+C ratio of detraining cloud mass to mass in detrainment layer
+C -----------------------------------------------------------
        tx1(i) = rhfrac(i)*rknob * cmass(i,ib) / tx1(i)
        if(cmass(i,K).gt.0.) clf(i,ib) = clf(i,ib) + tx1(i)
        if( clf(i,ib).gt.1.) clf(i,ib) = 1.
       enddo
- 
-c Compute Total Cloud Mass Flux
-c *****************************
+
+C Compute Total Cloud Mass Flux
+C *****************************
       do L=ib,k
       do i=1,lenc
        cmass(i,L) = rhfrac(i)*cmass(i,L) * dt
       enddo
       enddo
-         
+
       do L=ib,k
       do i=1,lenc
        cldmas(i,L) = cldmas(i,L) + cmass(i,L)
@@ -1343,9 +1371,9 @@ c        write(6,122)L,thbef(i,L),poi(i,L),temp
   100 CONTINUE
 
  122  format(' ',i3,' TH B ',e10.3,' TH A ',e10.3,' DTH ',e10.3)
- 
-c Fill Convective Cloud Fractions based on 3-D Rain Amounts
-c ---------------------------------------------------------
+
+C Fill Convective Cloud Fractions based on 3-D Rain Amounts
+C ---------------------------------------------------------
       do L=k-1,1,-1
       do i=1,lenc
          tx1(i)   = 100*(prs(i,L+1)-prs(i,L))/grav
@@ -1370,7 +1398,7 @@ c     _RL rnd(nrnd)
       integer iras0
       data    iras0 /0/
       save random, iras0
- 
+
       if(nrnd.eq.0)then
        do i = 1,nrnd
         rnd(i) = 0
@@ -1386,13 +1414,13 @@ c     print *,' RNDCLOUD: irm,nrnd,mcheck=',irm,nrnd,mcheck
 
       if ( iras.eq.iras0 ) then
 C-    Not the 1rst tile: we are all set (already done for the 1rst tile):
-c -----------------------------------------------------------------------
+C -----------------------------------------------------------------------
           indx = (iras-1)*nrnd
 
-c First Time In From a Continuing RESTART (IRAS.GT.1) or Reading a New RESTART
-c   -- or --
-c Multiple Time In But have Used Up all 1000 numbers (MCHECK.EQ.0)
-c ----------------------------------------------------------------------------
+C First Time In From a Continuing RESTART (IRAS.GT.1) or Reading a New RESTART
+C   -- or --
+C Multiple Time In But have Used Up all 1000 numbers (MCHECK.EQ.0)
+C ----------------------------------------------------------------------------
       elseif ( first.and.(iras.gt.1) .or. mcheck.eq.0 ) then
        iseed = (iras-1-mcheck)*nrnd
        call random_seedx(iseed)
@@ -1406,8 +1434,8 @@ c ----------------------------------------------------------------------------
        if( myid.eq.1 ) print *, 'IRAS: ',iras,'  IRAS0: ',iras0,
      &    ' indx: ', mod(indx,irm)
 
-c Multiple Time In But have NOT Used Up all 1000 numbers (MCHECK.NE.0)
-c --------------------------------------------------------------------
+C Multiple Time In But have NOT Used Up all 1000 numbers (MCHECK.NE.0)
+C --------------------------------------------------------------------
       else
           indx = (iras-1)*nrnd
       endif
@@ -1422,7 +1450,7 @@ c    &   'reach end of Rand Numb Array in RNDCLOUD',indx,irm-nrnd
       do n = 1,nrnd
        rnd(n) = random(indx+n)
       enddo
- 
+
  100  continue
       first = .false.
       iras0 = iras
@@ -1437,7 +1465,7 @@ c    &   'reach end of Rand Numb Array in RNDCLOUD',indx,irm-nrnd
 #ifdef CRAY
       _RL ranf
       random_numbx = ranf()
-#else 
+#else
 #ifdef SGI
       _RL rand
       random_numbx = rand()
@@ -1498,7 +1526,7 @@ C****************** NASA/GSFC, Greenbelt, MD 20771 *******************
 C*********************************************************************
 C*********************************************************************
 C
-C   The calculations of Moorthi and Suarez (1992, MWR) are 
+C   The calculations of Moorthi and Suarez (1992, MWR) are
 C   contained in the CLOUD routine.
 C   It is probably advisable, at least initially, to treat CLOUD
 C   as a black box that computes the single cloud adjustments. RAS,
@@ -1519,12 +1547,12 @@ C               say for multitasking, without declaring temporary arrays
 C               and copying the data to and from them.  This is an f77
 C               version. An F90 version would have to allow more
 C               flexibility in the argument declarations.  Obviously
-C               (LENC<=lng).  
-C 
+C               (LENC<=lng).
+C
 C     K       : Number of vertical layers (increasing downwards).
 C               Need not be the same as the number of layers in the
 C               GCM, since it is the outer dimension. The bottom layer
-C               (K) is the subcloud layer. 
+C               (K) is the subcloud layer.
 C
 C     IC      : Detrainment level to check for presence of convection
 C
@@ -1546,7 +1574,7 @@ C     GRAV    : Acceleration due to gravity
 C
 C     P00     : A reference pressure in hPa, useually 1000 hPa
 C
-C     CRTMSF  : Critical value of mass flux above which cloudiness at 
+C     CRTMSF  : Critical value of mass flux above which cloudiness at
 C               the detrainment layer of that cloud-type is assumed.
 C               Affects only cloudiness calculation.
 C
@@ -1560,7 +1588,7 @@ C     UOI     : 3D array of dimension (lng,K,NTRACER) containing tracers
 C               Updated but not initialized by RAS.
 C
 C     PRS     : 2D array of dimension (lng,K+1) containing pressure
-C               in hPa at the interfaces of K-layers from top of the 
+C               in hPa at the interfaces of K-layers from top of the
 C               atmosphere to the bottom. Not modified.
 C
 C     PRJ     : 2D array of dimension (lng,K+1) containing (PRS/P00) **
@@ -1578,10 +1606,10 @@ C
 C     CLN     : 2D array of dimension (lng,K) containing cloudiness
 C               Note:  CLN is bumped but NOT initialized
 C
-C     TCU     : 2D array of dimension (lng,K) containing accumulated 
-C               convective heating (K/sec). 
+C     TCU     : 2D array of dimension (lng,K) containing accumulated
+C               convective heating (K/sec).
 C
-C     QCU     : 2D array of dimension (lng,K) containing accumulated 
+C     QCU     : 2D array of dimension (lng,K) containing accumulated
 C               convective drying (kg/kg/sec).
 C
 C     CMASS   : 2D array of dimension (lng,K) containing the
@@ -1591,14 +1619,14 @@ C
 C  Temporaries:
 C
 C      ALF, BET, GAM, ETA, PRH, PRI, HOI, HST, QOL, GMH are temporary
-C               2D real arrays of dimension of at least (LENC,K) where LENC is 
+C               2D real arrays of dimension of at least (LENC,K) where LENC is
 C               the horizontal dimension over which convection is invoked.
 C
 C
 C    TX1, TX2, TX3, TX4, TX5, TX6, TX7, TX8, TX9, AKM, QS1, CLF, UHT
 C    VHT, WLQ  WFN are temporary real arrays of length at least LENC
 C
-C    IA, I1, and I2 are temporary integer arrays of length LENC 
+C    IA, I1, and I2 are temporary integer arrays of length LENC
 C
 C
 C************************************************************************
@@ -1633,9 +1661,9 @@ C
       integer nt,km1,ic1,i,L,len1,len2,isav,len11,ii
       integer lena,lena1,lenb
       _RL tem,tem1
- 
-c Explicit Inline Directives
-c --------------------------
+
+C Explicit Inline Directives
+C --------------------------
 #ifdef CRAY
 #ifdef f77
 cfpp$ expand (qsat)
@@ -1712,7 +1740,7 @@ C
          QS1(I)   = ALF(I,L) + BET(I,L)*POI(I,L)
          QOL(I,L) = MIN(QS1(I)*RHMAX,QOI(I,L))
 C
-         TEM1 = TX2(I) + PRJ(I,L+1) * POI(I,L) * CP 
+         TEM1 = TX2(I) + PRJ(I,L+1) * POI(I,L) * CP
          HOL(I,L) = TEM1 + QOL(I,L )* ALHL
          HST(I,L) = TEM1 + QS1(I)   * ALHL
 
@@ -1728,9 +1756,9 @@ C
       DO 70 I=1,LENC
       HOL(I,IC) = TX2(I)
       QS1(I)    = ALF(I,IC) + BET(I,IC)*POI(I,IC)
-      QOL(I,IC) = MIN(QS1(I)*RHMAX,QOI(I,IC)) 
-c
-      TEM1      = TX2(I) + PRJ(I,IC1) * POI(I,IC) * CP 
+      QOL(I,IC) = MIN(QS1(I)*RHMAX,QOI(I,IC))
+C
+      TEM1      = TX2(I) + PRJ(I,IC1) * POI(I,IC) * CP
       HOL(I,IC) = TEM1 + QOL(I,IC) * ALHL
       HST(I,IC) = TEM1 + QS1(I)    * ALHL
 C
@@ -1775,11 +1803,17 @@ C
   196    CONTINUE
       endif
 C
-      IF (LEN2 .EQ. 0) THEN 
-         DO 5010 I=1,LENC*K
-         HST(I,1) = 0.0
-         QOL(I,1) = 0.0
- 5010    CONTINUE
+      IF (LEN2 .EQ. 0) THEN
+c        DO 5010 I=1,LENC*K
+c        HST(I,1) = 0.0
+c        QOL(I,1) = 0.0
+c5010    CONTINUE
+         DO L = 1,K
+          DO I = 1,LENC
+           HST(I,L) = 0.0
+           QOL(I,L) = 0.0
+          ENDDO
+         ENDDO
          DO 5020 I=1,LENC
          PCU(I) = 0.0
  5020    CONTINUE
@@ -2006,11 +2040,11 @@ C
       IF (LENA .GT. 0) THEN
          DO 810 I=1,LENA
          II = I1(I)
-         AKM(I) = AKM(I) - ETA(I,IC1) * (PRJ(II,IC1) - PRH(II,IC)) 
+         AKM(I) = AKM(I) - ETA(I,IC1) * (PRJ(II,IC1) - PRH(II,IC))
      *                                * TX1(I) / PRH(II,IC)
   810    CONTINUE
       ENDIF
-c
+C
 C     CALCULATE GH
 C
       DO 830 I=1,LENB
@@ -2018,7 +2052,7 @@ C
       TX3(I)   =  QOL(II,KM1) - QOL(II,K)
       GMH(I,K) = HOL(I,K) + TX3(I) * PRI(II,K) * (ALBCP)
 
-      AKM(I)   = AKM(I) + GAM(II,KM1)*(PRJ(II,K)-PRH(II,KM1)) 
+      AKM(I)   = AKM(I) + GAM(II,KM1)*(PRJ(II,K)-PRH(II,KM1))
      *                               * GMH(I,K)
       TX3(I)   =  zero
   830 CONTINUE
@@ -2065,7 +2099,7 @@ C
          ENDIF
          DO 900 I=1,LENB
          II = I1(I)
-         AKM(I) = AKM(I) + TX1(I) * 
+         AKM(I) = AKM(I) + TX1(I) *
      *          (TX2(I) + GAM(II,L)*(PRH(II,L)-PRJ(II,L)))
   900    CONTINUE
  3725    CONTINUE
@@ -2075,7 +2109,7 @@ C
       II = I1(I)
       TX2(I) = 0.5 * (PRS(II,IC) + PRS(II,IC1))
      *       + 0.5*(PRS(II,IC+2) - PRS(II,IC)) * (ONE-TX6(I))
-c
+C
       TX1(I) = PRS(II,IC1)
       TX5(I) = 0.5 * (PRS(II,IC1) + PRS(II,IC+2))
 C
@@ -2146,7 +2180,7 @@ CC975 CONTINUE
 C
 C     THETA AND Q CHANGE DUE TO CLOUD TYPE IC
 C
- 
+
 c     TEMA = 0.0
 c     TEMB = 0.0
       DO 990 L=IC,K
@@ -2167,21 +2201,21 @@ c     TEMB = TEMB +  QCU(I,L)            * TEM
 C
   990 CONTINUE
 C
-c Compute Tracer Tendencies
-c -------------------------
+C Compute Tracer Tendencies
+C -------------------------
       do nt = 1,ntracer
-c
-c Tracer Tendency at the Bottom Layer
-c -----------------------------------
+C
+C Tracer Tendency at the Bottom Layer
+C -----------------------------------
       DO 995 I=1,LENB
       II = I1(I)
       TEM    = half*TX5(I) * PRI(II,K)
       TX1(I) = ( UOI(II,KM1+nltop-1,nt) - UOI(II,K+nltop-1,nt))
       ucu(II,K,nt) = TEM * TX1(I)
   995 CONTINUE
-c
-c Tracer Tendency at all other Levels
-c -----------------------------------
+C
+C Tracer Tendency at all other Levels
+C -----------------------------------
       DO 1020 L=KM1,IC1,-1
       DO 1010 I=1,LENB
       II = I1(I)
@@ -2208,7 +2242,7 @@ c -----------------------------------
       II = I1(I)
       ucu(II,IC,nt) = TX1(I)
  1040 CONTINUE
- 
+
       enddo
 C
 C     PENETRATIVE CONVECTION CALCULATION OVER
@@ -2267,7 +2301,7 @@ C
       RETURN
       END
       SUBROUTINE ACRITN ( lng,PL,PLB,ACR )
- 
+
 C*********************************************************************
 C********************** Relaxed Arakawa-Schubert *********************
 C************************** SUBROUTINE  ACRIT    *********************
@@ -2300,7 +2334,7 @@ C Local variables
      .           .25574,  .20347,  .17254,  .15260,  .16756,
      .           .09916,  .10360,  .05880/
 
- 
+
       do L=1,lma-1
       do i=1,lng
          if( pl(i).ge.p(L)   .and.
@@ -2325,7 +2359,7 @@ C Local variables
        SUBROUTINE RNEVP(NN,IRUN,NLAY,TL,QL,RAIN,PL,CLFRAC,SP,DP,PLKE,
      1   PLK,TH,TEMP1,TEMP2,TEMP3,ITMP1,ITMP2,RCON,RLAR,CLSBTH,tmscl,
      2   tmfrc,cp,gravity,alhl,gamfac,cldlz,RHCRIT,offset,alpha)
- 
+
       implicit none
 C Argument List declarations
       integer nn,irun,nlay
@@ -2366,8 +2400,8 @@ C
 
       integer i,L,n,nlaym1,irnlay,irnlm1
 
-c Explicit Inline Directives
-c --------------------------
+C Explicit Inline Directives
+C --------------------------
 #ifdef CRAY
 #ifdef f77
 cfpp$ expand (qsat)
@@ -2382,10 +2416,10 @@ cfpp$ expand (qsat)
        NLAYM1 = NLAY - 1
        IRNLAY = IRUN*NLAY
        IRNLM1 = IRUN*(NLAY-1)
- 
+
 C      RPHF = Z3600/tmscl
        RPHF = Z1800/tmscl
- 
+
        ELOCP   = alhl/cp
        CPOG    = cp/gravity
 
@@ -2405,9 +2439,9 @@ C      RPHF = Z3600/tmscl
          cldlz(i,L) = 0.
        enddo
        enddo
- 
+
 C RHO(ZERO) / RHO FOR TERMINAL VELOCITY APPROX.
-c ---------------------------------------------
+C ---------------------------------------------
       DO L = 1,NLAY
       DO I = 1,IRUN
         TEMP2(I,L) = PL(I,L)*ZP001
@@ -2416,15 +2450,15 @@ c ---------------------------------------------
       ENDDO
 
 C INVERSE OF MASS IN EACH LAYER
-c -----------------------------
+C -----------------------------
       DO L = 1,NLAY
       DO I = 1,IRUN
       TEMP3(I,L) = GRAVITY*ZP01 / DP(I,L)
       ENDDO
       ENDDO
- 
+
 C DO LOOP FOR MOISTURE EVAPORATION ABILITY AND CONVEC EVAPORATION.
-c ----------------------------------------------------------------
+C ----------------------------------------------------------------
       DO 100 L=1,NLAY
 
       DO I = 1,IRUN
@@ -2449,19 +2483,19 @@ c ----------------------------------------------------------------
       DO I = 1,IRUN
           EVP9(I,L) = (TEMP1(I,4) -  QL(I,L))/TEMP3(I,L)
 C convective detrained water
-         cldlz(i,L) = rain(i,L)*temp3(i,L)  
+         cldlz(i,L) = rain(i,L)*temp3(i,L)
        if(  tl(i,L).gt.tice-20.) then
            water(i) =   water(i) + rain(i,L)
        else
          crystal(i) = crystal(i) + rain(i,L)
        endif
       ENDDO
- 
+
 C**********************************************************************
 C  FOR CONVECTIVE PRECIP, FIND THE "EVAPORATION EFFICIENCY" USING     *
 C                   KESSLERS PARAMETERIZATION                         *
 C**********************************************************************
- 
+
       DO 20 I=1,IRUN
 
         iceevap(i) = 0.
@@ -2516,12 +2550,12 @@ C**********************************************************************
            endif
 
 C Do not allow clouds above 10 mb
-           if( pl(i,L).ge.10.0 ) CLSBTH(I,L) = fact  
+           if( pl(i,L).ge.10.0 ) CLSBTH(I,L) = fact
            RLAR(I) = RLAR(I)-rainmax(I)
            QL(I,L) = QL(I,L)+rainmax(I)*TEMP3(I,L)
            TL(I,L) = TL(I,L)-rainmax(I)*TEMP3(I,L)*ELOCP
 C Large-scale water
-        cldlz(i,L) = cldlz(i,L) - rainmax(i)*temp3(i,L)  
+        cldlz(i,L) = cldlz(i,L) - rainmax(i)*temp3(i,L)
          ENDIF
       ENDDO
 
@@ -2589,8 +2623,8 @@ C***********************************************************************
       _RL rhc(irun,irise)
       _RL offset,alpha
 
-c Explicit Inline Directives
-c --------------------------
+C Explicit Inline Directives
+C --------------------------
 #ifdef CRAY
 #ifdef f77
 cfpp$ expand (qsat)
@@ -2615,16 +2649,16 @@ cfpp$ expand (qsat)
 
       rhcrit = rhc(i,L) - offset
       ratio  = alpha*(rh-rhcrit)/offset
- 
+
       if(cloud(i,L).eq.  0.0 .and. ratio.gt.0.0 ) then
          cloud(i,L) = min( ratio,1.0 _d 0)
       endif
- 
+
       enddo
       enddo
- 
-c Reduce clouds from conditionally unstable layer
-c -----------------------------------------------
+
+C Reduce clouds from conditionally unstable layer
+C -----------------------------------------------
       call ctei ( th,q,cloud,cldwat,pl,plk,plke,irun,irise )
 
       return
@@ -2653,14 +2687,17 @@ c -----------------------------------------------
       t = th(i,L)*plk(i,L)
       p = pl(i,L)
       call qsat ( t,p,qs,dqsdt,.true. )
-   
+
       krd = ( cpoel*t*(1+elocp*dqsdt) )/( 1 + 1.608*dqsdt*t )
 
       kmm = ( 1+elocp*dqsdt )*( 1 + 0.392*cpoel*t )
      .    / ( 2+(1+1.608*cpoel*t)*elocp*dqsdt )
 
       s = ( (k-krd)/(kmm-krd) )
-      f = 1.0 - min( 1.0 _d 0, max(0.0 _d 0,1.0-exp(-s)) )
+c     f = 1.0 - min( 1.0 _d 0, max(0.0 _d 0,1.0-exp(-s)) )
+C- to avoid floating overflow in exp(-s):
+      f = 1.
+      if (s.GT.0. ) f = max( 0.0 _d 0, min( 1.0 _d 0, exp(-s)) )
 
       cldfrc(i,L) = cldfrc(i,L)*f
       cldwat(i,L) = cldwat(i,L)*f
