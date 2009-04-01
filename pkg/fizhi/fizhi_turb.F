@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.45 2007/07/08 20:24:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.46 2009/04/01 23:33:34 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -13,84 +13,84 @@ C $Name:  $
      9 ,fdifpar,fdirpar,rainlsp,rainconv,snowfall,tempref
      1 ,imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw
      2 ,qqgrid,myid)
-c-----------------------------------------------------------------------
-c subroutine turbio - model interface routine to trbflx, the turbulence
-c        parameterization, and tile, the land surface parameterization
-c 
-c  input:
-c      im      - number of points in the longitude direction
-c      jm      - number of points in the latitude direction
-c      nlay    - number of vertical levels
-c      istrip  - number of horizontal points to be handled at a time on
-c      nymd    - year and date integer in YYMMDD format (ie, 790212)
-c      nhms    - date and time integer in HHMMSS format (ie, 123000)
-c      ndturb  - turbulence time step integer in HHMMSS format
-c      nltop   - Top level at which to allow turbulence
-c      ptop    - model top pressure - rigid lid assumed - real
-c      pz      - surface pressure minus ptop in mb - real[lon,lat]
-c      uz      - zonal wind in m/sec - real[lon,lat,level]
-c      vz      - meridional wind in m/sec - real[lon,lat,level]
-c      tz      - model theta (theta [deg K]/p0**k) - real[lon,lat,level]
-c      qz      - specific humidity in kg/kg - real[lon,lat,level]
-c      ntracers- total number of tracers - integer
-c      ptracers- number of permanent tracers - integer
-c      pkht    - pressure[mb]**k at bottom edges of levels - real[lon,lat,level]
-c      fracland- not being used - real[lon,lat]
-c      landtype- not being used - integer[lon,lat]
-c      nchp    - nchplnd<nchp - total no chips (ocean too) - integer
-c      nchplnd - <=nchp - number of land chips - integer
-c      chfr    - chip fraction - real[nchp]
-c      chlt    - tile space latitude array - real[nchp]
-c      chlon   - tile space longitude array - real[nchp]
-c      igrd    - tile space grid number - integer[nchp]
-c      ityp    - tile space vegetation type - integer[nchp]
-c      alai    - leaf area index - real[nchp]
-c      agrn    - greenness fraction - real[nchp]
-c      thkz    - sea ice thickness in m (0. for no ice) - real[lon,lat]
-c      tprof   - logical flag for point by point diagnostic output
-c      ndiagsiz- number of diagnostic 2-D arrays allocated
-c      ndlsm   - number of tile diagnostic
-c      radlwg  - net longwave flux at ground (up-down) in w/m**2 - real[lon,lat]
-c      st4     - upward longwave flux at ground in w/m**2 - real[lon,lat]
-c      dst4    - delta-sigma-T**4, ie, derivative of upward lw flux at
-c                ground with respect to ground Temperature - real[lon,lat]
-c      radswg  - net shortwave flux at ground (down-up) NON-DIM - real[lon,lat]
-c                  {NOTE: this field is divided by the incident shortwave
-c                     at the top of the atmosphere to non-dimensionalize]
-c      radswt  - incident shortwave at top of atmos in W/m**2 - real[lon,lat]
-c      fdifpar - incident diffuse-beam PAR at surface in W/m**2 - real[lon,lat]
-c      fdirpar - incident direct-beam PAR at surface in W/m**2 - real[lon,lat]
-c      rainlsp - large-scale (frontal,supersat) rainfall in mm/sec - real[lon,lat]
-c      rainconv- convective rainfall rate in mm/sec - real[lon,lat]
-c      snowfall- total snowfall rate in mm/sec - real[lon,lat]
-c updated:
-c      tke     - turbulent k.e. in m**2/s**2 - real[tiles,levels]
-c      tgz     - surface skin temperature in deg K - real[lon,lat]
-c      tcanopy - canopy temperature in deg K real[tiles]
-c                 (sea surface temp over the ocean tiles)
-c      ecanopy - canopy vapor pressure in mb real[tiles]
-c                 (qstar at tground over the sea ice and ocean tiles)
-c      tdeep   - deep soil temp in deg K real[tiles]
-c      swetshal- shallow level moisture field capacity fraction real[tiles]
-c      swetroot- root level moisture field capacity fraction real[tiles]
-c      swetdeep- deep soil level moisture field capacity fraction real[tiles]
-c      snodep  - depth of snow pack in cm liquid water equiv real[tiles]
-c      capac   - leaf canopy water reservoir in cm real[tiles]
-c output:
-c      duturb  - change in zonal wind component due to turbulent processes
-c                per unit time in m/sec**2 - real[lon,lat,levels]
-c      dvturb  - change in meridional wind component due to turbulent processes
-c                per unit time in m/sec**2 - real[lon,lat,levels]
-c      dtturb  - change in (model theta*pi) due to turbulent processes
-c                per unit time  - real[lon,lat,levels] !! pi is pressure-ptop
-c      dqturb  - change in (specific humidity*pi) due to turbulent processes
-c                per unit time  - real[lon,lat,levels] !! pi is pressure-ptop
-c      qliqavelw - Moist   Turbulence Liquid Water   for Longwave  - real[lon,lat,levels]
-c      qliqavesw - Moist   Turbulence Liquid Water   for Shortwave - real[lon,lat,levels]
-c      fccavelw  - Moist   Turbulence Cloud Fraction for Longwave  - real[lon,lat,levels]
-c      fccavesw  - Moist   Turbulence Cloud Fraction for Shortwave - real[lon,lat,levels]
-c      qqgrid    - Gridded Turbulent Kinetic Energy                - real[lon,lat,levels]
-c-----------------------------------------------------------------------
+C-----------------------------------------------------------------------
+C subroutine turbio - model interface routine to trbflx, the turbulence
+C        parameterization, and tile, the land surface parameterization
+C
+C  input:
+C      im      - number of points in the longitude direction
+C      jm      - number of points in the latitude direction
+C      nlay    - number of vertical levels
+C      istrip  - number of horizontal points to be handled at a time on
+C      nymd    - year and date integer in YYMMDD format (ie, 790212)
+C      nhms    - date and time integer in HHMMSS format (ie, 123000)
+C      ndturb  - turbulence time step integer in HHMMSS format
+C      nltop   - Top level at which to allow turbulence
+C      ptop    - model top pressure - rigid lid assumed - real
+C      pz      - surface pressure minus ptop in mb - real[lon,lat]
+C      uz      - zonal wind in m/sec - real[lon,lat,level]
+C      vz      - meridional wind in m/sec - real[lon,lat,level]
+C      tz      - model theta (theta [deg K]/p0**k) - real[lon,lat,level]
+C      qz      - specific humidity in kg/kg - real[lon,lat,level]
+C      ntracers- total number of tracers - integer
+C      ptracers- number of permanent tracers - integer
+C      pkht    - pressure[mb]**k at bottom edges of levels - real[lon,lat,level]
+C      fracland- not being used - real[lon,lat]
+C      landtype- not being used - integer[lon,lat]
+C      nchp    - nchplnd<nchp - total no chips (ocean too) - integer
+C      nchplnd - <=nchp - number of land chips - integer
+C      chfr    - chip fraction - real[nchp]
+C      chlt    - tile space latitude array - real[nchp]
+C      chlon   - tile space longitude array - real[nchp]
+C      igrd    - tile space grid number - integer[nchp]
+C      ityp    - tile space vegetation type - integer[nchp]
+C      alai    - leaf area index - real[nchp]
+C      agrn    - greenness fraction - real[nchp]
+C      thkz    - sea ice thickness in m (0. for no ice) - real[lon,lat]
+C      tprof   - logical flag for point by point diagnostic output
+C      ndiagsiz- number of diagnostic 2-D arrays allocated
+C      ndlsm   - number of tile diagnostic
+C      radlwg  - net longwave flux at ground (up-down) in w/m**2 - real[lon,lat]
+C      st4     - upward longwave flux at ground in w/m**2 - real[lon,lat]
+C      dst4    - delta-sigma-T**4, ie, derivative of upward lw flux at
+C                ground with respect to ground Temperature - real[lon,lat]
+C      radswg  - net shortwave flux at ground (down-up) NON-DIM - real[lon,lat]
+C                  {NOTE: this field is divided by the incident shortwave
+C                     at the top of the atmosphere to non-dimensionalize]
+C      radswt  - incident shortwave at top of atmos in W/m**2 - real[lon,lat]
+C      fdifpar - incident diffuse-beam PAR at surface in W/m**2 - real[lon,lat]
+C      fdirpar - incident direct-beam PAR at surface in W/m**2 - real[lon,lat]
+C      rainlsp - large-scale (frontal,supersat) rainfall in mm/sec - real[lon,lat]
+C      rainconv- convective rainfall rate in mm/sec - real[lon,lat]
+C      snowfall- total snowfall rate in mm/sec - real[lon,lat]
+C updated:
+C      tke     - turbulent k.e. in m**2/s**2 - real[tiles,levels]
+C      tgz     - surface skin temperature in deg K - real[lon,lat]
+C      tcanopy - canopy temperature in deg K real[tiles]
+C                 (sea surface temp over the ocean tiles)
+C      ecanopy - canopy vapor pressure in mb real[tiles]
+C                 (qstar at tground over the sea ice and ocean tiles)
+C      tdeep   - deep soil temp in deg K real[tiles]
+C      swetshal- shallow level moisture field capacity fraction real[tiles]
+C      swetroot- root level moisture field capacity fraction real[tiles]
+C      swetdeep- deep soil level moisture field capacity fraction real[tiles]
+C      snodep  - depth of snow pack in cm liquid water equiv real[tiles]
+C      capac   - leaf canopy water reservoir in cm real[tiles]
+C output:
+C      duturb  - change in zonal wind component due to turbulent processes
+C                per unit time in m/sec**2 - real[lon,lat,levels]
+C      dvturb  - change in meridional wind component due to turbulent processes
+C                per unit time in m/sec**2 - real[lon,lat,levels]
+C      dtturb  - change in (model theta*pi) due to turbulent processes
+C                per unit time  - real[lon,lat,levels] !! pi is pressure-ptop
+C      dqturb  - change in (specific humidity*pi) due to turbulent processes
+C                per unit time  - real[lon,lat,levels] !! pi is pressure-ptop
+C      qliqavelw - Moist   Turbulence Liquid Water   for Longwave  - real[lon,lat,levels]
+C      qliqavesw - Moist   Turbulence Liquid Water   for Shortwave - real[lon,lat,levels]
+C      fccavelw  - Moist   Turbulence Cloud Fraction for Longwave  - real[lon,lat,levels]
+C      fccavesw  - Moist   Turbulence Cloud Fraction for Shortwave - real[lon,lat,levels]
+C      qqgrid    - Gridded Turbulent Kinetic Energy                - real[lon,lat,levels]
+C-----------------------------------------------------------------------
       implicit none
 
 #ifdef ALLOW_USE_MPI
@@ -101,31 +101,48 @@ c-----------------------------------------------------------------------
       integer ntracers, ptracers
       integer nchp,nchptot,nchplnd
       _RL ptop
-      _RL pz(im,jm),uz(im,jm,nlay),vz(im,jm,nlay),tz(im,jm,nlay)
-      _RL qz(im,jm,nlay,ntracers)
-      _RL plz(im,jm,nlay),plze(im,jm,nlay+1),dpres(im,jm,nlay)
-      _RL pkht(im,jm,nlay+1),pkz(im,jm,nlay)
+c     _RL pz(im,jm),uz(im,jm,nlay),vz(im,jm,nlay),tz(im,jm,nlay)
+c     _RL qz(im,jm,nlay,ntracers)
+c     _RL plz(im,jm,nlay),plze(im,jm,nlay+1),dpres(im,jm,nlay)
+c     _RL pkht(im,jm,nlay+1),pkz(im,jm,nlay)
+      _RL pz(im*jm,1),uz(im*jm,1,nlay),vz(im*jm,1,nlay)
+      _RL tz(im*jm,1,nlay),qz(im*jm,1,nlay,ntracers)
+      _RL plz(im*jm,1,nlay),plze(im*jm,1,nlay+1),dpres(im*jm,1,nlay)
+      _RL pkht(im*jm,1,nlay+1),pkz(im*jm,1,nlay)
       _RL ctmt(nchp),xxmt(nchp),yymt(nchp),zetamt(nchp)
       _RL xlmt(nchp,nlay),khmt(nchp,nlay),tke(nchp,nlay)
-      _RL tgz(im, jm),fracland(im,jm)
-      integer landtype(im,jm)
+c     _RL tgz(im, jm),fracland(im,jm)
+c     integer landtype(im,jm)
+      _RL tgz(im*jm,1),fracland(im*jm,1)
+      integer landtype(im*jm,1)
       _RL tcanopy(nchp),tdeep(nchp),ecanopy(nchp),swetshal(nchp)
       _RL swetroot(nchp),swetdeep(nchp),snodep(nchp),capac(nchp)
       _RL chfr(nchp),chlt(nchp),chlon(nchp)
       integer igrd(nchp),ityp(nchp)
-      _RL alai(nchp),agrn(nchp),thkz(im,jm)
+c     _RL alai(nchp),agrn(nchp),thkz(im,jm)
+      _RL alai(nchp),agrn(nchp),thkz(im*jm,1)
       logical tprof
-      _RL duturb(im,jm,nlay),dvturb(im,jm,nlay)
-      _RL dtturb(im,jm,nlay),dqturb(im,jm,nlay,ntracers)
-      _RL st4(im,jm),dst4(im,jm)
-      _RL radswg(im,jm),radswt(im,jm),radlwg(im,jm)
-      _RL fdifpar(im,jm),fdirpar(im,jm)
-      _RL rainlsp(im,jm),rainconv(im,jm),snowfall(im,jm)
-      _RL tempref (im,jm)
+c     _RL duturb(im,jm,nlay),dvturb(im,jm,nlay)
+c     _RL dtturb(im,jm,nlay),dqturb(im,jm,nlay,ntracers)
+c     _RL st4(im,jm),dst4(im,jm)
+c     _RL radswg(im,jm),radswt(im,jm),radlwg(im,jm)
+c     _RL fdifpar(im,jm),fdirpar(im,jm)
+c     _RL rainlsp(im,jm),rainconv(im,jm),snowfall(im,jm)
+c     _RL tempref (im,jm)
+      _RL duturb(im*jm,1,nlay),dvturb(im*jm,1,nlay)
+      _RL dtturb(im*jm,1,nlay),dqturb(im*jm,1,nlay,ntracers)
+      _RL st4(im*jm,1),dst4(im*jm,1)
+      _RL radswg(im*jm,1),radswt(im*jm,1),radlwg(im*jm,1)
+      _RL fdifpar(im*jm,1),fdirpar(im*jm,1)
+      _RL rainlsp(im*jm,1),rainconv(im*jm,1),snowfall(im*jm,1)
+      _RL tempref (im*jm,1)
       integer imstturblw, imstturbsw
-      _RL qliqavesw(im,jm,nlay),qliqavelw(im,jm,nlay)
-      _RL fccavelw (im,jm,nlay),fccavesw (im,jm,nlay)
-      _RL qqgrid   (im,jm,nlay)
+c     _RL qliqavesw(im,jm,nlay),qliqavelw(im,jm,nlay)
+c     _RL fccavelw (im,jm,nlay),fccavesw (im,jm,nlay)
+c     _RL qqgrid   (im,jm,nlay)
+      _RL qliqavesw(im*jm,1,nlay),qliqavelw(im*jm,1,nlay)
+      _RL fccavelw (im*jm,1,nlay),fccavesw (im*jm,1,nlay)
+      _RL qqgrid   (im*jm,1,nlay)
       integer myid
 
 C Local Variables
@@ -134,16 +151,19 @@ C Local Variables
       integer ijall
       _RL fmu,hice,tref,pref,cti,ed
 C Set fmu and ed to zero for no background diffusion
-      parameter ( fmu    = 0.00000    ) 
+      parameter ( fmu    = 0.00000    )
       parameter ( hice   =   300.     )
-      parameter ( tref   =   258.     )  
+      parameter ( tref   =   258.     )
       parameter ( pref   =   500.     )
       parameter ( cti    =   0.0052   )
       parameter ( ed     =   0.0      )
 
-      _RL qliqtmp(im,jm,nlay)
-      _RL  fcctmp(im,jm,nlay)
-      _RL tmpdiag(im,jm)
+c     _RL qliqtmp(im,jm,nlay)
+c     _RL  fcctmp(im,jm,nlay)
+c     _RL tmpdiag(im,jm)
+      _RL qliqtmp(im*jm,1,nlay)
+      _RL  fcctmp(im*jm,1,nlay)
+      _RL tmpdiag(im*jm,1), tmpFac
       _RL   thtgz(im*jm)
       logical  diagnostics_is_on
       external diagnostics_is_on
@@ -173,7 +193,7 @@ C Set fmu and ed to zero for no background diffusion
 
       _RL shg(nchp),z0(nchp),icethk(nchp)
       integer water(nchp)
- 
+
       _RL lats(istrip),lons(istrip),cosz(istrip),icest(istrip)
       _RL rainls(istrip),raincon(istrip),newsnow(istrip)
       _RL pardf(istrip),pardr(istrip),swnet(istrip)
@@ -228,7 +248,8 @@ C Set fmu and ed to zero for no background diffusion
       _RL qliqmsc(nchp,nlay),fccmsc(nchp,nlay)
 
       integer ndlsm
-      parameter ( ndlsm = 1)
+c     parameter ( ndlsm = 1)
+      parameter ( ndlsm = 38)
       _RL qdiaglsm(nchp,ndlsm)
 
       _RL pi,secday,sdayopi2,rgas,akap,cp,alhl
@@ -241,7 +262,7 @@ C Set fmu and ed to zero for no background diffusion
       integer ntracedim
       _RL    dtfac,timstp2,sum0
 C logical begin flag - set to true to indicate a cold start
-      logical qbeg    
+      logical qbeg
 
       integer n,nsecf,nmonf,ndayf
       nsecf(n) = n/10000*3600 + mod(n,10000)/100* 60 + mod(n,100)
@@ -254,8 +275,7 @@ cfpp$ expand (qsat)
 #endif
 #endif
 
-c   compute variables that do not change
-c
+C   compute variables that do not change
 
        pi = 4.*atan(1.)
        secday   = getcon('SDAY')
@@ -277,8 +297,8 @@ c
        timstp2  = nsecf(ndmoist)
        dtfac    = min( 1.0 _d 0, timstp/timstp2 )
 
-c delttrb is the internal turbulence time step
-c a value equal to ndturb means one internal iteration
+C delttrb is the internal turbulence time step
+C a value equal to ndturb means one internal iteration
        delttrb = nsecf(ndturb)
 
        ijall    =   im * jm
@@ -287,18 +307,18 @@ c a value equal to ndturb means one internal iteration
        itrtrb   = ( timstp / delttrb ) + 0.1
        dttrb    =   timstp / float(itrtrb)
        edle     =   ed * 0.2
- 
-c   coefficient of viscosity (background momentum diffusion)
-c
+
+C   coefficient of viscosity (background momentum diffusion)
+C
        rmu     = fmu * tref * rgas / pref
        cltj10  = 10. * caltoj
        atimstp = 1. / timstp
        tice = getcon('FREEZING-POINT')
 
-c **********************************************************************
-c   Check for Cold Start (if QQ is zero everywhere)
-c **********************************************************************
-      
+C **********************************************************************
+C   Check for Cold Start (if QQ is zero everywhere)
+C **********************************************************************
+
       qbeg = .false.
 
       sum0 = 0.0
@@ -311,7 +331,7 @@ c **********************************************************************
 #ifdef ALLOW_USE_MPI
       call mpi_allreduce(sum0,const,1,mpi_double_precision,mpi_sum,
      .                                                mpi_comm_world,n)
-#else 
+#else
       const = sum0
 #endif
 
@@ -326,26 +346,29 @@ c **********************************************************************
           endif
       endif
 
-c **********************************************************************
-c                            Initialization
-c **********************************************************************
-      
-c Initialize diagnostic for ground temperature change
-c ---------------------------------------------------
-      if(diagnostics_is_on('DTG     ',myid) ) then
-       do j =1,jm
-       do i =1,im
-        tmpdiag(i,j) =  -tgz(i,j)
-       enddo
-       enddo
-       call diagnostics_fill(tmpdiag,'DTG     ',0,1,-3,bi,bj,myid)
-      endif
+C **********************************************************************
+C                            Initialization
+C **********************************************************************
 
-c **********************************************************************
-c  entire turbulence and land surface package will run in 'tile space'   
-c       do conversion of model state variables to tile space
-c        (ocean points appended to tile space land point arrays)
-c **********************************************************************
+C Initialize diagnostic for ground temperature change
+C ---------------------------------------------------
+c     if(diagnostics_is_on('DTG     ',myid) ) then
+c      do j =1,jm
+c      do i =1,im
+c       tmpdiag(i,j) =  -tgz(i,j)
+c      enddo
+c      enddo
+c      call diagnostics_fill(tmpdiag,'DTG     ',0,1,-3,bi,bj,myid)
+c     endif
+      tmpFac = -1.
+      CALL DIAGNOSTICS_SCALE_FILL( tgz,tmpFac,1,
+     &                             'DTG     ',0,1,-3,bi,bj,myid)
+
+C **********************************************************************
+C  entire turbulence and land surface package will run in 'tile space'
+C       do conversion of model state variables to tile space
+C        (ocean points appended to tile space land point arrays)
+C **********************************************************************
 
       numstrips   = ((nchptot-1)/istrip) + 1
 
@@ -353,7 +376,7 @@ c **********************************************************************
 
       call grd2msc(tgz,im,jm,igrd,tground,nchp,nchptot)
       do i = 1,ijall
-       tmpdiag(i,1) = st4(i,1) + dst4(i,1)*(tgz(i,1)-tempref(i,1)) 
+       tmpdiag(i,1) = st4(i,1) + dst4(i,1)*(tgz(i,1)-tempref(i,1))
      1                         - dst4(i,1)* tgz(i,1)
       enddo
       call grd2msc(tmpdiag,im,jm,igrd,alwcoeff,nchp,nchptot)
@@ -387,19 +410,19 @@ C Call chpprm to get non-varying vegetation and soil characteristics
       call chpprm(nymd,nhms,nchp,nchplnd,chlt,ityp,alai,
      1       agrn,zoch,z2ch,cdrc,cdsc,sqscat,u2fac,rsoil1,rsoil2,rdc)
 
-c **********************************************************************
-c ****                surface specification                         ****
-c **********************************************************************
+C **********************************************************************
+C ****                surface specification                         ****
+C **********************************************************************
 
-c   set water
+C   set water
 
       do i = 1,nchptot
        water(i) = 0
        if((ityp(i).eq.100).and.(icethk(i).eq.0. ))water(i) = 1
       enddo
 
-c   roughness length z0
-c
+C   roughness length z0
+C
       do i =1,nchptot
        if (icethk(i).gt.0.) then
         z0(i) = 1.e-4
@@ -410,8 +433,8 @@ c
        endif
       enddo
 
-c Fill Array Tground with canopy temperatures over land tiles
-c  (it has sst from the tgz array over the sea ice and ocean tiles)
+C Fill Array Tground with canopy temperatures over land tiles
+C  (it has sst from the tgz array over the sea ice and ocean tiles)
 
       do i = 1,nchplnd
        tground(i) = tcanopy(i)
@@ -424,8 +447,8 @@ C ---------------------
       call qsat ( tground(i),utility(i),shg(i),dqsdt(i),.true. )
       enddo
 
-c Fill Array Qground with canopy air specific humidity over land tiles
-c  (it has qstar at tground over the sea ice and ocean tiles)
+C Fill Array Qground with canopy air specific humidity over land tiles
+C  (it has qstar at tground over the sea ice and ocean tiles)
 
       do i = 1,nchplnd
        qground(i) = ecanopy(i)
@@ -434,13 +457,13 @@ c  (it has qstar at tground over the sea ice and ocean tiles)
        qground(i) = shg(i)
       enddo
 
-c Fill Array Swetshal with Value 1. over oceans and sea ice
+C Fill Array Swetshal with Value 1. over oceans and sea ice
       do i = nchplnd+1,nchptot
        swetshal(i) = 1.
       enddo
 
-c compute heat conduction through ice
-c -----------------------------------
+C compute heat conduction through ice
+C -----------------------------------
       const = ( cti / hice ) * cltj10
       do i =1,nchptot
              qice(i) =  0.0
@@ -459,9 +482,9 @@ c -----------------------------------
        call diagnostics_fill(tmpdiag,'QICE    ',0,1,3,bi,bj,myid)
       endif
 
-c***********************************************************************
-c                        loop over regions
-c***********************************************************************
+C***********************************************************************
+C                        loop over regions
+C***********************************************************************
 
       do 2000 nn = 1, numstrips
 
@@ -528,9 +551,13 @@ c      enddo
        call stripit  (snodep,snowdepth,nchptot,nchp,istrip,1,nn)
        call stripit  (capac,capacity,nchptot,nchp,istrip,1,nn)
 
+#ifdef FIZHI_USE_FIXED_DAY
+       call astro ( 20040321,nhms,lats,lons,istrip,cosz,ra )
+#else
        call astro ( nymd,nhms,lats,lons,istrip,cosz,ra )
+#endif
 
-c we need to count up the land, sea ice and ocean points
+C we need to count up the land, sea ice and ocean points
       nocean = 0
       nland  = 0
       nice   = 0
@@ -540,15 +567,15 @@ c we need to count up the land, sea ice and ocean points
        if( types(i).eq.100 .and. icest(i).gt.0.0 ) nice = nice + 1
       enddo
 
-c Zero out velocities at the bottom edge of the model
-c ---------------------------------------------------
+C Zero out velocities at the bottom edge of the model
+C ---------------------------------------------------
       do i =1,istrip
        u(i,nlay+1) = 0.
        v(i,nlay+1) = 0.
       enddo
 
-c convert temperature of level nlay+1 to theta & value of sh at ground
-c --------------------------------------------------------------------
+C convert temperature of level nlay+1 to theta & value of sh at ground
+C --------------------------------------------------------------------
       do i =1,istrip
       th(i,nlay+1) = th(i,nlay+1) / pke(i,nlay+1)
       sh(i,nlay+1) = qa(i)
@@ -562,16 +589,16 @@ c --------------------------------------------------------------------
      . .false., 'QG      ', 1, 1, bi, bj, myid)
       endif
 
-c value of tracers at the ground
-c ------------------------------
+C value of tracers at the ground
+C ------------------------------
 c     do nt = 1,ntracers-ptracers
-C      do i = 1,istrip
-C       tracers(i,nlay+1,nt) = 0.
-C      enddo
-C     enddo
+c      do i = 1,istrip
+c       tracers(i,nlay+1,nt) = 0.
+c      enddo
+c     enddo
 
-c compute virtual potential temperatures
-c --------------------------------------
+C compute virtual potential temperatures
+C --------------------------------------
       do L = 1,nlay+1
       do i =1,istrip
       thv(i,L) = 1. + virtcon * sh(i,L)
@@ -582,7 +609,7 @@ c --------------------------------------
       sh(i,nlay+1) = qa(i)
       enddo
 
-c zero out arrays for output of qliq and fcc
+C zero out arrays for output of qliq and fcc
       do L =1,nlay
       do i =1,istrip
       qliq(i,L) = 0.
@@ -590,8 +617,8 @@ c zero out arrays for output of qliq and fcc
       enddo
       enddo
 
-c zero out fluxes and derivatives
-c -------------------------------
+C zero out fluxes and derivatives
+C -------------------------------
       do i = 1,istrip
        eturb(i) = 0.
        scu(i) = 0.
@@ -602,8 +629,8 @@ c -------------------------------
        dhsdtc(i) = 0.
       enddo
 
-c increment diagnostic arrays for quantities calculated before trbfl
-c ------------------------------------------------------------------
+C increment diagnostic arrays for quantities calculated before trbfl
+C ------------------------------------------------------------------
       if(diagnostics_is_on('DTSRF   ',myid) ) then
        do i=1,istrip
         stdiag(i) = ( thv(i,nlay+1)-thv(i,nlay) ) / pke(i,nlay+1)
@@ -612,8 +639,8 @@ c ------------------------------------------------------------------
      . .false., 'DTSRF   ', 1, 1, bi, bj, myid)
       endif
 
-c call trbflx
-c -----------
+C call trbflx
+C -----------
       call trbflx(nn,th,thv,sh,u,v,qq,p,pe,pk,pke,dpstr,stwatr,stz0,
      1 tracers,ntracers-ptracers,ntracedim,dttrb,itrtrb,rmu,edle,qbeg,
      2 tprof,stuflux,stvflux,sri,skh,skm,swinds,sustar,sz0,frqtrb,
@@ -634,7 +661,7 @@ c -----------
       call pastit (qliq  ,qliqmsc,istrip,nchp,nchptot,nlay,nn)
       call pastit (turbfcc,fccmsc,istrip,nchp,nchptot,nlay,nn)
 
-c  New diagnostic: potential evapotranspiration
+C  New diagnostic: potential evapotranspiration
       do i = 1,istrip
        evpot(i) = transsh(i,nlay) * (shgstr(i) - sh(i,nlay))
       enddo
@@ -642,7 +669,7 @@ c  New diagnostic: potential evapotranspiration
 C**********************************************************************
 C   Call Land Surface Module
 C**********************************************************************
- 
+
       do i = 1,istrip
        savetc(i) = tc(i)
        saveqa(i) = qa(i)
@@ -656,9 +683,9 @@ C**********************************************************************
        wspeed(i) = sqrt(u(i,nlay)*u(i,nlay) + v(i,nlay)*v(i,nlay))
        if(wspeed(i) .lt. 1.e-20) wspeed(i) = 1.e-20
 C Note: This LSM precip bug needs to be cleaned up
-ccc   newsnow(i) = newsnow(i)*dtfac   
-ccc   raincon(i) = raincon(i)*dtfac   
-ccc   rainls (i) = rainls (i)*dtfac   
+ccc   newsnow(i) = newsnow(i)*dtfac
+ccc   raincon(i) = raincon(i)*dtfac
+ccc   rainls (i) = rainls (i)*dtfac
       enddo
 
       do i = 1,istrip
@@ -691,26 +718,26 @@ ccc   rainls (i) = rainls (i)*dtfac
        fwsoil(i) = 0.
       enddo
 
-c**********************************************************************
-c   diagnostics: fill arrays for lsm input fields
-c**********************************************************************
+C**********************************************************************
+C   diagnostics: fill arrays for lsm input fields
+C**********************************************************************
       if(diagnostics_is_on('SNOWFALL',myid) ) then
       do i = 1,istrip
-      tmpstrip(i) = newsnow(i)*86400   
+      tmpstrip(i) = newsnow(i)*86400
       enddo
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'SNOWFALL', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('RAINCON ',myid) ) then
       do i = 1,istrip
-      tmpstrip(i) = raincon(i)*86400   
+      tmpstrip(i) = raincon(i)*86400
       enddo
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'RAINCON ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('RAINLSP ',myid) ) then
       do i = 1,istrip
-      tmpstrip(i) = rainls(i)*86400   
+      tmpstrip(i) = rainls(i)*86400
       enddo
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'RAINLSP ', 1, 1, bi, bj, myid)
@@ -755,7 +782,7 @@ c**********************************************************************
       call diag_vegtile_fill (hlwdwn,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'LWGDOWN ', 1, 1, bi, bj, myid)
       endif
-c**********************************************************************
+C**********************************************************************
 
       if(nland.gt.0)then
 
@@ -777,16 +804,16 @@ c**********************************************************************
       if( nice.gt.0 ) then
        call seaice ( nocean, timstp,     hice,
      .               eturb(nland+1),    dedtc(nland+1),
-     .              hsturb(nland+1),   dhsdtc(nland+1), 
-     .             qicestr(nland+1), dqicestr(nland+1), 
+     .              hsturb(nland+1),   dhsdtc(nland+1),
+     .             qicestr(nland+1), dqicestr(nland+1),
      .               swnet(nland+1),  lwstrip(nland+1), blwrad(nland+1),
      .          pke(nland+1,nlay+1),    icest(nland+1),
      .                  tc(nland+1),       qa(nland+1) )
       endif
 
-c***********************************************************************
-c   diagnostics: fill arrays for lsm output fields
-c***********************************************************************
+C***********************************************************************
+C   diagnostics: fill arrays for lsm output fields
+C***********************************************************************
 
       if(diagnostics_is_on('RUNOFF  ',myid) ) then
       call diag_vegtile_fill (runoff,igrd,chfrstr,istrip,nchp,nn,
@@ -856,7 +883,7 @@ c***********************************************************************
       call diag_vegtile_fill (strdg8,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'QCDTC   ', 1, 1, bi, bj, myid)
       endif
-c***********************************************************************
+C***********************************************************************
 
       if( ndlsm.gt.1 ) then
       call pstbitint(types,qdiaglsm(1,1),istrip,nchp,nchptot,1,nn)
@@ -908,9 +935,9 @@ c     call pstbmpit(igrdstr,qdiaglsm(1,5),istrip,nchp,nchptot,1,nn)
       call pastit (capacity,capac,istrip,nchp,nchptot,1,nn)
       call pastit (snowdepth,snodep,istrip,nchp,nchptot,1,nn)
 
-c**********************************************************************
-c  Now update the theta and sh profiles with the new ground temperature
-c**********************************************************************
+C**********************************************************************
+C  Now update the theta and sh profiles with the new ground temperature
+C**********************************************************************
 
       do i =1,istrip
       th(i,nlay+1) = tc(i) / pke(i,nlay+1)
@@ -936,9 +963,9 @@ c**********************************************************************
        stqflux(i,L) = transsh(i,L) * (sh(i,L+1)-sh(i,L))
       enddo
       enddo
- 
-c tendency updates
-c ----------------
+
+C tendency updates
+C ----------------
       do  l=1,nlay
       call strip2tile(uz(1,1,l),igrd,tmpstrip,nchp,ijall,
      1                                                 istrip,1,nn)
@@ -981,13 +1008,13 @@ c    .                                     nchptot,1,nn)
 c     enddo
 
       enddo
-c *********************************************************************
-c **** increment diagnostic arrays for quantities saved in trbflx
-c *********************************************************************
+C *********************************************************************
+C **** increment diagnostic arrays for quantities saved in trbflx
+C *********************************************************************
 
-c note: the order, logic, and scaling of the heat and moisture flux
-c       diagnostics is critical!
-c ------------------------------
+C note: the order, logic, and scaling of the heat and moisture flux
+C       diagnostics is critical!
+C ------------------------------
 
       if(diagnostics_is_on('EVAP    ',myid) ) then
       do i=1,istrip
@@ -1131,10 +1158,10 @@ c ------------------------------
      . .false., 'Q10M    ', 1, 1, bi, bj, myid)
       endif
 
-c**********************************************************************
-c   more diagnostics: land surface model parameters
-c**********************************************************************
- 
+C**********************************************************************
+C   more diagnostics: land surface model parameters
+C**********************************************************************
+
       if(diagnostics_is_on('TDEEP   ',myid) ) then
       call diag_vegtile_fill (td,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'TDEEP   ', 1, 1, bi, bj, myid)
@@ -1163,34 +1190,34 @@ c**********************************************************************
       call diag_vegtile_fill (snowdepth,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'SNOW    ', 1, 1, bi, bj, myid)
       endif
-c**********************************************************************
-c end regions loop
+C**********************************************************************
+C end regions loop
 
  2000 continue
 
-c**********************************************************************
- 
-c increment the counter for the accumulated fcc and qliq arrays
-c ---------------------------------------------------------------------
+C**********************************************************************
+
+C increment the counter for the accumulated fcc and qliq arrays
+C ---------------------------------------------------------------------
       imstturblw = imstturblw + 1
       imstturbsw = imstturbsw + 1
 
-c prevent ice or snow from melting
-c ---------------------------------------------------------------------
+C prevent ice or snow from melting
+C ---------------------------------------------------------------------
       do i =1,nchptot
       if( (icethk(i).gt.0.).and.(tground(i).gt.tice) ) tground(i)=tice
       enddo
 
-c Update tcanopy and ecanopy from the points of the 
-c           tground and qground arrays
-c ---------------------------------------------------------------------
+C Update tcanopy and ecanopy from the points of the
+C           tground and qground arrays
+C ---------------------------------------------------------------------
       do i =1,nchptot
        tcanopy(i) = tground(i)
        ecanopy(i) = qground(i)
       enddo
 
 C Initialize Tendencies and Couplings
-c -----------------------------------
+C -----------------------------------
       do L = 1,nlay
        do i = 1,ijall
            duturb(i,1,L) = 0.
@@ -1208,7 +1235,7 @@ c -----------------------------------
       enddo
 
 C Return Tendencies and Couplings to Grid Space
-c ---------------------------------------------
+C ---------------------------------------------
       do l = 1,nlay
       call msc2grd(igrd,chfr,dumsc(1,L),nchp,nchptot,fracland,
      .                                              duturb(1,1,L),im,jm)
@@ -1223,120 +1250,149 @@ c ---------------------------------------------
       call msc2grd(igrd,chfr,  tke(1,L),nchp,nchptot,fracland,
      .                                              qqgrid(1,1,L),im,jm)
 
-      call msc2grd(igrd,chfr, fccmsc(1,L),nchp,nchptot,fracland, 
+      call msc2grd(igrd,chfr, fccmsc(1,L),nchp,nchptot,fracland,
      .                                              fcctmp(1,1,L),im,jm)
       call msc2grd(igrd,chfr,qliqmsc(1,L),nchp,nchptot,fracland,
      .                                             qliqtmp(1,1,L),im,jm)
       enddo
 
-c Reduce clouds from conditionally unstable layer
-c -----------------------------------------------
+C Reduce clouds from conditionally unstable layer
+C -----------------------------------------------
       call ctei ( tz,qz,fcctmp,qliqtmp,plz,pkz,pkht,im*jm,nlay )
 
 C Bump Total Cloud Liquid Water and Fraction by Instantaneous Values
-c ------------------------------------------------------------------
+C ------------------------------------------------------------------
       do l = 1,nlay
-       do j=1,jm
-       do i=1,im
-         fccavesw(i,j,L) =  fccavesw(i,j,L) +  fcctmp(i,j,L)
-         fccavelw(i,j,L) =  fccavelw(i,j,L) +  fcctmp(i,j,L)
-        qliqavelw(i,j,L) = qliqavelw(i,j,L) + qliqtmp(i,j,L)
-        qliqavesw(i,j,L) = qliqavesw(i,j,L) + qliqtmp(i,j,L)
-       enddo
+c      do j=1,jm
+c      do i=1,im
+c        fccavesw(i,j,L) =  fccavesw(i,j,L) +  fcctmp(i,j,L)
+c        fccavelw(i,j,L) =  fccavelw(i,j,L) +  fcctmp(i,j,L)
+c       qliqavelw(i,j,L) = qliqavelw(i,j,L) + qliqtmp(i,j,L)
+c       qliqavesw(i,j,L) = qliqavesw(i,j,L) + qliqtmp(i,j,L)
+c      enddo
+c      enddo
+       do i = 1,ijall
+         fccavesw(i,1,L) =  fccavesw(i,1,L) +  fcctmp(i,1,L)
+         fccavelw(i,1,L) =  fccavelw(i,1,L) +  fcctmp(i,1,L)
+        qliqavelw(i,1,L) = qliqavelw(i,1,L) + qliqtmp(i,1,L)
+        qliqavesw(i,1,L) = qliqavesw(i,1,L) + qliqtmp(i,1,L)
        enddo
 
-       if(diagnostics_is_on('TRBFCC  ',myid) ) then
-        call diagnostics_fill(fcctmp(i,j,L),'TRBFCC  ',L,1,3,bi,bj,myid)
-       endif
-       if(diagnostics_is_on('TRBQLIQ ',myid) ) then
-        do j = 1,jm
-        do i = 1,im
-         tmpdiag(i,j) = qliqtmp(i,j,L)*1.e6
-        enddo
-        enddo
-        call diagnostics_fill(tmpdiag,'TRBQLIQ ',L,1,3,bi,bj,myid)
-       endif
+c      if(diagnostics_is_on('TRBFCC  ',myid) ) then
+c       call diagnostics_fill(fcctmp(i,j,L),'TRBFCC  ',L,1,3,bi,bj,myid)
+c      endif
+c      if(diagnostics_is_on('TRBQLIQ ',myid) ) then
+c       do j = 1,jm
+c       do i = 1,im
+c        tmpdiag(i,j) = qliqtmp(i,j,L)*1.e6
+c       enddo
+c       enddo
+c       call diagnostics_fill(tmpdiag,'TRBQLIQ ',L,1,3,bi,bj,myid)
+c      endif
       enddo
+      tmpFac = 1.e6
+      CALL DIAGNOSTICS_FILL(fcctmp,'TRBFCC  ',0,nlay,3,bi,bj,myid)
+      CALL DIAGNOSTICS_SCALE_FILL( qliqtmp,tmpFac,1,
+     &                             'TRBQLIQ ',0,nlay,3,bi,bj,myid)
 C**********************************************************************
 C And some other variables to be transformed back to grid space:
 C Ground Temperature, snow depth and shallow layer ground wetness
-      do j = 1,jm
-       do i = 1,im
-         tgz(i,j) = 0.
-       enddo
+c     do j = 1,jm
+c      do i = 1,im
+c        tgz(i,j) = 0.
+c      enddo
+c     enddo
+      do i = 1,ijall
+         tgz(i,1) = 0.
       enddo
       call msc2grd(igrd,chfr,tground ,nchp,nchptot,fracland,tgz ,im,jm)
 
-c *********************************************************************
-c **** increment diagnostic array for ground and surface temperatures,
-c ***       ground temp tendency, and ground humidity
-c *********************************************************************
- 
-      if(diagnostics_is_on('TGROUND ',myid) ) then
+C *********************************************************************
+C **** increment diagnostic array for ground and surface temperatures,
+C ***       ground temp tendency, and ground humidity
+C *********************************************************************
+
+c     if(diagnostics_is_on('TGROUND ',myid) ) then
        call diagnostics_fill(tgz,'TGROUND ',0,1,3,bi,bj,myid)
-      endif
-      if(diagnostics_is_on('TCANOPY ',myid) ) then
+c     endif
+c     if(diagnostics_is_on('TCANOPY ',myid) ) then
        call diagnostics_fill(tgz,'TCANOPY ',0,1,3,bi,bj,myid)
-      endif
+c     endif
 
       if(diagnostics_is_on('TS      ',myid) ) then
-       do j =1,jm
-       do i =1,im
-        tmpdiag(i,j) = tz(i,j,nlay) * pkht(i,j,nlay)
-       enddo
+c      do j =1,jm
+c      do i =1,im
+c       tmpdiag(i,j) = tz(i,j,nlay) * pkht(i,j,nlay)
+c      enddo
+       do i = 1,ijall
+        tmpdiag(i,1) = tz(i,1,nlay) * pkht(i,1,nlay)
        enddo
        call diagnostics_fill(tmpdiag,'TS      ',0,1,3,bi,bj,myid)
       endif
 
-      if(diagnostics_is_on('DTG     ',myid) ) then
+c     if(diagnostics_is_on('DTG     ',myid) ) then
        call diagnostics_fill(tgz,'DTG     ',0,1,3,bi,bj,myid)
-      endif
+c     endif
 
-c *********************************************************************
-c ****           increment diagnostic arrays for tendencies        ****
-c *********************************************************************
-      do L = 1,nlay
- 
-       if(diagnostics_is_on('TURBV   ',myid) ) then
-        do j = 1,jm
-        do i = 1,im
-         tmpdiag(i,j) = dvturb(i,j,l) * atimstp * secday
-        enddo
-        enddo
-        call diagnostics_fill(tmpdiag,'TURBV   ',L,1,3,bi,bj,myid)
-       endif
+C *********************************************************************
+C ****           increment diagnostic arrays for tendencies        ****
+C *********************************************************************
+      tmpFac = atimstp * secday
+      CALL DIAGNOSTICS_SCALE_FILL(dvturb,tmpFac,1,
+     &                            'TURBV   ',0,nlay,3,bi,bj,myid)
+      CALL DIAGNOSTICS_SCALE_FILL(duturb,tmpFac,1,
+     &                            'TURBU   ',0,nlay,3,bi,bj,myid)
+      tmpFac = atimstp * secday * 1000.
+      CALL DIAGNOSTICS_SCALE_FILL(dqturb,tmpFac,1,
+     &                            'TURBQ   ',0,nlay,3,bi,bj,myid)
 
-       if(diagnostics_is_on('TURBU   ',myid) ) then
-        do j = 1,jm
-        do i = 1,im
-         tmpdiag(i,j) = duturb(i,j,l) * atimstp * secday
-        enddo
-        enddo
-        call diagnostics_fill(tmpdiag,'TURBU   ',L,1,3,bi,bj,myid)
-       endif
+c     do L = 1,nlay
 
-       if(diagnostics_is_on('TURBQ   ',myid) ) then
-        do j = 1,jm
-        do i = 1,im
-         tmpdiag(i,j) = dqturb(i,j,l,1) * atimstp * secday * 1000.
-        enddo
-        enddo
-        call diagnostics_fill(tmpdiag,'TURBQ   ',L,1,3,bi,bj,myid)
-       endif
+c      if(diagnostics_is_on('TURBV   ',myid) ) then
+c       do j = 1,jm
+c       do i = 1,im
+c        tmpdiag(i,j) = dvturb(i,j,l) * atimstp * secday
+c       enddo
+c       enddo
+c       call diagnostics_fill(tmpdiag,'TURBV   ',L,1,3,bi,bj,myid)
+c      endif
+
+c      if(diagnostics_is_on('TURBU   ',myid) ) then
+c       do j = 1,jm
+c       do i = 1,im
+c        tmpdiag(i,j) = duturb(i,j,l) * atimstp * secday
+c       enddo
+c       enddo
+c       call diagnostics_fill(tmpdiag,'TURBU   ',L,1,3,bi,bj,myid)
+c      endif
+
+c      if(diagnostics_is_on('TURBQ   ',myid) ) then
+c       do j = 1,jm
+c       do i = 1,im
+c        tmpdiag(i,j) = dqturb(i,j,l,1) * atimstp * secday * 1000.
+c       enddo
+c       enddo
+c       call diagnostics_fill(tmpdiag,'TURBQ   ',L,1,3,bi,bj,myid)
+c      endif
 
        if(diagnostics_is_on('TURBT   ',myid) ) then
-        do j = 1,jm
-        do i = 1,im
-         tmpdiag(i,j) = dtturb(i,j,l) * pkz(i,j,l)*atimstp*secday
+c       do j = 1,jm
+c       do i = 1,im
+c        tmpdiag(i,j) = dtturb(i,j,l) * pkz(i,j,l)*atimstp*secday
+c       enddo
+c       enddo
+        do L = 1,nlay
+         do i = 1,ijall
+          tmpdiag(i,1) = dtturb(i,1,l) * pkz(i,1,l)*atimstp*secday
+         enddo
+         call diagnostics_fill(tmpdiag,'TURBT   ',L,1,3,bi,bj,myid)
         enddo
-        enddo
-        call diagnostics_fill(tmpdiag,'TURBT   ',L,1,3,bi,bj,myid)
        endif
 
-      enddo
+c     enddo
 
-c pi-weight the theta and moisture tendencies
-c -------------------------------------------
+C pi-weight the theta and moisture tendencies
+C -------------------------------------------
       do i =1,ijall
       thtgz(i) = pz(i,1) * atimstp
       enddo
@@ -1353,18 +1409,23 @@ c -------------------------------------------
        enddo
       enddo
 
-c *********************************************************************
-c ****   zero out the accumulating rainfall and snowfall arrays     ***
-c *********************************************************************
+C *********************************************************************
+C ****   zero out the accumulating rainfall and snowfall arrays     ***
+C *********************************************************************
 
       if( time_left.lt.timstp ) then
-      do j = 1,jm
-      do i = 1,im
-         rainlsp(i,j) = 0.
-        rainconv(i,j) = 0.
-        snowfall(i,j) = 0.
-      enddo
-      enddo
+c     do j = 1,jm
+c     do i = 1,im
+c        rainlsp(i,j) = 0.
+c       rainconv(i,j) = 0.
+c       snowfall(i,j) = 0.
+c     enddo
+c     enddo
+       do i =1,ijall
+         rainlsp(i,1) = 0.
+        rainconv(i,1) = 0.
+        snowfall(i,1) = 0.
+       enddo
       endif
 
       return
@@ -1399,7 +1460,7 @@ C    PLKE          -         EDGE LEVEL PRESSURES ** KAPPA
 C    DPSTR         -         PRESSURE INTERVALS
 C    WATER         -         BIT ARRAY - '1' OVER OCEANS
 C    Z0            -         SURFACE ROUGHNESS
-C    tracers       -         array of passive tracers 
+C    tracers       -         array of passive tracers
 C    ntrace        -         number of tracers to be diffused
 C    ntracedim     -         outer dimension of tracers array
 C    DTAU          -         TIME CHANGE PER ITERATION OF TRBFLX
@@ -1451,8 +1512,8 @@ C Argument list declarations
 
 C Local Variables
       _RL b1,b3,alpha,halpha,qqmin,qbustr
-      PARAMETER ( B1      =   16.6    )  
-      PARAMETER ( B3      = 1. / B1  )  
+      PARAMETER ( B1      =   16.6    )
+      PARAMETER ( B3      = 1. / B1  )
       PARAMETER ( ALPHA   = 0.1       )
       PARAMETER ( HALPHA = ALPHA * 0.5 )
       PARAMETER ( QQMIN  = 0.005      )
@@ -1499,7 +1560,7 @@ C Local Variables
 
       LOGICAL FIRST,LAST
       integer IBITSTB(irun,nlev),INTQ(irun,nlev)
- 
+
 C arrays for use by moist bouyancy calculation
 C -----------------
       _RL TL(irun,NLEV),DTH(irun,NLEV)
@@ -1543,7 +1604,7 @@ C Some space for variables to be used in called routines
       _RL WRKIT3(irun,nlev-1)
       _RL WRKIT4(irun,nlev-1)
       INTEGER INT1(irun,nlev), INT2(irun,nlev-1)
- 
+
       _RL vrt1con,pi,rsq2pi,p5sr,clh,vk,rvk,aitr,gbycp,fac1,fac2
       _RL getcon,dum,errf
       integer istnlv,nlevm1,nlevm2,nlevml,nlevp1,istnm1,istnm2,istnp1
@@ -1561,7 +1622,7 @@ C Some space for variables to be used in called routines
       ISTNM2 = irun * NLEVM2
       ISTNP1 = irun * NLEVP1
       GBYCP  = GRAV / CP
- 
+
       VRT1CON = 1. + VIRTCON
       PI   = 4. * ATAN(1.)
       RSQ2PI = 1./ ((2.*PI)**0.5)
@@ -1577,29 +1638,49 @@ C --------------------------
       IF(QBEG) INIT = 1
 C SET DIAGNOSTIC LOGICALS AND INITIALIZE DIAGNOSTIC ARRAYS
 C --------------------------------------------------------
-      do I =1,istnlv
-      wu(i,1) = 0.
-      enddo
-      do I =1,istnlv
-      wv(i,1) = 0.
-      enddo
-      do I =1,istnlv
-      eu(i,1) = 0.
-      enddo
-      do I =1,istnlv
-      et(i,1) = 0.
-      enddo
+c     do I =1,istnlv
+c     wu(i,1) = 0.
+c     enddo
+c     do I =1,istnlv
+c     wv(i,1) = 0.
+c     enddo
+c     do I =1,istnlv
+c     eu(i,1) = 0.
+c     enddo
+c     do I =1,istnlv
+c     et(i,1) = 0.
+c     enddo
+c     if (tprof) then
+c     DO I =1,ISTNM1
+c     XLDIAG(I,1) = 0.
+c     enddo
+c     endif
+c     do I =1,irun
+c     wu(i,nlev) = 0.
+c     enddo
+c     do I =1,irun
+c     wv(i,nlev) = 0.
+c     enddo
+      DO L =1,NLEV
+        DO I =1,irun
+         wu(I,L) = 0.
+         wv(I,L) = 0.
+         eu(I,L) = 0.
+         et(I,L) = 0.
+        ENDDO
+      ENDDO
       if (tprof) then
-      DO I =1,ISTNM1
-      XLDIAG(I,1) = 0.
-      enddo
+       DO L =1,NLEVM1
+        DO I =1,irun
+         XLDIAG(I,L) = 0.
+        ENDDO
+       ENDDO
       endif
-      do I =1,irun
-      wu(i,nlev) = 0.
-      enddo
-      do I =1,irun
-      wv(i,nlev) = 0.
-      enddo
+      DO L =1,NLEVM1
+        DO I =1,irun
+         FREQDG(I,L) = 0.
+        ENDDO
+      ENDDO
       do I =1,irun
       scu(i) = 0.
       enddo
@@ -1615,9 +1696,9 @@ C --------------------------------------------------------
       do I =1,irun
       sz0(i) = 0.
       enddo
-      do I =1,ISTNM1
-      FREQDG(I,1) = 0.
-      enddo
+c     do I =1,ISTNM1
+c     FREQDG(I,1) = 0.
+c     enddo
       do I =1,irun
       stu2m(i) = 0.
       enddo
@@ -1644,9 +1725,15 @@ C --------------------------------------------------------
       enddo
 
       IF (INIT.EQ.1) THEN
-       DO I = 1,ISTNM1
-        XLSAVE(I,1) = 0.
-        KHSAVE(I,1) = 0.
+c      DO I = 1,ISTNM1
+c       XLSAVE(I,1) = 0.
+c       KHSAVE(I,1) = 0.
+c      ENDDO
+       DO L =1,NLEVM1
+        DO I =1,irun
+        XLSAVE(I,L) = 0.
+        KHSAVE(I,L) = 0.
+        ENDDO
        ENDDO
        DO I = 1,irun
         CTSAVE(I) = 0.
@@ -1658,14 +1745,26 @@ C --------------------------------------------------------
 
 C COMPUTE VERTICAL GRID
 C ---------------------
-      DO 9038 I =1,ISTNLV
-      ADZ1(I,1) = (CP/GRAV)*(PLKE(I,2)-PLKE(I,1))
-      ADZ1(I,1) = THV(I,1) * ADZ1(I,1)
-      DZ1TMP(I,1) = ADZ1(I,1)
+c     DO 9038 I =1,ISTNLV
+c     ADZ1(I,1) = (CP/GRAV)*(PLKE(I,2)-PLKE(I,1))
+c     ADZ1(I,1) = THV(I,1) * ADZ1(I,1)
+c     DZ1TMP(I,1) = ADZ1(I,1)
 9038  CONTINUE
-      DO 9040 I =1,ISTNM1
-      ADZ2(I,1) = 0.5 * (ADZ1(I,1)+ADZ1(I,2))
+      DO L =1,NLEV
+       DO I =1,irun
+        ADZ1(I,L) = (CP/GRAV)*(PLKE(I,L+1)-PLKE(I,L))
+        ADZ1(I,L) = THV(I,L) * ADZ1(I,L)
+        DZ1TMP(I,L) = ADZ1(I,L)
+       ENDDO
+      ENDDO
+c     DO 9040 I =1,ISTNM1
+c     ADZ2(I,1) = 0.5 * (ADZ1(I,1)+ADZ1(I,2))
 9040  CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        ADZ2(I,L) = 0.5 * (ADZ1(I,L)+ADZ1(I,L+1))
+       ENDDO
+      ENDDO
 C DEPTH HS OF SURFACE LAYER
 C -------------------------
       DO 9042 I =1,irun
@@ -1676,18 +1775,28 @@ C -------------------------------
       DO 9044 I =1,irun
       DZ3(I,1) = HALPHA * ADZ1(I,1)
 9044  CONTINUE
-      DO 9046 I =1,ISTNM2
-      DZ3(I,2) = ALPHA * ADZ1(I,2)
+c     DO 9046 I =1,ISTNM2
+c     DZ3(I,2) = ALPHA * ADZ1(I,2)
 9046  CONTINUE
+      DO L =2,NLEVM1
+       DO I =1,irun
+        DZ3(I,L) = ALPHA * ADZ1(I,L)
+       ENDDO
+      ENDDO
       DO 9048 I =1,irun
       DZ3(I,NLEV) = ALPHA * HS(I)
 9048  CONTINUE
 
 C VK * HEIGHTS AT MID AND EDGE LEVELS
 C -----------------------------------
-      DO 9050 I =1,ISTNM1
-      TEMP(I,2) = VK * ADZ1(I,2)
+c     DO 9050 I =1,ISTNM1
+c     TEMP(I,2) = VK * ADZ1(I,2)
 9050  CONTINUE
+      DO L =2,NLEV
+       DO I =1,irun
+        TEMP(I,L) = VK * ADZ1(I,L)
+       ENDDO
+      ENDDO
       DO 9052 I =1,irun
       VKZE(I,NLEVM1) = TEMP(I,NLEV)
 9052  CONTINUE
@@ -1698,9 +1807,14 @@ C -----------------------------------
       VKZE(I,L) = VKZE(I,LP1) + TEMP(I,LP1)
 9054  CONTINUE
  100  CONTINUE
-      DO 9056 I =1,ISTNM1
-      VKZM(I,1) = VKZE(I,1) - 0.5 * TEMP(I,2)
+c     DO 9056 I =1,ISTNM1
+c     VKZM(I,1) = VKZE(I,1) - 0.5 * TEMP(I,2)
 9056  CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        VKZM(I,L) = VKZE(I,L) - 0.5 * TEMP(I,L+1)
+       ENDDO
+      ENDDO
 C COMPUTE RHO BY DZ AT MID AND EDGE LEVELS
 C ----------------------------------------
       DO 200 L = 1,NLEVM1
@@ -1712,71 +1826,123 @@ C ----------------------------------------
        RHODZ2(I,L) = RHODZ2(I,L) + FAC2 * THV(I,L)
 9058  CONTINUE
  200  CONTINUE
-      DO 9060 I =1,ISTNM1
-       RHODZ2(I,1) = (RGAS*0.01) * RHODZ2(I,1)
-       TEMP(I,1)   = PLKE(I,2) * ADZ2(I,1)
-       RHODZ2(I,1) = TEMP(I,1) * RHODZ2(I,1)
-       RHODZ2(I,1) = PLE(I,2) / RHODZ2(I,1)
-       RHOZPK(I,1) = RHODZ2(I,1) * PLKE(I,2)
-       RHODZ1(I,1) = (RGAS*0.01) * THV(I,2)
-       TEMP(I,1)   = PLK(I,2) * ADZ1(I,2)
-       RHODZ1(I,1) = TEMP(I,1) * RHODZ1(I,1)
-       RHODZ1(I,1) = PL(I,2) / RHODZ1(I,1)
+c     DO 9060 I =1,ISTNM1
+c      RHODZ2(I,1) = (RGAS*0.01) * RHODZ2(I,1)
+c      TEMP(I,1)   = PLKE(I,2) * ADZ2(I,1)
+c      RHODZ2(I,1) = TEMP(I,1) * RHODZ2(I,1)
+c      RHODZ2(I,1) = PLE(I,2) / RHODZ2(I,1)
+c      RHOZPK(I,1) = RHODZ2(I,1) * PLKE(I,2)
+c      RHODZ1(I,1) = (RGAS*0.01) * THV(I,2)
+c      TEMP(I,1)   = PLK(I,2) * ADZ1(I,2)
+c      RHODZ1(I,1) = TEMP(I,1) * RHODZ1(I,1)
+c      RHODZ1(I,1) = PL(I,2) / RHODZ1(I,1)
 9060  CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        RHODZ2(I,L) = (RGAS*0.01) * RHODZ2(I,L)
+        TEMP(I,L)   = PLKE(I,L+1) * ADZ2(I,L)
+        RHODZ2(I,L) = TEMP(I,L) * RHODZ2(I,L)
+        RHODZ2(I,L) = PLE(I,L+1) / RHODZ2(I,L)
+        RHOZPK(I,L) = RHODZ2(I,L) * PLKE(I,L+1)
+        RHODZ1(I,L) = (RGAS*0.01) * THV(I,L+1)
+        TEMP(I,L)   = PLK(I,L+1) * ADZ1(I,L+1)
+        RHODZ1(I,L) = TEMP(I,L) * RHODZ1(I,L)
+        RHODZ1(I,L) = PL(I,L+1) / RHODZ1(I,L)
+       ENDDO
+      ENDDO
 C COMPUTE FLXFAC FOR LAYERS AND EDGES
 C COMPUTE DTG / DT DUE TO RADIATION AND HEAT CONDUCTION THROUGH ICE
 C -----------------------------------------------------------------
-      DO 9062 I =1,ISTNLV
-      FLXFPK(I,1) = PLE(I,2) - PLE(I,1)
-      FLXFPK(I,1) = FLXFPK(I,1) * PLK(I,1)
-      FLXFPK(I,1) = (GRAV*DTAU*0.01) / FLXFPK(I,1)
+c     DO 9062 I =1,ISTNLV
+c     FLXFPK(I,1) = PLE(I,2) - PLE(I,1)
+c     FLXFPK(I,1) = FLXFPK(I,1) * PLK(I,1)
+c     FLXFPK(I,1) = (GRAV*DTAU*0.01) / FLXFPK(I,1)
 9062  CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        FLXFPK(I,L) = PLE(I,L+1) - PLE(I,L)
+        FLXFPK(I,L) = FLXFPK(I,L) * PLK(I,L)
+        FLXFPK(I,L) = (GRAV*DTAU*0.01) / FLXFPK(I,L)
+       ENDDO
+      ENDDO
       DO 9064 I =1,irun
       FLXFPK(I,NLEVP1) = 0.
 9064  CONTINUE
       DO 9066 I =1,irun
       IF (IWATER(I).EQ.0 ) FLXFPK(I,NLEVP1) = 1. / PLKE(I,NLEVP1)
 9066  CONTINUE
-      DO 9068 I =1,ISTNLV
-      FLXFAC(I,1) = FLXFPK(I,1) * PLK(I,1)
+c     DO 9068 I =1,ISTNLV
+c     FLXFAC(I,1) = FLXFPK(I,1) * PLK(I,1)
 9068  CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        FLXFAC(I,L) = FLXFPK(I,L) * PLK(I,L)
+       ENDDO
+      ENDDO
       DO 9070 I =1,irun
       FLXFAC(I,NLEVP1) = FLXFPK(I,NLEVP1)
 9070  CONTINUE
       DO 9074 I =1,irun
       FLXFPK(I,NLEVP1) = CP * FLXFPK(I,NLEVP1)
 9074  CONTINUE
-      DO 9076 I =1,ISTNM1
-      FLXFCE(I,1) = PL(I,2) - PL(I,1)
+c     DO 9076 I =1,ISTNM1
+c     FLXFCE(I,1) = PL(I,2) - PL(I,1)
 9076  CONTINUE
-      DO 9078 I =1,ISTNM1
-      FLXFCE(I,1) = (GRAV*DTAU*0.01) / FLXFCE(I,1)
+c     DO 9078 I =1,ISTNM1
+c     FLXFCE(I,1) = (GRAV*DTAU*0.01) / FLXFCE(I,1)
 9078  CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        FLXFCE(I,L) = PL(I,L+1) - PL(I,L)
+        FLXFCE(I,L) = (GRAV*DTAU*0.01) / FLXFCE(I,L)
+       ENDDO
+      ENDDO
 C COMPUTE RECIPROCALS OF DZ1, DZ2, HS
 C -----------------------------------
-      DO 9084 I =1,ISTNLV
-      ADZ1(I,1) = 1. / ADZ1(I,1)
+c     DO 9084 I =1,ISTNLV
+c     ADZ1(I,1) = 1. / ADZ1(I,1)
 9084  CONTINUE
-      DO 9086 I =1,ISTNM1
-      ADZ2(I,1) = 1. / ADZ2(I,1)
+      DO L =1,NLEV
+       DO I =1,irun
+        ADZ1(I,L) = 1. / ADZ1(I,L)
+       ENDDO
+      ENDDO
+c     DO 9086 I =1,ISTNM1
+c     ADZ2(I,1) = 1. / ADZ2(I,1)
 9086  CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        ADZ2(I,L) = 1. / ADZ2(I,L)
+       ENDDO
+      ENDDO
       DO 9088 I =1,irun
       AHS(I) = 1. / HS(I)
 9088  CONTINUE
 C COMPUTE GRADIENTS OF P**KAPPA
 C -----------------------------
-      DO 9090 I =1,ISTNM1
-      DPK(I,1) = ( PLK(I,2)-PLK(I,1) ) * ADZ2(I,1)
+c     DO 9090 I =1,ISTNM1
+c     DPK(I,1) = ( PLK(I,2)-PLK(I,1) ) * ADZ2(I,1)
 9090  CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        DPK(I,L) = ( PLK(I,L+1)-PLK(I,L) ) * ADZ2(I,L)
+       ENDDO
+      ENDDO
       DO 9092 I =1,irun
       DPK(I,NLEV) = GBYCP / THV(I,NLEV)
 9092  CONTINUE
 C INITIALIZE Q ARRAY
 C ------------------
-      DO 9094 I =1,ISTNM1
-      Q(I,1) = 2. * QQ(I,1)
-      Q(I,1) = SQRT( Q(I,1) )
+c     DO 9094 I =1,ISTNM1
+c     Q(I,1) = 2. * QQ(I,1)
+c     Q(I,1) = SQRT( Q(I,1) )
 9094  CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        Q(I,L) = 2. * QQ(I,L)
+        Q(I,L) = SQRT( Q(I,L) )
+       ENDDO
+      ENDDO
       FIRST = .TRUE.
       LAST = .FALSE.
 C**********************************************************************
@@ -1875,36 +2041,63 @@ CE
 C
 C GRADIENTS
 C ---------
-      DO 9100 I =1,ISTNM1
-        DU(I,1) = (   U(I,1)-  U(I,2) ) * ADZ2(I,1)
-        DV(I,1) = (   V(I,1)-  V(I,2) ) * ADZ2(I,1)
+c     DO 9100 I =1,ISTNM1
+c       DU(I,1) = (   U(I,1)-  U(I,2) ) * ADZ2(I,1)
+c       DV(I,1) = (   V(I,1)-  V(I,2) ) * ADZ2(I,1)
 9100  CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        DU(I,L) = (   U(I,L)-  U(I,L+1) ) * ADZ2(I,L)
+        DV(I,L) = (   V(I,L)-  V(I,L+1) ) * ADZ2(I,L)
+       ENDDO
+      ENDDO
 
 
 C    NEW CODE FOR MOIST BOUNDARY LAYER - NEW CALCULATION OF DTHV
 C
-      IF(ITER.EQ.1) THEN 
-       DO I = 1,ISTNM1 
-        XL(I,1) = XLSAVE(I,1)
+      IF(ITER.EQ.1) THEN
+c      DO I = 1,ISTNM1
+c       XL(I,1) = XLSAVE(I,1)
+c      ENDDO
+       DO L =1,NLEVM1
+        DO I =1,irun
+         XL(I,L) = XLSAVE(I,L)
+        ENDDO
        ENDDO
       ENDIF
 C
-      DO I =1,ISTNM1
-       DTH(I,1) = ( TH(I,1)-TH(I,2) ) * ADZ2(I,1)
-       DSH(I,1) = ( SH(I,1)-SH(I,2) ) * ADZ2(I,1)
-       TL(I,1) = TH(I,1)*PLK(I,1)
+c     DO I =1,ISTNM1
+c      DTH(I,1) = ( TH(I,1)-TH(I,2) ) * ADZ2(I,1)
+c      DSH(I,1) = ( SH(I,1)-SH(I,2) ) * ADZ2(I,1)
+c      TL(I,1) = TH(I,1)*PLK(I,1)
+c     ENDDO
+      DO L =1,NLEVM1
+       DO I =1,irun
+        DTH(I,L) = ( TH(I,L)-TH(I,L+1) ) * ADZ2(I,L)
+        DSH(I,L) = ( SH(I,L)-SH(I,L+1) ) * ADZ2(I,L)
+        TL(I,L) = TH(I,L)*PLK(I,L)
+       ENDDO
       ENDDO
-      DO LL = 1,NLEVM1   
-      DO I = 1,irun  
+      DO LL = 1,NLEVM1
+      DO I = 1,irun
        call qsat ( tl(i,LL),pl(i,LL),shsat(i,LL),dum,.false. )
       ENDDO
       ENDDO
-      DO I = 1,ISTNM1
-       BB(I,1) = FACEPS*SHSAT(I,1)/(TL(I,1)*TL(I,1))
-       AA(I,1) = 1. / (1. + CLH * BB(I,1) )
-COMMM  BB(I,1) = BB(I,1) * AA(I,1) * plke(I,2)
-       BB(I,1) = BB(I,1) * AA(I,1)
-       SBAR(I,1) = AA(I,1) * (SH(I,1) - SHSAT(I,1))
+c     DO I = 1,ISTNM1
+c      BB(I,1) = FACEPS*SHSAT(I,1)/(TL(I,1)*TL(I,1))
+c      AA(I,1) = 1. / (1. + CLH * BB(I,1) )
+cCOMMM BB(I,1) = BB(I,1) * AA(I,1) * plke(I,2)
+c      BB(I,1) = BB(I,1) * AA(I,1)
+c      SBAR(I,1) = AA(I,1) * (SH(I,1) - SHSAT(I,1))
+c     ENDDO
+      DO L =1,NLEVM1
+       DO I =1,irun
+        BB(I,L) = FACEPS*SHSAT(I,L)/(TL(I,L)*TL(I,L))
+        AA(I,L) = 1. / (1. + CLH * BB(I,L) )
+COMMM   BB(I,L) = BB(I,L) * AA(I,L) * plke(I,L+1)
+        BB(I,L) = BB(I,L) * AA(I,L)
+        SBAR(I,L) = AA(I,L) * (SH(I,L) - SHSAT(I,L))
+       ENDDO
       ENDDO
       DO I = 1,irun
 COMMM  SSDEV(I,1) = XL(I,1)*(AA(I,1)*DSH(I,1)-BB(I,1)*DTH(I,1))
@@ -1914,42 +2107,83 @@ COMMM  SSDEV(I,1) = XL(I,1)*(AA(I,1)*DSH(I,1)-BB(I,1)*DTH(I,1))
        SVAR(I,1) = SQRT(SSDEV(I,1))
        IF ( SVAR(I,1).LT.Z1PEM25) SVAR(I,1) = Z1PEM25
       ENDDO
-      DO I = 1,ISTNM2
-COMMM  SSDEV(I,2) = XL(I,1)*(AA(I,2)*DSH(I,1)-BB(I,2)*DTH(I,1))
-       SSDEV(I,2) = XL(I,1)*(AA(I,2)*DSH(I,1)-
-     1              BB(I,2)*plke(I,2)*DTH(I,1))
-       SSDEV(I,2) = B2 * KHSAVE(I,1) * SSDEV(I,1) * SSDEV(I,1)
-       SVAR(I,2) = SQRT(SSDEV(I,2))
-COMMM  SSDEV(I,2) = XL(I,2)*(AA(I,2)*DSH(I,2)-BB(I,2)*DTH(I,2))
-       SSDEV(I,2) = XL(I,2)*(AA(I,2)*DSH(I,2)-
-     1              BB(I,2)*plke(I,3)*DTH(I,2))
-       SSDEV(I,2) = B2 * KHSAVE(I,2) * SSDEV(I,2) * SSDEV(I,2)
-       TEMP(I,2) = SQRT(SSDEV(I,2))
-       SVAR(I,2) = (1./2.) * (SVAR(I,2) + TEMP(I,2))
-       IF ( SVAR(I,2).LT.Z1PEM25) SVAR(I,2) = Z1PEM25
+c     DO I = 1,ISTNM2
+cCOMMM SSDEV(I,2) = XL(I,1)*(AA(I,2)*DSH(I,1)-BB(I,2)*DTH(I,1))
+c      SSDEV(I,2) = XL(I,1)*(AA(I,2)*DSH(I,1)-
+c    1              BB(I,2)*plke(I,2)*DTH(I,1))
+c      SSDEV(I,2) = B2 * KHSAVE(I,1) * SSDEV(I,1) * SSDEV(I,1)
+c      SVAR(I,2) = SQRT(SSDEV(I,2))
+cCOMMM SSDEV(I,2) = XL(I,2)*(AA(I,2)*DSH(I,2)-BB(I,2)*DTH(I,2))
+c      SSDEV(I,2) = XL(I,2)*(AA(I,2)*DSH(I,2)-
+c    1              BB(I,2)*plke(I,3)*DTH(I,2))
+c      SSDEV(I,2) = B2 * KHSAVE(I,2) * SSDEV(I,2) * SSDEV(I,2)
+c      TEMP(I,2) = SQRT(SSDEV(I,2))
+c      SVAR(I,2) = (1./2.) * (SVAR(I,2) + TEMP(I,2))
+c      IF ( SVAR(I,2).LT.Z1PEM25) SVAR(I,2) = Z1PEM25
+c     ENDDO
+      DO L =2,NLEVM1
+       DO I =1,irun
+COMMM   SSDEV(I,L) = XL(I,L-1)*(AA(I,L)*DSH(I,L-1)-BB(I,L)*DTH(I,L-1))
+        SSDEV(I,L) = XL(I,L-1)*(AA(I,L)*DSH(I,L-1)-
+     1               BB(I,L)*plke(I,L)*DTH(I,L-1))
+        SSDEV(I,L) = B2 * KHSAVE(I,L-1) * SSDEV(I,L-1) * SSDEV(I,L-1)
+        SVAR(I,L) = SQRT(SSDEV(I,L))
+COMMM   SSDEV(I,L) = XL(I,L)*(AA(I,L)*DSH(I,L)-BB(I,L)*DTH(I,L))
+        SSDEV(I,L) = XL(I,L)*(AA(I,L)*DSH(I,L)-
+     1               BB(I,L)*plke(I,L+1)*DTH(I,L))
+        SSDEV(I,L) = B2 * KHSAVE(I,L) * SSDEV(I,L) * SSDEV(I,L)
+        TEMP(I,L) = SQRT(SSDEV(I,L))
+        SVAR(I,L) = (1./2.) * (SVAR(I,L) + TEMP(I,L))
+        IF ( SVAR(I,L).LT.Z1PEM25) SVAR(I,L) = Z1PEM25
+       ENDDO
       ENDDO
-      DO I = 1,ISTNM1
-       Q1M(I,1) = SBAR(I,1) / SVAR(I,1)
-       FCC(I,1) = (1./2.) * ( 1. + ERRF( P5SR*Q1M(I,1) ) )
-       SHL(I,1) =  FCC(I,1) * SBAR(I,1)
-       ARG(I,1)  = (1./2.)*Q1M(I,1)*Q1M(I,1)
-       IF(ARG(I,1).LE.ARGMAX)
-     1       SHL(I,1) =  SHL(I,1)+RSQ2PI*SVAR(I,1)*EXP(-ARG(I,1))
-       BETAT(I,1) = 1. + VIRTCON * SH(I,1) - VRT1CON * SHL(I,1)
-       BETAW(I,1) = VIRTCON *
-     1               ( TH(I,1) + (CLH/plk(I,1)) * SHL(I,1) )
-       BETAL(I,1) = ( 1. + VIRTCON*SH(I,1) - TWO*VRT1CON*SHL(I,1) )
-     1    * (CLH/plke(I,2)) - VRT1CON * TH(I,1)
-COMMM  BETAT1(I,1) = BETAT(I,1) - BB(I,1) * FCC(I,1) * BETAL(I,1)
-       BETAT1(I,1) = BETAT(I,1) -
-     1              BB(I,1)*plk(i,1) * FCC(I,1) * BETAL(I,1)
-       BETAW1(I,1) = BETAW(I,1) + AA(I,1) * FCC(I,1) * BETAL(I,1)
+c     DO I = 1,ISTNM1
+c      Q1M(I,1) = SBAR(I,1) / SVAR(I,1)
+c      FCC(I,1) = (1./2.) * ( 1. + ERRF( P5SR*Q1M(I,1) ) )
+c      SHL(I,1) =  FCC(I,1) * SBAR(I,1)
+c      ARG(I,1)  = (1./2.)*Q1M(I,1)*Q1M(I,1)
+c      IF(ARG(I,1).LE.ARGMAX)
+c    1       SHL(I,1) =  SHL(I,1)+RSQ2PI*SVAR(I,1)*EXP(-ARG(I,1))
+c      BETAT(I,1) = 1. + VIRTCON * SH(I,1) - VRT1CON * SHL(I,1)
+c      BETAW(I,1) = VIRTCON *
+c    1               ( TH(I,1) + (CLH/plk(I,1)) * SHL(I,1) )
+c      BETAL(I,1) = ( 1. + VIRTCON*SH(I,1) - TWO*VRT1CON*SHL(I,1) )
+c    1    * (CLH/plke(I,2)) - VRT1CON * TH(I,1)
+cCOMMM BETAT1(I,1) = BETAT(I,1) - BB(I,1) * FCC(I,1) * BETAL(I,1)
+c      BETAT1(I,1) = BETAT(I,1) -
+c    1              BB(I,1)*plk(i,1) * FCC(I,1) * BETAL(I,1)
+c      BETAW1(I,1) = BETAW(I,1) + AA(I,1) * FCC(I,1) * BETAL(I,1)
+c     ENDDO
+      DO L =1,NLEVM1
+       DO I =1,irun
+        Q1M(I,L) = SBAR(I,L) / SVAR(I,L)
+        FCC(I,L) = (1./2.) * ( 1. + ERRF( P5SR*Q1M(I,L) ) )
+        SHL(I,L) =  FCC(I,L) * SBAR(I,L)
+        ARG(I,L)  = (1./2.)*Q1M(I,L)*Q1M(I,L)
+        IF(ARG(I,L).LE.ARGMAX)
+     1        SHL(I,L) =  SHL(I,L)+RSQ2PI*SVAR(I,L)*EXP(-ARG(I,L))
+        BETAT(I,L) = 1. + VIRTCON * SH(I,L) - VRT1CON * SHL(I,L)
+        BETAW(I,L) = VIRTCON *
+     1                ( TH(I,L) + (CLH/plk(I,L)) * SHL(I,L) )
+        BETAL(I,L) = ( 1. + VIRTCON*SH(I,L) - TWO*VRT1CON*SHL(I,L) )
+     1     * (CLH/plke(I,L+1)) - VRT1CON * TH(I,L)
+COMMM   BETAT1(I,L) = BETAT(I,L) - BB(I,L) * FCC(I,L) * BETAL(I,L)
+        BETAT1(I,L) = BETAT(I,L) -
+     1               BB(I,L)*plk(i,L) * FCC(I,L) * BETAL(I,L)
+        BETAW1(I,L) = BETAW(I,L) + AA(I,L) * FCC(I,L) * BETAL(I,L)
+       ENDDO
       ENDDO
-      DO I = 1,ISTNM1
-       DTHV(I,1) =  (1./2.)*((BETAT1(I,1)+BETAT1(I,2))*DTH(I,1)
-     1              + (BETAW1(I,1)+BETAW1(I,2))*DSH(I,1))
+c     DO I = 1,ISTNM1
+c      DTHV(I,1) =  (1./2.)*((BETAT1(I,1)+BETAT1(I,2))*DTH(I,1)
+c    1              + (BETAW1(I,1)+BETAW1(I,2))*DSH(I,1))
+c     ENDDO
+      DO L =1,NLEVM1
+       DO I =1,irun
+        DTHV(I,L) =  (1./2.)*((BETAT1(I,L)+BETAT1(I,L+1))*DTH(I,L)
+     1               + (BETAW1(I,L)+BETAW1(I,L+1))*DSH(I,L))
+       ENDDO
       ENDDO
- 
+
 C GRADIENTS AT THE TOP OF THE SURFACE LAYER
 C -----------------------------------------
       DO 9102 I =1,irun
@@ -1962,18 +2196,31 @@ C -----------------------------------------
 
 C CALCULATE BRUNT-VAISALA FREQUENCIES, SHEARS, RICHARDSON NUMBERS
 C ---------------------------------------------------------------
-      DO 9104 I =1,ISTNLV
-      STRT(I,1) = CP * DTHV(I,1) * DPK(I,1)
-      DW2(I,1) = DU(I,1) * DU(I,1) + DV(I,1) * DV(I,1)
-      IF ( DW2(I,1) .LE. 1.e-4 ) DW2(I,1) = 1.e-4
-      RI(I,1) = STRT(I,1) / DW2(I,1)
+c     DO 9104 I =1,ISTNLV
+c     STRT(I,1) = CP * DTHV(I,1) * DPK(I,1)
+c     DW2(I,1) = DU(I,1) * DU(I,1) + DV(I,1) * DV(I,1)
+c     IF ( DW2(I,1) .LE. 1.e-4 ) DW2(I,1) = 1.e-4
+c     RI(I,1) = STRT(I,1) / DW2(I,1)
 9104  CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        STRT(I,L) = CP * DTHV(I,L) * DPK(I,L)
+        DW2(I,L) = DU(I,L) * DU(I,L) + DV(I,L) * DV(I,L)
+        IF ( DW2(I,L) .LE. 1.e-4 ) DW2(I,L) = 1.e-4
+        RI(I,L) = STRT(I,L) / DW2(I,L)
+       ENDDO
+      ENDDO
 C FILL RICHARDSON NUMBER AND SURFACE WIND DIAGNOSTICS
 C       (THOSE NEEDED FROM FIRST TRBFLX ITERATION)
 C ---------------------------------------------------
-      DO 9106 I =1,ISTNM1
-      SRI(I,1) = RI(I,1)
+c     DO 9106 I =1,ISTNM1
+c     SRI(I,1) = RI(I,1)
 9106  CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        SRI(I,L) = RI(I,L)
+       ENDDO
+      ENDDO
       DO 9108 I =1,irun
       SRI(I,NLEV) = RIB(I)
 9108  CONTINUE
@@ -1982,29 +2229,48 @@ C ---------------------------------------------------
 9110  CONTINUE
 C INITIALIZE KH, KM, QE AND P3 AND ELIMINATE SMALL QQ
 C ---------------------------------------------------
-      DO 9112 I =1,ISTNM1
-      KH(I,1) = 0.
-      KM(I,1) = 0.
-      QQE(I,1) = 0.
-      QE(I,1) = 0.
-      P3(I,1) = 0.
+c     DO 9112 I =1,ISTNM1
+c     KH(I,1) = 0.
+c     KM(I,1) = 0.
+c     QQE(I,1) = 0.
+c     QE(I,1) = 0.
+c     P3(I,1) = 0.
 9112  CONTINUE
-      DO 9414 I = 1,ISTNM1
-       IBITSTB(I,1) = 0
- 9414 CONTINUE
-      DO 9314 I = 1,ISTNM1
-       IF ( QQ(I,1) .GT. 1.e-8 ) THEN
-        INTQ(I,1) = 1
-       ELSE
-        INTQ(I,1) = 0
-       ENDIF
- 9314 CONTINUE
-      DO 9114 I = 1,ISTNM1
-       IF ( QQ(I,1).LE.1.e-8 ) THEN
-        QQ(I,1) = 0.
-        Q(I,1) = 0.
-       ENDIF
- 9114 CONTINUE
+c     DO 9414 I = 1,ISTNM1
+c      IBITSTB(I,1) = 0
+c9414 CONTINUE
+c     DO 9314 I = 1,ISTNM1
+c      IF ( QQ(I,1) .GT. 1.e-8 ) THEN
+c       INTQ(I,1) = 1
+c      ELSE
+c       INTQ(I,1) = 0
+c      ENDIF
+c9314 CONTINUE
+c     DO 9114 I = 1,ISTNM1
+c      IF ( QQ(I,1).LE.1.e-8 ) THEN
+c       QQ(I,1) = 0.
+c       Q(I,1) = 0.
+c      ENDIF
+c9114 CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        KH(I,L) = 0.
+        KM(I,L) = 0.
+        QQE(I,L) = 0.
+        QE(I,L) = 0.
+        P3(I,L) = 0.
+        IBITSTB(I,L) = 0
+        IF ( QQ(I,L) .GT. 1.e-8 ) THEN
+         INTQ(I,L) = 1
+        ELSE
+         INTQ(I,L) = 0
+        ENDIF
+        IF ( QQ(I,L).LE.1.e-8 ) THEN
+         QQ(I,L) = 0.
+         Q(I,L) = 0.
+        ENDIF
+       ENDDO
+      ENDDO
 C
        DO 300 LMINQ = 1,NLEVM1
         IBIT = 0
@@ -2034,10 +2300,16 @@ C ----------------------------------------------
 C FOR INITIAL START ONLY : USE EQUILIBRIUM MODEL
 C ----------------------------------------------
       IF ( INIT .EQ. 1 ) THEN
-      DO 9180 I =1,ISTNM1
-       QQ(I,1) = QQE(I,1)
-       Q(I,1) = QE(I,1)
+c     DO 9180 I =1,ISTNM1
+c      QQ(I,1) = QQE(I,1)
+c      Q(I,1) = QE(I,1)
 9180  CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        QQ(I,L) = QQE(I,L)
+        Q(I,L) = QE(I,L)
+       ENDDO
+      ENDDO
        INIT = 2
         CALL TRBLEN(STRT,DW2,DZ3,Q,VKZE,VKZM,DTHV,DPK,DU,DV,XL,QXLM,
      1    NLEV,INIT,LMIN,LMINQ,LMINQ1,CP,INT1,INT2,
@@ -2049,29 +2321,56 @@ C DIMENSIONLESS COEFFS AND P3 (Q LE QE)
 C -------------------------------------
       IF( LMIN .LT. NLEV ) THEN
        ISTNML = irun * NLEVML
-       DO 9320 I = 1,ISTNML
-        IF (  (IBITSTB(I,LMIN).EQ.1)  .AND.
-     1            ( Q(I,LMIN) .LE. QE(I,LMIN) ) ) THEN
-         IBITSTB(I,LMIN) = 1
-        ELSE
-         IBITSTB(I,LMIN) = 0
-        ENDIF
- 9320  CONTINUE
-       DO 9220 I = 1,ISTNML
-        IF(IBITSTB(I,LMIN).EQ.1 ) THEN
-         TEMP(I,LMIN) = Q(I,LMIN) / QE(I,LMIN)
-         KH(I,LMIN) = TEMP(I,LMIN) * KH(I,LMIN)
-         KM(I,LMIN) = TEMP(I,LMIN) * KM(I,LMIN)
-        ENDIF
-        TEMP(I,LMIN) = 0.01 * QQE(I,LMIN)
-        IF((IBITSTB(I,LMIN).EQ.1) .AND.
-     1        ( QQ(I,LMIN) .LE. TEMP(I,LMIN) )) THEN
-         QQ(I,LMIN) = TEMP(I,LMIN)
-         Q(I,LMIN) = 0.1 * QE(I,LMIN)
-        ENDIF
-        IF(IBITSTB(I,LMIN).EQ.1 ) P3(I,LMIN) = (2.*B3) *
-     1            ( QE(I,LMIN) - Q(I,LMIN) )
- 9220  CONTINUE
+c      DO 9320 I = 1,ISTNML
+c       IF (  (IBITSTB(I,LMIN).EQ.1)  .AND.
+c    1            ( Q(I,LMIN) .LE. QE(I,LMIN) ) ) THEN
+c        IBITSTB(I,LMIN) = 1
+c       ELSE
+c        IBITSTB(I,LMIN) = 0
+c       ENDIF
+c9320  CONTINUE
+       DO L =LMIN,NLEVM1
+        DO I =1,irun
+         IF (  (IBITSTB(I,L).EQ.1)  .AND.
+     1             ( Q(I,L) .LE. QE(I,L) ) ) THEN
+          IBITSTB(I,L) = 1
+         ELSE
+          IBITSTB(I,L) = 0
+         ENDIF
+        ENDDO
+       ENDDO
+c      DO 9220 I = 1,ISTNML
+c       IF(IBITSTB(I,LMIN).EQ.1 ) THEN
+c        TEMP(I,LMIN) = Q(I,LMIN) / QE(I,LMIN)
+c        KH(I,LMIN) = TEMP(I,LMIN) * KH(I,LMIN)
+c        KM(I,LMIN) = TEMP(I,LMIN) * KM(I,LMIN)
+c       ENDIF
+c       TEMP(I,LMIN) = 0.01 * QQE(I,LMIN)
+c       IF((IBITSTB(I,LMIN).EQ.1) .AND.
+c    1        ( QQ(I,LMIN) .LE. TEMP(I,LMIN) )) THEN
+c        QQ(I,LMIN) = TEMP(I,LMIN)
+c        Q(I,LMIN) = 0.1 * QE(I,LMIN)
+c       ENDIF
+c       IF(IBITSTB(I,LMIN).EQ.1 ) P3(I,LMIN) = (2.*B3) *
+c    1            ( QE(I,LMIN) - Q(I,LMIN) )
+c9220  CONTINUE
+       DO L =LMIN,NLEVM1
+        DO I =1,irun
+         IF(IBITSTB(I,L).EQ.1 ) THEN
+          TEMP(I,L) = Q(I,L) / QE(I,L)
+          KH(I,L) = TEMP(I,L) * KH(I,L)
+          KM(I,L) = TEMP(I,L) * KM(I,L)
+         ENDIF
+         TEMP(I,L) = 0.01 * QQE(I,L)
+         IF((IBITSTB(I,L).EQ.1) .AND.
+     1         ( QQ(I,L) .LE. TEMP(I,L) )) THEN
+          QQ(I,L) = TEMP(I,L)
+          Q(I,L) = 0.1 * QE(I,L)
+         ENDIF
+         IF(IBITSTB(I,L).EQ.1 ) P3(I,L) = (2.*B3) *
+     1             ( QE(I,L) - Q(I,L) )
+        ENDDO
+       ENDDO
       ENDIF
 C DIMENSIONLESS COEFFS AND P3 (Q GT QE)
 C -------------------------------------
@@ -2086,19 +2385,36 @@ C ------------------------
        ISTNML = irun * ( NLEV - LMIN )
       ENDIF
       IF( LMIN .LT. NLEV ) THEN
-      DO 9122 I =1,ISTNML
-       P3(I,LMIN) = P3(I,LMIN) * DTAU / XL(I,LMIN)
-       TEMP(I,LMIN) = QQE(I,LMIN) * P3(I,LMIN)
-       XQ(I,LMIN) = QQE(I,LMIN) - QQ(I,LMIN)
+c     DO 9122 I =1,ISTNML
+c      P3(I,LMIN) = P3(I,LMIN) * DTAU / XL(I,LMIN)
+c      TEMP(I,LMIN) = QQE(I,LMIN) * P3(I,LMIN)
+c      XQ(I,LMIN) = QQE(I,LMIN) - QQ(I,LMIN)
 9122  CONTINUE
-       DO 9216 I = 1,ISTNML
-        IF( ( (IBITSTB(I,LMIN).EQ.1) .AND.
-     1            ( XQ(I,LMIN) .LT. TEMP(I,LMIN) ) )
+       DO L =LMIN,NLEVM1
+        DO I =1,irun
+         P3(I,L) = P3(I,L) * DTAU / XL(I,L)
+         TEMP(I,L) = QQE(I,L) * P3(I,L)
+         XQ(I,L) = QQE(I,L) - QQ(I,L)
+        ENDDO
+       ENDDO
+c      DO 9216 I = 1,ISTNML
+c       IF( ( (IBITSTB(I,LMIN).EQ.1) .AND.
+c    1            ( XQ(I,LMIN) .LT. TEMP(I,LMIN) ) )
+c    2                  .OR.
+c    3 ( (IBITSTB(I,LMIN).EQ.0) .AND.
+c    4            ( XQ(I,LMIN) .GT. TEMP(I,LMIN) ) ) )
+c    5  P3(I,LMIN) = XQ(I,LMIN) / QQE(I,LMIN)
+c9216  CONTINUE
+       DO L =LMIN,NLEVM1
+        DO I =1,irun
+         IF( ( (IBITSTB(I,L).EQ.1) .AND.
+     1             ( XQ(I,L) .LT. TEMP(I,L) ) )
      2                  .OR.
-     3 ( (IBITSTB(I,LMIN).EQ.0) .AND.
-     4            ( XQ(I,LMIN) .GT. TEMP(I,LMIN) ) ) )
-     5  P3(I,LMIN) = XQ(I,LMIN) / QQE(I,LMIN)
- 9216  CONTINUE
+     3       ( (IBITSTB(I,L).EQ.0) .AND.
+     4             ( XQ(I,L) .GT. TEMP(I,L) ) ) )
+     5   P3(I,L) = XQ(I,L) / QQE(I,L)
+        ENDDO
+       ENDDO
       ENDIF
  550  CONTINUE
 C DIAGNOSTIC PROFILES : INITIAL RI AND QQ
@@ -2113,10 +2429,16 @@ C ---------------------------------------
        Z0IN(I) = Z0(I)
        ZETAIN(I) = ZETA(I)
 9118  CONTINUE
-      DO 9120 I =1,ISTNLV
-       RIINIT(I,1) = RI(I,1)
-       QQINIT(I,1) = QQ(I,1)
+c     DO 9120 I =1,ISTNLV
+c      RIINIT(I,1) = RI(I,1)
+c      QQINIT(I,1) = QQ(I,1)
 9120  CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        RIINIT(I,L) = RI(I,L)
+        QQINIT(I,L) = QQ(I,L)
+       ENDDO
+      ENDDO
       ENDIF
 
 C Zero diffusion of TKE above 10 mb
@@ -2135,17 +2457,27 @@ C UPDATE TURBULENT KINETIC ENERGY QQ
 C ----------------------------------
       NLEVMQ = NLEV - LMINQ1
       ISTNMQ = irun * NLEVMQ
-      DO 9306 I =1,ISTNMQ
-      RHOKDZ(I,LMINQ1) = RHODZ1(I,LMINQ1)
-     1      * QXLM(I,LMINQ1)
+c     DO 9306 I =1,ISTNMQ
+c     RHOKDZ(I,LMINQ1) = RHODZ1(I,LMINQ1)
+c    1      * QXLM(I,LMINQ1)
 9306  CONTINUE
+      DO L =LMINQ1,NLEVM1
+       DO I =1,irun
+        RHOKDZ(I,L) = RHODZ1(I,L) * QXLM(I,L)
+       ENDDO
+      ENDDO
        CALL TRBDIF(QQ(1,LMINQ1),P3(1,LMINQ1),RHOKDZ(1,LMINQ1),
      1       FLXFCE(1,LMINQ1),DTHS,DELTHS,NLEVMQ,1,1.0 _d -20,irun)
 C
 C SAVE KH BEFORE ADDING DIMENSIONS FOR USE BY MOIST BOUYANCY CALCULATION
 C
-      DO I = 1,ISTNM1
-       KHSAVE(I,1) = KH(I,1)
+c     DO I = 1,ISTNM1
+c      KHSAVE(I,1) = KH(I,1)
+c     ENDDO
+      DO L =1,NLEVM1
+       DO I =1,irun
+        KHSAVE(I,L) = KH(I,L)
+       ENDDO
       ENDDO
 C
 C   DIMENSIONAL DIFFUSION COEFFS INCLUDING BACKGROUND AMOUNTS
@@ -2153,21 +2485,36 @@ C
       IF(LMINQ1.GT.1)THEN
        ISTLMQ = irun * (LMINQ1-1)
 CB
-      DO 9124 I =1,ISTLMQ
-       KM(I,1) = KMBG
-       KH(I,1) = KHBG
+c     DO 9124 I =1,ISTLMQ
+c      KM(I,1) = KMBG
+c      KH(I,1) = KHBG
 9124  CONTINUE
+       DO L =1,LMINQ1-1
+        DO I =1,irun
+         KM(I,L) = KMBG
+         KH(I,L) = KHBG
+        ENDDO
+       ENDDO
 CE
       ENDIF
 C
 CB
-      DO 9126 I =1,ISTNMQ
-      Q(I,LMINQ1) = 2. * QQ(I,LMINQ1)
-      Q(I,LMINQ1) = SQRT(Q(I,LMINQ1))
-      XQ(I,LMINQ1) = XL(I,LMINQ1) * Q(I,LMINQ1)
-      KM(I,LMINQ1)=XQ(I,LMINQ1)*KM(I,LMINQ1)+KMBG
-      KH(I,LMINQ1)=XQ(I,LMINQ1)*KH(I,LMINQ1)+KHBG
+c     DO 9126 I =1,ISTNMQ
+c     Q(I,LMINQ1) = 2. * QQ(I,LMINQ1)
+c     Q(I,LMINQ1) = SQRT(Q(I,LMINQ1))
+c     XQ(I,LMINQ1) = XL(I,LMINQ1) * Q(I,LMINQ1)
+c     KM(I,LMINQ1)=XQ(I,LMINQ1)*KM(I,LMINQ1)+KMBG
+c     KH(I,LMINQ1)=XQ(I,LMINQ1)*KH(I,LMINQ1)+KHBG
 9126  CONTINUE
+      DO L =LMINQ1,NLEVM1
+       DO I =1,irun
+        Q(I,L) = 2. * QQ(I,L)
+        Q(I,L) = SQRT(Q(I,L))
+        XQ(I,L)= XL(I,L) * Q(I,L)
+        KM(I,L)=XQ(I,L)*KM(I,L)+KMBG
+        KH(I,L)=XQ(I,L)*KH(I,L)+KHBG
+       ENDDO
+      ENDDO
 CE
 C Zero diffusion of u,v,t,q above 10 mb
       do L = 1,nlev-1
@@ -2185,12 +2532,18 @@ CCC      endif
 C
 C   CALCULATE INTERNAL FLUXES AND UPDATE PROGNOSTIC VARIABLES: TH AND S
 C
-      DO 9128 I =1,ISTNLV
-      TEMP(I,1) = RHOZPK(I,1) * KH(I,1)
+c     DO 9128 I =1,ISTNLV
+c     TEMP(I,1) = RHOZPK(I,1) * KH(I,1)
 9128  CONTINUE
-      DO 9130 I =1,ISTNLV
-      DELTH(I,1) = 0.
+c     DO 9130 I =1,ISTNLV
+c     DELTH(I,1) = 0.
 9130  CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        TEMP(I,L) = RHOZPK(I,L) * KH(I,L)
+        DELTH(I,L) = 0.
+       ENDDO
+      ENDDO
       DO 9132 I =1,irun
       DELTH(I,NLEVP1) = 1.
 9132  CONTINUE
@@ -2210,12 +2563,18 @@ C
        enddo
       enddo
 
-      DO 9134 I =1,ISTNLV
-      RHOKDZ(I,1) = RHODZ2(I,1) * KH(I,1)
+c     DO 9134 I =1,ISTNLV
+c     RHOKDZ(I,1) = RHODZ2(I,1) * KH(I,1)
 9134  CONTINUE
-      DO 9138 I =1,ISTNLV
-      DELSH(I,1) = 0.
+c     DO 9138 I =1,ISTNLV
+c     DELSH(I,1) = 0.
 9138  CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        RHOKDZ(I,L) = RHODZ2(I,L) * KH(I,L)
+        DELSH(I,L) = 0.
+       ENDDO
+      ENDDO
       DO 9140 I =1,irun
       DELSH(I,NLEVP1) = 1.
 9140  CONTINUE
@@ -2241,7 +2600,7 @@ C
 C   Update Tracers Due to Turbulent Diffusion
 C
       do i = 1,irun
-      rhokdz(i,nlev) = 0.0      
+      rhokdz(i,nlev) = 0.0
       enddo
 
 c     do nt = 1,ntrace
@@ -2254,25 +2613,46 @@ c     enddo
 C
 C   CALCULATE INTERNAL FLUXES AND UPDATE PROGNOSTIC VARIABLES: U AND V
 C
-      DO 9172 I =1,ISTNLV
-      RHOKDZ(I,1) = RHODZ2(I,1) * KM(I,1)
+c     DO 9172 I =1,ISTNLV
+c     RHOKDZ(I,1) = RHODZ2(I,1) * KM(I,1)
 9172  CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        RHOKDZ(I,L) = RHODZ2(I,L) * KM(I,L)
+       ENDDO
+      ENDDO
        CALL TRBDIF(U,V,RHOKDZ,FLXFAC,DTHS,DELTHS,NLEV,3,0. _d 0,irun)
 C ( FILL DIAGNOSTIC ARRAYS IF REQUIRED )
-      DO 9174 I =1,ISTNLV
-      WU(I,1) = WU(I,1) + RHOKDZ(I,1) * ( U(I,2) - U(I,1) )
+c     DO 9174 I =1,ISTNLV
+c     WU(I,1) = WU(I,1) + RHOKDZ(I,1) * ( U(I,2) - U(I,1) )
 9174  CONTINUE
-      DO 9176 I =1,ISTNLV
-      WV(I,1) = WV(I,1) + RHOKDZ(I,1) * ( V(I,2) - V(I,1) )
+c     DO 9176 I =1,ISTNLV
+c     WV(I,1) = WV(I,1) + RHOKDZ(I,1) * ( V(I,2) - V(I,1) )
 9176  CONTINUE
-      DO 9300 I = 1,ISTNM1
-      IF ( QQ(I,1) .GT. QQMIN ) THEN
-         IBITSTB(I,1) = 1
-         ELSE
-         IBITSTB(I,1) = 0
-      ENDIF
-      IF( IBITSTB(I,1).EQ.1 ) FREQDG(I,1) = FREQDG(I,1) + aitr
- 9300 CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        WU(I,L) = WU(I,L) + RHOKDZ(I,L) * ( U(I,L+1) - U(I,L) )
+        WV(I,L) = WV(I,L) + RHOKDZ(I,L) * ( V(I,L+1) - V(I,L) )
+       ENDDO
+      ENDDO
+c     DO 9300 I = 1,ISTNM1
+c     IF ( QQ(I,1) .GT. QQMIN ) THEN
+c        IBITSTB(I,1) = 1
+c        ELSE
+c        IBITSTB(I,1) = 0
+c     ENDIF
+c     IF( IBITSTB(I,1).EQ.1 ) FREQDG(I,1) = FREQDG(I,1) + aitr
+c9300 CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        IF ( QQ(I,L) .GT. QQMIN ) THEN
+         IBITSTB(I,L) = 1
+        ELSE
+         IBITSTB(I,L) = 0
+        ENDIF
+        IF( IBITSTB(I,L).EQ.1 ) FREQDG(I,L) = FREQDG(I,L) + aitr
+       ENDDO
+      ENDDO
        do i = 1,irun
         qqcolmin(i) = qq(i,nlev)*0.1
         qqcolmax(i) = qq(i,nlev)
@@ -2306,12 +2686,18 @@ C ( FILL DIAGNOSTIC ARRAYS IF REQUIRED )
       do i=1,irun
       sz0(i) = sz0(i) + aitr*z0(i)
       enddo
-      DO I =1,ISTNLV
-      EU(I,1) = EU(I,1) + AITR*KM(I,1)
-      enddo
-      DO I =1,ISTNLV
-      ET(I,1) = ET(I,1) + AITR*KH(I,1)
-      enddo
+c     DO I =1,ISTNLV
+c     EU(I,1) = EU(I,1) + AITR*KM(I,1)
+c     enddo
+c     DO I =1,ISTNLV
+c     ET(I,1) = ET(I,1) + AITR*KH(I,1)
+c     enddo
+      DO L =1,NLEV
+       DO I =1,irun
+        EU(I,L) = EU(I,L) + AITR*KM(I,L)
+        ET(I,L) = ET(I,L) + AITR*KH(I,L)
+       ENDDO
+      ENDDO
       DO I =1,irun
       scu(I) = scu(I) + AITR*cu(I)
       enddo
@@ -2319,17 +2705,27 @@ C ( FILL DIAGNOSTIC ARRAYS IF REQUIRED )
       sct(I) = sct(I) + AITR*ct(I)
       enddo
       IF(tprof) then
-      do i=1,ISTNM1
-      XLDIAG(I,1) = XLDIAG(I,1) + AITR*XL(I,1)
-      enddo
+c     do i=1,ISTNM1
+c     XLDIAG(I,1) = XLDIAG(I,1) + AITR*XL(I,1)
+c     enddo
+       DO L =1,NLEVM1
+        DO I =1,irun
+         XLDIAG(I,L) = XLDIAG(I,L) + AITR*XL(I,L)
+        ENDDO
+       ENDDO
       endif
       FIRST = .FALSE.
 C
 C SAVE XL,CT,XX,YY,ZETA FOR USE BY MOIST BOUYANCY CALCULATION
 C
       IF(ITER.EQ.ITRTRB)THEN
-       DO I = 1,ISTNM1
-        XLSAVE(I,1) = XL(I,1)
+c      DO I = 1,ISTNM1
+c       XLSAVE(I,1) = XL(I,1)
+c      ENDDO
+       DO L =1,NLEVM1
+        DO I =1,irun
+         XLSAVE(I,L) = XL(I,L)
+        ENDDO
        ENDDO
        DO I = 1,irun
         CTSAVE(I) = CT(I)
@@ -2339,20 +2735,32 @@ C
        ENDDO
       ENDIF
 
-      do i = 1,istnlv
-       turbfcc(i,1) = turbfcc(i,1) + fcc(i,1) * aitr
-      enddo
-      do i = 1,irun*nlev
-       qliq(i,1) = qliq(i,1) + shl(i,1) * aitr
-      enddo
+c     do i = 1,istnlv
+c      turbfcc(i,1) = turbfcc(i,1) + fcc(i,1) * aitr
+c     enddo
+c     do i = 1,irun*nlev
+c      qliq(i,1) = qliq(i,1) + shl(i,1) * aitr
+c     enddo
+      DO L =1,NLEV
+       DO I =1,irun
+        turbfcc(I,L) = turbfcc(I,L) + fcc(I,L) * aitr
+        qliq(I,L) = qliq(I,L) + shl(I,L) * aitr
+       ENDDO
+      ENDDO
 C
 C   END OF MAIN LOOP
 C
  2000 CONTINUE
-      DO 9194 I =1,ISTNLV
-       WU(I,1) =  WU(I,1) * AITR
-       WV(I,1) =  WV(I,1) * AITR
+c     DO 9194 I =1,ISTNLV
+c      WU(I,1) =  WU(I,1) * AITR
+c      WV(I,1) =  WV(I,1) * AITR
 9194  CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        WU(I,L) =  WU(I,L) * AITR
+        WV(I,L) =  WV(I,L) * AITR
+       ENDDO
+      ENDDO
 C
       RETURN
       END
@@ -2448,10 +2856,10 @@ C Local Variables
       PARAMETER ( Z0MIN  =  USTZ0S/USTMX3)
       PARAMETER ( H0BYZ0 =    30.0    )
       PARAMETER ( USTH0S =  H0BYZ0*USTZ0S )
-      PARAMETER ( H0VEG  =   0.01     )  
+      PARAMETER ( H0VEG  =   0.01     )
       PARAMETER ( Z0VEGM =   0.005    )
       PARAMETER ( PRFAC  = 0.595864   )
-      PARAMETER ( XPFAC  = .55        )  
+      PARAMETER ( XPFAC  = .55        )
       PARAMETER ( DIFSQT  = 3.872983E-3)
 
       _RL psihdiag(irun),psimdiag(irun)
@@ -3100,7 +3508,7 @@ C Argument List Declarations
       integer irun,iflag
       _RL VZZ(IRUN),VZH(IRUN),VPSIM(IRUN),VPSIH(IRUN),
      1     VX(IRUN),VXS(IRUN),VY(IRUN),VYS(IRUN)
- 
+
 C Local Variables
       _RL ZWM,RZWM,Z0M,ZCM,RZCM,CM1,CM2,CM6,CM7,CM8ARG,YCM
       PARAMETER ( ZWM     =    1.    )
@@ -3171,10 +3579,10 @@ C
        Z(I) = -18. * Z(I)
        Z0(I) = -18. * Z0(I)
  9004 CONTINUE
- 
+
       CALL PHI( Z,X1,Y1,IFLAG,IBIT )
       CALL PHI( Z0,X0,Y0,IFLAG,IBIT )
- 
+
 C ****************************
 C *****    COMPUTE PSIM  *****
 C ****************************
@@ -3435,7 +3843,7 @@ C Local Variables
       _RL clmt,clmt53
       PARAMETER ( RF1     = 0.2340678 )
       PARAMETER ( RF2     = 0.2231172 )
-      PARAMETER ( E5      = 49.66     )  
+      PARAMETER ( E5      = 49.66     )
       PARAMETER ( D4      = 2.6532122E-2 )
       PARAMETER ( D1      = D4 * E5   )
       PARAMETER ( RFC     = 0.1912323 )
@@ -3444,7 +3852,7 @@ C Local Variables
       PARAMETER ( DZCNV   = 100.      )
       PARAMETER ( XL0CNV  = DZCNV * ALPHA )
       PARAMETER ( XL0MIN  = 1.        )
-      PARAMETER ( CLMT    = 0.23      )  
+      PARAMETER ( CLMT    = 0.23      )
       PARAMETER ( CLMT53  = 5. * CLMT / 3. )
 
       integer ibit,nlevm1,nlevp1,istnlv,istnm1,nlevml,istnml,Lp1
@@ -3460,15 +3868,29 @@ C
 C
 C COMPUTE DEPTHS OF UNSTABLE LAYERS
 C =================================
-      DO 10 I=1,ISTNLV
-          STBFCN(I,1) = STRT(I,1) - RICR * DW2(I,1)
-                                INT1(I,1) = 0
-      IF( STBFCN(I,1).LE.0. ) INT1(I,1) = 1
-   10 CONTINUE
-      DO 20 I=1,ISTNM1
-                                                INT2(I,1) = 0
-      IF( (INT1(I,1).EQ.1) .NEQV. (INT1(I,2).EQ.1) ) INT2(I,1) = 1
-   20 CONTINUE
+c     DO 10 I=1,ISTNLV
+c         STBFCN(I,1) = STRT(I,1) - RICR * DW2(I,1)
+c                               INT1(I,1) = 0
+c     IF( STBFCN(I,1).LE.0. ) INT1(I,1) = 1
+c  10 CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+         STBFCN(I,L) = STRT(I,L) - RICR * DW2(I,L)
+         INT1(I,L) = 0
+         IF( STBFCN(I,L).LE.0. ) INT1(I,L) = 1
+       ENDDO
+      ENDDO
+
+c     DO 20 I=1,ISTNM1
+c                                               INT2(I,1) = 0
+c     IF( (INT1(I,1).EQ.1) .NEQV. (INT1(I,2).EQ.1) ) INT2(I,1) = 1
+c  20 CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        INT2(I,L) = 0
+        IF( (INT1(I,L).EQ.1) .NEQV. (INT1(I,L+1).EQ.1) ) INT2(I,L) = 1
+       ENDDO
+      ENDDO
 C
       DO 40 LMIN = 1,NLEV
       IBIT = 0
@@ -3481,9 +3903,14 @@ C
    50 CONTINUE
       LMIN = 1
 C
-      DO 60 I=1,ISTNM1
-      XL0(I,1) = 0.
-   60 CONTINUE
+c     DO 60 I=1,ISTNM1
+c     XL0(I,1) = 0.
+c  60 CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        XL0(I,L) = 0.
+       ENDDO
+      ENDDO
       DO 70 I=1,irun
       XL0(I,NLEV) = DZ3(I,NLEV)
    70 CONTINUE
@@ -3499,21 +3926,36 @@ C
      .              WRKIT1,WRKIT2,WRKIT3,WRKIT4,CP,irun )
       LP1 = LMIN1 + 1
 C
-      DO 80 I=1,ISTNML
-                                                     INT2(I,LMIN1) = 0
-      IF( INT1(I,LMIN1).EQ.1 .OR. INT1(I,LP1).EQ.1 ) INT2(I,LMIN1) = 1
-      IF( INT2(I,LMIN1).EQ.1 )
-     .     XL0(I,LMIN1) = (0.5+DZITRP(I,LMIN1)) * DZ3(I,LP1)
-   80 CONTINUE
+c     DO 80 I=1,ISTNML
+c                                                    INT2(I,LMIN1) = 0
+c     IF( INT1(I,LMIN1).EQ.1 .OR. INT1(I,LP1).EQ.1 ) INT2(I,LMIN1) = 1
+c     IF( INT2(I,LMIN1).EQ.1 )
+c    .     XL0(I,LMIN1) = (0.5+DZITRP(I,LMIN1)) * DZ3(I,LP1)
+c  80 CONTINUE
+      DO L =LMIN1,NLEVM1
+       DO I =1,irun
+        INT2(I,L) = 0
+        IF ( INT1(I,L).EQ.1 .OR. INT1(I,L+1).EQ.1 ) INT2(I,L) = 1
+        IF ( INT2(I,L).EQ.1 )
+     .       XL0(I,L) = (0.5+DZITRP(I,L)) * DZ3(I,L+1)
+       ENDDO
+      ENDDO
       DO 90 I=1,irun
       INT2(I,NLEVM1) = INT1(I,NLEV)
    90 CONTINUE
 C
-      DO 100 I=1,ISTNML
-      IF( INT2(I,LMIN1).EQ.1 ) THEN
-      XL0(I,LP1) = XL0(I,LP1) + ( (0.5-DZITRP(I,LMIN1)) * DZ3(I,LP1) )
-      ENDIF
-  100 CONTINUE
+c     DO 100 I=1,ISTNML
+c     IF( INT2(I,LMIN1).EQ.1 ) THEN
+c     XL0(I,LP1) = XL0(I,LP1) + ( (0.5-DZITRP(I,LMIN1)) * DZ3(I,LP1) )
+c     ENDIF
+c 100 CONTINUE
+      DO L =LMIN1,NLEVM1
+       DO I =1,irun
+        IF ( INT2(I,L).EQ.1 ) THEN
+         XL0(I,L+1) = XL0(I,L+1) + ( (0.5-DZITRP(I,L)) * DZ3(I,L+1) )
+        ENDIF
+       ENDDO
+      ENDDO
       IF (LMIN.GT.1) GOTO 400
       DO 110 I=1,irun
       IF( INT1(I,1).EQ.1 ) XL0(I,1) = XL0(I,1) + DZ3(I,1)
@@ -3552,9 +3994,14 @@ C
  1000 CONTINUE
  1100 CONTINUE
 C
-      DO 150 I = 1,ISTNLV
-      IF( XL0(I,1).LT.XL0CNV ) XL0(I,1) = XL0CNV
-  150 CONTINUE
+c     DO 150 I = 1,ISTNLV
+c     IF( XL0(I,1).LT.XL0CNV ) XL0(I,1) = XL0CNV
+c 150 CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        IF ( XL0(I,L).LT.XL0CNV ) XL0(I,L) = XL0CNV
+       ENDDO
+      ENDDO
 C
 C *********************************************************************
 C ****          DETERMINE MIXING LENGTHS FOR STABLE LAYERS          ***
@@ -3564,35 +4011,64 @@ C
 C
       IF(LMINQ.GT.1) THEN
                     ISTLMQ = irun * LMINQ1
-      DO 160 I  = 1,ISTLMQ
-      INT2(I,1) = 1 - INT1(I,1)
-  160 CONTINUE
+c     DO 160 I  = 1,ISTLMQ
+c     INT2(I,1) = 1 - INT1(I,1)
+c 160 CONTINUE
+      DO L =1,LMINQ1
+       DO I =1,irun
+        INT2(I,L) = 1 - INT1(I,L)
+       ENDDO
+      ENDDO
       ENDIF
       IF(LMINQ.LT.NLEV) THEN
         ISTNMQ = irun * (NLEV-LMINQ)
-      DO 170 I = 1,ISTNMQ
-      IF( INT1(I,LMINQ).EQ.0 ) THEN
-           XL0(I,LMINQ) =         Q(I,LMINQ) / XL0(I,LMINQ)
-           XL0(I,LMINQ) =       XL0(I,LMINQ) * XL0(I,LMINQ) + 1.0E-20
-           XL0(I,LMINQ) =    STBFCN(I,LMINQ) + XL0(I,LMINQ)
-           XL0(I,LMINQ) = SQRT( XL0(I,LMINQ) )
-           XL0(I,LMINQ) =         Q(I,LMINQ) / XL0(I,LMINQ)
-      ENDIF
-                                   INT2(I,LMINQ)  = 0
-      IF( XL0(I,LMINQ).LT.XL0MIN ) INT2(I,LMINQ)  = 1
-  170 CONTINUE
+c     DO 170 I = 1,ISTNMQ
+c     IF( INT1(I,LMINQ).EQ.0 ) THEN
+c          XL0(I,LMINQ) =         Q(I,LMINQ) / XL0(I,LMINQ)
+c          XL0(I,LMINQ) =       XL0(I,LMINQ) * XL0(I,LMINQ) + 1.0E-20
+c          XL0(I,LMINQ) =    STBFCN(I,LMINQ) + XL0(I,LMINQ)
+c          XL0(I,LMINQ) = SQRT( XL0(I,LMINQ) )
+c          XL0(I,LMINQ) =         Q(I,LMINQ) / XL0(I,LMINQ)
+c     ENDIF
+c                                  INT2(I,LMINQ)  = 0
+c     IF( XL0(I,LMINQ).LT.XL0MIN ) INT2(I,LMINQ)  = 1
+c 170 CONTINUE
+       DO L =LMINQ,NLEVM1
+        DO I =1,irun
+         IF( INT1(I,L).EQ.0 ) THEN
+           XL0(I,L) =         Q(I,L) / XL0(I,L)
+           XL0(I,L) =       XL0(I,L) * XL0(I,L) + 1.0E-20
+           XL0(I,L) =    STBFCN(I,L) + XL0(I,L)
+           XL0(I,L) = SQRT( XL0(I,L) )
+           XL0(I,L) =         Q(I,L) / XL0(I,L)
+         ENDIF
+         INT2(I,L)  = 0
+         IF( XL0(I,L).LT.XL0MIN ) INT2(I,L)  = 1
+        ENDDO
+       ENDDO
       ENDIF
 C
  1200 CONTINUE
 C
       IF(INIT.EQ.2) THEN
-      DO 180 I = 1,ISTNM1
-      INT2(I,1) = 1 - INT1(I,1)
-  180 CONTINUE
+c     DO 180 I = 1,ISTNM1
+c     INT2(I,1) = 1 - INT1(I,1)
+c 180 CONTINUE
+       DO L =1,NLEVM1
+        DO I =1,irun
+         INT2(I,L) = 1 - INT1(I,L)
+         IF ( INT2(I,L).EQ.1 ) XL0(I,L) = XL0MIN
+        ENDDO
+       ENDDO
       ENDIF
-      DO 190 I = 1,ISTNM1
-      IF( INT2(I,1).EQ.1 ) XL0(I,1) = XL0MIN
-  190 CONTINUE
+c     DO 190 I = 1,ISTNM1
+c     IF( INT2(I,1).EQ.1 ) XL0(I,1) = XL0MIN
+c 190 CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        IF ( INT2(I,L).EQ.1 ) XL0(I,L) = XL0MIN
+       ENDDO
+      ENDDO
 C
 C *********************************************************************
 C ****             LENGTH SCALE XL FROM XL0 AND VKZE              ****
@@ -3600,9 +4076,14 @@ C *********************************************************************
 C
  1400 CONTINUE
 C
-      DO 200 I = 1,ISTNM1
-      XL(I,1) = XL0(I,1) * VKZE(I,1) / ( XL0(I,1)+VKZE(I,1) )
-  200 CONTINUE
+c     DO 200 I = 1,ISTNM1
+c     XL(I,1) = XL0(I,1) * VKZE(I,1) / ( XL0(I,1)+VKZE(I,1) )
+c 200 CONTINUE
+      DO L =1,NLEVM1
+       DO I =1,irun
+        XL(I,L) = XL0(I,L) * VKZE(I,L) / ( XL0(I,L)+VKZE(I,L) )
+       ENDDO
+      ENDDO
 C
 C *********************************************************************
 C ****       CLMT53 TIMES Q TIMES LENGTH SCALE AT MID LEVELS        ***
@@ -3610,21 +4091,39 @@ C *********************************************************************
 C
       IF(INIT.EQ.1) GOTO 1700
                    ISTNMQ = irun * (NLEV-LMINQ1)
-      DO 210 I = 1,ISTNMQ
-                                              Q1(I,LMINQ1) = Q(I,LMINQ1)
-                                            INT1(I,LMINQ1) = 0
-      IF(    Q(I,LMINQ1).LE.Q(I,LMINQ1+1) ) INT1(I,LMINQ1) = 1
-      IF( INT1(I,LMINQ1).EQ.1 )  THEN
-           XL0(I,LMINQ1) = XL0(I,LMINQ1+1)
-            Q1(I,LMINQ1) =   Q(I,LMINQ1+1)
-      ENDIF
-  210 CONTINUE
+c     DO 210 I = 1,ISTNMQ
+c                                             Q1(I,LMINQ1) = Q(I,LMINQ1)
+c                                           INT1(I,LMINQ1) = 0
+c     IF(    Q(I,LMINQ1).LE.Q(I,LMINQ1+1) ) INT1(I,LMINQ1) = 1
+c     IF( INT1(I,LMINQ1).EQ.1 )  THEN
+c          XL0(I,LMINQ1) = XL0(I,LMINQ1+1)
+c           Q1(I,LMINQ1) =   Q(I,LMINQ1+1)
+c     ENDIF
+c 210 CONTINUE
+      DO L =LMINQ1,NLEVM1
+       DO I =1,irun
+        Q1(I,L) = Q(I,L)
+        INT1(I,L) = 0
+        IF (    Q(I,L).LE.Q(I,L+1) ) INT1(I,L) = 1
+        IF ( INT1(I,L).EQ.1 )  THEN
+           XL0(I,L) = XL0(I,L+1)
+            Q1(I,L) =   Q(I,L+1)
+        ENDIF
+       ENDDO
+      ENDDO
 C
-      DO 240 I = 1,ISTNMQ
-      QXLM(I,LMINQ1) =   XL0(I,LMINQ1)*VKZM(I,LMINQ1)
-     .               / ( XL0(I,LMINQ1)+VKZM(I,LMINQ1) )
-      QXLM(I,LMINQ1) = CLMT53 * Q1(I,LMINQ1)*QXLM(I,LMINQ1)
-  240 CONTINUE
+c     DO 240 I = 1,ISTNMQ
+c     QXLM(I,LMINQ1) =   XL0(I,LMINQ1)*VKZM(I,LMINQ1)
+c    .               / ( XL0(I,LMINQ1)+VKZM(I,LMINQ1) )
+c     QXLM(I,LMINQ1) = CLMT53 * Q1(I,LMINQ1)*QXLM(I,LMINQ1)
+c 240 CONTINUE
+      DO L =LMINQ1,NLEVM1
+       DO I =1,irun
+        QXLM(I,L) =   XL0(I,L)*VKZM(I,L)
+     .                 / ( XL0(I,L)+VKZM(I,L) )
+        QXLM(I,L) = CLMT53 * Q1(I,L)*QXLM(I,L)
+       ENDDO
+      ENDDO
 C
  1700 CONTINUE
 C
@@ -3670,14 +4169,14 @@ C Local Variables
       _RL rf1,rf2,e5,d4,d1,rfc,ricr
       PARAMETER ( RF1     = 0.2340678 )
       PARAMETER ( RF2     = 0.2231172 )
-      PARAMETER ( E5      = 49.66     )  
+      PARAMETER ( E5      = 49.66     )
       PARAMETER ( D4      = 2.6532122E-2 )
       PARAMETER ( D1      = D4 * E5   )
       PARAMETER ( RFC     = 0.1912323 )
       PARAMETER ( RICR    = ( (RF1-RFC)*RFC ) / ( (RF2-RFC)*D1 )  )
 
       integer istnlv
-      integer i
+      integer I,L
 C
 C *********************************************************************
 C ****           QUADRATIC INTERPOLATION OF RI TO RICR VIA          ***
@@ -3685,32 +4184,62 @@ C ****           LINEAR INTERPOLATION OF DTHV, DPK, DU & DV         ***
 C *********************************************************************
 C
       ISTNLV = irun*NLEV
-      DO 10 I=1,ISTNLV
-      DZITRP(I,1) = 0.
-   10 CONTINUE
-      DO 20 I=1,ISTNLV
-      IF( INTCHG(I,1).EQ.1 ) THEN
-      DDD(I,1) = (         CP  *(DTHV(I,2)*DPK(I,1)
-     .                         + DTHV(I,1)*DPK(I,2)) )
-     .         - ( (2.*RICR)  * ( DU(I,2)* DU(I,1)
-     .                         +   DV(I,2)* DV(I,1)) )
-      AAA(I,1) = STBFCN(I,1) + STBFCN(I,2)
-      BBB(I,1) = STBFCN(I,1) - STBFCN(I,2)
-      CCC(I,1) =            1. / BBB(I,1)
-      DZITRP(I,1) = AAA(I,1) * CCC(I,1)
-         AAA(I,1) = AAA(I,1) - DDD(I,1)
-         DDD(I,1) =        (   DDD(I,1) *    DDD(I,1) )
-     .            - 4. * (STBFCN(I,2) * STBFCN(I,1) )
-         DDD(I,1) = DDD(I,1)*CCC(I,1)*CCC(I,1)
-         DDD(I,1) =    SQRT( DDD(I,1) )
-      ENDIF
+c     DO 10 I=1,ISTNLV
+c     DZITRP(I,1) = 0.
+c  10 CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        DZITRP(I,L) = 0.
+       ENDDO
+      ENDDO
+c     DO 20 I=1,ISTNLV
+c     IF( INTCHG(I,1).EQ.1 ) THEN
+c     DDD(I,1) = (         CP  *(DTHV(I,2)*DPK(I,1)
+c    .                         + DTHV(I,1)*DPK(I,2)) )
+c    .         - ( (2.*RICR)  * ( DU(I,2)* DU(I,1)
+c    .                         +   DV(I,2)* DV(I,1)) )
+c     AAA(I,1) = STBFCN(I,1) + STBFCN(I,2)
+c     BBB(I,1) = STBFCN(I,1) - STBFCN(I,2)
+c     CCC(I,1) =            1. / BBB(I,1)
+c     DZITRP(I,1) = AAA(I,1) * CCC(I,1)
+c        AAA(I,1) = AAA(I,1) - DDD(I,1)
+c        DDD(I,1) =        (   DDD(I,1) *    DDD(I,1) )
+c    .            - 4. * (STBFCN(I,2) * STBFCN(I,1) )
+c        DDD(I,1) = DDD(I,1)*CCC(I,1)*CCC(I,1)
+c        DDD(I,1) =    SQRT( DDD(I,1) )
+c     ENDIF
 C
-      IF( INTCHG(I,1).EQ.1 .AND. AAA(I,1).NE.0. ) THEN
-      DZITRP(I,1) = ( BBB(I,1)*(1.-DDD(I,1)) ) / AAA(I,1)
-      ENDIF
+c     IF( INTCHG(I,1).EQ.1 .AND. AAA(I,1).NE.0. ) THEN
+c     DZITRP(I,1) = ( BBB(I,1)*(1.-DDD(I,1)) ) / AAA(I,1)
+c     ENDIF
 C
-      DZITRP(I,1) = 0.5 * DZITRP(I,1)
-   20 CONTINUE
+c     DZITRP(I,1) = 0.5 * DZITRP(I,1)
+c  20 CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        IF ( INTCHG(I,L).EQ.1 ) THEN
+         DDD(I,L) = (         CP  *(DTHV(I,L+1)*DPK(I,L)
+     .                            + DTHV(I,L)*DPK(I,L+1)) )
+     .            - ( (2.*RICR)  * ( DU(I,L+1)* DU(I,L)
+     .                            +   DV(I,L+1)* DV(I,L)) )
+         AAA(I,L) = STBFCN(I,L) + STBFCN(I,L+1)
+         BBB(I,L) = STBFCN(I,L) - STBFCN(I,L+1)
+         CCC(I,L) =            1. / BBB(I,L)
+         DZITRP(I,L) = AAA(I,L) * CCC(I,L)
+         AAA(I,L) = AAA(I,L) - DDD(I,L)
+         DDD(I,L) =        (   DDD(I,L) *    DDD(I,L) )
+     .            - 4. * (STBFCN(I,L+1) * STBFCN(I,L) )
+         DDD(I,L) = DDD(I,L)*CCC(I,L)*CCC(I,L)
+         DDD(I,L) =    SQRT( DDD(I,L) )
+        ENDIF
+C
+        IF( INTCHG(I,L).EQ.1 .AND. AAA(I,L).NE.0. ) THEN
+         DZITRP(I,L) = ( BBB(I,L)*(1.-DDD(I,L)) ) / AAA(I,L)
+        ENDIF
+C
+        DZITRP(I,L) = 0.5 * DZITRP(I,L)
+       ENDDO
+      ENDDO
 C
       RETURN
       END
@@ -3744,23 +4273,28 @@ C**********************************************************************
 
 C Argument List Declarations
       integer nlev,nlay,irun
-      _RL RI(irun,NLEV),STRT(irun,NLEV),DW2(irun,NLEV)
-      _RL XL(irun,NLEV),ZKM(irun,NLEV),ZKH(irun,NLEV)
-      _RL QE(irun,NLEV),QQE(irun,NLEV)
-      INTEGER INTSTB(irun,nlev)
-      _RL EE(irun,nlay-1),RF(irun,nlay-1)
+c     _RL RI(irun,NLEV),STRT(irun,NLEV),DW2(irun,NLEV)
+c     _RL XL(irun,NLEV),ZKM(irun,NLEV),ZKH(irun,NLEV)
+c     _RL QE(irun,NLEV),QQE(irun,NLEV)
+c     INTEGER INTSTB(irun,nlev)
+c     _RL EE(irun,nlay-1),RF(irun,nlay-1)
+      _RL RI(irun*NLEV,1),STRT(irun*NLEV,1),DW2(irun*NLEV,1)
+      _RL XL(irun*NLEV,1),ZKM(irun*NLEV,1), ZKH(irun*NLEV,1)
+      _RL QE(irun*NLEV,1),QQE(irun*NLEV,1)
+      INTEGER INTSTB(irun*NLEV,1)
+      _RL EE(irun*(nlay-1),1),RF(irun*(nlay-1),1)
 
 C Local Variables
       _RL b1,b2,d3,rf1,rf2,d3b2,d2,e5,d4,d1,d1half,d2half
-      _RL rfc,ricr,ch,cm 
-      PARAMETER ( B1      =   16.6    )  
+      _RL rfc,ricr,ch,cm
+      PARAMETER ( B1      =   16.6    )
       PARAMETER ( B2      =   10.1    )
       PARAMETER ( D3      = 0.29397643 )
       PARAMETER ( RF1     = 0.2340678 )
       PARAMETER ( RF2     = 0.2231172 )
       PARAMETER ( D3B2    = D3 / RF1  )
       PARAMETER ( D2      = RF1       )
-      PARAMETER ( E5      = 49.66     )  
+      PARAMETER ( E5      = 49.66     )
       PARAMETER ( D4      = 2.6532122E-2 )
       PARAMETER ( D1      = D4 * E5   )
       PARAMETER ( D1HALF = 0.5 * D1 )
@@ -3847,10 +4381,14 @@ C**********************************************************************
 
 C Argument list Declarations
       integer nlev,nlay,irun
-      _RL Q(irun,NLEV),XL(irun,NLEV),STRT(irun,NLEV)
-      _RL DW2(irun,NLEV)
-      INTEGER INTSTB(irun,nlay), INTQ(irun,nlay)
-      _RL ZKM(irun,NLEV),ZKH(irun,NLEV),P3(irun,NLEV)
+c     _RL Q(irun,NLEV),XL(irun,NLEV),STRT(irun,NLEV)
+c     _RL DW2(irun,NLEV)
+c     INTEGER INTSTB(irun,nlay), INTQ(irun,nlay)
+c     _RL ZKM(irun,NLEV),ZKH(irun,NLEV),P3(irun,NLEV)
+      _RL Q(irun*NLEV,1),XL(irun*NLEV,1),STRT(irun*NLEV,1)
+      _RL DW2(irun*NLEV,1)
+      INTEGER INTSTB(irun*nlay,1), INTQ(irun*nlay,1)
+      _RL ZKM(irun*NLEV,1),ZKH(irun*NLEV,1),P3(irun*NLEV,1)
 
 C Local Variables
       _RL a1,a2,a4,c1,a5,a3,b1,b2,b3,ff2,ff3,ff4
@@ -3860,15 +4398,15 @@ C Local Variables
       PARAMETER ( C1      =   0.08    )
       PARAMETER ( A5      = 3.*C1*(-1.) )
       PARAMETER ( A3      = A4 * A5*(-1.) )
-      PARAMETER ( B1      =   16.6    )  
+      PARAMETER ( B1      =   16.6    )
       PARAMETER ( B2      =   10.1    )
-      PARAMETER ( B3      = 1. / B1  )  
+      PARAMETER ( B3      = 1. / B1  )
       PARAMETER ( FF2     = 9. * A1 * A2 )
       PARAMETER ( FF3     = (3.*A2*B2) - (9.*A2*A2 )  )
       PARAMETER ( FF4     = (3.*A2*B2) + (12.*A1*A2 )  )
 
-      _RL F2(irun,nlay-1),F3(irun,nlay-1)
-      _RL F4(irun,nlay-1),XQ(irun,nlay-1)
+      _RL F2(irun*(nlay-1),1),F3(irun*(nlay-1),1)
+      _RL F4(irun*(nlay-1),1),XQ(irun*(nlay-1),1)
 
       integer istnlv
       integer i
@@ -3952,33 +4490,52 @@ C Argument List Declarations
       _RL epsl
 C
       _RL AA(irun,nlev), BB(irun,nlev), CC(irun,nlev+1)
-      integer istnlv,istnm1,nlevp1,istnlx
-      integer i
+c     integer istnlv,istnm1,nlevp1,istnlx
+      integer NLEVP1,NLEVX
+      integer I,L
 C
-      ISTNLV = irun * NLEV
-      ISTNM1 = ISTNLV - irun
+c     ISTNLV = irun * NLEV
+c     ISTNM1 = ISTNLV - irun
       NLEVP1 = NLEV + 1
-      ISTNLX = ISTNM1
-      IF(ITYPE.EQ.2) ISTNLX = ISTNLV
+c     ISTNLX = ISTNM1
+c     IF(ITYPE.EQ.2) ISTNLX = ISTNLV
+      NLEVX =  NLEV - 1
+      IF(ITYPE.EQ.2) NLEVX =  NLEV
 C
 C   DEFINE MATRIX
 C
       DO 10 I=1,irun
       CC(I,1) = 0.
    10 CONTINUE
-      DO 20 I=1,ISTNLX
-      CC(I,2) = RHOKDZ(I,1) * FLXFAC(I,2)
-   20 CONTINUE
-      DO 30 I=1,ISTNLV
-      BB(I,1) =   RHOKDZ(I,1) * FLXFAC(I,1)
-      AA(I,1) = 1. + CC(I,1) + BB(I,1)
-   30 CONTINUE
+c     DO 20 I=1,ISTNLX
+c     CC(I,2) = RHOKDZ(I,1) * FLXFAC(I,2)
+c  20 CONTINUE
+      DO L =1,NLEVX
+       DO I =1,irun
+        CC(I,L+1) = RHOKDZ(I,L) * FLXFAC(I,L+1)
+       ENDDO
+      ENDDO
+c     DO 30 I=1,ISTNLV
+c     BB(I,1) =   RHOKDZ(I,1) * FLXFAC(I,1)
+c     AA(I,1) = 1. + CC(I,1) + BB(I,1)
+c  30 CONTINUE
+      DO L =1,NLEV
+       DO I =1,irun
+        BB(I,L) =   RHOKDZ(I,L) * FLXFAC(I,L)
+        AA(I,L) = 1. + CC(I,L) + BB(I,L)
+       ENDDO
+      ENDDO
 C
 C     ADD IMPLICIT BACKWARD FORCING FOR QQ
       IF(ITYPE.EQ.1) THEN
-      DO 40 I=1,ISTNLV
-      AA(I,1) = AA(I,1) - XX2(I,1)
-   40 CONTINUE
+c     DO 40 I=1,ISTNLV
+c     AA(I,1) = AA(I,1) - XX2(I,1)
+c  40 CONTINUE
+       DO L =1,NLEV
+        DO I =1,irun
+         AA(I,L) = AA(I,L) - XX2(I,L)
+        ENDDO
+       ENDDO
       ENDIF
 C
 C     SOLVE MATRIX EQUATION FOR XX1
@@ -4004,9 +4561,14 @@ C
 C
 C     ELIMINATE UNDERFLOW
       IF(ITYPE.EQ.1) THEN
-      DO 70 I=1,ISTNLV
-      IF( XX1(I,1).LT.EPSL ) XX1(I,1) = 0.
-   70 CONTINUE
+c     DO 70 I=1,ISTNLV
+c     IF( XX1(I,1).LT.EPSL ) XX1(I,1) = 0.
+c  70 CONTINUE
+       DO L =1,NLEV
+        DO I =1,irun
+         IF ( XX1(I,L).LT.EPSL ) XX1(I,L) = 0.
+        ENDDO
+       ENDDO
       ENDIF
 C
       RETURN
@@ -4153,7 +4715,7 @@ C Local Variables
       _RL xx0max,prfac,xpfac,difsqt,ustz0s,h0byz0,usth0s
       PARAMETER ( XX0MAX  =   1.49821 )
       PARAMETER ( PRFAC  = 0.595864   )
-      PARAMETER ( XPFAC  = .55        )  
+      PARAMETER ( XPFAC  = .55        )
       PARAMETER ( DIFSQT  = 3.872983E-3)
       PARAMETER ( USTZ0S =   0.2030325E-5)
       PARAMETER ( H0BYZ0 =    30.0    )
@@ -4419,7 +4981,7 @@ C        COMPUTE ROUGHNESS LENGTH FOR OCEAN POINTS
 C          BASED ON FUNCTIONS OF LARGE AND POND
 C          AND OF KONDO --- DESIGNED FOR K = .4
 C *********************************************************************
-      implicit none 
+      implicit none
 
 C Argument List Delcarations
       integer irun
@@ -4522,11 +5084,11 @@ C
       END
 
       subroutine seaice ( nocean, timstp, hice,
-     .                     eturb,  dedtc,  
+     .                     eturb,  dedtc,
      .                    hsturb, dhsdtc,
      .                      qice,  dqice,
-     .                     swnet,  lwnet, dst4, 
-     .                       pke,  seaic, tc, qa ) 
+     .                     swnet,  lwnet, dst4,
+     .                       pke,  seaic, tc, qa )
       implicit none
       integer  nocean
       _RL timstp
@@ -4546,16 +5108,16 @@ C  rho*C = 1.93e6 J/(m**3 K) ; Peixoto & Oort
       faceps = getcon('EPSFAC')
       latent = getcon('HEATI') * getcon('CALTOJ')
 C Note hice is in centimeters
-      codt   = rhoC * (hice/100) / timstp  
+      codt   = rhoC * (hice/100) / timstp
 
-c Update TC and QA
-c ----------------
+C Update TC and QA
+C ----------------
       do i =1,nocean
        if( seaic(i).gt.0.0 ) then
         deltg = ( swnet(i)-lwnet(i)-latent*eturb(i)-hsturb(i)+qice(i) )
      .          / ( codt+dst4(i)+latent*dedtc(i)+dhsdtc(i)-dqice(i) )
         qa(i) = qa(i) + (faceps*qa(i)/(tc(i)*tc(i)))*deltg
-        tc(i) = tc(i) + deltg 
+        tc(i) = tc(i) + deltg
        endif
       enddo
 
