@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.46 2009/04/01 23:33:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.47 2009/04/01 23:58:22 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -256,9 +256,10 @@ c     parameter ( ndlsm = 1)
       _RL faceps,grav,caltoj,virtcon,getcon
       _RL heatw,undef,timstp,delttrb,dttrb,ra
       _RL edle,rmu,cltj10,atimstp,tice,const
-      integer istnp1,istnlay,itrtrb,i,j,L,nn,nt
+      integer istnp1,istnlay,itrtrb,i,L,nn,nt
+c     integer j
       integer nocean, nice
-      integer ndmoist,time_left,ndum
+      integer ndmoist,time_left, ndum0,ndum1
       integer ntracedim
       _RL    dtfac,timstp2,sum0
 C logical begin flag - set to true to indicate a cold start
@@ -292,7 +293,7 @@ C   compute variables that do not change
        undef    = getcon('UNDEF')
        ntracedim= max(ntracers-ptracers,1)
 
-       call get_alarm ( 'moist',ndum,ndum,ndmoist,time_left )
+       call get_alarm ( 'moist',ndum0,ndum1,ndmoist,time_left )
        timstp   = nsecf(ndturb)
        timstp2  = nsecf(ndmoist)
        dtfac    = min( 1.0 _d 0, timstp/timstp2 )
@@ -1609,7 +1610,7 @@ C Some space for variables to be used in called routines
       _RL getcon,dum,errf
       integer istnlv,nlevm1,nlevm2,nlevml,nlevp1,istnm1,istnm2,istnp1
       integer istnml,istnmq,istlmq,nlevmq
-      integer i,iter,init,n,nt,LL,L,Lp,Lp1,lmin,lminq,lminq1,ibit
+      integer i,iter,init,n,LL,L,Lp,Lp1,lmin,lminq,lminq1,ibit
 
       vk = getcon('VON KARMAN')
       rvk = 1./vk

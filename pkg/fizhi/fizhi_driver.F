@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.41 2006/06/29 18:17:26 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.42 2009/04/01 23:58:22 jmc Exp $
 C $Name:  $
-                                                                                 
+
 #include "FIZHI_OPTIONS.h"
       subroutine fizhi_driver (myid,im,jm,lm,bi,bj,ptracer,ntracer,
      . xlats,xlons,
@@ -18,20 +18,20 @@ C $Name:  $
      . cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,nswcld,cldtot_sw,
      . cldras_sw,cldlsp_sw,nswlz,swlz,imstturbsw,imstturblw,qliqavesw,
      . qliqavelw,fccavesw,fccavelw,qq)
-C***********************************************************************        
-C  Purpose                                                                      
-C  -------                                                                      
+C***********************************************************************
+C  Purpose
+C  -------
 C     Driver for the FIZHI high-end Atmospheric Physics
 C
-C  Arguments  Description                                                      
+C  Arguments  Description
 C  ----------------------
-C     nymd ..... Current YYMMDD                                                 
-C     nhms ..... Current HHMMSS                                                 
+C     nymd ..... Current YYMMDD
+C     nhms ..... Current HHMMSS
 C     fracland.. Land Fractions
 C     landtype.. Land Vegetation Types
 C     radswt ... Incident Solar Radiation
-C                                                                               
-C***********************************************************************        
+C
+C***********************************************************************
       implicit none
 
 c Diagnostic Common
@@ -112,8 +112,9 @@ C     data pcheckpress/950.,750.,700.,400.,10./
       integer low_level,mid_level,nltop,nsubmin,nsubmax,Lup
       integer ndmoist,ndturb,ndlw,ndsw
       integer istrip,npcs
-      integer i,j,L
-      integer ndum,ndpnt
+      integer i,j
+      integer ndpnt
+      INTEGER ndum0, ndum1, ndum2
       _RL akap,getcon
       _RL ptop
       logical lpnt,cumfric
@@ -125,15 +126,15 @@ C     data pcheckpress/950.,750.,700.,400.,10./
       ptop   =  0.
       akap = getcon('KAPPA')
 
-C **********************************************************************        
-C ****                         Initialization                       ****        
-C **********************************************************************        
-      call get_alarm ( 'radlw',ndum,ndum,ndlw   ,ndum )
-      call get_alarm ( 'radsw',ndum,ndum,ndsw   ,ndum )
-      call get_alarm ( 'turb' ,ndum,ndum,ndturb ,ndum )
-      call get_alarm ( 'moist',ndum,ndum,ndmoist,ndum )
+C **********************************************************************
+C ****                         Initialization                       ****
+C **********************************************************************
+      call get_alarm ( 'radlw',ndum0,ndum1, ndlw   ,ndum2 )
+      call get_alarm ( 'radsw',ndum0,ndum1, ndsw   ,ndum2 )
+      call get_alarm ( 'turb' ,ndum0,ndum1, ndturb ,ndum2 )
+      call get_alarm ( 'moist',ndum0,ndum1, ndmoist,ndum2 )
 
-      call get_alarm ( 'pnt',ndum,ndum,ndpnt,ndum )
+      call get_alarm ( 'pnt'  ,ndum0,ndum1, ndpnt  ,ndum2 )
       lpnt = ndpnt.ne.0
 
 C Fill array of model levels closest to a given pressure value
@@ -150,9 +151,9 @@ C Fill array of model levels closest to a given pressure value
 CCC   cumfric = .true.
       cumfric = .false.
 
-C **********************************************************************        
-C ****                  Call Physics Mini-Drivers                   ****        
-C **********************************************************************        
+C **********************************************************************
+C ****                  Call Physics Mini-Drivers                   ****
+C **********************************************************************
 
 C SHORT WAVE RADIATION
 C ====================
@@ -168,7 +169,7 @@ C ====================
      .   fccavesw,landtype,xlats,xlons )
 
       ENDIF
-                                                                                
+
 C LONG WAVE RADIATION
 C ===================
       IF ( alarm('radlw') ) THEN
@@ -210,7 +211,7 @@ C ==========
 
 c Add Gravity-Wave Drag Tendency
 c ------------------------------
-C Comment this out for now 
+C Comment this out for now
 
       imglobal = 128
       call gwdrag (myid,p,pl,ple,dpres,pkl,u,v,t,q,phis_var,
@@ -234,7 +235,7 @@ C     enddo
 C     enddo
 
       endif
-                                                                                
+
 C MOIST PROCESSES
 C ===============
       if ( alarm('moist') ) then
