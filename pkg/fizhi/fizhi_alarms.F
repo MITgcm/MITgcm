@@ -1,23 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.12 2005/03/08 19:54:26 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.13 2009/04/01 19:55:07 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
       subroutine fizhi_alarms (nymdb,nhmsb,deltaT)
 
-C***********************************************************************        
-C  Purpose                                                                      
-C  -------                                                                      
+C***********************************************************************
+C  Purpose
+C  -------
 C     Driver to Set Internal Model Alarms
 C
-C  Argument Description                                                         
-C  --------------------                                                          
-C     nymdb ..... Begining Date to Start Alarm Clock 
-C     nhmsb ..... Begining Time to Start Alarm Clock 
+C  Argument Description
+C  --------------------
+C     nymdb ..... Begining Date to Start Alarm Clock
+C     nhmsb ..... Begining Time to Start Alarm Clock
 C     ndt ....... Model Timestep
 C
 C     Note: For ndt = 0, all Intermal Model Alarms are set to 1 second
 C
-C***********************************************************************        
+C***********************************************************************
       implicit none
 
 c Input Parameters
@@ -25,12 +25,6 @@ c ----------------
       integer  nymdb,nhmsb
       _RL deltaT
 
-c MPI Utilities
-c -------------
-#ifdef ALLOW_USE_MPI
-#include "mpif.h"
-      integer  ierror
-#endif
       integer  myid
 
 c Physics Frequencies
@@ -38,21 +32,17 @@ c -------------------
       integer ndt
       integer  nhmsf, m,n, nd
       integer  ndlw, ndsw, ndturb, ndmoist
-                                                                                
-#ifdef ALLOW_USE_MPI
-      call mpi_comm_rank ( mpi_comm_world,myid,ierror )
-#else
+
       myid = 1
-#endif
 
       ndt = deltaT
 
       if( ndt.ne.0 ) then
 
 C Longwave  Radiation Frequency
-      ndlw = 003000   
+      ndlw = 003000
 C Shortwave Radiation Frequency
-      ndsw = 003000   
+      ndsw = 003000
 
 c Turbulence
 c ----------
@@ -75,7 +65,7 @@ c ----------
       call my_exit (101)
       endif
       enddo
-      ndturb  = nhmsf( nd )                                                 
+      ndturb  = nhmsf( nd )
 
 c Moist Processes
 c ---------------
@@ -105,13 +95,13 @@ c ---------------
 c For NDT = 0, all Alarms set to 1 second
 c ---------------------------------------
 C Longwave  Radiation Frequency
-      ndlw    = 000001   
+      ndlw    = 000001
 C Shortwave Radiation Frequency
-      ndsw    = 000001   
+      ndsw    = 000001
 C Turbulence          Frequency
-      ndturb  = 000001   
+      ndturb  = 000001
 C Moist Processes     Frequency
-      ndmoist = 000001   
+      ndmoist = 000001
 
       endif
 
