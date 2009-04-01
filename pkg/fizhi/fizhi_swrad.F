@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.25 2005/06/17 16:51:24 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.26 2009/04/01 19:54:17 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -17,7 +17,7 @@ c Input Variables
 c ---------------
       integer nymd,nhms,bi,bj,ndswr,myid,istrip,npcs
       integer mid_level,low_level
-      integer im,jm,lm        
+      integer im,jm,lm
       _RL  ptop
       _RL pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1),dpres(im,jm,lm)
       _RL pkht(im,jm,lm+1),pkz(im,jm,lm)
@@ -29,12 +29,12 @@ c ---------------
       _RL radswg(im,jm),swgclr(im,jm),fdifpar(im,jm),fdirpar(im,jm)
       _RL osr(im,jm),osrclr(im,jm),dtradsw(im,jm,lm)
       _RL dtswclr(im,jm,lm)
-      integer nswcld,nswlz    
-      _RL cldsw(im,jm,lm),cswmo(im,jm,lm),swlz(im,jm,lm)   
-      logical lpnt            
-      integer imstturb        
-      _RL qliqave(im,jm,lm),fccave(im,jm,lm)  
-      integer landtype(im,jm) 
+      integer nswcld,nswlz
+      _RL cldsw(im,jm,lm),cswmo(im,jm,lm),swlz(im,jm,lm)
+      logical lpnt
+      integer imstturb
+      _RL qliqave(im,jm,lm),fccave(im,jm,lm)
+      integer landtype(im,jm)
       _RL xlats(im,jm),xlons(im,jm)
 
 c Local Variables
@@ -44,8 +44,8 @@ c ---------------
       _RL      getcon,grav,cp,undef
       _RL      ra,alf,reffw,reffi,tminv
 
-      parameter ( reffw = 10.0 )   
-      parameter ( reffi = 65.0 )   
+      parameter ( reffw = 10.0 )
+      parameter ( reffi = 65.0 )
 
       _RL tdry(im,jm,lm)
       _RL TEMP1(im,jm)
@@ -62,7 +62,7 @@ c ---------------
       _RL tauhi  (im,jm)
       _RL tautype(im,jm,lm,3)
       _RL tau(im,jm,lm)
-      _RL albedo(im,jm)    
+      _RL albedo(im,jm)
 
       _RL PK(ISTRIP,lm)
       _RL qzl(ISTRIP,lm),CLRO(ISTRIP,lm)
@@ -133,11 +133,19 @@ C **********************************************************************
 C ****             CALCULATE COSINE OF THE ZENITH ANGLE             ****
 C **********************************************************************
 
+#ifdef FIZHI_USE_FIXED_DAY
+      CALL ASTRO ( 20040321,  NHMS,  XLATS,XLONS, im*jm, TEMP1,RA )
+                   NYMD2 = NYMD
+                   NHMS2 = NHMS
+      CALL TICK  ( NYMD2,  NHMS2, NTMSTP )
+      CALL ASTRO ( 20040321,  NHMS2, XLATS,XLONS, im*jm, TEMP2,RA )
+#else
       CALL ASTRO ( NYMD,   NHMS,  XLATS,XLONS, im*jm, TEMP1,RA )
                    NYMD2 = NYMD
                    NHMS2 = NHMS
       CALL TICK  ( NYMD2,  NHMS2, NTMSTP )
       CALL ASTRO ( NYMD2,  NHMS2, XLATS,XLONS, im*jm, TEMP2,RA )
+#endif
 
       do j = 1,jm
       do i = 1,im
@@ -197,7 +205,7 @@ c Compute Low-Mid-High Maximum Overlap Cloud Fractions
 c ----------------------------------------------------
       if(     L.lt.mid_level ) then
              cldhi (i,j) = max( cldtot(i,j,L),cldhi (i,j) )
-      elseif( L.ge.mid_level .and. 
+      elseif( L.ge.mid_level .and.
      .        L.lt.low_level ) then
              cldmid(i,j) = max( cldtot(i,j,L),cldmid(i,j) )
       elseif( L.ge.low_level ) then
@@ -467,7 +475,7 @@ C **********************************************************************
       dtswc(i,L) = alf*( fluxclr(i,L)-fluxclr(i,L+1) )/pk(i,L)
       enddo
       enddo
-      
+
       call paste ( dtsw , dtradsw ,istrip,im*jm,lm,nn )
       call paste ( dtswc, dtswclr ,istrip,im*jm,lm,nn )
 
@@ -600,8 +608,8 @@ c ----------------------------------------------------
          fraccu = 1.0-fracls
 
 c Define tau for large-scale ice and water clouds
-c Note:  tauice is scaled between (0.02 & .2) for:  0 < lz <  2 mg/kg over Land 
-c Note:  tauh2o is scaled between (0.20 & 20) for:  0 < lz <  5 mg/kg over Land 
+c Note:  tauice is scaled between (0.02 & .2) for:  0 < lz <  2 mg/kg over Land
+c Note:  tauh2o is scaled between (0.20 & 20) for:  0 < lz <  5 mg/kg over Land
 c Note:  tauh2o is scaled between (0.20 & 12) for:  0 < lz < 50 mg/kg over Ocean
 c -------------------------------------------------------------------------------
 
@@ -616,12 +624,12 @@ c -----------------
 C Over Land
          if( lwi(i,j).le.10 ) then
             tauh2o = max( 0.0020 _d 0, 0.200*min(200*lz(i,j,L)*1000,
-     $           1.0 _d 0) )  
+     $           1.0 _d 0) )
           tau(i,j,L,3) = fracls*alf*tauh2o*dp
          else
 C Non-Precipitation Clouds Over Ocean
           if( lz(i,j,L).eq.0.0 ) then
-           tauh2o = .12                      
+           tauh2o = .12
            tau(i,j,L,2) = fracls*alf*tauh2o*dp
           else
 C Over Ocean
@@ -660,7 +668,7 @@ ccc  .                + fraccu*tauras )*dp
      *                 flx,flc,fdirir,fdifir,fdirpar,fdifpar,
      *                 fdiruv,fdifuv)
 c********************************************************************
-c  
+c
 c This routine computes solar fluxes due to the absoption by water
 c  vapor, ozone, co2, o2, clouds, and aerosols and due to the
 c  scattering by clouds, aerosols, and gases.
@@ -681,7 +689,7 @@ c
 c Clouds are grouped into high, middle, and low clouds separated by the
 c  level indices ict and icb.  For detail, see the subroutine cldscale.
 c
-c----- Input parameters:                           
+c----- Input parameters:
 c                                                   units      size
 c   number of soundings in zonal direction (m)       n/d        1
 c   number of soundings in meridional direction (n)  n/d        1
@@ -704,15 +712,15 @@ c   level index separating high and middle           n/d        1
 c                clouds (ict)
 c   level index separating middle and low clouds     n/d        1
 c                clouds (icb)
-c   aerosol optical thickness (taual)                n/d      m*ndim*np 
+c   aerosol optical thickness (taual)                n/d      m*ndim*np
 c   solar ir surface albedo for beam                fraction   m*ndim
-c                radiation (rsirbm)                
+c                radiation (rsirbm)
 c   solar ir surface albedo for diffuse             fraction   m*ndim
-c                radiation (rsirdf)                
+c                radiation (rsirdf)
 c   uv + par surface albedo for beam                     fraction   m*ndim
-c                radiation (rsuvbm)                
+c                radiation (rsuvbm)
 c   uv + par surface albedo for diffuse                  fraction   m*ndim
-c                radiation (rsuvdf)                
+c                radiation (rsuvdf)
 c   cosine of solar zenith angle (cosz)            n/d        m*ndim
 c
 c----- Output parameters
@@ -735,7 +743,7 @@ c        at the top of the atmosphere.  Therefore, fluxes should
 c        be equal to flux multiplied by the extra-terrestrial solar
 c        flux and the cosine of solar zenith angle.
 c    (2) Clouds and aerosols can be included in any layers by specifying
-c        fcld(i,j,k), taucld(i,j,k,*) and taual(i,j,k), k=1,np. 
+c        fcld(i,j,k), taucld(i,j,k,*) and taual(i,j,k), k=1,np.
 c        For an atmosphere without clouds and aerosols,
 c        set fcld(i,j,k)=taucld(i,j,k,*)=taual(i,j,k)=0.0.
 c    (3) Aerosol single scattering albedos and asymmetry
@@ -744,9 +752,9 @@ c    (4) pl(i,j,1) is the pressure at the top of the model, and
 c        pl(i,j,np+1) is the surface pressure.
 c    (5) the pressure levels ict and icb correspond approximately
 c        to 400 and 700 mb.
-c        
+c
 c**************************************************************************
- 
+
       implicit none
 
 c-----Explicit Inline Directives
@@ -775,27 +783,27 @@ c-----output parameters
       _RL  fdiruv(m,ndim),fdifuv(m,ndim)
 
 c-----temporary array
- 
+
       integer i,j,k
       _RL  cc(m,n,3),tauclb(m,n,np),tauclf(m,n,np)
       _RL  dp(m,n,np),wh(m,n,np),oh(m,n,np),scal(m,n,np)
       _RL  swh(m,n,np+1),so2(m,n,np+1),df(m,n,np+1)
       _RL  sdf(m,n),sclr(m,n),csm(m,n),x
- 
+
 c-----------------------------------------------------------------
 
-      do j= 1, n 
-       do i= 1, m 
+      do j= 1, n
+       do i= 1, m
 
-         swh(i,j,1)=0. 
-         so2(i,j,1)=0. 
+         swh(i,j,1)=0.
+         so2(i,j,1)=0.
 
 c-----csm is the effective secant of the solar zenith angle
-c     see equation (12) of Lacis and Hansen (1974, JAS)    
- 
+c     see equation (12) of Lacis and Hansen (1974, JAS)
+
          csm(i,j)=35./sqrt(1224.*cosz(i,j)*cosz(i,j)+1.)
 
-       enddo 
+       enddo
       enddo
 
 
@@ -803,13 +811,13 @@ c     see equation (12) of Lacis and Hansen (1974, JAS)
        do j= 1, n
          do i= 1, m
 
-c-----compute layer thickness and pressure-scaling function. 
+c-----compute layer thickness and pressure-scaling function.
 c     indices for the surface level and surface layer
 c     are np+1 and np, respectively.
- 
+
           dp(i,j,k)=pl(i,j,k+1)-pl(i,j,k)
           scal(i,j,k)=dp(i,j,k)*(.5*(pl(i,j,k)+pl(i,j,k+1))/300.)**.8
- 
+
 c-----compute scaled water vapor amount, unit is g/cm**2
 
           wh(i,j,k)=1.02*wa(i,j,k)*scal(i,j,k)*
@@ -817,7 +825,7 @@ c-----compute scaled water vapor amount, unit is g/cm**2
           swh(i,j,k+1)=swh(i,j,k)+wh(i,j,k)
 
 c-----compute ozone amount, unit is (cm-atm)stp.
- 
+
           oh(i,j,k)=1.02*oa(i,j,k)*dp(i,j,k)*466.7
 
         enddo
@@ -878,7 +886,7 @@ c      extraterrestrial solar flux in the o2 bands.
            df(i,j,k)=df(i,j,k)+0.0287*(1.-expmn(-0.00027*sqrt(x)))
          enddo
         enddo
-       enddo          
+       enddo
 
 c-----compute scaled amounts for co2 (so2). unit is (cm-atm)stp.
 
@@ -944,7 +952,7 @@ c-----adjust for the direct downward ir flux.
       enddo
 
       return
-      end  
+      end
 
 c********************************************************************
 
@@ -1007,7 +1015,7 @@ c-----temporary variables
 c-----pre-computed table
 
       integer   nm,nt,na
-      parameter (nm=11,nt=9,na=11) 
+      parameter (nm=11,nt=9,na=11)
       _RL   dm,dt,da,t1,caib(nm,nt,na),caif(nt,na)
       parameter (dm=0.1,dt=0.30103,da=0.1,t1=-0.9031)
 
@@ -1057,7 +1065,7 @@ c     in the group
 c-----scale the cloud optical thickness.
 c     taucld(i,j,k,1) is the optical thickness for ice particles, and
 c     taucld(i,j,k,2) is the optical thickness for liquid particles.
-      
+
       do k=1,np
 
          if(k.lt.ict) then
@@ -1088,15 +1096,15 @@ c-----table look-up
            fm=cosz(i,j)/dm
            ft=(log10(taux)-t1)/dt
            fa=fa/da
- 
+
            im=int(fm+1.5)
            it=int(ft+1.5)
            ia=int(fa+1.5)
-  
+
            im=max(im,2)
            it=max(it,2)
            ia=max(ia,2)
-     
+
            im=min(im,nm-1)
            it=min(it,nt-1)
            ia=min(ia,na-1)
@@ -1108,10 +1116,10 @@ c-----table look-up
 c-----scale cloud optical thickness for beam radiation.
 c     the scaling factor, xai, is a function of the solar zenith
 c     angle, optical thickness, and cloud cover.
- 
+
            xai=    (-caib(im-1,it,ia)*(1.-fm)+
      *      caib(im+1,it,ia)*(1.+fm))*fm*.5+caib(im,it,ia)*(1.-fm*fm)
-         
+
            xai=xai+(-caib(im,it-1,ia)*(1.-ft)+
      *      caib(im,it+1,ia)*(1.+ft))*ft*.5+caib(im,it,ia)*(1.-ft*ft)
 
@@ -1120,7 +1128,7 @@ c     angle, optical thickness, and cloud cover.
 
            xai= xai-2.*caib(im,it,ia)
            xai=max(xai,0.0 _d 0)
-     
+
            tauclb(i,j,k) = taux*xai
 
 c-----scale cloud optical thickness for diffuse radiation.
@@ -1135,7 +1143,7 @@ c     thickness and cover but not the solar zenith angle.
 
            xai= xai-caif(it,ia)
            xai=max(xai,0.0 _d 0)
-     
+
            tauclf(i,j,k) = taux*xai
 
          endif
@@ -1150,7 +1158,7 @@ c***********************************************************************
 
       subroutine solir (m,n,ndim,np,wh,taucld,tauclb,tauclf,reff,
      *  ict,icb,fcld,cc,taual,csm,rsirbm,rsirdf,flx,flc,fdirir,fdifir)
- 
+
 c************************************************************************
 c  compute solar flux in the infrared region. The spectrum is divided
 c   into three bands:
@@ -1209,15 +1217,15 @@ c*************************************************************************
 
       implicit none
 
-c-----Explicit Inline Directives 
- 
+c-----Explicit Inline Directives
+
 #ifdef CRAY
-#ifdef f77 
+#ifdef f77
 cfpp$ expand (deledd)
 cfpp$ expand (sagpol)
-cfpp$ expand (expmn) 
-#endif 
-#endif 
+cfpp$ expand (expmn)
+#endif
+#endif
       _RL expmn
 
 c-----input parameters
@@ -1258,9 +1266,9 @@ c-----temporary array
 c-----water vapor absorption coefficient for 10 k-intervals.
 c     unit: cm^2/gm
 
-      data xk/            
-     1  0.0010, 0.0133, 0.0422, 0.1334, 0.4217,            
-     2  1.334,  5.623,  31.62,  177.8,  1000.0/  
+      data xk/
+     1  0.0010, 0.0133, 0.0422, 0.1334, 0.4217,
+     2  1.334,  5.623,  31.62,  177.8,  1000.0/
 
 c-----water vapor k-distribution function,
 c     the sum of hk is 0.52926. unit: fraction
@@ -1275,7 +1283,7 @@ c     the sum of hk is 0.52926. unit: fraction
 c-----aerosol single-scattering albedo and asymmetry factor
 
       data ssaal,asyal/nband*0.999,nband*0.850/
- 
+
 c-----coefficients for computing the single scattering albedo of
 c     ice clouds from ssa=1-(aia(*,1)+aia(*,2)*reff+aia(*,3)*reff**2)
 
@@ -1389,11 +1397,11 @@ c-----integration over the k-distribution function
 
 c-----compute total optical thickness, single scattering albedo,
 c     and asymmetry factor.
- 
+
              tausto=tauwv+taual(i,j,k)+1.0e-8
              ssatau=ssaal(ib)*taual(i,j,k)
              asysto=asyal(ib)*ssaal(ib)*taual(i,j,k)
- 
+
 c-----compute reflectance and transmittance for cloudless layers
 
              tauto=tausto
@@ -1404,7 +1412,7 @@ c            if (ssato .gt. 0.001) then
 c             ssato=min(ssato,0.999999 _d 0)
 c             asyto=asysto/(ssato*tauto)
 
-c             call deledd(tauto,ssato,asyto,csm(i,j), 
+c             call deledd(tauto,ssato,asyto,csm(i,j),
 c     *                   rr1t(i,j),tt1t(i,j),td1t(i,j))
 
 c             call sagpol (tauto,ssato,asyto,rs1t(i,j),ts1t(i,j))
@@ -1437,7 +1445,7 @@ c-----compute reflectance and transmittance for cloud layers
               asyto=(asysto+asycl(i,j,k)*ssacl(i,j,k)*tauclb(i,j,k))/
      *              (ssato*tauto)
 
-              call deledd(tauto,ssato,asyto,csm(i,j), 
+              call deledd(tauto,ssato,asyto,csm(i,j),
      *                    rr2t(i,j),tt2t(i,j),td2t(i,j))
 
               tauto=tausto+tauclf(i,j,k)
@@ -1481,7 +1489,7 @@ c     in certain parallel processors.
                ts(i,j,k,1)=ts1t(i,j)
             enddo
            enddo
- 
+
            do j=1,n
             do i=1,m
                rr(i,j,k,2)=rr2t(i,j)
@@ -1511,7 +1519,7 @@ c     in certain parallel processors.
  300  continue
 
 c-----flux calculations
- 
+
        do k= 1, np+1
         do j= 1, n
          do i= 1, m
@@ -1552,7 +1560,7 @@ c-----flux calculations
 
   200 continue
   100 continue
- 
+
       return
       end
 
@@ -1565,7 +1573,7 @@ c************************************************************************
 c************************************************************************
 c  compute solar fluxes in the uv+visible region. the spectrum is
 c  grouped into 8 bands:
-c  
+c
 c              Band     Micrometer
 c
 c       UV-C    1.     .175 - .225
@@ -1576,9 +1584,9 @@ c
 c       UV-B    4.     .280 - .295
 c               5.     .295 - .310
 c               6.     .310 - .320
-c      
+c
 c       UV-A    7.     .320 - .400
-c      
+c
 c       PAR     8.     .400 - .700
 c
 c----- Input parameters:                            units      size
@@ -1633,13 +1641,13 @@ c***********************************************************************
 
       implicit none
 
-c-----Explicit Inline Directives  
-  
-#ifdef CRAY 
-#ifdef f77  
-cfpp$ expand (deledd) 
-cfpp$ expand (sagpol) 
-#endif  
+c-----Explicit Inline Directives
+
+#ifdef CRAY
+#ifdef f77
+cfpp$ expand (deledd)
+cfpp$ expand (sagpol)
+#endif
 #endif
 
 c-----input parameters
@@ -1707,9 +1715,9 @@ c     clouds from asycl=awg(*,1)+awg(*,2)*reff+awg(*,3)*reff**2
       data awg/.82562000,.00529000,-.00014866/
 
 c-----initialize surface reflectances and transmittances
-            
+
       do j= 1, n
-       do i= 1, m                    
+       do i= 1, m
          rr(i,j,np+1,1)=rsuvbm(i,j)
          rr(i,j,np+1,2)=rsuvbm(i,j)
          rs(i,j,np+1,1)=rsuvdf(i,j)
@@ -1755,14 +1763,14 @@ c     liquid and ice particles.  unit of reff is micrometers.
        enddo
 
       enddo
- 
+
       do j=1,n
        do i=1,m
         fdiruv(i,j)=0.0
         fdifuv(i,j)=0.0
        enddo
       enddo
-           
+
 c-----integration over spectral bands
 
       do 100 ib=1,nband
@@ -1776,7 +1784,7 @@ c-----compute ozone and rayleigh optical thicknesses
 
           taurs=ry(ib)*dp(i,j,k)
           tauoz=xk(ib)*oh(i,j,k)
- 
+
 c-----compute total optical thickness, single scattering albedo,
 c     and asymmetry factor
 
@@ -1791,7 +1799,7 @@ c-----compute reflectance and transmittance for cloudless layers
           ssato=min(ssato,0.999999 _d 0)
           asyto=asysto/(ssato*tauto)
 
-          call deledd(tauto,ssato,asyto,csm(i,j), 
+          call deledd(tauto,ssato,asyto,csm(i,j),
      *                rr1t(i,j),tt1t(i,j),td1t(i,j))
 
           call sagpol (tauto,ssato,asyto,rs1t(i,j),ts1t(i,j))
@@ -1813,7 +1821,7 @@ c-----compute reflectance and transmittance for cloud layers
            ssato=min(ssato,0.999999 _d 0)
            asyto=(asysto+asycl(i,j,k)*tauclb(i,j,k))/(ssato*tauto)
 
-           call deledd(tauto,ssato,asyto,csm(i,j), 
+           call deledd(tauto,ssato,asyto,csm(i,j),
      *                 rr2t(i,j),tt2t(i,j),td2t(i,j))
 
            tauto=tausto+tauclf(i,j,k)
@@ -1883,7 +1891,7 @@ c-----compute reflectance and transmittance for cloud layers
  300  continue
 
 c-----flux calculations
- 
+
        do k= 1, np+1
         do j= 1, n
          do i= 1, m
@@ -1962,12 +1970,12 @@ c*********************************************************************
 
       implicit none
 
-c-----Explicit Inline Directives  
-  
-#ifdef CRAY 
-#ifdef f77  
+c-----Explicit Inline Directives
+
+#ifdef CRAY
+#ifdef f77
 cfpp$ expand (expmn)
-#endif  
+#endif
 #endif
       _RL expmn
 
@@ -1989,7 +1997,7 @@ c-----temporary parameters
      *     all1,bll,st7,st8,cll,dll,fll,ell,st1,st2,st3,st4
 c
                 zth = one / csm
- 
+
 c  delta-eddington scaling of single scattering albedo,
 c  optical thickness, and asymmetry factor,
 c  K & H eqs(27-29)
@@ -1999,63 +2007,63 @@ c  K & H eqs(27-29)
                 taup= tau*xx
                 sscp= ssc*(one-ff)/xx
                 gp  = g0/(one+g0)
- 
+
 c  extinction of the direct beam transmission
- 
+
                 td  = expmn(-taup*csm)
- 
+
 c  gamma1, gamma2, gamma3 and gamma4. see table 2 and eq(26) K & H
 c  ssc and gp are the d-s single scattering
 c  albedo and asymmetry factor.
 
-                xx  =  three*gp 
+                xx  =  three*gp
                 gm1 =  (seven - sscp*(four+xx))*fourth
                 gm2 = -(one   - sscp*(four-xx))*fourth
                 gm3 =  (two   -        zth*xx )*fourth
- 
+
 c  akk is k as defined in eq(25) of K & H
- 
+
                 xx  = gm1-gm2
                 akk = sqrt((gm1+gm2)*xx)
- 
+
 c   alf1 and alf2 are alpha1 and alpha2 from eqs (23) & (24) of K & H
- 
+
                 alf1 = gm1 - gm3 * xx
                 alf2 = gm2 + gm3 * xx
- 
+
 c  all1 is last term in eq(21) of K & H
 c  bll is last term in eq(22) of K & H
- 
+
                 xx  = akk * two
                 all1 = (gm3 - alf2 * zth    )*xx*td
                 bll = (one - gm3 + alf1*zth)*xx
- 
+
                 xx  = akk * zth
                 st7 = one - xx
                 st8 = one + xx
- 
+
                 xx  = akk * gm3
                 cll = (alf2 + xx) * st7
                 dll = (alf2 - xx) * st8
- 
+
                 xx  = akk * (one-gm3)
                 fll = (alf1 + xx) * st8
                 ell = (alf1 - xx) * st7
- 
+
                 st3 = max(abs(st7*st8),tumin)
                 st3 = sign (st3,st7)
- 
+
                 st2 = expmn(-akk*taup)
                 st4 = st2 * st2
- 
+
                 st1 =  sscp / ((akk+gm1 + (akk-gm1)*st4) * st3)
- 
+
 c   rr is r-hat of eq(21) of K & H
 c   tt is diffuse part of t-hat of eq(22) of K & H
- 
+
                 rr =   ( cll-dll*st4    -all1*st2)*st1
                 tt = - ((fll-ell*st4)*td-bll*st2)*st1
- 
+
                 rr = max(rr,zero)
                 tt = max(tt,zero)
 
@@ -2086,12 +2094,12 @@ c*********************************************************************
 
       implicit none
 
-c-----Explicit Inline Directives  
-  
-#ifdef CRAY 
-#ifdef f77  
+c-----Explicit Inline Directives
+
+#ifdef CRAY
+#ifdef f77
 cfpp$ expand (expmn)
-#endif  
+#endif
 #endif
       _RL expmn
 
@@ -2156,7 +2164,7 @@ c*******************************************************************
 c  compute upward and downward fluxes using a two-stream adding method
 c  following equations (3)-(5) of Chou (1992, JAS).
 c
-c  clouds are grouped into high, middle, and low clouds which are 
+c  clouds are grouped into high, middle, and low clouds which are
 c  assumed randomly overlapped. It involves eight sets of calculations.
 c  In each set of calculations, each atmospheric layer is homogeneous,
 c  either with clouds or without clouds.
@@ -2289,7 +2297,7 @@ c     rra is the composite reflectance illuminated by beam radiation
 c     rxa is the composite reflectance illuminated from above
 c         by diffuse radiation
 c     rra and rxa are computed from eqs. (4a) and (3a) of Chou
- 
+
 c-----for the low clouds
 
       do 20 is=1,2
@@ -2340,7 +2348,7 @@ c     ih, im, is denotes high, middle and low cloud groups.
 
       do 100 ih=1,2
 
-c-----clear portion 
+c-----clear portion
 
          if(ih.eq.1) then
            do j=1,n
@@ -2379,7 +2387,7 @@ c-----cloudy portion
 
            do j=1,n
             do i=1,m
-              cm(i,j)=ch(i,j)*cc(i,j,2) 
+              cm(i,j)=ch(i,j)*cc(i,j,2)
             enddo
            enddo
 
@@ -2393,7 +2401,7 @@ c-----clear portion
 
            do j=1,n
             do i=1,m
-             ct(i,j)=cm(i,j)*(1.0-cc(i,j,3)) 
+             ct(i,j)=cm(i,j)*(1.0-cc(i,j,3))
             enddo
            enddo
 
@@ -2440,7 +2448,7 @@ c-----add one layer at a time, going up.
        enddo
 
 c-----compute fluxes following eq (5) of Chou (1992)
- 
+
 c     fdndir is the direct  downward flux
 c     fdndif is the diffuse downward flux
 c     fupdif is the diffuse upward flux
@@ -2511,7 +2519,7 @@ c-----output (undated) parameter
 
 c-----temporary array
 
-      integer i,j,k,ic,iw 
+      integer i,j,k,ic,iw
       _RL  xx,clog1,wlog,dc,dw,x1,x2,y2
 
 c********************************************************************
@@ -2519,7 +2527,7 @@ c-----include co2 look-up table
 
 #include "cah-dat.h"
 c     save cah
- 
+
 c********************************************************************
 c-----table look-up for the reduction of clear-sky solar
 c     radiation due to co2. The fraction 0.0343 is the
@@ -2536,17 +2544,17 @@ c     extraterrestrial solar flux in the co2 bands.
           if(ic.lt.2)ic=2
           if(iw.lt.2)iw=2
           if(ic.gt.22)ic=22
-          if(iw.gt.19)iw=19     
+          if(iw.gt.19)iw=19
           dc=clog1-float(ic-2)*.3+3.
-          dw=wlog-float(iw-2)*.3+4.   
+          dw=wlog-float(iw-2)*.3+4.
           x1=cah(1,iw-1)+(cah(1,iw)-cah(1,iw-1))*xx*dw
           x2=cah(ic-1,iw-1)+(cah(ic-1,iw)-cah(ic-1,iw-1))*xx*dw
           y2=x2+(cah(ic,iw-1)-cah(ic-1,iw-1))*xx*dc
           if (x1.lt.y2) x1=y2
           df(i,j,k)=df(i,j,k)+0.0343*(x1-y2)
-        enddo     
-       enddo      
-      enddo      
+        enddo
+       enddo
+      enddo
 
       return
       end

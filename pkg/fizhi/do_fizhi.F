@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.52 2006/03/09 00:00:36 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.53 2009/04/01 19:54:17 jmc Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myIter,myid,
@@ -19,7 +19,7 @@ c-----------------------------------------------------------------------
 c Interface routine to calculate physics increments - calls fizhi_driver.
 c Purpose of this routine is to set up arrays local to fizhi and 'save'
 c them from one iteration to the next, and act as interface between the
-c model common blocks (held in fizhi_wrapper) and fizhi_driver. 
+c model common blocks (held in fizhi_wrapper) and fizhi_driver.
 c Copies of variables that are 'shadowed' are made here without shadows
 c for passing to fizhi_driver.
 c Note: routine is called from inside a bi-bj loop
@@ -98,7 +98,7 @@ c Local Variables
       parameter (ptracer = 1)
       parameter (ntracer = 1)
 
-      _RL xlats(sNx,sNy),xlons(sNx,sNy),sea_ice(sNx,sNy) 
+      _RL xlats(sNx,sNy),xlons(sNx,sNy),sea_ice(sNx,sNy)
       _RL surfZ(sNx,sNy)
       _RL p(sNx,sNy,Nsx,Nsy)
       _RL u(sNx,sNy,Nrphys),v(sNx,sNy,Nrphys),t(sNx,sNy,Nrphys)
@@ -157,14 +157,14 @@ c Local Variables
       common /saver/ st4,dst4,dlwdtg
       common /saver/ qq
       common /saver/ pl,ple,dpres,pkle,pkl
- 
+
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
 C***********************************************************************
       kappa = getcon('KAPPA')
       p0kappa = 1000.0 ** kappa
       S0 = getcon('S0')
-      
+
       do j = jm1,jm2
       do i = im1,im2
        xlats(i,j) = lats(i,j,bi,bj)
@@ -173,7 +173,11 @@ C***********************************************************************
       enddo
       enddo
 
+#ifdef FIZHI_USE_FIXED_DAY
+      call astro ( 20040321,nhms, xlats,xlons, im2*jm2, cosz,ra )
+#else
       call astro ( nymd,nhms, xlats,xlons, im2*jm2, cosz,ra )
+#endif
       do j=jm1,jm2
       do i=im1,im2
        radswt(i,j,bi,bj) = S0*(1.0/ra**2)*cosz(i,j)
@@ -294,7 +298,7 @@ C compute pressures - all pressure are converted here to hPa
        duphy(i,j,L,bi,bj) = moistu(i,j,L,bi,bj) + turbu(i,j,L,bi,bj)
        dvphy(i,j,L,bi,bj) = moistv(i,j,L,bi,bj) + turbv(i,j,L,bi,bj)
        dthphy(i,j,L,bi,bj) = ((moistt(i,j,L,bi,bj)+turbt(i,j,L,bi,bj)+
-     .   lwdt(i,j,L,bi,bj) + 
+     .   lwdt(i,j,L,bi,bj) +
      .   dlwdtg(i,j,L,bi,bj) * (tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) +
      .   swdt(i,j,L,bi,bj)*radswt(i,j,bi,bj) )*p0kappa ) / p(i,j,bi,bj)
        dsphy(i,j,L,bi,bj) = (moistq(i,j,L,1,bi,bj)+turbq(i,j,L,1,bi,bj))
