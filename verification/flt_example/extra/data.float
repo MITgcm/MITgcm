@@ -4,10 +4,11 @@
 # *******************
  &dimensions
  expnam='Verification Experiment flt_example ',
- startDate='01-JAN-1990 00:00:00'
+ startDate='01-JAN-1990 00:00:00',
  usingSphericalPolarGrid=.FALSE.,
- &
+ /
 
  &FLOATS
- fName='float_trajectories'
- &
+ fName='float_trajectories',
+ /
+
