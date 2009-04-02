@@ -1,11 +1,29 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1083 2009/03/27 00:09:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1084 2009/04/02 21:47:23 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o experiment fizhi-cs-aqualev20:
+  switching to new version of S/R GETPWHERE (#define TRY_NEW_GETPWHERE)
+  and generate new output. Note: new output is much closer to the old 
+  one (v1.8) generated with pgf77 -O2 on Mar 14 2007 than it is from 
+  the previous one (v1.9) generated with pgf77 -O0 on Jun 13 2007.
+o pkg/fizhi:
+ - change to avoid indices going deliberately over array-bounds
+ - remove unnecessary MPI stuff
+ - perpetual spring equinox with "#define FIZHI_USE_FIXED_DAY"
+ - new version of S/R GETPWHERE available with #define TRY_NEW_GETPWHERE:
+   does not go over array-bounds and therefore returns reliable output.
+ - in fizhi_driver.F & fizhi_turb.F, fix "get_alarm" calls:
+   this S/R has 4 output arguments, which are used inside "get_alarm";
+   when it is called with the same variable "ndum" in place of several
+   output arguments, this produces weird side effect inside "get_alarm"
+  (e.g., datein=dates(n) is overwritten by timein=times(n) since both
+   datein & timein, resp. 2nd and 3rd arg., are pointed to the same "ndum"
+   address) and produces error.
 o lab_sea experiment: change from 2x1 tiles to 2x2 tiles and regenerate output
-o pkg/seaice: fix bug in new version of S/R SEAICE_LSR.F: 
+o pkg/seaice: fix bug in new version of S/R SEAICE_LSR.F:
    update lab_sea.lsr & lab_sea.salt_plume results
 o pkg/seaice: 
   Major overhaul of the LSOR solver: change discretization from original
