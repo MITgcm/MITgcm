@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/FIZHI_OPTIONS.h,v 1.1 2009/04/02 00:04:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/FIZHI_OPTIONS.h,v 1.2 2009/04/02 19:15:27 jmc Exp $
 C $Name:  $
 
 #ifndef FIZHI_OPTIONS_H
@@ -16,7 +16,7 @@ C     use fixed day in the year:
 #define FIZHI_USE_FIXED_DAY
 
 C     try new version of S/R GETPWHERE
-#undef TRY_NEW_GETPWHERE
+#define TRY_NEW_GETPWHERE
 
 #endif /* ALLOW_FIZHI */
 #endif /* FIZHI_OPTIONS_H */
