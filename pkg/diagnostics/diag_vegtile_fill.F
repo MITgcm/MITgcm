@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.9 2008/11/18 21:41:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.10 2009/04/02 18:52:27 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -6,8 +6,9 @@ C $Name:  $
 CBOP
 C     !ROUTINE: DIAG_VEGTILE_FILL
 C     !INTERFACE:
-      SUBROUTINE DIAG_VEGTILE_FILL (field,indx,chfr,ib,numpts,npeice,
-     . check, chardiag, kLev, nLevs, bi, bj, myThid)
+      SUBROUTINE DIAG_VEGTILE_FILL(
+     &                field,indx,chfr,ib,numpts,npeice,
+     &                check, chardiag, kLev, nLevs, bi, bj, myThid )
 C     !DESCRIPTION:
 C***********************************************************************
 C Increment the diagnostics array with a vegetation tile space field
@@ -23,38 +24,33 @@ C     == Global variables ===
 
 C     !INPUT PARAMETERS:
 C***********************************************************************
-C   field  - array to be mapped to grid space [ib,levs] and added to qdiag
-C   indx   - array of horizontal indeces of grid points to convert to
-C            tile space[numpts]
-C   chfr   - fractional area covered by the tile [ib]
-C   ib     - inner dimension of source array AND number of points in
-C            array a that need to be pasted
-C   numpts - total number of points which were stripped
-C   npeice - the current strip number to be filled
-C   check  - logical to check for undefined values
-C   chardiag ... Character expression for diag to fill
-C   kLev   ..... Integer flag for vertical levels:
-C                > 0 (any integer): WHICH single level to increment
+C   field    :: array to be mapped to grid space [ib,levs] and added to qdiag
+C   indx     :: array of horizontal indices of grid points to convert to
+C               tile space[numpts]
+C   chfr     :: fractional area covered by the tile [ib]
+C   ib       :: inner dimension of source array and number of points in
+C               array a that need to be pasted
+C   numpts   :: total number of points which were stripped
+C   npeice   :: the current strip number to be filled
+C   check    :: logical to check for undefined values
+C   chardiag :: Character expression for diag to fill
+C   kLev     :: Integer flag for vertical levels:
+C                > 0 (any integer): which single level to increment
 C                0,-1 to increment "nLevs" levels in qdiag:
-C                 0 : fill-in in the same order as the input array
-C                -1 : fill-in in reverse order.
-C   nLevs ...... indicates Number of levels of the input field array
-C   bi    ...... X-direction tile number
-C   bj    ...... Y-direction tile number
-C   myThid     ::  my thread Id number
-C
-c IMPORTANT NOTE:
-c
-c This routine will result in roundoff differences if called from
-c within a parallel region.
+C                  0 : fill-in in the same order as the input array
+C                 -1 : fill-in in reverse order.
+C   nLevs    :: indicates Number of levels of the input field array
+C   bi       :: X-direction tile number
+C   bj       :: Y-direction tile number
+C   myThid   :: my thread Id number
 C***********************************************************************
       CHARACTER*8 chardiag
       INTEGER kLev, nLevs, bi, bj
       INTEGER myThid
-      integer ib,numpts,npeice
-      integer indx(numpts)
+      INTEGER ib,numpts,npeice
+      INTEGER indx(numpts)
       _RL field(ib,nlevs), chfr(ib)
-      logical check
+      LOGICAL check
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -64,7 +60,8 @@ C ===============
       INTEGER k, kFirst, kLast
       INTEGER kd, kd0, ksgn, kStore
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      integer i,offset,Lena,newindx,jindx
+      INTEGER offset, Lena
+      INTEGER ivt, ij, i
       _RL undef
       INTEGER iSp, ndId, j,l
       INTEGER region2fill(0:nRegions)
@@ -80,6 +77,9 @@ C Run through list of active diagnostics to make sure
 C we are trying to fill a valid diagnostic
 
       undef = UNSET_RL
+#ifdef ALLOW_FIZHI
+      IF ( check ) undef = getcon('UNDEF')
+#endif
       ndiagnum = 0
       ipointer = 0
       DO n=1,nlists
@@ -90,88 +90,85 @@ C we are trying to fill a valid diagnostic
          IF ( ndiagnum.NE.0 .AND. ndiag(ipointer,1,1).GE.0 ) THEN
 C--   do the filling: start here:
 
-       IF ( (ABS(kLev).LE.1) .AND. (npeice.eq.1) ) THEN
+          IF ( (ABS(kLev).LE.1) .AND. (npeice.EQ.1) ) THEN
 C Increment the counter for the diagnostic
-         ndiag(ipointer,bi,bj) = ndiag(ipointer,bi,bj) + 1
-       ENDIF
+            ndiag(ipointer,bi,bj) = ndiag(ipointer,bi,bj) + 1
+          ENDIF
 
-       offset = ib*(npeice-1)
-       Lena    = min(ib,numpts-offset)
-       offset = offset+1
+          offset = ib*(npeice-1)
+          Lena   = MIN(ib,numpts-offset)
 
 C-      Which part of field to add : k = 3rd index,
 C         and do the loop >> do k=kFirst,kLast <<
-       IF (kLev.LE.0) THEN
-        kFirst = 1
-        kLast  = nLevs
-       ELSEIF ( nLevs.EQ.1 ) THEN
-        kFirst = 1
-        kLast  = 1
-       ELSEIF ( kLev.LE.nLevs ) THEN
-        kFirst = kLev
-        kLast  = kLev
-       ELSE
-        STOP 'ABNORMAL END: S/R DIAGNOSTICS_FILL kLev > nLevs > 0'
-       ENDIF
+          IF (kLev.LE.0) THEN
+           kFirst = 1
+           kLast  = nLevs
+          ELSEIF ( nLevs.EQ.1 ) THEN
+           kFirst = 1
+           kLast  = 1
+          ELSEIF ( kLev.LE.nLevs ) THEN
+           kFirst = kLev
+           kLast  = kLev
+          ELSE
+           STOP 'ABNORMAL END: S/R DIAGNOSTICS_FILL kLev > nLevs > 0'
+          ENDIF
 C-      Which part of qdiag to update: kd = 3rd index,
 C         and do the loop >> do k=kFirst,kLast ; kd = kd0 + k*ksgn <<
-       IF ( kLev.EQ.-1 ) THEN
-        ksgn = -1
-        kd0 = ipointer + nLevs
-       ELSEIF ( kLev.EQ.0 ) THEN
-        ksgn = 1
-        kd0 = ipointer - 1
-       ELSE
-        ksgn = 0
-        kd0 = ipointer + kLev - 1
-       ENDIF
+          IF ( kLev.EQ.-1 ) THEN
+           ksgn = -1
+           kd0 = ipointer + nLevs
+          ELSEIF ( kLev.EQ.0 ) THEN
+           ksgn = 1
+           kd0 = ipointer - 1
+          ELSE
+           ksgn = 0
+           kd0 = ipointer + kLev - 1
+          ENDIF
 
 C-      Check for consistency with Nb of levels reserved in storage array
-        kStore = kd0 + MAX(ksgn*kFirst,ksgn*kLast) - ipointer + 1
-       IF ( kStore.GT.kdiag(ndiagnum) ) THEN
-        _BEGIN_MASTER(myThid)
-        WRITE(msgBuf,'(2A,I4,A)') 'DIAGNOSTICS_FILL: ',
-     &     'exceed Nb of levels(=',kdiag(ndiagnum),' ) reserved '
-        CALL PRINT_ERROR( msgBuf , myThid )
-        WRITE(msgBuf,'(2A,I6,2A)') 'DIAGNOSTICS_FILL: ',
-     &     'for Diagnostics #', ndiagnum, ' : ', chardiag
-        CALL PRINT_ERROR( msgBuf , myThid )
-        WRITE(msgBuf,'(2A,2I4,I3)') 'calling DIAGNOSTICS_FILL ',
-     &     'with kLev,nLevs=', kLev,nLevs
-        CALL PRINT_ERROR( msgBuf , myThid )
-        WRITE(msgBuf,'(2A,I6,A)') 'DIAGNOSTICS_FILL: ',
-     &     '==> trying to store up to ', kStore, ' levels'
-        CALL PRINT_ERROR( msgBuf , myThid )
-        STOP 'ABNORMAL END: S/R DIAGNOSTICS_FILL'
-        _END_MASTER(myThid)
-       ENDIF
+          kStore = kd0 + MAX(ksgn*kFirst,ksgn*kLast) - ipointer + 1
+          IF ( kStore.GT.kdiag(ndiagnum) ) THEN
+           _BEGIN_MASTER(myThid)
+           WRITE(msgBuf,'(2A,I4,A)') 'DIAGNOSTICS_FILL: ',
+     &      'exceed Nb of levels(=',kdiag(ndiagnum),' ) reserved '
+           CALL PRINT_ERROR( msgBuf , myThid )
+           WRITE(msgBuf,'(2A,I6,2A)') 'DIAGNOSTICS_FILL: ',
+     &      'for Diagnostics #', ndiagnum, ' : ', chardiag
+           CALL PRINT_ERROR( msgBuf , myThid )
+           WRITE(msgBuf,'(2A,2I4,I3)') 'calling DIAGNOSTICS_FILL ',
+     &      'with kLev,nLevs=', kLev,nLevs
+           CALL PRINT_ERROR( msgBuf , myThid )
+           WRITE(msgBuf,'(2A,I6,A)') 'DIAGNOSTICS_FILL: ',
+     &      '==> trying to store up to ', kStore, ' levels'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           STOP 'ABNORMAL END: S/R DIAGNOSTICS_FILL'
+           _END_MASTER(myThid)
+          ENDIF
 
-       DO k = kFirst,kLast
-        kd = kd0 + ksgn*k
-        if( check ) then
-#ifdef ALLOW_FIZHI
-         undef = getcon('UNDEF')
-#endif
-         do i= 1,Lena
-          jindx = 1 + int((indx(i+offset-1)-1)/sNx)
-          newindx = indx(i+offset-1)+(jindx-1)*2*Olx
-          if(qdiag(newindx,1,kd,bi,bj).eq.undef
-     .                                  .or.field(i,k).eq.undef)then
-           qdiag(newindx,1,kd,bi,bj) = undef
-          else
-           qdiag(newindx,1,kd,bi,bj)=qdiag(newindx,1,kd,bi,bj)+
-     .                                                field(i,k)*chfr(i)
-          endif
-         enddo
-        else
-         do i= 1,Lena
-          jindx = 1 + int((indx(i+offset-1)-1)/sNx)
-          newindx = indx(i+offset-1)+(jindx-1)*2*Olx
-          qdiag(newindx,1,kd,bi,bj)=qdiag(newindx,1,kd,bi,bj)+
-     .                                                field(i,k)*chfr(i)
-         enddo
-        endif
-       ENDDO
+          DO k = kFirst,kLast
+           kd = kd0 + ksgn*k
+           IF ( check ) THEN
+            DO ivt = 1,Lena
+             ij = indx(ivt+offset) - 1
+             j = 1 + INT(ij/sNx)
+             i = 1 + MOD(ij,sNx)
+             IF ( field(ivt,k).EQ.undef ) THEN
+              qdiag(i,j,kd,bi,bj) = undef
+             ELSEIF ( qdiag(i,j,kd,bi,bj).NE.undef ) THEN
+              qdiag(i,j,kd,bi,bj) = qdiag(i,j,kd,bi,bj)
+     &                            + field(ivt,k)*chfr(ivt)
+             ENDIF
+            ENDDO
+           ELSE
+            DO ivt = 1,Lena
+              ij = indx(ivt+offset) - 1
+              j = 1 + INT(ij/sNx)
+              i = 1 + MOD(ij,sNx)
+              qdiag(i,j,kd,bi,bj) = qdiag(i,j,kd,bi,bj)
+     &                            + field(ivt,k)*chfr(ivt)
+            ENDDO
+           ENDIF
+          ENDDO
 
 C--   do the filling: ends here.
          ENDIF
@@ -210,53 +207,50 @@ C     then add regions from other lists
 
 C-      Which part of field to add : k = 3rd index,
 C         and do the loop >> do k=kFirst,kLast <<
-       IF (kLev.LE.0) THEN
-        kFirst = 1
-        kLast  = nLevs
-       ELSE
-        kFirst = 1
-        kLast  = 1
-       ENDIF
+           IF (kLev.LE.0) THEN
+            kFirst = 1
+            kLast  = nLevs
+           ELSE
+            kFirst = 1
+            kLast  = 1
+           ENDIF
 
 C-    Fill local array with grid-space field after conversion.
-       offset = ib*(npeice-1)
-       Lena    = min(ib,numpts-offset)
-       offset = offset+1
+           offset = ib*(npeice-1)
+           Lena    = MIN(ib,numpts-offset)
 
-       DO i=1,sNx*sNy
-         gridFrac(i)= 0.
-       ENDDO
-       DO i=1,Lena
-         newindx = indx(i+offset-1)
-         gridFrac(newindx)=gridFrac(newindx)+chfr(i)
-       ENDDO
+           DO ij = 1,sNx*sNy
+             gridFrac(ij)= 0.
+           ENDDO
+           DO ivt = 1,Lena
+             ij = indx(ivt+offset)
+             gridFrac(ij)=gridFrac(ij)+chfr(ivt)
+           ENDDO
 
-       DO k = kFirst,kLast
-        DO i=1,sNx*sNy
-         gridField(i,k)= 0.
-        ENDDO
-        if( check ) then
-#ifdef ALLOW_FIZHI
-         undef = getcon('UNDEF')
-#endif
-         do i= 1,Lena
-          newindx = indx(i+offset-1)
-          if(gridField(newindx,k).eq.undef
-     .                           .or.field(i,k).eq.undef)then
-           gridField(newindx,k)= undef
-          else
-           gridField(newindx,k)=gridField(newindx,k)
-     &                         +field(i,k)*chfr(i)/gridFrac(newindx)
-          endif
-         enddo
-        else
-         do i= 1,Lena
-          newindx = indx(i+offset-1)
-          gridField(newindx,k)=gridField(newindx,k)
-     &                        +field(i,k)*chfr(i)/gridFrac(newindx)
-         enddo
-        endif
-       ENDDO
+           DO k = kFirst,kLast
+            DO ij = 1,sNx*sNy
+             gridField(ij,k)= 0.
+            ENDDO
+            IF ( check ) THEN
+             DO ivt = 1,Lena
+              ij = indx(ivt+offset)
+              IF ( field(ivt,k).EQ.undef ) THEN
+               gridField(ij,k) = undef
+              ELSEIF ( gridFrac(ij).GT.0. _d 0 ) THEN
+               gridField(ij,k) = gridField(ij,k)
+     &                         + field(ivt,k)*chfr(ivt)/gridFrac(ij)
+              ENDIF
+             ENDDO
+            ELSE
+             DO ivt = 1,Lena
+              ij = indx(ivt+offset)
+              IF ( gridFrac(ij).GT.0. _d 0 ) THEN
+               gridField(ij,k) = gridField(ij,k)
+     &                         + field(ivt,k)*chfr(ivt)/gridFrac(ij)
+              ENDIF
+             ENDDO
+            ENDIF
+           ENDDO
 
 C-    diagnostics is valid and Active: Now do the filling
            CALL DIAGSTATS_FILL(
