@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.4 2009/01/06 19:01:32 dfer Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.5 2009/04/02 18:28:31 dfer Exp $
 #
 # tested on MacBook Pro
 # on 28-Nov-2006
@@ -15,7 +15,7 @@ EXTENDED_SRC_FLAG='-ffixed-line-length-132'
 S64='$(TOOLSDIR)/set64bitConst.sh'
 #EH3 MAKEDEPEND='${TOOLSDIR}/xmakedepend'
 #EH3 MAKEDEPEND=makedepend
-DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_TERMINATOR'
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
 INCLUDEDIRS='/sw/include'
 INCLUDES='-I/sw/include'
 LIBS='-L/sw/lib'
@@ -30,12 +30,12 @@ LIBS='-L/sw/lib'
 
 #  For IEEE, use the "-ffloat-store" option
 if test "x$IEEE" = x ; then
-    FFLAGS='-Wunused -Wuninitialized -fsecond-underscore'
+    FFLAGS='-Wunused -Wuninitialized -fsecond-underscore -fconvert=big-endian'
     FOPTIM='-O3 -funroll-loops'
     NOOPTFLAGS='-O2 -funroll-loops'
     NOOPTFILES='gad_c4_adv_x.F gad_u3_adv_x.F'
 else
-    FFLAGS='-Wunused -ffloat-store -fsecond-underscore'
+    FFLAGS='-Wunused -ffloat-store -fsecond-underscore -fconvert=big-endian'
     FOPTIM='-O0'
 fi
 
