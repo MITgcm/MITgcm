@@ -1,7 +1,11 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+authors_fc5,v 1.4 2008/05/09 16:38:35 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+authors_fc5,v 1.5 2009/04/02 22:06:38 jmc Exp $
 #
+
+# on author: 
+# (csh,tcsh) setenv PGI /usr/local/pkg/pgi/pgi-6.1-5
+# (sh,bash)  export PGI=/usr/local/pkg/pgi/pgi-6.1-5
 
 FC='/usr/local/pkg/pgi/pgi-6.1-5/linux86/6.1/bin/pgf77'
 CC='/usr/local/pkg/pgi/pgi-6.1-5/linux86/6.1/bin/pgcc'
