@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.33 2006/08/04 17:03:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.34 2009/04/02 21:29:34 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
        subroutine fizhi_wrapper (myTime, myIter, myThid)
 c-----------------------------------------------------------------------
 c  Subroutine fizhi_wrapper - 'Wrapper' routine to interface
-c        with physics driver. 
-c        1) Set up "bi, bj loop"  and some timers and clocks. 
+c        with physics driver.
+c        1) Set up "bi, bj loop"  and some timers and clocks.
 c        2) Call do_fizhi - driver for physics which computes tendencies
 c        3) Interpolate tendencies to dynamics grid in vertical
 c        4) Convert u,v tendencies to C-Grid
@@ -34,7 +34,7 @@ c-----------------------------------------------------------------------
 #include "fizhi_SHP.h"
 #endif
 
-       integer myIter, myThid 
+       integer myIter, myThid
        _RL myTime
        logical  diagnostics_is_on
        external diagnostics_is_on
@@ -45,14 +45,13 @@ c pe on dynamics and physics grid refers to bottom edge
        _RL pedyn(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr+1,nSx,nSy)
        _RL tempphy(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nrphys,nSx,nSy)
        _RL fracland(sNx,sNy,Nsx,Nsy)
-       _RL tempLdiag(sNx,sNy,Nrphys,Nsx,Nsy)
-       _RL tempLdiag2(sNx,sNy,Nrphys,Nsx,Nsy)
-       _RL tempdiag(sNx,sNy,Nsx,Nsy)
-       _RL slp(sNx,sNy),meantemp(sNx,sNy)
+       _RL tempLdiag(sNx,sNy,Nrphys+1)
+       _RL tempLdiag2(sNx,sNy,Nrphys)
+       _RL tempdiag(sNx,sNy)
+       _RL slp(sNx,sNy)
 
        integer i, j, L, Lbotij, bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
-       _RL tempij(1-olx:sNx+olx,1-oly:sNy+oly)
        _RL grav, getcon
 
        grav = getcon('GRAVITY')
@@ -185,7 +184,7 @@ C Build pressures on dynamics grid
         do j = 1,sNy
         do i = 1,sNx
          Lbotij = ksurfC(i,j,bi,bj)
-         if(Lbotij.ne.0.) 
+         if(Lbotij.ne.0.)
      . pedyn(i,j,Lbotij,bi,bj) = (Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj))
         enddo
         enddo
@@ -193,7 +192,7 @@ C Build pressures on dynamics grid
         do i = 1,sNx
          Lbotij = ksurfC(i,j,bi,bj)
          do L = Lbotij+1,Nr+1
-          pedyn(i,j,L,bi,bj) = pedyn(i,j,L-1,bi,bj) - 
+          pedyn(i,j,L,bi,bj) = pedyn(i,j,L-1,bi,bj) -
      .           drF(L-1)* rStarExpC(i,j,bi,bj)*hfacC(i,j,L-1,bi,bj)
          enddo
 c Do not use a zero field as the top edge pressure for interpolation
@@ -233,26 +232,26 @@ c Do not use a zero field as the top edge pressure for interpolation
 #ifdef ALLOW_DIAGNOSTICS
       if ( useDiagnostics ) then
        if(diagnostics_is_on('SLP     ',myThid) ) then
+        L = Nrphys+1
         do j = 1,sNy
         do i = 1,sNx
-         tempdiag(i,j,bi,bj) = topoZ(i,j,bi,bj)*grav
+         tempdiag(i,j) = topoZ(i,j,bi,bj)*grav
+         tempLdiag(i,j,L) = pephy4fiz(i,j,L,bi,bj)/100.
+        enddo
+        enddo
         do L = 1,Nrphys
-         tempLdiag(i,j,L,bi,bj) = pephy4fiz(i,j,L,bi,bj)/100.
-         tempLdiag2(i,j,L,bi,bj) = thphy(i,j,L,bi,bj) *
-     .        (1.+0.609*sphy(i,j,L,bi,bj))
-        enddo
-        tempLdiag(i,j,Nrphys+1,bi,bj)=pephy4fiz(i,j,Nrphys+1,bi,bj)/100.
-        enddo
-        enddo
-        call slprs(tempdiag(1,1,bi,bj),tempLdiag(1,1,1,bi,bj),
-     .  tempLdiag2(1,1,1,bi,bj),fracland(1,1,bi,bj),sNx,sNy,Nrphys,slp)
         do j = 1,sNy
         do i = 1,sNx
-         tempij(i,j) = slp(i,j)
+         tempLdiag(i,j,L) = pephy4fiz(i,j,L,bi,bj)/100.
+         tempLdiag2(i,j,L) = thphy(i,j,L,bi,bj) *
+     .        (1.+0.609*sphy(i,j,L,bi,bj))
+
         enddo
         enddo
-        call diagnostics_fill(tempij,'SLP     ',1,
-     .                                     1,2,bi,bj,myThid)
+        enddo
+        call slprs( tempdiag, tempLdiag, tempLdiag2,
+     .              fracland(1,1,bi,bj),sNx,sNy,Nrphys,slp)
+        call diagnostics_fill( slp,'SLP     ',1,1,3,bi,bj,myThid )
        endif
       endif
 #endif
@@ -282,7 +281,7 @@ c Compute physics increments
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
 c Interpolate (A-Grid) physics increments to dynamics grid
-C   First flip the physics arrays (which are top-down) 
+C   First flip the physics arrays (which are top-down)
 C   into bottom-up arrays for interpolation to dynamics grid
         do j = 1,sNy
         do i = 1,sNx
