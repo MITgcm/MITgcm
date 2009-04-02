@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/update_ocean_exports.F,v 1.2 2007/03/13 15:38:59 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/update_ocean_exports.F,v 1.3 2009/04/02 20:51:12 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -28,7 +28,7 @@ c-----------------------------------------------------------------------
        integer i, j, bi, bj, bislot, bjslot
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
        integer xsize, ysize
-       _RL        sstmin 
+       _RL        sstmin
        parameter ( sstmin = 273.16 )
 
 #if defined(ALLOW_EXCH2)
@@ -115,7 +115,7 @@ C
 C!ROUTINE:	GETSICE
 C!DESCRIPTION:	GETSICE returns the sea ice depth.
 C!		This routine is adaptable for any frequency
-C!		data upto a daily frequency.  
+C!		data upto a daily frequency.
 C!		note: for diurnal data ndmax should be increased.
 C
 C!INPUT PARAMETERS:
@@ -170,7 +170,7 @@ C Maximum number of dates in one year for the data
       integer nymdbc(ndmax),nhmsbc(ndmax)
 
       integer i,j
- 
+
       do j = jm1,jm2
       do i = im1,im2
        sice(i,j,bi,bj) = 0.
@@ -188,7 +188,7 @@ C
 C!ROUTINE:	GETSST
 C!DESCRIPTION:	GETSST gets the SST data.
 C!		This routine is adaptable for any frequency
-C!		data upto a daily frequency.  
+C!		data upto a daily frequency.
 C!		note: for diurnal data ndmax should be increased.
 C
 C!INPUT PARAMETERS:
@@ -242,8 +242,9 @@ C Maximum number of dates in one year for the data
       parameter (ndmax = 370)
       integer nymdbc(ndmax),nhmsbc(ndmax)
 
-      _RL getcon 
-      _RL pi,pio2,pio3,mpio3,pio36,deg2rad,sinarg,factor,cosarg1,cosarg2
+      _RL getcon
+      _RL pi,pio2,pio3,mpio3,pio36,deg2rad,sinarg 
+c     _RL factor,cosarg1,cosarg2
 
       integer i,j
 
@@ -273,7 +274,7 @@ C      endif
 C Experiment 3 - Flat
 C      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. pio3 ) then
 C       sinarg = 3.*yc(i,j,bi,bj)*deg2rad/2.
-C       sst(i,j,bi,bj) = 273.16 + 
+C       sst(i,j,bi,bj) = 273.16 +
 C    .        27.*(1.-(sin(sinarg)*sin(sinarg)*sin(sinarg)*sin(sinarg)))
 C      else
 C       sst(i,j,bi,bj) = 273.16
@@ -282,7 +283,7 @@ C Experiment 4 - Qobs - average of control and exp 3
 C      if( abs(yc(i,j,bi,bj)*deg2rad)  .lt. pio3 ) then
 C       sinarg = 3.*yc(i,j,bi,bj)*deg2rad/2.
 C       sst(i,j,bi,bj) = 273.16 + 0.5*27*
-C    .   (2.- (sin(sinarg)*sin(sinarg)) - 
+C    .   (2.- (sin(sinarg)*sin(sinarg)) -
 C    .        (sin(sinarg)*sin(sinarg)*sin(sinarg)*sin(sinarg)))
 C      else
 C       sst(i,j,bi,bj) = 273.16
