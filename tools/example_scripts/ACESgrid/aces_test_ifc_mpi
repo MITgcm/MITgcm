@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_ifc.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_ifc.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.9 2009/02/28 20:54:33 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mpi,v 1.10 2009/04/03 21:31:34 jmc Exp $
 # $Name:  $
 
 umask 0022
@@ -17,6 +17,8 @@ cd $HERE
 if test -f /etc/profile.d/modules.sh ; then
     . /etc/profile.d/modules.sh
 fi
+# Note: added "ulimit -s unlimited" in file "~/.bashrc"
+#   to pass big test (the 2 fizhi-cs-* test) with MPI 
 
 sfx='ifc'
 module add mpich/intel
