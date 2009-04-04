@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.1 2009/03/25 20:52:42 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.2 2009/04/04 17:49:41 jmc Exp $
 
 #  Ed Hill
 
@@ -14,10 +14,10 @@ MC=10
 checkOut=1
 sepDir=0
 #tst_list='adm g77 pgi gfo ifc mth'
-tst_list='adm g77 gfo'
+tst_list='adm g77 gfo mth'
 
 #  Turn off stack limit for FIZHI
-ulimit -s unlimited
+#ulimit -s unlimited  <- this is the default
 
 tdir=$TESTDIR
 if test $checkOut = '0' ; then
@@ -76,6 +76,8 @@ do
   'adm') OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
   'ifc') OPTFILE='../tools/build_options/linux_amd64_ifort' ;;
   'pgi') OPTFILE='../tools/build_options/linux_amd64_pgf77' ;;
+  'mth') OPTFILE='../tools/build_options/linux_amd64_gfortran+mth'
+         export GOMP_STACKSIZE=400m ;;
    *) OPTFILE= ;;
  esac
 
@@ -183,7 +185,6 @@ do
  then
 
   export OMP_NUM_THREADS=2
-  export KMP_STACKSIZE=400m
   echo "Running testreport using:"
   comm="./testreport -mth -match $MC -a jmc@mitgcm.org"
   if test "x$OPTFILE" != x ; then
