@@ -1,25 +1,28 @@
 #!/bin/bash
-#
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_gfortran+mth,v 1.1 2007/08/20 20:31:00 ce107 Exp $
+
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_gfortran+mth,v 1.2 2009/04/04 17:58:04 jmc Exp $
 #  $Name:  $
-#
 
-#  Tested with gcc-gfortran v4.0.x as shipped with Fedora Core 4.
-#  It fixes the ' \' versus ' &' terminator problem but some 
-#  namelist problems remain.  The biggest seems to be the inability
-#  of current gfortran versions to support namelist syntax such as:
-#
-#     fields(1,1) = 'UVELSLT ','VVELSLT ','WVELSLT ',
-#
-#  which results in run-time errors.
+#  Tested on dickens with gcc-gfortran v4.3.2 as shipped with Fedora Core 10
 
+#-------
+#  to run, needs to set environment var. OMP_NUM_THREADS 
+#    and generally, needs to increase the thread stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export GOMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv GOMP_STACKSIZE 400m
+#-------
 
 FC=gfortran
 F90C=gfortran
 CC=gcc
 DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR -DUSE_OMP_THREADING'
 CPP='cpp  -traditional -P'
-NOOPTFLAGS='-O0 -fopenmp'
+NOOPTFLAGS='-O0'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
 
 if test "x$DEVEL" != x ; then
     FFLAGS='-g -Wall -W -ffpe-trap=invalid,zero,overflow -fbounds-check'
@@ -35,7 +38,16 @@ if test "x$IEEE" = x ; then
     FOPTIM='-O3 -funroll-loops'
 else
     #  Try to follow IEEE-754
+    # these may also be useful, but require specific gfortran versions:
+    # -Wnonstd-intrinsics  for gfortran <= 4.3
+    # -Wintrinsics-std     for gfortran >= 4.4
+    # -Wno-tabs            for gfortran >= 4.3 
+    FFLAGS="$FFLAGS -Waliasing -Wampersand -Wsurprising -Wline-truncation"
+#   to get plenty of warnings :
+#   FFLAGS="$FFLAGS -Wconversion -Wimplicit-interface -Wunused-labels"
     FOPTIM='-O0'
+#   for automatic testing with testreport (but no relation with IEEE arithmetic):
+    FOPTIM="$FOPTIM -g -ffpe-trap=invalid,zero,overflow -fbounds-check"
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
