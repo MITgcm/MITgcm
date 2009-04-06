@@ -20,4 +20,8 @@
   mult_ice   = 1.,
 # choose which seaice cost term you want
   cost_ice_flag = 1,
+  costIceStart1 = 20000101,
+  costIceStart2 = 00000,
+  costIceEnd1   = 20000201,
+  costIceEnd2   = 00000,
  &
