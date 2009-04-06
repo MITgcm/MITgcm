@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.5 2008/04/29 21:43:22 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.6 2009/04/06 23:30:42 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,9 +6,9 @@ C $Name:  $
 C     !ROUTINE: ADCTRL_BOUND_3D
 C     !INTERFACE:
       SUBROUTINE ADCTRL_BOUND_3D(
-     I             fieldCur,maskFld3d,
-     I             boundsVec,myThid,
-     I             adjFieldCur)
+     I             fieldCur, adjFieldCur,
+     I             maskFld3d, boundsVec, myThid
+     I             )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | started: Gael Forget gforget@mit.edu 20-Aug-2007
@@ -92,9 +92,9 @@ C  otherwise	=> error
 C     !ROUTINE: ADCTRL_BOUND_2D
 C     !INTERFACE:
       SUBROUTINE ADCTRL_BOUND_2D(
-     I             fieldCur,maskFld3d,
-     I             boundsVec,myThid,
-     I             adjFieldCur)
+     I             fieldCur,adjFieldCur,
+     I             maskFld3d,boundsVec,myThid,
+     I             )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | started: Gael Forget gforget@mit.edu 20-Aug-2007
