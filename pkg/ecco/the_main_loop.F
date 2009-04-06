@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.80 2009/03/13 06:00:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.81 2009/04/06 23:47:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -353,7 +353,8 @@ cph# endif /* DISABLE_MULTIDIM_ADVECTION */
 c--
 #   ifndef AUTODIFF_DISABLE_LEITH
 CADJ INIT comlev1_mom_ijk_loop
-CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nr*nthreads_chkpt
+CADJ &     = COMMON,nchklev_1*
+CADJ &       (snx+2*olx)*nsx*(sny+2*oly)*nsy*nr*nthreads_chkpt
 #   endif /* AUTODIFF_DISABLE_LEITH */
 c--
 # if (defined (ALLOW_EXF) && defined (ALLOW_BULKFORMULAE))

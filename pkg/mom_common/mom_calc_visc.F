@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.36 2008/10/22 00:28:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.37 2009/04/06 23:47:06 heimbach Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -334,7 +334,8 @@ CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 
 #ifdef    ALLOW_AUTODIFF_TAMC
 # ifndef AUTODIFF_DISABLE_LEITH
-           lockey_2 = i + sNx*(j-1) + sNx*sNy*(lockey_1-1)
+           lockey_2 = i+olx + (sNx+2*olx)*(j+oly-1) 
+     &                      + (sNx+2*olx)*(sNy+2*oly)*(lockey_1-1)
 CADJ STORE viscA4_ZSmg(i,j) 
 CADJ &     = comlev1_mom_ijk_loop , key=lockey_2, byte=isbyte
 CADJ STORE viscAh_ZSmg(i,j) 
