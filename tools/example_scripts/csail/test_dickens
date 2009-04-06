@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.2 2009/04/04 17:49:41 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.3 2009/04/06 03:14:08 jmc Exp $
 
 #  Ed Hill
 
@@ -17,7 +17,7 @@ sepDir=0
 tst_list='adm g77 gfo mth'
 
 #  Turn off stack limit for FIZHI
-#ulimit -s unlimited  <- this is the default
+ulimit -s unlimited
 
 tdir=$TESTDIR
 if test $checkOut = '0' ; then
