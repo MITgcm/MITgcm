@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.9 2009/04/01 23:34:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.10 2009/04/07 15:33:27 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -84,7 +84,11 @@ C    Counting from bottom to top, the dp's are:
        endif
 
 C define the mid pressure for the levels that are specified - bottom 300 mb.
+#ifdef TRY_NEW_GETPWHERE
+       dptry_pedge(1) = rF(1)*1. _d -2
+#else  /* TRY_NEW_GETPWHERE */
        dptry_pedge(1) = 1000.
+#endif /* TRY_NEW_GETPWHERE */
        do L = 1,ntry
         dptry_pedge(L+1) = dptry_pedge(L) - dptry(L)
        enddo
