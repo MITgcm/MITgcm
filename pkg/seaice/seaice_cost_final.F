@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.10 2007/10/09 00:10:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.11 2009/04/08 02:39:07 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,9 +47,19 @@ c     == local variables ==
       _RL no_smrarea
 
       character*23 cfname
+
+      integer il1, il2
+      character*(MAX_LEN_MBUF) yname1
+      character*(MAX_LEN_MBUF) yname2
+
 #ifdef ECCO_VERBOSE
       character*(MAX_LEN_MBUF) msgbuf
 #endif
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
 
 c     == end of interface ==
 
@@ -114,6 +124,22 @@ c--   Each process has calculated the global part for itself.
         write(ifc,*) 'fc =', fc
         write(ifc,*) 'f_ice   =', f_ice, no_ice
         write(ifc,*) 'f_smrarea   =', f_smrarea, no_smrarea
+#ifdef TEST_FOR_DIMITRIS
+        il1 = ilnblnk('costfunction_seaice')
+        write(yname1,'(A)') 'costfunction_seaice'
+c
+        il2 = ilnblnk('fc')
+        write(yname2,'(A)') 'fc'
+        call autodiff_cost_summary
+     &       ( yname1(1:il1), yname2(1:il2),
+     &         fc, 1., mythid )
+c
+        il2 = ilnblnk('f_smrarea')
+        write(yname2,'(A)') 'f_smrarea'
+        call autodiff_cost_summary
+     &       ( yname1(1:il1), yname2(1:il2),
+     &         f_smrarea, no_smrarea, mythid )
+#endif
 
         close(ifc)
 
