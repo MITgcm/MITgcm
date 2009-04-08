@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eesupp.flow,v 1.8 2007/10/08 17:28:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eesupp.flow,v 1.9 2009/04/08 11:03:03 dimitri Exp $
 C $Name:  $
 
 C---------------------------------------------------------------
@@ -155,3 +155,6 @@ CADJ SUBROUTINE mds_byteswapr4  OUTPUT = 2
 
 CADJ FUNCTION   MASTER_CPU_IO   INPUT  = 1
 CADJ FUNCTION   MASTER_CPU_IO   OUTPUT =
+
+CADJ FUNCTION   MASTER_CPU_THREAD  INPUT  = 1
+CADJ FUNCTION   MASTER_CPU_THREAD  OUTPUT =

@@ -1,7 +1,0 @@
-C----------------------------------------
-C subroutine  autodiff_cost_summary
-C----------------------------------------
-CADJ SUBROUTINE autodiff_cost_summary  INPUT  = 1,2,3,4,5
-CADJ SUBROUTINE autodiff_cost_summary  OUTPUT =
-
-

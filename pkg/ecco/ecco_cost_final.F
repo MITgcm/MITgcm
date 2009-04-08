@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.39 2008/02/02 02:34:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.40 2009/04/08 11:03:03 dimitri Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -43,6 +43,10 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer mythid
+
+C     === Functions ====
+      LOGICAL  MASTER_CPU_THREAD
+      EXTERNAL MASTER_CPU_THREAD
 
 c     == local variables ==
 
@@ -876,7 +880,7 @@ c--   Do global summation for each part of the cost function
 #endif
 
 c--   Each process has calculated the global part for itself.
-      _BEGIN_MASTER( mythid )
+      IF ( MASTER_CPU_THREAD(myThid) ) THEN
 
         fc = fc
      &          + mult_hmean*objf_hmean
@@ -1101,7 +1105,7 @@ cph)
 
         close(ifc)
 
-      _END_MASTER( mythid )
+      ENDIF
 
       call cost_trans_merid( mythid )
       call cost_trans_zonal( mythid )
