@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/master_cpu_thread.F,v 1.1 2009/04/08 11:03:03 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/master_cpu_thread.F,v 1.2 2009/04/08 20:43:54 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -16,6 +16,8 @@ C     !USES:
       IMPLICIT NONE
 
 C Global variables
+#include "SIZE.h"
+#include "EEPARAMS.h"
 #ifdef ALLOW_USE_MPI
 # include "EESUPPORT.h"
 #endif
