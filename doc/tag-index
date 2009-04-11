@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1085 2009/04/07 18:37:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1086 2009/04/11 13:53:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/exch2 (+ utils/exch2): ignore blank tiles (instead of removing them)
+  and keep the original tile numbering. Note: compatible with old
+  W2_EXCH2_TOPOLOGY.h & w2_e2setup.F topology files.
 
 checkpoint61l
 o Overlaps had been forgotten in calculating ijk keys : fixed
