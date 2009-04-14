@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1086 2009/04/11 13:53:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1087 2009/04/14 16:54:58 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -44,9 +44,9 @@ o pkg/seaice:
   results by setting the above flag.
   Further changes involve changes in defaults:
   - ALLOW_FLOODING is defined and turned on by default
-  - SEAICE_advSnow = .true. is now the default
-  - SEAICE_advSalt = .true. is now the default
-  - SEAICE_advAge  = .true. is now the default
+  - SEAICEadvSnow = .true. is now the default
+  - SEAICEadvSalt = .true. is now the default
+  - SEAICEadvAge  = .true. is now the default
   - SEAICE_clipVelocities  = .false. is now the default 
                                      (as per J. Zhang's recommendation)
   - B-grid, and thus not tested: SEAICE_TEST_ICE_STRESS_1/EXPLICIT_SSH_SLOPE
