@@ -1,3 +1,6 @@
+Update (from Aug 1rst, 2008): 
+ move all supplementary code to utils/exch2/code-mods
+------------------------------------------------------------
 Supplementary code mods sets for alternate verification tests
 that involve additional code mods. The tests here are designed to check that
 cube tilings that have multiple tiles per cube face and that have
