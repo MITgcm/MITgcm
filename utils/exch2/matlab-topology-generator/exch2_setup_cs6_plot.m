@@ -1,7 +1,7 @@
 function exch2_setup_cs6_plot( domain, tile, tnx, tny)
 % Draw a picture of the domain and its tiles in the standard cube layout
 
-% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_plot.m,v 1.3 2007/03/21 02:02:12 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_plot.m,v 1.4 2009/04/14 22:55:16 jmc Exp $
 % $Name:  $
 
 clf;hold on
@@ -9,7 +9,15 @@ clf;hold on
 xoff=0;
 yoff=0;
 clr='grb'; clx=2; cly=0; %- define color to plot face edges
-load blanklist.txt
+
+fstate=exist('blanklist.txt','file');
+if fstate ~= 0
+ load blanklist.txt
+ blanklist=sort(blanklist);
+else
+ blanklist=zeros(0);
+end
+
 for i = 1:6
  xc=[1 domain(i).dnx domain(i).dnx 1];
  xc(5)=xc(1);xc=xc+xoff;
@@ -71,7 +79,7 @@ end
 
 a=axis;
 amx=max(a);
-axis([-1 amx -1 amx]);axis square
+%axis([-1 amx -1 amx]);axis square
 hold off
 grid
 
