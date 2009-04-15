@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.186 2009/03/29 19:09:24 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.187 2009/04/15 22:21:03 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -611,6 +611,11 @@ Usage: "$0" [OPTIONS]
           set to PATH. i.e. Include files from \$PATH/include, link to libraries
           from \$PATH/lib and use binaries from \$PATH/bin.
 
+    -omp | --omp
+          Activate OpenMP code + use Compiler option OMPFLAG
+    -omp=OMPFLAG | --omp=OMPFLAG
+          Activate OpenMP code + use Compiler option OMPFLAG
+
     -es | --es | -embed-source | --embed-source
           Embed a tarball containing the full source code 
           (including the Makefile, etc.) used to build the 
@@ -1058,6 +1063,8 @@ NOOPTFILES=
 NOOPTFLAGS=
 MPI=
 MPIPATH=
+OMP=
+OMPFLAG=
 TS=
 PAPIS=
 PCLS=
@@ -1125,7 +1132,7 @@ TAMC_EXTRA=
 
 #  The following state can be set directly by command-line switches
 gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE"
-gm_s2="FC CPP IEEE TS PAPIS PCLS PAPI PCL HPMT GSL DEVEL MPI JAM DUMPSTATE STANDARDDIRS"
+gm_s2="FC CPP IEEE TS PAPIS PCLS PAPI PCL HPMT GSL DEVEL MPI OMP DUMPSTATE STANDARDDIRS"
 
 #  The following state is not directly set by command-line switches
 gm_s3="LN S64 KPP LINK PACKAGES MAKEDEPEND PDEPEND PDEFAULT INCLUDES FFLAGS FOPTIM FEXTRAFLAGS"
@@ -1326,10 +1333,11 @@ for ac_option in "$@" ; do
 	    MPIPATH=$ac_optarg
 	    MPI=true ;;
 	
-#	-jam | --jam)
-#	    JAM=1 ;;
-#	-nojam | --nojam)
-#	    JAM=0 ;;
+ 	-omp | --omp)
+ 	    OMP=true ;;
+	-omp=* | --omp=*)
+	    OMPFLAG=$ac_optarg
+	    OMP=true ;;
 	
 	-ds | --ds)
 	    DUMPSTATE=t ;;
@@ -1566,6 +1574,12 @@ check_for_broken_Ff
 if test ! "x$MPI" = x ; then
       echo "  Turning on MPI cpp macros"
       DEFINES="$DEFINES -DALLOW_USE_MPI -DALWAYS_USE_MPI"
+fi
+if test ! "x$OMP" = x ; then
+      echo "  Add OMPFLAG and turn on OpenMP cpp macros"
+      FFLAGS="$FFLAGS $OMPFLAG"
+      F90FLAGS="$F90FLAGS $OMPFLAG"
+      DEFINES="$DEFINES -DUSE_OMP_THREADING"
 fi
 
 if test ! "x$TS" = x ; then
@@ -2572,7 +2586,6 @@ else
     echo "EMBEDDED_FILES = " >>$MAKEFILE
 fi
 
-#  Note: figure out some way to add Hyades JAM libraries here 
 cat >>$MAKEFILE <<EOF
 # Unix ln (link)
 LN = ${LN}
