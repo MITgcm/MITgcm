@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.122 2009/04/15 22:22:36 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.123 2009/04/16 18:46:59 jmc Exp $
 #  $Name:  $
 #
 
@@ -722,6 +722,35 @@ scandirs()
 }
 
 
+check_eedata()
+{
+    # check_eedata size.h eedata
+    if [ $# -eq 2 ] ; then
+      if test -f $1 -a -f $2 ; then
+      sx=`grep "^     & *nSx *=" $1 | sed "s/^     & *nSx *=//" | sed 's/, *$//'`
+      nx=`grep "^ *nTx *=" $2 | tail -1 | sed 's/^ *nTx *= *//' | sed "s/, *$//"`
+      if test "x$nx" = x ; then
+	rx=10
+      else
+	rx=`expr $sx % $nx`
+      fi
+      sy=`grep "^     & *nSy *=" $1 | sed "s/^     & *nSy *=//" | sed 's/, *$//'`
+      ny=`grep "^ *nTy *=" $2 | tail -1 | sed 's/^ *nTy *= *//' | sed "s/, *$//"`
+      if test "x$ny" = x ; then
+	ry=20
+      else
+	ry=`expr $sy % $ny`
+      fi
+      echo `expr $rx + $ry`
+    else
+      echo '-1'
+      fi
+    else
+      echo '-2'
+    fi
+
+}
+
 ###############################################################################
 
 
@@ -1154,6 +1183,13 @@ for dir in $TESTDIRS ; do
 	echo "can't find \"$dir/input/eedata.mth\" -- skipping $dir"
 	continue
     fi
+    if test "x$MPI" = "xt" -a "x$MULTI_THREAD" = "xt" ; then
+      retv=`check_eedata $CODE_DIR"/SIZE.h_mpi" $dir"/input/eedata.mth"`
+      if test $retv != 0 ; then
+	echo "input/eedata.mth tiling misfit -- skipping $dir"
+	continue
+      fi
+    fi
 
     #  Check whether there are "extra runs" for this testdir
     extra_runs=
@@ -1164,14 +1200,23 @@ for dir in $TESTDIRS ; do
 	refExOut=`echo $ref_outp | sed "s/\./.${name}./"`
 	outf="$dir/results/$refExOut"
         if test -f $outf -a -r $outf ; then
-	    if test "x$MULTI_THREAD" = "xt" ; then 
-		if test -r $dir"/"$exd"/eedata.mth" ; then
+	  if test "x$MULTI_THREAD" = "xt" ; then 
+	    if test -r $dir"/"$exd"/eedata.mth" ; then
+	      if test "x$MPI" = "xt" ; then
+		retv=`check_eedata $CODE_DIR"/SIZE.h_mpi" $dir"/"$exd"/eedata.mth"`
+		if test $retv = 0 ; then
 		    extra_runs="$extra_runs $name"
-		#else echo $dir"/"$exd"/eedata.mth: not found"
+		else
+		    echo $exd"/eedata.mth tiling misfit -- skipping $dir"
 		fi
-	    else
+	      else
 		extra_runs="$extra_runs $name"
+	      fi
+	    #else echo $dir"/"$exd"/eedata.mth: not found"
 	    fi
+	  else
+	    extra_runs="$extra_runs $name"
+	  fi
 	fi
     done
 
