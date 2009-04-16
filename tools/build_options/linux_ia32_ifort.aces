@@ -1,0 +1,43 @@
+#!/bin/bash
+
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort.aces,v 1.1 2009/04/16 01:04:42 jmc Exp $
+
+# test Multi-Treaded with OpenMP:
+#  to get 1 node with 2 cpu : qsub -I -l nodes=1:ppn=2
+# then on computer node:
+#   needs to load intel compiler version 9:
+#     > module load ifc/9.0.021 icc/9.0.021 intel/9.0
+#   set for 2 threads, and generally, needs to increase the stack-size:
+#   *  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export KMP_STACKSIZE=400m
+#   * csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv KMP_STACKSIZE 400m
+#-------
+
+
+FC='ifort'
+CC='icc'
+LINK='ifort'
+INCLUDES='-I/usr/local/pkg/ifc/ifc-9.0.021/include'
+LIBS='-L/usr/local/pkg/ifc/ifc-9.0.021/lib'
+
+DEFINES='-DWORDLENGTH=4'
+CPP='cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-132'
+OMPFLAG='-openmp'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
+
+if test "x$IEEE" = x ; then
+    FOPTIM='-O3 -align'
+    FFLAGS='-r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl'
+else
+    FOPTIM='-O0 -noalign'
+    FFLAGS='-r8 -i4 -w95 -W0 -WB -pc64 -xW -convert big_endian -assume byterecl'
+fi
+
+NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
+NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F mds_byteswap.F'
