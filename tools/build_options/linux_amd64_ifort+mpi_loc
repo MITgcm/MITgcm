@@ -1,0 +1,118 @@
+#!/bin/bash
+
+# Adapted from linux_amd64_ifort_generic_mpi
+#  with specific local path (=MPI_INC_DIR & NETCDF_ROOT ) for MPI & NetCDF
+# Tested on jmc's laptop (FC.8), with MPI & Multi-Threaded (OpenMP)
+#  using ifort v.10.1.012 & mpich-1.2.7 (installed in /opt/intel/)
+
+#-------
+# run with OpenMP: needs to set environment var. OMP_NUM_THREADS
+#    and generally, needs to increase the stack-size:
+#   -  sh,bash:
+#     > export OMP_NUM_THREADS=2
+#     > export KMP_STACKSIZE=400m
+#   - csh,tcsh:
+#     > setenv OMP_NUM_THREADS 2
+#     > setenv KMP_STACKSIZE 400m
+#-------
+
+# Composed and tested by ce107 on ross/weddell (Opteron system)
+# Should work fine on EM64T and other AMD64 compatible Intel systems
+# a) Processor specific flags:
+#    1) for more speed on Core2 processors replace -xW with -xT
+#    2) for more speed on Pentium4 based EM64T processors replaces -xW with -xP
+# b) For more speed, provided your data size doesn't exceed 2GB you can
+# remove -fPIC which carries a performance penalty of 2-6%.
+# c) Provided that the libraries you link to are compiled with -fPIC this
+# optfile should work.
+# d) You can replace -fPIC with -mcmodel=medium which may perform faster
+# than -fPIC and still support data sizes over 2GB per process but all
+# the libraries you link to must be compiled with -fPIC or -mcmodel=medium
+# e) Changed from -O3 to -O2 to avoid buggy Intel v.10 compilers. Speed
+# impact appears to be minimal.
+#
+# DON'T FORGET to set environment variable MPI_INC_DIR to the include
+# directory of your MPI implementation
+
+NETCDF_ROOT='/opt/intel/netcdf-3.6.2'
+MPI_INC_DIR='/opt/intel/mpich-1.2.7p1_ic-10.1.012/include'
+
+FC=mpif77
+F90C='mpif90 -fixed'
+CC=mpicc
+LINK='mpif90 -i-dynamic -no-ipo'
+#LINK='mpif90 -i-static -no-ipo'
+
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+CPP='cpp  -traditional -P'
+F90FIXEDFORMAT='-fixed -Tf'
+EXTENDED_SRC_FLAG='-132'
+OMPFLAG='-openmp'
+
+NOOPTFLAGS='-O0 -g -m64 -fPIC'
+NOOPTFILES=''
+
+INCLUDEDIRS=''
+INCLUDES=''
+LIBS=''
+
+if test "x$DEVEL" != x ; then
+    FFLAGS='-r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC -O0 -g -noalign -fp-stack-check -check all -fpe0 -traceback -ftrapuv -fp-model except -warn all'
+else
+    FFLAGS='-r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -fPIC'
+fi
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-O2 -align -xW -ip'
+else
+    #  Try to follow IEEE-754
+    FOPTIM='-O0 -align -xW -ip -fp-model strict'
+#   for automatic testing with testreport (but no relation with IEEE arithmetic):
+    FOPTIM="$FOPTIM -g -noalign -fp-stack-check -check all -fpe0 -traceback -ftrapuv"
+fi
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS='-O0 -ip -fPIC'
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIRS="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIRS="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIRS="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIRS="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif test -d /usr/include/netcdf-3 ; then
+    INCLUDEDIRS='/usr/include/netcdf-3'
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
+elif test -d /usr/include/netcdf ; then
+    INCLUDEDIRS='/usr/include/netcdf'
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDEDIRS='/usr/include/netcdf/include'
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+elif test -d /usr/local/include/netcdf.inc ; then
+    INCLUDEDIRS='/usr/local/include'
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib64'
+fi
+
+
+INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+MPIINCLUDEDIR="$MPI_INC_DIR"
+MPI_HEADER_FILES='mpif.h mpiof.h'
+MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h'
