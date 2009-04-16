@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_mth.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mth.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.8 2008/08/28 18:35:42 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.9 2009/04/16 19:06:45 jmc Exp $
 # $Name:  $
 
 umask 0022
@@ -20,7 +20,7 @@ fi
 
 sfx='mth'
 module add ifc/9.0.021 icc/9.0.021 intel/9.0
-OPTFILE="../tools/build_options/linux_ia32_ifort.aces+mth"
+OPTFILE="../tools/build_options/linux_ia32_ifort.aces"
 options='-j 2 -mth -match 10'
 export OMP_NUM_THREADS=2
 export KMP_STACKSIZE=400m
