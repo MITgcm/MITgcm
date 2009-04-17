@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.35 2008/12/17 03:33:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.36 2009/04/17 05:41:46 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -31,12 +31,15 @@ C     myThid        - Number of this instance of SEAICE_DO_DIAGS
       INTEGER myIter
       INTEGER myThid
 
+C     == Local variables in common block :
+      COMMON /SEAICE_DO_DIAGS_LOCAL/ arr
+      _RL arr  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER i, j, k, bi, bj
-      _RL arr  (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
       LOGICAL dumpFiles
       CHARACTER*(1) pf
 
@@ -358,8 +361,6 @@ C      Reset averages to zero
 
 C--   do SEAICE monitor output : print some statistics about seaice fields
       CALL SEAICE_MONITOR( myTime, myIter, myThid )
-
-
 
       RETURN
       END
