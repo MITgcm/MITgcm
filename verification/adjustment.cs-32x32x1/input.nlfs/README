@@ -4,8 +4,8 @@ purpose:
 test the non-linear free-surface in a simple barotropic adjustment
 problem.
 
-this experiment is identical to "adjustment.cs_32x32x1",
-except:
+this experiment was identical to standard "adjustment.cs_32x32x1" (before 
+this later got changed to an oceanic test on Apr 18, 2009) except:
 * use NonLin-FreeSurf  
   (CPP_OPTION.h : "#define NONLIN_FRSURF" and nonlinFreeSurf=3 in data)
 * use a Cranck-Nickelson time stepping (implicSurfPress=implicDiv2DFlow=1/2)
