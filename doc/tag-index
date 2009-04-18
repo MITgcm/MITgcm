@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1087 2009/04/14 16:54:58 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1088 2009/04/18 21:23:13 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o adjustment.cs-32x32x1: changed to oceanic test with 1 continent
+  + use 48 tiles (16x8): this will allow to test "blank tiles".
+o start to test MPI + multi-threaded (change testreport to skip tests
+  where number of tiles do not match).
+o genmake2: add option "-omp" to turn on Open-MP ;
+  passed to testreport (if using -mth) ; merge few (*+mth) optfiles.
 o pkg/exch2 (+ utils/exch2): ignore blank tiles (instead of removing them)
   and keep the original tile numbering. Note: compatible with old
   W2_EXCH2_TOPOLOGY.h & w2_e2setup.F topology files.
@@ -13,8 +19,8 @@ o Overlaps had been forgotten in calculating ijk keys : fixed
 o fix cyrus makedepend for gcc 4.4
 o experiment fizhi-cs-aqualev20:
   switching to new version of S/R GETPWHERE (#define TRY_NEW_GETPWHERE)
-  and generate new output. Note: new output is much closer to the old 
-  one (v1.8) generated with pgf77 -O2 on Mar 14 2007 than it is from 
+  and generate new output. Note: new output is much closer to the old
+  one (v1.8) generated with pgf77 -O2 on Mar 14 2007 than it is from
   the previous one (v1.9) generated with pgf77 -O0 on Jun 13 2007.
 o pkg/fizhi:
  - change to avoid indices going deliberately over array-bounds
