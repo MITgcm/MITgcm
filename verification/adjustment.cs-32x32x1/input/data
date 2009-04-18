@@ -4,61 +4,62 @@
 #
 # Continuous equation parameters
  &PARM01
- tRef=300.,
+ tRef=15.,
  sRef=0.,
  viscAr=0.,
  viscAh=0.,
  viscA4=0.,
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
- buoyancyRelation='ATMOSPHERIC',
- eosType='IDEALGAS',
- gravity=9.81,
- gBaro=9.81,
- rhonil=1.0,
- rhoConst=1.0,
- rigidLid=.FALSE.,
+ buoyancyRelation='OCEANIC',
+ eosType='LINEAR',
+ gravity=9.8184,
+ rhonil=1000.,
+ rhoConst=1000.,
  implicitFreeSurface=.TRUE.,
- nonHydrostatic=.FALSE.,
- readBinaryPrec=64,
- writeBinaryPrec=64,
+ implicSurfPress=0.5,
+ implicDiv2DFlow=0.5,
+#nonlinFreeSurf=3, 
+#hFacInf=0.2,
+#hFacSup=1.8,
+ exactConserv=.TRUE.,
  momAdvection=.FALSE.,
  useCoriolis=.FALSE.,
  tempStepping=.FALSE.,
  saltStepping=.FALSE.,
-#implicSurfPress=0.5,
-#implicDiv2DFlow=0.5,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ useSingleCpuIO=.TRUE.,
  &
 
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=600,
- cg2dTargetResidual=1.E-12,
+ cg2dTargetResidual=1.E-13,
  &
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
  nTimeSteps=24,
+#endTime=172800.,
  abEps=0.1,
- deltaT=450.0,
+ deltaT=900.,
  cAdjFreq=0.,
- pChkptFreq=0.0,
- chkptFreq=0.0,
- dumpFreq=3600.0,
+ pChkptFreq=0.,
+ chkptFreq=0.,
+ dumpFreq=10800.,
  monitorFreq=1.,
  &
 
 # Gridding parameters
  &PARM04
  usingCurvilinearGrid=.TRUE.,
- delR=1.E5,
- Ro_SeaLevel=1.E5,
+ delR=1366.,
  &
 
 # Input datasets
  &PARM05
-#pSurfInitFile='square.bin',
-#pSurfInitFile='cos_equator.bin',
- pSurfInitFile='cos.bin',
+ bathyFile='bathy_f2.bin',
+ pSurfInitFile='ssh_eq.bin',
  &
