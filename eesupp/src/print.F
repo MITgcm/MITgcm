@@ -1,51 +1,177 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.28 2007/07/25 21:05:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.29 2009/04/21 16:02:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
-C--   File printf.F: Routines for performing formatted textual I/O
-C--                  in the MITgcm UV implementation environment.
-C--    Contents
-C--    o print_error    Does IO with **ERROR** highlighted header
-C--    o print_list_i   Prints one-deimensional list of INTEGER
-C--                     numbers.
-C--    o print_list_l   Prints one-deimensional list of LOGICAL
-C--                     variables.
-C--    o print_list_r8  Prints one-deimensional list of Real*8
-C--                     numbers.
-C--    o print_maprs    Formats ABCD... contour map of a Real(_RS) field
-C--                     Uses print_message for writing
-C--    o print_maprl    Formats ABCD... contour map of a Real(_RL) field
-C--                     Uses print_message for writing
-C--    o print_message  Does IO with unhighlighted header
+C--  File printf.F: Routines for performing formatted textual I/O
+C--                 in the MITgcm UV implementation environment.
+C--   Contents
+C--   o PRINT_MESSAGE  Does IO with unhighlighted header
+C--   o PRINT_ERROR    Does IO with **ERROR** highlighted header
+C--   o PRINT_LIST_I   Prints one-deimensional list of INTEGER
+C--                    numbers.
+C--   o PRINT_LIST_L   Prints one-deimensional list of LOGICAL
+C--                    variables.
+C--   o PRINT_LIST_R8  Prints one-deimensional list of Real*8
+C--                    numbers.
+C--   o PRINT_MAPRS    Formats ABCD... contour map of a Real(_RS) field
+C--                    Uses print_message for writing
+C--   o PRINT_MAPRL    Formats ABCD... contour map of a Real(_RL) field
+C--                    Uses print_message for writing
 
-CBOP               
-
-C     !ROUTINE: PRINT_ERROR
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: PRINT_MESSAGE
 C     !INTERFACE:
-      SUBROUTINE PRINT_ERROR( message , myThid )
-      IMPLICIT NONE
+      SUBROUTINE PRINT_MESSAGE( message, unit, sq , myThid )
 
 C     !DESCRIPTION:
 C     *============================================================*
-C     | SUBROUTINE PRINT\_ERROR                                      
-C     | o Write out error message using "standard" format.          
+C     | SUBROUTINE PRINT\_MESSAGE
+C     | o Write out informational message using "standard" format.
 C     *============================================================*
-C     | Notes                                                       
-C     | =====                                                       
-C     | o Some system   I/O is not "thread-safe". For this reason   
-C     |   without the FMTFTN\_IO\_THREAD\_SAFE directive set a         
-C     |   critical region is defined around the write here. In some 
-C     |   cases  BEGIN\_CRIT() is approximated by only doing writes  
-C     |   for thread number 1 - writes for other threads are        
-C     |   ignored!                                                  
-C     | o In a non-parallel form these routines are still used   
+C     | Notes
+C     | =====
+C     | o Some system   I/O is not "thread-safe". For this reason
+C     |   without the FMTFTN\_IO\_THREAD\_SAFE directive set a
+C     |   critical region is defined around the write here. In some
+C     |   cases  BEGIN\_CRIT() is approximated by only doing writes
+C     |   for thread number 1 - writes for other threads are
+C     |   ignored!
+C     | o In a non-parallel form these routines can still be used.
+C     |   to produce pretty printed output!
+C     *============================================================*
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     message :: Message to write
+C     unit    :: Unit number to write to
+C     sq      :: Justification option
+      CHARACTER*(*) message
+      INTEGER       unit
+      CHARACTER*(*) sq
+      INTEGER  myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     iStart, iEnd :: String indexing variables
+C     idString     :: Temp. for building prefix.
+      INTEGER iStart
+      INTEGER iEnd
+      CHARACTER*9 idString
+CEOP
+
+C--   Find beginning and end of message
+      IF ( sq .EQ. SQUEEZE_BOTH .OR.
+     &     sq .EQ. SQUEEZE_LEFT ) THEN
+       iStart = IFNBLNK( message )
+      ELSE
+       iStart = 1
+      ENDIF
+      IF ( sq .EQ. SQUEEZE_BOTH .OR.
+     &     sq .EQ. SQUEEZE_RIGHT ) THEN
+       iEnd   = ILNBLNK( message )
+      ELSE
+       iEnd   = LEN(message)
+      ENDIF
+C--   Test to see if in multi-process ( or multi-threaded ) mode.
+C     If so include process or thread identifier.
+      IF ( numberOfProcs .EQ. 0 .AND. nThreads .EQ. 1 ) THEN
+C--    Write single process format
+       IF ( message .EQ. ' ' ) THEN
+        WRITE(unit,'(A)') ' '
+       ELSE
+        WRITE(unit,'(A)') message(iStart:iEnd)
+       ENDIF
+      ELSEIF ( pidIO .EQ. myProcId ) THEN
+C--    Write multi-process format
+#ifndef FMTFTN_IO_THREAD_SAFE
+       _BEGIN_CRIT(myThid)
+#endif
+        WRITE(idString,'(I4.4,A,I4.4)') myProcId,'.',myThid
+#ifndef FMTFTN_IO_THREAD_SAFE
+       _END_CRIT(myThid)
+#endif
+       IF ( message .EQ. ' ' ) THEN
+C       PRINT can be called by several threads simultaneously.
+C       The write statement may need to ne marked as a critical section.
+#ifndef FMTFTN_IO_THREAD_SAFE
+        _BEGIN_CRIT(myThid)
+#endif
+         WRITE(unit,'(A,A,A,A,A,A)',ERR=999)
+     &   '(',PROCESS_HEADER,' ',idString,')',' '
+#ifndef FMTFTN_IO_THREAD_SAFE
+        _END_CRIT(myThid)
+#endif
+       ELSE
+#ifndef FMTFTN_IO_THREAD_SAFE
+        _BEGIN_CRIT(myThid)
+#endif
+         WRITE(unit,'(A,A,A,A,A,A,A)',ERR=999)
+     &   '(',PROCESS_HEADER,' ',idString(1:ILNBLNK(idString)),')',' ',
+     &   message(iStart:iEnd)
+#ifndef FMTFTN_IO_THREAD_SAFE
+        _END_CRIT(myThid)
+#endif
+       ENDIF
+      ENDIF
+
+#ifndef DISABLE_WRITE_TO_UNIT_ZERO
+C--   if error message, also write directly to unit 0 :
+      IF ( numberOfProcs .EQ. 1 .AND. nThreads .EQ. 1
+     &     .AND. unit.EQ.errorMessageUnit ) THEN
+        iEnd   = ILNBLNK( message )
+        IF (iEnd.NE.0) WRITE(0,'(A)') message(1:iEnd)
+      ENDIF
+#endif
+C
+ 1000 CONTINUE
+      RETURN
+  999 CONTINUE
+       ioErrorCount(myThid) = ioErrorCount(myThid)+1
+      GOTO 1000
+
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: PRINT_ERROR
+C     !INTERFACE:
+      SUBROUTINE PRINT_ERROR( message , myThid )
+
+C     !DESCRIPTION:
+C     *============================================================*
+C     | SUBROUTINE PRINT\_ERROR
+C     | o Write out error message using "standard" format.
+C     *============================================================*
+C     | Notes
+C     | =====
+C     | o Some system   I/O is not "thread-safe". For this reason
+C     |   without the FMTFTN\_IO\_THREAD\_SAFE directive set a
+C     |   critical region is defined around the write here. In some
+C     |   cases  BEGIN\_CRIT() is approximated by only doing writes
+C     |   for thread number 1 - writes for other threads are
+C     |   ignored!
+C     | o In a non-parallel form these routines are still used
 C     |   to produce pretty printed output. The process and thread
 C     |   id prefix is omitted in this case.
 C     *============================================================*
 
 C     !USES:
+      IMPLICIT NONE
+
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -81,7 +207,7 @@ C--    Write single process format
        IF ( message .EQ. ' ' ) THEN
         WRITE(errorMessageUnit,'(A,1X,A)') ERROR_HEADER, ' '
        ELSE
-        WRITE(errorMessageUnit,'(A,1X,A)') ERROR_HEADER, 
+        WRITE(errorMessageUnit,'(A,1X,A)') ERROR_HEADER,
      &   message(iStart:iEnd)
        ENDIF
       ELSE
@@ -99,14 +225,14 @@ C--    Write multi-process format
          WRITE(idString,'(I4.4,A,I4.4)') myProcId,'.',myThid
 
          IF ( iEnd.EQ.0 ) THEN
-c         WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999) 
-          WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)') 
-     &    '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ', 
+c         WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999)
+          WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)')
+     &    '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ',
      &    ' '
          ELSE
-c         WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999) 
-          WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)') 
-     &    '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ', 
+c         WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999)
+          WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)')
+     &    '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ',
      &    message(iStart:iEnd)
          ENDIF
        ENDIF
@@ -140,45 +266,48 @@ c      ioErrorCount(myThid) = ioErrorCount(myThid)+1
 c     GOTO 1000
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: PRINT_LIST_I
-
 C     !INTERFACE:
-      SUBROUTINE PRINT_LIST_I( fld, lFld, index_type, 
+      SUBROUTINE PRINT_LIST_I( fld, iFirst, iLast, index_type,
      &                         markEnd, compact, ioUnit )
-      IMPLICIT NONE
+
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | o SUBROUTINE PRINT\_LIST\_I                                 
+C     | o SUBROUTINE PRINT\_LIST\_I
 C     *==========================================================*
-C     | Routine for producing list of values for a field with     
-C     | duplicate values collected into                           
-C     |    n \@ value                                              
-C     | record.                                                   
+C     | Routine for producing list of values for a field with
+C     | duplicate values collected into
+C     |    n \@ value
+C     | record.
 C     *==========================================================*
 
 C     !USES:
-C     == Global data ==  
+      IMPLICIT NONE
+
+C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     fld    ::  Data to be printed
-C     lFld   ::  Number of elements to be printed
-C     index_type :: Flag indicating which type of index to print
-C                   INDEX_K    => /* K = nnn */
-C                   INDEX_I    => /* I = nnn */
-C                   INDEX_J    => /* J = nnn */
-C                   INDEX_NONE =>
-C     compact ::  Flag to control use of repeat symbol for same valued
-C                 fields.
-C     markEnd ::  Flag to control whether there is a separator after the
-C                 last element
-C     ioUnit ::   Unit number for IO.
-      INTEGER lFld 
+C     fld     :: Data to be printed
+C     iFirst  :: First element to print
+C     iLast   :: Last element to print
+C  index_type :: Flag indicating which type of index to print
+C                  INDEX_K    => /* K = nnn */
+C                  INDEX_I    => /* I = nnn */
+C                  INDEX_J    => /* J = nnn */
+C                  INDEX_NONE =>
+C     markEnd :: Flag to control whether there is a separator after the
+C                last element
+C     compact :: Flag to control use of repeat symbol for same valued
+C                fields.
+C     ioUnit  :: Unit number for IO.
+      INTEGER iFirst, iLast
+      INTEGER fld(iFirst:iLast)
       INTEGER index_type
-      INTEGER fld(lFld)
       LOGICAL markEnd
       LOGICAL compact
       INTEGER ioUnit
@@ -201,6 +330,7 @@ C     K    - Loop counter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*2 commOpen,commClose
       CHARACTER*3 index_lab
+      CHARACTER*25 fmt1, fmt2
       INTEGER K
 CEOP
 
@@ -213,25 +343,33 @@ CEOP
       ELSE
        index_lab = '?='
       ENDIF
+C-    fortran format to write 1 or 2 indices:
+      fmt1='(A,1X,A,I3,1X,A)'
+      fmt2='(A,1X,A,I3,A,I3,1X,A)'
+      IF ( iLast.GE.1000 ) THEN
+        K = 1+INT(LOG10(FLOAT(iLast)))
+        WRITE(fmt1,'(A,I1,A)')      '(A,1X,A,I',K,',1X,A)'
+        WRITE(fmt2,'(A,I1,A,I1,A)') '(A,1X,A,I',K,',A,I',K,',1X,A)'
+      ENDIF
       commOpen  = '/*'
       commClose = '*/'
-      iLo = 1
-      iHi = 1
+      iLo = iFirst
+      iHi = iFirst
       punc = ','
-      xOld = fld(1)
-      DO K=2,lFld
+      xOld = fld(iFirst)
+      DO K = iFirst+1,iLast
        xNew = fld(K  )
        IF ( .NOT. compact .OR. (xNew .NE. xOld) ) THEN
         nDup = iHi-iLo+1
         IF ( nDup .EQ. 1 ) THEN
          WRITE(msgBuf,'(A,I9,A)') '              ',xOld,punc
-         IF ( index_type .NE. INDEX_NONE ) 
-     &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
+         IF ( index_type .NE. INDEX_NONE )
+     &    WRITE(msgBuf(45:),fmt1)
      &    commOpen,index_lab,iLo,commClose
         ELSE
          WRITE(msgBuf,'(I5,'' '',A,I9,A)') nDup,'@',xOld,punc
-         IF ( index_type .NE. INDEX_NONE ) 
-     &    WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
+         IF ( index_type .NE. INDEX_NONE )
+     &    WRITE(msgBuf(45:),fmt2)
      &    commOpen,index_lab,iLo,':',iHi,commClose
         ENDIF
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
@@ -247,13 +385,13 @@ CEOP
       nDup = iHi-iLo+1
       IF    ( nDup .EQ. 1 ) THEN
        WRITE(msgBuf,'(A,I9,A)') '              ',xOld,punc
-       IF ( index_type .NE. INDEX_NONE ) 
-     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
+       IF ( index_type .NE. INDEX_NONE )
+     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)')
      &  commOpen,index_lab,iLo,commClose
       ELSEIF( nDup .GT. 1 ) THEN
        WRITE(msgBuf,'(I5,'' '',A,I9,A)') nDup,'@',xOld,punc
-       IF ( index_type .NE. INDEX_NONE ) 
-     &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
+       IF ( index_type .NE. INDEX_NONE )
+     &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)')
      &  commOpen,index_lab,iLo,':',iHi,commClose
       ENDIF
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
@@ -261,45 +399,48 @@ CEOP
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: PRINT_LIST_L
-
 C     !INTERFACE:
-      SUBROUTINE PRINT_LIST_L( fld, lFld, index_type, markEnd, 
-     &                         compact, ioUnit )
-      IMPLICIT NONE
+      SUBROUTINE PRINT_LIST_L( fld, iFirst, iLast, index_type,
+     &                         markEnd, compact, ioUnit )
+
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | o SUBROUTINE PRINT\_LIST\_L                                 
+C     | o SUBROUTINE PRINT\_LIST\_L
 C     *==========================================================*
-C     | Routine for producing list of values for a field with     
-C     | duplicate values collected into                           
-C     |    n \@ value                                              
-C     | record.                                                   
+C     | Routine for producing list of values for a field with
+C     | duplicate values collected into
+C     |    n \@ value
+C     | record.
 C     *==========================================================*
 
 C     !USES:
-C     == Global data ==  
+      IMPLICIT NONE
+
+C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     fld    -  Data to be printed
-C     lFld   -  Number of elements to be printed
-C     index_type - Flag indicating which type of index to print
+C     fld     :: Data to be printed
+C     iFirst  :: First element to print
+C     iLast   :: Last element to print
+C  index_type :: Flag indicating which type of index to print
 C                  INDEX_K    => /* K = nnn */
 C                  INDEX_I    => /* I = nnn */
 C                  INDEX_J    => /* J = nnn */
 C                  INDEX_NONE =>
-C     compact -  Flag to control use of repeat symbol for same valued
-C                fields.
-C     markEnd -  Flag to control whether there is a separator after the
+C     markEnd :: Flag to control whether there is a separator after the
 C                last element
-C     ioUnit -  Unit number for IO.
-      INTEGER lFld 
+C     compact :: Flag to control use of repeat symbol for same valued
+C                fields.
+C     ioUnit  :: Unit number for IO.
+      INTEGER iFirst, iLast
+      LOGICAL fld(iFirst:iLast)
       INTEGER index_type
-      LOGICAL fld(lFld)
       LOGICAL markEnd
       LOGICAL compact
       INTEGER ioUnit
@@ -322,6 +463,7 @@ C     K    - Loop counter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*2 commOpen,commClose
       CHARACTER*3 index_lab
+      CHARACTER*25 fmt1, fmt2
       INTEGER K
 CEOP
 
@@ -334,25 +476,33 @@ CEOP
       ELSE
        index_lab = '?='
       ENDIF
+C-    fortran format to write 1 or 2 indices:
+      fmt1='(A,1X,A,I3,1X,A)'
+      fmt2='(A,1X,A,I3,A,I3,1X,A)'
+      IF ( iLast.GE.1000 ) THEN
+        K = 1+INT(LOG10(FLOAT(iLast)))
+        WRITE(fmt1,'(A,I1,A)')      '(A,1X,A,I',K,',1X,A)'
+        WRITE(fmt2,'(A,I1,A,I1,A)') '(A,1X,A,I',K,',A,I',K,',1X,A)'
+      ENDIF
       commOpen  = '/*'
       commClose = '*/'
-      iLo = 1
-      iHi = 1
+      iLo = iFirst
+      iHi = iFirst
       punc = ','
-      xOld = fld(1)
-      DO K=2,lFld
+      xOld = fld(iFirst)
+      DO K = iFirst+1,iLast
        xNew = fld(K  )
        IF ( .NOT. compact .OR. (xNew .NEQV. xOld) ) THEN
         nDup = iHi-iLo+1
         IF ( nDup .EQ. 1 ) THEN
          WRITE(msgBuf,'(A,L5,A)') '              ',xOld,punc
-         IF ( index_type .NE. INDEX_NONE ) 
-     &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
+         IF ( index_type .NE. INDEX_NONE )
+     &    WRITE(msgBuf(45:),fmt1)
      &    commOpen,index_lab,iLo,commClose
         ELSE
          WRITE(msgBuf,'(I5,'' '',A,L5,A)') nDup,'@',xOld,punc
-         IF ( index_type .NE. INDEX_NONE ) 
-     &    WRITE(msgBuf(45:),'(A,1X,A,L3,A,I3,1X,A)') 
+         IF ( index_type .NE. INDEX_NONE )
+     &    WRITE(msgBuf(45:),fmt2)
      &    commOpen,index_lab,iLo,':',iHi,commClose
         ENDIF
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
@@ -368,13 +518,13 @@ CEOP
       nDup = iHi-iLo+1
       IF    ( nDup .EQ. 1 ) THEN
        WRITE(msgBuf,'(A,L5,A)') '              ',xOld,punc
-       IF ( index_type .NE. INDEX_NONE ) 
-     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
+       IF ( index_type .NE. INDEX_NONE )
+     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)')
      &    commOpen,index_lab,iLo,commClose
       ELSEIF( nDup .GT. 1 ) THEN
        WRITE(msgBuf,'(I5,'' '',A,L5,A)') nDup,'@',xOld,punc
-       IF ( index_type .NE. INDEX_NONE ) 
-     &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
+       IF ( index_type .NE. INDEX_NONE )
+     &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)')
      &  commOpen,index_lab,iLo,':',iHi,commClose
       ENDIF
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
@@ -382,44 +532,48 @@ CEOP
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: PRINT_LIST_R8
 C     !INTERFACE:
-      SUBROUTINE PRINT_LIST_R8( fld, lFld, index_type, 
-     &    markEnd, compact, ioUnit )
-      IMPLICIT NONE
+      SUBROUTINE PRINT_LIST_R8( fld, iFirst, iLast, index_type,
+     &                          markEnd, compact, ioUnit )
+
 C     !DESCRIPTION:
 C     *==========================================================*
 C     | o SUBROUTINE PRINT\_LIST\_R8
 C     *==========================================================*
-C     | Routine for producing list of values for a field with     
-C     | duplicate values collected into                           
-C     |    n \@ value                                              
-C     | record.                                                   
+C     | Routine for producing list of values for a field with
+C     | duplicate values collected into
+C     |    n \@ value
+C     | record.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
+
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     fld    -  Data to be printed
-C     lFld   -  Number of elements to be printed
-C     index_type - Flag indicating which type of index to print
+C     fld     :: Data to be printed
+C     iFirst  :: First element to print
+C     iLast   :: Last element to print
+C  index_type :: Flag indicating which type of index to print
 C                  INDEX_K    => /* K = nnn */
 C                  INDEX_I    => /* I = nnn */
 C                  INDEX_J    => /* J = nnn */
 C                  INDEX_NONE =>
-C     compact -  Flag to control use of repeat symbol for same valued
-C                fields.
-C     markEnd -  Flag to control whether there is a separator after the
+C     markEnd :: Flag to control whether there is a separator after the
 C                last element
-C     ioUnit -  Unit number for IO.
-      INTEGER lFld 
+C     compact :: Flag to control use of repeat symbol for same valued
+C                fields.
+C     ioUnit  :: Unit number for IO.
+      INTEGER iFirst, iLast
+      Real*8  fld(iFirst:iLast)
       INTEGER index_type
-      Real*8  fld(lFld)
       LOGICAL markEnd
       LOGICAL compact
       INTEGER ioUnit
@@ -458,18 +612,18 @@ CEOP
 C-    fortran format to write 1 or 2 indices:
       fmt1='(A,1X,A,I3,1X,A)'
       fmt2='(A,1X,A,I3,A,I3,1X,A)'
-      IF ( lFld.GE.1000 ) THEN
-        K = 1+INT(LOG10(FLOAT(lFld)))
-        WRITE(fmt1,'(A,I1,A)') '(A,1X,A,I',K,',1X,A)'
+      IF ( iLast.GE.1000 ) THEN
+        K = 1+INT(LOG10(FLOAT(iLast)))
+        WRITE(fmt1,'(A,I1,A)')      '(A,1X,A,I',K,',1X,A)'
         WRITE(fmt2,'(A,I1,A,I1,A)') '(A,1X,A,I',K,',A,I',K,',1X,A)'
       ENDIF
       commOpen  = '/*'
       commClose = '*/'
-      iLo = 1
-      iHi = 1
+      iLo = iFirst
+      iHi = iFirst
       punc = ','
-      xOld = fld(1)
-      DO K=2,lFld
+      xOld = fld(iFirst)
+      DO K = iFirst+1,iLast
        xNew = fld(K  )
        IF ( .NOT. compact .OR. (xNew .NE. xOld) ) THEN
         nDup = iHi-iLo+1
@@ -484,8 +638,7 @@ C-    fortran format to write 1 or 2 indices:
      &    WRITE(msgBuf(45:),fmt2)
      &    commOpen,index_lab,iLo,':',iHi,commClose
         ENDIF
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , 1)
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
         iLo  = K
         iHi  = K
         xOld = xNew
@@ -507,12 +660,12 @@ C-    fortran format to write 1 or 2 indices:
      &  WRITE(msgBuf(45:),fmt2)
      &  commOpen,index_lab,iLo,':',iHi,commClose
       ENDIF
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &    SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: PRINT_MAPRS
 C     !INTERFACE:
@@ -553,7 +706,6 @@ C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
       INTEGER  IFNBLNK
       EXTERNAL IFNBLNK
       INTEGER  ILNBLNK
@@ -570,7 +722,7 @@ C     jLo, jHi     be five-dimensional.
 C     kLo, kHi
 C     nBx, nBy
 C     iMin, iMax - Indexing for points to plot. Points from
-C     iStr         iMin -> iMax in steps of iStr are plotted 
+C     iStr         iMin -> iMax in steps of iStr are plotted
 C     jMin. jMax   and similarly for jMin, jMax, jStr and
 C     jStr         kMin, kMax, kStr and bxMin, bxMax, bxStr
 C     kMin, kMax   byMin, byMax, byStr.
@@ -652,9 +804,9 @@ C--   Calculate field range
          DO J=jMin, jMax, jStr
           DO I=iMin, iMax, iStr
            IF (printMapIncludesZeros .OR. fld(I,J,K,bi,bj) .NE. 0.) THEN
-            IF ( fld(I,J,K,bi,bj) .LT. fMin ) 
+            IF ( fld(I,J,K,bi,bj) .LT. fMin )
      &       fMin = fld(I,J,K,bi,bj)
-            IF ( fld(I,J,K,bi,bj) .GT. fMax ) 
+            IF ( fld(I,J,K,bi,bj) .GT. fMax )
      &       fMax = fld(I,J,K,bi,bj)
            ENDIF
           ENDDO
@@ -666,7 +818,7 @@ C--   Calculate field range
       IF ( fRange .GT. small ) validRange = .TRUE.
 
 C--   Write field title and statistics
-      msgBuf = 
+      msgBuf =
      & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
@@ -725,7 +877,7 @@ C--   Write field title and statistics
      &  ':',kStr,')'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      msgBuf = 
+      msgBuf =
      & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
@@ -849,7 +1001,7 @@ C      Data
          CALL PRINT_MESSAGE(plotBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, 1)
          plotBuf = ' '
-         iBuf = 6 
+         iBuf = 6
          DO bi=accBlo, accBhi, accBstr
           DO I=accMin, accMax, accStr
            iDx = accBase-1+(bi-1)*accStep+I
@@ -871,7 +1023,7 @@ C      Data
          CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, 1)
          plotBuf = dwnLab
-         iBuf = 7 
+         iBuf = 7
          DO bi=accBlo, accBhi, accBstr
           DO I=accMin, accMax, accStr
            iDx = accBase-1+(bi-1)*accStep+I
@@ -888,7 +1040,7 @@ C      Data
      &                    SQUEEZE_RIGHT, 1)
          DO bj=dwnBlo, dwnBhi, dwnBStr
           DO J=dwnMin, dwnMax, dwnStr
-           WRITE(plotBuf,'(1X,I5,1X)') 
+           WRITE(plotBuf,'(1X,I5,1X)')
      &      dwnBase-1+(bj-1)*dwnStep+J
            iBuf = 7
            DO bi=accBlo,accBhi,accBstr
@@ -902,16 +1054,16 @@ C      Data
               val = fld(K,I,J,bk,bi)
              ENDIF
              IF ( validRange .AND. val .NE. 0. ) THEN
-              IDX = NINT( 
-     &              FLOAT( lChList-1 )*( val-fMin ) / (fRange) 
+              IDX = NINT(
+     &              FLOAT( lChList-1 )*( val-fMin ) / (fRange)
      &             )+1
              ELSE
               IDX = 1
              ENDIF
-             IF ( iBuf .LE. MAX_LEN_PLOTBUF ) 
+             IF ( iBuf .LE. MAX_LEN_PLOTBUF )
      &        plotBuf(iBuf:iBuf) = chList(IDX:IDX)
              IF ( val .EQ. 0. ) THEN
-              IF ( iBuf .LE. MAX_LEN_PLOTBUF ) 
+              IF ( iBuf .LE. MAX_LEN_PLOTBUF )
      &         plotBuf(iBuf:iBuf) = '.'
              ENDIF
             ENDDO
@@ -925,15 +1077,15 @@ C      Data
        ENDDO
       ENDIF
 C--   Write delimiter
-      msgBuf = 
+      msgBuf =
      & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      msgBuf = 
+      msgBuf =
      & '// END OF FIELD                                          ='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      msgBuf = 
+      msgBuf =
      & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
@@ -944,9 +1096,9 @@ C--   Write delimiter
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: PRINT_MAPRL
-
 C     !INTERFACE:
       SUBROUTINE PRINT_MAPRL ( fld, fldTitle, plotMode,
      I        iLo,   iHi,   jLo,   jHi,  kLo,  kHi, nBx, nBy,
@@ -985,7 +1137,6 @@ C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
       INTEGER  IFNBLNK
       EXTERNAL IFNBLNK
       INTEGER  ILNBLNK
@@ -1002,7 +1153,7 @@ C     jLo, jHi     be five-dimensional.
 C     kLo, kHi
 C     nBx, nBy
 C     iMin, iMax - Indexing for points to plot. Points from
-C     iStr         iMin -> iMax in steps of iStr are plotted 
+C     iStr         iMin -> iMax in steps of iStr are plotted
 C     jMin. jMax   and similarly for jMin, jMax, jStr and
 C     jStr         kMin, kMax, kStr and bxMin, bxMax, bxStr
 C     kMin, kMax   byMin, byMax, byStr.
@@ -1083,11 +1234,11 @@ C--   Calculate field range
         DO K=kMin, kMax, kStr
          DO J=jMin, jMax, jStr
           DO I=iMin, iMax, iStr
-           IF ( printMapIncludesZeros .OR. fld(I,J,K,bi,bj) .NE. 0. ) 
+           IF ( printMapIncludesZeros .OR. fld(I,J,K,bi,bj) .NE. 0. )
      &     THEN
-            IF ( fld(I,J,K,bi,bj) .LT. fMin ) 
+            IF ( fld(I,J,K,bi,bj) .LT. fMin )
      &       fMin = fld(I,J,K,bi,bj)
-            IF ( fld(I,J,K,bi,bj) .GT. fMax ) 
+            IF ( fld(I,J,K,bi,bj) .GT. fMax )
      &       fMax = fld(I,J,K,bi,bj)
            ENDIF
           ENDDO
@@ -1099,7 +1250,7 @@ C--   Calculate field range
       IF ( fRange .GT. small ) validRange = .TRUE.
 
 C--   Write field title and statistics
-      msgBuf = 
+      msgBuf =
      & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
@@ -1158,7 +1309,7 @@ C--   Write field title and statistics
      &  ':',kStr,')'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      msgBuf = 
+      msgBuf =
      & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
@@ -1282,7 +1433,7 @@ C      Data
          CALL PRINT_MESSAGE(plotBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, 1)
          plotBuf = ' '
-         iBuf = 6 
+         iBuf = 6
          DO bi=accBlo, accBhi, accBstr
           DO I=accMin, accMax, accStr
            iDx = accBase-1+(bi-1)*accStep+I
@@ -1303,7 +1454,7 @@ C      Data
          CALL PRINT_MESSAGE(plotBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, 1)
          plotBuf = dwnLab
-         iBuf = 7 
+         iBuf = 7
          DO bi=accBlo, accBhi, accBstr
           DO I=accMin, accMax, accStr
            iDx = accBase-1+(bi-1)*accStep+I
@@ -1319,7 +1470,7 @@ C      Data
      &                    SQUEEZE_RIGHT, 1)
          DO bj=dwnBlo, dwnBhi, dwnBStr
           DO J=dwnMin, dwnMax, dwnStr
-           WRITE(plotBuf,'(1X,I5,1X)') 
+           WRITE(plotBuf,'(1X,I5,1X)')
      &      dwnBase-1+(bj-1)*dwnStep+J
            iBuf = 7
            DO bi=accBlo,accBhi,accBstr
@@ -1333,16 +1484,16 @@ C      Data
               val = fld(K,I,J,bk,bi)
              ENDIF
              IF ( validRange .AND. val .NE. 0. ) THEN
-              IDX = NINT( 
-     &               FLOAT( lChList-1 )*( val-fMin ) / (fRange) 
+              IDX = NINT(
+     &               FLOAT( lChList-1 )*( val-fMin ) / (fRange)
      &              )+1
              ELSE
               IDX = 1
              ENDIF
-             IF ( iBuf .LE. MAX_LEN_PLOTBUF ) 
+             IF ( iBuf .LE. MAX_LEN_PLOTBUF )
      &        plotBuf(iBuf:iBuf) = chList(IDX:IDX)
              IF ( val .EQ. 0. ) THEN
-              IF ( iBuf .LE. MAX_LEN_PLOTBUF ) 
+              IF ( iBuf .LE. MAX_LEN_PLOTBUF )
      &         plotBuf(iBuf:iBuf) = '.'
              ENDIF
             ENDDO
@@ -1355,15 +1506,15 @@ C      Data
        ENDDO
       ENDIF
 C--   Write delimiter
-      msgBuf = 
+      msgBuf =
      & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      msgBuf = 
+      msgBuf =
      & '// END OF FIELD                                          ='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
-      msgBuf = 
+      msgBuf =
      & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
      &                   SQUEEZE_RIGHT, 1)
@@ -1372,128 +1523,4 @@ C--   Write delimiter
      &                   SQUEEZE_RIGHT, 1)
 
       RETURN
-      END
-
-CBOP
-C     !ROUTINE: PRINT_MESSAGE
-
-C     !INTERFACE:
-      SUBROUTINE PRINT_MESSAGE( message, unit, sq , myThid )
-      IMPLICIT NONE
-C     !DESCRIPTION:
-C     *============================================================*
-C     | SUBROUTINE PRINT\_MESSAGE                                    
-C     | o Write out informational message using "standard" format.  
-C     *============================================================*
-C     | Notes                                                       
-C     | =====                                                       
-C     | o Some system   I/O is not "thread-safe". For this reason   
-C     |   without the FMTFTN\_IO\_THREAD\_SAFE directive set a         
-C     |   critical region is defined around the write here. In some 
-C     |   cases  BEGIN\_CRIT() is approximated by only doing writes  
-C     |   for thread number 1 - writes for other threads are        
-C     |   ignored!                                                  
-C     | o In a non-parallel form these routines can still be used.  
-C     |   to produce pretty printed output!                         
-C     *============================================================*
-
-C     !USES:
-C     == Global data ==
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "EESUPPORT.h"
-      INTEGER  IFNBLNK
-      EXTERNAL IFNBLNK
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     message :: Message to write
-C     unit    :: Unit number to write to
-C     sq      :: Justification option
-      CHARACTER*(*) message
-      INTEGER       unit
-      CHARACTER*(*) sq
-      INTEGER  myThid
-
-C     !LOCAL VARIABLES:
-C     == Local variables ==
-C     iStart, iEnd :: String indexing variables
-C     idString     :: Temp. for building prefix.
-      INTEGER iStart
-      INTEGER iEnd
-      CHARACTER*9 idString
-CEOP
-
-C--   Find beginning and end of message
-      IF ( sq .EQ. SQUEEZE_BOTH .OR.
-     &     sq .EQ. SQUEEZE_LEFT ) THEN
-       iStart = IFNBLNK( message )
-      ELSE
-       iStart = 1
-      ENDIF
-      IF ( sq .EQ. SQUEEZE_BOTH .OR.
-     &     sq .EQ. SQUEEZE_RIGHT ) THEN
-       iEnd   = ILNBLNK( message )
-      ELSE
-       iEnd   = LEN(message)
-      ENDIF
-C--   Test to see if in multi-process ( or multi-threaded ) mode.
-C     If so include process or thread identifier.
-      IF ( numberOfProcs .EQ. 0 .AND. nThreads .EQ. 1 ) THEN
-C--    Write single process format
-       IF ( message .EQ. ' ' ) THEN
-        WRITE(unit,'(A)') ' '
-       ELSE
-        WRITE(unit,'(A)') message(iStart:iEnd)
-       ENDIF
-      ELSEIF ( pidIO .EQ. myProcId ) THEN
-C--    Write multi-process format
-#ifndef FMTFTN_IO_THREAD_SAFE
-       _BEGIN_CRIT(myThid)
-#endif
-        WRITE(idString,'(I4.4,A,I4.4)') myProcId,'.',myThid
-#ifndef FMTFTN_IO_THREAD_SAFE
-       _END_CRIT(myThid)
-#endif
-       IF ( message .EQ. ' ' ) THEN
-C       PRINT can be called by several threads simultaneously.
-C       The write statement may need to ne marked as a critical section.
-#ifndef FMTFTN_IO_THREAD_SAFE
-        _BEGIN_CRIT(myThid)
-#endif
-         WRITE(unit,'(A,A,A,A,A,A)',ERR=999) 
-     &   '(',PROCESS_HEADER,' ',idString,')',' '
-#ifndef FMTFTN_IO_THREAD_SAFE
-        _END_CRIT(myThid)
-#endif
-       ELSE
-#ifndef FMTFTN_IO_THREAD_SAFE
-        _BEGIN_CRIT(myThid)
-#endif
-         WRITE(unit,'(A,A,A,A,A,A,A)',ERR=999) 
-     &   '(',PROCESS_HEADER,' ',idString(1:ILNBLNK(idString)),')',' ', 
-     &   message(iStart:iEnd)
-#ifndef FMTFTN_IO_THREAD_SAFE
-        _END_CRIT(myThid)
-#endif
-       ENDIF
-      ENDIF
-
-#ifndef DISABLE_WRITE_TO_UNIT_ZERO
-C--   if error message, also write directly to unit 0 :
-      IF ( numberOfProcs .EQ. 1 .AND. nThreads .EQ. 1
-     &     .AND. unit.EQ.errorMessageUnit ) THEN
-        iEnd   = ILNBLNK( message )
-        IF (iEnd.NE.0) WRITE(0,'(A)') message(1:iEnd)
-      ENDIF
-#endif
-C
- 1000 CONTINUE
-      RETURN
-  999 CONTINUE
-       ioErrorCount(myThid) = ioErrorCount(myThid)+1
-      GOTO 1000
-
       END

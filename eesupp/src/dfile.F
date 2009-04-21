@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.12 2004/03/27 03:51:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.13 2009/04/21 16:02:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -13,21 +13,21 @@ C--               encompassed by the data handling package. For
 C--               example netCDF provides primitive that are
 C--               higher level
 C-- Contents
-C-- DFILE_CLOSE    - Closes dump file
-C-- DFILE_INIT     - Initialisation procedure for subsequent DFILE 
+C-- DFILE_INIT     - Initialisation procedure for subsequent DFILE
 C                    data-structures. Only called once per run.
+C-- DFILE_CLOSE    - Closes dump file
 C-- DFILE_OPEN     - Opens dump file
 C-- DFILE_READ_R8  - Reads from a dump file
 C-- DFILE_READ_R4  - Reads from a dump file
 C-- DFILE_SET_RO            - Sets new connections to be read-only
 C-- DFILE_SET_RW            - Sets new connections to be read-write
 C-- DFILE_SET_STOP_ON_ERROR - Sets new connections to STOP on error
-C-- DFILE_SET_CONT_ON_ERROR - Sets new connections to continue 
+C-- DFILE_SET_CONT_ON_ERROR - Sets new connections to continue
 C                             on error
 C-- DFILE_WRITE_R4 - Writes to a dump file
 C-- DFILE_WRITE_R8 - Writes to a dump file
 C
-C   Notes: 
+C   Notes:
 C   ======
 C    The default behaviour is for the model to stop if an
 C   input errors occur but to continue if output errors occur.
@@ -35,17 +35,62 @@ C   However, this policy is not enforced in these low-level routines.
 C   Instead these routines are coded to allow either continue
 C   on error or stop on error. Which action is taken
 C   is controlled via a mode flag which is set from the higher
-C   level calls to these routines. A mode flag is also used to 
+C   level calls to these routines. A mode flag is also used to
 C   control whether the DFILE_OPEN routine opens a file in
 C   read-write or read-only mode. On some systems this is necessary
 C   as the default is read-write and will fail for read-only files or
 C   file systems. Other systems do not support the OPEN(...='READ_ONLY')
 C   so this feature may need to be switched on or off as appropriate.
 C    The DFILE_SET routines provide this mechanism. They work by setting
-C   a "context" flag which is applied to IO ahndles when the DFILE_OPEN 
-C   call is made. IO handles that are already open are not affected by 
+C   a "context" flag which is applied to IO ahndles when the DFILE_OPEN
+C   call is made. IO handles that are already open are not affected by
 C   subsequent calls to DFILE_SET routines.
 
+      SUBROUTINE DFILE_INIT
+C     /==========================================================\
+C     | SUBROUTINE DFILE_INIT                                    |
+C     | o Model "dump" file initialisation procedure             |
+C     |==========================================================|
+C     | Initalises data structures used by MITgcmUV "dump file"  |
+C     | procedures.                                              |
+C     | As coded this routine sets the unit number used for      |
+C     | dump file IO. Two numbers are used one for data and one  |
+C     | for meta data. It is possible to use more unit numbers   |
+C     | and/or have different unit numbers per thread. This is   |
+C     | not done here.                                           |
+C     \==========================================================/
+      IMPLICIT NONE
+
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "DFILE.h"
+
+#ifdef USE_DFILE
+
+C     == Local variables ==
+C     I, J - Loop counters
+      INTEGER I, J
+
+      DO j=1,MAX_NO_THREADS
+       DO i=1,ioUnitsPerThread
+        mUnitNumber(i,j) = 20+i*2-1
+        dUnitNumber(i,j) = 20+i*2
+        unitStatus (i,j) = freeUnit
+        metaDataStatus(i,j) = metaDataNotWritten
+       ENDDO
+      ENDDO
+
+C--   Set initial access and error modes
+      CALL DFILE_SET_RW
+      CALL DFILE_SET_STOP_ON_ERROR
+
+#endif /* USE_DFILE */
+
+      RETURN
+      END
+
+#ifdef USE_DFILE
       SUBROUTINE DFILE_CLOSE(
      I                       fileHandle, myThid)
 C     /==========================================================\
@@ -66,8 +111,6 @@ C     == Global variables ==
 C     == Routine arguments ==
       INTEGER myThid
       INTEGER fileHandle
-
-#ifdef USE_DFILE
 
 C     == Local variables ==
 C     msgBuf - Error message buffer
@@ -108,48 +151,8 @@ C--   Check that the fileHandle passed in is open
 
       END
 
-      SUBROUTINE DFILE_INIT
-C     /==========================================================\
-C     | SUBROUTINE DFILE_INIT                                    |
-C     | o Model "dump" file initialisation procedure             |
-C     |==========================================================|
-C     | Initalises data structures used by MITgcmUV "dump file"  |
-C     | procedures.                                              |
-C     | As coded this routine sets the unit number used for      |
-C     | dump file IO. Two numbers are used one for data and one  |
-C     | for meta data. It is possible to use more unit numbers   |
-C     | and/or have different unit numbers per thread. This is   |
-C     | not done here.                                           |
-C     \==========================================================/
-      IMPLICIT NONE
-
-C     == Global variables ==
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "DFILE.h"
-
-C     == Local variables ==
-C     I, J - Loop counters
-      INTEGER I, J
-
-      DO j=1,MAX_NO_THREADS
-       DO i=1,ioUnitsPerThread
-        mUnitNumber(i,j) = 20+i*2-1
-        dUnitNumber(i,j) = 20+i*2
-        unitStatus (i,j) = freeUnit
-        metaDataStatus(i,j) = metaDataNotWritten
-       ENDDO
-      ENDDO
-
-C--   Set initial access and error modes
-      CALL DFILE_SET_RW
-      CALL DFILE_SET_STOP_ON_ERROR
-
-      RETURN 
-      END
-
-      SUBROUTINE DFILE_OPEN( 
-     I                       fNam, fNamMeta, myThid, 
+      SUBROUTINE DFILE_OPEN(
+     I                       fNam, fNamMeta, myThid,
      O                       fileHandle)
 C     /==========================================================\
 C     | SUBROUTINE DFILE_OPEN                                    |
@@ -278,10 +281,10 @@ C--   Open data file
        ENDIF
        ioErrorCount(myThid) = ioErrorCount(myThid)  + 1
       GOTO 1000
-       
+
       END
 
-      SUBROUTINE DFILE_READ_R4( 
+      SUBROUTINE DFILE_READ_R4(
      I                       lBuffer,
      I                       fileHandle, myThid)
 C     /==========================================================\
@@ -365,7 +368,7 @@ C--   Check that file is active
       GOTO 1000
 
       END
-      SUBROUTINE DFILE_READ_R8( 
+      SUBROUTINE DFILE_READ_R8(
      I                       lBuffer,
      I                       fileHandle, myThid)
 C     /==========================================================\
@@ -450,7 +453,7 @@ C--   Check that file is active
 
       END
 
-      SUBROUTINE DFILE_SET_RO            
+      SUBROUTINE DFILE_SET_RO
 C     /==========================================================\
 C     | SUBROUTINE DFILE_SET_RO                                  |
 C     | o Sets new connections to be read-only.                  |
@@ -461,13 +464,13 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "DFILE.h"
- 
+
       theAccessMode = accessModeRO
 
       RETURN
       END
 
-      SUBROUTINE DFILE_SET_RW            
+      SUBROUTINE DFILE_SET_RW
 C     /==========================================================\
 C     | SUBROUTINE DFILE_SET_RW                                  |
 C     | o Sets new connections to be read-write                  |
@@ -478,13 +481,13 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "DFILE.h"
- 
+
       theAccessMode = accessModeRW
 
       RETURN
       END
 
-      SUBROUTINE DFILE_SET_STOP_ON_ERROR 
+      SUBROUTINE DFILE_SET_STOP_ON_ERROR
 C     /==========================================================\
 C     | SUBROUTINE DFILE_SET_STOP_ON_ERROR                       |
 C     | o Sets new connections to STOP on error                  |
@@ -495,13 +498,13 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "DFILE.h"
- 
+
       theErrorMode = errorModeSTOP
 
       RETURN
       END
 
-      SUBROUTINE DFILE_SET_CONT_ON_ERROR 
+      SUBROUTINE DFILE_SET_CONT_ON_ERROR
 C     /==========================================================\
 C     | SUBROUTINE DFILE_SET_CONT_ON_ERROR                       |
 C     | o Sets new connections to continue on error              |
@@ -512,13 +515,13 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "DFILE.h"
- 
+
       theErrorMode = errorModeCONT
 
       RETURN
       END
 
-      SUBROUTINE DFILE_WRITE_R4( 
+      SUBROUTINE DFILE_WRITE_R4(
      I                       lBuffer,
      I                       nDims, dimList,
      I                       fileHandle, fileId, myThid )
@@ -547,7 +550,7 @@ C     lBuffer - Amount of data written
 C     nDims   - Global and subset dimensionality
 C     dimList - List of global and subset extents
 C     fileHandle - Handle identifying actual IO unit
-C     myThid  - Thread number of thread calling this 
+C     myThid  - Thread number of thread calling this
 C               routine
 C     eMode   - error mode for this fileHandle
       INTEGER lBuffer
@@ -579,7 +582,7 @@ C--   Write data
       WRITE(ioUnit,ERR=899) (ioBuf_R4(I),I=1,lBuffer)
 
 C--   Now write meta information
-      IF ( metaDataStatus(fileHandle,myThid) .EQ. 
+      IF ( metaDataStatus(fileHandle,myThid) .EQ.
      &     metaDataNotWritten ) THEN
        ioUnit = mUnitNumber(fileHandle,myThid)
 
@@ -588,14 +591,14 @@ C--   Now write meta information
 
        WRITE(msgBuf,'(A,A)') ' id =[ ','/* Identifier */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-       CALL PRINT_LIST_I( fileId, 1, INDEX_NONE, .FALSE., .TRUE., 
+       CALL PRINT_LIST_I( fileId, 1,1, INDEX_NONE, .FALSE., .TRUE.,
      &                    ioUnit )
        WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
        WRITE(msgBuf,'(A,A)') ' nDims =[ ','/* Number of dimensions */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-       CALL PRINT_LIST_I( nDims, 1, INDEX_NONE, .FALSE., .TRUE., 
+       CALL PRINT_LIST_I( nDims, 1,1, INDEX_NONE, .FALSE., .TRUE.,
      &                    ioUnit )
        WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
@@ -604,7 +607,7 @@ C--   Now write meta information
      &  '/* Global1, local min1, local max1, ... */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
        DO I=1,nDims
-        CALL PRINT_LIST_I( dimList((I-1)*3+1), 3, INDEX_NONE, 
+        CALL PRINT_LIST_I( dimList((I-1)*3+1), 1,3, INDEX_NONE,
      &                    I.NE.nDims, .FALSE., ioUnit )
        ENDDO
        WRITE(msgBuf,'(A)')   '   ];     '
@@ -648,10 +651,10 @@ C--   Now write meta information
        ENDIF
        ioErrorCount(myThid) = ioErrorCount(myThid)  + 1
       GOTO 1000
-      
+
       END
 
-      SUBROUTINE DFILE_WRITE_R8( 
+      SUBROUTINE DFILE_WRITE_R8(
      I                       lBuffer,
      I                       nDims, dimList,
      I                       fileHandle, fileId, myThid )
@@ -681,7 +684,7 @@ C     lBuffer - Amount of data written
 C     nDims   - Global and subset dimensionality
 C     dimList - List of global and subset extents
 C     fileHandle - Handle identifying actual IO unit
-C     myThid  - Thread number of thread calling this 
+C     myThid  - Thread number of thread calling this
 C               routine
 C     eMode   - error mode for this fileHandle
       INTEGER lBuffer
@@ -713,7 +716,7 @@ C--   Write data
       WRITE(ioUnit,ERR=899) (ioBuf_R8(I),I=1,lBuffer)
 
 C--   Now write meta information
-      IF ( metaDataStatus(fileHandle,myThid) .EQ. 
+      IF ( metaDataStatus(fileHandle,myThid) .EQ.
      &                    metaDataNotWritten ) THEN
        ioUnit = mUnitNumber(fileHandle,myThid)
 
@@ -722,14 +725,14 @@ C--   Now write meta information
 
        WRITE(msgBuf,'(A,A)') ' id =[ ','/* Identifier */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-       CALL PRINT_LIST_I( fileId, 1, INDEX_NONE, .FALSE., .TRUE., 
+       CALL PRINT_LIST_I( fileId, 1,1, INDEX_NONE, .FALSE., .TRUE.,
      &                    ioUnit )
        WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
        WRITE(msgBuf,'(A,A)') ' nDims =[ ','/* Number of dimensions */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-       CALL PRINT_LIST_I( nDims, 1, INDEX_NONE, .FALSE., .TRUE., 
+       CALL PRINT_LIST_I( nDims, 1,1, INDEX_NONE, .FALSE., .TRUE.,
      &                    ioUnit )
        WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
@@ -738,7 +741,7 @@ C--   Now write meta information
      &  '/* Global1, local min1, local max1, ... */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
        DO I=1,nDims
-        CALL PRINT_LIST_I( dimList((I-1)*3+1), 3, INDEX_NONE, 
+        CALL PRINT_LIST_I( dimList((I-1)*3+1), 1,3, INDEX_NONE,
      &                    I.NE.nDims, .FALSE., ioUnit )
        ENDDO
        WRITE(msgBuf,'(A)')   '   ];     '
@@ -783,6 +786,5 @@ C--   Now write meta information
        ioErrorCount(myThid) = ioErrorCount(myThid)  + 1
       GOTO 1000
 
-#endif /* USE_DFILE */
-
       END
+#endif /* USE_DFILE */
