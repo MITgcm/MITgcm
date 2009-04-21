@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/write_utils.F,v 1.1 2009/04/20 23:09:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/write_utils.F,v 1.2 2009/04/21 16:04:04 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -64,7 +64,7 @@ CEOP
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_I( fld, lFld, index_type, .FALSE.,
+      CALL PRINT_LIST_I( fld, 1, lFld, index_type, .FALSE.,
      &                   .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -120,7 +120,7 @@ CEOP
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_L( fld, lFld, index_type, .FALSE.,
+      CALL PRINT_LIST_L( fld, 1, lFld, index_type, .FALSE.,
      &                   .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -175,15 +175,55 @@ C     == Local variables ==
 C     ILH, ILC - Index of last balnk in head and comment
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER ILH, ILC
+      INTEGER i, j, ic, i1, i2, nCount
+      LOGICAL outpAll
+      Real*8  prev
 CEOP
 
+C-    when list is long, try to write just few of them
+      outpAll = .TRUE.
+      IF ( ( index_type.EQ.INDEX_I .OR. index_type.EQ.INDEX_J )
+     &     .AND. lFld.GT.maxLengthPrt1D ) THEN
+C-    Count how many would be written
+        nCount = 1
+        prev = fld(1)
+        DO i= 2,lFld
+          IF ( fld(i).NE.prev ) nCount = nCount + 1
+          prev = fld(i)
+        ENDDO
+        IF ( nCount.GT.maxLengthPrt1D ) outpAll = .FALSE.
+      ENDIF
       ILH=ILNBLNK(head)
       ILC=ILNBLNK(comment)
       WRITE(msgBuf,'(A,A)') head(1:ILH), comment(1:ILC)
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_R8( fld, lFld, index_type, .FALSE.,
-     &                   .TRUE., standardMessageUnit )
+      IF ( outpAll ) THEN
+C-    write all of them
+        CALL PRINT_LIST_R8( fld, 1, lFld, index_type, .FALSE.,
+     &                      .TRUE., standardMessageUnit )
+      ELSE
+C-    write just 5 sets of 5-6 consecutive values (truncate 1rst and last)
+       DO j=1,4
+C  e.g. lFld=33 => 1:1+2  9-2:9+2  17-2:17+2 25-2:25+2 33-2:33
+C  e.g. lFld=32 => 1:1+2  8-2:9+2  16-2:17+2 24-2:25+2 32-2:32
+        ic = (lFld-1)*(j-1)/4
+        i1 = 1+ic-2
+        i2 = 1+ic+2
+        IF ( ic*4 .LT. (lFld-1)*(j-1) ) i2=i2+1
+        i1 = MAX(i1,1)
+        i2 = MIN(i2,lFld)
+        CALL PRINT_LIST_R8( fld(i1), i1, i2, index_type, .TRUE.,
+     &                      .FALSE., standardMessageUnit )
+        WRITE(msgBuf,'(A)') '     . . .'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , 1)
+       ENDDO
+        i1 = MAX(lFld-2,1)
+        i2 = lFld
+        CALL PRINT_LIST_R8( fld(i1), i1, i2, index_type, .FALSE.,
+     &                      .FALSE., standardMessageUnit )
+      ENDIF
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
@@ -238,7 +278,7 @@ CEOP
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_I( idummy, 1, index_type, .FALSE.,
+      CALL PRINT_LIST_I( idummy, 1, 1, index_type, .FALSE.,
      &                   .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -293,7 +333,7 @@ CEOP
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_L( ldummy, 1, index_type, .FALSE.,
+      CALL PRINT_LIST_L( ldummy, 1, 1, index_type, .FALSE.,
      &                   .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -350,7 +390,7 @@ C-    convert to real*8:
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_R8( r8dummy, 1, index_type, .FALSE.,
+      CALL PRINT_LIST_R8( r8dummy, 1, 1, index_type, .FALSE.,
      &                    .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -406,7 +446,7 @@ CEOP
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_R8( r8dummy, 1, index_type, .FALSE.,
+      CALL PRINT_LIST_R8( r8dummy, 1, 1, index_type, .FALSE.,
      &                    .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -463,7 +503,7 @@ C-    convert to real*8:
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_R8( r8dummy, 1, index_type, .FALSE.,
+      CALL PRINT_LIST_R8( r8dummy, 1, 1, index_type, .FALSE.,
      &                    .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -520,7 +560,7 @@ C-    convert to real*8:
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_R8( r8dummy, 1, index_type, .FALSE.,
+      CALL PRINT_LIST_R8( r8dummy, 1, 1, index_type, .FALSE.,
      &                    .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
