@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.24 2008/07/18 22:19:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.25 2009/04/21 16:00:53 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -152,25 +152,31 @@ C     TANGENT_SIMULATION
 C--   COMMON /EEPARAMS_L/ Execution environment public logical variables.
 C     eeBootError - Flag indicating error during multi-processing
 C     eeEndError    initialisation/termination.
-C     fatalError  - Flag used to indicate that the model is ended with
-C                   an error
+C     fatalError  - Flag used to indicate that the model is ended with an error
+C     printMapIncludesZeros :: Flag that controls whether character constant
+C                              map code ignores exact zero values.
 C     useCoupler  - use Coupler for a multi-components set-up
-      COMMON /EEPARAMS_L/ eeBootError, fatalError, eeEndError,
+      COMMON /EEPARAMS_L/
+     &  eeBootError, fatalError, eeEndError,
+     &  printMapIncludesZeros,
      &  useCubedSphereExchange, useCoupler, useSETRLSTK, useSIGREG
       LOGICAL eeBootError
       LOGICAL eeEndError
       LOGICAL fatalError
+      LOGICAL printMapIncludesZeros
       LOGICAL useCubedSphereExchange
       LOGICAL useCoupler
       LOGICAL useSETRLSTK
       LOGICAL useSIGREG
 
+
 C--   COMMON /EPARAMS_I/ Execution environment public integer variables.
 C     errorMessageUnit    - Fortran IO unit for error messages
 C     standardMessageUnit - Fortran IO unit for informational messages
+C     maxLengthPrt1D :: maximum length for printing (to Std-Msg-Unit) 1-D array
 C     scrUnit1      - Scratch file 1 unit number
 C     scrUnit2      - Scratch file 2 unit number
-C     eeDataUnit    - Unit number used for reading "execution environment" parameter file.
+C     eeDataUnit    - Unit # for reading "execution environment" parameter file.
 C     modelDataUnit - Unit number for reading "model" parameter file.
 C     numberOfProcs - Number of processes computing in parallel
 C     pidIO         - Id of process to use for I/O.
@@ -199,16 +205,21 @@ C                   gridding of the threads which is not required elsewhere
 C                   but that makes it easier.
 C     ioErrorCount - IO Error Counter. Set to zero initially and increased
 C                    by one every time an IO error occurs.
-      COMMON /EEPARAMS_I/ errorMessageUnit, standardMessageUnit,
-     & scrUnit1, scrUnit2, eeDataUnit, modelDataUnit,
-     & numberOfProcs, pidIO, myProcId,
-     & myPx, myPy, myXGlobalLo, myYGlobalLo, nThreads,
-     & myBxLo, myBxHi, myByLo, myByHi,
-     & nTx, nTy, ioErrorCount
-      INTEGER eeDataUnit
+      COMMON /EEPARAMS_I/
+     &  errorMessageUnit, standardMessageUnit, maxLengthPrt1D,
+     &  scrUnit1, scrUnit2, eeDataUnit, modelDataUnit,
+     &  numberOfProcs, pidIO, myProcId,
+     &  myPx, myPy, myXGlobalLo, myYGlobalLo, nThreads,
+     &  myBxLo, myBxHi, myByLo, myByHi,
+     &  nTx, nTy, ioErrorCount
       INTEGER errorMessageUnit
-      INTEGER ioErrorCount(MAX_NO_THREADS)
+      INTEGER standardMessageUnit
+      INTEGER maxLengthPrt1D
+      INTEGER scrUnit1
+      INTEGER scrUnit2
+      INTEGER eeDataUnit
       INTEGER modelDataUnit
+      INTEGER ioErrorCount(MAX_NO_THREADS)
       INTEGER myBxLo(MAX_NO_THREADS)
       INTEGER myBxHi(MAX_NO_THREADS)
       INTEGER myByLo(MAX_NO_THREADS)
@@ -223,9 +234,6 @@ C                    by one every time an IO error occurs.
       INTEGER nTy
       INTEGER numberOfProcs
       INTEGER pidIO
-      INTEGER scrUnit1
-      INTEGER scrUnit2
-      INTEGER standardMessageUnit
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

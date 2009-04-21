@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.9 2005/11/05 00:49:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.10 2009/04/21 16:00:53 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EESUPPORT.h
@@ -87,12 +87,9 @@ C                                         trap problems that might occur if one 
 C                                         the main.F master loop. This should not happen
 C                                         if the multi-threading compilation tools works right.
 C                                         But (see for example KAP) this is not always the case!
-C     printMapIncludesZeros - Flag that controls whether character constant map code ignores
-C                             exact zero values.
       COMMON /EESUPP_L/ thError, threadIsRunning, threadIsComplete,
      & allMyEdgesAreSharedMemory, usingMPI, usingSyncMessages,
-     & notUsingXPeriodicity, notUsingYPeriodicity,
-     & printMapIncludesZeros
+     & notUsingXPeriodicity, notUsingYPeriodicity
       LOGICAL thError(MAX_NO_THREADS)
       LOGICAL threadIsRunning(MAX_NO_THREADS)
       LOGICAL threadIsComplete(MAX_NO_THREADS)
@@ -101,8 +98,7 @@ C                             exact zero values.
       LOGICAL usingSyncMessages
       LOGICAL notUsingXPeriodicity
       LOGICAL notUsingYPeriodicity
-      LOGICAL printMapIncludesZeros
- 
+
 C--   COMMON /EESUPP_I/ Parallel support integer globals
 C     pidW   -  Process  ID of neighbor to West
 C     pidE   -           ditto             East
