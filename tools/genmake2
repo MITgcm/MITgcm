@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.187 2009/04/15 22:21:03 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.188 2009/04/21 16:43:08 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -3091,11 +3091,11 @@ ad_input_code_sf.w2f.pre.xb.xaif : ad_input_code_sf.w2f.pre.xaif xaif.xsd xaif_b
 
 # XAIF' -> WHIRL'
 ad_input_code_sf.w2f.pre.xb.x2w.B : ad_input_code_sf.w2f.pre.xb.xaif xaif2whirl
-	./xaif2whirl --debug 1 --structured ad_input_code_sf.w2f.pre.B \$<
+	./xaif2whirl --debug 1 -t OpenADTy_active --structured ad_input_code_sf.w2f.pre.B \$<
 
 # WHIRL' -> F'
 ad_input_code_sf.w2f.pre.xb.x2w.w2f.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.B whirl2f whirl2f_be
-	./whirl2f -FLIST:ftn_file=\$@ -openad \$< 
+	./whirl2f -FLIST:ftn_file=\$@ -openad -openadType OpenADTy_active  \$< 
 
 # insert template directives
 ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.f$FS90 ../OAD_support/insertTemplateDir.bash
