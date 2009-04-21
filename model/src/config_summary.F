@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.114 2009/01/27 15:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.115 2009/04/21 16:04:39 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,7 +27,6 @@ C     !USES:
 #include "PARAMS.h"
 #include "EOS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
@@ -47,16 +46,12 @@ C     rUnits :: vertical coordinate units
 C     ioUnit :: Temp. for fortran I/O unit
 C     I,J,K  :: Loop counters.
 C     bi,bj  :: Tile loop counters.
-C     xcoord :: Temps. for building lists of values for uni-dimensionally
-C     ycoord :: varying parameters.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*2 rUnits
       INTEGER ioUnit
       INTEGER I,J,K
       INTEGER bi, bj
-      _RL     xcoord(Nx)
-      _RL     ycoord(Ny)
-      _RL     rcoord(Nr+1)
+      Real*8  rcoord(Nr+1)
       INTEGER coordLine
       INTEGER tileLine
 
@@ -98,17 +93,17 @@ C     ycoord :: varying parameters.
      &'   /* Reference temperature profile ( oC or K ) */')
       CALL WRITE_1D_R8( sRef, Nr, INDEX_K,'sRef =',
      &'   /* Reference salinity profile ( psu ) */')
-      CALL WRITE_0D_R8( viscAh, INDEX_NONE,'viscAh =',
+      CALL WRITE_0D_RL( viscAh, INDEX_NONE,'viscAh =',
      &'   /* Lateral eddy viscosity ( m^2/s ) */')
       IF ( viscAhD.NE.viscAh )
-     & CALL WRITE_0D_R8( viscAhD, INDEX_NONE,'viscAhD =',
+     & CALL WRITE_0D_RL( viscAhD, INDEX_NONE,'viscAhD =',
      & '  /* Lateral eddy viscosity (Divergence)( m^2/s ) */')
       IF ( viscAhZ.NE.viscAh )
-     & CALL WRITE_0D_R8( viscAhZ, INDEX_NONE,'viscAhZ =',
+     & CALL WRITE_0D_RL( viscAhZ, INDEX_NONE,'viscAhZ =',
      & '  /* Lateral eddy viscosity (Vorticity) ( m^2/s ) */')
-      CALL WRITE_0D_R8( viscAhMax, INDEX_NONE,'viscAhMax =',
+      CALL WRITE_0D_RL( viscAhMax, INDEX_NONE,'viscAhMax =',
      &'   /* Maximum lateral eddy viscosity ( m^2/s ) */')
-      CALL WRITE_0D_R8( viscAhGrid, INDEX_NONE,'viscAhGrid =',
+      CALL WRITE_0D_RL( viscAhGrid, INDEX_NONE,'viscAhGrid =',
      &'   /* Grid dependent lateral eddy viscosity ( non-dim. ) */')
       CALL WRITE_0D_L( useFullLeith, INDEX_NONE,
      &'useFullLeith =',
@@ -119,51 +114,51 @@ C     ycoord :: varying parameters.
       CALL WRITE_0D_L( useAreaViscLength, INDEX_NONE,
      &'useAreaViscLength =',
      &'   /* Use area for visc length instead of geom. mean*/')
-      CALL WRITE_0D_R8( viscC2leith, INDEX_NONE,'viscC2leith =',
+      CALL WRITE_0D_RL( viscC2leith, INDEX_NONE,'viscC2leith =',
      &' /* Leith harmonic visc. factor (on grad(vort),non-dim.) */')
-      CALL WRITE_0D_R8( viscC2leithD, INDEX_NONE,'viscC2leithD =',
+      CALL WRITE_0D_RL( viscC2leithD, INDEX_NONE,'viscC2leithD =',
      &' /* Leith harmonic viscosity factor (on grad(div),non-dim.) */')
-      CALL WRITE_0D_R8( viscC2smag, INDEX_NONE,'viscC2smag =',
+      CALL WRITE_0D_RL( viscC2smag, INDEX_NONE,'viscC2smag =',
      &'   /* Smagorinsky harmonic viscosity factor (non-dim.) */')
-      CALL WRITE_0D_R8( viscA4, INDEX_NONE,'viscA4 =',
+      CALL WRITE_0D_RL( viscA4, INDEX_NONE,'viscA4 =',
      &'   /* Lateral biharmonic viscosity ( m^4/s ) */')
       IF ( viscA4D.NE.viscA4 )
-     & CALL WRITE_0D_R8( viscA4D, INDEX_NONE,'viscA4D =',
+     & CALL WRITE_0D_RL( viscA4D, INDEX_NONE,'viscA4D =',
      & '  /* Lateral biharmonic viscosity (Divergence)( m^4/s ) */')
       IF ( viscA4Z.NE.viscA4 )
-     & CALL WRITE_0D_R8( viscA4Z, INDEX_NONE,'viscA4Z =',
+     & CALL WRITE_0D_RL( viscA4Z, INDEX_NONE,'viscA4Z =',
      & '  /* Lateral biharmonic viscosity (Vorticity) ( m^4/s ) */')
-      CALL WRITE_0D_R8( viscA4Max, INDEX_NONE,'viscA4Max =',
+      CALL WRITE_0D_RL( viscA4Max, INDEX_NONE,'viscA4Max =',
      &'   /* Maximum biharmonic viscosity ( m^2/s ) */')
-      CALL WRITE_0D_R8( viscA4Grid, INDEX_NONE,'viscA4Grid =',
+      CALL WRITE_0D_RL( viscA4Grid, INDEX_NONE,'viscA4Grid =',
      &'   /* Grid dependent biharmonic viscosity ( non-dim. ) */')
-      CALL WRITE_0D_R8( viscC4leith, INDEX_NONE,'viscC4leith =',
+      CALL WRITE_0D_RL( viscC4leith, INDEX_NONE,'viscC4leith =',
      &' /* Leith biharm viscosity factor (on grad(vort), non-dim.) */')
-      CALL WRITE_0D_R8( viscC4leithD, INDEX_NONE,'viscC4leithD =',
+      CALL WRITE_0D_RL( viscC4leithD, INDEX_NONE,'viscC4leithD =',
      &' /* Leith biharm viscosity factor (on grad(div), non-dim.) */')
-      CALL WRITE_0D_R8( viscC4Smag, INDEX_NONE,'viscC4Smag =',
+      CALL WRITE_0D_RL( viscC4Smag, INDEX_NONE,'viscC4Smag =',
      &' /* Smagorinsky biharm viscosity factor (non-dim) */')
       CALL WRITE_0D_L( no_slip_sides, INDEX_NONE,
      & 'no_slip_sides =', '  /* Viscous BCs: No-slip sides */')
-      CALL WRITE_0D_R8( sideDragFactor, INDEX_NONE, 'sideDragFactor =',
+      CALL WRITE_0D_RL( sideDragFactor, INDEX_NONE, 'sideDragFactor =',
      & ' /* side-drag scaling factor (non-dim) */')
-      CALL WRITE_0D_R8( viscAr,  INDEX_NONE,'viscAr =',
+      CALL WRITE_0D_RL( viscAr,  INDEX_NONE,'viscAr =',
      &'   /* Vertical eddy viscosity ('//rUnits//'^2/s ) */')
       CALL WRITE_0D_L( no_slip_bottom, INDEX_NONE,
      & 'no_slip_bottom =', '  /* Viscous BCs: No-slip bottom */')
-      CALL WRITE_0D_R8( bottomDragLinear, INDEX_NONE,
+      CALL WRITE_0D_RL( bottomDragLinear, INDEX_NONE,
      & 'bottomDragLinear =',
      & ' /* linear bottom-drag coefficient ( m/s ) */')
-      CALL WRITE_0D_R8( bottomDragQuadratic, INDEX_NONE,
+      CALL WRITE_0D_RL( bottomDragQuadratic, INDEX_NONE,
      & 'bottomDragQuadratic =',
      & ' /* quadratic bottom-drag coefficient (-) */')
-      CALL WRITE_0D_R8( diffKhT, INDEX_NONE,'diffKhT =',
+      CALL WRITE_0D_RL( diffKhT, INDEX_NONE,'diffKhT =',
      &'   /* Laplacian diffusion of heat laterally ( m^2/s ) */')
-      CALL WRITE_0D_R8( diffK4T, INDEX_NONE,'diffK4T =',
+      CALL WRITE_0D_RL( diffK4T, INDEX_NONE,'diffK4T =',
      &'   /* Biharmonic diffusion of heat laterally ( m^4/s ) */')
-      CALL WRITE_0D_R8( diffKhS, INDEX_NONE,'diffKhS =',
+      CALL WRITE_0D_RL( diffKhS, INDEX_NONE,'diffKhS =',
      &'   /* Laplacian diffusion of salt laterally ( m^2/s ) */')
-      CALL WRITE_0D_R8( diffK4S, INDEX_NONE,'diffK4S =',
+      CALL WRITE_0D_RL( diffK4S, INDEX_NONE,'diffK4S =',
      &'   /* Biharmonic diffusion of salt laterally ( m^4/s ) */')
       CALL WRITE_1D_R8( diffKrNrT, Nr, INDEX_K,'diffKrNrT =',
      &  ' /* vertical profile of vertical diffusion of Temp ('
@@ -171,28 +166,28 @@ C     ycoord :: varying parameters.
       CALL WRITE_1D_R8( diffKrNrS, Nr, INDEX_K,'diffKrNrS =',
      &  ' /* vertical profile of vertical diffusion of Salt ('
      &  //rUnits//'^2/s )*/')
-      CALL WRITE_0D_R8( diffKrBL79surf, INDEX_NONE,'diffKrBL79surf =',
+      CALL WRITE_0D_RL( diffKrBL79surf, INDEX_NONE,'diffKrBL79surf =',
      &  ' /* Surface diffusion for Bryan and Lewis 79 ( m^2/s ) */')
-      CALL WRITE_0D_R8( diffKrBL79deep, INDEX_NONE,'diffKrBL79deep =',
+      CALL WRITE_0D_RL( diffKrBL79deep, INDEX_NONE,'diffKrBL79deep =',
      &  ' /* Deep diffusion for Bryan and Lewis 1979 ( m^2/s ) */')
-      CALL WRITE_0D_R8( diffKrBL79scl, INDEX_NONE,'diffKrBL79scl =',
+      CALL WRITE_0D_RL( diffKrBL79scl, INDEX_NONE,'diffKrBL79scl =',
      &  ' /* Depth scale for Bryan and Lewis 1979 ( m ) */')
-      CALL WRITE_0D_R8( diffKrBL79Ho, INDEX_NONE,'diffKrBL79Ho =',
+      CALL WRITE_0D_RL( diffKrBL79Ho, INDEX_NONE,'diffKrBL79Ho =',
      &  ' /* Turning depth for Bryan and Lewis 1979 ( m ) */')
-      CALL WRITE_0D_R8( ivdc_kappa, INDEX_NONE,'ivdc_kappa =',
+      CALL WRITE_0D_RL( ivdc_kappa, INDEX_NONE,'ivdc_kappa =',
      &  ' /* Implicit Vertical Diffusivity for Convection ('
      &  //rUnits//'^2/s ) */')
-      CALL WRITE_0D_R8( hMixCriteria, INDEX_NONE,'hMixCriteria=',
+      CALL WRITE_0D_RL( hMixCriteria, INDEX_NONE,'hMixCriteria=',
      & '  /* Criteria for mixed-layer diagnostic */')
-      CALL WRITE_0D_R8( dRhoSmall, INDEX_NONE,'dRhoSmall=',
+      CALL WRITE_0D_RL( dRhoSmall, INDEX_NONE,'dRhoSmall=',
      & '  /* Parameter for mixed-layer diagnostic */')
-      CALL WRITE_0D_R8( hMixSmooth, INDEX_NONE,'hMixSmooth=',
+      CALL WRITE_0D_RL( hMixSmooth, INDEX_NONE,'hMixSmooth=',
      & '  /* Smoothing parameter for mixed-layer diagnostic */')
       CALL WRITE_0D_C( eosType, 0, INDEX_NONE, 'eosType =',
      & '  /* Type of Equation of State */')
-      CALL WRITE_0D_R8( tAlpha,  INDEX_NONE,'tAlpha =',
+      CALL WRITE_0D_RL( tAlpha,  INDEX_NONE,'tAlpha =',
      &'   /* Linear EOS thermal expansion coefficient ( 1/oC ) */')
-      CALL WRITE_0D_R8( sBeta,   INDEX_NONE,'sBeta =',
+      CALL WRITE_0D_RL( sBeta,   INDEX_NONE,'sBeta =',
      &'   /* Linear EOS haline contraction coefficient ( 1/psu ) */')
       IF ( eosType .EQ. 'POLY3' ) THEN
         WRITE(msgBuf,'(A)')
@@ -204,15 +199,15 @@ C     ycoord :: varying parameters.
         ENDDO
       ENDIF
       IF ( fluidIsAir ) THEN
-       CALL WRITE_0D_R8( atm_Rd, INDEX_NONE, 'atm_Rd =',
+       CALL WRITE_0D_RL( atm_Rd, INDEX_NONE, 'atm_Rd =',
      & '  /* gas constant for dry air ( J/kg/K ) */')
-      CALL WRITE_0D_R8( atm_Cp, INDEX_NONE, 'atm_Cp =',
+      CALL WRITE_0D_RL( atm_Cp, INDEX_NONE, 'atm_Cp =',
      & '  /* specific heat (Cp) of dry air ( J/kg/K ) */')
-      CALL WRITE_0D_R8( atm_kappa, INDEX_NONE, 'atm_kappa =',
+      CALL WRITE_0D_RL( atm_kappa, INDEX_NONE, 'atm_kappa =',
      & '  /* kappa (=Rd/Cp ) of dry air */')
-       CALL WRITE_0D_R8( atm_Rq, INDEX_NONE, 'atm_Rq =',
+       CALL WRITE_0D_RL( atm_Rq, INDEX_NONE, 'atm_Rq =',
      &  ' /* water vap. specific vol. anomaly relative to dry air */')
-      CALL WRITE_0D_R8( atm_Po, INDEX_NONE, 'atm_Po =',
+      CALL WRITE_0D_RL( atm_Po, INDEX_NONE, 'atm_Po =',
      & '  /* standard reference pressure ( Pa ) */')
       CALL WRITE_0D_I( integr_GeoPot, INDEX_NONE, 'integr_GeoPot =',
      & '  /* select how the geopotential is integrated */')
@@ -220,29 +215,29 @@ C     ycoord :: varying parameters.
      & 'selectFindRoSurf=',
      & '  /* select how Surf.Ref. pressure is defined */')
       ENDIF
-      CALL WRITE_0D_R8( rhonil,  INDEX_NONE,'rhonil =',
+      CALL WRITE_0D_RL( rhonil,  INDEX_NONE,'rhonil =',
      &'   /* Reference density ( kg/m^3 ) */')
-      CALL WRITE_0D_R8( rhoConst, INDEX_NONE,'rhoConst =',
+      CALL WRITE_0D_RL( rhoConst, INDEX_NONE,'rhoConst =',
      &'   /* Reference density ( kg/m^3 ) */')
       CALL WRITE_1D_R8( rhoFacC, Nr,   INDEX_K,'rhoFacC = ',
      &  ' /* normalized Reference density @ cell-Center (-) */')
       CALL WRITE_1D_R8( rhoFacF, Nr+1, INDEX_K,'rhoFacF = ',
      &  ' /* normalized Reference density @ W-Interface (-) */')
-      CALL WRITE_0D_R8( rhoConstFresh, INDEX_NONE,'rhoConstFresh =',
+      CALL WRITE_0D_RL( rhoConstFresh, INDEX_NONE,'rhoConstFresh =',
      &'   /* Reference density ( kg/m^3 ) */')
-      CALL WRITE_0D_R8( gravity, INDEX_NONE,'gravity =',
+      CALL WRITE_0D_RL( gravity, INDEX_NONE,'gravity =',
      &'   /* Gravitational acceleration ( m/s^2 ) */')
-      CALL WRITE_0D_R8( gBaro,   INDEX_NONE,'gBaro =',
+      CALL WRITE_0D_RL( gBaro,   INDEX_NONE,'gBaro =',
      &'   /* Barotropic gravity ( m/s^2 ) */')
-      CALL WRITE_0D_R8(rotationPeriod,INDEX_NONE,'rotationPeriod =',
+      CALL WRITE_0D_RL(rotationPeriod,INDEX_NONE,'rotationPeriod =',
      &'   /* Rotation Period ( s ) */')
-      CALL WRITE_0D_R8( omega,   INDEX_NONE,'omega =',
+      CALL WRITE_0D_RL( omega,   INDEX_NONE,'omega =',
      &'   /* Angular velocity ( rad/s ) */')
-      CALL WRITE_0D_R8( f0,      INDEX_NONE,'f0 =',
+      CALL WRITE_0D_RL( f0,      INDEX_NONE,'f0 =',
      &'   /* Reference coriolis parameter ( 1/s ) */')
-      CALL WRITE_0D_R8( beta,    INDEX_NONE,'beta =',
+      CALL WRITE_0D_RL( beta,    INDEX_NONE,'beta =',
      &'   /* Beta ( 1/(m.s) ) */')
-      CALL WRITE_0D_R8( freeSurfFac, INDEX_NONE,'freeSurfFac =',
+      CALL WRITE_0D_RL( freeSurfFac, INDEX_NONE,'freeSurfFac =',
      &'   /* Implicit free surface factor */')
       CALL WRITE_0D_L( implicitFreeSurface, INDEX_NONE,
      &                 'implicitFreeSurface =',
@@ -250,10 +245,10 @@ C     ycoord :: varying parameters.
       CALL WRITE_0D_L( rigidLid, INDEX_NONE,
      &                 'rigidLid =',
      &'   /* Rigid lid on/off flag */')
-      CALL WRITE_0D_R8( implicSurfPress, INDEX_NONE,
+      CALL WRITE_0D_RL( implicSurfPress, INDEX_NONE,
      &'implicSurfPress =',
      &'   /* Surface Pressure implicit factor (0-1)*/')
-      CALL WRITE_0D_R8( implicDiv2Dflow, INDEX_NONE,
+      CALL WRITE_0D_RL( implicDiv2Dflow, INDEX_NONE,
      &'implicDiv2Dflow =',
      &'   /* Barot. Flow Div. implicit factor (0-1)*/')
       CALL WRITE_0D_L( exactConserv, INDEX_NONE,
@@ -271,10 +266,10 @@ C     ycoord :: varying parameters.
       WRITE(msgBuf,'(2A)') '     -1,0= Off ; 1,2,3= On,',
      &  ' 2=+rescale gU,gV, 3=+update cg2d solv.'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL WRITE_0D_R8( hFacInf, INDEX_NONE,
+      CALL WRITE_0D_RL( hFacInf, INDEX_NONE,
      &'hFacInf =',
      &'   /* lower threshold for hFac (nonlinFreeSurf only)*/')
-      CALL WRITE_0D_R8( hFacSup, INDEX_NONE,
+      CALL WRITE_0D_RL( hFacSup, INDEX_NONE,
      &'hFacSup =',
      &'   /* upper threshold for hFac (nonlinFreeSurf only)*/')
       CALL WRITE_0D_I( select_rStar, INDEX_NONE,
@@ -286,15 +281,15 @@ C     ycoord :: varying parameters.
       CALL WRITE_0D_L( useRealFreshWaterFlux, INDEX_NONE,
      &'useRealFreshWaterFlux =',
      &' /* Real Fresh Water Flux on/off flag*/')
-      CALL WRITE_0D_R8( temp_EvPrRn, INDEX_NONE,
+      CALL WRITE_0D_RL( temp_EvPrRn, INDEX_NONE,
      &'temp_EvPrRn =',
      &' /* Temp. of Evap/Prec/R (UNSET=use local T)(oC)*/')
-      CALL WRITE_0D_R8( salt_EvPrRn, INDEX_NONE,
+      CALL WRITE_0D_RL( salt_EvPrRn, INDEX_NONE,
      &'salt_EvPrRn =',
      &' /* Salin. of Evap/Prec/R (UNSET=use local S)(ppt)*/')
       IF ( .NOT.useRealFreshWaterFlux .OR. selectAddFluid.EQ.-1
      &                                .OR. nonlinFreeSurf.LE.0 ) THEN
-      CALL WRITE_0D_R8( convertFW2Salt, INDEX_NONE,
+      CALL WRITE_0D_RL( convertFW2Salt, INDEX_NONE,
      &'convertFW2Salt =',
      &' /* convert F.W. Flux to Salt Flux (-1=use local S)(ppt)*/')
       ENDIF
@@ -303,7 +298,7 @@ C     ycoord :: varying parameters.
      & 'use3Dsolver =', ' /* use 3-D pressure solver on/off flag */')
       CALL WRITE_0D_L( nonHydrostatic, INDEX_NONE,
      & 'nonHydrostatic =', '  /* Non-Hydrostatic on/off flag */')
-      CALL WRITE_0D_R8( nh_Am2, INDEX_NONE, 'nh_Am2 =',
+      CALL WRITE_0D_RL( nh_Am2, INDEX_NONE, 'nh_Am2 =',
      & ' /* Non-Hydrostatic terms scaling factor */')
       CALL WRITE_0D_L( quasiHydrostatic, INDEX_NONE,
      & 'quasiHydrostatic =', ' /* Quasi-Hydrostatic on/off flag */')
@@ -347,7 +342,7 @@ c    & 'selectVortScheme=',' /* Scheme selector for Vorticity-Term */')
       WRITE(msgBuf,'(2A)')
      & 'selectVortScheme=',' /* Scheme selector for Vorticity-Term */'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL PRINT_LIST_I( selectVortScheme, 1, INDEX_NONE,
+      CALL PRINT_LIST_I( selectVortScheme, 1, 1, INDEX_NONE,
      &                   .FALSE., .TRUE., ioUnit )
       WRITE(msgBuf,'(2A)') '   = 0 : enstrophy (Shallow-Water Eq.)',
      &                  ' conserving scheme by Sadourny, JAS 75'
@@ -445,10 +440,10 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &'   /* Upper limit on 2d con. grad iterations  */')
       CALL WRITE_0D_I( cg2dChkResFreq, INDEX_NONE,'cg2dChkResFreq =',
      &'   /* 2d con. grad convergence test frequency */')
-      CALL WRITE_0D_R8( cg2dTargetResidual, INDEX_NONE,
+      CALL WRITE_0D_RL( cg2dTargetResidual, INDEX_NONE,
      & 'cg2dTargetResidual =',
      &'   /* 2d con. grad target residual  */')
-      CALL WRITE_0D_R8( cg2dTargetResWunit, INDEX_NONE,
+      CALL WRITE_0D_RL( cg2dTargetResWunit, INDEX_NONE,
      & 'cg2dTargetResWunit =',
      &'   /* CG2d target residual [W units] */')
       CALL WRITE_0D_I( cg2dPreCondFreq, INDEX_NONE,'cg2dPreCondFreq =',
@@ -461,15 +456,15 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL WRITE_0D_R8( deltaTmom, INDEX_NONE,'deltaTmom =',
+      CALL WRITE_0D_RL( deltaTmom, INDEX_NONE,'deltaTmom =',
      &'   /* Momentum equation timestep ( s ) */')
-      CALL WRITE_0D_R8( deltaTfreesurf,INDEX_NONE,'deltaTfreesurf =',
+      CALL WRITE_0D_RL( deltaTfreesurf,INDEX_NONE,'deltaTfreesurf =',
      &'   /* FreeSurface equation timestep ( s ) */')
       CALL WRITE_1D_R8( dTtracerLev, Nr, INDEX_K, 'dTtracerLev =',
      &'   /* Tracer equation timestep ( s ) */')
-      CALL WRITE_0D_R8( deltaTClock, INDEX_NONE,'deltaTClock  =',
+      CALL WRITE_0D_RL( deltaTClock, INDEX_NONE,'deltaTClock  =',
      &'   /* Model clock timestep ( s ) */')
-      CALL WRITE_0D_R8( cAdjFreq, INDEX_NONE,'cAdjFreq =',
+      CALL WRITE_0D_RL( cAdjFreq, INDEX_NONE,'cAdjFreq =',
      &'   /* Convective adjustment interval ( s ) */')
       CALL WRITE_0D_I( momForcingOutAB, INDEX_NONE, 'momForcingOutAB =',
      & ' /* =1: take Momentum Forcing out of Adams-Bash. stepping */')
@@ -480,20 +475,20 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      & ' /* put Dissipation Tendency in Adams-Bash. stepping */')
       CALL WRITE_0D_L( doAB_onGtGs, INDEX_NONE, 'doAB_onGtGs =',
      &  ' /* apply AB on Tendencies (rather than on T,S)*/')
-      CALL WRITE_0D_R8( abEps, INDEX_NONE,'abEps =',
+      CALL WRITE_0D_RL( abEps, INDEX_NONE,'abEps =',
      &'   /* Adams-Bashforth-2 stabilizing weight */')
 #ifdef ALLOW_ADAMSBASHFORTH_3
-      CALL WRITE_0D_R8( alph_AB, INDEX_NONE,'alph_AB =',
+      CALL WRITE_0D_RL( alph_AB, INDEX_NONE,'alph_AB =',
      &'   /* Adams-Bashforth-3 primary factor */')
-      CALL WRITE_0D_R8( beta_AB, INDEX_NONE,'beta_AB =',
+      CALL WRITE_0D_RL( beta_AB, INDEX_NONE,'beta_AB =',
      &'   /* Adams-Bashforth-3 secondary factor */')
       CALL WRITE_0D_L( startFromPickupAB2, INDEX_NONE,
      & 'startFromPickupAB2=',' /* start from AB-2 pickup */')
 #endif
       IF (useCDscheme) THEN
-      CALL WRITE_0D_R8( tauCD, INDEX_NONE,'tauCD =',
+      CALL WRITE_0D_RL( tauCD, INDEX_NONE,'tauCD =',
      &'   /* CD coupling time-scale ( s ) */')
-      CALL WRITE_0D_R8( rCD, INDEX_NONE,'rCD =',
+      CALL WRITE_0D_RL( rCD, INDEX_NONE,'rCD =',
      &'   /* Normalised CD coupling parameter */')
       ENDIF
       I = ILNBLNK(pickupSuff)
@@ -508,15 +503,15 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &'   /* Run starting timestep number  */')
       CALL WRITE_0D_I( nTimeSteps, INDEX_NONE,'nTimeSteps =',
      &'   /* Number of timesteps */')
-      CALL WRITE_0D_R8( baseTime, INDEX_NONE,'baseTime =',
+      CALL WRITE_0D_RL( baseTime, INDEX_NONE,'baseTime =',
      &'   /* Model base time ( s ). */')
-      CALL WRITE_0D_R8( startTime, INDEX_NONE,'startTime =',
+      CALL WRITE_0D_RL( startTime, INDEX_NONE,'startTime =',
      &'   /* Run start time ( s ). */')
-      CALL WRITE_0D_R8( endTime, INDEX_NONE,'endTime =',
+      CALL WRITE_0D_RL( endTime, INDEX_NONE,'endTime =',
      &'   /* Integration ending time ( s ). */')
-      CALL WRITE_0D_R8( pChkPtFreq, INDEX_NONE,'pChkPtFreq =',
+      CALL WRITE_0D_RL( pChkPtFreq, INDEX_NONE,'pChkPtFreq =',
      &'   /* Permanent restart/checkpoint file interval ( s ). */')
-      CALL WRITE_0D_R8( chkPtFreq, INDEX_NONE,'chkPtFreq =',
+      CALL WRITE_0D_RL( chkPtFreq, INDEX_NONE,'chkPtFreq =',
      &'   /* Rolling restart/checkpoint file interval ( s ). */')
       CALL WRITE_0D_L(pickup_write_mdsio,INDEX_NONE,
      &     'pickup_write_mdsio =', '   /* Model IO flag. */')
@@ -532,7 +527,7 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &     'pickup_write_immed =','   /* Model IO flag. */')
       CALL WRITE_0D_L(writePickupAtEnd,INDEX_NONE,
      &     'writePickupAtEnd =','   /* Model IO flag. */')
-      CALL WRITE_0D_R8( dumpFreq, INDEX_NONE,'dumpFreq =',
+      CALL WRITE_0D_RL( dumpFreq, INDEX_NONE,'dumpFreq =',
      &'   /* Model state write out interval ( s ). */')
       CALL WRITE_0D_L(dumpInitAndLast,INDEX_NONE,'dumpInitAndLast=',
      &  ' /* write out Initial & Last iter. model state */')
@@ -542,7 +537,7 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L(snapshot_mnc,INDEX_NONE,
      &     'snapshot_mnc =', '   /* Model IO flag. */')
 #endif
-      CALL WRITE_0D_R8( monitorFreq, INDEX_NONE,'monitorFreq =',
+      CALL WRITE_0D_RL( monitorFreq, INDEX_NONE,'monitorFreq =',
      &'   /* Monitor output interval ( s ). */')
       CALL WRITE_0D_I( monitorSelect, INDEX_NONE, 'monitorSelect =',
      & ' /* select group of variables to monitor */')
@@ -552,15 +547,15 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L(monitor_mnc,INDEX_NONE,
      &     'monitor_mnc =', '   /* Model IO flag. */')
 #endif
-      CALL WRITE_0D_R8( externForcingPeriod, INDEX_NONE,
+      CALL WRITE_0D_RL( externForcingPeriod, INDEX_NONE,
      &   'externForcingPeriod =', '   /* forcing period (s) */')
-      CALL WRITE_0D_R8( externForcingCycle, INDEX_NONE,
+      CALL WRITE_0D_RL( externForcingCycle, INDEX_NONE,
      &   'externForcingCycle =', '   /* period of the cyle (s). */')
-      CALL WRITE_0D_R8( tauThetaClimRelax, INDEX_NONE,
+      CALL WRITE_0D_RL( tauThetaClimRelax, INDEX_NONE,
      &   'tauThetaClimRelax =', '   /* relaxation time scale (s) */')
-      CALL WRITE_0D_R8( tauSaltClimRelax, INDEX_NONE,
+      CALL WRITE_0D_RL( tauSaltClimRelax, INDEX_NONE,
      &   'tauSaltClimRelax =',  '   /* relaxation time scale (s) */')
-      CALL WRITE_0D_R8( latBandClimRelax, INDEX_NONE,
+      CALL WRITE_0D_RL( latBandClimRelax, INDEX_NONE,
      &   'latBandClimRelax =', '   /* max. Lat. where relaxation */')
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -581,32 +576,24 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L( usingCurvilinearGrid, INDEX_NONE,
      & 'usingCurvilinearGrid =',
      & ' /* Curvilinear coordinates flag ( True/False ) */')
-      CALL WRITE_0D_R8( Ro_SeaLevel, INDEX_NONE,'Ro_SeaLevel =',
+      CALL WRITE_0D_RL( Ro_SeaLevel, INDEX_NONE,'Ro_SeaLevel =',
      & ' /* r(1) ( units of r == '//rUnits//' ) */')
-      CALL WRITE_0D_R8( rkSign, INDEX_NONE,'rkSign =',
+      CALL WRITE_0D_RL( rkSign, INDEX_NONE,'rkSign =',
      &'   /* index orientation relative to vertical coordinate */')
-      CALL WRITE_0D_R8( gravitySign, INDEX_NONE,'gravitySign =',
+      CALL WRITE_0D_RL( gravitySign, INDEX_NONE,'gravitySign =',
      &  ' /* gravity orientation relative to vertical coordinate */')
       IF ( usingZCoords ) THEN
-       CALL WRITE_0D_R8( mass2rUnit, INDEX_NONE,'mass2rUnit =',
+       CALL WRITE_0D_RL( mass2rUnit, INDEX_NONE,'mass2rUnit =',
      & ' /* convert mass per unit area [kg/m2] to r-units [m] */')
-       CALL WRITE_0D_R8( rUnit2mass, INDEX_NONE,'rUnit2mass =',
+       CALL WRITE_0D_RL( rUnit2mass, INDEX_NONE,'rUnit2mass =',
      & ' /* convert r-units [m] to mass per unit area [kg/m2] */')
       ENDIF
       IF ( usingPCoords ) THEN
-       CALL WRITE_0D_R8( mass2rUnit, INDEX_NONE,'mass2rUnit =',
+       CALL WRITE_0D_RL( mass2rUnit, INDEX_NONE,'mass2rUnit =',
      & ' /* convert mass per unit area [kg/m2] to r-units [Pa] */')
-       CALL WRITE_0D_R8( rUnit2mass, INDEX_NONE,'rUnit2mass =',
+       CALL WRITE_0D_RL( rUnit2mass, INDEX_NONE,'rUnit2mass =',
      & ' /* convert r-units [Pa] to mass per unit area [kg/m2] */')
       ENDIF
-c     CALL WRITE_0D_R8( horiVertRatio, INDEX_NONE,'horiVertRatio =',
-c    &'   /* Ratio on units : Horiz - Vertical */')
-c     CALL WRITE_1D_R8( delZ,Nr, INDEX_K,'delZ = ',
-c    &'   /* W spacing ( m ) */')
-c     CALL WRITE_1D_R8( delP,Nr, INDEX_K,'delP = ',
-c    &'   /* W spacing ( Pa ) */')
-c     CALL WRITE_1D_R8( delR,Nr, INDEX_K,'delR = ',
-c    &'   /* W spacing ( units of r ) */')
       CALL WRITE_1D_R8( drC,Nr, INDEX_K,'drC = ',
      &'   /* C spacing ( units of r ) */')
       CALL WRITE_1D_R8( drF,Nr, INDEX_K,'drF = ',
@@ -615,28 +602,20 @@ c    &'   /* W spacing ( units of r ) */')
      &'   /* U spacing ( m - cartesian, degrees - spherical ) */')
       CALL WRITE_1D_R8( delY, Ny, INDEX_J,'delY = ',
      &'   /* V spacing ( m - cartesian, degrees - spherical ) */')
-      CALL WRITE_0D_R8( xgOrigin, INDEX_NONE,'xgOrigin = ',
+      CALL WRITE_0D_RL( xgOrigin, INDEX_NONE,'xgOrigin = ',
      &'/* X-axis origin of West  edge (cartesian: m, lat-lon: deg.) */')
-      CALL WRITE_0D_R8( ygOrigin, INDEX_NONE,'ygOrigin = ',
+      CALL WRITE_0D_RL( ygOrigin, INDEX_NONE,'ygOrigin = ',
      &'/* Y-axis origin of South edge (cartesian: m, lat-lon: deg.) */')
-      CALL WRITE_0D_R8( rSphere, INDEX_NONE,'rSphere = ',
+      CALL WRITE_0D_RL( rSphere, INDEX_NONE,'rSphere = ',
      &  ' /* Radius ( ignored - cartesian, m - spherical ) */')
       CALL WRITE_0D_L(deepAtmosphere,INDEX_NONE, 'deepAtmosphere =',
      &  ' /* Deep/Shallow Atmosphere flag (True/False) */')
-      DO bi=1,nSx
-       DO I=1,sNx
-        xcoord((bi-1)*sNx+I) = xC(I,1,bi,1)
-       ENDDO
-      ENDDO
-      CALL WRITE_1D_R8( xcoord, sNx*nSx, INDEX_I,'xcoord = ',
-     &'   /* P-point X coord ( m - cartesian, degrees - spherical ) */')
-      DO bj=1,nSy
-       DO J=1,sNy
-        ycoord((bj-1)*sNy+J) = yC(1,J,1,bj)
-       ENDDO
-      ENDDO
-      CALL WRITE_1D_R8( ycoord, sNy*nSy, INDEX_J,'ycoord = ',
-     &'   /* P-point Y coord ( m - cartesian, degrees - spherical ) */')
+      coordLine = 1
+      tileLine  = 1
+      CALL WRITE_XY_XLINE_RS( xC, coordLine, tileLine, 'xC',
+     I         ': P-point X coord ( deg. or m if cartesian)')
+      CALL WRITE_XY_YLINE_RS( yC, coordLine, tileLine, 'yC',
+     I         ': P-point Y coord ( deg. or m if cartesian)')
       DO K=1,Nr
        rcoord(K) = rC(K)
       ENDDO
@@ -659,11 +638,11 @@ c    &'   /* W spacing ( units of r ) */')
      & ' /* Vertical gradient of reference boyancy [(m/s/r)^2)] */')
       CALL WRITE_0D_L( rotateGrid, INDEX_NONE,
      & 'rotateGrid =',' /* use rotated grid ( True/False ) */')
-      CALL WRITE_0D_R8( phiEuler, INDEX_NONE,'phiEuler =',
+      CALL WRITE_0D_RL( phiEuler, INDEX_NONE,'phiEuler =',
      &' /* Euler angle, rotation about original z-coordinate [rad] */')
-      CALL WRITE_0D_R8( thetaEuler, INDEX_NONE,'thetaEuler =',
+      CALL WRITE_0D_RL( thetaEuler, INDEX_NONE,'thetaEuler =',
      & ' /* Euler angle, rotation about new x-coordinate [rad] */')
-      CALL WRITE_0D_R8( psiEuler, INDEX_NONE,'psiEuler =',
+      CALL WRITE_0D_RL( psiEuler, INDEX_NONE,'psiEuler =',
      & ' /* Euler angle, rotation about new z-coordinate [rad] */')
 
 C     Grid along selected grid lines
@@ -714,7 +693,7 @@ C     Grid along selected grid lines
       CALL WRITE_XY_YLINE_RS( rAs, coordLine, tileLine, 'rAs',
      I              '( units: m^2 )' )
 
-      CALL WRITE_0D_R8( globalArea, INDEX_NONE, 'globalArea =',
+      CALL WRITE_0D_RL( globalArea, INDEX_NONE, 'globalArea =',
      & ' /* Integrated horizontal Area (m^2) */')
 
       I = ILNBLNK(the_run_name)
@@ -736,7 +715,6 @@ C     Grid along selected grid lines
 
       _END_MASTER(myThid)
       _BARRIER
-
 
       RETURN
       END
