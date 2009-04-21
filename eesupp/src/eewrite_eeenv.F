@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eewrite_eeenv.F,v 1.9 2004/03/27 03:51:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eewrite_eeenv.F,v 1.10 2009/04/21 16:01:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -12,14 +12,14 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EERWITE\_EEENV                                  
-C     | o Write execution environment summary                     
+C     | SUBROUTINE EERWITE\_EEENV
+C     | o Write execution environment summary
 C     *==========================================================*
-C     | Write a summary of the execution environment as           
-C     | configured for this run. The execution environment is     
-C     | the computational mode in which the model operatoes. It   
-C     | includes the computational grid but does not include any  
-C     | model specific nuerical parameters.                       
+C     | Write a summary of the execution environment as
+C     | configured for this run. The execution environment is
+C     | the computational mode in which the model operatoes. It
+C     | includes the computational grid but does not include any
+C     | model specific nuerical parameters.
 C     *==========================================================*
 
 C     !USES:
@@ -33,23 +33,23 @@ C     == Local variables ==
 C     msgBuf :: Temp. for building text messages.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
-      
-      WRITE(msgBuf,'(A)') 
+
+      WRITE(msgBuf,'(A)')
      & '// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      & '// Computational Grid Specification ( see files "SIZE.h" )'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      & '//                                  ( and "eedata"       )'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      & '// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
@@ -109,12 +109,12 @@ CEOP
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 
-      WRITE(msgBuf,'(A,I5,A)') '      nX =', nX,
+      WRITE(msgBuf,'(A,I5,A)') '      Nx =', Nx,
      & ' ; /* Total domain size in X ( = nPx*nSx*sNx ) */'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 
-      WRITE(msgBuf,'(A,I5,A)') '      nY =', nY,
+      WRITE(msgBuf,'(A,I5,A)') '      Ny =', Ny,
      & ' ; /* Total domain size in Y ( = nPy*nSy*sNy ) */'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
@@ -163,6 +163,11 @@ CEOP
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 
+      CALL WRITE_0D_L( printMapIncludesZeros, INDEX_NONE,
+     &                'printMapIncludesZeros=',
+     &                ' /* print zeros in Std.Output maps */' )
+      CALL WRITE_0D_I( maxLengthPrt1D, INDEX_NONE, 'maxLengthPrt1D=',
+     &           ' /* max length of 1.D array printed to Std.Out */' )
 
       WRITE(msgBuf,'(A)') '                '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

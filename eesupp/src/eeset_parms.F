@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.24 2008/04/16 20:48:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.25 2009/04/21 16:01:31 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
 CBOP
-C     !ROUTINE: EESET_PARMS 
+C     !ROUTINE: EESET_PARMS
 
 C     !INTERFACE:
       SUBROUTINE EESET_PARMS
@@ -12,14 +12,14 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EESET\_PARMS                                    
-C     | o Routine to set model "parameters"                       
+C     | SUBROUTINE EESET\_PARMS
+C     | o Routine to set model "parameters"
 C     *==========================================================*
-C     | This routine is called from the high-level wrapper        
-C     | after multi-process paralle processing has started but    
-C     | before multi-threaded parallelism. THe routine reads an   
-C     | an "execution environment" input parameter file holding   
-C     | information about the number of threads at run-time.      
+C     | This routine is called from the high-level wrapper
+C     | after multi-process paralle processing has started but
+C     | before multi-threaded parallelism. THe routine reads an
+C     | an "execution environment" input parameter file holding
+C     | information about the number of threads at run-time.
 C     *==========================================================*
 
 C     !USES:
@@ -46,7 +46,8 @@ C     record :: Temp. for textual I/O
       CHARACTER*(MAX_LEN_PREC) record
       NAMELIST /EEPARMS/
      & nTx, nTy, usingMPI, useCoupler, useCubedSphereExchange,
-     & printMapIncludesZeros, useSETRLSTK, useSIGREG
+     & useSETRLSTK, useSIGREG,
+     & printMapIncludesZeros, maxLengthPrt1D
 CEOP
 
 
@@ -55,27 +56,24 @@ C     not fully support features for overlapping communication
 C     and computation.
       usingSyncMessages          = .TRUE.
 
-C--   Text map plots of fields ignore exact zero values
-      printMapIncludesZeros = .FALSE.
-
 C--   The remaining parameters here are set to default values.
 C--   and then any different values are read from an input
 C--   file called "eedata".
 C     The defaults set here are for serial execution.
 C
-C     nTx and nTy are the number of threads in the X and Y 
+C     nTx and nTy are the number of threads in the X and Y
 C     directions.
 C     nSx/nTx and nSy/nTy be whole numbers at present.
 C
 C     notUsingXPeriodicity and notUsingYPeriodicity affect
 C     the identifying of neighbor processes in a multi-process
-C     mode. On the whole the numerical model code should not 
+C     mode. On the whole the numerical model code should not
 C     customise itself based on these numbers as they may be
 C     removed if they do not prove useful.
 C
 C     usingMPI is a flag which controls whether MPI message
 C     passing library calls are actually made. Note that under
-C     MPI it is necessary to start a program a special way - 
+C     MPI it is necessary to start a program a special way -
 C     normally using a command of the form
 C     % mpirun program_name
 C     If usingMPI is set to TRUE but % mpirun .... was not
@@ -86,7 +84,7 @@ C
 C     useCoupler is a flag which controls communications with other
 C     model components through a coupler interface.
 C
-C     useSETRLSTK is a flag which toggles calling a small C routine 
+C     useSETRLSTK is a flag which toggles calling a small C routine
 C     which sets the stack size to "unlimited" using setrlimit()
 
       notUsingXPeriodicity       = .FALSE.
@@ -98,6 +96,12 @@ C     which sets the stack size to "unlimited" using setrlimit()
       nTy                        = 1
       useSETRLSTK                = .FALSE.
       useSIGREG                  = .FALSE.
+
+C--   Parameter for printing (ascii) to Std-Oupt:
+C     Text map plots of fields ignore exact zero values
+      printMapIncludesZeros = .FALSE.
+C     Maximum length for printing (to Std-Msg-Unit) 1-D array
+      maxLengthPrt1D = 65
 
 C--   Read in data from eedata file
 C     We really ought to be using our environment file reading
@@ -115,13 +119,13 @@ C     Make scratch copies of input data file with and without comments
      &     err=1,IOSTAT=errIO)
       IF ( errIO .GE. 0 ) GOTO 2
     1 CONTINUE
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &  'S/R EESET_PARMS'
        CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &  'Unable to open execution environment'
        CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &  'parameter file "eedata"'
        CALL PRINT_ERROR( msgBuf , 1)
        CALL EEDATA_EXAMPLE
@@ -139,13 +143,13 @@ C     Make scratch copies of input data file with and without comments
  1001 CONTINUE
       CLOSE(eeDataUnit)
 C--   Report contents of parameter file
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      & '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      & '// Execution Environment parameter file "eedata"'
       CALL PRINT_MESSAGE(msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      & '// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
@@ -171,13 +175,13 @@ C--   Report contents of parameter file
       IF ( errIO .GE. 0 ) GOTO 4
     3 CONTINUE
 #ifndef TARGET_PWR3
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &  'S/R EESET_PARMS'
        CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &  'Error reading execution environment '
        CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &  'parameter file "eedata"'
        CALL PRINT_ERROR( msgBuf , 1)
        CALL EEDATA_EXAMPLE
@@ -194,16 +198,16 @@ Cdbg  IF ( errIO .LT. 0 ) GOTO 11
 Cdbg  DO K=1, 10
 Cdbg   READ(eedataUnit,IOSTAT=errIO)
 Cdbg   IF ( errIO .LT. 0 ) GOTO 11
-Cdbg  ENDDO 
+Cdbg  ENDDO
 Cdbg  READ(eedataUnit,FMT='(30X,1X,L23)',IOSTAT=errIO) notUsingXPeriodicity
 Cdbg  IF ( errIO .LT. 0 ) GOTO 11
 Cdbg  READ(eedataUnit,FMT='(30X,1X,L23)',IOSTAT=errIO) notUsingYPeriodicity
 Cdbg  IF ( errIO .LT. 0 ) GOTO 11
 Cdbg  READ(eedataUnit,FMT='(30X,1X,L23)',IOSTAT=errIO) usingMPI
 Cdbg  IF ( errIO .LT. 0 ) GOTO 11
-Cdbg  READ(eedataUnit,FMT='(30X,1X,I3)',IOSTAT=errIO) nTx       
+Cdbg  READ(eedataUnit,FMT='(30X,1X,I3)',IOSTAT=errIO) nTx
 Cdbg  IF ( errIO .LT. 0 ) GOTO 11
-Cdbg  READ(eedataUnit,FMT='(30X,1X,I3)',IOSTAT=errIO) nTy       
+Cdbg  READ(eedataUnit,FMT='(30X,1X,I3)',IOSTAT=errIO) nTy
 
 
 Cdbg  IF (errIO .LT. 0 ) eeBootError = .TRUE.
@@ -211,7 +215,7 @@ Cdbg  CLOSE(eeDataUnit,IOSTAT=errIO)
 Cdbg  IF ( eeBootError .OR. errIO .LT. 0 ) THEN
 C--    Report that an error occured
 Cdbg   eeBootError = .TRUE.
-Cdbg   WRITE(msgBuf,'(A)' ) 
+Cdbg   WRITE(msgBuf,'(A)' )
 Cdbg &  'S/R EESET_PARMS: Error reading "eedata" execution environment file'
 Cdbg   CALL PRINT_ERROR( msgBuf , 1)
 Cdbg  ELSE
