@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1088 2009/04/18 21:23:13 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1089 2009/04/21 16:48:31 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o move read_write.F to write_utils.F ; new parameter (maxLengthPrt1D) 
+  to reduce length of 1.D array print in STDOUT.
 o adjustment.cs-32x32x1: changed to oceanic test with 1 continent
   + use 48 tiles (16x8): this will allow to test "blank tiles".
 o start to test MPI + multi-threaded (change testreport to skip tests
