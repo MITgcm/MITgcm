@@ -24,7 +24,7 @@
 #hFacSup=1.8,
  exactConserv=.TRUE.,
  momAdvection=.FALSE.,
- useCoriolis=.FALSE.,
+#useCoriolis=.FALSE.,
  tempStepping=.FALSE.,
  saltStepping=.FALSE.,
  readBinaryPrec=64,
