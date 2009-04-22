@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.189 2009/04/21 22:35:41 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.190 2009/04/22 18:35:00 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -3091,11 +3091,11 @@ ad_input_code_sf.w2f.pre.xb.xaif : ad_input_code_sf.w2f.pre.xaif xaif.xsd xaif_b
 
 # XAIF' -> WHIRL'
 ad_input_code_sf.w2f.pre.xb.x2w.B : ad_input_code_sf.w2f.pre.xb.xaif xaif2whirl
-	./xaif2whirl --debug 1 -t OpenADTy_active --structured ad_input_code_sf.w2f.pre.B \$<
+	./xaif2whirl --debug 1 --structured ad_input_code_sf.w2f.pre.B \$<
 
 # WHIRL' -> F'
 ad_input_code_sf.w2f.pre.xb.x2w.w2f.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.B whirl2f whirl2f_be
-	./whirl2f -FLIST:ftn_file=\$@ -openad -openadType OpenADTy_active  \$< 
+	./whirl2f -FLIST:ftn_file=\$@ -openad \$< 
 
 # insert template directives
 ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.f$FS90 ../OAD_support/insertTemplateDir.bash
@@ -3103,10 +3103,8 @@ ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w
 
 PPEXTRAS=\$(wildcard ../OAD_support/ad_template.*.F) ../OAD_support/ad_inline.F
 # postprocess F'
-ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.pp.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90 multi-pp.pl \$(PPEXTRAS:.F=.f)
-	perl multi-pp.pl -inline=../OAD_support/ad_inline.f \$<
-	# the postprocessor still gets the name wrong
-	cat \$<.pp | sed 's/RETURN//' > \$@
+ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.pp.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90 postProcess.py \$(PPEXTRAS:.F=.f)
+	./postProcess.py -m r -i ../OAD_support/ad_inline.f -o \$@ \$<
 
 # extract all transformed modules 
 all_mods.xb.x2w.w2f.pp.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.pp.f$FS90
@@ -3133,10 +3131,7 @@ mfef90:
 whirl2xaif xaif2whirl: 
 	\$(LN) \${OPENADFORTTK}/bin/\$@ .
 
-%.pl: 
-	\$(LN) \${OPENADFORTTK}/bin/\$@ .
-
-preProcess.py: 
+preProcess.py postProcess.py: 
 	\$(LN) \${OPENADFORTTK_BASE}/tools/SourceProcessing/\$@ .
 
 whirl2f whirl2f_be:
