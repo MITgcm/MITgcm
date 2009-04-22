@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.8 2005/12/22 00:56:49 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.9 2009/04/22 23:06:01 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -6,24 +6,28 @@ C $Name:  $
 # include "f_hpm.h"
 #endif
 
-CStartOfInterface
+CBOP
       SUBROUTINE EEDIE
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE EEDIE                                         |
 C     | o Close execution "environment", particularly perform    |
 C     |   steps to terminate parallel processing.                |
-C     |==========================================================|
+C     *==========================================================*
 C     | Note: This routine can also be compiled with CPP         |
 C     | directives set so that no multi-processing is initialised|
 C     | This is OK and should work fine.                         |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-CEndOfInterface
+CEOP
+
+C     !FUNCTIONS
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     == Local variables ==
 C     msgBuf       - I/O Buffer
@@ -31,7 +35,7 @@ C     nThreadsDone - Used to count number of completed threads.
 C     I            - Loop counter.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER nThreadsDone
-      INTEGER I
+      INTEGER I, L
 #ifdef ALLOW_USE_MPI
 C     mpiRC            - Error code reporting variable used
 C                        with MPI.
@@ -54,7 +58,8 @@ C     bug or you may need a different parallel compiler for main.F
      & 'S/R EEDIE: Only ',nThreadsDone,
      & ' threads have completed, ',nThreads,
      & ' are expected for this configuration!'
-       WRITE(*,*) msgBuf
+       L = ILNBLNK(msgBuf)
+       WRITE(*,*) msgBuf(1:L)
        WRITE(*,*) 
      & 'Possibly you have different setenv PARALLEL and nThreads?'
        eeEndError = .TRUE.
