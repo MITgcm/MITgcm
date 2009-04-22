@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.191 2009/04/22 19:21:18 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.192 2009/04/22 21:03:52 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1173,15 +1173,6 @@ else
 fi
 
 #echo "$0::$1:$2:$3:$4:$5:$6:$7:"
-#OPTIONS=
-#n=0
-#for i ; do 
-#   echo "$i  $n"
-#   setvar="OPTIONS[$n]='$i'"
-#   #  echo "  $setvar"
-#   eval "$setvar"
-#   n=$(( $n + 1 ))
-#done
 #parse_options
 ac_prev=
 for ac_option in "$@" ; do
@@ -2476,6 +2467,12 @@ echo "" >> F90srclist.tmp
 echo "" >> hsrclist.tmp
 echo "" >> ad_flow_files.tmp
 
+CMDLINE=$0
+for xx in "$@" ; do nw=`echo $xx | wc -w`
+    if test $nw = '1' ; then CMDLINE="$CMDLINE $xx"
+                        else CMDLINE="$CMDLINE '$xx'" ; fi
+done
+
 if test -f $MAKEFILE ; then
     mv -f $MAKEFILE "$MAKEFILE.bak"
 fi
@@ -2485,7 +2482,7 @@ echo "#    $MACHINE" >> $MAKEFILE
 echo "# This makefile was generated automatically on" >> $MAKEFILE
 echo "#    $THISDATE" >> $MAKEFILE
 echo "# by the command:" >> $MAKEFILE
-echo "#    $0 $G2ARGS" >> $MAKEFILE
+echo "#    $CMDLINE"  >> $MAKEFILE
 echo "# executed by:" >> $MAKEFILE
 echo "#    ${THISUSER}@${THISHOST}:${THISCWD}" >> $MAKEFILE
 
