@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.190 2009/04/22 18:35:00 utke Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.191 2009/04/22 19:21:18 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1790,7 +1790,6 @@ fi
 
 printf "\n===  Setting defaults  ===\n"
 printf "  Adding MODS directories: "
-MPI_LNKF=
 for d in $MODS ; do
     if test ! -d $d ; then
 	echo
@@ -1800,52 +1799,9 @@ for d in $MODS ; do
 	printf "$d "
 	SOURCEDIRS="$SOURCEDIRS $d"
 	INCLUDEDIRS="$INCLUDEDIRS $d"
-	#-------------------------------------------------------
-	# Put special links so that MPI specific files are used
-	MPI_FILES=`(cd $d ; find . -name "*_mpi" -print)`
-	for i in $MPI_FILES ; do
-	  ii=`echo $i | sed 's:^\./::'`
-	  name=`echo $ii | sed 's:_mpi::' `
-	  if test "x$MPI" = x ; then
-	  # NO: We undo an _mpi symbolically linked file
-	    if test -L $name ; then
-	      cmp $name "$d/$ii" > /dev/null 2>&1
-	      RETVAL=$?
-	      if test "x$RETVAL" = x0 ; then
-		printf "Un-linking $name ; "
-		rm -f $name
-	      fi
-	    fi
-	  else
-	  # YES: We symbolically link this file (with conditions if already there)
-	    if test -L $name ; then
-	      cmp $d/$ii $name > /dev/null 2>&1
-	      RETVAL=$?
-	      yy=0 ; 
-	      for xx in $MPI_LNKF ; do if test $xx = $name ; then yy=1 ; fi ; done
- 	      if test "x$RETVAL" != x0 -a $yy = 0 ; then
-	      # remove sym-link if different and has not just been linked
-		printf "Un-link + "
-		rm -f $name
-	      fi
-	      if test "x$RETVAL" = x0 ; then
-	      # if identical, keep sym-link and keep record of it
-		MPI_LNKF="$MPI_LNKF $name"
-	      fi
-	    fi
-	    if ! test -f $name ; then
-	      # make sym-link and keep record of it
-		printf "Linking $ii to $name ; "
-		ln -sf $d/$ii $name
-		MPI_LNKF="$MPI_LNKF $name"
-	    fi
-	  fi
-	done
-	#-------------------------------------------------------
     fi
 done
 echo
-#echo "MPI_LNKF='$MPI_LNKF'"
 
 if test "x${PLATFORM}" = x ; then
     PLATFORM=$p_PLATFORM
