@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.123 2009/04/16 18:46:59 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.124 2009/04/22 21:07:00 jmc Exp $
 #  $Name:  $
 #
 
@@ -320,10 +320,10 @@ genmakemodel()
 	    elif test "x$OADM" = xt ; then
 		command="$command -adof ../../../tools/adjoint_options/adjoint_oad -mods '../code_oad ../../OpenAD/code_oad_all'"
 	    else
-		command="$command --mods=../code"
+		command="$command -mods=../code"
 	    fi
 	    if test "x$OPTFILE" != xNONE ; then
-		command="$command --optfile=$OPTFILE"
+		command="$command -optfile=$OPTFILE"
 	    fi
 	    if test "x$IEEE" != x ; then
 		command="$command -ieee"
