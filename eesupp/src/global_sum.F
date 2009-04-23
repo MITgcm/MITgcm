@@ -1,38 +1,40 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.12 2004/03/27 03:51:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.13 2009/04/23 19:18:14 jmc Exp $
 C $Name:  $
 
 C--   File global_sum.F: Routines that perform global sum on an array
 C                        of thread values.
 C      Contents
-C      o global_sum_r4
-C      o global_sum_r8
+C      o GLOBAL_SUM_R4
+C      o GLOBAL_SUM_R8
+C      o GLOBAL_SUM_INT
+
 #include "CPP_EEOPTIONS.h"
 
 CBOP
 C     !ROUTINE: GLOBAL_SUM_R4
 
 C     !INTERFACE:
-      SUBROUTINE GLOBAL_SUM_R4( 
+      SUBROUTINE GLOBAL_SUM_R4(
      U                       sumPhi,
      I                       myThid )
-      IMPLICIT NONE
+
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE GLOBAL\_SUM\_R4                                  
-C     | o Handle sum for real*4 data.                             
+C     | SUBROUTINE GLOBAL\_SUM\_R4
+C     | o Handle sum for real*4 data.
 C     *==========================================================*
-C     | Perform sum an array of one value per thread and then     
-C     | sum result of all the processes.                          
-C     | Notes                                                     
-C     | =====                                                     
-C     | Within a process only one thread does the sum, each       
-C     | thread is assumed to have already summed its local data.  
-C     | The same thread also does the inter-process sum for       
-C     | example with MPI and then writes the result into a shared 
-C     | location. All threads wait until the sum is avaiailable.  
+C     | Perform sum an array of one value per thread and then
+C     | sum result of all the processes.
+C     | Notes:
+C     | Within a process only one thread does the sum.
+C     | The same thread also does the inter-process sum for
+C     | example with MPI and then writes the result into a shared
+C     | location. All threads wait until the sum is avaiailable.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
+
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -94,30 +96,28 @@ C--   set result for every process
 
       RETURN
       END
-      
+
 
 CBOP
 C     !ROUTINE: GLOBAL_SUM_R8
 
 C     !INTERFACE:
-      SUBROUTINE GLOBAL_SUM_R8( 
+      SUBROUTINE GLOBAL_SUM_R8(
      U                       sumPhi,
      I                       myThid )
-      IMPLICIT NONE 
+      IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE GLOBAL\_SUM\_R8                                
-C     | o Handle sum for real*8 data.                             
+C     | SUBROUTINE GLOBAL\_SUM\_R8
+C     | o Handle sum for real*8 data.
 C     *==========================================================*
-C     | Perform sum an array of one value per thread and then     
-C     | sum result of all the processes.                          
-C     | Notes                                                     
-C     | =====                                                     
-C     | Within a process only one thread does the sum, each       
-C     | thread is assumed to have already summed its local data.  
-C     | The same thread also does the inter-process sum for       
-C     | example with MPI and then writes the result into a shared 
-C     | location. All threads wait until the sum is avaiailable.  
+C     | Perform sum an array of one value per thread and then
+C     | sum result of all the processes.
+C     | Notes:
+C     | Within a process only one thread does the sum.
+C     | The same thread also does the inter-process sum for
+C     | example with MPI and then writes the result into a shared
+C     | location. All threads wait until the sum is avaiailable.
 C     *==========================================================*
 
 C     !USES:
@@ -196,24 +196,22 @@ C--   set result for every process
 CBOP
 C     !ROUTINE: GLOBAL_SUM_INT
 C     !INTERFACE:
-      SUBROUTINE GLOBAL_SUM_INT( 
+      SUBROUTINE GLOBAL_SUM_INT(
      U                       sumPhi,
      I                       myThid )
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE GLOBAL\_SUM\_INT                                 
-C     | o Handle sum for integer data.                            
+C     | SUBROUTINE GLOBAL\_SUM\_INT
+C     | o Handle sum for integer data.
 C     *==========================================================*
-C     | Perform sum an array of one value per thread and then     
-C     | sum result of all the processes.                          
-C     | Notes                                                     
-C     | =====                                                     
-C     | Within a process only one thread does the sum, each       
-C     | thread is assumed to have already summed its local data.  
-C     | The same thread also does the inter-process sum for       
-C     | example with MPI and then writes the result into a shared 
-C     | location. All threads wait until the sum is avaiailable.  
+C     | Perform sum an array of one value per thread and then
+C     | sum result of all the processes.
+C     | Notes:
+C     | Within a process only one thread does the sum.
+C     | The same thread also does the inter-process sum for
+C     | example with MPI and then writes the result into a shared
+C     | location. All threads wait until the sum is avaiailable.
 C     *==========================================================*
 
 C     !USES:
@@ -250,7 +248,7 @@ C--   Can not start until everyone is ready
 
 C--   Sum within the process first
       _BEGIN_MASTER( myThid )
-       tmp = 0. _d 0
+       tmp = 0
        DO I=1,nThreads
         tmp = tmp + phiGSI(1,I)
        ENDDO
