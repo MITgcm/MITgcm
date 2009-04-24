@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.43 2008/10/02 00:33:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.44 2009/04/24 01:55:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -276,11 +276,16 @@ C           are followed by an EXCH (with BARRIER)
 #ifdef ALLOW_OBCS
       IF ( useOBCS ) THEN
 C     check for inconsistent topography along boundaries and fix it
-       CALL OBCS_CHECK_TOPOGRAPHY( myThid )
+       CALL OBCS_CHECK_DEPTHS( myThid )
 C     update the overlaps
        _EXCH_XY_R4(R_low, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
+
+#ifdef ALLOW_EXCH2
+C     Check domain boundary (e.g., in case of missing tiles)
+      CALL EXCH2_CHECK_DEPTHS( R_low, Ro_surf, myThid )
+#endif
 
       RETURN
       END
