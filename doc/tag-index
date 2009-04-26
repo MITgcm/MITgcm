@@ -1,12 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1090 2009/04/22 19:25:06 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1091 2009/04/26 02:56:36 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o tools/gemake2: delete modifs from March 27-29 2009 (with option "-mpi": 
+o adjustment.cs-32x32x1: test "blank tiles" when compiling with mpi
+o eesupp/src: new S/R to stop everyone when 1 (or more) Proc. find an error
+o pkg/exch2: new S/R EXCH2_CHECK_DEPTHS to check that unconnected tile
+  edges are closed (zero depth); might happen with "blank tiles";
+  for now, disable if using OBCS.
+o tools/gemake2: delete modifs from March 27-29 2009 (with option "-mpi":
   link *_mpi files from "MODS" dir) to return to a strait-forward behavior.
-o move read_write.F to write_utils.F ; new parameter (maxLengthPrt1D) 
+o move read_write.F to write_utils.F ; new parameter (maxLengthPrt1D)
   to reduce length of 1.D array print in STDOUT.
 o adjustment.cs-32x32x1: changed to oceanic test with 1 continent
   + use 48 tiles (16x8): this will allow to test "blank tiles".
