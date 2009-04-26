@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/inverted_barometer/code/Attic/CPP_EEOPTIONS.h,v 1.3 2008/10/27 19:54:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/inverted_barometer/code/Attic/CPP_EEOPTIONS.h,v 1.4 2009/04/26 01:23:43 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -58,6 +58,10 @@ C     a different file for each tile) and read are thread-safe.
 
 C--   Flag to turn off the writing of error message to ioUnit zero
 #undef DISABLE_WRITE_TO_UNIT_ZERO
+
+C--   Flag to turn on checking for errors from all threads and procs
+C     (calling S/R IF_ERROR_STOP) before stopping.
+#define USE_CHECK_FOR_ERROR
 
 C--   Flag turns off MPI_SEND ready_to_receive polling in the
 C     gather_* subroutines to speed up integrations.
