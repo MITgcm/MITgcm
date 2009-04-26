@@ -1,10 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_check_depths.F,v 1.1 2009/04/24 01:43:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_check_depths.F,v 1.2 2009/04/26 00:27:21 jmc Exp $
 C $Name:  $
 
 c#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #include "W2_OPTIONS.h"
-#define DISABLE_ERROR_STOP
 
 CBOP
 C     !ROUTINE: EXCH2_CHECK_DEPTHS
@@ -137,11 +136,11 @@ c    &                        SQUEEZE_RIGHT, myThid )
        ENDDO
       ENDDO
 
-#ifdef DISABLE_ERROR_STOP
-      IF ( errFlag ) STOP 'ABNORMAL END: S/R EXCH2_CHECK_DEPTHS'
-#else  /* DISABLE_ERROR_STOP */
+#ifdef USE_ERROR_STOP
       CALL STOP_IF_ERROR( errFlag, msgBuf, myThid )
-#endif /* DISABLE_ERROR_STOP */
+#else  /* USE_ERROR_STOP */
+      IF ( errFlag ) STOP 'ABNORMAL END: S/R EXCH2_CHECK_DEPTHS'
+#endif /* USE_ERROR_STOP */
 
       RETURN
       END
