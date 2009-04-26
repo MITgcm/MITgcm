@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.29 2008/01/08 23:57:55 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.30 2009/04/26 00:32:23 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -58,6 +58,10 @@ C     a different file for each tile) and read are thread-safe.
 
 C--   Flag to turn off the writing of error message to ioUnit zero
 #undef DISABLE_WRITE_TO_UNIT_ZERO
+
+C--   Flag to turn on checking for errors from all threads and procs
+C     (calling S/R IF_ERROR_STOP) before stopping.
+#define USE_CHECK_FOR_ERROR
 
 C--   Flag turns off MPI_SEND ready_to_receive polling in the
 C     gather_* subroutines to speed up integrations.
