@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_3d_rx.template,v 1.4 2008/08/02 23:04:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_3d_rx.template,v 1.5 2009/04/27 04:06:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -231,9 +231,8 @@ c      CALL EXCH_RX( Vphi,
 c    I            OLw, OLe, OLs, OLn, myNz,
 c    I            exchWidthX, exchWidthY,
 c    I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-c_jmc: for JAM compatibility, replace the 2 CALLs above by the 2 CPP_MACROs:
-       _EXCH_XYZ_RX( Uphi, myThid )
-       _EXCH_XYZ_RX( Vphi, myThid )
+       CALL EXCH_3D_RX( Uphi, myNz, myThid )
+       CALL EXCH_3D_RX( Vphi, myNz, myThid )
 
       ENDIF
 
