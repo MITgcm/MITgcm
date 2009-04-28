@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.6 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ssh_mean.F,v 1.7 2009/04/28 17:55:53 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -238,7 +238,7 @@ c--         --> no weighting by cosphi.
      &                    * wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
               if ( wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj) .ne. 0. )
      &             num_hmean = num_hmean + 1. _d 0
-	      diagnosfld(i,j,bi,bj) = diff*diff
+              diagnosfld(i,j,bi,bj) = diff*diff
      &                    * wp(i,j,bi,bj)*tpmeanmask(i,j,bi,bj)
             enddo
           enddo
@@ -251,8 +251,8 @@ cph(
 cph)
 
 c--   Do the global summation.
-      _GLOBAL_SUM_R8( sumc, mythid )
-      _GLOBAL_SUM_R8( num_hmean, mythid )
+      CALL GLOBAL_SUM_R8( sumc, mythid )
+      _GLOBAL_SUM_RL( num_hmean, mythid )
       costmean = sumc
 
 #endif
