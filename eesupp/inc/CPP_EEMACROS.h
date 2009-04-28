@@ -1,18 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.16 2008/10/27 05:13:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.17 2009/04/28 17:51:11 jmc Exp $
 C $Name:  $
 
 CBOP
-C     !ROUTINE: CPP_EEMACROS.h 
+C     !ROUTINE: CPP_EEMACROS.h
 C     !INTERFACE:
 C     include "CPP_EEMACROS.h "
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | CPP_EEMACROS.h                                            
+C     | CPP_EEMACROS.h
 C     *==========================================================*
-C     | C preprocessor "execution environment" supporting         
-C     | macros. Use this file to define macros for  simplifying   
-C     | execution environment in which a model runs - as opposed  
-C     | to the dynamical problem the model solves.                
+C     | C preprocessor "execution environment" supporting
+C     | macros. Use this file to define macros for  simplifying
+C     | execution environment in which a model runs - as opposed
+C     | to the dynamical problem the model solves.
 C     *==========================================================*
 CEOP
 
@@ -35,7 +35,7 @@ C     Flag used to indicate which flavour of multi-threading
 C     compiler directives to use. Only set one of these.
 C     USE_SOLARIS_THREADING  - Takes directives for SUN Workshop
 C                              compiler.
-C     USE_KAP_THREADING      - Takes directives for Kuck and 
+C     USE_KAP_THREADING      - Takes directives for Kuck and
 C                              Associates multi-threading compiler
 C                              ( used on Digital platforms ).
 C     USE_IRIX_THREADING     - Takes directives for SGI MIPS
@@ -78,7 +78,7 @@ C     On some systems low-level hardware support can be accessed through
 C     compiler directives here.
 #define _BARRIER CALL BARRIER(myThid)
 
-C--   Define the mapping for the BEGIN_CRIT() and  END_CRIT() macros. 
+C--   Define the mapping for the BEGIN_CRIT() and  END_CRIT() macros.
 C     On some systems we simply execute this section only using the
 C     master thread i.e. its not really a critical section. We can
 C     do this because we do not use critical sections in any critical
@@ -119,36 +119,27 @@ C     can use 4-byte precision, reducing memory utilisation and
 C     boosting performance because of a smaller working
 C     set size. However, on vector CRAY systems this degrades
 C     performance.
+C- Note: global_sum/max macros were used to switch to  JAM routines (obsolete);
+C  in addition, since only the R4 & R8 S/R are coded, GLOBAL RS & RL macros
+C  enable to call the corresponding R4 or R8 S/R.
 #ifdef REAL4_IS_SLOW
 #define _RS Real*8
 #define RS_IS_REAL8
-#define _EXCH_XY_RS(a,b) CALL EXCH_XY_RL ( a, b )
-#define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_RL ( a, b )
-#define _EXCH_XY_R4(a,b) CALL EXCH_XY_RL ( a, b )
-#define _EXCH_XYZ_R4(a,b) CALL EXCH_XYZ_RL ( a, b )
-#define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R8 ( a, b)
-#define _GLOBAL_MAX_R4(a,b) CALL GLOBAL_MAX_R8 ( a, b )
+#define _GLOBAL_SUM_RS(a,b) CALL GLOBAL_SUM_R8 ( a, b)
+#define _GLOBAL_MAX_RS(a,b) CALL GLOBAL_MAX_R8 ( a, b )
 #define _MPI_TYPE_RS MPI_DOUBLE_PRECISION
 #else
 #define _RS Real*4
 #define RS_IS_REAL4
-#define _EXCH_XY_RS(a,b) CALL EXCH_XY_RS ( a, b )
-#define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_RS ( a, b )
-#define _EXCH_XY_R4(a,b) CALL EXCH_XY_RS ( a, b )
-#define _EXCH_XYZ_R4(a,b) CALL EXCH_XYZ_RS ( a, b )
-#define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R4 ( a, b )
-#define _GLOBAL_MAX_R4(a,b) CALL GLOBAL_MAX_R4 ( a, b )
+#define _GLOBAL_SUM_RS(a,b) CALL GLOBAL_SUM_R4 ( a, b )
+#define _GLOBAL_MAX_RS(a,b) CALL GLOBAL_MAX_R4 ( a, b )
 #define _MPI_TYPE_RS MPI_REAL
 #endif
 
 #define _RL Real*8
 #define RL_IS_REAL8
-#define _EXCH_XY_RL(a,b) CALL EXCH_XY_RL ( a, b )
-#define _EXCH_XYZ_RL(a,b) CALL EXCH_XYZ_RL ( a, b )
-#define _EXCH_XY_R8(a,b) CALL EXCH_XY_RL ( a, b )
-#define _EXCH_XYZ_R8(a,b) CALL EXCH_XYZ_RL ( a, b )
-#define _GLOBAL_SUM_R8(a,b) CALL GLOBAL_SUM_R8 ( a, b )
-#define _GLOBAL_MAX_R8(a,b) CALL GLOBAL_MAX_R8 ( a, b )
+#define _GLOBAL_SUM_RL(a,b) CALL GLOBAL_SUM_R8 ( a, b )
+#define _GLOBAL_MAX_RL(a,b) CALL GLOBAL_MAX_R8 ( a, b )
 #define _MPI_TYPE_RL MPI_DOUBLE_PRECISION
 
 #define _MPI_TYPE_R4 MPI_REAL
@@ -160,23 +151,30 @@ C     performance.
 #define _R4 Real*4
 #define _R8 Real*8
 
-C--   Control use of JAM routines for Artic network
+C- Note: a) exch macros were used to switch to  JAM routines (obsolete)
+C        b) exch R4 & R8 macros are not practically used ; if needed,
+C           will directly call the corrresponding S/R.
+#define _EXCH_XY_RS(a,b) CALL EXCH_XY_RS ( a, b )
+#define _EXCH_XY_RL(a,b) CALL EXCH_XY_RL ( a, b )
+c#define _EXCH_XY_R4(a,b) CALL EXCH_XY_R4 ( a, b )
+c#define _EXCH_XY_R8(a,b) CALL EXCH_XY_R8 ( a, b )
+#define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_RS ( a, b )
+#define _EXCH_XYZ_RL(a,b) CALL EXCH_XYZ_RL ( a, b )
+c#define _EXCH_XYZ_R4(a,b) CALL EXCH_XYZ_R4 ( a, b )
+c#define _EXCH_XYZ_R8(a,b) CALL EXCH_XYZ_R8 ( a, b )
+
+C--   Control use of JAM routines for Artic network (no longer supported)
 C     These invoke optimized versions of "exchange" and "sum" that
 C     utilize the programmable aspect of Artic cards.
 #ifdef LETS_MAKE_JAM
-#define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R8_JAM ( a, b)
-#define _EXCH_XY_R4(a,b) CALL EXCH_XY_R8_JAM ( a, b )
-#define _EXCH_XYZ_R4(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
-#define _EXCH_XY_R8(a,b) CALL EXCH_XY_R8_JAM ( a, b )
-#define _EXCH_XYZ_R8(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
-#define _GLOBAL_SUM_R8(a,b) CALL GLOBAL_SUM_R8_JAM ( a, b )
-
+#define _GLOBAL_SUM_RS(a,b) CALL GLOBAL_SUM_R8_JAM ( a, b)
+#define _GLOBAL_SUM_RL(a,b) CALL GLOBAL_SUM_R8_JAM ( a, b )
 #define _EXCH_XY_RS(a,b) CALL EXCH_XY_R8_JAM ( a, b )
-#define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
 #define _EXCH_XY_RL(a,b) CALL EXCH_XY_R8_JAM ( a, b )
+#define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
 #define _EXCH_XYZ_RL(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
 #endif
- 
+
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
 #ifdef REAL_D0_IS_16BYTES
