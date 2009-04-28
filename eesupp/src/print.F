@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.29 2009/04/21 16:02:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.30 2009/04/28 22:00:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -8,11 +8,11 @@ C--                 in the MITgcm UV implementation environment.
 C--   Contents
 C--   o PRINT_MESSAGE  Does IO with unhighlighted header
 C--   o PRINT_ERROR    Does IO with **ERROR** highlighted header
-C--   o PRINT_LIST_I   Prints one-deimensional list of INTEGER
+C--   o PRINT_LIST_I   Prints one-dimensional list of INTEGER
 C--                    numbers.
-C--   o PRINT_LIST_L   Prints one-deimensional list of LOGICAL
+C--   o PRINT_LIST_L   Prints one-dimensional list of LOGICAL
 C--                    variables.
-C--   o PRINT_LIST_R8  Prints one-deimensional list of Real*8
+C--   o PRINT_LIST_RL  Prints one-dimensional list of Real(_RL)
 C--                    numbers.
 C--   o PRINT_MAPRS    Formats ABCD... contour map of a Real(_RS) field
 C--                    Uses print_message for writing
@@ -534,14 +534,14 @@ C-    fortran format to write 1 or 2 indices:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: PRINT_LIST_R8
+C     !ROUTINE: PRINT_LIST_RL
 C     !INTERFACE:
-      SUBROUTINE PRINT_LIST_R8( fld, iFirst, iLast, index_type,
+      SUBROUTINE PRINT_LIST_RL( fld, iFirst, iLast, index_type,
      &                          markEnd, compact, ioUnit )
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | o SUBROUTINE PRINT\_LIST\_R8
+C     | o SUBROUTINE PRINT\_LIST\_RL
 C     *==========================================================*
 C     | Routine for producing list of values for a field with
 C     | duplicate values collected into
@@ -572,7 +572,7 @@ C     compact :: Flag to control use of repeat symbol for same valued
 C                fields.
 C     ioUnit  :: Unit number for IO.
       INTEGER iFirst, iLast
-      Real*8  fld(iFirst:iLast)
+      _RL     fld(iFirst:iLast)
       INTEGER index_type
       LOGICAL markEnd
       LOGICAL compact
@@ -591,7 +591,7 @@ C     K    - Loop counter
       INTEGER iLo
       INTEGER iHi
       INTEGER nDup
-      Real*8 xNew, xOld
+      _RL     xNew, xOld
       CHARACTER punc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*2 commOpen,commClose
