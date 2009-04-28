@@ -14,6 +14,8 @@
 #   - csh,tcsh:
 #     > setenv OMP_NUM_THREADS 2
 #     > setenv KMP_STACKSIZE 400m
+#  NOTE: need to set KMP_STACKSIZE in ~/.tcshrc (but curiously, works
+#  without OMP_NUM_THREADS in ~/.tcshrc).
 #-------
 
 # Composed and tested by ce107 on ross/weddell (Opteron system)
