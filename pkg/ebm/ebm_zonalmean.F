@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_zonalmean.F,v 1.3 2004/05/21 21:45:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_zonalmean.F,v 1.4 2009/04/28 18:42:56 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -75,8 +75,8 @@ C--   Calculate the zonal mean
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO j=1-OLy,sNy+OLy
-        _GLOBAL_SUM_R8( CountX(j,bj), myThid )
-        _GLOBAL_SUM_R8( ZonalMeanSST(j,bj), myThid )
+        _GLOBAL_SUM_RL( CountX(j,bj), myThid )
+        _GLOBAL_SUM_RL( ZonalMeanSST(j,bj), myThid )
        ENDDO
       ENDDO
 
