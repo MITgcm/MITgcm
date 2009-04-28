@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_checkpoint.F,v 1.9 2007/11/04 03:51:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_checkpoint.F,v 1.10 2009/04/28 18:57:14 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -132,31 +132,31 @@ C     READ E and W OB arrays
 
 
 C     Fill in edge regions
-c      _EXCH_XZ_R4(OBNu , myThid)
-c      _EXCH_XZ_R4(OBNv , myThid)
-c      _EXCH_XZ_R4(OBNt , myThid)
-c      _EXCH_XZ_R4(OBNs , myThid)
-c      _EXCH_XZ_R4(OBSu , myThid)
-c      _EXCH_XZ_R4(OBSv , myThid)
-c      _EXCH_XZ_R4(OBSt , myThid)
-c      _EXCH_XZ_R4(OBSs , myThid)
+c      _EXCH_XZ_RL(OBNu , myThid)
+c      _EXCH_XZ_RL(OBNv , myThid)
+c      _EXCH_XZ_RL(OBNt , myThid)
+c      _EXCH_XZ_RL(OBNs , myThid)
+c      _EXCH_XZ_RL(OBSu , myThid)
+c      _EXCH_XZ_RL(OBSv , myThid)
+c      _EXCH_XZ_RL(OBSt , myThid)
+c      _EXCH_XZ_RL(OBSs , myThid)
 c#ifdef ALLOW_NONHYDROSTATIC
-c      _EXCH_XZ_R4(OBNw , myThid)
-c      _EXCH_XZ_R4(OBSw , myThid)
+c      _EXCH_XZ_RL(OBNw , myThid)
+c      _EXCH_XZ_RL(OBSw , myThid)
 c#endif
 
 C     Fill in edge regions
-c      _EXCH_YZ_R4(OBEu , myThid)
-c      _EXCH_YZ_R4(OBEv , myThid)
-c      _EXCH_YZ_R4(OBEt , myThid)
-c      _EXCH_YZ_R4(OBEs , myThid)
-c      _EXCH_YZ_R4(OBWu , myThid)
-c      _EXCH_YZ_R4(OBWv , myThid)
-c      _EXCH_YZ_R4(OBWt , myThid)
-c      _EXCH_YZ_R4(OBWs , myThid)
+c      _EXCH_YZ_RL(OBEu , myThid)
+c      _EXCH_YZ_RL(OBEv , myThid)
+c      _EXCH_YZ_RL(OBEt , myThid)
+c      _EXCH_YZ_RL(OBEs , myThid)
+c      _EXCH_YZ_RL(OBWu , myThid)
+c      _EXCH_YZ_RL(OBWv , myThid)
+c      _EXCH_YZ_RL(OBWt , myThid)
+c      _EXCH_YZ_RL(OBWs , myThid)
 c#ifdef ALLOW_NONHYDROSTATIC
-c      _EXCH_YZ_R4(OBEw , myThid)
-c      _EXCH_YZ_R4(OBWw , myThid)
+c      _EXCH_YZ_RL(OBEw , myThid)
+c      _EXCH_YZ_RL(OBWw , myThid)
 c#endif
 
 #ifdef ALLOW_ORLANSKI
