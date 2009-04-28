@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.2 2008/09/12 07:21:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.3 2009/04/28 18:21:18 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -51,7 +51,7 @@ C-    must wait for initialisation to be finished before master loads from file
        CALL READ_FLD_XY_RS( SHELFICEloadAnomalyFile, ' ',
      &      shelficeLoadAnomaly, 0, myThid )
 C-    EXCH call implicitly contains Barrier: no need for an other one.
-       _EXCH_XY_R4( shelficeLoadAnomaly, myThid )
+       _EXCH_XY_RS( shelficeLoadAnomaly, myThid )
       ENDIF
 
 #endif /* ALLOW_SHELFICE */

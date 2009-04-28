@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.3 2009/01/05 15:21:36 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.4 2009/04/28 18:18:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -62,19 +62,19 @@ c      CALL MDSREADFIELD(fn,prec,'RL',1,vSqocn2cpl,12,myThid)
 
 C--   Fill in the halo region:
        IF ( .NOT. cpl_earlyExpImpCall ) THEN
-         _EXCH_XY_R8( atmSLPr   , myThid )
-         _EXCH_XY_R8( HeatFlux  , myThid )
-         _EXCH_XY_R8( qShortWave, myThid )
+         _EXCH_XY_RL( atmSLPr   , myThid )
+         _EXCH_XY_RL( HeatFlux  , myThid )
+         _EXCH_XY_RL( qShortWave, myThid )
          CALL EXCH_UV_XY_RL(tauX, tauY, .TRUE., myThid ) 
-         _EXCH_XY_R8( FWFlux    , myThid )
-         _EXCH_XY_R8( iceSaltFlx, myThid )
-         _EXCH_XY_R8( seaIceMass, myThid )
+         _EXCH_XY_RL( FWFlux    , myThid )
+         _EXCH_XY_RL( iceSaltFlx, myThid )
+         _EXCH_XY_RL( seaIceMass, myThid )
        ENDIF
        IF ( ocnCpl_exchange_DIC ) THEN
-c        _EXCH_XY_R8( airCO2    , myThid )
-c        _EXCH_XY_R8( surfWSpeed, myThid )
-c        _EXCH_XY_R8( fracIce   , myThid )
-         _EXCH_XY_R8( fluxCO2cpl, myThid )
+c        _EXCH_XY_RL( airCO2    , myThid )
+c        _EXCH_XY_RL( surfWSpeed, myThid )
+c        _EXCH_XY_RL( fracIce   , myThid )
+         _EXCH_XY_RL( fluxCO2cpl, myThid )
        ENDIF
 
 #endif /* COMPONENT_MODULE */

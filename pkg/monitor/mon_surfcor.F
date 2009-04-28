@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.12 2007/10/22 13:24:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.13 2009/04/28 18:16:53 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -172,17 +172,17 @@ C--    end bi,bj loop
         ENDDO
        ENDDO
 
-c      _GLOBAL_SUM_R8(theArea,myThid)
-c      _GLOBAL_SUM_R8(wT_Mean,myThid)
-c      _GLOBAL_SUM_R8(wS_Mean,myThid)
+c      _GLOBAL_SUM_RL(theArea,myThid)
+c      _GLOBAL_SUM_RL(wT_Mean,myThid)
+c      _GLOBAL_SUM_RL(wS_Mean,myThid)
        CALL GLOBAL_SUM_TILE_RL( tileArea, theArea, myThid )
        CALL GLOBAL_SUM_TILE_RL( tile_wT , wT_Mean, myThid )
        CALL GLOBAL_SUM_TILE_RL( tile_wS , wS_Mean, myThid )
        IF ( fluidIsAir ) THEN
         CALL GLOBAL_SUM_TILE_RL( tileWHeat , wT_Heat , myThid )
         CALL GLOBAL_SUM_TILE_RL( tileTh2pe , theta2PE, myThid )
-c       _GLOBAL_SUM_R8(wT_Heat,myThid)
-c       _GLOBAL_SUM_R8(theta2PE,myThid)
+c       _GLOBAL_SUM_RL(wT_Heat,myThid)
+c       _GLOBAL_SUM_RL(theta2PE,myThid)
        ENDIF
        IF (theArea.GT.0.) THEN
          wT_Mean = wT_Mean / theArea

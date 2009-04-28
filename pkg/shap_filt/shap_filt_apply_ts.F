@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.11 2008/09/09 19:58:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.12 2009/04/28 18:20:30 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -63,8 +63,8 @@ C-    Apply Exchanges on Output field, after the filter (but not before):
 
 #ifdef USE_OLD_SHAPIRO_FILTERS
 
-        IF ( tempStepping ) _EXCH_XYZ_R8( tFld,myThid )
-        IF ( saltStepping ) _EXCH_XYZ_R8( sFld,myThid )
+        IF ( tempStepping ) _EXCH_XYZ_RL( tFld,myThid )
+        IF ( saltStepping ) _EXCH_XYZ_RL( sFld,myThid )
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -77,8 +77,8 @@ C-    Apply Exchanges on Output field, after the filter (but not before):
          ENDDO
         ENDDO
 
-        IF ( tempStepping ) _EXCH_XYZ_R8( tFld,myThid )
-        IF ( saltStepping ) _EXCH_XYZ_R8( sFld,myThid )
+        IF ( tempStepping ) _EXCH_XYZ_RL( tFld,myThid )
+        IF ( saltStepping ) _EXCH_XYZ_RL( sFld,myThid )
 
 #else
 

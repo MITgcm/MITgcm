@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.12 2007/10/15 00:18:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.13 2009/04/28 18:16:53 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -318,15 +318,15 @@ c       volVar = volVar  + tileVSq(bi,bj)
       ENDDO
 
       theMin = -theMin
-      _GLOBAL_MAX_R8(theMin, myThid)
-      _GLOBAL_MAX_R8(theMax, myThid)
+      _GLOBAL_MAX_RL(theMin, myThid)
+      _GLOBAL_MAX_RL(theMax, myThid)
       theMin = -theMin
-c     _GLOBAL_SUM_R8(theArea,myThid)
-c     _GLOBAL_SUM_R8(theVol, myThid)
-c     _GLOBAL_SUM_R8(theMean,myThid)
-c     _GLOBAL_SUM_R8(theVar, myThid)
-c     _GLOBAL_SUM_R8(volMean,myThid)
-c     _GLOBAL_SUM_R8(volVar ,myThid)
+c     _GLOBAL_SUM_RL(theArea,myThid)
+c     _GLOBAL_SUM_RL(theVol, myThid)
+c     _GLOBAL_SUM_RL(theMean,myThid)
+c     _GLOBAL_SUM_RL(theVar, myThid)
+c     _GLOBAL_SUM_RL(volMean,myThid)
+c     _GLOBAL_SUM_RL(volVar ,myThid)
       CALL GLOBAL_SUM_TILE_RL( tileArea, theArea, myThid )
       CALL GLOBAL_SUM_TILE_RL( tileVol,  theVol,  myThid )
       CALL GLOBAL_SUM_TILE_RL( tileSum,  theMean, myThid )

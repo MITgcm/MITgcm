@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.9 2008/09/09 19:58:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.10 2009/04/28 18:20:30 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -66,8 +66,8 @@ CEOP
       IF (nShapUV.GT.0) THEN
 
 #ifdef  USE_OLD_SHAPIRO_FILTERS
-        _EXCH_XYZ_R8( uFld,myThid )
-        _EXCH_XYZ_R8( vFld,myThid )
+        _EXCH_XYZ_RL( uFld,myThid )
+        _EXCH_XYZ_RL( vFld,myThid )
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -78,8 +78,8 @@ CEOP
          ENDDO
         ENDDO
 
-        _EXCH_XYZ_R8( uFld,myThid )
-        _EXCH_XYZ_R8( vFld,myThid )
+        _EXCH_XYZ_RL( uFld,myThid )
+        _EXCH_XYZ_RL( vFld,myThid )
 #else
         IF ( momStepping .AND. nShapUV.GT.0) THEN
           IF (Shap_funct.EQ.1) THEN

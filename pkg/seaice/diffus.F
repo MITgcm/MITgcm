@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/diffus.F,v 1.11 2006/02/15 22:26:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/diffus.F,v 1.12 2009/04/28 18:20:00 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -100,7 +100,7 @@ C     apply mask for safety
        ENDDO
       ENDDO
 
-      _EXCH_XY_R8(HEFF1, myThid)
+      _EXCH_XY_RL(HEFF1, myThid)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

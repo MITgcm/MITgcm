@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s2.F,v 1.14 2008/10/22 00:28:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s2.F,v 1.15 2009/04/28 18:20:30 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -95,9 +95,9 @@ C      ( d_xx +d_yy )^n tmpFld
         IF ( ( MOD(n,2).EQ.1 .OR. Shap_alwaysExchTr ) .AND.
      &       ( n.GE.2 .OR. MOD(exchInOut,2).EQ.1 )  ) THEN
          IF (kSize.EQ.Nr) THEN
-          _EXCH_XYZ_R8( tmpFld, myThid )
+          _EXCH_XYZ_RL( tmpFld, myThid )
          ELSEIF (kSize.EQ.1) THEN
-          _EXCH_XY_R8( tmpFld, myThid )
+          _EXCH_XY_RL( tmpFld, myThid )
          ELSE
           STOP 'S/R SHAP_FILT_TRACER_S2: kSize is wrong'
          ENDIF
@@ -229,9 +229,9 @@ C      F <-  [1 - (d_xx+d_yy)^n *deltaT/tau].F
 
        IF ( exchInOut.GE.2 ) THEN
         IF (kSize.EQ.Nr) THEN
-          _EXCH_XYZ_R8( field, myThid )
+          _EXCH_XYZ_RL( field, myThid )
         ELSEIF (kSize.EQ.1) THEN
-          _EXCH_XY_R8( field, myThid )
+          _EXCH_XY_RL( field, myThid )
         ELSE
           STOP 'S/R SHAP_FILT_TRACER_S2: kSize is wrong'
         ENDIF

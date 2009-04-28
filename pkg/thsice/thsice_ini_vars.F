@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.17 2008/05/24 22:43:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.18 2009/04/28 18:21:18 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -159,15 +159,15 @@ C     Tf = -mu_Tf*salinity = -1.70 deg C;  Qice1 ~ 3.2e5;  Qice2 ~ 3.4e5
         ENDIF
       ENDIF
 
-      _EXCH_XY_R8(iceMask,myThid)
-      _EXCH_XY_R8(iceHeight, myThid)
-      _EXCH_XY_R8(snowHeight,myThid)
-      _EXCH_XY_R8(Tsrf,   myThid)
-      _EXCH_XY_R8(Tice1,  myThid)
-      _EXCH_XY_R8(Tice2,  myThid)
-      _EXCH_XY_R8(Qice1,  myThid)
-      _EXCH_XY_R8(Qice2,  myThid)
-      _EXCH_XY_R8(snowAge,myThid)
+      _EXCH_XY_RL(iceMask,myThid)
+      _EXCH_XY_RL(iceHeight, myThid)
+      _EXCH_XY_RL(snowHeight,myThid)
+      _EXCH_XY_RL(Tsrf,   myThid)
+      _EXCH_XY_RL(Tice1,  myThid)
+      _EXCH_XY_RL(Tice2,  myThid)
+      _EXCH_XY_RL(Qice1,  myThid)
+      _EXCH_XY_RL(Qice2,  myThid)
+      _EXCH_XY_RL(snowAge,myThid)
 
 C--     Initialise Sea-Ice Loading for SeaIce-Dynamics :
       IF ( useSEAICE ) THEN

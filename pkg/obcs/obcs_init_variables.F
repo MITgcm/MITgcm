@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.25 2007/11/13 23:39:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.26 2009/04/28 18:18:29 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -344,8 +344,8 @@ C     from a file.
      &       CALL DEBUG_CALL('EXCHANGES in OBCS_INIT_VARIABLES',myThid)
 #endif
         CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
-        _EXCH_XYZ_R8( theta, myThid )
-        _EXCH_XYZ_R8( salt , myThid )
+        _EXCH_XYZ_RL( theta, myThid )
+        _EXCH_XYZ_RL( salt , myThid )
        ENDIF
 C     endif start from rest
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.19 2009/01/12 10:10:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.20 2009/04/28 18:18:29 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -386,9 +386,9 @@ C ------------------------------------------------------------------------------
          ENDIF
         ENDDO
        ENDDO
-       _GLOBAL_SUM_R8( Ar_T , myThid )
+       _GLOBAL_SUM_RL( Ar_T , myThid )
        IF ( Ar_T .GT. 0. _d 0 ) THEN
-        _GLOBAL_SUM_R8( Tr_T , myThid )
+        _GLOBAL_SUM_RL( Tr_T , myThid )
         Tr_T = (0. - Tr_T)/Ar_T
         DO K=1,Nr
          DO J=1-Oly,sNy+Oly
@@ -415,9 +415,9 @@ c          OBEv(J,K,bi,bj) = 0.
          ENDIF
         ENDDO
        ENDDO
-       _GLOBAL_SUM_R8( Ar_T , myThid )
+       _GLOBAL_SUM_RL( Ar_T , myThid )
        IF ( Ar_T .GT. 0. _d 0 ) THEN
-        _GLOBAL_SUM_R8( Tr_T , myThid )
+        _GLOBAL_SUM_RL( Tr_T , myThid )
         Tr_T = (0. - Tr_T)/Ar_T
         DO K=1,Nr
          DO J=1-Oly,sNy+Oly
@@ -444,9 +444,9 @@ c          OBWv(J,K,bi,bj) = 0.
          ENDIF
         ENDDO
        ENDDO
-       _GLOBAL_SUM_R8( Ar_T , myThid )
+       _GLOBAL_SUM_RL( Ar_T , myThid )
        IF ( Ar_T .GT. 0. _d 0 ) THEN
-        _GLOBAL_SUM_R8( Tr_T , myThid )
+        _GLOBAL_SUM_RL( Tr_T , myThid )
         Tr_T = (0. - Tr_T)/Ar_T
         DO K=1,Nr
          DO I=1-Olx,sNx+Olx
@@ -473,9 +473,9 @@ c          OBNu(I,K,bi,bj) = 0.
          ENDIF
         ENDDO
        ENDDO
-       _GLOBAL_SUM_R8( Ar_T , myThid )
+       _GLOBAL_SUM_RL( Ar_T , myThid )
        IF ( Ar_T .GT. 0. _d 0 ) THEN
-        _GLOBAL_SUM_R8( Tr_T , myThid )
+        _GLOBAL_SUM_RL( Tr_T , myThid )
         Tr_T = (0. - Tr_T)/Ar_T
         DO K=1,Nr
          DO I=1-Olx,sNx+Olx

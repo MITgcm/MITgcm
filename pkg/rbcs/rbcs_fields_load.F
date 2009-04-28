@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.8 2007/11/08 22:26:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_fields_load.F,v 1.9 2009/04/28 18:18:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -158,15 +158,15 @@ C      data for the period ahead and the period behind myTime.
        ENDIF
 #endif
 
-       _EXCH_XYZ_R4(rbct0 , myThid )
-       _EXCH_XYZ_R4(rbct1 , myThid )
-       _EXCH_XYZ_R4(rbcs0 , myThid )
-       _EXCH_XYZ_R4(rbcs1 , myThid )
+       _EXCH_XYZ_RS(rbct0 , myThid )
+       _EXCH_XYZ_RS(rbct1 , myThid )
+       _EXCH_XYZ_RS(rbcs0 , myThid )
+       _EXCH_XYZ_RS(rbcs1 , myThid )
 #ifdef ALLOW_PTRACERS
        IF (useRBCptracers) THEN
         DO iTracer = 1, PTRACERS_numInUse
-         _EXCH_XYZ_R4(rbcptr0(1-Olx,1-Oly,1,1,1,iTracer),myThid)
-         _EXCH_XYZ_R4(rbcptr1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+         _EXCH_XYZ_RS(rbcptr0(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+         _EXCH_XYZ_RS(rbcptr1(1-Olx,1-Oly,1,1,1,iTracer),myThid)
         ENDDO
        ENDIF
 #endif

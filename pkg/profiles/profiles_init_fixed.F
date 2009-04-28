@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.12 2008/09/09 17:14:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.13 2009/04/28 18:18:29 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -630,12 +630,12 @@ cgf YC grid
       _BARRIER
 
 c2) stop after other kind of errors
-      _GLOBAL_SUM_R8( stopProfiles , myThid )
+      _GLOBAL_SUM_RL( stopProfiles , myThid )
       if ( stopProfiles.GE.1.) then
              STOP 'ABNORMAL END: S/R PROFILES_INIT_FIXED'
       endif
 #ifdef ALLOW_PROFILES_GENERICGRID
-      _GLOBAL_SUM_R8( stopGenericGrid , myThid )
+      _GLOBAL_SUM_RL( stopGenericGrid , myThid )
       if ( stopGenericGrid.GE.1.) then
              STOP 'ABNORMAL END: S/R PROFILES_INIT_FIXED'
       endif

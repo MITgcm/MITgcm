@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.13 2008/08/13 18:53:14 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.14 2009/04/28 18:18:29 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -346,28 +346,28 @@ c       print*,'OFFLINE READ', fn
 
        CALL EXCH_UV_XYZ_RS( uvel0, vvel0, .TRUE., myThid )
        CALL EXCH_UV_XYZ_RS( uvel1, vvel1, .TRUE., myThid )
-       _EXCH_XYZ_R4(wvel0, myThid )
-       _EXCH_XYZ_R4(wvel1, myThid )
-       _EXCH_XYZ_R4(tave0 , myThid )
-       _EXCH_XYZ_R4(tave1 , myThid )
-       _EXCH_XYZ_R4(save0, myThid )
-       _EXCH_XYZ_R4(save1, myThid )
-       _EXCH_XYZ_R4(conv0, myThid )
-       _EXCH_XYZ_R4(conv1, myThid )
+       _EXCH_XYZ_RS(wvel0, myThid )
+       _EXCH_XYZ_RS(wvel1, myThid )
+       _EXCH_XYZ_RS(tave0 , myThid )
+       _EXCH_XYZ_RS(tave1 , myThid )
+       _EXCH_XYZ_RS(save0, myThid )
+       _EXCH_XYZ_RS(save1, myThid )
+       _EXCH_XYZ_RS(conv0, myThid )
+       _EXCH_XYZ_RS(conv1, myThid )
        CALL EXCH_UV_AGRID_3D_RS( gmkx0, gmky0, .FALSE., Nr, myThid )
        CALL EXCH_UV_AGRID_3D_RS( gmkx1, gmky1, .FALSE., Nr, myThid )
-       _EXCH_XYZ_R4(gmkz0, myThid )
-       _EXCH_XYZ_R4(gmkz1, myThid )
-       _EXCH_XY_R4(hflx0 , myThid )
-       _EXCH_XY_R4(hflx1 , myThid )
-       _EXCH_XY_R4(sflx0, myThid )
-       _EXCH_XY_R4(sflx1, myThid )
-       _EXCH_XY_R4(icem0, myThid )
-       _EXCH_XY_R4(icem1, myThid )
-       _EXCH_XYZ_R4(kdfs0 , myThid )
-       _EXCH_XYZ_R4(kdfs1 , myThid )
-       _EXCH_XYZ_R4(kght0, myThid )
-       _EXCH_XYZ_R4(kght1, myThid )
+       _EXCH_XYZ_RS(gmkz0, myThid )
+       _EXCH_XYZ_RS(gmkz1, myThid )
+       _EXCH_XY_RS(hflx0 , myThid )
+       _EXCH_XY_RS(hflx1 , myThid )
+       _EXCH_XY_RS(sflx0, myThid )
+       _EXCH_XY_RS(sflx1, myThid )
+       _EXCH_XY_RS(icem0, myThid )
+       _EXCH_XY_RS(icem1, myThid )
+       _EXCH_XYZ_RS(kdfs0 , myThid )
+       _EXCH_XYZ_RS(kdfs1 , myThid )
+       _EXCH_XYZ_RS(kght0, myThid )
+       _EXCH_XYZ_RS(kght1, myThid )
 
       ENDIF
 

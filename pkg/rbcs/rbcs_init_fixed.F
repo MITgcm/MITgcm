@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.3 2007/10/09 00:09:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.4 2009/04/28 18:18:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -88,7 +88,7 @@ C read in mask for relaxing
          CALL READ_FLD_XYZ_RS(relaxMaskFile(irbc),' ',
      &                RBC_mask(1-Olx,1-Oly,1,1,1,irbc), 0, myThid)
         _END_MASTER(myThid)
-        _EXCH_XYZ_R8(RBC_mask(1-Olx,1-Oly,1,1,1,irbc), myThid )
+        _EXCH_XYZ_RL(RBC_mask(1-Olx,1-Oly,1,1,1,irbc), myThid )
        CALL PLOT_FIELD_XYRS( RBC_mask(1-Olx,1-Oly,1,1,1,irbc),
      &          'Boundary Relaxing' ,1, myThid )
        ENDIF

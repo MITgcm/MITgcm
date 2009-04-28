@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.18 2008/08/24 21:50:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.19 2009/04/28 18:21:18 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -265,11 +265,11 @@ c#include "thsice_test_addfluid.h"
 
       IF ( useSEAICE .OR. thSIceAdvScheme.GT.0 ) THEN
 C--   Exchange fields that are advected by seaice dynamics
-        _EXCH_XY_R8( iceMask, myThid )
-        _EXCH_XY_R8( iceHeight, myThid )
-        _EXCH_XY_R8( snowHeight, myThid )
-        _EXCH_XY_R8( Qice1, myThid )
-        _EXCH_XY_R8( Qice2, myThid )
+        _EXCH_XY_RL( iceMask, myThid )
+        _EXCH_XY_RL( iceHeight, myThid )
+        _EXCH_XY_RL( snowHeight, myThid )
+        _EXCH_XY_RL( Qice1, myThid )
+        _EXCH_XY_RL( Qice2, myThid )
 #ifdef ATMOSPHERIC_LOADING
         IF (useRealFreshWaterFlux)
      &  _EXCH_XY_RS( sIceLoad, myThid )

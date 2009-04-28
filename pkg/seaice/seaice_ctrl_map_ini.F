@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ctrl_map_ini.F,v 1.3 2007/10/09 00:10:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ctrl_map_ini.F,v 1.4 2009/04/28 18:20:02 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -149,15 +149,15 @@ c--   sihsnow.
 c--   Update the tile edges.
 
 #ifdef ALLOW_SIAREA_CONTROL
-      _EXCH_XY_R8( area, mythid )
+      _EXCH_XY_RL( area, mythid )
 #endif
 
 #ifdef ALLOW_SIHEFF_CONTROL
-      _EXCH_XY_R8( heff, mythid )
+      _EXCH_XY_RL( heff, mythid )
 #endif
 
 #ifdef ALLOW_SIHSNOW_CONTROL
-      _EXCH_XY_R8( hsnow, mythid )
+      _EXCH_XY_RL( hsnow, mythid )
 #endif
 
 #endif /* ALLOW_CTRL */

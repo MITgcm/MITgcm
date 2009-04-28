@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_update_masks.F,v 1.3 2008/09/15 12:42:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_update_masks.F,v 1.4 2009/04/28 18:21:18 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -75,7 +75,7 @@ C    &      0, myThid )
 C- end setup R_shelfIce in the interior
 
 C- fill in the overlap (+ BARRIER):
-      _EXCH_XY_R4(R_shelfIce, myThid )
+      _EXCH_XY_RS(R_shelfIce, myThid )
 
 C--   Calculate lopping factor hFacC : Remove part outside of the domain
 C     taking into account the Reference (=at rest) Surface Position Ro_shelfIce

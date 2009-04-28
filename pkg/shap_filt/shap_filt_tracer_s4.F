@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s4.F,v 1.5 2004/12/04 00:19:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s4.F,v 1.6 2009/04/28 18:20:30 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -70,9 +70,9 @@ C      d_xx^n tmpFld
        DO N=1,nShapTr
 
         IF (kSize.EQ.Nr) THEN
-          _EXCH_XYZ_R8( tmpFld, myThid )
+          _EXCH_XYZ_RL( tmpFld, myThid )
         ELSE
-          _EXCH_XY_R8( tmpFld, myThid )
+          _EXCH_XY_RL( tmpFld, myThid )
         ENDIF
 
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -122,9 +122,9 @@ C      d_yy^n tmpFld
        DO N=1,nShapTr
 
         IF (kSize.EQ.1) THEN
-          _EXCH_XY_R8( tmpFld, myThid )
+          _EXCH_XY_RL( tmpFld, myThid )
         ELSE
-          _EXCH_XYZ_R8( tmpFld, myThid )
+          _EXCH_XYZ_RL( tmpFld, myThid )
         ENDIF
 
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -168,9 +168,9 @@ C      F <-  [1 - d_yy^n *deltaT/tau].F
        ENDDO
 
         IF (kSize.EQ.Nr) THEN
-          _EXCH_XYZ_R8( field, myThid )
+          _EXCH_XYZ_RL( field, myThid )
         ELSEIF (kSize.EQ.1) THEN
-          _EXCH_XY_R8( field, myThid )
+          _EXCH_XY_RL( field, myThid )
         ELSE
           STOP 'S/R SHAP_FILT_TRACER_S4: kSize is wrong'
         ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.12 2007/10/15 00:18:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.13 2009/04/28 18:16:53 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -96,16 +96,16 @@ c       theVar  = theVar  + tileVar (bi,bj)
        ENDDO
       ENDDO
 
-c     _GLOBAL_SUM_R8(theDel2,myThid)
-c     _GLOBAL_SUM_R8(theVol,myThid)
-c     _GLOBAL_SUM_R8(theMean,myThid)
-c     _GLOBAL_SUM_R8(theVar,myThid)
+c     _GLOBAL_SUM_RL(theDel2,myThid)
+c     _GLOBAL_SUM_RL(theVol,myThid)
+c     _GLOBAL_SUM_RL(theMean,myThid)
+c     _GLOBAL_SUM_RL(theVar,myThid)
       CALL GLOBAL_SUM_TILE_RL( tileDel2, theDel2, myThid )
       CALL GLOBAL_SUM_TILE_RL( tileVol , theVol , myThid )
       CALL GLOBAL_SUM_TILE_RL( tileMean, theMean, myThid )
       CALL GLOBAL_SUM_TILE_RL( tileVar , theVar , myThid )
       tmpVal=FLOAT(numPnts)
-      _GLOBAL_SUM_R8(tmpVal,myThid)
+      _GLOBAL_SUM_RL(tmpVal,myThid)
       numPnts=NINT(tmpVal)
 
       IF (tmpVal.GT.0.) THEN
@@ -118,10 +118,10 @@ c     _GLOBAL_SUM_R8(theVar,myThid)
        theVar=theVar/theVol
        IF ( noPnts ) theMin = theMean
        theMin=-theMin
-       _GLOBAL_MAX_R8(theMin,myThid)
+       _GLOBAL_MAX_RL(theMin,myThid)
        theMin=-theMin
        IF ( noPnts ) theMax = theMean
-       _GLOBAL_MAX_R8(theMax,myThid)
+       _GLOBAL_MAX_RL(theMax,myThid)
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -143,7 +143,7 @@ c        theSD = theSD + tileSD(bi,bj)
         ENDDO
        ENDDO
 
-c      _GLOBAL_SUM_R8(theSD,myThid)
+c      _GLOBAL_SUM_RL(theSD,myThid)
        CALL GLOBAL_SUM_TILE_RL( tileSD, theSD, myThid )
 
        theSD = SQRT(theSD/theVol)

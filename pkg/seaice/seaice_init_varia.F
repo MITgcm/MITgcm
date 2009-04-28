@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.36 2009/03/18 14:35:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.37 2009/04/28 18:20:02 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -331,7 +331,7 @@ C--   Update overlap regions
 #ifdef SEAICE_CGRID
       CALL EXCH_UV_XY_RL(seaiceMaskU,seaiceMaskV,.FALSE.,myThid)
 #else
-      _EXCH_XY_R8(UVM, myThid)
+      _EXCH_XY_RL(UVM, myThid)
 #endif
 
 C--   Now lets look at all these beasts
@@ -376,7 +376,7 @@ C--   Set model variables to initial/restart conditions
 C--   Read initial sea-ice thickness from file if available.
        IF ( HeffFile .NE. ' ' ) THEN
         CALL READ_FLD_XY_RL( HeffFile, ' ', ZETA, 0, myThid )
-        _EXCH_XY_R8(ZETA,myThid)
+        _EXCH_XY_RL(ZETA,myThid)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -406,7 +406,7 @@ C--   Read initial sea-ice thickness from file if available.
 C--   Read initial sea-ice area from file if available.
        IF ( AreaFile .NE. ' ' ) THEN
         CALL READ_FLD_XY_RL( AreaFile, ' ', ZETA, 0, myThid )
-        _EXCH_XY_R8(ZETA,myThid)
+        _EXCH_XY_RL(ZETA,myThid)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -438,7 +438,7 @@ C--   Read initial sea-ice area from file if available.
 C--   Read initial snow thickness from file if available.
        IF ( HsnowFile .NE. ' ' ) THEN
         CALL READ_FLD_XY_RL( HsnowFile, ' ', ZETA, 0, myThid )
-        _EXCH_XY_R8(ZETA,myThid)
+        _EXCH_XY_RL(ZETA,myThid)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -465,7 +465,7 @@ C--   Read initial snow thickness from file if available.
 C--   Read initial sea ice salinity from file if available.
        IF ( HsaltFile .NE. ' ' ) THEN
         CALL READ_FLD_XY_RL( HsaltFile, ' ', ZETA, 0, myThid )
-        _EXCH_XY_R8(ZETA,myThid)
+        _EXCH_XY_RL(ZETA,myThid)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
@@ -482,7 +482,7 @@ C--   Read initial sea ice salinity from file if available.
 C--   Read initial sea ice age from file if available.
        IF ( IceAgeFile .NE. ' ' ) THEN
         CALL READ_FLD_XY_RL( IceAgeFile, ' ', ZETA, 0, myThid )
-        _EXCH_XY_R8(ZETA,myThid)
+        _EXCH_XY_RL(ZETA,myThid)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy

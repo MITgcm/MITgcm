@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.2 2008/12/17 03:33:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.3 2009/04/28 18:20:02 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -253,22 +253,22 @@ C--    Update overlap regions
 #ifdef SEAICE_MULTICATEGORY
        CALL EXCH_3D_RL   ( TICES, MULTDIM, myThid )
 #else
-       _EXCH_XY_R8(TICE , myThid )
+       _EXCH_XY_RL(TICE , myThid )
 #endif /* SEAICE_MULTICATEGORY */
-c      _EXCH_XY_R8(YNEG , myThid )
-       _EXCH_XY_R8(HSNOW, myThid )
+c      _EXCH_XY_RL(YNEG , myThid )
+       _EXCH_XY_RL(HSNOW, myThid )
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
        IF ( SEAICEuseEVP ) THEN
-          _EXCH_XY_R8(seaice_sigma1 , myThid )
-          _EXCH_XY_R8(seaice_sigma2 , myThid )
-          _EXCH_XY_R8(seaice_sigma12, myThid )
+          _EXCH_XY_RL(seaice_sigma1 , myThid )
+          _EXCH_XY_RL(seaice_sigma2 , myThid )
+          _EXCH_XY_RL(seaice_sigma12, myThid )
        ENDIF
 #endif /* SEAICE_CGRID SEAICE_ALLOW_EVP */
 #ifdef SEAICE_SALINITY
-       _EXCH_XY_R8(HSALT, myThid )
+       _EXCH_XY_RL(HSALT, myThid )
 #endif
 #ifdef SEAICE_AGE
-       _EXCH_XY_R8(ICEAGE, myThid )
+       _EXCH_XY_RL(ICEAGE, myThid )
 #endif
 
       RETURN

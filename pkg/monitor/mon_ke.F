@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.16 2007/10/15 00:20:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.17 2009/04/28 18:16:53 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -116,12 +116,12 @@ c        potEnMean  = potEnMean  + tilePEav(bi,bj)
 C- end bi,bj loops
        ENDDO
       ENDDO
-      _GLOBAL_SUM_R8(numPnts,myThid)
-      _GLOBAL_MAX_R8(theMax,myThid)
-c     _GLOBAL_SUM_R8(theMean,myThid)
-c     _GLOBAL_SUM_R8(theVol,myThid)
-c     _GLOBAL_SUM_R8(theVolMean,myThid)
-c     _GLOBAL_SUM_R8(potEnMean, myThid)
+      _GLOBAL_SUM_RL(numPnts,myThid)
+      _GLOBAL_MAX_RL(theMax,myThid)
+c     _GLOBAL_SUM_RL(theMean,myThid)
+c     _GLOBAL_SUM_RL(theVol,myThid)
+c     _GLOBAL_SUM_RL(theVolMean,myThid)
+c     _GLOBAL_SUM_RL(potEnMean, myThid)
       CALL GLOBAL_SUM_TILE_RL( tileMean, theMean   , myThid )
       CALL GLOBAL_SUM_TILE_RL( tileVol , theVol    , myThid )
       CALL GLOBAL_SUM_TILE_RL( tileVlAv, theVolMean, myThid )

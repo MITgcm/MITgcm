@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_latbnd_rl.F,v 1.7 2007/10/15 00:18:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_latbnd_rl.F,v 1.8 2009/04/28 18:16:53 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -134,10 +134,10 @@ C-    Check local Dim
         theVar(n) = theVar(n) -theMean(n)*theMean(n)
         IF ( noPnts(n) ) theMin(n) = theMean(n)
         theMin(n) = -theMin(n)
-        _GLOBAL_MAX_R8(theMin(n), myThid)
+        _GLOBAL_MAX_RL(theMin(n), myThid)
         theMin(n)=-theMin(n)
         IF ( noPnts(n) ) theMax(n) = theMin(n)
-        _GLOBAL_MAX_R8(theMax(n), myThid)
+        _GLOBAL_MAX_RL(theMax(n), myThid)
        ENDIF
       ENDDO
 
