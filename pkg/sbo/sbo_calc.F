@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.12 2008/08/11 22:28:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.13 2009/04/28 18:45:22 jmc Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -303,21 +303,21 @@ c     end loop over bj
       end do
 
 c     sum all values across model tiles
-      _GLOBAL_SUM_R8( mass  , myThid )
-      _GLOBAL_SUM_R8( xcom  , myThid )
-      _GLOBAL_SUM_R8( ycom  , myThid )
-      _GLOBAL_SUM_R8( zcom  , myThid )
-      _GLOBAL_SUM_R8( xoamc , myThid )
-      _GLOBAL_SUM_R8( yoamc , myThid )
-      _GLOBAL_SUM_R8( zoamc , myThid )
-      _GLOBAL_SUM_R8( xoamp , myThid )
-      _GLOBAL_SUM_R8( yoamp , myThid )
-      _GLOBAL_SUM_R8( zoamp , myThid )
+      _GLOBAL_SUM_RL( mass  , myThid )
+      _GLOBAL_SUM_RL( xcom  , myThid )
+      _GLOBAL_SUM_RL( ycom  , myThid )
+      _GLOBAL_SUM_RL( zcom  , myThid )
+      _GLOBAL_SUM_RL( xoamc , myThid )
+      _GLOBAL_SUM_RL( yoamc , myThid )
+      _GLOBAL_SUM_RL( zoamc , myThid )
+      _GLOBAL_SUM_RL( xoamp , myThid )
+      _GLOBAL_SUM_RL( yoamp , myThid )
+      _GLOBAL_SUM_RL( zoamp , myThid )
 cph(
-      _GLOBAL_SUM_R8( sbobp, myThid )
-      _GLOBAL_SUM_R8( sboarea, myThid )
-      _GLOBAL_SUM_R8( sboempmrwet, myThid )
-      _GLOBAL_SUM_R8( sboqnetwet, myThid )
+      _GLOBAL_SUM_RL( sbobp, myThid )
+      _GLOBAL_SUM_RL( sboarea, myThid )
+      _GLOBAL_SUM_RL( sboempmrwet, myThid )
+      _GLOBAL_SUM_RL( sboqnetwet, myThid )
 cph)
 
 c     finish calculating center-of-mass of oceans
