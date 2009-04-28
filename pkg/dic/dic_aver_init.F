@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_init.F,v 1.10 2008/04/09 22:16:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_init.F,v 1.11 2009/04/28 18:10:47 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -102,17 +102,17 @@ cQQ  &                          po4obsl4, 0, myThid )
 cQQ     CALL READ_FLD_XYZ_RL( 'input/o2lev4.bin', ' ',
 cQQ  &                          o2obsl4, 0, myThid )
 cswdmonth -end-
-       _EXCH_XYZ_R8(po4obs  , myThid )
-       _EXCH_XYZ_R8(o2obs  , myThid )
+       _EXCH_XYZ_RL(po4obs  , myThid )
+       _EXCH_XYZ_RL(o2obs  , myThid )
 cswdmonth -add-
-       _EXCH_XYZ_R8(po4obsl1  , myThid )
-       _EXCH_XYZ_R8(po4obsl2  , myThid )
-       _EXCH_XYZ_R8(po4obsl3  , myThid )
-cQQ    _EXCH_XYZ_R8(po4obsl4  , myThid )
-       _EXCH_XYZ_R8(o2obsl1  , myThid )
-       _EXCH_XYZ_R8(o2obsl2  , myThid )
-       _EXCH_XYZ_R8(o2obsl3  , myThid )
-cQQ    _EXCH_XYZ_R8(o2obsl4  , myThid )
+       _EXCH_XYZ_RL(po4obsl1  , myThid )
+       _EXCH_XYZ_RL(po4obsl2  , myThid )
+       _EXCH_XYZ_RL(po4obsl3  , myThid )
+cQQ    _EXCH_XYZ_RL(po4obsl4  , myThid )
+       _EXCH_XYZ_RL(o2obsl1  , myThid )
+       _EXCH_XYZ_RL(o2obsl2  , myThid )
+       _EXCH_XYZ_RL(o2obsl3  , myThid )
+cQQ    _EXCH_XYZ_RL(o2obsl4  , myThid )
 cswdmonth -end-
 
 c calculate layer means

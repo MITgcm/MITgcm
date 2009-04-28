@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_wind_perturb.F,v 1.2 2004/05/21 21:45:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_wind_perturb.F,v 1.3 2009/04/28 18:11:51 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -124,7 +124,7 @@ c     0.98 for the momentum timescale.
 
 C      CALL PLOT_FIELD_XYRS( winPert, 'winPert',1,myThid)
 
-      _EXCH_XY_R4(winPert  , myThid )
+      _EXCH_XY_RS(winPert  , myThid )
 
 # endif /* EBM_WIND_PERT */
 #endif /* ALLOW_EBM */

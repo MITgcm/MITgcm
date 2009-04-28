@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/Attic/ggl90_checkpoint.F,v 1.2 2007/10/19 03:20:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/Attic/ggl90_checkpoint.F,v 1.3 2009/04/28 18:15:33 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -42,7 +42,7 @@ C--   Suffix for pickup files
 
 c     _BARRIER
 
-      _EXCH_XYZ_R8( GGL90TKE, myThid )
+      _EXCH_XYZ_RL( GGL90TKE, myThid )
 
 #endif /*  ALLOW_GGL90  */
 

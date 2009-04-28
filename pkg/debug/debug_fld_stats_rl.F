@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_fld_stats_rl.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_fld_stats_rl.F,v 1.3 2009/04/28 18:10:47 jmc Exp $
 C $Name:  $
 
 #include "DEBUG_OPTIONS.h"
@@ -67,13 +67,13 @@ C     === Local variables ====
       ENDDO
 
       theMin=-theMin
-      _GLOBAL_MAX_R8(theMin,myThid)
+      _GLOBAL_MAX_RL(theMin,myThid)
       theMin=-theMin
-      _GLOBAL_MAX_R8(theMax,myThid)
-      _GLOBAL_SUM_R8(theMean,myThid)
-      _GLOBAL_SUM_R8(theVar,myThid)
+      _GLOBAL_MAX_RL(theMax,myThid)
+      _GLOBAL_SUM_RL(theMean,myThid)
+      _GLOBAL_SUM_RL(theVar,myThid)
       tmpVal=FLOAT(numPnts)
-      _GLOBAL_SUM_R8(tmpVal,myThid)
+      _GLOBAL_SUM_RL(tmpVal,myThid)
       numPnts=INT(tmpVal+0.5)
 
       IF (tmpVal.GT.0.) THEN
@@ -96,7 +96,7 @@ C     === Local variables ====
         ENDDO
        ENDDO
 
-       _GLOBAL_SUM_R8(theSD,myThid)
+       _GLOBAL_SUM_RL(theSD,myThid)
 
        theSD=sqrt(theSD*rNumPnts)
 c      theSD=sqrt(theVar-theMean**2)

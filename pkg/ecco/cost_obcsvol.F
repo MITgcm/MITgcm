@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.2 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsvol.F,v 1.3 2009/04/28 18:13:28 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -352,7 +352,7 @@ cgg -- Positive is flux in.
 c--   End of loop over records.
 
 c--   Do the global summation.
-      _GLOBAL_SUM_R8( sumvol, mythid )
+      _GLOBAL_SUM_RL( sumvol, mythid )
       objf_obcsvol =  wobcsvol * sumvol* sumvol
 
 #endif

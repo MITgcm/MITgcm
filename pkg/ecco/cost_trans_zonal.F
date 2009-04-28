@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_zonal.F,v 1.3 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_zonal.F,v 1.4 2009/04/28 18:13:28 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -209,12 +209,12 @@ c--     Assign the first value to the array holding the average.
           enddo
         enddo
 
-        _GLOBAL_SUM_R8( tu(isect), mythid )
-        _GLOBAL_SUM_R8( su(isect), mythid )
-        _GLOBAL_SUM_R8( mu(isect), mythid )
+        _GLOBAL_SUM_RL( tu(isect), mythid )
+        _GLOBAL_SUM_RL( su(isect), mythid )
+        _GLOBAL_SUM_RL( mu(isect), mythid )
 c
 	do k =1,nr
-           _GLOBAL_SUM_R8( mulev(isect,k), mythid )
+           _GLOBAL_SUM_RL( mulev(isect,k), mythid )
         enddo
         mumin(isect) = mulev(isect,1)
 	mumax(isect) = mulev(isect,1)

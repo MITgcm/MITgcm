@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.14 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.15 2009/04/28 18:13:28 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -178,8 +178,8 @@ c--   Sum over this thread tiles.
       enddo
 
 c--   Do a global summation.
-      _GLOBAL_SUM_R8( offset     , mythid )
-      _GLOBAL_SUM_R8( offset_sum , mythid )
+      _GLOBAL_SUM_RL( offset     , mythid )
+      _GLOBAL_SUM_RL( offset_sum , mythid )
 
       if (offset_sum .eq. 0.0) then
         _BEGIN_MASTER( mythid )
@@ -209,7 +209,7 @@ c--   Do a global summation.
           enddo
         enddo
       enddo
-      _EXCH_XY_R8( prof_etan_mean, mythid )
+      _EXCH_XY_RL( prof_etan_mean, mythid )
 #endif
 
 #ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION

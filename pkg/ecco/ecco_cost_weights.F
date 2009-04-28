@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.30 2008/05/31 17:03:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.31 2009/04/28 18:13:28 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -369,7 +369,7 @@ c--           Test for missing values.
       endif
       call active_write_xyz( 'wsaltLev', wsaltLev,
      &     1, 0, mythid, dummy)
-      _EXCH_XYZ_R8( wsaltLev, myThid )
+      _EXCH_XYZ_RL( wsaltLev, myThid )
 #endif
 
 #if (defined (ALLOW_THETA0_COST_CONTRIBUTION) || defined (ALLOW_THETA0_CONTROL))
@@ -410,7 +410,7 @@ c--           Test for missing values.
       endif
       call active_write_xyz( 'wthetaLev', wthetaLev,
      &     1, 0, mythid, dummy)
-      _EXCH_XYZ_R8( wthetaLev, myThid )
+      _EXCH_XYZ_RL( wthetaLev, myThid )
 #endif
 
 #if (defined (ALLOW_ARGO_SALT_COST_CONTRIBUTION) || \
@@ -455,7 +455,7 @@ c--           Test for missing values.
           enddo
          enddo
       endif
-      _EXCH_XYZ_R8( wsalt2, myThid )
+      _EXCH_XYZ_RL( wsalt2, myThid )
 #endif
 
 #if (defined (ALLOW_ARGO_THETA_COST_CONTRIBUTION) || \
@@ -505,7 +505,7 @@ c--           Test for missing values.
           enddo
          enddo
       endif
-      _EXCH_XYZ_R8( wtheta2, myThid )
+      _EXCH_XYZ_RL( wtheta2, myThid )
 #endif
 
       k = 1

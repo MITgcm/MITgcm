@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_pickup.F,v 1.6 2008/09/14 01:49:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_pickup.F,v 1.7 2009/04/28 18:10:47 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -55,7 +55,7 @@ C--   Read pickup file
         CALL READ_REC_3D_RL( fn, fp, 1, pH, 1, myIter, myThid )
         pH_isLoaded = .TRUE.
 
-        _EXCH_XY_R8( pH, myThid )
+        _EXCH_XY_RL( pH, myThid )
       ELSE
         pH_isLoaded = .FALSE.
         IF ( pickupStrictlyMatch ) THEN

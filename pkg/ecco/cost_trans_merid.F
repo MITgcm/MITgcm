@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_merid.F,v 1.3 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_trans_merid.F,v 1.4 2009/04/28 18:13:28 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -220,12 +220,12 @@ c--     Assign the first value to the array holding the average.
           enddo
         enddo
 
-        _GLOBAL_SUM_R8( tv(isect), mythid )
-        _GLOBAL_SUM_R8( sv(isect), mythid )
-        _GLOBAL_SUM_R8( mv(isect), mythid )
+        _GLOBAL_SUM_RL( tv(isect), mythid )
+        _GLOBAL_SUM_RL( sv(isect), mythid )
+        _GLOBAL_SUM_RL( mv(isect), mythid )
 c
 	do k =1,nr
-           _GLOBAL_SUM_R8( mvlev(isect,k), mythid )
+           _GLOBAL_SUM_RL( mvlev(isect,k), mythid )
         enddo
         mvmin(isect) = mvlev(isect,1)
 	mvmax(isect) = mvlev(isect,1)

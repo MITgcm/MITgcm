@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.34 2009/04/02 21:29:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.35 2009/04/28 18:15:33 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -335,8 +335,8 @@ c Convert guphy and gvphy from A-grid to C-grid for use by dynamics
 c Call the c-grid exchange routine to fill in the halo regions (du,dv)
        call exch_uv_xyz_RL(guphy,gvphy,.TRUE.,myThid)
 c Call the a-grid exchange routine to fill in the halo regions (dth,ds)
-       _EXCH_XYZ_R8(gthphy,myThid)
-       _EXCH_XYZ_R8(gsphy,myThid)
+       _EXCH_XYZ_RL(gthphy,myThid)
+       _EXCH_XYZ_RL(gsphy,myThid)
        CALL TIMER_STOP ('EXCHANGES         [FIZHI_WRAPPER]',mythid)
 
       return

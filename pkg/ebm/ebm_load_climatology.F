@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_load_climatology.F,v 1.2 2008/09/09 19:58:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_load_climatology.F,v 1.3 2009/04/28 18:11:51 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -82,9 +82,9 @@ C          tauX  = -tauMax*cos(2. _d 0*PI*distY)
        CALL READ_FLD_XY_RS( meridWindFile, ' ', fv, 0, myThid )
       ENDIF
 
-      _EXCH_XY_R4( SSS, myThid )
-      _EXCH_XY_R4( SST, myThid )
-      _EXCH_XY_R4( Run, myThid )
+      _EXCH_XY_RS( SSS, myThid )
+      _EXCH_XY_RS( SST, myThid )
+      _EXCH_XY_RS( Run, myThid )
       CALL EXCH_UV_XY_RS( fu, fv, .TRUE., myThid )
 
       CALL PLOT_FIELD_XYRS( SST, 'Theta Climatology' , 1, myThid )

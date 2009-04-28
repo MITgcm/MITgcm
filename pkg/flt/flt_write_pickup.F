@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.5 2009/02/10 21:30:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.6 2009/04/28 18:15:33 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -100,7 +100,7 @@ C (2) write float positions into file
         ENDDO
        ENDDO
 
-       _GLOBAL_SUM_R8( npart_dist, myThid )
+       _GLOBAL_SUM_RL( npart_dist, myThid )
        _BEGIN_MASTER( myThid )
         WRITE(msgBuf,*) 'FLT_WRITE_PICKUP:',
      &                   npart_dist, ' floats written'

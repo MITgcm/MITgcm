@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_salt.F,v 1.6 2007/10/09 00:02:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_salt.F,v 1.7 2009/04/28 18:13:27 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -202,7 +202,7 @@ c--         End of loop over layers.
 
 #ifdef ECCO_VERBOSE
 c--     Print cost function for all tiles.
-c        _GLOBAL_SUM_R8( fcthread_argos , myThid )
+c        _GLOBAL_SUM_RL( fcthread_argos , myThid )
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)

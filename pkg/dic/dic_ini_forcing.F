@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.18 2008/04/24 21:35:53 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.19 2009/04/28 18:10:47 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -52,21 +52,21 @@ C First call requires that we initialize everything to zero for safety
       CALL LEF_ZERO( feinput1,myThid )
 # endif
 
-       _EXCH_XY_R4(dicwind0, myThid )
-       _EXCH_XY_R4(dicwind1, myThid )
-       _EXCH_XY_R4(atmosp0, myThid )
-       _EXCH_XY_R4(atmosp1, myThid )
-       _EXCH_XY_R4(silica0, myThid )
-       _EXCH_XY_R4(silica1, myThid )
-       _EXCH_XY_R4(ice0, myThid )
-       _EXCH_XY_R4(ice1, myThid )
+       _EXCH_XY_RS(dicwind0, myThid )
+       _EXCH_XY_RS(dicwind1, myThid )
+       _EXCH_XY_RS(atmosp0, myThid )
+       _EXCH_XY_RS(atmosp1, myThid )
+       _EXCH_XY_RS(silica0, myThid )
+       _EXCH_XY_RS(silica1, myThid )
+       _EXCH_XY_RS(ice0, myThid )
+       _EXCH_XY_RS(ice1, myThid )
 #ifdef READ_PAR
-       _EXCH_XY_R4(par0, myThid )
-       _EXCH_XY_R4(par1, myThid )
+       _EXCH_XY_RS(par0, myThid )
+       _EXCH_XY_RS(par1, myThid )
 #endif
 # ifdef ALLOW_FE
-       _EXCH_XY_R4(feinput0, myThid )
-       _EXCH_XY_R4(feinput1, myThid )
+       _EXCH_XY_RS(feinput0, myThid )
+       _EXCH_XY_RS(feinput1, myThid )
 # endif
 
 #ifdef READ_PAR

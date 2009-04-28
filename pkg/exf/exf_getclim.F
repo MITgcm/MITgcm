@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.12 2008/01/29 11:25:53 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.13 2009/04/28 18:15:33 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -93,7 +93,7 @@ c
       enddo
 
 c--   Update the tile edges.
-      _EXCH_XY_R8(climsst, mythid)
+      _EXCH_XY_RL(climsst, mythid)
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
@@ -111,7 +111,7 @@ c     Get values of climatological sss fields.
 c
 
 c--   Update the tile edges.
-      _EXCH_XY_R8(climsss, mythid)
+      _EXCH_XY_RL(climsss, mythid)
 #endif
 #ifdef ALLOW_SST_CONTROL
       call ctrl_get_gen (

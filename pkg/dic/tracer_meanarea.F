@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/tracer_meanarea.F,v 1.10 2008/04/09 22:16:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/tracer_meanarea.F,v 1.11 2009/04/28 18:11:51 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -48,7 +48,7 @@ CEOP
          ENDDO
         ENDDO
        ENDDO
-       _GLOBAL_SUM_R8(sumTracer,myThid)
+       _GLOBAL_SUM_RL(sumTracer,myThid)
        gsm_tracer=sumTracer/globalArea
 
        RETURN

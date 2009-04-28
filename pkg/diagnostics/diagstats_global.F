@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_global.F,v 1.4 2008/02/14 15:41:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_global.F,v 1.5 2009/04/28 18:10:47 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -111,7 +111,7 @@ C--     Global min,max & sum (at each level) over all thread & processors :
         DO k=1,klev
            tmpVol = qtmp1(0,k)
            DO i=0,iv
-            _GLOBAL_SUM_R8(qtmp1(i,k),myThid)
+            _GLOBAL_SUM_RL(qtmp1(i,k),myThid)
            ENDDO
            IF ( qtmp1(0,k).GT.0. .AND. tmpVol.LE.0. ) THEN
 C-      In case 1 processor has only empty tiles:
@@ -121,15 +121,15 @@ C-      In case 1 processor has only empty tiles:
              tmpMin = -qtmp1(im,k)
              tmpMax =  qtmp1(ix,k)
            ENDIF
-           _GLOBAL_MAX_R8(tmpMin,myThid)
-           _GLOBAL_MAX_R8(tmpMax,myThid)
+           _GLOBAL_MAX_RL(tmpMin,myThid)
+           _GLOBAL_MAX_RL(tmpMax,myThid)
            qtmp1(im,k) = -tmpMin
            qtmp1(ix,k) =  tmpMax
         ENDDO
         IF ( mate.GT.0 ) THEN
          DO k=1,kMlev
            DO i=0,1
-            _GLOBAL_SUM_R8(qtmp2(i,k),myThid)
+            _GLOBAL_SUM_RL(qtmp2(i,k),myThid)
            ENDDO
          ENDDO
         ENDIF

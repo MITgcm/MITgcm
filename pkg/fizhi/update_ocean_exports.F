@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.27 2007/06/21 22:11:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.28 2009/04/28 18:15:33 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -100,8 +100,8 @@ c --------------------------------
 
        ENDDO
        ENDDO
-       _EXCH_XY_R8(sst,myThid)
-       _EXCH_XY_R8(sice,myThid)
+       _EXCH_XY_RL(sst,myThid)
+       _EXCH_XY_RL(sice,myThid)
 
        return
        end

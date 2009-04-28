@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.35 2009/02/13 21:58:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.36 2009/04/28 18:15:33 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -229,21 +229,21 @@ c             Salt flux from Precipitation and Evaporation.
       enddo
 
 c     Update the tile edges.
-      _EXCH_XY_R8(hflux,   mythid)
-      _EXCH_XY_R8(sflux,   mythid)
+      _EXCH_XY_RL(hflux,   mythid)
+      _EXCH_XY_RL(sflux,   mythid)
       IF ( stressIsOnCgrid ) THEN
         CALL EXCH_UV_XY_RL( ustress, vstress, .TRUE., myThid )
       ELSE
         CALL EXCH_UV_AGRID_3D_RL(ustress, vstress, .TRUE., 1, myThid)
       ENDIF
 #ifdef SHORTWAVE_HEATING
-      _EXCH_XY_R8(swflux, mythid)
+      _EXCH_XY_RL(swflux, mythid)
 #endif
 #ifdef ATMOSPHERIC_LOADING
-      _EXCH_XY_R8(apressure, mythid)
+      _EXCH_XY_RL(apressure, mythid)
 #endif
 #ifdef ALLOW_ICE_AREAMASK
-      _EXCH_XY_R8(areamask, mythid)
+      _EXCH_XY_RL(areamask, mythid)
 #endif
 
 c     Get values of the surface flux anomalies.

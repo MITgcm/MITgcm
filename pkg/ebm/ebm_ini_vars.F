@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_ini_vars.F,v 1.2 2004/05/19 20:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_ini_vars.F,v 1.3 2009/04/28 18:11:51 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -46,8 +46,8 @@ C--   initially all forcing fields are zero
        ENDDO
       ENDDO
 
-      _EXCH_XY_R4(Run,   myThid )
-      _EXCH_XY_R4(winPert,  myThid )
+      _EXCH_XY_RS(Run,   myThid )
+      _EXCH_XY_RS(winPert,  myThid )
 
       CALL EBM_LOAD_CLIMATOLOGY( myThid )
 

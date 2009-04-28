@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcse.F,v 1.3 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcse.F,v 1.4 2009/04/28 18:13:28 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -253,7 +253,7 @@ c--         End of loop over layers.
 
 #ifdef ECCO_VERBOSE
 c--     Print cost function for all tiles.
-        _GLOBAL_SUM_R8( fcthread , myThid )
+        _GLOBAL_SUM_RL( fcthread , myThid )
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)

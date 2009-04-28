@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs_ageos.F,v 1.3 2008/08/11 22:29:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcs_ageos.F,v 1.4 2009/04/28 18:13:28 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -206,8 +206,8 @@ c--     Read time averages and the monthly mean data.
 
 cgg     Minor problem : grad T,S needs overlap values.
         _BARRIER
-        _EXCH_XYZ_R8(tbar,myThid)
-        _EXCH_XYZ_R8(sbar,myThid)
+        _EXCH_XYZ_RL(tbar,myThid)
+        _EXCH_XYZ_RL(sbar,myThid)
 
 
         do bj = jtlo,jthi
@@ -244,7 +244,7 @@ C-- jmc: both calls below are wrong if more than 1 tile => stop here
      I                         sbar(1-OLx,1-OLy,k,bi,bj),
      O                         rholoc,
      I                         k, bi, bj, myThid )
-              _EXCH_XY_R8(rholoc , myThid)
+              _EXCH_XY_RL(rholoc , myThid)
 
 cgg   Compute centered difference horizontal gradient on bdy.
               do i = imin, imax
@@ -309,7 +309,7 @@ cgg    All these points need to be wet.
      O                         rholoc,
      I                         k, bi, bj, myThid )
 
-              _EXCH_XY_R8(rholoc , myThid)
+              _EXCH_XY_RL(rholoc , myThid)
 
 cgg   Compute centered difference horizontal gradient on bdy.
                do i = imin, imax
@@ -372,7 +372,7 @@ cgg    All these points need to be wet.
      I                         sbar(1-OLx,1-OLy,k,bi,bj),
      O                         rholoc,
      I                         k, bi, bj, myThid )
-              _EXCH_XY_R8(rholoc , myThid)
+              _EXCH_XY_RL(rholoc , myThid)
 
 cgg   Compute centered difference horizontal gradient on bdy.
               do j = jmin, jmax
@@ -435,7 +435,7 @@ cgg    All these points need to be wet.
      I                         sbar(1-OLx,1-OLy,k,bi,bj),
      O                         rholoc,
      I                         k, bi, bj, myThid )
-              _EXCH_XY_R8(rholoc , myThid)
+              _EXCH_XY_RL(rholoc , myThid)
 
 cgg   Compute centered difference horizontal gradient on bdy.
               do j = jmin, jmax
@@ -498,7 +498,7 @@ c--         Print cost function for each tile in each thread.
 
 #ifdef ECCO_VERBOSE
 c--     Print cost function for all tiles.
-        _GLOBAL_SUM_R8( fcthread , myThid )
+        _GLOBAL_SUM_RL( fcthread , myThid )
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)

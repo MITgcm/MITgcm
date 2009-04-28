@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_varia.F,v 1.2 2009/01/30 02:23:56 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_varia.F,v 1.3 2009/04/28 18:15:33 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -64,7 +64,7 @@ C--   Read initial turbulent kinetic energy thickness from file if available.
        IF ( GGL90TKEFile .NE. ' ' ) THEN
         _BARRIER
         CALL READ_FLD_XYZ_RL( GGL90TKEFile, ' ', GGL90TKE, 0, myThid )
-        _EXCH_XYZ_R8(GGL90TKE,myThid)
+        _EXCH_XYZ_RL(GGL90TKE,myThid)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO k=1,Nr

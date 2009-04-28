@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_mean_heatflux.F,v 1.7 2008/02/05 12:49:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_mean_heatflux.F,v 1.8 2009/04/28 18:13:28 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -125,8 +125,8 @@ c--     Read time averages and the monthly mean data.
           enddo
         enddo
 
-       _GLOBAL_SUM_R8( sumtot , myThid )
-       _GLOBAL_SUM_R8( fctiletot , myThid )
+       _GLOBAL_SUM_RL( sumtot , myThid )
+       _GLOBAL_SUM_RL( fctiletot , myThid )
 
        if (sumtot.eq.0.) sumtot = 1.
 

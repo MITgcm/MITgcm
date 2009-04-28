@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt_ini_fin.F,v 1.2 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt_ini_fin.F,v 1.3 2009/04/28 18:13:28 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -139,7 +139,7 @@ c--         Print cost function for each tile in each thread.
 
 #ifdef ECCO_VERBOSE
 c--     Print cost function for all tiles.
-        _GLOBAL_SUM_R8( fcthread , myThid )
+        _GLOBAL_SUM_RL( fcthread , myThid )
         write(msgbuf,'(a)') ' '
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)

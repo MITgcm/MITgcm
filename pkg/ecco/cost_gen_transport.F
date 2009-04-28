@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_gen_transport.F,v 1.4 2008/10/18 12:42:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_gen_transport.F,v 1.5 2009/04/28 18:13:28 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -77,7 +77,7 @@ c--   Loop over records for the second time.
              ftmp = ftmp + transpbar(irec,bi,bj)
           enddo
         enddo
-        _GLOBAL_SUM_R8( ftmp , myThid )
+        _GLOBAL_SUM_RL( ftmp , myThid )
 
 cph        write(msgbuf,'(A,I,2(X,P2E22.14))')
 cph     &       'ph-cost-transport FS: day, 1-model, 2-obs ',

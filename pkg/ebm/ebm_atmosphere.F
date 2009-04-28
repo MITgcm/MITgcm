@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_atmosphere.F,v 1.5 2007/10/01 13:35:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_atmosphere.F,v 1.6 2009/04/28 18:11:51 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -339,8 +339,8 @@ c--   Pacific
        ENDDO
       ENDDO
 
-      _EXCH_XY_R4(Qnet , myThid )
-      _EXCH_XY_R4(EmPmR , myThid )
+      _EXCH_XY_RS(Qnet , myThid )
+      _EXCH_XY_RS(EmPmR , myThid )
       
 
 C      CALL PLOT_FIELD_XYRS( Qnet, 'Qnet' , 1, myThid )

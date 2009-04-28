@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_fixed.F,v 1.2 2009/02/01 20:48:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_fixed.F,v 1.3 2009/04/28 18:15:33 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -44,10 +44,10 @@ C Set domain dependent constants:
          yHi = MAX( yHi, yG(1,sNy+1,bi,bj) )
        ENDDO
       ENDDO
-      _GLOBAL_MAX_R8( xLo, myThid )
-      _GLOBAL_MAX_R8( xHi, myThid )
-      _GLOBAL_MAX_R8( yLo, myThid )
-      _GLOBAL_MAX_R8( yHi, myThid )
+      _GLOBAL_MAX_RL( xLo, myThid )
+      _GLOBAL_MAX_RL( xHi, myThid )
+      _GLOBAL_MAX_RL( yLo, myThid )
+      _GLOBAL_MAX_RL( yHi, myThid )
 
       _BEGIN_MASTER(myThid)
        flt_xLo = -xLo

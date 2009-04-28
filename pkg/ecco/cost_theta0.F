@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta0.F,v 1.9 2007/10/09 00:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta0.F,v 1.10 2009/04/28 18:13:28 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -145,7 +145,7 @@ c--         Determine the weights to be used.
      &     fnamefld, tmpfld3d, irec, doglobalread,
      &     ladinit, optimcycle, mythid, xx_theta_dummy )
 
-        _EXCH_XYZ_R8(tmpfld3d, mythid)
+        _EXCH_XYZ_RL(tmpfld3d, mythid)
 
 c--     Loop over this thread's tiles.
         do bj = jtlo,jthi

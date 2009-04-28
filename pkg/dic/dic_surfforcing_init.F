@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.25 2009/02/23 03:00:10 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.26 2009/04/28 18:11:51 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -102,8 +102,8 @@ c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
        ENDIF
 #endif
 
-       _EXCH_XY_R4(silica0, myThid )
-       _EXCH_XY_R4(silica1, myThid )
+       _EXCH_XY_RS(silica0, myThid )
+       _EXCH_XY_RS(silica1, myThid )
 
        IF ( DIC_silicaFile .NE. ' '  ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
