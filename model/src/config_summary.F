@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.115 2009/04/21 16:04:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.116 2009/04/28 22:06:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,7 +51,7 @@ C     bi,bj  :: Tile loop counters.
       INTEGER ioUnit
       INTEGER I,J,K
       INTEGER bi, bj
-      Real*8  rcoord(Nr+1)
+      _RL     bufRL(Nr+1)
       INTEGER coordLine
       INTEGER tileLine
 
@@ -89,9 +89,9 @@ C     bi,bj  :: Tile loop counters.
      & 'usingPCoords =', '  /* use p (or p*) vertical coordinate */')
       CALL WRITE_0D_L( usingZCoords, INDEX_NONE,
      & 'usingZCoords =', '  /* use z (or z*) vertical coordinate */')
-      CALL WRITE_1D_R8( tRef, Nr, INDEX_K,'tRef =',
+      CALL WRITE_1D_RL( tRef, Nr, INDEX_K, 'tRef =',
      &'   /* Reference temperature profile ( oC or K ) */')
-      CALL WRITE_1D_R8( sRef, Nr, INDEX_K,'sRef =',
+      CALL WRITE_1D_RL( sRef, Nr, INDEX_K, 'sRef =',
      &'   /* Reference salinity profile ( psu ) */')
       CALL WRITE_0D_RL( viscAh, INDEX_NONE,'viscAh =',
      &'   /* Lateral eddy viscosity ( m^2/s ) */')
@@ -160,10 +160,10 @@ C     bi,bj  :: Tile loop counters.
      &'   /* Laplacian diffusion of salt laterally ( m^2/s ) */')
       CALL WRITE_0D_RL( diffK4S, INDEX_NONE,'diffK4S =',
      &'   /* Biharmonic diffusion of salt laterally ( m^4/s ) */')
-      CALL WRITE_1D_R8( diffKrNrT, Nr, INDEX_K,'diffKrNrT =',
+      CALL WRITE_1D_RL( diffKrNrT, Nr, INDEX_K, 'diffKrNrT =',
      &  ' /* vertical profile of vertical diffusion of Temp ('
      &  //rUnits//'^2/s )*/')
-      CALL WRITE_1D_R8( diffKrNrS, Nr, INDEX_K,'diffKrNrS =',
+      CALL WRITE_1D_RL( diffKrNrS, Nr, INDEX_K, 'diffKrNrS =',
      &  ' /* vertical profile of vertical diffusion of Salt ('
      &  //rUnits//'^2/s )*/')
       CALL WRITE_0D_RL( diffKrBL79surf, INDEX_NONE,'diffKrBL79surf =',
@@ -219,9 +219,9 @@ C     bi,bj  :: Tile loop counters.
      &'   /* Reference density ( kg/m^3 ) */')
       CALL WRITE_0D_RL( rhoConst, INDEX_NONE,'rhoConst =',
      &'   /* Reference density ( kg/m^3 ) */')
-      CALL WRITE_1D_R8( rhoFacC, Nr,   INDEX_K,'rhoFacC = ',
+      CALL WRITE_1D_RL( rhoFacC, Nr,   INDEX_K, 'rhoFacC = ',
      &  ' /* normalized Reference density @ cell-Center (-) */')
-      CALL WRITE_1D_R8( rhoFacF, Nr+1, INDEX_K,'rhoFacF = ',
+      CALL WRITE_1D_RL( rhoFacF, Nr+1, INDEX_K, 'rhoFacF = ',
      &  ' /* normalized Reference density @ W-Interface (-) */')
       CALL WRITE_0D_RL( rhoConstFresh, INDEX_NONE,'rhoConstFresh =',
      &'   /* Reference density ( kg/m^3 ) */')
@@ -459,9 +459,9 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_RL( deltaTmom, INDEX_NONE,'deltaTmom =',
      &'   /* Momentum equation timestep ( s ) */')
       CALL WRITE_0D_RL( deltaTfreesurf,INDEX_NONE,'deltaTfreesurf =',
-     &'   /* FreeSurface equation timestep ( s ) */')
-      CALL WRITE_1D_R8( dTtracerLev, Nr, INDEX_K, 'dTtracerLev =',
-     &'   /* Tracer equation timestep ( s ) */')
+     &  ' /* FreeSurface equation timestep ( s ) */')
+      CALL WRITE_1D_RL( dTtracerLev, Nr, INDEX_K, 'dTtracerLev =',
+     & '  /* Tracer equation timestep ( s ) */')
       CALL WRITE_0D_RL( deltaTClock, INDEX_NONE,'deltaTClock  =',
      &'   /* Model clock timestep ( s ) */')
       CALL WRITE_0D_RL( cAdjFreq, INDEX_NONE,'cAdjFreq =',
@@ -594,14 +594,16 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        CALL WRITE_0D_RL( rUnit2mass, INDEX_NONE,'rUnit2mass =',
      & ' /* convert r-units [Pa] to mass per unit area [kg/m2] */')
       ENDIF
-      CALL WRITE_1D_R8( drC,Nr, INDEX_K,'drC = ',
+      CALL WRITE_COPY1D_RS( bufRL, drC, Nr, INDEX_K, 'drC = ',
      &'   /* C spacing ( units of r ) */')
-      CALL WRITE_1D_R8( drF,Nr, INDEX_K,'drF = ',
+      CALL WRITE_COPY1D_RS( bufRL, drF, Nr, INDEX_K, 'drF = ',
      &'   /* W spacing ( units of r ) */')
-      CALL WRITE_1D_R8( delX, Nx, INDEX_I,'delX = ',
-     &'   /* U spacing ( m - cartesian, degrees - spherical ) */')
-      CALL WRITE_1D_R8( delY, Ny, INDEX_J,'delY = ',
-     &'   /* V spacing ( m - cartesian, degrees - spherical ) */')
+      IF ( .NOT.usingCurvilinearGrid ) THEN
+       CALL WRITE_1D_RL( delX, Nx, INDEX_I, 'delX = ',
+     &  ' /* U spacing ( m - cartesian, degrees - spherical ) */')
+       CALL WRITE_1D_RL( delY, Ny, INDEX_J, 'delY = ',
+     &  ' /* V spacing ( m - cartesian, degrees - spherical ) */')
+      ENDIF
       CALL WRITE_0D_RL( xgOrigin, INDEX_NONE,'xgOrigin = ',
      &'/* X-axis origin of West  edge (cartesian: m, lat-lon: deg.) */')
       CALL WRITE_0D_RL( ygOrigin, INDEX_NONE,'ygOrigin = ',
@@ -616,25 +618,19 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      I         ': P-point X coord ( deg. or m if cartesian)')
       CALL WRITE_XY_YLINE_RS( yC, coordLine, tileLine, 'yC',
      I         ': P-point Y coord ( deg. or m if cartesian)')
-      DO K=1,Nr
-       rcoord(K) = rC(K)
-      ENDDO
-      CALL WRITE_1D_R8( rcoord, Nr, INDEX_K,'rcoord = ',
-     &'   /* P-point R coordinate (  units of r ) */')
-      DO K=1,Nr+1
-       rcoord(K) = rF(K)
-      ENDDO
-      CALL WRITE_1D_R8( rcoord, Nr+1, INDEX_K,'rF = ',
+      CALL WRITE_COPY1D_RS( bufRL, rC, Nr, INDEX_K, 'rcoord =',
+     &  ' /* P-point R coordinate (  units of r ) */')
+      CALL WRITE_COPY1D_RS( bufRL, rF,Nr+1,INDEX_K, 'rF = ',
      &'   /* W-Interf. R coordinate (  units of r ) */')
-      CALL WRITE_1D_R8( deepFacC, Nr, INDEX_K,'deepFacC = ',
+      CALL WRITE_1D_RL( deepFacC, Nr,   INDEX_K, 'deepFacC = ',
      &  ' /* deep-model grid factor @ cell-Center (-) */')
-      CALL WRITE_1D_R8( deepFacF, Nr+1, INDEX_K,'deepFacF = ',
+      CALL WRITE_1D_RL( deepFacF, Nr+1, INDEX_K, 'deepFacF = ',
      &  ' /* deep-model grid factor @ W-Interface (-) */')
-      CALL WRITE_1D_R8( rVel2wUnit, Nr+1, INDEX_K,'rVel2wUnit = ',
+      CALL WRITE_1D_RL(rVel2wUnit,Nr+1, INDEX_K,'rVel2wUnit =',
      &  ' /* convert units: rVel -> wSpeed (=1 if z-coord)*/')
-      CALL WRITE_1D_R8( wUnit2rVel, Nr+1, INDEX_K,'wUnit2rVel = ',
+      CALL WRITE_1D_RL(wUnit2rVel,Nr+1, INDEX_K,'wUnit2rVel =',
      &  ' /* convert units: wSpeed -> rVel (=1 if z-coord)*/')
-      CALL WRITE_1D_R8( dBdrRef, Nr, INDEX_K,'dBdrRef = ',
+      CALL WRITE_1D_RL( dBdrRef,  Nr,   INDEX_K, 'dBdrRef =',
      & ' /* Vertical gradient of reference boyancy [(m/s/r)^2)] */')
       CALL WRITE_0D_L( rotateGrid, INDEX_NONE,
      & 'rotateGrid =',' /* use rotated grid ( True/False ) */')
