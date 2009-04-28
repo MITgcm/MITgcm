@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.1 2009/01/05 15:15:33 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.2 2009/04/28 18:32:53 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -77,7 +77,7 @@ C- First compute global mole flux at air-sea interface
      &               * rA(i,j,bi,bj) * deltaT
          ENDDO
         ENDDO
-        _GLOBAL_SUM_R8(total_flux,myThid)
+        _GLOBAL_SUM_RL(total_flux,myThid)
 
 
         IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0 ) THEN
