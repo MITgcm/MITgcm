@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.192 2009/04/22 21:03:52 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.193 2009/04/28 18:46:06 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2638,8 +2638,7 @@ clean:
 	-rm -rf *.p *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template
 	-rm -rf *.o
 	-rm -rf *.$FS *.flowdir
-	-rm -rf *.f$FS90 *_mod.h *_mod.F90 *.FF90 *.mod-whirl ad_input*
-	-rm -rf temp.sed
+	-rm -rf *.f$FS90 \$(AD_CLEAN) ad_input*
 Clean:
 	@make clean
 	@make cleanlinks
@@ -2968,11 +2967,31 @@ f95_test.out: f95_test_mods.f90 f95_test.f90
 	f95 -fixed -w=unused -maxcontin=132 -c f95_test_mods.f90 > \$@ 2>&1
 	f95 -fixed -w=unused -maxcontin=132 -c -fixed f95_test.f90 >> \$@ 2>&1
 
-AD_OBJ_FILES=\$(OPENAD_SUPPORT_F90_SRC_FILES:.F90=.o) \$(OPENAD_SUPPORT_C_SRC_FILES:.c=.o) all_mods.xb.x2w.w2f.pp.o  ad_input_code.w2f.pre.xb.x2w.w2f.td.pp.o \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC_FILES:.c=.o) \$(F90_SRC_FILES:.F90=.o)
+# the file included below is created by the 
+# postProcessor and its inclusion sets the 
+# variable POSTPROCESSEDFILES
+# used below. Because the file is made during 
+# make it won't be read until the second (recursive) 
+# invocation in the rule below
+-include postProcess.make
 
-\$(EXE_AD): \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) \$(AD_OBJ_FILES)
-	@echo Creating \$@ ...
-	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(AD_OBJ_FILES) \$(LIBS)
+AD_OBJ_FILES_S1=\$(OPENAD_SUPPORT_F90_SRC_FILES:.F90=.o) \$(OPENAD_SUPPORT_C_SRC_FILES:.c=.o) \$(POSTPROCESSEDFILES:.f$FS90=.o)
+
+AD_OBJ_FILES_S2=\$(AD_OBJ_FILES_S1) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC_FILES:.c=.o) \$(F90_SRC_FILES:.F90=.o)
+
+postProcess.comp: \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) postProcess.tag \$(AD_OBJ_FILES_S1)
+ifeq (\$(MAKELEVEL),0)
+	\$(MAKE) adAll
+else
+	touch \$@
+endif
+
+\$(EXE_AD): \$(ALL_LINKED_FILES) \$(addsuffix _mod.h, \$(CB2M_F90_SRC_NAMES)) postProcess.comp \$(AD_OBJ_FILES_S2)
+ifeq (\$(MAKELEVEL),1)
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(AD_OBJ_FILES_S2) \$(LIBS)
+else
+	touch \$@
+endif
 
 # makefile debug rule
 openad: ad_input_code.w2f.pre.xb.x2w.w2f.td.pp.f$FS90
@@ -3002,7 +3021,7 @@ ad_output.txt: \$(EXE_AD)
 	@./\$(EXE_AD) > \$@
 
 CB2M_AD_FILES=\$(AD_FILES:.f=_cb2m.f$FS90)
-ad_input_code.f$FS90: ../OAD_support/maxMinDefs.f \$(CB2M_AD_FILES) 
+ad_input_code.f$FS90:  \$(CB2M_AD_FILES) ../OAD_support/maxMinDefs.f
 	cat \$^ > \$@
 
 # strip all comments and blanks to reduce 
@@ -3056,19 +3075,13 @@ ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w
 
 PPEXTRAS=\$(wildcard ../OAD_support/ad_template.*.F) ../OAD_support/ad_inline.F
 # postprocess F'
-ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.pp.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90 postProcess.py \$(PPEXTRAS:.F=.f)
-	./postProcess.py -m r -i ../OAD_support/ad_inline.f -o \$@ \$<
-
-# extract all transformed modules 
-all_mods.xb.x2w.w2f.pp.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.pp.f$FS90
-	cat \$< | sed -n '/MODULE /,/END MODULE/p' > \$@
-
-# remove the transformed globals module from the 
-# transformed ad_input_code file
-# and remove for now the duplicate variables
-# and fix 2 data statements
-ad_input_code.w2f.pre.xb.x2w.w2f.td.pp.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.pp.f$FS90 
-	cat \$< | sed '/MODULE /,/END MODULE/d' | sed '/^      INTEGER(w2f__i4) DOLOOP_UB/d' > \$@
+postProcess.tag: ad_input_code_sf.w2f.pre.xb.x2w.w2f.td.f$FS90 postProcess.py \$(PPEXTRAS:.F=.f)
+	# the target is a placeholder to signal execution of the rule 
+	touch \$@
+	# this step also creates the file postProcess.make but we cannot 
+	# name it as the target or else make will try to remake it for 
+	# the include directive above for any rule, e.g. make clean
+	./postProcess.py -m r -i ../OAD_support/ad_inline.f --width 4 \$<
 
 # setup some links
 %.xsd:
@@ -3092,6 +3105,8 @@ whirl2f whirl2f_be:
 
 oadDriver:
 	\$(LN) \${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/driver/oadDriver \$@
+
+AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.make postProcess.tag postProcess.comp
 
 # ============ end OpenAD specific section ==============
 
