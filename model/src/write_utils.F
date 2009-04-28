@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/write_utils.F,v 1.2 2009/04/21 16:04:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/write_utils.F,v 1.3 2009/04/28 22:04:42 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -6,7 +6,7 @@ C--  File write_utils.F: Routine for formatted textual I/O to Standard Output
 C--   Contents
 C--   o  WRITE_1D_I
 C--   o  WRITE_1D_L
-C--   o  WRITE_1D_R8
+C--   o  WRITE_1D_RL
 C--   o  WRITE_0D_I
 C--   o  WRITE_0D_L
 C--   o  WRITE_0D_R4
@@ -14,6 +14,9 @@ C--   o  WRITE_0D_R8
 C--   o  WRITE_0D_RS
 C--   o  WRITE_0D_RL
 C--   o  WRITE_0D_C
+C--   o  WRITE_COPY1D_R4
+C--   o  WRITE_COPY1D_R8
+C--   o  WRITE_COPY1D_RS
 C--   o  WRITE_XY_XLINE_RS
 C--   o  WRITE_XY_YLINE_RS
 
@@ -132,15 +135,15 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-C     !ROUTINE: WRITE_1D_R8
+C     !ROUTINE: WRITE_1D_RL
 C     !INTERFACE:
-      SUBROUTINE WRITE_1D_R8( fld, lFld, index_type, head, comment )
+      SUBROUTINE WRITE_1D_RL( fld, lFld, index_type, head, comment )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | o SUBROUTINE WRITE_1D_R8
+C     | o SUBROUTINE WRITE_1D_RL
 C     | Controls formatted, tabular I/O for a one-dimensional
-C     | real*8 field.
+C     | "RL" type field.
 C     *==========================================================*
 C     | This routine produces a standard format for list
 C     | one-dimensional real*8 data in textual form. The format
@@ -165,7 +168,7 @@ C     index_type :: Type of index labelling (I=,J=,...) to use
 C     head       :: Statement start (e.g. phi = )
 C     comment    :: Descriptive comment for field
       INTEGER lFld
-      Real*8 fld(lFld)
+      _RL     fld(lFld)
       INTEGER index_type
       CHARACTER*(*) head
       CHARACTER*(*) comment
@@ -177,7 +180,7 @@ C     ILH, ILC - Index of last balnk in head and comment
       INTEGER ILH, ILC
       INTEGER i, j, ic, i1, i2, nCount
       LOGICAL outpAll
-      Real*8  prev
+      _RL     prev
 CEOP
 
 C-    when list is long, try to write just few of them
@@ -200,7 +203,7 @@ C-    Count how many would be written
      &                    SQUEEZE_RIGHT , 1)
       IF ( outpAll ) THEN
 C-    write all of them
-        CALL PRINT_LIST_R8( fld, 1, lFld, index_type, .FALSE.,
+        CALL PRINT_LIST_RL( fld, 1, lFld, index_type, .FALSE.,
      &                      .TRUE., standardMessageUnit )
       ELSE
 C-    write just 5 sets of 5-6 consecutive values (truncate 1rst and last)
@@ -213,7 +216,7 @@ C  e.g. lFld=32 => 1:1+2  8-2:9+2  16-2:17+2 24-2:25+2 32-2:32
         IF ( ic*4 .LT. (lFld-1)*(j-1) ) i2=i2+1
         i1 = MAX(i1,1)
         i2 = MIN(i2,lFld)
-        CALL PRINT_LIST_R8( fld(i1), i1, i2, index_type, .TRUE.,
+        CALL PRINT_LIST_RL( fld(i1), i1, i2, index_type, .TRUE.,
      &                      .FALSE., standardMessageUnit )
         WRITE(msgBuf,'(A)') '     . . .'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -221,7 +224,7 @@ C  e.g. lFld=32 => 1:1+2  8-2:9+2  16-2:17+2 24-2:25+2 32-2:32
        ENDDO
         i1 = MAX(lFld-2,1)
         i2 = lFld
-        CALL PRINT_LIST_R8( fld(i1), i1, i2, index_type, .FALSE.,
+        CALL PRINT_LIST_RL( fld(i1), i1, i2, index_type, .FALSE.,
      &                      .FALSE., standardMessageUnit )
       ENDIF
       WRITE(msgBuf,'(A)')   '    ;     '
@@ -381,16 +384,16 @@ C     comment    :: Descriptive comment for field
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      Real*8 r8dummy(1)
+      _RL    dummyRL(1)
 CEOP
 
-C-    convert to real*8:
-      r8dummy(1) = fld
+C-    convert to "RL"
+      dummyRL(1) = fld
 
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_R8( r8dummy, 1, 1, index_type, .FALSE.,
+      CALL PRINT_LIST_RL( dummyRL, 1, 1, index_type, .FALSE.,
      &                    .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -438,15 +441,16 @@ C     comment    :: Descriptive comment for field
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      Real*8 r8dummy(1)
+      _RL    dummyRL(1)
 CEOP
 
-      r8dummy(1) = fld
+C-    convert to "RL"
+      dummyRL(1) = fld
 
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_R8( r8dummy, 1, 1, index_type, .FALSE.,
+      CALL PRINT_LIST_RL( dummyRL, 1, 1, index_type, .FALSE.,
      &                    .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -494,16 +498,16 @@ C     comment    :: Descriptive comment for field
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      Real*8 r8dummy(1)
+      _RL    dummyRL(1)
 CEOP
 
-C-    convert to real*8:
-      r8dummy(1) = fld
+C-    convert to "RL"
+      dummyRL(1) = fld
 
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_R8( r8dummy, 1, 1, index_type, .FALSE.,
+      CALL PRINT_LIST_RL( dummyRL, 1, 1, index_type, .FALSE.,
      &                    .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -543,7 +547,7 @@ C     fld        :: Field to be printed
 C     index_type :: Type of index labelling (I=,J=,...) to use
 C     head       :: Statement start (e.g. phi = )
 C     comment    :: Descriptive comment for field
-      Real*8 fld
+      _RL    fld
       INTEGER index_type
       CHARACTER*(*) head
       CHARACTER*(*) comment
@@ -551,16 +555,16 @@ C     comment    :: Descriptive comment for field
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      Real*8 r8dummy(1)
+      _RL    dummyRL(1)
 CEOP
 
-C-    convert to real*8:
-      r8dummy(1) = fld
+C-    copy to array "RL"
+      dummyRL(1) = fld
 
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_R8( r8dummy, 1, 1, index_type, .FALSE.,
+      CALL PRINT_LIST_RL( dummyRL, 1, 1, index_type, .FALSE.,
      &                    .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -652,6 +656,174 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
+C     !ROUTINE: WRITE_COPY1D_R4
+C     !INTERFACE:
+      SUBROUTINE WRITE_COPY1D_R4(
+     O                        tmpBufRL,
+     I                        fld, lFld, index_type, head, comment )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE WRITE_COPY1D_R4
+C     | Write as formatted I/O to STDOUT a copy (in "RL" buffer)
+C     |  of a one-dimensional real*4 field.
+C     *==========================================================*
+C     | Copy the 1.D array (fld) to "RL" type buffer (tmpBufRL)
+C     |  and then call WRITE_1D_RL;
+C     | Length of buffer array must be equal or larger than
+C     |  input 1.D field (fld) to write.
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     tmpBufRL   :: buffer ("RL" type) passed to WRITE_1D_RL
+C     fld        :: Field to be printed
+C     lFld       :: Number of elements (in field "fld") to print
+C     index_type :: Type of index labelling (I=,J=,...) to use
+C     head       :: Statement start (e.g. phi = )
+C     comment    :: Descriptive comment for field
+      INTEGER lFld
+      _RL    tmpBufRL(lFld)
+      Real*4 fld(lFld)
+      INTEGER index_type
+      CHARACTER*(*) head
+      CHARACTER*(*) comment
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER i
+CEOP
+
+      DO i=1,lFld
+        tmpBufRL(i) = fld(i)
+      ENDDO
+      CALL WRITE_1D_RL( tmpBufRL, lFld, index_type, head, comment )
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: WRITE_COPY1D_R8
+C     !INTERFACE:
+      SUBROUTINE WRITE_COPY1D_R8(
+     O                        tmpBufRL,
+     I                        fld, lFld, index_type, head, comment )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE WRITE_COPY1D_R8
+C     | Write as formatted I/O to STDOUT a copy (in "RL" buffer)
+C     |  of a one-dimensional real*8 field.
+C     *==========================================================*
+C     | Copy the 1.D array (fld) to "RL" type buffer (tmpBufRL)
+C     |  and then call WRITE_1D_RL;
+C     | Length of buffer array must be equal or larger than
+C     |  input 1.D field (fld) to write.
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     tmpBufRL   :: buffer ("RL" type) passed to WRITE_1D_RL
+C     fld        :: Field to be printed
+C     lFld       :: Number of elements (in field "fld") to print
+C     index_type :: Type of index labelling (I=,J=,...) to use
+C     head       :: Statement start (e.g. phi = )
+C     comment    :: Descriptive comment for field
+      INTEGER lFld
+      _RL    tmpBufRL(lFld)
+      Real*8 fld(lFld)
+      INTEGER index_type
+      CHARACTER*(*) head
+      CHARACTER*(*) comment
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER i
+CEOP
+
+      DO i=1,lFld
+        tmpBufRL(i) = fld(i)
+      ENDDO
+      CALL WRITE_1D_RL( tmpBufRL, lFld, index_type, head, comment )
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: WRITE_COPY1D_RS
+C     !INTERFACE:
+      SUBROUTINE WRITE_COPY1D_RS(
+     O                        tmpBufRL,
+     I                        fld, lFld, index_type, head, comment )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE WRITE_COPY1D_RS
+C     | Write as formatted I/O to STDOUT a copy (in "RL" buffer)
+C     |  of a one-dimensional RS field.
+C     *==========================================================*
+C     | Copy the 1.D array (fld) to "RL" type buffer (tmpBufRL)
+C     |  and then call WRITE_1D_RL;
+C     | Length of buffer array must be equal or larger than
+C     |  input 1.D field (fld) to write.
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     tmpBufRL   :: buffer ("RL" type) passed to WRITE_1D_RL
+C     fld        :: Field to be printed
+C     lFld       :: Number of elements (in field "fld") to print
+C     index_type :: Type of index labelling (I=,J=,...) to use
+C     head       :: Statement start (e.g. phi = )
+C     comment    :: Descriptive comment for field
+      INTEGER lFld
+      _RL    tmpBufRL(lFld)
+      _RS    fld(lFld)
+      INTEGER index_type
+      CHARACTER*(*) head
+      CHARACTER*(*) comment
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER i
+CEOP
+
+      DO i=1,lFld
+        tmpBufRL(i) = fld(i)
+      ENDDO
+      CALL WRITE_1D_RL( tmpBufRL, lFld, index_type, head, comment )
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
 C     !ROUTINE: WRITE_XY_XLINE_RS
 C     !INTERFACE:
       SUBROUTINE WRITE_XY_XLINE_RS(
@@ -675,10 +847,6 @@ C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-      EXTERNAL IFNBLNK
-      INTEGER  IFNBLNK
-      EXTERNAL ILNBLNK
-      INTEGER  ILNBLNK
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -693,12 +861,18 @@ C     comment    :: Descriptive comment for field
       CHARACTER*(*) head
       CHARACTER*(*) comment
 
+C     !FUNCTIONS:
+      EXTERNAL IFNBLNK
+      INTEGER  IFNBLNK
+      EXTERNAL ILNBLNK
+      INTEGER  ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf1
       CHARACTER*(MAX_LEN_MBUF) msgBuf2
       CHARACTER*10 num1, num2
-      REAL*8 xcoord(sNx*nSx)
+      _RL     xcoord(sNx*nSx)
       INTEGER bi, bj, i, j
       INTEGER IFN1, ILN1, IFN2, ILN2
 CEOP
@@ -723,7 +897,7 @@ C     fld(:,J,:,bj)
         xcoord(sNx*(bi-1)+I)=fld(I,J,bi,bj)
        ENDDO
       ENDDO
-      CALL WRITE_1D_R8( xcoord, sNx*nSx, INDEX_I,msgBuf1,msgBuf2)
+      CALL WRITE_1D_RL( xcoord, sNx*nSx, INDEX_I,msgBuf1,msgBuf2)
 
       RETURN
       END
@@ -754,10 +928,6 @@ C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-      EXTERNAL IFNBLNK
-      INTEGER  IFNBLNK
-      EXTERNAL ILNBLNK
-      INTEGER  ILNBLNK
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -772,11 +942,17 @@ C     comment    :: Descriptive comment for field
       CHARACTER*(*) head
       CHARACTER*(*) comment
 
+C     !FUNCTIONS:
+      EXTERNAL IFNBLNK
+      INTEGER  IFNBLNK
+      EXTERNAL ILNBLNK
+      INTEGER  ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf1
       CHARACTER*(MAX_LEN_MBUF) msgBuf2
-      REAL*8 ycoord(sNy*nSy)
+      _RL     ycoord(sNy*nSy)
       INTEGER bi, bj, i, j
       CHARACTER*10 num1, num2
       INTEGER IFN1, ILN1, IFN2, ILN2
@@ -802,7 +978,7 @@ C     fld(I,:,bi,:)
         ycoord(sNy*(bj-1)+J)=fld(I,J,bi,bj)
        ENDDO
       ENDDO
-      CALL WRITE_1D_R8( ycoord, sNy*nSy, INDEX_J,msgBuf1,msgBuf2)
+      CALL WRITE_1D_RL( ycoord, sNy*nSy, INDEX_J,msgBuf1,msgBuf2)
 
       RETURN
       END
