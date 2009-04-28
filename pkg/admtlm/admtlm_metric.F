@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_metric.F,v 1.5 2007/10/08 23:45:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_metric.F,v 1.6 2009/04/28 18:08:13 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -66,7 +66,7 @@ C     ========= Local variables =========================
        END DO
       END DO
 
-      _GLOBAL_SUM_R8( myMetric , myThid )
+      _GLOBAL_SUM_RL( myMetric , myThid )
       myMetric = myMetric/(nx*ny*(4*Nr+1))
 
 cph(

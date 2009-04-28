@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/ini_salt.F,v 1.1 2001/09/13 20:06:19 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/ini_salt.F,v 1.2 2009/04/28 18:06:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -60,7 +60,7 @@ C--   Initialise salinity field to the vertical reference profile
        _BEGIN_MASTER( myThid )
        CALL READ_FLD_XYZ_RL( hydrogSaltFile, ' ', salt, 0, myThid )
        _END_MASTER(myThid)
-       _EXCH_XYZ_R8(salt  , myThid )
+       _EXCH_XYZ_RL(salt  , myThid )
       ENDIF
 
 C     Apply mask and test consistancy

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.14 2008/04/09 16:07:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.15 2009/04/28 18:08:13 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -106,14 +106,14 @@ C      data for the period ahead and the period behind myTime.
 
 C
        IF (.NOT.useEXF) THEN
-       _EXCH_XY_R4(wind0, myThid )
-       _EXCH_XY_R4(wind1, myThid )
+       _EXCH_XY_RS(wind0, myThid )
+       _EXCH_XY_RS(wind1, myThid )
        ENDIF
-       _EXCH_XY_R4(atmosp0, myThid )
-       _EXCH_XY_R4(atmosp1, myThid )
+       _EXCH_XY_RS(atmosp0, myThid )
+       _EXCH_XY_RS(atmosp1, myThid )
        IF (.NOT.useSEAICE) THEN
-       _EXCH_XY_R4(ice0, myThid )
-       _EXCH_XY_R4(ice1, myThid )
+       _EXCH_XY_RS(ice0, myThid )
+       _EXCH_XY_RS(ice1, myThid )
        ENDIF
 C
        ENDIF

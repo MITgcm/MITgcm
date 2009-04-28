@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ini_theta.F,v 1.2 2005/04/15 22:10:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/ini_theta.F,v 1.3 2009/04/28 18:06:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -125,7 +125,7 @@ C--   Apply mask and test consistency
        STOP 'ABNORMAL END: S/R INI_THETA'
       ENDIF
 
-      _EXCH_XYZ_R8(theta , myThid )
+      _EXCH_XYZ_RL(theta , myThid )
 
       CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature' ,
      &                       Nr, 1, myThid )

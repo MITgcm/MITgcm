@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.18 2008/01/17 20:53:08 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.19 2009/04/28 18:08:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -124,7 +124,7 @@ c--   Sum up all contributions.
       write(standardmessageunit,'(A,D22.15)') '  local fc = ', fc
 
 c--   Do global summation.
-      _GLOBAL_SUM_R8( fc , myThid )
+      _GLOBAL_SUM_RL( fc , myThid )
 
       write(standardmessageunit,'(A,D22.15)') ' global fc = ', fc
 

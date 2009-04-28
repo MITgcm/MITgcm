@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_state_final.F,v 1.5 2007/10/08 23:59:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_state_final.F,v 1.6 2009/04/28 18:08:13 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -45,7 +45,7 @@ C     ========= Local variables =========================
       END DO
 
 cph      fc = objf_state_final(45,4,1,1,1)
-cph      _GLOBAL_SUM_R8( fc , myThid )
+cph      _GLOBAL_SUM_RL( fc , myThid )
 cph      print *, 'fc for admtlm test at 83,33 : ', fc
 
 #endif

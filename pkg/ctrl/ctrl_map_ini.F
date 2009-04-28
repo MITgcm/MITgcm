@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.31 2008/11/18 16:47:15 utke Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.32 2009/04/28 18:09:28 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -562,37 +562,37 @@ c--   SSS relaxation coefficient.
 c--   Update the tile edges.
 
 #if (defined (ALLOW_THETA0_CONTROL) || defined (ALLOW_SST0_CONTROL))
-      _EXCH_XYZ_R8( theta, mythid )
+      _EXCH_XYZ_RL( theta, mythid )
 #endif
 #if (defined (ALLOW_SALT0_CONTROL) || defined (ALLOW_SSS0_CONTROL))
-      _EXCH_XYZ_R8(  salt, mythid )
+      _EXCH_XYZ_RL(  salt, mythid )
 #endif
 #ifdef ALLOW_TR10_CONTROL
 #ifdef ALLOW_PTRACERS
-      _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,1),myThid)
+      _EXCH_XYZ_RL(pTracer(1-Olx,1-Oly,1,1,1,1),myThid)
 #endif
 #endif
 
 #ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_DIFFKR_CONTROL
-      _EXCH_XYZ_R8( diffkr, mythid)
+      _EXCH_XYZ_RL( diffkr, mythid)
 # endif
 # ifdef ALLOW_KAPGM_CONTROL
-      _EXCH_XYZ_R8( kapgm, mythid)
+      _EXCH_XYZ_RL( kapgm, mythid)
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
-      _EXCH_XYZ_R8( kapredi, mythid)
+      _EXCH_XYZ_RL( kapredi, mythid)
 # endif
 #endif
 
 #ifdef ALLOW_EFLUXY0_CONTROL
-      _EXCH_XYZ_R8( EfluxY, mythid )
+      _EXCH_XYZ_RL( EfluxY, mythid )
 #endif
 #ifdef ALLOW_EFLUXP0_CONTROL
-      _EXCH_XYZ_R8( EfluxP, mythid )
+      _EXCH_XYZ_RL( EfluxP, mythid )
 #endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-      _EXCH_XY_R8( bottomdragfld, mythid )
+      _EXCH_XY_RL( bottomdragfld, mythid )
 #endif
 
 #ifdef ALLOW_EDDYPSI_CONTROL
@@ -600,23 +600,23 @@ c--   Update the tile edges.
 #endif
 
 #ifdef ALLOW_UVEL0_CONTROL
-      _EXCH_XYZ_R8( uVel, mythid)
+      _EXCH_XYZ_RL( uVel, mythid)
 #endif
 
 #ifdef ALLOW_VVEL0_CONTROL
-      _EXCH_XYZ_R8( vVel, mythid)
+      _EXCH_XYZ_RL( vVel, mythid)
 #endif
 
 #ifdef ALLOW_ETAN0_CONTROL
-      _EXCH_XY_R8( etaN, mythid )
+      _EXCH_XY_RL( etaN, mythid )
 #endif
 
 #ifdef ALLOW_RELAXSST_CONTROL
-      _EXCH_XY_R4( lambdaThetaClimRelax, mythid )
+      _EXCH_XY_RS( lambdaThetaClimRelax, mythid )
 #endif
 
 #ifdef ALLOW_RELAXSSS_CONTROL
-      _EXCH_XY_R4( lambdaThetaClimRelax, mythid )
+      _EXCH_XY_RS( lambdaThetaClimRelax, mythid )
 #endif
 
       return

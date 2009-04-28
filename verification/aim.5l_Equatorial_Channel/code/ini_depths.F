@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/ini_depths.F,v 1.12 2009/01/27 15:38:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/ini_depths.F,v 1.13 2009/04/28 18:06:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,9 +37,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
-#endif /* ALLOW_SHELFICE */
+#ifdef ALLOW_MNC
+# include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -79,9 +79,6 @@ C------
           R_low(i,j,bi,bj)   = 0. _d 0
           Ro_surf(i,j,bi,bj) = 0. _d 0
           topoZ(i,j,bi,bj)   = 0. _d 0
-#ifdef ALLOW_SHELFICE
-          R_shelfIce(i,j,bi,bj) = 0. _d 0
-#endif /* ALLOW_SHELFICE */
          ENDDO
         ENDDO
        ENDDO
@@ -106,20 +103,39 @@ C-            ocean : R_low = Bottom
         ENDDO
        ENDDO
       ELSE
+
+#ifdef ALLOW_MNC
+        IF (useMNC .AND. mnc_read_bathy) THEN
+          CALL MNC_CW_ADD_VNAME('bathy', 'Cen_xy_Hn__-__-', 3,4, myThid)
+          CALL MNC_FILE_CLOSE_ALL_MATCHING(bathyFile, myThid)
+          CALL MNC_CW_SET_UDIM(bathyFile, 1, myThid)
+          CALL MNC_CW_SET_CITER(bathyFile, 2, -1, -1, -1, myThid)
+          CALL MNC_CW_SET_UDIM(bathyFile, 1, myThid)
+          CALL MNC_CW_RL_R('D',bathyFile,0,0,'bathy',R_low, myThid)
+          CALL MNC_FILE_CLOSE_ALL_MATCHING(bathyFile, myThid)
+          CALL MNC_CW_DEL_VNAME('bathy', myThid)
+        ELSE
+#endif /*  ALLOW_MNC  */
 C Read the bathymetry using the mid-level I/O package read_write_rec
 C The 0 is the "iteration" argument. The 1 is the record number.
-        CALL READ_REC_XY_RS( bathyFile, R_low, 1, 0, myThid )
+          CALL READ_REC_XY_RS( bathyFile, R_low, 1, 0, myThid )
 C Read the bathymetry using the mid-level I/O package read_write_fld
 C The 0 is the "iteration" argument. The ' ' is an empty suffix
 c       CALL READ_FLD_XY_RS( bathyFile, ' ', R_low, 0, myThid )
 C Read the bathymetry using the low-level I/O package
 c       CALL MDSREADFIELD( bathyFile, readBinaryPrec,
 c    &                     'RS', 1, R_low, 1, myThid )
+
+#ifdef ALLOW_MNC
+        ENDIF
+#endif /*  ALLOW_MNC  */
+
+
       ENDIF
 C- end setup R_low in the interior
 
 C- fill in the overlap (+ BARRIER):
-      _EXCH_XY_R4(R_low, myThid )
+      _EXCH_XY_RS(R_low, myThid )
 
       IF ( debugLevel.GE.debLevB ) THEN
 c      PRINT *, ' Calling plot field', myThid
@@ -146,7 +162,7 @@ C------ set default value:
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1,sNy
            DO i=1,sNx
-            Ro_surf(i,j,bi,bj) = Ro_SeaLevel
+            Ro_surf(i,j,bi,bj) = rF(1)
            ENDDO
           ENDDO
          ENDDO
@@ -175,6 +191,13 @@ c         _BARRIER
 C         This I/O is now done in write_grid.F
 c         CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,0,myThid)
 
+        ELSEIF ( buoyancyRelation.EQ.'OCEANICP' ) THEN
+
+          WRITE(msgBuf,'(A,A)') 'S/R INI_DEPTHS: ',
+     &     'from topoFile (in m) to ref.bottom pressure: Not yet coded'
+          CALL PRINT_ERROR( msgBuf , myThid)
+          STOP 'ABNORMAL END: S/R INI_DEPTHS'
+
         ELSE
 C----
 C   Direct Transfer to Ro_surf (e.g., to specify upper ocean boundary
@@ -195,7 +218,7 @@ C------ end case "read topoFile"
       ENDIF
 
 C----- fill in the overlap (+ BARRIER):
-      _EXCH_XY_R4(Ro_surf, myThid )
+      _EXCH_XY_RS(Ro_surf, myThid )
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -237,9 +260,9 @@ c          IF ( jG .EQ. Ny )  R_low(i,j,bi,bj) = 0.
 c- Domain : Symetric % Eq. & closed at N & S boundaries:
            IF (usingSphericalPolarGrid .AND.
      &         ABS(yC(I,J,bi,bj)).GE.-ygOrigin)
-     &       R_low(I,J,bi,bj) = Ro_SeaLevel
+     &       R_low(I,J,bi,bj) = rF(1)
            IF (usingSphericalPolarGrid .AND. ABS(yC(I,J,bi,bj)).GE.90. )
-     &       R_low(I,J,bi,bj) = Ro_SeaLevel
+     &       R_low(I,J,bi,bj) = rF(1)
           ENDDO
          ENDDO
         ENDDO
@@ -253,52 +276,24 @@ c- Domain : Symetric % Eq. & closed at N & S boundaries:
       ENDIF
 c     CALL WRITE_FLD_XY_RS('Ro_surf',' ',Ro_surf,0,myThid)
 
-#ifdef ALLOW_SHELFICE
-c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      IF ( useShelfIce ) THEN
-C------
-C   4) Set R_shelfIce = the Lower (in r sense) boundary of floating shelfice :
-C------
-      IF (usingPCoords .OR. shelfIceFile .EQ. ' ') THEN
-C- e.g., atmosphere : R_low = Top of atmosphere
-C-            ocean : R_low = Bottom
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           R_shelfIce(i,j,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ELSE
-C Read the shelfIce draught using the mid-level I/O pacakage read_write_rec
-C The 0 is the "iteration" argument. The 1 is the record number.
-        CALL READ_REC_XY_RS( shelfIceFile, R_shelfIce, 1, 0, myThid )
-C Read the shelfIce draught using the mid-level I/O pacakage read_write_fld
-C The 0 is the "iteration" argument. The ' ' is an empty suffix
-C        CALL READ_FLD_XY_RS( shelfIceFile, ' ', R_shelfIce, 0, myThid )
-c       CALL READ_FLD_XY_RS( bathyFile, ' ', R_low, 0, myThid )
-C Read the selfIce draught using the low-level I/O package
-c       CALL MDSREADFIELD( shelfIceFile, readBinaryPrec,
-c    &                     'RS', 1, R_selfIce, 1, myThid )
-
-      ENDIF
-C- end setup R_shelfIce in the interior
-
-C- fill in the overlap (+ BARRIER):
-      _EXCH_XY_R4(R_shelfIce, myThid )
-
-c     CALL PLOT_FIELD_XYRS(R_selfIce,'Shelf ice draught (ini_depths)',
-c    &     1,myThid)
-CML      CALL WRITE_FLD_XY_RS( 'R_shelfIce' ,' ', R_shelfIce, 0,myThid)
-      ENDIF
-#endif /* ALLOW_SHELFICE */
-
 C--   Everyone else must wait for the depth to be loaded
 C-    note: might not be necessary since all single-thread IO above
 C           are followed by an EXCH (with BARRIER)
       _BARRIER
+
+#ifdef ALLOW_OBCS
+      IF ( useOBCS ) THEN
+C     check for inconsistent topography along boundaries and fix it
+       CALL OBCS_CHECK_DEPTHS( myThid )
+C     update the overlaps
+       _EXCH_XY_RS(R_low, myThid )
+      ENDIF
+#endif /* ALLOW_OBCS */
+
+#ifdef ALLOW_EXCH2
+C     Check domain boundary (e.g., in case of missing tiles)
+      CALL EXCH2_CHECK_DEPTHS( R_low, Ro_surf, myThid )
+#endif
 
       RETURN
       END

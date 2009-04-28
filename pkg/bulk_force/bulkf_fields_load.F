@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.14 2007/10/15 15:28:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.15 2009/04/28 18:08:13 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -305,40 +305,40 @@ c      ENDIF
 C note: no need for extra barrier here since EXCH contains threads synchronization
 c      _BARRIER
 
-       _EXCH_XY_R4(tair0 , myThid )
-       _EXCH_XY_R4(tair1 , myThid )
-       _EXCH_XY_R4(qair0 , myThid )
-       _EXCH_XY_R4(qair1 , myThid )
-       _EXCH_XY_R4(solar0, myThid )
-       _EXCH_XY_R4(solar1, myThid )
-       _EXCH_XY_R4(flwdwn0, myThid )
-       _EXCH_XY_R4(flwdwn1, myThid )
-       _EXCH_XY_R4(cloud0, myThid )
-       _EXCH_XY_R4(cloud1, myThid )
-       _EXCH_XY_R4(wspeed0, myThid )
-       _EXCH_XY_R4(wspeed1, myThid )
-c      _EXCH_XY_R4(uwind0, myThid )
-c      _EXCH_XY_R4(uwind1, myThid )
-c      _EXCH_XY_R4(vwind0, myThid )
-c      _EXCH_XY_R4(vwind1, myThid )
+       _EXCH_XY_RS(tair0 , myThid )
+       _EXCH_XY_RS(tair1 , myThid )
+       _EXCH_XY_RS(qair0 , myThid )
+       _EXCH_XY_RS(qair1 , myThid )
+       _EXCH_XY_RS(solar0, myThid )
+       _EXCH_XY_RS(solar1, myThid )
+       _EXCH_XY_RS(flwdwn0, myThid )
+       _EXCH_XY_RS(flwdwn1, myThid )
+       _EXCH_XY_RS(cloud0, myThid )
+       _EXCH_XY_RS(cloud1, myThid )
+       _EXCH_XY_RS(wspeed0, myThid )
+       _EXCH_XY_RS(wspeed1, myThid )
+c      _EXCH_XY_RS(uwind0, myThid )
+c      _EXCH_XY_RS(uwind1, myThid )
+c      _EXCH_XY_RS(vwind0, myThid )
+c      _EXCH_XY_RS(vwind1, myThid )
        CALL EXCH_UV_AGRID_3D_RS( uwind0, vwind0, .TRUE., 1, myThid )
        CALL EXCH_UV_AGRID_3D_RS( uwind1, vwind1, .TRUE., 1, myThid )
-       _EXCH_XY_R4(rain0, myThid )
-       _EXCH_XY_R4(rain1, myThid )
-       _EXCH_XY_R4(runoff0, myThid )
-       _EXCH_XY_R4(runoff1, myThid )
-       _EXCH_XY_R4(snow0 , myThid )
-       _EXCH_XY_R4(snow1 , myThid )
+       _EXCH_XY_RS(rain0, myThid )
+       _EXCH_XY_RS(rain1, myThid )
+       _EXCH_XY_RS(runoff0, myThid )
+       _EXCH_XY_RS(runoff1, myThid )
+       _EXCH_XY_RS(snow0 , myThid )
+       _EXCH_XY_RS(snow1 , myThid )
 #ifdef ALLOW_FORMULA_AIM
        IF ( useFluxFormula_AIM ) THEN
-         _EXCH_XY_R4( thAir0, myThid )
-         _EXCH_XY_R4( thAir1, myThid )
+         _EXCH_XY_RS( thAir0, myThid )
+         _EXCH_XY_RS( thAir1, myThid )
        ENDIF
 #endif
-       _EXCH_XY_R4(qnetch0, myThid )
-       _EXCH_XY_R4(qnetch1, myThid )
-       _EXCH_XY_R4(empch0, myThid )
-       _EXCH_XY_R4(empch1, myThid )
+       _EXCH_XY_RS(qnetch0, myThid )
+       _EXCH_XY_RS(qnetch1, myThid )
+       _EXCH_XY_RS(empch0, myThid )
+       _EXCH_XY_RS(empch1, myThid )
 
       ENDIF
 
@@ -396,7 +396,7 @@ C       -- dasilva data in g, ncep in kg ---
       ENDDO
 
 C- jmc: not needed since local fields have been exchanged.
-c      _EXCH_XY_R8(tair , myThid )
+c      _EXCH_XY_RL(tair , myThid )
 
 C-- Diagnostics
 c      IF (myThid.EQ.1 .AND. myTime.LT.62208000.) THEN

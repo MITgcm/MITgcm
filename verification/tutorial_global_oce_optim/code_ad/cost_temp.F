@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_temp.F,v 1.3 2008/02/08 17:06:45 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_temp.F,v 1.4 2009/04/28 18:06:15 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -57,7 +57,7 @@ C  Total number of wet temperature point
             enddo
          ENDDO
       ENDDO
-      _GLOBAL_SUM_R8( tmp , myThid )
+      _GLOBAL_SUM_RL( tmp , myThid )
 c
       locfc = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)

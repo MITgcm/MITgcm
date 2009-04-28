@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.4 2008/04/29 21:43:22 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.5 2009/04/28 18:09:28 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -99,7 +99,7 @@ c--   only do interior, and exchange outside
 
 
       call mdsreadfield(wFileCur,32,'RL',nR,wFld3d,1,mythid)
-      _EXCH_XYZ_R8( wFld3d, mythid )
+      _EXCH_XYZ_RL( wFld3d, mythid )
 
       il=ilnblnk( xxFileCur )
       write(fnamegeneric(1:80),'(2a,i10.10)')
@@ -271,7 +271,7 @@ c--   only do interior, and exchange outside
 
 
       call mdsreadfield(wFileCur,32,'RL',1,wFld2d,1,mythid)
-      _EXCH_XY_R8( wFld2d, mythid )
+      _EXCH_XY_RL( wFld2d, mythid )
 
       il=ilnblnk( xxFileCur )
       write(fnamegeneric(1:80),'(2a,i10.10)')

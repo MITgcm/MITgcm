@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/solid-body.cs-32x32x1/code/ini_vel.F,v 1.2 2003/02/11 04:02:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/solid-body.cs-32x32x1/code/ini_vel.F,v 1.3 2009/04/28 18:06:15 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -69,14 +69,14 @@ C     Read an initial state for each component if required
        _BEGIN_MASTER( myThid )
        CALL READ_FLD_XYZ_RL( uVelInitFile, ' ', uVel, 0, myThid )
        _END_MASTER(myThid)
-c      _EXCH_XYZ_R8(uVel  , myThid )
+c      _EXCH_XYZ_RL(uVel  , myThid )
       ENDIF
 
       IF (vVelInitFile .NE. ' ') THEN
        _BEGIN_MASTER( myThid )
        CALL READ_FLD_XYZ_RL( vVelInitFile, ' ', vVel, 0, myThid )
        _END_MASTER(myThid)
-c      _EXCH_XYZ_R8(vVel  , myThid )
+c      _EXCH_XYZ_RL(vVel  , myThid )
       ENDIF
 
 c     IF (uVelInitFile .NE. ' ' .OR. vVelInitFile .NE. ' ') THEN

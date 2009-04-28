@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_hflux.F,v 1.2 2008/01/18 03:39:26 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_hflux.F,v 1.3 2009/04/28 18:06:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,7 +51,7 @@ C
             enddo
          ENDDO
       ENDDO
-      _GLOBAL_SUM_R8( tmpC , myThid )
+      _GLOBAL_SUM_RL( tmpC , myThid )
       locfc = 0. _d 0
 c
         DO bj=myByLo(myThid),myByHi(myThid)

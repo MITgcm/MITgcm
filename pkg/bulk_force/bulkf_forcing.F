@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_forcing.F,v 1.12 2007/10/01 13:33:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_forcing.F,v 1.13 2009/04/28 18:08:13 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -213,8 +213,8 @@ C--   end bi,bj loops
 
 C--   Update the tile edges.
 C jmc: Is it necessary ?
-c     _EXCH_XY_R8(Qnet,   myThid)
-c     _EXCH_XY_R8(EmPmR,   myThid)
+c     _EXCH_XY_RS(Qnet,   myThid)
+c     _EXCH_XY_RS(EmPmR,   myThid)
 c     CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
 
 #endif  /*ALLOW_BULK_FORCE*/

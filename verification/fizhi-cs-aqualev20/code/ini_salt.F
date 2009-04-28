@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/ini_salt.F,v 1.1 2006/04/03 20:55:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/ini_salt.F,v 1.2 2009/04/28 18:06:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -114,7 +114,7 @@ C Now convert from rh to q
        ENDDO
       ENDDO
 
-       _EXCH_XYZ_R8(salt  , myThid )
+       _EXCH_XYZ_RL(salt  , myThid )
 
       ENDIF
 

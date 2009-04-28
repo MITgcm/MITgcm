@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/solid-body.cs-32x32x1/code/ini_psurf.F,v 1.2 2003/10/28 22:58:01 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/solid-body.cs-32x32x1/code/ini_psurf.F,v 1.3 2009/04/28 18:06:15 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,7 +54,7 @@ C     Read an initial state
        _END_MASTER(myThid)
       ENDIF
 C
-      _EXCH_XY_R8(etaN, myThid)
+      _EXCH_XY_RL(etaN, myThid)
 
 #ifdef ALLOW_CD_CODE
 C--   By default, initialize etaNm1 with etaN : 
@@ -68,7 +68,7 @@ C--   By default, initialize etaNm1 with etaN :
        ENDDO
       ENDDO
 
-C     _EXCH_XY_R8(etaNm1, myThid)
+C     _EXCH_XY_RL(etaNm1, myThid)
 #endif
 
       RETURN

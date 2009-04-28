@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/update_ocean_exports.F,v 1.3 2009/04/02 20:51:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/update_ocean_exports.F,v 1.4 2009/04/28 18:06:14 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -100,8 +100,8 @@ c --------------------------------
 
        ENDDO
        ENDDO
-       _EXCH_XY_R8(sst,myThid)
-       _EXCH_XY_R8(sice,myThid)
+       _EXCH_XY_RL(sst,myThid)
+       _EXCH_XY_RL(sice,myThid)
 
        return
        end

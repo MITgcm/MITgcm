@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/Attic/ctrl_obcsvol.F,v 1.10 2007/10/09 00:00:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/Attic/ctrl_obcsvol.F,v 1.11 2009/04/28 18:09:28 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -308,8 +308,8 @@ cgg -- Positive is flux in.
 #endif
 
 c--   Do the global summation.
-        _GLOBAL_SUM_R8( sumvol, mythid )
-        _GLOBAL_SUM_R8( sumarea,mythid )
+        _GLOBAL_SUM_RL( sumvol, mythid )
+        _GLOBAL_SUM_RL( sumarea,mythid )
 
         shiftvel(2) = sumvol /sumarea
       endif
@@ -466,8 +466,8 @@ cgg -- Positive is flux in.
 #endif
 
 c--   Do the global summation.
-        _GLOBAL_SUM_R8( sumvol, mythid )
-        _GLOBAL_SUM_R8( sumarea,mythid )
+        _GLOBAL_SUM_RL( sumvol, mythid )
+        _GLOBAL_SUM_RL( sumarea,mythid )
 
         shiftvel(2) = sumvol /sumarea
       endif

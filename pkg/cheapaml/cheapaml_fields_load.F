@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.3 2008/09/09 19:05:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.4 2009/04/28 18:08:13 jmc Exp $
 C $Name:  $
 #include "CHEAPAML_OPTIONS.h"
 
@@ -248,16 +248,16 @@ C      data for the period ahead and the period behind myTime.
      &       myIter,myThid )
       ENDIF
 
-       _EXCH_XY_R4(trair0 , myThid )
-       _EXCH_XY_R4(qrair0 , myThid )
-       _EXCH_XY_R4(solar0 , myThid )
-       _EXCH_XY_R4(uwind0 , myThid )
-       _EXCH_XY_R4(vwind0 , myThid )
-       _EXCH_XY_R4(trair1 , myThid )
-       _EXCH_XY_R4(qrair1 , myThid )
-       _EXCH_XY_R4(solar1 , myThid )
-       _EXCH_XY_R4(uwind1 , myThid )
-       _EXCH_XY_R4(vwind1 , myThid )
+       _EXCH_XY_RS(trair0 , myThid )
+       _EXCH_XY_RS(qrair0 , myThid )
+       _EXCH_XY_RS(solar0 , myThid )
+       _EXCH_XY_RS(uwind0 , myThid )
+       _EXCH_XY_RS(vwind0 , myThid )
+       _EXCH_XY_RS(trair1 , myThid )
+       _EXCH_XY_RS(qrair1 , myThid )
+       _EXCH_XY_RS(solar1 , myThid )
+       _EXCH_XY_RS(uwind1 , myThid )
+       _EXCH_XY_RS(vwind1 , myThid )
 C
       ENDIF
 

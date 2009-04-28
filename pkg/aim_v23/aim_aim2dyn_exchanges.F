@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/Attic/aim_aim2dyn_exchanges.F,v 1.4 2007/04/04 02:47:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/Attic/aim_aim2dyn_exchanges.F,v 1.5 2009/04/28 18:08:13 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -50,7 +50,7 @@ C     !LOCAL VARIABLES:
       INTEGER bi,bj
 #endif
 
-      _EXCH_XY_R8( aim_drag, myThid )
+      _EXCH_XY_RL( aim_drag, myThid )
 
 #ifdef ALLOW_THSICE
       IF (useThSIce) THEN
