@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.50 2008/01/08 23:59:39 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.51 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -116,7 +116,7 @@ C--   Initialise inverter
       eta_qrNM1 = 1. _d 0
 
 CcnhDebugStarts
-C     _EXCH_XY_R8( cg2d_b, myThid )
+C     _EXCH_XY_RL( cg2d_b, myThid )
 C     CALL PLOT_FIELD_XYRL( cg2d_b, 'CG2D.0 CG2D_B' , 1, myThid )
 C     suff = 'unnormalised'
 C     CALL WRITE_FLD_XY_RL (  'cg2d_b.',suff,    cg2d_b, 1, myThid)
@@ -139,10 +139,10 @@ C--   Normalise RHS
       IF (cg2dNormaliseRHS) THEN
 C-  Normalise RHS :
 #ifdef LETS_MAKE_JAM
-C     _GLOBAL_MAX_R8( rhsMax, myThid )
+C     _GLOBAL_MAX_RL( rhsMax, myThid )
       rhsMax=1.
 #else
-      _GLOBAL_MAX_R8( rhsMax, myThid )
+      _GLOBAL_MAX_RL( rhsMax, myThid )
 #endif
       rhsNorm = 1. _d 0
       IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax
@@ -160,8 +160,8 @@ C- end Normalise RHS
       ENDIF
 
 C--   Update overlaps
-      _EXCH_XY_R8( cg2d_b, myThid )
-      _EXCH_XY_R8( cg2d_x, myThid )
+      _EXCH_XY_RL( cg2d_b, myThid )
+      _EXCH_XY_RL( cg2d_x, myThid )
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRL( cg2d_b, 'CG2D.1 CG2D_B' , 1, myThid )
 C     suff = 'normalised'
@@ -233,8 +233,8 @@ c       err    = err    + errTile(bi,bj)
       ENDDO
       CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, sumRHS, myThid)
 #else
-c      _GLOBAL_SUM_R8( sumRHS, myThid )
-c      _GLOBAL_SUM_R8( err   , myThid )
+c      _GLOBAL_SUM_RL( sumRHS, myThid )
+c      _GLOBAL_SUM_RL( err   , myThid )
        CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
        CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
 #endif
@@ -301,7 +301,7 @@ c        eta_qrN = eta_qrN + eta_qrNtile(bi,bj)
 #ifdef CG2D_SINGLECPU_SUM
        CALL GLOBAL_SUM_SINGLECPU_RL( localBuf,eta_qrN,myThid )
 #else
-c      _GLOBAL_SUM_R8(eta_qrN, myThid)
+c      _GLOBAL_SUM_RL(eta_qrN, myThid)
        CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
 #endif
 CcnhDebugStarts
@@ -326,7 +326,7 @@ CcnhDebugEnds
 
 C--    Do exchanges that require messages i.e. between
 C--    processes.
-C      _EXCH_XY_R8( cg2d_s, myThid )
+C      _EXCH_XY_RL( cg2d_s, myThid )
 #ifdef LETS_MAKE_JAM
       CALL EXCH_XY_O1_R8_JAM( cg2d_s )
 #else
@@ -372,7 +372,7 @@ c        alpha = alpha + alphaTile(bi,bj)
 #ifdef CG2D_SINGLECPU_SUM
        CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, alpha, myThid)
 #else
-c      _GLOBAL_SUM_R8(alpha,myThid)
+c      _GLOBAL_SUM_RL(alpha,myThid)
        CALL GLOBAL_SUM_TILE_RL( alphaTile,  alpha,  myThid )
 #endif
 CcnhDebugStarts
@@ -408,7 +408,7 @@ c        err = err + errTile(bi,bj)
 #ifdef CG2D_SINGLECPU_SUM
        CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, err, myThid)
 #else
-c      _GLOBAL_SUM_R8( err   , myThid )
+c      _GLOBAL_SUM_RL( err   , myThid )
        CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
 #endif
        err = SQRT(err)
@@ -450,7 +450,7 @@ C--   Un-normalise the answer
 
 C     The following exchange was moved up to solve_for_pressure
 C     for compatibility with TAMC.
-C     _EXCH_XY_R8(cg2d_x, myThid )
+C     _EXCH_XY_RL(cg2d_x, myThid )
 c     _BEGIN_MASTER( myThid )
 c      WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ',
 c    & actualIts, actualResidual
@@ -482,7 +482,7 @@ C        ENDDO
 C       ENDDO
 C      ENDDO
 C     ENDDO
-C     _GLOBAL_SUM_R8( err   , myThid )
+C     _GLOBAL_SUM_RL( err   , myThid )
 C     write(*,*) 'cg2d: Ax - b = ',SQRT(err)
 CcnhDebugEnds
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.8 2008/02/02 02:37:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.9 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -84,13 +84,13 @@ CEOP
        IF ( diffKrFile .NE. ' ' ) THEN
           CALL READ_FLD_XYZ_RL(diffKrFile,' ',diffKr,0,myThid)
        ENDIF
-      _EXCH_XYZ_R8(diffKr , myThid )
+      _EXCH_XYZ_RL(diffKr , myThid )
 #endif
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPGM_CONTROL))
-      _EXCH_XYZ_R8(KapGM,   myThid )
+      _EXCH_XYZ_RL(KapGM,   myThid )
 #endif
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPREDI_CONTROL))
-      _EXCH_XYZ_R8(kapredi,   myThid )
+      _EXCH_XYZ_RL(kapredi,   myThid )
 #endif
       RETURN
       END

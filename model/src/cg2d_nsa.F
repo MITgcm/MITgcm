@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d_nsa.F,v 1.1 2006/06/07 01:45:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d_nsa.F,v 1.2 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -141,7 +141,7 @@ C--   Initialise inverter
       recip_eta_qrNM1 = 1./eta_qrNM1
 
 CcnhDebugStarts
-C     _EXCH_XY_R8( cg2d_b, myThid )
+C     _EXCH_XY_RL( cg2d_b, myThid )
 C     CALL PLOT_FIELD_XYRL( cg2d_b, 'CG2D.0 CG2D_B' , 1, myThid )
 C     suff = 'unnormalised'
 C     CALL WRITE_FLD_XY_RL (  'cg2d_b.',suff,    cg2d_b, 1, myThid)
@@ -167,14 +167,14 @@ CADJ STORE cg2d_b = comlev1_cg2d, key = ikey, byte = isbyte
       IF (cg2dNormaliseRHS) THEN
 C     -  Normalise RHS :
 #ifdef LETS_MAKE_JAM
-C     _GLOBAL_MAX_R8( rhsMax, myThid )
+C     _GLOBAL_MAX_RL( rhsMax, myThid )
       rhsMaxGlobal=1.
 #else
 #ifdef ALLOW_CONST_RHSMAX
       rhsMaxGlobal=1.
 #else
       rhsMaxGlobal=rhsMax
-      _GLOBAL_MAX_R8( rhsMaxGlobal, myThid )
+      _GLOBAL_MAX_RL( rhsMaxGlobal, myThid )
 #endif /* ALLOW_CONST_RHSMAX */
 #endif
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -204,8 +204,8 @@ C- end Normalise RHS
       ENDIF
 
 C--   Update overlaps
-      _EXCH_XY_R8( cg2d_b, myThid )
-      _EXCH_XY_R8( cg2d_x, myThid )
+      _EXCH_XY_RL( cg2d_b, myThid )
+      _EXCH_XY_RL( cg2d_x, myThid )
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRL( cg2d_b, 'CG2D.1 CG2D_B' , 1, myThid )
 C     suff = 'normalised'
@@ -251,11 +251,11 @@ CML     &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom*cg2dNorm
       CALL EXCH_XY_O1_R8_JAM( cg2d_r )
       CALL EXCH_XY_O1_R8_JAM( cg2d_s )
 #else
-      _EXCH_XY_R8( cg2d_r, myThid )
-      _EXCH_XY_R8( cg2d_s, myThid )
+      _EXCH_XY_RL( cg2d_r, myThid )
+      _EXCH_XY_RL( cg2d_s, myThid )
 #endif
-       _GLOBAL_SUM_R8( sumRHS, myThid )
-       _GLOBAL_SUM_R8( err_sq, myThid )
+       _GLOBAL_SUM_RL( sumRHS, myThid )
+       _GLOBAL_SUM_RL( err_sq, myThid )
        if ( err_sq .ne. 0. ) then
           err = SQRT(err_sq)
        else
@@ -329,7 +329,7 @@ CcnhDebugEnds
         ENDDO
        ENDDO
 
-       _GLOBAL_SUM_R8(eta_qrN, myThid)
+       _GLOBAL_SUM_RL(eta_qrN, myThid)
 CcnhDebugStarts
 C      WRITE(*,*) ' CG2D_NSA: Iteration ',it2d-1,' eta_qrN = ',eta_qrN
 CcnhDebugEnds
@@ -364,7 +364,7 @@ C--    processes.
 #ifdef LETS_MAKE_JAM
       CALL EXCH_XY_O1_R8_JAM( cg2d_s )
 #else
-       _EXCH_XY_R8( cg2d_s, myThid )
+       _EXCH_XY_RL( cg2d_s, myThid )
 #endif
 
 C==    Evaluate laplace operator on conjugate gradient vector
@@ -397,7 +397,7 @@ CML     &     cg2d_s(I  ,J  ,bi,bj)/deltaTMom/deltaTMom*cg2dNorm
          ENDDO
         ENDDO
        ENDDO
-       _GLOBAL_SUM_R8(alpha_aux,myThid)
+       _GLOBAL_SUM_RL(alpha_aux,myThid)
 CcnhDebugStarts
 C      WRITE(*,*) ' CG2D_NSA: Iteration ',it2d-1,' SUM(s*q)= ',alpha_aux
 CcnhDebugEnds
@@ -427,7 +427,7 @@ CADJ STORE cg2d_r = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
         ENDDO
        ENDDO
 
-       _GLOBAL_SUM_R8( err_sq   , myThid )
+       _GLOBAL_SUM_RL( err_sq   , myThid )
        if ( err_sq .ne. 0. ) then
           err = SQRT(err_sq)
        else
@@ -439,8 +439,8 @@ CADJ STORE cg2d_r = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 #ifdef LETS_MAKE_JAM
       CALL EXCH_XY_O1_R8_JAM( cg2d_r )
 #else
-      _EXCH_XY_R8( cg2d_r, myThid )
-      _EXCH_XY_R8( cg2d_x, myThid )
+      _EXCH_XY_RL( cg2d_r, myThid )
+      _EXCH_XY_RL( cg2d_x, myThid )
 #endif
 
 Cml   end of IF ( err .LT. cg2dTolerance ) THEN; ELSE
@@ -467,7 +467,7 @@ C--   Un-normalise the answer
 
 C     The following exchange was moved up to solve_for_pressure
 C     for compatibility with TAMC.
-C     _EXCH_XY_R8(cg2d_x, myThid )
+C     _EXCH_XY_RL(cg2d_x, myThid )
 c     _BEGIN_MASTER( myThid )
 c      WRITE(*,'(A,I6,1PE30.14)') ' CG2D_NSA iters, err = ', 
 c    & actualIts, actualResidual

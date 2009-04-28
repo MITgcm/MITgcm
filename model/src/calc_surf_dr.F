@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.13 2007/09/04 16:49:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.14 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -173,8 +173,8 @@ C-    end bi,bj loop.
       ENDDO
 
 C-- Global diagnostic :
-      _GLOBAL_SUM_R8( adjust_nb_pt , myThid )
-      _GLOBAL_SUM_R8( adjust_volum , myThid )
+      _GLOBAL_SUM_RL( adjust_nb_pt , myThid )
+      _GLOBAL_SUM_RL( adjust_volum , myThid )
       IF (adjust_nb_pt .GE.1.) THEN
         _BEGIN_MASTER( myThid )
         WRITE(standardMessageUnit,'(2(A,I10),1PE16.8)')
@@ -183,7 +183,7 @@ C-- Global diagnostic :
         _END_MASTER( myThid )
       ENDIF
 
-      _EXCH_XY_R4(hFac_surfC, myThid )
+      _EXCH_XY_RS(hFac_surfC, myThid )
       CALL EXCH_UV_XY_RS(hFac_surfW,hFac_surfS,.FALSE.,myThid)
 
 C-----

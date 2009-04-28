@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.23 2007/03/12 23:43:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.24 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -194,7 +194,7 @@ c    &      theRecip_Dr = 1. _d 0/theRecip_Dr
 #endif
        ENDDO
       ENDDO
-      _GLOBAL_MAX_R4( myNorm, myThid )
+      _GLOBAL_MAX_RS( myNorm, myThid )
       IF ( myNorm .NE. 0. _d 0 ) THEN
        myNorm = 1. _d 0/myNorm
       ELSE
@@ -259,11 +259,11 @@ C-    Matrix solver normalisation
       ENDDO
 
 C--   Update overlap regions
-c     _EXCH_XYZ_R4(aW3d, myThid)
-c     _EXCH_XYZ_R4(aS3d, myThid)
+c     _EXCH_XYZ_RS(aW3d, myThid)
+c     _EXCH_XYZ_RS(aS3d, myThid)
       CALL EXCH_UV_XYZ_RS(aW3d,aS3d,.FALSE.,myThid)
-      _EXCH_XYZ_R4(aV3d, myThid)
-      _EXCH_XYZ_R4(aC3d, myThid)
+      _EXCH_XYZ_RS(aV3d, myThid)
+      _EXCH_XYZ_RS(aC3d, myThid)
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYZRS( aW3d, 'AW3D INI_CG3D.1' , Nr, 1, myThid )
 C     CALL PLOT_FIELD_XYZRS( aS3d, 'AS3D INI_CG3D.1' , Nr, 1, myThid )
@@ -350,9 +350,9 @@ CcnhDEbugEnds
        ENDDO
       ENDDO
 C--   Update overlap regions
-      _EXCH_XYZ_R4(zMC, myThid)
-      _EXCH_XYZ_R4(zML, myThid)
-      _EXCH_XYZ_R4(zMU, myThid)
+      _EXCH_XYZ_RS(zMC, myThid)
+      _EXCH_XYZ_RS(zML, myThid)
+      _EXCH_XYZ_RS(zMU, myThid)
 
 CcnhDebugStarts
 c     DO k=1,Nr

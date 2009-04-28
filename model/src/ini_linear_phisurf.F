@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.14 2008/09/06 17:42:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.15 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -156,8 +156,8 @@ C--- Bo = d/d_p(Phi_surf) = tRef_surf*d/d_p(PI) ; PI = Cp*(p/Po)^kappa
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Update overlap regions (jmc: is it really needed ?)
-      _EXCH_XY_R8(Bo_surf, myThid)
-      _EXCH_XY_R8(recip_Bo, myThid)
+      _EXCH_XY_RL(Bo_surf, myThid)
+      _EXCH_XY_RL(recip_Bo, myThid)
 
       IF ( ( buoyancyRelation .EQ. 'ATMOSPHERIC' .OR.
      &       buoyancyRelation .EQ. 'OCEANICP'         )

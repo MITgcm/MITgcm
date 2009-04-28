@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.41 2009/02/27 00:32:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.42 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -106,15 +106,15 @@ C     read the raw grid data from files
 C-    Cell centered quantities
       CALL MDSREADFIELD('LONC.bin',readBinaryPrec,'RS',1,xC,  1,myThid)
       CALL MDSREADFIELD('LATC.bin',readBinaryPrec,'RS',1,yC,  1,myThid)
-      _EXCH_XY_R4(xC,myThid)
-      _EXCH_XY_R4(yC,myThid)
+      _EXCH_XY_RS(xC,myThid)
+      _EXCH_XY_RS(yC,myThid)
 
       CALL MDSREADFIELD('DXF.bin',readBinaryPrec,'RS',1,dxF,  1,myThid)
       CALL MDSREADFIELD('DYF.bin',readBinaryPrec,'RS',1,dyF,  1,myThid)
       CALL EXCH_UV_AGRID_3D_RS( dxF, dyF, .FALSE., 1, myThid )
 
       CALL MDSREADFIELD('RA.bin',readBinaryPrec,'RS',1,rA,  1,myThid)
-      _EXCH_XY_R4(rA,myThid )
+      _EXCH_XY_RS(rA,myThid )
 
 C-    Corner quantities
       CALL MDSREADFIELD('LONG.bin',readBinaryPrec,'RS',1,xG,  1,myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.2 2006/07/23 23:32:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.3 2009/04/28 18:01:15 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -114,7 +114,7 @@ C - end bi,bj loops.
        ENDDO
       ENDDO
 C
-C      _EXCH_XYZ_R4(hFacC,myThid)
+C      _EXCH_XYZ_RS(hFacC,myThid)
 C
 C-  Re-calculate lower-R Boundary position, taking into account hFacC
       DO bj=myByLo(myThid), myByHi(myThid)
@@ -184,7 +184,7 @@ C         Inverse of fluid column thickness (1/r_unit)
         ENDDO
        ENDDO
       ENDDO
-C     _EXCH_XY_R4(   recip_Rcol, myThid )
+C     _EXCH_XY_RS(   recip_Rcol, myThid )
 
 C     hFacW and hFacS (at U and V points)
 CML   This will be the crucial part of the code, because here the minimum
@@ -319,12 +319,12 @@ Cml            maskS(I,J,K,bi,bj) = 0.
 CmlCml(
 Cml       ENDDO
 Cml      ENDDO
-Cml      _EXCH_XYZ_R4(recip_hFacC    , myThid )
-Cml      _EXCH_XYZ_R4(recip_hFacW    , myThid )
-Cml      _EXCH_XYZ_R4(recip_hFacS    , myThid )
-Cml      _EXCH_XYZ_R4(maskC    , myThid )
-Cml      _EXCH_XYZ_R4(maskW    , myThid )
-Cml      _EXCH_XYZ_R4(maskS    , myThid )
+Cml      _EXCH_XYZ_RS(recip_hFacC    , myThid )
+Cml      _EXCH_XYZ_RS(recip_hFacW    , myThid )
+Cml      _EXCH_XYZ_RS(recip_hFacS    , myThid )
+Cml      _EXCH_XYZ_RS(maskC    , myThid )
+Cml      _EXCH_XYZ_RS(maskW    , myThid )
+Cml      _EXCH_XYZ_RS(maskS    , myThid )
 Cml      DO bj = myByLo(myThid), myByHi(myThid)
 Cml       DO bi = myBxLo(myThid), myBxHi(myThid)
 CmlCml)

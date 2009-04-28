@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.39 2009/02/27 01:05:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.40 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -203,10 +203,10 @@ C-      Compute the domain Area:
         threadArea = threadArea + tileArea(bi,bj)
        ENDDO
       ENDDO
-C     _EXCH_XY_R4(   recip_Rcol, myThid )
+C     _EXCH_XY_RS(   recip_Rcol, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
 C_jmc: apply GLOBAL_SUM to thread-local variable (not in common block)
-      _GLOBAL_SUM_R8( threadArea, myThid )
+      _GLOBAL_SUM_RL( threadArea, myThid )
 #else
       CALL GLOBAL_SUM_TILE_RL( tileArea, threadArea, myThid )
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.31 2007/10/15 15:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.32 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -199,25 +199,25 @@ C-     Qnet is now (after c54) the net Heat Flux (including SW)
 #endif
 
 C-    thread synchronisation (barrier) is part of the EXCH S/R calls
-       _EXCH_XY_R4(SST0  , myThid )
-       _EXCH_XY_R4(SST1  , myThid )
-       _EXCH_XY_R4(SSS0  , myThid )
-       _EXCH_XY_R4(SSS1  , myThid )
+       _EXCH_XY_RS(SST0  , myThid )
+       _EXCH_XY_RS(SST1  , myThid )
+       _EXCH_XY_RS(SSS0  , myThid )
+       _EXCH_XY_RS(SSS1  , myThid )
        CALL EXCH_UV_XY_RS(taux0,tauy0,.TRUE.,myThid)
        CALL EXCH_UV_XY_RS(taux1,tauy1,.TRUE.,myThid)
-       _EXCH_XY_R4(Qnet0, myThid )
-       _EXCH_XY_R4(Qnet1, myThid )
-       _EXCH_XY_R4(EmPmR0, myThid )
-       _EXCH_XY_R4(EmPmR1, myThid )
-       _EXCH_XY_R4(saltFlux0, myThid )
-       _EXCH_XY_R4(saltFlux1, myThid )
+       _EXCH_XY_RS(Qnet0, myThid )
+       _EXCH_XY_RS(Qnet1, myThid )
+       _EXCH_XY_RS(EmPmR0, myThid )
+       _EXCH_XY_RS(EmPmR1, myThid )
+       _EXCH_XY_RS(saltFlux0, myThid )
+       _EXCH_XY_RS(saltFlux1, myThid )
 #ifdef SHORTWAVE_HEATING
-       _EXCH_XY_R4(Qsw0, myThid )
-       _EXCH_XY_R4(Qsw1, myThid )
+       _EXCH_XY_RS(Qsw0, myThid )
+       _EXCH_XY_RS(Qsw1, myThid )
 #endif
 #ifdef ATMOSPHERIC_LOADING
-       _EXCH_XY_R4(pLoad0, myThid )
-       _EXCH_XY_R4(pLoad1, myThid )
+       _EXCH_XY_RS(pLoad0, myThid )
+       _EXCH_XY_RS(pLoad1, myThid )
 #endif
 
       ENDIF

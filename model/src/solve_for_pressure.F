@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.65 2009/04/22 01:30:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.66 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -290,7 +290,7 @@ C--   Call the not-self-adjoint version of cg2d
      U           numIters,
      I           myThid )
 #endif /* ALLOW_CG2D_NSA */
-      _EXCH_XY_R8(cg2d_x, myThid )
+      _EXCH_XY_RL(cg2d_x, myThid )
 c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 
 #ifdef ALLOW_DEBUG
@@ -463,7 +463,7 @@ C-    end bi,bj loops
      O           lastResidual,
      U           numIters,
      I           myThid )
-      _EXCH_XYZ_R8(phi_nh, myThid )
+      _EXCH_XYZ_RL(phi_nh, myThid )
       CALL TIMER_STOP ('CG3D   [SOLVE_FOR_PRESSURE]',myThid)
 
       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)

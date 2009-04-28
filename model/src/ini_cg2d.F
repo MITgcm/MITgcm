@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.45 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.46 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,7 +129,7 @@ C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
         ENDDO
        ENDDO
       ENDDO
-      _GLOBAL_MAX_R4( myNorm, myThid )
+      _GLOBAL_MAX_RS( myNorm, myThid )
       IF ( myNorm .NE. 0. _d 0 ) THEN
        myNorm = 1. _d 0/myNorm
       ELSE
@@ -151,8 +151,8 @@ CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.1' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.1' , 1, myThid )
 CcnhDebugEnds
-c     _EXCH_XY_R4(aW2d, myThid)
-c     _EXCH_XY_R4(aS2d, myThid)
+c     _EXCH_XY_RS(aW2d, myThid)
+c     _EXCH_XY_RS(aS2d, myThid)
       CALL EXCH_UV_XY_RS(aW2d,aS2d,.FALSE.,myThid)
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.2' , 1, myThid )
@@ -254,9 +254,9 @@ C         pS(I,J,bi,bj) = 0.
        ENDDO
       ENDDO
 C--   Update overlap regions
-      _EXCH_XY_R4(pC, myThid)
-c     _EXCH_XY_R4(pW, myThid)
-c     _EXCH_XY_R4(pS, myThid)
+      _EXCH_XY_RS(pC, myThid)
+c     _EXCH_XY_RS(pW, myThid)
+c     _EXCH_XY_RS(pS, myThid)
       CALL EXCH_UV_XY_RS(pW,pS,.FALSE.,myThid)
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( pC, 'pC   INI_CG2D.2' , 1, myThid )

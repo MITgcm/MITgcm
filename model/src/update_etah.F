@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.8 2005/12/07 23:57:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.9 2009/04/28 18:01:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -101,7 +101,7 @@ C- end bi,bj loop.
      &    _EXCH_XY_RL( etaH, myThid ) 
 
 c     IF (useRealFreshWaterFlux .AND. myTime.EQ.startTime)
-c    &    _EXCH_XY_R4( PmEpR, myThid )
+c    &    _EXCH_XY_RS( PmEpR, myThid )
 
 #endif /* EXACT_CONSERV */
 

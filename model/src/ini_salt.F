@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.18 2006/11/05 18:36:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.19 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -81,7 +81,7 @@ C        _END_MASTER(myThid)
 #ifdef ALLOW_MNC
         ENDIF
 #endif /*  ALLOW_MNC  */
-       _EXCH_XYZ_R8(salt  , myThid )
+       _EXCH_XYZ_RL(salt  , myThid )
       ENDIF
 
 C     Apply mask and test consistancy

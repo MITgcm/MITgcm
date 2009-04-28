@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_surf_dr.F,v 1.2 2006/07/13 20:48:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_surf_dr.F,v 1.3 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -86,7 +86,7 @@ C-    end bi,bj loop.
         ENDDO
        ENDDO
 
-       _EXCH_XY_R8( Rmin_surf, myThid )
+       _EXCH_XY_RL( Rmin_surf, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* NONLIN_FRSURF */

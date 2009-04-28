@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.6 2009/02/13 21:56:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.7 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -180,9 +180,9 @@ C--    End of 2nd bi,bj loop
       ENDDO
 
       IF ( exactConserv .AND. implicDiv2Dflow .NE. 0. _d 0)
-     & _EXCH_XY_R8( etaN , myThid )
+     & _EXCH_XY_RL( etaN , myThid )
       IF ( implicitIntGravWave ) 
-     & _EXCH_XYZ_R8( wVel , myThid )
+     & _EXCH_XYZ_RL( wVel , myThid )
 
       RETURN
       END

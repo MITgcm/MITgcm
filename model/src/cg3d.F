@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.19 2007/09/04 14:54:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.20 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -117,7 +117,7 @@ C--   Normalise RHS
         ENDDO
        ENDDO
       ENDDO
-      _GLOBAL_MAX_R8( rhsMax, myThid )
+      _GLOBAL_MAX_RL( rhsMax, myThid )
       rhsNorm = 1. _d 0
       IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -134,8 +134,8 @@ C--   Normalise RHS
       ENDDO
 
 C--   Update overlaps
-c     _EXCH_XYZ_R8( cg3d_b, myThid )
-      _EXCH_XYZ_R8( cg3d_x, myThid )
+c     _EXCH_XYZ_RL( cg3d_b, myThid )
+      _EXCH_XYZ_RL( cg3d_x, myThid )
 
 C--   Initial residual calculation (with free-Surface term)
       err    = 0. _d 0
@@ -181,8 +181,8 @@ c       sumRHS = sumRHS + sumRHStile(bi,bj)
       ENDDO
        CALL EXCH_S3D_RL( cg3d_r, Nr, myThid )
 c      CALL EXCH_S3D_RL( cg3d_s, Nr, myThid )
-c     _GLOBAL_SUM_R8( sumRHS, myThid )
-c     _GLOBAL_SUM_R8( err   , myThid )
+c     _GLOBAL_SUM_RL( sumRHS, myThid )
+c     _GLOBAL_SUM_RL( err   , myThid )
        CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
        CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
 
@@ -289,7 +289,7 @@ caja    ENDDO
 caja   ENDDO
 caja
 
-c      _GLOBAL_SUM_R8(eta_qrN, myThid)
+c      _GLOBAL_SUM_RL(eta_qrN, myThid)
        CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
 CcnhDebugStarts
 C      WRITE(*,*) ' CG3D: Iteration ',it3d-1,' eta_qrN = ',eta_qrN
@@ -387,7 +387,7 @@ C==    q = A.s
 c        alpha = alpha + alphaTile(bi,bj)
         ENDDO
        ENDDO
-c      _GLOBAL_SUM_R8(alpha,myThid)
+c      _GLOBAL_SUM_RL(alpha,myThid)
        CALL GLOBAL_SUM_TILE_RL( alphaTile,  alpha,  myThid )
 CcnhDebugStarts
 C      WRITE(*,*) ' CG3D: Iteration ',it3d-1,' SUM(s*q)= ',alpha
@@ -419,7 +419,7 @@ c        err = err + errTile(bi,bj)
         ENDDO
        ENDDO
 
-c      _GLOBAL_SUM_R8( err   , myThid )
+c      _GLOBAL_SUM_RL( err   , myThid )
        CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
        err = SQRT(err)
        actualIts      = it3d
@@ -443,7 +443,7 @@ C--   Un-normalise the answer
        ENDDO
       ENDDO
 
-Cadj  _EXCH_XYZ_R8(cg3d_x, myThid )
+Cadj  _EXCH_XYZ_RL(cg3d_x, myThid )
 c     _BEGIN_MASTER( myThid )
 c      WRITE(*,'(A,I6,1PE30.14)') ' CG3D iters, err = ',
 c    &  actualIts, actualResidual

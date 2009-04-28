@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.44 2009/04/24 01:55:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.45 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -135,7 +135,7 @@ c    &                     'RS', 1, R_low, 1, myThid )
 C- end setup R_low in the interior
 
 C- fill in the overlap (+ BARRIER):
-      _EXCH_XY_R4(R_low, myThid )
+      _EXCH_XY_RS(R_low, myThid )
 
       IF ( debugLevel.GE.debLevB ) THEN
 c      PRINT *, ' Calling plot field', myThid
@@ -218,7 +218,7 @@ C------ end case "read topoFile"
       ENDIF
 
 C----- fill in the overlap (+ BARRIER):
-      _EXCH_XY_R4(Ro_surf, myThid )
+      _EXCH_XY_RS(Ro_surf, myThid )
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -278,7 +278,7 @@ C           are followed by an EXCH (with BARRIER)
 C     check for inconsistent topography along boundaries and fix it
        CALL OBCS_CHECK_DEPTHS( myThid )
 C     update the overlaps
-       _EXCH_XY_R4(R_low, myThid )
+       _EXCH_XY_RS(R_low, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
 

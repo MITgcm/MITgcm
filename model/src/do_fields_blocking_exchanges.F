@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.24 2007/08/17 21:19:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.25 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -44,13 +44,13 @@ C-    Apply Exchanges on dynamics state variable, except in Off-Line mode
       IF ( .NOT.staggerTimeStep .OR. .NOT.useMultiDimAdvec ) THEN
        CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
        IF ( .NOT.implicitIntGravWave )
-     & _EXCH_XYZ_R8( wVel , myThid )
+     & _EXCH_XYZ_RL( wVel , myThid )
       ENDIF
 c     IF ( exactConserv .AND. implicDiv2Dflow .NE. 0. _d 0)
-c    & _EXCH_XY_R8( etaN , myThid )
+c    & _EXCH_XY_RL( etaN , myThid )
       IF ( .NOT.implicitIntGravWave ) THEN
-       _EXCH_XYZ_R8( theta, myThid )
-       _EXCH_XYZ_R8( salt , myThid )
+       _EXCH_XYZ_RL( theta, myThid )
+       _EXCH_XYZ_RL( salt , myThid )
       ENDIF
 
 #ifdef ALLOW_GENERIC_ADVDIFF

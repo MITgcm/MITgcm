@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.56 2008/05/30 02:45:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.57 2009/04/28 18:01:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -331,7 +331,7 @@ C--   end bi,bj loop.
 #endif
 
 C--   Fill in overlap regions for wVel :
-      _EXCH_XYZ_R8(wVel,myThid)
+      _EXCH_XYZ_RL(wVel,myThid)
 
 C--   Finally summarise the model state
 #ifdef ALLOW_DEBUG
