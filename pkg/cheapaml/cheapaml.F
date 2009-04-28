@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.1 2008/08/05 21:49:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.2 2009/04/28 18:34:15 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -25,7 +25,7 @@ c       Tair  - mean air temperature (K)  at height ht (m)
 c       theta(k=1) - sea surface temperature (C)
 c
 c     ==================================================================
-c     SUBROUTINE cheapaml 
+c     SUBROUTINE cheapaml
 c     ==================================================================
 
       implicit none
@@ -93,11 +93,11 @@ c       _RL gravity,aln,cdalton,czol,psim_fac
         integer niter_bulk,iter
 
 c External functions
-c       EXTERNAL  
+c       EXTERNAL
 c     $   cheapaml_BulkCdn
 
 c coefficients used to compute saturation specific humidity
-      DATA   ssq0,           ssq1,           ssq2 
+      DATA   ssq0,           ssq1,           ssq2
      &     / 3.797915 _d 0 , 7.93252 _d -6 , 2.166847 _d -3 /
 
 c useful values
@@ -200,9 +200,9 @@ c close bi, bj loops
 c this is a reprogramming to speed up cheapaml
 c the short atmospheric time step is applied to
 c advection and diffusion only.  diabatic forcing is computed
-c once and used for the entire oceanic time step.  
+c once and used for the entire oceanic time step.
 
-c cycle through atmospheric advective/diffusive 
+c cycle through atmospheric advective/diffusive
 c surface temperature evolution
         do nt=1,cheapaml_ntim
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -215,60 +215,60 @@ c compute advective and diffusive flux divergence
          gTair(i,j,bi,bj)=0.d0
          enddo
          enddo
-         call GAD_2d_CALC_RHS( 
+         call GAD_2d_CALC_RHS(
      I           bi,bj,1-olx,nsx+olx,1-oly,nsy+oly,
      I           uTrans,vTrans,
-     I           uwind, vwind, 
+     I           uwind, vwind,
      I           cheapaml_kdiff, Tair,
      U           gTair,
      I           myTime, myIter, myThid )
-        call adams2d( 
-     I                     bi, bj, 
+        call adams2d(
+     I                     bi, bj,
      U                     gTair, gTairm,
      I                     nt-1, myThid )
-c       WRITE(*,*) 'gTair ',nt  
+c       WRITE(*,*) 'gTair ',nt
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML Tair',1,myThid)
-c       WRITE(*,*) 'Tair ',nt   
+c       WRITE(*,*) 'Tair ',nt
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 c      write(*,*)'Qnet before timestep',nt
-c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid) 
+c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 
         call timestep_2d_tracer(
-     I                     bi, bj, 1-olx,snx+olx ,1-oly, sny+oly, 
+     I                     bi, bj, 1-olx,snx+olx ,1-oly, sny+oly,
      I                     deltaTtracer,
      I                     Tair, gTair,
      I                     myIter, myThid )
-c       WRITE(*,*) 'gTair ',nt  
+c       WRITE(*,*) 'gTair ',nt
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML Tair',1,myThid)
-c       WRITE(*,*) 'Tair ',nt   
+c       WRITE(*,*) 'Tair ',nt
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 c      write(*,*)'Qnet before cycle',nt
-c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid) 
+c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 
         call cycle_2d_tracer(
-     I                   bi, bj, 
+     I                   bi, bj,
      U                   Tair, gTair,
      I                   myTime, myIter, myThid )
-c       WRITE(*,*) 'gTair ',nt  
+c       WRITE(*,*) 'gTair ',nt
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML Tair',1,myThid)
-c       WRITE(*,*) 'Tair ',nt   
+c       WRITE(*,*) 'Tair ',nt
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 c      write(*,*)'Qnet after cycle ',nt
-c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid) 
-c       write(*,*)Qnet  
+c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
+c       write(*,*)Qnet
 c close bi,bj loops
         enddo
         enddo
 c update edges
 
-         _EXCH_XY_R8(Tair,mythid)
-         _EXCH_XY_R8(Qnet,mythid)
-c       WRITE(*,*) 'gTair ',nt  
+         _EXCH_XY_RL(Tair,mythid)
+         _EXCH_XY_RS(Qnet,mythid)
+c       WRITE(*,*) 'gTair ',nt
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML Tair',1,myThid)
-c       WRITE(*,*) 'Tair ',nt   
+c       WRITE(*,*) 'Tair ',nt
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 c      write(*,*)'Qnet before adams',nt
-c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid) 
+c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 c       STOP
         enddo
 c cycling on short atmospheric time step is now done
@@ -313,7 +313,7 @@ c iteration with psi-functions to find transfer coefficients
                  psixh  = -5. _d 0*huol*stable + (1. _d 0-stable)*
      &                     (2. _d 0*log(5. _d -1*(1. _d 0+xsq)))
 
-c Update the transfer coefficients 
+c Update the transfer coefficients
 
                  rd = rdn/(1. _d 0 + rdn*(aln-psimh)/xkar)
                  rh = rhn/(1. _d 0 + rhn*(aln-psixh)/xkar)
@@ -328,8 +328,8 @@ c
                         vw=vwind(i,j,bi,bj)
                         uss=sqrt(uw**2+vw**2)
                         usm=max(uss,0.5 _d 0)
-                csha   = rhoa*cpair*usm*rh*rd   
-                clha   = rhoa*lath*usm*re*rd   
+                csha   = rhoa*cpair*usm*rh*rd
+                clha   = rhoa*lath*usm*re*rd
 c
                 fsha  = csha*deltap
                 flha  = clha*delq
@@ -342,12 +342,12 @@ c so they must be multiplied by -1
         fsha=-fsha
         flha=-flha
 
-        
+
 c atmospheric upwelled long wave
         xalw=stefan*(t+273.16d0)**4*0.5d0
 c oceanic upwelled long wave
         xolw=stefan*(to+273.16d0)**4
-c total flux at upper mixed layer interface 
+c total flux at upper mixed layer interface
         xflu=(-solar(i,j,bi,bj)+xalw+flha)*xef*hfacC(i,j,1,bi,bj)
 c lower flux calculation. will switch to relaxation if over buffer
 c       xrelf=xgs*(t-tr(i,j,bi,bj))*(1-hfacC(i,j,1,bi,bj))*cheapaml_h
@@ -366,57 +366,57 @@ c     .*xef*hfacC(i,j,1,bi,bj)
 
 c      write(*,*) i,j,bi,bj,flha,fsha,-xalw+xolw,-solar(i,j,bi,bj),
 c     .Qnet(i,j,bi,bj)
-                                
-                              
-                              
+
+
+
         enddo
         enddo
-        call adams2d( 
-     I                     bi, bj, 
+        call adams2d(
+     I                     bi, bj,
      U                     gTair, gTairm,
      I                          0,myThid)
 
 
 c the value 0 is used in the above line, because we
 c always assume gTairm is not known.  this is because
-c the diabatic forcing is diagnosed from the SST, and 
-c done locally.  
+c the diabatic forcing is diagnosed from the SST, and
+c done locally.
 c     I                     myIter, myThid )
-c       WRITE(*,*) 'gTair ',nt  
+c       WRITE(*,*) 'gTair ',nt
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML Tair',1,myThid)
-c       WRITE(*,*) 'Tair ',nt   
+c       WRITE(*,*) 'Tair ',nt
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 c      write(*,*)'Qnet before timestep',nt
-c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid) 
+c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 
         call timestep_2d_tracer(
-     I                     bi, bj, 1-olx,snx+olx ,1-oly, sny+oly, 
+     I                     bi, bj, 1-olx,snx+olx ,1-oly, sny+oly,
      I                     deltaT,
      I                     Tair, gTair,
      I                     myIter, myThid )
 c full oceanic time step deltaT is used in the above
-c       WRITE(*,*) 'gTair ',nt  
+c       WRITE(*,*) 'gTair ',nt
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML Tair',1,myThid)
-c       WRITE(*,*) 'Tair ',nt   
+c       WRITE(*,*) 'Tair ',nt
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 c      write(*,*)'Qnet before cycle',nt
-c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid) 
+c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 
         call cycle_2d_tracer(
-     I                   bi, bj, 
+     I                   bi, bj,
      U                   Tair, gTair,
      I                   myTime, myIter, myThid )
-c       WRITE(*,*) 'gTair ',nt  
+c       WRITE(*,*) 'gTair ',nt
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML Tair',1,myThid)
-c       WRITE(*,*) 'Tair ',nt   
+c       WRITE(*,*) 'Tair ',nt
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 c      write(*,*)'Qnet after cycle ',nt
-c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid) 
-c       write(*,*)Qnet  
+c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
+c       write(*,*)Qnet
 c       do implicit time stepping over land
         do j=1-oly,sny+oly
         do i=1-olx,snx+olx
-        dtemp=tr(i,j,bi,bj)-Tair(i,j,bi,bj)     
+        dtemp=tr(i,j,bi,bj)-Tair(i,j,bi,bj)
         Tair(i,j,bi,bj)=Tair(i,j,bi,bj)+xgs*deltaT*dtemp
      .*xrelf*(1.d0-hFacC(i,j,1,bi,bj))
         enddo
@@ -426,14 +426,14 @@ c close bi,bj loops
         enddo
 c update edges
 
-         _EXCH_XY_R8(Tair,mythid)
-         _EXCH_XY_R8(Qnet,mythid)
-c       WRITE(*,*) 'gTair ',nt  
+         _EXCH_XY_RL(Tair,mythid)
+         _EXCH_XY_RS(Qnet,mythid)
+c       WRITE(*,*) 'gTair ',nt
 c      CALL PLOT_FIELD_XYRS( gTair, 'S/R CHEAPAML Tair',1,myThid)
-c       WRITE(*,*) 'Tair ',nt   
+c       WRITE(*,*) 'Tair ',nt
 c      CALL PLOT_FIELD_XYRS( Tair, 'S/R CHEAPAML Tair',1,myThid)
 c      write(*,*)'Qnet before adams',nt
-c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid) 
+c      CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
