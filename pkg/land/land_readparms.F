@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.12 2007/01/31 23:02:06 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.13 2009/04/28 22:10:02 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -327,17 +327,17 @@ c     IF ( iL.EQ.LEN(land_grT_iniFile) ) iL=0
        msgBuf='    ;'
        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
-       CALL WRITE_0D_R8( land_deltaT, INDEX_NONE,'land_deltaT =',
+       CALL WRITE_0D_RL( land_deltaT, INDEX_NONE,'land_deltaT =',
      &  ' /* land model Time-Step (s) */')
-       CALL WRITE_0D_R8( land_taveFreq, INDEX_NONE,'land_taveFreq =',
+       CALL WRITE_0D_RL( land_taveFreq, INDEX_NONE,'land_taveFreq =',
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
-       CALL WRITE_0D_R8( land_diagFreq, INDEX_NONE,'land_diagFreq =',
+       CALL WRITE_0D_RL( land_diagFreq, INDEX_NONE,'land_diagFreq =',
      &   ' /* Frequency^-1 for diagnostic output (s) */')
-       CALL WRITE_0D_R8( land_diagFreq, INDEX_NONE,'land_monFreq =',
+       CALL WRITE_0D_RL( land_diagFreq, INDEX_NONE,'land_monFreq =',
      &   ' /* Frequency^-1 for monitor output (s) */')
-       CALL WRITE_1D_R8( land_dzF,land_nLev, INDEX_K,'land_dzF = ',
+       CALL WRITE_1D_RL( land_dzF,land_nLev, INDEX_K,'land_dzF = ',
      &   ' /* layer thickness ( m ) */')
-       CALL WRITE_1D_R8(land_rec_dzC,land_nLev,INDEX_K,'land_rec_dzC= '
+       CALL WRITE_1D_RL(land_rec_dzC,land_nLev,INDEX_K,'land_rec_dzC= '
      &  ,' /* recip. vertical spacing (m-1) */')
       CALL WRITE_0D_L( land_timeave_mdsio, INDEX_NONE,
      &     'land_timeave_mdsio =',' /* use MDSIO for Tave output */')
@@ -360,41 +360,41 @@ c     IF ( iL.EQ.LEN(land_grT_iniFile) ) iL=0
      &     ' /* use MNC for reading pickups */')
 
 C- namelist LAND_PHYS_PAR:
-       CALL WRITE_0D_R8(land_grdLambda,INDEX_NONE,'land_grdLambda =',
+       CALL WRITE_0D_RL(land_grdLambda,INDEX_NONE,'land_grdLambda =',
      &   ' /* Thermal conductivity of the ground (W/m/K)*/')
-       CALL WRITE_0D_R8( land_heatCs,INDEX_NONE,'land_heatCs =',
+       CALL WRITE_0D_RL( land_heatCs,INDEX_NONE,'land_heatCs =',
      &   ' /* Heat capacity of dry soil (J/m3/K) */')
-       CALL WRITE_0D_R8( land_CpWater,INDEX_NONE,'land_CpWater =',
+       CALL WRITE_0D_RL( land_CpWater,INDEX_NONE,'land_CpWater =',
      &   ' /* Heat capacity of water    (J/kg/K) */')
-       CALL WRITE_0D_R8( land_wTauDiff,INDEX_NONE,'land_wTauDiff =',
+       CALL WRITE_0D_RL( land_wTauDiff,INDEX_NONE,'land_wTauDiff =',
      &   ' /* soil moisture diffusion time scale (s) */')
-       CALL WRITE_0D_R8( land_waterCap,INDEX_NONE,'land_waterCap =',
+       CALL WRITE_0D_RL( land_waterCap,INDEX_NONE,'land_waterCap =',
      &   ' /* field capacity per meter of soil (1) */')
-       CALL WRITE_0D_R8(land_fractRunOff,INDEX_NONE,'land_fractRunOff='
+       CALL WRITE_0D_RL(land_fractRunOff,INDEX_NONE,'land_fractRunOff='
      &  ,' /* fraction of water in excess which run-off */')
-       CALL WRITE_0D_R8(land_rhoLiqW,INDEX_NONE,'land_rhoLiqW =',
+       CALL WRITE_0D_RL(land_rhoLiqW,INDEX_NONE,'land_rhoLiqW =',
      &   ' /* density of liquid water (kg/m3) */')
-       CALL WRITE_0D_R8(land_rhoSnow,INDEX_NONE,'land_rhoSnow =',
+       CALL WRITE_0D_RL(land_rhoSnow,INDEX_NONE,'land_rhoSnow =',
      &   ' /* density of snow (kg/m3) */')
-       CALL WRITE_0D_R8(land_Lfreez,INDEX_NONE,'land_Lfreez =',
+       CALL WRITE_0D_RL(land_Lfreez,INDEX_NONE,'land_Lfreez =',
      &   ' /* Latent heat of freezing (J/kg) */')
-       CALL WRITE_0D_R8(land_hMaxSnow,INDEX_NONE,'land_hMaxSnow =',
+       CALL WRITE_0D_RL(land_hMaxSnow,INDEX_NONE,'land_hMaxSnow =',
      &   ' /* maximum snow-thickness (m) */')
-       CALL WRITE_0D_R8(diffKsnow,INDEX_NONE,'diffKsnow =',
+       CALL WRITE_0D_RL(diffKsnow,INDEX_NONE,'diffKsnow =',
      &   ' /* thermal conductivity of snow (W/m/K) */')
-       CALL WRITE_0D_R8(timeSnowAge,INDEX_NONE,'timeSnowAge =',
+       CALL WRITE_0D_RL(timeSnowAge,INDEX_NONE,'timeSnowAge =',
      &   ' /* snow aging time scale   (s) */')
-       CALL WRITE_0D_R8(hNewSnowAge,INDEX_NONE,'hNewSnowAge =',
+       CALL WRITE_0D_RL(hNewSnowAge,INDEX_NONE,'hNewSnowAge =',
      &   ' /* new snow thickness to refresh snow-age by 1/e */')
-       CALL WRITE_0D_R8(albColdSnow,INDEX_NONE,'albColdSnow =',
+       CALL WRITE_0D_RL(albColdSnow,INDEX_NONE,'albColdSnow =',
      &   ' /* albedo of cold (=dry) new snow */')
-       CALL WRITE_0D_R8(albWarmSnow,INDEX_NONE,'albWarmSnow =',
+       CALL WRITE_0D_RL(albWarmSnow,INDEX_NONE,'albWarmSnow =',
      &   ' /* albedo of warm (=wet) new snow */')
-       CALL WRITE_0D_R8(tempSnowAlbL,INDEX_NONE,'tempSnowAlbL =',
+       CALL WRITE_0D_RL(tempSnowAlbL,INDEX_NONE,'tempSnowAlbL =',
      &   ' /* Temp. transition from ColdSnow to WarmSnow Alb. (oC) */')
-       CALL WRITE_0D_R8(albOldSnow, INDEX_NONE,'albOldSnow =',
+       CALL WRITE_0D_RL(albOldSnow, INDEX_NONE,'albOldSnow =',
      &   ' /* albedo of old snow (snowAge >35.d)*/')
-       CALL WRITE_0D_R8(hAlbSnow, INDEX_NONE,'hAlbSnow =',
+       CALL WRITE_0D_RL(hAlbSnow, INDEX_NONE,'hAlbSnow =',
      &   ' /* snow depth for albedo transition */')
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

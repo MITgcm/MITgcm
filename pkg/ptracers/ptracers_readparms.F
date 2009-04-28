@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.33 2008/08/21 15:16:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.34 2009/04/28 22:11:12 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -274,10 +274,10 @@ C--   Print a summary of pTracer parameter values:
       CALL WRITE_0D_I( PTRACERS_Iter0, INDEX_NONE,
      &   'PTRACERS_Iter0 =',
      &   ' /* timestep number when tracers are initialized */')
-      CALL WRITE_0D_R8(PTRACERS_dumpFreq, INDEX_NONE,
+      CALL WRITE_0D_RL(PTRACERS_dumpFreq, INDEX_NONE,
      &   'PTRACERS_dumpFreq =',
      &   ' /* Frequency^-1 for snapshot output (s) */')
-      CALL WRITE_0D_R8(PTRACERS_taveFreq, INDEX_NONE,
+      CALL WRITE_0D_RL(PTRACERS_taveFreq, INDEX_NONE,
      &   'PTRACERS_taveFreq =',
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
       CALL WRITE_0D_L( PTRACERS_useRecords, INDEX_NONE,
@@ -308,11 +308,11 @@ C--   Print a summary of pTracer parameter values:
         CALL WRITE_0D_L( PTRACERS_ImplVertAdv(iTracer), INDEX_NONE,
      &     'PTRACERS_ImplVertAdv =',
      &     ' /* implicit vert. advection flag */')
-        CALL WRITE_0D_R8( PTRACERS_diffKh(iTracer), INDEX_NONE,
+        CALL WRITE_0D_RL( PTRACERS_diffKh(iTracer), INDEX_NONE,
      &     'PTRACERS_diffKh =', ' /* Laplacian Diffusivity */')
-        CALL WRITE_0D_R8( PTRACERS_diffK4(iTracer), INDEX_NONE,
+        CALL WRITE_0D_RL( PTRACERS_diffK4(iTracer), INDEX_NONE,
      &     'PTRACERS_diffK4 =', ' /* Biharmonic Diffusivity */')
-        CALL WRITE_1D_R8( PTRACERS_diffKrNr(1,iTracer), Nr, INDEX_K,
+        CALL WRITE_1D_RL( PTRACERS_diffKrNr(1,iTracer), Nr, INDEX_K,
      &     'PTRACERS_diffKrNr =', ' /* Vertical Diffusivity */')
         CALL WRITE_0D_L( PTRACERS_useGMRedi(iTracer), INDEX_NONE,
      &     'PTRACERS_useGMRedi =', ' /* apply GM-Redi */')
@@ -320,9 +320,9 @@ C--   Print a summary of pTracer parameter values:
      &     'PTRACERS_useDWNSLP =', ' /* apply DOWN-SLOPE Flow */')
         CALL WRITE_0D_L( PTRACERS_useKPP(iTracer), INDEX_NONE,
      &     'PTRACERS_useKPP =', ' /* apply KPP scheme */')
-        CALL WRITE_1D_R8( PTRACERS_ref(1,iTracer), Nr, INDEX_K,
+        CALL WRITE_1D_RL( PTRACERS_ref(1,iTracer), Nr, INDEX_K,
      &     'PTRACERS_ref =', ' /* Reference vertical profile */')
-        CALL WRITE_0D_R8( PTRACERS_EvPrRn(iTracer), INDEX_NONE,
+        CALL WRITE_0D_RL( PTRACERS_EvPrRn(iTracer), INDEX_NONE,
      &     'PTRACERS_EvPrRn =', '/* tracer conc. in Evap. & Rain */')
 
       ENDDO
