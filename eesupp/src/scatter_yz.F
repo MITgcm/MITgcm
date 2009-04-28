@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_yz.F,v 1.2 2007/09/23 22:52:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_yz.F,v 1.3 2009/04/28 18:28:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -87,7 +87,7 @@ C--   All proceses except 0 receive local array from process 0
       _BARRIER
 
 C--   Fill in edges.
-CMM      _EXCH_XY_R8( local, myThid )
+CMM      _EXCH_XY_RL( local, myThid )
 
       RETURN
       END

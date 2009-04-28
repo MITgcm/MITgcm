@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/scatter_vector.F,v 1.4 2007/09/23 22:52:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/scatter_vector.F,v 1.5 2009/04/28 18:28:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -80,7 +80,7 @@ C--   All proceses except 0 receive local array from process 0
       _BARRIER
 
 C--   Fill in edges.
-cph      _EXCH_XY_R8( local, myThid )
+cph      _EXCH_XY_RL( local, myThid )
 
       RETURN
       END
