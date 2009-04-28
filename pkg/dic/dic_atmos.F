@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.12 2008/08/11 17:41:05 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.13 2009/04/28 18:41:40 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -185,8 +185,8 @@ c for 278ppmv we need total_atmos_carbon=4.9206e+16
         ENDDO
        ENDDO
 
-       _GLOBAL_SUM_R8(total_flux,myThid)
-       _GLOBAL_SUM_R8(total_ocean_carbon,myThid)
+       _GLOBAL_SUM_RL(total_flux,myThid)
+       _GLOBAL_SUM_RL(total_ocean_carbon,myThid)
 
        if (istate.eq.0) then
 c use value read in dic_init_fixed
