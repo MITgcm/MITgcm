@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.6 2008/04/04 21:43:57 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.7 2009/04/28 18:44:21 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -184,29 +184,29 @@ C--  Fill in Halo region with valid values
 #ifdef ATMOSPHERIC_LOADING
        IF ( useImportSLP . AND. 
      &    ( ocnCpl_exchange_DIC .OR. apply2AllFields ) ) 
-     &   _EXCH_XY_R4( pLoad,    myThid )
+     &   _EXCH_XY_RS( pLoad,    myThid )
        IF ( apply2AllFields ) THEN
-        IF ( useImportSIce)  _EXCH_XY_R4( sIceLoad, myThid )
+        IF ( useImportSIce)  _EXCH_XY_RS( sIceLoad, myThid )
        ELSEIF ( useImportSLP .OR. useImportSIce ) THEN
-         _EXCH_XY_R4( phi0surf, myThid )
+         _EXCH_XY_RS( phi0surf, myThid )
        ENDIF
 #else
        IF ( useImportSLP . AND. ocnCpl_exchange_DIC) 
-     &     _EXCH_XY_R4( pLoad,    myThid )
+     &     _EXCH_XY_RS( pLoad,    myThid )
 #endif
 
-       IF ( useImportFW  ) _EXCH_XY_R4(EmPmR, myThid )
+       IF ( useImportFW  ) _EXCH_XY_RS(EmPmR, myThid )
        IF ( apply2AllFields ) THEN
         IF (useImportTau ) CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
-        IF (useImportFW  ) _EXCH_XY_R4(saltFlux, myThid )
-        IF (useImportHFlx) _EXCH_XY_R4(Qnet , myThid )
+        IF (useImportFW  ) _EXCH_XY_RS(saltFlux, myThid )
+        IF (useImportHFlx) _EXCH_XY_RS(Qnet , myThid )
 #ifdef SHORTWAVE_HEATING
-        IF (useImportHFlx) _EXCH_XY_R4(Qsw ,  myThid )
+        IF (useImportHFlx) _EXCH_XY_RS(Qsw ,  myThid )
 #endif
 #ifdef ALLOW_DIC
-        IF ( useImportFice ) _EXCH_XY_R4(fice ,  myThid )
-        IF ( useImportCO2 )  _EXCH_XY_R4(AtmospCO2 ,  myThid )
-        IF ( useImportWSpd ) _EXCH_XY_R4(wind ,  myThid )
+        IF ( useImportFice ) _EXCH_XY_RL(fice ,  myThid )
+        IF ( useImportCO2 )  _EXCH_XY_RL(AtmospCO2 ,  myThid )
+        IF ( useImportWSpd ) _EXCH_XY_RL(wind ,  myThid )
 #endif
       ENDIF
 
