@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.19 2008/05/30 21:17:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.20 2009/04/28 18:38:07 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -118,7 +118,7 @@ c--   only do interior, and exchange at the end
           enddo
         enddo
       enddo
-      _EXCH_XY_R8( tmpfld2d, mythid)
+      _EXCH_XY_RL( tmpfld2d, mythid)
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -131,7 +131,7 @@ c--   only do interior, and exchange at the end
           enddo
         enddo
       enddo
-      _EXCH_XYZ_R8( tmpfld3d, mythid)
+      _EXCH_XYZ_RL( tmpfld3d, mythid)
 
 
 
@@ -146,7 +146,7 @@ c--   Temperature field.
       call ctrl_map_ini_gen3D(xx_theta_file, 'wthetaLev', 
      & xx_theta_dummy, boundsVec, theta, maskc, paramSmooth,
      &  mythid ) 
-      _EXCH_XYZ_R8( theta, mythid)
+      _EXCH_XYZ_RL( theta, mythid)
 #endif
 
 
@@ -161,7 +161,7 @@ c--   Salinity field.
       call ctrl_map_ini_gen3D(xx_salt_file, 'wsaltLev', 
      & xx_salt_dummy, boundsVec, salt, maskc, paramSmooth, 
      & mythid )
-      _EXCH_XYZ_R8( salt, mythid)
+      _EXCH_XYZ_RL( salt, mythid)
 #endif
 
 
@@ -196,7 +196,7 @@ c--   initial Eta.
       call ctrl_map_ini_gen2D(xx_etan_file, 'wetan', 
      & xx_etan_dummy, boundsVec, etan, maskc, paramSmooth, 
      & mythid )
-      _EXCH_XY_R8( etan, mythid)
+      _EXCH_XY_RL( etan, mythid)
 #endif
 
 
@@ -213,7 +213,7 @@ c--   SST relaxation coefficient.
       call ctrl_map_ini_gen2D(xx_relaxsst_file, 'wrelaxsst', 
      & xx_relaxsst_dummy, boundsVec, 
      & lambdaThetaClimRelax, maskc, paramSmooth, mythid )
-      _EXCH_XY_R8( lambdaSaltClimRelax, mythid)
+      _EXCH_XY_RS( lambdaThetaClimRelax, mythid)
 #endif
 
 
@@ -228,7 +228,7 @@ c--   SSS relaxation coefficient.
       call ctrl_map_ini_gen2D(xx_relaxsss_file, 'wrelaxsss', 
      & xx_relaxsss_dummy, boundsVec, 
      & lambdaSaltClimRelax, maskc, paramSmooth, mythid )
-      _EXCH_XY_R8( lambdaSaltClimRelax, mythid)
+      _EXCH_XY_RS( lambdaSaltClimRelax, mythid)
 #endif
 
 
@@ -249,7 +249,7 @@ c--   SSS relaxation coefficient.
       call ctrl_map_ini_gen2D(xx_bottomdrag_file, 'wbottomdrag', 
      & xx_bottomdrag_dummy, boundsVec, bottomdragfld, maskc, 
      & paramSmooth, mythid )
-      _EXCH_XY_R8( bottomdragfld, mythid)
+      _EXCH_XY_RL( bottomdragfld, mythid)
 #endif
 
 
@@ -283,7 +283,7 @@ c-- exchange UV:
       call ctrl_map_ini_gen3D(xx_diffkr_file, 'wdiffkrFld', 
      & xx_diffkr_dummy, boundsVec, diffkr, maskc, paramSmooth, 
      & mythid )
-      _EXCH_XYZ_R8( diffkr, mythid)
+      _EXCH_XYZ_RL( diffkr, mythid)
 #endif
 
 
@@ -297,7 +297,7 @@ c-- exchange UV:
       call ctrl_map_ini_gen3D(xx_kapgm_file, 'wkapgmFld', 
      & xx_kapgm_dummy, boundsVec, kapgm, maskc, paramSmooth, 
      & mythid )
-      _EXCH_XYZ_R8( kapgm, mythid)
+      _EXCH_XYZ_RL( kapgm, mythid)
 #endif
 
 
@@ -311,7 +311,7 @@ c-- exchange UV:
       call ctrl_map_ini_gen3D(xx_kapredi_file, 'wkaprediFld', 
      & xx_kapredi_dummy, boundsVec, kapredi, maskc, paramSmooth, 
      & mythid )
-      _EXCH_XYZ_R8( kapredi, mythid)
+      _EXCH_XYZ_RL( kapredi, mythid)
 #endif
 
 
