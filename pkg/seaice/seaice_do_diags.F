@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.36 2009/04/17 05:41:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.37 2009/04/28 18:46:05 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -32,7 +32,7 @@ C     myThid        - Number of this instance of SEAICE_DO_DIAGS
       INTEGER myThid
 
 C     == Local variables in common block :
-      COMMON /SEAICE_DO_DIAGS_LOCAL/ arr
+      COMMON /LOCAL_SEAICE_DO_DIAGS/ arr
       _RL arr  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     == Local variables ==
@@ -133,7 +133,7 @@ C     == Local variables ==
           ENDIF
 #endif
 #ifdef SEAICE_DEBUG
-          _EXCH_XY_R8( arr, myThid )
+          _EXCH_XY_RL( arr, myThid )
           CALL PLOT_FIELD_XYRL( arr   , 'Current uice  ',
      &         myIter, myThid )
 #endif
@@ -158,7 +158,7 @@ C     == Local variables ==
           ENDIF
 #endif
 #ifdef SEAICE_DEBUG
-          _EXCH_XY_R4( arr, myThid )
+          _EXCH_XY_RL( arr, myThid )
           CALL PLOT_FIELD_XYRL( arr   , 'Current vice  ',
      &         myIter, myThid )
 #endif
@@ -183,7 +183,7 @@ C     == Local variables ==
           ENDIF
 #endif
 #ifdef SEAICE_DEBUG
-          _EXCH_XY_R4( arr, myThid )
+          _EXCH_XY_RL( arr, myThid )
           CALL PLOT_FIELD_XYRL( arr   , 'Current heff  ',
      &         myIter, myThid )
 #endif
@@ -208,7 +208,7 @@ C     == Local variables ==
           ENDIF
 #endif
 #ifdef SEAICE_DEBUG
-          _EXCH_XY_R4( arr, myThid )
+          _EXCH_XY_RL( arr, myThid )
           CALL PLOT_FIELD_XYRL( arr   , 'Current area  ',
      &         myIter, myThid )
 #endif
