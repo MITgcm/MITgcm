@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/remove_mean.F,v 1.2 2007/07/31 22:50:24 ce107 Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/remove_mean.F,v 1.3 2009/04/28 18:30:33 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -70,8 +70,8 @@ CEOP
        ENDDO
       ENDDO
 
-      _GLOBAL_SUM_R8(theVol,myThid)
-      _GLOBAL_SUM_R8(theMean,myThid)
+      _GLOBAL_SUM_RL(theVol,myThid)
+      _GLOBAL_SUM_RL(theMean,myThid)
 
       IF (theVol.GT.0.) THEN
        theMean=theMean/theVol
@@ -96,10 +96,10 @@ C     Print the global mean to standard output, this is a measure for
 C     the drift of the array arr
       IF ( balancePrintMean ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(msgbuf,'(a,a,a,e24.17)') 
-     &      'REMOVE_MEAN_RL: Global mean of ', 
+       WRITE(msgbuf,'(a,a,a,e24.17)')
+     &      'REMOVE_MEAN_RL: Global mean of ',
      &      arrName, ' = ', theMean
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , 1)
        _END_MASTER( myThid )
       ENDIF
@@ -175,8 +175,8 @@ CEOP
        ENDDO
       ENDDO
 
-      _GLOBAL_SUM_R8(theVol,myThid)
-      _GLOBAL_SUM_R8(theMean,myThid)
+      _GLOBAL_SUM_RS(theVol,myThid)
+      _GLOBAL_SUM_RS(theMean,myThid)
 
       IF (theVol.GT.0.) THEN
        theMean=theMean/theVol
@@ -201,10 +201,10 @@ C     Print the global mean to standard output, this is a measure for
 C     the drift of the array arr
       IF ( balancePrintMean ) THEN
        _BEGIN_MASTER( myThid )
-       WRITE(msgbuf,'(a,a,a,e24.17)') 
-     &      'REMOVE_MEAN_RS: Global mean of ', 
+       WRITE(msgbuf,'(a,a,a,e24.17)')
+     &      'REMOVE_MEAN_RS: Global mean of ',
      &      arrName, ' = ', theMean
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT , 1)
        _END_MASTER( myThid )
       ENDIF
@@ -212,4 +212,3 @@ C     the drift of the array arr
 C#endif /* ALLOW_BALANCE_FLUXES */
       RETURN
       END
-
