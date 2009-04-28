@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.2 2009/04/28 18:32:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.3 2009/04/28 23:27:24 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -118,9 +118,9 @@ C- If restart, read moles number from pickup
           WRITE(msgBuf,'(2A)') '// AIM_DO_CO2: Read pickup ',fn(ilo:ihi)
           CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 
-          CALL WRITE_0D_R8( atpco2_check, INDEX_NONE, 'atpco2_check =',
+          CALL WRITE_0D_RL( atpco2_check, INDEX_NONE, 'atpco2_check =',
      &     ' /* pCo2 from pickup file */')
-          CALL WRITE_0D_R8( atpco2, INDEX_NONE, 'atpco2 =',
+          CALL WRITE_0D_RL( atpco2, INDEX_NONE, 'atpco2 =',
      &     ' /* pCo2 from Atm_CO2_Moles */')
 
 c        ELSE

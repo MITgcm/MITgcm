@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.10 2009/01/30 02:23:56 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.11 2009/04/28 23:27:24 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
 
       SUBROUTINE GGL90_READPARMS( myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE GGL90_READPARMS                               |
 C     | o Routine to read in file data.ggl90                     |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -80,7 +80,7 @@ C-----------------------------------------------------------------------
 C define some non-dimensional constants and
 C the vertical mixing coefficients in m-k-s units
 C-----------------------------------------------------------------------
- 
+
 C--   Read settings from model parameter file "data.ggl90".
       READ(UNIT=iUnit,NML=GGL90_PARM01,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
@@ -107,24 +107,24 @@ C      CALL MODELDATA_EXAMPLE( myThid )
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-C Now set-up any remaining parameters that result from the input parameters 
+C Now set-up any remaining parameters that result from the input parameters
       IF ( GGL90TKEbottom .EQ. UNSET_RL ) THEN
        GGL90TKEbottom = GGL90TKEmin
       ENDIF
       IF ( GGL90TKEmin .LE. 0. ) THEN
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &      'GGL90TKEmin must be greater than zero'
        CALL PRINT_ERROR( msgBuf , 1)
        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
       ENDIF
       IF ( GGL90TKEbottom .LT. 0. ) THEN
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &      'GGL90TKEbottom must not be less than zero'
        CALL PRINT_ERROR( msgBuf , 1)
        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
       ENDIF
       IF ( GGL90mixingLengthMin .LE. 0. ) THEN
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &      'GGL90mixingLengthMin must be greater than zero'
        CALL PRINT_ERROR( msgBuf , 1)
        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
@@ -143,48 +143,48 @@ C Now set-up any remaining parameters that result from the input parameters
 C--   print TKE vertical mixing parameters to stdout for better debugging
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '// GGL90 configuration'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 
-      CALL WRITE_0D_R8( GGL90dumpFreq, INDEX_NONE,'GGL90dumpFreq =',
+      CALL WRITE_0D_RL( GGL90dumpFreq, INDEX_NONE,'GGL90dumpFreq =',
      &'   /* GGL90 state write out interval ( s ). */')
-      CALL WRITE_0D_R8( GGL90taveFreq, INDEX_NONE,'GGL90taveFreq =',
+      CALL WRITE_0D_RL( GGL90taveFreq, INDEX_NONE,'GGL90taveFreq =',
      &'   /* GGL90 averaging interval ( s ). */')
       CALL WRITE_0D_L(GGL90mixingMaps,INDEX_NONE,
      &     'GGL90mixingMAPS =', '   /* GGL90 IO flag. */')
       CALL WRITE_0D_L(GGL90writeState,INDEX_NONE,
      &     'GGL90writeState =', '   /* GGL90 IO flag. */')
-      CALL WRITE_0D_R8( GGL90ck, INDEX_NONE,'GGL90ck =',
+      CALL WRITE_0D_RL( GGL90ck, INDEX_NONE,'GGL90ck =',
      &'   /* GGL90 viscosity parameter. */')
-      CALL WRITE_0D_R8( GGL90ceps, INDEX_NONE,'GGL90ceps =',
+      CALL WRITE_0D_RL( GGL90ceps, INDEX_NONE,'GGL90ceps =',
      &'   /* GGL90 dissipation parameter. */')
-      CALL WRITE_0D_R8( GGL90alpha, INDEX_NONE,'GGL90alpha =',
+      CALL WRITE_0D_RL( GGL90alpha, INDEX_NONE,'GGL90alpha =',
      &'   /* GGL90 TKE diffusivity parameter. */')
-      CALL WRITE_0D_R8( GGL90m2, INDEX_NONE,'GGL90m2 =',
+      CALL WRITE_0D_RL( GGL90m2, INDEX_NONE,'GGL90m2 =',
      &'   /* GGL90 wind stress to vertical stress ratio. */')
-      CALL WRITE_0D_R8( GGL90TKEmin, INDEX_NONE,'GGL90TKEmin =',
+      CALL WRITE_0D_RL( GGL90TKEmin, INDEX_NONE,'GGL90TKEmin =',
      &'   /* GGL90 minimum kinetic energy ( m^2/s^2 ). */')
-      CALL WRITE_0D_R8( GGL90TKEsurfMin, INDEX_NONE,
+      CALL WRITE_0D_RL( GGL90TKEsurfMin, INDEX_NONE,
      &     'GGL90TKEsurfMin =',
      &'   /* GGL90 minimum surface kinetic energy ( m^2/s^2 ). */')
-      CALL WRITE_0D_R8( GGL90TKEbottom, INDEX_NONE,
-     &     'GGL90TKEbottom =', 
+      CALL WRITE_0D_RL( GGL90TKEbottom, INDEX_NONE,
+     &     'GGL90TKEbottom =',
      &     '   /* GGL90 bottom kinetic energy ( m^2/s^2 ). */')
-      CALL WRITE_0D_R8( GGL90viscMax, INDEX_NONE,'GGL90viscMax =', 
+      CALL WRITE_0D_RL( GGL90viscMax, INDEX_NONE,'GGL90viscMax =',
      &     '   /* GGL90 upper limit for viscosity ( m^2/s ). */')
-      CALL WRITE_0D_R8( GGL90diffMax, INDEX_NONE,'GGL90diffMax =', 
+      CALL WRITE_0D_RL( GGL90diffMax, INDEX_NONE,'GGL90diffMax =',
      &     '   /* GGL90 upper limit for diffusivity ( m^2/s ). */')
-      CALL WRITE_0D_R8( GGL90diffTKEh, INDEX_NONE,'GGL90diffTKEh =', 
+      CALL WRITE_0D_RL( GGL90diffTKEh, INDEX_NONE,'GGL90diffTKEh =',
      &     '   /* GGL90 horizontal diffusivity for TKE ( m^2/s ). */')
-      CALL WRITE_0D_R8( GGL90mixingLengthMin, INDEX_NONE,
-     &     'GGL90mixingLengthMin =', 
+      CALL WRITE_0D_RL( GGL90mixingLengthMin, INDEX_NONE,
+     &     'GGL90mixingLengthMin =',
      &     '   /* GGL90 minimum mixing length ( m ). */')
       CALL WRITE_0D_I(mxlMaxFlag, INDEX_NONE, 'mxlMaxFlag =',
      &     '   /* Flag for limiting mixing-length method */')
@@ -196,10 +196,10 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
 
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '// End of GGL90 config. summary'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)')
      &'// ======================================================='

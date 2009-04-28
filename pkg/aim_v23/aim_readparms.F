@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.15 2009/01/05 15:15:33 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.16 2009/04/28 23:27:24 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -379,13 +379,13 @@ C- namelist AIM_PARAMS:
        CALL WRITE_0D_L( aim_useMMsurfFc, INDEX_NONE,
      &                 'aim_useMMsurfFc =',
      &'   /* Monthly Mean surf. Forcing on/off flag */')
-       CALL WRITE_0D_R8(aim_surfForc_TimePeriod, INDEX_NONE,
+       CALL WRITE_0D_RL(aim_surfForc_TimePeriod, INDEX_NONE,
      &                 'aim_surfForc_TimePeriod =',
      &  ' /* Length of forcing time period (s) */')
        CALL WRITE_0D_I( aim_surfForc_NppCycle, INDEX_NONE,
      &                 'aim_surfForc_NppCycle   =',
      &  ' /* Number of time period per Cycle */')
-       CALL WRITE_0D_R8(aim_surfForc_TransRatio, INDEX_NONE,
+       CALL WRITE_0D_RL(aim_surfForc_TransRatio, INDEX_NONE,
      &                 'aim_surfForc_TransRatio =',
      &  ' /* transition ratio from one month to the next */')
        CALL WRITE_0D_L( aim_surfPotTemp, INDEX_NONE,
@@ -397,155 +397,155 @@ C- namelist AIM_PARAMS:
        CALL WRITE_0D_L( aim_splitSIOsFx, INDEX_NONE,
      &                 'aim_splitSIOsFx =',
      &  ' /* separate Sea-Ice & Ocean Flux on/off flag */')
-       CALL WRITE_0D_R8(aim_dragStrato,INDEX_NONE,'aim_dragStrato=',
+       CALL WRITE_0D_RL(aim_dragStrato,INDEX_NONE,'aim_dragStrato=',
      &    ' /* stratospheric-drag damping time scale (s) */')
        CALL WRITE_0D_L( aim_clrSkyDiag, INDEX_NONE,
      &                 'aim_clrSkyDiag =',
      &  ' /* do clear-sky radiation diagnostics */')
-       CALL WRITE_0D_R8( aim_taveFreq, INDEX_NONE,'aim_taveFreq =',
+       CALL WRITE_0D_RL( aim_taveFreq, INDEX_NONE,'aim_taveFreq =',
      &  '   /* Frequency^-1 for time-Aver. output (s) */')
-       CALL WRITE_0D_R8( aim_diagFreq, INDEX_NONE,'aim_diagFreq =',
+       CALL WRITE_0D_RL( aim_diagFreq, INDEX_NONE,'aim_diagFreq =',
      &  '   /* Frequency^-1 for diagnostic output (s) */')
-       CALL WRITE_0D_R8( aim_tendFreq, INDEX_NONE,'aim_tendFreq =',
+       CALL WRITE_0D_RL( aim_tendFreq, INDEX_NONE,'aim_tendFreq =',
      &  '   /* Frequency^-1 for tendencies output (s) */')
        CALL WRITE_0D_I( aim_selectOceAlbedo, INDEX_NONE,
      &                 'aim_selectOceAlbedo =',
      &  '   /* Ocean albedo(latitude) flag */')
 
 C- namelist AIM_PAR_FOR:
-       CALL WRITE_0D_R8( SOLC,  INDEX_NONE,'AIM_FOR:   SOLC =',
+       CALL WRITE_0D_RL( SOLC,  INDEX_NONE,'AIM_FOR:   SOLC =',
      &  '   /* Solar constant (area averaged) in W/m2 */')
-       CALL WRITE_0D_R8( ALBSEA,INDEX_NONE,'AIM_FOR: ALBSEA =',
+       CALL WRITE_0D_RL( ALBSEA,INDEX_NONE,'AIM_FOR: ALBSEA =',
      &  '   /* Albedo over sea [0-1]      */')
-       CALL WRITE_0D_R8( ALBICE,INDEX_NONE,'AIM_FOR: ALBICE =',
+       CALL WRITE_0D_RL( ALBICE,INDEX_NONE,'AIM_FOR: ALBICE =',
      &  '   /* Albedo over sea ice (for ice fraction =1) */')
-       CALL WRITE_0D_R8( ALBSN, INDEX_NONE,'AIM_FOR:  ALBSN =',
+       CALL WRITE_0D_RL( ALBSN, INDEX_NONE,'AIM_FOR:  ALBSN =',
      &  '   /* Albedo over snow (for snow depth > SDALB) */')
-       CALL WRITE_0D_R8( SDALB, INDEX_NONE,'AIM_FOR:  SDALB =',
+       CALL WRITE_0D_RL( SDALB, INDEX_NONE,'AIM_FOR:  SDALB =',
      &  '   /* Snow depth (mm H2O) corresp. maximum albedo */')
-       CALL WRITE_0D_R8( SWCAP, INDEX_NONE,'AIM_FOR:  SWCAP =',
+       CALL WRITE_0D_RL( SWCAP, INDEX_NONE,'AIM_FOR:  SWCAP =',
      &  '   /* Soil wetness at field capacity (Vol.fract.) */')
-       CALL WRITE_0D_R8( SWWIL, INDEX_NONE,'AIM_FOR:  SWWIL =',
+       CALL WRITE_0D_RL( SWWIL, INDEX_NONE,'AIM_FOR:  SWWIL =',
      &  '   /* Soil wetness at wilting point  (Vol.fract.) */')
-       CALL WRITE_0D_R8( hSnowWetness, INDEX_NONE,
+       CALL WRITE_0D_RL( hSnowWetness, INDEX_NONE,
      &  'AIM_FOR: hSnowWetness=',
      &  '   /* snow depth corresp. maximum wetness (m) */')
 
 C- namelist AIM_PAR_SFL:
-       CALL WRITE_0D_R8( FWIND0,INDEX_NONE,'AIM_SFL: FWIND0 =',
+       CALL WRITE_0D_RL( FWIND0,INDEX_NONE,'AIM_SFL: FWIND0 =',
      &  '   /* ratio of near-sfc wind to lowest-level wind */')
-       CALL WRITE_0D_R8( FTEMP0,INDEX_NONE,'AIM_SFL: FTEMP0 =',
+       CALL WRITE_0D_RL( FTEMP0,INDEX_NONE,'AIM_SFL: FTEMP0 =',
      &  '  /* weight for near-sfc temp. extrapolation (0-1)*/')
-       CALL WRITE_0D_R8( FHUM0, INDEX_NONE,'AIM_SFL:  FHUM0 =',
+       CALL WRITE_0D_RL( FHUM0, INDEX_NONE,'AIM_SFL:  FHUM0 =',
      &  '  /* weight for near-sfc spec.humid. extrap. (0-1)*/')
-       CALL WRITE_0D_R8( CDL,   INDEX_NONE,'AIM_SFL:    CDL =',
+       CALL WRITE_0D_RL( CDL,   INDEX_NONE,'AIM_SFL:    CDL =',
      &  '   /* drag coefficient for momentum over land */')
-       CALL WRITE_0D_R8( CDS,   INDEX_NONE,'AIM_SFL:    CDS =',
+       CALL WRITE_0D_RL( CDS,   INDEX_NONE,'AIM_SFL:    CDS =',
      &  '   /* drag coefficient for momentum over sea  */')
-       CALL WRITE_0D_R8( CHL,   INDEX_NONE,'AIM_SFL:    CHL =',
+       CALL WRITE_0D_RL( CHL,   INDEX_NONE,'AIM_SFL:    CHL =',
      &  '   /* heat exchange coefficient over land */')
-       CALL WRITE_0D_R8( CHS,   INDEX_NONE,'AIM_SFL:    CHS =',
+       CALL WRITE_0D_RL( CHS,   INDEX_NONE,'AIM_SFL:    CHS =',
      &  '   /* heat exchange coefficient over sea  */')
-       CALL WRITE_0D_R8( VGUST, INDEX_NONE,'AIM_SFL:  VGUST =',
+       CALL WRITE_0D_RL( VGUST, INDEX_NONE,'AIM_SFL:  VGUST =',
      &  '   /* wind speed [m/s] for sub-grid-scale gusts */')
-       CALL WRITE_0D_R8( CTDAY, INDEX_NONE,'AIM_SFL:  CTDAY =',
+       CALL WRITE_0D_RL( CTDAY, INDEX_NONE,'AIM_SFL:  CTDAY =',
      &  '   /* daily-cycle correction (dTskin/dSSRad) */')
-       CALL WRITE_0D_R8( DTHETA,INDEX_NONE,'AIM_SFL: DTHETA =',
+       CALL WRITE_0D_RL( DTHETA,INDEX_NONE,'AIM_SFL: DTHETA =',
      &  '   /* Pot.Temp. gradient for stability correction */')
-       CALL WRITE_0D_R8( dTstab,INDEX_NONE,'AIM_SFL: dTstab =',
+       CALL WRITE_0D_RL( dTstab,INDEX_NONE,'AIM_SFL: dTstab =',
      &  '   /* Pot.Temp. increment for stab.funct. derivative */')
-       CALL WRITE_0D_R8( FSTAB, INDEX_NONE,'AIM_SFL:  FSTAB =',
+       CALL WRITE_0D_RL( FSTAB, INDEX_NONE,'AIM_SFL:  FSTAB =',
      &  '   /* Amplitude of stability correction (fract.) */')
-       CALL WRITE_0D_R8( HDRAG, INDEX_NONE,'AIM_SFL:  HDRAG =',
+       CALL WRITE_0D_RL( HDRAG, INDEX_NONE,'AIM_SFL:  HDRAG =',
      &  '   /* Height scale for orographic correction */')
-       CALL WRITE_0D_R8( FHDRAG,INDEX_NONE,'AIM_SFL: FHDRAG =',
+       CALL WRITE_0D_RL( FHDRAG,INDEX_NONE,'AIM_SFL: FHDRAG =',
      &  '   /* Amplitude of orographic correction (fract.)*/')
 
 C- namelist AIM_PAR_CNV:
-       CALL WRITE_0D_R8( PSMIN, INDEX_NONE,'AIM_CNV:  PSMIN =',
+       CALL WRITE_0D_RL( PSMIN, INDEX_NONE,'AIM_CNV:  PSMIN =',
      &  '   /* min norm.sfc.P. for occurrence of convect. */')
-       CALL WRITE_0D_R8( TRCNV, INDEX_NONE,'AIM_CNV:  TRCNV =',
+       CALL WRITE_0D_RL( TRCNV, INDEX_NONE,'AIM_CNV:  TRCNV =',
      &  '   /* time of relaxation [h] towards ref state */')
-       CALL WRITE_0D_R8( QBL,   INDEX_NONE,'AIM_CNV:    QBL =',
+       CALL WRITE_0D_RL( QBL,   INDEX_NONE,'AIM_CNV:    QBL =',
      &  '   /* specific hum. threshold in the Bound.layer */')
-       CALL WRITE_0D_R8( RHBL,  INDEX_NONE,'AIM_CNV:   RHBL =',
+       CALL WRITE_0D_RL( RHBL,  INDEX_NONE,'AIM_CNV:   RHBL =',
      &  '   /* relative hum. threshold in the Bound.layer */')
-       CALL WRITE_0D_R8( RHIL,  INDEX_NONE,'AIM_CNV:   RHIL =',
+       CALL WRITE_0D_RL( RHIL,  INDEX_NONE,'AIM_CNV:   RHIL =',
      &  '   /* rel.hum. threshold (intern) for 2nd mass.Flx*/')
-       CALL WRITE_0D_R8( ENTMAX,INDEX_NONE,'AIM_CNV: ENTMAX =',
+       CALL WRITE_0D_RL( ENTMAX,INDEX_NONE,'AIM_CNV: ENTMAX =',
      &  '   /* time of relaxation [h] towards neutral eq. */')
-       CALL WRITE_0D_R8( SMF,   INDEX_NONE,'AIM_CNV:    SMF =',
+       CALL WRITE_0D_RL( SMF,   INDEX_NONE,'AIM_CNV:    SMF =',
      &  '   /* ratio 2ndary/primary mass.Flx at cloud-base*/')
 
 C- namelist AIM_PAR_LSC:
-       CALL WRITE_0D_R8( TRLSC, INDEX_NONE,'AIM_LSC:  TRLSC =',
+       CALL WRITE_0D_RL( TRLSC, INDEX_NONE,'AIM_LSC:  TRLSC =',
      &  '   /* relaxation time [h] for supersat. spec.hum. */')
-       CALL WRITE_0D_R8( RHLSC, INDEX_NONE,'AIM_LSC:  RHLSC =',
+       CALL WRITE_0D_RL( RHLSC, INDEX_NONE,'AIM_LSC:  RHLSC =',
      &  '   /* Max rel.humidity threshold (at sigma=1) */')
-       CALL WRITE_0D_R8( DRHLSC,INDEX_NONE,'AIM_LSC: DRHLSC =',
+       CALL WRITE_0D_RL( DRHLSC,INDEX_NONE,'AIM_LSC: DRHLSC =',
      &  '   /* Vertical range of rel.humidity threshold */')
-       CALL WRITE_0D_R8( QSMAX, INDEX_NONE,'AIM_LSC:  QSMAX =',
+       CALL WRITE_0D_RL( QSMAX, INDEX_NONE,'AIM_LSC:  QSMAX =',
      &  '   /* Define the maximum latent heat release */')
 
 C- namelist AIM_PAR_RAD:
-       CALL WRITE_0D_R8( RHCL1, INDEX_NONE,'AIM_RAD:  RHCL1 =',
+       CALL WRITE_0D_RL( RHCL1, INDEX_NONE,'AIM_RAD:  RHCL1 =',
      &  '   /*  rel.hum. corresponding to cloud cover = 0 */')
-       CALL WRITE_0D_R8( RHCL2, INDEX_NONE,'AIM_RAD:  RHCL2 =',
+       CALL WRITE_0D_RL( RHCL2, INDEX_NONE,'AIM_RAD:  RHCL2 =',
      &  '   /*  rel.hum. corresponding to cloud cover = 1 */')
-       CALL WRITE_0D_R8( QACL1, INDEX_NONE,'AIM_RAD:  QACL1 =',
+       CALL WRITE_0D_RL( QACL1, INDEX_NONE,'AIM_RAD:  QACL1 =',
      &  '   /* spec.hum. threshold for cloud, upper trop. */')
-       CALL WRITE_0D_R8( QACL2, INDEX_NONE,'AIM_RAD:  QACL2 =',
+       CALL WRITE_0D_RL( QACL2, INDEX_NONE,'AIM_RAD:  QACL2 =',
      &  '   /* spec.hum. threshold for cloud, upper trop. */')
-       CALL WRITE_0D_R8( ALBCL, INDEX_NONE,'AIM_RAD:  ALBCL =',
+       CALL WRITE_0D_RL( ALBCL, INDEX_NONE,'AIM_RAD:  ALBCL =',
      &  '   /*  cloud albedo (for cloud cover = 1) */')
-       CALL WRITE_0D_R8( EPSSW, INDEX_NONE,'AIM_RAD:  EPSSW =',
+       CALL WRITE_0D_RL( EPSSW, INDEX_NONE,'AIM_RAD:  EPSSW =',
      &  '   /*  fract. of inc.solar rad. absorbed by ozone */')
-       CALL WRITE_0D_R8( EPSLW, INDEX_NONE,'AIM_RAD:  EPSLW =',
+       CALL WRITE_0D_RL( EPSLW, INDEX_NONE,'AIM_RAD:  EPSLW =',
      &  '   /*  fract. of sfc LW emitted directly to space */')
-       CALL WRITE_0D_R8( EMISFC,INDEX_NONE,'AIM_RAD: EMISFC =',
+       CALL WRITE_0D_RL( EMISFC,INDEX_NONE,'AIM_RAD: EMISFC =',
      &  '   /*  longwave surface emissivity */')
 
        WRITE(msgBuf,'(A)')
      &  ' AIM_RAD : ShortWave absorptivities (for dp = 10^5 Pa) :'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-       CALL WRITE_0D_R8( ABSDRY,INDEX_NONE,'AIM_RAD: ABSDRY =',
+       CALL WRITE_0D_RL( ABSDRY,INDEX_NONE,'AIM_RAD: ABSDRY =',
      &  '   /* abs. of dry air (visible band) */')
-       CALL WRITE_0D_R8( ABSAER,INDEX_NONE,'AIM_RAD: ABSAER =',
+       CALL WRITE_0D_RL( ABSAER,INDEX_NONE,'AIM_RAD: ABSAER =',
      &  '   /* abs. of aerosols (visible band) */')
-       CALL WRITE_0D_R8( ABSWV1,INDEX_NONE,'AIM_RAD: ABSWV1 =',
+       CALL WRITE_0D_RL( ABSWV1,INDEX_NONE,'AIM_RAD: ABSWV1 =',
      &  '   /* abs. of water vap. (vis. band)(/dq, 1g/kg) */')
-       CALL WRITE_0D_R8( ABSWV2,INDEX_NONE,'AIM_RAD: ABSWV2 =',
+       CALL WRITE_0D_RL( ABSWV2,INDEX_NONE,'AIM_RAD: ABSWV2 =',
      &  '   /* abs. of water vap.(near IR bd)(/dq, 1g/kg) */')
-       CALL WRITE_0D_R8( ABSCL1,INDEX_NONE,'AIM_RAD: ABSCL1 =',
+       CALL WRITE_0D_RL( ABSCL1,INDEX_NONE,'AIM_RAD: ABSCL1 =',
      &  '   /* abs. of clouds (vis.band)(constant term) */')
-       CALL WRITE_0D_R8( ABSCL2,INDEX_NONE,'AIM_RAD: ABSCL2 =',
+       CALL WRITE_0D_RL( ABSCL2,INDEX_NONE,'AIM_RAD: ABSCL2 =',
      &  '   /* abs. of clouds (vis.band) (/dw, 1g/kg) */')
 
        WRITE(msgBuf,'(A)')
      &  ' AIM_RAD : LongWave absorptivities (per dp = 10^5 Pa) :'
-       CALL WRITE_0D_R8( ABLWIN,INDEX_NONE,'AIM_RAD: ABLWIN =',
+       CALL WRITE_0D_RL( ABLWIN,INDEX_NONE,'AIM_RAD: ABLWIN =',
      &  '   /* abs. of air in "window" band */')
-       CALL WRITE_0D_R8( ABLCO2,INDEX_NONE,'AIM_RAD: ABLCO2 =',
+       CALL WRITE_0D_RL( ABLCO2,INDEX_NONE,'AIM_RAD: ABLCO2 =',
      &  '   /* abs. of air in CO2 band */')
-       CALL WRITE_0D_R8( ABLWV1,INDEX_NONE,'AIM_RAD: ABLWV1 =',
+       CALL WRITE_0D_RL( ABLWV1,INDEX_NONE,'AIM_RAD: ABLWV1 =',
      &  '   /* abs. of Water vap. H2O bd-1(weak)(/dq,1g/kg)*/')
-       CALL WRITE_0D_R8( ABLWV2,INDEX_NONE,'AIM_RAD: ABLWV2 =',
+       CALL WRITE_0D_RL( ABLWV2,INDEX_NONE,'AIM_RAD: ABLWV2 =',
      &  '   /* abs. of W. vap., H2O bd-2(strong)(/dq,1g/kg)*/')
-       CALL WRITE_0D_R8( ABLCL1,INDEX_NONE,'AIM_RAD: ABLCL1 =',
+       CALL WRITE_0D_RL( ABLCL1,INDEX_NONE,'AIM_RAD: ABLCL1 =',
      &  '   /* abs. of clouds in window band (const term) */')
-       CALL WRITE_0D_R8( ABLCL2,INDEX_NONE,'AIM_RAD: ABLCL2 =',
+       CALL WRITE_0D_RL( ABLCL2,INDEX_NONE,'AIM_RAD: ABLCL2 =',
      &  '   /* abs. of clouds in window band (/dw, 1g/kg) */')
 
 C- namelist AIM_PAR_VDI:
-       CALL WRITE_0D_R8( TRSHC, INDEX_NONE,'AIM_VDI:  TRSHC =',
+       CALL WRITE_0D_RL( TRSHC, INDEX_NONE,'AIM_VDI:  TRSHC =',
      &  '   /* relaxation time [h] for shallow convection */')
-       CALL WRITE_0D_R8( TRVDI, INDEX_NONE,'AIM_VDI:  TRVDI =',
+       CALL WRITE_0D_RL( TRVDI, INDEX_NONE,'AIM_VDI:  TRVDI =',
      &  '   /* relaxation time [h] for moisture diffusion */')
-       CALL WRITE_0D_R8( TRVDS, INDEX_NONE,'AIM_VDI:  TRVDS =',
+       CALL WRITE_0D_RL( TRVDS, INDEX_NONE,'AIM_VDI:  TRVDS =',
      &  '   /* relaxation time [h] for super-adiab. cond. */')
-       CALL WRITE_0D_R8( RHGRAD,INDEX_NONE,'AIM_VDI: RHGRAD =',
+       CALL WRITE_0D_RL( RHGRAD,INDEX_NONE,'AIM_VDI: RHGRAD =',
      &  '   /* max gradient of rel.humidity (d_RH/d_sigma)*/')
-       CALL WRITE_0D_R8( RHGRAD,INDEX_NONE,'AIM_VDI: RHGRAD =',
+       CALL WRITE_0D_RL( SEGRAD,INDEX_NONE,'AIM_VDI: SEGRAD =',
      &  '   /* max grad. of dry static Energy(d_DSE/d_phi)*/')
 
 #ifdef ALLOW_AIM_CO2
@@ -553,7 +553,7 @@ C- namelist AIM_PAR_CO2:
        CALL WRITE_0D_I( Aim_CO2_Flag, INDEX_NONE,
      &                 'AIM_PAR_CO2: Aim_CO2_Flag =',
      &  ' /* CO2 flag, 1: prescribed, 2: interactive  */')
-       CALL WRITE_0D_R8( atm_pCO2,    INDEX_NONE,
+       CALL WRITE_0D_RL( atm_pCO2,    INDEX_NONE,
      &                 'AIM_PAR_CO2: atm_pCO2 =',
      &  ' /* pCO2 when prescribed or IC when interactive */')
 #endif

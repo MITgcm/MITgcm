@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.10 2007/06/18 21:06:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.11 2009/04/28 23:27:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -231,7 +231,7 @@ C- namelist CPL_OCN_PARAM:
        CALL WRITE_0D_L( useImportWSpd , INDEX_NONE,
      &                 'useImportWSpd =',
      &   ' /* use Imported Windspeed fr Cpl. on/off flag */')
-       CALL WRITE_0D_R8( cpl_taveFreq, INDEX_NONE, 'cpl_taveFreq =',
+       CALL WRITE_0D_RL( cpl_taveFreq, INDEX_NONE, 'cpl_taveFreq =',
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
        CALL WRITE_0D_L( cpl_timeave_mnc , INDEX_NONE,
      &                 'cpl_timeave_mnc =',

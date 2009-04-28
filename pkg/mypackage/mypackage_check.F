@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_check.F,v 1.3 2008/01/27 20:52:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_check.F,v 1.4 2009/04/28 23:27:24 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -57,7 +57,7 @@ C--  Print out some kee parameters :
 C-   add some other as example:
        CALL WRITE_0D_I( myPa_index1, INDEX_NONE, ' myPa_index1 =',
      &  ' /* user defined parameter */')
-       CALL WRITE_0D_R8( myPa_param1, INDEX_NONE, ' myPa_param1 =',
+       CALL WRITE_0D_RL( myPa_param1, INDEX_NONE, ' myPa_param1 =',
      &  ' /* user defined parameter */')
        CALL WRITE_0D_C( myPa_string1,-1,INDEX_NONE,'myPa_string1 =',
      &  ' /* user defined parameter */')

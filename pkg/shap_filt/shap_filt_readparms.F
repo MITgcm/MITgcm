@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.14 2007/11/28 16:24:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.15 2009/04/28 23:27:24 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -143,22 +143,22 @@ C- print out some kee parameters :
      & '   /* power of physical-space filter (Momentum) */')
       ENDIF
 
-      CALL WRITE_0D_R8( Shap_Trtau, INDEX_NONE,
+      CALL WRITE_0D_RL( Shap_Trtau, INDEX_NONE,
      & 'Shap_Trtau =',
      & '   /* time scale of Shapiro filter (Tracer) */')
-      CALL WRITE_0D_R8( Shap_TrLength, INDEX_NONE,
+      CALL WRITE_0D_RL( Shap_TrLength, INDEX_NONE,
      & 'Shap_TrLength =',
      & '   /* Length scale of Shapiro filter (Tracer) */')
-      CALL WRITE_0D_R8( Shap_uvtau, INDEX_NONE,
+      CALL WRITE_0D_RL( Shap_uvtau, INDEX_NONE,
      & 'Shap_uvtau =',
      & '   /* time scale of Shapiro filter (Momentum) */')
-      CALL WRITE_0D_R8( Shap_uvLength, INDEX_NONE,
+      CALL WRITE_0D_RL( Shap_uvLength, INDEX_NONE,
      & 'Shap_uvLength =',
      & '   /* Length scale of Shapiro filter (Momentum) */')
-      CALL WRITE_0D_R8( Shap_noSlip, INDEX_NONE,
+      CALL WRITE_0D_RL( Shap_noSlip, INDEX_NONE,
      & 'Shap_noSlip =',
      &  '  /* No-slip parameter (0=Free-slip ; 1=No-slip)*/')
-      CALL WRITE_0D_R8( Shap_diagFreq, INDEX_NONE,
+      CALL WRITE_0D_RL( Shap_diagFreq, INDEX_NONE,
      & 'Shap_diagFreq =',
      & '   /* Frequency^-1 for diagnostic output (s)*/')
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.5 2008/04/18 19:39:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_fixed.F,v 1.6 2009/04/28 23:27:24 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -169,7 +169,7 @@ C-- Print out GAD parameters :
      & 'AdamsBashforth_S =',
      & ' /* apply Adams-Bashforth extrapolation on Salt */')
 #ifdef GAD_SMOLARKIEWICZ_HACK
-      CALL WRITE_0D_R8( SmolarkiewiczMaxFrac, INDEX_NONE,
+      CALL WRITE_0D_RL( SmolarkiewiczMaxFrac, INDEX_NONE,
      & 'SmolarkiewiczMaxFrac =',
      & ' /* maximal fraction of tracer to flow out of a cell */')
 #endif

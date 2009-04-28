@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.8 2008/04/10 01:53:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.9 2009/04/28 23:27:24 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -196,56 +196,56 @@ C--   Print out parameter values :
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 
 C- namelist ABIOTIC_PARMS
-       CALL WRITE_0D_R8( permil, INDEX_NONE,'permil =',
+       CALL WRITE_0D_RL( permil, INDEX_NONE,'permil =',
      &  ' /* Ref. density to convert mol/m3 to mol/kg */')
-       CALL WRITE_0D_R8( Pa2Atm, INDEX_NONE,'Pa2Atm =',
+       CALL WRITE_0D_RL( Pa2Atm, INDEX_NONE,'Pa2Atm =',
      &  ' /* Atmosph. pressure conversion coeff (to Atm) */')
 
 #ifdef DIC_BIOTIC
 C- namelist BIOTIC_PARMS
-       CALL WRITE_0D_R8( DOPfraction, INDEX_NONE,'DOPfraction =',
+       CALL WRITE_0D_RL( DOPfraction, INDEX_NONE,'DOPfraction =',
      &  ' /* Fraction of new production going to DOP */')
-       CALL WRITE_0D_R8( KDOPRemin, INDEX_NONE,'KDOPRemin =',
+       CALL WRITE_0D_RL( KDOPRemin, INDEX_NONE,'KDOPRemin =',
      &  ' /* DOP remineralization rate (1/s) */')
-       CALL WRITE_0D_R8( KRemin, INDEX_NONE,'KRemin =',
+       CALL WRITE_0D_RL( KRemin, INDEX_NONE,'KRemin =',
      &  ' /* Remin power law coeff. */')
-       CALL WRITE_0D_R8( zcrit, INDEX_NONE,'zcrit =',
+       CALL WRITE_0D_RL( zcrit, INDEX_NONE,'zcrit =',
      &  ' /* Minimum depth for biological activity (m) */')
-       CALL WRITE_0D_R8( O2crit, INDEX_NONE,'O2crit =',
+       CALL WRITE_0D_RL( O2crit, INDEX_NONE,'O2crit =',
      &  ' /* Critical oxygen level (mol/m3) */')
-       CALL WRITE_0D_R8( R_OP, INDEX_NONE,'R_OP =',
+       CALL WRITE_0D_RL( R_OP, INDEX_NONE,'R_OP =',
      &  ' /* Stochiometric ratio R_OP */')
-       CALL WRITE_0D_R8( R_CP, INDEX_NONE,'R_CP =',
+       CALL WRITE_0D_RL( R_CP, INDEX_NONE,'R_CP =',
      &  ' /* Stochiometric ratio R_CP */')
-       CALL WRITE_0D_R8( R_NP, INDEX_NONE,'R_NP =',
+       CALL WRITE_0D_RL( R_NP, INDEX_NONE,'R_NP =',
      &  ' /* Stochiometric ratio R_NP */')
-       CALL WRITE_0D_R8( R_FeP, INDEX_NONE,'R_FeP =',
+       CALL WRITE_0D_RL( R_FeP, INDEX_NONE,'R_FeP =',
      &  ' /* Stochiometric ratio R_FeP */')
-       CALL WRITE_0D_R8( zca, INDEX_NONE,'zca =',
+       CALL WRITE_0D_RL( zca, INDEX_NONE,'zca =',
      &  ' /* Scale depth for CaCO3 remineralization (m) */')
-       CALL WRITE_0D_R8( parfrac, INDEX_NONE,'parfrac =',
+       CALL WRITE_0D_RL( parfrac, INDEX_NONE,'parfrac =',
      &  ' /* Fraction of Qsw that is PAR */')
-       CALL WRITE_0D_R8( k0, INDEX_NONE,'k0 =',
+       CALL WRITE_0D_RL( k0, INDEX_NONE,'k0 =',
      &  ' /* Light attentuation coefficient (1/m) */')
-       CALL WRITE_0D_R8( lit0, INDEX_NONE,'lit0 =',
+       CALL WRITE_0D_RL( lit0, INDEX_NONE,'lit0 =',
      &  ' /* Half saturation light constant (W/m2) */')
-       CALL WRITE_0D_R8( KPO4, INDEX_NONE,'KPO4 =',
+       CALL WRITE_0D_RL( KPO4, INDEX_NONE,'KPO4 =',
      &  ' /* Half saturation phosphate constant (mol/m3) */')
-       CALL WRITE_0D_R8( KFE, INDEX_NONE,'KFE =',
+       CALL WRITE_0D_RL( KFE, INDEX_NONE,'KFE =',
      &  ' /* Half saturation fe constant (mol/m3) */')
-       CALL WRITE_0D_R8( alpfe, INDEX_NONE,'alpfe =',
+       CALL WRITE_0D_RL( alpfe, INDEX_NONE,'alpfe =',
      &  ' /* Solubility of aeolian fe */')
-       CALL WRITE_0D_R8( freefemax, INDEX_NONE,'freefemax =',
+       CALL WRITE_0D_RL( freefemax, INDEX_NONE,'freefemax =',
      &  ' /* Max solubility of free iron (mol/m3) */')
-       CALL WRITE_0D_R8( KScav, INDEX_NONE,'KScav =',
+       CALL WRITE_0D_RL( KScav, INDEX_NONE,'KScav =',
      &  ' /* Iron scavenging rate */')
-       CALL WRITE_0D_R8( ligand_stab, INDEX_NONE,'ligand_stab =',
+       CALL WRITE_0D_RL( ligand_stab, INDEX_NONE,'ligand_stab =',
      &  ' /* Ligand-free iron stability constant (m3/mol) */')
-       CALL WRITE_0D_R8( ligand_tot, INDEX_NONE,'ligand_tot =',
+       CALL WRITE_0D_RL( ligand_tot, INDEX_NONE,'ligand_tot =',
      &  ' /* Total free ligand  (mol/m3) */')
-       CALL WRITE_0D_R8( alphaUniform, INDEX_NONE,'alphaUniform =',
+       CALL WRITE_0D_RL( alphaUniform, INDEX_NONE,'alphaUniform =',
      &  ' /* Timescale for biological activity */')
-       CALL WRITE_0D_R8(rainRatioUniform,INDEX_NONE,'rainRatioUniform=',
+       CALL WRITE_0D_RL(rainRatioUniform,INDEX_NONE,'rainRatioUniform=',
      &  ' /* Inorganic/organic carbon rain ratio */')
 
        CALL WRITE_0D_L( QSW_underice, INDEX_NONE, 'QSW_underice  =',
@@ -263,10 +263,10 @@ C- namelist DIC_FORCING
      & '  /* File name of aeolian iron flux */')
        CALL WRITE_0D_C( DIC_silicaFile, -1,INDEX_NONE,'DIC_silicaFile=',
      & '  /* File name of surface silica */')
-       CALL WRITE_0D_R8( DIC_forcingPeriod,
+       CALL WRITE_0D_RL( DIC_forcingPeriod,
      &   INDEX_NONE,'DIC_forcingPeriod =',
      &  ' /* Periodic forcing parameter specific for DIC (s) */')
-       CALL WRITE_0D_R8( DIC_forcingCycle,
+       CALL WRITE_0D_RL( DIC_forcingCycle,
      &   INDEX_NONE,'DIC_forcingCycle =',
      &  ' /* Periodic forcing parameter specific for DIC (s) */')
        CALL WRITE_0D_I( dic_int1, INDEX_NONE, 'dic_int1 =',
@@ -277,7 +277,7 @@ C- namelist DIC_FORCING
      &  '  /*  */')
        CALL WRITE_0D_I( dic_int4, INDEX_NONE, 'dic_int4 =',
      &  '  /*  */')
-       CALL WRITE_0D_R8( dic_pCO2, INDEX_NONE,'dic_pCO2 =',
+       CALL WRITE_0D_RL( dic_pCO2, INDEX_NONE,'dic_pCO2 =',
      &  ' /* Atmospheric pCO2 to be read in data.dic */')
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

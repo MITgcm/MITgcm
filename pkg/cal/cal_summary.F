@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_summary.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_summary.F,v 1.3 2009/04/28 23:27:24 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -92,11 +92,11 @@ c     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-      call write_0d_r8( modelstart, INDEX_NONE,'startTime =',
+      call WRITE_0D_RL( modelstart, INDEX_NONE,'startTime =',
      &'   /* Start time of the model integration [s] */')
-      call write_0d_r8( modelend, INDEX_NONE,'endTime =',
+      call WRITE_0D_RL( modelend, INDEX_NONE,'endTime =',
      &'   /* End time of the model integration [s] */')
-      call write_0d_r8( modelstep, INDEX_NONE,'deltatclock =',
+      call WRITE_0D_RL( modelstep, INDEX_NONE,'deltatclock =',
      &'   /* Time interval for a model forward step [s] */')
       call write_0d_l( usingGregorianCalendar, INDEX_NONE,
      &                'usingGregorianCalendar =',

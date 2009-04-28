@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.18 2008/11/17 23:08:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.19 2009/04/28 23:27:24 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -97,92 +97,92 @@ C--   Print general parameters:
       CALL WRITE_0D_L( useExfCheckRange, INDEX_NONE,
      &  'useExfCheckRange =',
      &  ' /* check for fields range */')
-      CALL WRITE_0D_R8( exf_monFreq, INDEX_NONE, 'exf_monFreq =',
+      CALL WRITE_0D_RL( exf_monFreq, INDEX_NONE, 'exf_monFreq =',
      &  ' /* EXF monitor frequency [ s ] */')
-      CALL WRITE_0D_R8( repeatPeriod, INDEX_NONE, 'repeatPeriod =',
+      CALL WRITE_0D_RL( repeatPeriod, INDEX_NONE, 'repeatPeriod =',
      &  ' /* period for cycling forcing dataset [ s ] */')
-      CALL WRITE_0D_R8( climtempfreeze, INDEX_NONE,'climTempFreeze=',
+      CALL WRITE_0D_RL( climtempfreeze, INDEX_NONE,'climTempFreeze=',
      &  ' /* Minimum climatological temperature [deg.C] */')
-      CALL WRITE_0D_R8( windStressMax, INDEX_NONE,'windStressMax =',
+      CALL WRITE_0D_RL( windStressMax, INDEX_NONE,'windStressMax =',
      &  ' /* Maximum absolute windstress [ Pa ] */')
       CALL WRITE_0D_L( stressIsOnCgrid,INDEX_NONE,'stressIsOnCgrid =',
      &  ' /* set u,v_stress on Arakawa C-grid */')
-      CALL WRITE_0D_R8( cen2kel, INDEX_NONE, 'cen2kel =',
+      CALL WRITE_0D_RL( cen2kel, INDEX_NONE, 'cen2kel =',
      &  ' /* conversion of deg. Centigrade to Kelvin [K] */')
-      CALL WRITE_0D_R8( gravity_mks, INDEX_NONE, 'gravity_mks=',
+      CALL WRITE_0D_RL( gravity_mks, INDEX_NONE, 'gravity_mks=',
      &  ' /* gravitational acceleration [m/s^2] */')
-      CALL WRITE_0D_R8( atmrho, INDEX_NONE, 'atmrho =',
+      CALL WRITE_0D_RL( atmrho, INDEX_NONE, 'atmrho =',
      & '  /* mean atmospheric density [kg/m^3] */')
-      CALL WRITE_0D_R8( atmcp, INDEX_NONE, 'atmcp =',
+      CALL WRITE_0D_RL( atmcp, INDEX_NONE, 'atmcp =',
      & '  /* mean atmospheric specific heat [J/kg/K] */')
-      CALL WRITE_0D_R8( flamb, INDEX_NONE, 'flamb =',
+      CALL WRITE_0D_RL( flamb, INDEX_NONE, 'flamb =',
      & '  /* latent heat of evaporation [J/kg] */')
-      CALL WRITE_0D_R8( flami, INDEX_NONE, 'flami =',
+      CALL WRITE_0D_RL( flami, INDEX_NONE, 'flami =',
      & '  /* latent heat of pure-ice melting [J/kg] */')
-      CALL WRITE_0D_R8( cvapor_fac, INDEX_NONE, 'cvapor_fac =',
+      CALL WRITE_0D_RL( cvapor_fac, INDEX_NONE, 'cvapor_fac =',
      &  ' /* const. for Saturation calculation [?] */')
-      CALL WRITE_0D_R8( cvapor_exp, INDEX_NONE, 'cvapor_exp =',
+      CALL WRITE_0D_RL( cvapor_exp, INDEX_NONE, 'cvapor_exp =',
      &  ' /* const. for Saturation calculation [?] */')
-      CALL WRITE_0D_R8( cvapor_fac_ice, INDEX_NONE, 'cvapor_fac_ice=',
+      CALL WRITE_0D_RL( cvapor_fac_ice, INDEX_NONE, 'cvapor_fac_ice=',
      &  ' /* const. for Saturation calculation [?] */')
-      CALL WRITE_0D_R8( cvapor_exp_ice, INDEX_NONE, 'cvapor_exp_ice=',
+      CALL WRITE_0D_RL( cvapor_exp_ice, INDEX_NONE, 'cvapor_exp_ice=',
      &  ' /* const. for Saturation calculation [?] */')
-      CALL WRITE_0D_R8( humid_fac, INDEX_NONE, 'humid_fac =',
+      CALL WRITE_0D_RL( humid_fac, INDEX_NONE, 'humid_fac =',
      &  ' /* humidity coef. in virtual temp. [(kg/kg)^-1] */')
-      CALL WRITE_0D_R8( gamma_blk, INDEX_NONE, 'gamma_blk =',
+      CALL WRITE_0D_RL( gamma_blk, INDEX_NONE, 'gamma_blk =',
      &  ' /* adiabatic lapse rate [?] */')
-      CALL WRITE_0D_R8( saltsat, INDEX_NONE, 'saltsat =',
+      CALL WRITE_0D_RL( saltsat, INDEX_NONE, 'saltsat =',
      &  ' /* reduction of Qsat over salty water [-] */')
       CALL WRITE_0D_L( noNegativeEvap,INDEX_NONE,'noNegativeEvap =',
      &  ' /* prevent negative Evaporation */')
-      CALL WRITE_0D_R8( sstExtrapol, INDEX_NONE, 'sstExtrapol =',
+      CALL WRITE_0D_RL( sstExtrapol, INDEX_NONE, 'sstExtrapol =',
      &  ' /* extrapolation coeff from lev. 1 & 2 to surf [-] */')
-      CALL WRITE_0D_R8( cdrag_1, INDEX_NONE, 'cDrag_1 =',
+      CALL WRITE_0D_RL( cdrag_1, INDEX_NONE, 'cDrag_1 =',
      &  ' /* coef used in drag calculation [?] */')
-      CALL WRITE_0D_R8( cdrag_2, INDEX_NONE, 'cDrag_2 =',
+      CALL WRITE_0D_RL( cdrag_2, INDEX_NONE, 'cDrag_2 =',
      &  ' /* coef used in drag calculation [?] */')
-      CALL WRITE_0D_R8( cdrag_3, INDEX_NONE, 'cDrag_3 =',
+      CALL WRITE_0D_RL( cdrag_3, INDEX_NONE, 'cDrag_3 =',
      &  ' /* coef used in drag calculation [?] */')
-      CALL WRITE_0D_R8( cstanton_1, INDEX_NONE, 'cStanton_1 =',
+      CALL WRITE_0D_RL( cstanton_1, INDEX_NONE, 'cStanton_1 =',
      &  ' /* coef used in Stanton number calculation [?] */')
-      CALL WRITE_0D_R8( cstanton_2, INDEX_NONE, 'cStanton_2 =',
+      CALL WRITE_0D_RL( cstanton_2, INDEX_NONE, 'cStanton_2 =',
      &  ' /* coef used in Stanton number calculation [?] */')
-      CALL WRITE_0D_R8( cdalton, INDEX_NONE, 'cDalton =',
+      CALL WRITE_0D_RL( cdalton, INDEX_NONE, 'cDalton =',
      &  ' /* coef used in Dalton number calculation [?] */')
-      CALL WRITE_0D_R8( exf_scal_BulkCdn, INDEX_NONE,
+      CALL WRITE_0D_RL( exf_scal_BulkCdn, INDEX_NONE,
      &  'exf_scal_BulkCdn=',
      &  ' /* Drag coefficient scaling factor [-] */')
-      CALL WRITE_0D_R8( zolmin, INDEX_NONE, 'zolmin =',
+      CALL WRITE_0D_RL( zolmin, INDEX_NONE, 'zolmin =',
      &  ' /* minimum stability parameter [?] */')
-      CALL WRITE_0D_R8( psim_fac, INDEX_NONE, 'psim_fac =',
+      CALL WRITE_0D_RL( psim_fac, INDEX_NONE, 'psim_fac =',
      &  ' /* coef used in turbulent fluxes calculation [-] */')
-      CALL WRITE_0D_R8( zref, INDEX_NONE, 'zref =',
+      CALL WRITE_0D_RL( zref, INDEX_NONE, 'zref =',
      & '  /* reference height [ m ] */')
-      CALL WRITE_0D_R8( hu, INDEX_NONE, 'hu =',
+      CALL WRITE_0D_RL( hu, INDEX_NONE, 'hu =',
      & '  /* height of mean wind [ m ] */')
-      CALL WRITE_0D_R8( ht, INDEX_NONE, 'ht =',
+      CALL WRITE_0D_RL( ht, INDEX_NONE, 'ht =',
      & '  /* height of mean temperature [ m ] */')
-      CALL WRITE_0D_R8( hq, INDEX_NONE, 'hq =',
+      CALL WRITE_0D_RL( hq, INDEX_NONE, 'hq =',
      & '  /* height of mean spec.humidity [ m ] */')
-      CALL WRITE_0D_R8( umin, INDEX_NONE, 'uMin =',
+      CALL WRITE_0D_RL( umin, INDEX_NONE, 'uMin =',
      &  ' /* minimum wind speed [m/s] */')
       CALL WRITE_0D_L( useStabilityFct_overIce, INDEX_NONE,
      &  'useStabilityFct_overIce=',
      &  ' /* transfert Coeffs over sea-ice depend on stability */')
-      CALL WRITE_0D_R8( exf_iceCd, INDEX_NONE, 'exf_iceCd =',
+      CALL WRITE_0D_RL( exf_iceCd, INDEX_NONE, 'exf_iceCd =',
      &  ' /* drag coefficient over sea-ice (fixed) [-] */')
-      CALL WRITE_0D_R8( exf_iceCe, INDEX_NONE, 'exf_iceCe =',
+      CALL WRITE_0D_RL( exf_iceCe, INDEX_NONE, 'exf_iceCe =',
      &  ' /* transfert coeff. over sea-ice, for Evap (fixed) [-] */')
-      CALL WRITE_0D_R8( exf_iceCh, INDEX_NONE, 'exf_iceCh =',
+      CALL WRITE_0D_RL( exf_iceCh, INDEX_NONE, 'exf_iceCh =',
      &  ' /* transfert coeff. over sea-ice, Sens.Heat.(fixed)[-] */')
-      CALL WRITE_0D_R8( exf_albedo, INDEX_NONE, 'exf_albedo =',
+      CALL WRITE_0D_RL( exf_albedo, INDEX_NONE, 'exf_albedo =',
      & '  /* Sea-water albedo [-] */')
-      CALL WRITE_0D_R8( ocean_emissivity, INDEX_NONE,
+      CALL WRITE_0D_RL( ocean_emissivity, INDEX_NONE,
      &  'ocean_emissivity =',
      &  ' /* longwave ocean-surface emissivity [-] */')
-      CALL WRITE_0D_R8( ice_emissivity, INDEX_NONE,'ice_emissivity =',
+      CALL WRITE_0D_RL( ice_emissivity, INDEX_NONE,'ice_emissivity =',
      &  ' /* longwave seaice emissivity [-] */')
-      CALL WRITE_0D_R8(snow_emissivity, INDEX_NONE,'snow_emissivity =',
+      CALL WRITE_0D_RL(snow_emissivity, INDEX_NONE,'snow_emissivity =',
      &  ' /* longwave snow  emissivity [-] */')
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

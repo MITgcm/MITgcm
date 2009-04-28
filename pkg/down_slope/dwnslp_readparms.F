@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_readparms.F,v 1.1 2008/08/17 02:01:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_readparms.F,v 1.2 2009/04/28 23:27:24 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -91,11 +91,11 @@ C--   Check the parameters :
 C- print out some kee parameters :
       _BEGIN_MASTER(myThid)
 
-       CALL WRITE_0D_R8( DWNSLP_slope, INDEX_NONE,'DWNSLP_slope =',
+       CALL WRITE_0D_RL( DWNSLP_slope, INDEX_NONE,'DWNSLP_slope =',
      &  '   /* DOWNSLP fixed slope (=0 => use local slope) */')
-       CALL WRITE_0D_R8( DWNSLP_rec_mu,INDEX_NONE,'DWNSLP_rec_mu =',
+       CALL WRITE_0D_RL( DWNSLP_rec_mu,INDEX_NONE,'DWNSLP_rec_mu =',
      &  '   /* DOWNSLP recip. friction parameter (time, s ) */')
-       CALL WRITE_0D_R8( DWNSLP_drFlow,INDEX_NONE,'DWNSLP_drFlow =',
+       CALL WRITE_0D_RL( DWNSLP_drFlow,INDEX_NONE,'DWNSLP_drFlow =',
      &  '   /* DOWNSLP effective layer thickness ( m ) */')
 
       _END_MASTER(myThid)
