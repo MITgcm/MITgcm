@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.7 2009/03/17 18:41:33 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.8 2009/04/28 04:25:33 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -86,13 +86,18 @@ CEOP
       theSimulationMode = simulationMode
       theCornerMode     = cornerMode
 
-C     For now tile<->tile exchanges are sequentialised through
+C     For now tile <-> tile exchanges are sequentialised through
 C     thread 1. This is a temporary feature for preliminary testing until
 C     general tile decomposistion is in place (CNH April 11, 2001)
       CALL BAR2( myThid )
 
 C     Post sends as messages or buffer copies
+#ifdef ALLOW_USE_MPI
+      _BEGIN_MASTER( myThid )
+      DO bi=1,nSx
+#else
       DO bi=myBxLo(myThid), myBxHi(myThid)
+#endif
        thisTile=W2_myTileList(bi)
        nN=exch2_nNeighbours(thisTile)
        DO N=1,nN
@@ -164,12 +169,20 @@ C       in its copy of "array".
      I       myThid )
        ENDDO
       ENDDO
+#ifdef ALLOW_USE_MPI
+      _END_MASTER( myThid )
+#endif
 
 C     without MPI: wait until all threads finish filling buffer
       CALL BAR2( myThid )
 
 C     Receive messages or extract buffer copies
+#ifdef ALLOW_USE_MPI
+      _BEGIN_MASTER( myThid )
+      DO bi=1,nSx
+#else
       DO bi=myBxLo(myThid), myBxHi(myThid)
+#endif
        thisTile=W2_myTileList(bi)
        nN=exch2_nNeighbours(thisTile)
        DO N=1,nN
@@ -244,8 +257,13 @@ C               record.
      I       myThid )
        ENDDO
       ENDDO
+#ifdef ALLOW_USE_MPI
+      _END_MASTER( myThid )
+#endif
 
 C     Clear message handles/locks
+#ifdef ALLOW_USE_MPI
+      _BEGIN_MASTER( myThid )
       DO bi=1,nSx
        thisTile=W2_myTileList(bi)
        nN=exch2_nNeighbours(thisTile)
@@ -258,17 +276,17 @@ C             addressable memory blocks the receiver needs to assert
 C             that is has consumed the buffer the sender filled here.
         farTile=exch2_neighbourId(N,thisTile)
         IF     ( W2_myCommFlag(N,bi) .EQ. 'M' ) THEN
-#ifdef ALLOW_USE_MPI
          wHandle = e2_msgHandles(1,N,bi)
          CALL MPI_Wait( wHandle, mpiStatus, mpiRc )
          wHandle = e2_msgHandles(2,N,bi)
          CALL MPI_Wait( wHandle, mpiStatus, mpiRc )
-#endif
         ELSEIF ( W2_myCommFlag(N,bi) .EQ. 'P' ) THEN
         ELSE
         ENDIF
        ENDDO
       ENDDO
+      _END_MASTER( myThid )
+#endif /* ALLOW_USE_MPI */
 
       CALL BAR2(myThid)
 

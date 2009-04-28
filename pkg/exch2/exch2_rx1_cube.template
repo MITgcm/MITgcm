@@ -1,15 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube.template,v 1.6 2009/03/17 18:41:33 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube.template,v 1.7 2009/04/28 04:25:33 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
-
-#undef  Dbg
 
 CBOP
 C     !ROUTINE: EXCH_RX_CUBE
 
 C     !INTERFACE:
-      SUBROUTINE EXCH2_RX1_CUBE( 
+      SUBROUTINE EXCH2_RX1_CUBE(
      U            array, fieldCode,
      I            myOLw, myOLe, myOLn, myOLs, myNz,
      I            exchWidthX, exchWidthY,
@@ -48,7 +46,7 @@ C     myThid         :: Thread number of this instance of S/R EXCH...
       INTEGER cornerMode
       INTEGER myThid
       _RX array(1-myOLw:sNx+myOLe,
-     &          1-myOLs:sNy+myOLn, 
+     &          1-myOLs:sNy+myOLn,
      &          myNZ, nSx, nSy)
 
 C     !LOCAL VARIABLES:
@@ -60,14 +58,13 @@ C     be,bw
       INTEGER theCornerMode
 c     INTEGER I,J,K
 c     INTEGER bl,bt,bn,bs,be,bw
-      INTEGER I
+      INTEGER bi
 C     Variables for working through W2 topology
       INTEGER e2_msgHandles(2,MAX_NEIGHBOURS, nSx)
       INTEGER thisTile, farTile, N, nN, oN
       INTEGER tIlo, tIhi, tJlo, tJhi, tKlo, tKhi
       INTEGER tIStride, tJStride, tKStride
       INTEGER i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi
-      INTEGER bi1Lo, bi1Hi, bj1Lo, bj1Hi
 C     == Statement function ==
 C     tilemod - Permutes indices to return neighboring tile index on
 C               six face cube.
@@ -84,14 +81,19 @@ CEOP
       theSimulationMode = simulationMode
       theCornerMode     = cornerMode
 
-C     For now tile<->tile exchanges are sequentialised through
+C     For now tile <-> tile exchanges are sequentialised through
 C     thread 1. This is a temporary feature for preliminary testing until
 C     general tile decomposistion is in place (CNH April 11, 2001)
       CALL BAR2( myThid )
 
 C     Post sends as messages or buffer copies
-      DO I=myBxLo(myThid), myBxHi(myThid)
-       thisTile=W2_myTileList(I)
+#ifdef ALLOW_USE_MPI
+      _BEGIN_MASTER( myThid )
+      DO bi=1,nSx
+#else
+      DO bi=myBxLo(myThid), myBxHi(myThid)
+#endif
+       thisTile=W2_myTileList(bi)
        nN=exch2_nNeighbours(thisTile)
        DO N=1,nN
         farTile=exch2_neighbourId(N,thisTile)
@@ -113,33 +115,37 @@ C     Post sends as messages or buffer copies
         j1Hi  = sNy+myOLn
         k1Lo  = 1
         k1Hi  = myNz
-        bi1Lo = I
-        bi1Hi = I
-        bj1Lo = 1
-        bj1Hi = 1
-C       Send to neighbour N to fill neighbor points 
+C       Send to neighbour N to fill neighbor points
 C       (tIlo:tIhi:tiStride,tJlo:tJhi,tJStride,tKlo:tKhi,tKStride)
 C       in its copy of "array".
         CALL EXCH2_SEND_RX1(
-     I       tIlo, tIhi, tiStride, 
-     I       tJlo, tJhi, tjStride, 
+     I       tIlo, tIhi, tiStride,
+     I       tJlo, tJhi, tjStride,
      I       tKlo, tKhi, tkStride,
      I       thisTile, N,
-     I       e2Bufr1_RX(1,N,I,1), e2BufrRecSize,
-     I       array(1-myOLw,1-myOLs,1,I,1),
+     I       e2Bufr1_RX(1,N,bi,1), e2BufrRecSize,
+     I       array(1-myOLw,1-myOLs,1,bi,1),
      I       i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
-     O       e2_msgHandles(1,N,I), 
-     I       W2_myCommFlag(N,I),
+     O       e2_msgHandles(1,N,bi),
+     I       W2_myCommFlag(N,bi),
      I       myThid )
        ENDDO
       ENDDO
+#ifdef ALLOW_USE_MPI
+      _END_MASTER( myThid )
+#endif
 
 C     without MPI: wait until all threads finish filling buffer
       CALL BAR2( myThid )
 
 C     Receive messages or extract buffer copies
-      DO I=myBxLo(myThid), myBxHi(myThid)
-       thisTile=W2_myTileList(I)
+#ifdef ALLOW_USE_MPI
+      _BEGIN_MASTER( myThid )
+      DO bi=1,nSx
+#else
+      DO bi=myBxLo(myThid), myBxHi(myThid)
+#endif
+       thisTile=W2_myTileList(bi)
        nN=exch2_nNeighbours(thisTile)
        DO N=1,nN
         farTile=exch2_neighbourId(N,thisTile)
@@ -160,59 +166,60 @@ C     Receive messages or extract buffer copies
         j1Hi  = sNy+myOLn
         k1Lo  = 1
         k1Hi  = myNz
-        bi1Lo = I
-        bi1Hi = I
-        bj1Lo = 1
-        bj1Hi = 1
 
-C       Receive from neighbour N to fill my points 
+C       Receive from neighbour N to fill my points
 C       (tIlo:tIhi:tiStride,tJlo:tJhi,tJStride,tKlo:tKhi,tKStride)
-C       in "array". 
+C       in "array".
 C       Note: when transferring data within a process:
 C             o e2Bufr entry to read is entry associated with opposing send record
 C             o e2_msgHandle entry to read is entry associated with opposing send
 C               record.
         CALL EXCH2_RECV_RX1(
-     I       tIlo, tIhi, tiStride, 
-     I       tJlo, tJhi, tjStride, 
+     I       tIlo, tIhi, tiStride,
+     I       tJlo, tJhi, tjStride,
      I       tKlo, tKhi, tkStride,
-     I       thisTile, I, N,
+     I       thisTile, bi, N,
      I       e2Bufr1_RX, e2BufrRecSize,
      I       MAX_NEIGHBOURS, nSx,
-     I       array(1-myOLw,1-myOLs,1,I,1),
+     I       array(1-myOLw,1-myOLs,1,bi,1),
      I       i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
-     U       e2_msgHandles, 
+     U       e2_msgHandles,
      I       W2_myTileList,
-     I       W2_myCommFlag(N,I),
+     I       W2_myCommFlag(N,bi),
      I       myThid )
        ENDDO
       ENDDO
+#ifdef ALLOW_USE_MPI
+      _END_MASTER( myThid )
+#endif
 
 C     Clear message handles/locks
-      DO I=1,nSx
-       thisTile=W2_myTileList(I)
+#ifdef ALLOW_USE_MPI
+      _BEGIN_MASTER( myThid )
+      DO bi=1,nSx
+       thisTile=W2_myTileList(bi)
        nN=exch2_nNeighbours(thisTile)
        DO N=1,nN
 C       Note: In a between process tile-tile data transport using
 C             MPI the sender needs to clear an Isend wait handle here.
 C             In a within process tile-tile data transport using true
 C             shared address space/or direct transfer through commonly
-C             addressable memory blocks the receiver needs to assert 
+C             addressable memory blocks the receiver needs to assert
 C             that is has consumed the buffer the sender filled here.
         farTile=exch2_neighbourId(N,thisTile)
-        IF     ( W2_myCommFlag(N,I) .EQ. 'M' ) THEN
-#ifdef ALLOW_USE_MPI
-         wHandle = e2_msgHandles(1,N,I)
+        IF     ( W2_myCommFlag(N,bi) .EQ. 'M' ) THEN
+         wHandle = e2_msgHandles(1,N,bi)
          CALL MPI_Wait( wHandle, mpiStatus, mpiRc )
-#endif
-        ELSEIF ( W2_myCommFlag(N,I) .EQ. 'P' ) THEN
+        ELSEIF ( W2_myCommFlag(N,bi) .EQ. 'P' ) THEN
         ELSE
         ENDIF
        ENDDO
       ENDDO
+      _END_MASTER( myThid )
+#endif /* ALLOW_USE_MPI */
 
       CALL BAR2(myThid)
-  
+
       RETURN
       END
 
