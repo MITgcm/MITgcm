@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/put_ocnvars.F,v 1.4 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/put_ocnvars.F,v 1.5 2009/04/28 18:33:36 jmc Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -81,15 +81,15 @@ C FFIELDS.h common block set from ATM2D common
           saltFlux(i,j,1,1)= sFluxFromIce(i,j)
 
           CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
-          _EXCH_XY_R4(EmPmR, myThid )   !for NL Free surf?
-          _EXCH_XY_R4(saltFlux, myThid )
-          _EXCH_XY_R4(Qnet, myThid )
-          _EXCH_XY_R4(Qsw, myThid )
+          _EXCH_XY_RS(EmPmR, myThid )   !for NL Free surf?
+          _EXCH_XY_RS(saltFlux, myThid )
+          _EXCH_XY_RS(Qnet, myThid )
+          _EXCH_XY_RS(Qsw, myThid )
 
 #  ifdef ATMOSPHERIC_LOADING
           sIceLoad(i,j,1,1) = pass_sIceLoad(i,j)
-          _EXCH_XY_R4(pLoad, myThid )
-          _EXCH_XY_R4( sIceLoad, myThid )
+          _EXCH_XY_RS(pLoad, myThid )
+          _EXCH_XY_RS( sIceLoad, myThid )
 C          phi0surf(i,j,1,1) = pass_slp(i,j)*recip_rhoConst
 C     &                 + gravity*seaIceMass(i,j,1,1)*recip_rhoConst
 #  endif /* ATMOSPHERIC_LOADING */
@@ -98,8 +98,8 @@ C     &                 + gravity*seaIceMass(i,j,1,1)*recip_rhoConst
 C          icemask should be imported in DIC code
            AtmospCO2(i,j,1,1)=  pass_pCO2(i,j)
            wind(i,j,1,1)= pass_wspeed(i,j)
-           _EXCH_XY_R4(AtmospCO2 ,  myThid )
-           _EXCH_XY_R4(wind ,  myThid )
+           _EXCH_XY_RL(AtmospCO2 ,  myThid )
+           _EXCH_XY_RL(wind ,  myThid )
 #  endif /* ALLOW_DIC */
 
 #endif /* ATM2D_MPI_ON */
