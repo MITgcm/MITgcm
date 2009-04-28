@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.12 2008/11/18 16:47:15 utke Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.13 2009/04/28 18:35:45 jmc Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -240,19 +240,19 @@ c--   hfluxm.
        CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
 #endif
 #ifdef ALLOW_SFLUX0_CONTROL
-       _EXCH_XY_R4(EmPmR, myThid )
+       _EXCH_XY_RS(EmPmR, myThid )
 #endif
 #ifdef ALLOW_HFLUX0_CONTROL
-       _EXCH_XY_R4(Qnet,  myThid )
+       _EXCH_XY_RS(Qnet,  myThid )
 #endif
 #ifdef ALLOW_SST_CONTROL
-       _EXCH_XY_R4(SST,   myThid )
+       _EXCH_XY_RS(SST,   myThid )
 #endif
 #ifdef ALLOW_SSS_CONTROL
-       _EXCH_XY_R4(SSS,   myThid )
+       _EXCH_XY_RS(SSS,   myThid )
 #endif
 #ifdef ALLOW_HFLUXM_CONTROL
-       _EXCH_XY_R4(Qnetm, myThid )
+       _EXCH_XY_RS(Qnetm, myThid )
 #endif
 
       END
