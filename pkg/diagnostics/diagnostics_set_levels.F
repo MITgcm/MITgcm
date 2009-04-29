@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.13 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.14 2009/04/29 20:58:56 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -126,7 +126,7 @@ C--   Check for unvalid diag.mate number
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     write a summary of the (long) list of all available diagnostics:
-      IF ( debugLevel.GE.debLevA ) THEN
+      IF ( debugLevel.GE.debLevA .AND. myProcId.EQ.0 ) THEN
 
         WRITE(msgBuf,'(2A)')
      &   ' write list of available Diagnostics to file: ',
