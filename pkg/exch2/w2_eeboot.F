@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.8 2009/04/29 19:44:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.9 2009/04/29 21:37:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -95,8 +95,7 @@ C     Open message output-file (if needed)
         CALL MDSFINDUNIT( W2_oUnit, myThid )
         OPEN( W2_oUnit, file=fName(1:iLen),
      &                  status='unknown', form='formatted')
-c       WRITE(msgBuf,'(2AA)') '  repport on file: ', fName(1:iLen)
-        WRITE(msgBuf,'(2AA)') ' write to log-file: ', fName(1:iLen)
+        WRITE(msgBuf,'(2A)') ' write to log-file: ', fName(1:iLen)
         CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
 
