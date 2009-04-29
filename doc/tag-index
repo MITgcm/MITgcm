@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1092 2009/04/29 00:04:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1093 2009/04/29 18:10:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61m
 o write_utils : change WRITE_1D_R8 to WRITE_1D_RL 
   and add 3 other S/R for other types (R4,R8,RS). 
   Change calls to WRITE_0D/1D_R[4,8,S,L] to match the type of argument.
