@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.15 2009/01/05 15:15:33 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.16 2009/04/29 21:46:35 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: AIM_DO_PHYSICS
 C     !INTERFACE:
-      SUBROUTINE AIM_DO_PHYSICS( bi, bj, myTime, myIter, myThid )
+      SUBROUTINE AIM_DO_PHYSICS( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==================================================================*
@@ -45,11 +45,9 @@ C-- Physics package
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi,bj     :: Tile indices
 C     myTime    :: Current time in simulation (s)
 C     myIter    :: Current iteration number
 C     myThid    :: My Thread Id. number
-      INTEGER bi,bj
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -57,15 +55,21 @@ CEOP
 
 #ifdef ALLOW_AIM
 C     == Local variables ==
+C     bi,bj      :: Tile indices
 C     i,j,k,I2   :: Loop counters
 C     tYear      :: Fraction into year
 C     aim_sWght0 :: weight for time interpolation of surface BC
 C     aim_sWght1 :: 0/1 = time period before/after the current time
 C     prcAtm     :: total precip from the atmosphere [kg/m2/s]
+      INTEGER bi,bj
       INTEGER i,j,k,I2
       _RL     tYear, yearLength
       _RL     aim_sWght0, aim_sWght1
       _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C--   Start loops on tile indices
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C_jmc: Because AIM physics LSC is not applied in the stratosphere (top level),
 C      ==> move water wapor from the stratos to the surface level.
@@ -183,6 +187,9 @@ C-    Slab Ocean : step forward ocean mixed-layer temp. & salinity
 C-    AIM diagnostics : write snap-shot & cumulate for TimeAve output
       CALL AIM_DIAGNOSTICS( bi, bj, myTime, myIter, myThid )
 
+C--   end bi,bj loops.
+       ENDDO
+      ENDDO
 #endif /* ALLOW_AIM */
 
       RETURN
