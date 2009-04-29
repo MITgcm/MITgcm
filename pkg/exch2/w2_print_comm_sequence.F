@@ -1,44 +1,70 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.5 2008/07/29 20:25:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.6 2009/04/29 19:44:44 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
+#undef W2_PRINT_PREFIX
 
 CBOP
 C     !ROUTINE: W2_PRINT_COMM_SEQUENCE
 
 C     !INTERFACE:
-      SUBROUTINE W2_PRINT_COMM_SEQUENCE
-      IMPLICIT NONE
+      SUBROUTINE W2_PRINT_COMM_SEQUENCE( W2_oUnit )
 
 C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE W2_PRINT_COMM_SEQUENCE
 C     | o Write communication sequence for a given WRAPPER2
-C     |   toplogy
+C     |   topology
 C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
+C     W2_oUnit   :: fortran I/O unit
+      INTEGER W2_oUnit
+
+#ifndef W2_PRINT_PREFIX
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+#endif
+
+C     !LOCAL VARIABLES:
 C     == Local variables ==
-      CHARACTER*(MAX_LEN_MBUF) msgBuffer
+C     bi         :: tile index
+C     N          :: Neighbours index
+C     nN         :: number of Neighbours
+C     targetTile ::
+C     sourceProc ::
       INTEGER myTileId, nN
 c     INTEGER PI_TC2SC(2), PJ_TC2SC(2), O_TC2SC(2)
 c     _RL     SXDIR_TX2CX(2), SYDIR_TX2CX(2)
       INTEGER targetIlo, targetIhi, targetJlo, targetJhi
       INTEGER sourceIlo, sourceIhi, sourceJlo, sourceJhi
-      INTEGER I, N, targetTile, myThid, targetProc, sourceProc
+      INTEGER targetTile, targetProc, sourceProc
+      INTEGER bi, N
       INTEGER iStride, jStride
       INTEGER pi(2), pj(2), oi, oj, tN
       INTEGER itb, jtb, isb, jsb
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER myThid
+#ifndef W2_PRINT_PREFIX
+      INTEGER iLen
+#endif
+CEOP
 
       myThid = 1
 
 C     Send loop for cell centered
-      DO I=1,nSx
-       myTileId=W2_myTileList(I)
+      DO bi=1,nSx
+       myTileId=W2_myTileList(bi)
        nN=exch2_nNeighbours(myTileId)
        sourceProc=exch2_tProc(myTileId)
        DO N=1,nN
@@ -69,24 +95,32 @@ C     Send loop for cell centered
         sourceIhi=pi(1)*(targetIhi+itb)+pi(2)*(targetJhi+jtb)+oi-isb
         sourceJhi=pj(1)*(targetIhi+itb)+pj(2)*(targetJhi+jtb)+oj-jsb
 C       Tile XX sends to points i=ilo:ihi,j=jlo:jhi in tile YY
-        WRITE(msgBuffer,'(A,I6,A,I4,A,4(A,I4))')
+        WRITE(msgBuf,'(A,I6,A,I4,A,4(A,I4))')
      &   'Tile', myTileId,' (pr=',sourceProc,')',
      &   ' sends pts i=',sourceIlo,':',sourceIhi,
      &            ', j=',sourceJlo,':',sourceJhi
-         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
-     &         SQUEEZE_RIGHT,myThid)
-        WRITE(msgBuffer,'(4(A,I4),A,I6,A,I4,A)')
+#ifdef W2_PRINT_PREFIX
+        CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
+#else
+        iLen = ILNBLNK(msgBuf)
+        WRITE(W2_oUnit,'(A)') msgBuf(1:iLen)
+#endif
+        WRITE(msgBuf,'(4(A,I4),A,I6,A,I4,A)')
      &   '                        to pts i=',targetIlo,':',targetIhi,
      &                                ', j=',targetJlo,':',targetJhi,
      &                ' in tile ',targetTile,' (pr=',targetProc,')'
-         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
-     &         SQUEEZE_RIGHT,myThid)
+#ifdef W2_PRINT_PREFIX
+        CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
+#else
+        iLen = ILNBLNK(msgBuf)
+        WRITE(W2_oUnit,'(A)') msgBuf(1:iLen)
+#endif
        ENDDO
       ENDDO
 
 C     Recv loop for cell centered
-      DO I=1,nSx
-       myTileId=W2_myTileList(I)
+      DO bi=1,nSx
+       myTileId=W2_myTileList(bi)
        nN=exch2_nNeighbours(myTileId)
        sourceProc=exch2_tProc(myTileId)
        DO N=1,nN
@@ -104,13 +138,17 @@ C       Get the range of points associated with that entry
      O       iStride, jStride,
      U       targetIlo, targetIhi, targetJlo, targetJhi )
 C       Tile XX receives points i=ilo:ihi,j=jlo:jhi in tile YY
-        WRITE(msgBuffer,'(A,I6,A,I4,A,4(A,I4),A,I6,A,I4,A)')
+        WRITE(msgBuf,'(A,I6,A,I4,A,4(A,I4),A,I6,A,I4,A)')
      &   'Tile', myTileId,' (pr=',sourceProc,')',
      &   ' recv pts i=',targetIlo,':',targetIhi,
      &           ', j=',targetJlo, ':',targetJhi,
      &   ' from tile',targetTile,' (pr=',targetProc,')'
-         CALL PRINT_MESSAGE(msgBuffer,standardMessageUnit,
-     &         SQUEEZE_RIGHT,myThid)
+#ifdef W2_PRINT_PREFIX
+        CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
+#else
+        iLen = ILNBLNK(msgBuf)
+        WRITE(W2_oUnit,'(A)') msgBuf(1:iLen)
+#endif
        ENDDO
       ENDDO
 

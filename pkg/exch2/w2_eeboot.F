@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.7 2009/04/11 05:34:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.8 2009/04/29 19:44:44 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -28,14 +28,19 @@ C     !USES:
 #include "W2_EXCH2_PARAMS.h"
 CEOP
 
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     == Local variables ==
       INTEGER nt_perProc, thisProc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_FNAM) fName
+      INTEGER stdUnit, W2_oUnit, iLen
       CHARACTER commFlag
       INTEGER myTileId
       INTEGER myThid, I, J, II, np, jp
       INTEGER iErr, tNx, tNy
-      INTEGER pRank
 
 C     Set dummy myThid value (we are not multi-threaded here)
       myThid = 1
@@ -71,6 +76,29 @@ C     Initialise to zero EXCH2_TOPOLOGY common blocks
           exch2_jHi(J,I) = 0
         ENDDO
       ENDDO
+C     Initialise parameters from EXCH2_PARAMS common blocks
+      W2_oUnit = standardMessageUnit
+
+C     Set W2-EXCH2 parameters
+c     CALL W2_EXCH2_READPARMS
+c     W2_oUnit = -1
+
+      stdUnit = standardMessageUnit
+      WRITE(msgBuf,'(A)') '===== Start setting W2 TOPOLOGY:'
+      CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
+
+C     Open message output-file (if needed)
+      IF ( W2_oUnit.LT.0 ) THEN
+        WRITE(fName,'(A,I4.4,A)')
+     &     'w2_tile_topology.',myProcId,'.log'
+        iLen = ILNBLNK(fName)
+        CALL MDSFINDUNIT( W2_oUnit, myThid )
+        OPEN( W2_oUnit, file=fName(1:iLen),
+     &                  status='unknown', form='formatted')
+c       WRITE(msgBuf,'(2AA)') '  repport on file: ', fName(1:iLen)
+        WRITE(msgBuf,'(2AA)') ' write to log-file: ', fName(1:iLen)
+        CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
+      ENDIF
 
 C     Define topology for every tile
       CALL W2_E2SETUP
@@ -132,14 +160,12 @@ C--   Check tile sizes
       ENDIF
 
 C--   Print tiles connection for this process and set myCommonFlag :
-      WRITE(msgBuf,'(A)') '===== W2 TILE TOPLOGY ====='
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
-     &     SQUEEZE_BOTH,myThid)
+      WRITE(msgBuf,'(A)') '===== W2 TILE TOPOLOGY ====='
+      CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_BOTH, myThid )
       DO I=1,nSx
        myTileId = W2_myTileList(I)
        WRITE(msgBuf,'(A,I4)') ' TILE: ', myTileId
-       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
-     &      SQUEEZE_RIGHT,myThid)
+       CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
        DO J=1,exch2_nNeighbours(myTileId)
         commFlag = 'M'
         DO II=1,nSx
@@ -151,16 +177,14 @@ C--   Print tiles connection for this process and set myCommonFlag :
      &   '      NEIGHBOUR ',J,' = TILE ',
      &   exch2_neighbourId(J,myTileId), ' Comm = MSG',
      &   ' ( PROC = ',exch2_tProc(exch2_neighbourId(J,myTileId)),')'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
-     &        SQUEEZE_RIGHT,myThid)
+         CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
         IF ( commFlag .EQ. 'P' ) THEN
          WRITE(msgBuf,'(A,I4,A,I4,A,A,I4,A)')
      &   '      NEIGHBOUR ',J,' = TILE ',
      &   exch2_neighbourId(J,myTileId), ' Comm = PUT',
      &   ' ( PROC = ',exch2_tProc(exch2_neighbourId(J,myTileId)),')'
-         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
-     &        SQUEEZE_RIGHT,myThid)
+         CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
         W2_myCommFlag(J,I) = commFlag
        ENDDO
@@ -178,7 +202,18 @@ c     e2FillValue_R4 = 1.e+20
 c     e2FillValue_R8 = 1.d+20
 
 C     Print out the topology communication schedule
-      CALL W2_PRINT_COMM_SEQUENCE
+      CALL W2_PRINT_COMM_SEQUENCE( W2_oUnit )
+
+C     Close message output-file (if needed)
+      IF ( W2_oUnit.NE.standardMessageUnit ) THEN
+        WRITE(msgBuf,'(A)') '===  End TOPOLOGY report ==='
+        CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_BOTH, myThid )
+        CLOSE( W2_oUnit )
+      ENDIF
+      WRITE(msgBuf,'(A)') '=====       setting W2 TOPOLOGY: Done'
+      CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
 
       RETURN
       END
