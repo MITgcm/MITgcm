@@ -1,9 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1091 2009/04/26 02:56:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1092 2009/04/29 00:04:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o write_utils : change WRITE_1D_R8 to WRITE_1D_RL 
+  and add 3 other S/R for other types (R4,R8,RS). 
+  Change calls to WRITE_0D/1D_R[4,8,S,L] to match the type of argument.
+o eesupp/inc/CPP_EEMACROS.h (EXCH & GLOBAL_SUM/MAX macros):
+ - ensure suffix (_R4,_R8,_RS,_RL) correspondance between macro and S/R ;
+ - reduce number of macro definitions (keep only those which are used);
+   can always call directly the corrresponding S/R if needed.
+ - everywhere in the code: change macros (EXCH & GLOBAL_SUM/MAX) suffix 
+   _R4/_R8 to _RS/_RL when applied to _RS/_RL variable.
+ Fixed wrong type of arg in:
+   atm2d/put_ocnvars.F cheapaml/cheapaml.F ocn_compon_interf/ocn_apply_import.F 
+   ctrl/ctrl_map_ini_ecco.F seaice/seaice_do_diags.F seaice/seaice_model.F
+ To fix: global_sum of var in common block is wrong (multi-threaded) in:
+   dic/dic_atmos.F ebm/ebm_area_t.F ebm/ebm_zonalmean.F sbo/sbo_calc.F
+ To fix: aim_v23/aim_do_co2.F (BARRIER & GLOBAL_SUM within bi,bj loops)
 o adjustment.cs-32x32x1: test "blank tiles" when compiling with mpi
 o eesupp/src: new S/R to stop everyone when 1 (or more) Proc. find an error
 o pkg/exch2: new S/R EXCH2_CHECK_DEPTHS to check that unconnected tile
