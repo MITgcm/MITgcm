@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.16 2009/02/09 17:15:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.17 2009/04/30 13:42:30 dimitri Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -69,6 +69,7 @@ C     drKp1, recip_drLoc
       _RL cFac, rFac
       _RL aqe, bqe, cqe, discrim, recip_aqe
       _RL drKp1, recip_drLoc
+      _RL tmpFac
 
       _RL SW_TEMP
       EXTERNAL SW_TEMP
@@ -302,8 +303,17 @@ C     endif (not) useISOMIPTD
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(shelfIceHeatFlux,      'SHIhtFlx',
      &      0,1,0,1,1,myThid)
+C     SHIForcT (Ice shelf forcing for theta [W/m2], >0 increases theta)
+       tmpFac = HeatCapacity_Cp*rUnit2mass
+       CALL DIAGNOSTICS_SCALE_FILL(shelficeForcingT,tmpFac,1,
+     &      'SHIForcT',0, 1,0,1,1,myThid)
+C     SHIForcS (Ice shelf forcing for salt [g/m2/s], >0 increases salt)
+       tmpFac = rUnit2mass
+       CALL DIAGNOSTICS_SCALE_FILL(shelficeForcingS,tmpFac,1,
+     &      'SHIForcS',0, 1,0,1,1,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+
 #endif /* ALLOW_SHELFICE */
       RETURN
       END
