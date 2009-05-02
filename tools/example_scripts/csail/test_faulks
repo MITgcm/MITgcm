@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.4 2009/04/16 19:06:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.5 2009/05/02 14:48:22 jmc Exp $
 
 #  Ed Hill
 
@@ -251,7 +251,14 @@ do
 #-- cleaning:
   echo "======================"
   echo "Cleaning test directories:"
-  ./testreport -clean > /dev/null 2>&1
+  if test $tt != $typ ; then
+    cmdCLN="../tools/do_tst_2+2 -clean"
+    echo " clean tst_2+2 running: $cmdCLN"
+    $cmdCLN >> $tdir/output_2+2 2>&1
+  fi
+    cmdCLN="./testreport -clean"
+    echo " clean dir running: $cmdCLN"
+    $cmdCLN > /dev/null 2>&1
   echo "======================"
   echo
  fi
