@@ -1,4 +1,4 @@
-% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/driver.m,v 1.3 2007/03/21 02:02:12 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/driver.m,v 1.4 2009/05/02 02:41:05 jmc Exp $
 % $Name:  $
 
 % Create exch2 communication map and schedule for a cube sphere grid with
@@ -7,19 +7,17 @@
 % Use red-green-blue shorthand for cube index space specification
 % In this notation cube faces are laid out as shown below
 %
-%                         f5(nr,ng)  f6(nb,ng)
-%              f3(ng,nb)  f4(nr,nb)
-%   f1(nb,nr)  f2(ng,nr)
+%                        f5(ng,nb)  f6(nr,nb)
+%             f3(nb,nr)  f4(ng,nr)
+%  f1(nr,ng)  f2(nb,ng)
 %---
-%nr=64;  nb=32; ng=128;
-%nr=576;  nb=576; ng=576;
-%nr=672;  nb=672; ng=672;
-nr=32; nb=32; ng=32;
-%nr=510; nb=510; ng=510;
-%nr=30; nb=30; ng=30;
+%nr=32; ng=64; nb=128;
+nr=32; ng=32; nb=32;
+%nr=510; ng=510; nb=510;
+%nr=30; ng=30; nb=30;
 
 %- Choose tile subgrid sizes for each face.
-% nr,nb,ng must be integer multiples of tnx and tny.
+% nr,ng,nb must be integer multiples of tnx and tny.
 %---
 %tnx=85;tny=85;
 %tnx=10;tny=10;
@@ -29,8 +27,7 @@ tnx=16;tny=32;
 %tnx=32;tny=8;
 %tnx=192;tny=64;
 tnx=8;tny=4;
-
-% nr = 360; ng = 90; nb = 90; tnx=90; tny=90; %- polar-cap grid
+%tnx=16;tny=8; % <- adjustment.cs-32x32x1
 
 %- select option for global-IO mapping: mapIO
 %  =-1 : old format: put domains 1 after the other in the X direction
@@ -41,16 +38,18 @@ tnx=8;tny=4;
 %---
 mapIO=-1;
 
+% nr = 90; ng = 360; nb = 90; tnx=90; tny=90; mapIO=1; %- polar-cap grid
+
 if mapIO==1,
-%- calculate size in X of global-IO map: = greater divider of nr,nb,ng
-  [divlist]=exch2_divider([nr nb ng]);
+%- calculate size in X of global-IO map: = greater divider of nr,ng,nb
+  [divlist]=exch2_divider([nr ng nb]);
    mapIO=prod(divlist);
 end
 
 % Make list of domains. Assume MITgcm standard cube layout, three
 % color path labeling and global indexing convention.
 clear domain ndomains domain_nx domain_ny
-[ndomains,domain,domain_nx,domain_ny] = exch2_setup_cs6_domains(nr,nb,ng);
+[ndomains,domain,domain_nx,domain_ny] = exch2_setup_cs6_domains(nr,ng,nb);
 
 % Now create basic tile definitions for each domain with their offsets
 % within the domain

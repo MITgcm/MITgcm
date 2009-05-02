@@ -1,14 +1,14 @@
 % Make list of subdomains. Assume MITgcm standard cube layout, three color 
-% path labeling and global indexing convention.
+% path labelinb and global indexinb convention.
 function [ndomains,domain,domain_nx,domain_ny] = ...
-         exch2_setup_cs6_domains(nr,nb,ng);
+         exch2_setup_cs6_domains(nr,ng,nb);
 
-% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_domains.m,v 1.3 2008/07/23 13:22:29 cnh Exp $
+% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/Attic/exch2_setup_cs6_domains.m,v 1.4 2009/05/02 02:41:05 jmc Exp $
 % $Name:  $
 
 ndomains=6;
-domain(1).dnx=nb;
-domain(1).dny=nr;
+domain(1).dnx=nr;
+domain(1).dny=ng;
 domain(1).basex=1;
 domain(1).basey=1;
 domain(1).wFace='n';
@@ -20,8 +20,8 @@ domain(1).nDomain=3;
 domain(1).eDomain=2;
 domain(1).sDomain=6;
 
-domain(2).dnx=ng;
-domain(2).dny=nr;
+domain(2).dnx=nb;
+domain(2).dny=ng;
 domain(2).basex=domain(1).basex+domain(1).dnx;
 domain(2).basey=1;
 domain(2).wFace='e';
@@ -33,8 +33,8 @@ domain(2).nDomain=3;
 domain(2).eDomain=4;
 domain(2).sDomain=6;
 
-domain(3).dnx=ng;
-domain(3).dny=nb;
+domain(3).dnx=nb;
+domain(3).dny=nr;
 domain(3).basex=domain(2).basex+domain(2).dnx;
 domain(3).basey=1;
 domain(3).wFace='n';
@@ -46,8 +46,8 @@ domain(3).nDomain=5;
 domain(3).eDomain=4;
 domain(3).sDomain=2;
 
-domain(4).dnx=nr;
-domain(4).dny=nb;
+domain(4).dnx=ng;
+domain(4).dny=nr;
 domain(4).basex=domain(3).basex+domain(3).dnx;
 domain(4).basey=1;
 domain(4).wFace='e';
@@ -59,8 +59,8 @@ domain(4).nDomain=5;
 domain(4).eDomain=6;
 domain(4).sDomain=2;
 
-domain(5).dnx=nr;
-domain(5).dny=ng;
+domain(5).dnx=ng;
+domain(5).dny=nb;
 domain(5).basex=domain(4).basex+domain(4).dnx;
 domain(5).basey=1;
 domain(5).wFace='n';
@@ -72,8 +72,8 @@ domain(5).nDomain=1;
 domain(5).eDomain=6;
 domain(5).sDomain=4;
 
-domain(6).dnx=nb;
-domain(6).dny=ng;
+domain(6).dnx=nr;
+domain(6).dny=nb;
 domain(6).basex=domain(5).basex+domain(5).dnx;
 domain(6).basey=1;
 domain(6).wFace='e';
