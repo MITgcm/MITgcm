@@ -35,6 +35,7 @@
  hFacMin=.1,
  hFacMinDr=20.,
  readBinaryPrec=64,
+ useSingleCpuIO=.TRUE.,
  &
 
 # Elliptic solver parameters
