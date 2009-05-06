@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.5 2008/12/30 00:13:35 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.6 2009/05/06 02:42:49 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -69,7 +69,6 @@ C !USES:
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "PARAMS.h"
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_TOPOLOGY.h"
@@ -107,24 +106,31 @@ C !LOCAL VARIABLES:
       LOGICAL fileIsOpen
       LOGICAL iAmDoingIO
       LOGICAL writeMetaF
+      LOGICAL zeroBuff
+      INTEGER xSize, ySize
       INTEGER irecord
       INTEGER iG,jG,bi,bj,i,j,k,nNz
       INTEGER irec,dUnit,IL,pIL
       INTEGER dimList(3,3), nDims, map2gl(2)
       INTEGER iGjLoc, jGjLoc
       INTEGER length_of_rec
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-      INTEGER iG_IO,jG_IO,npe, loc_xGlobalLo, loc_yGlobalLo
-#endif
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
 #ifdef ALLOW_EXCH2
 c     INTEGER tGy,tGx,tNy,tNx,tN
       INTEGER tGy,tGx,    tNx,tN
+      INTEGER global_nTx
 #endif /* ALLOW_EXCH2 */
       INTEGER tNy
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C Set dimensions:
+      xSize = Nx
+      ySize = Ny
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+      xSize = exch2_global_Nx
+      ySize = exch2_global_Ny
+#endif
 
 C-    default:
       iGjLoc = 0
@@ -189,7 +195,7 @@ C globalFile is too slow, then try using single-CPU I/O.
 C Master thread of process 0, only, opens a global file
        IF ( iAmDoingIO ) THEN
          WRITE(dataFName,'(2a)') fName(1:IL),'.data'
-         length_of_rec=MDS_RECLEN(filePrec,x_size*y_size,myThid)
+         length_of_rec=MDS_RECLEN(filePrec,xSize*ySize,myThid)
          IF (irecord .EQ. 1) THEN
           OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
      &        access='direct', recl=length_of_rec )
@@ -215,98 +221,25 @@ C-      copy from arr(level=k) to 2-D "local":
         CALL GATHER_2D( globalBuf, sharedLocalBuf, myThid )
 
         IF ( iAmDoingIO ) THEN
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-          IF (filePrec .EQ. precFloat32) THEN
-           DO J=1,y_size
-            DO I=1,x_size
-             xy_buffer_r4(I,J) = 0.0
-            ENDDO
-           ENDDO
-          ELSEIF (filePrec .EQ. precFloat64) THEN
-           DO J=1,y_size
-            DO I=1,x_size
-             xy_buffer_r8(I,J) = 0.0
-            ENDDO
-           ENDDO
-          ENDIF
-
-          bj=1
-          DO npe=1,nPx*nPy
-           DO bi=1,nSx
-#ifdef ALLOW_USE_MPI
-            loc_xGlobalLo = mpi_myXGlobalLo(npe)
-            loc_yGlobalLo = mpi_myYGlobalLo(npe)
-#else  /* ALLOW_USE_MPI */
-            loc_xGlobalLo = myXGlobalLo
-            loc_yGlobalLo = myYGlobalLo
-#endif /* ALLOW_USE_MPI */
-            tN = W2_mpi_myTileList(npe,bi)
-            IF   ( exch2_mydNx(tN) .GT. x_size ) THEN
-C-          face x-size larger than glob-size : fold it
-              iGjLoc = 0
-              jGjLoc = exch2_mydNx(tN) / x_size
-            ELSEIF ( exch2_tNy(tN) .GT. y_size ) THEN
-C-          tile y-size larger than glob-size : make a long line
-              iGjLoc = exch2_mydNx(tN)
-              jGjLoc = 0
-            ELSE
-C-          default (face fit into global-IO-array)
-              iGjLoc = 0
-              jGjLoc = 1
-            ENDIF
-
-            IF (filePrec .EQ. precFloat32) THEN
-             DO J=1,sNy
-              DO I=1,sNx
-               iG = loc_xGlobalLo-1+(bi-1)*sNx+i
-               jG = loc_yGlobalLo-1+(bj-1)*sNy+j
-               iG_IO=exch2_txGlobalo(tN)+iGjLoc*(j-1)+i-1
-               jG_IO=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
-               xy_buffer_r4(iG_IO,jG_IO) = globalBuf(iG,jG)
-              ENDDO
-             ENDDO
-            ELSEIF (filePrec .EQ. precFloat64) THEN
-             DO J=1,sNy
-              DO I=1,sNx
-               iG = loc_xGlobalLo-1+(bi-1)*sNx+i
-               jG = loc_yGlobalLo-1+(bj-1)*sNy+j
-               iG_IO=exch2_txGlobalo(tN)+iGjLoc*(j-1)+i-1
-               jG_IO=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
-               xy_buffer_r8(iG_IO,jG_IO) = globalBuf(iG,jG)
-              ENDDO
-             ENDDO
-            ENDIF
-
-C--    end of npe & bi loops
-           ENDDO
-          ENDDO
-#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
-          IF (filePrec .EQ. precFloat32) THEN
-           DO J=1,Ny
-            DO I=1,Nx
-             xy_buffer_r4(I,J) = globalBuf(I,J)
-            ENDDO
-           ENDDO
-          ELSEIF (filePrec .EQ. precFloat64) THEN
-           DO J=1,Ny
-            DO I=1,Nx
-             xy_buffer_r8(I,J) = globalBuf(I,J)
-            ENDDO
-           ENDDO
-          ENDIF
-#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+C Map  global model (real*8) array to the appropriate global io-buffer
+          zeroBuff = k.EQ.kLo
+          CALL MDS_MAP_GLOBAL(
+     U                 xy_buffer_r4, xy_buffer_r8,
+     U                 globalBuf,
+     I                 xSize, ySize, filePrec,
+     I                 .FALSE., zeroBuff )
 
           irec=k+1-kLo+nNz*(irecord-1)
           IF (filePrec .EQ. precFloat32) THEN
 #ifdef _BYTESWAPIO
-           CALL MDS_BYTESWAPR4( x_size*y_size, xy_buffer_r4 )
+           CALL MDS_BYTESWAPR4( xSize*ySize, xy_buffer_r4 )
 #endif
-           WRITE(dUnit,rec=irec) xy_buffer_r4
+           WRITE(dUnit,rec=irec) ( xy_buffer_r4(i),i=1,xSize*ySize )
           ELSEIF (filePrec .EQ. precFloat64) THEN
 #ifdef _BYTESWAPIO
-           CALL MDS_BYTESWAPR8( x_size*y_size, xy_buffer_r8 )
+           CALL MDS_BYTESWAPR8( xSize*ySize, xy_buffer_r8 )
 #endif
-           WRITE(dUnit,rec=irec) xy_buffer_r8
+           WRITE(dUnit,rec=irec) ( xy_buffer_r8(i),i=1,xSize*ySize )
           ELSE
            WRITE(msgBuf,'(A)')
      &       ' MDS_WRITE_FIELD: illegal value for filePrec'
@@ -376,11 +309,11 @@ C If we are writing to a tiled MDS file then we open each one here
            tGx = exch2_txGlobalo(tN)
            tNy = exch2_tNy(tN)
            tNx = exch2_tNx(tN)
-           IF   ( exch2_mydNx(tN) .GT. x_size ) THEN
+           IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
 C-         face x-size larger than glob-size : fold it
              iGjLoc = 0
-             jGjLoc = exch2_mydNx(tN) / x_size
-           ELSEIF ( exch2_tNy(tN) .GT. y_size ) THEN
+             jGjLoc = exch2_mydNx(tN) / xSize
+           ELSEIF ( exch2_tNy(tN) .GT. ySize ) THEN
 C-         tile y-size larger than glob-size : make a long line
              iGjLoc = exch2_mydNx(tN)
              jGjLoc = 0
@@ -389,15 +322,16 @@ C-         default (face fit into global-IO-array)
              iGjLoc = 0
              jGjLoc = 1
            ENDIF
+           global_nTx = exch2_global_Nx/tNx
 #endif /* ALLOW_EXCH2 */
            DO k=1,nNz
             DO j=1,tNy
              IF (globalFile) THEN
 #ifdef ALLOW_EXCH2
               irec = 1 + ( tGx-1 + (j-1)*iGjLoc )/tNx
-     &                 + ( tGy-1 + (j-1)*jGjLoc )*exch2_domain_nxt
+     &                 + ( tGy-1 + (j-1)*jGjLoc )*global_nTx
      &                 + ( k-kLo + (irecord-1)*nNz
-     &                   )*y_size*exch2_domain_nxt
+     &                   )*ySize*global_nTx
 #else /* ALLOW_EXCH2 */
               iG = myXGlobalLo-1 + (bi-1)*sNx
               jG = myYGlobalLo-1 + (bj-1)*sNy
@@ -468,27 +402,27 @@ C Create meta-file for each tile if we are tiling
      &              pfName(1:pIL),'.',iG,'.',jG,'.meta'
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
            tN = W2_myTileList(bi)
-           dimList(1,1)=x_size
-           dimList(2,1)=exch2_txGlobalo(tN)
-           dimList(3,1)=exch2_txGlobalo(tN)+sNx-1
-           dimList(1,2)=y_size
-           dimList(2,2)=exch2_tyGlobalo(tN)
-           dimList(3,2)=exch2_tyGlobalo(tN)+sNy-1
+           dimList(1,1) = xSize
+           dimList(2,1) = exch2_txGlobalo(tN)
+           dimList(3,1) = exch2_txGlobalo(tN)+sNx-1
+           dimList(1,2) = ySize
+           dimList(2,2) = exch2_tyGlobalo(tN)
+           dimList(3,2) = exch2_tyGlobalo(tN)+sNy-1
 #else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
 C- jmc: if MISSING_TILE_IO, keep meta files unchanged
 C       to stay consistent with global file structure
-           dimList(1,1)=Nx
-           dimList(2,1)=myXGlobalLo+(bi-1)*sNx
-           dimList(3,1)=myXGlobalLo+bi*sNx-1
-           dimList(1,2)=Ny
-           dimList(2,2)=myYGlobalLo+(bj-1)*sNy
-           dimList(3,2)=myYGlobalLo+bj*sNy-1
+           dimList(1,1) = Nx
+           dimList(2,1) = myXGlobalLo+(bi-1)*sNx
+           dimList(3,1) = myXGlobalLo+bi*sNx-1
+           dimList(1,2) = Ny
+           dimList(2,2) = myYGlobalLo+(bj-1)*sNy
+           dimList(3,2) = myYGlobalLo+bj*sNy-1
 #endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
-           dimList(1,3)=nNz
-           dimList(2,3)=1
-           dimList(3,3)=nNz
-           nDims=3
-           IF ( nNz.EQ.1 ) nDims=2
+           dimList(1,3) = nNz
+           dimList(2,3) = 1
+           dimList(3,3) = nNz
+           nDims = 3
+           IF ( nNz.EQ.1 ) nDims = 2
            map2gl(1) = iGjLoc
            map2gl(2) = jGjLoc
            CALL MDS_WRITE_META(
@@ -516,17 +450,17 @@ C Create meta-file for the global-file (also if useSingleCpuIO)
       IF ( writeMetaF .AND. iAmDoingIO .AND.
      &    (globalFile .OR. useSingleCpuIO) ) THEN
          WRITE(metaFName,'(2A)') fName(1:IL),'.meta'
-         dimList(1,1)=x_size
-         dimList(2,1)=1
-         dimList(3,1)=x_size
-         dimList(1,2)=y_size
-         dimList(2,2)=1
-         dimList(3,2)=y_size
-         dimList(1,3)=nNz
-         dimList(2,3)=1
-         dimList(3,3)=nNz
-         nDims=3
-         IF ( nNz.EQ.1 ) nDims=2
+         dimList(1,1) = xSize
+         dimList(2,1) = 1
+         dimList(3,1) = xSize
+         dimList(1,2) = ySize
+         dimList(2,2) = 1
+         dimList(3,2) = ySize
+         dimList(1,3) = nNz
+         dimList(2,3) = 1
+         dimList(3,3) = nNz
+         nDims = 3
+         IF ( nNz.EQ.1 ) nDims = 2
          map2gl(1) = 0
          map2gl(2) = 1
          CALL MDS_WRITE_META(
