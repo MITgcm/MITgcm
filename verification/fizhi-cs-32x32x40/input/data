@@ -74,6 +74,8 @@
  monitorFreq=120.,
  taveFreq=0.0,
  tave_lastiter=1.,
+# for daily testing: to save disk space
+ writePickupAtEnd=.FALSE.,
  &
 
 # Gridding parameters
