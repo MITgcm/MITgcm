@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.25 2009/04/28 15:18:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.26 2009/05/06 02:44:45 dfer Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 CBOP
@@ -278,7 +278,7 @@ C--    Print summary of processor mapping on standard output
        i1 = IFNBLNK(mpiProcNam)
        i2 = ILNBLNK(mpiProcNam)
        WRITE(msgBuffer,'(A,I3,A,A)') ' My Processor Name (len:',
-     &  mpilProcNam, ' ) = ', mpiProcNam(i1:i2)
+     &  mpilProcNam, ' ) = ', mpiProcNam(i1:mpilProcNam)
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,
      &  SQUEEZE_RIGHT , myThid)
        WRITE(msgBuffer,'(A,I3,A,I3,A,I3,A,I3,A)') ' Located at (',
