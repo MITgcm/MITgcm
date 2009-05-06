@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.7 2007/03/21 01:57:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.8 2009/05/06 02:43:21 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -79,27 +79,31 @@ C Functions
       INTEGER MDS_RECLEN
 C Local variables
       CHARACTER*(MAX_LEN_FNAM) dataFName,metaFName
-      INTEGER iG,jG,irec,j,k,dUnit,IL
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL fileIsOpen
+      LOGICAL globalFile
+      LOGICAL iAmDoingIO
+      INTEGER xSize, ySize
+      INTEGER iG,jG,j,k
+      INTEGER irec,dUnit,IL
+      INTEGER dimList(3,3),nDims, map2gl(2)
+      INTEGER iGjLoc, jGjLoc
+      INTEGER length_of_rec
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
-      INTEGER dimList(3,3),nDims, map2gl(2)
-      INTEGER length_of_rec
-      LOGICAL fileIsOpen
-      LOGICAL globalFile, iAmDoingIO
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_EXCH2
       INTEGER tN, tGx, tGy
+      INTEGER global_nTx
 #endif /* ALLOW_EXCH2 */
-      INTEGER iGjLoc, jGjLoc
-      INTEGER x_size,y_size
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C Set dimensions:
+      xSize = Nx
+      ySize = Ny
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-      PARAMETER ( x_size = exch2_domain_nxt * sNx )
-      PARAMETER ( y_size = exch2_domain_nyt * sNy )
-#else
-      PARAMETER ( x_size = Nx )
-      PARAMETER ( y_size = Ny )
+      xSize = exch2_global_Nx
+      ySize = exch2_global_Ny
 #endif
-C     ------------------------------------------------------------------
 
 C-    default:
       iGjLoc = 0
@@ -210,11 +214,11 @@ C If we are writing to a tiled MDS file then we open each one here
          tN = W2_myTileList(bi)
          tGy = exch2_tyGlobalo(tN)
          tGx = exch2_txGlobalo(tN)
-         IF   ( exch2_mydNx(tN) .GT. x_size ) THEN
+         IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
 C-         face x-size larger than glob-size : fold it
            iGjLoc = 0
-           jGjLoc = exch2_mydNx(tN) / x_size
-         ELSEIF ( exch2_tNy(tN) .GT. y_size ) THEN
+           jGjLoc = exch2_mydNx(tN) / xSize
+         ELSEIF ( exch2_tNy(tN) .GT. ySize ) THEN
 C-         tile y-size larger than glob-size : make a long line
            iGjLoc = exch2_mydNx(tN)
            jGjLoc = 0
@@ -223,6 +227,7 @@ C-         default (face fit into global-IO-array)
            iGjLoc = 0
            jGjLoc = 1
          ENDIF
+         global_nTx = exch2_global_Nx/sNx
 #endif /* ALLOW_EXCH2 */
          DO k=1,nNz
           DO j=1,sNy
@@ -230,9 +235,9 @@ C-       compute record number:
            IF (globalFile) THEN
 #ifdef ALLOW_EXCH2
             irec = 1 + ( tGx-1 + (j-1)*iGjLoc )/sNx
-     &               + ( tGy-1 + (j-1)*jGjLoc )*exch2_domain_nxt
+     &               + ( tGy-1 + (j-1)*jGjLoc )*global_nTx
      &               + ( k-1 + (irecord-1)*nNz
-     &                 )*y_size*exch2_domain_nxt
+     &                 )*ySize*global_nTx
 #else /* ALLOW_EXCH2 */
             iG = myXGlobalLo-1 + (bi-1)*sNx
             jG = myYGlobalLo-1 + (bj-1)*sNy
@@ -302,25 +307,25 @@ C Create meta-file for each tile if we are tiling
      &              fName(1:IL),'.',iG,'.',jG,'.meta'
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
          tN = W2_myTileList(bi)
-         dimList(1,1)=x_size
-         dimList(2,1)=exch2_txGlobalo(tN)
-         dimList(3,1)=exch2_txGlobalo(tN)+sNx-1
-         dimList(1,2)=y_size
-         dimList(2,2)=exch2_tyGlobalo(tN)
-         dimList(3,2)=exch2_tyGlobalo(tN)+sNy-1
+         dimList(1,1) = xSize
+         dimList(2,1) = exch2_txGlobalo(tN)
+         dimList(3,1) = exch2_txGlobalo(tN)+sNx-1
+         dimList(1,2) = ySize
+         dimList(2,2) = exch2_tyGlobalo(tN)
+         dimList(3,2) = exch2_tyGlobalo(tN)+sNy-1
 #else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
 C- jmc: if MISSING_TILE_IO, keep meta files unchanged
 C       to stay consistent with global file structure
-         dimList(1,1)=Nx
-         dimList(2,1)=myXGlobalLo+(bi-1)*sNx
-         dimList(3,1)=myXGlobalLo+bi*sNx-1
-         dimList(1,2)=Ny
-         dimList(2,2)=myYGlobalLo+(bj-1)*sNy
-         dimList(3,2)=myYGlobalLo+bj*sNy-1
+         dimList(1,1) = Nx
+         dimList(2,1) = myXGlobalLo+(bi-1)*sNx
+         dimList(3,1) = myXGlobalLo+bi*sNx-1
+         dimList(1,2) = Ny
+         dimList(2,2) = myYGlobalLo+(bj-1)*sNy
+         dimList(3,2) = myYGlobalLo+bj*sNy-1
 #endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
-         dimList(1,3)=Nr
-         dimList(2,3)=1
-         dimList(3,3)=Nr
+         dimList(1,3) = Nr
+         dimList(2,3) = 1
+         dimList(3,3) = Nr
          nDims=3
          IF (nNz .EQ. 1) nDims=2
          map2gl(1) = iGjLoc
@@ -368,17 +373,17 @@ C We put a barrier here to ensure that all processes have finished
 C writing their data before we update the meta-file
 c      _BARRIER
        WRITE(metaFName,'(2A)') fName(1:IL),'.meta'
-       dimList(1,1)=x_size
-       dimList(2,1)=1
-       dimList(3,1)=x_size
-       dimList(1,2)=y_size
-       dimList(2,2)=1
-       dimList(3,2)=y_size
-       dimList(1,3)=Nr
-       dimList(2,3)=1
-       dimList(3,3)=Nr
-       nDims=3
-       IF (nNz .EQ. 1) nDims=2
+       dimList(1,1) = xSize
+       dimList(2,1) = 1
+       dimList(3,1) = xSize
+       dimList(1,2) = ySize
+       dimList(2,2) = 1
+       dimList(3,2) = ySize
+       dimList(1,3) = Nr
+       dimList(2,3) = 1
+       dimList(3,3) = Nr
+       nDims = 3
+       IF (nNz .EQ. 1) nDims = 2
        map2gl(1) = 0
        map2gl(2) = 1
        CALL MDS_WRITE_META(
@@ -391,6 +396,6 @@ c     _END_MASTER( myThid )
 C-    end if iAmDoingIO
       ENDIF
 
-C     ------------------------------------------------------------------
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       RETURN
       END

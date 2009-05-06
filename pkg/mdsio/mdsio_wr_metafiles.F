@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_metafiles.F,v 1.2 2007/03/19 02:30:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_metafiles.F,v 1.3 2009/05/06 02:43:21 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -102,8 +102,8 @@ C-    Set dimensions:
       xSize = Nx
       ySize = Ny
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-      xSize = exch2_domain_nxt * sNx
-      ySize = exch2_domain_nyt * sNy
+      xSize = exch2_global_Nx
+      ySize = exch2_global_Ny
 #endif
       IF (nNx.EQ.1) xSize = 1
       IF (nNy.EQ.1) ySize = 1
