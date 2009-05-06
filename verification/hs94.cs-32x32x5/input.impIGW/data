@@ -28,6 +28,7 @@
  implicitIntGravWave=.TRUE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
+ useSingleCpuIO=.TRUE.,
  &
 
 # Elliptic solver parameters
