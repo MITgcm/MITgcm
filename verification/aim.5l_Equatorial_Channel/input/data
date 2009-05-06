@@ -21,9 +21,10 @@
  exactConserv=.TRUE.,
 #uniformLin_PhiSurf=.FALSE.,
  staggerTimeStep=.TRUE.,
+ saltAdvScheme=3,
  readBinaryPrec=64,
  writeBinaryPrec=64,
- saltAdvScheme=3,
+ useSingleCpuIO=.TRUE.,
  &
 
 # Elliptic solver parameters
