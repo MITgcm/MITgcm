@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.10 2007/07/09 15:07:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.11 2009/05/06 02:57:46 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -6,10 +6,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: FIZHI_INIT_VEGSURFTILES
 C     !INTERFACE:
-      subroutine fizhi_init_vegsurftiles(nymd,nhms,prec,myThid)
+      subroutine fizhi_init_vegsurftiles(globalArr,xsize,ysize,
+     &                                   nymd,nhms,prec,myThid)
 
 C     !DESCRIPTION:
-C      Read in grid space values of the land state 
+C      Read in grid space values of the land state
 C      and then convert to vegetation tile space
 
 C     !USES:
@@ -29,6 +30,8 @@ C      Calls routine grd2msc to do grid to tile space for each bi bj
 #endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:
+      integer xsize, ysize
+      Real*8 globalArr(xsize,ysize,8)
       CHARACTER*1 prec
       INTEGER nhms,nymd
       INTEGER myThid
@@ -44,15 +47,6 @@ C     !LOCAL VARIABLES:
       integer bislot,bjslot,iunit
       integer recl
       integer bi,bj,fileprec
-      integer xsize, ysize
-#if defined(ALLOW_EXCH2)
-       PARAMETER ( xsize = exch2_domain_nxt * sNx )
-       PARAMETER ( ysize = exch2_domain_nyt * sNy )
-#else
-       PARAMETER ( xsize = Nx )
-       PARAMETER ( ysize = Ny )
-#endif
-      Real*8 globalarr(xsize,ysize,8)
       _RL tempgrid(sNx,sNy)
       _RL temptile(nchp)
       _RL fracland(sNx,sNy,Nsx,Nsy)

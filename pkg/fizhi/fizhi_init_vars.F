@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.20 2006/08/03 19:04:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.21 2009/05/06 02:57:46 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
        subroutine fizhi_init_vars (myThid)
 c-----------------------------------------------------------------------
 c  Routine to initialise the fizhi state.
-c  
+c
 c  Input: myThid       - Process number calling this routine
 c
-c  Notes: 
-c   1) For a Cold Start - 
+c  Notes:
+c   1) For a Cold Start -
 c      This routine takes the initial condition on the dynamics grid
 c      and interpolates to the physics grid to initialize the state
 c      variables that are on both grids. It initializes the variables
@@ -34,8 +34,20 @@ c-----------------------------------------------------------------------
 #include "SURFACE.h"
 #include "PARAMS.h"
 #include "chronos.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
        integer myThid
+
+       INTEGER xySize
+#if defined(ALLOW_EXCH2)
+       PARAMETER ( xySize = W2_ioBufferSize )
+#else
+       PARAMETER ( xySize = Nx*Ny )
+#endif
+       Real*8 globalArr( xySize*8 )
 
 c pe on dynamics and physics grid refers to bottom edge
        _RL pephy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys+1,nSx,nSy)
@@ -47,9 +59,17 @@ c pe on dynamics and physics grid refers to bottom edge
 
        integer i, j, L, bi, bj, Lbotij
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
+       integer xsize, ysize
        logical alarm
        external alarm
 
+#if defined(ALLOW_EXCH2)
+       xsize = exch2_global_Nx
+       ysize = exch2_global_Ny
+#else
+       xsize = Nx
+       ysize = Ny
+#endif
        im1 = 1-OLx
        im2 = sNx+OLx
        jm1 = 1-OLy
@@ -87,7 +107,7 @@ C Build pressures on dynamics grid
         do j = 1,sNy
         do i = 1,sNx
          Lbotij = ksurfC(i,j,bi,bj)
-         if(Lbotij.ne.0.) 
+         if(Lbotij.ne.0.)
      .    pedyn(i,j,Lbotij,bi,bj) = Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
         enddo
         enddo
@@ -130,7 +150,7 @@ c   do units and get u = .025*ln(dP*10), with dP in pa.
 
        enddo
        enddo
-                                                                                   
+
 c Create initial fields on phys. grid - Move Dynamics u and v to A-Grid
        call CtoA(myThid,uvel,vvel,maskW,maskS,im1,im2,jm1,jm2,Nr,
      .                     Nsx,Nsy,1,sNx,1,sNy,udyntemp,vdyntemp)
@@ -223,8 +243,9 @@ c Initialize vegetation tile tke, xlmt, khmt, xxmt, yymt, ctmt, zetamt,
          stop
         endif
 
-c Now initialize vegetation tile land state too - tcanopy, etc... 
-        call fizhi_init_vegsurftiles( nymd,nhms, 'D', myThid )
+c Now initialize vegetation tile land state too - tcanopy, etc...
+        call fizhi_init_vegsurftiles( globalArr, xsize, ysize,
+     &                                nymd,nhms, 'D', myThid )
 
 c Now initialize fizhi arrays that will be on a pickup
         print *,' Initialize fizhi arrays that will be on pickup '
@@ -266,7 +287,7 @@ c Now initialize fizhi arrays that will be on a pickup
 
       ELSE
       print *,' In fizhi_init_vars: Read from restart '
-                                                                                   
+
 C--   Read fizhi package state variables from pickup file
 
        call fizhi_read_pickup( nIter0, myThid )

@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.31 2007/06/21 22:11:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.32 2009/05/06 02:57:46 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
        subroutine fizhi_init_fixed (myThid)
 c-----------------------------------------------------------------------
 c  Routine to initialise the fizhi package.
-c  
+c
 c  Input: myThid       - Process number calling this routine
 c
-c  Notes: 
+c  Notes:
 c   1) This routine is the interface to read input datasets and set
 c      other fixed variables for fizhi
 c      the datasets are:
@@ -50,16 +50,15 @@ c-----------------------------------------------------------------------
        _RL lats(sNx,sNy,Nsx,Nsy), lons(sNx,sNy,Nsx,Nsy)
        _RL fracland(sNx,sNy,Nsx,Nsy)
        _RL tempoverlap(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nsx,Nsy)
-
       integer xsize, ysize
-#if defined(ALLOW_EXCH2)
-       PARAMETER ( xsize = exch2_domain_nxt * sNx )
-       PARAMETER ( ysize = exch2_domain_nyt * sNy )
-#else
-       PARAMETER ( xsize = Nx )
-       PARAMETER ( ysize = Ny )
-#endif
 
+#if defined(ALLOW_EXCH2)
+       xsize = exch2_global_Nx
+       ysize = exch2_global_Ny
+#else
+       xsize = Nx
+       ysize = Ny
+#endif
        idim2 = sNx+OLx
        jdim2 = sNy+OLy
        im1 = 1
@@ -122,7 +121,7 @@ C And now fill the earth export landtype
        enddo
        enddo
 
-C Compute pressure profile to get methane and n2o values 
+C Compute pressure profile to get methane and n2o values
 C     - First bottom-up (in mb)
 
        pressure0(1)=1000.

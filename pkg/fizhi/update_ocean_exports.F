@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.28 2009/04/28 18:15:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.29 2009/05/06 02:57:47 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -25,21 +25,22 @@ c-----------------------------------------------------------------------
        integer myIter, myThid
        _RL myTime
 
+       INTEGER xySize
+#if defined(ALLOW_EXCH2)
+       PARAMETER ( xySize = W2_ioBufferSize )
+#else
+       PARAMETER ( xySize = Nx*Ny )
+#endif
        integer i, j, bi, bj, bislot, bjslot
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
        integer xsize, ysize
-       _RL        sstmin 
+       _RL        sstmin
        parameter ( sstmin = 273.16 )
 
-#if defined(ALLOW_EXCH2)
-       PARAMETER ( xsize = exch2_domain_nxt * sNx )
-       PARAMETER ( ysize = exch2_domain_nyt * sNy )
-#else
-       PARAMETER ( xsize = Nx )
-       PARAMETER ( ysize = Ny )
-#endif
-       _RL sst1(xsize,ysize),sst2(xsize,ysize)
-       _RL sice1(xsize,ysize),sice2(xsize,ysize)
+       _RL sst1 (xySize), sst2 (xySize)
+       _RL sice1(xySize), sice2(xySize)
+c      _RL sst1(xsize,ysize),sst2(xsize,ysize)
+c      _RL sice1(xsize,ysize),sice2(xsize,ysize)
        integer nymd1sst(nSx,nSy),nymd2sst(nSx,nSy)
        integer nymd1sice(nSx,nSy),nymd2sice(nSx,nSy)
        integer nhms1sst(nSx,nSy),nhms2sst(nSx,nSy)
@@ -57,6 +58,13 @@ c-----------------------------------------------------------------------
        save sstdates, sicedates
        save ssttimes, sicetimes
 
+#if defined(ALLOW_EXCH2)
+       xsize = exch2_global_Nx
+       ysize = exch2_global_Ny
+#else
+       xsize = Nx
+       ysize = Ny
+#endif
        idim1 = 1-OLx
        idim2 = sNx+OLx
        jdim1 = 1-OLy
@@ -112,14 +120,14 @@ c --------------------------------
      .   nymdbc,nhmsbc,sice,mythid)
 C***********************************************************************
 C
-C!ROUTINE:	GETSICE
-C!DESCRIPTION:	GETSICE returns the sea ice depth.
-C!		This routine is adaptable for any frequency
-C!		data upto a daily frequency.  
-C!		note: for diurnal data ndmax should be increased.
+C!ROUTINE: GETSICE
+C!DESCRIPTION:  GETSICE returns the sea ice depth.
+C!              This routine is adaptable for any frequency
+C!              data upto a daily frequency.
+C!              note: for diurnal data ndmax should be increased.
 C
 C!INPUT PARAMETERS:
-C!	iunit     Unit number assigned to the sice data file
+C!      iunit     Unit number assigned to the sice data file
 C!      idim1     Start dimension in x-direction
 C!      idim2     End dimension in x-direction
 C!      jdim1     Start dimension in y-direction
@@ -136,16 +144,16 @@ C!      bi        Processor number in x-direction (local to processor)
 C!      bj        Processor number in y-direction (local to processor)
 C!      bislot  Processor number in x-direction (global)
 C!      bjslot  Processor number in y-direction (global)
-C!	nymd	  YYMMDD of the current model timestep
-C!	nhms	  HHMMSS of the model time
+C!      nymd    YYMMDD of the current model timestep
+C!      nhms    HHMMSS of the model time
 C
 C!OUTPUT PARAMETERS:
-C!	sice(idim1:idim2,jdim1:jdim2,nSumx,nSumy) Sea ice depth in meters
+C!      sice(idim1:idim2,jdim1:jdim2,nSumx,nSumy) Sea ice depth in meters
 C
 C!ROUTINES CALLED:
 C
-C!	bcdata	     Reads the data for a given unit number
-C!	bcheader     Reads the header info for a given unit number
+C!      bcdata       Reads the data for a given unit number
+C!      bcheader     Reads the header info for a given unit number
 C!      interp_time  Returns weights for linear interpolation
 C
 C--------------------------------------------------------------------------
@@ -164,7 +172,7 @@ C--------------------------------------------------------------------------
       logical first
 
 C Maximum number of dates in one year for the data
-      integer 	ndmax
+      integer ndmax
       parameter (ndmax = 370)
       integer nymdbc(ndmax),nhmsbc(ndmax)
 
@@ -229,7 +237,7 @@ C---------- Read in Header file ----------------------------------
      .                                         recl=xsize*ysize*4)
        nrec = 1
        call bcheader (iunit, ndmax, nrec,
-     .          cname, cdscrip, imbc, jmbc, lat0, lon0, 
+     .          cname, cdscrip, imbc, jmbc, lat0, lon0,
      .          ndatebc, nymdbc, nhmsbc, undef, error)
 
 C--------- Check data for Compatibility ------------------------------
@@ -248,7 +256,7 @@ C Check Horizontal Resolution
         error = .true.
        endif
 
-C Check Year 
+C Check Year
        iyearbc = nymdbc(2)/10000
        if (.not.error .and. iyear.ne.iyearbc .and. iyearbc.ne.0) then
         write(6,*)'     B.C. Year DOES NOT match REQUESTED Year!'
@@ -259,19 +267,19 @@ C Check Year
 
        if (.not.error)   then
 C if climatology, fill dates for data with current model year
-        if (iyearbc.eq.0) then		
+        if (iyearbc.eq.0) then
          write(6,*)
-         write(6,*) 'Climatological Dataset is being used.'  
+         write(6,*) 'Climatological Dataset is being used.'
          write(6,*) 'Current model year to be used to fill Header Dates'
          do n = 2, ndatebc-1
-          nymdbc(n) = nymdbc(n) +(nymdmod/10000)*10000 
+          nymdbc(n) = nymdbc(n) +(nymdmod/10000)*10000
          enddo
 C  For the first date subtract 1 year from the current model NYMD
          n = 1
-         nymdbc(n) = nymdbc(n) +(nymdmod/10000-1)*10000 
+         nymdbc(n) = nymdbc(n) +(nymdmod/10000-1)*10000
 C  For the last date add 1 year to the current model NYMD
          n = ndatebc
-         nymdbc(n) = nymdbc(n) +(nymdmod/10000+1)*10000 
+         nymdbc(n) = nymdbc(n) +(nymdmod/10000+1)*10000
         endif
 
 C  Write out header info
@@ -291,7 +299,7 @@ C  Write out header info
         enddo
         write(6,1000) (nn,nymdbc(nn),nhmsbc(nn),nn=ndby3*3+1,ndatebc)
         _END_MASTER( myThid )
-       endif  
+       endif
 
       endif
 
@@ -300,8 +308,8 @@ C---------- Read sice data if necessary -------------------------------
       found = .false.
       nd = 2
 
-c  If model time is not within the times of saved sice data 
-c  from previous call to getsice then read new data 
+c  If model time is not within the times of saved sice data
+c  from previous call to getsice then read new data
 
       timemod = dfloat(nymdmod) + dfloat(nhms)   /1000000
       timebc1 = dfloat(nymdbc1) + dfloat(nhmsbc1)/1000000
@@ -311,7 +319,7 @@ c  from previous call to getsice then read new data
 
        do while (.not.found .and. nd .le. ndatebc)
         timebc2 = dfloat(nymdbc(nd)) + dfloat(nhmsbc(nd))/1000000
-        if (timebc2 .gt. timemod) then	
+        if (timebc2 .gt. timemod) then
          nymdbc1 = nymdbc(nd-1)
          nymdbc2 = nymdbc(nd)
          nhmsbc1 = nhmsbc(nd-1)
@@ -323,7 +331,7 @@ c  from previous call to getsice then read new data
         endif
        enddo
 
-c  Otherwise the data from the last time in getsice surrounds the 
+c  Otherwise the data from the last time in getsice surrounds the
 c  current model time.
 
       else
@@ -331,7 +339,7 @@ c  current model time.
       endif
 
       if (.not.found) then
-       print *, 'STOP: Could not find SICE dates for model time.' 
+       print *, 'STOP: Could not find SICE dates for model time.'
        call my_finalize
        call my_exit (101)
       endif
@@ -343,8 +351,8 @@ C---------- Interpolate sice data ------------------------------------
 
       do j = jm1,jm2
       do i = im1,im2
-       sice(i,j,bi,bj) = sicebc1(i+bislot,j+bjslot)*fac1 
-     .                 + sicebc2(i+bislot,j+bjslot)*fac2 
+       sice(i,j,bi,bj) = sicebc1(i+bislot,j+bjslot)*fac1
+     .                 + sicebc2(i+bislot,j+bjslot)*fac2
 c average to 0 or 1
 c -----------------
        if (sice(i,j,bi,bj) .ge. 0.5) then
@@ -358,13 +366,13 @@ c -----------------
 C---------- Fill sice with depth of ice ------------------------------------
       do j = jm1,jm2
       do i = im1,im2
-       if (sice(i,j,bi,bj) .eq. 1.) then		
+       if (sice(i,j,bi,bj) .eq. 1.) then
         sice(i,j,bi,bj) = 3.
        endif
       enddo
       enddo
 C---------------------------------------------------------------------------
- 
+
       return
       end
       subroutine getsst(iunit,clim,idim1,idim2,jdim1,jdim2,im1,im2,
@@ -373,14 +381,14 @@ C---------------------------------------------------------------------------
      .   nymdbc,nhmsbc,sst,mythid)
 C***********************************************************************
 C
-C!ROUTINE:	GETSST
-C!DESCRIPTION:	GETSST gets the SST data.
-C!		This routine is adaptable for any frequency
-C!		data upto a daily frequency.  
-C!		note: for diurnal data ndmax should be increased.
+C!ROUTINE: GETSST
+C!DESCRIPTION:  GETSST gets the SST data.
+C!              This routine is adaptable for any frequency
+C!              data upto a daily frequency.
+C!              note: for diurnal data ndmax should be increased.
 C
 C!INPUT PARAMETERS:
-C!	iunit     Unit number assigned to the sice data file
+C!      iunit     Unit number assigned to the sice data file
 C!      idim1     Start dimension in x-direction
 C!      idim2     End dimension in x-direction
 C!      jdim1     Start dimension in y-direction
@@ -397,17 +405,17 @@ C!      bi        Processor number in x-direction (local to processor)
 C!      bj        Processor number in y-direction (local to processor)
 C!      bislot    Slot number into global array in x-direction (global)
 C!      bjslot    Slot number into global array in y-direction (global)
-C!	nymd	  YYMMDD of the current model timestep
-C!	nhms	  HHMMSS of the model time
+C!      nymd      YYMMDD of the current model timestep
+C!      nhms      HHMMSS of the model time
 C
 C!OUTPUT PARAMETERS:
-C!	sst(idim1:idim2,jdim1:jdim2,nSumx,nSumy) Sea surface temperature (K)
+C!     sst(idim1:idim2,jdim1:jdim2,nSumx,nSumy) Sea surface temperature (K)
 C
 C!ROUTINES CALLED:
 C
-C!	bcdata		Reads the data for a given unit number
-C!	bcheader	Reads the header info for a given unit number
-C!     interp_time      Returns weights for linear interpolation
+C!     bcdata     Reads the data for a given unit number
+C!     bcheader   Reads the header info for a given unit number
+C!     interp_time  Returns weights for linear interpolation
 C
 C--------------------------------------------------------------------------
 
@@ -425,7 +433,7 @@ C--------------------------------------------------------------------------
       logical first
 
 C Maximum number of dates in one year for the data
-      integer 	ndmax
+      integer ndmax
       parameter (ndmax = 370)
       integer nymdbc(ndmax),nhmsbc(ndmax)
 
@@ -489,7 +497,7 @@ C---------- Read in Header file ----------------------------------
      .                                        recl=xsize*ysize*4)
        nrec = 1
        call bcheader (iunit, ndmax, nrec,
-     .          cname, cdscrip, imbc, jmbc, lat0, lon0, 
+     .          cname, cdscrip, imbc, jmbc, lat0, lon0,
      .          ndatebc, nymdbc, nhmsbc, undef, error)
 
 C--------- Check data for Compatibility
@@ -508,7 +516,7 @@ C Check Horizontal Resolution
         error = .true.
        endif
 
-C Check Year 
+C Check Year
        iyearbc = nymdbc(2)/10000
        if (.not.error .and. iyear.ne.iyearbc .and. iyearbc.ne.0) then
         write(6,*)'     B.C. Year DOES NOT match REQUESTED Year!'
@@ -519,19 +527,19 @@ C Check Year
 
        if (.not.error)   then
 C if climatology, fill dates for data with current model year
-        if (iyearbc.eq.0) then		
+        if (iyearbc.eq.0) then
          write(6,*)
-         write(6,*)'Climatological Dataset is being used.'  
+         write(6,*)'Climatological Dataset is being used.'
          write(6,*)'Current model year is used to fill Header Dates'
          do n = 2, ndatebc-1
-          nymdbc(n) = nymdbc(n) +(nymdmod/10000)*10000 
+          nymdbc(n) = nymdbc(n) +(nymdmod/10000)*10000
          enddo
 C  For the first date subtract 1 year from the current model NYMD
          n = 1
-         nymdbc(n) = nymdbc(n) +(nymdmod/10000-1)*10000 
+         nymdbc(n) = nymdbc(n) +(nymdmod/10000-1)*10000
 C  For the last date add 1 year to the current model NYMD
          n = ndatebc
-         nymdbc(n) = nymdbc(n) +(nymdmod/10000+1)*10000 
+         nymdbc(n) = nymdbc(n) +(nymdmod/10000+1)*10000
         endif
 
 C  Write out header info
@@ -562,8 +570,8 @@ C---------- Read SST data if necessary -------------------------------
       found = .false.
       nd = 2
 
-c  If model time is not within the times of saved sst data 
-c  from previous call to getsst then read new data 
+c  If model time is not within the times of saved sst data
+c  from previous call to getsst then read new data
 
       timemod = dfloat(nymdmod) + dfloat(nhms)   /1000000
       timebc1 = dfloat(nymdbc1) + dfloat(nhmsbc1)/1000000
@@ -573,7 +581,7 @@ c  from previous call to getsst then read new data
 
        do while (.not.found .and. nd .le. ndatebc)
         timebc2 = dfloat(nymdbc(nd)) + dfloat(nhmsbc(nd))/1000000
-        if (timebc2 .gt. timemod) then	
+        if (timebc2 .gt. timemod) then
          nymdbc1 = nymdbc(nd-1)
          nymdbc2 = nymdbc(nd)
          nhmsbc1 = nhmsbc(nd-1)
@@ -585,13 +593,13 @@ c  from previous call to getsst then read new data
         endif
        enddo
 
-c  Otherwise the data from the last time in getsst surrounds the 
+c  Otherwise the data from the last time in getsst surrounds the
 c  current model time.
 
       else
        found = .true.
       endif
- 
+
       if (.not.found) then
        print *, 'STOP: Could not find SST dates for model time.'
        call my_finalize
@@ -605,11 +613,11 @@ C---------- Interpolate SST data ------------------------------------
 
       do j = jm1,jm2
       do i = im1,im2
-       sst(i,j,bi,bj) = sstbc1(i+bislot,j+bjslot)*fac1 
-     .                + sstbc2(i+bislot,j+bjslot)*fac2 
+       sst(i,j,bi,bj) = sstbc1(i+bislot,j+bjslot)*fac1
+     .                + sstbc2(i+bislot,j+bjslot)*fac2
       enddo
       enddo
- 
+
 
       return
       end
@@ -620,7 +628,7 @@ C
 C!ROUTINE:      BCDATA
 C!DESCRIPTION:  BCDATA reads the data from the file assigned to the
 C!              passed unit number and returns data from the two times
-C!              surrounding the current model time.  The two record 
+C!              surrounding the current model time.  The two record
 C!              postitions are not assumed to be next to each other.
 C
 C!INPUT PARAMETERS:
@@ -662,12 +670,12 @@ C--------- Read file -----------------------------------------------
       return
       end
       subroutine bcheader (iunit, ndmax, nrec,
-     .           cname, cdscrip, im, jm, lat0, lon0, ndatebc, 
+     .           cname, cdscrip, im, jm, lat0, lon0, ndatebc,
      .           nymdbc, nhmsbc, undef, error)
 C************************************************************************
 C
 C!ROUTINE:     BCHEADER
-C!DESCRIPTION: BCHEADER reads the header from a file and returns the info.  
+C!DESCRIPTION: BCHEADER reads the header from a file and returns the info.
 C
 C!INPUT PARAMETERS:
 C!      iunit    unit number assigned to the data file
@@ -676,12 +684,12 @@ C!      nrec     record number of the header info (or assume 1??)
 C
 C!OUTPUT PARAMETERS:
 C!      cname         name of the data in the file header
-C!      cdscrip	      description of the data in the file header
+C!      cdscrip       description of the data in the file header
 C!      im            number of x points
 C!      jm            number of y points
 C!      lat0          starting latitude for the data grid
 C!      lon0          starting longitude for the data grid
-C!      ndatebc	      number of date/times of the data in the file
+C!      ndatebc       number of date/times of the data in the file
 C!      nymdbc(ndmax) array of dates for the data including century
 C!      nhmsbc(ndmax) array of times for the data
 C!      undef         value for undefined values in the data
@@ -706,8 +714,8 @@ C--------------------------------------------------------------------------
 
 C--------- Read file -----------------------------------------------
 
-      read(iunit,rec=nrec,err=500) cname, cdscrip, 
-     .     im_32, jm_32, lat0_32, lon0_32, 
+      read(iunit,rec=nrec,err=500) cname, cdscrip,
+     .     im_32, jm_32, lat0_32, lon0_32,
      .     ndatebc_32, undef_32
 
 #ifdef _BYTESWAPIO
