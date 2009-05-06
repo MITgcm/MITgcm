@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.26 2009/05/06 02:44:45 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.27 2009/05/06 20:33:08 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 CBOP
@@ -30,9 +30,6 @@ C     === Global data ===
 
 #ifdef ALLOW_USE_MPI
 C     !FUNCTIONS:
-      INTEGER  IFNBLNK, ILNBLNK
-      EXTERNAL IFNBLNK
-      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
@@ -60,7 +57,6 @@ C                         units.
       INTEGER mpiPeriodicity(2)
       INTEGER mpiLProcNam
       CHARACTER*(MPI_MAX_PROCESSOR_NAME) mpiProcNam
-      INTEGER i1, i2
       INTEGER arrElSize
       INTEGER arrElSep
       INTEGER elCount
@@ -275,10 +271,8 @@ C--    Print summary of processor mapping on standard output
      &   '======= Starting MPI parallel Run ========='
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,
      &  SQUEEZE_BOTH , myThid)
-       i1 = IFNBLNK(mpiProcNam)
-       i2 = ILNBLNK(mpiProcNam)
        WRITE(msgBuffer,'(A,I3,A,A)') ' My Processor Name (len:',
-     &  mpilProcNam, ' ) = ', mpiProcNam(i1:mpilProcNam)
+     &  mpilProcNam, ' ) = ', mpiProcNam(1:mpilProcNam)
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit,
      &  SQUEEZE_RIGHT , myThid)
        WRITE(msgBuffer,'(A,I3,A,I3,A,I3,A,I3,A)') ' Located at (',
