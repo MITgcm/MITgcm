@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.9 2009/04/29 21:37:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.10 2009/05/06 01:03:41 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -36,7 +36,8 @@ C     == Local variables ==
       INTEGER nt_perProc, thisProc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_FNAM) fName
-      INTEGER stdUnit, W2_oUnit, iLen
+      INTEGER W2_oUnit
+      INTEGER stdUnit, iLen
       CHARACTER commFlag
       INTEGER myTileId
       INTEGER myThid, I, J, II, np, jp
@@ -76,7 +77,6 @@ C     Initialise to zero EXCH2_TOPOLOGY common blocks
           exch2_jHi(J,I) = 0
         ENDDO
       ENDDO
-C     Initialise parameters from EXCH2_PARAMS common blocks
       W2_oUnit = standardMessageUnit
 
 C     Set W2-EXCH2 parameters
@@ -88,7 +88,7 @@ c     W2_oUnit = -1
       CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
 
 C     Open message output-file (if needed)
-      IF ( W2_oUnit.LT.0 ) THEN
+      IF ( W2_oUnit.NE.standardMessageUnit ) THEN
         WRITE(fName,'(A,I4.4,A)')
      &     'w2_tile_topology.',myProcId,'.log'
         iLen = ILNBLNK(fName)
@@ -163,7 +163,9 @@ C--   Print tiles connection for this process and set myCommonFlag :
       CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_BOTH, myThid )
       DO I=1,nSx
        myTileId = W2_myTileList(I)
-       WRITE(msgBuf,'(A,I4)') ' TILE: ', myTileId
+c      WRITE(msgBuf,'(A,I4)') ' TILE: ', myTileId
+       WRITE(msgBuf,'(A,I5,A,I3)') ' TILE: ', myTileId,
+     &      ' , Nb of Neighbours =', exch2_nNeighbours(myTileId)
        CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
        DO J=1,exch2_nNeighbours(myTileId)
         commFlag = 'M'
@@ -172,17 +174,17 @@ C--   Print tiles connection for this process and set myCommonFlag :
      &    commFlag = 'P'
         ENDDO
         IF ( commFlag .EQ. 'M' ) THEN
-         WRITE(msgBuf,'(A,I4,A,I4,A,A,I4,A)')
-     &   '      NEIGHBOUR ',J,' = TILE ',
-     &   exch2_neighbourId(J,myTileId), ' Comm = MSG',
-     &   ' ( PROC = ',exch2_tProc(exch2_neighbourId(J,myTileId)),')'
+         WRITE(msgBuf,'(A,I3,A,I5,A,I3,2A,I5,A)')
+     &   '    NEIGHBOUR',J,' = TILE', exch2_neighbourId(J,myTileId),
+     &   ' (n=', exch2_opposingSend(J,myTileId), ') Comm = MSG',
+     &   ' (PROC=',exch2_tProc(exch2_neighbourId(J,myTileId)),')'
          CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
         IF ( commFlag .EQ. 'P' ) THEN
-         WRITE(msgBuf,'(A,I4,A,I4,A,A,I4,A)')
-     &   '      NEIGHBOUR ',J,' = TILE ',
-     &   exch2_neighbourId(J,myTileId), ' Comm = PUT',
-     &   ' ( PROC = ',exch2_tProc(exch2_neighbourId(J,myTileId)),')'
+         WRITE(msgBuf,'(A,I3,A,I5,A,I3,2A,I5,A)')
+     &   '    NEIGHBOUR',J,' = TILE', exch2_neighbourId(J,myTileId),
+     &   ' (n=', exch2_opposingSend(J,myTileId), ') Comm = PUT',
+     &   ' (PROC=',exch2_tProc(exch2_neighbourId(J,myTileId)),')'
          CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
         ENDIF
         W2_myCommFlag(J,I) = commFlag
