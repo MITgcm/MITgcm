@@ -19,7 +19,7 @@
  implicitFreeSurface=.TRUE.,
  implicSurfPress=0.5,
  implicDiv2DFlow=0.5,
-#nonlinFreeSurf=3, 
+#nonlinFreeSurf=3,
 #hFacInf=0.2,
 #hFacSup=1.8,
  exactConserv=.TRUE.,
@@ -28,7 +28,7 @@
  tempStepping=.FALSE.,
  saltStepping=.FALSE.,
  readBinaryPrec=64,
- writeBinaryPrec=64,
+#writeBinaryPrec=64,
  useSingleCpuIO=.TRUE.,
  &
 
