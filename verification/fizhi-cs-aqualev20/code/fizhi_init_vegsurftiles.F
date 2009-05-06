@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/fizhi_init_vegsurftiles.F,v 1.1 2006/04/03 20:55:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/fizhi_init_vegsurftiles.F,v 1.2 2009/05/06 02:59:35 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -6,10 +6,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: FIZHI_INIT_VEGSURFTILES
 C     !INTERFACE:
-      subroutine fizhi_init_vegsurftiles(nymd,nhms,prec,myThid)
+      subroutine fizhi_init_vegsurftiles(globalArr,xsize,ysize,
+     &                                   nymd,nhms,prec,myThid)
+
 
 C     !DESCRIPTION:
-C      Read in grid space values of the land state 
+C      Read in grid space values of the land state
 C      and then convert to vegetation tile space
 
 C     !USES:
@@ -25,6 +27,8 @@ C      Calls routine grd2msc to do grid to tile space for each bi bj
 #include "PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
+      integer xsize, ysize
+      Real*8 globalArr(xsize,ysize,8)
       CHARACTER*1 prec
       INTEGER nhms,nymd
       INTEGER myThid

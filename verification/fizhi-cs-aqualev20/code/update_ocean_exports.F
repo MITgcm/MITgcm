@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/update_ocean_exports.F,v 1.4 2009/04/28 18:06:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/update_ocean_exports.F,v 1.5 2009/05/06 02:59:35 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -25,21 +25,22 @@ c-----------------------------------------------------------------------
        integer myIter, myThid
        _RL myTime
 
+       INTEGER xySize
+#if defined(ALLOW_EXCH2)
+       PARAMETER ( xySize = W2_ioBufferSize )
+#else
+       PARAMETER ( xySize = Nx*Ny )
+#endif
        integer i, j, bi, bj, bislot, bjslot
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
        integer xsize, ysize
        _RL        sstmin
        parameter ( sstmin = 273.16 )
 
-#if defined(ALLOW_EXCH2)
-       PARAMETER ( xsize = exch2_domain_nxt * sNx )
-       PARAMETER ( ysize = exch2_domain_nyt * sNy )
-#else
-       PARAMETER ( xsize = Nx )
-       PARAMETER ( ysize = Ny )
-#endif
-       _RL sst1(xsize,ysize),sst2(xsize,ysize)
-       _RL sice1(xsize,ysize),sice2(xsize,ysize)
+       _RL sst1 (xySize), sst2 (xySize)
+       _RL sice1(xySize), sice2(xySize)
+c      _RL sst1(xsize,ysize),sst2(xsize,ysize)
+c      _RL sice1(xsize,ysize),sice2(xsize,ysize)
        integer nymd1sst(nSx,nSy),nymd2sst(nSx,nSy)
        integer nymd1sice(nSx,nSy),nymd2sice(nSx,nSy)
        integer nhms1sst(nSx,nSy),nhms2sst(nSx,nSy)
@@ -57,6 +58,13 @@ c-----------------------------------------------------------------------
        save sstdates, sicedates
        save ssttimes, sicetimes
 
+#if defined(ALLOW_EXCH2)
+       xsize = exch2_global_Nx
+       ysize = exch2_global_Ny
+#else
+       xsize = Nx
+       ysize = Ny
+#endif
        idim1 = 1-OLx
        idim2 = sNx+OLx
        jdim1 = 1-OLy
@@ -112,14 +120,14 @@ c --------------------------------
      .   nymdbc,nhmsbc,sice,mythid)
 C***********************************************************************
 C
-C!ROUTINE:	GETSICE
-C!DESCRIPTION:	GETSICE returns the sea ice depth.
-C!		This routine is adaptable for any frequency
-C!		data upto a daily frequency.
-C!		note: for diurnal data ndmax should be increased.
+C!ROUTINE: GETSICE
+C!DESCRIPTION: GETSICE returns the sea ice depth.
+C!             This routine is adaptable for any frequency
+C!             data upto a daily frequency.
+C!             note: for diurnal data ndmax should be increased.
 C
 C!INPUT PARAMETERS:
-C!	iunit     Unit number assigned to the sice data file
+C!      iunit     Unit number assigned to the sice data file
 C!      idim1     Start dimension in x-direction
 C!      idim2     End dimension in x-direction
 C!      jdim1     Start dimension in y-direction
@@ -136,16 +144,16 @@ C!      bi        Processor number in x-direction (local to processor)
 C!      bj        Processor number in y-direction (local to processor)
 C!      bislot  Processor number in x-direction (global)
 C!      bjslot  Processor number in y-direction (global)
-C!	nymd	  YYMMDD of the current model timestep
-C!	nhms	  HHMMSS of the model time
+C!      nymd   YYMMDD of the current model timestep
+C!      nhms   HHMMSS of the model time
 C
 C!OUTPUT PARAMETERS:
-C!	sice(idim1:idim2,jdim1:jdim2,nSumx,nSumy) Sea ice depth in meters
+C!      sice(idim1:idim2,jdim1:jdim2,nSumx,nSumy) Sea ice depth in meters
 C
 C!ROUTINES CALLED:
 C
-C!	bcdata	     Reads the data for a given unit number
-C!	bcheader     Reads the header info for a given unit number
+C!      bcdata      Reads the data for a given unit number
+C!      bcheader     Reads the header info for a given unit number
 C!      interp_time  Returns weights for linear interpolation
 C
 C--------------------------------------------------------------------------
@@ -185,14 +193,14 @@ C Maximum number of dates in one year for the data
      .   nymdbc,nhmsbc,sst,mythid)
 C***********************************************************************
 C
-C!ROUTINE:	GETSST
-C!DESCRIPTION:	GETSST gets the SST data.
-C!		This routine is adaptable for any frequency
-C!		data upto a daily frequency.
-C!		note: for diurnal data ndmax should be increased.
+C!ROUTINE: GETSST
+C!DESCRIPTION: GETSST gets the SST data.
+C!             This routine is adaptable for any frequency
+C!             data upto a daily frequency.
+C!             note: for diurnal data ndmax should be increased.
 C
 C!INPUT PARAMETERS:
-C!	iunit     Unit number assigned to the sice data file
+C!      iunit     Unit number assigned to the sice data file
 C!      idim1     Start dimension in x-direction
 C!      idim2     End dimension in x-direction
 C!      jdim1     Start dimension in y-direction
@@ -209,16 +217,16 @@ C!      bi        Processor number in x-direction (local to processor)
 C!      bj        Processor number in y-direction (local to processor)
 C!      bislot    Slot number into global array in x-direction (global)
 C!      bjslot    Slot number into global array in y-direction (global)
-C!	nymd	  YYMMDD of the current model timestep
-C!	nhms	  HHMMSS of the model time
+C!      nymd      YYMMDD of the current model timestep
+C!      nhms      HHMMSS of the model time
 C
 C!OUTPUT PARAMETERS:
-C!	sst(idim1:idim2,jdim1:jdim2,nSumx,nSumy) Sea surface temperature (K)
+C!     sst(idim1:idim2,jdim1:jdim2,nSumx,nSumy) Sea surface temperature (K)
 C
 C!ROUTINES CALLED:
 C
-C!	bcdata		Reads the data for a given unit number
-C!	bcheader	Reads the header info for a given unit number
+C!     bcdata      Reads the data for a given unit number
+C!     bcheader     Reads the header info for a given unit number
 C!     interp_time      Returns weights for linear interpolation
 C
 C--------------------------------------------------------------------------
