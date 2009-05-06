@@ -34,7 +34,7 @@
 #tempAdvScheme=77,
 #saltAdvScheme=77,
  readBinaryPrec=64,
-#writeBinaryPrec=64,
+ writeBinaryPrec=64,
 #debugLevel = 2,
  &
 
