@@ -22,10 +22,10 @@
  exactConserv=.TRUE.,
 #uniformLin_PhiSurf=.FALSE.,
  staggerTimeStep=.TRUE.,
- readBinaryPrec=64,
- writeBinaryPrec=64,
  hFacMin=1.0,
  saltAdvScheme=3,
+ readBinaryPrec=64,
+#writeBinaryPrec=64,
  &
 
 # Elliptic solver parameters
