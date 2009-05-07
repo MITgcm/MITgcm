@@ -11,12 +11,13 @@
 #                 for the list of all available diag. in this particular config)
 #-----------------
  &diagnostics_list
+  dumpAtLast=.TRUE.,
   diag_mnc=.TRUE.,
-  frequency(1) = 7200.,
+  frequency(1) = 864000.,
   fields(1,1) = 'momKE   ','momHDiv ','momVort3',
                 'Strain  ','Tension ',
   filename(1) = 'mom',
-  frequency(2) = 7200.,
+  frequency(2) = 864000.,
   fields(1,2) = 'VISCAHD ','VISCA4D ','VISCAHZ ','VISCA4Z ',
                 'VAHDMAX ','VA4DMAX ','VAHZMAX ','VA4ZMAX ',
                 'VAHDMIN ','VA4DMIN ','VAHZMIN ','VA4ZMIN ',
