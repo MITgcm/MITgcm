@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eesupp.flow,v 1.11 2009/04/28 22:00:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eesupp.flow,v 1.12 2009/05/07 19:05:30 jmc Exp $
 C $Name:  $
 
 C---------------------------------------------------------------
@@ -155,3 +155,92 @@ CADJ FUNCTION   MASTER_CPU_IO   OUTPUT =
 
 CADJ FUNCTION   MASTER_CPU_THREAD  INPUT  = 1
 CADJ FUNCTION   MASTER_CPU_THREAD  OUTPUT =
+
+C----------------------------------------
+C subroutine  open_copy_data_file
+C----------------------------------------
+CADJ SUBROUTINE OPEN_COPY_DATA_FILE  INPUT  = 1,2,  4
+CADJ SUBROUTINE OPEN_COPY_DATA_FILE  OUTPUT =     3
+
+C-------------------------------------------------------
+C-- formerly in pkg/autodiff/write_utils.flow (previously: read_write.flow)
+
+C----------------------------------------
+C subroutine  write_1d_i
+C----------------------------------------
+CADJ SUBROUTINE WRITE_1D_I  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE WRITE_1D_I  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_1d_l
+C----------------------------------------
+CADJ SUBROUTINE WRITE_1D_L  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE WRITE_1D_L  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_1d_rl
+C----------------------------------------
+CADJ SUBROUTINE WRITE_1D_RL INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE WRITE_1D_RL OUTPUT =
+
+C----------------------------------------
+C subroutine  write_0d_i
+C----------------------------------------
+CADJ SUBROUTINE WRITE_0D_I INPUT  = 1,2,3,4
+CADJ SUBROUTINE WRITE_0D_I OUTPUT =
+
+C----------------------------------------
+C subroutine  write_0d_l
+C----------------------------------------
+CADJ SUBROUTINE WRITE_0D_L INPUT  = 1,2,3,4
+CADJ SUBROUTINE WRITE_0D_L OUTPUT =
+
+C----------------------------------------
+C subroutine  write_0d_r4
+C----------------------------------------
+CADJ SUBROUTINE WRITE_0D_R4 INPUT  = 1,2,3,4
+CADJ SUBROUTINE WRITE_0D_R4 OUTPUT =
+
+C----------------------------------------
+C subroutine  write_0d_r8
+C----------------------------------------
+CADJ SUBROUTINE WRITE_0D_R8 INPUT  = 1,2,3,4
+CADJ SUBROUTINE WRITE_0D_R8 OUTPUT =
+
+C----------------------------------------
+C subroutine  write_0d_rs
+C----------------------------------------
+CADJ SUBROUTINE WRITE_0D_RS INPUT  = 1,2,3,4
+CADJ SUBROUTINE WRITE_0D_RS OUTPUT =
+
+C----------------------------------------
+C subroutine  write_0d_rl
+C----------------------------------------
+CADJ SUBROUTINE WRITE_0D_RL INPUT  = 1,2,3,4
+CADJ SUBROUTINE WRITE_0D_RL OUTPUT =
+
+C----------------------------------------
+C subroutine  write_0d_c
+C----------------------------------------
+CADJ SUBROUTINE WRITE_0D_C INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE WRITE_0D_C OUTPUT =
+
+C----------------------------------------
+C subroutine  write_copy1d_r4
+C----------------------------------------
+CADJ SUBROUTINE WRITE_COPY1D_R4 INPUT  =   2,3,4,5,6
+CADJ SUBROUTINE WRITE_COPY1D_R4 OUTPUT = 1
+
+C----------------------------------------
+C subroutine  write_copy1d_r8
+C----------------------------------------
+CADJ SUBROUTINE WRITE_COPY1D_R8 INPUT  =   2,3,4,5,6
+CADJ SUBROUTINE WRITE_COPY1D_R8 OUTPUT = 1
+
+C----------------------------------------
+C subroutine  write_copy1d_rs
+C----------------------------------------
+CADJ SUBROUTINE WRITE_COPY1D_RS INPUT  =   2,3,4,5,6
+CADJ SUBROUTINE WRITE_COPY1D_RS OUTPUT = 1
+
+C-------------------------------------------------------
