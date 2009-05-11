@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/eesupp/src/Makefile,v 1.13 2009/02/14 23:29:50 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/eesupp/src/Makefile,v 1.14 2009/05/11 02:13:29 jmc Exp $
 # $Name:  $
 
 # Makefile for generate eesupp source code from templates.
@@ -30,7 +30,8 @@ R4_FILES = exch_xy_r4.F exch_3d_r4.F exch_xyz_r4.F exch_s3d_r4.F \
            exch_r4.F \
            exch_r4_cube.F exch_uv_r4_cube.F exch_z_r4_cube.F exch_bg_r4_cube.F \
            exch_r4_recv_get_x.F exch_r4_recv_get_y.F \
-           exch_r4_send_put_x.F exch_r4_send_put_y.F
+           exch_r4_send_put_x.F exch_r4_send_put_y.F \
+           gather_2d_r4.F scatter_2d_r4.F
 
 R8_FILES = exch_xy_r8.F exch_3d_r8.F exch_xyz_r8.F exch_s3d_r8.F \
            exch_uv_xy_r8.F exch_uv_3d_r8.F exch_uv_xyz_r8.F \
@@ -39,7 +40,8 @@ R8_FILES = exch_xy_r8.F exch_3d_r8.F exch_xyz_r8.F exch_s3d_r8.F \
            exch_r8.F \
            exch_r8_cube.F exch_uv_r8_cube.F exch_z_r8_cube.F exch_bg_r8_cube.F \
            exch_r8_recv_get_x.F exch_r8_recv_get_y.F \
-           exch_r8_send_put_x.F exch_r8_send_put_y.F
+           exch_r8_send_put_x.F exch_r8_send_put_y.F \
+           gather_2d_r8.F scatter_2d_r8.F
 
 OLD_FILES = exch_z_xy_rl.F exch_z_xy_rs.F exch_z_xy_r4.F exch_z_xy_r8.F \
  exch_z_xyz_rl.F exch_z_xyz_rs.F exch_z_xyz_r4.F exch_z_xyz_r8.F \
@@ -261,4 +263,14 @@ exch_r8_send_put_y.F: exch_rx_send_put_y.template
 	sed 's/RX/R8/g' exch_rx_send_put_y.template > $@
 exch_r4_send_put_y.F: exch_rx_send_put_y.template
 	sed 's/RX/R4/g' exch_rx_send_put_y.template > $@
+
+# gather_2d_rx, scatter_2d_rx
+gather_2d_r8.F: gather_2d_rx.template 
+	sed 's/RX/R8/g' gather_2d_rx.template > $@
+gather_2d_r4.F: gather_2d_rx.template 
+	sed 's/RX/R4/g' gather_2d_rx.template > $@
+scatter_2d_r8.F: scatter_2d_rx.template 
+	sed 's/RX/R8/g' scatter_2d_rx.template > $@
+scatter_2d_r4.F: scatter_2d_rx.template 
+	sed 's/RX/R4/g' scatter_2d_rx.template > $@
 
