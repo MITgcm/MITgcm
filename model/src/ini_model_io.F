@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.27 2008/09/21 18:02:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.28 2009/05/11 02:29:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -20,6 +20,14 @@ C     !USES:
 #include "EESUPPORT.h"
 #include "PARAMS.h"
 #include "RESTART.h"
+#ifdef ALLOW_EXCH2
+c#include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
+# include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
+#ifdef ALLOW_MDSIO
+# include "MDSIO_SCPU.h"
+#endif /* ALLOW_MDSIO */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: my Thread Id number
@@ -34,6 +42,15 @@ C     msgBuf :: Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_FNAM) namBuf
       INTEGER   iL, pIL
+#ifdef ALLOW_EXCH2
+      INTEGER xySize
+#endif /* ALLOW_EXCH2 */
+#ifdef ALLOW_USE_MPI
+      INTEGER iG,jG,np
+#endif /* ALLOW_USE_MPI */
+#ifdef ALLOW_MDSIO
+      INTEGER i
+#endif /* ALLOW_MDSIO */
 CEOP
 
 C-    Safety check:
@@ -70,6 +87,53 @@ C-----
         _END_MASTER( myThid )
       ENDIF
 
+C-    Check size of IO buffers:
+      IF ( useSingleCpuIO ) THEN
+c       xySize = Nx*Ny
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+        xySize = exch2_global_Nx*exch2_global_Ny
+        IF ( xySize.GT.W2_ioBufferSize ) THEN
+          WRITE(msgBuf,'(A,I10)')
+     &     'INI_MODEL_IO: W2_ioBufferSize=',W2_ioBufferSize
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A,I10,A)')
+     &     ' <', xySize,' = Size of Global 2-D map'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(2A)') ' Must increase "W2_ioBufferSize"',
+     &                         ' in "W2_EXCH2_SIZE.h" + recompile'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R INI_MODEL_IO (buffer size)'
+        ENDIF
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+#ifdef ALLOW_USE_MPI
+C-  Although using mpi_myX,YGlobalLo is more general, if they happen
+C   to be different from iG,jG then mapping into global 2D array is
+C   very likely to go wrong ; check and stop.
+         DO np = 1,nPx*nPy
+          iG = MOD(np-1,nPx)
+          jG = (np-1)/nPx
+          iG = 1+iG*nSx*sNx
+          jG = 1+jG*nSy*sNy
+          IF ( mpi_myXGlobalLo(np).NE.iG ) THEN
+           WRITE(msgBuf,'(2A,I4,A,I8,A,I8,A)') 'INI_MODEL_IO: ',
+     &      'myXGlobalLo(np=',np,')=', mpi_myXGlobalLo(np),
+     &       ' <>',iG,' =iGLo'
+           CALL PRINT_ERROR( msgBuf, myThid )
+          ENDIF
+          IF ( mpi_myYGlobalLo(np).NE.jG ) THEN
+           WRITE(msgBuf,'(2A,I4,A,I8,A,I8,A)') 'INI_MODEL_IO: ',
+     &      'myYGlobalLo(np=',np,')=', mpi_myYGlobalLo(np),
+     &       ' <>',jG,' =jGLo'
+           CALL PRINT_ERROR( msgBuf, myThid )
+          ENDIF
+          IF ( mpi_myXGlobalLo(np).NE.iG .OR.
+     &         mpi_myYGlobalLo(np).NE.jG ) THEN
+           STOP 'ABNORMAL END: S/R INI_MODEL_IO wrong iGLo,jGLo'
+          ENDIF
+         ENDDO
+#endif /* ALLOW_USE_MPI */
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+      ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Only Master-thread updates IO-parameter in Common blocks:
@@ -119,6 +183,18 @@ C     Set globalFiles flag for READ_WRITE_PICKUP
       _END_MASTER( myThid )
 C-    Everyone else must wait for the IO-parameters to be set
       _BARRIER
+
+C-    MDSIO IO-buffers initialisation
+#ifdef ALLOW_MDSIO
+      IF ( useSingleCpuIO ) THEN
+        _BEGIN_MASTER( myThid )
+        DO i=1,xyBuffer_size
+          xy_buffer_r8(i) = 0. _d 0
+          xy_buffer_r4(i) = 0.
+        ENDDO
+        _END_MASTER( myThid )
+      ENDIF
+#endif /* ALLOW_MDSIO */
 
 C-    MNC model-io initialisation
 
