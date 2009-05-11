@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.6 2009/05/06 02:42:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.7 2009/05/11 02:20:48 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -106,6 +106,7 @@ C !LOCAL VARIABLES:
       LOGICAL fileIsOpen
       LOGICAL iAmDoingIO
       LOGICAL writeMetaF
+      LOGICAL keepBlankTileIO
       LOGICAL zeroBuff
       INTEGER xSize, ySize
       INTEGER irecord
@@ -127,9 +128,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C Set dimensions:
       xSize = Nx
       ySize = Ny
+      keepBlankTileIO = .FALSE.
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
       xSize = exch2_global_Nx
       ySize = exch2_global_Ny
+      keepBlankTileIO = .TRUE.
 #endif
 
 C-    default:
@@ -207,28 +210,52 @@ C Master thread of process 0, only, opens a global file
 
 C Gather array and WRITE it to file, one vertical level at a time
        DO k=kLo,kHi
+        zeroBuff = k.EQ.kLo
 C-      copy from arr(level=k) to 2-D "local":
-        IF ( arrType.EQ.'RS' ) THEN
-          CALL MDS_PASStoRS(sharedLocalBuf,arr,k,kSize,.FALSE.,myThid)
-        ELSEIF ( arrType.EQ.'RL' ) THEN
-          CALL MDS_PASStoRL(sharedLocalBuf,arr,k,kSize,.FALSE.,myThid)
-        ELSE
-          WRITE(msgBuf,'(A)')
+        IF ( filePrec.EQ.precFloat32 ) THEN
+          IF ( arrType.EQ.'RS' ) THEN
+            CALL MDS_PASS_R4toRS( sharedLocBuf_r4,
+     &                            arr, k, kSize, .FALSE., myThid )
+          ELSEIF ( arrType.EQ.'RL' ) THEN
+            CALL MDS_PASS_R4toRL( sharedLocBuf_r4,
+     &                            arr, k, kSize, .FALSE., myThid )
+          ELSE
+            WRITE(msgBuf,'(A)')
      &         ' MDS_WRITE_FIELD: illegal value for arrType'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+          ENDIF
+          CALL GATHER_2D_R4(
+     U                       xy_buffer_r4,
+     O                       sharedLocBuf_r4,
+     I                       xSize, ySize,
+     I                       keepBlankTileIO, zeroBuff, myThid )
+        ELSEIF ( filePrec.EQ.precFloat64 ) THEN
+          IF ( arrType.EQ.'RS' ) THEN
+            CALL MDS_PASS_R8toRS( sharedLocBuf_r8,
+     &                            arr, k, kSize, .FALSE., myThid )
+          ELSEIF ( arrType.EQ.'RL' ) THEN
+            CALL MDS_PASS_R8toRL( sharedLocBuf_r8,
+     &                            arr, k, kSize, .FALSE., myThid )
+          ELSE
+            WRITE(msgBuf,'(A)')
+     &         ' MDS_WRITE_FIELD: illegal value for arrType'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+          ENDIF
+          CALL GATHER_2D_R8(
+     U                       xy_buffer_r8,
+     O                       sharedLocBuf_r8,
+     I                       xSize, ySize,
+     I                       keepBlankTileIO, zeroBuff, myThid )
+        ELSE
+           WRITE(msgBuf,'(A)')
+     &       ' MDS_WRITE_FIELD: illegal value for filePrec'
+           CALL PRINT_ERROR( msgBuf, myThid )
+           STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
         ENDIF
-        CALL GATHER_2D( globalBuf, sharedLocalBuf, myThid )
 
         IF ( iAmDoingIO ) THEN
-C Map  global model (real*8) array to the appropriate global io-buffer
-          zeroBuff = k.EQ.kLo
-          CALL MDS_MAP_GLOBAL(
-     U                 xy_buffer_r4, xy_buffer_r8,
-     U                 globalBuf,
-     I                 xSize, ySize, filePrec,
-     I                 .FALSE., zeroBuff )
-
           irec=k+1-kLo+nNz*(irecord-1)
           IF (filePrec .EQ. precFloat32) THEN
 #ifdef _BYTESWAPIO

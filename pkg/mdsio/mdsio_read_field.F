@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.5 2009/05/06 02:42:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.6 2009/05/11 02:20:48 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -89,6 +89,7 @@ C !LOCAL VARIABLES:
       LOGICAL exst
       LOGICAL globalFile, fileIsOpen
       LOGICAL iAmDoingIO
+      LOGICAL keepBlankTileIO
       INTEGER xSize, ySize
       INTEGER iG,jG,bi,bj,i,j,k,nNz
       INTEGER irec,dUnit,IL,pIL
@@ -107,9 +108,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C Set dimensions:
       xSize = Nx
       ySize = Ny
+      keepBlankTileIO = .FALSE.
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
       xSize = exch2_global_Nx
       ySize = exch2_global_Ny
+      keepBlankTileIO = .TRUE.
 #endif
 
 C Assume nothing
@@ -244,24 +247,45 @@ C master thread of process 0, only, read from file
            CALL PRINT_ERROR( msgBuf, myThid )
            STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
           ENDIF
-C Map the appropriate global io-buffer to global model (real*8) array
-          CALL MDS_MAP_GLOBAL(
-     U                 xy_buffer_r4, xy_buffer_r8,
-     U                 globalBuf,
-     I                 xSize, ySize, filePrec,
-     I                 .TRUE., .FALSE. )
 C- endif iAmDoingIO
         ENDIF
-        CALL SCATTER_2D(globalBuf,sharedLocalBuf,myThid)
-        IF (arrType .EQ. 'RS') THEN
-          CALL MDS_PASStoRS( sharedLocalBuf,arr,k,kSize,.TRUE.,myThid )
-        ELSEIF (arrType .EQ. 'RL') THEN
-          CALL MDS_PASStoRL( sharedLocalBuf,arr,k,kSize,.TRUE.,myThid )
-        ELSE
-          WRITE(msgBuf,'(A)')
+
+        IF ( filePrec.EQ.precFloat32 ) THEN
+          CALL SCATTER_2D_R4(
+     U                        xy_buffer_r4,
+     O                        sharedLocBuf_r4,
+     I                        xSize, ySize,
+     I                        keepBlankTileIO, .FALSE., myThid )
+          IF ( arrType.EQ.'RS' ) THEN
+            CALL MDS_PASS_R4toRS( sharedLocBuf_r4,
+     &                            arr, k, kSize, .TRUE., myThid )
+          ELSEIF ( arrType.EQ.'RL' ) THEN
+            CALL MDS_PASS_R4toRL( sharedLocBuf_r4,
+     &                            arr, k, kSize, .TRUE., myThid )
+          ELSE
+            WRITE(msgBuf,'(A)')
      &          ' MDS_READ_FIELD: illegal value for arrType'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
+          ENDIF
+        ELSE
+          CALL SCATTER_2D_R8(
+     U                        xy_buffer_r8,
+     O                        sharedLocBuf_r8,
+     I                        xSize, ySize,
+     I                        keepBlankTileIO, .FALSE., myThid )
+          IF ( arrType.EQ.'RS' ) THEN
+            CALL MDS_PASS_R8toRS( sharedLocBuf_r8,
+     &                            arr, k, kSize, .TRUE., myThid )
+          ELSEIF ( arrType.EQ.'RL' ) THEN
+            CALL MDS_PASS_R8toRL( sharedLocBuf_r8,
+     &                            arr, k, kSize, .TRUE., myThid )
+          ELSE
+            WRITE(msgBuf,'(A)')
+     &          ' MDS_READ_FIELD: illegal value for arrType'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
+          ENDIF
         ENDIF
 
        ENDDO
