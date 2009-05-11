@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1094 2009/05/06 03:02:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1095 2009/05/11 12:36:41 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp & mdsio (SingleCpuIO):
+  - move mapping to global io-buffer inside gather_2d/scater_2d: this save
+    memory (1 less 2D global RL array); skip 1 buffer copy; and only send/
+    receive real*4 array (instead of real*8) to read/write 32.bit files.
+    (new template for gather_2d/scater_2d, new set of S/R MDS_PASS_R4,8toRL,S
+     and remove new mapping S/R)
 o pkg/mdsio: in preparation for topology-generator within pkg/exch2:
   - Change declaration of SingleCpuIO buffer, reduced to only 1 dim.:
     xyBuffer_size, which is set to W2_ioBufferSize from W2_EXCH2_PARAMS.h
