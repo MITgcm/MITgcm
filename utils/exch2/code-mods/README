@@ -1,0 +1,27 @@
+# $Header: /u/gcmpack/MITgcm/utils/exch2/code-mods/README,v 1.1 2009/05/12 22:18:38 jmc Exp $
+# $Name:  $
+
+---- May 12, 2009 (after checkpoint61n)
+ fortran code to set-up topology is now part of pkg/exch2, with new parameter
+ file "data.exch2". 
+ None of the modified src file (from any sub.dir) is necessary (just SIZE.h 
+ is enough) and therefore has not been updated. No additional parameter
+ is needed (can run without "data.exch2", using the default), except for
+ the last case (s176t_8x4) with blank tiles: data.exch2.16_blk 
+ An other example with blank-tiles can be foundi in:
+  verification/adjusment.cs-32x32x1/input/data.exch2.mpi
+------------------
+
+Example of modified src code (from matlab-topology-generator) corresponding
+to different tiling of regular CS-32 grid:
+
+- s6t_32x32  :   6 tiles, dimension of each tile: 32 x 32 ( 1x1 tile per face)
+- s12t_16x32 :  12 tiles, dimension of each tile: 16 x 32 ( 2x1 tile per face)
+- s12t_32x16 :  12 tiles, dimension of each tile: 32 x 16 ( 1x2 tile per face)
+- s24t_16x16 :  24 tiles, dimension of each tile: 16 x 16 ( 2x2 tile per face)
+- s24t_32x8  :  24 tiles, dimension of each tile: 32 x  8 ( 1x4 tile per face)
+- s24t_8x32  :  24 tiles, dimension of each tile:  8 x 32 ( 4x1 tile per face)
+- s192t_8x4  : 192 tiles, dimension of each tile:  8 x  4 ( 4x8 tile per face)
+- s176t_8x4  : 176 tiles, same as s192t_8x4 with 16 blank-tiles
+
+------------------
