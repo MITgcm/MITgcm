@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_xy_rx.template,v 1.6 2007/07/28 16:07:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_xy_rx.template,v 1.7 2009/05/12 19:44:59 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -27,8 +27,11 @@ C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 cph-mpi#include "EESUPPORT.h"
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
+#ifdef W2_FILL_NULL_REGIONS
 #include "W2_EXCH2_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===

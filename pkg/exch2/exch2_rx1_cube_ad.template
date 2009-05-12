@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube_ad.template,v 1.3 2009/03/17 18:41:33 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube_ad.template,v 1.4 2009/05/12 19:44:58 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -24,8 +24,9 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "EXCH.h"
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
+#include "W2_EXCH2_BUFFER.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     array :: Array with edges to exchange.
@@ -62,7 +63,7 @@ c     INTEGER I,J,K
 c     INTEGER bl,bt,bn,bs,be,bw
       INTEGER I
 C     Variables for working through W2 topology
-      INTEGER e2_msgHandles(2,MAX_NEIGHBOURS, nSx)
+      INTEGER e2_msgHandles(2,W2_maxNeighbours, nSx)
       INTEGER thisTile, farTile, N, nN, oN
       INTEGER tIlo, tIhi, tJlo, tJhi, tKlo, tKhi
       INTEGER tIStride, tJStride, tKStride
@@ -130,7 +131,7 @@ C               record.
      I       tKlo, tKhi, tkStride,
      I       thisTile, I, N,
      I       e2Bufr1_RX, e2BufrRecSize,
-     I       MAX_NEIGHBOURS, nSx,
+     I       W2_maxNeighbours, nSx,
      I       array(1-myOLw,1-myOLs,1,I,1),
      I       i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
      U       e2_msgHandles(1,N,I), 

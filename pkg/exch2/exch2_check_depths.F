@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_check_depths.F,v 1.3 2009/05/07 19:39:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_check_depths.F,v 1.4 2009/05/12 19:44:59 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,8 +26,8 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 c#include "EESUPPORT.h"
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #ifdef ALLOW_OBCS
 # include "PARAMS.h"
 #endif

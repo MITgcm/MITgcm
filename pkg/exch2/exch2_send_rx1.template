@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx1.template,v 1.8 2008/08/05 18:31:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx1.template,v 1.9 2009/05/12 19:44:58 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -20,6 +20,7 @@ C $Name:  $
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 
 C     === Routine arguments ===
@@ -153,7 +154,7 @@ C      for multithreaded mode, for now do nothing i.e. assume only one thread pe
       ELSEIF ( commSetting .EQ. 'M' ) THEN
 #ifdef ALLOW_USE_MPI
 C      Setup MPI stuff here
-       theTag =  (thisTile-1)*MAX_NEIGHBOURS + nN
+       theTag =  (thisTile-1)*W2_maxNeighbours + nN
        tProc = exch2_tProc(tt)-1
        sProc = exch2_tProc(thisTile)-1
        theType = MPI_REAL8

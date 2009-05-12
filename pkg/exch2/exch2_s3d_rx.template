@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_s3d_rx.template,v 1.4 2007/08/17 18:17:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_s3d_rx.template,v 1.5 2009/05/12 19:44:58 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -28,8 +28,8 @@ C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 c#include "EESUPPORT.h"
+c#include "W2_EXCH2_SIZE.h"
 c#include "W2_EXCH2_TOPOLOGY.h"
-c#include "W2_EXCH2_PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
