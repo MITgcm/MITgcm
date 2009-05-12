@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.124 2009/04/22 21:07:00 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.125 2009/05/12 18:44:24 jmc Exp $
 #  $Name:  $
 #
 
@@ -525,6 +525,24 @@ linkdata()
     if test -d $1 ; then
 	(
 	    cd $1 ; shift
+            inpMPI=`(cd ../$1 ; find . -name "*.mpi" -print | sed 's:^\./::')`
+	    for xx in $inpMPI ; do
+	      if test -r "../"$1"/"$xx ; then
+	        # found 1 _mpi sfx file in 1rst input dir and it is readable
+		yy=`echo $xx | sed 's:\.mpi$::'`
+		if test "x$MPI" = "xt" ; then
+		# mpi test: remove symbolic link & link _mpi sfx file
+		    if test -h $yy ; then rm -f $yy ; fi
+		    if test ! -r $yy ; then 
+			ln -sf "../"$1"/"$xx $yy ;
+			printf "$xx " 1>&2
+		    fi
+		else
+		# not mpi test: remove symbolic link
+		    if test -h $yy ; then rm -f $yy ; fi
+		fi
+	      fi
+	    done
 	    if test -r "../"$1"/eedata.mth" ; then
 	    # found eedata.mth in 1rst input dir and it is readable
 		if test "x$MULTI_THREAD" = "xt" ; then
