@@ -1,5 +1,12 @@
-# $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/README,v 1.4 2009/05/02 02:41:05 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/README,v 1.5 2009/05/12 19:12:16 jmc Exp $
 # $Name:  $
+
+---- May 12, 2009 (after checkpoint61n)
+ fortran code to set-up topology is now part of pkg/exch2, with new parameter
+ file "data.exch2". For now, keep a compatile version of matlab-topology-generator
+ (writing files "W2_EXCH2_SIZE.h" and "w2_e2setup.F") as back-up solution 
+ until new code is extensively tested.
+------------------
 
 Matlab code to generate topology description for MITgcm cs6 conventions.
 
