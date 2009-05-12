@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.193 2009/04/28 18:46:06 utke Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.194 2009/05/12 08:19:48 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -3021,7 +3021,7 @@ ad_output.txt: \$(EXE_AD)
 	@./\$(EXE_AD) > \$@
 
 CB2M_AD_FILES=\$(AD_FILES:.f=_cb2m.f$FS90)
-ad_input_code.f$FS90:  \$(CB2M_AD_FILES) ../OAD_support/maxMinDefs.f
+ad_input_code.f$FS90:  \$(CB2M_AD_FILES)
 	cat \$^ > \$@
 
 # strip all comments and blanks to reduce 
