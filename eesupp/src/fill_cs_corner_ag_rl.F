@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/fill_cs_corner_ag_rl.F,v 1.1 2007/08/16 21:21:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/fill_cs_corner_ag_rl.F,v 1.2 2009/05/12 19:53:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -32,8 +32,8 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:
