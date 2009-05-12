@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.5 2008/11/14 22:04:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.6 2009/05/12 19:56:35 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -31,8 +31,8 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "GAD.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
 C !INPUT PARAMETERS: ===================================================

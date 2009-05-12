@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.15 2008/10/22 00:28:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.16 2009/05/12 19:56:36 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -29,8 +29,8 @@ C     == Global variables ===
 #include "GRID.h"
 #include "SHAP_FILT.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:

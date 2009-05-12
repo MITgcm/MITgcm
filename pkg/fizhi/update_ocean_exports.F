@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.29 2009/05/06 02:57:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.30 2009/05/12 19:56:35 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -18,8 +18,8 @@ c-----------------------------------------------------------------------
 #include "EEPARAMS.h"
 #include "chronos.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
        integer myIter, myThid

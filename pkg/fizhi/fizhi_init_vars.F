@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.21 2009/05/06 02:57:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.22 2009/05/12 19:56:35 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -35,8 +35,8 @@ c-----------------------------------------------------------------------
 #include "PARAMS.h"
 #include "chronos.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
        integer myThid

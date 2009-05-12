@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_facef_read.F,v 1.2 2008/07/20 12:26:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_facef_read.F,v 1.3 2009/05/12 19:56:35 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -32,8 +32,8 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:

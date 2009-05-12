@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_metafiles.F,v 1.3 2009/05/06 02:43:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_metafiles.F,v 1.4 2009/05/12 19:56:36 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -46,8 +46,8 @@ C Global variables / COMMON blocks
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 C Arguments:
 C

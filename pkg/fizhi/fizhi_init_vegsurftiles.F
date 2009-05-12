@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.11 2009/05/06 02:57:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.12 2009/05/12 19:56:35 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -25,8 +25,8 @@ C      Calls routine grd2msc to do grid to tile space for each bi bj
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.13 2009/04/28 18:16:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.14 2009/05/12 19:56:36 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -23,8 +23,8 @@ C     !USES:
 #include "MONITOR.h"
 #include "GRID.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
 C     !INPUT PARAMETERS:

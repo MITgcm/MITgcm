@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.8 2009/05/06 02:43:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.9 2009/05/12 19:56:36 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -58,8 +58,8 @@ C Global variables / common blocks
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
 C Routine arguments

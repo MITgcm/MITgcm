@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.13 2009/03/03 10:01:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.14 2009/05/12 19:56:36 jmc Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -28,8 +28,8 @@ C     !USES:
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif
 #include "netcdf.inc"
 

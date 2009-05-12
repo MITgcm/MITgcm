@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.18 2007/10/19 03:21:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.19 2009/05/12 19:56:35 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -24,8 +24,8 @@ C     !USES:
 #include "MNC_PARAMS.h"
 #endif
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
       EXTERNAL ILNBLNK
@@ -298,8 +298,8 @@ C     !USES:
 #include "MNC_PARAMS.h"
 #endif
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
       EXTERNAL ILNBLNK

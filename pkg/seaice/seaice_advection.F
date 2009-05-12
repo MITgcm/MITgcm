@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.16 2008/10/22 00:28:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.17 2009/05/12 19:56:36 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -55,8 +55,8 @@ C !USES: ===============================================================
 # include "tamc_keys.h"
 #endif
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
       LOGICAL extensiveFld
       PARAMETER ( extensiveFld = .TRUE. )

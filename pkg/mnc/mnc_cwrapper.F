@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.32 2008/06/20 20:36:58 utke Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.33 2009/05/12 19:56:36 jmc Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -597,8 +597,8 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif
 
 C     !INPUT PARAMETERS:
@@ -647,8 +647,8 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif
 
 C     !INPUT PARAMETERS:
@@ -686,8 +686,8 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif
 
 C     !INPUT PARAMETERS:

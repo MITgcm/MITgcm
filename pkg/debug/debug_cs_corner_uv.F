@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_cs_corner_uv.F,v 1.5 2008/07/29 20:27:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_cs_corner_uv.F,v 1.6 2009/05/12 19:56:35 jmc Exp $
 C $Name:  $
 
 #include "DEBUG_OPTIONS.h"
@@ -28,8 +28,8 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif
 c #include "PARAMS.h"
 c #include "GRID.h"

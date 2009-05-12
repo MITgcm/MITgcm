@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.6 2009/05/11 02:20:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.7 2009/05/12 19:56:35 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -59,8 +59,8 @@ C Global variables / common blocks
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 #include "MDSIO_SCPU.h"
 

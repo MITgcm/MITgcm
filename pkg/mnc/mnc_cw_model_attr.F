@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.13 2008/07/29 20:26:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.14 2009/05/12 19:56:36 jmc Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -28,8 +28,8 @@ C     !USES:
 #include "MNC_PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_EXCH2
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
 #endif
 C     Functions
       integer ILNBLNK
