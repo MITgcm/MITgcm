@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1095 2009/05/11 12:36:41 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1096 2009/05/12 16:39:46 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61n
 o eesupp & mdsio (SingleCpuIO):
   - move mapping to global io-buffer inside gather_2d/scater_2d: this save
     memory (1 less 2D global RL array); skip 1 buffer copy; and only send/
