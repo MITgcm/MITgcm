@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_PARAMS.h,v 1.8 2009/05/06 01:01:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_PARAMS.h,v 1.9 2009/05/12 19:40:32 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -9,45 +9,89 @@ C     #include W2_EXCH2_PARAMS.h
 C     !DESCRIPTION:
 C     *==========================================================*
 C     | W2_EXCH2_PARAMS.h
-C     | o Header file defining Parameters for WRAPPER2 topology
+C     | o Header file defining WRAPPER2-EXCH2 topology parameters
 C     *==========================================================*
 CEOP
 
-C     W2_ioBufferSize  :: Maximum size of Single-CPU IO buffer
-      INTEGER W2_ioBufferSize
-      PARAMETER( W2_ioBufferSize = exch2_global_Nx*exch2_global_Ny )
+C--   COMMON /W2_EXCH2_PARM_I/ Integer valued parameters used by W2-EXCH2
+C     preDefTopol :: pre-defined Topology selector:
+C                 :: = 0 : topology defined from processing "data.exch2";
+C                 :: = 1 : simple, single facet topology;
+C                 :: = 2 : customized topology (w2_set_myown_facets)
+C                 :: = 3 : 6-face Cube (3 face-dims: nRed, nGreen, nBlue).
+C     nFacets     :: Number of facets (or domains) in this topology
+C     facet_dims  :: facet pair of dimensions (n1x,n1y, n2x,n2y, ...)
+C     nTiles      :: Number of tiles in this topology
+C     nBlankTiles :: Number of "Blank-Tiles"
+C     blankList   :: List of "Blank-Tiles" (non active)
+C--
+C     W2_mapIO    :: select option for global-IO mapping:
+C             =-1 :: old format, put facets 1 after the other in the X dir.;
+C                 :: this is not necessary "compact".
+C             = 1 :: compact format, 1 facet after the other (mostly in Y dir.)
+C                 :: but needs to fold some facet (domain) if too large
+C             = 0 :: compact format (= 1 long line), one facet after the other.
+C--
+C     W2_oUnit    :: output fortran Unit for printing Std messages
+C     W2_printMsg :: select option for information messages printing
+C             < 0 :: open and print to "w2_tile_topology" log file
+C             = 0 :: print the minimun, to StdOut
+C             = 1 :: no duplicated print from different processes (only Master)
+C             = 2 :: all processes do print (used to check).
+      INTEGER preDefTopol
+      INTEGER nFacets
+      INTEGER facet_dims(2*W2_maxNbFacets)
+      INTEGER nTiles
+      INTEGER nBlankTiles
+      INTEGER blankList(W2_maxNbTiles)
+      INTEGER W2_mapIO
+      INTEGER W2_oUnit, W2_printMsg
+      COMMON /W2_EXCH2_PARM_I/
+     &        preDefTopol,
+     &        nFacets, facet_dims,
+     &        nTiles, nBlankTiles,
+     &        blankList,
+     &        W2_mapIO,
+     &        W2_oUnit, W2_printMsg
 
-C     W2 tile id variables (tile ids are no longer a function of
-C     process and subgrid indicies).
-C     W2_myTileList     :: list of tiles owned by this process
-C     W2_mpi_myTileList :: same as W2_myTileList, but contains
-C                          information for all processes
-      INTEGER W2_myTileList(nSx), W2_mpi_myTileList(nPx*nPy,nSx)
-c     INTEGER E2_MSGHANDLES(2,MAX_NEIGHBOURS, nSx)
-      COMMON /W2_EXCH2_PARAMS_I/ W2_myTileList, W2_mpi_myTileList
+C--   COMMON /W2_EXCH2_BUILD_I/ Integer variables used to build topology
+C     facet_owns  :: Range of tiles this facet "owns"
+C     facet_pij   \  ::
+C     facet_oi     } :: indices correspondence matrix (facet_pij) & offsets:
+C     facet_oj    /  ::
+C-with:  suffix "so" for indices of source facet j ;
+C        suffix "tg" for indices of target facet jj= INT(facet_link(i,j))
+C      pij(:,i,j) : matrix which gives so indices when applied to tg indices
+C        iso = pij(1)*itg + pij(2)*jtg + oi
+C        jso = pij(3)*itg + pij(4)*jtg + oj
+C-----
+      INTEGER facet_owns(2,W2_maxNbFacets)
+      INTEGER facet_pij(4,4,W2_maxNbFacets)
+      INTEGER facet_oi(4,W2_maxNbFacets)
+      INTEGER facet_oj(4,W2_maxNbFacets)
+      COMMON /W2_EXCH2_BUILD_I/
+     &        facet_owns,
+     &        facet_pij, facet_oi, facet_oj
 
-      CHARACTER W2_myCommFlag(MAX_NEIGHBOURS,nSx)
-      COMMON /W2_EXCH2_PARAMS_C/ W2_myCommFlag
+C--   COMMON /W2_EXCH2_PARM_R/ Real*4 valued parameters used by W2-EXCH2
+C--   topology defined from processing "data.exch2" (preDefTopol=0):
+C     facet_link  :: Face-Edge connectivity map:
+C       facet_link(i,j)=XX.1 : face(j)-edge(i) (i=1,2,3,4 <==> N,S,E,W)
+C       is connected to Northern edge of face "XX" ; similarly,
+C       = XX.2 : to Southern.E, XX.3 = Eastern.E, XX.4 = Western.E of face "XX".
+      Real*4  facet_link( 4, W2_maxNbFacets )
+      COMMON /W2_EXCH2_PARM_R/ facet_link
 
-C     e2FillValue_RX :: filling value for null regions (face-corner halo regions)
-      INTEGER e2BufrRecSize
-      PARAMETER (
-     & e2BufrRecSize = ( (sNx+2*OLx)*2*OLy+(sNy+2*OLy)*2*OLx)*Nr
-     &)
-      _RL E2BUFR1_RL( e2BufrRecSize, MAX_NEIGHBOURS, nSx, 2 )
-      _RL E2BUFR2_RL( e2BufrRecSize, MAX_NEIGHBOURS, nSx, 2 )
-      _RS E2BUFR1_RS( e2BufrRecSize, MAX_NEIGHBOURS, nSx, 2 )
-      _RS E2BUFR2_RS( e2BufrRecSize, MAX_NEIGHBOURS, nSx, 2 )
-      _R4 E2BUFR1_R4( e2BufrRecSize, MAX_NEIGHBOURS, nSx, 2 )
-      _R4 E2BUFR2_R4( e2BufrRecSize, MAX_NEIGHBOURS, nSx, 2 )
-      _R8 E2BUFR1_R8( e2BufrRecSize, MAX_NEIGHBOURS, nSx, 2 )
-      _R8 E2BUFR2_R8( e2BufrRecSize, MAX_NEIGHBOURS, nSx, 2 )
+C--   COMMON /EXCH2_FILLVAL_RX/ real type filling vallue used by EXCH2
+C     e2FillValue_RX :: filling value for null regions (facet-corner
+C                    :: halo regions)
       _RL e2FillValue_RL
       _RS e2FillValue_RS
       _R4 e2FillValue_R4
       _R8 e2FillValue_R8
-      COMMON /W2_EXCH2_BUF_RL/ E2BUFR1_RL, E2BUFR2_RL, e2FillValue_RL
-      COMMON /W2_EXCH2_BUF_RS/ E2BUFR1_RS, E2BUFR2_RS, e2FillValue_RS
-      COMMON /W2_EXCH2_BUF_R4/ E2BUFR1_R4, E2BUFR2_R4, e2FillValue_R4
-      COMMON /W2_EXCH2_BUF_R8/ E2BUFR1_R8, E2BUFR2_R8, e2FillValue_R8
+      COMMON /EXCH2_FILLVAL_RL/ e2FillValue_RL
+      COMMON /EXCH2_FILLVAL_RS/ e2FillValue_RS
+      COMMON /EXCH2_FILLVAL_R4/ e2FillValue_R4
+      COMMON /EXCH2_FILLVAL_R8/ e2FillValue_R8
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

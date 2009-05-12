@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.6 2009/04/29 19:44:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.7 2009/05/12 19:40:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 C     !ROUTINE: W2_PRINT_COMM_SEQUENCE
 
 C     !INTERFACE:
-      SUBROUTINE W2_PRINT_COMM_SEQUENCE( W2_oUnit )
+      SUBROUTINE W2_PRINT_COMM_SEQUENCE( myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -23,12 +23,15 @@ C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     W2_oUnit   :: fortran I/O unit
-      INTEGER W2_oUnit
+C     myThid     :: my Thread Id number
+c     INTEGER W2_oUnit
+      INTEGER myThid
 
 #ifndef W2_PRINT_PREFIX
 C     !FUNCTIONS:
@@ -54,13 +57,10 @@ c     _RL     SXDIR_TX2CX(2), SYDIR_TX2CX(2)
       INTEGER pi(2), pj(2), oi, oj, tN
       INTEGER itb, jtb, isb, jsb
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER myThid
 #ifndef W2_PRINT_PREFIX
       INTEGER iLen
 #endif
 CEOP
-
-      myThid = 1
 
 C     Send loop for cell centered
       DO bi=1,nSx

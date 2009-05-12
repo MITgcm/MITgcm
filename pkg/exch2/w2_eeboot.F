@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.10 2009/05/06 01:03:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.11 2009/05/12 19:40:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -24,8 +24,10 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
+#include "W2_EXCH2_BUFFER.h"
 CEOP
 
 C     !FUNCTIONS:
@@ -36,7 +38,7 @@ C     == Local variables ==
       INTEGER nt_perProc, thisProc
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_FNAM) fName
-      INTEGER W2_oUnit
+c     INTEGER W2_oUnit
       INTEGER stdUnit, iLen
       CHARACTER commFlag
       INTEGER myTileId
@@ -47,7 +49,7 @@ C     Set dummy myThid value (we are not multi-threaded here)
       myThid = 1
 
 C     Initialise to zero EXCH2_TOPOLOGY common blocks
-      DO I = 1,NTILES
+      DO I = 1,W2_maxNbTiles
         exch2_tNx(I)    = 0
         exch2_tNy(I)    = 0
         exch2_tBasex(I) = 0
@@ -63,7 +65,7 @@ C     Initialise to zero EXCH2_TOPOLOGY common blocks
         exch2_mydNx(I)   = 0
         exch2_mydNy(I)   = 0
         exch2_nNeighbours(I) = 0
-        DO J = 1,MAX_NEIGHBOURS
+        DO J = 1,W2_maxNeighbours
           exch2_neighbourId(J,I)  = 0
           exch2_opposingSend(J,I) = 0
           DO II = 1,4
@@ -80,15 +82,14 @@ C     Initialise to zero EXCH2_TOPOLOGY common blocks
       W2_oUnit = standardMessageUnit
 
 C     Set W2-EXCH2 parameters
-c     CALL W2_EXCH2_READPARMS
-c     W2_oUnit = -1
+      CALL W2_READPARMS( myThid )
 
       stdUnit = standardMessageUnit
       WRITE(msgBuf,'(A)') '===== Start setting W2 TOPOLOGY:'
       CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
 
 C     Open message output-file (if needed)
-      IF ( W2_oUnit.NE.standardMessageUnit ) THEN
+      IF ( W2_printMsg .LT. 0 ) THEN
         WRITE(fName,'(A,I4.4,A)')
      &     'w2_tile_topology.',myProcId,'.log'
         iLen = ILNBLNK(fName)
@@ -100,14 +101,14 @@ C     Open message output-file (if needed)
       ENDIF
 
 C     Define topology for every tile
-      CALL W2_E2SETUP
+      CALL W2_E2SETUP( myThid )
 
 C     Decide which tiles this process handles - do this inline for now, but
 C     should go in subroutine.
 C     Set which rank processes "own" which tiles. This should probably
 C     be queried as part of some hand-shaking but for now we use the
 C     functional relationship that was used above.
-C     Fill also W2_mpi_myTileList for Single-CPU-IO.
+C     Fill also W2_procTileList for Single-CPU-IO.
 
 C     Number of tiles I handle is nSx*nSy
       nt_perProc = nSx*nSy
@@ -116,12 +117,12 @@ C     Number of tiles I handle is nSx*nSy
       thisProc = 1+myPid
 #endif
       J = 0
-      DO I=1,NTILES
+      DO I=1,nTiles
        IF ( exch2_myFace(I) .NE. 0 ) THEN
         np = 1 + J/nt_perProc
         jp = 1 + MOD(J,nt_perProc)
         exch2_tProc(I) = np
-        W2_mpi_myTileList(np,jp) = I
+        W2_procTileList(jp,np) = I
         IF ( np.EQ.thisProc ) W2_myTileList(jp) = I
         J = J + 1
        ENDIF
@@ -203,7 +204,9 @@ c     e2FillValue_R4 = 1.e+20
 c     e2FillValue_R8 = 1.d+20
 
 C     Print out the topology communication schedule
-      CALL W2_PRINT_COMM_SEQUENCE( W2_oUnit )
+      IF ( W2_printMsg .NE. 0 ) THEN
+        CALL W2_PRINT_COMM_SEQUENCE( myThid )
+      ENDIF
 
 C     Close message output-file (if needed)
       IF ( W2_oUnit.NE.standardMessageUnit ) THEN
