@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.29 2009/05/12 19:54:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.30 2009/05/13 00:39:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_MDSIO
+#include "MDSIO_OPTIONS.h"
+#endif /* ALLOW_MDSIO */
 
 CBOP
 C     !ROUTINE: INI_MODEL_IO
