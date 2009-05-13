@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.14 2009/05/13 13:39:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.15 2009/05/13 19:27:20 zhc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -79,7 +79,7 @@ c     == end of interface ==
      &     objf_sst, num_sst,
      &     myiter, mytime, mythid )
 c
-#elif ALLOW_DAILYSST_COST_CONTRIBUTION
+#elif (defined (ALLOW_DAILYSST_COST_CONTRIBUTION))
 c
       write(msgbuf,'(a)') 'ph-cost call cost_sst'
       call print_message( msgbuf, standardmessageunit,
@@ -90,7 +90,7 @@ c
       spminloc = -2.
       spmaxloc = 40.
       spzeroloc = 0.
-      localperiod = 0.
+      localperiod = 86400.
       call cost_generic(
      &     nnzbar, sstbarfile, sstbar, xx_sstbar_mean_dummy,
      &     nnzobs, sstdatfile, sstdat, mult_sst,
