@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.24 2009/03/14 11:53:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.25 2009/05/13 13:39:38 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -171,7 +171,8 @@ c--   Get the time flags and record numbers for the time averaging.
 #endif
 #endif
 
-#ifdef ALLOW_SEAICE_COST_AREASST
+#ifdef ALLOW_DAILYSST_COST_CONTRIBUTION
+cph#ifdef ALLOW_SEAICE_COST_AREASST
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('cost_averagesgeneric sstbar',myThid)

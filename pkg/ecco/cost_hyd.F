@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.13 2008/10/18 12:52:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.14 2009/05/13 13:39:38 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -60,7 +60,7 @@ c     == local variables ==
 c     == end of interface ==
 
 
-#ifdef ALLOW_SST_COST_CONTRIBUTION
+#if (defined (ALLOW_SST_COST_CONTRIBUTION))
       write(msgbuf,'(a)') 'ph-cost call cost_sst'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
@@ -74,6 +74,27 @@ c     == end of interface ==
      &     nnzbar, tbarfile, tbar, xx_tbar_mean_dummy,
      &     nnzobs, sstdatfile, sstdat, mult_sst,
      &     nmonsrec, modelstartdate, localperiod,
+     &     maskC, wsst,
+     &     spminloc, spmaxloc, spzeroloc,
+     &     objf_sst, num_sst,
+     &     myiter, mytime, mythid )
+c
+#elif ALLOW_DAILYSST_COST_CONTRIBUTION
+c
+      write(msgbuf,'(a)') 'ph-cost call cost_sst'
+      call print_message( msgbuf, standardmessageunit,
+     &     SQUEEZE_RIGHT , mythid)
+      nnzbar = nnztbar
+      nnzobs = 1
+      nrecloc = ndaysrec
+      spminloc = -2.
+      spmaxloc = 40.
+      spzeroloc = 0.
+      localperiod = 0.
+      call cost_generic(
+     &     nnzbar, sstbarfile, sstbar, xx_sstbar_mean_dummy,
+     &     nnzobs, sstdatfile, sstdat, mult_sst,
+     &     nrecloc, modelstartdate, localperiod,
      &     maskC, wsst,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_sst, num_sst,

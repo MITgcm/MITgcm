@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.37 2009/03/14 11:53:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.38 2009/05/13 13:39:38 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -117,7 +117,8 @@ c             intantaneous field.
       _RL sbar_gen
 #endif
 
-#ifdef ALLOW_SEAICE_COST_AREASST
+#ifdef ALLOW_DAILYSST_COST_CONTRIBUTION
+cph#ifdef ALLOW_SEAICE_COST_AREASST
       _RL sstbar  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
 #else
       _RL sstbar

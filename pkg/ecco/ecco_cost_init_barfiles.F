@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.11 2008/10/18 12:52:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.12 2009/05/13 13:39:38 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -199,7 +199,8 @@ c     &                        optimcycle, mythid, xx_tbar_mean_dummy )
 #endif
 #endif
 
-#ifdef ALLOW_SEAICE_COST_AREASST
+#ifdef ALLOW_DAILYSST_COST_CONTRIBUTION
+cph#ifdef ALLOW_SEAICE_COST_AREASST
 c--   Save tbar on file.
       ilt=ilnblnk( sstbarfile )
       write(fnamesstbar,'(2a,i10.10)')
