@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/code_atm/CPP_EEOPTIONS.h,v 1.7 2006/03/03 20:23:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/code_atm/CPP_EEOPTIONS.h,v 1.8 2009/05/13 00:34:35 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -46,11 +46,26 @@ C
 C     ALWAYS - indicates the choice will be fixed at compile time
 C              so no run-time option will be present
 
-C     Flag used to indicate whether Fortran formatted write
+C--   Flag used to indicate whether Fortran formatted write
 C     and read are threadsafe. On SGI the routines can be thread
 C     safe, on Sun it is not possible - if you are unsure then
 C     undef this option.
-#undef  FMTFTN_IO_THREADSAFE
+#undef FMTFTN_IO_THREAD_SAFE
+
+C--   Flag used to indicate whether Binary write to Local file (i.e.,
+C     a different file for each tile) and read are thread-safe.
+#undef LOCBIN_IO_THREAD_SAFE
+
+C--   Flag to turn off the writing of error message to ioUnit zero
+#undef DISABLE_WRITE_TO_UNIT_ZERO
+
+C--   Flag to turn on checking for errors from all threads and procs
+C     (calling S/R STOP_IF_ERROR) before stopping.
+#define USE_ERROR_STOP
+
+C--   Flag turns off MPI_SEND ready_to_receive polling in the
+C     gather_* subroutines to speed up integrations.
+#undef DISABLE_MPI_READY_TO_RECEIVE
 
 C--   Control MPI based parallel processing
 CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
@@ -58,7 +73,7 @@ CXXX To use MPI, use an appropriate genmake2 options file or use
 CXXX genmake2 -mpi .
 CXXX #undef  ALLOW_USE_MPI
 CXXX #undef  ALWAYS_USE_MPI
- 
+
 C--   Control use of communication with other component:
 C     allow to import and export from/to Coupler interface.
 #define COMPONENT_MODULE
@@ -88,13 +103,13 @@ C     boosting performance because of a smaller working
 C     set size. However, on vector CRAY systems this degrades
 C     performance.
 #define REAL4_IS_SLOW
- 
+
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
 #define D0 d0
 
 C--   Control XY periodicity in processor to grid mappings
-C     Note: Model code does not need to know whether a domain is 
+C     Note: Model code does not need to know whether a domain is
 C           periodic because it has overlap regions for every box.
 C           Model assume that these values have been
 C           filled in some way.
@@ -102,6 +117,19 @@ C           filled in some way.
 #undef  ALWAYS_PREVENT_Y_PERIODICITY
 #define CAN_PREVENT_X_PERIODICITY
 #define CAN_PREVENT_Y_PERIODICITY
+
+C--   Alternative formulation of BYTESWAP, faster than
+C     compiler flag -byteswapio on the Altix.
+#undef FAST_BYTESWAP
+
+C--   Alternative way of doing global sum without MPI allreduce call
+C     but instead, explicit MPI send & recv calls.
+#undef GLOBAL_SUM_SEND_RECV
+
+C--   Alternative way of doing global sum on a single CPU
+C     to eliminate tiling-dependent roundoff errors.
+C     Note: This is slow.
+#undef  CG2D_SINGLECPU_SUM
 
 #endif /* _CPP_EEOPTIONS_H_ */
 
