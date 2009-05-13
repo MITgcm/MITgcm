@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1096 2009/05/12 16:39:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1097 2009/05/13 21:35:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/exch2:
+ - new code to set-up W2-Exch2 topology (replace matlab-topology-generator):
+   read parameter file "data.exch2" if it exists; otherwise try default regular
+   cube without blank-tile; new header file "W2_EXCH2_SIZE.h";
+ - update matlab-topology-generator (exch2_setup_cs6_print.m) to be compatible
+   with new code (not to be used, just as a backup solution).
 
 checkpoint61n
 o eesupp & mdsio (SingleCpuIO):
