@@ -1,0 +1,37 @@
+Examples of parameter file "data.exch2" can be found here;
+Some dimension files "SIZE.h" which match the "data.exch2"
+files are also provided.
+
+naming convention: 
+ llc_120 : lat-lon-cap grid, 120-360-120 (=nRed,nGreen,nBlue)
+ (grid-files in MITgcm_contrib/llc_120/grid_files )
+
+SIZE.h.14t_120x120 :
+   llc_120 grid, 6-facets, tiles size = 120x120, no blank tiles
+      (<=> largest tile size => minimum total Nb of tiles = 14)
+
+SIZE.h.156t_20x60 : can be used with:
+      llc_120, 6-facets, tiles =  20x60 + 12 blank tiles
+   or llc_120, 5-facets, tiles =  20x60 , no blank tiles
+   or cs-180,  6-facets, tiles =  20x60 +  6 blank tiles
+
+data.exch2.llc_120_6f :
+ llc_120, 6-facets, no blank tiles 
+ works for any tiling of facets and in particular with SIZE.h.14t_120x120
+
+data.exch2.llc_120_6f.168t-12b :
+ llc_120, 6-facets, 168 tiles - 12 blank tiles = 156 active tiles
+ Notes: list and number of blank-tiles generaly depend on tiling of facets;
+        however, to blank out the last facet just requires listing all tiles
+        of the last facets and does not depend on precise tile-size but
+        just on Number of tiles.
+ works with SIZE.h.156t_20x60 (and also SIZE.h.156t_60x20 <- not provided)
+
+data.exch2.llc_120_5f :
+ llc_120, 5-facets (drop the last one), no blank tiles
+ works for any facet tiling, and in particular with SIZE.h.156t_20x60
+
+data.exch2.cs180.162t-6b_20x60 :
+ regular CS-180 cube, 162 tiles - 6 blank (on face 2 along the Eq) = 156 active T.
+ would work with SIZE.h.156t_20x60 (but what about grid-files ?)
+
