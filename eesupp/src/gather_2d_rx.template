@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/gather_2d_rx.template,v 1.2 2009/05/12 19:53:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/gather_2d_rx.template,v 1.3 2009/05/15 16:04:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,7 +11,7 @@ C !INTERFACE:
      O                  gloBuff,
      I                  myField,
      I                  xSize, ySize,
-     I                  keepBlankTileIO,
+     I                  useExch2GlobLayOut,
      I                  zeroBuff,
      I                  myThid )
 C !DESCRIPTION:
@@ -32,14 +32,14 @@ C gloBuff   ( _RX ) :: full-domain 2D IO-buffer array             (Output)
 C myField   ( _RX ) :: tiled, local (i.e. my Proc. tiles) 2D array (Input)
 C xSize    (integer):: global buffer 1rst dim (x)
 C ySize    (integer):: global buffer 2nd  dim (y)
-C keepBlankTileIO   :: =T: keep blank-tiles in global IO (only with EXCH2)
+C useExch2GlobLayOut:: =T: Use Exch2 global-map layout (only with EXCH2)
 C zeroBuff (logical):: =T: initialise the buffer to zero before copy
 C myThid   (integer):: my Thread Id number
 
       INTEGER xSize, ySize
       _RX     gloBuff(xSize,ySize)
       _RX     myField(1:sNx,1:sNy,nSx,nSy)
-      LOGICAL keepBlankTileIO
+      LOGICAL useExch2GlobLayOut
       LOGICAL zeroBuff
       INTEGER myThid
 CEOP
@@ -67,7 +67,7 @@ C--   Make everyone wait except for master thread.
 C--   Process 0 fills-in its local data
 
 #ifdef ALLOW_EXCH2
-        IF ( keepBlankTileIO ) THEN
+        IF ( useExch2GlobLayOut ) THEN
 C--   If using blank-tiles, buffer will not be completely filled;
 C     safer to reset to zero to avoid unknown values in output file
           IF ( zeroBuff ) THEN
@@ -135,7 +135,7 @@ c         jBase = myYGlobalLo-1
            ENDDO
           ENDDO
 
-C       end if-else keepBlankTileIO
+C       end if-else useExch2GlobLayOut
         ENDIF
 
 C-    end if myProcId = 0
@@ -162,7 +162,7 @@ C--   Process 0 polls and receives data from each process in turn
 
 C--   Process 0 gathers the local arrays into the global buffer.
 #ifdef ALLOW_EXCH2
-         IF ( keepBlankTileIO ) THEN
+         IF ( useExch2GlobLayOut ) THEN
 
 c         DO bj=1,nSy
           bj=1
@@ -223,7 +223,7 @@ c         jBase = mpi_myYGlobalLo(np)-1
            ENDDO
           ENDDO
 
-C        end if-else keepBlankTileIO
+C        end if-else useExch2GlobLayOut
          ENDIF
 
 C-      end loop on np
