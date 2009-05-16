@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.30 2009/05/13 00:39:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.31 2009/05/16 13:35:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_MDSIO
-#include "MDSIO_OPTIONS.h"
-#endif /* ALLOW_MDSIO */
 
 CBOP
 C     !ROUTINE: INI_MODEL_IO
@@ -26,10 +23,9 @@ C     !USES:
 #ifdef ALLOW_EXCH2
 # include "W2_EXCH2_SIZE.h"
 # include "W2_EXCH2_TOPOLOGY.h"
+# include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
-#ifdef ALLOW_MDSIO
-# include "MDSIO_SCPU.h"
-#endif /* ALLOW_MDSIO */
+#include "EEBUFF_SCPU.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: my Thread Id number
@@ -43,16 +39,14 @@ C     !LOCAL VARIABLES:
 C     msgBuf :: Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_FNAM) namBuf
-      INTEGER   iL, pIL
+      INTEGER i, iL, pIL
+      LOGICAL useGlobalBuff
 #ifdef ALLOW_EXCH2
       INTEGER xySize
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
       INTEGER iG,jG,np
 #endif /* ALLOW_USE_MPI */
-#ifdef ALLOW_MDSIO
-      INTEGER i
-#endif /* ALLOW_MDSIO */
 CEOP
 
 C-    Safety check:
@@ -90,23 +84,28 @@ C-----
       ENDIF
 
 C-    Check size of IO buffers:
-      IF ( useSingleCpuIO ) THEN
-c       xySize = Nx*Ny
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+      useGlobalBuff = useSingleCpuIO
+#ifdef CG2D_SINGLECPU_SUM
+      useGlobalBuff = .TRUE.
+#endif /* CG2D_SINGLECPU_SUM */
+      IF ( useGlobalBuff ) THEN
+#ifdef ALLOW_EXCH2
         xySize = exch2_global_Nx*exch2_global_Ny
+#ifndef CG2D_SINGLECPU_SUM
+        IF ( .NOT.W2_useE2ioLayOut ) xySize = Nx*Ny
+#endif /* ndef CG2D_SINGLECPU_SUM */
         IF ( xySize.GT.W2_ioBufferSize ) THEN
-          WRITE(msgBuf,'(A,I10)')
-     &     'INI_MODEL_IO: W2_ioBufferSize=',W2_ioBufferSize
+          WRITE(msgBuf,'(A,2(I10,A))')
+     &       'W2_ioBufferSize=', W2_ioBufferSize,
+     &       ' <', xySize, ' = Size of Global 2-D map'
           CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(A,I10,A)')
-     &     ' <', xySize,' = Size of Global 2-D map'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(2A)') ' Must increase "W2_ioBufferSize"',
-     &                         ' in "W2_EXCH2_SIZE.h" + recompile'
+          WRITE(msgBuf,'(2A)')
+     &       'INI_MODEL_IO: increase W2_ioBufferSize',
+     &       ' in "W2_EXCH2_SIZE.h" + recompile'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R INI_MODEL_IO (buffer size)'
         ENDIF
-#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+#else /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
 C-  Although using mpi_myX,YGlobalLo is more general, if they happen
 C   to be different from iG,jG then mapping into global 2D array is
@@ -134,7 +133,7 @@ C   very likely to go wrong ; check and stop.
           ENDIF
          ENDDO
 #endif /* ALLOW_USE_MPI */
-#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+#endif /* ALLOW_EXCH2 */
       ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -186,9 +185,8 @@ C     Set globalFiles flag for READ_WRITE_PICKUP
 C-    Everyone else must wait for the IO-parameters to be set
       _BARRIER
 
-C-    MDSIO IO-buffers initialisation
-#ifdef ALLOW_MDSIO
-      IF ( useSingleCpuIO ) THEN
+C-    Global IO-buffers initialisation
+      IF ( useGlobalBuff ) THEN
         _BEGIN_MASTER( myThid )
         DO i=1,xyBuffer_size
           xy_buffer_r8(i) = 0. _d 0
@@ -196,7 +194,6 @@ C-    MDSIO IO-buffers initialisation
         ENDDO
         _END_MASTER( myThid )
       ENDIF
-#endif /* ALLOW_MDSIO */
 
 C-    MNC model-io initialisation
 
