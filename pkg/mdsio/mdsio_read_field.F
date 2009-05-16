@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.7 2009/05/12 19:56:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.8 2009/05/16 13:37:38 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -61,8 +61,9 @@ C Global variables / common blocks
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
-#include "MDSIO_SCPU.h"
+#include "EEBUFF_SCPU.h"
 
 C !INPUT PARAMETERS:
       CHARACTER*(*) fName
@@ -89,31 +90,31 @@ C !LOCAL VARIABLES:
       LOGICAL exst
       LOGICAL globalFile, fileIsOpen
       LOGICAL iAmDoingIO
-      LOGICAL keepBlankTileIO
+      LOGICAL useExch2ioLayOut
       INTEGER xSize, ySize
       INTEGER iG,jG,bi,bj,i,j,k,nNz
       INTEGER irec,dUnit,IL,pIL
       INTEGER length_of_rec
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
+      INTEGER tNx, tNy, global_nTx
+      INTEGER tBx, tBy, iGjLoc, jGjLoc
 #ifdef ALLOW_EXCH2
-      INTEGER iGjLoc, jGjLoc
-c     INTEGER tGy,tGx,tNy,tNx,tN
-      INTEGER tGy,tGx,    tNx,tN
-      INTEGER global_nTx
+      INTEGER tN
 #endif /* ALLOW_EXCH2 */
-      INTEGER tNy
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C Set dimensions:
       xSize = Nx
       ySize = Ny
-      keepBlankTileIO = .FALSE.
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-      xSize = exch2_global_Nx
-      ySize = exch2_global_Ny
-      keepBlankTileIO = .TRUE.
-#endif
+      useExch2ioLayOut = .FALSE.
+#ifdef ALLOW_EXCH2
+      IF ( W2_useE2ioLayOut ) THEN
+        xSize = exch2_global_Nx
+        ySize = exch2_global_Ny
+        useExch2ioLayOut = .TRUE.
+      ENDIF
+#endif /* ALLOW_EXCH2 */
 
 C Assume nothing
       globalFile = .FALSE.
@@ -255,7 +256,7 @@ C- endif iAmDoingIO
      U                        xy_buffer_r4,
      O                        sharedLocBuf_r4,
      I                        xSize, ySize,
-     I                        keepBlankTileIO, .FALSE., myThid )
+     I                        useExch2ioLayOut, .FALSE., myThid )
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R4toRS( sharedLocBuf_r4,
      &                            arr, k, kSize, .TRUE., myThid )
@@ -273,7 +274,7 @@ C- endif iAmDoingIO
      U                        xy_buffer_r8,
      O                        sharedLocBuf_r8,
      I                        xSize, ySize,
-     I                        keepBlankTileIO, .FALSE., myThid )
+     I                        useExch2ioLayOut, .FALSE., myThid )
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R8toRS( sharedLocBuf_r8,
      &                            arr, k, kSize, .TRUE., myThid )
@@ -315,8 +316,8 @@ C Loop over all tiles
          DO bi=1,nSx
 C If we are reading from a tiled MDS file then we open each one here
           IF (.NOT. globalFile) THEN
-           iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
-           jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
+           iG=bi+(myXGlobalLo-1)/sNx
+           jG=bj+(myYGlobalLo-1)/sNy
            WRITE(dataFName,'(2A,I3.3,A,I3.3,A)')
      &            pfName(1:pIL),'.',iG,'.',jG,'.data'
            INQUIRE( file=dataFName, exist=exst )
@@ -350,45 +351,44 @@ C (This is a place-holder for the active/passive mechanism
           ENDIF
 
           IF (fileIsOpen) THEN
+           tNx = sNx
            tNy = sNy
+           global_nTx = xSize/sNx
+           tBx = myXGlobalLo-1 + (bi-1)*sNx
+           tBy = myYGlobalLo-1 + (bj-1)*sNy
+           iGjLoc = 0
+           jGjLoc = 1
 #ifdef ALLOW_EXCH2
-           tN = W2_myTileList(bi)
-           tGy = exch2_tyGlobalo(tN)
-           tGx = exch2_txGlobalo(tN)
-           tNy = exch2_tNy(tN)
-           tNx = exch2_tNx(tN)
-           IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
-C-         face x-size larger than glob-size : fold it
-             iGjLoc = 0
-             jGjLoc = exch2_mydNx(tN) / xSize
-           ELSEIF ( exch2_tNy(tN) .GT. ySize ) THEN
-C-         tile y-size larger than glob-size : make a long line
-             iGjLoc = exch2_mydNx(tN)
-             jGjLoc = 0
-           ELSE
-C-         default (face fit into global-IO-array)
-             iGjLoc = 0
-             jGjLoc = 1
+           IF ( useExch2ioLayOut ) THEN
+             tN = W2_myTileList(bi)
+c            tNx = exch2_tNx(tN)
+c            tNy = exch2_tNy(tN)
+c            global_nTx = exch2_global_Nx/tNx
+             tBx = exch2_txGlobalo(tN) - 1
+             tBy = exch2_tyGlobalo(tN) - 1
+             IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
+C-           face x-size larger than glob-size : fold it
+               iGjLoc = 0
+               jGjLoc = exch2_mydNx(tN) / xSize
+             ELSEIF ( exch2_tNy(tN) .GT. ySize ) THEN
+C-           tile y-size larger than glob-size : make a long line
+               iGjLoc = exch2_mydNx(tN)
+               jGjLoc = 0
+             ELSE
+C-           default (face fit into global-IO-array)
+               iGjLoc = 0
+               jGjLoc = 1
+             ENDIF
            ENDIF
-           global_nTx = exch2_global_Nx/tNx
 #endif /* ALLOW_EXCH2 */
            DO k=kLo,kHi
             DO j=1,tNy
              IF (globalFile) THEN
-#ifdef ALLOW_EXCH2
-              irec = 1 + ( tGx-1 + (j-1)*iGjLoc )/tNx
-     &                 + ( tGy-1 + (j-1)*jGjLoc )*global_nTx
-     &                 + ( k-kLo + (irecord-1)*nNz
-     &                   )*ySize*global_nTx
-#else /* ALLOW_EXCH2 */
-              iG = myXGlobalLo-1 + (bi-1)*sNx
-              jG = myYGlobalLo-1 + (bj-1)*sNy
-              irec= 1 + INT(iG/sNx) + nSx*nPx*(jG+j-1)
-     &                + nSx*nPx*Ny*(k-kLo)
-     &                + nSx*nPx*Ny*nNz*(irecord-1)
-#endif /* ALLOW_EXCH2 */
+              irec = 1 + ( tBx + (j-1)*iGjLoc )/sNx
+     &                 + ( tBy + (j-1)*jGjLoc )*global_nTx
+     &             +( k-kLo + (irecord-1)*nNz )*global_nTx*ySize
              ELSE
-              irec=j + sNy*(k-kLo) + sNy*nNz*(irecord-1)
+              irec = j + ( k-kLo + (irecord-1)*nNz )*sNy
              ENDIF
              IF (filePrec .EQ. precFloat32) THEN
               READ(dUnit,rec=irec) r4seg

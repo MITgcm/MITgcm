@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.8 2009/05/12 19:56:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.9 2009/05/16 13:37:38 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -73,8 +73,9 @@ C Global variables / common blocks
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
-#include "MDSIO_SCPU.h"
+#include "EEBUFF_SCPU.h"
 
 C !INPUT PARAMETERS:
       CHARACTER*(*) fName
@@ -106,34 +107,34 @@ C !LOCAL VARIABLES:
       LOGICAL fileIsOpen
       LOGICAL iAmDoingIO
       LOGICAL writeMetaF
-      LOGICAL keepBlankTileIO
+      LOGICAL useExch2ioLayOut
       LOGICAL zeroBuff
       INTEGER xSize, ySize
       INTEGER irecord
       INTEGER iG,jG,bi,bj,i,j,k,nNz
       INTEGER irec,dUnit,IL,pIL
       INTEGER dimList(3,3), nDims, map2gl(2)
-      INTEGER iGjLoc, jGjLoc
       INTEGER length_of_rec
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
+      INTEGER tNx, tNy, global_nTx
+      INTEGER tBx, tBy, iGjLoc, jGjLoc
 #ifdef ALLOW_EXCH2
-c     INTEGER tGy,tGx,tNy,tNx,tN
-      INTEGER tGy,tGx,    tNx,tN
-      INTEGER global_nTx
+      INTEGER tN
 #endif /* ALLOW_EXCH2 */
-      INTEGER tNy
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C Set dimensions:
       xSize = Nx
       ySize = Ny
-      keepBlankTileIO = .FALSE.
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-      xSize = exch2_global_Nx
-      ySize = exch2_global_Ny
-      keepBlankTileIO = .TRUE.
-#endif
+      useExch2ioLayOut = .FALSE.
+#ifdef ALLOW_EXCH2
+      IF ( W2_useE2ioLayOut ) THEN
+        xSize = exch2_global_Nx
+        ySize = exch2_global_Ny
+        useExch2ioLayOut = .TRUE.
+      ENDIF
+#endif /* ALLOW_EXCH2 */
 
 C-    default:
       iGjLoc = 0
@@ -226,10 +227,10 @@ C-      copy from arr(level=k) to 2-D "local":
             STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
           ENDIF
           CALL GATHER_2D_R4(
-     U                       xy_buffer_r4,
-     O                       sharedLocBuf_r4,
+     O                       xy_buffer_r4,
+     I                       sharedLocBuf_r4,
      I                       xSize, ySize,
-     I                       keepBlankTileIO, zeroBuff, myThid )
+     I                       useExch2ioLayOut, zeroBuff, myThid )
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R8toRS( sharedLocBuf_r8,
@@ -244,10 +245,10 @@ C-      copy from arr(level=k) to 2-D "local":
             STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
           ENDIF
           CALL GATHER_2D_R8(
-     U                       xy_buffer_r8,
-     O                       sharedLocBuf_r8,
+     O                       xy_buffer_r8,
+     I                       sharedLocBuf_r8,
      I                       xSize, ySize,
-     I                       keepBlankTileIO, zeroBuff, myThid )
+     I                       useExch2ioLayOut, zeroBuff, myThid )
         ELSE
            WRITE(msgBuf,'(A)')
      &       ' MDS_WRITE_FIELD: illegal value for filePrec'
@@ -311,8 +312,8 @@ C Loop over all tiles
          DO bi=1,nSx
 C If we are writing to a tiled MDS file then we open each one here
           IF (.NOT. globalFile) THEN
-           iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
-           jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
+           iG=bi+(myXGlobalLo-1)/sNx
+           jG=bj+(myYGlobalLo-1)/sNy
            WRITE(dataFName,'(2A,I3.3,A,I3.3,A)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.data'
            IF (irecord .EQ. 1) THEN
@@ -329,45 +330,42 @@ C If we are writing to a tiled MDS file then we open each one here
           ENDIF
 
           IF (fileIsOpen) THEN
+           tNx = sNx
            tNy = sNy
+           global_nTx = xSize/sNx
+           tBx = myXGlobalLo-1 + (bi-1)*sNx
+           tBy = myYGlobalLo-1 + (bj-1)*sNy
 #ifdef ALLOW_EXCH2
-           tN = W2_myTileList(bi)
-           tGy = exch2_tyGlobalo(tN)
-           tGx = exch2_txGlobalo(tN)
-           tNy = exch2_tNy(tN)
-           tNx = exch2_tNx(tN)
-           IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
-C-         face x-size larger than glob-size : fold it
-             iGjLoc = 0
-             jGjLoc = exch2_mydNx(tN) / xSize
-           ELSEIF ( exch2_tNy(tN) .GT. ySize ) THEN
-C-         tile y-size larger than glob-size : make a long line
-             iGjLoc = exch2_mydNx(tN)
-             jGjLoc = 0
-           ELSE
-C-         default (face fit into global-IO-array)
-             iGjLoc = 0
-             jGjLoc = 1
+           IF ( useExch2ioLayOut ) THEN
+             tN = W2_myTileList(bi)
+c            tNx = exch2_tNx(tN)
+c            tNy = exch2_tNy(tN)
+c            global_nTx = exch2_global_Nx/tNx
+             tBx = exch2_txGlobalo(tN) - 1
+             tBy = exch2_tyGlobalo(tN) - 1
+             IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
+C-           face x-size larger than glob-size : fold it
+               iGjLoc = 0
+               jGjLoc = exch2_mydNx(tN) / xSize
+             ELSEIF ( exch2_tNy(tN) .GT. ySize ) THEN
+C-           tile y-size larger than glob-size : make a long line
+               iGjLoc = exch2_mydNx(tN)
+               jGjLoc = 0
+             ELSE
+C-           default (face fit into global-IO-array)
+               iGjLoc = 0
+               jGjLoc = 1
+             ENDIF
            ENDIF
-           global_nTx = exch2_global_Nx/tNx
 #endif /* ALLOW_EXCH2 */
            DO k=1,nNz
             DO j=1,tNy
              IF (globalFile) THEN
-#ifdef ALLOW_EXCH2
-              irec = 1 + ( tGx-1 + (j-1)*iGjLoc )/tNx
-     &                 + ( tGy-1 + (j-1)*jGjLoc )*global_nTx
-     &                 + ( k-kLo + (irecord-1)*nNz
-     &                   )*ySize*global_nTx
-#else /* ALLOW_EXCH2 */
-              iG = myXGlobalLo-1 + (bi-1)*sNx
-              jG = myYGlobalLo-1 + (bj-1)*sNy
-              irec= 1 + INT(iG/sNx) + nSx*nPx*(jG+j-1)
-     &                + nSx*nPx*Ny*(k-kLo)
-     &                + nSx*nPx*Ny*nNz*(irecord-1)
-#endif /* ALLOW_EXCH2 */
+              irec = 1 + ( tBx + (j-1)*iGjLoc )/tNx
+     &                 + ( tBy + (j-1)*jGjLoc )*global_nTx
+     &             +( k-kLo + (irecord-1)*nNz )*global_nTx*ySize
              ELSE
-              irec=j + sNy*(k-kLo) + sNy*nNz*(irecord-1)
+              irec = j + ( k-kLo + (irecord-1)*nNz )*sNy
              ENDIF
              IF (filePrec .EQ. precFloat32) THEN
               IF (arrType .EQ. 'RS') THEN
@@ -427,24 +425,12 @@ C Create meta-file for each tile if we are tiling
            jG=bj+(myYGlobalLo-1)/sNy
            WRITE(metaFname,'(2A,I3.3,A,I3.3,A)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.meta'
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-           tN = W2_myTileList(bi)
            dimList(1,1) = xSize
-           dimList(2,1) = exch2_txGlobalo(tN)
-           dimList(3,1) = exch2_txGlobalo(tN)+sNx-1
+           dimList(2,1) = tBx + 1
+           dimList(3,1) = tBx + tNx
            dimList(1,2) = ySize
-           dimList(2,2) = exch2_tyGlobalo(tN)
-           dimList(3,2) = exch2_tyGlobalo(tN)+sNy-1
-#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
-C- jmc: if MISSING_TILE_IO, keep meta files unchanged
-C       to stay consistent with global file structure
-           dimList(1,1) = Nx
-           dimList(2,1) = myXGlobalLo+(bi-1)*sNx
-           dimList(3,1) = myXGlobalLo+bi*sNx-1
-           dimList(1,2) = Ny
-           dimList(2,2) = myYGlobalLo+(bj-1)*sNy
-           dimList(3,2) = myYGlobalLo+bj*sNy-1
-#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+           dimList(2,2) = tBy + 1
+           dimList(3,2) = tBy + tNy
            dimList(1,3) = nNz
            dimList(2,3) = 1
            dimList(3,3) = nNz
