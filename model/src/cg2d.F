@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.51 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.52 2009/05/16 13:42:15 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -100,7 +100,6 @@ c     INTEGER ks
       _RL    rhsMax
       _RL    rhsNorm
 #ifdef CG2D_SINGLECPU_SUM
-      COMMON /CG2D_SINGLECPU_BUF/ localBuf
       _RL    localBuf(1:sNx,1:sNy,nSx,nSy)
 #endif
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -169,8 +168,6 @@ C     CALL WRITE_FLD_XY_RL (  'cg2d_b.',suff,    cg2d_b, 1, myThid)
 CcnhDebugEnds
 
 C--   Initial residual calculation
-      err    = 0. _d 0
-      sumRHS = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         sumRHStile(bi,bj) = 0. _d 0
@@ -206,8 +203,6 @@ c    &    )
 #endif
          ENDDO
         ENDDO
-c       sumRHS = sumRHS + sumRHStile(bi,bj)
-c       err    = err    + errTile(bi,bj)
        ENDDO
       ENDDO
 #ifdef LETS_MAKE_JAM
@@ -221,22 +216,11 @@ c       err    = err    + errTile(bi,bj)
       CALL EXCH_XY_RL( cg2d_s, myThid )
 #endif
 #ifdef CG2D_SINGLECPU_SUM
-      CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, err, myThid)
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
-          localBuf(I,J,bi,bj) = cg2d_b(I,J,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, sumRHS, myThid)
+      CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, err, 0, 0, myThid)
+      CALL GLOBAL_SUM_SINGLECPU_RL(cg2d_b, sumRHS, OLx, OLy, myThid)
 #else
-c      _GLOBAL_SUM_RL( sumRHS, myThid )
-c      _GLOBAL_SUM_RL( err   , myThid )
-       CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
        CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
+       CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
 #endif
        err = SQRT(err)
        actualIts      = 0
@@ -267,7 +251,6 @@ C    &  actualResidual
 CcnhDebugEnds
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
-       eta_qrN = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          eta_qrNtile(bi,bj) = 0. _d 0
@@ -294,14 +277,12 @@ CcnhDebugEnds
 #endif
           ENDDO
          ENDDO
-c        eta_qrN = eta_qrN + eta_qrNtile(bi,bj)
         ENDDO
        ENDDO
 
 #ifdef CG2D_SINGLECPU_SUM
-       CALL GLOBAL_SUM_SINGLECPU_RL( localBuf,eta_qrN,myThid )
+       CALL GLOBAL_SUM_SINGLECPU_RL( localBuf,eta_qrN,0,0,myThid )
 #else
-c      _GLOBAL_SUM_RL(eta_qrN, myThid)
        CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
 #endif
 CcnhDebugStarts
@@ -335,7 +316,6 @@ C      _EXCH_XY_RL( cg2d_s, myThid )
 
 C==    Evaluate laplace operator on conjugate gradient vector
 C==    q = A.s
-       alpha = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          alphaTile(bi,bj) = 0. _d 0
@@ -366,13 +346,11 @@ c    &                        /deltaTMom/deltaTfreesurf*cg2dNorm
 #endif
           ENDDO
          ENDDO
-c        alpha = alpha + alphaTile(bi,bj)
         ENDDO
        ENDDO
 #ifdef CG2D_SINGLECPU_SUM
-       CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, alpha, myThid)
+       CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, alpha, 0, 0, myThid)
 #else
-c      _GLOBAL_SUM_RL(alpha,myThid)
        CALL GLOBAL_SUM_TILE_RL( alphaTile,  alpha,  myThid )
 #endif
 CcnhDebugStarts
@@ -385,7 +363,6 @@ CcnhDebugEnds
 
 C==    Update solution and residual vectors
 C      Now compute "interior" points.
-       err = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          errTile(bi,bj) = 0. _d 0
@@ -401,14 +378,12 @@ C      Now compute "interior" points.
 #endif
           ENDDO
          ENDDO
-c        err = err + errTile(bi,bj)
         ENDDO
        ENDDO
 
 #ifdef CG2D_SINGLECPU_SUM
-       CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, err, myThid)
+       CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, err, 0, 0, myThid)
 #else
-c      _GLOBAL_SUM_RL( err   , myThid )
        CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
 #endif
        err = SQRT(err)
