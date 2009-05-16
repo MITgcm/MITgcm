@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_metafiles.F,v 1.4 2009/05/12 19:56:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_metafiles.F,v 1.5 2009/05/16 13:38:05 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -48,6 +48,7 @@ C Global variables / COMMON blocks
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 C Arguments:
 C
@@ -93,18 +94,21 @@ C Local variables
       INTEGER iG,jG, bi,bj, IL,pIL
       INTEGER dimList(3,3), nDims, map2gl(2)
       INTEGER xSize, ySize
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+      INTEGER tBx, tBy
+#ifdef ALLOW_EXCH2
       INTEGER tN
-#endif
+#endif /* ALLOW_EXCH2 */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    Set dimensions:
       xSize = Nx
       ySize = Ny
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-      xSize = exch2_global_Nx
-      ySize = exch2_global_Ny
-#endif
+#ifdef ALLOW_EXCH2
+      IF ( W2_useE2ioLayOut ) THEN
+        xSize = exch2_global_Nx
+        ySize = exch2_global_Ny
+      ENDIF
+#endif /* ALLOW_EXCH2 */
       IF (nNx.EQ.1) xSize = 1
       IF (nNy.EQ.1) ySize = 1
 
@@ -157,41 +161,38 @@ C If we are writing to a tiled MDS file then we open each one here
 C Create meta-file for each tile IF we are tiling
            WRITE(metaFname,'(2a,i3.3,a,i3.3,a)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.meta'
+           tBx = myXGlobalLo-1 + (bi-1)*sNx
+           tBy = myYGlobalLo-1 + (bj-1)*sNy
            map2gl(1) = 0
            map2gl(2) = 1
-#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
-           tN = W2_myTileList(bi)
-           dimList(1,1) = xSize
-           dimList(2,1) = exch2_txGlobalo(tN)
-           dimList(3,1) = exch2_txGlobalo(tN)+sNx-1
-           dimList(1,2) = ySize
-           dimList(2,2) = exch2_tyGlobalo(tN)
-           dimList(3,2) = exch2_tyGlobalo(tN)+sNy-1
-           IF (nNx.EQ.0 .AND. nNy.EQ.0) THEN
-            IF   ( exch2_mydNx(tN) .GT. xsize ) THEN
-C-          face x-size larger than glob-size : fold it
-              map2gl(1) = 0
-              map2gl(2) = exch2_mydNx(tN) / xsize
-            ELSEIF ( exch2_tNy(tN) .GT. ysize ) THEN
-C-          tile y-size larger than glob-size : make a long line
-              map2gl(1) = exch2_mydNx(tN)
-              map2gl(2) = 0
-            ELSE
-C-          default (face fit into global-IO-array)
-              map2gl(1) = 0
-              map2gl(2) = 1
-            ENDIF
+#ifdef ALLOW_EXCH2
+           IF ( W2_useE2ioLayOut ) THEN
+             tN = W2_myTileList(bi)
+             tBx = exch2_txGlobalo(tN) - 1
+             tBy = exch2_tyGlobalo(tN) - 1
+             IF (nNx.EQ.0 .AND. nNy.EQ.0) THEN
+              IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
+C-            face x-size larger than glob-size : fold it
+                map2gl(1) = 0
+                map2gl(2) = exch2_mydNx(tN) / xSize
+              ELSEIF ( exch2_tNy(tN) .GT. ySize ) THEN
+C-            tile y-size larger than glob-size : make a long line
+                map2gl(1) = exch2_mydNx(tN)
+                map2gl(2) = 0
+              ELSE
+C-            default (face fit into global-IO-array)
+                map2gl(1) = 0
+                map2gl(2) = 1
+              ENDIF
+             ENDIF
            ENDIF
-#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
-C- jmc: IF MISSING_TILE_IO, keep meta files unchanged
-C       to stay consistent with global file structure
+#endif /* ALLOW_EXCH2 */
            dimList(1,1) = xSize
-           dimList(2,1) = myXGlobalLo+(bi-1)*sNx
-           dimList(3,1) = myXGlobalLo+bi*sNx-1
+           dimList(2,1) = tBx + 1
+           dimList(3,1) = tBx + sNx
            dimList(1,2) = ySize
-           dimList(2,2) = myYGlobalLo+(bj-1)*sNy
-           dimList(3,2) = myYGlobalLo+bj*sNy-1
-#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+           dimList(2,2) = tBy + 1
+           dimList(3,2) = tBy + sNy
            dimList(1,3) = nNz
            dimList(2,3) = 1
            dimList(3,3) = nNz
