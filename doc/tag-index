@@ -1,15 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1097 2009/05/13 21:35:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1098 2009/05/16 13:45:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp & mdsio (SingleCpuIO):
+ - remove MISSING_TILE_IO (from MDSIO_OPTIONS.h), replaced by run-time
+   parameter "W2_useE2ioLayOut" (read from file "data.exch2").
+   Note: was not effective for globalFile & useSingleCpuIO=F; now fixed.
+ - move MDSIO_SCPU.h (pkg/mdsio) to EEBUFF_SCPU.h (eesupp/inc).
+ - fix GLOBAL_SUM_SINGLECPU when using Exch2; re-use same buffers and same
+   gather/scatter S/R as with SingleCpuIO (=> 1 less 2D global RL array).
 o pkg/exch2:
  - new code to set-up W2-Exch2 topology (replace matlab-topology-generator):
    read parameter file "data.exch2" if it exists; otherwise try default regular
    cube without blank-tile; new header file "W2_EXCH2_SIZE.h";
  - update matlab-topology-generator (exch2_setup_cs6_print.m) to be compatible
    with new code (not to be used, just as a backup solution).
+ - add examples (e.g., for lat-lon-cap_120) of parameter file "data.exch2" 
+   in utils/exch2/input.
 
 checkpoint61n
 o eesupp & mdsio (SingleCpuIO):
