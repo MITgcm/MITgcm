@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.22 2006/08/24 01:15:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.23 2009/05/17 20:15:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -41,10 +41,10 @@ C     Set model variables to initial/restart conditions
       ELSEIF ( .NOT.useOffLine ) THEN
         CALL READ_PICKUP( nIter0, myThid )
 
-CEH3        IF (pickup_write_immed) THEN
-CEH3          CALL WRITE_CHECKPOINT(
-CEH3     &         .TRUE., myCurrentTime, myCurrentIter, myThid)
-CEH3        ENDIF
+c       IF (pickup_write_immed) THEN
+c         CALL WRITE_PICKUP(
+c    I                       .TRUE., startTime, nIter0, myThid )
+c       ENDIF
 
       ENDIF
 
