@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/Attic/CPP_EEOPTIONS.h_mpi,v 1.5 2009/04/26 02:40:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/CPP_EEOPTIONS.h,v 1.3 2009/05/17 16:26:38 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -125,7 +125,7 @@ C     but instead, explicit MPI send & recv calls.
 C--   Alternative way of doing global sum on a single CPU
 C     to eliminate tiling-dependent roundoff errors.
 C     Note: This is slow.
-#undef  CG2D_SINGLECPU_SUM
+#define CG2D_SINGLECPU_SUM
 
 #endif /* _CPP_EEOPTIONS_H_ */
 
