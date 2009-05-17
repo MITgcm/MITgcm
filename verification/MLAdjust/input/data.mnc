@@ -9,7 +9,7 @@
  monitor_mnc=.FALSE.,
 #snapshot_mnc=.FALSE.,
 #timeave_mnc=.FALSE.,
-#pickup_read_mnc=.FALSE.,
+ pickup_read_mnc=.FALSE.,
  pickup_write_mnc=.FALSE.,
  &
 # Note: Some systems use & as the
