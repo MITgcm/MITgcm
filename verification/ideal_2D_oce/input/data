@@ -22,7 +22,6 @@
  tAlpha=2.E-4,
  sBeta =0.E-4,
  saltStepping=.FALSE.,
- rotationPeriod=86400.,
  gravity=9.81,
  rhonil=1035.,
  implicitFreeSurface=.TRUE.,
@@ -61,6 +60,7 @@
  diagFreq=1555200000.0,
 #monitorFreq=31104000.0,
  monitorFreq=1.0,
+ monitorSelect=2,
  &
 
 # Gridding parameters
