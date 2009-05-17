@@ -70,7 +70,7 @@
  saltAdvScheme=33,
  nonHydrostatic=.FALSE.,
  vectorInvariantMomentum=.TRUE.,
- /
+ &
 
 # Elliptic solver parameters
  &PARM02
@@ -78,11 +78,11 @@
  cg2dTargetResidual=1.E-11,
  cg3dMaxIters=40,
  cg3dTargetResidual=1.E-9,
- /
+ &
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
 #endTime=86400.,
 #- for testing, only run for 12 iterations:
  nTimeSteps=12,
@@ -95,28 +95,20 @@
 #diagFreq=7200.,
  monitorFreq=1200.,
  cadjfreq=0.,
- /
+ &
 
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- usingSphericalPolarGrid=.FALSE.,
-  delR= 5d0, 5d0, 5d0, 5d0, 5d0,
-    5d0, 5d0, 5d0, 5d0, 5d0,
-    5d0, 5d0, 5d0, 5d0, 5d0,
-    5d0, 5d0, 5d0, 5d0, 5d0,
-    5d0, 5d0, 5d0, 5d0, 5d0,
-    5d0, 5d0, 5d0, 5d0, 5d0,
-    5d0, 5d0, 5d0, 5d0, 5d0,
-    5d0, 5d0, 5d0, 5d0, 5d0,
- dxspacing=1d3,
- dyspacing=1d3,
- /
+ delR= 40*5.0,
+ dxSpacing=1.E3,
+ dySpacing=1.E3,
+ &
 
 # Input datasets
  &PARM05
  bathyFile='topo_sl.bin',
  hydrogThetaFile='thetaInitial.bin',
  hydrogSaltFile='spiceInitial.bin',
- /
+ &
 
