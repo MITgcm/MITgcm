@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1098 2009/05/16 13:45:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1099 2009/05/17 23:41:22 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification: to get more experiments tested with mpi, mth and mpi+mth,
+  change tiling of:
+   aim.5l_Equatorial_Channel, aim.5l_LatLon, dome, exp4, global_ocean.90x40x15,
+   hs94.cs-32x32x5, MLAdjust, offline_exf_seaice & tutorial_plume_on_slope
+  update output of exp:
+   exp4, global_ocean.90x40x15(+.dwslp), MLAdjust(all 5),
+   tutorial_plume_on_slope and hs94.cs-32x32x5 (use default rotationPeriod)
+  + ideal_2D_ocean: use default rotation period + test Global_Sum_SINGLECPU
+                   (note: output.txt generated on faulks using only 1 tile)
 o eesupp & mdsio (SingleCpuIO):
  - remove MISSING_TILE_IO (from MDSIO_OPTIONS.h), replaced by run-time
    parameter "W2_useE2ioLayOut" (read from file "data.exch2").
