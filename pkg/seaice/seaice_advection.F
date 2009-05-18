@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.17 2009/05/12 19:56:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.18 2009/05/18 20:35:00 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -342,9 +342,12 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
           CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, localTij,
      O         af, myThid )
-          IF (dBug.AND. bi.EQ.3) WRITE(6,'(A,1P4E14.6)')
-     &      'ICE_adv: xFx=',af(13,11),localTij(12,11),uTrans(13,11),
-     &       af(13,11)/uTrans(13,11)
+          IF ( dBug .AND. bi.EQ.3 ) THEN
+            i=MIN(12,sNx)
+            j=MIN(11,sNy)
+            WRITE(6,'(A,1P4E14.6)') 'ICE_adv: xFx=', af(i+1,j),
+     &        localTij(i,j), uTrans(i+1,j), af(i+1,j)/uTrans(i+1,j)
+          ENDIF
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
@@ -359,7 +362,7 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
      O         af, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
          ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
-          CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE., 
+          CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
 #endif
@@ -538,9 +541,12 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
           CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, localTij,
      O         af, myThid )
-          IF (dBug.AND. bi.EQ.3) WRITE(6,'(A,1P4E14.6)')
-     &      'ICE_adv: yFx=',af(12,12),localTij(12,11),vTrans(12,12),
-     &       af(12,12)/vTrans(12,12)
+          IF ( dBug .AND. bi.EQ.3 ) THEN
+            i=MIN(12,sNx)
+            j=MIN(11,sNy)
+            WRITE(6,'(A,1P4E14.6)') 'ICE_adv: yFx=', af(i,j+1),
+     &        localTij(i,j), vTrans(i,j+1), af(i,j+1)/vTrans(i,j+1)
+          ENDIF
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
@@ -697,8 +703,8 @@ C-    explicit advection is done ; store tendency in gFld:
        ENDDO
       ENDDO
       IF ( dBug .AND. bi.EQ.3 ) THEN
-       i=12
-       j=11
+       i=MIN(12,sNx)
+       j=MIN(11,sNy)
        tmpFac= SEAICE_deltaTtherm*recip_rA(i,j,bi,bj)
        WRITE(6,'(A,1P4E14.6)') 'ICE_adv:',
      &      afx(i,j)*tmpFac,afx(i+1,j)*tmpFac,
