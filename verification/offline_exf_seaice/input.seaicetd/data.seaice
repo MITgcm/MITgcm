@@ -20,3 +20,4 @@
  wsmrarea0 = 0.5,
  wmean_smrarea = 0.5,
  smrarea_errfile = ' ',
+ &
