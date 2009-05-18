@@ -10,75 +10,74 @@
 #  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics" file
 #                 for the list of all available diag. in this particular config)
 #-----------------
-# This example dumps all KPP diagnostics as
-# a snapshot after ten time steps
+# This example dumps EXF diagnostics as snapshot after 30 days
+# Note: EXF air-sea fluxes over Sea-Ice are wrong
  &diagnostics_list
-#
    dumpatlast  = .TRUE.,
 #
-  frequency(1) = -36000.,
+  frequency(1) = -2592000.,
    fields(1,1) = 'EXFtaux ',
    filename(1) = 'EXFtaux ',
 #
-  frequency(2) = -36000.,
+  frequency(2) = -2592000.,
    fields(1,2) = 'EXFtauy ',
    filename(2) = 'EXFtauy ',
 #
-  frequency(3) = -36000.,
+  frequency(3) = -2592000.,
    fields(1,3) = 'EXFqnet ',
    filename(3) = 'EXFqnet ',
 #
-  frequency(4) = -36000.,
+  frequency(4) = -2592000.,
    fields(1,4) = 'EXFempmr',
    filename(4) = 'EXFempmr',
 #
-  frequency(5) = -36000.,
+  frequency(5) = -2592000.,
    fields(1,5) = 'EXFhl   ',
    filename(5) = 'EXFhl   ',
 #
-  frequency(6) = -36000.,
+  frequency(6) = -2592000.,
    fields(1,6) = 'EXFhs   ',
    filename(6) = 'EXFhs   ',
 #
-  frequency(7) = -36000.,
+  frequency(7) = -2592000.,
    fields(1,7) = 'EXFswnet',
    filename(7) = 'EXFswnet',
 #
-  frequency(8) = -36000.,
+  frequency(8) = -2592000.,
    fields(1,8) = 'EXFlwnet',
    filename(8) = 'EXFlwnet',
 #
-  frequency(9) = -36000.,
+  frequency(9) = -2592000.,
    fields(1,9) = 'EXFuwind',
    filename(9) = 'EXFuwind',
 #
-  frequency(10) = -36000.,
+  frequency(10) = -2592000.,
    fields(1,10) = 'EXFvwind',
    filename(10) = 'EXFvwind',
 #
-  frequency(11) = -36000.,
+  frequency(11) = -2592000.,
    fields(1,11) = 'EXFatemp',
    filename(11) = 'EXFatemp',
 #
-  frequency(12) = 36000.,
+  frequency(12) = 2592000.,
    fields(1,12) = 'SIarea  ',
    filename(12) = 'SIarea  ',
 #
-  frequency(13) = 36000.,
+  frequency(13) = 2592000.,
    fields(1,13) = 'SIheff  ',
    filename(13) = 'SIheff  ',
 #
-  frequency(14) = 36000.,
+  frequency(14) = 2592000.,
    fields(1,14) = 'SIhsnow ',
    filename(14) = 'SIhsnow ',
 #
-  frequency(15) = 36000.,
+  frequency(15) = 2592000.,
    fields(1,15) = 'SIuice  ',
-   filename(15) = 'SIuice  ',
+#  filename(15) = 'SIuice  ',
 #
-  frequency(16) = 36000.,
+  frequency(16) = 2592000.,
    fields(1,16) = 'SIvice  ',
-   filename(16) = 'SIvice  ',
+#  filename(16) = 'SIvice  ',
 #
  &
 
