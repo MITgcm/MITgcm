@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.7 2008/02/05 15:35:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.8 2009/05/19 19:54:38 dfer Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -168,7 +168,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'SIfrw2oc'
         diagTitle = 'fresh-water flux out of the ocean (+=up)'
-        diagUnits = 'm/s             '
+        diagUnits = 'kg/m^2/s        '
         diagCode  = 'SM      M1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
