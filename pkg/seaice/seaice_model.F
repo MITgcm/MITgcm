@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.68 2009/04/28 18:46:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.69 2009/05/19 21:50:25 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -10,7 +10,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE SEAICE_MODEL( myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
-C     /===========================================================\
+C     *===========================================================*
 C     | SUBROUTINE SEAICE_MODEL                                   |
 C     | o Time stepping of a dynamic/thermodynamic sea ice model. |
 C     |  Dynamics solver: Zhang/Hibler, JGR, 102, 8691-8702, 1997 |
@@ -20,8 +20,8 @@ C     |  Snow:          Zhang et al.  , JPO,  28,  191- 217, 1998 |
 C     |  Parallel forward ice model written by Jinlun Zhang PSC/UW|
 C     |  & coupled into MITgcm by Dimitris Menemenlis (JPL) 2/2001|
 C     |  zhang@apl.washington.edu / menemenlis@jpl.nasa.gov       |
-C     |===========================================================|
-C     \===========================================================/
+C     *===========================================================*
+C     *===========================================================*
       IMPLICIT NONE
 C \ev
 
@@ -57,8 +57,8 @@ CEndOfInterface
 C !LOCAL VARIABLES: ====================================================
 C     i,j,bi,bj :: Loop counters
 C     iceFld    :: Copy of seaice field
-      INTEGER i, j, bi, bj
-      _RL iceFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     INTEGER i, j, bi, bj
+c     _RL iceFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -129,7 +129,7 @@ C--   Apply ice velocity open boundary conditions
 #ifdef ALLOW_THSICE
       IF ( .NOT.useThSice ) THEN
 #endif
-C--   Only call advection of heff, area, snow, and salt and 
+C--   Only call advection of heff, area, snow, and salt and
 C--   growth for the generic 0-layer thermodynamics of seaice
 C--   if useThSice=.false., otherwise the 3-layer Winton thermodynamics
 C--   (called from DO_OCEANIC_PHYSICS) take care of this
@@ -160,7 +160,7 @@ cphCADJ STORE vice   = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     thermodynamics growth
-C     must call growth after calling advection 
+C     must call growth after calling advection
 C     because of ugly time level business
        IF ( usePW79thermodynamics ) THEN
 #ifdef ALLOW_DEBUG
@@ -210,7 +210,7 @@ C--   Update overlap regions for a bunch of stuff
 #ifdef ALLOW_DIAGNOSTICS
        IF ( useDiagnostics ) THEN
 C     diagnostics for "non-state variables" that are modified by
-C     the seaice model 
+C     the seaice model
 # ifdef ALLOW_EXF
         CALL DIAGNOSTICS_FILL(UWIND  ,'SIuwind ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(VWIND  ,'SIvwind ',0,1 ,0,1,1,myThid)
