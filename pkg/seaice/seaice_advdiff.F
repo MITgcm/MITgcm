@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.31 2009/02/13 21:59:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.32 2009/05/19 21:49:31 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -64,6 +64,8 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       INTEGER ks
       LOGICAL SEAICEmultiDimAdvection
 
+C-    MPI+MTH: apply exch (sure with exch1) only to array in common block
+      COMMON / SEAICE_ADVDIFF_LOCAL / uc, vc, fld3d
       _RL uc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uTrans    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -446,7 +448,7 @@ CADJ STORE AREA   = comlev1, key = ikey_dynamics, kind=isbyte
 #endif
       IF ( .NOT. usePW79thermodynamics ) THEN
 C     Hiblers "ridging function": Do it now if not in seaice_growth
-C     in principle we should add a "real" ridging function here (or 
+C     in principle we should add a "real" ridging function here (or
 C     somewhere after doing the advection)
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)

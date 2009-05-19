@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.28 2009/04/28 18:20:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.29 2009/05/19 21:49:31 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE dynsolver( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE dynsolver                                     |
+      SUBROUTINE DYNSOLVER( myTime, myIter, myThid )
+C     *==========================================================*
+C     | SUBROUTINE DYNSOLVER                                     |
 C     | o Ice dynamics using LSR solver                          |
 C     |   Zhang and Hibler,   JGR, 102, 8691-8702, 1997          |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -54,6 +54,8 @@ C     i,j,bi,bj - Loop counters
       _RL ECCEN, ECM2, DELT1, DELT2, PSTAR, AAA
       _RL TEMPVAR, U1, V1
 
+C-    MPI+MTH: apply exch (sure with exch1) only to array in common block
+      COMMON / LOCAL_DYNSOLVER / PRESS
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL E11        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL E22        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -287,8 +289,8 @@ C  NOW EVALUATE VISCOSITIES
 C NOW PUT MIN AND MAX VISCOSITIES IN
           ZETA(I,J,bi,bj)=MIN(ZMAX(I,J,bi,bj),ZETA(I,J,bi,bj))
           ZETA(I,J,bi,bj)=MAX(ZMIN(I,J,bi,bj),ZETA(I,J,bi,bj))
-C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS 
-          ZETA(I,J,bi,bj)=ZETA(I,J,bi,bj)*HEFFM(I,J,bi,bj) 
+C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS
+          ZETA(I,J,bi,bj)=ZETA(I,J,bi,bj)*HEFFM(I,J,bi,bj)
           ETA(I,J,bi,bj)=ECM2*ZETA(I,J,bi,bj)
           PRESS(I,J,bi,bj)=TWO*ZETA(I,J,bi,bj)*DELT2
          ENDDO
@@ -330,7 +332,7 @@ C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
      &          -QUART * _recip_dxV(I,J,bi,bj)
      &          *(PRESS(I,  J,bi,bj) + PRESS(I,  J-1,bi,bj)
      &          - PRESS(I-1,J,bi,bj) - PRESS(I-1,J-1,bi,bj))
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj) 
+          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
      &         -QUART * _recip_dyU(I,J,bi,bj)
      &          *(PRESS(I,J,  bi,bj) + PRESS(I-1,J,  bi,bj)
      &          - PRESS(I,J-1,bi,bj) - PRESS(I-1,J-1,bi,bj))
@@ -398,8 +400,8 @@ C  NOW EVALUATE VISCOSITIES
 C NOW PUT MIN AND MAX VISCOSITIES IN
           ZETA(I,J,bi,bj)=MIN(ZMAX(I,J,bi,bj),ZETA(I,J,bi,bj))
           ZETA(I,J,bi,bj)=MAX(ZMIN(I,J,bi,bj),ZETA(I,J,bi,bj))
-C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS 
-          ZETA(I,J,bi,bj)=ZETA(I,J,bi,bj)*HEFFM(I,J,bi,bj) 
+C NOW SET VISCOSITIES TO ZERO AT HEFFMFLOW PTS
+          ZETA(I,J,bi,bj)=ZETA(I,J,bi,bj)*HEFFM(I,J,bi,bj)
           ETA(I,J,bi,bj)=ECM2*ZETA(I,J,bi,bj)
           PRESS(I,J,bi,bj)=TWO*ZETA(I,J,bi,bj)*DELT2
          ENDDO
@@ -464,7 +466,7 @@ cdm c$taf store uice,vice = comlev1, key=ikey_dynamics
        CALL DIAGNOSTICS_FILL(eta    ,'SIeta   ',0,1 ,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1 ,0,1,1,myThid)
       ENDIF
-#endif /* ALLOW_DIAGNOSTICS */ 
+#endif /* ALLOW_DIAGNOSTICS */
 
 C Calculate ocean surface stress
       CALL OSTRES ( COR_ICE, myThid )
