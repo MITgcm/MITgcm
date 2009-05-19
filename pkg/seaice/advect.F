@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.19 2007/12/05 23:57:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.20 2009/05/19 21:44:24 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE advect( UI,VI,HEFF,HEFFM,myThid )
-C     /==========================================================\
-C     | SUBROUTINE advect                                        |
+      SUBROUTINE ADVECT( UI,VI,fld3d,iceMsk,myThid )
+C     *==========================================================*
+C     | SUBROUTINE ADVECT                                        |
 C     | o Calculate ice advection                                |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -27,8 +27,8 @@ C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
       _RL UI         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL VI         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL fld3d      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
+      _RL iceMsk     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       INTEGER myThid
 CEndOfInterface
 
@@ -58,8 +58,8 @@ C NOW REARRANGE HS
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFF(I,J,3,bi,bj)=HEFF(I,J,2,bi,bj)
-          HEFF(I,J,2,bi,bj)=HEFF(I,J,1,bi,bj)
+          fld3d(I,J,3,bi,bj)=fld3d(I,J,2,bi,bj)
+          fld3d(I,J,2,bi,bj)=fld3d(I,J,1,bi,bj)
          ENDDO
         ENDDO
 
@@ -78,18 +78,18 @@ C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
          DO I=1,sNx
 CML   This formulation gives the same result as the original code on a
 CML   lat-lon-grid, but may not be accurate on irregular grids
-          HEFF(I,J,1,bi,bj)=HEFF(I,J,K3,bi,bj)
+          fld3d(I,J,1,bi,bj)=fld3d(I,J,K3,bi,bj)
      &         -DELTT*(
-     &         ( HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
+     &         ( fld3d(I  ,J  ,2,bi,bj)+fld3d(I+1,J  ,2,bi,bj))
      &         *   UI(I+1,J,  bi,bj) -
-     &         ( HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
+     &         ( fld3d(I  ,J  ,2,bi,bj)+fld3d(I-1,J  ,2,bi,bj))
      &         *   UI(I  ,J,  bi,bj) )
      &     *(HALF * _recip_dxF(I,J,bi,bj))
      &         -DELTT*(
-     &         ( HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
+     &         ( fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J+1,2,bi,bj))
      &         *   VI(I  ,J+1,  bi,bj)
      &         * _dxG(I  ,J+1,bi,bj) -
-     &         ( HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
+     &         ( fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J-1,2,bi,bj))
      &         *   VI(I  ,J  ,  bi,bj)
      &         * _dxG(I,J,bi,bj))
      &     *(HALF * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
@@ -103,19 +103,19 @@ CML   lat-lon-grid, but may not be accurate on irregular grids
         DO J=1,sNy
          DO I=1,sNx
 C--   Use flux form for MITgcm compliance, unfortunately changes results
-          HEFF(I,J,1,bi,bj)=HEFF(I,J,K3,bi,bj)
+          fld3d(I,J,1,bi,bj)=fld3d(I,J,K3,bi,bj)
      &         -DELTT * HALF * (
      &        + _dyG(I+1,J,bi,bj) *
-     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
+     &         (fld3d(I  ,J  ,2,bi,bj)+fld3d(I+1,J  ,2,bi,bj))
      &         *  UI(I+1,J  ,  bi,bj)
      &        - _dyG(I,J,bi,bj) *
-     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
+     &         (fld3d(I  ,J  ,2,bi,bj)+fld3d(I-1,J  ,2,bi,bj))
      &         *  UI(I  ,J  ,  bi,bj)
      &        + _dxG(I  ,J+1,bi,bj) *
-     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
+     &         (fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J+1,2,bi,bj))
      &         *  VI(I  ,J+1,  bi,bj)
      &        - _dxG(I  ,J  ,bi,bj)*
-     &         (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
+     &         (fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J-1,2,bi,bj))
      &         *  VI(I  ,J  ,  bi,bj)
      &        )*recip_rA(I,J,bi,bj)
          ENDDO
@@ -125,7 +125,7 @@ C--   Use flux form for MITgcm compliance, unfortunately changes results
       ENDIF
 
       _BARRIER
-      CALL EXCH_3D_RL( HEFF, 3, myThid )
+      CALL EXCH_3D_RL( fld3d, 3, myThid )
       _BARRIER
 
       IF (LAD .EQ. 2) THEN
@@ -135,9 +135,9 @@ C NOW DO BACKWARD EULER CORRECTION
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             HEFF(I,J,3,bi,bj)=HEFF(I,J,2,bi,bj)
-             HEFF(I,J,2,bi,bj)=HALF*(HEFF(I,J,1,bi,bj)
-     &                              +HEFF(I,J,2,bi,bj))
+             fld3d(I,J,3,bi,bj)=fld3d(I,J,2,bi,bj)
+             fld3d(I,J,2,bi,bj)=HALF*(fld3d(I,J,1,bi,bj)
+     &                               +fld3d(I,J,2,bi,bj))
             ENDDO
            ENDDO
           ENDDO
@@ -151,19 +151,19 @@ C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
             DO I=1,sNx
 CML   This formulation gives the same result as the original code on a
 CML   lat-lon-grid, but may not be accurate on irregular grids
-             HEFF(I,J,1,bi,bj)=HEFF(I,J,3,bi,bj)
+             fld3d(I,J,1,bi,bj)=fld3d(I,J,3,bi,bj)
      &            -DELTT*(
-     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
+     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I+1,J  ,2,bi,bj))
      &            *  UI(I+1,J  ,  bi,bj) -
-     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
+     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I-1,J  ,2,bi,bj))
      &            *  UI(I  ,J  ,  bi,bj) )
      &     *(HALF * _recip_dxF(I,J,bi,bj))
      &            -DELTT*(
-     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
-     &            *  VI(I  ,J+1,  bi,bj) 
+     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J+1,2,bi,bj))
+     &            *  VI(I  ,J+1,  bi,bj)
      &            * _dxG(I,J+1,bi,bj) -
-     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
-     &            *   VI(I  ,J  ,  bi,bj) 
+     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J-1,2,bi,bj))
+     &            *   VI(I  ,J  ,  bi,bj)
      &            * _dxG(I,J,bi,bj))
      &     *(HALF * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
             ENDDO
@@ -176,19 +176,19 @@ CML   lat-lon-grid, but may not be accurate on irregular grids
            DO J=1,sNy
             DO I=1,sNx
 C--   Use flux form for MITgcm compliance, unfortunately changes results
-             HEFF(I,J,1,bi,bj)=HEFF(I,J,3,bi,bj)
+             fld3d(I,J,1,bi,bj)=fld3d(I,J,3,bi,bj)
      &            -DELTT * HALF * (
      &           + _dyG(I+1,J  ,bi,bj) *
-     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I+1,J  ,2,bi,bj))
+     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I+1,J  ,2,bi,bj))
      &            *  UI(I+1,J  ,  bi,bj)
      &           - _dyG(I  ,J  ,bi,bj) *
-     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I-1,J  ,2,bi,bj))
+     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I-1,J  ,2,bi,bj))
      &            *  UI(I  ,J  ,  bi,bj)
      &           + _dxG(I  ,J+1,bi,bj) *
-     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J+1,2,bi,bj))
+     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J+1,2,bi,bj))
      &            *  VI(I  ,J+1,  bi,bj)
      &           - _dxG(I  ,J  ,bi,bj) *
-     &            (HEFF(I  ,J  ,2,bi,bj)+HEFF(I  ,J-1,2,bi,bj))
+     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J-1,2,bi,bj))
      &            *  VI(I  ,J  ,  bi,bj)
      &            )*recip_rA(I,J,bi,bj)
             ENDDO
@@ -198,7 +198,7 @@ C--   Use flux form for MITgcm compliance, unfortunately changes results
          ENDIF
 
          _BARRIER
-         CALL EXCH_3D_RL( HEFF, 3, myThid )
+         CALL EXCH_3D_RL( fld3d, 3, myThid )
          _BARRIER
 
 C     NOW FIX UP H(I,J,2)
@@ -206,7 +206,7 @@ C     NOW FIX UP H(I,J,2)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             HEFF(I,J,2,bi,bj)=HEFF(I,J,3,bi,bj)
+             fld3d(I,J,2,bi,bj)=fld3d(I,J,3,bi,bj)
             ENDDO
            ENDDO
           ENDDO
@@ -226,14 +226,14 @@ C NOW CALCULATE DIFFUSION COEF ROUGHLY
         ENDDO
        ENDDO
       ENDDO
-      CALL DIFFUS(HEFF,DIFFA,HEFFM,DELTT, myThid)
+      CALL DIFFUS(fld3d,DIFFA,iceMsk,DELTT, myThid)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFF(I,J,1,bi,bj)=(HEFF(I,J,1,bi,bj)+HEFF(I,J,3,bi,bj))
-     &                      *HEFFM(I,J,bi,bj)
+          fld3d(I,J,1,bi,bj)=(fld3d(I,J,1,bi,bj)+fld3d(I,J,3,bi,bj))
+     &                      *iceMsk(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -250,14 +250,14 @@ C NOW CALCULATE DIFFUSION COEF ROUGHLY
         ENDDO
        ENDDO
       ENDDO
-      CALL DIFFUS(HEFF,DIFFA,HEFFM,DELTT, myThid)
- 
+      CALL DIFFUS(fld3d,DIFFA,iceMsk,DELTT, myThid)
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFF(I,J,1,bi,bj)=(HEFF(I,J,1,bi,bj)+HEFF(I,J,3,bi,bj))
-     &                      *HEFFM(I,J,bi,bj)
+          fld3d(I,J,1,bi,bj)=(fld3d(I,J,1,bi,bj)+fld3d(I,J,3,bi,bj))
+     &                      *iceMsk(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
