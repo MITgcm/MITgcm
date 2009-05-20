@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_send_rx2_ad.template,v 1.5 2009/05/12 19:44:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_send_rx2_ad.template,v 1.6 2009/05/20 21:01:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -108,7 +108,7 @@ C      Setup MPI stuff here
      &         + W2_maxNeighbours + nN-1
        tProc = exch2_tProc(tt)-1
        sProc = exch2_tProc(thisTile)-1
-       theType = MPI_REAL8
+       theType = _MPI_TYPE_RX
        nri1 = (tIhi1-tIlo1+1)/tiStride
        nrj1 = (tJhi1-tJlo1+1)/tjStride
        nrk1 = (tKhi-tKlo+1)/tkStride

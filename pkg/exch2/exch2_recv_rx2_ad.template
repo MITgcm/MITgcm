@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_recv_rx2_ad.template,v 1.5 2009/05/12 19:44:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_recv_rx2_ad.template,v 1.6 2009/05/20 21:01:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -173,7 +173,7 @@ C      Setup MPI stuff here
        theTag2 =  (tt-1)*W2_maxNeighbours*2 + W2_maxNeighbours + oN-1
        tProc = exch2_tProc(thisTile)-1
        sProc = exch2_tProc(tt)-1
-       theType = MPI_REAL8
+       theType = _MPI_TYPE_RX
        CALL MPI_Isend( e2Bufr1_RX(1,mb,nb,ir), iBufr1, theType, sProc,
      &               theTag1, MPI_COMM_MODEL, theHandle1, mpiRc )
        CALL MPI_Isend( e2Bufr2_RX(1,mb,nb,ir), iBufr2, theType, sProc,

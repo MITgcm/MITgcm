@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_recv_rx1_ad.template,v 1.4 2009/05/12 19:44:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_recv_rx1_ad.template,v 1.5 2009/05/20 21:01:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -56,13 +56,13 @@ C                          :: This is done in routine after receives.
 C     myTiles              :: List of nt tiles that this process owns.
 C     commSetting          :: Mode of communication used to exchnage with this neighbor
 C     myThid               :: Thread number of this instance of EXCH2_RECV_RX1
-C  
+C
       INTEGER tILo, tIHi, tiStride
       INTEGER tJLo, tJHi, tjStride
       INTEGER tKLo, tKHi, tkStride
       INTEGER i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi
       INTEGER thisTile, nN, thisI
-      INTEGER e2BufrRecSize 
+      INTEGER e2BufrRecSize
       INTEGER mnb, nt
       _RX     e2Bufr1_RX( e2BufrRecSize, mnb, nt, 2 )
       _RX     array(i1Lo:i1Hi,j1Lo:j1Hi,k1Lo:k1Hi)
@@ -88,7 +88,7 @@ C     iBufr      :: Buffer counter
 C     mb, nb :: Selects e2Bufr, msgHandle record to use
 C     ir     ::
       INTEGER mb, nb, ir
-C     oN     :: Opposing send record number 
+C     oN     :: Opposing send record number
       INTEGER oN
 C     Loop counters
 c     INTEGER I, nri, nrj, nrk
@@ -108,7 +108,7 @@ C     MPI setup
       tt=exch2_neighbourId(nN, thisTile )
       oN=exch2_opposingSend(nN, thisTile )
 
-C     Handle receive end data transport according to communication mechanism between 
+C     Handle receive end data transport according to communication mechanism between
 C     source and target tile
       IF     ( commSetting .EQ. 'P' ) THEN
 C      1 Need to check and spin on data ready assertion for multithreaded mode, for now do nothing i.e.
@@ -145,7 +145,7 @@ C        Read from e2Bufr1_RX(iBufr,mb,nb)
         ENDDO
        ENDDO
       ENDDO
- 
+
       IF     ( commSetting .EQ. 'P' ) THEN
       ELSEIF ( commSetting .EQ. 'M' ) THEN
 #ifdef ALLOW_USE_MPI
@@ -156,7 +156,7 @@ C      Setup MPI stuff here
        theTag =  (tt-1)*W2_maxNeighbours + oN
        tProc = exch2_tProc(thisTile)-1
        sProc = exch2_tProc(tt)-1
-       theType = MPI_REAL8
+       theType = _MPI_TYPE_RX
        nri = (tIhi-tIlo+1)/tiStride
        nrj = (tJhi-tJlo+1)/tjStride
        nrk = (tKhi-tKlo+1)/tkStride

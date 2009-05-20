@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx2.template,v 1.9 2009/05/12 19:44:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx2.template,v 1.10 2009/05/20 21:01:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -344,7 +344,7 @@ C      Setup MPI stuff here
      &         + W2_maxNeighbours + nN-1
        tProc = exch2_tProc(tt)-1
        sProc = exch2_tProc(thisTile)-1
-       theType = MPI_REAL8
+       theType = _MPI_TYPE_RX
 #ifdef W2_E2_DEBUG_ON
        WRITE(messageBuffer,'(A,I4,A,I4,A)') ' SEND FROM TILE=',thisTile,
      &                                   ' (proc = ',sProc,')'

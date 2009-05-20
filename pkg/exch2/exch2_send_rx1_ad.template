@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_send_rx1_ad.template,v 1.4 2009/05/12 19:44:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_send_rx1_ad.template,v 1.5 2009/05/20 21:01:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -29,7 +29,7 @@ C     === Routine arguments ===
       INTEGER tKLo, tKHi, tkStride
       INTEGER i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi
       INTEGER thisTile, nN
-      INTEGER e2BufrRecSize 
+      INTEGER e2BufrRecSize
       _RX     e2Bufr1_RX( e2BufrRecSize )
       _RX     array(i1Lo:i1Hi,j1Lo:j1Hi,k1Lo:k1Hi)
       INTEGER e2_msgHandle(1)
@@ -67,7 +67,7 @@ C     MPI setup
 #endif
 
       IF     ( commSetting .EQ. 'P' ) THEN
-C      Need to check that buffer synchronisation token is decremented 
+C      Need to check that buffer synchronisation token is decremented
 C      before filling buffer.
       ENDIF
 
@@ -111,7 +111,7 @@ C      Setup MPI stuff here
        theTag =  (thisTile-1)*W2_maxNeighbours + nN
        tProc = exch2_tProc(tt)-1
        sProc = exch2_tProc(thisTile)-1
-       theType = MPI_REAL8
+       theType = _MPI_TYPE_RX
 #ifdef W2_E2_DEBUG_ON
        WRITE(messageBuffer,'(A,I4,A,I4,A)') ' SEND FROM TILE=', thisTile,
      &                                   ' (proc = ',sProc,')'
@@ -133,7 +133,7 @@ C      Setup MPI stuff here
      I      myThid)
 #endif /* W2_E2_DEBUG_ON */
        CALL MPI_Recv( e2Bufr1_RX, iBufr, theType,
-     I                 tProc, theTag, MPI_COMM_MODEL, 
+     I                 tProc, theTag, MPI_COMM_MODEL,
      O                 mpiStatus, mpiRc )
 #endif
       ELSE
@@ -156,7 +156,7 @@ C      Setup MPI stuff here
         ENDDO
        ENDDO
       ENDDO
- 
+
       RETURN
       END
 

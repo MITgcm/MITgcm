@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx1.template,v 1.9 2009/05/12 19:44:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_send_rx1.template,v 1.10 2009/05/20 21:01:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -29,7 +29,7 @@ C     === Routine arguments ===
       INTEGER tKLo, tKHi, tkStride
       INTEGER i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi
       INTEGER thisTile, nN
-      INTEGER e2BufrRecSize 
+      INTEGER e2BufrRecSize
       _RX     e2Bufr1_RX( e2BufrRecSize )
       _RX     array(i1Lo:i1Hi,j1Lo:j1Hi,k1Lo:k1Hi)
       INTEGER e2_msgHandle(1)
@@ -66,7 +66,7 @@ C     MPI setup
 #endif
 
       IF     ( commSetting .EQ. 'P' ) THEN
-C      Need to check that buffer synchronisation token is decremented 
+C      Need to check that buffer synchronisation token is decremented
 C      before filling buffer.
       ENDIF
 
@@ -83,7 +83,7 @@ C      before filling buffer.
       oj=exch2_oj(nN,thisTile)
       iBufr=0
 #ifdef W2_E2_DEBUG_ON
-      WRITE(messageBuffer,'(A,I4,A,I4)') 'EXCH2_SEND_RX1 sourceTile= ', 
+      WRITE(messageBuffer,'(A,I4,A,I4)') 'EXCH2_SEND_RX1 sourceTile= ',
      &                                    thisTile,
      &                                   'targetTile= ',tt
       CALL PRINT_MESSAGE(messageBuffer,
@@ -102,26 +102,26 @@ C      before filling buffer.
          jsl=jsc-jsb
          e2Bufr1_RX(iBufr)=array(isl,jsl,ktl)
 #ifdef W2_E2_DEBUG_ON
-      WRITE(messageBuffer,'(A,2I4)') 
+      WRITE(messageBuffer,'(A,2I4)')
      &     'EXCH2_SEND_RX1 target t(itl,jtl) = ', itl, jtl
          CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_RIGHT,
      I      myThid)
-         WRITE(messageBuffer,'(A,2I4)') 
+         WRITE(messageBuffer,'(A,2I4)')
      &           '               source  (isl,jsl) = ', isl, jsl
          CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_RIGHT,
      I      myThid)
          IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
-          WRITE(messageBuffer,'(A,2I4)') 
-     &        '              *** isl is out of bounds'        
+          WRITE(messageBuffer,'(A,2I4)')
+     &        '              *** isl is out of bounds'
           CALL PRINT_MESSAGE(messageBuffer,
      I       standardMessageUnit,SQUEEZE_RIGHT,
      I       myThid)
          ENDIF
          IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
-          WRITE(messageBuffer,'(A,2I4)') 
-     &        '              *** jsl is out of bounds'        
+          WRITE(messageBuffer,'(A,2I4)')
+     &        '              *** jsl is out of bounds'
           CALL PRINT_MESSAGE(messageBuffer,
      I       standardMessageUnit,SQUEEZE_RIGHT,
      I       myThid)
@@ -157,7 +157,7 @@ C      Setup MPI stuff here
        theTag =  (thisTile-1)*W2_maxNeighbours + nN
        tProc = exch2_tProc(tt)-1
        sProc = exch2_tProc(thisTile)-1
-       theType = MPI_REAL8
+       theType = _MPI_TYPE_RX
 #ifdef W2_E2_DEBUG_ON
        WRITE(messageBuffer,'(A,I4,A,I4,A)') ' SEND FROM TILE=',
      &                             thisTile, ' (proc = ',sProc,')'
@@ -179,7 +179,7 @@ C      Setup MPI stuff here
      I      myThid)
 #endif /* W2_E2_DEBUG_ON */
        CALL MPI_Isend( e2Bufr1_RX, iBufr, theType,
-     I                 tProc, theTag, MPI_COMM_MODEL, 
+     I                 tProc, theTag, MPI_COMM_MODEL,
      O                 theHandle, mpiRc )
 C      Store MPI_Wait token in messageHandle.
        e2_msgHandle(1) = theHandle
@@ -187,7 +187,7 @@ C      Store MPI_Wait token in messageHandle.
       ELSE
        STOP 'EXCH2_SEND_RX1:: commSetting VALUE IS INVALID'
       ENDIF
- 
+
       RETURN
       END
 
