@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.20 2009/05/19 21:44:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.21 2009/05/20 17:15:03 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -67,7 +67,7 @@ C NOW REARRANGE HS
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff  = comlev1, key = ikey_dynamics
+CADJ STORE fld3d  = comlev1, key = ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
