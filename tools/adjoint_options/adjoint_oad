@@ -1,9 +1,13 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_oad,v 1.1 2008/06/20 22:23:22 utke Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_oad,v 1.2 2009/05/21 19:07:16 utke Exp $
 #  $Name:  $
 #
 
 #  This file contains settings for OpenAD
 
 export OPENAD=true
+# debug defines OAD_DEBUG, OAD_DEBUG_CP, OAD_DEBUG_JOINT, OAD_DEBUG_SPLIT1, OAD_DEBUG_SPLIT2  
+
+DEFINES="$DEFINES -DOAD_DEBUG"
+
