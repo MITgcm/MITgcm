@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/gather_2d_rx.template,v 1.3 2009/05/15 16:04:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/gather_2d_rx.template,v 1.4 2009/05/22 00:15:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -115,10 +115,8 @@ c         ENDDO
         IF (.TRUE.) THEN
 #endif /* ALLOW_EXCH2 */
 
-          iBase = 0
-          jBase = 0
-c         iBase = myXGlobalLo-1
-c         jBase = myYGlobalLo-1
+          iBase = myXGlobalLo-1
+          jBase = myYGlobalLo-1
 
           DO bj=1,nSy
            DO bi=1,nSx
@@ -201,12 +199,8 @@ c         ENDDO
          IF (.TRUE.) THEN
 #endif /* ALLOW_EXCH2 */
 
-          iBase = MOD(np0,nPx)
-          jBase = np0/nPx
-          iBase = iBase*nSx*sNx
-          jBase = jBase*nSy*sNy
-c         iBase = mpi_myXGlobalLo(np)-1
-c         jBase = mpi_myYGlobalLo(np)-1
+          iBase = mpi_myXGlobalLo(np)-1
+          jBase = mpi_myYGlobalLo(np)-1
 
           DO bj=1,nSy
            DO bi=1,nSx

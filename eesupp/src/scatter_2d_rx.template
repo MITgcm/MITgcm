@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_2d_rx.template,v 1.3 2009/05/15 16:04:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_2d_rx.template,v 1.4 2009/05/22 00:15:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -117,12 +117,8 @@ c         ENDDO
          IF (.TRUE.) THEN
 #endif /* ALLOW_EXCH2 */
 
-          iBase = MOD(np0,nPx)
-          jBase = np0/nPx
-          iBase = iBase*nSx*sNx
-          jBase = jBase*nSy*sNy
-c         iBase = mpi_myXGlobalLo(np)-1
-c         jBase = mpi_myYGlobalLo(np)-1
+          iBase = mpi_myXGlobalLo(np)-1
+          jBase = mpi_myYGlobalLo(np)-1
 
           DO bj=1,nSy
            DO bi=1,nSx
@@ -142,12 +138,12 @@ c         jBase = mpi_myYGlobalLo(np)-1
 C        end if-else useExch2GlobLayOut
          ENDIF
 
-C-      end loop on np
-        ENDDO
-
 C--   Process 0 sends local arrays to all other processes
          CALL MPI_SEND (temp, lbuff, _MPI_TYPE_RX,
      &           np0, itag, MPI_COMM_MODEL, ierr)
+
+C-      end loop on np
+        ENDDO
 
       ELSE
 
@@ -213,10 +209,8 @@ C     which could be faster if we do less read than write.
         IF (.TRUE.) THEN
 #endif /* ALLOW_EXCH2 */
 
-          iBase = 0
-          jBase = 0
-c         iBase = myXGlobalLo-1
-c         jBase = myYGlobalLo-1
+          iBase = myXGlobalLo-1
+          jBase = myYGlobalLo-1
 
           DO bj=1,nSy
            DO bi=1,nSx
