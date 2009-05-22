@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.31 2009/05/16 13:35:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.32 2009/05/22 00:18:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -88,8 +88,8 @@ C-    Check size of IO buffers:
 #ifdef CG2D_SINGLECPU_SUM
       useGlobalBuff = .TRUE.
 #endif /* CG2D_SINGLECPU_SUM */
-      IF ( useGlobalBuff ) THEN
 #ifdef ALLOW_EXCH2
+      IF ( useGlobalBuff ) THEN
         xySize = exch2_global_Nx*exch2_global_Ny
 #ifndef CG2D_SINGLECPU_SUM
         IF ( .NOT.W2_useE2ioLayOut ) xySize = Nx*Ny
@@ -105,36 +105,8 @@ C-    Check size of IO buffers:
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R INI_MODEL_IO (buffer size)'
         ENDIF
-#else /* ALLOW_EXCH2 */
-#ifdef ALLOW_USE_MPI
-C-  Although using mpi_myX,YGlobalLo is more general, if they happen
-C   to be different from iG,jG then mapping into global 2D array is
-C   very likely to go wrong ; check and stop.
-         DO np = 1,nPx*nPy
-          iG = MOD(np-1,nPx)
-          jG = (np-1)/nPx
-          iG = 1+iG*nSx*sNx
-          jG = 1+jG*nSy*sNy
-          IF ( mpi_myXGlobalLo(np).NE.iG ) THEN
-           WRITE(msgBuf,'(2A,I4,A,I8,A,I8,A)') 'INI_MODEL_IO: ',
-     &      'myXGlobalLo(np=',np,')=', mpi_myXGlobalLo(np),
-     &       ' <>',iG,' =iGLo'
-           CALL PRINT_ERROR( msgBuf, myThid )
-          ENDIF
-          IF ( mpi_myYGlobalLo(np).NE.jG ) THEN
-           WRITE(msgBuf,'(2A,I4,A,I8,A,I8,A)') 'INI_MODEL_IO: ',
-     &      'myYGlobalLo(np=',np,')=', mpi_myYGlobalLo(np),
-     &       ' <>',jG,' =jGLo'
-           CALL PRINT_ERROR( msgBuf, myThid )
-          ENDIF
-          IF ( mpi_myXGlobalLo(np).NE.iG .OR.
-     &         mpi_myYGlobalLo(np).NE.jG ) THEN
-           STOP 'ABNORMAL END: S/R INI_MODEL_IO wrong iGLo,jGLo'
-          ENDIF
-         ENDDO
-#endif /* ALLOW_USE_MPI */
-#endif /* ALLOW_EXCH2 */
       ENDIF
+#endif /* ALLOW_EXCH2 */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Only Master-thread updates IO-parameter in Common blocks:
