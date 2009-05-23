@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1101 2009/05/22 00:25:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1102 2009/05/23 15:39:11 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+   Adding separate sea ice albedo and drag coefficients in Southern Ocean
+   from those in Arctic Ocean.  See *_south in SEAICE_PARAMS.h
 o SingleCpuIO:
    fix bug put before chkp61n (May 11), when more than 2 MPI cpu are used.
 o pkg/seaice:

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.20 2009/03/18 10:27:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.21 2009/05/23 15:39:12 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -329,10 +329,18 @@ C     set up non-linear water drag, forcex, forcey
      &           + uIceC(I+1,J,bi,bj)-uVel(I+1,J,1,bi,bj))**2
      &           +(vIceC(I,J  ,bi,bj)-vVel(I,J  ,1,bi,bj)
      &           + vIceC(I,J+1,bi,bj)-vVel(I,J+1,1,bi,bj))**2)
-            IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
-             DWATN(I,J,bi,bj)=QUART
+            IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+             IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
+              DWATN(I,J,bi,bj)=QUART
+             ELSE
+              DWATN(I,J,bi,bj)=SEAICE_waterDrag_south*SQRT(TEMPVAR)
+             ENDIF
             ELSE
-             DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+             IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
+              DWATN(I,J,bi,bj)=QUART
+             ELSE
+              DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+             ENDIF
             ENDIF
             DWATN(I,J,bi,bj) = DWATN(I,J,bi,bj) * HEFFM(I,J,bi,bj)
 C     set up symmetric drag

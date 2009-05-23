@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.29 2009/05/19 21:49:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.30 2009/05/23 15:39:12 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -137,9 +137,17 @@ C first ocean surface stress
      &         (SIGN(SINWIN, _fCori(I,J,bi,bj))*U1+COSWIN*V1)
 
 C now ice surface stress
-          DAIRN(I,J,bi,bj)=RHOAIR*(SEAICE_drag*AAA*AREA(I,J,1,bi,bj)
-     &         +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
-     &         +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,1,bi,bj)))
+          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+           DAIRN(I,J,bi,bj) =
+     &          RHOAIR*(SEAICE_drag_south*AAA*AREA(I,J,1,bi,bj)
+     &          +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
+     &          +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,1,bi,bj)))
+          ELSE
+           DAIRN(I,J,bi,bj) =
+     &          RHOAIR*(SEAICE_drag*AAA*AREA(I,J,1,bi,bj)
+     &          +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
+     &          +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,1,bi,bj)))
+          ENDIF
           FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
      &         (COSWIN*U1-SIGN(SINWIN, _fCori(I,J,bi,bj))*V1)
           FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
@@ -310,10 +318,18 @@ C--   Update overlap regions
 C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
           TEMPVAR=(UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj))**2
      &           +(VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj))**2
-          IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
-             DWATN(I,J,bi,bj)=QUART
+          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
+            DWATN(I,J,bi,bj)=QUART
+           ELSE
+            DWATN(I,J,bi,bj)=SEAICE_waterDrag_south*SQRT(TEMPVAR)
+           ENDIF
           ELSE
-             DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
+            DWATN(I,J,bi,bj)=QUART
+           ELSE
+            DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+           ENDIF
           ENDIF
 C NOW SET UP SYMMETTRIC DRAG
           DRAGS(I,J,bi,bj)=DWATN(I,J,bi,bj)*COSWAT
@@ -421,16 +437,24 @@ C--   Update overlap regions
 C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
           TEMPVAR=(UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj))**2
      &           +(VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj))**2
-          IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
-             DWATN(I,J,bi,bj)=QUART
+          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
+            DWATN(I,J,bi,bj)=QUART
+           ELSE
+            DWATN(I,J,bi,bj)=SEAICE_waterDrag_south*SQRT(TEMPVAR)
+           ENDIF
           ELSE
-             DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
+            DWATN(I,J,bi,bj)=QUART
+           ELSE
+            DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+           ENDIF
           ENDIF
 C NOW SET UP SYMMETTRIC DRAG
           DRAGS(I,J,bi,bj)=DWATN(I,J,bi,bj)*COSWAT
 C NOW SET UP ANTI SYMMETTRIC DRAG PLUS CORIOLIS
-          DRAGA(I,J,bi,bj)=DWATN(I,J,bi,bj)*
-     &         SIGN(SINWAT, _fCori(I,J,bi,bj))+COR_ICE(I,J,bi,bj)
+          DRAGA(I,J,bi,bj)=DWATN(I,J,bi,bj)
+     &         *SIGN(SINWAT, _fCori(I,J,bi,bj))+COR_ICE(I,J,bi,bj)
 C NOW ADD IN CURRENT FORCE
           FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+DWATN(I,J,bi,bj)
      &         *(COSWAT*GWATX(I,J,bi,bj)

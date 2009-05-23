@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.56 2009/03/18 12:53:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.57 2009/05/23 15:39:12 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -144,13 +144,22 @@ C     SEAICE_rhoAir      - density of air                              (kg/m^3)
 C     SEAICE_rhoIce      - density of sea ice                          (kg/m^3)
 C     SEAICE_rhoSnow     - density of snow                             (kg/m^3)
 C     ICE2WATR           - ratio of sea ice density to water density
-C     SEAICE_drag        - air-ice drag coefficient
 C     OCEAN_drag         - air-ocean drag coefficient
+C
+C     SEAICE_drag        - air-ice drag coefficient
 C     SEAICE_waterDrag   - water-ice drag coefficient * water density
 C     SEAICE_dryIceAlb   - winter albedo
 C     SEAICE_wetIceAlb   - summer albedo
 C     SEAICE_drySnowAlb  - dry snow albedo
 C     SEAICE_wetSnowAlb  - wet snow albedo
+C
+C     SEAICE_drag_south       - Southern Ocean SEAICE_drag
+C     SEAICE_waterDrag_south  - Southern Ocean SEAICE_waterDrag
+C     SEAICE_dryIceAlb_south  - Southern Ocean SEAICE_dryIceAlb
+C     SEAICE_wetIceAlb_south  - Southern Ocean SEAICE_wetIceAlb
+C     SEAICE_drySnowAlb_south - Southern Ocean SEAICE_drySnowAlb
+C     SEAICE_wetSnowAlb_south - Southern Ocean SEAICE_wetSnowAlb
+C
 C     SEAICE_waterAlbedo - water albedo
 C     SEAICE_strength    - sea-ice strength Pstar
 C     SEAICE_eccen       - sea-ice eccentricity of the elliptical yield curve
@@ -198,8 +207,11 @@ C
       _RL SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq
       _RL SEAICE_initialHEFF
       _RL SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR
-      _RL SEAICE_drag, SEAICE_waterDrag,  SEAICE_dryIceAlb
+      _RL SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb
       _RL SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb
+      _RL SEAICE_drag_south, SEAICE_waterDrag_south
+      _RL SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south
+      _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south
       _RL SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
@@ -220,6 +232,9 @@ C
      &    SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      &    SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      &    SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
+     &    SEAICE_drag_south, SEAICE_waterDrag_south,
+     &    SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
+     &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south,
      &    SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
      &    SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,

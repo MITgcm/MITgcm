@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice_if.F,v 1.3 2008/04/08 03:01:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice_if.F,v 1.4 2009/05/23 15:39:12 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -20,6 +20,7 @@ C     \================================================================/
 
 C     === Global variables ===
 #include "SIZE.h"
+#include "GRID.h"
 #include "EEPARAMS.h"
 #include "FFIELDS.h"
 #include "SEAICE.h"
@@ -163,19 +164,35 @@ C COME HERE AT START OF ITERATION
          IF (HICE_ACTUAL(I,J) .GT. 0.0) THEN
 
 C         DECIDE ON ALBEDO
-          IF (tsurfLoc(I,J) .GE. TMELT) THEN
-           IF (HSNOW_ACTUAL(I,J) .EQ. 0.0) THEN
-              ALB(I,J)   = SEAICE_wetIceAlb
-           ELSE  ! some snow
-              ALB(I,J)   = SEAICE_wetSnowAlb
-           ENDIF
-          ELSE   ! no surface melting
+          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+           IF (tsurfLoc(I,J) .GE. TMELT) THEN
             IF (HSNOW_ACTUAL(I,J) .EQ. 0.0) THEN
-              ALB(I,J)   = SEAICE_dryIceAlb
-            ELSE !  some snow
-              ALB(I,J)   = SEAICE_drySnowAlb
+             ALB(I,J)   = SEAICE_wetIceAlb_south
+            ELSE                ! some snow
+             ALB(I,J)   = SEAICE_wetSnowAlb_south
+            ENDIF
+           ELSE                 ! no surface melting
+            IF (HSNOW_ACTUAL(I,J) .EQ. 0.0) THEN
+             ALB(I,J)   = SEAICE_dryIceAlb_south
+            ELSE                !  some snow
+             ALB(I,J)   = SEAICE_drySnowAlb_south
             ENDIF 
-          ENDIF 
+           ENDIF
+          ELSE
+           IF (tsurfLoc(I,J) .GE. TMELT) THEN
+            IF (HSNOW_ACTUAL(I,J) .EQ. 0.0) THEN
+             ALB(I,J)   = SEAICE_wetIceAlb
+            ELSE                ! some snow
+             ALB(I,J)   = SEAICE_wetSnowAlb
+            ENDIF
+           ELSE                 ! no surface melting
+            IF (HSNOW_ACTUAL(I,J) .EQ. 0.0) THEN
+             ALB(I,J)   = SEAICE_dryIceAlb
+            ELSE                !  some snow
+             ALB(I,J)   = SEAICE_drySnowAlb
+            ENDIF 
+           ENDIF
+          ENDIF
 
           F_lwd(I,J) = - 0.97 _d 0 * lwdownLoc(I,J)
 

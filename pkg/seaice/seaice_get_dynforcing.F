@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.5 2008/01/15 23:24:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.6 2009/05/23 15:39:12 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -122,7 +122,11 @@ C--   Now compute ice surface stress
            ELSE
               AAA=SQRT(AAA)
            ENDIF
-           CDAIR(I,J) = SEAICE_rhoAir*SEAICE_drag*AAA
+           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+            CDAIR(I,J) = SEAICE_rhoAir*SEAICE_drag_south*AAA
+           ELSE
+            CDAIR(I,J) = SEAICE_rhoAir*SEAICE_drag*AAA
+           ENDIF
           ENDDO
          ENDDO
         ELSE
@@ -136,7 +140,11 @@ C--   Now compute ice surface stress
            ELSE
               AAA=SQRT(AAA)
            ENDIF
-           CDAIR(I,J) = SEAICE_rhoAir*SEAICE_drag*AAA
+           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+            CDAIR(I,J) = SEAICE_rhoAir*SEAICE_drag_south*AAA
+           ELSE
+            CDAIR(I,J) = SEAICE_rhoAir*SEAICE_drag*AAA
+           ENDIF
           ENDDO
          ENDDO
         ENDIF
@@ -215,7 +223,11 @@ C--   Wind stress is available on U and V points, copy it to seaice variables.
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
 C now ice surface stress
-          CDAIR(I,J)       = SEAICE_drag/OCEAN_drag
+          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+           CDAIR(I,J) = SEAICE_drag_south/OCEAN_drag
+          ELSE
+           CDAIR(I,J) = SEAICE_drag      /OCEAN_drag
+          ENDIF
           taux (I,J,bi,bj) = CDAIR(I,J)*FU(I,J,bi,bj)
           tauy (I,J,bi,bj) = CDAIR(I,J)*FV(I,J,bi,bj) 
          ENDDO

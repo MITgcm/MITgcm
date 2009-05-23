@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.25 2009/04/28 23:27:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.26 2009/05/23 15:39:12 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -163,10 +163,11 @@ C     == end of interface ==
      & 'SEAICE_tave_mnc   =',' /* write TimeAverage using MNC */')
       CALL WRITE_0D_RL( SEAICE_initialHEFF,INDEX_NONE,
      & 'SEAICE_initialHEFF=', ' /* initial sea-ice thickness */')
-      CALL WRITE_0D_RL( SEAICE_drag       ,INDEX_NONE,
-     & 'SEAICE_drag       =', ' /* air-ice drag coefficient */')
       CALL WRITE_0D_RL( OCEAN_drag        ,INDEX_NONE,
      & 'OCEAN_drag        =', ' /* air-ocean drag coefficient */')
+
+      CALL WRITE_0D_RL( SEAICE_drag       ,INDEX_NONE,
+     & 'SEAICE_drag       =', ' /* air-ice drag coefficient */')
       CALL WRITE_0D_RL( SEAICE_waterDrag  ,INDEX_NONE,
      & 'SEAICE_waterDrag  =', ' /* water-ice drag * density */')
       CALL WRITE_0D_RL( SEAICE_dryIceAlb  ,INDEX_NONE,
@@ -177,6 +178,18 @@ C     == end of interface ==
      & 'SEAICE_drySnowAlb =', ' /* dry snow albedo */')
       CALL WRITE_0D_RL( SEAICE_wetSnowAlb ,INDEX_NONE,
      & 'SEAICE_wetSnowAlb =', ' /* wet snow albedo */')
+      CALL WRITE_0D_RL( SEAICE_drag_south       ,INDEX_NONE,
+     & 'SEAICE_drag_south       =', ' /* Southern Ocean SEAICE_drag */')
+      CALL WRITE_0D_RL( SEAICE_waterDrag_south  ,INDEX_NONE,
+     & 'SEAICE_waterDrag_south  =', ' /* Southern Ocean waterDrag */')
+      CALL WRITE_0D_RL( SEAICE_dryIceAlb_south  ,INDEX_NONE,
+     & 'SEAICE_dryIceAlb_south  =', ' /* Southern Ocean dryIceAlb */')
+      CALL WRITE_0D_RL( SEAICE_wetIceAlb_south  ,INDEX_NONE,
+     & 'SEAICE_wetIceAlb_south  =', ' /* Southern Ocean wetIceAlb */')
+      CALL WRITE_0D_RL( SEAICE_drySnowAlb_south ,INDEX_NONE,
+     & 'SEAICE_drySnowAlb_south =', ' /* Southern Ocean drySnowAlb */')
+      CALL WRITE_0D_RL( SEAICE_wetSnowAlb_south ,INDEX_NONE,
+     & 'SEAICE_wetSnowAlb_south =', ' /* Southern Ocean wetSnowAlb */')
       CALL WRITE_0D_RL( SEAICE_waterAlbedo,INDEX_NONE,
      & 'SEAICE_waterAlbedo=', ' /* water albedo */')
       CALL WRITE_0D_RL( SEAICE_strength   ,INDEX_NONE,

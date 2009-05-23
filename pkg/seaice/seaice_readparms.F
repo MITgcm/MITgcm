@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.71 2009/03/20 16:04:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.72 2009/05/23 15:39:12 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -58,6 +58,9 @@ C--   SEAICE parameters
      & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      & SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
+     & SEAICE_drag_south, SEAICE_waterDrag_south,
+     & SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
+     & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south,
      & SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
@@ -164,6 +167,12 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this
       SEAICE_wetIceAlb   = 0.66   _d 0
       SEAICE_drySnowAlb  = 0.84   _d 0
       SEAICE_wetSnowAlb  = 0.7    _d 0
+      SEAICE_drag_south       = UNSET_RL
+      SEAICE_waterDrag_south  = UNSET_RL
+      SEAICE_dryIceAlb_south  = UNSET_RL
+      SEAICE_wetIceAlb_south  = UNSET_RL
+      SEAICE_drySnowAlb_south = UNSET_RL
+      SEAICE_wetSnowAlb_south = UNSET_RL
       SEAICE_waterAlbedo = 0.1    _d +00
       SEAICE_strength    = 2.75   _d +04
       SEAICE_eccen       = 2.     _d 0
@@ -246,6 +255,18 @@ C--   Read settings from model parameter file "data.seaice".
      &                    SQUEEZE_RIGHT , myThid)
 
       IF (ICE2WATR.EQ.UNSET_RL) ICE2WATR = SEAICE_rhoIce*recip_rhoConst
+      IF (SEAICE_drag_south       .EQ. UNSET_RL)
+     &    SEAICE_drag_south       = SEAICE_drag
+      IF (SEAICE_waterDrag_south  .EQ. UNSET_RL)
+     &    SEAICE_waterDrag_south  = SEAICE_waterDrag
+      IF (SEAICE_dryIceAlb_south  .EQ. UNSET_RL)
+     &    SEAICE_dryIceAlb_south  = SEAICE_dryIceAlb
+      IF (SEAICE_wetIceAlb_south  .EQ. UNSET_RL)
+     &    SEAICE_wetIceAlb_south  = SEAICE_wetIceAlb
+      IF (SEAICE_drySnowAlb_south .EQ. UNSET_RL)
+     &    SEAICE_drySnowAlb_south = SEAICE_drySnowAlb
+      IF (SEAICE_wetSnowAlb_south .EQ. UNSET_RL)
+     &    SEAICE_wetSnowAlb_south = SEAICE_wetSnowAlb
 
 C     Check that requested time step size is supported.  The combination
 C     below is the only one that is supported at this time.  Does not

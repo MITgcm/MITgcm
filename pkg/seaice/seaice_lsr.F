@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.39 2009/04/28 18:20:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.40 2009/05/23 15:39:12 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -185,10 +185,18 @@ C     set up non-linear water drag
      &          +uIceC(I+1,J,bi,bj)-uVel(I+1,J,1,bi,bj))**2
      &         +(vIceC(I,J  ,bi,bj)-vVel(I,J  ,1,bi,bj)
      &          +vIceC(I,J+1,bi,bj)-vVel(I,J+1,1,bi,bj))**2)
-          IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
-             DWATN(I,J,bi,bj)=QUART
+          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
+            DWATN(I,J,bi,bj)=QUART
+           ELSE
+            DWATN(I,J,bi,bj)=SEAICE_waterDrag_south*SQRT(TEMPVAR)
+           ENDIF
           ELSE
-             DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
+            DWATN(I,J,bi,bj)=QUART
+           ELSE
+            DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+           ENDIF
           ENDIF
           DWATN(I,J,bi,bj) = DWATN(I,J,bi,bj) * HEFFM(I,J,bi,bj)
 C     set up symmettric drag
@@ -977,10 +985,18 @@ C     set up non-linear water drag
      &          +uIceC(I+1,J,bi,bj)-uVel(I+1,J,1,bi,bj))**2
      &         +(vIceC(I,J  ,bi,bj)-vVel(I,J  ,1,bi,bj)
      &          +vIceC(I,J+1,bi,bj)-vVel(I,J+1,1,bi,bj))**2)
-          IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
-             DWATN(I,J,bi,bj)=QUART
+          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
+            DWATN(I,J,bi,bj)=QUART
+           ELSE
+            DWATN(I,J,bi,bj)=SEAICE_waterDrag_south*SQRT(TEMPVAR)
+           ENDIF
           ELSE
-             DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+           IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag)**2 ) THEN
+            DWATN(I,J,bi,bj)=QUART
+           ELSE
+            DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+           ENDIF
           ENDIF
           DWATN(I,J,bi,bj) = DWATN(I,J,bi,bj) * HEFFM(I,J,bi,bj)
 C     set up symmettric drag

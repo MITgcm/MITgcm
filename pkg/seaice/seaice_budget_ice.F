@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.9 2007/12/05 15:37:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.10 2009/05/23 15:39:12 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -20,6 +20,7 @@ C     \================================================================/
 
 C     === Global variables ===
 #include "SIZE.h"
+#include "GRID.h"
 #include "EEPARAMS.h"
 #include "FFIELDS.h"
 #include "SEAICE_PARAMS.h"
@@ -130,10 +131,17 @@ C     Is this necessary?
 C NOW DECIDE ON ALBEDO                       
       DO J=1,sNy
        DO I=1,sNx
-        ALB(I,J)=SEAICE_dryIceAlb
-        IF(tsurfLoc(I,J).GT.TMELTP) ALB(I,J)=SEAICE_wetIceAlb
-        ASNOW=SEAICE_drySnowAlb
-        IF(tsurfLoc(I,J).GT.TMELTP) ASNOW=SEAICE_wetSnowAlb
+        IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+         ALB(I,J)=SEAICE_dryIceAlb_south
+         IF(tsurfLoc(I,J).GT.TMELTP) ALB(I,J)=SEAICE_wetIceAlb_south
+         ASNOW=SEAICE_drySnowAlb_south
+         IF(tsurfLoc(I,J).GT.TMELTP) ASNOW=SEAICE_wetSnowAlb_south
+        ELSE
+         ALB(I,J)=SEAICE_dryIceAlb
+         IF(tsurfLoc(I,J).GT.TMELTP) ALB(I,J)=SEAICE_wetIceAlb
+         ASNOW=SEAICE_drySnowAlb
+         IF(tsurfLoc(I,J).GT.TMELTP) ASNOW=SEAICE_wetSnowAlb
+        ENDIF
 C     For albedo computation, actual rather than effective snow thickness
 c     must be used. 
         IF(hSnwLoc(I,J).GT.HCUT) THEN
