@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.31 2009/02/13 21:59:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.32 2009/05/24 18:12:58 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -77,6 +77,13 @@ CADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
       IF (
      &  DIFFERENT_MULTIPLE(SEAICE_deltaTdyn,myTime,SEAICE_deltaTtherm)
      &   ) THEN
+
+# ifdef ALLOW_AUTODIFF_TAMC
+# ifdef SEAICE_ALLOW_EVP
+CADJ STORE press0 = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE zmax   = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
+# endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   FIRST SET UP BASIC CONSTANTS
       PSTAR  = SEAICE_strength
