@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.77 2009/02/13 21:56:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.78 2009/05/24 18:00:39 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -176,6 +176,10 @@ CADJ &     kind = isbyte
 CADJ STORE recip_hfacc         = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #  endif
+#  ifdef ANNUAL_BALANCE
+CADJ STORE balance_itcount     = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#  endif /* ANNUAL_BALANCE */
 # endif
 # ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB )
