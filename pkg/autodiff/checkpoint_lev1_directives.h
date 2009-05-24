@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.38 2009/02/13 21:58:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.39 2009/05/24 17:55:54 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -196,4 +196,24 @@ CADJ STORE uVel  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE vVel  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+#endif
+
+#ifdef ALLOW_SEAICE
+cph temporary for HD
+# ifdef ALLOW_HFLUXM_CONTROL
+CADJ STORE qnetm      = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE area       = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE heff,hsnow = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE eta,zeta   = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE pmepr,tice = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE totphihyd,salt = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE uice,vice  = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+# ifdef ANNUAL_BALANCE
+CADJ STORE balance_itcount = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE atmfw_tilesum   = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE qnet_tilesum    = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE qnet_corr       = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE empmr_corr      = comlev1, key = ikey_dynamics, kind = isbyte
+# endif /* ANNUAL_BALANCE */
 #endif

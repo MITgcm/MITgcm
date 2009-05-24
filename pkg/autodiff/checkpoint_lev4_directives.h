@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.16 2008/10/27 20:45:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev4_directives.h,v 1.17 2009/05/24 17:55:54 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 4
@@ -171,3 +171,13 @@ CADJ STORE objf_transport = tapelev4, key = ilev_4
 CADJ STORE qnetm          = tapelev4, key = ilev_4
 #endif
 
+#ifdef ALLOW_SEAICE
+cph temporary for HD
+# ifdef ANNUAL_BALANCE
+CADJ STORE balance_itcount = tapelev4, key = ilev_4
+CADJ STORE atmfw_tilesum   = tapelev4, key = ilev_4
+CADJ STORE qnet_tilesum    = tapelev4, key = ilev_4
+CADJ STORE empmr_corr      = tapelev4, key = ilev_4
+CADJ STORE qnet_corr       = tapelev4, key = ilev_4
+# endif /* ANNUAL_BALANCE */
+#endif
