@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.31 2009/04/26 02:34:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.32 2009/05/25 04:33:15 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -126,6 +126,10 @@ C--   Alternative way of doing global sum on a single CPU
 C     to eliminate tiling-dependent roundoff errors.
 C     Note: This is slow.
 #undef  CG2D_SINGLECPU_SUM
+
+C--   Enablbe some old macro conventions for
+C     backward compatibility
+#undef USE_OLD_MACROS_R4R8toRSRL
 
 #endif /* _CPP_EEOPTIONS_H_ */
 

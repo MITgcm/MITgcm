@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.18 2009/05/24 16:57:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.19 2009/05/25 04:33:15 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -140,11 +140,11 @@ C  enable to call the corresponding R4 or R8 S/R.
 #define RL_IS_REAL8
 #define _GLOBAL_SUM_RL(a,b) CALL GLOBAL_SUM_R8 ( a, b )
 #define _GLOBAL_MAX_RL(a,b) CALL GLOBAL_MAX_R8 ( a, b )
-cph(
+#ifdef USE_OLD_MACROS_R4R8toRSRL
 cph Needed for some backward compatibility with broken packages
 #define _GLOBAL_SUM_R8(a,b) CALL GLOBAL_SUM_R8 ( a, b )
 #define _GLOBAL_MAX_R8(a,b) CALL GLOBAL_MAX_R8 ( a, b )
-cph)
+#endif
 #define _MPI_TYPE_RL MPI_DOUBLE_PRECISION
 
 #define _MPI_TYPE_R4 MPI_REAL
@@ -163,13 +163,13 @@ C           will directly call the corrresponding S/R.
 #define _EXCH_XY_RL(a,b) CALL EXCH_XY_RL ( a, b )
 #define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_RS ( a, b )
 #define _EXCH_XYZ_RL(a,b) CALL EXCH_XYZ_RL ( a, b )
-cph(
+#ifdef USE_OLD_MACROS_R4R8toRSRL
 cph Needed for some backward compatibility with broken packages
 #define _EXCH_XY_R4(a,b) CALL EXCH_XY_RS ( a, b )
 #define _EXCH_XY_R8(a,b) CALL EXCH_XY_RL ( a, b )
 #define _EXCH_XYZ_R4(a,b) CALL EXCH_XYZ_RS ( a, b )
 #define _EXCH_XYZ_R8(a,b) CALL EXCH_XYZ_RL ( a, b )
-cph)
+#endif
 
 C--   Control use of JAM routines for Artic network (no longer supported)
 C     These invoke optimized versions of "exchange" and "sum" that
