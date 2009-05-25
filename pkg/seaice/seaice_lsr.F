@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.40 2009/05/23 15:39:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.41 2009/05/25 09:46:25 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -144,6 +144,40 @@ C SET SOME VALUES
       ICOUNT2=SOLV_MAX_ITERS
 
       k = 1
+
+      IF ( ilcall .EQ. 1 ) THEN
+C NOW DO PREDICTOR TIME STEP
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIce(I,J,2,bi,bj)=uIce(I,J,1,bi,bj)
+           vIce(I,J,2,bi,bj)=vIce(I,J,1,bi,bj)
+           uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
+           vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uicec = comlev1_lsr, key=ikey_dynamics, kind=isbyte
+CADJ STORE vicec = comlev1_lsr, key=ikey_dynamics, kind=isbyte
+#endif
+      ELSE
+C NOW DO MODIFIED EULER STEP
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIce(I,J,1,bi,bj)=HALF*(uIce(I,J,1,bi,bj)+uIce(I,J,2,bi,bj))
+           vIce(I,J,1,bi,bj)=HALF*(vIce(I,J,1,bi,bj)+vIce(I,J,2,bi,bj))
+           uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
+           vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph That's an important one! Note, that
@@ -946,6 +980,53 @@ C SET SOME VALUES
       ICOUNT2=SOLV_MAX_ITERS
 
       k = 1
+
+      IF ( ilcall .EQ. 1 ) THEN
+C NOW DO PREDICTOR TIME STEP
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIce(I,J,2,bi,bj)=uIce(I,J,1,bi,bj)
+           vIce(I,J,2,bi,bj)=vIce(I,J,1,bi,bj)
+           uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
+           vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uicec = comlev1_lsr, key=ikey_dynamics, kind=isbyte
+CADJ STORE vicec = comlev1_lsr, key=ikey_dynamics, kind=isbyte
+#endif
+      ELSE
+C NOW DO MODIFIED EULER STEP
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIce(I,J,1,bi,bj)=HALF*(uIce(I,J,1,bi,bj)+uIce(I,J,2,bi,bj))
+           vIce(I,J,1,bi,bj)=HALF*(vIce(I,J,1,bi,bj)+vIce(I,J,2,bi,bj))
+           uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
+           vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+C     for additional (pseudo-time)steps update u(k-1) = uice(2)
+      IF ( ilcall .GT. 2 ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIce(I,J,2,bi,bj)=uIce(I,J,1,bi,bj)
+           vIce(I,J,2,bi,bj)=vIce(I,J,1,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph That's an important one! Note, that

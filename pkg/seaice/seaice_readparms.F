@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.72 2009/05/23 15:39:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.73 2009/05/25 09:46:25 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -203,7 +203,9 @@ C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
       IMAX_TICE  = 10
       SOLV_MAX_ITERS = 1500
       SOLV_NCHECK= 2
-      NPSEUDOTIMESTEPS = 0
+C     two pseudo time steps correspond to the original modified 
+C     Euler time stepping scheme of Zhang+Hibler (1997)
+      NPSEUDOTIMESTEPS = 2
       LSR_ERROR  = 0.0001    _d 0
       DIFF1      = .002      _d 0
       DIFF1      = 2.0*DIFF1
@@ -324,6 +326,9 @@ C     Check the consitency of a few parameters
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
+
+C     Make sure that we have least two pseudo time steps 
+      NPSEUDOTIMESTEPS = MAX(NPSEUDOTIMESTEPS,2)
 C     Set default values
       IF ( SEAICE_availHeatFrac .EQ. UNSET_RL ) THEN
          SEAICE_availHeatFrac = 1. _d 0

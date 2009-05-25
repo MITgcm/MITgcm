@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.32 2009/05/24 18:12:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.33 2009/05/25 09:46:24 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -227,53 +227,10 @@ CADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
 C     do the original VP solver of Zhang and Hibler (1997), ported to
 C     a C-grid
 #endif /* SEAICE_ALLOW_EVP */
-C NOW DO PREDICTOR TIME STEP
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           uIce(I,J,2,bi,bj)=uIce(I,J,1,bi,bj)
-           vIce(I,J,2,bi,bj)=vIce(I,J,1,bi,bj)
-           uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
-           vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
-          ENDDO
-         ENDDO
+C     LSR SCHEME (ZHANG-J/HIBLER 1997)
+        DO I=1,NPSEUDOTIMESTEPS
+         CALL SEAICE_LSR( I, myTime, myIter, myThid )
         ENDDO
-       ENDDO
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uicec = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vicec = comlev1, key=ikey_dynamics, kind=isbyte
-# ifdef SEAICE_ALLOW_EVP
-cphCADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
-#endif
-C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
-       CALL SEAICE_LSR( 1, myTime, myIter, myThid )
-#ifdef ALLOW_AUTODIFF_TAMC
-cphCADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE uicec = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE vicec = comlev1, key=ikey_dynamics, kind=isbyte
-#endif
-
-C NOW DO MODIFIED EULER STEP
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           uIce(I,J,1,bi,bj)=HALF*(uIce(I,J,1,bi,bj)+uIce(I,J,2,bi,bj))
-           vIce(I,J,1,bi,bj)=HALF*(vIce(I,J,1,bi,bj)+vIce(I,J,2,bi,bj))
-           uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
-           vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-
-C NOW LSR SCHEME (ZHANG-J/HIBLER 1997)
-       CALL SEAICE_LSR( 2, myTime, myIter, myThid )
 #ifdef SEAICE_ALLOW_EVP
        ENDIF
 #endif /* SEAICE_ALLOW_EVP */
