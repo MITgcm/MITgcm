@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.66 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.67 2009/05/25 01:40:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -123,7 +123,7 @@ C--   Save previous solution & Initialise Vector solution and source term :
          tileEmP(bi,bj) = 0.
          DO j=1,sNy
           DO i=1,sNx
-            tileEmP(bi,bj) = tileEmP(bi,bj) 
+            tileEmP(bi,bj) = tileEmP(bi,bj)
      &                     + rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)
      &                                    *maskH(i,j,bi,bj)
           ENDDO
@@ -262,7 +262,7 @@ C-    end bi,bj loops
 #endif
       IF ( DIFFERENT_MULTIPLE(diagFreq, myTime, deltaTClock) ) THEN
        WRITE(sufx,'(I10.10)') myIter
-       CALL WRITE_FLD_XY_RS( 'cg2d_b.', sufx, cg2d_b, myIter, myThid )
+       CALL WRITE_FLD_XY_RL( 'cg2d_b.', sufx, cg2d_b, myIter, myThid )
       ENDIF
 
 C--   Find the surface pressure using a two-dimensional conjugate
@@ -290,7 +290,7 @@ C--   Call the not-self-adjoint version of cg2d
      U           numIters,
      I           myThid )
 #endif /* ALLOW_CG2D_NSA */
-      _EXCH_XY_RL(cg2d_x, myThid )
+      _EXCH_XY_RL( cg2d_x, myThid )
 c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 
 #ifdef ALLOW_DEBUG
@@ -328,6 +328,10 @@ C--   Transfert the 2D-solution to "etaN" :
 
 #ifdef ALLOW_NONHYDROSTATIC
       IF ( use3Dsolver ) THEN
+       IF ( DIFFERENT_MULTIPLE(diagFreq, myTime, deltaTClock) ) THEN
+        WRITE(sufx,'(I10.10)') myIter
+        CALL WRITE_FLD_XY_RL( 'cg2d_x.',sufx, cg2d_x, myIter, myThid )
+       ENDIF
 
 C--   Solve for a three-dimensional pressure term (NH or IGW or both ).
 C     see CG3D.h for the interface to this routine.
@@ -452,6 +456,17 @@ C-    end bi,bj loops
         ENDDO
        ENDDO
 
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB ) THEN
+       CALL DEBUG_STATS_RL(Nr,cg3d_b,'cg3d_b (SOLVE_FOR_PRESSURE)',
+     &                        myThid)
+      ENDIF
+#endif
+      IF ( DIFFERENT_MULTIPLE( diagFreq, myTime, deltaTClock) ) THEN
+       WRITE(sufx,'(I10.10)') myIter
+       CALL WRITE_FLD_XYZ_RL( 'cg3d_b.',sufx, cg3d_b, myIter, myThid )
+      ENDIF
+
       firstResidual=0.
       lastResidual=0.
       numIters=cg3dMaxIters
@@ -463,7 +478,7 @@ C-    end bi,bj loops
      O           lastResidual,
      U           numIters,
      I           myThid )
-      _EXCH_XYZ_RL(phi_nh, myThid )
+      _EXCH_XYZ_RL( phi_nh, myThid )
       CALL TIMER_STOP ('CG3D   [SOLVE_FOR_PRESSURE]',myThid)
 
       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
@@ -482,6 +497,10 @@ C-    end bi,bj loops
 
 C--   Update surface pressure (account for NH-p @ surface level) and NH pressure:
       IF ( zeroPsNH ) THEN
+       IF ( DIFFERENT_MULTIPLE( diagFreq, myTime, deltaTClock) ) THEN
+        WRITE(sufx,'(I10.10)') myIter
+        CALL WRITE_FLD_XYZ_RL( 'cg3d_x.',sufx,phi_nh, myIter, myThid )
+       ENDIF
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
 
