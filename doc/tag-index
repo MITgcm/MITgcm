@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1103 2009/05/25 03:30:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1104 2009/05/25 09:49:56 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src/ini_curvilinear_grid.F: 
+   compute angleSin/CosC when they are not read from a file
+o pkg/seaice: 
+   add pseudo time stepping for LSOR
 o pkg/exch2:
    temporary fix for exch2_s3d_rx; update results of exp. hs94.cs-32x32x5.impIGW
 o pkg/seaice:
