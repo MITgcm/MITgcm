@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_s3d_rx.template,v 1.5 2009/05/12 19:44:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_s3d_rx.template,v 1.6 2009/05/25 02:00:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -63,6 +63,31 @@ C                begine.
 
       IF (useCubedSphereExchange) THEN
 
+       CALL EXCH2_RX1_CUBE( phi, 'T ',
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+
+C---- This 2nd call has been added for the case where 1 tile-Edge
+C     is connected to 2 different tiles: the last neighbour in the loop
+C     tends to over-write a valid value (provided by the 1rst neighbour)
+C     with a not-yet-right data:
+C       e.g., cs32: 16x32, East-Edge of tile.8 on face.4 connect to
+C       tiles 11 & 12 on face.6 :
+C              |
+C              |  f6:t11    i: 1,
+C              |            v 16, j:1>32
+C       f4:t8  |--------
+C     32       |            i: 1,
+C   j:1^,      |  f6:t12    v 16, j:1>32
+C     i:1>16   |
+C
+C    1rst call: t8(17,17) <- t11(16,1)   = valid
+C               t8(17,17) <- t12( 0,1)   = not yet valid
+C              t12( 0,1 ) <- t11(16,1)   = valid
+C     Adding a 2nd call does not fix this index-range Pb, but the over-writting
+C     value is right the 2nd time (because of the 1rst exch).
+C----
        CALL EXCH2_RX1_CUBE( phi, 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
