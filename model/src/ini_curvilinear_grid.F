@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.43 2009/05/12 19:54:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.44 2009/05/25 09:48:09 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -396,6 +396,14 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
 
 #endif /* OLD_GRID_IO */
 
+C--   Calculate (sines and cosines of) angles of grid north with 
+C--   geographical north when they have not been read from a file
+      IF ( .NOT.anglesAreSet ) THEN
+       CALL CALC_ANGLES( myThid )
+       anglesAreSet = .TRUE.
+C--   Exchange the newly computed fields
+       CALL EXCH_UV_AGRID_3D_RS(angleSinC,angleCosC,.TRUE., 1, myThid)
+      ENDIF
 C--   Stop if Angle have not been loaded but are needed :
       _BEGIN_MASTER(myThid)
       IF ( .NOT.anglesAreSet .AND. use3dCoriolis ) THEN
