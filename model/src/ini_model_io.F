@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.32 2009/05/22 00:18:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.33 2009/05/25 02:51:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -50,7 +50,8 @@ C     msgBuf :: Informational/error meesage buffer
 CEOP
 
 C-    Safety check:
-      IF ( nPx*nPy.NE.1 .AND. globalFiles ) THEN
+      IF ( nPx*nPy.NE.1 .AND. globalFiles
+     &                  .AND. .NOT.useSingleCpuIO ) THEN
         _BEGIN_MASTER( myThid )
 c       WRITE(msgBuf,'(2A)')
 c    &   'INI_MODEL_IO: globalFiles=TRUE is not safe',
