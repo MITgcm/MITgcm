@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1102 2009/05/23 15:39:11 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1103 2009/05/25 03:30:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exch2:
+   temporary fix for exch2_s3d_rx; update results of exp. hs94.cs-32x32x5.impIGW
 o pkg/seaice:
    Adding separate sea ice albedo and drag coefficients in Southern Ocean
    from those in Arctic Ocean.  See *_south in SEAICE_PARAMS.h
