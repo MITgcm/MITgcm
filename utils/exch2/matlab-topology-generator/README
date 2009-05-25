@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/README,v 1.5 2009/05/12 19:12:16 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/README,v 1.6 2009/05/25 20:20:44 dimitri Exp $
 # $Name:  $
 
 ---- May 12, 2009 (after checkpoint61n)
@@ -64,3 +64,5 @@ exch2_setup_cs6_print.m                                 :: Writes the Fortran co
                                                         :: and that is linked with the model run.
 exch2_setup_cs6_tiles.m                                 :: Builds lists of each tile and its location within
                                                         :: a domain and within the global index space.
+
+generate_blanklist.m                                    :: generate blanklist.example.txt
