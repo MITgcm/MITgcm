@@ -2,6 +2,13 @@
 % Requires:
 % MITgcm/verification/global_ocean.cs32x15/input/bathy_Hmin50.bin
 
+% Another way to get list of empty files is to compile
+% and run (1 iter is enough) without blank-tile and:
+% grep 'Empty tile' output.txt
+% or MPI:
+% grep 'Empty tile' STDOUT.*
+% give this list.
+
 addpath ../../matlab/cs_grid/read_cs    % readbin.m location
 nr=32;                                  % face dimension
 nf=6;                                   % number of faces
