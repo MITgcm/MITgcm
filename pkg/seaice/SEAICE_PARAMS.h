@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.58 2009/05/26 16:39:57 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.59 2009/05/26 23:13:06 heimbach Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -91,7 +91,8 @@ C     SEAICEadvSchSalt - sets the advection scheme for sea ice salinity
 C     SEAICEadvSchAge  - sets the advection scheme for sea ice age
 C
       INTEGER LAD, IMAX_TICE
-      INTEGER SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS
+      INTEGER SOLV_MAX_ITERS, SOLV_NCHECK
+      INTEGER MPSEUDOTIMESTEPS, NPSEUDOTIMESTEPS
       INTEGER SEAICEadvScheme
       INTEGER SEAICEadvSchArea
       INTEGER SEAICEadvSchHeff
@@ -107,6 +108,7 @@ C
      &     SEAICEadvSchSnow,
      &     SEAICEadvSchSalt,
      &     SEAICEadvSchAge
+      PARAMETER (MPSEUDOTIMESTEPS=2)
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
 C     AreaFile        - File containing initial sea-ice concentration

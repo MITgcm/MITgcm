@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.29 2009/03/19 11:55:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.30 2009/05/26 23:13:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -115,6 +115,18 @@ C--   Check advection schemes
      &      ' SEAICEadvSchSalt = ',  SEAICEadvSchSalt
        WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
      &      ' SEAICEadvSchAge  = ',  SEAICEadvSchAge
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
+C--
+      IF ( NPSEUDOTIMESTEPS .GT. MPSEUDOTIMESTEPS ) THEN
+       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &  ' need to increase MPSEUDOTIMESTEPS in SEAICE_PARAMS.h'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A,2I4)') 'SEAICE_CHECK:',
+     &  ' MPSEUDOTIMESTEPS, NPSEUDOTIMESTEPS = ',
+     &  MPSEUDOTIMESTEPS, NPSEUDOTIMESTEPS
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.42 2009/05/26 12:53:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.43 2009/05/26 23:13:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -160,8 +160,10 @@ C NOW DO PREDICTOR TIME STEP
         ENDDO
        ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uicec = comlev1_lsr, key=ikey_dynamics, kind=isbyte
-CADJ STORE vicec = comlev1_lsr, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE uicec = comlev1_dynsol, kind=isbyte,
+cphCADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+cphCADJ STORE vicec = comlev1_dynsol, kind=isbyte,
+cphCADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif
       ELSE
 C NOW DO MODIFIED EULER STEP
@@ -196,10 +198,10 @@ C     update  u/vIce(k-2)
 cph That's an important one! Note, that
 cph * lsr is called twice, thus the icall index
 cph * this storing is still outside the iteration loop
-CADJ STORE uice = comlev1_lsr, kind=isbyte,
-CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
-CADJ STORE vice = comlev1_lsr, kind=isbyte,
-CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ STORE uice = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ STORE vice = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF ( SEAICE_no_Slip ) THEN
@@ -1009,8 +1011,10 @@ C NOW DO PREDICTOR TIME STEP
         ENDDO
        ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uicec = comlev1_lsr, key=ikey_dynamics, kind=isbyte
-CADJ STORE vicec = comlev1_lsr, key=ikey_dynamics, kind=isbyte
+CADJ STORE uicec = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ STORE vicec = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif
       ELSE
 C NOW DO MODIFIED EULER STEP
@@ -1045,10 +1049,10 @@ C     for additional (pseudo-time)steps update u(k-1) = uice(2)
 cph That's an important one! Note, that
 cph * lsr is called twice, thus the icall index
 cph * this storing is still outside the iteration loop
-CADJ STORE uice = comlev1_lsr, kind=isbyte,
-CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
-CADJ STORE vice = comlev1_lsr, kind=isbyte,
-CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ STORE uice = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
+CADJ STORE vice = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF ( SEAICE_no_Slip ) THEN

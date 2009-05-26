@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.24 2009/04/28 18:20:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.25 2009/05/26 23:13:06 heimbach Exp $
 C $Name:  $
 
 C     for an alternative discretization of d/dx[ (zeta-eta) dV/dy]
@@ -101,9 +101,9 @@ C SOLVE FOR UICE
 cph That's an important one! Note, that
 cph * lsr is called twice, thus the icall index
 cph * this storing is still outside the iteration loop
-CADJ STORE uice = comlev1_lsr,
+CADJ STORE uice = comlev1_dynsol,
 CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
-CADJ STORE vice = comlev1_lsr,
+CADJ STORE vice = comlev1_dynsol,
 CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
 

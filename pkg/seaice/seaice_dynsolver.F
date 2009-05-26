@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.33 2009/05/25 09:46:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.34 2009/05/26 23:13:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -45,6 +45,7 @@ CEndOfInterface
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
       INTEGER i, j, bi, bj
+      INTEGER ipseudo
       _RL PSTAR
       _RL phiSurf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       LOGICAL  DIFFERENT_MULTIPLE
@@ -228,8 +229,16 @@ C     do the original VP solver of Zhang and Hibler (1997), ported to
 C     a C-grid
 #endif /* SEAICE_ALLOW_EVP */
 C     LSR SCHEME (ZHANG-J/HIBLER 1997)
-        DO I=1,NPSEUDOTIMESTEPS
-         CALL SEAICE_LSR( I, myTime, myIter, myThid )
+        DO ipseudo=1,MPSEUDOTIMESTEPS
+         IF ( ipseudo .LE. NPSEUDOTIMESTEPS ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uice = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ipseudo-1)*nchklev_1
+CADJ STORE vice = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ipseudo-1)*nchklev_1
+#endif /* ALLOW_AUTODIFF_TAMC */
+          CALL SEAICE_LSR( ipseudo, myTime, myIter, myThid )
+         ENDIF
         ENDDO
 #ifdef SEAICE_ALLOW_EVP
        ENDIF
