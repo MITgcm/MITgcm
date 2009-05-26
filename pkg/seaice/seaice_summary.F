@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.26 2009/05/23 15:39:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.27 2009/05/26 16:39:57 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -178,18 +178,22 @@ C     == end of interface ==
      & 'SEAICE_drySnowAlb =', ' /* dry snow albedo */')
       CALL WRITE_0D_RL( SEAICE_wetSnowAlb ,INDEX_NONE,
      & 'SEAICE_wetSnowAlb =', ' /* wet snow albedo */')
+      CALL WRITE_0D_RL( HO                ,INDEX_NONE,
+     & 'HO                =', ' /* demarcation ice thickness */')
       CALL WRITE_0D_RL( SEAICE_drag_south       ,INDEX_NONE,
-     & 'SEAICE_drag_south       =', ' /* Southern Ocean SEAICE_drag */')
+     & 'SEAICE_drag_south      =', ' /* Southern Ocean SEAICE_drag */')
       CALL WRITE_0D_RL( SEAICE_waterDrag_south  ,INDEX_NONE,
-     & 'SEAICE_waterDrag_south  =', ' /* Southern Ocean waterDrag */')
+     & 'SEAICE_waterDrag_south =', ' /* Southern Ocean waterDrag */')
       CALL WRITE_0D_RL( SEAICE_dryIceAlb_south  ,INDEX_NONE,
-     & 'SEAICE_dryIceAlb_south  =', ' /* Southern Ocean dryIceAlb */')
+     & 'SEAICE_dryIceAlb_south =', ' /* Southern Ocean dryIceAlb */')
       CALL WRITE_0D_RL( SEAICE_wetIceAlb_south  ,INDEX_NONE,
-     & 'SEAICE_wetIceAlb_south  =', ' /* Southern Ocean wetIceAlb */')
+     & 'SEAICE_wetIceAlb_south =', ' /* Southern Ocean wetIceAlb */')
       CALL WRITE_0D_RL( SEAICE_drySnowAlb_south ,INDEX_NONE,
-     & 'SEAICE_drySnowAlb_south =', ' /* Southern Ocean drySnowAlb */')
+     & 'SEAICE_drySnowAlb_south=', ' /* Southern Ocean drySnowAlb */')
       CALL WRITE_0D_RL( SEAICE_wetSnowAlb_south ,INDEX_NONE,
-     & 'SEAICE_wetSnowAlb_south =', ' /* Southern Ocean wetSnowAlb */')
+     & 'SEAICE_wetSnowAlb_south=', ' /* Southern Ocean wetSnowAlb */')
+      CALL WRITE_0D_RL( HO_south          ,INDEX_NONE,
+     & 'HO_south               =', ' /* Southern Ocean HO */')
       CALL WRITE_0D_RL( SEAICE_waterAlbedo,INDEX_NONE,
      & 'SEAICE_waterAlbedo=', ' /* water albedo */')
       CALL WRITE_0D_RL( SEAICE_strength   ,INDEX_NONE,
@@ -246,8 +250,6 @@ C     == end of interface ==
      & 'DIFF1             =', ' /* parameter used in advect.F */')
       CALL WRITE_0D_RL( A22               ,INDEX_NONE,
      & 'A22               =', ' /* parameter used in growth.F */')
-      CALL WRITE_0D_RL( HO                ,INDEX_NONE,
-     & 'HO                =', ' /* demarcation ice thickness */')
       CALL WRITE_0D_RL( MAX_HEFF          ,INDEX_NONE,
      & 'MAX_HEFF          =', ' /* maximum ice thickness */')
       CALL WRITE_0D_RL( MIN_ATEMP         ,INDEX_NONE,

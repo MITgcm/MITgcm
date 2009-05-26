@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.55 2009/03/18 14:35:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.56 2009/05/26 16:39:57 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -475,10 +475,17 @@ CML#endif
 CML        DO J=1,sNy
 CML         DO I=1,sNx
 C     Here we finally compute the new AREA
-          AREA(I,J,1,bi,bj)=AREA(I,J,1,bi,bj)+
-     &         (ONE-AREA(I,J,2,bi,bj))*GAREA(I,J)/HO
-     &         +HALF*HCORR(I,J)*AREA(I,J,2,bi,bj)
-     &         /(HEFF(I,J,1,bi,bj)+.00001 _d 0)
+          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+           AREA(I,J,1,bi,bj)=AREA(I,J,1,bi,bj)+
+     &          (ONE-AREA(I,J,2,bi,bj))*GAREA(I,J)/HO_south
+     &          +HALF*HCORR(I,J)*AREA(I,J,2,bi,bj)
+     &          /(HEFF(I,J,1,bi,bj)+.00001 _d 0)
+          ELSE
+           AREA(I,J,1,bi,bj)=AREA(I,J,1,bi,bj)+
+     &          (ONE-AREA(I,J,2,bi,bj))*GAREA(I,J)/HO
+     &          +HALF*HCORR(I,J)*AREA(I,J,2,bi,bj)
+     &          /(HEFF(I,J,1,bi,bj)+.00001 _d 0)
+          ENDIF
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC

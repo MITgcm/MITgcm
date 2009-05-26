@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1104 2009/05/25 09:49:56 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1105 2009/05/26 16:39:57 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -11,8 +11,8 @@ o pkg/seaice:
 o pkg/exch2:
    temporary fix for exch2_s3d_rx; update results of exp. hs94.cs-32x32x5.impIGW
 o pkg/seaice:
-   Adding separate sea ice albedo and drag coefficients in Southern Ocean
-   from those in Arctic Ocean.  See *_south in SEAICE_PARAMS.h
+   Adding separate sea ice albedo, drag coefficients, and HO in Southern
+   Ocean from those in Arctic Ocean.  See *_south in SEAICE_PARAMS.h
 o SingleCpuIO:
    fix bug put before chkp61n (May 11), when more than 2 MPI cpu are used.
 o pkg/seaice:

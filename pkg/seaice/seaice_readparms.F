@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.73 2009/05/25 09:46:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.74 2009/05/26 16:39:57 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,10 +57,10 @@ C--   SEAICE parameters
      & SEAICE_initialHEFF,
      & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
-     & SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
+     & SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO,
      & SEAICE_drag_south, SEAICE_waterDrag_south,
      & SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
-     & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south,
+     & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      & SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
@@ -70,7 +70,7 @@ C--   SEAICE parameters
      & SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
      & AreaFile, HeffFile, HsnowFile, HsaltFile, IceAgeFile,
      & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
-     & LSR_ERROR, DIFF1, A22, HO,
+     & LSR_ERROR, DIFF1, A22,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ, 
@@ -167,12 +167,14 @@ C     Hunke, JCP, 2001 use 615 kg/m^2 for this
       SEAICE_wetIceAlb   = 0.66   _d 0
       SEAICE_drySnowAlb  = 0.84   _d 0
       SEAICE_wetSnowAlb  = 0.7    _d 0
+      HO                 = 0.5    _d 0
       SEAICE_drag_south       = UNSET_RL
       SEAICE_waterDrag_south  = UNSET_RL
       SEAICE_dryIceAlb_south  = UNSET_RL
       SEAICE_wetIceAlb_south  = UNSET_RL
       SEAICE_drySnowAlb_south = UNSET_RL
       SEAICE_wetSnowAlb_south = UNSET_RL
+      HO_south                = UNSET_RL
       SEAICE_waterAlbedo = 0.1    _d +00
       SEAICE_strength    = 2.75   _d +04
       SEAICE_eccen       = 2.     _d 0
@@ -210,7 +212,6 @@ C     Euler time stepping scheme of Zhang+Hibler (1997)
       DIFF1      = .002      _d 0
       DIFF1      = 2.0*DIFF1
       A22        = 0.15      _d 0
-      HO         = 0.5       _d 0
       SEAICE_airTurnAngle   = 0.0 _d 0
       SEAICE_waterTurnAngle = 0.0 _d 0
       MAX_HEFF          = 10.     _d 0
@@ -269,6 +270,8 @@ C--   Read settings from model parameter file "data.seaice".
      &    SEAICE_drySnowAlb_south = SEAICE_drySnowAlb
       IF (SEAICE_wetSnowAlb_south .EQ. UNSET_RL)
      &    SEAICE_wetSnowAlb_south = SEAICE_wetSnowAlb
+      IF (HO_south                .EQ. UNSET_RL)
+     &    HO_south                = HO
 
 C     Check that requested time step size is supported.  The combination
 C     below is the only one that is supported at this time.  Does not

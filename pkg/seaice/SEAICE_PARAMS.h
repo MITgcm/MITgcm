@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.57 2009/05/23 15:39:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.58 2009/05/26 16:39:57 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -152,6 +152,8 @@ C     SEAICE_dryIceAlb   - winter albedo
 C     SEAICE_wetIceAlb   - summer albedo
 C     SEAICE_drySnowAlb  - dry snow albedo
 C     SEAICE_wetSnowAlb  - wet snow albedo
+C     HO                 - demarcation thickness between thin and
+C                          thick ice: HO is a key ice-growth parameter
 C
 C     SEAICE_drag_south       - Southern Ocean SEAICE_drag
 C     SEAICE_waterDrag_south  - Southern Ocean SEAICE_waterDrag
@@ -159,6 +161,7 @@ C     SEAICE_dryIceAlb_south  - Southern Ocean SEAICE_dryIceAlb
 C     SEAICE_wetIceAlb_south  - Southern Ocean SEAICE_wetIceAlb
 C     SEAICE_drySnowAlb_south - Southern Ocean SEAICE_drySnowAlb
 C     SEAICE_wetSnowAlb_south - Southern Ocean SEAICE_wetSnowAlb
+C     HO_south                - Southern Ocean HO
 C
 C     SEAICE_waterAlbedo - water albedo
 C     SEAICE_strength    - sea-ice strength Pstar
@@ -198,8 +201,6 @@ C     SEAICEstressFactor - factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          - sets accuracy of LSR solver
 C     DIFF1              - parameter used in advect.F
 C     A22                - parameter used in growth.F
-C     HO                 - demarcation thickness between thin and
-C                          thick ice: HO is a key ice-growth parameter
 C     SEAICE_airTurnAngle   - turning angles of air-ice interfacial stress 
 C     SEAICE_waterTurnAngle - and ice-water interfacial stress (in degrees)
 C
@@ -208,10 +209,10 @@ C
       _RL SEAICE_initialHEFF
       _RL SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR
       _RL SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb
-      _RL SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb
+      _RL SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO
       _RL SEAICE_drag_south, SEAICE_waterDrag_south
       _RL SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south
-      _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south
+      _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south
       _RL SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
@@ -219,7 +220,7 @@ C
       _RL SEAICE_salinity, SEAICEstressFactor
       _RL SEAICE_gamma_t, SEAICE_gamma_t_frz
       _RL SEAICE_availHeatFrac, SEAICE_availHeatFracFrz
-      _RL OCEAN_drag, LSR_ERROR, DIFF1, A22, HO
+      _RL OCEAN_drag, LSR_ERROR, DIFF1, A22
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
       _RL SEAICE_elasticParm, SEAICE_evpTauRelax
       _RL SEAICE_evpDampC, SEAICE_zetaMin
@@ -231,10 +232,10 @@ C
      &    SEAICE_initialHEFF,
      &    SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      &    SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
-     &    SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
+     &    SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO,
      &    SEAICE_drag_south, SEAICE_waterDrag_south,
      &    SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
-     &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south,
+     &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      &    SEAICE_waterAlbedo, SEAICE_strength, SEAICE_eccen,
      &    SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
@@ -242,7 +243,7 @@ C
      &    SEAICE_salinity, SEAICEstressFactor,
      &    SEAICE_gamma_t, SEAICE_gamma_t_frz,
      &    SEAICE_availHeatFrac, SEAICE_availHeatFracFrz,
-     &    OCEAN_drag, LSR_ERROR, DIFF1, A22, HO,
+     &    OCEAN_drag, LSR_ERROR, DIFF1, A22,
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
