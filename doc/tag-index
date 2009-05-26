@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1106 2009/05/26 19:21:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1107 2009/05/26 23:28:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o eesupp:
+  new S/R ALL_PROC_DIE (like EEDIE, without irrelevant threads err msg):
+  should be called before a "stop" if we know that all process are going
+  to stop; if one Proc does call this S/R, will hang in MPI_FINALISE.
 
 checkpoint61o
 o pkg/exch2: change check_depths to issue just a warning (instead of error+stop)
