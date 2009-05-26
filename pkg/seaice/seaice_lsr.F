@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.41 2009/05/25 09:46:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.42 2009/05/26 12:53:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -173,6 +173,19 @@ C NOW DO MODIFIED EULER STEP
            vIce(I,J,1,bi,bj)=HALF*(vIce(I,J,1,bi,bj)+vIce(I,J,2,bi,bj))
            uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
            vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+      IF ( ilcall .GT. 2 ) THEN
+C     update  u/vIce(k-2)
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIce(I,J,2,bi,bj)=uIce(I,J,1,bi,bj)
+           vIce(I,J,2,bi,bj)=vIce(I,J,1,bi,bj)
           ENDDO
          ENDDO
         ENDDO
