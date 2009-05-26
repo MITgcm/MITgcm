@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eesupp.flow,v 1.12 2009/05/07 19:05:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eesupp.flow,v 1.13 2009/05/26 22:56:32 jmc Exp $
 C $Name:  $
 
 C---------------------------------------------------------------
@@ -50,6 +50,9 @@ CADJ SUBROUTINE CHECK_THREADS  OUTPUT =
 
 CADJ SUBROUTINE EEDIE  INPUT  =
 CADJ SUBROUTINE EEDIE  OUTPUT =
+
+CADJ SUBROUTINE ALL_PROC_DIE  INPUT  = 1
+CADJ SUBROUTINE ALL_PROC_DIE  OUTPUT =
 
 
 CADJ FUNCTION   TIMER_INDEX  INPUT  = 1,2,3,4
