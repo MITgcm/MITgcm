@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.44 2009/05/25 09:48:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.45 2009/05/26 16:47:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -41,11 +41,13 @@ C     myThid -  Number of this instance of INI_CURVILINEAR_GRID
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
+C     == Shared Local variables ==
+      LOGICAL anglesAreSet
+      COMMON /LOCAL_INI_CURVILINEAR_GRID/ anglesAreSet
 C     == Local variables ==
       INTEGER bi,bj
       INTEGER i,j
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      LOGICAL anglesAreSet
 #ifdef ALLOW_MNC
       CHARACTER*(80) mncFn
 #endif
@@ -115,6 +117,10 @@ C-    Cell centered quantities
 
       CALL MDSREADFIELD('RA.bin',readBinaryPrec,'RS',1,rA,  1,myThid)
       _EXCH_XY_RS(rA,myThid )
+
+      _BEGIN_MASTER(myThid)
+      anglesAreSet = .FALSE.
+      _END_MASTER(myThid)
 
 C-    Corner quantities
       CALL MDSREADFIELD('LONG.bin',readBinaryPrec,'RS',1,xG,  1,myThid)
@@ -198,8 +204,6 @@ C-    Staggered (u,v pairs) quantities
       CALL MDSREADFIELD('DXG.bin',readBinaryPrec,'RS',1,dxG,  1,myThid)
       CALL MDSREADFIELD('DYG.bin',readBinaryPrec,'RS',1,dyG,  1,myThid)
       CALL EXCH_UV_XY_RS(dyG,dxG,.FALSE.,myThid)
-      CALL EXCH_UV_AGRID_3D_RS(angleSinC,angleCosC,.TRUE., 1, myThid)
-      anglesAreSet = .FALSE.
 
 c     write(10) xC
 c     write(10) yC
@@ -392,7 +396,6 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
       CALL EXCH_UV_XY_RS(dxC,dyC,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(rAw,rAs,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(dyG,dxG,.FALSE.,myThid)
-      CALL EXCH_UV_AGRID_3D_RS(angleSinC,angleCosC,.TRUE., 1, myThid)
 
 #endif /* OLD_GRID_IO */
 
@@ -400,10 +403,14 @@ C--   Calculate (sines and cosines of) angles of grid north with
 C--   geographical north when they have not been read from a file
       IF ( .NOT.anglesAreSet ) THEN
        CALL CALC_ANGLES( myThid )
+       _BARRIER
+       _BEGIN_MASTER(myThid)
        anglesAreSet = .TRUE.
-C--   Exchange the newly computed fields
-       CALL EXCH_UV_AGRID_3D_RS(angleSinC,angleCosC,.TRUE., 1, myThid)
+       _END_MASTER(myThid)
       ENDIF
+C--   Exchange Angle (either loaded from file or computed)
+      CALL EXCH_UV_AGRID_3D_RS(angleSinC,angleCosC,.TRUE., 1, myThid)
+
 C--   Stop if Angle have not been loaded but are needed :
       _BEGIN_MASTER(myThid)
       IF ( .NOT.anglesAreSet .AND. use3dCoriolis ) THEN
