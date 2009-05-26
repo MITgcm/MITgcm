@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_solution.F,v 1.6 2006/08/03 19:06:34 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_solution.F,v 1.7 2009/05/26 23:04:03 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -13,7 +13,7 @@ C     !INTERFACE:
      I     myTime, myIter, myThid )
 
 C     !DESCRIPTION:
-C     Checks that the solutions is within bounds             
+C     Checks that the solutions is within bounds
 
 C     !USES:
       IMPLICIT NONE
@@ -32,7 +32,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      CHARACTER*(MAX_LEN_MBUF) msgBuf   
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL tMin,tMax,tMean,tSD,tDel2,tVol
 
       IF ( statsTemp(1) .LE. statsTemp(2) ) THEN
@@ -46,9 +46,9 @@ C     Statistics for T
      O                tMin,tMax,tMean,tSD,tDel2,tVol,
      I                myThid )
       ENDIF
-      
-      IF ( (tMax-tMin.GT.10.e3) .or. 
-     .            (fluidIsWater .and. (tMax-tMin.GT.1.e3) )  ) THEN
+
+      IF ( (tMax-tMin.GT.1.E4) .OR.
+     .            (fluidIsWater .AND. (tMax-tMin.GT.1.E3) )  ) THEN
         _BEGIN_MASTER(myThid)
          WRITE(msgBuf,'(A,1P2E12.3)')
      &    'SOLUTION IS HEADING OUT OF BOUNDS: tMin,tMax=',tMin,tMax
@@ -57,8 +57,8 @@ C     Statistics for T
          CALL PRINT_MESSAGE(msgBuf,errorMessageUnit,SQUEEZE_RIGHT, 1)
         _END_MASTER(myThid)
 
-C jmc: add this "if not ..." to avoid beeing stuck when using coupler; 
-        IF ( .NOT. useCoupler ) CALL EEDIE
+C jmc: add this "if not ..." to avoid beeing stuck when using coupler;
+        IF ( .NOT.useCoupler ) CALL ALL_PROC_DIE( myThid )
         STOP 'MON_SOLUTION: STOPPED DUE TO EXTREME VALUES OF SOLUTION'
       ENDIF
 
