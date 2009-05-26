@@ -1,12 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1105 2009/05/26 16:39:57 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1106 2009/05/26 19:21:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o model/src/ini_curvilinear_grid.F: 
+checkpoint61o
+o pkg/exch2: change check_depths to issue just a warning (instead of error+stop)
+o model/src/ini_curvilinear_grid.F:
    compute angleSin/CosC when they are not read from a file
-o pkg/seaice: 
+o pkg/seaice:
    add pseudo time stepping for LSOR
 o pkg/exch2:
    temporary fix for exch2_s3d_rx; update results of exp. hs94.cs-32x32x5.impIGW
