@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_cs6_facets.F,v 1.1 2009/05/12 19:40:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_cs6_facets.F,v 1.2 2009/05/26 23:08:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -53,8 +53,10 @@ CEOP
 
 C--   Number of facets:
       nFacets = 6
-      IF ( nfacets.GT.W2_maxNbFacets )
-     & STOP 'ABNORMAL END: S/R W2_SET_CS6_FACETS (nFacets>maxNbFacets)'
+      IF ( nfacets.GT.W2_maxNbFacets ) THEN
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R W2_SET_CS6_FACETS (nFacets>maxNbFacets)'
+      ENDIF
 
 C--   Facet Edge connections ( edges order: N,S,E,W <==> 1,2,3,4 )
       DO j=1,nFacets
@@ -89,6 +91,7 @@ C--   facet dimension: take the 1rst 3 numbers from facet_dims
      &     ' no more than 3 dims (nRd,nGr,nBl) expected for CS-6 Topol'
          CALL PRINT_MESSAGE( msgBuf, W2_oUnit,SQUEEZE_RIGHT,myThid )
          CALL PRINT_ERROR( msgBuf, myThid )
+         CALL ALL_PROC_DIE( myThid )
          STOP 'ABNORMAL END: S/R W2_SET_CS6_FACETS: allows 3 dims only'
         ENDIF
       ENDDO
@@ -121,8 +124,10 @@ C-    try to get cube size from number of tiles, assuming a regular Cube
           CALL PRINT_ERROR( msgBuf, myThid )
         ENDIF
       ENDIF
-      IF ( nRd*nGr*nBl.EQ.0 )
-     & STOP 'ABNORMAL END: S/R W2_SET_CS6_FACETS (Dims are missing)'
+      IF ( nRd*nGr*nBl.EQ.0 ) THEN
+       CALL ALL_PROC_DIE( myThid )
+       STOP 'ABNORMAL END: S/R W2_SET_CS6_FACETS (Dims are missing)'
+      ENDIF
 
 
 C--   Set facet dimension : 1rst 3 are known:
@@ -175,6 +180,7 @@ C-    Corresponding Edge length
           CALL PRINT_ERROR( msgBuf, myThid )
          ENDIF
         ENDDO
+        CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R W2_SET_CS6_FACETS (unset facet dims)'
       ENDIF
 
