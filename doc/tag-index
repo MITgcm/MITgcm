@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1107 2009/05/26 23:28:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1108 2009/05/27 03:12:04 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o Fix computations of L4rdt in mom_calc_visc.F
 o eesupp:
   new S/R ALL_PROC_DIE (like EEDIE, without irrelevant threads err msg):
   should be called before a "stop" if we know that all process are going
