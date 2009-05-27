@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.37 2009/04/06 23:47:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.38 2009/05/27 01:35:25 dfer Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -334,7 +334,7 @@ CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 
 #ifdef    ALLOW_AUTODIFF_TAMC
 # ifndef AUTODIFF_DISABLE_LEITH
-           lockey_2 = i+olx + (sNx+2*olx)*(j+oly-1) 
+           lockey_2 = i+olx + (sNx+2*olx)*(j+oly-1)
      &                      + (sNx+2*olx)*(sNy+2*oly)*(lockey_1-1)
 CADJ STORE viscA4_ZSmg(i,j) 
 CADJ &     = comlev1_mom_ijk_loop , key=lockey_2, byte=isbyte
@@ -346,14 +346,10 @@ CADJ &     = comlev1_mom_ijk_loop , key=lockey_2, byte=isbyte
 C These are (powers of) length scales
          IF (useAreaViscLength) THEN
           L2=rA(i,j,bi,bj)
-          L4rdt=0.03125 _d 0*recip_dt*L2**2
          ELSE
           L2=2. _d 0/((recip_DXF(I,J,bi,bj)**2+recip_DYF(I,J,bi,bj)**2))
-          L4rdt=recip_dt/( 6. _d 0*(recip_DXF(I,J,bi,bj)**4
-     &                             +recip_DYF(I,J,bi,bj)**4)
-     &                   +8. _d 0*((recip_DXF(I,J,bi,bj)
-     &                             *recip_DYF(I,J,bi,bj))**2) )
          ENDIF
+         L4rdt=0.03125 _d 0*recip_dt*L2**2
          L3=(L2**1.5)
          L4=(L2**2)
          L5=(L2*L3)
@@ -482,14 +478,10 @@ CCCCCCCCCCCCC Vorticity Point CalculationsCCCCCCCCCCCCCCCCCC
 C These are (powers of) length scales
          IF (useAreaViscLength) THEN
           L2=rAz(i,j,bi,bj)
-          L4rdt=0.125 _d 0*recip_dt*rAz(i,j,bi,bj)**2
          ELSE
           L2=2. _d 0/((recip_DXV(I,J,bi,bj)**2+recip_DYU(I,J,bi,bj)**2))
-          L4rdt=recip_dt/
-     &     ( 6. _d 0*(recip_DXV(I,J,bi,bj)**4+recip_DYU(I,J,bi,bj)**4)
-     &      +8. _d 0*((recip_DXV(I,J,bi,bj)*recip_DYU(I,J,bi,bj))**2))
          ENDIF
-
+         L4rdt=0.03125 _d 0*recip_dt*L2**2
          L3=(L2**1.5)
          L4=(L2**2)
          L5=(L2*L3)
