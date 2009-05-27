@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.34 2009/05/26 23:13:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.35 2009/05/27 08:26:31 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -229,7 +229,11 @@ C     do the original VP solver of Zhang and Hibler (1997), ported to
 C     a C-grid
 #endif /* SEAICE_ALLOW_EVP */
 C     LSR SCHEME (ZHANG-J/HIBLER 1997)
+#ifdef ALLOW_AUTODIFF_TAMC
         DO ipseudo=1,MPSEUDOTIMESTEPS
+#else
+        DO ipseudo=1,NPSEUDOTIMESTEPS
+#endif
          IF ( ipseudo .LE. NPSEUDOTIMESTEPS ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice = comlev1_dynsol, kind=isbyte,

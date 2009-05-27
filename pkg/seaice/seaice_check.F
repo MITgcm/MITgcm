@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.30 2009/05/26 23:13:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.31 2009/05/27 08:26:31 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -120,6 +120,7 @@ C--   Check advection schemes
       ENDIF
 
 C--
+#ifdef ALLOW_AUTODIFF_TAMC
       IF ( NPSEUDOTIMESTEPS .GT. MPSEUDOTIMESTEPS ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &  ' need to increase MPSEUDOTIMESTEPS in SEAICE_PARAMS.h'
@@ -130,6 +131,7 @@ C--
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
+#endif
 
 C--   SEAICEadvSnow does not work with LAD = 1
       IF (SEAICEadvSnow .AND. SEAICEadvSchSnow .EQ. 2
