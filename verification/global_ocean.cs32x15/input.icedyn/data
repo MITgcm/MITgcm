@@ -35,6 +35,7 @@
 #saltAdvScheme=77,
  readBinaryPrec=64,
  writeBinaryPrec=64,
+ useSingleCpuIO=.TRUE.,
 #debugLevel = 2,
  &
 
