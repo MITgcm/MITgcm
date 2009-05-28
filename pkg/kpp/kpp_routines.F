@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.42 2009/02/13 21:58:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.43 2009/05/28 20:20:59 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -848,7 +848,7 @@ c     fRi, fcon             function of Rig
       _RL Rig
       _RL fRi, fcon
       _RL ratio
-      integer i, ki
+      integer i, ki, kp1
       _RL c1, c0
 
 #ifdef ALLOW_KPP_VERTICALLY_SMOOTH
@@ -934,20 +934,21 @@ c ----------------------------------------------------------------------
 c            evaluate diffusivities and viscosity
 c    mixing due to internal waves, and shear and static instability
 
+            kp1 = MIN(ki+1,Nr)
 #ifndef EXCLUDE_KPP_SHEAR_MIX 
             if ( .NOT. inAdMode ) then
                diffus(i,ki,1) = viscAr + fcon * difmcon + fRi * difm0
-               diffus(i,ki,2) = diffusKzS(i,ki)+fcon*difscon+fRi*difs0
-               diffus(i,ki,3) = diffusKzT(i,ki)+fcon*diftcon+fRi*dift0
+               diffus(i,ki,2) = diffusKzS(i,kp1)+fcon*difscon+fRi*difs0
+               diffus(i,ki,3) = diffusKzT(i,kp1)+fcon*diftcon+fRi*dift0
             else
                diffus(i,ki,1) = viscAr
-               diffus(i,ki,2) = diffusKzS(i,ki)
-               diffus(i,ki,3) = diffusKzT(i,ki)
+               diffus(i,ki,2) = diffusKzS(i,kp1)
+               diffus(i,ki,3) = diffusKzT(i,kp1)
             endif
 #else
             diffus(i,ki,1) = viscAr
-            diffus(i,ki,2) = diffusKzS(i,ki)
-            diffus(i,ki,3) = diffusKzT(i,ki)
+            diffus(i,ki,2) = diffusKzS(i,kp1)
+            diffus(i,ki,3) = diffusKzT(i,kp1)
 #endif
 
          end do
