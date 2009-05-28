@@ -16,7 +16,6 @@
  diffKrS=3.E-5,
  ivdc_kappa=10.,
  implicitDiffusion=.TRUE.,
- rotationPeriod=86400.,
  gravity=9.81,
  rhonil=1035.,
  rhoConstFresh=1000.,
