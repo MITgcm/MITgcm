@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.43 2009/05/28 20:20:59 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.44 2009/05/28 22:59:23 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -599,6 +599,7 @@ c check hbl limits for hekman or hmonob
 c     ph: test for zero nominator
 c-----------------------------------------------------------------------
 
+      IF ( LimitHblStable ) THEN
       do i = 1, imt
          if (bfsfc(i) .gt. 0.0) then
             hekman = cekman * ustar(i) / max(abs(Coriol(i)),phepsi)
@@ -609,6 +610,8 @@ c-----------------------------------------------------------------------
             hbl(i) = min(hbl(i),hlimit)
          end if
       end do
+      ENDIF
+
 CADJ store hbl = comlev1_kpp
 CADJ &   , key=ikppkey, kind=isbyte, 
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)

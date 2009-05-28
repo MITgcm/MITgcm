@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.18 2008/11/14 21:34:48 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.19 2009/05/28 22:59:22 dfer Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -36,6 +36,7 @@ C--   KPP vertical mixing parameters
       NAMELIST /KPP_PARM01/
      & kpp_freq, kpp_dumpFreq, kpp_taveFreq,
      & KPPmixingMaps, KPPwriteState, KPP_ghatUseTotalDiffus,
+     & LimitHblStable,
      & minKPPhbl,
      & epsln, phepsi, epsilon, vonk, dB_dz,
      & conc1, conam, concm, conc2, zetam,
@@ -66,6 +67,7 @@ C--   set default KPP vertical mixing parameters
       kpp_taveFreq  = taveFreq
       KPPmixingMaps = .FALSE.
       KPPwriteState = .FALSE.
+      LimitHblStable= .TRUE.
       KPP_ghatUseTotalDiffus = .FALSE.
       minKPPhbl = UNSET_RL
 
