@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1108 2009/05/27 03:12:04 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1109 2009/05/28 23:38:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o change tiling of global_ocean.cs32x15 (12 tiles, 32x16) and generate
+  new output (all 4 tests) using default rotationPeriod.
 o Fix computations of L4rdt in mom_calc_visc.F
 o eesupp:
   new S/R ALL_PROC_DIE (like EEDIE, without irrelevant threads err msg):
