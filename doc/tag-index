@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1109 2009/05/28 23:38:58 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1110 2009/05/29 10:44:50 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  - fix diagnostics for flux of ice in case of B-grid
+  - turn strain rates eij and press into global fields within global 
+    common block in SEAICE.h for more straighforward diagnostics
+  - fix diagnostics for principal stress components, press, zeta, eta
+    to give something meaning full
 o change tiling of global_ocean.cs32x15 (12 tiles, 32x16) and generate
   new output (all 4 tests) using default rotationPeriod.
 o Fix computations of L4rdt in mom_calc_visc.F
