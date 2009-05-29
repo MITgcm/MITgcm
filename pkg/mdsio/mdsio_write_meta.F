@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_meta.F,v 1.3 2008/07/20 12:26:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_meta.F,v 1.4 2009/05/29 16:05:41 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -72,7 +72,7 @@ C     !FUNCTIONS
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-      INTEGER i,ii,iL
+      INTEGER i,j,ii,iL
       INTEGER mUnit
 c     LOGICAL exst
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -109,14 +109,30 @@ C     1  global size  (ie. the size of the global dimension of all files)
 C     2  global start (ie. the global position of the start of this file)
 C     3  global end   (ie. the global position of the end   of this file)
 
-      WRITE(mUnit,'(1X,A)') 'dimList = ['
-      DO ii=1,nDims
-       IF (ii.LT.nDims) THEN
-        WRITE(mUnit,'(1X,3(I5,","))') (dimList(i,ii),i=1,3)
-       ELSE
-        WRITE(mUnit,'(1X,I5,",",I5,",",I5)') (dimList(i,ii),i=1,3)
-       ENDIF
+      ii = 0
+      DO j=1,nDims
+       ii = MAX(dimList(1,j),ii)
       ENDDO
+      WRITE(mUnit,'(1X,A)') 'dimList = ['
+      IF ( ii.LT.10000 ) THEN
+C     Small-size domain:
+       DO j=1,nDims
+        IF (j.LT.nDims) THEN
+         WRITE(mUnit,'(1X,3(I5,","))')    (dimList(i,j),i=1,3)
+        ELSE
+         WRITE(mUnit,'(1X,2(I5,","),I5)') (dimList(i,j),i=1,3)
+        ENDIF
+       ENDDO
+      ELSE
+C     Large-size domain:
+       DO j=1,nDims
+        IF (j.LT.nDims) THEN
+         WRITE(mUnit,'(1X,3(I10,","))')     (dimList(i,j),i=1,3)
+        ELSE
+         WRITE(mUnit,'(1X,2(I10,","),I10)') (dimList(i,j),i=1,3)
+        ENDIF
+       ENDDO
+      ENDIF
       WRITE(mUnit,'(1X,A)') '];'
 C-    only write if different from default:
       IF ( map2gl(1).NE.0 .OR. map2gl(2).NE.1 ) THEN

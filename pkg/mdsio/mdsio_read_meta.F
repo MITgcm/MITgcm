@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_meta.F,v 1.3 2008/04/06 00:01:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_meta.F,v 1.4 2009/05/29 16:05:41 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -77,13 +77,14 @@ C     !FUNCTIONS
       EXTERNAL IFNBLNK, ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     i,j,ii      :: loop indices
+C     i, j        :: loop indices
+C     ii,jj       :: indices
 C     iG,jG       :: global tile indices
 C     iL,pL,iLm   :: length of character strings (temp. variables)
 C     nDimFil     :: number of dimensions (in meta file)
 C     nFldFil     :: number of fields in "fldList" (in meta file)
 C     nTimFil     :: number of time-specification in "timList" (meta file)
-      INTEGER i,j,ii
+      INTEGER i,j,ii,jj
       INTEGER iG,jG
       INTEGER iL,pL,iLm
       INTEGER mUnit, errIO
@@ -237,20 +238,24 @@ C     1  global size  (ie. the size of the global dimension of all files)
 C     2  global start (ie. the global position of the start of this file)
 C     3  global end   (ie. the global position of the end   of this file)
           DO j=1,nDimFil
-c          READ( mUnit, FMT='(3(1X,I5))', ERR=1002, END=1002 )
-c    &                 (dimList(i,j),i=1,3)
 C-    This is to accomodate with the 2 versions of meta file:
            READ( mUnit, FMT='(A)', END=1001 ) lineBuf
            ii = IFNBLNK(lineBuf)
+           jj = ILNBLNK(lineBuf)
            IF ( ii.GT.6 ) THEN
 C     Old version (S/R MDSWRITEMETA, file mdsio_writemeta.F):
 C          start each line with 10 blanks.
             READ(lineBuf, FMT='(9X,3(1X,I5))', ERR=1002, END=1002 )
      &                  (dimList(i,j),i=1,3)
+           ELSEIF ( jj.LT.30 ) THEN
+C     New version (S/R MDS_WRITE_META, file mdsio_write_meta.F):
+C          small-size domain without starting blanks.
+            READ(lineBuf, FMT='(3(1X,I5))',    ERR=1002, END=1002 )
+     &                  (dimList(i,j),i=1,3)
            ELSE
 C     New version (S/R MDS_WRITE_META, file mdsio_write_meta.F):
-C          without starting blanks.
-            READ(lineBuf, FMT='(3(1X,I5))',    ERR=1002, END=1002 )
+C          large-size domain without starting blanks.
+            READ(lineBuf, FMT='(3(1X,I10))',   ERR=1002, END=1002 )
      &                  (dimList(i,j),i=1,3)
            ENDIF
           ENDDO
