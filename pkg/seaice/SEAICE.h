@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.43 2009/03/18 12:56:21 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.44 2009/05/29 10:18:02 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -48,9 +48,17 @@ CEOP
       _RL VICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
 
       COMMON/SEAICE_DYNVARS_3/
-     &     ETA,ZETA,DRAGS,DRAGA,FORCEX,FORCEY,UICEC,VICEC
+     &     ETA,ZETA,PRESS, e11, e22, e12, 
+     &     DRAGS,DRAGA,FORCEX,FORCEY,UICEC,VICEC
       _RL ETA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL ZETA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+C     ice strength/pressure term
+      _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+C     strain rate tensor
+      _RL e11        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL e22        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL e12        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+C
       _RL DRAGS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL DRAGA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL FORCEX     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)

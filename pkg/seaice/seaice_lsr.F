@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.43 2009/05/26 23:13:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.44 2009/05/29 10:18:02 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -88,12 +88,6 @@ C     diagonals of coefficient matrices
 C     coefficients for lateral points (u(j+/-1),v(i+/-1))
       _RL UVRT1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL UVRT2(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-C     ice strength/pressure term
-      _RL PRESS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     strain rate tensor
-      _RL e11         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL e22         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL e12         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     abbreviations
       _RL etaPlusZeta (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL zetaMinusEta(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -937,11 +931,7 @@ C     i,j,bi,bj - Loop counters
       _RL CUU(1-Olx:sNx+Olx, 1-Oly:sNy+Oly)
       _RL VRT(1-Olx:sNx+Olx, 1-Oly:sNy+Oly)
       _RL CVV(1-Olx:sNx+Olx, 1-Oly:sNy+Oly)
-C     strain rate tensor
-      _RL e11              (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL e22              (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL e12              (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
+C
       _RL etaPlusZeta (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL zetaMinusEta(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL etaMeanZ    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -971,7 +961,6 @@ C     part of the overlap, because the overlap of u/v(tlev) is used
       PARAMETER ( iMin = 1, iMax = sNx, jMin = 1, jMax = sNy )
 #endif
 
-      _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 #ifdef ALLOW_DEBUG
       _RL ARR  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 #endif
