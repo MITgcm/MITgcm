@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.30 2008/05/30 02:48:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.31 2009/05/29 06:12:05 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -435,7 +435,6 @@ c--   Meridional wind speed.
 
 #elif (defined (ALLOW_TAUV0_CONTROL))
 c--   initial forcing only
-        diffrec  = endrec - startrec + 1
         call ctrl_init_ctrlvar ( 
      &       xx_tauv_file, 6, 106, 1, 1, 1,
      &       snx, sny, 1, 's', 'xy', mythid )
