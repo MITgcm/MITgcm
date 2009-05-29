@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.8 2008/12/17 03:33:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.9 2009/05/29 10:17:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,10 +47,6 @@ C     == Local variables ==
       INTEGER bi,bj
       _RL sigI (1-oLx:sNx+oLx,1-oLy:sNy+oLy)
       _RL sigII(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
-      _RL e11  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL e22  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL e12  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL press(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL sig1, sig2, sig12, sigTmp, recip_prs
 C
       LOGICAL  DIAGNOSTICS_IS_ON
