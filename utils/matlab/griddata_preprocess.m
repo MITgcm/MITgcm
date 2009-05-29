@@ -7,16 +7,20 @@ function [del] = griddata_preprocess(x,y,xi,yi,method)
 %   Based on
 %   Clay M. Thompson 8-21-95
 %   Copyright 1984-2001 The MathWorks, Inc. 
-%   $Revision: 1.2 $  $Date: 2007/02/17 23:49:43 $
+%   $Revision: 1.3 $  $Date: 2009/05/29 14:03:30 $
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/griddata_preprocess.m,v 1.2 2007/02/17 23:49:43 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/griddata_preprocess.m,v 1.3 2009/05/29 14:03:30 jmc Exp $
 % $Name:  $
 
 error(nargchk(4,5,nargin))
 
-if prod(size(xi)) ~= prod(size(yi))
+%- To interpolate to a section (with position vector xi,yi), skip the
+%  ndgrid call hereafter. However, since this is poorly documented, 
+%  leave the unconditional call to ndgrid to avoid falling into this trap 
+%  when doing 2-D interpolation on to a square grid (xi & yi of equal size)
+%if prod(size(xi)) ~= prod(size(yi))
  [yi,xi]=ndgrid(yi,xi);
-end
+%end
 
 if nargin<6, method = 'linear'; end
 if ~isstr(method), 
