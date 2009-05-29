@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.9 2009/05/29 10:17:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.10 2009/05/29 10:41:55 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -77,31 +77,18 @@ C
        CALL DIAGNOSTICS_FILL(IceAge ,'SIage   ',0,1 ,0,1,1,myThid)
 #endif
 C
+       CALL DIAGNOSTICS_FILL(zeta   ,'SIzeta  ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(eta    ,'SIeta   ',0,1 ,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1 ,0,1,1,myThid)
 #ifdef SEAICE_CGRID
        IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIpress ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIzeta  ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIeta   ',myThid) ) THEN
-C     Unfortunately, for this we have to recompute a few things:
-C     compute strainrates, "viscosities" and modified pressure
+     &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) ) THEN
+C     recompute strainrates from up-to-date velocities
         CALL SEAICE_CALC_STRAINRATES(
      I       uIce, vIce,
      O       e11, e22, e12,
      I       3, 0, myTime, myIter, myThid )
-
-        CALL SEAICE_CALC_VISCOSITIES(
-     I       e11, e22, e12, zMin, zMax, hEffM, press0,
-     O       eta, zeta, press,
-     I       0, myTime, myIter, myThid )
-C
-        CALL DIAGNOSTICS_FILL(zeta   ,'SIzeta  ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(eta    ,'SIeta   ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1 ,0,1,1,myThid)
-       ENDIF
-
-       IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) ) THEN
+C     but use old viscosities and pressure for the
 C     principle stress components
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
