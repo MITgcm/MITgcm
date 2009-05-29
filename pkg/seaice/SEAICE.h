@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.44 2009/05/29 10:18:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.45 2009/05/29 14:51:04 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -146,16 +146,20 @@ C
 C     seaice_sigma1  - sigma11+sigma22, defined at C-points
 C     seaice_sigma2  - sigma11-sigma22, defined at C-points
 C     seaice_sigma12 - off-diagonal term, defined at Z-points
-C     stressDivergenceX/Y - divergence of stress tensor
       COMMON /SEAICE_EVP_FIELDS/
-     &     stressDivergenceX, stressDivergenceY,
      &     seaice_sigma1, seaice_sigma2, seaice_sigma12
-      _RL stressDivergenceX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL stressDivergenceY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL seaice_sigma1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL seaice_sigma2    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL seaice_sigma12   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* SEAICE_ALLOW_EVP and SEAICE_CGRID */
+
+#ifdef SEAICE_CGRID
+C     stressDivergenceX/Y - divergence of stress tensor
+      COMMON /SEAICE_STRESSDIV/
+     &     stressDivergenceX, stressDivergenceY
+      _RL stressDivergenceX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL stressDivergenceY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* SEAICE_CGRID */
 
       COMMON/MIX/TMIX,TICE
       _RL TMIX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
