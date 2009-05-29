@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1111 2009/05/29 14:52:48 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1112 2009/05/29 18:46:03 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -17,6 +17,10 @@ o pkg/seaice:
     to give something meaning full
 o change tiling of global_ocean.cs32x15 (12 tiles, 32x16) and generate
   new output (all 4 tests) using default rotationPeriod.
+o pkg KPP:
+  - add flag (LimitHblStable) to avoid limiting BL depth under stable conditions
+  - fix vertical indices in RI_IWMIX (match between KPP grid from 0 to Nr+1
+    and normal grid from 1 to Nr)
 o Fix computations of L4rdt in mom_calc_visc.F
 o eesupp:
   new S/R ALL_PROC_DIE (like EEDIE, without irrelevant threads err msg):
