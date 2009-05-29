@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.44 2009/05/29 10:18:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.45 2009/05/29 14:51:21 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,9 +59,10 @@ C     i,j,bi,bj - Loop counters
       INTEGER ICOUNT1, ICOUNT2
       INTEGER phexit
 
-      _RL  WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
-      _RL  AA3, S1, S2, S1A, S2A
-      _RL  seaiceSlipFactor, noSlipFac, hFacM, hFacP
+      _RL WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
+      _RL AA3, S1, S2, S1A, S2A
+      _RL seaiceSlipFactor, noSlipFac, hFacM, hFacP
+      _RL eplus, eminus
 
 C     coefficients of ice velocities in coefficient matrix
 C     for both U and V-equation
@@ -915,9 +916,13 @@ C     i,j,bi,bj - Loop counters
       INTEGER ICOUNT1, ICOUNT2
       INTEGER phexit
 
-      _RL  WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
-      _RL  AA1, AA2, AA3, AA4, AA5, AA6, AA7, AA8, S1, S2, S1A, S2A
-      _RL  seaiceSlipFactor, hFacM, hFacP
+      _RL WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
+      _RL AA1, AA2, AA3, AA4, AA5, AA6, AA7, AA8, S1, S2, S1A, S2A
+      _RL seaiceSlipFactor, hFacM, hFacP
+      _RL eplus, eminus
+      _RL sig11       (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL sig22       (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL sig12       (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
       _RL AU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL BU   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
@@ -1789,6 +1794,63 @@ C     APPLY MASKS
 CML      CALL EXCH_UV_3D_RL( uIce, vIce, .TRUE., 3, myThid )
 
 #endif /* SEAICE_OLD_AND_BAD_DISCRETIZATION */
+
+      IF ( useHB87StressCoupling .AND. ilcall.EQ.NPSEUDOTIMESTEPS ) THEN
+C     compute the divergence of stress here to be used later
+C     
+C     compute strain rate from latest velocities
+       CALL SEAICE_CALC_STRAINRATES(
+     I       uIce, vIce,
+     O       e11, e22, e12,
+     I       3, 3, myTime, myIter, myThid )
+C     compute internal stresses with updated ice velocities
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           sig11(I,J) = 0. _d 0
+           sig22(I,J) = 0. _d 0
+           sig12(I,J) = 0. _d 0
+          ENDDO
+         ENDDO
+         
+         DO j=0,sNy
+          DO i=0,sNx
+           eplus = e11(I,J,bi,bj) + e22(I,J,bi,bj)
+           eminus= e11(I,J,bi,bj) - e22(I,J,bi,bj)
+           sig11(I,J) = zeta(I,J,bi,bj)*eplus + eta(I,J,bi,bj)*eminus
+     &          - 0.5 _d 0 * PRESS(I,J,bi,bj)
+           sig22(I,J) = zeta(I,J,bi,bj)*eplus - eta(I,J,bi,bj)*eminus
+     &          - 0.5 _d 0 * PRESS(I,J,bi,bj)
+          ENDDO
+         ENDDO
+         
+         DO j=1,sNy+1
+          DO i=1,sNx+1
+           sig12(I,J) = 2. _d 0 * e12(I,J,bi,bj) * etaMeanZ(I,J,bi,bj)
+          ENDDO
+         ENDDO
+C     evaluate divergence of stress and apply to forcing
+         DO J=1,sNy
+          DO I=1,sNx
+           stressDivergenceX(I,J,bi,bj) = 
+     &          ( sig11(I  ,J  ) * _dyF(I  ,J  ,bi,bj)
+     &          - sig11(I-1,J  ) * _dyF(I-1,J  ,bi,bj)
+     &          + sig12(I  ,J+1) * _dxV(I  ,J+1,bi,bj)
+     &          - sig12(I  ,J  ) * _dxV(I  ,J  ,bi,bj)
+     &          ) * recip_rAw(I,J,bi,bj)
+            stressDivergenceY(I,J,bi,bj) =
+     &          ( sig22(I  ,J  ) * _dxF(I  ,J  ,bi,bj)
+     &          - sig22(I  ,J-1) * _dxF(I  ,J-1,bi,bj)
+     &          + sig12(I+1,J  ) * _dyU(I+1,J  ,bi,bj)
+     &          - sig12(I  ,J  ) * _dyU(I  ,J  ,bi,bj)
+     &          ) * recip_rAs(I,J,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+C     endif  useHB87StressCoupling 
+      ENDIF
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
