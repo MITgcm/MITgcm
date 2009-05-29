@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.22 2009/05/29 10:18:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.23 2009/05/29 10:40:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -232,6 +232,12 @@ C     masked by boundaries/land points
             zetaZ  = MIN(zMaxZ,zetaZ)
             zetaZ  = MAX(zMinZ,zetaZ)
             pressC = TWO*zetaC*deltaC
+#ifdef ALLOW_DIAGNOSTICS
+C     save etc, zeta, and pressure for diagnostics
+            press(I,J,bi,bj) = pressC
+            zeta (I,J,bi,bj) = zetaC
+             eta (I,J,bi,bj) = zetaC*recip_ecc2
+#endif /* ALLOW_DIAGNOSTICS */
 C     Calculate the RHS of the stress equations. Do this now in order to
 C     avoid multiple divisions by Delta
 C     P * ( D_d/Delta - 1 ) = 2*zeta*D_d - P = 2*zeta*D_d - 2*zeta*Delta
@@ -248,6 +254,10 @@ C     P * ( D_s/Delta     ) = 2*zeta*D_s
              etaDenZ  = (e11Z-e22Z)**2 + 4. _d 0*e12Z**2
              etaDenZ  = SQRT(MAX(SEAICE_EPS_SQ,etaDenZ))
              zetaMaxZ = ecc2*zetaZ*( deltaZ-( e11Z+e22Z ) )/etaDenZ
+#ifdef ALLOW_DIAGNOSTICS
+C     save eta for diagnostics
+             eta(I,J,bi,bj) = MIN(zetaC,zetaMaxC)*recip_ecc2
+#endif /* ALLOW_DIAGNOSTICS */
              seaice_tension(I,J) = 2. _d 0*MIN(zetaC,zetaMaxC)
      &            *(e11C-e22C)*hEffM(I,J,bi,bj)
              seaice_shear  (I,J) = 
