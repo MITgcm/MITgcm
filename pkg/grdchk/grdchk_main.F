@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.27 2007/12/03 22:38:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.28 2009/05/29 06:14:47 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -156,6 +156,7 @@ cph   Gradient via adjoint has already been computed,
 cph   and so has unperturbed cost function,
 cph   assuming all xx_ fields are initialised to zero.
 
+      ierr      = 0
       ierr_grdchk = 0
       adxxmemo  = 0.
       ftlxxmemo = 0.
