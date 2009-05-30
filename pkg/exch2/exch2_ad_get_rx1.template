@@ -1,0 +1,161 @@
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_ad_get_rx1.template,v 1.1 2009/05/30 21:18:59 jmc Exp $
+C $Name:  $
+
+#include "CPP_EEOPTIONS.h"
+#include "W2_OPTIONS.h"
+
+CBOP 0
+C !ROUTINE: EXCH2_AD_GET_RX1
+
+C !INTERFACE:
+      SUBROUTINE EXCH2_AD_GET_RX1(
+     I       tIlo, tIhi, tiStride,
+     I       tJlo, tJhi, tjStride,
+     I       tKlo, tKhi, tkStride,
+     I       thisTile, nN, bi, bj,
+     I       e2BufrRecSize, sizeNb, sizeBi, sizeBj,
+     O       iBufr,
+     O       e2Bufr1_RX,
+     U       array,
+     I       i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
+     U       e2_msgHandles,
+     I       commSetting, myThid )
+
+C !DESCRIPTION:
+C---------------
+C  AD: IMPORTANT: All comments (exept AD:) are taken from the Forward S/R
+C  AD:       and need to be interpreted in the reverse sense: put <-> get,
+C  AD:       send <-> recv, source <-> target ...
+C---------------
+C     Scalar field (1 component) Exchange:
+C     Get from buffer exchanged data to fill in this tile-egde overlap region.
+
+C !USES:
+      IMPLICIT NONE
+
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "W2_EXCH2_SIZE.h"
+#include "W2_EXCH2_TOPOLOGY.h"
+
+C !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     tIlo,tIhi     :: index range in I that will be filled in target "array"
+C     tIstride      :: index step  in I that will be filled in target "array"
+C     tJlo,tJhi     :: index range in J that will be filled in target "array"
+C     tJstride      :: index step  in J that will be filled in target "array"
+C     tKlo,tKhi     :: index range in K that will be filled in target "array"
+C     tKstride      :: index step  in K that will be filled in target "array"
+C     thisTile      :: receiveing tile Id. number
+C     nN            :: Neighbour entry that we are processing
+C     bi,bj         :: Indices of the receiving tile within this process
+C                   ::  (used to select buffer slots that are allowed).
+C     e2BufrRecSize :: Number of elements in each entry of e2Bufr1_RX
+C     sizeNb        :: Second dimension of e2Bufr1_RX
+C     sizeBi        :: Third  dimension of e2Bufr1_RX
+C     sizeBj        :: Fourth dimension of e2Bufr1_RX
+C     iBufr         :: number of buffer elements to transfert
+C     e2Bufr1_RX    :: Data transport buffer array. This array is used in one of
+C                   :: two ways. For PUT communication the entry in the buffer
+C                   :: associated with the source for this receive (determined
+C                   :: from the opposing_send index) is read.
+C                   :: For MSG communication the entry in the buffer associated
+C                   :: with this neighbor of this tile is used as a receive
+C                   :: location for loading a linear stream of bytes.
+C     array         :: Target array that this receive writes to.
+C     i1Lo, i1Hi    :: I coordinate bounds of target array
+C     j1Lo, j1Hi    :: J coordinate bounds of target array
+C     k1Lo, k1Hi    :: K coordinate bounds of target array
+C     e2_msgHandles :: Synchronization and coordination data structure used to
+C                   :: coordinate access to e2Bufr1_RX or to regulate message
+C                   :: buffering. In PUT communication sender will increment
+C                   :: handle entry once data is ready in buffer. Receiver will
+C                   :: decrement handle once data is consumed from buffer.
+C                   :: For MPI MSG communication MPI_Wait uses hanlde to check
+C                   :: Isend has cleared. This is done in routine after receives.
+C     commSetting   :: Mode of communication used to exchange with this neighbor
+C     myThid        :: my Thread Id. number
+
+      INTEGER tILo, tIHi, tiStride
+      INTEGER tJLo, tJHi, tjStride
+      INTEGER tKLo, tKHi, tkStride
+      INTEGER i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi
+      INTEGER thisTile, nN, bi, bj
+      INTEGER e2BufrRecSize, sizeNb, sizeBi, sizeBj
+      INTEGER iBufr
+      _RX     e2Bufr1_RX( e2BufrRecSize, sizeNb, sizeBi, sizeBj, 2 )
+      _RX     array(i1Lo:i1Hi,j1Lo:j1Hi,k1Lo:k1Hi)
+      INTEGER e2_msgHandles( 2, sizeNb, sizeBi, sizeBj )
+      CHARACTER commSetting
+      INTEGER myThid
+CEOP
+
+C !LOCAL VARIABLES:
+C     == Local variables ==
+C     itl,jtl,ktl :: Loop counters (this tile)
+C     soT    :: Source tile Id number
+C     oNb    :: Opposing send record number
+C     sNb    :: buffer (source) Neibour index to get data from
+C     sBi    :: buffer (source) Tile  index (for this Proc) to get data from
+C     sBj    :: buffer (source) Tile  index (for this Proc) to get data from
+C     sLv    :: buffer (source) level index to get data from
+C     i,j    :: Loop counters
+      INTEGER itl, jtl, ktl
+      INTEGER soT
+      INTEGER oNb
+      INTEGER sNb, sBi, sBj, sLv
+      INTEGER i,j
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      soT = exch2_neighbourId( nN, thisTile )
+      oNb = exch2_opposingSend(nN, thisTile )
+
+C     Handle receive end data transport according to communication mechanism
+C     between source and target tile
+      IF     ( commSetting .EQ. 'P' ) THEN
+C  AD: Need to check that buffer synchronisation token is decremented
+C  AD: before filling buffer.
+
+C     find the tile indices (local to this Proc) corresponding to
+C      this source tile Id "soT"
+       sLv = 1
+       sNb = oNb
+       DO j=1,sizeBj
+        DO i=1,sizeBi
+         IF ( W2_myTileList(i).EQ.soT ) THEN
+           sBi = i
+           sBj = j
+         ENDIF
+        ENDDO
+       ENDDO
+#ifdef ALLOW_USE_MPI
+      ELSEIF ( commSetting .EQ. 'M' ) THEN
+       sLv = 2
+       sBi = bi
+       sBj = bj
+       sNb = nN
+#endif /* ALLOW_USE_MPI */
+      ELSE
+       STOP 'EXCH2_AD_GET_RX1:: commSetting VALUE IS INVALID'
+      ENDIF
+
+      iBufr = 0
+      DO ktl=tKlo,tKhi,tKStride
+       DO jtl=tJLo, tJHi, tjStride
+        DO itl=tILo, tIHi, tiStride
+C     Read from e2Bufr1_RX(iBufr,sNb,sBi,sBj,sLv)
+         iBufr = iBufr+1
+         e2Bufr1_RX(iBufr,sNb,sBi,sBj,sLv) = array(itl,jtl,ktl)
+         array(itl,jtl,ktl) =  0.
+        ENDDO
+       ENDDO
+      ENDDO
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

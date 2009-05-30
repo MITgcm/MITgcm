@@ -1,0 +1,352 @@
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_ad_put_rx2.template,v 1.1 2009/05/30 21:18:59 jmc Exp $
+C $Name:  $
+
+#include "CPP_EEOPTIONS.h"
+#include "W2_OPTIONS.h"
+
+CBOP 0
+C !ROUTINE: EXCH2_AD_PUT_RX2
+
+C !INTERFACE:
+      SUBROUTINE EXCH2_AD_PUT_RX2 (
+     I       tIlo1, tIhi1, tIlo2, tIhi2, tiStride,
+     I       tJlo1, tJhi1, tJlo2, tJhi2, tjStride,
+     I       tKlo, tKhi, tkStride,
+     I       oIs1, oJs1, oIs2, oJs2,
+     I       thisTile, nN,
+     I       e2BufrRecSize,
+     O       e2Bufr1_RX, e2Bufr2_RX,
+     I       array1,
+     I       array2,
+     I       i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
+     I       i2Lo, i2Hi, j2Lo, j2Hi, k2Lo, k2Hi,
+     O       e2_msgHandle,
+     I       commSetting, withSigns, myThid )
+
+C !DESCRIPTION:
+C---------------
+C  AD: IMPORTANT: all comments (exept AD:) are taken from the Forward S/R
+C  AD: and need to be interpreted in the reverse sense: put <-> get,
+C  AD: send <-> recv, source <-> target ...
+C---------------
+C     Two components vector field Exchange:
+C     Put into buffer exchanged data from this source tile.
+C     Those data are intended to fill-in the
+C     target-neighbour-edge overlap region.
+
+C !USES:
+      IMPLICIT NONE
+
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "W2_EXCH2_SIZE.h"
+#include "W2_EXCH2_TOPOLOGY.h"
+
+
+C !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     tIlo1, tIhi1  :: index range in I that will be filled in target "array1"
+C     tIlo2, tIhi2  :: index range in I that will be filled in target "array2"
+C     tIstride      :: index step  in I that will be filled in target arrays
+C     tJlo1, tJhi1  :: index range in J that will be filled in target "array1"
+C     tJlo2, tJhi2  :: index range in J that will be filled in target "array2"
+C     tJstride      :: index step  in J that will be filled in target arrays
+C     tKlo, tKhi    :: index range in K that will be filled in target arrays
+C     tKstride      :: index step  in K that will be filled in target arrays
+C     oIs1, oJs1    :: I,J index offset in target to source-1 connection
+C     oIs2, oJs2    :: I,J index offset in target to source-2 connection
+C     thisTile      :: sending tile Id. number
+C     nN            :: Neighbour entry that we are processing
+C     e2BufrRecSize :: Number of elements in each entry of e2Bufr[1,2]_RX
+C     e2Bufr1_RX    :: Data transport buffer array. This array is used in one of
+C     e2Bufr2_RX    :: two ways. For PUT communication the entry in the buffer
+C                   :: associated with the source for this receive (determined
+C                   :: from the opposing_send index) is read.
+C                   :: For MSG communication the entry in the buffer associated
+C                   :: with this neighbor of this tile is used as a receive
+C                   :: location for loading a linear stream of bytes.
+C     array1        :: 1rst Component target array that this receive writes to.
+C     array2        :: 2nd  Component target array that this receive writes to.
+C     i1Lo, i1Hi    :: I coordinate bounds of target array1
+C     j1Lo, j1Hi    :: J coordinate bounds of target array1
+C     k1Lo, k1Hi    :: K coordinate bounds of target array1
+C     i2Lo, i2Hi    :: I coordinate bounds of target array2
+C     j2Lo, j2Hi    :: J coordinate bounds of target array2
+C     k2Lo, k2Hi    :: K coordinate bounds of target array2
+C     e2_msgHandles :: Synchronization and coordination data structure used to
+C                   :: coordinate access to e2Bufr1_RX or to regulate message
+C                   :: buffering. In PUT communication sender will increment
+C                   :: handle entry once data is ready in buffer. Receiver will
+C                   :: decrement handle once data is consumed from buffer.
+C                   :: For MPI MSG communication MPI_Wait uses hanlde to check
+C                   :: Isend has cleared. This is done in routine after receives.
+C     commSetting   :: Mode of communication used to exchange with this neighbor
+C     withSigns     :: Flag controlling whether vector field is signed.
+C     myThid        :: my Thread Id. number
+
+      INTEGER tIlo1, tIhi1, tIlo2, tIhi2, tiStride
+      INTEGER tJlo1, tJhi1, tJlo2, tJhi2, tjStride
+      INTEGER tKlo, tKhi, tkStride
+      INTEGER oIs1, oJs1, oIs2, oJs2
+      INTEGER thisTile, nN
+      INTEGER e2BufrRecSize
+      _RX     e2Bufr1_RX( e2BufrRecSize )
+      _RX     e2Bufr2_RX( e2BufrRecSize )
+      INTEGER i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi
+      INTEGER i2Lo, i2Hi, j2Lo, j2Hi, k2Lo, k2Hi
+      _RX     array1(i1Lo:i1Hi,j1Lo:j1Hi,k1Lo:k1Hi)
+      _RX     array2(i2Lo:i2Hi,j2Lo:j2Hi,k2Lo:k2Hi)
+      INTEGER e2_msgHandle(2)
+      CHARACTER commSetting
+      LOGICAL withSigns
+      INTEGER myThid
+CEOP
+
+C !LOCAL VARIABLES:
+C     == Local variables ==
+C     itl,jtl,ktl :: Loop counters
+C                 :: itl etc... target local
+C                 :: itc etc... target canonical
+C                 :: isl etc... source local
+C                 :: isc etc... source canonical
+C     tgT         :: Target tile
+C     itb, jtb    :: Target local to canonical offsets
+C     iBufr1      :: number of buffer-1 elements filled in
+C     iBufr2      :: number of buffer-2 elements filled in
+      INTEGER itl, jtl, ktl
+      INTEGER itc, jtc
+      INTEGER isc, jsc
+      INTEGER isl, jsl
+      INTEGER tgT
+      INTEGER itb, jtb
+      INTEGER isb, jsb
+      INTEGER iBufr1, iBufr2
+      INTEGER pi(2), pj(2)
+      _RX     sa1, sa2, val1, val2
+
+#if ( (defined W2_E2_DEBUG_ON) || (defined W2_USE_E2_SAFEMODE) )
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
+
+      IF     ( commSetting .EQ. 'P' ) THEN
+C  AD: 1 Need to check and spin on data ready assertion for multithreaded mode,
+C  AD:   for now, ensure global sync using barrier.
+C  AD: 2 get directly data from 1rst level buffer (sLv=1);
+      ENDIF
+
+      tgT = exch2_neighbourId(nN, thisTile )
+      itb = exch2_tBasex(tgT)
+      jtb = exch2_tBasey(tgT)
+      isb = exch2_tBasex(thisTile)
+      jsb = exch2_tBasey(thisTile)
+      pi(1)=exch2_pij(1,nN,thisTile)
+      pi(2)=exch2_pij(2,nN,thisTile)
+      pj(1)=exch2_pij(3,nN,thisTile)
+      pj(2)=exch2_pij(4,nN,thisTile)
+
+C     Extract into bufr1 (target i-index array)
+C     if pi(1) is  1 then +i in target <=> +i in source so bufr1 should get +array1
+C     if pi(1) is -1 then +i in target <=> -i in source so bufr1 should get -array1
+C     if pj(1) is  1 then +i in target <=> +j in source so bufr1 should get +array2
+C     if pj(1) is -1 then +i in target <=> -j in source so bufr1 should get -array2
+      sa1 = pi(1)
+      sa2 = pj(1)
+      IF ( .NOT. withSigns ) THEN
+       sa1 = ABS(sa1)
+       sa2 = ABS(sa2)
+      ENDIF
+C     if pi(1) is 1 then +i in source aligns with +i in target
+C     if pj(1) is 1 then +i in source aligns with +j in target
+#ifdef W2_E2_DEBUG_ON
+      WRITE(msgBuf,'(A,I5,A,I5)')
+     &  'EXCH2_AD_PUT_RX2 sourceTile=', thisTile, ' targetTile=', tgT
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                    SQUEEZE_BOTH, myThid )
+#endif /* W2_E2_DEBUG_ON */
+      iBufr1=0
+      DO ktl=tKlo,tKhi,tkStride
+       DO jtl=tJlo1, tJhi1, tjStride
+        DO itl=tIlo1, tIhi1, tiStride
+         iBufr1=iBufr1+1
+         itc = itl+itb
+         jtc = jtl+jtb
+         isc = pi(1)*itc+pi(2)*jtc+oIs1
+         jsc = pj(1)*itc+pj(2)*jtc+oJs1
+         isl = isc-isb
+         jsl = jsc-jsb
+#ifdef W2_E2_DEBUG_ON
+         WRITE(msgBuf,'(A,2I4)')
+     &           'EXCH2_AD_PUT_RX2 target  u(itl, jtl) = ', itl, jtl
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                       SQUEEZE_RIGHT, myThid )
+         IF (     pi(1) .EQ. 1 ) THEN
+C         i index aligns
+          WRITE(msgBuf,'(A,2I4)')
+     &           '               source +u(isl, jsl) = ', isl, jsl
+         ELSEIF ( pi(1) .EQ. -1 ) THEN
+C         reversed i index aligns
+          WRITE(msgBuf,'(A,2I4)')
+     &            '               source -u(isl, jsl) = ', isl, jsl
+         ELSEIF ( pj(1) .EQ.  1 ) THEN
+          WRITE(msgBuf,'(A,2I4)')
+     &            '               source +v(isl, jsl) = ', isl, jsl
+         ELSEIF ( pj(1) .EQ. -1 ) THEN
+          WRITE(msgBuf,'(A,2I4)')
+     &            '               source -v(isl, jsl) = ', isl, jsl
+         ENDIF
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                       SQUEEZE_RIGHT, myThid )
+         IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
+          WRITE(msgBuf,'(A,2I4)')
+     &           '               *** isl is out of bounds '
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                        SQUEEZE_RIGHT, myThid )
+         ENDIF
+         IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
+          WRITE(msgBuf,'(A,2I4)')
+     &           '               *** jsl is out of bounds '
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                        SQUEEZE_RIGHT, myThid )
+         ENDIF
+#endif /* W2_E2_DEBUG_ON */
+#ifdef   W2_USE_E2_SAFEMODE
+         IF ( iBufr1 .GT. e2BufrRecSize ) THEN
+C         Ran off end of buffer. This should not happen
+          STOP 'EXCH2_AD_PUT_RX2:: E2BUFR LIMIT EXCEEDED'
+         ENDIF
+         IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
+C         Forward mode send getting from points outside of the
+C         tiles exclusive domain bounds in X. This should not happen
+          WRITE(msgBuf,'(A,I4,I4)')
+     &     'EXCH2_AD_PUT_RX2 tIlo1,tIhi1=', tIlo1, tIhi1
+          CALL PRINT_ERROR (msgBuf, myThid )
+          WRITE(msgBuf,'(A,3I4)')
+     &     'EXCH2_AD_PUT_RX2 itl, jtl, isl =', itl, jtl, isl
+          CALL PRINT_ERROR (msgBuf, myThid )
+          STOP 'EXCH2_AD_PUT_RX2:: ISL OUTSIDE TILE EXCLUSIVE DOMAIN'
+         ENDIF
+         IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
+C         Forward mode send getting from points outside of the
+C         tiles exclusive domain bounds in Y. This should not happen
+          WRITE(msgBuf,'(A,I4,I4)')
+     &     'EXCH2_AD_PUT_RX2 tJlo1,tJhi1=', tJlo1, tJhi1
+          CALL PRINT_ERROR (msgBuf, myThid )
+          WRITE(msgBuf,'(A,2I4)')
+     &     'EXCH2_AD_PUT_RX2 itl, jtl =', itl, jtl
+          CALL PRINT_ERROR (msgBuf, myThid )
+          WRITE(msgBuf,'(A,2I4)')
+     &     'EXCH2_AD_PUT_RX2 isl, jsl =', isl, jsl
+          CALL PRINT_ERROR (msgBuf, myThid )
+          STOP 'EXCH2_AD_PUT_RX2:: JSL OUTSIDE TILE EXCLUSIVE DOMAIN'
+         ENDIF
+#endif /* W2_USE_E2_SAFEMODE */
+         val1 = e2Bufr1_RX(iBufr1)
+         array1(isl,jsl,ktl) = array1(isl,jsl,ktl) + sa1*val1
+         array2(isl,jsl,ktl) = array2(isl,jsl,ktl) + sa2*val1
+        ENDDO
+       ENDDO
+      ENDDO
+
+C     Extract values into bufr2
+C     if pi(2) is  1 then +j in target <=> +i in source so bufr1 should get +array1
+C     if pi(2) is -1 then +j in target <=> -i in source so bufr1 should get -array1
+C     if pj(2) is  1 then +j in target <=> +j in source so bufr1 should get +array2
+C     if pj(2) is -1 then +j in target <=> -j in source so bufr1 should get -array2
+      sa1 = pi(2)
+      sa2 = pj(2)
+      IF ( .NOT. withSigns ) THEN
+       sa1 = ABS(sa1)
+       sa2 = ABS(sa2)
+      ENDIF
+      iBufr2=0
+      DO ktl=tKlo,tKhi,tkStride
+       DO jtl=tJlo2, tJhi2, tjStride
+        DO itl=tIlo2, tIhi2, tiStride
+         iBufr2=iBufr2+1
+         itc = itl+itb
+         jtc = jtl+jtb
+         isc = pi(1)*itc+pi(2)*jtc+oIs2
+         jsc = pj(1)*itc+pj(2)*jtc+oJs2
+         isl = isc-isb
+         jsl = jsc-jsb
+#ifdef W2_E2_DEBUG_ON
+         WRITE(msgBuf,'(A,2I4)')
+     &            'EXCH2_AD_PUT_RX2 target  v(itl, jtl) = ', itl, jtl
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                       SQUEEZE_RIGHT, myThid )
+         IF (     pi(2) .EQ. 1 ) THEN
+C         i index aligns
+          WRITE(msgBuf,'(A,2I4)')
+     &          '               source +u(isl, jsl) = ', isl, jsl
+         ELSEIF ( pi(2) .EQ. -1 ) THEN
+C         reversed i index aligns
+          WRITE(msgBuf,'(A,2I4)')
+     &          '               source -u(isl, jsl) = ', isl, jsl
+         ELSEIF ( pj(2) .EQ.  1 ) THEN
+          WRITE(msgBuf,'(A,2I4)')
+     &          '               source +v(isl, jsl) = ', isl, jsl
+         ELSEIF ( pj(2) .EQ. -1 ) THEN
+          WRITE(msgBuf,'(A,2I4)')
+     &          '               source -v(isl, jsl) = ', isl, jsl
+         ENDIF
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                       SQUEEZE_RIGHT, myThid )
+         IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
+          WRITE(msgBuf,'(A,2I4)')
+     &          '               *** isl is out of bounds '
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                        SQUEEZE_RIGHT, myThid )
+         ENDIF
+         IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
+          WRITE(msgBuf,'(A,2I4)')
+     &          '               *** jsl is out of bounds '
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     I                        SQUEEZE_RIGHT, myThid )
+         ENDIF
+#endif /* W2_E2_DEBUG_ON */
+#ifdef   W2_USE_E2_SAFEMODE
+         IF ( iBufr2 .GT. e2BufrRecSize ) THEN
+C         Ran off end of buffer. This should not happen
+          STOP 'EXCH2_AD_PUT_RX2:: E2BUFR LIMIT EXCEEDED'
+         ENDIF
+         IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
+C         Forward mode send getting from points outside of the
+C         tiles exclusive domain bounds in X. This should not happen
+          WRITE(msgBuf,'(A,I4,I4)')
+     &     'EXCH2_AD_PUT_RX2 tIlo2,tIhi2=', tIlo2, tIhi2
+          CALL PRINT_ERROR (msgBuf, myThid )
+          WRITE(msgBuf,'(A,3I4)')
+     &     'EXCH2_AD_PUT_RX2 itl, jtl, isl =', itl, jtl, isl
+          CALL PRINT_ERROR (msgBuf, myThid )
+          STOP 'EXCH2_AD_PUT_RX2:: ISL OUTSIDE TILE EXCLUSIVE DOMAIN'
+         ENDIF
+         IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
+C         Forward mode send getting from points outside of the
+C         tiles exclusive domain bounds in Y. This should not happen
+          WRITE(msgBuf,'(A,I4,I4)')
+     &     'EXCH2_AD_PUT_RX2 tJlo2,tJhi2=', tJlo2, tJhi2
+          CALL PRINT_ERROR (msgBuf, myThid )
+          WRITE(msgBuf,'(A,2I4)')
+     &     'EXCH2_AD_PUT_RX2 itl, jtl =', itl, jtl
+          CALL PRINT_ERROR (msgBuf, myThid )
+          WRITE(msgBuf,'(A,2I4)')
+     &     'EXCH2_AD_PUT_RX2 isl, jsl =', isl, jsl
+          CALL PRINT_ERROR (msgBuf, myThid )
+          STOP 'EXCH2_AD_PUT_RX2:: JSL OUTSIDE TILE EXCLUSIVE DOMAIN'
+         ENDIF
+#endif /* W2_USE_E2_SAFEMODE */
+         val2 = e2Bufr2_RX(iBufr2)
+         array1(isl,jsl,ktl) = array1(isl,jsl,ktl) + sa1*val2
+         array2(isl,jsl,ktl) = array2(isl,jsl,ktl) + sa2*val2
+        ENDDO
+       ENDDO
+      ENDDO
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***
