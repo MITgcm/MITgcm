@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_get_uv_bounds.F,v 1.1 2008/08/01 00:45:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_get_uv_bounds.F,v 1.2 2009/05/30 21:22:13 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -6,106 +6,133 @@ C     !ROUTINE: EXCH2_GET_UV_BOUNDS
 
 C     !INTERFACE:
       SUBROUTINE EXCH2_GET_UV_BOUNDS(
-     I           fCode, eWdth,
-     I           fWedge, fEedge, fSedge, fNedge,
-     U           tIlo1, tIhi1, tJlo1, tJhi1,
-     O           tIlo2, tIhi2, tJlo2, tJhi2,
-     O           tiStride, tjStride,
-     I           e2_pij,
-     U           e2_oi1, e2_oj1,
-     O           e2_oi2, e2_oj2,
-     I           myThid )
+     I                 fCode, eWdth,
+     I                 tgTile, tgNb,
+     O                 tIlo1, tIhi1, tJlo1, tJhi1,
+     O                 tIlo2, tIhi2, tJlo2, tJhi2,
+     O                 tiStride, tjStride,
+     O                 e2_oi1, e2_oj1, e2_oi2, e2_oj2,
+     I                 myThid )
 
 C     !DESCRIPTION:
+C     Return the index range & step of the part of the array (overlap-region)
+C     which is going to be updated by the exchange with 1 neighbour.
+C     2 components vector field (UV) version.
+
 
 C     !USES:
       IMPLICIT NONE
 C     == Global data ==
+#include "SIZE.h"
+#include "W2_EXCH2_SIZE.h"
+#include "W2_EXCH2_TOPOLOGY.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     fCode         :: field code (position on staggered grid)
+C     eWdth         :: width of data region to exchange
+C     updateCorners :: flag, do update corner halo region if true
+C     tgTile        :: target tile
+C     tgNb          :: target Neighbour entry
+C     tIlo1, tIhi1  :: index range in I that will be filled in 1rst comp. array
+C     tJlo1, tJhi1  :: index range in J that will be filled in 1rst comp. array
+C     tIlo2, tIhi2  :: index range in I that will be filled in 2nd  comp. array
+C     tJlo2, tJhi2  :: index range in J that will be filled in 2nd  comp. array
+C     tiStride      :: index step  in I that will be filled in target arrays
+C     tjStride      :: index step  in J that will be filled in target arrays
+C     e2_oi1        :: index offset in target to source-1 index relation
+C     e2_oj1        :: index offset in target to source-1 index relation
+C     e2_oi2        :: index offset in target to source-2 index relation
+C     e2_oj2        :: index offset in target to source-2 index relation
+C     myThid        :: my Thread Id. number
 
       CHARACTER*2 fCode
       INTEGER     eWdth
-      INTEGER     fWedge, fEedge, fSedge, fNedge
+c     LOGICAL     updateCorners
+      INTEGER     tgTile, tgNb
       INTEGER     tIlo1, tIhi1, tJlo1, tJhi1
       INTEGER     tIlo2, tIhi2, tJlo2, tJhi2
       INTEGER     tiStride, tjStride
-      INTEGER     e2_pij(4)
       INTEGER     e2_oi1, e2_oj1
       INTEGER     e2_oi2, e2_oj2
       INTEGER     myThid
 C
 C     !LOCAL VARIABLES:
-      INTEGER     tIlo,  tIhi,  tJlo,  tJhi
+C     soTile        :: source tile
+C     soNb          :: source Neighbour entry
+      INTEGER  soTile
+      INTEGER  soNb
+      INTEGER  tIlo,  tIhi,  tJlo,  tJhi
+      INTEGER  i, e2_pij(4)
 
 C---  exch2 target to source index relation:
 C     is = pij(1)*it + pij(2)*jt + oi
 C     js = pij(3)*it + pij(4)*jt + oj
 
-C---  Save input in local variable
-      tIlo  = tIlo1
-      tIhi  = tIhi1
-      tJlo  = tJlo1
-      tJhi  = tJhi1
+C---  Initialise index range from Topology values:
+      tIlo = exch2_iLo(tgNb,tgTile)
+      tIhi = exch2_iHi(tgNb,tgTile)
+      tJlo = exch2_jLo(tgNb,tgTile)
+      tJhi = exch2_jHi(tgNb,tgTile)
+      soNb = exch2_opposingSend(tgNb,tgTile)
+      soTile = exch2_neighbourId(tgNb,tgTile)
+      e2_oi1 = exch2_oi(soNb,soTile)
+      e2_oj1 = exch2_oj(soNb,soTile)
+      DO i=1,4
+        e2_pij(i) = exch2_pij(i,soNb,soTile)
+      ENDDO
 
 C---  Expand index range according to exchange-Width "eWdth"
       IF ( tIlo.EQ.tIhi .AND. tIlo.EQ.0 ) THEN
-C      Sending to a west edge
+C      Filling a west edge overlap
        tIlo1 = 1-eWdth
        tIhi1 = 0
-       tiStride=1
+       tiStride = 1
        IF ( tJlo.LE.tJhi ) THEN
-        tJlo1 = tJlo-eWdth+1
-        tJhi1 = tJhi+eWdth-1
         tjStride=1
        ELSE
-        tJlo1 = tJlo+eWdth-1
-        tJhi1 = tJhi-eWdth+1
         tjStride=-1
        ENDIF
+        tJlo1 = tJlo-tjStride*(eWdth-1)
+        tJhi1 = tJhi+tjStride*(eWdth-1)
       ENDIF
       IF ( tIlo.EQ.tIhi .AND. tIlo.GT.1 ) THEN
-C      Sending to an east edge
+C      Filling an east edge overlap
+       tIlo1 = tIlo
        tIhi1 = tIhi+eWdth-1
-       tiStride=1
+       tiStride = 1
        IF ( tJlo.LE.tJhi ) THEN
-        tJlo1 = tJlo-eWdth+1
-        tJhi1 = tJhi+eWdth-1
-        tjStride=1
+        tjStride = 1
        ELSE
-        tJlo1 = tJlo+eWdth-1
-        tJhi1 = tJhi-eWdth+1
-        tjStride=-1
+        tjStride =-1
        ENDIF
+        tJlo1 = tJlo-tjStride*(eWdth-1)
+        tJhi1 = tJhi+tjStride*(eWdth-1)
       ENDIF
       IF ( tJlo.EQ.tJhi .AND. tJlo.EQ.0 ) THEN
-C      Sending to a south edge
+C      Filling a south edge overlap
        tJlo1 = 1-eWdth
        tJhi1 = 0
-       tjStride=1
+       tjStride = 1
        IF ( tIlo .LE. tIhi ) THEN
-        tIlo1 = tIlo-eWdth+1
-        tIhi1 = tIhi+eWdth-1
-        tiStride=1
+        tiStride = 1
        ELSE
-        tIlo1 = tIlo+eWdth-1
-        tIhi1 = tIhi-eWdth+1
-        tiStride=-1
+        tiStride =-1
        ENDIF
+        tIlo1 = tIlo-tiStride*(eWdth-1)
+        tIhi1 = tIhi+tiStride*(eWdth-1)
       ENDIF
       IF ( tJlo.EQ.tJhi .AND. tJlo.GT.1 ) THEN
-C      Sending to a north edge
+C      Filling a north edge overlap
+       tJlo1 = tJlo
        tJhi1 = tJhi+eWdth-1
-       tjStride=1
+       tjStride = 1
        IF ( tIlo.LE.tIhi ) THEN
-        tIlo1 = tIlo-eWdth+1
-        tIhi1 = tIhi+eWdth-1
-        tiStride=1
+        tiStride = 1
        ELSE
-        tIlo1 = tIlo+eWdth-1
-        tIhi1 = tIhi-eWdth+1
-        tiStride=-1
+        tiStride =-1
        ENDIF
+        tIlo1 = tIlo-tiStride*(eWdth-1)
+        tIhi1 = tIhi+tiStride*(eWdth-1)
       ENDIF
 
 C---  copy to 2nd set of indices
@@ -144,48 +171,48 @@ C     (avoid "out-of bounds" problems ; formerly itlreduce,jtlreduce)
 
 C---  Avoid updating (some) tile-corner halo region if across faces
 c       IF ( tIlo.EQ.tIhi .AND. tIlo.EQ.0 ) THEN
-c         IF ( fSedge.EQ.1 ) THEN
+c         IF ( exch2_isSedge(tgTile).EQ.1 ) THEN
 C-      West edge is touching the face S edge
 c           tJlo1 = tJlo+1
 c           tJlo2 = tJlo+1
 c         ENDIF
-c         IF ( fNedge.EQ.1 ) THEN
+c         IF ( exch2_isNedge(tgTile).EQ.1 ) THEN
 C-      West edge is touching the face N edge
 c           tJhi1 = tJhi-1
 c           tJhi2 = tJhi
 c         ENDIF
 c       ENDIF
         IF ( tIlo.EQ.tIhi .AND. tIlo.GT.1 ) THEN
-          IF ( fSedge.EQ.1 ) THEN
+          IF ( exch2_isSedge(tgTile).EQ.1 ) THEN
 C-      East edge is touching the face S edge
             tJlo1 = tJlo+1
             tJlo2 = tJlo+1
           ENDIF
-          IF ( fNedge.EQ.1 ) THEN
+          IF ( exch2_isNedge(tgTile).EQ.1 ) THEN
 C-      East edge is touching the face N edge
             tJhi1 = tJhi-1
             tJhi2 = tJhi
           ENDIF
         ENDIF
 c       IF ( tJlo.EQ.tJhi .AND. tJlo.EQ.0 ) THEN
-c         IF ( fWedge.EQ.1 ) THEN
+c         IF ( exch2_isWedge(tgTile).EQ.1 ) THEN
 C-      South edge is touching the face W edge
 c           tIlo1 = tIlo+1
 c           tIlo2 = tIlo+1
 c         ENDIF
-c         IF ( fEedge.EQ.1 ) THEN
+c         IF ( exch2_isEedge(tgTile).EQ.1 ) THEN
 C-      South Edge is touching the face E edge
 c           tIhi1 = tIhi
 c           tIhi2 = tIhi-1
 c         ENDIF
 c       ENDIF
         IF ( tJlo.EQ.tJhi .AND. tJlo.GT.1 ) THEN
-          IF ( fWedge.EQ.1 ) THEN
+          IF ( exch2_isWedge(tgTile).EQ.1 ) THEN
 C-      North edge is touching the face W edge
             tIlo1 = tIlo+1
             tIlo2 = tIlo+1
           ENDIF
-          IF ( fEedge.EQ.1 ) THEN
+          IF ( exch2_isEedge(tgTile).EQ.1 ) THEN
 C-      North Edge is touching the face E edge
             tIhi1 = tIhi
             tIhi2 = tIhi-1

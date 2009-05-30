@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.7 2009/05/12 19:40:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.8 2009/05/30 21:22:13 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -71,20 +71,18 @@ C     Send loop for cell centered
         targetTile=exch2_neighbourId(N,myTileId)
         targetProc=exch2_tProc(targetTile)
         tN = exch2_opposingSend(N,myTileId)
-        targetIlo =exch2_iLo(tN,targetTile)
-        targetIhi =exch2_iHi(tN,targetTile)
-        targetJlo =exch2_jLo(tN,targetTile)
-        targetJhi =exch2_jHi(tN,targetTile)
         pi(1)     =exch2_pij(1,N,myTileId)
         pi(2)     =exch2_pij(2,N,myTileId)
         pj(1)     =exch2_pij(3,N,myTileId)
         pj(2)     =exch2_pij(4,N,myTileId)
         oi        =exch2_oi(N,myTileId)
         oj        =exch2_oj(N,myTileId)
-        CALL EXCH2_GET_SEND_BOUNDS(
-     I       'T ', OLx,
-     O       iStride, jStride,
-     U       targetIlo, targetIhi, targetJlo, targetJhi )
+        CALL EXCH2_GET_SCAL_BOUNDS(
+     I             'T ', OLx, .TRUE.,
+     I             targetTile, tN,
+     O             targetIlo, targetIhi, targetJlo, targetJhi,
+     O             iStride, jStride,
+     I             myThid )
 
         itb = exch2_tBasex(targetTile)
         jtb = exch2_tBasey(targetTile)
@@ -129,14 +127,12 @@ C     Recv loop for cell centered
 C       Find entry for tile targetTile entry that sent to this edge.
         tN=exch2_opposingSend(N,myTileId)
 C       Get the range of points associated with that entry
-        targetIlo =exch2_iLo(N,myTileId)
-        targetIhi =exch2_iHi(N,myTileId)
-        targetJlo =exch2_jLo(N,myTileId)
-        targetJhi =exch2_jHi(N,myTileId)
-        CALL EXCH2_GET_RECV_BOUNDS(
-     I       'T ', OLx,
-     O       iStride, jStride,
-     U       targetIlo, targetIhi, targetJlo, targetJhi )
+        CALL EXCH2_GET_SCAL_BOUNDS(
+     I             'T ', OLx, .TRUE.,
+     I             myTileId, N,
+     O             targetIlo, targetIhi, targetJlo, targetJhi,
+     O             iStride, jStride,
+     I             myThid )
 C       Tile XX receives points i=ilo:ihi,j=jlo:jhi in tile YY
         WRITE(msgBuf,'(A,I6,A,I4,A,4(A,I4),A,I6,A,I4,A)')
      &   'Tile', myTileId,' (pr=',sourceProc,')',
