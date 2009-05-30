@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube_ad.template,v 1.4 2009/05/12 19:44:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx1_cube_ad.template,v 1.5 2009/05/30 21:26:31 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -9,211 +9,270 @@ CBOP
 C     !ROUTINE: EXCH_RX_CUBE_AD
 
 C     !INTERFACE:
-      SUBROUTINE EXCH2_RX1_CUBE_AD( 
+      SUBROUTINE EXCH2_RX1_CUBE_AD(
      U            array, fieldCode,
      I            myOLw, myOLe, myOLn, myOLs, myNz,
      I            exchWidthX, exchWidthY,
      I            simulationMode, cornerMode, myThid )
-      IMPLICIT NONE
 
 C     !DESCRIPTION:
+C     Scalar field (1 component) AD-Exchange:
+C     Tile-edge overlap-region of a 1 component scalar field is added to
+C     corresponding near-edge interior data point and then zero out.
 
 C     !USES:
+      IMPLICIT NONE
+
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-#include "EXCH.h"
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_BUFFER.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     array :: Array with edges to exchange.
-C     myOLw :: West, East, North and South overlap region sizes.
-C     myOLe
-C     myOLn
-C     myOLs
-C     exchWidthX :: Width of data regi exchanged in X.
-C     exchWidthY :: Width of data region exchanged in Y.
-C     myThid         :: Thread number of this instance of S/R EXCH...
-      CHARACTER*2 fieldCode
+C     array       :: Array with edges to exchange.
+C     fieldCode   :: field code (position on staggered grid)
+C     myOLw,myOLe :: West and East overlap region sizes.
+C     myOLn,myOLs :: North and South overlap region sizes.
+C     exchWidthX  :: Width of data regi exchanged in X.
+C     exchWidthY  :: Width of data region exchanged in Y.
+C     cornerMode  :: halo-corner-region treatment: update/ignore corner region
+C     myThid      :: Thread number of this instance of S/R EXCH...
       INTEGER myOLw
       INTEGER myOLe
       INTEGER myOLs
       INTEGER myOLn
       INTEGER myNz
+      _RX array(1-myOLw:sNx+myOLe,
+     &          1-myOLs:sNy+myOLn,
+     &          myNZ, nSx, nSy)
+      CHARACTER*2 fieldCode
       INTEGER exchWidthX
       INTEGER exchWidthY
       INTEGER simulationMode
       INTEGER cornerMode
       INTEGER myThid
-      _RX array(1-myOLw:sNx+myOLe,
-     &          1-myOLs:sNy+myOLn, 
-     &          myNZ, nSx, nSy)
 
 C     !LOCAL VARIABLES:
-C     theSimulationMode :: Holds working copy of simulation mode
-C     theCornerMode     :: Holds working copy of corner mode
-C     I,J,K,bl,bt,bn,bs :: Loop and index counters
-C     be,bw
-      INTEGER theSimulationMode
-      INTEGER theCornerMode
-c     INTEGER I,J,K
-c     INTEGER bl,bt,bn,bs,be,bw
-      INTEGER I
+C     e2_msgHandles :: Synchronization and coordination data structure used to
+C                   :: coordinate access to e2Bufr1_RX or to regulate message
+C                   :: buffering. In PUT communication sender will increment
+C                   :: handle entry once data is ready in buffer. Receiver will
+C                   :: decrement handle once data is consumed from buffer.
+C                   :: For MPI MSG communication MPI_Wait uses hanlde to check
+C                   :: Isend has cleared. This is done in routine after receives.
+C     note: a) current implementation does not use e2_msgHandles for communication
+C              between threads: all-threads barriers are used (see CNH note below).
+C              For a 2-threads synchro communication (future version),
+C              e2_msgHandles should be shared (in common block, moved to BUFFER.h)
+C           b) 1rst dim=2 so that it could be used also by exch2_rx2_cube.
+      INTEGER bi, bj
 C     Variables for working through W2 topology
-      INTEGER e2_msgHandles(2,W2_maxNeighbours, nSx)
+      INTEGER e2_msgHandles( 2, W2_maxNeighbours, nSx, nSy )
       INTEGER thisTile, farTile, N, nN, oN
       INTEGER tIlo, tIhi, tJlo, tJhi, tKlo, tKhi
       INTEGER tIStride, tJStride, tKStride
       INTEGER i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi
-      INTEGER bi1Lo, bi1Hi, bj1Lo, bj1Hi
-C     == Statement function ==
-C     tilemod - Permutes indices to return neighboring tile index on
-C               six face cube.
-c     INTEGER tilemod
+      LOGICAL updateCorners
 
-C     MPI stuff (should be in a routine call)
 #ifdef ALLOW_USE_MPI
+      INTEGER iBufr, nri, nrj
+C     MPI stuff (should be in a routine call)
       INTEGER mpiStatus(MPI_STATUS_SIZE)
       INTEGER mpiRc
       INTEGER wHandle
 #endif
 CEOP
 
-      theSimulationMode = simulationMode
-      theCornerMode     = cornerMode
+      updateCorners = cornerMode .EQ. EXCH_UPDATE_CORNERS
+C-    Tile size of array to exchange:
+      i1Lo  = 1-myOLw
+      i1Hi  = sNx+myOLe
+      j1Lo  = 1-myOLs
+      j1Hi  = sNy+myOLn
+      k1Lo  = 1
+      k1Hi  = myNz
 
-C     For now tile<->tile exchanges are sequentialised through
+C     For now tile <-> tile exchanges are sequentialised through
 C     thread 1. This is a temporary feature for preliminary testing until
-C     general tile decomposistion is in place (CNH April 11, 2001)
+C     general tile decomposition is in place (CNH April 11, 2001)
       CALL BAR2( myThid )
 
-C     Receive messages or extract buffer copies
-      DO I=myBxLo(myThid), myBxHi(myThid)
-       thisTile=W2_myTileList(I)
-       nN=exch2_nNeighbours(thisTile)
-       DO N=1,nN
-        farTile=exch2_neighbourId(N,thisTile)
-        tIlo =exch2_iLo(N,thisTile)
-        tIhi =exch2_iHi(N,thisTile)
-        tJlo =exch2_jLo(N,thisTile)
-        tJhi =exch2_jHi(N,thisTile)
-        CALL EXCH2_GET_RECV_BOUNDS(
-     I       fieldCode, exchWidthX,
-     O       tiStride, tjStride,
-     U       tIlo, tiHi, tjLo, tjHi )
-        tKLo=1
-        tKHi=myNz
-        tKStride=1
-        i1Lo  = 1-myOLw
-        i1Hi  = sNx+myOLe
-        j1Lo  = 1-myOLs
-        j1Hi  = sNy+myOLn
-        k1Lo  = 1
-        k1Hi  = myNz
-        bi1Lo = I
-        bi1Hi = I
-        bj1Lo = 1
-        bj1Hi = 1
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C       Receive from neighbour N to fill my points 
-C       (tIlo:tIhi:tiStride,tJlo:tJhi,tJStride,tKlo:tKhi,tKStride)
-C       in "array". 
-C       Note: when transferring data within a process:
-C             o e2Bufr entry to read is entry associated with opposing send record
-C             o e2_msgHandle entry to read is entry associated with opposing send
-C               record.
-        CALL EXCH2_RECV_RX1_AD(
-     I       tIlo, tIhi, tiStride, 
-     I       tJlo, tJhi, tjStride, 
-     I       tKlo, tKhi, tkStride,
-     I       thisTile, I, N,
-     I       e2Bufr1_RX, e2BufrRecSize,
-     I       W2_maxNeighbours, nSx,
-     I       array(1-myOLw,1-myOLs,1,I,1),
-     I       i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
-     U       e2_msgHandles(1,N,I), 
-     I       W2_myTileList,
-     I       W2_myCommFlag(N,I),
-     I       myThid )
+C--    Extract from buffer (either from level 1 if local exch,
+C                           or level 2 if coming from an other Proc)
+C  AD: = fill buffer from my-tile-edge overlap-region, level 1 or 2 depending
+C  AD:   on local (to this Proc) or remote Proc tile destination
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        thisTile=W2_myTileList(bi)
+        nN=exch2_nNeighbours(thisTile)
+        DO N=1,nN
+          CALL EXCH2_GET_SCAL_BOUNDS(
+     I               fieldCode, exchWidthX, updateCorners,
+     I               thisTile, N,
+     O               tIlo, tiHi, tjLo, tjHi,
+     O               tiStride, tjStride,
+     I               myThid )
+          tKLo=1
+          tKHi=myNz
+          tKStride=1
+
+C      From buffer, get my points
+C      (tIlo:tIhi:tiStride,tJlo:tJhi,tJStride,tKlo:tKhi,tKStride) in "array":
+C      Note: when transferring data within a process:
+C       o e2Bufr entry to read is entry associated with opposing send record
+C       o e2_msgHandle entry to read is entry associated with opposing send record.
+          CALL EXCH2_AD_GET_RX1(
+     I               tIlo, tIhi, tiStride,
+     I               tJlo, tJhi, tjStride,
+     I               tKlo, tKhi, tkStride,
+     I               thisTile, N, bi, bj,
+     I               e2BufrRecSize, W2_maxNeighbours, nSx, nSy,
+     O               iBuf1Filled(N,bi),
+     O               e2Bufr1_RX,
+     U               array(1-myOLw,1-myOLs,1,bi,bj),
+     I               i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
+     U               e2_msgHandles,
+     I               W2_myCommFlag(N,bi), myThid )
+        ENDDO
        ENDDO
       ENDDO
 
-C     without MPI: wait until all threads finish filling buffer
-      CALL BAR2( myThid )
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C     Post sends as messages or buffer copies
-      DO I=myBxLo(myThid), myBxHi(myThid)
-       thisTile=W2_myTileList(I)
-       nN=exch2_nNeighbours(thisTile)
-       DO N=1,nN
-        farTile=exch2_neighbourId(N,thisTile)
-        oN=exch2_opposingSend(N,thisTile)
-        tIlo =exch2_iLo(oN,farTile)
-        tIhi =exch2_iHi(oN,farTile)
-        tJlo =exch2_jLo(oN,farTile)
-        tJhi =exch2_jHi(oN,farTile)
-        CALL EXCH2_GET_SEND_BOUNDS(
-     I       fieldCode, exchWidthX,
-     O       tiStride, tjStride,
-     U       tIlo, tiHi, tjLo, tjHi )
-        tKLo=1
-        tKHi=myNz
-        tKStride=1
-        i1Lo  = 1-myOLw
-        i1Hi  = sNx+myOLe
-        j1Lo  = 1-myOLs
-        j1Hi  = sNy+myOLn
-        k1Lo  = 1
-        k1Hi  = myNz
-        bi1Lo = I
-        bi1Hi = I
-        bj1Lo = 1
-        bj1Hi = 1
-C       Send to neighbour N to fill neighbor points 
-C       (tIlo:tIhi:tiStride,tJlo:tJhi,tJStride,tKlo:tKhi,tKStride)
-C       in its copy of "array".
-        CALL EXCH2_SEND_RX1_AD(
-     I       tIlo, tIhi, tiStride, 
-     I       tJlo, tJhi, tjStride, 
-     I       tKlo, tKhi, tkStride,
-     I       thisTile, N,
-     I       e2Bufr1_RX(1,N,I,1), e2BufrRecSize,
-     I       array(1-myOLw,1-myOLs,1,I,1),
-     I       i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
-     O       e2_msgHandles(1,N,I), 
-     I       W2_myCommFlag(N,I),
-     I       myThid )
-       ENDDO
-      ENDDO
-
-C     Clear message handles/locks
-      DO I=1,nSx
-       thisTile=W2_myTileList(I)
-       nN=exch2_nNeighbours(thisTile)
-       DO N=1,nN
-C       Note: In a between process tile-tile data transport using
-C             MPI the sender needs to clear an Isend wait handle here.
-C             In a within process tile-tile data transport using true
-C             shared address space/or direct transfer through commonly
-C             addressable memory blocks the receiver needs to assert 
-C             that is has consumed the buffer the sender filled here.
-        farTile=exch2_neighbourId(N,thisTile)
-        IF     ( W2_myCommFlag(N,I) .EQ. 'M' ) THEN
 #ifdef ALLOW_USE_MPI
-         wHandle = e2_msgHandles(1,N,I)
-         CALL MPI_Wait( wHandle, mpiStatus, mpiRc )
-#endif
-        ELSEIF ( W2_myCommFlag(N,I) .EQ. 'P' ) THEN
-        ELSE
-        ENDIF
+C  AD: all MPI part is acting on buffer and is identical to forward code,
+C  AD: except a) the buffer level: send from lev.2, receive into lev.1
+C  AD:        b) the length of transfered buffer (<- match the ad_put/ad_get)
+
+C     Wait until all threads finish filling buffer
+      CALL BAR2( myThid )
+      _BEGIN_MASTER( myThid )
+
+C--   Send my data (in buffer, level 2) to target Process
+      DO bj=1,nSy
+       DO bi=1,nSx
+        thisTile=W2_myTileList(bi)
+        nN=exch2_nNeighbours(thisTile)
+        DO N=1,nN
+C-    Skip the call if this is an internal exchange
+         IF ( W2_myCommFlag(N,bi) .EQ. 'M' ) THEN
+          CALL EXCH2_SEND_RX1(
+     I               thisTile, N,
+     I               e2BufrRecSize,
+     I               iBuf1Filled(N,bi),
+     I               e2Bufr1_RX(1,N,bi,2),
+     O               e2_msgHandles(1,N,bi,bj),
+     I               W2_myCommFlag(N,bi), myThid )
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDDO
+
+C--   Receive data (in buffer, level 1) from source Process
+      DO bj=1,nSy
+       DO bi=1,nSx
+        thisTile=W2_myTileList(bi)
+        nN=exch2_nNeighbours(thisTile)
+        DO N=1,nN
+C-    Skip the call if this is an internal exchange
+         IF ( W2_myCommFlag(N,bi) .EQ. 'M' ) THEN
+          farTile=exch2_neighbourId(N,thisTile)
+          oN = exch2_opposingSend(N,thisTile)
+          CALL EXCH2_GET_SCAL_BOUNDS(
+     I               fieldCode, exchWidthX, updateCorners,
+     I               farTile, oN,
+     O               tIlo, tiHi, tjLo, tjHi,
+     O               tiStride, tjStride,
+     I               myThid )
+          nri = 1 + (tIhi-tIlo)/tiStride
+          nrj = 1 + (tJhi-tJlo)/tjStride
+          iBufr = nri*nrj*myNz
+C       Receive from neighbour N to fill buffer and later on the array
+          CALL EXCH2_RECV_RX1(
+     I               thisTile, N,
+     I               e2BufrRecSize,
+     I               iBufr,
+     O               e2Bufr1_RX(1,N,bi,1),
+     I               W2_myCommFlag(N,bi), myThid )
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDDO
+
+C--   Clear message handles/locks
+      DO bj=1,nSy
+       DO bi=1,nSx
+        thisTile=W2_myTileList(bi)
+        nN=exch2_nNeighbours(thisTile)
+        DO N=1,nN
+C     Note: In a between process tile-tile data transport using
+C           MPI the sender needs to clear an Isend wait handle here.
+C           In a within process tile-tile data transport using true
+C           shared address space/or direct transfer through commonly
+C           addressable memory blocks the receiver needs to assert
+C           that he has consumed the buffer the sender filled here.
+c        farTile=exch2_neighbourId(N,thisTile)
+         IF     ( W2_myCommFlag(N,bi) .EQ. 'M' ) THEN
+          wHandle = e2_msgHandles(1,N,bi,bj)
+          CALL MPI_Wait( wHandle, mpiStatus, mpiRc )
+         ELSEIF ( W2_myCommFlag(N,bi) .EQ. 'P' ) THEN
+         ELSE
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDDO
+
+      _END_MASTER( myThid )
+#endif /* ALLOW_USE_MPI */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     Wait until all threads finish receiving or filling buffer
+      CALL BAR2( myThid )
+
+C--   Post sends into buffer (buffer level 1):
+C- AD: = get exch-data from buffer (level 1), formerly in source tile
+C  AD:   overlap region, and add to my tile near-Edge interior
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        thisTile=W2_myTileList(bi)
+        nN=exch2_nNeighbours(thisTile)
+        DO N=1,nN
+          farTile=exch2_neighbourId(N,thisTile)
+          oN = exch2_opposingSend(N,thisTile)
+          CALL EXCH2_GET_SCAL_BOUNDS(
+     I               fieldCode, exchWidthX, updateCorners,
+     I               farTile, oN,
+     O               tIlo, tiHi, tjLo, tjHi,
+     O               tiStride, tjStride,
+     I               myThid )
+          tKLo=1
+          tKHi=myNz
+          tKStride=1
+C-    Put my points in buffer for neighbour N to fill points
+C     (tIlo:tIhi:tiStride,tJlo:tJhi,tJStride,tKlo:tKhi,tKStride)
+C     in its copy of "array".
+          CALL EXCH2_AD_PUT_RX1(
+     I               tIlo, tIhi, tiStride,
+     I               tJlo, tJhi, tjStride,
+     I               tKlo, tKhi, tkStride,
+     I               thisTile, N,
+     I               e2BufrRecSize,
+     I               e2Bufr1_RX(1,N,bi,1),
+     U               array(1-myOLw,1-myOLs,1,bi,bj),
+     I               i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
+     O               e2_msgHandles(1,N,bi,bj),
+     I               W2_myCommFlag(N,bi), myThid )
+        ENDDO
        ENDDO
       ENDDO
 
       CALL BAR2(myThid)
-  
+
       RETURN
       END
 
