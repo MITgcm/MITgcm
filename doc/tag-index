@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1112 2009/05/29 18:46:03 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1113 2009/05/31 00:00:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exch2: 
+  - take buffer copy from/to array out of S/R exch2_send/recv into new
+    S/R exch2_put/get ; Exch of local variable now works with MPI+MTH
+    (tested by removing commom block statement in SOLVE_FOR_PRESSURE.h).
+  - ad version of send/recv no longer needed (but needs exch2_ad_put/ad_get)
+  - simplify argument list of S/R exch2_get_uv_bounds and exch2_get_scal_bounds 
+    (which replaces exch2_get_recv_bounds & exch2_get_send_bounds) by
+    including Topology header file (and common blocks).
+  - implement EXCH_IGNORE_CORNERS in scalar exchange (rx1);
+    remove 2nd exch call in exch2_s3d_rx (no longer needed).
+  - document S/R arg. list (+ update some comments)
 o pkg/seaice: 
   - clean up computation of Hibler+Bryan (1987) stress coupling for the case
     of LSR (this change is expected to change the results slightly because now 
