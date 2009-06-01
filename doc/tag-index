@@ -1,15 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1113 2009/05/31 00:00:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1114 2009/06/01 14:22:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/exch2: 
+o pkg/mdsio:
+  - read/write tiled (local) files: read/write 1-level tile chunk at a time
+    (instead of segment of length sNx); expected to speed up tiled IO.
+o pkg/exch2:
   - take buffer copy from/to array out of S/R exch2_send/recv into new
     S/R exch2_put/get ; Exch of local variable now works with MPI+MTH
     (tested by removing commom block statement in SOLVE_FOR_PRESSURE.h).
   - ad version of send/recv no longer needed (but needs exch2_ad_put/ad_get)
-  - simplify argument list of S/R exch2_get_uv_bounds and exch2_get_scal_bounds 
+  - simplify argument list of S/R exch2_get_uv_bounds and exch2_get_scal_bounds
     (which replaces exch2_get_recv_bounds & exch2_get_send_bounds) by
     including Topology header file (and common blocks).
   - implement EXCH_IGNORE_CORNERS in scalar exchange (rx1);
