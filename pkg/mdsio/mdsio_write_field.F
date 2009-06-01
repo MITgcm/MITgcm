@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.9 2009/05/16 13:37:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.10 2009/06/01 14:20:31 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -117,6 +117,8 @@ C !LOCAL VARIABLES:
       INTEGER length_of_rec
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
+      Real*4 r4loc(sNx,sNy)
+      Real*8 r8loc(sNx,sNy)
       INTEGER tNx, tNy, global_nTx
       INTEGER tBx, tBy, iGjLoc, jGjLoc
 #ifdef ALLOW_EXCH2
@@ -199,7 +201,7 @@ C globalFile is too slow, then try using single-CPU I/O.
 C Master thread of process 0, only, opens a global file
        IF ( iAmDoingIO ) THEN
          WRITE(dataFName,'(2a)') fName(1:IL),'.data'
-         length_of_rec=MDS_RECLEN(filePrec,xSize*ySize,myThid)
+         length_of_rec = MDS_RECLEN( filePrec, xSize*ySize, myThid )
          IF (irecord .EQ. 1) THEN
           OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
      &        access='direct', recl=length_of_rec )
@@ -215,11 +217,11 @@ C Gather array and WRITE it to file, one vertical level at a time
 C-      copy from arr(level=k) to 2-D "local":
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R4toRS( sharedLocBuf_r4,
-     &                            arr, k, kSize, .FALSE., myThid )
+            CALL MDS_PASS_R4toRS( sharedLocBuf_r4, arr,
+     I                            k, kSize, 0,0, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R4toRL( sharedLocBuf_r4,
-     &                            arr, k, kSize, .FALSE., myThid )
+            CALL MDS_PASS_R4toRL( sharedLocBuf_r4, arr,
+     I                            k, kSize, 0,0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &         ' MDS_WRITE_FIELD: illegal value for arrType'
@@ -233,11 +235,11 @@ C-      copy from arr(level=k) to 2-D "local":
      I                       useExch2ioLayOut, zeroBuff, myThid )
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R8toRS( sharedLocBuf_r8,
-     &                            arr, k, kSize, .FALSE., myThid )
+            CALL MDS_PASS_R8toRS( sharedLocBuf_r8, arr,
+     I                            k, kSize, 0,0, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R8toRL( sharedLocBuf_r8,
-     &                            arr, k, kSize, .FALSE., myThid )
+            CALL MDS_PASS_R8toRL( sharedLocBuf_r8, arr,
+     I                            k, kSize, 0,0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &         ' MDS_WRITE_FIELD: illegal value for arrType'
@@ -257,7 +259,7 @@ C-      copy from arr(level=k) to 2-D "local":
         ENDIF
 
         IF ( iAmDoingIO ) THEN
-          irec=k+1-kLo+nNz*(irecord-1)
+          irec = 1 + k-kLo + (irecord-1)*nNz
           IF (filePrec .EQ. precFloat32) THEN
 #ifdef _BYTESWAPIO
            CALL MDS_BYTESWAPR4( xSize*ySize, xy_buffer_r4 )
@@ -294,79 +296,58 @@ C Only do I/O if I am the master thread
 C If we are writing to a global file then we open it here
         IF (globalFile) THEN
          WRITE(dataFName,'(2a)') fName(1:IL),'.data'
+         length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
          IF (irecord .EQ. 1) THEN
-          length_of_rec=MDS_RECLEN( filePrec, sNx, myThid )
           OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
      &            access='direct', recl=length_of_rec )
-          fileIsOpen=.TRUE.
          ELSE
-          length_of_rec=MDS_RECLEN( filePrec, sNx, myThid )
           OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
      &            access='direct', recl=length_of_rec )
-          fileIsOpen=.TRUE.
          ENDIF
+         fileIsOpen=.TRUE.
         ENDIF
 
 C Loop over all tiles
         DO bj=1,nSy
          DO bi=1,nSx
-C If we are writing to a tiled MDS file then we open each one here
-          IF (.NOT. globalFile) THEN
-           iG=bi+(myXGlobalLo-1)/sNx
-           jG=bj+(myYGlobalLo-1)/sNy
-           WRITE(dataFName,'(2A,I3.3,A,I3.3,A)')
-     &              pfName(1:pIL),'.',iG,'.',jG,'.data'
-           IF (irecord .EQ. 1) THEN
-            length_of_rec=MDS_RECLEN( filePrec, sNx, myThid )
-            OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
-     &            access='direct', recl=length_of_rec )
-            fileIsOpen=.TRUE.
-           ELSE
-            length_of_rec=MDS_RECLEN( filePrec, sNx, myThid )
-            OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
-     &            access='direct', recl=length_of_rec )
-            fileIsOpen=.TRUE.
-           ENDIF
-          ENDIF
 
-          IF (fileIsOpen) THEN
-           tNx = sNx
-           tNy = sNy
-           global_nTx = xSize/sNx
-           tBx = myXGlobalLo-1 + (bi-1)*sNx
-           tBy = myYGlobalLo-1 + (bj-1)*sNy
+          tNx = sNx
+          tNy = sNy
+          global_nTx = xSize/sNx
+          tBx = myXGlobalLo-1 + (bi-1)*sNx
+          tBy = myYGlobalLo-1 + (bj-1)*sNy
 #ifdef ALLOW_EXCH2
-           IF ( useExch2ioLayOut ) THEN
-             tN = W2_myTileList(bi)
-c            tNx = exch2_tNx(tN)
-c            tNy = exch2_tNy(tN)
-c            global_nTx = exch2_global_Nx/tNx
-             tBx = exch2_txGlobalo(tN) - 1
-             tBy = exch2_tyGlobalo(tN) - 1
-             IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
-C-           face x-size larger than glob-size : fold it
-               iGjLoc = 0
-               jGjLoc = exch2_mydNx(tN) / xSize
-             ELSEIF ( exch2_tNy(tN) .GT. ySize ) THEN
-C-           tile y-size larger than glob-size : make a long line
-               iGjLoc = exch2_mydNx(tN)
-               jGjLoc = 0
-             ELSE
-C-           default (face fit into global-IO-array)
-               iGjLoc = 0
-               jGjLoc = 1
-             ENDIF
-           ENDIF
+          IF ( useExch2ioLayOut ) THEN
+            tN = W2_myTileList(bi)
+c           tNx = exch2_tNx(tN)
+c           tNy = exch2_tNy(tN)
+c           global_nTx = exch2_global_Nx/tNx
+            tBx = exch2_txGlobalo(tN) - 1
+            tBy = exch2_tyGlobalo(tN) - 1
+            IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
+C-          face x-size larger than glob-size : fold it
+              iGjLoc = 0
+              jGjLoc = exch2_mydNx(tN) / xSize
+            ELSEIF ( exch2_tNy(tN) .GT. ySize ) THEN
+C-          tile y-size larger than glob-size : make a long line
+              iGjLoc = exch2_mydNx(tN)
+              jGjLoc = 0
+            ELSE
+C-          default (face fit into global-IO-array)
+              iGjLoc = 0
+              jGjLoc = 1
+            ENDIF
+          ENDIF
 #endif /* ALLOW_EXCH2 */
-           DO k=1,nNz
+
+          IF (globalFile) THEN
+C--- Case of 1 Global file:
+
+           DO k=kLo,kHi
             DO j=1,tNy
-             IF (globalFile) THEN
-              irec = 1 + ( tBx + (j-1)*iGjLoc )/tNx
-     &                 + ( tBy + (j-1)*jGjLoc )*global_nTx
-     &             +( k-kLo + (irecord-1)*nNz )*global_nTx*ySize
-             ELSE
-              irec = j + ( k-kLo + (irecord-1)*nNz )*sNy
-             ENDIF
+             irec = 1 + ( tBx + (j-1)*iGjLoc )/tNx
+     &                + ( tBy + (j-1)*jGjLoc )*global_nTx
+     &            +( k-kLo + (irecord-1)*nNz )*global_nTx*ySize
              IF (filePrec .EQ. precFloat32) THEN
               IF (arrType .EQ. 'RS') THEN
                CALL MDS_SEG4toRS( j,bi,bj,k,kSize, r4seg,.FALSE.,arr )
@@ -407,18 +388,81 @@ C End of j loop
             ENDDO
 C End of k loop
            ENDDO
+
           ELSE
-C fileIsOpen=F
-           WRITE(msgBuf,'(A)')
-     &       ' MDS_WRITE_FIELD: I should never get to this point'
-           CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+C--- Case of 1 file per tile (globalFile=F):
+
+C If we are writing to a tiled MDS file then we open each one here
+           iG=bi+(myXGlobalLo-1)/sNx
+           jG=bj+(myYGlobalLo-1)/sNy
+           WRITE(dataFName,'(2A,I3.3,A,I3.3,A)')
+     &              pfName(1:pIL),'.',iG,'.',jG,'.data'
+           length_of_rec = MDS_RECLEN( filePrec, sNx*sNy, myThid )
+           IF (irecord .EQ. 1) THEN
+            OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
+     &            access='direct', recl=length_of_rec )
+           ELSE
+            OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
+     &            access='direct', recl=length_of_rec )
+           ENDIF
+           fileIsOpen=.TRUE.
+
+           DO k=kLo,kHi
+
+             irec = 1 + k-kLo + (irecord-1)*nNz
+             IF (filePrec .EQ. precFloat32) THEN
+              IF ( arrType.EQ.'RS' ) THEN
+               CALL MDS_PASS_R4toRS( r4loc, arr,
+     I                           k, kSize, bi,bj,.FALSE., myThid )
+              ELSEIF ( arrType.EQ.'RL' ) THEN
+               CALL MDS_PASS_R4toRL( r4loc, arr,
+     I                           k, kSize, bi,bj,.FALSE., myThid )
+              ELSE
+               WRITE(msgBuf,'(A)')
+     &           ' MDS_WRITE_FIELD: illegal value for arrType'
+               CALL PRINT_ERROR( msgBuf, myThid )
+               STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+              ENDIF
+#ifdef _BYTESWAPIO
+              CALL MDS_BYTESWAPR4( sNx*sNy, r4loc )
+#endif
+              WRITE(dUnit,rec=irec) r4loc
+             ELSEIF (filePrec .EQ. precFloat64) THEN
+              IF ( arrType.EQ.'RS' ) THEN
+               CALL MDS_PASS_R8toRS( r8loc, arr,
+     I                           k, kSize, bi,bj,.FALSE., myThid )
+              ELSEIF ( arrType.EQ.'RL' ) THEN
+               CALL MDS_PASS_R8toRL( r8loc, arr,
+     I                           k, kSize, bi,bj,.FALSE., myThid )
+              ELSE
+               WRITE(msgBuf,'(A)')
+     &           ' MDS_WRITE_FIELD: illegal value for arrType'
+               CALL PRINT_ERROR( msgBuf, myThid )
+               STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+              ENDIF
+#ifdef _BYTESWAPIO
+              CALL MDS_BYTESWAPR8( sNx*sNy, r8loc )
+#endif
+              WRITE(dUnit,rec=irec) r8loc
+             ELSE
+              WRITE(msgBuf,'(A)')
+     &          ' MDS_WRITE_FIELD: illegal value for filePrec'
+              CALL PRINT_ERROR( msgBuf, myThid )
+              STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+             ENDIF
+
+C End of k loop
+           ENDDO
+
+C here We close the tiled MDS file
+           IF ( fileIsOpen ) THEN
+            CLOSE( dUnit )
+            fileIsOpen = .FALSE.
+           ENDIF
+
+C--- End Global File / tile-file cases
           ENDIF
-C If we were writing to a tiled MDS file then we close it here
-          IF (fileIsOpen .AND. (.NOT. globalFile)) THEN
-           CLOSE( dUnit )
-           fileIsOpen = .FALSE.
-          ENDIF
+
 C Create meta-file for each tile if we are tiling
           IF ( .NOT.globalFile .AND. writeMetaF ) THEN
            iG=bi+(myXGlobalLo-1)/sNx
@@ -434,6 +478,9 @@ C Create meta-file for each tile if we are tiling
            dimList(1,3) = nNz
            dimList(2,3) = 1
            dimList(3,3) = nNz
+c          dimList(1,3) = kSize
+c          dimList(2,3) = kLo
+c          dimList(3,3) = kHi
            nDims = 3
            IF ( nNz.EQ.1 ) nDims = 2
            map2gl(1) = iGjLoc
@@ -443,6 +490,7 @@ C Create meta-file for each tile if we are tiling
      I              filePrec, nDims,dimList,map2gl, 0,  ' ',
      I              0, UNSET_RL, irecord, myIter, myThid )
           ENDIF
+
 C End of bi,bj loops
          ENDDO
         ENDDO
@@ -472,6 +520,9 @@ C Create meta-file for the global-file (also if useSingleCpuIO)
          dimList(1,3) = nNz
          dimList(2,3) = 1
          dimList(3,3) = nNz
+c        dimList(1,3) = kSize
+c        dimList(2,3) = kLo
+c        dimList(3,3) = kHi
          nDims = 3
          IF ( nNz.EQ.1 ) nDims = 2
          map2gl(1) = 0

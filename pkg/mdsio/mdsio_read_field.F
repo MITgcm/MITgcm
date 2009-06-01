@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.8 2009/05/16 13:37:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.9 2009/06/01 14:20:31 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -97,6 +97,8 @@ C !LOCAL VARIABLES:
       INTEGER length_of_rec
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
+      Real*4 r4loc(sNx,sNy)
+      Real*8 r8loc(sNx,sNy)
       INTEGER tNx, tNy, global_nTx
       INTEGER tBx, tBy, iGjLoc, jGjLoc
 #ifdef ALLOW_EXCH2
@@ -208,7 +210,7 @@ C master thread of process 0, only, opens a global file
 C If global file is visible to process 0, then open it here.
 C Otherwise stop program.
          IF ( globalFile) THEN
-          length_of_rec=MDS_RECLEN( filePrec, xSize*ySize, myThid )
+          length_of_rec = MDS_RECLEN( filePrec, xSize*ySize, myThid )
           OPEN( dUnit, file=dataFName, status='old',
      &         access='direct', recl=length_of_rec )
          ELSE
@@ -231,7 +233,7 @@ C- endif iAmDoingIO
 
 C master thread of process 0, only, read from file
         IF ( iAmDoingIO ) THEN
-          irec = k+1-kLo+nNz*(irecord-1)
+          irec = 1 + k-kLo + (irecord-1)*nNz
           IF (filePrec .EQ. precFloat32) THEN
            READ(dUnit,rec=irec) ( xy_buffer_r4(i),i=1,xSize*ySize )
 #ifdef _BYTESWAPIO
@@ -258,11 +260,11 @@ C- endif iAmDoingIO
      I                        xSize, ySize,
      I                        useExch2ioLayOut, .FALSE., myThid )
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R4toRS( sharedLocBuf_r4,
-     &                            arr, k, kSize, .TRUE., myThid )
+            CALL MDS_PASS_R4toRS( sharedLocBuf_r4, arr,
+     I                            k, kSize, 0, 0, .TRUE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R4toRL( sharedLocBuf_r4,
-     &                            arr, k, kSize, .TRUE., myThid )
+            CALL MDS_PASS_R4toRL( sharedLocBuf_r4, arr,
+     I                            k, kSize, 0, 0, .TRUE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &          ' MDS_READ_FIELD: illegal value for arrType'
@@ -276,11 +278,11 @@ C- endif iAmDoingIO
      I                        xSize, ySize,
      I                        useExch2ioLayOut, .FALSE., myThid )
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R8toRS( sharedLocBuf_r8,
-     &                            arr, k, kSize, .TRUE., myThid )
+            CALL MDS_PASS_R8toRS( sharedLocBuf_r8, arr,
+     I                            k, kSize, 0, 0, .TRUE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R8toRL( sharedLocBuf_r8,
-     &                            arr, k, kSize, .TRUE., myThid )
+            CALL MDS_PASS_R8toRL( sharedLocBuf_r8, arr,
+     I                            k, kSize, 0, 0, .TRUE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &          ' MDS_READ_FIELD: illegal value for arrType'
@@ -305,7 +307,7 @@ C Only do I/O if I am the master thread
 
 C If we are reading from a global file then we open it here
         IF (globalFile) THEN
-         length_of_rec=MDS_RECLEN( filePrec, sNx, myThid )
+         length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
          OPEN( dUnit, file=dataFName, status='old',
      &        access='direct', recl=length_of_rec )
          fileIsOpen=.TRUE.
@@ -314,43 +316,11 @@ C If we are reading from a global file then we open it here
 C Loop over all tiles
         DO bj=1,nSy
          DO bi=1,nSx
-C If we are reading from a tiled MDS file then we open each one here
-          IF (.NOT. globalFile) THEN
-           iG=bi+(myXGlobalLo-1)/sNx
-           jG=bj+(myYGlobalLo-1)/sNy
-           WRITE(dataFName,'(2A,I3.3,A,I3.3,A)')
-     &            pfName(1:pIL),'.',iG,'.',jG,'.data'
-           INQUIRE( file=dataFName, exist=exst )
-C Of course, we only open the file if the tile is "active"
-C (This is a place-holder for the active/passive mechanism
-           IF (exst) THEN
-            IF ( debugLevel .GE. debLevA ) THEN
-             WRITE(msgBuf,'(A,A)')
-     &       ' MDS_READ_FIELD: opening file: ',dataFName(1:pIL+13)
-             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT , myThid)
-            ENDIF
-            length_of_rec=MDS_RECLEN( filePrec, sNx, myThid )
-            OPEN( dUnit, file=dataFName, status='old',
-     &            access='direct', recl=length_of_rec )
-            fileIsOpen=.TRUE.
-           ELSE
-            fileIsOpen=.FALSE.
-            WRITE(msgBuf,'(4A)') ' MDS_READ_FIELD: filename: ',
-     &             fName(1:IL),' , ', dataFName(1:pIL+13)
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT , myThid)
-            CALL PRINT_ERROR( msgBuf, myThid )
-            WRITE(msgBuf,'(A)')
-     &      ' MDS_READ_FIELD: Files DO not exist'
-            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                          SQUEEZE_RIGHT , myThid)
-            CALL PRINT_ERROR( msgBuf, myThid )
-            STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
-           ENDIF
-          ENDIF
 
-          IF (fileIsOpen) THEN
+          IF (globalFile) THEN
+C--- Case of 1 Global file:
+
+c         IF (fileIsOpen) THEN
            tNx = sNx
            tNy = sNy
            global_nTx = xSize/sNx
@@ -383,13 +353,9 @@ C-           default (face fit into global-IO-array)
 #endif /* ALLOW_EXCH2 */
            DO k=kLo,kHi
             DO j=1,tNy
-             IF (globalFile) THEN
-              irec = 1 + ( tBx + (j-1)*iGjLoc )/sNx
-     &                 + ( tBy + (j-1)*jGjLoc )*global_nTx
-     &             +( k-kLo + (irecord-1)*nNz )*global_nTx*ySize
-             ELSE
-              irec = j + ( k-kLo + (irecord-1)*nNz )*sNy
-             ENDIF
+             irec = 1 + ( tBx + (j-1)*iGjLoc )/sNx
+     &                + ( tBy + (j-1)*jGjLoc )*global_nTx
+     &            +( k-kLo + (irecord-1)*nNz )*global_nTx*ySize
              IF (filePrec .EQ. precFloat32) THEN
               READ(dUnit,rec=irec) r4seg
 #ifdef _BYTESWAPIO
@@ -430,12 +396,103 @@ C End of j loop
             ENDDO
 C End of k loop
            ENDDO
+
 C end if fileIsOpen
-          ENDIF
-          IF (fileIsOpen .AND. (.NOT. globalFile)) THEN
+c         ENDIF
+
+          ELSE
+C--- Case of 1 file per tile (globalFile=F):
+
+C If we are reading from a tiled MDS file then we open each one here
+           iG=bi+(myXGlobalLo-1)/sNx
+           jG=bj+(myYGlobalLo-1)/sNy
+           WRITE(dataFName,'(2A,I3.3,A,I3.3,A)')
+     &            pfName(1:pIL),'.',iG,'.',jG,'.data'
+           INQUIRE( file=dataFName, exist=exst )
+C Of course, we only open the file if the tile is "active"
+C (This is a place-holder for the active/passive mechanism
+           IF (exst) THEN
+            IF ( debugLevel .GE. debLevA ) THEN
+             WRITE(msgBuf,'(A,A)')
+     &       ' MDS_READ_FIELD: opening file: ',dataFName(1:pIL+13)
+             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT , myThid)
+            ENDIF
+            length_of_rec = MDS_RECLEN( filePrec, sNx*sNy, myThid )
+            OPEN( dUnit, file=dataFName, status='old',
+     &            access='direct', recl=length_of_rec )
+            fileIsOpen=.TRUE.
+           ELSE
+            fileIsOpen=.FALSE.
+            WRITE(msgBuf,'(4A)') ' MDS_READ_FIELD: filename: ',
+     &             fName(1:IL),' , ', dataFName(1:pIL+13)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT , myThid)
+            CALL PRINT_ERROR( msgBuf, myThid )
+            WRITE(msgBuf,'(A)')
+     &      ' MDS_READ_FIELD: Files DO not exist'
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT , myThid)
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
+           ENDIF
+
+           DO k=kLo,kHi
+
+             irec = 1 + k-kLo + (irecord-1)*nNz
+             IF (filePrec .EQ. precFloat32) THEN
+              READ(dUnit,rec=irec) r4loc
+#ifdef _BYTESWAPIO
+              CALL MDS_BYTESWAPR4( sNx*sNy, r4loc )
+#endif
+              IF ( arrType.EQ.'RS' ) THEN
+               CALL MDS_PASS_R4toRS( r4loc, arr,
+     I                           k, kSize, bi,bj, .TRUE., myThid )
+              ELSEIF ( arrType.EQ.'RL' ) THEN
+               CALL MDS_PASS_R4toRL( r4loc, arr,
+     I                           k, kSize, bi,bj, .TRUE., myThid )
+              ELSE
+               WRITE(msgBuf,'(A)')
+     &         ' MDS_READ_FIELD: illegal value for arrType'
+               CALL PRINT_ERROR( msgBuf, myThid )
+               STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
+              ENDIF
+             ELSEIF (filePrec .EQ. precFloat64) THEN
+              READ(dUnit,rec=irec) r8loc
+#ifdef _BYTESWAPIO
+              CALL MDS_BYTESWAPR8( sNx*sNy, r8loc )
+#endif
+              IF ( arrType.EQ.'RS' ) THEN
+               CALL MDS_PASS_R8toRS( r8loc, arr,
+     I                           k, kSize, bi,bj, .TRUE., myThid )
+              ELSEIF ( arrType.EQ.'RL' ) THEN
+               CALL MDS_PASS_R8toRL( r8loc, arr,
+     I                           k, kSize, bi,bj, .TRUE., myThid )
+              ELSE
+               WRITE(msgBuf,'(A)')
+     &         ' MDS_READ_FIELD: illegal value for arrType'
+               CALL PRINT_ERROR( msgBuf, myThid )
+               STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
+              ENDIF
+             ELSE
+              WRITE(msgBuf,'(A)')
+     &        ' MDS_READ_FIELD: illegal value for filePrec'
+              CALL PRINT_ERROR( msgBuf, myThid )
+              STOP 'ABNORMAL END: S/R MDS_READ_FIELD'
+             ENDIF
+
+C End of k loop
+           ENDDO
+
+C here We close the tiled MDS file
+           IF ( fileIsOpen ) THEN
             CLOSE( dUnit )
             fileIsOpen = .FALSE.
+           ENDIF
+
+C--- End Global File / tile-file cases
           ENDIF
+
 C End of bi,bj loops
          ENDDO
         ENDDO
