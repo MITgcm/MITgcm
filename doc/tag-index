@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1114 2009/06/01 14:22:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1115 2009/06/02 15:01:00 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs/exf
+  - obcs_precribe_read.F: change if statements so that they match 
+                          the variable type (_RL)
+  - add a separate exf_iprec_obcs to exf_set_obcs (by default equal to 
+    exf_iprec) as part of namelist EXF_NML_01
 o pkg/mdsio:
   - read/write tiled (local) files: read/write 1-level tile chunk at a time
     (instead of segment of length sNx); expected to speed up tiled IO.
