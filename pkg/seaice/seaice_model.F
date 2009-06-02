@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.69 2009/05/19 21:50:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.70 2009/06/02 16:11:32 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -90,8 +90,8 @@ CADJ STORE fu    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE fv    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uice  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE eta   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE zeta  = comlev1, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE eta   = comlev1, key=ikey_dynamics, kind=isbyte
+cphCADJ STORE zeta  = comlev1, key=ikey_dynamics, kind=isbyte
 cph(
 CADJ STORE dwatn    = comlev1, key=ikey_dynamics, kind=isbyte
 cccCADJ STORE press0   = comlev1, key=ikey_dynamics, kind=isbyte
