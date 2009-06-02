@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.23 2008/05/09 09:20:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.24 2009/06/02 14:58:54 mlosch Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -294,7 +294,7 @@ c     == local variables ==
 # endif /* ALLOW_PTRACERS */
 c     == end of interface ==
 
-      if ( obcsperiod .eq. -12 ) then
+      if ( obcsperiod .eq. -12. _d 0 ) then
 c     obcsperiod=-12 means input file contains 12 monthly means
 c     record numbers are assumed 1 to 12 corresponding to
 c     Jan. through Dec.
@@ -304,7 +304,7 @@ c     Jan. through Dec.
      I                        mycurrenttime, mycurrentiter, mythid
      &           )
 
-      elseif ( obcsperiod .lt. 0 ) then
+      elseif ( obcsperiod .lt. 0. _d 0 ) then
        print *, 'obcsperiod is out of range'
        STOP 'ABNORMAL END: S/R OBCS_PRESCIBE_EXF_XZ'
       else
@@ -348,7 +348,7 @@ c     get record numbers and interpolation factor
 # endif /* ALLOW_PTRACERS */
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
-       if ( siobperiod .eq. -12 ) then
+       if ( siobperiod .eq. -12. _d 0 ) then
 c     siobperiod=-12 means input file contains 12 monthly means
 c     record numbers are assumed 1 to 12 corresponding to
 c     Jan. through Dec.
@@ -358,7 +358,7 @@ c     Jan. through Dec.
      I                        mycurrenttime, mycurrentiter, mythid
      &           )
 
-       elseif ( siobperiod .lt. 0 ) then
+       elseif ( siobperiod .lt. 0. _d 0 ) then
         print *, 'siobperiod is out of range'
         STOP 'ABNORMAL END: S/R OBCS_PRESCIBE_EXF_XZ'
        else
@@ -513,7 +513,7 @@ c     == local variables ==
 # endif /* ALLOW_PTRACERS */
 
 c     == end of interface ==
-      if ( obcsperiod .eq. -12 ) then
+      if ( obcsperiod .eq. -12. _d 0 ) then
 c     obcsperiod=-12 means input file contains 12 monthly means
 c     record numbers are assumed 1 to 12 corresponding to
 c     Jan. through Dec.
@@ -523,7 +523,7 @@ c     Jan. through Dec.
      I                        mycurrenttime, mycurrentiter, mythid
      &           )
 
-      elseif ( obcsperiod .lt. 0 ) then
+      elseif ( obcsperiod .lt. 0. _d 0 ) then
        print *, 'obcsperiod is out of range'
        STOP 'ABNORMAL END: S/R OBCS_PRESCIBE_EXF_YZ'
       else
@@ -567,7 +567,7 @@ c     get record numbers and interpolation factor
 # endif /* ALLOW_PTRACERS */
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
-       if ( siobperiod .eq. -12 ) then
+       if ( siobperiod .eq. -12. _d 0 ) then
 c     siobperiod=-12 means input file contains 12 monthly means
 c     record numbers are assumed 1 to 12 corresponding to
 c     Jan. through Dec.
@@ -577,7 +577,7 @@ c     Jan. through Dec.
      I                        mycurrenttime, mycurrentiter, mythid
      &           )
 
-       elseif ( siobperiod .lt. 0 ) then
+       elseif ( siobperiod .lt. 0. _d 0 ) then
         print *, 'siobperiod is out of range'
         STOP 'ABNORMAL END: S/R OBCS_PRESCIBE_EXF_XZ'
        else
