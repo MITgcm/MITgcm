@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.7 2009/02/12 23:28:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.8 2009/06/02 16:10:31 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -445,15 +445,17 @@ C-      2D arrays
           dwatn(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,19)
           seaicemasku(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,20)
           seaicemaskv(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,21)
+          stressDivergenceX(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,22)
+          stressDivergenceY(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,23)
 #  endif /* SEAICE_CGRID */
 #  ifdef SEAICE_ALLOW_EVP
-          seaice_sigma1(I,J,bi,bj)  = StoreSEAICE(I,J,bi,bj,22)
-          seaice_sigma2(I,J,bi,bj)  = StoreSEAICE(I,J,bi,bj,23)
-          seaice_sigma12(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,24)
+          seaice_sigma1(I,J,bi,bj)  = StoreSEAICE(I,J,bi,bj,24)
+          seaice_sigma2(I,J,bi,bj)  = StoreSEAICE(I,J,bi,bj,25)
+          seaice_sigma12(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,26)
 #  endif /* SEAICE_ALLOW_EVP */
 # endif /* SEAICE_ALLOW_DYNAMICS */
 # ifdef SEAICE_SALINITY
-          HSALT(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,25)
+          HSALT(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,27)
 # endif
          enddo
         enddo

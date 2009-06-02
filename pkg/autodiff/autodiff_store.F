@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.7 2009/02/12 23:28:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.8 2009/06/02 16:10:31 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -547,19 +547,23 @@ C-      2D arrays
           StoreSEAICE(I,J,bi,bj,19) = dwatn(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,20) = seaicemasku(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,21) = seaicemaskv(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,22) = stressDivergenceX(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,23) = stressDivergenceY(I,J,bi,bj)
 #  else
           StoreSEAICE(I,J,bi,bj,19) = 0.0      
           StoreSEAICE(I,J,bi,bj,20) = 0.0           
           StoreSEAICE(I,J,bi,bj,21) = 0.0
+          StoreSEAICE(I,J,bi,bj,22) = 0.0           
+          StoreSEAICE(I,J,bi,bj,23) = 0.0
 #  endif /* SEAICE_CGRID */
 #  ifdef SEAICE_ALLOW_EVP
-          StoreSEAICE(I,J,bi,bj,22) = seaice_sigma1(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,23) = seaice_sigma2(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,24) = seaice_sigma12(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,24) = seaice_sigma1(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,25) = seaice_sigma2(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,26) = seaice_sigma12(I,J,bi,bj)
 #  else
-          StoreSEAICE(I,J,bi,bj,22) = 0.0      
-          StoreSEAICE(I,J,bi,bj,23) = 0.0           
-          StoreSEAICE(I,J,bi,bj,24) = 0.0
+          StoreSEAICE(I,J,bi,bj,24) = 0.0      
+          StoreSEAICE(I,J,bi,bj,25) = 0.0           
+          StoreSEAICE(I,J,bi,bj,26) = 0.0
 #  endif /* SEAICE_ALLOW_EVP */
 # else
           StoreSEAICE(I,J,bi,bj,11) = 0.0      
@@ -576,11 +580,13 @@ C-      2D arrays
           StoreSEAICE(I,J,bi,bj,22) = 0.0      
           StoreSEAICE(I,J,bi,bj,23) = 0.0           
           StoreSEAICE(I,J,bi,bj,24) = 0.0
+          StoreSEAICE(I,J,bi,bj,25) = 0.0
+          StoreSEAICE(I,J,bi,bj,26) = 0.0
 # endif /* SEAICE_ALLOW_DYNAMICS */
 # ifdef SEAICE_SALINITY
-          StoreSEAICE(I,J,bi,bj,25) = HSALT(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,27) = HSALT(I,J,bi,bj)
 # else
-          StoreSEAICE(I,J,bi,bj,25) = 0.0
+          StoreSEAICE(I,J,bi,bj,27) = 0.0
 # endif
          enddo
         enddo
