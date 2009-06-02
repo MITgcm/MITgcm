@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.11 2008/11/17 23:08:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.12 2009/06/02 14:59:55 mlosch Exp $
 C $Name:  $
 c
 c
@@ -515,9 +515,11 @@ c     file precision and field type
 
       common /exf_param_type/
      &                     exf_iprec,
+     &                     exf_iprec_obcs,
      &                     exf_yftype
 
       integer exf_iprec
+      integer exf_iprec_obcs
       character*(2) exf_yftype
 
 c     exf_inscal_*      input scaling factors

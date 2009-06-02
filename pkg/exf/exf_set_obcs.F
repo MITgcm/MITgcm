@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_obcs.F,v 1.13 2008/05/09 10:00:40 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_obcs.F,v 1.14 2009/06/02 14:59:55 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -78,8 +78,8 @@ c     == end of interface ==
      O         obcs_file0,
      I         mycurrenttime, mycurrentiter, mythid )
 
-            call mdsreadfieldxz( obcs_file0, exf_iprec, exf_yftype, Nr
-     &           , obcs_xz_1, count0, mythid
+            call mdsreadfieldxz( obcs_file0, exf_iprec_obsc, exf_yftype
+     &           , Nr, obcs_xz_1, count0, mythid
      &           )
          endif
 
@@ -92,8 +92,8 @@ c     == end of interface ==
      O         obcs_file1,
      I         mycurrenttime, mycurrentiter, mythid )
 
-            call mdsreadfieldxz( obcs_file1, exf_iprec, exf_yftype, Nr
-     &           , obcs_xz_1, count1, mythid
+            call mdsreadfieldxz( obcs_file1, exf_iprec_obcs, exf_yftype
+     &           , Nr, obcs_xz_1, count1, mythid
      &           )
          endif
 
@@ -187,8 +187,8 @@ c     == end of interface ==
      O         obcs_file0,
      I         mycurrenttime, mycurrentiter, mythid )
 
-            call mdsreadfieldyz( obcs_file0, exf_iprec, exf_yftype, Nr
-     &           , obcs_yz_1, count0, mythid
+            call mdsreadfieldyz( obcs_file0, exf_iprec_obcs, exf_yftype
+     &           , Nr, obcs_yz_1, count0, mythid
      &           )
          endif
 
@@ -201,8 +201,8 @@ c     == end of interface ==
      O         obcs_file1,
      I         mycurrenttime, mycurrentiter, mythid )
 
-            call mdsreadfieldyz( obcs_file1, exf_iprec, exf_yftype, Nr
-     &           , obcs_yz_1, count1, mythid
+            call mdsreadfieldyz( obcs_file1, exf_iprec_obcs, exf_yftype
+     &           , Nr, obcs_yz_1, count1, mythid
      &           )
          endif
 
@@ -296,8 +296,8 @@ c     == end of interface ==
      O         obcs_file0,
      I         mycurrenttime, mycurrentiter, mythid )
 
-            call mdsreadfieldxz( obcs_file0, exf_iprec, exf_yftype, 1
-     &           , obcs_x_1, count0, mythid
+            call mdsreadfieldxz( obcs_file0, exf_iprec_obcs, exf_yftype
+     &           , 1, obcs_x_1, count0, mythid
      &           )
          endif
 
@@ -310,8 +310,8 @@ c     == end of interface ==
      O         obcs_file1,
      I         mycurrenttime, mycurrentiter, mythid )
 
-            call mdsreadfieldxz( obcs_file1, exf_iprec, exf_yftype, 1
-     &           , obcs_x_1, count1, mythid
+            call mdsreadfieldxz( obcs_file1, exf_iprec_obcs, exf_yftype
+     &           , 1, obcs_x_1, count1, mythid
      &           )
          endif
 
@@ -402,8 +402,8 @@ c     == end of interface ==
      O         obcs_file0,
      I         mycurrenttime, mycurrentiter, mythid )
 
-            call mdsreadfieldyz( obcs_file0, exf_iprec, exf_yftype, 1
-     &           , obcs_y_1, count0, mythid
+            call mdsreadfieldyz( obcs_file0, exf_iprec_obcs, exf_yftype
+     &           , 1, obcs_y_1, count0, mythid
      &           )
          endif
 
@@ -416,8 +416,8 @@ c     == end of interface ==
      O         obcs_file1,
      I         mycurrenttime, mycurrentiter, mythid )
 
-            call mdsreadfieldyz( obcs_file1, exf_iprec, exf_yftype, 1
-     &           , obcs_y_1, count1, mythid
+            call mdsreadfieldyz( obcs_file1, exf_iprec_obcs, exf_yftype
+     &           , 1, obcs_y_1, count1, mythid
      &           )
          endif
 
