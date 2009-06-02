@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_adm.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_adm.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_adm_mpi,v 1.1 2009/05/30 18:03:02 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_adm_mpi,v 1.2 2009/06/02 19:58:20 jmc Exp $
 # $Name:  $
 
 umask 0022
@@ -25,8 +25,7 @@ module add mpich/gnu
 OPTFILE="../tools/build_options/linux_ia32_g77+mpi_aces"
 options='-adm -mpi'
 #- need this to get "staf":
-#export PATH="$PATH:~/bin" <- does not work
-export MITGCM_AD_OF="/home/jmc/test_ACES/ad_optfil_local"
+export PATH="$PATH:$HOME/bin"
 
 checkOut=1
 #options="$options -nc" ; checkOut=0
