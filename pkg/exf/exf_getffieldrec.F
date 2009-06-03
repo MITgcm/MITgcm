@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.21 2008/01/31 18:38:35 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.22 2009/06/03 09:59:50 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -88,6 +88,21 @@ c     Set some default values.
       first = ((mytime - modelstart) .lt. 0.5*modelstep)
       changed = .false.
 
+      if ( fldperiod .eq. 0. _d 0 ) then
+c     Read field only once in the beginning. Hack: count1=count0 causes
+c     the model to read the first record twice, but since this this is
+c     done only the first time around it is not too much of an overhead.
+       first   = ((mytime - modelstart) .lt. 0.5*modelstep)
+       changed = .false.
+       fac     = 1. _d 0
+       count0  = 1
+       count1  = count0
+c     Give these variables some unproblematic values although they are
+c     never used in this context.
+       year0   = 0
+       year1   = year0
+      else
+c     fldperiod .ne. 0 
       if (.not.usefldyearlyfields) then
 
 c     Determine offset in seconds from beginning of input data
@@ -95,9 +110,9 @@ c     to current date.
        fldsectot = mytime - fldstartdate
 
 c     Determine the flux records just before and after mycurrentdate.
-       if ( repeatPeriod .eq. 0. ) then
+       if ( repeatPeriod .eq. 0. _d 0 ) then
 
-        if ( fldsectot .lt. 0 ) then
+        if ( fldsectot .lt. 0. _d 0 ) then
          print *, 'flux data not available for this date'
          stop 'ABNORMAL END: S/R EXF_GETFFIELDREC'
         endif
@@ -109,7 +124,7 @@ c     Determine the flux records just before and after mycurrentdate.
 c     if ( repeatPeriod .gt. 0. )
 
 c     If using repeating data then make fldsectot cycle around.
-        if(fldsectot.lt.0) fldsectot = fldsectot + repeatPeriod
+        if(fldsectot.lt.0. _d 0) fldsectot = fldsectot + repeatPeriod
         fldsecs0     = mod(fldsectot,repeatPeriod)
         count0       = int((fldsecs0+0.5)/fldperiod) + 1
         fldsecs1     = mod(fldsectot+fldperiod,repeatPeriod)
@@ -166,7 +181,10 @@ c     Weight belonging to count0 for linear interpolation purposes.
 c     if (usefldyearlyfields)
 
 c     Set switch for reading new record.
-      if ( fldsecs - modelstep .lt. 0. ) changed = .true.
+      if ( fldsecs - modelstep .lt. 0. _d 0 ) changed = .true.
+
+      endif
+c     if (fldperiod .eq. 0.)
 
 #ifdef EXF_VERBOSE
 c     Do some printing for the protocol.
