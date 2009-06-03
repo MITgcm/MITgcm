@@ -6,7 +6,6 @@
       SEAICE_deltaTdyn   = 3600.,
 #     SEAICEuseDYNAMICS  =.FALSE.,
       LSR_ERROR          = 1.E-12,
-#     SEAICEuseEVP       = .TRUE.,
 #     SEAICE_deltaTevp   = 60.,
 #     SEAICE_tave_mnc    = .FALSE.,
 #     SEAICE_dump_mnc    = .FALSE.,
