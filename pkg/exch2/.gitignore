@@ -12,9 +12,7 @@ exch2_uv_agrid_3d_r[ls48].F
 exch2_uv_bgrid_3d_r[ls48].F
 exch2_uv_cgrid_3d_r[ls48].F
 exch2_uv_dgrid_3d_r[ls48].F
-exch2_recv_r[ls48][12]_ad.F
 exch2_r[ls48][12]_cube_ad.F
-exch2_send_r[ls48][12]_ad.F
 exch2_ad_get_r[ls48][12].F
 exch2_ad_put_r[ls48][12].F
 exch2_get_r[ls48][12].F
