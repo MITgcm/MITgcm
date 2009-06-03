@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_e2setup.F,v 1.1 2009/05/12 19:40:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_e2setup.F,v 1.2 2009/06/03 19:23:31 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -35,14 +35,14 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf     :: Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*1 edge(4), cc1
+      CHARACTER*1 edge(0:4)
       INTEGER tNx, tNy, fNx, fNy
       INTEGER nbTx, nbTy
       INTEGER ip(4), np(4)
       INTEGER i, j, js, jp, jt, ii, is, it, ns, nt, k, tx, ty
       LOGICAL prtFlag
 CEOP
-      DATA edge / 'N' , 'S' , 'E' , 'W' /
+      DATA edge / '?' , 'N' , 'S' , 'E' , 'W' /
 
       tNx = sNx
       tNy = sNy
@@ -79,11 +79,9 @@ C---     write
      &        ii = 2 - MIN(1,exch2_jHi(nt,it))
             IF ( exch2_iLo(nt,it).EQ.exch2_iHi(nt,it) )
      &        ii = 4 - MIN(1,exch2_iHi(nt,it))
-            cc1 = '?'
-            IF ( ii.NE.0 ) cc1 = edge(ii)
             WRITE(W2_oUnit,'(2(3A,I3),A,4I3,A,2I6)')
      &      '  ', edge(i), '.Edge Facet', j, ' <-- ',
-     &                cc1, '.Edge Facet', jt,
+     &           edge(ii), '.Edge Facet', jt,
      &      ' : pij=', (exch2_pij(k,np(i),ip(i)),k=1,4),
      &      ' ; oi,oj=',exch2_oi(np(i),ip(i)),exch2_oj(np(i),ip(i))
           ENDIF
@@ -138,11 +136,9 @@ C---   write the last one:
      &        ii = 2 - MIN(1,exch2_jHi(nt,it))
             IF ( exch2_iLo(nt,it).EQ.exch2_iHi(nt,it) )
      &        ii = 4 - MIN(1,exch2_iHi(nt,it))
-            cc1 = '?'
-            IF ( ii.NE.0 ) cc1 = edge(ii)
             WRITE(W2_oUnit,'(2(3A,I3),A,4I3,A,2I6)')
      &      '  ', edge(i), '.Edge Facet', j, ' <-- ',
-     &                cc1, '.Edge Facet', jt,
+     &           edge(ii), '.Edge Facet', jt,
      &      ' : pij=', (exch2_pij(k,np(i),ip(i)),k=1,4),
      &      ' ; oi,oj=',exch2_oi(np(i),ip(i)),exch2_oj(np(i),ip(i))
           ENDIF
