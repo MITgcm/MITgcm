@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1115 2009/06/02 15:01:00 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1116 2009/06/03 10:01:20 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/obcs/exf
+  - exf_getffieldrec.F: add a few ". _d 0" and 
+                        add code to catch the case fldperiod = 0.  
   - obcs_precribe_read.F: change if statements so that they match 
                           the variable type (_RL)
   - add a separate exf_iprec_obcs to exf_set_obcs (by default equal to 
