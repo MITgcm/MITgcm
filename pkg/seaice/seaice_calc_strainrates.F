@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.12 2009/05/29 10:18:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.13 2009/06/03 08:48:07 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -77,7 +77,6 @@ C     evaluate strain rates
      &         +HALF*
      &         (uFld(I,J,1,bi,bj)+uFld(I+1,J,1,bi,bj))
      &         * k1AtC(I,J,bi,bj)
-C     one metric term is missing
          ENDDO
         ENDDO
         DO j=1-Oly+1,sNy+Oly
