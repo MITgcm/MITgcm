@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.6 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.7 2009/06/03 12:08:11 mlosch Exp $
 C $Name:  $
 
 #ifndef DIAG_OPTIONS_H
@@ -20,6 +20,10 @@ C  from pickup file.
 C Note: Use with cautious since it does not work for all restart
 C  cases (e.g., changing data.diagnostics).
 #undef  DIAGNOSTICS_HAS_PICKUP
+
+C for NetCDF (mnc) output: define a missing value (default is UNSET_RL)
+C and fill land points of (so far only) scalar fields with it
+#undef DIAGNOSTICS_MISSING_VALUE
 
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* DIAG_OPTIONS_H */
