@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.57 2009/06/03 20:54:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.58 2009/06/04 17:27:17 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -250,7 +250,7 @@ C FIRST DO OPEN WATER
      I       UG, 
      U       TMIX, 
      O       QNETO, QSWO, 
-     I       bi, bj, myThid )
+     I       bi, bj, myTime, myIter, myThid )
 
 C NOW DO ICE
         IF (useRelativeWind) THEN
@@ -291,7 +291,7 @@ CADJ &                           key = ilockey, byte = isbyte
      I        UG, HICEP, hSnwLoc, 
      U        TICE, 
      O        FICEP, QSWIP, 
-     I        bi, bj, myThid )
+     I        bi, bj, myTime, myIter, myThid )
          DO J=1,sNy
           DO I=1,sNx
 C     average surface heat fluxes/growth rates
@@ -307,7 +307,7 @@ C--  End loop over multi-categories
      I       UG, HICE, hSnwLoc, 
      U       TICE, 
      O       FICE, QSWI, 
-     I       bi, bj, myThid )
+     I       bi, bj, myTime, myIter, myThid )
 #endif /* SEAICE_MULTICATEGORY */
      
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -516,6 +516,7 @@ C     by construction
 
 C     now update other things
 
+#ifdef ALLOW_ATM_TEMP
           IF(FICE(I,J).GT.ZERO) THEN
 C     freezing, add precip as snow
            HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)+SEAICE_deltaTtherm*
@@ -533,6 +534,7 @@ C     through the ice into the ocean)
      &            -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*
      &            SEAICE_deltaTtherm/ICE2WATR
           ENDIF
+#endif /* ALLOW_ATM_TEMP */
 
          ENDDO
         ENDDO
@@ -673,11 +675,7 @@ C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
           ENDIF
          ENDDO
         ENDDO
-
 #endif /* SEAICE_SALINITY */
-
-#else /* ALLOW_ATM_TEMP */
-        STOP 'ABNORMAL END: S/R THSICE_GROWTH: ATM_TEMP undef'
 #endif /* ALLOW_ATM_TEMP */
 
         DO J=1,sNy

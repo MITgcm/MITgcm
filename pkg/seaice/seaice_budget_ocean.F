@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.6 2007/12/05 15:37:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.7 2009/06/04 17:27:17 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -8,7 +8,7 @@ CStartOfInterface
      I     UG,
      U     TSURF,
      O     netHeatFlux, SWHeatFlux,
-     I     bi, bj, myThid )
+     I     bi, bj, myTime, myIter, myThid )
 C     /================================================================\
 C     | SUBROUTINE seaice_budget_ocean                                 |
 C     | o Calculate surface heat fluxes over open ocean                |
@@ -31,12 +31,18 @@ C     === Global variables ===
 # include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"
 #endif
+#ifdef SEAICE_CLIM_AIR
+      COMMON/SEAICE_DYNVARS_1/AREA
+      _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
+#endif
 
 C     === Routine arguments ===
 C     INPUT:
 C     UG      :: thermal wind of atmosphere
 C     TSURF   :: surface temperature of ocean in Kelvin
 C     bi,bj   :: loop indices
+C     myTime  :: Simulation time
+C     myIter  :: Simulation timestep number
 C     myThid  :: Thread no. that called this routine.
 C     OUTPUT:
 C     netHeatFlux :: net surface heat flux over open water or under ice
@@ -45,7 +51,8 @@ C     SWHeatFlux  :: short wave heat flux over open water or under ice
       _RL TSURF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL netHeatFlux(1:sNx,1:sNy)
       _RL SWHeatFlux (1:sNx,1:sNy)
-      INTEGER bi, bj, myThid
+      _RL myTime
+      INTEGER bi, bj, myIter, myThid
 CEndOfInterface
 
 C     === Local variables ===
@@ -72,6 +79,20 @@ C     coefficients of Hibler (1980), appendix B
 C     auxiliary variable
       _RL B          (1:sNx,1:sNy)
 
+#ifdef SEAICE_CLIM_AIR
+      _RL aqhLoc     (1:sNx,1:sNy)
+      _RL fac
+      logical first, changed
+      integer count0, count1
+
+C--   Compute indices and weights for seasonal interpolation
+      call cal_GetMonthsRec(
+     O     fac, first, changed,
+     O     count0, count1,
+     I     mytime, myiter, mythid
+     &     )
+#endif /* SEAICE_CLIM_AIR */
+
 C NOW DEFINE ASSORTED CONSTANTS
 C SATURATION VAPOR PRESSURE CONSTANT
       QS1=0.622 _d +00/1013.0 _d +00
@@ -92,18 +113,23 @@ C MELTING TEMPERATURE OF ICE
         SWHeatFlux (I,J) = 0. _d 0
 C     
         tsurfLoc (I,J) = MIN(273.16 _d 0+MAX_TICE,TSURF(I,J,bi,bj))
+# ifdef ALLOW_ATM_TEMP
 C     Is this necessary?
-#ifdef ALLOW_ATM_TEMP
         atempLoc (I,J) = MAX(273.16 _d 0+MIN_ATEMP,ATEMP(I,J,bi,bj))
-#else /* ALLOW_ATM_TEMP */
-        STOP 'ABNORMAL END: S/R SEAICE_BUDGET_OCE: ATM_TEMP undef'
-#endif /* ALLOW_ATM_TEMP */
-#ifdef ALLOW_DOWNWARD_RADIATION
+# endif
+#ifdef SEAICE_CLIM_AIR
+        atempLoc (I,J) = AREA(I,J,1,bi,bj) *
+     &       ( fac * SEAICE_clim_atemp(count0) + (1-fac) *
+     &       SEAICE_clim_atemp(count1) ) +
+     &       (1-AREA(I,J,1,bi,bj)) * atempLoc(I,J)
+        aqhLoc (I,J)   = AREA(I,J,1,bi,bj) *
+     &       ( fac * SEAICE_clim_aqh(count0) + (1-fac) *
+     &       SEAICE_clim_aqh(count1) ) +
+     &       (1-AREA(I,J,1,bi,bj)) * aqh(I,J,bi,bj)
+#endif /* SEAICE_CLIM_AIR */
+# ifdef ALLOW_DOWNWARD_RADIATION
         lwdownLoc(I,J) = MAX(MIN_LWDOWN,LWDOWN(I,J,bi,bj))
-#else
-        STOP
-     & 'ABNORMAL END: S/R SEAICE_BUDGET_OCE: DOWNWARD_RADIATION undef'
-#endif
+# endif
        ENDDO
       ENDDO
 #endif /* SEAICE_EXTERNAL_FLUXES */
@@ -117,10 +143,16 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
         SWHeatFlux (I,J) =  Qsw(I,J,bi,bj)
 #else /* SEAICE_EXTERNAL_FLUXES undefined */
         ALB(I,J)=SEAICE_waterAlbedo                                
-#if defined(ALLOW_DOWNWARD_RADIATION) && defined(ALLOW_ATM_TEMP)
+# ifdef ALLOW_DOWNWARD_RADIATION
+# ifdef SEAICE_CLIM_AIR
+        A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
+     &       +lwdownLoc(I,J)*0.97 _d 0
+     &       +D1*UG(I,J)*atempLoc(I,J)+D1W*UG(I,J)*aqhLoc (I,J)
+#else
         A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
      &       +lwdownLoc(I,J)*0.97 _d 0
      &       +D1*UG(I,J)*atempLoc(I,J)+D1W*UG(I,J)*AQH(I,J,bi,bj)
+#endif /* SEAICE_CLIM_AIR */
         B(I,J)=QS1*6.11 _d +00*EXP(17.2694 _d +00
      &       *(tsurfLoc(I,J)-TMELT)
      &       /(tsurfLoc(I,J)-TMELT+237.3 _d +00))
@@ -128,10 +160,7 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
      &       -D3*(tsurfLoc(I,J)**4)
         netHeatFlux(I,J)=-A1(I,J)-A2(I,J)    
         SWHeatFlux (I,J)=-(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
-#else
-        STOP
-     & 'ABNORMAL END: S/R SEAICE_BUDGET_OCE: DOWNWARD_RADIATION undef'
-#endif
+# endif /* ALLOW_DOWNWARD_RADIATION */
 #endif /* SEAICE_EXTERNAL_FLUXES */
        ENDDO
       ENDDO

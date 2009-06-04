@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.10 2009/05/23 15:39:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.11 2009/06/04 17:27:17 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -8,7 +8,7 @@ CStartOfInterface
      I     UG, hIce, hSnwLoc,
      U     TSURF,
      O     netHeatFlux, SWHeatFlux,
-     I     bi, bj, myThid )
+     I     bi, bj, myTime, myIter, myThid )
 C     /================================================================\
 C     | SUBROUTINE seaice_budget_ice                                   |
 C     | o Calculate ice growth rate, surface fluxes and temperature of |
@@ -31,6 +31,10 @@ C     === Global variables ===
 # include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"
 #endif
+#ifdef SEAICE_CLIM_AIR
+      COMMON/SEAICE_DYNVARS_1/AREA
+      _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
+#endif
 
 C     === Routine arguments ===
 C     INPUT:
@@ -39,6 +43,8 @@ C     TSURF   :: surface temperature of ice in Kelvin, updated
 C     hIce    :: (actual) ice thickness with upper and lower limit
 C     hSnwLoc :: actual snow thickness
 C     bi,bj   :: loop indices
+C     myTime  :: Simulation time
+C     myIter  :: Simulation timestep number
 C     myThid  :: Thread no. that called this routine.
 C     OUTPUT:
 C     netHeatFlux :: net heat flux under ice = growth rate
@@ -49,7 +55,8 @@ C     SWHeatFlux  :: short wave heat flux under ice
       _RL TSURF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL netHeatFlux(1:sNx,1:sNy)
       _RL SWHeatFlux (1:sNx,1:sNy)
-      INTEGER bi, bj, myTHid
+      _RL myTime
+      INTEGER bi, bj, myIter, myThid
       INTEGER KOPEN
 CEndOfInterface
 
@@ -77,6 +84,20 @@ C     coefficients of Hibler (1980), appendix B
       _RL A3         (1:sNx,1:sNy)
 C     auxiliary variable
       _RL B          (1:sNx,1:sNy)
+
+#ifdef SEAICE_CLIM_AIR
+      _RL aqhLoc     (1:sNx,1:sNy)
+      _RL fac
+      logical first, changed
+      integer count0, count1
+
+C--   Compute indices and weights for seasonal interpolation
+      call cal_GetMonthsRec(
+     O     fac, first, changed,
+     O     count0, count1,
+     I     mytime, myiter, mythid
+     &     )
+#endif /* SEAICE_CLIM_AIR */
 
 C NOW DEFINE ASSORTED CONSTANTS
 C SATURATION VAPOR PRESSURE CONSTANT
@@ -113,17 +134,22 @@ C PENETRATION SHORTWAVE RADIATION FACTOR
         SWHeatFlux (I,J) = 0. _d 0
 C     
         tsurfLoc (I,J) = MIN(273.16 _d 0+MAX_TICE,TSURF(I,J,bi,bj))
-C     Is this necessary?
 #ifdef ALLOW_ATM_TEMP
+C     Is this necessary?
         atempLoc (I,J) = MAX(273.16 _d 0+MIN_ATEMP,ATEMP(I,J,bi,bj))
-#else /* ALLOW_ATM_TEMP */
-        STOP 'ABNORMAL END: S/R SEAICE_BUDGET_ICE: ATM_TEMP undef'
-#endif /* ALLOW_ATM_TEMP */
+#endif
+#ifdef SEAICE_CLIM_AIR
+        atempLoc (I,J) = AREA(I,J,1,bi,bj) *
+     &       ( fac * SEAICE_clim_atemp(count0) + (1-fac) *
+     &       SEAICE_clim_atemp(count1) ) +
+     &       (1-AREA(I,J,1,bi,bj)) * atempLoc(I,J)
+        aqhLoc (I,J)   = AREA(I,J,1,bi,bj) *
+     &       ( fac * SEAICE_clim_aqh(count0) + (1-fac) *
+     &       SEAICE_clim_aqh(count1) ) +
+     &       (1-AREA(I,J,1,bi,bj)) * aqh(I,J,bi,bj)
+#endif /* SEAICE_CLIM_AIR */
 #ifdef ALLOW_DOWNWARD_RADIATION
         lwdownLoc(I,J) = MAX(MIN_LWDOWN,LWDOWN(I,J,bi,bj))
-#else
-        STOP 
-     & 'ABNORMAL END: S/R SEAICE_BUDGET_ICE: DOWNWARD_RADIATION undef'
 #endif
        ENDDO
       ENDDO
@@ -156,8 +182,20 @@ C NOW DETERMINE FIXED FORCING TERM IN HEAT BUDGET
       DO J=1,sNy
        DO I=1,sNx
         IF(hSnwLoc(I,J).GT.0.0) THEN
+#ifdef ALLOW_DOWNWARD_RADIATION
+# ifdef SEAICE_CLIM_AIR
 C NO SW PENETRATION WITH SNOW
-#if defined(ALLOW_DOWNWARD_RADIATION) && defined(ALLOW_ATM_TEMP)
+         A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
+     &        +lwdownLoc(I,J)*0.97 _d 0
+     &        +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*aqhLoc (I,J)
+        ELSE
+C SW PENETRATION UNDER ICE
+         A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
+     &        *(ONE-XIO*EXP(-1.5 _d 0*hice(I,J)))
+     &        +lwdownLoc(I,J)*0.97 _d 0
+     &        +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*aqhLoc (I,J)
+# else /* SEAICE_CLIM_AIR */
+C NO SW PENETRATION WITH SNOW
          A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
      &        +lwdownLoc(I,J)*0.97 _d 0
      &        +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
@@ -167,10 +205,8 @@ C SW PENETRATION UNDER ICE
      &        *(ONE-XIO*EXP(-1.5 _d 0*hice(I,J)))
      &        +lwdownLoc(I,J)*0.97 _d 0
      &        +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
-#else
-         STOP 
-     & 'ABNORMAL END: S/R SEAICE_BUDGET_ICE: DOWNWARD_RADIATION undef'
-#endif
+# endif /* SEAICE_CLIM_AIR */
+#endif /* ALLOW_DOWNWARD_RADIATION */
         ENDIF
        ENDDO
       ENDDO
@@ -208,7 +244,7 @@ C         effConduct= XKS*XKI / ( hSnwLoc(I,J)*XKI + hice(I,J)*XKS )
 #ifdef SEAICE_VARIABLE_FREEZING_POINT
          TB = -0.0575 _d 0*salt(I,J,1,bi,bj) + 0.0901 _d 0 
      &        + 273.15 _d 0
-#endif /* SEAICE_VARIABLE_FREEZING_POINT */
+#endif
          B(I,J)=effConduct*(TB-tsurfLoc(I,J))
 cdm
 cdm   if(tsurfLoc(I,J).le.206.)
@@ -247,9 +283,6 @@ C SW PENETRATION UNDER ICE
 #ifdef ALLOW_DOWNWARD_RADIATION
          SWHeatFlux(I,J)=-(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
      &        *XIO*EXP(-1.5 _d 0*hice(I,J))
-#else
-         STOP 
-     & 'ABNORMAL END: S/R SEAICE_BUDGET_ICE: DOWNWARD_RADIATION undef'
 #endif
         ENDIF
        ENDDO

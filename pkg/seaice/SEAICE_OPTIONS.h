@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.33 2009/03/18 13:48:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.34 2009/06/04 17:27:17 dimitri Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -83,6 +83,13 @@ C     in order to use ETAN instead.
 
 C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth
 #undef SEAICE_CAP_HEFF
+
+C--   By default, pkg sea-ice specifies surface air temperature (SAT)
+C     and humidity (SPH) exactly as per input files, with the exception
+C     of a cold temperature cap on SAT.  This flag modulates SAT and
+C     SPH based on sea ice concentration and on climatological values
+C     for SAT and SPH over sea ice.
+#undef SEAICE_CLIM_AIR
 
 #endif /* SEAICE_OPTIONS_H */
 

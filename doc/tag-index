@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1116 2009/06/03 10:01:20 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1117 2009/06/04 17:27:17 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -25,7 +25,9 @@ o pkg/exch2:
   - implement EXCH_IGNORE_CORNERS in scalar exchange (rx1);
     remove 2nd exch call in exch2_s3d_rx (no longer needed).
   - document S/R arg. list (+ update some comments)
-o pkg/seaice: 
+o pkg/seaice:
+  - added SEAICE_CLIM_AIR code, which permits modulation of surface air
+    temperature and humidity over sea ice based on climatological values.
   - clean up computation of Hibler+Bryan (1987) stress coupling for the case
     of LSR (this change is expected to change the results slightly because now 
     it uses slightly difference moduli from the second last LSR solution, but
