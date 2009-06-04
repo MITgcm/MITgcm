@@ -46,7 +46,7 @@ if test "x$IEEE" = x ; then
     FOPTIM='-O2 -align'
 else
     #  Try to follow IEEE-754
-    FOPTIM='-O2 -align -mp'
+    FOPTIM='-O0 -noalign -mp'
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
