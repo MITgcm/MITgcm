@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.126 2009/05/19 21:34:01 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.127 2009/06/04 23:40:53 jmc Exp $
 #  $Name:  $
 #
 
@@ -385,8 +385,10 @@ makeclean()
 		    cp make.log $CDIR"/make.log"
 		    return 1
 		fi
+		echo successful 1>&2
+	    else
+		echo ''
 	    fi
-	    echo successful 1>&2
 	    exit 0
 	)
     fi
@@ -1168,18 +1170,18 @@ for dir in $TESTDIRS ; do
 
     #  Cleanup only!
     if test "x$CLEANUP" = xt ; then
-	if test -r $BUILD_DIR/Makefile ; then
-            echo '  ------  clean dir:' $dir/$builddir
-	    ( cd $BUILD_DIR ; make CLEAN )
-	fi
+	echo -n '  --- dir:' $BUILD_DIR ': '
+	makeclean $BUILD_DIR
 	if test -d $dir/$rundir/CVS ; then
-            echo '  ------  clean dir:' $dir/$rundir
+            echo -n '  --- dir:' $dir/$rundir ': '
 	    run_clean $dir/$rundir
 	fi
-	(
-	    cd $dir
-	    rm -rf tr_run.*
-	)
+	trdir=`( cd $dir ; find . -type d -name "tr_run.*" -print | sed 's/^.\///')`
+	ttd=`echo $trdir | wc -w`
+	if test $ttd != 0 ; then
+	    echo '  --- rm dir:' $trdir
+	    ( cd $dir ; rm -rf $trdir )
+	fi
 	continue
     fi
 
