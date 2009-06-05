@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/taueddy_init_varia.F,v 1.2 2008/05/30 02:45:43 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/taueddy_init_varia.F,v 1.3 2009/06/05 14:27:43 dfer Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,12 +53,12 @@ C--   Over all tiles
        ENDDO
       ENDDO
 
-      IF ( eddyPsixFile .NE. ' ' ) THEN
-       CALL MDSREADFIELD(eddyPsiXFile,precFloat32,
+      IF ( eddyPsiXFile .NE. ' ' ) THEN
+       CALL MDSREADFIELD(eddyPsiXFile,readBinaryPrec,
      &                  'RS',Nr,eddyPsiX,1,myThid)
       ENDIF
-      IF ( eddyPsiyFile .NE. ' ' ) THEN
-       CALL MDSREADFIELD(eddyPsiYFile,precFloat32,
+      IF ( eddyPsiYFile .NE. ' ' ) THEN
+       CALL MDSREADFIELD(eddyPsiYFile,readBinaryPrec,
      &                  'RS',Nr,eddyPsiY,1,myThid)
       ENDIF
 
