@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_rec.F,v 1.2 2007/11/13 19:39:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_rec.F,v 1.3 2009/06/06 20:09:30 jmc Exp $
 C $Name:  $
 #include "RW_OPTIONS.h"
 
@@ -519,7 +519,7 @@ C Arguments
       CHARACTER*(*) fName
       INTEGER fPrec
       INTEGER kSiz, kLo, kHi
-      _RS field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSiz,nSx,nSy)
+      _RL field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSiz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
