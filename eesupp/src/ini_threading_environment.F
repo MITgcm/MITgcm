@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_threading_environment.F,v 1.11 2009/04/11 05:38:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_threading_environment.F,v 1.12 2009/06/07 14:54:57 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -14,16 +14,16 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE INI\_THREADING\_ENVIRONMENT                      
-C     | o Initialise multi-threaded environment.                  
+C     | SUBROUTINE INI\_THREADING\_ENVIRONMENT
+C     | o Initialise multi-threaded environment.
 C     *==========================================================*
-C     | Generally we do not start separate threads here.          
-C     | The separate threads a spawned at later on.               
-C     | Here we perform initialisation of data-structures         
-C     | that indicate which of the nSx x nSy tiles a thread is    
-C     | responsible for.                                          
-C     | The multiple threads are spawned in the top level MAIN    
-C     | routine.                                                  
+C     | Generally we do not start separate threads here.
+C     | The separate threads a spawned at later on.
+C     | Here we perform initialisation of data-structures
+C     | that indicate which of the nSx x nSy tiles a thread is
+C     | responsible for.
+C     | The multiple threads are spawned in the top level MAIN
+C     | routine.
 C     *==========================================================*
 
 C     !USES:
@@ -37,7 +37,7 @@ C     == Local variables ==
 C     bXPerThread - Blocks of size sNx per thread.
 C     byPerThread - Blocks of size sNy per thread.
 C     Thid        - Thread index. Temporary used in loops
-C                   which set per. thread values on a 
+C                   which set per. thread values on a
 C                   cartesian grid.
 C     bxLo, bxHi  - Work vars. for thread index
 C     byLo, byHi    range. bxLo is the lowest i index
@@ -47,7 +47,7 @@ C                   j index, byHi is the highest j index.
 C     I, J        - Loop counter
 C     msgBuf      - I/O buffer for reporting status information.
 C     myThid      - Dummy thread id for use in printed messages
-C                   ( this routine "INI_THREADING_ENVIRONMENT" is 
+C                   ( this routine "INI_THREADING_ENVIRONMENT" is
 C                     called before multi-threading has started.)
       INTEGER bxPerThread
       INTEGER byPerThread
@@ -83,10 +83,23 @@ C--   nSx*nSy blocks to each thread.
 C     For now handle simple case of no. blocks nSx = n*nTx and
 C     no. blocks nSy = m*nTy ( where m and n are integer ). This
 C     is handled by simply mapping threads to blocks in sequence
-C     with the x thread index moving fastest. 
-C     Later code which sets the thread number of neighboring blocks 
+C     with the x thread index moving fastest.
+C     Later code which sets the thread number of neighboring blocks
 C     needs to be consistent with the code here.
       nThreads = nTx * nTy
+      IF   ( nThreads .GT. MAX_NO_THREADS ) THEN
+       WRITE(msgBuf,'(2A,2I6)')
+     &  'S/R INI_THREADING_ENVIRONMENT:',
+     &  ' Total number of threads exceeds MAX_NO_THREADS',
+     &   nTx*nTy, MAX_NO_THREADS
+       CALL PRINT_ERROR(msgBuf, myThid)
+       WRITE(msgBuf,'(2A)')
+     &    ' Needs to increase MAX_NO_THREADS',
+     &    ' in file "EEPARAMS.h" and to re-compile'
+       CALL PRINT_ERROR(msgBuf, myThid)
+       eeBootError = .TRUE.
+       STOP 'ABNORMAL END: S/R INI_THREADING_ENVIRONMENT'
+      ENDIF
 
 C--   Initialise the barrier mechanisms
 C     BAR2 will eventually replace barrier everywhere.
@@ -99,7 +112,7 @@ C--   Initialise exchange mechanism
       CALL EXCH_INIT
 
       IF   ( nThreads .NE. nTx*nTy ) THEN
-       WRITE(msgBuf,'(A,A,A,I5,A,I5)') 
+       WRITE(msgBuf,'(A,A,A,I5,A,I5)')
      &  'S/R INI_THREADING_ENVIRONMENT:',
      &  ' Total number of threads is not the same as nTx*nTy.',
      &  ' nTx * nTy = ',nTx*nTy,' nThreads = ',nThreads
@@ -107,22 +120,9 @@ C--   Initialise exchange mechanism
        eeBootError = .TRUE.
        STOP 'ABNORMAL END: S/R INI_THREADING_ENVIRONMENT'
       ENDIF
-      IF   ( nThreads .GT. MAX_NO_THREADS ) THEN
-       WRITE(msgBuf,'(2A,2I6)') 
-     &  'S/R INI_THREADING_ENVIRONMENT:',
-     &  ' Total number of threads exceeds MAX_NO_THREADS',
-     &   nTx*nTy, MAX_NO_THREADS
-       CALL PRINT_ERROR(msgBuf, myThid)
-       WRITE(msgBuf,'(2A)')
-     &    ' Needs to increase MAX_NO_THREADS',
-     &    ' in file "EEPARAMS.h" and to re-compile'
-       CALL PRINT_ERROR(msgBuf, myThid)
-       eeBootError = .TRUE.
-       STOP 'ABNORMAL END: S/R INI_THREADING_ENVIRONMENT'
-      ENDIF
       bxPerThread = nSx/nTx
       IF ( bxPerThread*nTx .NE. nSx ) THEN
-       WRITE(msgBuf,'(A,A,A)') 
+       WRITE(msgBuf,'(A,A,A)')
      &  'S/R INI_THREADING_ENVIRONMENT:',
      &  ' Number of blocks in X (nSx)',
      &  ' must be exact multiple of threads in X (nTx).'
@@ -132,7 +132,7 @@ C--   Initialise exchange mechanism
       ENDIF
       byPerThread = nSy/nTy
       IF ( byPerThread*nTy .NE. nSy ) THEN
-       WRITE(msgBuf,'(A,A,A)') 
+       WRITE(msgBuf,'(A,A,A)')
      &  'S/R INI_THREADING_ENVIRONMENT:',
      &  ' Number of blocks in Y (nSy)',
      &  ' must be exact multiple of threads in Y (nTy).'
@@ -163,7 +163,7 @@ C--   Initialise exchange mechanism
       ENDDO
 
 C--   Print mapping of threads to grid points.
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &'// ======================================================'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
@@ -171,12 +171,12 @@ C--   Print mapping of threads to grid points.
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 C     o Write list of tiles each thread is responsible for
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &'// ======================================================'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
       DO I=1,nThreads
-       WRITE(msgBuf,'(A,I4,A,4(I4,A1))') 
+       WRITE(msgBuf,'(A,I4,A,4(I4,A1))')
      & '// -o- Thread',I,', tiles (',
      & myBxLo(I),':',myBxHi(I),',',myByLo(I),':',myByHi(I),')'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_BOTH , 1)
@@ -186,20 +186,20 @@ C     o Write list of tiles each thread is responsible for
 
 #ifndef ALLOW_EXCH2
 C     o For each tile print its communication method(s)
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &'// ======================================================'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '// Tile <-> Tile connectvity table'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &'// ======================================================'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
       DO J=1,nSy
        DO I=1,nSx
-        WRITE(msgBuf,'(A,A,I6.6,A,I6.6,A)')  
+        WRITE(msgBuf,'(A,A,I6.6,A,I6.6,A)')
      &   '//',' Tile number: ',tileNo(I,J),
      &   ' (process no. = ',myPid,')'
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT , 1)
