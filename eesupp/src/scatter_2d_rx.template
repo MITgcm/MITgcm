@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_2d_rx.template,v 1.4 2009/05/22 00:15:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_2d_rx.template,v 1.5 2009/06/08 03:34:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -16,6 +16,8 @@ C !INTERFACE:
      I                  myThid )
 C !DESCRIPTION:
 C     Scatter elements of a global 2-D array from mpi process 0 to all processes.
+C     Note: done by Master-Thread ; might need barrier calls before and after
+C           this S/R call.
 
 C     !USES:
       IMPLICIT NONE
@@ -59,8 +61,6 @@ C !LOCAL VARIABLES:
       INTEGER lbuff, isource, itag
 #endif /* ALLOW_USE_MPI */
 
-C--   Make everyone wait except for master thread.
-      _BARRIER
       _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_USE_MPI
@@ -234,7 +234,6 @@ C-    end if myProcId = 0
       ENDIF
 
       _END_MASTER( myThid )
-      _BARRIER
 
       RETURN
       END
