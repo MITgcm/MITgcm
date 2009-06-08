@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.11 2009/06/08 03:32:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.12 2009/06/08 14:38:54 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -71,11 +71,14 @@ C Global variables / common blocks
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_EXCH2
-#include "W2_EXCH2_SIZE.h"
-#include "W2_EXCH2_TOPOLOGY.h"
-#include "W2_EXCH2_PARAMS.h"
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
+# include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 #include "EEBUFF_SCPU.h"
+#ifdef ALLOW_FIZHI
+# include "fizhi_SIZE.h"
+#endif /* ALLOW_FIZHI */
 #include "MDSIO_BUFF_3D.h"
 
 C !INPUT PARAMETERS:
@@ -155,10 +158,14 @@ C Only do I/O if I am the master thread (and mpi process 0 IF useSingleCpuIO):
 
 C Record number must be >= 1
       IF (irecord .LT. 1) THEN
+        WRITE(msgBuf,'(3A,I10))')
+     &    ' MDS_WRITE_FIELD: file="', fName(1:IL), '" , iter=', myIter
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
         WRITE(msgBuf,'(A,I9.8)')
      &    ' MDS_WRITE_FIELD: argument irecord = ',irecord
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
+     &                      SQUEEZE_RIGHT , myThid )
          WRITE(msgBuf,'(A)')
      &    ' MDS_WRITE_FIELD: invalid value for irecord'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -167,11 +174,15 @@ C Record number must be >= 1
       ENDIF
 C check for valid sub-set of levels:
       IF ( kLo.LT.1 .OR. kHi.GT.kSize ) THEN
+        WRITE(msgBuf,'(3A,I10))')
+     &    ' MDS_WRITE_FIELD: file="', fName(1:IL), '" , iter=', myIter
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
         WRITE(msgBuf,'(3(A,I6))')
      &    ' MDS_WRITE_FIELD: arguments kSize=', kSize,
      &    ' , kLo=', kLo, ' , kHi=', kHi
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
+     &                      SQUEEZE_RIGHT , myThid )
         WRITE(msgBuf,'(A)')
      &    ' MDS_WRITE_FIELD: invalid sub-set of levels'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -180,11 +191,15 @@ C check for valid sub-set of levels:
       ENDIF
 C check for 3-D Buffer size:
       IF ( .NOT.useSingleCpuIO .AND. nNz.GT.size3dBuf ) THEN
+        WRITE(msgBuf,'(3A,I10))')
+     &    ' MDS_WRITE_FIELD: file="', fName(1:IL), '" , iter=', myIter
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
         WRITE(msgBuf,'(3(A,I6))')
      &    ' MDS_WRITE_FIELD: Nb Lev to write =', nNz,
      &    ' >', size3dBuf, ' = buffer 3rd Dim'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
+     &                      SQUEEZE_RIGHT , myThid )
         WRITE(msgBuf,'(A)')
      &    ' MDS_WRITE_FIELD: buffer 3rd Dim. too small'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -242,8 +257,8 @@ C-      copy from arr(level=k) to 2-D "local":
             CALL MDS_PASS_R4toRL( sharedLocBuf_r4, arr,
      I                       1, k, kSize, 0, 0, .FALSE., myThid )
           ELSE
-            WRITE(msgBuf,'(A)')
-     &         ' MDS_WRITE_FIELD: illegal value for arrType'
+            WRITE(msgBuf,'(2A)')
+     &      ' MDS_WRITE_FIELD: illegal value for arrType=', arrType
             CALL PRINT_ERROR( msgBuf, myThid )
             CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
@@ -264,8 +279,8 @@ C Wait for all threads to finish filling shared buffer
             CALL MDS_PASS_R8toRL( sharedLocBuf_r8, arr,
      I                       1, k, kSize, 0, 0, .FALSE., myThid )
           ELSE
-            WRITE(msgBuf,'(A)')
-     &         ' MDS_WRITE_FIELD: illegal value for arrType'
+            WRITE(msgBuf,'(2A)')
+     &      ' MDS_WRITE_FIELD: illegal value for arrType=', arrType
             CALL PRINT_ERROR( msgBuf, myThid )
             CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
@@ -278,11 +293,11 @@ C Wait for all threads to finish filling shared buffer
      I                       xSize, ySize,
      I                       useExch2ioLayOut, zeroBuff, myThid )
         ELSE
-           WRITE(msgBuf,'(A)')
-     &       ' MDS_WRITE_FIELD: illegal value for filePrec'
-           CALL PRINT_ERROR( msgBuf, myThid )
-           CALL ALL_PROC_DIE( myThid )
-           STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+          WRITE(msgBuf,'(A,I6)')
+     &      ' MDS_WRITE_FIELD: illegal value for filePrec=',filePrec
+          CALL PRINT_ERROR( msgBuf, myThid )
+          CALL ALL_PROC_DIE( myThid )
+          STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
         ENDIF
 C Make other threads wait for "gather" completion so that after this,
 C  shared buffer can again be modified by any thread
@@ -324,8 +339,8 @@ C---    Copy from arr to 3-D buffer (multi-threads):
             CALL MDS_PASS_R4toRL( shared3dBuf_r4, arr,
      I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
           ELSE
-            WRITE(msgBuf,'(A)')
-     &         ' MDS_WRITE_FIELD: illegal value for arrType'
+            WRITE(msgBuf,'(2A)')
+     &      ' MDS_WRITE_FIELD: illegal value for arrType=', arrType
             CALL PRINT_ERROR( msgBuf, myThid )
             CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
@@ -338,15 +353,15 @@ C---    Copy from arr to 3-D buffer (multi-threads):
             CALL MDS_PASS_R8toRL( shared3dBuf_r8, arr,
      I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
           ELSE
-            WRITE(msgBuf,'(A)')
-     &         ' MDS_WRITE_FIELD: illegal value for arrType'
+            WRITE(msgBuf,'(2A)')
+     &      ' MDS_WRITE_FIELD: illegal value for arrType=', arrType
             CALL PRINT_ERROR( msgBuf, myThid )
             CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
           ENDIF
         ELSE
-          WRITE(msgBuf,'(A)')
-     &         ' MDS_WRITE_FIELD: illegal value for filePrec'
+          WRITE(msgBuf,'(A,I6)')
+     &      ' MDS_WRITE_FIELD: illegal value for filePrec=',filePrec
           CALL PRINT_ERROR( msgBuf, myThid )
           CALL ALL_PROC_DIE( myThid )
           STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_BUFF_3D.h,v 1.1 2009/06/08 03:32:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_BUFF_3D.h,v 1.2 2009/06/08 14:38:54 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -19,7 +19,11 @@ C     Note: minimum value = Nr, but in few cases (vertical interpolation,
 C           NrPhys from Fizhi, ...)  needs to be larger. Here we pick 2*Nr
 C           which should be enough for most applications.
       INTEGER size3dBuf
+#ifdef ALLOW_FIZHI
+      PARAMETER ( size3dBuf = Nr+NrPhys )
+#else
       PARAMETER ( size3dBuf = 2*Nr )
+#endif
 
 C--   COMMON /MDS_3D_BUFFERS/  3-D Shared Local Buffers
 C     Those buffers have be in common block to be shared by all threads

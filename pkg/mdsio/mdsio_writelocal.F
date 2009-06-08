@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.12 2009/06/08 03:32:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.13 2009/06/08 14:38:54 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -62,6 +62,9 @@ C Global variables / common blocks
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
+#ifdef ALLOW_FIZHI
+# include "fizhi_SIZE.h"
+#endif /* ALLOW_FIZHI */
 #include "MDSIO_BUFF_3D.h"
 
 C !OUTPUT PARAMETERS:
@@ -145,12 +148,12 @@ C      => switch to tiled file
          WRITE(msgBuf,'(A,I10,A,2I5,A)')
      &    'MDS_WRITELOCAL (it=', myIter, ' ; bi,bj=', bi,bj,
      &    ' ): No global-file multi-threaded IO'
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid )
          WRITE(msgBuf,'(2A)')
      &    'MDS_WRITELOCAL: => write tiled file: ', fName(1:IL)
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid)
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid )
         ENDIF
       ENDIF
 
@@ -161,29 +164,37 @@ c     _BEGIN_MASTER( myThid )
 
 C Record number must be >= 1
       IF (irecord .LT. 1) THEN
-       WRITE(msgBuf,'(A,I9.8)')
-     &   ' MDS_WRITELOCAL: argument irecord = ',irecord
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuf,'(A)')
-     &   ' MDS_WRITELOCAL: invalid value for irecord'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R MDS_WRITELOCAL'
+        WRITE(msgBuf,'(3A,I10))')
+     &    ' MDS_WRITELOCAL: file="', fName(1:IL), '" , iter=', myIter
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+        WRITE(msgBuf,'(A,I9.8)')
+     &    ' MDS_WRITELOCAL: argument irecord = ',irecord
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+        WRITE(msgBuf,'(A)')
+     &    ' MDS_WRITELOCAL: invalid value for irecord'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R MDS_WRITELOCAL'
       ENDIF
 C check for 3-D Buffer size:
       IF ( .NOT.useSingleCpuIO .AND. nNz.GT.size3dBuf ) THEN
+        WRITE(msgBuf,'(3A,I10))')
+     &    ' MDS_WRITELOCAL: file="', fName(1:IL), '" , iter=', myIter
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
         WRITE(msgBuf,'(3(A,I6))')
      &    ' MDS_WRITELOCAL: Nb Lev to write =', nNz,
      &    ' >', size3dBuf, ' = buffer 3rd Dim'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
+     &                      SQUEEZE_RIGHT , myThid )
         WRITE(msgBuf,'(A)')
      &    ' MDS_WRITELOCAL: buffer 3rd Dim. too small'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &    ' increase "size3dBuf" in "MDSIO_BUFF_3D.h" and recompile'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
+     &                      SQUEEZE_RIGHT , myThid )
 c       CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R MDS_WRITELOCAL'
       ENDIF
