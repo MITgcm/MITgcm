@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.10 2009/06/01 14:20:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.11 2009/06/08 03:32:33 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -76,6 +76,7 @@ C Global variables / common blocks
 #include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 #include "EEBUFF_SCPU.h"
+#include "MDSIO_BUFF_3D.h"
 
 C !INPUT PARAMETERS:
       CHARACTER*(*) fName
@@ -102,6 +103,7 @@ C !FUNCTIONS
       EXTERNAL MASTER_CPU_IO
 
 C !LOCAL VARIABLES:
+C     bBij  :: base shift in Buffer index for tile bi,bj
       CHARACTER*(MAX_LEN_FNAM) dataFName,metaFName,pfName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL fileIsOpen
@@ -111,14 +113,12 @@ C !LOCAL VARIABLES:
       LOGICAL zeroBuff
       INTEGER xSize, ySize
       INTEGER irecord
-      INTEGER iG,jG,bi,bj,i,j,k,nNz
+      INTEGER iG,jG,bi,bj
+      INTEGER i1,i2,i,j,k,nNz
       INTEGER irec,dUnit,IL,pIL
       INTEGER dimList(3,3), nDims, map2gl(2)
       INTEGER length_of_rec
-      Real*4 r4seg(sNx)
-      Real*8 r8seg(sNx)
-      Real*4 r4loc(sNx,sNy)
-      Real*8 r8loc(sNx,sNy)
+      INTEGER bBij
       INTEGER tNx, tNy, global_nTx
       INTEGER tBx, tBy, iGjLoc, jGjLoc
 #ifdef ALLOW_EXCH2
@@ -153,32 +153,51 @@ C Assume nothing
 C Only do I/O if I am the master thread (and mpi process 0 IF useSingleCpuIO):
       iAmDoingIO = MASTER_CPU_IO(myThid)
 
+C Record number must be >= 1
+      IF (irecord .LT. 1) THEN
+        WRITE(msgBuf,'(A,I9.8)')
+     &    ' MDS_WRITE_FIELD: argument irecord = ',irecord
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+         WRITE(msgBuf,'(A)')
+     &    ' MDS_WRITE_FIELD: invalid value for irecord'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+      ENDIF
+C check for valid sub-set of levels:
+      IF ( kLo.LT.1 .OR. kHi.GT.kSize ) THEN
+        WRITE(msgBuf,'(3(A,I6))')
+     &    ' MDS_WRITE_FIELD: arguments kSize=', kSize,
+     &    ' , kLo=', kLo, ' , kHi=', kHi
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(A)')
+     &    ' MDS_WRITE_FIELD: invalid sub-set of levels'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+      ENDIF
+C check for 3-D Buffer size:
+      IF ( .NOT.useSingleCpuIO .AND. nNz.GT.size3dBuf ) THEN
+        WRITE(msgBuf,'(3(A,I6))')
+     &    ' MDS_WRITE_FIELD: Nb Lev to write =', nNz,
+     &    ' >', size3dBuf, ' = buffer 3rd Dim'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(A)')
+     &    ' MDS_WRITE_FIELD: buffer 3rd Dim. too small'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &    ' increase "size3dBuf" in "MDSIO_BUFF_3D.h" and recompile'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+      ENDIF
+
 C Only do I/O if I am the master thread
       IF ( iAmDoingIO ) THEN
-
-C Record number must be >= 1
-        IF (irecord .LT. 1) THEN
-         WRITE(msgBuf,'(A,I9.8)')
-     &     ' MDS_WRITE_FIELD: argument irecord = ',irecord
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT , myThid)
-         WRITE(msgBuf,'(A)')
-     &     ' MDS_WRITE_FIELD: invalid value for irecord'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
-        ENDIF
-C check for valid sub-set of levels:
-        IF ( kLo.LT.1 .OR. kHi.GT.kSize ) THEN
-         WRITE(msgBuf,'(3(A,I6))')
-     &     ' MDS_WRITE_FIELD: arguments kSize=', kSize,
-     &     ' , kLo=', kLo, ' , kHi=', kHi
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT , myThid)
-         WRITE(msgBuf,'(A)')
-     &     ' MDS_WRITE_FIELD: invalid sub-set of levels'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
-        ENDIF
 
 C Assign special directory
         IF ( useCurrentDir .OR. pIL.EQ.0 ) THEN
@@ -211,23 +230,26 @@ C Master thread of process 0, only, opens a global file
          ENDIF
        ENDIF
 
-C Gather array and WRITE it to file, one vertical level at a time
+C Gather array and write it to file, one vertical level at a time
        DO k=kLo,kHi
         zeroBuff = k.EQ.kLo
 C-      copy from arr(level=k) to 2-D "local":
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R4toRS( sharedLocBuf_r4, arr,
-     I                            k, kSize, 0,0, .FALSE., myThid )
+     I                       1, k, kSize, 0, 0, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_R4toRL( sharedLocBuf_r4, arr,
-     I                            k, kSize, 0,0, .FALSE., myThid )
+     I                       1, k, kSize, 0, 0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &         ' MDS_WRITE_FIELD: illegal value for arrType'
             CALL PRINT_ERROR( msgBuf, myThid )
+            CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
           ENDIF
+C Wait for all threads to finish filling shared buffer
+          CALL BAR2( myThid )
           CALL GATHER_2D_R4(
      O                       xy_buffer_r4,
      I                       sharedLocBuf_r4,
@@ -236,16 +258,20 @@ C-      copy from arr(level=k) to 2-D "local":
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_R8toRS( sharedLocBuf_r8, arr,
-     I                            k, kSize, 0,0, .FALSE., myThid )
+     I                       1, k, kSize, 0, 0, .FALSE., myThid )
+
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_R8toRL( sharedLocBuf_r8, arr,
-     I                            k, kSize, 0,0, .FALSE., myThid )
+     I                       1, k, kSize, 0, 0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &         ' MDS_WRITE_FIELD: illegal value for arrType'
             CALL PRINT_ERROR( msgBuf, myThid )
+            CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
           ENDIF
+C Wait for all threads to finish filling shared buffer
+          CALL BAR2( myThid )
           CALL GATHER_2D_R8(
      O                       xy_buffer_r8,
      I                       sharedLocBuf_r8,
@@ -255,26 +281,25 @@ C-      copy from arr(level=k) to 2-D "local":
            WRITE(msgBuf,'(A)')
      &       ' MDS_WRITE_FIELD: illegal value for filePrec'
            CALL PRINT_ERROR( msgBuf, myThid )
+           CALL ALL_PROC_DIE( myThid )
            STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
         ENDIF
+C Make other threads wait for "gather" completion so that after this,
+C  shared buffer can again be modified by any thread
+        CALL BAR2( myThid )
 
         IF ( iAmDoingIO ) THEN
           irec = 1 + k-kLo + (irecord-1)*nNz
-          IF (filePrec .EQ. precFloat32) THEN
+          IF ( filePrec.EQ.precFloat32 ) THEN
 #ifdef _BYTESWAPIO
            CALL MDS_BYTESWAPR4( xSize*ySize, xy_buffer_r4 )
 #endif
            WRITE(dUnit,rec=irec) ( xy_buffer_r4(i),i=1,xSize*ySize )
-          ELSEIF (filePrec .EQ. precFloat64) THEN
+          ELSE
 #ifdef _BYTESWAPIO
            CALL MDS_BYTESWAPR8( xSize*ySize, xy_buffer_r8 )
 #endif
            WRITE(dUnit,rec=irec) ( xy_buffer_r8(i),i=1,xSize*ySize )
-          ELSE
-           WRITE(msgBuf,'(A)')
-     &       ' MDS_WRITE_FIELD: illegal value for filePrec'
-           CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
           ENDIF
 C-      end if iAmDoingIO
         ENDIF
@@ -290,26 +315,75 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  else .NOT.useSingleCpuIO
       ELSE
 
+C---    Copy from arr to 3-D buffer (multi-threads):
+        IF ( filePrec.EQ.precFloat32 ) THEN
+          IF ( arrType.EQ.'RS' ) THEN
+            CALL MDS_PASS_R4toRS( shared3dBuf_r4, arr,
+     I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
+          ELSEIF ( arrType.EQ.'RL' ) THEN
+            CALL MDS_PASS_R4toRL( shared3dBuf_r4, arr,
+     I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
+          ELSE
+            WRITE(msgBuf,'(A)')
+     &         ' MDS_WRITE_FIELD: illegal value for arrType'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            CALL ALL_PROC_DIE( myThid )
+            STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+          ENDIF
+        ELSEIF ( filePrec.EQ.precFloat64 ) THEN
+          IF ( arrType.EQ.'RS' ) THEN
+            CALL MDS_PASS_R8toRS( shared3dBuf_r8, arr,
+     I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
+          ELSEIF ( arrType.EQ.'RL' ) THEN
+            CALL MDS_PASS_R8toRL( shared3dBuf_r8, arr,
+     I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
+          ELSE
+            WRITE(msgBuf,'(A)')
+     &         ' MDS_WRITE_FIELD: illegal value for arrType'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            CALL ALL_PROC_DIE( myThid )
+            STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+          ENDIF
+        ELSE
+          WRITE(msgBuf,'(A)')
+     &         ' MDS_WRITE_FIELD: illegal value for filePrec'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          CALL ALL_PROC_DIE( myThid )
+          STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+        ENDIF
+
+C Wait for all threads to finish filling shared buffer
+       CALL BAR2( myThid )
+
 C Only do I/O if I am the master thread
        IF ( iAmDoingIO ) THEN
 
+#ifdef _BYTESWAPIO
+        IF ( filePrec.EQ.precFloat32 ) THEN
+          CALL MDS_BYTESWAPR4( sNx*sNy*nNz*nSx*nSy, shared3dBuf_r4 )
+        ELSE
+          CALL MDS_BYTESWAPR8( sNx*sNy*nNz*nSx*nSy, shared3dBuf_r8 )
+        ENDIF
+#endif
+
 C If we are writing to a global file then we open it here
         IF (globalFile) THEN
-         WRITE(dataFName,'(2a)') fName(1:IL),'.data'
-         length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
-         IF (irecord .EQ. 1) THEN
-          OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
-     &            access='direct', recl=length_of_rec )
-         ELSE
-          OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
-     &            access='direct', recl=length_of_rec )
-         ENDIF
-         fileIsOpen=.TRUE.
+          WRITE(dataFName,'(2a)') fName(1:IL),'.data'
+          length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
+          IF (irecord .EQ. 1) THEN
+           OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
+     &             access='direct', recl=length_of_rec )
+          ELSE
+           OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
+     &             access='direct', recl=length_of_rec )
+          ENDIF
+          fileIsOpen=.TRUE.
         ENDIF
 
 C Loop over all tiles
         DO bj=1,nSy
          DO bi=1,nSx
+          bBij = sNx*sNy*nNz*( bi-1 + (bj-1)*nSx )
 
           tNx = sNx
           tNy = sNy
@@ -348,45 +422,15 @@ C--- Case of 1 Global file:
              irec = 1 + ( tBx + (j-1)*iGjLoc )/tNx
      &                + ( tBy + (j-1)*jGjLoc )*global_nTx
      &            +( k-kLo + (irecord-1)*nNz )*global_nTx*ySize
-             IF (filePrec .EQ. precFloat32) THEN
-              IF (arrType .EQ. 'RS') THEN
-               CALL MDS_SEG4toRS( j,bi,bj,k,kSize, r4seg,.FALSE.,arr )
-              ELSEIF (arrType .EQ. 'RL') THEN
-               CALL MDS_SEG4toRL( j,bi,bj,k,kSize, r4seg,.FALSE.,arr )
-              ELSE
-               WRITE(msgBuf,'(A)')
-     &           ' MDS_WRITE_FIELD: illegal value for arrType'
-               CALL PRINT_ERROR( msgBuf, myThid )
-               STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
-              ENDIF
-#ifdef _BYTESWAPIO
-              CALL MDS_BYTESWAPR4( sNx, r4seg )
-#endif
-              WRITE(dUnit,rec=irec) r4seg
-             ELSEIF (filePrec .EQ. precFloat64) THEN
-              IF (arrType .EQ. 'RS') THEN
-               CALL MDS_SEG8toRS( j,bi,bj,k,kSize, r8seg,.FALSE.,arr )
-              ELSEIF (arrType .EQ. 'RL') THEN
-               CALL MDS_SEG8toRL( j,bi,bj,k,kSize, r8seg,.FALSE.,arr )
-              ELSE
-               WRITE(msgBuf,'(A)')
-     &           ' MDS_WRITE_FIELD: illegal value for arrType'
-               CALL PRINT_ERROR( msgBuf, myThid )
-               STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
-              ENDIF
-#ifdef _BYTESWAPIO
-              CALL MDS_BYTESWAPR8( sNx, r8seg )
-#endif
-              WRITE(dUnit,rec=irec) r8seg
+             i1 = bBij + 1 + (j-1)*sNx + (k-kLo)*sNx*sNy
+             i2 = bBij +         j*sNx + (k-kLo)*sNx*sNy
+             IF ( filePrec.EQ.precFloat32 ) THEN
+              WRITE(dUnit,rec=irec) (shared3dBuf_r4(i),i=i1,i2)
              ELSE
-              WRITE(msgBuf,'(A)')
-     &          ' MDS_WRITE_FIELD: illegal value for filePrec'
-              CALL PRINT_ERROR( msgBuf, myThid )
-              STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
+              WRITE(dUnit,rec=irec) (shared3dBuf_r8(i),i=i1,i2)
              ENDIF
-C End of j loop
+C End of j,k loops
             ENDDO
-C End of k loop
            ENDDO
 
           ELSE
@@ -396,8 +440,8 @@ C If we are writing to a tiled MDS file then we open each one here
            iG=bi+(myXGlobalLo-1)/sNx
            jG=bj+(myYGlobalLo-1)/sNy
            WRITE(dataFName,'(2A,I3.3,A,I3.3,A)')
-     &              pfName(1:pIL),'.',iG,'.',jG,'.data'
-           length_of_rec = MDS_RECLEN( filePrec, sNx*sNy, myThid )
+     &            pfName(1:pIL),'.',iG,'.',jG,'.data'
+           length_of_rec = MDS_RECLEN( filePrec, sNx*sNy*nNz, myThid )
            IF (irecord .EQ. 1) THEN
             OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
      &            access='direct', recl=length_of_rec )
@@ -407,57 +451,19 @@ C If we are writing to a tiled MDS file then we open each one here
            ENDIF
            fileIsOpen=.TRUE.
 
-           DO k=kLo,kHi
-
-             irec = 1 + k-kLo + (irecord-1)*nNz
-             IF (filePrec .EQ. precFloat32) THEN
-              IF ( arrType.EQ.'RS' ) THEN
-               CALL MDS_PASS_R4toRS( r4loc, arr,
-     I                           k, kSize, bi,bj,.FALSE., myThid )
-              ELSEIF ( arrType.EQ.'RL' ) THEN
-               CALL MDS_PASS_R4toRL( r4loc, arr,
-     I                           k, kSize, bi,bj,.FALSE., myThid )
-              ELSE
-               WRITE(msgBuf,'(A)')
-     &           ' MDS_WRITE_FIELD: illegal value for arrType'
-               CALL PRINT_ERROR( msgBuf, myThid )
-               STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
-              ENDIF
-#ifdef _BYTESWAPIO
-              CALL MDS_BYTESWAPR4( sNx*sNy, r4loc )
-#endif
-              WRITE(dUnit,rec=irec) r4loc
-             ELSEIF (filePrec .EQ. precFloat64) THEN
-              IF ( arrType.EQ.'RS' ) THEN
-               CALL MDS_PASS_R8toRS( r8loc, arr,
-     I                           k, kSize, bi,bj,.FALSE., myThid )
-              ELSEIF ( arrType.EQ.'RL' ) THEN
-               CALL MDS_PASS_R8toRL( r8loc, arr,
-     I                           k, kSize, bi,bj,.FALSE., myThid )
-              ELSE
-               WRITE(msgBuf,'(A)')
-     &           ' MDS_WRITE_FIELD: illegal value for arrType'
-               CALL PRINT_ERROR( msgBuf, myThid )
-               STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
-              ENDIF
-#ifdef _BYTESWAPIO
-              CALL MDS_BYTESWAPR8( sNx*sNy, r8loc )
-#endif
-              WRITE(dUnit,rec=irec) r8loc
-             ELSE
-              WRITE(msgBuf,'(A)')
-     &          ' MDS_WRITE_FIELD: illegal value for filePrec'
-              CALL PRINT_ERROR( msgBuf, myThid )
-              STOP 'ABNORMAL END: S/R MDS_WRITE_FIELD'
-             ENDIF
-
-C End of k loop
-           ENDDO
+           irec = irecord
+           i1 = bBij + 1
+           i2 = bBij + sNx*sNy*nNz
+           IF ( filePrec.EQ.precFloat32 ) THEN
+             WRITE(dUnit,rec=irec) (shared3dBuf_r4(i),i=i1,i2)
+           ELSE
+             WRITE(dUnit,rec=irec) (shared3dBuf_r8(i),i=i1,i2)
+           ENDIF
 
 C here We close the tiled MDS file
            IF ( fileIsOpen ) THEN
-            CLOSE( dUnit )
-            fileIsOpen = .FALSE.
+             CLOSE( dUnit )
+             fileIsOpen = .FALSE.
            ENDIF
 
 C--- End Global File / tile-file cases
@@ -497,12 +503,16 @@ C End of bi,bj loops
 
 C If global file was opened then close it
         IF (fileIsOpen .AND. globalFile) THEN
-         CLOSE( dUnit )
-         fileIsOpen = .FALSE.
+          CLOSE( dUnit )
+          fileIsOpen = .FALSE.
         ENDIF
 
 C- endif iAmDoingIO
        ENDIF
+
+C Make other threads wait for I/O completion so that after this,
+C  3-D buffer can again be modified by any thread
+       CALL BAR2( myThid )
 
 C     if useSingleCpuIO / else / end
       ENDIF
@@ -535,9 +545,6 @@ c    I              metaFName, dataFName, the_run_name, titleLine,
 c    I              filePrec, nDims, dimList, map2gl, nFlds,  fldList,
 c    I              nTimRec, timList, irecord, myIter, myThid )
       ENDIF
-
-C To be safe, make other processes wait for I/O completion
-      _BARRIER
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       RETURN
