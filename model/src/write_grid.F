@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.27 2009/02/03 22:59:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.28 2009/06/08 03:40:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -41,7 +41,8 @@ C     !LOCAL VARIABLES:
 C     tmpfld :: Temporary array used to compute & write Total Depth ;
 C               loaded in multi-threaded way but written by single (master)
 C               thread => needs to be in common to be shared by all threads
-      COMMON / LOCAL_WRITE_GRID / tmpfld
+C     no longer needed since MDSIO now allows (2009/06/07) to write local arrays
+c     COMMON / LOCAL_WRITE_GRID / tmpfld
       _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS tmpVar(Nr+1)
       INTEGER i,j,k,bi,bj
@@ -64,7 +65,7 @@ C     Total fluid column thickness (r_unit) :
          ENDDO
        ENDDO
       ENDDO
-      _BARRIER
+c     _BARRIER
 
       writegrid_mdsio = .TRUE.
 #ifdef ALLOW_MNC
