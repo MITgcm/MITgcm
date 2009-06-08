@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1117 2009/06/04 17:27:17 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1118 2009/06/08 04:33:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio (read/write field):
+ - tiled IO done in 1 piece (all levels at a time);
+ - multi-threaded: allow to read/write local (non-shared) array
+   (was already working with singleCpuIO ; now works also without);
+   => no longer needs barrier call after reading a file (added inside
+   mds_read/write field). 
+ - new header file "MDSIO_BUFF_3D.h" with 3-D buffers.
+ - move barrier calls outside gather/scatter_2d to mds_read/write_field
 o pkg/obcs/exf
   - exf_getffieldrec.F: add a few ". _d 0" and 
                         add code to catch the case fldperiod = 0.  
