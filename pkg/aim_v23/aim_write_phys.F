@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_phys.F,v 1.1 2006/08/04 22:27:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_phys.F,v 1.2 2009/06/09 22:44:02 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -36,7 +36,7 @@ C     kLev   :: level index to write (0 = write all levels)
 C     bi,bj  :: Tile index
 C     iRec   :: reccord number in the output file
 C     myIter :: Current iteration number in simulation
-C     myThid :: Thread number for this instance of the routine
+C     myThid :: my Thread Id number
       CHARACTER*(*) pref, suff
       INTEGER nNr
       _RL field(sNx,sNy,nNr,MAX_NO_THREADS)
@@ -54,7 +54,6 @@ C     !LOCAL VARIABLES:
       INTEGER iL
       INTEGER i, j, k, Katm, nLoc
       INTEGER ith, biLoc, bjLoc
-
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -129,9 +128,9 @@ C-     Do simple copy
          ENDDO
         ENDIF
 
-C--   Write to file:
+C--   Write to file: note: call with myThArg=0 => single thread job
         CALL WRITE_LOCAL_RL( pref, suff, nLoc, tmpFld,
-     &                       biLoc, bjLoc, iRec, myIter, myThid )
+     &                       biLoc, bjLoc, iRec, myIter, 0 )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
