@@ -1,35 +1,58 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rl.F,v 1.6 2007/11/13 19:41:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rl.F,v 1.7 2009/06/09 22:52:57 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: WRITE_LOCAL_RL
+C     !INTERFACE:
       SUBROUTINE WRITE_LOCAL_RL(
-     I          pref,suff,nNr,field,bi,bj,iRec,myIter,myThid)
-C WRITE_LOCAL_RL is a "front-end" interface to the low-level I/O
-C routines. It assumes single record files.
+     I                 pref, suff, nNr, field,
+     I                 bi, bj, iRec, myIter, myThArg )
+
+C     !DESCRIPTION:
+C     Write "RL" type local-tile array "field" corresponding to tile bi,bj
+C     to binary file (prefix,suffix) at record position "iRec".
+
+C     !USES:
       IMPLICIT NONE
-C Global
+C     Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-C Arguments
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     pref    :: file name prefix
+C     suff    :: file name suffix
+C     nNr     :: Number of levels to write
+C     field   :: field array to write
+C     bi,bj   :: tile indices
+C     iRec    :: record number in output file
+C     myIter  :: Iteration number
+C     myThArg :: thread argument (= my Thread Id or = 0 to simply
+C                     write 1 tile without thread synchronisation)
       CHARACTER*(*) pref,suff
       INTEGER nNr
       _RL field(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nNr)
       INTEGER bi,bj
       INTEGER iRec
       INTEGER myIter
-      INTEGER myThid
-C Functions
-      INTEGER ILNBLNK,IFNBLNK
-C Common
+      INTEGER myThArg
+
+C     !FUNCTIONS
+      INTEGER  IFNBLNK, ILNBLNK
+      EXTERNAL IFNBLNK, ILNBLNK
+
+C     Common block
       COMMON /RD_WR_FLD/ globalFile
       LOGICAL globalFile
-C Local
+
+C     !LOCAL VARIABLES:
       LOGICAL useCurrentDir
       CHARACTER*(2) fType
-      INTEGER s1Lo,s1Hi,s2Lo,s2Hi
       CHARACTER*(MAX_LEN_FNAM) fullName
+      INTEGER s1Lo,s1Hi,s2Lo,s2Hi
+      INTEGER myThid
 
 C--   Build file name
 C     Name has form 'prefix.suffix'
@@ -50,18 +73,20 @@ C
       fType='RL'
 #ifdef ALLOW_MDSIO
       IF (nSx.EQ.1.AND.nSy.EQ.1) THEN
-C The hack below replaces MDS_WRITELOCAL with MDSWRITEFIELD_LOC for
+C The hack below replaces MDS_WRITELOCAL with MDS_WRITE_FIELD for
 C single-threaded execution because the former does not support the
 C singleCpuIo option. This is a placeholder until MDS_WRITELOCAL
 C functionality is superseded by pkg/diagnostics.
+         myThid = MAX(myThArg,1)
          CALL MDS_WRITE_FIELD(
      I        fullName, writeBinaryPrec, globalFile, useCurrentDir,
      I        fType, nNr, 1, nNr, field, iRec, myIter, myThid )
       ELSE
          CALL MDS_WRITELOCAL(
      I        fullName, writeBinaryPrec, globalFile,
-     I        fType, nNr, field, bi, bj, iRec, myIter, myThid )
+     I        fType, nNr, field, bi, bj, iRec, myIter, myThArg )
       ENDIF
 #endif
+
       RETURN
       END
