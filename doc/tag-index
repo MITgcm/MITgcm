@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1120 2009/06/10 03:59:51 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1121 2009/06/10 14:20:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61p
 o eesupp (global_max & global_sum):
  - add one more element to buffer (start at index 0) for GL_MAX/SUM output;
  - remove starting & endding barrier (no longer needed)
