@@ -1,14 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.7 2008/08/02 23:16:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.8 2009/06/10 03:53:30 jmc Exp $
 C $Name:  $
+
+#include "AUTODIFF_OPTIONS.h"
 
 C--   File global_adsum.F: Routines that perform adjoint of
 C                          global sum on an array of thread values.
 C      Contents
-C      o global_adsum_r4
-C      o global_adsum_r8
-#include "AUTODIFF_OPTIONS.h"
+C      o GLOBAL_ADSUM_R4
+C      o GLOBAL_ADSUM_R8
 
-CStartOfInterface
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: GLOBAL_ADSUM_R4
+
+C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE GLOBAL_ADSUM_R4(
      I                            myThid,
@@ -20,29 +25,35 @@ CStartOfInterface
      I                            myThid
      &                          )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE GLOBAL_ADSUM_R4                               |
-C     | o Handle sum for real*4 data.                            |
-C     |==========================================================|
-C     \==========================================================/
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE GLOBAL_ADSUM_R4
+C     | o Handle sum for real*4 data.
+C     *==========================================================*
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
 
 C     == Global data ==
-      implicit none
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     sumPhi - Result of sum.
-C     myThid - My thread id.
+C     sumPhi :: Result of sum.
+C     myThid :: My thread id.
       Real*4 adsumPhi
       INTEGER myThid
-CEndOfInterface
+CEOP
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     adphi  - Array to be summed.
-C     I      - Loop counters
-C     mpiRC  - MPI return code
+C     adphi  :: Array to be summed.
+C     I      :: Loop counters
+C     mpiRC  :: MPI return code
       Real*4 adphi(lShare4,MAX_NO_THREADS)
       INTEGER I
       Real*4  tmp
@@ -63,7 +74,7 @@ C--   broadcast to all processes
       IF ( usingMPI ) THEN
 #endif
          CALL MPI_Bcast(tmp, 1, MPI_REAL, 0
-     &        , MPI_COMM_WORLD, mpiRC
+     &        , MPI_COMM_MODEL, mpiRC
      &        )
 #ifndef ALWAYS_USE_MPI
       ENDIF
@@ -84,10 +95,11 @@ C--   every thread takes its adjoint sum
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: GLOBAL_ADSUM_R8
 
-#include "CPP_EEOPTIONS.h"
-
-CStartOfInterface
+C     !INTERFACE:
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
       SUBROUTINE GLOBAL_ADSUM_R8(
      I                            myThid,
@@ -99,28 +111,35 @@ CStartOfInterface
      I                            myThid
      &                          )
 #endif
-C     /==========================================================\
-C     | SUBROUTINE GLOBAL_ADSUM_R4                               |
-C     | o Handle sum for real*8 data.                            |
-C     |==========================================================|
-C     \==========================================================/
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE GLOBAL_ADSUM_R8
+C     | o Handle sum for real*8 data.
+C     *==========================================================*
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
 
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     sumPhi - Result of sum.
-C     myThid - My thread id.
+C     sumPhi :: Result of sum.
+C     myThid :: My thread id.
       Real*8 adsumPhi
       INTEGER myThid
-CEndOfInterface
+CEOP
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     adphi  - Array to be summed.
-C     I      - Loop counters
-C     mpiRC  - MPI return code
+C     adphi  :: Array to be summed.
+C     I      :: Loop counters
+C     mpiRC  :: MPI return code
       Real*8 adphi(lShare8,MAX_NO_THREADS)
       INTEGER I
       Real*8  tmp
@@ -141,7 +160,7 @@ C--   broadcast to all processes
       IF ( usingMPI ) THEN
 #endif
          CALL MPI_Bcast(tmp, 1, MPI_DOUBLE_PRECISION, 0
-     &        , MPI_COMM_WORLD, mpiRC
+     &        , MPI_COMM_MODEL, mpiRC
      &        )
 #ifndef ALWAYS_USE_MPI
       ENDIF
