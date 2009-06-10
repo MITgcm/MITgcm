@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1119 2009/06/09 22:55:35 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1120 2009/06/10 03:59:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp (global_max & global_sum):
+ - add one more element to buffer (start at index 0) for GL_MAX/SUM output;
+ - remove starting & endding barrier (no longer needed)
 o pkg/mdsio, writelocal:
    works also in multi-threaded when LOCBIN_IO_THREAD_SAFE is undefined
    (remove the STOP): uses shared buffer IO to store data from all threads
