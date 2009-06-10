@@ -1,13 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum_tile.F,v 1.2 2009/06/07 15:19:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum_tile.F,v 1.3 2009/06/10 03:47:03 jmc Exp $
 C $Name:  $
+
+#include "CPP_EEOPTIONS.h"
 
 C--   File global_sum_tile.F: Routines that perform global sum
 C                             on a tile array
 C      Contents
-C      o global_sum_tile_rl
-C      o global_sum_tile_rs <- not yet coded
-#include "CPP_EEOPTIONS.h"
+C      o GLOBAL_SUM_TILE_RL
+C      o GLOBAL_SUM_TILE_RS <- not yet coded
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: GLOBAL_SUM_TILE_RL
 
@@ -16,7 +18,7 @@ C     !INTERFACE:
      I                       phiTile,
      O                       sumPhi,
      I                       myThid )
-      IMPLICIT NONE
+
 C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE GLOBAL\_SUM\_TILE\_RL
@@ -27,6 +29,8 @@ C     |  and operate over all tiles & all the processes.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
+
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -51,7 +55,7 @@ C         all 4 needs to have the same length as MPI_DOUBLE_PRECISION
       INTEGER bi,bj
 #ifdef ALLOW_USE_MPI
 #ifdef GLOBAL_SUM_SEND_RECV
-      INTEGER biG, bjG, npe
+      INTEGER biG, bjG, npe, np1
       INTEGER lbuff, idest, itag, ready_to_receive
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       Real*8  localBuf (nSx,nSy)
@@ -104,11 +108,11 @@ C--   All proceses except 0 receive result from process 0
       ELSE
 
 C--   Process 0 fills-in its local data
-        npe = 0
+        np1 = 1
         DO bj=1,nSy
           DO bi=1,nSx
-            biG = (mpi_myXGlobalLo(npe+1)-1)/sNx+bi
-            bjG = (mpi_myYGlobalLo(npe+1)-1)/sNy+bj
+            biG = (mpi_myXGlobalLo(np1)-1)/sNx+bi
+            bjG = (mpi_myYGlobalLo(np1)-1)/sNy+bj
             globalBuf(biG,bjG) = shareBufGSR8(bi,bj)
           ENDDO
         ENDDO
@@ -123,10 +127,11 @@ C--   Process 0 polls and receives data from each process in turn
      &           npe, itag, MPI_COMM_MODEL, istatus, ierr)
 
 C--   Process 0 gathers the local arrays into a global array.
+          np1 = npe + 1
           DO bj=1,nSy
            DO bi=1,nSx
-            biG = (mpi_myXGlobalLo(npe+1)-1)/sNx+bi
-            bjG = (mpi_myYGlobalLo(npe+1)-1)/sNy+bj
+            biG = (mpi_myXGlobalLo(np1)-1)/sNx+bi
+            bjG = (mpi_myYGlobalLo(np1)-1)/sNy+bj
             globalBuf(biG,bjG) = localBuf(bi,bj)
            ENDDO
           ENDDO
@@ -177,19 +182,22 @@ C      in case MPI is not used:
 #endif /* not (GLOBAL_SUM_SEND_RECV & ALLOW_USE_MPI) */
 
 C--    Write solution to shared buffer (all threads can see it)
-       shareBufGSR8(1,1) = sumAllP
+c      shareBufGSR8(1,1) = sumAllP
+       phiGSR8(1,0) = sumAllP
 
       _END_MASTER( myThid )
 C--   Everyone wait for Master thread to be ready
       CALL BAR2( myThid )
 
 C--   set result for every threads
-      sumPhi = shareBufGSR8(1,1)
+c     sumPhi = shareBufGSR8(1,1)
+      sumPhi = phiGSR8(1,0)
 
-C-    Need a barrier here to prevent thread 1 to modify shareBufGSR8(1,1)
+C--   A barrier was needed here to prevent thread 1 to modify shareBufGSR8(1,1)
 C     (as it would in the following call to this S/R) before all threads get
 C     their global-sum result out.
-      CALL BAR2( myThid )
+C     No longer needed since a dedicated shared var. is used to share the output
+c     CALL BAR2( myThid )
 
       RETURN
       END

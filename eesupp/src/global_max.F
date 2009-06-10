@@ -1,39 +1,42 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_max.F,v 1.11 2004/03/27 03:51:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_max.F,v 1.12 2009/06/10 03:47:03 jmc Exp $
 C $Name:  $
+
+#include "CPP_EEOPTIONS.h"
 
 C--   File global_max.F: Routines that perform global max reduction on an array
 C                        of thread values.
 C      Contents
-C      o global_max_r4
-C      o global_max_r8
-#include "CPP_EEOPTIONS.h"
+C      o GLOBAL_MAX_R4
+C      o GLOBAL_MAX_R8
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-
 C     !ROUTINE: GLOBAL_MAX_R4
 
 C     !INTERFACE:
-      SUBROUTINE GLOBAL_MAX_R4( 
+      SUBROUTINE GLOBAL_MAX_R4(
      U                       maxPhi,
      I                       myThid )
-      IMPLICIT NONE
+
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE GLOBAL\_MAX\_R4                                  
-C     | o Handle max for real*4 data.                             
+C     | SUBROUTINE GLOBAL\_MAX\_R4
+C     | o Handle max for real*4 data.
 C     *==========================================================*
-C     | Perform max on array of one value per thread and then     
-C     | max result of all the processes.                          
-C     | Notes                                                     
-C     | =====                                                     
-C     | Within a process only one thread does the max, each       
-C     | thread is assumed to have already maxed  its local data.  
-C     | The same thread also does the inter-process max for       
-C     | example with MPI and then writes the result into a shared 
-C     | location. All threads wait until the max is avaiailable.  
+C     | Perform max on array of one value per thread and then
+C     | max result of all the processes.
+C     | Notes
+C     | =====
+C     | Within a process only one thread does the max, each
+C     | thread is assumed to have already maxed  its local data.
+C     | The same thread also does the inter-process max for
+C     | example with MPI and then writes the result into a shared
+C     | location. All threads wait until the max is avaiailable.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
+
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -58,18 +61,17 @@ C     mpiRC  :: MPI return code
 #endif /* ALLOW_USE_MPI */
 CEOP
 
-      CALL BAR2( myThid )
 C--   write local max into array
-      phiGMRS(1,myThid) = maxPhi
+      phiGMR4(1,myThid) = maxPhi
 
 C--   Can not start until everyone is ready
       CALL BAR2( myThid )
 
 C--   Max within the process first
       _BEGIN_MASTER( myThid )
-       tmp = phiGMRS(1,1)
+       tmp = phiGMR4(1,1)
        DO I=2,nThreads
-        tmp = MAX(tmp,phiGMRS(1,I))
+        tmp = MAX(tmp,phiGMR4(1,I))
        ENDDO
        maxPhi = tmp
 #ifdef  ALLOW_USE_MPI
@@ -82,44 +84,45 @@ C--   Max within the process first
        ENDIF
 #endif
 #endif /*  ALLOW_USE_MPI */
-       phiGMRS(1,1) = maxPhi
+       phiGMR4(1,0) = maxPhi
       _END_MASTER( myThid )
 C--
       CALL BAR2( myThid )
 
 C--   set result for every process
-      maxPhi = phiGMRS(1,1)
-      CALL BAR2( myThid )
+      maxPhi = phiGMR4(1,0)
 
       RETURN
       END
-      
-CBOP
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: GLOBAL_MAX_R8
 
 C     !INTERFACE:
-      SUBROUTINE GLOBAL_MAX_R8( 
+      SUBROUTINE GLOBAL_MAX_R8(
      O                       maxPhi,
      I                       myThid )
-      IMPLICIT NONE
+
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE GLOBAL\_MAX\_R8                                  
-C     | o Handle max for real*8 data.                             
+C     | SUBROUTINE GLOBAL\_MAX\_R8
+C     | o Handle max for real*8 data.
 C     *==========================================================*
-C     | Perform max on array of one value per thread and then     
-C     | max result of all the processes.                          
-C     | Notes                                                     
-C     | =====                                                     
-C     | Within a process only one thread does the max, each       
-C     | thread is assumed to have already maxed  its local data.  
-C     | The same thread also does the inter-process max for       
-C     | example with MPI and then writes the result into a shared 
-C     | location. All threads wait until the max is avaiailable.  
+C     | Perform max on array of one value per thread and then
+C     | max result of all the processes.
+C     | Notes
+C     | =====
+C     | Within a process only one thread does the max, each
+C     | thread is assumed to have already maxed  its local data.
+C     | The same thread also does the inter-process max for
+C     | example with MPI and then writes the result into a shared
+C     | location. All threads wait until the max is avaiailable.
 C     *==========================================================*
 
 C     !USES:
+      IMPLICIT NONE
+
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -144,18 +147,17 @@ C     mpiRC  :: MPI return code
 #endif   /* ALLOW_USE_MPI */
 CEOP
 
-      CALL BAR2( myThid )
 C--   write local max into array
-      phiGMRL(1,myThid) = maxPhi
+      phiGMR8(1,myThid) = maxPhi
 
 C--   Can not start until everyone is ready
       CALL BAR2( myThid )
 
 C--   Max within the process first
       _BEGIN_MASTER( myThid )
-       tmp = phiGMRL(1,1)
+       tmp = phiGMR8(1,1)
        DO I=2,nThreads
-        tmp = MAX(tmp,phiGMRL(1,I))
+        tmp = MAX(tmp,phiGMR8(1,I))
        ENDDO
        maxPhi = tmp
 #ifdef  ALLOW_USE_MPI
@@ -169,15 +171,14 @@ C--   Max within the process first
 #endif
 #endif /*  ALLOW_USE_MPI */
 C--     Write solution to place where all threads can see it
-        phiGMRL(1,1) = maxPhi
+       phiGMR8(1,0) = maxPhi
       _END_MASTER( myThid )
 
 C--   Do not leave until we are sure that the max is done
       CALL BAR2( myThid )
 
 C--   set result for every process
-      maxPhi = phiGMRL(1,1)
-      CALL BAR2( myThid )
+      maxPhi = phiGMR8(1,0)
 
       RETURN
       END

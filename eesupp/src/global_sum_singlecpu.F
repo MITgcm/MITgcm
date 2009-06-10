@@ -1,15 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum_singlecpu.F,v 1.3 2009/05/16 13:41:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum_singlecpu.F,v 1.4 2009/06/10 03:47:03 jmc Exp $
 C $Name:  $
-
-C--   File global_sum_singlecpu.F: Routines that perform global sum
-C                                  on a single CPU
-C      Contents
-C      o global_sum_singlecpu_rl
-C      o global_sum_singlecpu_rs <- not yet coded
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 
+C--   File global_sum_singlecpu.F: Routines that perform global sum
+C                                  on a single CPU
+C      Contents
+C      o GLOBAL_SUM_SINGLECPU_RL
+C      o GLOBAL_SUM_SINGLECPU_RS <- not yet coded
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: GLOBAL_SUM_SINGLECPU_RL
 
@@ -91,10 +92,10 @@ C--   copy (and conversion to real*8) to Shared buffer:
        ENDDO
       ENDDO
 
-C- note(jmc): do not see why we need this Barrier here + the one at the end ;
-C     however a) both are present in the standard version of global_sum ;
-C             b) with OpenMP on hugo, does not work if both are commented out
+C--   Master thread does the communications and the global sum
+C--   Master thread cannot start until everyone is ready:
       CALL BAR2( myThid )
+      _BEGIN_MASTER( myThid )
 
 C--   Gather local arrays
       CALL GATHER_2D_R8(
@@ -102,11 +103,6 @@ C--   Gather local arrays
      I                       sharedLocBuf_r8,
      I                       xSize, ySize,
      I                       useExch2GlobLayOut, zeroBuff, myThid )
-
-C--   Master thread does the communications and the global sum
-C--   Master thread cannot start until everyone is ready:
-      CALL BAR2( myThid )
-      _BEGIN_MASTER( myThid )
 
 #ifdef ALLOW_USE_MPI
        idest = 0
@@ -139,17 +135,14 @@ C--   All proceses except 0 receive result from process 0
 #endif /* not ALLOW_USE_MPI */
 
 C--   Write solution to shared buffer (all threads can see it)
-      shareBufGSR8(1,1) = sumAll
+      phiGSR8(1,0) = sumAll
 
       _END_MASTER( myThid )
 C--   Everyone wait for Master thread to be ready
       CALL BAR2( myThid )
 
 C--   set result for every threads
-      sumPhi = shareBufGSR8(1,1)
-
-C- note(jmc): do not see why we need this Barrier here (see comment @ the top)
-      CALL BAR2( myThid )
+      sumPhi = phiGSR8(1,0)
 
       RETURN
       END
