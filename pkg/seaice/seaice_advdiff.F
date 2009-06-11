@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.32 2009/05/19 21:49:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.33 2009/06/11 09:04:03 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -441,7 +441,22 @@ C     with LAD=1 (Leapfrog).
 
 C--   end if multiDimAdvection
       ENDIF
-C--   end if SEAICEuseDynamics
+
+#ifdef SEAICE_AGE
+C     avoid ridging of sea ice age (at this point ridged ice means AREA > 1)
+      IF ( .TRUE. ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO J=1,sNy
+          DO I=1,sNx
+           IceAge(I,J,bi,bj) = IceAge(I,J,bi,bj) 
+     &          / MAX(ONE,AREA(I,J,1,bi,bj))
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* SEAICE_AGE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE AREA   = comlev1, key = ikey_dynamics, kind=isbyte
@@ -454,17 +469,30 @@ C     somewhere after doing the advection)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           IF ( AREA(I,J,1,bi,bj) .GT. ONE ) THEN
-#ifdef SEAICE_AGE
-C     avoid ridging of age
-            IceAge(I,J,bi,bj) = IceAge(I,J,bi,bj) / AREA(I,J,1,bi,bj)
-#endif
-            AREA(I,J,1,bi,bj) = ONE
-           ENDIF
+           AREA(I,J,1,bi,bj) = MIN(ONE,AREA(I,J,1,bi,bj))
           ENDDO
          ENDDO
         ENDDO
        ENDDO
+#ifdef SEAICE_AGE
+C     Sources and sinks for sea ice age (otherwise added in seaice_growth)
+       IF ( .TRUE. ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO J=1,sNy
+           DO I=1,sNx
+            IF ( AREA(I,J,1,bi,bj) .GT. 0.15 ) THEN
+             IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj) +
+     &            AREA(I,J,1,bi,bj) * SEAICE_deltaTtherm
+            ELSE
+             IceAge(i,j,bi,bj) = ZERO
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* SEAICE_AGE */
       ENDIF
 
       RETURN
