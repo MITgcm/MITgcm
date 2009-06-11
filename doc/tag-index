@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1121 2009/06/10 14:20:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1122 2009/06/11 09:04:13 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: make the (placeholder-)tracer IceAge a little more meaningful
+  by avoiding ridging of age due to convergent ice flow
 
 checkpoint61p
 o eesupp (global_max & global_sum):
