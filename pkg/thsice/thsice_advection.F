@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.9 2009/05/12 19:56:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.10 2009/06/11 20:04:24 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -136,7 +136,8 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
 #ifdef ALLOW_EXCH2
       INTEGER myTile
 #endif
-      LOGICAL dBug
+      LOGICAL dBugFlag
+      INTEGER idb,jdb,biDb
       _RL tmpFac
       _RL tmpVol
 CEOP
@@ -157,11 +158,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       k = 1
-      dBug = debugLevel.GE.debLevB
+      dBugFlag = debugLevel.GE.debLevB
      &     .AND. myIter.EQ.nIter0
      &     .AND. ( tracerIdentity.EQ.GAD_SI_HICE .OR.
      &             tracerIdentity.EQ.GAD_SI_QICE2 )
-c    &     .AND. tracerIdentity.EQ.GAD_SI_HICE
+c    &     .AND. tracerIdentity.EQ.GAD_SI_FRAC
+      idb  = MIN(13,sNx)
+      jdb  = MOD(17,sNy)
+      biDb = nSx/2
 
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
@@ -267,8 +271,9 @@ C--   not CubedSphere
         calc_fluxes_X = MOD(ipass,2).EQ.1
         calc_fluxes_Y = .NOT.calc_fluxes_X
        ENDIF
-       IF (dBug.AND.bi.EQ.3 ) WRITE(6,*) 'ICE_adv:',tracerIdentity,
-     &   ipass,calc_fluxes_X,calc_fluxes_Y,overlapOnly,interiorOnly
+       IF (dBugFlag.AND.bi.EQ.biDb ) WRITE(6,'(A,3I4,2I5,4L5)')
+     &   'ICE_adv:', tracerIdentity, ipass, bi, idb, jdb,
+     &   calc_fluxes_X, calc_fluxes_Y, overlapOnly, interiorOnly
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   X direction
@@ -328,9 +333,9 @@ C-     Compute CFL number
           CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme, .FALSE.,
      I             deltaTadvect, uTrans, uCfl, iceFld,
      O             af, myThid )
-          IF (dBug.AND. bi.EQ.3) WRITE(6,'(A,1P4E14.6)')
-     &      'ICE_adv: xFx=',af(13,11),iceFld(12,11),uTrans(13,11),
-     &       af(13,11)/uTrans(13,11)
+          IF (dBugFlag.AND.bi.EQ.biDb ) WRITE(6,'(A,1P4E14.6)')
+     &      'ICE_adv: xFx=', af(idb,jdb), iceFld(idb,jdb),
+     &       uTrans(idb,jdb), af(idb,jdb)/uTrans(idb,jdb)
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .FALSE., deltaTadvect,
      I             uTrans, uCfl, maskLocW, iceFld,
@@ -542,9 +547,9 @@ C-     Compute CFL number
           CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme, .FALSE.,
      I             deltaTadvect, vTrans, vCfl, iceFld,
      O             af, myThid )
-          IF (dBug.AND. bi.EQ.3) WRITE(6,'(A,1P4E14.6)')
-     &      'ICE_adv: yFx=',af(12,12),iceFld(12,11),vTrans(12,12),
-     &       af(12,12)/vTrans(12,12)
+          IF (dBugFlag.AND.bi.EQ.biDb ) WRITE(6,'(A,1P4E14.6)')
+     &      'ICE_adv: yFx=', af(idb,jdb), iceFld(idb,jdb),
+     &       vTrans(idb,jdb), af(idb,jdb)/vTrans(idb,jdb)
          ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .FALSE., deltaTadvect,
      I             vTrans, vCfl, maskLocS, iceFld,
@@ -701,10 +706,10 @@ C--   End of ipass loop
       ENDDO
 
 C-    explicit advection is done ; add some debugging print
-      IF ( dBug ) THEN
+      IF ( dBugFlag ) THEN
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         IF ( i.EQ.12 .AND. j.EQ.11 .AND. bi.EQ.3 ) THEN
+         IF ( i.EQ.idb .AND. j.EQ.jdb .AND. bi.EQ.biDb ) THEN
           tmpFac= deltaTadvect*recip_rA(i,j,bi,bj)
           WRITE(6,'(A,1P4E14.6)') 'ICE_adv:',
      &     afx(i,j)*tmpFac,afx(i+1,j)*tmpFac,
