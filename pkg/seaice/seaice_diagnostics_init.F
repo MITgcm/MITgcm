@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.15 2009/06/11 12:10:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.16 2009/06/11 12:31:48 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -103,7 +103,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       diagName  = 'SItices '
       diagTitle = 'Surface Temperature over Sea-Ice (area weighted)'
-      diagUnits = 'degC            '
+      diagUnits = 'K               '
       diagCode  = 'SM  C   M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, numArea, myThid )
