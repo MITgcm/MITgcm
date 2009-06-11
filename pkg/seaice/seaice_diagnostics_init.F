@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.14 2008/12/17 03:33:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.15 2009/06/11 12:10:44 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -43,6 +43,7 @@ C     diagTitle :: local string (80c): description of field in diagnostic
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 
+      INTEGER       numArea
       CHARACTER*9   flxUnits
       CHARACTER*15  locName
       CHARACTER*4 SEAICE_DIAG_SUFX, diagSufx
@@ -56,6 +57,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )
+      numArea  = diagNum
 
       diagName  = 'SIheff  '
       diagTitle = 'SEAICE effective ice thickness'
@@ -98,6 +100,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SItices '
+      diagTitle = 'Surface Temperature over Sea-Ice (area weighted)'
+      diagUnits = 'degC            '
+      diagCode  = 'SM  C   M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, numArea, myThid )
 
       diagName  = 'SIatmFW '
       diagTitle = 'Net freshwater flux from the atmosphere (+=down)'

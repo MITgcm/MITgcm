@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.12 2009/05/29 13:03:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.13 2009/06/11 12:10:44 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -48,6 +48,10 @@ C     == Local variables ==
       _RL sigI (1-oLx:sNx+oLx,1-oLy:sNy+oLy)
       _RL sigII(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
       _RL sig1, sig2, sig12, sigTmp, recip_prs
+#ifdef SEAICE_MULTICATEGORY
+      INTEGER k
+      _RL recip_multdim
+#endif 
 C
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
@@ -66,6 +70,34 @@ C
      &        'SIvice  ',0,1 ,2,bi,bj,myThid)
         ENDDO
        ENDDO
+C     
+       IF ( DIAGNOSTICS_IS_ON('SItices ',myThid) ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+#ifdef SEAICE_MULTICATEGORY
+C     use TICE as a temporary field, as it is done in seaice_growth
+          DO j=1,sNy
+           DO i=1,sNx
+            TICE(I,J,bi,bj) = 0. _d 0
+           ENDDO
+          ENDDO
+C     division by zero is not possible
+          recip_multdim = 1. _d 0/MULTDIM
+          DO k=1,MULTDIM
+           DO j=1,sNy
+            DO i=1,sNx
+             TICE(I,J,bi,bj) = TICE(I,J,bi,bj) 
+     &            + TICES(I,J,K,bi,bj)*recip_multdim
+            ENDDO
+           ENDDO
+          ENDDO
+#endif /* SEAICE_MULTICATEGORY */
+          CALL DIAGNOSTICS_FRACT_FILL(
+     I         TICE, AREA(1-oLx,1-oLy,1,bi,bj), 1. _d 0,1,'SItices ', 
+     I         0,1,1,bi,bj,myThid)
+         ENDDO
+        ENDDO
+       ENDIF
 C
        CALL DIAGNOSTICS_FILL(HSNOW  ,'SIhsnow ',0,1 ,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(frWtrAtm,'SIatmFW ',0,1 ,0,1,1,myThid)
