@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.7 2009/06/11 12:30:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.8 2009/06/11 12:35:19 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -68,12 +68,6 @@ c
 #endif
 #ifdef ALLOW_RUNOFF
          CALL DIAGNOSTICS_FILL(runoff,     'EXFroff ',0,1,0,1,1,myThid)
-#endif
-#ifdef ALLOW_CLIMSST_RELAXATION
-         CALL DIAGNOSTICS_FILL(climsst,    'EXFclsst',0,1,0,1,1,myThid)
-#endif
-#ifdef ALLOW_CLIMSSS_RELAXATION
-         CALL DIAGNOSTICS_FILL(climsss,    'EXFclsss',0,1,0,1,1,myThid)
 #endif
 c
       ENDIF
