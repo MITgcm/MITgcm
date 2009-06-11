@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.13 2009/06/11 12:10:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.14 2009/06/11 20:31:13 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -100,7 +100,6 @@ C     division by zero is not possible
        ENDIF
 C
        CALL DIAGNOSTICS_FILL(HSNOW  ,'SIhsnow ',0,1 ,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(frWtrAtm,'SIatmFW ',0,1 ,0,1,1,myThid)
 C
 #ifdef SEAICE_SALINITY
        CALL DIAGNOSTICS_FILL(HSALT  ,'SIhsalt ',0,1 ,0,1,1,myThid)
@@ -154,7 +153,7 @@ C     abuse press as a temporary field
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j = 1,sNy
             DO i = 1,sNx+1
-             press(i,j,bi,bj) = 
+             press(i,j,bi,bj) =
 #ifdef SEAICE_CGRID
      &            UICE(i,j,1,bi,bj)
 #else
@@ -173,7 +172,7 @@ C     average B-grid velocities to C-grid points
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j = 1,sNy+1
             DO i = 1,sNx
-             press(i,j,bi,bj) = 
+             press(i,j,bi,bj) =
 #ifdef SEAICE_CGRID
      &            VICE(i,j,1,bi,bj)
 #else
