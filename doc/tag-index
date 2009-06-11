@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1123 2009/06/11 12:14:44 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1124 2009/06/11 19:56:50 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thsice: 
+ - fix hOceMxL in overlap (needed for sea-ice advection); 
+   update output of experiment global_ocean.cs32x15.icedyn.
 o pkg/seaice: 
  - make the (placeholder-)tracer IceAge a little more meaningful
   by avoiding ridging of age due to convergent ice flow
