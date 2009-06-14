@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_check.F,v 1.2 2007/11/28 17:55:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_check.F,v 1.3 2009/06/14 03:59:47 jmc Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -16,7 +16,7 @@ C     !USES:
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
-C     myThid -  Number of this instances
+C     myThid :: my Thread Id number
       INTEGER myThid
 CEOP
 
@@ -26,9 +26,13 @@ C     !LOCAL VARIABLES:
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
+      _BEGIN_MASTER(myThid)
+
        WRITE(msgBuf,'(A)') 'SALT_PLUME_CHECK: #define SALT_PLUME'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                     SQUEEZE_RIGHT , myThid )
+
+      _END_MASTER(myThid)
 
 #endif /* ALLOW_SALT_PLUME */
 
