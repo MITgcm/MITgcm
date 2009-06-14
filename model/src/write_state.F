@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.59 2005/11/08 23:01:10 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.60 2009/06/14 21:45:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,7 +8,7 @@ C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: WRITE_STATE 
+C     !ROUTINE: WRITE_STATE
 
 C     !INTERFACE:
       SUBROUTINE WRITE_STATE ( myTime, myIter, myThid )
@@ -25,20 +25,20 @@ C     variable, per time and per tile. This *has* to be the default
 C     because most users use this mode and all utilities and scripts
 C     (diagnostic) assume this form.  It is also robust, as explained
 C     below.
-C     
+C
 C     If #defined, subsequent snap-shots are written as records in the
 C     same file (no iteration number in filenames). The main advantage
 C     is fewer files.  The disadvantages are that:
 C       (1) it breaks a lot of diagnostic scripts,
 C       (2) for large or long problems this creates huge files,
-C       (3) its an unexpected, unsolicited change in behaviour which 
-C           came as a surprise (in c32) and is an inconvenience to 
+C       (3) its an unexpected, unsolicited change in behaviour which
+C           came as a surprise (in c32) and is an inconvenience to
 C           several users
 C       (4) it can not accomodate changing the frequency of output
-C           after a pickup (this is trivial in previous method but 
+C           after a pickup (this is trivial in previous method but
 C           needs new code and parameters in this new method)
 C
-C      Known Bugs include: 
+C      Known Bugs include:
 C       (1) if the length of integration is not exactly an integer
 C           times the output frequency then the last record written
 C           (at end of integration) overwrites a previously written
@@ -49,7 +49,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h" 
+#include "GRID.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "NH_VARS.h"
@@ -79,7 +79,7 @@ C     !LOCAL VARIABLES:
 #endif
 CEOP
 
-      IF ( 
+      IF (
      &     DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
      &  .OR. dumpInitAndLast.AND.( myTime.EQ.endTime .OR.
      &                             myTime.EQ.startTime  )
@@ -89,10 +89,10 @@ CEOP
         ELSE
           iRec = int ( (myTime-startTime) / dumpFreq +1.5 )
         ENDIF
-         
+
 C       Going to really do some IO. Make everyone except master thread wait.
-        _BARRIER
-C       _BEGIN_MASTER( myThid )
+C       this is done within IO routines => no longer needed
+c       _BARRIER
 
 C       Write model fields
         IF (snapshot_mdsio) THEN
@@ -150,9 +150,6 @@ c         CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
 #endif /* MULTIPLE_RECORD_STATE_FILES */
 
         ENDIF
-        
-C       _END_MASTER( myThid )
-        _BARRIER
 
 #ifdef ALLOW_MNC
         IF (useMNC .AND. snapshot_mnc) THEN
@@ -198,7 +195,7 @@ C         CALL MNC_CW_RL_W_S('D','state',0,0,'model_time',myTime,myThid)
 #endif /* ALLOW_NONHYDROSTATIC */
         ENDIF
 #endif /*  ALLOW_MNC  */
-        
+
       ENDIF
 
       RETURN

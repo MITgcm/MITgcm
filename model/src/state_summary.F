@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/state_summary.F,v 1.7 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/state_summary.F,v 1.8 2009/06/14 21:45:12 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,28 +43,22 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-      _BARRIER
-
       _BEGIN_MASTER(myThid)
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT , myThid )
       WRITE(msgBuf,'(A)') '// Model current state'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT , myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT , myThid )
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT , myThid )
       _END_MASTER(myThid)
-
-      _BARRIER
-
 
       RETURN
       END
-

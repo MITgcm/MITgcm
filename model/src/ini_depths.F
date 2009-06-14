@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.45 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.46 2009/06/14 21:45:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -85,7 +85,8 @@ C------
       ENDDO
 
 C-    Need to synchronize here before doing master-thread IO
-      _BARRIER
+C     this is done within IO routines => no longer needed
+c     _BARRIER
 
 C------
 C   1) Set R_low = the Lower (in r sense) boundary of the fluid column :
@@ -174,7 +175,6 @@ C------ read from file:
 C- read surface topography (in m) from topoFile (case topoFile.NE.' '):
 
         CALL READ_REC_XY_RS( topoFile, topoZ, 1, 0, myThid )
-        _BARRIER
 
         IF (buoyancyRelation .EQ. 'ATMOSPHERIC') THEN
 C----
@@ -187,7 +187,6 @@ c         CALL WRITE_FLD_XY_RS( 'topo_Z',' ',topoZ,0,myThid)
      O                       Ro_surf,
      I                       myThid )
 
-c         _BARRIER
 C         This I/O is now done in write_grid.F
 c         CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,0,myThid)
 
@@ -262,6 +261,7 @@ c          IF ( jG .EQ. Ny )  R_low(i,j,bi,bj) = 0.
       ENDIF
 
       IF ( debugLevel.GE.debLevB ) THEN
+       _BARRIER
        CALL PLOT_FIELD_XYRS( Ro_surf,
      &           'Surface reference r-position (ini_depths)',
      &           -1, myThid )
@@ -269,9 +269,9 @@ c          IF ( jG .EQ. Ny )  R_low(i,j,bi,bj) = 0.
 c     CALL WRITE_FLD_XY_RS('Ro_surf',' ',Ro_surf,0,myThid)
 
 C--   Everyone else must wait for the depth to be loaded
-C-    note: might not be necessary since all single-thread IO above
-C           are followed by an EXCH (with BARRIER)
-      _BARRIER
+C-    note: not necessary since all single-thread IO above are followed 
+C           by an EXCH (with BARRIER) + BARRIER within IO routine
+c     _BARRIER
 
 #ifdef ALLOW_OBCS
       IF ( useOBCS ) THEN

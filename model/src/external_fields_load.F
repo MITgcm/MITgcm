@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.32 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.33 2009/06/14 21:45:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,9 +52,7 @@ C     myIter - Simulation timestep number
       _RL     myTime
       INTEGER myIter
 
-
 #ifndef EXCLUDE_FFIELDS_LOAD
-
 
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
@@ -96,8 +94,6 @@ C-jmc: so let's try this:
      &  .OR. myIter .EQ. nIter0
      & ) THEN
 
-       _BARRIER
-
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
        _BEGIN_MASTER(myThid)
@@ -136,7 +132,6 @@ C      data for the period ahead and the period behind myTime.
      &                      intime1, myIter, myThid )
 c      IF ( convertEmP2rUnit.EQ.mass2rUnit ) THEN
 C-     EmPmR is now (after c59h) expressed in kg/m2/s (fresh water mass flux)
-        _BARRIER
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-Oly,sNy+Oly
@@ -175,7 +170,6 @@ c      ENDIF
      &                      intime1, myIter, myThid )
        IF ( surfQFile .NE. ' '  ) THEN
 C-     Qnet is now (after c54) the net Heat Flux (including SW)
-        _BARRIER
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-Oly,sNy+Oly

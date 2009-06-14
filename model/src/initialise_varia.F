@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.57 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.58 2009/06/14 21:45:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -144,14 +144,12 @@ ceh3 should add an IF ( useNONHYDROSTATIC ) THEN
 # endif
 
 #endif /* ALLOW_AUTODIFF_TAMC */
-      _BARRIER
 
 C--   Initialise 3-dim. diffusivities
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_MIXING',myThid)
 #endif
       CALL INI_MIXING( myThid )
-      _BARRIER
 
 #ifdef ALLOW_EDDYPSI
 C--  Initialise eddy diffusivities
@@ -183,12 +181,10 @@ C--   Initialise model forcing fields.
       IF (debugMode) CALL DEBUG_CALL('INI_FORCING',myThid)
 #endif
       CALL INI_FORCING( myThid )
-      _BARRIER
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   Initialise active fields to help TAMC
       CALL INI_AUTODIFF( myThid )
-      _BARRIER
 #endif
 
 C--   Initialize variable data for packages
@@ -323,11 +319,11 @@ C--   end bi,bj loop.
 #endif /* ALLOW_TIMEAVE */
 
 #ifdef ALLOW_GRIDALT
-        if (useGRIDALT) then
+      IF (useGRIDALT) THEN
          CALL TIMER_START('GRIDALT_UPDATE  [INITIALISE_VARIA]',myThid)
          CALL GRIDALT_UPDATE(myThid)
          CALL TIMER_STOP ('GRIDALT_UPDATE  [INITIALISE_VARIA]',myThid)
-        endif
+      ENDIF
 #endif
 
 C--   Fill in overlap regions for wVel :

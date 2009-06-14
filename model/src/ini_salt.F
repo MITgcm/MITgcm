@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.19 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.20 2009/06/14 21:45:12 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,7 +38,7 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_SALT 
+C     myThid -  Number of this instance of INI_SALT
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
@@ -62,7 +62,6 @@ C--   Initialise salinity field to the vertical reference profile
         ENDDO
        ENDDO
       ENDDO
-      _BARRIER
 
       IF ( hydrogSaltFile .NE. ' ' ) THEN
 #ifdef ALLOW_MNC
@@ -75,13 +74,11 @@ C--   Initialise salinity field to the vertical reference profile
           CALL MNC_FILE_CLOSE_ALL_MATCHING(hydrogSaltFile, myThid)
         ELSE
 #endif /*  ALLOW_MNC  */
-C        _BEGIN_MASTER( myThid )
          CALL READ_FLD_XYZ_RL( hydrogSaltFile, ' ', salt, 0, myThid )
-C        _END_MASTER(myThid)
 #ifdef ALLOW_MNC
         ENDIF
 #endif /*  ALLOW_MNC  */
-       _EXCH_XYZ_RL(salt  , myThid )
+        _EXCH_XYZ_RL(salt  , myThid )
       ENDIF
 
 C     Apply mask and test consistancy

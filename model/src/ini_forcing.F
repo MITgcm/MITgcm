@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.49 2008/05/16 01:53:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.50 2009/06/14 21:45:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -110,7 +110,8 @@ C-    Initialise all arrays in common blocks
       ENDDO
 
 C-    every-one waits before master thread loads from file
-      _BARRIER
+C     this is done within IO routines => no longer needed
+c     _BARRIER
 
       IF ( zonalWindFile .NE. ' '  ) THEN
        CALL READ_FLD_XY_RS( zonalWindFile, ' ', fu, 0, myThid )
@@ -127,7 +128,6 @@ C-    every-one waits before master thread loads from file
        CALL READ_FLD_XY_RS( EmPmRfile, ' ', EmPmR, 0, myThid )
 c      IF ( convertEmP2rUnit.EQ.mass2rUnit ) THEN
 C-     EmPmR is now (after c59h) expressed in kg/m2/s (fresh water mass flux)
-        _BARRIER
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-Oly,sNy+Oly
@@ -161,7 +161,6 @@ c      ENDIF
        CALL READ_FLD_XY_RS( surfQswFile, ' ', Qsw, 0, myThid )
        IF ( surfQFile .NE. ' '  ) THEN
 C-     Qnet is now (after c54) the net Heat Flux (including SW)
-        _BARRIER
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy

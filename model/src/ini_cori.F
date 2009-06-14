@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.28 2009/05/12 19:54:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.29 2009/06/14 21:45:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -116,7 +116,6 @@ C       Special custom form
             ENDDO
           ENDDO
         ENDDO
-        _BARRIER
         CALL READ_REC_XY_RS( 'fCoriC.bin', fCori,   1, 0, myThid )
         CALL READ_REC_XY_RS( 'fCorCs.bin', fCoriCos,1, 0, myThid )
         IF ( .NOT.useCubedSphereExchange ) THEN
@@ -124,7 +123,6 @@ C       Special custom form
         ELSE
 #ifdef OLD_GRID_IO
          CALL READ_REC_XY_RS('fCoriG.bin', fCoriG,  1, 0, myThid )
-         _BARRIER
 C-       deal with the 2 missing corners (for fCoriG):
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)

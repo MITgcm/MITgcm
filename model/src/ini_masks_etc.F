@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.41 2009/05/12 19:54:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.42 2009/06/14 21:45:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -312,17 +312,13 @@ C     rLow & reference rSurf at Western & Southern edges (U and V points)
 #endif /* ALLOW_NONHYDROSTATIC */
 
 C-    Write to disk: Total Column Thickness & hFac(C,W,S):
-      _BARRIER
-c     _BEGIN_MASTER( myThid )
 C     This I/O is now done in write_grid.F
-C     CALL MDSWRITEFIELD( 'Depth', writeBinaryPrec, .TRUE.,
-C    &                    'RS', 1, tmpfld, 1, -1, myThid )
 c     CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
-c     _END_MASTER(myThid)
 
+      _BARRIER
       CALL PLOT_FIELD_XYZRS( hFacC, 'hFacC' , Nr, 1, myThid )
       CALL PLOT_FIELD_XYZRS( hFacW, 'hFacW' , Nr, 1, myThid )
       CALL PLOT_FIELD_XYZRS( hFacS, 'hFacS' , Nr, 1, myThid )

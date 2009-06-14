@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vel.F,v 1.7 2006/08/02 03:40:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vel.F,v 1.8 2009/06/14 21:45:12 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -57,7 +57,6 @@ C
       ENDDO
 
       IF (uVelInitFile .NE. ' ' .OR. vVelInitFile .NE. ' ') THEN
-       _BARRIER
 C     Read an initial state for each component if required
        IF (uVelInitFile .NE. ' ')
      & CALL READ_FLD_XYZ_RL( uVelInitFile, ' ', uVel, 0, myThid )
