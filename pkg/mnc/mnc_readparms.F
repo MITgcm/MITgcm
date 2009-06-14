@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.32 2009/06/14 01:23:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.33 2009/06/14 15:36:01 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -54,6 +54,7 @@ C-----
 C     Need some work to make MNC multi-threaded safe.
 C     For now, switch it off (otherwise, it's hanging up somewhere)
       IF ( nThreads.GT.1 ) THEN
+        _BARRIER
         _BEGIN_MASTER( myThid )
         WRITE(msgBuf,'(2A)') '**WARNING** MNC_READPARMS: ',
      &                       'useMNC unsafe with multi-threads'
