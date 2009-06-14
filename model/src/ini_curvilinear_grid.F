@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.45 2009/05/26 16:47:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.46 2009/06/14 21:52:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,11 +48,11 @@ C     == Local variables ==
       INTEGER bi,bj
       INTEGER i,j
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER fp
 #ifdef ALLOW_MNC
       CHARACTER*(80) mncFn
 #endif
 #ifndef OLD_GRID_IO
-      INTEGER fp
       INTEGER iG, jG, iL, iLen
       CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) tmpBuf
@@ -97,25 +97,25 @@ C--   Set everything to zero everywhere
        ENDDO
       ENDDO
 
-C--   Everyone must wait for the initialisation to be done
-      _BARRIER
-
 C     Here we make no assumptions about grid symmetry and simply
 C     read the raw grid data from files
 
 #ifdef OLD_GRID_IO
+C--   File Precision is different from "new grid IO" (always 64-bits precision)
+C     which should probably be changed to the standard file-prec (= readBinaryPrec)
+      fp = readBinaryPrec
 
 C-    Cell centered quantities
-      CALL MDSREADFIELD('LONC.bin',readBinaryPrec,'RS',1,xC,  1,myThid)
-      CALL MDSREADFIELD('LATC.bin',readBinaryPrec,'RS',1,yC,  1,myThid)
+      CALL READ_REC_3D_RS( 'LONC.bin', fp, 1, xC, 1, 0, myThid )
+      CALL READ_REC_3D_RS( 'LATC.bin', fp, 1, yC, 1, 0, myThid )
       _EXCH_XY_RS(xC,myThid)
       _EXCH_XY_RS(yC,myThid)
 
-      CALL MDSREADFIELD('DXF.bin',readBinaryPrec,'RS',1,dxF,  1,myThid)
-      CALL MDSREADFIELD('DYF.bin',readBinaryPrec,'RS',1,dyF,  1,myThid)
+      CALL READ_REC_3D_RS( 'DXF.bin', fp, 1, dxF, 1, 0, myThid )
+      CALL READ_REC_3D_RS( 'DYF.bin', fp, 1, dyF, 1, 0, myThid )
       CALL EXCH_UV_AGRID_3D_RS( dxF, dyF, .FALSE., 1, myThid )
 
-      CALL MDSREADFIELD('RA.bin',readBinaryPrec,'RS',1,rA,  1,myThid)
+      CALL READ_REC_3D_RS( 'RA.bin' , fp, 1, rA,  1, 0, myThid )
       _EXCH_XY_RS(rA,myThid )
 
       _BEGIN_MASTER(myThid)
@@ -123,86 +123,87 @@ C-    Cell centered quantities
       _END_MASTER(myThid)
 
 C-    Corner quantities
-      CALL MDSREADFIELD('LONG.bin',readBinaryPrec,'RS',1,xG,  1,myThid)
-      CALL MDSREADFIELD('LATG.bin',readBinaryPrec,'RS',1,yG,  1,myThid)
+      CALL READ_REC_3D_RS( 'LONG.bin', fp, 1, xG, 1, 0, myThid )
+      CALL READ_REC_3D_RS( 'LATG.bin', fp, 1, yG, 1, 0, myThid )
       IF (useCubedSphereExchange) THEN
 cs-   this block needed by cubed sphere until we write more useful I/O routines
-      bi=3
-      bj=1
-      yG(1,sNy+1,bj,1)=yG(1,1,bi,1)
-      bj=bj+2
-      yG(1,sNy+1,bj,1)=yG(1,1,bi,1)
-      bj=bj+2
-      yG(1,sNy+1,bj,1)=yG(1,1,bi,1)
-      bi=6
-      bj=2
-      yG(sNx+1,1,bj,1)=yG(1,1,bi,1)
-      bj=bj+2
-      yG(sNx+1,1,bj,1)=yG(1,1,bi,1)
-      bj=bj+2
-      yG(sNx+1,1,bj,1)=yG(1,1,bi,1)
+       IF ( nPx*nPy*nSy.EQ.1 .AND. nSx.EQ.6 ) THEN
+        _BARRIER
+        _BEGIN_MASTER(myThid)
+         bi=3
+         bj=1
+         yG(1,sNy+1,bj,1)=yG(1,1,bi,1)
+         bj=bj+2
+         yG(1,sNy+1,bj,1)=yG(1,1,bi,1)
+         bj=bj+2
+         yG(1,sNy+1,bj,1)=yG(1,1,bi,1)
+         bi=6
+         bj=2
+         yG(sNx+1,1,bj,1)=yG(1,1,bi,1)
+         bj=bj+2
+         yG(sNx+1,1,bj,1)=yG(1,1,bi,1)
+         bj=bj+2
+         yG(sNx+1,1,bj,1)=yG(1,1,bi,1)
+        _END_MASTER(myThid)
+        _BARRIER
+       ELSE
+        WRITE(msgBuf,'(2A)') 'INI_CURVILINEAR_GRID:',
+     &        ' OLD_GRID_IO only works for 6 tiles on 1 proc'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R INI_CURVILINEAR_GRID'
+       ENDIF
 cs-   end block
       ENDIF
       CALL EXCH_Z_3D_RS( xG, 1, myThid )
       CALL EXCH_Z_3D_RS( yG, 1, myThid )
 
-      CALL MDSREADFIELD('DXV.bin',readBinaryPrec,'RS',1,dxV,  1,myThid)
-      CALL MDSREADFIELD('DYU.bin',readBinaryPrec,'RS',1,dyU,  1,myThid)
-c     CALL EXCH_UV_BGRID_3D_RS( dxV, dyU, .FALSE., 1, myThid)
+      CALL READ_REC_3D_RS( 'DXV.bin', fp, 1, dxV, 1, 0, myThid )
+      CALL READ_REC_3D_RS( 'DYU.bin', fp, 1, dyU, 1, 0, myThid )
 cs-   this block needed by cubed sphere until we write more useful I/O routines
-      IF (.NOT.useCubedSphereExchange) THEN
-      CALL EXCH_Z_3D_RS( dxV, 1, myThid )
-      CALL EXCH_Z_3D_RS( dyU, 1, myThid )
-      ELSE
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-cs! fix overlaps:
-        DO j=1,sNy
-         DO i=1,Olx
-          dxV(1-i,j,bi,bj)=dxV(1+i,j,bi,bj)
-          dxV(sNx+i,j,bi,bj)=dxV(i,j,bi,bj)
-          dyU(1-i,j,bi,bj)=dyU(1+i,j,bi,bj)
-          dyU(sNx+i,j,bi,bj)=dyU(i,j,bi,bj)
+      IF ( useCubedSphereExchange ) THEN
+       IF ( nPx*nPy*nSx*nSy.EQ.6 .AND. sNx.EQ.sNy ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          dxV(sNx+1,1,bi,bj)=dxV(1,1,bi,bj)
+          dxV(1,sNy+1,bi,bj)=dxV(1,1,bi,bj)
+          dyU(sNx+1,1,bi,bj)=dyU(1,1,bi,bj)
+          dyU(1,sNy+1,bi,bj)=dyU(1,1,bi,bj)
          ENDDO
         ENDDO
-        DO j=1,Oly
-         DO i=1-Olx,sNx+Olx
-          dxV(i,1-j,bi,bj)=dxV(i,1+j,bi,bj)
-          dxV(i,sNy+j,bi,bj)=dxV(i,j,bi,bj)
-          dyU(i,1-j,bi,bj)=dyU(i,1+j,bi,bj)
-          dyU(i,sNy+j,bi,bj)=dyU(i,j,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
+       ELSE
+        WRITE(msgBuf,'(2A)') 'INI_CURVILINEAR_GRID:',
+     &        ' OLD_GRID_IO only works with 1 tile per face'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R INI_CURVILINEAR_GRID'
+       ENDIF
 cs-   end block
       ENDIF
+      CALL EXCH_UV_BGRID_3D_RS( dxV, dyU, .FALSE., 1, myThid )
 
-      CALL MDSREADFIELD('RAZ.bin',readBinaryPrec,'RS',1,rAz,  1,myThid)
+      CALL READ_REC_3D_RS( 'RAZ.bin', fp, 1, rAz, 1, 0, myThid )
       IF (useCubedSphereExchange) THEN
 cs-   this block needed by cubed sphere until we write more useful I/O routines
-      CALL EXCH_Z_3D_RS( rAz, 1, myThid )
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        rAz(sNx+1,1,bi,bj)=rAz(1,1,bi,bj)
-        rAz(1,sNy+1,bi,bj)=rAz(1,1,bi,bj)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         rAz(sNx+1,1,bi,bj)=rAz(1,1,bi,bj)
+         rAz(1,sNy+1,bi,bj)=rAz(1,1,bi,bj)
+        ENDDO
        ENDDO
-      ENDDO
 cs-   end block
       ENDIF
       CALL EXCH_Z_3D_RS( rAz, 1, myThid )
 
 C-    Staggered (u,v pairs) quantities
-      CALL MDSREADFIELD('DXC.bin',readBinaryPrec,'RS',1,dxC,  1,myThid)
-      CALL MDSREADFIELD('DYC.bin',readBinaryPrec,'RS',1,dyC,  1,myThid)
+      CALL READ_REC_3D_RS( 'DXC.bin', fp, 1, dxC, 1, 0, myThid )
+      CALL READ_REC_3D_RS( 'DYC.bin', fp, 1, dyC, 1, 0, myThid )
       CALL EXCH_UV_XY_RS(dxC,dyC,.FALSE.,myThid)
 
-      CALL MDSREADFIELD('RAW.bin',readBinaryPrec,'RS',1,rAw,  1,myThid)
-      CALL MDSREADFIELD('RAS.bin',readBinaryPrec,'RS',1,rAs,  1,myThid)
+      CALL READ_REC_3D_RS( 'RAW.bin', fp, 1, rAw, 1, 0, myThid )
+      CALL READ_REC_3D_RS( 'RAS.bin', fp, 1, rAs, 1, 0, myThid )
       CALL EXCH_UV_XY_RS(rAw,rAs,.FALSE.,myThid)
 
-      CALL MDSREADFIELD('DXG.bin',readBinaryPrec,'RS',1,dxG,  1,myThid)
-      CALL MDSREADFIELD('DYG.bin',readBinaryPrec,'RS',1,dyG,  1,myThid)
+      CALL READ_REC_3D_RS( 'DXG.bin', fp, 1, dxG, 1, 0, myThid )
+      CALL READ_REC_3D_RS( 'DYG.bin', fp, 1, dyG, 1, 0, myThid )
       CALL EXCH_UV_XY_RS(dyG,dxG,.FALSE.,myThid)
 
 c     write(10) xC
@@ -223,9 +224,6 @@ c     write(10) dxG
 c     write(10) dyG
 
 #else /* ifndef OLD_GRID_IO */
-
-C--   Only do I/O if I am the master thread
-      _BEGIN_MASTER(myThid)
 
 #ifdef ALLOW_MNC
       IF (useMNC .AND. readgrid_mnc) THEN
@@ -273,6 +271,12 @@ C--   File Precision: keep 64-bits precision (as it used to be)
 C     but should probably change it to the standard file-prec (= readBinaryPrec)
       fp = precFloat64
 c     fp = readBinaryPrec
+
+C--   Everyone must wait for the initialisation to be done
+      _BARRIER
+
+C--   Only do I/O if I am the master thread
+      _BEGIN_MASTER(myThid)
 
       DO bj = 1,nSy
        DO bi = 1,nSx
@@ -379,11 +383,11 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
        ENDDO
       ENDDO
 
+      _END_MASTER(myThid)
+
 #ifdef ALLOW_MNC
       ENDIF
 #endif /* ALLOW_MNC */
-
-      _END_MASTER(myThid)
 
       CALL EXCH_XY_RS(xC,myThid)
       CALL EXCH_XY_RS(yC,myThid)
@@ -399,7 +403,7 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
 
 #endif /* OLD_GRID_IO */
 
-C--   Calculate (sines and cosines of) angles of grid north with 
+C--   Calculate (sines and cosines of) angles of grid north with
 C--   geographical north when they have not been read from a file
       IF ( .NOT.anglesAreSet ) THEN
        CALL CALC_ANGLES( myThid )
