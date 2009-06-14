@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.9 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.10 2009/06/14 21:49:39 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 # if (defined (ALLOW_GMREDI) && (defined (ALLOW_KAPGM_CONTROL)||defined (ALLOW_KAPREDI_CONTROL)))
 # include "GMREDI_OPTIONS.h"
@@ -13,8 +14,8 @@ C     !INTERFACE:
       SUBROUTINE INI_MIXING( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_MIXING                                     
-C     | o Initialise diapycnal diffusivity to default constant val.
+C     | SUBROUTINE INI_MIXING
+C     | o Initialise diffusivity to default constant value.
 C     *==========================================================*
 C     \ev
 
@@ -46,10 +47,9 @@ CEOP
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO k=1,Nr
-          DO j=1,sNy
-           DO i=1,sNx
-#if (defined ALLOW_3D_DIFFKR || \
-     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
+          DO j = 1-Oly, sNy+Oly
+           DO i = 1-Olx, sNx+Olx
+#ifdef ALLOW_3D_DIFFKR
             diffKr(i,j,k,bi,bj) = diffKrNrS(k)
 #endif
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPGM_CONTROL))
@@ -79,12 +79,11 @@ CEOP
        ENDDO
 #endif
 
-#if (defined ALLOW_3D_DIFFKR || \
-     (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL)))
+#ifdef ALLOW_3D_DIFFKR
        IF ( diffKrFile .NE. ' ' ) THEN
           CALL READ_FLD_XYZ_RL(diffKrFile,' ',diffKr,0,myThid)
+          _EXCH_XYZ_RL(diffKr , myThid )
        ENDIF
-      _EXCH_XYZ_RL(diffKr , myThid )
 #endif
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPGM_CONTROL))
       _EXCH_XYZ_RL(KapGM,   myThid )
