@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_varia.F,v 1.4 2008/01/27 20:52:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_varia.F,v 1.5 2009/06/14 21:26:03 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -73,7 +73,8 @@ C- end bi,bj loops
       IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0 ) THEN
 
 C     Prevent loading of new data before everyone has finished initialisation
-       _BARRIER
+C     this is done within IO routines => no longer needed
+c      _BARRIER
 
 #ifdef MYPACKAGE_3D_STATE
        IF ( myPa_Scal1File .NE. ' ' ) THEN
@@ -120,10 +121,6 @@ C-      Assume Agrid position:
          CALL EXCH_XY_RL( myPa_Surf2, myThid )
        ENDIF
 #endif /* MYPACKAGE_2D_STATE */
-
-C     Stop anyone leaving until all data is read
-C note: not strictly necessary since calling EXCH force synchronisation
-c      _BARRIER
 
       ELSE
 C--   restart from a pickup:

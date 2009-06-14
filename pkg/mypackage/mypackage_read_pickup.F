@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_read_pickup.F,v 1.1 2008/01/27 20:52:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_read_pickup.F,v 1.2 2009/06/14 21:26:03 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -50,8 +50,6 @@ C     msgBuf      :: Informational/error message buffer
       CHARACTER*(8) missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
-
-      _BARRIER
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -189,7 +187,7 @@ C-      Assume Agrid position:
 #endif /* MYPACKAGE_2D_STATE */
 
 #endif /* MYPACKAGE_3D_STATE or MYPACKAGE_3D_STATE */
-#endif /* ALLOW_ALLOW_MYPACKAGE */
+#endif /* ALLOW_MYPACKAGE */
 
       RETURN
       END
