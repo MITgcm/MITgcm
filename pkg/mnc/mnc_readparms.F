@@ -1,7 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.31 2008/05/22 12:21:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.32 2009/06/14 01:23:17 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
+
+C--  File mnc_readparms.F
+C--   Contents
+C--   o MNC_READPARMS
+C--   o MNC_SET_OUTDIR
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
@@ -10,12 +15,12 @@ C     !ROUTINE: MNC_READPARMS
 C     !INTERFACE:
       SUBROUTINE MNC_READPARMS( myThid )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     Read the MNC run-time parameters file.  IF the file does not
 C     exist, MNC will assume that it is not needed (that is, some other
 C     IO routines such as MDSIO will be used) and will not issue any
 C     errors.
-      
+
 C     !USES:
       implicit none
 #include "SIZE.h"
@@ -36,7 +41,7 @@ C     !LOCAL VARIABLES:
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
      &     mnc_outdir_num, mnc_use_name_ni0, mnc_echo_gvtypes,
      &     pickup_write_mnc, pickup_read_mnc,
-     &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc, 
+     &     timeave_mnc, snapshot_mnc, monitor_mnc, autodiff_mnc,
      &     writegrid_mnc, readgrid_mnc,
      &     mnc_outdir_str, mnc_indir_str, mnc_max_fsize,
      &     mnc_filefreq,
@@ -45,7 +50,7 @@ C     !LOCAL VARIABLES:
 C     Functions
       integer ILNBLNK
 
-C----- 
+C-----
 C     Need some work to make MNC multi-threaded safe.
 C     For now, switch it off (otherwise, it's hanging up somewhere)
       IF ( nThreads.GT.1 ) THEN
@@ -60,6 +65,7 @@ C     For now, switch it off (otherwise, it's hanging up somewhere)
      &                      SQUEEZE_RIGHT , myThid )
         useMNC = .FALSE.
         _END_MASTER( myThid )
+        _BARRIER
         RETURN
       ENDIF
 C-----
@@ -112,7 +118,7 @@ C     Set the file name
      &     ku, myThid )
       READ(ku,NML=MNC_01)
       CLOSE(ku)
-      
+
       WRITE(msgBuf,'(a)') ' MNC_READPARMS: finished reading data.mnc'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &     SQUEEZE_RIGHT,mythid)
@@ -125,17 +131,17 @@ C     (1) outputTypesInclusive=.TRUE. is an "inclusive-or" meaning that
 C         one or more write methods can occur simultaneously or
 C     (2) outputTypesInclusive=.FALSE. is an "exclusive-or" meaning that
 C         only one write method can occur in a given run
-C     
+C
 C     Since all the *_mdsio flags default to .TRUE. and
 C     outputTypesInclusive defaults to .FALSE., the logic here is
 C     simple:
-      IF ( (.NOT. outputTypesInclusive) 
+      IF ( (.NOT. outputTypesInclusive)
      &     .AND. pickup_write_mnc ) pickup_write_mdsio = .FALSE.
-      IF ( (.NOT. outputTypesInclusive) 
+      IF ( (.NOT. outputTypesInclusive)
      &     .AND. timeave_mnc ) timeave_mdsio = .FALSE.
-      IF ( (.NOT. outputTypesInclusive) 
+      IF ( (.NOT. outputTypesInclusive)
      &     .AND. snapshot_mnc ) snapshot_mdsio = .FALSE.
-      IF ( (.NOT. outputTypesInclusive) 
+      IF ( (.NOT. outputTypesInclusive)
      &     .AND. monitor_mnc ) monitor_stdio = .FALSE.
 
 C     Reads are always an exclusive relationship
@@ -149,7 +155,7 @@ C     Create and/or set the MNC output directory
           DO i = 1,MNC_MAX_CHAR
             mnc_out_path(i:i) = ' '
           ENDDO
-          write(mnc_out_path,'(2A)') 
+          write(mnc_out_path,'(2A)')
      &         mnc_outdir_str(1:ILNBLNK(mnc_outdir_str)), '/'
         ENDIF
       ENDIF
@@ -166,7 +172,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     Create the output (sub--)directory for the MNC output files.
-      
+
 C     !USES:
       implicit none
 #include "MNC_COMMON.h"

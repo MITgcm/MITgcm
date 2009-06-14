@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.58 2009/01/31 22:22:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.59 2009/06/14 01:23:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -124,7 +124,6 @@ C     Read run-time flags and initialize look-up tables for MNC
       IF (useMNC) THEN
         CALL MNC_READPARMS( myThid )
       ENDIF
-      _BARRIER
       IF (useMNC) THEN
         CALL MNC_INIT(myThid)
         CALL MNC_CW_INIT(sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,
