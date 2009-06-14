@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.15 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.16 2009/06/14 21:50:26 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -35,15 +35,16 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 
 C     == Local variables in common ==
-C     Hloc  - Temporary array used to write surface topography
-C             has to be in common for multi threading
-      COMMON / LOCAL_INI_PHISURF / topoHloc
-      _RS topoHloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     Hloc  :: Temporary array used to write surface topography
+C              has to be in common for multi threading
+C     no longer needed since MDSIO now allows (2009/06/07) to write local arrays
+c     COMMON / LOCAL_INI_PHISURF / topoHloc
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     bi,bj  - Loop counters
-C     I,J,K
+C     bi,bj  :: tile indices
+C     I,J,K  :: Loop counters
+      _RS topoHloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER bi, bj
       INTEGER I, J, K
       _RL     pLoc, rhoLoc
@@ -163,8 +164,6 @@ C--   Update overlap regions (jmc: is it really needed ?)
      &       buoyancyRelation .EQ. 'OCEANICP'         )
      &       .AND. .NOT.uniformLin_PhiSurf              ) THEN
 
-C--     EXCH (above) contains barrier calls
-c       _BARRIER
         CALL WRITE_FLD_XY_RL( 'Bo_surf',' ',Bo_surf,0,myThid)
 
       ENDIF
@@ -203,10 +202,7 @@ C--   AND set phi0surf = starting point for integrating Geopotential;
 
        IF (selectFindRoSurf.NE.0) THEN
         _EXCH_XY_RS(phi0surf, myThid)
-
         CALL WRITE_FLD_XY_RS( 'phi0surf',' ',phi0surf,0,myThid)
-       ELSE
-        _BARRIER
        ENDIF
 
         CALL WRITE_FLD_XY_RS( 'topo_H',' ',topoHloc,0,myThid)
