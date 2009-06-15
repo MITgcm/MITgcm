@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.16 2009/04/29 21:46:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.17 2009/06/15 13:40:03 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -67,6 +67,10 @@ C     prcAtm     :: total precip from the atmosphere [kg/m2/s]
       _RL     aim_sWght0, aim_sWght1
       _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
+#ifdef ALLOW_AIM_CO2
+      CALL AIM_DO_CO2( myTime, myIter, myThid )
+#endif
+
 C--   Start loops on tile indices
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -105,10 +109,6 @@ C     includes some parts of S/R FORDATE from F.Molteni SPEDDY code (ver23)
      U                  tYear,
      O                  aim_sWght0, aim_sWght1,
      I                  bi, bj, myTime, myIter, myThid )
-
-#ifdef ALLOW_AIM_CO2
-      CALL AIM_DO_CO2( bi, bj, myTime, myIter, myThid )
-#endif
 
 C--   Set surface geopotential: (g * orographic height)
       DO j=1,sNy

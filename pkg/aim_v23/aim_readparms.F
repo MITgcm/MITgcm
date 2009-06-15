@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.16 2009/04/28 23:27:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.17 2009/06/15 13:40:03 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -210,7 +210,7 @@ C      SEGRAD = minimum gradient of dry static energy (d_DSE/d_phi)
      &    TRSHC, TRVDI, TRVDS, RHGRAD, SEGRAD
 
 #ifdef ALLOW_AIM_CO2
-      NAMELIST /AIM_PAR_CO2/ atm_pCO2, Aim_CO2_Flag
+      NAMELIST /AIM_PAR_CO2/ atmpCO2init, Aim_CO2_Flag
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -259,7 +259,7 @@ C      > TimePeriod/deltaT -> jump from one month to the next one
       aim_diagFreq = dumpFreq
       aim_tendFreq = 0.
 #ifdef ALLOW_AIM_CO2
-      atm_pCO2     = 326. _d -6
+      atmpCO2init  = 326. _d -6
       Aim_CO2_Flag = 1
 #endif
 
@@ -553,8 +553,8 @@ C- namelist AIM_PAR_CO2:
        CALL WRITE_0D_I( Aim_CO2_Flag, INDEX_NONE,
      &                 'AIM_PAR_CO2: Aim_CO2_Flag =',
      &  ' /* CO2 flag, 1: prescribed, 2: interactive  */')
-       CALL WRITE_0D_RL( atm_pCO2,    INDEX_NONE,
-     &                 'AIM_PAR_CO2: atm_pCO2 =',
+       CALL WRITE_0D_RL( atmpCO2init,    INDEX_NONE,
+     &                 'AIM_PAR_CO2: atmpCO2init =',
      &  ' /* pCO2 when prescribed or IC when interactive */')
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.13 2009/01/05 15:15:33 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.14 2009/06/15 13:40:03 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -69,6 +69,10 @@ C     i,j,k,I2,k   :: Loop counters
       _RL RSD, alb_land, oceTfreez, ALBSEA1, ALPHA, CZEN, CZEN2
       _RL RZEN, ZS, ZC, SJ, CJ, TMPA, TMPB, TMPL, hlim
 c     _RL DALB, alb_sea
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    Set Land-sea mask (in [0,1]) from aim_landFr to fMask1:
@@ -327,19 +331,24 @@ C     to replace MxL fields (if use sea-ice) or directly AIM SST
      U           sst1(1,myThid), oice1,
      I           myTime, myIter, bi, bj, myThid )
       ENDIF
+#endif /* COMPONENT_MODULE */
 
 #ifdef ALLOW_AIM_CO2
-      IF ( useImportFlxCO2 ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-          I2 = i+(j-1)*sNx
-          aimflxCo2(I2,myThid) = flxCO2ocn(i,j,bi,bj)
-         ENDDO
+       DO j=1,sNy
+        DO i=1,sNx
+           I2 = i+(j-1)*sNx
+           aim_CO2(I2,myThid)= atm_pCO2
         ENDDO
-      ENDIF
-#endif
+       ENDDO
 
-#endif /* COMPONENT_MODULE */
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics .AND.
+     &       DIAGNOSTICS_IS_ON('aim_pCO2',myThid) ) THEN
+         CALL DIAGNOSTICS_SCALE_FILL( aim_CO2, 1. _d 6, 1,
+     &                  'aim_pCO2', 1, 1, 3, bi, bj, myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+#endif
 
 #ifdef ALLOW_LAND
       IF (useLand) THEN
