@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+mpi_aces,v 1.6 2007/06/26 12:30:32 utke Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+mpi_aces,v 1.7 2009/06/15 02:21:47 jmc Exp $
 #
 #  These are the build options used with the Intel 8.x compiler for the
 #  daily testing on ACES (which are initiated by cron jobs on the "ao"
@@ -12,9 +12,9 @@
 #
 #  will add /usr/local/pkg/ifc/ifc-8.0.034/lib to LD_LIBRARY_PATH
 #  which is needed by any executables generated with this optfile.
-#  The PBS -V option for exporting environment variables may also be
-#  helpful if you encounter missing-library problems.  Or,
-#  alternatively, one may choose to link with one of the intel
+#  The PBS -V option for exporting environment variables <== does not work
+#  may also be helpful if you encounter missing-library problems.
+#  Or, alternatively, one may choose to link with one of the intel
 #  "-static" or "-i-static" flags.
 
 
@@ -27,6 +27,7 @@ LIBS='-L/usr/local/pkg/ifc/ifc-8.1.018/lib'
 
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-132'
 
 NOOPTFLAGS='-O0'
 NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
@@ -37,13 +38,12 @@ if test "x$IEEE" = x ; then
     FOPTIM='-O3 -align'
     #P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
     #P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
+    FFLAGS='-r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
 else
     # FOPTIM='-O0 -noalign -CA -CB -CU -CV -CS'
-    FOPTIM='-O0 -noalign'
-    # FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
-    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -pc64 -xW -assume byterecl -convert big_endian'
-    # FLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
+    FOPTIM='-O0 -noalign -CB -CU -CV'
+    FFLAGS='-r8 -i4 -w95 -W0 -WB -pc64 -xW -assume byterecl -convert big_endian'
+    # FLAGS='-mp -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
