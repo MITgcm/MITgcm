@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.14 2009/06/15 13:40:03 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.15 2009/06/15 17:58:55 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -70,6 +70,7 @@ C     i,j,k,I2,k   :: Loop counters
       _RL RZEN, ZS, ZC, SJ, CJ, TMPA, TMPB, TMPL, hlim
 c     _RL DALB, alb_sea
 #ifdef ALLOW_DIAGNOSTICS
+      _RL pCO2scl
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif
@@ -342,9 +343,9 @@ C     to replace MxL fields (if use sea-ice) or directly AIM SST
        ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics .AND.
-     &       DIAGNOSTICS_IS_ON('aim_pCO2',myThid) ) THEN
-         CALL DIAGNOSTICS_SCALE_FILL( aim_CO2, 1. _d 6, 1,
+      IF ( useDiagnostics ) THEN
+         pCO2scl = 1. _d 6
+         CALL DIAGNOSTICS_SCALE_FILL( aim_CO2(1,myThyd), pCO2scl, 1,
      &                  'aim_pCO2', 1, 1, 3, bi, bj, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
