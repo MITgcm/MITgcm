@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_forcing_surf.F,v 1.2 2007/11/28 17:55:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_forcing_surf.F,v 1.3 2009/06/15 23:42:46 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -25,6 +25,7 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "FFIELDS.h"
 #include "DYNVARS.h"
 #include "SALT_PLUME.h"
@@ -54,13 +55,22 @@ C     ks                   :: surface level index
       ENDIF
 
       DO j = jMin, jMax
-         DO i = iMin, iMax
-            surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
-     &           - saltPlumeFlux(i,j,bi,bj) * mass2rUnit
-         ENDDO
+       DO i = iMin, iMax
+        surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
+     &       - saltPlumeFlux(i,j,bi,bj) * mass2rUnit
+       ENDDO
       ENDDO
- 
+
+      IF ( .NOT. SaltPlumeSouthernOcean ) THEN
+       DO j = jMin, jMax
+        DO i = iMin, iMax
+         IF ( YC(I,J,bi,bj) .LT. 0.0 _d 0 )
+     &        saltPlumeFlux(i,j,bi,bj) = 0.0 _d 0
+        ENDDO
+       ENDDO
+      ENDIF
+
 #endif /* ALLOW_SALT_PLUME */
-    
+
       RETURN
       END

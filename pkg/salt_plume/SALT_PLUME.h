@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME.h,v 1.5 2007/12/21 22:49:09 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME.h,v 1.6 2009/06/15 23:42:46 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_SALT_PLUME
@@ -6,6 +6,11 @@ C $Name:  $
 C--   SALT_PLUME parameters
 C     Find surface where the potential density (ref.lev=surface) is
 C     larger than surface density plus SaltPlumeCriterion.
+
+C     SaltPlumeSouthernOcean: TRUE  = apply salt plume globally
+C                             FALSE = apply salt plume in Arctic Ocean only
+      LOGICAL SaltPlumeSouthernOcean
+      COMMON /SALT_PLUME_PARAMS_L/ SaltPlumeSouthernOcean
 
 C     CriterionType: 1=delta_rho, 2=drhodz, default is 1
 C     PlumeMethod: method of distributing salt plume vertically

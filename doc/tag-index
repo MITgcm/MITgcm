@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1124 2009/06/11 19:56:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1125 2009/06/15 23:42:25 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/salt_plume: add SaltPlumeSouthernOcean to allow disabling
+  of salt_plume package in Southern Ocean 
 o pkg/thsice: 
  - fix hOceMxL in overlap (needed for sea-ice advection); 
    update output of experiment global_ocean.cs32x15.icedyn.

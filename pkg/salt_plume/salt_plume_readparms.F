@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.3 2007/12/18 05:34:41 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.4 2009/06/15 23:42:46 dimitri Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -26,6 +26,7 @@ CEOP
 #ifdef ALLOW_SALT_PLUME
 
       NAMELIST /SALT_PLUME_PARM01/
+     &     SaltPlumeSouthernOcean,
      &     CriterionType, PlumeMethod, Npower,
      &     SaltPlumeCriterion, SPovershoot
 
@@ -38,6 +39,7 @@ C     iUnit       - Work variable for IO unit number
       _BEGIN_MASTER(myThid)
 
 C--   Default values for SALT_PLUME
+      SaltPlumeSouthernOcean = .TRUE.
       CriterionType       = 1
       PlumeMethod         = 1
       Npower              = 0
