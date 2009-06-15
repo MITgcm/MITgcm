@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_adm.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_adm.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_adm_mpi,v 1.2 2009/06/02 19:58:20 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_adm_mpi,v 1.3 2009/06/15 02:32:22 jmc Exp $
 # $Name:  $
 
 umask 0022
@@ -18,12 +18,12 @@ if test -f /etc/profile.d/modules.sh ; then
     . /etc/profile.d/modules.sh
 fi
 # Note: added "ulimit -s unlimited" in file "~/.bashrc"
-#   to pass big test (the 2 fizhi-cs-* test) with MPI 
+#   to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI 
 
 sfx='adm'
-module add mpich/gnu
-OPTFILE="../tools/build_options/linux_ia32_g77+mpi_aces"
-options='-adm -mpi'
+module add mpich/intel
+OPTFILE="../tools/build_options/linux_ia32_ifort+mpi_aces"
+options='-adm -mpi -match 10'
 #- need this to get "staf":
 export PATH="$PATH:$HOME/bin"
 
@@ -36,9 +36,6 @@ cat $PBS_NODEFILE | sort | uniq > $MF
 NCPU=`wc -l $MF | awk '{print $1}'`
 EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv_ad"
 
-# cat << EOF > $HERE"/.cvspass"
-# /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
-# EOF
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
 #- check for disk space:
@@ -76,7 +73,6 @@ else
 fi
 
 cd $gcmDIR/verification
-# avoid hanging in fizhi-cs-32x32x40 (due to I/O problems with g77)
 echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir aces-$sfx
 ./testreport $options -of $OPTFILE -command "$EXE" -odir aces-$sfx
 
