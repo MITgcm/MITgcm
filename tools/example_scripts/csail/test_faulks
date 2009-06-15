@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.5 2009/05/02 14:48:22 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.6 2009/06/15 02:06:55 jmc Exp $
 
 #  Ed Hill
 
@@ -13,7 +13,11 @@ TESTDIR="/scratch/jmc/test_"`hostname`
 MC=10
 checkOut=1
 sepDir=1
+option=
 tst_list='g77 adm ifc mth pgi+rs'
+
+#option="-nc" ; checkOut=0
+#option="-q"  ; checkOut=0
 
 #  Turn off stack limit for FIZHI
 ulimit -s unlimited
@@ -24,7 +28,11 @@ if test $checkOut = '0' ; then
   echo $tdir/MITgcm/CVS 'exist'
   echo -n "Update the MITgcm code from CVS pserver..."
   cd $tdir/MITgcm
-  cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d > /dev/null
+  if test $sepDir = 1 ; then
+   cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d > /dev/null
+  else
+   cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
+  fi
   echo "  done"
   cd $tdir
  else 
@@ -60,10 +68,17 @@ do
  rm -f $tdir/output_${typ}*
  if test $sepDir = 1 ; then
   new_dir="MITgcm_$typ"
-  test -e $new_dir  &&  rm -rf $new_dir
-  mkdir $new_dir
-  pushd $new_dir
-  cp -ra ../MITgcm/* .
+  if test -d $new_dir/CVS -a $checkOut = '0' ; then
+    pushd $new_dir
+    echo -n "Update the MITgcm code from CVS pserver..."
+    cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
+    echo "  done"
+  else
+    test -e $new_dir  &&  rm -rf $new_dir
+    mkdir $new_dir
+    pushd $new_dir
+    cp -ra ../MITgcm/* .
+  fi
  else
   pushd MITgcm
  fi
@@ -86,6 +101,7 @@ do
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
   echo "  \"$comm\""
   echo "======================"
   $comm > $tdir/output_$typ 2>&1
@@ -114,6 +130,7 @@ do
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
   echo "  \"$comm\""
   echo "======================"
   $comm > $tdir/output_$typ 2>&1
@@ -142,6 +159,7 @@ do
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
   echo "  \"$comm\""
   echo "======================"
   $comm > $tdir/output_$typ 2>&1
@@ -158,6 +176,7 @@ do
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
   echo "  \"$comm\""
   echo "======================"
   $comm > $tdir/output_$typ 2>&1
@@ -187,6 +206,7 @@ do
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
   echo "  \"$comm\""
   echo "======================"
   $comm > $tdir/output_$typ 2>&1
@@ -217,6 +237,7 @@ do
   if test "x$OPTFILE" != x ; then
     comm="$comm -of=$OPTFILE"
   fi
+  if test "x$option" != x ; then comm="$comm $option" ; fi
   echo "  \"$comm\""
   echo "======================"
   $comm > $tdir/output_${typ}_1 2>&1
