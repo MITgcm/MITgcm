@@ -6,17 +6,22 @@
 #PBS -e /home/jmc/test_ACES/output/tst_mth.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_mth.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.9 2009/04/16 19:06:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_ifc_mth,v 1.10 2009/06/16 21:32:22 jmc Exp $
 # $Name:  $
-
-umask 0022
-TST_DIR="/home/jmc/test_ACES/gcm_tests"
-HERE='/home/jmc/test_ACES/output'
-cd $HERE
 
 if test -f /etc/profile.d/modules.sh ; then
     . /etc/profile.d/modules.sh
 fi
+# Note: added to pass big test (the 2 fizhi-cs-* test)
+ulimit -s unlimited
+
+umask 0022
+#- to get case insensitive "ls" (and order of tested experiments)
+export LC_ALL="en_US.UTF-8"
+
+TST_DIR="/home/jmc/test_ACES/gcm_tests"
+HERE='/home/jmc/test_ACES/output'
+cd $HERE
 
 sfx='mth'
 module add ifc/9.0.021 icc/9.0.021 intel/9.0
@@ -29,9 +34,6 @@ checkOut=1
 #options="$options -nc" ; checkOut=0
 #options="$options -q"  ; checkOut=0
 
-# cat << EOF > $HERE"/.cvspass"
-# /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
-# EOF
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
 #- check for disk space:

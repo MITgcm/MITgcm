@@ -6,19 +6,22 @@
 #PBS -e /home/jmc/test_ACES/output/tst_adm.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_adm.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_adm_mpi,v 1.3 2009/06/15 02:32:22 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_adm_mpi,v 1.4 2009/06/16 21:32:22 jmc Exp $
 # $Name:  $
-
-umask 0022
-TST_DIR="/home/jmc/test_ACES/gcm_tests"
-HERE='/home/jmc/test_ACES/output'
-#cd $HERE
 
 if test -f /etc/profile.d/modules.sh ; then
     . /etc/profile.d/modules.sh
 fi
 # Note: added "ulimit -s unlimited" in file "~/.bashrc"
-#   to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI 
+# to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI 
+
+umask 0022
+#- to get case insensitive "ls" (and order of tested experiments)
+export LC_ALL="en_US.UTF-8"
+
+TST_DIR="/home/jmc/test_ACES/gcm_tests"
+HERE='/home/jmc/test_ACES/output'
+#cd $HERE
 
 sfx='adm'
 module add mpich/intel

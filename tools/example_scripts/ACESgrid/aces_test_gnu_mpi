@@ -6,19 +6,18 @@
 #PBS -e /home/jmc/test_ACES/output/tst_gnu.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_gnu.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.8 2009/04/03 21:31:34 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.9 2009/06/16 21:32:22 jmc Exp $
 # $Name:  $
-
-umask 0022
-TST_DIR="/home/jmc/test_ACES/gcm_tests"
-HERE='/home/jmc/test_ACES/output'
-cd $HERE
 
 if test -f /etc/profile.d/modules.sh ; then
     . /etc/profile.d/modules.sh
 fi
 # Note: added "ulimit -s unlimited" in file "~/.bashrc"
-#   to pass big test (the 2 fizhi-cs-* test) with MPI 
+# to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI 
+
+umask 0022
+#- to get case insensitive "ls" (and order of tested experiments)
+export LC_ALL="en_US.UTF-8"
 
 sfx='gnu'
 module add mpich/$sfx
@@ -34,9 +33,6 @@ cat $PBS_NODEFILE | sort | uniq > $MF
 NCPU=`wc -l $MF | awk '{print $1}'`
 EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
 
-# cat << EOF > $HERE"/.cvspass"
-# /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
-# EOF
 gcmDIR="MITgcm_$sfx"
 cd $TST_DIR
 #- check for disk space:
