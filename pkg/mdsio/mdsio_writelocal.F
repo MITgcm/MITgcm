@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.14 2009/06/09 22:41:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.15 2009/06/16 14:53:52 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -171,7 +171,7 @@ C      => switch to tiled file
 
 C Record number must be >= 1
       IF (irecord .LT. 1) THEN
-        WRITE(msgBuf,'(3A,I10))')
+        WRITE(msgBuf,'(3A,I10)')
      &    ' MDS_WRITELOCAL: file="', fName(1:IL), '" , iter=', myIter
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT , myThid )
@@ -186,7 +186,7 @@ C Record number must be >= 1
       ENDIF
 C check for 3-D Buffer size:
       IF ( .NOT.useSingleCpuIO .AND. nNz.GT.size3dBuf ) THEN
-        WRITE(msgBuf,'(3A,I10))')
+        WRITE(msgBuf,'(3A,I10)')
      &    ' MDS_WRITELOCAL: file="', fName(1:IL), '" , iter=', myIter
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT , myThid )
