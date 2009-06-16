@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.6 2009/06/15 02:06:55 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.7 2009/06/16 21:30:51 jmc Exp $
 
 #  Ed Hill
 
@@ -9,6 +9,11 @@
 
 # defaults
 export PATH='/usr/local/bin:/bin:/usr/bin'
+#- to get case insensitive "ls" (and order of tested experiments)
+export LC_ALL="en_US.UTF-8"
+#  Turn off stack limit for FIZHI & AD-tests
+ulimit -s unlimited
+
 TESTDIR="/scratch/jmc/test_"`hostname`
 MC=10
 checkOut=1
@@ -18,9 +23,6 @@ tst_list='g77 adm ifc mth pgi+rs'
 
 #option="-nc" ; checkOut=0
 #option="-q"  ; checkOut=0
-
-#  Turn off stack limit for FIZHI
-ulimit -s unlimited
 
 tdir=$TESTDIR
 if test $checkOut = '0' ; then
