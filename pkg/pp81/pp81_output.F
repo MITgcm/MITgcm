@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/Attic/pp81_do_diags.F,v 1.3 2005/05/15 03:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_output.F,v 1.1 2009/06/17 14:24:06 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
 
 #undef  MULTIPLE_RECORD_PP81_STATE_FILES
 CBOP
-C     !ROUTINE: PP81_DO_DIAGS
+C     !ROUTINE: PP81_OUTPUT
 C     !INTERFACE:
-      SUBROUTINE PP81_DO_DIAGS( myCurrentTime, myIter, myThid )
+      SUBROUTINE PP81_OUTPUT( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE PP81_DO_DIAGS                                  
-C     | o Do PP81 diagnostic output.                              
+C     | SUBROUTINE PP81_OUTPUT
+C     | o Do PP81 diagnostic output.
 C     *==========================================================
 C     | The following CPP flag (MULTIPLE_RECORD_PP81_STATE_FILES) is
 C     | #define/#undefed here since it is specific to this routine
@@ -45,14 +45,14 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "PP81.h"
-#include "PP81_DIAGS.h"
+#include "PP81_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myCurrentTime - Current time of simulation ( s )
-C     myIter - Iteration number
-C     myThid -  Number of this instance of INI_FORCING
-      _RL     myCurrentTime
+C     myTime :: my time in simulation ( s )
+C     myIter :: my Iteration number
+C     myThid :: my Thread Id number
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
@@ -72,26 +72,20 @@ C     Dump snapshot of PP variables.
 C----------------------------------------------------------------
 
       IF (
-     &     DIFFERENT_MULTIPLE(PPdumpFreq,myCurrentTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(PPdumpFreq,myTime,deltaTClock)
      &     ) THEN
-         
-       IF (PPmixingMaps) THEN
-        CALL PLOT_FIELD_XYZRL ( PPviscAr , 'PPviscAr' ,
-     &       Nr, myIter, myThid )
-        CALL PLOT_FIELD_XYZRL ( PPdiffKr, 'PPdiffKr',
-     &       Nr, myIter, myThid )
-       ENDIF
 
        if (PPwriteState) then
 #ifdef MULTIPLE_RECORD_PP81_STATE_FILES
 C       Write each snap-shot as a new record in one file per variable
 C       - creates relatively few files but these files can become huge
+        STOP 'un-initialised pp_drctrec'
         CALL WRITE_REC_XYZ_RL('PPviscAr',PPviscAr,pp_drctrec,
      &       myIter,myThid)
         CALL WRITE_REC_XYZ_RL('PPdiffKr',PPdiffKr,pp_drctrec,
      &       myIter,myThid)
 #else /* MULTIPLE_RECORD_PP81_STATE_FILES */
-C       Write each snap-shot as a new file 
+C       Write each snap-shot as a new file
 C       - creates many files but for large configurations is easier to
 C         transfer analyse a particular snap-shots
         WRITE(suff,'(I10.10)') myIter
@@ -128,7 +122,7 @@ C     Initialize averages to zero
 
 C     Time Average PP fields
       IF ( myIter .EQ. nIter0 .OR.
-     &     DIFFERENT_MULTIPLE(PPtaveFreq,myCurrentTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(PPtaveFreq,myTime,deltaTClock)
      &   ) THEN
        DDTT=0.5*deltaTclock
       ELSE
@@ -148,10 +142,10 @@ C     Keep record of how much time has been integrated over
       ENDDO
 
 C     Dump files and restart average computation if needed
-      IF ( myIter.NE.nIter0 .AND. 
-     &     DIFFERENT_MULTIPLE(PPtaveFreq,myCurrentTime,deltaTClock)
+      IF ( myIter.NE.nIter0 .AND.
+     &     DIFFERENT_MULTIPLE(PPtaveFreq,myTime,deltaTClock)
      &     ) THEN
-         
+
 C     Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -161,20 +155,21 @@ C     Normalize by integrated time
      &        Nr, bi,bj,myThid)
         ENDDO
        ENDDO
-       
+
 #ifdef MULTIPLE_RECORD_PP81_STATE_FILES
 C     Write each snap-shot as a new record in one file per variable
 C     - creates relatively few files but these files can become huge
+       STOP 'un-initialised pp_drctrecTave'
        CALL WRITE_REC_XYZ_RL('PPviscAr-T',PPviscArTave,
      &      pp_drctrecTave,myIter,myThid)
        CALL WRITE_REC_XYZ_RL('PPdiffKr-T',PPdiffKrTave,
      &      pp_drctrecTave,myIter,myThid)
 C--   Increment record counter
        pp_drctrecTave = pp_drctrecTave + 1
-         
+
 #else /* MULTIPLE_RECORD_PP81_STATE_FILES */
 
-C     Write each snap-shot as a new file 
+C     Write each snap-shot as a new file
 C     - creates many files but for large configurations is easier to
 C     transfer analyse a particular snap-shots
        WRITE(suff,'(I10.10)') myIter
@@ -182,8 +177,8 @@ C     transfer analyse a particular snap-shots
      &      myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('PPdiffKr-T.',suff,PPdiffKrTave,
      &      myIter,myThid)
-#endif /* MULTIPLE_RECORD_PP81_STATE_FILES */          
-         
+#endif /* MULTIPLE_RECORD_PP81_STATE_FILES */
+
 C     Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -194,7 +189,7 @@ C     Reset averages to zero
          ENDDO
         ENDDO
        ENDDO
-         
+
 C     Time Average PP fields
        DDTT=0.5*deltaTclock
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -212,8 +207,8 @@ C     Keep record of how much time has been integrated over
       ENDIF
 
 #endif /* ALLOW_TIMEAVE */
-      
+
 #endif /* ALLOW_PP81 */
-      
+
       RETURN
       END

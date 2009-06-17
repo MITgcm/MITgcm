@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/Attic/PP81_DIAGS.h,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/PP81_TAVE.h,v 1.1 2009/06/17 14:24:06 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_PP81
 
-C     /==========================================================\
-C     | PP81_DIAGS.h                                             |
-C     | o Header for PP81 diagnostic output                      |
-C     \==========================================================/
+C     *==========================================================*
+C     | PP81_TAVE.h
+C     | o Header for PP81 time-average output
+C     *==========================================================*
 
 C----------------------------------------------------------------
 C     pp_drctrec     - next record to dump for PP files
