@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.15 2009/05/13 19:27:20 zhc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.16 2009/06/17 15:15:20 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -84,7 +84,7 @@ c
       write(msgbuf,'(a)') 'ph-cost call cost_sst'
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
-      nnzbar = nnztbar
+      nnzbar = 1
       nnzobs = 1
       nrecloc = ndaysrec
       spminloc = -2.
