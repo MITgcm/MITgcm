@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/Attic/offline_model_io.F,v 1.7 2005/08/18 18:22:00 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/Attic/offline_model_io.F,v 1.8 2009/06/17 14:10:20 jmc Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -9,9 +9,9 @@ C     !INTERFACE:
       SUBROUTINE OFFLINE_MODEL_IO( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE OFFLINE_MODEL_IO                                
-C     | o Controlling routine for IO in offline model  time-stepping  
-C     |   loop.                                                   
+C     | SUBROUTINE OFFLINE_MODEL_IO
+C     | o Controlling routine for IO in offline model
+C     |   time-stepping loop.
 C     *==========================================================*
 C     \ev
 
@@ -51,8 +51,7 @@ c#endif
 
 #ifdef ALLOW_GCHEM
 C--   Do gchem diagnostics.
-      IF ( useGCHEM )
-     & CALL GCHEM_DIAGS( myTime, myIter, myThid )
+      IF ( useGCHEM ) CALL GCHEM_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_PTRACERS
