@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.39 2009/06/02 16:11:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.40 2009/06/17 07:33:30 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -89,8 +89,10 @@ C--   Initialise all variables in common blocks:
           seaiceMassC(i,j,bi,bj)=0. _d 0
           seaiceMassU(i,j,bi,bj)=0. _d 0
           seaiceMassV(i,j,bi,bj)=0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
           seaiceMaskU(i,j,bi,bj)=0. _d 0
           seaiceMaskV(i,j,bi,bj)=0. _d 0
+#endif /* ALLOW_AUTODIFF_TAMC */
           stressDivergenceX(i,j,bi,bj) = 0. _d 0
           stressDivergenceY(i,j,bi,bj) = 0. _d 0
 # ifdef SEAICE_ALLOW_EVP
@@ -101,12 +103,10 @@ C--   Initialise all variables in common blocks:
 #else /* SEAICE_CGRID */
           AMASS(i,j,bi,bj)  = 0. _d 0
           DAIRN(i,j,bi,bj)  = 0. _d 0
-          UVM(i,j,bi,bj)    = 0. _d 0
           WINDX(i,j,bi,bj)  = 0. _d 0
           WINDY(i,j,bi,bj)  = 0. _d 0
           GWATX(i,j,bi,bj)  = 0. _d 0
           GWATY(i,j,bi,bj)  = 0. _d 0
-          KGEO(i,j,bi,bj)   = 0
 #endif /* SEAICE_CGRID */
           DWATN(i,j,bi,bj)  = 0. _d 0
           PRESS0(i,j,bi,bj) = 0. _d 0
@@ -121,7 +121,6 @@ C--   Initialise all variables in common blocks:
 #ifdef SEAICE_AGE
           ICEAGE(i,j,bi,bj) = 0. _d 0
 #endif
-          HEFFM(i,j,bi,bj)  = 0. _d 0
           YNEG (i,j,bi,bj)  = 0. _d 0
           RIVER(i,j,bi,bj)  = 0. _d 0
           TMIX(i,j,bi,bj)   = 0. _d 0
@@ -140,87 +139,30 @@ C--   Initialise all variables in common blocks:
        ENDDO
       ENDDO
 
-C--   Initialize grid info
+C--   Initialize (variable) grid info. As long as we allow masking of
+C--   velocities outside of ice covered areas (in seaice_dynsolver)
+C--   we need to re-initialize seaiceMaskU/V here for TAF/TAMC
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef SEAICE_CGRID
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          HEFFM(i,j,bi,bj)=ONE
-          IF (_hFacC(i,j,1,bi,bj).eq.0.) HEFFM(i,j,bi,bj)=0. _d 0
-         ENDDO
-        ENDDO
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-#ifdef SEAICE_CGRID
           seaiceMaskU(i,j,bi,bj)=   0.0 _d 0
           seaiceMaskV(i,j,bi,bj)=   0.0 _d 0
           mask_uice=HEFFM(i,j,bi,bj)+HEFFM(i-1,j  ,bi,bj)
           IF(mask_uice.GT.1.5) seaiceMaskU(i,j,bi,bj)=ONE
           mask_uice=HEFFM(i,j,bi,bj)+HEFFM(i  ,j-1,bi,bj)
           IF(mask_uice.GT.1.5) seaiceMaskV(i,j,bi,bj)=ONE
-#else
-          UVM(i,j,bi,bj)=0. _d 0
-          mask_uice=HEFFM(i,j,  bi,bj)+HEFFM(i-1,j-1,bi,bj)
-     &             +HEFFM(i,j-1,bi,bj)+HEFFM(i-1,j,  bi,bj)
-          IF(mask_uice.GT.3.5) UVM(i,j,bi,bj)=ONE
-#endif /* SEAICE_CGRID */
          ENDDO
         ENDDO
-#ifdef SEAICE_CGRID
-C     coefficients for metric terms 
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          k1AtC(I,J,bi,bj) = 0.0 _d 0
-          k1AtZ(I,J,bi,bj) = 0.0 _d 0
-          k2AtC(I,J,bi,bj) = 0.0 _d 0
-          k2AtZ(I,J,bi,bj) = 0.0 _d 0
-         ENDDO
-        ENDDO
-        IF ( usingSphericalPolarGrid .AND. SEAICEuseMetricTerms ) THEN
-C     This is the only case where tan(phi) is not zero. In this case 
-C     C and U points, and Z and V points have the same phi, so that we 
-C     only need a copy here. Do not use tan(YC) and tan(YG), because these
-C     can be the geographical coordinates and not the correct grid 
-C     coordinates when the grid is rotated (phi/theta/psiEuler .NE. 0)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = - _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-           k2AtZ(I,J,bi,bj) = - _tanPhiAtV(I,J,bi,bj)*recip_rSphere
-          ENDDO
-         ENDDO
-        ELSEIF ( usingCurvilinearGrid .AND. SEAICEuseMetricTerms ) THEN
-C     compute metric term coefficients from finite difference approximation
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx-1
-           k1AtC(I,J,bi,bj) = _recip_dyF(I,J,bi,bj)
-     &          * ( _dyG(I+1,J,bi,bj) - _dyG(I,J,bi,bj) )
-     &          * _recip_dxF(I,J,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx+1,sNx+OLx
-           k1AtZ(I,J,bi,bj) = _recip_dyU(I,J,bi,bj) 
-     &          * ( _dyC(I,J,bi,bj) - _dyC(I-1,J,bi,bj) )
-     &          * _recip_dxV(I,J,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy,sNy+OLy-1
-          DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = _recip_dxF(I,J,bi,bj) 
-     &          * ( _dxG(I,J+1,bi,bj) - _dxG(I,J,bi,bj) )
-     &          * _recip_dyF(I,J,bi,bj)
-          ENDDO
-         ENDDO
-         DO j=1-OLy+1,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = _recip_dxV(I,J,bi,bj) 
-     &          * ( _dxC(I,J,bi,bj) - _dxC(I,J-1,bi,bj) )
-     &          * _recip_dyU(I,J,bi,bj)
-          ENDDO
-         ENDDO
-        ENDIF
+       ENDDO
+      ENDDO
 #endif /* SEAICE_CGRID */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef ALLOW_OBCS
         IF (useOBCS) THEN
 C--   If OBCS is turned on, close southern and western boundaries
@@ -302,27 +244,6 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
 #endif
          ENDDO
         ENDDO
-
-#ifndef SEAICE_CGRID
-C--   Choose a proxy level for geostrophic velocity,
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-#ifdef SEAICE_BICE_STRESS
-          KGEO(i,j,bi,bj) = 1
-#else /* SEAICE_BICE_STRESS */
-          IF (klowc(i,j,bi,bj) .LT. 2) THEN
-           KGEO(i,j,bi,bj) = 1
-          ELSE
-           KGEO(i,j,bi,bj) = 2
-           DO WHILE ( abs(rC(KGEO(i,j,bi,bj))) .LT. 50.0 .AND.
-     &          KGEO(i,j,bi,bj) .LT. (klowc(i,j,bi,bj)-1) )
-              KGEO(i,j,bi,bj) = KGEO(i,j,bi,bj) + 1
-           ENDDO
-          ENDIF
-#endif /* SEAICE_BICE_STRESS */
-         ENDDO
-        ENDDO
-#endif /* SEAICE_CGRID */
 
        ENDDO
       ENDDO
