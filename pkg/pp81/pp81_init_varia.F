@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/Attic/pp81_init.F,v 1.2 2004/10/17 23:12:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_init_varia.F,v 1.1 2009/06/17 14:22:57 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
 
-      SUBROUTINE PP81_INIT( myThid )
-C     /==========================================================\
-C     | SUBROUTINE PP81_INIT                                     |
-C     | o Routine to initialize PP81 parameters and variables.   |
-C     |==========================================================|
-C     | Initialize PP81 parameters and variables.                |
-C     \==========================================================/
+      SUBROUTINE PP81_INIT_VARIA( myThid )
+C     *==========================================================*
+C     | SUBROUTINE PP81_INIT_VARIA
+C     | o Routine to initialize PP81 parameters and variables.
+C     *==========================================================*
+C     | Initialize PP81 parameters and variables.
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
