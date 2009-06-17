@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.59 2006/08/04 22:16:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.60 2009/06/17 14:55:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -97,7 +97,7 @@ C     Do LAND output
 
 #ifdef ALLOW_OBCS
       IF (useOBCS .AND. myIter.NE.nIter0 )
-     &     CALL OBCS_DIAGS( myTime, myIter, myThid )
+     &     CALL OBCS_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_GMREDI
@@ -109,50 +109,50 @@ C     Do GMRedi output.
 #ifdef ALLOW_KPP
 C     Do KPP diagnostics.
       IF ( useKPP .AND. .NOT.useOffLine )
-     &     CALL KPP_DO_DIAGS( myTime, myIter, myThid )
+     &     CALL KPP_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_PP81
 C     Do PP81 diagnostics.
       IF (usePP81 .AND. myIter.NE.nIter0 )
-     &     CALL PP81_DO_DIAGS( myTime, myIter, myThid )
+     &     CALL PP81_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_MY82
 C     Do MY82 diagnostics.
       IF (useMY82 .AND. myIter.NE.nIter0 )
-     &     CALL MY82_DO_DIAGS( myTime, myIter, myThid )
+     &     CALL MY82_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_OPPS
 C--   Do OPPS diagnostics.
       IF (useOPPS .AND. myIter.NE.nIter0 )
-     & CALL OPPS_DO_DIAGS( myTime, myIter, myThid )
+     & CALL OPPS_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_GGL90
 C--   Do GGL90 diagnostics.
       IF (useGGL90 .AND. myIter.NE.nIter0 )
-     & CALL GGL90_DO_DIAGS( myTime, myIter, myThid )
+     & CALL GGL90_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_SBO
 C     Do SBO diagnostics.
       IF (useSBO .AND. myIter.NE.nIter0 ) THEN
         CALL SBO_CALC ( myTime, myIter, myThid )
-        CALL SBO_DIAGS( myTime, myIter, myThid )
+        CALL SBO_OUTPUT( myTime, myIter, myThid )
       ENDIF
 #endif
 
 #ifdef  ALLOW_SEAICE
       IF ( useSEAICE ) THEN
-        CALL SEAICE_DO_DIAGS( myTime, myIter, myThid )
+        CALL SEAICE_OUTPUT( myTime, myIter, myThid )
       ENDIF
 #endif  /* ALLOW_SEAICE */
 
 #ifdef  ALLOW_SHELFICE
       IF ( useShelfIce ) THEN
-        CALL SHELFICE_DO_DIAGS( myTime, myIter, myThid )
+        CALL SHELFICE_OUTPUT( myTime, myIter, myThid )
       ENDIF
 #endif  /* ALLOW_SHELFICE */
 
@@ -183,7 +183,7 @@ C--   Do matrix output
 #ifdef ALLOW_GCHEM
 C--   Do GCHEM diagnostics.
       IF (useGCHEM)
-     & CALL GCHEM_DIAGS( myTime, myIter, myThid )
+     & CALL GCHEM_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_OFFLINE
@@ -194,7 +194,7 @@ c    & CALL OFFLINE_STATE( myTime, myIter, myThid )
 
 #ifdef COMPONENT_MODULE
       IF ( useCoupler )
-     &     CALL CPL_WRITE_DIAGS( myTime, myIter, myThid )
+     &     CALL CPL_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
