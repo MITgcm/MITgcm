@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.19 2008/11/14 21:34:48 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_init_varia.F,v 1.1 2009/06/17 14:32:01 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
-C     !ROUTINE: KPP_INIT
+C     !ROUTINE: KPP_INIT_VARIA
 
 C     !INTERFACE:
-      SUBROUTINE KPP_INIT( myThid )
+      SUBROUTINE KPP_INIT_VARIA( myThid )
 
 C     !DESCRIPTION:
 C     Routine to initialize KPP parameters and variables.
@@ -21,6 +21,7 @@ C     !USES:
 #include "GAD.h"
 #include "KPP.h"
 #include "KPP_PARAMS.h"
+#include "KPP_TAVE.h"
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -91,6 +92,15 @@ cph     I           myThid)
 
        ENDDO
       ENDDO
+
+C     Initialize record numbers in KPP_TAVE
+      _BEGIN_MASTER( myThid )
+      kpp_drctrec=1
+#ifdef ALLOW_TIMEAVE
+      kpp_drctrecTave=1
+#endif
+      _END_MASTER( myThid )
+      _BARRIER
 
 #endif /* ALLOW_KPP */
 
