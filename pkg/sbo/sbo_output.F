@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/Attic/sbo_diags.F,v 1.9 2007/02/01 17:14:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_output.F,v 1.1 2009/06/17 14:33:15 jmc Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
 
-      SUBROUTINE SBO_DIAGS( myCurrentTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE SBO_DIAGS                                     |
-C     | o Do SBO diagnostic output.                              |
-C     \==========================================================/
+      SUBROUTINE SBO_OUTPUT( myTime, myIter, myThid )
+C     *==========================================================*
+C     | SUBROUTINE SBO_OUTPUT
+C     | o Do SBO diagnostic output.
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -17,10 +17,10 @@ C     === Global variables ===
 #include "SBO.h"
 
 C     == Routine arguments ==
-C     myCurrentTime - Current time of simulation ( s )
-C     myIter - Iteration number
-C     myThid -  Number of this instance of INI_FORCING
-      _RL     myCurrentTime
+C     myTime :: my time in simulation ( s )
+C     myIter :: my Iteration number
+C     myThid :: my Thread Id number
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
@@ -45,7 +45,7 @@ C-----------------------------------------------------------------
 C     Save angular momentum and mass variables at every time step
 C-----------------------------------------------------------------
 
-      sbo_diag(1)  = myCurrentTime
+      sbo_diag(1)  = myTime
       sbo_diag(2)  = xoamc
       sbo_diag(3)  = yoamc
       sbo_diag(4)  = zoamc
@@ -63,7 +63,7 @@ C-----------------------------------------------------------------
 
       fName        = 'SBO_DIAG'
       narr         = 15
-      irecord      = (myCurrentTime-starttime)/deltaTClock
+      irecord      = (myTime-starttime)/deltaTClock
 
       CALL SBO_WRITEVECTOR(
      I   fName,
@@ -93,7 +93,7 @@ C     Initialize averages to zero
 
 C     Time Average SBO fields
       IF ( myIter .EQ. nIter0 .OR.
-     &     DIFFERENT_MULTIPLE(sbo_taveFreq,myCurrentTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(sbo_taveFreq,myTime,deltaTClock)
      &   ) THEN
          DDTT=0.5*deltaTclock
       ELSE
@@ -112,8 +112,8 @@ C     Keep record of how much time has been integrated over
       ENDDO
 
 C     Dump files and restart average computation if needed
-      IF ( myIter.NE.nIter0 .AND. 
-     &     DIFFERENT_MULTIPLE(sbo_taveFreq,myCurrentTime,deltaTClock)
+      IF ( myIter.NE.nIter0 .AND.
+     &     DIFFERENT_MULTIPLE(sbo_taveFreq,myTime,deltaTClock)
      &     ) THEN
 
 C     Normalize by integrated time
@@ -144,7 +144,7 @@ C     Time Average SBO fields
             DO bi = myBxLo(myThid), myBxHi(myThid)
                CALL TIMEAVE_CUMULATE(
      &              obp,OBPtave,1,DDTT,bi,bj,myThid)
-               
+
 C     Keep record of how much time has been integrated over
                DO k=1,Nr
                   sbo_TimeAve(k,bi,bj)=sbo_TimeAve(k,bi,bj)+DDTT
