@@ -9,7 +9,7 @@ seaice_budget_ice_if.f
 seaice_budget_ocean.f
 seaice_budget_ocean_if.f
 seaice_check.f
-seaice_do_diags.f
+seaice_output.f
 seaice_diagnostics_state.f
 seaice_get_dynforcing.f
 seaice_growth.f

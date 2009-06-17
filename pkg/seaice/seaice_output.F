@@ -1,13 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.37 2009/04/28 18:46:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.1 2009/06/17 14:51:50 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
-      SUBROUTINE SEAICE_DO_DIAGS( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE SEAICE_DO_DIAGS                               |
-C     | o Do SEAICE diagnostic output.                           |
-C     \==========================================================/
+CBOP 0
+C !ROUTINE: W2_PRINT_E2SETUP
+
+C !INTERFACE:
+      SUBROUTINE SEAICE_OUTPUT( myTime, myIter, myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE SEAICE_OUTPUT
+C     | o Do SEAICE output and TimeAve averaging and output.
+C     *==========================================================*
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -23,31 +31,43 @@ C     === Global variables ===
 # include "EXF_FIELDS.h"
 #endif
 
+C     !INPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime        - Current time of simulation ( s )
-C     myIter        - Iteration number
-C     myThid        - Number of this instance of SEAICE_DO_DIAGS
+C     myTime :: my time in simulation ( s )
+C     myIter :: my Iteration number
+C     myThid :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables in common block :
-      COMMON /LOCAL_SEAICE_DO_DIAGS/ arr
-      _RL arr  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     COMMON /LOCAL_SEAICE_DO_DIAGS/ arr
 
 C     == Local variables ==
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
+      CHARACTER*(MAX_LEN_FNAM) fName
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+#if ( defined (ALLOW_TIMEAVE) || defined (ALLOW_MNC) )
       INTEGER i, j, k, bi, bj
+#endif
+#ifdef ALLOW_TIMEAVE
       LOGICAL dumpFiles
+#endif /* ALLOW_TIMEAVE */
+#ifdef ALLOW_MNC
+      _RL arr  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       CHARACTER*(1) pf
+#endif /* ALLOW_MNC */
+CEOP
 
+#ifdef ALLOW_MNC
       IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
         pf(1:1) = 'D'
       ELSE
         pf(1:1) = 'R'
       ENDIF
+#endif /* ALLOW_MNC */
 
       IF (SEAICEwriteState) THEN
 
@@ -56,7 +76,6 @@ C     == Local variables ==
      &                               myTime.EQ.startTime  )
      &       ) THEN
 
-          _BARRIER
 #ifdef ALLOW_MNC
           IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
             CALL MNC_CW_SET_UDIM('sice', -1, myThid)
@@ -75,6 +94,46 @@ C     == Local variables ==
      &            seaice_sigma12,myThid)
             ENDIF
 #endif /* SEAICE_CGRID and SEAICE_ALLOW_EVP */
+            DO bj=myByLo(myThid),myByHi(myThid)
+             DO bi=myBxLo(myThid),myBxHi(myThid)
+               DO j=1-Oly,sNy+Oly
+                DO i=1-Olx,sNx+Olx
+                  arr(i,j,bi,bj)=UICE(i,j,1,bi,bj)
+                ENDDO
+               ENDDO
+             ENDDO
+            ENDDO
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_UICE',arr,myThid)
+            DO bj=myByLo(myThid),myByHi(myThid)
+             DO bi=myBxLo(myThid),myBxHi(myThid)
+               DO j=1-Oly,sNy+Oly
+                DO i=1-Olx,sNx+Olx
+                  arr(i,j,bi,bj)=VICE(i,j,1,bi,bj)
+                ENDDO
+               ENDDO
+             ENDDO
+            ENDDO
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_VICE',arr,myThid)
+            DO bj=myByLo(myThid),myByHi(myThid)
+             DO bi=myBxLo(myThid),myBxHi(myThid)
+               DO j=1-Oly,sNy+Oly
+                DO i=1-Olx,sNx+Olx
+                  arr(i,j,bi,bj)=HEFF(i,j,1,bi,bj)
+                ENDDO
+               ENDDO
+             ENDDO
+            ENDDO
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_HEFF',arr,myThid)
+            DO bj=myByLo(myThid),myByHi(myThid)
+             DO bi=myBxLo(myThid),myBxHi(myThid)
+               DO j=1-Oly,sNy+Oly
+                DO i=1-Olx,sNx+Olx
+                  arr(i,j,bi,bj)=AREA(i,j,1,bi,bj)
+                ENDDO
+               ENDDO
+             ENDDO
+            ENDDO
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_AREA',arr,myThid)
             CALL MNC_CW_RS_W(pf,'sice',0,0,'si_UWIND',uwind,myThid)
             CALL MNC_CW_RS_W(pf,'sice',0,0,'si_VWIND',vwind,myThid)
             CALL MNC_CW_RS_W(pf,'sice',0,0,'fu',fu,myThid)
@@ -83,18 +142,30 @@ C     == Local variables ==
             CALL MNC_CW_RS_W(pf,'sice',0,0,'Qnet',Qnet,myThid)
             CALL MNC_CW_RS_W(pf,'sice',0,0,'Qsw',Qsw,myThid)
           ENDIF
-#endif
+#endif /* ALLOW_MNC */
           IF (SEAICE_dump_mdsio) THEN
             WRITE(suff,'(I10.10)') myIter
             IF ( myIter.NE.nIter0 ) THEN
-            CALL WRITE_FLD_XY_RS( 'UWIND.',suff,uwind,myIter,myThid)
-            CALL WRITE_FLD_XY_RS( 'VWIND.',suff,vwind,myIter,myThid)
-            CALL WRITE_FLD_XY_RS( 'FU.',suff,fu,myIter,myThid)
-            CALL WRITE_FLD_XY_RS( 'FV.',suff,fv,myIter,myThid)
-            CALL WRITE_FLD_XY_RS( 'EmPmR.',suff,EmPmR,myIter,myThid)
-            CALL WRITE_FLD_XY_RS( 'Qnet.',suff,Qnet,myIter,myThid)
-            CALL WRITE_FLD_XY_RS( 'Qsw.',suff,Qsw,myIter,myThid)
+             CALL WRITE_FLD_XY_RS('UWIND.',suff,uwind,myIter,myThid)
+             CALL WRITE_FLD_XY_RS('VWIND.',suff,vwind,myIter,myThid)
+             CALL WRITE_FLD_XY_RS('FU.',suff,fu,myIter,myThid)
+             CALL WRITE_FLD_XY_RS('FV.',suff,fv,myIter,myThid)
+             CALL WRITE_FLD_XY_RS('EmPmR.',suff,EmPmR,myIter,myThid)
+             CALL WRITE_FLD_XY_RS('Qnet.',suff,Qnet,myIter,myThid)
+             CALL WRITE_FLD_XY_RS('Qsw.',suff,Qsw,myIter,myThid)
             ENDIF
+            WRITE(fName,'(A,I10.10)') 'UICE.', myIter
+            CALL WRITE_REC_LEV_RL( fName, writeBinaryPrec, 3, 1, 1,
+     &                             UICE, 1, myIter, myThid )
+            WRITE(fName,'(A,I10.10)') 'VICE.', myIter
+            CALL WRITE_REC_LEV_RL( fName, writeBinaryPrec, 3, 1, 1,
+     &                             VICE, 1, myIter, myThid )
+            WRITE(fName,'(A,I10.10)') 'HEFF.', myIter
+            CALL WRITE_REC_LEV_RL( fName, writeBinaryPrec, 3, 1, 1,
+     &                             HEFF, 1, myIter, myThid )
+            WRITE(fName,'(A,I10.10)') 'AREA.', myIter
+            CALL WRITE_REC_LEV_RL( fName, writeBinaryPrec, 3, 1, 1,
+     &                             AREA, 1, myIter, myThid )
             CALL WRITE_FLD_XY_RL( 'HSNOW.',suff,HSNOW,myIter,myThid)
 #ifdef SEAICE_SALINITY
             CALL WRITE_FLD_XY_RL( 'HSALT.',suff,HSALT,myIter,myThid)
@@ -112,109 +183,10 @@ C     == Local variables ==
      &            myIter,myThid)
             ENDIF
 #endif /* SEAICE_CGRID and SEAICE_ALLOW_EVP */
+C--   end SEAICE_dump_mdsio block
           ENDIF
 
-          DO bj=myByLo(myThid),myByHi(myThid)
-            DO bi=myBxLo(myThid),myBxHi(myThid)
-              DO j=1-Oly,sNy+Oly
-                DO i=1-Olx,sNx+Olx
-                  arr(i,j,bi,bj)=UICE(i,j,1,bi,bj)
-                ENDDO
-              ENDDO
-            ENDDO
-          ENDDO
-          _BARRIER
-          IF (SEAICE_dump_mdsio) THEN
-            CALL WRITE_FLD_XY_RL( 'UICE.',suff,arr,myIter,myThid)
-          ENDIF
-#ifdef ALLOW_MNC
-          IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
-            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_UICE',arr,myThid)
-          ENDIF
-#endif
-#ifdef SEAICE_DEBUG
-          _EXCH_XY_RL( arr, myThid )
-          CALL PLOT_FIELD_XYRL( arr   , 'Current uice  ',
-     &         myIter, myThid )
-#endif
-          _BARRIER
-
-          DO bj=myByLo(myThid),myByHi(myThid)
-            DO bi=myBxLo(myThid),myBxHi(myThid)
-              DO j=1-Oly,sNy+Oly
-                DO i=1-Olx,sNx+Olx
-                  arr(i,j,bi,bj)=VICE(i,j,1,bi,bj)
-                ENDDO
-              ENDDO
-            ENDDO
-          ENDDO
-          _BARRIER
-          IF (SEAICE_dump_mdsio) THEN
-            CALL WRITE_FLD_XY_RL( 'VICE.',suff,arr,myIter,myThid)
-          ENDIF
-#ifdef ALLOW_MNC
-          IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
-            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_VICE',arr,myThid)
-          ENDIF
-#endif
-#ifdef SEAICE_DEBUG
-          _EXCH_XY_RL( arr, myThid )
-          CALL PLOT_FIELD_XYRL( arr   , 'Current vice  ',
-     &         myIter, myThid )
-#endif
-          _BARRIER
-
-          DO bj=myByLo(myThid),myByHi(myThid)
-            DO bi=myBxLo(myThid),myBxHi(myThid)
-              DO j=1-Oly,sNy+Oly
-                DO i=1-Olx,sNx+Olx
-                  arr(i,j,bi,bj)=HEFF(i,j,1,bi,bj)
-                ENDDO
-              ENDDO
-            ENDDO
-          ENDDO
-          _BARRIER
-          IF (SEAICE_dump_mdsio) THEN
-            CALL WRITE_FLD_XY_RL( 'HEFF.',suff,arr,myIter,myThid)
-          ENDIF
-#ifdef ALLOW_MNC
-          IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
-            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_HEFF',arr,myThid)
-          ENDIF
-#endif
-#ifdef SEAICE_DEBUG
-          _EXCH_XY_RL( arr, myThid )
-          CALL PLOT_FIELD_XYRL( arr   , 'Current heff  ',
-     &         myIter, myThid )
-#endif
-          _BARRIER
-
-          DO bj=myByLo(myThid),myByHi(myThid)
-            DO bi=myBxLo(myThid),myBxHi(myThid)
-              DO j=1-Oly,sNy+Oly
-                DO i=1-Olx,sNx+Olx
-                  arr(i,j,bi,bj)=AREA(i,j,1,bi,bj)
-                ENDDO
-              ENDDO
-            ENDDO
-          ENDDO
-          _BARRIER
-          IF (SEAICE_dump_mdsio) THEN
-            CALL WRITE_FLD_XY_RL( 'AREA.',suff,arr,myIter,myThid)
-          ENDIF
-#ifdef ALLOW_MNC
-          IF ( useMNC .AND. SEAICE_dump_mnc ) THEN
-            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_AREA',arr,myThid)
-          ENDIF
-#endif
-#ifdef SEAICE_DEBUG
-          _EXCH_XY_RL( arr, myThid )
-          CALL PLOT_FIELD_XYRL( arr   , 'Current area  ',
-     &         myIter, myThid )
-#endif
-          _BARRIER
-
-         ENDIF
+        ENDIF
       ENDIF
 
 C----------------------------------------------------------------
@@ -294,7 +266,6 @@ C      Normalize by integrated time
        ENDDO
 c      IF (myIter.EQ.10) WRITE(0,*) myThid, dumpFiles
 
-       _BARRIER
 #ifdef ALLOW_MNC
        IF (useMNC .AND. SEAICE_tave_mnc) THEN
          CALL MNC_CW_SET_UDIM('sice_tave', -1, myThid)
@@ -335,7 +306,6 @@ C    &        myTime,myThid)
          CALL WRITE_FLD_XY_RL('HEFFtave.' ,suff,HEFFtave ,myIter,myThid)
          CALL WRITE_FLD_XY_RL('AREAtave.' ,suff,AREAtave ,myIter,myThid)
        ENDIF
-       _BARRIER
 
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -355,6 +325,7 @@ C      Reset averages to zero
         ENDDO
        ENDDO
 
+C--   end dumpFiles block
       ENDIF
 
 #endif /* ALLOW_TIMEAVE */
