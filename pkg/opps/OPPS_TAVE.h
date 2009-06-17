@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/Attic/OPPS_DIAGS.h,v 1.1 2004/09/16 11:28:16 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/OPPS_TAVE.h,v 1.1 2009/06/17 14:20:53 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_OPPS
 
-C     /==========================================================\
-C     | OPPS_DIAGS.h                                             |
-C     | o Header for OPPS diagnostic output                      |
-C     \==========================================================/
+C     *==========================================================*
+C     | OPPS_TAVE.h
+C     | o Header for OPPS time-average output
+C     *==========================================================*
 
 C----------------------------------------------------------------
 C     opps_drctrec     - next record to dump for PP files

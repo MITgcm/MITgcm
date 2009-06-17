@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/Attic/opps_do_diags.F,v 1.3 2005/05/15 03:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_output.F,v 1.1 2009/06/17 14:20:54 jmc Exp $
 C $Name:  $
 
 #include "OPPS_OPTIONS.h"
 
 #undef  MULTIPLE_RECORD_OPPS_STATE_FILES
 CBOP
-C     !ROUTINE: OPPS_DO_DIAGS
+C     !ROUTINE: OPPS_OUTPUT
 C     !INTERFACE:
-      SUBROUTINE OPPS_DO_DIAGS( myCurrentTime, myIter, myThid )
+      SUBROUTINE OPPS_OUTPUT( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE OPPS_DO_DIAGS                                  
-C     | o Do OPPS diagnostic output.                              
+C     | SUBROUTINE OPPS_OUTPUT
+C     | o Do OPPS diagnostic output.
 C     *==========================================================
 C     | The following CPP flag (MULTIPLE_RECORD_OPPS_STATE_FILES) is
 C     | #define/#undefed here since it is specific to this routine
@@ -45,14 +45,14 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "OPPS.h"
-#include "OPPS_DIAGS.h"
+#include "OPPS_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myCurrentTime - Current time of simulation ( s )
-C     myIter - Iteration number
-C     myThid -  Number of this instance of INI_FORCING
-      _RL     myCurrentTime
+C     myTime :: my time in simulation ( s )
+C     myIter :: my Iteration number
+C     myThid :: my Thread Id number
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
@@ -73,17 +73,18 @@ CMLC----------------------------------------------------------------
 CML
 CML      IF (
 CML     &     DIFFERENT_MULTIPLE(OPPSdumpFreq,
-CML     &     myCurrentTime,deltaTClock)
+CML     &     myTime,deltaTClock)
 CML     &     ) THEN
-CML         
+CML
 CML       if (OPPSwriteState) then
 CML#ifdef MULTIPLE_RECORD_OPPS_STATE_FILES
 CMLC       Write each snap-shot as a new record in one file per variable
 CMLC       - creates relatively few files but these files can become huge
+C          STOP 'un-initialised opps_drctrec'
 CML        CALL WRITE_REC_XYZ_RL('OPPSconv',OPPSconvectCount,opps_drctrec,
 CML     &       myIter,myThid)
 CML#else /* MULTIPLE_RECORD_OPPS_STATE_FILES */
-CMLC       Write each snap-shot as a new file 
+CMLC       Write each snap-shot as a new file
 CMLC       - creates many files but for large configurations is easier to
 CMLC         transfer analyse a particular snap-shots
 CML        WRITE(suff,'(I10.10)') myIter
@@ -117,7 +118,7 @@ C     Initialize averages to zero
 
 C     Time Average OPPS fields
       IF ( myIter .EQ. nIter0 .OR.
-     &     DIFFERENT_MULTIPLE(OPPStaveFreq,myCurrentTime,deltaTClock)
+     &     DIFFERENT_MULTIPLE(OPPStaveFreq,myTime,deltaTClock)
      &   ) THEN
        DDTT=0.5*deltaTclock
       ELSE
@@ -133,11 +134,11 @@ C     Keep record of how much time has been integrated over
       ENDDO
 
 C     Dump files and restart average computation if needed
-      IF ( myIter.NE.nIter0 .AND. 
+      IF ( myIter.NE.nIter0 .AND.
      &     DIFFERENT_MULTIPLE(OPPStaveFreq,
-     &     myCurrentTime,deltaTClock)
+     &     myTime,deltaTClock)
      &     ) THEN
-         
+
 C     Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -145,25 +146,26 @@ C     Normalize by integrated time
      &        Nr, bi,bj,myThid)
         ENDDO
        ENDDO
-       
+
 #ifdef MULTIPLE_RECORD_OPPS_STATE_FILES
 C     Write each snap-shot as a new record in one file per variable
 C     - creates relatively few files but these files can become huge
+       STOP 'un-initialised opps_drctrecTave'
        CALL WRITE_REC_XYZ_RL('OPPSconvtave',OPPSconvectCountTave,
      &      opps_drctrecTave,myIter,myThid)
 C--   Increment record counter
        opps_drctrecTave = opps_drctrecTave + 1
-         
+
 #else /* MULTIPLE_RECORD_OPPS_STATE_FILES */
 
-C     Write each snap-shot as a new file 
+C     Write each snap-shot as a new file
 C     - creates many files but for large configurations is easier to
 C     transfer analyse a particular snap-shots
        WRITE(suff,'(I10.10)') myIter
        CALL WRITE_FLD_XYZ_RL('OPPSconvtave.',suff,OPPSconvectCountTave,
      &      myIter,myThid)
-#endif /* MULTIPLE_RECORD_OPPS_STATE_FILES */          
-         
+#endif /* MULTIPLE_RECORD_OPPS_STATE_FILES */
+
 C     Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -173,13 +175,13 @@ C     Reset averages to zero
          ENDDO
         ENDDO
        ENDDO
-         
+
 C     Time Average OPPS fields
        DDTT=0.5*deltaTclock
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          CALL TIMEAVE_CUMULATE(
-     &        OPPSconvectCountTave, OPPSconvectCount, 
+     &        OPPSconvectCountTave, OPPSconvectCount,
      &        Nr,DDTT,bi,bj,myThid)
 C     Keep record of how much time has been integrated over
          DO k=1,Nr
@@ -190,8 +192,8 @@ C     Keep record of how much time has been integrated over
       ENDIF
 
 #endif /* ALLOW_TIMEAVE */
-      
+
 #endif /* ALLOW_OPPS */
-      
+
       RETURN
       END
