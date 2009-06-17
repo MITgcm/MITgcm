@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.26 2009/06/14 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.27 2009/06/17 20:00:24 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -9,18 +10,18 @@ C     !INTERFACE:
       SUBROUTINE INI_THETA( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_THETA                                      
-C     | o Set model initial temperature field.                    
+C     | SUBROUTINE INI_THETA
+C     | o Set model initial temperature field.
 C     *==========================================================*
-C     | There are several options for setting the initial         
-C     | temperature file                                          
-C     |  1. Inline code                                           
-C     |  2. Vertical profile ( uniform T in X and Y )             
-C     |  3. Three-dimensional data from a file. For example from  
-C     |     Levitus or from a checkpoint file from a previous     
-C     |     integration.                                          
-C     | In addition to setting the temperature field we also      
-C     | set the initial temperature tendency term here.           
+C     | There are several options for setting the initial
+C     | temperature file
+C     |  1. Inline code
+C     |  2. Vertical profile ( uniform T in X and Y )
+C     |  3. Three-dimensional data from a file. For example from
+C     |     Levitus or from a checkpoint file from a previous
+C     |     integration.
+C     | In addition to setting the temperature field we also
+C     | set the initial temperature tendency term here.
 C     *==========================================================*
 C     \ev
 
@@ -38,13 +39,13 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_THETA
+C     myThid :: Number of this instance of INI_THETA
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj  - Loop counters
-C     I,J,K
+C     bi,bj  :: Tile indices
+C     I,J,K  :: Loop counters
       INTEGER bi, bj
       INTEGER I, J, K, localWarnings
       _RL     Tfreezing
@@ -66,7 +67,7 @@ C--   Initialise temperature field to the vertical reference profile
 
       IF ( hydrogThetaFile .NE. ' ' ) THEN
 #ifdef ALLOW_MNC
-        IF (useMNC .AND. mnc_read_theta) THEN
+        IF ( useMNC.AND.mnc_read_theta ) THEN
           CALL MNC_FILE_CLOSE_ALL_MATCHING(hydrogThetaFile, myThid)
           CALL MNC_CW_SET_UDIM(hydrogThetaFile, 1, myThid)
           CALL MNC_CW_SET_CITER(hydrogThetaFile, 2, -1, -1, -1, myThid)
@@ -131,8 +132,10 @@ C--   Check that there are no values of temperature below freezing point.
        ENDDO
       ENDIF
 
-      CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature' ,
-     &                       Nr, 1, myThid )
+      IF (debugMode) THEN
+        CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature',
+     &                         Nr, 1, myThid )
+      ENDIF
 
       RETURN
       END

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.20 2009/06/14 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.21 2009/06/17 20:00:25 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -9,18 +10,18 @@ C     !INTERFACE:
       SUBROUTINE INI_SALT ( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_SALT                                       
-C     | o Set model initial salinity field.                       
+C     | SUBROUTINE INI_SALT
+C     | o Set model initial salinity field.
 C     *==========================================================*
-C     | There are several options for setting the initial         
-C     | temperature file                                          
-C     |  1. Inline code                                           
-C     |  2. Vertical profile ( uniform S in X and Y )             
-C     |  3. Three-dimensional data from a file. For example from  
-C     |     Levitus or from a checkpoint file from a previous     
-C     |     integration.                                          
-C     | In addition to setting the salinity field we also         
-C     | set the initial salinity tendency term here.              
+C     | There are several options for setting the initial
+C     | temperature file
+C     |  1. Inline code
+C     |  2. Vertical profile ( uniform S in X and Y )
+C     |  3. Three-dimensional data from a file. For example from
+C     |     Levitus or from a checkpoint file from a previous
+C     |     integration.
+C     | In addition to setting the salinity field we also
+C     | set the initial salinity tendency term here.
 C     *==========================================================*
 C     \ev
 
@@ -38,13 +39,13 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_SALT
+C     myThid :: Number of this instance of INI_SALT
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj  - Loop counters
-C     I,J,K
+C     bi,bj  :: Tile indices
+C     I,J,K  :: Loop counters
       INTEGER bi, bj
       INTEGER I, J, K, localWarnings
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -65,7 +66,7 @@ C--   Initialise salinity field to the vertical reference profile
 
       IF ( hydrogSaltFile .NE. ' ' ) THEN
 #ifdef ALLOW_MNC
-        IF (useMNC .AND. mnc_read_salt) THEN
+        IF ( useMNC.AND.mnc_read_salt ) THEN
           CALL MNC_FILE_CLOSE_ALL_MATCHING(hydrogSaltFile, myThid)
           CALL MNC_CW_SET_UDIM(hydrogSaltFile, 1, myThid)
           CALL MNC_CW_SET_CITER(hydrogSaltFile, 2, -1, -1, -1, myThid)
@@ -112,7 +113,10 @@ C     Apply mask and test consistancy
        STOP 'ABNORMAL END: S/R INI_SALT'
       ENDIF
 
-      CALL PLOT_FIELD_XYZRL( salt, 'Initial Salinity' , Nr, 1, myThid )
+      IF (debugMode) THEN
+        CALL PLOT_FIELD_XYZRL( salt, 'Initial Salinity',
+     &                         Nr, 1, myThid )
+      ENDIF
 
       RETURN
       END
