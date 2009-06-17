@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE_TAVE.h,v 1.1 2009/06/17 14:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE_TAVE.h,v 1.2 2009/06/17 15:04:14 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
-C     | SHELFICE_DIAGS.h
+C     | SHELFICE_TAVE.h
 C     | o Header for SHELFICE time-average output
 C     *==========================================================*
 
