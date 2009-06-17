@@ -1,46 +1,45 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_diags.F,v 1.6 2007/10/09 00:07:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_output.F,v 1.1 2009/06/17 14:25:46 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
-      SUBROUTINE OBCS_DIAGS(myCurrentTime, myIter, myThid)
-C     /==========================================================\
-C     | SUBROUTINE OBCS_DIAGS                               |
-C     | o Controlling routine for IO in model main time-stepping |
-C     |   loop.                                                  |
-C     |==========================================================|
-C     | Many systems do not have thread safe IO so it is easier  |
-C     | to lump everything together and do dumping of fields     |
-C     | and updating of forcing terms in a single place.         |
-C     | The approach to IO used here is that writes are only     |
-C     | performed by thread 1 and that a process only writes out |
-C     | its data ( it does not know about anyone elses data!)    |
-C     | Reading on the other hand is assumed to be from a file   |
-C     | containing all the data for all the processes. Only the  |
-C     | portion of data of interest to this process is actually  |
-C     | loaded. To work well this assumes the existence of some  |
-C     | reliable tool to join datasets together at the end of a  |
-C     | run - see joinds.p                                       |
-C     \==========================================================/
+      SUBROUTINE OBCS_OUTPUT( myTime, myIter, myThid )
+C     *==========================================================*
+C     | SUBROUTINE OBCS_OUTPUT
+C     | o Controlling routine for IO in model main time-stepping
+C     |   loop.
+C     *==========================================================*
+C     | Many systems do not have thread safe IO so it is easier
+C     | to lump everything together and do dumping of fields
+C     | and updating of forcing terms in a single place.
+C     | The approach to IO used here is that writes are only
+C     | performed by thread 1 and that a process only writes out
+C     | its data ( it does not know about anyone elses data!)
+C     | Reading on the other hand is assumed to be from a file
+C     | containing all the data for all the processes. Only the
+C     | portion of data of interest to this process is actually
+C     | loaded. To work well this assumes the existence of some
+C     | reliable tool to join datasets together at the end of a
+C     | run - see joinds.p
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "OBCS.h"
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
-C     myIter - Iteration number
-C     myCurrentTime - Current time of simulation ( s )
-      INTEGER myThid
+C     myTime :: my time in simulation ( s )
+C     myIter :: my Iteration number
+C     myThid :: my Thread Id number
+      _RL     myTime
       INTEGER myIter
-      _RL    myCurrentTime
+      INTEGER myThid
 
 #ifdef ALLOW_OBCS
 C     == Local variables ==
@@ -48,7 +47,7 @@ C     == Local variables ==
 C--   Generaly only thread 1 does IO here. It can not start until
 C--   all threads fields are ready.
       IF (
-     &  DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,deltaTClock)
+     &  DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
      &  .AND. OBCSprintDiags
      & ) THEN
 
@@ -88,4 +87,3 @@ C--   all threads fields are ready.
 
       RETURN
       END
-

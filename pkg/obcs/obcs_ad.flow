@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad.flow,v 1.4 2009/04/24 01:52:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad.flow,v 1.5 2009/06/17 14:25:46 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
-C subroutine  OBCS_DIAGS
+C subroutine  OBCS_OUTPUT
 C----------------------------------------
-CADJ SUBROUTINE OBCS_DIAGS INPUT  = 1,2,3
-CADJ SUBROUTINE OBCS_DIAGS OUTPUT =
+CADJ SUBROUTINE OBCS_OUTPUT INPUT  = 1,2,3
+CADJ SUBROUTINE OBCS_OUTPUT OUTPUT =
  
 C----------------------------------------
 C subroutine  OBCS_CHECK_DEPTHS
