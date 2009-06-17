@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatyfields.F,v 1.4 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatyfields.F,v 1.5 2009/06/17 15:12:53 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -123,8 +123,6 @@ cnew)
           do j = jmin,jmax
             do i = imin,imax
               if (maskS(i,j,k,bi,bj) .eq. 0.) then
-                scatymask(i,j,bi,bj) = 0. _d 0
-              else if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
                 scatymask(i,j,bi,bj) = 0. _d 0
               else
                 scatymask(i,j,bi,bj) = 1. _d 0
