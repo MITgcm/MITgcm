@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.27 2008/08/01 15:44:41 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.1 2009/06/17 14:31:14 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -6,25 +6,25 @@ C $Name:  $
 #undef  MULTIPLE_RECORD_KPP_STATE_FILES
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: KPP_DO_DIAGS
+C     !ROUTINE: KPP_OUTPUT
 
 C     !INTERFACE:
-      SUBROUTINE KPP_DO_DIAGS( myTime, myIter, myThid )
+      SUBROUTINE KPP_OUTPUT( myTime, myIter, myThid )
 
-C     !DESCRIPTION: 
-C     Create the KPP diagnostic output.                              
+C     !DESCRIPTION:
+C     Create the KPP diagnostic output.
 C
 C     The following CPP flag (MULTIPLE_RECORD_KPP_STATE_FILES) is
 C     #define/#undefed here since it is specific to this routine and
 C     very user-preference specific.
-C     
+C
 C     If #undefed (default) the state files are written as in all
 C     versions prior to checkpoint32, where a file is created per
 C     variable, per time and per tile. This *has* to be the default
 C     because most users use this mode and all utilities and scripts
 C     (diagnostic) assume this form.  It is also robust, as explained
 C     below.
-C     
+C
 C     If #defined, subsequent snap-shots are written as records in the
 C     same file (no iteration number in filenames).
 C
@@ -50,9 +50,12 @@ C     !USES:
 #endif
 #include "KPP.h"
 #include "KPP_PARAMS.h"
-#include "KPP_DIAGS.h"
+#include "KPP_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     myTime :: my time in simulation ( s )
+C     myIter :: my Iteration number
+C     myThid :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -78,21 +81,10 @@ CEOP
 C----------------------------------------------------------------
 C     Dump snapshot of KPP variables.
 
-      IF ( myIter.NE.nIter0 .AND. 
+      IF ( myIter.NE.nIter0 .AND.
      &     DIFFERENT_MULTIPLE(kpp_dumpFreq,myTime,deltaTClock)
      &     ) THEN
-        
-        IF (KPPmixingMaps) THEN
-          CALL PLOT_FIELD_XYRL  ( KPPhbl    , 'KPPhbl'    ,    
-     &         myIter, myThid )
-          CALL PLOT_FIELD_XYZRL ( KPPviscAz , 'KPPviscAz' ,
-     &         Nr, myIter, myThid )
-          CALL PLOT_FIELD_XYZRL ( KPPdiffKzT, 'KPPdiffKzT',
-     &         Nr, myIter, myThid )
-          CALL PLOT_FIELD_XYZRL ( KPPghat   , 'KPPghat'   ,
-     &         Nr, myIter, myThid )
-        ENDIF
-        
+
         IF (KPPwriteState .AND. snapshot_mdsio) THEN
 #ifdef MULTIPLE_RECORD_KPP_STATE_FILES
 C         Write each snap-shot as a new record in one file per variable
@@ -108,6 +100,12 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
      &         myIter,myThid)
           CALL WRITE_REC_XY_RL('KPPhbl',KPPhbl,kpp_drctrec,
      &         myIter,myThid)
+C--     Increment record counter
+          _BARRIER
+          _BEGIN_MASTER( myThid )
+          kpp_drctrec = kpp_drctrec + 1
+          _END_MASTER( myThid )
+          _BARRIER
 #else /* MULTIPLE_RECORD_KPP_STATE_FILES */
 C         Write each snap-shot as a new file - creates many files but
 C         for large configurations is easier to transfer
@@ -145,11 +143,8 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
         ENDIF
 #endif /*  ALLOW_MNC  */
 
-C--     Increment record counter
-        kpp_drctrec = kpp_drctrec + 1
-        
       ENDIF
-      
+
 C----------------------------------------------------------------
 C     Do KPP time averaging.
 
@@ -172,7 +167,7 @@ C     Initialize averages to zero
         ENDDO
 
       ELSE
-      
+
 C     Time Average KPP fields
        DDTT=deltaTclock
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -195,7 +190,7 @@ C         Keep record of how much time has been integrated over
        ENDDO
 
       ENDIF
-      
+
 C     Dump files and restart average computation if needed
       dumpFiles = .FALSE.
       IF ( myIter .NE. nIter0 ) THEN
@@ -226,7 +221,7 @@ C       Normalize by integrated time
      &           1,  bi,bj,myThid)
           ENDDO
         ENDDO
-        
+
         IF (KPPwriteState .AND. timeave_mdsio) THEN
 #ifdef MULTIPLE_RECORD_KPP_STATE_FILES
 C         Write each tave output as a new record in one file per variable
@@ -243,7 +238,11 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
           CALL WRITE_REC_XY_RL('KPPhbl-T',KPPhblTave,
      &         kpp_drctrecTave,myIter,myThid)
 C--       Increment record counter
+          _BARRIER
+          _BEGIN_MASTER( myThid )
           kpp_drctrecTave = kpp_drctrecTave + 1
+          _END_MASTER( myThid )
+          _BARRIER
 #else /* MULTIPLE_RECORD_KPP_STATE_FILES */
 C         Write each tave output as a new file - creates many files but for
 C         large configurations is easier to transfer
@@ -259,9 +258,9 @@ C         NOTE: file size and number problems are *SOLVED* by MNC
      &         myIter,myThid)
           CALL WRITE_FLD_XY_RL('KPPhbl-T.',suff,KPPhblTave,
      &         myIter,myThid)
-#endif /* MULTIPLE_RECORD_KPP_STATE_FILES */          
+#endif /* MULTIPLE_RECORD_KPP_STATE_FILES */
         ENDIF
-        
+
 #ifdef ALLOW_MNC
         IF (KPPwriteState .AND. useMNC .AND. timeave_mnc) THEN
           CALL MNC_CW_SET_UDIM('kpp_timeave', -1, myThid)
@@ -294,9 +293,9 @@ C       Reset averages to zero
             ENDDO
           ENDDO
         ENDDO
-        
+
       ENDIF
-      
+
 #endif /* ALLOW_TIMEAVE */
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -313,8 +312,8 @@ C     don't fill during call from INITIALISE_VARIA
 #endif /* ALLOW_SALT_PLUME */
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-     
+
 #endif /* ALLOW_KPP */
-      
+
       RETURN
       END
