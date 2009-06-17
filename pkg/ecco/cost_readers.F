@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.7 2007/10/09 00:02:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.8 2009/06/17 15:14:00 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -141,16 +141,10 @@ cnew)
               endif
 
 cph(
-cph               print *, 'WARNING: SPECIFIC SETUP FOR ECCO'
-cph               below statement could be replaced by following
-cph               to make it independnet of Nr:
-cph
-cph               if ( rC(K) .GT. -1000. ) then
-cph)
-c             set tpmask=0 in areas shallower than 1000m
-              if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
+              if ( R_low(i,j,bi,bj) .GT. -200. ) then
                 ersmask(i,j,bi,bj) = 0. _d 0
               endif
+cph)
 
               ersmask(i,j,bi,bj) = ersmask(i,j,bi,bj)*frame(i,j)
               ersobs(i,j,bi,bj)  = ersmask(i,j,bi,bj)*factor*

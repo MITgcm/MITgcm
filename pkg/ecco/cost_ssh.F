@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.15 2009/04/28 18:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.16 2009/06/17 15:14:00 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -187,7 +187,7 @@ c--   Do a global summation.
         call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
         _END_MASTER( mythid )
-        stop   '  ... stopped in cost_ssh.'
+cph        stop   '  ... stopped in cost_ssh.'
       else
         _BEGIN_MASTER( mythid )
         write(msgbuf,'(a,d22.15)')
