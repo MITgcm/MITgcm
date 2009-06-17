@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/Attic/GGL90_DIAGS.h,v 1.2 2006/06/08 00:12:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90_TAVE.h,v 1.1 2009/06/17 14:15:34 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GGL90
 
-C     /==========================================================\
-C     | GGL90_DIAGS.h                                            |
-C     | o Header for GGL90 diagnostic output                     |
-C     \==========================================================/
+C     *==========================================================*
+C     | GGL90_TAVE.h
+C     | o Header for GGL90 time-average output
+C     *==========================================================*
 
 C----------------------------------------------------------------
 C     my_drctrec     - next record to dump for GGL90 files
