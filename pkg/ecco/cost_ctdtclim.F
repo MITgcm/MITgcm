@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdtclim.F,v 1.6 2009/04/28 18:13:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdtclim.F,v 1.7 2009/06/17 15:11:32 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -181,18 +181,6 @@ c--           Determine the mask on weights
                   endif
 
                   if (tdat(i,j,k,bi,bj) .lt. spval) then
-                    cmask(i,j) = 0. _d 0
-                  endif
-
-cph(
-cph               print *, 'WARNING: SPECIFIC SETUP FOR ECCO'
-cph               below statement could be replaced by following
-cph               to make it independnet of Nr:
-cph
-cph               if ( rC(K) .GT. -1000. ) then
-cph)
-c                 set cmask=0 in areas shallower than 1000m
-                  if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
                     cmask(i,j) = 0. _d 0
                   endif
                 enddo

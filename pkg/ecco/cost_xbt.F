@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_xbt.F,v 1.8 2009/04/28 18:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_xbt.F,v 1.9 2009/06/17 15:11:32 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -180,8 +180,7 @@ cph)
 
               do j = jmin,jmax
                 do i = imin,imax
-                  if ( _hFacC(i,j,k,bi,bj) .ne. 0. .AND.
-     &                 _hFacC(i,j,13,bi,bj) .ne. 0. ) then
+                  if ( _hFacC(i,j,k,bi,bj) .ne. 0. ) then
                     tmpobs(i,j) = SW_PTMP(rl_35,
      $                   xbtobs(i,j,k,bi,bj),ztop*rc(k),rl_0)
 c--               The array ctdtobs contains CTD temperature.

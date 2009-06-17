@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_salt.F,v 1.7 2009/04/28 18:13:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_salt.F,v 1.8 2009/06/17 15:11:32 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -163,7 +163,7 @@ cph)
                do i = imin,imax
                 if ( (argosobs(i,j,k,bi,bj) .ge. spval) .and.
      $              (argosobs(i,j,k,bi,bj) .lt. spmax) .and.
-     $              (_hFacC(i,j,13,bi,bj) .ne. 0.) .and.
+cph     $              (_hFacC(i,j,13,bi,bj) .ne. 0.) .and.
      $              (_hFacC(i,j,k,bi,bj) .ne. 0.) ) then
                  fctile_argos = fctile_argos +
      &             wsalt2(i,j,k,bi,bj)*cosphi(i,j,bi,bj)*
