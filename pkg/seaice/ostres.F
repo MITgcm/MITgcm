@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.19 2009/03/18 13:48:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.20 2009/06/17 07:31:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -43,46 +43,49 @@ c     introduce turning angle (default is zero)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
 
 #ifdef SEAICE_ORIGINAL_BAD_ICE_STRESS
-C--   Following formulation is problematic and is no longer used.
-#ifdef SEAICE_ALLOW_DYNAMICS
-      IF ( SEAICEuseDYNAMICS ) THEN
-C--   Compute ice-affected wind stress
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           WINDX(I,J,bi,bj)=DWATN(I,J,bi,bj)
-     &          *(COSWAT*(GWATX(I,J,bi,bj)-UICE(I,J,1,bi,bj))
-     &          -SIGN(SINWAT,COR_ICE(I,J,bi,bj))
-     &          *(GWATY(I,J,bi,bj)-VICEC(I,J,bi,bj)))
-           WINDY(I,J,bi,bj)=DWATN(I,J,bi,bj)
-     &          *(SIGN(SINWAT,COR_ICE(I,J,bi,bj))
-     &          *(GWATX(I,J,bi,bj)-UICEC(I,J,bi,bj))
-     &          +COSWAT*(GWATY(I,J,bi,bj)-VICE(I,J,1,bi,bj)))
-           WINDX(I,J,bi,bj)=WINDX(I,J,bi,bj)-( COR_ICE(I,J,bi,bj)
-     &          *GWATY(I,J,bi,bj)-COR_ICE(I,J,bi,bj)*VICEC(I,J,bi,bj))
-           WINDY(I,J,bi,bj)=WINDY(I,J,bi,bj)-(-COR_ICE(I,J,bi,bj)
-     &          *GWATX(I,J,bi,bj)+COR_ICE(I,J,bi,bj)*UICEC(I,J,bi,bj))
-           WINDX(I,J,bi,bj)=WINDX(I,J,bi,bj)-(UICE(I,J,1,bi,bj)
-     &          -UICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/SEAICE_DT*TWO
-           WINDY(I,J,bi,bj)=WINDY(I,J,bi,bj)-(VICE(I,J,1,bi,bj)
-     &          -VICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/SEAICE_DT*TWO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           WINDX(I,J,bi,bj)=-WINDX(I,J,bi,bj)
-           WINDY(I,J,bi,bj)=-WINDY(I,J,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
-#endif /*  SEAICE_ALLOW_DYNAMICS */
+      These lines are put here on purpose to cause the compilation 
+      to fail because the following code is retired and can no longer
+      be used. It was probably never used anyway.
+CMLC--   Following formulation is problematic and is no longer used.
+CML#ifdef SEAICE_ALLOW_DYNAMICS
+CML      IF ( SEAICEuseDYNAMICS ) THEN
+CMLC--   Compute ice-affected wind stress
+CML       DO bj=myByLo(myThid),myByHi(myThid)
+CML        DO bi=myBxLo(myThid),myBxHi(myThid)
+CML         DO j=1,sNy
+CML          DO i=1,sNx
+CML           WINDX(I,J,bi,bj)=DWATN(I,J,bi,bj)
+CML     &          *(COSWAT*(GWATX(I,J,bi,bj)-UICE(I,J,1,bi,bj))
+CML     &          -SIGN(SINWAT,COR_ICE(I,J,bi,bj))
+CML     &          *(GWATY(I,J,bi,bj)-VICEC(I,J,bi,bj)))
+CML           WINDY(I,J,bi,bj)=DWATN(I,J,bi,bj)
+CML     &          *(SIGN(SINWAT,COR_ICE(I,J,bi,bj))
+CML     &          *(GWATX(I,J,bi,bj)-UICEC(I,J,bi,bj))
+CML     &          +COSWAT*(GWATY(I,J,bi,bj)-VICE(I,J,1,bi,bj)))
+CML           WINDX(I,J,bi,bj)=WINDX(I,J,bi,bj)-( COR_ICE(I,J,bi,bj)
+CML     &          *GWATY(I,J,bi,bj)-COR_ICE(I,J,bi,bj)*VICEC(I,J,bi,bj))
+CML           WINDY(I,J,bi,bj)=WINDY(I,J,bi,bj)-(-COR_ICE(I,J,bi,bj)
+CML     &          *GWATX(I,J,bi,bj)+COR_ICE(I,J,bi,bj)*UICEC(I,J,bi,bj))
+CML           WINDX(I,J,bi,bj)=WINDX(I,J,bi,bj)-(UICE(I,J,1,bi,bj)
+CML     &          -UICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/SEAICE_DT*TWO
+CML           WINDY(I,J,bi,bj)=WINDY(I,J,bi,bj)-(VICE(I,J,1,bi,bj)
+CML     &          -VICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/SEAICE_DT*TWO
+CML          ENDDO
+CML         ENDDO
+CML        ENDDO
+CML       ENDDO
+CML       DO bj=myByLo(myThid),myByHi(myThid)
+CML        DO bi=myBxLo(myThid),myBxHi(myThid)
+CML         DO j=1,sNy
+CML          DO i=1,sNx
+CML           WINDX(I,J,bi,bj)=-WINDX(I,J,bi,bj)
+CML           WINDY(I,J,bi,bj)=-WINDY(I,J,bi,bj)
+CML          ENDDO
+CML         ENDDO
+CML        ENDDO
+CML       ENDDO
+CML      ENDIF
+CML#endif /*  SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_ORIGINAL_BAD_ICE_STRESS */
 
 C--   Update overlap regions
