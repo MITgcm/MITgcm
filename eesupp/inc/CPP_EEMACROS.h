@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.19 2009/05/25 04:33:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.20 2009/06/17 16:39:22 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -134,6 +134,11 @@ C  enable to call the corresponding R4 or R8 S/R.
 #define _GLOBAL_SUM_RS(a,b) CALL GLOBAL_SUM_R4 ( a, b )
 #define _GLOBAL_MAX_RS(a,b) CALL GLOBAL_MAX_R4 ( a, b )
 #define _MPI_TYPE_RS MPI_REAL
+#endif
+#ifdef USE_OLD_MACROS_R4R8toRSRL
+cph Needed for some backward compatibility with broken packages
+#define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R4 ( a, b )
+#define _GLOBAL_MAX_R4(a,b) CALL GLOBAL_MAX_R4 ( a, b )
 #endif
 
 #define _RL Real*8
