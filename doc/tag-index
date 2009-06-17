@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1125 2009/06/15 23:42:25 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1126 2009/06/17 20:26:00 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src: 
+  do_the_model_io: rename few pkg S/R which are called from do_the_model_io, 
+   to avoid "_diags" naming if no relation to pkg/diagnostics.
+  ini_theta,ini_salt: fix (at least compile the code) reading from NetCDF 
+   file and only call PLOT_FIELD_XYZ if debugMode=T.
+  remove few PLOT_FIELD_XY calls outside initialisation.
+  remove few unnecessary BARRIER.
 o pkg/salt_plume: add SaltPlumeSouthernOcean to allow disabling
   of salt_plume package in Southern Ocean 
 o pkg/thsice: 
