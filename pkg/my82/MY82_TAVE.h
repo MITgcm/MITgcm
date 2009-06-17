@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/Attic/MY82_DIAGS.h,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/MY82_TAVE.h,v 1.1 2009/06/17 14:18:16 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_MY82
 
-C     /==========================================================\
-C     | MY82_DIAGS.h                                              |
-C     | o Header for MY82 diagnostic output                       |
-C     \==========================================================/
+C     *==========================================================*
+C     | MY82_TAVE.h
+C     | o Header for MY82 time-average output
+C     *==========================================================*
 
 C----------------------------------------------------------------
 C     my_drctrec     - next record to dump for MY82 files
