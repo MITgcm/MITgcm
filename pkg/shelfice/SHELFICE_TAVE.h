@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/SHELFICE_DIAGS.h,v 1.3 2007/03/14 15:49:59 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE_TAVE.h,v 1.1 2009/06/17 14:48:04 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | SHELFICE_DIAGS.h                                         |
-C     | o Header for SHELFICE diagnostic output                  |
-C     \==========================================================/
+C     *==========================================================*
+C     | SHELFICE_DIAGS.h
+C     | o Header for SHELFICE time-average output
+C     *==========================================================*
 
 #ifdef ALLOW_TIMEAVE
 
@@ -13,7 +13,7 @@ C     Keep track of time
       COMMON /SHELFICE_TAVE/ SHELFICE_TimeAve
 
 C     Storage arrays for time-averages
-      _RL shelfice_heatFluxtave 
+      _RL shelfice_heatFluxtave
      &     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
       _RL shelfice_frshFluxtave
      &     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)

@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/Attic/shelfice_do_diags.F,v 1.5 2008/09/09 19:58:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_output.F,v 1.1 2009/06/17 14:48:04 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
 
-      SUBROUTINE SHELFICE_DO_DIAGS( myTime, myIter, myThid )
+      SUBROUTINE SHELFICE_OUTPUT( myTime, myIter, myThid )
 C     *==========================================================*
-C     | SUBROUTINE SHELFICE_DO_DIAGS
+C     | SUBROUTINE SHELFICE_OUTPUT
 C     | o Do SHELFICE diagnostic output.
 C     *==========================================================*
       IMPLICIT NONE
@@ -14,13 +14,13 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "SHELFICE_DIAGS.h"
 #include "SHELFICE.h"
+#include "SHELFICE_TAVE.h"
 
 C     == Routine arguments ==
-C     myTime        - Current time of simulation ( s )
-C     myIter        - Iteration number
-C     myThid        - Number of this instance of SHELFICE_DO_DIAGS
+C     myTime :: my time in simulation ( s )
+C     myIter :: my Iteration number
+C     myThid :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
