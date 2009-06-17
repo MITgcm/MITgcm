@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.71 2009/01/31 22:22:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.72 2009/06/17 14:57:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -30,10 +30,9 @@ C       |-- GMREDI_INIT
 C       |
 C       |-- DWNSLP_INIT_VARIA
 C       |
-C       |-- KPP_INIT
-C       |-- KPP_OPEN_DIAGS
+C       |-- KPP_INIT_VARIA
 C       |
-C       |-- PP81_INIT
+C       |-- PP81_INIT_VARIA
 C       |
 C       |-- MY82_INIT_VARIA
 C       |
@@ -157,11 +156,9 @@ C--   Initialize GM/Redi parameterization
 C--   Initialize KPP vertical mixing scheme.
       IF (useKPP) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode)
-     &       CALL DEBUG_CALL('KPP_INIT + KPP_OPEN_DIAGS',myThid)
+       IF (debugMode) CALL DEBUG_CALL('KPP_INIT_VARIA',myThid)
 # endif
-       CALL KPP_INIT( myThid )
-       CALL KPP_OPEN_DIAGS( myThid )
+       CALL KPP_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_KPP */
 
@@ -169,9 +166,9 @@ C--   Initialize KPP vertical mixing scheme.
 C--   Initialize PP81 vertical mixing scheme.
       IF (usePP81) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('PP81_INIT',myThid)
+       IF (debugMode) CALL DEBUG_CALL('PP81_INIT_VARIA',myThid)
 # endif
-       CALL PP81_INIT( myThid )
+       CALL PP81_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_PP81 */
 
