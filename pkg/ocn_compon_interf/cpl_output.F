@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.11 2008/09/09 19:58:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_output.F,v 1.1 2009/06/17 14:53:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CStartOfInterFace
-      SUBROUTINE CPL_WRITE_DIAGS( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE CPL_WRITE_DIAGS                               |
-C     | o Calculate CPL diagnostics                              |
-C     | - Oceanic version -                                      |
-C     \==========================================================/
+      SUBROUTINE CPL_OUTPUT( myTime, myIter, myThid )
+C     *==========================================================*
+C     | SUBROUTINE CPL_OUTPUT
+C     | o Write CPL time-average output
+C     | - Oceanic version -
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -26,31 +26,33 @@ C     === Global variables ===
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     == Routine arguments ==
-C     myTime - Current time of simulation ( s )
-C     myIter - Iteration number
-C     myThid - Number of this instance of the routine
+C     myTime :: my time in simulation ( s )
+C     myIter :: my Iteration number
+C     myThid :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
 CEndOfInterface
 
 #ifdef COMPONENT_MODULE
+#ifdef ALLOW_TIMEAVE
 
 C     == Local variables ==
-C     bi,bj  - Tile index
+C     bi,bj  :: Tile index
+C     fn     :: File name suffix
       INTEGER bi,bj
-      CHARACTER*(MAX_LEN_MBUF) fn
-      LOGICAL gf
+      CHARACTER*(MAX_LEN_FNAM) fn
+#ifdef ALLOW_MNC
       CHARACTER*(1) pf
+#endif /*  ALLOW_MNC  */
 
-
+#ifdef ALLOW_MNC
       IF ( writeBinaryPrec .EQ. precFloat64 ) THEN
         pf(1:1) = 'D'
       ELSE
         pf(1:1) = 'R'
       ENDIF
-
-#ifdef ALLOW_TIMEAVE
+#endif /*  ALLOW_MNC  */
 
 C     Dump files and restart average computation if needed
       IF ( myIter.NE.nIter0 .AND.
@@ -86,51 +88,30 @@ c          CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
          ENDDO
         ENDDO
 
-        IF (cpl_timeave_mdsio) THEN
-
-          _BARRIER
-          gf = globalFiles
-          WRITE(fn,'(A,I10.10)') 'cplFldtave.',myIter
-          CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, SLPtave ,  1, myIter, myThid )
-          CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, HFtave  ,  2, myIter, myThid )
-          CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, QSWtave ,  3, myIter, myThid )
-          CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, TXtave  ,  4, myIter, myThid )
-          CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, TYtave  ,  5, myIter, myThid )
-          CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, FWtave  ,  6, myIter, myThid )
-          CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, SFxtave ,  7, myIter, myThid )
-          CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, SICtave ,  8, myIter, myThid )
-          CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, MXLtave ,  9, myIter, myThid )
-          CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, SSTtave , 10, myIter, myThid )
-          CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, SSStave , 11, myIter, myThid )
-          CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, vSqtave , 12, myIter, myThid )
+        IF ( cpl_timeave_mdsio ) THEN
+          WRITE(fn,'(A,I10.10)') 'cplFldtave.', myIter
+          CALL WRITE_REC_XY_RL(  fn, SLPtave  ,  1, myIter, myThid )
+          CALL WRITE_REC_XY_RL(  fn, HFtave   ,  2, myIter, myThid )
+          CALL WRITE_REC_XY_RL(  fn, QSWtave  ,  3, myIter, myThid )
+          CALL WRITE_REC_XY_RL(  fn, TXtave   ,  4, myIter, myThid )
+          CALL WRITE_REC_XY_RL(  fn, TYtave   ,  5, myIter, myThid )
+          CALL WRITE_REC_XY_RL(  fn, FWtave   ,  6, myIter, myThid )
+          CALL WRITE_REC_XY_RL(  fn, SFxtave  ,  7, myIter, myThid )
+          CALL WRITE_REC_XY_RL(  fn, SICtave  ,  8, myIter, myThid )
+          CALL WRITE_REC_XY_RL(  fn, MXLtave  ,  9, myIter, myThid )
+          CALL WRITE_REC_XY_RL(  fn, SSTtave  , 10, myIter, myThid )
+          CALL WRITE_REC_XY_RL(  fn, SSStave  , 11, myIter, myThid )
+          CALL WRITE_REC_XY_RL(  fn, vSqtave  , 12, myIter, myThid )
           IF ( ocnCpl_exchange_DIC ) THEN
-            CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, aCO2tave , 13, myIter, myThid )
-            CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, sWSpdtave ,14, myIter, myThid )
-            CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, iceftave , 15, myIter, myThid )
-            CALL MDSWRITEFIELD(fn, writeBinaryPrec, gf, 'RL',
-     &         1, fCO2tave , 16, myIter, myThid )
+           CALL WRITE_REC_XY_RL( fn, aCO2tave , 13, myIter, myThid )
+           CALL WRITE_REC_XY_RL( fn, sWSpdtave, 14, myIter, myThid )
+           CALL WRITE_REC_XY_RL( fn, iceftave , 15, myIter, myThid )
+           CALL WRITE_REC_XY_RL( fn, fCO2tave , 16, myIter, myThid )
           ENDIF
-          _BARRIER
-
         ENDIF
 
 #ifdef ALLOW_MNC
-        IF (useMNC .AND. cpl_timeave_mnc) THEN
+        IF ( useMNC.AND.cpl_timeave_mnc ) THEN
           CALL MNC_CW_SET_UDIM('cpl_tave', -1, myThid)
           CALL MNC_CW_RL_W_S('D','cpl_tave',0,0,'T',myTime,myThid)
           CALL MNC_CW_SET_UDIM('cpl_tave', 0, myThid)
@@ -169,7 +150,7 @@ c          CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
             CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'fCO2tave',fCO2tave,myThid)
           ENDIF
-       ENDIF
+        ENDIF
 #endif /*  ALLOW_MNC  */
 
 C       Reset diagnostic counters
@@ -205,7 +186,6 @@ c           CALL TIMEAVE_RESET(VGtave ,1,bi,bj,myThid)
       ENDIF
 
 #endif /* ALLOW_TIMEAVE */
-
 #endif /* COMPONENT_MODULE */
 
       RETURN
