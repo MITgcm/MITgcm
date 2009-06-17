@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.45 2009/05/29 14:51:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.46 2009/06/17 07:33:08 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -40,6 +40,27 @@ C             note: for non-zero AREA, actual ice
 C                age is ICEAGE / AREA
 C \ev
 CEOP
+
+C--   Grid variables for seaice
+      COMMON/ARRAY/HEFFM
+      _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+#ifdef SEAICE_CGRID
+      COMMON/ARRAYC/ seaiceMaskU, seaiceMaskV
+      _RL seaiceMaskU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL seaiceMaskV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+C     k1/2AtZ :: coefficients at C and Z points
+C     k1/2AtC    for metric terms in U/V ice equations.
+      COMMON/ARRAYCMETRIC/  k1AtC, k1AtZ, k2AtC, k2AtZ
+      _RS k1AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RS k1AtZ      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RS k2AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RS k2AtZ      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+#else
+      COMMON/ARRAYB/ UVM
+      _RL UVM        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+#endif /* SEAICE_CGRID */
+
+C--   Dynamical variables
       COMMON/SEAICE_DYNVARS_1/AREA
       _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
 
@@ -101,23 +122,6 @@ C
       _RL ICEAGE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 #endif
 
-      COMMON/ARRAY/HEFFM
-      _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-#ifdef SEAICE_CGRID
-      COMMON/ARRAYC/ seaiceMaskU, seaiceMaskV
-      _RL seaiceMaskU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL seaiceMaskV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-C     k1/2AtZ :: coefficients at C and Z points
-C     k1/2AtC    for metric terms in U/V ice equations.
-      COMMON/ARRAYCMETRIC/  k1AtC, k1AtZ, k2AtC, k2AtZ
-      _RS k1AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RS k1AtZ      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RS k2AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RS k2AtZ      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-#else
-      COMMON/ARRAYB/ UVM
-      _RL UVM        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-#endif /* SEAICE_CGRID */
       COMMON/OFL/YNEG
       COMMON/RIV/RIVER
       _RL YNEG       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
