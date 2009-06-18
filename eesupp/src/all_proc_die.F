@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.1 2009/05/26 22:56:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/all_proc_die.F,v 1.2 2009/06/18 22:38:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -39,9 +39,7 @@ C     !FUNCTIONS
 
 C     == Local variables ==
 C     msgBuf       :: I/O Buffer
-C     errCount     :: error counter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER errCount
 #ifdef ALLOW_USE_MPI
 C     mpiRC        :: Error code reporting variable used with MPI.
       INTEGER mpiRC
