@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_e2setup.F,v 1.4 2009/05/12 19:40:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_e2setup.F,v 1.5 2009/06/18 22:37:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -34,17 +34,12 @@ C               (Note: not relevant since threading has not yet started)
 
 #ifdef ALLOW_EXCH2
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     msgBuf     :: Informational/error meesage buffer
 C     stdUnit    :: Standard-Output IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*(MAX_LEN_FNAM) fName
-      INTEGER stdUnit, iLen
+      INTEGER stdUnit
       INTEGER i, j, k
       LOGICAL addBlank
 CEOP

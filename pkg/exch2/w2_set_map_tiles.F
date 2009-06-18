@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_map_tiles.F,v 1.1 2009/05/12 19:40:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_map_tiles.F,v 1.2 2009/06/18 22:37:58 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -42,7 +42,7 @@ C     msgBuf     :: Informational/error meesage buffer
       INTEGER j, ii, k, tId, tx, ty
       INTEGER divise, nnx(W2_maxNbFacets)
       INTEGER errCnt, tCnt
-      LOGICAL tileIsActive, flag, prtFlag
+      LOGICAL tileIsActive, prtFlag
 CEOP
 
 C     Set-up tiles mapping and IO global mapping
