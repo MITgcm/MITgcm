@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.30 2009/04/28 22:00:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.31 2009/06/19 03:05:13 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -49,10 +49,6 @@ C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-      INTEGER  IFNBLNK
-      EXTERNAL IFNBLNK
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -63,6 +59,12 @@ C     sq      :: Justification option
       INTEGER       unit
       CHARACTER*(*) sq
       INTEGER  myThid
+
+C     !FUNCTIONS:
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -176,10 +178,6 @@ C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-      INTEGER  IFNBLNK
-      EXTERNAL IFNBLNK
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -188,27 +186,34 @@ C     myThid  :: Thread number of this instance
       CHARACTER*(*) message
       INTEGER       myThid
 
+C     !FUNCTIONS:
+c     INTEGER  IFNBLNK
+c     EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     iStart, iEnd :: Temps. for string indexing
 C     idString     :: Temp. for building message prefix
-      INTEGER iStart
+c     INTEGER iStart
       INTEGER iEnd
       CHARACTER*9 idString
 CEOP
 
 C--   Find beginning and end of message
-      iStart = IFNBLNK( message )
+c     iStart = IFNBLNK( message )
       iEnd   = ILNBLNK( message )
 C--   Test to see if in multi-process ( or multi-threaded ) mode.
 C     If so include process or thread identifier.
       IF ( numberOfProcs .EQ. 0 .AND. nThreads .EQ. 1 ) THEN
 C--    Write single process format
-       IF ( message .EQ. ' ' ) THEN
+       IF ( iEnd.EQ.0 ) THEN
         WRITE(errorMessageUnit,'(A,1X,A)') ERROR_HEADER, ' '
        ELSE
         WRITE(errorMessageUnit,'(A,1X,A)') ERROR_HEADER,
-     &   message(iStart:iEnd)
+     &        message(1:iEnd)
+c    &    message(iStart:iEnd)
        ENDIF
       ELSE
 C       PRINT_ERROR can be called by several threads simulataneously.
@@ -233,7 +238,8 @@ c         WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999)
 c         WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999)
           WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)')
      &    '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ',
-     &    message(iStart:iEnd)
+     &        message(1:iEnd)
+c    &    message(iStart:iEnd)
          ENDIF
        ENDIF
 
@@ -706,10 +712,6 @@ C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-      INTEGER  IFNBLNK
-      EXTERNAL IFNBLNK
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -739,6 +741,12 @@ C     kStr
       INTEGER kMin, kMax, kStr
       INTEGER bxMin, bxMax, bxStr
       INTEGER byMin, byMax, byStr
+
+C     !FUNCTIONS:
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -1137,10 +1145,6 @@ C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-      INTEGER  IFNBLNK
-      EXTERNAL IFNBLNK
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -1170,6 +1174,12 @@ C     kStr
       INTEGER kMin, kMax, kStr
       INTEGER bxMin, bxMax, bxStr
       INTEGER byMin, byMax, byStr
+
+C     !FUNCTIONS:
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
