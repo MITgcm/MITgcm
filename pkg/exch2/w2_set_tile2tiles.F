@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_tile2tiles.F,v 1.1 2009/05/12 19:40:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_tile2tiles.F,v 1.2 2009/06/19 03:01:24 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -31,10 +31,17 @@ C               (Note: not relevant since threading has not yet started)
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf  :: Informational/error meesage buffer
+C     tile_edge2edge(nId,tId) :: Tile edge to edge connection (of tile "tId"
+C                                and neighbour "nId"):
+C                1rst digit gives local tile Edge (10,20,30,40 <==> N,S,E,W)
+C                2nd  digit gives remote tile Edge (1,2,3,4 <==> N,S,E,W)
+C                corresponding to this neighbour connection.
+      INTEGER tile_edge2edge( W2_maxNeighbours, W2_maxNbTiles )
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER tNx, tNy, nbTx, nbNeighb
-      INTEGER i, k, ii, is, js, ns, it, jt, nt, tx, ty
+      INTEGER i, k, ii, nn
+      INTEGER is, js, ns, it, jt, nt, tx, ty
       INTEGER iLo, iHi, jLo, jHi
       INTEGER ii1, ii2, jj1, jj2, ddi, ddj
       INTEGER ibnd1, ibnd2, jbnd1, jbnd2
@@ -50,6 +57,13 @@ CEOP
       CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
       prtFlag = ABS(W2_printMsg).GE.2
      &       .OR. ( W2_printMsg .NE.0 .AND. myProcId.EQ.0 )
+
+C--   Initialise local arrays
+      DO is=1,W2_maxNbTiles
+       DO ns=1,W2_maxNeighbours
+        tile_edge2edge(ns,is) = 0
+       ENDDO
+      ENDDO
 
       tNx = sNx
       tNy = sNy
@@ -99,16 +113,22 @@ C--   Western Edge: [iLo,jLo:jHi]
 
          IF ( internConnect ) THEN
 C---  Internal (from the same facet)
+C-    N(i=1) -> S(ii=2); S(i=2) -> N(ii=1); E(i=3) -> W(ii=4); W(i=4) -> E(ii=3)
+C-    get tile neighbour Id "it":
             nbTx = facet_dims(2*js-1)/tNx
+            ii = 1 + MOD(i,2)
+            it = 2*ii - 3
             IF ( i.LE.2 ) THEN
-               it = is + (3-2*i)*nbTx
+               it = is + it*nbTx
             ELSE
-               it = is + (7-2*i)
+               it = is + it
+               ii = ii + 2
             ENDIF
             IF ( exch2_myFace(it).NE.0 ) THEN
                nbNeighb = nbNeighb + 1
                ns = MIN(nbNeighb,W2_maxNeighbours)
                exch2_neighbourId(ns,is) = it
+               tile_edge2edge(ns,is) = 10*i + ii
                exch2_pij(1,ns,is) = 1
                exch2_pij(2,ns,is) = 0
                exch2_pij(3,ns,is) = 0
@@ -161,6 +181,7 @@ C-    Save to common block this neighbour connection :
                nbNeighb = nbNeighb + 1
                ns = MIN(nbNeighb,W2_maxNeighbours)
                exch2_neighbourId(ns,is)  = it
+               tile_edge2edge(ns,is) = 10*i + ii
                DO k=1,4
                  exch2_pij(k,ns,is) = facet_pij(k,i,js)
                ENDDO
@@ -243,30 +264,35 @@ C-  Check nbNeighb =< W2_maxNeighbours
 
 C-    Set exch2_opposingSend(ns,is) = Neighbour Id (in list of neighbours
 C     of tile exch2_neighbourId(ns,is)) which is connected to tile "is"
-C     neighbour Id "ns" : go through the list
+C     neighbour Id "ns" with matching edge <-> edge connection (ii==i).
       errCnt = 0
       DO is=1,nTiles
        DO ns=1,exch2_nNeighbours(is)
-
+        i  = tile_edge2edge(ns,is)/10
+c       ii = MOD(tile_edge2edge(ns,is),10)
         it = exch2_neighbourId(ns,is)
         DO nt=1,exch2_nNeighbours(it)
-          IF ( exch2_neighbourId(nt,it).EQ.is ) THEN
+c         i  = tile_edge2edge(nt,it)/10
+          ii = MOD(tile_edge2edge(nt,it),10)
+          IF ( exch2_neighbourId(nt,it).EQ.is .AND. ii.EQ.i ) THEN
            IF ( exch2_opposingSend(ns,is).EQ.0 ) THEN
             exch2_opposingSend(ns,is) = nt
            ELSE
-            WRITE(msgBuf,'(A,I5,A,I3,A)')
-     &       'Tile',is,' neighb:',ns,' has multiple connection'
+            nn = exch2_opposingSend(ns,is)
+            WRITE(msgBuf,'(A,I5,2(A,I3),A,I5)') 'Tile',is,' neighb:',
+     &      ns,' (',tile_edge2edge(ns,is),' ) has multiple connection'
             CALL PRINT_ERROR( msgBuf, myThid )
-            WRITE(msgBuf,'(A,I5,A,2I3)')
-     &       'with tile',it,' :',exch2_opposingSend(ns,is),nt
+            WRITE(msgBuf,'(A,I5,5(A,I3))') ' with tile', it, ' :',
+     &      nn,' (',tile_edge2edge(nn,it),' ) and',
+     &      nt,' (',tile_edge2edge(nt,it),' )'
             CALL PRINT_ERROR( msgBuf, myThid )
             errCnt = errCnt + 1
            ENDIF
           ENDIF
         ENDDO
         IF ( exch2_opposingSend(ns,is).EQ.0 ) THEN
-            WRITE(msgBuf,'(A,I5,A,I3,A,I5)')
-     &       'Tile',is,' neighb:',ns,' no connection from',it
+            WRITE(msgBuf,'(A,I5,2(A,I3),A,I5)') 'Tile',is,' neighb:',
+     &      ns,' (',tile_edge2edge(ns,is),' ) no connection from',it
             CALL PRINT_ERROR( msgBuf, myThid )
             errCnt = errCnt + 1
         ENDIF
@@ -278,6 +304,37 @@ C     neighbour Id "ns" : go through the list
      &   ' W2_SET_TILE2TILES: found', errCnt, ' Dbl/No connection'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R W2_SET_TILE2TILES (tile connection)'
+      ENDIF
+C--  Check opposingSend reciprocity:
+      errCnt = 0
+      DO is=1,nTiles
+       DO ns=1,exch2_nNeighbours(is)
+        it = exch2_neighbourId(ns,is)
+        nt = exch2_opposingSend(ns,is)
+        ii = exch2_neighbourId(nt,it)
+        nn = exch2_opposingSend(nt,it)
+        IF ( ii.NE.is .OR. nn.NE.ns ) THEN
+          WRITE(msgBuf,'(A,I5,2(A,I3),A)') 'Tile',is,' neighb:',
+     &      ns,' (',tile_edge2edge(ns,is),' ) connected'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A,I5,5(A,I3))') ' with tile', it, ' :',
+     &      nt,' (',tile_edge2edge(nt,it),' )'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A,I5,2(A,I3),A)') ' but',it,' neighb:',
+     &      nt,' (',tile_edge2edge(nt,it),' ) connected'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A,I5,3(A,I3))') ' with tile', ii, ' :',
+     &      nn,' (',tile_edge2edge(nn,ii),' )'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCnt = errCnt + 1
+        ENDIF
+       ENDDO
+      ENDDO
+      IF ( errCnt.GT.0 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &   ' W2_SET_TILE2TILES: found', errCnt, ' opposingSend error'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R W2_SET_TILE2TILES (opposingSend)'
       ENDIF
 
       RETURN
