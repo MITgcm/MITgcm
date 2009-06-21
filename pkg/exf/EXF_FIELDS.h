@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.6 2008/11/07 20:49:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.7 2009/06/21 21:58:56 dimitri Exp $
 C $Name:  $
 c
 c
@@ -34,7 +34,7 @@ C                  Typical range: -0.5 < vstress < 0.5
 C                  Input field
 c
 C     hflux     :: Net upward surface heat flux excluding shortwave in W/m^2
-C                  hflux = latent + sensible + lwflux
+C                  hflux = latent + sensible + lwflux + swflux
 C                  > 0 for decrease in theta (ocean cooling)
 C                  Typical range: -250 < hflux < 600
 C                  Input field
@@ -139,9 +139,6 @@ C     by exf_readparms.F
 c
 C     Output fields fu, fv, Qnet, Qsw, and EmPmR are
 C     defined in FFIELDS.h
-c
-C     #ifndef SHORTWAVE_HEATING, hflux includes shortwave,
-C     that is, hflux = latent + sensible + lwflux +swflux
 c
 C     Arrays *0 and *1 below are used for temporal interpolation.
 c
