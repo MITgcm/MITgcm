@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.58 2009/06/04 17:27:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.59 2009/06/21 23:08:48 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -104,6 +104,7 @@ C     local copy of AREA
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
+      _RL DIAGarray     (1:sNx,1:sNy)
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
 #endif
@@ -176,7 +177,6 @@ CADJ &                         key = iicekey, byte = isbyte
          DO I=1-oLx,sNx+oLx
           saltWtrIce(I,J,bi,bj) = 0.0 _d 0
           frWtrIce(I,J,bi,bj)   = 0.0 _d 0
-          frWtrAtm(I,J,bi,bj)   = 0.0 _d 0
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -309,13 +309,28 @@ C--  End loop over multi-categories
      O       FICE, QSWI, 
      I       bi, bj, myTime, myIter, myThid )
 #endif /* SEAICE_MULTICATEGORY */
-     
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+         IF ( DIAGNOSTICS_IS_ON('SIatmQnt',myThid) ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            DIAGarray(I,J) = maskC(I,J,kSurface,bi,bj) * (
+     &           FICE(I,J) * AREA(I,J,2,bi,bj) +
+     &           QNETO(I,J) * ( ONE - AREA(I,J,2,bi,bj) ) )
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(DIAGarray,'SIatmQnt',0,1,3,bi,bj,myThid)
+         ENDIF
+        ENDIF
+#endif
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj)= comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif
 C
 C--   compute and apply ice growth due to oceanic heat flux from below
 C
@@ -363,6 +378,14 @@ C     saltWtrIce contains m of ice melted (<0) or created (>0)
 C     RESID_HEAT is residual heat above freezing in equivalent m of ice
          ENDDO
         ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+         IF ( DIAGNOSTICS_IS_ON('SIyneg  ',myThid) ) THEN
+          CALL DIAGNOSTICS_FILL(YNEG,'SIyneg  ',0,1,1,bi,bj,myThid)
+         ENDIF
+        ENDIF
+#endif
 
 cph(
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -461,6 +484,9 @@ C     negative growth in meters of ice (>0 for melting)
 C     negative growth must not exceed effective ice thickness (=volume)
 C     (that is, cannot melt more than all the ice)
           growthHEFF = -ONE*MIN(HEFF(I,J,1,bi,bj),growthNeg)
+#ifdef ALLOW_DIAGNOSTICS
+          DIAGarray(I,J) = growthHEFF
+#endif
 C     growthHEFF < 0 means melting
           HCORR(I,J) = MIN(ZERO,growthHEFF)
 C     gain of new effective ice thickness over open water (>0 by definition)
@@ -488,6 +514,15 @@ C     Here we finally compute the new AREA
           ENDIF
          ENDDO
         ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+         IF ( DIAGNOSTICS_IS_ON('SIfice  ',myThid) ) THEN
+          CALL DIAGNOSTICS_FILL(DIAGarray,'SIfice  ',0,1,3,bi,bj,myThid)
+         ENDIF
+        ENDIF
+#endif
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
@@ -589,28 +624,36 @@ CADJ &                        key = iicekey, byte = isbyte
 #ifdef ALLOW_ATM_TEMP
         DO J=1,sNy
          DO I=1,sNx
-
 C NOW GET FRESH WATER FLUX
           EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
      &         ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
      &         * ( ONE - AREA(I,J,2,bi,bj) )
 #ifdef ALLOW_RUNOFF
      &         - RUNOFF(I,J,bi,bj)
-#endif /* ALLOW_RUNOFF */
+#endif
      &         + frWtrIce(I,J,bi,bj)*ICE2WATR/SEAICE_deltaTtherm
      &         + saltWtrIce(I,J,bi,bj)*ICE2WATR/SEAICE_deltaTtherm
      &         )*rhoConstFresh
-#ifdef ALLOW_DIAGNOSTICS
-          frWtrAtm(I,J,bi,bj)   = maskC(I,J,kSurface,bi,bj)*(
-     &           PRECIP(I,J,bi,bj) 
-     &         - EVAP(I,J,bi,bj)
-     &               *( ONE - AREA(I,J,2,bi,bj) )
-     &         + RUNOFF(I,J,bi,bj)
-     &         )*rhoConstFresh
-#endif /* ALLOW_DIAGNOSTICS */
-
          ENDDO
         ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+         IF ( DIAGNOSTICS_IS_ON('SIatmFW ',myThid) ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            DIAGarray(I,J) = maskC(I,J,kSurface,bi,bj)*(
+     &           PRECIP(I,J,bi,bj) 
+     &           - EVAP(I,J,bi,bj)
+     &           *( ONE - AREA(I,J,2,bi,bj) )
+     &           + RUNOFF(I,J,bi,bj)
+     &           )*rhoConstFresh
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(DIAGarray,'SIatmFW ',0,1,3,bi,bj,myThid)
+         ENDIF
+        ENDIF
+#endif
 
 C COMPUTE SURFACE SALT FLUX AND ADJUST ICE SALINITY
 
@@ -687,6 +730,27 @@ C NOW GET TOTAL QNET AND QSW
      &                     +QSWO(I,J)  * (ONE-AREA(I,J,2,bi,bj))
          ENDDO
         ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+         IF ( DIAGNOSTICS_IS_ON('SIqneto ',myThid) ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            DIAGarray(I,J) = QNETO(I,J) * (ONE-AREA(I,J,2,bi,bj))
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(DIAGarray,'SIqneto ',0,1,3,bi,bj,myThid)
+         ENDIF
+         IF ( DIAGNOSTICS_IS_ON('SIqneti ',myThid) ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            DIAGarray(I,J) = QNETI(I,J) * AREA(I,J,2,bi,bj)
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(DIAGarray,'SIqneti ',0,1,3,bi,bj,myThid)
+         ENDIF
+        ENDIF
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cphCADJ STORE yneg(:,:,bi,bj) = comlev1_bibj, 

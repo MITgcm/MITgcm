@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.71 2009/06/11 20:31:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.72 2009/06/21 23:08:48 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -220,10 +220,8 @@ C     the seaice model
         CALL DIAGNOSTICS_FILL(EmPmR  ,'SIempmr ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(Qnet   ,'SIqnet  ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL(Qsw    ,'SIqsw   ',0,1 ,0,1,1,myThid)
-        CALL DIAGNOSTICS_FILL(frWtrAtm,'SIatmFW ',0,1 ,0,1,1,myThid)
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-
 
 #ifdef ALLOW_THSICE
 C     endif .not.useThSice

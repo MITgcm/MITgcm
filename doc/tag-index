@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1126 2009/06/17 20:26:00 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1127 2009/06/21 23:08:48 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o adding doc/diags_changes.txt
 o model/src: 
   do_the_model_io: rename few pkg S/R which are called from do_the_model_io, 
    to avoid "_diags" naming if no relation to pkg/diagnostics.
@@ -19,7 +20,8 @@ o pkg/thsice:
 o pkg/seaice: 
  - make the (placeholder-)tracer IceAge a little more meaningful
   by avoiding ridging of age due to convergent ice flow
- - add diagnostics for surface temperature
+ - add diagnostics for surface temperature, atmospheric and oceanic
+   heat flux, and atmospheric and oceanic ice growth
 
 checkpoint61p
 o eesupp (global_max & global_sum):

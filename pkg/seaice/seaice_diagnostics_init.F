@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.16 2009/06/11 12:31:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.17 2009/06/21 23:08:48 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -108,12 +108,77 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, numArea, myThid )
 
+C     SIqnet, Qnet, and QNETtave are identical.
+C     With #undef NONLIN_FRSURF SIqnet is identical to -(TFLUX-TRELAX).
+C     Except over land and under sea ice, SIqnet is also identical to
+C     EXFlwnet+EXFswnet-EXFhl-EXFhs.
+      diagName  = 'SIqnet  '
+      diagTitle = 'Ocean surface heatflux, turb+rad, >0 decreases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+
+C     SIqsw, Qsw, and QSWtave are identical.
+C     Except under sea ice, SIqsw is also identical to EXFswnet.
+      diagName  = 'SIqsw   '
+      diagTitle = 'Ocean surface shortwave radiat., >0 decreases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIatmQnt'
+      diagTitle = 'Net atmospheric heat flux, >0 decreases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIqneto '
+      diagTitle = 'Heat flux over ocean, turb+rad, >0 decreases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIqneti '
+      diagTitle = 'Heat flux under ice, turb+rad, >0 decreases theta'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
+
+C     pkg/diagnostics SIempmr, dumpfreq EmPmR, and tavefreq EmPmRtave
+C     are identical but they differ from pkg/diagnostics EXFempmr, which
+C     is EmPmR before impact of ice.
+      diagName  = 'SIempmr '
+      diagTitle = 'Ocean surface freshwater flux, > 0 increases salt'
+      diagUnits = 'kg/m^2/s        '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
       diagName  = 'SIatmFW '
       diagTitle = 'Net freshwater flux from the atmosphere (+=down)'
       diagUnits = 'kg/m^2/s        '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIyneg  '
+      diagTitle = 'Ice growth due to oceanic heat flux , >0 melts ice'
+      diagUnits = 'm               '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'SIfice  '
+      diagTitle = 'Ice growth due to atm heat flux, >0 creates ice'
+      diagUnits = 'm               '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'SIuwind '
       diagTitle = 'SEAICE zonal 10-m wind speed, >0 increases uVel'
@@ -148,36 +213,6 @@ C     formulae, EXFtauy is defined on tracer rather than vvel points.
       diagTitle = 'SEAICE merid. surface wind stress, >0 increases vVel'
       diagUnits = 'N/m^2           '
       diagCode  = 'VV      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, myThid )
-
-C     pkg/diagnostics SIempmr, dumpfreq EmPmR, and tavefreq EmPmRtave
-C     are identical but they differ from pkg/diagnostics EXFempmr, which
-C     is EmPmR before impact of ice.
-      diagName  = 'SIempmr '
-      diagTitle = 'SEAICE upward freshwater flux, > 0 increases salt'
-      diagUnits = 'kg/m^2/s        '
-      diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, myThid )
-
-C     SIqnet, Qnet, and QNETtave are identical.
-C     With #undef NONLIN_FRSURF SIqnet is identical to -(TFLUX-TRELAX).
-C     Except over land and under sea ice, SIqnet is also identical to
-C     EXFlwnet+EXFswnet-EXFhl-EXFhs.
-      diagName  = 'SIqnet  '
-      diagTitle = 'SEAICE upward heatflux, turb+rad, >0 decreases theta'
-      diagUnits = 'W/m^2           '
-      diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADD2LIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, myThid )
-
-C     SIqsw, Qsw, and QSWtave are identical.
-C     Except under sea ice, SIqsw is also identical to EXFswnet.
-      diagName  = 'SIqsw   '
-      diagTitle = 'SEAICE upward shortwave radiat., >0 decreases theta'
-      diagUnits = 'W/m^2           '
-      diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, myThid )
 

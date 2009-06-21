@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.40 2009/06/17 07:33:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.41 2009/06/21 23:08:48 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -133,7 +133,6 @@ C--   Initialise all variables in common blocks:
 #endif
           saltWtrIce(i,j,bi,bj) = 0. _d 0
           frWtrIce(i,j,bi,bj)   = 0. _d 0
-          frWtrAtm(i,j,bi,bj)   = 0. _d 0
          ENDDO
         ENDDO
        ENDDO

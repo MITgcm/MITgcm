@@ -1,0 +1,115 @@
+Jun 21, 2009
+Some redundancies and relations for model diagnostics:
+
+1) Qnet = QNETtave = - oceQnet = SIqnet
+   for open-ocean: Qnet = EXFqnet = SIqneto
+
+2) EXFqnet = EXFlwnet + EXFswnet - EXFhl - EXFhs
+
+3) Qsw = QSWtave = - oceQsw = SIqsw
+   for open-ocean: Qsw = EXFswnet
+
+4) EmPmR = EmPmRtave = -oceFWflx = SIempmr
+
+================================================================
+
+Nov 19, 2006 (after tag checkpoint58r_post)
+
+I) Some diagnostics have been renamed (essentially, to better
+match the content):
+
+1) name:	description (oceanic set-up):
+PRESSURE	Cell-Center Height
+replaced by:
+RCENTER		Cell-Center Height
+
+2) name:	description (oceanic set-up):
+TICE		heat from melt/freeze of sea-ice, >0 increases theta
+replaced by:
+oceFreez	heating from freezing of sea-water (allowFreezing=T)
+
+3) name:	description (oceanic set-up):
+TAUX		zonal surface wind stress, >0 increases uVel
+TAUY		meridional surf. wind stress, >0 increases vVel
+replaced by:
+oceTAUX		zonal surface wind stress, >0 increases uVel
+oceTAUY		meridional surf. wind stress, >0 increases vVel
+
+4) name:	description (oceanic set-up):
+SWFLUX		net upward SW radiation, >0 increases theta
+replaced by:
+oceQsw		net Short-Wave radiation (+=down), >0 increases theta
+
+5) name:	description (oceanic set-up):
+DIFx_TH		Zonal      Diffusive Flux of Pot.Temperature
+DIFy_TH		Meridional Diffusive Flux of Pot.Temperature
+replaced by:
+DFxE_TH		Zonal      Diffusive Flux of Pot.Temperature
+DFyE_TH		Meridional Diffusive Flux of Pot.Temperature
+
+6) name:	description (oceanic set-up):
+DIFx_SLT	Zonal      Diffusive Flux of Salinity
+DIFy_SLT	Meridional Diffusive Flux of Salinity
+replaced by:
+DFxE_SLT	Zonal      Diffusive Flux of Salinity
+DFyE_SLT	Meridional Diffusive Flux of Salinity
+
+-----------------------------------------------
+II) Change description of existing diagnostics:
+
+name:		old description (oceanic set-up):
+TFLUX   	net surface heat flux, >0 increases theta
+SFLUX   	net surface salt flux, >0 increases salt
+name:		new description (oceanic set-up):
+TFLUX   	total heat flux (match heat-content variations), >0 increases theta
+SFLUX   	total salt flux (match salt-content variations), >0 increases salt
+
+-----------------------------------------------
+III) New diagnostics have been added:
+
+name:		description (oceanic set-up):
+atmPload	Atmospheric pressure loading
+sIceLoad 	sea-ice loading (in Mass of ice+snow / area unit)
+oceQnet		net surface heat flux into the ocean (+=down), >0 increases theta
+oceFWflx	net surface Fresh-Water flux into the ocean (+=down), >0 decreases salinity
+oceSflux 	net surface Salt flux into the ocean (+=down), >0 increases salinity
+surForcT	model surface forcing for Temperature, >0 increases theta
+surForcS	model surface forcing for Salinity, >0 increases salinity
+
+--------------------------------------------------------------------------
+Relation between surForcT,surForcS and others surface forcing diagnostics:
+ [x] = average of model variable "x" over the diagnostic time interval
+
+a) if useRealFreshWaterFlux=F or (nonlinFreeSurf=0 & usingZCoords=T)
+ surForcT = oceQnet  + TRELAX - oceQsw
+ surForcS = oceSflux + SRELAX - [PmEpR*So]
+  (with So = local Sea-Surface Salinity (SSS) if convertFW2Salt=-1
+    and So = convertFW2Salt otherwise)
+ oceFWflx = [PmEpR]
+ TFLUX = surForcT + oceQsw + oceFreez
+ SFLUX = surForcS
+
+b) if useRealFreshWaterFlux=T & (nonlinFreeSurf>0 or usingPCoords=T),
+In general:
+ surForcT = oceQnet  + TRELAX - oceQsw + [T_dilution_effect]*Cp
+ surForcS = oceSflux + SRELAX          + [S_dilution_effect]
+    where T_dilution_effect = PmEpR*( temp_EvPrRn - SST )
+      and S_dilution_effect = PmEpR*( salt_EvPrRn - SSS )
+ oceFWflx = [PmEpR]
+ TFLUX = surForcT + oceQsw + oceFreez + [PmEpR*SST]*Cp
+ SFLUX = surForcS + [PmEpR*SSS]
+
+And with the default value: salt_EvPrRn=0. & temp_EvPrRn=UNSET_RL
+ (=> no dilution effect on Temp.):
+ surForcT = oceQnet  + TRELAX - oceQsw
+ surForcS = oceSflux + SRELAX - [PmEpR*SSS]
+
+Notes:
+1) here PmEpR is assumed to be the fresh-water mass flux
+ per surface area [units: kg/m^2/s] whereas the model variable
+ EmPmR is still a volume flux per surface area [units: m/s].
+2) with Linear Free surface (nonlinFreeSurf=0), the term
+corresponding to w_surface*SST,SSS is missing in TFLUX,SFLUX
+[might be added later ?] to match exactly the Heat and Salt
+budget evolution.
+--------------------------------------------------------------------------
