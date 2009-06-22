@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.33 2009/06/11 09:04:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.34 2009/06/22 15:57:45 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -75,6 +75,8 @@ C-    MPI+MTH: apply exch (sure with exch1) only to array in common block
       _RL afy       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gFld      (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL fld3d     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
+      _RL tmpfld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gtmpfld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS xA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL recip_heff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -154,11 +156,13 @@ C     Initialise for TAF
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFF(i,j,3,bi,bj) = 0. _d 0
-          HEFF(i,j,2,bi,bj) = HEFF(i,j,1,bi,bj)
-          AREA(i,j,3,bi,bj) = 0. _d 0
-          AREA(i,j,2,bi,bj) = AREA(i,j,1,bi,bj)
-          recip_heff(i,j)   = 1. _d 0
+          HEFF(i,j,3,bi,bj)  = 0. _d 0
+          HEFF(i,j,2,bi,bj)  = HEFF(i,j,1,bi,bj)
+          HEFFNM1(i,j,bi,bj) = HEFF(i,j,1,bi,bj)
+          AREA(i,j,3,bi,bj)  = 0. _d 0
+          AREA(i,j,2,bi,bj)  = AREA(i,j,1,bi,bj)
+          AREANM1(i,j,bi,bj) = AREA(i,j,1,bi,bj)
+          recip_heff(i,j)    = 1. _d 0
          ENDDO
         ENDDO
 
@@ -351,8 +355,48 @@ CADJ STORE uc   = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-       IF ( SEAICEadvHEff ) CALL ADVECT( uc, vc, HEFF, HEFFM, myThid )
-       IF ( SEAICEadvArea ) CALL ADVECT( uc, vc, AREA, HEFFM, myThid )
+       IF ( SEAICEadvHEff ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            tmpFld(i,j,bi,bj) = HEFF(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL ADVECT( uc, vc, tmpFld, hEffNm1, HEFFM, myThid )
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            HEFF(i,j,1,bi,bj) = tmpFld(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+       IF ( SEAICEadvArea ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            tmpFld(i,j,bi,bj) = AREA(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL ADVECT( uc, vc, tmpFld, areaNm1, HEFFM, myThid )
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            AREA(I,J,1,bi,bj) = tmpFld(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
 
 C     another fudge: copy 2D field HSNOW to 3D field fld3d to be able to
 C     use ADVECT. Works only with LAD=2 (Backward Euler scheme) and NOT
@@ -362,23 +406,12 @@ C     with LAD=1 (Leapfrog).
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            fld3d(I,J,3,bi,bj) = 0. _d 0
-            fld3d(I,J,2,bi,bj) = HSNOW(I,J,bi,bj)
-            fld3d(I,J,1,bi,bj) = HSNOW(I,J,bi,bj)
+            gtmpFld(I,J,bi,bj) = HSNOW(I,J,bi,bj)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-        CALL ADVECT( uc, vc, fld3d, HEFFM, myThid )
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            HSNOW(I,J,bi,bj) = fld3d(I,J,1,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
+        CALL ADVECT( uc, vc, HSNOW, gtmpFld, HEFFM, myThid )
        ENDIF
 
 #ifdef SEAICE_SALINITY
@@ -390,23 +423,12 @@ C     with LAD=1 (Leapfrog).
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            fld3d(I,J,3,bi,bj) = 0. _d 0
-            fld3d(I,J,2,bi,bj) = HSALT(I,J,bi,bj)
-            fld3d(I,J,1,bi,bj) = HSALT(I,J,bi,bj)
+            gtmpFld(I,J,bi,bj) = HSALT(I,J,bi,bj)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-        CALL ADVECT( uc, vc, fld3d, HEFFM, myThid )
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            HSALT(I,J,bi,bj) = fld3d(I,J,1,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
+        CALL ADVECT( uc, vc, HSALT, gtmpFld, HEFFM, myThid )
        ENDIF
 #endif /* SEAICE_SALINITY */
 
@@ -419,23 +441,12 @@ C     with LAD=1 (Leapfrog).
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            fld3d(I,J,3,bi,bj) = 0. _d 0
-            fld3d(I,J,2,bi,bj) = IceAge(I,J,bi,bj)
-            fld3d(I,J,1,bi,bj) = IceAge(I,J,bi,bj)
+            gtmpFld(I,J,bi,bj) = IceAge(I,J,bi,bj)
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-        CALL ADVECT( uc, vc, fld3d, HEFFM, myThid )
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            IceAge(I,J,bi,bj) = fld3d(I,J,1,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
+        CALL ADVECT( uc, vc, iceAge, gtmpFld, HEFFM, myThid )
        ENDIF
 #endif /* SEAICE_AGE */
 

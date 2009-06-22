@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.41 2009/06/21 23:08:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.42 2009/06/22 15:57:45 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -64,6 +64,14 @@ C--   Initialise all variables in common blocks:
            UICE(i,j,k,bi,bj)=0. _d 0
            VICE(i,j,k,bi,bj)=0. _d 0
           ENDDO
+         ENDDO
+        ENDDO
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          uIceNm1(i,j,bi,bj)=0. _d 0
+          vIceNm1(i,j,bi,bj)=0. _d 0
+          areaNm1(i,j,bi,bj)=0. _d 0
+          hEffNm1(i,j,bi,bj)=0. _d 0
          ENDDO
         ENDDO
 #ifdef SEAICE_MULTICATEGORY

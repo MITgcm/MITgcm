@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.47 2009/06/22 13:33:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.48 2009/06/22 15:57:45 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -102,6 +102,8 @@ C     auxillary fields
       _RL CUU  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL VRT  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL CVV  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL uTmp (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL vTmp (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 C
       _RL SINWAT, COSWAT
       _RL TEMPVAR
@@ -146,8 +148,8 @@ C NOW DO PREDICTOR TIME STEP
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           uIce(I,J,2,bi,bj)=uIce(I,J,1,bi,bj)
-           vIce(I,J,2,bi,bj)=vIce(I,J,1,bi,bj)
+           uIceNm1(i,j,bi,bj)=uIce(I,J,1,bi,bj)
+           vIceNm1(i,j,bi,bj)=vIce(I,J,1,bi,bj)
            uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
            vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
           ENDDO
@@ -166,8 +168,8 @@ C NOW DO MODIFIED EULER STEP
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           uIce(I,J,1,bi,bj)=HALF*(uIce(I,J,1,bi,bj)+uIce(I,J,2,bi,bj))
-           vIce(I,J,1,bi,bj)=HALF*(vIce(I,J,1,bi,bj)+vIce(I,J,2,bi,bj))
+           uIce(I,J,1,bi,bj)=HALF*(uIce(I,J,1,bi,bj)+uIceNm1(i,j,bi,bj))
+           vIce(I,J,1,bi,bj)=HALF*(vIce(I,J,1,bi,bj)+vIceNm1(i,j,bi,bj))
            uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
            vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
           ENDDO
@@ -176,13 +178,13 @@ C NOW DO MODIFIED EULER STEP
        ENDDO
       ENDIF
       IF ( ilcall .GT. 2 ) THEN
-C     update  u/vIce(k-2)
+C     for additional (pseudo-time)steps update u/vIceNm1
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           uIce(I,J,2,bi,bj)=uIce(I,J,1,bi,bj)
-           vIce(I,J,2,bi,bj)=vIce(I,J,1,bi,bj)
+           uIceNm1(i,j,bi,bj)=uIce(I,J,1,bi,bj)
+           vIceNm1(i,j,bi,bj)=vIce(I,J,1,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -271,10 +273,10 @@ C      this is the rhs contribution of the time derivative
          DO i=1,sNx
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
      &         +seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         *uIce(I,J,2,bi,bj)
+     &         *uIceNm1(i,j,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
      &         +seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         *vIce(I,J,2,bi,bj)
+     &         *vIceNm1(i,j,bi,bj)
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)* seaiceMaskU(I,J,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)* seaiceMaskV(I,J,bi,bj)
          ENDDO
@@ -514,9 +516,10 @@ CADJ LOOP = iteration uice
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C NOW SET U(3)=U(1)
+C     save uIce prior to iteration
         DO J=jMin,jMax
          DO I=1,sNx
-          uIce(I,J,3,bi,bj)=uIce(I,J,1,bi,bj)
+          uTmp(I,J,bi,bj)=uIce(I,J,1,bi,bj)
          ENDDO
         ENDDO
 
@@ -567,8 +570,8 @@ C     go back to original order
           URT(J1,J)=URT(J1,J)-CUU(J1,J)*URT(J2,J)
          ENDDO
          DO I=1,sNx
-          uIce(I,J,1,bi,bj)=uIce(I,J,3,bi,bj)
-     &        +WFAU*(URT(I,J)-uIce(I,J,3,bi,bj))
+          uIce(I,J,1,bi,bj)=uTmp(I,J,bi,bj)
+     &        +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
          ENDDO
         ENDDO
 C     end bi,bj-loops
@@ -581,7 +584,7 @@ C     end bi,bj-loops
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy
           DO I=1,sNx
-           UERR=(uIce(I,J,1,bi,bj)-uIce(I,J,3,bi,bj))
+           UERR=(uIce(I,J,1,bi,bj)-uTmp(I,J,bi,bj))
      &             * seaiceMaskU(I,J,bi,bj)
            S1=MAX(ABS(UERR),S1)
           ENDDO
@@ -599,6 +602,7 @@ C SAFEGUARD AGAINST BAD FORCING ETC
         phexit = 1
        ENDIF
       ENDIF
+CML      CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
       CALL EXCH_UV_3D_RL( uIce, vIce, .TRUE., 3, myThid )
 
       ENDIF
@@ -785,9 +789,10 @@ CADJ LOOP = iteration vice
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C NOW SET V(3)=V(1)
+C     save vIce prior to iteration
         DO J=1,sNy
          DO I=iMin,iMax
-          vIce(I,J,3,bi,bj)=vIce(I,J,1,bi,bj)
+          vTmp(I,J,bi,bj)=vIce(I,J,1,bi,bj)
          ENDDO
         ENDDO
 
@@ -826,8 +831,8 @@ C NOW SET V(3)=V(1)
           VRT(I,J1)=VRT(I,J1)-CVV(I,J1)*VRT(I,J2)
          ENDDO
          DO J=1,sNy
-          vIce(I,J,1,bi,bj)=vIce(I,J,3,bi,bj)
-     &        +WFAV*(VRT(I,J)-vIce(I,J,3,bi,bj))
+          vIce(I,J,1,bi,bj)=vTmp(I,J,bi,bj)
+     &        +WFAV*(VRT(I,J)-vTmp(I,J,bi,bj))
          ENDDO
         ENDDO
 C     end bi,bj-loops
@@ -840,7 +845,7 @@ C     end bi,bj-loops
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy
           DO I=1,sNx
-           UERR=(vIce(I,J,1,bi,bj)-vIce(I,J,3,bi,bj))
+           UERR=(vIce(I,J,1,bi,bj)-vTmp(I,J,bi,bj))
      &             * seaiceMaskV(I,J,bi,bj)
            S2=MAX(ABS(UERR),S2)
           ENDDO
@@ -943,6 +948,8 @@ C
 
       _RL UVRT1    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL UVRT2    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL uTmp     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL vTmp     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
       _RL dUdx     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dUdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -994,8 +1001,8 @@ C NOW DO PREDICTOR TIME STEP
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           uIce(I,J,2,bi,bj)=uIce(I,J,1,bi,bj)
-           vIce(I,J,2,bi,bj)=vIce(I,J,1,bi,bj)
+           uIceNm1(i,j,bi,bj)=uIce(I,J,1,bi,bj)
+           vIceNm1(i,j,bi,bj)=vIce(I,J,1,bi,bj)
            uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
            vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
           ENDDO
@@ -1014,8 +1021,8 @@ C NOW DO MODIFIED EULER STEP
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           uIce(I,J,1,bi,bj)=HALF*(uIce(I,J,1,bi,bj)+uIce(I,J,2,bi,bj))
-           vIce(I,J,1,bi,bj)=HALF*(vIce(I,J,1,bi,bj)+vIce(I,J,2,bi,bj))
+           uIce(I,J,1,bi,bj)=HALF*(uIce(I,J,1,bi,bj)+uIceNm1(i,j,bi,bj))
+           vIce(I,J,1,bi,bj)=HALF*(vIce(I,J,1,bi,bj)+vIceNm1(i,j,bi,bj))
            uIceC(I,J,bi,bj)=uIce(I,J,1,bi,bj)
            vIceC(I,J,bi,bj)=vIce(I,J,1,bi,bj)
           ENDDO
@@ -1023,14 +1030,14 @@ C NOW DO MODIFIED EULER STEP
         ENDDO
        ENDDO
       ENDIF
-C     for additional (pseudo-time)steps update u(k-1) = uice(2)
+C     for additional (pseudo-time)steps update u/vIceNm1
       IF ( ilcall .GT. 2 ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           uIce(I,J,2,bi,bj)=uIce(I,J,1,bi,bj)
-           vIce(I,J,2,bi,bj)=vIce(I,J,1,bi,bj)
+           uIceNm1(i,j,bi,bj)=uIce(I,J,1,bi,bj)
+           vIceNm1(i,j,bi,bj)=vIce(I,J,1,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -1134,10 +1141,10 @@ C      this is the rhs contribution of the time derivative
          DO i=1,sNx
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
      &         +seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         *uIce(I,J,2,bi,bj)
+     &         *uIceNm1(i,j,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
      &         +seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
-     &         *vIce(I,J,2,bi,bj)
+     &         *vIceNm1(i,j,bi,bj)
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)* seaiceMaskU(I,J,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)* seaiceMaskV(I,J,bi,bj)
          ENDDO
@@ -1363,7 +1370,7 @@ CADJ LOOP = iteration uice
 C NOW SET U(3)=U(1)
         DO J=jMin,jMax
          DO I=1,sNx
-          uIce(I,J,3,bi,bj)=uIce(I,J,1,bi,bj)
+          uTmp(I,J,bi,bj)=uIce(I,J,1,bi,bj)
          ENDDO
         ENDDO
 
@@ -1418,8 +1425,8 @@ C     go back to original order
           URT(J1,J)=URT(J1,J)-CUU(J1,J)*URT(J2,J)
          ENDDO
          DO I=1,sNx
-          uIce(I,J,1,bi,bj)=uIce(I,J,3,bi,bj)
-     &        +WFAU*(URT(I,J)-uIce(I,J,3,bi,bj))
+          uIce(I,J,1,bi,bj)=uTmp(I,J,bi,bj)
+     &        +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
          ENDDO
         ENDDO
 C     end bi,bj-loops
@@ -1432,7 +1439,7 @@ C     end bi,bj-loops
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy
           DO I=1,sNx
-           UERR=(uIce(I,J,1,bi,bj)-uIce(I,J,3,bi,bj))
+           UERR=(uIce(I,J,1,bi,bj)-uTmp(I,J,bi,bj))
      &             * seaiceMaskU(I,J,bi,bj)
            S1=MAX(ABS(UERR),S1)
           ENDDO
@@ -1668,7 +1675,7 @@ CADJ LOOP = iteration vice
 C NOW SET V(3)=V(1)
         DO J=1,sNy
          DO I=iMin,iMax
-          vIce(I,J,3,bi,bj)=vIce(I,J,1,bi,bj)
+          vTmp(I,J,bi,bj)=vIce(I,J,1,bi,bj)
          ENDDO
         ENDDO
 
@@ -1721,8 +1728,8 @@ C NOW SET V(3)=V(1)
           VRT(I,J1)=VRT(I,J1)-CVV(I,J1)*VRT(I,J2)
          ENDDO
          DO J=1,sNy
-          vIce(I,J,1,bi,bj)=vIce(I,J,3,bi,bj)
-     &        +WFAV*(VRT(I,J)-vIce(I,J,3,bi,bj))
+          vIce(I,J,1,bi,bj)=vTmp(I,J,bi,bj)
+     &        +WFAV*(VRT(I,J)-vTmp(I,J,bi,bj))
          ENDDO
         ENDDO
 C     end bi,bj-loops
@@ -1735,7 +1742,7 @@ C     end bi,bj-loops
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy
           DO I=1,sNx
-           UERR=(vIce(I,J,1,bi,bj)-vIce(I,J,3,bi,bj))
+           UERR=(vIce(I,J,1,bi,bj)-vTmp(I,J,bi,bj))
      &             * seaiceMaskV(I,J,bi,bj)
            S2=MAX(ABS(UERR),S2)
           ENDDO

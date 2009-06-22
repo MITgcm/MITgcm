@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.59 2009/06/21 23:08:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.60 2009/06/22 15:57:45 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -192,8 +192,8 @@ C     ON ICE THICKNESS FOR BUDGET COMPUTATION
 C     The default of A22 = 0.15 is a common threshold for defining 
 C     the ice edge. This ice concentration usually does not occur 
 C     due to thermodynamics but due to advection.
-          areaLoc      = MAX(A22,AREA(I,J,2,bi,bj))
-          HICE(I,J)    = HEFF(I,J,2,bi,bj)/areaLoc
+          areaLoc      = MAX(A22,AREANm1(I,J,bi,bj))
+          HICE(I,J)    = HEFFNm1(I,J,bi,bj)/areaLoc
 C     Do we know what this is for?
           HICE(I,J)    = MAX(HICE(I,J),0.05 _d +00) 
 C     Capping the actual ice thickness effectively enforces a
@@ -409,7 +409,7 @@ C
         DO J=1,sNy
          DO I=1,sNx
 C NOW CALCULATE CORRECTED effective growth in J/m^2 (>0=melt)
-          GHEFF(I,J)=-SEAICE_deltaTtherm*FICE(I,J)*AREA(I,J,2,bi,bj)
+          GHEFF(I,J)=-SEAICE_deltaTtherm*FICE(I,J)*AREANm1(I,J,bi,bj)
          ENDDO
         ENDDO
 
@@ -420,7 +420,7 @@ CADJ &                         key = iicekey, byte = isbyte
 
         DO J=1,sNy
          DO I=1,sNx
-          IF(FICE(I,J).LT.ZERO.AND.AREA(I,J,2,bi,bj).GT.ZERO) THEN
+          IF(FICE(I,J).LT.ZERO.AND.AREANm1(I,J,bi,bj).GT.ZERO) THEN
 C     use FICE to melt snow and CALCULATE CORRECTED GROWTH
 C     effective snow thickness in J/m^2
            snowEnergy=HSNOW(I,J,bi,bj)*QS 
@@ -436,7 +436,7 @@ C     The factor 1/ICE2SNOW converts m of snow to m of sea-ice
 C     enought heat to melt snow completely;
 C     compute remaining heat flux that will melt ice
             FICE(I,J)=-(GHEFF(I,J)-snowEnergy)/
-     &           SEAICE_deltaTtherm/AREA(I,J,2,bi,bj)
+     &           SEAICE_deltaTtherm/AREANm1(I,J,bi,bj)
 C     convert all snow to melt water (fresh water flux)
             frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj)
      &           -HSNOW(I,J,bi,bj)/ICE2SNOW
@@ -454,8 +454,8 @@ CADJ &                         key = iicekey, byte = isbyte
         DO J=1,sNy
          DO I=1,sNx
 C     now get cell averaged growth rate in W/m^2, >0 causes ice growth
-          FHEFF(I,J)= FICE(I,J)  * AREA(I,J,2,bi,bj)
-     &              + QNETO(I,J) * (ONE-AREA(I,J,2,bi,bj))
+          FHEFF(I,J)= FICE(I,J)  * AREANm1(I,J,bi,bj)
+     &              + QNETO(I,J) * (ONE-AREANm1(I,J,bi,bj))
          ENDDO
         ENDDO
 cph(
@@ -503,13 +503,13 @@ CML         DO I=1,sNx
 C     Here we finally compute the new AREA
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            AREA(I,J,1,bi,bj)=AREA(I,J,1,bi,bj)+
-     &          (ONE-AREA(I,J,2,bi,bj))*GAREA(I,J)/HO_south
-     &          +HALF*HCORR(I,J)*AREA(I,J,2,bi,bj)
+     &          (ONE-AREANm1(I,J,bi,bj))*GAREA(I,J)/HO_south
+     &          +HALF*HCORR(I,J)*AREANm1(I,J,bi,bj)
      &          /(HEFF(I,J,1,bi,bj)+.00001 _d 0)
           ELSE
            AREA(I,J,1,bi,bj)=AREA(I,J,1,bi,bj)+
-     &          (ONE-AREA(I,J,2,bi,bj))*GAREA(I,J)/HO
-     &          +HALF*HCORR(I,J)*AREA(I,J,2,bi,bj)
+     &          (ONE-AREANm1(I,J,bi,bj))*GAREA(I,J)/HO
+     &          +HALF*HCORR(I,J)*AREANm1(I,J,bi,bj)
      &          /(HEFF(I,J,1,bi,bj)+.00001 _d 0)
           ENDIF
          ENDDO
@@ -534,7 +534,7 @@ C
          DO I=1,sNx
 C     negative growth (>0 for melting) of existing ice in meters
           growthNeg        = -SEAICE_deltaTtherm*
-     &                       FICE(I,J)*recip_QI*AREA(I,J,2,bi,bj)
+     &                       FICE(I,J)*recip_QI*AREANm1(I,J,bi,bj)
 C     negative growth must not exceed effective ice thickness (=volume)
 C     (that is, cannot melt more than all the ice)
           growthHEFF       = -ONE*MIN(HEFF(I,J,1,bi,bj),growthNeg)
@@ -555,7 +555,7 @@ C     now update other things
           IF(FICE(I,J).GT.ZERO) THEN
 C     freezing, add precip as snow
            HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)+SEAICE_deltaTtherm*
-     &            PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*SDF
+     &            PRECIP(I,J,bi,bj)*AREANm1(I,J,bi,bj)*SDF
           ELSE
 C     add precip as rain, water converted into equivalent m of 
 C     ice by 1/ICE2WATR. 
@@ -566,7 +566,7 @@ C     so that here the rain is added *as if* it is melted ice (which is not
 C     true, but just a trick; physically the rain just runs as water 
 C     through the ice into the ocean)
            frWtrIce(I,J,bi,bj) = frWtrIce(I,J,bi,bj)
-     &            -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*
+     &            -PRECIP(I,J,bi,bj)*AREANm1(I,J,bi,bj)*
      &            SEAICE_deltaTtherm/ICE2WATR
           ENDIF
 #endif /* ALLOW_ATM_TEMP */
@@ -627,7 +627,7 @@ CADJ &                        key = iicekey, byte = isbyte
 C NOW GET FRESH WATER FLUX
           EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
      &         ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
-     &         * ( ONE - AREA(I,J,2,bi,bj) )
+     &         * ( ONE - AREANm1(I,J,bi,bj) )
 #ifdef ALLOW_RUNOFF
      &         - RUNOFF(I,J,bi,bj)
 #endif
@@ -645,7 +645,7 @@ C NOW GET FRESH WATER FLUX
             DIAGarray(I,J) = maskC(I,J,kSurface,bi,bj)*(
      &           PRECIP(I,J,bi,bj) 
      &           - EVAP(I,J,bi,bj)
-     &           *( ONE - AREA(I,J,2,bi,bj) )
+     &           *( ONE - AREANm1(I,J,bi,bj) )
      &           + RUNOFF(I,J,bi,bj)
      &           )*rhoConstFresh
            ENDDO
@@ -724,10 +724,10 @@ C set HSALT = 0 if HEFF = 0 and compute salt to dump into ocean
         DO J=1,sNy
          DO I=1,sNx
 C NOW GET TOTAL QNET AND QSW
-          QNET(I,J,bi,bj) = QNETI(I,J) * AREA(I,J,2,bi,bj)
-     &                     +QNETO(I,J) * (ONE-AREA(I,J,2,bi,bj))
-          QSW(I,J,bi,bj)  = QSWI(I,J)  * AREA(I,J,2,bi,bj)
-     &                     +QSWO(I,J)  * (ONE-AREA(I,J,2,bi,bj))
+          QNET(I,J,bi,bj) = QNETI(I,J) * AREANm1(I,J,bi,bj)
+     &                     +QNETO(I,J) * (ONE-AREANm1(I,J,bi,bj))
+          QSW(I,J,bi,bj)  = QSWI(I,J)  * AREANm1(I,J,bi,bj)
+     &                     +QSWO(I,J)  * (ONE-AREANm1(I,J,bi,bj))
          ENDDO
         ENDDO
 
@@ -838,7 +838,7 @@ CADJ &                         key = iicekey, byte = isbyte
 C     use (abuse) GHEFF to diagnose the total thermodynamic growth rate
           DO J=1,sNy
            DO I=1,sNx
-            GHEFF(I,J) = (HEFF(I,J,1,bi,bj)-HEFF(I,J,2,bi,bj))
+            GHEFF(I,J) = (HEFF(I,J,1,bi,bj)-HEFFNm1(I,J,bi,bj))
      &           /SEAICE_deltaTtherm
            ENDDO
           ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.25 2009/05/26 23:13:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.26 2009/06/22 15:57:45 mlosch Exp $
 C $Name:  $
 
 C     for an alternative discretization of d/dx[ (zeta-eta) dV/dy]
@@ -72,13 +72,16 @@ C     i,j,bi,bj - Loop counters
       _RL UVRT1    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL UVRT2    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
+      _RL UTMP     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL UTMP     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+
       _RL dVdx     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dVdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dUdx     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dUdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #ifdef SEAICE_TEST
-      _RL utmp     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL vtmp     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL uz     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL vz     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #endif
 
 C SET SOME VALUES
@@ -112,9 +115,9 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &           +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn*UICE(I,J,2,bi,bj)
+     &           +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn*UICENM1(I,J,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
-     &           +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn*VICE(I,J,2,bi,bj)
+     &           +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn*VICENM1(I,J,bi,bj)
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)*UVM(I,J,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)*UVM(I,J,bi,bj)
           etaPlusZeta(I,J,bi,bj) = ETA(I,J,bi,bj)+ZETA(I,J,bi,bj)
@@ -187,9 +190,9 @@ C     now set up right-hand side
 #ifdef SEAICE_TEST
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
-          vtmp(i,j) = quart * (
+          vz(i,j) = quart * (
      &         vicec(i,j,bi,bj) + vicec(i+1,j,bi,bj) )
-          vtmp(i,j)= vtmp(i,j) + quart * (
+          vz(i,j)= vz(i,j) + quart * (
      &         vicec(i,j+1,bi,bj) + vicec(i+1,j+1,bi,bj) )
          ENDDO
         ENDDO
@@ -201,10 +204,10 @@ C     now set up right-hand side
 #ifdef SEAICE_TEST
      &        + ( 0.5 _d 0 *
      &         (zetaMinusEta(i,j,bi,bj)+zetaMinusEta(i,j-1,bi,bj))
-     &         *(vtmp(i,j)-vtmp(i,j-1)) * _recip_dyC(i,j,bi,bj)
+     &         *(vz(i,j)-vz(i,j-1)) * _recip_dyC(i,j,bi,bj)
      &          - 0.5 _d 0 *
      &         (zetaMinusEta(i-1,j,bi,bj)+zetaMinusEta(i-1,j-1,bi,bj))
-     &         *(vtmp(i-1,j)-vtmp(i-1,j-1)) * _recip_dyC(i-1,j,bi,bj)
+     &         *(vz(i-1,j)-vz(i-1,j-1)) * _recip_dyC(i-1,j,bi,bj)
      &         ) * _recip_dxV(i,j,bi,bj)
 #else
      &         + ( zetaMinusEta(I  ,J  ,bi,bj) * dVdy(I  ,J  )
@@ -276,7 +279,7 @@ CADJ LOOP = iteration uice
 C NOW SET U(3)=U(1)
         DO J=1,sNy
          DO I=1,sNx
-          UICE(I,J,3,bi,bj)=UICE(I,J,1,bi,bj)
+          UTMP(I,J,bi,bj)=UICE(I,J,1,bi,bj)
          END DO
         END DO
 
@@ -317,8 +320,8 @@ C NOW SET U(3)=U(1)
           URT(J1)=URT(J1)-CUU(J1)*URT(J2)
          END DO
          DO I=1,sNx
-          UICE(I,J,1,bi,bj)=UICE(I,J,3,bi,bj)
-     &        +WFAU*(URT(I)-UICE(I,J,3,bi,bj))
+          UICE(I,J,1,bi,bj)=UTMP(I,J,bi,bj)
+     &        +WFAU*(URT(I)-UTMP(I,J,bi,bj))
          END DO
 
         END DO
@@ -332,7 +335,7 @@ C NOW SET U(3)=U(1)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy
           DO I=1,sNx
-           UERR(I,J,bi,bj)=(UICE(I,J,1,bi,bj)-UICE(I,J,3,bi,bj))
+           UERR(I,J,bi,bj)=(UICE(I,J,1,bi,bj)-UTMP(I,J,bi,bj))
      &             *UVM(I,J,bi,bj)
            S1=MAX(ABS(UERR(I,J,bi,bj)),S1)
           END DO
@@ -430,9 +433,9 @@ C     now set up right-hand-side
 #ifdef SEAICE_TEST
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
-          utmp(i,j) = quart * (
+          uz(i,j) = quart * (
      &         uicec(i,j,bi,bj) + uicec(i+1,j,bi,bj) )
-          utmp(i,j)= utmp(i,j) + quart * (
+          uz(i,j)= uz(i,j) + quart * (
      &         uicec(i,j+1,bi,bj) + uicec(i+1,j+1,bi,bj) )
          ENDDO
         ENDDO
@@ -445,10 +448,10 @@ C     now set up right-hand-side
 #ifdef SEAICE_TEST
      &        + ( 0.5 _d 0 *
      &         (zetaMinusEta(i,j,bi,bj)+zetaMinusEta(i-1,j,bi,bj))
-     &         *(utmp(i,j)-utmp(i-1,j)) * _recip_dxC(i,j,bi,bj)
+     &         *(uz(i,j)-uz(i-1,j)) * _recip_dxC(i,j,bi,bj)
      &          - 0.5 _d 0 *
      &         (zetaMinusEta(i,j-1,bi,bj)+zetaMinusEta(i-1,j-1,bi,bj))
-     &         *(utmp(i,j-1)-utmp(i-1,j-1)) * _recip_dxC(i,j-1,bi,bj)
+     &         *(uz(i,j-1)-uz(i-1,j-1)) * _recip_dxC(i,j-1,bi,bj)
      &         ) * _recip_dyU(i,j,bi,bj)
 #else
      &         + ( zetaMinusEta(I  ,J  ,bi,bj) * dUdx(I  ,J  )
@@ -511,7 +514,7 @@ C NOW SET U(3)=U(1)
 
         DO J=1,sNy
          DO I=1,sNx
-          VICE(I,J,3,bi,bj)=VICE(I,J,1,bi,bj)
+          VTMP(I,J,bi,bj)=VICE(I,J,1,bi,bj)
          END DO
         END DO
 
@@ -566,8 +569,8 @@ C NOW SET U(3)=U(1)
           VRT(J1)=VRT(J1)-CVV(J1)*VRT(J2)
          END DO
          DO J=1,sNy
-          VICE(I,J,1,bi,bj)=VICE(I,J,3,bi,bj)
-     &        +WFAV*(VRT(J)-VICE(I,J,3,bi,bj))
+          VICE(I,J,1,bi,bj)=VTMP(I,J,bi,bj)
+     &        +WFAV*(VRT(J)-VTMP(I,J,bi,bj))
          END DO
         ENDDO
 
@@ -580,7 +583,7 @@ C NOW SET U(3)=U(1)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy
           DO I=1,sNx
-           UERR(I,J,bi,bj)=(VICE(I,J,1,bi,bj)-VICE(I,J,3,bi,bj))
+           UERR(I,J,bi,bj)=(VICE(I,J,1,bi,bj)-VTMP(I,J,bi,bj))
      &             *UVM(I,J,bi,bj)
            S2=MAX(ABS(UERR(I,J,bi,bj)),S2)
           END DO
