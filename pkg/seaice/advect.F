@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.21 2009/05/20 17:15:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.22 2009/06/22 15:55:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE ADVECT( UI,VI,fld3d,iceMsk,myThid )
+      SUBROUTINE ADVECT( UI,VI,fld,fldNm1,iceMsk,myThid )
 C     *==========================================================*
 C     | SUBROUTINE ADVECT                                        |
 C     | o Calculate ice advection                                |
@@ -25,10 +25,11 @@ C     === Global variables ===
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
-      _RL UI         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL VI         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL fld3d      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL iceMsk     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL UI     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL VI     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL fld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL fldNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL iceMsk (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
 CEndOfInterface
 
@@ -36,231 +37,165 @@ C     === Local variables ===
 C     i,j,k,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
-      INTEGER K3
+      INTEGER k
       _RL DELTT
-      _RL DIFFA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL DIFFA  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-C NOW DECIDE IF BACKWARD EULER OR LEAPFROG
-      IF(LAD.EQ.1) THEN
-C LEAPFROG
-         DELTT=SEAICE_deltaTtherm*TWO
-         K3=3
-      ELSE
-C BACKWARD EULER
-         DELTT=SEAICE_deltaTtherm
-         K3=2
-      ENDIF
-
-C NOW REARRANGE HS
-
+      DELTT=SEAICE_deltaTtherm
+C     save fld from previous time step
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          fld3d(I,J,3,bi,bj)=fld3d(I,J,2,bi,bj)
-          fld3d(I,J,2,bi,bj)=fld3d(I,J,1,bi,bj)
+          fldNm1(i,j,bi,bj) = fld(I,J,bi,bj)
          ENDDO
         ENDDO
-
        ENDDO
       ENDDO
 
+      DO k=1,2
+       IF ( k .EQ. 1 ) THEN
+C     Predition step
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            tmpFld(I,J,bi,bj) = fld(I,J,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ELSE       
+C     Backward Euler correction step
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            tmpFld(i,j,bi,bj)=HALF*(fld(I,J,bi,bj)
+     &           +fldNm1(i,j,bi,bj))
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fld3d  = comlev1, key = ikey_dynamics
+CADJ STORE fld    = comlev1, key = ikey_dynamics
+CADJ STORE fldNm1 = comlev1, key = ikey_dynamics
+CADJ STORE tmpFld = comlev1, key = ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
-      IF ( .NOT. SEAICEuseFluxForm ) THEN
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
+       IF ( .NOT. SEAICEuseFluxForm ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO J=0,sNy+1
+           DO I=0,sNx+1
 CML   This formulation gives the same result as the original code on a
 CML   lat-lon-grid, but may not be accurate on irregular grids
-          fld3d(I,J,1,bi,bj)=fld3d(I,J,K3,bi,bj)
-     &         -DELTT*(
-     &         ( fld3d(I  ,J  ,2,bi,bj)+fld3d(I+1,J  ,2,bi,bj))
-     &         *   UI(I+1,J,  bi,bj) -
-     &         ( fld3d(I  ,J  ,2,bi,bj)+fld3d(I-1,J  ,2,bi,bj))
-     &         *   UI(I  ,J,  bi,bj) )
-     &     *(HALF * _recip_dxF(I,J,bi,bj))
-     &         -DELTT*(
-     &         ( fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J+1,2,bi,bj))
-     &         *   VI(I  ,J+1,  bi,bj)
-     &         * _dxG(I  ,J+1,bi,bj) -
-     &         ( fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J-1,2,bi,bj))
-     &         *   VI(I  ,J  ,  bi,bj)
-     &         * _dxG(I,J,bi,bj))
-     &     *(HALF * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      ELSE
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
-C--   Use flux form for MITgcm compliance, unfortunately changes results
-          fld3d(I,J,1,bi,bj)=fld3d(I,J,K3,bi,bj)
-     &         -DELTT * HALF * (
-     &        + _dyG(I+1,J,bi,bj) *
-     &         (fld3d(I  ,J  ,2,bi,bj)+fld3d(I+1,J  ,2,bi,bj))
-     &         *  UI(I+1,J  ,  bi,bj)
-     &        - _dyG(I,J,bi,bj) *
-     &         (fld3d(I  ,J  ,2,bi,bj)+fld3d(I-1,J  ,2,bi,bj))
-     &         *  UI(I  ,J  ,  bi,bj)
-     &        + _dxG(I  ,J+1,bi,bj) *
-     &         (fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J+1,2,bi,bj))
-     &         *  VI(I  ,J+1,  bi,bj)
-     &        - _dxG(I  ,J  ,bi,bj)*
-     &         (fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J-1,2,bi,bj))
-     &         *  VI(I  ,J  ,  bi,bj)
-     &        )*recip_rA(I,J,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      ENDIF
-
-      _BARRIER
-      CALL EXCH_3D_RL( fld3d, 3, myThid )
-      _BARRIER
-
-      IF (LAD .EQ. 2) THEN
-
-C NOW DO BACKWARD EULER CORRECTION
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             fld3d(I,J,3,bi,bj)=fld3d(I,J,2,bi,bj)
-             fld3d(I,J,2,bi,bj)=HALF*(fld3d(I,J,1,bi,bj)
-     &                               +fld3d(I,J,2,bi,bj))
-            ENDDO
+            fld(I,J,bi,bj)=fldNm1(I,J,bi,bj)
+     &           -DELTT*(
+     &           ( tmpFld(I  ,J  ,bi,bj)+tmpFld(I+1,J  ,bi,bj))
+     &           *   UI(I+1,J,  bi,bj) -
+     &           ( tmpFld(I  ,J  ,bi,bj)+tmpFld(I-1,J  ,bi,bj))
+     &           *   UI(I  ,J,  bi,bj) )
+     &           *(HALF * _recip_dxF(I,J,bi,bj))
+     &           -DELTT*(
+     &           ( tmpFld(I  ,J  ,bi,bj)+tmpFld(I  ,J+1,bi,bj))
+     &           *   VI(I  ,J+1,  bi,bj)
+     &           * _dxG(I  ,J+1,bi,bj) -
+     &           ( tmpFld(I  ,J  ,bi,bj)+tmpFld(I  ,J-1,bi,bj))
+     &           *   VI(I  ,J  ,  bi,bj)
+     &           * _dxG(I,J,bi,bj))
+     &           *(HALF * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
            ENDDO
           ENDDO
          ENDDO
-
-C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
-         IF ( .NOT. SEAICEuseFluxForm ) THEN
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO J=1,sNy
-            DO I=1,sNx
-CML   This formulation gives the same result as the original code on a
-CML   lat-lon-grid, but may not be accurate on irregular grids
-             fld3d(I,J,1,bi,bj)=fld3d(I,J,3,bi,bj)
-     &            -DELTT*(
-     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I+1,J  ,2,bi,bj))
-     &            *  UI(I+1,J  ,  bi,bj) -
-     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I-1,J  ,2,bi,bj))
-     &            *  UI(I  ,J  ,  bi,bj) )
-     &     *(HALF * _recip_dxF(I,J,bi,bj))
-     &            -DELTT*(
-     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J+1,2,bi,bj))
-     &            *  VI(I  ,J+1,  bi,bj)
-     &            * _dxG(I,J+1,bi,bj) -
-     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J-1,2,bi,bj))
-     &            *   VI(I  ,J  ,  bi,bj)
-     &            * _dxG(I,J,bi,bj))
-     &     *(HALF * _recip_dyF(I,J,bi,bj) * _recip_dxF(I,J,bi,bj))
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-         ELSE
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO J=1,sNy
-            DO I=1,sNx
+        ENDDO
+       ELSE
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO J=0,sNy+1
+           DO I=0,sNx+1
 C--   Use flux form for MITgcm compliance, unfortunately changes results
-             fld3d(I,J,1,bi,bj)=fld3d(I,J,3,bi,bj)
-     &            -DELTT * HALF * (
-     &           + _dyG(I+1,J  ,bi,bj) *
-     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I+1,J  ,2,bi,bj))
-     &            *  UI(I+1,J  ,  bi,bj)
-     &           - _dyG(I  ,J  ,bi,bj) *
-     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I-1,J  ,2,bi,bj))
-     &            *  UI(I  ,J  ,  bi,bj)
+            fld(I,J,bi,bj)=fldNm1(I,J,bi,bj)
+     &           -DELTT * HALF * (
+     &           + _dyG(I+1,J,bi,bj) *
+     &           (tmpFld(I  ,J  ,bi,bj)+tmpFld(I+1,J  ,bi,bj))
+     &           *  UI(I+1,J  ,  bi,bj)
+     &           - _dyG(I,J,bi,bj) *
+     &           (tmpFld(I  ,J  ,bi,bj)+tmpFld(I-1,J  ,bi,bj))
+     &           *  UI(I  ,J  ,  bi,bj)
      &           + _dxG(I  ,J+1,bi,bj) *
-     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J+1,2,bi,bj))
-     &            *  VI(I  ,J+1,  bi,bj)
-     &           - _dxG(I  ,J  ,bi,bj) *
-     &            (fld3d(I  ,J  ,2,bi,bj)+fld3d(I  ,J-1,2,bi,bj))
-     &            *  VI(I  ,J  ,  bi,bj)
-     &            )*recip_rA(I,J,bi,bj)
-            ENDDO
+     &           (tmpFld(I  ,J  ,bi,bj)+tmpFld(I  ,J+1,bi,bj))
+     &           *  VI(I  ,J+1,  bi,bj)
+     &           - _dxG(I  ,J  ,bi,bj)*
+     &           (tmpFld(I  ,J  ,bi,bj)+tmpFld(I  ,J-1,bi,bj))
+     &           *  VI(I  ,J  ,  bi,bj)
+     &           )*recip_rA(I,J,bi,bj)
            ENDDO
           ENDDO
          ENDDO
-         ENDIF
+        ENDDO
+       ENDIF
 
-         _BARRIER
-         CALL EXCH_3D_RL( fld3d, 3, myThid )
-         _BARRIER
+       _BARRIER
+       _EXCH_XY_RL( fld, myThid )
+       _BARRIER
 
-C     NOW FIX UP H(I,J,2)
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             fld3d(I,J,2,bi,bj)=fld3d(I,J,3,bi,bj)
-            ENDDO
+      ENDDO
+
+C NOW DO DIFFUSION 
+C     make a working copy of field from last time step
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          tmpFld(i,j,bi,bj)=fldNm1(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      DO k = 1,2
+C NOW CALCULATE DIFFUSION COEF ROUGHLY
+       IF ( k .EQ. 1 ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            DIFFA(I,J,bi,bj)=
+     &           DIFF1*MIN( _dxF(I,J,bi,bj), _dyF(I,J,bi,bj))
            ENDDO
           ENDDO
          ENDDO
+        ENDDO
+       ELSE
+C     use some strange quardatic form for the second time around
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            DIFFA(I,J,bi,bj)=
+     &           -(MIN( _dxF(I,J,bi,bj),  _dyF(I,J,bi,bj)))**2/DELTT
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+       CALL DIFFUS(tmpFld,DIFFA,iceMsk,DELTT, myThid)
 
-      ENDIF
-
-C NOW DO DIFFUSION ON H(I,J,3)
-C NOW CALCULATE DIFFUSION COEF ROUGHLY
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          DIFFA(I,J,bi,bj)=
-     &         DIFF1*MIN( _dxF(I,J,bi,bj), _dyF(I,J,bi,bj))
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           fld(I,J,bi,bj)=(fld(I,J,bi,bj)+tmpFld(i,j,bi,bj))
+     &          *iceMsk(I,J,bi,bj)
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
-      CALL DIFFUS(fld3d,DIFFA,iceMsk,DELTT, myThid)
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          fld3d(I,J,1,bi,bj)=(fld3d(I,J,1,bi,bj)+fld3d(I,J,3,bi,bj))
-     &                      *iceMsk(I,J,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-C NOW CALCULATE DIFFUSION COEF ROUGHLY
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          DIFFA(I,J,bi,bj)=
-     &         -(MIN( _dxF(I,J,bi,bj),  _dyF(I,J,bi,bj)))**2/DELTT
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      CALL DIFFUS(fld3d,DIFFA,iceMsk,DELTT, myThid)
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          fld3d(I,J,1,bi,bj)=(fld3d(I,J,1,bi,bj)+fld3d(I,J,3,bi,bj))
-     &                      *iceMsk(I,J,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
+       
       ENDDO
 
       RETURN
