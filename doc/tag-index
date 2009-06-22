@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1128 2009/06/22 15:33:02 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1129 2009/06/22 15:58:42 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: 
+  - completely remove code for leap-frog time stepping for second order
+   advection
+ - clean up the 3-time levels of UICE,VICE,HEFF,AREA:
+  1. introduce fields for time step (N-1)
+  2. do not use levels 2 and 3 anymore (but keep them for now)
 
 checkpoint61q
 o pkg/seaice: fix bug in free slip boundary conditons for LSOR solver
