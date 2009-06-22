@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/diffus.F,v 1.13 2009/05/19 21:47:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/diffus.F,v 1.14 2009/06/22 15:55:27 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE DIFFUS( fld3d, DIFFA, iceMsk, DELTT, myThid )
+      SUBROUTINE DIFFUS( fld, DIFFA, iceMsk, DELTT, myThid )
 C     *==========================================================*
 C     | SUBROUTINE DIFFUS                                        |
 C     | o Add diffusion terms to ice mass conservation equations |
@@ -21,9 +21,9 @@ CML#include "SEAICE_GRID.h"
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
-      _RL fld3d       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL iceMsk      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL DIFFA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL fld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL iceMsk (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL DIFFA  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL DELTT
       INTEGER myThid
 CEndOfInterface
@@ -56,14 +56,14 @@ C NOW DO DIFFUSION WITH NUIT CONVERSION
           DELTYY=DELTYY1 * _recip_dyF(I,J,bi,bj)* _recip_dyF(I,J,bi,bj)
      &          * _recip_dxF(I,J,bi,bj)
           iceFld(I,J,bi,bj)=DELTXX*(
-     &         (fld3d(I+1,J,3,bi,bj)-fld3d(I,  J,3,bi,bj))
+     &         (fld(I+1,J,bi,bj)-fld(I,  J,bi,bj))
      &         *iceMsk(I+1,J,bi,bj)
-     &        -(fld3d(I,  J,3,bi,bj)-fld3d(I-1,J,3,bi,bj))
+     &        -(fld(I,  J,bi,bj)-fld(I-1,J,bi,bj))
      &         *iceMsk(I-1,J,bi,bj))
      &         +DELTYY*(
-     &         (fld3d(I,J+1,3,bi,bj)-fld3d(I,J,  3,bi,bj))
+     &         (fld(I,J+1,bi,bj)-fld(I,J,  bi,bj))
      &         * _dxG(I+1,J+1,bi,bj)*iceMsk(I,J+1,bi,bj)
-     &        -(fld3d(I,J,  3,bi,bj)-fld3d(I,J-1,3,bi,bj))
+     &        -(fld(I,J,  bi,bj)-fld(I,J-1,bi,bj))
      &         * _dxG(I+1,J,  bi,bj)*iceMsk(I,J-1,bi,bj))
          ENDDO
         ENDDO
@@ -75,20 +75,20 @@ C--   Use flux form for MITgcm compliance, unfortunately changes results
      &         DELTT*DIFFA(I,J,bi,bj) * recip_rA(I,J,bi,bj) * (
 C     x - compontent
      &        + _dyG(I+1,J,bi,bj) * _recip_dxC(I+1,J,bi,bj)
-     &         * (fld3d(I+1,J,3,bi,bj)-fld3d(I,  J,3,bi,bj))
+     &         * (fld(I+1,J,bi,bj)-fld(I,  J,bi,bj))
      &         * cosFacU(J,bi,bj) * iceMsk(I+1,J,bi,bj)
      &        - _dyG(I  ,J,bi,bj) * _recip_dxC(I  ,J,bi,bj)
-     &         * (fld3d(I,  J,3,bi,bj)-fld3d(I-1,J,3,bi,bj))
+     &         * (fld(I,  J,bi,bj)-fld(I-1,J,bi,bj))
      &         * cosFacU(J,bi,bj) * iceMsk(I-1,J,bi,bj)
 C     y - compontent
      &        + _dxG(I,J+1,bi,bj) * _recip_dyC(I,J+1,bi,bj)
-     &         * (fld3d(I,J+1,3,bi,bj)-fld3d(I,J,  3,bi,bj))
+     &         * (fld(I,J+1,bi,bj)-fld(I,J,  bi,bj))
 #ifdef ISOTROPIC_COS_SCALING
      &         * cosFacV(J+1,bi,bj)
 #endif
      &         * iceMsk(I,J+1,bi,bj)
      &        - _dxG(I,J,bi,bj) * _recip_dyC(I,J,bi,bj)
-     &         * (fld3d(I,J,  3,bi,bj)-fld3d(I,J-1,3,bi,bj))
+     &         * (fld(I,J,  bi,bj)-fld(I,J-1,bi,bj))
 #ifdef ISOTROPIC_COS_SCALING
      &         * cosFacV(J,bi,bj)
 #endif
@@ -108,7 +108,7 @@ C     apply mask for safety
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          fld3d(I,J,3,bi,bj)=iceFld(I,J,bi,bj)
+          fld(I,J,bi,bj)=iceFld(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
