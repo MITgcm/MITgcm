@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.34 2009/06/22 15:57:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.35 2009/06/22 21:57:01 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -65,7 +65,7 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       LOGICAL SEAICEmultiDimAdvection
 
 C-    MPI+MTH: apply exch (sure with exch1) only to array in common block
-      COMMON / SEAICE_ADVDIFF_LOCAL / uc, vc, fld3d
+      COMMON / SEAICE_ADVDIFF_LOCAL / uc, vc, tmpFld
       _RL uc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uTrans    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -74,9 +74,9 @@ C-    MPI+MTH: apply exch (sure with exch1) only to array in common block
       _RL afx       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gFld      (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL fld3d     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL tmpfld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gtmpfld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL fld3d     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
+      _RL tmpFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gtmpFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS xA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL recip_heff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
