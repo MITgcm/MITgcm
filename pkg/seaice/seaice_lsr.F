@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.46 2009/06/03 08:48:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.47 2009/06/22 13:33:29 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -61,7 +61,7 @@ C     i,j,bi,bj - Loop counters
 
       _RL WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
       _RL AA3, S1, S2, S1A, S2A
-      _RL seaiceSlipFactor, noSlipFac, hFacM, hFacP
+      _RL hFacM, hFacP
       _RL eplus, eminus
 
 C     coefficients of ice velocities in coefficient matrix
@@ -199,16 +199,6 @@ CADJ STORE vice = comlev1_dynsol, kind=isbyte,
 CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      IF ( SEAICE_no_Slip ) THEN
-C     no slip
-       seaiceSlipFactor = + 1. _d 0
-       noSlipFac        =   1. _d 0
-      ELSE
-C     free slip
-       seaiceSlipFactor = - 1. _d 0
-       noSlipFac        =   0. _d 0
-      ENDIF
-
       CALL SEAICE_CALC_STRAINRATES(
      I     uIceC, vIceC,
      O     e11, e22, e12,
@@ -311,6 +301,18 @@ C
      &         +          maskC(I,J-1,k,bi,bj)+maskC(I-1,J-1,k,bi,bj) )
          ENDDO
         ENDDO
+C     free-slip means no lateral stress, which is best achieved masking
+C     eta on vorticity(=Z)-points; from now on we only need to worry
+C     about the no-slip boundary conditions
+        IF (.NOT.SEAICE_no_slip) THEN
+         DO J=1,sNy+1
+          DO I=1,sNx+1
+           etaMeanZ (I,J,bi,bj) = etaMeanZ(I,J,bi,bj)
+     &          *maskC(I,J,  k,bi,bj)*maskC(I-1,J,  k,bi,bj)
+     &          *maskC(I,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
 C     coefficients of uIce(I,J) and vIce(I,J) belonging to ...
         DO J=1,sNy
          DO I=0,sNx
@@ -395,11 +397,9 @@ C     beware of sign convection: UVRT1/2 have the opposite sign convention
 C     than BU, hence the minus sign
           BU(I,J,bi,bj)=BU(I,J,bi,bj) + seaiceMaskU(I,J,bi,bj) *
      &         ( ( 1. _d 0 - hFacM )
-     &         * ( UYY(I  ,J  ,bi,bj)*seaiceSlipFactor
-     &           + UYM(I  ,J  ,bi,bj) )
+     &         * ( UYY(I  ,J  ,bi,bj) + UYM(I  ,J  ,bi,bj) )
      &         + ( 1. _d 0 - hFacP )
-     &         * ( UYY(I  ,J+1,bi,bj)*seaiceSlipFactor
-     &           - UYM(I  ,J+1,bi,bj) ) )
+     &         * ( UYY(I  ,J+1,bi,bj) - UYM(I  ,J+1,bi,bj) ) )
 C     reset coefficients of U(I,J-1) and U(I,J+1)
           UVRT1(I,J,bi,bj)=UVRT1(I,J,bi,bj) * hFacM
           UVRT2(I,J,bi,bj)=UVRT2(I,J,bi,bj) * hFacP
@@ -454,11 +454,11 @@ C     free slip conditions (sig12=0) are taken care of by masking sig12
      &         *maskC(I  ,J  ,k,bi,bj)*maskC(I-1,J  ,k,bi,bj)
      &         *maskC(I  ,J-1,k,bi,bj)*maskC(I-1,J-1,k,bi,bj)
 C     no slip boundary conditions (v(i-1)=-v(i))
-C     v(i)+u(i-1) = 0 is also taken care of by masking sig12, so that we
+C     v(i)+v(i-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with v(i)-v(i-1)
      &         + etaMeanZ(I,J,bi,bj) * _recip_dxV(I,J,bi,bj)
      &         * ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
-     &         * noSlipFac * hFacM * 2. _d 0
+     &         * hFacM * 2. _d 0
          ENDDO
         ENDDO
 
@@ -667,11 +667,9 @@ C     beware of sign convection: UVRT1/2 have the opposite sign convention
 C     than BV, hence the minus sign
           BV(I,J,bi,bj)=BV(I,J,bi,bj) + seaiceMaskV(I,J,bi,bj) *
      &         ( ( 1. _d 0 - hFacM )
-     &         * ( VXX(I  ,J,bi,bj) *seaiceSlipFactor
-     &           + VXM(I  ,J,bi,bj) )
+     &         * ( VXX(I  ,J,bi,bj) + VXM(I  ,J,bi,bj) )
      &         + ( 1. _d 0 - hFacP )
-     &         * ( VXX(I+1,J,bi,bj) *seaiceSlipFactor
-     &           - VXM(I+1,J,bi,bj) ) )
+     &         * ( VXX(I+1,J,bi,bj) - VXM(I+1,J,bi,bj) ) )
 C     reset coefficients of V(I-1,J) and V(I+1,J)
           UVRT1(I,J,bi,bj)=UVRT1(I,J,bi,bj) * hFacM
           UVRT2(I,J,bi,bj)=UVRT2(I,J,bi,bj) * hFacP
@@ -730,7 +728,7 @@ C     u(j)+u(j-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with u(j)-u(j-1)
      &         + etaMeanZ(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
      &         * ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
-     &         * noSlipFac * hFacM * 2. _d 0
+     &         * hFacM * 2. _d 0
          ENDDO
         ENDDO
 
