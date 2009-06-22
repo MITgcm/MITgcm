@@ -2,14 +2,18 @@ Jun 21, 2009
 Some redundancies and relations for model diagnostics:
 
 1) Qnet = QNETtave = - oceQnet = SIqnet
-   for open-ocean: Qnet = EXFqnet = SIqneto
 
-2) EXFqnet = EXFlwnet + EXFswnet - EXFhl - EXFhs
+2) For open-ocean, i.e., when there is no sea ice:
+   Qnet = QNETtave = - oceQnet = SIqnet = EXFqnet = SIqneto = SIatmQnt
 
-3) Qsw = QSWtave = - oceQsw = SIqsw
-   for open-ocean: Qsw = EXFswnet
+3) EXFqnet = EXFlwnet + EXFswnet - EXFhl - EXFhs
 
-4) EmPmR = EmPmRtave = -oceFWflx = SIempmr
+4) Qsw = QSWtave = - oceQsw = SIqsw
+
+5) For open-ocean, i.e., when there is no sea ice:
+   Qsw = QSWtave = - oceQsw = SIqsw = EXFswnet
+
+6) EmPmR = EmPmRtave = -oceFWflx = SIempmr
 
 ================================================================
 
