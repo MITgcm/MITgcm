@@ -1,39 +1,57 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.4 2009/06/22 23:13:30 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_gfortran+mth,v 1.1 2009/06/22 23:13:30 ce107 Exp $
 #  $Name:  $
 #
-# Build options for Fedore Core 3 x86-64 Opteron
-# tested on (Linux batsi 2.6.10-1.766_FC3smp #1 SMP Wed Feb 9 23:17:48 EST 2005 x86_64 x86_64 x86_64 GNU/Linux) system 20051802
-#
 
-CC=pathcc
-FC=pathf90
-LD=pathf90
-DEFINES='-DWORDLENGTH=4'
+#  Tested with gcc-gfortran v4.1.1 on FC5, FC6, FC8, using flags
+#              formally for gcc-gfortran 4.3*
+#       + with gcc-gfortran v4.3.0 on FC9
+#  It fixes the ' \' versus ' &' terminator problem ;
+#  some namelist problems remain with old version (The biggest seems 
+#     to be the inability to support namelist syntax such as:
+#     fields(1,1) = 'UVELSLT ','VVELSLT ','WVELSLT ',
+#      which results in run-time errors).
+
+
+FC=gfortran
+F90C=gfortran
+CC=gcc
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR -DUSE_OMP_THREADING'
 CPP='cpp -traditional -P'
-MAKEDEPEND=/usr/X11R6/bin/makedepend
-NOOPTFLAGS='-O0 -m64 -g -fPIC'
-NOOPTFILES=''
+NOOPTFLAGS='-O0 -fopenmp'
+EXTENDED_SRC_FLAG='-ffixed-line-length-132'
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-m64 -convert big_endian -fPIC -ffortran-bounds-check -trapuv -g'
+    FFLAGS='-g -Wall -W -ffpe-trap=invalid,zero,overflow -fbounds-check'
 else
-    FFLAGS='-m64 -convert big_endian -fPIC'
+    FFLAGS=''
 fi
+
+# Requires gfortran from 2006 onwards for -fconvert=big-endian
+FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none -fopenmp"
+#- otherwise, switch to the home-made byte-swap:
+#DEFINES="-D_BYTESWAPIO $DEFINES"
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FOPTIM='-Ofast -LNO:fusion=2 -funsafe-math-optimizations'
+    FOPTIM='-O3 -funroll-loops'
 else
     #  Try to follow IEEE-754
-    FOPTIM='-Ofast -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+    has_sse2=f
+    grep flags /proc/cpuinfo | grep sse2 > /dev/null 2>&1  &&  has_sse2=t
+    if test "x$has_sse2" = xt ; then
+        FOPTIM='-O0 -mfpmath=sse -msse -msse2'
+    else
+        FOPTIM='-O0 -ffloat-store'
+    fi
 fi
-
+#  version 4.3.0 has problems with option "-malign-double" ;
+#  may want to put it back with older/newer version (when it works)
+#FOPTIM="$FOPTIM -malign-double"
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -m64 -fPIC'
-GSLLIB='-lgsl -lgslcblas'
+CFLAGS=$FOPTIM
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
@@ -69,4 +87,3 @@ elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDES='-I/usr/local/include'
     LIBS='-L/usr/local/lib64'
 fi
-

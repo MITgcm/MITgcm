@@ -1,39 +1,39 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.4 2009/06/22 23:13:30 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pathf90+mth,v 1.1 2009/06/22 23:13:30 ce107 Exp $
 #  $Name:  $
 #
-# Build options for Fedore Core 3 x86-64 Opteron
-# tested on (Linux batsi 2.6.10-1.766_FC3smp #1 SMP Wed Feb 9 23:17:48 EST 2005 x86_64 x86_64 x86_64 GNU/Linux) system 20051802
+# Multithreaded tests require
+# export PSC_OMP_STACK_SIZE=400m
+# export OMP_NUM_THREADS=2
 #
 
 CC=pathcc
 FC=pathf90
 LD=pathf90
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DUSE_OMP_THREADING'
 CPP='cpp -traditional -P'
 MAKEDEPEND=/usr/X11R6/bin/makedepend
-NOOPTFLAGS='-O0 -m64 -g -fPIC'
+NOOPTFLAGS='-O0 -m32 -g -openmp'
 NOOPTFILES=''
 
 if test "x$DEVEL" != x ; then
-    FFLAGS='-m64 -convert big_endian -fPIC -ffortran-bounds-check -trapuv -g'
+    FFLAGS='-m32 -convert big_endian -openmp -ffortran-bounds-check -trapuv -g'
 else
-    FFLAGS='-m64 -convert big_endian -fPIC'
+    FFLAGS='-m32 -convert big_endian -openmp'
 fi
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FOPTIM='-Ofast -LNO:fusion=2 -funsafe-math-optimizations'
+    FOPTIM='-Ofast -LNO:fusion=2 -funsafe-math-optimizations -OPT:early_mp=ON'
 else
     #  Try to follow IEEE-754
-    FOPTIM='-Ofast -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math'
+    FOPTIM='-Ofast -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math -OPT:early_mp=ON'
 fi
 
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -m64 -fPIC'
-GSLLIB='-lgsl -lgslcblas'
+CFLAGS='-O3 -m32 -openmp'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDEDIR="${NETCDF_ROOT}/include"
