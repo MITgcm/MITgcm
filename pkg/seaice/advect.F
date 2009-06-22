@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.22 2009/06/22 15:55:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.23 2009/06/22 21:47:43 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -140,9 +140,7 @@ C--   Use flux form for MITgcm compliance, unfortunately changes results
         ENDDO
        ENDIF
 
-       _BARRIER
-       _EXCH_XY_RL( fld, myThid )
-       _BARRIER
+       CALL EXCH_XY_RL( fld, myThid )
 
       ENDDO
 
