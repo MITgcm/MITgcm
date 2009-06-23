@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+mpi2_aces,v 1.1 2009/06/23 22:54:32 jmc Exp $
+#
+#  These are the build options used with the Intel 8.x compiler for the
+#  daily testing on ACES (which are initiated by cron jobs on the "ao"
+#  head node).
+#
+#  Please note that the appropriate module commands:
+#
+#    module add mpich2/1.0.3/intel
+#
+#  will add /usr/local/pkg/ifc/ifc-???????/lib to LD_LIBRARY_PATH
+#  which is needed by any executables generated with this optfile.
+#  The PBS -V option for exporting environment variables <== does not work
+#  may also be helpful if you encounter missing-library problems.
+#  Or, alternatively, one may choose to link with one of the intel
+#  "-static" or "-i-static" flags.
+
+
+FC='mpif77'
+CC='mpicc'
+F90C='mpif90 -fixed -c '
+LINK='mpif77'
+#INCLUDES='-I/usr/local/pkg/ifc/ifc-8.1.018/include -I/usr/local/pkg/mpich/mpich-intel/include/'
+#LIBS='-L/usr/local/pkg/ifc/ifc-8.1.018/lib'
+INCLUDES='-I/usr/local/pkg/mpich2/mpich2-1.0.3/intel/include/'
+LIBS='-L/usr/local/pkg/mpich2/mpich2-1.0.3/intel/lib'
+
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+CPP='cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-132'
+OMPFLAG='-openmp'
+
+NOOPTFLAGS='-O0'
+NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F'
+
+#  Note that the -mp switch is for ieee "maintain precision" and is
+#  roughly equivalent to -ieee
+if test "x$IEEE" = x ; then
+    FOPTIM='-O3 -align'
+    #P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
+    #P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
+    FFLAGS='-r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
+else
+    # FOPTIM='-O0 -noalign -CA -CB -CU -CV -CS'
+    FOPTIM='-O0 -noalign -CB -CU -CV'
+    FFLAGS='-r8 -i4 -w95 -W0 -WB -pc64 -xW -assume byterecl -convert big_endian'
+    # FLAGS='-mp -r8 -i4 -w95 -W0 -WB -assume byterecl -convert big_endian'
+fi
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+
+NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
+NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F mds_byteswap.F'
