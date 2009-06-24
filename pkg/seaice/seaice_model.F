@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.73 2009/06/24 08:01:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.74 2009/06/24 20:10:17 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,7 +57,7 @@ CEndOfInterface
 C !LOCAL VARIABLES: ====================================================
 C     i,j,bi,bj :: Loop counters
 C     iceFld    :: Copy of seaice field
-c     INTEGER i, j, bi, bj
+      INTEGER i, j, bi, bj
 c     _RL iceFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
@@ -77,6 +77,22 @@ C--   Map thSice-variables to HEFF and AREA
 #endif /* ALLOW_THSICE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
+c
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          HEFFNM1(i,j,bi,bj) = 0. _d 0
+          AREANM1(i,j,bi,bj) = 0. _d 0
+          uIceNm1(i,j,bi,bj) = 0. _d 0
+          vIceNm1(i,j,bi,bj) = 0. _d 0
+          seaiceMaskU(I,J,bi,bj) = 0. _d 0
+          seaiceMaskV(I,J,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+c
 CADJ STORE uwind = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vwind = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte

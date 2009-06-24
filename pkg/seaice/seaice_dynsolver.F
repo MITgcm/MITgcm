@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.36 2009/06/24 08:01:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.37 2009/06/24 20:10:17 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -71,8 +71,10 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
        ENDDO
       ENDDO
 C
-CADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uice    = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vice    = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (
@@ -219,8 +221,10 @@ C--   now set up ice pressure and viscosities
 
 #ifdef SEAICE_ALLOW_EVP
 # ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uice = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uice    = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vice    = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
        IF ( SEAICEuseEVP ) THEN
         CALL SEAICE_EVP( myTime, myIter, myThid )
@@ -239,6 +243,10 @@ C     LSR SCHEME (ZHANG-J/HIBLER 1997)
 CADJ STORE uice = comlev1_dynsol, kind=isbyte,
 CADJ &     key = ikey_dynamics + (ipseudo-1)*nchklev_1
 CADJ STORE vice = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ipseudo-1)*nchklev_1
+CADJ STORE uicenm1 = comlev1_dynsol, kind=isbyte,
+CADJ &     key = ikey_dynamics + (ipseudo-1)*nchklev_1
+CADJ STORE vicenm1 = comlev1_dynsol, kind=isbyte,
 CADJ &     key = ikey_dynamics + (ipseudo-1)*nchklev_1
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL SEAICE_LSR( ipseudo, myTime, myIter, myThid )

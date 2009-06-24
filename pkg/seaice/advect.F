@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.23 2009/06/22 21:47:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.24 2009/06/24 20:10:17 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -81,8 +81,8 @@ C     Backward Euler correction step
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE fld    = comlev1, key = ikey_dynamics
-CADJ STORE fldNm1 = comlev1, key = ikey_dynamics
+cphCADJ STORE fld    = comlev1, key = ikey_dynamics
+cphCADJ STORE fldNm1 = comlev1, key = ikey_dynamics
 CADJ STORE tmpFld = comlev1, key = ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
