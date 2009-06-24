@@ -6,7 +6,7 @@
 #PBS -e /home/jmc/test_ACES/output/tst_gnu.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_gnu.stdout
  
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.9 2009/06/16 21:32:22 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_gnu_mpi,v 1.10 2009/06/24 04:43:06 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -18,6 +18,10 @@ fi
 umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
 export LC_ALL="en_US.UTF-8"
+
+TST_DIR="/home/jmc/test_ACES/gcm_tests"
+HERE='/home/jmc/test_ACES/output'
+cd $HERE
 
 sfx='gnu'
 module add mpich/$sfx
@@ -46,7 +50,7 @@ if [ $checkOut -eq 1 ] ; then
   if test -d $gcmDIR/CVS ; then
     echo "cvs update of dir $gcmDIR :"
     ( cd $gcmDIR ; cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d )
-    /bin/rm -rf $gcmDIR/verification/tr_aces-${sfx}_????????_?
+    /bin/rm -rf $gcmDIR/verification/??_aces-${sfx}_????????_?
   else
     echo "no dir: $gcmDIR/CVS => try a fresh check-out"
     checkOut=2
