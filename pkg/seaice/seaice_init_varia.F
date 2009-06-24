@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.42 2009/06/22 15:57:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.43 2009/06/24 08:01:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -56,18 +56,13 @@ C     i,j,k,bi,bj - Loop counters
 C--   Initialise all variables in common blocks:
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO k=1,3
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           HEFF(i,j,k,bi,bj)=0. _d 0
-           AREA(i,j,k,bi,bj)=0. _d 0
-           UICE(i,j,k,bi,bj)=0. _d 0
-           VICE(i,j,k,bi,bj)=0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
+          HEFF(i,j,bi,bj)=0. _d 0
+          AREA(i,j,bi,bj)=0. _d 0
+          UICE(i,j,bi,bj)=0. _d 0
+          VICE(i,j,bi,bj)=0. _d 0
+C
           uIceNm1(i,j,bi,bj)=0. _d 0
           vIceNm1(i,j,bi,bj)=0. _d 0
           areaNm1(i,j,bi,bj)=0. _d 0
@@ -291,11 +286,9 @@ C--   Set model variables to initial/restart conditions
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            TMIX(i,j,bi,bj)=TICE(i,j,bi,bj)
-           DO k=1,3
-            HEFF(i,j,k,bi,bj)=SEAICE_initialHEFF*HEFFM(i,j,bi,bj)
-            UICE(i,j,k,bi,bj)=ZERO
-            VICE(i,j,k,bi,bj)=ZERO
-           ENDDO
+           HEFF(i,j,bi,bj)=SEAICE_initialHEFF*HEFFM(i,j,bi,bj)
+           UICE(i,j,bi,bj)=ZERO
+           VICE(i,j,bi,bj)=ZERO
           ENDDO
          ENDDO
         ENDDO
@@ -303,15 +296,13 @@ C--   Set model variables to initial/restart conditions
 
 C--   Read initial sea-ice thickness from file if available.
        IF ( HeffFile .NE. ' ' ) THEN
-        CALL READ_FLD_XY_RL( HeffFile, ' ', ZETA, 0, myThid )
-        _EXCH_XY_RL(ZETA,myThid)
+        CALL READ_FLD_XY_RL( HeffFile, ' ', HEFF, 0, myThid )
+        _EXCH_XY_RL(HEFF,myThid)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            DO k=1,3
-             HEFF(i,j,k,bi,bj) = MAX(ZETA(i,j,bi,bj),ZERO)
-            ENDDO
+            HEFF(i,j,bi,bj) = MAX(HEFF(i,j,bi,bj),ZERO)
            ENDDO
           ENDDO
          ENDDO
@@ -322,10 +313,7 @@ C--   Read initial sea-ice thickness from file if available.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           DO k=1,3
-            IF(HEFF(i,j,k,bi,bj).GT.ZERO)
-     &           AREA(i,j,k,bi,bj)=ONE
-           ENDDO
+           IF(HEFF(i,j,bi,bj).GT.ZERO) AREA(i,j,bi,bj)=ONE
           ENDDO
          ENDDO
         ENDDO
@@ -333,20 +321,16 @@ C--   Read initial sea-ice thickness from file if available.
 
 C--   Read initial sea-ice area from file if available.
        IF ( AreaFile .NE. ' ' ) THEN
-        CALL READ_FLD_XY_RL( AreaFile, ' ', ZETA, 0, myThid )
-        _EXCH_XY_RL(ZETA,myThid)
+        CALL READ_FLD_XY_RL( AreaFile, ' ', AREA, 0, myThid )
+        _EXCH_XY_RL(AREA,myThid)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            DO k=1,3
-             AREA(i,j,k,bi,bj) = MAX(ZETA(i,j,bi,bj),ZERO)
-             AREA(i,j,k,bi,bj) = MIN(AREA(i,j,k,bi,bj),ONE)
-             IF ( AREA(i,j,k,bi,bj) .LE. ZERO )
-     &            HEFF(i,j,k,bi,bj) = ZERO
-             IF ( HEFF(i,j,k,bi,bj) .LE. ZERO )
-     &            AREA(i,j,k,bi,bj) = ZERO
-            ENDDO
+            AREA(i,j,bi,bj) = MAX(AREA(i,j,bi,bj),ZERO)
+            AREA(i,j,bi,bj) = MIN(AREA(i,j,bi,bj),ONE)
+            IF ( AREA(i,j,bi,bj) .LE. ZERO ) HEFF(i,j,bi,bj) = ZERO
+            IF ( HEFF(i,j,bi,bj) .LE. ZERO ) AREA(i,j,bi,bj) = ZERO
            ENDDO
           ENDDO
          ENDDO
@@ -357,7 +341,7 @@ C--   Read initial sea-ice area from file if available.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           HSNOW(i,j,bi,bj)=0.2*AREA(i,j,1,bi,bj)
+           HSNOW(i,j,bi,bj)=0.2*AREA(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -365,13 +349,13 @@ C--   Read initial sea-ice area from file if available.
 
 C--   Read initial snow thickness from file if available.
        IF ( HsnowFile .NE. ' ' ) THEN
-        CALL READ_FLD_XY_RL( HsnowFile, ' ', ZETA, 0, myThid )
-        _EXCH_XY_RL(ZETA,myThid)
+        CALL READ_FLD_XY_RL( HsnowFile, ' ', HSNOW, 0, myThid )
+        _EXCH_XY_RL(HSNOW,myThid)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            HSNOW(i,j,bi,bj) = MAX(ZETA(i,j,bi,bj),ZERO)
+            HSNOW(i,j,bi,bj) = MAX(HSNOW(i,j,bi,bj),ZERO)
            ENDDO
           ENDDO
          ENDDO
@@ -383,7 +367,7 @@ C--   Read initial snow thickness from file if available.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           HSALT(i,j,bi,bj)=HEFF(i,j,1,bi,bj)*salt(i,j,1,bi,bj)*
+           HSALT(i,j,bi,bj)=HEFF(i,j,bi,bj)*salt(i,j,1,bi,bj)*
      &            ICE2WATR*rhoConstFresh*SEAICE_salinity
           ENDDO
          ENDDO
@@ -392,34 +376,16 @@ C--   Read initial snow thickness from file if available.
 
 C--   Read initial sea ice salinity from file if available.
        IF ( HsaltFile .NE. ' ' ) THEN
-        CALL READ_FLD_XY_RL( HsaltFile, ' ', ZETA, 0, myThid )
-        _EXCH_XY_RL(ZETA,myThid)
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            HSALT(i,j,bi,bj) = ZETA(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
+        CALL READ_FLD_XY_RL( HsaltFile, ' ', HSALT, 0, myThid )
+        _EXCH_XY_RL(HSALT,myThid)
        ENDIF
 #endif /* SEAICE_SALINITY */
 
 #ifdef SEAICE_AGE
 C--   Read initial sea ice age from file if available.
        IF ( IceAgeFile .NE. ' ' ) THEN
-        CALL READ_FLD_XY_RL( IceAgeFile, ' ', ZETA, 0, myThid )
-        _EXCH_XY_RL(ZETA,myThid)
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            ICEAGE(i,j,bi,bj) = ZETA(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
+        CALL READ_FLD_XY_RL( IceAgeFile, ' ', ICEAGE, 0, myThid )
+        _EXCH_XY_RL(ICEAGE,myThid)
        ENDIF
 #endif /* SEAICE_AGE */
 
@@ -431,10 +397,10 @@ C---  Complete initialization
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          ZETA(i,j,bi,bj)=HEFF(i,j,1,bi,bj)*(1.0 _d 11)
+          ZETA(i,j,bi,bj)=HEFF(i,j,bi,bj)*(1.0 _d 11)
           ETA(i,j,bi,bj)=ZETA(i,j,bi,bj)/4.0 _d 0
-          PRESS0(i,j,bi,bj)=PSTAR*HEFF(i,j,1,bi,bj)
-     &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,1,bi,bj)))
+          PRESS0(i,j,bi,bj)=PSTAR*HEFF(i,j,bi,bj)
+     &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,bi,bj)))
           ZMAX(i,j,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(i,j,bi,bj)
           ZMIN(i,j,bi,bj)=SEAICE_zetaMin
           PRESS0(i,j,bi,bj)=PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
@@ -443,7 +409,7 @@ C---  Complete initialization
         IF ( useRealFreshWaterFlux .AND. .NOT.useThSIce ) THEN
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           sIceLoad(i,j,bi,bj) = HEFF(i,j,1,bi,bj)*SEAICE_rhoIce
+           sIceLoad(i,j,bi,bj) = HEFF(i,j,bi,bj)*SEAICE_rhoIce
      &                         + HSNOW(i,j,bi,bj)*SEAICE_rhoSnow
 
           ENDDO

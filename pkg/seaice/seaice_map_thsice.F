@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_map_thsice.F,v 1.1 2006/06/05 22:46:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_map_thsice.F,v 1.2 2009/06/24 08:01:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -44,8 +44,8 @@ C     i,j,bi,bj - Loop counters
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          AREA(i,j,1,bi,bj) = iceMask(i,j,bi,bj)
-          HEFF(i,j,1,bi,bj) = iceMask(i,j,bi,bj)*iceHeight(i,j,bi,bj)
+          AREA(i,j,bi,bj) = iceMask(i,j,bi,bj)
+          HEFF(i,j,bi,bj) = iceMask(i,j,bi,bj)*iceHeight(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO   

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.1 2009/06/17 14:51:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.2 2009/06/24 08:01:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,7 +42,6 @@ C     myThid :: my Thread Id number
 
 C     !LOCAL VARIABLES:
 C     == Local variables in common block :
-c     COMMON /LOCAL_SEAICE_DO_DIAGS/ arr
 
 C     == Local variables ==
       CHARACTER*(10) suff
@@ -56,7 +55,6 @@ C     == Local variables ==
       LOGICAL dumpFiles
 #endif /* ALLOW_TIMEAVE */
 #ifdef ALLOW_MNC
-      _RL arr  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       CHARACTER*(1) pf
 #endif /* ALLOW_MNC */
 CEOP
@@ -94,46 +92,10 @@ CEOP
      &            seaice_sigma12,myThid)
             ENDIF
 #endif /* SEAICE_CGRID and SEAICE_ALLOW_EVP */
-            DO bj=myByLo(myThid),myByHi(myThid)
-             DO bi=myBxLo(myThid),myBxHi(myThid)
-               DO j=1-Oly,sNy+Oly
-                DO i=1-Olx,sNx+Olx
-                  arr(i,j,bi,bj)=UICE(i,j,1,bi,bj)
-                ENDDO
-               ENDDO
-             ENDDO
-            ENDDO
-            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_UICE',arr,myThid)
-            DO bj=myByLo(myThid),myByHi(myThid)
-             DO bi=myBxLo(myThid),myBxHi(myThid)
-               DO j=1-Oly,sNy+Oly
-                DO i=1-Olx,sNx+Olx
-                  arr(i,j,bi,bj)=VICE(i,j,1,bi,bj)
-                ENDDO
-               ENDDO
-             ENDDO
-            ENDDO
-            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_VICE',arr,myThid)
-            DO bj=myByLo(myThid),myByHi(myThid)
-             DO bi=myBxLo(myThid),myBxHi(myThid)
-               DO j=1-Oly,sNy+Oly
-                DO i=1-Olx,sNx+Olx
-                  arr(i,j,bi,bj)=HEFF(i,j,1,bi,bj)
-                ENDDO
-               ENDDO
-             ENDDO
-            ENDDO
-            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_HEFF',arr,myThid)
-            DO bj=myByLo(myThid),myByHi(myThid)
-             DO bi=myBxLo(myThid),myBxHi(myThid)
-               DO j=1-Oly,sNy+Oly
-                DO i=1-Olx,sNx+Olx
-                  arr(i,j,bi,bj)=AREA(i,j,1,bi,bj)
-                ENDDO
-               ENDDO
-             ENDDO
-            ENDDO
-            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_AREA',arr,myThid)
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_UICE',uIce,myThid)
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_VICE',vIce,myThid)
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_HEFF',hEff,myThid)
+            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_AREA',area,myThid)
             CALL MNC_CW_RS_W(pf,'sice',0,0,'si_UWIND',uwind,myThid)
             CALL MNC_CW_RS_W(pf,'sice',0,0,'si_VWIND',vwind,myThid)
             CALL MNC_CW_RS_W(pf,'sice',0,0,'fu',fu,myThid)
@@ -154,18 +116,10 @@ CEOP
              CALL WRITE_FLD_XY_RS('Qnet.',suff,Qnet,myIter,myThid)
              CALL WRITE_FLD_XY_RS('Qsw.',suff,Qsw,myIter,myThid)
             ENDIF
-            WRITE(fName,'(A,I10.10)') 'UICE.', myIter
-            CALL WRITE_REC_LEV_RL( fName, writeBinaryPrec, 3, 1, 1,
-     &                             UICE, 1, myIter, myThid )
-            WRITE(fName,'(A,I10.10)') 'VICE.', myIter
-            CALL WRITE_REC_LEV_RL( fName, writeBinaryPrec, 3, 1, 1,
-     &                             VICE, 1, myIter, myThid )
-            WRITE(fName,'(A,I10.10)') 'HEFF.', myIter
-            CALL WRITE_REC_LEV_RL( fName, writeBinaryPrec, 3, 1, 1,
-     &                             HEFF, 1, myIter, myThid )
-            WRITE(fName,'(A,I10.10)') 'AREA.', myIter
-            CALL WRITE_REC_LEV_RL( fName, writeBinaryPrec, 3, 1, 1,
-     &                             AREA, 1, myIter, myThid )
+            CALL WRITE_FLD_XY_RL( 'UICE.',suff,uIce,myIter,myThid)
+            CALL WRITE_FLD_XY_RL( 'VICE.',suff,vIce,myIter,myThid)
+            CALL WRITE_FLD_XY_RL( 'HEFF.',suff,hEff,myIter,myThid)
+            CALL WRITE_FLD_XY_RL( 'AREA.',suff,area,myIter,myThid)
             CALL WRITE_FLD_XY_RL( 'HSNOW.',suff,HSNOW,myIter,myThid)
 #ifdef SEAICE_SALINITY
             CALL WRITE_FLD_XY_RL( 'HSALT.',suff,HSALT,myIter,myThid)
@@ -211,13 +165,13 @@ C--   Time-cumulations
           QSWtave(i,j,1,bi,bj)  =
      &         QSWtave(i,j,1,bi,bj)  +QSW(i,j,bi,bj)   *deltaTclock
           UICEtave(i,j,1,bi,bj) =
-     &         UICEtave(i,j,1,bi,bj) +UICE(i,j,1,bi,bj)*deltaTclock
+     &         UICEtave(i,j,1,bi,bj) +UICE(i,j,bi,bj)*deltaTclock
           VICEtave(i,j,1,bi,bj) =
-     &         VICEtave(i,j,1,bi,bj) +VICE(i,j,1,bi,bj)*deltaTclock
+     &         VICEtave(i,j,1,bi,bj) +VICE(i,j,bi,bj)*deltaTclock
           HEFFtave(i,j,1,bi,bj) =
-     &         HEFFtave(i,j,1,bi,bj) +HEFF(i,j,1,bi,bj)*deltaTclock
+     &         HEFFtave(i,j,1,bi,bj) +HEFF(i,j,bi,bj)*deltaTclock
           AREAtave(i,j,1,bi,bj) =
-     &         AREAtave(i,j,1,bi,bj) +AREA(i,j,1,bi,bj)*deltaTclock
+     &         AREAtave(i,j,1,bi,bj) +AREA(i,j,bi,bj)*deltaTclock
          ENDDO
         ENDDO
         DO k=1,Nr

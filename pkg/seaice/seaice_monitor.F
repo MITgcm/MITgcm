@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.16 2009/03/03 14:05:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.17 2009/06/24 08:01:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,7 +42,6 @@ C     === Functions ====
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER i,j,bi,bj
-      _RL TMP_DIAG (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
       IF ( DIFFERENT_MULTIPLE(SEAICE_monFreq,myTime,deltaTClock)
      &   ) THEN
@@ -92,99 +91,36 @@ C--   endif master cpu io
         CALL MON_OUT_RL('_time_sec', myTime,mon_string_none,myThid)
 
 C       Print some statistics about input forcing fields
-        DO bj=myByLo(myThid),myByHi(myThid)
-           DO bi=myBxLo(myThid),myBxHi(myThid)
-              DO J=1-OLy,sNy+OLy
-                 DO I=1-OLx,sNx+OLx
-                    TMP_DIAG(i,j,bi,bj)=UICE(i,j,1,bi,bj)
-                 ENDDO
-              ENDDO
-           ENDDO
-        ENDDO
 #ifdef SEAICE_CGRID
 C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
         IF ( nSx.EQ.1 .AND. nSy.EQ.1 )
-     &  CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_uice',
+     &  CALL MON_PRINTSTATS_RL(1,UICE,'_uice',
      &       maskW,maskW,rAw,drF,myThid)
 #else
-        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_uice',
+        CALL MON_PRINTSTATS_RL(1,UICE,'_uice',
      &       UVM,UVM,rAz,drF,myThid)
 #endif
-        DO bj=myByLo(myThid),myByHi(myThid)
-           DO bi=myBxLo(myThid),myBxHi(myThid)
-              DO J=1-OLy,sNy+OLy
-                 DO I=1-OLx,sNx+OLx
-                    TMP_DIAG(i,j,bi,bj)=VICE(i,j,1,bi,bj)
-                 ENDDO
-              ENDDO
-           ENDDO
-        ENDDO
 #ifdef SEAICE_CGRID
 C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
         IF ( nSx.EQ.1 .AND. nSy.EQ.1 )
-     &  CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_vice',
+     &  CALL MON_PRINTSTATS_RL(1,VICE,'_vice',
      &       maskS,maskS,rAs,drF,myThid)
 #else
-        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_vice',
+        CALL MON_PRINTSTATS_RL(1,VICE,'_vice',
      &       UVM,UVM,rAz,drF,myThid)
 #endif
-        DO bj=myByLo(myThid),myByHi(myThid)
-           DO bi=myBxLo(myThid),myBxHi(myThid)
-              DO J=1-OLy,sNy+OLy
-                 DO I=1-OLx,sNx+OLx
-                    TMP_DIAG(i,j,bi,bj)=AREA(i,j,1,bi,bj)
-                 ENDDO
-              ENDDO
-           ENDDO
-        ENDDO
-        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_area',
+        CALL MON_PRINTSTATS_RL(1,AREA,'_area',
      &       maskH,maskH,rA ,drF,myThid)
-        DO bj=myByLo(myThid),myByHi(myThid)
-           DO bi=myBxLo(myThid),myBxHi(myThid)
-              DO J=1-OLy,sNy+OLy
-                 DO I=1-OLx,sNx+OLx
-                    TMP_DIAG(i,j,bi,bj)=HEFF(i,j,1,bi,bj)
-                 ENDDO
-              ENDDO
-           ENDDO
-        ENDDO
-        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_heff',
+        CALL MON_PRINTSTATS_RL(1,HEFF,'_heff',
      &       maskH,maskH,rA ,drF,myThid)
-        DO bj=myByLo(myThid),myByHi(myThid)
-           DO bi=myBxLo(myThid),myBxHi(myThid)
-              DO J=1-OLy,sNy+OLy
-                 DO I=1-OLx,sNx+OLx
-                    TMP_DIAG(i,j,bi,bj)=HSNOW(i,j,bi,bj)
-                 ENDDO
-              ENDDO
-           ENDDO
-        ENDDO
-        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_hsnow',
+        CALL MON_PRINTSTATS_RL(1,HSNOW,'_hsnow',
      &       maskH,maskH,rA ,drF,myThid)
 #ifdef SEAICE_SALINITY
-        DO bj=myByLo(myThid),myByHi(myThid)
-           DO bi=myBxLo(myThid),myBxHi(myThid)
-              DO J=1-OLy,sNy+OLy
-                 DO I=1-OLx,sNx+OLx
-                    TMP_DIAG(i,j,bi,bj)=HSALT(i,j,bi,bj)
-                 ENDDO
-              ENDDO
-           ENDDO
-        ENDDO
-        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_hsalt',
+        CALL MON_PRINTSTATS_RL(1,HSALT,'_hsalt',
      &       maskH,maskH,rA ,drF,myThid)
 #endif /* SEAICE_SALINITY */
 #ifdef SEAICE_AGE
-        DO bj=myByLo(myThid),myByHi(myThid)
-           DO bi=myBxLo(myThid),myBxHi(myThid)
-              DO J=1-OLy,sNy+OLy
-                 DO I=1-OLx,sNx+OLx
-                    TMP_DIAG(i,j,bi,bj)=IceAge(i,j,bi,bj)
-                 ENDDO
-              ENDDO
-           ENDDO
-        ENDDO
-        CALL MON_PRINTSTATS_RL(1,TMP_DIAG,'_iceage',
+        CALL MON_PRINTSTATS_RL(1,ICEAGE,'_iceage',
      &       maskH,maskH,rA ,drF,myThid)
 #endif /* SEAICE_AGE */
 

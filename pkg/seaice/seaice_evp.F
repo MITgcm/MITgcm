@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.24 2009/06/22 15:57:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.25 2009/06/24 08:01:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -111,8 +111,8 @@ C     inverse relaxation/damping time scale
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
 C     use u/vIceC as work arrays: copy previous time step to u/vIceC
-          uIceC(I,J,bi,bj)   = uIce(I,J,1,bi,bj)
-          vIceC(I,J,bi,bj)   = vIce(I,J,1,bi,bj)
+          uIceC(I,J,bi,bj)   = uIce(I,J,bi,bj)
+          vIceC(I,J,bi,bj)   = vIce(I,J,bi,bj)
 c     initialise strain rates
           e11  (I,J,bi,bj)   = 0. _d 0
           e22  (I,J,bi,bj)   = 0. _d 0
@@ -328,10 +328,10 @@ C
            DO I=0,sNx
 C     set up non-linear water drag, forcex, forcey
             TEMPVAR = QUART*(
-     &           ( uIceC(I  ,J,bi,bj)-uVel(I  ,J,1,bi,bj)
-     &           + uIceC(I+1,J,bi,bj)-uVel(I+1,J,1,bi,bj))**2
-     &           +(vIceC(I,J  ,bi,bj)-vVel(I,J  ,1,bi,bj)
-     &           + vIceC(I,J+1,bi,bj)-vVel(I,J+1,1,bi,bj))**2)
+     &           ( uIceC(I  ,J,bi,bj)-uVel(I  ,J,kSrf,bi,bj)
+     &           + uIceC(I+1,J,bi,bj)-uVel(I+1,J,kSrf,bi,bj))**2
+     &           +(vIceC(I,J  ,bi,bj)-vVel(I,J  ,kSrf,bi,bj)
+     &           + vIceC(I,J+1,bi,bj)-vVel(I,J+1,kSrf,bi,bj))**2)
             IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
              IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
               DWATN(I,J,bi,bj)=QUART
@@ -357,26 +357,26 @@ C     set up anti symmetric drag force and add in ice ocean stress
 C     ( remember to average to correct velocity points )
             FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
      &           0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
-     &           COSWAT * uVel(I,J,1,bi,bj)
+     &           COSWAT * uVel(I,J,kSrf,bi,bj)
      &           - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 *
-     &           ( DWATN(I  ,J,bi,bj) *
-     &           0.5 _d 0 * (vVel(I  ,J  ,1,bi,bj)-vIceC(I  ,J  ,bi,bj)
-     &                      +vVel(I  ,J+1,1,bi,bj)-vIceC(I  ,J+1,bi,bj))
-     &           + DWATN(I-1,J,bi,bj) *
-     &           0.5 _d 0 * (vVel(I-1,J  ,1,bi,bj)-vIceC(I-1,J  ,bi,bj)
-     &                      +vVel(I-1,J+1,1,bi,bj)-vIceC(I-1,J+1,bi,bj))
-     &         )
+     &           ( DWATN(I  ,J,bi,bj) * 0.5 _d 0 *
+     &            (vVel(I  ,J  ,kSrf,bi,bj)-vIceC(I  ,J  ,bi,bj)
+     &            +vVel(I  ,J+1,kSrf,bi,bj)-vIceC(I  ,J+1,bi,bj))
+     &           + DWATN(I-1,J,bi,bj) * 0.5 _d 0 *
+     &            (vVel(I-1,J  ,kSrf,bi,bj)-vIceC(I-1,J  ,bi,bj)
+     &            +vVel(I-1,J+1,kSrf,bi,bj)-vIceC(I-1,J+1,bi,bj))
+     &           )
             FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
      &           0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
-     &           COSWAT * vVel(I,J,1,bi,bj)
+     &           COSWAT * vVel(I,J,kSrf,bi,bj)
      &           + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
-     &           ( DWATN(I,J  ,bi,bj) *
-     &           0.5 _d 0 * (uVel(I  ,J  ,1,bi,bj)-uIceC(I  ,J  ,bi,bj)
-     &                      +uVel(I+1,J  ,1,bi,bj)-uIceC(I+1,J  ,bi,bj))
-     &           + DWATN(I,J-1,bi,bj) *
-     &           0.5 _d 0 * (uVel(I  ,J-1,1,bi,bj)-uIceC(I  ,J-1,bi,bj)
-     &                      +uVel(I+1,J-1,1,bi,bj)-uIceC(I+1,J-1,bi,bj))
-     &         )
+     &           ( DWATN(I,J  ,bi,bj) * 0.5 _d 0 *
+     &            (uVel(I  ,J  ,kSrf,bi,bj)-uIceC(I  ,J  ,bi,bj)
+     &            +uVel(I+1,J  ,kSrf,bi,bj)-uIceC(I+1,J  ,bi,bj))
+     &           + DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
+     &            (uVel(I  ,J-1,kSrf,bi,bj)-uIceC(I  ,J-1,bi,bj)
+     &            +uVel(I+1,J-1,kSrf,bi,bj)-uIceC(I+1,J-1,bi,bj))
+     &           )
 C     coriols terms
             FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj) + 0.5 _d 0*(
      &             seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
@@ -429,8 +429,8 @@ C     Copy work arrays and apply masks
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
-          uIce(I,J,1,bi,bj)=uIceC(I,J,bi,bj)* _maskW(I,J,kSrf,bi,bj)
-          vIce(I,J,1,bi,bj)=vIceC(I,J,bi,bj)* _maskS(I,J,kSrf,bi,bj)
+          uIce(I,J,bi,bj)=uIceC(I,J,bi,bj)* _maskW(I,J,kSrf,bi,bj)
+          vIce(I,J,bi,bj)=vIceC(I,J,bi,bj)* _maskS(I,J,kSrf,bi,bj)
          ENDDO
         ENDDO
        ENDDO

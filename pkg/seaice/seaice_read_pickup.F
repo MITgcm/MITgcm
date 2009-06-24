@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.3 2009/04/28 18:20:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.4 2009/06/24 08:01:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -138,17 +138,15 @@ C--    Read ice model fields
 c       CALL READ_REC_3D_RL( fn, fp, 1, YNEG     , nj, nIter0, myThid )
         nj = nj + 1
         CALL READ_REC_3D_RL( fn, fp, 1, HSNOW    , nj, nIter0, myThid )
-c       nj = int((nj+3)/3)
         nj = nj + 1
-        CALL READ_REC_LEV_RL( fn, fp, 3,1,1, UICE, nj, nIter0, myThid )
-        nj = nj + 3
-        CALL READ_REC_LEV_RL( fn, fp, 3,1,1, VICE, nj, nIter0, myThid )
-        nj = nj + 3
-        CALL READ_REC_LEV_RL( fn, fp, 3,1,1, HEFF, nj, nIter0, myThid )
-        nj = nj + 3
-        CALL READ_REC_LEV_RL( fn, fp, 3,1,1, AREA, nj, nIter0, myThid )
-c       nj = nj * 3 + 1
-        nj = nj + 3
+        CALL READ_REC_3D_RL( fn, fp, 1, UICE    , nj, nIter0, myThid )
+        nj = nj + 1
+        CALL READ_REC_3D_RL( fn, fp, 1, VICE    , nj, nIter0, myThid )
+        nj = nj + 1
+        CALL READ_REC_3D_RL( fn, fp, 1, HEFF    , nj, nIter0, myThid )
+        nj = nj + 1
+        CALL READ_REC_3D_RL( fn, fp, 1, AREA    , nj, nIter0, myThid )
+        nj = nj + 1
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
         IF ( SEAICEuseEVP .AND. SEAICEuseEVPpickup ) THEN
          CALL READ_REC_3D_RL(fn,fp,1,seaice_sigma1,nj, nIter0, myThid )
@@ -189,10 +187,10 @@ C--    read Sea-Ice Thermodynamics State variables, starting with 3-D fields:
          ENDIF
 #endif /* SEAICE_MULTICATEGORY */
 C--    continue with 2-D fields:
-         CALL READ_MFLDS_LEV_RL('siAREA  ', AREA,
-     &                                  nj, fp, 3,1,1, nIter0, myThid )
-         CALL READ_MFLDS_LEV_RL('siHEFF  ', HEFF,
-     &                                  nj, fp, 3,1,1, nIter0, myThid )
+         CALL READ_MFLDS_3D_RL( 'siAREA  ', AREA,
+     &                                      nj, fp, 1, nIter0, myThid )
+         CALL READ_MFLDS_3D_RL( 'siHEFF  ', HEFF,
+     &                                      nj, fp, 1, nIter0, myThid )
          CALL READ_MFLDS_3D_RL( 'siHSNOW ', HSNOW,
      &                                      nj, fp, 1, nIter0, myThid )
 #ifdef SEAICE_SALINITY
@@ -206,10 +204,10 @@ C--    continue with 2-D fields:
         ENDIF
 
 C--    read Sea-Ice Dynamics variables (all 2-D fields):
-         CALL READ_MFLDS_LEV_RL('siUICE  ', UICE,
-     &                                  nj, fp, 3,1,1, nIter0, myThid )
-         CALL READ_MFLDS_LEV_RL('siVICE  ', VICE,
-     &                                  nj, fp, 3,1,1, nIter0, myThid )
+         CALL READ_MFLDS_3D_RL( 'siUICE  ', UICE,
+     &                                      nj, fp, 1, nIter0, myThid )
+         CALL READ_MFLDS_3D_RL( 'siVICE  ', VICE,
+     &                                      nj, fp, 1, nIter0, myThid )
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
         IF ( SEAICEuseEVP ) THEN
          CALL READ_MFLDS_3D_RL( 'siSigm1 ', seaice_sigma1,
@@ -247,9 +245,9 @@ c     ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--    Update overlap regions
-       CALL EXCH_UV_3D_RL( UICE, VICE, .TRUE., 3, myThid )
-       CALL EXCH_3D_RL   ( HEFF, 3, myThid )
-       CALL EXCH_3D_RL   ( AREA, 3, myThid )
+       CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
+       _EXCH_XY_RL( HEFF, myThid )
+       _EXCH_XY_RL( AREA, myThid )
 #ifdef SEAICE_MULTICATEGORY
        CALL EXCH_3D_RL   ( TICES, MULTDIM, myThid )
 #else

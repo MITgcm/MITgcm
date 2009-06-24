@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.6 2009/05/23 15:39:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.7 2009/06/24 08:01:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -39,10 +39,10 @@ C     tauy   - meridional wind stress over ice at V point
 C     myTime - Simulation time
 C     myIter - Simulation timestep number
 C     myThid - Thread no. that called this routine.
-      _RL uIce    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL vIce    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL taux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL tauy    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL uIce    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIce    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL taux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tauy    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -112,10 +112,10 @@ C--   Now compute ice surface stress
           DO i=1-Olx,sNx+Olx
            U1=UWIND(I,J,bi,bj)
      &          + 0.5 _d 0 * (uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
-     &          - 0.5 _d 0 * (uice(i,j,1,bi,bj)+uice(i+1,j,1,bi,bj))
+     &          - 0.5 _d 0 * (uice(i,j,bi,bj)+uice(i+1,j,bi,bj))
            V1=VWIND(I,J,bi,bj)
      &          + 0.5 _d 0 * (vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
-     &          - 0.5 _d 0 * (vice(i,j,1,bi,bj)+vice(i,j+1,1,bi,bj))
+     &          - 0.5 _d 0 * (vice(i,j,bi,bj)+vice(i,j+1,bi,bj))
            AAA=U1**2+V1**2
            IF ( AAA .LE. SEAICE_EPS_SQ ) THEN
               AAA=SEAICE_EPS
@@ -156,37 +156,37 @@ C     interpolate to U points
      &          (CDAIR(I,J)*(COSWIN*
      &          (uWind(I,J,bi,bj)
      &          +0.5 _d 0*(uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
-     &          -0.5 _d 0*(uice(i,j,1,bi,bj)+uice(i+1,j,1,bi,bj)))
+     &          -0.5 _d 0*(uice(i,j,bi,bj)+uice(i+1,j,bi,bj)))
      &          -SIGN(SINWIN, _fCori(I,J,bi,bj))*
      &          (vWind(I,J,bi,bj)
      &          +0.5 _d 0*(vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
-     &          -0.5 _d 0*(vice(i,j,1,bi,bj)+vice(i,j+1,1,bi,bj))))
+     &          -0.5 _d 0*(vice(i,j,bi,bj)+vice(i,j+1,bi,bj))))
      &          +CDAIR(I-1,J)*(COSWIN*
      &          (uWind(I-1,J,bi,bj)
      &          +0.5 _d 0*(uVel(i-1,j,1,bi,bj)+uVel(i,j,1,bi,bj))
-     &          -0.5 _d 0*(uice(i-1,j,1,bi,bj)+uice(i,j,1,bi,bj)))
+     &          -0.5 _d 0*(uice(i-1,j,bi,bj)+uice(i,j,bi,bj)))
      &          -SIGN(SINWIN, _fCori(I-1,J,bi,bj))*
      &          (vWind(I-1,J,bi,bj)
      &          +0.5 _d 0*(vVel(i-1,j,1,bi,bj)+vVel(i-1,j+1,1,bi,bj))
-     &          -0.5 _d 0*(vice(i-1,j,1,bi,bj)+vice(i-1,j+1,1,bi,bj)))))
+     &          -0.5 _d 0*(vice(i-1,j,bi,bj)+vice(i-1,j+1,bi,bj)))))
 C     interpolate to V points
            tauy(I,J,bi,bj)= 0.5 _d 0 * 
      &          (CDAIR(I,J)*(SIGN(SINWIN, _fCori(I,J,bi,bj))*
      &          (uWind(I,J,bi,bj)
      &          +0.5 _d 0*(uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
-     &          -0.5 _d 0*(uice(i,j,1,bi,bj)+uice(i+1,j,1,bi,bj)))
+     &          -0.5 _d 0*(uice(i,j,bi,bj)+uice(i+1,j,bi,bj)))
      &          +COSWIN*
      &          (vWind(I,J,bi,bj)
      &          +0.5 _d 0*(vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
-     &          -0.5 _d 0*(vice(i,j,1,bi,bj)+vice(i,j+1,1,bi,bj))))
+     &          -0.5 _d 0*(vice(i,j,bi,bj)+vice(i,j+1,bi,bj))))
      &          +CDAIR(I,J-1)*(SIGN(SINWIN, _fCori(I,J-1,bi,bj))*
      &          (uWind(I,J-1,bi,bj)
      &          +0.5 _d 0*(uVel(i,j-1,1,bi,bj)+uVel(i+1,j-1,1,bi,bj))
-     &          -0.5 _d 0*(uice(i,j-1,1,bi,bj)+uice(i+1,j-1,1,bi,bj)))
+     &          -0.5 _d 0*(uice(i,j-1,bi,bj)+uice(i+1,j-1,bi,bj)))
      &          +COSWIN*
      &          (vWind(I,J-1,bi,bj)
      &          +0.5 _d 0*(vVel(i,j-1,1,bi,bj)+vVel(i,j,1,bi,bj))
-     &          -0.5 _d 0*(vice(i,j-1,1,bi,bj)+vice(i,j,1,bi,bj)))))
+     &          -0.5 _d 0*(vice(i,j-1,bi,bj)+vice(i,j,bi,bj)))))
           ENDDO
          ENDDO
         ELSE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.26 2009/06/22 15:57:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.27 2009/06/24 08:01:42 mlosch Exp $
 C $Name:  $
 
 C     for an alternative discretization of d/dx[ (zeta-eta) dV/dy]
@@ -73,7 +73,7 @@ C     i,j,bi,bj - Loop counters
       _RL UVRT2    (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
       _RL UTMP     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RL UTMP     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL VTMP     (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
       _RL dVdx     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dVdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -279,7 +279,7 @@ CADJ LOOP = iteration uice
 C NOW SET U(3)=U(1)
         DO J=1,sNy
          DO I=1,sNx
-          UTMP(I,J,bi,bj)=UICE(I,J,1,bi,bj)
+          UTMP(I,J,bi,bj)=UICE(I,J,bi,bj)
          END DO
         END DO
 
@@ -289,18 +289,18 @@ C NOW SET U(3)=U(1)
            AA2=(etaPlusZeta(I-1,J-1,bi,bj) * _recip_dxF(I-1,J-1,bi,bj)
      &         +etaPlusZeta(I-1,J  ,bi,bj) * _recip_dxF(I-1,J  ,bi,bj)
      &          )*0.5 _d 0 * _recip_dxV(I,J,bi,bj)
-           AA3=AA2*UICE(I-1,J,1,bi,bj)*UVM(I,J,bi,bj)
+           AA3=AA2*UICE(I-1,J,bi,bj)*UVM(I,J,bi,bj)
           ELSE IF(I.EQ.sNx) THEN
            AA1=(etaPlusZeta(I  ,J-1,bi,bj) * _recip_dxF(I  ,J-1,bi,bj)
      &         +etaPlusZeta(I  ,J  ,bi,bj) * _recip_dxF(I  ,J  ,bi,bj)
      &          )*0.5 _d 0 * _recip_dxV(I,J,bi,bj)
-           AA3=AA1*UICE(I+1,J,1,bi,bj)*UVM(I,J,bi,bj)
+           AA3=AA1*UICE(I+1,J,bi,bj)*UVM(I,J,bi,bj)
           ELSE
            AA3=ZERO
           END IF
           URT(I)=FXY(I,J,bi,bj)+AA3
-     &          +UVRT1(I,J,bi,bj)*UICE(I,J-1,1,bi,bj)
-     &          +UVRT2(I,J,bi,bj)*UICE(I,J+1,1,bi,bj)
+     &          +UVRT1(I,J,bi,bj)*UICE(I,J-1,bi,bj)
+     &          +UVRT2(I,J,bi,bj)*UICE(I,J+1,bi,bj)
           URT(I)=URT(I)*UVM(I,J,bi,bj)
          END DO
 
@@ -320,7 +320,7 @@ C NOW SET U(3)=U(1)
           URT(J1)=URT(J1)-CUU(J1)*URT(J2)
          END DO
          DO I=1,sNx
-          UICE(I,J,1,bi,bj)=UTMP(I,J,bi,bj)
+          UICE(I,J,bi,bj)=UTMP(I,J,bi,bj)
      &        +WFAU*(URT(I)-UTMP(I,J,bi,bj))
          END DO
 
@@ -335,7 +335,7 @@ C NOW SET U(3)=U(1)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy
           DO I=1,sNx
-           UERR(I,J,bi,bj)=(UICE(I,J,1,bi,bj)-UTMP(I,J,bi,bj))
+           UERR(I,J,bi,bj)=(UICE(I,J,bi,bj)-UTMP(I,J,bi,bj))
      &             *UVM(I,J,bi,bj)
            S1=MAX(ABS(UERR(I,J,bi,bj)),S1)
           END DO
@@ -351,7 +351,7 @@ C SAFEGUARD AGAINST BAD FORCING ETC
         phexit = 1
        END IF
       END IF
-      CALL EXCH_3D_RL( UICE, 3, myThid )
+      _EXCH_XY_RL( UICE, myThid )
 
       ENDIF
       ENDDO
@@ -514,7 +514,7 @@ C NOW SET U(3)=U(1)
 
         DO J=1,sNy
          DO I=1,sNx
-          VTMP(I,J,bi,bj)=VICE(I,J,1,bi,bj)
+          VTMP(I,J,bi,bj)=VICE(I,J,bi,bj)
          END DO
         END DO
 
@@ -531,7 +531,7 @@ C NOW SET U(3)=U(1)
      &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &         + ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
      &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere )
-     &         *VICE(I,J-1,1,bi,bj)*UVM(I,J,bi,bj)
+     &         *VICE(I,J-1,bi,bj)*UVM(I,J,bi,bj)
            ELSE IF(J.EQ.sNy) THEN
             AA1= _recip_dyU(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
      &           * 0.5 _d 0 * (
@@ -543,13 +543,13 @@ C NOW SET U(3)=U(1)
      &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere
      &         - ETAMEAN(I,J,bi,bj)*TWO* _tanPhiAtV(I,J,bi,bj)
      &         * 0.5 _d 0 * _recip_dyU(I,J,bi,bj)*recip_rSphere )
-     &         *VICE(I,J+1,1,bi,bj)*UVM(I,J,bi,bj)
+     &         *VICE(I,J+1,bi,bj)*UVM(I,J,bi,bj)
            ELSE
             AA3=ZERO
            END IF
 
-          VRT(J)=FXY(I,J,bi,bj)+AA3+UVRT1(I,J,bi,bj)*VICE(I-1,J,1,bi,bj)
-     &                       +UVRT2(I,J,bi,bj)*VICE(I+1,J,1,bi,bj)
+          VRT(J)=FXY(I,J,bi,bj)+AA3+UVRT1(I,J,bi,bj)*VICE(I-1,J,bi,bj)
+     &                       +UVRT2(I,J,bi,bj)*VICE(I+1,J,bi,bj)
           VRT(J)=VRT(J)*UVM(I,J,bi,bj)
          END DO
 
@@ -569,7 +569,7 @@ C NOW SET U(3)=U(1)
           VRT(J1)=VRT(J1)-CVV(J1)*VRT(J2)
          END DO
          DO J=1,sNy
-          VICE(I,J,1,bi,bj)=VTMP(I,J,bi,bj)
+          VICE(I,J,bi,bj)=VTMP(I,J,bi,bj)
      &        +WFAV*(VRT(J)-VTMP(I,J,bi,bj))
          END DO
         ENDDO
@@ -583,7 +583,7 @@ C NOW SET U(3)=U(1)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy
           DO I=1,sNx
-           UERR(I,J,bi,bj)=(VICE(I,J,1,bi,bj)-VTMP(I,J,bi,bj))
+           UERR(I,J,bi,bj)=(VICE(I,J,bi,bj)-VTMP(I,J,bi,bj))
      &             *UVM(I,J,bi,bj)
            S2=MAX(ABS(UERR(I,J,bi,bj)),S2)
           END DO
@@ -600,7 +600,7 @@ C SAFEGUARD AGAINST BAD FORCING ETC
        END IF
       END IF
 
-      CALL EXCH_3D_RL( VICE, 3, myThid )
+      _EXCH_XY_RL( VICE, myThid )
 
       ENDIF
       ENDDO
@@ -618,13 +618,13 @@ C NOW MAKE COROLIS TERM IMPLICIT
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
          DO I=1,sNx
-          UICE(I,J,1,bi,bj)=UICE(I,J,1,bi,bj)*UVM(I,J,bi,bj)
-          VICE(I,J,1,bi,bj)=VICE(I,J,1,bi,bj)*UVM(I,J,bi,bj)
+          UICE(I,J,bi,bj)=UICE(I,J,bi,bj)*UVM(I,J,bi,bj)
+          VICE(I,J,bi,bj)=VICE(I,J,bi,bj)*UVM(I,J,bi,bj)
          END DO
         END DO
        ENDDO
       ENDDO
-      CALL EXCH_UV_3D_RL( UICE, VICE, .TRUE., 3, myThid )
+      CALL EXCH_UV_XY_RL( UICE, VICE,.TRUE.,myThid)
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.14 2009/06/11 20:31:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.15 2009/06/24 08:01:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -60,13 +60,13 @@ C
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL DIAGNOSTICS_FILL(AREA(1-oLx,1-oLy,1,bi,bj),
-     &        'SIarea  ',0,1 ,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(HEFF(1-oLx,1-oLy,1,bi,bj),
-     &        'SIheff  ',0,1 ,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(UICE(1-oLx,1-oLy,1,bi,bj),
-     &        'SIuice  ',0,1 ,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(VICE(1-oLx,1-oLy,1,bi,bj),
+         CALL DIAGNOSTICS_FILL(AREA,
+     &        'SIarea  ',0,1 ,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(HEFF,
+     &        'SIheff  ',0,1 ,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(UICE,
+     &        'SIuice  ',0,1 ,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(VICE,
      &        'SIvice  ',0,1 ,2,bi,bj,myThid)
         ENDDO
        ENDDO
@@ -93,7 +93,7 @@ C     division by zero is not possible
           ENDDO
 #endif /* SEAICE_MULTICATEGORY */
           CALL DIAGNOSTICS_FRACT_FILL(
-     I         TICE, AREA(1-oLx,1-oLy,1,bi,bj), 1. _d 0,1,'SItices ', 
+     I         TICE, AREA, 1. _d 0,1,'SItices ', 
      I         0,1,1,bi,bj,myThid)
          ENDDO
         ENDDO
@@ -155,12 +155,12 @@ C     abuse press as a temporary field
             DO i = 1,sNx+1
              press(i,j,bi,bj) =
 #ifdef SEAICE_CGRID
-     &            UICE(i,j,1,bi,bj)
+     &            UICE(i,j,bi,bj)
 #else
 C     average B-grid velocities to C-grid points
-     &            0.5 _d 0*(UICE(i,j,1,bi,bj)+UICE(i,j+1,1,bi,bj))
+     &            0.5 _d 0*(UICE(i,j,bi,bj)+UICE(i,j+1,bi,bj))
 #endif /* SEAICE_CGRID */
-     &            *0.5 _d 0*(HEFF(i,j,1,bi,bj)+HEFF(i-1,j,1,bi,bj))
+     &            *0.5 _d 0*(HEFF(i,j,bi,bj)+HEFF(i-1,j,bi,bj))
             ENDDO
            ENDDO
           ENDDO
@@ -174,12 +174,12 @@ C     average B-grid velocities to C-grid points
             DO i = 1,sNx
              press(i,j,bi,bj) =
 #ifdef SEAICE_CGRID
-     &            VICE(i,j,1,bi,bj)
+     &            VICE(i,j,bi,bj)
 #else
 C     average B-grid velocities to C-grid points
-     &            0.5 _d 0*(VICE(i,j,1,bi,bj)+VICE(i+1,j,1,bi,bj))
+     &            0.5 _d 0*(VICE(i,j,bi,bj)+VICE(i+1,j,bi,bj))
 #endif /* SEAICE_CGRID */
-     &            *0.5 _d 0*(HEFF(i,j,1,bi,bj)+HEFF(i,j-1,1,bi,bj))
+     &            *0.5 _d 0*(HEFF(i,j,bi,bj)+HEFF(i,j-1,bi,bj))
             ENDDO
            ENDDO
           ENDDO

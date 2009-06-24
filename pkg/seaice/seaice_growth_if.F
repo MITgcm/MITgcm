@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.6 2009/06/22 15:57:45 mlosch Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.7 2009/06/24 08:01:43 mlosch Exp $
 C     $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -229,12 +229,12 @@ C
 C     initialise a few fields
 C     
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE qnet(:,:,bi,bj)   = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE qsw(:,:,bi,bj)    = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                       key = iicekey, byte = isbyte
+CADJ STORE qnet(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                       key = iicekey, byte = isbyte
+CADJ STORE qsw(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                       key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             DO J=1,sNy
                DO I=1,sNx
@@ -300,16 +300,16 @@ c the post sea ice advection and diffusion ice state are in time level 1.
 c move these to the time level 2 before thermo.  after this routine 
 c the updated ice state will be in time level 1 again. (except for snow 
 c which does not have 3 time levels for some reason) 
-                  HEFFNm1(I,J,bi,bj) = HEFF(I,J,1,bi,bj) 
-                  AREANm1(I,J,bi,bj) = AREA(I,J,1,bi,bj) 
+                  HEFFNm1(I,J,bi,bj) = HEFF(I,J,bi,bj) 
+                  AREANm1(I,J,bi,bj) = AREA(I,J,bi,bj) 
 
                ENDDO
             ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ STORE area(:,:,bi,bj)   = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ STORE heff(:,:,bi,bj)   = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
@@ -337,9 +337,9 @@ cph-checkthis
             ENDDO
             
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ STORE area(:,:,bi,bj)   = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ STORE heff(:,:,bi,bj)   = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
@@ -597,7 +597,7 @@ c     not included without SHORTWAVE_HEATING
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj)= comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ STORE heff(:,:,bi,bj)   = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -631,7 +631,7 @@ c     heat flux, and hope for the best.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE S_h(:,:)         = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ &                        key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     CALCULATE THICKNESS DERIVATIVE (S_h)
@@ -653,16 +653,16 @@ c                  with area converts to mean snow thickness.
             ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
 CADJ STORE S_h(:,:)         = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE S_hsnow(:,:)      = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE S_hsnow(:,:)     = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
             DO J=1,sNy
@@ -738,7 +738,7 @@ C     REDUCE THE ICE COVER IF ICE IS PRESENT
                  
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ STORE heff(:,:,bi,bj)   = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
@@ -752,16 +752,16 @@ CADJ STORE qswi(:,:)         = comlev1_bibj,
 CADJ &                         key = iicekey, byte = isbyte
 CADJ STORE qswo(:,:)         = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
+CADJ STORE area(:,:,bi,bj)   = comlev1_bibj, 
 CADJ &                         key = iicekey, byte = isbyte
 #endif
 
 C     ACTUALLY CHANGE THE AREA AND THICKNESS
             DO J=1,sNy
                DO I=1,sNx
-                  AREA(I,J,1,bi,bj) = AREANm1(I,J,bi,bj) + 
+                  AREA(I,J,bi,bj) = AREANm1(I,J,bi,bj) + 
      &                 SEAICE_deltaTtherm * S_a(I,J)
-                  HEFF(I,J,1,bi,bj) = HEFFNm1(I,J,bi,bj) +
+                  HEFF(I,J,bi,bj) = HEFFNm1(I,J,bi,bj) +
      &                 SEAICE_deltaTTherm * S_h(I,J)
                   HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj) +
      &                 SEAICE_deltaTTherm * S_hsnow(I,J)
@@ -769,40 +769,40 @@ C     ACTUALLY CHANGE THE AREA AND THICKNESS
             ENDDO
             
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
 #endif
 
             DO J=1,sNy
                DO I=1,sNx
 C     SET LIMIT ON AREA etc.
-                  AREA(I,J,1,bi,bj) = MIN(1. _d 0,AREA(I,J,1,bi,bj))
-                  AREA(I,J,1,bi,bj) = MAX(0. _d 0,AREA(I,J,1,bi,bj))
-                  HEFF(I,J,1,bi,bj) = MAX(0. _d 0, HEFF(I,J,1,bi,bj))
+                  AREA(I,J,bi,bj) = MIN(1. _d 0,AREA(I,J,bi,bj))
+                  AREA(I,J,bi,bj) = MAX(0. _d 0,AREA(I,J,bi,bj))
+                  HEFF(I,J,bi,bj) = MAX(0. _d 0, HEFF(I,J,bi,bj))
                   HSNOW(I,J,bi,bj)  = MAX(0. _d 0, HSNOW(I,J,bi,bj))
                ENDDO
             ENDDO
             
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE hsnow(:,:,bi,bj)  = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
 #endif
 
             DO J=1,sNy
                DO I=1,sNx
-                  IF (AREA(I,J,1,bi,bj) .GT. 0.0) THEN
+                  IF (AREA(I,J,bi,bj) .GT. 0.0) THEN
                       HICE_ACTUAL(I,J) = 
-     &                   HEFF(I,J,1,bi,bj)/AREA(I,J,1,bi,bj)
+     &                   HEFF(I,J,bi,bj)/AREA(I,J,bi,bj)
                       HSNOW_ACTUAL(I,J) = 
-     &                    HSNOW(I,J,bi,bj)/AREA(I,J,1,bi,bj)
+     &                    HSNOW(I,J,bi,bj)/AREA(I,J,bi,bj)
                   ELSE
                       HICE_ACTUAL(I,J) = 0.0
                       HSNOW_ACTUAL(I,J) = 0.0
@@ -811,20 +811,20 @@ CADJ &                         key = iicekey, byte = isbyte
             ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                       key = iicekey, byte = isbyte
+CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                       key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 c     constrain area is no thickness and vice versa.
             DO J=1,sNy
                DO I=1,sNx
-                  IF (HEFF(I,J,1,bi,bj)  .LE. 0.0 .OR.
-     &                 AREA(I,J,1,bi,bj) .LE. 0.0) THEN
+                  IF (HEFF(I,J,bi,bj)  .LE. 0.0 .OR.
+     &                 AREA(I,J,bi,bj) .LE. 0.0) THEN
                      
-                     AREA(I,J,1,bi,bj)       = 0.0
-                     HEFF(I,J,1,bi,bj)       = 0.0
+                     AREA(I,J,bi,bj)       = 0.0
+                     HEFF(I,J,bi,bj)       = 0.0
                      HICE_ACTUAL(I,J)        = 0.0
                      HSNOW(I,J,bi,bj)        = 0.0
                      HSNOW_ACTUAL(I,J)       = 0.0
@@ -833,10 +833,10 @@ c     constrain area is no thickness and vice versa.
             ENDDO
             
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                       key = iicekey, byte = isbyte
+CADJ STORE heff(:,:,bi,bj) = comlev1_bibj, 
+CADJ &                       key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
             DO J=1,sNy
@@ -859,7 +859,7 @@ c     THE EFFECTIVE SHORTWAVE HEATING RATE
 #endif
 
                   ActualNewTotalVolumeChange(I,J) = 
-     &                 HEFF(I,J,1,bi,bj) - HEFFNm1(I,J,bi,bj)
+     &                 HEFF(I,J,bi,bj) - HEFFNm1(I,J,bi,bj)
 
 c     The net average snow thickness melt that is actually realized. e.g.
 c     hsnow_orig  = 0.25 m (e.g. 1 m of ice over a cell 1/4 covered in snow)
@@ -987,29 +987,29 @@ C     THE SHORTWAVE ENERGY FLUX PENETRATING BELOW THE SURFACE LAYER
 
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
 CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             
             DO J=1,sNy
                DO I=1,sNx
-                  AREA(I,J,1,bi,bj) = AREA(I,J,1,bi,bj)*HEFFM(I,J,bi,bj)
-                  HEFF(I,J,1,bi,bj) = HEFF(I,J,1,bi,bj)*HEFFM(I,J,bi,bj)
+                  AREA(I,J,bi,bj) = AREA(I,J,bi,bj)*HEFFM(I,J,bi,bj)
+                  HEFF(I,J,bi,bj) = HEFF(I,J,bi,bj)*HEFFM(I,J,bi,bj)
                   HSNOW(I,J,bi,bj)  = HSNOW(I,J,bi,bj)*HEFFM(I,J,bi,bj)
                ENDDO
             ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
 CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 
@@ -1019,7 +1019,7 @@ CADJ &                         key = iicekey, byte = isbyte
             DO J = 1,sNy
                DO I = 1,sNx
                   EnergyToMeltSnowAndIce(I,J) = 
-     &                 HEFF(I,J,1,bi,bj)/QI +
+     &                 HEFF(I,J,bi,bj)/QI +
      &                 HSNOW(I,J,bi,bj)/QS
                   
                   deltaHS = FL_C2*( HSNOW_ACTUAL(I,J) -
@@ -1034,14 +1034,14 @@ CADJ &                         key = iicekey, byte = isbyte
                      HSNOW_ACTUAL(I,J)= HSNOW_ACTUAL(I,J) 
      &                    - deltaHS
 
-                     HEFF(I,J,1,bi,bj)= HICE_ACTUAL(I,J) *
-     &                    AREA(I,J,1,bi,bj)
+                     HEFF(I,J,bi,bj)= HICE_ACTUAL(I,J) *
+     &                    AREA(I,J,bi,bj)
 
                      HSNOW(I,J,bi,bj) = HSNOW_ACTUAL(I,J)*
-     &                    AREA(I,J,1,bi,bj)
+     &                    AREA(I,J,bi,bj)
                      
                      EnergyToMeltSnowAndIce2(I,J) = 
-     &                    HEFF(I,J,1,bi,bj)/QI +
+     &                    HEFF(I,J,bi,bj)/QI +
      &                    HSNOW(I,J,bi,bj)/QS
                      
 #ifdef SEAICE_DEBUG
@@ -1067,12 +1067,12 @@ c ALLOW_SEAICE_FLOODING
 #endif 
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
 CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
-CADJ STORE heff(:,:,:,bi,bj) = comlev1_bibj, 
-CADJ &                         key = iicekey, byte = isbyte
+CADJ &                        key = iicekey, byte = isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                        key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 
@@ -1080,7 +1080,7 @@ CADJ &                         key = iicekey, byte = isbyte
             IF ( useRealFreshWaterFlux ) THEN
                DO J=1,sNy
                   DO I=1,sNx
-                     sIceLoad(i,j,bi,bj) = HEFF(I,J,1,bi,bj)*
+                     sIceLoad(i,j,bi,bj) = HEFF(I,J,bi,bj)*
      &                 SEAICE_rhoIce + HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
                   ENDDO
                ENDDO
@@ -1120,9 +1120,9 @@ CADJ &                         key = iicekey, byte = isbyte
                   print '(A,2i4,2(1x,1P3E15.4))',
      &                 'ifice i j AREA2/1 HEFF2/1 ',i,j,
      &                 AREANm1(I,J,bi,bj),
-     &                 AREA(i,j,1,bi,bj),
+     &                 AREA(i,j,bi,bj),
      &                 HEFFNm1(I,J,bi,bj),
-     &                 HEFF(i,j,1,bi,bj)
+     &                 HEFF(i,j,bi,bj)
                   
                   print '(A,2i4,2(1x,1P3E15.4))',
      &                 'ifice i j HSNOW2/1 TMX TBC',i,j,

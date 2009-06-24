@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.48 2009/06/22 15:53:40 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.49 2009/06/24 08:01:42 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -43,100 +43,100 @@ CEOP
 
 C--   Grid variables for seaice
       COMMON/ARRAY/HEFFM
-      _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef SEAICE_CGRID
       COMMON/ARRAYC/ seaiceMaskU, seaiceMaskV
-      _RL seaiceMaskU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL seaiceMaskV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL seaiceMaskU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL seaiceMaskV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     k1/2AtZ :: coefficients at C and Z points
 C     k1/2AtC    for metric terms in U/V ice equations.
       COMMON/ARRAYCMETRIC/  k1AtC, k1AtZ, k2AtC, k2AtZ
-      _RS k1AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RS k1AtZ      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RS k2AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RS k2AtZ      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RS k1AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS k1AtZ      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS k2AtC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS k2AtZ      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #else
       COMMON/ARRAYB/ UVM
-      _RL UVM        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL UVM        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* SEAICE_CGRID */
 
 C--   Dynamical variables
       COMMON/SEAICE_DYNVARS_1/AREA,AREANM1
-      _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL AREANM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL AREANM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON/SEAICE_DYNVARS_2/UICE,VICE,UICENM1,VICENM1
-      _RL UICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL VICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
+      _RL UICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL VICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL UICENM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL VICENM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON/SEAICE_DYNVARS_3/
      &     ETA,ZETA,PRESS, e11, e22, e12, 
      &     DRAGS,DRAGA,FORCEX,FORCEY,UICEC,VICEC
-      _RL ETA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL ZETA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL ETA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ZETA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     ice strength/pressure term
-      _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     strain rate tensor
-      _RL e11        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL e22        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL e12        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL e11        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL e22        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL e12        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C
-      _RL DRAGS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL DRAGA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL FORCEX     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL FORCEY     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL UICEC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL VICEC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL DRAGS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL DRAGA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL FORCEX     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL FORCEY     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL UICEC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL VICEC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifndef SEAICE_CGRID
       COMMON/SEAICE_DYNVARS_BGRID/ AMASS, DAIRN
-      _RL AMASS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL AMASS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #else
       COMMON/SEAICE_DYNVARS_CGRID/
      &     seaiceMassC, seaiceMassU, seaiceMassV
-      _RL seaiceMassC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL seaiceMassU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL seaiceMassV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL seaiceMassC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL seaiceMassU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL seaiceMassV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
       COMMON/SEAICE_DYNVARS_4/
      &     DWATN, PRESS0, FORCEX0, FORCEY0, ZMAX, ZMIN
-      _RL DWATN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL PRESS0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL FORCEX0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL FORCEY0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL ZMAX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL ZMIN       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL DWATN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL PRESS0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL FORCEX0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL FORCEY0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ZMAX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ZMIN       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON/SEAICE_TRANS/HEFF,HEFFNM1,HSNOW
-      _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL HEFFNM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL HEFFNM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef SEAICE_SALINITY
       COMMON/SEAICE_SALINITY_R/HSALT
-      _RL HSALT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL HSALT      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #ifdef SEAICE_AGE
       COMMON/SEAICE_AGE_R/ICEAGE
-      _RL ICEAGE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL ICEAGE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
       COMMON/OFL/YNEG
       COMMON/RIV/RIVER
-      _RL YNEG       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL RIVER      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL YNEG       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL RIVER      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     saltWtrIce contains m of salty ice melted (<0) or created (>0)
 C     frWtrIce contains m of freshwater ice melted (<0) or created (>0)
 C              that is, ice due to precipitation or snow
       COMMON/ICEFLUX/ saltWtrIce, frWtrIce
-      _RL saltWtrIce (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL frWtrIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      _RL saltWtrIce (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL frWtrIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       INTEGER MULTDIM
       PARAMETER (MULTDIM=7)
@@ -190,7 +190,7 @@ C     WINDY  - meridional wind stress over water at C points
 
 C--   KGEO    Level used as a proxy for geostrophic velocity.
       COMMON/SEAICE_KGEO/KGEO
-      INTEGER KGEO   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+      INTEGER KGEO   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #ifdef ALLOW_SEAICE_COST_EXPORT

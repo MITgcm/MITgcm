@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.35 2009/05/27 08:26:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.36 2009/06/24 08:01:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,8 +59,8 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
-          PRESS0(i,j,bi,bj)=PSTAR*HEFF(i,j,1,bi,bj)
-     &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,1,bi,bj)))
+          PRESS0(i,j,bi,bj)=PSTAR*HEFF(i,j,bi,bj)
+     &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,bi,bj)))
           ZMAX(i,j,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(i,j,bi,bj)
           ZMIN(i,j,bi,bj)=SEAICE_zetaMin
           PRESS0(i,j,bi,bj)=PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
@@ -94,11 +94,11 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
-          seaiceMassC(I,J,bi,bj)=SEAICE_rhoIce*HEFF(i,j,1,bi,bj)
+          seaiceMassC(I,J,bi,bj)=SEAICE_rhoIce*HEFF(i,j,bi,bj)
           seaiceMassU(I,J,bi,bj)=SEAICE_rhoIce*HALF*(
-     &          HEFF(i,j,1,bi,bj) + HEFF(i-1,j  ,1,bi,bj) )
+     &          HEFF(i,j,bi,bj) + HEFF(i-1,j  ,bi,bj) )
           seaiceMassV(I,J,bi,bj)=SEAICE_rhoIce*HALF*(
-     &          HEFF(i,j,1,bi,bj) + HEFF(i  ,j-1,1,bi,bj) )
+     &          HEFF(i,j,bi,bj) + HEFF(i  ,j-1,bi,bj) )
          ENDDO
         ENDDO
        ENDDO
@@ -110,13 +110,13 @@ C     dynamic masking of areas with no ice
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-Oly+1,sNy+Oly
           DO i=1-Olx+1,sNx+Olx
-           seaiceMaskU(I,J,bi,bj)=AREA(I,J,1,bi,bj)+AREA(I-1,J,1,bi,bj)
+           seaiceMaskU(I,J,bi,bj)=AREA(i,j,bi,bj)+AREA(I-1,J,bi,bj)
            IF ( seaiceMaskU(I,J,bi,bj) .GT. 0. _d 0 ) THEN
             seaiceMaskU(I,J,bi,bj) = 1. _d 0
            ELSE
             seaiceMaskU(I,J,bi,bj) = 0. _d 0
            ENDIF
-           seaiceMaskV(I,J,bi,bj)=AREA(I,J,1,bi,bj)+AREA(I,J-1,1,bi,bj)
+           seaiceMaskV(I,J,bi,bj)=AREA(i,j,bi,bj)+AREA(I,J-1,bi,bj)
            IF ( seaiceMaskV(I,J,bi,bj) .GT. 0. _d 0 ) THEN
             seaiceMaskV(I,J,bi,bj) = 1. _d 0
            ELSE
@@ -203,8 +203,8 @@ C--   now add in wind stress ant tilt
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
 C--   now set up ice pressure and viscosities
-          PRESS0(I,J,bi,bj)=PSTAR*HEFF(I,J,1,bi,bj)
-     &         *EXP(-20.0 _d 0*(ONE-AREA(I,J,1,bi,bj)))
+          PRESS0(I,J,bi,bj)=PSTAR*HEFF(i,j,bi,bj)
+     &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,bi,bj)))
           ZMAX(I,J,bi,bj)  = (5. _d +12/(2. _d +04))*PRESS0(I,J,bi,bj)
           ZMIN(I,J,bi,bj)  = SEAICE_zetaMin
           PRESS0(I,J,bi,bj)= PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
@@ -276,10 +276,10 @@ c in open water areas (drift of zero thickness ice)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           uIce(i,j,1,bi,bj)=
-     &          MAX(MIN(uIce(i,j,1,bi,bj),0.40 _d +00),-0.40 _d +00)
-           vIce(i,j,1,bi,bj)=
-     &          MAX(MIN(vIce(i,j,1,bi,bj),0.40 _d +00),-0.40 _d +00)
+           uIce(i,j,bi,bj)=
+     &          MAX(MIN(uIce(i,j,bi,bj),0.40 _d +00),-0.40 _d +00)
+           vIce(i,j,bi,bj)=
+     &          MAX(MIN(vIce(i,j,bi,bj),0.40 _d +00),-0.40 _d +00)
           ENDDO
          ENDDO
         ENDDO

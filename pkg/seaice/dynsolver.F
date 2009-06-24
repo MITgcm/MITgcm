@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.32 2009/06/22 15:57:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.33 2009/06/24 08:01:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -96,8 +96,8 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
         DO j=1,sNy
          DO i=1,sNx
           AMASS(I,J,bi,bj)=RHOICE*QUART*(
-     &          HEFF(i,j  ,1,bi,bj) + HEFF(i-1,j  ,1,bi,bj)
-     &         +HEFF(i,j-1,1,bi,bj) + HEFF(i-1,j-1,1,bi,bj) )
+     &          HEFF(i,j  ,bi,bj) + HEFF(i-1,j  ,bi,bj)
+     &         +HEFF(i,j-1,bi,bj) + HEFF(i-1,j-1,bi,bj) )
           COR_ICE(I,J,bi,bj)=AMASS(I,J,bi,bj) * _fCoriG(I,J,bi,bj)
          ENDDO
         ENDDO
@@ -133,14 +133,14 @@ C first ocean surface stress
 C now ice surface stress
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            DAIRN(I,J,bi,bj) =
-     &          RHOAIR*(SEAICE_drag_south*AAA*AREA(I,J,1,bi,bj)
+     &          RHOAIR*(SEAICE_drag_south*AAA*AREA(I,J,bi,bj)
      &          +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
-     &          +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,1,bi,bj)))
+     &          +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,bi,bj)))
           ELSE
            DAIRN(I,J,bi,bj) =
-     &          RHOAIR*(SEAICE_drag*AAA*AREA(I,J,1,bi,bj)
+     &          RHOAIR*(SEAICE_drag*AAA*AREA(I,J,bi,bj)
      &          +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
-     &          +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,1,bi,bj)))
+     &          +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,bi,bj)))
           ENDIF
           FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
      &         (COSWIN*U1-SIGN(SINWIN, _fCori(I,J,bi,bj))*V1)
@@ -213,8 +213,8 @@ C NOW KEEP FORCEX0
           FORCEY0(I,J,bi,bj)=FORCEY(I,J,bi,bj)
 #endif /* EXPLICIT_SSH_SLOPE */
 C--   NOW SET UP ICE PRESSURE AND VISCOSITIES
-          PRESS0(I,J,bi,bj)=PSTAR*HEFF(I,J,1,bi,bj)
-     &         *EXP(-20.0 _d 0*(ONE-AREA(I,J,1,bi,bj)))
+          PRESS0(I,J,bi,bj)=PSTAR*HEFF(I,J,bi,bj)
+     &         *EXP(-20.0 _d 0*(ONE-AREA(I,J,bi,bj)))
           ZMAX(I,J,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(I,J,bi,bj)
 CML          ZMIN(I,J,bi,bj)=4.0 _d +08
           ZMIN(I,J,bi,bj)=SEAICE_zetaMin
@@ -244,10 +244,10 @@ C NOW DO PREDICTOR TIME STEP
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          UICENM1(I,J,bi,bj)=UICE(I,J,1,bi,bj)
-          VICENM1(I,J,bi,bj)=VICE(I,J,1,bi,bj)
-          UICEC(I,J,bi,bj)=UICE(I,J,1,bi,bj)
-          VICEC(I,J,bi,bj)=VICE(I,J,1,bi,bj)
+          UICENM1(I,J,bi,bj)=UICE(I,J,bi,bj)
+          VICENM1(I,J,bi,bj)=VICE(I,J,bi,bj)
+          UICEC(I,J,bi,bj)=UICE(I,J,bi,bj)
+          VICEC(I,J,bi,bj)=VICE(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -259,23 +259,23 @@ C NOW DO PREDICTOR TIME STEP
          DO i=1,sNx
 C NOW EVALUATE STRAIN RATES
           E11(I,J,bi,bj)=HALF* _recip_dxF(I,J,bi,bj) *
-     &                (UICE(I+1,J+1,1,bi,bj)+UICE(I+1,J,1,bi,bj)
-     &                -UICE(I,  J+1,1,bi,bj)-UICE(I,  J,1,bi,bj))
+     &                (UICE(I+1,J+1,bi,bj)+UICE(I+1,J,bi,bj)
+     &                -UICE(I,  J+1,bi,bj)-UICE(I,  J,bi,bj))
      &                -QUART*
-     &                (VICE(I+1,J+1,1,bi,bj)+VICE(I,  J+1,1,bi,bj)
+     &                (VICE(I+1,J+1,bi,bj)+VICE(I,  J+1,bi,bj)
      &                +VICE(I,  J,  1,bi,bj)+VICE(I+1,J, 1,bi,bj))
      &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
           E22(I,J,bi,bj)=HALF* _recip_dyF(I,J,bi,bj) *
-     &                (VICE(I+1,J+1,1,bi,bj)+VICE(I,J+1,1,bi,bj)
+     &                (VICE(I+1,J+1,bi,bj)+VICE(I,J+1,bi,bj)
      &                -VICE(I+1,J,  1,bi,bj)-VICE(I,J,  1,bi,bj))
           E12(I,J,bi,bj)=HALF*(HALF * _recip_dyF(I,J,bi,bj) *
-     &                (UICE(I+1,J+1,1,bi,bj)+UICE(I,J+1,1,bi,bj)
+     &                (UICE(I+1,J+1,bi,bj)+UICE(I,J+1,bi,bj)
      &                -UICE(I+1,J,  1,bi,bj)-UICE(I,J,  1,bi,bj))
      &                +HALF * _recip_dxF(I,J,bi,bj) *
-     &                (VICE(I+1,J+1,1,bi,bj)+VICE(I+1,J,1,bi,bj)
-     &                -VICE(I,  J+1,1,bi,bj)-VICE(I,  J,1,bi,bj))
+     &                (VICE(I+1,J+1,bi,bj)+VICE(I+1,J,bi,bj)
+     &                -VICE(I,  J+1,bi,bj)-VICE(I,  J,bi,bj))
      &                +QUART*
-     &                (UICE(I+1,J+1,1,bi,bj)+UICE(I,  J+1,1,bi,bj)
+     &                (UICE(I+1,J+1,bi,bj)+UICE(I,  J+1,bi,bj)
      &                +UICE(I,  J,  1,bi,bj)+UICE(I+1,J,  1,bi,bj))
      &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere)
 C  NOW EVALUATE VISCOSITIES
@@ -310,8 +310,8 @@ C--   Update overlap regions
         DO j=1,sNy
          DO i=1,sNx
 C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
-          TEMPVAR=(UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj))**2
-     &           +(VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj))**2
+          TEMPVAR=(UICE(I,J,bi,bj)-GWATX(I,J,bi,bj))**2
+     &           +(VICE(I,J,bi,bj)-GWATY(I,J,bi,bj))**2
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
             DWATN(I,J,bi,bj)=QUART
@@ -363,10 +363,10 @@ C NOW DO MODIFIED EULER STEP
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          UICE(I,J,1,bi,bj)=HALF*(UICE(I,J,1,bi,bj)+UICENM1(I,J,bi,bj))
-          VICE(I,J,1,bi,bj)=HALF*(VICE(I,J,1,bi,bj)+VICENM1(I,J,bi,bj))
-          UICEC(I,J,bi,bj)=UICE(I,J,1,bi,bj)
-          VICEC(I,J,bi,bj)=VICE(I,J,1,bi,bj)
+          UICE(I,J,bi,bj)=HALF*(UICE(I,J,bi,bj)+UICENM1(I,J,bi,bj))
+          VICE(I,J,bi,bj)=HALF*(VICE(I,J,bi,bj)+VICENM1(I,J,bi,bj))
+          UICEC(I,J,bi,bj)=UICE(I,J,bi,bj)
+          VICEC(I,J,bi,bj)=VICE(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -378,23 +378,23 @@ C NOW DO MODIFIED EULER STEP
          DO i=1,sNx
 C NOW EVALUATE STRAIN RATES
           E11(I,J,bi,bj)=HALF * _recip_dxF(I,J,bi,bj) *
-     &                (UICE(I+1,J+1,1,bi,bj)+UICE(I+1,J,1,bi,bj)
-     &                -UICE(I,  J+1,1,bi,bj)-UICE(I,  J,1,bi,bj))
+     &                (UICE(I+1,J+1,bi,bj)+UICE(I+1,J,bi,bj)
+     &                -UICE(I,  J+1,bi,bj)-UICE(I,  J,bi,bj))
      &                -QUART*
-     &                (VICE(I+1,J+1,1,bi,bj)+VICE(I,  J+1,1,bi,bj)
+     &                (VICE(I+1,J+1,bi,bj)+VICE(I,  J+1,bi,bj)
      &                +VICE(I,  J,  1,bi,bj)+VICE(I+1,J,  1,bi,bj))
      &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere
           E22(I,J,bi,bj)=HALF * _recip_dyF(I,J,bi,bj) *
-     &                (VICE(I+1,J+1,1,bi,bj)+VICE(I,J+1,1,bi,bj)
+     &                (VICE(I+1,J+1,bi,bj)+VICE(I,J+1,bi,bj)
      &                -VICE(I+1,J,  1,bi,bj)-VICE(I,J,  1,bi,bj))
           E12(I,J,bi,bj)=HALF*(HALF * _recip_dyF(I,J,bi,bj) *
-     &                (UICE(I+1,J+1,1,bi,bj)+UICE(I,J+1,1,bi,bj)
+     &                (UICE(I+1,J+1,bi,bj)+UICE(I,J+1,bi,bj)
      &                -UICE(I+1,J,  1,bi,bj)-UICE(I,J,  1,bi,bj))
      &                +HALF * _recip_dxF(I,J,bi,bj) *
-     &                (VICE(I+1,J+1,1,bi,bj)+VICE(I+1,J,1,bi,bj)
-     &                -VICE(I,  J+1,1,bi,bj)-VICE(I,  J,1,bi,bj))
+     &                (VICE(I+1,J+1,bi,bj)+VICE(I+1,J,bi,bj)
+     &                -VICE(I,  J+1,bi,bj)-VICE(I,  J,bi,bj))
      &                +QUART*
-     &                (UICE(I+1,J+1,1,bi,bj)+UICE(I,  J+1,1,bi,bj)
+     &                (UICE(I+1,J+1,bi,bj)+UICE(I,  J+1,bi,bj)
      &                +UICE(I,  J,  1,bi,bj)+UICE(I+1,J,  1,bi,bj))
      &                * _tanPhiAtU(I,J,bi,bj)*recip_rSphere)
 C  NOW EVALUATE VISCOSITIES
@@ -429,8 +429,8 @@ C--   Update overlap regions
         DO j=1,sNy
          DO i=1,sNx
 C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
-          TEMPVAR=(UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj))**2
-     &           +(VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj))**2
+          TEMPVAR=(UICE(I,J,bi,bj)-GWATX(I,J,bi,bj))**2
+     &           +(VICE(I,J,bi,bj)-GWATY(I,J,bi,bj))**2
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
             DWATN(I,J,bi,bj)=QUART
@@ -509,11 +509,11 @@ c          write(*,'(2i4,2i2,f7.1,7f12.3)')
 c     &      i,j,bi,bj,UVM(I,J,bi,bj),amass(i,j,bi,bj)
 c     &     ,gwatx(I,J,bi,bj),gwaty(i,j,bi,bj)
 c     &     ,forcex(I,J,bi,bj),forcey(i,j,bi,bj)
-c     &     ,uice(i,j,1,bi,bj)
-c     &     ,vice(i,j,1,bi,bj)
+c     &     ,uice(i,j,bi,bj)
+c     &     ,vice(i,j,bi,bj)
 #endif /* SEAICE_DEBUG */
-          UICE(i,j,1,bi,bj)=min(UICE(i,j,1,bi,bj),0.40 _d +00)
-          VICE(i,j,1,bi,bj)=min(VICE(i,j,1,bi,bj),0.40 _d +00)
+          UICE(i,j,bi,bj)=min(UICE(i,j,bi,bj),0.40 _d +00)
+          VICE(i,j,bi,bj)=min(VICE(i,j,bi,bj),0.40 _d +00)
          ENDDO
         ENDDO
        ENDDO
@@ -526,8 +526,8 @@ CADJ STORE vice = comlev1, key=ikey_dynamics
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          UICE(i,j,1,bi,bj)=max(UICE(i,j,1,bi,bj),-0.40 _d +00)
-          VICE(i,j,1,bi,bj)=max(VICE(i,j,1,bi,bj),-0.40 _d +00)
+          UICE(i,j,bi,bj)=max(UICE(i,j,bi,bj),-0.40 _d +00)
+          VICE(i,j,bi,bj)=max(VICE(i,j,bi,bj),-0.40 _d +00)
          ENDDO
         ENDDO
        ENDDO
