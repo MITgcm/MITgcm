@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.36 2009/06/24 08:00:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.37 2009/06/24 13:11:00 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -65,13 +65,13 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       LOGICAL SEAICEmultiDimAdvection
 
 C-    MPI+MTH: apply exch (sure with exch1) only to array in common block
-      COMMON / SEAICE_ADVDIFF_LOCAL / uc, vc, fldNm1
+      COMMON / SEAICE_ADVDIFF_LOCAL / uc, vc
       _RL uc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fldNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uTrans    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL iceFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL iceFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afx       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gFld      (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -146,7 +146,7 @@ C---   loops on tile indices bi,bj
 C     Initialise for TAF
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          iceFld(i,j)     = 0. _d 0
+c         iceFld(i,j)     = 0. _d 0
           gFld(i,j)       = 0. _d 0
          ENDDO
         ENDDO
@@ -177,15 +177,10 @@ C-    Calculate "volume transports" through tracer cell faces.
 
 C--   Effective Thickness (Volume)
         IF ( SEAICEadvHeff ) THEN
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           iceFld(i,j) = HEFF(i,j,bi,bj)
-          ENDDO
-         ENDDO
          CALL SEAICE_ADVECTION(
      I        GAD_HEFF, SEAICEadvSchHeff,
      I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I        uTrans, vTrans, iceFld, recip_heff,
+     I        uTrans, vTrans, HEFF(1-OLx,1-OLy,bi,bj), recip_heff,
      O        gFld, afx, afy,
      I        bi, bj, myTime, myIter, myThid )
          IF ( diff1 .GT. 0. _d 0 ) THEN
@@ -208,15 +203,10 @@ C     now do the "explicit" time step
 
 C--   Fractional area
         IF ( SEAICEadvArea ) THEN
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           iceFld(i,j) = AREA(i,j,bi,bj)
-          ENDDO
-         ENDDO
          CALL SEAICE_ADVECTION(
      I        GAD_AREA, SEAICEadvSchArea,
      I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I        uTrans, vTrans, iceFld, recip_heff,
+     I        uTrans, vTrans, AREA(1-OLx,1-OLy,bi,bj), recip_heff,
      O        gFld, afx, afy,
      I        bi, bj, myTime, myIter, myThid )
          IF ( diff1 .GT. 0. _d 0 ) THEN
@@ -239,15 +229,10 @@ C     now do the "explicit" time step
 
 C--   Effective Snow Thickness (Volume)
         IF ( SEAICEadvSnow ) THEN
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           iceFld(i,j) = HSNOW(i,j,bi,bj)
-          ENDDO
-         ENDDO
          CALL SEAICE_ADVECTION(
      I        GAD_SNOW, SEAICEadvSchSnow,
      I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I        uTrans, vTrans, iceFld, recip_heff,
+     I        uTrans, vTrans, HSNOW(1-OLx,1-OLy,bi,bj), recip_heff,
      O        gFld, afx, afy,
      I        bi, bj, myTime, myIter, myThid )
          IF ( diff1 .GT. 0. _d 0 ) THEN
@@ -271,15 +256,10 @@ C     now do the "explicit" time step
 #ifdef SEAICE_SALINITY
 C--   Effective Sea Ice Salinity (Mass of salt)
         IF ( SEAICEadvSalt ) THEN
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           iceFld(i,j) = HSALT(i,j,bi,bj)
-          ENDDO
-         ENDDO
          CALL SEAICE_ADVECTION(
      I        GAD_SALT, SEAICEadvSchSalt,
      I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I        uTrans, vTrans, iceFld, recip_heff,
+     I        uTrans, vTrans, HSALT(1-OLx,1-OLy,bi,bj), recip_heff,
      O        gFld, afx, afy,
      I        bi, bj, myTime, myIter, myThid )
          IF ( diff1 .GT. 0. _d 0 ) THEN
@@ -304,15 +284,10 @@ C     now do the "explicit" time step
 #ifdef SEAICE_AGE
 C--   Sea Ice Age
         IF ( SEAICEadvAge ) THEN
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           iceFld(i,j) = IceAge(i,j,bi,bj)
-          ENDDO
-         ENDDO
          CALL SEAICE_ADVECTION(
      I        GAD_AGE, SEAICEadvSchAge,
      I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
-     I        uTrans, vTrans, iceFld, recip_heff,
+     I        uTrans, vTrans, IceAge(1-OLx,1-OLy,bi,bj), recip_heff,
      O        gFld, afx, afy,
      I        bi, bj, myTime, myIter, myThid )
          IF ( diff1 .GT. 0. _d 0 ) THEN
@@ -381,7 +356,7 @@ C     avoid ridging of sea ice age (at this point ridged ice means AREA > 1)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy
           DO I=1,sNx
-           IceAge(I,J,bi,bj) = IceAge(I,J,bi,bj) 
+           IceAge(I,J,bi,bj) = IceAge(I,J,bi,bj)
      &          / MAX(ONE,AREA(I,J,bi,bj))
           ENDDO
          ENDDO
