@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.2 2009/06/24 08:01:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.3 2009/06/24 09:06:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -154,24 +154,24 @@ C--   Time-cumulations
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          FUtave(i,j,1,bi,bj)   =
-     &         FUtave(i,j,1,bi,bj)   +FU(i,j,bi,bj)    *deltaTclock
-          FVtave(i,j,1,bi,bj)   =
-     &         FVtave(i,j,1,bi,bj)   +FV(i,j,bi,bj)    *deltaTclock
-          EmPmRtave(i,j,1,bi,bj)=
-     &         EmPmRtave(i,j,1,bi,bj)+EmPmR(i,j,bi,bj) *deltaTclock
-          QNETtave(i,j,1,bi,bj) =
-     &         QNETtave(i,j,1,bi,bj) +QNET(i,j,bi,bj)  *deltaTclock
-          QSWtave(i,j,1,bi,bj)  =
-     &         QSWtave(i,j,1,bi,bj)  +QSW(i,j,bi,bj)   *deltaTclock
-          UICEtave(i,j,1,bi,bj) =
-     &         UICEtave(i,j,1,bi,bj) +UICE(i,j,bi,bj)*deltaTclock
-          VICEtave(i,j,1,bi,bj) =
-     &         VICEtave(i,j,1,bi,bj) +VICE(i,j,bi,bj)*deltaTclock
-          HEFFtave(i,j,1,bi,bj) =
-     &         HEFFtave(i,j,1,bi,bj) +HEFF(i,j,bi,bj)*deltaTclock
-          AREAtave(i,j,1,bi,bj) =
-     &         AREAtave(i,j,1,bi,bj) +AREA(i,j,bi,bj)*deltaTclock
+          FUtave(i,j,bi,bj)   =
+     &         FUtave(i,j,bi,bj)   +FU(i,j,bi,bj)    *deltaTclock
+          FVtave(i,j,bi,bj)   =
+     &         FVtave(i,j,bi,bj)   +FV(i,j,bi,bj)    *deltaTclock
+          EmPmRtave(i,j,bi,bj)=
+     &         EmPmRtave(i,j,bi,bj)+EmPmR(i,j,bi,bj) *deltaTclock
+          QNETtave(i,j,bi,bj) =
+     &         QNETtave(i,j,bi,bj) +QNET(i,j,bi,bj)  *deltaTclock
+          QSWtave(i,j,bi,bj)  =
+     &         QSWtave(i,j,bi,bj)  +QSW(i,j,bi,bj)   *deltaTclock
+          UICEtave(i,j,bi,bj) =
+     &         UICEtave(i,j,bi,bj) +UICE(i,j,bi,bj)*deltaTclock
+          VICEtave(i,j,bi,bj) =
+     &         VICEtave(i,j,bi,bj) +VICE(i,j,bi,bj)*deltaTclock
+          HEFFtave(i,j,bi,bj) =
+     &         HEFFtave(i,j,bi,bj) +HEFF(i,j,bi,bj)*deltaTclock
+          AREAtave(i,j,bi,bj) =
+     &         AREAtave(i,j,bi,bj) +AREA(i,j,bi,bj)*deltaTclock
          ENDDO
         ENDDO
         DO k=1,Nr

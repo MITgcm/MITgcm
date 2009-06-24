@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_DIAGS.h,v 1.6 2005/04/17 00:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_DIAGS.h,v 1.7 2009/06/24 09:06:11 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -13,15 +13,15 @@ C     Keep track of time
       COMMON /SEAICE_TAVE/ SEAICE_TimeAve
 
 C     Storage arrays for time-averages
-      _RL FUtave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
-      _RL FVtave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
-      _RL EmPmRtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
-      _RL QNETtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
-      _RL QSWtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
-      _RL UICEtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
-      _RL VICEtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
-      _RL HEFFtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
-      _RL AREAtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL FUtave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL FVtave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL EmPmRtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL QNETtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL QSWtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL UICEtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL VICEtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL HEFFtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL AREAtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /SEAICE_TAVE_DIAGS/
      &        FUtave, FVtave, EmPmRtave, QNETtave, QSWtave,
      &        UICEtave, VICEtave, HEFFtave, AREAtave
