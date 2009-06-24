@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.35 2009/06/22 21:57:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advdiff.F,v 1.36 2009/06/24 08:00:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -65,18 +65,16 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       LOGICAL SEAICEmultiDimAdvection
 
 C-    MPI+MTH: apply exch (sure with exch1) only to array in common block
-      COMMON / SEAICE_ADVDIFF_LOCAL / uc, vc, tmpFld
+      COMMON / SEAICE_ADVDIFF_LOCAL / uc, vc, fldNm1
       _RL uc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL fldNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uTrans    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL iceFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afx       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL gFld      (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-c     _RL fld3d     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
-      _RL tmpFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL gtmpFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS xA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL recip_heff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -86,23 +84,23 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       ks = 1
 
-C--   Get rid of the time dimension for velocities and interpolate
-C--   to C-points if necessary
+C--   make a local copy of the velocities for compatibility with B-grid
+C--   alternatively interpolate to C-points if necessary
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef SEAICE_CGRID
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          uc(i,j,bi,bj)=UICE(i,j,1,bi,bj)
-          vc(i,j,bi,bj)=VICE(i,j,1,bi,bj)
+          uc(i,j,bi,bj)=UICE(i,j,bi,bj)
+          vc(i,j,bi,bj)=VICE(i,j,bi,bj)
          ENDDO
         ENDDO
 #else /* not SEAICE_CGRID = BGRID */
-C average seaice velocity to c-grid
+C average seaice velocity to C-grid
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
-          uc(i,j,bi,bj)=.5 _d 0*(UICE(i,j,1,bi,bj)+UICE(i,j+1,1,bi,bj))
-          vc(i,j,bi,bj)=.5 _d 0*(VICE(i,j,1,bi,bj)+VICE(I+1,J,1,bi,bj))
+          uc(i,j,bi,bj)=.5 _d 0*(UICE(i,j,bi,bj)+UICE(i,j+1,bi,bj))
+          vc(i,j,bi,bj)=.5 _d 0*(VICE(i,j,bi,bj)+VICE(I+1,J,bi,bj))
          ENDDO
         ENDDO
 #endif /* SEAICE_CGRID */
@@ -156,12 +154,8 @@ C     Initialise for TAF
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFF(i,j,3,bi,bj)  = 0. _d 0
-          HEFF(i,j,2,bi,bj)  = HEFF(i,j,1,bi,bj)
-          HEFFNM1(i,j,bi,bj) = HEFF(i,j,1,bi,bj)
-          AREA(i,j,3,bi,bj)  = 0. _d 0
-          AREA(i,j,2,bi,bj)  = AREA(i,j,1,bi,bj)
-          AREANM1(i,j,bi,bj) = AREA(i,j,1,bi,bj)
+          HEFFNM1(i,j,bi,bj) = HEFF(i,j,bi,bj)
+          AREANM1(i,j,bi,bj) = AREA(i,j,bi,bj)
           recip_heff(i,j)    = 1. _d 0
          ENDDO
         ENDDO
@@ -185,7 +179,7 @@ C--   Effective Thickness (Volume)
         IF ( SEAICEadvHeff ) THEN
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           iceFld(i,j) = HEFF(i,j,1,bi,bj)
+           iceFld(i,j) = HEFF(i,j,bi,bj)
           ENDDO
          ENDDO
          CALL SEAICE_ADVECTION(
@@ -198,15 +192,15 @@ C--   Effective Thickness (Volume)
 C-    Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
      I         GAD_HEFF,
-     I         HEFF(1-OLx,1-OLy,1,bi,bj), HEFFM, xA, yA,
+     I         HEFF(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
      U         gFld,
      I         bi, bj, myTime, myIter, myThid )
          ENDIF
 C     now do the "explicit" time step
          DO j=1,sNy
           DO i=1,sNx
-           HEFF(i,j,1,bi,bj) = HEFFM(i,j,bi,bj) * (
-     &          HEFF(i,j,1,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
+           HEFF(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
+     &          HEFF(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
      &          )
           ENDDO
          ENDDO
@@ -216,7 +210,7 @@ C--   Fractional area
         IF ( SEAICEadvArea ) THEN
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           iceFld(i,j) = AREA(i,j,1,bi,bj)
+           iceFld(i,j) = AREA(i,j,bi,bj)
           ENDDO
          ENDDO
          CALL SEAICE_ADVECTION(
@@ -229,15 +223,15 @@ C--   Fractional area
 C-    Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(
      I         GAD_AREA,
-     I         AREA(1-OLx,1-OLy,1,bi,bj), HEFFM, xA, yA,
+     I         AREA(1-OLx,1-OLy,bi,bj), HEFFM, xA, yA,
      U         gFld,
      I         bi, bj, myTime, myIter, myThid )
          ENDIF
 C     now do the "explicit" time step
          DO j=1,sNy
           DO i=1,sNx
-           AREA(i,j,1,bi,bj) = HEFFM(i,j,bi,bj) * (
-     &          AREA(i,j,1,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
+           AREA(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
+     &          AREA(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
      &          )
           ENDDO
          ENDDO
@@ -356,97 +350,24 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
        IF ( SEAICEadvHEff ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            tmpFld(i,j,bi,bj) = HEFF(i,j,1,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        CALL ADVECT( uc, vc, tmpFld, hEffNm1, HEFFM, myThid )
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            HEFF(i,j,1,bi,bj) = tmpFld(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
+        CALL ADVECT( uc, vc, hEff, hEffNm1, HEFFM, myThid )
        ENDIF
        IF ( SEAICEadvArea ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            tmpFld(i,j,bi,bj) = AREA(i,j,1,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        CALL ADVECT( uc, vc, tmpFld, areaNm1, HEFFM, myThid )
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            AREA(I,J,1,bi,bj) = tmpFld(i,j,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
+        CALL ADVECT( uc, vc, area, areaNm1, HEFFM, myThid )
        ENDIF
-
-C     another fudge: copy 2D field HSNOW to 3D field fld3d to be able to
-C     use ADVECT. Works only with LAD=2 (Backward Euler scheme) and NOT
-C     with LAD=1 (Leapfrog).
        IF ( SEAICEadvSnow ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            gtmpFld(I,J,bi,bj) = HSNOW(I,J,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        CALL ADVECT( uc, vc, HSNOW, gtmpFld, HEFFM, myThid )
+        CALL ADVECT( uc, vc, HSNOW, fldNm1, HEFFM, myThid )
        ENDIF
 
 #ifdef SEAICE_SALINITY
-C     another fudge: copy 2D field HSALT to 3D field fld3d to be able to
-C     use ADVECT. Works only with LAD=2 (Backward Euler scheme) and NOT
-C     with LAD=1 (Leapfrog).
        IF ( SEAICEadvSalt ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            gtmpFld(I,J,bi,bj) = HSALT(I,J,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        CALL ADVECT( uc, vc, HSALT, gtmpFld, HEFFM, myThid )
+        CALL ADVECT( uc, vc, HSALT, fldNm1, HEFFM, myThid )
        ENDIF
 #endif /* SEAICE_SALINITY */
 
 #ifdef SEAICE_AGE
-C     another fudge: copy 2D field IceAge to 3D field fld3d to be able to
-C     use ADVECT. Works only with LAD=2 (Backward Euler scheme) and NOT
-C     with LAD=1 (Leapfrog).
        IF ( SEAICEadvAge ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            gtmpFld(I,J,bi,bj) = IceAge(I,J,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        CALL ADVECT( uc, vc, iceAge, gtmpFld, HEFFM, myThid )
+        CALL ADVECT( uc, vc, iceAge, fldNm1, HEFFM, myThid )
        ENDIF
 #endif /* SEAICE_AGE */
 
@@ -461,7 +382,7 @@ C     avoid ridging of sea ice age (at this point ridged ice means AREA > 1)
          DO J=1,sNy
           DO I=1,sNx
            IceAge(I,J,bi,bj) = IceAge(I,J,bi,bj) 
-     &          / MAX(ONE,AREA(I,J,1,bi,bj))
+     &          / MAX(ONE,AREA(I,J,bi,bj))
           ENDDO
          ENDDO
         ENDDO
@@ -480,7 +401,7 @@ C     somewhere after doing the advection)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           AREA(I,J,1,bi,bj) = MIN(ONE,AREA(I,J,1,bi,bj))
+           AREA(I,J,bi,bj) = MIN(ONE,AREA(I,J,bi,bj))
           ENDDO
          ENDDO
         ENDDO
@@ -492,9 +413,9 @@ C     Sources and sinks for sea ice age (otherwise added in seaice_growth)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO J=1,sNy
            DO I=1,sNx
-            IF ( AREA(I,J,1,bi,bj) .GT. 0.15 ) THEN
+            IF ( AREA(I,J,bi,bj) .GT. 0.15 ) THEN
              IceAge(i,j,bi,bj) = IceAge(i,j,bi,bj) +
-     &            AREA(I,J,1,bi,bj) * SEAICE_deltaTtherm
+     &            AREA(I,J,bi,bj) * SEAICE_deltaTtherm
             ELSE
              IceAge(i,j,bi,bj) = ZERO
             ENDIF
