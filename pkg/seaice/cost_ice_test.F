@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.8 2009/06/24 08:42:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.9 2009/06/24 08:55:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -71,7 +71,7 @@ c     == local variables ==
 
 c     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      integer bi,bj,i,j
+      integer bi,bj,i,j,kSrf
       _RL tempVar
 
 c     == external functions ==
@@ -86,9 +86,10 @@ c     == end of interface ==
      &             ( ( 1. + min(endTime-startTime,lastinterval) )
      &             / deltaTClock )
 
+         kSrf = 1
 cph(
-      print *, 'ph-ice B ', myiter, theta(4,4,1,1,1),
-     &     area(4,4,1,1,1), heff(4,4,1,1,1)
+      print *, 'ph-ice B ', myiter, theta(4,4,kSrf,1,1),
+     &     area(4,4,1,1), heff(4,4,1,1)
 cph)
          if ( cost_ice_flag .eq. 1 ) then
 c     sea-ice volume
@@ -145,7 +146,7 @@ c     heat content of top level plus latent heat of sea-ice
                do i =  1,snx
                 objf_ice(bi,bj) = objf_ice(bi,bj) +
      &                 tempVar * rA(i,j,bi,bj) * (
-     &                 (THETA(i,j,1,bi,bj) + 1.96 ) *
+     &                 (THETA(i,j,kSrf,bi,bj) + 1.96 ) *
      &                 drF(1) * 3996 * 1026 -
      &                 HEFF(i,j,bi,bj) * 334000 * 910 )
                enddo
@@ -161,7 +162,7 @@ c     heat content of top level
                do i =  1,snx
                 objf_ice(bi,bj) = objf_ice(bi,bj) +
      &                 tempVar * rA(i,j,bi,bj) * (
-     &                 (THETA(i,j,1,bi,bj) + 1.96 ) *
+     &                 (THETA(i,j,kSrf,bi,bj) + 1.96 ) *
      &                 drF(1) * 3996 * 1026 )
                enddo
               enddo
@@ -176,7 +177,7 @@ c     heat content of top level plus sea-ice plus latent heat of snow
                do i =  1,snx
                 objf_ice(bi,bj) = objf_ice(bi,bj) +
      &                 tempVar * rA(i,j,bi,bj) * (
-     &                 (THETA(i,j,1,bi,bj) + 1.96 ) *
+     &                 (THETA(i,j,kSrf,bi,bj) + 1.96 ) *
      &                 drF(1) * 3996 * 1026 +
      &                 (TICE(i,j,bi,bj) - 273.15 + 1.96 ) *
      &                 HEFF(i,j,bi,bj) * 2090 * 910 -
