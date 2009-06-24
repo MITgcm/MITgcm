@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/external_forcing_surf.F,v 1.1 2008/01/15 21:16:42 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/external_forcing_surf.F,v 1.2 2009/06/24 13:47:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,6 +29,7 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SURFACE.h"
 #ifdef ALLOW_SEAICE
+#include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 #endif /* ALLOW_SEAICE */
 #ifdef ALLOW_SHELFICE
@@ -72,18 +73,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Start with surface restoring term :
 
 #ifdef ALLOW_SEAICE
-       IF ( useSEAICE ) THEN
+       IF ( useSEAICE .AND. (.NOT. SEAICErestoreUnderIce) ) THEN
 C     Do not restore under sea-ice
         DO j = jMin, jMax
          DO i = iMin, iMax
 C     Heat Flux (restoring term) :
           surfaceForcingT(i,j,bi,bj) =
-     &      -lambdaThetaClimRelax(i,j,bi,bj)*(1.-AREA(i,j,1,bi,bj))
+     &      -lambdaThetaClimRelax(i,j,bi,bj)*(1.-AREA(i,j,bi,bj))
      &         *(theta(i,j,ks,bi,bj)-SST(i,j,bi,bj))
      &         *drF(ks)*_hFacC(i,j,ks,bi,bj)
 C     Salt Flux (restoring term) :
           surfaceForcingS(i,j,bi,bj) =
-     &      -lambdaSaltClimRelax(i,j,bi,bj) *(1.-AREA(i,j,1,bi,bj))
+     &      -lambdaSaltClimRelax(i,j,bi,bj) *(1.-AREA(i,j,bi,bj))
      &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
      &         *drF(ks)*_hFacC(i,j,ks,bi,bj)
          ENDDO
@@ -186,11 +187,11 @@ C     Meridional wind stress fv:
 C     Net heat flux Qnet:
           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
      &       - ( Qnet(i,j,bi,bj)
-#ifdef ALLOW_HFLUXM_CONTROL
-     &          +Qnetm(i,j,bi,bj)
-#endif
 #ifdef SHORTWAVE_HEATING
      &          -Qsw(i,j,bi,bj)
+#endif
+#ifdef ALLOW_HFLUXM_CONTROL
+     &          +Qnetm(i,j,bi,bj)
 #endif
      &         ) *recip_Cp*mass2rUnit
 C     Net Salt Flux :
@@ -341,14 +342,21 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_PTRACERS */
 
 #ifdef ATMOSPHERIC_LOADING
-
-C-- Atmospheric surface Pressure loading :
+C-- Atmospheric surface Pressure loading : added to phi0surf when using Z-coord;
+C   Not yet implemented for Ocean in P: would need to be applied to the other end
+C   of the column, as a vertical velocity (omega); (meaningless for Atmos in P).
+C- Note:
+C   Using P-coord., a hack (now directly applied from S/R INI_FORCING)
+C   is sometime used to read phi0surf from a file (pLoadFile) instead
+C   of computing it from bathymetry & density ref. profile.
 
       IF ( usingZCoords ) THEN
+C   The true atmospheric P-loading is not yet implemented for P-coord
+C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
        IF ( useRealFreshWaterFlux ) THEN
         DO j = jMin, jMax
          DO i = iMin, iMax
-          phi0surf(i,j,bi,bj) = ( pload(i,j,bi,bj)
+          phi0surf(i,j,bi,bj) = ( pLoad(i,j,bi,bj)
      &                        +sIceLoad(i,j,bi,bj)*gravity
      &                          )*recip_rhoConst
          ENDDO
@@ -356,22 +364,20 @@ C-- Atmospheric surface Pressure loading :
        ELSE
         DO j = jMin, jMax
          DO i = iMin, iMax
-          phi0surf(i,j,bi,bj) = pload(i,j,bi,bj)*recip_rhoConst
+          phi0surf(i,j,bi,bj) = pLoad(i,j,bi,bj)*recip_rhoConst
          ENDDO
         ENDDO
        ENDIF
-      ELSEIF ( usingPCoords ) THEN
-C-- This is a hack used to read phi0surf from a file (ploadFile)
+c     ELSEIF ( usingPCoords ) THEN
+C-- This is a hack used to read phi0surf from a file (pLoadFile)
 C   instead of computing it from bathymetry & density ref. profile.
-C   The true atmospheric P-loading is not yet implemented for P-coord
-C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
-        DO j = jMin, jMax
-         DO i = iMin, iMax
-          phi0surf(i,j,bi,bj) = pload(i,j,bi,bj)
-         ENDDO
-        ENDDO
+C   ==> now done only once, in S/R INI_FORCING
+c       DO j = jMin, jMax
+c        DO i = iMin, iMax
+c         phi0surf(i,j,bi,bj) = pLoad(i,j,bi,bj)
+c        ENDDO
+c       ENDDO
       ENDIF
-
 #endif /* ATMOSPHERIC_LOADING */
 
 #ifdef ALLOW_SHELFICE
