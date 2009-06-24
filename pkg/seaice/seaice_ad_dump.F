@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.4 2008/09/09 19:58:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.5 2009/06/24 08:23:12 mlosch Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -88,10 +88,10 @@ C--     Read IO error counter
 
         CALL MDSWRITEFIELD(
      &       'ADJarea.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       3,  adarea, 1, myIter, myThid )
+     &       1,  adarea, 1, myIter, myThid )
         CALL MDSWRITEFIELD(
      &       'ADJheff.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       3,  adheff, 1, myIter, myThid )
+     &       1,  adheff, 1, myIter, myThid )
         CALL MDSWRITEFIELD(
      &       'ADJhsnow.'//suff, writeBinaryPrec, globalFiles, 'RL',
      &       1,  adhsnow, 1, myIter, myThid )
@@ -99,10 +99,10 @@ C--     Read IO error counter
 cph        IF ( SEAICEuseDynamics ) THEN
           CALL MDSWRITEFIELD(
      &       'ADJuice.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       3,  aduice, 1, myIter, myThid )
+     &       1,  aduice, 1, myIter, myThid )
           CALL MDSWRITEFIELD(
      &       'ADJvice.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       3,  advice, 1, myIter, myThid )
+     &       1,  advice, 1, myIter, myThid )
 cph        ENDIF
 # endif
 c
