@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_accumulate_mean.F,v 1.3 2008/05/03 00:02:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_accumulate_mean.F,v 1.4 2009/06/24 08:26:00 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,11 +59,11 @@ C--   Calculate cost function on tile of this instance
             do i=1,sNx
                 uHeffExportCell(i,j,bi,bj) = 
      &               uHeffExportCell(i,j,bi,bj)
-     &               + HEFF(i,j,1,bi,bj)*UICE(i,j,1,bi,bj)
+     &               + HEFF(i,j,bi,bj)*UICE(i,j,bi,bj)
      &               *_dyG(i,j,bi,bj)/lastinterval*deltaTClock
                 vHeffExportCell(i,j,bi,bj) = 
      &               vHeffExportCell(i,j,bi,bj)
-     &               + HEFF(i,j,1,bi,bj)*VICE(i,j,1,bi,bj)
+     &               + HEFF(i,j,bi,bj)*VICE(i,j,bi,bj)
      &               *_dxG(i,j,bi,bj)/lastinterval*deltaTClock
             end do
           end do
