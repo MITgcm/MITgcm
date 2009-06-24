@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.11 2009/06/04 17:27:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.12 2009/06/24 08:24:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -139,14 +139,14 @@ C     Is this necessary?
         atempLoc (I,J) = MAX(273.16 _d 0+MIN_ATEMP,ATEMP(I,J,bi,bj))
 #endif
 #ifdef SEAICE_CLIM_AIR
-        atempLoc (I,J) = AREA(I,J,1,bi,bj) *
+        atempLoc (I,J) = AREA(I,J,bi,bj) *
      &       ( fac * SEAICE_clim_atemp(count0) + (1-fac) *
      &       SEAICE_clim_atemp(count1) ) +
-     &       (1-AREA(I,J,1,bi,bj)) * atempLoc(I,J)
-        aqhLoc (I,J)   = AREA(I,J,1,bi,bj) *
+     &       (1-AREA(I,J,bi,bj)) * atempLoc(I,J)
+        aqhLoc (I,J)   = AREA(I,J,bi,bj) *
      &       ( fac * SEAICE_clim_aqh(count0) + (1-fac) *
      &       SEAICE_clim_aqh(count1) ) +
-     &       (1-AREA(I,J,1,bi,bj)) * aqh(I,J,bi,bj)
+     &       (1-AREA(I,J,bi,bj)) * aqh(I,J,bi,bj)
 #endif /* SEAICE_CLIM_AIR */
 #ifdef ALLOW_DOWNWARD_RADIATION
         lwdownLoc(I,J) = MAX(MIN_LWDOWN,LWDOWN(I,J,bi,bj))
