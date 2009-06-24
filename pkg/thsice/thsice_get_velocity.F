@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_velocity.F,v 1.1 2007/04/04 02:40:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_velocity.F,v 1.2 2009/06/24 08:02:02 mlosch Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -65,8 +65,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( useSEAICE ) THEN
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          uLoc(i,j) = UICE(i,j,1,bi,bj)
-          vLoc(i,j) = VICE(i,j,1,bi,bj)
+          uLoc(i,j) = UICE(i,j,bi,bj)
+          vLoc(i,j) = VICE(i,j,bi,bj)
          ENDDO
         ENDDO
       ELSE
