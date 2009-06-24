@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.7 2009/06/24 08:26:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.8 2009/06/24 08:42:22 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -97,7 +97,7 @@ c     sea-ice volume
                   do j = 1,sny
                      do i =  1,snx
                         objf_ice(bi,bj) = objf_ice(bi,bj) +
-     &                       tempVar * rA(i,j,bi,bj) * HEFF(i,j,1,bi,bj)
+     &                       tempVar * rA(i,j,bi,bj) * HEFF(i,j,bi,bj)
                      enddo
                   enddo
                enddo
@@ -110,7 +110,7 @@ c     sea-ice area
                   do j = 1,sny
                      do i =  1,snx
                         objf_ice(bi,bj) = objf_ice(bi,bj) +
-     &                       tempVar * rA(i,j,bi,bj) * AREA(i,j,1,bi,bj)
+     &                       tempVar * rA(i,j,bi,bj) * AREA(i,j,bi,bj)
                      enddo
                   enddo
                enddo
