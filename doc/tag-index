@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1130 2009/06/24 08:05:07 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1131 2009/06/24 20:28:21 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -14,6 +14,8 @@ o pkg/seaice:
      pkg/obcs/obcs_apply_uvice.F.
  - completely remove code for leap-frog time stepping for second order
    advection
+ - adjusted adjoint accordingly;
+   gradient checks have improved by an order of magnitude!
  
 checkpoint61q
 o pkg/seaice: fix bug in free slip boundary conditons for LSOR solver
