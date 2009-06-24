@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.74 2009/06/24 20:10:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.75 2009/06/24 22:42:04 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -86,8 +86,10 @@ c
           AREANM1(i,j,bi,bj) = 0. _d 0
           uIceNm1(i,j,bi,bj) = 0. _d 0
           vIceNm1(i,j,bi,bj) = 0. _d 0
+#ifdef SEAICE_CGRID
           seaiceMaskU(I,J,bi,bj) = 0. _d 0
           seaiceMaskV(I,J,bi,bj) = 0. _d 0
+#endif
          ENDDO
         ENDDO
        ENDDO
