@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.49 2009/06/24 08:01:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.50 2009/06/24 08:24:26 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -202,7 +202,7 @@ CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
       CALL SEAICE_CALC_STRAINRATES(
      I     uIceC, vIceC,
      O     e11, e22, e12,
-     I     1, ilcall, myTime, myIter, myThid )
+     I     ilcall, myTime, myIter, myThid )
 
       CALL SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,
@@ -1069,7 +1069,7 @@ C     free slip
       CALL SEAICE_CALC_STRAINRATES(
      I     uIceC, vIceC,
      O     e11, e22, e12,
-     I     1, ilcall, myTime, myIter, myThid )
+     I     ilcall, myTime, myIter, myThid )
 
       CALL SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0,
@@ -1820,7 +1820,7 @@ C     compute strain rate from latest velocities
        CALL SEAICE_CALC_STRAINRATES(
      I       uIce, vIce,
      O       e11, e22, e12,
-     I       3, 3, myTime, myIter, myThid )
+     I       3, myTime, myIter, myThid )
 C     compute internal stresses with updated ice velocities
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)

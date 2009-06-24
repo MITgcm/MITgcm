@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.15 2009/06/24 08:01:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.16 2009/06/24 08:24:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -118,7 +118,7 @@ C     recompute strainrates from up-to-date velocities
         CALL SEAICE_CALC_STRAINRATES(
      I       uIce, vIce,
      O       e11, e22, e12,
-     I       3, 0, myTime, myIter, myThid )
+     I       0, myTime, myIter, myThid )
 C     but use old viscosities and pressure for the
 C     principle stress components
         DO bj = myByLo(myThid), myByHi(myThid)
