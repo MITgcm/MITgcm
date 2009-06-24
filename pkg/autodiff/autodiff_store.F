@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.8 2009/06/02 16:10:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.9 2009/06/24 20:09:08 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -520,73 +520,61 @@ C--   Over all tiles
 C-      2D arrays
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
-          StoreSEAICE(I,J,bi,bj,1) = AREA(I,J,1,bi,bj)
-          StoreSEAICE(I,J,bi,bj,2) = AREA(I,J,2,bi,bj)
-          StoreSEAICE(I,J,bi,bj,3) = AREA(I,J,3,bi,bj)
-          StoreSEAICE(I,J,bi,bj,4) = HEFF(I,J,1,bi,bj)
-          StoreSEAICE(I,J,bi,bj,5) = HEFF(I,J,2,bi,bj)
-          StoreSEAICE(I,J,bi,bj,6) = HEFF(I,J,3,bi,bj)           
-          StoreSEAICE(I,J,bi,bj,7) = HSNOW(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,8) = TICE(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,9) = RUNOFF(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,1) = AREA(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,2) = HEFF(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,3) = HSNOW(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,4) = TICE(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,5) = RUNOFF(I,J,bi,bj)
 # ifdef SEAICE_MULTICATEGORY
-          StoreSEAICE(I,J,bi,bj,10) = TICES(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,6) = TICES(I,J,bi,bj)
 # else
-          StoreSEAICE(I,J,bi,bj,10) = 0.0
+          StoreSEAICE(I,J,bi,bj,6) = 0.0
 # endif
 # ifdef SEAICE_ALLOW_DYNAMICS
-          StoreSEAICE(I,J,bi,bj,11) = UICE(I,J,1,bi,bj)
-          StoreSEAICE(I,J,bi,bj,12) = UICE(I,J,2,bi,bj)
-          StoreSEAICE(I,J,bi,bj,13) = UICE(I,J,3,bi,bj)
-          StoreSEAICE(I,J,bi,bj,14) = VICE(I,J,1,bi,bj)
-          StoreSEAICE(I,J,bi,bj,15) = VICE(I,J,2,bi,bj)
-          StoreSEAICE(I,J,bi,bj,16) = VICE(I,J,3,bi,bj)
-          StoreSEAICE(I,J,bi,bj,17) = ZETA(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,18) = ETA(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,7) = UICE(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,8) = VICE(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,9) = ZETA(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,10) = ETA(I,J,bi,bj)
 #  ifdef SEAICE_CGRID
-          StoreSEAICE(I,J,bi,bj,19) = dwatn(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,20) = seaicemasku(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,21) = seaicemaskv(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,22) = stressDivergenceX(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,23) = stressDivergenceY(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,11) = dwatn(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,12) = seaicemasku(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,13) = seaicemaskv(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,14) = stressDivergenceX(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,15) = stressDivergenceY(I,J,bi,bj)
 #  else
-          StoreSEAICE(I,J,bi,bj,19) = 0.0      
-          StoreSEAICE(I,J,bi,bj,20) = 0.0           
-          StoreSEAICE(I,J,bi,bj,21) = 0.0
-          StoreSEAICE(I,J,bi,bj,22) = 0.0           
-          StoreSEAICE(I,J,bi,bj,23) = 0.0
-#  endif /* SEAICE_CGRID */
-#  ifdef SEAICE_ALLOW_EVP
-          StoreSEAICE(I,J,bi,bj,24) = seaice_sigma1(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,25) = seaice_sigma2(I,J,bi,bj)
-          StoreSEAICE(I,J,bi,bj,26) = seaice_sigma12(I,J,bi,bj)
-#  else
-          StoreSEAICE(I,J,bi,bj,24) = 0.0      
-          StoreSEAICE(I,J,bi,bj,25) = 0.0           
-          StoreSEAICE(I,J,bi,bj,26) = 0.0
-#  endif /* SEAICE_ALLOW_EVP */
-# else
           StoreSEAICE(I,J,bi,bj,11) = 0.0      
           StoreSEAICE(I,J,bi,bj,12) = 0.0           
           StoreSEAICE(I,J,bi,bj,13) = 0.0
-          StoreSEAICE(I,J,bi,bj,14) = 0.0      
-          StoreSEAICE(I,J,bi,bj,15) = 0.0           
-          StoreSEAICE(I,J,bi,bj,16) = 0.0
-          StoreSEAICE(I,J,bi,bj,17) = 0.0      
-          StoreSEAICE(I,J,bi,bj,18) = 0.0           
-          StoreSEAICE(I,J,bi,bj,19) = 0.0      
-          StoreSEAICE(I,J,bi,bj,20) = 0.0           
-          StoreSEAICE(I,J,bi,bj,21) = 0.0
-          StoreSEAICE(I,J,bi,bj,22) = 0.0      
-          StoreSEAICE(I,J,bi,bj,23) = 0.0           
-          StoreSEAICE(I,J,bi,bj,24) = 0.0
-          StoreSEAICE(I,J,bi,bj,25) = 0.0
-          StoreSEAICE(I,J,bi,bj,26) = 0.0
+          StoreSEAICE(I,J,bi,bj,14) = 0.0           
+          StoreSEAICE(I,J,bi,bj,15) = 0.0
+#  endif /* SEAICE_CGRID */
+#  ifdef SEAICE_ALLOW_EVP
+          StoreSEAICE(I,J,bi,bj,16) = seaice_sigma1(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,17) = seaice_sigma2(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,18) = seaice_sigma12(I,J,bi,bj)
+#  else
+          StoreSEAICE(I,J,bi,bj,16) = 0.0      
+          StoreSEAICE(I,J,bi,bj,17) = 0.0           
+          StoreSEAICE(I,J,bi,bj,18) = 0.0
+#  endif /* SEAICE_ALLOW_EVP */
+# else
+          StoreSEAICE(I,J,bi,bj,7) = 0.0      
+          StoreSEAICE(I,J,bi,bj,8) = 0.0           
+          StoreSEAICE(I,J,bi,bj,9) = 0.0
+          StoreSEAICE(I,J,bi,bj,10) = 0.0      
+          StoreSEAICE(I,J,bi,bj,11) = 0.0           
+          StoreSEAICE(I,J,bi,bj,12) = 0.0
+          StoreSEAICE(I,J,bi,bj,13) = 0.0      
+          StoreSEAICE(I,J,bi,bj,14) = 0.0           
+          StoreSEAICE(I,J,bi,bj,15) = 0.0      
+          StoreSEAICE(I,J,bi,bj,16) = 0.0           
+          StoreSEAICE(I,J,bi,bj,17) = 0.0
+          StoreSEAICE(I,J,bi,bj,18) = 0.0      
 # endif /* SEAICE_ALLOW_DYNAMICS */
 # ifdef SEAICE_SALINITY
-          StoreSEAICE(I,J,bi,bj,27) = HSALT(I,J,bi,bj)
+          StoreSEAICE(I,J,bi,bj,19) = HSALT(I,J,bi,bj)
 # else
-          StoreSEAICE(I,J,bi,bj,27) = 0.0
+          StoreSEAICE(I,J,bi,bj,19) = 0.0
 # endif
          enddo
         enddo
