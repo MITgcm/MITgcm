@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.12 2009/06/24 08:24:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.13 2009/06/24 08:56:45 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -62,7 +62,9 @@ CEndOfInterface
 
 C     === Local variables ===
 C     i,j - Loop counters
+C     kSrf      - vertical index of surface layer
       INTEGER i, j
+      INTEGER kSrf
       INTEGER ITER
       _RL  QS1, C1, C2, C3, C4, C5, TB, D1, D1I, D3
       _RL  TMELT, TMELTP, XKI, XKS, HCUT, ASNOW, XIO
@@ -99,6 +101,8 @@ C--   Compute indices and weights for seasonal interpolation
      &     )
 #endif /* SEAICE_CLIM_AIR */
 
+C     surrface level
+      kSrf = 1
 C NOW DEFINE ASSORTED CONSTANTS
 C SATURATION VAPOR PRESSURE CONSTANT
       QS1=0.622 _d +00/1013.0 _d +00
@@ -242,7 +246,7 @@ C         effConduct= 1. _d 0 / ( hSnwLoc(I,J)/XKS + hice(I,J)/XKI )
 C         effConduct= XKS*XKI / ( hSnwLoc(I,J)*XKI + hice(I,J)*XKS )
          A3(I,J)=4.0 _d +00*D3*t3 + effConduct + D1*UG(I,J)
 #ifdef SEAICE_VARIABLE_FREEZING_POINT
-         TB = -0.0575 _d 0*salt(I,J,1,bi,bj) + 0.0901 _d 0 
+         TB = -0.0575 _d 0*salt(I,J,kSrf,bi,bj) + 0.0901 _d 0 
      &        + 273.15 _d 0
 #endif
          B(I,J)=effConduct*(TB-tsurfLoc(I,J))

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.7 2009/06/24 08:01:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.8 2009/06/24 08:56:45 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -51,7 +51,9 @@ CEndOfInterface
 #ifdef SEAICE_CGRID
 C     === Local variables ===
 C     i,j - Loop counters
+C     k   - vertical index of surface layer
       INTEGER bi, bj, i, j
+      INTEGER k
       _RL  U1, V1, AAA
       _RL  SINWIN, COSWIN
 C     CDAIR   :: local wind stress coefficient (used twice)
@@ -63,6 +65,8 @@ C     oceTauY :: wind-stress over open-ocean (on Arakawa A-grid), Y direction
       _RL oceTauY (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 
+C--   surrface level
+      k = 1
 C--   introduce turning angle (default is zero)
       SINWIN=SIN(SEAICE_airTurnAngle*deg2rad)
       COSWIN=COS(SEAICE_airTurnAngle*deg2rad)
@@ -111,10 +115,10 @@ C--   Now compute ice surface stress
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
            U1=UWIND(I,J,bi,bj)
-     &          + 0.5 _d 0 * (uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
+     &          + 0.5 _d 0 * (uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj))
      &          - 0.5 _d 0 * (uice(i,j,bi,bj)+uice(i+1,j,bi,bj))
            V1=VWIND(I,J,bi,bj)
-     &          + 0.5 _d 0 * (vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
+     &          + 0.5 _d 0 * (vVel(i,j,k,bi,bj)+vVel(i,j+1,k,bi,bj))
      &          - 0.5 _d 0 * (vice(i,j,bi,bj)+vice(i,j+1,bi,bj))
            AAA=U1**2+V1**2
            IF ( AAA .LE. SEAICE_EPS_SQ ) THEN
@@ -155,37 +159,37 @@ C     interpolate to U points
            taux(I,J,bi,bj)= 0.5 _d 0 *
      &          (CDAIR(I,J)*(COSWIN*
      &          (uWind(I,J,bi,bj)
-     &          +0.5 _d 0*(uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
+     &          +0.5 _d 0*(uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj))
      &          -0.5 _d 0*(uice(i,j,bi,bj)+uice(i+1,j,bi,bj)))
      &          -SIGN(SINWIN, _fCori(I,J,bi,bj))*
      &          (vWind(I,J,bi,bj)
-     &          +0.5 _d 0*(vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
+     &          +0.5 _d 0*(vVel(i,j,k,bi,bj)+vVel(i,j+1,k,bi,bj))
      &          -0.5 _d 0*(vice(i,j,bi,bj)+vice(i,j+1,bi,bj))))
      &          +CDAIR(I-1,J)*(COSWIN*
      &          (uWind(I-1,J,bi,bj)
-     &          +0.5 _d 0*(uVel(i-1,j,1,bi,bj)+uVel(i,j,1,bi,bj))
+     &          +0.5 _d 0*(uVel(i-1,j,k,bi,bj)+uVel(i,j,k,bi,bj))
      &          -0.5 _d 0*(uice(i-1,j,bi,bj)+uice(i,j,bi,bj)))
      &          -SIGN(SINWIN, _fCori(I-1,J,bi,bj))*
      &          (vWind(I-1,J,bi,bj)
-     &          +0.5 _d 0*(vVel(i-1,j,1,bi,bj)+vVel(i-1,j+1,1,bi,bj))
+     &          +0.5 _d 0*(vVel(i-1,j,k,bi,bj)+vVel(i-1,j+1,k,bi,bj))
      &          -0.5 _d 0*(vice(i-1,j,bi,bj)+vice(i-1,j+1,bi,bj)))))
 C     interpolate to V points
            tauy(I,J,bi,bj)= 0.5 _d 0 * 
      &          (CDAIR(I,J)*(SIGN(SINWIN, _fCori(I,J,bi,bj))*
      &          (uWind(I,J,bi,bj)
-     &          +0.5 _d 0*(uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
+     &          +0.5 _d 0*(uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj))
      &          -0.5 _d 0*(uice(i,j,bi,bj)+uice(i+1,j,bi,bj)))
      &          +COSWIN*
      &          (vWind(I,J,bi,bj)
-     &          +0.5 _d 0*(vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
+     &          +0.5 _d 0*(vVel(i,j,k,bi,bj)+vVel(i,j+1,k,bi,bj))
      &          -0.5 _d 0*(vice(i,j,bi,bj)+vice(i,j+1,bi,bj))))
      &          +CDAIR(I,J-1)*(SIGN(SINWIN, _fCori(I,J-1,bi,bj))*
      &          (uWind(I,J-1,bi,bj)
-     &          +0.5 _d 0*(uVel(i,j-1,1,bi,bj)+uVel(i+1,j-1,1,bi,bj))
+     &          +0.5 _d 0*(uVel(i,j-1,k,bi,bj)+uVel(i+1,j-1,k,bi,bj))
      &          -0.5 _d 0*(uice(i,j-1,bi,bj)+uice(i+1,j-1,bi,bj)))
      &          +COSWIN*
      &          (vWind(I,J-1,bi,bj)
-     &          +0.5 _d 0*(vVel(i,j-1,1,bi,bj)+vVel(i,j,1,bi,bj))
+     &          +0.5 _d 0*(vVel(i,j-1,k,bi,bj)+vVel(i,j,k,bi,bj))
      &          -0.5 _d 0*(vice(i,j-1,bi,bj)+vice(i,j,bi,bj)))))
           ENDDO
          ENDDO

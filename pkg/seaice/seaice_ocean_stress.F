@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.25 2009/06/24 08:01:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.26 2009/06/24 08:56:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -36,13 +36,16 @@ CEndOfInterface
 #ifdef SEAICE_CGRID
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
-
+C     kSrf      - vertical index of surface layer
       INTEGER i, j, bi, bj
+      INTEGER kSrf
       _RL  SINWAT, COSWAT, SINWIN, COSWIN
       _RL  fuIceLoc, fvIceLoc
       _RL  areaW, areaS
 
-c     introduce turning angle (default is zero)
+C     surrface level
+      kSrf = 1
+C     introduce turning angle (default is zero)
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
       SINWIN=SIN(SEAICE_airTurnAngle*deg2rad)
@@ -86,25 +89,25 @@ C     ice cover
          DO i=1,sNx
           fuIceLoc=HALF*( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) )*
      &         COSWAT *
-     &         ( UICE(I,J,bi,bj)-uVel(I,J,1,bi,bj) )
+     &         ( uIce(I,J,bi,bj)-uVel(I,J,kSrf,bi,bj) )
      &         - SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
      &         ( DWATN(I  ,J,bi,bj) *
-     &         0.5 _d 0*(vIce(I  ,J  ,bi,bj)-vVel(I  ,J  ,1,bi,bj)
-     &                  +vIce(I  ,J+1,bi,bj)-vVel(I  ,J+1,1,bi,bj))
+     &         0.5 _d 0*(vIce(I  ,J  ,bi,bj)-vVel(I  ,J  ,kSrf,bi,bj)
+     &                  +vIce(I  ,J+1,bi,bj)-vVel(I  ,J+1,kSrf,bi,bj))
      &         + DWATN(I-1,J,bi,bj) *
-     &         0.5 _d 0*(vIce(I-1,J  ,bi,bj)-vVel(I-1,J  ,1,bi,bj)
-     &                  +vIce(I-1,J+1,bi,bj)-vVel(I-1,J+1,1,bi,bj))
+     &         0.5 _d 0*(vIce(I-1,J  ,bi,bj)-vVel(I-1,J  ,kSrf,bi,bj)
+     &                  +vIce(I-1,J+1,bi,bj)-vVel(I-1,J+1,kSrf,bi,bj))
      &         )
           fvIceLoc=HALF*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) )*
      &         COSWAT *
-     &         ( VICE(I,J,bi,bj)-vVel(I,J,1,bi,bj) )
+     &         ( vIce(I,J,bi,bj)-vVel(I,J,kSrf,bi,bj) )
      &         + SIGN(SINWAT,  _fCori(I,J,bi,bj)) * 0.5 _d 0 *
      &         ( DWATN(I,J  ,bi,bj) *
-     &         0.5 _d 0*(uIce(I  ,J  ,bi,bj)-uVel(I  ,J  ,1,bi,bj)
-     &                  +uIce(I+1,J  ,bi,bj)-uVel(I+1,J  ,1,bi,bj))
+     &         0.5 _d 0*(uIce(I  ,J  ,bi,bj)-uVel(I  ,J  ,kSrf,bi,bj)
+     &                  +uIce(I+1,J  ,bi,bj)-uVel(I+1,J  ,kSrf,bi,bj))
      &         + DWATN(I,J-1,bi,bj) *
-     &         0.5 _d 0*(uIce(I  ,J-1,bi,bj)-uVel(I  ,J-1,1,bi,bj)
-     &                  +uIce(I+1,J-1,bi,bj)-uVel(I+1,J-1,1,bi,bj))
+     &         0.5 _d 0*(uIce(I  ,J-1,bi,bj)-uVel(I  ,J-1,kSrf,bi,bj)
+     &                  +uIce(I+1,J-1,bi,bj)-uVel(I+1,J-1,kSrf,bi,bj))
      &         )
           areaW = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I-1,J,bi,bj))
      &         * SEAICEstressFactor

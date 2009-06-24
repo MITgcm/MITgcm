@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.43 2009/06/24 08:01:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.44 2009/06/24 08:56:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -42,16 +42,16 @@ C     i,j,k,bi,bj - Loop counters
       INTEGER i, j, k, bi, bj
       _RL PSTAR
       _RS  mask_uice
-      INTEGER myIter, myTile
-
+      INTEGER myIter, myTile, kSurface
 #ifdef ALLOW_OBCS
-      INTEGER I_obc, J_obc, kSurface
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
-       kSurface        = Nr
-      ELSE
-       kSurface        = 1
-      ENDIF
+      INTEGER I_obc, J_obc
 #endif /* ALLOW_OBCS */
+
+      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+       kSurface = Nr
+      ELSE
+       kSurface = 1
+      ENDIF
 
 C--   Initialise all variables in common blocks:
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -367,7 +367,7 @@ C--   Read initial snow thickness from file if available.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           HSALT(i,j,bi,bj)=HEFF(i,j,bi,bj)*salt(i,j,1,bi,bj)*
+           HSALT(i,j,bi,bj)=HEFF(i,j,bi,bj)*salt(i,j,kSurface,bi,bj)*
      &            ICE2WATR*rhoConstFresh*SEAICE_salinity
           ENDDO
          ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.50 2009/06/24 08:24:26 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.51 2009/06/24 08:56:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -57,6 +57,7 @@ C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, k, m, bi, bj, j1, j2, im, jm
       INTEGER ICOUNT1, ICOUNT2
+      INTEGER kSrf
       INTEGER phexit
 
       _RL WFAU, WFAV, WFAU1, WFAV1, WFAU2, WFAV2
@@ -120,6 +121,8 @@ C     part of the overlap, because the overlap of u/vTmp is used
       _RL ARR  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 #endif
 
+C     surrface level
+      kSrf = 1
 C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
@@ -215,10 +218,10 @@ CADJ &     key = ikey_dynamics + (ilcall-1)*nchklev_1
          DO i=0,sNx+1
 C     set up non-linear water drag
           TEMPVAR = QUART*(
-     &          (uIceC(I  ,J,bi,bj)-uVel(I  ,J,1,bi,bj)
-     &          +uIceC(I+1,J,bi,bj)-uVel(I+1,J,1,bi,bj))**2
-     &         +(vIceC(I,J  ,bi,bj)-vVel(I,J  ,1,bi,bj)
-     &          +vIceC(I,J+1,bi,bj)-vVel(I,J+1,1,bi,bj))**2)
+     &          (uIceC(I  ,J,bi,bj)-uVel(I  ,J,kSrf,bi,bj)
+     &          +uIceC(I+1,J,bi,bj)-uVel(I+1,J,kSrf,bi,bj))**2
+     &         +(vIceC(I,J  ,bi,bj)-vVel(I,J  ,kSrf,bi,bj)
+     &          +vIceC(I,J+1,bi,bj)-vVel(I,J+1,kSrf,bi,bj))**2)
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            IF ( TEMPVAR .LE. (QUART/SEAICE_waterDrag_south)**2 ) THEN
             DWATN(I,J,bi,bj)=QUART
@@ -244,25 +247,25 @@ C     set up anti symmettric drag force and add in current force
 C     ( remember to average to correct velocity points )
           FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
      &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
-     &         COSWAT * uVel(I,J,1,bi,bj)
+     &         COSWAT * uVel(I,J,kSrf,bi,bj)
      &         - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 *
-     &         ( DWATN(I  ,J,bi,bj) *
-     &         0.5 _d 0 * (vVel(I  ,J  ,1,bi,bj)-vIceC(I  ,J  ,bi,bj)
-     &                    +vVel(I  ,J+1,1,bi,bj)-vIceC(I  ,J+1,bi,bj))
-     &         + DWATN(I-1,J,bi,bj) *
-     &         0.5 _d 0 * (vVel(I-1,J  ,1,bi,bj)-vIceC(I-1,J  ,bi,bj)
-     &                    +vVel(I-1,J+1,1,bi,bj)-vIceC(I-1,J+1,bi,bj))
+     &         ( DWATN(I  ,J,bi,bj) * 0.5 _d 0 * 
+     &          (vVel(I  ,J  ,kSrf,bi,bj)-vIceC(I  ,J  ,bi,bj)
+     &          +vVel(I  ,J+1,kSrf,bi,bj)-vIceC(I  ,J+1,bi,bj))
+     &         + DWATN(I-1,J,bi,bj) * 0.5 _d 0 * 
+     &          (vVel(I-1,J  ,kSrf,bi,bj)-vIceC(I-1,J  ,bi,bj)
+     &          +vVel(I-1,J+1,kSrf,bi,bj)-vIceC(I-1,J+1,bi,bj))
      &         )
           FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
      &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
-     &         COSWAT * vVel(I,J,1,bi,bj)
+     &         COSWAT * vVel(I,J,kSrf,bi,bj)
      &         + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
-     &         ( DWATN(I,J  ,bi,bj) *
-     &         0.5 _d 0 * (uVel(I  ,J  ,1,bi,bj)-uIceC(I  ,J  ,bi,bj)
-     &                    +uVel(I+1,J  ,1,bi,bj)-uIceC(I+1,J  ,bi,bj))
-     &         + DWATN(I,J-1,bi,bj) *
-     &         0.5 _d 0 * (uVel(I  ,J-1,1,bi,bj)-uIceC(I  ,J-1,bi,bj)
-     &                    +uVel(I+1,J-1,1,bi,bj)-uIceC(I+1,J-1,bi,bj))
+     &         ( DWATN(I,J  ,bi,bj) * 0.5 _d 0 *
+     &          (uVel(I  ,J  ,kSrf,bi,bj)-uIceC(I  ,J  ,bi,bj)
+     &          +uVel(I+1,J  ,kSrf,bi,bj)-uIceC(I+1,J  ,bi,bj))
+     &         + DWATN(I,J-1,bi,bj) * 0.5 _d 0 * 
+     &          (uVel(I  ,J-1,kSrf,bi,bj)-uIceC(I  ,J-1,bi,bj)
+     &          +uVel(I+1,J-1,kSrf,bi,bj)-uIceC(I+1,J-1,bi,bj))
      &         )
          ENDDO
         ENDDO
