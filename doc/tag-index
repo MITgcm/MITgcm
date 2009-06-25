@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1131 2009/06/24 20:28:21 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1132 2009/06/25 15:55:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61r
 o pkg/seaice: 
  - clean up the 3-time levels of UICE,VICE,HEFF,AREA in three steps:
   1. introduce fields for time step (N-1)
