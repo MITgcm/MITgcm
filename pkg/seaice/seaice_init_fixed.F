@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.4 2009/06/17 07:33:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.5 2009/06/25 14:36:15 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -72,12 +72,6 @@ C--   Initialize grid info
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           HEFFM(i,j,bi,bj)       = 0. _d 0
-#ifdef SEAICE_CGRID
-          seaiceMaskU(i,j,bi,bj) = 0. _d 0
-          seaiceMaskV(i,j,bi,bj) = 0. _d 0
-#else
-          UVM(i,j,bi,bj)         = 0. _d 0
-#endif /* not SEAICE_CGRID */
          ENDDO
         ENDDO
         DO j=1-OLy,sNy+OLy
@@ -89,14 +83,7 @@ C--   Initialize grid info
         ENDDO
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-#ifdef SEAICE_CGRID
-          seaiceMaskU(i,j,bi,bj)=   0.0 _d 0
-          seaiceMaskV(i,j,bi,bj)=   0.0 _d 0
-          mask_uice=HEFFM(i,j,bi,bj)+HEFFM(i-1,j  ,bi,bj)
-          IF(mask_uice.GT.1.5 _d 0) seaiceMaskU(i,j,bi,bj)=1.0 _d 0
-          mask_uice=HEFFM(i,j,bi,bj)+HEFFM(i  ,j-1,bi,bj)
-          IF(mask_uice.GT.1.5 _d 0) seaiceMaskV(i,j,bi,bj)=1.0 _d 0
-#else
+#ifndef SEAICE_CGRID
           UVM(i,j,bi,bj)=0. _d 0
           mask_uice=HEFFM(i,j,  bi,bj)+HEFFM(i-1,j-1,bi,bj)
      &             +HEFFM(i,j-1,bi,bj)+HEFFM(i-1,j,  bi,bj)

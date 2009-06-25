@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.44 2009/06/24 08:56:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.45 2009/06/25 14:36:15 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -92,10 +92,6 @@ C
           seaiceMassC(i,j,bi,bj)=0. _d 0
           seaiceMassU(i,j,bi,bj)=0. _d 0
           seaiceMassV(i,j,bi,bj)=0. _d 0
-#ifdef ALLOW_AUTODIFF_TAMC
-          seaiceMaskU(i,j,bi,bj)=0. _d 0
-          seaiceMaskV(i,j,bi,bj)=0. _d 0
-#endif /* ALLOW_AUTODIFF_TAMC */
           stressDivergenceX(i,j,bi,bj) = 0. _d 0
           stressDivergenceY(i,j,bi,bj) = 0. _d 0
 # ifdef SEAICE_ALLOW_EVP
@@ -144,7 +140,6 @@ C
 C--   Initialize (variable) grid info. As long as we allow masking of
 C--   velocities outside of ice covered areas (in seaice_dynsolver)
 C--   we need to re-initialize seaiceMaskU/V here for TAF/TAMC
-#ifdef ALLOW_AUTODIFF_TAMC
 #ifdef SEAICE_CGRID
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -153,15 +148,14 @@ C--   we need to re-initialize seaiceMaskU/V here for TAF/TAMC
           seaiceMaskU(i,j,bi,bj)=   0.0 _d 0
           seaiceMaskV(i,j,bi,bj)=   0.0 _d 0
           mask_uice=HEFFM(i,j,bi,bj)+HEFFM(i-1,j  ,bi,bj)
-          IF(mask_uice.GT.1.5) seaiceMaskU(i,j,bi,bj)=ONE
+          IF(mask_uice.GT.1.5 _d 0) seaiceMaskU(i,j,bi,bj)=1.0 _d 0
           mask_uice=HEFFM(i,j,bi,bj)+HEFFM(i  ,j-1,bi,bj)
-          IF(mask_uice.GT.1.5) seaiceMaskV(i,j,bi,bj)=ONE
+          IF(mask_uice.GT.1.5 _d 0) seaiceMaskV(i,j,bi,bj)=1.0 _d 0
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 #endif /* SEAICE_CGRID */
-#endif /* ALLOW_AUTODIFF_TAMC */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
