@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.4 2009/06/15 13:40:03 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.5 2009/06/26 17:52:18 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -155,7 +155,7 @@ C- Write out if time for a new pickup
 C- write values to new pickup
           CALL MDSFINDUNIT( iUnit, myThid )
           length_of_rec = MDS_RECLEN( precFloat64, 2, myThid )
-          OPEN(UNIT=iUnit,FILE=fn,STATUS='new',
+          OPEN(UNIT=iUnit,FILE=fn,STATUS='unknown',
      &      FORM='UNFORMATTED',ACCESS='DIRECT',RECL=length_of_rec)
           tmpco2(1)= Atm_CO2_Moles
           tmpco2(2)= atm_pCO2
