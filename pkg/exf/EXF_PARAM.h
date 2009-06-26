@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.12 2009/06/02 14:59:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.13 2009/06/26 20:53:36 jmc Exp $
 C $Name:  $
 c
 c
@@ -454,6 +454,7 @@ C     noNegativeEvap     :: prevent negative evaporation (= sea-surface condensa
      &                     swdown_exfremo_intercept,
      &                     lwdown_exfremo_intercept,
      &                     apressure_exfremo_intercept,
+     &                     areamask_exfremo_intercept,
      &                     hflux_exfremo_slope,
      &                     atemp_exfremo_slope,
      &                     aqh_exfremo_slope,
@@ -471,7 +472,8 @@ C     noNegativeEvap     :: prevent negative evaporation (= sea-surface condensa
      &                     lwflux_exfremo_slope,
      &                     swdown_exfremo_slope,
      &                     lwdown_exfremo_slope,
-     &                     apressure_exfremo_slope
+     &                     apressure_exfremo_slope,
+     &                     areamask_exfremo_slope
 
       common /exf_param_c/
      &                     hfluxfile,

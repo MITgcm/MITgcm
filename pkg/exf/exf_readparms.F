@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.54 2009/06/02 14:59:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.55 2009/06/26 20:53:36 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -56,7 +56,10 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer i, idummy
+#ifdef USE_EXF_INTERPOLATION
+      integer i
+#endif
+      integer idummy
       integer iUnit
 
       character*(max_len_mbuf) msgbuf
@@ -146,6 +149,7 @@ c     Surface flux data.
      &     swdown_exfremo_intercept, swdown_exfremo_slope,
      &     lwdown_exfremo_intercept, lwdown_exfremo_slope,
      &     apressure_exfremo_intercept, apressure_exfremo_slope,
+     &     areamask_exfremo_intercept, areamask_exfremo_slope,
      &     climsst_exfremo_intercept, climsst_exfremo_slope,
      &     climsss_exfremo_intercept, climsss_exfremo_slope
 
@@ -384,6 +388,8 @@ c     Calendar data.
       areamaskstartdate2    = 0
       areamaskperiod        = 0.0 _d 0
       areamaskconst         = 0.0 _d 0
+      areamask_exfremo_intercept = 0. _d 0
+      areamask_exfremo_slope = 0. _d 0
 
       climsststartdate1  = 0
       climsststartdate2  = 0
@@ -732,7 +738,7 @@ c     Next, read the forcing data file.
       IF(siobWstartdate1.EQ.UNSET_I ) siobWstartdate1 = obcsWstartdate1
       IF(siobWstartdate2.EQ.UNSET_I ) siobWstartdate2 = obcsWstartdate2
       IF(siobWperiod    .EQ.UNSET_RL) siobWperiod     = obcsWperiod
-C     
+
       IF(exf_iprec_obcs .EQ. UNSET_I) exf_iprec_obcs  = exf_iprec
 #endif
 
