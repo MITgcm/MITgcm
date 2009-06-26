@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.19 2009/04/28 23:27:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.20 2009/06/26 18:02:15 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -594,7 +594,7 @@ C--   Runoff.
      &                    SQUEEZE_RIGHT , mythid)
 #endif /* ALLOW_RUNOFF */
 
-#ifdef DOWNWARD_RADIATION
+#ifdef ALLOW_DOWNWARD_RADIATION
 C--   Downward shortwave.
       il = ilnblnk(swdownfile)
       write(msgbuf,'(a)') ' '
