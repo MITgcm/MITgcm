@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.72 2009/06/17 14:57:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.73 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -228,6 +228,12 @@ cph#endif
         IF (debugMode) CALL DEBUG_CALL('PTRACERS_INIT_VARIA',myThid)
 # endif
         CALL PTRACERS_INIT_VARIA( myThid )
+# ifdef ALLOW_LONGSTEP
+#  ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('LONGSTEP_INIT_VARIA',myThid)
+#  endif
+        CALL LONGSTEP_INIT_VARIA( myThid )
+# endif /* ALLOW_LONGSTEP */
 # ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
 # endif

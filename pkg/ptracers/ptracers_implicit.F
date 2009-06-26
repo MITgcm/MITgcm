@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.5 2007/11/05 18:48:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.6 2009/06/26 23:10:10 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -19,6 +19,10 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#ifdef ALLOW_LONGSTEP
+#include "LONGSTEP_PARAMS.h"
+#include "LONGSTEP.h"
+#endif
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_FIELDS.h"
@@ -103,7 +107,13 @@ CADJ &     key=iptrkey, byte=isbyte
           CALL GAD_IMPLICIT_R(
      I         PTRACERS_ImplVertAdv(iTracer),
      I         PTRACERS_advScheme(iTracer), GAD_TR,
-     I         kappaRk, wVel, pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+     I         PTRACERS_dTLev, kappaRk,
+#ifdef ALLOW_LONGSTEP
+     I         LS_wVel,
+#else
+     I         wVel,
+#endif
+     I         pTracer(1-Olx,1-Oly,1,1,1,iTracer),
      U         gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I         bi, bj, myTime, myIter, myThid )
 

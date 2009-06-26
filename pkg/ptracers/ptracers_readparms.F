@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.34 2009/04/28 22:11:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.35 2009/06/26 23:10:10 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -17,6 +17,9 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#ifdef ALLOW_LONGSTEP
+#include "LONGSTEP_PARAMS.h"
+#endif
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PARAMS.h"
@@ -129,6 +132,13 @@ C     Set defaults values for parameters in PTRACERS.h
       PTRACERS_pickup_read_mnc  = .FALSE.
 #endif
       tauTr1ClimRelax = 0.
+      DO k = 1,Nr
+#ifdef ALLOW_LONGSTEP
+        PTRACERS_dTLev(k) = LS_nIter*dTtracerLev(k)
+#else
+        PTRACERS_dTLev(k) = dTtracerLev(k)
+#endif
+      ENDDO
 
 C     Open and read the data.ptracers file
       WRITE(msgBuf,'(A)') ' PTRACERS_READPARMS: opening data.ptracers'
@@ -194,6 +204,16 @@ C     Check that enough parameters were specified
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
        ENDIF
       ENDDO
+      IF ( PTRACERS_dTLev(1).NE.PTRACERS_dTLev(Nr)
+     &     .AND. implicitDiffusion ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'PTRACERS_READPARMS: #undef INCLUDE_IMPLVERTADV_CODE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)') 'PTRACERS_READPARMS: ',
+     &   'but implicitDiffusion=T with non-uniform PTRACERS_dTLev'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+      ENDIF
 #endif
       DO iTracer=1,PTRACERS_numInUse
         IF ( PTRACERS_useGMRedi(iTracer) .AND. .NOT.useGMRedi ) THEN
@@ -274,6 +294,9 @@ C--   Print a summary of pTracer parameter values:
       CALL WRITE_0D_I( PTRACERS_Iter0, INDEX_NONE,
      &   'PTRACERS_Iter0 =',
      &   ' /* timestep number when tracers are initialized */')
+      CALL WRITE_1D_RL( PTRACERS_dTLev, Nr, INDEX_K,
+     &   'PTRACERS_dTLev =',
+     &'   /* Ptracer timestep ( s ) */')
       CALL WRITE_0D_RL(PTRACERS_dumpFreq, INDEX_NONE,
      &   'PTRACERS_dumpFreq =',
      &   ' /* Frequency^-1 for snapshot output (s) */')

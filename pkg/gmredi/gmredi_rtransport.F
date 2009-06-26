@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.15 2008/05/30 02:50:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.16 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -22,6 +22,10 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GMREDI.h"
+#include "GAD.h"
+#ifdef ALLOW_LONGSTEP
+#include "LONGSTEP.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -124,10 +128,19 @@ CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
 C-      Off-diagonal components of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-        df(i,j) = df(i,j)
+        IF ( tracerIdentity .LT. GAD_TR1 ) THEN
+         df(i,j) = df(i,j)
      &      - _rA(i,j,bi,bj)
      &        *( Kwx(i,j,k,bi,bj)*dTdx(i,j)+Kwy(i,j,k,bi,bj)*dTdy(i,j) )
-
+        ELSE
+         df(i,j) = df(i,j)
+     &      - _rA(i,j,bi,bj)
+#ifdef ALLOW_LONGSTEP
+     &    *(LS_Kwx(i,j,k,bi,bj)*dTdx(i,j)+LS_Kwy(i,j,k,bi,bj)*dTdy(i,j))
+#else
+     &        *( Kwx(i,j,k,bi,bj)*dTdx(i,j)+Kwy(i,j,k,bi,bj)*dTdy(i,j) )
+#endif
+        ENDIF
        ENDDO
       ENDDO
 

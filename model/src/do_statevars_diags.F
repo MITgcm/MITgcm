@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.13 2008/02/12 20:27:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.14 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,7 +82,7 @@ C                    and stagger/synchronous TimeStep
 #ifdef ALLOW_PTRACERS
         IF ( (selectVars.EQ.1 .OR. selectVars.EQ.3)
      &      .AND. usePTRACERS ) THEN
-          CALL PTRACERS_DIAGNOSTICS_STATE( myThid )
+          CALL PTRACERS_DIAGNOSTICS_STATE( myTime, myIter, myThid )
         ENDIF
 #endif
 

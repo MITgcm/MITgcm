@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.60 2009/05/12 19:56:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.61 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -11,7 +11,7 @@ C !ROUTINE: GAD_ADVECTION
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_ADVECTION(
      I     implicitAdvection, advectionScheme, vertAdvecScheme,
-     I     tracerIdentity,
+     I     tracerIdentity, deltaTLev,
      I     uVel, vVel, wVel, tracer,
      O     gTracer,
      I     bi,bj, myTime,myIter,myThid)
@@ -70,6 +70,7 @@ C  myThid            :: thread number
       LOGICAL implicitAdvection
       INTEGER advectionScheme, vertAdvecScheme
       INTEGER tracerIdentity
+      _RL deltaTLev(Nr)
       _RL uVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL vVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL wVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
@@ -376,23 +377,23 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
         IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &     .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
           CALL GAD_DST2U1_ADV_X( bi,bj,k, advectionScheme, .TRUE.,
-     I                           dTtracerLev(k),uTrans,uFld,localTij,
+     I                           deltaTLev(k),uTrans,uFld,localTij,
      O                           af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE., dTtracerLev(k),
+          CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
      I                              uTrans, uFld, maskLocW, localTij,
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_X(      bi,bj,k, .TRUE., dTtracerLev(k),
+          CALL GAD_DST3_ADV_X(      bi,bj,k, .TRUE., deltaTLev(k),
      I                              uTrans, uFld, maskLocW, localTij,
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-          CALL GAD_DST3FL_ADV_X(    bi,bj,k, .TRUE., dTtracerLev(k),
+          CALL GAD_DST3FL_ADV_X(    bi,bj,k, .TRUE., deltaTLev(k),
      I                              uTrans, uFld, maskLocW, localTij,
      O                              af, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
-          CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE., dTtracerLev(k),
+          CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE., deltaTLev(k),
      I                              uTrans, uFld, maskLocW, localTij,
      O                              af, myThid )
 #endif
@@ -424,7 +425,7 @@ C         in corner region) but safer to keep them.
          DO j=1-Oly,0
           DO i=iMinUpd,iMaxUpd
            localTij(i,j) = localTij(i,j)
-     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i+1,j)-af(i,j)
@@ -437,7 +438,7 @@ C         in corner region) but safer to keep them.
          DO j=sNy+1,sNy+Oly
           DO i=iMinUpd,iMaxUpd
            localTij(i,j) = localTij(i,j)
-     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i+1,j)-af(i,j)
@@ -456,7 +457,7 @@ C      do not only update the overlap
         DO j=jMinUpd,jMaxUpd
          DO i=1-Olx+1,sNx+Olx-1
            localTij(i,j) = localTij(i,j)
-     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i+1,j)-af(i,j)
@@ -546,23 +547,23 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
         IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &     .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
           CALL GAD_DST2U1_ADV_Y( bi,bj,k, advectionScheme, .TRUE.,
-     I                           dTtracerLev(k),vTrans,vFld,localTij,
+     I                           deltaTLev(k),vTrans,vFld,localTij,
      O                           af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE., dTtracerLev(k),
+          CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
      I                              vTrans, vFld, maskLocS, localTij,
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_Y(      bi,bj,k, .TRUE., dTtracerLev(k),
+          CALL GAD_DST3_ADV_Y(      bi,bj,k, .TRUE., deltaTLev(k),
      I                              vTrans, vFld, maskLocS, localTij,
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-          CALL GAD_DST3FL_ADV_Y(    bi,bj,k, .TRUE., dTtracerLev(k),
+          CALL GAD_DST3FL_ADV_Y(    bi,bj,k, .TRUE., deltaTLev(k),
      I                              vTrans, vFld, maskLocS, localTij,
      O                              af, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
-          CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE., dTtracerLev(k),
+          CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE., deltaTLev(k),
      I                              vTrans, vFld, maskLocS, localTij,
      O                              af, myThid )
 #endif
@@ -594,7 +595,7 @@ C         in corner region) but safer to keep them.
          DO j=jMinUpd,jMaxUpd
           DO i=1-Olx,0
            localTij(i,j) = localTij(i,j)
-     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i,j+1)-af(i,j)
@@ -607,7 +608,7 @@ C         in corner region) but safer to keep them.
          DO j=jMinUpd,jMaxUpd
           DO i=sNx+1,sNx+Olx
            localTij(i,j) = localTij(i,j)
-     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i,j+1)-af(i,j)
@@ -626,7 +627,7 @@ C      do not only update the overlap
         DO j=1-Oly+1,sNy+Oly-1
          DO i=iMinUpd,iMaxUpd
            localTij(i,j) = localTij(i,j)
-     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( af(i,j+1)-af(i,j)
@@ -671,7 +672,7 @@ C-    explicit advection is done ; store tendency in gTracer:
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
           gTracer(i,j,k,bi,bj)=
-     &     (localTij(i,j)-tracer(i,j,k,bi,bj))/dTtracerLev(k)
+     &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTLev(k)
          ENDDO
         ENDDO
       ELSE
@@ -794,23 +795,23 @@ C-    Compute vertical advective flux in the interior:
          IF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
      &      .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
            CALL GAD_DST2U1_ADV_R( bi,bj,k, advectionScheme,
-     I                            dTtracerLev(k),rTrans,wFld,localTijk,
+     I                            deltaTLev(k),rTrans,wFld,localTijk,
      O                            fVerT(1-Olx,1-Oly,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
-           CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, dTtracerLev(k),
+           CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTLev(k),
      I                               rTrans, wFld, localTijk,
      O                               fVerT(1-Olx,1-Oly,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_DST3 ) THEN
-           CALL GAD_DST3_ADV_R(      bi,bj,k, dTtracerLev(k),
+           CALL GAD_DST3_ADV_R(      bi,bj,k, deltaTLev(k),
      I                               rTrans, wFld, localTijk,
      O                               fVerT(1-Olx,1-Oly,kUp), myThid )
          ELSEIF( vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-           CALL GAD_DST3FL_ADV_R(    bi,bj,k, dTtracerLev(k),
+           CALL GAD_DST3FL_ADV_R(    bi,bj,k, deltaTLev(k),
      I                               rTrans, wFld, localTijk,
      O                               fVerT(1-Olx,1-Oly,kUp), myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
          ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
-           CALL GAD_OS7MP_ADV_R(     bi,bj,k, dTtracerLev(k),
+           CALL GAD_OS7MP_ADV_R(     bi,bj,k, deltaTLev(k),
      I                               rTrans, wFld, localTijk,
      O                               fVerT(1-Olx,1-Oly,kUp), myThid )
 #endif
@@ -838,14 +839,14 @@ C--   Divergence of vertical fluxes
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
           localTij(i,j) = localTijk(i,j,k)
-     &      -dTtracerLev(k)*recip_rhoFacC(k)
+     &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &       *( fVerT(i,j,kDown)-fVerT(i,j,kUp)
      &         -tracer(i,j,k,bi,bj)*(rTransKp1(i,j)-rTrans(i,j))
      &        )*rkSign
           gTracer(i,j,k,bi,bj)=
-     &     (localTij(i,j)-tracer(i,j,k,bi,bj))/dTtracerLev(k)
+     &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTLev(k)
          ENDDO
         ENDDO
 

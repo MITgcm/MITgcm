@@ -1,0 +1,144 @@
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_diagnostics_init.F,v 1.1 2009/06/26 23:10:10 jahn Exp $
+C $Name:  $
+
+#include "LONGSTEP_OPTIONS.h"
+
+CBOP
+C     !ROUTINE: LONGSTEP_DIAGNOSTICS_INIT
+C     !INTERFACE:
+      SUBROUTINE LONGSTEP_DIAGNOSTICS_INIT( myThid )
+C     !DESCRIPTION:
+C     Routine to initialize longstep diagnostics
+
+C     !USES:
+      IMPLICIT NONE
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "LONGSTEP_PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     myThid -  Number of this instance of LONGSTEP_DIAGNOSTICS_INIT
+      INTEGER myThid
+CEOP
+
+#ifdef ALLOW_DIAGNOSTICS
+C     !LOCAL VARIABLES:
+C     === Local variables ===
+C     msgBuf      - Informational/error meesage buffer
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      INTEGER       diagNum
+      INTEGER       diagMate
+      CHARACTER*8   diagName
+      CHARACTER*16  diagCode
+      CHARACTER*16  diagUnits
+      CHARACTER*(80) diagTitle
+
+C--   Add diagnostics to the (long) list
+
+      diagName  = 'LSwVel  '
+      diagTitle = 'Vertical Component of Velocity (m/s)'
+      diagUnits = 'm/s             '
+      diagCode  = 'WM      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'LSuVel  '
+      diagTitle = 'Zonal Component of Velocity (m/s)'
+      diagUnits = 'm/s             '
+      diagCode  = 'UU      MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'LSvVel  '
+      diagTitle = 'Meridional Component of Velocity (m/s)'
+      diagUnits = 'm/s             '
+      diagCode  = 'VV      MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'LStheta '
+      diagTitle = 'Potential Temperature'
+      diagUnits = 'degC            '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'LSsalt  '
+      diagTitle = 'Salinity'
+      diagUnits = 'psu             '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      IF ( ivdc_kappa .NE. 0. _d 0 ) THEN
+        diagName  = 'LScnvAdj'
+        diagTitle = 'Convective Adjustment Index [0-1] '
+        diagUnits = 'fraction        '
+        diagCode  = 'SM      LR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      ENDIF
+
+#ifdef SHORTWAVE_HEATING
+      diagName  = 'LSqsw   '
+      diagTitle = 'net Short-Wave radiation (+=up)'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
+
+#ifdef ALLOW_GMREDI
+      IF ( useGMRedi ) THEN
+       diagName  = 'LSkwx   '
+       diagTitle = 'K_31 element (W.point, X.dir) of GM-Redi tensor'
+       diagUnits = 'm^2/s           '
+       WRITE(diagCode,'(A,I3.3,A)') 'UM   ',diagNum+2,'LR      '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+       diagName  = 'LSkwy   '
+       diagTitle = 'K_32 element (W.point, Y.dir) of GM-Redi tensor'
+       diagUnits = 'm^2/s           '
+       WRITE(diagCode,'(A,I3.3,A)') 'VM   ', diagNum ,'LR      '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+       diagName  = 'LSkwz   '
+       diagTitle = 'K_33 element (W.point, Z.dir) of GM-Redi tensor'
+       diagUnits = 'm^2/s           '
+       diagCode  = 'WM P    LR      '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_KPP
+      IF ( useKPP ) THEN
+       diagName  = 'LSKPPdfS'
+       diagTitle = 'Vertical diffusion coefficient for salt & tracers'
+       diagUnits = 'm^2/s           '
+       diagCode  = 'SM P    UR      '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+       diagName  = 'LSKPPght'
+       diagTitle = 'Nonlocal transport coefficient'
+       diagUnits = 's/m^2           '
+       diagCode  = 'SM P    LR      '
+       CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+      ENDIF
+#endif /* ALLOW_KPP */
+
+#endif /* ALLOW_DIAGNOSTICS */
+
+      RETURN
+      END
+

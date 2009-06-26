@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.14 2007/02/04 21:13:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.15 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -70,9 +70,11 @@ C-      Update tracer fields:  T(n) = T**
      U           salt,gS,
      I           myTime,myIter,myThid )
 #ifdef ALLOW_PTRACERS
+#ifndef ALLOW_LONGSTEP
 C-      Update passive tracer fields:  T(n) = T**
         IF (usePTRACERS)
      &      CALL PTRACERS_CYCLE(bi,bj,myTime,myIter,myThid)
+#endif /* ! ALLOW_LONGSTEP */
 #endif /* ALLOW_PTRACERS */
 
 #ifdef ALLOW_NONHYDROSTATIC

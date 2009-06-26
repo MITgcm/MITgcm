@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.59 2009/06/14 01:23:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.60 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -208,6 +208,10 @@ C--   Initialize SHELFICE parameters
 
 #ifdef ALLOW_OFFLINE
       CALL OFFLINE_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_LONGSTEP
+      IF (usePTRACERS) call LONGSTEP_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_BULK_FORCE

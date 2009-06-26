@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.14 2008/02/12 23:04:44 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.15 2009/06/26 23:10:08 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,6 +37,9 @@ C     == GLobal variables ==
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
+#endif
+#ifdef ALLOW_LONGSTEP
+#include "LONGSTEP.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -82,12 +85,25 @@ CEOP
 #endif
         DO j = 1-Oly,sNy+Oly
          DO i = 1-Olx,sNx+Olx
-          KappaRTr(i,j,k) =
+#ifdef ALLOW_LONGSTEP
+          IF ( trIdentity .GE. GAD_TR1) THEN
+           KappaRTr(i,j,k) =
+     &         LS_IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
+     &         + KbryanLewis79
+#ifdef ALLOW_BL79_LAT_VARY
+     &         + (KbryanLewisEQ-KbryanLewis79)*BL79LatArray(i,j,bi,bj)
+#endif
+          ELSE
+#else
+          IF ( .TRUE. ) THEN
+#endif /* ALLOW_LONGSTEP */
+           KappaRTr(i,j,k) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
      &         + KbryanLewis79
 #ifdef ALLOW_BL79_LAT_VARY
      &         + (KbryanLewisEQ-KbryanLewis79)*BL79LatArray(i,j,bi,bj)
 #endif
+          ENDIF
          ENDDO
         ENDDO
        ENDDO
@@ -120,8 +136,7 @@ CEOP
          ENDDO
         ENDDO
 #ifdef ALLOW_PTRACERS
-       ELSEIF ( trIdentity.GE.GAD_TR1
-     &   .AND. trIdentity.LT.GAD_TR1+PTRACERS_numInUse) THEN
+       ELSEIF ( trIdentity.GE.GAD_TR1) THEN
 
         iTr = trIdentity - GAD_TR1 + 1
         DO k = 1,Nr
@@ -156,16 +171,20 @@ C--   Set vertical diffusivity contribution from KPP
      I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
      O        KappaRTr,
      I        myThid)
-       ELSE
+       ELSEIF (trIdentity.EQ.GAD_SALINITY) THEN
          CALL KPP_CALC_DIFF_S(
+     I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
+     O        KappaRTr,
+     I        myThid)
+       ELSEIF ( trIdentity.GE.GAD_TR1) THEN
+         CALL KPP_CALC_DIFF_Ptr(
      I        bi,bj,iMin,iMax,jMin,jMax,0,Nr,
      O        KappaRTr,
      I        myThid)
        ENDIF
 #if (defined ALLOW_PTRACERS && ! (defined ALLOW_3D_DIFFKR || \
      (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))))
-       IF ( trIdentity.GE.GAD_TR1
-     &   .AND. trIdentity.LT.GAD_TR1+PTRACERS_numInUse) THEN
+       IF ( trIdentity.GE.GAD_TR1) THEN
         iTr = trIdentity - GAD_TR1 + 1
         DO k = 1,Nr
          DO j = 1-Oly, sNy+Oly

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.21 2008/04/18 19:39:48 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.22 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 CBOP
@@ -128,10 +128,8 @@ C AdamsBashforth_S  :: apply Adams-Bashforth extrapolation on Salinity
      & AdamsBashforthGt, AdamsBashforthGs,
      & AdamsBashforth_T, AdamsBashforth_S
 
-#ifdef GAD_SMOLARKIEWICZ_HACK
       _RL SmolarkiewiczMaxFrac
       COMMON /GAD_SMOL/ SmolarkiewiczMaxFrac
-#endif
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

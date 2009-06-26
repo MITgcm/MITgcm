@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.13 2006/06/18 23:27:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.14 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -8,6 +8,7 @@ C     !ROUTINE: GAD_IMPLICIT_R
 C     !INTERFACE:
       SUBROUTINE GAD_IMPLICIT_R(
      I      implicitAdvection, advectionScheme, tracerIdentity,
+     I      deltaTLev,
      I      kappaRX, wVel, tracer,
      U      gTracer,
      I      bi, bj, myTime, myIter, myThid )
@@ -39,6 +40,7 @@ C myThid            :: thread number
       LOGICAL implicitAdvection
       INTEGER advectionScheme
       INTEGER tracerIdentity
+      _RL     deltaTLev(Nr)
       _RL kappaRX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL wVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
@@ -133,7 +135,7 @@ C-     1rst lower diagonal :
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-           b5d(i,j,k) = -dTtracerLev(k)*maskC(i,j,k-1,bi,bj)
+           b5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k-1,bi,bj)
      &                  *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &                  *kappaRX(i,j, k )*recip_drC( k )
          ENDDO
@@ -143,7 +145,7 @@ C-     1rst upper diagonal :
        DO k=1,Nr-1
         DO j=jMin,jMax
          DO i=iMin,iMax
-           d5d(i,j,k) = -dTtracerLev(k)*maskC(i,j,k+1,bi,bj)
+           d5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k+1,bi,bj)
      &                 *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &                 *KappaRX(i,j,k+1)*recip_drC(k+1)
          ENDDO
@@ -206,7 +208,7 @@ C--   Residual transp = Bolus transp + Eulerian transp
           DO i=iMin,iMax
 c          localTijk(i,j,k)     = gTracer(i,j,k,bi,bj)
            gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
-     &      + dTtracerLev(1)*recip_rA(i,j,bi,bj)
+     &      + deltaTLev(1)*recip_rA(i,j,bi,bj)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *tracer(i,j,k,bi,bj)*(rTransKp1(i,j)-rTrans(i,j))*rkSign
           ENDDO
@@ -224,20 +226,20 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
          IF ( advectionScheme.EQ.ENUM_CENTERED_2ND ) THEN
           diagonalNumber = 3
           CALL GAD_C2_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        dTtracerLev, rTrans,
+     I                        deltaTLev, rTrans,
      U                        b5d, c5d, d5d,
      I                        myThid )
          ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &       .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
           diagonalNumber = 3
           CALL GAD_DST2U1_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        advectionScheme, dTtracerLev, rTrans,
+     I                        advectionScheme, deltaTLev, rTrans,
      U                        b5d, c5d, d5d,
      I                        myThid )
          ELSEIF ( advectionScheme.EQ.ENUM_FLUX_LIMIT ) THEN
           diagonalNumber = 3
           CALL GAD_FLUXLIMIT_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        dTtracerLev, rTrans, localTijk,
+     I                        deltaTLev, rTrans, localTijk,
      U                        b5d, c5d, d5d,
      I                        myThid )
          ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_3RD
@@ -245,13 +247,13 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
      &       .OR. advectionScheme.EQ.ENUM_DST3 ) THEN
           diagonalNumber = 5
           CALL GAD_U3C4_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        advectionScheme, dTtracerLev, rTrans,
+     I                        advectionScheme, deltaTLev, rTrans,
      U                        a5d, b5d, c5d, d5d, e5d,
      I                        myThid )
          ELSEIF ( advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           diagonalNumber = 5
           CALL GAD_DST3FL_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        dTtracerLev, rTrans, localTijk,
+     I                        deltaTLev, rTrans, localTijk,
      U                        a5d, b5d, c5d, d5d, e5d,
      I                        myThid )
          ELSE

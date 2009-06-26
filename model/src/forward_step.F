@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.165 2009/02/13 21:56:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.166 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,6 +59,11 @@ C     == Global variables ==
 #endif
 #ifdef COMPONENT_MODULE
 # include "CPL_PARAMS.h"
+#endif
+
+#ifdef ALLOW_LONGSTEP
+# include "LONGSTEP_PARAMS.h"
+# include "LONGSTEP.h"
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -150,10 +155,16 @@ C     myThid :: thread number for this instance of the routine.
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     modelEnd  :: true if reaching the end of the run
+C     myTimeBeg :: time at beginning of time step (needed by longstep)
+C     myIterBeg :: iteration number at beginning of time step
+C     myTimeTD  :: time at call to thermodynamics (needed by longstep)
+C     myIterTD  :: iteration number at call to thermodynamics
       LOGICAL modelEnd
 #ifdef COMPONENT_MODULE
       INTEGER myItP1
 #endif
+      INTEGER myIterBeg, myIterTD
+      _RL myTimeBeg, myTimeTD
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -170,6 +181,13 @@ C--   Reset the model iteration counter and the model time.
       myIter = nIter0 + (iloop-1)
       myTime = startTime + float(iloop-1)*deltaTclock
 #endif
+
+C     store this for longstep_average with staggerTimeStep
+C     and longstep_thermodynamics without staggerTimeStep
+C     which are called after myIter and myTime are incremented
+C     but need iter/time at beginning of time step
+      myIterBeg = myIter
+      myTimeBeg = myTime
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c**************************************
@@ -443,6 +461,24 @@ CADJ &     kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+#ifdef ALLOW_LONGSTEP
+      IF ( usePTRACERS ) THEN
+       IF ( .NOT.LS_afterTS .AND. .NOT.LS_staggerTimeStep ) THEN
+C       Average all variables before advection (but after do_oceanic_phys
+C       where Qsw, KPP and GMRedi stuff is computed).
+C       This is like diagnostics package and will reproduce offline
+C       results.
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('LONGSTEP_AVERAGE',myThid)
+#endif
+        CALL TIMER_START('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
+        CALL LONGSTEP_AVERAGE( myTime, myIter, myThid )
+        CALL TIMER_STOP ('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
+       ENDIF
+      ENDIF
+#endif /* ALLOW_LONGSTEP */
+
       IF ( .NOT.staggerTimeStep ) THEN
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB )
@@ -455,6 +491,24 @@ CADJ &     kind = isbyte
         CALL TIMER_STOP ('THERMODYNAMICS      [FORWARD_STEP]',myThid)
 C--    if not staggerTimeStep: end
       ENDIF
+
+#ifdef ALLOW_LONGSTEP
+      IF ( usePTRACERS ) THEN
+       IF ( LS_afterTS .AND. .NOT.LS_staggerTimeStep ) THEN
+C       Average T and S after thermodynamics.  This will reproduce the
+C       effect of gchem's separate timestep, and thus online results
+C       for LS_nIter=1
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('LONGSTEP_AVERAGE',myThid)
+#endif
+        CALL TIMER_START('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
+        CALL LONGSTEP_AVERAGE( myTime, myIter, myThid )
+        CALL TIMER_STOP ('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
+       ENDIF
+      ENDIF
+#endif /* ALLOW_LONGSTEP */
+
 c #ifdef ALLOW_NONHYDROSTATIC
       IF ( implicitIntGravWave ) THEN
         CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
@@ -799,6 +853,47 @@ C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
       CALL TRACERS_CORRECTION_STEP(myTime, myIter, myThid)
       CALL TIMER_STOP ('TRC_CORRECTION_STEP [FORWARD_STEP]',myThid)
 
+#ifdef ALLOW_LONGSTEP
+      IF ( usePTRACERS ) THEN
+       IF ( LS_staggerTimeStep ) THEN
+C       Average everything at the end of the timestep.  This will
+C       reproduce online results with staggerTimeStep=.TRUE.
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('LONGSTEP_AVERAGE',myThid)
+#endif
+        CALL TIMER_START('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
+C       myIter has been update after dynamics, but the averaging window
+C       should be determined by myIter at beginning of timestep
+        CALL LONGSTEP_AVERAGE( myTimeBeg, myIterBeg, myThid )
+        CALL TIMER_STOP ('LONGSTEP_AVERAGE    [FORWARD_STEP]',myThid)
+       ENDIF
+
+#ifdef ALLOW_DEBUG
+       IF ( debugLevel .GE. debLevB )
+     &  CALL DEBUG_CALL('LONGSTEP_THERMODYNAMICS',myThid)
+#endif
+       CALL TIMER_START('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
+     &                 myThid)
+       IF ( LS_staggerTimeStep ) THEN
+        myTimeTD = myTime
+        myIterTD = myIter
+       ELSE
+C     set iter for forcing/obcs as at beginning of timestep
+        myTimeTD = myTimeBeg
+        myIterTD = myIterBeg
+       ENDIF
+       CALL LONGSTEP_THERMODYNAMICS( myTimeTD, myIterTD, myThid )
+       CALL TIMER_STOP ('LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]',
+     &                   myThid)
+
+C--   Cycle time-stepping Tracers arrays (pTracers)
+       CALL TIMER_START('LS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+       CALL LONGSTEP_CORRECTION_STEP(myTime, myIter, myThid)
+       CALL TIMER_STOP ('LS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+      ENDIF
+#endif /* ALLOW_LONGSTEP */
+
 #ifdef ALLOW_GCHEM
 C     Add separate timestepping of chemical/biological/forcing
 C     of ptracers here in GCHEM_FORCING_SEP
@@ -810,7 +905,13 @@ CADJ &     kind = isbyte
 CADJ STORE salt  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #endif
-      IF ( useGCHEM ) THEN
+
+#ifdef ALLOW_LONGSTEP
+      IF ( LS_doTimeStep ) THEN
+#else
+      IF ( .TRUE. ) THEN
+#endif
+       IF ( useGCHEM ) THEN
 #ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('GCHEM_FORCING_SEP',myThid)
@@ -818,6 +919,8 @@ CADJ &     kind = isbyte
          CALL TIMER_START('GCHEM_FORCING_SEP  [FORWARD_STEP]',myThid)
          CALL GCHEM_FORCING_SEP( myTime,myIter,myThid )
          CALL TIMER_STOP ('GCHEM_FORCING_SEP  [FORWARD_STEP]',myThid)
+       ENDIF
+C     endif LS_doTimeStep
       ENDIF
 #endif /* ALLOW_GCHEM */
 

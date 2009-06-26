@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.37 2008/01/23 15:30:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.38 2009/06/26 23:10:10 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -25,6 +25,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_LONGSTEP
+#include "LONGSTEP_PARAMS.h"
+#endif
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "PTRACERS_RESTART.h"
@@ -140,7 +143,7 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                   KappaRtr(1-Olx,1-Oly,iTracer),
      I                   gpTrNm1(1-Olx,1-Oly,1,1,1,iTracer),
      I                   pTracer(1-Olx,1-Oly,1,1,1,iTracer),
-     I                   GAD_TR,
+     I                   PTRACERS_dTLev, GAD_TR,
      I                   PTRACERS_advScheme(iTracer),
      I                   PTRACERS_advScheme(iTracer),
      I                   calcAdvection, PTRACERS_ImplVertAdv(iTracer),
@@ -167,8 +170,14 @@ C  If matrix is being computed, block call to S/R ADAMS_BASHFORTH2 to
 C  prevent gPtr from being replaced by the average of gPtr and gpTrNm1.
         IF (.NOT.useMATRIX) THEN
 #endif
+C       compute iter at beginning of ptracer time step
+#ifdef ALLOW_LONGSTEP
+        iterNb = myIter - LS_nIter + 1
+        IF (LS_staggerTimeStep) iterNb = myIter - LS_nIter
+#else
         iterNb = myIter
         IF (staggerTimeStep) iterNb = myIter - 1
+#endif
         CALL ADAMS_BASHFORTH2(
      I                      bi,bj,K,
      U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
@@ -206,6 +215,7 @@ C Integrate forward in time, storing in gPtr:  G=T+dt*G
          CALL TIMESTEP_TRACER(
      I                        bi,bj,iMin,iMax,jMin,jMax,k,
      I                        PTRACERS_advScheme(iTracer),
+     I                        PTRACERS_dTLev(k),
      I                        pTracer(1-Olx,1-Oly,1,1,1,iTracer),
      I                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                        myIter,myThid )

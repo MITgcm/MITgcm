@@ -1,10 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.124 2009/02/13 21:56:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.125 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"
+#endif
+#ifdef ALLOW_LONGSTEP
+#include "LONGSTEP_OPTIONS.h"
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -86,9 +89,11 @@ C     == Global variables ===
 # include "GAD_SOM_VARS.h"
 #endif
 #ifdef ALLOW_PTRACERS
+#ifndef ALLOW_LONGSTEP
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
+#endif
 #endif
 #ifdef ALLOW_TIMEAVE
 # include "TIMEAVE_STATV.h"
@@ -162,8 +167,10 @@ C                      index into fVerTerm.
       _RL kappaRT (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL kappaRS (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #ifdef ALLOW_PTRACERS
+#ifndef ALLOW_LONGSTEP
       _RL fVerP   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
       _RL kappaRTr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,PTRACERS_num)
+#endif
 #endif
       _RL kappaRk (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       INTEGER iMin, iMax
@@ -178,7 +185,9 @@ C                      index into fVerTerm.
       LOGICAL useVariableK
 #endif
 #ifdef ALLOW_PTRACERS
+#ifndef ALLOW_LONGSTEP
       INTEGER iTracer, ip
+#endif
 #endif
 
 CEOP
@@ -221,7 +230,9 @@ CHPF$&                  ,utrans,vtrans,xA,yA
 CHPF$&                  ,kappaRT,kappaRS
 CHPF$&                  )
 # ifdef ALLOW_PTRACERS
+# ifndef ALLOW_LONGSTEP
 CHPF$  INDEPENDENT, NEW (fVerP,kappaRTr)
+# endif
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -276,6 +287,7 @@ C- tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
         ENDDO
 
 #ifdef ALLOW_PTRACERS
+#ifndef ALLOW_LONGSTEP
         IF ( usePTRACERS ) THEN
          DO ip=1,PTRACERS_num
            DO j=1-OLy,sNy+OLy
@@ -297,6 +309,7 @@ C-      set tracer tendency to zero:
           ENDDO
          ENDDO
         ENDIF
+#endif
 #endif
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
@@ -361,7 +374,7 @@ C disable this section of code.
 #endif
           CALL GAD_SOM_ADVECT(
      I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
-     I             GAD_TEMPERATURE,
+     I             GAD_TEMPERATURE, dTtracerLev,
      I             uVel, vVel, wVel, theta,
      U             som_T,
      O             gT,
@@ -376,7 +389,7 @@ C disable this section of code.
 #endif
           CALL GAD_ADVECTION(
      I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
-     I             GAD_TEMPERATURE,
+     I             GAD_TEMPERATURE, dTtracerLev,
      I             uVel, vVel, wVel, theta,
      O             gT,
      I             bi,bj,myTime,myIter,myThid)
@@ -389,7 +402,7 @@ C disable this section of code.
 #endif
           CALL GAD_SOM_ADVECT(
      I             saltImplVertAdv, saltAdvScheme, saltVertAdvScheme,
-     I             GAD_SALINITY,
+     I             GAD_SALINITY, dTtracerLev,
      I             uVel, vVel, wVel, salt,
      U             som_S,
      O             gS,
@@ -404,7 +417,7 @@ C disable this section of code.
 #endif
           CALL GAD_ADVECTION(
      I             saltImplVertAdv, saltAdvScheme, saltVertAdvScheme,
-     I             GAD_SALINITY,
+     I             GAD_SALINITY, dTtracerLev,
      I             uVel, vVel, wVel, salt,
      O             gS,
      I             bi,bj,myTime,myIter,myThid)
@@ -414,6 +427,7 @@ C Since passive tracers are configurable separately from T,S we
 C call the multi-dimensional method for PTRACERS regardless
 C of whether multiDimAdvection is set or not.
 #ifdef ALLOW_PTRACERS
+#ifndef ALLOW_LONGSTEP
         IF ( usePTRACERS ) THEN
 #ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB )
@@ -421,6 +435,7 @@ C of whether multiDimAdvection is set or not.
 #endif
          CALL PTRACERS_ADVECTION( bi,bj,myIter,myTime,myThid )
         ENDIF
+#endif /* ALLOW_LONGSTEP */
 #endif /* ALLOW_PTRACERS */
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 
@@ -589,14 +604,14 @@ CADJ STORE fvert(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_ADAMSBASHFORTH_3
           IF ( AdamsBashforth_T ) THEN
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,
+     I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,dTtracerLev(k),
      I         gtNm(1-Olx,1-Oly,1,1,1,m2),
      U         gT,
      I         myIter, myThid)
           ELSE
 #endif
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,
+     I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,dTtracerLev(k),
      I         theta,
      U         gT,
      I         myIter, myThid)
@@ -623,14 +638,14 @@ CADJ STORE fvers(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_ADAMSBASHFORTH_3
           IF ( AdamsBashforth_S ) THEN
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,
+     I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,dTtracerLev(k),
      I         gsNm(1-Olx,1-Oly,1,1,1,m2),
      U         gS,
      I         myIter, myThid)
           ELSE
 #endif
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,
+     I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,dTtracerLev(k),
      I         salt,
      U         gS,
      I         myIter, myThid)
@@ -640,6 +655,7 @@ CADJ STORE fvers(:,:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
          ENDIF
 
 #ifdef ALLOW_PTRACERS
+#ifndef ALLOW_LONGSTEP
          IF ( usePTRACERS ) THEN
            IF ( .NOT.implicitDiffusion ) THEN
              CALL PTRACERS_CALC_DIFF(
@@ -659,6 +675,7 @@ CADJ STORE kappaRTr(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
      U          fVerP,
      I          myTime,myIter,myThid)
          ENDIF
+#endif /*ALLOW_LONGSTEP */
 #endif /* ALLOW_PTRACERS */
 
 #ifdef   ALLOW_OBCS
@@ -689,6 +706,7 @@ C--     end of thermodynamic k loop (Nr:1)
             CALL DWNSLP_APPLY(
      I                  GAD_TEMPERATURE, bi, bj, kSurfC,
      I                  recip_drF, recip_hFacC, recip_rA,
+     I                  dTtracerLev,
      I                  theta,
      U                  gT,
      I                  myTime, myIter, myThid )
@@ -696,6 +714,7 @@ C--     end of thermodynamic k loop (Nr:1)
             CALL DWNSLP_APPLY(
      I                  GAD_TEMPERATURE, bi, bj, kLowC,
      I                  recip_drF, recip_hFacC, recip_rA,
+     I                  dTtracerLev,
      I                  theta,
      U                  gT,
      I                  myTime, myIter, myThid )
@@ -706,6 +725,7 @@ C--     end of thermodynamic k loop (Nr:1)
             CALL DWNSLP_APPLY(
      I                  GAD_SALINITY, bi, bj, kSurfC,
      I                  recip_drF, recip_hFacC, recip_rA,
+     I                  dTtracerLev,
      I                  salt,
      U                  gS,
      I                  myTime, myIter, myThid )
@@ -713,16 +733,19 @@ C--     end of thermodynamic k loop (Nr:1)
             CALL DWNSLP_APPLY(
      I                  GAD_SALINITY, bi, bj, kLowC,
      I                  recip_drF, recip_hFacC, recip_rA,
+     I                  dTtracerLev,
      I                  salt,
      U                  gS,
      I                  myTime, myIter, myThid )
           ENDIF
         ENDIF
 #ifdef ALLOW_PTRACERS
+#ifndef ALLOW_LONGSTEP
         IF ( usePTRACERS .AND. useDOWN_SLOPE ) THEN
           CALL PTRACERS_DWNSLP_APPLY(
      I                  bi, bj, myTime, myIter, myThid )
         ENDIF
+#endif /*ALLOW_LONGSTEP */
 #endif /* ALLOW_PTRACERS */
 #endif /* ALLOW_DOWN_SLOPE */
 
@@ -753,6 +776,7 @@ C--     Implicit vertical advection & diffusion
         IF ( tempImplVertAdv ) THEN
           CALL GAD_IMPLICIT_R(
      I         tempImplVertAdv, tempAdvScheme, GAD_TEMPERATURE,
+     I         dTtracerLev,
      I         kappaRk, wVel, theta,
      U         gT,
      I         bi, bj, myTime, myIter, myThid )
@@ -797,6 +821,7 @@ c    I                        Nr, 3, deltaTclock, bi, bj, myThid)
         IF ( saltImplVertAdv ) THEN
           CALL GAD_IMPLICIT_R(
      I         saltImplVertAdv, saltAdvScheme, GAD_SALINITY,
+     I         dTtracerLev,
      I         kappaRk, wVel, salt,
      U         gS,
      I         bi, bj, myTime, myIter, myThid )
@@ -816,12 +841,14 @@ CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
         ENDIF
 
 #ifdef ALLOW_PTRACERS
+#ifndef ALLOW_LONGSTEP
         IF     ( usePTRACERS ) THEN
 C--     Vertical advection/diffusion (implicit) for passive tracers
            CALL PTRACERS_IMPLICIT(
      U                             kappaRk,
      I                             bi, bj, myTime, myIter, myThid )
         ENDIF
+#endif /* ALLOW_LONGSTEP */
 #endif /* ALLOW_PTRACERS */
 
 #ifdef   ALLOW_OBCS
@@ -856,9 +883,11 @@ C--   end bi,bj loops.
        CALL DEBUG_STATS_RL(Nr,gsNm1,'GsNm1 (THERMODYNAMICS)',myThid)
 #endif
 #ifdef ALLOW_PTRACERS
+#ifndef ALLOW_LONGSTEP
        IF ( usePTRACERS ) THEN
          CALL PTRACERS_DEBUG(myThid)
        ENDIF
+#endif /* ALLOW_LONGSTEP */
 #endif /* ALLOW_PTRACERS */
       ENDIF
 #endif /* ALLOW_DEBUG */

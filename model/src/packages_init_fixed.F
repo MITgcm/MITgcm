@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.67 2009/01/31 22:22:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.68 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -69,6 +69,8 @@ C       |
 C       |-- CTRL_INIT
 C       |
 C       |-- FLT_INIT_FIXED
+C       |
+C       |-- LONGSTEP_INIT_FIXED
 C       |
 C       |-- PTRACERS_INIT_FIXED
 C       |
@@ -267,6 +269,10 @@ C--   Initialise ADMTLM
 #ifdef ALLOW_FLT
 C--   Initialise fixed array for Float pkg
       IF ( useFLT ) CALL FLT_INIT_FIXED( myThid )
+#endif
+
+#ifdef ALLOW_LONGSTEP
+      IF (usePTRACERS) CALL LONGSTEP_INIT_FIXED(myThid)
 #endif
 
 #ifdef ALLOW_PTRACERS

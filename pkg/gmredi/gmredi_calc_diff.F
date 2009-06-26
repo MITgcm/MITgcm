@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_diff.F,v 1.9 2008/02/12 23:01:18 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_diff.F,v 1.10 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -19,6 +19,10 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "GAD.h"
+#ifdef ALLOW_LONGSTEP
+#include "LONGSTEP.h"
+#endif
 #ifdef ALLOW_GMREDI
 #include "GMREDI.h"
 #endif
@@ -50,7 +54,15 @@ C-    do all levels :
         DO k=1,MIN(Nr,kSize)
          DO j=jMin,jMax
           DO i=iMin,iMax
+           IF (tracerIdentity .LT. GAD_TR1) THEN
             KappaRx(i,j,k) = KappaRx(i,j,k)+Kwz(i,j,k,bi,bj)
+           ELSE
+#ifdef ALLOW_LONGSTEP
+            KappaRx(i,j,k) = KappaRx(i,j,k)+LS_Kwz(i,j,k,bi,bj)
+#else
+            KappaRx(i,j,k) = KappaRx(i,j,k)+Kwz(i,j,k,bi,bj)
+#endif
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
@@ -59,7 +71,15 @@ C-    do level k=kArg only :
          k = MIN(kArg,kSize)
          DO j=jMin,jMax
           DO i=iMin,iMax
+           IF (tracerIdentity .LT. GAD_TR1) THEN
             KappaRx(i,j,k) = KappaRx(i,j,k)+Kwz(i,j,kArg,bi,bj)
+           ELSE
+#ifdef ALLOW_LONGSTEP
+            KappaRx(i,j,k) = KappaRx(i,j,k)+LS_Kwz(i,j,kArg,bi,bj)
+#else
+            KappaRx(i,j,k) = KappaRx(i,j,k)+Kwz(i,j,kArg,bi,bj)
+#endif
+           ENDIF
           ENDDO
          ENDDO
       ENDIF

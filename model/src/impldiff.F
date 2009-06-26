@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.26 2006/12/05 05:25:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.27 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,6 +31,16 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+#include "GAD.h"
+#endif
+#ifdef ALLOW_LONGSTEP
+#include "LONGSTEP_PARAMS.h"
+#endif
+#ifdef ALLOW_PTRACERS
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc_keys.h"
 #endif
@@ -74,7 +84,15 @@ cph Not good for TAF: may create irreducible control flow graph
 cph      IF (Nr.LE.1) RETURN
 cph)
 
+#ifdef ALLOW_PTRACERS
+      IF ( tracerId.GE.GAD_TR1) THEN
+        DO k=1,Nr
+         deltaTX(k) = PTRACERS_dTLev(k)
+        ENDDO
+      ELSEIF ( tracerId.GE.1 ) THEN
+#else
       IF ( tracerId.GE.1 ) THEN
+#endif
         DO k=1,Nr
          deltaTX(k) = dTtracerLev(k)
         ENDDO

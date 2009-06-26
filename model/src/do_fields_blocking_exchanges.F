@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.25 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.26 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,6 +25,9 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_LONGSTEP
+#include "LONGSTEP.h"
+#endif
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
 #endif
@@ -72,8 +75,15 @@ C-    if not useOffLine: end
       ENDIF
 
 #ifdef ALLOW_PTRACERS
+#ifdef ALLOW_LONGSTEP
+      IF ( LS_doTimeStep ) THEN
+#else
+      IF ( .TRUE. ) THEN
+#endif
       IF (usePTRACERS)
      &  CALL PTRACERS_FIELDS_BLOCKING_EXCH(myThid)
+C     endif LS_doTimeStep
+      ENDIF
 #endif /* ALLOW PTRACERS */
 
 #ifdef ALLOW_GGL90

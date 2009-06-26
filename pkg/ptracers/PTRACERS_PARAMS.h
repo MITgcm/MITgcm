@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.6 2008/08/17 02:09:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.7 2009/06/26 23:10:10 jahn Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -22,6 +22,7 @@ C     PTRACERS_EvPrRn   :: tracer concentration in Rain, Evap & RunOff
 C       notes: a) used if both NonLin_FrSurf & useRealFreshWater are set.
 C              b) use pTracer surface (local) value if = UNSET_RL (default)
 C     PTRACERS_Iter0    :: timestep number when tracers are initialized
+C     PTRACERS_dTLev    :: Timestep for ptracers ( s ), function of level k
 
       _RL PTRACERS_dumpFreq
       _RL PTRACERS_taveFreq
@@ -31,6 +32,7 @@ C     PTRACERS_Iter0    :: timestep number when tracers are initialized
       _RL PTRACERS_diffKrNr(Nr,PTRACERS_num)
       _RL PTRACERS_ref(Nr,PTRACERS_num)
       _RL PTRACERS_EvPrRn(PTRACERS_num)
+      _RL PTRACERS_dTLev(Nr)
       COMMON /PTRACERS_PARAMS_R/
      &     PTRACERS_dumpFreq,
      &     PTRACERS_taveFreq,
@@ -39,7 +41,8 @@ C     PTRACERS_Iter0    :: timestep number when tracers are initialized
      &     PTRACERS_diffK4,
      &     PTRACERS_diffKrNr,
      &     PTRACERS_ref,
-     &     PTRACERS_EvPrRn
+     &     PTRACERS_EvPrRn,
+     &     PTRACERS_dTLev
 
 C     COMMON /PTRACERS_OLD_R/ Old (real type) PTRACERS parameters
 C        (to be removed 1 day ...)

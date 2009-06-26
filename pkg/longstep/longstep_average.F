@@ -1,0 +1,221 @@
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average.F,v 1.1 2009/06/26 23:10:09 jahn Exp $
+C $Name:  $
+
+#include "LONGSTEP_OPTIONS.h"
+
+CBOP
+C     !ROUTINE: LONGSTEP_AVERAGE
+C     !INTERFACE:
+      SUBROUTINE LONGSTEP_AVERAGE( myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE LONGSTEP_AVERAGE
+C     | o Average variables needed for longstep
+C     |   - myIter is used for determining the averaging interval
+C     |     (LS_nIter timesteps, phase 0)
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "DYNVARS.h"
+#include "FFIELDS.h"
+#include "LONGSTEP_PARAMS.h"
+#include "LONGSTEP.h"
+#ifdef ALLOW_GMREDI
+#include "GMREDI.h"
+#endif
+#ifdef ALLOW_KPP
+#include "KPP.h"
+#endif
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myTime     :: Current time in simulation
+C     myIter     :: Current iteration number in simulation
+C     myThid     :: my Thread Id number
+      INTEGER myTime
+      INTEGER myIter
+      INTEGER myThid
+
+#ifdef ALLOW_LONGSTEP
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+CEOP
+
+      _BEGIN_MASTER(myThid)
+
+      LS_doTimeStep = .FALSE.
+
+      _END_MASTER(myThid)
+
+C     first iteration in a long time step? - reset averages
+      IF ( MOD(myIter, LS_niter) .EQ. 0 ) THEN
+
+       CALL LONGSTEP_RESET_3D(LS_uVelCount, LS_uVel, Nr, myThid)
+       CALL LONGSTEP_RESET_3D(LS_vVelCount, LS_vVel, Nr, myThid)
+       CALL LONGSTEP_RESET_3D(LS_wVelCount, LS_wVel, Nr, myThid)
+       CALL LONGSTEP_RESET_3D(LS_thetaCount,LS_theta,Nr, myThid)
+       CALL LONGSTEP_RESET_3D(LS_saltCount, LS_salt, Nr, myThid)
+       IF ( ivdc_kappa .NE. 0. _d 0 )
+     &  CALL LONGSTEP_RESET_3D(LS_IVDConvCountCount,
+     &                        LS_IVDConvCount, Nr, myThid)
+#ifdef SHORTWAVE_HEATING
+       CALL LONGSTEP_RESET_3D(LS_QswCount, LS_Qsw, 1, myThid)
+#endif
+#ifdef ALLOW_GMREDI
+       IF ( useGMRedi ) THEN
+        CALL LONGSTEP_RESET_3D(LS_KwxCount, LS_Kwx, Nr, myThid)
+        CALL LONGSTEP_RESET_3D(LS_KwyCount, LS_Kwy, Nr, myThid)
+        CALL LONGSTEP_RESET_3D(LS_KwzCount, LS_Kwz, Nr, myThid)
+       ENDIF
+#endif
+#ifdef ALLOW_KPP
+       IF ( useKPP ) THEN
+        CALL LONGSTEP_RESET_3D(LS_KPPdiffKzSCount,
+     &                         LS_KPPdiffKzS, Nr, myThid)
+        CALL LONGSTEP_RESET_3D(LS_KPPghatCount,
+     &                         LS_KPPghat, Nr, myThid)
+       ENDIF
+#endif
+
+      ENDIF
+
+C--   update average inside tile (no overlaps) for all bi,bj
+
+      CALL LONGSTEP_FILL_3D(LS_uVelCount, LS_uVel, uVel, Nr, myThid)
+      CALL LONGSTEP_FILL_3D(LS_vVelCount, LS_vVel, vVel, Nr, myThid)
+      CALL LONGSTEP_FILL_3D(LS_wVelCount, LS_wVel, wVel, Nr, myThid)
+      CALL LONGSTEP_FILL_3D(LS_thetaCount, LS_theta, theta, Nr, myThid)
+      CALL LONGSTEP_FILL_3D(LS_saltCount, LS_salt, salt, Nr, myThid)
+      IF ( ivdc_kappa .NE. 0. _d 0 )
+     & CALL LONGSTEP_FILL_3D(LS_IVDConvCountCount,
+     &                      LS_IVDConvCount, IVDConvCount, Nr, myThid)
+#ifdef SHORTWAVE_HEATING
+      CALL LONGSTEP_FILL_3D(LS_QswCount, LS_Qsw, Qsw, 1, myThid)
+#endif
+#ifdef ALLOW_GMREDI
+      IF ( useGMRedi ) THEN
+       CALL LONGSTEP_FILL_3D(LS_KwxCount, LS_Kwx, Kwx, Nr, myThid)
+       CALL LONGSTEP_FILL_3D(LS_KwyCount, LS_Kwy, Kwy, Nr, myThid)
+       CALL LONGSTEP_FILL_3D(LS_KwzCount, LS_Kwz, Kwz, Nr, myThid)
+      ENDIF
+#endif
+#ifdef ALLOW_KPP
+      IF ( useKPP ) THEN
+       CALL LONGSTEP_FILL_3D(LS_KPPdiffKzSCount,
+     &                       LS_KPPdiffKzS, KPPdiffKzS, Nr, myThid)
+       CALL LONGSTEP_FILL_3D(LS_KPPghatCount,
+     &                       LS_KPPghat, KPPghat, Nr, myThid)
+      ENDIF
+#endif
+
+C     time for a ptracer time step? - finish average
+      IF ( MOD(myIter, LS_niter) .EQ. LS_niter-1 ) THEN
+
+       _BEGIN_MASTER(myThid)
+
+C      we decide whether to do a timestep here and everybody else just
+C      checks this variable.  This avoids complications with
+C      staggerTimeStep
+       LS_doTimeStep = .TRUE.
+
+       _END_MASTER(myThid)
+
+       CALL LONGSTEP_AVERAGE_3D(LS_uVelCount, LS_uVel, Nr, myThid)
+       CALL LONGSTEP_AVERAGE_3D(LS_vVelCount, LS_vVel, Nr, myThid)
+       CALL LONGSTEP_AVERAGE_3D(LS_wVelCount, LS_wVel, Nr, myThid)
+       CALL LONGSTEP_AVERAGE_3D(LS_thetaCount,LS_theta,Nr, myThid)
+       CALL LONGSTEP_AVERAGE_3D(LS_saltCount, LS_salt, Nr, myThid)
+       IF ( ivdc_kappa .NE. 0. _d 0 )
+     &  CALL LONGSTEP_AVERAGE_3D(LS_IVDConvCountCount,
+     &                        LS_IVDConvCount, Nr, myThid)
+#ifdef SHORTWAVE_HEATING
+       CALL LONGSTEP_AVERAGE_3D(LS_QswCount, LS_Qsw, 1, myThid)
+#endif
+#ifdef ALLOW_GMREDI
+       IF ( useGMRedi ) THEN
+        CALL LONGSTEP_AVERAGE_3D(LS_KwxCount, LS_Kwx, Nr, myThid)
+        CALL LONGSTEP_AVERAGE_3D(LS_KwyCount, LS_Kwy, Nr, myThid)
+        CALL LONGSTEP_AVERAGE_3D(LS_KwzCount, LS_Kwz, Nr, myThid)
+       ENDIF
+#endif
+#ifdef ALLOW_KPP
+       IF ( useKPP ) THEN
+        CALL LONGSTEP_AVERAGE_3D(LS_KPPdiffKzSCount,
+     &                           LS_KPPdiffKzS, Nr, myThid)
+        CALL LONGSTEP_AVERAGE_3D(LS_KPPghatCount,
+     &                           LS_KPPghat, Nr, myThid)
+       ENDIF
+#endif
+
+#if 0
+C     and update overlaps
+       CALL EXCH_UV_3D_RL( LS_uVel, LS_vVel, .TRUE., Nr, myThid )
+       CALL EXCH_3D_RL( LS_wVel , Nr, myThid )
+       CALL EXCH_3D_RL( LS_theta, Nr, myThid )
+       CALL EXCH_3D_RL( LS_salt , Nr, myThid )
+       IF ( ivdc_kappa .NE. 0. _d 0 )
+     &  CALL EXCH_3D_RL( LS_IVDConvCount, myThid )
+#ifdef SHORTWAVE_HEATING
+       CALL EXCH_XY_RL( LS_Qsw, myThid )
+#endif
+#ifdef ALLOW_GMREDI
+       IF ( useGMRedi ) THEN
+        CALL EXCH_UV_AGRID_3D_RL( LS_Kwx, LS_Kwy, .FALSE., Nr, myThid )
+        CALL EXCH_3D_RL( LS_Kwz  , Nr, myThid )
+       ENDIF
+#endif
+#ifdef ALLOW_KPP
+       IF ( useKPP ) THEN
+        CALL EXCH_3D_RL( LS_KPPdiffKzS, Nr, myThid )
+        CALL EXCH_3D_RL( LS_KPPghat, Nr, myThid )
+       ENDIF
+#endif
+#endif /* 0 */
+
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(LS_uVel, 'LSuVel  ',0,Nr,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(LS_vVel, 'LSvVel  ',0,Nr,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(LS_wVel, 'LSwVel  ',0,Nr,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(LS_theta,'LStheta ',0,Nr,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(LS_salt, 'LSsalt  ',0,Nr,0,1,1,myThid)
+        IF ( ivdc_kappa .NE. 0. _d 0 .AND. .NOT. useKPP )
+     &   CALL DIAGNOSTICS_FILL(LS_IVDConvCount,
+     &                                 'LScnvAdj',0,Nr,0,1,1,myThid)
+#ifdef SHORTWAVE_HEATING
+        CALL DIAGNOSTICS_FILL(LS_Qsw , 'LSqsw   ',0,1 ,0,1,1,myThid)
+#endif
+#ifdef ALLOW_GMREDI
+        IF ( useGMRedi ) THEN
+         CALL DIAGNOSTICS_FILL(LS_Kwx , 'LSkwx   ',0,Nr,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(LS_Kwy , 'LSkwy   ',0,Nr,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(LS_Kwz , 'LSkwz   ',0,Nr,0,1,1,myThid)
+        ENDIF
+#endif
+#ifdef ALLOW_KPP
+        IF ( useKPP ) THEN
+         CALL DIAGNOSTICS_FILL(LS_KPPdiffKzs,
+     &                                 'LSKPPdfS',0,Nr,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(LS_KPPghat,
+     &                                 'LSKPPght',0,Nr,0,1,1,myThid)
+        ENDIF
+#endif
+C       if useDiagnostics: end
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+C      if MOD(myIter, LS_niter): end
+      ENDIF
+
+#endif /* ALLOW_LONGSTEP */
+
+      RETURN
+      END
+

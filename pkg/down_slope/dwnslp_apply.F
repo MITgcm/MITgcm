@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_apply.F,v 1.1 2008/08/17 02:01:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_apply.F,v 1.2 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -9,6 +9,7 @@ C     !INTERFACE:
       SUBROUTINE DWNSLP_APPLY(
      I            trIdentity, bi, bj, kBottom,
      I            recip_drF, recip_hFac_arg, recip_rA_arg,
+     I            deltaTLev,
      I            tracer,
      U            trStar,
      I            myTime, myIter, myThid )
@@ -49,6 +50,7 @@ C     myThid     :: my Thread Id. number
       INTEGER trIdentity
       INTEGER bi, bj
       INTEGER kBottom( xySize, nSx, nSy )
+      _RL deltaTLev(Nr)
       _RS recip_drF(Nr)
       _RS recip_rA_arg( xySize, nSx, nSy )
       _RS recip_hFac_arg( xySize, Nr, nSx, nSy )
@@ -147,7 +149,7 @@ c- downsloping flow (in) & upward return flow :
      &       *recip_drF(k)*recip_hFac_arg(ijd,k,bi,bj)
      &       *recip_rA_arg(ijd,bi,bj)
           trStar(ijd,k,bi,bj) = trStar(ijd,k,bi,bj)
-     &                        + dTtracerLev(k)*gTrLoc(k)
+     &                        + deltaTLev(k)*gTrLoc(k)
           tmpFld = tracer(ijd,k,bi,bj)
          ENDDO
 c- downsloping flow (out) & return flow to the shelf
@@ -157,7 +159,7 @@ c- downsloping flow (out) & return flow to the shelf
      &       *recip_drF(k)*recip_hFac_arg(ijs,k,bi,bj)
      &       *recip_rA_arg(ijs,bi,bj)
           trStar(ijs,k,bi,bj) = trStar(ijs,k,bi,bj)
-     &                        + dTtracerLev(k)*gTrLoc(0)
+     &                        + deltaTLev(k)*gTrLoc(0)
 
 #ifdef ALLOW_DIAGNOSTICS
          IF ( doDiagDwnSlpTend ) THEN
@@ -173,12 +175,12 @@ c- downsloping flow (out) & return flow to the shelf
           WRITE(DWNSLP_ioUnit,'(2I4,I6,2I8,I4,1P4E14.6)')
      &      bi,bj,n,ijd,ijs,k,
      &      tracer(ijd,k,bi,bj),
-     &      dTtracerLev(k)*DWNSLP_Transp(n,bi,bj)
+     &      deltaTLev(k)*DWNSLP_Transp(n,bi,bj)
      &       *recip_drF(k)*recip_hFac_arg(ijd,k,bi,bj)
      &       *recip_rA_arg(ijd,bi,bj)*
      &        (tracer(ijs,kshelf,bi,bj)-tracer(ijd,k,bi,bj)),
      &      tracer(ijs,kshelf,bi,bj),
-     &      dTtracerLev(k)*DWNSLP_Transp(n,bi,bj)
+     &      deltaTLev(k)*DWNSLP_Transp(n,bi,bj)
      &       *recip_drF(kshelf)*recip_hFac_arg(ijs,kshelf,bi,bj)
      &       *recip_rA_arg(ijs,bi,bj)*
      &        (tmpFld-tracer(ijs,kshelf,bi,bj))

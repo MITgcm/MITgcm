@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.4 2008/04/05 21:24:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.5 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
-c #include "PACKAGES_CONFIG.h"
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -136,6 +136,12 @@ c     useDynP_inEos_Zc = .FALSE.
      &              .AND. ( eosType .EQ. 'JMD95P' .OR.
      &                      eosType .EQ. 'UNESCO' .OR.
      &                      eosType .EQ. 'MDJWF'       )  )
+
+#ifdef ALLOW_LONGSTEP
+      IF ( usePTRACERS ) THEN
+        CALL LONGSTEP_CHECK_ITERS(myThid)
+      ENDIF
+#endif /* ALLOW_LONGSTEP */
 
 C--  After this point, main model parameters are not supposed to be modified.
        WRITE(msgBuf,'(A,A)') 'SET_PARMS: done'

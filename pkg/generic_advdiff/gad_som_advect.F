@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.6 2009/05/12 19:56:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.7 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -10,7 +10,7 @@ C !ROUTINE: GAD_SOM_ADVECT
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_SOM_ADVECT(
      I     implicitAdvection, advectionScheme, vertAdvecScheme,
-     I     tracerIdentity,
+     I     tracerIdentity, deltaTLev,
      I     uVel, vVel, wVel, tracer,
      U     smTr,
      O     gTracer,
@@ -51,6 +51,7 @@ C  myThid            :: thread number
       LOGICAL implicitAdvection
       INTEGER advectionScheme, vertAdvecScheme
       INTEGER tracerIdentity
+      _RL deltaTLev(Nr)
       _RL uVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL vVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -327,7 +328,7 @@ C-     Solve advection in X and update moments
      I                     bi,bj,k, limiter,
      I                     overlapOnly, interiorOnly,
      I                     N_edge, S_edge, E_edge, W_edge,
-     I                     dTtracerLev(k), uTrans,
+     I                     deltaTLev(k), uTrans,
      U                     smVol(1-OLx,1-OLy,k),
      U                     smTr0(1-OLx,1-OLy,k),
      U                     smTr(1-OLx,1-OLy,k,bi,bj,1),
@@ -391,7 +392,7 @@ C-     Solve advection in Y and update moments
      I                     bi,bj,k, limiter,
      I                     overlapOnly, interiorOnly,
      I                     N_edge, S_edge, E_edge, W_edge,
-     I                     dTtracerLev(k), vTrans,
+     I                     deltaTLev(k), vTrans,
      U                     smVol(1-OLx,1-OLy,k),
      U                     smTr0(1-OLx,1-OLy,k),
      U                     smTr(1-OLx,1-OLy,k,bi,bj,1),
@@ -439,14 +440,14 @@ C-    explicit advection is done ; store tendency in gTracer:
 C--  without rescaling of tendencies:
 c         localTr = smTr0(i,j,k)/smVol(i,j,k)
 c         gTracer(i,j,k,bi,bj) = ( localTr - tracer(i,j,k,bi,bj) )
-c    &                         / dTtracerLev(k)
+c    &                         / deltaTLev(k)
 C--  consistent with rescaling of tendencies (in FREESURF_RESCALE_G):
           gTracer(i,j,k,bi,bj) =
      &          ( smTr0(i,j,k) - tracer(i,j,k,bi,bj)*smVol(i,j,k) )
      &            *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
      &            *recip_rhoFacC(k)
-     &            /dTtracerLev(k)
+     &            /deltaTLev(k)
          ENDDO
         ENDDO
        ENDIF
@@ -591,7 +592,7 @@ C-    Compute vertical advective flux in the interior:
      &     .OR. vertAdvecScheme.EQ.ENUM_SOM_LIMITER ) THEN
            CALL GAD_SOM_ADV_R(
      I                     bi,bj,k, kUp, kDown,
-     I                     dTtracerLev(k), rTrans, maskUp,
+     I                     deltaTLev(k), rTrans, maskUp,
      U                     smVol,
      U                     smTr0,
      U                     smTr(1-OLx,1-OLy,1,bi,bj,1),
@@ -618,14 +619,14 @@ C--   Compute new tracer value and store tracer tendency
 C--  without rescaling of tendencies:
 c         localTr = smTr0(i,j,k)/smVol(i,j,k)
 c         gTracer(i,j,k,bi,bj) = ( localTr - tracer(i,j,k,bi,bj) )
-c    &                         / dTtracerLev(k)
+c    &                         / deltaTLev(k)
 C--  consistent with rescaling of tendencies (in FREESURF_RESCALE_G):
           gTracer(i,j,k,bi,bj) =
      &          ( smTr0(i,j,k) - tracer(i,j,k,bi,bj)*smVol(i,j,k) )
      &            *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
      &            *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
      &            *recip_rhoFacC(k)
-     &            /dTtracerLev(k)
+     &            /deltaTLev(k)
          ENDDO
         ENDDO
 

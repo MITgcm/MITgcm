@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.50 2009/02/13 21:56:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.51 2009/06/26 23:10:09 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -152,7 +152,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           xA, yA, maskUp, uFld, vFld, wFld,
      I           uTrans, vTrans, rTrans, rTransKp1,
      I           diffKhS, diffK4S, KappaRS,
-     I           gsNm(1-Olx,1-Oly,1,1,1,m2), salt,
+     I           gsNm(1-Olx,1-Oly,1,1,1,m2), salt, dTtracerLev,
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv, AdamsBashforth_S,
      I           useGMRedi, useKPP,
@@ -163,7 +163,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA, yA, maskUp, uFld, vFld, wFld,
      I           uTrans, vTrans, rTrans, rTransKp1,
-     I           diffKhS, diffK4S, KappaRS, gsNm1, salt,
+     I           diffKhS, diffK4S, KappaRS, gsNm1, salt, dTtracerLev,
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv, AdamsBashforth_S,
      I           useGMRedi, useKPP,

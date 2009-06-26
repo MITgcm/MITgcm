@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_dwnslp_apply.F,v 1.1 2008/08/17 02:09:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_dwnslp_apply.F,v 1.2 2009/06/26 23:10:10 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -55,6 +55,7 @@ C Loop over tracers
             CALL DWNSLP_APPLY(
      I                  GAD_TR1+iTr-1, bi, bj, kSurfC,
      I                  recip_drF, recip_hFacC, recip_rA,
+     I                  PTRACERS_dTLev,
      I                  pTracer(1-Olx,1-Oly,1,1,1,iTr),
      O                  gPtr(1-Olx,1-Oly,1,1,1,iTr),
      I                  myTime, myIter, myThid )
@@ -62,6 +63,7 @@ C Loop over tracers
             CALL DWNSLP_APPLY(
      I                  GAD_TR1+iTr-1, bi, bj, kLowC,
      I                  recip_drF, recip_hFacC, recip_rA,
+     I                  PTRACERS_dTLev,
      I                  pTracer(1-Olx,1-Oly,1,1,1,iTr),
      O                  gPtr(1-Olx,1-Oly,1,1,1,iTr),
      I                  myTime, myIter, myThid )
