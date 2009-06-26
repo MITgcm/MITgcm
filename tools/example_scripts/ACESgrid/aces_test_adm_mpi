@@ -5,15 +5,17 @@
 #PBS -l nodes=2:ppn=2
 #PBS -e /home/jmc/test_ACES/output/tst_adm.stderr
 #PBS -o /home/jmc/test_ACES/output/tst_adm.stdout
- 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_adm_mpi,v 1.4 2009/06/16 21:32:22 jmc Exp $
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/aces_test_adm_mpi,v 1.5 2009/06/26 16:13:17 jmc Exp $
 # $Name:  $
+
+# ACES-grid PBS-batch script for Adjoint MPI test using ifort (default=v8) & mpich
 
 if test -f /etc/profile.d/modules.sh ; then
     . /etc/profile.d/modules.sh
 fi
 # Note: added "ulimit -s unlimited" in file "~/.bashrc"
-# to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI 
+# to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
 
 umask 0022
 #- to get case insensitive "ls" (and order of tested experiments)
@@ -24,9 +26,12 @@ HERE='/home/jmc/test_ACES/output'
 #cd $HERE
 
 sfx='adm'
-module add mpich/intel
-OPTFILE="../tools/build_options/linux_ia32_ifort+mpi_aces"
-options='-adm -mpi -match 10'
+ module add mpich/intel
+ module add netcdf/3.6.1/icc
+ export MPI_INC_DIR='/usr/local/pkg/mpich/mpich-intel/include/'
+ OPTFILE="../tools/build_options/linux_ia32_ifort+mpi_aces"
+#OPTFILE="$HERE/linux_ia32_ifort+mpi_aces"
+ options='-adm -mpi -match 10'
 #- need this to get "staf":
 export PATH="$PATH:$HOME/bin"
 
