@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.4 2009/06/24 08:01:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.5 2009/06/26 17:42:36 jahn Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -140,13 +140,13 @@ c       CALL READ_REC_3D_RL( fn, fp, 1, YNEG     , nj, nIter0, myThid )
         CALL READ_REC_3D_RL( fn, fp, 1, HSNOW    , nj, nIter0, myThid )
         nj = nj + 1
         CALL READ_REC_3D_RL( fn, fp, 1, UICE    , nj, nIter0, myThid )
-        nj = nj + 1
+        nj = nj + 3
         CALL READ_REC_3D_RL( fn, fp, 1, VICE    , nj, nIter0, myThid )
-        nj = nj + 1
+        nj = nj + 3
         CALL READ_REC_3D_RL( fn, fp, 1, HEFF    , nj, nIter0, myThid )
-        nj = nj + 1
+        nj = nj + 3
         CALL READ_REC_3D_RL( fn, fp, 1, AREA    , nj, nIter0, myThid )
-        nj = nj + 1
+        nj = nj + 3
 #if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
         IF ( SEAICEuseEVP .AND. SEAICEuseEVPpickup ) THEN
          CALL READ_REC_3D_RL(fn,fp,1,seaice_sigma1,nj, nIter0, myThid )
