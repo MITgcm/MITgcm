@@ -1,0 +1,18 @@
+# Dye set-up: tracer is initialized after 10 years
+# of spin-up of the dynamical fields.
+# dye.bin has a dye concentration of 1 in a single grid cell
+# near the left boundary (i=2, j=30, k=1), zero otherwise;
+# generated with matlab using gendata.m
+#
+ &PTRACERS_PARM01
+ PTRACERS_numInUse=1,
+ PTRACERS_Iter0=0,
+#
+#PTRACERS_advScheme(1)=2,
+#PTRACERS_diffKh(1)=1.0E3,
+#PTRACERS_diffK4(1)=0.,
+#PTRACERS_diffKr(1)=1.E-5,
+ PTRACERS_useKPP(1)=.TRUE.,
+ PTRACERS_useGMREDI(1)=.TRUE.,
+ PTRACERS_initialFile(1)='kf_climsalt',
+ &

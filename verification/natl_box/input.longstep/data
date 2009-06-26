@@ -1,0 +1,139 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+#
+#   tRef            - Reference vertical potential temperature          (deg C)
+#   sRef            - Reference vertical salinity                         (PSU)
+#   viscAh          - Horizontal eddy viscosity coefficient             (m^2/s)
+#   viscAz          - Vertical eddy viscosity coefficient               (m^2/s)
+#   diffKhT         - Horizontal temperature diffusivity                (m^2/s)
+#   diffKzT         - Vertical temperature diffusivity                  (m^2/s)
+#   diffKhS         - Horizontal salt diffusivity                       (m^2/s)
+#   diffKzS         - Vertical salt diffusivity                         (m^2/s)
+#   tAlpha          - Linear EOS thermal expansion coefficient           (1/oC)
+#   sBeta           - Linear EOS haline contraction coefficient         (1/ppt)
+#   gravity         - Acceleration due to gravity                       (m/s^2)
+#   rigidLid        - Set to true to use rigid lid
+#   implicitFreeSurface - Set to true to use implicit free surface
+#   eosType         - Flag for linear or polynomial equation of state
+#   GMkbackground   - background value of GM/Redi coefficient
+#   momAdvection    - On/Off flag for momentum self transport
+#   momViscosity    - On/Off flag for momentum mixing
+#
+ &PARM01
+ viscAz             = 1.E-3,
+ diffKzT            = 1.E-5,
+ diffKzS            = 1.E-5,
+ viscAh             = 5.0E4,
+ viscA4             = 5.e12,
+#diffKhT            = 1.0E3,
+#diffKhS            = 1.0E3,
+ rotationPeriod     = 86400.,
+ tAlpha             = 2.E-4,
+ sBeta              = 7.4E-4,
+ gravity            = 9.81,
+ rigidLid           = .FALSE.,
+ implicitFreeSurface= .TRUE.,
+ implicitDiffusion  = .TRUE.,
+ useCDscheme        = .TRUE.,
+ useNHMTerms        = .TRUE.,
+ eosType            = 'POLY3',
+ momAdvection       = .TRUE.,
+ momViscosity       = .TRUE.,
+ implicitDiffusion  = .TRUE.,
+ implicitViscosity  = .TRUE.,
+ no_slip_bottom     = .TRUE.,
+ no_slip_sides      = .FALSE.,
+ readBinaryPrec     = 32,
+ writeBinaryPrec    = 64,
+#- not safe to use globalFiles in multi-processors runs
+ globalFiles        = .TRUE.
+ &
+
+# Elliptic solver parameters
+#
+#   cg2dMaxIters       - Maximum number of 2d solver iterations
+#   cg2dTargetResidual - Solver target residual
+#
+ &PARM02
+ cg2dMaxIters       = 1000,
+ cg2dTargetResidual = 1.E-13,
+ &
+
+# Time stepping parameters
+#
+#   startTime         - Integration starting time                (s)
+#   endTime           - Integration ending time                  (s)
+#   tauCD             - CD scheme coupling timescale             (s)
+#   deltaTMom         - Timestep for momemtum equations          (s)
+#   deltaTtracer      - Tracer timestep                          (s)
+#   deltaTClock       - Timestep used as model "clock"           (s)
+#   abEps             - Adams-Bashforth stabilising factor
+#   pChkPtFreq        - Frequency of permanent check pointing    (s)
+#   chkPtFreq         - Frequency of rolling check pointing      (s)
+#   dumpFreq          - Frequency at which model state is stored (s)
+#   tauThetaClimRelax - Relaxation to climatology time scale     (s)
+#   tauSaltClimRelax  - Relaxation to climatology time scale     (s)
+#
+ &PARM03
+ baseTime   = 21600.,
+ startTime  = 21600.,
+ endTime    = 93600.,
+ deltaTmom  = 3600.0,
+ TauCD      = 172800.,
+ cAdjFreq   = 0.,
+ abEps      = 0.1,
+ pChkptFreq = 0.0,
+ chkptFreq  = 0.0,
+ dumpFreq   = 86400.,
+ tauSaltClimRelax = 2592000.0,
+ tauThetaClimRelax = 2592000.0,
+ periodicExternalForcing = .TRUE.,
+ externForcingPeriod = 43200.0,
+ externForcingCycle = 2764800.0,
+ monitorFreq=1.,
+ &
+
+# Gridding parameters
+#
+#   usingSphericalPolarGrid - On/Off flag for spherical polar coordinates
+#   delX                    - Zonal grid spacing         (degrees)
+#   delY                    - Meridional grid spacing    (degrees)
+#   delZ                    - Vertical grid spacing      (m)
+#   ygOrigin                - Southern boundary latitude (degrees)
+#
+ &PARM04
+ usingSphericalPolarGrid = .TRUE.,
+ delX   = 20*2.,
+ delY   = 16*2.,
+ delZ= 10., 10., 15., 20., 20., 25., 35., 50., 75.,
+       100., 150., 200., 275., 350., 415., 450.,
+       500., 500., 500., 500., 500., 500., 500.,
+ ygOrigin = 10.,
+ xgOrigin= -42.,
+ &
+
+# Input datasets
+#
+#   bathyFile       - File containing bathymetry
+#   hydrogThetaFile - File containing initial potential temperature data
+#   hydrogSaltFile  - File containing initial salinity data
+#   zonalWindFile   - File containing zonal wind data
+#   meridWindFile   - File containing meridional wind data
+#   thetaClimFile   - File containing theta climatology used for relaxation
+#   saltClimFile    - File containing salt climatology used for relaxation
+#
+ &PARM05
+ bathyFile       = 'kf_topog',
+ hydrogThetaFile = 'kf_climtheta',
+ hydrogSaltFile  = 'kf_climsalt',
+ zonalWindFile   = 'kf_tx',
+ meridWindFile   = 'kf_ty',
+ thetaClimFile   = 'kf_sst',
+ saltClimFile    = 'kf_sss',
+ surfQFile       = 'kf_qnet',
+ EmPmRFile       = 'kf_empmr',
+ surfQswFile     = 'kf_sw',
+ &

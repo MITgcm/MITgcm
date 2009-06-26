@@ -1,0 +1,8 @@
+# Packages
+ &PACKAGES
+  useGMRedi=.TRUE.,
+  useKPP=.TRUE.,
+  useECCO=.FALSE.,
+  usediagnostics=.TRUE.,
+  usePTRACERS=.TRUE.,
+ &
