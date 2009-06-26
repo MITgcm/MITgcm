@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.10 2009/06/24 23:41:42 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.11 2009/06/26 16:51:23 jmc Exp $
 
 #  Ed Hill
 
@@ -63,6 +63,8 @@ fi
 
 #------------------------------------------------------------------------
 
+firstTst=`echo $tst_list | awk '{print $1}'`
+last_Tst=`echo $tst_list | awk '{print $NF}'`
 for tt in $tst_list
 do
 
@@ -98,6 +100,17 @@ do
          export GOMP_STACKSIZE=400m ;;
    *) OPTFILE= ;;
  esac
+
+ if test $sepDir = 0 -a $checkOut = '1' -a  $tt = $firstTst ; then
+#-- cleaning:
+  echo "======================"
+  echo "Cleaning test directories:"
+    cmdCLN="./testreport -clean"
+    echo " clean dir running: $cmdCLN"
+    $cmdCLN > /dev/null 2>&1
+  echo "======================"
+  echo
+ fi
 
  if test $typ = 'g77'
  then
@@ -283,9 +296,11 @@ do
     echo " clean tst_2+2 running: $cmdCLN"
     $cmdCLN >> $tdir/output_2+2 2>&1
   fi
+  if test $tt != $last_Tst ; then
     cmdCLN="./testreport -clean"
     echo " clean dir running: $cmdCLN"
     $cmdCLN > /dev/null 2>&1
+  fi
   echo "======================"
   echo
  fi
