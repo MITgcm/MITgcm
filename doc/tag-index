@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1132 2009/06/25 15:55:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1133 2009/06/26 16:19:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o build_options: ifort+mpi_aces optfile (following Constantinos advise):
+  allow different versions of ifort (8 or 9) and different versions
+   of mpi (mpich or mpich2) to be used with the same optfile.
+  requires to load a netcdf module and set MPI_INC_DIR (see comments inside
+   optfile). Change testing scripts (example_scripts/ACESgrid) accordingly.
 
 checkpoint61r
 o pkg/seaice: 
