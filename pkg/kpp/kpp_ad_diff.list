@@ -1,6 +1,7 @@
 kpp_calc.f
 kpp_calc_diff_t.f
 kpp_calc_diff_s.f
+kpp_calc_diff_ptr.f
 kpp_calc_visc.f
 kpp_output.f
 kpp_do_exch.f
