@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_fill_3d.F,v 1.1 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_fill_3d.F,v 1.2 2009/06/27 02:40:41 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -32,10 +32,10 @@ C      lsFld :: average to update
 C        fld :: field to accumulate
 C       myNr :: number of levels to update
 C     myThid :: my Thread Id number
+      INTEGER myNr
       _RL lsFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RL Fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       INTEGER lsCnt
-      INTEGER myNr
       INTEGER myThid
 
 #ifdef ALLOW_LONGSTEP
