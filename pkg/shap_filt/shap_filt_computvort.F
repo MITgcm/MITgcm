@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_computvort.F,v 1.3 2009/05/12 19:56:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_computvort.F,v 1.4 2009/06/28 01:08:26 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -81,7 +81,7 @@ C-    replace Physical calc Div & Vort by computational one :
 C-    Special stuff for Cubed Sphere
       IF (useCubedSphereExchange) THEN
 #ifdef ALLOW_EXCH2
-         myTile = W2_myTileList(bi)
+         myTile = W2_myTileList(bi,bj)
          myFace = exch2_myFace(myTile)
          southWestCorner = exch2_isWedge(myTile).EQ.1
      &               .AND. exch2_isSedge(myTile).EQ.1

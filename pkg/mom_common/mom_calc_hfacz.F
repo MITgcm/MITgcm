@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.5 2009/05/12 19:56:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.6 2009/06/28 01:08:25 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -241,7 +241,7 @@ C     Special stuff for Cubed Sphere
       IF ( useCubedSphereExchange .AND. hZoption.GE.1 ) THEN
 
 #ifdef ALLOW_EXCH2
-        myTile = W2_myTileList(bi)
+        myTile = W2_myTileList(bi,bj)
         myFace = exch2_myFace(myTile)
         southWestCorner = exch2_isWedge(myTile).EQ.1
      &               .AND. exch2_isSedge(myTile).EQ.1

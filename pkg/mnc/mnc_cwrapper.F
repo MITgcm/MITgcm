@@ -1,24 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.33 2009/05/12 19:56:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.34 2009/06/28 01:08:25 jmc Exp $
 C $Name:  $
-      
+
 #include "MNC_OPTIONS.h"
-      
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
 C     !ROUTINE: MNC_CW_ADD_GNAME
 
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_ADD_GNAME( 
-     I     name, 
-     I     ndim, 
-     I     dlens, 
-     I     dnames, 
-     I     inds_beg, inds_end, 
+      SUBROUTINE MNC_CW_ADD_GNAME(
+     I     name,
+     I     ndim,
+     I     dlens,
+     I     dnames,
+     I     inds_beg, inds_end,
      I     myThid )
 
 C     !DESCRIPTION:
 C     Add a grid name to the MNC convenience wrapper layer.
-      
+
 C     !USES:
       implicit none
 #include "MNC_COMMON.h"
@@ -44,12 +44,12 @@ C     Functions
 C     Check that this name is not already defined
       CALL MNC_GET_IND(MNC_MAX_ID, name, mnc_cw_gname, indg, myThid)
       IF (indg .GT. 0) THEN
-        write(msgbuf,'(3a)') 'MNC_CW_ADD_GNAME ERROR: ''', name, 
+        write(msgbuf,'(3a)') 'MNC_CW_ADD_GNAME ERROR: ''', name,
      &       ''' is already defined'
         CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: S/R MNC_CW_ADD_GNAME'
       ENDIF
-      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_cw_gname, 
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_cw_gname,
      &     'mnc_cw_gname', indg, myThid)
 
       mnc_cw_gname(indg)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
@@ -74,13 +74,13 @@ CBOP 0
 C     !ROUTINE: MNC_CW_DEL_GNAME
 
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_DEL_GNAME( 
-     I     name, 
+      SUBROUTINE MNC_CW_DEL_GNAME(
+     I     name,
      I     myThid )
 
 C     !DESCRIPTION:
 C     Delete a grid name from the MNC convenience wrapper layer.
-      
+
 C     !USES:
       implicit none
 #include "MNC_COMMON.h"
@@ -122,7 +122,7 @@ C     !INTERFACE:
 C     !DESCRIPTION:
 C     Write a condensed view of the current state of the MNC look-up
 C     tables for the convenience wrapper section.
-      
+
 C     !USES:
       implicit none
 #include "MNC_COMMON.h"
@@ -141,11 +141,11 @@ C     !LOCAL VARIABLES:
       character s1*(NBLNK), blnk*(NBLNK)
 
       _BEGIN_MASTER(myThid)
-      
+
       DO i = 1,NBLNK
         blnk(i:i) = ' '
       ENDDO
-      
+
       s1(1:NBLNK) = blnk(1:NBLNK)
       write(s1,'(a5,a)') 'MNC: ',
      &     'The currently defined Grid Types are:'
@@ -153,24 +153,24 @@ C     !LOCAL VARIABLES:
      &     s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
       ntot = 0
       DO j = 1,MNC_MAX_ID
-        IF (mnc_cw_gname(j)(1:MNC_MAX_CHAR) 
+        IF (mnc_cw_gname(j)(1:MNC_MAX_CHAR)
      &       .NE. mnc_blank_name(1:MNC_MAX_CHAR)) THEN
-          
+
           ntot = ntot + 1
           s1(1:NBLNK) = blnk(1:NBLNK)
           write(s1,'(a5,2i5,a3,a20,i3,a3,5i4,a4,5i4,a4,5i4,6a8)')
      &         'MNC: ',
-     &         j, ntot, ' : ', mnc_cw_gname(j)(1:20), mnc_cw_ndim(j), 
-     &         ' : ', (mnc_cw_dims(i,j), i=1,5), 
+     &         j, ntot, ' : ', mnc_cw_gname(j)(1:20), mnc_cw_ndim(j),
+     &         ' : ', (mnc_cw_dims(i,j), i=1,5),
      &         '  | ', (mnc_cw_is(i,j), i=1,5),
      &         '  | ', (mnc_cw_ie(i,j), i=1,5),
      &         '  | ', (mnc_cw_dn(i,j)(1:7), i=1,5)
           CALL PRINT_MESSAGE(
      &         s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
-          
+
         ENDIF
       ENDDO
-      
+
       s1(1:NBLNK) = blnk(1:NBLNK)
       write(s1,'(a5,a)') 'MNC: ',
      &     'The currently defined Variable Types are:'
@@ -178,21 +178,21 @@ C     !LOCAL VARIABLES:
      &     s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
       ntot = 0
       DO j = 1,MNC_MAX_ID
-        IF (mnc_cw_vname(j)(1:MNC_MAX_CHAR) 
+        IF (mnc_cw_vname(j)(1:MNC_MAX_CHAR)
      &       .NE. mnc_blank_name(1:MNC_MAX_CHAR)) THEN
-          
+
           ntot = ntot + 1
           s1(1:NBLNK) = blnk(1:NBLNK)
           write(s1,'(a5,2i5,a3,a25,a3,i4)') 'MNC: ',
-     &         j, ntot, ' | ', 
+     &         j, ntot, ' | ',
      &         mnc_cw_vname(j)(1:20), ' | ', mnc_cw_vgind(j)
           CALL PRINT_MESSAGE(
      &         s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
-          
+
           DO i = 1,mnc_cw_vnat(1,j)
             s1(1:NBLNK) = blnk(1:NBLNK)
-            write(s1,'(a5,a14,i4,a3,a25,a3,a55)') 
-     &           'MNC: ','      text_at:',i, 
+            write(s1,'(a5,a14,i4,a3,a25,a3,a55)')
+     &           'MNC: ','      text_at:',i,
      &           ' : ', mnc_cw_vtnm(i,j)(1:25), ' : ',
      &           mnc_cw_vtat(i,j)(1:MNC_MAX_CHAR)
             CALL PRINT_MESSAGE(
@@ -200,8 +200,8 @@ C     !LOCAL VARIABLES:
           ENDDO
           DO i = 1,mnc_cw_vnat(2,j)
             s1(1:NBLNK) = blnk(1:NBLNK)
-            write(s1,'(a5,a14,i4,a3,a25,a3,i20)') 
-     &           'MNC: ','      int__at:',i, 
+            write(s1,'(a5,a14,i4,a3,a25,a3,i20)')
+     &           'MNC: ','      int__at:',i,
      &           ' : ', mnc_cw_vinm(i,j)(1:25), ' : ',
      &           mnc_cw_viat(i,j)
             CALL PRINT_MESSAGE(
@@ -209,14 +209,14 @@ C     !LOCAL VARIABLES:
           ENDDO
           DO i = 1,mnc_cw_vnat(3,j)
             s1(1:NBLNK) = blnk(1:NBLNK)
-            write(s1,'(a5,a14,i4,a3,a25,a3,f25.10)') 
-     &           'MNC: ','      dbl__at:',i, 
+            write(s1,'(a5,a14,i4,a3,a25,a3,f25.10)')
+     &           'MNC: ','      dbl__at:',i,
      &           ' : ', mnc_cw_vdnm(i,j)(1:25), ' : ',
      &           mnc_cw_vdat(i,j)
             CALL PRINT_MESSAGE(
      &           s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
         ENDDO
-        
+
         ENDIF
       ENDDO
       IF (ntot .EQ. 0) THEN
@@ -225,7 +225,7 @@ C     !LOCAL VARIABLES:
         CALL PRINT_MESSAGE(
      &       s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
       ENDIF
-      
+
       _END_MASTER(myThid)
 
       RETURN
@@ -236,16 +236,16 @@ CBOP 0
 C     !ROUTINE: MNC_CW_APPEND_VNAME
 
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_APPEND_VNAME( 
-     I     vname, 
-     I     gname, 
-     I     bi_dim, bj_dim, 
+      SUBROUTINE MNC_CW_APPEND_VNAME(
+     I     vname,
+     I     gname,
+     I     bi_dim, bj_dim,
      I     myThid )
 
 C     !DESCRIPTION:
 C     If it is not yet defined within the MNC CW layer, append a
 C     variable type.  Calls MNC\_CW\_ADD\_VNAME().
-  
+
 C     !USES:
       implicit none
 #include "MNC_COMMON.h"
@@ -273,13 +273,13 @@ CBOP 0
 C     !ROUTINE: MNC_CW_ADD_VNAME
 
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_ADD_VNAME( 
-     I     vname, 
-     I     gname, 
-     I     bi_dim, bj_dim, 
+      SUBROUTINE MNC_CW_ADD_VNAME(
+     I     vname,
+     I     gname,
+     I     bi_dim, bj_dim,
      I     myThid )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     Add a variable type to the MNC CW layer.  The variable type is an
 C     association between a variable type name and the following items:
 C     \begin{center}
@@ -289,7 +289,7 @@ C         grid type  &  defines the in-memory arrangement  \\
 C         \texttt{bi,bj} dimensions  &  tiling indices, if present  \\\hline
 C       \end{tabular}
 C     \end{center}
-  
+
 C     !USES:
       implicit none
 #include "MNC_COMMON.h"
@@ -315,18 +315,18 @@ C     Functions
 C     Check that this vname is not already defined
       CALL MNC_GET_IND(MNC_MAX_ID, vname, mnc_cw_vname, indv, myThid)
       IF (indv .GT. 0) THEN
-        write(msgbuf,'(3a)') 'MNC_CW_ADD_VNAME ERROR: ''', 
+        write(msgbuf,'(3a)') 'MNC_CW_ADD_VNAME ERROR: ''',
      &       vname(nvf:nvl), ''' is already defined'
         CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: S/R MNC_CW_ADD_VNAME'
       ENDIF
-      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_cw_vname, 
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_cw_vname,
      &     'mnc_cw_vname', indv, myThid)
 
 C     Check that gname exists
       CALL MNC_GET_IND(MNC_MAX_ID, gname, mnc_cw_gname, indg, myThid)
       IF (indg .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC_CW_ADD_VNAME ERROR: ''', 
+        write(msgbuf,'(3a)') 'MNC_CW_ADD_VNAME ERROR: ''',
      &       gname(ngf:ngl), ''' is not defined'
         CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: S/R MNC_CW_ADD_VNAME'
@@ -353,13 +353,13 @@ CBOP 0
 C     !ROUTINE: MNC_CW_DEL_VNAME
 
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_DEL_VNAME( 
-     I     vname, 
+      SUBROUTINE MNC_CW_DEL_VNAME(
+     I     vname,
      I     myThid )
 
-C     !DESCRIPTION: 
+C     !DESCRIPTION:
 C     Delete a variable type from the MNC CW layer.
-  
+
 C     !USES:
       implicit none
 #include "MNC_COMMON.h"
@@ -392,13 +392,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: MNC_CW_ADD_VATTR_TEXT
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_ADD_VATTR_TEXT( 
-     I     vname, tname, tval, 
+      SUBROUTINE MNC_CW_ADD_VATTR_TEXT(
+     I     vname, tname, tval,
      I     myThid )
 
 C     !DESCRIPTION:
 C     Add a text attribute
-      
+
 C     !USES:
       implicit none
 
@@ -418,8 +418,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: MNC_CW_ADD_VATTR_INT
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_ADD_VATTR_INT( 
-     I     vname, iname, ival, 
+      SUBROUTINE MNC_CW_ADD_VATTR_INT(
+     I     vname, iname, ival,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -443,12 +443,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C !ROUTINE: MNC_CW_ADD_VATTR_DBL
 C !INTERFACE:
-      SUBROUTINE MNC_CW_ADD_VATTR_DBL( 
-     I     vname, dname, dval, 
+      SUBROUTINE MNC_CW_ADD_VATTR_DBL(
+     I     vname, dname, dval,
      I     myThid )
 
 C     !DESCRIPTION:
-C     Add double-precision real attribute 
+C     Add double-precision real attribute
 
 C     !USES:
       implicit none
@@ -469,11 +469,11 @@ CBOP 1
 C     !ROUTINE: MNC_CW_ADD_VATTR_ANY
 
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_ADD_VATTR_ANY( 
-     I     vname, 
+      SUBROUTINE MNC_CW_ADD_VATTR_ANY(
+     I     vname,
      I     atype,
      I     tname, iname, dname,
-     I     tval,  ival,  dval, 
+     I     tval,  ival,  dval,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -506,7 +506,7 @@ C     Functions
 C     Check that vname is defined
       CALL MNC_GET_IND(MNC_MAX_ID, vname, mnc_cw_vname, indv, myThid)
       IF (indv .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC_CW_ADD_VATTR_ANY ERROR: ''', 
+        write(msgbuf,'(3a)') 'MNC_CW_ADD_VATTR_ANY ERROR: ''',
      &       vname(nvf:nvl), ''' is not defined'
         CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: S/R MNC_CW_ADD_VATTR_ANY'
@@ -518,7 +518,7 @@ C       Text Attribute
         n1 = IFNBLNK(tname)
         n2 = ILNBLNK(tname)
         IF ((n2-n1+1) .GT. MNC_MAX_CHAR) THEN
-          write(msgbuf,'(3a,i6,2a)') 
+          write(msgbuf,'(3a,i6,2a)')
      &         'MNC_CW_ADD_VATTR_ANY WARNING: attribute name ''',
      &         tname(n1:n2), ''' has more than ', MNC_MAX_CHAR,
      &         ' characters and has been truncated to fit--please',
@@ -536,7 +536,7 @@ C       write(*,*) atype,tname(n1:n2)
         n1 = IFNBLNK(tval)
         n2 = ILNBLNK(tval)
         IF ((n2-n1+1) .GT. MNC_MAX_CATT) THEN
-          write(msgbuf,'(3a,i6,2a)') 
+          write(msgbuf,'(3a,i6,2a)')
      &         'MNC_CW_ADD_VATTR_ANY WARNING: attribute value ''',
      &         tval(n1:n2), ''' has more than ', MNC_MAX_CATT,
      &         ' characters and has been truncated to fit--please',
@@ -545,7 +545,7 @@ C       write(*,*) atype,tname(n1:n2)
      &                        SQUEEZE_RIGHT , myThid)
           n2 = MNC_MAX_CATT + n1 - 1
         ENDIF
-        
+
         mnc_cw_vnat(1,indv) = n
         DO ic = 1,MNC_MAX_CATT
           mnc_cw_vtat(n,indv)(ic:ic) = ' '
@@ -554,7 +554,7 @@ C       write(*,*) atype,tname(n1:n2)
           mnc_cw_vtat(n,indv)(1:(n2-n1+1)) = tval(n1:n2)
         ENDIF
       ENDIF
-        
+
       IF (atype .EQ. 2) THEN
 C       Integer Attribute
         n = mnc_cw_vnat(2,indv) + 1
@@ -576,7 +576,7 @@ C       write(*,*) atype,dname(n1:n2)
         mnc_cw_vdat(n,indv) = dval
         mnc_cw_vnat(3,indv) = n
       ENDIF
-      
+
       RETURN
       END
 
@@ -585,9 +585,9 @@ CBOP 1
 C     !ROUTINE: MNC_CW_GET_TILE_NUM
 
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_GET_TILE_NUM( 
-     I     bi, bj, 
-     O     uniq_tnum, 
+      SUBROUTINE MNC_CW_GET_TILE_NUM(
+     I     bi, bj,
+     O     uniq_tnum,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -613,7 +613,7 @@ C     !LOCAL VARIABLES:
 
 #ifdef ALLOW_EXCH2
 
-      uniq_tnum = W2_myTileList(bi)
+      uniq_tnum = W2_myTileList(bi,bj)
 
 #else
 
@@ -635,9 +635,9 @@ CBOP 1
 C     !ROUTINE: MNC_CW_GET_FACE_NUM
 
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_GET_FACE_NUM( 
-     I     bi, bj, 
-     O     uniq_fnum, 
+      SUBROUTINE MNC_CW_GET_FACE_NUM(
+     I     bi, bj,
+     O     uniq_fnum,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -657,7 +657,7 @@ CEOP
 
 #ifdef ALLOW_EXCH2
 
-      uniq_fnum = exch2_myFace( W2_myTileList(bi) )
+      uniq_fnum = exch2_myFace( W2_myTileList(bi,bj) )
 
 #else
 
@@ -674,9 +674,9 @@ CBOP 1
 C     !ROUTINE: MNC_CW_GET_XYFO
 
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_GET_XYFO( 
-     I     bi, bj, 
-     O     ixoff, iyoff, 
+      SUBROUTINE MNC_CW_GET_XYFO(
+     I     bi, bj,
+     O     ixoff, iyoff,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -699,7 +699,7 @@ C     !LOCAL VARIABLES:
 
 #ifdef ALLOW_EXCH2
 
-      uniq_tnum = W2_myTileList(bi)
+      uniq_tnum = W2_myTileList(bi,bj)
       ixoff = exch2_tbasex( uniq_tnum )
       iyoff = exch2_tbasey( uniq_tnum )
 
@@ -720,12 +720,12 @@ C     uniq_tnum = (jG - 1)*(nPx*nSx) + iG
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 1
 C     !ROUTINE: MNC_CW_FILE_AORC
-      
+
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_FILE_AORC( 
-     I     fname, 
-     O     indf, 
-     I     lbi, lbj, uniq_tnum, 
+      SUBROUTINE MNC_CW_FILE_AORC(
+     I     fname,
+     O     indf,
+     I     lbi, lbj, uniq_tnum,
      I     myThid )
 
 C     !DESCRIPTION:

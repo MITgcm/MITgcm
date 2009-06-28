@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.7 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.8 2009/06/28 01:05:41 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -219,7 +219,7 @@ C--   Set tile-specific parameters for horizontal fluxes
       IF (useCubedSphereExchange) THEN
        npass  = 3
 #ifdef ALLOW_EXCH2
-       myTile = W2_myTileList(bi)
+       myTile = W2_myTileList(bi,bj)
        nCFace = exch2_myFace(myTile)
        N_edge = exch2_isNedge(myTile).EQ.1
        S_edge = exch2_isSedge(myTile).EQ.1

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.10 2009/06/11 20:04:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.11 2009/06/28 01:05:41 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -177,7 +177,7 @@ C--   Set tile-specific parameters for horizontal fluxes
       IF (useCubedSphereExchange) THEN
        nipass=3
 #ifdef ALLOW_EXCH2
-       myTile = W2_myTileList(bi)
+       myTile = W2_myTileList(bi,bj)
        nCFace = exch2_myFace(myTile)
        N_edge = exch2_isNedge(myTile).EQ.1
        S_edge = exch2_isSedge(myTile).EQ.1

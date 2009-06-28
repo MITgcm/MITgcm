@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.12 2009/05/12 19:56:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vegsurftiles.F,v 1.13 2009/06/28 01:05:41 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -84,8 +84,8 @@ C Only do I/O if I am the master thread
       DO bi = myBxLo(myThid), myBxHi(myThid)
 
 #if defined(ALLOW_EXCH2)
-       bislot = exch2_txglobalo(W2_myTileList(bi))-1
-       bjslot = exch2_tyglobalo(W2_myTileList(bi))-1
+       bislot = exch2_txglobalo(W2_myTileList(bi,bj))-1
+       bjslot = exch2_tyglobalo(W2_myTileList(bi,bj))-1
 #else
        bislot = myXGlobalLo-1+(bi-1)*sNx
        bjslot = myYGlobalLo-1+(bj-1)*sNy

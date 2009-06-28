@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/regrid/regrid_init_varia.F,v 1.2 2009/05/12 19:56:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/regrid/regrid_init_varia.F,v 1.3 2009/06/28 01:05:41 jmc Exp $
 C $Name:  $
 
 #include "REGRID_OPTIONS.h"
@@ -51,7 +51,7 @@ C     removed or added only the corresponding per-face files will need
 C     to be removed or added [and all the other per-face files remain
 C     unchanged provided the face numbers do not change].
 C
-C     The convention is: "points cycle most quickly in X and then Y" 
+C     The convention is: "points cycle most quickly in X and then Y"
 C
 C        +-------------------+
 C        |  Face             |
@@ -66,15 +66,15 @@ C                X
 
       _BEGIN_MASTER( myThid )
 
-      WRITE(msgBuf,'(a)') 
+      WRITE(msgBuf,'(a)')
      &     '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &     SQUEEZE_RIGHT,myThid)
-      WRITE(msgBuf,'(a)') 
+      WRITE(msgBuf,'(a)')
      &     '// Begin reading the per-face REGRID information'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &     SQUEEZE_RIGHT,myThid)
-      WRITE(msgBuf,'(a)') 
+      WRITE(msgBuf,'(a)')
      &     '// ======================================================='
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &     SQUEEZE_RIGHT,myThid)
@@ -85,10 +85,10 @@ C                X
 
       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-          
+
 #ifdef ALLOW_EXCH2
 C         EXCH2 domains
-          uniq_tnum = W2_myTileList(bi)
+          uniq_tnum = W2_myTileList(bi,bj)
           iface = exch2_myFace(uniq_tnum)
           nFx = exch2_mydnx(uniq_tnum)
           nFy = exch2_mydny(uniq_tnum)
@@ -128,14 +128,14 @@ C         locate the points that belong to this tile
               fname(k:k) = ' '
             ENDDO
             nnb = ILNBLNK(REGRID_fbname_in(i))
-            write(fname,'(a,i3.3,a)') 
+            write(fname,'(a,i3.3,a)')
      &           REGRID_fbname_in(i)(1:nnb),iface,'.regrid.ascii'
             nnb = ILNBLNK(fname)
             INQUIRE( FILE=fname, EXIST=exst )
             IF (.NOT. exst) THEN
               WRITE(msgBuf,'(A)')  'S/R REGRID_INIT_VARIA()'
               CALL PRINT_ERROR( msgBuf , 1)
-              WRITE(msgBuf,'(3A)')  ' File "', 
+              WRITE(msgBuf,'(3A)')  ' File "',
      &             fname(1:nnb), '" does not exist'
               CALL PRINT_ERROR( msgBuf , 1)
               CLOSE(iUnit)
@@ -147,7 +147,7 @@ C         locate the points that belong to this tile
             IF (errIO .LT. 0) THEN
               WRITE(msgBuf,'(A)')  'S/R REGRID_INIT_VARIA()'
               CALL PRINT_ERROR( msgBuf , 1)
-              WRITE(msgBuf,'(3A)')  'Unable to open file="', 
+              WRITE(msgBuf,'(3A)')  'Unable to open file="',
      &             fname(1:nnb), '"'
               CALL PRINT_ERROR( msgBuf , 1)
               CLOSE(iUnit)
@@ -160,7 +160,7 @@ C         locate the points that belong to this tile
 
             DO WHILE ( .TRUE. )
 C             READ(iUnit,fmt='(2(I10,1X),1P1E23.13E3)',iostat=errIO)
-              READ(iUnit,fmt='(2(1X,I10),1X,E28.22)',iostat=errIO) 
+              READ(iUnit,fmt='(2(1X,I10),1X,E28.22)',iostat=errIO)
      &             isrc, idst, wt
               IF ( errIO .NE. 0 ) THEN
                 GOTO 100
@@ -186,7 +186,7 @@ C             READ(iUnit,fmt='(2(I10,1X),1P1E23.13E3)',iostat=errIO)
             REGRID_ibeg(i,bi,bj) = init_nlpts + 1
             REGRID_iend(i,bi,bj) = nlpts
           ENDDO
-            
+
         ENDDO
       ENDDO
 

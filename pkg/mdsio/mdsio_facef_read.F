@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_facef_read.F,v 1.3 2009/05/12 19:56:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_facef_read.F,v 1.4 2009/06/28 01:06:39 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -68,7 +68,7 @@ C     == Local variables ==
       iLen = ILNBLNK(fName)
 #ifdef ALLOW_EXCH2
 C     Figure out offset of tile within face
-      tN  = W2_myTileList(bi)
+      tN  = W2_myTileList(bi,bj)
       dNx = exch2_mydnx(tN)
       dNy = exch2_mydny(tN)
       tBx = exch2_tbasex(tN)

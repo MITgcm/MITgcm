@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.61 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.62 2009/06/28 01:05:41 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -224,7 +224,7 @@ C--   Set tile-specific parameters for horizontal fluxes
        IF ( npass.GT.maxcube ) STOP 'maxcube needs to be = 3'
 #endif
 #ifdef ALLOW_EXCH2
-       myTile = W2_myTileList(bi)
+       myTile = W2_myTileList(bi,bj)
        nCFace = exch2_myFace(myTile)
        N_edge = exch2_isNedge(myTile).EQ.1
        S_edge = exch2_isSedge(myTile).EQ.1

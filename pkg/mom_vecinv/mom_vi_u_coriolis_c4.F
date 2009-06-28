@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis_c4.F,v 1.11 2009/05/12 19:56:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis_c4.F,v 1.12 2009/06/28 01:08:26 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -74,7 +74,7 @@ C--   Special stuff for Cubed Sphere
       IF ( useCubedSphereExchange.AND.highOrderVorticity ) THEN
 
 #ifdef ALLOW_EXCH2
-       myTile = W2_myTileList(bi)
+       myTile = W2_myTileList(bi,bj)
        myFace = exch2_myFace(myTile)
        southWestCorner = exch2_isWedge(myTile).EQ.1
      &             .AND. exch2_isSedge(myTile).EQ.1

@@ -1,19 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.14 2009/05/12 19:56:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.15 2009/06/28 01:08:25 jmc Exp $
 C $Name:  $
-      
+
 #include "MNC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 1
 C     !ROUTINE: MNC_CW_WRITE_CVAR
-      
+
 C     !INTERFACE:
-      SUBROUTINE MNC_CW_WRITE_CVAR( 
-     I     fname, 
-     I     cvname, 
-     I     fid, 
-     I     did, 
-     I     bi, bj, 
+      SUBROUTINE MNC_CW_WRITE_CVAR(
+     I     fname,
+     I     cvname,
+     I     fid,
+     I     did,
+     I     bi, bj,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -66,8 +66,8 @@ C     variables for text attributes
       xtmin = 0
       ytmin = 0
 #ifdef ALLOW_EXCH2
-      xtmin = exch2_tbasex(W2_myTileList(bi))
-      ytmin = exch2_tbasey(W2_myTileList(bi))
+      xtmin = exch2_tbasex(W2_myTileList(bi,bj))
+      ytmin = exch2_tbasey(W2_myTileList(bi,bj))
 #else
       IF ( .NOT. useCubedSphereExchange ) THEN
 C     make sure for a non-cubed-sphere curvi-linear grid,
@@ -106,7 +106,7 @@ C     Check all the coordinate variables that we know about
          long_name = 'X-coordinate of cell center'
          units     = 'meters'
         ELSEIF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
-         long_name = 'i-index of cell center' 
+         long_name = 'i-index of cell center'
          units     = 'none'
         ELSEIF ( usingSphericalPolarGrid ) THEN
          long_name = 'longitude of cell center'
@@ -142,7 +142,7 @@ C       unknown grid type
          long_name = 'X-Coordinate of cell corner'
          units     = 'meters'
         ELSEIF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
-         long_name = 'i-index of cell corner' 
+         long_name = 'i-index of cell corner'
          units     = 'none'
         ELSEIF ( usingSphericalPolarGrid ) THEN
          long_name = 'longitude of cell corner'
@@ -179,20 +179,20 @@ CML????          rtmp(i) = xC(i-Olx,1,bi,bj)
          long_name = 'X-Coordinate of cell center including overlaps'
          units     = 'meters'
         ELSEIF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
-         long_name = 'i-index of cell center including overlaps' 
+         long_name = 'i-index of cell center including overlaps'
          units     = 'none'
         ELSEIF ( usingSphericalPolarGrid ) THEN
          long_name = 'longitude of cell center including overlaps'
          units     = 'degrees_east'
         ELSEIF ( usingCylindricalGrid ) THEN
-         long_name = 
+         long_name =
      &        'polar angle coordinate of cell center including overlaps'
          units     = 'degrees'
         ELSE
 C       unknown grid type
          print *, 'S/R MNC_CW_CVARS: Ooops, unknown horizontal grid!'
         ENDIF
-        
+
       ELSEIF (cvname(nnf:nnl) .EQ. 'Y') THEN
 
         cv_start(1) = 1
@@ -216,7 +216,7 @@ C       unknown grid type
          long_name = 'Y-Coordinate of cell center'
          units     = 'meters'
         ELSEIF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
-         long_name = 'j-index of cell center' 
+         long_name = 'j-index of cell center'
          units     = 'none'
         ELSEIF ( usingSphericalPolarGrid ) THEN
          long_name = 'latitude of cell center'
@@ -252,7 +252,7 @@ C       unknown grid type
          long_name = 'Y-Coordinate of cell corner'
          units     = 'meters'
         ELSEIF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
-         long_name = 'j-index of cell corner' 
+         long_name = 'j-index of cell corner'
          units     = 'none'
         ELSEIF ( usingSphericalPolarGrid ) THEN
          long_name = 'latitude of cell corner'
@@ -288,13 +288,13 @@ C       unknown grid type
          long_name = 'Y-Coordinate of cell center including overlaps'
          units     = 'meters'
         ELSEIF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
-         long_name = 'j-index of cell center including overlaps' 
+         long_name = 'j-index of cell center including overlaps'
          units     = 'none'
         ELSEIF ( usingSphericalPolarGrid ) THEN
          long_name = 'latitude of cell center including overlaps'
          units     = 'degrees_north'
         ELSEIF ( usingCylindricalGrid ) THEN
-         long_name = 
+         long_name =
      &        'radial coordinate of cell center including overlaps'
          units     = 'meters'
         ELSE
@@ -309,7 +309,7 @@ C       unknown grid type
         DO i = cv_start(1),cv_count(1)
           rtmp(i) = rC(i)
         ENDDO
-C     
+C
         long_name = 'vertical coordinate of cell center'
         IF ( usingZCoords ) THEN
          units     = 'meters'
@@ -410,54 +410,54 @@ C       unknown grid type
 
         CALL MNC_FILE_REDEF(fname, myThid)
 #ifdef REAL4_IS_SLOW
-        err = NF_DEF_VAR(fid, cvname, NF_DOUBLE, 
+        err = NF_DEF_VAR(fid, cvname, NF_DOUBLE,
      &       nids, cv_did, vid)
 #else
-        err = NF_DEF_VAR(fid, cvname, NF_FLOAT, 
+        err = NF_DEF_VAR(fid, cvname, NF_FLOAT,
      &       nids, cv_did, vid)
 #endif /* REAL4_IS_SLOW */
         i = ILNBLNK( fname )
-        write(msgbuf,'(5a)') 'defining coordinate variable ''', 
+        write(msgbuf,'(5a)') 'defining coordinate variable ''',
      &       cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
         CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 C     add attributes if set
         ia = ILNBLNK(long_name)
         IF ( ia .GT. 0 ) THEN
          err = NF_PUT_ATT_TEXT(fid, vid, 'long_name', ia, long_name)
-         write(msgbuf,'(5a)') 
-     &     'adding attribute ''long_name'' to coordinate variable ''', 
+         write(msgbuf,'(5a)')
+     &     'adding attribute ''long_name'' to coordinate variable ''',
      &     cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
          CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
         ENDIF
         ia = ILNBLNK(units)
         IF ( ia .GT. 0 ) THEN
          err = NF_PUT_ATT_TEXT(fid, vid, 'units', ia, units)
-         write(msgbuf,'(5a)') 
-     &     'adding attribute ''units'' to coordinate variable ''', 
+         write(msgbuf,'(5a)')
+     &     'adding attribute ''units'' to coordinate variable ''',
      &     cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
          CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
         ENDIF
         ia = ILNBLNK(positive)
         IF ( ia .GT. 0 ) THEN
          err = NF_PUT_ATT_TEXT(fid, vid, 'positive', ia, positive)
-         write(msgbuf,'(5a)') 
-     &     'adding attribute ''positive'' to coordinate variable ''', 
+         write(msgbuf,'(5a)')
+     &     'adding attribute ''positive'' to coordinate variable ''',
      &     cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
          CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
         ENDIF
-C     
+C
         CALL MNC_FILE_ENDDEF(fname, myThid)
 #ifdef REAL4_IS_SLOW
-        err = NF_PUT_VARA_DOUBLE(fid, vid, 
+        err = NF_PUT_VARA_DOUBLE(fid, vid,
      &       cv_start, cv_count, rtmp)
 #else
-        err = NF_PUT_VARA_REAL(fid, vid, 
+        err = NF_PUT_VARA_REAL(fid, vid,
      &       cv_start, cv_count, rtmp)
 #endif /* REAL4_IS_SLOW */
-        write(msgbuf,'(5a)') 'writing coordinate variable ''', 
+        write(msgbuf,'(5a)') 'writing coordinate variable ''',
      &       cvname(nnf:nnl), ''' in file ''', fname(1:i), ''''
         CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
-        
+
       ENDIF
 
       RETURN

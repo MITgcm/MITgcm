@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.14 2009/05/12 19:56:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.15 2009/06/28 01:05:41 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -162,7 +162,7 @@ c          AZcorner = 0.75 _d 0
            northEastCorner = .TRUE.
            iG = bi+(myXGlobalLo-1)/sNx
 #ifdef ALLOW_EXCH2
-           myTile = W2_myTileList(bi)
+           myTile = W2_myTileList(bi,bj)
            iG = exch2_myFace(myTile)
            southWestCorner = exch2_isWedge(myTile).EQ.1
      &                 .AND. exch2_isSedge(myTile).EQ.1

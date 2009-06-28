@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.45 2009/06/25 14:36:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.46 2009/06/28 01:05:41 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -198,7 +198,7 @@ C Western boundary
 C--   Special stuff for cubed sphere: assume grid is rectangular and
 C     set UV mask to zero except for Arctic and Antarctic cube faces.
         IF (useCubedSphereExchange) THEN
-         myTile = W2_myTileList(bi)
+         myTile = W2_myTileList(bi,bj)
          IF ( exch2_myFace(myTile) .EQ. 1 .OR.
      &        exch2_myFace(myTile) .EQ. 2 .OR.
      &        exch2_myFace(myTile) .EQ. 4 .OR.

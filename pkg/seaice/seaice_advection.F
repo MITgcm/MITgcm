@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.18 2009/05/18 20:35:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.19 2009/06/28 01:05:41 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -194,7 +194,7 @@ C--   Set tile-specific parameters for horizontal fluxes
        IF ( nipass.GT.maxcube ) STOP 'maxcube needs to be = 3'
 #endif
 #ifdef ALLOW_EXCH2
-       myTile = W2_myTileList(bi)
+       myTile = W2_myTileList(bi,bj)
        nCFace = exch2_myFace(myTile)
        N_edge = exch2_isNedge(myTile).EQ.1
        S_edge = exch2_isSedge(myTile).EQ.1

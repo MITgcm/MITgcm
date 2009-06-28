@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.15 2009/06/16 14:53:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.16 2009/06/28 01:06:39 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -290,7 +290,7 @@ C Loop over tiles
           tBy = myYGlobalLo-1 + (bj-1)*sNy
 #ifdef ALLOW_EXCH2
           IF ( W2_useE2ioLayOut ) THEN
-            tN = W2_myTileList(bi)
+            tN = W2_myTileList(bi,bj)
 c           global_nTx = exch2_global_Nx/sNx
             tBx = exch2_txGlobalo(tN) - 1
             tBy = exch2_tyGlobalo(tN) - 1
