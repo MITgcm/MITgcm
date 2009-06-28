@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.42 2009/06/14 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.43 2009/06/28 01:03:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -218,8 +218,8 @@ C-    list empty tiles:
        DO bi = 1,nSx
         IF ( tileArea(bi,bj).EQ.0. _d 0 ) THEN
 #ifdef ALLOW_EXCH2
-         WRITE(msgBuf,'(A,I6,A,I6,A)')
-     &     'Empty tile: #', W2_myTileList(bi), ' (bi=', bi,' )'
+         WRITE(msgBuf,'(A,I6,A,2I4,A)')
+     &    'Empty tile: #', W2_myTileList(bi,bj), ' (bi,bj=',bi,bj,' )'
 #else
          WRITE(msgBuf,'(A,I6,I6)') 'Empty tile bi,bj=', bi, bj
 #endif

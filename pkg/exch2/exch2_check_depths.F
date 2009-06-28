@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_check_depths.F,v 1.5 2009/05/26 19:00:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_check_depths.F,v 1.6 2009/06/28 01:00:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -72,7 +72,7 @@ C-    Fill E,W & N,S edges with total depth from the interior
          ENDDO
 
 C-    Reset to zero if connected
-         tId = W2_myTileList(bi)
+         tId = W2_myTileList(bi,bj)
          DO n= 1,exch2_nNeighbours(tId)
           DO j=exch2_jLo(n,tId),exch2_jHi(n,tId)
            DO i=exch2_iLo(n,tId),exch2_iHi(n,tId)

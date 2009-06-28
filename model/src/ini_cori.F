@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.29 2009/06/14 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.30 2009/06/28 01:03:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -149,7 +149,7 @@ C    with 2 polar faces + 4 equatorials:
            iG = bi+(myXGlobalLo-1)/sNx
            myTile = iG
 #ifdef ALLOW_EXCH2
-           myTile = W2_myTileList(bi)
+           myTile = W2_myTileList(bi,bj)
            iG = exch2_myface(myTile)
 #endif
            WRITE(fName,'(2A,I3.3,A)') 'fCoriG','.face',iG,'.bin'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.11 2009/05/12 19:40:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.12 2009/06/28 01:00:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -42,7 +42,8 @@ c     INTEGER W2_oUnit
       INTEGER stdUnit, iLen
       CHARACTER commFlag
       INTEGER myTileId
-      INTEGER myThid, I, J, II, np, jp
+      INTEGER myThid, I, J, II
+      INTEGER np, jp, bi, bj
       INTEGER iErr, tNx, tNy
 
 C     Set dummy myThid value (we are not multi-threaded here)
@@ -120,10 +121,12 @@ C     Number of tiles I handle is nSx*nSy
       DO I=1,nTiles
        IF ( exch2_myFace(I) .NE. 0 ) THEN
         np = 1 + J/nt_perProc
-        jp = 1 + MOD(J,nt_perProc)
+        jp = MOD(J,nt_perProc)
+        bj = 1 + jp/nSx
+        bi = 1 + MOD(jp,nSx)
         exch2_tProc(I) = np
-        W2_procTileList(jp,np) = I
-        IF ( np.EQ.thisProc ) W2_myTileList(jp) = I
+        W2_procTileList(bi,bj,np) = I
+        IF ( np.EQ.thisProc ) W2_myTileList(bi,bj) = I
         J = J + 1
        ENDIF
       ENDDO
@@ -134,26 +137,28 @@ C     Number of tiles I handle is nSx*nSy
 
 C--   Check tile sizes
       iErr = 0
-      DO I=1,nSx
-       myTileId = W2_myTileList(I)
-       tNx = exch2_tNx(myTileId)
-       tNy = exch2_tNy(myTileId)
-       IF ( tNx .NE. sNx ) THEN
-        WRITE(msgBuf,'(3(A,I5))')
+      DO bj=1,nSy
+       DO bi=1,nSx
+        myTileId = W2_myTileList(bi,bj)
+        tNx = exch2_tNx(myTileId)
+        tNy = exch2_tNy(myTileId)
+        IF ( tNx .NE. sNx ) THEN
+         WRITE(msgBuf,'(3(A,I5))')
      &   'ERROR: S/R W2_EEBOOT Topology for tile', myTileId,
      &   'tNx=', tNx, ' is not equal to subgrid size sNx=', sNx
          CALL PRINT_MESSAGE(msgBuf,
      &        errorMessageUnit, SQUEEZE_RIGHT, 1 )
          iErr = iErr+1
-       ENDIF
-       IF ( tNy .NE. sNy ) THEN
-        WRITE(msgBuf,'(3(A,I5))')
+        ENDIF
+        IF ( tNy .NE. sNy ) THEN
+         WRITE(msgBuf,'(3(A,I5))')
      &   'ERROR: S/R W2_EEBOOT Topology for tile', myTileId,
      &   'tNy=', tNy, ' is not equal to subgrid size sNy=', sNy
          CALL PRINT_MESSAGE(msgBuf,
      &        errorMessageUnit, SQUEEZE_RIGHT, 1 )
          iErr = iErr+1
-       ENDIF
+        ENDIF
+       ENDDO
       ENDDO
       IF ( iErr .NE. 0 ) THEN
        STOP 'ABNORMAL END: W2_EEBOOT'
@@ -162,33 +167,37 @@ C--   Check tile sizes
 C--   Print tiles connection for this process and set myCommonFlag :
       WRITE(msgBuf,'(A)') '===== W2 TILE TOPOLOGY ====='
       CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_BOTH, myThid )
-      DO I=1,nSx
-       myTileId = W2_myTileList(I)
-c      WRITE(msgBuf,'(A,I4)') ' TILE: ', myTileId
-       WRITE(msgBuf,'(A,I5,A,I3)') ' TILE: ', myTileId,
-     &      ' , Nb of Neighbours =', exch2_nNeighbours(myTileId)
-       CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
-       DO J=1,exch2_nNeighbours(myTileId)
-        commFlag = 'M'
-        DO II=1,nSx
-         IF ( W2_myTileList(II) .EQ. exch2_neighbourId(J,myTileId) )
-     &    commFlag = 'P'
+      DO bj=1,nSy
+       DO bi=1,nSx
+        myTileId = W2_myTileList(bi,bj)
+c       WRITE(msgBuf,'(A,I4)') ' TILE: ', myTileId
+        WRITE(msgBuf,'(A,I5,A,I3)') ' TILE: ', myTileId,
+     &       ' , Nb of Neighbours =', exch2_nNeighbours(myTileId)
+        CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
+        DO J=1,exch2_nNeighbours(myTileId)
+         commFlag = 'M'
+         DO II=1,nSy
+          DO I=1,nSx
+          IF ( W2_myTileList(I,II).EQ.exch2_neighbourId(J,myTileId) )
+     &     commFlag = 'P'
+          ENDDO
+         ENDDO
+         IF ( commFlag .EQ. 'M' ) THEN
+          WRITE(msgBuf,'(A,I3,A,I5,A,I3,2A,I5,A)')
+     &    '    NEIGHBOUR',J,' = TILE', exch2_neighbourId(J,myTileId),
+     &    ' (n=', exch2_opposingSend(J,myTileId), ') Comm = MSG',
+     &    ' (PROC=',exch2_tProc(exch2_neighbourId(J,myTileId)),')'
+          CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
+         ENDIF
+         IF ( commFlag .EQ. 'P' ) THEN
+          WRITE(msgBuf,'(A,I3,A,I5,A,I3,2A,I5,A)')
+     &    '    NEIGHBOUR',J,' = TILE', exch2_neighbourId(J,myTileId),
+     &    ' (n=', exch2_opposingSend(J,myTileId), ') Comm = PUT',
+     &    ' (PROC=',exch2_tProc(exch2_neighbourId(J,myTileId)),')'
+          CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
+         ENDIF
+         W2_myCommFlag(J,bi,bj) = commFlag
         ENDDO
-        IF ( commFlag .EQ. 'M' ) THEN
-         WRITE(msgBuf,'(A,I3,A,I5,A,I3,2A,I5,A)')
-     &   '    NEIGHBOUR',J,' = TILE', exch2_neighbourId(J,myTileId),
-     &   ' (n=', exch2_opposingSend(J,myTileId), ') Comm = MSG',
-     &   ' (PROC=',exch2_tProc(exch2_neighbourId(J,myTileId)),')'
-         CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
-        ENDIF
-        IF ( commFlag .EQ. 'P' ) THEN
-         WRITE(msgBuf,'(A,I3,A,I5,A,I3,2A,I5,A)')
-     &   '    NEIGHBOUR',J,' = TILE', exch2_neighbourId(J,myTileId),
-     &   ' (n=', exch2_opposingSend(J,myTileId), ') Comm = PUT',
-     &   ' (PROC=',exch2_tProc(exch2_neighbourId(J,myTileId)),')'
-         CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
-        ENDIF
-        W2_myCommFlag(J,I) = commFlag
        ENDDO
       ENDDO
 

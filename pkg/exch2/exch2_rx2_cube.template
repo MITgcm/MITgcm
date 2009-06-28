@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.10 2009/05/30 21:26:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.11 2009/06/28 01:00:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -114,14 +114,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Post sends into buffer (buffer level 1):
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        thisTile=W2_myTileList(bi)
+        thisTile=W2_myTileList(bi,bj)
         nN=exch2_nNeighbours(thisTile)
         DO N=1,nN
           farTile=exch2_neighbourId(N,thisTile)
           oN = exch2_opposingSend(N,thisTile)
 #ifdef LOCAL_DBUG
-          WRITE(errorMessageUnit,'(A,2I3,A,4I4,A,2I5)')
-     &      'send_0 bi,N=', bi, N, ' , tI,J_lo,hi=',
+          WRITE(errorMessageUnit,'(A,3I3,A,4I4,A,2I5)')
+     &      'send_0 bi,N=', bi,bj, N, ' , tI,J_lo,hi=',
      &                  exch2_iLo(oN,farTile), exch2_iHi(oN,farTile),
      &                  exch2_jLo(oN,farTile), exch2_jHi(oN,farTile),
      &      ' , oIs,oJs=', exch2_oi(N,thisTile), exch2_oj(N,thisTile)
@@ -135,11 +135,11 @@ C--   Post sends into buffer (buffer level 1):
      O               oIs1, oJs1, oIs2, oJs2,
      I               myThid )
 #ifdef LOCAL_DBUG
-          WRITE(errorMessageUnit,'(A,2I3,A,4I4,A,2I5)')
-     &      'send_1 bi,N=', bi, N, ' , tI,J_lo,hi=',
+          WRITE(errorMessageUnit,'(A,3I3,A,4I4,A,2I5)')
+     &      'send_1 bi,N=', bi,bj, N, ' , tI,J_lo,hi=',
      &      tIlo1, tIhi1, tJlo1, tJhi1, ' , oIs,oJs=', oIs1, oJs1
-          WRITE(errorMessageUnit,'(A,2I3,A,4I4,A,2I5)')
-     &      'send_2 bi,N=', bi, N, ' , tI,J_lo,hi=',
+          WRITE(errorMessageUnit,'(A,3I3,A,4I4,A,2I5)')
+     &      'send_2 bi,N=', bi,bj, N, ' , tI,J_lo,hi=',
      &      tIlo2, tIhi2, tJlo2, tJhi2, ' , oIs,oJs=', oIs2, oJs2
 #endif
           tKLo=1
@@ -155,14 +155,14 @@ C     in its copy of "array1" & "array2".
      I               oIs1, oJs1, oIs2, oJs2,
      I               thisTile, N,
      I               e2BufrRecSize,
-     O               iBuf1Filled(N,bi),    iBuf2Filled(N,bi),
-     O               e2Bufr1_RX(1,N,bi,1), e2Bufr2_RX(1,N,bi,1),
+     O               iBuf1Filled(N,bi,bj),    iBuf2Filled(N,bi,bj),
+     O               e2Bufr1_RX(1,N,bi,bj,1), e2Bufr2_RX(1,N,bi,bj,1),
      I               array1(1-myOLw,1-myOLs,1,bi,bj),
      I               array2(1-myOLw,1-myOLs,1,bi,bj),
      I               i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
      I               i2Lo, i2Hi, j2Lo, j2Hi, k2Lo, k2Hi,
      O               e2_msgHandles(1,N,bi,bj),
-     I               W2_myCommFlag(N,bi), signOption, myThid )
+     I               W2_myCommFlag(N,bi,bj), signOption, myThid )
         ENDDO
        ENDDO
       ENDDO
@@ -177,18 +177,18 @@ C     wait until all threads finish filling buffer
 C--   Send my data (in buffer, level 1) to target Process
       DO bj=1,nSy
        DO bi=1,nSx
-        thisTile=W2_myTileList(bi)
+        thisTile=W2_myTileList(bi,bj)
         nN=exch2_nNeighbours(thisTile)
         DO N=1,nN
 C-    Skip the call if this is an internal exchange
-         IF ( W2_myCommFlag(N,bi) .EQ. 'M' ) THEN
+         IF ( W2_myCommFlag(N,bi,bj) .EQ. 'M' ) THEN
           CALL EXCH2_SEND_RX2(
      I               thisTile, N,
      I               e2BufrRecSize,
-     I               iBuf1Filled(N,bi),    iBuf2Filled(N,bi),
-     I               e2Bufr1_RX(1,N,bi,1), e2Bufr2_RX(1,N,bi,1),
+     I               iBuf1Filled(N,bi,bj),    iBuf2Filled(N,bi,bj),
+     I               e2Bufr1_RX(1,N,bi,bj,1), e2Bufr2_RX(1,N,bi,bj,1),
      O               e2_msgHandles(1,N,bi,bj),
-     I               W2_myCommFlag(N,bi), myThid )
+     I               W2_myCommFlag(N,bi,bj), myThid )
          ENDIF
         ENDDO
        ENDDO
@@ -197,11 +197,11 @@ C-    Skip the call if this is an internal exchange
 C--   Receive data (in buffer, level 2) from source Process
       DO bj=1,nSy
        DO bi=1,nSx
-        thisTile=W2_myTileList(bi)
+        thisTile=W2_myTileList(bi,bj)
         nN=exch2_nNeighbours(thisTile)
         DO N=1,nN
 C-    Skip the call if this is an internal exchange
-         IF ( W2_myCommFlag(N,bi) .EQ. 'M' ) THEN
+         IF ( W2_myCommFlag(N,bi,bj) .EQ. 'M' ) THEN
           CALL EXCH2_GET_UV_BOUNDS(
      I               fieldCode, exchWidthX,
      I               thisTile, N,
@@ -221,8 +221,8 @@ C       Receive from neighbour N to fill buffer and later on the array
      I               thisTile, N,
      I               e2BufrRecSize,
      I               iBufr1, iBufr2,
-     I               e2Bufr1_RX(1,N,bi,2), e2Bufr2_RX(1,N,bi,2),
-     I               W2_myCommFlag(N,bi), myThid )
+     I               e2Bufr1_RX(1,N,bi,bj,2), e2Bufr2_RX(1,N,bi,bj,2),
+     I               W2_myCommFlag(N,bi,bj), myThid )
          ENDIF
         ENDDO
        ENDDO
@@ -231,7 +231,7 @@ C       Receive from neighbour N to fill buffer and later on the array
 C--   Clear message handles/locks
       DO bj=1,nSy
        DO bi=1,nSx
-        thisTile=W2_myTileList(bi)
+        thisTile=W2_myTileList(bi,bj)
         nN=exch2_nNeighbours(thisTile)
         DO N=1,nN
 C     Note: In a between process tile-tile data transport using
@@ -241,12 +241,12 @@ C           shared address space/or direct transfer through commonly
 C           addressable memory blocks the receiver needs to assert
 C           that he has consumed the buffer the sender filled here.
          farTile=exch2_neighbourId(N,thisTile)
-         IF     ( W2_myCommFlag(N,bi) .EQ. 'M' ) THEN
+         IF     ( W2_myCommFlag(N,bi,bj) .EQ. 'M' ) THEN
           wHandle = e2_msgHandles(1,N,bi,bj)
           CALL MPI_Wait( wHandle, mpiStatus, mpiRc )
           wHandle = e2_msgHandles(2,N,bi,bj)
           CALL MPI_Wait( wHandle, mpiStatus, mpiRc )
-         ELSEIF ( W2_myCommFlag(N,bi) .EQ. 'P' ) THEN
+         ELSEIF ( W2_myCommFlag(N,bi,bj) .EQ. 'P' ) THEN
          ELSE
          ENDIF
         ENDDO
@@ -264,12 +264,12 @@ C--   Extract from buffer (either from level 1 if local exch,
 C                     or level 2 if coming from an other Proc)
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        thisTile=W2_myTileList(bi)
+        thisTile=W2_myTileList(bi,bj)
         nN=exch2_nNeighbours(thisTile)
         DO N=1,nN
 #ifdef LOCAL_DBUG
-          WRITE(errorMessageUnit,'(A,2I3,A,4I4,A,2I5)')
-     &      'recv_0 bi,N=', bi, N, ' , tI,J_lo,hi=',
+          WRITE(errorMessageUnit,'(A,3I3,A,4I4,A,2I5)')
+     &      'recv_0 bi,N=', bi,bj, N, ' , tI,J_lo,hi=',
      &          exch2_iLo(N,thisTile), exch2_iHi(N,thisTile),
      &          exch2_jLo(N,thisTile), exch2_jHi(N,thisTile)
 #endif
@@ -282,11 +282,11 @@ C                     or level 2 if coming from an other Proc)
      O               oIs1, oJs1, oIs2, oJs2,
      I               myThid )
 #ifdef LOCAL_DBUG
-          WRITE(errorMessageUnit,'(A,2I3,A,4I4,A,2I5)')
-     &      'recv_1 bi,N=', bi, N, ' , tI,J_lo,hi=',
+          WRITE(errorMessageUnit,'(A,3I3,A,4I4,A,2I5)')
+     &      'recv_1 bi,N=', bi,bj, N, ' , tI,J_lo,hi=',
      &      tIlo1, tIhi1, tJlo1, tJhi1
-          WRITE(errorMessageUnit,'(A,2I3,A,4I4,A,2I5)')
-     &      'recv_2 bi,N=', bi, N, ' , tI,J_lo,hi=',
+          WRITE(errorMessageUnit,'(A,3I3,A,4I4,A,2I5)')
+     &      'recv_2 bi,N=', bi,bj, N, ' , tI,J_lo,hi=',
      &      tIlo2, tIhi2, tJlo2, tJhi2
 #endif
           tKLo=1
@@ -310,7 +310,7 @@ C      o e2_msgHandle entry to read is entry associated with opposing send recor
      I               i1Lo, i1Hi, j1Lo, j1Hi, k1Lo, k1Hi,
      I               i2Lo, i2Hi, j2Lo, j2Hi, k2Lo, k2Hi,
      U               e2_msgHandles,
-     I               W2_myCommFlag(N,bi), myThid )
+     I               W2_myCommFlag(N,bi,bj), myThid )
         ENDDO
        ENDDO
       ENDDO
