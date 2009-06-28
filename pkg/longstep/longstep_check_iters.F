@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_check_iters.F,v 1.1 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_check_iters.F,v 1.2 2009/06/28 04:58:41 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -32,8 +32,6 @@ C     extraIter  :: extra iterations added to finish on a longstep
 C     msgBuf     :: message buffer
       INTEGER extraIter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-
-      _BEGIN_MASTER(myThid)
 
       IF (MOD(nIter0, LS_nIter) .NE. 0) THEN
 C       Restarting from a pickup in the middle of a longstep will lead
@@ -79,12 +77,7 @@ C       log to standard output too
      &'   /* Number of timesteps */')
       ENDIF
 
-      _END_MASTER(myThid)
-C     Everyone else must wait for the parameters to be loaded
-      _BARRIER
-
 #endif /* ALLOW_LONGSTEP */
 
       RETURN
       END
-
