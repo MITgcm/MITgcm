@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_agrid_3d_rx.template,v 1.5 2009/05/12 19:44:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_agrid_3d_rx.template,v 1.6 2009/06/28 00:57:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -35,7 +35,6 @@ C     !USES:
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
-c#include "EESUPPORT.h"
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 
@@ -71,9 +70,6 @@ CEOP
       negOne = 1.
       IF (withSigns) negOne = -1.
 
-      IF ( useCubedSphereExchange ) THEN
-C---  using CubedSphereExchange:
-
 C--   First call the exchanges for the two components
 
        CALL EXCH2_RX1_CUBE( uPhi, 'T ',
@@ -98,6 +94,8 @@ C- note: can substitute the low-level S/R calls above with:
 c      CALL EXCH2_3D_RX( uPhi, myNz, myThid )
 c      CALL EXCH2_3D_RX( vPhi, myNz, myThid )
 
+      IF ( useCubedSphereExchange ) THEN
+
 C--   Then we may need to switch u and v components
 C     and/or the signs depending on which cube face we are located.
 
@@ -107,7 +105,7 @@ C--   Loops on tile indices:
 
 C-    Now choose what to do at each edge of the halo based on which face
 C     (we assume that bj is always=1)
-         myTile = W2_myTileList(bi)
+         myTile = W2_myTileList(bi,bj)
          myFace = exch2_myFace(myTile)
 
 C--   Loops on level index:
@@ -207,20 +205,6 @@ C--    end of Loops on tile and level indices (k,bi,bj).
          ENDDO
         ENDDO
        ENDDO
-
-      ELSE
-C---  not using CubedSphereExchange:
-
-#ifndef AUTODIFF_EXCH2
-       CALL EXCH_RX( uPhi,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RX( vPhi,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-#endif
 
 C---  using or not using CubedSphereExchange: end
       ENDIF

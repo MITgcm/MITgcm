@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xy_rx.template,v 1.12 2009/05/12 19:44:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xy_rx.template,v 1.13 2009/06/28 00:57:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -19,11 +19,9 @@ C     *==========================================================*
 C     | SUBROUTINE EXCH_UV_XY_RX
 C     | o Handle exchanges for _RX, two-dimensional arrays.
 C     *==========================================================*
-C     | Driver exchange routine which branches to cube sphere or
-C     | global, simple cartesian index grid. Exchange routine is
-C     | called with two arrays that are components of a vector.
-C     | These components are rotated and interchanged on the
-C     | rotated grid during cube exchanges.
+C     | Exchange routine is called with two arrays that are
+C     | components of a vector. These components are rotated and
+C     | interchanged on the rotated grid during cube exchanges.
 C     *==========================================================*
 
 C     !USES:
@@ -54,9 +52,13 @@ C     == Local variables ==
 C     OL[wens]       :: Overlap extents in west, east, north, south.
 C     exchWidth[XY]  :: Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
-      INTEGER bi, bj, myTile, j
+      INTEGER bi, bj, myTile
 #ifdef W2_FILL_NULL_REGIONS
-      INTEGER i
+      INTEGER i, j
+#else
+# ifdef DO_CORNER_COPY_V2U
+      INTEGER j
+# endif
 #endif
 CEOP
 
@@ -67,53 +69,43 @@ CEOP
       exchWidthX = OLx
       exchWidthY = OLy
       myNz       = 1
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
+
+       CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'Cg',
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+       CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'Cg',
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+
       IF (useCubedSphereExchange) THEN
-
-       CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'Cg',
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'Cg',
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-c      CALL EXCH2_RX2_CUBE( Uphi, Vphi, withSigns, 'Cg',
-c    I            OLw, OLe, OLs, OLn, myNz,
-c    I            exchWidthX, exchWidthY,
-c    I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         myTile = W2_myTileList(bi)
+         myTile = W2_myTileList(bi,bj)
 
 #ifdef DO_CORNER_COPY_V2U
          IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
-C         Uphi(snx+1,    0,bi,bj)= vPhi(snx+1,    1,bi,bj)
+C         Uphi(sNx+1,    0,bi,bj)= vPhi(sNx+1,    1,bi,bj)
           DO j=1-olx,0
-           Uphi(snx+1,    j,bi,bj)= vPhi(snx+(1-j),    1,bi,bj)
+           Uphi(sNx+1,    j,bi,bj)= vPhi(sNx+(1-j),    1,bi,bj)
           ENDDO
          ENDIF
          IF ( withSigns ) THEN
           IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &         exch2_isNedge(myTile) .EQ. 1 ) THEN
-C          Uphi(snx+1,sny+1,bi,bj)=-vPhi(snx+1,sny+1,bi,bj)
+C          Uphi(sNx+1,sNy+1,bi,bj)=-vPhi(sNx+1,sNy+1,bi,bj)
            DO j=1,olx
-            Uphi(snx+1,sny+j,bi,bj)=-vPhi(snx+j,sny+1,bi,bj)
+            Uphi(sNx+1,sNy+j,bi,bj)=-vPhi(sNx+j,sNy+1,bi,bj)
            ENDDO
           ENDIF
          ELSE
           IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &         exch2_isNedge(myTile) .EQ. 1 ) THEN
-C          Uphi(snx+1,sny+1,bi,bj)= vPhi(snx+1,sny+1,bi,bj)
+C          Uphi(sNx+1,sNy+1,bi,bj)= vPhi(sNx+1,sNy+1,bi,bj)
            DO j=1,olx
-            Uphi(snx+1,sny+j,bi,bj)= vPhi(snx+j,sny+1,bi,bj)
+            Uphi(sNx+1,sNy+j,bi,bj)= vPhi(sNx+j,sNy+1,bi,bj)
            ENDDO
           ENDIF
          ENDIF
@@ -127,14 +119,14 @@ C         to compute vorticity on a wider stencil (e.g., vort3(0,1) & (1,0))
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
 C         Zero SW corner points
 #ifdef W2_FILL_NULL_REGIONS
-          DO J=1-OLx,0
-           DO I=1-OLx,0
-            uPhi(I,J,bi,bj)=e2FillValue_RX
+          DO j=1-OLx,0
+           DO i=1-OLx,0
+            uPhi(i,j,bi,bj)=e2FillValue_RX
            ENDDO
           ENDDO
-          DO J=1-OLx,0
-           DO I=1-OLx,0
-            vPhi(I,J,bi,bj)=e2FillValue_RX
+          DO j=1-OLx,0
+           DO i=1-OLx,0
+            vPhi(i,j,bi,bj)=e2FillValue_RX
            ENDDO
           ENDDO
 #endif
@@ -146,14 +138,14 @@ C         Zero SW corner points
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
 C         Zero NW corner points
 #ifdef W2_FILL_NULL_REGIONS
-          DO J=sNy+1,sNy+OLy
-           DO I=1-OLx,0
-            uPhi(I,J,bi,bj)=e2FillValue_RX
+          DO j=sNy+1,sNy+OLy
+           DO i=1-OLx,0
+            uPhi(i,j,bi,bj)=e2FillValue_RX
            ENDDO
           ENDDO
-          DO J=sNy+2,sNy+OLy
-           DO I=1-OLx,0
-            vPhi(I,J,bi,bj)=e2FillValue_RX
+          DO j=sNy+2,sNy+OLy
+           DO i=1-OLx,0
+            vPhi(i,j,bi,bj)=e2FillValue_RX
            ENDDO
           ENDDO
 #endif
@@ -170,14 +162,14 @@ C         Zero NW corner points
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
 C         Zero SE corner points
 #ifdef W2_FILL_NULL_REGIONS
-          DO J=1-OLx,0
-           DO I=sNx+2,sNx+OLx
-            uPhi(I,J,bi,bj)=e2FillValue_RX
+          DO j=1-OLx,0
+           DO i=sNx+2,sNx+OLx
+            uPhi(i,j,bi,bj)=e2FillValue_RX
            ENDDO
           ENDDO
-          DO J=1-OLx,0
-           DO I=sNx+1,sNx+OLx
-            vPhi(I,J,bi,bj)=e2FillValue_RX
+          DO j=1-OLx,0
+           DO i=sNx+1,sNx+OLx
+            vPhi(i,j,bi,bj)=e2FillValue_RX
            ENDDO
           ENDDO
 #endif
@@ -194,14 +186,14 @@ C         Zero SE corner points
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
 C         Zero NE corner points
 #ifdef W2_FILL_NULL_REGIONS
-          DO J=sNy+1,sNy+OLy
-           DO I=sNx+2,sNx+OLx
-            uPhi(I,J,bi,bj)=e2FillValue_RX
+          DO j=sNy+1,sNy+OLy
+           DO i=sNx+2,sNx+OLx
+            uPhi(i,j,bi,bj)=e2FillValue_RX
            ENDDO
           ENDDO
-          DO J=sNy+2,sNy+OLy
-           DO I=sNx+1,sNx+OLx
-            vPhi(I,J,bi,bj)=e2FillValue_RX
+          DO j=sNy+2,sNy+OLy
+           DO i=sNx+1,sNx+OLx
+            vPhi(i,j,bi,bj)=e2FillValue_RX
            ENDDO
           ENDDO
 #endif
@@ -213,19 +205,7 @@ C-      end bi,bj loops.
         ENDDO
        ENDDO
 
-      ELSE
-
-c      CALL EXCH_RX( Uphi,
-c    I            OLw, OLe, OLs, OLn, myNz,
-c    I            exchWidthX, exchWidthY,
-c    I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-c      CALL EXCH_RX( Vphi,
-c    I            OLw, OLe, OLs, OLn, myNz,
-c    I            exchWidthX, exchWidthY,
-c    I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_XY_RX( Uphi, myThid )
-       CALL EXCH_XY_RX( Vphi, myThid )
-
+C---  using or not using CubedSphereExchange: end
       ENDIF
 
       RETURN

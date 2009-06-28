@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_bgrid_3d_rx.template,v 1.4 2009/05/12 19:44:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_uv_bgrid_3d_rx.template,v 1.5 2009/06/28 00:57:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -35,7 +35,6 @@ C     !USES:
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
-c#include "EESUPPORT.h"
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #ifdef W2_FILL_NULL_REGIONS
@@ -108,6 +107,8 @@ C-     save 2 corners value (in case we find 1 "missing corner")
          ENDDO
         ENDDO
        ENDDO
+C---  using or not using CubedSphereExchange: end
+      ENDIF
 
 C--   First call the exchanges for the two components
 
@@ -133,6 +134,8 @@ C- note: can substitute the low-level S/R calls above with:
 c      CALL EXCH2_3D_RX( uPhi, myNz, myThid )
 c      CALL EXCH2_3D_RX( vPhi, myNz, myThid )
 
+      IF ( useCubedSphereExchange ) THEN
+
 C--   Then, depending on which tile we are, we may need
 C     1) to switch u and v components and also to switch the signs
 C     2) to shift the index along the face edge.
@@ -148,7 +151,7 @@ C--   Loops on tile indices:
 
 C-    Now choose what to do at each edge of the halo based on which face
 C    (we assume that bj is always=1)
-         myTile = W2_myTileList(bi)
+         myTile = W2_myTileList(bi,bj)
          myFace = exch2_myFace(myTile)
 
 C--   Loops on level index:
@@ -406,22 +409,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   end of Loops on tile indices (bi,bj).
         ENDDO
        ENDDO
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-      ELSE
-C---  not using CubedSphereExchange:
-
-#ifndef AUTODIFF_EXCH2
-       CALL EXCH_RX( uPhi,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       CALL EXCH_RX( vPhi,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-#endif
 
 C---  using or not using CubedSphereExchange: end
       ENDIF
