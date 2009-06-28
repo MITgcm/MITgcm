@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1134 2009/06/26 23:19:03 jahn Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1135 2009/06/28 16:55:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exch2:
+  - always call exch2_*_cube, not exch-1 anymore, if useCubedSphereExchange=F
+    (was already the case with AUTODIFF_EXCH2 defined)
+  - add bj in exch2 arrays and S/R.
 o add pkg/longstep for ptracer timestep a multiple of U/V/T/S timestep
   - adds deltaT argument to the subroutines TIMESTEP_TRACER DWNSLP_APPLY
     GAD_ADVECTION GAD_CALC_RHS GAD_IMPLICIT_R GAD_SOM_ADVECT
@@ -13,6 +17,8 @@ o build_options: ifort+mpi_aces optfile (following Constantinos advise):
    of mpi (mpich or mpich2) to be used with the same optfile.
   requires to load a netcdf module and set MPI_INC_DIR (see comments inside
    optfile). Change testing scripts (example_scripts/ACESgrid) accordingly.
+o pkg/seaice: 
+  fix previous modif (3-level field removed) for old-pickup reading 
 
 checkpoint61r
 o pkg/seaice: 
