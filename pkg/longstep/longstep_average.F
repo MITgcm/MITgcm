@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average.F,v 1.1 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average.F,v 1.2 2009/06/28 16:35:48 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -48,14 +48,8 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 CEOP
 
-      _BEGIN_MASTER(myThid)
-
-      LS_doTimeStep = .FALSE.
-
-      _END_MASTER(myThid)
-
 C     first iteration in a long time step? - reset averages
-      IF ( MOD(myIter, LS_niter) .EQ. 0 ) THEN
+      IF ( MOD(myIter, LS_nIter) .EQ. 0 ) THEN
 
        CALL LONGSTEP_RESET_3D(LS_uVelCount, LS_uVel, Nr, myThid)
        CALL LONGSTEP_RESET_3D(LS_vVelCount, LS_vVel, Nr, myThid)
@@ -116,16 +110,7 @@ C--   update average inside tile (no overlaps) for all bi,bj
 #endif
 
 C     time for a ptracer time step? - finish average
-      IF ( MOD(myIter, LS_niter) .EQ. LS_niter-1 ) THEN
-
-       _BEGIN_MASTER(myThid)
-
-C      we decide whether to do a timestep here and everybody else just
-C      checks this variable.  This avoids complications with
-C      staggerTimeStep
-       LS_doTimeStep = .TRUE.
-
-       _END_MASTER(myThid)
+      IF ( MOD(myIter, LS_nIter) .EQ. LS_nIter-1 ) THEN
 
        CALL LONGSTEP_AVERAGE_3D(LS_uVelCount, LS_uVel, Nr, myThid)
        CALL LONGSTEP_AVERAGE_3D(LS_vVelCount, LS_vVel, Nr, myThid)
@@ -211,7 +196,25 @@ C       if useDiagnostics: end
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-C      if MOD(myIter, LS_niter): end
+       _BARRIER
+       _BEGIN_MASTER(myThid)
+C      we decide whether to do a timestep here and everybody else just
+C      checks this variable.  This avoids complications with
+C      staggerTimeStep
+       LS_doTimeStep = .TRUE.
+       _END_MASTER(myThid)
+       _BARRIER
+
+      ELSEIF ( MOD(myIter, LS_nIter) .EQ. 0 ) THEN
+
+C      next time-step: switch back LS_doTimeStep
+       _BARRIER
+       _BEGIN_MASTER(myThid)
+       LS_doTimeStep = .FALSE.
+       _END_MASTER(myThid)
+       _BARRIER
+
+C      if MOD(myIter, LS_nIter): end
       ENDIF
 
 #endif /* ALLOW_LONGSTEP */

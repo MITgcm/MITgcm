@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_init_varia.F,v 1.1 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_init_varia.F,v 1.2 2009/06/28 16:35:48 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -34,6 +34,13 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 CEOP
 
+C     Initialise LS_doTimeStep
+      _BARRIER
+      _BEGIN_MASTER(myThid)
+      LS_doTimeStep = .FALSE.
+      _END_MASTER(myThid)
+      _BARRIER
+
 C     initialize longstep averages to zero
 
       CALL LONGSTEP_RESET_3D(LS_uVelCount, LS_uVel, Nr, myThid)
@@ -67,4 +74,3 @@ C     initialize longstep averages to zero
 
       RETURN
       END
-

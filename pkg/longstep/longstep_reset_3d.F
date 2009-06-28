@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_reset_3d.F,v 1.2 2009/06/27 02:40:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_reset_3d.F,v 1.3 2009/06/28 16:35:48 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -33,7 +33,7 @@ C       myNr :: number of levels to update
 C     myThid :: my Thread Id number
       INTEGER myNr
       _RL lsFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
-      INTEGER lsCnt
+      INTEGER lsCnt(nSx,nSy)
       INTEGER myThid
 
 #ifdef ALLOW_LONGSTEP
@@ -42,9 +42,9 @@ C     == Local variables ==
       INTEGER i,j,k,bi,bj
 CEOP
 
-      lsCnt = 0
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
+        lsCnt(bi,bj) = 0
         DO k = 1,myNr
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
