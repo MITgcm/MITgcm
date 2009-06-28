@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_TOPOLOGY.h,v 1.5 2009/05/12 19:40:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_TOPOLOGY.h,v 1.6 2009/06/28 00:58:42 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -106,7 +106,8 @@ C     process and subgrid indices).
 C     W2_myTileList   :: list of tiles owned by this process
 C     W2_procTileList :: same as W2_myTileList, but contains
 C                        information for all processes
-      INTEGER W2_myTileList(nSx), W2_procTileList(nSx,nPx*nPy)
+      INTEGER W2_myTileList(nSx,nSy)
+      INTEGER W2_procTileList(nSx,nSy,nPx*nPy)
       COMMON /W2_EXCH2_TILE_ID/
      &        W2_myTileList, W2_procTileList
 

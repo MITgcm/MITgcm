@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/fill_cs_corner_tr_rl.F,v 1.5 2009/05/12 19:53:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/fill_cs_corner_tr_rl.F,v 1.6 2009/06/28 01:02:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -74,7 +74,7 @@ CEOP
       IF (useCubedSphereExchange) THEN
 
 #ifdef ALLOW_EXCH2
-       myTile = W2_myTileList(bi)
+       myTile = W2_myTileList(bi,bj)
        southWestCorner = exch2_isWedge(myTile).EQ.1
      &             .AND. exch2_isSedge(myTile).EQ.1
        southEastCorner = exch2_isEedge(myTile).EQ.1

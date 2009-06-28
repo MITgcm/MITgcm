@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_2d_rx.template,v 1.5 2009/06/08 03:34:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_2d_rx.template,v 1.6 2009/06/28 01:02:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -80,10 +80,9 @@ C--   Process 0 extract the local arrays from the global buffer.
 #ifdef ALLOW_EXCH2
          IF ( useExch2GlobLayOut ) THEN
 
-c         DO bj=1,nSy
-          bj=1
+          DO bj=1,nSy
            DO bi=1,nSx
-             tN = W2_procTileList(bi,np)
+             tN = W2_procTileList(bi,bj,np)
              IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
 C-           face x-size larger than glob-size : fold it
                iGjLoc = 0
@@ -110,7 +109,7 @@ C-           default (face fit into global-IO-array)
              ENDDO
 
            ENDDO
-c         ENDDO
+          ENDDO
 
          ELSE
 #else /* ALLOW_EXCH2 */
@@ -161,10 +160,9 @@ C--   Process 0 fills-in its local data
 #ifdef ALLOW_EXCH2
         IF ( useExch2GlobLayOut ) THEN
 
-c         DO bj=1,nSy
-          bj=1
+          DO bj=1,nSy
            DO bi=1,nSx
-             tN = W2_myTileList(bi)
+             tN = W2_myTileList(bi,bj)
              IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
 C-           face x-size larger than glob-size : fold it
                iGjLoc = 0
@@ -191,7 +189,7 @@ C-           default (face fit into global-IO-array)
              ENDDO
 
            ENDDO
-c         ENDDO
+          ENDDO
 
 C--   After the copy from the buffer, reset to zero.
 C     An alternative to zeroBuff when writing to file,

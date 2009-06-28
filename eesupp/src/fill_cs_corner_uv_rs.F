@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/fill_cs_corner_uv_rs.F,v 1.3 2009/05/12 19:53:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/fill_cs_corner_uv_rs.F,v 1.4 2009/06/28 01:02:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,7 +18,7 @@ C     !INTERFACE:
 C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE FILL_CS_CORNER_UV_RS
-C     | o Fill the corner-halo region of CS-grid, 
+C     | o Fill the corner-halo region of CS-grid,
 C     |   for a 2 components, C-grid vector field
 C     *==========================================================*
 C     | o the corner halo region is filled with valid values
@@ -38,7 +38,7 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     
+C
 C     withSigns :: uFld,vFld are vector components
 C     uFld      :: u-component, at C-grid West  point location
 C     vFld      :: v-component, at C-grid SOuth point location
@@ -71,7 +71,7 @@ CEOP
        IF (withSigns) negOne = -1. _d 0
 
 #ifdef ALLOW_EXCH2
-       myTile = W2_myTileList(bi)
+       myTile = W2_myTileList(bi,bj)
        southWestCorner = exch2_isWedge(myTile).EQ.1
      &             .AND. exch2_isSedge(myTile).EQ.1
        southEastCorner = exch2_isEedge(myTile).EQ.1
@@ -98,8 +98,8 @@ C      U(-1,sNy+1)   U(1,sNy+1)   U(2,sNy+1)
 C          | ^           |             |
 C     -----|--\--------corner----------|
 C          |   \         |             |
-C          |    \        |   
-C          |     \       |            
+C          |    \        |
+C          |     \       |
 C     -----|---V(0,sNy)--|---------------
 C          |             |
 C
@@ -117,7 +117,7 @@ C          |              |              |
 C     -----|--V(0,sNy+1)--o--------------|
 C          |              |\             |
 C          |              | \=corner
-C          |              |            
+C          |              |
 C     -----|--V(0,sNy)----|--
 C          |              |
 C
