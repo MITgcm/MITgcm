@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_s3d_rx.template,v 1.7 2009/05/30 21:27:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_s3d_rx.template,v 1.8 2009/06/28 00:56:17 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -18,16 +18,12 @@ C     | SUBROUTINE EXCH2_S3D_RX
 C     | o Handle Simple exchanges (= that ignore corners)
 C     |   for _RX, 3-dim scalar arrays with overlap size = 1
 C     *==========================================================*
-C     | Invoke appropriate exchange routine depending on type
-C     | of grid (cube or globally indexed) to be operated on.
-C     *==========================================================*
 
 C     !USES:
       IMPLICIT NONE
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-c#include "EESUPPORT.h"
 c#include "W2_EXCH2_SIZE.h"
 c#include "W2_EXCH2_TOPOLOGY.h"
 
@@ -54,30 +50,11 @@ CEOP
       OLs        = 1
       exchWidthX = 1
       exchWidthY = 1
-C     ** NOTE ** The exchange routine we use here does not
-C                require the preceeding and following barriers.
-C                However, the slow, simple exchange interface
-C                that is calling it here is meant to ensure
-C                that threads are synchronised before exchanges
-C                begine.
 
-      IF (useCubedSphereExchange) THEN
-
-       CALL EXCH2_RX1_CUBE( phi, 'T ',
+      CALL EXCH2_RX1_CUBE( phi, 'T ',
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
-
-      ELSE
-
-#ifndef AUTODIFF_EXCH2
-       CALL EXCH_RX( phi,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
-#endif
-
-      ENDIF
 
       RETURN
       END
