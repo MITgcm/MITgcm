@@ -1,13 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1135 2009/06/28 16:55:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1136 2009/06/29 22:47:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o change tiling of natl_box (from 2 to 4 tiles) to get it tested with MPI+MTH
+  and generate new output (for the 2 tests) using default rotationPeriod.
 o pkg/exch2:
   - always call exch2_*_cube, not exch-1 anymore, if useCubedSphereExchange=F
     (was already the case with AUTODIFF_EXCH2 defined)
   - add bj in exch2 arrays and S/R.
+  - can now use pkg/exch2 for regular (non CS) set-up; switch test experiment
+    MLAdjust to exch2 (identical results except with MPI -> truncation diff);
 o add pkg/longstep for ptracer timestep a multiple of U/V/T/S timestep
   - adds deltaT argument to the subroutines TIMESTEP_TRACER DWNSLP_APPLY
     GAD_ADVECTION GAD_CALC_RHS GAD_IMPLICIT_R GAD_SOM_ADVECT
