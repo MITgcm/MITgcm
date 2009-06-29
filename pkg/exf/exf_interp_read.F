@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.12 2008/01/23 16:38:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.13 2009/06/29 21:31:09 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -113,7 +113,7 @@ C--   master thread of process 0, only, opens a global file
         IL  = ILNBLNK( infile )
         INQUIRE( file=infile, exist=exst )
         IF (exst) THEN
-         IF ( debugLevel .GE. debLevA ) THEN
+         IF ( debugLevel .GT. debLevA ) THEN
           WRITE(msgBuf,'(A,A)')
      &         ' EXF_INTERP_READ: opening file: ',infile(1:IL)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
