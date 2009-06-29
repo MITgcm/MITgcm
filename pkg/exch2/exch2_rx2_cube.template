@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.11 2009/06/28 01:00:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/exch2_rx2_cube.template,v 1.12 2009/06/29 23:46:50 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -104,12 +104,10 @@ C-    Tile size of arrays to exchange:
       k2Lo  = 1
       k2Hi  = myNz
 
-C     For now tile <-> tile exchanges are sequentialised through
-C     thread 1. This is a temporary feature for preliminary testing until
-C     general tile decomposition is in place (CNH April 11, 2001)
-      CALL BAR2( myThid )
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     Prevent anyone to access shared buffer while an other thread modifies it
+      CALL BAR2( myThid )
 
 C--   Post sends into buffer (buffer level 1):
       DO bj=myByLo(myThid), myByHi(myThid)
@@ -167,11 +165,12 @@ C     in its copy of "array1" & "array2".
        ENDDO
       ENDDO
 
+C     Wait until all threads finish filling buffer
+      CALL BAR2( myThid )
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_USE_MPI
-C     wait until all threads finish filling buffer
-      CALL BAR2( myThid )
       _BEGIN_MASTER( myThid )
 
 C--   Send my data (in buffer, level 1) to target Process
@@ -254,11 +253,12 @@ C           that he has consumed the buffer the sender filled here.
       ENDDO
 
       _END_MASTER( myThid )
+C     Everyone waits until master-thread finishes receiving
+      CALL BAR2( myThid )
+
 #endif /* ALLOW_USE_MPI */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Wait until all threads finish receiving or filling buffer
-      CALL BAR2( myThid )
 
 C--   Extract from buffer (either from level 1 if local exch,
 C                     or level 2 if coming from an other Proc)
@@ -314,8 +314,6 @@ C      o e2_msgHandle entry to read is entry associated with opposing send recor
         ENDDO
        ENDDO
       ENDDO
-
-      CALL BAR2(myThid)
 
       RETURN
       END
