@@ -30,7 +30,7 @@
  viscA4             = 5.e12,
  diffKhT            = 1.0E3,
  diffKhS            = 1.0E3,
- rotationPeriod     = 86400.,
+#rotationPeriod     = 86400.,
  tAlpha             = 2.E-4,
  sBeta              = 7.4E-4,
  gravity            = 9.81,
