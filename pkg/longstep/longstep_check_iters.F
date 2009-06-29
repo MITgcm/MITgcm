@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_check_iters.F,v 1.2 2009/06/28 04:58:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_check_iters.F,v 1.3 2009/06/29 18:51:26 jahn Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -46,26 +46,35 @@ C       to invalid vel,... averages, so we abort
       IF (MOD(nEndIter, LS_nIter) .NE. 0) THEN
 C       Add as many time steps as necessary to bring endtime to the end
 C       of a long time step, so that the pickup will be valid.
-        WRITE(msgBuf,'(2A,2I10)')
+        WRITE(msgBuf,'(3A)') '**WARNING** ',
      &       ' LONGSTEP_CHECK_ITERS: nEndIter is not a multiple of',
-     &       ' LS_niter', nEndIter, LS_niter
-        CALL PRINT_ERROR( msgBuf, myThid )
+     &       ' LS_niter:'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(2A,2I10)') '**WARNING** ',
+     &       ' LONGSTEP_CHECK_ITERS:     ', nEndIter, LS_niter
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
         extraIter = LS_nIter - MOD(nEndIter, LS_nIter)
         nEndIter = nEndIter + extraIter
         nTimeSteps = nEndIter - nIter0
         endTime = baseTime + deltaTClock*float(nEndIter)
-        WRITE(msgBuf,'(A)')
+        WRITE(msgBuf,'(2A)') '**WARNING** ',
      &       ' LONGSTEP_CHECK_ITERS: adjusting to'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A,I10)')
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(2A,I10)') '**WARNING** ',
      &       ' LONGSTEP_CHECK_ITERS:     nEndIter   =', nEndIter
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A,I10)')
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(2A,I10)') '**WARNING** ',
      &       ' LONGSTEP_CHECK_ITERS:     nTimeSteps =', nTimeSteps
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A,1PE23.15)')
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(2A,1PE23.15)') '**WARNING** ',
      &       ' LONGSTEP_CHECK_ITERS:     endTime    =', endTime
-        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
 C       log to standard output too
         WRITE(msgBuf,'(2A)') 'S/R LONGSTEP_CHECK_ITERS: ',
      &    ' adjusting endTime:'
