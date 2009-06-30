@@ -1,5 +1,5 @@
-C$Header: /u/gcmpack/MITgcm/model/src/seawater.F,v 1.3 2008/09/06 17:42:27 jmc Exp $
-C$Name:  $
+C $Header: /u/gcmpack/MITgcm/model/src/seawater.F,v 1.4 2009/06/30 20:47:32 ce107 Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
