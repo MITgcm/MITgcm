@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1136 2009/06/29 22:47:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1137 2009/06/30 00:02:32 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exch2 (exch2_rxN_cube*):
+   remove last BARRIER (no need to synchronise after getting data from shared
+   buffer (get) as long as any change to buffer (put,recv) is between BARRIER)
 o change tiling of natl_box (from 2 to 4 tiles) to get it tested with MPI+MTH
   and generate new output (for the 2 tests) using default rotationPeriod.
 o pkg/exch2:
