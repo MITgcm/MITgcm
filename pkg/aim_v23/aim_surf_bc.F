@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.15 2009/06/15 17:58:55 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.16 2009/06/30 16:03:44 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -345,7 +345,7 @@ C     to replace MxL fields (if use sea-ice) or directly AIM SST
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
          pCO2scl = 1. _d 6
-         CALL DIAGNOSTICS_SCALE_FILL( aim_CO2(1,myThyd), pCO2scl, 1,
+         CALL DIAGNOSTICS_SCALE_FILL( aim_CO2(1,myThid), pCO2scl, 1,
      &                  'aim_pCO2', 1, 1, 3, bi, bj, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
