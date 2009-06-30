@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/runclock/runclock_readparms.F,v 1.1 2005/05/31 18:24:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/runclock/runclock_readparms.F,v 1.2 2009/06/30 20:46:10 ce107 Exp $
 C $Name:  $
 
 #include "RUNCLOCK_OPTIONS.h"
@@ -88,7 +88,7 @@ C--   Close the open data file
      &                    SQUEEZE_RIGHT , 1)
 c     write(0,*) ' RUNCLOCK_READPARMS: no Wall Clock limit set'
       ELSE
-      WRITE(msgBuf,'(A,I)') 
+      WRITE(msgBuf,'(A,I7)') 
      &  ' RUNCLOCK_READPARMS: Wall Clock limit set to ',tSecs
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
