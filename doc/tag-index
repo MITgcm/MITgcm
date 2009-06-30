@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1137 2009/06/30 00:02:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1138 2009/06/30 16:38:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61s
 o pkg/exch2 (exch2_rxN_cube*):
    remove last BARRIER (no need to synchronise after getting data from shared
    buffer (get) as long as any change to buffer (put,recv) is between BARRIER)
