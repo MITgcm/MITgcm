@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.10 2008/04/08 16:20:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.11 2009/06/30 16:43:00 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -48,6 +48,12 @@ ccccccccccccccccccccccccccc
       ENDIF
 #endif /* ALLOW_CFC */
 c         _END_MASTER( mythid )
+
+#ifdef ALLOW_DARWIN
+      IF ( useDARWIN ) THEN
+         call DARWIN_INIT_FIXED(myThid)
+      ENDIF
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
 C     Define diagnostics Names :

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.16 2008/04/09 20:10:04 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.17 2009/06/30 16:43:00 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -47,6 +47,7 @@ C  to test the flag before any corresponding pkg S/R call
      &                   nsubtime,
      &                   useDIC,
      &                   useCFC,
+     &                   useDARWIN,
      &                   Filename1,
      &                   Filename2,
      &                   Filename3,
@@ -66,6 +67,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C Set defaults values for parameters in GCHEM.h
        useDIC = .FALSE.
        useCFC = .FALSE.
+       useDARWIN = .FALSE.
        tIter0 = UNSET_I
        nsubtime=1
        Filename1=' '
@@ -131,6 +133,12 @@ C Everyone else must wait for the parameters to be loaded
 #ifdef ALLOW_CFC
       IF ( useCFC ) THEN
         CALL CFC_READPARMS(myThid)
+      ENDIF
+#endif
+
+#ifdef ALLOW_DARWIN
+      IF ( useDARWIN ) THEN
+        CALL DARWIN_READPARMS(myThid)
       ENDIF
 #endif
 

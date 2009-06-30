@@ -1,10 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.25 2009/01/05 15:26:02 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.26 2009/06/30 16:43:00 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
 #ifdef ALLOW_DIC
 #include "DIC_OPTIONS.h"
 #endif
+#ifdef ALLOW_DARWIN
+#include "DARWIN_OPTIONS.h"
+#endif
+
 
 CBOP
 C !ROUTINE: GCHEM_FORCING_SEP
@@ -27,6 +31,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_FIELDS.h"
+#include "GCHEM.h"
 #ifdef ALLOW_DIC
 #include "DIC_VARS.h"
 #endif /* ALLOW_DIC */
@@ -114,6 +119,36 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 
 #endif
 cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
+#ifdef ALLOW_DARWIN
+        IF ( useDARWIN ) THEN
+#ifdef NUT_SUPPLY
+c articficial supply of nutrients
+          call DARWIN_Nut_Supply( Ptracer(1-Olx,1-Oly,1,bi,bj,1),
+     &                          bi,bj,imin,imax,jmin,jmax,
+     &                          myIter,myTime,myThid)
+          call DARWIN_Nut_Supply( Ptracer(1-Olx,1-Oly,1,bi,bj,2),
+     &                          bi,bj,imin,imax,jmin,jmax,
+     &                          myIter,myTime,myThid)
+          call DARWIN_Nut_Supply( Ptracer(1-Olx,1-Oly,1,bi,bj,3),
+     &                          bi,bj,imin,imax,jmin,jmax,
+     &                          myIter,myTime,myThid)
+          call DARWIN_Nut_Supply( Ptracer(1-Olx,1-Oly,1,bi,bj,4),
+     &                          bi,bj,imin,imax,jmin,jmax,
+     &                          myIter,myTime,myThid)
+#endif
+ccccccccccccccc
+          call DARWIN_cons(myIter,myTime,myThid)
+C darwin_forcing operates on bi,bj part only, but needs to get full
+C array because of last (iPtr) index
+          call DARWIN_Forcing(  Ptracer(1-Olx,1-Oly,1,1,1,1),
+     &                          bi,bj,imin,imax,jmin,jmax,
+     &                          myIter,myTime,myThid)
+          call DARWIN_cons(myIter,myTime,myThid)
+#ifdef ALLOW_CARBON
+       CALL DIC_ATMOS( 1, myTime, myIter, myThid )
+#endif
+        ENDIF
+#endif
 
         ENDDO
        ENDDO

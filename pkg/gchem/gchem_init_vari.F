@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_vari.F,v 1.10 2008/04/08 21:00:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_vari.F,v 1.11 2009/06/30 16:43:00 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
+#ifdef ALLOW_DARWIN
+#include "DARWIN_OPTIONS.h"
+#endif
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GCHEM_INIT_VARI(myThid )
@@ -40,6 +43,15 @@ ccccccccccccccccccccccccccc
       ENDIF
 #endif /* ALLOW_DIC */
 
+#ifdef ALLOW_DARWIN
+      IF ( useDARWIN ) THEN
+         call DARWIN_INIT_VARI(myThid )
+#ifdef ALLOW_CARBON
+         CALL DIC_SURFFORCING_INIT(myThid)
+         CALL DIC_DIAGS_INIT(myThid)
+#endif
+      ENDIF
+#endif
 #endif /* ALLOW_GCHEM */
 
       RETURN
