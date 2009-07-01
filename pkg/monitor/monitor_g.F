@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_g.F,v 1.4 2008/03/28 18:48:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_g.F,v 1.5 2009/07/01 14:45:14 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -12,7 +12,7 @@ C     !ROUTINE: MONITOR
 
 C     !INTERFACE:
       SUBROUTINE G_MONITOR(
-     I                    myIter, myTime, myThid )
+     I                      myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Monitor key dynamical variables: calculate over the full domain
@@ -37,8 +37,8 @@ C     !USES:
 #endif
 
 C     !INPUT PARAMETERS:
-      INTEGER myIter
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 CEOP
 
