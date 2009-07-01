@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.10 2006/10/17 19:01:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.11 2009/07/01 14:49:22 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -36,10 +36,12 @@ C     and prefix monitor "variables" with mon by default.
       CALL MON_SET_IOUNIT( standardMessageUnit, myThid )
       CALL MON_SET_PREF  ( mon_string_none    , myThid )
 
+      _BEGIN_MASTER(myThid)
 C     Internal parameter for continuing when monitor_solution would
 C     otherwise decide to stop the code.
-      _BEGIN_MASTER(myThid)
-      mon_overrideStop=.FALSE.
+c     mon_overrideStop=.FALSE.
+      monSolutionMaxRange = 1. _d +4
+      IF ( fluidIsWater ) monSolutionMaxRange = 1. _d +3
       _END_MASTER(myThid)
 
       _BARRIER
