@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.166 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.167 2009/07/01 14:46:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -976,7 +976,7 @@ C--   State-variables time-averaging
       IF ( .NOT.useOffLine ) THEN
 C--   Check status of solution (statistics, cfl, etc...)
         CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
-        CALL MONITOR( myIter, myTime, myThid )
+        CALL MONITOR( myTime, myIter, myThid )
         CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
       ENDIF
 #endif /* ALLOW_MONITOR */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.58 2009/06/14 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.59 2009/07/01 14:46:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -340,7 +340,7 @@ C--   Finally summarise the model state
       IF (debugMode) CALL DEBUG_CALL('MONITOR',myThid)
 #endif
 C--   Check status of initial state (statistics, cfl, etc...)
-      CALL MONITOR( nIter0, startTime, myThid )
+      CALL MONITOR( startTime, nIter0, myThid )
 #endif /* ALLOW_MONITOR */
 
 C--   Dump initial state to files
