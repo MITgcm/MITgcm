@@ -9,6 +9,7 @@ DEFINES='-DWORDLENGTH=4 -D_BYTESWAPIO -DHAVE_ETIME -DHAVE_SYSTEM -DHAVE_FDATE'
 CPP='cpp  -traditional -P'
 NOOPTFLAGS='-B108 -YCFRL=1 -YEXT_NAMES=LCS -YVAR_NAMES=LCS -g -m32'
 NOOPTFILES='ini_parms.F'
+EXTENDED_SRC_FLAG='-W132'
 
 if test "x$DEVEL" != x ; then
     FFLAGS='-B108 -YCFRL=1 -YEXT_NAMES=LCS -YVAR_NAMES=LCS -g -trap=INVALID,DIVBYZERO,OVERFLOW -Rb -Rs -Rc'
@@ -18,7 +19,7 @@ fi
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FOPTIM='-Ofast -m32 -fPIC -speed_math=9 -WOPT:if_conv=off -LNO:fu=9:full_unroll_size=7000 -cpu:host -TARG:sse2=on'
+    FOPTIM='-Ofast -m32 -fPIC -speed_math=9 -WOPT:if_conv=off -LNO:fu=9:full_unroll_size=7000 -cpu:host -TARG:sse2=on -TENV:simd_imask,simd_dmask,simd_zmask,simd_omask'
 #    FOPTIM='-O3 -m32 -U -cpu:host'
 else
     #  Try to follow IEEE-754
