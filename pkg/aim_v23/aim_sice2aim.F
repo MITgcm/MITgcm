@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.12 2009/06/09 22:48:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.13 2009/07/08 23:35:42 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -114,7 +114,7 @@ C-     Compute albedo over sea-ice
      I          iceMask(siLo,sjLo,bi,bj), iceHeight(siLo,sjLo,bi,bj),
      I          snowHeight(siLo,sjLo,bi,bj), Tsrf(siLo,sjLo,bi,bj),
      I          snowAge(siLo,sjLo,bi,bj),
-     O          siceAlb(siLo,sjLo,bi,bj),
+     O          siceAlb(siLo,sjLo,bi,bj), icAlbNIR(siLo,sjLo,bi,bj),
      I          myTime, myIter, myThid )
         DO j=1,sNy
          DO i=1,sNx
