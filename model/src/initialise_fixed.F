@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.49 2008/09/05 20:15:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.50 2009/07/08 22:10:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -32,16 +32,13 @@ C      |
 C      |-- PACKAGES_BOOT
 C      |
 C      |-- PACKAGES_READPARMS
-C      | |
-C      | | - MNC_INIT + MNC_CW_INIT
-C      | |
-C      | | - ${PKG}_READPARMS
+C      |  |- ${PKG}_READPARMS
 C      |
 C      |-- SET_PARMS
 C      |
 C      |-- INI_MODEL_IO
-C      |
-C      |-- MON_INIT
+C      |  |- MNC_INIT + MNC_CW_INIT
+C      |  |- MON_INIT
 C      |
 C      |-- INI_GRID
 C      |
@@ -58,6 +55,7 @@ C      |
 C      |-- INI_MASKS_ETC
 C      |
 C      |-- PACKAGES_INIT_FIXED
+C      |  |- ${PKG}_INIT_FIXED
 C      |
 C      |-- INI_LINEAR_PHSURF
 C      |
@@ -113,14 +111,8 @@ C--   Set (or reset) parameters (at this point, know which packages are used);
 C     after this call, main model parameters are not supposed to be modified.
       CALL SET_PARMS( myThid )
 
-C--   Write units/set precision/etc for I/O of variables/arrays belonging
-C     to the core dynamical model
+C--   Write units/set precision/etc for I/O (pickup, MDS/RW, MNC, MONITOR):
       CALL INI_MODEL_IO( myThid )
-
-#ifdef ALLOW_MONITOR
-C--   Initialise MONITOR I/O streams so we can report config. info
-      CALL MON_INIT( myThid )
-#endif
 
 C--   Set model grid.
 C     Variables defining model grid spacing are defined.

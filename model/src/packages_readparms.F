@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.60 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.61 2009/07/08 22:10:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,7 +28,7 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     PACKAGES_READPARMS
 C       |
-C       |-- MNC_READPARMS + MNC_INIT + MNC_CW_INIT
+C       |-- MNC_READPARMS
 C       |
 C       |-- RUNCLOCK_READPARMS
 C       |
@@ -120,17 +120,9 @@ C     == Routine arguments ==
 CEOP
 
 #ifdef ALLOW_MNC
-C     Read run-time flags and initialize look-up tables for MNC
+C     Read run-time flags for MNC
       IF (useMNC) THEN
         CALL MNC_READPARMS( myThid )
-      ENDIF
-      IF (useMNC) THEN
-        CALL MNC_INIT(myThid)
-        CALL MNC_CW_INIT(sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,
-     &       Nr,myThid)
-CEH3       IF ( mnc_echo_gvtypes ) THEN
-CEH3       CALL MNC_CW_DUMP( myThid )
-CEH3       ENDIF
       ENDIF
 #endif
 

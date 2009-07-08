@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.33 2009/05/25 02:51:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.34 2009/07/08 22:10:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,7 +11,11 @@ C     !INTERFACE:
       SUBROUTINE INI_MODEL_IO( myThid )
 
 C     !DESCRIPTION:
-C     Pass specific setup data for mdsio/rw.
+C     Initialisation and setting of I/O:
+C     - Check size and initialise global I/O buffer
+C     - Initialise flags for pickup and for mdsio/rw.
+C     - Do MNC model-IO initialisation
+C     - Do Monitor-IO initialisation
 
 C     !USES:
       IMPLICIT NONE
@@ -115,7 +119,7 @@ C-    Only Master-thread updates IO-parameter in Common blocks:
 
 C-    Initialise AB starting level
 C      notes: those could be modified when reading a pickup that does
-C             correspond to what is actually needed.
+C             not correspond to what is actually needed.
       tempStartAB = nIter0
       saltStartAB = nIter0
       mom_StartAB = nIter0
@@ -173,6 +177,14 @@ C-    MNC model-io initialisation
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
 
+C-    Initialize look-up tables for MNC
+        CALL MNC_INIT( myThid )
+        CALL MNC_CW_INIT( sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,
+     &                    Nr,myThid )
+CEH3       IF ( mnc_echo_gvtypes ) THEN
+CEH3       CALL MNC_CW_DUMP( myThid )
+CEH3       ENDIF
+
 C       Write units/set precision/etc for I/O of variables/arrays
 C       belonging to the core dynamical model
         CALL INI_MNC_VARS( myThid )
@@ -183,6 +195,11 @@ C       belonging to the core dynamical model
 
       ENDIF
 #endif /* ALLOW_MNC */
+
+#ifdef ALLOW_MONITOR
+C--   Initialise MONITOR I/O streams so we can report config. info
+      CALL MON_INIT( myThid )
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
