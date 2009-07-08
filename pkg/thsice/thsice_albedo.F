@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_albedo.F,v 1.5 2006/07/24 20:30:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_albedo.F,v 1.6 2009/07/08 23:35:05 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -10,7 +10,7 @@ C     !INTERFACE:
      I                  bi, bj, siLo, siHi, sjLo, sjHi,
      I                  iMin,iMax, jMin,jMax,
      I                  iceMask, hIce, hSnow, tSrf, ageSnw,
-     O                  sAlb,
+     O                  sAlb, sAlbNIR,
      I                  myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -42,6 +42,7 @@ C  tSrf    (Tsf)  :: surface (ice or snow) temperature [oC]
 C  ageSnw  (age)  :: snow age [s]
 C---  Output
 C  sAlb  (albedo) :: surface albedo [0-1]
+C  sAlbNIR(albedo):: near IR surface albedo [0-1]
 C---  Input:
 C     myTime      :: current Time of simulation [s]
 C     myIter      :: current Iteration number in simulation
@@ -56,6 +57,7 @@ C     myThid      :: my Thread Id number
       _RL tSrf   (siLo:siHi,sjLo:sjHi)
       _RL ageSnw (siLo:siHi,sjLo:sjHi)
       _RL sAlb   (siLo:siHi,sjLo:sjHi)
+      _RL sAlbNIR(siLo:siHi,sjLo:sjHi)
       _RL  myTime
       INTEGER myIter
       INTEGER myThid
@@ -79,10 +81,21 @@ C     msgBuf     :: Informational/error meesage buffer
 c     _RL  frsnow
       _RL albsno, albice
       _RL albNewSnow
+      _RL albNIR_ocean, albNIR_thick, albNIR_dsnow
+      _RL albNIR_ice, albNIR_fHice, recFac_albNIR
       INTEGER i,j
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( thSIce_calc_albNIR ) THEN
+C     Near-InfraRed albedo
+        albNIR_ocean = 0.06 _d 0
+        albNIR_thick = 0.33 _d 0
+        albNIR_dsnow = 0.68 _d 0
+        albNIR_fHice = 4. _d 0
+        recFac_albNIR = 1. _d 0 / ATAN(albNIR_fHice*0.5 _d 0)
+      ENDIF
 
       DO j = jMin, jMax
        DO i = iMin, iMax
@@ -124,6 +137,18 @@ C-    albedo of snow is function of snow-age (make age units into days):
 C-    layer of snow over the ice:
       albedo = albsno + (albice-albsno)*EXP(-hs/hAlbSnow)
 
+      IF ( thSIce_calc_albNIR ) THEN
+C--   Compute near-infrared albedo
+        albNIR_ice = albNIR_ocean + (albNIR_thick -  albNIR_ocean)*
+     &        MIN( recFac_albNIR*ATAN(albNIR_fHice*hi), 1. _d 0 )
+     &        + 0.075 _d 0 * MIN( -Tsf - 1. _d 0, 0. _d 0 )
+
+        sAlbNIR(i,j) = albNIR_ice * ( 1. _d 0 - hs/(hs + 0.02 _d 0) )
+     &   + ( albNIR_dsnow + 0.15 _d 0 *MIN( -Tsf - 1. _d 0, 0. _d 0) )
+     &           * hs/(hs + 0.02 _d 0)
+      ELSE
+        sAlbNIR(i,j) = albedo
+      ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           IF (albedo.GT.1. _d 0 .OR. albedo.LT. .2 _d 0) THEN
 c       print*,'QQ - albedo problem', albedo, age, hs, albsno
@@ -138,6 +163,7 @@ c       print*,'QQ - albedo problem', albedo, age, hs, albsno
           sAlb(i,j) = albedo
         ELSE
           sAlb(i,j) = 0. _d 0
+          sAlbNIR(i,j) = 0. _d 0
         ENDIF
        ENDDO
       ENDDO

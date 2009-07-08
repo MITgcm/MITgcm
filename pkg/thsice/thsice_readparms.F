@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.15 2008/04/11 21:31:14 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.16 2009/07/08 23:35:05 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -60,7 +60,7 @@ C--   Th-Sea-ICE parameter
      &  fracEnMelt, fracEnFreez, hThinIce, hThickIce, hNewIceMax
 
       NAMELIST /THSICE_PARM01/
-     &     startIceModel, stepFwd_oceMxL,
+     &     startIceModel, stepFwd_oceMxL, thSIce_calc_albNIR,
      &     thSIce_deltaT, thSIce_dtTemp,
      &     ocean_deltaT, tauRelax_MxL,
      &     hMxL_default, sMxL_default, vMxL_default,
@@ -127,6 +127,7 @@ C--   Default values (constants)
 
 C--   Default values (parameters)
       stepFwd_oceMxL  = .FALSE.
+      thSIce_calc_albNIR  = .FALSE.
       startIceModel   = 0
       thSIce_deltaT   = dTtracerLev(1)
       thSIce_dtTemp  = UNSET_RL

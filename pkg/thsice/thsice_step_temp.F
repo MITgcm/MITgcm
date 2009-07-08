@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.6 2007/04/19 13:22:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.7 2009/07/08 23:35:05 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -115,7 +115,7 @@ c     IF ( fluidIsWater ) THEN
      I          iceMask(siLo,sjLo,bi,bj), iceHeight(siLo,sjLo,bi,bj),
      I          snowHeight(siLo,sjLo,bi,bj), Tsrf(siLo,sjLo,bi,bj),
      I          snowAge(siLo,sjLo,bi,bj),
-     O          siceAlb(siLo,sjLo,bi,bj),
+     O          siceAlb(siLo,sjLo,bi,bj), icAlbNIR(siLo,sjLo,bi,bj),
      I          myTime, myIter, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
