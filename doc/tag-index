@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1138 2009/06/30 16:38:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1139 2009/07/08 23:38:05 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/thsice: add code for Near Infra-Red albedo (from Jeff)
+   (turned on with run-time flag: thSIce_calc_albNIR, in data.ice).
+o move (from packages_readparms.F & initialise_fixed.F) to ini_model_io.F
+  MNC & MONITOR initialisation calls; move MNC calls from {pkg}_readparms.F
+  to {pkg}_init_fixed.F for {pkg}= kpp, seaice & shelfice.
 
 checkpoint61s
 o pkg/exch2 (exch2_rxN_cube*):
