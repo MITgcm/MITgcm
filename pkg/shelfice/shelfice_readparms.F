@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.7 2008/09/10 08:55:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.8 2009/07/08 21:58:30 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -45,7 +45,7 @@ CEOP
      &     SHELFICElatentHeat, SHELFICEHeatCapacity_Cp,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
      &     SHELFICEthetaSurface,
-     &     useISOMIPTD, no_slip_shelfice, 
+     &     useISOMIPTD, no_slip_shelfice,
      &     SHELFICEconserve, SHELFICEboundaryLayer,
      &     SHELFICEwriteState,
      &     SHELFICE_dumpFreq,
@@ -127,14 +127,6 @@ C-    Set Output type flags :
       _END_MASTER(myThid)
 C Everyone else must wait for the parameters to be loaded
       _BARRIER
-
-#ifdef ALLOW_MNC
-C     Initialize MNC variable information for SHELFICE
-      IF ( useMNC .AND. (shelfice_tave_mnc.OR.shelfice_dump_mnc)
-     &    ) THEN
-       CALL SHELFICE_MNC_INIT( myThid )
-      ENDIF
-#endif /* ALLOW_MNC */
 
 #endif /* ALLOW_SHELFICE */
 

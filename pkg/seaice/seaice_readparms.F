@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.75 2009/06/04 17:27:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.76 2009/07/08 21:59:01 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -35,7 +35,7 @@ C     msgBuf      - Informational/error meesage buffer
 C     iUnit       - Work variable for IO unit number
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit, m
+      INTEGER iUnit
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
@@ -47,13 +47,13 @@ C--   SEAICE parameters
      & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow,
      & SEAICEadvSalt, SEAICEadvAge,
      & SEAICE_clipVelocities, SEAICE_maskRHS, SEAICE_no_slip,
-     & LAD, IMAX_TICE, SEAICEadvScheme, SEAICEadvSchArea, 
+     & LAD, IMAX_TICE, SEAICEadvScheme, SEAICEadvSchArea,
      & SEAICEadvSchHeff, SEAICEadvSchSnow,
      & SEAICEadvSchSalt, SEAICEadvSchAge,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
-     & SEAICE_evpDampC, SEAICE_zetaMin, 
-     & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq, 
+     & SEAICE_evpDampC, SEAICE_zetaMin,
+     & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_initialHEFF,
      & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
@@ -73,7 +73,7 @@ C--   SEAICE parameters
      & LSR_ERROR, DIFF1, A22,
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
-     & SEAICE_EPS, SEAICE_EPS_SQ, 
+     & SEAICE_EPS, SEAICE_EPS_SQ,
      & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
      & SEAICE_clim_atemp, SEAICE_clim_aqh
 
@@ -117,7 +117,7 @@ C--   set default sea ice parameters
       SEAICErestoreUnderIce = .FALSE.
       useHB87stressCoupling = .FALSE.
       usePW79thermodynamics = .TRUE.
-      SEAICEadvHeff      = .TRUE.    
+      SEAICEadvHeff      = .TRUE.
       SEAICEadvArea      = .TRUE.
       SEAICEadvSnow      = .TRUE.
       SEAICEadvSalt      = .TRUE.
@@ -206,7 +206,7 @@ C     SEAICE_latentIce   = 1.75 _d -03 * 2.834 _d 06 * 1.3
       IMAX_TICE  = 10
       SOLV_MAX_ITERS = 1500
       SOLV_NCHECK= 2
-C     two pseudo time steps correspond to the original modified 
+C     two pseudo time steps correspond to the original modified
 C     Euler time stepping scheme of Zhang+Hibler (1997)
       NPSEUDOTIMESTEPS = 2
       LSR_ERROR  = 0.0001    _d 0
@@ -358,7 +358,7 @@ C     Check the consitency of a few parameters
       ENDIF
 
 
-C     Make sure that we have least two pseudo time steps 
+C     Make sure that we have least two pseudo time steps
       NPSEUDOTIMESTEPS = MAX(NPSEUDOTIMESTEPS,2)
 C     Set default values
       IF ( SEAICE_availHeatFrac .EQ. UNSET_RL ) THEN
@@ -382,19 +382,19 @@ C     If the thsice package with the Winton thermodynamics is used
 C     is does not make sense to have the following parameters defined,
 C     so we reset them here
        usePW79thermodynamics = .FALSE.
-       SEAICEadvHeff         = .FALSE.    
+       SEAICEadvHeff         = .FALSE.
        SEAICEadvArea         = .FALSE.
-       SEAICEadvSnow         = .FALSE.    
-       SEAICEadvSalt         = .FALSE.    
-       SEAICEadvAge          = .FALSE.    
+       SEAICEadvSnow         = .FALSE.
+       SEAICEadvSalt         = .FALSE.
+       SEAICEadvAge          = .FALSE.
       ENDIF
-C     Set advection schemes to some sensible values if not done 
+C     Set advection schemes to some sensible values if not done
 C     in data.seaice
-      IF ( SEAICEadvSchArea .EQ. UNSET_I ) 
+      IF ( SEAICEadvSchArea .EQ. UNSET_I )
      &     SEAICEadvSchArea = SEAICEadvScheme
       IF ( SEAICEadvScheme .NE. SEAICEadvSchArea )
      &     SEAICEadvScheme  = SEAICEadvSchArea
-      IF ( SEAICEadvSchHeff .EQ. UNSET_I ) 
+      IF ( SEAICEadvSchHeff .EQ. UNSET_I )
      &     SEAICEadvSchHeff = SEAICEadvSchArea
       IF ( SEAICEadvSchSnow .EQ. UNSET_I )
      &     SEAICEadvSchSnow = SEAICEadvSchHeff
@@ -426,15 +426,8 @@ C-    Set Output type flags :
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
-C--   Summarise pkg/seaice cofiguration
+C--   Summarise pkg/seaice configuration
       CALL SEAICE_SUMMARY( myThid )
-
-C     Initialize MNC variable information for SEAICE
-      IF ( useMNC .AND. 
-     &    (seaice_tave_mnc.OR.seaice_dump_mnc.OR.SEAICE_mon_mnc)
-     &   ) THEN
-        CALL SEAICE_MNC_INIT( myThid )
-      ENDIF
 
       RETURN
       END

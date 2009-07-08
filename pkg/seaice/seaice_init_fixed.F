@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.5 2009/06/25 14:36:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.6 2009/07/08 21:59:01 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE SEAICE_INIT_FIXED( myThid )
-C     /==========================================================\
-C     | SUBROUTINE SEAICE_INIT_FIXED                             |
-C     | o Initialization of sea ice model.                       |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE SEAICE_INIT_FIXED
+C     | o Initialization of sea ice model.
+C     *==========================================================*
+C     *==========================================================*
       IMPLICIT NONE
- 
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -27,13 +27,15 @@ C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
       INTEGER myThid
 CEndOfInterface
- 
+
 C     === Local variables ===
 C     i,j,k,bi,bj - Loop counters
 
       INTEGER i, j, k, bi, bj
       INTEGER kSurface
+#ifndef SEAICE_CGRID
       _RS  mask_uice
+#endif
 cif(
 cif   Helper variable for determining the fraction of sw radiation
 cif   penetrating the model's shallowest layer
@@ -50,13 +52,20 @@ cif)
        kSurface        = 1
       ENDIF
 
+C     Initialize MNC variable information for SEAICE
+      IF ( useMNC .AND.
+     &    (seaice_tave_mnc.OR.seaice_dump_mnc.OR.SEAICE_mon_mnc)
+     &   ) THEN
+        CALL SEAICE_MNC_INIT( myThid )
+      ENDIF
+
 cif(
 #ifdef SHORTWAVE_HEATING
       IMAX      = 2
       FACTORM   = -1.0
       dummyTime = 1.0
       dummyIter = 0
-      swfracba(1) = abs(rF(1)) 
+      swfracba(1) = abs(rF(1))
       swfracba(2) = abs(rF(2))
       CALL SWFRAC(
      I       IMAX,FACTORM,
@@ -95,7 +104,7 @@ C--   Initialize grid info
       ENDDO
 
 #ifdef SEAICE_CGRID
-C     coefficients for metric terms 
+C     coefficients for metric terms
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
@@ -107,10 +116,10 @@ C     coefficients for metric terms
          ENDDO
         ENDDO
         IF ( usingSphericalPolarGrid .AND. SEAICEuseMetricTerms ) THEN
-C     This is the only case where tan(phi) is not zero. In this case 
-C     C and U points, and Z and V points have the same phi, so that we 
+C     This is the only case where tan(phi) is not zero. In this case
+C     C and U points, and Z and V points have the same phi, so that we
 C     only need a copy here. Do not use tan(YC) and tan(YG), because these
-C     can be the geographical coordinates and not the correct grid 
+C     can be the geographical coordinates and not the correct grid
 C     coordinates when the grid is rotated (phi/theta/psiEuler .NE. 0)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -129,21 +138,21 @@ C     compute metric term coefficients from finite difference approximation
          ENDDO
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx+1,sNx+OLx
-           k1AtZ(I,J,bi,bj) = _recip_dyU(I,J,bi,bj) 
+           k1AtZ(I,J,bi,bj) = _recip_dyU(I,J,bi,bj)
      &          * ( _dyC(I,J,bi,bj) - _dyC(I-1,J,bi,bj) )
      &          * _recip_dxV(I,J,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy-1
           DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = _recip_dxF(I,J,bi,bj) 
+           k2AtC(I,J,bi,bj) = _recip_dxF(I,J,bi,bj)
      &          * ( _dxG(I,J+1,bi,bj) - _dxG(I,J,bi,bj) )
      &          * _recip_dyF(I,J,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy+1,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = _recip_dxV(I,J,bi,bj) 
+           k2AtC(I,J,bi,bj) = _recip_dxV(I,J,bi,bj)
      &          * ( _dxC(I,J,bi,bj) - _dxC(I,J-1,bi,bj) )
      &          * _recip_dyU(I,J,bi,bj)
           ENDDO

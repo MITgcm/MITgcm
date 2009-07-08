@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.3 2009/04/30 13:42:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.4 2009/07/08 21:58:30 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
 
       SUBROUTINE SHELFICE_INIT_FIXED( myThid )
-C     /============================================================\
-C     | SUBROUTINE SHELFICE_INIT_FIXED                             |
-C     | o Routine to initialize SHELFICE parameters and variables. |
-C     |============================================================|
-C     | Initialize SHELFICE parameters and variables.              |
-C     \============================================================/
+C     *============================================================*
+C     | SUBROUTINE SHELFICE_INIT_FIXED
+C     | o Routine to initialize SHELFICE parameters and variables.
+C     *============================================================*
+C     | Initialize SHELFICE parameters and variables.
+C     *============================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -34,6 +34,14 @@ C     I,J,K,bi,bj - Loop counters
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 #endif /* ALLOW_DIAGNOSTICS */
+
+#ifdef ALLOW_MNC
+C     Initialize MNC variable information for SHELFICE
+      IF ( useMNC .AND. (shelfice_tave_mnc.OR.shelfice_dump_mnc)
+     &    ) THEN
+        CALL SHELFICE_MNC_INIT( myThid )
+      ENDIF
+#endif /* ALLOW_MNC */
 
 C-----------------------------------------------------------------------
 C--   Initialize SHELFICE variables kTopC
@@ -104,4 +112,3 @@ C-----------------------------------------------------------------------
 
       RETURN
       END
-

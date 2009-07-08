@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_init_fixed.F,v 1.2 2008/11/14 21:34:48 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_init_fixed.F,v 1.3 2009/07/08 21:57:51 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE KPP_INIT_FIXED
-C     | o Routine to initialize GM/Redi variables 
+C     | o Routine to initialize GM/Redi variables
 C     |   that are kept fixed during the run.
 C     *==========================================================*
 C     \ev
@@ -36,12 +36,75 @@ C     === Local variables ===
 C     i,j,k,bi,bj - Loop counters
 C     zehat       - zeta * ustar**3
 C     zeta        - Stability parameter d/l
-      INTEGER i, j, k, bi, bj
+      INTEGER i, j, k
       _RL zehat
       _RL zeta
       _RL usta
       _RL p25, p33
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C-- Note: this should go in a separated S/R: KPP_MNC_INIT
+#ifdef ALLOW_MNC
+      IF (useMNC) THEN
+C       Define grid types for KPP variables
+        CALL MNC_CW_ADD_VNAME('KPPviscAz', 'Cen_xy_Hn__C__t',
+     &       4,5, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPviscAz','units','m^2/s',
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPviscAz','long_name',
+     &       'KPP_vertical_eddy_viscosity_coefficient', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPviscAz',
+     &       'coordinates','XC YC RC iter', myThid)
+
+        CALL MNC_CW_ADD_VNAME('KPPdiffKzS', 'Cen_xy_Hn__C__t',
+     &       4,5, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzS','units','m^2/s',
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzS','long_name',
+     &       'KPP_salt-tracer_vertical_diffusion_coefficient',
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzS',
+     &       'coordinates','XC YC RC iter', myThid)
+
+        CALL MNC_CW_ADD_VNAME('KPPdiffKzT', 'Cen_xy_Hn__C__t',
+     &       4,5, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzT','units','m^2/s',
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzT','long_name',
+     &       'KPP_vertical_heat_diffusion_coefficient', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzT',
+     &       'coordinates','XC YC RC iter', myThid)
+
+        CALL MNC_CW_ADD_VNAME('KPPGHAT', 'Cen_xy_Hn__C__t',
+     &       4,5, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPGHAT','units','s/m^2',
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPGHAT','long_name',
+     &       'KPP_nonlocal_transport_coefficient', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPGHAT',
+     &       'coordinates','XC YC RC iter', myThid)
+
+        CALL MNC_CW_ADD_VNAME('KPPHBL', 'Cen_xy_Hn__-__t',
+     &       3,4, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPHBL','units','m',
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPHBL','long_name',
+     &       'KPP_boundary_layer_depth', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPHBL',
+     &       'coordinates','XC YC iter', myThid)
+
+        CALL MNC_CW_ADD_VNAME('KPPFRAC', 'Cen_xy_Hn__-__t',
+     &       3,4, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC','units','dimless',
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC','long_name',
+     &       'KPP_short-wave_fraction_penetrating_mixing_layer',
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPFRAC',
+     &       'coordinates','XC YC iter', myThid)
+      ENDIF
+#endif /* ALLOW_MNC */
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
 
