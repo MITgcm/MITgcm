@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.59 2009/07/01 14:46:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.60 2009/07/08 22:12:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -7,18 +7,18 @@ C $Name:  $
 CBOP
 C     !ROUTINE: INITIALISE_VARIA
 C     !INTERFACE:
-      SUBROUTINE INITIALISE_VARIA(myThid)
+      SUBROUTINE INITIALISE_VARIA( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INITIALISE_VARIA                               
-C     | o Set the initial conditions for dynamics variables       
-C     |   and time dependent arrays                               
+C     | SUBROUTINE INITIALISE_VARIA
+C     | o Set the initial conditions for dynamics variables
+C     |   and time dependent arrays
 C     *==========================================================*
-C     | This routine reads/writes  data from an input file and    
-C     | from various binary files.                                
-C     | Each thread invokes an instance of this routine as does   
-C     | each process in a multi-process parallel environment like 
-C     | MPI.                                                      
+C     | This routine reads/writes  data from an input file and
+C     | from various binary files.
+C     | Each thread invokes an instance of this routine as does
+C     | each process in a multi-process parallel environment like
+C     | MPI.
 C     *==========================================================*
 C     \ev
 
@@ -26,20 +26,32 @@ C     !CALLING SEQUENCE:
 C     INITIALISE_VARIA
 C       |
 C #ifdef ALLOW_AUTODIFF_TAMC
+C       |-- INI_HFAC
+C       |
+C       |-- INI_DEPTHS
+C       |
+C       |-- INI_MASKS_ETC
+C       |
 C       |-- INI_LINEAR_PHISURF
 C       |
 C       |-- INI_CORI
 C       |
 C       |-- INI_CG2D
 C       |
+C       |-- CTRL_DEPTH_INI
+C       |-- UPDATE_MASKS_ETC
+C       |-- UPDATE_CG2D
+C       |
 C       |-- INI_CG3D
 C #endif
-C       |-- INI_MIXING
-C       |
 C       |-- INI_DYNVARS
 C       |-- INI_NH_VARS
 C       |
 C       |-- INI_FIELDS
+C       |
+C       |-- INI_MIXING
+C       |
+C       |-- TAUEDDY_INIT_VARIA
 C       |
 C       |-- INI_FORCING
 C       |
@@ -47,17 +59,24 @@ C       |-- INI_AUTODIFF
 C       |
 C       |-- PACKAGES_INIT_VARIABLES
 C       |
-C       |-- THE_CORRECTION_STEP (if restart from old pickup files)
+C       |-- CONVECTIVE_ADJUSTMENT_INI
 C       |
-C       |-- CALL CONVECTIVE_ADJUSTMENT_INI
+C       |-- INI_SURF_DR
+C       |-- INI_R_STAR
 C       |
+C       |-- CALC_R_STAR
+C       |-- UPDATE_R_STAR
 C       |-- CALC_SURF_DR
-C       |
 C       |-- UPDATE_SURF_DR
 C       |
 C       |-- UPDATE_CG2D
 C       |
 C       |-- INTEGR_CONTINUITY
+C       |
+C       |-- UPDATE_ETAH
+C       |
+C       |-- CALC_R_STAR
+C       |-- CALC_SURF_DR
 C       |
 C       |-- TIMEAVE_STATVARS
 C       |
@@ -77,12 +96,12 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "SURFACE.h"
-#ifdef ALLOW_SHAP_FILT
-# include "SHAP_FILT.h"
-#endif
-#ifdef ALLOW_ZONAL_FILT
-# include "ZONAL_FILT.h"
-#endif
+c#ifdef ALLOW_SHAP_FILT
+c# include "SHAP_FILT.h"
+c#endif
+c#ifdef ALLOW_ZONAL_FILT
+c# include "ZONAL_FILT.h"
+c#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -101,7 +120,7 @@ CEOP
 
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
 
-C--   Intialize the hFacC for TAF/TAMC 
+C--   Intialize the hFacC for TAF/TAMC
       CALL INI_HFAC( myThid )
       CALL INI_DEPTHS( myThid )
       CALL INI_MASKS_ETC( myThid )
@@ -124,19 +143,17 @@ C--   Set laplace operators for use in 2D conjugate gradient solver.
 # endif
       CALL INI_CG2D( myThid )
 
-#ifdef ALLOW_DEPTH_CONTROL
+# ifdef ALLOW_DEPTH_CONTROL
 C--   get control parameter depth
       CALL CTRL_DEPTH_INI( myThid )
 C--   Re-calculate hFacS/W and some other parameters from hFacC
       CALL UPDATE_MASKS_ETC( myThid )
 C--   Update laplace operators for use in 2D conjugate gradient solver.
       CALL UPDATE_CG2D( startTime, nIter0, myThid )
-CML      CALL UPDATE_CG2D( myThid )
-#endif /* ALLOW_DEPTH_CONTROL */
+# endif /* ALLOW_DEPTH_CONTROL */
 
 # ifdef ALLOW_NONHYDROSTATIC
 C--   Set laplace operators for use in 3D conjugate gradient solver.
-ceh3 should add an IF ( useNONHYDROSTATIC ) THEN
 #  ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INI_CG3D',myThid)
 #  endif
@@ -144,17 +161,6 @@ ceh3 should add an IF ( useNONHYDROSTATIC ) THEN
 # endif
 
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-C--   Initialise 3-dim. diffusivities
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('INI_MIXING',myThid)
-#endif
-      CALL INI_MIXING( myThid )
-
-#ifdef ALLOW_EDDYPSI
-C--  Initialise eddy diffusivities
-      CALL TAUEDDY_INIT_VARIA( myThid )
-#endif
 
 C--   Initialize DYNVARS arrays (state fields + G terms: Gu,Gv,...) to zero [always]
 #ifdef ALLOW_DEBUG
@@ -175,6 +181,17 @@ C     stored files.
       IF (debugMode) CALL DEBUG_CALL('INI_FIELDS',myThid)
 #endif
       CALL INI_FIELDS( myThid )
+
+C--   Initialise 3-dim. diffusivities
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('INI_MIXING',myThid)
+#endif
+      CALL INI_MIXING( myThid )
+
+#ifdef ALLOW_EDDYPSI
+C--  Initialise eddy diffusivities
+      CALL TAUEDDY_INIT_VARIA( myThid )
+#endif
 
 C--   Initialise model forcing fields.
 #ifdef ALLOW_DEBUG
@@ -278,7 +295,7 @@ C--   compute the future surface level thickness according to etaH(n+1)
 #endif /* NONLIN_FRSURF */
 
 c     IF ( nIter0.EQ.0 .AND. staggerTimeStep ) THEN
-C--    Filter initial T & S fields if staggerTimeStep 
+C--    Filter initial T & S fields if staggerTimeStep
 C       (only for backward compatibility ; to be removed later)
 #ifdef ALLOW_SHAP_FILT
 c      IF ( useSHAP_FILT .AND. shap_filt_TrStagg ) THEN
