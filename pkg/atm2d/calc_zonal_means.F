@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/calc_zonal_means.F,v 1.7 2007/11/08 21:18:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/calc_zonal_means.F,v 1.8 2009/07/09 21:40:36 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -55,6 +55,7 @@ C     LOCAL VARIABLES:
         ENDIF
         ctice(j_atm)=0. _d 0
         csAlb(j_atm)=0. _d 0
+        csAlbNIR(j_atm)=0. _d 0
       ENDDO
 
        CALL THSICE_ALBEDO(
@@ -63,7 +64,7 @@ C     LOCAL VARIABLES:
      I          iceMask(siLo,sjLo,1,1), iceHeight(siLo,sjLo,1,1),
      I          snowHeight(siLo,sjLo,1,1), Tsrf(siLo,sjLo,1,1),
      I          snowAge(siLo,sjLo,1,1),
-     O          siceAlb(siLo,sjLo,1,1),
+     O          siceAlb(siLo,sjLo,1,1), icAlbNIR(siLo,sjLo,1,1),
      I          myTime, myIter, myThid )
 
       DO j=1,sNy
@@ -84,6 +85,9 @@ C     LOCAL VARIABLES:
      &             *rA(i,j,1,1)*iceMask(i,j,1,1)*atm_oc_wgt(j)
            csAlb(atm_oc_ind(j))=csAlb(atm_oc_ind(j)) + siceAlb(i,j,1,1)
      &             *rA(i,j,1,1)*iceMask(i,j,1,1)*atm_oc_wgt(j)
+           csAlbNIR(atm_oc_ind(j))=csAlbNIR(atm_oc_ind(j)) + 
+     &             icAlbNIR(i,j,1,1)
+     &             *rA(i,j,1,1)*iceMask(i,j,1,1)*atm_oc_wgt(j)
 
 
            IF (atm_oc_wgt(j).LT.1. _d 0) THEN
@@ -101,6 +105,8 @@ C     LOCAL VARIABLES:
      &             Tsrf(i,j,1,1)*rA(i,j,1,1)*iceMask(i,j,1,1)*mWgt
              csAlb(atm_oc_ind(j)+1)= csAlb(atm_oc_ind(j)+1) +
      &             siceAlb(i,j,1,1)*rA(i,j,1,1)*iceMask(i,j,1,1)*mWgt
+             csAlbNIR(atm_oc_ind(j)+1)= csAlbNIR(atm_oc_ind(j)+1) + 
+     &             icAlbNIR(i,j,1,1)*rA(i,j,1,1)*iceMask(i,j,1,1)*mWgt
            ENDIF
 
          ENDIF
@@ -117,6 +123,7 @@ C     LOCAL VARIABLES:
           IF (cfice(j_atm).GT.1. _d -32) THEN
             ctice(j_atm)= ctice(j_atm)/ocnArea(j_atm)/cfice(j_atm)
             csAlb(j_atm)= csAlb(j_atm)/ocnArea(j_atm)/cfice(j_atm)
+            csAlbNIR(j_atm)= csAlbNIR(j_atm)/ocnArea(j_atm)/cfice(j_atm)
           ENDIF
 
           IF ((1. _d 0-cfice(j_atm).GT.1. _d -32).AND.doAll)
@@ -134,6 +141,7 @@ C       At present, keeping separate variables in AGRID.h and ATM2D_VARS.h
         ENDIF
         mmtice(j_atm)= ctice(j_atm)
         mmsAlb(j_atm)= csAlb(j_atm)
+        mmsAlbNIR(j_atm)= csAlbNIR(j_atm)
 
       ENDDO
 
@@ -150,6 +158,8 @@ C     Copy data to atmosphere polar points
         mmtice(jm0)= ctice(jm0-1)
         mmsAlb(1)= csAlb(2)
         mmsAlb(jm0)= csAlb(jm0-1)
+        mmsAlbNIR(1)= csAlbNIR(2)
+        mmsAlbNIR(jm0)= csAlbNIR(jm0-1)
 
       RETURN
       END
