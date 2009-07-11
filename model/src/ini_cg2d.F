@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.46 2009/04/28 18:01:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.47 2009/07/11 22:00:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -11,11 +11,11 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_CG2D                                       
-C     | o Initialise 2d conjugate gradient solver operators.      
+C     | SUBROUTINE INI_CG2D
+C     | o Initialise 2d conjugate gradient solver operators.
 C     *==========================================================*
-C     | These arrays are purely a function of the basin geom.     
-C     | We set then here once and them use then repeatedly.       
+C     | These arrays are purely a function of the basin geom.
+C     | We set then here once and them use then repeatedly.
 C     *==========================================================*
 C     \ev
 
@@ -64,13 +64,16 @@ C     but safer when EXCH do not fill all the overlap regions.
           pW(I,J,bi,bj) = 0. _d 0
           pS(I,J,bi,bj) = 0. _d 0
           pC(I,J,bi,bj) = 0. _d 0
-          cg2d_q(I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
         DO J=1-1,sNy+1
          DO I=1-1,sNx+1
+          cg2d_q(I,J,bi,bj) = 0. _d 0
           cg2d_r(I,J,bi,bj) = 0. _d 0
           cg2d_s(I,J,bi,bj) = 0. _d 0
+#ifdef ALLOW_CG2D_NSA
+          cg2d_z(I,J,bi,bj) = 0. _d 0
+#endif /* ALLOW_CG2D_NSA */
          ENDDO
         ENDDO
        ENDDO
@@ -151,9 +154,7 @@ CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.1' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.1' , 1, myThid )
 CcnhDebugEnds
-c     _EXCH_XY_RS(aW2d, myThid)
-c     _EXCH_XY_RS(aS2d, myThid)
-      CALL EXCH_UV_XY_RS(aW2d,aS2d,.FALSE.,myThid)
+      CALL EXCH_UV_XY_RS( aW2d, aS2d, .FALSE., myThid )
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.2' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
@@ -254,10 +255,8 @@ C         pS(I,J,bi,bj) = 0.
        ENDDO
       ENDDO
 C--   Update overlap regions
-      _EXCH_XY_RS(pC, myThid)
-c     _EXCH_XY_RS(pW, myThid)
-c     _EXCH_XY_RS(pS, myThid)
-      CALL EXCH_UV_XY_RS(pW,pS,.FALSE.,myThid)
+      CALL EXCH_XY_RS( pC, myThid )
+      CALL EXCH_UV_XY_RS( pW, pS, .FALSE., myThid )
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( pC, 'pC   INI_CG2D.2' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( pW, 'pW   INI_CG2D.2' , 1, myThid )

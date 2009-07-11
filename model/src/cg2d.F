@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.52 2009/05/16 13:42:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.53 2009/07/11 22:00:40 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -57,13 +57,13 @@ c#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid    :: Thread on which I am working.
 C     cg2d_b    :: The source term or "right hand side"
 C     cg2d_x    :: The solution
 C     firstResidual :: the initial residual before any iterations
 C     lastResidual  :: the actual residual reached
 C     numIters  :: Entry: the maximum number of iterations allowed
 C                  Exit:  the actual number of iterations used
+C     myThid    :: Thread on which I am working.
       _RL  cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  firstResidual
@@ -159,8 +159,8 @@ C- end Normalise RHS
       ENDIF
 
 C--   Update overlaps
-      _EXCH_XY_RL( cg2d_b, myThid )
-      _EXCH_XY_RL( cg2d_x, myThid )
+c     CALL EXCH_XY_RL( cg2d_b, myThid )
+      CALL EXCH_XY_RL( cg2d_x, myThid )
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRL( cg2d_b, 'CG2D.1 CG2D_B' , 1, myThid )
 C     suff = 'normalised'
@@ -170,6 +170,11 @@ CcnhDebugEnds
 C--   Initial residual calculation
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1-1,sNy+1
+         DO I=1-1,sNx+1
+          cg2d_s(I,J,bi,bj) = 0.
+         ENDDO
+        ENDDO
         sumRHStile(bi,bj) = 0. _d 0
         errTile(bi,bj)    = 0. _d 0
 #ifdef TARGET_NEC_SX
@@ -178,7 +183,6 @@ C--   Initial residual calculation
         DO J=1,sNy
          DO I=1,sNx
 c         ks = ksurfC(I,J,bi,bj)
-          cg2d_s(I,J,bi,bj) = 0.
           cg2d_r(I,J,bi,bj) = cg2d_b(I,J,bi,bj) -
      &    (aW2d(I  ,J  ,bi,bj)*cg2d_x(I-1,J  ,bi,bj)
      &    +aW2d(I+1,J  ,bi,bj)*cg2d_x(I+1,J  ,bi,bj)
@@ -205,33 +209,24 @@ c    &    )
         ENDDO
        ENDDO
       ENDDO
-#ifdef LETS_MAKE_JAM
-      CALL EXCH_XY_O1_R8_JAM( cg2d_r )
-#else
-      CALL EXCH_XY_RL( cg2d_r, myThid )
-#endif
-#ifdef LETS_MAKE_JAM
-      CALL EXCH_XY_O1_R8_JAM( cg2d_s )
-#else
-      CALL EXCH_XY_RL( cg2d_s, myThid )
-#endif
+      CALL EXCH_S3D_RL( cg2d_r, 1, myThid )
 #ifdef CG2D_SINGLECPU_SUM
       CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, err, 0, 0, myThid)
       CALL GLOBAL_SUM_SINGLECPU_RL(cg2d_b, sumRHS, OLx, OLy, myThid)
 #else
-       CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
-       CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
+      CALL GLOBAL_SUM_TILE_RL( errTile,    err,    myThid )
+      CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
 #endif
        err = SQRT(err)
        actualIts      = 0
        actualResidual = err
 
-       IF ( debugLevel .GE. debLevZero ) THEN
+      IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
         WRITE(standardmessageunit,'(A,1P2E22.14)')
      &  ' cg2d: Sum(rhs),rhsMax = ', sumRHS,rhsMax
         _END_MASTER( myThid )
-       ENDIF
+      ENDIF
 C     _BARRIER
 c     _BEGIN_MASTER( myThid )
 c      WRITE(standardmessageunit,'(A,I6,1PE30.14)')
@@ -307,12 +302,7 @@ CcnhDebugEnds
 
 C--    Do exchanges that require messages i.e. between
 C--    processes.
-C      _EXCH_XY_RL( cg2d_s, myThid )
-#ifdef LETS_MAKE_JAM
-      CALL EXCH_XY_O1_R8_JAM( cg2d_s )
-#else
-      CALL EXCH_XY_RL( cg2d_s, myThid )
-#endif
+       CALL EXCH_S3D_RL( cg2d_s, 1, myThid )
 
 C==    Evaluate laplace operator on conjugate gradient vector
 C==    q = A.s
@@ -401,11 +391,7 @@ c       ENDIF
        ENDIF
        IF ( err .LT. cg2dTolerance ) GOTO 11
 
-#ifdef LETS_MAKE_JAM
-      CALL EXCH_XY_O1_R8_JAM( cg2d_r )
-#else
-      CALL EXCH_XY_RL( cg2d_r, myThid )
-#endif
+       CALL EXCH_S3D_RL( cg2d_r, 1, myThid )
 
    10 CONTINUE
    11 CONTINUE
