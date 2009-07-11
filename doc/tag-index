@@ -1,14 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1139 2009/07/08 23:38:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1140 2009/07/11 23:19:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/thsice: add code for Near Infra-Red albedo (from Jeff)
+o cg2d:
+   use simple EXCH (overlap size = 1 and ignore corners), like in cg3d.F :
+   this reduces number of EXCH calls by 2 when using exch2.
+   For now, keep previous size array for gc2d_nsa.F to avoid Pb with store 
+   directives and missing simple EXCH (exch_s3d_rx) adjoint code.
+o pkg/thsice: 
+   add code for Near Infra-Red albedo (from Jeff)
    (turned on with run-time flag: thSIce_calc_albNIR, in data.ice).
-o move (from packages_readparms.F & initialise_fixed.F) to ini_model_io.F
-  MNC & MONITOR initialisation calls; move MNC calls from {pkg}_readparms.F
-  to {pkg}_init_fixed.F for {pkg}= kpp, seaice & shelfice.
+o ini_model_io:
+   move (from packages_readparms.F & initialise_fixed.F) to ini_model_io.F
+   MNC & MONITOR initialisation calls; move MNC calls from {pkg}_readparms.F
+   to {pkg}_init_fixed.F for {pkg}= kpp, seaice & shelfice.
 
 checkpoint61s
 o pkg/exch2 (exch2_rxN_cube*):
