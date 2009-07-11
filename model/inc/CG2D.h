@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.14 2006/12/05 05:16:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.15 2009/07/11 21:56:16 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -50,14 +50,14 @@ C     cg2d_r ::   *same*
 C     cg2d_s ::   *same*
       COMMON /CG2D_I_WK_R/
      & cg2d_q, cg2d_r, cg2d_s
-      _RL  cg2d_q(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef LETS_MAKE_JAM
-      _RL  cg2d_r(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL  cg2d_s(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-#else
+      _RL  cg2d_q(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+#ifdef ALLOW_CG2D_NSA
       _RL  cg2d_r(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
+#else  /* ALLOW_CG2D_NSA */
+      _RL  cg2d_r(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL  cg2d_s(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+#endif /* ALLOW_CG2D_NSA */
 
 #ifdef ALLOW_CG2D_NSA
 C--   COMMON /CG2D_I_WK_R2/  extra work array common block
@@ -65,5 +65,5 @@ C     cg2d_z :: Intermediate matrix-vector product term
 C            :: reduces the number of recomputation in adjoint mode
 C            :: this field is superfluous if your cg2d is self-adjoint.
       COMMON /CG2D_I_WK_R2/ cg2d_z
-      _RL  cg2d_z(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cg2d_z(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
 #endif /* ALLOW_CG2D_NSA */
