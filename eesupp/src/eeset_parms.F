@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.25 2009/04/21 16:01:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.26 2009/07/13 21:41:57 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -44,11 +44,16 @@ C     record :: Temp. for textual I/O
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
+#if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
+      CHARACTER*(MAX_LEN_FNAM) scratchFile1
+      CHARACTER*(MAX_LEN_FNAM) scratchFile2
+#endif
+CEOP
+
       NAMELIST /EEPARMS/
      & nTx, nTy, usingMPI, useCoupler, useCubedSphereExchange,
      & useSETRLSTK, useSIGREG,
      & printMapIncludesZeros, maxLengthPrt1D
-CEOP
 
 
 C--   For now these options are fixed as the code does
@@ -109,8 +114,10 @@ C     package - but we have not written it yet.
 
 C     Make scratch copies of input data file with and without comments
 #if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
-      OPEN(UNIT=scrUnit1,FILE='scratch1',STATUS='UNKNOWN')
-      OPEN(UNIT=scrUnit2,FILE='scratch2',STATUS='UNKNOWN')
+      WRITE(scratchFile1,'(A,I4.4)') 'scratch1.', myProcId
+      WRITE(scratchFile2,'(A,I4.4)') 'scratch2.', myProcId
+      OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
+      OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
 #else
       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
