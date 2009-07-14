@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/columbia/Attic/script_testreport,v 1.2 2009/06/30 14:42:04 dfer Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/columbia/Attic/script_testreport,v 1.3 2009/07/14 13:54:04 dfer Exp $
 # $Name:  $
 
 #PBS -N Testreport
@@ -36,7 +36,7 @@ tst3=1
 ##### NO MPI + IEEE
 if [ $tst1 -eq 1 ]; then
 
-./testreport -of='../tools/build_options/linux_ia64_ifort' -ieee -match 10 -j 2
+./testreport -of='../tools/build_options/linux_ia64_ifort' -match 10 -j 2
 ../tools/do_tst_2+2
 
 tdir0=`ls -dt1 tr_* | grep -v tr_out | head -1`
@@ -55,7 +55,7 @@ fi
 ##### MPI + IEEE
 if [ $tst2 -eq 1 ]; then
 
-./testreport -of='../tools/build_options/linux_ia64_ifort+mpi_altix_nas' -mpi -ieee -match 10 -command='mpirun -np 2 ./mitgcmuv' -j 2
+./testreport -of='../tools/build_options/linux_ia64_ifort+mpi_altix_nas' -mpi -match 10 -command='mpirun -np 2 ./mitgcmuv' -j 2
 ../tools/do_tst_2+2 -mpi -exe 'mpirun -np 2 ./mitgcmuv' -a NONE -o columbia-ieee
 
 tdir0=`ls -dt1 tr_* | grep -v tr_out | head -1`
@@ -68,7 +68,9 @@ tdir2=$tdir1.tar.gz
 tar -czf $tdir2 $tdir1
 ../tools/mpack-1.6/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
 
-tdir1=`ls -dt1 rs_* | grep -v tr_out | head -1`
+tdir0=`ls -dt1 rs_* | grep -v tr_out | head -1`
+tdir1=rs_columbia-ieee_$date_str
+mv $tdir0 $tdir1
 tdir2=$tdir1.tar.gz
 tar -czf $tdir2 $tdir1
 ../tools/mpack-1.6/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
