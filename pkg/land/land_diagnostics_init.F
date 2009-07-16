@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_diagnostics_init.F,v 1.2 2005/05/23 02:30:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_diagnostics_init.F,v 1.3 2009/07/16 19:36:53 dfer Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -102,7 +102,7 @@ C--    Fluxes:
 
         diagName  = 'RUNOFF  '
         diagTitle = 'Run-Off per surface unit'
-        diagUnits = 'm/s             '
+        diagUnits = 'kg/m2/s         '
         diagCode  = 'SM      L1      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
