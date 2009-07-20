@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.61 2009/06/24 08:01:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.62 2009/07/20 07:30:58 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -493,29 +493,33 @@ C     growthHEFF < 0 means melting
           HCORR(I,J) = MIN(ZERO,growthHEFF)
 C     gain of new effective ice thickness over open water (>0 by definition)
           GAREA(I,J) = MAX(ZERO,SEAICE_deltaTtherm*QNETO(I,J)*recip_QI)
-CML   removed these loops and moved TAMC store directive up
-CML         ENDDO
-CML        ENDDO
+         ENDDO
+        ENDDO
+CML   do not know if this store directive is still necessary
 CML#ifdef ALLOW_AUTODIFF_TAMC
 CMLCADJ STORE area(:,:,bi,bj) = comlev1_bibj, 
 CMLCADJ &                       key = iicekey, byte = isbyte
 CML#endif
-CML        DO J=1,sNy
-CML         DO I=1,sNx
 C     Here we finally compute the new AREA
-          IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+        IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+         DO J=1,sNy
+          DO I=1,sNx
            AREA(I,J,bi,bj)=AREA(I,J,bi,bj)+
      &          (ONE-AREANm1(I,J,bi,bj))*GAREA(I,J)/HO_south
      &          +HALF*HCORR(I,J)*AREANm1(I,J,bi,bj)
      &          /(HEFF(I,J,bi,bj)+.00001 _d 0)
-          ELSE
+          ENDDO
+         ENDDO
+        ELSE
+         DO J=1,sNy
+          DO I=1,sNx
            AREA(I,J,bi,bj)=AREA(I,J,bi,bj)+
      &          (ONE-AREANm1(I,J,bi,bj))*GAREA(I,J)/HO
      &          +HALF*HCORR(I,J)*AREANm1(I,J,bi,bj)
      &          /(HEFF(I,J,bi,bj)+.00001 _d 0)
-          ENDIF
+          ENDDO
          ENDDO
-        ENDDO
+        ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
