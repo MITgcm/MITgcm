@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1142 2009/07/20 07:31:28 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1143 2009/07/20 07:42:32 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -7,7 +7,6 @@ $Name:  $
 o pkg/seaice: 
  - remove unused variables in seaice_evp
  - reduce number of SQRT in seaice_evp and seaice_calc_viscosities
- - move if-statement out of loop for better vectorization
 o eeset_parms.F, open_copy_data_file.F & ini_parms.F:
    named file replacing SCRATCH files (for TARGET_BGL & TARGET_CRAYXT):
    each processor open a different file (a fix from Matt).
