@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.26 2009/06/24 08:24:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.27 2009/07/20 07:31:17 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -62,7 +62,9 @@ C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
       INTEGER i, j, bi, bj
       INTEGER kSrf
       INTEGER nEVPstep, iEVPstep
+#ifdef ALLOW_AUTODIFF_TAMC
       INTEGER ikeyloc
+#endif 
 #ifndef ALLOW_AUTODIFF_TAMC
       integer nEVPstepMax
 #endif
@@ -78,7 +80,9 @@ C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
 C     auxilliary variables
       _RL e11C, e22C, e12C, deltaC, deltaCreg, pressC, zetaC
       _RL e11Z, e22Z, e12Z, deltaZ, deltaZreg, pressZ, zetaZ
+#ifdef SEAICE_ALLOW_TEM
       _RL etaDenC, zetaMaxC, etaDenZ, zetaMaxZ
+#endif /* SEAICE_ALLOW_TEM */
       _RL zMaxZ, zMinZ
       _RL denom1, denom2, fac, facZ
 
@@ -195,11 +199,9 @@ CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
             deltaC    = (e11C**2+e22C**2)*(ONE+recip_ecc2)
      &           +      4. _d 0*recip_ecc2*e12C**2
      &           +      2. _d 0*e11C*e22C*(ONE-recip_ecc2)
-            deltaCreg = SQRT(MAX(deltaC,SEAICE_EPS_SQ))
             deltaZ    = (e11Z**2+e22Z**2)*(ONE+recip_ecc2)
      &           +      4. _d 0*recip_ecc2*e12Z**2
      &           +      2. _d 0*e11Z*e22Z*(ONE-recip_ecc2)
-            deltaZreg = SQRT(MAX(deltaZ,SEAICE_EPS_SQ))
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid sqrt of 0
             IF ( deltaC .GT. 0. _d 0 ) deltaC = SQRT(deltaC)
@@ -208,6 +210,8 @@ C     avoid sqrt of 0
             deltaC = SQRT(deltaC)
             deltaZ = SQRT(deltaZ)
 #endif /* ALLOW_AUTODIFF_TAMC */
+            deltaCreg = MAX(deltaC,SEAICE_EPS)
+            deltaZreg = MAX(deltaZ,SEAICE_EPS)
 C     modify pressure (copied from seaice_calc_viscosities)
             zetaC  = HALF*press0(I,J,bi,bj)/deltaCreg
             zetaC  = MIN(zMax(I,J,bi,bj),zetaC)
@@ -390,8 +394,8 @@ C     coriols terms
      &           + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
      &           * 0.5 _d 0*( uIceC(I,J-1,bi,bj)+uIceC(I+1,J-1,bi,bj) )
      &           )
-         ENDDO
-        ENDDO
+           ENDDO
+          ENDDO
 C
 C     step momentum equations with ice-ocean stress term treated implicitly
 C

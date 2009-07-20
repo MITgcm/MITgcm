@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.10 2008/01/16 09:47:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.11 2009/07/20 07:31:17 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -61,7 +61,10 @@ C     i,j,bi,bj - Loop counters
 C     e11, e12, e22 - components of strain rate tensor
 C     ecm2          - inverse of square of eccentricity of yield curve
       INTEGER i, j, bi, bj
-      _RL ECM2, e12C, deltaC, deltaCreg, etaMax, etaDen
+      _RL ECM2, e12C, deltaC, deltaCreg
+#ifdef SEAICE_ALLOW_TEM
+      _RL etaMax, etaDen
+#endif /* SEAICE_ALLOW_TEM */
 
 C--   FIRST SET UP BASIC CONSTANTS
       ecm2=0. _d 0
@@ -76,13 +79,13 @@ C
           deltaC = (e11(i,j,bi,bj)**2+e22(i,j,bi,bj)**2)*(ONE+ecm2)
      &         + 4. _d 0*ecm2*e12C**2
      &         + 2. _d 0*e11(i,j,bi,bj)*e22(i,j,bi,bj)*(ONE-ecm2)
-          deltaCreg = SQRT(MAX(deltaC,SEAICE_EPS_SQ))
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid sqrt of 0
           IF ( deltaC .GT. 0. _d 0 ) deltaC = SQRT(deltaC)
 #else
           deltaC    = SQRT(deltaC)
 #endif /* ALLOW_AUTODIFF_TAMC */
+          deltaCreg = MAX(deltaC,SEAICE_EPS)
 C     "replacement pressure"
           zeta (I,J,bi,bj) = HALF*press0(I,J,bi,bj)/deltaCreg
 C     put min and max viscosities in
