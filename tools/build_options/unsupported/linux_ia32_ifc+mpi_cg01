@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc+mpi_cg01,v 1.11 2006/03/24 22:34:43 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia32_ifc+mpi_cg01,v 1.1 2009/07/21 20:00:18 jmc Exp $
 #  $Name:  $
 #
 

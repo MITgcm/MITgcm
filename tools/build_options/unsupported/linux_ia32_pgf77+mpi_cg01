@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_cg01,v 1.9 2006/03/24 22:40:10 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia32_pgf77+mpi_cg01,v 1.1 2009/07/21 20:00:19 jmc Exp $
 #
 
 FC='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpif77'
