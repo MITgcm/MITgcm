@@ -1,9 +1,14 @@
 #!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_loc,v 1.3 2009/07/22 16:21:13 jmc Exp $
+#  $Name:  $
 
 # Adapted from linux_amd64_ifort_generic_mpi
 #  with specific local path (=MPI_INC_DIR & NETCDF_ROOT ) for MPI & NetCDF
-# Tested on jmc's laptop (FC.8), with MPI & Multi-Threaded (OpenMP)
-#  using ifort v.10.1.012 & mpich-1.2.7 (installed in /opt/intel/)
+# Tested on jmc's laptop with MPI & Multi-Threaded
+#  using intel compiler v.10.1.012 & mpich-1.2.7 (FC.8)
+#                       v.11.1.046 & mpich-1.2.7 (FC.11)
+#  (intel compiler, mpich & netcdf installed in /opt/intel/ )
 
 #-------
 # run with OpenMP: needs to set environment var. OMP_NUM_THREADS
@@ -38,6 +43,8 @@
 
 NETCDF_ROOT='/opt/intel/netcdf-3.6.2'
 MPI_INC_DIR='/opt/intel/mpich-1.2.7p1_ic-10.1.012/include'
+#NETCDF_ROOT='/opt/intel/netcdf-4.0.1/11.1'
+#MPI_INC_DIR='/opt/intel/mpich-1.2.7p1_ic-11.1.046/include'
 
 FC=mpif77
 F90C='mpif90 -fixed'
@@ -69,9 +76,10 @@ if test "x$IEEE" = x ; then
     FOPTIM='-O2 -align -xW -ip'
 else
     #  Try to follow IEEE-754
-    FOPTIM='-O0 -align -xW -ip -fp-model strict'
+    FOPTIM='-O0 -xW -ip -fp-model strict'
 #   for automatic testing with testreport (but no relation with IEEE arithmetic):
-    FOPTIM="$FOPTIM -g -noalign -fp-stack-check -check all -fpe0 -traceback -ftrapuv"
+    FOPTIM="$FOPTIM -fpe0 -ftz -fp-stack-check -check all -ftrapuv"
+    FOPTIM="$FOPTIM -noalign -g -traceback"
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
@@ -111,7 +119,6 @@ elif test -d /usr/local/include/netcdf.inc ; then
     INCLUDES='-I/usr/local/include'
     LIBS='-L/usr/local/lib64'
 fi
-
 
 INCLUDES="$INCLUDES -I$MPI_INC_DIR"
 INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
