@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.4 2009/04/28 18:18:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.5 2009/07/22 21:20:47 dfer Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
@@ -19,6 +20,10 @@ C     == Global variables ==
 #include "CPL_PARAMS.h"
 #include "OCNIDS.h"
 #include "OCNCPL.h"
+#ifdef ALLOW_PTRACERS
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
+#endif
 
 C     == Routine arguments ==
 C     myIter  :: time-step number
@@ -52,7 +57,11 @@ C     == Local variables ==
 c        CALL MDSREADFIELD(fn,prec,'RL',1,airCO2    ,  9,myThid)
 c        CALL MDSREADFIELD(fn,prec,'RL',1,surfWSpeed, 10,myThid)
 c        CALL MDSREADFIELD(fn,prec,'RL',1,fracIce   , 11,myThid)
-         CALL MDSREADFIELD(fn,prec,'RL',1,fluxCO2cpl, rec_ind+1,myThid)
+#ifdef ALLOW_PTRACERS
+         IF (nIter0.GT.PTRACERS_Iter0) THEN
+          CALL MDSREADFIELD(fn,prec,'RL',1,fluxCO2cpl, rec_ind+1,myThid)
+         ENDIF
+#endif
        ENDIF
 
 c      CALL MDSREADFIELD(fn,prec,'RL',1,ocMxlD2cpl, 9,myThid)
