@@ -1,15 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1143 2009/07/20 07:42:32 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1144 2009/07/22 20:23:29 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61t
 o pkg/seaice: 
  - remove unused variables in seaice_evp
  - reduce number of SQRT in seaice_evp and seaice_calc_viscosities
 o eeset_parms.F, open_copy_data_file.F & ini_parms.F:
    named file replacing SCRATCH files (for TARGET_BGL & TARGET_CRAYXT):
-   each processor open a different file (a fix from Matt).
+   each processor opens a different file (a fix from Matt).
 o cg2d:
    use simple EXCH (overlap size = 1 and ignore corners), like in cg3d.F :
    this reduces number of EXCH calls by 2 when using exch2.
