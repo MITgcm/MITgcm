@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.195 2009/06/17 22:47:49 utke Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.196 2009/07/29 14:17:34 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -3063,7 +3063,7 @@ ad_input_code_sf.w2f.pre.xb.xaif : ad_input_code_sf.w2f.pre.xaif xaif.xsd xaif_b
 
 # XAIF' -> WHIRL'
 ad_input_code_sf.w2f.pre.xb.x2w.B : ad_input_code_sf.w2f.pre.xb.xaif xaif2whirl
-	./xaif2whirl --debug 1 --structured ad_input_code_sf.w2f.pre.B \$<
+	./xaif2whirl --debug 1 ad_input_code_sf.w2f.pre.B \$<
 
 # WHIRL' -> F'
 ad_input_code_sf.w2f.pre.xb.x2w.w2f.f$FS90: ad_input_code_sf.w2f.pre.xb.x2w.B whirl2f whirl2f_be
