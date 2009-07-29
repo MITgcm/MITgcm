@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.7 2009/06/21 21:58:56 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.8 2009/07/29 14:24:04 dimitri Exp $
 C $Name:  $
 c
 c
@@ -127,11 +127,9 @@ c
 C     NOTES:
 C     ======
 c
-C     All surface forcing fields are defined at the center of
-C     each grid (the rVel location in model/inc/GRID.h) with
-C     one exception.  When both ALLOW_BULKFORMULAE and
-C     USE_EXF_INTERPOLATION are undefined, ustress and vstress are
-C     defined at the Southwest C-grid U and V points, respectively.
+C     By default all surface forcing fields are defined at the center
+C     of each grid (the rVel location in model/inc/GRID.h) unless
+C     flags readStressOnAgrid or readStressOnCgrid are set.
 c
 C     Input and output units and sign conventions can be customized
 C     using variables exf_inscal_* and exf_outscal_*, which are set
