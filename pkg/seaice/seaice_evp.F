@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.29 2009/07/30 08:03:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.30 2009/07/30 08:27:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,19 +78,18 @@ C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
       _RL sig11         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     auxilliary variables
-      _RL e11C  (0:sNx+1,0:sNy+1)
-      _RL e22C  (0:sNx+1,0:sNy+1)
-      _RL e12C  (0:sNx+1,0:sNy+1)
-      _RL pressC(0:sNx+1,0:sNy+1)
-      _RL zetaC (0:sNx+1,0:sNy+1)
-      _RL e11Z  (0:sNx+1,0:sNy+1)
-      _RL e22Z  (0:sNx+1,0:sNy+1)
-      _RL e12Z  (0:sNx+1,0:sNy+1)
-      _RL deltaZ(0:sNx+1,0:sNy+1)
-      _RL zetaZ (0:sNx+1,0:sNy+1)
-      _RL deltaC(0:sNx+1,0:sNy+1)
-      _RL deltaCreg
-      _RL deltaZreg, pressZ
+      _RL e11C          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL e22C          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL e12C          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pressC        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL zetaC         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL e11Z          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL e22Z          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL e12Z          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL deltaZ        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL zetaZ         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL deltaC        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL deltaCreg, deltaZreg, pressZ
 #ifdef SEAICE_ALLOW_TEM
       _RL etaDenC, zetaMaxC, etaDenZ, zetaMaxZ
 #endif /* SEAICE_ALLOW_TEM */
@@ -184,6 +183,17 @@ C
             seaice_div    (I,J) = 0. _d 0
             seaice_tension(I,J) = 0. _d 0
             seaice_shear  (I,J) = 0. _d 0
+            e11C          (I,J) = 0. _d 0
+            e22C          (I,J) = 0. _d 0
+            e12C          (I,J) = 0. _d 0
+            pressC        (I,J) = 0. _d 0
+            zetaC         (I,J) = 0. _d 0
+            e11Z          (I,J) = 0. _d 0
+            e22Z          (I,J) = 0. _d 0
+            e12Z          (I,J) = 0. _d 0
+            deltaZ        (I,J) = 0. _d 0
+            zetaZ         (I,J) = 0. _d 0
+            deltaC        (I,J) = 0. _d 0
            ENDDO
           ENDDO
           DO j=0,sNy+1
