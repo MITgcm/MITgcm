@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.28 2009/07/30 07:38:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.29 2009/07/30 08:03:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -227,15 +227,19 @@ C     avoid sqrt of 0
             deltaZreg   = MAX(deltaZ(I,J),SEAICE_EPS)
 C     modify pressure (copied from seaice_calc_viscosities)
             zetaC(I,J)  = HALF*press0(I,J,bi,bj)/deltaCreg
-            zetaC(I,J)  = MIN(zMax(I,J,bi,bj),zetaC(I,J))
-            zetaC(I,J)  = MAX(zMin(I,J,bi,bj),zetaC(I,J))
-CML            zetaC(I,J)   = zetaC(I,J)*hEffM(I,J,bi,bj) 
-            pressC(I,J) = TWO*zetaC(I,J)*deltaC(I,J)
-C
             pressZ      = (deltaZ(I,J)/deltaZreg) * facZ
      &         * ( PRESS0(I,J  ,bi,bj) + PRESS0(I-1,J  ,bi,bj)
      &           + PRESS0(I,J-1,bi,bj) + PRESS0(I-1,J-1,bi,bj) )
             zetaZ(I,J)  = HALF/deltaZreg * pressZ
+           ENDDO
+          ENDDO
+C     regularize zeta if necessary
+          DO j=0,sNy+1
+           DO i=0,sNx+1
+            zetaC(I,J)  = MIN(zMax(I,J,bi,bj),zetaC(I,J))
+            zetaC(I,J)  = MAX(zMin(I,J,bi,bj),zetaC(I,J))
+CML            zetaC(I,J)   = zetaC(I,J)*hEffM(I,J,bi,bj) 
+C
 C     zMin, zMax are defined at C-points, make sure that they are not
 C     masked by boundaries/land points
             zMaxZ       = MAX(
@@ -246,6 +250,12 @@ C     masked by boundaries/land points
      &           MAX(zMin(I-1,J,bi,bj),zMin(I-1,J-1,bi,bj)) )
             zetaZ(I,J)  = MIN(zMaxZ,zetaZ(I,J))
             zetaZ(I,J)  = MAX(zMinZ,zetaZ(I,J))
+           ENDDO
+          ENDDO
+C     recompute pressure
+          DO j=0,sNy+1
+           DO i=0,sNx+1
+            pressC(I,J) = TWO*zetaC(I,J)*deltaC(I,J)
            ENDDO
           ENDDO
 #ifdef ALLOW_DIAGNOSTICS
