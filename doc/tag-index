@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1144 2009/07/22 20:23:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1145 2009/07/30 07:38:54 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+ - seaice_evp: move if-statement out of loop (TEM) at the cost of 11 new 
+   2d-fields, for slightly better performance
 checkpoint61t
 o pkg/seaice: 
  - remove unused variables in seaice_evp
