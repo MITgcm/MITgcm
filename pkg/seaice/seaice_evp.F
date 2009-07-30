@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.27 2009/07/20 07:31:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.28 2009/07/30 07:38:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,8 +78,19 @@ C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
       _RL sig11         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     auxilliary variables
-      _RL e11C, e22C, e12C, deltaC, deltaCreg, pressC, zetaC
-      _RL e11Z, e22Z, e12Z, deltaZ, deltaZreg, pressZ, zetaZ
+      _RL e11C  (0:sNx+1,0:sNy+1)
+      _RL e22C  (0:sNx+1,0:sNy+1)
+      _RL e12C  (0:sNx+1,0:sNy+1)
+      _RL pressC(0:sNx+1,0:sNy+1)
+      _RL zetaC (0:sNx+1,0:sNy+1)
+      _RL e11Z  (0:sNx+1,0:sNy+1)
+      _RL e22Z  (0:sNx+1,0:sNy+1)
+      _RL e12Z  (0:sNx+1,0:sNy+1)
+      _RL deltaZ(0:sNx+1,0:sNy+1)
+      _RL zetaZ (0:sNx+1,0:sNy+1)
+      _RL deltaC(0:sNx+1,0:sNy+1)
+      _RL deltaCreg
+      _RL deltaZreg, pressZ
 #ifdef SEAICE_ALLOW_TEM
       _RL etaDenC, zetaMaxC, etaDenZ, zetaMaxZ
 #endif /* SEAICE_ALLOW_TEM */
@@ -184,94 +195,116 @@ CML     &           / MAX(1.D0,maskC(I,  J,  kSrf,bi,bj)
 CML     &           +          maskC(I-1,J,  kSrf,bi,bj)
 CML     &           +          maskC(I,  J-1,kSrf,bi,bj)
 CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
-            e11C = e11(i,j,bi,bj)
-            e22C = e22(i,j,bi,bj)
-            e12C = 0.25 _d 0
+            e11C(I,J) = e11(I,J,bi,bj)
+            e22C(I,J) = e22(I,J,bi,bj)
+            e12C(I,J) = 0.25 _d 0
      &         * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
      &           + e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
-            e11Z = facZ
+            e11Z(I,J) = facZ
      &         * ( e11(I,J  ,bi,bj) + e11(I-1,J  ,bi,bj) 
      &           + e11(I,J-1,bi,bj) + e11(I-1,J-1,bi,bj) )
-            e22Z = facZ
+            e22Z(I,J) = facZ
      &         * ( e22(I,J  ,bi,bj) + e22(I-1,J  ,bi,bj) 
      &           + e22(I,J-1,bi,bj) + e22(I-1,J-1,bi,bj) )
-            e12Z = e12(i,j,bi,bj)
-            deltaC    = (e11C**2+e22C**2)*(ONE+recip_ecc2)
-     &           +      4. _d 0*recip_ecc2*e12C**2
-     &           +      2. _d 0*e11C*e22C*(ONE-recip_ecc2)
-            deltaZ    = (e11Z**2+e22Z**2)*(ONE+recip_ecc2)
-     &           +      4. _d 0*recip_ecc2*e12Z**2
-     &           +      2. _d 0*e11Z*e22Z*(ONE-recip_ecc2)
+            e12Z(I,J) = e12(I,J,bi,bj)
+            deltaC(I,J) = (e11C(I,J)**2+e22C(I,J)**2)*(ONE+recip_ecc2)
+     &           +      4. _d 0*recip_ecc2*e12C(I,J)**2
+     &           +      2. _d 0*e11C(I,J)*e22C(I,J)*(ONE-recip_ecc2)
+            deltaZ(I,J) = (e11Z(I,J)**2+e22Z(I,J)**2)*(ONE+recip_ecc2)
+     &           +      4. _d 0*recip_ecc2*e12Z(I,J)**2
+     &           +      2. _d 0*e11Z(I,J)*e22Z(I,J)*(ONE-recip_ecc2)
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid sqrt of 0
-            IF ( deltaC .GT. 0. _d 0 ) deltaC = SQRT(deltaC)
-            IF ( deltaZ .GT. 0. _d 0 ) deltaZ = SQRT(deltaZ)
+            IF ( deltaC(I,J) .GT. 0. _d 0 ) 
+     &           deltaC(I,J) = SQRT(deltaC(I,J))
+            IF ( deltaZ(I,J) .GT. 0. _d 0 ) 
+     &           deltaZ(I,J) = SQRT(deltaZ(I,J))
 #else
-            deltaC = SQRT(deltaC)
-            deltaZ = SQRT(deltaZ)
+            deltaC(I,J) = SQRT(deltaC(I,J))
+            deltaZ(I,J) = SQRT(deltaZ(I,J))
 #endif /* ALLOW_AUTODIFF_TAMC */
-            deltaCreg = MAX(deltaC,SEAICE_EPS)
-            deltaZreg = MAX(deltaZ,SEAICE_EPS)
+            deltaCreg   = MAX(deltaC(I,J),SEAICE_EPS)
+            deltaZreg   = MAX(deltaZ(I,J),SEAICE_EPS)
 C     modify pressure (copied from seaice_calc_viscosities)
-            zetaC  = HALF*press0(I,J,bi,bj)/deltaCreg
-            zetaC  = MIN(zMax(I,J,bi,bj),zetaC)
-            zetaC  = MAX(zMin(I,J,bi,bj),zetaC)
-CML            zetaC  = zetaC*hEffM(I,J,bi,bj) 
-            pressZ = (deltaZ/deltaZreg) * facZ
+            zetaC(I,J)  = HALF*press0(I,J,bi,bj)/deltaCreg
+            zetaC(I,J)  = MIN(zMax(I,J,bi,bj),zetaC(I,J))
+            zetaC(I,J)  = MAX(zMin(I,J,bi,bj),zetaC(I,J))
+CML            zetaC(I,J)   = zetaC(I,J)*hEffM(I,J,bi,bj) 
+            pressC(I,J) = TWO*zetaC(I,J)*deltaC(I,J)
+C
+            pressZ      = (deltaZ(I,J)/deltaZreg) * facZ
      &         * ( PRESS0(I,J  ,bi,bj) + PRESS0(I-1,J  ,bi,bj)
      &           + PRESS0(I,J-1,bi,bj) + PRESS0(I-1,J-1,bi,bj) )
-            zetaZ  = HALF/deltaZreg * pressZ
+            zetaZ(I,J)  = HALF/deltaZreg * pressZ
 C     zMin, zMax are defined at C-points, make sure that they are not
 C     masked by boundaries/land points
-            zMaxZ  = MAX(
+            zMaxZ       = MAX(
      &           MAX(zMax(I,  J,bi,bj),zMax(I,  J-1,bi,bj)),
      &           MAX(zMax(I-1,J,bi,bj),zMax(I-1,J-1,bi,bj)) )
-            zMinZ  = MAX(
+            zMinZ       = MAX(
      &           MAX(zMin(I,  J,bi,bj),zMin(I,  J-1,bi,bj)),
      &           MAX(zMin(I-1,J,bi,bj),zMin(I-1,J-1,bi,bj)) )
-            zetaZ  = MIN(zMaxZ,zetaZ)
-            zetaZ  = MAX(zMinZ,zetaZ)
-            pressC = TWO*zetaC*deltaC
+            zetaZ(I,J)  = MIN(zMaxZ,zetaZ(I,J))
+            zetaZ(I,J)  = MAX(zMinZ,zetaZ(I,J))
+           ENDDO
+          ENDDO
 #ifdef ALLOW_DIAGNOSTICS
+          IF ( useDiagnostics ) THEN
 C     save etc, zeta, and pressure for diagnostics
-            press(I,J,bi,bj) = pressC
-            zeta (I,J,bi,bj) = zetaC
-             eta (I,J,bi,bj) = zetaC*recip_ecc2
+           DO j=1,sNy
+            DO i=1,sNx
+             press(I,J,bi,bj) = pressC(I,J)
+             zeta (I,J,bi,bj) = zetaC(I,J)
+             eta  (I,J,bi,bj) = zetaC(I,J)*recip_ecc2
+            ENDDO
+           ENDDO
+          ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 C     Calculate the RHS of the stress equations. Do this now in order to
 C     avoid multiple divisions by Delta
 C     P * ( D_d/Delta - 1 ) = 2*zeta*D_d - P = 2*zeta*D_d - 2*zeta*Delta
 C     P * ( D_t/Delta     ) = 2*zeta*D_t
 C     P * ( D_s/Delta     ) = 2*zeta*D_s
-            seaice_div    (I,J) = (
-     &           2. _d 0 *zetaC*(e11C+e22C) - pressC
-     &           ) *hEffM(I,J,bi,bj)
 #ifdef SEAICE_ALLOW_TEM
-            IF ( SEAICEuseTEM ) THEN
-             etaDenC  = (e11C-e22C)**2 + 4. _d 0*e12C**2
+          IF ( SEAICEuseTEM ) THEN
+           DO j=0,sNy+1
+            DO i=0,sNx+1
+             etaDenC  = (e11C(I,J)-e22C(I,J))**2 + 4. _d 0*e12C(I,J)**2
              etaDenC  = SQRT(MAX(SEAICE_EPS_SQ,etaDenC))
-             zetaMaxC = ecc2*zetaC*( deltaC-( e11C+e22C ) )/etaDenC
-             etaDenZ  = (e11Z-e22Z)**2 + 4. _d 0*e12Z**2
+             zetaMaxC = ecc2*zetaC(I,J)
+     &            *( deltaC(I,J)-( e11C(I,J)+e22C(I,J) ) )/etaDenC
+             etaDenZ  = (e11Z(I,J)-e22Z(I,J))**2 + 4. _d 0*e12Z(I,J)**2
              etaDenZ  = SQRT(MAX(SEAICE_EPS_SQ,etaDenZ))
-             zetaMaxZ = ecc2*zetaZ*( deltaZ-( e11Z+e22Z ) )/etaDenZ
+             zetaMaxZ = ecc2*zetaZ(I,J)
+     &            *( deltaZ(I,J)-( e11Z(I,J)+e22Z(I,J) ) )/etaDenZ
 #ifdef ALLOW_DIAGNOSTICS
-C     save eta for diagnostics
-             eta(I,J,bi,bj) = MIN(zetaC,zetaMaxC)*recip_ecc2
+C     save new eta for diagnostics
+             eta(I,J,bi,bj) = MIN(zetaC(I,J),zetaMaxC)*recip_ecc2
 #endif /* ALLOW_DIAGNOSTICS */
-             seaice_tension(I,J) = 2. _d 0*MIN(zetaC,zetaMaxC)
-     &            *(e11C-e22C)*hEffM(I,J,bi,bj)
+             seaice_div    (I,J) = (
+     &            2. _d 0 *zetaC(I,J)*(e11C(I,J)+e22C(I,J))-pressC(I,J)
+     &            ) * hEffM(I,J,bi,bj)
+             seaice_tension(I,J) = 2. _d 0*MIN(zetaC(I,J),zetaMaxC)
+     &            *(e11C(I,J)-e22C(I,J)) * hEffM(I,J,bi,bj)
              seaice_shear  (I,J) = 
-     &            2. _d 0*MIN(zetaZ,zetaMaxZ)*2. _d 0*e12Z
-            ELSE
-#endif /* SEAICE_ALLOW_TEM */
-             seaice_tension(I,J) = 2. _d 0*zetaC*(e11C-e22C)
-     &            *hEffM(I,J,bi,bj)
-             seaice_shear  (I,J) = 2. _d 0*zetaZ*2. _d 0*e12Z
-#ifdef SEAICE_ALLOW_TEM
-            ENDIF
-#endif /* SEAICE_ALLOW_TEM */
+     &            2. _d 0*MIN(zetaZ(I,J),zetaMaxZ)*2. _d 0*e12Z(I,J)
+            ENDDO
            ENDDO
-          ENDDO
+          ELSE
+#else
+          IF (.TRUE. ) THEN
+#endif /* SEAICE_ALLOW_TEM */
+           DO j=0,sNy+1
+            DO i=0,sNx+1
+             seaice_div    (I,J) = (
+     &            2. _d 0 *zetaC(I,J)*(e11C(I,J)+e22C(I,J))-pressC(I,J)
+     &            ) * hEffM(I,J,bi,bj)
+             seaice_tension(I,J) = 2. _d 0*zetaC(I,J)
+     &            *(e11C(I,J)-e22C(I,J)) * hEffM(I,J,bi,bj)
+             seaice_shear  (I,J) = 2. _d 0*zetaZ(I,J)*2. _d 0*e12Z(I,J)
+            ENDDO
+           ENDDO
+          ENDIF
 C
 C     first step stress equations
 C
