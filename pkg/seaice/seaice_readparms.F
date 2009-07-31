@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.76 2009/07/08 21:59:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.77 2009/07/31 03:09:05 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -74,8 +74,7 @@ C--   SEAICE parameters
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ,
-     & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
-     & SEAICE_clim_atemp, SEAICE_clim_aqh
+     & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc
 
 #ifdef ALLOW_COST
       NAMELIST /SEAICE_PARM02/
@@ -222,33 +221,6 @@ C     Euler time stepping scheme of Zhang+Hibler (1997)
       MIN_TICE          = -50.    _d 0
       SEAICE_EPS        = 1.      _d -10
       SEAICE_EPS_SQ     = -99999.
-C     default climatological surface air temperature and humidity over sea ice
-C     are generated based on JRA25 years 2007 and 2008 using
-C     http://ecco2.jpl.nasa.gov/data1/data/jra25/matlab/get_climatology_SAT.m
-      SEAICE_clim_atemp(1)  = 245.4221 _d  0
-      SEAICE_clim_atemp(2)  = 247.5512 _d  0
-      SEAICE_clim_atemp(3)  = 249.4650 _d  0
-      SEAICE_clim_atemp(4)  = 260.8040 _d  0
-      SEAICE_clim_atemp(5)  = 270.0122 _d  0
-      SEAICE_clim_atemp(6)  = 273.6773 _d  0
-      SEAICE_clim_atemp(7)  = 274.3340 _d  0
-      SEAICE_clim_atemp(8)  = 273.0930 _d  0
-      SEAICE_clim_atemp(9)  = 267.2423 _d  0
-      SEAICE_clim_atemp(10) = 258.4914 _d  0
-      SEAICE_clim_atemp(11) = 251.4378 _d  0
-      SEAICE_clim_atemp(12) = 248.5060 _d  0
-      SEAICE_clim_aqh(1)    =   3.6237 _d -4
-      SEAICE_clim_aqh(1)    =   4.3468 _d -4
-      SEAICE_clim_aqh(1)    =   5.0717 _d -4
-      SEAICE_clim_aqh(1)    =  13.0187 _d -4
-      SEAICE_clim_aqh(1)    =  26.3783 _d -4
-      SEAICE_clim_aqh(1)    =  35.7153 _d -4
-      SEAICE_clim_aqh(1)    =  37.8374 _d -4
-      SEAICE_clim_aqh(1)    =  34.8835 _d -4
-      SEAICE_clim_aqh(1)    =  22.5806 _d -4
-      SEAICE_clim_aqh(1)    =  11.2949 _d -4
-      SEAICE_clim_aqh(1)    =   5.7014 _d -4
-      SEAICE_clim_aqh(1)    =   4.7181 _d -4
 
 #ifdef ALLOW_COST
       mult_ice_export   =  0. _d 0

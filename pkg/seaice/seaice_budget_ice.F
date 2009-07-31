@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.13 2009/06/24 08:56:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_budget_ice.F,v 1.14 2009/07/31 03:09:05 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -30,10 +30,6 @@ C     === Global variables ===
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"
-#endif
-#ifdef SEAICE_CLIM_AIR
-      COMMON/SEAICE_DYNVARS_1/AREA
-      _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
 #endif
 
 C     === Routine arguments ===
@@ -87,20 +83,6 @@ C     coefficients of Hibler (1980), appendix B
 C     auxiliary variable
       _RL B          (1:sNx,1:sNy)
 
-#ifdef SEAICE_CLIM_AIR
-      _RL aqhLoc     (1:sNx,1:sNy)
-      _RL fac
-      logical first, changed
-      integer count0, count1
-
-C--   Compute indices and weights for seasonal interpolation
-      call cal_GetMonthsRec(
-     O     fac, first, changed,
-     O     count0, count1,
-     I     mytime, myiter, mythid
-     &     )
-#endif /* SEAICE_CLIM_AIR */
-
 C     surrface level
       kSrf = 1
 C NOW DEFINE ASSORTED CONSTANTS
@@ -142,16 +124,6 @@ C
 C     Is this necessary?
         atempLoc (I,J) = MAX(273.16 _d 0+MIN_ATEMP,ATEMP(I,J,bi,bj))
 #endif
-#ifdef SEAICE_CLIM_AIR
-        atempLoc (I,J) = AREA(I,J,bi,bj) *
-     &       ( fac * SEAICE_clim_atemp(count0) + (1-fac) *
-     &       SEAICE_clim_atemp(count1) ) +
-     &       (1-AREA(I,J,bi,bj)) * atempLoc(I,J)
-        aqhLoc (I,J)   = AREA(I,J,bi,bj) *
-     &       ( fac * SEAICE_clim_aqh(count0) + (1-fac) *
-     &       SEAICE_clim_aqh(count1) ) +
-     &       (1-AREA(I,J,bi,bj)) * aqh(I,J,bi,bj)
-#endif /* SEAICE_CLIM_AIR */
 #ifdef ALLOW_DOWNWARD_RADIATION
         lwdownLoc(I,J) = MAX(MIN_LWDOWN,LWDOWN(I,J,bi,bj))
 #endif
@@ -187,18 +159,6 @@ C NOW DETERMINE FIXED FORCING TERM IN HEAT BUDGET
        DO I=1,sNx
         IF(hSnwLoc(I,J).GT.0.0) THEN
 #ifdef ALLOW_DOWNWARD_RADIATION
-# ifdef SEAICE_CLIM_AIR
-C NO SW PENETRATION WITH SNOW
-         A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
-     &        +lwdownLoc(I,J)*0.97 _d 0
-     &        +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*aqhLoc (I,J)
-        ELSE
-C SW PENETRATION UNDER ICE
-         A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
-     &        *(ONE-XIO*EXP(-1.5 _d 0*hice(I,J)))
-     &        +lwdownLoc(I,J)*0.97 _d 0
-     &        +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*aqhLoc (I,J)
-# else /* SEAICE_CLIM_AIR */
 C NO SW PENETRATION WITH SNOW
          A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
      &        +lwdownLoc(I,J)*0.97 _d 0
@@ -209,7 +169,6 @@ C SW PENETRATION UNDER ICE
      &        *(ONE-XIO*EXP(-1.5 _d 0*hice(I,J)))
      &        +lwdownLoc(I,J)*0.97 _d 0
      &        +D1*UG(I,J)*atempLoc(I,J)+D1I*UG(I,J)*AQH(I,J,bi,bj)
-# endif /* SEAICE_CLIM_AIR */
 #endif /* ALLOW_DOWNWARD_RADIATION */
         ENDIF
        ENDDO

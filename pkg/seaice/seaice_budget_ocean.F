@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.8 2009/06/24 08:25:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.9 2009/07/31 03:09:05 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -30,10 +30,6 @@ C     === Global variables ===
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 # include "EXF_FIELDS.h"
-#endif
-#ifdef SEAICE_CLIM_AIR
-      COMMON/SEAICE_DYNVARS_1/AREA
-      _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
 #endif
 
 C     === Routine arguments ===
@@ -79,20 +75,6 @@ C     coefficients of Hibler (1980), appendix B
 C     auxiliary variable
       _RL B          (1:sNx,1:sNy)
 
-#ifdef SEAICE_CLIM_AIR
-      _RL aqhLoc     (1:sNx,1:sNy)
-      _RL fac
-      logical first, changed
-      integer count0, count1
-
-C--   Compute indices and weights for seasonal interpolation
-      call cal_GetMonthsRec(
-     O     fac, first, changed,
-     O     count0, count1,
-     I     mytime, myiter, mythid
-     &     )
-#endif /* SEAICE_CLIM_AIR */
-
 C NOW DEFINE ASSORTED CONSTANTS
 C SATURATION VAPOR PRESSURE CONSTANT
       QS1=0.622 _d +00/1013.0 _d +00
@@ -117,16 +99,6 @@ C
 C     Is this necessary?
         atempLoc (I,J) = MAX(273.16 _d 0+MIN_ATEMP,ATEMP(I,J,bi,bj))
 # endif
-#ifdef SEAICE_CLIM_AIR
-        atempLoc (I,J) = AREA(I,J,bi,bj) *
-     &       ( fac * SEAICE_clim_atemp(count0) + (1-fac) *
-     &       SEAICE_clim_atemp(count1) ) +
-     &       (1-AREA(I,J,bi,bj)) * atempLoc(I,J)
-        aqhLoc (I,J)   = AREA(I,J,bi,bj) *
-     &       ( fac * SEAICE_clim_aqh(count0) + (1-fac) *
-     &       SEAICE_clim_aqh(count1) ) +
-     &       (1-AREA(I,J,bi,bj)) * aqh(I,J,bi,bj)
-#endif /* SEAICE_CLIM_AIR */
 # ifdef ALLOW_DOWNWARD_RADIATION
         lwdownLoc(I,J) = MAX(MIN_LWDOWN,LWDOWN(I,J,bi,bj))
 # endif
@@ -144,15 +116,9 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
 #else /* SEAICE_EXTERNAL_FLUXES undefined */
         ALB(I,J)=SEAICE_waterAlbedo                                
 # ifdef ALLOW_DOWNWARD_RADIATION
-# ifdef SEAICE_CLIM_AIR
-        A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
-     &       +lwdownLoc(I,J)*0.97 _d 0
-     &       +D1*UG(I,J)*atempLoc(I,J)+D1W*UG(I,J)*aqhLoc (I,J)
-#else
         A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
      &       +lwdownLoc(I,J)*0.97 _d 0
      &       +D1*UG(I,J)*atempLoc(I,J)+D1W*UG(I,J)*AQH(I,J,bi,bj)
-#endif /* SEAICE_CLIM_AIR */
         B(I,J)=QS1*6.11 _d +00*EXP(17.2694 _d +00
      &       *(tsurfLoc(I,J)-TMELT)
      &       /(tsurfLoc(I,J)-TMELT+237.3 _d +00))
