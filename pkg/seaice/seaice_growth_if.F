@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.7 2009/06/24 08:01:43 mlosch Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_growth_if.F,v 1.8 2009/08/02 19:45:42 jmc Exp $
 C     $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -560,7 +560,7 @@ C     FIRST DO OPEN WATER
      I           UG, 
      U           TMIX, 
      O           F_ao, QSWO, 
-     I           bi, bj)
+     I           bi, bj, myThid )
  
 #ifdef SEAICE_DEBUG
         print *,'myiter', myIter
@@ -962,7 +962,7 @@ C     THE SHORTWAVE ENERGY FLUX PENETRATING BELOW THE SURFACE LAYER
      &             - QSW_absorb_in_ML(I,J) * FLUX_TO_DELTA_TEMP
 
                   PredTempChangeFromOA_MQNET(I,J) = 
-     &            -(QNET(I,J,bi,bj) - QSWO(I,J))*(1. -AREANm1(I,J,bi,bj))
+     &            -(QNET(I,J,bi,bj)-QSWO(I,J))*(1. -AREANm1(I,J,bi,bj))
      &             * FLUX_TO_DELTA_TEMP
 
                   PredTempChangeFromF_IO_NET(I,J) = 
