@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.12 2009/02/03 23:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.13 2009/08/02 20:42:43 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -86,8 +86,12 @@ c     INTEGER iG_IO,jG_IO,npe
 cph)
       Real*4 xy_buffer_r4(narr*nPx*nPy)
       Real*8 xy_buffer_r8(narr*nPx*nPy)
+      _RL dummyRL(1)
+      CHARACTER*8 blank8c
 
-      DATA map2gl / 0, 1 /
+      DATA dummyRL(1) / 0. _d 0 /
+      DATA blank8c / '        ' /
+      DATA map2gl  / 0, 1 /
 
 C     ------------------------------------------------------------------
 
@@ -221,8 +225,8 @@ C Close data-file and create meta-file
          nDims = 1
          CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
-     I              filePrec, nDims, dimList, map2gl, 0, ' ',
-     I              0, UNSET_RL, irecord, myIter, myThid )
+     I              filePrec, nDims, dimList, map2gl, 0, blank8c,
+     I              0, dummyRL, irecord, myIter, myThid )
         ENDIF
        _END_MASTER( myThid )
 C To be safe, make other processes wait for I/O completion
@@ -321,8 +325,8 @@ C Create meta-file for each tile file
          nDims = 1
          CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
-     I              filePrec, nDims, dimList, map2gl, 0, ' ',
-     I              0, UNSET_RL, irecord, myIter, myThid )
+     I              filePrec, nDims, dimList, map2gl, 0, blank8c,
+     I              0, dummyRL, irecord, myIter, myThid )
         ENDIF
 C End of bi,bj loops
 c      ENDDO
@@ -349,8 +353,8 @@ C Create meta-file for global file
        nDims = 1
        CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
-     I              filePrec, nDims, dimList, map2gl, 0, ' ',
-     I              0, UNSET_RL, irecord, myIter, myThid )
+     I              filePrec, nDims, dimList, map2gl, 0, blank8c,
+     I              0, dummyRL, irecord, myIter, myThid )
 c    I              metaFName, dataFName, the_run_name, titleLine,
 c    I              filePrec, nDims, dimList, map2gl, nFlds, fldList,
 c    I              nTimRec, timList, irecord, myIter, myThid )

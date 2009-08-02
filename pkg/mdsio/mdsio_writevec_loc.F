@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writevec_loc.F,v 1.3 2009/02/03 22:57:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writevec_loc.F,v 1.4 2009/08/02 20:42:43 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -81,9 +81,13 @@ C !LOCAL VARIABLES:
       PARAMETER( loc_size = Nx+Ny+Nr )
       real*4 r4seg(loc_size)
       real*8 r8seg(loc_size)
+      _RL dummyRL(1)
+      CHARACTER*8 blank8c
 CEOP
 
-      DATA map2gl / 0, 1 /
+      DATA dummyRL(1) / 0. _d 0 /
+      DATA blank8c / '        ' /
+      DATA map2gl  / 0, 1 /
 
 C We write a non-tiled array (bi=bj=0) only 1 time (if ProcId=0):
       IF ( myProcId.EQ.0 .OR. bi.NE.0 .OR. bj.NE.0 ) THEN
@@ -231,8 +235,8 @@ C--   we are writing a tiled array (bi>0,bj>0):
           IF ( nArr.EQ.1 ) nDims=2
           CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
-     I              filePrec, nDims, dimList, map2gl, 0, ' ',
-     I              0, UNSET_RL, iRec, myIter, myThid )
+     I              filePrec, nDims, dimList, map2gl, 0, blank8c,
+     I              0, dummyRL, iRec, myIter, myThid )
         ENDIF
 
         _END_MASTER( myThid )
