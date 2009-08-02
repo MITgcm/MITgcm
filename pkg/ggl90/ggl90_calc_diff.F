@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc_diff.F,v 1.4 2009/01/30 02:23:56 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc_diff.F,v 1.5 2009/08/02 19:30:19 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -35,7 +35,7 @@ C     KappaRx   :: vertical diffusivity array
 C     myThid    :: Instance number for this innvocation of GGL90_CALC_DIFF
 
       INTEGER bi,bj,iMin,iMax,jMin,jMax,kArg,kSize
-      _RL KappaRx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL KappaRx(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSize)
       INTEGER myThid
 
 #ifdef ALLOW_GGL90
