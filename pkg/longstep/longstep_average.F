@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average.F,v 1.2 2009/06/28 16:35:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average.F,v 1.3 2009/08/02 19:32:24 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -39,7 +39,7 @@ C     == Routine arguments ==
 C     myTime     :: Current time in simulation
 C     myIter     :: Current iteration number in simulation
 C     myThid     :: my Thread Id number
-      INTEGER myTime
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
