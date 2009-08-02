@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/gsum.F,v 1.7 2004/03/27 03:51:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/gsum.F,v 1.8 2009/08/02 20:16:14 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -11,12 +11,12 @@ C     !INTERFACE:
       IMPLICIT NONE
 
 C     !DESCRIPTION:
-C     *=============================================================================*
+C     *==========================================================*
 C     | SUBROUTINE GSUM\_R8\_INIT
 C     | o Setup data structures for global sum.
-C     *=============================================================================*
+C     *==========================================================*
 C     | Fast true shared memory form for global sum operation.
-C     *=============================================================================*
+C     *==========================================================*
 
 C     !USES:
 #include "SIZE.h"
@@ -44,7 +44,7 @@ CEOP
       DO I = 1, lShare8
        GSR8_value(I,myThid) = _NOT_SET_
       ENDDO
-C
+
       RETURN
       END
 
@@ -55,12 +55,12 @@ C     !INTERFACE:
       SUBROUTINE GSUM_R8( myPhi, answer, myThid )
       IMPLICIT NONE
 C     !DESCRIPTION:
-C     *=============================================================================*
-C     | SUBROUTINE GSUM\_R8     
-C     | o Perform global sum.                           
-C     *=============================================================================*
+C     *==========================================================*
+C     | SUBROUTINE GSUM\_R8
+C     | o Perform global sum.
+C     *==========================================================*
 C     | Fast true shared memory form for global sum operation.
-C     *=============================================================================*
+C     *==========================================================*
 C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -74,7 +74,6 @@ C     GSR8_level :: Cyclic buffer index into global data sum elements.
       COMMON /GS_R8_BUFFER_I/
      &  GSR8_level
       INTEGER GSR8_level
-C
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myPhi  :: This threads contribution
@@ -96,7 +95,6 @@ C     prevLev
       INTEGER nDone
       INTEGER I
       INTEGER curLev, prevLev
-C
 CEOP
 
 C     answer = 1.
@@ -111,7 +109,7 @@ C
        GSR8_value(curLev,myThid) = myPhi
    10  CONTINUE
         IF ( GSR8_value(curLev,1) .NE. _NOT_SET_  ) GOTO 11
-        CALL FOOL_THE_COMPILER( GSR8_value )
+        CALL FOOL_THE_COMPILER_R8( GSR8_value(1,1) )
        GOTO 10
    11  CONTINUE
        GSR8_value(curLev,myThid) = _NOT_SET_
@@ -124,7 +122,7 @@ C
        IF ( prevLev .GT. 2 ) prevLev = 1
 
    12  CONTINUE
-        CALL FOOL_THE_COMPILER( GSR8_value )
+        CALL FOOL_THE_COMPILER_R8( GSR8_value(1,1) )
         nDone   = 1
         DO I = 2, nThreads
          IF ( GSR8_value(curLev,I) .NE. _NOT_SET_ ) nDone = nDone+1
@@ -132,7 +130,7 @@ C
        IF ( nDone .LT. nThreads ) GOTO 12
 
        GSR8_level = prevLev
-       CALL FOOL_THE_COMPILER( GSR8_value )
+       CALL FOOL_THE_COMPILER_R8( GSR8_value(1,1) )
        GSR8_value(prevLev,1) = _NOT_SET_
 
        answer = myPhi
@@ -156,6 +154,6 @@ C
        GSR8_value(curLev,1) = answer
 
       ENDIF
-C
+
       RETURN
       END
