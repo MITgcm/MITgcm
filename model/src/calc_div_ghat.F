@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.23 2008/08/24 21:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.24 2009/08/02 19:54:50 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -40,11 +40,11 @@ C     myThid  :: Instance number for this call of CALC_DIV_GHAT
       INTEGER bi,bj
       INTEGER k
       _RL cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-c#ifdef ALLOW_NONHYDROSTATIC
+#ifdef ALLOW_NONHYDROSTATIC
       _RL cg3d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-c#else
-c     _RL cg3d_b(1)
-c#endif
+#else
+      _RL cg3d_b(1)
+#endif
       INTEGER myThid
 
 C     !LOCAL VARIABLES:

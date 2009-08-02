@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.12 2008/08/24 21:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.13 2009/08/02 19:54:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -35,11 +35,11 @@ C     wFld       :: Vertical flow
       INTEGER bi,bj,k
       _RL  uFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-c#ifdef ALLOW_ADDFLUID
+#ifdef ALLOW_ADDFLUID
       _RL  mFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-c#else
-c     _RL  mFld (1)
-c#endif
+#else
+      _RL  mFld (1)
+#endif
       _RL  wFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
 
