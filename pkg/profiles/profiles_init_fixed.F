@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.13 2009/04/28 18:18:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.14 2009/08/03 14:25:50 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
 
-C     o==========================================================o
-C     | subroutine profiles_init_fixed 				 |
-C     | o initialization for netcdf profiles data		 |
-C     | started: Gael Forget 15-March-2006                       |
-C     | extended: Gael Forget 14-June-2007                       |
-C     o==========================================================o
+C     *==========================================================*
+C     | subroutine profiles_init_fixed
+C     | o initialization for netcdf profiles data
+C     | started: Gael Forget 15-March-2006
+C     | extended: Gael Forget 14-June-2007
+C     *==========================================================*
 
       SUBROUTINE profiles_init_fixed( myThid )
 
@@ -83,12 +83,12 @@ c--   == end of interface ==
           enddo
          enddo
         enddo
- 
+
         do num_file=1,NFILESPROFMAX
 
       IL  = ILNBLNK( profilesfiles(num_file) )
       if (IL.NE.0) then
-        write(profilesfile(1:80),'(1a)') 
+        write(profilesfile(1:80),'(1a)')
      &     profilesfiles(num_file)(1:IL)
         write(msgbuf,'(a,X,i3,X,a)')
      &     'Profiles num_file is ', num_file, profilesfile(1:80)
@@ -126,7 +126,7 @@ c1)  read the number of profiles :
       endif
       err = NF_INQ_DIMLEN(fid, dimid, ProfDepthNo(num_file,bi,bj) )
       write(msgbuf,'(a,X,4i9)')
-     &   ' fid, num_file, ProfNo, ProfDepthNo ', 
+     &   ' fid, num_file, ProfNo, ProfDepthNo ',
      &   fid, num_file, ProfNo(num_file,bi,bj),
      &   ProfDepthNo(num_file,bi,bj)
       call print_message(
@@ -152,7 +152,7 @@ c2) read the dates and positions :
       endif
 
 #ifdef ALLOW_PROFILES_GENERICGRID
-c3) read interpolattion information (grid points, coeffs, etc.) 
+c3) read interpolattion information (grid points, coeffs, etc.)
            err = NF_INQ_VARID(fid,'prof_interp_XC11',varid_intp1)
            err = NF_INQ_VARID(fid,'prof_interp_YC11',varid_intp2)
            err = NF_INQ_VARID(fid,'prof_interp_XCNINJ',varid_intp11)
@@ -206,7 +206,7 @@ c5.1) read a chunk
 
       if ( (vec_count(2).LE.0).OR.(vec_count(2).GT.1000).OR.
      & (vec_start(2).LE.0).OR.
-     & (vec_count(2)+vec_start(2)-1.GT.ProfNo(num_file,bi,bj)) ) 
+     & (vec_count(2)+vec_start(2)-1.GT.ProfNo(num_file,bi,bj)) )
      & then
             WRITE(errorMessageUnit,'(A,X,I4.4)')
      & 'ERROR in PROFILES_INIT_FIXED: #1', num_file
@@ -225,28 +225,28 @@ c5.1) read a chunk
       if (err.NE.NF_NOERR) then
             WRITE(errorMessageUnit,'(A,X,I4.4)')
      & 'ERROR in PROFILES_INIT_FIXED: #2', num_file
-      stopProfiles=1. _d 0 
-      endif 
+      stopProfiles=1. _d 0
+      endif
 
 #ifdef ALLOW_PROFILES_GENERICGRID
-      err = NF_GET_VARA_DOUBLE(fid,varid_intp1,vec_start(2), 
+      err = NF_GET_VARA_DOUBLE(fid,varid_intp1,vec_start(2),
      & vec_count(2), tmp_xC11)
-      err = NF_GET_VARA_DOUBLE(fid,varid_intp2,vec_start(2), 
+      err = NF_GET_VARA_DOUBLE(fid,varid_intp2,vec_start(2),
      & vec_count(2), tmp_yC11)
       err = NF_GET_VARA_DOUBLE(fid,varid_intp11,vec_start(2),
      & vec_count(2), tmp_xCNINJ)
-      err = NF_GET_VARA_DOUBLE(fid,varid_intp22,vec_start(2), 
+      err = NF_GET_VARA_DOUBLE(fid,varid_intp22,vec_start(2),
      & vec_count(2), tmp_yCNINJ)
       do q=1,NUM_INTERP_POINTS
         vec_start2(1)=q
         vec_start2(2)=1+1000*(kk-1)
         vec_count2(1)=1
         vec_count2(2)=min(1000,ProfNo(num_file,bi,bj)-1000*(kk-1))
-        err = NF_GET_VARA_DOUBLE(fid,varid_intp3,vec_start2, 
+        err = NF_GET_VARA_DOUBLE(fid,varid_intp3,vec_start2,
      &  vec_count2, tmp_weights(1,q))
-        err = NF_GET_VARA_DOUBLE(fid,varid_intp4,vec_start2,    
+        err = NF_GET_VARA_DOUBLE(fid,varid_intp4,vec_start2,
      &  vec_count2, tmp_i(1,q))
-        err = NF_GET_VARA_DOUBLE(fid,varid_intp5,vec_start2,    
+        err = NF_GET_VARA_DOUBLE(fid,varid_intp5,vec_start2,
      &  vec_count2, tmp_j(1,q))
       enddo
 #endif
@@ -257,7 +257,7 @@ c5.2) loop through this chunk
       if ( stopProfiles .EQ. 0.) then
 
       call cal_FullDate( int(tmpyymmdd(k)),int(tmphhmmss(k)),
-     & tmpdate,bi,bj,mythid )
+     & tmpdate,mythid )
       call cal_TimePassed( modelstartdate,tmpdate,tmpdiff,mythid )
       call cal_ToSeconds (tmpdiff,diffsecs,mythid)
       diffsecs=diffsecs+nIter0*deltaTclock
@@ -311,7 +311,7 @@ c5.2) loop through this chunk
        if (stopGenericGrid.EQ.0.) then
 
        if ( ( abs( tmp_xC11(k) - xC(1,1,bi,bj) ).LT.0.0001 ) .AND.
-     & ( abs( tmp_yC11(k) - yC(1,1,bi,bj) ).LT.0.0001 ) .AND. 
+     & ( abs( tmp_yC11(k) - yC(1,1,bi,bj) ).LT.0.0001 ) .AND.
      & ( abs( tmp_xCNINJ(k) - xC(sNx,sNy,bi,bj) ).LT.0.0001 ) .AND.
      & ( abs( tmp_yCNINJ(k) - yC(sNx,sNy,bi,bj) ).LT.0.0001 ) ) then
 
@@ -330,7 +330,7 @@ c5.2) loop through this chunk
              prof_interp_j(num_file,length_for_tile,q,bi,bj)
      &       =tmp_j(k,q)
              tmp_sum_weights=tmp_sum_weights+tmp_weights(k,q)
-c more test of the inputs: is the offline-computed 
+c more test of the inputs: is the offline-computed
 c interpolation information consistent (self and with grid)
        if ( (tmp_i(k,q).LT.0).OR.(tmp_j(k,q).LT.0)
      & .OR.(tmp_i(k,q).GT.sNx+1).OR.(tmp_j(k,q).GT.sNy+1) ) then
@@ -388,7 +388,7 @@ c interpolation information consistent (self and with grid)
       endif
       enddo
 
- 
+
       ProfNo(num_file,bi,bj)=length_for_tile
 
       write(msgbuf,'(a,i3,i3,i3,i5)')
@@ -473,13 +473,13 @@ C===========================================================
 c create files for model counterparts to observations
 C===========================================================
 
-           if (ProfNo(num_file,bi,bj).GT.0) then   
+           if (ProfNo(num_file,bi,bj).GT.0) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
 
       if (profilesfile_equi_type.EQ.1) then
- 
-      write(fnameequinc(1:80),'(2a,i3.3,a,i3.3,a)') 
+
+      write(fnameequinc(1:80),'(2a,i3.3,a,i3.3,a)')
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
       write(adfnameequinc(1:80),'(3a,i3.3,a,i3.3,a)') 'ad',
      & profilesfile(1:IL),'.',iG,'.',jG,'.equi.nc'
@@ -517,7 +517,7 @@ C===========================================================
      & ProfDepthNo(num_file,bi,bj),bi,bj, myThid)
       else
        call MDSFINDUNIT( fidforward(num_file,bi,bj) , mythid )
-       open( fidforward(num_file,bi,bj),file=fnameequinc, 
+       open( fidforward(num_file,bi,bj),file=fnameequinc,
      & form ='unformatted',status='unknown', access='direct',
      & recl=  (ProfDepthNo(num_file,bi,bj)+1)*WORDLENGTH*2 )
        call MDSFINDUNIT( fidadjoint(num_file,bi,bj) , mythid )
@@ -554,7 +554,7 @@ C===========================================================
       prof_interp_yC11(num_file,k,bi,bj)=-999
       prof_interp_xCNINJ(num_file,k,bi,bj)=-999
       prof_interp_yCNINJ(num_file,k,bi,bj)=-999
-#endif     
+#endif
       enddo
 
       endif !if (IL.NE.0) then
@@ -579,7 +579,7 @@ cgf XC grid
             WRITE(standardMessageUnit,'(A,/,2A)')
      & 'PROFILES_INIT_FIXED: creating grid from profiles; file:',
      & fnameequinc
-       open( fid, file= fnameequinc, form ='unformatted', 
+       open( fid, file= fnameequinc, form ='unformatted',
      &      status='unknown',access='direct', recl= k)
         DO m=0,sNy+1
          DO l=0,sNx+1
@@ -599,7 +599,7 @@ cgf YC grid
             WRITE(standardMessageUnit,'(A,/,A)')
      & 'PROFILES_INIT_FIXED: creating grid from profiles; file:',
      & fnameequinc
-       open( fid, file= fnameequinc, form ='unformatted', 
+       open( fid, file= fnameequinc, form ='unformatted',
      & status='unknown', access='direct', recl= k)
         DO m=0,sNy+1
          DO l=0,sNx+1
@@ -613,8 +613,8 @@ cgf YC grid
        close(fid)
             WRITE(errorMessageUnit,'(A,/,2A,/A,/,A,/,A)')
      & 'ERROR in PROFILES_INIT_FIXED : ',
-     & 'when using ALLOW_PROFILES_GENERICGRID ', 
-     & 'you have to provide interpolation coeffs etc. ', 
+     & 'when using ALLOW_PROFILES_GENERICGRID ',
+     & 'you have to provide interpolation coeffs etc. ',
      & 'and THIS DEMANDS A PRE-PROCESSING OF ECCO NC FILES. ',
      & '=> see MITGCM_contrib/gael for convenient matlab scripts ',
      & 'that use profiles*incl1PointOverlap*data model outputs. '
@@ -643,5 +643,5 @@ c2) stop after other kind of errors
 
 #endif
 
+      RETURN
       END
-
