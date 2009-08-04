@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/bar2.F,v 1.6 2005/11/07 18:16:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/bar2.F,v 1.7 2009/08/04 18:01:37 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -63,7 +63,7 @@ C     !INTERFACE:
 C     !DESCRIPTION:
 C     *=====================================================================*
 C     | SUBROUTINE BAR2
-C     | o Global barrier routine.                 
+C     | o Global barrier routine.
 C     *=====================================================================*
 C     | Implements a simple true shared memory barrier that uses a global
 C     | heap array that all threads can access to synchronise. Each thread
@@ -82,7 +82,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "BAR2.h"
- 
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid :: Thread number of this instance of BAR2
@@ -118,9 +118,8 @@ Cdbg C$OMP BARRIER
       RETURN
 #endif
 
-C
       spinCount = 0
-C
+
       IF ( myThid .NE. 1 ) THEN
 
        BAR2_level(1,myThid) = BAR2_level(1,myThid)+1
@@ -128,7 +127,7 @@ C
    10  CONTINUE
         IF ( BAR2_level(1,1) .EQ. myLevel  ) GOTO 11
         spinCount = spinCount+1
-        CALL FOOL_THE_COMPILER( BAR2_level )
+        CALL FOOL_THE_COMPILER( BAR2_level(1,1) )
        GOTO 10
    11  CONTINUE
 
@@ -136,7 +135,7 @@ C
 
        myLevel = BAR2_level(1,1)
    12  CONTINUE
-        CALL FOOL_THE_COMPILER( BAR2_level )
+        CALL FOOL_THE_COMPILER( BAR2_level(1,1) )
         nDone   = 1
         DO I = 2, nThreads
          IF ( BAR2_level(1,1) .EQ. BAR2_level(1,I)-1 ) nDone = nDone+1
@@ -147,12 +146,11 @@ C
        BAR2_level(1,1) = myLevel+1
 
       ENDIF
-C
+
       BAR2_barrierCount(1,myThid) = BAR2_barrierCount(1,myThid)+1
       BAR2_spinsCount(1,myThid) = BAR2_spinsCount(1,myThid)+spinCount
       BAR2_spinsMax  (1,myThid) = MAX(BAR2_spinsMax(1,myThid),spinCount)
       BAR2_spinsMin  (1,myThid) = MIN(BAR2_spinsMin(1,myThid),spinCount)
-C
+
       RETURN
       END
-

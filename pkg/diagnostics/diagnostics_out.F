@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.41 2009/01/25 20:22:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.42 2009/08/04 18:00:29 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -78,6 +78,7 @@ C              diagnostic storage qdiag into it.
       INTEGER prec, nRec
 #ifdef ALLOW_MDSIO
       LOGICAL glf
+      _RL timeRec(1)
 #endif
 #ifdef ALLOW_MNC
       INTEGER ll, llMx, jj, jjMx
@@ -567,9 +568,10 @@ C     all MDSIO S/R, uses instead this specific S/R to write only
 C     meta files but with more informations in it.
             glf = globalFiles
             nRec = nfields(listId)*averageCycle(listId)
+            timeRec(1) = myTime
             CALL MDS_WR_METAFILES(fn, prec, glf, .FALSE.,
      &              0, 0, nlevels(listId), ' ',
-     &              nfields(listId), flds(1,listId), 1, myTime,
+     &              nfields(listId), flds(1,listId), 1, timeRec,
      &              nRec, myIter, myThid)
       ENDIF
 #endif /*  ALLOW_MDSIO  */
