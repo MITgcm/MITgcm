@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.14 2007/09/04 16:49:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.15 2009/08/04 21:51:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -69,14 +69,14 @@ c     INTEGER count0, count1
 c     INTEGER jerl(12)
 c     DATA jerl / 2 , 2 , 2 , 3 , 3 , 3 , 4 , 4 , 4 , 4 , 3 , 2 /
 #endif /* ALLOW_CAL */
-C
-C     Jerlov water type :  I       IA      IB      II      III
-C                jwtype    1       2       3       4       5
-C
-      DATA rfac         /  0.58 ,  0.62 ,  0.67 ,  0.77 ,  0.78 /
-      DATA a1           /  0.35 ,  0.6  ,  1.0  ,  1.5  ,  1.4  /
-      DATA a2           / 23.0  , 20.0  , 17.0  , 14.0  ,  7.9  /
 CEOP
+
+C     Jerlov water type :
+C                  I          IA         IB         II         III
+C     jwtype :     1          2          3          4          5
+      DATA rfac / 0.58 _d 0, 0.62 _d 0, 0.67 _d 0, 0.77 _d 0, 0.78 _d 0/
+      DATA a1   / 0.35 _d 0, 0.6  _d 0, 1.0  _d 0, 1.5  _d 0, 1.4  _d 0/
+      DATA a2   / 23.0 _d 0, 20.0 _d 0, 17.0 _d 0, 14.0 _d 0, 7.9  _d 0/
 
 #ifdef ALLOW_CAL
 ceh3 this should have an IF ( useCALENDAR ) THEN
@@ -98,13 +98,13 @@ CML)
 #endif /* ALLOW_CAL */
 
       DO i = 1,imax
-         facz = fact*swdk(i)
-         IF (facz .LT. (-200.)) THEN
-            swdk(i) = 0.
-         ELSE
-            swdk(i) =       rfac(jwtype)  * exp(facz/a1(jwtype))
-     $                + (1.-rfac(jwtype)) * exp(facz/a2(jwtype))
-         ENDIF
+        facz = fact*swdk(i)
+        IF ( facz .LT. -200. _d 0 ) THEN
+          swdk(i) = 0. _d 0
+        ELSE
+          swdk(i) =       rfac(jwtype)  * exp( facz/a1(jwtype) )
+     &       + (1. _d 0 - rfac(jwtype)) * exp( facz/a2(jwtype) )
+        ENDIF
       ENDDO
 
       RETURN
