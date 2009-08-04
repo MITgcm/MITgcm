@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.14 2008/04/07 20:31:16 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.15 2009/08/04 18:33:07 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE DIC_BIOTIC_DIAGS( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE DIC_BIOTIC_DIAGS                                  |
-C     | o Do DIC diagnostic output                           |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE DIC_BIOTIC_DIAGS
+C     | o Do DIC diagnostic output
+C     *==========================================================*
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -54,27 +54,27 @@ C     Dump files and restart average computation if needed
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_NORMALIZ(BIOave, DIC_timeave, nR ,
+         CALL TIMEAVE_NORMALIZ(BIOave, DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(CARave, DIC_timeave, nR ,
+         CALL TIMEAVE_NORMALIZ(CARave, DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(SURave,dic_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZ(SURave,dic_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(SUROave,dic_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZ(SUROave,dic_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(pCO2ave,dic_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZ(pCO2ave,dic_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(pHave,dic_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZ(pHave,dic_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(fluxCO2ave,dic_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZ(fluxCO2ave,dic_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(OmegaCave, DIC_timeave, nR ,
+         CALL TIMEAVE_NORMALIZ(OmegaCave, DIC_timeAve, Nr ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(pfluxave,dic_timeave, nR ,
+         CALL TIMEAVE_NORMALIZ(pfluxave,dic_timeAve, Nr ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(epfluxave,dic_timeave, nR ,
+         CALL TIMEAVE_NORMALIZ(epfluxave,dic_timeAve, Nr ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(cfluxave,dic_timeave, nR ,
+         CALL TIMEAVE_NORMALIZ(cfluxave,dic_timeAve, Nr ,
      &                 bi,bj,myThid)
         ENDDO
        ENDDO
@@ -150,9 +150,9 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(pfluxave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(epfluxave,Nr,bi,bj,myThid)
          CALL TIMEAVE_RESET(cfluxave,Nr,bi,bj,myThid)
-         do k=1,Nr
-           DIC_TimeAve(bi,bj,k)=0.d0
-         enddo
+         DO k=1,Nr
+           DIC_timeAve(k,bi,bj) = 0. _d 0
+         ENDDO
         ENDDO
        ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.22 2008/04/08 16:18:43 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.23 2009/08/04 18:33:07 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -8,9 +8,9 @@ C !ROUTINE: DIC_BIOTIC_FORCING
 
 C !INTERFACE: ==========================================================
       SUBROUTINE DIC_BIOTIC_FORCING( PTR_DIC, PTR_ALK, PTR_PO4,
-     &                            PTR_DOP, 
+     &                            PTR_DOP,
 #ifdef ALLOW_O2
-     &                            PTR_O2, 
+     &                            PTR_O2,
 #endif
 #ifdef ALLOW_FE
      &                            PTR_FE,
@@ -68,12 +68,12 @@ C                            and virtual flux
 C  SURO                   :: tendency of O2 due to air-sea exchange
 C  GPO4                   :: tendency of PO4 due to biological productivity,
 C                            exchange with DOP pool and reminerization
-C  CAR                    :: carbonate changes due to biological 
+C  CAR                    :: carbonate changes due to biological
 C                             productivity and remineralization
 C  BIOac                  :: biological productivity
 C  RDOP                   :: DOP sink due to remineralization
 C  pflux                  :: changes to PO4 due to flux and remineralization
-C  CAR_S                  :: carbonate sink 
+C  CAR_S                  :: carbonate sink
 C  cflux                  :: carbonate changes due to flux and remineralization
 C  freefe                 :: iron not bound to ligand
       _RL  GDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -152,16 +152,16 @@ c oxygen air-sea interaction
 
 #ifdef ALLOW_FE
 c find free iron
-       call fe_chem(bi,bj,iMin,iMax,jMin,jMax, PTR_FE, freefe,
+       CALL FE_CHEM(bi,bj,iMin,iMax,jMin,jMax, PTR_FE, freefe,
      &                myIter, mythid)
 #endif
 
 
 c biological activity
-       CALL BIO_EXPORT( PTR_PO4 , 
+       CALL BIO_EXPORT( PTR_PO4 ,
 #ifdef ALLOW_FE
-     I           PTR_FE, 
-#endif 
+     I           PTR_FE,
+#endif
      I           BIOac,
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
@@ -176,7 +176,7 @@ C- Carbonate sink
          DO j=jmin,jmax
           DO i=imin,imax
              CAR_S(i,j,k)=BIOac(i,j,k)*R_CP*rain_ratio(i,j,bi,bj)*
-     &                    (1. _d 0-DOPfraction) 
+     &                    (1. _d 0-DOPfraction)
           ENDDO
          ENDDO
        ENDDO
@@ -283,14 +283,14 @@ C update
 c find free iron and get rid of insoluble part
        call fe_chem(bi,bj,iMin,iMax,jMin,jMax, PTR_FE, freefe,
      &                myIter, mythid)
-#endif 
+#endif
 #endif
 
 
-#ifdef ALLOW_TIMEAVE 
+#ifdef ALLOW_TIMEAVE
 c save averages
-      IF ( taveFreq.GT.0. ) THEN
-      DO k=1,Nr
+       IF ( taveFreq.GT.0. ) THEN
+        DO k=1,Nr
          DO j=jmin,jmax
           DO i=imin,imax
             BIOave(i,j,k,bi,bj)   =BIOave(i,j,k,bi,bj)+
@@ -307,7 +307,7 @@ c save averages
      &                             cflux(i,j,k)*deltaTclock
           ENDDO
          ENDDO
-      ENDDO
+        ENDDO
          DO j=jmin,jmax
           DO i=imin,imax
               SURave(i,j,bi,bj)    =SURave(i,j,bi,bj)+
@@ -324,10 +324,10 @@ c save averages
      &                           fluxCO2(i,j,bi,bj)*deltaTclock
           ENDDO
          ENDDO
-      do k=1,Nr
-       dic_timeave(bi,bj,k)=dic_timeave(bi,bj,k)+deltaTclock
-      enddo
-      ENDIF
+         DO k=1,Nr
+          DIC_timeAve(k,bi,bj) = DIC_timeAve(k,bi,bj)+deltaTclock
+         ENDDO
+       ENDIF
 #endif /* ALLOW_TIMEAVE*/
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

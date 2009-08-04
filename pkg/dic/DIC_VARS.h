@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.4 2008/04/10 01:53:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.5 2009/08/04 18:33:07 jmc Exp $
 C $Name:  $
 
-C     /==========================================================\
+C     *==========================================================*
 C     | DIC_VARS.h
 C     | o Carbon Variables
-C     |==========================================================|
+C     *==========================================================*
 
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
@@ -107,9 +107,9 @@ C  dic_int*          :: place holder to read in a integer number, set at run tim
       INTEGER dic_int4
 
 #ifdef DIC_BIOTIC
-C     /==========================================================\
+C     *==========================================================*
 C     | o Biological Carbon Variables
-C     |==========================================================|
+C     *==========================================================*
 
       COMMON /BIOTIC_NEEDS/
      &     BIOave, CARave, SURave, SUROave, pCO2ave, pHave,
@@ -127,25 +127,25 @@ C     |==========================================================|
       INTEGER nlev
 
 C     For averages
-      _RL BIOave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
-      _RL CARave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RL BIOave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL CARave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL SURave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SUROave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pHave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fluxCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL OmegaCave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
-      _RL pfluxave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
-      _RL epfluxave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
-      _RL cfluxave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
-      _RL DIC_timeave(nSx,nSy,nR)
+      _RL OmegaCave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL pfluxave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL epfluxave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL cfluxave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL DIC_timeAve(Nr,nSx,nSy)
 
 C     values for biogeochemistry
       _RL par(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL alpha(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL rain_ratio(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL InputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RL omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Kpo4
       _RL DOPfraction
       _RL zcrit
