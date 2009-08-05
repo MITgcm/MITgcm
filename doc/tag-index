@@ -1,12 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1145 2009/07/30 07:38:54 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1146 2009/08/05 14:54:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add missing "_d 0" in ShortWave flux penetration (S/R SWFRAC):
+   update results of experiments: lab_sea (4 fwd tests + 3 adjoint), 
+    seaice_obcs, global_ocean.cs32x15 (icedyn & thsice) and natl_box (x2).
+o few changes to pass when compiling with strick checking of arguments 
+   across S/R (allow to find few bugs in S/R calls).
 o pkg/seaice:
  - seaice_evp: move if-statement out of loop (TEM) at the cost of 11 new 
    2d-fields, for slightly better performance
+
 checkpoint61t
 o pkg/seaice: 
  - remove unused variables in seaice_evp
