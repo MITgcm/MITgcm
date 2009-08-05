@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readtile.F,v 1.4 2008/07/20 12:26:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readtile.F,v 1.5 2009/08/05 23:17:54 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -50,7 +50,7 @@ C Routine arguments
       integer filePrec
       character*(2) arrType
       integer nNz
-      Real arr(*)
+      _RL  arr(*)
       integer bi, bj
       integer irecord
       integer myThid

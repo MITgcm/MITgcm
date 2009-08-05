@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice_loc.F,v 1.9 2007/10/09 00:13:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice_loc.F,v 1.10 2009/08/05 23:17:54 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -48,7 +48,7 @@ C Routine arguments
       integer filePrec
       character*(2) arrType
       integer nNz
-      Real arr(*)
+      _RL  arr(*)
       integer irecord
       integer myThid
 C Functions
@@ -277,7 +277,7 @@ C Routine arguments
       integer filePrec
       character*(2) arrType
       integer nNz
-      Real arr(*)
+      _RL  arr(*)
       integer irecord
       integer myThid
 C Functions
@@ -511,7 +511,7 @@ C Routine arguments
       logical globalFile
       character*(2) arrType
       integer nNz
-      Real arr(*)
+      _RL  arr(*)
       integer irecord
       integer myIter
       integer myThid
@@ -720,7 +720,7 @@ C Routine arguments
       logical globalFile
       character*(2) arrType
       integer nNz
-      Real arr(*)
+      _RL  arr(*)
       integer irecord
       integer myIter
       integer myThid

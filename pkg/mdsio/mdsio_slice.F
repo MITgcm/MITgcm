@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice.F,v 1.12 2006/08/08 22:20:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice.F,v 1.13 2009/08/05 23:17:54 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -25,17 +25,17 @@ C myThid	integer thread identifier
 C
 C MDSREADFIELD first checks to see if the file "fName" exists, then
 C if the file "fName.data" exists and finally the tiled files of the
-C form "fName.xxx.yyy.data" exist. 
+C form "fName.xxx.yyy.data" exist.
 C The precision of the file is decsribed by filePrec, set either
 C to floatPrec32 or floatPrec64. The precision or declaration of
 C the array argument must be consistently described by the char*(2)
-C string arrType, either "RS" or "RL". 
+C string arrType, either "RS" or "RL".
 C This routine reads vertical slices (X-Z) including the overlap region.
-C irecord is the record number to be read and must be >= 1. 
-C The file data is stored in arr *but* the overlaps are *not* updated. 
+C irecord is the record number to be read and must be >= 1.
+C The file data is stored in arr *but* the overlaps are *not* updated.
 C
 C Created: 06/03/00 spk@ocean.mit.edu
-C 
+C
 
       implicit none
 C Global variables / common blocks
@@ -48,7 +48,7 @@ C Routine arguments
       integer filePrec
       character*(2) arrType
       integer nNz
-      Real arr(*)
+      _RL  arr(*)
       integer irecord
       integer myThid
 C Functions
@@ -263,17 +263,17 @@ C myThid	integer thread identifier
 C
 C MDSREADFIELD first checks to see if the file "fName" exists, then
 C if the file "fName.data" exists and finally the tiled files of the
-C form "fName.xxx.yyy.data" exist. 
+C form "fName.xxx.yyy.data" exist.
 C The precision of the file is decsribed by filePrec, set either
 C to floatPrec32 or floatPrec64. The precision or declaration of
 C the array argument must be consistently described by the char*(2)
-C string arrType, either "RS" or "RL". 
+C string arrType, either "RS" or "RL".
 C This routine reads vertical slices (Y-Z) including overlap regions.
-C irecord is the record number to be read and must be >= 1. 
-C The file data is stored in arr *but* the overlaps are *not* updated. 
+C irecord is the record number to be read and must be >= 1.
+C The file data is stored in arr *but* the overlaps are *not* updated.
 C
 C Created: 06/03/00 spk@ocean.mit.edu
-C 
+C
 
       implicit none
 C Global variables / common blocks
@@ -286,7 +286,7 @@ C Routine arguments
       integer filePrec
       character*(2) arrType
       integer nNz
-      Real arr(*)
+      _RL  arr(*)
       integer irecord
       integer myThid
 C Functions
@@ -503,7 +503,7 @@ C irecord	integer	record number to read
 C myIter	integer	time step number
 C myThid	integer thread identifier
 C
-C MDSWRITEFIELDXZ creates either a file of the form "fName.data"  
+C MDSWRITEFIELDXZ creates either a file of the form "fName.data"
 C if the logical flag "globalFile" is set true. Otherwise
 C it creates MDS tiled files of the form "fName.xxx.yyy.data".
 C The precision of the file is decsribed by filePrec, set either
@@ -511,7 +511,7 @@ C to floatPrec32 or floatPrec64. The precision or declaration of
 C the array argument must be consistently described by the char*(2)
 C string arrType, either "RS" or "RL".
 C This routine writes vertical slices (X-Z) including overlap regions.
-C irecord is the record number to be read and must be >= 1. 
+C irecord is the record number to be read and must be >= 1.
 C NOTE: It is currently assumed that
 C the highest record number in the file was the last record written.
 C
@@ -529,7 +529,7 @@ C Routine arguments
       logical globalFile
       character*(2) arrType
       integer nNz
-      Real arr(*)
+      _RL  arr(*)
       integer irecord
       integer myIter
       integer myThid
@@ -651,7 +651,7 @@ C If we are writing to a tiled MDS file then we open each one here
      &         ' MDSWRITEFIELDXZ: illegal value for arrType'
              call print_error( msgbuf, mythid )
              stop 'ABNORMAL END: S/R MDSWRITEFIELDXZ'
-            endif              
+            endif
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8( sNx, r8seg )
 #endif
@@ -721,7 +721,7 @@ C irecord	integer	record number to read
 C myIter	integer	time step number
 C myThid	integer thread identifier
 C
-C MDSWRITEFIELDYZ creates either a file of the form "fName.data"  
+C MDSWRITEFIELDYZ creates either a file of the form "fName.data"
 C if the logical flag "globalFile" is set true. Otherwise
 C it creates MDS tiled files of the form "fName.xxx.yyy.data".
 C The precision of the file is decsribed by filePrec, set either
@@ -729,7 +729,7 @@ C to floatPrec32 or floatPrec64. The precision or declaration of
 C the array argument must be consistently described by the char*(2)
 C string arrType, either "RS" or "RL".
 C This routine writes vertical slices (Y-Z) including overlap regions.
-C irecord is the record number to be read and must be >= 1. 
+C irecord is the record number to be read and must be >= 1.
 C NOTE: It is currently assumed that
 C the highest record number in the file was the last record written.
 C
@@ -748,7 +748,7 @@ C Routine arguments
       logical globalFile
       character*(2) arrType
       integer nNz
-      Real arr(*)
+      _RL  arr(*)
       integer irecord
       integer myIter
       integer myThid
@@ -870,7 +870,7 @@ C If we are writing to a tiled MDS file then we open each one here
      &         ' MDSWRITEFIELDYZ: illegal value for arrType'
              call print_error( msgbuf, mythid )
              stop 'ABNORMAL END: S/R MDSWRITEFIELDYZ'
-            endif             
+            endif
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8( sNy, r8seg )
 #endif
@@ -938,7 +938,7 @@ C Arguments
       logical copyTo
       Real*4 seg(sn)
       _RL arr(1-ol:sn+ol,nNz,nSx,nSy)
-     
+
 C Local
       integer ii
 C     ------------------------------------------------------------------
@@ -978,7 +978,7 @@ C Arguments
       logical copyTo
       Real*4 seg(sn)
       _RS arr(1-ol:sn+ol,nNz,nSx,nSy)
-     
+
 C Local
       integer ii
 C     ------------------------------------------------------------------
@@ -1018,7 +1018,7 @@ C Arguments
       logical copyTo
       Real*8 seg(sn)
       _RL arr(1-ol:sn+ol,nNz,nSx,nSy)
-     
+
 C Local
       integer ii
 C     ------------------------------------------------------------------
@@ -1058,7 +1058,7 @@ C Arguments
       logical copyTo
       Real*8 seg(sn)
       _RS arr(1-ol:sn+ol,nNz,nSx,nSy)
-     
+
 C Local
       integer ii
 C     ------------------------------------------------------------------

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_rw_field.F,v 1.2 2007/11/13 19:37:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_rw_field.F,v 1.3 2009/08/05 23:17:54 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -50,7 +50,7 @@ C Routine arguments
       INTEGER filePrec
       CHARACTER*(2) arrType
       INTEGER nNz
-      Real    arr(*)
+      _RL     arr(*)
       INTEGER irecord
       INTEGER myThid
 C     ------------------------------------------------------------------
@@ -100,7 +100,7 @@ C Routine arguments
       INTEGER filePrec
       CHARACTER*(2) arrType
       INTEGER nNz
-      Real    arr(*)
+      _RL     arr(*)
       INTEGER irecord
       INTEGER myThid
 C     ------------------------------------------------------------------

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.13 2009/06/28 01:06:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.14 2009/08/05 23:17:54 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -78,7 +78,7 @@ C !INPUT PARAMETERS:
       INTEGER irecord
       INTEGER myThid
 C !OUTPUT PARAMETERS:
-      Real arr(*)
+      _RL  arr(*)
 
 C !FUNCTIONS
       INTEGER  ILNBLNK
