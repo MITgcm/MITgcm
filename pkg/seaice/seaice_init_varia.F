@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.46 2009/06/28 01:05:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.47 2009/08/05 21:49:02 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE SEAICE_INIT_VARIA( myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE SEAICE_INIT_VARIA                             |
 C     | o Initialization of sea ice model.                       |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -335,7 +335,7 @@ C--   Read initial sea-ice area from file if available.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           HSNOW(i,j,bi,bj)=0.2*AREA(i,j,bi,bj)
+           HSNOW(i,j,bi,bj) = 0.2 _d 0 * AREA(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
