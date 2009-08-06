@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1147 2009/08/05 22:58:06 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1148 2009/08/06 14:43:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ebm: add plenty of missing "_d 0" ;
+   update results of experiment global_ocean_ebm (fwd + adjoint tests) 
+  Notes: several pieces of code only works for (very) specific set up
+   (domain size, lat range, etc ...); should be documented & stop if one 
+   of those assumptions is not meet.
 o pkg/seaice: add missing "_d 0" in HSNOW initialisation
    update results of experiments: lab_sea (3 fwd tests + 2 adjoint tests) 
       and offline_exf_seaice (seaicetd + adjoint).
