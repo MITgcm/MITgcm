@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.100 2009/05/26 23:13:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.101 2009/08/07 04:16:19 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,6 +51,7 @@ c These includes are needed for
 c AD-checkpointing. 
 c They provide the fields to be stored.
 
+#  include "AUTODIFF_MYFIELDS.h"
 #  include "GRID.h"
 #  include "DYNVARS.h"
 #  include "SURFACE.h"

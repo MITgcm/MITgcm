@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.79 2009/06/02 16:11:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.80 2009/08/07 04:16:19 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -46,6 +46,7 @@ C     == Global variables ===
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
+# include "AUTODIFF_MYFIELDS.h"
 # include "tamc.h"
 # include "tamc_keys.h"
 # include "FFIELDS.h"

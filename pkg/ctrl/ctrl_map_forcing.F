@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.13 2009/04/28 18:35:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.14 2009/08/07 04:16:19 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -30,6 +30,9 @@ C     == Global variables ===
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#ifdef ALLOW_AUTODIFF
+#include "AUTODIFF_MYFIELDS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
