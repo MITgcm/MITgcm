@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+authors_fc5,v 1.5 2009/04/02 22:06:38 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+authors_fc5,v 1.6 2009/08/08 17:00:46 jmc Exp $
 #
 
 # on author: 
@@ -19,11 +19,11 @@ fi
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
+    FFLAGS="$FFLAGS -byteswapio -Mnodclchk -Mextend"
+    FOPTIM="$FOPTIM -fastsse -Mvect=cachesize:524288,transform"
 else
     #  Try to follow IEEE-754
-    FFLAGS='-byteswapio -r8'
-    FOPTIM='-O0 -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
+    FFLAGS="$FFLAGS -byteswapio"
+    FOPTIM="$FOPTIM -O0 -Mscalarsse -Mcache_align -Mnoflushz -Kieee"
 fi
 
