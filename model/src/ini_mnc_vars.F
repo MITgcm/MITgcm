@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.7 2007/12/06 07:42:59 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.8 2009/08/10 09:20:55 mlosch Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -22,12 +22,17 @@ C     !USES:
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_CAL
+# include "cal.h"
+#endif /* ALLOW_CAL */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid -  Number of this instances
       INTEGER myThid
+#ifdef ALLOW_CAL
+      CHARACTER*(34) timeUnits
+#endif /* ALLOW_CAL */
 CEOP
-
 
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
@@ -199,8 +204,26 @@ C     Create MNC definitions for DYNVARS.h variables  ----------------
       CALL MNC_CW_ADD_VNAME('T', '-_-_--__-__t', 0,0, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('T',
      &     'long_name','model_time', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('T',
+#ifdef ALLOW_CAL
+      IF ( useCAL ) THEN
+C     format: seconds since 1992-01-01, 00:00:00
+       WRITE(timeUnits,
+     &'(A14,(I4.4),A1,(I2.2),A1,(I2.2),A2,(I2.2),A1,(I2.2),A1,(I2.2))')
+     &      'seconds since ',startDate_1/10000,         '-',
+     &      (startDate_1 - startDate_1/10000*10000)/100,'-',
+     &      (startDate_1 - startDate_1/100*100),        ', ',
+     &      startDate_2/10000,                          ':',
+     &      (startDate_2 - startDate_2/10000*10000)/100,':',
+     &      (startDate_2 - startDate_2/100*100)
+       CALL MNC_CW_ADD_VATTR_TEXT('T',
+     &      'units',timeUnits, myThid)
+      ELSE
+#else
+      IF (.TRUE. ) THEN 
+#endif /* ALLOW_CAL */
+       CALL MNC_CW_ADD_VATTR_TEXT('T',
      &     'units','s', myThid)
+      ENDIF
 
       CALL MNC_CW_ADD_VNAME('iter', '-_-_--__-__t', 0,0, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('iter',
