@@ -1,23 +1,76 @@
 The experiments:
 
-exp0 - single layer, double gyre (barotropic with free-surface).
-exp1 - 4 layer, double gyre.
+MLAdjust
+OpenAD
+adjustment.128x64x1
+adjustment.cs-32x32x1
+advect_cs
+advect_xy
+advect_xz
+aim.5l_Equatorial_Channel
+aim.5l_LatLon
+aim.5l_cs
+bottom_ctrl_5x5 - simple test of bottom topography as a control variable
+cfc_example
+cpl_aim+ocn
+cpl_atm2d+ocn
+deep_anelastic
+dome - Denmark Overflow Mixing and Entrainment experiment with open boundaries
 exp2 - 4x4 degree global simulation with steady climatological forcing.
-exp3 - atmospheric configuration ? (but empty)
 exp4 - flow over a Gaussian bump in open-water or channel with open
        boundaries.
-exp5 - inhomogenously forced convection in a doubly periodic box.
+fizhi-cs-32x32x40
+fizhi-cs-aqualev20
+fizhi-gridalt-hs
+flt_example
 front_relax   - relaxation of a thermal front (test for GM scheme). 2D (Y-Z).
-internal_wave - internal wave forced by open boundary conditions.
-natl_box      - eastern subtropical North Atlantic with KPP; 1 month integration
+global1x1_tot
+global2x2_tot
+global_ocean.90x40x15 - global 4x4 degree ocean model with annual cycle
+                        of monthly climatological forcing
+global_ocean.cs32x15  - global ocean model on a cubed sphere grid with
+                        various flavors of sea ice
+global_ocean_ebm - global 4x4 degree ocean model coupled to a zonally
+                   averaged energy balance model of the atmosphere
+global_with_exf  - global 4x4 degree ocean model with annual cycle
+                   of monthly climatological forcing read with exf-package
 hs94.1x64x5   - Zonal averaged atmosphere using Held and Suarez '94 forcing.
-hs94.128x64x5   - 3-D atmosphere Dynamics using Held and Suarez '94 forcing.
-aim.5l_zon-ave  - Intermediate Atmospheric physics, 5 layers Molteni Physics 
-		package. Global Zonal Mean configuration, 1x64x5 resolution.
-
-And also (but not completely  tested) :
-aim.5l_Equatorial_Channel
-aim.5l_XZ_Equatorial_Slice
+hs94.128x64x5   - 3-D atmosphere dynamics using Held and Suarez '94 forcing.
+hs94.cs-32x32x5 - ... on a cubed sphere grid
+ideal_2D_oce
+internal_wave - internal wave forced by open boundary conditions.
+inverted_barometer - simple test of atmospheric pressure loading with
+                     radially symmetric Bessel-function geometry in a
+                     quadratc domain
+isomip - Ice Shelf Ocean Model Intercomparison Project experiment 0,
+         test for pkg/shelfice
+lab_sea - 2x2 degree regional Labrador Sea model mainly for testing pkg/seaice
+matrix_example
+natl_box      - eastern subtropical North Atlantic with KPP; 1 month integration
+natl_box_adjoint
+offline_exf_seaice
+rotating_tank
+seaice_obcs - similar to lab_sea with open boundaries.
+solid-body.cs-32x32x1
+tidal_basin_2d
+tutorial_advection_in_gyre
+tutorial_baroclinic_gyre - 4 layer, double gyre (formerly exp1).
+tutorial_barotropic_gyre - single layer, double gyre (barotropic with
+                           free-surface, formerly exp0 ).
+tutorial_cfc_offline
+tutorial_deep_convection - inhomogenously forced convection in a
+                           doubly periodic box (formerly exp5).
+tutorial_global_oce_biogeo - global 4x4 degree ocean model 
+                             with bio-geochemical tracer package (pkg/dic)
+tutorial_global_oce_in_p   - global 4x4 degree ocean model 
+                             in pressure coordinates
+tutorial_global_oce_latlon - global 4x4 degree ocean model with annual cycle
+                             of monthly climatological forcing
+tutorial_global_oce_optim
+tutorial_held_suarez_cs
+tutorial_offline
+tutorial_plume_on_slope
+tutorial_tracer_adjsens
+vermix - test various mixing schemes (pkgs KPP, PP81, MY82, GGL90, OPPS)
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
