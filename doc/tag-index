@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1149 2009/08/10 09:21:10 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1150 2009/08/11 08:07:52 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  change OB?eta from _RS to _RL and put them into a separate commen block
 o ini_mnc_vars.F: if available (ALLOW_CAL), use startTime_1 and 2 to 
   create a meaningful unit attribute for the time coordinate variable 
 o pkg/ebm: add plenty of missing "_d 0" ;
