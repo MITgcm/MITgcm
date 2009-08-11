@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.24 2009/06/02 14:58:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.25 2009/08/11 15:46:27 mlosch Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -54,6 +54,9 @@ c     == end of interface ==
      U     OBNv,   OBNv0,   OBNv1,   OBNvfile, 
      U     OBNt,   OBNt0,   OBNt1,   OBNtfile, 
      U     OBNs,   OBNs0,   OBNs1,   OBNsfile, 
+#   ifdef NONLIN_FRSURF
+     U     OBNeta, OBNeta0, OBNeta1, OBNetafile, 
+#   endif
 #   ifdef ALLOW_SEAICE
      I     siobNstartdate, siobNperiod,
      U     OBNa,   OBNa0,   OBNa1,   OBNafile,
@@ -78,6 +81,9 @@ c     == end of interface ==
      U     OBSv,   OBSv0,   OBSv1,   OBSvfile, 
      U     OBSt,   OBSt0,   OBSt1,   OBStfile, 
      U     OBSs,   OBSs0,   OBSs1,   OBSsfile, 
+#   ifdef NONLIN_FRSURF
+     U     OBSeta, OBSeta0, OBSeta1, OBSetafile, 
+#   endif
 #   ifdef ALLOW_SEAICE
      I     siobSstartdate, siobSperiod,
      U     OBSa,   OBSa0,   OBSa1,   OBSafile,
@@ -102,6 +108,9 @@ c     == end of interface ==
      U     OBEv,   OBEv0,   OBEv1,   OBEvfile, 
      U     OBEt,   OBEt0,   OBEt1,   OBEtfile, 
      U     OBEs,   OBEs0,   OBEs1,   OBEsfile, 
+#   ifdef NONLIN_FRSURF
+     U     OBEeta, OBEeta0, OBEeta1, OBEetafile, 
+#   endif
 #   ifdef ALLOW_SEAICE
      I     siobEstartdate, siobEperiod,
      U     OBEa,   OBEa0,   OBEa1,   OBEafile,
@@ -126,6 +135,9 @@ c     == end of interface ==
      U     OBWv,   OBWv0,   OBWv1,   OBWvfile, 
      U     OBWt,   OBWt0,   OBWt1,   OBWtfile, 
      U     OBWs,   OBWs0,   OBWs1,   OBWsfile, 
+#   ifdef NONLIN_FRSURF
+     U     OBWeta, OBWeta0, OBWeta1, OBWetafile, 
+#   endif
 #   ifdef ALLOW_SEAICE
      I     siobWstartdate, siobWperiod,
      U     OBWa,   OBWa0,   OBWa1,   OBWafile,
@@ -192,6 +204,9 @@ C=========================================================================
      U     OBv,   OBv0,   OBv1,   OBvfile, 
      U     OBt,   OBt0,   OBt1,   OBtfile, 
      U     OBs,   OBs0,   OBs1,   OBsfile, 
+#ifdef NONLIN_FRSURF
+     U     OBeta, OBeta0, OBeta1, OBetafile, 
+#endif
 #ifdef ALLOW_SEAICE
      I     siobstartdate, siobperiod,
      U     OBa,   OBa0,   OBa1,   OBafile,
@@ -247,6 +262,12 @@ c     == routine arguments ==
       _RL OBt1    (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RL OBs1    (1-Olx:sNx+Olx,Nr,nSx,nSy)
       CHARACTER*(MAX_LEN_FNAM) OBuFile,OBvFile,OBtFile,OBsFile
+#ifdef NONLIN_FRSURF
+      _RL OBeta   (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBeta0  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBeta1  (1-Olx:sNx+Olx,nSx,nSy)
+      CHARACTER*(MAX_LEN_FNAM) OBetaFile
+#endif
 #ifdef ALLOW_SEAICE
       _RL     siobstartdate
       _RL     siobperiod
@@ -333,6 +354,12 @@ c     get record numbers and interpolation factor
      I                     , fac, first, changed, useYearlyFields
      I                     , obcsperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
+# ifdef NONLIN_FRSURF
+       call exf_set_obcs_x ( OBeta, OBeta0, OBeta1, OBetaFile, 's'
+     I                     , fac, first, changed, useYearlyFields
+     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+# endif /* NONLIN_FRSURF */
 # ifdef ALLOW_PTRACERS
       if ( usePTRACERS ) then
        do iTracer = 1, PTRACERS_numInUse
@@ -411,6 +438,9 @@ C=========================================================================
      U     OBv,   OBv0,   OBv1,   OBvfile, 
      U     OBt,   OBt0,   OBt1,   OBtfile, 
      U     OBs,   OBs0,   OBs1,   OBsfile, 
+#ifdef NONLIN_FRSURF
+     U     OBeta, OBeta0, OBeta1, OBetafile, 
+#endif
 #ifdef ALLOW_SEAICE
      I     siobstartdate, siobperiod,
      U     OBa,   OBa0,   OBa1,   OBafile,
@@ -466,6 +496,12 @@ c     == routine arguments ==
       _RL OBt1    (1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL OBs1    (1-Oly:sNy+Oly,Nr,nSx,nSy)
       CHARACTER*(MAX_LEN_FNAM) OBuFile,OBvFile,OBtFile,OBsFile
+#ifdef NONLIN_FRSURF
+      _RL OBeta   (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBeta0  (1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBeta1  (1-Olx:sNx+Olx,nSx,nSy)
+      CHARACTER*(MAX_LEN_FNAM) OBetaFile
+#endif
 #ifdef ALLOW_SEAICE
       _RL     siobstartdate
       _RL     siobperiod
@@ -552,6 +588,12 @@ c     get record numbers and interpolation factor
      I                     , fac, first, changed, useYearlyFields
      I                     , obcsperiod, count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid )
+# ifdef NONLIN_FRSURF
+       call exf_set_obcs_y ( OBeta, OBeta0, OBeta1, OBetaFile, 's'
+     I                     , fac, first, changed, useYearlyFields
+     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , mycurrenttime, mycurrentiter, mythid )
+# endif /* NONLIN_FRSURF */
 # ifdef ALLOW_PTRACERS
       if ( usePTRACERS ) then
        do iTracer = 1, PTRACERS_numInUse

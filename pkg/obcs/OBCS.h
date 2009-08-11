@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.20 2009/08/11 08:07:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.21 2009/08/11 15:46:27 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -292,6 +292,7 @@ C
 #endif /* ALLOW_OBCS_WEST */
 
       COMMON /OB_FILES/
+     &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
      &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
      &      OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
      &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
@@ -301,6 +302,7 @@ C
      &      OBNuiceFile,OBSuiceFile,OBEuiceFile,OBWuiceFile,
      &      OBNviceFile,OBSviceFile,OBEviceFile,OBWviceFile
       CHARACTER*(MAX_LEN_FNAM)
+     &      OBNetaFile,OBSetaFile,OBEetaFile,OBWetaFile,
      &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,OBNaFile,OBNhFile,
      &      OBSuFile,OBSvFile,OBStFile,OBSsFile,OBSaFile,OBShFile,
      &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,OBEaFile,OBEhFile,
@@ -332,6 +334,19 @@ C
       _RL OBSeta (1-Olx:sNx+Olx,nSx,nSy)
       _RL OBEeta (1-Oly:sNy+Oly,nSx,nSy)
       _RL OBWeta (1-Oly:sNy+Oly,nSx,nSy)
+#ifdef ALLOW_OBCS_PRESCRIBE
+      COMMON /OB_NLFS_AUX/
+     &      OBNeta0,OBSeta0,OBEeta0,OBWeta0,
+     &      OBNeta1,OBSeta1,OBEeta1,OBWeta1
+      _RL OBNeta0(1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSeta0(1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBEeta0(1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWeta0(1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBNeta1(1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBSeta1(1-Olx:sNx+Olx,nSx,nSy)
+      _RL OBEeta1(1-Oly:sNy+Oly,nSx,nSy)
+      _RL OBWeta1(1-Oly:sNy+Oly,nSx,nSy)
+#endif /* ALLOW_OBCS_PRESCRIBE */
 #endif /* NONLIN_FRSURF */
 
 #ifdef ALLOW_OBCS
