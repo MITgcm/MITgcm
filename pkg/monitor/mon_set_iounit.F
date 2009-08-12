@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_set_iounit.F,v 1.3 2006/10/17 19:01:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_set_iounit.F,v 1.4 2009/08/12 22:11:17 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 C     !ROUTINE: MON_SET_IOUNIT
 
 C     !INTERFACE:
-      SUBROUTINE MON_SET_IOUNIT(unit, myThid )
+      SUBROUTINE MON_SET_IOUNIT( monUnit, myThid )
 
 C     !DESCRIPTION:
 C     Set default monitor unit for I/O.
@@ -20,9 +20,9 @@ C     !USES:
 #include "MONITOR.h"
 
 C     !INPUT PARAMETERS:
-C     unit   - Unit number to use for monitor output
-C     myThid - Instance number of this call to monitor
-      INTEGER unit
+C     monUnit :: Unit number to use for monitor output
+C     myThid  :: Instance number of this call to monitor
+      INTEGER monUnit
       INTEGER myThid
 CEOP
 
@@ -31,7 +31,7 @@ C     Dont change before everyone is ready
 
 C     Set monitor I/O unit
       _BEGIN_MASTER(myThid)
-      mon_ioUnit = unit
+      mon_ioUnit = monUnit
       _END_MASTER(myThid)
 
 C     Make sure everyone sees the change
