@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.38 2009/05/27 01:35:25 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.39 2009/08/14 20:31:05 dfer Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -108,7 +108,7 @@ C     == Local variables ==
       _RL leithD2fac, leithD4fac
       _RL viscAhRe_max, viscA4Re_max
       _RL Alin,grdVrt,grdDiv, keZpt
-      _RL recip_dt,L2,L3,L4,L5,L2rdt,L4rdt
+      _RL recip_dt,L2,L3,L5,L2rdt,L4rdt
       _RL Uscl,U4scl
       _RL divDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL divDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -351,7 +351,6 @@ C These are (powers of) length scales
          ENDIF
          L4rdt=0.03125 _d 0*recip_dt*L2**2
          L3=(L2**1.5)
-         L4=(L2**2)
          L5=(L2*L3)
 
          L2rdt=0.25 _d 0*recip_dt*L2
@@ -483,7 +482,6 @@ C These are (powers of) length scales
          ENDIF
          L4rdt=0.03125 _d 0*recip_dt*L2**2
          L3=(L2**1.5)
-         L4=(L2**2)
          L5=(L2*L3)
 
          L2rdt=0.25 _d 0*recip_dt*L2
