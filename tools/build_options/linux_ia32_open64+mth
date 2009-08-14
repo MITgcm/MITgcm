@@ -1,12 +1,14 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_open64+mth,v 1.1 2009/06/22 23:13:30 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_open64+mth,v 1.2 2009/08/14 20:28:19 jmc Exp $
 #  $Name:  $
 #
 # Multithreaded tests require
 # export OMP_SLAVE_STACK_SIZE=400m
 # export OMP_NUM_THREADS=2
 #
+# Note: use just -O2 optimisation to avoid some wierd problems with -O3
+#       on aces (open64/4.1 & 4.2) (ideal_2D_ocean)
 
 CC=opencc
 FC=openf90
@@ -16,8 +18,9 @@ LD=openf90
 DEFINES='-DWORDLENGTH=4 -DUSE_OMP_THREADING'
 CPP='cpp -traditional -P'
 MAKEDEPEND=/usr/X11R6/bin/makedepend
-NOOPTFLAGS='-O0 -m32 -g -openmp'
-NOOPTFILES=''
+NOOPTFLAGS='-O0 -g'
+# to avoid a bug in ealier version (4.1) of compiler with openMP:
+NOOPTFILES='mon_set_iounit.F mon_init.F'
 
 if test "x$DEVEL" != x ; then
     FFLAGS='-m32 -convert big_endian -openmp -ffortran-bounds-check -trapuv -g'
@@ -27,15 +30,15 @@ fi
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FOPTIM='-O3 -LNO:fusion=2 -OPT:roundoff=1:IEEE_arithmetic=3 -OPT:early_mp=ON' # -funsafe-math-optimizations'
+    FOPTIM='-O2 -LNO:fusion=2 -OPT:roundoff=1:IEEE_arithmetic=3 -OPT:early_mp=ON' # -funsafe-math-optimizations'
 else
     #  Try to follow IEEE-754
-    FOPTIM='-O3 -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math -OPT:early_mp=ON'
+    FOPTIM='-O2 -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1 -fmath-errno -fno-fast-math -OPT:early_mp=ON'
 fi
 
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
-CFLAGS='-O3 -m32 -openmp'
+CFLAGS='-O2 -m32 -openmp'
 GSLLIB='-lgsl -lgslcblas'
 
 if [ "x$NETCDF_ROOT" != x ] ; then
