@@ -1,4 +1,8 @@
-#!/bin/bash
+#! /usr/bin/env bash
+#
+# $Header: /u/gcmpack/MITgcm/utils/scripts/gluemnc,v 1.10 2009/08/14 20:36:09 jmc Exp $
+# $Name:  $
+
 # This is a shell script to combine multiple MITgcm mnc output files from 
 # different tiles into one global file.
 # All of the variables should be in one directory, where this script is run.
@@ -223,7 +227,7 @@ do
             if [ ${#withY} -gt 1 ]; then
               echo Changing Y to record variable in $somesplit
               ncpdq $DEBUG -O -a Y,T $somesplit $somesplit > $LOGFILE
-              mv $somesplit $countxx.$somesplit
+              mv $somesplit i$countxx.$somesplit
             fi
             
             if [ -f $somesplit ]; then
@@ -234,7 +238,7 @@ do
                 #  Strip off the repeated value in Yp1
                 echo Changing Yp1 to record variable in $somesplit
                 ncpdq $DEBUG -O -a Yp1,T -F -d Yp1,1,$Yp1len $somesplit $somesplit > $LOGFILE
-                mv $somesplit $countxx.$somesplit
+                mv $somesplit i$countxx.$somesplit
               fi
             fi
           done
@@ -249,7 +253,7 @@ do
     echo  Combining X tile $((countxx-1000))
     echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     varls=
-    cxfilels=$(ls $countxx.*)
+    cxfilels=$(ls i$countxx.*)
     oldvar=
     for somefile in $cxfilels
     do
@@ -274,12 +278,13 @@ do
       echo Combining $somevar files in Y
       echo YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
 
-      withY=$(ncdump -h $countxx.$somevar.$somepre.*.nc | grep "Y =")
-      withYp1=$(ncdump -h $countxx.$somevar.$somepre.*.nc | grep "Yp1 =")
+      filelist=(`ls i$countxx.$somevar.$somepre.*.nc`)
+      withY=$(ncdump -h ${filelist[0]} | grep "Y =")
+      withYp1=$(ncdump -h ${filelist[0]} | grep "Yp1 =")
 
-      ncrcat $DEBUG $countxx.$somevar.$somepre.*.nc $somevar.$somepre.gloy.$countxx.nc > $LOGFILE
+      ncrcat $DEBUG i$countxx.$somevar.$somepre.*.nc $somevar.$somepre.gloy.$countxx.nc > $LOGFILE
       echo Just combined $countxx.$somevar
-      rm $countxx.$somevar.$somepre.t???.nc
+      rm i$countxx.$somevar.$somepre.t???.nc
 
       if [ ${#withY} -gt 1 ]; then
         echo Changing T to record variable in $somevar.$somepre.gloy.$countxx.nc
@@ -329,7 +334,7 @@ echo   ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy > $LOGFI
       echo Changing T to record variable in $somevar.$somepre.glob.nc
       ncpdq $DEBUG -O -a T,Xp1 $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc > $LOGFILE
     fi
-  ncrcat $DEBUG -A $somevar.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
+    ncrcat $DEBUG -A $somevar.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
 #  rm $somevar.$somepre.glob.nc
   done
   ncrcat $DEBUG -A iter.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
