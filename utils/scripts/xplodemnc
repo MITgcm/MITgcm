@@ -1,4 +1,8 @@
-#!/bin/bash
+#! /usr/bin/env bash
+#
+# $Header: /u/gcmpack/MITgcm/utils/scripts/xplodemnc,v 1.4 2009/08/14 21:07:44 jmc Exp $
+# $Name:  $
+
 # This is a shell script to separate an MITgcm mnc output file into
 # one file per multi-dimensional variable. 
 # The file should be in one directory, where this script is run.
@@ -29,11 +33,12 @@ do
 #   echo $somevar1
    vars=${vars}$somevar1' '
   done
-  echo Variables to extract: $vars iter
   IFS=' '
+  withIter=$(ncdump -h $somefile | grep -c 'int iter(' )
+  if [ $withIter -gt 0 ]; then vars=${vars}iter ; fi
+  echo Variables to extract: $vars
   for somevar in $vars
   do
     ncks $DEBUG -v $somevar $somefile $somevar.$somefile
   done
-  ncks $DEBUG -v iter $somefile iter.$somefile
 done

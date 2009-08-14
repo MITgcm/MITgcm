@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/utils/scripts/gluemnc,v 1.10 2009/08/14 20:36:09 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/utils/scripts/gluemnc,v 1.11 2009/08/14 21:07:44 jmc Exp $
 # $Name:  $
 
 # This is a shell script to combine multiple MITgcm mnc output files from 
@@ -220,9 +220,17 @@ do
 
         if [ "$someX" = $Xs ]; then
           ./xplodemnc $somefile 
-          mv iter.$somefile iter.${somefile%t???.nc}glob.nc
+          if [ -f iter.$somefile ]; then
+            mv iter.$somefile iter.${somefile%t???.nc}glob.nc
+          fi
           for somesplit in $(ls *.$somefile)
           do
+	    # added by rpa to account for grid files with no T dimension defined
+	    hasT=$(ncdump -h $somesplit | grep "T =")
+	    if [[ -z "$hasT" ]]; then
+		echo "No T record dimension found, adding one now"
+		ncecat $DEBUG -O -u T $somesplit $somesplit > $LOGFILE
+	    fi
             withY=$(ncdump -h $somesplit | grep "Y =")
             if [ ${#withY} -gt 1 ]; then
               echo Changing Y to record variable in $somesplit
@@ -257,11 +265,7 @@ do
     oldvar=
     for somefile in $cxfilels
     do
-      varname=${somefile%.*}
-      varname=${varname%.*}
-      varname=${varname%.*}
-      varname=${varname%.*}
-      varname=${varname#*.}
+      varname=`echo $somefile | sed 's/^i[0-9][0-9][0-9][0-9]\.//; s/\..*nc//'`
       if [ "$varname" = "$oldvar" ]; then
         echo $varname repeated
       else
@@ -335,10 +339,17 @@ echo   ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy > $LOGFI
       ncpdq $DEBUG -O -a T,Xp1 $somevar.$somepre.glob.nc $somevar.$somepre.glob.nc > $LOGFILE
     fi
     ncrcat $DEBUG -A $somevar.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
-#  rm $somevar.$somepre.glob.nc
+#   rm $somevar.$somepre.glob.nc
   done
-  ncrcat $DEBUG -A iter.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
-#  rm iter.$somepre.glob.nc
+  if [ -f iter.$somepre.glob.nc ]; then
+    ncrcat $DEBUG -A iter.$somepre.glob.nc $somepre.glob.nc > $LOGFILE
+  fi
+# rm iter.$somepre.glob.nc
+
+  # remove the dummy T dimension if it was added
+  if [[ -z "$hasT" ]]; then
+	ncwa $DEBUG -O -a T $somepre.glob.nc $somepre.glob.nc
+  fi
 
   cp $somepre.glob.nc $DIRORIG
 done
