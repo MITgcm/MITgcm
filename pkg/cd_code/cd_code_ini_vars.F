@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_ini_vars.F,v 1.8 2006/10/25 20:40:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_ini_vars.F,v 1.9 2009/08/25 21:33:27 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -52,7 +52,7 @@ C-      2D arrays
        ENDDO
       ENDDO
 
-      IF ( nIter0.NE.0 ) THEN
+      IF ( nIter0.NE.0 .OR. pickupSuff.NE.' ' ) THEN
         CALL CD_CODE_READ_PICKUP( nIter0, myThid )
       ENDIF
 

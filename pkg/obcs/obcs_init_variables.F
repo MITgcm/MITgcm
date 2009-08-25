@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.26 2009/04/28 18:18:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.27 2009/08/25 21:33:28 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -234,7 +234,7 @@ C     == Local variables ==
             OBNptr1(I,K,bi,bj,iTracer)=0. _d 0
 # endif
 #endif /* ALLOW_OBCS_NORTH */
-            
+
 #ifdef ALLOW_OBCS_SOUTH
             OBSptr (I,K,bi,bj,iTracer)=0. _d 0
 # ifdef ALLOW_OBCS_PRESCRIBE
@@ -243,7 +243,7 @@ C     == Local variables ==
 # endif
 #endif /* ALLOW_OBCS_SOUTH */
            ENDDO
-           
+
            DO J=1-Oly,sNy+Oly
 #ifdef ALLOW_OBCS_EAST
             OBEptr (J,K,bi,bj,iTracer)=0. _d 0
@@ -252,7 +252,7 @@ C     == Local variables ==
             OBEptr1(J,K,bi,bj,iTracer)=0. _d 0
 # endif
 #endif /* ALLOW_OBCS_EAST */
-            
+
 #ifdef ALLOW_OBCS_WEST
             OBWptr (J,K,bi,bj,iTracer)=0. _d 0
 # ifdef ALLOW_OBCS_PRESCRIBE
@@ -290,13 +290,13 @@ C     == Local variables ==
 #endif /* ALLOW_ORLANSKI */
 
        ENDDO
-      ENDDO     
+      ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C jmc: here is the logical place to read OBCS-pickup files
 C      but a) without Orlanski: pass the test 1+1=2 without reading pickup.
 C          b) with Orlanski: 1+1=2 fail even with this bit of code
-      IF ( nIter0.NE.0 ) THEN
+      IF ( nIter0.NE.0 .OR. pickupSuff.NE.' ' ) THEN
         prec = precFloat64
         IF (pickupSuff.EQ.' ') THEN
          WRITE(suff,'(I10.10)') nIter0
@@ -324,7 +324,7 @@ C--   only used for initialisation and never for restart:
 C--   Apply OBCS values to initial conditions for consistency
 C      (but initial conditions only)
 #ifdef ALLOW_DEBUG
-       IF (debugMode) 
+       IF (debugMode)
      &      CALL DEBUG_CALL('OBCS_APPLY_UV + OBCS_APPLY_TS',myThid)
 #endif
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -340,7 +340,7 @@ C     After applying the boundary conditions exchange the 3D-fields.
 C     This is only necessary of the boudnary values have been read
 C     from a file.
 #ifdef ALLOW_DEBUG
-        IF (debugMode) 
+        IF (debugMode)
      &       CALL DEBUG_CALL('EXCHANGES in OBCS_INIT_VARIABLES',myThid)
 #endif
         CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
@@ -356,15 +356,15 @@ C     catch the case when we do start from a pickup for dynamics variables
 C     but initialise ptracers differently
        IF ( nIter0 .EQ. PTRACERS_Iter0 ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugMode) 
+        IF (debugMode)
      &       CALL DEBUG_CALL('OBCS_APPLY_PTRACER',myThid)
 #endif
         DO iTracer=1,PTRACERS_numInUse
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO K=1,Nr
-            CALL OBCS_APPLY_PTRACER( 
-     I           bi, bj, K, iTracer, 
+            CALL OBCS_APPLY_PTRACER(
+     I           bi, bj, K, iTracer,
      U           ptracer(1-Olx,1-Oly,K,bi,bj,iTracer),
      I           myThid )
            ENDDO
@@ -376,7 +376,7 @@ C     After applying the boundary conditions exchange the 3D-fields.
 C     This is only necessary of the boudnary values have been read
 C     from a file.
 #ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL( 
+         IF (debugMode) CALL DEBUG_CALL(
      &        'PTRACERS EXCHANGES in OBCS_INIT_VARIABLES',myThid)
 #endif
          CALL PTRACERS_FIELDS_BLOCKING_EXCH( myThid )

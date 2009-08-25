@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_varia.F,v 1.5 2009/06/14 21:26:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_varia.F,v 1.6 2009/08/25 21:33:28 jmc Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -70,7 +70,8 @@ C- end bi,bj loops
        ENDDO
       ENDDO
 
-      IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0 ) THEN
+      IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0
+     &                           .AND. pickupSuff.EQ.' ' ) THEN
 
 C     Prevent loading of new data before everyone has finished initialisation
 C     this is done within IO routines => no longer needed

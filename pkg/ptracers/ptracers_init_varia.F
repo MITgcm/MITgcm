@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.7 2009/04/28 18:18:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.8 2009/08/25 21:33:28 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -112,7 +112,10 @@ C     Apply mask
       ENDDO
 
 C Read from a pickup file if needed
-      IF (nIter0.GT.PTRACERS_Iter0) THEN
+      IF ( nIter0.GT.PTRACERS_Iter0 .OR.
+     &    (nIter0.EQ.PTRACERS_Iter0 .AND. pickupSuff.NE.' ')
+     &   ) THEN
+
        CALL PTRACERS_READ_PICKUP( nIter0, myThid )
       ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_varia.F,v 1.2 2008/05/09 21:43:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_init_varia.F,v 1.3 2009/08/25 21:33:28 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -59,7 +59,8 @@ C- end bi,bj loops
       ENDDO
 
       IF ( tempSOM_Advection .OR. saltSOM_Advection ) THEN
-       IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0 ) THEN
+       IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0
+     &                      .AND. pickupSuff.EQ.' ' ) THEN
 C-     Need to synchronize here before doing master-thread IO
 c        _BARRIER
 C-     Read-in initial conditions:
