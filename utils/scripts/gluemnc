@@ -1,15 +1,15 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/utils/scripts/gluemnc,v 1.11 2009/08/14 21:07:44 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/utils/scripts/gluemnc,v 1.12 2009/08/25 23:04:50 jmc Exp $
 # $Name:  $
 
-# This is a shell script to combine multiple MITgcm mnc output files from 
+# This is a shell script to combine multiple MITgcm mnc output files from
 # different tiles into one global file.
 # All of the variables should be in one directory, where this script is run.
 #
 # To combine all state.0000000000.t*.nc files,
-#  gluemnc state.0000000000.*.nc 
-# This will result in an output file state.0000000000.glob.nc 
+#  gluemnc state.0000000000.*.nc
+# This will result in an output file state.0000000000.glob.nc
 # Where glob is for global.
 #
 # You can even combine all mnc files, use
@@ -20,7 +20,7 @@
 # diag.0000000000.glob.nc diag.0000000100.glob.nc, ...
 #
 # A lot of hard drive activity is needed.  If you have a fast drive
-# export TMPDIR=<path of hard drive>.  On some high-performance 
+# export TMPDIR=<path of hard drive>.  On some high-performance
 # systems, this is already done for you.
 #
 # **********WARNINGS**********
@@ -161,7 +161,7 @@ do
   # Determine all the X locations
   countx=0
   for someXs in $Xsls
-  do 
+  do
     inls=0
     for somesXs in $sXsls
     do
@@ -181,7 +181,7 @@ do
   # Determine all the Y locations
   county=0
   for someYs in $Ysls
-  do 
+  do
     inls=0
     for somesYs in $sYsls
     do
@@ -219,25 +219,25 @@ do
         Xs=$(echo $Xs | sed s/' '//g)
 
         if [ "$someX" = $Xs ]; then
-          ./xplodemnc $somefile 
+          ./xplodemnc $somefile
           if [ -f iter.$somefile ]; then
             mv iter.$somefile iter.${somefile%t???.nc}glob.nc
           fi
           for somesplit in $(ls *.$somefile)
           do
-	    # added by rpa to account for grid files with no T dimension defined
-	    hasT=$(ncdump -h $somesplit | grep "T =")
-	    if [[ -z "$hasT" ]]; then
-		echo "No T record dimension found, adding one now"
-		ncecat $DEBUG -O -u T $somesplit $somesplit > $LOGFILE
-	    fi
+            # added by rpa to account for grid files with no T dimension defined
+            hasT=$(ncdump -h $somesplit | grep "T =")
+            if [[ -z "$hasT" ]]; then
+               echo "No T record dimension found, adding one now"
+               ncecat $DEBUG -O -u T $somesplit $somesplit > $LOGFILE
+            fi
             withY=$(ncdump -h $somesplit | grep "Y =")
             if [ ${#withY} -gt 1 ]; then
               echo Changing Y to record variable in $somesplit
               ncpdq $DEBUG -O -a Y,T $somesplit $somesplit > $LOGFILE
               mv $somesplit i$countxx.$somesplit
             fi
-            
+
             if [ -f $somesplit ]; then
               withYp1=$(ncdump -h $somesplit | grep "Yp1 =")
               if [ ${#withYp1} -gt 1 ]; then
@@ -310,7 +310,7 @@ do
     do
       withX=$(ncdump -h $somegloy | grep "X =")
       withXp1=$(ncdump -h $somegloy | grep "Xp1 =")
- 
+
       if [ ${#withX} -gt 1 ]; then
         echo Changing X to record variable in $somegloy
         ncpdq $DEBUG -O -a X,T $somegloy $somegloy > $LOGFILE
@@ -348,8 +348,23 @@ echo   ncpdq $DEBUG -O -a Xp1,T -F -d Xp1,1,$Xp1len $somegloy $somegloy > $LOGFI
 
   # remove the dummy T dimension if it was added
   if [[ -z "$hasT" ]]; then
-	ncwa $DEBUG -O -a T $somepre.glob.nc $somepre.glob.nc
+    ncwa $DEBUG -O -a T $somepre.glob.nc $somepre.glob.nc
   fi
+
+  # another hack by rpa to accomodate grid.nc files
+  # (there are several variables with just Z dimension that we want to keep)
+  varsz=$( ncdump -h $somepre.t001.nc | sed -n 's/^\s*\(double\|float\).* \(\w*\)(Z\w*).*/\2/p' )
+  fixed=
+  for varz in $varsz
+  do
+     # check to make sure the variable doesn't already exist in the glob file
+     if [[ -z $( ncdump -h $somepre.glob.nc | grep " $varz(" ) ]]
+     then
+        echo "Adding variable $varz to $somepre.glob.nc"
+        ncks $DEBUG -A -v $varz $somepre.t001.nc $somepre.glob.nc > $LOGFILE
+     fixed='yes'
+     fi
+  done
 
   cp $somepre.glob.nc $DIRORIG
 done
