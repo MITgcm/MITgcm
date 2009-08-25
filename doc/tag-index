@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1151 2009/08/11 15:47:16 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1152 2009/08/25 16:34:35 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61u
 o pkg/obcs:
   - change OB?eta from _RS to _RL and put them into a separate commen block
   - add code to read OB?eta from a file via obcs_prescribe_read: the code
