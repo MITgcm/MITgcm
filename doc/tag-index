@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1152 2009/08/25 16:34:35 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1153 2009/08/26 19:43:09 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o setting pickupSuff force to start from a pickup (even if nIter0=0): this
+  is now implemented for all pkgs (previously only done for the main pickup) 
 
 checkpoint61u
 o pkg/obcs:
