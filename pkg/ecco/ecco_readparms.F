@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.37 2009/03/13 01:58:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.38 2009/08/26 23:33:53 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -131,7 +131,7 @@ c--     Set default values.
         data_errfile          =    ' '
         tbarfile              =    'tbar'
         sbarfile              =    'sbar'
-	sstbarfile            =    'sstbar'
+        sstbarfile            =    'sstbar'
         psbarfile             =    'psbar'
         bpbarfile             =    'bpbar'
         ubarfile              =    'ubar'
