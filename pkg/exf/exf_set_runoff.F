@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_runoff.F,v 1.1 2009/02/16 09:11:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_runoff.F,v 1.2 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
-      subroutine exf_set_runoff( 
-     &     genfile, genstartdate, genperiod, 
+      subroutine exf_set_runoff(
+     &     genfile, genstartdate, genperiod,
      &     exf_inscal_gen, genremove_intercept, genremove_slope,
      &     genfld, gen0, gen1, genmask,
      &     mytime, myiter, mythid )
@@ -105,39 +105,37 @@ c     get record numbers and interpolation factor for gen
      O         genfile0,
      I         mytime, myiter, mythid )
 
-            _BARRIER
-            call mdsreadfield( genfile0, exf_iprec, exf_yftype, 1
-     &           , gen1, count0, mythid
-     &           )
-            _BARRIER
-
             if (exf_yftype .eq. 'RL') then
+               CALL READ_REC_3D_RL( genfile0, exf_iprec, 1,
+     &                              gen1, count0, myIter, myThid )
                call exf_filter_rl( gen1, genmask, mythid )
             else
-               call exf_filter_rs( gen1, genmask, mythid )
+c              CALL READ_REC_3D_RS( genfile0, exf_iprec, 1,
+c    &                              gen1, count0, myIter, myThid )
+c              call exf_filter_rs( gen1, genmask, mythid )
+               STOP 'S/R EXF_SET_RUNOFF: invalid exf_yftype'
             end if
          endif
 
          if (( first ) .or. ( changed )) then
             call exf_SwapFFields( gen0, gen1, mythid )
-            
+
             call exf_GetYearlyFieldName(
      I         useExfYearlyFields, twoDigitYear, genperiod, year1,
      I         genfile,
      O         genfile1,
      I         mytime, myiter, mythid )
 
-            _BARRIER
-            call mdsreadfield( genfile1, exf_iprec, exf_yftype, 1
-     &           , gen1, count1, mythid
-     &           )
-            _BARRIER
-
             if (exf_yftype .eq. 'RL') then
+               CALL READ_REC_3D_RL( genfile1, exf_iprec, 1,
+     &                              gen1, count1, myIter, myThid )
                call exf_filter_rl( gen1, genmask, mythid )
             else
-               call exf_filter_rs( gen1, genmask, mythid )
-            end if
+c              CALL READ_REC_3D_RS( genfile1, exf_iprec, 1,
+c    &                              gen1, count1, myIter, myThid )
+c              call exf_filter_rs( gen1, genmask, mythid )
+               STOP 'S/R EXF_SET_RUNOFF: invalid exf_yftype'
+            endif
          endif
 
 c     Loop over tiles.
@@ -149,7 +147,7 @@ c     Interpolate linearly onto the  time.
              genfld(i,j,bi,bj) = exf_inscal_gen * (
      &                          fac * gen0(i,j,bi,bj) +
      &              (exf_one - fac) * gen1(i,j,bi,bj) )
-             genfld(i,j,bi,bj) = 
+             genfld(i,j,bi,bj) =
      &            genfld(i,j,bi,bj) -
      &            exf_inscal_gen * ( genremove_intercept +
      &            genremove_slope*(mytime-starttime) )
@@ -166,7 +164,7 @@ c     Interpolate linearly onto the  time.
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-      subroutine exf_init_runoff ( 
+      subroutine exf_init_runoff (
      &     genfile, genperiod, exf_inscal_gen, genmask,
      &     genconst, genfld, gen0, gen1,
      &     mythid )
@@ -225,17 +223,16 @@ c     == end of interface ==
       if ( genfile .NE. ' ' .and. genperiod .eq. 0. ) then
          count = 1
 
-         _BARRIER
-         call mdsreadfield( genfile, exf_iprec, exf_yftype, 1
-     &        , genfld, count, mythid
-     &        )
-         _BARRIER
-
          if (exf_yftype .eq. 'RL') then
+            CALL READ_REC_3D_RL( genfile, exf_iprec, 1,
+     &                           genfld, count, 0, myThid )
             call exf_filter_rl( genfld, genmask, mythid )
          else
-            call exf_filter_rs( genfld, genmask, mythid )
-         end if
+c           CALL READ_REC_3D_RS( genfile, exf_iprec, 1,
+c    &                           genfld, count, 0, myThid )
+c           call exf_filter_rs( genfld, genmask, mythid )
+            STOP 'S/R EXF_INIT_RUNOFF: invalid exf_yftype'
+         endif
 
 c     Loop over tiles and scale genfld
          do bj = mybylo(mythid),mybyhi(mythid)
@@ -243,7 +240,7 @@ c     Loop over tiles and scale genfld
                do j = 1,sny
                   do i = 1,snx
                      genfld(i,j,bi,bj) =
-     &                    exf_inscal_gen * genfld(i,j,bi,bj) 
+     &                    exf_inscal_gen * genfld(i,j,bi,bj)
                   enddo
                enddo
             enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_write_pickup.F,v 1.6 2007/11/06 20:28:40 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_write_pickup.F,v 1.7 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -49,9 +49,6 @@ C     permCheckPoint :: Flag indicating whether a permanent checkpoint will
 C                       be written.
 C     tempCheckPoint :: Flag indicating if it is time to write a non-permanent
 C                       checkpoint (that will be permanent if permCheckPoint=T)
-C     oldPrc :: Temp. for holding I/O precision
-C     fn     :: Temp. for building file name string.
-C     lgf    :: Flag to indicate whether to use global file mode.
       LOGICAL permCheckPoint, tempCheckPoint
 CEOP
 
@@ -140,18 +137,11 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     oldPrc :: Temp. for holding I/O precision
 C     fn     :: Temp. for building file name string.
-C     lgf    :: Flag to indicate whether to use global file mode.
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER prec, i,j
-      LOGICAL lgf
 CEOP
 
-C     Going to really do some IO. Make everyone except master thread wait.
-C      _BARRIER
-C     _BEGIN_MASTER( myThid )
-
       prec = precFloat64
-      lgf = globalFile
 
 C     Create suffix to pass on to package pickup routines
       IF ( permCheckPoint ) THEN
@@ -160,46 +150,25 @@ C     Create suffix to pass on to package pickup routines
        WRITE(fn,'(A,A)') 'pickup_atm2d.',checkPtSuff(nCheckLev)
       ENDIF
 
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_slp,
-     &                   1,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_qnet,
-     &                   2,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_solarnet,
-     &                   3,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_fu,
-     &                   4,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_fv,
-     &                   5,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_precip,
-     &                   6,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_evap,
-     &                   7,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_runoff,
-     &                   8,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_wspeed,
-     &                   9,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_pCO2,
-     &                   10,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_sIceLoad,
-     &                   11,myIter,myThid)
+      CALL WRITE_REC_3D_RL( fn,prec,1,pass_slp,      1,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,pass_qnet,     2,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,pass_solarnet, 3,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,pass_fu,       4,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,pass_fv,       5,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,pass_precip,   6,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,pass_evap,     7,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,pass_runoff,   8,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,pass_wspeed,   9,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,pass_pCO2,    10,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,pass_sIceLoad,11,myIter,myThid )
 
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,sHeating,
-     &                   12,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,flxCndBt,
-     &                   13,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,pass_prcAtm,
-     &                   14,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,snowPrc,
-     &                   15,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,icFrwAtm,
-     &                   16,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,icFlxSw,
-     &                   17,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,siceAlb,
-     &                   18,myIter,myThid)
-
-C     _END_MASTER( myThid )
-C      _BARRIER
+      CALL WRITE_REC_3D_RL( fn,prec,1,sHeating,     12,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,flxCndBt,     13,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,pass_prcAtm,  14,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,snowPrc,      15,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,icFrwAtm,     16,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,icFlxSw,      17,myIter,myThid )
+      CALL WRITE_REC_3D_RL( fn,prec,1,siceAlb,      18,myIter,myThid )
 
       RETURN
       END

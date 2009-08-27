@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_read_pickup.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_read_pickup.F,v 1.3 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -40,25 +40,25 @@ C     LOCAL VARIABLES:
 
         WRITE(fn,'(A,I10.10)') 'pickup_atm2d.',nIter0
 
-        CALL MDSREADFIELD(fn,prec,'RL',1,pass_slp, 1, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,pass_qnet, 2, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,pass_solarnet, 3, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,pass_fu, 4, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,pass_fv, 5, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,pass_precip, 6, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,pass_evap, 7, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,pass_runoff, 8, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,pass_wspeed, 9, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,pass_pCO2, 10, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,pass_sIceLoad, 11, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,pass_slp,      1, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,pass_qnet,     2, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,pass_solarnet, 3, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,pass_fu,       4, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,pass_fv,       5, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,pass_precip,   6, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,pass_evap,     7, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,pass_runoff,   8, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,pass_wspeed,   9, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,pass_pCO2,    10, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,pass_sIceLoad,11, nIter0, myThid)
 
-        CALL MDSREADFIELD(fn,prec,'RL',1,sHeating, 12, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,flxCndBt, 13, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,pass_prcAtm, 14, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,snowPrc, 15, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,icFrwAtm, 16, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,icFlxSw   , 17, myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,siceAlb  , 18, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,sHeating,     12, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,flxCndBt,     13, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,pass_prcAtm,  14, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,snowPrc,      15, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,icFrwAtm,     16, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,icFlxSw,      17, nIter0, myThid)
+        CALL READ_REC_3D_RL(fn,prec,1,siceAlb,      18, nIter0, myThid)
 
       ENDIF
 

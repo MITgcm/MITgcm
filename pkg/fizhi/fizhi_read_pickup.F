@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.14 2004/12/14 16:54:08 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.15 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -50,27 +50,26 @@ C     k       :: loop index
       WRITE(fn,'(A,I10.10)') 'pickup_fizhi.',myIter
       prec = precFloat64
 
-C#ifdef ALLOW_MDSIO
       IF ( fizhi_mdsio_read_pickup ) THEN
 
-C       Read fields as consecutive records
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,uphy,1,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,vphy,2,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,thphy,3,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,sphy,4,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldtot_lw,5,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldras_lw,6,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldlsp_lw,7,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,lwlz,8,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldtot_sw,9,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldras_sw,10,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,cldlsp_sw,11,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,swlz,12,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,qliqavelw,13,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,qliqavesw,14,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,fccavelw,15,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,fccavesw,16,myThid)
-       CALL MDSREADFIELD(fn,prec,'RL',Nrphys,temp,17,myThid)
+C     Read fields as consecutive records
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,uphy,      1,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,vphy,      2,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,thphy,     3,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,sphy,      4,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,cldtot_lw, 5,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,cldras_lw, 6,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,cldlsp_lw, 7,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,lwlz,      8,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,cldtot_sw, 9,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,cldras_sw,10,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,cldlsp_sw,11,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,swlz,     12,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,qliqavelw,13,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,qliqavesw,14,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,fccavelw, 15,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,fccavesw, 16,myIter,myThid )
+       CALL READ_REC_3D_RL( fn,prec,Nrphys,temp,     17,myIter,myThid )
 
        do bj = 1,myByLo(myThid), myByHi(myThid)
        do bi = 1,myBxLo(myThid), myBxHi(myThid)
@@ -82,13 +81,13 @@ C       Read fields as consecutive records
        enddo
        enddo
 
-       iras(bi,bj)       = nint(temp(1,1,4,bi,bj))
-       nlwcld(bi,bj)     = nint(temp(2,1,4,bi,bj))
-       nlwlz(bi,bj)      = nint(temp(3,1,4,bi,bj))
-       nswcld(bi,bj)     = nint(temp(4,1,4,bi,bj))
-       nswlz(bi,bj)      = nint(temp(5,1,4,bi,bj))
-       imstturbsw(bi,bj) = nint(temp(6,1,4,bi,bj))
-       imstturblw(bi,bj) = nint(temp(7,1,4,bi,bj))
+       iras(bi,bj)       = NINT(temp(1,1,4,bi,bj))
+       nlwcld(bi,bj)     = NINT(temp(2,1,4,bi,bj))
+       nlwlz(bi,bj)      = NINT(temp(3,1,4,bi,bj))
+       nswcld(bi,bj)     = NINT(temp(4,1,4,bi,bj))
+       nswlz(bi,bj)      = NINT(temp(5,1,4,bi,bj))
+       imstturbsw(bi,bj) = NINT(temp(6,1,4,bi,bj))
+       imstturblw(bi,bj) = NINT(temp(7,1,4,bi,bj))
 
        enddo
        enddo

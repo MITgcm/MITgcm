@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_write_pickup.F,v 1.5 2007/11/05 15:40:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_write_pickup.F,v 1.6 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -41,49 +41,39 @@ C     myThid  :: Number of this instance
 
 #ifdef ALLOW_LAND
 
-C     !LOCAL VARIABLES:
-C     fn      :: character buffer for creating filename
-C     prec    :: precision of pickup files
-C     lgf     :: flag to write "global" files
-c     INTEGER prec, iChar, lChar, k
-      INTEGER prec, lChar, k
-      CHARACTER*(MAX_LEN_FNAM) fn
-      LOGICAL lgf
-
+C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
+C     !LOCAL VARIABLES:
+C     fn      :: character buffer for creating filename
+C     prec    :: precision of pickup files
+c     INTEGER prec, iChar, lChar, k
+      INTEGER prec, lChar, k
+      CHARACTER*(MAX_LEN_FNAM) fn
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       lChar = ILNBLNK(suff)
 
-C     Going to really do some IO. Make everyone except master thread wait.
-      _BARRIER
-
       IF ( land_pickup_write_mdsio ) THEN
 
 C--   Write fields as consecutive records
-      WRITE(fn,'(A,A)') 'pickup_land.',suff(1:lChar)
-      prec = precFloat64
-      lgf = globalFiles
+        WRITE(fn,'(A,A)') 'pickup_land.',suff(1:lChar)
+        prec = precFloat64
 
-#ifdef ALLOW_MDSIO
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',land_nLev,
-     &                   land_enthalp,1,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',land_nLev,
-     &                   land_groundW,2,myIter,myThid)
-      k=2*land_nLev
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,
-     &                   land_skinT,  k+1,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,
-     &                   land_hSnow,  k+2,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,
-     &                   land_snowAge,k+3,myIter,myThid)
-#else /* ALLOW_MDSIO */
-      STOP 'ABNORMAL END: S/R OBCS_READ_CHECKPOINT: NEEDS MSDIO PKG'
-#endif /* ALLOW_MDSIO */
+        CALL WRITE_REC_3D_RL( fn, prec, land_nLev,
+     &                        land_enthalp,  1, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, prec, land_nLev,
+     &                        land_groundW,  2, myIter, myThid )
+        k=2*land_nLev
+        CALL WRITE_REC_3D_RL( fn, prec, 1,
+     &                        land_skinT,  k+1, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, prec, 1,
+     &                        land_hSnow,  k+2, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, prec, 1,
+     &                        land_snowAge,k+3, myIter, myThid )
 
       ENDIF
 
@@ -124,9 +114,6 @@ C--   Write fields as consecutive records
 
       ENDIF
 #endif /*  ALLOW_MNC  */
-
-C--   Every one else must wait until writing is done.
-      _BARRIER
 
 #endif /* ALLOW_LAND */
 

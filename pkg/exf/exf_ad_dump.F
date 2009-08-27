@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_dump.F,v 1.2 2007/10/25 19:08:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_dump.F,v 1.3 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -8,7 +8,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: exf_ad_dump
 C     !INTERFACE:
-      subroutine exf_ad_dump( mytime, myiter, myThid )
+      SUBROUTINE EXF_AD_DUMP( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -39,130 +39,109 @@ C     == Global variables ===
 # include "adcommon.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
+C     myThid :: Thread number for this instance of the routine.
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+
+#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
+#ifdef ALLOW_AUTODIFF_MONITOR
+
+C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myIter - iteration counter for this thread
-C     myTime - time counter for this thread
-C     myThid - Thread number for this instance of the routine.
-      integer myThid
-      integer myiter
-      _RL     mytime
-
-#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
-#ifdef ALLOW_AUTODIFF_MONITOR
-
 C     !LOCAL VARIABLES:
 c     == local variables ==
-C     suff - Hold suffix part of a filename
-C     beginIOErrCount - Begin and end IO error counts
-C     endIOErrCount
-C     msgBuf - Error message buffer
+C     suff   :: Hold suffix part of a filename
+C     msgBuf :: Error message buffer
       CHARACTER*(MAX_LEN_FNAM) suff
-      INTEGER beginIOErrCount
-      INTEGER endIOErrCount
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 c     == end of interface ==
 CEOP
 
-      call TIMER_START('I/O (WRITE)        [EXF_AD_DUMP]', myThid )
+      CALL TIMER_START('I/O (WRITE)        [EXF_AD_DUMP]', myThid )
 
       IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
+     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
      & ) THEN
-
-       _BARRIER
-       _BEGIN_MASTER( myThid )
 
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
         writeBinaryPrec = writeStatePrec
 
-C--     Read IO error counter
-        beginIOErrCount = IO_ERRCOUNT(myThid)
-
-
-        CALL MDSWRITEFIELD(
-     &       'ADJhflux.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adhflux, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJsflux.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adsflux, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJustress.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adustress, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJvstress.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  advstress, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJhflux.'//suff, writeBinaryPrec, 1,
+     &        adhflux, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJsflux.'//suff, writeBinaryPrec, 1,
+     &        adsflux, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJustress.'//suff, writeBinaryPrec, 1,
+     &        adustress, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJvstress.'//suff, writeBinaryPrec, 1,
+     &        advstress, 1, myIter, myThid )
 
 # ifdef ALLOW_ATM_TEMP
-        CALL MDSWRITEFIELD(
-     &       'ADJatemp.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adatemp, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJaqh.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adaqh, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJlwflux.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adlwflux, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJprecip.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adprecip, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJatemp.'//suff, writeBinaryPrec, 1,
+     &        adatemp, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJaqh.'//suff, writeBinaryPrec, 1,
+     &        adaqh, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJlwflux.'//suff, writeBinaryPrec, 1,
+     &        adlwflux, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJprecip.'//suff, writeBinaryPrec, 1,
+     &        adprecip, 1, myIter, myThid )
 # endif
 # ifdef ALLOW_ATM_WIND
-        CALL MDSWRITEFIELD(
-     &       'ADJuwind.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  aduwind, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJvwind.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  advwind, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJuwind.'//suff, writeBinaryPrec, 1,
+     &        aduwind, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJvwind.'//suff, writeBinaryPrec, 1,
+     &        advwind, 1, myIter, myThid )
 # endif
 # ifdef ALLOW_DOWNWARD_RADIATION
-        CALL MDSWRITEFIELD(
-     &       'ADJswdown.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adswdown, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJlwdown.'//suff, writeBinaryPrec, globalFiles, 'RL',
-     &       1,  adlwdown, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJswdown.'//suff, writeBinaryPrec, 1,
+     &        adswdown, 1, myIter, myThid )
+        CALL WRITE_REC_3D_RL(
+     &       'ADJlwdown.'//suff, writeBinaryPrec, 1,
+     &        adlwdown, 1, myIter, myThid )
 # endif
 # ifdef ATMOSPHERIC_LOADING
-cph        CALL MDSWRITEFIELD(
-cph     &       'ADJapressure.'//suff, writeBinaryPrec, globalFiles, 'RL',
-cph     &       1,  adapressure, 1, myIter, myThid )
+cph        CALL WRITE_REC_3D_RL(
+cph     &       'ADJapressure.'//suff, writeBinaryPrec, 1,
+cph     &        adapressure, 1, myIter, myThid )
 # endif
 # if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-cph        CALL MDSWRITEFIELD(
-cph     &       'ADJswflux.'//suff, writeBinaryPrec, globalFiles, 'RL',
-cph     &       1,  adswflux, 1, myIter, myThid )
+cph        CALL WRITE_REC_3D_RL(
+cph     &       'ADJswflux.'//suff, writeBinaryPrec, 1,
+cph     &        adswflux, 1, myIter, myThid )
 # endif
 # if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
-cph        CALL MDSWRITEFIELD(
-cph     &       'ADJevap.'//suff, writeBinaryPrec, globalFiles, 'RL',
-cph     &       1,  adevap, 1, myIter, myThid )
+cph        CALL WRITE_REC_3D_RL(
+cph     &       'ADJevap.'//suff, writeBinaryPrec, 1,
+cph     &        adevap, 1, myIter, myThid )
 # endif
-
-       _END_MASTER( myThid )
-       _BARRIER
 
       ENDIF
 
-      call TIMER_STOP( 'I/O (WRITE)        [EXF_AD_DUMP]', myThid )
+      CALL TIMER_STOP( 'I/O (WRITE)        [EXF_AD_DUMP]', myThid )
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */
 
-      end
-
-
-
-
-
-
-
-
-
+      RETURN
+      END

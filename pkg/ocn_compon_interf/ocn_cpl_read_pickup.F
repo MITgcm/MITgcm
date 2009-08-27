@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.5 2009/07/22 21:20:47 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.6 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -42,39 +42,41 @@ C     == Local variables ==
        rec_ind=0
 
        IF ( .NOT. cpl_earlyExpImpCall ) THEN
-         CALL MDSREADFIELD(fn,prec,'RL',1,atmSLPr   , 1,myThid)
-         CALL MDSREADFIELD(fn,prec,'RL',1,HeatFlux  , 2,myThid)
-         CALL MDSREADFIELD(fn,prec,'RL',1,qShortWave, 3,myThid)
-         CALL MDSREADFIELD(fn,prec,'RL',1,tauX      , 4,myThid)
-         CALL MDSREADFIELD(fn,prec,'RL',1,tauY      , 5,myThid)
-         CALL MDSREADFIELD(fn,prec,'RL',1,FWFlux    , 6,myThid)
-         CALL MDSREADFIELD(fn,prec,'RL',1,iceSaltFlx, 7,myThid)
-         CALL MDSREADFIELD(fn,prec,'RL',1,seaIceMass, 8,myThid)
+         CALL READ_REC_3D_RL( fn,prec,1,atmSLPr   , 1,myIter,myThid )
+         CALL READ_REC_3D_RL( fn,prec,1,HeatFlux  , 2,myIter,myThid )
+         CALL READ_REC_3D_RL( fn,prec,1,qShortWave, 3,myIter,myThid )
+         CALL READ_REC_3D_RL( fn,prec,1,tauX      , 4,myIter,myThid )
+         CALL READ_REC_3D_RL( fn,prec,1,tauY      , 5,myIter,myThid )
+         CALL READ_REC_3D_RL( fn,prec,1,FWFlux    , 6,myIter,myThid )
+         CALL READ_REC_3D_RL( fn,prec,1,iceSaltFlx, 7,myIter,myThid )
+         CALL READ_REC_3D_RL( fn,prec,1,seaIceMass, 8,myIter,myThid )
          rec_ind=8
        ENDIF
 
        IF ( ocnCpl_exchange_DIC ) THEN
-c        CALL MDSREADFIELD(fn,prec,'RL',1,airCO2    ,  9,myThid)
-c        CALL MDSREADFIELD(fn,prec,'RL',1,surfWSpeed, 10,myThid)
-c        CALL MDSREADFIELD(fn,prec,'RL',1,fracIce   , 11,myThid)
+c        CALL READ_REC_3D_RL( fn,prec,1,airCO2    , 9,myIter,myThid )
+c        CALL READ_REC_3D_RL( fn,prec,1,surfWSpeed,10,myIter,myThid )
+c        CALL READ_REC_3D_RL( fn,prec,1,fracIce   ,11,myIter,myThid )
 #ifdef ALLOW_PTRACERS
          IF (nIter0.GT.PTRACERS_Iter0) THEN
-          CALL MDSREADFIELD(fn,prec,'RL',1,fluxCO2cpl, rec_ind+1,myThid)
+          rec_ind = rec_ind+1
+          CALL READ_REC_3D_RL( fn, prec, 1,
+     &                         fluxCO2cpl, rec_ind, myIter, myThid )
          ENDIF
 #endif
        ENDIF
 
-c      CALL MDSREADFIELD(fn,prec,'RL',1,ocMxlD2cpl, 9,myThid)
-c      CALL MDSREADFIELD(fn,prec,'RL',1,SSTocn2cpl,10,myThid)
-c      CALL MDSREADFIELD(fn,prec,'RL',1,SSSocn2cpl,11,myThid)
-c      CALL MDSREADFIELD(fn,prec,'RL',1,vSqocn2cpl,12,myThid)
+c      CALL READ_REC_3D_RL( fn,prec,1,ocMxlD2cpl, 9,myIter,myThid )
+c      CALL READ_REC_3D_RL( fn,prec,1,SSTocn2cpl,10,myIter,myThid )
+c      CALL READ_REC_3D_RL( fn,prec,1,SSSocn2cpl,11,myIter,myThid )
+c      CALL READ_REC_3D_RL( fn,prec,1,vSqocn2cpl,12,myIter,myThid )
 
 C--   Fill in the halo region:
        IF ( .NOT. cpl_earlyExpImpCall ) THEN
          _EXCH_XY_RL( atmSLPr   , myThid )
          _EXCH_XY_RL( HeatFlux  , myThid )
          _EXCH_XY_RL( qShortWave, myThid )
-         CALL EXCH_UV_XY_RL(tauX, tauY, .TRUE., myThid ) 
+         CALL EXCH_UV_XY_RL( tauX, tauY, .TRUE., myThid )
          _EXCH_XY_RL( FWFlux    , myThid )
          _EXCH_XY_RL( iceSaltFlx, myThid )
          _EXCH_XY_RL( seaIceMass, myThid )

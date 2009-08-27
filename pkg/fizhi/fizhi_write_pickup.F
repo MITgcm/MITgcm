@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_pickup.F,v 1.9 2004/10/14 22:11:42 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_pickup.F,v 1.10 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
 CBOP
-C     !ROUTINE: FIZHI_WRITE_PICKUP 
+C     !ROUTINE: FIZHI_WRITE_PICKUP
 C     !INTERFACE:
       SUBROUTINE FIZHI_WRITE_PICKUP( suff, myTime, myIter, myThid )
 
@@ -70,35 +70,23 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       lgf = globalFiles
 
 C--   Write fields as consecutive records
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,uphy,1,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,vphy,2,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,thphy,3,myIter,myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,sphy,4,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,uphy,      1,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,vphy,      2,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,thphy,     3,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,sphy,      4,myIter,myThid)
 
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldtot_lw,5,myIter,
-     .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldras_lw,6,myIter,
-     .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldlsp_lw,7,myIter,
-     .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,lwlz,8,myIter,
-     .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldtot_sw,9,myIter,
-     .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldras_sw,10,myIter,
-     .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,cldlsp_sw,11,myIter,
-     .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,swlz,12,myIter,
-     .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,qliqavelw,13,myIter,
-     .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,qliqavesw,14,myIter,
-     .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,fccavelw,15,myIter,
-     .                                                          myThid)
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,fccavesw,16,myIter,
-     .                                                          myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,cldtot_lw, 5,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,cldras_lw, 6,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,cldlsp_lw, 7,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,lwlz,      8,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,cldtot_sw, 9,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,cldras_sw,10,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,cldlsp_sw,11,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,swlz,     12,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,qliqavelw,13,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,qliqavesw,14,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,fccavelw, 15,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,fccavesw, 16,myIter,myThid)
 
       do bj = myByLo(myThid), myByHi(myThid)
       do bi = myBxLo(myThid), myBxHi(myThid)
@@ -121,7 +109,7 @@ C--   Write fields as consecutive records
       enddo
       enddo
 
-      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nrphys,temp,17,myIter,myThid)
+      CALL WRITE_REC_3D_RL(fn,prec,Nrphys,temp,17,myIter,myThid)
 
       RETURN
       END

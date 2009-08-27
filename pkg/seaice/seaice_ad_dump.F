@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.5 2009/06/24 08:23:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.6 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -77,8 +77,6 @@ CEOP
      &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,deltaTClock)
      & ) THEN
 
-       _BARRIER
-
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
         writeBinaryPrec = writeStatePrec
@@ -86,27 +84,25 @@ C--     Set suffix for this set of data files.
 C--     Read IO error counter
         beginIOErrCount = IO_ERRCOUNT(myThid)
 
-        CALL MDSWRITEFIELD(
-     &       'ADJarea.'//suff, writeBinaryPrec, globalFiles, 'RL',
+        CALL WRITE_REC_3D_RL(
+     &       'ADJarea.'//suff, writeBinaryPrec,
      &       1,  adarea, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJheff.'//suff, writeBinaryPrec, globalFiles, 'RL',
+        CALL WRITE_REC_3D_RL(
+     &       'ADJheff.'//suff, writeBinaryPrec,
      &       1,  adheff, 1, myIter, myThid )
-        CALL MDSWRITEFIELD(
-     &       'ADJhsnow.'//suff, writeBinaryPrec, globalFiles, 'RL',
+        CALL WRITE_REC_3D_RL(
+     &       'ADJhsnow.'//suff, writeBinaryPrec,
      &       1,  adhsnow, 1, myIter, myThid )
 # ifdef SEAICE_ALLOW_DYNAMICS
 cph        IF ( SEAICEuseDynamics ) THEN
-          CALL MDSWRITEFIELD(
-     &       'ADJuice.'//suff, writeBinaryPrec, globalFiles, 'RL',
+          CALL WRITE_REC_3D_RL(
+     &       'ADJuice.'//suff, writeBinaryPrec,
      &       1,  aduice, 1, myIter, myThid )
-          CALL MDSWRITEFIELD(
-     &       'ADJvice.'//suff, writeBinaryPrec, globalFiles, 'RL',
+          CALL WRITE_REC_3D_RL(
+     &       'ADJvice.'//suff, writeBinaryPrec,
      &       1,  advice, 1, myIter, myThid )
 cph        ENDIF
 # endif
-c
-       _BARRIER
 
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN

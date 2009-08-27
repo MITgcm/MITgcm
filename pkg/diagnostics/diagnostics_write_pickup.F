@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.9 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.10 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -39,26 +39,22 @@ C     myThid  :: Number of this instance
       INTEGER myIter
       INTEGER myThid
 
-#ifdef ALLOW_DIAGNOSTICS
 #ifdef DIAGNOSTICS_HAS_PICKUP
 
 C     !LOCAL VARIABLES:
 C     fn      :: character buffer for creating filename
 C     prec    :: precision of pickup files
 c     INTEGER prec, iChar, lChar, k
-      INTEGER prec, lChar, i, sn
+      INTEGER prec, lChar, sn
       CHARACTER*(MAX_LEN_FNAM) fn
 
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
-#ifdef ALLOW_MDSIO
-      LOGICAL lgf
       INTEGER dUnit, n, m
-#endif /* ALLOW_MDSIO */
 
 #ifdef ALLOW_MNC
-      INTEGER ii
+      INTEGER i, ii
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
       INTEGER CW_DIMS, NLEN
       PARAMETER ( CW_DIMS = 10 )
@@ -173,42 +169,34 @@ C         Write the ndiag() array
         ENDIF
 #endif
 
-#ifdef ALLOW_MDSIO
         IF (diag_pickup_write_mdsio) THEN
-          _BEGIN_MASTER( myThid )
 
           sn = ILNBLNK(suff)
 
 C         Write qdiag()
-          DO i = 1,80
-            fn(i:i) = ' '
-          ENDDO
-          write(fn,'(a,a)') 'pickup_qdiag.', suff(1:sn)
+          WRITE(fn,'(a,a)') 'pickup_qdiag.', suff(1:sn)
           prec = precFloat64
-          lgf = globalFiles
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',numDiags,qdiag,
-     &         1,myIter,myThid)
+          CALL WRITE_REC_3D_RL( fn, prec, numDiags, qdiag,
+     &                          1, myIter, myThid )
 
 C         Write ndiag()
-          DO i = 1,80
-            fn(i:i) = ' '
-          ENDDO
+          _BARRIER
+          _BEGIN_MASTER( myThid )
           WRITE(fn,'(a,a)') 'pickup_ndiag.', suff(1:sn)
           CALL MDSFINDUNIT( dUnit, mythid )
           OPEN( dUnit, file=fn )
           DO n = 1,nlists
             DO m = 1,nfields(n)
-              WRITE(dUnit,'(I10)') ndiag(jdiag(m,n))
+              WRITE(dUnit,'(I10)') ndiag(jdiag(m,n),1,1)
             ENDDO
           ENDDO
           CLOSE( dUnit )
           _END_MASTER( myThid )
+          _BARRIER
         ENDIF
-#endif /* ALLOW_MDSIO */
 
       ENDIF
 
-#endif /* ALLOW_DIAGNOSTICS */
 #endif /* DIAGNOSTICS_HAS_PICKUP */
 
       RETURN

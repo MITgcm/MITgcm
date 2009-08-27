@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_read_pickup.F,v 1.5 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_read_pickup.F,v 1.6 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -33,18 +33,17 @@ C     !LOCAL VARIABLES:
 C     fn      :: character buffer for creating filename
 C     prec    :: precision of pickup files
 c     INTEGER prec, iChar, lChar, k
-      INTEGER prec, lChar, i, sn
+      INTEGER bi,bj
+      INTEGER prec, sn
       CHARACTER*(MAX_LEN_FNAM) fn
 
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
-#ifdef ALLOW_MDSIO
       INTEGER dUnit, n, m
-#endif /* ALLOW_MDSIO */
 
 #ifdef ALLOW_MNC
-      INTEGER ii
+      INTEGER i, ii
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
       INTEGER CW_DIMS, NLEN
       PARAMETER ( CW_DIMS = 10 )
@@ -134,39 +133,43 @@ c    &         d_cw_name, ndiag, myThid)
         ENDIF
 #endif /* ALLOW_MNC */
 
-#ifdef ALLOW_MDSIO
         IF (diag_pickup_read_mdsio) THEN
-          _BEGIN_MASTER(myThid)
 
 C         Read qdiag()
-          DO i = 1,80
-            fn(i:i) = ' '
-          ENDDO
-          write(fn,'(A,I10.10)') 'pickup_qdiag', nIter0
-          CALL MDSREADFIELD(fn,readBinaryPrec,'RL',
-     &         numDiags,qdiag,1,myThid)
+          prec = precFloat64
+          WRITE(fn,'(A,I10.10)') 'pickup_qdiag.', nIter0
+          CALL READ_REC_3D_RL( fn, prec,
+     &                         numDiags, qdiag, nIter0, myThid )
 
 C         Read ndiag()
-          DO i = 1,80
-            fn(i:i) = ' '
-          ENDDO
+          _BARRIER
+          _BEGIN_MASTER(myThid)
+
+C--    jmc: should really write 1 file per tile
           WRITE(fn,'(A,I10.10)') 'pickup_ndiag.', nIter0
-          CALL MDSFINDUNIT( dUnit, mythid )
+          CALL MDSFINDUNIT( dUnit, myThid )
           OPEN( dUnit, file=fn )
           DO n = 1,nlists
             DO m = 1,nfields(n)
-              READ(dUnit,'(I10)') ndiag(jdiag(m,n))
+              READ(dUnit,'(I10)') ndiag(jdiag(m,n),1,1)
             ENDDO
           ENDDO
           CLOSE( dUnit )
+C-        Need to fill-in ndiag for other tiles
+          DO bj=1,nSy
+           DO bi=1,nSx
+            DO n=1,ndiagt
+             ndiag(n,bi,bj) = ndiag(n,1,1)
+            ENDDO
+           ENDDO
+          ENDDO
           _END_MASTER(myThid)
+          _BARRIER
         ENDIF
-#endif /* ALLOW_MDSIO */
 
       ENDIF
 
 #endif /* DIAGNOSTICS_HAS_PICKUP */
-
 
       RETURN
       END

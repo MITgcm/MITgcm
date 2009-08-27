@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_state.F,v 1.9 2005/08/24 23:23:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_state.F,v 1.10 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
 CBOP
-C     !ROUTINE: FIZHI_WRITE_STATE 
+C     !ROUTINE: FIZHI_WRITE_STATE
 C     !INTERFACE:
       SUBROUTINE FIZHI_WRITE_STATE( myTime, myIter, myThid )
 
@@ -30,7 +30,6 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     suff    :: suffix for pickup file
 C     myTime  :: current time
 C     myIter  :: time-step number
 C     myThid  :: Number of this instance
@@ -38,14 +37,16 @@ C     myThid  :: Number of this instance
       INTEGER myIter
       INTEGER myThid
 
-C     !LOCAL VARIABLES:
-C     fn      :: character buffer for creating filename
-      CHARACTER*(MAX_LEN_FNAM) pref
-      CHARACTER*(MAX_LEN_MBUF) suff
-      CHARACTER*(80) fn
-      logical glf
+C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+
+C     !LOCAL VARIABLES:
+C     fn      :: character buffer for creating filename
+      CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER prec
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF (
      &     DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
@@ -53,24 +54,16 @@ C     fn      :: character buffer for creating filename
      &                             myTime.EQ.startTime  )
      &   ) THEN
 
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C--   Write fields as consecutive records
-       glf = .FALSE.
-       WRITE(suff,'(I10.10)') myIter
-       pref = 'fizhi_U.'
-       WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
-       call mdswritefield(fn,64,glf,'RL',Nrphys,uphy,1,myIter,myThid)
-       pref = 'fizhi_V.'
-       WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
-       call mdswritefield(fn,64,glf,'RL',Nrphys,vphy,1,myIter,myThid)
-       pref = 'fizhi_T.'
-       WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
-       call mdswritefield(fn,64,glf,'RL',Nrphys,thphy,1,myIter,myThid)
-       pref = 'fizhi_S.'
-       WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
-       call mdswritefield(fn,64,glf,'RL',Nrphys,sphy,1,myIter,myThid)
+C--   Write fields:
+       prec = writeBinaryPrec
+       WRITE( fn, '(A,I10.10)' ) 'fizhi_U.', myIter
+       CALL WRITE_REC_3D_RL( fn,prec, Nrphys, uphy, 1, myIter,myThid )
+       WRITE( fn, '(A,I10.10)' ) 'fizhi_V.', myIter
+       CALL WRITE_REC_3D_RL( fn,prec, Nrphys, vphy, 1, myIter,myThid )
+       WRITE( fn, '(A,I10.10)' ) 'fizhi_T.', myIter
+       CALL WRITE_REC_3D_RL( fn,prec, Nrphys, thphy, 1, myIter,myThid )
+       WRITE( fn, '(A,I10.10)' ) 'fizhi_S.', myIter
+       CALL WRITE_REC_3D_RL( fn,prec, Nrphys, sphy, 1, myIter,myThid )
 
       ENDIF
 

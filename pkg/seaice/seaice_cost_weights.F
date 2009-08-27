@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_weights.F,v 1.5 2007/10/09 00:10:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_weights.F,v 1.6 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -97,8 +97,12 @@ c--
       irec  = 1
       k     = 1
       if ( smrarea_errfile .NE. ' ' ) then
-         call mdsreadfield( smrarea_errfile, cost_iprec, cost_yftype,
-     &        nnz, wsmrarea, irec, mythid )
+         IF ( cost_yftype.EQ.'RL' ) THEN
+           CALL READ_REC_3D_RL( smrarea_errfile, cost_iprec, nnz,
+     &                          wsmrarea, irec, 0, mythid )
+         ELSE
+           STOP 'S/R SEAICE_COST_WEIGHTS: invalid cost_yftype'
+         ENDIF
          do bj = jtlo,jthi
            do bi = itlo,ithi
              do j = jmin,jmax

@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.25 2008/01/29 11:25:53 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.26 2009/08/27 18:00:01 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
-      subroutine exf_set_gen( 
-     &     genfile, genstartdate, genperiod, 
+      subroutine exf_set_gen(
+     &     genfile, genstartdate, genperiod,
      &     exf_inscal_gen, genremove_intercept, genremove_slope,
      &     genfld, gen0, gen1, genmask,
 #ifdef USE_EXF_INTERPOLATION
@@ -22,7 +22,7 @@ c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 c     changed: heimbach@mit.edu 10-Jan-2002
 c              20-Dec-2002: mods for pkg/seaice, menemenlis@jpl.nasa.gov
-c              heimbach@mit.edu: totally re-organized exf_set_... 
+c              heimbach@mit.edu: totally re-organized exf_set_...
 c              replaced all routines by one generic routine
 c              5-Aug-2003: added USE_EXF_INTERPOLATION for arbitrary
 c                          input grid capability
@@ -138,11 +138,14 @@ c     get record numbers and interpolation factor for gen
      &           , gen_nlon,gen_nlat,interp_method,mythid
      &           )
 #else
-            _BARRIER
-            call mdsreadfield( genfile0, exf_iprec, exf_yftype, 1
-     &           , gen1, count0, mythid
-     &           )
-            _BARRIER
+            IF (exf_yftype .EQ. 'RL') THEN
+              CALL READ_REC_3D_RL( genfile0, exf_iprec, 1,
+     &                             gen1, count0, myIter, myThid )
+            ELSE
+c             CALL READ_REC_3D_RS( genfile0, exf_iprec, 1,
+c    &                             gen1, count0, myIter, myThid )
+              STOP 'S/R EXF_SET_GEN: invalid exf_yftype'
+            ENDIF
 #endif /* USE_EXF_INTERPOLATION */
 
             if (exf_yftype .eq. 'RL') then
@@ -154,7 +157,7 @@ c     get record numbers and interpolation factor for gen
 
          if (( first ) .or. ( changed )) then
             call exf_SwapFFields( gen0, gen1, mythid )
-            
+
             call exf_GetYearlyFieldName(
      I         useExfYearlyFields, twoDigitYear, genperiod, year1,
      I         genfile,
@@ -169,11 +172,14 @@ c     get record numbers and interpolation factor for gen
      &           , gen_nlon,gen_nlat,interp_method,mythid
      &           )
 #else
-            _BARRIER
-            call mdsreadfield( genfile1, exf_iprec, exf_yftype, 1
-     &           , gen1, count1, mythid
-     &           )
-            _BARRIER
+            IF (exf_yftype .EQ. 'RL') THEN
+              CALL READ_REC_3D_RL( genfile1, exf_iprec, 1,
+     &                             gen1, count1, myIter, myThid )
+            ELSE
+c             CALL READ_REC_3D_RS( genfile1, exf_iprec, 1,
+c    &                             gen1, count1, myIter, myThid )
+              STOP 'S/R EXF_SET_GEN: invalid exf_yftype'
+            ENDIF
 #endif /* USE_EXF_INTERPOLATION */
 
             if (exf_yftype .eq. 'RL') then
@@ -192,7 +198,7 @@ c     Interpolate linearly onto the  time.
              genfld(i,j,bi,bj) = exf_inscal_gen * (
      &                          fac * gen0(i,j,bi,bj) +
      &              (exf_one - fac) * gen1(i,j,bi,bj) )
-             genfld(i,j,bi,bj) = 
+             genfld(i,j,bi,bj) =
      &            genfld(i,j,bi,bj) -
      &            exf_inscal_gen * ( genremove_intercept +
      &            genremove_slope*(mytime-starttime) )
@@ -209,7 +215,7 @@ c     Interpolate linearly onto the  time.
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-      subroutine exf_init_gen ( 
+      subroutine exf_init_gen (
      &     genfile, genperiod, exf_inscal_gen, genmask,
      &     genconst, genfld, gen0, gen1,
 #ifdef USE_EXF_INTERPOLATION
@@ -223,11 +229,11 @@ c     ==================================================================
 c     SUBROUTINE exf_init_gen
 c     ==================================================================
 c
-c     o 
+c     o
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 c     changed: heimbach@mit.edu 10-Jan-2002
-c              heimbach@mit.edu: totally re-organized exf_set_... 
+c              heimbach@mit.edu: totally re-organized exf_set_...
 c              replaced all routines by one generic routine
 c
 c     ==================================================================
@@ -297,11 +303,14 @@ c     == end of interface ==
      &        , gen_nlon,gen_nlat,interp_method,mythid
      &        )
 #else
-         _BARRIER
-         call mdsreadfield( genfile, exf_iprec, exf_yftype, 1
-     &        , genfld, count, mythid
-     &        )
-         _BARRIER
+         IF (exf_yftype .EQ. 'RL') THEN
+            CALL READ_REC_3D_RL( genfile, exf_iprec, 1,
+     &                             genfld, count, 0, myThid )
+         ELSE
+c           CALL READ_REC_3D_RS( genfile, exf_iprec, 1,
+c    &                             genfld, count, 0, myThid )
+            STOP 'S/R EXF_INIT_GEN: invalid exf_yftype'
+         ENDIF
 #endif /* USE_EXF_INTERPOLATION */
 
          if (exf_yftype .eq. 'RL') then
@@ -316,7 +325,7 @@ c     Loop over tiles and scale genfld
                do j = 1,sny
                   do i = 1,snx
                      genfld(i,j,bi,bj) =
-     &                    exf_inscal_gen * genfld(i,j,bi,bj) 
+     &                    exf_inscal_gen * genfld(i,j,bi,bj)
                   enddo
                enddo
             enddo
