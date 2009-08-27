@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.11 2008/06/11 18:55:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.12 2009/08/27 17:52:31 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -33,14 +33,11 @@ c     == local variables ==
 c     == end of interface ==
 
 c     check for consistency
-      if (.NOT. 
-     &     (exf_iprec .EQ. 32 .OR. exf_iprec .EQ. 64)
+      if (.NOT.
+     &     (exf_iprec.EQ.precFloat32 .OR. exf_iprec.EQ.precFloat64)
      &     ) then
        stop 'S/R EXF_CHECK: value of exf_iprec not allowed'
-      elseif (.NOT. 
-     &      (exf_yftype .EQ. 'RS' .OR. 
-     &      exf_yftype .EQ. 'RL')
-     &      ) then
+      elseif ( exf_yftype.NE.'RL' ) then
        stop 'S/R EXF_CHECK: value of exf_yftype not allowed'
       endif
 
