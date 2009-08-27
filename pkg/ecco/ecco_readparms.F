@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.38 2009/08/26 23:33:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.39 2009/08/27 17:51:13 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -338,6 +338,8 @@ c--     Set default values.
         wmean_hflux           =      0. _d 0
         wmean_sflux           =      0. _d 0
         wmean_tau             =      0. _d 0
+        cost_iprec  = precFloat32
+        cost_yftype = 'RL'
 
 c--     Next, read the cost data file.
         WRITE(msgBuf,'(A)') 'ECCO_READPARMS: opening data.ecco'
@@ -356,6 +358,11 @@ c--     Next, read the cost data file.
      &                  SQUEEZE_RIGHT , 1)
 
         CLOSE( iUnit )
+
+C--   Check parameters:
+        IF ( cost_yftype.NE.'RL' ) THEN
+          STOP 'ABNORMAL END: S/R ECCO_READPARMS: invalid cost_yftype'
+        ENDIF
 
 #ifdef ALLOW_CAL
 c--     Get the complete dates of the ...
