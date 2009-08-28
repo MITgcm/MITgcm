@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_beagle,v 1.2 2009/06/15 19:05:46 jahn Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_beagle,v 1.3 2009/08/28 18:02:28 jahn Exp $
 #  $Name:  $
 #
 #  These are the build options used with the Intel 10.x compiler for
@@ -26,6 +26,7 @@ CC='mpicc'
 F90C='mpif90 -fixed -c '
 LINK='mpif77'
 INCLUDES="$CPPFLAGS"
+LIBS="$LDFLAGS"
 
 # -DIFORT turns on ifort-specific declarations in darwin (RAND is not an intrinsic)
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4 -DIFORT'
