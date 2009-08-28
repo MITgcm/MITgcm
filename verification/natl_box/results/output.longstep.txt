@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint61t
-(PID.TID 0000.0001) // Build user:        jmc
-(PID.TID 0000.0001) // Build host:        faulks
-(PID.TID 0000.0001) // Build date:        Tue Aug  4 18:21:51 EDT 2009
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint61u
+(PID.TID 0000.0001) // Build user:        jahn
+(PID.TID 0000.0001) // Build host:        rilke.csail.mit.edu
+(PID.TID 0000.0001) // Build date:        Fri Aug 28 12:54:09 EDT 2009
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -20,7 +20,7 @@
 (PID.TID 0000.0001) > &EEPARMS
 (PID.TID 0000.0001) > nTx=1,
 (PID.TID 0000.0001) > nTy=1,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) ># Note: Some systems use & as the
 (PID.TID 0000.0001) ># namelist terminator. Other systems
 (PID.TID 0000.0001) ># use a / character (as shown here).
@@ -154,7 +154,7 @@
 (PID.TID 0000.0001) > writeBinaryPrec    = 64,
 (PID.TID 0000.0001) >#- not safe to use globalFiles in multi-processors runs
 (PID.TID 0000.0001) > globalFiles        = .TRUE.
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Elliptic solver parameters
 (PID.TID 0000.0001) >#
@@ -164,7 +164,7 @@
 (PID.TID 0000.0001) > &PARM02
 (PID.TID 0000.0001) > cg2dMaxIters       = 1000,
 (PID.TID 0000.0001) > cg2dTargetResidual = 1.E-13,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Time stepping parameters
 (PID.TID 0000.0001) >#
@@ -198,7 +198,7 @@
 (PID.TID 0000.0001) > externForcingPeriod = 43200.0,
 (PID.TID 0000.0001) > externForcingCycle = 2764800.0,
 (PID.TID 0000.0001) > monitorFreq=1.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Gridding parameters
 (PID.TID 0000.0001) >#
@@ -217,7 +217,7 @@
 (PID.TID 0000.0001) >       500., 500., 500., 500., 500., 500., 500.,
 (PID.TID 0000.0001) > ygOrigin = 10.,
 (PID.TID 0000.0001) > xgOrigin= -42.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Input datasets
 (PID.TID 0000.0001) >#
@@ -240,7 +240,7 @@
 (PID.TID 0000.0001) > surfQFile       = 'kf_qnet',
 (PID.TID 0000.0001) > EmPmRFile       = 'kf_empmr',
 (PID.TID 0000.0001) > surfQswFile     = 'kf_sw',
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) S/R INI_PARMS ; starts to read PARM01
 (PID.TID 0000.0001) S/R INI_PARMS ; read PARM01 : OK
@@ -264,7 +264,7 @@
 (PID.TID 0000.0001) >  useECCO=.FALSE.,
 (PID.TID 0000.0001) >  usediagnostics=.TRUE.,
 (PID.TID 0000.0001) >  usePTRACERS=.TRUE.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
 (PID.TID 0000.0001)  GM_READPARMS: opening data.gmredi
@@ -297,7 +297,7 @@
 (PID.TID 0000.0001) ># GM_Visbeck_length  = 2.e+5,
 (PID.TID 0000.0001) ># GM_Visbeck_depth   = 1.e+3,
 (PID.TID 0000.0001) ># GM_Visbeck_maxval_K= 2.5e+3,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) 
@@ -311,7 +311,7 @@
 (PID.TID 0000.0001) > &KPP_PARM01
 (PID.TID 0000.0001) > KPPmixingMaps   = .FALSE.,
 (PID.TID 0000.0001) > KPPwriteState   = .TRUE.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  KPP_INIT: finished reading data.kpp
 (PID.TID 0000.0001)  LONGSTEP_READPARMS: opening data.longstep
@@ -320,10 +320,10 @@
 (PID.TID 0000.0001) // Parameter file "data.longstep"
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) > &LONGSTEP_PARM01
-(PID.TID 0000.0001) > LS_nIter=3,
+(PID.TID 0000.0001) > LS_nIter=2,
 (PID.TID 0000.0001) >#LS_afterTS=.TRUE.,
 (PID.TID 0000.0001) >#LS_staggerTimeStep=.TRUE.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  LONGSTEP_READPARMS: finished reading data.longstep
@@ -331,7 +331,7 @@
 (PID.TID 0000.0001) // longstep parameters
 (PID.TID 0000.0001) // ===================================
 (PID.TID 0000.0001) LS_nIter = /* number of dynamics steps between ptracer steps */
-(PID.TID 0000.0001)                       3
+(PID.TID 0000.0001)                       2
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) LS_staggerTimeStep = /* average U,V,W,T,S at end of time step */
 (PID.TID 0000.0001)                   F
@@ -362,7 +362,7 @@
 (PID.TID 0000.0001) > PTRACERS_useKPP(1)=.TRUE.,
 (PID.TID 0000.0001) > PTRACERS_useGMREDI(1)=.TRUE.,
 (PID.TID 0000.0001) > PTRACERS_initialFile(1)='kf_climsalt',
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  PTRACERS_READPARMS: finished reading data.ptracers
 (PID.TID 0000.0001) // ===================================
@@ -375,7 +375,7 @@
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) PTRACERS_dTLev =   /* Ptracer timestep ( s ) */
-(PID.TID 0000.0001)    23 @  1.080000000000000E+04              /* K =  1: 23 */
+(PID.TID 0000.0001)    23 @  7.200000000000000E+03              /* K =  1: 23 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) PTRACERS_dumpFreq = /* Frequency^-1 for snapshot output (s) */
 (PID.TID 0000.0001)                 8.640000000000000E+04
@@ -457,7 +457,7 @@
 (PID.TID 0000.0001) >  frequency(1) = 10800.,
 (PID.TID 0000.0001) >   fields(1,1) = 'TRAC01  ',
 (PID.TID 0000.0001) >   filename(1) = 'TRAC01',
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) ># Parameter for Diagnostics of per level statistics:
 (PID.TID 0000.0001) >#-----------------
@@ -476,7 +476,7 @@
 (PID.TID 0000.0001) >#   stat_fname(1)= 'dynStDiag',
 (PID.TID 0000.0001) >#    stat_freq(1)= -864000.,
 (PID.TID 0000.0001) >#   stat_phase(1)= 0.,
-(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) > /
 (PID.TID 0000.0001) >
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) S/R DIAGNOSTICS_READPARMS, read namelist "diagnostics_list": start
@@ -496,13 +496,6 @@
 (PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: statistics diags. summary:
 (PID.TID 0000.0001) -----------------------------------------------------
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) S/R LONGSTEP_CHECK_ITERS:  adjusting endTime:
-(PID.TID 0000.0001) endTime =   /* Integration ending time ( s ). */
-(PID.TID 0000.0001)                 9.720000000000000E+04
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nTimeSteps =   /* Number of timesteps */
-(PID.TID 0000.0001)                      21
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) SET_PARMS: done
 (PID.TID 0000.0001) Enter INI_VERTICAL_GRID: setInterFDr=    T ; setCenterDr=    F
 (PID.TID 0000.0001) %MON XC_max                       =  -3.0000000000000E+00
@@ -915,7 +908,7 @@
 (PID.TID 0000.0001)  12   5.946  34.900  30.300  -0.143   0.785  -0.006  -0.002   0.001   0.000   0.000   0.000   0.000
 (PID.TID 0000.0001)  13   4.433  34.900  31.591  -0.132   0.786  -0.006  -0.003   0.000   0.000   0.000   0.000   0.000
 (PID.TID 0000.0001)  14   3.909  34.750  32.966  -0.134   0.785  -0.006  -0.003   0.000   0.000   0.000   0.000   0.000
-(PID.TID 0000.0001)  15   1.899  34.800  35.002  -0.121   0.787  -0.006  -0.003   0.000   0.000   0.000   0.000   0.000
+(PID.TID 0000.0001)  15   1.899  34.800  35.002  -0.121   0.787  -0.006  -0.003  -0.000   0.000   0.000   0.000   0.000
 (PID.TID 0000.0001)  16   1.372  34.750  36.991  -0.127   0.785  -0.006  -0.003  -0.001   0.000   0.000   0.000   0.000
 (PID.TID 0000.0001)  17   1.332  34.800  39.171  -0.140   0.782  -0.006  -0.003  -0.001   0.000   0.000   0.000   0.000
 (PID.TID 0000.0001)  18   0.797  34.800  41.472  -0.147   0.779  -0.006  -0.003  -0.001   0.000   0.000   0.000   0.000
@@ -1231,7 +1224,7 @@
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) nTimeSteps =   /* Number of timesteps */
-(PID.TID 0000.0001)                      21
+(PID.TID 0000.0001)                      20
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) baseTime =   /* Model base time ( s ). */
 (PID.TID 0000.0001)                 2.160000000000000E+04
@@ -1240,7 +1233,7 @@
 (PID.TID 0000.0001)                 2.160000000000000E+04
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) endTime =   /* Integration ending time ( s ). */
-(PID.TID 0000.0001)                 9.720000000000000E+04
+(PID.TID 0000.0001)                 9.360000000000000E+04
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) pChkPtFreq =   /* Permanent restart/checkpoint file interval ( s ). */
 (PID.TID 0000.0001)                 0.000000000000000E+00
@@ -1782,8 +1775,8 @@ Global & Regional Statistics diagnostics: Number of lists:     0
 (PID.TID 0000.0001) %MON dynstat_vvel_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =  -0.0000000000000E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   0.0000000000000E+00
@@ -1857,8 +1850,8 @@ S/R EXTERNAL_FIELDS_LOAD: Reading new data:    1    2         0  2.160000000000E
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: kf_sss
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: kf_sw
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: kf_sw
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     1     2  0.0000E+00  1.0000E+00
-time,fu0,fu1,fu =   2.1600E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.000000000000000E+00  1.000000000000000E+00
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     1     2  0.0000E+00  1.0000E+00
+time,fu0,fu1,fu =   2.1600E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  0.000000000000000E+00  1.000000000000000E+00
  cg2d: Sum(rhs),rhsMax =   1.77635683940025E-15  4.50718046056083E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    3.97976985192654E+00
 (PID.TID 0000.0001)                       cg2d_iters =    50
@@ -1943,8 +1936,8 @@ time,fu0,fu1,fu =   2.1600E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000000000
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     1     2  8.3333E-02  9.1667E-01
-time,fu0,fu1,fu =   2.5200E+04  0.0000E+00  0.0000E+00  0.0000E+00  8.333333333333333E-02  9.166666666666666E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5200E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     1     2  8.3333E-02  9.1667E-01
+time,fu0,fu1,fu =   2.5200E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  8.333333333333333E-02  9.166666666666666E-01
  cg2d: Sum(rhs),rhsMax =   4.44089209850063E-15  5.55638071966736E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    9.18950762575155E-01
 (PID.TID 0000.0001)                       cg2d_iters =    47
@@ -2021,16 +2014,16 @@ time,fu0,fu1,fu =   2.5200E+04  0.0000E+00  0.0000E+00  0.0000E+00  8.3333333333
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7401638031006E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726768493652E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157555715946E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1377404390946E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2632116608019E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400378492398E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726776488869E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157553838320E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1376620263657E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2629372493311E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.8800E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     1     2  1.6667E-01  8.3333E-01
-time,fu0,fu1,fu =   2.8800E+04  0.0000E+00  0.0000E+00  0.0000E+00  1.666666666666667E-01  8.333333333333334E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.8800E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     1     2  1.6667E-01  8.3333E-01
+time,fu0,fu1,fu =   2.8800E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  1.666666666666667E-01  8.333333333333334E-01
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  5.83615055774413E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    5.49850873044627E-01
 (PID.TID 0000.0001)                       cg2d_iters =    46
@@ -2107,17 +2100,17 @@ time,fu0,fu1,fu =   2.8800E+04  0.0000E+00  0.0000E+00  0.0000E+00  1.6666666666
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400370955203E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726781755807E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157551976247E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375914670924E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2629246355122E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400378492398E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726776488869E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157553838320E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1376620263657E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2629372493311E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    211  TRAC01       Counter:       1   Parms: SM P    MR      
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.2400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     1     2  2.5000E-01  7.5000E-01
-time,fu0,fu1,fu =   3.2400E+04  0.0000E+00  0.0000E+00  0.0000E+00  2.500000000000000E-01  7.500000000000000E-01
+ Computing Diagnostic #    211  TRAC01       Counter:       2   Parms: SM P    MR      
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.2400E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     1     2  2.5000E-01  7.5000E-01
+time,fu0,fu1,fu =   3.2400E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  2.500000000000000E-01  7.500000000000000E-01
  cg2d: Sum(rhs),rhsMax =   6.21724893790088E-15  6.07279873511739E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    2.97260432293304E-01
 (PID.TID 0000.0001)                       cg2d_iters =    47
@@ -2194,16 +2187,16 @@ time,fu0,fu1,fu =   3.2400E+04  0.0000E+00  0.0000E+00  0.0000E+00  2.5000000000
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400370955203E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726781755807E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157551976247E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375914670924E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2629246355122E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400326640902E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726787736760E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157550304396E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375279437873E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2630467320782E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.6000E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     1     2  3.3333E-01  6.6667E-01
-time,fu0,fu1,fu =   3.6000E+04  0.0000E+00  0.0000E+00  0.0000E+00  3.333333333333333E-01  6.666666666666667E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.6000E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     1     2  3.3333E-01  6.6667E-01
+time,fu0,fu1,fu =   3.6000E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  3.333333333333333E-01  6.666666666666667E-01
  cg2d: Sum(rhs),rhsMax =   3.55271367880050E-15  6.21371774062224E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    2.45976305367790E-01
 (PID.TID 0000.0001)                       cg2d_iters =    47
@@ -2280,16 +2273,16 @@ time,fu0,fu1,fu =   3.6000E+04  0.0000E+00  0.0000E+00  0.0000E+00  3.3333333333
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400370955203E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726781755807E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157551976247E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375914670924E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2629246355122E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400326640902E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726787736760E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157550304396E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375279437873E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2630467320782E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.9600E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     1     2  4.1667E-01  5.8333E-01
-time,fu0,fu1,fu =   3.9600E+04  0.0000E+00  0.0000E+00  0.0000E+00  4.166666666666667E-01  5.833333333333333E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.9600E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     1     2  4.1667E-01  5.8333E-01
+time,fu0,fu1,fu =   3.9600E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  4.166666666666667E-01  5.833333333333333E-01
  cg2d: Sum(rhs),rhsMax =  -3.55271367880050E-15  6.21926058891314E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    2.81397250028471E-01
 (PID.TID 0000.0001)                       cg2d_iters =    47
@@ -2366,17 +2359,17 @@ time,fu0,fu1,fu =   3.9600E+04  0.0000E+00  0.0000E+00  0.0000E+00  4.1666666666
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400525813266E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726791254699E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157552913267E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375957058053E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2630988174374E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400603615248E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726791555559E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157552426330E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375784046993E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2630804531180E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
  Computing Diagnostic #    211  TRAC01       Counter:       1   Parms: SM P    MR      
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     1     2  5.0000E-01  5.0000E-01
-time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.000000000000000E-01  5.000000000000000E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     1     2  5.0000E-01  5.0000E-01
+time,fu0,fu1,fu =   4.3200E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  5.000000000000000E-01  5.000000000000000E-01
  cg2d: Sum(rhs),rhsMax =  -7.10542735760100E-15  6.11396071760773E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    2.63343777742470E-01
 (PID.TID 0000.0001)                       cg2d_iters =    47
@@ -2453,16 +2446,16 @@ time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.0000000000
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400525813266E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726791254699E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157552913267E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375957058053E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2630988174374E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400603615248E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726791555559E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157552426330E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375784046993E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2630804531180E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.6800E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     1     2  5.8333E-01  4.1667E-01
-time,fu0,fu1,fu =   4.6800E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.6800E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     1     2  5.8333E-01  4.1667E-01
+time,fu0,fu1,fu =   4.6800E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  5.95199244063613E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    2.04226939989093E-01
 (PID.TID 0000.0001)                       cg2d_iters =    47
@@ -2539,16 +2532,16 @@ time,fu0,fu1,fu =   4.6800E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400525813266E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726791254699E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157552913267E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375957058053E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2630988174374E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400595720707E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726790697794E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554473511E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1376262203102E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2632451450701E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   5.0400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     1     2  6.6667E-01  3.3333E-01
-time,fu0,fu1,fu =   5.0400E+04  0.0000E+00  0.0000E+00  0.0000E+00  6.666666666666666E-01  3.333333333333334E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   5.0400E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     1     2  6.6667E-01  3.3333E-01
+time,fu0,fu1,fu =   5.0400E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  6.666666666666666E-01  3.333333333333334E-01
  cg2d: Sum(rhs),rhsMax =   2.66453525910038E-15  5.78218465407428E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    1.56497254865273E-01
 (PID.TID 0000.0001)                       cg2d_iters =    46
@@ -2625,17 +2618,17 @@ time,fu0,fu1,fu =   5.0400E+04  0.0000E+00  0.0000E+00  0.0000E+00  6.6666666666
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400648264502E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726787680377E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157556276418E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1376807232657E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2634357620275E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400595720707E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726790697794E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554473511E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1376262203102E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2632451450701E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    211  TRAC01       Counter:       1   Parms: SM P    MR      
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   5.4000E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     1     2  7.5000E-01  2.5000E-01
-time,fu0,fu1,fu =   5.4000E+04  0.0000E+00  0.0000E+00  0.0000E+00  7.500000000000000E-01  2.500000000000000E-01
+ Computing Diagnostic #    211  TRAC01       Counter:       2   Parms: SM P    MR      
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   5.4000E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     1     2  7.5000E-01  2.5000E-01
+time,fu0,fu1,fu =   5.4000E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  7.500000000000000E-01  2.500000000000000E-01
  cg2d: Sum(rhs),rhsMax =   1.24344978758018E-14  5.63513195139669E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    1.44890528565343E-01
 (PID.TID 0000.0001)                       cg2d_iters =    46
@@ -2712,16 +2705,16 @@ time,fu0,fu1,fu =   5.4000E+04  0.0000E+00  0.0000E+00  0.0000E+00  7.5000000000
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400648264502E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726787680377E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157556276418E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1376807232657E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2634357620275E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400708572036E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726789840094E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554538595E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1376207496588E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2635945427556E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   5.7600E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     1     2  8.3333E-01  1.6667E-01
-time,fu0,fu1,fu =   5.7600E+04  0.0000E+00  0.0000E+00  0.0000E+00  8.333333333333334E-01  1.666666666666666E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   5.7600E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     1     2  8.3333E-01  1.6667E-01
+time,fu0,fu1,fu =   5.7600E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  8.333333333333334E-01  1.666666666666666E-01
  cg2d: Sum(rhs),rhsMax =   1.24344978758018E-14  5.52501625136743E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    1.38584557179239E-01
 (PID.TID 0000.0001)                       cg2d_iters =    45
@@ -2767,7 +2760,7 @@ time,fu0,fu1,fu =   5.7600E+04  0.0000E+00  0.0000E+00  0.0000E+00  8.3333333333
 (PID.TID 0000.0001) %MON extforcing_qnet_sd           =   5.1937624405908E+01
 (PID.TID 0000.0001) %MON extforcing_qnet_del2         =   8.0963423248191E+00
 (PID.TID 0000.0001) %MON extforcing_qsw_max           =  -1.3937092844645E+02
-(PID.TID 0000.0001) %MON extforcing_qsw_min           =  -3.1751391601562E+02
+(PID.TID 0000.0001) %MON extforcing_qsw_min           =  -3.1751391601563E+02
 (PID.TID 0000.0001) %MON extforcing_qsw_mean          =  -2.4902279348619E+02
 (PID.TID 0000.0001) %MON extforcing_qsw_sd            =   4.2575600204769E+01
 (PID.TID 0000.0001) %MON extforcing_qsw_del2          =   5.9252104109340E+00
@@ -2798,16 +2791,16 @@ time,fu0,fu1,fu =   5.7600E+04  0.0000E+00  0.0000E+00  0.0000E+00  8.3333333333
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400648264502E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726787680377E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157556276418E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1376807232657E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2634357620275E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400708572036E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726789840094E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554538595E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1376207496588E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2635945427556E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   6.1200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     1     2  9.1667E-01  8.3333E-02
-time,fu0,fu1,fu =   6.1200E+04  0.0000E+00  0.0000E+00  0.0000E+00  9.166666666666666E-01  8.333333333333337E-02
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   6.1200E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     1     2  9.1667E-01  8.3333E-02
+time,fu0,fu1,fu =   6.1200E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  9.166666666666666E-01  8.333333333333337E-02
  cg2d: Sum(rhs),rhsMax =   2.22044604925031E-14  5.45530964571060E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    1.16906716500701E-01
 (PID.TID 0000.0001)                       cg2d_iters =    45
@@ -2884,11 +2877,11 @@ time,fu0,fu1,fu =   6.1200E+04  0.0000E+00  0.0000E+00  0.0000E+00  9.1666666666
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400742969246E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726788630779E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554826295E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1376283359595E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2642540795734E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400848813903E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726791768172E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157553633979E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375857432819E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2641977312336E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2908,8 +2901,8 @@ S/R EXTERNAL_FIELDS_LOAD: Reading new data:    2    3        12  6.480000000000E
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: kf_sss
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: kf_sw
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: kf_sw
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   6.4800E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     2     3  0.0000E+00  1.0000E+00
-time,fu0,fu1,fu =   6.4800E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.000000000000000E+00  1.000000000000000E+00
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   6.4800E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     2     3  0.0000E+00  1.0000E+00
+time,fu0,fu1,fu =   6.4800E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  0.000000000000000E+00  1.000000000000000E+00
  cg2d: Sum(rhs),rhsMax =   2.22044604925031E-14  5.42327295260875E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    9.04979668519532E-02
 (PID.TID 0000.0001)                       cg2d_iters =    45
@@ -2986,16 +2979,16 @@ time,fu0,fu1,fu =   6.4800E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000000000
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400742969246E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726788630779E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554826295E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1376283359595E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2642540795734E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400848813903E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726791768172E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157553633979E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375857432819E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2641977312336E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   6.8400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     2     3  8.3333E-02  9.1667E-01
-time,fu0,fu1,fu =   6.8400E+04  0.0000E+00  0.0000E+00  0.0000E+00  8.333333333333333E-02  9.166666666666666E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   6.8400E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     2     3  8.3333E-02  9.1667E-01
+time,fu0,fu1,fu =   6.8400E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  8.333333333333333E-02  9.166666666666666E-01
  cg2d: Sum(rhs),rhsMax =   2.13162820728030E-14  5.42148056491869E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    7.98496971243618E-02
 (PID.TID 0000.0001)                       cg2d_iters =    45
@@ -3072,16 +3065,16 @@ time,fu0,fu1,fu =   6.8400E+04  0.0000E+00  0.0000E+00  0.0000E+00  8.3333333333
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400742969246E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726788630779E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554826295E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1376283359595E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2642540795734E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400980821383E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726798220081E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157553210555E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375602739011E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2649853666481E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   7.2000E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     2     3  1.6667E-01  8.3333E-01
-time,fu0,fu1,fu =   7.2000E+04  0.0000E+00  0.0000E+00  0.0000E+00  1.666666666666667E-01  8.333333333333334E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   7.2000E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     2     3  1.6667E-01  8.3333E-01
+time,fu0,fu1,fu =   7.2000E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  1.666666666666667E-01  8.333333333333334E-01
  cg2d: Sum(rhs),rhsMax =   1.95399252334028E-14  5.44058860825756E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    8.31273589902583E-02
 (PID.TID 0000.0001)                       cg2d_iters =    45
@@ -3158,17 +3151,17 @@ time,fu0,fu1,fu =   7.2000E+04  0.0000E+00  0.0000E+00  0.0000E+00  1.6666666666
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400904823669E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726800909072E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554235456E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375898485497E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2653677573648E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400980821383E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726798220081E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157553210555E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375602739011E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2649853666481E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    211  TRAC01       Counter:       1   Parms: SM P    MR      
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   7.5600E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     2     3  2.5000E-01  7.5000E-01
-time,fu0,fu1,fu =   7.5600E+04  0.0000E+00  0.0000E+00  0.0000E+00  2.500000000000000E-01  7.500000000000000E-01
+ Computing Diagnostic #    211  TRAC01       Counter:       2   Parms: SM P    MR      
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   7.5600E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     2     3  2.5000E-01  7.5000E-01
+time,fu0,fu1,fu =   7.5600E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  2.500000000000000E-01  7.500000000000000E-01
  cg2d: Sum(rhs),rhsMax =   1.95399252334028E-14  5.47131320497597E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    8.45356814432548E-02
 (PID.TID 0000.0001)                       cg2d_iters =    44
@@ -3245,16 +3238,16 @@ time,fu0,fu1,fu =   7.5600E+04  0.0000E+00  0.0000E+00  0.0000E+00  2.5000000000
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400904823669E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726800909072E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554235456E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375898485497E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2653677573648E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7401092017593E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726808488522E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157553398328E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375504945656E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2656079757556E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   7.9200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     2     3  3.3333E-01  6.6667E-01
-time,fu0,fu1,fu =   7.9200E+04  0.0000E+00  0.0000E+00  0.0000E+00  3.333333333333333E-01  6.666666666666667E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   7.9200E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     2     3  3.3333E-01  6.6667E-01
+time,fu0,fu1,fu =   7.9200E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  3.333333333333333E-01  6.666666666666667E-01
  cg2d: Sum(rhs),rhsMax =   3.19744231092045E-14  5.50172975116265E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    7.85251032474371E-02
 (PID.TID 0000.0001)                       cg2d_iters =    44
@@ -3331,16 +3324,16 @@ time,fu0,fu1,fu =   7.9200E+04  0.0000E+00  0.0000E+00  0.0000E+00  3.3333333333
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7400904823669E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726800909072E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554235456E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375898485497E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2653677573648E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7401092017593E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726808488522E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157553398328E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375504945656E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2656079757556E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.2800E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     2     3  4.1667E-01  5.8333E-01
-time,fu0,fu1,fu =   8.2800E+04  0.0000E+00  0.0000E+00  0.0000E+00  4.166666666666667E-01  5.833333333333333E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.2800E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     2     3  4.1667E-01  5.8333E-01
+time,fu0,fu1,fu =   8.2800E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  4.166666666666667E-01  5.833333333333333E-01
  cg2d: Sum(rhs),rhsMax =   2.66453525910038E-14  5.52134137041145E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    6.93698118573874E-02
 (PID.TID 0000.0001)                       cg2d_iters =    44
@@ -3417,17 +3410,17 @@ time,fu0,fu1,fu =   8.2800E+04  0.0000E+00  0.0000E+00  0.0000E+00  4.1666666666
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7401036499815E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726820334995E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554786387E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375828814772E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2661144190440E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7401181788679E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726820818849E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157553653182E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375436273382E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2660571829281E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
  Computing Diagnostic #    211  TRAC01       Counter:       1   Parms: SM P    MR      
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     2     3  5.0000E-01  5.0000E-01
-time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.000000000000000E-01  5.000000000000000E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     2     3  5.0000E-01  5.0000E-01
+time,fu0,fu1,fu =   8.6400E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  5.000000000000000E-01  5.000000000000000E-01
  cg2d: Sum(rhs),rhsMax =   2.30926389122033E-14  5.52367071588216E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    6.30407987800158E-02
 (PID.TID 0000.0001)                       cg2d_iters =    44
@@ -3504,16 +3497,16 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.0000000000
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7401036499815E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726820334995E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554786387E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375828814772E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2661144190440E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7401181788679E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726820818849E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157553653182E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375436273382E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2660571829281E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   9.0000E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     2     3  5.8333E-01  4.1667E-01
-time,fu0,fu1,fu =   9.0000E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
+time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   9.0000E+04  0.0000E+00  0.0000E+00 -0.0000E+00 -0.0000E+00  0.0000E+00  0.0000E+00     2     3  5.8333E-01  4.1667E-01
+time,fu0,fu1,fu =   9.0000E+04 -0.0000E+00 -0.0000E+00 -0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
  cg2d: Sum(rhs),rhsMax =   3.01980662698043E-14  5.50717171324072E-01
 (PID.TID 0000.0001)                    cg2d_init_res =    6.12970934086024E-02
 (PID.TID 0000.0001)                       cg2d_iters =    44
@@ -3590,252 +3583,165 @@ time,fu0,fu1,fu =   9.0000E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7401036499815E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726820334995E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554786387E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375828814772E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2661144190440E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7401254157574E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726834679194E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157553689343E+01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375323601833E-01
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2663473999133E-02
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
-time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   9.3600E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00     2     3  6.6667E-01  3.3333E-01
-time,fu0,fu1,fu =   9.3600E+04  0.0000E+00  0.0000E+00  0.0000E+00  6.666666666666666E-01  3.333333333333334E-01
- cg2d: Sum(rhs),rhsMax =   3.55271367880050E-14  5.47487778481635E-01
-(PID.TID 0000.0001)                    cg2d_init_res =    6.14041816247078E-02
-(PID.TID 0000.0001)                       cg2d_iters =    44
-(PID.TID 0000.0001)                         cg2d_res =    7.19808301183462E-14
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON time_tsnumber                =                    21
-(PID.TID 0000.0001) %MON time_secondsf                =   9.7200000000000E+04
-(PID.TID 0000.0001) %MON dynstat_eta_max              =   1.5098366205594E-01
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -2.2486689873382E-01
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -2.0405381106611E-16
-(PID.TID 0000.0001) %MON dynstat_eta_sd               =   7.7861352576491E-02
-(PID.TID 0000.0001) %MON dynstat_eta_del2             =   4.8526691281475E-03
-(PID.TID 0000.0001) %MON dynstat_uvel_max             =   3.1314172379845E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -2.0743586370184E-01
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -2.7137500539659E-05
-(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   7.7988703859087E-03
-(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.9905850222295E-03
-(PID.TID 0000.0001) %MON dynstat_vvel_max             =   1.3893670534565E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.0837494775677E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   6.9329603731766E-05
-(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   5.9878667971273E-03
-(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   2.0140341153859E-03
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   7.5690197782504E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.6293287535147E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -3.3764361577003E-22
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.3583893983983E-05
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   5.4060264434953E-06
-(PID.TID 0000.0001) %MON dynstat_theta_max            =   2.6171347260282E+01
-(PID.TID 0000.0001) %MON dynstat_theta_min            =   1.8064699858508E+00
-(PID.TID 0000.0001) %MON dynstat_theta_mean           =   5.4787344861072E+00
-(PID.TID 0000.0001) %MON dynstat_theta_sd             =   4.5934781873681E+00
-(PID.TID 0000.0001) %MON dynstat_theta_del2           =   5.1382987767136E-02
-(PID.TID 0000.0001) %MON dynstat_salt_max             =   3.7407154166071E+01
-(PID.TID 0000.0001) %MON dynstat_salt_min             =   3.4726841503450E+01
-(PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.5157580237364E+01
-(PID.TID 0000.0001) %MON dynstat_salt_sd              =   4.1383448054458E-01
-(PID.TID 0000.0001) %MON dynstat_salt_del2            =   1.2660574157954E-02
-(PID.TID 0000.0001) %MON extforcing_qnet_max          =   5.8747227986654E+01
-(PID.TID 0000.0001) %MON extforcing_qnet_min          =  -1.7275064341227E+02
-(PID.TID 0000.0001) %MON extforcing_qnet_mean         =  -6.6961859630039E+01
-(PID.TID 0000.0001) %MON extforcing_qnet_sd           =   4.9410747031214E+01
-(PID.TID 0000.0001) %MON extforcing_qnet_del2         =   7.7259231467161E+00
-(PID.TID 0000.0001) %MON extforcing_qsw_max           =  -1.3057248942057E+02
-(PID.TID 0000.0001) %MON extforcing_qsw_min           =  -3.1866255696615E+02
-(PID.TID 0000.0001) %MON extforcing_qsw_mean          =  -2.5316618004679E+02
-(PID.TID 0000.0001) %MON extforcing_qsw_sd            =   4.1780248618451E+01
-(PID.TID 0000.0001) %MON extforcing_qsw_del2          =   5.1897492808074E+00
-(PID.TID 0000.0001) %MON extforcing_empmr_max         =   7.1123738443172E-05
-(PID.TID 0000.0001) %MON extforcing_empmr_min         =   1.4577770742719E-05
-(PID.TID 0000.0001) %MON extforcing_empmr_mean        =   4.4784945200327E-05
-(PID.TID 0000.0001) %MON extforcing_empmr_sd          =   1.1640983370527E-05
-(PID.TID 0000.0001) %MON extforcing_empmr_del2        =   2.3200856165226E-06
-(PID.TID 0000.0001) %MON advcfl_uvel_max              =   3.4769285892291E-03
-(PID.TID 0000.0001) %MON advcfl_vvel_max              =   2.2494311309836E-03
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   5.1095853455445E-03
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   6.3869816819307E-03
-(PID.TID 0000.0001) %MON pe_b_mean                    =   7.3076206680134E-06
-(PID.TID 0000.0001) %MON ke_max                       =   2.4758512744708E-02
-(PID.TID 0000.0001) %MON ke_mean                      =   4.3138223620885E-05
-(PID.TID 0000.0001) %MON ke_vol                       =   3.6027486600263E+16
-(PID.TID 0000.0001) %MON vort_r_min                   =  -3.8863638152638E-07
-(PID.TID 0000.0001) %MON vort_r_max                   =   7.2368833902508E-07
-(PID.TID 0000.0001) %MON vort_a_mean                  =   6.2114138811197E-05
-(PID.TID 0000.0001) %MON vort_a_sd                    =   1.9250230370248E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =   7.8095197769435E-05
-(PID.TID 0000.0001) %MON vort_p_sd                    =   5.6523409527009E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.9636805512902E-07
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   4.0673396593391E-08
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR dynamic field statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   3.7401136561732E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   3.4726842848499E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   3.5157554789374E+01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   4.1375650505456E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.2664908795955E-02
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR ptracers field statistics
-(PID.TID 0000.0001) // =======================================================
- Computing Diagnostic #    211  TRAC01       Counter:       1   Parms: SM P    MR      
-(PID.TID 0000.0001) %CHECKPOINT        21 ckptA
+(PID.TID 0000.0001) %CHECKPOINT        20 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  8.03677821
-(PID.TID 0000.0001)         System time:  0.325950004
-(PID.TID 0000.0001)     Wall clock time:  8.40447998
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:   7.9500000000000002
+(PID.TID 0000.0001)         System time:  0.22000000000000000
+(PID.TID 0000.0001)     Wall clock time:   8.2911028861999512
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.393939997
-(PID.TID 0000.0001)         System time:  0.0479930008
-(PID.TID 0000.0001)     Wall clock time:  0.467638016
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:  0.14000000000000001
+(PID.TID 0000.0001)         System time:  4.00000000000000008E-002
+(PID.TID 0000.0001)     Wall clock time:  0.18539118766784668
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  7.64283821
-(PID.TID 0000.0001)         System time:  0.277957004
-(PID.TID 0000.0001)     Wall clock time:  7.93670607
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:   7.8100000000000005
+(PID.TID 0000.0001)         System time:  0.17999999999999999
+(PID.TID 0000.0001)     Wall clock time:   8.1056609153747559
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.0949859917
-(PID.TID 0000.0001)         System time:  0.0569909997
-(PID.TID 0000.0001)     Wall clock time:  0.154798985
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:  5.99999999999999978E-002
+(PID.TID 0000.0001)         System time:  3.00000000000000058E-002
+(PID.TID 0000.0001)     Wall clock time:  9.45999622344970703E-002
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  7.54785222
-(PID.TID 0000.0001)         System time:  0.220966004
-(PID.TID 0000.0001)     Wall clock time:  7.7817831
-(PID.TID 0000.0001)          No. starts: 1
-(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)           User time:   7.7500000000000000
+(PID.TID 0000.0001)         System time:  0.14999999999999999
+(PID.TID 0000.0001)     Wall clock time:   8.0110208988189697
+(PID.TID 0000.0001)          No. starts:           1
+(PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  7.54785222
-(PID.TID 0000.0001)         System time:  0.220966004
-(PID.TID 0000.0001)     Wall clock time:  7.78090191
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:   7.7499999999999991
+(PID.TID 0000.0001)         System time:  0.14999999999999999
+(PID.TID 0000.0001)     Wall clock time:   8.0107843875885010
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00399878621
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00418257713
-(PID.TID 0000.0001)          No. starts: 42
-(PID.TID 0000.0001)           No. stops: 42
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  2.90226936340332031E-003
+(PID.TID 0000.0001)          No. starts:          40
+(PID.TID 0000.0001)           No. stops:          40
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.017998457
-(PID.TID 0000.0001)         System time:  0.00399998575
-(PID.TID 0000.0001)     Wall clock time:  0.0199453831
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  1.11644268035888672E-002
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.0159986019
-(PID.TID 0000.0001)         System time:  0.00399998575
-(PID.TID 0000.0001)     Wall clock time:  0.0182452202
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  1.07090473175048828E-002
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.000999927521
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000831127167
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  2.28166580200195313E-004
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.89171043
-(PID.TID 0000.0001)         System time:  0.00399900973
-(PID.TID 0000.0001)     Wall clock time:  1.90120149
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:   1.9899999999999975
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   2.0415759086608887
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "KPP_CALC [DO_OCEANIC_PHYS]":
-(PID.TID 0000.0001)           User time:  1.47878101
-(PID.TID 0000.0001)         System time:  0.00399900973
-(PID.TID 0000.0001)     Wall clock time:  1.48731089
-(PID.TID 0000.0001)          No. starts: 84
-(PID.TID 0000.0001)           No. stops: 84
+(PID.TID 0000.0001)           User time:   1.7199999999999989
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   1.6787896156311035
+(PID.TID 0000.0001)          No. starts:          80
+(PID.TID 0000.0001)           No. stops:          80
 (PID.TID 0000.0001)   Seconds in section "LONGSTEP_AVERAGE    [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.320953608
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.325985432
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:  0.34000000000000075
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.32701086997985840
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.49477386
-(PID.TID 0000.0001)         System time:  0.00399998575
-(PID.TID 0000.0001)     Wall clock time:  1.49734831
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:   1.5200000000000014
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:   1.5474500656127930
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.40863121
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  2.40864754
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:   2.5799999999999992
+(PID.TID 0000.0001)         System time:  9.99999999999998113E-003
+(PID.TID 0000.0001)     Wall clock time:   2.5981862545013428
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.167976081
-(PID.TID 0000.0001)         System time:  0.00199899822
-(PID.TID 0000.0001)     Wall clock time:  0.168417454
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:  0.21000000000000085
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.20221018791198730
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0849853754
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.085943222
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:  4.99999999999998224E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  8.71758460998535156E-002
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0349941254
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0358753204
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:  5.00000000000007105E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  2.86214351654052734E-002
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "LONGSTEP_THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.285958052
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.285570383
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:  0.42000000000000082
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.43915319442749023
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "LS_CORRECTION_STEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00699865818
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00657820702
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:  1.99999999999995737E-002
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  7.21788406372070313E-003
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.204969108
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.207201481
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:  0.13999999999999879
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.14671754837036133
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000849962234
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:   0.0000000000000000
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  2.34365463256835938E-004
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.330950737
-(PID.TID 0000.0001)         System time:  0.0019999966
-(PID.TID 0000.0001)     Wall clock time:  0.335855007
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:  0.28999999999999915
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.30841898918151855
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.203967273
-(PID.TID 0000.0001)         System time:  0.112982012
-(PID.TID 0000.0001)     Wall clock time:  0.315850973
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:  0.12000000000000099
+(PID.TID 0000.0001)         System time:  9.99999999999999778E-002
+(PID.TID 0000.0001)     Wall clock time:  0.19985866546630859
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0719890594
-(PID.TID 0000.0001)         System time:  0.0889860094
-(PID.TID 0000.0001)     Wall clock time:  0.164128304
-(PID.TID 0000.0001)          No. starts: 21
-(PID.TID 0000.0001)           No. stops: 21
+(PID.TID 0000.0001)           User time:  1.99999999999995737E-002
+(PID.TID 0000.0001)         System time:  4.00000000000000078E-002
+(PID.TID 0000.0001)     Wall clock time:  5.80468177795410156E-002
+(PID.TID 0000.0001)          No. starts:          20
+(PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // Tile <-> Tile communication statistics
 (PID.TID 0000.0001) // ======================================================
@@ -3884,8 +3790,8 @@ time,fu0,fu1,fu =   9.3600E+04  0.0000E+00  0.0000E+00  0.0000E+00  6.6666666666
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =          11200
+(PID.TID 0000.0001) //            No. barriers =          10708
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =          11200
+(PID.TID 0000.0001) //     Total barrier spins =          10708
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
