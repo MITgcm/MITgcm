@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_surf_flux.F,v 1.4 2007/08/23 19:13:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_surf_flux.F,v 1.5 2009/08/28 19:31:24 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -34,9 +34,8 @@ C     myThid :: Thread number for this instance of the routine.
 
 C     == Local variables ==
       INTEGER I, J, K
-      _RL DDTT
       _RL tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
- 
+
 C-    Time Averages of surface fluxes
        IF ( usingPCoords ) THEN
         k=Nr
@@ -45,28 +44,22 @@ C-    Time Averages of surface fluxes
        ENDIF
 
 C-    uFlux (surface momentum flux [Pa=N/m2], positive <-> increase u)
-c      DO j=1,sNy
-c       DO i=1,sNx
-c        tmpFld(i,j)=fu(i,j,bi,bj)*foFacMom*_maskW(i,j,k,bi,bj)
-c       ENDDO
-c      ENDDO
-c      CALL TIMEAVE_CUMUL_1T(uFluxtave,tmpFld,1,
-c    &                                   deltaTclock, bi, bj, myThid)
-       DDTT = deltaTclock*foFacMom
-       CALL TIMEAVE_CUMULATE( uFluxtave, fu, 1,
-     &                                   DDTT, bi, bj, myThid)
+       DO j=1,sNy
+        DO i=1,sNx
+         tmpFld(i,j)=fu(i,j,bi,bj)*foFacMom*_maskW(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+       CALL TIMEAVE_CUMUL_1T(uFluxtave,tmpFld,1,
+     &                                   deltaTclock, bi, bj, myThid)
 
 C-    vFlux (surface momentum flux [Pa=N/m2], positive <-> increase v)
-c      DO j=1,sNy
-c       DO i=1,sNx
-c        tmpFld(i,j)=fv(i,j,bi,bj)*foFacMom*_maskS(i,j,k,bi,bj)
-c       ENDDO
-c      ENDDO
-c      CALL TIMEAVE_CUMUL_1T(vFluxtave,tmpFld,1,
-c    &                                   deltaTclock, bi, bj, myThid)
-       DDTT = deltaTclock*foFacMom
-       CALL TIMEAVE_CUMULATE( vFluxtave, fv, 1,
-     &                                   DDTT, bi, bj, myThid)
+       DO j=1,sNy
+        DO i=1,sNx
+         tmpFld(i,j)=fv(i,j,bi,bj)*foFacMom*_maskS(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+       CALL TIMEAVE_CUMUL_1T(vFluxtave,tmpFld,1,
+     &                                   deltaTclock, bi, bj, myThid)
 
 C     tFlux (=Heat flux [W/m2], positive <-> increasing Theta)
        DO j=1,sNy
@@ -84,7 +77,7 @@ C     tFlux (=Heat flux [W/m2], positive <-> increasing Theta)
      &     .AND. useRealFreshWaterFlux ) THEN
         DO j=1,sNy
          DO i=1,sNx
-           tmpFld(i,j) = tmpFld(i,j) 
+           tmpFld(i,j) = tmpFld(i,j)
      &      + PmEpR(i,j,bi,bj)*rhoConstFresh
      &                        *theta(i,j,k,bi,bj)*HeatCapacity_Cp
          ENDDO
@@ -106,7 +99,7 @@ C     sFlux (=salt flux [psu.kg/m2/s], positive <-> increasing Theta)
      &     .AND. useRealFreshWaterFlux ) THEN
         DO j=1,sNy
          DO i=1,sNx
-           tmpFld(i,j) = tmpFld(i,j) 
+           tmpFld(i,j) = tmpFld(i,j)
      &      + PmEpR(i,j,bi,bj)*rhoConstFresh
      &                        *salt(i,j,k,bi,bj)
          ENDDO
@@ -116,7 +109,7 @@ C     sFlux (=salt flux [psu.kg/m2/s], positive <-> increasing Theta)
        CALL TIMEAVE_CUMUL_1T( sFluxtave, tmpFld, 1,
      &                                   deltaTclock, bi, bj, myThid)
 
-#endif /* ALLOW_TIMEAVE */ 
+#endif /* ALLOW_TIMEAVE */
 
       RETURN
       END
