@@ -1,22 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.11 2008/05/22 12:21:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.12 2009/08/28 19:48:07 jmc Exp $
 C $Name:  $
-      
+
 #include "MNC_OPTIONS.h"
-      
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 1
 C !ROUTINE: MNC_CW_WRITE_GRID_INFO
 
 C !INTERFACE:
       SUBROUTINE MNC_CW_WRITE_GRID_INFO(
-     I     bfname,  
+     I     bfname,
      I     myThid )
 
 C     !DESCRIPTION:
 C     This subroutine writes all the grid information (\textit{eg.}
 C     locations, spacings, areas, \textit{etc.}) to one grid file
 C     (\texttt{grid.xxxxx.nc}) per tile.
-      
+
 C     !USES:
       implicit none
 #include "MNC_COMMON.h"
@@ -127,37 +127,35 @@ C     Create MNC definitions for GRID.h variables
 
 C     Write the GRID.h variables
       CALL MNC_CW_SET_UDIM(bfname(nf:nl), 0, myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'rC',rC,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'rF',rF,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'drC',drC,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'drF',drF,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'xC',xC,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'yC',yC,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'xG',xG,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'yG',yG,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'dxC',dxC,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'dyC',dyC,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'dxF',dxF,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'dyF',dyF,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'dxG',dxG,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'dyG',dyG,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'dxV',dxV,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'dyU',dyU,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'rA',rA,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'rAw',rAw,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'rAs',rAs,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'rAz',rAz,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'fCori',fCori,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'fCoriG',fCoriG,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'R_low',R_low,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'Ro_surf',Ro_surf,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'HFacC',HFacC,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'HFacW',HFacW,myThid)
-      CALL MNC_CW_RL_W('D',bfname(nf:nl),0,0,'HFacS',HFacS,myThid)
-
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'rC',rC,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'rF',rF,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'drC',drC,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'drF',drF,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'xC',xC,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'yC',yC,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'xG',xG,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'yG',yG,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'dxC',dxC,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'dyC',dyC,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'dxF',dxF,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'dyF',dyF,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'dxG',dxG,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'dyG',dyG,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'dxV',dxV,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'dyU',dyU,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'rA',rA,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'rAw',rAw,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'rAs',rAs,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'rAz',rAz,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'fCori',fCori,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'fCoriG',fCoriG,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'R_low',R_low,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'Ro_surf',Ro_surf,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'HFacC',HFacC,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'HFacW',HFacW,myThid)
+      CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'HFacS',HFacS,myThid)
 
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
