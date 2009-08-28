@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.46 2009/06/14 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.47 2009/08/28 19:47:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -112,7 +112,7 @@ C-            ocean : R_low = Bottom
           CALL MNC_CW_SET_UDIM(bathyFile, 1, myThid)
           CALL MNC_CW_SET_CITER(bathyFile, 2, -1, -1, -1, myThid)
           CALL MNC_CW_SET_UDIM(bathyFile, 1, myThid)
-          CALL MNC_CW_RL_R('D',bathyFile,0,0,'bathy',R_low, myThid)
+          CALL MNC_CW_RS_R('D',bathyFile,0,0,'bathy',R_low, myThid)
           CALL MNC_FILE_CLOSE_ALL_MATCHING(bathyFile, myThid)
           CALL MNC_CW_DEL_VNAME('bathy', myThid)
         ELSE
