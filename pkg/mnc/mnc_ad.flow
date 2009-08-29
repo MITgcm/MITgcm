@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_ad.flow,v 1.4 2007/10/08 17:00:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_ad.flow,v 1.5 2009/08/29 02:56:31 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -24,6 +24,12 @@ C subroutine mnc_cw_rl_r
 C----------------------------------------
 CADJ SUBROUTINE mnc_cw_rl_r  INPUT  = 1,2,3,4,5,6,7
 CADJ SUBROUTINE mnc_cw_rl_r  OUTPUT =
+
+C----------------------------------------
+C subroutine mnc_cw_rs_r
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_rs_r  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE mnc_cw_rs_r  OUTPUT =
 
 C----------------------------------------
 C subroutine  mnc_cw_rl_w_offset
