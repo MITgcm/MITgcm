@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_load_climatology.F,v 1.3 2009/04/28 18:11:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_load_climatology.F,v 1.4 2009/08/30 22:06:22 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -56,8 +56,11 @@ C      In spherical polar yc, delY and ly are degrees
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           distY = (yC(i,j,bi,bj)-(yC0))/lY
-C          tauX  = -tauMax*cos(2. _d 0*PI*distY)
+c          distY = (yC(i,j,bi,bj)-(yC0))/lY
+c jmc:    yC0 has been removed (not used except here,
+c         and since it was not initialised, was generaly zero):
+           distY = (yC(i,j,bi,bj)- 0.  )/lY
+c          tauX  = -tauMax*cos(2. _d 0*PI*distY)
            tauX  = tauMax*sin(PI*distY)
            fu(i,j,bi,bj) = tauX
           ENDDO
