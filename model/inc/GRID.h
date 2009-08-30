@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.35 2009/02/27 00:20:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.36 2009/08/30 23:19:04 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -374,8 +374,6 @@ C                  diagnostics etc.. As such xc is in m for cartesian
 C                  coordinates but degrees for spherical polar.
 C     yC        :: Y-coordinate of center of cell f[X,Y].
 C     yG        :: Y-coordinate of corner of cell ( c-grid vorticity point) f[X,Y].
-C     xC0,yC0   :: West  edge x coord ( metres or degrees )
-C                  South edge y coord ( metres or degrees )
 C     rA        :: R-face are f[X,Y] ( m^2 ).
 C                  Note: In a cartesian framework zA is simply dx*dy,
 C                      however we use zA to allow for non-globally
@@ -408,7 +406,6 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
      &  recip_rA,recip_rAw,recip_rAs,recip_rAz,
      &  tanPhiAtU, tanPhiAtV, angleCosC, angleSinC,
      &  drC,drF,recip_drC,recip_drF,rC,rF,
-     &  xC0, yC0,
      &  fCori, fCoriG, fCoriCos
       _RS dxC            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxF            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -461,8 +458,6 @@ C     fCoriCos  :: Coriolis Cos(phi) parameter at grid Center point (for NH)
       _RS recip_drF      (Nr)
       _RS rC             (Nr)
       _RS rF             (Nr+1)
-      _RS xC0
-      _RS yC0
       _RS fCori          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriG         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS fCoriCos       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
