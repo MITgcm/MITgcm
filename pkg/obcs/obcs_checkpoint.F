@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_checkpoint.F,v 1.10 2009/04/28 18:57:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_checkpoint.F,v 1.11 2009/09/01 19:40:45 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
 CStartofinterface
-      SUBROUTINE OBCS_READ_CHECKPOINT( prec, myIt, suff, myThid )
-C     /==========================================================\
-C     | SUBROUTINE OBCS_READ_CHECKPOINT                          |
-C     | o Read open boundary checkpoint arrays                   |
-C     |==========================================================|
-C     |                                                          |
-C     \==========================================================/
+      SUBROUTINE OBCS_READ_PICKUP( myIter, myThid )
+C     *==========================================================*
+C     | SUBROUTINE OBCS_READ_PICKUP
+C     | o Read open boundary pickup file
+C     *==========================================================*
+C     |
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -20,9 +20,7 @@ C     === Global variables ===
 #include "OBCS.h"
 
 C     == Routine arguments ==
-      INTEGER prec
-      INTEGER myIt
-      CHARACTER*(10) suff
+      INTEGER myIter
       INTEGER myThid
 CEndofinterface
 
@@ -30,106 +28,118 @@ CEndofinterface
 
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(10) suff
+      INTEGER prec
       INTEGER iRec
 
-#ifdef ALLOW_MDSIO
+#ifndef ALLOW_MDSIO
+      STOP 'ABNORMAL END: S/R OBCS_READ_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
+
+      IF ( pickupSuff.EQ.' ' ) THEN
+        WRITE(suff,'(I10.10)') myIter
+      ELSE
+        suff = pickupSuff
+      ENDIF
+      prec = precFloat64
+
 C     READ N and S OB arrays
 #ifdef ALLOW_OBCS_NORTH
-      WRITE(fn,'(A,A10)') 'pickup_obN.',suff
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNu,1,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNv,2,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNt,3,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNs,4,myThid)
+      WRITE(fn,'(2A)') 'pickup_obN.',suff
+      CALL READ_REC_XZ_RL(fn,prec,Nr,OBNu,1,myIter,myThid)
+      CALL READ_REC_XZ_RL(fn,prec,Nr,OBNv,2,myIter,myThid)
+      CALL READ_REC_XZ_RL(fn,prec,Nr,OBNt,3,myIter,myThid)
+      CALL READ_REC_XZ_RL(fn,prec,Nr,OBNs,4,myIter,myThid)
       iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNw,5,myThid)
+      CALL READ_REC_XZ_RL(fn,prec,Nr,OBNw,5,myIter,myThid)
       iRec = 5
 # endif
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
-       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNa,iRec*Nr+1,myThid)
-       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNh,iRec*Nr+2,myThid)
-       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNsl,iRec*Nr+3,myThid)
-       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNsn,iRec*Nr+4,myThid)
-       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNuice,iRec*Nr+5,myThid)
-       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBNvice,iRec*Nr+6,myThid)
+       iRec = iRec*Nr
+       CALL READ_REC_XZ_RL(fn,prec, 1,OBNa,   iRec+1,myIter,myThid)
+       CALL READ_REC_XZ_RL(fn,prec, 1,OBNh,   iRec+2,myIter,myThid)
+       CALL READ_REC_XZ_RL(fn,prec, 1,OBNsl,  iRec+3,myIter,myThid)
+       CALL READ_REC_XZ_RL(fn,prec, 1,OBNsn,  iRec+4,myIter,myThid)
+       CALL READ_REC_XZ_RL(fn,prec, 1,OBNuice,iRec+5,myIter,myThid)
+       CALL READ_REC_XZ_RL(fn,prec, 1,OBNvice,iRec+6,myIter,myThid)
       ENDIF
 # endif
 #endif
 
 #ifdef ALLOW_OBCS_SOUTH
-      WRITE(fn,'(A,A10)') 'pickup_obS.',suff
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSu,1,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSv,2,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSt,3,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSs,4,myThid)
+      WRITE(fn,'(2A)') 'pickup_obS.',suff
+      CALL READ_REC_XZ_RL(fn,prec,Nr,OBSu,1,myIter,myThid)
+      CALL READ_REC_XZ_RL(fn,prec,Nr,OBSv,2,myIter,myThid)
+      CALL READ_REC_XZ_RL(fn,prec,Nr,OBSt,3,myIter,myThid)
+      CALL READ_REC_XZ_RL(fn,prec,Nr,OBSs,4,myIter,myThid)
       iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSw,5,myThid)
+      CALL READ_REC_XZ_RL(fn,prec,Nr,OBSw,5,myIter,myThid)
       iRec = 5
 # endif
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
-       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSa,iRec*Nr+1,myThid)
-       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSh,iRec*Nr+2,myThid)
-       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSsl,iRec*Nr+3,myThid)
-       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSsn,iRec*Nr+4,myThid)
-       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSuice,iRec*Nr+5,myThid)
-       CALL MDSREADFIELDXZ(fn,prec,'RS',1 ,OBSvice,iRec*Nr+6,myThid)
+       iRec = iRec*Nr
+       CALL READ_REC_XZ_RL(fn,prec, 1,OBSa,   iRec+1,myIter,myThid)
+       CALL READ_REC_XZ_RL(fn,prec, 1,OBSh,   iRec+2,myIter,myThid)
+       CALL READ_REC_XZ_RL(fn,prec, 1,OBSsl,  iRec+3,myIter,myThid)
+       CALL READ_REC_XZ_RL(fn,prec, 1,OBSsn,  iRec+4,myIter,myThid)
+       CALL READ_REC_XZ_RL(fn,prec, 1,OBSuice,iRec+5,myIter,myThid)
+       CALL READ_REC_XZ_RL(fn,prec, 1,OBSvice,iRec+6,myIter,myThid)
       ENDIF
 # endif
 #endif
 
 C     READ E and W OB arrays
 #ifdef ALLOW_OBCS_EAST
-      WRITE(fn,'(A,A10)') 'pickup_obE.',suff
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEu,1,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEv,2,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEt,3,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEs,4,myThid)
+      WRITE(fn,'(2A)') 'pickup_obE.',suff
+      CALL READ_REC_YZ_RL(fn,prec,Nr,OBEu,1,myIter,myThid)
+      CALL READ_REC_YZ_RL(fn,prec,Nr,OBEv,2,myIter,myThid)
+      CALL READ_REC_YZ_RL(fn,prec,Nr,OBEt,3,myIter,myThid)
+      CALL READ_REC_YZ_RL(fn,prec,Nr,OBEs,4,myIter,myThid)
       iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEw,5,myThid)
+      CALL READ_REC_YZ_RL(fn,prec,Nr,OBEw,5,myIter,myThid)
       iRec = 5
 # endif
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
-       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEa,iRec*Nr+1,myThid)
-       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEh,iRec*Nr+2,myThid)
-       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEsl,iRec*Nr+3,myThid)
-       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEsn,iRec*Nr+4,myThid)
-       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEuice,iRec*Nr+5,myThid)
-       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBEvice,iRec*Nr+6,myThid)
+       iRec = iRec*Nr
+       CALL READ_REC_YZ_RL(fn,prec, 1,OBEa,   iRec+1,myIter,myThid)
+       CALL READ_REC_YZ_RL(fn,prec, 1,OBEh,   iRec+2,myIter,myThid)
+       CALL READ_REC_YZ_RL(fn,prec, 1,OBEsl,  iRec+3,myIter,myThid)
+       CALL READ_REC_YZ_RL(fn,prec, 1,OBEsn,  iRec+4,myIter,myThid)
+       CALL READ_REC_YZ_RL(fn,prec, 1,OBEuice,iRec+5,myIter,myThid)
+       CALL READ_REC_YZ_RL(fn,prec, 1,OBEvice,iRec+6,myIter,myThid)
       ENDIF
 # endif
 #endif
 
 #ifdef ALLOW_OBCS_WEST
-      WRITE(fn,'(A,A10)') 'pickup_obW.',suff
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWu,1,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWv,2,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWt,3,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWs,4,myThid)
+      WRITE(fn,'(2A)') 'pickup_obW.',suff
+      CALL READ_REC_YZ_RL(fn,prec,Nr,OBWu,1,myIter,myThid)
+      CALL READ_REC_YZ_RL(fn,prec,Nr,OBWv,2,myIter,myThid)
+      CALL READ_REC_YZ_RL(fn,prec,Nr,OBWt,3,myIter,myThid)
+      CALL READ_REC_YZ_RL(fn,prec,Nr,OBWs,4,myIter,myThid)
       iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWw,5,myThid)
+      CALL READ_REC_YZ_RL(fn,prec,Nr,OBWw,5,myIter,myThid)
       iRec = 5
 # endif
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
-       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWa,iRec*Nr+1,myThid)
-       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWh,iRec*Nr+2,myThid)
-       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWsl,iRec*Nr+3,myThid)
-       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWsn,iRec*Nr+4,myThid)
-       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWuice,iRec*Nr+5,myThid)
-       CALL MDSREADFIELDYZ(fn,prec,'RS',1 ,OBWvice,iRec*Nr+6,myThid)
+       iRec = iRec*Nr
+       CALL READ_REC_YZ_RL(fn,prec, 1,OBWa,   iRec+1,myIter,myThid)
+       CALL READ_REC_YZ_RL(fn,prec, 1,OBWh,   iRec+2,myIter,myThid)
+       CALL READ_REC_YZ_RL(fn,prec, 1,OBWsl,  iRec+3,myIter,myThid)
+       CALL READ_REC_YZ_RL(fn,prec, 1,OBWsn,  iRec+4,myIter,myThid)
+       CALL READ_REC_YZ_RL(fn,prec, 1,OBWuice,iRec+5,myIter,myThid)
+       CALL READ_REC_YZ_RL(fn,prec, 1,OBWvice,iRec+6,myIter,myThid)
       ENDIF
 # endif
 #endif
-#else /* ALLOW_MDSIO */
-      STOP 'ABNORMAL END: S/R OBCS_READ_CHECKPOINT: NEEDS MSDIO PKG'
-#endif /* ALLOW_MDSIO */
-
 
 C     Fill in edge regions
 c      _EXCH_XZ_RL(OBNu , myThid)
@@ -160,10 +170,10 @@ c      _EXCH_YZ_RL(OBWw , myThid)
 c#endif
 
 #ifdef ALLOW_ORLANSKI
-      IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.
-     &    useOrlanskiEast.OR.useOrlanskiWest) THEN
-        CALL ORLANSKI_READ_CHECKPOINT(
-     &          prec, myIt, suff, myThid )
+      IF ( useOrlanskiNorth.OR.useOrlanskiSouth.OR.
+     &     useOrlanskiEast.OR.useOrlanskiWest ) THEN
+        CALL ORLANSKI_READ_PICKUP(
+     I                     myIter, myThid )
       ENDIF
 #endif  /* ALLOW_ORLANSKI */
 
@@ -172,15 +182,16 @@ c#endif
       END
 
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CStartofinterface
-      SUBROUTINE OBCS_WRITE_CHECKPOINT( prec, lgf, permCheckPoint,
-     &                                  myIt, myThid )
-C     /==========================================================\
-C     | SUBROUTINE OBCS_WRITE_CHECKPOINT                         |
-C     | o Write open boundary checkpoint arrays                  |
-C     |==========================================================|
-C     |                                                          |
-C     \==========================================================/
+      SUBROUTINE OBCS_WRITE_PICKUP(
+     I                      suff, myTime, myIter, myThid )
+C     *==========================================================*
+C     | SUBROUTINE OBCS_WRITE_PICKUP
+C     | o Write open boundary pickup file
+C     *==========================================================*
+C     |
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -191,147 +202,135 @@ C     === Global variables ===
 #include "RESTART.h"
 
 C     == Routine arguments ==
-      INTEGER prec
-      LOGICAL lgf
-      LOGICAL permCheckPoint
-      INTEGER myIt
+      CHARACTER*(*) suff
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 CEndofinterface
 
 #ifdef ALLOW_OBCS
 
+C     === Functions ====
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER prec
       INTEGER iRec
+      INTEGER iL
 
-#ifdef ALLOW_MDSIO
+#ifndef ALLOW_MDSIO
+      STOP 'ABNORMAL END: S/R OBCS_READ_CHECKPOINT: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
+
+      iL = ILNBLNK(suff)
+      iL = MAX(1,iL)
+      prec = precFloat64
+
 C     Write N and S OB arrays
 #ifdef ALLOW_OBCS_NORTH
-      IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_obN.',myIt
-      ELSE
-         WRITE(fn,'(A,A)') 'pickup_obN.',checkPtSuff(nCheckLev)
-      ENDIF
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNu,1,myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNv,2,myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNt,3,myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNs,4,myIt,myThid)
-      iRec = 4*Nr
+      WRITE(fn,'(2A)') 'pickup_obN.',suff(1:iL)
+      CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNu,1,myIter,myThid)
+      CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNv,2,myIter,myThid)
+      CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNt,3,myIter,myThid)
+      CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNs,4,myIter,myThid)
+      iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNw,5,myIt,myThid)
-      iRec = 5*Nr
+      CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNw,5,myIter,myThid)
+      iRec = 5
 # endif
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
-       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNa,iRec+1,myIt,myThid)
-       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNh,iRec+2,myIt,myThid)
-       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNsl,iRec+3,myIt,myThid)
-       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNsn,iRec+4,myIt,myThid)
-       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNuice,iRec+5,myIt,
-     &      myThid)
-       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBNvice,iRec+6,myIt,
-     &      myThid)
+       iRec = iRec*Nr
+       CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNa,   iRec+1,myIter,myThid)
+       CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNh,   iRec+2,myIter,myThid)
+       CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNsl,  iRec+3,myIter,myThid)
+       CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNsn,  iRec+4,myIter,myThid)
+       CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNuice,iRec+5,myIter,myThid)
+       CALL WRITE_REC_XZ_RL(fn,prec, 1,OBNvice,iRec+6,myIter,myThid)
       ENDIF
 # endif
 #endif
 
 #ifdef ALLOW_OBCS_SOUTH
-      IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_obS.',myIt
-      ELSE
-         WRITE(fn,'(A,A)') 'pickup_obS.',checkPtSuff(nCheckLev)
-      ENDIF
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSu,1,myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSv,2,myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSt,3,myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSs,4,myIt,myThid)
-      iRec = 4*Nr
+      WRITE(fn,'(2A)') 'pickup_obS.',suff(1:iL)
+      CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSu,1,myIter,myThid)
+      CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSv,2,myIter,myThid)
+      CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSt,3,myIter,myThid)
+      CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSs,4,myIter,myThid)
+      iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSw,5,myIt,myThid)
-      iRec = 5*Nr
+      CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSw,5,myIter,myThid)
+      iRec = 5
 # endif
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
-       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSa,iRec+1,myIt,myThid)
-       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSh,iRec+2,myIt,myThid)
-       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSsl,iRec+3,myIt,myThid)
-       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSsn,iRec+4,myIt,myThid)
-       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSuice,iRec+5,myIt,
-     &      myThid)
-       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',1,OBSvice,iRec+6,myIt,
-     &      myThid)
+       iRec = iRec*Nr
+       CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSa,   iRec+1,myIter,myThid)
+       CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSh,   iRec+2,myIter,myThid)
+       CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSsl,  iRec+3,myIter,myThid)
+       CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSsn,  iRec+4,myIter,myThid)
+       CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSuice,iRec+5,myIter,myThid)
+       CALL WRITE_REC_XZ_RL(fn,prec, 1,OBSvice,iRec+6,myIter,myThid)
       ENDIF
 # endif
 #endif
 
 C     Write E and W OB arrays
 #ifdef ALLOW_OBCS_EAST
-      IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_obE.',myIt
-      ELSE
-         WRITE(fn,'(A,A)') 'pickup_obE.',checkPtSuff(nCheckLev)
-      ENDIF
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEu,1,myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEv,2,myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEt,3,myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEs,4,myIt,myThid)
-      iRec = 4*Nr
+      WRITE(fn,'(2A)') 'pickup_obE.',suff(1:iL)
+      CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEu,1,myIter,myThid)
+      CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEv,2,myIter,myThid)
+      CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEt,3,myIter,myThid)
+      CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEs,4,myIter,myThid)
+      iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEw,5,myIt,myThid)
-      iRec = 5*Nr
+      CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEw,5,myIter,myThid)
+      iRec = 5
 # endif
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
-       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEa,iRec+1,myIt,myThid)
-       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEh,iRec+2,myIt,myThid)
-       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEsl,iRec+3,myIt,myThid)
-       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEsn,iRec+4,myIt,myThid)
-       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEuice,iRec+5,myIt,
-     &      myThid)
-       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBEvice,iRec+6,myIt,
-     &      myThid)
+       iRec = iRec*Nr
+       CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEa,   iRec+1,myIter,myThid)
+       CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEh,   iRec+2,myIter,myThid)
+       CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEsl,  iRec+3,myIter,myThid)
+       CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEsn,  iRec+4,myIter,myThid)
+       CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEuice,iRec+5,myIter,myThid)
+       CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEvice,iRec+6,myIter,myThid)
       ENDIF
 # endif
 #endif
 
 #ifdef ALLOW_OBCS_WEST
-      IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_obW.',myIt
-      ELSE
-         WRITE(fn,'(A,A)') 'pickup_obW.',checkPtSuff(nCheckLev)
-      ENDIF
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWu,1,myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWv,2,myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWt,3,myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWs,4,myIt,myThid)
-      iRec = 4*Nr
+      WRITE(fn,'(2A)') 'pickup_obW.',suff(1:iL)
+      CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWu,1,myIter,myThid)
+      CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWv,2,myIter,myThid)
+      CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWt,3,myIter,myThid)
+      CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWs,4,myIter,myThid)
+      iRec = 4
 # ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWw,5,myIt,myThid)
-      iRec = 5*Nr
+      CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWw,5,myIter,myThid)
+      iRec = 5
 # endif
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
-       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWa,iRec+1,myIt,myThid)
-       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWh,iRec+2,myIt,myThid)
-       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWsl,iRec+3,myIt,myThid)
-       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWsn,iRec+4,myIt,myThid)
-       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWuice,iRec+5,myIt,
-     &      myThid)
-       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',1,OBWvice,iRec+6,myIt,
-     &      myThid)
+       iRec = iRec*Nr
+       CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWa,   iRec+1,myIter,myThid)
+       CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWh,   iRec+2,myIter,myThid)
+       CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWsl,  iRec+3,myIter,myThid)
+       CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWsn,  iRec+4,myIter,myThid)
+       CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWuice,iRec+5,myIter,myThid)
+       CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWvice,iRec+6,myIter,myThid)
       ENDIF
 # endif
 #endif
-#else /* ALLOW_MDSIO */
-      STOP 'ABNORMAL END: S/R OBCS_WRITE_CHECKPOINT: NEEDS MSDIO PKG'
-#endif /* ALLOW_MDSIO */
-
 
 #ifdef ALLOW_ORLANSKI
-      IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.
-     &    useOrlanskiEast.OR.useOrlanskiWest) THEN
-        CALL ORLANSKI_WRITE_CHECKPOINT(
-     &          prec, lgf, permCheckPoint, myIt, myThid )
+      IF ( useOrlanskiNorth.OR.useOrlanskiSouth.OR.
+     &     useOrlanskiEast.OR.useOrlanskiWest ) THEN
+        CALL ORLANSKI_WRITE_PICKUP(
+     I                      suff, myTime, myIter, myThid )
       ENDIF
 #endif  /* ALLOW_ORLANSKI */
 

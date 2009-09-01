@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.12 2009/08/11 15:46:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.13 2009/09/01 19:40:45 jmc Exp $
 C $Name:  $
 #include "OBCS_OPTIONS.h"
 
@@ -50,12 +50,12 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid - Thread no. that called this routine.
-C     myTime - Simulation time
-C     myIter - Simulation timestep number
-      INTEGER myThid
+C     myTime :: Simulation time
+C     myIter :: Simulation timestep number
+C     myThid :: Thread no. that called this routine.
       _RL     myTime
       INTEGER myIter
+      INTEGER myThid
 
 C     if external forcing (exf) package is enabled, all loading of external
 C     fields is done by exf
@@ -76,11 +76,14 @@ C     msgBuf       :: Informational/error meesage buffer
 #ifdef NONLIN_FRSURF
       INTEGER i,j,bi,bj
 #endif /* NONLIN_FRSURF */
-      INTEGER intime0,intime1,iTracer
+      INTEGER fp
+      INTEGER iRec0, iRec1, iTr
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
+
+      fp = readBinaryPrec
 
       IF ( periodicExternalForcing ) THEN
 
@@ -92,18 +95,22 @@ C Now calculate whether it is time to update the forcing arrays
       Ifcyc = NINT(externForcingCycle*rdt)
       Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
 
-      intime0 = 1 + INT(Iftm/Ifprd)
-      intime1 = 1 + MOD(intime0,nForcingPeriods)
-c     aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
-      aWght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
+      iRec0 = 1 + INT(Iftm/Ifprd)
+      iRec1 = 1 + MOD(iRec0,nForcingPeriods)
+c     aWght = DFLOAT( Iftm-Ifprd*(iRec0 - 1) ) / DFLOAT( Ifprd )
+      aWght = FLOAT( Iftm-Ifprd*(iRec0 - 1) )
       bWght = FLOAT( Ifprd )
       aWght =  aWght / bWght
       bWght = 1. _d 0 - aWght
 
       IF (
-     &  Iftm-Ifprd*(intime0-1) .EQ. 0
+     &  Iftm-Ifprd*(iRec0-1) .EQ. 0
      &  .OR. myIter .EQ. nIter0
      & ) THEN
+
+#ifndef ALLOW_MDSIO
+       STOP 'ABNORMAL END: OBCS_EXTERNAL_FIELDS_LOAD: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
 
        _BARRIER
 
@@ -111,207 +118,155 @@ C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
        WRITE(msgBuf,'(1X,A,2I5,I10,1P1E20.12)')
      &  'OBCS_EXTERNAL_FIELDS_LOAD: Reading new data:',
-     &  intime0, intime1, myIter, myTime
+     &  iRec0, iRec1, myIter, myTime
        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &                   SQUEEZE_RIGHT,myThid)
 
-#ifdef ALLOW_MDSIO
 #ifdef ALLOW_OBCS_EAST
 C     Eastern boundary
       IF ( OBEuFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDYZ ( OBEuFile, readBinaryPrec,
-     &        'RL', Nr, OBEu0, intime0, myThid )
-       CALL MDSREADFIELDYZ ( OBEuFile, readBinaryPrec,
-     &        'RL', Nr, OBEu1, intime1, myThid )
+       CALL READ_REC_YZ_RL( OBEuFile, fp,Nr,OBEu0,iRec0,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEuFile, fp,Nr,OBEu1,iRec1,myIter,myThid )
       ENDIF
       IF ( OBEvFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDYZ ( OBEvFile, readBinaryPrec,
-     &        'RL', Nr, OBEv0, intime0, myThid )
-       CALL MDSREADFIELDYZ ( OBEvFile, readBinaryPrec,
-     &        'RL', Nr, OBEv1, intime1, myThid )
+       CALL READ_REC_YZ_RL( OBEvFile, fp,Nr,OBEv0,iRec0,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEvFile, fp,Nr,OBEv1,iRec1,myIter,myThid )
       ENDIF
       IF ( OBEtFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDYZ ( OBEtFile, readBinaryPrec,
-     &        'RL', Nr, OBEt0, intime0, myThid )
-       CALL MDSREADFIELDYZ ( OBEtFile, readBinaryPrec,
-     &        'RL', Nr, OBEt1, intime1, myThid )
+       CALL READ_REC_YZ_RL( OBEtFile, fp,Nr,OBEt0,iRec0,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEtFile, fp,Nr,OBEt1,iRec1,myIter,myThid )
       ENDIF
       IF ( OBEsFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDYZ ( OBEsFile, readBinaryPrec,
-     &        'RL', Nr, OBEs0, intime0, myThid )
-       CALL MDSREADFIELDYZ ( OBEsFile, readBinaryPrec,
-     &        'RL', Nr, OBEs1, intime1, myThid )
+       CALL READ_REC_YZ_RL( OBEsFile, fp,Nr,OBEs0,iRec0,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBEsFile, fp,Nr,OBEs1,iRec1,myIter,myThid )
       ENDIF
 # ifdef NONLIN_FRSURF
       IF ( OBEetaFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDYZ ( OBEetaFile, readBinaryPrec,
-     &        'RL', 1, OBEeta0, intime0, myThid )
-       CALL MDSREADFIELDYZ ( OBEetaFile, readBinaryPrec,
-     &        'RL', 1, OBEeta1, intime1, myThid )
+       CALL READ_REC_YZ_RL(OBEetaFile,fp,1,OBEeta0,iRec0,myIter,myThid)
+       CALL READ_REC_YZ_RL(OBEetaFile,fp,1,OBEeta1,iRec1,myIter,myThid)
       ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_EAST */
 #ifdef ALLOW_OBCS_WEST
 C     Western boundary
       IF ( OBWuFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDYZ ( OBWuFile, readBinaryPrec,
-     &        'RL', Nr, OBWu0, intime0, myThid )
-       CALL MDSREADFIELDYZ ( OBWuFile, readBinaryPrec,
-     &        'RL', Nr, OBWu1, intime1, myThid )
+       CALL READ_REC_YZ_RL( OBWuFile, fp,Nr,OBWu0,iRec0,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWuFile, fp,Nr,OBWu1,iRec1,myIter,myThid )
       ENDIF
       IF ( OBWvFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDYZ ( OBWvFile, readBinaryPrec,
-     &        'RL', Nr, OBWv0, intime0, myThid )
-       CALL MDSREADFIELDYZ ( OBWvFile, readBinaryPrec,
-     &        'RL', Nr, OBWv1, intime1, myThid )
+       CALL READ_REC_YZ_RL( OBWvFile, fp,Nr,OBWv0,iRec0,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWvFile, fp,Nr,OBWv1,iRec1,myIter,myThid )
       ENDIF
       IF ( OBWtFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDYZ ( OBWtFile, readBinaryPrec,
-     &        'RL', Nr, OBWt0, intime0, myThid )
-       CALL MDSREADFIELDYZ ( OBWtFile, readBinaryPrec,
-     &        'RL', Nr, OBWt1, intime1, myThid )
+       CALL READ_REC_YZ_RL( OBWtFile, fp,Nr,OBWt0,iRec0,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWtFile, fp,Nr,OBWt1,iRec1,myIter,myThid )
       ENDIF
       IF ( OBWsFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDYZ ( OBWsFile, readBinaryPrec,
-     &        'RL', Nr, OBWs0, intime0, myThid )
-       CALL MDSREADFIELDYZ ( OBWsFile, readBinaryPrec,
-     &        'RL', Nr, OBWs1, intime1, myThid )
+       CALL READ_REC_YZ_RL( OBWsFile, fp,Nr,OBWs0,iRec0,myIter,myThid )
+       CALL READ_REC_YZ_RL( OBWsFile, fp,Nr,OBWs1,iRec1,myIter,myThid )
       ENDIF
 # ifdef NONLIN_FRSURF
       IF ( OBWetaFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDYZ ( OBWetaFile, readBinaryPrec,
-     &        'RL', 1, OBWeta0, intime0, myThid )
-       CALL MDSREADFIELDYZ ( OBWetaFile, readBinaryPrec,
-     &        'RL', 1, OBWeta1, intime1, myThid )
+       CALL READ_REC_YZ_RL(OBWetaFile,fp,1,OBWeta0,iRec0,myIter,myThid)
+       CALL READ_REC_YZ_RL(OBWetaFile,fp,1,OBWeta1,iRec1,myIter,myThid)
       ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_WEST */
 #ifdef ALLOW_OBCS_NORTH
 C     Northern boundary
       IF ( OBNuFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDXZ ( OBNuFile, readBinaryPrec,
-     &        'RL', Nr, OBNu0, intime0, myThid )
-       CALL MDSREADFIELDXZ ( OBNuFile, readBinaryPrec,
-     &        'RL', Nr, OBNu1, intime1, myThid )
+       CALL READ_REC_XZ_RL( OBNuFile, fp,Nr,OBNu0,iRec0,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNuFile, fp,Nr,OBNu1,iRec1,myIter,myThid )
       ENDIF
       IF ( OBNvFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDXZ ( OBNvFile, readBinaryPrec,
-     &        'RL', Nr, OBNv0, intime0, myThid )
-       CALL MDSREADFIELDXZ ( OBNvFile, readBinaryPrec,
-     &        'RL', Nr, OBNv1, intime1, myThid )
+       CALL READ_REC_XZ_RL( OBNvFile, fp,Nr,OBNv0,iRec0,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNvFile, fp,Nr,OBNv1,iRec1,myIter,myThid )
       ENDIF
       IF ( OBNtFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDXZ ( OBNtFile, readBinaryPrec,
-     &        'RL', Nr, OBNt0, intime0, myThid )
-       CALL MDSREADFIELDXZ ( OBNtFile, readBinaryPrec,
-     &        'RL', Nr, OBNt1, intime1, myThid )
+       CALL READ_REC_XZ_RL( OBNtFile, fp,Nr,OBNt0,iRec0,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNtFile, fp,Nr,OBNt1,iRec1,myIter,myThid )
       ENDIF
       IF ( OBNsFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDXZ ( OBNsFile, readBinaryPrec,
-     &        'RL', Nr, OBNs0, intime0, myThid )
-       CALL MDSREADFIELDXZ ( OBNsFile, readBinaryPrec,
-     &        'RL', Nr, OBNs1, intime1, myThid )
+       CALL READ_REC_XZ_RL( OBNsFile, fp,Nr,OBNs0,iRec0,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBNsFile, fp,Nr,OBNs1,iRec1,myIter,myThid )
       ENDIF
 # ifdef NONLIN_FRSURF
       IF ( OBNetaFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDXZ ( OBNetaFile, readBinaryPrec,
-     &        'RL', 1, OBNeta0, intime0, myThid )
-       CALL MDSREADFIELDXZ ( OBNetaFile, readBinaryPrec,
-     &        'RL', 1, OBNeta1, intime1, myThid )
+       CALL READ_REC_XZ_RL(OBNetaFile,fp,1,OBNeta0,iRec0,myIter,myThid)
+       CALL READ_REC_XZ_RL(OBNetaFile,fp,1,OBNeta1,iRec1,myIter,myThid)
       ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_NORTH */
 #ifdef ALLOW_OBCS_SOUTH
 C     Southern boundary
       IF ( OBSuFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDXZ ( OBSuFile, readBinaryPrec,
-     &        'RL', Nr, OBSu0, intime0, myThid )
-       CALL MDSREADFIELDXZ ( OBSuFile, readBinaryPrec,
-     &        'RL', Nr, OBSu1, intime1, myThid )
+       CALL READ_REC_XZ_RL( OBSuFile, fp,Nr,OBSu0,iRec0,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBSuFile, fp,Nr,OBSu1,iRec1,myIter,myThid )
       ENDIF
       IF ( OBSvFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDXZ ( OBSvFile, readBinaryPrec,
-     &        'RL', Nr, OBSv0, intime0, myThid )
-       CALL MDSREADFIELDXZ ( OBSvFile, readBinaryPrec,
-     &        'RL', Nr, OBSv1, intime1, myThid )
+       CALL READ_REC_XZ_RL( OBSvFile, fp,Nr,OBSv0,iRec0,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBSvFile, fp,Nr,OBSv1,iRec1,myIter,myThid )
       ENDIF
       IF ( OBStFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDXZ ( OBStFile, readBinaryPrec,
-     &        'RL', Nr, OBSt0, intime0, myThid )
-       CALL MDSREADFIELDXZ ( OBStFile, readBinaryPrec,
-     &        'RL', Nr, OBSt1, intime1, myThid )
+       CALL READ_REC_XZ_RL( OBStFile, fp,Nr,OBSt0,iRec0,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBStFile, fp,Nr,OBSt1,iRec1,myIter,myThid )
       ENDIF
       IF ( OBSsFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDXZ ( OBSsFile, readBinaryPrec,
-     &        'RL', Nr, OBSs0, intime0, myThid )
-       CALL MDSREADFIELDXZ ( OBSsFile, readBinaryPrec,
-     &        'RL', Nr, OBSs1, intime1, myThid )
+       CALL READ_REC_XZ_RL( OBSsFile, fp,Nr,OBSs0,iRec0,myIter,myThid )
+       CALL READ_REC_XZ_RL( OBSsFile, fp,Nr,OBSs1,iRec1,myIter,myThid )
       ENDIF
 # ifdef NONLIN_FRSURF
       IF ( OBSetaFile .NE. ' '  ) THEN
-       CALL MDSREADFIELDXZ ( OBSetaFile, readBinaryPrec,
-     &        'RL', 1, OBSeta0, intime0, myThid )
-       CALL MDSREADFIELDXZ ( OBSetaFile, readBinaryPrec,
-     &        'RL', 1, OBSeta1, intime1, myThid )
+       CALL READ_REC_XZ_RL(OBSetaFile,fp,1,OBSeta0,iRec0,myIter,myThid)
+       CALL READ_REC_XZ_RL(OBSetaFile,fp,1,OBSeta1,iRec1,myIter,myThid)
       ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_SOUTH */
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS) THEN
 C     read boundary values for passive tracers
-       DO iTracer = 1, PTRACERS_numInUse
+       DO iTr = 1, PTRACERS_numInUse
 # ifdef ALLOW_OBCS_EAST
 C     Eastern boundary
-        IF ( OBEptrFile(iTracer) .NE. ' '  ) THEN
-         CALL MDSREADFIELDYZ ( OBEptrFile(itracer), readBinaryPrec,
-     &        'RL', Nr, OBEptr0(1-Oly,1,1,1,iTracer),
-     &        intime0, myThid )
-         CALL MDSREADFIELDYZ ( OBEptrFile(itracer), readBinaryPrec,
-     &        'RL', Nr, OBEptr1(1-Oly,1,1,1,iTracer),
-     &        intime1, myThid )
+        IF ( OBEptrFile(iTr) .NE. ' '  ) THEN
+         CALL READ_REC_YZ_RL( OBEptrFile(iTr), fp, Nr,
+     &                OBEptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+         CALL READ_REC_YZ_RL( OBEptrFile(iTr), fp, Nr,
+     &                OBEptr1(1-Oly,1,1,1,iTr), iRec1, myIter, myThid )
         ENDIF
 # endif /* ALLOW_OBCS_WEST */
 # ifdef ALLOW_OBCS_WEST
 C     Western boundary
-        IF ( OBWptrFile(iTracer) .NE. ' '  ) THEN
-         CALL MDSREADFIELDYZ ( OBWptrFile(itracer), readBinaryPrec,
-     &        'RL', Nr, OBWptr0(1-Oly,1,1,1,iTracer),
-     &        intime0, myThid )
-         CALL MDSREADFIELDYZ ( OBWptrFile(itracer), readBinaryPrec,
-     &        'RL', Nr, OBWptr1(1-Oly,1,1,1,iTracer),
-     &        intime1, myThid )
+        IF ( OBWptrFile(iTr) .NE. ' '  ) THEN
+         CALL READ_REC_YZ_RL( OBWptrFile(iTr), fp, Nr,
+     &                OBWptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+         CALL READ_REC_YZ_RL( OBWptrFile(iTr), fp, Nr,
+     &                OBWptr1(1-Oly,1,1,1,iTr), iRec1, myIter, myThid )
         ENDIF
 # endif /* ALLOW_OBCS_WEST */
 # ifdef ALLOW_OBCS_NORTH
 C     Northern boundary
-        IF ( OBNptrFile(iTracer) .NE. ' '  ) THEN
-         CALL MDSREADFIELDXZ ( OBNptrFile(itracer), readBinaryPrec,
-     &        'RL', Nr, OBNptr0(1-Olx,1,1,1,iTracer),
-     &        intime0, myThid )
-         CALL MDSREADFIELDXZ ( OBNptrFile(itracer), readBinaryPrec,
-     &        'RL', Nr, OBNptr1(1-Olx,1,1,1,iTracer),
-     &        intime1, myThid )
+        IF ( OBNptrFile(iTr) .NE. ' '  ) THEN
+         CALL READ_REC_XZ_RL( OBNptrFile(iTr), fp, Nr,
+     &                OBNptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+         CALL READ_REC_XZ_RL( OBNptrFile(iTr), fp, Nr,
+     &                OBNptr1(1-Oly,1,1,1,iTr), iRec1, myIter, myThid )
         ENDIF
 # endif /* ALLOW_OBCS_NORTH */
 # ifdef ALLOW_OBCS_SOUTH
 C     Southern boundary
-        IF ( OBSptrFile(iTracer) .NE. ' '  ) THEN
-         CALL MDSREADFIELDXZ ( OBSptrFile(itracer), readBinaryPrec,
-     &        'RL', Nr, OBSptr0(1-Olx,1,1,1,iTracer),
-     &        intime0, myThid )
-         CALL MDSREADFIELDXZ ( OBSptrFile(itracer), readBinaryPrec,
-     &        'RL', Nr, OBSptr1(1-Olx,1,1,1,iTracer),
-     &        intime1, myThid )
+        IF ( OBSptrFile(iTr) .NE. ' '  ) THEN
+         CALL READ_REC_XZ_RL( OBSptrFile(iTr), fp, Nr,
+     &                OBSptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
+         CALL READ_REC_XZ_RL( OBSptrFile(iTr), fp, Nr,
+     &                OBSptr1(1-Oly,1,1,1,iTr), iRec1, myIter, myThid )
         ENDIF
 # endif /* ALLOW_OBCS_SOUTH */
-C     end do iTracer
+C     end do iTr
        ENDDO
 C     end if (usePTRACERS)
       ENDIF
 #endif /* ALLOW_PTRACERS */
-#else /* ALLOW_MDSIO */
-      STOP 'ABNORMAL END: OBCS_EXTERNAL_FIELDS_LOAD: NEEDS MSDIO PKG'
-#endif /* ALLOW_MDSIO */
 
 C
 C     At this point in external_fields_load the input fields are exchanged.
@@ -330,6 +285,9 @@ C     if not periodicForcing
        bWght = 1. _d 0
 C     read boundary values once and for all
        IF ( myIter .EQ. nIter0 ) THEN
+#ifndef ALLOW_MDSIO
+         STOP 'ABNORMAL END: OBCS_EXTERNAL_FIELDS_LOAD: NEEDS MSDIO PKG'
+#endif /* ALLOW_MDSIO */
         _BARRIER
 C      Read constant boundary conditions only for myIter = nIter0
         WRITE(msgBuf,'(1X,A,I10,1P1E20.12)')
@@ -337,152 +295,129 @@ C      Read constant boundary conditions only for myIter = nIter0
      &       myIter, myTime
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
      &       SQUEEZE_RIGHT,myThid)
-        inTime0 = 1
-#ifdef ALLOW_MDSIO
+        iRec0 = 1
+
 #ifdef ALLOW_OBCS_EAST
 C     Eastern boundary
         IF ( OBEuFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDYZ ( OBEuFile, readBinaryPrec,
-     &        'RL', Nr, OBEu0, inTime0, myThid )
+         CALL READ_REC_YZ_RL( OBEuFile,fp,Nr,OBEu0,iRec0,myIter,myThid )
         ENDIF
         IF ( OBEvFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDYZ ( OBEvFile, readBinaryPrec,
-     &        'RL', Nr, OBEv0, inTime0, myThid )
+         CALL READ_REC_YZ_RL( OBEvFile,fp,Nr,OBEv0,iRec0,myIter,myThid )
         ENDIF
         IF ( OBEtFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDYZ ( OBEtFile, readBinaryPrec,
-     &        'RL', Nr, OBEt0, inTime0, myThid )
+         CALL READ_REC_YZ_RL( OBEtFile,fp,Nr,OBEt0,iRec0,myIter,myThid )
         ENDIF
         IF ( OBEsFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDYZ ( OBEsFile, readBinaryPrec,
-     &        'RL', Nr, OBEs0, inTime0, myThid )
+         CALL READ_REC_YZ_RL( OBEsFile,fp,Nr,OBEs0,iRec0,myIter,myThid )
         ENDIF
 # ifdef NONLIN_FRSURF
         IF ( OBEetaFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDYZ ( OBEetaFile, readBinaryPrec,
-     &        'RL', 1, OBEeta0, intime0, myThid )
+         CALL READ_REC_YZ_RL( OBEetaFile, fp, 1, OBEeta0, iRec0,
+     &                        myIter, myThid )
         ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_WEST */
 #ifdef ALLOW_OBCS_WEST
 C     Western boundary
         IF ( OBWuFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDYZ ( OBWuFile, readBinaryPrec,
-     &        'RL', Nr, OBWu0, inTime0, myThid )
+         CALL READ_REC_YZ_RL( OBWuFile,fp,Nr,OBWu0,iRec0,myIter,myThid )
         ENDIF
         IF ( OBWvFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDYZ ( OBWvFile, readBinaryPrec,
-     &        'RL', Nr, OBWv0, inTime0, myThid )
+         CALL READ_REC_YZ_RL( OBWvFile,fp,Nr,OBWv0,iRec0,myIter,myThid )
         ENDIF
         IF ( OBWtFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDYZ ( OBWtFile, readBinaryPrec,
-     &        'RL', Nr, OBWt0, inTime0, myThid )
+         CALL READ_REC_YZ_RL( OBWtFile,fp,Nr,OBWt0,iRec0,myIter,myThid )
         ENDIF
         IF ( OBWsFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDYZ ( OBWsFile, readBinaryPrec,
-     &        'RL', Nr, OBWs0, inTime0, myThid )
+         CALL READ_REC_YZ_RL( OBWsFile,fp,Nr,OBWs0,iRec0,myIter,myThid )
         ENDIF
 # ifdef NONLIN_FRSURF
         IF ( OBWetaFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDYZ ( OBWetaFile, readBinaryPrec,
-     &        'RL', 1, OBWeta0, intime0, myThid )
+         CALL READ_REC_YZ_RL( OBWetaFile, fp, 1, OBWeta0, iRec0,
+     &                        myIter, myThid )
         ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_WEST */
 #ifdef ALLOW_OBCS_NORTH
 C     Northern boundary
         IF ( OBNuFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDXz ( OBNuFile, readBinaryPrec,
-     &        'RL', Nr, OBNu0, inTime0, myThid )
+         CALL READ_REC_XZ_RL( OBNuFile,fp,Nr,OBNu0,iRec0,myIter,myThid )
         ENDIF
         IF ( OBNvFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDXZ ( OBNvFile, readBinaryPrec,
-     &        'RL', Nr, OBNv0, inTime0, myThid )
+         CALL READ_REC_XZ_RL( OBNvFile,fp,Nr,OBNv0,iRec0,myIter,myThid )
         ENDIF
         IF ( OBNtFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDXZ ( OBNtFile, readBinaryPrec,
-     &        'RL', Nr, OBNt0, inTime0, myThid )
+         CALL READ_REC_XZ_RL( OBNtFile,fp,Nr,OBNt0,iRec0,myIter,myThid )
         ENDIF
         IF ( OBNsFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDXZ ( OBNsFile, readBinaryPrec,
-     &        'RL', Nr, OBNs0, inTime0, myThid )
+         CALL READ_REC_XZ_RL( OBNsFile,fp,Nr,OBNs0,iRec0,myIter,myThid )
         ENDIF
 # ifdef NONLIN_FRSURF
         IF ( OBNetaFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDXZ ( OBNetaFile, readBinaryPrec,
-     &        'RL', 1, OBNeta0, intime0, myThid )
+         CALL READ_REC_XZ_RL( OBNetaFile, fp, 1, OBNeta0, iRec0,
+     &                        myIter, myThid )
         ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_NORTH */
 #ifdef ALLOW_OBCS_SOUTH
 C     Southern boundary
         IF ( OBSuFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDXz ( OBSuFile, readBinaryPrec,
-     &        'RL', Nr, OBSu0, inTime0, myThid )
+         CALL READ_REC_XZ_RL( OBSuFile,fp,Nr,OBSu0,iRec0,myIter,myThid )
         ENDIF
         IF ( OBSvFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDXZ ( OBSvFile, readBinaryPrec,
-     &        'RL', Nr, OBSv0, inTime0, myThid )
+         CALL READ_REC_XZ_RL( OBSvFile,fp,Nr,OBSv0,iRec0,myIter,myThid )
         ENDIF
         IF ( OBStFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDXZ ( OBStFile, readBinaryPrec,
-     &        'RL', Nr, OBSt0, inTime0, myThid )
+         CALL READ_REC_XZ_RL( OBStFile,fp,Nr,OBSt0,iRec0,myIter,myThid )
         ENDIF
         IF ( OBSsFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDXZ ( OBSsFile, readBinaryPrec,
-     &        'RL', Nr, OBSs0, inTime0, myThid )
+         CALL READ_REC_XZ_RL( OBSsFile,fp,Nr,OBSs0,iRec0,myIter,myThid )
         ENDIF
 # ifdef NONLIN_FRSURF
         IF ( OBSetaFile .NE. ' '  ) THEN
-         CALL MDSREADFIELDXZ ( OBSetaFile, readBinaryPrec,
-     &        'RL', 1, OBSeta0, intime0, myThid )
+         CALL READ_REC_XZ_RL( OBSetaFile, fp, 1, OBSeta0, iRec0,
+     &                        myIter, myThid )
         ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_SOUTH */
 #ifdef ALLOW_PTRACERS
         IF (usePTRACERS) THEN
 C     read passive tracer boundary values
-         DO iTracer = 1, PTRACERS_numInUse
+         DO iTr = 1, PTRACERS_numInUse
 # ifdef ALLOW_OBCS_EAST
 C     Eastern boundary
-          IF ( OBEptrFile(iTracer) .NE. ' '  ) THEN
-           CALL MDSREADFIELDYZ ( OBEptrFile(iTracer), readBinaryPrec,
-     &          'RL', Nr, OBEptr0(1-Oly,1,1,1,iTracer),
-     &          inTime0, myThid )
+          IF ( OBEptrFile(iTr) .NE. ' '  ) THEN
+           CALL READ_REC_YZ_RL( OBEptrFile(iTr), fp, Nr,
+     &               OBEptr0(1-Oly,1,1,1,iTr), iRec0,myIter, myThid )
           ENDIF
 # endif /* ALLOW_OBCS_WEST */
 # ifdef ALLOW_OBCS_WEST
 C     Western boundary
-          IF ( OBWptrFile(iTracer) .NE. ' '  ) THEN
-           CALL MDSREADFIELDYZ ( OBWptrFile(iTracer), readBinaryPrec,
-     &          'RL', Nr, OBWptr0(1-Oly,1,1,1,iTracer),
-     &          inTime0, myThid )
+          IF ( OBWptrFile(iTr) .NE. ' '  ) THEN
+           CALL READ_REC_YZ_RL( OBWptrFile(iTr), fp, Nr,
+     &               OBWptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
           ENDIF
 # endif /* ALLOW_OBCS_WEST */
 # ifdef ALLOW_OBCS_NORTH
 C     Northern boundary
-          IF ( OBNptrFile(iTracer) .NE. ' '  ) THEN
-           CALL MDSREADFIELDXZ ( OBNptrFile(iTracer), readBinaryPrec,
-     &          'RL', Nr, OBNptr0(1-Olx,1,1,1,iTracer),
-     &          inTime0, myThid )
+          IF ( OBNptrFile(iTr) .NE. ' '  ) THEN
+           CALL READ_REC_XZ_RL( OBNptrFile(iTr), fp, Nr,
+     &               OBNptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
           ENDIF
 # endif /* ALLOW_OBCS_NORTH */
 # ifdef ALLOW_OBCS_SOUTH
 C     Southern boundary
-          IF ( OBSptrFile(iTracer) .NE. ' '  ) THEN
-           CALL MDSREADFIELDXZ ( OBSptrFile(iTracer), readBinaryPrec,
-     &          'RL', Nr, OBSptr0(1-Olx,1,1,1,iTracer),
-     &          inTime0, myThid )
+          IF ( OBSptrFile(iTr) .NE. ' '  ) THEN
+           CALL READ_REC_XZ_RL( OBSptrFile(iTr), fp, Nr,
+     &               OBSptr0(1-Oly,1,1,1,iTr), iRec0, myIter, myThid )
           ENDIF
 # endif /* ALLOW_OBCS_SOUTH */
-C     end do iTracer
+C     end do iTr
          ENDDO
 C     end if (usePTRACERS)
         ENDIF
 #endif /* ALLOW_PTRACERS */
-#else /* ALLOW_MDSIO */
-      STOP 'ABNORMAL END: OBCS_EXTERNAL_FIELDS_LOAD: NEEDS MSDIO PKG'
-#endif /* ALLOW_MDSIO */
         _BARRIER
 C     endif myIter .EQ. nIter0
        ENDIF
@@ -511,7 +446,7 @@ C--   forcing field OBSu0 to OBSu
      &                      +aWght*OBEeta1(j,bi,bj)
           ENDDO
          ENDDO
-        ENDDO	
+        ENDDO
        ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_EAST */
@@ -533,7 +468,7 @@ C--   forcing field OBSu0 to OBSu
      &                      +aWght*OBWeta1(j,bi,bj)
           ENDDO
          ENDDO
-        ENDDO	
+        ENDDO
        ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_WEST */
@@ -555,7 +490,7 @@ C--   forcing field OBSu0 to OBSu
      &                      +aWght*OBNeta1(i,bi,bj)
           ENDDO
          ENDDO
-        ENDDO	
+        ENDDO
        ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_NORTH */
@@ -577,43 +512,43 @@ C--   forcing field OBSu0 to OBSu
      &                      +aWght*OBSeta1(i,bi,bj)
           ENDDO
          ENDDO
-        ENDDO	
+        ENDDO
        ENDIF
 # endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS_SOUTH */
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS) THEN
 C     "interpolate" passive tracer boundary values
-       DO iTracer = 1, PTRACERS_numInUse
+       DO iTr = 1, PTRACERS_numInUse
 # ifdef ALLOW_OBCS_EAST
-        IF ( OBEptrFile(iTracer) .NE. ' '  )
+        IF ( OBEptrFile(iTr) .NE. ' '  )
      &       CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
-     O       OBEptr (1-Oly,1,1,1,iTracer),
-     I       OBEptr0(1-Oly,1,1,1,iTracer),
-     I       OBEptr1(1-Oly,1,1,1,iTracer), aWght, bWght, myThid )
+     O       OBEptr (1-Oly,1,1,1,iTr),
+     I       OBEptr0(1-Oly,1,1,1,iTr),
+     I       OBEptr1(1-Oly,1,1,1,iTr), aWght, bWght, myThid )
 # endif /* ALLOW_OBCS_EAST */
 # ifdef ALLOW_OBCS_WEST
-        IF ( OBWptrFile(iTracer) .NE. ' '  )
+        IF ( OBWptrFile(iTr) .NE. ' '  )
      &       CALL OBCS_EXTERNAL_FIELDS_INTERP_YZ(
-     O       OBWptr (1-Oly,1,1,1,iTracer),
-     I       OBWptr0(1-Oly,1,1,1,iTracer),
-     I       OBWptr1(1-Oly,1,1,1,iTracer), aWght, bWght, myThid )
+     O       OBWptr (1-Oly,1,1,1,iTr),
+     I       OBWptr0(1-Oly,1,1,1,iTr),
+     I       OBWptr1(1-Oly,1,1,1,iTr), aWght, bWght, myThid )
 # endif /* ALLOW_OBCS_WEST */
 # ifdef ALLOW_OBCS_NORTH
-        IF ( OBNptrFile(iTracer) .NE. ' '  )
+        IF ( OBNptrFile(iTr) .NE. ' '  )
      &       CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
-     O       OBNptr (1-Olx,1,1,1,iTracer),
-     I       OBNptr0(1-Olx,1,1,1,iTracer),
-     I       OBNptr1(1-Olx,1,1,1,iTracer), aWght, bWght, myThid )
+     O       OBNptr (1-Olx,1,1,1,iTr),
+     I       OBNptr0(1-Olx,1,1,1,iTr),
+     I       OBNptr1(1-Olx,1,1,1,iTr), aWght, bWght, myThid )
 # endif /* ALLOW_OBCS_NORTH */
 # ifdef ALLOW_OBCS_SOUTH
-        IF ( OBSptrFile(iTracer) .NE. ' '  )
+        IF ( OBSptrFile(iTr) .NE. ' '  )
      &       CALL OBCS_EXTERNAL_FIELDS_INTERP_XZ(
-     O       OBSptr (1-Olx,1,1,1,iTracer),
-     I       OBSptr0(1-Olx,1,1,1,iTracer),
-     I       OBSptr1(1-Olx,1,1,1,iTracer), aWght, bWght, myThid )
+     O       OBSptr (1-Olx,1,1,1,iTr),
+     I       OBSptr0(1-Olx,1,1,1,iTr),
+     I       OBSptr1(1-Olx,1,1,1,iTr), aWght, bWght, myThid )
 # endif /* ALLOW_OBCS_SOUTH */
-C     end do iTracer
+C     end do iTr
        ENDDO
 C     end if (usePTRACERS)
       ENDIF
@@ -714,7 +649,7 @@ CEOP
           ENDDO
          ENDDO
         ENDDO
-       ENDDO	
+       ENDDO
 
 #endif /* ALLOW_OBCS AND ALLOW_OBCS_PRESCRIBE AND .NOT. ALLOW_EXF */
 
