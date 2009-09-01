@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.14 2009/08/05 23:17:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_field.F,v 1.15 2009/09/01 19:08:27 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -12,7 +12,7 @@ C !INTERFACE:
      I   useCurrentDir,
      I   arrType,
      I   kSize,kLo,kHi,
-     O   arr,
+     O   fldRL, fldRS,
      I   irecord,
      I   myThid )
 
@@ -23,11 +23,12 @@ C fName     (string)  :: base name for file to read
 C filePrec  (integer) :: number of bits per word in file (32 or 64)
 C useCurrentDir(logic):: always read from the current directory (even if
 C                        "mdsioLocalDir" is set)
-C arrType   (char(2)) :: declaration of "arr": either "RS" or "RL"
+C arrType   (char(2)) :: which array (fldRL/RS) to read into, either "RL" or "RS"
 C kSize     (integer) :: size of third dimension: normally either 1 or Nr
-C kLo       (integer) :: 1rst vertical level (of array "arr") to read-in
-C kHi       (integer) :: last vertical level (of array "arr") to read-in
-C arr       ( RS/RL ) :: array to read into, arr(:,:,kSize,:,:)
+C kLo       (integer) :: 1rst vertical level (of array fldRL/RS) to read-in
+C kHi       (integer) :: last vertical level (of array fldRL/RS) to read-in
+C fldRL       ( RL )  :: array to read into if arrType="RL", fldRL(:,:,kSize,:,:)
+C fldRS       ( RS )  :: array to read into if arrType="RS", fldRS(:,:,kSize,:,:)
 C irecord   (integer) :: record number to read
 C myIter    (integer) :: time step number
 C myThid    (integer) :: thread identifier
@@ -37,15 +38,14 @@ C  IF the file "fName.data" exists and finally the tiled files of the
 C  form "fName.xxx.yyy.data" exist. Currently, the meta-files are not
 C  read because it is difficult to parse files in fortran.
 C The precision of the file is decsribed by filePrec, set either
-C  to floatPrec32 or floatPrec64. The precision or declaration of
-C  the array argument must be consistently described by the char*(2)
-C  string arrType, either "RS" or "RL".
+C  to floatPrec32 or floatPrec64. The char*(2) string arrType, either "RL"
+C  or "RS", selects which array is filled in, either fldRL or fldRS.
 C (kSize,kLo,kHi) allows for both 2-D and 3-D arrays to be handled, with
 C  the option to only read and fill-in a sub-set of consecutive vertical
 C  levels (from kLo to kHi) ; (kSize,kLo,kHi)=(1,1,1) implies a 2-D model
 C  field and (kSize,kLo,kHi)=(Nr,1,Nr) implies a 3-D model field.
 C irecord is the record number to be read and must be >= 1.
-C The file data is stored in arr *but* the overlaps are *not* updated,
+C The file data is stored in fldRL/RS *but* the overlaps are *not* updated,
 C  i.e., an exchange must be called. This is because the routine is
 C  sometimes called from within a MASTER_THID region.
 C
@@ -78,7 +78,8 @@ C !INPUT PARAMETERS:
       INTEGER irecord
       INTEGER myThid
 C !OUTPUT PARAMETERS:
-      _RL  arr(*)
+      _RL  fldRL(*)
+      _RS  fldRS(*)
 
 C !FUNCTIONS
       INTEGER  ILNBLNK
@@ -295,10 +296,10 @@ C  to acces shared buffer while master thread is loading data into
 C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R4toRS( sharedLocBuf_r4, arr,
+            CALL MDS_PASS_R4toRS( sharedLocBuf_r4, fldRS,
      I                        1, k, kSize, 0, 0, .TRUE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R4toRL( sharedLocBuf_r4, arr,
+            CALL MDS_PASS_R4toRL( sharedLocBuf_r4, fldRL,
      I                        1, k, kSize, 0, 0, .TRUE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
@@ -316,10 +317,10 @@ C All threads wait for Master to finish loading into shared buffer
 C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R8toRS( sharedLocBuf_r8, arr,
+            CALL MDS_PASS_R8toRS( sharedLocBuf_r8, fldRS,
      I                        1, k, kSize, 0, 0, .TRUE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R8toRL( sharedLocBuf_r8, arr,
+            CALL MDS_PASS_R8toRL( sharedLocBuf_r8, fldRL,
      I                        1, k, kSize, 0, 0, .TRUE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
@@ -500,13 +501,13 @@ C- endif iAmDoingIO
 C All threads wait for Master to finish reading into shared buffer
        CALL BAR2( myThid )
 
-C---    Copy from 3-D buffer to arr (multi-threads):
+C---    Copy from 3-D buffer to fldRL/RS (multi-threads):
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R4toRS( shared3dBuf_r4, arr,
+            CALL MDS_PASS_R4toRS( shared3dBuf_r4, fldRS,
      I                    nNz, kLo, kSize, 0, 0, .TRUE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R4toRL( shared3dBuf_r4, arr,
+            CALL MDS_PASS_R4toRL( shared3dBuf_r4, fldRL,
      I                    nNz, kLo, kSize, 0, 0, .TRUE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
@@ -517,10 +518,10 @@ C---    Copy from 3-D buffer to arr (multi-threads):
           ENDIF
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R8toRS( shared3dBuf_r8, arr,
+            CALL MDS_PASS_R8toRS( shared3dBuf_r8, fldRS,
      I                    nNz, kLo, kSize, 0, 0, .TRUE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R8toRL( shared3dBuf_r8, arr,
+            CALL MDS_PASS_R8toRL( shared3dBuf_r8, fldRL,
      I                    nNz, kLo, kSize, 0, 0, .TRUE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')

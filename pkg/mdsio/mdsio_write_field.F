@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.15 2009/08/02 20:42:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_field.F,v 1.16 2009/09/01 19:08:27 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -13,7 +13,7 @@ C !INTERFACE:
      I   useCurrentDir,
      I   arrType,
      I   kSize,kLo,kHi,
-     I   arr,
+     I   fldRL, fldRS,
      I   jrecord,
      I   myIter,
      I   myThid )
@@ -26,11 +26,12 @@ C filePrec  (integer) :: number of bits per word in file (32 or 64)
 C globalFile (logical):: selects between writing a global or tiled file
 C useCurrentDir(logic):: always write to the current directory (even if
 C                        "mdsioLocalDir" is set)
-C arrType   (char(2)) :: declaration of "arr": either "RS" or "RL"
+C arrType   (char(2)) :: which array (fldRL/RS) to write, either "RL" or "RS"
 C kSize     (integer) :: size of third dimension: normally either 1 or Nr
-C kLo       (integer) :: 1rst vertical level (of array "arr") to write
-C kHi       (integer) :: last vertical level (of array "arr") to write
-C arr       ( RS/RL ) :: array to write, arr(:,:,kSize,:,:)
+C kLo       (integer) :: 1rst vertical level (of array fldRL/RS) to write
+C kHi       (integer) :: last vertical level (of array fldRL/RS) to write
+C fldRL       ( RL )  :: array to write if arrType="RL", fldRL(:,:,kSize,:,:)
+C fldRS       ( RS )  :: array to write if arrType="RS", fldRS(:,:,kSize,:,:)
 C irecord   (integer) :: record number to write
 C myIter    (integer) :: time step number
 C myThid    (integer) :: thread identifier
@@ -43,9 +44,8 @@ C Currently, the meta-files are not read because it is difficult
 C  to parse files in fortran. We should read meta information before
 C  adding records to an existing multi-record file.
 C The precision of the file is decsribed by filePrec, set either
-C  to floatPrec32 or floatPrec64. The precision or declaration of
-C  the array argument must be consistently described by the char*(2)
-C  string arrType, either "RS" or "RL".
+C  to floatPrec32 or floatPrec64. The char*(2) string arrType, either
+C  "RL" or "RS", selects which array is written, either fldRL or fldRS.
 C (kSize,kLo,kHi) allows for both 2-D and 3-D arrays to be handled, with
 C  the option to only write a sub-set of consecutive vertical levels (from
 C  kLo to kHi); (kSize,kLo,kHi)=(1,1,1) implies a 2-D model field and
@@ -88,10 +88,8 @@ C !INPUT PARAMETERS:
       LOGICAL useCurrentDir
       CHARACTER*(2) arrType
       INTEGER kSize, kLo, kHi
-cph(
-cph      Real arr(*)
-      _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,kSize,nSx,nSy)
-cph)
+      _RL fldRL(*)
+      _RS fldRS(*)
       INTEGER jrecord
       INTEGER myIter
       INTEGER myThid
@@ -253,13 +251,13 @@ C Master thread of process 0, only, opens a global file
 C Gather array and write it to file, one vertical level at a time
        DO k=kLo,kHi
         zeroBuff = k.EQ.kLo
-C-      copy from arr(level=k) to 2-D "local":
+C-      copy from fldRL/RS(level=k) to 2-D "local":
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R4toRS( sharedLocBuf_r4, arr,
+            CALL MDS_PASS_R4toRS( sharedLocBuf_r4, fldRS,
      I                       1, k, kSize, 0, 0, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R4toRL( sharedLocBuf_r4, arr,
+            CALL MDS_PASS_R4toRL( sharedLocBuf_r4, fldRL,
      I                       1, k, kSize, 0, 0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
@@ -277,11 +275,11 @@ C Wait for all threads to finish filling shared buffer
      I                       useExch2ioLayOut, zeroBuff, myThid )
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R8toRS( sharedLocBuf_r8, arr,
+            CALL MDS_PASS_R8toRS( sharedLocBuf_r8, fldRS,
      I                       1, k, kSize, 0, 0, .FALSE., myThid )
 
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R8toRL( sharedLocBuf_r8, arr,
+            CALL MDS_PASS_R8toRL( sharedLocBuf_r8, fldRL,
      I                       1, k, kSize, 0, 0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
@@ -335,13 +333,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  else .NOT.useSingleCpuIO
       ELSE
 
-C---    Copy from arr to 3-D buffer (multi-threads):
+C---    Copy from fldRL/RS to 3-D buffer (multi-threads):
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R4toRS( shared3dBuf_r4, arr,
+            CALL MDS_PASS_R4toRS( shared3dBuf_r4, fldRS,
      I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R4toRL( shared3dBuf_r4, arr,
+            CALL MDS_PASS_R4toRL( shared3dBuf_r4, fldRL,
      I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
@@ -352,10 +350,10 @@ C---    Copy from arr to 3-D buffer (multi-threads):
           ENDIF
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R8toRS( shared3dBuf_r8, arr,
+            CALL MDS_PASS_R8toRS( shared3dBuf_r8, fldRS,
      I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R8toRL( shared3dBuf_r8, arr,
+            CALL MDS_PASS_R8toRL( shared3dBuf_r8, fldRL,
      I                    nNz, kLo, kSize, 0,0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')

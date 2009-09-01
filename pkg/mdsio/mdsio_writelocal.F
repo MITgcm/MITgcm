@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.17 2009/08/02 20:42:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writelocal.F,v 1.18 2009/09/01 19:08:27 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -12,7 +12,7 @@ C !INTERFACE:
      I   globFile,
      I   arrType,
      I   nNz,
-     I   arr,
+     I   fldRL, fldRS,
      I   biArg, bjArg,
      I   irecord,
      I   myIter,
@@ -24,9 +24,10 @@ C
 C fName     (string)  :: base name for file to write
 C filePrec  (integer) :: number of bits per word in file (32 or 64)
 C globalFile (logical):: selects between writing a global or tiled file
-C arrType   (char(2)) :: declaration of "arr": either "RS" or "RL"
+C arrType   (char(2)) :: which array (fldRL/RS) to write, either "RL" or "RS"
 C nNz	    (integer) :: size of third dimension: normally either 1 or Nr
-C arr       ( RS/RL ) :: array to write, arr(:,:,kSize)
+C fldRL       ( RL )  :: array to write if arrType="RL", fldRL(:,:,nNz)
+C fldRS       ( RS )  :: array to write if arrType="RS", fldRS(:,:,nNz)
 C biArg     (integer) :: tile X-index argument
 C bjArg     (integer) :: tile Y-index argument
 C irecord   (integer) :: record number to write
@@ -50,9 +51,8 @@ C Currently, the meta-files are not read because it is difficult
 C  to parse files in fortran. We should read meta information before
 C  adding records to an existing multi-record file.
 C The precision of the file is decsribed by filePrec, set either
-C  to floatPrec32 or floatPrec64. The precision or declaration of
-C  the array argument must be consistently described by the char*(2)
-C  string arrType, either "RS" or "RL".
+C  to floatPrec32 or floatPrec64. The char*(2) string arrType, either
+C  "RL" or "RS", selects which array is written, either fldRL or fldRS.
 C nNz allows for both 2-D and 3-D arrays to be handled. nNz=1 implies
 C  a 2-D model field and nNz=Nr implies a 3-D model field.
 C irecord is the record number to be written and must be >= 1.
@@ -89,8 +89,8 @@ C !INPUT PARAMETERS:
       LOGICAL globFile
       CHARACTER*(2) arrType
       INTEGER nNz
-c     real arr(*)
-      _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz)
+      _RL fldRL(*)
+      _RS fldRS(*)
       INTEGER biArg, bjArg
       INTEGER irecord
       INTEGER myIter
@@ -212,13 +212,13 @@ c       CALL ALL_PROC_DIE( myThid )
       ENDIF
 
 C-------------------------------------------------
-C---    Copy from arr to 3-D buffer (multi-threads):
+C---    Copy from fldRL/RS to 3-D buffer (multi-threads):
       IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R4toRS( shared3dBuf_r4, arr,
+            CALL MDS_PASS_R4toRS( shared3dBuf_r4, fldRS,
      I               nNz, 1, nNz, biArg, bjArg, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R4toRL( shared3dBuf_r4, arr,
+            CALL MDS_PASS_R4toRL( shared3dBuf_r4, fldRL,
      I               nNz, 1, nNz, biArg, bjArg, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')
@@ -228,10 +228,10 @@ C---    Copy from arr to 3-D buffer (multi-threads):
           ENDIF
       ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_R8toRS( shared3dBuf_r8, arr,
+            CALL MDS_PASS_R8toRS( shared3dBuf_r8, fldRS,
      I               nNz, 1, nNz, biArg, bjArg, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_R8toRL( shared3dBuf_r8, arr,
+            CALL MDS_PASS_R8toRL( shared3dBuf_r8, fldRL,
      I               nNz, 1, nNz, biArg, bjArg, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(A)')

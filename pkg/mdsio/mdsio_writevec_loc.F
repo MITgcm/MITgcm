@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writevec_loc.F,v 1.4 2009/08/02 20:42:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_writevec_loc.F,v 1.5 2009/09/01 19:08:27 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -11,8 +11,8 @@ C !INTERFACE:
      I   filePrec,
      U   ioUnit,
      I   arrType,
-     I   nArr,
-     I   arr,
+     I   nSize,
+     I   fldRL, fldRS,
      I   bi, bj,
      I   irecord,
      I   myIter,
@@ -24,9 +24,10 @@ C
 C fName    string  :: base name for file to written
 C filePrec integer :: number of bits per word in file (32 or 64)
 C ioUnit   integer :: fortran file IO unit
-C nArr     integer :: number of elements from input array "arr" to be written
-C arrType  char(2) :: declaration type of "arr": either "RS" or "RL"
-C arr       RS/RL  :: array to WRITE, arr(nArr)
+C nSize    integer :: number of elements from input array "fldRL/RS" to be written
+C arrType  char(2) :: which array (fldRL/RS) to write, either "RL" or "RS"
+C fldRL    ( RL )  :: array to write if arrType="RL", fldRL(nSize)
+C fldRS    ( RS )  :: array to write if arrType="RS", fldRS(nSize)
 C bi,bj    integer :: tile indices (if tiled array) or 0,0 if not a tiled array
 C irecord  integer :: record number to WRITE =|irecord|
 C myIter   integer :: time step number
@@ -37,10 +38,10 @@ C  ioUnit = 0 : open file, write and close the file (return ioUnit=0).
 C  ioUnit =-1 : open file, write and leave it open (return IO unit in ioUnit)
 C  ioUnit > 0 : assume file "ioUnit" is open, and write to it.
 C MDS_WRITEVEC_LOC writes either to a file of the form "fName.data" and
-C "fName.meta" IF bi=bj=0. Otherwise it writes to MDS tiled files of the
+C "fName.meta" if bi=bj=0. Otherwise it writes to MDS tiled files of the
 C form "fName.xxx.yyy.data" and "fName.xxx.yyy.meta".
 C If irecord>0, a meta-file is created (skipped if irecord<0).
-C The precision of the file is decsribed by filePrec, set either
+C The precision of the file is described by filePrec, set either
 C to floatPrec32 or floatPrec64.
 C |irecord|=iRec is the record number to be written and must be >=1.
 
@@ -57,8 +58,9 @@ C !INPUT/OUTPUT PARAMETERS:
       INTEGER ioUnit
       INTEGER filePrec
       CHARACTER*(2) arrType
-      INTEGER nArr
-      _RL     arr(*)
+      INTEGER nSize
+      _RL     fldRL(*)
+      _RS     fldRS(*)
       INTEGER bi,bj
       INTEGER irecord
       INTEGER myIter
@@ -74,13 +76,13 @@ C !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_FNAM) dataFName, metaFName, pfName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL fileIsOpen
-      INTEGER iG,jG,iRec,k,dUnit,IL,pIL
+      INTEGER iG,jG,iRec,dUnit,IL,pIL
       INTEGER dimList(3,3), nDims, map2gl(2)
       INTEGER length_of_rec
       INTEGER loc_size
       PARAMETER( loc_size = Nx+Ny+Nr )
-      real*4 r4seg(loc_size)
-      real*8 r8seg(loc_size)
+      Real*4 r4seg(loc_size)
+      Real*8 r8seg(loc_size)
       _RL dummyRL(1)
       CHARACTER*8 blank8c
 CEOP
@@ -112,12 +114,12 @@ C Record number must be >= 1
         ENDIF
 
 C Check buffer size
-        IF ( nArr.GT.loc_size ) THEN
+        IF ( nSize.GT.loc_size ) THEN
           WRITE(msgBuf,'(3A)')
      &     ' MDS_WRITEVEC_LOC: writing to file "', fName(1:IL), '":'
           CALL PRINT_ERROR( msgBuf, myThid )
           WRITE(msgBuf,'(A,I9)')
-     &      ' MDS_WRITEVEC_LOC: dim of arr to write=', nArr
+     &      ' MDS_WRITEVEC_LOC: dim of array to write=', nSize
           CALL PRINT_ERROR( msgBuf, myThid )
           WRITE(msgBuf,'(A,I9)')
      &      ' MDS_WRITEVEC_LOC: exceeds buffer size=', loc_size
@@ -158,7 +160,7 @@ C-    we are writing a tiled array (bi>0,bj>0):
           ENDIF
 
 C--   Open the file:
-          length_of_rec=MDS_RECLEN( filePrec, nArr, myThid )
+          length_of_rec=MDS_RECLEN( filePrec, nSize, myThid )
           IF (iRec .EQ. 1) THEN
             OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
      &            access='direct', recl=length_of_rec )
@@ -179,11 +181,11 @@ C- End if block: File Unit is already open / Need to open it
 
         IF (fileIsOpen) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_WR_REC_RS( arr, r4seg, r8seg,
-     I                          filePrec, dUnit, iRec, nArr, myThid )
+            CALL MDS_WR_REC_RS( fldRS, r4seg, r8seg,
+     I                          filePrec, dUnit, iRec, nSize, myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_WR_REC_RL( arr, r4seg, r8seg,
-     I                          filePrec, dUnit, iRec, nArr, myThid )
+            CALL MDS_WR_REC_RL( fldRL, r4seg, r8seg,
+     I                          filePrec, dUnit, iRec, nSize, myThid )
           ELSE
             WRITE(msgBuf,'(A)')
      &          ' MDS_WRITEVEC_LOC: illegal value for arrType'
@@ -228,11 +230,11 @@ C--   we are writing a tiled array (bi>0,bj>0):
             dimList(2,2)=jG
             dimList(3,2)=jG
           ENDIF
-          dimList(1,3)=nArr
+          dimList(1,3)=nSize
           dimList(2,3)=1
-          dimList(3,3)=nArr
+          dimList(3,3)=nSize
           nDims=3
-          IF ( nArr.EQ.1 ) nDims=2
+          IF ( nSize.EQ.1 ) nDims=2
           CALL MDS_WRITE_META(
      I              metaFName, dataFName, the_run_name, ' ',
      I              filePrec, nDims, dimList, map2gl, 0, blank8c,
