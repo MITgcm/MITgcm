@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_glvec_rl.F,v 1.1 2009/02/03 22:21:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_glvec_rl.F,v 1.2 2009/09/01 19:28:24 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -34,6 +34,7 @@ C !FUNCTIONS:
       EXTERNAL ILNBLNK, IFNBLNK
 
 C !LOCAL VARIABLES:
+      _RS     dummyRS(1)
       CHARACTER*(2) fType
       INTEGER ioUnit, bi, bj, iRec
       INTEGER s1Lo,s1Hi,s2Lo,s2Hi
@@ -61,7 +62,7 @@ C     e.g. U.0000000100
 #ifdef ALLOW_MDSIO
       CALL MDS_WRITEVEC_LOC(
      I                       fullName, writeBinaryPrec, ioUnit,
-     I                       fType, sizArr, array,
+     I                       fType, sizArr, array, dummyRS,
      I                       bi, bj, iRec, myIter, myThid )
 #endif
 

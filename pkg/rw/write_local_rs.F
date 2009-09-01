@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rs.F,v 1.5 2009/06/09 22:52:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_local_rs.F,v 1.6 2009/09/01 19:28:24 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -49,6 +49,7 @@ C     Common block
 
 C     !LOCAL VARIABLES:
       LOGICAL useCurrentDir
+      _RL dummyRL(1)
       CHARACTER*(2) fType
       CHARACTER*(MAX_LEN_FNAM) fullName
       INTEGER s1Lo,s1Hi,s2Lo,s2Hi
@@ -79,12 +80,15 @@ C singleCpuIo option. This is a placeholder until MDS_WRITELOCAL
 C functionality is superseded by pkg/diagnostics.
          myThid = MAX(myThArg,1)
          CALL MDS_WRITE_FIELD(
-     I        fullName, writeBinaryPrec, globalFile, useCurrentDir,
-     I        fType, nNr, 1, nNr, field, iRec, myIter, myThid )
+     I                        fullName, writeBinaryPrec,
+     I                        globalFile, useCurrentDir,
+     I                        fType, nNr, 1, nNr, dummyRL, field,
+     I                        iRec, myIter, myThid )
       ELSE
          CALL MDS_WRITELOCAL(
-     I        fullName, writeBinaryPrec, globalFile,
-     I        fType, nNr, field, bi, bj, iRec, myIter, myThArg )
+     I                        fullName, writeBinaryPrec, globalFile,
+     I                        fType, nNr, dummyRL, field,
+     I                        bi, bj, iRec, myIter, myThArg )
       ENDIF
 #endif
 

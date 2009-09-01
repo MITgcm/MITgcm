@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_fld_xy_rl.F,v 1.4 2007/11/13 19:41:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/read_fld_xy_rl.F,v 1.5 2009/09/01 19:28:24 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -20,6 +20,7 @@ C Functions
       INTEGER ILNBLNK,IFNBLNK
 C Local
       LOGICAL useCurrentDir
+      _RS dummyRS(1)
       CHARACTER*(2) fType
       INTEGER nNz
       INTEGER iRec
@@ -47,7 +48,7 @@ C     e.g. U.0000000100
       CALL MDS_READ_FIELD(
      I                     fullName, readBinaryPrec, useCurrentDir,
      I                     fType, nNz, 1, nNz,
-     O                     field,
+     O                     field, dummyRS,
      I                     iRec, myThid )
 #endif
       RETURN

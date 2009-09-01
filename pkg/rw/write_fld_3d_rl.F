@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_fld_3d_rl.F,v 1.2 2007/11/13 19:41:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_fld_3d_rl.F,v 1.3 2009/09/01 19:28:24 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -25,6 +25,7 @@ C Common
       LOGICAL globalFile
 C Local
       LOGICAL useCurrentDir
+      _RS dummyRS(1)
       CHARACTER*(2) fType
       INTEGER iRec
       INTEGER s1Lo,s1Hi,s2Lo,s2Hi
@@ -52,7 +53,7 @@ C     e.g. U.0000000100
       CALL MDS_WRITE_FIELD(
      I                      fullName, writeBinaryPrec,
      I                      globalFile, useCurrentDir,
-     I                      fType, nNz, 1, nNz, field,
+     I                      fType, nNz, 1, nNz, field, dummyRS,
      I                      iRec, myIter, myThid )
 #endif
       RETURN

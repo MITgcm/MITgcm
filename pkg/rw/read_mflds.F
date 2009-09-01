@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.4 2007/11/25 21:34:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.5 2009/09/01 19:28:24 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -278,6 +278,7 @@ C     !FUNCTIONS
 C     !LOCAL VARIABLES:
       INTEGER j, iL, ioUnit
       LOGICAL useCurrentDir
+      _RS     dummyRS(1)
       CHARACTER*(2) fType
       CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -344,7 +345,7 @@ C--   read in array "field"
         CALL MDS_READ_FIELD(
      I                       fName, fPrec, useCurrentDir,
      I                       fType, nNz, 1, nNz,
-     O                       field,
+     O                       field, dummyRS,
      I                       nj, myThid )
 
 #endif
@@ -404,6 +405,7 @@ C     !FUNCTIONS
 C     !LOCAL VARIABLES:
       INTEGER j, iL, ioUnit
       LOGICAL useCurrentDir
+      _RS     dummyRS(1)
       CHARACTER*(2) fType
       CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -470,7 +472,7 @@ C--   read in array "field"
         CALL MDS_READ_FIELD(
      I                       fName, fPrec, useCurrentDir,
      I                       fType, kSiz, kLo, kHi,
-     O                       field,
+     O                       field, dummyRS,
      I                       nj, myThid )
 
 #endif
