@@ -1,33 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl_slice.F,v 1.9 2005/11/05 01:05:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl_slice.F,v 1.10 2009/09/01 18:49:26 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
 
-C The five "public" routines supplied here are:
-C
-C MDSREADFIELD   - read model field from direct access global or tiled MDS file
-C MDSWRITEFIELD  - write model field to direct access global or tiled MDS file
-C MDSFINDUNIT    - returns an available (unused) I/O channel
-C MDSREADVECTOR  - read vector from direct access global or tiled MDS file
-C MDSWRITEVECTOR - write vector to direct access global or tiled MDS file
-C
-C all other routines are "private" to these utilities and ought
-C not be accessed directly from the main code.
-C
-C Created:  03/16/99 adcroft@mit.edu
-C Modified: 03/23/99 adcroft@mit.edu
-C           To work with multiple records
-C Modified: 03/29/99 eckert@mit.edu
-C           Added arbitrary vector capability
-C Modified: 07/27/99 eckert@mit.edu
-C           Customized for state estimation (--> active_file_control.F)
-C           this relates only to *mdsreadvector* and *mdswritevector*
-C Modified: 07/28/99 eckert@mit.edu
-C           inserted calls to *print_message* and *print_error*
-C
-C To be modified to work with MITgcmuv message routines.
+C--  File mdsio_gl_slice.F: Routines to handle mid-level I/O interface.
+C--   Contents
+C--   o MDSREADFIELD_XZ_GL
+C--   o MDSREADFIELD_YZ_GL
+C--   o MDSWRITEFIELD_XZ_GL
+C--   o MDSWRITEFIELD_YZ_GL
 
-C=======================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE MDSREADFIELD_XZ_GL(
      I   fName,
      I   filePrec,
@@ -39,13 +23,13 @@ C=======================================================================
 C
 C Arguments:
 C
-C fName		string	base name for file to read
-C filePrec	integer	number of bits per word in file (32 or 64)
-C arrType	char(2)	declaration of "arr": either "RS" or "RL"
-C nNz		integer	size of third dimension: normally either 1 or Nr
-C arr		RS/RL	array to read into, arr(:,:,nNz,:,:)
-C irecord	integer	record number to read
-C myThid	integer thread identifier
+C fName      string  :: base name for file to read
+C filePrec   integer :: number of bits per word in file (32 or 64)
+C arrType    char(2) :: declaration of "arr": either "RS" or "RL"
+C nNz        integer :: size of third dimension: normally either 1 or Nr
+C arr         RS/RL  :: array to read into, arr(:,:,nNz,:,:)
+C irecord    integer :: record number to read
+C myThid     integer :: thread identifier
 C
 C MDSREADFIELD first checks to see if the file "fName" exists, then
 C if the file "fName.data" exists and finally the tiled files of the
@@ -78,6 +62,8 @@ C Routine arguments
       _RL arr_gl(sNx,nSx,nPx,nSy,nPy,Nr)
       integer irecord
       integer myThid
+
+#ifdef ALLOW_AUTODIFF
 C Functions
       integer ILNBLNK
       integer MDS_RECLEN
@@ -139,7 +125,7 @@ C If negative check for global file with MDS name (ie. fName.data)
        endif
       endif
 
-C Loop over all processors    
+C Loop over all processors
       do jp=1,nPy
       do ip=1,nPx
 C Loop over all tiles
@@ -245,12 +231,15 @@ C If global file was opened then close it
 
       _END_MASTER( myThid )
 
+#else /* ALLOW_AUTODIFF */
+      STOP 'ABNORMAL END: S/R MDSREADFIELD_XZ_GL is empty'
+#endif /* ALLOW_AUTODIFF */
 C     ------------------------------------------------------------------
-      return
-      end
-C=======================================================================
+      RETURN
+      END
 
-C=======================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE MDSREADFIELD_YZ_GL(
      I   fName,
      I   filePrec,
@@ -259,16 +248,16 @@ C=======================================================================
      O   arr_gl,
      I   irecord,
      I   myThid )
-C
+
 C Arguments:
 C
-C fName		string	base name for file to read
-C filePrec	integer	number of bits per word in file (32 or 64)
-C arrType	char(2)	declaration of "arr": either "RS" or "RL"
-C nNz		integer	size of third dimension: normally either 1 or Nr
-C arr		RS/RL	array to read into, arr(:,:,nNz,:,:)
-C irecord	integer	record number to read
-C myThid	integer thread identifier
+C fName      string  :: base name for file to read
+C filePrec   integer :: number of bits per word in file (32 or 64)
+C arrType    char(2) :: declaration of "arr": either "RS" or "RL"
+C nNz        integer :: size of third dimension: normally either 1 or Nr
+C arr         RS/RL  :: array to read into, arr(:,:,nNz,:,:)
+C irecord    integer :: record number to read
+C myThid     integer :: thread identifier
 C
 C MDSREADFIELD first checks to see if the file "fName" exists, then
 C if the file "fName.data" exists and finally the tiled files of the
@@ -301,6 +290,8 @@ C Routine arguments
       _RL arr_gl(nSx,nPx,sNy,nSy,nPy,Nr)
       integer irecord
       integer myThid
+
+#ifdef ALLOW_AUTODIFF
 C Functions
       integer ILNBLNK
       integer MDS_RECLEN
@@ -361,7 +352,7 @@ C If negative check for global file with MDS name (ie. fName.data)
         globalFile = .TRUE.
        endif
       endif
-C Loop over all processors    
+C Loop over all processors
       do jp=1,nPy
       do ip=1,nPx
 C Loop over all tiles
@@ -467,12 +458,15 @@ C If global file was opened then close it
 
       _END_MASTER( myThid )
 
+#else /* ALLOW_AUTODIFF */
+      STOP 'ABNORMAL END: S/R MDSREADFIELD_YZ_GL is empty'
+#endif /* ALLOW_AUTODIFF */
 C     ------------------------------------------------------------------
-      return
-      end
-C=======================================================================
+      RETURN
+      END
 
-C=======================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE MDSWRITEFIELD_XZ_GL(
      I   fName,
      I   filePrec,
@@ -485,14 +479,14 @@ C=======================================================================
 C
 C Arguments:
 C
-C fName		string	base name for file to written
-C filePrec	integer	number of bits per word in file (32 or 64)
-C arrType	char(2)	declaration of "arr": either "RS" or "RL"
-C nNz		integer	size of third dimension: normally either 1 or Nr
-C arr		RS/RL	array to write, arr(:,:,nNz,:,:)
-C irecord	integer	record number to read
-C myIter	integer	time step number
-C myThid	integer thread identifier
+C fName      string  :: base name for file to write
+C filePrec   integer :: number of bits per word in file (32 or 64)
+C arrType    char(2) :: declaration of "arr": either "RS" or "RL"
+C nNz        integer :: size of third dimension: normally either 1 or Nr
+C arr         RS/RL  :: array to write, arr(:,:,nNz,:,:)
+C irecord    integer :: record number to write
+C myIter     integer :: time step number
+C myThid     integer :: thread identifier
 C
 C MDSWRITEFIELD creates either a file of the form "fName.data" and
 C "fName.meta" if the logical flag "globalFile" is set true. Otherwise
@@ -537,6 +531,8 @@ cph)
       integer irecord
       integer myIter
       integer myThid
+
+#ifdef ALLOW_AUTODIFF
 C Functions
       integer ILNBLNK
       integer MDS_RECLEN
@@ -575,7 +571,7 @@ C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
 
 
-C Loop over all processors    
+C Loop over all processors
       do jp=1,nPy
       do ip=1,nPx
 C Loop over all tiles
@@ -679,15 +675,17 @@ C End of ip,jp loops
        enddo
       enddo
 
-
       _END_MASTER( myThid )
 
+#else /* ALLOW_AUTODIFF */
+      STOP 'ABNORMAL END: S/R MDSWRITEFIELD_XZ_GL is empty'
+#endif /* ALLOW_AUTODIFF */
 C     ------------------------------------------------------------------
-      return
-      end
-C=======================================================================
+      RETURN
+      END
 
-C=======================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE MDSWRITEFIELD_YZ_GL(
      I   fName,
      I   filePrec,
@@ -700,14 +698,14 @@ C=======================================================================
 C
 C Arguments:
 C
-C fName		string	base name for file to written
-C filePrec	integer	number of bits per word in file (32 or 64)
-C arrType	char(2)	declaration of "arr": either "RS" or "RL"
-C nNz		integer	size of third dimension: normally either 1 or Nr
-C arr		RS/RL	array to write, arr(:,:,nNz,:,:)
-C irecord	integer	record number to read
-C myIter	integer	time step number
-C myThid	integer thread identifier
+C fName      string  :: base name for file to write
+C filePrec   integer :: number of bits per word in file (32 or 64)
+C arrType    char(2) :: declaration of "arr": either "RS" or "RL"
+C nNz        integer :: size of third dimension: normally either 1 or Nr
+C arr         RS/RL  :: array to write, arr(:,:,nNz,:,:)
+C irecord    integer :: record number to write
+C myIter     integer :: time step number
+C myThid     integer :: thread identifier
 C
 C MDSWRITEFIELD creates either a file of the form "fName.data" and
 C "fName.meta" if the logical flag "globalFile" is set true. Otherwise
@@ -752,6 +750,8 @@ cph)
       integer irecord
       integer myIter
       integer myThid
+
+#ifdef ALLOW_AUTODIFF
 C Functions
       integer ILNBLNK
       integer MDS_RECLEN
@@ -790,7 +790,7 @@ C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
 
 
-C Loop over all processors    
+C Loop over all processors
       do jp=1,nPy
       do ip=1,nPx
 C Loop over all tiles
@@ -894,11 +894,11 @@ C End of ip,jp loops
        enddo
       enddo
 
-
       _END_MASTER( myThid )
 
+#else /* ALLOW_AUTODIFF */
+      STOP 'ABNORMAL END: S/R MDSWRITEFIELD_YZ_GL is empty'
+#endif /* ALLOW_AUTODIFF */
 C     ------------------------------------------------------------------
-      return
-      end
-C=======================================================================
-
+      RETURN
+      END
