@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.6 2009/04/28 18:15:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.7 2009/09/01 19:32:27 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -45,6 +45,7 @@ C     == local variables ==
       INTEGER ip
       _RL tmp(imax)
       _RL npart_dist
+      _RS dummyRS(1)
 
 C     == end of interface ==
 
@@ -70,7 +71,7 @@ C (1) write actual number floats and time into file
 
           ioUnit = -1
           CALL MDS_WRITEVEC_LOC( fn, precFloat64, ioUnit,
-     &                           'RL', imax, tmp,
+     &                           'RL', imax, tmp, dummyRS,
      &                           bi,bj,-1, myIter, myThid )
 
           DO ip=1,npart_tile(bi,bj)
@@ -89,7 +90,7 @@ C (2) write float positions into file
             irecord = ip+1
             IF ( ip.NE.npart_tile(bi,bj) ) irecord = -irecord
             CALL MDS_WRITEVEC_LOC( fn, precFloat64, ioUnit,
-     &                             'RL', imax, tmp,
+     &                             'RL', imax, tmp, dummyRS,
      &                             bi,bj,irecord, myIter, myThid )
 
           ENDDO
