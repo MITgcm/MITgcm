@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_rw_field.F,v 1.3 2009/08/05 23:17:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_rw_field.F,v 1.4 2009/09/01 19:20:40 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -53,12 +53,28 @@ C Routine arguments
       _RL     arr(*)
       INTEGER irecord
       INTEGER myThid
-C     ------------------------------------------------------------------
-      CALL MDS_READ_FIELD(
-     I              fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
-     O              arr,
-     I              irecord, myThid )
-C     ------------------------------------------------------------------
+
+#ifdef ALLOW_AUTODIFF
+C Local variables
+      _RL dummyRL(1)
+      _RS dummyRS(1)
+
+      IF ( arrType.EQ.'RL' ) THEN
+        CALL MDS_READ_FIELD(
+     I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
+     O                arr, dummyRS,
+     I                irecord, myThid )
+      ELSE
+        CALL MDS_READ_FIELD(
+     I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
+     O                dummyRL, arr,
+     I                irecord, myThid )
+      ENDIF
+
+#else /* ALLOW_AUTODIFF */
+      STOP 'ABNORMAL END: S/R MDSREADFIELD is retired'
+#endif /* ALLOW_AUTODIFF */
+
       RETURN
       END
 
@@ -103,14 +119,31 @@ C Routine arguments
       _RL     arr(*)
       INTEGER irecord
       INTEGER myThid
-C     ------------------------------------------------------------------
-      CALL MDS_READ_FIELD(
-     I              fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
-     O              arr,
-     I              irecord, myThid )
-C     ------------------------------------------------------------------
+
+#ifdef ALLOW_AUTODIFF
+C Local variables
+      _RL dummyRL(1)
+      _RS dummyRS(1)
+
+      IF ( arrType.EQ.'RL' ) THEN
+        CALL MDS_READ_FIELD(
+     I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
+     O                arr, dummyRS,
+     I                irecord, myThid )
+      ELSE
+        CALL MDS_READ_FIELD(
+     I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
+     O                dummyRL, arr,
+     I                irecord, myThid )
+      ENDIF
+
+#else /* ALLOW_AUTODIFF */
+      STOP 'ABNORMAL END: S/R MDSREADFIELD_LOC is empty'
+#endif /* ALLOW_AUTODIFF */
+
       RETURN
       END
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MDSWRITEFIELD(
@@ -158,12 +191,28 @@ C Routine arguments
       INTEGER irecord
       INTEGER myIter
       INTEGER myThid
-C     ------------------------------------------------------------------
-      CALL MDS_WRITE_FIELD(
-     I                      fName, filePrec, globalFile, .FALSE.,
-     I                      arrType, nNz, 1, nNz, arr, irecord,
-     I                      myIter, myThid )
-C     ------------------------------------------------------------------
+
+#ifdef ALLOW_AUTODIFF
+C Local variables
+      _RL dummyRL(1)
+      _RS dummyRS(1)
+
+      IF ( arrType.EQ.'RL' ) THEN
+        CALL MDS_WRITE_FIELD(
+     I                 fName, filePrec, globalFile, .FALSE.,
+     I                 arrType, nNz, 1, nNz, arr, dummyRS,
+     I                 irecord, myIter, myThid )
+      ELSE
+        CALL MDS_WRITE_FIELD(
+     I                 fName, filePrec, globalFile, .FALSE.,
+     I                 arrType, nNz, 1, nNz, dummyRL, arr,
+     I                 irecord, myIter, myThid )
+      ENDIF
+
+#else /* ALLOW_AUTODIFF */
+      STOP 'ABNORMAL END: S/R MDSWRITEFIELD is retired'
+#endif /* ALLOW_AUTODIFF */
+
       RETURN
       END
 
@@ -214,11 +263,27 @@ C Routine arguments
       INTEGER irecord
       INTEGER myIter
       INTEGER myThid
-C     ------------------------------------------------------------------
-      CALL MDS_WRITE_FIELD(
-     I                      fName, filePrec, globalFile, .TRUE.,
-     I                      arrType, nNz, 1, nNz, arr, irecord,
-     I                      myIter, myThid )
-C     ------------------------------------------------------------------
+
+#ifdef ALLOW_AUTODIFF
+C Local variables
+      _RL dummyRL(1)
+      _RS dummyRS(1)
+
+      IF ( arrType.EQ.'RL' ) THEN
+        CALL MDS_WRITE_FIELD(
+     I                 fName, filePrec, globalFile, .TRUE.,
+     I                 arrType, nNz, 1, nNz, arr, dummyRS,
+     I                 irecord, myIter, myThid )
+      ELSE
+        CALL MDS_WRITE_FIELD(
+     I                 fName, filePrec, globalFile, .TRUE.,
+     I                 arrType, nNz, 1, nNz, dummyRL, arr,
+     I                 irecord, myIter, myThid )
+      ENDIF
+
+#else /* ALLOW_AUTODIFF */
+      STOP 'ABNORMAL END: S/R MDSWRITEFIELD_LOC is empty'
+#endif /* ALLOW_AUTODIFF */
+
       RETURN
       END

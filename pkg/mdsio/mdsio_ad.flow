@@ -1,19 +1,47 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_ad.flow,v 1.7 2009/02/03 22:57:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_ad.flow,v 1.8 2009/09/01 19:20:40 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
 C subroutine mds_read_field
 C----------------------------------------
-CADJ SUBROUTINE mds_read_field  INPUT  = 1,2,3,4,5,6,7,  9,10
-CADJ SUBROUTINE mds_read_field  OUTPUT =               8 
-CADJ SUBROUTINE mds_read_field  DEPEND = 1,2,3,4,5,6,7,8,9,10
+CADJ SUBROUTINE mds_read_field  INPUT  = 1,2,3,4,5,6,7,    10,11
+CADJ SUBROUTINE mds_read_field  OUTPUT =               8,9
+CADJ SUBROUTINE mds_read_field  DEPEND = 1,2,3,4,5,6,7,8,9,10,11
 CADJ SUBROUTINE mds_read_field  REQUIRED
 
 C----------------------------------------
 C subroutine mds_write_field
 C----------------------------------------
-CADJ SUBROUTINE mds_write_field  INPUT  = 1,2,3,4,5,6,7,8,9,10,11,12
+CADJ SUBROUTINE mds_write_field  INPUT  = 1,2,3,4,5,6,7,8,9,10,11,12,13
 CADJ SUBROUTINE mds_write_field  OUTPUT =
+
+C----------------------------------------
+C subroutine mds_read_rec_xz
+C----------------------------------------
+CADJ SUBROUTINE mds_read_rec_xz  INPUT  = 1,2,3,4,5,    8,9
+CADJ SUBROUTINE mds_read_rec_xz  OUTPUT =           6,7
+CADJ SUBROUTINE mds_read_rec_xz  DEPEND = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE mds_read_rec_xz  REQUIRED
+
+C----------------------------------------
+C subroutine mds_read_rec_yz
+C----------------------------------------
+CADJ SUBROUTINE mds_read_rec_yz  INPUT  = 1,2,3,4,5,    8,9
+CADJ SUBROUTINE mds_read_rec_yz  OUTPUT =           6,7
+CADJ SUBROUTINE mds_read_rec_yz  DEPEND = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE mds_read_rec_yz  REQUIRED
+
+C----------------------------------------
+C subroutine mds_write_sec_xz
+C----------------------------------------
+CADJ SUBROUTINE mds_write_sec_xz  INPUT  = 1,2,3,4,5,6,7,8,9,10,11
+CADJ SUBROUTINE mds_write_sec_xz  OUTPUT =
+
+C----------------------------------------
+C subroutine mds_write_sec_yz
+C----------------------------------------
+CADJ SUBROUTINE mds_write_sec_yz  INPUT  = 1,2,3,4,5,6,7,8,9,10,11
+CADJ SUBROUTINE mds_write_sec_yz  OUTPUT =
 
 C----------------------------------------
 C subroutine mdsreadfield
