@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.13 2009/08/02 20:42:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.14 2009/09/01 19:00:15 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -367,6 +367,8 @@ C End-if useSingleCpuIO
       ENDIF
 #endif /* ALLOW_USE_MPI */
 
+#else /* ALLOW_AUTODIFF */
+      STOP 'ABNORMAL END: S/R MDSWRITEVECTOR is empty'
 #endif /* ALLOW_AUTODIFF */
 
 C     ------------------------------------------------------------------

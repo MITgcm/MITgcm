@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.14 2009/02/03 23:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.15 2009/09/01 19:00:15 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -337,6 +337,8 @@ C      end-do k=1,1
       ENDIF
 C     end-if ( useSingleCPUIO )
 
+#else /* ALLOW_AUTODIFF */
+      STOP 'ABNORMAL END: S/R MDSREADVECTOR is empty'
 #endif /* ALLOW_AUTODIFF */
 
       RETURN
