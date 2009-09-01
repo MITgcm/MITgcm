@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/rw_ad.flow,v 1.10 2009/02/03 22:21:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/rw_ad.flow,v 1.11 2009/09/01 19:25:28 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -66,6 +66,54 @@ C subroutine  write_rec_xyz_rl
 C----------------------------------------
 CADJ SUBROUTINE write_rec_xyz_rl  INPUT  = 1,2,3,4,5
 CADJ SUBROUTINE write_rec_xyz_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_3d_rs
+C----------------------------------------
+CADJ SUBROUTINE write_rec_3d_rs  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_3d_rs  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_3d_rl
+C----------------------------------------
+CADJ SUBROUTINE write_rec_3d_rl  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_3d_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_lev_rs
+C----------------------------------------
+CADJ SUBROUTINE write_rec_lev_rs  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE write_rec_lev_rs  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_lev_rl
+C----------------------------------------
+CADJ SUBROUTINE write_rec_lev_rl  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE write_rec_lev_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_xz_rs
+C----------------------------------------
+CADJ SUBROUTINE write_rec_xz_rs  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_xz_rs  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_xz_rl
+C----------------------------------------
+CADJ SUBROUTINE write_rec_xz_rl  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_xz_rl  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_yz_rs
+C----------------------------------------
+CADJ SUBROUTINE write_rec_yz_rs  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_yz_rs  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_rec_yz_rl
+C----------------------------------------
+CADJ SUBROUTINE write_rec_yz_rl  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_yz_rl  OUTPUT =
 
 C----------------------------------------
 C subroutine WRITE_GLVEC_RS

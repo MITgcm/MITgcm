@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_rec.F,v 1.2 2007/11/13 19:39:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/read_rec.F,v 1.3 2009/09/01 19:25:28 jmc Exp $
 C $Name:  $
 #include "RW_OPTIONS.h"
 
@@ -46,6 +46,7 @@ c     INTEGER ILNBLNK
 C     !LOCAL VARIABLES:
 C Local
       LOGICAL useCurrentDir
+      _RL dummyRL(1)
       CHARACTER*(2) fType
       INTEGER nNz
 c     INTEGER IL
@@ -66,7 +67,7 @@ c     ENDIF
       CALL MDS_READ_FIELD(
      I                     fName, readBinaryPrec, useCurrentDir,
      I                     fType, nNz, 1, nNz,
-     O                     field,
+     O                     dummyRL, field,
      I                     iRec, myThid )
 #endif
       RETURN
@@ -104,6 +105,7 @@ c     INTEGER ILNBLNK
 C     !LOCAL VARIABLES:
 C Local
       LOGICAL useCurrentDir
+      _RS dummyRS(1)
       CHARACTER*(2) fType
       INTEGER nNz
 c     INTEGER IL
@@ -124,7 +126,7 @@ c     ENDIF
       CALL MDS_READ_FIELD(
      I                     fName, readBinaryPrec, useCurrentDir,
      I                     fType, nNz, 1, nNz,
-     O                     field,
+     O                     field, dummyRS,
      I                     iRec, myThid )
 #endif
       RETURN
@@ -162,6 +164,7 @@ c     INTEGER ILNBLNK
 C     !LOCAL VARIABLES:
 C Local
       LOGICAL useCurrentDir
+      _RL dummyRL(1)
       CHARACTER*(2) fType
       INTEGER nNz
 c     INTEGER IL
@@ -183,7 +186,7 @@ c     ENDIF
       CALL MDS_READ_FIELD(
      I                     fName, readBinaryPrec, useCurrentDir,
      I                     fType, nNz, 1, nNz,
-     O                     field,
+     O                     dummyRL, field,
      I                     iRec, myThid )
 #endif
       RETURN
@@ -221,6 +224,7 @@ c     INTEGER ILNBLNK
 C     !LOCAL VARIABLES:
 C Local
       LOGICAL useCurrentDir
+      _RS dummyRS(1)
       CHARACTER*(2) fType
       INTEGER nNz
 c     INTEGER IL
@@ -242,7 +246,7 @@ c     ENDIF
       CALL MDS_READ_FIELD(
      I                     fName, readBinaryPrec, useCurrentDir,
      I                     fType, nNz, 1, nNz,
-     O                     field,
+     O                     field, dummyRS,
      I                     iRec, myThid )
 #endif
       RETURN
@@ -286,6 +290,7 @@ c     INTEGER ILNBLNK
 C     !LOCAL VARIABLES:
 C Local
       LOGICAL useCurrentDir
+      _RL dummyRL(1)
       CHARACTER*(2) fType
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
@@ -305,7 +310,7 @@ c     ENDIF
       CALL MDS_READ_FIELD(
      I                     fName, fPrec, useCurrentDir,
      I                     fType, nNz, 1, nNz,
-     O                     field,
+     O                     dummyRL, field,
      I                     iRec, myThid )
 #endif
       RETURN
@@ -349,6 +354,7 @@ c     INTEGER ILNBLNK
 C     !LOCAL VARIABLES:
 C Local
       LOGICAL useCurrentDir
+      _RS dummyRS(1)
       CHARACTER*(2) fType
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
@@ -368,7 +374,7 @@ c     ENDIF
       CALL MDS_READ_FIELD(
      I                     fName, fPrec, useCurrentDir,
      I                     fType, nNz, 1, nNz,
-     O                     field,
+     O                     field, dummyRS,
      I                     iRec, myThid )
 #endif
       RETURN
@@ -413,6 +419,7 @@ c     INTEGER ILNBLNK
 C     !LOCAL VARIABLES:
 C Local
       LOGICAL useCurrentDir
+      _RL dummyRL(1)
       CHARACTER*(2) fType
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
@@ -432,7 +439,7 @@ c     ENDIF
       CALL MDS_READ_FIELD(
      I                     fName, fPrec, useCurrentDir,
      I                     fType, kSiz, kLo, kHi,
-     O                     field,
+     O                     dummyRL, field,
      I                     iRec, myThid )
 #endif
       RETURN
@@ -477,6 +484,7 @@ c     INTEGER ILNBLNK
 C     !LOCAL VARIABLES:
 C Local
       LOGICAL useCurrentDir
+      _RS dummyRS(1)
       CHARACTER*(2) fType
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
@@ -496,7 +504,7 @@ c     ENDIF
       CALL MDS_READ_FIELD(
      I                     fName, fPrec, useCurrentDir,
      I                     fType, kSiz, kLo, kHi,
-     O                     field,
+     O                     field, dummyRS,
      I                     iRec, myThid )
 #endif
       RETURN
@@ -506,7 +514,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: READ_REC_XZ_RS
 C     !INTERFACE:
-      SUBROUTINE READ_REC_XZ_RS( fName,field,iRec,myIter,myThid )
+      SUBROUTINE READ_REC_XZ_RS(
+     I                           fName, fPrec, nNz,
+     O                           field,
+     I                           iRec, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C READ_REC_XZ_RS is a "front-end" interface to the low-level I/O
@@ -522,7 +533,9 @@ C Global
 C     !INPUT/OUTPUT PARAMETERS:
 C Arguments
       CHARACTER*(*) fName
-      _RS field(1-Olx:sNx+Olx,Nr,nSx,nSy)
+      INTEGER fPrec
+      INTEGER nNz
+      _RS field(1-Olx:sNx+Olx,nNz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -532,8 +545,9 @@ c     INTEGER ILNBLNK
 
 C     !LOCAL VARIABLES:
 C Local
+      LOGICAL useCurrentDir
+      _RL dummyRL(1)
       CHARACTER*(2) fType
-      INTEGER nNz
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
@@ -545,11 +559,14 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      useCurrentDir = .FALSE.
       fType='RS'
-      nNz=Nr
 #ifdef ALLOW_MDSIO
-      CALL MDSREADFIELDXZ( fName, readBinaryPrec, fType,
-     &     nNz, field, iRec, myThid )
+      CALL MDS_READ_SEC_XZ(
+     I                      fName, fPrec, useCurrentDir,
+     I                      fType, nNz,
+     O                      dummyRL, field,
+     I                      iRec, myThid )
 #endif
       RETURN
       END
@@ -558,7 +575,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: READ_REC_XZ_RL
 C     !INTERFACE:
-      SUBROUTINE READ_REC_XZ_RL( fName,field,iRec,myIter,myThid )
+      SUBROUTINE READ_REC_XZ_RL(
+     I                           fName, fPrec, nNz,
+     O                           field,
+     I                           iRec, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C READ_REC_XZ_RL is a "front-end" interface to the low-level I/O
@@ -575,7 +595,9 @@ C Global
 C     !INPUT/OUTPUT PARAMETERS:
 C Arguments
       CHARACTER*(*) fName
-      _RL field(1-Olx:sNx+Olx,Nr,nSx,nSy)
+      INTEGER fPrec
+      INTEGER nNz
+      _RL field(1-Olx:sNx+Olx,nNz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -585,8 +607,9 @@ c     INTEGER ILNBLNK
 
 C     !LOCAL VARIABLES:
 C Local
+      LOGICAL useCurrentDir
+      _RS dummyRS(1)
       CHARACTER*(2) fType
-      INTEGER nNz
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
@@ -598,11 +621,14 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      useCurrentDir = .FALSE.
       fType='RL'
-      nNz=Nr
 #ifdef ALLOW_MDSIO
-      CALL MDSREADFIELDXZ( fName, readBinaryPrec, fType,
-     &     nNz, field, iRec, myThid )
+      CALL MDS_READ_SEC_XZ(
+     I                      fName, fPrec, useCurrentDir,
+     I                      fType, nNz,
+     O                      field, dummyRS,
+     I                      iRec, myThid )
 #endif
       RETURN
       END
@@ -611,7 +637,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: READ_REC_YZ_RS
 C     !INTERFACE:
-      SUBROUTINE READ_REC_YZ_RS( fName,field,iRec,myIter,myThid )
+      SUBROUTINE READ_REC_YZ_RS(
+     I                           fName, fPrec, nNz,
+     O                           field,
+     I                           iRec, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C READ_REC_YZ_RS is a "front-end" interface to the low-level I/O
@@ -628,7 +657,9 @@ C Global
 C     !INPUT/OUTPUT PARAMETERS:
 C Arguments
       CHARACTER*(*) fName
-      _RS field(1-Oly:sNy+Oly,Nr,nSx,nSy)
+      INTEGER fPrec
+      INTEGER nNz
+      _RS field(1-Oly:sNy+Oly,nNz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -638,8 +669,9 @@ c     INTEGER ILNBLNK
 
 C     !LOCAL VARIABLES:
 C Local
+      LOGICAL useCurrentDir
+      _RL dummyRL(1)
       CHARACTER*(2) fType
-      INTEGER nNz
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
@@ -652,11 +684,14 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      useCurrentDir = .FALSE.
       fType='RS'
-      nNz=Nr
 #ifdef ALLOW_MDSIO
-      CALL MDSREADFIELDYZ( fName, readBinaryPrec, fType,
-     &     nNz, field, iRec, myThid )
+      CALL MDS_READ_SEC_YZ(
+     I                      fName, fPrec, useCurrentDir,
+     I                      fType, nNz,
+     O                      dummyRL, field,
+     I                      iRec, myThid )
 #endif
       RETURN
       END
@@ -665,7 +700,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: READ_REC_YZ_RL
 C     !INTERFACE:
-      SUBROUTINE READ_REC_YZ_RL( fName,field,iRec,myIter,myThid )
+      SUBROUTINE READ_REC_YZ_RL(
+     I                           fName, fPrec, nNz,
+     O                           field,
+     I                           iRec, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C READ_REC_YZ_RL is a "front-end" interface to the low-level I/O
@@ -682,7 +720,9 @@ C Global
 C     !INPUT/OUTPUT PARAMETERS:
 C Arguments
       CHARACTER*(*) fName
-      _RL field(1-Oly:sNy+Oly,Nr,nSx,nSy)
+      INTEGER fPrec
+      INTEGER nNz
+      _RL field(1-Oly:sNy+Oly,nNz,nSx,nSy)
       INTEGER iRec
       INTEGER myIter
       INTEGER myThid
@@ -692,8 +732,9 @@ c     INTEGER ILNBLNK
 
 C     !LOCAL VARIABLES:
 C Local
+      LOGICAL useCurrentDir
+      _RS dummyRS(1)
       CHARACTER*(2) fType
-      INTEGER nNz
 c     INTEGER IL
 c     CHARACTER*(MAX_LEN_FNAM) fullName
 CEOP
@@ -706,11 +747,14 @@ c     ELSE
 c      fullName=fName
 c     ENDIF
 
+      useCurrentDir = .FALSE.
       fType='RL'
-      nNz=Nr
 #ifdef ALLOW_MDSIO
-      CALL MDSREADFIELDYZ( fName, readBinaryPrec, fType,
-     &     nNz, field, iRec, myThid )
+      CALL MDS_READ_SEC_YZ(
+     I                      fName, fPrec, useCurrentDir,
+     I                      fType, nNz,
+     O                      field, dummyRS,
+     I                      iRec, myThid )
 #endif
       RETURN
       END
