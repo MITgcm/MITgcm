@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.6 2006/10/18 20:08:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.7 2009/09/02 19:13:25 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -34,12 +34,12 @@ c #include "AIM_GRID.h"
 #include "AIM_FFIELDS.h"
 
 C     === Routine arguments ===
-C     myThid - Thread no. that called this routine.
-C     myTime - Simulation time
-C     myIter - Simulation timestep number
-      INTEGER myThid
+C     myTime :: Simulation time
+C     myIter :: Simulation timestep number
+C     myThid :: Thread no. that called this routine.
       _RL     myTime
       INTEGER myIter
+      INTEGER myThid
 CEndOfInterface
 
 C     === Functions ===
@@ -116,7 +116,8 @@ C-- Use Monthly Mean surface forcing fields:
 C-    New month so load in data
 
 C     Prevent loading of new data before everyone has finished with it
-         CALL BAR2(myThid)
+c        CALL BAR2(myThid)
+C  note: already call BARRIER inside MDS-IO S/R when reading/writing 2-D/3-D field
 
 C-      only one thread updates parameter in common block
          _BEGIN_MASTER( myThid )
@@ -149,7 +150,7 @@ C        o Soil moisture
          CALL READ_REC_XY_RS( fNam, aim_sw10, 1, myIter, myThid )
 
 C     Stop anyone leaving until all data is read
-         CALL BAR2(myThid)
+c        CALL BAR2(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -193,8 +194,7 @@ C-- end bi,bj loops
          ENDDO
 
          IF (myIter.EQ.nIter0) THEN
-          CALL BAR2(myThid)
-          CALL WRITE_FLD_XY_RL( 'aim_Tsurf',' ', aim_sst0, 0, myThid )
+          CALL WRITE_FLD_XY_RS( 'aim_Tsurf',' ', aim_sst0, 0, myThid )
          ENDIF
 
 C-     endif New month - load in data
@@ -237,7 +237,8 @@ C-     Load new data:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Prevent loading of new data before everyone has finished with it
-        CALL BAR2(myThid)
+c       CALL BAR2(myThid)
+C  note: already call BARRIER inside MDS-IO S/R when reading/writing 2-D/3-D field
 
 C-      only one thread updates parameter in common block
         _BEGIN_MASTER( myThid )
@@ -292,7 +293,7 @@ C-      endif 1rst iter.
         ENDIF
 
 C     Stop anyone leaving until all data is read
-        CALL BAR2(myThid)
+c       CALL BAR2(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

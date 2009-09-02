@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.14 2007/04/04 01:51:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.15 2009/09/02 19:13:25 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -44,7 +44,7 @@ C     pGround :: Lower boundary pressure
 C     bi,bj   :: Tile indices
 C     i, j, k :: Loop counters
       _RL HSG(0:Nr)
-      _RL pGround, tmpPgrnd
+      _RL pGround, tmpPgrnd, tmpVar
       INTEGER bi, bj
       INTEGER i, j, k
       INTEGER Katm
@@ -85,16 +85,17 @@ C      of surface reference pressure Ro_surf that affects Surf.Temp.
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          tmpPgrnd = MIN(truncSurfP(i,j,bi,bj),atm_Po)
-          truncSurfP(i,j,bi,bj)=
-     &     ( Ro_surf(i,j,bi,bj)/tmpPgrnd )**atm_kappa
+          tmpPgrnd = truncSurfP(i,j,bi,bj)
+          tmpVar   = Ro_surf(i,j,bi,bj)
+          tmpPgrnd = MIN( tmpPgrnd, atm_Po )
+          truncSurfP(i,j,bi,bj) = ( tmpVar/tmpPgrnd )**atm_kappa
          ENDDO
         ENDDO
         IF (aim_useMMsurfFc .AND. aim_surfPotTemp) THEN
          DO j=1,sNy
           DO i=1,sNx
-           truncSurfP(i,j,bi,bj) =
-     &      ( Ro_surf(i,j,bi,bj)/atm_Po )**atm_kappa
+           tmpVar   = Ro_surf(i,j,bi,bj)
+           truncSurfP(i,j,bi,bj) = ( tmpVar/atm_Po )**atm_kappa
           ENDDO
          ENDDO
         ENDIF
