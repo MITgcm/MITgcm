@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.20 2009/02/19 09:24:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.21 2009/09/02 19:18:39 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -7,7 +7,7 @@ C $Name:  $
      &     uvecfile, uvecstartdate, uvecperiod,
      &     exf_inscal_uvec, uvec, uvec0, uvec1, uvecmask,
      &     uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
-     &     uvec_nlon, uvec_nlat, 
+     &     uvec_nlon, uvec_nlat,
      &     uvec_remove_intercept, uvec_remove_slope,
      &     vvecfile, vvecstartdate, vvecperiod,
      &     exf_inscal_vvec, vvec, vvec0, vvec1, vvecmask,
@@ -186,8 +186,9 @@ c     apply mask
               call exf_filter_rl( uvec1, uvecmask, mythid )
               call exf_filter_rl( vvec1, vvecmask, mythid )
             else
-              call exf_filter_rs( uvec1, uvecmask, mythid )
-              call exf_filter_rs( vvec1, vvecmask, mythid )
+c             call exf_filter_rs( uvec1, uvecmask, mythid )
+c             call exf_filter_rs( vvec1, vvecmask, mythid )
+              STOP 'S/R EXF_SET_UV: invalid exf_yftype'
             end if
           endif
 
@@ -265,8 +266,9 @@ c     apply mask
               call exf_filter_rl( uvec1, uvecmask, mythid )
               call exf_filter_rl( vvec1, vvecmask, mythid )
             else
-              call exf_filter_rs( uvec1, uvecmask, mythid )
-              call exf_filter_rs( vvec1, vvecmask, mythid )
+c             call exf_filter_rs( uvec1, uvecmask, mythid )
+c             call exf_filter_rs( vvec1, vvecmask, mythid )
+              STOP 'S/R EXF_SET_UV: invalid exf_yftype'
             end if
           endif
 
@@ -285,7 +287,7 @@ c     Interpolate linearly onto the current time.
               enddo
             enddo
           enddo
-          
+
         endif
 
       ELSE
@@ -309,7 +311,7 @@ c     IF ( .NOT. ( usingCurvilinearGrid .OR rotateGrid ) )
      &      vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
      &      vvec_nlon, vvec_nlat, xC, yC, interp_method,
      &      mycurrenttime, mycurrentiter, mythid )
-        
+
       ENDIF
 
 #endif /* USE_EXF_INTERPOLATION */

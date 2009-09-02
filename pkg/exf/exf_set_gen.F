@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.27 2009/09/01 19:33:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.28 2009/09/02 19:18:39 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -150,8 +150,8 @@ c    &                             gen1, count0, myIter, myThid )
 
             if (exf_yftype .eq. 'RL') then
                call exf_filter_rl( gen1, genmask, mythid )
-            else
-               call exf_filter_rs( gen1, genmask, mythid )
+c           else
+c              call exf_filter_rs( gen1, genmask, mythid )
             end if
          endif
 
@@ -184,8 +184,8 @@ c    &                             gen1, count1, myIter, myThid )
 
             if (exf_yftype .eq. 'RL') then
                call exf_filter_rl( gen1, genmask, mythid )
-            else
-               call exf_filter_rs( gen1, genmask, mythid )
+c           else
+c              call exf_filter_rs( gen1, genmask, mythid )
             end if
          endif
 
@@ -315,8 +315,8 @@ c    &                             genfld, count, 0, myThid )
 
          if (exf_yftype .eq. 'RL') then
             call exf_filter_rl( genfld, genmask, mythid )
-         else
-            call exf_filter_rs( genfld, genmask, mythid )
+c        else
+c           call exf_filter_rs( genfld, genmask, mythid )
          end if
 
 c     Loop over tiles and scale genfld
