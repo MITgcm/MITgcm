@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.11 2006/10/17 18:22:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.12 2009/09/02 21:42:43 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -81,10 +81,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( DIFFERENT_MULTIPLE(land_monFreq,myTime,deltaTClock)
      &     .OR. myIter.EQ.nIter0 ) THEN
 
-        DO k=1,land_nLev
-          locDr(k)= 1.
-        ENDDO
-
         IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
 C     & mon_write_mnc (since it's the only thread that uses those flags):
@@ -128,6 +124,10 @@ C--   endif master cpu io
         CALL MON_SET_PREF('land_',myThid)
         CALL MON_OUT_RL('time_sec', myTime,mon_string_none,myThid)
 
+        DO k=1,land_nLev
+          locDr(k)= 1.
+        ENDDO
+
 C-- Snow thickness :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, nLatBnd, yBand,
@@ -163,23 +163,6 @@ C-- Snow thickness :
           CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
           _END_MASTER(myThid)
         ENDIF
-
-C-- Total Energy :
-        CALL MON_STATS_LATBND_RL(
-     I                land_nLev, 1, 0, nLatBnd, yBand,
-     I                land_enthalp, land_frc, maskH, rA, yC, land_dzF,
-     O                theMin, theMax, theMean, theVar, theVol,
-     I                myThid )
-        theEnergy = 0.
-        DO n=1,nLatBnd
-         theEng(n) = theEng(n) + theMean(n)*theVol(n)
-         theEnergy = theEnergy + theEng(n)
-        ENDDO
-        mon_var='TotEnerg'
-        CALL MON_OUT_RL(mon_var,theEnergy, mon_sufx(0), myThid)
-        CALL MON_OUT_RL(mon_var,theEng(1), mon_sufx(1), myThid)
-        CALL MON_OUT_RL(mon_var,theEng(2), mon_sufx(2), myThid)
-        CALL MON_OUT_RL(mon_var,theEng(3), mon_sufx(3), myThid)
 
 C-- Surface Temp. :
         CALL MON_STATS_LATBND_RL(
@@ -265,10 +248,30 @@ C-- 2nd  level (volume-mean) Temp. :
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
         CALL MON_OUT_RL(mon_var, theMax(3), mon_sufx(3), myThid)
 
+C-- Total Energy :
+        DO k=1,land_nLev
+          locDr(k)= land_dzF(k)
+        ENDDO
+        CALL MON_STATS_LATBND_RL(
+     I                land_nLev, 1, 0, nLatBnd, yBand,
+     I                land_enthalp, land_frc, maskH, rA, yC, locDr,
+     O                theMin, theMax, theMean, theVar, theVol,
+     I                myThid )
+        theEnergy = 0.
+        DO n=1,nLatBnd
+         theEng(n) = theEng(n) + theMean(n)*theVol(n)
+         theEnergy = theEnergy + theEng(n)
+        ENDDO
+        mon_var='TotEnerg'
+        CALL MON_OUT_RL(mon_var,theEnergy, mon_sufx(0), myThid)
+        CALL MON_OUT_RL(mon_var,theEng(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var,theEng(2), mon_sufx(2), myThid)
+        CALL MON_OUT_RL(mon_var,theEng(3), mon_sufx(3), myThid)
+
 C-- Soil water content (level 1+2):
         CALL MON_STATS_LATBND_RL(
      I                land_nLev, 1, 0, nLatBnd, yBand,
-     I                land_groundW, land_frc, maskH, rA, yC, land_dzF,
+     I                land_groundW, land_frc, maskH, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG = 0.
