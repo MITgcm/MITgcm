@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.17 2009/06/24 08:01:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.18 2009/09/02 22:29:15 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -97,8 +97,10 @@ C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
      &  CALL MON_PRINTSTATS_RL(1,UICE,'_uice',
      &       maskW,maskW,rAw,drF,myThid)
 #else
+# ifdef REAL4_IS_SLOW
         CALL MON_PRINTSTATS_RL(1,UICE,'_uice',
      &       UVM,UVM,rAz,drF,myThid)
+# endif
 #endif
 #ifdef SEAICE_CGRID
 C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
@@ -106,8 +108,10 @@ C-      print stats only if nSx=nSy=1 since otherwise stats are wrong
      &  CALL MON_PRINTSTATS_RL(1,VICE,'_vice',
      &       maskS,maskS,rAs,drF,myThid)
 #else
+# ifdef REAL4_IS_SLOW
         CALL MON_PRINTSTATS_RL(1,VICE,'_vice',
      &       UVM,UVM,rAz,drF,myThid)
+# endif
 #endif
         CALL MON_PRINTSTATS_RL(1,AREA,'_area',
      &       maskH,maskH,rA ,drF,myThid)
