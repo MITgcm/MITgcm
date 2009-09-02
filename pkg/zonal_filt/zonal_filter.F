@@ -1,15 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filter.F,v 1.5 2001/12/11 14:50:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filter.F,v 1.6 2009/09/02 19:22:07 jmc Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
 
-      SUBROUTINE ZONAL_FILTER( 
-     U           field, fieldMask,
+      SUBROUTINE ZONAL_FILTER(
+     U           field,
+     I           fieldMask,
      I           jMin, jMax, kMin, kMax, bi, bj, gridLoc, myThid )
-C     /==========================================================\
-C     | S/R ZONAL_FILTER                                         |
-C     | o Apply FFT filter to a latitude circle.                 |
-C     \==========================================================/
+
+C     *==========================================================*
+C     | S/R ZONAL_FILTER
+C     | o Apply FFT filter to a latitude circle.
+C     *==========================================================*
+
       IMPLICIT NONE
 
 C     == Global data ==
@@ -30,11 +33,11 @@ C     bj
 C     myThid  - Thread number of this instance of FILTER_LATCIRC_FFT_APPLY
 C     field   - Field to filter
 C     gridLoc - Orientation (U or V) of field.
-      INTEGER myThid
-      INTEGER gridLoc
-      Real*8 field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      Real*8 fieldMask(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL     field    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS     fieldMask(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       INTEGER jMin, jMax, kMin, kMax, bi, bj
+      INTEGER gridLoc
+      INTEGER myThid
 
 #ifdef ALLOW_ZONAL_FILT
 
