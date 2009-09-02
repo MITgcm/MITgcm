@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_vars.F,v 1.3 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_vars.F,v 1.4 2009/09/02 16:36:13 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -28,7 +28,7 @@ C     === Local variables ===
 
 #ifdef ML_2D
 C    2D mixed layer model  initialization
-      CALL ocean_ml(dtocn,dtatm*3600.)
+      CALL ocean_ml(dtocn*3600.,dtatm*3600.)
 #  ifdef CPL_OCEANCO2
       CALL zerogary
 #  endif
