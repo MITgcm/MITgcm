@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.19 2009/08/25 21:33:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.20 2009/09/02 19:28:44 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -135,7 +135,7 @@ C--     Read initial conditions:
          CALL READ_REC_XY_RL(thSIceEnthp_InitFile,Qice2,2,0,myThid)
         ENDIF
         IF ( thSIceTsurf_InitFile .NE. ' ' ) THEN
-         CALL READ_REC_XY_RS(thSIceTsurf_InitFile,Tsrf,1,0,myThid)
+         CALL READ_REC_XY_RL(thSIceTsurf_InitFile,Tsrf,1,0,myThid)
         ENDIF
         IF ( thSIceEnthp_InitFile .EQ. ' ' ) THEN
 C-    enthalpy of new ice in J/kg, taken from thsice_extend.F with Tf beeing
