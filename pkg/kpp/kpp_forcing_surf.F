@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.3 2007/12/21 02:54:34 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.4 2009/09/02 19:19:35 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -111,7 +111,7 @@ C                            at grid levels for bldepth             (m^2/s^2)
       _RL surfForcT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL surfForcS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL surfForcTice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL Qsw         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS Qsw         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL TTALPHA     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrp1)
       _RL SSBETA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrp1)
 
