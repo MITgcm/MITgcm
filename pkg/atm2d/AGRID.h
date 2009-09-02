@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/AGRID.h,v 1.5 2007/11/19 19:51:06 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/AGRID.h,v 1.6 2009/09/02 16:26:22 jscott Exp $
 C $Name:  $
 
       COMMON/ATM_GRID/atm_yC,atm_yG
@@ -48,7 +48,7 @@ C $Name:  $
        REAL*8 mmtice(jm0)   ! zonal mean seaice TSurf (C)
        REAL*8 mmco2flux(jm0)! total ocean->atmos CO2 flux (mol/s for latitude band)
        REAL*8 cflan(jm0)    ! fraction of land in latitude circle
-       REAL*8 mmsAlb(jm0)   ! zonal mean seaice albedo
+       REAL*8 mmsAlb(jm0)   ! zonal mean visual seaice albedo
        REAL*8 mmsAlbNIR(jm0)   ! zonal mean near IR seaice albedo
        REAL*8 mmicem(jm0)
        REAL*8 mmtice1(jm0)
