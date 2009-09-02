@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.14 2007/08/27 13:23:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.15 2009/09/02 22:23:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -48,12 +48,14 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*10 mon_var
       CHARACTER*2 mon_sufx(0:2)
+      _RS locMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS yBand(2), locDr(1)
       _RL theMin(2), theMax(2)
       _RL theMean(2), theVar(2), theVol(2)
       _RL theMeanG, theVolG
       _RL theMean1, theMean2, theEnergy
       _RL theMin0, theMax0, theSD, theDel2
+      INTEGER i,j,bi,bj
 #ifdef ALLOW_MNC
       INTEGER k
 #endif
@@ -109,13 +111,24 @@ C     & mon_write_mnc (since it's the only thread that uses those flags):
 C--   endif master cpu io
         ENDIF
 
+C--   make a local copy of iceMask into "RS" array:
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            locMask(i,j,bi,bj) = iceMask(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
         CALL MON_SET_PREF('thSI_',myThid)
         CALL MON_OUT_RL('time_sec', myTime,mon_string_none,myThid)
 
 C-- Ice area and Ice thickness :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                iceHeight, iceMask, maskH, rA, yC, locDr,
+     I                iceHeight, locMask, maskH, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG= theVol(1)+theVol(2)
@@ -137,7 +150,7 @@ C-- Ice area and Ice thickness :
 C-- Snow thickness :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                snowHeight, iceMask, maskH, rA, yC, locDr,
+     I                snowHeight, locMask, maskH, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG= theVol(1)+theVol(2)
@@ -153,23 +166,10 @@ C-- Snow thickness :
         CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
 
-C-- Total Energy :
-        CALL  MON_STATS_RL(
-     I                1, Qice1, iceMask, iceHeight, rA, locDr,
-     O                theMin0,theMax0,theMean1,theSD,theDel2,theVolG,
-     I                myThid )
-        CALL  MON_STATS_RL(
-     I                1, Qice2, iceMask, iceHeight, rA, locDr,
-     O                theMin0,theMax0,theMean2,theSD,theDel2,theVolG,
-     I                myThid )
-        theEnergy = theEnergy -rhoi*(theMean1+theMean2)*theVolG/2
-        mon_var='TotEnerg'
-        CALL MON_OUT_RL(mon_var, theEnergy, mon_sufx(0), myThid)
-
 C-- Surface Temp. :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                Tsrf, iceMask, maskH, rA, yC, locDr,
+     I                Tsrf, locMask, maskH, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG= theVol(1)+theVol(2)
@@ -187,10 +187,21 @@ C-- Surface Temp. :
         CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
 
+C--   make a local copy of iceMask*iceHeight into "RS" array:
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            locMask(i,j,bi,bj)=iceMask(i,j,bi,bj)*iceHeight(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
 C-- 1rst level (volume-mean) Temp. :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                Tice1, iceMask, iceHeight, rA, yC, locDr,
+     I                Tice1, locMask, maskH, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theVolG = theVol(1)+theVol(2)
@@ -215,7 +226,7 @@ c       CALL MON_OUT_RL(mon_var, theVol(2), mon_sufx(2), myThid)
 C-- 2nd  level (volume-mean) Temp. :
         CALL MON_STATS_LATBND_RL(
      I                1, 1, 1, 2, yBand,
-     I                Tice2, iceMask, iceHeight, rA, yC, locDr,
+     I                Tice2, locMask, maskH, rA, yC, locDr,
      O                theMin, theMax, theMean, theVar, theVol,
      I                myThid )
         theMeanG= theMean(1)*theVol(1)+theMean(2)*theVol(2)
@@ -231,6 +242,19 @@ C-- 2nd  level (volume-mean) Temp. :
         mon_var='Tic2_max'
         CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
         CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
+
+C-- Total Energy :
+        CALL  MON_STATS_RL(
+     I                1, Qice1, locMask, maskH, rA, locDr,
+     O                theMin0,theMax0,theMean1,theSD,theDel2,theVolG,
+     I                myThid )
+        CALL  MON_STATS_RL(
+     I                1, Qice2, locMask, maskH, rA, locDr,
+     O                theMin0,theMax0,theMean2,theSD,theDel2,theVolG,
+     I                myThid )
+        theEnergy = theEnergy -rhoi*(theMean1+theMean2)*theVolG/2
+        mon_var='TotEnerg'
+        CALL MON_OUT_RL(mon_var, theEnergy, mon_sufx(0), myThid)
 
         IF ( MASTER_CPU_IO(myThid) ) THEN
 C--   only the master thread is allowed to switch On/Off mon_write_stdout
