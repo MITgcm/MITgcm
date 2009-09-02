@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.11 2007/11/06 20:28:40 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.12 2009/09/02 16:41:50 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -62,7 +62,7 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
       INTEGER iloop_ocn
 #endif
 
-      print *,'*** Top of forwrdstep_atm',iloop,myTime,myIter
+!     print *,'*** Top of forwrdstep_atm',iloop,myTime,myIter
       idyear= int((iloop-1)*dtcouple/365.0/24.0) + 1
       iyr= idyear + startYear -1
       inyr = mod(iloop*dtcouple, 365*24)
@@ -72,8 +72,8 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
       ENDDO
       inday= mod(iloop*dtcouple, 24)
       dayid= int((inyr-dtcouple-jdofmhr(monid-1))/24.0) +1
-      print *,'*** idyear,iyr,inyr,monid,inday,dayid',
-     &             idyear,iyr,inyr,monid,inday,dayid
+!     print *,'*** idyear,iyr,inyr,monid,inday,dayid',
+!    &             idyear,iyr,inyr,monid,inday,dayid
 
       IF (inyr.EQ.dtcouple) THEN !do this block at start of new year
         PRINT *,'*** Starting a new year'
@@ -105,6 +105,9 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
         DO j=1,jm0
           co24ocnan(j)=0.0
         ENDDO
+#if ( defined ML_2D )
+          call kvcarbon(iyr)
+#endif
 #endif
 #ifdef CPL_TEM
         DO j=1,jm0
@@ -184,7 +187,7 @@ C      PRINT *,'Top of ncall_ocean Loop'
 #  endif
 #endif
 #ifdef ML_2D
-        CALL ocean_ml(dtocn,dtatm*3600.)
+        CALL ocean_ml(dtocn*3600.,dtatm*3600.)
 #endif
 
       ENDDO	! ncall_ocean loop
@@ -228,8 +231,9 @@ c        PRINT *,'From driver before call tem',' idyear=',idyear
 #    ifdef CPL_NEM
         PRINT *,'Month=',monid
         PRINT *,'CH4=',ch4mn/1.e9,' N2O=',n2omn/1.e9
-        OPEN(277,ACCESS='APPEND',FILE=fnememiss,STATUS='old')
-        WRITE (277,*) iyr,monid,ch4mn,n2omn,nepmn,
+        OPEN(277,ACCESS='APPEND',FILE=fnememiss,form='unformatted'
+     &     ,STATUS='old')
+        WRITE (277) iyr,monid,ch4mn,n2omn,nepmn,
      &          temch4,temn2o,temco2
         CLOSE(277)
 #    endif
@@ -349,7 +353,11 @@ C        WRITE(333,'(2f9.5)')nepan,ocuptp
 #endif
 #ifdef CPL_OCEANCO2
         DO j=1,jm0
+#if ( defined OCEAN_3D )
           co24ocnan(j)=co24ocnan(j)*dtatm/24.0/365.0
+#else
+          co24ocnan(j)=co24ocnan(j)/365.0
+#endif
         ENDDO
         PRINT *,' CO2 for ocean model',' ncallatm=',ncall_atm
         PRINT '12f7.1,/,2(11f7.1,/),12f7.1',co24ocnan
