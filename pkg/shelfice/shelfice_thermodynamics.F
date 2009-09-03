@@ -1,18 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.17 2009/04/30 13:42:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.18 2009/09/03 20:50:09 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
- 
+
 CBOP
 C     !ROUTINE: SHELFICE_THERMODYNAMICS
 C     !INTERFACE:
-      SUBROUTINE SHELFICE_THERMODYNAMICS( 
+      SUBROUTINE SHELFICE_THERMODYNAMICS(
      I                        myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *=============================================================*
-C     | S/R  SHELFICE_THERMODYNAMICS             
-C     | o shelf-ice main routine. 
-C     |   compute temperature and (virtual) salt flux at the 
+C     | S/R  SHELFICE_THERMODYNAMICS
+C     | o shelf-ice main routine.
+C     |   compute temperature and (virtual) salt flux at the
 C     |   shelf-ice ocean interface
 C     |
 C     | stresses at the ice/water interface are computed in separate
@@ -30,7 +30,7 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SHELFICE.h"
- 
+
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myIter :: iteration counter for this thread
@@ -46,10 +46,10 @@ C     !LOCAL VARIABLES :
 C     === Local variables ===
 C     I,J,K,Kp1,bi,bj  :: loop counters
 C     tLoc, sLoc, pLoc :: local in-situ temperature, salinity, pressure
-C     theta/saltFreeze :: temperature and salinity of water at the 
+C     theta/saltFreeze :: temperature and salinity of water at the
 C                         ice-ocean interface (at the freezing point)
-C     freshWaterFlux   :: local variable for fresh water melt flux due to 
-C                         melting in kg/m^2/s (negative density x melt rate) 
+C     freshWaterFlux   :: local variable for fresh water melt flux due to
+C                         melting in kg/m^2/s (negative density x melt rate)
 C     convertFW2SaltLoc:: local copy of convertFW2Salt
 C     cFac             :: 1 for conservative form, 0, otherwise
 C     auxiliary variables and abbreviations:
@@ -115,7 +115,7 @@ C     where this value is part of the protocol
         ENDDO
         DO J = 1, sNy
          DO I = 1, sNx
-C--   make local copies of temperature, salinity and depth (pressure) 
+C--   make local copies of temperature, salinity and depth (pressure)
 C--   underneath the ice
           K         = MAX(1,kTopC(I,J,bi,bj))
           pLoc(I,J) = ABS(R_shelfIce(I,J,bi,bj))
@@ -133,8 +133,8 @@ C--   average over boundary layer width
 C--   overlap into lower cell
             drKp1 = drF(K)*( 1. _d 0 - _hFacC(I,J,K,bi,bj) )
 C--   lower cell may not be as thick as required
-            drKp1 = MIN( drKp1, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) ) 
-            recip_drLoc = 1. _d 0 / 
+            drKp1 = MIN( drKp1, drF(Kp1) * _hFacC(I,J,Kp1,bi,bj) )
+            recip_drLoc = 1. _d 0 /
      &           ( drF(K)*_hFacC(I,J,K,bi,bj) + drKp1 )
             tLoc(I,J) = ( tLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + theta(I,J,Kp1,bi,bj) *drKp1 )
@@ -147,7 +147,7 @@ C--   lower cell may not be as thick as required
          ENDDO
         ENDIF
 
-C--   turn potential temperature into in-situ temperature relative 
+C--   turn potential temperature into in-situ temperature relative
 C--   to the surface
         DO J = 1, sNy
          DO I = 1, sNx
@@ -162,7 +162,7 @@ C--   to the surface
            K = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
 C--   Calculate freezing temperature as a function of salinity and pressure
-            thetaFreeze = 
+            thetaFreeze =
      &           sLoc(I,J) * ( a0 + a1*sqrt(sLoc(I,J)) + a2*sLoc(I,J) )
      &           + b*pLoc(I,J) + c0
 C--   Calculate the upward heat and  fresh water fluxes
@@ -172,16 +172,16 @@ C--   Calculate the upward heat and  fresh water fluxes
 C     upward heat flux into the shelf-ice implies basal melting,
 C     thus a downward (negative upward) fresh water flux (as a mass flux),
 C     and vice versa
-            shelfIceFreshWaterFlux(I,J,bi,bj) = 
+            shelfIceFreshWaterFlux(I,J,bi,bj) =
      &           - shelfIceHeatFlux(I,J,bi,bj)
      &           *recip_SHELFICElatentHeat
 C--   compute surface tendencies
             shelficeForcingT(i,j,bi,bj) =
      &           - shelfIceHeatFlux(I,J,bi,bj)
      &           *recip_Cp*mass2rUnit
-     &           - cFac * shelfIceFreshWaterFlux(I,J,bi,bj)*mass2rUnit 
+     &           - cFac * shelfIceFreshWaterFlux(I,J,bi,bj)*mass2rUnit
      &           * ( thetaFreeze - tLoc(I,J) )
-            shelficeForcingS(i,j,bi,bj) = 
+            shelficeForcingS(i,j,bi,bj) =
      &           shelfIceFreshWaterFlux(I,J,bi,bj) * mass2rUnit
      &           * ( cFac*sLoc(I,J) + (1. _d 0-cFac)*convertFW2SaltLoc )
 C--   stress at the ice/water interface is computed in separate
@@ -195,11 +195,11 @@ C     routines that are called from mom_fluxform/mom_vecinv
           ENDDO
          ENDDO
         ELSE
-#else 
+#else
         IF ( .TRUE. ) THEN
 #endif /* ALLOW_ISOMIP_TD */
 C     use BRIOS thermodynamics, following Hellmers PhD thesis:
-C     Hellmer, H., 1989, A two-dimensional model for the thermohaline 
+C     Hellmer, H., 1989, A two-dimensional model for the thermohaline
 C     circulation under an ice shelf, Reports on Polar Research, No. 60
 C     (in German).
 
@@ -207,7 +207,7 @@ C     a few abbreviations
          eps1 = rUnit2mass*HeatCapacity_Cp*SHELFICEheatTransCoeff
          eps2 = rUnit2mass*SHELFICElatentHeat*SHELFICEsaltTransCoeff
          eps5 = rUnit2mass*HeatCapacity_Cp*SHELFICEsaltTransCoeff
-      
+
          DO J = 1, sNy
           DO I = 1, sNx
            K    = kTopC(I,J,bi,bj)
@@ -235,7 +235,7 @@ C     only make sense in connection with my notes on this (M.Losch)
              print *, 'ml-shelfice: pLoc    = ', pLoc(I,J)
              print *, 'ml-shelfice: tLoc    = ', tLoc(I,J)
              print *, 'ml-shelfice: sLoc    = ', sLoc(I,J)
-             print *, 'ml-shelfice: tsurface= ', 
+             print *, 'ml-shelfice: tsurface= ',
      &            SHELFICEthetaSurface
              print *, 'ml-shelfice: eps1    = ', eps1
              print *, 'ml-shelfice: eps2    = ', eps2
@@ -250,11 +250,11 @@ C     only make sense in connection with my notes on this (M.Losch)
              print *, 'ml-shelfice: Cp_W    = ', HeatCapacity_Cp
              print *, 'ml-shelfice: Cp_I    = ',
      &            SHELFICEHeatCapacity_Cp
-             print *, 'ml-shelfice: gammaT  = ', 
+             print *, 'ml-shelfice: gammaT  = ',
      &            SHELFICEheatTransCoeff
-             print *, 'ml-shelfice: gammaS  = ', 
+             print *, 'ml-shelfice: gammaS  = ',
      &            SHELFICEsaltTransCoeff
-             print *, 'ml-shelfice: lat.heat= ', 
+             print *, 'ml-shelfice: lat.heat= ',
      &            SHELFICElatentHeat
              STOP 'ABNORMAL END in S/R SHELFICE_THERMODYNAMICS'
             ENDIF
@@ -265,43 +265,43 @@ C     only make sense in connection with my notes on this (M.Losch)
             thetaFreeze = a0*saltFreeze + eps4
 C--   upward fresh water flux due to melting (in kg/m^2/s)
             freshWaterFlux = rUnit2mass*SHELFICEsaltTransCoeff
-     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze 
+     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
 C--   Calculate the upward heat and fresh water fluxes;
-C--   MITgcm sign conventions: downward (negative) fresh water flux 
+C--   MITgcm sign conventions: downward (negative) fresh water flux
 C--   implies melting and due to upward (positive) heat flux
-            shelfIceHeatFlux(I,J,bi,bj) = 
+            shelfIceHeatFlux(I,J,bi,bj) =
      &           ( eps3*( thetaFreeze - SHELFICEthetaSurface )
-     &           -  cFac*freshWaterFlux*( SHELFICElatentHeat 
+     &           -  cFac*freshWaterFlux*( SHELFICElatentHeat
      &             - HeatCapacity_Cp*( thetaFreeze - rFac*tLoc(I,J) ) )
      &           )
             shelfIceFreshWaterFlux(I,J,bi,bj) = freshWaterFlux
 C--   compute surface tendencies
             shelficeForcingT(i,j,bi,bj) =
-     &           ( SHELFICEheatTransCoeff 
+     &           ( SHELFICEheatTransCoeff
      &           - cFac*shelfIceFreshWaterFlux(I,J,bi,bj)*mass2rUnit )
-     &           * ( thetaFreeze - tLoc(I,J) ) 
-            shelficeForcingS(i,j,bi,bj) = 
-     &           ( SHELFICEsaltTransCoeff 
+     &           * ( thetaFreeze - tLoc(I,J) )
+            shelficeForcingS(i,j,bi,bj) =
+     &           ( SHELFICEsaltTransCoeff
      &           - cFac*shelfIceFreshWaterFlux(I,J,bi,bj)*mass2rUnit )
-     &           * ( saltFreeze - sLoc(I,J) ) 
+     &           * ( saltFreeze - sLoc(I,J) )
            ELSE
             shelfIceHeatFlux      (I,J,bi,bj) = 0. _d 0
             shelfIceFreshWaterFlux(I,J,bi,bj) = 0. _d 0
             shelficeForcingT      (I,J,bi,bj) = 0. _d 0
             shelficeForcingS      (I,J,bi,bj) = 0. _d 0
            ENDIF
-          ENDDO 
+          ENDDO
          ENDDO
         ENDIF
 C     endif (not) useISOMIPTD
        ENDDO
       ENDDO
-      
+
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-       CALL DIAGNOSTICS_FILL(shelfIceFreshWaterFlux,'SHIfwFlx',
+       CALL DIAGNOSTICS_FILL_RS(shelfIceFreshWaterFlux,'SHIfwFlx',
      &      0,1,0,1,1,myThid)
-       CALL DIAGNOSTICS_FILL(shelfIceHeatFlux,      'SHIhtFlx',
+       CALL DIAGNOSTICS_FILL_RS(shelfIceHeatFlux,      'SHIhtFlx',
      &      0,1,0,1,1,myThid)
 C     SHIForcT (Ice shelf forcing for theta [W/m2], >0 increases theta)
        tmpFac = HeatCapacity_Cp*rUnit2mass
