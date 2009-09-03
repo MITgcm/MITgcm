@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/init_atm2d.F,v 1.6 2007/11/19 22:57:31 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/init_atm2d.F,v 1.7 2009/09/03 19:29:03 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -137,7 +137,7 @@ C     compute tauv interpolation points
      &        ( yG(1,j,1,1) .LT. atm_yC(jj+1))) j_atm=jj
         ENDDO
         tauv_jpt(j)= j_atm
-        tauv_jwght(j)= (yG(1,j,1,1) - atm_yC(j_atm)) / 
+        tauv_jwght(j)= 1. _d 0 - (yG(1,j,1,1) - atm_yC(j_atm)) / 
      &                 (atm_yC(j_atm+1) - atm_yC(j_atm))
       ENDDO
 
