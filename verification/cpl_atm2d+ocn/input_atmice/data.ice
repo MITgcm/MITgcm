@@ -19,6 +19,7 @@
 
  &THSICE_PARM01
  startIceModel=1,
+ thSIce_calc_albNIR=.TRUE.,
 # stepFwd_oceMxL=.TRUE.,
 # ocean_deltaT=3600.,
 #tauRelax_MxL=5184000.,
