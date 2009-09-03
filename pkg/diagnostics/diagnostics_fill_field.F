@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_field.F,v 1.5 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_field.F,v 1.6 2009/09/03 20:39:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -6,14 +6,15 @@ C $Name:  $
 C--   File diagnostics_fill_field.F:
 C--    Contents:
 C--    o DIAGNOSTICS_FILL_FIELD
-C--    o DIAGNOSTICS_DO_FILL
+C--    o DIAGNOSTICS_CUMULATE
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: DIAGNOSTICS_FILL_FIELD
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_FILL_FIELD(
-     I               inpFld, fractFld, scaleFact, power, nLevFract,
+     I               inpFldRL, fracFldRL, inpFldRS, fracFldRS,
+     I               scaleFact, power, arrType, nLevFrac,
      I               ndiagnum, ipointer, kLev, nLevs,
      I               bibjFlg, biArg, bjArg, myThid )
 
@@ -37,11 +38,15 @@ C     !INPUT PARAMETERS:
 C***********************************************************************
 C  Arguments Description
 C  ----------------------
-C     inpFld    :: Field to increment diagnostics array
-C     fractFld  :: fraction used for weighted average diagnostics
+C     inpFldRL  :: Field to increment diagnostics array (arrType=0,1)
+C     fracFldRL :: fraction used for weighted average diagnostics (arrType=0,2)
+C     inpFldRS  :: Field to increment diagnostics array (arrType=2,3)
+C     fracFldRS :: fraction used for weighted average diagnostics (arrType=1,3)
 C     scaleFact :: scaling factor
 C     power     :: option to fill-in with the field square (power=2)
-C     nLevFract :: number of levels of the fraction field, =0 : do not use fraction
+C     arrType   :: select which array & fraction (RL/RS) to process:
+C                  0: both RL ; 1: inpRL & fracRS ; 2: inpRS,fracRL ; 3: both RS
+C     nLevFrac  :: number of levels of the fraction field, =0: do not use fraction
 C     ndiagnum  :: Diagnostics Number (in available diag list) of diag to process
 C     ipointer  :: Pointer to the slot in qdiag to fill
 C     kLev      :: Integer flag for vertical levels:
@@ -68,11 +73,14 @@ C                  NOTE: User beware! If a local (1 tile only) array
 C                        is sent here, bibjFlg MUST NOT be set to 0
 C                        or there will be out of bounds problems!
 C***********************************************************************
-      _RL inpFld(*)
-      _RL fractFld(*)
+      _RL inpFldRL(*)
+      _RL fracFldRL(*)
+      _RS inpFldRS(*)
+      _RS fracFldRS(*)
       _RL scaleFact
       INTEGER power
-      INTEGER nLevFract
+      INTEGER arrType
+      INTEGER nLevFrac
       INTEGER ndiagnum, ipointer
       INTEGER kLev, nLevs, bibjFlg, biArg, bjArg
       INTEGER myThid
@@ -177,9 +185,9 @@ C         and do the loop >> do k=kFirst,kLast ; kd = kd0 + k*ksgn <<
           kd0 = ipointer + kLev - 1
         ENDIF
 C-      Set fraction-weight option :
-        useFract = nLevFract.GT.0
+        useFract = nLevFrac.GT.0
         IF ( useFract ) THEN
-          sizF = nLevFract
+          sizF = nLevFrac
         ELSE
           sizF = 1
         ENDIF
@@ -210,10 +218,10 @@ C-      Check for consistency with Nb of levels reserved in storage array
           DO bi=myBxLo(myThid), myBxHi(myThid)
            DO k = kFirst,kLast
             kd = kd0 + ksgn*k
-            CALL DIAGNOSTICS_DO_FILL(
+            CALL DIAGNOSTICS_CUMULATE(
      U                  qdiag(1-OLx,1-OLy,kd,bi,bj),
-     I                  inpFld, fractFld,
-     I                  scaleFact, power, useFract,sizF,
+     I                  inpFldRL, fracFldRL, inpFldRS, fracFldRS,
+     I                  scaleFact, power, arrType, useFract, sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
      I                  myThid)
@@ -225,10 +233,10 @@ C-      Check for consistency with Nb of levels reserved in storage array
           bj = MIN(bjArg,sizTy)
           DO k = kFirst,kLast
             kd = kd0 + ksgn*k
-            CALL DIAGNOSTICS_DO_FILL(
+            CALL DIAGNOSTICS_CUMULATE(
      U                  qdiag(1-OLx,1-OLy,kd,biArg,bjArg),
-     I                  inpFld, fractFld,
-     I                  scaleFact, power, useFract,sizF,
+     I                  inpFldRL, fracFldRL, inpFldRS, fracFldRS,
+     I                  scaleFact, power, arrType, useFract, sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
      I                  myThid)
@@ -249,15 +257,15 @@ c    &        ' But it is not a valid (or active) name ')
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
-C     !ROUTINE: DIAGNOSTICS_DO_FILL
+C     !ROUTINE: DIAGNOSTICS_CUMULATE
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_DO_FILL(
+      SUBROUTINE DIAGNOSTICS_CUMULATE(
      U                  cumFld,
-     I                  inpFld, frcFld,
-     I                  scaleFact, power, useFract, sizF,
+     I                  inpFldRL, frcFldRL, inpFldRS, frcFldRS,
+     I                  scaleFact, power, arrType, useFract, sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
-     I                  myThid)
+     I                  myThid )
 
 C     !DESCRIPTION:
 C     Update array cumFld
@@ -273,10 +281,14 @@ C     !USES:
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     cumFld      :: cumulative array (updated)
-C     inpFld      :: input field array to add to cumFld
-C     frcFld      :: fraction used for weighted-average diagnostics
+C     inpFldRL    :: input field array to add to cumFld (arrType=0,1)
+C     frcFldRL    :: fraction used for weighted-average diagnostics (arrType=0,2)
+C     inpFldRS    :: input field array to add to cumFld (arrType=2,3)
+C     frcFldRS    :: fraction used for weighted-average diagnostics (arrType=1,3)
 C     scaleFact   :: scaling factor
 C     power       :: option to fill-in with the field square (power=2)
+C     arrType     :: select which array & fraction (RL/RS) to process:
+C                    0: both RL ; 1: inpRL & fracRS ; 2: inpRS,fracRL ; 3: both RS
 C     useFract    :: if True, use fraction-weight
 C     sizF        :: size of frcFld array: 3rd  dimension
 C     sizI1,sizI2 :: size of inpFld array: 1rst index range (min,max)
@@ -284,16 +296,18 @@ C     sizJ1,sizJ2 :: size of inpFld array: 2nd  index range (min,max)
 C     sizK        :: size of inpFld array: 3rd  dimension
 C     sizTx,sizTy :: size of inpFld array: tile dimensions
 C     iRun,jRun   :: range of 1rst & 2nd index
-C     k,bi,bj     :: level and tile indices of inFld array
-C                    to add to cumFld array
+C     k,bi,bj     :: level and tile indices of inFld array to add to cumFld array
 C     myThid      :: my Thread Id number
       _RL cumFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER sizI1,sizI2,sizJ1,sizJ2
       INTEGER sizF,sizK,sizTx,sizTy
-      _RL inpFld(sizI1:sizI2,sizJ1:sizJ2,sizK,sizTx,sizTy)
-      _RL frcFld(sizI1:sizI2,sizJ1:sizJ2,sizF,sizTx,sizTy)
+      _RL inpFldRL(sizI1:sizI2,sizJ1:sizJ2,sizK,sizTx,sizTy)
+      _RL frcFldRL(sizI1:sizI2,sizJ1:sizJ2,sizF,sizTx,sizTy)
+      _RS inpFldRS(sizI1:sizI2,sizJ1:sizJ2,sizK,sizTx,sizTy)
+      _RS frcFldRS(sizI1:sizI2,sizJ1:sizJ2,sizF,sizTx,sizTy)
       _RL scaleFact
       INTEGER power
+      INTEGER arrType
       LOGICAL useFract
       INTEGER iRun, jRun, k, bi, bj
       INTEGER myThid
@@ -311,42 +325,132 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( useFract .AND. power.EQ.2 ) THEN
        l = MIN(k,sizF)
-       DO j = 1,jRun
-        DO i = 1,iRun
+
+       IF ( arrType.EQ.0 ) THEN
+        DO j = 1,jRun
+         DO i = 1,iRun
           cumFld(i,j) = cumFld(i,j)
-     &                + tmpFact*inpFld(i,j,k,bi,bj)
-     &                         *inpFld(i,j,k,bi,bj)
-     &                         *frcFld(i,j,l,bi,bj)
+     &                + tmpFact*inpFldRL(i,j,k,bi,bj)
+     &                         *inpFldRL(i,j,k,bi,bj)
+     &                         *frcFldRL(i,j,l,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
+       ELSEIF ( arrType.EQ.1 ) THEN
+        DO j = 1,jRun
+         DO i = 1,iRun
+          cumFld(i,j) = cumFld(i,j)
+     &                + tmpFact*inpFldRL(i,j,k,bi,bj)
+     &                         *inpFldRL(i,j,k,bi,bj)
+     &                         *frcFldRS(i,j,l,bi,bj)
+         ENDDO
+        ENDDO
+       ELSEIF ( arrType.EQ.2 ) THEN
+        DO j = 1,jRun
+         DO i = 1,iRun
+          cumFld(i,j) = cumFld(i,j)
+     &                + tmpFact*inpFldRS(i,j,k,bi,bj)
+     &                         *inpFldRS(i,j,k,bi,bj)
+     &                         *frcFldRL(i,j,l,bi,bj)
+         ENDDO
+        ENDDO
+       ELSEIF ( arrType.EQ.3 ) THEN
+        DO j = 1,jRun
+         DO i = 1,iRun
+          cumFld(i,j) = cumFld(i,j)
+     &                + tmpFact*inpFldRS(i,j,k,bi,bj)
+     &                         *inpFldRS(i,j,k,bi,bj)
+     &                         *frcFldRS(i,j,l,bi,bj)
+         ENDDO
+        ENDDO
+       ELSE
+        STOP 'DIAGNOSTICS_CUMULATE: invalid arrType'
+       ENDIF
+
       ELSEIF ( useFract ) THEN
        l = MIN(k,sizF)
-       DO j = 1,jRun
-        DO i = 1,iRun
+
+       IF ( arrType.EQ.0 ) THEN
+        DO j = 1,jRun
+         DO i = 1,iRun
           cumFld(i,j) = cumFld(i,j)
-     &                + tmpFact*inpFld(i,j,k,bi,bj)
-     &                         *frcFld(i,j,l,bi,bj)
+     &                + tmpFact*inpFldRL(i,j,k,bi,bj)
+     &                         *frcFldRL(i,j,l,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
+       ELSEIF ( arrType.EQ.1 ) THEN
+        DO j = 1,jRun
+         DO i = 1,iRun
+          cumFld(i,j) = cumFld(i,j)
+     &                + tmpFact*inpFldRL(i,j,k,bi,bj)
+     &                         *frcFldRS(i,j,l,bi,bj)
+         ENDDO
+        ENDDO
+       ELSEIF ( arrType.EQ.2 ) THEN
+        DO j = 1,jRun
+         DO i = 1,iRun
+          cumFld(i,j) = cumFld(i,j)
+     &                + tmpFact*inpFldRS(i,j,k,bi,bj)
+     &                         *frcFldRL(i,j,l,bi,bj)
+         ENDDO
+        ENDDO
+       ELSEIF ( arrType.EQ.3 ) THEN
+        DO j = 1,jRun
+         DO i = 1,iRun
+          cumFld(i,j) = cumFld(i,j)
+     &                + tmpFact*inpFldRS(i,j,k,bi,bj)
+     &                         *frcFldRS(i,j,l,bi,bj)
+         ENDDO
+        ENDDO
+       ELSE
+        STOP 'DIAGNOSTICS_CUMULATE: invalid arrType'
+       ENDIF
+
       ELSEIF ( power.EQ.2 ) THEN
-       DO j = 1,jRun
-        DO i = 1,iRun
+
+       IF ( arrType.LE.1 ) THEN
+        DO j = 1,jRun
+         DO i = 1,iRun
           cumFld(i,j) = cumFld(i,j)
-     &                + tmpFact*inpFld(i,j,k,bi,bj)
-     &                         *inpFld(i,j,k,bi,bj)
+     &                + tmpFact*inpFldRL(i,j,k,bi,bj)
+     &                         *inpFldRL(i,j,k,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
+       ELSEIF ( arrType.LE.3 ) THEN
+        DO j = 1,jRun
+         DO i = 1,iRun
+          cumFld(i,j) = cumFld(i,j)
+     &                + tmpFact*inpFldRS(i,j,k,bi,bj)
+     &                         *inpFldRS(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+       ELSE
+        STOP 'DIAGNOSTICS_CUMULATE: invalid arrType'
+       ENDIF
+
       ELSE
-       DO j = 1,jRun
-        DO i = 1,iRun
+
+       IF ( arrType.LE.1 ) THEN
+        DO j = 1,jRun
+         DO i = 1,iRun
 C- jmc: try with fixed ranges, that are known at compiling stage
 C        (might produce a better cash optimisation ?)
-c      DO j = 1,sNy
-c       DO i = 1,sNx
+c       DO j = 1,sNy
+c        DO i = 1,sNx
           cumFld(i,j) = cumFld(i,j)
-     &                + tmpFact*inpFld(i,j,k,bi,bj)
+     &                + tmpFact*inpFldRL(i,j,k,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
+       ELSEIF ( arrType.LE.3 ) THEN
+        DO j = 1,jRun
+         DO i = 1,iRun
+          cumFld(i,j) = cumFld(i,j)
+     &                + tmpFact*inpFldRS(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+       ELSE
+        STOP 'DIAGNOSTICS_CUMULATE: invalid arrType'
+       ENDIF
+
       ENDIF
 
       RETURN
