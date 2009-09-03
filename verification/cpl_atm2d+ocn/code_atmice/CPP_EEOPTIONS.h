@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/code_atmice/Attic/CPP_EEOPTIONS.h,v 1.1 2007/05/01 21:50:52 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/code_atmice/Attic/CPP_EEOPTIONS.h,v 1.2 2009/09/03 20:21:33 jscott Exp $
 C $Name:  $
 
 CBOP
@@ -59,6 +59,10 @@ C     a different file for each tile) and read are thread-safe.
 C--   Flag to turn off the writing of error message to ioUnit zero
 #undef DISABLE_WRITE_TO_UNIT_ZERO
 
+C--   Flag to turn on checking for errors from all threads and procs
+C     (calling S/R STOP_IF_ERROR) before stopping.
+#define USE_ERROR_STOP
+
 C--   Flag turns off MPI_SEND ready_to_receive polling in the
 C     gather_* subroutines to speed up integrations.
 #undef DISABLE_MPI_READY_TO_RECEIVE
@@ -117,6 +121,15 @@ C           filled in some way.
 C--   Alternative formulation of BYTESWAP, faster than
 C     compiler flag -byteswapio on the Altix.
 #undef FAST_BYTESWAP
+
+C--   Alternative way of doing global sum without MPI allreduce call
+C     but instead, explicit MPI send & recv calls.
+#undef GLOBAL_SUM_SEND_RECV
+
+C--   Alternative way of doing global sum on a single CPU
+C     to eliminate tiling-dependent roundoff errors.
+C     Note: This is slow.
+#undef  CG2D_SINGLECPU_SUM
 
 #endif /* _CPP_EEOPTIONS_H_ */
 
