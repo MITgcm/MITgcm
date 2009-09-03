@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_others_calc.F,v 1.1 2006/01/23 22:31:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_others_calc.F,v 1.2 2009/09/03 14:53:32 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -81,6 +81,10 @@ C     !LOCAL VARIABLES:
       LOGICAL useWeight
       INTEGER kl
       _RL drLoc
+#ifndef REAL4_IS_SLOW
+      INTEGER i,j
+      _RS tmp_hFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
 
 c     IF ( useFIZHI ) THEN
 
@@ -93,10 +97,7 @@ c     IF ( useFIZHI ) THEN
         ENDIF
         drLoc = 1. _d 0
 
-C- jmc: here we have a Problem if RL & RS are not the same:
-C    since dpphys is RL but argument is RS. leave it like this for now
-C    and will change it once the Regions are fully implemented.
-
+#ifdef REAL4_IS_SLOW
         CALL  DIAGSTATS_CALC(
      O            statArr,
      I            inpArr, frcArr, scaleFact, power, useFract,
@@ -105,6 +106,21 @@ C    and will change it once the Regions are fully implemented.
      I            regMask, arrMask,
      I            dpphys(1-Olx,1-Oly,kl,bi,bj), arrArea,
      I            drLoc, specialVal, exclSpVal, useWeight, myThid )
+#else /* REAL4_IS_SLOW */
+C    make local copy of dpphys (RL type) into RS array tmp_hFac
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          tmp_hFac(i,j) = dpphys(i,j,kl,bi,bj)
+         ENDDO
+        ENDDO
+        CALL  DIAGSTATS_CALC(
+     O            statArr,
+     I            inpArr, frcArr, scaleFact, power, useFract,
+     I            regId, regMskVal,
+     I            nStats,sizI1,sizI2,sizJ1,sizJ2,iRun,jRun,
+     I            regMask, arrMask, tmp_hFac, arrArea,
+     I            drLoc, specialVal, exclSpVal, useWeight, myThid )
+#endif /* REAL4_IS_SLOW */
 
 c     ENDIF
 #endif /* ALLOW_FIZHI */
