@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1154 2009/09/01 20:45:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1155 2009/09/03 22:00:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics: 
+  implement a RS type version for the set of DIAGNOSTICS-FILL subroutines
+o fix few RS/RL type mismatch (check with ifort 11.1 "-warn all" option)
 o pkg/mdsio (& pkg/rw): rework high level S/R interface:
   To avoid mixing type (RS/RL) of input/output array argument,
   replace single mixed-type array with a pair from each type (RS/RL).
