@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fields_blocking_exchanges.F,v 1.8 2008/05/09 21:44:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fields_blocking_exchanges.F,v 1.9 2009/09/03 22:13:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -44,7 +44,7 @@ C Exchange overlaps
      &                   Nr, myThid )
 #ifdef PTRACERS_ALLOW_DYN_STATE
         IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
-          CALL GAD_EXCH_SOM( _Ptracers_som(1-Olx,1-Oly,1,1,1,1,iTracer),
+          CALL GAD_EXCH_SOM( _Ptracers_som(:,:,:,:,:,:,iTracer),
      &                       Nr, myThid )
         ENDIF
 #endif /* PTRACERS_ALLOW_DYN_STATE */

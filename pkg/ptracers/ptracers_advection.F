@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.14 2009/06/26 23:10:10 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.15 2009/09/03 22:13:04 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -101,7 +101,7 @@ CADJ &      = comlev1_bibj_ptracers, key=iptrkey, byte=isbyte
      I                       uVel, vVel, wVel,
 #endif
      I                       pTracer(1-Olx,1-Oly,1,1,1,iTracer),
-     U                       _Ptracers_som(1-Olx,1-Oly,1,1,1,1,iTracer),
+     U                       _Ptracers_som(:,:,:,:,:,:,iTracer),
      O                       gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                       bi,bj,myTime,myIter,myThid)
        ELSEIF ( PTRACERS_MultiDimAdv(iTracer) ) THEN

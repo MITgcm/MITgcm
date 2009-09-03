@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.8 2008/05/09 21:44:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.9 2009/09/03 22:13:04 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -194,7 +194,7 @@ C     Write 2nd Order moments as consecutive records
           DO n=1,nSOM
             iRec = n
             CALL WRITE_REC_3D_RL( fn, prec, Nr,
-     I               _Ptracers_som(1-Olx,1-Oly,1,1,1,n,iTracer),
+     I               _Ptracers_som(:,:,:,:,:,n,iTracer),
      I               iRec, myIter, myThid )
           ENDDO
          ENDIF
