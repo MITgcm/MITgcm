@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.7 2008/11/18 21:41:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_local.F,v 1.8 2009/09/03 20:37:17 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -13,7 +13,7 @@ C     !INTERFACE:
      I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
      I                  iRun,jRun,kIn,biIn,bjIn,
      I                  k,bi,bj, region2fill, ndId, parsFld,
-     I                  myThid)
+     I                  myThid )
 
 C     !DESCRIPTION:
 C     Update array statFld
@@ -51,7 +51,7 @@ C     sizJ1,sizJ2 :: size of inpFld array: 2nd  index range (min,max)
 C     sizK        :: size of inpFld array: 3rd  dimension
 C     sizTx,sizTy :: size of inpFld array: tile dimensions
 C     iRun,jRun   :: range of 1rst & 2nd index
-C     kIn         :: level index of inpFld array to porcess
+C     kIn         :: level index of inpFld array to process
 C     biIn,bjIn   :: tile indices of inpFld array to process
 C     k,bi,bj     :: level and tile indices used for weighting (mask,area ...)
 C     region2fill :: indicates whether to compute statistics over this region
