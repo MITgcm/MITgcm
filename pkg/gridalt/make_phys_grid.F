@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.9 2007/07/08 20:24:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.10 2009/09/03 14:49:17 jmc Exp $
 C $Name:  $
 
        subroutine make_phys_grid(drF,hfacC,im1,im2,jm1,jm2,Nr,
@@ -46,9 +46,9 @@ c
        integer im1,im2,jm1,jm2,Nr,Nsx,Nsy,Nrphys
        integer i1,i2,j1,j2,bi,bj
        integer numlevphys
-       _RL hfacC(im1:im2,jm1:jm2,Nr,Nsx,Nsy)
+       _RS hfacC(im1:im2,jm1:jm2,Nr,Nsx,Nsy)
        _RL dpphys(im1:im2,jm1:jm2,Nrphys,Nsx,Nsy)
-       _RL drF(Nr)
+       _RS drF(Nr)
        integer Lbot(im1:im2,jm1:jm2,Nsx,Nsy)
        integer nlperdyn(im1:im2,jm1:jm2,Nr,Nsx,Nsy)
 c
