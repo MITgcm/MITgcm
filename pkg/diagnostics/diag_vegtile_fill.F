@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.10 2009/04/02 18:52:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.11 2009/09/03 20:46:12 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -67,6 +67,7 @@ C ===============
       INTEGER region2fill(0:nRegions)
       _RL     scaleFact
       _RL     gridField(sNx*sNy,nlevs), gridFrac(sNx*sNy)
+      _RS     dummyRS(1)
 
 #ifdef ALLOW_FIZHI
       _RL   getcon
@@ -254,7 +255,11 @@ C-    Fill local array with grid-space field after conversion.
 
 C-    diagnostics is valid and Active: Now do the filling
            CALL DIAGSTATS_FILL(
-     I              gridField, gridFrac, scaleFact, 1, 1,
+     I              gridField, gridFrac,
+#ifndef REAL4_IS_SLOW
+     I               dummyRS, dummyRS,
+#endif
+     I              scaleFact, 1, 0, 1,
      I              ndId, iSp, region2fill, kLev, nLevs,
      I              3, bi, bj, myThid )
          ENDIF

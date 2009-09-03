@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.13 2006/07/31 16:26:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.14 2009/09/03 20:46:12 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C***********************************************************************
-C   Wrapper routine to increment the diagnostics arrays with a field
+C   Wrapper routine to increment the diagnostics arrays with a RL field
 C***********************************************************************
 C     !USES:
       IMPLICIT NONE
@@ -61,12 +61,16 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     ndId      :: diagnostic Id number (in available diagnostics list)
-C ===============
       INTEGER m, n, j, k, l, bi, bj
       INTEGER ndId, ipt, iSp
       INTEGER region2fill(0:nRegions)
+      INTEGER arrType
       _RL     scaleFact
+      _RL     dummyRL(1)
+      _RS     dummyRS(1)
+C ===============
 
+      arrType = 0
       scaleFact = 1. _d 0
       IF ( bibjFlg.EQ.0 ) THEN
         bi = myBxLo(myThid)
@@ -87,7 +91,8 @@ C we are trying to fill a valid diagnostic
            ipt = ipt + pdiag(n,bi,bj)*kdiag(ndId)
 C-    diagnostic is valid & active, do the filling:
            CALL DIAGNOSTICS_FILL_FIELD(
-     I              inpFld, inpFld, scaleFact, 1, 0,
+     I              inpFld, dummyRL, dummyRS, dummyRS,
+     I              scaleFact, 1, arrType, 0,
      I              ndId, ipt, kLev, nLevs,
      I              bibjFlg, biArg, bjArg, myThid )
          ENDIF
@@ -124,7 +129,11 @@ C     then add regions from other lists
            ENDDO
 C-    diagnostics is valid and Active: Now do the filling
            CALL DIAGSTATS_FILL(
-     I              inpFld, inpFld, scaleFact, 1, 0,
+     I              inpFld, dummyRL,
+#ifndef REAL4_IS_SLOW
+     I              dummyRS, dummyRS,
+#endif
+     I              scaleFact, 1, arrType, 0,
      I              ndId, iSp, region2fill, kLev, nLevs,
      I              bibjFlg, biArg, bjArg, myThid )
          ENDIF

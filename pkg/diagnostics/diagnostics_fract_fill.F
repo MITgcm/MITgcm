@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fract_fill.F,v 1.5 2008/02/05 15:13:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fract_fill.F,v 1.6 2009/09/03 20:46:12 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -12,10 +12,10 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C***********************************************************************
-C   Wrapper routine to increment the diagnostics arrays with a field
+C   Wrapper routine to increment the diagnostics arrays with a RL field
 C           using a scaling factor & square option (power=2)
-C           and using a fraction-weight (assumed to be the counter-mate
-C           of the current diagnostics)
+C           and using a RL fraction-weight (assumed to be the
+C           counter-mate of the current diagnostics)
 C   Note: 1) fraction-weight has to correspond to the diagnostics
 C            counter-mate (filled independently with a call to
 C             DIAGNOSTICS_FILL)
@@ -75,14 +75,17 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     ndId      :: diagnostic Id number (in available diagnostics list)
-C ===============
       INTEGER m, n, j, k, l, bi, bj
       INTEGER ndId, ipt, iSp
       INTEGER region2fill(0:nRegions)
       INTEGER mate, nLevFract
       CHARACTER*10 gcode
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER arrType
+      _RS     dummyRS(1)
+C ===============
 
+      arrType = 0
       IF ( bibjFlg.EQ.0 ) THEN
         bi = myBxLo(myThid)
         bj = myByLo(myThid)
@@ -118,7 +121,8 @@ C-    set the nb of levels of fraction-weight field (not > kdiag(mate))
            nLevFract = MIN(nLevs,kdiag(mate))
 C-    diagnostic is valid & active, has a counter-mate, do the filling:
            CALL DIAGNOSTICS_FILL_FIELD(
-     I              inpFld, fractFld, scaleFact, power, nLevFract,
+     I              inpFld, fractFld, dummyRS, dummyRS,
+     I              scaleFact, power, arrType, nLevFract,
      I              ndId, ipt, kLev, nLevs,
      I              bibjFlg, biArg, bjArg, myThid )
          ENDIF
@@ -172,7 +176,11 @@ C     then add regions from other lists
            ENDDO
 C-    diagnostics is valid and Active, has a counter mate: Now do the filling
            CALL DIAGSTATS_FILL(
-     I              inpFld, fractFld, scaleFact, power, nLevFract,
+     I              inpFld, fractFld,
+#ifndef REAL4_IS_SLOW
+     I              dummyRS, dummyRS,
+#endif
+     I              scaleFact, power, arrType, nLevFract,
      I              ndId, iSp, region2fill, kLev, nLevs,
      I              bibjFlg, biArg, bjArg, myThid )
          ENDIF
