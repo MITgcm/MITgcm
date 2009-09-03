@@ -1,13 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_fill.F,v 1.4 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_fill.F,v 1.5 2009/09/03 20:41:37 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
+
+C--   File diagstats_fill.F:
+C--    Contents:
+C--    o DIAGSTATS_FILL
+C--    o DIAGSTATS_TO_RL
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
 C     !ROUTINE: DIAGSTATS_FILL
 C     !INTERFACE:
       SUBROUTINE DIAGSTATS_FILL(
-     I               inpFld, fractFld, scaleFact, power, nLevFract,
+     I               inpFldRL, fracFldRL,
+#ifndef REAL4_IS_SLOW
+     I               inpFldRS, fracFldRS,
+#endif
+     I               scaleFact, power, arrType, nLevFract,
      I               ndId, kInQSd, region2fill, kLev, nLevs,
      I               bibjflg, biArg, bjArg, myThid )
 
@@ -32,11 +43,15 @@ C     !INPUT PARAMETERS:
 C***********************************************************************
 C  Arguments Description
 C  ----------------------
-C     inpFld    :: Field to increment diagnostics array
-C     fractFld  :: fraction used for weighted average diagnostics
+C     inpFldRL  :: Field to increment diagnostics array (arrType=0,1)
+C     fracFldRL :: fraction used for weighted average diagnostics (arrType=0,2)
+C     inpFldRS  :: Field to increment diagnostics array (arrType=2,3)
+C     fracFldRS :: fraction used for weighted average diagnostics (arrType=1,3)
 C     scaleFact :: scaling factor
 C     power     :: option to fill-in with the field square (power=2)
-C     nLevFract :: number of levels of the fraction field, =0 : do not use fraction
+C     arrType   :: select which array & fraction (RL/RS) to process:
+C                  0: both RL ; 1: inpRL & fracRS ; 2: inpRS,fracRL ; 3: both RS
+C     nLevFract :: number of levels of the fraction field, =0: do not use fraction
 C     ndId      :: Diagnostics Id Number (in available diag list) of diag to process
 C     kInQSd    :: Pointer to the slot in qSdiag to fill
 C   region2fill :: array, indicates whether to compute statistics over region
@@ -65,10 +80,15 @@ C                  NOTE: User beware! If a local (1 tile only) array
 C                        is sent here, bibjflg MUST NOT be set to 0
 C                        or there will be out of bounds problems!
 C***********************************************************************
-      _RL inpFld(*)
-      _RL fractFld(*)
+      _RL inpFldRL(*)
+      _RL fracFldRL(*)
+#ifndef REAL4_IS_SLOW
+      _RS inpFldRS(*)
+      _RS fracFldRS(*)
+#endif
       _RL scaleFact
       INTEGER power
+      INTEGER arrType
       INTEGER nLevFract
       INTEGER ndId, kInQSd
       INTEGER region2fill(0:nRegions)
@@ -89,6 +109,10 @@ C     useFract  :: flag to increment (or not) with fraction-weigted inpFld
       CHARACTER*8 parms1
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER km, km0
+#ifndef REAL4_IS_SLOW
+      _RL tmpFldRL( sNx+1,sNy+1)
+      _RL tmpFracRL(sNx+1,sNy+1)
+#endif
 
 C If-sequence to see if we are a valid and an active diagnostic
 c     IF ( ndId.NE.0 .AND. kInQSd.NE.0 ) THEN
@@ -189,8 +213,10 @@ C-      Check for consistency with Nb of levels reserved in storage array
          _END_MASTER(myThid)
         ENDIF
 
+#ifndef REAL4_IS_SLOW
+      IF ( arrType.EQ.0 .OR. ( arrType.EQ.1 .AND. .NOT.useFract ) ) THEN
+#endif
         IF ( bibjflg.EQ.0 ) THEN
-
          DO bj=myByLo(myThid), myByHi(myThid)
           DO bi=myBxLo(myThid), myBxHi(myThid)
            DO k = kFirst,kLast
@@ -198,7 +224,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
             km = km0 + ksgn*k
             CALL DIAGSTATS_LOCAL(
      U                  qSdiag(0,0,kd,bi,bj),
-     I                  inpFld, fractFld,
+     I                  inpFldRL, fracFldRL,
      I                  scaleFact, power, useFract, sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
@@ -215,7 +241,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
             km = km0 + ksgn*k
             CALL DIAGSTATS_LOCAL(
      U                  qSdiag(0,0,kd,biArg,bjArg),
-     I                  inpFld, fractFld,
+     I                  inpFldRL, fracFldRL,
      I                  scaleFact, power, useFract, sizF,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
@@ -224,6 +250,56 @@ C-      Check for consistency with Nb of levels reserved in storage array
           ENDDO
         ENDIF
 
+#ifndef REAL4_IS_SLOW
+      ELSE
+        IF ( bibjflg.EQ.0 ) THEN
+         DO bj=myByLo(myThid), myByHi(myThid)
+          DO bi=myBxLo(myThid), myBxHi(myThid)
+           DO k = kFirst,kLast
+            kd = kd0 + ksgn*k
+            km = km0 + ksgn*k
+            CALL DIAGSTATS_TO_RL(
+     I                  inpFldRL, fracFldRL, inpFldRS, fracFldRS,
+     O                  tmpFldRL, tmpFracRL,
+     I                  arrType, useFract, sizF,
+     I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
+     I                  iRun,jRun,k,bi,bj, myThid )
+            CALL DIAGSTATS_LOCAL(
+     U                  qSdiag(0,0,kd,bi,bj),
+     I                  tmpFldRL, tmpFracRL,
+     I                  scaleFact, power, useFract, 1,
+     I                  1, iRun, 1, jRun, 1, 1, 1,
+     I                  iRun, jRun, 1, 1, 1,
+     I                  km, bi, bj, region2fill,
+     I                  ndId, gdiag(ndId), myThid )
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSE
+          bi = MIN(biArg,sizTx)
+          bj = MIN(bjArg,sizTy)
+          DO k = kFirst,kLast
+            kd = kd0 + ksgn*k
+            km = km0 + ksgn*k
+            CALL DIAGSTATS_TO_RL(
+     I                  inpFldRL, fracFldRL, inpFldRS, fracFldRS,
+     O                  tmpFldRL, tmpFracRL,
+     I                  arrType, useFract, sizF,
+     I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
+     I                  iRun,jRun,k,bi,bj, myThid )
+            CALL DIAGSTATS_LOCAL(
+     U                  qSdiag(0,0,kd,biArg,bjArg),
+     I                  tmpFldRL, tmpFracRL,
+     I                  scaleFact, power, useFract, 1,
+     I                  1, iRun, 1, jRun, 1, 1, 1,
+     I                  iRun, jRun, 1, 1, 1,
+     I                  km, biArg, bjArg, region2fill,
+     I                  ndId, gdiag(ndId), myThid )
+          ENDDO
+        ENDIF
+      ENDIF
+#endif /* ndef REAL4_IS_SLOW */
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c     ELSE
 
@@ -231,3 +307,99 @@ c     ENDIF
 
       RETURN
       END
+
+#ifndef REAL4_IS_SLOW
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: DIAGSTATS_TO_RL
+C     !INTERFACE:
+      SUBROUTINE DIAGSTATS_TO_RL(
+     I                  inpFldRL, inpFrcRL, inpFldRS, inpFrcRS,
+     O                  outFldRL, outFrcRL,
+     I                  arrType, useFract, sizF,
+     I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
+     I                  iRun,jRun,kIn,biIn,bjIn,
+     I                  myThid )
+
+C     !DESCRIPTION:
+C     Do a local copy with conversion to RL type array
+
+C     !USES:
+      IMPLICIT NONE
+
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine Arguments ==
+C     inpFldRL    :: input field array    to convert (arrType=0,1)
+C     inpFrcRL    :: input fraction array to convert (arrType=0,2)
+C     inpFldRS    :: input field array    to convert (arrType=2,3)
+C     inpFrcRS    :: input fraction array to convert (arrType=1,3)
+C     outFldRL    :: output field array
+C     outFrcRL    :: output fraction array
+C     arrType     :: select which array & fraction (RL/RS) to process:
+C                    0: both RL ; 1: fldRL & frcRS ; 2: fldRS,frcRL ; 3: both RS
+C     useFract    :: if True, process fraction-weight
+C     sizF        :: size of inpFrc array: 3rd  dimension
+C     sizI1,sizI2 :: size of inpFld array: 1rst index range (min,max)
+C     sizJ1,sizJ2 :: size of inpFld array: 2nd  index range (min,max)
+C     sizK        :: size of inpFld array: 3rd  dimension
+C     sizTx,sizTy :: size of inpFld array: tile dimensions
+C     iRun,jRun   :: range of 1rst & 2nd index
+C     kIn         :: level index of inpFld array to process
+C     biIn,bjIn   :: tile indices of inpFld array to process
+C     myThid      :: my Thread Id number
+      INTEGER sizI1,sizI2,sizJ1,sizJ2
+      INTEGER sizF,sizK,sizTx,sizTy
+      INTEGER iRun, jRun, kIn, biIn, bjIn
+      _RL     inpFldRL(sizI1:sizI2,sizJ1:sizJ2,sizK,sizTx,sizTy)
+      _RL     inpFrcRL(sizI1:sizI2,sizJ1:sizJ2,sizF,sizTx,sizTy)
+      _RS     inpFldRS(sizI1:sizI2,sizJ1:sizJ2,sizK,sizTx,sizTy)
+      _RS     inpFrcRS(sizI1:sizI2,sizJ1:sizJ2,sizF,sizTx,sizTy)
+      _RL     outFldRL(1:iRun,1:jRun)
+      _RL     outFrcRL(1:iRun,1:jRun)
+      INTEGER arrType
+      LOGICAL useFract
+      INTEGER myThid
+CEOP
+
+C     !LOCAL VARIABLES:
+C     i,j    :: loop indices
+      INTEGER i, j, kFr
+
+      IF ( arrType.LE.1 ) THEN
+        DO j=1,jRun
+         DO i=1,iRun
+           outFldRL(i,j) = inpFldRL(i,j,kIn,biIn,bjIn)
+         ENDDO
+        ENDDO
+      ELSE
+        DO j=1,jRun
+         DO i=1,iRun
+           outFldRL(i,j) = inpFldRS(i,j,kIn,biIn,bjIn)
+         ENDDO
+        ENDDO
+      ENDIF
+
+      IF ( useFract ) THEN
+       kFr = MIN(kIn,sizF)
+       IF ( arrType.EQ.0 .OR. arrType.EQ.2 ) THEN
+        DO j=1,jRun
+         DO i=1,iRun
+           outFrcRL(i,j) = inpFrcRL(i,j,kFr,biIn,bjIn)
+         ENDDO
+        ENDDO
+       ELSE
+        DO j=1,jRun
+         DO i=1,iRun
+           outFrcRL(i,j) = inpFrcRS(i,j,kFr,biIn,bjIn)
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+
+      RETURN
+      END
+#endif /* ndef REAL4_IS_SLOW */
