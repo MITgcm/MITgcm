@@ -76,5 +76,6 @@
  saltClimFile=   ' ',
  surfQFile=      ' ',
  EmPmRFile=      ' ',
- &
+ diffKrFile=     'diffKrFile.bin',
+&
 
