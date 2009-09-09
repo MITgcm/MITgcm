@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/LONGSTEP.h,v 1.2 2009/06/28 16:34:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/LONGSTEP.h,v 1.3 2009/09/09 22:48:02 jahn Exp $
 C $Name:  $
 
 #ifdef ALLOW_LONGSTEP
@@ -78,7 +78,7 @@ C
 #ifdef SHORTWAVE_HEATING
 C     LS_Qsw :: longstep average of net upward shortwave radiation after ice
 C
-      _RS LS_Qsw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL LS_Qsw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER LS_QswCount(nSx,nSy)
       COMMON /LONGSTEP_EXTRA_R/ LS_Qsw
       COMMON /LONGSTEP_EXTRA_I/ LS_QswCount

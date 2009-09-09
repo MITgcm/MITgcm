@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average.F,v 1.3 2009/08/02 19:32:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average.F,v 1.4 2009/09/09 22:48:02 jahn Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -91,7 +91,7 @@ C--   update average inside tile (no overlaps) for all bi,bj
      & CALL LONGSTEP_FILL_3D(LS_IVDConvCountCount,
      &                      LS_IVDConvCount, IVDConvCount, Nr, myThid)
 #ifdef SHORTWAVE_HEATING
-      CALL LONGSTEP_FILL_3D(LS_QswCount, LS_Qsw, Qsw, 1, myThid)
+      CALL LONGSTEP_FILL_3D_RS(LS_QswCount, LS_Qsw, Qsw, 1, myThid)
 #endif
 #ifdef ALLOW_GMREDI
       IF ( useGMRedi ) THEN
