@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_fill_3d_rs.F,v 1.1 2009/09/09 22:48:02 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_fill_3d_rs.F,v 1.2 2009/09/10 14:41:13 jahn Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -33,10 +33,10 @@ C      lsFld :: average to update
 C        fld :: field to accumulate
 C       myNr :: number of levels to update
 C     myThid :: my Thread Id number
+      INTEGER myNr
       _RL lsFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RS Fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
-      INTEGER lsCnt
-      INTEGER myNr
+      INTEGER lsCnt(nSx,nSy)
       INTEGER myThid
 
 #ifdef ALLOW_LONGSTEP
@@ -45,9 +45,9 @@ C     == Local variables ==
       INTEGER i,j,k,bi,bj
 CEOP
 
-      lsCnt = lsCnt + 1
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
+        lsCnt(bi,bj) = lsCnt(bi,bj) + 1
         DO k = 1,myNr
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
