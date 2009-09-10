@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.13 2009/04/28 18:41:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.14 2009/09/10 21:09:57 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -22,6 +22,9 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
+#ifdef ALLOW_USE_MPI
+#include "EESUPPORT.h"      
+#endif
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
@@ -191,18 +194,26 @@ c for 278ppmv we need total_atmos_carbon=4.9206e+16
        if (istate.eq.0) then
 c use value read in dic_init_fixed
           total_atmos_carbon=total_atmos_carbon_ini
+          atpco2=total_atmos_carbon/total_atmos_moles
        else
 c calculate new atmos pCO2
           total_atmos_carbon=total_atmos_carbon - total_flux
+          atpco2=total_atmos_carbon/total_atmos_moles
 c write out if time for a new pickup
           permCheckPoint = .FALSE.
           permCheckPoint =
      &      DIFFERENT_MULTIPLE(pChkptFreq,myTime,deltaTClock)
           if (permCheckPoint) then
+c only write if the first processor
+      _BEGIN_MASTER( myThid )
+#ifdef ALLOW_USE_MPI
+       IF ( mpiMyId.EQ.0 ) THEN
+#endif
             DO i = 1,MAX_LEN_FNAM
                 fn(i:i) = ' '
             ENDDO
             WRITE(fn,'(A,I10.10)') 'dic_atmos.',myIter
+
 C     Going to really do some IO. Make everyone except master thread wait.
             _BARRIER
 c write values to new pickup
@@ -211,6 +222,11 @@ c write values to new pickup
             open(iUnit,file=fn,status='new')
             write(iUnit,*) total_atmos_carbon, atpco2
             close(iUnit)
+#ifdef ALLOW_USE_MPI
+       ENDIF
+#endif
+      _END_MASTER( myThid )
+
 
           endif
        endif
