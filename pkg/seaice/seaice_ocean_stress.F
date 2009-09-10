@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.26 2009/06/24 08:56:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.27 2009/09/10 16:05:26 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -39,7 +39,8 @@ C     i,j,bi,bj - Loop counters
 C     kSrf      - vertical index of surface layer
       INTEGER i, j, bi, bj
       INTEGER kSrf
-      _RL  SINWAT, COSWAT, SINWIN, COSWIN
+      _RL  COSWAT
+      _RS  SINWAT
       _RL  fuIceLoc, fvIceLoc
       _RL  areaW, areaS
 
@@ -48,8 +49,6 @@ C     surrface level
 C     introduce turning angle (default is zero)
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
-      SINWIN=SIN(SEAICE_airTurnAngle*deg2rad)
-      COSWIN=COS(SEAICE_airTurnAngle*deg2rad)
 
       IF ( useHB87StressCoupling ) THEN
 C

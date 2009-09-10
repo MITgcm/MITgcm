@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.8 2009/06/24 08:56:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.9 2009/09/10 16:05:26 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE SEAICE_GET_DYNFORCING( 
+      SUBROUTINE SEAICE_GET_DYNFORCING(
      I     uIce, vIce,
      O     taux, tauy,
      I     myTime, myIter, myThid )
@@ -55,7 +55,8 @@ C     k   - vertical index of surface layer
       INTEGER bi, bj, i, j
       INTEGER k
       _RL  U1, V1, AAA
-      _RL  SINWIN, COSWIN
+      _RL  COSWIN
+      _RS  SINWIN
 C     CDAIR   :: local wind stress coefficient (used twice)
 C     oceTauX :: wind-stress over open-ocean (on Arakawa A-grid), X direction
 C     oceTauY :: wind-stress over open-ocean (on Arakawa A-grid), Y direction
@@ -101,7 +102,7 @@ C     over-writing fu and fv that were computed or read-in by pkg/exf.
          ENDDO
         ENDDO
 C--   Interpolate wind stress over open ocean (N/m^2)
-C     from A-grid to U and V points of C-grid 
+C     from A-grid to U and V points of C-grid
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
           fu(I,J,bi,bj) = 0.5 _d 0*( oceTauX(I,J) + oceTauX(I-1,J) )
@@ -174,7 +175,7 @@ C     interpolate to U points
      &          +0.5 _d 0*(vVel(i-1,j,k,bi,bj)+vVel(i-1,j+1,k,bi,bj))
      &          -0.5 _d 0*(vice(i-1,j,bi,bj)+vice(i-1,j+1,bi,bj)))))
 C     interpolate to V points
-           tauy(I,J,bi,bj)= 0.5 _d 0 * 
+           tauy(I,J,bi,bj)= 0.5 _d 0 *
      &          (CDAIR(I,J)*(SIGN(SINWIN, _fCori(I,J,bi,bj))*
      &          (uWind(I,J,bi,bj)
      &          +0.5 _d 0*(uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj))
@@ -197,7 +198,7 @@ C     interpolate to V points
          DO j=1-Oly+1,sNy+Oly
           DO i=1-Olx+1,sNx+Olx
 C     interpolate to U points
-           taux(I,J,bi,bj)=0.5 _d 0 * 
+           taux(I,J,bi,bj)=0.5 _d 0 *
      &          ( CDAIR(I  ,J)*(
      &          COSWIN                            *uWind(I  ,J,bi,bj)
      &          -SIGN(SINWIN, _fCori(I  ,J,bi,bj))*vWind(I  ,J,bi,bj) )
@@ -206,7 +207,7 @@ C     interpolate to U points
      &          -SIGN(SINWIN, _fCori(I-1,J,bi,bj))*vWind(I-1,J,bi,bj) )
      &          )
 C     interpolate to V points
-           tauy(I,J,bi,bj)=0.5 _d 0 * 
+           tauy(I,J,bi,bj)=0.5 _d 0 *
      &          ( CDAIR(I,J  )*(
      &          SIGN(SINWIN, _fCori(I,J  ,bi,bj))*uWind(I,J  ,bi,bj)
      &          +COSWIN*vWind(I,J  ,bi,bj) )
@@ -220,7 +221,7 @@ C     interpolate to V points
 
        ENDDO
       ENDDO
-#else /* not SEAICE_EXTERNAL_FLUXES or ALLOW_ATM_WIND */ 
+#else /* not SEAICE_EXTERNAL_FLUXES or ALLOW_ATM_WIND */
 C--   Wind stress is available on U and V points, copy it to seaice variables.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -233,12 +234,12 @@ C now ice surface stress
            CDAIR(I,J) = SEAICE_drag      /OCEAN_drag
           ENDIF
           taux (I,J,bi,bj) = CDAIR(I,J)*FU(I,J,bi,bj)
-          tauy (I,J,bi,bj) = CDAIR(I,J)*FV(I,J,bi,bj) 
+          tauy (I,J,bi,bj) = CDAIR(I,J)*FV(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-#endif /* not SEAICE_EXTERNAL_FLUXES or ALLOW_ATM_WIND */ 
+#endif /* not SEAICE_EXTERNAL_FLUXES or ALLOW_ATM_WIND */
 #endif /* SEAICE_CGRID */
 
       RETURN

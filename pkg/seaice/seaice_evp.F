@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.30 2009/07/30 08:27:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.31 2009/09/10 16:05:26 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -64,12 +64,13 @@ C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
       INTEGER nEVPstep, iEVPstep
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER ikeyloc
-#endif 
+#endif
 #ifndef ALLOW_AUTODIFF_TAMC
       integer nEVPstepMax
 #endif
 
-      _RL SINWAT, COSWAT
+      _RL COSWAT
+      _RS SINWAT
       _RL TEMPVAR, ecc2, recip_ecc2, recip_evp_tau
 
       _RL seaice_div    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -211,10 +212,10 @@ CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
      &         * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
      &           + e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
             e11Z(I,J) = facZ
-     &         * ( e11(I,J  ,bi,bj) + e11(I-1,J  ,bi,bj) 
+     &         * ( e11(I,J  ,bi,bj) + e11(I-1,J  ,bi,bj)
      &           + e11(I,J-1,bi,bj) + e11(I-1,J-1,bi,bj) )
             e22Z(I,J) = facZ
-     &         * ( e22(I,J  ,bi,bj) + e22(I-1,J  ,bi,bj) 
+     &         * ( e22(I,J  ,bi,bj) + e22(I-1,J  ,bi,bj)
      &           + e22(I,J-1,bi,bj) + e22(I-1,J-1,bi,bj) )
             e12Z(I,J) = e12(I,J,bi,bj)
             deltaC(I,J) = (e11C(I,J)**2+e22C(I,J)**2)*(ONE+recip_ecc2)
@@ -225,9 +226,9 @@ CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
      &           +      2. _d 0*e11Z(I,J)*e22Z(I,J)*(ONE-recip_ecc2)
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid sqrt of 0
-            IF ( deltaC(I,J) .GT. 0. _d 0 ) 
+            IF ( deltaC(I,J) .GT. 0. _d 0 )
      &           deltaC(I,J) = SQRT(deltaC(I,J))
-            IF ( deltaZ(I,J) .GT. 0. _d 0 ) 
+            IF ( deltaZ(I,J) .GT. 0. _d 0 )
      &           deltaZ(I,J) = SQRT(deltaZ(I,J))
 #else
             deltaC(I,J) = SQRT(deltaC(I,J))
@@ -248,7 +249,7 @@ C     regularize zeta if necessary
            DO i=0,sNx+1
             zetaC(I,J)  = MIN(zMax(I,J,bi,bj),zetaC(I,J))
             zetaC(I,J)  = MAX(zMin(I,J,bi,bj),zetaC(I,J))
-CML            zetaC(I,J)   = zetaC(I,J)*hEffM(I,J,bi,bj) 
+CML            zetaC(I,J)   = zetaC(I,J)*hEffM(I,J,bi,bj)
 C
 C     zMin, zMax are defined at C-points, make sure that they are not
 C     masked by boundaries/land points
@@ -306,7 +307,7 @@ C     save new eta for diagnostics
      &            ) * hEffM(I,J,bi,bj)
              seaice_tension(I,J) = 2. _d 0*MIN(zetaC(I,J),zetaMaxC)
      &            *(e11C(I,J)-e22C(I,J)) * hEffM(I,J,bi,bj)
-             seaice_shear  (I,J) = 
+             seaice_shear  (I,J) =
      &            2. _d 0*MIN(zetaZ(I,J),zetaMaxZ)*2. _d 0*e12Z(I,J)
             ENDDO
            ENDDO

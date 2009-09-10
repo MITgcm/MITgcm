@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.51 2009/06/24 08:56:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.52 2009/09/10 16:05:26 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -106,7 +106,8 @@ C     auxillary fields
       _RL uTmp (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL vTmp (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 C
-      _RL SINWAT, COSWAT
+      _RL COSWAT
+      _RS SINWAT
       _RL TEMPVAR
       _RL UERR
       INTEGER iMin, iMax, jMin, jMax
@@ -249,10 +250,10 @@ C     ( remember to average to correct velocity points )
      &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
      &         COSWAT * uVel(I,J,kSrf,bi,bj)
      &         - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 *
-     &         ( DWATN(I  ,J,bi,bj) * 0.5 _d 0 * 
+     &         ( DWATN(I  ,J,bi,bj) * 0.5 _d 0 *
      &          (vVel(I  ,J  ,kSrf,bi,bj)-vIceC(I  ,J  ,bi,bj)
      &          +vVel(I  ,J+1,kSrf,bi,bj)-vIceC(I  ,J+1,bi,bj))
-     &         + DWATN(I-1,J,bi,bj) * 0.5 _d 0 * 
+     &         + DWATN(I-1,J,bi,bj) * 0.5 _d 0 *
      &          (vVel(I-1,J  ,kSrf,bi,bj)-vIceC(I-1,J  ,bi,bj)
      &          +vVel(I-1,J+1,kSrf,bi,bj)-vIceC(I-1,J+1,bi,bj))
      &         )
@@ -263,7 +264,7 @@ C     ( remember to average to correct velocity points )
      &         ( DWATN(I,J  ,bi,bj) * 0.5 _d 0 *
      &          (uVel(I  ,J  ,kSrf,bi,bj)-uIceC(I  ,J  ,bi,bj)
      &          +uVel(I+1,J  ,kSrf,bi,bj)-uIceC(I+1,J  ,bi,bj))
-     &         + DWATN(I,J-1,bi,bj) * 0.5 _d 0 * 
+     &         + DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
      &          (uVel(I  ,J-1,kSrf,bi,bj)-uIceC(I  ,J-1,bi,bj)
      &          +uVel(I+1,J-1,kSrf,bi,bj)-uIceC(I+1,J-1,bi,bj))
      &         )
@@ -966,7 +967,8 @@ C
       _RL dVdy     (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL uMeanZ   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
-      _RL SINWAT, COSWAT
+      _RL COSWAT
+      _RS SINWAT
       _RL TEMPVAR
       _RL UERR
       INTEGER iMin, iMax, jMin, jMax
@@ -1818,7 +1820,7 @@ CML      CALL EXCH_UV_XY_RL( uIce, vIce,.TRUE.,myThid)
 
       IF ( useHB87StressCoupling .AND. ilcall.EQ.NPSEUDOTIMESTEPS ) THEN
 C     compute the divergence of stress here to be used later
-C     
+C
 C     compute strain rate from latest velocities
        CALL SEAICE_CALC_STRAINRATES(
      I       uIce, vIce,
@@ -1834,7 +1836,7 @@ C     compute internal stresses with updated ice velocities
            sig12(I,J) = 0. _d 0
           ENDDO
          ENDDO
-         
+
          DO j=0,sNy
           DO i=0,sNx
            eplus = e11(I,J,bi,bj) + e22(I,J,bi,bj)
@@ -1845,7 +1847,7 @@ C     compute internal stresses with updated ice velocities
      &          - 0.5 _d 0 * PRESS(I,J,bi,bj)
           ENDDO
          ENDDO
-         
+
          DO j=1,sNy+1
           DO i=1,sNx+1
            sig12(I,J) = 2. _d 0 * e12(I,J,bi,bj) * etaMeanZ(I,J,bi,bj)
@@ -1854,7 +1856,7 @@ C     compute internal stresses with updated ice velocities
 C     evaluate divergence of stress and apply to forcing
          DO J=1,sNy
           DO I=1,sNx
-           stressDivergenceX(I,J,bi,bj) = 
+           stressDivergenceX(I,J,bi,bj) =
      &          ( sig11(I  ,J  ) * _dyF(I  ,J  ,bi,bj)
      &          - sig11(I-1,J  ) * _dyF(I-1,J  ,bi,bj)
      &          + sig12(I  ,J+1) * _dxV(I  ,J+1,bi,bj)
@@ -1870,7 +1872,7 @@ C     evaluate divergence of stress and apply to forcing
           ENDDO
          ENDDO
         ENDDO
-C     endif  useHB87StressCoupling 
+C     endif  useHB87StressCoupling
       ENDIF
 
 #endif /* SEAICE_ALLOW_DYNAMICS */

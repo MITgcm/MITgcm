@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.34 2009/06/24 08:56:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.35 2009/09/10 16:05:26 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -50,7 +50,9 @@ C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj, kii
-      _RL RHOICE, RHOAIR, SINWIN, COSWIN, SINWAT, COSWAT
+      _RL RHOICE, RHOAIR
+      _RL COSWIN, COSWAT
+      _RS SINWIN, SINWAT
       _RL ECCEN, ECM2, DELT1, DELT2, PSTAR, AAA
       _RL TEMPVAR, U1, V1
 
