@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/OCNVARS.h,v 1.5 2007/10/01 14:45:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/OCNVARS.h,v 1.6 2009/09/14 16:24:53 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -40,7 +40,7 @@ c    &       uVelGround_ocn, vVelGround_ocn,
      &       SaltFlx_ocn, sIceMass_ocn,
      &       aCO2_ocn, wSpeed_ocn, sIceFrac_ocn
 
-      _RS AtmDepths_ocn  (Nx_ocn,Ny_ocn)
+      _RL AtmDepths_ocn  (Nx_ocn,Ny_ocn)
       _RL OcMxlD_ocn     (Nx_ocn,Ny_ocn)
       _RL SST_ocn        (Nx_ocn,Ny_ocn)
       _RL SSS_ocn        (Nx_ocn,Ny_ocn)
