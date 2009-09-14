@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.15 2008/04/11 21:31:14 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.16 2009/09/14 20:54:33 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -153,38 +153,59 @@ c     _RL evpAtm
       _RL qleft
       _RL fresh
 c     _RL fsalt
-C     == Local Variables ==
-      INTEGER  i,j,k     ! loop indices
-      _RL  rec_nlyr      ! reciprocal of number of ice layers (real value)
-C     evap     :: evaporation over snow/ice [kg/m2/s] (>0 if evaporate)
-C     Fbot     :: oceanic heat flux used to melt/form ice [W/m2]
-      _RL  evap
-      _RL  Fbot
-      _RL  etop          ! energy for top melting    (J m-2)
-      _RL  ebot          ! energy for bottom melting (J m-2)
-      _RL  etope         ! energy (from top)    for lateral melting (J m-2)
-      _RL  ebote         ! energy (from bottom) for lateral melting (J m-2)
-      _RL  extend        ! total energy for lateral melting (J m-2)
-      _RL  hnew(nlyr)    ! new ice layer thickness (m)
-      _RL  hlyr          ! individual ice layer thickness (m)
-      _RL  dhi           ! change in ice thickness
-      _RL  dhs           ! change in snow thickness
-      _RL  rq            ! rho * q for a layer
-      _RL  rqh           ! rho * q * h for a layer
-      _RL  qbot          ! enthalpy for new ice at bottom surf (J/kg)
-      _RL  dt            ! timestep
-      _RL  esurp         ! surplus energy from melting (J m-2)
-      _RL  mwater0       ! fresh water mass gained/lost (kg/m^2)
-      _RL  msalt0        ! salt gained/lost  (kg/m^2)
-      _RL  freshe        ! fresh water gain from extension melting
-      _RL  salte         ! salt gained from extension melting
 
-      _RL  ustar, cpchr
-      _RL  chi, chs
-      _RL  frace, rs, hq
+C     == Local Variables ==
+C     i,j,k      :: loop indices
+C     rec_nlyr   :: reciprocal of number of ice layers (real value)
+C     evap       :: evaporation over snow/ice [kg/m2/s] (>0 if evaporate)
+C     Fbot       :: oceanic heat flux used to melt/form ice [W/m2]
+C     etop       :: energy for top melting    (J m-2)
+C     ebot       :: energy for bottom melting (J m-2)
+C     etope      :: energy (from top)    for lateral melting (J m-2)
+C     ebote      :: energy (from bottom) for lateral melting (J m-2)
+C     extend     :: total energy for lateral melting (J m-2)
+C     hnew(nlyr) :: new ice layer thickness (m)
+C     hlyr       :: individual ice layer thickness (m)
+C     dhi        :: change in ice thickness
+C     dhs        :: change in snow thickness
+C     rq         :: rho * q for a layer
+C     rqh        :: rho * q * h for a layer
+C     qbot       :: enthalpy for new ice at bottom surf (J/kg)
+C     dt         :: timestep
+C     esurp      :: surplus energy from melting (J m-2)
+C     mwater0    :: fresh water mass gained/lost (kg/m^2)
+C     msalt0     :: salt gained/lost  (kg/m^2)
+C     freshe     :: fresh water gain from extension melting
+C     salte      :: salt gained from extension melting
 C     lowIcFrac1 :: ice-fraction lower limit above which partial (lowIcFrac1)
 C     lowIcFrac2 :: or full (lowIcFrac2) lateral melting is allowed.
+      INTEGER  i,j,k
+      _RL  rec_nlyr
+      _RL  evap
+      _RL  Fbot
+      _RL  etop
+      _RL  ebot
+      _RL  etope
+      _RL  ebote
+      _RL  extend
+      _RL  hnew(nlyr)
+      _RL  hlyr
+      _RL  dhi
+      _RL  dhs
+      _RL  rq
+      _RL  rqh
+      _RL  qbot
+      _RL  dt
+      _RL  esurp
+      _RL  mwater0
+      _RL  msalt0
+      _RL  freshe
+      _RL  salte
       _RL lowIcFrac1, lowIcFrac2
+
+      _RL  ustar, cpchr
+      _RL  chi
+      _RL  frace, rs, hq
 #ifdef THSICE_FRACEN_POWERLAW
       INTEGER powerLaw
       _RL rec_pLaw
@@ -341,13 +362,15 @@ C between hThinIce & hThickIce, use partition factor fracEnFreez
 C     !-----------------------------------------------------------------
 C     ! melting conditions
 C     !-----------------------------------------------------------------
-         ustar = 5. _d -2        !for no currents
+C     for no currents:
+         ustar = 5. _d -2
 C frictional velocity between ice and water
          ustar = SQRT(0.00536 _d 0*oceV2s)
          ustar=max(5. _d -3,ustar)
          cpchr =cpWater*rhosw*bMeltCoef
-         Fbot = cpchr*(Tf-oceTs)*ustar  ! < 0
-         Fbot = max(Fbot,frzmlt)    ! frzmlt < Fbot < 0
+         Fbot = cpchr*(Tf-oceTs)*ustar
+C     frzmlt < Fbot < 0
+         Fbot = max(Fbot,frzmlt)
          Fbot = min(Fbot,0. _d 0)
       ENDIF
 

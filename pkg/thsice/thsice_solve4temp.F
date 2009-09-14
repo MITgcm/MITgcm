@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.17 2007/05/01 02:26:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.18 2009/09/14 20:54:33 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -135,26 +135,39 @@ c     _RL flxAtm
 c     _RL evpAtm
 
 C     == Local Variables ==
+C     frsnow       :: fractional snow cover
+C     fswpen       :: SW penetrating beneath surface (W m-2)
+C     fswdn        :: SW absorbed at surface (W m-2)
+C     fswint       :: SW absorbed in ice (W m-2)
+C     fswocn       :: SW passed through ice to ocean (W m-2)
+C     flxExceptSw  :: net surface heat flux, except short-wave (W/m2)
+C     evap         :: evaporation over snow/ice [kg/m2/s] (>0 if evaporate)
+C     dEvdT        :: derivative of evap. with respect to Tsf [kg/m2/s/K]
+C     flx0         :: net surf heat flux, from Atmos. to sea-ice (W m-2)
+C     fct          :: heat conducted to top surface
+C     df0dT        :: deriv of flx0 wrt Tsf (W m-2 deg-1)
+C     k12, k32     :: thermal conductivity terms
+C     a10, b10     :: coefficients in quadratic eqn for T1
+C     a1, b1, c1   :: coefficients in quadratic eqn for T1
+C     Tsf_start    :: old value of Tsf
+C     dt           :: timestep
       INTEGER i,j
       INTEGER k, iterMax
-
-      _RL  frsnow        ! fractional snow cover
-      _RL  fswpen        ! SW penetrating beneath surface (W m-2)
-      _RL  fswdn         ! SW absorbed at surface (W m-2)
-      _RL  fswint        ! SW absorbed in ice (W m-2)
-      _RL  fswocn        ! SW passed through ice to ocean (W m-2)
-      _RL  flxExceptSw   ! net surface heat flux, except short-wave (W/m2)
-C     evap           :: evaporation over snow/ice [kg/m2/s] (>0 if evaporate)
-C     dEvdT          :: derivative of evap. with respect to Tsf [kg/m2/s/K]
+      _RL  frsnow
+      _RL  fswpen
+      _RL  fswdn
+      _RL  fswint
+      _RL  fswocn
+      _RL  flxExceptSw
       _RL  evap, dEvdT
-      _RL  flx0          ! net surf heat flux, from Atmos. to sea-ice (W m-2)
-      _RL  fct           ! heat conducted to top surface
-      _RL  df0dT         ! deriv of flx0 wrt Tsf (W m-2 deg-1)
-      _RL  k12, k32      ! thermal conductivity terms
-      _RL  a10, b10      ! coefficients in quadratic eqn for T1
-      _RL  a1, b1, c1    ! coefficients in quadratic eqn for T1
-c     _RL  Tsf_start     ! old value of Tsf
-      _RL  dt            ! timestep
+      _RL  flx0
+      _RL  fct
+      _RL  df0dT
+      _RL  k12, k32
+      _RL  a10, b10
+      _RL  a1, b1, c1
+c     _RL  Tsf_start
+      _RL  dt
       _RL  recip_dhSnowLin
       INTEGER iceornot
       LOGICAL useBlkFlx
@@ -362,7 +375,8 @@ CADJ STORE tsf  = comlev1_thsice_3, key=ikey_3
      &        'ThSI_SOLVE4T: k,ts,t1,dTs=', k,Tsf,Tice(1),dTsf
 #endif
             a1 = a10 + k12
-            b1 = b10          ! note b1 = b10 - k12*Tf0
+C      note: b1 = b10 - k12*Tf0
+            b1 = b10
             Tice(1) = (-b1 - SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)
             Tsf = 0. _d 0
            IF ( useBlkFlx ) THEN
