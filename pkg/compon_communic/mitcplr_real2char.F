@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_real2char.F,v 1.2 2007/10/08 23:58:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_real2char.F,v 1.3 2009/09/14 16:18:14 jmc Exp $
 C $Name:  $
 
 !=======================================================================
@@ -15,7 +15,7 @@ C $Name:  $
 
 ! Convert the integer array to characters
       do j=1,MAXLEN_COMP_NAME
-       carg(j:j) = char( int( 0.5+rarg(j) ) )
+       carg(j:j) = char( nint( rarg(j) ) )
       enddo
 
 !     ------------------------------------------------------------------
