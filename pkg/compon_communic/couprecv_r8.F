@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/couprecv_r8.F,v 1.2 2007/10/08 23:58:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/couprecv_r8.F,v 1.3 2009/09/14 16:22:02 jmc Exp $
 C $Name:  $
 
 !=======================================================================
@@ -80,7 +80,7 @@ C $Name:  $
         stop 'couprecv_r8: Incompatible header/target array'
        endif
 
-       call mitcplr_real2char( r8buf(9), recvdname )
+       call mitcplr_dbl2char( r8buf(9), recvdname )
        if (recvdname .ne. dataname) then
         write(LogUnit,*) 'couprecv_r8: recvdname = ',recvdname
         write(LogUnit,*) 'couprecv_r8:  dataname = ',dataname

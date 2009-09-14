@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/couprecv_r8tiles.F,v 1.2 2007/10/08 23:58:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/couprecv_r8tiles.F,v 1.3 2009/09/14 16:22:03 jmc Exp $
 C $Name:  $
 
 !=======================================================================
@@ -93,7 +93,7 @@ C $Name:  $
        if (Nj.ne.component_tile_ny(bibj,n,compind))
      &    stop 'couprecv_r8tiles: Nj != component_tile_ny'
 
-       call mitcplr_real2char( r8buf(9), recvdname )
+       call mitcplr_dbl2char( r8buf(9), recvdname )
        if (recvdname .ne. dataname) then
         write(LogUnit,*) 'couprecv_r8tiles: recvdname = ',recvdname
         write(LogUnit,*) 'couprecv_r8tiles:  dataname = ',dataname

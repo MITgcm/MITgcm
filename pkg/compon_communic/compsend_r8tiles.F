@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/compsend_r8tiles.F,v 1.2 2007/10/08 23:58:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/compsend_r8tiles.F,v 1.3 2009/09/14 16:22:02 jmc Exp $
 C $Name:  $
 
 !=======================================================================
@@ -38,7 +38,7 @@ C $Name:  $
        r8buf(2)=float( my_tile_nx(bibj) )
        r8buf(3)=float( my_tile_j0(bibj) )
        r8buf(4)=float( my_tile_ny(bibj) )
-       call mitcplr_char2real( dataname, r8buf(9) )
+       call mitcplr_char2dbl( dataname, r8buf(9) )
 
 ! Copy interior of tile to buffer
        k=1

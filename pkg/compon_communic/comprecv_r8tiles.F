@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/comprecv_r8tiles.F,v 1.2 2007/10/08 23:58:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/comprecv_r8tiles.F,v 1.3 2009/09/14 16:22:01 jmc Exp $
 C $Name:  $
 
 !=======================================================================
@@ -60,7 +60,7 @@ C $Name:  $
        Jo=int(0.5+r8buf(2))
        nx=int(0.5+r8buf(3))
        ny=int(0.5+r8buf(4))
-       call mitcplr_real2char( r8buf(9), recvdname )
+       call mitcplr_dbl2char( r8buf(9), recvdname )
 
        if (Io.ne.my_tile_i0(bibj)) stop 'comprecv_r8tiles: bad Io'
        if (Jo.ne.my_tile_j0(bibj)) stop 'comprecv_r8tiles: bad Jo'
