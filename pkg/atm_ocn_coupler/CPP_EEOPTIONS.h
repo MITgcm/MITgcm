@@ -1,10 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/CPP_EEOPTIONS.h,v 1.4 2007/10/08 23:49:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/CPP_EEOPTIONS.h,v 1.5 2009/09/14 18:24:51 jmc Exp $
 C $Name:  $
 
+CBOP
+C     !ROUTINE: CPP_EEOPTIONS.h
+C     !INTERFACE:
+C     include "CPP_EEOPTIONS.h"
 C
-C     /==========================================================\
-C     | CPP_EEOPTIONS.h                                          |
-C     |==========================================================|
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | CPP\_EEOPTIONS.h                                         |
+C     *==========================================================*
 C     | C preprocessor "execution environment" supporting        |
 C     | flags. Use this file to set flags controlling the        |
 C     | execution environment in which a model runs - as opposed |
@@ -23,7 +28,8 @@ C     |       set all options as selectable at runtime but then  |
 C     |       once an experimental configuration has been        |
 C     |       identified, rebuild the code with the appropriate  |
 C     |       options set at compile time.                       |
-C     \==========================================================/
+C     *==========================================================*
+CEOP
 
 #ifndef _CPP_EEOPTIONS_H_
 #define _CPP_EEOPTIONS_H_
@@ -40,11 +46,82 @@ C
 C     ALWAYS - indicates the choice will be fixed at compile time
 C              so no run-time option will be present
 
-C     Flag used to indicate whether Fortran formatted write
+C--   Flag used to indicate whether Fortran formatted write
 C     and read are threadsafe. On SGI the routines can be thread
 C     safe, on Sun it is not possible - if you are unsure then
 C     undef this option.
-#undef  FMTFTN_IO_THREADSAFE
+#undef FMTFTN_IO_THREAD_SAFE
+
+C--   Flag used to indicate whether Binary write to Local file (i.e.,
+C     a different file for each tile) and read are thread-safe.
+#undef LOCBIN_IO_THREAD_SAFE
+
+C--   Flag to turn off the writing of error message to ioUnit zero
+#undef DISABLE_WRITE_TO_UNIT_ZERO
+
+C--   Flag to turn on checking for errors from all threads and procs
+C     (calling S/R STOP_IF_ERROR) before stopping.
+#define USE_ERROR_STOP
+
+C--   Flag turns off MPI_SEND ready_to_receive polling in the
+C     gather_* subroutines to speed up integrations.
+#undef DISABLE_MPI_READY_TO_RECEIVE
+
+C--   Control MPI based parallel processing
+CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
+CXXX To use MPI, use an appropriate genmake2 options file or use
+CXXX genmake2 -mpi .
+CXXX #undef  ALLOW_USE_MPI
+CXXX #undef  ALWAYS_USE_MPI
+
+C--   Control use of communication that might overlap computation.
+C     Under MPI selects/deselects "non-blocking" sends and receives.
+#define ALLOW_ASYNC_COMMUNICATION
+#undef  ALLOW_ASYNC_COMMUNICATION
+#undef  ALWAYS_USE_ASYNC_COMMUNICATION
+C--   Control use of communication that is atomic to computation.
+C     Under MPI selects/deselects "blocking" sends and receives.
+#define ALLOW_SYNC_COMMUNICATION
+#undef  ALWAYS_USE_SYNC_COMMUNICATION
+
+C--   Control storage of floating point operands
+C     On many systems it improves performance only to use
+C     8-byte precision for time stepped variables.
+C     Constant in time terms ( geometric factors etc.. )
+C     can use 4-byte precision, reducing memory utilisation and
+C     boosting performance because of a smaller working
+C     set size. However, on vector CRAY systems this degrades
+C     performance.
+#define REAL4_IS_SLOW
+
+C--   Control use of "double" precision constants.
+C     Use D0 where it means REAL*8 but not where it means REAL*16
+#define D0 d0
+
+C--   Control XY periodicity in processor to grid mappings
+C     Note: Model code does not need to know whether a domain is
+C           periodic because it has overlap regions for every box.
+C           Model assume that these values have been
+C           filled in some way.
+#undef  ALWAYS_PREVENT_X_PERIODICITY
+#undef  ALWAYS_PREVENT_Y_PERIODICITY
+#define CAN_PREVENT_X_PERIODICITY
+#define CAN_PREVENT_Y_PERIODICITY
+
+C--   Alternative formulation of BYTESWAP, faster than
+C     compiler flag -byteswapio on the Altix.
+#undef FAST_BYTESWAP
+
+C--   Alternative way of doing global sum without MPI allreduce call
+C     but instead, explicit MPI send & recv calls.
+#undef GLOBAL_SUM_SEND_RECV
+
+C--   Alternative way of doing global sum on a single CPU
+C     to eliminate tiling-dependent roundoff errors.
+C     Note: This is slow.
+#undef  CG2D_SINGLECPU_SUM
+
+C--- Taken from file "CPP_EEMACROS.h":
 
 C     Flag used to indicate which flavour of multi-threading
 C     compiler directives to use. Only set one of these.
@@ -99,85 +176,40 @@ C     it alone execute the BEGIN_MASTER..., END_MASTER.. sections.
 #define _BEGIN_MASTER(a)  IF ( a .EQ. 1 ) THEN
 #define _END_MASTER(a)    ENDIF
 
-C--   Control MPI based parallel processing
-#define ALLOW_USE_MPI
-#define ALWAYS_USE_MPI
-
-C--   Hack for switching in JAM based communication
-C     JAM_WITH_TWO_PROCS_PER_NODE option is defined if we want two processes
-C     per node. It goes with a different link-time library so be careful!
-#undef  USE_JAM
-#ifdef USE_JAM
-#define USE_JAM_INIT
-#define USE_JAM_EXCH
-#define USE_JAM_GSUM
-#endif
-#undef  JAM_WITH_TWO_PROCS_PER_NODE
-
-C--   Control use of communication that might overlap computation.
-C     Under MPI selects/deselects "non-blocking" sends and receives.
-#define ALLOW_ASYNC_COMMUNICATION
-#undef  ALLOW_ASYNC_COMMUNICATION
-#undef  ALWAYS_USE_ASYNC_COMMUNICATION
-C--   Control use of communication that is atomic to computation.
-C     Under MPI selects/deselects "blocking" sends and receives.
-#define ALLOW_SYNC_COMMUNICATION
-#undef  ALWAYS_USE_SYNC_COMMUNICATION
-
-C--   Control storage of floating point operands
-C     On many systems it improves performance only to use
-C     8-byte precision for time stepped variables.
-C     Constant in time terms ( geometric factors etc.. )
-C     can use 4-byte precision, reducing memory utilisation and
-C     boosting performance because of a smaller working
-C     set size. However, on vector CRAY systems this degrades
-C     performance.
-#define REAL4_IS_SLOW
-
+C- Note: global_sum/max macros were used to switch to  JAM routines (obsolete);
+C  in addition, since only the R4 & R8 S/R are coded, GLOBAL RS & RL macros
+C  enable to call the corresponding R4 or R8 S/R.
 #ifdef REAL4_IS_SLOW
-#define real Real*8
-#define REAL Real*8
+
 #define _RS  Real*8
-#define _RL  Real*8
 #define RS_IS_REAL8
+#define _GLOBAL_SUM_RS(a,b)    CALL GLOBAL_SUM_R8( a, b )
+#define _GLOBAL_MAX_RS(a,b)    CALL GLOBAL_MAX_R8( a, b )
+#define _MPI_TYPE_RS MPI_DOUBLE_PRECISION
 
-#ifdef USE_JAM
-#define _EXCH_XY_R4(a,b)       CALL EXCH_XY_R8_JAM ( a )
-#define _EXCH_XYZ_R4(a,b)      CALL EXCH_XYZ_R8_JAM( a )
-#define _GLOBAL_SUM_R8(a,b  )  CALL GSUM_R8_JAM( a, b)
-#else
-#define _EXCH_XY_R4(a,b)       CALL EXCH_XY_R8 ( a, b )
-#define _EXCH_XYZ_R4(a,b)      CALL EXCH_XYZ_R8 ( a, b )
-#define _GLOBAL_SUM_R4(a,b)    CALL GLOBAL_SUM_R8( a, b )
-#endif /* USE_JAM */
+#else /* REAL4_IS_SLOW */
 
-#define _GLOBAL_MAX_R4(a,b)    CALL GLOBAL_MAX_R8( a, b )
-
-#endif
-
-#ifndef REAL4_IS_SLOW
-#define real Real*4
-#define REAL Real*8
 #define _RS  Real*4
-#define _RL  Real*8
 #define RS_IS_REAL4
-#define _EXCH_XY_R4(a,b)       CALL EXCH_XY_R4 ( a, b )
-#define _EXCH_XYZ_R4(a,b)      CALL EXCH_XYZ_R4 ( a, b )
-#define _GLOBAL_SUM_R4(a,b)    CALL GLOBAL_SUM_R4( a, b )
-#define _GLOBAL_MAX_R4(a,b)    CALL GLOBAL_MAX_R4( a, b )
-#endif
+#define _GLOBAL_SUM_RS(a,b)    CALL GLOBAL_SUM_R4( a, b )
+#define _GLOBAL_MAX_RS(a,b)    CALL GLOBAL_MAX_R4( a, b )
+#define _MPI_TYPE_RS MPI_REAL
 
-#ifndef USE_JAM
-#define _EXCH_XY_R8(a,b)       CALL EXCH_XY_R8 ( a, b )
-#define _EXCH_XYZ_R8(a,b)      CALL EXCH_XYZ_R8 ( a, b )
-#define _GLOBAL_SUM_R8(a,b)    CALL GLOBAL_SUM_R8( a, b )
-#else   /* USE_JAM */
-#define _EXCH_XY_R8(a,b)       CALL EXCH_XY_R8_JAM ( a )
-#define _EXCH_XYZ_R8(a,b)      CALL EXCH_XYZ_R8_JAM ( a )
-#define _GLOBAL_SUM_R8(a,b  )  CALL GSUM_R8_JAM( a, b)
-#endif   /* USE_JAM */
+#endif /* REAL4_IS_SLOW */
 
-#define _GLOBAL_MAX_R8(a,b  )  CALL GLOBAL_MAX_R8( a, b , c)
+#define _RL  Real*8
+#define RL_IS_REAL8
+#define _GLOBAL_SUM_RL(a,b)    CALL GLOBAL_SUM_R8( a, b )
+#define _GLOBAL_MAX_RL(a,b)    CALL GLOBAL_MAX_R8( a, b )
+#define _MPI_TYPE_RL MPI_DOUBLE_PRECISION
+
+C- Note: a) exch macros were used to switch to  JAM routines (obsolete)
+C        b) exch R4 & R8 macros are not practically used ; if needed,
+C           will directly call the corrresponding S/R.
+#define _EXCH_XY_RS(a,b) CALL EXCH_XY_RS ( a, b )
+#define _EXCH_XY_RL(a,b) CALL EXCH_XY_RL ( a, b )
+#define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_RS ( a, b )
+#define _EXCH_XYZ_RL(a,b) CALL EXCH_XYZ_RL ( a, b )
 
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
@@ -185,16 +217,6 @@ C     Use D0 where it means REAL*8 but not where it means REAL*16
 #ifdef REAL_D0_IS_16BYTES
 #define D0
 #endif
-
-C--   Control XY periodicity in processor to grid mappings
-C     Note: Model code does not need to know whether a domain is
-C           periodic because it has overlap regions for every box.
-C           Model assume that these values have been
-C           filled in some way.
-#undef  ALWAYS_PREVENT_X_PERIODICITY
-#undef  ALWAYS_PREVENT_Y_PERIODICITY
-#define CAN_PREVENT_X_PERIODICITY
-#define CAN_PREVENT_Y_PERIODICITY
 
 C--   Substitue for 1.D variables
 C     Sun compilers do not use 8-byte precision for literals
@@ -210,3 +232,4 @@ C     precision when they see .Dnn which runs very slowly!
 #endif
 
 #endif /* _CPP_EEOPTIONS_H_ */
+
