@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.45 2008/09/13 17:13:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.46 2009/09/16 21:36:11 rpa Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -280,6 +280,12 @@ C---  Continue with standard packages (with standard usePKG flag)
       IF (useREGRID) CALL PACKAGES_ERROR_MSG('REGRID',' ',myThid)
 #endif
 
+#ifdef ALLOW_LAYERS
+      IF ( useLayers ) CALL LAYERS_CHECK( myThid )
+#else
+      IF ( useLayers ) CALL PACKAGES_ERROR_MSG('LAYERS',' ',myThid)
+#endif /* ALLOW_LAYERS */
+
 #ifdef ALLOW_MYPACKAGE
       IF (useMYPACKAGE) CALL MYPACKAGE_CHECK( myThid )
 #else
@@ -294,7 +300,7 @@ C---  Continue with standard packages (with standard usePKG flag)
 
 #ifdef ALLOW_ECCO
       CALL ECCO_CHECK( myThid )
-#endif 
+#endif
 
 C---  Exclusive packages (which cannot be used together):
       IF ( useEXF .AND. useBulkForce ) THEN

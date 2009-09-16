@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.68 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.69 2009/09/16 21:36:11 rpa Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -86,11 +86,14 @@ C       |-- ATM2D_INIT_FIXED
 C       |
 C       |-- REGRID_INIT_FIXED
 C       |
+C       |-- LAYERS_INIT_FIXED
+C       |
 C       |-- SALT_PLUME_INIT_FIXED
 C       |
 C       |-- MYPACKAGE_INIT_FIXED
 C       |
 C       |-- DIAGNOSTICS_INIT_FIXED
+
 
 C     !USES:
       IMPLICIT NONE
@@ -306,6 +309,10 @@ C--   Initialise fixed array for Float pkg
 #ifdef ALLOW_REGRID
       IF ( useREGRID ) CALL REGRID_INIT_FIXED( myThid )
 #endif
+
+#ifdef ALLOW_LAYERS
+      IF ( useLayers ) CALL LAYERS_INIT_FIXED( myThid )
+#endif /* ALLOW_LAYERS */
 
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) CALL CPL_INIT_FIXED( myThid )

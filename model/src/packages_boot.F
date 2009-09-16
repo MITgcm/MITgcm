@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.46 2008/08/17 02:08:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.47 2009/09/16 21:36:11 rpa Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -80,6 +80,7 @@ c    &          useCAL,
      &          useGridAlt,
      &          useDiagnostics,
      &          useREGRID,
+     &          useLayers,
      &          useMNC,
      &          useRunClock,
      &          useEMBED_FILES,
@@ -135,6 +136,7 @@ c     useGAD          =.FALSE.
       useGridAlt      =.FALSE.
       useDiagnostics  =.FALSE.
       useREGRID       =.FALSE.
+      useLayers       =.FALSE.
       useMNC          =.FALSE.
       useRunClock     =.FALSE.
       useMYPACKAGE    =.FALSE.

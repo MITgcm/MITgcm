@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.73 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.74 2009/09/16 21:36:11 rpa Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -79,6 +79,8 @@ C       |
 C       |-- RBCS_INIT_VARIA
 C       |
 C       |-- REGRID_INIT_VARIA
+C       |
+C       |-- LAYERS_INIT_VARIA
 C       |
 C       |-- SALT_PLUME_INIT_VARIA
 C       |
@@ -389,6 +391,10 @@ C Initialize FIZHI state variables
         CALL REGRID_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_REGRID */
+
+#ifdef ALLOW_LAYERS
+      IF ( useLayers ) CALL LAYERS_INIT_VARIA( myThid )
+#endif /* ALLOW_LAYERS */
 
 #ifdef ALLOW_SALT_PLUME
       IF ( useSALT_PLUME ) THEN

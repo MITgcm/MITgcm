@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.60 2009/06/17 14:55:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.61 2009/09/16 21:36:11 rpa Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -196,6 +196,16 @@ c    & CALL OFFLINE_STATE( myTime, myIter, myThid )
       IF ( useCoupler )
      &     CALL CPL_OUTPUT( myTime, myIter, myThid )
 #endif
+
+C-- added by RPA
+C- added by RPA
+#ifdef ALLOW_LAYERS
+      IF ( useLayers ) THEN
+        CALL LAYERS_CALC( myTime, myIter, myThid )
+        CALL LAYERS_OUTPUT( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_LAYERS */
+
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics )
