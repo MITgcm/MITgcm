@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_normaliz.F,v 1.3 2003/12/05 02:27:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_normaliz.F,v 1.4 2009/09/16 15:44:04 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
 CStartofinterface
-      SUBROUTINE TIMEAVE_NORMALIZ( 
-     U                               fldtave, 
+      SUBROUTINE TIMEAVE_NORMALIZ(
+     U                               fldtave,
      I                               timeave_cumul, Ksize,
      I                               bi, bj, myThid )
 C     /==========================================================\
@@ -30,22 +30,23 @@ CEndofinterface
 
 C     == Local variables ==
 C     i,j,k,bi,bj  - Loop counters
-      INTEGER i, j, k
- 
+      INTEGER i, j, k, km
+
 C     DO bj = myByLo(myThid), myByHi(myThid)
 C      DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,Ksize
-         IF ( timeave_cumul(k,bi,bj) .NE. 0. ) THEN
+         km = MIN(k,Nr)
+         IF ( timeave_cumul(km,bi,bj) .NE. 0. ) THEN
           DO j=1,sNy
            DO i=1,sNx
-             fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj) / 
-     &                              timeave_cumul(k,bi,bj)
+             fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
+     &                            / timeave_cumul(km,bi,bj)
            ENDDO
           ENDDO
          ENDIF
         ENDDO
 C      ENDDO
 C     ENDDO
- 
+
       RETURN
       END
