@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.227 2009/01/27 15:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.228 2009/09/16 21:36:53 rpa Exp $
 C $Name:  $
 C
 
@@ -893,6 +893,7 @@ C Logical flags for selecting packages
       LOGICAL useGridAlt
       LOGICAL useDiagnostics
       LOGICAL useREGRID
+      LOGICAL useLayers
       LOGICAL useMNC
       LOGICAL useRunClock
       LOGICAL useEMBED_FILES
@@ -906,7 +907,7 @@ C Logical flags for selecting packages
      &        usePTRACERS, useGCHEM, useRBCS, useOffLine, useMATRIX,
      &        useSEAICE, useSALT_PLUME, useShelfIce, useThSIce,
      &        useATM2D, useAIM, useLand, useFizhi, useGridAlt,
-     &        useDiagnostics, useREGRID, useMNC,
+     &        useDiagnostics, useREGRID, useLayers, useMNC,
      &        useRunClock, useEMBED_FILES,
      &        useMYPACKAGE
 CEH3 ;;; Local Variables: ***
