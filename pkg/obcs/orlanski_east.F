@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_east.F,v 1.8 2004/09/20 23:22:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_east.F,v 1.9 2009/09/17 16:30:07 jmc Exp $
 C $Name:  $
 cc
 
 #include "OBCS_OPTIONS.h"
 
-      SUBROUTINE ORLANSKI_EAST( bi, bj, futureTime, 
-     I                      uVel, vVel, wVel, theta, salt, 
+      SUBROUTINE ORLANSKI_EAST( bi, bj, futureTime,
+     I                      uVel, vVel, wVel, theta, salt,
      I                      myThid )
 C     /==========================================================\
 C     | SUBROUTINE ORLANSKI_EAST                                 |
@@ -25,44 +25,44 @@ C     === Global variables ===
 #include "OBCS.h"
 #include "ORLANSKI.h"
 
-C SPK 6/2/00: Added radiative OBCs for salinity. 
-C SPK 6/6/00: Changed calculation of OB*w. When K=1, the 
+C SPK 6/2/00: Added radiative OBCs for salinity.
+C SPK 6/6/00: Changed calculation of OB*w. When K=1, the
 C             upstream value is used. For example on the eastern OB:
 C                IF (K.EQ.1) THEN
 C                   OBEw(J,K,bi,bj)=wVel(I_obc-1,J,K,bi,bj)
 C                ENDIF
-C                         
+C
 C SPK 7/7/00: 1) Removed OB*w fix (see above).
 C             2) Added variable CMAX. Maximum diagnosed phase speed is now
-C                clamped to CMAX. For stability of AB-II scheme (CFL) the 
+C                clamped to CMAX. For stability of AB-II scheme (CFL) the
 C                (non-dimensional) phase speed must be <0.5
 C             3) (Sonya Legg) Changed application of uVel and vVel.
-C                uVel on the western OB is actually applied at I_obc+1 
+C                uVel on the western OB is actually applied at I_obc+1
 C                while vVel on the southern OB is applied at J_obc+1.
 C             4) (Sonya Legg) Added templates for forced OBs.
 C
 C SPK 7/17/00: Non-uniform resolution is now taken into account in diagnosing
 C              phase speeds and time-stepping OB values. CL is still the
 C              non-dimensional phase speed; CVEL is the dimensional phase
-C              speed: CVEL = CL*(dx or dy)/dt, where dx and dy is the 
-C              appropriate grid spacings. Note that CMAX (with which CL 
+C              speed: CVEL = CL*(dx or dy)/dt, where dx and dy is the
+C              appropriate grid spacings. Note that CMAX (with which CL
 C              is compared) remains non-dimensional.
-C 
-C SPK 7/18/00: Added code to allow filtering of phase speed following 
-C              Blumberg and Kantha. There is now a separate array 
+C
+C SPK 7/18/00: Added code to allow filtering of phase speed following
+C              Blumberg and Kantha. There is now a separate array
 C              CVEL_**, where **=Variable(U,V,T,S,W)Boundary(E,W,N,S) for
-C              the dimensional phase speed. These arrays are initialized to 
+C              the dimensional phase speed. These arrays are initialized to
 C              zero in ini_obcs.F. CVEL_** is filtered according to
 C              CVEL_** = fracCVEL*CVEL(new) + (1-fracCVEL)*CVEL_**(old).
 C              fracCVEL=1.0 turns off filtering.
 C
-C SPK 7/26/00: Changed code to average phase speed. A new variable 
+C SPK 7/26/00: Changed code to average phase speed. A new variable
 C              'cvelTimeScale' was created. This variable must now be
-C              specified. Then, fracCVEL=deltaT/cvelTimeScale. 
-C              Since the goal is to smooth out the 'singularities' in the 
-C              diagnosed phase speed, cvelTimeScale could be picked as the 
-C              duration of the singular period in the unfiltered case. Thus, 
-C              for a plane wave cvelTimeScale might be the time take for the 
+C              specified. Then, fracCVEL=deltaT/cvelTimeScale.
+C              Since the goal is to smooth out the 'singularities' in the
+C              diagnosed phase speed, cvelTimeScale could be picked as the
+C              duration of the singular period in the unfiltered case. Thus,
+C              for a plane wave cvelTimeScale might be the time take for the
 C              wave to travel a distance DX, where DX is the width of the region
 C              near which d(phi)/dx is small.
 C
@@ -138,7 +138,7 @@ C              vVel
                ELSE
                   CL=-(vVel(I_obc-1,J,K,bi,bj)-VE_STORE_1(J,K,bi,bj))/
      &          (ab1*VE_STORE_2(J,K,bi,bj) + ab2*VE_STORE_3(J,K,bi,bj))
-               ENDIF            
+               ENDIF
                IF (CL.lt.0.) THEN
                   CL=0.
                ELSEIF (CL.gt.CMAX) THEN
@@ -155,7 +155,7 @@ C		  saved data...)
 C              update OBC to next timestep
                OBEv(J,K,bi,bj)=vVel(I_obc,J,K,bi,bj)-
      &           CVEL_VE(J,K,bi,bj)*(deltaT*recip_dxV(I_obc,J,bi,bj))*
-     &           (ab1*(vVel(I_obc,J,K,bi,bj)-vVel(I_obc-1,J,K,bi,bj)) + 
+     &           (ab1*(vVel(I_obc,J,K,bi,bj)-vVel(I_obc-1,J,K,bi,bj)) +
      &           ab2*(VE_STORE_4(J,K,bi,bj)-VE_STORE_1(J,K,bi,bj)))
 C              Temperature
                IF ((TE_STORE_2(J,K,bi,bj).eq.0.).and.
@@ -164,7 +164,7 @@ C              Temperature
                ELSE
                   CL=-(theta(I_obc-1,J,K,bi,bj)-TE_STORE_1(J,K,bi,bj))/
      &          (ab1*TE_STORE_2(J,K,bi,bj) + ab2*TE_STORE_3(J,K,bi,bj))
-               ENDIF 
+               ENDIF
                IF (CL.lt.0.) THEN
                   CL=0.
                ELSEIF (CL.gt.CMAX) THEN
@@ -190,7 +190,7 @@ C              Salinity
                ELSE
                   CL=-(salt(I_obc-1,J,K,bi,bj)-SE_STORE_1(J,K,bi,bj))/
      &          (ab1*SE_STORE_2(J,K,bi,bj) + ab2*SE_STORE_3(J,K,bi,bj))
-               ENDIF 
+               ENDIF
                IF (CL.lt.0.) THEN
                   CL=0.
                ELSEIF (CL.gt.CMAX) THEN
@@ -208,7 +208,7 @@ C              update OBC to next timestep
                OBEs(J,K,bi,bj)=salt(I_obc,J,K,bi,bj)-
      &           CVEL_SE(J,K,bi,bj)*(deltaT*recip_dxC(I_obc,J,bi,bj))*
      &           (ab1*(salt(I_obc,J,K,bi,bj)-salt(I_obc-1,J,K,bi,bj))+
-     &           ab2*(SE_STORE_4(J,K,bi,bj)-SE_STORE_1(J,K,bi,bj))) 
+     &           ab2*(SE_STORE_4(J,K,bi,bj)-SE_STORE_1(J,K,bi,bj)))
 C              wVel
 #ifdef ALLOW_NONHYDROSTATIC
                   IF ((WE_STORE_2(J,K,bi,bj).eq.0.).and.
