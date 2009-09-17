@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.5 2009/09/17 16:57:13 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.6 2009/09/17 18:21:55 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -29,10 +29,10 @@ C     myThid               :: thread number
 CEOP
 
 C     !LOCAL VARIABLES:
+C     i,j,k,bi,bj  :: loop counter
       INTEGER i,j,bi,bj
 #ifdef NONLIN_FRSURF
-C     i,j,k,bi,bj  :: loop counter
-      INTEGER i,j,k,bi,bj
+      INTEGER k
 #endif
 
 #ifdef NONLIN_FRSURF
