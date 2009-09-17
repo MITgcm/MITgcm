@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ctrparam.h,v 1.2 2007/10/08 23:48:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ctrparam.h,v 1.3 2009/09/17 16:00:53 jscott Exp $
 C $Name:  $
 
 ! ==================================================
@@ -63,5 +63,5 @@ C $Name:  $
 !#define CLM 1
 !
 !
-#define NYR_CHEM 124
+#define NYR_CHEM 1
 
