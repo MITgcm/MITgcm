@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.6 2009/09/17 18:21:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.7 2009/09/17 21:16:21 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -53,23 +53,34 @@ C-    used for side-drag:
 #endif /* NONLIN_FRSURF */
 
        IF (deltaTmom.NE.0.) THEN
-        recip_dt=1. _d 0/deltaTmom
+        recip_dt = 1. _d 0/deltaTmom
        ELSE
-        recip_dt=0. _d 0
+        recip_dt = 0. _d 0
        ENDIF
 
        DO bj=myByLo(myThid), myByHi(myThid)
         DO bi=myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           IF (useAreaViscLength) THEN
-            L2_D(i,j,bi,bj)=rA(i,j,bi,bj)
-           ELSE
-            L2_D(i,j,bi,bj)=2. _d 0
-     &           /((recip_DXF(i,j,bi,bj)**2+recip_DYF(i,j,bi,bj)**2))
-           ENDIF
-           L3_D(i,j,bi,bj)=L2_D(i,j,bi,bj)**1.5
-           L4rdt_D(i,j,bi,bj)=0.03125 _d 0*recip_dt*L2_D(i,j,bi,bj)**2
+            L2_D(i,j,bi,bj) = rA(i,j,bi,bj)
+          ENDDO
+         ENDDO
+         IF ( .NOT.useAreaViscLength ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            IF ( recip_dxF(i,j,bi,bj).NE.0. .OR.
+     &           recip_dyF(i,j,bi,bj).NE.0. ) THEN
+              L2_D(i,j,bi,bj) = 2. _d 0
+     &           /((recip_dxF(i,j,bi,bj)**2+recip_dyF(i,j,bi,bj)**2))
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            L3_D(i,j,bi,bj) = L2_D(i,j,bi,bj)**1.5
+            L4rdt_D(i,j,bi,bj) = 0.03125 _d 0*recip_dt
+     &                       *L2_D(i,j,bi,bj)**2
           ENDDO
          ENDDO
         ENDDO
@@ -79,14 +90,25 @@ C-    used for side-drag:
         DO bi=myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           IF (useAreaViscLength) THEN
-            L2_Z(i,j,bi,bj)=rAz(i,j,bi,bj)
-           ELSE
-            L2_Z(i,j,bi,bj)=2. _d 0
-     &           /((recip_DXV(I,J,bi,bj)**2+recip_DYU(I,J,bi,bj)**2))
-           ENDIF
-           L3_Z(i,j,bi,bj)=L2_Z(i,j,bi,bj)**1.5
-           L4rdt_Z(i,j,bi,bj)=0.03125 _d 0*recip_dt*L2_Z(i,j,bi,bj)**2
+            L2_Z(i,j,bi,bj) = rAz(i,j,bi,bj)
+          ENDDO
+         ENDDO
+         IF ( .NOT.useAreaViscLength ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            IF ( recip_dxV(i,j,bi,bj).NE.0. .OR.
+     &           recip_dyU(i,j,bi,bj).NE.0. ) THEN
+              L2_Z(i,j,bi,bj) = 2. _d 0
+     &           /((recip_dxV(i,j,bi,bj)**2+recip_dyU(i,j,bi,bj)**2))
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            L3_Z(i,j,bi,bj) = L2_Z(i,j,bi,bj)**1.5
+            L4rdt_Z(i,j,bi,bj) = 0.03125 _d 0*recip_dt
+     &                       *L2_Z(i,j,bi,bj)**2
           ENDDO
          ENDDO
         ENDDO
