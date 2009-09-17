@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_z_rx_cube.template,v 1.3 2001/09/21 03:55:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_z_rx_cube.template,v 1.4 2009/09/17 18:09:05 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 C     !ROUTINE: EXCH_Z_RX_CUBE
 
 C     !INTERFACE:
-      SUBROUTINE EXCH_Z_RX_CUBE( 
+      SUBROUTINE EXCH_Z_RX_CUBE(
      U            array,
      I            myOLw, myOLe, myOLn, myOLs, myNz,
      I            exchWidthX, exchWidthY,
@@ -16,30 +16,30 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EXCH_Z_RX_CUBE                                 
-C     | o Control edge exchanges for RX zeta point array on CS    
+C     | SUBROUTINE EXCH_Z_RX_CUBE
+C     | o Control edge exchanges for RX zeta point array on CS
 C     *==========================================================*
-C     |                                                           
-C     | Controlling routine for exchange of XY edges of an array  
-C     | distributed in X and Y. The routine interfaces to         
-C     | communication routines that can use messages passing      
-C     | exchanges, put type exchanges or get type exchanges.      
-C     |  This allows anything from MPI to raw memory channel to   
-C     | memmap segments to be used as a inter-process and/or      
-C     | inter-thread communiation and synchronisation             
-C     | mechanism.                                                
-C     | Notes --                                                  
-C     | 1. Some low-level mechanisms such as raw memory-channel   
-C     | or SGI/CRAY shmem put do not have direct Fortran bindings 
-C     | and are invoked through C stub routines.                  
-C     | 2. Although this routine is fairly general but it does    
-C     | require nSx and nSy are the same for all innvocations.    
-C     | There are many common data structures ( myByLo,           
-C     | westCommunicationMode, mpiIdW etc... ) tied in with       
-C     | (nSx,nSy). To support arbitray nSx and nSy would require  
-C     | general forms of these.                                   
-C     | 3. zeta coord exchange operation for cube sphere grid 
-C     |                                                           
+C     |
+C     | Controlling routine for exchange of XY edges of an array
+C     | distributed in X and Y. The routine interfaces to
+C     | communication routines that can use messages passing
+C     | exchanges, put type exchanges or get type exchanges.
+C     |  This allows anything from MPI to raw memory channel to
+C     | memmap segments to be used as a inter-process and/or
+C     | inter-thread communiation and synchronisation
+C     | mechanism.
+C     | Notes --
+C     | 1. Some low-level mechanisms such as raw memory-channel
+C     | or SGI/CRAY shmem put do not have direct Fortran bindings
+C     | and are invoked through C stub routines.
+C     | 2. Although this routine is fairly general but it does
+C     | require nSx and nSy are the same for all innvocations.
+C     | There are many common data structures ( myByLo,
+C     | westCommunicationMode, mpiIdW etc... ) tied in with
+C     | (nSx,nSy). To support arbitray nSx and nSy would require
+C     | general forms of these.
+C     | 3. zeta coord exchange operation for cube sphere grid
+C     |
 C     *==========================================================*
 
 C     !USES:
@@ -58,17 +58,17 @@ C     myOLn
 C     myOLs
 C     exchWidthX :: Width of data region exchanged in X.
 C     exchWidthY :: Width of data region exchanged in Y.
-C                   Note -- 
+C                   Note --
 C                   1. In theory one could have a send width and
 C                   a receive width for each face of each tile. The only
 C                   restriction woul be that the send width of one
 C                   face should equal the receive width of the sent to
-C                   tile face. Dont know if this would be useful. I 
-C                   have left it out for now as it requires additional 
+C                   tile face. Dont know if this would be useful. I
+C                   have left it out for now as it requires additional
 C                   bookeeping.
-C     simulationMode :: Forward or reverse mode exchange ( provides 
+C     simulationMode :: Forward or reverse mode exchange ( provides
 C                       support for adjoint integration of code. )
-C     cornerMode     :: Flag indicating whether corner updates are 
+C     cornerMode     :: Flag indicating whether corner updates are
 C                       needed.
 C     myThid         :: Thread number of this instance of S/R EXCH...
       INTEGER myOLw
@@ -82,7 +82,7 @@ C     myThid         :: Thread number of this instance of S/R EXCH...
       INTEGER cornerMode
       INTEGER myThid
       _RX array(1-myOLw:sNx+myOLe,
-     &          1-myOLs:sNy+myOLn, 
+     &          1-myOLs:sNy+myOLn,
      &          myNZ, nSx, nSy)
 
 C     !LOCAL VARIABLES:
@@ -91,6 +91,7 @@ C     theSimulationMode :: Holds working copy of simulation mode
 C     theCornerMode     :: Holds working copy of corner mode
 C     I,J,K,repeat      :: Loop counters and index
 C     bl,bt,bn,bs,be,bw
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER theSimulationMode
       INTEGER theCornerMode
       INTEGER I,J,K,repeat
@@ -99,6 +100,17 @@ C     == Statement function ==
       INTEGER tilemod
       tilemod(I)=1+mod(I-1+6,6)
 CEOP
+
+      IF ( sNx.NE.sNy .OR.
+     &     nSx.NE.6 .OR. nSy.NE.1 .OR.
+     &     nPx.NE.1 .OR. nPy.NE.1 ) THEN
+        WRITE(msgBuf,'(2A)') 'EXCH_Z_RX_CUBE: Wrong Tiling'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'EXCH_Z_RX_CUBE: ',
+     &   'works only with sNx=sNy & nSx=6 & nSy=nPx=nPy=1'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: EXCH_Z_RX_CUBE: Wrong Tiling'
+      ENDIF
 
       theSimulationMode = simulationMode
       theCornerMode     = cornerMode
