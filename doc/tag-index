@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1156 2009/09/16 23:13:20 rpa Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1157 2009/09/17 17:01:04 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/mom_common:
+  Move computation of length scales to mom_init_fixed.F (avoid recomputation
+  at each time-steps*levels).
 o pkg/layers:
   Created a new package for computing volume fluxes in temperature or
   [not yet implemented] density layers, e.g. for calculating residual
