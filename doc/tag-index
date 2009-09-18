@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1157 2009/09/17 17:01:04 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1158 2009/09/18 12:36:12 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kpp:
+ -add double diffusive contributions as a hack, turned off by default 
+  for now, and the code can be excluded with a CPP-flag 
+  EXCLUDE_KPP_DOUBLEDIFF just as EXCLUDE_KPP_SHEAR_MIX
+ -add a verification experiments to "vermix" to test this code
 o pkg/mom_common:
   Move computation of length scales to mom_init_fixed.F (avoid recomputation
   at each time-steps*levels).
