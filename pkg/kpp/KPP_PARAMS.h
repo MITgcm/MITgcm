@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.13 2009/05/28 22:59:22 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.14 2009/09/18 11:40:22 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -63,16 +63,19 @@ C                       if T : Compute the non-local term using
 C                            the total vertical diffusivity ; 
 C                       if F (=default): use KPP vertical diffusivity 
 C     Note: prior to checkpoint55h_post, was using the total Kz
+C     KPPuseDoubleDiff  - if TRUE, include double diffusive
+C                         contributions
 C     LimitHblStable    - if TRUE (the default), limits the depth of the
 C                         hbl under stable conditions.
 C
 C-----------------------------------------------------------------------
 
       LOGICAL KPPmixingMaps, KPPwriteState, KPP_ghatUseTotalDiffus
+      LOGICAL KPPuseDoubleDiff
       LOGICAL LimitHblStable
       COMMON /KPP_PARM_L/
      &        KPPmixingMaps, KPPwriteState, KPP_ghatUseTotalDiffus,
-     &        LimitHblStable
+     &        KPPuseDoubleDiff, LimitHblStable
 
       _RL                 minKPPhbl
       COMMON /KPP_PARM_R/ minKPPhbl

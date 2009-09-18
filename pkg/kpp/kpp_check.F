@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_check.F,v 1.8 2007/10/23 15:47:28 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_check.F,v 1.9 2009/09/18 11:40:22 mlosch Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -79,6 +79,15 @@ C     Hence overlap region needs to be set OLx=4, OLy=4.
       ENDIF
 #endif
 #endif
+
+#ifdef EXCLUDE_KPP_DOUBLEDIFF
+      IF ( KPPuseDoubleDiff ) THEN
+       WRITE(msgBuf,'(A,A)') 'KPPuseDoubleDiff=.TRUE. requires ',
+     &      'that EXCLUDE_KPP_DOUBLEDIFF is undefined'
+       CALL PRINT_ERROR( msgBuf , myThid )
+       STOP 'ABNORMAL END: S/R KPP_CHECK'
+      ENDIF
+#endif /* EXCLUDE_KPP_DOUBLEDIFF */
 
 #endif /* ALLOW_KPP */
 

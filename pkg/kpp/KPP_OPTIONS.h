@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.16 2008/09/29 18:35:53 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.17 2009/09/18 11:40:22 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -46,6 +46,9 @@ C o Include/exclude KPP non/local transport terms
 
 C o Exclude Interior shear instability mixing
 #undef EXCLUDE_KPP_SHEAR_MIX
+
+C o Exclude double diffusive mixing in the interior
+#undef EXCLUDE_KPP_DOUBLEDIFF
 
 C o Avoid as many as possible AD recomputations
 C   usually not necessary, but useful for testing

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.20 2009/07/08 21:57:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.21 2009/09/18 11:40:22 mlosch Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -36,7 +36,7 @@ C--   KPP vertical mixing parameters
       NAMELIST /KPP_PARM01/
      & kpp_freq, kpp_dumpFreq, kpp_taveFreq,
      & KPPmixingMaps, KPPwriteState, KPP_ghatUseTotalDiffus,
-     & LimitHblStable,
+     & KPPuseDoubleDiff, LimitHblStable,
      & minKPPhbl,
      & epsln, phepsi, epsilon, vonk, dB_dz,
      & conc1, conam, concm, conc2, zetam,
@@ -47,6 +47,7 @@ C--   KPP vertical mixing parameters
      & num_z_smooth_sh, num_m_smooth_sh,
      & Riinfty, BVSQcon, difm0, difs0, dift0,
      & difmcon, difscon, diftcon,
+     & Rrho0, dsfmax, 
      & cstar
 
       _BEGIN_MASTER(myThid)
@@ -62,12 +63,13 @@ C--   KPP vertical mixing parameters
      I                          myThid )
 
 C--   set default KPP vertical mixing parameters
-      kpp_freq      = deltaTClock
-      kpp_dumpFreq  = dumpFreq
-      kpp_taveFreq  = taveFreq
-      KPPmixingMaps = .FALSE.
-      KPPwriteState = .FALSE.
-      LimitHblStable= .TRUE.
+      kpp_freq               = deltaTClock
+      kpp_dumpFreq           = dumpFreq
+      kpp_taveFreq           = taveFreq
+      KPPmixingMaps          = .FALSE.
+      KPPwriteState          = .FALSE.
+      KPPuseDoubleDiff       = .FALSE.
+      LimitHblStable         = .TRUE.
       KPP_ghatUseTotalDiffus = .FALSE.
       minKPPhbl = UNSET_RL
 
@@ -123,6 +125,11 @@ C     parameters for subroutine "Ri_iwmix"
       difmcon = 0.1 _d 0
       difscon = 0.1 _d 0
       diftcon = 0.1 _d 0
+
+C     parameters for double diffusion routine "KPP_DOUBLEDIFF"
+
+      Rrho0   = 1.9 _d 0
+      dsfmax  = 10. _d -3
 
 C     parameters for subroutine "blmix"
 

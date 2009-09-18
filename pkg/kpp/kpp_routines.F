@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.44 2009/05/28 22:59:23 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.45 2009/09/18 11:40:22 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -16,6 +16,7 @@ C--  o SMOOTH_HORIZ- Apply horizontal smoothing to global array.
 C--  o BLMIX       - Boundary layer mixing coefficients.
 C--  o ENHANCE     - Enhance diffusivity at boundary layer interface.
 C--  o STATEKPP    - Compute buoyancy-related input arrays.
+C--  o KPP_DOUBLEDIFF - Compute double diffusive contribution to diffusivities
 
 c***********************************************************************
 
@@ -1657,6 +1658,171 @@ c     compute arrays for K = Nrp1
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
+#endif /* ALLOW_KPP */
+
+      RETURN
+      END
+
+
+c*************************************************************************
+
+      SUBROUTINE KPP_DOUBLEDIFF (
+     I     TTALPHA, SSBETA,
+     U     kappaRT, 
+     U     kappaRS,
+     I     ikppkey, imin, imax, jmin, jmax, bi, bj, myThid )
+c
+c-----------------------------------------------------------------------
+c     "KPP_DOUBLEDIFF" adds the double diffusive contributions 
+C     as Rrho-dependent parameterizations to kappaRT and kappaRS 
+c
+c     input:
+c     bi, bj  = array indices on which to apply calculations
+c     imin, imax, jmin, jmax = array boundaries
+c     ikppkey = key for TAMC/TAF automatic differentiation
+c     myThid  = thread id
+c
+c      ttalpha= thermal expansion coefficient without 1/rho factor
+c               d(rho) / d(potential temperature)                    (kg/m^3/C)
+c      ssbeta = salt expansion coefficient without 1/rho factor
+c               d(rho) / d(salinity)                               (kg/m^3/PSU)
+c     output: updated
+c     kappaRT/S :: background diffusivities for temperature and salinity
+c
+c     written  by: martin losch,   sept. 15, 2009 
+c
+
+c-----------------------------------------------------------------------
+
+      IMPLICIT NONE
+
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "KPP_PARAMS.h"
+#include "DYNVARS.h"
+#include "GRID.h"
+#ifdef ALLOW_AUTODIFF
+# include "tamc.h"
+#endif
+
+c-------------- Routine arguments -----------------------------------------
+      INTEGER ikppkey, imin, imax, jmin, jmax, bi, bj, myThid
+
+      _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
+      _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
+      _RL KappaRT( 1-Olx:sNx+Olx, 1-Oly:sNy+Oly, Nr   )
+      _RL KappaRS( 1-Olx:sNx+Olx, 1-Oly:sNy+Oly, Nr   )
+
+
+#ifdef ALLOW_KPP
+
+C--------------------------------------------------------------------------
+C
+C     local variables
+C     I,J,K :: loop indices
+C     kkppkey :: key for TAMC/TAF automatic differentiation
+C
+      INTEGER I, J, K
+      INTEGER kkppkey
+C     alphaDT   :: d\rho/d\theta * d\theta
+C     betaDS    :: d\rho/dsalt * dsalt
+C     Rrho      :: "density ratio" R_{\rho} = \alpha dT/dz / \beta dS/dz
+C     nuddt/s   :: double diffusive diffusivities
+C     numol     :: molecular diffusivity
+C     rFac      :: abbreviation for 1/(R_{\rho0}-1)
+
+      _RL alphaDT ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
+      _RL betaDS  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
+      _RL nuddt   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
+      _RL nudds   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy )
+      _RL Rrho
+      _RL numol, rFac, nutmp
+      INTEGER Km1
+
+C     set some constants here
+      numol = 1.5 _d -06
+      rFac  = 1. _d 0 / (Rrho0 - 1. _d 0 )
+C
+      kkppkey = (ikppkey-1)*Nr + 1
+
+CML#ifdef KPP_AUTODIFF_EXCESSIVE_STORE
+CMLCADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k,
+CMLCADJ &     key=kkppkey, kind=isbyte
+CMLCADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k,
+CMLCADJ &     key=kkppkey, kind=isbyte
+CML#endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
+
+      DO K = 1, Nr
+       Km1 = MAX(K-1,1)
+       DO J = 1-Oly, sNy+Oly
+        DO I = 1-Olx, sNx+Olx
+         alphaDT(I,J) = ( theta(I,J,Km1,bi,bj)-theta(I,J,K,bi,bj) ) 
+     &        * 0.5 _d 0 * ABS( TTALPHA(I,J,Km1) + TTALPHA(I,J,K) )
+         betaDS(I,J)  = ( salt(I,J,Km1,bi,bj)-salt(I,J,K,bi,bj) ) 
+     &        * 0.5 _d 0 * ( SSBETA(I,J,Km1) + SSBETA(I,J,K) )
+         nuddt(I,J) = 0. _d 0
+         nudds(I,J) = 0. _d 0
+        ENDDO
+       ENDDO
+       IF ( K .GT. 1 ) THEN
+        DO J = jMin, jMax
+         DO I = iMin, iMax
+          Rrho  = 0. _d 0
+C     Now we have many different cases
+C     a. alphaDT > 0 and betaDS > 0 => salt fingering 
+C        (salinity destabilizes)
+          IF (      alphaDT(I,J) .GT. betaDS(I,J)
+     &         .AND. betaDS(I,J) .GT. 0. _d 0 ) THEN
+           Rrho = MIN( alphaDT(I,J)/betaDS(I,J), Rrho0 )
+C     Large et al. 1994, eq. 31a
+C          nudds(I,J) = dsfmax * ( 1. _d 0 - (Rrho - 1. _d 0) * rFac )**3
+           nutmp      =          ( 1. _d 0 - (Rrho - 1. _d 0) * rFac )
+           nudds(I,J) = dsfmax * nutmp * nutmp * nutmp
+C     Large et al. 1994, eq. 31c
+           nuddt(I,J) = 0.7 _d 0 * nudds(I,J)
+          ELSEIF (   alphaDT(I,J) .LT. 0. _d 0 
+     &          .AND. betaDS(I,J) .LT. 0. _d 0 
+     &          .AND.alphaDT(I,J) .GT. betaDS(I,J) ) THEN
+C     b. alphaDT < 0 and betaDS < 0 => semi-convection, diffusive convection
+C        (temperature destabilizes)
+C     for Rrho >= 1 the water column is statically unstable and we never
+C     reach this point
+           Rrho = alphaDT(I,J)/betaDS(I,J)
+C     Large et al. 1994, eq. 32
+           nuddt(I,J) = numol * 0.909 _d 0
+     &          * exp ( 4.6 _d 0 * exp ( 
+     &          - 5.4 _d 0 * ( 1. _d 0/Rrho - 1. _d 0 ) ) )
+CMLC     or
+CMLC     Large et al. 1994, eq. 33
+CML         nuddt(I,J) = numol * 8.7 _d 0 * Rrho**1.1
+C     Large et al. 1994, eqs. 34
+           nudds(I,J) = nuddt(I,J) * MAX( 0.15 _d 0 * Rrho, 
+     &          1.85 _d 0 * Rrho - 0.85 _d 0 )
+          ELSE
+C     Do nothing, because in this case the water colume is unstable 
+C     => double diffusive processes are negligible and mixing due 
+C     to shear instability will dominate 
+          ENDIF
+         ENDDO
+        ENDDO
+C     ENDIF ( K .GT. 1 ) 
+       ENDIF
+C
+       DO J = 1-Oly, sNy+Oly
+        DO I = 1-Olx, sNx+Olx
+         kappaRT(I,J,K) = kappaRT(I,J,K) + nuddt(I,J)
+         kappaRS(I,J,K) = kappaRS(I,J,K) + nudds(I,J)
+        ENDDO
+       ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(nuddt,'KPPnuddt',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(nudds,'KPPnudds',k,1,2,bi,bj,myThid)
+       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+C     end of K-loop
+      ENDDO
 #endif /* ALLOW_KPP */
 
       RETURN

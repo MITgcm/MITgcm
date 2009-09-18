@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.5 2008/10/30 18:51:35 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.6 2009/09/18 11:40:22 mlosch Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -127,6 +127,22 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         diagCode  = 'SM P    UR      '
         CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+#ifndef EXCLUDE_KPP_DOUBLEDIFF
+        diagName  = 'KPPnuddt'
+        diagTitle = 'Vertical double diffusion coefficient for heat'
+        diagUnits = 'm^2/s           '
+        diagCode  = 'SM P    UR      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+        diagName  = 'KPPnudds'
+        diagTitle = 'Vertical double diffusion coefficient for salt'
+        diagUnits = 'm^2/s           '
+        diagCode  = 'SM P    UR      '
+        CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+#endif /* ndef EXCLUDE_KPP_DOUBLEDIFF */
 
 #ifdef ALLOW_SALT_PLUME
         diagName  = 'KPPpfrac'
