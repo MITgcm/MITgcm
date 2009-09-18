@@ -1,0 +1,79 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=20*1.,
+ sRef=20*35.,
+ viscA4=0.0E4,
+ viscAh=0.E-2,
+ viscAz=1.E-4,
+ no_slip_sides=.TRUE.,
+ no_slip_bottom=.TRUE.,
+ diffK4T=0.E4,
+ diffKhT=0.E-2,
+# diffKzT=1.E-5,
+ diffK4S=0.E4,
+ diffKhS=0.E-2,
+# diffKzS=1.E-5,
+ f0=1.4e-4,
+ beta=0.E-11,
+ tAlpha=2.E-4,
+ sBeta =7.E-4,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+#ivdc_kappa=10.,
+ implicitDiffusion=.TRUE.,
+ implicitViscosity=.TRUE.,
+ eosType='LINEAR',
+#eosType='MDJWF',
+ hFacMin=0.05,
+ readBinaryPrec=64,
+ bottomDragLinear=0.E-4,
+ debugLevel=1,
+ tempAdvection=.FALSE.,
+ tempAdvScheme=33,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=300,
+ cg2dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ niter0=0,
+ nTimeSteps=20,
+#nTimeSteps=720,
+#nTimeSteps=8640,
+ deltaT=1200.0,
+#cAdjFreq=-1.,
+ abEps=0.01,
+ pChkptFreq=0.0,
+ chkptFreq=0.0,
+ dumpFreq=86400.0,
+#dumpFreq=1.0,
+ monitorFreq=86400.,
+ monitorFreq=1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ usingSphericalPolarGrid=.FALSE.,
+ dXspacing=5000,
+ dYspacing=5000.,
+ delZ=20*50,
+ &
+
+# Input datasets
+ &PARM05
+ hydrogThetaFile='T.saltfinger',
+ hydrogSaltFile ='S.saltfinger',
+ hydrogThetaFile='T.diffconv',
+ hydrogSaltFile ='S.diffconv',
+ hydrogThetaFile='T.doublediff',
+ hydrogSaltFile ='S.doublediff',
+ &

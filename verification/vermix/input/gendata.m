@@ -80,4 +80,26 @@ tke = 1e-6*ones([nx,ny,nz]);
 tke(2,1,1) = 1e-3;
 fid=fopen('TKE.init','w',ieee); fwrite(fid,tke,prec); fclose(fid);
 
+% double diffusive initial conditions: 
+% salt fingers in upper layers (dt>0,ds>0,Rrho=talpha*dt/sbeta*ds > 1)
+% diffusive convection in lower layers (dt<0,ds<0,Rrho=talpha*dt/sbeta*ds < 1)
+sbeta = 7.e-4;
+tdd = -min(Tref,2-Tref);
+Rrho = 0*tdd+1.1;
+Rrho(8:end) = 0.5;
+Sz2=talpha*diff(tdd)/sbeta./Rrho(1:end-1);
+sdd = cumsum([34,Sz2]);
+
+t=zeros([nx,ny,nz]);
+for k=1:nz
+ t(:,:,k) = tdd(k);
+end
+fid=fopen('T.doublediff','w',ieee); fwrite(fid,t,prec); fclose(fid);
+
+s=zeros([nx,ny,nz]);
+for k=1:nz
+ s(:,:,k) = sdd(k);
+end
+fid=fopen('S.doublediff','w',ieee); fwrite(fid,s,prec); fclose(fid);
+
 
