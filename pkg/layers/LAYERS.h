@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.1 2009/09/16 21:25:47 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.2 2009/09/20 20:54:47 rpa Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAYERS
@@ -75,20 +75,20 @@ C     Keep track of time
 
 C     Isopycnal grid parameters:
 C      layers_G :: boundaries of isopycnal layers
-C      dZZ      :: the vertical grid spacing
+C      dZZf     :: height of fine grid cells
 C      NZZ      :: the number of levels to use in the fine grid
 C      MapIndex :: indices for mapping ZZ to Z
 C      MapFact  :: factors for interpolating T(Z) to T(ZZ)
 
       _RL layers_G(nLayers+1)
-      _RL dZZ
+      _RL dZZf(FineGridMax)
       INTEGER MapIndex(FineGridMax), CellIndex(FineGridMax)
       _RL MapFact(FineGridMax)
       INTEGER NZZ
       COMMON /LAYERS_VERT_GRID_I/
      &      NZZ, MapIndex, CellIndex
       COMMON /LAYERS_VERT_GRID_R/
-     &      layers_G, dZZ, MapFact
+     &      layers_G, MapFact, dZZf
 
 
 #endif /* ALLOW_LAYERS */

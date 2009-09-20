@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.2 2009/09/18 16:13:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.3 2009/09/20 20:54:47 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -28,14 +28,12 @@ C     k         :: loop index
 C     kk,kkinit :: fine grid loop indices
 C     Zf        :: depth at cell boundaries
 C     Zf        :: depth at cell centers
-C     dZZf      :: height of fine grid cells
 C     ZZf       :: depth at cell boundaries (fine grid)
 C     ZZc       :: depth at cell centers (fine grid)
 C     msgBuf    :: Informational/error meesage buffer
       INTEGER k,kk,kkinit
       _RL     Zf(Nr+1)
       _RL     Zc(Nr)
-      _RL     dZZf(FineGridMax)
       _RL     ZZf(FineGridMax+1)
       _RL     ZZc(FineGridMax)
 
@@ -79,13 +77,12 @@ C     find the depths
 
 C     create ZZ
       ZZf(1) = 0. _d 0
-      ZZc(1) = 0.5 _d 0 * dZZ
+      ZZc(1) = 0.5 _d 0 * dZZf(1)
 
-      DO kk=2,NZZ
+      DO kk=2,NZZ+1
             ZZf(kk) = ZZf(kk-1) + dZZf(kk-1)
-            ZZc(kk) = 0.5 _d 0 * (ZZf(kk) + ZZf(kk-1))
+            ZZc(kk-1) = 0.5 _d 0 * (ZZf(kk) + ZZf(kk-1))
       ENDDO
-      ZZf(NZZ+1) = ZZf(NZZ) + dZZf(NZZ)
 
 C     create the interpolating mapping arrays
       k = 1
@@ -115,7 +112,7 @@ C       This means there was a problem
      &     ', ZZc(kk)=', ZZc(kk),' , Zc(k)=',Zc(k)
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R LAYERS_INIT_FIXED'
-        END IF
+        END IF       
 
 C       See which grid box the point lies in
         IF ( ZZc(kk).LT.Zf(MapIndex(kk)+1) ) THEN
@@ -138,6 +135,10 @@ C       See which grid box the point lies in
      &                     SQUEEZE_RIGHT , 1)
         ENDDO
       END IF
+
+C     Output the layer coordinates
+      CALL WRITE_GLVEC_RS( 'layers_G', ' ', layers_G, 1+Nlayers,
+     & -1, myThid )
 
       RETURN
       END

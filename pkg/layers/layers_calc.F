@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.1 2009/09/16 21:25:47 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.2 2009/09/20 20:54:47 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -132,11 +132,11 @@ C        that should have covered all the options
 C ------ Augment the bin values
          layers_UFlux(i,j,kgu(i,j),bi,bj) =
      &    layers_UFlux(i,j,kgu(i,j),bi,bj) +
-     &    dZZ * uVel(i,j,kci,bi,bj) * hFacW(i,j,kci,bi,bj)
+     &    dZZf(kk) * uVel(i,j,kci,bi,bj) * hFacW(i,j,kci,bi,bj)
 
 #ifdef LAYERS_THICKNESS
          layers_HU(i,j,kgu(i,j),bi,bj) = layers_HU(i,j,kgu(i,j),bi,bj)
-     &    + dZZ * hFacW(i,j,kci,bi,bj)
+     &    + dZZf(kk) * hFacW(i,j,kci,bi,bj)
 #endif /* LAYERS_THICKNESS */
 
 #endif /* LAYERS_UFLUX */
@@ -182,18 +182,16 @@ C         that should have covered all the options
 C ------ Augment the bin values
          layers_VFlux(i,j,kgv(i,j),bi,bj) =
      &    layers_VFlux(i,j,kgv(i,j),bi,bj)
-     &    + dZZ * vVel(i,j,kci,bi,bj) * hFacS(i,j,kci,bi,bj)
+     &    + dZZf(kk) * vVel(i,j,kci,bi,bj) * hFacS(i,j,kci,bi,bj)
 
 #ifdef LAYERS_THICKNESS
          layers_HV(i,j,kgv(i,j),bi,bj) = layers_HV(i,j,kgv(i,j),bi,bj)
-     &    + dZZ * hFacS(i,j,kci,bi,bj)
+     &    + dZZf(kk) * hFacS(i,j,kci,bi,bj)
 #endif /* LAYERS_THICKNESS */
 
 #endif /* LAYERS_VFLUX */
-
-C       k loop
+        
         ENDDO
-
        ENDDO
       ENDDO
 

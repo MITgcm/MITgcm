@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.1 2009/09/16 21:25:47 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.2 2009/09/20 20:54:48 rpa Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -51,7 +51,7 @@ C     == Local variables ==
       ENDIF
 
       IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
-     &   ) THEN
+     &  .AND. myIter .GT. 0 ) THEN
 
         IF ( layers_MDSIO ) THEN
           WRITE(suff,'(I10.10)') myIter
@@ -87,7 +87,7 @@ C           But how?
 
 C     Dump files and restart average computation if needed
       IF ( DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock)
-     &     ) THEN
+     & .AND. myIter .GT. 0   ) THEN
 
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
