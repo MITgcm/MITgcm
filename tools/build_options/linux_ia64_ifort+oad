@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+#  Build options for the intel compiler with OpenAD
+
+FC=ifort
+F90C=ifort
+F90FIXEDFORMAT='-fixed -Tf' 
+DEFINES='-DWORDLENGTH=4'
+LINK='ifort -static'
+CPP='cpp  -traditional -P'
+INCLUDES=''
+LIBS=''
+
+#  Note that the -mp switch is for ieee "maintain precision" and is
+#  roughly equivalent to -ieee
+if test "x$IEEE" = x ; then
+    FOPTIM='-O0 -g'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -m64 -fPIC'
+else
+    FOPTIM='-O0 -noalign'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -m64 -fPIC'
+fi
+
+F90OPTIM=$FOPTIM
+F90FLAGS=$FFLAGS
+
