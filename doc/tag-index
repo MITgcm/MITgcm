@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1158 2009/09/18 12:36:12 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1159 2009/09/21 15:50:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61v
 o pkg/kpp:
  -add double diffusive contributions as a hack, turned off by default 
   for now, and the code can be excluded with a CPP-flag 
