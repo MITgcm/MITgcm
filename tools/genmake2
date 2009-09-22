@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.196 2009/07/29 14:17:34 utke Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.197 2009/09/22 04:36:30 utke Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -3106,7 +3106,7 @@ whirl2f whirl2f_be:
 oadDriver:
 	\$(LN) \${XAIFBOOSTERROOT}/xaifBooster/algorithms/BasicBlockPreaccumulationReverse/driver/oadDriver \$@
 
-AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.make postProcess.tag postProcess.comp
+AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.make postProcess.tag postProcess.comp \$(PPEXTRAS:.F=.f)
 
 # ============ end OpenAD specific section ==============
 
