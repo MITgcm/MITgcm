@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort_beagle,v 1.1 2009/06/16 15:21:59 jahn Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort_beagle,v 1.2 2009/09/23 18:38:33 jmc Exp $
 #  $Name:  $
 #
 #  These are the build options used with the Intel 10.x compiler for
@@ -33,8 +33,10 @@ LIBS="$LDFLAGS -shared-intel"
 # -DIFORT turns on ifort-specific declarations in darwin (RAND is not an intrinsic)
 DEFINES='-DWORDLENGTH=4 -DIFORT'
 CPP='cpp  -traditional -P'
+EXTENDED_SRC_FLAG='-132'
+#OMPFLAG='-openmp'
 
-NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F mom_calc_ke.F'
+NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F mom_calc_ke.F mon_ke.F'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
@@ -51,7 +53,7 @@ if test "x$IEEE" = x ; then
     # -fno-alias  don't assume aliasing (assume that different variables DON'T refer to the same memory location)
     # -assume byterecl     record length in OPEN statements is in bytes
     # -convert big_endian  binary files contain big-endian data
-    FFLAGS="$FFLAGS -132 -r8 -i4 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian"
+    FFLAGS="$FFLAGS -r8 -i4 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian"
 else
     #  Try to follow IEEE-754
     NOOPTFLAGS='-O0'
@@ -60,11 +62,10 @@ else
     # -pc64       round floating point values to 64 bits
     # one could also try
     # -mp         maintain precision
-    FFLAGS="$FFLAGS -pc64 -132 -r8 -i4 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian"
+    FFLAGS="$FFLAGS -pc64 -r8 -i4 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian"
 fi
 #F90FLAGS=$FFLAGS
 #F90OPTIM=$FOPTIM
 
-NOOPTFILES=$NOOPTFILES' mitcplr_char2real.F mitcplr_real2char.F'
-NOOPTFILES=$NOOPTFILES' mitcplr_char2int.F mitcplr_int2char.F mds_byteswap.F'
+NOOPTFILES=$NOOPTFILES' mds_byteswap.F'
 
