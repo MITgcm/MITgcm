@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.8 2009/09/23 20:24:47 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.9 2009/09/23 23:08:44 dfer Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -87,6 +87,19 @@ C--    add heat flux and fresh-water + salt flux :
        ENDDO
 
 #ifdef ALLOW_AIM
+       IF ( tauRelax_MxL_salt .GT. 0. _d 0 ) THEN
+C--    add restoring (backward) toward climatological fixed Salinity
+        dtFac   = ocean_deltaT/tauRelax_MxL_salt
+        dtFacR  = 1. _d 0 /(1. _d 0 + dtFac)
+        DO j=1,sNy
+         DO i=1,sNx
+          IF ( hOceMxL(i,j,bi,bj).NE.0. _d 0 ) THEN
+           sOceMxL(i,j,bi,bj) =
+     &         (sOceMxL(i,j,bi,bj) + dtFac*sMxL_default)*dtFacR
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDIF
        IF ( tauRelax_MxL .GT. 0. _d 0 ) THEN
 C--    add restoring (backward) toward climatological Temp.
         dtFac   = ocean_deltaT/tauRelax_MxL
@@ -102,19 +115,6 @@ C--    add restoring (backward) toward climatological Temp.
            locTemp = MAX( locTemp , oceTfreez )
            tOceMxL(i,j,bi,bj) =
      &         (tOceMxL(i,j,bi,bj) + dtFac*locTemp)*dtFacR
-          ENDIF
-         ENDDO
-        ENDDO
-       ENDIF
-       IF ( tauRelax_MxL_salt .GT. 0. _d 0 ) THEN
-C--    add restoring (backward) toward climatological fixed Salinity
-        dtFac   = ocean_deltaT/tauRelax_MxL_salt
-        dtFacR  = 1. _d 0 /(1. _d 0 + dtFac)
-        DO j=1,sNy
-         DO i=1,sNx
-          IF ( hOceMxL(i,j,bi,bj).NE.0. _d 0 ) THEN
-           sOceMxL(i,j,bi,bj) =
-     &         (sOceMxL(i,j,bi,bj) + dtFac*sMxL_default)*dtFacR
           ENDIF
          ENDDO
         ENDDO
