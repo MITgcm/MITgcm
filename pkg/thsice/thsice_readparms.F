@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.16 2009/07/08 23:35:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.17 2009/09/23 20:24:47 dfer Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -62,7 +62,7 @@ C--   Th-Sea-ICE parameter
       NAMELIST /THSICE_PARM01/
      &     startIceModel, stepFwd_oceMxL, thSIce_calc_albNIR,
      &     thSIce_deltaT, thSIce_dtTemp,
-     &     ocean_deltaT, tauRelax_MxL,
+     &     ocean_deltaT, tauRelax_MxL, tauRelax_MxL_salt,
      &     hMxL_default, sMxL_default, vMxL_default,
      &     thSIce_diffK, thSIceAdvScheme, stressReduction,
      &     thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq,
@@ -133,6 +133,7 @@ C--   Default values (parameters)
       thSIce_dtTemp  = UNSET_RL
       ocean_deltaT    = dTtracerLev(1)
       tauRelax_MxL    = 0. _d 0
+      tauRelax_MxL_salt = UNSET_RL
       hMxL_default    = 50. _d 0
       sMxL_default    = 35. _d 0
       vMxL_default    = 5. _d -2
@@ -184,6 +185,11 @@ C-    neutral default:
 C     If using the same time step for both icetop temp solver
 C     and ice thickness/growth, use thSIce_deltaT value
       IF ( thSIce_dtTemp .EQ. UNSET_RL ) thSIce_dtTemp=thSIce_deltaT
+
+C-    If undef, set salt relax to temperature relax
+      IF ( tauRelax_MxL_salt .EQ. UNSET_RL ) THEN
+           tauRelax_MxL_salt = tauRelax_MxL
+      ENDIF
 
 C-    Define other constants (from previous ones):
       Tmlt1=-mu_Tf*S_winton
@@ -296,6 +302,7 @@ c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,*) 'ThSI: ocean_deltaT  =',ocean_deltaT
       WRITE(iUnit,*) 'ThSI: stepFwd_oceMxL=',stepFwd_oceMxL
       WRITE(iUnit,*) 'ThSI: tauRelax_MxL  =',tauRelax_MxL
+      WRITE(iUnit,*) 'ThSI: tauRelax_MxL_salt  =',tauRelax_MxL_salt
       WRITE(iUnit,*) 'ThSI: hMxL_default  =',hMxL_default
       WRITE(iUnit,*) 'ThSI: sMxL_default  =',sMxL_default
       WRITE(iUnit,*) 'ThSI: vMxL_default  =',vMxL_default

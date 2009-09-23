@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.13 2009/07/08 23:35:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.14 2009/09/23 20:24:47 dfer Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -181,7 +181,8 @@ C--   COMMON / THSICE_PAR_R / ice model (real) parameters
 C     thSIce_deltaT   :: ice model time-step, seaice thicken/extend [s]
 C     thSIce_dtTemp   :: ice model time-step, solve4temp [s]
 C     ocean_deltaT    :: ocean mixed-layer time-step [s]
-C     tauRelax_MxL    :: Relaxation time scale for MixLayer T & S [s]
+C     tauRelax_MxL    :: Relaxation time scale for MixLayer T [s]
+C     tauRelax_MxL_salt :: Relaxation time scale for MixLayer S [s]
 C     hMxL_default    :: default value for ocean MixLayer thickness [m]
 C     sMxL_default    :: default value for salinity in MixLayer [psu]
 C     vMxL_default    :: default value for ocean current velocity in MxL [m/s]
@@ -191,12 +192,14 @@ C     thSIce_taveFreq :: Frequency^-1 for time-Aver. output [s]
 C     thSIce_diagFreq :: Frequency^-1 for diagnostic output [s]
 C     thSIce_monFreq  :: Frequency^-1 for monitor    output [s]
       COMMON / THSICE_PAR_R /
-     &  thSIce_deltaT,  thSIce_dtTemp, ocean_deltaT, tauRelax_MxL,
+     &  thSIce_deltaT,  thSIce_dtTemp, ocean_deltaT,
+     &  tauRelax_MxL, tauRelax_MxL_salt,
      &  hMxL_default,  sMxL_default, vMxL_default,
      &  thSIce_diffK,  stressReduction,
      &  thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
 
-      _RL  thSIce_deltaT, thSIce_dtTemp, ocean_deltaT, tauRelax_MxL
+      _RL  thSIce_deltaT, thSIce_dtTemp, ocean_deltaT
+      _RL  tauRelax_MxL, tauRelax_MxL_salt
       _RL  hMxL_default, sMxL_default, vMxL_default
       _RL  thSIce_diffK,  stressReduction
       _RL  thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
