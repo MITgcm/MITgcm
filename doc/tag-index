@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1160 2009/09/23 20:27:30 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1161 2009/09/24 20:32:36 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/aim/thsice:
+ -Add capacity to read a Q-Flux to be applied in slab-mixed layer thsice_slab_ocean.F
+  (works as SST restoring)
 o pkg/thsice:
  -add specific parameter for salt restoring in slab mixed-layer
    (by default equal to the temperature restoring)
