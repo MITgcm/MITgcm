@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_FFIELDS.h,v 1.5 2009/09/02 19:13:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_FFIELDS.h,v 1.6 2009/09/24 20:08:06 dfer Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -22,10 +22,13 @@ C     aim_oic0,1 :: Holds Sea Ice fraction ( 0-1 )
 C     aim_snw0,1 :: Holds snow depth ( 0-1 )
 C     aim_sw10,1 :: Holds soil water content, level 1 ( 0-1 )
 C     aim_sw20,1 :: Holds soil water content, level 2 ( 0-1 )
+C     aim_qfx0,1 :: Holds q-flux (W/m^2, >0 = OHT convergence = T increases)
+
       COMMON /AIM_FFIELDS_R/
      &   truncSurfP, aim_landFr, aim_veget, aim_albedo,
      &   aim_sst0, aim_lst0, aim_oic0, aim_snw0, aim_sw10, aim_sw20,
-     &   aim_sst1, aim_lst1, aim_oic1, aim_snw1, aim_sw11, aim_sw21
+     &   aim_sst1, aim_lst1, aim_oic1, aim_snw1, aim_sw11, aim_sw21,
+     &   aim_qfx0, aim_qfx1
 
       _RS  truncSurfP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  aim_landFr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -45,6 +48,9 @@ C     aim_sw20,1 :: Holds soil water content, level 2 ( 0-1 )
       _RS  aim_snw1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  aim_sw11  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  aim_sw21  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      _RS  aim_qfx0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  aim_qfx1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #endif /* ALLOW_AIM */
 

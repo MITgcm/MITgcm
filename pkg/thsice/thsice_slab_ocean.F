@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.9 2009/09/23 23:08:44 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.10 2009/09/24 20:08:37 dfer Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -61,7 +61,7 @@ C     == Local variables ==
 C     i,j          :: Loop counters
       _RL dtFac, fwFac, heatFac
 #ifdef ALLOW_AIM
-      _RL oceTfreez, locTemp, dtFacR
+      _RL oceTfreez, locTemp, locQflux, dtFacR
 #endif
       INTEGER i,j
 
@@ -119,6 +119,17 @@ C--    add restoring (backward) toward climatological Temp.
          ENDDO
         ENDDO
        ENDIF
+       DO j=1,sNy
+        DO i=1,sNx
+          IF ( hOceMxL(i,j,bi,bj).NE.0. _d 0 ) THEN
+           locQflux = ( aim_sWght0*aim_qfx0(i,j,bi,bj)
+     &                + aim_sWght1*aim_qfx1(i,j,bi,bj)
+     &                )
+           tOceMxL(i,j,bi,bj) = tOceMxL(i,j,bi,bj)
+     &            + heatFac*locQflux / hOceMxL(i,j,bi,bj)
+          ENDIF
+        ENDDO
+       ENDDO
 #endif /* ALLOW_AIM */
 
 C-    Diagnose surf. temp. change

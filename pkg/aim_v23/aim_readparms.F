@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.17 2009/06/15 13:40:03 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.18 2009/09/24 20:08:06 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -96,7 +96,7 @@ C                              1 = Briegleb et al. 1986
      &    aim_MMsufx, aim_MMsufxLength,
      &    aim_LandFile, aim_albFile, aim_vegFile,
      &    aim_sstFile, aim_lstFile, aim_oiceFile, aim_snowFile,
-     &    aim_swcFile,
+     &    aim_swcFile, aim_qfxFile,
      &    aim_dragStrato,
      &    aim_clrSkyDiag, aim_taveFreq, aim_diagFreq, aim_tendFreq,
      &    aim_timeave_mnc, aim_snapshot_mnc,
@@ -254,6 +254,7 @@ C      > TimePeriod/deltaT -> jump from one month to the next one
       aim_oiceFile = ' '
       aim_snowFile = ' '
       aim_swcFile  = ' '
+      aim_qfxFile  = ' '
       aim_dragStrato = 0.
       aim_taveFreq = taveFreq
       aim_diagFreq = dumpFreq
