@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1161 2009/09/24 20:32:36 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1162 2009/09/27 23:25:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg zonal_filt:
+  - change ZONAL_FILTER S/R interface (allows to filter 2-D fields)
+  - when using rStar, filter uVel*hFacW instead of uVel
+   (tested without topography: fix a Pb of growing instability with NLFS)
 o pkg/aim/thsice:
  -Add capacity to read a Q-Flux to be applied in slab-mixed layer thsice_slab_ocean.F
   (works as SST restoring)
