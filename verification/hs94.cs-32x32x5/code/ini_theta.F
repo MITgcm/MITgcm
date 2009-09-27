@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/ini_theta.F,v 1.7 2009/04/28 18:06:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/ini_theta.F,v 1.8 2009/09/27 23:49:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -10,18 +10,18 @@ C     !INTERFACE:
       SUBROUTINE INI_THETA( myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE INI_THETA                                      
-C     | o Set model initial temperature field.                    
+C     | SUBROUTINE INI_THETA
+C     | o Set model initial temperature field.
 C     *==========================================================*
-C     | There are several options for setting the initial         
-C     | temperature file                                          
-C     |  1. Inline code                                           
-C     |  2. Vertical profile ( uniform T in X and Y )             
-C     |  3. Three-dimensional data from a file. For example from  
-C     |     Levitus or from a checkpoint file from a previous     
-C     |     integration.                                          
-C     | In addition to setting the temperature field we also      
-C     | set the initial temperature tendency term here.           
+C     | There are several options for setting the initial
+C     | temperature file
+C     |  1. Inline code
+C     |  2. Vertical profile ( uniform T in X and Y )
+C     |  3. Three-dimensional data from a file. For example from
+C     |     Levitus or from a checkpoint file from a previous
+C     |     integration.
+C     | In addition to setting the temperature field we also
+C     | set the initial temperature tendency term here.
 C     *==========================================================*
 C     \ev
 
@@ -41,8 +41,8 @@ C     myThid -  Number of this instance of INI_THETA
       INTEGER myThid
 
 C     == Functions ==
-      real*8  PORT_RAND
-      real*8  seed
+c     real*8  PORT_RAND
+c     real*8  seed
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -53,8 +53,6 @@ C     I,J,K
       _RL     term1,term2,thetaLim,thetaEq
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
-
-      _BARRIER
 
       J = 99+myBxLo(myThid)+nPx*myByLo(myThid)
 c     CALL SRAND( J )
@@ -83,16 +81,15 @@ c           theta(I,J,K,bi,bj) = tRef(K)
 C--   Zonal FFT filter initial conditions
          IF (useZONAL_FILT) THEN
           CALL ZONAL_FILTER(
-     U      theta, hFacC,
-     I      1, sNy, 1, Nr, bi, bj, 1, myThid)
+     U                       theta(1-OLx,1-OLy,1,bi,bj),
+     I                       hFacC(1-OLx,1-OLy,1,bi,bj),
+     I                       1, sNy, Nr, bi, bj, 1, myThid )
          ENDIF
 #endif /* ALLOW_ZONAL_FILT */
         ENDDO
        ENDDO
       ELSE
-       _BEGIN_MASTER( myThid )
        CALL READ_FLD_XYZ_RL( hydrogThetaFile, ' ', theta, 0, myThid )
-       _END_MASTER(myThid)
       ENDIF
 C--   Apply mask and test consistency
       localWarnings=0
@@ -127,8 +124,10 @@ C--   Apply mask and test consistency
 
       _EXCH_XYZ_RL(theta , myThid )
 
-      CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature' ,
-     &                       Nr, 1, myThid )
+      IF (debugMode) THEN
+        CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature' ,
+     &                         Nr, 1, myThid )
+      ENDIF
 
       RETURN
       END
