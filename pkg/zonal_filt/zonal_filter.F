@@ -1,20 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filter.F,v 1.6 2009/09/02 19:22:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filter.F,v 1.7 2009/09/27 23:13:58 jmc Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
 
+CBOP 0
+C     !ROUTINE: ZONAL_FILTER
+
+C     !INTERFACE:
       SUBROUTINE ZONAL_FILTER(
      U           field,
      I           fieldMask,
-     I           jMin, jMax, kMin, kMax, bi, bj, gridLoc, myThid )
+     I           jMin, jMax, kSize, bi, bj, gridLoc, myThid )
 
+C     !DESCRIPTION:
 C     *==========================================================*
 C     | S/R ZONAL_FILTER
 C     | o Apply FFT filter to a latitude circle.
 C     *==========================================================*
 
+C     !USES:
       IMPLICIT NONE
-
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -23,31 +28,32 @@ C     == Global data ==
 #include "ZONAL_FILT.h"
 #include "FFTPACK.h"
 
-C     == Routine arguments ==
-C     jMin - Range of points to filter
+C     !INPUT/OUTPUT PARAMETERS:
+C     jMin      :: Range of points to filter
 C     jMax
-C     kMin
-C     kMax
-C     bi
-C     bj
-C     myThid  - Thread number of this instance of FILTER_LATCIRC_FFT_APPLY
-C     field   - Field to filter
-C     gridLoc - Orientation (U or V) of field.
-      _RL     field    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS     fieldMask(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      INTEGER jMin, jMax, kMin, kMax, bi, bj
+C     kSize     :: Number of levels to filter
+C     bi, bj    :: tile indices
+C     field     :: Field to filter
+C     fieldMask :: mask corresponding to field to filter
+C     gridLoc   :: Position on the grid (U or V) of field.
+C     myThid    :: my Thread Id number
+      INTEGER kSize
+      _RL     field    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize)
+      _RS     fieldMask(1-Olx:sNx+Olx,1-Oly:sNy+Oly,kSize)
+      INTEGER jMin, jMax, bi, bj
       INTEGER gridLoc
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_ZONAL_FILT
 
-C     == Local data ==
+C     !LOCAL VARIABLES:
       Real*8 phi(Nx)
       Real*8 phiMask(Nx)
       Real*8 avPhi
-      INTEGER I, J, K
+      INTEGER i, j, k
 
-      DO k=kMin, kMax
+      DO k= 1, kSize
        DO j=jMin, jMax
         IF ( (gridLoc.EQ.1 .AND.ABS(yC(1,j,bi,bj)).GE.zonal_filt_lat)
      &   .OR.(gridLoc.EQ.2 .AND.ABS(yG(2,j,bi,bj)).GE.zonal_filt_lat)
@@ -55,8 +61,8 @@ C     == Local data ==
 
 C     o Copy zonal line of field into local workspace
         DO i=1,sNx
-         phi(I) = field(i,j,k,bi,bj)
-         phiMask(I) = fieldMask(i,j,k,bi,bj)
+         phi(i) = field(i,j,k)
+         phiMask(i) = fieldMask(i,j,k)
         ENDDO
 
 C Interpolate through land
@@ -91,13 +97,13 @@ C De-interpolate through land
 
 C       o Do periodic wrap around by hand
         DO i=1-OLx,0
-         field(i,j,k,bi,bj) = phi(sNx+i)
+         field(i,j,k) = phi(sNx+i)
         ENDDO
         DO i=1,sNx
-         field(i,j,k,bi,bj) = phi(I)
+         field(i,j,k) = phi(i)
         ENDDO
         DO i=sNx+1,sNx+OLx
-         field(i,j,k,bi,bj) = phi(i-sNx)
+         field(i,j,k) = phi(i-sNx)
         ENDDO
 
         ENDIF

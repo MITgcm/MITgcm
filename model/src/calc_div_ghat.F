@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.24 2009/08/02 19:54:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.25 2009/09/27 23:18:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -95,15 +95,18 @@ C      => Filtering of uVel,vVel is necessary
 C-- Now the filter are applied in the_correction_step().
 C   We have left this code here to indicate where the filters used to be
 C   in the algorithm before JMC moved them to after the pressure solver.
-C-
-C#ifdef ALLOW_ZONAL_FILT
-C        IF (zonal_filt_lat.LT.90.) THEN
-C          CALL ZONAL_FILTER(
-C     &      uVel, hFacW, 1-1, sNy+1, k, k, bi, bj, 1, myThid)
-C          CALL ZONAL_FILTER(
-C     &      vVel, hFacS, 1-1, sNy+1, k, k, bi, bj, 2, myThid)
-C        ENDIF
-C#endif
+c#ifdef ALLOW_ZONAL_FILT
+c        IF (zonal_filt_lat.LT.90.) THEN
+c          CALL ZONAL_FILTER(
+c    U                     uVel( 1-OLx,1-OLy,k,bi,bj),
+c    I                     hFacW(1-OLx,1-OLy,k,bi,bj),
+c    I                     0, sNy+1, 1, bi, bj, 1, myThid )
+c          CALL ZONAL_FILTER(
+c    U                     vVel( 1-OLx,1-OLy,k,bi,bj),
+c    I                     hFacS(1-OLx,1-OLy,k,bi,bj),
+c    I                     0, sNy+1, 1, bi, bj, 2, myThid )
+c        ENDIF
+c#endif
         DO j=1,sNy
          DO i=1,sNx+1
           pf(i,j) = ( implicDiv2Dflow * gU(i,j,k,bi,bj)
