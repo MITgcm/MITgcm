@@ -11,16 +11,13 @@ CPP='cpp  -traditional -P'
 INCLUDES=''
 LIBS=''
 
-#  Note that the -mp switch is for ieee "maintain precision" and is
-#  roughly equivalent to -ieee
 if test "x$IEEE" = x ; then
-    FOPTIM='-O0 -g'
+    FOPTIM='-O2 -align'
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -m64 -fPIC'
 else
-    FOPTIM='-O0 -noalign'
+    FOPTIM='-O0 -g -noalign -mp'
     FFLAGS='-132 -r8 -i4 -w95 -W0 -WB -convert big_endian -assume byterecl -m64 -fPIC'
 fi
 
 F90OPTIM=$FOPTIM
 F90FLAGS=$FFLAGS
-
