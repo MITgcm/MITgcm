@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.12 2009/09/02 16:41:50 jscott Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.13 2009/09/28 17:00:22 jscott Exp $
 C $Name:  $
 
 #include "ctrparam.h"
@@ -118,6 +118,10 @@ C      212*24,243*24,273*24,304*24,334*24,365*24
 #  endif
 C For land use
         CALL updatelcluc(idyear)
+#endif
+#ifdef CPL_CHEM
+        print *,' Before eppaemission'
+        CALL eppaemission (iyr)
 #endif
       ENDIF   !end block done at year-start
 
