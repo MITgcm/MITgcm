@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.5 2009/06/26 17:52:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.6 2009/09/28 16:09:36 dfer Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -99,6 +99,7 @@ C- First compute global mole flux at air-sea interface
         IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0 ) THEN
 C- If  first iteration, use atmpCO2init as initial condition
           atm_pCO2 = atmpCO2init
+          Atm_CO2_Moles = atm_pCO2 * total_atmos_moles
 
         ELSEIF ( myTime .EQ. starttime ) THEN
 C- If restart, read moles number from pickup
