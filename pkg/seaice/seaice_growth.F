@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.63 2009/07/20 07:42:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.64 2009/09/30 15:46:36 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -177,6 +177,9 @@ CADJ &                       key = iicekey, byte = isbyte
          DO I=1-oLx,sNx+oLx
           saltWtrIce(I,J,bi,bj) = 0.0 _d 0
           frWtrIce(I,J,bi,bj)   = 0.0 _d 0
+#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
+          frWtrAtm(I,J,bi,bj)   = 0.0 _d 0
+#endif
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -655,6 +658,18 @@ C NOW GET FRESH WATER FLUX
           CALL DIAGNOSTICS_FILL(DIAGarray,'SIatmFW ',0,1,3,bi,bj,myThid)
          ENDIF
         ENDIF
+#endif
+#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
+        DO J=1,sNy
+         DO I=1,sNx
+          frWtrAtm(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
+     &         PRECIP(I,J,bi,bj) 
+     &         - EVAP(I,J,bi,bj)
+     &         *( ONE - AREANm1(I,J,bi,bj) )
+     &         + RUNOFF(I,J,bi,bj)
+     &         )*rhoConstFresh
+         ENDDO
+        ENDDO
 #endif
 
 C COMPUTE SURFACE SALT FLUX AND ADJUST ICE SALINITY

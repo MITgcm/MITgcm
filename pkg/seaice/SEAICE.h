@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.49 2009/06/24 08:01:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.50 2009/09/30 15:46:36 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -134,7 +134,12 @@ C
 C     saltWtrIce contains m of salty ice melted (<0) or created (>0)
 C     frWtrIce contains m of freshwater ice melted (<0) or created (>0)
 C              that is, ice due to precipitation or snow
+C     frWtrAtm contains freshwater flux from the atmosphere
       COMMON/ICEFLUX/ saltWtrIce, frWtrIce
+#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
+     &     , frWtrAtm
+      _RL frWtrAtm   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
       _RL saltWtrIce (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL frWtrIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
