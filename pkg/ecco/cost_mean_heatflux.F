@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_mean_heatflux.F,v 1.8 2009/04/28 18:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_mean_heatflux.F,v 1.9 2009/09/30 15:48:31 mlosch Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -115,9 +115,9 @@ c--     Read time averages and the monthly mean data.
                 tmpx=tmpfld2d(i,j,bi,bj)
                 if (maskC(i,j,kk,bi,bj) .ne. 0.) then
                    fctiletot = fctiletot
-     &                + tmpx*cos(yc(i,j,bi,bj)*deg2rad)
+     &                + tmpx* _rA(i,j,bi,bj)
                    sumtot = sumtot
-     &                + cos(yc(i,j,bi,bj)*deg2rad)
+     &                + _rA(i,j,bi,bj)
                    num_hfluxmm(bi,bj) = num_hfluxmm(bi,bj) + 1
                 endif
               enddo
@@ -141,7 +141,7 @@ c-- diagnostic: imbalance per year:
        write(standardmessageunit,'(A,I5,2(X,D22.14))')
      &      ' --> bal_hfluxmm    =', irec,
      &      fctiletot/sumtot,
-     &      ((fctiletot/sumtot+1.D0)/wmean_hflux)**2
+     &      objf_hfluxmm
 
       enddo
 
