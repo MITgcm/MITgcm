@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_yz.F,v 1.13 2008/01/23 22:38:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_yz.F,v 1.14 2009/09/30 16:03:20 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -198,7 +198,13 @@ cph                           weightfldyz(bi,ip,j,bj,jp,k,iobcs) = wbaro
 #endif
       enddo
 
-      nrec_nl=int(ncvarrecs(ivartype)/snx)
+      if ( useSingleCPUio ) then
+C     MDSWRITEFIELD_YZ_GL does not know about useSingleCPUio, so the faster
+C     method that works for .not.useSingleCPUio cannot be used
+       nrec_nl = 0
+      else
+       nrec_nl = int(ncvarrecs(ivartype)/Nx)
+      endif
       do irec = 1, nrec_nl
 cgg      do iobcs = 1, nobcs
 cgg      And now back-calculate what iobcs should be.
@@ -290,7 +296,7 @@ cgg     enddo
 c     -- end of irec loop --
       enddo
 
-      do irec = nrec_nl*snx+1,ncvarrecs(ivartype)
+      do irec = nrec_nl*nx+1,ncvarrecs(ivartype)
          iobcs= mod(irec-1,nobcs)+1
 
          read(cunit) filencvarindex(ivartype)

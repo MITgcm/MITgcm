@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_yz.F,v 1.12 2007/05/16 00:03:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_yz.F,v 1.13 2009/09/30 16:03:19 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -94,21 +94,28 @@ c     Initialise temporary file
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
-      nrec_nl=int(ncvarrecs(ivartype)/Nx)
-      do irec = 1, nrec_nl
-	call MDSWRITEFIELD( fname, ctrlprec,.FALSE., 'RL',
-     &        Nr, globfld3d,
-     &        irec,   optimcycle,  mythid)
+      if ( useSingleCPUio ) then
+C     MDSWRITEFIELDXZ does not know about useSingleCPUio, so the faster
+C     method that works for .not.useSingleCPUio cannot be used
+       nrec_nl = 0
+      else
+       nrec_nl = int(ncvarrecs(ivartype)/Ny)
+      endif
 
+      do irec = 1, nrec_nl
+       call MDSWRITEFIELD( fname, ctrlprec,.FALSE., 'RL',
+     &      Nr, globfld3d,
+     &      irec,   optimcycle,  mythid)
+       
       enddo
 
 CMM( addone for good measure
 CMM      do irec = nrec_nl*Nx+1, ncvarrecs(ivartype)
       do irec = nrec_nl*Nx+1, ncvarrecs(ivartype)+1
 CMM)
-        call MDSWRITEFIELDYZ( fname, ctrlprec,.FALSE., 'RL',
-     &        Nr, globfldyz,
-     &        irec,   optimcycle,  mythid)
+       call MDSWRITEFIELDYZ( fname, ctrlprec,.FALSE., 'RL',
+     &      Nr, globfldyz,
+     &      irec,   optimcycle,  mythid)
       enddo
 
       _END_MASTER( mythid )
