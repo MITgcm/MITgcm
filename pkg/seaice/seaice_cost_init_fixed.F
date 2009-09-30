@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.4 2007/10/09 00:10:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.5 2009/09/30 15:45:57 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -77,8 +77,9 @@ c
         call cal_ToSeconds ( tempDate2 , costIceEnd , mythid )
         costIceEnd = costIceEnd + startTime
 c--
-        call cal_FullDate( smrareastartdate1, smrareastartdate2,
-     &                 smrareastartdate, mythid )
+        if ( smrareadatfile .ne. ' ' )
+     &   call cal_FullDate( smrareastartdate1, smrareastartdate2,
+     &                      smrareastartdate,  mythid )
 
       _END_MASTER( mythid )
 
