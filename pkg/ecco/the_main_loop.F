@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.82 2009/05/26 23:13:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.83 2009/09/30 15:47:43 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -71,6 +71,7 @@ c     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "DYNVARS.h"
 
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
@@ -100,7 +101,6 @@ c AD-checkpointing.
 c They provide the fields to be stored.
 
 # include "GRID.h"
-# include "DYNVARS.h"
 # include "SURFACE.h"
 # include "FFIELDS.h"
 # include "EOS.h"
@@ -373,7 +373,7 @@ CADJ INIT comlev1_dynsol = COMMON,nchklev_1*MPSEUDOTIMESTEPS
 #  ifdef SEAICE_ALLOW_EVP
 CADJ INIT comlev1_evp = COMMON,nEVPstepMax*nchklev_1
 #  endif
-#  ifdef SEAICE_MULTILEVEL
+#  ifdef SEAICE_MULTICATEGORY
 CADJ INIT comlev1_multdim 
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt*multdim
 #  endif
@@ -1021,7 +1021,7 @@ C--   State-variables time-averaging
 #endif /* ALLOW_DEBUG */
 C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
-      CALL MONITOR( myIter, myTime, myThid )
+      CALL MONITOR( myTime, myIter, myThid )
       CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
 #endif /* ALLOW_MONITOR */
 #endif
