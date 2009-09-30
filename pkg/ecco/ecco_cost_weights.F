@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.32 2009/05/19 21:58:59 zhc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.33 2009/09/30 15:50:56 mlosch Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -429,8 +429,8 @@ c--           Test for missing values.
             do j = jmin,jmax
              do i = imin,imax
 c--           Test for missing values.
-              if (wsalt(k,bi,bj).eq.0 .and.
-     $             wsalt2(i,j,k,bi,bj).eq.0) then
+              if (wsalt(k,bi,bj).eq.0. .or.
+     $             wsalt2(i,j,k,bi,bj).eq.0.) then
                  wsalt2(i,j,k,bi,bj) = 0. _d 0
               else
                  wsalt2(i,j,k,bi,bj)=frame(i,j)*maskC(i,j,k,bi,bj)/
@@ -476,8 +476,8 @@ c--           Test for missing values.
             do j = jmin,jmax
              do i = imin,imax
 c--           Test for missing values.
-              if (wtheta(k,bi,bj).eq.0 .and.
-     $            wtheta2(i,j,k,bi,bj).eq.0) then
+              if (wtheta(k,bi,bj).eq.0. .or.
+     $            wtheta2(i,j,k,bi,bj).eq.0.) then
                  wtheta2(i,j,k,bi,bj) = 0. _d 0
               else
                  wtheta2(i,j,k,bi,bj)= frame(i,j)*maskC(i,j,k,bi,bj)/
