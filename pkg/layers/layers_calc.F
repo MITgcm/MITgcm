@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.2 2009/09/20 20:54:47 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.3 2009/09/30 15:58:29 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -197,7 +197,7 @@ C ------ Augment the bin values
 
 #ifdef ALLOW_TIMEAVE
 C--   Time-average
-      IF ( taveFreq.GT.0. ) THEN
+      IF ( layers_taveFreq.GT.0. ) THEN
 
 #ifdef LAYERS_UFLUX
          CALL TIMEAVE_CUMULATE( layers_UFlux_T, layers_UFlux, Nlayers,

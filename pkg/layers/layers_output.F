@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.2 2009/09/20 20:54:48 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.3 2009/09/30 15:58:29 dfer Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -50,7 +50,7 @@ C     == Local variables ==
         pf(1:1) = 'R'
       ENDIF
 
-      IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
+      IF ( DIFFERENT_MULTIPLE(layers_diagFreq,myTime,deltaTClock)
      &  .AND. myIter .GT. 0 ) THEN
 
         IF ( layers_MDSIO ) THEN
@@ -85,9 +85,33 @@ C           But how?
 
 #ifdef ALLOW_TIMEAVE
 
+c set arrays to zero if first timestep
+      IF ( myIter.EQ.nIter0 ) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+#ifdef LAYERS_UFLUX
+          CALL TIMEAVE_RESET(layers_UFlux_T,Nlayers,bi,bj,myThid)
+#ifdef LAYERS_THICKNESS
+          CALL TIMEAVE_RESET(layers_HU_T,Nlayers,bi,bj,myThid)
+#endif /* LAYERS_THICKNESS */
+#endif /* LAYERS_UFLUX */
+
+#ifdef LAYERS_VFLUX
+          CALL TIMEAVE_RESET(layers_VFlux_T,Nlayers,bi,bj,myThid)
+#ifdef LAYERS_THICKNESS
+          CALL TIMEAVE_RESET(layers_HV_T,Nlayers,bi,bj,myThid)
+#endif /* LAYERS_THICKNESS */
+#endif /* LAYERS_VFLUX */
+         DO k=1,Nlayers
+          layers_TimeAve(k,bi,bj)=0.
+         ENDDO
+        ENDDO
+       ENDDO
+
 C     Dump files and restart average computation if needed
-      IF ( DIFFERENT_MULTIPLE(taveFreq,myTime,deltaTClock)
-     & .AND. myIter .GT. 0   ) THEN
+      ELSEIF (
+     &  DIFFERENT_MULTIPLE(layers_taveFreq,myTime,deltaTClock)
+     &       ) THEN
 
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
