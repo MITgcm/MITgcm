@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1163 2009/09/30 15:52:05 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1164 2009/09/30 16:03:49 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg ctrl
+ - make obcs as control parameter work also with useSingleCPUio
+ - replace a few sny and snx by Ny and Nx to be consistent with
+   ctrl_set_globfld_x/yz.F
 o pkg seaice
  - re-introduce global field frWtrAtm for the case of 
    ALLOW_MEAN_SFLUX_COST_CONTRIBUTION defined (SEAICE.h, seaice_growth.F)
@@ -20,7 +24,7 @@ o pkg ecco:
  - catch the case of empty filenames in ecco_cost_init_fixed.F 
    and ecco_readparms.F
  - fix the logic of wsalt=0.and.wsalt2=0 to wsalt=0.or.wsalt2=0 (and theta)
-   to make this statement meaningfull
+   to make this statement meaningfull in ecco_cost_weights.F
 o pkg zonal_filt:
   - change ZONAL_FILTER S/R interface (allows to filter 2-D fields)
   - when using rStar, filter uVel*hFacW instead of uVel
