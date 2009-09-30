@@ -1,9 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1162 2009/09/27 23:25:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1163 2009/09/30 15:52:05 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg seaice
+ - re-introduce global field frWtrAtm for the case of 
+   ALLOW_MEAN_SFLUX_COST_CONTRIBUTION defined (SEAICE.h, seaice_growth.F)
+ - catch the case of an empty filename in seaice_cost_init_fixed.F
+o pkg ecco:
+ - small bug fixes in the_main_loop
+  . fix order of monitor arguments
+  . change SEAICE_MULTILEVEL to SEAICE_MULTICATEGORY
+  . move include DYNVARS.h up outside the ALLOW_AUTODIFF_TAMC block so
+    that ALLOW_ECCO_FORWARD_RUN works with NONLIN_FRSURF
+ - replace cos(yc*deg2rad) by _rA in cost_mean_heat/saltflux.F, fix the 
+   imbalance diagnostics for wmean_h/sflux = 0 
+ - add actual values to f_obcsn/s/w/e in ecco_cost_final.F
+ - catch the case of empty filenames in ecco_cost_init_fixed.F 
+   and ecco_readparms.F
+ - fix the logic of wsalt=0.and.wsalt2=0 to wsalt=0.or.wsalt2=0 (and theta)
+   to make this statement meaningfull
 o pkg zonal_filt:
   - change ZONAL_FILTER S/R interface (allows to filter 2-D fields)
   - when using rStar, filter uVel*hFacW instead of uVel
