@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.17 2009/03/23 23:29:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.18 2009/09/30 15:49:56 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -88,35 +88,46 @@ c--   current model integration.
 
 c--     Get the complete dates of the ...
 c--     ... TMI data.
-        call cal_FullDate( tmistartdate1,   tmistartdate2,
-     &                     tmistartdate,    mythid )
+        if ( tmidatfile .ne. ' ' )
+     &   call cal_FullDate( tmistartdate1,   tmistartdate2,
+     &                      tmistartdate,    mythid )
 c--     ... SST data.
-        call cal_FullDate( sststartdate1,   sststartdate2,
-     &                     sststartdate,    mythid )
+        if ( sstdatfile .ne. ' ' )
+     &   call cal_FullDate( sststartdate1,   sststartdate2,
+     &                      sststartdate,    mythid )
 c--     ... SSS data.
-        call cal_FullDate( sssstartdate1,   sssstartdate2,
-     &                     sssstartdate,    mythid )
+        if ( sssdatfile .ne. ' ' )
+     &   call cal_FullDate( sssstartdate1,   sssstartdate2,
+     &                      sssstartdate,    mythid )
 c--     ... BP data.
-        call cal_FullDate( bpstartdate1,   bpstartdate2,
-     &                     bpstartdate,    mythid )
+        if ( bpdatfile .ne. ' ' )
+     &   call cal_FullDate( bpstartdate1,   bpstartdate2,
+     &                      bpstartdate,    mythid )
 c--     ... T/P data.
-        call cal_FullDate( topexstartdate1, topexstartdate2,
+        if ( topexfile .ne. ' ' )
+     &  call cal_FullDate( topexstartdate1, topexstartdate2,
      &                     topexstartdate,  mythid )
 c--     ... ERS data.
-        call cal_FullDate( ersstartdate1,   ersstartdate2,
-     &                     ersstartdate,    mythid )
+        if ( ersfile .ne. ' ' )
+     &   call cal_FullDate( ersstartdate1,   ersstartdate2,
+     &                      ersstartdate,    mythid )
 c--     ... GFO data.
-        call cal_FullDate( gfostartdate1,   gfostartdate2,
-     &                     gfostartdate,    mythid )
+        if ( gfofile .ne. ' ' )
+     &   call cal_FullDate( gfostartdate1,   gfostartdate2,
+     &                      gfostartdate,    mythid )
 c--     ... SCAT data.
-        call cal_FullDate( scatstartdate1,  scatstartdate2,
-     &                     scatxstartdate,  mythid )
-        call cal_FullDate( scatstartdate1,  scatstartdate2,
-     &                     scatystartdate,  mythid )
+        if ( scatxdatfile .ne. ' ' )
+     &   call cal_FullDate( scatstartdate1,   scatstartdate2,
+     &                      scatxstartdate,    mythid )
+        if ( scatydatfile .ne. ' ' )
+     &   call cal_FullDate( scatstartdate1,   scatstartdate2,
+     &                      scatystartdate,    mythid )
 c--     ... ARGO data.
-        call cal_FullDate( argotstartdate1,   argotstartdate2,
+        if ( argotfile .ne. ' ' )
+     &  call cal_FullDate( argotstartdate1,   argotstartdate2,
      &                     argotstartdate,    mythid )
-        call cal_FullDate( argosstartdate1,   argotstartdate2,
+         if ( argosfile .ne. ' ' )
+     &  call cal_FullDate( argosstartdate1,   argotstartdate2,
      &                     argosstartdate,    mythid )
 
       _END_MASTER( mythid )
