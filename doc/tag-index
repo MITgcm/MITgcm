@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1164 2009/09/30 16:03:49 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1165 2009/10/01 23:28:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg obcs:
+ - go through NH code only if nonHydrostatic=T
+ - fix restart for Orlanski (Hydrostatic; still to fix NH+Orlanski restart)
 o pkg ctrl
  - make obcs as control parameter work also with useSingleCPUio
  - replace a few sny and snx by Ny and Nx to be consistent with
