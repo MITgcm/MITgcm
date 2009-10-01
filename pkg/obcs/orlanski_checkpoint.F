@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/orlanski_checkpoint.F,v 1.8 2009/09/01 19:40:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/orlanski_checkpoint.F,v 1.9 2009/10/01 21:10:18 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -40,6 +40,7 @@ C     == Local variables ==
       prec = precFloat64
 
 #ifdef ALLOW_OBCS_NORTH
+      IF ( useOrlanskiNorth ) THEN
 C     READ N and S OB storage and phase speed arrays
       WRITE(fn,'(2A)') 'pickup_orlanskiN.',suff
       CALL READ_REC_XZ_RL(fn,prec,Nr,UN_STORE_1, 1,myIter,myThid)
@@ -63,15 +64,19 @@ C     READ N and S OB storage and phase speed arrays
       CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_TN , 19,myIter,myThid)
       CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_SN , 20,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
+      IF ( nonHydrostatic ) THEN
       CALL READ_REC_XZ_RL(fn,prec,Nr,WN_STORE_1,21,myIter,myThid)
       CALL READ_REC_XZ_RL(fn,prec,Nr,WN_STORE_2,22,myIter,myThid)
       CALL READ_REC_XZ_RL(fn,prec,Nr,WN_STORE_3,23,myIter,myThid)
       CALL READ_REC_XZ_RL(fn,prec,Nr,WN_STORE_4,24,myIter,myThid)
       CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_WN , 25,myIter,myThid)
+      ENDIF
 #endif
+      ENDIF
 #endif /* ALLOW_OBCS_NORTH */
 
 #ifdef ALLOW_OBCS_SOUTH
+      IF ( useOrlanskiSouth ) THEN
       WRITE(fn,'(2A)') 'pickup_orlanskiS.',suff
       CALL READ_REC_XZ_RL(fn,prec,Nr,US_STORE_1, 1,myIter,myThid)
       CALL READ_REC_XZ_RL(fn,prec,Nr,US_STORE_2, 2,myIter,myThid)
@@ -94,16 +99,20 @@ C     READ N and S OB storage and phase speed arrays
       CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_TS , 19,myIter,myThid)
       CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_SS , 20,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
+      IF ( nonHydrostatic ) THEN
       CALL READ_REC_XZ_RL(fn,prec,Nr,WS_STORE_1,21,myIter,myThid)
       CALL READ_REC_XZ_RL(fn,prec,Nr,WS_STORE_2,22,myIter,myThid)
       CALL READ_REC_XZ_RL(fn,prec,Nr,WS_STORE_3,23,myIter,myThid)
       CALL READ_REC_XZ_RL(fn,prec,Nr,WS_STORE_4,24,myIter,myThid)
       CALL READ_REC_XZ_RL(fn,prec,Nr, CVEL_WS , 25,myIter,myThid)
+      ENDIF
 #endif
+      ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
 
 C     READ E and W OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_EAST
+      IF ( useOrlanskiEast ) THEN
       WRITE(fn,'(2A)') 'pickup_orlanskiE.',suff
       CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_1, 1,myIter,myThid)
       CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_2, 2,myIter,myThid)
@@ -126,15 +135,19 @@ C     READ E and W OB storage and phase speed arrays
       CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_TE , 19,myIter,myThid)
       CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_SE , 20,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
+      IF ( nonHydrostatic ) THEN
       CALL READ_REC_YZ_RL(fn,prec,Nr,WE_STORE_1,21,myIter,myThid)
       CALL READ_REC_YZ_RL(fn,prec,Nr,WE_STORE_2,22,myIter,myThid)
       CALL READ_REC_YZ_RL(fn,prec,Nr,WE_STORE_3,23,myIter,myThid)
       CALL READ_REC_YZ_RL(fn,prec,Nr,WE_STORE_4,24,myIter,myThid)
       CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_WE , 25,myIter,myThid)
+      ENDIF
 #endif
+      ENDIF
 #endif /* ALLOW_OBCS_EAST */
 
 #ifdef ALLOW_OBCS_WEST
+      IF ( useOrlanskiWest ) THEN
       WRITE(fn,'(2A)') 'pickup_orlanskiW.',suff
       CALL READ_REC_YZ_RL(fn,prec,Nr,UW_STORE_1, 1,myIter,myThid)
       CALL READ_REC_YZ_RL(fn,prec,Nr,UW_STORE_2, 2,myIter,myThid)
@@ -157,126 +170,33 @@ C     READ E and W OB storage and phase speed arrays
       CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_TW , 19,myIter,myThid)
       CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_SW , 20,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
+      IF ( nonHydrostatic ) THEN
       CALL READ_REC_YZ_RL(fn,prec,Nr,WW_STORE_1,21,myIter,myThid)
       CALL READ_REC_YZ_RL(fn,prec,Nr,WW_STORE_2,22,myIter,myThid)
       CALL READ_REC_YZ_RL(fn,prec,Nr,WW_STORE_3,23,myIter,myThid)
       CALL READ_REC_YZ_RL(fn,prec,Nr,WW_STORE_4,24,myIter,myThid)
       CALL READ_REC_YZ_RL(fn,prec,Nr, CVEL_WW , 25,myIter,myThid)
+      ENDIF
 #endif
+      ENDIF
 #endif /* ALLOW_OBCS_WEST */
 
 C     Fill in edge regions
 c      _EXCH_XZ_RL(UN_STORE_1 , myThid)
-c      _EXCH_XZ_RL(UN_STORE_2 , myThid)
-c      _EXCH_XZ_RL(UN_STORE_3 , myThid)
-c      _EXCH_XZ_RL(UN_STORE_4 , myThid)
-c      _EXCH_XZ_RL(VN_STORE_1 , myThid)
-c      _EXCH_XZ_RL(VN_STORE_2 , myThid)
-c      _EXCH_XZ_RL(VN_STORE_3 , myThid)
-c      _EXCH_XZ_RL(VN_STORE_4 , myThid)
-c      _EXCH_XZ_RL(TN_STORE_1 , myThid)
-c      _EXCH_XZ_RL(TN_STORE_2 , myThid)
-c      _EXCH_XZ_RL(TN_STORE_3 , myThid)
-c      _EXCH_XZ_RL(TN_STORE_4 , myThid)
-c      _EXCH_XZ_RL(SN_STORE_1 , myThid)
-c      _EXCH_XZ_RL(SN_STORE_2 , myThid)
-c      _EXCH_XZ_RL(SN_STORE_3 , myThid)
-c      _EXCH_XZ_RL(SN_STORE_4 , myThid)
-
-c      _EXCH_XZ_RL(US_STORE_1 , myThid)
-c      _EXCH_XZ_RL(US_STORE_2 , myThid)
-c      _EXCH_XZ_RL(US_STORE_3 , myThid)
-c      _EXCH_XZ_RL(US_STORE_4 , myThid)
-c      _EXCH_XZ_RL(VS_STORE_1 , myThid)
-c      _EXCH_XZ_RL(VS_STORE_2 , myThid)
-c      _EXCH_XZ_RL(VS_STORE_3 , myThid)
-c      _EXCH_XZ_RL(VS_STORE_4 , myThid)
-c      _EXCH_XZ_RL(TS_STORE_1 , myThid)
-c      _EXCH_XZ_RL(TS_STORE_2 , myThid)
-c      _EXCH_XZ_RL(TS_STORE_3 , myThid)
-c      _EXCH_XZ_RL(TS_STORE_4 , myThid)
-c      _EXCH_XZ_RL(SS_STORE_1 , myThid)
-c      _EXCH_XZ_RL(SS_STORE_2 , myThid)
-c      _EXCH_XZ_RL(SS_STORE_3 , myThid)
-c      _EXCH_XZ_RL(SS_STORE_4 , myThid)
+C      same with 2,3,4
+C      same with VN_STORE_n, TN_STORE_n, SN_STORE_n, with n=1,2,3,4
+C      same with XS_STORE_n, XE_STORE_N, XW_STORE_n, with X=U,V,T,S & n=1,2,3,4
 
 c      _EXCH_XZ_RL(CVEL_UN , myThid)
-c      _EXCH_XZ_RL(CVEL_VN , myThid)
-c      _EXCH_XZ_RL(CVEL_TN , myThid)
-c      _EXCH_XZ_RL(CVEL_SN , myThid)
-c      _EXCH_XZ_RL(CVEL_US , myThid)
-c      _EXCH_XZ_RL(CVEL_VS , myThid)
-c      _EXCH_XZ_RL(CVEL_TS , myThid)
-c      _EXCH_XZ_RL(CVEL_SS , myThid)
+C      same with CVEL_VN,  CVEL_TN,  CVEL_SN
+C      same with CVEL_XS,  CVEL_XE,  CVEL_XW, with X=U,V,T,S
 c#ifdef ALLOW_NONHYDROSTATIC
 c      _EXCH_XZ_RL(WN_STORE_1 , myThid)
-c      _EXCH_XZ_RL(WN_STORE_2 , myThid)
-c      _EXCH_XZ_RL(WN_STORE_3 , myThid)
-c      _EXCH_XZ_RL(WN_STORE_4 , myThid)
-c      _EXCH_XZ_RL(WS_STORE_1 , myThid)
-c      _EXCH_XZ_RL(WS_STORE_2 , myThid)
-c      _EXCH_XZ_RL(WS_STORE_3 , myThid)
-c      _EXCH_XZ_RL(WS_STORE_4 , myThid)
+C      same with 2,3,4
+C      same with WE_STORE_n, WE_STORE_n, WW_STORE_n, with n=1,2,3,4
 c      _EXCH_XZ_RL(CVEL_WN , myThid)
-c      _EXCH_XZ_RL(CVEL_WS , myThid)
+C      same with CVEL_WS,  CVEL_WE,  CVEL_WW
 c#endif
-
-C     Fill in edge regions
-c      _EXCH_YZ_RL(UE_STORE_1 , myThid)
-c      _EXCH_YZ_RL(UE_STORE_2 , myThid)
-c      _EXCH_YZ_RL(UE_STORE_3 , myThid)
-c      _EXCH_YZ_RL(UE_STORE_4 , myThid)
-c      _EXCH_YZ_RL(VE_STORE_1 , myThid)
-c      _EXCH_YZ_RL(VE_STORE_2 , myThid)
-c      _EXCH_YZ_RL(VE_STORE_3 , myThid)
-c      _EXCH_YZ_RL(VE_STORE_4 , myThid)
-c      _EXCH_YZ_RL(TE_STORE_1 , myThid)
-c      _EXCH_YZ_RL(TE_STORE_2 , myThid)
-c      _EXCH_YZ_RL(TE_STORE_3 , myThid)
-c      _EXCH_YZ_RL(TE_STORE_4 , myThid)
-c      _EXCH_YZ_RL(SE_STORE_1 , myThid)
-c      _EXCH_YZ_RL(SE_STORE_2 , myThid)
-c      _EXCH_YZ_RL(SE_STORE_3 , myThid)
-c      _EXCH_YZ_RL(SE_STORE_4 , myThid)
-
-c      _EXCH_YZ_RL(UW_STORE_1 , myThid)
-c      _EXCH_YZ_RL(UW_STORE_2 , myThid)
-c      _EXCH_YZ_RL(UW_STORE_3 , myThid)
-c      _EXCH_YZ_RL(UW_STORE_4 , myThid)
-c      _EXCH_YZ_RL(VW_STORE_1 , myThid)
-c      _EXCH_YZ_RL(VW_STORE_2 , myThid)
-c      _EXCH_YZ_RL(VW_STORE_3 , myThid)
-c      _EXCH_YZ_RL(VW_STORE_4 , myThid)
-c      _EXCH_YZ_RL(TW_STORE_1 , myThid)
-c      _EXCH_YZ_RL(TW_STORE_2 , myThid)
-c      _EXCH_YZ_RL(TW_STORE_3 , myThid)
-c      _EXCH_YZ_RL(TW_STORE_4 , myThid)
-c      _EXCH_YZ_RL(SW_STORE_1 , myThid)
-c      _EXCH_YZ_RL(SW_STORE_2 , myThid)
-c      _EXCH_YZ_RL(SW_STORE_3 , myThid)
-c      _EXCH_YZ_RL(SW_STORE_4 , myThid)
-
-c      _EXCH_YZ_RL(CVEL_UE , myThid)
-c      _EXCH_YZ_RL(CVEL_VE , myThid)
-c      _EXCH_YZ_RL(CVEL_TE , myThid)
-c      _EXCH_YZ_RL(CVEL_SE , myThid)
-c      _EXCH_YZ_RL(CVEL_UW , myThid)
-c      _EXCH_YZ_RL(CVEL_VW , myThid)
-c      _EXCH_YZ_RL(CVEL_TW , myThid)
-c      _EXCH_YZ_RL(CVEL_SW , myThid)
-c#ifdef ALLOW_NONHYDROSTATIC
-c      _EXCH_YZ_RL(WE_STORE_1 , myThid)
-c      _EXCH_YZ_RL(WE_STORE_2 , myThid)
-c      _EXCH_YZ_RL(WE_STORE_3 , myThid)
-c      _EXCH_YZ_RL(WE_STORE_4 , myThid)
-c      _EXCH_YZ_RL(WW_STORE_1 , myThid)
-c      _EXCH_YZ_RL(WW_STORE_2 , myThid)
-c      _EXCH_YZ_RL(WW_STORE_3 , myThid)
-c      _EXCH_YZ_RL(WW_STORE_4 , myThid)
-c      _EXCH_YZ_RL(CVEL_WE , myThid)
-c      _EXCH_YZ_RL(CVEL_WW , myThid)
-c#endif
-
 
 #endif /* ALLOW_ORLANSKI */
       RETURN
@@ -325,6 +245,7 @@ C     == Local variables ==
 
 C     Write N and S OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_NORTH
+      IF ( useOrlanskiNorth ) THEN
       WRITE(fn,'(2A)') 'pickup_orlanskiN.',suff(1:iL)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr,UN_STORE_1, 1,myIter,myThid)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr,UN_STORE_2, 2,myIter,myThid)
@@ -347,15 +268,19 @@ C     Write N and S OB storage and phase speed arrays
       CALL WRITE_REC_XZ_RL(fn,prec,Nr, CVEL_TN , 19,myIter,myThid)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr, CVEL_SN , 20,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
+      IF ( nonHydrostatic ) THEN
       CALL WRITE_REC_XZ_RL(fn,prec,Nr,WN_STORE_1,21,myIter,myThid)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr,WN_STORE_2,22,myIter,myThid)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr,WN_STORE_3,23,myIter,myThid)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr,WN_STORE_4,24,myIter,myThid)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr, CVEL_WN , 25,myIter,myThid)
+      ENDIF
 #endif
+      ENDIF
 #endif /* ALLOW_OBCS_NORTH */
 
 #ifdef ALLOW_OBCS_SOUTH
+      IF ( useOrlanskiSouth ) THEN
       WRITE(fn,'(2A)') 'pickup_orlanskiS.',suff(1:iL)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr,US_STORE_1, 1,myIter,myThid)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr,US_STORE_2, 2,myIter,myThid)
@@ -378,16 +303,20 @@ C     Write N and S OB storage and phase speed arrays
       CALL WRITE_REC_XZ_RL(fn,prec,Nr, CVEL_TS , 19,myIter,myThid)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr, CVEL_SS , 20,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
+      IF ( nonHydrostatic ) THEN
       CALL WRITE_REC_XZ_RL(fn,prec,Nr,WS_STORE_1,21,myIter,myThid)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr,WS_STORE_2,22,myIter,myThid)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr,WS_STORE_3,23,myIter,myThid)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr,WS_STORE_4,24,myIter,myThid)
       CALL WRITE_REC_XZ_RL(fn,prec,Nr, CVEL_WS , 25,myIter,myThid)
+      ENDIF
 #endif
+      ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
 
 C     Write E and W OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_EAST
+      IF ( useOrlanskiEast ) THEN
       WRITE(fn,'(2A)') 'pickup_orlanskiE.',suff(1:iL)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr,UE_STORE_1, 1,myIter,myThid)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr,UE_STORE_2, 2,myIter,myThid)
@@ -410,15 +339,19 @@ C     Write E and W OB storage and phase speed arrays
       CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_TE , 19,myIter,myThid)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_SE , 20,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
+      IF ( nonHydrostatic ) THEN
       CALL WRITE_REC_YZ_RL(fn,prec,Nr,WE_STORE_1,21,myIter,myThid)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr,WE_STORE_2,22,myIter,myThid)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr,WE_STORE_3,23,myIter,myThid)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr,WE_STORE_4,24,myIter,myThid)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_WE , 25,myIter,myThid)
+      ENDIF
 #endif
+      ENDIF
 #endif /* ALLOW_OBCS_EAST */
 
 #ifdef ALLOW_OBCS_WEST
+      IF ( useOrlanskiWest ) THEN
       WRITE(fn,'(2A)') 'pickup_orlanskiW.',suff(1:iL)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr,UW_STORE_1, 1,myIter,myThid)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr,UW_STORE_2, 2,myIter,myThid)
@@ -441,12 +374,15 @@ C     Write E and W OB storage and phase speed arrays
       CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_TW , 19,myIter,myThid)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_SW , 20,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
+      IF ( nonHydrostatic ) THEN
       CALL WRITE_REC_YZ_RL(fn,prec,Nr,WW_STORE_1,21,myIter,myThid)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr,WW_STORE_2,22,myIter,myThid)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr,WW_STORE_3,23,myIter,myThid)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr,WW_STORE_4,24,myIter,myThid)
       CALL WRITE_REC_YZ_RL(fn,prec,Nr, CVEL_WW , 25,myIter,myThid)
+      ENDIF
 #endif
+      ENDIF
 #endif /* ALLOW_OBCS_WEST */
 
 #endif /* ALLOW_ORLANSKI */
