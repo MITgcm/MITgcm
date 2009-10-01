@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_apply_sloc.F,v 1.3 2004/12/03 16:47:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_apply_sloc.F,v 1.4 2009/10/01 20:54:34 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -61,7 +61,7 @@ C Eastern boundary
         obc_mask = _maskW(I_obc,J,K,bi,bj)
         DO I = I_obc, I_obc+Olx
          sFld(I,J)=OBEs(J,K,bi,bj)*obc_mask
-        ENDDO	
+        ENDDO
        ENDIF
 #endif
 C Western boundary
