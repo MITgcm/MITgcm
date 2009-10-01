@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_checkpoint.F,v 1.11 2009/09/01 19:40:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_checkpoint.F,v 1.12 2009/10/01 21:09:10 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
+#undef OBCS_NEEDS_PICKUP
 
 CStartofinterface
       SUBROUTINE OBCS_READ_PICKUP( myIter, myThid )
@@ -25,6 +26,7 @@ C     == Routine arguments ==
 CEndofinterface
 
 #ifdef ALLOW_OBCS
+#ifdef OBCS_NEEDS_PICKUP
 
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
@@ -168,6 +170,7 @@ c#ifdef ALLOW_NONHYDROSTATIC
 c      _EXCH_YZ_RL(OBEw , myThid)
 c      _EXCH_YZ_RL(OBWw , myThid)
 c#endif
+#endif /* OBCS_NEEDS_PICKUP */
 
 #ifdef ALLOW_ORLANSKI
       IF ( useOrlanskiNorth.OR.useOrlanskiSouth.OR.
@@ -209,6 +212,7 @@ C     == Routine arguments ==
 CEndofinterface
 
 #ifdef ALLOW_OBCS
+#ifdef OBCS_NEEDS_PICKUP
 
 C     === Functions ====
       INTEGER  ILNBLNK
@@ -326,6 +330,8 @@ C     Write E and W OB arrays
 # endif
 #endif
 
+#endif /* OBCS_NEEDS_PICKUP */
+
 #ifdef ALLOW_ORLANSKI
       IF ( useOrlanskiNorth.OR.useOrlanskiSouth.OR.
      &     useOrlanskiEast.OR.useOrlanskiWest ) THEN
@@ -337,4 +343,3 @@ C     Write E and W OB arrays
 #endif  /* ALLOW_OBCS */
       RETURN
       END
-
