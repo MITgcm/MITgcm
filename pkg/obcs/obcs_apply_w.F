@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.5 2008/11/26 15:26:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.6 2009/10/01 21:04:50 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -30,25 +30,8 @@ C     == Local variables ==
       _RL obc_mask
 #endif
 
-C     Set model variable to zero at the Open Boundaries
-      DO I=1-Olx,sNx+Olx
-C Northern boundary
-        J_obc = OB_Jn(I,bi,bj)
-        IF (J_obc.NE.0) wFld(I,J_obc,K,bi,bj) = 0. _d 0
-C Southern boundary
-        J_obc = OB_Js(I,bi,bj)
-        IF (J_obc.NE.0) wFld(I,J_obc,K,bi,bj) = 0. _d 0
-      ENDDO
-      DO J=1-Oly,sNy+Oly
-C Eastern boundary
-        I_obc = OB_Ie(J,bi,bj)
-        IF (I_obc.NE.0) wFld(I_obc,J,K,bi,bj) = 0. _d 0
-C Western boundary
-        I_obc = OB_Iw(J,bi,bj)
-        IF (I_obc.NE.0) wFld(I_obc,J,K,bi,bj) = 0. _d 0
-      ENDDO
-
 #ifdef ALLOW_NONHYDROSTATIC
+      IF ( nonHydrostatic ) THEN
 
 C     Set model variables to OB values on North/South Boundaries
 #ifdef ALLOW_OBCS_NORTH
@@ -94,6 +77,29 @@ C Western boundary
       ENDDO
 #endif
 
+      ELSE
+#endif /* ALLOW_NONHYDROSTATIC */
+
+C     Set model variable to zero at the Open Boundaries
+      DO I=1-Olx,sNx+Olx
+C Northern boundary
+        J_obc = OB_Jn(I,bi,bj)
+        IF (J_obc.NE.0) wFld(I,J_obc,K,bi,bj) = 0. _d 0
+C Southern boundary
+        J_obc = OB_Js(I,bi,bj)
+        IF (J_obc.NE.0) wFld(I,J_obc,K,bi,bj) = 0. _d 0
+      ENDDO
+      DO J=1-Oly,sNy+Oly
+C Eastern boundary
+        I_obc = OB_Ie(J,bi,bj)
+        IF (I_obc.NE.0) wFld(I_obc,J,K,bi,bj) = 0. _d 0
+C Western boundary
+        I_obc = OB_Iw(J,bi,bj)
+        IF (I_obc.NE.0) wFld(I_obc,J,K,bi,bj) = 0. _d 0
+      ENDDO
+
+#ifdef ALLOW_NONHYDROSTATIC
+      ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 
 #endif /* ALLOW_OBCS */

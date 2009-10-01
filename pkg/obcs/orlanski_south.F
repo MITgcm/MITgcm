@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_south.F,v 1.7 2009/09/17 16:30:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_south.F,v 1.8 2009/10/01 21:04:50 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -176,28 +176,30 @@ C              update OBC to next timestep
      &          CVEL_SS(I,K,bi,bj)*deltaT*recip_dyC(I,J_obc+1,bi,bj)*
      &          (ab1*(salt(I,J_obc+1,K,bi,bj)-salt(I,J_obc,K,bi,bj)) +
      &         ab2*(SS_STORE_1(I,K,bi,bj)-SS_STORE_4(I,K,bi,bj)))
-C              wVel
 #ifdef ALLOW_NONHYDROSTATIC
-                  IF ((WS_STORE_2(I,K,bi,bj).eq.0.).and.
-     &               (WS_STORE_3(I,K,bi,bj).eq.0.)) THEN
-                     CL=0.
-                  ELSE
-                    CL=(wVel(I,J_obc+1,K,bi,bj)-WS_STORE_1(I,K,bi,bj))/
-     &            (ab1*WS_STORE_2(I,K,bi,bj)+ab2*WS_STORE_3(I,K,bi,bj))
-                  ENDIF
-                  IF (CL.lt.0.) THEN
-                     CL=0.
-                  ELSEIF (CL.gt.CMAX) THEN
-                     CL=CMAX
-                  ENDIF
-                  CVEL_WS(I,K,bi,bj)=f1*(CL*dyC(I,J_obc+2,bi,bj)/deltaT)
+             IF ( nonHydrostatic ) THEN
+C              wVel
+               IF ((WS_STORE_2(I,K,bi,bj).eq.0.).and.
+     &            (WS_STORE_3(I,K,bi,bj).eq.0.)) THEN
+                  CL=0.
+               ELSE
+                  CL=(wVel(I,J_obc+1,K,bi,bj)-WS_STORE_1(I,K,bi,bj))/
+     &          (ab1*WS_STORE_2(I,K,bi,bj)+ab2*WS_STORE_3(I,K,bi,bj))
+               ENDIF
+               IF (CL.lt.0.) THEN
+                  CL=0.
+               ELSEIF (CL.gt.CMAX) THEN
+                  CL=CMAX
+               ENDIF
+               CVEL_WS(I,K,bi,bj)=f1*(CL*dyC(I,J_obc+2,bi,bj)/deltaT)
      &                   + f2*CVEL_WS(I,K,bi,bj)
-C                 update OBC to next timestep
-                  OBSw(I,K,bi,bj)=wVel(I,J_obc,K,bi,bj)+
-     &            CVEL_WS(I,K,bi,bj)*deltaT*recip_dyC(I,J_obc+1,bi,bj)*
-     &            (ab1*(wVel(I,J_obc+1,K,bi,bj)-wVel(I,J_obc,K,bi,bj))+
-     &            ab2*(WS_STORE_1(I,K,bi,bj)-WS_STORE_4(I,K,bi,bj)))
-#endif
+C              update OBC to next timestep
+               OBSw(I,K,bi,bj)=wVel(I,J_obc,K,bi,bj)+
+     &           CVEL_WS(I,K,bi,bj)*deltaT*recip_dyC(I,J_obc+1,bi,bj)*
+     &           (ab1*(wVel(I,J_obc+1,K,bi,bj)-wVel(I,J_obc,K,bi,bj))+
+     &           ab2*(WS_STORE_1(I,K,bi,bj)-WS_STORE_4(I,K,bi,bj)))
+             ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 C              update/save storage arrays
 C              uVel
 C              copy t-1 to t-2 array
@@ -231,8 +233,9 @@ C              copy (current time) t to t-1 arrays
      &         salt(I,J_obc+1,K,bi,bj)
                SS_STORE_1(I,K,bi,bj)=salt(I,J_obc+1,K,bi,bj)
                SS_STORE_4(I,K,bi,bj)=salt(I,J_obc,K,bi,bj)
-C              wVel
 #ifdef ALLOW_NONHYDROSTATIC
+             IF ( nonHydrostatic ) THEN
+C              wVel
 C              copy t-1 to t-2 array
                WS_STORE_3(I,K,bi,bj)=WS_STORE_2(I,K,bi,bj)
 C              copy (current time) t to t-1 arrays
@@ -240,7 +243,8 @@ C              copy (current time) t to t-1 arrays
      &         wVel(I,J_obc+1,K,bi,bj)
                WS_STORE_1(I,K,bi,bj)=wVel(I,J_obc+1,K,bi,bj)
                WS_STORE_4(I,K,bi,bj)=wVel(I,J_obc,K,bi,bj)
-#endif
+             ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
             ENDIF
          ENDDO
       ENDDO

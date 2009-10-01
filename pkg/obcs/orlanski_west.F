@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_west.F,v 1.9 2009/09/17 16:30:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_west.F,v 1.10 2009/10/01 21:04:50 jmc Exp $
 C $Name:  $
 cc
 
@@ -67,7 +67,7 @@ C              wave to travel a distance DX, where DX is the width of the region
 C              near which d(phi)/dx is small.
 C
 C JBG 3/24/03: Fixed phase speed at western boundary (as suggested by
-C	       Dale Durran's MWR paper). Fixed value (in m/s) is
+C              Dale Durran's MWR paper). Fixed value (in m/s) is
 C              passed in as variable CFIX in data.obcs.
 C
 C JBG 4/10/03: allow choice of Orlanski or fixed wavespeed (by means of new
@@ -121,8 +121,8 @@ C              uVel (to be applied at I_obc+1)
                   CL=CMAX
                ENDIF
                IF (useFixedCWest) THEN
-C	         Fixed phase speed (ignoring all of that painstakingly
-C		  saved data...)
+C                Fixed phase speed (ignoring all of that painstakingly
+C                saved data...)
                  CVEL_UW(J,K,bi,bj) = CFIX
                ELSE
                  CVEL_UW(J,K,bi,bj) = f1*(CL*dxF(I_obc+2,J,bi,bj)/deltaT
@@ -147,8 +147,8 @@ C              vVel
                   CL=CMAX
                ENDIF
                IF (useFixedCWest) THEN
-C	         Fixed phase speed (ignoring all of that painstakingly
-C		  saved data...)
+C                Fixed phase speed (ignoring all of that painstakingly
+C                saved data...)
                  CVEL_VW(J,K,bi,bj) = CFIX
                ELSE
                  CVEL_VW(J,K,bi,bj) = f1*(CL*dxV(I_obc+2,J,bi,bj)/deltaT
@@ -173,8 +173,8 @@ C              Temperature
                   CL=CMAX
                ENDIF
                IF (useFixedCWest) THEN
-C	         Fixed phase speed (ignoring all of that painstakingly
-C		  saved data...)
+C                Fixed phase speed (ignoring all of that painstakingly
+C                saved data...)
                  CVEL_TW(J,K,bi,bj) = CFIX
                ELSE
                  CVEL_TW(J,K,bi,bj) = f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT
@@ -199,8 +199,8 @@ C              Salinity
                   CL=CMAX
                ENDIF
                IF (useFixedCWest) THEN
-C  	         Fixed phase speed (ignoring all of that painstakingly
-C		  saved data...)
+C                Fixed phase speed (ignoring all of that painstakingly
+C                saved data...)
                  CVEL_SW(J,K,bi,bj) = CFIX
                ELSE
                  CVEL_SW(J,K,bi,bj) = f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT
@@ -211,34 +211,36 @@ C              update OBC to next timestep
      &           CVEL_SW(J,K,bi,bj)*(deltaT*recip_dxC(I_obc+1,J,bi,bj))*
      &           (ab1*(salt(I_obc+1,J,K,bi,bj)-salt(I_obc,J,K,bi,bj))+
      &           ab2*(SW_STORE_1(J,K,bi,bj)-SW_STORE_4(J,K,bi,bj)))
-C              wVel
 #ifdef ALLOW_NONHYDROSTATIC
-                  IF ((WW_STORE_2(J,K,bi,bj).eq.0.).and.
-     &               (WW_STORE_3(J,K,bi,bj).eq.0.)) THEN
-                     CL=0.
-                  ELSE
-                    CL=(wVel(I_obc+1,J,K,bi,bj)-WW_STORE_1(J,K,bi,bj))/
-     &            (ab1*WW_STORE_2(J,K,bi,bj)+ab2*WW_STORE_3(J,K,bi,bj))
-                  ENDIF
-                  IF (CL.lt.0.) THEN
-                     CL=0.
-                  ELSEIF (CL.gt.CMAX) THEN
-                     CL=CMAX
-                  ENDIF
+             IF ( nonHydrostatic ) THEN
+C              wVel
+               IF ((WW_STORE_2(J,K,bi,bj).eq.0.).and.
+     &            (WW_STORE_3(J,K,bi,bj).eq.0.)) THEN
+                  CL=0.
+               ELSE
+                  CL=(wVel(I_obc+1,J,K,bi,bj)-WW_STORE_1(J,K,bi,bj))/
+     &          (ab1*WW_STORE_2(J,K,bi,bj)+ab2*WW_STORE_3(J,K,bi,bj))
+               ENDIF
+               IF (CL.lt.0.) THEN
+                  CL=0.
+               ELSEIF (CL.gt.CMAX) THEN
+                  CL=CMAX
+               ENDIF
                IF (useFixedCWest) THEN
-C	         Fixed phase speed (ignoring all of that painstakingly
-C		  saved data...)
+C                Fixed phase speed (ignoring all of that painstakingly
+C                saved data...)
                  CVEL_WW(J,K,bi,bj) = CFIX
                ELSE
                  CVEL_WW(J,K,bi,bj)=f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT)
      &                   + f2*CVEL_WW(J,K,bi,bj)
                ENDIF
-C                 update OBC to next timestep
-                  OBWw(J,K,bi,bj)=wVel(I_obc,J,K,bi,bj)+
+C              update OBC to next timestep
+               OBWw(J,K,bi,bj)=wVel(I_obc,J,K,bi,bj)+
      &           CVEL_WW(J,K,bi,bj)*(deltaT*recip_dxC(I_obc+1,J,bi,bj))*
      &            (ab1*(wVel(I_obc+1,J,K,bi,bj)-wVel(I_obc,J,K,bi,bj))+
      &            ab2*(WW_STORE_1(J,K,bi,bj)-WW_STORE_4(J,K,bi,bj)))
-#endif
+             ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
 C              update/save storage arrays
 C              uVel
 C              copy t-1 to t-2 array
@@ -266,14 +268,15 @@ C              copy (current time) t to t-1 arrays
                TW_STORE_4(J,K,bi,bj)=theta(I_obc,J,K,bi,bj)
 c              Salinity
 C              copy t-1 to t-2 array
-	       SW_STORE_3(J,K,bi,bj)=SW_STORE_2(J,K,bi,bj)
+               SW_STORE_3(J,K,bi,bj)=SW_STORE_2(J,K,bi,bj)
 C              copy (current time) t to t-1 arrays
                SW_STORE_2(J,K,bi,bj)=salt(I_obc+2,J,K,bi,bj) -
      &         salt(I_obc+1,J,K,bi,bj)
                SW_STORE_1(J,K,bi,bj)=salt(I_obc+1,J,K,bi,bj)
-	       SW_STORE_4(J,K,bi,bj)=salt(I_obc,J,K,bi,bj)
-C              wVel
+               SW_STORE_4(J,K,bi,bj)=salt(I_obc,J,K,bi,bj)
 #ifdef ALLOW_NONHYDROSTATIC
+             IF ( nonHydrostatic ) THEN
+C              wVel
 C              copy t-1 to t-2 array
                WW_STORE_3(J,K,bi,bj)=WW_STORE_2(J,K,bi,bj)
 C              copy (current time) t to t-1 arrays
@@ -281,7 +284,8 @@ C              copy (current time) t to t-1 arrays
      &         wVel(I_obc+1,J,K,bi,bj)
                WW_STORE_1(J,K,bi,bj)=wVel(I_obc+1,J,K,bi,bj)
                WW_STORE_4(J,K,bi,bj)=wVel(I_obc,J,K,bi,bj)
-#endif
+             ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
             ENDIF
          ENDDO
       ENDDO
