@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.28 2009/09/01 19:40:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.29 2009/10/01 21:46:25 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -291,28 +291,25 @@ C     == Local variables ==
       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C jmc: here is the logical place to read OBCS-pickup files
-C      but a) without Orlanski: pass the test 1+1=2 without reading pickup.
-C          b) with Orlanski: 1+1=2 fail even with this bit of code
+C     Only needed for Orlanski:
       IF ( nIter0.NE.0 .OR. pickupSuff.NE.' ' ) THEN
-c       CALL OBCS_READ_PICKUP( nIter0, myThid )
+        CALL OBCS_READ_PICKUP( nIter0, myThid )
       ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   Load/compute OBCS values in all cases, although these values are
-C--   only used for initialisation and never for restart:
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('OBCS_CALC',myThid)
-#endif
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        CALL OBCS_CALC( bi, bj, startTime, nIter0,
-     &        uVel, vVel, wVel, theta, salt, myThid )
-       ENDDO
-      ENDDO
-
+C--   Load/compute OBCS values (initial conditions only)
       IF ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
      &     .AND. pickupSuff .EQ. ' ' ) THEN
+#ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('OBCS_CALC',myThid)
+#endif
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          CALL OBCS_CALC( bi, bj, startTime, nIter0,
+     &              uVel, vVel, wVel, theta, salt, myThid )
+        ENDDO
+       ENDDO
+
 C--   Apply OBCS values to initial conditions for consistency
 C      (but initial conditions only)
 #ifdef ALLOW_DEBUG
