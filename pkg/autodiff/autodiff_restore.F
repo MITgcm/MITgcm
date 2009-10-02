@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.9 2009/06/24 20:09:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.10 2009/10/02 13:40:27 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -426,7 +426,8 @@ C-      2D arrays
           TICE(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,4)
           RUNOFF(I,J,bi,bj)   = StoreSEAICE(I,J,bi,bj,5)
 # ifdef SEAICE_MULTICATEGORY
-          TICES(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,6)
+cph moved to seaice_ad_check_lev because of extra dim. MULTDIM
+cph          TICES(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,6)
 # endif
 # ifdef SEAICE_ALLOW_DYNAMICS
           UICE(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,7)

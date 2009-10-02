@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.9 2009/06/24 20:09:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.10 2009/10/02 13:40:27 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -525,11 +525,7 @@ C-      2D arrays
           StoreSEAICE(I,J,bi,bj,3) = HSNOW(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,4) = TICE(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,5) = RUNOFF(I,J,bi,bj)
-# ifdef SEAICE_MULTICATEGORY
-          StoreSEAICE(I,J,bi,bj,6) = TICES(I,J,bi,bj)
-# else
           StoreSEAICE(I,J,bi,bj,6) = 0.0
-# endif
 # ifdef SEAICE_ALLOW_DYNAMICS
           StoreSEAICE(I,J,bi,bj,7) = UICE(I,J,bi,bj)
           StoreSEAICE(I,J,bi,bj,8) = VICE(I,J,bi,bj)
