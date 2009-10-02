@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.21 2009/10/01 20:54:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.22 2009/10/02 20:08:42 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -224,10 +224,10 @@ C     Eastern OB
 #  ifdef ALLOW_ORLANSKI
         WRITE(msgBuf,'(A)')
      &       'OBCS_CALC: ERROR: useOrlanskiEast Rad OBC with'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &       'OBCS_CALC: ERROR: pTracers not yet implemented'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CALC'
 #  endif
        ELSE
@@ -258,10 +258,10 @@ C     Western OB
 #  ifdef ALLOW_ORLANSKI
         WRITE(msgBuf,'(A)')
      &       'OBCS_CALC: ERROR: useOrlanskiWest Rad OBC with'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &       'OBCS_CALC: ERROR: pTracers not yet implemented'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CALC'
 #  endif
        ELSE
@@ -292,10 +292,10 @@ C         Northern OB
 #  ifdef ALLOW_ORLANSKI
         WRITE(msgBuf,'(A)')
      &       'OBCS_CALC: ERROR: useOrlanskiNorth Rad OBC with'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &       'OBCS_CALC: ERROR: pTracers not yet implemented'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CALC'
 #  endif
        ELSE
@@ -326,10 +326,10 @@ C         Southern OB
 #ifdef ALLOW_ORLANSKI
         WRITE(msgBuf,'(A)')
      &       'OBCS_CALC: ERROR: useOrlanskiSouth Rad OBC with'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &       'OBCS_CALC: ERROR: pTracers not yet implemented'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_CALC'
 #endif
        ELSE
@@ -360,7 +360,13 @@ C--     Calculate future values on open boundaries
       IF ( debugLevel .GE. debLevB )
      &      CALL DEBUG_CALL('OBCS_PRESCRIBE_READ',myThid)
 #endif
-        CALL OBCS_PRESCRIBE_READ(futureTime, futureIter, mythid)
+#ifdef HACK_TO_FIX_SEAICE_OBCS_RESTART
+C- jmc: Restart Pb with seaice+obcs get "fixed" by adding the following call.
+C       have no clue why (exf+cal initialisation issue ?).
+        IF ( futureIter.EQ.1+nIter0 .AND. nIter0.GT.0 )
+     &  CALL OBCS_PRESCRIBE_READ( startTime, nIter0, myThid)
+#endif /* HACK_TO_FIX_SEAICE_OBCS_RESTART */
+        CALL OBCS_PRESCRIBE_READ( futureTime, futureIter, myThid )
       ENDIF
 #endif /* ALLOW_OBCS_PRESCRIBE */
 
@@ -368,6 +374,12 @@ C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_BALANCE
       IF ( useOBCSbalance) THEN
+       IF ( nSx.NE.1 .OR. nSy.NE.1 ) THEN
+         WRITE(msgBuf,'(A)')
+     &       'OBCS_CALC: Wrong Multi-tile coding of OBCSbalance'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R OBCS_CALC'
+       ENDIF
 #ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB )
      &      CALL DEBUG_MSG('useOBCSbalance=.TRUE.',myThid)
