@@ -1,6 +1,9 @@
 obcs_apply_eta.f
+obcs_apply_ptracer.f
+obcs_apply_seaice.f
 obcs_apply_sloc.f
 obcs_apply_tloc.f
+obcs_apply_uvice.f
 obcs_apply_r_star.f
 obcs_apply_surf_dr.f
 obcs_apply_ts.f	
