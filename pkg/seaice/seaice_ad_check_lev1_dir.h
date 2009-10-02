@@ -1,5 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.20 2009/06/02 16:11:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.21 2009/10/02 13:19:37 heimbach Exp $
 C $Name:  $
+
+#ifdef SEAICE_MULTICATEGORY
+CADJ STORE tices      = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
 
 #ifdef AUTODIFF_SOMETIMES_NEEDED
 # ifdef EXACT_CONSERV
@@ -16,9 +20,6 @@ cphCADJ STORE heff    = comlev1, key=ikey_dynamics, kind=isbyte
 cphCADJ STORE heffm      = comlev1, key=ikey_dynamics, kind=isbyte
 cphCADJ STORE hsnow      = comlev1, key=ikey_dynamics, kind=isbyte
 cphCADJ STORE tice    = comlev1, key=ikey_dynamics, kind=isbyte
-# ifdef SEAICE_MULTICATEGORY
-CADJ STORE tices      = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
 # ifdef SEAICE_ALLOW_DYNAMICS
 CADJ STORE uice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice    = comlev1, key=ikey_dynamics, kind=isbyte
