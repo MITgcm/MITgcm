@@ -8,6 +8,7 @@
  OB_Ieast  =   8*10,
 #
  useOBCSprescribe=.TRUE.,
+ OBCSprintDiags=.FALSE.,
 #
  OBSsFile='OBSs.seaice_obcs',
  OBStFile='OBSt.seaice_obcs',
