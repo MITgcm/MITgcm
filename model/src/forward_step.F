@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.168 2009/08/07 04:16:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.169 2009/10/02 15:44:29 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -307,7 +307,7 @@ C--     Step forward fields and calculate time tendency terms.
       CALL TIMER_STOP ('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surfaceforcingtice    = comlev1, key = ikey_dynamics,
+CADJ STORE surfaceforcingtice = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 # ifdef ALLOW_KPP
 CADJ STORE uvel               = comlev1, key = ikey_dynamics,
@@ -315,9 +315,13 @@ CADJ &     kind = isbyte
 CADJ STORE vvel               = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 # endif
-# ifdef EXACT_CONSERV
-cphCADJ STORE empmr              = comlev1, key = ikey_dynamics
-cphCADJ STORE pmepr              = comlev1, key = ikey_dynamics
+# ifdef ALLOW_OBCS
+CADJ STORE salt               = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE totphihyd          = comlev1, key=ikey_dynamics, kind=isbyte
+#  ifdef EXACT_CONSERV
+CADJ STORE empmr              = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE pmepr              = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
 # endif
 # ifdef ALLOW_PTRACERS
 CADJ STORE ptracer               = comlev1, key = ikey_dynamics,
