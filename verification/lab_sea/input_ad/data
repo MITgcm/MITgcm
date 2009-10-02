@@ -67,6 +67,7 @@
  useCDscheme=.TRUE.,
  inAdExact=.TRUE.,
 #ph(
+ staggerTimeStep=.TRUE.,
  multiDimAdvection=.TRUE.,
  tempAdvScheme=30,
  saltAdvScheme=30,
