@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.29 2009/10/01 21:46:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.30 2009/10/03 15:12:09 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -290,12 +290,17 @@ C     == Local variables ==
        ENDDO
       ENDDO
 
+#ifdef ALLOW_ORLANSKI
+      IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.
+     &     useOrlanskiEast.OR.useOrlanskiWest) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Only needed for Orlanski:
-      IF ( nIter0.NE.0 .OR. pickupSuff.NE.' ' ) THEN
+       IF ( nIter0.NE.0 .OR. pickupSuff.NE.' ' ) THEN
         CALL OBCS_READ_PICKUP( nIter0, myThid )
-      ENDIF
+       ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      ENDIF
+#endif /* ALLOW_ORLANSKI */
 
 C--   Load/compute OBCS values (initial conditions only)
       IF ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
