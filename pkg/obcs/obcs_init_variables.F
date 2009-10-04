@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.30 2009/10/03 15:12:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.31 2009/10/04 22:36:30 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -290,21 +290,15 @@ C     == Local variables ==
        ENDDO
       ENDDO
 
-#ifdef ALLOW_ORLANSKI
-      IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.
-     &     useOrlanskiEast.OR.useOrlanskiWest) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Only needed for Orlanski:
-       IF ( nIter0.NE.0 .OR. pickupSuff.NE.' ' ) THEN
+      IF ( nIter0.NE.0 .OR. pickupSuff.NE.' ' ) THEN
         CALL OBCS_READ_PICKUP( nIter0, myThid )
-       ENDIF
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
-#endif /* ALLOW_ORLANSKI */
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Load/compute OBCS values (initial conditions only)
-      IF ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
-     &     .AND. pickupSuff .EQ. ' ' ) THEN
+      IF ( nIter0.EQ.0 .AND. pickupSuff.EQ.' ' ) THEN
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('OBCS_CALC',myThid)
 #endif
@@ -342,7 +336,15 @@ C     from a file.
         _EXCH_XYZ_RL( salt , myThid )
        ENDIF
 C     endif start from rest
+#ifdef ALLOW_OBCS_PRESCRIBE
+      ELSEIF ( useOBCSprescribe .AND. useEXF ) THEN
+C    No real need to set OB values here. Add this call to fix a problem
+C    of initialisation with EXF (exf_getffieldrec.F) which only recognizes
+C    the 1rst call (setting "first") when time=starTime
+        CALL OBCS_PRESCRIBE_READ( startTime, nIter0, myThid )
+#endif
       ENDIF
+
 #ifdef ALLOW_PTRACERS
 C     repeat everything for passive tracers
       IF ( usePTRACERS ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.22 2009/10/02 20:08:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.23 2009/10/04 22:36:30 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -360,12 +360,6 @@ C--     Calculate future values on open boundaries
       IF ( debugLevel .GE. debLevB )
      &      CALL DEBUG_CALL('OBCS_PRESCRIBE_READ',myThid)
 #endif
-#ifdef HACK_TO_FIX_SEAICE_OBCS_RESTART
-C- jmc: Restart Pb with seaice+obcs get "fixed" by adding the following call.
-C       have no clue why (exf+cal initialisation issue ?).
-        IF ( futureIter.EQ.1+nIter0 .AND. nIter0.GT.0 )
-     &  CALL OBCS_PRESCRIBE_READ( startTime, nIter0, myThid)
-#endif /* HACK_TO_FIX_SEAICE_OBCS_RESTART */
         CALL OBCS_PRESCRIBE_READ( futureTime, futureIter, myThid )
       ENDIF
 #endif /* ALLOW_OBCS_PRESCRIBE */
