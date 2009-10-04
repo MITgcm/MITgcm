@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.13 2009/09/01 19:40:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.14 2009/10/04 21:52:25 jmc Exp $
 C $Name:  $
 #include "OBCS_OPTIONS.h"
 
@@ -47,6 +47,13 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "OBCS.h"
+#ifdef ALLOW_PTRACERS
+#include "PTRACERS_SIZE.h"
+#include "OBCS_PTRACERS.h"
+#include "PTRACERS_PARAMS.h"
+c#include "PTRACERS_FIELDS.h"
+#endif /* ALLOW_PTRACERS */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -57,17 +64,9 @@ C     myThid :: Thread no. that called this routine.
       INTEGER myIter
       INTEGER myThid
 
-C     if external forcing (exf) package is enabled, all loading of external
-C     fields is done by exf
-#if (defined ALLOW_OBCS && defined ALLOW_OBCS_PRESCRIBE && !defined ALLOW_EXF)
-C
-#include "OBCS.h"
-#ifdef ALLOW_PTRACERS
-#include "PTRACERS_SIZE.h"
-#include "OBCS_PTRACERS.h"
-#include "PTRACERS_PARAMS.h"
-c#include "PTRACERS_FIELDS.h"
-#endif /* ALLOW_PTRACERS */
+C     if external forcing (exf) package is enabled (useEXF=T), all loading of
+C     external fields is done by exf
+#if (defined ALLOW_OBCS && defined ALLOW_OBCS_PRESCRIBE )
 
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
@@ -651,7 +650,7 @@ CEOP
         ENDDO
        ENDDO
 
-#endif /* ALLOW_OBCS AND ALLOW_OBCS_PRESCRIBE AND .NOT. ALLOW_EXF */
+#endif /* ALLOW_OBCS AND ALLOW_OBCS_PRESCRIBE */
 
        RETURN
        END
