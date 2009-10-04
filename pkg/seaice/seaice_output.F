@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.4 2009/09/02 19:25:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.5 2009/10/04 22:30:38 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -286,6 +286,9 @@ C--   end dumpFiles block
 
 C--   do SEAICE monitor output : print some statistics about seaice fields
       CALL SEAICE_MONITOR( myTime, myIter, myThid )
+
+C--   do SEAICE Open-Boundary output
+      IF ( useOBCS ) CALL SEAICE_OBCS_OUTPUT( myTime, myIter, myThid )
 
       RETURN
       END
