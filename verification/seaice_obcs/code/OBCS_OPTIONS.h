@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/OBCS_OPTIONS.h,v 1.2 2009/10/02 20:17:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/OBCS_OPTIONS.h,v 1.3 2009/10/04 23:04:14 jmc Exp $
 C $Name:  $
  
 C CPP options file for OBCS package
@@ -32,9 +32,6 @@ C This includes hooks to sponge layer treatment of uvel, vvel
 
 C balance barotropic velocity
 #undef ALLOW_OBCS_BALANCE
-
-C to fix the restart: Hack S/R OBCS_CALC with a 2nd call to OBCS_PRESCRIBE_READ
-#define HACK_TO_FIX_SEAICE_OBCS_RESTART
 
 #endif /* ALLOW_OBCS */
 #endif /* OBCS_OPTIONS_H */
