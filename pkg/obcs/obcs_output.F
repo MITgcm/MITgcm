@@ -1,56 +1,58 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_output.F,v 1.1 2009/06/17 14:25:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_output.F,v 1.2 2009/10/04 22:01:28 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: OBCS_OUTPUT
+
+C     !INTERFACE:
       SUBROUTINE OBCS_OUTPUT( myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE OBCS_OUTPUT
-C     | o Controlling routine for IO in model main time-stepping
-C     |   loop.
+C     | o General routine for OBCS output
 C     *==========================================================*
-C     | Many systems do not have thread safe IO so it is easier
-C     | to lump everything together and do dumping of fields
-C     | and updating of forcing terms in a single place.
-C     | The approach to IO used here is that writes are only
-C     | performed by thread 1 and that a process only writes out
-C     | its data ( it does not know about anyone elses data!)
-C     | Reading on the other hand is assumed to be from a file
-C     | containing all the data for all the processes. Only the
-C     | portion of data of interest to this process is actually
-C     | loaded. To work well this assumes the existence of some
-C     | reliable tool to join datasets together at the end of a
-C     | run - see joinds.p
-C     *==========================================================*
-      IMPLICIT NONE
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "OBCS.h"
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-
-C     == Routine arguments ==
+C     !INPUT PARAMETERS:
 C     myTime :: my time in simulation ( s )
 C     myIter :: my Iteration number
 C     myThid :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_OBCS
-C     == Local variables ==
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+c     INTEGER  ILNBLNK
+c     EXTERNAL ILNBLNK
 
-C--   Generaly only thread 1 does IO here. It can not start until
-C--   all threads fields are ready.
+C     !LOCAL VARIABLES:
+      CHARACTER*(MAX_LEN_FNAM) fn
+      INTEGER prec
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       IF (
      &  DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
      &  .AND. OBCSprintDiags
      & ) THEN
 
+C--   Generaly only thread 1 does IO here. It can not start until
+C--   all threads fields are ready.
        _BARRIER
 
 #ifdef ALLOW_OBCS_NORTH
@@ -83,7 +85,77 @@ C--   all threads fields are ready.
 
       ENDIF
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Write OB aray to binary files (mainly for debugging => use "diagFreq")
+      IF (
+     &     DIFFERENT_MULTIPLE(diagFreq,myTime,deltaTClock)
+     &   ) THEN
+
+       _BARRIER
+        prec = writeBinaryPrec
+
+#ifdef ALLOW_OBCS_NORTH
+C     Write Northern OB arrays
+        WRITE(fn,'(A,I10.10)') 'obcs_N.', myIter
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNu,1,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNv,2,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNt,3,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNs,4,myIter,myThid)
+# ifdef ALLOW_NONHYDROSTATIC
+       IF ( nonHydrostatic ) THEN
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNw,5,myIter,myThid)
+       ENDIF
+# endif
 #endif
+
+#ifdef ALLOW_OBCS_SOUTH
+C     Write Southern OB arrays
+        WRITE(fn,'(A,I10.10)') 'obcs_S.', myIter
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSu,1,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSv,2,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSt,3,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSs,4,myIter,myThid)
+# ifdef ALLOW_NONHYDROSTATIC
+       IF ( nonHydrostatic ) THEN
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSw,5,myIter,myThid)
+       ENDIF
+# endif
+#endif
+
+#ifdef ALLOW_OBCS_EAST
+C     Write Eastern OB arrays
+        WRITE(fn,'(A,I10.10)') 'obcs_E.', myIter
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEu,1,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEv,2,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEt,3,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEs,4,myIter,myThid)
+# ifdef ALLOW_NONHYDROSTATIC
+       IF ( nonHydrostatic ) THEN
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEw,5,myIter,myThid)
+       ENDIF
+# endif
+#endif
+
+#ifdef ALLOW_OBCS_WEST
+C     Write Western OB arrays
+        WRITE(fn,'(A,I10.10)') 'obcs_W.', myIter
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWu,1,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWv,2,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWt,3,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWs,4,myIter,myThid)
+# ifdef ALLOW_NONHYDROSTATIC
+       IF ( nonHydrostatic ) THEN
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWw,5,myIter,myThid)
+       ENDIF
+# endif
+#endif
+
+       _BARRIER
+
+      ENDIF
+
+#endif /* ALLOW_OBCS */
 
       RETURN
       END
