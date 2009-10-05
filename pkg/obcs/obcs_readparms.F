@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.23 2009/08/11 15:46:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.24 2009/10/05 18:49:29 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -103,7 +103,7 @@ C--   Default flags and values for OBCS
       useOBCSsponge      =.FALSE.
       useOBCSbalance     =.FALSE.
       useOBCSprescribe   =.FALSE.
-      OBCSprintDiags     =.TRUE.
+      OBCSprintDiags     = debugLevel.GE.debLevB
       useOBCSYearlyFields=.FALSE.
       OBCSfixTopo        =.TRUE.
 
@@ -222,7 +222,7 @@ C--   Close the open data file
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
-C--   Calculate the tiled index arrays OB_Jn/Js/Ie/Iw here from the 
+C--   Calculate the tiled index arrays OB_Jn/Js/Ie/Iw here from the
 C     global arrays OB_Jnorth/Jsouth/Ieast/Iwest.
 C     Note: This part of the code has been moved from obcs_init_fixed to
 C     routine routine because the OB_Jn/Js/Ie/Iw index arrays are
