@@ -56,7 +56,7 @@ fid=fopen('topog.bump','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
 
 % initial fields for salinity
 si = 35;
-fid=fopen('S.init','w',ieee); fwrite(fid,si*ones(nx,ny,nz),accuracy); fclose(fid);
+%fid=fopen('S.init','w',ieee); fwrite(fid,si*ones(nx,ny,nz),accuracy); fclose(fid);
 
 % open boundary conditions;
 u0 = .25;

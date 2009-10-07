@@ -68,5 +68,4 @@
 # Input datasets
  &PARM05
  bathyFile='topog.bump',
- hydrogSaltFile='S.init',
  &
