@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_init_varia.F,v 1.2 2009/01/20 00:26:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_init_varia.F,v 1.3 2009/10/08 20:07:53 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
 
       SUBROUTINE MY82_INIT_VARIA( myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE MY82_INIT_VARIA                               |
 C     | o Routine to initialize MY82 parameters and variables.   |
-C     |==========================================================|
+C     *==========================================================*
 C     | Initialize MY92 parameters and variables.                |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -45,21 +45,21 @@ C-----------------------------------------------------------------------
 C Initialize MY82 variables MYviscAr, MYdiffKrT
 C-----------------------------------------------------------------------
 
-      do bj = myByLo(myThid), myByHi(myThid)
-       do bi = myBxLo(myThid), myBxHi(myThid)
-        do k = 1, Nr
-         do j = 1-OLy, sNy+OLy
-          do i = 1-OLx, sNx+OLx
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1, Nr
+         DO j = 1-OLy, sNy+OLy
+          DO i = 1-OLx, sNx+OLx
            MYhbl    (i,j  ,bi,bj) = 0. _d 0
-           MYviscAr (i,j,k,bi,bj) = viscAr
+           MYviscAr (i,j,k,bi,bj) = viscArNr(k)
            MYdiffKr (i,j,k,bi,bj) = diffKrNrT(k)
-          end do
-         end do
-        end do
-       end do
-      end do
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_MY82 */
 
-      return
-      end
+      RETURN
+      END

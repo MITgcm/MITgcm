@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc_visc.F,v 1.3 2009/01/20 00:26:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc_visc.F,v 1.4 2009/10/08 20:07:53 jmc Exp $
 C $Name:  $
 #include "MY82_OPTIONS.h"
 
@@ -8,10 +8,10 @@ C $Name:  $
      I        myThid)
 
 CBOP
-C     /==========================================================\
-C     | SUBROUTINE MY82_CALC_VISC                                 |
-C     | o Add contrubution to net viscosity from MY82 mixing      |
-C     \==========================================================/
+C     *==========================================================*
+C     | SUBROUTINE MY82_CALC_VISC
+C     | o Add contrubution to net viscosity from MY82 mixing
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -39,7 +39,7 @@ CEOP
       DO j=jMin,jMax
        DO i=iMin,iMax
         KappaRU(i,j,k) = max ( KappaRU(i,j,k),
-     &         KappaRU(i,j,k) - viscAr + _maskW(i,j,k,bi,bj) *
+     &         KappaRU(i,j,k) - viscArNr(k) + _maskW(i,j,k,bi,bj) *
      &    0.5 _d 0*(MYviscAr(i,j,k,bi,bj)+MYviscAr(i-1,j,k,bi,bj)) )
        ENDDO
       ENDDO
@@ -47,7 +47,7 @@ CEOP
       DO j=jMin,jMax
        DO i=iMin,iMax
         KappaRV(i,j,k) = max ( KappaRV(i,j,k),
-     &         KappaRV(i,j,k) - viscAr + _maskS(i,j,k,bi,bj) *
+     &         KappaRV(i,j,k) - viscArNr(k) + _maskS(i,j,k,bi,bj) *
      &    0.5 _d 0*(MYviscAr(i,j,k,bi,bj)+MYviscAr(i,j-1,k,bi,bj)) )
        ENDDO
       ENDDO

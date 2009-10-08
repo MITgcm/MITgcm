@@ -1,18 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc_visc.F,v 1.4 2009/01/30 02:23:56 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc_visc.F,v 1.5 2009/10/08 20:07:18 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
 
-      SUBROUTINE GGL90_CALC_VISC( 
+      SUBROUTINE GGL90_CALC_VISC(
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      U        KappaRU,KappaRV,
      I        myThid)
 
 CBOP
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE GGL90_CALC_VISC                               |
 C     | o Add contrubution to net viscosity from GGL90 mixing    |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -21,6 +21,7 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#include "GGL90.h"
 
 C     == Routine arguments ==
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
@@ -30,9 +31,9 @@ C
       _RL KappaRU(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_GGL90
-#include "GGL90.h"
 
 C     == Local variables ==
 C     I, J, K - Loop counters
@@ -42,7 +43,6 @@ C     I, J, K - Loop counters
       p4=0.25 _d 0
       p8=0.125 _d 0
       p16=0.0625 _d 0
-CEOP
 
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -61,14 +61,14 @@ CEOP
      &       +      maskC(i-1,j+1,k,bi,bj) * mskCor(i-1,j+1,bi,bj)
      &       +      maskC(i  ,j-1,k,bi,bj) * mskCor(i  ,j-1,bi,bj)
      &       +      maskC(i  ,j+1,k,bi,bj) * mskCor(i  ,j+1,bi,bj))
-     &  ) - viscAr )
+     &  ) - viscArNr(k) )
      &  *maskC(i  ,j,k,bi,bj)*mskCor(i  ,j,bi,bj)
      &  *maskC(i-1,j,k,bi,bj)*mskCor(i-1,j,bi,bj)
 #else
         KappaRU(i,j,k) = KappaRU(i,j,k) + _maskW(i,j,k,bi,bj) *
      &                   (.5 _d 0*(GGL90viscAr(i,j,k,bi,bj)
      &                            +GGL90viscAr(i-1,j,k,bi,bj))
-     &                    -viscAr)
+     &                    - viscArNr(k) )
 #endif
        ENDDO
       ENDDO
@@ -90,14 +90,14 @@ CEOP
      &       +      maskC(i-1,j-1,k,bi,bj) * mskCor(i-1,j-1,bi,bj)
      &       +      maskC(i+1,j  ,k,bi,bj) * mskCor(i+1,j  ,bi,bj)
      &       +      maskC(i+1,j-1,k,bi,bj) * mskCor(i+1,j-1,bi,bj))
-     &  ) - viscAr )
+     &  ) - viscArNr(k) )
      &   *maskC(i,j  ,k,bi,bj)*mskCor(i,j  ,bi,bj)
      &   *maskC(i,j-1,k,bi,bj)*mskCor(i,j-1,bi,bj)
 #else
         KappaRV(i,j,k) = KappaRV(i,j,k) + _maskS(i,j,k,bi,bj) *
      &                   (.5 _d 0*(GGL90viscAr(i,j,k,bi,bj)
      &                            +GGL90viscAr(i,j-1,k,bi,bj))
-     &                    -viscAr)
+     &                    - viscArNr(k) )
 #endif
        ENDDO
       ENDDO

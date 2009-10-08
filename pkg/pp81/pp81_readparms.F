@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_readparms.F,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_readparms.F,v 1.2 2009/10/08 20:08:20 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -37,10 +37,10 @@ CEOP
 
       NAMELIST /PP81_PARM01/
      &     PPnRi,
-     &     PPviscMin, 
-     &     PPdiffMin, 
-     &     PPviscMax, 
-     &     PPnu0, 
+     &     PPviscMin,
+     &     PPdiffMin,
+     &     PPviscMax,
+     &     PPnu0,
      &     PPalpha,
      &     PPdumpFreq,
      &     PPMixingMaps,
@@ -86,7 +86,7 @@ C Close the open data file
 C Everyone else must wait for the parameters to be loaded
       _BARRIER
 
-C Now set-up any remaining parameters that result from the input parameters 
+C Now set-up any remaining parameters that result from the input parameters
       IF ( PPviscMax .LE. 0. ) THEN
        WRITE(msgBuf,'(A)') 'PPviscMax must be greater than zero'
        CALL PRINT_ERROR( msgBuf , 1)
@@ -103,8 +103,11 @@ C Now set-up any remaining parameters that result from the input parameters
        STOP 'ABNORMAL END: S/R PP81_READPARMS'
       ENDIF
       IF ( RiLimit .EQ. UNSET_RL ) THEN
-       RiLimit=(((PPnu0+viscAr)/PPviscMax)**(1./REAL(PPnRi))-1.)
-     &      /PPalpha
+       RiLimit = PPnRi
+       RiLimit = (
+     &             ((PPnu0+viscArNr(1))/PPviscMax)**(1. _d 0/RiLimit)
+     &            -1. _d 0
+     &           )/PPalpha
       ENDIF
 #endif /* ALLOW_PP81 */
 

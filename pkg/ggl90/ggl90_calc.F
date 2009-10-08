@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.11 2009/01/30 02:23:56 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.12 2009/10/08 20:07:18 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -11,29 +11,27 @@ C !INTERFACE: ======================================================
      I     bi, bj, myTime, myThid )
 
 C !DESCRIPTION: \bv
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE GGL90_CALC                                    |
 C     | o Compute all GGL90 fields defined in GGL90.h            |
-C     |==========================================================|
+C     *==========================================================*
 C     | Equation numbers refer to                                |
 C     | Gaspar et al. (1990), JGR 95 (C9), pp 16,179             |
 C     | Some parts of the implementation follow Blanke and       |
 C     | Delecuse (1993), JPO, and OPA code, in particular the    |
 C     | computation of the                                       |
 C     | mixing length = max(min(lk,depth),lkmin)                 |
-C     \==========================================================/
-      IMPLICIT NONE
-C
-C--------------------------------------------------------------------
+C     *==========================================================*
 
 C global parameters updated by ggl90_calc
-C     GGL90TKE     - sub-grid turbulent kinetic energy           (m^2/s^2)
-C     GGL90viscAz  - GGL90 eddy viscosity coefficient              (m^2/s)
-C     GGL90diffKzT - GGL90 diffusion coefficient for temperature   (m^2/s)
+C     GGL90TKE     :: sub-grid turbulent kinetic energy          (m^2/s^2)
+C     GGL90viscAz  :: GGL90 eddy viscosity coefficient             (m^2/s)
+C     GGL90diffKzT :: GGL90 diffusion coefficient for temperature  (m^2/s)
 C
 C \ev
 
 C !USES: ============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -43,18 +41,19 @@ C !USES: ============================================================
 #include "GRID.h"
 
 C !INPUT PARAMETERS: ===================================================
-c Routine arguments
-c     bi, bj - array indices on which to apply calculations
-c     myTime - Current time in simulation
-
+C Routine arguments
+C     bi, bj :: array indices on which to apply calculations
+C     myTime :: Current time in simulation
+C     myThid :: My Thread Id number
       INTEGER bi, bj
-      INTEGER myThid
       _RL     myTime
+      INTEGER myThid
+CEOP
 
 #ifdef ALLOW_GGL90
 
 C !LOCAL VARIABLES: ====================================================
-c Local constants
+C Local constants
 C     iMin, iMax, jMin, jMax, I, J - array computation indices
 C     K, Kp1, km1, kSurf, kBottom  - vertical loop indices
 C     ab15, ab05       - weights for implicit timestepping
@@ -113,7 +112,6 @@ C     dfx, dfy - diffusive flux across lateral faces
       p8=0.125 _d 0
       p16=0.0625 _d 0
 #endif
-CEOP
       iMin = 2-OLx
       iMax = sNx+OLx-1
       jMin = 2-OLy
@@ -121,7 +119,7 @@ CEOP
 
 C     set separate time step (should be deltaTtracer)
       deltaTggl90 = dTtracerLev(1)
-C
+
       kSurf = 1
 C     implicit timestepping weights for dissipation
       ab15 =  1.5 _d 0
@@ -234,8 +232,8 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
          DO I=iMin,iMax
           GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K),
      &        GGL90mixingLength(I,J,K+1)+drF(k))
-         ENDDO 
-        ENDDO  
+         ENDDO
+        ENDDO
        ENDDO
       ELSE
        STOP 'GGL90_CALC: Wrong mxlMaxFlag (mixing lenght limit)'
@@ -264,7 +262,7 @@ C     vertical shear term (dU/dz)^2+(dV/dz)^2
      &                 -( vVel(I,J,K  ,bi,bj)+vVel(I,J+1,K  ,bi,bj)) )
      &        *recip_drC(K)
          verticalShear = tempU*tempU + tempV*tempV
-         RiNumber   = MAX(Nsquare(i,j,k),0. _d 0)/(verticalShear+GGL90eps)
+         RiNumber = MAX(Nsquare(i,j,k),0. _d 0)/(verticalShear+GGL90eps)
 C     compute Prandtl number (always greater than 0)
          prTemp = 1. _d 0
          IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
@@ -275,7 +273,7 @@ C     viscosity and diffusivity
          KappaH = KappaM/TKEPrandtlNumber(I,J,K)
 
 C     Set a minium (= background) and maximum value
-         KappaM = MAX(KappaM,viscAr)
+         KappaM = MAX(KappaM,viscArNr(k))
          KappaH = MAX(KappaH,diffKrNrT(k))
          KappaM = MIN(KappaM,GGL90viscMax)
          KappaH = MIN(KappaH,GGL90diffMax)
@@ -505,4 +503,3 @@ C     ===============================
 
       RETURN
       END
-
