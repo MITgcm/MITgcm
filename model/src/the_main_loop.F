@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.101 2009/08/07 04:16:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.102 2009/10/08 16:48:33 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -318,11 +318,13 @@ CADJ INIT comlev1_bibj_k_gad_pass = COMMON,
 CADJ &    nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass*maxpass
 #   endif /* DISABLE_MULTIDIM_ADVECTION */
 c--
+#   ifdef ALLOW_MOM_COMMON
 #   ifndef AUTODIFF_DISABLE_LEITH
 CADJ INIT comlev1_mom_ijk_loop
 CADJ &     = COMMON,nchklev_1*
 CADJ &       (snx+2*olx)*nsx*(sny+2*oly)*nsy*nr*nthreads_chkpt
 #   endif /* AUTODIFF_DISABLE_LEITH */
+#   endif /* ALLOW_MOM_COMMON */
 c--
 #   if (defined (ALLOW_EXF) && defined (ALLOW_BULKFORMULAE))
 CADJ INIT comlev1_exf_1
