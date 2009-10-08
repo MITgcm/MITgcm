@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.74 2009/09/16 21:36:11 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.75 2009/10/08 19:44:23 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -240,6 +240,16 @@ cph#endif
       ENDIF
 # endif
 #endif /* ALLOW_PTRACERS */
+
+#ifdef ALLOW_OFFLINE
+# ifndef ALLOW_AUTODIFF_TAMC
+      IF ( useOFFLINE ) THEN
+# endif
+        CALL OFFLINE_INIT_VARIA( myThid )
+# ifndef ALLOW_AUTODIFF_TAMC
+      ENDIF
+# endif
+#endif /* ALLOW_RBCS */
 
 #ifdef ALLOW_GCHEM
 # ifndef ALLOW_AUTODIFF_TAMC

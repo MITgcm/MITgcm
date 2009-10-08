@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.102 2009/10/08 16:48:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.103 2009/10/08 19:44:23 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -113,6 +113,9 @@ c They provide the fields to be stored.
 #  endif
 #  ifdef ALLOW_RBCS
 #   include "RBCS.h"
+#  endif
+#  ifdef ALLOW_OFFLINE
+#   include "OFFLINE.h"
 #  endif
 #  ifdef ALLOW_DIVIDED_ADJOINT_MPI
 #   include "mpif.h"
