@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1168 2009/10/04 23:02:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1169 2009/10/08 08:20:19 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg seaice/autodiff:
+ left-over from removing the 3-time-level fields: 
+ - small rearrangement of common blocks (SEAICE.h)
+ - fix field declaration in order to get meaningful output in 
+   adseaice.*.nc (adcommon.h) 
 o pkg obcs:
  - go through NH code only if nonHydrostatic=T
  - fix restart for Orlanski (Hydrostatic; still to fix NH+Orlanski restart)
