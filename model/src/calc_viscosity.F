@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_viscosity.F,v 1.8 2008/10/20 23:51:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_viscosity.F,v 1.9 2009/10/08 20:03:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,8 +51,8 @@ CEOP
 
        DO j = 1-Oly, sNy+Oly
         DO i = 1-Olx, sNx+Olx
-         KappaRU(i,j,k) = viscAr
-         KappaRV(i,j,k) = viscAr
+         KappaRU(i,j,k) = viscArNr(k)
+         KappaRV(i,j,k) = viscArNr(k)
         ENDDO
        ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.117 2009/08/02 19:54:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.118 2009/10/08 20:03:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -143,8 +143,9 @@ C     bi,bj  :: Tile loop counters.
      & 'no_slip_sides =', '  /* Viscous BCs: No-slip sides */')
       CALL WRITE_0D_RL( sideDragFactor, INDEX_NONE, 'sideDragFactor =',
      & ' /* side-drag scaling factor (non-dim) */')
-      CALL WRITE_0D_RL( viscAr,  INDEX_NONE,'viscAr =',
-     &'   /* Vertical eddy viscosity ('//rUnits//'^2/s ) */')
+      CALL WRITE_1D_RL( viscArNr, Nr, INDEX_K, 'viscArNr =',
+     &  ' /* vertical profile of vertical viscosity ('
+     &  //rUnits//'^2/s )*/')
       CALL WRITE_0D_L( no_slip_bottom, INDEX_NONE,
      & 'no_slip_bottom =', '  /* Viscous BCs: No-slip bottom */')
       CALL WRITE_0D_RL( bottomDragLinear, INDEX_NONE,

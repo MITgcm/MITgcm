@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.228 2009/09/16 21:36:53 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.229 2009/10/08 20:02:30 jmc Exp $
 C $Name:  $
 C
 
@@ -513,8 +513,8 @@ C                   ( Southern edge f for beta plane )
 C     beta       :: df/dy ( s^-1.m^-1 )
 C     omega      :: Angular velocity ( rad/s )
 C     rotationPeriod :: Rotation period (s) (= 2.pi/omega)
-C     viscAr     :: Eddy viscosity coeff. for mixing of
-C                   momentum vertically ( units of r^2/s )
+C     viscArNr   :: vertical profile of Eddy viscosity coeff.
+C                   for vertical mixing of momentum ( units of r^2/s )
 C     viscAh     :: Eddy viscosity coeff. for mixing of
 C                   momentum laterally ( m^2/s )
 C     viscAhW    :: Eddy viscosity coeff. for mixing of vertical
@@ -676,7 +676,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & viscA4, viscA4W, viscA4Max,
      & viscA4Grid, viscA4GridMax, viscA4GridMin,
      & viscAhReMax, viscA4ReMax,
-     & viscC4leith, viscC4leithD, viscAr,
+     & viscC4leith, viscC4leithD, viscArNr,
      & diffKhT, diffK4T, diffKrNrT,
      & diffKhS, diffK4S, diffKrNrS,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
@@ -733,7 +733,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL hFacInf
       _RL hFacSup
       _RL beta
-      _RL viscAr
+      _RL viscArNr(Nr)
       _RL viscAh
       _RL viscAhW
       _RL viscAhD
