@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.50 2009/09/30 15:46:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.51 2009/10/08 08:17:01 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -111,10 +111,12 @@ C
       _RL ZMAX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ZMIN       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      COMMON/SEAICE_TRANS/HEFF,HEFFNM1,HSNOW
+      COMMON/SEAICE_TRANS/HEFF,HSNOW
       _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL HEFFNM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      COMMON/SEAICE_TRANS_AUX/HEFFNM1
+      _RL HEFFNM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef SEAICE_SALINITY
       COMMON/SEAICE_SALINITY_R/HSALT
