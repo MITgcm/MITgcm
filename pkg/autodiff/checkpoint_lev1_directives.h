@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.40 2009/10/08 09:42:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.41 2009/10/08 19:39:41 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -159,6 +159,10 @@ CADJ STORE uice,vice       = comlev1, key=ikey_dynamics, kind=isbyte
 #ifdef ALLOW_RBCS
 # include "rbcs_ad_check_lev1_dir.h"
 #endif /* ALLOW_RBCS */
+
+#ifdef ALLOW_OFFLINE
+# include "offline_ad_check_lev1_dir.h"
+#endif /* ALLOW_OFFLINE */
 
 #ifdef ALLOW_GCHEM
 # include "gchem_ad_check_lev1_dir.h"
