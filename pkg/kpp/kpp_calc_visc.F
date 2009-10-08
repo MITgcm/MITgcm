@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_visc.F,v 1.3 2007/05/03 21:31:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_visc.F,v 1.4 2009/10/08 20:06:22 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
 
-      SUBROUTINE KPP_CALC_VISC( 
+      SUBROUTINE KPP_CALC_VISC(
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      U        KappaRU,KappaRV,
      I        myThid)
 
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE KPP_CALC_VISC                                 |
 C     | o Add contrubution to net viscosity from KPP mixing      |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -40,7 +40,7 @@ C     I, J, K - Loop counters
       DO j=jMin,jMax
        DO i=iMin,iMax
         KappaRU(i,j,k) = max ( KappaRU(i,j,k),
-     &         KappaRU(i,j,k) - viscAr + _maskW(i,j,k,bi,bj) *
+     &         KappaRU(i,j,k) - viscArNr(1) + _maskW(i,j,k,bi,bj) *
      &         0.5*(KPPviscAz(i,j,k,bi,bj)+KPPviscAz(i-1,j,k,bi,bj)) )
        ENDDO
       ENDDO
@@ -48,7 +48,7 @@ C     I, J, K - Loop counters
       DO j=jMin,jMax
        DO i=iMin,iMax
         KappaRV(i,j,k) = max ( KappaRV(i,j,k),
-     &         KappaRV(i,j,k) - viscAr + _maskS(i,j,k,bi,bj) *
+     &         KappaRV(i,j,k) - viscArNr(1) + _maskS(i,j,k,bi,bj) *
      &         0.5*(KPPviscAz(i,j,k,bi,bj)+KPPviscAz(i,j-1,k,bi,bj)) )
        ENDDO
       ENDDO

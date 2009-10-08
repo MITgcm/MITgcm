@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.51 2009/09/18 11:40:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.52 2009/10/08 20:06:22 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -38,44 +38,44 @@ c       is enhanced in places of static instability (local richardson
 c       number < 0).
 c       Additionally, mixing can be enhanced by adding contribution due
 c       to shear instability which is a function of the local richardson
-c       number 
+c       number
 c     - double diffusivity:
 c       interior mixing can be enhanced by double diffusion due to salt
 c       fingering and diffusive convection (ifdef "kmixdd").
 c     - kpp scheme in the boundary layer:
-c 
+c
 c       a.boundary layer depth:
-c         at every gridpoint the depth of the oceanic boundary layer 
+c         at every gridpoint the depth of the oceanic boundary layer
 c         ("hbl") gets computed by evaluating bulk richardson numbers.
 c       b.boundary layer mixing:
-c         within the boundary layer, above hbl, vertical mixing is 
+c         within the boundary layer, above hbl, vertical mixing is
 c         determined by turbulent surface fluxes, and interior mixing at
 c         the lower boundary, i.e. at hbl.
-c     
+c
 c     this subroutine provides the interface between the MITGCM and
-c     the routine "kppmix", where boundary layer depth, vertical 
+c     the routine "kppmix", where boundary layer depth, vertical
 c     viscosity, vertical diffusivity, and counter gradient term (ghat)
 c     are computed slabwise.
 c     note: subroutine "kppmix" uses m-k-s units.
 c
 c     time level:
-c     input tracer and velocity profiles are evaluated at time level 
+c     input tracer and velocity profiles are evaluated at time level
 c     tau, surface fluxes come from tau or tau-1.
 c
 c     grid option:
 c     in this "1-grid" implementation, diffusivity and viscosity
 c     profiles are computed on the "t-grid" (by using velocity shear
 c     profiles averaged from the "u,v-grid" onto the "t-grid"; note, that
-c     the averaging includes zero values on coastal and seafloor grid 
-c     points).  viscosity on the "u,v-grid" is computed by averaging the 
+c     the averaging includes zero values on coastal and seafloor grid
+c     points).  viscosity on the "u,v-grid" is computed by averaging the
 c     "t-grid" viscosity values onto the "u,v-grid".
 c
 c     vertical grid:
-c     mixing coefficients get evaluated at the bottom of the lowest 
-c     layer, i.e., at depth zw(Nr).  these values are only useful when 
+c     mixing coefficients get evaluated at the bottom of the lowest
+c     layer, i.e., at depth zw(Nr).  these values are only useful when
 c     the model ocean domain does not include the entire ocean down to
 c     the seafloor ("upperocean" setup) and allows flux through the
-c     bottom of the domain.  for full-depth runs, these mixing 
+c     bottom of the domain.  for full-depth runs, these mixing
 c     coefficients are being zeroed out before leaving this subroutine.
 c
 c-------------------------------------------------------------------------
@@ -353,18 +353,18 @@ CADJ store TTALPHA, SSBETA    = comlev1_kpp, key = ikppkey
 cph)
 
 CML#ifdef ALLOW_SHELFICE
-CMLC     For the pbl parameterisation to work underneath the ice shelves 
+CMLC     For the pbl parameterisation to work underneath the ice shelves
 CMLC     it needs to know the surface (ice-ocean) fluxes. However, masking
-CMLC     and indexing problems make this part of the code not work 
+CMLC     and indexing problems make this part of the code not work
 CMLC     underneath the ice shelves and the following lines are only here
 CMLC     to remind me that this still needs to be sorted out.
 CML      shelfIceFac = 0. _d 0
 CML      IF ( useShelfIce ) selfIceFac = 1. _d 0
 CML      DO j = jmin, jmax
 CML       DO i = imin, imax
-CML        surfForcT = surfaceForcingT(i,j,bi,bj) 
+CML        surfForcT = surfaceForcingT(i,j,bi,bj)
 CML     &       + shelficeForcingT(i,j,bi,bj) * shelfIceFac
-CML        surfForcS = surfaceForcingS(i,j,bi,bj) 
+CML        surfForcS = surfaceForcingS(i,j,bi,bj)
 CML     &       + shelficeForcingS(i,j,bi,bj) * shelfIceFac
 CML       ENDDO
 CML      ENDDO
@@ -387,7 +387,7 @@ c     Get velocity shear squared, averaged from "u,v-grid"
 c     onto "t-grid" (in (m/s)**2):
 c     dVsq(k)=(Uref-U(k))**2+(Vref-V(k))**2      at grid levels
 c     shsq(k)=(U(k)-U(k+1))**2+(V(k)-V(k+1))**2  at interfaces
-c     
+c
 c     note: Vref can depend on the surface fluxes that is why we compute
 c     dVsq in the subroutine that does the surface related stuff
 c     (admittedly this is a bit messy)
@@ -396,12 +396,12 @@ c------------------------------------------------------------------------
       CALL KPP_FORCING_SURF(
      I     work2, surfaceForcingU, surfaceForcingV,
      I     surfaceForcingT, surfaceForcingS, surfaceForcingTice,
-     I     Qsw, 
+     I     Qsw,
 #ifdef ALLOW_SALT_PLUME
      I     saltPlumeFlux,
 #endif /* ALLOW_SALT_PLUME */
      I     ttalpha, ssbeta,
-     O     ustar, bo, bosol, 
+     O     ustar, bo, bosol,
 #ifdef ALLOW_SALT_PLUME
      O     boplume,
 #endif /* ALLOW_SALT_PLUME */
@@ -486,9 +486,9 @@ c     matching diffusivities at bottom of KPP PBL
      I        myThid)
 #ifndef EXCLUDE_KPP_DOUBLEDIFF
       IF ( KPPuseDoubleDiff ) THEN
-C     Add the contribution of double diffusive effects (salt fingering 
+C     Add the contribution of double diffusive effects (salt fingering
 C     and diffusive convection) here. It would be more logical to add
-C     them right after Ri_iwmix within kppmix, but ttalpha, ssbeta, theta 
+C     them right after Ri_iwmix within kppmix, but ttalpha, ssbeta, theta
 C     and salt are not passed to kppmix and are thus not available there.
        CALL KPP_DOUBLEDIFF(
      I      TTALPHA, SSBETA,
@@ -623,6 +623,8 @@ C     the bottom of the mixing layer.
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       SUBROUTINE KPP_CALC_DUMMY(
      I     bi, bj, myTime, myIter, myThid )
 C     *==========================================================*
@@ -668,7 +670,7 @@ c Local constants
 #endif /* ALLOW_SALT_PLUME */
             DO k = 1,Nr
                KPPghat   (i,j,k,bi,bj) = 0.0
-               KPPviscAz (i,j,k,bi,bj) = viscAr
+               KPPviscAz (i,j,k,bi,bj) = viscArNr(1)
             ENDDO
          ENDDO
       ENDDO

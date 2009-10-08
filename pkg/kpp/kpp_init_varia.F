@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_init_varia.F,v 1.1 2009/06/17 14:32:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_init_varia.F,v 1.2 2009/10/08 20:06:22 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -71,7 +71,7 @@ C-----------------------------------------------------------------------
                DO j = 1-OLy, sNy+OLy
                   DO i = 1-OLx, sNx+OLx
                      KPPghat       (i,j,k,bi,bj) = 0.
-                     KPPviscAz  (i,j,k,bi,bj) = viscAr
+                     KPPviscAz  (i,j,k,bi,bj) = viscArNr(1)
                      KPPdiffKzS (i,j,k,bi,bj) = 0.
                      KPPdiffKzT (i,j,k,bi,bj) = 0.
                   ENDDO

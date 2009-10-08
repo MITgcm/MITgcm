@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.45 2009/09/18 11:40:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.46 2009/10/08 20:06:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -195,7 +195,7 @@ c-----------------------------------------------------------------------
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
      I     , myTime, myIter, myThid )
 
-CADJ STORE hbl,bfsfc,stable,casea,kbl = comlev1_kpp, 
+CADJ STORE hbl,bfsfc,stable,casea,kbl = comlev1_kpp,
 CADJ &     key=ikppkey, kind=isbyte
 
 c-----------------------------------------------------------------------
@@ -207,9 +207,9 @@ c-----------------------------------------------------------------------
      O     , dkm1, blmc, ghat, sigma, ikppkey
      I     , myThid )
 cph(
-CADJ STORE dkm1,blmc,ghat = comlev1_kpp, 
+CADJ STORE dkm1,blmc,ghat = comlev1_kpp,
 CADJ &     key=ikppkey, kind=isbyte
-CADJ STORE hbl, kbl, diffus, casea = comlev1_kpp, 
+CADJ STORE hbl, kbl, diffus, casea = comlev1_kpp,
 CADJ &     key=ikppkey, kind=isbyte
 cph)
 
@@ -240,14 +240,14 @@ c-----------------------------------------------------------------------
 #ifdef ALLOW_SHELFICE
 C     when there is shelfice on top (msk(i)=0), reset the boundary layer
 C     mixing coefficients blmc to pure Ri-number based mixing
-               blmc(i,k,1) = max ( blmc(i,k,1)*msk(i), 
+               blmc(i,k,1) = max ( blmc(i,k,1)*msk(i),
      &              diffus(i,k,1) )
-               blmc(i,k,2) = max ( blmc(i,k,2)*msk(i), 
+               blmc(i,k,2) = max ( blmc(i,k,2)*msk(i),
      &              diffus(i,k,2) )
-               blmc(i,k,3) = max ( blmc(i,k,3)*msk(i), 
+               blmc(i,k,3) = max ( blmc(i,k,3)*msk(i),
      &              diffus(i,k,3) )
 #endif /* not ALLOW_SHELFICE */
-               diffus(i,k,1) = max ( blmc(i,k,1), viscAr  )
+               diffus(i,k,1) = max ( blmc(i,k,1), viscArNr(1) )
                diffus(i,k,2) = max ( blmc(i,k,2), diffusKzS(i,Nr) )
                diffus(i,k,3) = max ( blmc(i,k,3), diffusKzT(i,Nr) )
             else
@@ -258,7 +258,7 @@ C     mixing coefficients blmc to pure Ri-number based mixing
 
 #endif /* ALLOW_KPP */
 
-      return 
+      return
       end
 
 c*************************************************************************
@@ -294,7 +294,7 @@ c     The water column and the surface forcing are diagnosed for
 c     stable/ustable forcing conditions, and where hbl is relative
 c     to grid points (caseA), so that conditional branches can be
 c     avoided in later subroutines.
-c 
+c
       IMPLICIT NONE
 
 #include "SIZE.h"
@@ -404,7 +404,7 @@ c     initialize hbl and kbl to bottomed out values
 
       do kl = 2, Nr
 
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
          kkppkey = (ikppkey-1)*Nr + kl
 #endif
 
@@ -415,7 +415,7 @@ c     compute bfsfc = sw fraction at hbf * zgrid
          end do
 CADJ store worka = comlev1_kpp_k, key = kkppkey, kind=isbyte
          call SWFRAC(
-     I       imt, hbf, 
+     I       imt, hbf,
      U       worka,
      I       myTime, myIter, myThid )
 CADJ store worka = comlev1_kpp_k, key = kkppkey, kind=isbyte
@@ -461,7 +461,7 @@ c     compute bfsfc = plume fraction at hbf * zgrid
 c-----------------------------------------------------------------------
 c     compute velocity scales at sigma, for hbl= caseA = -zgrid(kl)
 c-----------------------------------------------------------------------
- 
+
          call wscale (
      I        sigma, casea, ustar, bfsfc,
      O        wm, ws, myThid )
@@ -495,11 +495,11 @@ c     rg: assignment to double precision variable to avoid overflow
 c     ph: test for zero nominator
 c
 
-            tempVar1  = dvsq(i,kl) + vtsq           
+            tempVar1  = dvsq(i,kl) + vtsq
             tempVar2 = max(tempVar1, phepsi)
             Rib(i,kl) = Ritop(i,kl) / tempVar2
 #ifdef ALLOW_DIAGNOSTICS
-            KPPRi(i,kl) = Rib(i,kl) 
+            KPPRi(i,kl) = Rib(i,kl)
 #endif
 
          end do
@@ -512,9 +512,9 @@ c
 
 cph(
 cph  without this store, there is a recomputation error for
-cph  rib in adbldepth (probably partial recomputation problem)    
+cph  rib in adbldepth (probably partial recomputation problem)
 CADJ store Rib = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &   , key=ikppkey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr /)
 cph)
 
@@ -525,7 +525,7 @@ cph)
       end do
 
 CADJ store kbl = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &   , key=ikppkey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
       do i = 1, imt
@@ -539,7 +539,7 @@ c     linearly interpolate to find hbl where Rib = Ricr
       end do
 
 CADJ store hbl = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &   , key=ikppkey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c-----------------------------------------------------------------------
@@ -550,14 +550,14 @@ c-----------------------------------------------------------------------
          worka(i) = hbl(i)
       end do
 CADJ store worka = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &   , key=ikppkey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       call SWFRAC(
-     I       imt, minusone, 
+     I       imt, minusone,
      U       worka,
      I       myTime, myIter, myThid )
 CADJ store worka = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &   , key=ikppkey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
       do i = 1, imt
@@ -579,7 +579,7 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 CADJ store bfsfc = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &   , key=ikppkey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c--   ensure bfsfc is never 0
@@ -591,7 +591,7 @@ c--   ensure bfsfc is never 0
 cph(
 cph  added stable to store list to avoid extensive recomp.
 CADJ store bfsfc, stable = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &   , key=ikppkey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 cph)
 
@@ -614,7 +614,7 @@ c-----------------------------------------------------------------------
       ENDIF
 
 CADJ store hbl = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &   , key=ikppkey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
       do i = 1, imt
@@ -623,7 +623,7 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       end do
 
 CADJ store hbl = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &   , key=ikppkey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c-----------------------------------------------------------------------
@@ -646,16 +646,16 @@ c-----------------------------------------------------------------------
          worka(i) = hbl(i)
       end do
 CADJ store worka = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &   , key=ikppkey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       call SWFRAC(
-     I     imt, minusone, 
+     I     imt, minusone,
      U     worka,
      I     myTime, myIter, myThid )
 CADJ store worka = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &   , key=ikppkey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
- 
+
       do i = 1, imt
          bfsfc(i) = bo(i) + bosol(i) * (1. - worka(i))
       end do
@@ -675,7 +675,7 @@ CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
 CADJ store bfsfc = comlev1_kpp
-CADJ &   , key=ikppkey, kind=isbyte, 
+CADJ &   , key=ikppkey, kind=isbyte,
 CADJ &     shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c--   ensures bfsfc is never 0
@@ -702,7 +702,7 @@ c*************************************************************************
 
       subroutine wscale (
      I     sigma, hbl, ustar, bfsfc,
-     O     wm, ws, 
+     O     wm, ws,
      I     myThid )
 
 c     compute turbulent velocity scales.
@@ -712,7 +712,7 @@ c
 c     note: the lookup table is only used for unstable conditions
 c     (zehat.le.0), in the stable domain wm (=ws) gets computed
 c     directly.
-c 
+c
       IMPLICIT NONE
 
 #include "SIZE.h"
@@ -730,14 +730,14 @@ c myThid  : thread number for this instance of the routine
       _RL hbl  (imt)
       _RL ustar(imt)
       _RL bfsfc(imt)
- 
+
 c  output
 c--------
 c wm, ws  : turbulent velocity scales at sigma
       _RL wm(imt), ws(imt)
 
 #ifdef ALLOW_KPP
- 
+
 c local
 c------
 c zehat   : = zeta *  ustar**3
@@ -789,16 +789,16 @@ c-----------------------------------------------------------------------
             ws(i) = wm(i)
 
          endif
- 
+
       end do
 
 #endif /* ALLOW_KPP */
- 
-      return 
+
+      return
       end
 
 c*************************************************************************
- 
+
       subroutine Ri_iwmix (
      I       kmtj, shsq, dbloc, dblocSm,
      I       diffusKzS, diffusKzT,
@@ -837,7 +837,7 @@ c     myThid :: My Thread Id. number
       _RL diffusKzT(imt,Nr)
       integer ikppkey
       integer myThid
- 
+
 c output
 c     diffus(imt,0:Nrp1,1)  vertical viscosivity coefficient        (m^2/s)
 c     diffus(imt,0:Nrp1,2)  vertical scalar diffusivity             (m^2/s)
@@ -881,7 +881,7 @@ C     break data flow dependence on diffus
          enddo
       enddo
 #endif
-            
+
 
       do ki = 1, Nr
          do i = 1, imt
@@ -919,48 +919,48 @@ c                           after smoothing loop
 
       do ki = 1, Nr
          do i = 1, imt
- 
+
 c  evaluate f of Brunt-Vaisala squared for convection, store in fcon
 
             Rig   = max ( diffus(i,ki,2) , BVSQcon )
             ratio = min ( (BVSQcon - Rig) / BVSQcon, c1 )
             fcon  = c1 - ratio * ratio
             fcon  = fcon * fcon * fcon
- 
+
 c  evaluate f of smooth Ri for shear instability, store in fRi
 
             Rig  = max ( diffus(i,ki,1), c0 )
             ratio = min ( Rig / Riinfty , c1 )
             fRi   = c1 - ratio * ratio
             fRi   = fRi * fRi * fRi
- 
+
 c ----------------------------------------------------------------------
 c            evaluate diffusivities and viscosity
 c    mixing due to internal waves, and shear and static instability
 
             kp1 = MIN(ki+1,Nr)
-#ifndef EXCLUDE_KPP_SHEAR_MIX 
+#ifndef EXCLUDE_KPP_SHEAR_MIX
             if ( .NOT. inAdMode ) then
-               diffus(i,ki,1) = viscAr + fcon * difmcon + fRi * difm0
+               diffus(i,ki,1) = viscArNr(1) + fcon*difmcon + fRi*difm0
                diffus(i,ki,2) = diffusKzS(i,kp1)+fcon*difscon+fRi*difs0
                diffus(i,ki,3) = diffusKzT(i,kp1)+fcon*diftcon+fRi*dift0
             else
-               diffus(i,ki,1) = viscAr
+               diffus(i,ki,1) = viscArnr(1)
                diffus(i,ki,2) = diffusKzS(i,kp1)
                diffus(i,ki,3) = diffusKzT(i,kp1)
             endif
 #else
-            diffus(i,ki,1) = viscAr
+            diffus(i,ki,1) = viscArNr(1)
             diffus(i,ki,2) = diffusKzS(i,kp1)
             diffus(i,ki,3) = diffusKzT(i,kp1)
 #endif
 
          end do
       end do
- 
+
 c ------------------------------------------------------------------------
 c         set surface values to 0.0
- 
+
       do i = 1, imt
          diffus(i,0,1) = c0
          diffus(i,0,2) = c0
@@ -968,9 +968,9 @@ c         set surface values to 0.0
       end do
 
 #endif /* ALLOW_KPP */
- 
-      return 
-      end 
+
+      return
+      end
 
 c*************************************************************************
 
@@ -991,7 +991,7 @@ c     penetrative convection.
 #include "SIZE.h"
 #include "KPP_PARAMS.h"
 
-c input/output 
+c input/output
 c-------------
 c v     : 2-D array to be smoothed in Nrp1 direction
 c myThid: thread number for this instance of the routine
@@ -1199,7 +1199,7 @@ c  local
 c     gat1*(imt)                 shape function at sigma = 1
 c     dat1*(imt)                 derivative of shape function at sigma = 1
 c     ws(imt), wm(imt)           turbulent velocity scales             (m/s)
-      _RL gat1m(imt), gat1s(imt), gat1t(imt) 
+      _RL gat1m(imt), gat1s(imt), gat1t(imt)
       _RL dat1m(imt), dat1s(imt), dat1t(imt)
       _RL ws(imt), wm(imt)
       integer i, kn, ki
@@ -1264,17 +1264,17 @@ c-----------------------------------------------------------------------
          difsh  = diffus(i,kn,2) + difsp * delhat
          difth  = diffus(i,kn,3) + diftp * delhat
 
-         f1 = stable(i) * conc1 * bfsfc(i) / 
+         f1 = stable(i) * conc1 * bfsfc(i) /
      &        max(ustar(i)**4,phepsi)
          gat1m(i) = visch / hbl(i) / wm(i)
          dat1m(i) = -viscp / wm(i) + f1 * visch
- 
+
          gat1s(i) = difsh  / hbl(i) / ws(i)
-         dat1s(i) = -difsp / ws(i) + f1 * difsh 
- 
+         dat1s(i) = -difsp / ws(i) + f1 * difsh
+
          gat1t(i) = difth /  hbl(i) / ws(i)
-         dat1t(i) = -diftp / ws(i) + f1 * difth 
- 
+         dat1t(i) = -diftp / ws(i) + f1 * difth
+
       end do
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
 CADJ STORE gat1m = comlev1_kpp, key=ikppkey, kind=isbyte
@@ -1287,7 +1287,7 @@ CADJ STORE dat1t = comlev1_kpp, key=ikppkey, kind=isbyte
       do i = 1, imt
          dat1m(i) = min(dat1m(i),p0)
          dat1s(i) = min(dat1s(i),p0)
-         dat1t(i) = min(dat1t(i),p0) 
+         dat1t(i) = min(dat1t(i),p0)
       end do
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
 CADJ STORE dat1m = comlev1_kpp, key=ikppkey, kind=isbyte
@@ -1297,7 +1297,7 @@ CADJ STORE dat1t = comlev1_kpp, key=ikppkey, kind=isbyte
 
       do ki = 1, Nr
 
-#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_AUTODIFF_TAMC
          kkppkey = (ikppkey-1)*Nr + ki
 #endif
 
@@ -1348,7 +1348,7 @@ c-----------------------------------------------------------------------
 
             tempVar = ws(i) * hbl(i)
             ghat(i,ki) = (1.-stable(i)) * cg / max(phepsi,tempVar)
- 
+
          end do
       end do
 
@@ -1358,7 +1358,7 @@ c-----------------------------------------------------------------------
 
       do i = 1, imt
          sig      = -zgrid(kbl(i)-1) / hbl(i)
-         sigma(i) = stable(i) * sig 
+         sigma(i) = stable(i) * sig
      &            + (1. - stable(i)) * min(sig,epsilon)
       end do
 
@@ -1388,12 +1388,12 @@ CADJ STORE ws = comlev1_kpp, key=ikppkey, kind=isbyte
 
 #endif /* ALLOW_KPP */
 
-      return 
-      end 
+      return
+      end
 
 c*************************************************************************
 
-      subroutine enhance ( 
+      subroutine enhance (
      I       dkm1, hbl, kbl, diffus, casea
      U     , ghat
      O     , blmc
@@ -1454,8 +1454,8 @@ c     fraction hbl lies beteen zgrid neighbors
 
 #endif /* ALLOW_KPP */
 
-      return 
-      end 
+      return
+      end
 
 c*************************************************************************
 
@@ -1546,7 +1546,7 @@ CADJ &     key=kkppkey, kind=isbyte
      O     WORK1,
      I     1, bi, bj, myThid )
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
-CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k, 
+CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k,
 CADJ &     key=kkppkey, kind=isbyte
 CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k,
 CADJ &     key=kkppkey, kind=isbyte
@@ -1668,13 +1668,13 @@ c*************************************************************************
 
       SUBROUTINE KPP_DOUBLEDIFF (
      I     TTALPHA, SSBETA,
-     U     kappaRT, 
+     U     kappaRT,
      U     kappaRS,
      I     ikppkey, imin, imax, jmin, jmax, bi, bj, myThid )
 c
 c-----------------------------------------------------------------------
-c     "KPP_DOUBLEDIFF" adds the double diffusive contributions 
-C     as Rrho-dependent parameterizations to kappaRT and kappaRS 
+c     "KPP_DOUBLEDIFF" adds the double diffusive contributions
+C     as Rrho-dependent parameterizations to kappaRT and kappaRS
 c
 c     input:
 c     bi, bj  = array indices on which to apply calculations
@@ -1689,7 +1689,7 @@ c               d(rho) / d(salinity)                               (kg/m^3/PSU)
 c     output: updated
 c     kappaRT/S :: background diffusivities for temperature and salinity
 c
-c     written  by: martin losch,   sept. 15, 2009 
+c     written  by: martin losch,   sept. 15, 2009
 c
 
 c-----------------------------------------------------------------------
@@ -1757,9 +1757,9 @@ CML#endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
        Km1 = MAX(K-1,1)
        DO J = 1-Oly, sNy+Oly
         DO I = 1-Olx, sNx+Olx
-         alphaDT(I,J) = ( theta(I,J,Km1,bi,bj)-theta(I,J,K,bi,bj) ) 
+         alphaDT(I,J) = ( theta(I,J,Km1,bi,bj)-theta(I,J,K,bi,bj) )
      &        * 0.5 _d 0 * ABS( TTALPHA(I,J,Km1) + TTALPHA(I,J,K) )
-         betaDS(I,J)  = ( salt(I,J,Km1,bi,bj)-salt(I,J,K,bi,bj) ) 
+         betaDS(I,J)  = ( salt(I,J,Km1,bi,bj)-salt(I,J,K,bi,bj) )
      &        * 0.5 _d 0 * ( SSBETA(I,J,Km1) + SSBETA(I,J,K) )
          nuddt(I,J) = 0. _d 0
          nudds(I,J) = 0. _d 0
@@ -1770,7 +1770,7 @@ CML#endif /* KPP_AUTODIFF_EXCESSIVE_STORE */
          DO I = iMin, iMax
           Rrho  = 0. _d 0
 C     Now we have many different cases
-C     a. alphaDT > 0 and betaDS > 0 => salt fingering 
+C     a. alphaDT > 0 and betaDS > 0 => salt fingering
 C        (salinity destabilizes)
           IF (      alphaDT(I,J) .GT. betaDS(I,J)
      &         .AND. betaDS(I,J) .GT. 0. _d 0 ) THEN
@@ -1781,8 +1781,8 @@ C          nudds(I,J) = dsfmax * ( 1. _d 0 - (Rrho - 1. _d 0) * rFac )**3
            nudds(I,J) = dsfmax * nutmp * nutmp * nutmp
 C     Large et al. 1994, eq. 31c
            nuddt(I,J) = 0.7 _d 0 * nudds(I,J)
-          ELSEIF (   alphaDT(I,J) .LT. 0. _d 0 
-     &          .AND. betaDS(I,J) .LT. 0. _d 0 
+          ELSEIF (   alphaDT(I,J) .LT. 0. _d 0
+     &          .AND. betaDS(I,J) .LT. 0. _d 0
      &          .AND.alphaDT(I,J) .GT. betaDS(I,J) ) THEN
 C     b. alphaDT < 0 and betaDS < 0 => semi-convection, diffusive convection
 C        (temperature destabilizes)
@@ -1791,22 +1791,22 @@ C     reach this point
            Rrho = alphaDT(I,J)/betaDS(I,J)
 C     Large et al. 1994, eq. 32
            nuddt(I,J) = numol * 0.909 _d 0
-     &          * exp ( 4.6 _d 0 * exp ( 
+     &          * exp ( 4.6 _d 0 * exp (
      &          - 5.4 _d 0 * ( 1. _d 0/Rrho - 1. _d 0 ) ) )
 CMLC     or
 CMLC     Large et al. 1994, eq. 33
 CML         nuddt(I,J) = numol * 8.7 _d 0 * Rrho**1.1
 C     Large et al. 1994, eqs. 34
-           nudds(I,J) = nuddt(I,J) * MAX( 0.15 _d 0 * Rrho, 
+           nudds(I,J) = nuddt(I,J) * MAX( 0.15 _d 0 * Rrho,
      &          1.85 _d 0 * Rrho - 0.85 _d 0 )
           ELSE
-C     Do nothing, because in this case the water colume is unstable 
-C     => double diffusive processes are negligible and mixing due 
-C     to shear instability will dominate 
+C     Do nothing, because in this case the water colume is unstable
+C     => double diffusive processes are negligible and mixing due
+C     to shear instability will dominate
           ENDIF
          ENDDO
         ENDDO
-C     ENDIF ( K .GT. 1 ) 
+C     ENDIF ( K .GT. 1 )
        ENDIF
 C
        DO J = 1-Oly, sNy+Oly
