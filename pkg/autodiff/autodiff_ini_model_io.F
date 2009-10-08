@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.15 2008/02/02 02:35:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.16 2009/10/08 08:22:52 mlosch Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -320,46 +320,46 @@ c
 c
 #endif
 
-C     Write coordinates to "adstate" file
-      CALL MNC_CW_SET_UDIM('adstate', 0, myThid)
-      CALL MNC_CW_RS_W('R','adstate',0,0,'XC',xC, myThid)
-      CALL MNC_CW_RS_W('R','adstate',0,0,'YC',yC, myThid)
-      CALL MNC_CW_RS_W('R','adstate',0,0,'XU',xG, myThid)
-      CALL MNC_CW_RS_W('R','adstate',0,0,'YU',yC, myThid)
-      CALL MNC_CW_RS_W('R','adstate',0,0,'XV',xC, myThid)
-      CALL MNC_CW_RS_W('R','adstate',0,0,'YV',yG, myThid)
-      CALL MNC_CW_RS_W('R','adstate',0,0,'XG',xG, myThid)
-      CALL MNC_CW_RS_W('R','adstate',0,0,'YG',yG, myThid)
-      CALL MNC_CW_RS_W('R','adstate',0,0,'RC',rC, myThid)
-      CALL MNC_CW_RS_W('R','adstate',0,0,'RF',rF, myThid)
-
-#ifdef ALLOW_EXF
-      CALL MNC_CW_SET_UDIM('adexf', 0, myThid)
-      CALL MNC_CW_RS_W('R','adexf',0,0,'XC',xC, myThid)
-      CALL MNC_CW_RS_W('R','adexf',0,0,'YC',yC, myThid)
-      CALL MNC_CW_RS_W('R','adexf',0,0,'XU',xG, myThid)
-      CALL MNC_CW_RS_W('R','adexf',0,0,'YU',yC, myThid)
-      CALL MNC_CW_RS_W('R','adexf',0,0,'XV',xC, myThid)
-      CALL MNC_CW_RS_W('R','adexf',0,0,'YV',yG, myThid)
-      CALL MNC_CW_RS_W('R','adexf',0,0,'XG',xG, myThid)
-      CALL MNC_CW_RS_W('R','adexf',0,0,'YG',yG, myThid)
-      CALL MNC_CW_RS_W('R','adexf',0,0,'RC',rC, myThid)
-      CALL MNC_CW_RS_W('R','adexf',0,0,'RF',rF, myThid)
-#endif
-
-#ifdef ALLOW_SEAICE
-      CALL MNC_CW_SET_UDIM('adseaice', 0, myThid)
-      CALL MNC_CW_RS_W('R','adseaice',0,0,'XC',xC, myThid)
-      CALL MNC_CW_RS_W('R','adseaice',0,0,'YC',yC, myThid)
-      CALL MNC_CW_RS_W('R','adseaice',0,0,'XU',xG, myThid)
-      CALL MNC_CW_RS_W('R','adseaice',0,0,'YU',yC, myThid)
-      CALL MNC_CW_RS_W('R','adseaice',0,0,'XV',xC, myThid)
-      CALL MNC_CW_RS_W('R','adseaice',0,0,'YV',yG, myThid)
-      CALL MNC_CW_RS_W('R','adseaice',0,0,'XG',xG, myThid)
-      CALL MNC_CW_RS_W('R','adseaice',0,0,'YG',yG, myThid)
-      CALL MNC_CW_RS_W('R','adseaice',0,0,'RC',rC, myThid)
-      CALL MNC_CW_RS_W('R','adseaice',0,0,'RF',rF, myThid)
-#endif
+CC     Write coordinates to "adstate" file
+C      CALL MNC_CW_SET_UDIM('adstate', 0, myThid)
+C      CALL MNC_CW_RS_W('R','adstate',0,0,'XC',xC, myThid)
+C      CALL MNC_CW_RS_W('R','adstate',0,0,'YC',yC, myThid)
+C      CALL MNC_CW_RS_W('R','adstate',0,0,'XU',xG, myThid)
+C      CALL MNC_CW_RS_W('R','adstate',0,0,'YU',yC, myThid)
+C      CALL MNC_CW_RS_W('R','adstate',0,0,'XV',xC, myThid)
+C      CALL MNC_CW_RS_W('R','adstate',0,0,'YV',yG, myThid)
+C      CALL MNC_CW_RS_W('R','adstate',0,0,'XG',xG, myThid)
+C      CALL MNC_CW_RS_W('R','adstate',0,0,'YG',yG, myThid)
+C      CALL MNC_CW_RS_W('R','adstate',0,0,'RC',rC, myThid)
+C      CALL MNC_CW_RS_W('R','adstate',0,0,'RF',rF, myThid)
+C
+C#ifdef ALLOW_EXF
+C      CALL MNC_CW_SET_UDIM('adexf', 0, myThid)
+C      CALL MNC_CW_RS_W('R','adexf',0,0,'XC',xC, myThid)
+C      CALL MNC_CW_RS_W('R','adexf',0,0,'YC',yC, myThid)
+C      CALL MNC_CW_RS_W('R','adexf',0,0,'XU',xG, myThid)
+C      CALL MNC_CW_RS_W('R','adexf',0,0,'YU',yC, myThid)
+C      CALL MNC_CW_RS_W('R','adexf',0,0,'XV',xC, myThid)
+C      CALL MNC_CW_RS_W('R','adexf',0,0,'YV',yG, myThid)
+C      CALL MNC_CW_RS_W('R','adexf',0,0,'XG',xG, myThid)
+C      CALL MNC_CW_RS_W('R','adexf',0,0,'YG',yG, myThid)
+C      CALL MNC_CW_RS_W('R','adexf',0,0,'RC',rC, myThid)
+C      CALL MNC_CW_RS_W('R','adexf',0,0,'RF',rF, myThid)
+C#endif
+C
+C#ifdef ALLOW_SEAICE
+C      CALL MNC_CW_SET_UDIM('adseaice', 0, myThid)
+C      CALL MNC_CW_RS_W('R','adseaice',0,0,'XC',xC, myThid)
+C      CALL MNC_CW_RS_W('R','adseaice',0,0,'YC',yC, myThid)
+C      CALL MNC_CW_RS_W('R','adseaice',0,0,'XU',xG, myThid)
+C      CALL MNC_CW_RS_W('R','adseaice',0,0,'YU',yC, myThid)
+C      CALL MNC_CW_RS_W('R','adseaice',0,0,'XV',xC, myThid)
+C      CALL MNC_CW_RS_W('R','adseaice',0,0,'YV',yG, myThid)
+C      CALL MNC_CW_RS_W('R','adseaice',0,0,'XG',xG, myThid)
+C      CALL MNC_CW_RS_W('R','adseaice',0,0,'YG',yG, myThid)
+C      CALL MNC_CW_RS_W('R','adseaice',0,0,'RC',rC, myThid)
+C      CALL MNC_CW_RS_W('R','adseaice',0,0,'RF',rF, myThid)
+C#endif
 
       ENDIF
 #endif
