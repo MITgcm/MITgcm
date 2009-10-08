@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1170 2009/10/08 08:24:03 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1171 2009/10/08 22:10:00 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o allows to specify vertical profile of vertical viscosity (viscArNr)
 o pkg autodiff
   autodiff_ini_model_io: comment out writing of grid information to netcdf 
   files, because at this time the grid fields are a bunch of zeros 
