@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev1_dir.h,v 1.5 2007/10/09 00:07:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev1_dir.h,v 1.6 2009/10/08 09:39:31 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -64,5 +64,50 @@ CADJ STORE OBWptr  = comlev1, key = ikey_dynamics
 #endif /* ALLOW_OBCS_WEST */
 #
 # endif  /* ALLOW_PTRACERS */
+#
+# ifdef ALLOW_SEAICE
+#
+#ifdef ALLOW_OBCS_NORTH
+CADJ STORE OBNh  = comlev1, key = ikey_dynamics
+CADJ STORE OBNa  = comlev1, key = ikey_dynamics
+CADJ STORE OBNsn = comlev1, key = ikey_dynamics
+# ifdef ALLOW_OBCS_PRESCRIBE
+CADJ STORE OBNh0,OBNh1  = comlev1, key = ikey_dynamics
+CADJ STORE OBNa0,OBNa1  = comlev1, key = ikey_dynamics
+CADJ STORE OBNsn0,OBNsn1  = comlev1, key = ikey_dynamics
+# endif /* ALLOW_OBCS_PRESCRIBE */
+#endif /* ALLOW_OBCS_NORTH */
+#ifdef ALLOW_OBCS_SOUTH
+CADJ STORE OBSh  = comlev1, key = ikey_dynamics
+CADJ STORE OBSa  = comlev1, key = ikey_dynamics
+CADJ STORE OBSsn = comlev1, key = ikey_dynamics
+# ifdef ALLOW_OBCS_PRESCRIBE
+CADJ STORE OBSh0,OBSh1  = comlev1, key = ikey_dynamics
+CADJ STORE OBSa0,OBSa1  = comlev1, key = ikey_dynamics
+CADJ STORE OBSsn0,OBSsn1  = comlev1, key = ikey_dynamics
+# endif /* ALLOW_OBCS_PRESCRIBE */
+#endif /* ALLOW_OBCS_SOUTH */
+#ifdef ALLOW_OBCS_EAST
+CADJ STORE OBEh  = comlev1, key = ikey_dynamics
+CADJ STORE OBEa  = comlev1, key = ikey_dynamics
+CADJ STORE OBEsn = comlev1, key = ikey_dynamics
+# ifdef ALLOW_OBCS_PRESCRIBE
+CADJ STORE OBEh0,OBEh1  = comlev1, key = ikey_dynamics
+CADJ STORE OBEa0,OBEa1  = comlev1, key = ikey_dynamics
+CADJ STORE OBEsn0,OBEsn1  = comlev1, key = ikey_dynamics
+# endif /* ALLOW_OBCS_PRESCRIBE */
+#endif /* ALLOW_OBCS_EAST */
+#ifdef ALLOW_OBCS_WEST
+CADJ STORE OBWh  = comlev1, key = ikey_dynamics
+CADJ STORE OBWa  = comlev1, key = ikey_dynamics
+CADJ STORE OBWsn = comlev1, key = ikey_dynamics
+# ifdef ALLOW_OBCS_PRESCRIBE
+CADJ STORE OBWh0,OBWh1  = comlev1, key = ikey_dynamics
+CADJ STORE OBWa0,OBWa1  = comlev1, key = ikey_dynamics
+CADJ STORE OBWsn0,OBWsn1  = comlev1, key = ikey_dynamics
+# endif /* ALLOW_OBCS_PRESCRIBE */
+#endif /* ALLOW_OBCS_WEST */
+#
+# endif /* ALLOW_SEAICE */
 #
 #endif  /* ALLOW_OBCS */
