@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1169 2009/10/08 08:20:19 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1170 2009/10/08 08:24:03 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg autodiff
+  autodiff_ini_model_io: comment out writing of grid information to netcdf 
+  files, because at this time the grid fields are a bunch of zeros 
+  (this is analogous to ini_mnc_vars.F) 
 o pkg seaice/autodiff:
  left-over from removing the 3-time-level fields: 
  - small rearrangement of common blocks (SEAICE.h)

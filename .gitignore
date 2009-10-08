@@ -27,3 +27,20 @@ _$*
 core
 # CVS default ignores end
 notes
+convect*
+dp*
+drake*
+eilat
+global_ocean_thsice*
+gtest
+ice
+isomip
+lab_sea
+llc
+mini_elat
+ice*
+qiang
+my82_old
+testr4
+tmp
+WS01
