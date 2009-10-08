@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.222 2009/07/13 21:38:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.223 2009/10/08 20:04:17 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -59,7 +59,7 @@ C     xxxDefault :: Default value for variable xxx
       LOGICAL SadournyCoriolis
       LOGICAL forcing_In_AB
       INTEGER goptCount
-      INTEGER K, i, j, IL, iUnit
+      INTEGER k, i, j, IL, iUnit
       INTEGER errIO
 C     Default values for variables which have vertical coordinate system
 C     dependency.
@@ -83,13 +83,13 @@ C                     :: zCoord..., pCoord..., rCoord... are used to flag when
 C                     :: z, p or r are used.
 C                     :: coordsSet counts how many vertical coordinate systems have
 C                     :: been used to specify variables. coordsSet > 1 is an error.
-C
+C     vertSetCount    :: to count number of vertical array elements which are set.
 
       LOGICAL zCoordInputData
       LOGICAL pCoordInputData
       LOGICAL rCoordInputData
       INTEGER coordsSet
-      LOGICAL diffKrSet
+      INTEGER vertSetCount
 
 C     Variables which have vertical coordinate system dependency.
 C     delZ    :: Vertical grid spacing ( m  ).
@@ -104,6 +104,7 @@ C     diffKpS :: Laplacian diffusion coeff. for mixing of salt vertically ( Pa^2
       _RL delP(Nr)
       _RL viscAz
       _RL viscAp
+      _RL viscAr
       _RL diffKzT
       _RL diffKpT
       _RL diffKrT
@@ -174,9 +175,8 @@ C--   Continuous equation parameters
      & viscA4, viscA4W,
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
      & viscA4ReMax, viscAhReMax,
-     & viscAz,  cosPower, viscAstrain, viscAtension,
-     & diffKhT, diffKzT, diffK4T,
-     & diffKhS, diffKzS, diffK4S,
+     & cosPower, viscAstrain, viscAtension,
+     & diffKhT, diffK4T, diffKhS, diffK4S,
      & tRef, sRef, tRefFile, sRefFile, rhoRefFile,
      & eosType, integr_GeoPot, selectFindRoSurf,
      & atm_Cp, atm_Rd, atm_Rq, atm_Po,
@@ -188,15 +188,16 @@ C--   Continuous equation parameters
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
      & implicSurfPress, implicDiv2Dflow,
-     & implicitFreeSurface, rigidLid, freeSurfFac, hFacMin, hFacMinDz,
+     & implicitFreeSurface, rigidLid, freeSurfFac,
+     & hFacMin, hFacMinDz, hFacMinDp, hFacMinDr,
      & exactConserv, linFSConserveTr, uniformLin_PhiSurf,
      & nonlinFreeSurf, hFacInf, hFacSup, select_rStar,
      & implicitIntGravWave, staggerTimeStep,
      & tempStepping, saltStepping, momStepping,
      & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
-     & viscAr, diffKrT, diffKrS, diffKrNrT, diffKrNrS, hFacMinDr,
-     & viscAp, diffKpT, diffKpS, hFacMinDp,
+     & viscAz, diffKzT, diffKzS, viscAp, diffKpT, diffKpS,
+     & viscAr, diffKrT, diffKrS, viscArNr, diffKrNrT, diffKrNrS,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & BL79LatVary,
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
@@ -385,8 +386,8 @@ C--   Set default "physical" parameters
       viscA4D  = UNSET_RL
       viscA4Z  = UNSET_RL
       viscAz   = UNSET_RL
-      viscAr   = UNSET_RL
       viscAp   = UNSET_RL
+      viscAr   = UNSET_RL
       diffKzT  = UNSET_RL
       diffKpT  = UNSET_RL
       diffKrT  = UNSET_RL
@@ -394,6 +395,7 @@ C--   Set default "physical" parameters
       diffKpS  = UNSET_RL
       diffKrS  = UNSET_RL
       DO k=1,Nr
+       viscArNr(k)  = UNSET_RL
        diffKrNrT(k) = UNSET_RL
        diffKrNrS(k) = UNSET_RL
        tRef(k)      = UNSET_RL
@@ -516,6 +518,25 @@ C--   z,p,r coord input switching.
       IF ( viscAr .EQ. UNSET_RL )          viscAr = viscAz
       IF ( viscAr .EQ. UNSET_RL )          viscAr = viscAp
       IF ( viscAr .EQ. UNSET_RL )          viscAr = viscArDefault
+      vertSetCount = 0
+      DO k=1,Nr
+        IF ( viscArNr(k).EQ.UNSET_RL ) THEN
+          viscArNr(k) = viscAr
+        ELSE
+          vertSetCount = vertSetCount + 1
+        ENDIF
+      ENDDO
+      IF ( viscAr.NE.viscArDefault .AND. vertSetCount.GT.0 ) THEN
+       WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
+     &    'viscArNr and viscAr (or Ap,Az) in param file data'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ELSEIF ( vertSetCount.GT.0 .AND. vertSetCount.LT.Nr ) THEN
+       WRITE(msgBuf,'(A,2(I5,A))') 'S/R INI_PARMS: Partial setting (',
+     &       vertSetCount, ' /', Nr, ') of viscArNr is not allowed'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ENDIF
 
       IF ( diffKzT .NE. UNSET_RL ) zCoordInputData  = .TRUE.
       IF ( diffKpT .NE. UNSET_RL ) pCoordInputData  = .TRUE.
@@ -523,17 +544,22 @@ C--   z,p,r coord input switching.
       IF ( diffKrT .EQ. UNSET_RL )          diffKrT = diffKzT
       IF ( diffKrT .EQ. UNSET_RL )          diffKrT = diffKpT
       IF ( diffKrT .EQ. UNSET_RL )          diffKrT = diffKrTDefault
-      diffKrSet = .TRUE.
+      vertSetCount = 0
       DO k=1,Nr
-        IF ( diffKrNrT(k).EQ. UNSET_RL ) diffKrSet = .FALSE.
+        IF ( diffKrNrT(k).EQ.UNSET_RL ) THEN
+          diffKrNrT(k) = diffKrT
+        ELSE
+          vertSetCount = vertSetCount + 1
+        ENDIF
       ENDDO
-      IF ( .NOT.diffKrSet ) THEN
-        DO k=1,Nr
-         diffKrNrT(k) = diffKrT
-        ENDDO
-      ELSEIF ( diffKrT.NE.diffKrTDefault ) THEN
+      IF ( diffKrT.NE.diffKrTDefault .AND. vertSetCount.GT.0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
-     &    'diffKrNrT and diffKrT (or Kp,Kz) in input file data'
+     &    'diffKrNrT and diffKrT (or Kp,Kz) in param file data'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ELSEIF ( vertSetCount.GT.0 .AND. vertSetCount.LT.Nr ) THEN
+       WRITE(msgBuf,'(A,2(I5,A))') 'S/R INI_PARMS: Partial setting (',
+     &       vertSetCount, ' /', Nr, ') of diffKrNrT is not allowed'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
@@ -544,17 +570,22 @@ C--   z,p,r coord input switching.
       IF ( diffKrS .EQ. UNSET_RL )          diffKrS = diffKzS
       IF ( diffKrS .EQ. UNSET_RL )          diffKrS = diffKpS
       IF ( diffKrS .EQ. UNSET_RL )          diffKrS = diffKrSDefault
-      diffKrSet = .TRUE.
+      vertSetCount = 0
       DO k=1,Nr
-        IF ( diffKrNrS(k).EQ. UNSET_RL ) diffKrSet = .FALSE.
+        IF ( diffKrNrS(k).EQ.UNSET_RL ) THEN
+          diffKrNrS(k) = diffKrS
+        ELSE
+          vertSetCount = vertSetCount + 1
+        ENDIF
       ENDDO
-      IF ( .NOT.diffKrSet ) THEN
-        DO k=1,Nr
-         diffKrNrS(k) = diffKrS
-        ENDDO
-      ELSEIF ( diffKrS.NE.diffKrSDefault ) THEN
+      IF ( diffKrS.NE.diffKrSDefault .AND. vertSetCount.GT.0 ) THEN
        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
-     &    'diffKrNrS and diffKrS (or Kp,Kz) in input file data'
+     &    'diffKrNrS and diffKrS (or Kp,Kz) in param file data'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ELSEIF ( vertSetCount.GT.0 .AND. vertSetCount.LT.Nr ) THEN
+       WRITE(msgBuf,'(A,2(I5,A))') 'S/R INI_PARMS: Partial setting (',
+     &       vertSetCount, ' /', Nr, ') of diffKrNrS is not allowed'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
@@ -988,10 +1019,10 @@ C     o Monitor (should also add CPP flag for monitor?)
 
 C--   Grid parameters
 C     In cartesian coords distances are in metres
-      DO K =1,Nr
-       delZ(K) = UNSET_RL
-       delP(K) = UNSET_RL
-       delR(K) = UNSET_RL
+      DO k =1,Nr
+       delZ(k) = UNSET_RL
+       delP(k) = UNSET_RL
+       delR(k) = UNSET_RL
       ENDDO
 C     In spherical polar distances are in degrees
       dxSpacing = UNSET_RL
@@ -1166,11 +1197,11 @@ C     note: done later (once domain size is known) if using CartesianGrid
       ENDIF
 C--   set cell Center depth and put Interface at the middle between 2 C
       setCenterDr = .FALSE.
-      DO K=1,Nr+1
-       IF ( delRc(K).EQ.UNSET_RL ) THEN
+      DO k=1,Nr+1
+       IF ( delRc(k).EQ.UNSET_RL ) THEN
         IF ( setCenterDr ) THEN
          WRITE(msgBuf,'(A,I4)')
-     &        'S/R INI_PARMS: No value for delRc at K =', K
+     &        'S/R INI_PARMS: No value for delRc at k =', k
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R INI_PARMS'
         ENDIF
@@ -1178,7 +1209,7 @@ C--   set cell Center depth and put Interface at the middle between 2 C
         IF ( k.EQ.1 ) setCenterDr = .TRUE.
         IF ( .NOT.setCenterDr ) THEN
          WRITE(msgBuf,'(A,I4)')
-     &        'S/R INI_PARMS: No value for delRc at K <', K
+     &        'S/R INI_PARMS: No value for delRc at k <', k
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R INI_PARMS'
         ENDIF
@@ -1187,16 +1218,16 @@ C--   set cell Center depth and put Interface at the middle between 2 C
       IF ( setCenterDr ) rCoordInputData = .TRUE.
 C--   p, z, r coord parameters
       setInterFDr = .FALSE.
-      DO K = 1, Nr
-       IF ( delZ(K) .NE. UNSET_RL ) zCoordInputData = .TRUE.
-       IF ( delP(K) .NE. UNSET_RL ) pCoordInputData = .TRUE.
-       IF ( delR(K) .NE. UNSET_RL ) rCoordInputData = .TRUE.
-       IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delZ(K)
-       IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delP(K)
-       IF ( delR(K) .EQ. UNSET_RL ) THEN
+      DO k = 1, Nr
+       IF ( delZ(k) .NE. UNSET_RL ) zCoordInputData = .TRUE.
+       IF ( delP(k) .NE. UNSET_RL ) pCoordInputData = .TRUE.
+       IF ( delR(k) .NE. UNSET_RL ) rCoordInputData = .TRUE.
+       IF ( delR(k) .EQ. UNSET_RL ) delR(k) = delZ(k)
+       IF ( delR(k) .EQ. UNSET_RL ) delR(k) = delP(k)
+       IF ( delR(k) .EQ. UNSET_RL ) THEN
         IF ( setInterFDr ) THEN
          WRITE(msgBuf,'(A,I4)')
-     &        'S/R INI_PARMS: No value for delZ/delP/delR at K =', K
+     &        'S/R INI_PARMS: No value for delZ/delP/delR at k =', k
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R INI_PARMS'
         ENDIF
@@ -1204,7 +1235,7 @@ C--   p, z, r coord parameters
         IF ( k.EQ.1 ) setInterFDr = .TRUE.
         IF ( .NOT.setInterFDr ) THEN
          WRITE(msgBuf,'(A,I4)')
-     &        'S/R INI_PARMS: No value for delZ/delP/delR at K <', K
+     &        'S/R INI_PARMS: No value for delZ/delP/delR at k <', k
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R INI_PARMS'
         ENDIF
