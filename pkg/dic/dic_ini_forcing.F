@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.19 2009/04/28 18:10:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.20 2009/10/08 16:15:10 heimbach Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -22,6 +22,7 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "DIC_VARS.h"
 #include "DIC_LOAD.h"
+#include "DIC_ATMOS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -88,6 +89,7 @@ c set reasonable values to those that need at least something
              AtmosP(i,j,bi,bj) = 1. _d 0*maskC(i,j,1,bi,bj)
              SILICA(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,1,bi,bj)
              FIce(i,j,bi,bj)   = 0. _d 0
+             FluxCO2(i,j,bi,bj)= 0. _d 0
 #ifdef READ_PAR
              PAR(i,j,bi,bj)    = 100. _d 0*maskC(i,j,1,bi,bj)
 #endif
@@ -99,6 +101,7 @@ c set reasonable values to those that need at least something
         ENDDO
        ENDDO
 
+       total_atmos_carbon = 0. _d 0
 
 #endif
       RETURN

@@ -1,0 +1,10 @@
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_ad.flow,v 1.9 2009/10/02 14:58:35 h
+eimbach Exp $
+C $Name:  $
+
+C----------------------------------------
+C subroutine DIC_READ_PICKUP
+C----------------------------------------
+CADJ SUBROUTINE DIC_READ_PICKUP  INPUT  = 1,2,3
+CADJ SUBROUTINE DIC_READ_PICKUP  OUTPUT = 1
+
