@@ -1,5 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_ad.flow,v 1.9 2009/10/02 14:58:35 h
-eimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ad.flow,v 1.2 2009/10/08 20:33:22 heimbach Exp $
 C $Name:  $
 
 C----------------------------------------
