@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.21 2008/05/30 02:47:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.22 2009/10/08 08:18:21 mlosch Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -157,15 +157,15 @@ C--   heimbach@mit.edu 11-Jan-2001
 #endif
 
 #ifdef ALLOW_SEAICE
-      _RL adarea(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      _RL adarea(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adseaice_dynvars_1/ adarea
 c
-      _RL adheff(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      _RL adheff(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adhsnow(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adseaice_trans/ adheff, adhsnow
 # ifdef SEAICE_ALLOW_DYNAMICS
-      _RL aduice(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
-      _RL advice(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      _RL aduice(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL advice(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /adseaice_dynvars_2/ aduice, advice
 # endif
 #endif
