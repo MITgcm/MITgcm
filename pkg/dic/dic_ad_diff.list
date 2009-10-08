@@ -17,7 +17,6 @@ dic_ini_forcing.f
 dic_init_fixed.f
 dic_mnc_init.f
 dic_readparms.f
-dic_read_pickup.f
 dic_store_fluxco2.f
 dic_surfforcing.f
 dic_surfforcing_init.f
