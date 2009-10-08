@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.39 2009/05/24 17:55:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.40 2009/10/08 09:42:30 mlosch Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
@@ -134,6 +134,14 @@ CADJ &     kind = isbyte
 
 #ifdef ALLOW_OBCS
 # include "obcs_ad_check_lev1_dir.h"
+# ifdef ALLOW_SEAICE
+CML required for the combination of seaice and obcs. In combination with
+CML downslope or ALLOW_HFLUXM_CONTROL, these directives are double
+CADJ STORE area,heff,hsnow = comlev1, key=ikey_dynamics, kind=isbyte
+#  ifdef SEAICE_ALLOW_DYNAMICS
+CADJ STORE uice,vice       = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif /* SEAICE_ALLOW_DYNAMICS */
+# endif /* ALLOW_SEAICE */
 #endif  /* ALLOW_OBCS */
 
 #ifdef ALLOW_SALT_PLUME
