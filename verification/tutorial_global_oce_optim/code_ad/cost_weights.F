@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_weights.F,v 1.3 2009/10/09 01:17:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_weights.F,v 1.4 2009/10/09 01:26:52 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -98,7 +98,7 @@ C  Temperature weights for cost function
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
 
-      print*,'Weights for temperature: wti', (wti(k),k=1,nr)
+c     print*,'Weights for temperature: wti', (wti(k),k=1,nr)
 
       DO bj = jtlo,jthi
         DO bi = itlo,ithi
@@ -119,7 +119,7 @@ C--   Then the hflux weights :
         DO bi = itlo,ithi
           DO j = jMin,jMax
             DO i = iMin,iMax
-             print*,'Uncertainties for Heat Flux',i,j,whfluxm(i,j,bi,bj)
+c            print*,'Uncertainties for Heat Flux',i,j,whfluxm(i,j,bi,bj)
              IF (whfluxm(i,j,bi,bj) .NE. 0. _d 0) THEN
                  whfluxm(i,j,bi,bj) = 1. _d 0 /whfluxm(i,j,bi,bj)
      &                                        /whfluxm(i,j,bi,bj)
