@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.5 2009/06/26 17:42:36 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.6 2009/10/09 08:00:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -93,7 +93,7 @@ C-      No meta-file or old meta-file without List of Fields
         IF ( pickupStrictlyMatch ) THEN
           WRITE(msgBuf,'(4A)') 'SEAICE_READ_PICKUP: ',
      &      'no field-list found in meta-file',
-     &      ' => cannot check for strick-matching'
+     &      ' => cannot check for strict-matching'
           CALL PRINT_ERROR( msgBuf, myThid )
           WRITE(msgBuf,'(4A)') 'SEAICE_READ_PICKUP: ',
      &      'try with " pickupStrictlyMatch=.FALSE.,"',
