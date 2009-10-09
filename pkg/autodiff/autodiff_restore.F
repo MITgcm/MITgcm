@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.10 2009/10/02 13:40:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.11 2009/10/09 11:10:27 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -298,14 +298,14 @@ C-      2D arrays
           OBNt1(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,9)
           OBNs1(I,K,bi,bj)   = StoreOBCSN(I,K,bi,bj,10)
 #  ifdef ALLOW_OBCSN_CONTROL
-          xx_obcsn0(I,K,i,j,1)   = StoreOBCSN(I,K,bi,bj,11)
-          xx_obcsn0(I,K,i,j,2)   = StoreOBCSN(I,K,bi,bj,12)
-          xx_obcsn0(I,K,i,j,3)   = StoreOBCSN(I,K,bi,bj,13)
-          xx_obcsn0(I,K,i,j,4)   = StoreOBCSN(I,K,bi,bj,14)
-          xx_obcsn1(I,K,i,j,1)   = StoreOBCSN(I,K,bi,bj,15)
-          xx_obcsn1(I,K,i,j,2)   = StoreOBCSN(I,K,bi,bj,16)
-          xx_obcsn1(I,K,i,j,3)   = StoreOBCSN(I,K,bi,bj,17)
-          xx_obcsn1(I,K,i,j,4)   = StoreOBCSN(I,K,bi,bj,18)
+          xx_obcsn0(I,K,bi,bj,1)   = StoreOBCSN(I,K,bi,bj,11)
+          xx_obcsn0(I,K,bi,bj,2)   = StoreOBCSN(I,K,bi,bj,12)
+          xx_obcsn0(I,K,bi,bj,3)   = StoreOBCSN(I,K,bi,bj,13)
+          xx_obcsn0(I,K,bi,bj,4)   = StoreOBCSN(I,K,bi,bj,14)
+          xx_obcsn1(I,K,bi,bj,1)   = StoreOBCSN(I,K,bi,bj,15)
+          xx_obcsn1(I,K,bi,bj,2)   = StoreOBCSN(I,K,bi,bj,16)
+          xx_obcsn1(I,K,bi,bj,3)   = StoreOBCSN(I,K,bi,bj,17)
+          xx_obcsn1(I,K,bi,bj,4)   = StoreOBCSN(I,K,bi,bj,18)
 #  endif
          enddo
         enddo
@@ -331,14 +331,14 @@ C-      2D arrays
           OBSt1(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,9)
           OBSs1(I,K,bi,bj)      = StoreOBCSS(I,K,bi,bj,10)
 #  ifdef ALLOW_OBCSS_CONTROL
-          xx_obcss0(I,K,i,j,1)   = StoreOBCSS(I,K,bi,bj,11)
-          xx_obcss0(I,K,i,j,2)   = StoreOBCSS(I,K,bi,bj,12)
-          xx_obcss0(I,K,i,j,3)   = StoreOBCSS(I,K,bi,bj,13)
-          xx_obcss0(I,K,i,j,4)   = StoreOBCSS(I,K,bi,bj,14)
-          xx_obcss1(I,K,i,j,1)   = StoreOBCSS(I,K,bi,bj,15)
-          xx_obcss1(I,K,i,j,2)   = StoreOBCSS(I,K,bi,bj,16)
-          xx_obcss1(I,K,i,j,3)   = StoreOBCSS(I,K,bi,bj,17)
-          xx_obcss1(I,K,i,j,4)   = StoreOBCSS(I,K,bi,bj,18)
+          xx_obcss0(I,K,bi,bj,1)   = StoreOBCSS(I,K,bi,bj,11)
+          xx_obcss0(I,K,bi,bj,2)   = StoreOBCSS(I,K,bi,bj,12)
+          xx_obcss0(I,K,bi,bj,3)   = StoreOBCSS(I,K,bi,bj,13)
+          xx_obcss0(I,K,bi,bj,4)   = StoreOBCSS(I,K,bi,bj,14)
+          xx_obcss1(I,K,bi,bj,1)   = StoreOBCSS(I,K,bi,bj,15)
+          xx_obcss1(I,K,bi,bj,2)   = StoreOBCSS(I,K,bi,bj,16)
+          xx_obcss1(I,K,bi,bj,3)   = StoreOBCSS(I,K,bi,bj,17)
+          xx_obcss1(I,K,bi,bj,4)   = StoreOBCSS(I,K,bi,bj,18)
 #  endif
          enddo
         enddo
@@ -397,14 +397,14 @@ C-      2D arrays
           OBWt1(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,9)
           OBWs1(J,K,bi,bj)     = StoreOBCSW(J,K,bi,bj,10)
 #  ifdef ALLOW_OBCSW_CONTROL
-          xx_obcsw0(J,K,i,j,1) = StoreOBCSW(J,K,bi,bj,11)
-          xx_obcsw0(J,K,i,j,2) = StoreOBCSW(J,K,bi,bj,12)
-          xx_obcsw0(J,K,i,j,3) = StoreOBCSW(J,K,bi,bj,13)
-          xx_obcsw0(J,K,i,j,4) = StoreOBCSW(J,K,bi,bj,14)
-          xx_obcsw1(J,K,i,j,1) = StoreOBCSW(J,K,bi,bj,15)
-          xx_obcsw1(J,K,i,j,2) = StoreOBCSW(J,K,bi,bj,16)
-          xx_obcsw1(J,K,i,j,3) = StoreOBCSW(J,K,bi,bj,17)
-          xx_obcsw1(J,K,i,j,4) = StoreOBCSW(J,K,bi,bj,18)
+          xx_obcsw0(J,K,bi,bj,1) = StoreOBCSW(J,K,bi,bj,11)
+          xx_obcsw0(J,K,bi,bj,2) = StoreOBCSW(J,K,bi,bj,12)
+          xx_obcsw0(J,K,bi,bj,3) = StoreOBCSW(J,K,bi,bj,13)
+          xx_obcsw0(J,K,bi,bj,4) = StoreOBCSW(J,K,bi,bj,14)
+          xx_obcsw1(J,K,bi,bj,1) = StoreOBCSW(J,K,bi,bj,15)
+          xx_obcsw1(J,K,bi,bj,2) = StoreOBCSW(J,K,bi,bj,16)
+          xx_obcsw1(J,K,bi,bj,3) = StoreOBCSW(J,K,bi,bj,17)
+          xx_obcsw1(J,K,bi,bj,4) = StoreOBCSW(J,K,bi,bj,18)
 #  endif
           enddo
         enddo
