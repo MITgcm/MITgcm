@@ -1,16 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_hflux.F,v 1.3 2009/04/28 18:06:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_hflux.F,v 1.4 2009/10/09 01:21:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
 
-      subroutine cost_hflux( myThid )
-C     /==========================================================\
-C     | subroutine cost_hflux                                     |
-C     | o the subroutine computes the cost function relative to  |
-C     |   surface hflux optimization                              |
-C     \==========================================================/
-       implicit none
+      SUBROUTINE COST_HFLUX( myThid )
+C     *==========================================================*
+C     | SUBROUTINE COST_HFLUX
+C     | o the subroutine computes the cost function relative to
+C     |   surface hflux optimization
+C     *==========================================================*
+
+       IMPLICIT NONE
 
 C     == Global variables ===
 #include "SIZE.h"
@@ -28,9 +29,6 @@ C     == Global variables ===
 # include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-
 C     ======== Routine arguments ======================
 C     myThid - Thread number for this instance of the routine.
       integer myThid
@@ -40,49 +38,50 @@ C     ========= Local variables =========================
       integer i, j
       integer bi, bj
       _RL     locfc,tmpC
-C
+
       tmpC = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-            do j=1,sNy
-               do i=1,sNx
-                  tmpC = tmpC + maskC(i,j,1,bi,bj)
-               enddo
-            enddo
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+         do j=1,sNy
+           do i=1,sNx
+             tmpC = tmpC + maskC(i,j,1,bi,bj)
+           ENDDO
          ENDDO
+       ENDDO
       ENDDO
       _GLOBAL_SUM_RL( tmpC , myThid )
-      locfc = 0. _d 0
-c
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-c
+      IF ( tmpC.GT.0. ) tmpC = 1. _d 0 / tmpC
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+
 #ifdef ALLOW_AUTODIFF_TAMC
-          act1 = bi - myBxLo(myThid)
-          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-          act2 = bj - myByLo(myThid)
-          max2 = myByHi(myThid) - myByLo(myThid) + 1
-          act3 = myThid - 1
-          ikey = (act1 + 1) + act2*max1
+         act1 = bi - myBxLo(myThid)
+         max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+         act2 = bj - myByLo(myThid)
+         max2 = myByHi(myThid) - myByLo(myThid) + 1
+         act3 = myThid - 1
+         ikey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
 #endif /* ALLOW_AUTODIFF_TAMC */
-c
-      do j=1,sNy
-         do i=1,sNx
-         locfc = locfc + 1/tmpC*maskC(i,j,1,bi,bj)*
+
+         locfc = 0. _d 0
+         DO j=1,sNy
+          DO i=1,sNx
+            locfc = locfc + tmpC*maskC(i,j,1,bi,bj)*
      &         whfluxm(i,j,bi,bj)*
      &        (
      &         Qnetm(i,j,bi,bj)
      &        )**2
-         enddo
-      enddo
-c
-      objf_hflux_tut(bi,bj) = locfc
-c     print*,'objf_hflux_tut =',locfc
-c
+          ENDDO
          ENDDO
-        ENDDO
+
+         objf_hflux_tut(bi,bj) = locfc
+c        print*,'objf_hflux_tut =',locfc
+
+       ENDDO
+      ENDDO
 
 #endif
- 
-      end
+      RETURN
+      END
