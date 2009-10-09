@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.197 2009/09/22 04:36:30 utke Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.198 2009/10/09 11:13:27 mlosch Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2783,7 +2783,7 @@ ad_input_code.$FS: \$(AD_FILES) \$(H_SRC_FILES) \$(AD_FLOW_FILES)
 	-rm -f ad_config.template
 	@make \$(F77_PP_SRC_FILES)
 	@make \$(FLOFILES)
-	cat \$(FLOFILES) \$(AD_FILES) > ad_input_code.$FS
+	cat \$(FLOFILES) \$(AD_FILES) | sed -f \$(TOOLSDIR)/remove_comments_sed > ad_input_code.$FS
 
 ad_taf_output.$FS: ad_input_code.$FS
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.$FS
