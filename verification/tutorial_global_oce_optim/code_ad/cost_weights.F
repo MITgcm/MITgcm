@@ -1,21 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_weights.F,v 1.2 2008/06/23 18:38:34 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_weights.F,v 1.3 2009/10/09 01:17:51 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
       SUBROUTINE COST_WEIGHTS( myThid )
 
-c     ==================================================================
-c     SUBROUTINE COST_WEIGHTS
-c     ==================================================================
-c
-c     o Set weights used in the cost function and in the
-c       normalization of the sensitivities when ALLOW_NON_DIMENSIONAL
+C     ==================================================================
+C     SUBROUTINE COST_WEIGHTS
+C     ==================================================================
+C
+C     o Set weights used in the cost function and in the
+C       normalization of the sensitivities when ALLOW_NON_DIMENSIONAL
 
       IMPLICIT NONE
 
-c     == global variables ==
-
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
@@ -25,24 +24,26 @@ c     == global variables ==
 #include "ctrl_weights.h"
 #include "cost.h"
 
-c     == routine arguments ==
-
+C     == routine arguments ==
       INTEGER  myThid
 
-c     == local variables ==
+C     == Functions ==
+      INTEGER  MDS_RECLEN
+      EXTERNAL MDS_RECLEN
 
+C     == local variables ==
       INTEGER bi,bj
       INTEGER i,j,k
       INTEGER itlo,ithi,jtlo,jthi
       INTEGER jMin,jMax,iMin,iMax
-      INTEGER iUnit
+      INTEGER iUnit, length_of_rec
 
       _RL dummy
       _RL wti(Nr)
       REAL*8 tmpwti(Nr)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-c     == end of interface ==
+C     == end of interface ==
 
       jtlo = myByLo(myThid)
       jthi = myByHi(myThid)
@@ -53,7 +54,7 @@ c     == end of interface ==
       jMin = 1-OLy
       jMax = sNy+OLy
 
-c--   Initialize variance (weight) fields.
+C--   Initialize variance (weight) fields.
       DO k = 1,Nr
          wti(k) = 0. _d 0
       ENDDO
@@ -72,15 +73,16 @@ c--   Initialize variance (weight) fields.
         ENDDO
       ENDDO
 
-c--   Read error information and set up weight matrices.
+C--   Read error information and set up weight matrices.
 
 #ifdef ALLOW_COST_TEMP
-C  Temperature weights for cost function   
+C  Temperature weights for cost function
        _BEGIN_MASTER(myThid)
        CALL MDSFINDUNIT( iUnit, myThid )
-       OPEN(iUnit, FILE='Err_levitus_15layer.bin', STATUS='OLD',
-     &      FORM='UNFORMATTED',ACCESS='DIRECT',RECL=2*WORDLENGTH*Nr)
-       READ(iUnit,rec=1) tmpwti 
+       length_of_rec = MDS_RECLEN( precFloat64, Nr, myThid )
+       OPEN( iUnit, FILE='Err_levitus_15layer.bin', STATUS='OLD',
+     &       FORM='UNFORMATTED',ACCESS='DIRECT',RECL=length_of_rec )
+       READ(iUnit,rec=1) tmpwti
        CLOSE(iUnit)
 #ifdef _BYTESWAPIO
        CALL MDS_BYTESWAPR8( Nr, tmpwti )
@@ -106,14 +108,12 @@ C  Temperature weights for cost function
         ENDDO
       ENDDO
 #endif
-c
-c--   Then the hflux weights :
-c
+
+C--   Then the hflux weights :
+
 #if (defined (ALLOW_COST_HFLUXM) || defined (ALLOW_HFLUXM_CONTROL))
-      _BEGIN_MASTER(myThid)
-      CALL MDSREADFIELD('Err_hflux.bin',precFloat64,
-     &                  'RL',1,whfluxm,1,myThid)
-      _END_MASTER(myThid)
+      CALL READ_REC_3D_RL( 'Err_hflux.bin', precFloat64, 1,
+     &                      whfluxm, 1, 0, myThid )
       _EXCH_XY_RL(whfluxm   , myThid )
       DO bj = jtlo,jthi
         DO bi = itlo,ithi
@@ -131,8 +131,8 @@ c
         ENDDO
       ENDDO
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-      call active_write_xy('whfluxm',whfluxm,1,0,myThid,dummy)
+      CALL ACTIVE_WRITE_XY('whfluxm',whfluxm,1,0,myThid,dummy)
 #endif
 #endif
-c
-      end
+      RETURN
+      END
