@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1171 2009/10/08 22:10:00 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1172 2009/10/09 11:15:45 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg autodiff
+ - fix bug in autodiff_restore
+ - make genmake2 remove comments and empty lines from ad_input_code.f in 
+   order to reduce file size (new script file remove_comments_sed)
 o allows to specify vertical profile of vertical viscosity (viscArNr)
 o pkg autodiff
   autodiff_ini_model_io: comment out writing of grid information to netcdf 
