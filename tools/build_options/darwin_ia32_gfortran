@@ -1,15 +1,13 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.6 2009/10/09 11:14:03 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.7 2009/10/09 11:18:37 mlosch Exp $
 #
 # tested on MacBook Pro
 # on 28-Nov-2006
 
 CPP='/usr/bin/cpp -traditional -P'
-#FC=/usr/local/bin/gfortran
 FC=gfortran
 ###CC=gcc
-#LINK=/usr/local/bin/gfortran
 LINK=gfortran
 NOOPTFLAGS='-O0'
 EXTENDED_SRC_FLAG='-ffixed-line-length-132'
@@ -21,9 +19,6 @@ DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
 INCLUDEDIRS='/sw/include'
 INCLUDES='-I/sw/include'
 LIBS='-L/sw/lib'
-INCLUDEDIRS='/usr/local/include'
-INCLUDES='-I/usr/local/include'
-LIBS='-L/usr/local/lib'
 
 ##INCLUDEDIRS='/Users/heimbach/NetCDF/netcdf-3.6.0-p1/gfortran/include'
 ##INCLUDES='-I/Users/heimbach/NetCDF/netcdf-3.6.0-p1/gfortran/include'
