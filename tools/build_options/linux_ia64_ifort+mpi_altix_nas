@@ -20,11 +20,11 @@ MPI_HEADER_FILES_INC='./mpi_headers/mpif.h ./mpi_headers/mpiof.h ./mpi_headers/m
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS="$FFLAGS -fp-model precise -w95 -W0 -WB -convert big_endian -assume byterecl"
-#   FFLAGS="$FFLAGS -mp -w95 -W0 -WB -convert big_endian -assume byterecl"
+#   FFLAGS="$FFLAGS -fp-model precise -w95 -W0 -WB -convert big_endian -assume byterecl"
+    FFLAGS="$FFLAGS -mp -w95 -W0 -WB -convert big_endian -assume byterecl"
     FOPTIM='-O3 -align'
     NOOPTFLAGS='-O1'
-    NOOPTFILES='fizhi_lsm.F fizhi_clockstuff.F'
+    NOOPTFILES='calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F'
 else
     #  Try to follow IEEE-754
     FFLAGS="$FFLAGS -w95 -W0 -WB -convert big_endian -assume byterecl"
