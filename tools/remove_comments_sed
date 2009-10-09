@@ -1,0 +1,29 @@
+/^$/d
+/^C\ /d
+/^c\ /d
+/^C-/d
+/^c-/d
+/^C\*/d
+/^c\*/d
+/^\*/d
+/^C#/d
+/^c#/d
+/^CBOP/d
+/^CEOP/d
+/^CXXX/d
+/^Ccnh/d
+/^Cph/d
+/^cph/d
+/^CEH3/d
+/^ceh3/d
+/^CML/d
+/^cml/d
+/^Cml/d
+/^cgg/d
+
+# This is a growing list of which comments lines to remove from a file 
+# in order to reduce the file size of ad_input_code.f. The first one is 
+# for empty lines. 
+# We want to remove all comments (=lines starting with C,c,*), but
+# compiler directives also start with a C, in particular CADJ/cadj/Cadj/cADJ, 
+# and absolutely must remain in the file.
