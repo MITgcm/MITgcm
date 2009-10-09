@@ -1,15 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_temp.F,v 1.4 2009/04/28 18:06:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_temp.F,v 1.5 2009/10/09 01:20:45 jmc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
 
-      subroutine cost_temp( myThid )
-C     /==========================================================\
-C     | subroutine cost_temp                                  |
-C     | o the subroutine computes the sum of the squared errors  |
-C     |   relatively to the Levitus climatology                  |
-C     \==========================================================/
-       implicit none
+      SUBROUTINE COST_TEMP( myThid )
+C     *==========================================================*
+C     | SUBROUTINE COST_TEMP
+C     | o the subroutine computes the sum of the squared errors
+C     |   relatively to the Levitus climatology
+C     *==========================================================*
+
+       IMPLICIT NONE
 
 C     == Global variables ===
 #include "SIZE.h"
@@ -24,45 +25,42 @@ C     == Global variables ===
 # include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-
 C     ======== Routine arguments ======================
 C     myThid - Thread number for this instance of the routine.
-      integer myThid
+      INTEGER myThid
 
 #ifdef ALLOW_COST_TEMP
 C     ========= Local variables =========================
-      integer i, j, k
-      integer bi, bj
-      integer Nk 
+      INTEGER i, j, k
+      INTEGER bi, bj
+      INTEGER Nk
       _RL locfc,tmp
       _RL thetalev(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-C
+
       Nk = 2
 C Read annual mean Levitus temperature
-C
+
       CALL READ_FLD_XYZ_RL('lev_t_an.bin',' ',thetalev,0,myThid)
-C
+
 C  Total number of wet temperature point
       tmp  = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-            do k=1, Nk
-               do j=1,sNy
-                  do i=1,sNx
-                     tmp = tmp + maskC(i,j,k,bi,bj)
-                  enddo
-               enddo
-            enddo
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO k=1, Nk
+          DO j=1,sNy
+           DO i=1,sNx
+             tmp = tmp + maskC(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
          ENDDO
+       ENDDO
       ENDDO
       _GLOBAL_SUM_RL( tmp , myThid )
-c
-      locfc = 0. _d 0
+      IF ( tmp.GT.0. ) tmp = 1. _d 0 / tmp
+
       DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-c
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+
 #ifdef ALLOW_AUTODIFF_TAMC
          act1 = bi - myBxLo(myThid)
          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
@@ -72,21 +70,23 @@ c
          ikey = (act1 + 1) + act2*max1
      &                     + act3*max1*max2
 #endif /* ALLOW_AUTODIFF_TAMC */
-c
-         do j=1,sNy
-            do i=1,sNx
-               do k=1,Nk
-           locfc = locfc + 1/tmp*maskC(i,j,k,bi,bj)*
-     &         wtheta(k,bj,bi)*
+
+         locfc = 0. _d 0
+         DO k=1,Nk
+           DO j=1,sNy
+            DO i=1,sNx
+              locfc = locfc + tmp*maskC(i,j,k,bi,bj)*
+     &         wtheta(k,bi,bj)*
      &         ( cMeanTheta(i,j,k,bi,bj) - thetalev(i,j,k,bi,bj) )**2
-               enddo
-            enddo
-         enddo
-c
-          objf_temp_tut(bi,bj) = locfc
-c         print*,'objf_temp_tut =',locfc,startTime,endTime,tmp
-c
+            ENDDO
+           ENDDO
          ENDDO
+
+         objf_temp_tut(bi,bj) = locfc
+c        print*,'objf_temp_tut =',locfc,startTime,endTime,tmp
+
+       ENDDO
       ENDDO
 #endif
-      end
+      RETURN
+      END
