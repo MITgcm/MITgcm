@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_write_pickup.F,v 1.1 2009/10/02 22:01:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_write_pickup.F,v 1.2 2009/10/10 18:40:47 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -50,6 +50,11 @@ C     !LOCAL VARIABLES:
       iL = ILNBLNK(suff)
       iL = MAX(1,iL)
       prec = precFloat64
+
+C--   Unlike horizontal 2D or 3D IO routines, no thread synchronisation is
+C     done within  Vertical Section IO routines. Since only thread one is
+C     doing IO, we need a barrier here to wait for every one to finish.
+      _BARRIER
 
 C     Write N and S OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_NORTH
@@ -196,6 +201,9 @@ C     Write E and W OB storage and phase speed arrays
 #endif
       ENDIF
 #endif /* ALLOW_OBCS_WEST */
+
+C--   Every one wait for thread 1 to finish (see comment @ the top)
+      _BARRIER
 
 #endif /* ALLOW_ORLANSKI */
       RETURN
