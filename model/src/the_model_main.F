@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.103 2007/12/04 23:43:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.104 2009/10/10 18:09:25 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -494,7 +494,7 @@ c--   set default:
       lastdiva = .TRUE.
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_ENTER('THE_MODEL_MAIN',myThid)
+      CALL DEBUG_ENTER('THE_MODEL_MAIN',myThid)
 #endif
 
 #if defined(USE_PAPI) || defined(USE_PCL_FLOPS_SFP) || defined(USE_PCL_FLOPS) || defined(USE_PCL)
@@ -504,13 +504,17 @@ C--   This timer encompasses the whole code
       CALL TIMER_START('ALL                    [THE_MODEL_MAIN]',myThid)
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('INITIALISE_FIXED',myThid)
+      CALL DEBUG_CALL('INITIALISE_FIXED',myThid)
 #endif
 
 C--   Set model configuration (fixed arrays)
       CALL TIMER_START('INITIALISE_FIXED       [THE_MODEL_MAIN]',myThid)
       CALL INITIALISE_FIXED( myThid )
       CALL TIMER_STOP ('INITIALISE_FIXED       [THE_MODEL_MAIN]',myThid)
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('INITIALISE_FIXED',myThid)
+#endif
 
       myCurrentTime = startTime
       myCurrentIter = nIter0
@@ -544,6 +548,9 @@ c
 
 # if ( defined (ALLOW_TANGENTLINEAR_RUN) )
 c
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('G_THE_MAIN_LOOP',myThid)
+#endif
       CALL TIMER_START('G_THE_MAIN_LOOP           [TANGENT RUN]',mythid)
       CALL G_THE_MAIN_LOOP ( myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('G_THE_MAIN_LOOP           [TANGENT RUN]',mythid)
@@ -555,11 +562,17 @@ c
 c-- The following assumes the TAF option '-pure'
       inquire( file='costfinal', exist=exst )
       IF ( .NOT. exst) THEN
+#ifdef ALLOW_DEBUG
+         IF (debugMode) CALL DEBUG_CALL('MDTHE_MAIN_LOOP',myThid)
+#endif
          CALL TIMER_START('MDTHE_MAIN_LOOP            [MD RUN]', mythid)
          CALL MDTHE_MAIN_LOOP ( myCurrentTime, myCurrentIter, mythid )
          CALL TIMER_STOP ('MDTHE_MAIN_LOOP            [MD RUN]', mythid)
          CALL COST_FINAL_STORE ( mythid, lastdiva )
       ELSE
+#ifdef ALLOW_DEBUG
+         IF (debugMode) CALL DEBUG_CALL('ADTHE_MAIN_LOOP',myThid)
+#endif
          CALL TIMER_START('ADTHE_MAIN_LOOP       [ADJOINT RUN]', mythid)
          CALL ADTHE_MAIN_LOOP (  mythid )
          CALL TIMER_STOP ('ADTHE_MAIN_LOOP       [ADJOINT RUN]', mythid)
@@ -567,6 +580,9 @@ c-- The following assumes the TAF option '-pure'
       ENDIF
 c--
 #  else /* ALLOW_DIVIDED_ADJOINT undef */
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('ADTHE_MAIN_LOOP',myThid)
+#endif
       CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
 #ifdef ALLOW_ECCO
       CALL ADTHE_MAIN_LOOP ( myCurrentTime, mythid )
@@ -582,6 +598,9 @@ c
       IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
 #endif
 C--   Call time stepping loop of full model
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
+#endif
       CALL TIMER_START('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
       CALL THE_MAIN_LOOP( myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
