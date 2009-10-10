@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.170 2009/10/08 19:44:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.171 2009/10/10 18:10:49 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -341,7 +341,7 @@ CADJ &     kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_OFFLINE
       IF ( .NOT. useOffLine ) THEN
 #endif
 #ifdef ALLOW_DEBUG
@@ -358,7 +358,8 @@ CADJ &     kind = isbyte
 CADJ STORE pmepr    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 # endif
-#else
+#endif
+#ifdef ALLOW_OFFLINE
       ENDIF
 #endif
 
