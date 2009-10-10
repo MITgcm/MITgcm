@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.50 2008/08/24 21:47:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.51 2009/10/10 22:36:14 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -490,7 +490,7 @@ C- jmc: but ultimately, this block can/will be removed.
         WRITE(msgBuf,'(2A)')
      &   'CONFIG_CHECK: CD-scheme not implemented on CubedSphere grid'
         CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+cph        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
 C--   Time-stepping limitations
