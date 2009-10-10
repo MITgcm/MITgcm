@@ -1,10 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.41 2009/10/08 19:39:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev1_directives.h,v 1.42 2009/10/10 21:28:43 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 1
 c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
+
+CADJ STORE totphihyd = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE pmepr = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 
 #ifdef ALLOW_DOWN_SLOPE
 # ifdef ALLOW_SEAICE
@@ -19,9 +24,7 @@ CADJ &     kind = isbyte
 # endif
 CADJ STORE surfaceforcingtice = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE totphihyd = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE pmepr,salt = comlev1, key = ikey_dynamics,
+CADJ STORE salt = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #endif
 
