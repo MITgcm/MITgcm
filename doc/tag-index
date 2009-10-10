@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1173 2009/10/09 21:08:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1174 2009/10/10 17:09:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,6 +6,7 @@ $Name:  $
 
 o tutorial_global_oce_optim:
   now tested with 4 tiles (change data.grdchk and update output_adm.txt)
+  and add SIZE.h_mpi for MPI testing
 o pkg autodiff
  - fix bug in autodiff_restore
  - make genmake2 remove comments and empty lines from ad_input_code.f in 
@@ -23,7 +24,7 @@ o pkg seaice/autodiff:
 o pkg obcs:
  - go through NH code only if nonHydrostatic=T
  - fix restart for Orlanski (Hydrostatic; still to fix NH+Orlanski restart)
- - move call to OBCS_CALC before SEAICE_MODEL which needs seaice-obcields
+ - move call to OBCS_CALC before SEAICE_MODEL which needs seaice-obc fields
    => Update output of experiment seaice_obcs
  - useOBCSbalance: code is wrong with multi-tile / proc: add a stop.
  - fix NH+Orlanski restart (add wvel OBC value in pickup file)
