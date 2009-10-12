@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.11 2009/10/09 11:10:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.12 2009/10/12 14:36:36 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -32,8 +32,6 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 c**************************************
-#ifdef ALLOW_AUTODIFF_TAMC
-
 c These includes are needed for 
 c AD-checkpointing. 
 c They provide the fields to be stored.
@@ -68,6 +66,7 @@ c           updated.
 c     mythid - thread number for this instance of the routine.
       integer mythid 
 
+#ifdef ALLOW_AUTODIFF_TAMC
 c     == local variables ==
 
       integer bi,bj
