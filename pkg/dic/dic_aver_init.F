@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_init.F,v 1.11 2009/04/28 18:10:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_init.F,v 1.12 2009/10/14 20:12:30 heimbach Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -45,7 +45,7 @@ cswdmonth -add-
 cswddmonth -- end-
 c
 c initialize to zero
-        totcost=0.d0
+cph        totcost=0.d0
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           CALL TIMEAVE_RESET(PO4obs,   Nr,  bi, bj, myThid)
