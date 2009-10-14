@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.26 2009/06/30 16:43:00 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.27 2009/10/14 14:18:58 heimbach Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -156,6 +156,10 @@ C array because of last (iPtr) index
 #ifdef ALLOW_DIC
        CALL DIC_ATMOS( 1, myTime, myIter, myThid )
        CALL DIC_STORE_FLUXCO2( myTime, myIter, myThid )
+#endif
+
+#ifdef ALLOW_COST
+       CALL DIC_COST( myTime, myIter, myThid )
 #endif
 
 #endif /* GCHEM_SEPARATE_FORCING */
