@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/adcost.h,v 1.7 2007/10/08 23:59:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/adcost.h,v 1.8 2009/10/14 20:50:06 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -30,6 +30,12 @@ cph      _RL  adobjf_state_final (snx,sny,nsx,nsy)
       common /adcost_vector_r/
      &                  adobjf_vector
       _RL  adobjf_vector(snx,nsx,nsy)
+#endif
+
+#ifdef ALLOW_DIC
+         COMMON /addic_cost_ctrl/
+     &    adtotcost
+      _RL  adtotcost
 #endif
 
 c     ==================================================================

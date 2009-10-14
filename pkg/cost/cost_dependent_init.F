@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.7 2005/12/19 23:29:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.8 2009/10/14 20:50:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,6 +54,10 @@ c     == end of interface ==
 #ifdef ALLOW_AUTODIFF
 
       adfc = 1.0
+#ifdef ALLOW_DIC
+      adtotcost = 1.0
+#endif
+
       do bj = jtlo,jthi
        do bi = itlo,ithi
 #ifdef ALLOW_COST_VECTOR
