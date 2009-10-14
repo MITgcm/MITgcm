@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.23 2008/06/11 19:31:41 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.24 2009/10/14 20:10:13 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -398,6 +398,31 @@ c--   == end of interface ==
      &                        mythid, dummy)
          xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 #endif /* ALLOW_HFLUXM_CONTROL */
+
+#ifdef ALLOW_GEN2D_CONTROL
+      else if ( grdchkvarindex .eq. 30 ) then
+         il=ilnblnk( xx_gen2d_file )
+         write(fname(1:80),'(80a)') ' '
+         write(fname(1:80),'(3a,i10.10)')
+     &        yadmark, xx_gen2d_file(1:il),'.',optimcycle
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+#endif /* ALLOW_GEN2D_CONTROL */
+
+#ifdef ALLOW_GEN3D_CONTROL
+      else if ( grdchkvarindex .eq. 31 ) then
+         il=ilnblnk( xx_gen3d_file )
+         write(fname(1:80),'(80a)') ' '
+         write(fname(1:80),'(3a,i10.10)')
+     &        yadmark, xx_gen3d_file(1:il),'.',optimcycle
+
+         call active_read_xyz( fname, tmpfld3d, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
+         xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+#endif /* ALLOW_GEN3D_CONTROL */
 
 #ifdef ALLOW_PRECIP_CONTROL
       else if ( grdchkvarindex .eq. 32 ) then

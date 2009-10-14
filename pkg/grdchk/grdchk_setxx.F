@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.23 2008/06/11 19:31:41 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.24 2009/10/14 20:10:13 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -570,6 +570,47 @@ c--   == end of interface ==
      &                        optimcycle,
      &                        mythid, dummy)
 #endif /* ALLOW_HFLUXM_CONTROL */
+
+#ifdef ALLOW_GEN2D_CONTROL
+      else if ( grdchkvarindex .eq. 20 ) then
+         il=ilnblnk( xx_gen2d_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_gen2d_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_gen2d_file(1:il),'.',optimcycle
+         end if
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_ref
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                        optimcycle,
+     &                        mythid, dummy)
+#endif /* ALLOW_GEN2D_CONTROL */
+
+#ifdef ALLOW_GEN3D_CONTROL
+      else if ( grdchkvarindex .eq. 31 ) then
+         il=ilnblnk( xx_gen3d_file )
+         if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
+            write(fname(1:80),'(3a,i10.10)')
+     &           yadmark, xx_gen3d_file(1:il),'.',optimcycle
+         else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
+            write(fname(1:80),'(2a,i10.10)')
+     &           xx_gen3d_file(1:il),'.',optimcycle
+         end if
+
+         call active_read_xyz( fname, tmpfld3d, 1,
+     &                         doglobalread, ladinit, optimcycle,
+     &                         mythid, dummy)
+
+         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_ref
+
+         call active_write_xyz( fname, tmpfld3d, 1,
+     &                          optimcycle,
+     &                          mythid, dummy)
+#endif /* ALLOW_GEN3D_CONTROL */
 
 #ifdef ALLOW_PRECIP_CONTROL
       else if ( grdchkvarindex .eq. 32 ) then
