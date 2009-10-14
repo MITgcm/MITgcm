@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ad_check_lev3_dir.h,v 1.1 2008/04/24 21:32:13 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ad_check_lev3_dir.h,v 1.2 2009/10/14 05:02:20 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_DIC
@@ -22,6 +22,9 @@ CADJ STORE gsm_s             = tapelev3, key = ilev_3
 CADJ STORE co2atmos          = tapelev3, key = ilev_3
 CADJ STORE total_atmos_carbon  = tapelev3, key = ilev_3
 
+#ifdef DIC_BIOTIC
+CADJ STORE omegaC  = tapelev3, key = ilev_3
+#endif
 
 #endif /* ALLOW_DIC */
 

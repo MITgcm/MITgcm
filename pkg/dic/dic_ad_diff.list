@@ -14,7 +14,7 @@ dic_biotic_init.f
 dic_cost.f
 dic_fields_load.f
 dic_ini_forcing.f
-dic_init_fixed.f
+dic_init_varia.f
 dic_mnc_init.f
 dic_readparms.f
 dic_set_control.f
