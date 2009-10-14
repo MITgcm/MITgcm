@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.15 2009/06/26 23:10:09 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.16 2009/10/14 19:54:28 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -105,8 +105,14 @@ C--   Filter (and exchange)
         CALL TIMER_START('ZONAL_FILT_TS      [TRC_CORR_STEP]',myThid)
         CALL ZONAL_FILT_APPLY_TS( theta, salt, myThid )
         CALL TIMER_STOP ('ZONAL_FILT_TS      [TRC_CORR_STEP]',myThid)
+# ifdef ALLOW_PTRACERS
+C-      apply to passive tracer fields
+        IF (usePTRACERS) THEN
+          CALL PTRACERS_ZONAL_FILT_APPLY( myThid )
+        ENDIF
+# endif
       ENDIF
-#endif
+#endif /* ALLOW_ZONAL_FILT */
 C -- Fill negative tracer values (for now, only if Fizhi is running)
 #ifdef ALLOW_FIZHI
       IF (useFIZHI .and. saltAdvScheme.eq.2) THEN
