@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.1 2009/10/14 01:17:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.2 2009/10/14 20:11:16 heimbach Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -24,9 +24,11 @@ C     == GLobal variables ==
 # include "DIC_DIAGS.h"
 # include "DIC_CTRL.h"
 #endif
+#ifdef ALLOW_CTRL
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#endif
 C     == Routine arguments ==
       _RL fac
       INTEGER myThid
@@ -46,6 +48,7 @@ c     == external ==
 
 c     == end of interface ==
 CEOP
+#ifdef ALLOW_CTRL
 
       doglobalread = .false.
       ladinit      = .false.
@@ -61,20 +64,31 @@ c       fac = 1.d-3
    
       print*,'QQ alpha before', alpha(20,10,1,1)
 
-      il=ilnblnk( xx_gen_2d_file )
+#ifdef ALLOW_GEN2D_CONTROL
+      il=ilnblnk( xx_gen2d_file )
       write(fnamegen2d(1:80),'(2a,i10.10)')
-     &     xx_gen_2d_file(1:il),'.',optimcycle
+     &     xx_gen2d_file(1:il),'.',optimcycle
       call active_read_xy_loc( fnamegen2d, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_gen_2d_dummy )
+     &                      mythid, xx_gen2d_dummy )
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           do i = 1, sNx
+             do j = 1, sNy
+                alpha (i,j,bi,bj) = alpha(i,j,bi,bj) +
+     &               fac*tmpfld2d(i,j,bi,bj)
+             end do
+          end do
+        end do
+      end do
+#endif
 
        DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
            do i = 1, sNx
              do j = 1, sNy
-c               alpha (i,j,bi,bj) = alpha(i,j,bi,bj)*(1.+xx_dic(1))
-                feload(i,j,bi,bj) = feload(i,j,bi,bj) +
-     &                               fac*tmpfld2d(i,j,bi,bj)
+                feload(i,j,bi,bj) = feload(i,j,bi,bj)*(1.+xx_dic(1))
 cswd -- QQ limits!
 cph                if (alpha(i,j,bi,bj).gt.alphamax) then
 cph                   alpha(i,j,bi,bj)=alphamax
@@ -84,11 +98,10 @@ cph                   alpha(i,j,bi,bj)=alphamin
 cph                endif
 cswd -- QQ limits
                 rain_ratio(i,j,bi,bj) = 
-     &               rain_ratio(i,j,bi,bj) +
-     &               rain_ratio(i,j,bi,bj) * xx_dic(2)
+     &               rain_ratio(i,j,bi,bj)*(1.+xx_dic(2))
              end do
           end do
-       end do
+        end do
       end do
 
       _EXCH_XY_RL( alpha, mythid )
@@ -106,6 +119,8 @@ cswd -- QQ limits
       print *,'COST KScav = ', KScav
       print *,'COST ligand_stab = ', ligand_stab
       print *,'COST ligand_tot = ', ligand_tot
+
+#endif
 
 cph#endif /* DIC_BIOTIC */
 
