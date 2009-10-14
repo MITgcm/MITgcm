@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.103 2009/10/08 19:44:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.104 2009/10/14 01:40:45 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,6 +82,8 @@ c They provide the fields to be stored.
 #  include "DIC_VARS.h"
 #  include "DIC_LOAD.h"
 #  include "DIC_ATMOS.h"
+#  include "DIC_CTRL.h"
+#  include "DIC_COST.h"
 # endif
 #  ifdef ALLOW_OBCS
 #   include "OBCS.h"
