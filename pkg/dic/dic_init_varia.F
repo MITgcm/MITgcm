@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_varia.F,v 1.1 2009/10/14 05:01:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_varia.F,v 1.2 2009/10/14 05:17:17 heimbach Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -64,92 +64,6 @@ C--   Initialise alpha & rain_ratio fields with fixed (& Uniform) values
       totcost =  0. _d 0
 # endif
 #endif /* DIC_BIOTIC */
-
-      _BEGIN_MASTER(myThid)
-
-C set up coefficients for DIC chemistry
-C define Schmidt no. coefficients for CO2
-      sca1 = 2073.1 _d 0
-      sca2 = -125.62 _d 0
-      sca3 =    3.6276 _d 0
-      sca4 =   -0.043219 _d 0
-C define Schmidt no. coefficients for O2
-C based on Keeling et al [GBC, 12, 141, (1998)]
-      sox1 = 1638.0 _d 0
-      sox2 = -81.83 _d 0
-      sox3 =    1.483 _d 0
-      sox4 =   -0.008004 _d 0
-
-C coefficients for determining saturation O2
-      oA0=  2.00907 _d 0
-      oA1=  3.22014 _d 0
-      oA2=  4.05010 _d 0
-      oA3=  4.94457 _d 0
-      oA4= -2.56847 _d -1
-      oA5=  3.88767 _d 0
-      oB0= -6.24523 _d -3
-      oB1= -7.37614 _d -3
-      oB2= -1.03410 _d -2
-      oB3= -8.17083 _d -3
-      oC0= -4.88682 _d -7
-
-C     Set other constant/flag
-
-#ifndef USE_ATMOSCO2
-
-      if (dic_int1.eq.2) then
-        call mdsfindunit( iUnit, mythid )
-        open(UNIT=iUnit,FILE='co2atmos.dat',STATUS='old')
-        do k=1,dic_int2
-          read(iUnit,*) co2atmos(k)
-          print*,'co2atmos',co2atmos(k)
-        enddo
-        close(iUnit)
-      endif
-
-      if (dic_int1.eq.3) then
-        write(iName,'(A,I10.10)') 'dic_atmos.',nIter0
-        ilo = ifnblnk(iName)
-        ihi = ilnblnk(iName)
-        call mdsfindunit( iUnit, mythid )
-        open(UNIT=iUnit,FILE=iname(ilo:ihi),STATUS='old')
-        read(iUnit,*) total_atmos_carbon_ini,
-     &              atpco2_ini
-        close(iUnit)
-      endif
-     
-#endif
-
-#ifdef DIC_BIOTIC
-#ifdef AD_SAFE
-      nlev=Nr
-#else
-      k = 1
-      DO WHILE ( k .LT. Nr .AND. rC(k) .GE. -zcrit )
-        k = k+1
-      ENDDO
-      nlev = k
-#endif
-C--   Print out nlev values :
-      iUnit = standardMessageUnit
-      WRITE(msgBuf,'(A)') ' '
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-      WRITE(msgBuf,'(A)') '//  DIC_INIT_FIXED parameters :'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
-
-       CALL WRITE_0D_I( nlev, INDEX_NONE, 'nlev =',
-     &   ' /* Number of level over which Bio act is computed */')
-#endif /* DIC_BIOTIC */
-
-      _END_MASTER(myThid)
-
-#ifdef ALLOW_MNC
-      IF ( useMNC ) THEN
-        CALL DIC_MNC_INIT( myThid )
-      ENDIF
-#endif /* ALLOW_MNC */
 
 #endif /* ALLOW_DIC */
 
