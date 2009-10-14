@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.171 2009/10/10 18:10:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.172 2009/10/14 05:15:19 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -99,6 +99,7 @@ C     == Global variables ==
 #  include "DIC_VARS.h"
 #  include "DIC_LOAD.h"
 #  include "DIC_ATMOS.h"
+#  include "DIC_COST.h"
 # endif
 # ifdef ALLOW_OBCS
 #  include "OBCS.h"
@@ -580,6 +581,8 @@ CADJ &     kind = isbyte
 #  endif
 # endif
 #endif
+
+#ifndef ALLOW_OFFLINE
 C--   Step forward fields and calculate time tendency terms.
 #ifndef ALLOW_AUTODIFF_TAMC
       IF ( momStepping ) THEN
@@ -594,6 +597,7 @@ C--   Step forward fields and calculate time tendency terms.
 #ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
 #endif
+#endif /* ndfef ALLOW_OFFLINE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
@@ -735,6 +739,8 @@ C      => Filtering of uVel,vVel is necessary
       ENDIF
 #endif
 
+#ifndef ALLOW_OFFLINE
+
 C--   Solve elliptic equation(s).
 C     Two-dimensional only for conventional hydrostatic or
 C     three-dimensional for non-hydrostatic and/or IGW scheme.
@@ -778,6 +784,7 @@ CADJ &     = comlev1, key = ikey_dynamics
 #ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
 #endif
+#endif /* ndfef ALLOW_OFFLINE */
 
 #ifdef EXACT_CONSERV
       IF (exactConserv) THEN
