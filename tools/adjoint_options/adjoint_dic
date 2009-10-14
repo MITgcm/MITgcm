@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_dic,v 1.1 2009/10/14 01:15:30 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/Attic/adjoint_dic,v 1.2 2009/10/14 20:08:28 heimbach Exp $
 #  $Name:  $
 #
 
@@ -24,7 +24,7 @@ SVD_TAF_FLAGS='-reverse -forward -pure -i4 -r4 -l taf_svd.log -flow taf_flow.log
 
 DIFF_FLAGS="-toplevel 'the_main_loop'    \
             -input 'xx_dic \
-		    xx_gen_2d_dummy'       \
+		    xx_gen2d_dummy'       \
             -output 'totcost' "
 
 AD_TAMC_FLAGS="$AD_TAMC_FLAGS $DIFF_FLAGS"
