@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.21 2008/04/19 18:04:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.22 2009/10/14 01:26:44 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -83,9 +83,12 @@ c     ==================================================================
      &                  , xx_theta_ini_fin_dummy
      &                  , xx_salt_ini_fin_dummy
      &                  , xx_smrareabar_mean_dummy
+     &                  , xx_gen_2d_dummy
+     &                  , xx_gen_3d_dummy
 cHFLUXM_CONTROL
      &                  , xx_hfluxm_dummy
 cHFLUXM_CONTROL
+
       _RL xx_theta_dummy
       _RL xx_salt_dummy
       _RL xx_hflux_dummy
@@ -129,6 +132,8 @@ cHFLUXM_CONTROL
       _RL xx_sihsnow_dummy
       _RL xx_relaxsst_dummy
       _RL xx_relaxsss_dummy
+      _RL xx_gen_2d_dummy
+      _RL xx_gen_3d_dummy
 c
       _RL xx_tbar_mean_dummy
       _RL xx_sbar_mean_dummy

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.47 2009/02/13 15:02:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.48 2009/10/14 01:26:44 heimbach Exp $
 C $Name:  $
 
 
@@ -22,6 +22,10 @@ c     ==================================================================
 c
 c     nwet[c/s/w]tile - Number of wet points in a tile for center (c),
 c                       south (s), and western (w) mask, resp. .
+
+      integer     dimgen2d
+      integer     dimgen3d
+      parameter ( dimgen2d = 1, dimgen3d = 0 )
 
       integer     maxcvars
 #if (defined (CTRL_SET_OLD_MAXCVARS_30))
@@ -609,6 +613,7 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_siarea_file
      &                    , xx_siheff_file
      &                    , xx_sihsnow_file
+     &                    , xx_gen_2d_file
 cHFLUXM_CONTROL
      &                    , xx_hfluxm_file
 cHFLUXM_CONTROL
@@ -658,6 +663,7 @@ cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_siarea_file
       character*(MAX_LEN_FNAM) xx_siheff_file
       character*(MAX_LEN_FNAM) xx_sihsnow_file
+      character*(MAX_LEN_FNAM) xx_gen_2d_file
 cHFLUXM_CONTROL
       character*(MAX_LEN_FNAM) xx_hfluxm_file
 cHFLUXM_CONTROL
@@ -978,6 +984,7 @@ c                         control part.
       character*( 80)   fname_siarea(2)
       character*( 80)   fname_siheff(2)
       character*( 80)   fname_sihsnow(2)
+      character*( 80)   fname_gen2d(2)
 cHFLUXM_CONTROL
       character*( 80)   fname_hfluxm(2)
 cHFLUXM_CONTROL
