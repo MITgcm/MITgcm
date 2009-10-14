@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.9 2009/10/14 05:01:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_varia.F,v 1.1 2009/10/14 05:01:54 heimbach Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: DIC_INIT_FIXED
+C     !ROUTINE: DIC_INIT_VARIA
 
 C     !INTERFACE:
-      SUBROUTINE DIC_INIT_FIXED( myThid )
+      SUBROUTINE DIC_INIT_VARIA( myThid )
 
 C     !DESCRIPTION:
-C     Initialize fixed quantities
+C     Initialize variable quantities
 
 C     !USES:
       IMPLICIT NONE
@@ -21,7 +21,9 @@ C     !USES:
 #include "GRID.h"
 #include "DIC_VARS.h"
 #include "DIC_ATMOS.h"
-
+#ifdef ALLOW_COST
+# include "DIC_COST.h"
+#endif
 C     !INPUT PARAMETERS:
 C     myThid               :: thread number
       INTEGER myThid
@@ -38,6 +40,30 @@ CEOP
       external ilnblnk,ifnblnk
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef DIC_BIOTIC
+C--   Initialise alpha & rain_ratio fields with fixed (& Uniform) values
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            alpha(i,j,bi,bj)      = alphaUniform
+            rain_ratio(i,j,bi,bj) = rainRatioUniform
+            DO k = 1, Nr
+               omegaC(i,j,k,bi,bj) =  0. _d 0
+            ENDDO
+          ENDDO
+         ENDDO
+       ENDDO
+      ENDDO
+      alpfe = 0. _d 0
+      kscav =  0. _d 0
+      ligand_stab =  0. _d 0
+      ligand_tot =  0. _d 0
+# ifdef ALLOW_COST
+      totcost =  0. _d 0
+# endif
+#endif /* DIC_BIOTIC */
 
       _BEGIN_MASTER(myThid)
 
