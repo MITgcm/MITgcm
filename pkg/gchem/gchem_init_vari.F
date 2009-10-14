@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_vari.F,v 1.11 2009/06/30 16:43:00 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_vari.F,v 1.12 2009/10/14 01:31:42 heimbach Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -39,8 +39,11 @@ ccccccccccccccccccccccccccc
           print*,'QQ load dic parameters, initial vari' 
           CALL DIC_INI_FORCING(myThid)
           CALL DIC_SURFFORCING_INIT(myThid)
-          CALL DIC_BIOTIC_INIT(myThid )
+          CALL DIC_BIOTIC_INIT(myThid)
       ENDIF
+# ifdef ALLOW_CTRL
+      CALL DIC_SET_CONTROL(myThid)
+# endif
 #endif /* ALLOW_DIC */
 
 #ifdef ALLOW_DARWIN
