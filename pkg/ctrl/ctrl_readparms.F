@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.31 2009/02/13 15:02:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.32 2009/10/14 20:09:40 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -119,7 +119,7 @@ c--   Read the namelist input.
      &  xx_sst_file, xx_sss_file,
      &  xx_sststartdate1, xx_sststartdate2, xx_sstperiod,
      &  xx_sssstartdate1, xx_sssstartdate2, xx_sssperiod,
-     &  xx_depth_file,
+     &  xx_depth_file, xx_gen2d_file, xx_gen3d_file,
      &  xx_efluxy_file, xx_efluxp_file,
      &  xx_bottomdrag_file,
      &  xx_edtaux_file, xx_edtauy_file,
@@ -162,6 +162,9 @@ c--     Set default values.
 
         xx_theta_file      = 'xx_theta'
         xx_salt_file       = 'xx_salt'
+c
+        xx_gen2d_file      = 'xx_gen2d'
+        xx_gen3d_file      = 'xx_gen3d'
 c
         xx_hfluxstartdate1 =   0
         xx_hfluxstartdate2 =   0

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.31 2009/05/29 06:12:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.32 2009/10/14 20:09:40 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -148,7 +148,7 @@ cph    index 23             for bottom drag
 cph    index 24
 cph    index 25-26          for edtaux, edtauy
 cph    index 27-29          for uvel0, vvel0, etan0
-cph    index 30-31          for relax. SST, SSS
+cph    index 30-31          for generic 2d, 3d field
 cph    index 32    reserved for precip (atmos. state)
 cph    index 33    reserved for swflux (atmos. state)
 cph    index 34    reserved for swdown (atmos. state)
@@ -723,19 +723,19 @@ c--
 
 c----------------------------------------------------------------------
 c--
-#ifdef ALLOW_RELAXSST_CONTROL
+#ifdef ALLOW_GEN2D_CONTROL
         call ctrl_init_ctrlvar (
-     &       xx_relaxsst_file, 30, 130, 1, 1, 1,
+     &       xx_gen2d_file, 30, 130, 1, 1, 1,
      &       snx, sny, 1, 'c', 'xy', mythid )
-#endif /* ALLOW_RELAXSST_CONTROL */
+#endif /* ALLOW_GEN2D_CONTROL */
 
 c----------------------------------------------------------------------
 c--
-#ifdef ALLOW_RELAXSSS_CONTROL
+#ifdef ALLOW_GEN3D_CONTROL
         call ctrl_init_ctrlvar (
-     &       xx_relaxsss_file, 31, 131, 1, 1, 1,
-     &       snx, sny, 1, 'c', 'xy', mythid )
-#endif /* ALLOW_RELAXSSS_CONTROL */
+     &       xx_gen3d_file, 31, 131, 1, 1, 1,
+     &       snx, sny, nr, 'c', '3d', mythid )
+#endif /* ALLOW_GEN3D_CONTROL */
 
 c----------------------------------------------------------------------
 c--
