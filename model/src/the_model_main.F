@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.104 2009/10/10 18:09:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.105 2009/10/14 22:29:22 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -494,7 +494,7 @@ c--   set default:
       lastdiva = .TRUE.
 
 #ifdef ALLOW_DEBUG
-      CALL DEBUG_ENTER('THE_MODEL_MAIN',myThid)
+      IF (debugMode) CALL DEBUG_ENTER('THE_MODEL_MAIN',myThid)
 #endif
 
 #if defined(USE_PAPI) || defined(USE_PCL_FLOPS_SFP) || defined(USE_PCL_FLOPS) || defined(USE_PCL)
@@ -504,7 +504,7 @@ C--   This timer encompasses the whole code
       CALL TIMER_START('ALL                    [THE_MODEL_MAIN]',myThid)
 
 #ifdef ALLOW_DEBUG
-      CALL DEBUG_CALL('INITIALISE_FIXED',myThid)
+      IF (debugMode) CALL DEBUG_CALL('INITIALISE_FIXED',myThid)
 #endif
 
 C--   Set model configuration (fixed arrays)
