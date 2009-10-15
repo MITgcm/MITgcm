@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.21 2009/06/17 20:00:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.22 2009/10/15 01:06:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,19 +45,19 @@ C     myThid :: Number of this instance of INI_SALT
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi,bj  :: Tile indices
-C     I,J,K  :: Loop counters
+C     i,j,k  :: Loop counters
       INTEGER bi, bj
-      INTEGER I, J, K, localWarnings
+      INTEGER i, j, k, localWarnings
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 C--   Initialise salinity field to the vertical reference profile
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-           salt(I,J,K,bi,bj) = sRef(K)
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           salt(i,j,k,bi,bj) = sRef(k)
           ENDDO
          ENDDO
         ENDDO
@@ -86,17 +86,19 @@ C     Apply mask and test consistancy
       localWarnings=0
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-           IF (maskC(I,J,K,bi,bj).EQ.0.) salt(I,J,K,bi,bj) = 0.
+        DO k=1,Nr
+         IF ( maskIniSalt ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            IF (maskC(i,j,k,bi,bj).EQ.0.) salt(i,j,k,bi,bj) = 0.
+           ENDDO
           ENDDO
-         ENDDO
+         ENDIF
          IF ( sRef(k).NE.0. ) THEN
-          DO J=1,sNy
-           DO I=1,sNx
-            IF ( maskC(I,J,K,bi,bj).NE.0.
-     &      .AND. salt(I,J,K,bi,bj).EQ.0. ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+            IF ( maskC(i,j,k,bi,bj).NE.0.
+     &      .AND. salt(i,j,k,bi,bj).EQ.0. ) THEN
               localWarnings=localWarnings+1
             ENDIF
            ENDDO
@@ -105,12 +107,24 @@ C     Apply mask and test consistancy
         ENDDO
        ENDDO
       ENDDO
-      IF (localWarnings.NE.0) THEN
-       WRITE(msgBuf,'(A,A)')
-     &  'S/R INI_SALT: salt = 0 identically. If this is intentional',
-     &  'you will need to edit ini_salt.F to avoid this safety check'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       STOP 'ABNORMAL END: S/R INI_SALT'
+      IF ( localWarnings.NE.0 ) THEN
+       IF ( checkIniSalt ) THEN
+        WRITE(msgBuf,'(A,I10,A)')
+     &   ' INI_SALT: found', localWarnings,
+     &   ' wet grid-pts with salt=0 identically.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A,A)')
+     &  ' If this is intentional, you need to',
+     &  ' set checkIniSalt=.false. in "data", namelist PARM05'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R INI_SALT'
+       ELSE
+        WRITE(msgBuf,'(A,I10,A)')
+     &   '** WARNINGS ** INI_SALT: found', localWarnings,
+     &   ' wet grid-pts with salt=0 identically.'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
       ENDIF
 
       IF (debugMode) THEN

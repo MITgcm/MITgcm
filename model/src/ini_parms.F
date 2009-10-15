@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.223 2009/10/08 20:04:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.224 2009/10/15 01:06:50 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -259,7 +259,9 @@ C--   Gridding parameters
 C--   Input files
       NAMELIST /PARM05/
      & bathyFile, topoFile, shelfIceFile,
-     & hydrogThetaFile, hydrogSaltFile, diffKrFile,
+     & diffKrFile,
+     & hydrogThetaFile, hydrogSaltFile,
+     & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
      & zonalWindFile, meridWindFile,
      & thetaClimFile, saltClimFile,
      & surfQfile, surfQnetFile, surfQswFile, EmPmRfile, saltFluxFile,
@@ -271,7 +273,6 @@ C--   Input files
      & the_run_name
 CEOP
 
-C
       _BEGIN_MASTER(myThid)
 
 C     Defaults values for input parameters

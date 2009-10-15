@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.144 2009/01/27 15:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.145 2009/10/15 01:06:50 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -309,6 +309,10 @@ C--   Input files
       topoFile        = ' '
       hydrogSaltFile  = ' '
       hydrogThetaFile = ' '
+      maskIniTemp     = .TRUE.
+      maskIniSalt     = .TRUE.
+      checkIniTemp    = .TRUE.
+      checkIniSalt    = .TRUE.
       diffKrFile      = ' '
       zonalWindFile   = ' '
       meridWindFile   = ' '

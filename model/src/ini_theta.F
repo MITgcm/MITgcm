@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.27 2009/06/17 20:00:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.28 2009/10/15 01:06:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,9 +45,9 @@ C     myThid :: Number of this instance of INI_THETA
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi,bj  :: Tile indices
-C     I,J,K  :: Loop counters
+C     i,j,k  :: Loop counters
       INTEGER bi, bj
-      INTEGER I, J, K, localWarnings
+      INTEGER i, j, k, localWarnings
       _RL     Tfreezing
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -55,10 +55,10 @@ CEOP
 C--   Initialise temperature field to the vertical reference profile
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-           theta(I,J,K,bi,bj) = tRef(K)
+        DO k=1,Nr
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           theta(i,j,k,bi,bj) = tRef(k)
           ENDDO
          ENDDO
         ENDDO
@@ -87,17 +87,19 @@ C--   Apply mask and test consistency
       localWarnings=0
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nr
-         DO J=1-Oly,sNy+Oly
-          DO I=1-Olx,sNx+Olx
-           IF (maskC(I,J,K,bi,bj).EQ.0.) theta(I,J,K,bi,bj) = 0.
+        DO k=1,Nr
+         IF ( maskIniTemp ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            IF (maskC(i,j,k,bi,bj).EQ.0.) theta(i,j,k,bi,bj) = 0.
+           ENDDO
           ENDDO
-         ENDDO
+         ENDIF
          IF ( tRef(k).NE.0. ) THEN
-          DO J=1,sNy
-           DO I=1,sNx
-            IF (  maskC(I,J,K,bi,bj).NE.0.
-     &      .AND. theta(I,J,K,bi,bj).EQ.0. ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+            IF (  maskC(i,j,k,bi,bj).NE.0.
+     &      .AND. theta(i,j,k,bi,bj).EQ.0. ) THEN
               localWarnings=localWarnings+1
             ENDIF
            ENDDO
@@ -107,11 +109,23 @@ C--   Apply mask and test consistency
        ENDDO
       ENDDO
       IF (localWarnings.NE.0) THEN
-       WRITE(msgBuf,'(A,A)')
-     &  'S/R INI_THETA: theta = 0 identically. If this is intentional',
-     &  'you will need to edit ini_theta.F to avoid this safety check'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       STOP 'ABNORMAL END: S/R INI_THETA'
+       IF ( checkIniTemp ) THEN
+        WRITE(msgBuf,'(A,I10,A)')
+     &   ' INI_THETA: found', localWarnings,
+     &   ' wet grid-pts with theta=0 identically.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A,A)')
+     &  ' If this is intentional, you need to',
+     &  ' set checkIniTemp=.false. in "data", namelist PARM05'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R INI_THETA'
+       ELSE
+        WRITE(msgBuf,'(A,I10,A)')
+     &   '** WARNINGS ** INI_THETA: found', localWarnings,
+     &   ' wet grid-pts with theta=0 identically.'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       ENDIF
       ENDIF
 
 C--   Check that there are no values of temperature below freezing point.
@@ -119,11 +133,11 @@ C--   Check that there are no values of temperature below freezing point.
       IF ( allowFreezing ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
-            IF (theta(I,J,k,bi,bj) .LT. Tfreezing) THEN
-               theta(I,J,K,bi,bj) = Tfreezing
+         DO k=1,Nr
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            IF (theta(i,j,k,bi,bj) .LT. Tfreezing) THEN
+               theta(i,j,k,bi,bj) = Tfreezing
             ENDIF
            ENDDO
           ENDDO
