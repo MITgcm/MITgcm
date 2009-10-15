@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.229 2009/10/08 20:02:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.230 2009/10/15 01:05:54 jmc Exp $
 C $Name:  $
 C
 
@@ -262,6 +262,10 @@ C     saltAdvection  :: Flag which turns advection of salinity on and off.
 C     saltIsActiveTr :: Salinity  is a dynamically active tracer
 C     saltForcing    :: Flag which turns external forcing of salinity on
 C                       and off.
+C     maskIniTemp    :: apply mask to initial Pot.Temp.
+C     maskIniSalt    :: apply mask to initial salinity
+C     checkIniTemp   :: check for points with identically zero initial Pot.Temp.
+C     checkIniSalt   :: check for points with identically zero initial salinity
 C     useRealFreshWaterFlux :: if True (=Natural BCS), treats P+R-E flux
 C                         as a real Fresh Water (=> changes the Sea Level)
 C                         if F, converts P+R-E to salt flux (no SL effect)
@@ -339,6 +343,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & momStepping, tempStepping, saltStepping,
      & tempAdvection, tempIsActiveTr, tempForcing,
      & saltAdvection, saltIsActiveTr, saltForcing,
+     & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
      & useRealFreshWaterFlux,
      & rigidLid, implicitFreeSurface, exactConserv, linFSConserveTr,
      & uniformLin_PhiSurf,
@@ -387,6 +392,10 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL saltAdvection
       LOGICAL saltIsActiveTr
       LOGICAL saltForcing
+      LOGICAL maskIniTemp
+      LOGICAL maskIniSalt
+      LOGICAL checkIniTemp
+      LOGICAL checkIniSalt
       LOGICAL useRealFreshWaterFlux
       LOGICAL useFullLeith
       LOGICAL useStrainTensionVisc
