@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_varia.F,v 1.2 2009/10/14 05:17:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_varia.F,v 1.3 2009/10/15 05:23:22 heimbach Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -56,10 +56,6 @@ C--   Initialise alpha & rain_ratio fields with fixed (& Uniform) values
          ENDDO
        ENDDO
       ENDDO
-      alpfe = 0. _d 0
-      kscav =  0. _d 0
-      ligand_stab =  0. _d 0
-      ligand_tot =  0. _d 0
 # ifdef ALLOW_COST
       totcost =  0. _d 0
 # endif

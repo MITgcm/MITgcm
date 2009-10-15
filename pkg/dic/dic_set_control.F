@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.2 2009/10/14 20:11:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.3 2009/10/15 05:23:22 heimbach Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -57,7 +57,6 @@ CEOP
 
       if ( equal ) then
         fac = 1. _d 0
-c       fac = 1.d-3
       else
         fac = 0. _d 0
       endif
@@ -82,13 +81,6 @@ c       fac = 1.d-3
           end do
         end do
       end do
-#endif
-
-       DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-           do i = 1, sNx
-             do j = 1, sNy
-                feload(i,j,bi,bj) = feload(i,j,bi,bj)*(1.+xx_dic(1))
 cswd -- QQ limits!
 cph                if (alpha(i,j,bi,bj).gt.alphamax) then
 cph                   alpha(i,j,bi,bj)=alphamax
@@ -97,6 +89,17 @@ cph                if (alpha(i,j,bi,bj).lt.alphamin) then
 cph                   alpha(i,j,bi,bj)=alphamin
 cph                endif
 cswd -- QQ limits
+      print*,'QQ - preturb alpha', alpha(20,10,1,1), 
+     &                             tmpfld2d(20,10,1,1)
+#endif
+
+#ifdef ALLOW_DIC_CONTROL
+
+       DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           do i = 1, sNx
+             do j = 1, sNy
+                feload(i,j,bi,bj) = feload(i,j,bi,bj)*(1.+xx_dic(1))
                 rain_ratio(i,j,bi,bj) = 
      &               rain_ratio(i,j,bi,bj)*(1.+xx_dic(2))
              end do
@@ -106,19 +109,17 @@ cswd -- QQ limits
 
       _EXCH_XY_RL( alpha, mythid )
       _EXCH_XY_RL( rain_ratio, mythid )
-      _EXCH_XY_RL( alpfe, mythid )
       _EXCH_XY_RL( feload, mythid )
-
 
       KScav       = KScav       * (1.+1.e+6*xx_dic(3))
       ligand_stab = ligand_stab * (1.+1.e+6*xx_dic(4))
       ligand_tot  = ligand_tot  * (1.+1.e+6*xx_dic(5))
 
-      print*,'QQ - preturb alpha', alpha(20,10,1,1), 
-     &                             tmpfld2d(20,10,1,1)
       print *,'COST KScav = ', KScav
       print *,'COST ligand_stab = ', ligand_stab
       print *,'COST ligand_tot = ', ligand_tot
+
+#endif
 
 #endif
 
