@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_beagle,v 1.4 2009/09/23 18:38:33 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort+mpi_beagle,v 1.5 2009/10/15 23:06:32 jahn Exp $
 #  $Name:  $
 #
 #  These are the build options used with the Intel 10.x compiler for
@@ -26,7 +26,7 @@ CC='mpicc'
 F90C='mpif90 -fixed -c '
 LINK='mpif77'
 INCLUDES="$CPPFLAGS"
-LIBS="$LDFLAGS"
+LIBS="$LDFLAGS -shared-intel"
 
 # -DIFORT turns on ifort-specific declarations in darwin (RAND is not an intrinsic)
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4 -DIFORT'
@@ -39,7 +39,9 @@ NOOPTFILES='mds_byteswapr8.F mds_byteswapr4.F mds_byteswapi4.F mom_calc_ke.F mon
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
     NOOPTFLAGS='-O2'
-    FOPTIM='-O3 -align'
+    # use this for exact checkpointing (slightly slower):
+    # FOPTIM='-O2 -pc64 -mieee-fp -align'
+    FOPTIM='-O2 -align'
     # ifort options:
     # -132        fixed-form line length is 132 characters
     # -r8         REAL is REAL*8
@@ -52,7 +54,7 @@ if test "x$IEEE" = x ; then
     # -assume byterecl     record length in OPEN statements is in bytes
     # -convert big_endian  binary files contain big-endian data
     # -shared-intel        avoids static library mismatch (?)
-    FFLAGS="$FFLAGS -r8 -i4 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian -shared-intel" 
+    FFLAGS="$FFLAGS -r8 -i4 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian" 
 else
     #  Try to follow IEEE-754
     NOOPTFLAGS='-O0'
@@ -62,7 +64,7 @@ else
     # -pc64       round floating point values to 64 bits
     # one could also try
     # -mp         maintain precision
-    FFLAGS="$FFLAGS -pc64 -r8 -i4 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian -shared-intel" 
+    FFLAGS="$FFLAGS -pc64 -r8 -i4 -w95 -W0 -WB -xT -fno-alias -assume byterecl -convert big_endian" 
 fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
