@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.32 2009/10/14 20:09:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.33 2009/10/15 05:22:29 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -74,6 +74,9 @@ c     == global variables ==
 #endif
 #ifdef ALLOW_OBCS_CONTROL
 # include "OBCS.h"
+#endif
+#ifdef ALLOW_DIC_CONTROL
+# include "DIC_CTRL.h"
 #endif
 
 c     == routine arguments ==
@@ -1043,6 +1046,15 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
         call ctrl_init_wet( mythid )
+
+c----------------------------------------------------------------------
+c----------------------------------------------------------------------
+
+#ifdef ALLOW_DIC_CONTROL
+        do i = 1, dic_n_control
+           xx_dic(i) = 0. _d 0
+        enddo
+#endif
 
 c----------------------------------------------------------------------
 c----------------------------------------------------------------------
