@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.19 2009/04/28 18:08:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.20 2009/10/15 05:21:50 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,6 +31,10 @@ c     == global variables ==
 #include "cost.h"
 #ifdef ALLOW_CTRL
 # include "ctrl.h"
+#endif
+#ifdef ALLOW_DIC
+cph-- quickly for testing
+# include "DIC_COST.h"
 #endif
 
 c     == routine arguments ==
@@ -125,6 +129,11 @@ c--   Sum up all contributions.
 
 c--   Do global summation.
       _GLOBAL_SUM_RL( fc , myThid )
+
+#ifdef ALLOW_DIC
+cph-- quickly for testing
+      fc = totcost
+#endif
 
       write(standardmessageunit,'(A,D22.15)') ' global fc = ', fc
 
