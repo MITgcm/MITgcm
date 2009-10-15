@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.3 2009/10/15 05:23:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.4 2009/10/15 23:28:43 heimbach Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -67,7 +67,7 @@ CEOP
       il=ilnblnk( xx_gen2d_file )
       write(fnamegen2d(1:80),'(2a,i10.10)')
      &     xx_gen2d_file(1:il),'.',optimcycle
-      call active_read_xy_loc( fnamegen2d, tmpfld2d, 1,
+      call active_read_xy( fnamegen2d, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_gen2d_dummy )
 
