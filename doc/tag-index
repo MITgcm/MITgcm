@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1177 2009/10/14 19:56:18 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1178 2009/10/15 01:23:59 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  add run-time parameters to check and/or mask initial Temp & Salt
 o pkg/ptracers:
   apply zonal filter (if used) to all passive tracers
 
