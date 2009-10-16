@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1178 2009/10/15 01:23:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1179 2009/10/16 19:30:56 heimbach Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o adjoint: adding two new verification experiments
+  * tutorial_global_biogeo: an online dic sensitivity experiment 
+    (work with G. Forget)
+  * tutorial_dic_adjoffline: an offline dic sensitivity experiment
+    (an update of the Dutkiewicz et al., 2006 paper)
+  Both use the same CO2FLUX cost function, but different controls
+  Gradient checks look good, but some recomp. could still be traightened out
+  Should add xx_dic control variable to test at some point
 o model/src:
   add run-time parameters to check and/or mask initial Temp & Salt
 o pkg/ptracers:
