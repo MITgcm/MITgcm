@@ -1,0 +1,88 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=15*20.,
+ sRef=15*35.,
+ viscA4=0.,
+ viscAh=2.E5,
+ diffKhT=0.E3,
+ diffKhS=0.E3,
+ viscAz=1.E-3,
+#diffKzT=3.E-5,
+#diffKzS=3.E-5,
+ diffKrBL79surf= 3.E-5,
+ diffKrBL79deep= 13.E-5,
+ diffKrBL79Ho  = -2000.,
+ diffKrBL79scl = 150.,
+ gravity=9.81,
+ rhoConst=1035.,
+ rhoConstFresh=1000.,
+ implicitFreeSurface=.TRUE.,
+ eosType='JMD95Z',
+ implicitDiffusion=.TRUE.,
+ implicitViscosity=.TRUE.,
+ ivdc_kappa=100.,
+ tempAdvScheme       = 2,
+ saltAdvScheme       = 2,
+ allowFreezing=.TRUE.,
+# turn on looped cells
+ hFacMin=.1,
+ hFacMindz=50.,
+ useCDscheme=.TRUE.,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=5184000,
+ nTimeSteps = 4,
+ deltaTmom  = 900.,
+ tauCD =     321428.,
+ deltaTtracer= 43200.,
+ deltaTClock = 43200.,
+ abEps = 0.1,
+ pChkptFreq = 216000.,
+ chkptFreq  = 216000.,
+ dumpFreq   = 216000.,
+ taveFreq   = 216000.,
+ monitorFreq= 86400.,
+ tauThetaClimRelax = 5184000.,
+ tauSaltClimRelax  = 7776000.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2592000.,
+ externForcingCycle=31104000.,
+ monitorFreq= 1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ delZ=  50., 70.,  100., 140., 190., 
+       240., 290., 340., 390., 440., 
+       490., 540., 590., 640., 690.,
+ ygOrigin=-90.,
+ delX=128*2.8125,
+ delY=64*2.8125,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile=      'bathy.bin',
+ hydrogThetaFile='lev_clim_temp.bin',
+ hydrogSaltFile= 'lev_clim_salt.bin',
+ zonalWindFile=  'tren_taux.bin',
+ meridWindFile=  'tren_tauy.bin',
+ thetaClimFile=  'lev_monthly_temp.bin',
+ saltClimFile=   'lev_monthly_salt.bin',
+ surfQFile=      'shi_qnet.bin',
+ EmPmRFile=      'shi_empmr_year.bin',
+ the_run_name=   'Tutorial Biogeo',
+ &
