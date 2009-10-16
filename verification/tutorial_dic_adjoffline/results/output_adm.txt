@@ -7,8 +7,8 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint61w
 (PID.TID 0000.0001) // Build user:        heimbach
-(PID.TID 0000.0001) // Build host:        weddell.mit.edu
-(PID.TID 0000.0001) // Build date:        Fri Oct 16 12:11:01 EDT 2009
+(PID.TID 0000.0001) // Build host:        faulks
+(PID.TID 0000.0001) // Build date:        Fri Oct 16 12:57:14 EDT 2009
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -947,11 +947,11 @@
 (PID.TID 0000.0001) %MON DXC_max                      =   3.1259246843155E+05
 (PID.TID 0000.0001) %MON DXC_min                      =   7.6737143816223E+03
 (PID.TID 0000.0001) %MON DXC_mean                     =   1.9908248704234E+05
-(PID.TID 0000.0001) %MON DXC_sd                       =   9.6190602240067E+04
+(PID.TID 0000.0001) %MON DXC_sd                       =   9.6190602240068E+04
 (PID.TID 0000.0001) %MON DXF_max                      =   3.1259246843155E+05
 (PID.TID 0000.0001) %MON DXF_min                      =   7.6737143816223E+03
 (PID.TID 0000.0001) %MON DXF_mean                     =   1.9908248704234E+05
-(PID.TID 0000.0001) %MON DXF_sd                       =   9.6190602240067E+04
+(PID.TID 0000.0001) %MON DXF_sd                       =   9.6190602240068E+04
 (PID.TID 0000.0001) %MON DXG_max                      =   3.1268664380261E+05
 (PID.TID 0000.0001) %MON DXG_min                      =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON DXG_mean                     =   1.9902252711933E+05
@@ -1315,7 +1315,7 @@
 (PID.TID 0000.0001) %MON fCoriCos_max                 =   1.4579854531444E-04
 (PID.TID 0000.0001) %MON fCoriCos_min                 =   3.5791533929553E-06
 (PID.TID 0000.0001) %MON fCoriCos_mean                =   9.2855522572228E-05
-(PID.TID 0000.0001) %MON fCoriCos_sd                  =   4.4864964117307E-05
+(PID.TID 0000.0001) %MON fCoriCos_sd                  =   4.4864964117308E-05
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -2578,7 +2578,7 @@
 (PID.TID 0000.0001)                 4.797008993346594E+09       /* J = 64 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) globalArea = /* Integrated horizontal Area (m^2) */
-(PID.TID 0000.0001)                 3.303322488638341E+14
+(PID.TID 0000.0001)                 3.303322488638365E+14
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) the_run_name = /* Name of this simulation */
 (PID.TID 0000.0001)               'Offline dic'
@@ -2809,7 +2809,7 @@
 (PID.TID 0000.0001) %MON fCoriCos_max                 =   1.4579854531444E-04
 (PID.TID 0000.0001) %MON fCoriCos_min                 =   3.5791533929553E-06
 (PID.TID 0000.0001) %MON fCoriCos_mean                =   9.2855522572228E-05
-(PID.TID 0000.0001) %MON fCoriCos_sd                  =   4.4864964117307E-05
+(PID.TID 0000.0001) %MON fCoriCos_sd                  =   4.4864964117308E-05
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -2821,7 +2821,7 @@
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
- S/R DIC_SURFFORCING_INIT: Reading new dic data          12           1
+ S/R DIC_SURFFORCING_INIT: Reading new dic data 12 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+00
@@ -2846,13 +2846,12 @@ S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
- QQ first guess pH   8.17099685110493        19.8066616058350     
-   35.5974693298340        1.96655738353729       1.902262592921034E-004
-  4.228830803185701E-003   2.30775141716003     
+ QQ first guess pH  8.17099685  19.8066616  35.5974693  1.96655738
+  0.000190226259  0.0042288308  2.30775142
  QQ start timeave
- QQ alpha before  9.700000000000000E-011
+ QQ alpha before  9.7E-11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- QQ - preturb alpha  9.700000000000000E-011  0.000000000000000E+000
+ QQ - preturb alpha  9.7E-11  0.
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2929,7 +2928,7 @@ S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.4472939758957E-02
 (PID.TID 0000.0001) %MON pe_b_mean                    =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_max                       =   3.0861312312183E-02
-(PID.TID 0000.0001) %MON ke_mean                      =   1.0477685151465E-04
+(PID.TID 0000.0001) %MON ke_mean                      =   1.0477685151464E-04
 (PID.TID 0000.0001) %MON ke_vol                       =   1.2571476858569E+18
 (PID.TID 0000.0001) %MON vort_r_min                   =  -8.4926410197407E-07
 (PID.TID 0000.0001) %MON vort_r_max                   =   9.7785204919849E-07
@@ -3011,7 +3010,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
- QQ myiter, totcost =            1  -7119242957.41548     
+ QQ myiter, totcost =  1 -7.11924296E+09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3050,7 +3049,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.1667E-01  4.8333E-01
 time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.166666666666667E-01  4.833333333333333E-01
- QQ myiter, totcost =            2  -11603226819.1692     
+ QQ myiter, totcost =  2 -1.16032268E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3089,7 +3088,7 @@ time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.3333E-01  4.6667E-01
 time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.333333333333333E-01  4.666666666666667E-01
- QQ myiter, totcost =            3  -19807919452.4004     
+ QQ myiter, totcost =  3 -1.98079195E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3102,7 +3101,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9491974838866E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641950700473E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9623695661733E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292554E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292553E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2965145611947E-03
 (PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   5.0089022149022E-05
 (PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266167609725E-03
@@ -3128,7 +3127,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.5000E-01  4.5000E-01
 time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.500000000000000E-01  4.500000000000000E-01
- QQ myiter, totcost =            4  -28695373140.6871     
+ QQ myiter, totcost =  4 -2.86953731E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3167,7 +3166,7 @@ time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.5000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.6667E-01  4.3333E-01
 time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.666666666666667E-01  4.333333333333333E-01
- QQ myiter, totcost =            5  -39086077432.8429     
+ QQ myiter, totcost =  5 -3.90860774E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3206,7 +3205,7 @@ time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.6666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.8333E-01  4.1667E-01
 time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
- QQ myiter, totcost =            6  -50322982778.2507     
+ QQ myiter, totcost =  6 -5.03229828E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3245,7 +3244,7 @@ time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.0000E-01  4.0000E-01
 time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.000000000000000E-01  4.000000000000000E-01
- QQ myiter, totcost =            7  -62403503523.2938     
+ QQ myiter, totcost =  7 -6.24035035E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3284,7 +3283,7 @@ time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.0000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.1667E-01  3.8333E-01
 time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.166666666666667E-01  3.833333333333333E-01
- QQ myiter, totcost =            8  -75107608362.3476     
+ QQ myiter, totcost =  8 -7.51076084E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3323,7 +3322,7 @@ time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.3333E-01  3.6667E-01
 time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.333333333333333E-01  3.666666666666667E-01
- QQ myiter, totcost =            9  -88339825254.4652     
+ QQ myiter, totcost =  9 -8.83398253E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3362,7 +3361,7 @@ time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.5000E-01  3.5000E-01
 time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.500000000000000E-01  3.500000000000000E-01
- QQ myiter, totcost =           10  -101983575218.836     
+ QQ myiter, totcost =  10 -1.01983575E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3400,11 +3399,11 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT        10 ckptA
- --> objf_test(bi,bj)   =  0.000000000000000D+00
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.000000000000000D+00
- global fc = -0.101983575218836D+12
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.000000000000000E+00
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.000000000000000E+00
+ global fc = -0.101983575218073E+12
 S/R EXTERNAL_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+00
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.0000E-01  5.0000E-01
 time,fu0,fu1,fu =   0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  5.000000000000000E-01  5.000000000000000E-01
@@ -3438,7 +3437,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
- QQ myiter, totcost =            1  -7119242957.41548     
+ QQ myiter, totcost =  1 -7.11924296E+09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3479,7 +3478,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.1667E-01  4.8333E-01
 time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.166666666666667E-01  4.833333333333333E-01
- QQ myiter, totcost =            2  -11603226819.1692     
+ QQ myiter, totcost =  2 -1.16032268E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3520,7 +3519,7 @@ time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.3333E-01  4.6667E-01
 time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.333333333333333E-01  4.666666666666667E-01
- QQ myiter, totcost =            3  -19807919452.4004     
+ QQ myiter, totcost =  3 -1.98079195E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3535,7 +3534,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9491974838866E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641950700473E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9623695661733E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292554E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292553E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2965145611947E-03
 (PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   5.0089022149022E-05
 (PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266167609725E-03
@@ -3561,7 +3560,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.5000E-01  4.5000E-01
 time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.500000000000000E-01  4.500000000000000E-01
- QQ myiter, totcost =            4  -28695373140.6871     
+ QQ myiter, totcost =  4 -2.86953731E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3602,7 +3601,7 @@ time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.5000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.6667E-01  4.3333E-01
 time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.666666666666667E-01  4.333333333333333E-01
- QQ myiter, totcost =            5  -39086077432.8429     
+ QQ myiter, totcost =  5 -3.90860774E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3643,7 +3642,7 @@ time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.6666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.8333E-01  4.1667E-01
 time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
- QQ myiter, totcost =            6  -50322982778.2507     
+ QQ myiter, totcost =  6 -5.03229828E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3684,7 +3683,7 @@ time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.0000E-01  4.0000E-01
 time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.000000000000000E-01  4.000000000000000E-01
- QQ myiter, totcost =            7  -62403503523.2938     
+ QQ myiter, totcost =  7 -6.24035035E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3725,7 +3724,7 @@ time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.0000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.1667E-01  3.8333E-01
 time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.166666666666667E-01  3.833333333333333E-01
- QQ myiter, totcost =            8  -75107608362.3476     
+ QQ myiter, totcost =  8 -7.51076084E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3766,7 +3765,7 @@ time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.3333E-01  3.6667E-01
 time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.333333333333333E-01  3.666666666666667E-01
- QQ myiter, totcost =            9  -88339825254.4652     
+ QQ myiter, totcost =  9 -8.83398253E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3807,7 +3806,7 @@ time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.5000E-01  3.5000E-01
 time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.500000000000000E-01  3.500000000000000E-01
- QQ myiter, totcost =           10  -101983575218.836     
+ QQ myiter, totcost =  10 -1.01983575E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3890,7 +3889,7 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) %CHECKPOINT        10 ckptA
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.3333E-01  3.6667E-01
 time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.333333333333333E-01  3.666666666666667E-01
- QQ myiter, totcost =            9  -88339825254.4652     
+ QQ myiter, totcost =  9 -8.83398253E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -3971,7 +3970,7 @@ time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.1667E-01  3.8333E-01
 time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.166666666666667E-01  3.833333333333333E-01
- QQ myiter, totcost =            8  -75107608362.3476     
+ QQ myiter, totcost =  8 -7.51076084E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4052,7 +4051,7 @@ time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.0000E-01  4.0000E-01
 time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.000000000000000E-01  4.000000000000000E-01
- QQ myiter, totcost =            7  -62403503523.2938     
+ QQ myiter, totcost =  7 -6.24035035E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4133,7 +4132,7 @@ time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.0000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.8333E-01  4.1667E-01
 time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
- QQ myiter, totcost =            6  -50322982778.2507     
+ QQ myiter, totcost =  6 -5.03229828E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4214,7 +4213,7 @@ time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.6667E-01  4.3333E-01
 time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.666666666666667E-01  4.333333333333333E-01
- QQ myiter, totcost =            5  -39086077432.8429     
+ QQ myiter, totcost =  5 -3.90860774E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4295,7 +4294,7 @@ time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.6666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.5000E-01  4.5000E-01
 time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.500000000000000E-01  4.500000000000000E-01
- QQ myiter, totcost =            4  -28695373140.6871     
+ QQ myiter, totcost =  4 -2.86953731E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4376,7 +4375,7 @@ time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.5000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.3333E-01  4.6667E-01
 time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.333333333333333E-01  4.666666666666667E-01
- QQ myiter, totcost =            3  -19807919452.4004     
+ QQ myiter, totcost =  3 -1.98079195E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4391,7 +4390,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9491974838866E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641950700473E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9623695661733E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292554E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292553E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2965145611947E-03
 (PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   5.0089022149022E-05
 (PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266167609725E-03
@@ -4457,7 +4456,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.1667E-01  4.8333E-01
 time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.166666666666667E-01  4.833333333333333E-01
- QQ myiter, totcost =            2  -11603226819.1692     
+ QQ myiter, totcost =  2 -1.16032268E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4569,7 +4568,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
- QQ myiter, totcost =            1  -7119242957.41548     
+ QQ myiter, totcost =  1 -7.11924296E+09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -4832,11 +4831,11 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gen2d.0000000000.001.001.data
  ph-check entering grdchk_main 
- ph-check fcref =   -101983575218.836     
+ ph-check fcref =  -1.01983575E+11
 grad-res -------------------------------
  grad-res  proc    #    i    j    k   bi   bj iobc               fc ref           fc + eps           fc - eps
  grad-res  proc    #    i    j    k   bi   bj iobc             adj grad            fd grad         1 - fd/adj
- ph-grd -->hit<--           61           5           1           1
+ ph-grd -->hit<--  61 5 1 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: bathy.bin
@@ -5001,7 +5000,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_max         =   1.4579854531444E-04
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_min         =   3.5791533929553E-06
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_mean        =   9.2855522572228E-05
-(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117307E-05
+(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117308E-05
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -5013,7 +5012,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
- S/R DIC_SURFFORCING_INIT: Reading new dic data          12           1
+ S/R DIC_SURFFORCING_INIT: Reading new dic data 12 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+00
@@ -5038,13 +5037,12 @@ S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
- QQ first guess pH   8.17099685110493        19.8066616058350     
-   35.5974693298340        1.96655738353729       1.902262592921034E-004
-  4.228830803185701E-003   2.30775141716003     
+ QQ first guess pH  8.17099685  19.8066616  35.5974693  1.96655738
+  0.000190226259  0.0042288308  2.30775142
  QQ start timeave
- QQ alpha before  9.700000000000000E-011
+ QQ alpha before  9.7E-11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- QQ - preturb alpha  9.700000000000000E-011  0.000000000000000E+000
+ QQ - preturb alpha  9.7E-11  0.
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -5120,7 +5118,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
- QQ myiter, totcost =            1  -7119242957.41548     
+ QQ myiter, totcost =  1 -7.11924296E+09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5161,7 +5159,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.1667E-01  4.8333E-01
 time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.166666666666667E-01  4.833333333333333E-01
- QQ myiter, totcost =            2  -11603226419.9008     
+ QQ myiter, totcost =  2 -1.16032264E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5202,7 +5200,7 @@ time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.3333E-01  4.6667E-01
 time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.333333333333333E-01  4.666666666666667E-01
- QQ myiter, totcost =            3  -19807918443.4560     
+ QQ myiter, totcost =  3 -1.98079184E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5243,7 +5241,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.5000E-01  4.5000E-01
 time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.500000000000000E-01  4.500000000000000E-01
- QQ myiter, totcost =            4  -28695371268.4405     
+ QQ myiter, totcost =  4 -2.86953713E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5284,7 +5282,7 @@ time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.5000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.6667E-01  4.3333E-01
 time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.666666666666667E-01  4.333333333333333E-01
- QQ myiter, totcost =            5  -39086074486.8504     
+ QQ myiter, totcost =  5 -3.90860745E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5325,7 +5323,7 @@ time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.6666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.8333E-01  4.1667E-01
 time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
- QQ myiter, totcost =            6  -50322978552.7328     
+ QQ myiter, totcost =  6 -5.03229786E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5366,7 +5364,7 @@ time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.0000E-01  4.0000E-01
 time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.000000000000000E-01  4.000000000000000E-01
- QQ myiter, totcost =            7  -62403497828.9727     
+ QQ myiter, totcost =  7 -6.24034978E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5407,7 +5405,7 @@ time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.0000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.1667E-01  3.8333E-01
 time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.166666666666667E-01  3.833333333333333E-01
- QQ myiter, totcost =            8  -75107601018.9797     
+ QQ myiter, totcost =  8 -7.5107601E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5448,7 +5446,7 @@ time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.3333E-01  3.6667E-01
 time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.333333333333333E-01  3.666666666666667E-01
- QQ myiter, totcost =            9  -88339816091.5443     
+ QQ myiter, totcost =  9 -8.83398161E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5489,7 +5487,7 @@ time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.5000E-01  3.5000E-01
 time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.500000000000000E-01  3.500000000000000E-01
- QQ myiter, totcost =           10  -101983564073.451     
+ QQ myiter, totcost =  10 -1.01983564E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5529,13 +5527,13 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT        10 ckptB
- --> objf_test(bi,bj)   =  0.000000000000000D+00
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.000000000000000D+00
- global fc = -0.101983564073451D+12
- ph-check fcpertplus =   -101983564073.451     
- ph-check fcpertminus =   -101983575218.836     
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.000000000000000E+00
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.000000000000000E+00
+ global fc = -0.101983564072688E+12
+ ph-check fcpertplus =  -1.01983564E+11
+ ph-check fcpertminus =  -1.01983575E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: bathy.bin
 (PID.TID 0000.0001) // =======================================================
@@ -5699,7 +5697,7 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_max         =   1.4579854531444E-04
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_min         =   3.5791533929553E-06
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_mean        =   9.2855522572228E-05
-(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117307E-05
+(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117308E-05
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -5711,7 +5709,7 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
- S/R DIC_SURFFORCING_INIT: Reading new dic data          12           1
+ S/R DIC_SURFFORCING_INIT: Reading new dic data 12 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+00
@@ -5736,13 +5734,12 @@ S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
- QQ first guess pH   8.17099685110493        19.8066616058350     
-   35.5974693298340        1.96655738353729       1.902262592921034E-004
-  4.228830803185701E-003   2.30775141716003     
+ QQ first guess pH  8.17099685  19.8066616  35.5974693  1.96655738
+  0.000190226259  0.0042288308  2.30775142
  QQ start timeave
- QQ alpha before  9.700000000000000E-011
+ QQ alpha before  9.7E-11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- QQ - preturb alpha  9.700000000000000E-011  0.000000000000000E+000
+ QQ - preturb alpha  9.7E-11  0.
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -5818,7 +5815,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
- QQ myiter, totcost =            1  -7119242957.41548     
+ QQ myiter, totcost =  1 -7.11924296E+09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5859,7 +5856,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.1667E-01  4.8333E-01
 time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.166666666666667E-01  4.833333333333333E-01
- QQ myiter, totcost =            2  -11603226819.1692     
+ QQ myiter, totcost =  2 -1.16032268E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5900,7 +5897,7 @@ time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.3333E-01  4.6667E-01
 time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.333333333333333E-01  4.666666666666667E-01
- QQ myiter, totcost =            3  -19807919452.4004     
+ QQ myiter, totcost =  3 -1.98079195E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5915,7 +5912,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9491974838866E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641950700473E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9623695661733E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292554E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292553E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2965145611947E-03
 (PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   5.0089022149022E-05
 (PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266167609725E-03
@@ -5941,7 +5938,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.5000E-01  4.5000E-01
 time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.500000000000000E-01  4.500000000000000E-01
- QQ myiter, totcost =            4  -28695373140.6871     
+ QQ myiter, totcost =  4 -2.86953731E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -5982,7 +5979,7 @@ time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.5000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.6667E-01  4.3333E-01
 time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.666666666666667E-01  4.333333333333333E-01
- QQ myiter, totcost =            5  -39086077432.8429     
+ QQ myiter, totcost =  5 -3.90860774E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6023,7 +6020,7 @@ time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.6666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.8333E-01  4.1667E-01
 time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
- QQ myiter, totcost =            6  -50322982778.2507     
+ QQ myiter, totcost =  6 -5.03229828E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6064,7 +6061,7 @@ time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.0000E-01  4.0000E-01
 time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.000000000000000E-01  4.000000000000000E-01
- QQ myiter, totcost =            7  -62403503523.2938     
+ QQ myiter, totcost =  7 -6.24035035E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6105,7 +6102,7 @@ time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.0000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.1667E-01  3.8333E-01
 time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.166666666666667E-01  3.833333333333333E-01
- QQ myiter, totcost =            8  -75107608362.3476     
+ QQ myiter, totcost =  8 -7.51076084E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6146,7 +6143,7 @@ time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.3333E-01  3.6667E-01
 time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.333333333333333E-01  3.666666666666667E-01
- QQ myiter, totcost =            9  -88339825254.4652     
+ QQ myiter, totcost =  9 -8.83398253E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6187,7 +6184,7 @@ time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.5000E-01  3.5000E-01
 time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.500000000000000E-01  3.500000000000000E-01
- QQ myiter, totcost =           10  -101983575218.836     
+ QQ myiter, totcost =  10 -1.01983575E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6227,19 +6224,19 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT        10 ckptA
- --> objf_test(bi,bj)   =  0.000000000000000D+00
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.000000000000000D+00
- global fc = -0.101983575218836D+12
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.000000000000000E+00
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.000000000000000E+00
+ global fc = -0.101983575218073E+12
 grad-res -------------------------------
- grad-res     0    1   61    5    1    1    1    1   -.101983575219E+12 -.101983564073E+12 -.101983575219E+12
- grad-res     0    1    1    1 4447    1    1    1   0.111454479441E+18 0.557269229126E+17 0.500002842487E+00
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =   -1.01983575218836E+11
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.11454479440902E+17
+ grad-res     0    1   61    5    1    1    1    1   -.101983575218E+12 -.101983564073E+12 -.101983575218E+12
+ grad-res     0    1    1    1 4447    1    1    1   0.111454479801E+18 0.557269229126E+17 0.500002844101E+00
+(PID.TID 0000.0001)   ADM  precision_derivative_cost =   -1.01983575218073E+11
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.11454479800712E+17
  ph-grd  ierr ---------------------------
- ph-grd  ierr =            0 , icomp =            1 , ichknum =            1
- ph-grd -->hit<--           62           5           1           1
+ ph-grd  ierr =  0, icomp =  1, ichknum =  1
+ ph-grd -->hit<--  62 5 1 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: bathy.bin
@@ -6404,7 +6401,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_max         =   1.4579854531444E-04
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_min         =   3.5791533929553E-06
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_mean        =   9.2855522572228E-05
-(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117307E-05
+(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117308E-05
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -6416,7 +6413,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
- S/R DIC_SURFFORCING_INIT: Reading new dic data          12           1
+ S/R DIC_SURFFORCING_INIT: Reading new dic data 12 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+00
@@ -6441,13 +6438,12 @@ S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
- QQ first guess pH   8.17099685110493        19.8066616058350     
-   35.5974693298340        1.96655738353729       1.902262592921034E-004
-  4.228830803185701E-003   2.30775141716003     
+ QQ first guess pH  8.17099685  19.8066616  35.5974693  1.96655738
+  0.000190226259  0.0042288308  2.30775142
  QQ start timeave
- QQ alpha before  9.700000000000000E-011
+ QQ alpha before  9.7E-11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- QQ - preturb alpha  9.700000000000000E-011  0.000000000000000E+000
+ QQ - preturb alpha  9.7E-11  0.
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -6523,7 +6519,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
- QQ myiter, totcost =            1  -7119242957.41548     
+ QQ myiter, totcost =  1 -7.11924296E+09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6564,7 +6560,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.1667E-01  4.8333E-01
 time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.166666666666667E-01  4.833333333333333E-01
- QQ myiter, totcost =            2  -11603226404.6641     
+ QQ myiter, totcost =  2 -1.16032264E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6605,7 +6601,7 @@ time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.3333E-01  4.6667E-01
 time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.333333333333333E-01  4.666666666666667E-01
- QQ myiter, totcost =            3  -19807918371.6598     
+ QQ myiter, totcost =  3 -1.98079184E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6646,7 +6642,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.5000E-01  4.5000E-01
 time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.500000000000000E-01  4.500000000000000E-01
- QQ myiter, totcost =            4  -28695371083.5190     
+ QQ myiter, totcost =  4 -2.86953711E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6687,7 +6683,7 @@ time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.5000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.6667E-01  4.3333E-01
 time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.666666666666667E-01  4.333333333333333E-01
- QQ myiter, totcost =            5  -39086074119.1156     
+ QQ myiter, totcost =  5 -3.90860741E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6728,7 +6724,7 @@ time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.6666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.8333E-01  4.1667E-01
 time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
- QQ myiter, totcost =            6  -50322977923.0463     
+ QQ myiter, totcost =  6 -5.03229779E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6769,7 +6765,7 @@ time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.0000E-01  4.0000E-01
 time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.000000000000000E-01  4.000000000000000E-01
- QQ myiter, totcost =            7  -62403496850.9587     
+ QQ myiter, totcost =  7 -6.24034969E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6810,7 +6806,7 @@ time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.0000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.1667E-01  3.8333E-01
 time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.166666666666667E-01  3.833333333333333E-01
- QQ myiter, totcost =            8  -75107599600.9459     
+ QQ myiter, totcost =  8 -7.51075996E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6851,7 +6847,7 @@ time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.3333E-01  3.6667E-01
 time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.333333333333333E-01  3.666666666666667E-01
- QQ myiter, totcost =            9  -88339814137.9430     
+ QQ myiter, totcost =  9 -8.83398141E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6892,7 +6888,7 @@ time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.5000E-01  3.5000E-01
 time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.500000000000000E-01  3.500000000000000E-01
- QQ myiter, totcost =           10  -101983561486.043     
+ QQ myiter, totcost =  10 -1.01983561E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -6902,7 +6898,7 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.6411827535413E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2619497657469E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   1.0330373245207E-01
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.4531818656591E-03
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.4531818656592E-03
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.5608390133598E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9498966159858E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641951609911E+00
@@ -6932,13 +6928,13 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT        10 ckptB
- --> objf_test(bi,bj)   =  0.000000000000000D+00
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.000000000000000D+00
- global fc = -0.101983561486043D+12
- ph-check fcpertplus =   -101983561486.043     
- ph-check fcpertminus =   -101983575218.836     
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.000000000000000E+00
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.000000000000000E+00
+ global fc = -0.101983561485279E+12
+ ph-check fcpertplus =  -1.01983561E+11
+ ph-check fcpertminus =  -1.01983575E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: bathy.bin
 (PID.TID 0000.0001) // =======================================================
@@ -7102,7 +7098,7 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_max         =   1.4579854531444E-04
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_min         =   3.5791533929553E-06
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_mean        =   9.2855522572228E-05
-(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117307E-05
+(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117308E-05
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -7114,7 +7110,7 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
- S/R DIC_SURFFORCING_INIT: Reading new dic data          12           1
+ S/R DIC_SURFFORCING_INIT: Reading new dic data 12 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+00
@@ -7139,13 +7135,12 @@ S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
- QQ first guess pH   8.17099685110493        19.8066616058350     
-   35.5974693298340        1.96655738353729       1.902262592921034E-004
-  4.228830803185701E-003   2.30775141716003     
+ QQ first guess pH  8.17099685  19.8066616  35.5974693  1.96655738
+  0.000190226259  0.0042288308  2.30775142
  QQ start timeave
- QQ alpha before  9.700000000000000E-011
+ QQ alpha before  9.7E-11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- QQ - preturb alpha  9.700000000000000E-011  0.000000000000000E+000
+ QQ - preturb alpha  9.7E-11  0.
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -7221,7 +7216,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
- QQ myiter, totcost =            1  -7119242957.41548     
+ QQ myiter, totcost =  1 -7.11924296E+09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7262,7 +7257,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.1667E-01  4.8333E-01
 time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.166666666666667E-01  4.833333333333333E-01
- QQ myiter, totcost =            2  -11603226819.1692     
+ QQ myiter, totcost =  2 -1.16032268E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7303,7 +7298,7 @@ time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.3333E-01  4.6667E-01
 time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.333333333333333E-01  4.666666666666667E-01
- QQ myiter, totcost =            3  -19807919452.4004     
+ QQ myiter, totcost =  3 -1.98079195E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7318,7 +7313,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9491974838866E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641950700473E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9623695661733E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292554E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292553E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2965145611947E-03
 (PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   5.0089022149022E-05
 (PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266167609725E-03
@@ -7344,7 +7339,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.5000E-01  4.5000E-01
 time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.500000000000000E-01  4.500000000000000E-01
- QQ myiter, totcost =            4  -28695373140.6871     
+ QQ myiter, totcost =  4 -2.86953731E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7385,7 +7380,7 @@ time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.5000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.6667E-01  4.3333E-01
 time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.666666666666667E-01  4.333333333333333E-01
- QQ myiter, totcost =            5  -39086077432.8429     
+ QQ myiter, totcost =  5 -3.90860774E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7426,7 +7421,7 @@ time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.6666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.8333E-01  4.1667E-01
 time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
- QQ myiter, totcost =            6  -50322982778.2507     
+ QQ myiter, totcost =  6 -5.03229828E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7467,7 +7462,7 @@ time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.0000E-01  4.0000E-01
 time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.000000000000000E-01  4.000000000000000E-01
- QQ myiter, totcost =            7  -62403503523.2938     
+ QQ myiter, totcost =  7 -6.24035035E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7508,7 +7503,7 @@ time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.0000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.1667E-01  3.8333E-01
 time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.166666666666667E-01  3.833333333333333E-01
- QQ myiter, totcost =            8  -75107608362.3476     
+ QQ myiter, totcost =  8 -7.51076084E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7549,7 +7544,7 @@ time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.3333E-01  3.6667E-01
 time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.333333333333333E-01  3.666666666666667E-01
- QQ myiter, totcost =            9  -88339825254.4652     
+ QQ myiter, totcost =  9 -8.83398253E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7590,7 +7585,7 @@ time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.5000E-01  3.5000E-01
 time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.500000000000000E-01  3.500000000000000E-01
- QQ myiter, totcost =           10  -101983575218.836     
+ QQ myiter, totcost =  10 -1.01983575E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7630,19 +7625,19 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT        10 ckptA
- --> objf_test(bi,bj)   =  0.000000000000000D+00
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.000000000000000D+00
- global fc = -0.101983575218836D+12
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.000000000000000E+00
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.000000000000000E+00
+ global fc = -0.101983575218073E+12
 grad-res -------------------------------
- grad-res     0    2   62    5    1    1    1    1   -.101983575219E+12 -.101983561486E+12 -.101983575219E+12
- grad-res     0    2    2    2 4447    1    1    1   0.137328772678E+18 0.686639661407E+17 0.500003059797E+00
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =   -1.01983575218836E+11
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.37328772677944E+17
+ grad-res     0    2   62    5    1    1    1    1   -.101983575218E+12 -.101983561485E+12 -.101983575218E+12
+ grad-res     0    2    2    2 4447    1    1    1   0.137328773117E+18 0.686639660645E+17 0.500003061952E+00
+(PID.TID 0000.0001)   ADM  precision_derivative_cost =   -1.01983575218073E+11
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.37328773117038E+17
  ph-grd  ierr ---------------------------
- ph-grd  ierr =            0 , icomp =            2 , ichknum =            2
- ph-grd -->hit<--           63           5           1           1
+ ph-grd  ierr =  0, icomp =  2, ichknum =  2
+ ph-grd -->hit<--  63 5 1 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: bathy.bin
@@ -7807,7 +7802,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_max         =   1.4579854531444E-04
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_min         =   3.5791533929553E-06
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_mean        =   9.2855522572228E-05
-(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117307E-05
+(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117308E-05
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -7819,7 +7814,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
- S/R DIC_SURFFORCING_INIT: Reading new dic data          12           1
+ S/R DIC_SURFFORCING_INIT: Reading new dic data 12 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+00
@@ -7844,13 +7839,12 @@ S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
- QQ first guess pH   8.17099685110493        19.8066616058350     
-   35.5974693298340        1.96655738353729       1.902262592921034E-004
-  4.228830803185701E-003   2.30775141716003     
+ QQ first guess pH  8.17099685  19.8066616  35.5974693  1.96655738
+  0.000190226259  0.0042288308  2.30775142
  QQ start timeave
- QQ alpha before  9.700000000000000E-011
+ QQ alpha before  9.7E-11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- QQ - preturb alpha  9.700000000000000E-011  0.000000000000000E+000
+ QQ - preturb alpha  9.7E-11  0.
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -7926,7 +7920,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
- QQ myiter, totcost =            1  -7119242957.41548     
+ QQ myiter, totcost =  1 -7.11924296E+09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -7967,7 +7961,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.1667E-01  4.8333E-01
 time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.166666666666667E-01  4.833333333333333E-01
- QQ myiter, totcost =            2  -11603226430.0596     
+ QQ myiter, totcost =  2 -1.16032264E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8008,7 +8002,7 @@ time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.3333E-01  4.6667E-01
 time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.333333333333333E-01  4.666666666666667E-01
- QQ myiter, totcost =            3  -19807918436.3901     
+ QQ myiter, totcost =  3 -1.98079184E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8049,7 +8043,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.5000E-01  4.5000E-01
 time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.500000000000000E-01  4.500000000000000E-01
- QQ myiter, totcost =            4  -28695371201.8378     
+ QQ myiter, totcost =  4 -2.86953712E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8090,7 +8084,7 @@ time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.5000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.6667E-01  4.3333E-01
 time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.666666666666667E-01  4.333333333333333E-01
- QQ myiter, totcost =            5  -39086074301.0491     
+ QQ myiter, totcost =  5 -3.90860743E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8131,7 +8125,7 @@ time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.6666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.8333E-01  4.1667E-01
 time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
- QQ myiter, totcost =            6  -50322978175.6514     
+ QQ myiter, totcost =  6 -5.03229782E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8172,7 +8166,7 @@ time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.0000E-01  4.0000E-01
 time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.000000000000000E-01  4.000000000000000E-01
- QQ myiter, totcost =            7  -62403497177.8203     
+ QQ myiter, totcost =  7 -6.24034972E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8213,7 +8207,7 @@ time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.0000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.1667E-01  3.8333E-01
 time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.166666666666667E-01  3.833333333333333E-01
- QQ myiter, totcost =            8  -75107600002.3571     
+ QQ myiter, totcost =  8 -7.51076E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8254,7 +8248,7 @@ time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.3333E-01  3.6667E-01
 time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.333333333333333E-01  3.666666666666667E-01
- QQ myiter, totcost =            9  -88339814610.9581     
+ QQ myiter, totcost =  9 -8.83398146E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8295,7 +8289,7 @@ time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.5000E-01  3.5000E-01
 time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.500000000000000E-01  3.500000000000000E-01
- QQ myiter, totcost =           10  -101983562024.620     
+ QQ myiter, totcost =  10 -1.01983562E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8335,13 +8329,13 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT        10 ckptB
- --> objf_test(bi,bj)   =  0.000000000000000D+00
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.000000000000000D+00
- global fc = -0.101983562024620D+12
- ph-check fcpertplus =   -101983562024.620     
- ph-check fcpertminus =   -101983575218.836     
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.000000000000000E+00
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.000000000000000E+00
+ global fc = -0.101983562023856E+12
+ ph-check fcpertplus =  -1.01983562E+11
+ ph-check fcpertminus =  -1.01983575E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: bathy.bin
 (PID.TID 0000.0001) // =======================================================
@@ -8505,7 +8499,7 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_max         =   1.4579854531444E-04
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_min         =   3.5791533929553E-06
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_mean        =   9.2855522572228E-05
-(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117307E-05
+(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117308E-05
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -8517,7 +8511,7 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
- S/R DIC_SURFFORCING_INIT: Reading new dic data          12           1
+ S/R DIC_SURFFORCING_INIT: Reading new dic data 12 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+00
@@ -8542,13 +8536,12 @@ S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
- QQ first guess pH   8.17099685110493        19.8066616058350     
-   35.5974693298340        1.96655738353729       1.902262592921034E-004
-  4.228830803185701E-003   2.30775141716003     
+ QQ first guess pH  8.17099685  19.8066616  35.5974693  1.96655738
+  0.000190226259  0.0042288308  2.30775142
  QQ start timeave
- QQ alpha before  9.700000000000000E-011
+ QQ alpha before  9.7E-11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- QQ - preturb alpha  9.700000000000000E-011  0.000000000000000E+000
+ QQ - preturb alpha  9.7E-11  0.
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -8624,7 +8617,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
- QQ myiter, totcost =            1  -7119242957.41548     
+ QQ myiter, totcost =  1 -7.11924296E+09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8665,7 +8658,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.1667E-01  4.8333E-01
 time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.166666666666667E-01  4.833333333333333E-01
- QQ myiter, totcost =            2  -11603226819.1692     
+ QQ myiter, totcost =  2 -1.16032268E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8706,7 +8699,7 @@ time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.3333E-01  4.6667E-01
 time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.333333333333333E-01  4.666666666666667E-01
- QQ myiter, totcost =            3  -19807919452.4004     
+ QQ myiter, totcost =  3 -1.98079195E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8721,7 +8714,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9491974838866E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641950700473E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9623695661733E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292554E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292553E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2965145611947E-03
 (PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   5.0089022149022E-05
 (PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266167609725E-03
@@ -8747,7 +8740,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.5000E-01  4.5000E-01
 time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.500000000000000E-01  4.500000000000000E-01
- QQ myiter, totcost =            4  -28695373140.6871     
+ QQ myiter, totcost =  4 -2.86953731E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8788,7 +8781,7 @@ time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.5000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.6667E-01  4.3333E-01
 time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.666666666666667E-01  4.333333333333333E-01
- QQ myiter, totcost =            5  -39086077432.8429     
+ QQ myiter, totcost =  5 -3.90860774E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8829,7 +8822,7 @@ time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.6666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.8333E-01  4.1667E-01
 time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
- QQ myiter, totcost =            6  -50322982778.2507     
+ QQ myiter, totcost =  6 -5.03229828E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8870,7 +8863,7 @@ time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.0000E-01  4.0000E-01
 time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.000000000000000E-01  4.000000000000000E-01
- QQ myiter, totcost =            7  -62403503523.2938     
+ QQ myiter, totcost =  7 -6.24035035E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8911,7 +8904,7 @@ time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.0000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.1667E-01  3.8333E-01
 time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.166666666666667E-01  3.833333333333333E-01
- QQ myiter, totcost =            8  -75107608362.3476     
+ QQ myiter, totcost =  8 -7.51076084E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8952,7 +8945,7 @@ time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.3333E-01  3.6667E-01
 time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.333333333333333E-01  3.666666666666667E-01
- QQ myiter, totcost =            9  -88339825254.4652     
+ QQ myiter, totcost =  9 -8.83398253E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -8993,7 +8986,7 @@ time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.5000E-01  3.5000E-01
 time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.500000000000000E-01  3.500000000000000E-01
- QQ myiter, totcost =           10  -101983575218.836     
+ QQ myiter, totcost =  10 -1.01983575E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -9033,19 +9026,19 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT        10 ckptA
- --> objf_test(bi,bj)   =  0.000000000000000D+00
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.000000000000000D+00
- global fc = -0.101983575218836D+12
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.000000000000000E+00
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.000000000000000E+00
+ global fc = -0.101983575218073E+12
 grad-res -------------------------------
- grad-res     0    3   63    5    1    1    1    1   -.101983575219E+12 -.101983562025E+12 -.101983575219E+12
- grad-res     0    3    3    3 4447    1    1    1   0.131942973374E+18 0.659710813904E+17 0.500003071754E+00
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =   -1.01983575218836E+11
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.31942973373594E+17
+ grad-res     0    3   63    5    1    1    1    1   -.101983575218E+12 -.101983562024E+12 -.101983575218E+12
+ grad-res     0    3    3    3 4447    1    1    1   0.131942973796E+18 0.659710813904E+17 0.500003073356E+00
+(PID.TID 0000.0001)   ADM  precision_derivative_cost =   -1.01983575218073E+11
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.31942973796275E+17
  ph-grd  ierr ---------------------------
- ph-grd  ierr =            0 , icomp =            3 , ichknum =            3
- ph-grd -->hit<--           64           5           1           1
+ ph-grd  ierr =  0, icomp =  3, ichknum =  3
+ ph-grd -->hit<--  64 5 1 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: adxx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: bathy.bin
@@ -9210,7 +9203,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_max         =   1.4579854531444E-04
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_min         =   3.5791533929553E-06
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_mean        =   9.2855522572228E-05
-(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117307E-05
+(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117308E-05
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -9222,7 +9215,7 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
- S/R DIC_SURFFORCING_INIT: Reading new dic data          12           1
+ S/R DIC_SURFFORCING_INIT: Reading new dic data 12 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+00
@@ -9247,13 +9240,12 @@ S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
- QQ first guess pH   8.17099685110493        19.8066616058350     
-   35.5974693298340        1.96655738353729       1.902262592921034E-004
-  4.228830803185701E-003   2.30775141716003     
+ QQ first guess pH  8.17099685  19.8066616  35.5974693  1.96655738
+  0.000190226259  0.0042288308  2.30775142
  QQ start timeave
- QQ alpha before  9.700000000000000E-011
+ QQ alpha before  9.7E-11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- QQ - preturb alpha  9.700000000000000E-011  0.000000000000000E+000
+ QQ - preturb alpha  9.7E-11  0.
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -9329,7 +9321,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
- QQ myiter, totcost =            1  -7119242957.41548     
+ QQ myiter, totcost =  1 -7.11924296E+09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -9370,7 +9362,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.1667E-01  4.8333E-01
 time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.166666666666667E-01  4.833333333333333E-01
- QQ myiter, totcost =            2  -11603226308.9920     
+ QQ myiter, totcost =  2 -1.16032263E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -9411,7 +9403,7 @@ time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.3333E-01  4.6667E-01
 time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.333333333333333E-01  4.666666666666667E-01
- QQ myiter, totcost =            3  -19807918122.6300     
+ QQ myiter, totcost =  3 -1.98079181E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -9452,7 +9444,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.5000E-01  4.5000E-01
 time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.500000000000000E-01  4.500000000000000E-01
- QQ myiter, totcost =            4  -28695370603.9685     
+ QQ myiter, totcost =  4 -2.86953706E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -9467,7 +9459,7 @@ time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.5000000000
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9492972459122E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641950828759E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9623304059131E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2520894261357E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2520894261358E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2965248824261E-03
 (PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   5.0032713004529E-05
 (PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266147172239E-03
@@ -9493,7 +9485,7 @@ time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.5000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.6667E-01  4.3333E-01
 time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.666666666666667E-01  4.333333333333333E-01
- QQ myiter, totcost =            5  -39086073336.8337     
+ QQ myiter, totcost =  5 -3.90860733E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -9534,7 +9526,7 @@ time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.6666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.8333E-01  4.1667E-01
 time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
- QQ myiter, totcost =            6  -50322976759.8154     
+ QQ myiter, totcost =  6 -5.03229768E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -9575,7 +9567,7 @@ time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.0000E-01  4.0000E-01
 time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.000000000000000E-01  4.000000000000000E-01
- QQ myiter, totcost =            7  -62403495227.0943     
+ QQ myiter, totcost =  7 -6.24034952E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -9616,7 +9608,7 @@ time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.0000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.1667E-01  3.8333E-01
 time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.166666666666667E-01  3.833333333333333E-01
- QQ myiter, totcost =            8  -75107597433.3015     
+ QQ myiter, totcost =  8 -7.51075974E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -9657,7 +9649,7 @@ time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.3333E-01  3.6667E-01
 time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.333333333333333E-01  3.666666666666667E-01
- QQ myiter, totcost =            9  -88339811340.8137     
+ QQ myiter, totcost =  9 -8.83398113E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -9698,7 +9690,7 @@ time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.5000E-01  3.5000E-01
 time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.500000000000000E-01  3.500000000000000E-01
- QQ myiter, totcost =           10  -101983557970.902     
+ QQ myiter, totcost =  10 -1.01983558E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -9713,7 +9705,7 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9498966159858E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641951609912E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9621201841407E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2530444626055E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2530444626056E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2965890608222E-03
 (PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   4.9703445361288E-05
 (PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266025218549E-03
@@ -9738,13 +9730,13 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT        10 ckptB
- --> objf_test(bi,bj)   =  0.000000000000000D+00
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.000000000000000D+00
- global fc = -0.101983557970902D+12
- ph-check fcpertplus =   -101983557970.902     
- ph-check fcpertminus =   -101983575218.836     
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.000000000000000E+00
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.000000000000000E+00
+ global fc = -0.101983557970139E+12
+ ph-check fcpertplus =  -1.01983558E+11
+ ph-check fcpertminus =  -1.01983575E+11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: bathy.bin
 (PID.TID 0000.0001) // =======================================================
@@ -9908,7 +9900,7 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_max         =   1.4579854531444E-04
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_min         =   3.5791533929553E-06
 (PID.TID 0000.0001) %MON trcstat_fCoriCos_mean        =   9.2855522572228E-05
-(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117307E-05
+(PID.TID 0000.0001) %MON trcstat_fCoriCos_sd          =   4.4864964117308E-05
 (PID.TID 0000.0001) INI_CG2D: CG2D normalisation factor =  7.0372759228205380E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) Start initial hydrostatic pressure computation
@@ -9920,7 +9912,7 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: dop_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: o2_initial.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fet_initial.bin
- S/R DIC_SURFFORCING_INIT: Reading new dic data          12           1
+ S/R DIC_SURFFORCING_INIT: Reading new dic data 12 1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1.bin
 S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+00
@@ -9945,13 +9937,12 @@ S/R OFFLINE_FIELDS_LOAD: Reading new data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184720.data
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sFluxtave.0005184060.data
  QQ: pCO2 approximation method
- QQ first guess pH   8.17099685110493        19.8066616058350     
-   35.5974693298340        1.96655738353729       1.902262592921034E-004
-  4.228830803185701E-003   2.30775141716003     
+ QQ first guess pH  8.17099685  19.8066616  35.5974693  1.96655738
+  0.000190226259  0.0042288308  2.30775142
  QQ start timeave
- QQ alpha before  9.700000000000000E-011
+ QQ alpha before  9.7E-11
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening file: xx_gen2d.0000000000.001.001.data
- QQ - preturb alpha  9.700000000000000E-011  0.000000000000000E+000
+ QQ - preturb alpha  9.7E-11  0.
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Model current state
 (PID.TID 0000.0001) // =======================================================
@@ -10027,7 +10018,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: fice.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: mah_flux_smooth.bin
- QQ myiter, totcost =            1  -7119242957.41548     
+ QQ myiter, totcost =  1 -7.11924296E+09
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -10068,7 +10059,7 @@ S/R DIC_FIELDS_LOAD: Reading new dic data:   12    1         0  0.000000000000E+
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.1667E-01  4.8333E-01
 time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.166666666666667E-01  4.833333333333333E-01
- QQ myiter, totcost =            2  -11603226819.1692     
+ QQ myiter, totcost =  2 -1.16032268E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -10109,7 +10100,7 @@ time,fu0,fu1,fu =   4.3200E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.3333E-01  4.6667E-01
 time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.333333333333333E-01  4.666666666666667E-01
- QQ myiter, totcost =            3  -19807919452.4004     
+ QQ myiter, totcost =  3 -1.98079195E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -10124,7 +10115,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   1.9491974838866E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3641950700473E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_sd         =   4.9623695661733E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292554E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer02_del2       =   8.2526580292553E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer03_max        =   3.2965145611947E-03
 (PID.TID 0000.0001) %MON trcstat_ptracer03_min        =   5.0089022149022E-05
 (PID.TID 0000.0001) %MON trcstat_ptracer03_mean       =   2.1266167609725E-03
@@ -10150,7 +10141,7 @@ time,fu0,fu1,fu =   8.6400E+04  0.0000E+00  0.0000E+00  0.0000E+00  5.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.5000E-01  4.5000E-01
 time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.500000000000000E-01  4.500000000000000E-01
- QQ myiter, totcost =            4  -28695373140.6871     
+ QQ myiter, totcost =  4 -2.86953731E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -10191,7 +10182,7 @@ time,fu0,fu1,fu =   1.2960E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.5000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.6667E-01  4.3333E-01
 time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.666666666666667E-01  4.333333333333333E-01
- QQ myiter, totcost =            5  -39086077432.8429     
+ QQ myiter, totcost =  5 -3.90860774E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -10232,7 +10223,7 @@ time,fu0,fu1,fu =   1.7280E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.6666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  5.8333E-01  4.1667E-01
 time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.833333333333334E-01  4.166666666666666E-01
- QQ myiter, totcost =            6  -50322982778.2507     
+ QQ myiter, totcost =  6 -5.03229828E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -10273,7 +10264,7 @@ time,fu0,fu1,fu =   2.1600E+05  0.0000E+00  0.0000E+00  0.0000E+00  5.8333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.0000E-01  4.0000E-01
 time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.000000000000000E-01  4.000000000000000E-01
- QQ myiter, totcost =            7  -62403503523.2938     
+ QQ myiter, totcost =  7 -6.24035035E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -10314,7 +10305,7 @@ time,fu0,fu1,fu =   2.5920E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.0000000000
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.1667E-01  3.8333E-01
 time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.166666666666667E-01  3.833333333333333E-01
- QQ myiter, totcost =            8  -75107608362.3476     
+ QQ myiter, totcost =  8 -7.51076084E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -10355,7 +10346,7 @@ time,fu0,fu1,fu =   3.0240E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.1666666666
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.3333E-01  3.6667E-01
 time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.333333333333333E-01  3.666666666666667E-01
- QQ myiter, totcost =            9  -88339825254.4652     
+ QQ myiter, totcost =  9 -8.83398253E+10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -10396,7 +10387,7 @@ time,fu0,fu1,fu =   3.4560E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.3333333333
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00    12     1  6.5000E-01  3.5000E-01
 time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.500000000000000E-01  3.500000000000000E-01
- QQ myiter, totcost =           10  -101983575218.836     
+ QQ myiter, totcost =  10 -1.01983575E+11
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -10436,18 +10427,18 @@ time,fu0,fu1,fu =   3.8880E+05  0.0000E+00  0.0000E+00  0.0000E+00  6.5000000000
 (PID.TID 0000.0001) // End MONITOR ptracers field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT        10 ckptA
- --> objf_test(bi,bj)   =  0.000000000000000D+00
- --> objf_tracer(bi,bj) =  0.000000000000000D+00
- --> objf_atl(bi,bj)    =  0.000000000000000D+00
-  local fc =  0.000000000000000D+00
- global fc = -0.101983575218836D+12
+ --> objf_test(bi,bj)   =  0.000000000000000E+00
+ --> objf_tracer(bi,bj) =  0.000000000000000E+00
+ --> objf_atl(bi,bj)    =  0.000000000000000E+00
+  local fc =  0.000000000000000E+00
+ global fc = -0.101983575218073E+12
 grad-res -------------------------------
- grad-res     0    4   64    5    1    1    1    1   -.101983575219E+12 -.101983557971E+12 -.101983575219E+12
- grad-res     0    4    4    4 4447    1    1    1   0.172480536848E+18 0.862396700287E+17 0.500003469350E+00
-(PID.TID 0000.0001)   ADM  precision_derivative_cost =   -1.01983575218836E+11
-(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.72480536848030E+17
+ grad-res     0    4   64    5    1    1    1    1   -.101983575218E+12 -.101983557970E+12 -.101983575218E+12
+ grad-res     0    4    4    4 4447    1    1    1   0.172480537404E+18 0.862396696472E+17 0.500003473173E+00
+(PID.TID 0000.0001)   ADM  precision_derivative_cost =   -1.01983575218073E+11
+(PID.TID 0000.0001)   ADM  precision_derivative_grad =    1.72480537404082E+17
  ph-grd  ierr ---------------------------
- ph-grd  ierr =            0 , icomp =            4 , ichknum =            4
+ ph-grd  ierr =  0, icomp =  4, ichknum =  4
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> START <<<
@@ -10457,17 +10448,17 @@ grad-res -------------------------------
 (PID.TID 0000.0001)  EPS =  0.100E-12
 (PID.TID 0000.0001) grdchk output:            procId               I        ITILEPOS        JTILEPOS           LAYER            X(I)      X(I)+/-EPS
 (PID.TID 0000.0001) grdchk output:                                FC             FC1             FC2 FC1-FC2/(2*EPS)    ADJ GRAD(FC)   1-FDGRD/ADGRD
-(PID.TID 0000.0001) grdchk output:                 0               1              61               5               1 0.100000000D-12 0.000000000D+00
-(PID.TID 0000.0001) grdchk output:                   -.101983575D+12 -.101983564D+12 -.101983575D+12 0.557269229D+17 0.111454479D+18 0.500002842D+00
+(PID.TID 0000.0001) grdchk output:                 0               1              61               5               1 0.100000000E-12 0.000000000E+00
+(PID.TID 0000.0001) grdchk output:                   -.101983575E+12 -.101983564E+12 -.101983575E+12 0.557269229E+17 0.111454480E+18 0.500002844E+00
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output:                 0               2              62               5               1 0.100000000D-12 0.000000000D+00
-(PID.TID 0000.0001) grdchk output:                   -.101983575D+12 -.101983561D+12 -.101983575D+12 0.686639661D+17 0.137328773D+18 0.500003060D+00
+(PID.TID 0000.0001) grdchk output:                 0               2              62               5               1 0.100000000E-12 0.000000000E+00
+(PID.TID 0000.0001) grdchk output:                   -.101983575E+12 -.101983561E+12 -.101983575E+12 0.686639661E+17 0.137328773E+18 0.500003062E+00
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output:                 0               3              63               5               1 0.100000000D-12 0.000000000D+00
-(PID.TID 0000.0001) grdchk output:                   -.101983575D+12 -.101983562D+12 -.101983575D+12 0.659710814D+17 0.131942973D+18 0.500003072D+00
+(PID.TID 0000.0001) grdchk output:                 0               3              63               5               1 0.100000000E-12 0.000000000E+00
+(PID.TID 0000.0001) grdchk output:                   -.101983575E+12 -.101983562E+12 -.101983575E+12 0.659710814E+17 0.131942974E+18 0.500003073E+00
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk output:                 0               4              64               5               1 0.100000000D-12 0.000000000D+00
-(PID.TID 0000.0001) grdchk output:                   -.101983575D+12 -.101983558D+12 -.101983575D+12 0.862396700D+17 0.172480537D+18 0.500003469D+00
+(PID.TID 0000.0001) grdchk output:                 0               4              64               5               1 0.100000000E-12 0.000000000E+00
+(PID.TID 0000.0001) grdchk output:                   -.101983575E+12 -.101983558E+12 -.101983575E+12 0.862396696E+17 0.172480537E+18 0.500003473E+00
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -10475,131 +10466,131 @@ grad-res -------------------------------
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   108.449996948242
-(PID.TID 0000.0001)         System time:   8.21000003814697
-(PID.TID 0000.0001)     Wall clock time:   125.094089984894
-(PID.TID 0000.0001)          No. starts:           1
-(PID.TID 0000.0001)           No. stops:           1
+(PID.TID 0000.0001)           User time:  607.776626
+(PID.TID 0000.0001)         System time:  9.65753204
+(PID.TID 0000.0001)     Wall clock time:  653.755209
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.200000002980232
-(PID.TID 0000.0001)         System time:  0.109999999403954
-(PID.TID 0000.0001)     Wall clock time:  0.327125072479248
-(PID.TID 0000.0001)          No. starts:           1
-(PID.TID 0000.0001)           No. stops:           1
+(PID.TID 0000.0001)           User time:  2.17267003
+(PID.TID 0000.0001)         System time:  0.190970995
+(PID.TID 0000.0001)     Wall clock time:  2.39032793
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:   46.1499984711409
-(PID.TID 0000.0001)         System time:   7.17000021040440
-(PID.TID 0000.0001)     Wall clock time:   61.5828521251678
-(PID.TID 0000.0001)          No. starts:           1
-(PID.TID 0000.0001)           No. stops:           1
+(PID.TID 0000.0001)           User time:  273.628401
+(PID.TID 0000.0001)         System time:  8.19175503
+(PID.TID 0000.0001)     Wall clock time:  317.274357
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   2.49998468160629
-(PID.TID 0000.0001)         System time:  0.259999096393585
-(PID.TID 0000.0001)     Wall clock time:   2.69505977630615
-(PID.TID 0000.0001)          No. starts:          99
-(PID.TID 0000.0001)           No. stops:          99
+(PID.TID 0000.0001)           User time:  17.0255752
+(PID.TID 0000.0001)         System time:  0.359943211
+(PID.TID 0000.0001)     Wall clock time:  19.484792
+(PID.TID 0000.0001)          No. starts: 99
+(PID.TID 0000.0001)           No. stops: 99
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  2.000236511230469E-002
-(PID.TID 0000.0001)         System time:  1.000022888183594E-002
-(PID.TID 0000.0001)     Wall clock time:  0.506275177001953
-(PID.TID 0000.0001)          No. starts:         119
-(PID.TID 0000.0001)           No. stops:         119
+(PID.TID 0000.0001)           User time:  0.0369429588
+(PID.TID 0000.0001)         System time:  0.00100040436
+(PID.TID 0000.0001)     Wall clock time:  0.0403387547
+(PID.TID 0000.0001)          No. starts: 119
+(PID.TID 0000.0001)           No. stops: 119
 (PID.TID 0000.0001)   Seconds in section "OFFLINE_FLDS_LOAD  [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:   3.00998872518539
-(PID.TID 0000.0001)         System time:  0.289999306201935
-(PID.TID 0000.0001)     Wall clock time:   3.22873735427856
-(PID.TID 0000.0001)          No. starts:         119
-(PID.TID 0000.0001)           No. stops:         119
+(PID.TID 0000.0001)           User time:  20.1030512
+(PID.TID 0000.0001)         System time:  0.414935112
+(PID.TID 0000.0001)     Wall clock time:  21.7799549
+(PID.TID 0000.0001)          No. starts: 119
+(PID.TID 0000.0001)           No. stops: 119
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.000000000000000E+000
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  1.275777816772461E-003
-(PID.TID 0000.0001)          No. starts:          99
-(PID.TID 0000.0001)           No. stops:          99
+(PID.TID 0000.0001)           User time:  0.00597381592
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.00414228439
+(PID.TID 0000.0001)          No. starts: 99
+(PID.TID 0000.0001)           No. stops: 99
 (PID.TID 0000.0001)   Seconds in section "GCHEM_CALC_TENDENCY [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.000000000000000E+000
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  1.272201538085938E-003
-(PID.TID 0000.0001)          No. starts:          99
-(PID.TID 0000.0001)           No. stops:          99
+(PID.TID 0000.0001)           User time:  0.000999450684
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.00413489342
+(PID.TID 0000.0001)          No. starts: 99
+(PID.TID 0000.0001)           No. stops: 99
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   47.7600267529488
-(PID.TID 0000.0001)         System time:  6.000024080276489E-002
-(PID.TID 0000.0001)     Wall clock time:   47.8482708930969
-(PID.TID 0000.0001)          No. starts:          99
-(PID.TID 0000.0001)           No. stops:          99
+(PID.TID 0000.0001)           User time:  253.583474
+(PID.TID 0000.0001)         System time:  0.212961257
+(PID.TID 0000.0001)     Wall clock time:  254.007566
+(PID.TID 0000.0001)          No. starts: 99
+(PID.TID 0000.0001)           No. stops: 99
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.629985809326172
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  0.599165201187134
-(PID.TID 0000.0001)          No. starts:          99
-(PID.TID 0000.0001)           No. stops:          99
+(PID.TID 0000.0001)           User time:  2.27451515
+(PID.TID 0000.0001)         System time:  0.00899791718
+(PID.TID 0000.0001)     Wall clock time:  2.28532577
+(PID.TID 0000.0001)          No. starts: 99
+(PID.TID 0000.0001)           No. stops: 99
 (PID.TID 0000.0001)   Seconds in section "GCHEM_FORCING_SEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   14.3399721384048
-(PID.TID 0000.0001)         System time:  2.999973297119141E-002
-(PID.TID 0000.0001)     Wall clock time:   15.8569149971008
-(PID.TID 0000.0001)          No. starts:          99
-(PID.TID 0000.0001)           No. stops:          99
+(PID.TID 0000.0001)           User time:  71.397171
+(PID.TID 0000.0001)         System time:  0.0849914551
+(PID.TID 0000.0001)     Wall clock time:  71.5517509
+(PID.TID 0000.0001)          No. starts: 99
+(PID.TID 0000.0001)           No. stops: 99
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.210004329681396
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  0.241868257522583
-(PID.TID 0000.0001)          No. starts:          99
-(PID.TID 0000.0001)           No. stops:          99
+(PID.TID 0000.0001)           User time:  1.00208664
+(PID.TID 0000.0001)         System time:  0.000999927521
+(PID.TID 0000.0001)     Wall clock time:  1.00620437
+(PID.TID 0000.0001)          No. starts: 99
+(PID.TID 0000.0001)           No. stops: 99
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_TAVE   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.279998540878296
-(PID.TID 0000.0001)         System time:  4.000002145767212E-002
-(PID.TID 0000.0001)     Wall clock time:  0.319936037063599
-(PID.TID 0000.0001)          No. starts:          99
-(PID.TID 0000.0001)           No. stops:          99
+(PID.TID 0000.0001)           User time:  1.86873913
+(PID.TID 0000.0001)         System time:  0.0579910278
+(PID.TID 0000.0001)     Wall clock time:  1.9380393
+(PID.TID 0000.0001)          No. starts: 99
+(PID.TID 0000.0001)           No. stops: 99
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.000000000000000E+000
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  1.383781433105469E-003
-(PID.TID 0000.0001)          No. starts:          99
-(PID.TID 0000.0001)           No. stops:          99
+(PID.TID 0000.0001)           User time:  0.0009765625
+(PID.TID 0000.0001)         System time:  0.00100040436
+(PID.TID 0000.0001)     Wall clock time:  0.00397014618
+(PID.TID 0000.0001)          No. starts: 99
+(PID.TID 0000.0001)           No. stops: 99
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   2.28002095222473
-(PID.TID 0000.0001)         System time:  0.209999561309814
-(PID.TID 0000.0001)     Wall clock time:   2.48530149459839
-(PID.TID 0000.0001)          No. starts:          99
-(PID.TID 0000.0001)           No. stops:          99
+(PID.TID 0000.0001)           User time:  15.7386141
+(PID.TID 0000.0001)         System time:  0.224966586
+(PID.TID 0000.0001)     Wall clock time:  16.010989
+(PID.TID 0000.0001)          No. starts: 99
+(PID.TID 0000.0001)           No. stops: 99
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.330000877380371
-(PID.TID 0000.0001)         System time:  0.140000343322754
-(PID.TID 0000.0001)     Wall clock time:  0.458920478820801
-(PID.TID 0000.0001)          No. starts:          99
-(PID.TID 0000.0001)           No. stops:          99
+(PID.TID 0000.0001)           User time:  2.27758026
+(PID.TID 0000.0001)         System time:  0.143978059
+(PID.TID 0000.0001)     Wall clock time:  2.4589622
+(PID.TID 0000.0001)          No. starts: 99
+(PID.TID 0000.0001)           No. stops: 99
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   62.0999984741211
-(PID.TID 0000.0001)         System time:  0.929999828338623
-(PID.TID 0000.0001)     Wall clock time:   63.1836791038513
-(PID.TID 0000.0001)          No. starts:           1
-(PID.TID 0000.0001)           No. stops:           1
+(PID.TID 0000.0001)           User time:  331.974518
+(PID.TID 0000.0001)         System time:  1.27480602
+(PID.TID 0000.0001)     Wall clock time:  334.089483
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   1.98000335693359
-(PID.TID 0000.0001)         System time:  0.400001049041748
-(PID.TID 0000.0001)     Wall clock time:   2.50791883468628
-(PID.TID 0000.0001)          No. starts:           8
-(PID.TID 0000.0001)           No. stops:           8
+(PID.TID 0000.0001)           User time:  16.6933899
+(PID.TID 0000.0001)         System time:  0.518922806
+(PID.TID 0000.0001)     Wall clock time:  17.6048911
+(PID.TID 0000.0001)          No. starts: 8
+(PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   60.0899963378906
-(PID.TID 0000.0001)         System time:  0.509998798370361
-(PID.TID 0000.0001)     Wall clock time:   60.6420171260834
-(PID.TID 0000.0001)          No. starts:           8
-(PID.TID 0000.0001)           No. stops:           8
+(PID.TID 0000.0001)           User time:  315.1091
+(PID.TID 0000.0001)         System time:  0.734888077
+(PID.TID 0000.0001)     Wall clock time:  316.030935
+(PID.TID 0000.0001)          No. starts: 8
+(PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   55.2699890136719
-(PID.TID 0000.0001)         System time:  0.499999046325684
-(PID.TID 0000.0001)     Wall clock time:   55.7865459918976
-(PID.TID 0000.0001)          No. starts:          80
-(PID.TID 0000.0001)           No. stops:          80
+(PID.TID 0000.0001)           User time:  293.547485
+(PID.TID 0000.0001)         System time:  0.716889381
+(PID.TID 0000.0001)     Wall clock time:  294.430105
+(PID.TID 0000.0001)          No. starts: 80
+(PID.TID 0000.0001)           No. stops: 80
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.000000000000000E+000
-(PID.TID 0000.0001)         System time:  0.000000000000000E+000
-(PID.TID 0000.0001)     Wall clock time:  7.629394531250000E-004
-(PID.TID 0000.0001)          No. starts:           8
-(PID.TID 0000.0001)           No. stops:           8
+(PID.TID 0000.0001)           User time:  0.00198364258
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.000912904739
+(PID.TID 0000.0001)          No. starts: 8
+(PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // Tile <-> Tile communication statistics
 (PID.TID 0000.0001) // ======================================================
