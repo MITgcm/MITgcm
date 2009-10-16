@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.7 2008/11/14 03:04:09 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_oce_mxlayer.F,v 1.8 2009/10/16 17:27:33 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -87,6 +87,7 @@ C--   First method :
 C     where the potential density (ref.lev=surface) is larger than
 C       surface density plus Delta_Rho = hMixCriteria * Alpha(surf)
 C     = density of water which is -hMixCriteria colder than surface water
+C     (see Kara, Rochford, and Hurlburt JGR 2000 for default criterion)
 
 c       hMixCriteria  = -0.8 _d 0
 c       dRhoSmall = 1. _d -6
