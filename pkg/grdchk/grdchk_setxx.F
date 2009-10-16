@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.24 2009/10/14 20:10:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.25 2009/10/16 19:12:09 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -572,7 +572,7 @@ c--   == end of interface ==
 #endif /* ALLOW_HFLUXM_CONTROL */
 
 #ifdef ALLOW_GEN2D_CONTROL
-      else if ( grdchkvarindex .eq. 20 ) then
+      else if ( grdchkvarindex .eq. 30 ) then
          il=ilnblnk( xx_gen2d_file )
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
