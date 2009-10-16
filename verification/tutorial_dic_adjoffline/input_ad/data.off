@@ -1,0 +1,21 @@
+ &OFFLINE_PARM01
+  UvelFile= 'uVeltave',
+  VvelFile= 'vVeltave',
+  WvelFile= 'wVeltave',
+  GMwxFile= 'GM_Kwx-T',
+  GMwyFile= 'GM_Kwy-T',
+  GMwzFile= 'GM_Kwz-T',
+  ConvFile= 'Convtave',
+  SaltFile= 'Stave',
+  ThetFile= 'Ttave',
+  SFluxFile='sFluxtave',
+# HFluxFile=' ',
+ &
+
+ &OFFLINE_PARM02
+  offlineIter0=5184000,
+  deltaToffline=43200.,
+  offlineForcingPeriod=2592000.,
+  offlineForcingCycle=31104000.,
+ &
+
