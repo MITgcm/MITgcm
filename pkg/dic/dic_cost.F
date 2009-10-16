@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.11 2008/09/09 19:58:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.12 2009/10/16 15:48:33 heimbach Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -8,7 +8,7 @@ CStartOfInterFace
      I           myTime,myIter,myThid)
 
 C     /==========================================================\
-C     | SUBROUTINE DIC_COST  i                            |
+C     | SUBROUTINE DIC_COST                              |
 C     |==========================================================|
       IMPLICIT NONE
 
@@ -29,91 +29,35 @@ C     == Routine arguments ==
       _RL myTime
       INTEGER myThid
 
-#ifdef ALLOW_DIC_COST
+#ifdef ALLOW_COST
 
 C     == Local variables ==
       INTEGER i, j, bi, bj, k, it
+      _RL tmpcost
 c
-      _RL po4cost, o2cost, sumvol
-      _RL po4costm, o2costm, sumvolm
 c
 c calculate costfunction
 
-       sumvol= 0. _d 0
-       po4cost= 0. _d 0
-       o2cost=0.d0
-cswdmonth-add--
-       sumvolm=0.d0
-       po4costm=0.d0
-       o2costm=0.d0
-cswdmonth -- end add --
-
+      tmpcost = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO i=1,sNx
           DO j=1,sNy
-           do k=1,nR
-            sumvol=sumvol+
-     &            rA(i,j,bi,bj)*drF(k)*maskC(i,j,k,bi,bj)
-            po4cost=po4cost+
-     &          (po4ann(i,j,k,bi,bj)-po4obs(i,j,k,bi,bj))**2
-     &          /po4var(k)
-     &          *rA(i,j,bi,bj)*drF(k)*maskC(i,j,k,bi,bj)
-            o2cost=o2cost+
-     &          (o2ann(i,j,k,bi,bj)-o2obs(i,j,k,bi,bj))**2
-     &          /o2var(k)
-     &          *rA(i,j,bi,bj)*drF(k)*maskC(i,j,k,bi,bj)
-           enddo
-cswdmonth-add--
-           do k=1,4
-            sumvolm=sumvolm+
-     &            rA(i,j,bi,bj)*drF(k)*maskC(i,j,k,bi,bj)
-           enddo
-           do it=1,12
-              po4costm=po4costm+
-     &          (po4lev1(i,j,it,bi,bj)-po4obsl1(i,j,it,bi,bj))**2
-     &          /po4varm(it,1)
-     &          *rA(i,j,bi,bj)*drF(1)*maskC(i,j,1,bi,bj)  +
-     &          (po4lev2(i,j,it,bi,bj)-po4obsl2(i,j,it,bi,bj))**2
-     &          /po4varm(it,2)
-     &          *rA(i,j,bi,bj)*drF(2)*maskC(i,j,2,bi,bj) +
-     &          (po4lev3(i,j,it,bi,bj)-po4obsl3(i,j,it,bi,bj))**2
-     &          /po4varm(it,3)
-     &          *rA(i,j,bi,bj)*drF(3)*maskC(i,j,3,bi,bj)
-cQQ  &          (po4lev4(i,j,it,bi,bj)-po4obsl4(i,j,it,bi,bj))**2
-cQQ  &          /po4varm(it,4)
-cQQ  &          *rA(i,j,bi,bj)*drF(4)*maskC(i,j,4,bi,bj)
-              o2costm=o2costm+
-     &          (o2lev1(i,j,it,bi,bj)-o2obsl1(i,j,it,bi,bj))**2
-     &          /o2varm(it,1)
-     &          *rA(i,j,bi,bj)*drF(1)*maskC(i,j,1,bi,bj) +
-     &          (o2lev2(i,j,it,bi,bj)-o2obsl2(i,j,it,bi,bj))**2
-     &          /o2varm(it,2)
-     &          *rA(i,j,bi,bj)*drF(2)*maskC(i,j,2,bi,bj) +
-     &          (o2lev3(i,j,it,bi,bj)-o2obsl3(i,j,it,bi,bj))**2
-     &          /o2varm(it,3)
-     &          *rA(i,j,bi,bj)*drF(3)*maskC(i,j,3,bi,bj)
-cQQ  &          (O2lev4(i,j,it,bi,bj)-o2obsl4(i,j,it,bi,bj))**2
-cQQ  &          /o2varm(it,4)
-cQQ  &          *rA(i,j,bi,bj)*drF(4)*maskC(i,j,4,bi,bj)
-
-           enddo
-cswdmonth -end-
-          ENDDO
+              tmpcost = tmpcost+FluxCO2(i,j,bi,bj)*rA(i,j,bi,bj)*
+     &                        maskC(i,j,1,bi,bj)*dTtracerLev(1)
           ENDDO
          ENDDO
         ENDDO
-        po4cost=po4cost/sumvol
-        o2cost=o2cost/sumvol
-cswdmonth-add
-        po4costm=po4costm/sumvolm/12.d0
-        o2costm=o2costm/sumvolm/12.d0
-cswdmonth-end
-        totcost=po4cost+o2cost+po4costm+o2costm
+       ENDDO
 
-        print*,'COST ',totcost, po4cost, o2cost,po4costm,o2costm
-c
+       _GLOBAL_SUM_RL(tmpcost,myThid)
+
+       totcost = totcost + tmpcost
+
+       print *, 'QQ myiter, totcost = ', myiter, totcost
+
 #endif
+
       RETURN
       END
 cswd -- end added subroutine --
