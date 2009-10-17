@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.9 2009/10/14 05:01:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.10 2009/10/17 20:47:34 heimbach Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -95,7 +95,8 @@ C     Set other constant/flag
 #endif
 
 #ifdef DIC_BIOTIC
-#ifdef AD_SAFE
+#ifdef ALLOW_AUTODIFF
+cph nlev=Nr used in TAF store directive
       nlev=Nr
 #else
       k = 1
