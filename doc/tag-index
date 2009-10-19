@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1179 2009/10/16 19:30:56 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1180 2009/10/19 23:15:15 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint61x
 o adjoint: adding two new verification experiments
   * tutorial_global_biogeo: an online dic sensitivity experiment 
     (work with G. Forget)
