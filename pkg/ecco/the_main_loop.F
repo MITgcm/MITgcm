@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.85 2009/10/08 16:50:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.86 2009/10/20 20:13:47 zhc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1258,7 +1258,8 @@ c--   Compute cost function contribution of drifter's velocities.
 #endif
 
 c--   Compute cost function contribution of wind stress observations.
-#ifdef ALLOW_SCAT_COST_CONTRIBUTION
+#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
+     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
 #ifndef DISABLE_DEBUGMODE
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('cost_scat',myThid)

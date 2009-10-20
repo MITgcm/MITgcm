@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.8 2009/04/28 18:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.9 2009/10/20 20:13:47 zhc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -61,6 +61,12 @@ c     == local variables ==
       _RL fctile_scaty
       _RL fcthread_scaty
 
+c work arrays rotated to EW/NS tracer point
+      _RL tmpU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nsx,nsy)
+      _RL tmpV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nsx,nsy)
+      _RL uBarC, vBarC
+
+
       character*(80) fnametaux
       character*(80) fnametauy
 
@@ -89,7 +95,8 @@ c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
-#ifdef ALLOW_SCAT_COST_CONTRIBUTION
+#if (defined (ALLOW_SCAT_COST_CONTRIBUTION) || \
+     defined (ALLOW_DAILYSCAT_COST_CONTRIBUTION) )
 
       if (optimcycle .ge. 0) then
         ilsalt = ilnblnk( tauxbarfile )
@@ -104,8 +111,11 @@ c--   Read tiled data.
       fcthread_scaty = 0. _d 0
 
 c--   Loop over records.
+#ifdef ALLOW_SCAT_COST_CONTRIBUTION
       do irec = 1,nmonsrec
-
+#else
+      do irec = 1,ndaysrec
+#endif
 c--     Read time averages and the monthly mean data.
         call active_read_xy( fnametaux, tauxbar, irec,
      &                        doglobalread, ladinit,
@@ -116,6 +126,24 @@ c--     Read time averages and the monthly mean data.
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_tauy_mean_dummy )
+
+c rotated to EW/NS tracer point
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do j = jmin,jmax
+              do i = imin,imax
+                uBarC = 0.5 _d 0
+     &           *(tauxbar(i,j,bi,bj)+tauxbar(i+1,j,bi,bj))             
+                vBarC = 0.5 _d 0
+     &           *(tauybar(i,j,bi,bj)+tauybar(i,j+1,bi,bj))                     
+                tmpU(i,j,bi,bj) = angleCosC(i,j,bi,bj)*uBarC
+     &                           -angleSinC(i,j,bi,bj)*vBarC
+                tmpV(i,j,bi,bj) = angleSinC(i,j,bi,bj)*uBarC
+     &                           +angleCosC(i,j,bi,bj)*vBarC
+              enddo
+            enddo
+          enddo
+        enddo
 
 
         do bj = jtlo,jthi
@@ -132,6 +160,7 @@ c--         Compute cost rel. to monthly SCAT field.
 
             do j = jmin,jmax
               do i = imin,imax
+                tauxbar(i,j,bi,bj)=tmpU(i,j,bi,bj)
                 if (maskW(i,j,k,bi,bj) .ne. 0.) then
                    fctile_scatx = fctile_scatx +
      &                  wscatx(i,j,bi,bj)*cosphi(i,j,bi,bj)*
@@ -151,6 +180,7 @@ c--         Compute cost rel. to monthly SCAT field.
 
             do j = jmin,jmax
               do i = imin,imax
+                tauybar(i,j,bi,bj)=tmpV(i,j,bi,bj)
                 if (maskS(i,j,k,bi,bj) .ne. 0.) then
                    fctile_scaty = fctile_scaty +
      &                  wscaty(i,j,bi,bj)*cosphi(i,j,bi,bj)*

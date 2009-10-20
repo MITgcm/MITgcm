@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.25 2009/05/13 13:39:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.26 2009/10/20 20:13:46 zhc Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -360,7 +360,19 @@ c--     Accumulate ubar and vbar.
         stop   ' ... stopped in cost_averagesfields; tauxbar part.'
       endif
 
-
+#else
+#ifdef ALLOW_DAILYSCAT_COST_CONTRIBUTION
+      call cost_averagesgeneric(
+     &     tauxbarfile,
+     &     tauxbar, ustress, xx_taux_mean_dummy,
+     &     first, last, startofday, endofday, inday,
+     &     sum1day, dayrec, 1, mythid )
+      call cost_averagesgeneric(
+     &     tauybarfile,
+     &     tauybar, vstress, xx_tauy_mean_dummy,
+     &     first, last, startofday, endofday, inday,
+     &     sum1day, dayrec, 1, mythid )
+#endif
 #endif
 
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
