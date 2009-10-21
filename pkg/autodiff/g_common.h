@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.18 2008/04/08 03:11:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.19 2009/10/21 13:52:48 mlosch Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -154,15 +154,15 @@ cph larger common block, so be careful
 #endif
 
 #ifdef ALLOW_SEAICE
-      _RL g_area(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      _RL g_area(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /g_seaice_dynvars_1/ g_area
 c
-      _RL g_heff(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      _RL g_heff(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_hsnow(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /g_seaice_trans/ g_heff, g_hsnow
 # ifdef SEAICE_ALLOW_DYNAMICS
-      _RL g_uice(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
-      _RL g_vice(1-olx:snx+olx,1-oly:sny+oly,3,nsx,nsy)
+      _RL g_uice(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL g_vice(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /g_seaice_dynvars_2/ g_uice, g_vice
 # endif
 #endif
