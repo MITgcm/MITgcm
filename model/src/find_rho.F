@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.36 2008/08/11 22:33:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.37 2009/10/22 04:33:59 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -11,6 +11,7 @@ C--   o FIND_RHOP0
 C--   o FIND_BULKMOD
 C--   o FIND_RHONUM
 C--   o FIND_RHODEN
+C--   o FIND_RHO_SCALAR: in-situ density for individual points
 C--   o LOOK_FOR_NEG_SALINITY
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -306,6 +307,8 @@ C     density of sea water at the surface
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: FIND_BULKMOD
 C     !INTERFACE:
       SUBROUTINE FIND_BULKMOD(
@@ -319,9 +322,7 @@ C     *==========================================================*
 C     | o SUBROUTINE FIND_BULKMOD
 C     |   Calculates the secant bulk modulus K(S,T,p) of a slice
 C     *==========================================================*
-C     |
 C     | k    - is the level of Theta/Salt slice
-C     |
 C     *==========================================================*
 C     \ev
 
@@ -414,6 +415,7 @@ C     secant bulk modulus of sea water at pressure p
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: FIND_RHONUM
 C     !INTERFACE:
@@ -479,6 +481,7 @@ C     abbreviations
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: FIND_RHODEN
 C     !INTERFACE:
@@ -557,6 +560,220 @@ C     abbreviations
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: FIND_RHO_SCALAR
+C     !INTERFACE:
+      SUBROUTINE FIND_RHO_SCALAR(
+     I     tLoc, sLoc, pLoc,
+     O     rhoLoc,
+     I     myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE FIND_RHO_SCALAR
+C     |   Calculates rho(S,T,p)
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "EOS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+      _RL tLoc, sLoc, pLoc
+      _RL rhoLoc
+      INTEGER myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      _RL t1, t2, t3, t4, s1, s3o2, p1, p2, sp5, p1t1
+      _RL rfresh, rsalt, rhoP0
+      _RL bMfresh, bMsalt, bMpres, BulkMod
+      _RL rhoNum, rhoDen, den, epsln
+      PARAMETER ( epsln = 0. _d 0 )
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
+
+      rhoLoc  = 0. _d 0
+      rhoP0   = 0. _d 0
+      bulkMod = 0. _d 0
+      rfresh  = 0. _d 0
+      rsalt   = 0. _d 0
+      bMfresh = 0. _d 0
+      bMsalt  = 0. _d 0
+      bMpres  = 0. _d 0
+      rhoNum  = 0. _d 0
+      rhoDen  = 0. _d 0
+      den     = 0. _d 0
+
+      t1 = tLoc
+      t2 = t1*t1
+      t3 = t2*t1
+      t4 = t3*t1
+
+      s1  = sLoc
+      IF ( s1 .LT. 0. _d 0 ) THEN
+C     issue a warning
+         WRITE(msgBuf,'(A,E13.5)')
+     &        ' FIND_RHO_SCALAR:   WARNING, salinity = ', s1
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid )
+         s1 = 0. _d 0
+      ENDIF
+
+      IF (equationOfState.EQ.'LINEAR') THEN
+
+         rholoc = rhoNil*(
+     &                      sBeta *(sLoc-sRef(1))
+     &                     -tAlpha*(tLoc-tRef(1))
+     &                   ) + rhoNil
+c        rhoLoc = 0. _d  0
+
+      ELSEIF (equationOfState.EQ.'POLY3') THEN
+
+C     this is not correct, there is a field eosSig0 which should be use here
+C     but I DO not intent to include the reference level in this routine
+         WRITE(msgBuf,'(A)')
+     &        ' FIND_RHO_SCALAR: for POLY3, the density is not'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid )
+         WRITE(msgBuf,'(A)')
+     &         '                 computed correctly in this routine'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                       SQUEEZE_RIGHT , myThid )
+         rhoLoc = 0. _d 0
+
+      ELSEIF ( equationOfState(1:5).EQ.'JMD95'
+     &      .OR. equationOfState.EQ.'UNESCO' ) THEN
+C     nonlinear equation of state in pressure coordinates
+
+         s3o2 = s1*SQRT(s1)
+
+         p1 = pLoc*SItoBar
+         p2 = p1*p1
+
+C     density of freshwater at the surface
+         rfresh =
+     &          eosJMDCFw(1)
+     &        + eosJMDCFw(2)*t1
+     &        + eosJMDCFw(3)*t2
+     &        + eosJMDCFw(4)*t3
+     &        + eosJMDCFw(5)*t4
+     &        + eosJMDCFw(6)*t4*t1
+C     density of sea water at the surface
+         rsalt =
+     &        s1*(
+     &             eosJMDCSw(1)
+     &           + eosJMDCSw(2)*t1
+     &           + eosJMDCSw(3)*t2
+     &           + eosJMDCSw(4)*t3
+     &           + eosJMDCSw(5)*t4
+     &           )
+     &        + s3o2*(
+     &             eosJMDCSw(6)
+     &           + eosJMDCSw(7)*t1
+     &           + eosJMDCSw(8)*t2
+     &           )
+     &           + eosJMDCSw(9)*s1*s1
+
+         rhoP0 = rfresh + rsalt
+
+C     secant bulk modulus of fresh water at the surface
+         bMfresh =
+     &             eosJMDCKFw(1)
+     &           + eosJMDCKFw(2)*t1
+     &           + eosJMDCKFw(3)*t2
+     &           + eosJMDCKFw(4)*t3
+     &           + eosJMDCKFw(5)*t4
+C     secant bulk modulus of sea water at the surface
+         bMsalt =
+     &        s1*( eosJMDCKSw(1)
+     &           + eosJMDCKSw(2)*t1
+     &           + eosJMDCKSw(3)*t2
+     &           + eosJMDCKSw(4)*t3
+     &           )
+     &    + s3o2*( eosJMDCKSw(5)
+     &           + eosJMDCKSw(6)*t1
+     &           + eosJMDCKSw(7)*t2
+     &           )
+C     secant bulk modulus of sea water at pressure p
+         bMpres =
+     &        p1*( eosJMDCKP(1)
+     &           + eosJMDCKP(2)*t1
+     &           + eosJMDCKP(3)*t2
+     &           + eosJMDCKP(4)*t3
+     &           )
+     &   + p1*s1*( eosJMDCKP(5)
+     &           + eosJMDCKP(6)*t1
+     &           + eosJMDCKP(7)*t2
+     &           )
+     &      + p1*s3o2*eosJMDCKP(8)
+     &      + p2*( eosJMDCKP(9)
+     &           + eosJMDCKP(10)*t1
+     &           + eosJMDCKP(11)*t2
+     &           )
+     &    + p2*s1*( eosJMDCKP(12)
+     &           + eosJMDCKP(13)*t1
+     &           + eosJMDCKP(14)*t2
+     &           )
+
+         bulkMod = bMfresh + bMsalt + bMpres
+
+C     density of sea water at pressure p
+         rhoLoc = rhoP0/(1. _d 0 - p1/bulkMod)
+
+      ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
+
+         sp5 = SQRT(s1)
+
+         p1   = pLoc*SItodBar
+         p1t1 = p1*t1
+
+         rhoNum = eosMDJWFnum(0)
+     &        + t1*(eosMDJWFnum(1)
+     &        +     t1*(eosMDJWFnum(2) + eosMDJWFnum(3)*t1) )
+     &        + s1*(eosMDJWFnum(4)
+     &        +     eosMDJWFnum(5)*t1  + eosMDJWFnum(6)*s1)
+     &        + p1*(eosMDJWFnum(7) + eosMDJWFnum(8)*t2
+     &        +     eosMDJWFnum(9)*s1
+     &        +     p1*(eosMDJWFnum(10) + eosMDJWFnum(11)*t2) )
+
+
+         den = eosMDJWFden(0)
+     &        + t1*(eosMDJWFden(1)
+     &        +     t1*(eosMDJWFden(2)
+     &        +         t1*(eosMDJWFden(3) + t1*eosMDJWFden(4) ) ) )
+     &        + s1*(eosMDJWFden(5)
+     &        +     t1*(eosMDJWFden(6)
+     &        +         eosMDJWFden(7)*t2)
+     &        +     sp5*(eosMDJWFden(8) + eosMDJWFden(9)*t2) )
+     &        + p1*(eosMDJWFden(10)
+     &        +     p1t1*(eosMDJWFden(11)*t2 + eosMDJWFden(12)*p1) )
+
+         rhoDen = 1.0/(epsln+den)
+
+         rhoLoc = rhoNum*rhoDen
+
+      ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
+C
+      ELSE
+       WRITE(msgBuf,'(3A)')
+     &        ' FIND_RHO_SCALAR : equationOfState = "',
+     &        equationOfState,'"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R FIND_RHO_SCALAR'
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: LOOK_FOR_NEG_SALINITY
 C     !INTERFACE:
@@ -572,9 +789,7 @@ C     |   looks for and fixes negative salinity values
 C     |   this is necessary IF the equation of state uses
 C     |   the square root of salinity
 C     *==========================================================*
-C     |
 C     | k - is the Salt level
-C     |
 C     *==========================================================*
 C     \ev
 
@@ -588,14 +803,15 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     k    :: Level of Salt slice
-      INTEGER bi,bj,iMin,iMax,jMin,jMax,k
+      INTEGER iMin,iMax,jMin,jMax
       _RL     sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER k, bi, bj
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j, localWarning
-c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       localWarning = 0
@@ -610,11 +826,14 @@ C     abbreviations
       ENDDO
 C     issue a warning
       IF ( localWarning .GT. 0 ) THEN
-       WRITE(standardMessageUnit,'(A,I6,A)')
-     &      'S/R LOOK_FOR_NEG_SALINITY: found',localWarning,
-     &      ' negative salinity values and reset them to zero.'
-       WRITE(standardMessageUnit,'(A,I3)')
-     &      'S/R LOOK_FOR_NEG_SALINITY: current level is k = ', k
+        WRITE(msgBuf,'(2A,I5,A,2I4)') 'S/R LOOK_FOR_NEG_SALINITY:',
+     &      ' from level k =', k, ' ; bi,bj =', bi, bj
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+        WRITE(msgBuf,'(2A,I6,A)') 'S/R LOOK_FOR_NEG_SALINITY:',
+     &      ' reset to zero', localWarning, ' negative salinity.'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
       ENDIF
 
       RETURN
