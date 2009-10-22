@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.51 2009/10/08 08:17:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.52 2009/10/22 12:15:38 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -61,13 +61,16 @@ C     k1/2AtC    for metric terms in U/V ice equations.
 #endif /* SEAICE_CGRID */
 
 C--   Dynamical variables
-      COMMON/SEAICE_DYNVARS_1/AREA,AREANM1
+      COMMON/SEAICE_DYNVARS_1/AREA,HEFF,HSNOW,UICE,VICE
       _RL AREA       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL AREANM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-      COMMON/SEAICE_DYNVARS_2/UICE,VICE,UICENM1,VICENM1
+      _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL UICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL VICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      COMMON/SEAICE_DYNVARS_2/AREANM1,HEFFNM1,UICENM1,VICENM1
+      _RL HEFFNM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL AREANM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL UICENM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL VICENM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -110,13 +113,6 @@ C
       _RL FORCEY0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ZMAX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ZMIN       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-      COMMON/SEAICE_TRANS/HEFF,HSNOW
-      _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-      COMMON/SEAICE_TRANS_AUX/HEFFNM1
-      _RL HEFFNM1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef SEAICE_SALINITY
       COMMON/SEAICE_SALINITY_R/HSALT
