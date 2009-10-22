@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1181 2009/10/21 13:54:55 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1182 2009/10/22 12:36:04 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/autodiff:
+ - rearrange common blocks in SEAICE.h once again for easier dumps of 
+   adjoint output, adjust adcommon.h and g_common.h
+ - change flux form of default advection scheme for better vectorization
+   of adjoint code
+ - modify lab_sea/input.lsr to test the flux form of default advection 
+   scheme
 o autodiff: fix seaice fields in g_common.h (left over from 3 to 1 level
   transition in checkpoint61r)
 
