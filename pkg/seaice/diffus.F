@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/diffus.F,v 1.14 2009/06/22 15:55:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/diffus.F,v 1.15 2009/10/22 12:16:04 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -36,6 +36,8 @@ C     i,j,bi,bj - Loop counters
 C-    MPI+MTH: apply exch (sure with exch1) only to array in common block
       COMMON / LOCAL_DIFFUS / iceFld
       _RL iceFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL dfx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dfy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -68,33 +70,35 @@ C NOW DO DIFFUSION WITH NUIT CONVERSION
          ENDDO
         ENDDO
         ELSE
-        DO j=1,sNy
-         DO i=1,sNx
 C--   Use flux form for MITgcm compliance, unfortunately changes results
-          iceFld(I,J,bi,bj)=
-     &         DELTT*DIFFA(I,J,bi,bj) * recip_rA(I,J,bi,bj) * (
-C     x - compontent
-     &        + _dyG(I+1,J,bi,bj) * _recip_dxC(I+1,J,bi,bj)
-     &         * (fld(I+1,J,bi,bj)-fld(I,  J,bi,bj))
-     &         * cosFacU(J,bi,bj) * iceMsk(I+1,J,bi,bj)
-     &        - _dyG(I  ,J,bi,bj) * _recip_dxC(I  ,J,bi,bj)
-     &         * (fld(I,  J,bi,bj)-fld(I-1,J,bi,bj))
-     &         * cosFacU(J,bi,bj) * iceMsk(I-1,J,bi,bj)
-C     y - compontent
-     &        + _dxG(I,J+1,bi,bj) * _recip_dyC(I,J+1,bi,bj)
-     &         * (fld(I,J+1,bi,bj)-fld(I,J,  bi,bj))
-#ifdef ISOTROPIC_COS_SCALING
-     &         * cosFacV(J+1,bi,bj)
-#endif
-     &         * iceMsk(I,J+1,bi,bj)
-     &        - _dxG(I,J,bi,bj) * _recip_dyC(I,J,bi,bj)
-     &         * (fld(I,J,  bi,bj)-fld(I,J-1,bi,bj))
+        DO J=1-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
+          dfx(I,J) = 0. _d 0
+          dfy(I,J) = 0. _d 0
+         ENDDO
+        ENDDO
+C--   first compute fluxes across cell faces
+        DO J=1,sNy+1
+         DO I=1,sNx+1
+          dfx(I,J) = _dyG(I,J,bi,bj) * _recip_dxC(I,J,bi,bj)
+     &         * (fld(I,J,bi,bj)-fld(I-1,J,bi,bj))
+     &         * cosFacU(J,bi,bj)
+     &         * iceMsk(I,J,bi,bj) * iceMsk(I-1,J,bi,bj)
+          dfy(I,J) = _dxG(I,J,bi,bj) * _recip_dyC(I,J,bi,bj)
+     &         * (fld(I,J,bi,bj)-fld(I,J-1,bi,bj))
 #ifdef ISOTROPIC_COS_SCALING
      &         * cosFacV(J,bi,bj)
 #endif
-     &         * iceMsk(I,J-1,bi,bj)
-C     apply mask for safety
-     &         ) * iceMsk(I,J,bi,bj)
+     &         * iceMsk(I,J,bi,bj) * iceMsk(I,J-1,bi,bj)
+         ENDDO
+        ENDDO
+        DO J=1,sNy
+         DO I=1,sNx
+          iceFld(I,J,bi,bj)=
+     &         DELTT*DIFFA(I,J,bi,bj) * (
+     &             dfx(I+1,J) - dfx(I,J)
+     &           + dfy(I,J+1) - dfy(I,J)
+     &         ) * recip_rA(I,J,bi,bj)
          ENDDO
         ENDDO
         ENDIF

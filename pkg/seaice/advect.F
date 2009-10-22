@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.24 2009/06/24 20:10:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.25 2009/10/22 12:16:04 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,6 +41,8 @@ C     i,j,k,bi,bj - Loop counters
       _RL DELTT
       _RL DIFFA  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL afx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL afy    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       DELTT=SEAICE_deltaTtherm
 C     save fld from previous time step
@@ -84,6 +86,12 @@ C     Backward Euler correction step
 cphCADJ STORE fld    = comlev1, key = ikey_dynamics
 cphCADJ STORE fldNm1 = comlev1, key = ikey_dynamics
 CADJ STORE tmpFld = comlev1, key = ikey_dynamics
+       DO J=1-Oly,sNy+Oly
+        DO I=1-Olx,sNx+Olx
+         afx(I,J) = 0. _d 0
+         afy(I,J) = 0. _d 0
+        ENDDO
+       ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
@@ -114,25 +122,24 @@ CML   lat-lon-grid, but may not be accurate on irregular grids
          ENDDO
         ENDDO
        ELSE
+C--   Use flux form for MITgcm compliance, unfortunately changes results
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=0,sNy+1
-           DO I=0,sNx+1
-C--   Use flux form for MITgcm compliance, unfortunately changes results
+C--   first compute fluxes across cell faces
+          DO J=1,sNy+1
+           DO I=1,sNx+1
+            afx(I,J) = _dyG(I,J,bi,bj) * UI(I,J,bi,bj) 
+     &           * 0.5 _d 0 * (tmpFld(I,J,bi,bj)+tmpFld(I-1,J,bi,bj))
+            afy(I,J) = _dxG(I,J,bi,bj) * VI(I,J,bi,bj)
+     &           * 0.5 _d 0 * (tmpFld(I,J,bi,bj)+tmpFld(I,J-1,bi,bj))
+           ENDDO
+          ENDDO
+          DO J=1,sNy
+           DO I=1,sNx
             fld(I,J,bi,bj)=fldNm1(I,J,bi,bj)
-     &           -DELTT * HALF * (
-     &           + _dyG(I+1,J,bi,bj) *
-     &           (tmpFld(I  ,J  ,bi,bj)+tmpFld(I+1,J  ,bi,bj))
-     &           *  UI(I+1,J  ,  bi,bj)
-     &           - _dyG(I,J,bi,bj) *
-     &           (tmpFld(I  ,J  ,bi,bj)+tmpFld(I-1,J  ,bi,bj))
-     &           *  UI(I  ,J  ,  bi,bj)
-     &           + _dxG(I  ,J+1,bi,bj) *
-     &           (tmpFld(I  ,J  ,bi,bj)+tmpFld(I  ,J+1,bi,bj))
-     &           *  VI(I  ,J+1,  bi,bj)
-     &           - _dxG(I  ,J  ,bi,bj)*
-     &           (tmpFld(I  ,J  ,bi,bj)+tmpFld(I  ,J-1,bi,bj))
-     &           *  VI(I  ,J  ,  bi,bj)
+     &           -DELTT * ( 
+     &             afx(I+1,J) - afx(I,J)
+     &           + afy(I,J+1) - afy(I,J)
      &           )*recip_rA(I,J,bi,bj)
            ENDDO
           ENDDO
