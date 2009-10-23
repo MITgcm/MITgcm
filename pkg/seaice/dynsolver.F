@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.35 2009/09/10 16:05:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.36 2009/10/23 08:10:45 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -492,9 +492,8 @@ C Calculate ocean surface stress
       CALL OSTRES ( COR_ICE, myThid )
 
 #ifdef SEAICE_ALLOW_DYNAMICS
-
-      IF ( SEAICEuseDYNAMICS ) THEN
-
+#ifdef SEAICE_ALLOW_CLIPVELS
+      IF ( SEAICEuseDYNAMICS .AND. SEAICE_clipVelocities) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
@@ -536,6 +535,7 @@ CADJ STORE vice = comlev1, key=ikey_dynamics
       ENDDO
 
       ENDIF
+#endif /* SEAICE_ALLOW_CLIPVELS */
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* NOT SEAICE_CGRID */
 

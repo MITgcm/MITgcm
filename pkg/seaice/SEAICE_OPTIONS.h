@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.35 2009/07/31 03:09:05 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.36 2009/10/23 08:10:45 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -83,6 +83,9 @@ C     in order to use ETAN instead.
 
 C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth
 #undef SEAICE_CAP_HEFF
+C--   When set use SEAICE_clipVelocties = .true., to clip U/VICE at 40cm/s,
+C--   not recommended
+#undef SEAICE_ALLOW_CLIPVELS
 
 #endif /* SEAICE_OPTIONS_H */
 
