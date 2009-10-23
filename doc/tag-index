@@ -1,10 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1183 2009/10/23 08:11:44 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1184 2009/10/23 13:13:13 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice/autodiff:
+ - modify computation and store zetaC/Z in seaice_evp for TAF
  - add CPP-flag SEAICE_ALLOW_CLIPVELS (undefined by default)
  - change seaice_calc_viscosities/strainraties for better 
    vectorization after AD by TAF
