@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/SEAICE_OPTIONS.h,v 1.1 2009/03/18 13:42:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/SEAICE_OPTIONS.h,v 1.2 2009/10/23 08:11:28 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -87,6 +87,9 @@ C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 
 C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth
 #undef SEAICE_CAP_HEFF
+C--   When set use SEAICE_clipVelocties = .true., to clip U/VICE at 40cm/s,
+C--   not recommended, here enabled for backward compatibility
+#define SEAICE_ALLOW_CLIPVELS
 
 #endif /* SEAICE_OPTIONS_H */
 
