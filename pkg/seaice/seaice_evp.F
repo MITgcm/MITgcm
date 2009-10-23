@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.31 2009/09/10 16:05:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.32 2009/10/23 13:12:58 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -244,11 +244,15 @@ C     modify pressure (copied from seaice_calc_viscosities)
             zetaZ(I,J)  = HALF/deltaZreg * pressZ
            ENDDO
           ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE zetac  = comlev1_evp,key = ikeyloc, byte = isbyte
+CADJ STORE zetaz  = comlev1_evp,key = ikeyloc, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 C     regularize zeta if necessary
           DO j=0,sNy+1
            DO i=0,sNx+1
-            zetaC(I,J)  = MIN(zMax(I,J,bi,bj),zetaC(I,J))
-            zetaC(I,J)  = MAX(zMin(I,J,bi,bj),zetaC(I,J))
+            zetaC(I,J)  = MAX(zMin(I,J,bi,bj),MIN(zMax(I,J,bi,bj) 
+     &           ,zetaC(I,J)))
 CML            zetaC(I,J)   = zetaC(I,J)*hEffM(I,J,bi,bj)
 C
 C     zMin, zMax are defined at C-points, make sure that they are not
@@ -259,8 +263,7 @@ C     masked by boundaries/land points
             zMinZ       = MAX(
      &           MAX(zMin(I,  J,bi,bj),zMin(I,  J-1,bi,bj)),
      &           MAX(zMin(I-1,J,bi,bj),zMin(I-1,J-1,bi,bj)) )
-            zetaZ(I,J)  = MIN(zMaxZ,zetaZ(I,J))
-            zetaZ(I,J)  = MAX(zMinZ,zetaZ(I,J))
+            zetaZ(I,J)  = MAX(zMinZ,MIN(zMaxZ,zetaZ(I,J)))
            ENDDO
           ENDDO
 C     recompute pressure
