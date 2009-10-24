@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.33 2009/10/23 08:10:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.34 2009/10/24 20:21:23 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -79,7 +79,7 @@ C--   Check advection schemes
      &     SEAICEadvSchSalt.NE.ENUM_FLUX_LIMIT .AND.
      &     SEAICEadvSchSalt.NE.ENUM_DST3 .AND.
      &     SEAICEadvSchSalt.NE.ENUM_DST3_FLUX_LIMIT .AND.
-     &     SEAICEadvSchSalt.NE.ENUM_OS7MP ) 
+     &     SEAICEadvSchSalt.NE.ENUM_OS7MP )
       checkAdvSchAge  = SEAICEadvAge  .AND. (
      &     SEAICEadvSchAge .NE.ENUM_UPWIND_1RST .AND.
      &     SEAICEadvSchAge .NE.ENUM_CENTERED_2ND .AND.
@@ -87,8 +87,8 @@ C--   Check advection schemes
      &     SEAICEadvSchAge .NE.ENUM_FLUX_LIMIT .AND.
      &     SEAICEadvSchAge .NE.ENUM_DST3 .AND.
      &     SEAICEadvSchAge .NE.ENUM_DST3_FLUX_LIMIT .AND.
-     &     SEAICEadvSchAge .NE.ENUM_OS7MP ) 
-      IF ( checkAdvSchArea .OR. checkAdvSchHeff .OR. 
+     &     SEAICEadvSchAge .NE.ENUM_OS7MP )
+      IF ( checkAdvSchArea .OR. checkAdvSchHeff .OR.
      &     checkAdvSchSnow .OR. checkAdvSchSalt .OR.
      &     checkAdvSchAge ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: allowed advection schemes',
@@ -96,7 +96,7 @@ C--   Check advection schemes
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,7I3)') 'SEAICE_CHECK:',
      &      ENUM_UPWIND_1RST, ENUM_CENTERED_2ND, ENUM_DST2,
-     &      ENUM_FLUX_LIMIT, ENUM_DST3, ENUM_DST3_FLUX_LIMIT, 
+     &      ENUM_FLUX_LIMIT, ENUM_DST3, ENUM_DST3_FLUX_LIMIT,
      &      ENUM_OS7MP
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
@@ -254,7 +254,7 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
 
 #ifndef SEAICE_ALLOW_CLIPVELS
       IF ( SEAICE_clipVelocities ) THEN
-        WRITE(msgBuf,'(A)') 
+        WRITE(msgBuf,'(A)')
      &      'SEAICE_CHECK: SEAICE_clipVelocities = .TRUE.'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
@@ -299,8 +299,8 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
      &  'SEAICE_CHECK: SEAICE_BICE_STRESS (defined by default)'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif / * SEAICE_TEST_ICE_STRESS_1 */      
-#endif / * SEAICE_CGRID not defined */
+#endif /* SEAICE_TEST_ICE_STRESS_1 */
+#endif /* SEAICE_CGRID not defined */
 
       _END_MASTER(myThid)
 
