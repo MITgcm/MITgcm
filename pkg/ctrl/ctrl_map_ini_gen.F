@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.5 2009/04/28 18:09:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.6 2009/10/25 02:04:52 gforget Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -280,7 +280,7 @@ c--   only do interior, and exchange outside
      & doglobalread, ladinit, optimcycle, mythid, xxDummyCur )
 
 
-#ifndef ALLOW_SMOOTH_CORREL3D
+#ifndef ALLOW_SMOOTH_CORREL2D
 c avoid xx larger than boundsVec(5) X uncertainty
       if ( boundsVec(5).GT.0.) then
       do bj = jtlo,jthi

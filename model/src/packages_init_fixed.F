@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.69 2009/09/16 21:36:11 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.70 2009/10/25 02:04:50 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -247,6 +247,10 @@ C--   This needs to preceed the call ctrl_init
 C--   in order to provide the weight files
       IF (useSEAICE) CALL SEAICE_COST_INIT_FIXED( myThid )
 #endif
+
+#ifdef ALLOW_SMOOTH 
+      CALL SMOOTH_INIT_FIXED(myThid)
+#endif /* ALLOW_SMOOTH */
 
 #if (defined (ALLOW_ECCO) && defined (ALLOW_COST))
 C--   Initialise ecco-specific cost function.
