@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.33 2009/09/30 15:50:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.34 2009/10/25 01:33:21 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -509,6 +509,17 @@ c--           Test for missing values.
       _EXCH_XYZ_RL( wtheta2, myThid )
 #endif
 
+#if (defined (ALLOW_SST_COST_CONTRIBUTION) || defined (ALLOW_SST_CONTROL))
+      if ( ssterrfile .NE. ' ' )
+     &   call mdsreadfield( ssterrfile, 32, 'RL', 1, wsst, 1,
+     &                      mythid)
+#endif
+#if (defined (ALLOW_SSS_COST_CONTRIBUTION) || defined (ALLOW_SSS_CONTROL))
+      if ( ssserrfile .NE. ' ' )
+     &   call mdsreadfield( ssserrfile, 32, 'RL', 1, wsss, 1,
+     &                      mythid)
+#endif
+
       k = 1
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -517,23 +528,42 @@ c--           Test for missing values.
 #if (defined (ALLOW_SST_COST_CONTRIBUTION) || \
      defined (ALLOW_DAILYSST_COST_CONTRIBUTION) || \
      defined (ALLOW_SST_CONTROL))
-              if ( lwtheta2InUse ) then
-                wsst(i,j,bi,bj) = wtheta2(i,j,k,bi,bj)
-              elseif ( lwthetaLevInUse ) then
-                wsst(i,j,bi,bj) = wthetaLev(i,j,k,bi,bj)
+
+              if ( ssterrfile .NE. ' ' ) then
+cgf use specific weights for sst
+                if (wsst(i,j,bi,bj).ne.0)
+     &               wsst(i,j,bi,bj)= frame(i,j)*maskC(i,j,k,bi,bj)/
+     &                  ( wsst(i,j,bi,bj)*wsst(i,j,bi,bj) )
               else
-                wsst(i,j,bi,bj) =
-     &              wtheta(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
+cgf use general hydrography weights
+                if ( lwtheta2InUse ) then
+                  wsst(i,j,bi,bj) = wtheta2(i,j,k,bi,bj)
+                elseif ( lwthetaLevInUse ) then
+                  wsst(i,j,bi,bj) = wthetaLev(i,j,k,bi,bj)
+                else
+                  wsst(i,j,bi,bj) =
+     &               wtheta(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
+                endif
               endif
 #endif
+
 #if (defined (ALLOW_SSS_COST_CONTRIBUTION) || defined (ALLOW_SSS_CONTROL))
-              if ( lwsalt2InUse ) then
-                wsss(i,j,bi,bj) = wsalt2(i,j,k,bi,bj)
-              elseif ( lwsaltLevInUse ) then
-                wsss(i,j,bi,bj) = wsaltLev(i,j,k,bi,bj)
+              if ( ssserrfile .NE. ' ' ) then
+cgf use specific weights for sss
+                if (wsss(i,j,bi,bj).ne.0)
+     &               wsss(i,j,bi,bj)= frame(i,j)*maskC(i,j,k,bi,bj)/
+     &                  ( wsss(i,j,bi,bj)*wsss(i,j,bi,bj) )
+
               else
-                wsss(i,j,bi,bj) =
-     &              wsalt(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
+cgf use general hydrography weights
+                if ( lwsalt2InUse ) then
+                  wsss(i,j,bi,bj) = wsalt2(i,j,k,bi,bj)
+                elseif ( lwsaltLevInUse ) then
+                  wsss(i,j,bi,bj) = wsaltLev(i,j,k,bi,bj)
+                else
+                  wsss(i,j,bi,bj) =
+     &               wsalt(k,bi,bj)*frame(i,j)*maskC(i,j,k,bi,bj)
+                endif
               endif
 #endif
             enddo
