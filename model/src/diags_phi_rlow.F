@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.3 2009/10/26 00:43:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.4 2009/10/26 21:48:43 gforget Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -63,12 +63,6 @@ C     i,j :: Loop counters
       _RL ddRloc, ratioRm, ratioRp
       PARAMETER ( zero= 0. _d 0 , one= 1. _d 0 , half= .5 _d 0 )
 CEOP
-
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-             phiHydLow(i,j,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
 
       IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
 
