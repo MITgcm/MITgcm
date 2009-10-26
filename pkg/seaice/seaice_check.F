@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.34 2009/10/24 20:21:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.35 2009/10/26 08:38:54 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -263,6 +263,20 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_ALLOW_CLIPVELS */
+
+#ifndef SEAICE_ALLOW_CLIPZETA
+      IF ( SEAICE_evpDampC .GT. 0. _d 0 .OR.
+     &     SEAICE_zetaMin  .GT. 0. _d 0 ) THEN
+        WRITE(msgBuf,'(A)')
+     &      'SEAICE_CHECK: SEAICE_evpDampC and/or SEAICE_zetaMin '//
+     &      'are set in data.seaice'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
+     &       'SEAICE_ALLOW_CLIPZETA is not defined in SEAICE_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif /* SEAICE_ALLOW_CLIPZETA */
 
 #ifdef ALLOW_SALT_PLUME
 #ifndef SEAICE_SALINITY

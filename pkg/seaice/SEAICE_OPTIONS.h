@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.36 2009/10/23 08:10:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.37 2009/10/26 08:38:53 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -66,6 +66,12 @@ C--   Only for the C-grid version it is possible to
 #ifdef SEAICE_CGRID
 C     enable EVP code by defining the following flag
 #define SEAICE_ALLOW_EVP
+#ifdef SEAICE_ALLOW_EVP
+C--   When set use SEAICE_zetaMin and SEAICE_evpDampC to limit
+C--   viscosities from below and above in seaice_evp
+C--   not necessary, and not recommended
+#undef SEAICE_ALLOW_CLIPZETA
+#endif /* SEAICE_ALLOW_EVP */
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 #undef SEAICE_ALLOW_TEM
 #else /* not SEAICE_CGRID, but old B-grid */

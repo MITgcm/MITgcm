@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.32 2009/10/23 13:12:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.33 2009/10/26 08:38:54 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -94,8 +94,10 @@ C     auxilliary variables
 #ifdef SEAICE_ALLOW_TEM
       _RL etaDenC, zetaMaxC, etaDenZ, zetaMaxZ
 #endif /* SEAICE_ALLOW_TEM */
-      _RL zMaxZ, zMinZ
-      _RL denom1, denom2, fac, facZ
+#ifdef SEAICE_ALLOW_CLIPZETA
+      _RL zMaxZ, zMinZ, fac
+#endif /* SEAICE_ALLOW_CLIPZETA */
+      _RL denom1, denom2, facZ
 
 C     surrface level
       kSrf = 1
@@ -136,6 +138,7 @@ c     initialise strain rates
         ENDDO
        ENDDO
       ENDDO
+#ifdef SEAICE_ALLOW_CLIPZETA
 C     damping constraint (Hunke, J.Comp.Phys.,2001)
       IF ( SEAICE_evpDampC .GT. 0. _d 0 ) THEN
        fac = HALF * SEAICE_evpDampC * SEAICE_evpTauRelax
@@ -150,6 +153,7 @@ C     damping constraint (Hunke, J.Comp.Phys.,2001)
         ENDDO
        ENDDO
       ENDIF
+#endif /* SEAICE_ALLOW_CLIPZETA */
 C
 C     start of the main time loop
       DO iEVPstep = 1, nEVPstepMax
@@ -244,6 +248,7 @@ C     modify pressure (copied from seaice_calc_viscosities)
             zetaZ(I,J)  = HALF/deltaZreg * pressZ
            ENDDO
           ENDDO
+#ifdef SEAICE_ALLOW_CLIPZETA
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE zetac  = comlev1_evp,key = ikeyloc, byte = isbyte
 CADJ STORE zetaz  = comlev1_evp,key = ikeyloc, byte = isbyte
@@ -266,6 +271,7 @@ C     masked by boundaries/land points
             zetaZ(I,J)  = MAX(zMinZ,MIN(zMaxZ,zetaZ(I,J)))
            ENDDO
           ENDDO
+#endif /* SEAICE_ALLOW_CLIPZETA */
 C     recompute pressure
           DO j=0,sNy+1
            DO i=0,sNx+1
