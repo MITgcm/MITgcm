@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.86 2009/10/20 20:13:47 zhc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.87 2009/10/26 00:41:23 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1203,6 +1203,13 @@ c--   Compute cost function contribution of SSH.
 CADJ STORE prof_etan_mean = tapelev_init, key=1
 #  endif
 # endif
+#endif
+
+#ifdef ALLOW_BP_COST_CONTRIBUTION
+c--   Compute bottom pressure cost
+      call timer_start('cost_bp    [ECCO SPIN-DOWN]', mythid)
+      call cost_bp( myiter, mytime, mythid )
+      call timer_stop ('cost_bp    [ECCO SPIN-DOWN]', mythid)
 #endif
 
 c--   Compute cost function contribution of Temperature and Salinity.

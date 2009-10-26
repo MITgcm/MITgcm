@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.41 2009/10/25 01:33:21 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.42 2009/10/26 00:41:23 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -76,7 +76,7 @@ c--   Read the namelist input.
      &                   curmtrufile,curmtrvfile,
      &                   salterrfile, temperrfile, velerrfile,
      &                   salt0errfile, temp0errfile, vel0errfile,
-     &                   ssterrfile, ssserrfile,
+     &                   ssterrfile, ssserrfile, bperrfile,
      &                   hflux_errfile, sflux_errfile,
      &                   tauu_errfile, tauv_errfile,
      &                   atemp_errfile, aqh_errfile,
@@ -215,6 +215,7 @@ c--     Set default values.
         vel0errfile           =    ' '
         ssterrfile            =    ' '
         ssserrfile            =    ' '
+        bperrfile             =    ' '
         hflux_errfile         =    ' '
         sflux_errfile         =    ' '
         tauu_errfile          =    ' '

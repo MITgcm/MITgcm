@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.34 2009/10/25 01:33:21 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.35 2009/10/26 00:41:23 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -719,6 +719,27 @@ cph-indonesian(
 cph-indonesian)
 
 #endif /* ALLOW_SSH_COST_CONTRIBUTION */
+
+
+#ifdef ALLOW_BP_COST_CONTRIBUTION
+      if ( bperrfile .NE. ' ' )
+     &   call mdsreadfield( bperrfile, 32, 'RL', 1, wbp, 1,
+     &                      mythid)
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+                if (wbp(i,j,bi,bj).ne.0)
+     &               wbp(i,j,bi,bj)= frame(i,j)*maskC(i,j,k,bi,bj)/
+     &                  ( wbp(i,j,bi,bj)* wbp(i,j,bi,bj) )
+            enddo
+          enddo
+        enddo
+      enddo
+
+      call active_write_xy_loc( 'wbp', wbp, 1, 0, mythid, dummy)
+#endif
 
 c--   Read zonal wind stress variance.
 #if (defined (ALLOW_SCAT_COST_CONTRIBUTION))

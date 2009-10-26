@@ -5,6 +5,8 @@ cost_averagesgeneric.f
 cost_averagesfields.f           
 cost_averagesflags.f            
 cost_averagesinit.f             
+cost_bp.f
+cost_bp_read.f
 cost_ctds.f                     
 cost_ctdt.f                     
 cost_drift.f                    

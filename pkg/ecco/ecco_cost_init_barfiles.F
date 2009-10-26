@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.13 2009/10/20 20:13:46 zhc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.14 2009/10/26 00:41:23 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -65,6 +65,7 @@ c     == local variables ==
       character*(128) fnamehfluxbar
       character*(128) fnamesfluxbar
       character*(128) fnamesmrareabar
+      character*(128) fnamebpbar
 c
       character*(128) adfnamepsbar
       character*(128) adfnametbar
@@ -78,6 +79,7 @@ c
       character*(128) adfnamehfluxbar
       character*(128) adfnamesfluxbar
       character*(128) adfnamesmrareabar
+      character*(128) adfnamebpbar
 
 c     == external functions ==
 
@@ -158,6 +160,24 @@ c     &                        optimcycle, mythid, xx_psbar_mean_dummy )
 #endif
       enddo
 #endif /* ALLOW_SSH_COST_CONTRIBUTION */
+
+#ifdef ALLOW_BP_COST_CONTRIBUTION
+c--   Save bpbar on file.
+      ilps=ilnblnk( bpbarfile )
+      write(fnamebpbar,'(2a,i10.10)')
+     &     bpbarfile(1:ilps), '.', optimcycle
+      write(adfnamebpbar,'(3a,i10.10)')
+     &     yadprefix, bpbarfile(1:ilps), '.', optimcycle
+
+      do irec = 1, nmonsrec
+c        call active_write_xy( fnamebpbar, tmpfld2d, irec,
+c     &                        optimcycle, mythid, xx_bpbar_mean_dummy )
+#ifndef ALLOW_TANGENTLINEAR_RUN
+        call active_write_xy( adfnamebpbar, tmpfld2d, irec,
+     &                         optimcycle,mythid, xx_bpbar_mean_dummy )
+#endif
+      enddo
+#endif
 
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \
      defined (ALLOW_CTDT_COST_CONTRIBUTION) || \
