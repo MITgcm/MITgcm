@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_check.F,v 1.2 2004/09/23 12:02:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_check.F,v 1.3 2009/10/27 15:23:22 dfer Exp $
 C $Name:  $
 #include "GGL90_OPTIONS.h"
 
@@ -37,12 +37,12 @@ C     So far, GGL90 works only with oceanic z-coordinates
          STOP 'ABNORMAL END: S/R GGL90_CHECK'
       ENDIF
 
-C     GGL90 needs convection turned off (will be packaged later)
-      IF (cAdjFreq.NE.0.  .OR.
-     &     ivdc_kappa.NE.0. ) THEN
-         WRITE(msgBuf,'(A)') 'Some form of convection has been enabled'
-         CALL PRINT_ERROR( msgBuf , 1)
-         STOP 'ABNORMAL END: S/R GGL90_CHECK'
+C     GGL90 needs convection turned on, but keep warning message
+      IF (cAdjFreq.NE.0.  .OR. ivdc_kappa.NE.0. ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'GGL90_CHECK: WARNING: Some form of convection has been enabled'
+         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT , myThid)
       ENDIF
 
       IF ( useKPP ) THEN

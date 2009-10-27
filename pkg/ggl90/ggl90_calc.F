@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.12 2009/10/08 20:07:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.13 2009/10/27 15:23:22 dfer Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -85,22 +85,23 @@ c     _RL     SQRTTKE
       _RL     RiNumber
       _RL     TKEdissipation
       _RL     tempU, tempV, prTemp
-      _RL     MaxLength
+      _RL     MaxLength, tmpmlx
       _RL     TKEPrandtlNumber (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     GGL90mixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL         rMixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     rMixingLength    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     mxLength_Dn      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     KappaE           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     rhoK             (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     rhoKm1           (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     totalDepth       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gTKE             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-C     tri-diagonal matrix
+C-    tri-diagonal matrix
       _RL     a(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     c(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_GGL90_HORIZDIFF
-C     xA, yA   - area of lateral faces
-C     dfx, dfy - diffusive flux across lateral faces
+C-    xA, yA   - area of lateral faces
+C-    dfx, dfy - diffusive flux across lateral faces
       _RL     xA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     yA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     dfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -133,7 +134,7 @@ C     Initialize local fields
         DO I=1-Olx,sNx+Olx
          gTKE(I,J,K)              = 0. _d 0
          KappaE(I,J,K)            = 0. _d 0
-         TKEPrandtlNumber(I,J,K)  = 0. _d 0
+         TKEPrandtlNumber(I,J,K)  = 1. _d 0
          GGL90mixingLength(I,J,K) = GGL90mixingLengthMin
              rMixingLength(I,J,K) = 0. _d 0
         ENDDO
@@ -141,9 +142,10 @@ C     Initialize local fields
       ENDDO
       DO J=1-Oly,sNy+Oly
        DO I=1-Olx,sNx+Olx
-        rhoK    (I,J) = 0. _d 0
-        rhoKm1  (I,J) = 0. _d 0
-        totalDepth(I,J) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
+        rhoK(I,J)          = 0. _d 0
+        rhoKm1(I,J)        = 0. _d 0
+        totalDepth(I,J)    = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
+        mxLength_Dn(I,J,1) = GGL90mixingLengthMin
        ENDDO
       ENDDO
 
@@ -190,29 +192,54 @@ C     mixing length
        ENDDO
       ENDDO
 
-C- Impose upper bound for mixing length (total depth)
+C- Impose upper and lower bound for mixing length
       IF ( mxlMaxFlag .EQ. 0 ) THEN
+C-
        DO k=2,Nr
         DO J=jMin,jMax
          DO I=iMin,iMax
           MaxLength=totalDepth(I,J)
           GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K),
-     &        MaxLength)
+     &                                   MaxLength)
          ENDDO
         ENDDO
        ENDDO
+
+       DO k=2,Nr
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          GGL90mixingLength(I,J,K) = MAX(GGL90mixingLength(I,J,K),
+     &                                   GGL90mixingLengthMin)
+          rMixingLength(I,J,K) = 1. _d 0 / GGL90mixingLength(I,J,K)
+         ENDDO
+        ENDDO
+       ENDDO
+
       ELSEIF ( mxlMaxFlag .EQ. 1 ) THEN
+C-
        DO k=2,Nr
         DO J=jMin,jMax
          DO I=iMin,iMax
           MaxLength=MIN(Ro_surf(I,J,bi,bj)-rF(k),rF(k)-R_low(I,J,bi,bj))
 c         MaxLength=MAX(MaxLength,20. _d 0)
           GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K),
-     &        MaxLength)
+     &                                   MaxLength)
          ENDDO
         ENDDO
        ENDDO
+
+       DO k=2,Nr
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          GGL90mixingLength(I,J,K) = MAX(GGL90mixingLength(I,J,K),
+     &                                   GGL90mixingLengthMin)
+          rMixingLength(I,J,K) = 1. _d 0 / GGL90mixingLength(I,J,K)
+         ENDDO
+        ENDDO
+       ENDDO
+
       ELSEIF ( mxlMaxFlag .EQ. 2 ) THEN
+C-
        DO k=2,Nr
         DO J=jMin,jMax
          DO I=iMin,iMax
@@ -235,20 +262,68 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
          ENDDO
         ENDDO
        ENDDO
+
+       DO k=2,Nr
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          GGL90mixingLength(I,J,K) = MAX(GGL90mixingLength(I,J,K),
+     &                                   GGL90mixingLengthMin)
+          rMixingLength(I,J,K) = 1. _d 0 / GGL90mixingLength(I,J,K)
+         ENDDO
+        ENDDO
+       ENDDO
+
+      ELSEIF ( mxlMaxFlag .EQ. 3 ) THEN
+C-
+       DO k=2,Nr
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          mxLength_Dn(I,J,K) = MIN(GGL90mixingLength(I,J,K),
+     &        mxLength_Dn(I,J,K-1)+drF(k-1))
+         ENDDO
+        ENDDO
+       ENDDO
+       DO J=jMin,jMax
+        DO I=iMin,iMax
+          GGL90mixingLength(I,J,Nr) = MIN(GGL90mixingLength(I,J,Nr),
+     &       GGL90mixingLengthMin+drF(Nr))
+        ENDDO
+       ENDDO
+       DO k=Nr-1,2,-1
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K),
+     &        GGL90mixingLength(I,J,K+1)+drF(k))
+         ENDDO
+        ENDDO
+       ENDDO
+
+       DO k=2,Nr
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K),
+     &                                  mxLength_Dn(I,J,K))
+          tmpmlx = SQRT(GGL90mixingLength(I,J,K) * mxLength_Dn(I,J,K)) 
+          tmpmlx = MAX( tmpmlx, GGL90mixingLengthMin)
+          rMixingLength(I,J,K) = 1. _d 0 / tmpmlx
+         ENDDO
+        ENDDO
+       ENDDO
+
       ELSE
-       STOP 'GGL90_CALC: Wrong mxlMaxFlag (mixing lenght limit)'
+       STOP 'GGL90_CALC: Wrong mxlMaxFlag (mixing length limit)'
       ENDIF
 
 C- Impose minimum mixing length (to avoid division by zero)
-      DO k=2,Nr
-       DO J=jMin,jMax
-        DO I=iMin,iMax
-         GGL90mixingLength(I,J,K) = MAX(GGL90mixingLength(I,J,K),
-     &        GGL90mixingLengthMin)
-         rMixingLength(I,J,K) = 1. _d 0 /GGL90mixingLength(I,J,K)
-        ENDDO
-       ENDDO
-      ENDDO
+c      DO k=2,Nr
+c      DO J=jMin,jMax
+c       DO I=iMin,iMax
+c        GGL90mixingLength(I,J,K) = MAX(GGL90mixingLength(I,J,K),
+c    &        GGL90mixingLengthMin)
+c        rMixingLength(I,J,K) = 1. _d 0 /GGL90mixingLength(I,J,K)
+c       ENDDO
+c      ENDDO
+c     ENDDO
 
       DO k=2,Nr
        Km1 = K-1
@@ -267,6 +342,7 @@ C     compute Prandtl number (always greater than 0)
          prTemp = 1. _d 0
          IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
          TKEPrandtlNumber(I,J,K) = MIN(10. _d 0,prTemp)
+c         TKEPrandtlNumber(I,J,K) = 1. _d 0
 
 C     viscosity and diffusivity
          KappaM = GGL90ck*GGL90mixingLength(I,J,K)*SQRTTKE(i,j,k)
@@ -399,7 +475,7 @@ C--   Center diagonal
        DO j=jMin,jMax
         DO i=iMin,iMax
           b(i,j,k) = 1. _d 0 - c(i,j,k) - a(i,j,k)
-     &        + ab15*deltaTggl90*GGL90ceps*SQRT(GGL90TKE(I,J,K,bi,bj))
+     &        + ab15*deltaTggl90*GGL90ceps*SQRTTKE(I,J,K)
      &        *rMixingLength(I,J,K)*maskC(i,j,k,bi,bj)
          ENDDO
        ENDDO
