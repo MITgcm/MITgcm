@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1185 2009/10/26 08:42:26 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1186 2009/10/27 16:04:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -10,7 +10,7 @@ o pkg/seaice/autodiff:
    it was done by default, now clipping is disabled by default
  - modify computation and store zetaC/Z in seaice_evp for TAF
  - add CPP-flag SEAICE_ALLOW_CLIPVELS (undefined by default)
- - change seaice_calc_viscosities/strainraties for better 
+ - change seaice_calc_viscosities/strainraties for better
    vectorization after AD by TAF
  - rearrange common blocks in SEAICE.h once again for easier dumps of 
    adjoint output, adjust adcommon.h and g_common.h
