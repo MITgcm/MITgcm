@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_yz.F,v 1.13 2009/09/30 16:03:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_yz.F,v 1.14 2009/10/27 07:58:09 mlosch Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -99,7 +99,7 @@ C     MDSWRITEFIELDXZ does not know about useSingleCPUio, so the faster
 C     method that works for .not.useSingleCPUio cannot be used
        nrec_nl = 0
       else
-       nrec_nl = int(ncvarrecs(ivartype)/Ny)
+       nrec_nl = int(ncvarrecs(ivartype)/Nx)
       endif
 
       do irec = 1, nrec_nl
