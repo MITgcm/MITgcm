@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.13 2009/10/27 15:23:22 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.14 2009/10/31 03:18:50 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -27,7 +27,6 @@ C global parameters updated by ggl90_calc
 C     GGL90TKE     :: sub-grid turbulent kinetic energy          (m^2/s^2)
 C     GGL90viscAz  :: GGL90 eddy viscosity coefficient             (m^2/s)
 C     GGL90diffKzT :: GGL90 diffusion coefficient for temperature  (m^2/s)
-C
 C \ev
 
 C !USES: ============================================================
@@ -99,6 +98,7 @@ C-    tri-diagonal matrix
       _RL     a(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     c(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+c     INTEGER errCode
 #ifdef ALLOW_GGL90_HORIZDIFF
 C-    xA, yA   - area of lateral faces
 C-    dfx, dfy - diffusive flux across lateral faces
@@ -136,7 +136,6 @@ C     Initialize local fields
          KappaE(I,J,K)            = 0. _d 0
          TKEPrandtlNumber(I,J,K)  = 1. _d 0
          GGL90mixingLength(I,J,K) = GGL90mixingLengthMin
-             rMixingLength(I,J,K) = 0. _d 0
         ENDDO
        ENDDO
       ENDDO
@@ -145,7 +144,9 @@ C     Initialize local fields
         rhoK(I,J)          = 0. _d 0
         rhoKm1(I,J)        = 0. _d 0
         totalDepth(I,J)    = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
+        rMixingLength(i,j,1) = 0. _d 0
         mxLength_Dn(I,J,1) = GGL90mixingLengthMin
+        SQRTTKE(i,j,1) = SQRT( GGL90TKE(i,j,1,bi,bj) )
        ENDDO
       ENDDO
 
@@ -167,9 +168,8 @@ c      Kp1 = MIN(Nr,K+1)
        DO J=jMin,jMax
         DO I=iMin,iMax
          SQRTTKE(i,j,k)=SQRT( GGL90TKE(I,J,K,bi,bj) )
-C
+
 C     buoyancy frequency
-C
          Nsquare(i,j,k) = - gravity*recip_rhoConst*recip_drC(K)
      &        * ( rhoKm1(I,J) - rhoK(I,J) )*maskC(I,J,K,bi,bj)
 cC     vertical shear term (dU/dz)^2+(dV/dz)^2
@@ -303,7 +303,7 @@ C-
          DO I=iMin,iMax
           GGL90mixingLength(I,J,K) = MIN(GGL90mixingLength(I,J,K),
      &                                  mxLength_Dn(I,J,K))
-          tmpmlx = SQRT(GGL90mixingLength(I,J,K) * mxLength_Dn(I,J,K)) 
+          tmpmlx = SQRT( GGL90mixingLength(I,J,K)*mxLength_Dn(I,J,K) )
           tmpmlx = MAX( tmpmlx, GGL90mixingLengthMin)
           rMixingLength(I,J,K) = 1. _d 0 / tmpmlx
          ENDDO
@@ -414,6 +414,7 @@ C     ... across y-faces
          ENDDO
         ENDDO
 C     Compute divergence of fluxes
+C- jmc: concerned about missing a deltaT since gTKE is already the future TKE.
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
           gTKE(i,j,k)=gTKE(i,j,k)
@@ -441,6 +442,8 @@ C--   Lower diagonal
        ENDDO
       ENDDO
       DO k=2,Nr
+C- jmc: concerned that a(k=2) should always be zero 
+C       and would be better without recip_hFacC
        km1=max(2,k-1)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -459,8 +462,11 @@ C--   Upper diagonal
        ENDDO
       ENDDO
       DO k=2,Nr
+C- jmc: concerned that c(k) from k=kLow to k=Nr should always be zero
        DO j=jMin,jMax
         DO i=iMin,iMax
+C- jmc: this is dangerous since klowC could be zero if land column
+C       and would be better without recip_hFacC
           kp1=min(klowC(i,j,bi,bj),k+1)
           c(i,j,k) = -deltaTggl90
 c     &        *recip_drF( k )*recip_hFacI(i,j,k,bi,bj)
@@ -482,9 +488,8 @@ C--   Center diagonal
       ENDDO
 C     end set up matrix
 
-C
 C     Apply boundary condition
-C
+C- jmc: concerned about conservation when a or c are changed after computing b
       DO J=jMin,jMax
        DO I=iMin,iMax
 C     estimate friction velocity uStar from surface forcing
@@ -495,6 +500,7 @@ C     estimate friction velocity uStar from surface forcing
      &              + surfaceForcingV(I,  J+1,bi,bj) ) )**2
      &                     )
 C     Dirichlet surface boundary condition for TKE
+C- jmc: would be much better to update the provisional TKE (i.e. gTKE) at k=2
         gTKE(I,J,kSurf) = MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare)
      &                     *maskC(I,J,kSurf,bi,bj)
 C     Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
@@ -504,16 +510,19 @@ C     Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
         c(I,J,kBottom) = 0. _d 0
        ENDDO
       ENDDO
-C
+
 C     solve tri-diagonal system, and store solution on gTKE (previously rhs)
-C
+c     CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
+c    I                        a, b, c,
+c    U                        gTKE,
+c    O                        errCode,
+c    I                        bi, bj, myThid )
       CALL GGL90_SOLVE( bi, bj, iMin, iMax, jMin, jMax,
      I     a, b, c,
      U     gTKE,
      I     myThid )
-C
+
 C     now update TKE
-C
       DO K=1,Nr
        DO J=jMin,jMax
         DO I=iMin,iMax
