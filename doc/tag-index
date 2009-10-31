@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1187 2009/10/28 17:54:44 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1188 2009/10/31 03:22:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90: 
+ - fix previous modif (unfortunatly has not been documented here).
 o pkg/seaice/autodiff:
  - add CPP flag to include clipping of zeta in EVP code;
    although clipping of zeta is not necessary for EVP and not recommended
