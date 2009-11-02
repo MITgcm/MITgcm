@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.9 2009/06/26 16:51:24 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.10 2009/11/02 18:55:30 jmc Exp $
 
 #  Ed Hill
 
@@ -14,7 +14,7 @@ export LC_ALL="en_US.UTF-8"
 #  Turn off stack limit for FIZHI & AD-tests
 ulimit -s unlimited
 
-TESTDIR="/scratch/jmc/test_"`hostname`
+TESTDIR="/scratch/jmc/test_"`hostname -s`
 MC=10
 checkOut=1
 sepDir=1
