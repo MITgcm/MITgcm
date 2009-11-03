@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.14 2008/02/02 02:34:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.15 2009/11/03 03:32:25 gforget Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -139,6 +139,9 @@ c--   Initialize the tiled cost function contributions.
           do k=1,NGENCOST
           objf_gencost(k,bi,bj)    = 0. _d 0
           enddo
+          do k=1,NSSHV4COST
+          objf_sshv4cost(k,bi,bj)    = 0. _d 0
+          enddo
 c
           num_hflux(bi,bj)    = 0. _d 0
           num_hfluxm(bi,bj)   = 0. _d 0
@@ -197,6 +200,9 @@ c
           num_bottomdrag(bi,bj)    = 0. _d 0
           do k=1,NGENCOST
           num_gencost(k,bi,bj)    = 0. _d 0
+          enddo
+          do k=1,NSSHV4COST
+          num_sshv4cost(k,bi,bj)    = 0. _d 0
           enddo
           num_theta_ini_fin(bi,bj) = 0. _d 0
           num_salt_ini_fin(bi,bj)  = 0. _d 0

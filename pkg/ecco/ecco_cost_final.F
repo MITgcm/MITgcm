@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.42 2009/09/30 15:49:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.43 2009/11/03 03:32:25 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -84,6 +84,7 @@ c     == local variables ==
       _RL f_eddytau, f_bottomdrag
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
       _RL f_gencost(NGENCOST)
+      _RL f_sshv4cost(NSSHV4COST)
       _RL f_transp
 
       _RL no_temp0, no_salt0,  no_temp, no_salt
@@ -107,6 +108,7 @@ c     == local variables ==
       _RL no_hmean
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
       _RL no_gencost(NGENCOST)
+      _RL no_sshv4cost(NSSHV4COST)
       _RL no_transp
 
       character*20 cfname
@@ -219,6 +221,11 @@ c     == end of interface ==
         f_gencost(num_var)= 0. _d 0
        enddo
 #endif
+#ifdef ALLOW_SSHV4_COST
+       do num_var=1,NSSHV4COST
+        f_sshv4cost(num_var)= 0. _d 0
+       enddo
+#endif
 
       no_temp = 0. _d 0
       no_salt = 0. _d 0
@@ -295,6 +302,11 @@ c     == end of interface ==
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         no_gencost(num_var)= 0. _d 0
+       enddo
+#endif
+#ifdef ALLOW_SSHV4_COST
+       do num_var=1,NSSHV4COST
+        no_sshv4cost(num_var)= 0. _d 0
        enddo
 #endif
 
@@ -381,6 +393,13 @@ c--   Sum up all contributions.
           fc = fc
      &            + mult_gencost(num_var)
      &            *objf_gencost(num_var,bi,bj)
+       enddo
+#endif
+#ifdef ALLOW_SSHV4_COST
+       do num_var=1,NSSHV4COST
+          fc = fc
+     &            + mult_sshv4cost(num_var)
+     &            *objf_sshv4cost(num_var,bi,bj)
        enddo
 #endif
           f_temp = f_temp + objf_temp(bi,bj)
@@ -471,6 +490,12 @@ c--   Sum up all contributions.
      &            +objf_gencost(num_var,bi,bj)
        enddo
 #endif
+#ifdef ALLOW_SSHV4_COST
+       do num_var=1,NSSHV4COST
+          f_sshv4cost(num_var)=f_sshv4cost(num_var)
+     &            +objf_sshv4cost(num_var,bi,bj)
+       enddo
+#endif
           no_temp = no_temp + num_temp(bi,bj)
           no_salt = no_salt + num_salt(bi,bj)
           no_temp0 = no_temp0 + num_temp0(bi,bj)
@@ -541,6 +566,12 @@ c--   Sum up all contributions.
        do num_var=1,NGENCOST
           no_gencost(num_var)=no_gencost(num_var)
      &            +num_gencost(num_var,bi,bj)
+       enddo
+#endif
+#ifdef ALLOW_SSHV4_COST
+       do num_var=1,NSSHV4COST
+          no_sshv4cost(num_var)=no_sshv4cost(num_var)
+     &            +num_sshv4cost(num_var,bi,bj)
        enddo
 #endif
 
@@ -639,6 +670,11 @@ c--   Do global summation for each part of the cost function
         _GLOBAL_SUM_RL(f_gencost(num_var), myThid )
        enddo
 #endif
+#ifdef ALLOW_SSHV4_COST
+       do num_var=1,NSSHV4COST
+        _GLOBAL_SUM_RL(f_sshv4cost(num_var), myThid )
+       enddo
+#endif
       _GLOBAL_SUM_RL( no_temp , myThid )
       _GLOBAL_SUM_RL( no_salt , myThid )
       _GLOBAL_SUM_RL( no_temp0, myThid )
@@ -711,6 +747,11 @@ c--   Do global summation for each part of the cost function
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         _GLOBAL_SUM_RL(no_gencost(num_var), myThid )
+       enddo
+#endif
+#ifdef ALLOW_SSHV4_COST
+       do num_var=1,NSSHV4COST
+        _GLOBAL_SUM_RL(no_sshv4cost(num_var), myThid )
        enddo
 #endif
 
@@ -878,6 +919,15 @@ c--   Do global summation for each part of the cost function
         if (no_gencost(num_var).GT.0) then
          write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
      &     ' --> f_gencost =',f_gencost(num_var),
+     &      num_var
+        endif
+       enddo
+#endif
+#ifdef ALLOW_SSHV4_COST
+       do num_var=1,NSSHV4COST
+        if (no_sshv4cost(num_var).GT.0) then
+         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+     &     ' --> f_sshv4cost =',f_sshv4cost(num_var),
      &      num_var
         endif
        enddo
@@ -1103,6 +1153,16 @@ cph)
      &    'gencost', num_var, ' = ',
      &    f_gencost(num_var),
      &    no_gencost(num_var)
+         endif
+       enddo
+#endif
+#ifdef ALLOW_SSHV4_COST
+       do num_var=1,NSSHV4COST
+        if (no_sshv4cost(num_var).GT.0) then
+         write(ifc,'(A,i2.0,A,2D22.15)')
+     &    'sshv4cost', num_var, ' = ',
+     &    f_sshv4cost(num_var),
+     &    no_sshv4cost(num_var)
          endif
        enddo
 #endif

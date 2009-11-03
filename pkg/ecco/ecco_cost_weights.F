@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.35 2009/10/26 00:41:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.36 2009/11/03 03:32:25 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -56,6 +56,7 @@ c     == local variables ==
       integer irec,nnz
       integer ilo,ihi
       integer iobcs
+      integer num_var
 
       _RL factor
       _RL wti(nr)
@@ -67,6 +68,7 @@ c     == local variables ==
       _RL wtau0m
       _RL ratio
       _RL dummy
+      _RL wsshv4tmp ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
 
       logical lwtheta2InUse
       logical lwsalt2InUse
@@ -138,6 +140,9 @@ c--   Initialize variance (weight) fields.
               wtp     (i,j,bi,bj) = 0. _d 0
               wers    (i,j,bi,bj) = 0. _d 0
               wgfo    (i,j,bi,bj) = 0. _d 0
+              do num_var=1,NSSHV4COST
+                wsshv4  (i,j,num_var,bi,bj) = 0. _d 0
+              enddo
               wp      (i,j,bi,bj) = 0. _d 0
               wudrift (i,j,bi,bj) = 0. _d 0
               wvdrift (i,j,bi,bj) = 0. _d 0
@@ -720,6 +725,57 @@ cph-indonesian)
 
 #endif /* ALLOW_SSH_COST_CONTRIBUTION */
 
+#ifdef ALLOW_SSHV4_COST
+
+      do num_var=1,NSSHV4COST
+
+      if ( sshv4cost_errfile(num_var) .NE. ' ' ) then
+c--   read error standard deviation
+      call mdsreadfield( sshv4cost_errfile(num_var),
+     &    32, 'RL', 1, wsshv4tmp, 1, mythid)
+c--   convert to units of meters
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+            wsshv4tmp(i,j,bi,bj)=wsshv4tmp(i,j,bi,bj)
+     &           *sshv4cost_errfactor(num_var)
+            enddo
+          enddo
+        enddo
+      enddo
+      else
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              wsshv4tmp(i,j,bi,bj)=0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+      endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+      if (wsshv4tmp(i,j,bi,bj).ne.0) then
+        wsshv4tmp(i,j,bi,bj)= frame(i,j)*maskC(i,j,k,bi,bj)/
+     &        ( wsshv4tmp(i,j,bi,bj)* wsshv4tmp(i,j,bi,bj) )
+        wsshv4(i,j,num_var,bi,bj)=wsshv4tmp(i,j,bi,bj)
+      endif
+            enddo
+          enddo
+        enddo
+      enddo
+
+      call active_write_xy_loc( 'wsshv4', wsshv4tmp, 
+     &   num_var, 0, mythid, dummy)
+
+      enddo
+
+#endif
 
 #ifdef ALLOW_BP_COST_CONTRIBUTION
       if ( bperrfile .NE. ' ' )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.40 2009/10/26 00:41:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost.h,v 1.41 2009/11/03 03:32:25 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -36,6 +36,11 @@ c     Number of Generic Cost terms:
 c     =============================
       INTEGER NGENCOST
       PARAMETER ( NGENCOST=20 )
+
+c     Number of sshv4cost Cost terms:
+c     =============================
+      INTEGER NSSHV4COST
+      PARAMETER ( NSSHV4COST=5 )
 
 c     Number of days: (hard-coded to set up some vector dimensions
 c     =============================
@@ -352,6 +357,7 @@ c                  function contributions.
      &                objf_tp,
      &                objf_ers,
      &                objf_gfo,
+     &                objf_sshv4cost,
      &                objf_temp,
      &                objf_salt,
      &                objf_temp0,
@@ -451,6 +457,7 @@ c                  function contributions.
       _RL  objf_tp   (nsx,nsy)
       _RL  objf_ers  (nsx,nsy)
       _RL  objf_gfo  (nsx,nsy)
+      _RL  objf_sshv4cost(NSSHV4COST,nsx,nsy)
       _RL  objf_temp (nsx,nsy)
       _RL  objf_salt (nsx,nsy)
       _RL  objf_temp0(nsx,nsy)
@@ -548,6 +555,7 @@ c                  function contributions.
      &                num_tp,
      &                num_ers,
      &                num_gfo,
+     &                num_sshv4cost,
      &                num_temp,
      &                num_salt,
      &                num_temp0,
@@ -629,6 +637,7 @@ c                  function contributions.
       _RL  num_tp   (nsx,nsy)
       _RL  num_ers  (nsx,nsy)
       _RL  num_gfo  (nsx,nsy)
+      _RL  num_sshv4cost(NSSHV4COST,nsx,nsy)
       _RL  num_temp (nsx,nsy)
       _RL  num_salt (nsx,nsy)
       _RL  num_temp0(nsx,nsy)
@@ -707,6 +716,7 @@ c                  function contributions.
      &                    mult_tp,
      &                    mult_ers,
      &                    mult_gfo,
+     &                    mult_sshv4cost,
      &                    mult_temp,
      &                    mult_salt,
      &                    mult_temp0,
@@ -769,6 +779,7 @@ c                  function contributions.
       _RL  mult_tp
       _RL  mult_ers
       _RL  mult_gfo
+      _RL  mult_sshv4cost(NSSHV4COST)
       _RL  mult_temp
       _RL  mult_salt
       _RL  mult_temp0
@@ -884,6 +895,7 @@ c     velerrfile            - representation error
      &                tp_errfile,
      &                ers_errfile,
      &                gfo_errfile,
+     &                sshv4cost_errfile,
      &                ctdt_errfile,
      &                ctds_errfile,
      &                drift_errfile,
@@ -934,6 +946,7 @@ c     velerrfile            - representation error
       character*(MAX_LEN_FNAM) tp_errfile
       character*(MAX_LEN_FNAM) ers_errfile
       character*(MAX_LEN_FNAM) gfo_errfile
+      character*(MAX_LEN_FNAM) sshv4cost_errfile(NSSHV4COST)
       character*(MAX_LEN_FNAM) ctdt_errfile
       character*(MAX_LEN_FNAM) ctds_errfile
       character*(MAX_LEN_FNAM) drift_errfile
@@ -1012,7 +1025,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
      &                      wedtauy,wedtauy2,wedtauyFld,
      &                      wsst,wsss,wbp,
      &                      wtp,wers,wgfo,
-     &                      wp,
+     &                      wp,wsshv4,
      &                      wctdt,wctds,
      &                      wudrift,wvdrift,
      &                      whfluxmm,wsfluxmm,
@@ -1057,6 +1070,7 @@ c     wvdrift    - weight for mean meridional velocity from drifters.
       _RL wsss    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wbp     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtp     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wsshv4  (1-olx:snx+olx,1-oly:sny+oly,NSSHV4COST,nsx,nsy)
       _RL wers    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wgfo    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wp      (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
@@ -1462,6 +1476,11 @@ c     sshperiod      - sampling interval for the sea surface height data.
       _RL topexslope
       _RL ersslope
       _RL gfoslope
+
+cgf factor to convert sshv4cost_errfile in m
+      common /ecco_cost_errfactor/
+     &         sshv4cost_errfactor
+      _RL  sshv4cost_errfactor(NSSHV4COST)
 
 #ifdef ALLOW_SSH_COST_CONTRIBUTION
       common /ecco_ssh_daymask_r/

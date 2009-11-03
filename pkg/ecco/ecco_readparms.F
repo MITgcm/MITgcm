@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.42 2009/10/26 00:41:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.43 2009/11/03 03:35:23 gforget Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -61,7 +61,8 @@ c--   Read the namelist input.
      &                   scatstartdate1, scatstartdate2,
      &                   scatperiod, scatxdatfile, scatydatfile,
      &                   scatx_errfile, scaty_errfile,
-     &                   ssh_errfile,
+     &                   ssh_errfile, 
+     &                   sshv4cost_errfile, sshv4cost_errfactor,
      &                   tp_errfile, ers_errfile, gfo_errfile,
      &                   tmistartdate1, tmistartdate2, tmidatfile,
      &                   sststartdate1, sststartdate2, sstdatfile,
@@ -95,7 +96,7 @@ c--   Read the namelist input.
      &                   mult_lwflux, mult_lwdown, mult_evap,
      &                   mult_snowprecip, mult_apressure,
      &                   mult_uwind, mult_vwind,
-     &                   mult_hmean, mult_h,
+     &                   mult_hmean, mult_h, mult_sshv4cost,
      &                   mult_tp, mult_ers, mult_gfo,
      &                   mult_temp, mult_salt,
      &                   mult_tmi, mult_sst, mult_sss, mult_bp,
@@ -243,6 +244,10 @@ c--     Set default values.
          gencost_datafile(k)  =    ' '
          gencost_errfile(k)   =    ' '
         enddo
+        do k=1,NSSHV4COST
+         sshv4cost_errfile(k) =    ' '
+         sshv4cost_errfactor(k)=     1. _d 0
+        enddo
         tpTimeMaskFile        =    ' '
         ersTimeMaskFile       =    ' '
         gfoTimeMaskFile       =    ' '
@@ -305,6 +310,9 @@ c--     Set default values.
         mult_bottomdrag       =      0. _d 0
         do k=1,NGENCOST
         mult_gencost(k)       =      0. _d 0
+        enddo
+        do k=1,NSSHV4COST
+        mult_sshv4cost(k)       =      0. _d 0
         enddo
         mult_smooth_ic        =      0. _d 0
         mult_smooth_bc        =      0. _d 0
