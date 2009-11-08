@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1188 2009/10/31 03:22:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1189 2009/11/08 17:30:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src (3-d solver):
+  Undo modif from Dec 12, 2005 (solve_for_pressure.F cvs version v.49),
+   which consisted in removing the Surf. Non-Hydrostatic pressure from the
+   whole column and adding it to Eta (inspired from Casualli, 1999):
+   Only affects 3-D solver initial guess and only if using ExactConserv,
+   but tests did show a degradation of solver convergence. For this reason,
+   decide to disable this piece of code.
+   to recover previous version, just set zeroPsNH = exactConserv (line 78).
+  Update output of exp. global_ocean.cs32x15.viscA4 & hs94.cs-32x32x5.impIGW
 o pkg/ggl90: 
  - fix previous modif (unfortunatly has not been documented here).
 o pkg/seaice/autodiff:
