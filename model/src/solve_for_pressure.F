@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.67 2009/05/25 01:40:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.68 2009/11/08 16:51:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -74,8 +74,8 @@ C     == Local variables ==
 CEOP
 
 #ifdef ALLOW_NONHYDROSTATIC
-c       zeroPsNH = .FALSE.
-        zeroPsNH = exactConserv
+        zeroPsNH = .FALSE.
+c       zeroPsNH = exactConserv
 #else
         cg3d_b(1) = 0.
 #endif
