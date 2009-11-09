@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.52 2009/09/10 16:05:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.53 2009/11/09 16:13:00 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -121,6 +121,9 @@ C     part of the overlap, because the overlap of u/vTmp is used
 #ifdef ALLOW_DEBUG
       _RL ARR  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 #endif
+#ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
+      _RL resnorm, EKnorm, counter
+#endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
 
 C     surrface level
       kSrf = 1
@@ -979,10 +982,12 @@ C     part of the overlap, because the overlap of u/vTmp is used
 #else
       PARAMETER ( iMin = 1, iMax = sNx, jMin = 1, jMax = sNy )
 #endif
-
 #ifdef ALLOW_DEBUG
       _RL ARR  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 #endif
+#ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
+      _RL resnorm, EKnorm, counter
+#endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
 
 C--   introduce turning angles
       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
@@ -1874,6 +1879,41 @@ C     evaluate divergence of stress and apply to forcing
         ENDDO
 C     endif  useHB87StressCoupling
       ENDIF
+
+#ifdef SEAICE_ALLOW_CHECK_LSR_CONVERGENCE
+      IF ( debugLevel .GE. debLevB ) THEN
+       resnorm = 0. _d 0
+       EKnorm  = 0. _d 0
+       counter = 0. _d 0
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+C--   Compute residual norm and print
+         DO j=1,sNy
+          DO i=1,sNx
+           resnorm = resnorm + 0.5 _d 0 *
+     &          ( ( (uIceNm1(i,j,bi,bj)+uIceNm1(i+1,j,bi,bj))
+     &            - (uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj)) )**2
+     &          + ( (vIceNm1(i,j,bi,bj)+vIceNm1(i,j+1,bi,bj))
+     &            - (vIce(i,j,bi,bj)+vIce(i,j+1,bi,bj)) )**2 )
+           IF ( area(i,j,bi,bj) .gt. 0.5 _d 0 ) THEN
+            EKnorm = EKnorm + 0.5 _d 0 * heff(i,j,bi,bj) *
+     &           ( ( (uIce(i,j,bi,bj)+uIce(i+1,j,bi,bj)) )**2
+     &           + ( (vIce(i,j,bi,bj)+vIce(i,j+1,bi,bj)) )**2 )
+            counter = counter + 1. _d 0
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+       CALL GLOBAL_SUM_R8( resnorm, myThid )
+       CALL GLOBAL_SUM_R8( EKnorm, myThid )
+       CALL GLOBAL_SUM_R8( counter, myThid )
+       IF ( counter .gt. 0. _d 0 ) EKnorm = EKnorm/counter
+       WRITE(*,'(A,I7,1X,2E22.14)')
+     &      'S/R seaice_lsr: IPSEUDO, RESNORM, EKNORM = ', 
+     &      ilcall, sqrt(resnorm), EKnorm
+      ENDIF
+#endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
