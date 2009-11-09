@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1189 2009/11/08 17:30:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1190 2009/11/09 16:47:01 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice
+ - fix diagnostics of principal stress components for EVP
+ - add optional diagnostics of non-linear convergence for LSOR solver
 o model/src (3-d solver):
   Undo modif from Dec 12, 2005 (solve_for_pressure.F cvs version v.49),
    which consisted in removing the Surf. Non-Hydrostatic pressure from the
@@ -21,7 +24,7 @@ o pkg/seaice/autodiff:
    it was done by default, now clipping is disabled by default
  - modify computation and store zetaC/Z in seaice_evp for TAF
  - add CPP-flag SEAICE_ALLOW_CLIPVELS (undefined by default)
- - change seaice_calc_viscosities/strainraties for better
+ - change seaice_calc_viscosities/strainrates for better
    vectorization after AD by TAF
  - rearrange common blocks in SEAICE.h once again for easier dumps of
    adjoint output, adjust adcommon.h and g_common.h
