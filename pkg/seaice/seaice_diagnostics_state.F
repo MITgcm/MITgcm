@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.16 2009/06/24 08:24:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.17 2009/11/09 16:13:44 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -114,37 +114,72 @@ C
 #ifdef SEAICE_CGRID
        IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) ) THEN
+#ifdef SEAICE_ALLOW_EVP
+        IF ( SEAICEuseEVP ) THEN
+C     for EVP compute principle stress components from recent 
+C     stress state and normalize with latest 
+C     PRESS = PRESS(n-1), n = number of sub-cycling steps
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+             sig1 = seaice_sigma1(I,J,bi,bj)
+             sig2 = seaice_sigma2(I,J,bi,bj)
+             sig12 = 0.25 _d 0 *
+     &            ( seaice_sigma12(I,  J,  bi,bj)
+     &            + seaice_sigma12(I+1,J,  bi,bj)
+     &            + seaice_sigma12(I+1,J+1,bi,bj)
+     &            + seaice_sigma12(I  ,J+1,bi,bj) )
+             sigTmp = SQRT( sig2*sig2 + 4. _d 0*sig12*sig12 )
+             recip_prs = 0. _d 0
+             IF ( press(I,J,bi,bj) .GT. 1. _d -13 )
+     &            recip_prs = 1./press(I,J,bi,bj)
+             sigI (I,J) = 0.5*(sig1 + sigTmp)*recip_prs
+             sigII(I,J) = 0.5*(sig1 - sigTmp)*recip_prs
+            ENDDO
+           ENDDO
+           CALL DIAGNOSTICS_FILL(sigI ,'SIsigI  ',0,1,2,bi,bj,myThid)
+           CALL DIAGNOSTICS_FILL(sigII,'SIsigII ',0,1,2,bi,bj,myThid)
+          ENDDO
+         ENDDO
+        ELSE
+#else
+        IF ( .TRUE. ) THEN
+#endif /* SEAICE_ALLOW_EVP */
 C     recompute strainrates from up-to-date velocities
-        CALL SEAICE_CALC_STRAINRATES(
-     I       uIce, vIce,
-     O       e11, e22, e12,
-     I       0, myTime, myIter, myThid )
+         CALL SEAICE_CALC_STRAINRATES(
+     I        uIce, vIce,
+     O        e11, e22, e12,
+     I        0, myTime, myIter, myThid )
 C     but use old viscosities and pressure for the
 C     principle stress components
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-            sig1  = 2.*zeta(I,J,bi,bj)
-     &           * (e11(I,J,bi,bj) + e22(I,J,bi,bj))
-     &           - press(I,J,bi,bj)
-            sig2  = 2.* eta(I,J,bi,bj)
-     &           * (e11(I,J,bi,bj) - e22(I,J,bi,bj))
-            sig12 = 2.*eta(I,J,bi,bj) * 0.25 _d 0 *
-     &           ( e12(I  ,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
-     &           + e12(I  ,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
-            sigTmp = SQRT( sig2*sig2 + 4. _d 0*sig12*sig12 )
-            recip_prs = 0. _d 0
-            IF ( press(I,J,  bi,bj) .GT. 1. _d -13 )
-     &           recip_prs = 1./press(I,J,bi,bj)
-            sigI (I,J) = 0.5*(sig1 + sigTmp)*recip_prs
-            sigII(I,J) = 0.5*(sig1 - sigTmp)*recip_prs
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+             sig1  = 2.*zeta(I,J,bi,bj)
+     &            * (e11(I,J,bi,bj) + e22(I,J,bi,bj))
+     &            - press(I,J,bi,bj)
+             sig2  = 2.* eta(I,J,bi,bj)
+     &            * (e11(I,J,bi,bj) - e22(I,J,bi,bj))
+             sig12 = 2.*eta(I,J,bi,bj) * 0.25 _d 0 *
+     &            ( e12(I  ,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
+     &            + e12(I  ,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
+             sigTmp = SQRT( sig2*sig2 + 4. _d 0*sig12*sig12 )
+             recip_prs = 0. _d 0
+             IF ( press(I,J,bi,bj) .GT. 1. _d -13 )
+     &            recip_prs = 1./press(I,J,bi,bj)
+             sigI (I,J) = 0.5*(sig1 + sigTmp)*recip_prs
+             sigII(I,J) = 0.5*(sig1 - sigTmp)*recip_prs
+            ENDDO
            ENDDO
+           CALL DIAGNOSTICS_FILL(sigI ,'SIsigI  ',0,1,2,bi,bj,myThid)
+           CALL DIAGNOSTICS_FILL(sigII,'SIsigII ',0,1,2,bi,bj,myThid)
           ENDDO
-          CALL DIAGNOSTICS_FILL(sigI ,'SIsigI  ',0,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(sigII,'SIsigII ',0,1,2,bi,bj,myThid)
          ENDDO
-        ENDDO
+C     endif SEAICEuseEVP
+        ENDIF
+C     endif DIAGNOSTICS_IS_ON(SIsigI/II)
        ENDIF
 #endif /* SEAICE_CGRID */
 C     abuse press as a temporary field
