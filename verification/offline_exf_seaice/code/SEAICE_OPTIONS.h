@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_OPTIONS.h,v 1.2 2007/10/09 02:29:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_OPTIONS.h,v 1.3 2009/11/10 09:33:38 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -25,17 +25,6 @@ C     on the thermodynamics component of the code only.
 C     Sea-ice dynamics can also be turned off at runtime
 C     using variable SEAICEuseDYNAMICS.
 #undef SEAICE_ALLOW_DYNAMICS
-
-C--   By default, pkg/seaice defines forcing variable internally, in
-C     SEAICE_FFIELDS.h, and reads them in from files.  When CPP option
-C     SEAICE_EXTERNAL_FORCING is defined, the above forcing variables
-C     are defined and provided by an external package.  At present this
-C     option is hardwired for pkg/exf and the variables are passed using
-C     include file exf_fields.h.
-#define SEAICE_EXTERNAL_FORCING
-#ifdef SEAICE_EXTERNAL_FORCING
-#include "EXF_OPTIONS.h"
-#endif /* SEAICE_EXTERNAL_FORCING */
 
 C--   By default, the sea-ice package uses its own integrated bulk
 C     formulae to compute fluxes (fu, fv, EmPmR, Qnet, and Qsw) over
