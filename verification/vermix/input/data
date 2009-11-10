@@ -4,8 +4,8 @@
 #
 # Continuous equation parameters
  &PARM01
- tRef=20*1.,
- sRef=20*35.,
+ tRef=26*1.,
+ sRef=26*35.,
  viscA4=0.0E4,
  viscAh=0.E-2,
  viscAz=1.E-4,
@@ -19,21 +19,18 @@
  diffKzS=1.E-5,
  f0=1.4e-4,
  beta=0.E-11,
- tAlpha=2.E-4,
- sBeta =0.E-4,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
 #ivdc_kappa=10.,
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
-#eosType='LINEAR',
  eosType='MDJWF',
  hFacMin=0.05,
  readBinaryPrec=64,
- bottomDragLinear=0.E-4,
  debugLevel=1,
  tempAdvection=.FALSE.,
  tempAdvScheme=33,
+ momAdvection=.FALSE.,
  &
 
 # Elliptic solver parameters
@@ -47,17 +44,19 @@
  niter0=0,
  nTimeSteps=20,
 #nTimeSteps=720,
-#nTimeSteps=8640,
- deltaT=1200.0,
+ nTimeSteps=51840,
+ deltaT=1200.,
 #cAdjFreq=-1.,
  abEps=0.01,
- pChkptFreq=0.0,
- chkptFreq=0.0,
- taveFreq=86400.0,
- dumpFreq=86400.0,
-#dumpFreq=1.0,
+ pChkptFreq=62208000.,
+ chkptFreq=0.,
+ taveFreq=0.,
+ dumpFreq=0.,
  monitorFreq=86400.,
  monitorFreq=1.,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=432000.,
+ externForcingCycle=31104000.,
  &
 
 # Gridding parameters
@@ -66,14 +65,13 @@
  usingSphericalPolarGrid=.FALSE.,
  dXspacing=5000,
  dYspacing=5000.,
- delZ=20*50,
+ delZ=10, 10, 10, 10, 10, 12, 12, 15, 15, 18, 18, 22, 22,
+      26, 32, 38, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46,
  &
 
 # Input datasets
  &PARM05
- hydrogThetaFile='T.init',
-#hydrogThetaFile='Tinstable.init',
- hydrogThetaFile='Tstable2.init',
- surfQfile='Qnet.forcing',
- zonalWindFile='taux.forcing',
+ hydrogThetaFile='T_26.init',
+ surfQfile='Qnet_72.forcing',
+ zonalWindFile='taux_72.forcing',
  &
