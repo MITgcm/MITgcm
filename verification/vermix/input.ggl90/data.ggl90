@@ -5,6 +5,11 @@
  GGL90writeState=.TRUE.,
 #GGL90diffTKEh=1.e3,
 #GGL90alpha=30.,
-#GGL90diffMax = 10.,
 #GGL90TKEFile = 'TKE.init',
+ GGL90TKEmin = 1.e-7,
+ mxlMaxFlag=2,
+#GGL90ck=0.15,
+#GGL90ceps = 0.35,
+#GGL90m2 = 5.,
+ GGL90mixingLengthMin=3.,
  &

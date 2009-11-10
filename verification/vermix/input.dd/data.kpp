@@ -3,5 +3,5 @@
 # =====================================================================
  &KPP_PARM01
  KPPwriteState=.TRUE.,
- KPPuseDoubleDiff = .true.,
+ KPPuseDoubleDiff = .TRUE.,
  &

@@ -1,4 +1,6 @@
 # Packages
  &PACKAGES
  useGGL90=.TRUE.,
+ useDiagnostics=.TRUE.,
+ useMNC=.TRUE.,
  &

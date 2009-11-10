@@ -4,8 +4,8 @@
 #
 # Continuous equation parameters
  &PARM01
- tRef=20*1.,
- sRef=20*35.,
+ tRef=26*1.,
+ sRef=26*35.,
  viscA4=0.0E4,
  viscAh=0.E-2,
  viscAz=1.E-4,
@@ -13,10 +13,10 @@
  no_slip_bottom=.TRUE.,
  diffK4T=0.E4,
  diffKhT=0.E-2,
-# diffKzT=1.E-5,
+#diffKzT=1.E-5,
  diffK4S=0.E4,
  diffKhS=0.E-2,
-# diffKzS=1.E-5,
+#diffKzS=1.E-5,
  f0=1.4e-4,
  beta=0.E-11,
  tAlpha=2.E-4,
@@ -27,13 +27,13 @@
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
  eosType='LINEAR',
-#eosType='MDJWF',
  hFacMin=0.05,
  readBinaryPrec=64,
  bottomDragLinear=0.E-4,
  debugLevel=1,
  tempAdvection=.FALSE.,
  tempAdvScheme=33,
+ momAdvection=.FALSE.,
  &
 
 # Elliptic solver parameters
@@ -47,14 +47,14 @@
  niter0=0,
  nTimeSteps=20,
 #nTimeSteps=720,
-#nTimeSteps=8640,
- deltaT=1200.0,
+ nTimeSteps=51840,
+ deltaT=1200.,
 #cAdjFreq=-1.,
  abEps=0.01,
- pChkptFreq=0.0,
- chkptFreq=0.0,
- dumpFreq=86400.0,
-#dumpFreq=1.0,
+ pChkptFreq=62208000.,
+ chkptFreq=0.,
+ taveFreq=0.,
+ dumpFreq=0.,
  monitorFreq=86400.,
  monitorFreq=1.,
  &
@@ -65,15 +65,12 @@
  usingSphericalPolarGrid=.FALSE.,
  dXspacing=5000,
  dYspacing=5000.,
- delZ=20*50,
+ delZ=10, 10, 10, 10, 10, 12, 12, 15, 15, 18, 18, 22, 22,
+      26, 32, 38, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46,
  &
 
 # Input datasets
  &PARM05
- hydrogThetaFile='T.saltfinger',
- hydrogSaltFile ='S.saltfinger',
- hydrogThetaFile='T.diffconv',
- hydrogSaltFile ='S.diffconv',
  hydrogThetaFile='T.doublediff',
  hydrogSaltFile ='S.doublediff',
  &

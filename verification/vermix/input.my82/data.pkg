@@ -1,4 +1,6 @@
 # Packages
  &PACKAGES
  useMY82=.TRUE.,
+ useDiagnostics=.TRUE.,
+ useMNC=.TRUE.,
  &
