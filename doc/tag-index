@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1190 2009/11/09 16:47:01 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1191 2009/11/10 09:34:04 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -7,6 +7,7 @@ $Name:  $
 o pkg/seaice
  - fix diagnostics of principal stress components for EVP
  - add optional diagnostics of non-linear convergence for LSOR solver
+ - make maximum zeta a runtime parameter
 o model/src (3-d solver):
   Undo modif from Dec 12, 2005 (solve_for_pressure.F cvs version v.49),
    which consisted in removing the Surf. Non-Hydrostatic pressure from the
