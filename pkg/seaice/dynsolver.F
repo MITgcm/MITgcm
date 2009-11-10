@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.36 2009/10/23 08:10:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.37 2009/11/10 09:33:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -217,7 +217,8 @@ C NOW KEEP FORCEX0
 C--   NOW SET UP ICE PRESSURE AND VISCOSITIES
           PRESS0(I,J,bi,bj)=PSTAR*HEFF(I,J,bi,bj)
      &         *EXP(-20.0 _d 0*(ONE-AREA(I,J,bi,bj)))
-          ZMAX(I,J,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(I,J,bi,bj)
+CML          ZMAX(I,J,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(I,J,bi,bj)
+          ZMAX(I,J,bi,bj)=SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
 CML          ZMIN(I,J,bi,bj)=4.0 _d +08
           ZMIN(I,J,bi,bj)=SEAICE_zetaMin
           PRESS0(I,J,bi,bj)=PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)

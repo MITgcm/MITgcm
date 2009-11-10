@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.38 2009/10/23 08:10:45 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.39 2009/11/10 09:33:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -59,11 +59,11 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-Oly+1,sNy+Oly
          DO i=1-Olx+1,sNx+Olx
-          PRESS0(i,j,bi,bj)=PSTAR*HEFF(i,j,bi,bj)
+          PRESS0(i,j,bi,bj) = PSTAR*HEFF(i,j,bi,bj)
      &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,bi,bj)))
-          ZMAX(i,j,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(i,j,bi,bj)
-          ZMIN(i,j,bi,bj)=SEAICE_zetaMin
-          PRESS0(i,j,bi,bj)=PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
+          ZMAX(I,J,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
+          ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
+          PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
           TAUX(i,j,bi,bj)   = 0. _d 0
           TAUY(i,j,bi,bj)   = 0. _d 0
          ENDDO
@@ -207,7 +207,7 @@ C--   now add in wind stress ant tilt
 C--   now set up ice pressure and viscosities
           PRESS0(I,J,bi,bj)=PSTAR*HEFF(i,j,bi,bj)
      &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,bi,bj)))
-          ZMAX(I,J,bi,bj)  = (5. _d +12/(2. _d +04))*PRESS0(I,J,bi,bj)
+          ZMAX(I,J,bi,bj)  = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
           ZMIN(I,J,bi,bj)  = SEAICE_zetaMin
           PRESS0(I,J,bi,bj)= PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)
          ENDDO

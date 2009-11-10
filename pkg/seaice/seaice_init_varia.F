@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.47 2009/08/05 21:49:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.48 2009/11/10 09:33:56 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -391,13 +391,13 @@ C---  Complete initialization
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          ZETA(i,j,bi,bj)=HEFF(i,j,bi,bj)*(1.0 _d 11)
-          ETA(i,j,bi,bj)=ZETA(i,j,bi,bj)/4.0 _d 0
-          PRESS0(i,j,bi,bj)=PSTAR*HEFF(i,j,bi,bj)
+          ZETA(i,j,bi,bj)   = HEFF(i,j,bi,bj)*(1.0 _d 11)
+          ETA(i,j,bi,bj)    = ZETA(i,j,bi,bj)/SEAICE_eccen**2
+          PRESS0(i,j,bi,bj) = PSTAR*HEFF(i,j,bi,bj)
      &         *EXP(-20.0 _d 0*(ONE-AREA(i,j,bi,bj)))
-          ZMAX(i,j,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS0(i,j,bi,bj)
-          ZMIN(i,j,bi,bj)=SEAICE_zetaMin
-          PRESS0(i,j,bi,bj)=PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
+          ZMAX(I,J,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
+          ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
+          PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
          ENDDO
         ENDDO
         IF ( useRealFreshWaterFlux .AND. .NOT.useThSIce ) THEN

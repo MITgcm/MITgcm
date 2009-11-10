@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.77 2009/07/31 03:09:05 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.78 2009/11/10 09:33:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -52,7 +52,7 @@ C--   SEAICE parameters
      & SEAICEadvSchSalt, SEAICEadvSchAge,
      & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
-     & SEAICE_evpDampC, SEAICE_zetaMin,
+     & SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_initialHEFF,
      & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
@@ -138,9 +138,10 @@ C--   set default sea ice parameters
       SEAICE_deltaTtherm = dTtracerLev(1)
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = UNSET_RL
-C     Hunke, JCP, 2001 use 615 kg/m^2 for this
+C     Hunke, JCP, 2001 use 615 kg/m^2 for this, but does not recommend using it
       SEAICE_evpDampC    = -1. _d 0
       SEAICE_zetaMin     = 0. _d 0
+      SEAICE_zetaMaxFac  = 2.5 _d 8
       SEAICE_monFreq     = monitorFreq
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq

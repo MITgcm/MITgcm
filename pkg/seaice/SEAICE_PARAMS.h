@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.61 2009/07/31 03:09:05 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.62 2009/11/10 09:33:56 mlosch Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -137,7 +137,9 @@ C     SEAICE_elasticParm - parameter that sets relaxation timescale
 C                          tau = SEAICE_elasticParm * SEAICE_deltaTdyn
 C     SEAICE_evpTauRelax - relaxation timescale tau                    (s)
 C     SEAICE_evpDampC    - evp daming constant                         (kg/m^2)
-C     SEAICE_zetaMin     - lower bound for viscosity (default = 0)     (kg/s)
+C     SEAICE_zetaMaxFac  - factor detrmining the maximum viscosity     (s)
+C                          (default = 5.e+12/2.e4 = 2.5e8)
+C     SEAICE_zetaMin     - lower bound for viscosity (default = 0)     (N s/m^2)
 C     SEAICE_monFreq     - SEAICE monitor frequency.                   (s)
 C     SEAICE_dumpFreq    - SEAICE dump frequency.                      (s)
 C     SEAICE_taveFreq    - SEAICE time-averaging frequency.            (s)
@@ -225,11 +227,12 @@ C
       _RL OCEAN_drag, LSR_ERROR, DIFF1, A22
       _RL SEAICE_airTurnAngle, SEAICE_waterTurnAngle
       _RL SEAICE_elasticParm, SEAICE_evpTauRelax
-      _RL SEAICE_evpDampC, SEAICE_zetaMin
+      _RL SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac
+
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      &    SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
-     &    SEAICE_evpDampC, SEAICE_zetaMin,
+     &    SEAICE_evpDampC, SEAICE_zetaMin, SEAICE_zetaMaxFac,
      &    SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      &    SEAICE_initialHEFF,
      &    SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
