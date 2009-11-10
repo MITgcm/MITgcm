@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1191 2009/11/10 09:34:04 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1192 2009/11/10 17:17:58 dfer Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/vermix:
+  - change vermix to a more "classical" 1d column with high vertical reoslution,
+    seasonal heat flux forcing and constant wind forcing --> update outputs
 o pkg/seaice
  - fix diagnostics of principal stress components for EVP
  - add optional diagnostics of non-linear convergence for LSOR solver
