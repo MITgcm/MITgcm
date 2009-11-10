@@ -1,4 +1,6 @@
 # Packages
  &PACKAGES
  usePP81=.TRUE.,
+ useDiagnostics=.TRUE.,
+ useMNC=.TRUE.,
  &
