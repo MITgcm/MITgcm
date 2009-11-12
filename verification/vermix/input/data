@@ -44,7 +44,7 @@
  niter0=0,
  nTimeSteps=20,
 #nTimeSteps=720,
-#nTimeSteps=51840,
+ nTimeSteps=51840,
  deltaT=1200.,
 #cAdjFreq=-1.,
  abEps=0.01,
@@ -65,8 +65,8 @@
  usingSphericalPolarGrid=.FALSE.,
  dXspacing=5000,
  dYspacing=5000.,
- delZ=10, 10, 10, 10, 10, 12, 12, 15, 15, 18, 18, 22, 22,
-      26, 32, 38, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46,
+ delZ=10, 10, 10, 10, 10, 11, 12, 14, 16, 18, 21, 24, 27,
+      31, 35, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
  &
 
 # Input datasets

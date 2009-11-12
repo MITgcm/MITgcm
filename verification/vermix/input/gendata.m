@@ -9,7 +9,7 @@ nx=1;
 ny=1;
 nz=26;
 % Vertical grid (meters)
-dz =[10 10 10 10 10 12 12 15 15 18 18 22 22 26 32 38 46 46 46 46 46 46 46 46 46 46];
+dz =[10 10 10 10 10 11 12 14 16 18 21 24 27 31 35 40 40 40 40 40 40 40 40 40 40 40];
 sprintf('delR = %d * %7.6g,',nz,dz)
 zi = [0 cumsum(dz)];
 z = 0.5*(zi(1:end-1)+zi(2:end));
@@ -21,7 +21,7 @@ N2=2.e-5;
 Tz=N2/(gravity*talpha);
 
 Tref=-Tz*(z - zi(end))+2;
-[sprintf('Tref =') sprintf(' %8.6g,',Tref)];
+sprintf('Tref ='), sprintf(' %8.6g,',Tref)
 fid=fopen('T_26.init','w',ieee); fwrite(fid,Tref,prec); fclose(fid);
 
 % Flux
