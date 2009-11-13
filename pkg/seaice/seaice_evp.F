@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.33 2009/10/26 08:38:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.34 2009/11/13 09:04:40 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -79,14 +79,10 @@ C     sig11, sig22  - sum and difference of diagonal terms of stress tensor
       _RL sig11         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     auxilliary variables
-      _RL e11C          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL e22C          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL e12C          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ep            (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL em            (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pressC        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL zetaC         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL e11Z          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL e22Z          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL e12Z          (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL deltaZ        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL zetaZ         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL deltaC        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -188,17 +184,17 @@ C
             seaice_div    (I,J) = 0. _d 0
             seaice_tension(I,J) = 0. _d 0
             seaice_shear  (I,J) = 0. _d 0
-            e11C          (I,J) = 0. _d 0
-            e22C          (I,J) = 0. _d 0
-            e12C          (I,J) = 0. _d 0
             pressC        (I,J) = 0. _d 0
             zetaC         (I,J) = 0. _d 0
-            e11Z          (I,J) = 0. _d 0
-            e22Z          (I,J) = 0. _d 0
-            e12Z          (I,J) = 0. _d 0
             deltaZ        (I,J) = 0. _d 0
             zetaZ         (I,J) = 0. _d 0
             deltaC        (I,J) = 0. _d 0
+           ENDDO
+          ENDDO
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            ep(i,j) = e11(i,j,bi,bj) + e22(i,j,bi,bj)
+            em(i,j) = e11(i,j,bi,bj) - e22(i,j,bi,bj)
            ENDDO
           ENDDO
           DO j=0,sNy+1
@@ -210,24 +206,20 @@ CML     &           / MAX(1.D0,maskC(I,  J,  kSrf,bi,bj)
 CML     &           +          maskC(I-1,J,  kSrf,bi,bj)
 CML     &           +          maskC(I,  J-1,kSrf,bi,bj)
 CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
-            e11C(I,J) = e11(I,J,bi,bj)
-            e22C(I,J) = e22(I,J,bi,bj)
-            e12C(I,J) = 0.25 _d 0
-     &         * ( e12(I,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
-     &           + e12(I,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
-            e11Z(I,J) = facZ
-     &         * ( e11(I,J  ,bi,bj) + e11(I-1,J  ,bi,bj)
-     &           + e11(I,J-1,bi,bj) + e11(I-1,J-1,bi,bj) )
-            e22Z(I,J) = facZ
-     &         * ( e22(I,J  ,bi,bj) + e22(I-1,J  ,bi,bj)
-     &           + e22(I,J-1,bi,bj) + e22(I-1,J-1,bi,bj) )
-            e12Z(I,J) = e12(I,J,bi,bj)
-            deltaC(I,J) = (e11C(I,J)**2+e22C(I,J)**2)*(ONE+recip_ecc2)
-     &           +      4. _d 0*recip_ecc2*e12C(I,J)**2
-     &           +      2. _d 0*e11C(I,J)*e22C(I,J)*(ONE-recip_ecc2)
-            deltaZ(I,J) = (e11Z(I,J)**2+e22Z(I,J)**2)*(ONE+recip_ecc2)
-     &           +      4. _d 0*recip_ecc2*e12Z(I,J)**2
-     &           +      2. _d 0*e11Z(I,J)*e22Z(I,J)*(ONE-recip_ecc2)
+C     Averaging the squares gives more accurate viscous-plastic behavior
+C     than squaring the averages
+            deltaC(I,J) = 
+     &           ep(I,J)**2 + recip_ecc2*em(I,J)**2
+     &           + recip_ecc2*
+     &               ( e12(I,  J,bi,bj)**2 + e12(I+1,J+1,bi,bj)**2 
+     &               + e12(I+1,J,bi,bj)**2 + e12(I,  J+1,bi,bj)**2 )
+            deltaZ(I,J) = facZ *
+     &           ( ep(I,J  )**2 + ep(I-1,J  )**2
+     &           + ep(I,J-1)**2 + ep(I-1,J-1)**2
+     &           +(em(I,J  )**2 + em(I-1,J  )**2
+     &            +em(I,J-1)**2 + em(I-1,J-1)**2)*recip_ecc2 
+     &           )
+     &           + 4. _d 0*recip_ecc2*e12(I,J,bi,bj)**2
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid sqrt of 0
             IF ( deltaC(I,J) .GT. 0. _d 0 )
@@ -299,25 +291,39 @@ C     P * ( D_s/Delta     ) = 2*zeta*D_s
           IF ( SEAICEuseTEM ) THEN
            DO j=0,sNy+1
             DO i=0,sNx+1
-             etaDenC  = (e11C(I,J)-e22C(I,J))**2 + 4. _d 0*e12C(I,J)**2
+             facZ = 0.25 _d 0
+CML            facZ = 1.0 _d 0
+CML     &           / MAX(1.D0,maskC(I,  J,  kSrf,bi,bj)
+CML     &           +          maskC(I-1,J,  kSrf,bi,bj)
+CML     &           +          maskC(I,  J-1,kSrf,bi,bj)
+CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
+C     Averaging the squares gives more accurate viscous-plastic behavior
+C     than squaring the averages
+             etaDenC   = em(I,J)**2 +
+     &            ( e12(I,  J,bi,bj)**2 + e12(I+1,J+1,bi,bj)**2 
+     &            + e12(I+1,J,bi,bj)**2 + e12(I,  J+1,bi,bj)**2 )
              etaDenC  = SQRT(MAX(SEAICE_EPS_SQ,etaDenC))
-             zetaMaxC = ecc2*zetaC(I,J)
-     &            *( deltaC(I,J)-( e11C(I,J)+e22C(I,J) ) )/etaDenC
-             etaDenZ  = (e11Z(I,J)-e22Z(I,J))**2 + 4. _d 0*e12Z(I,J)**2
+             zetaMaxC = ecc2*zetaC(I,J)*(deltaC(I,J)-ep(I,J))/etaDenC
+             etaDenZ  = 
+     &            facZ * ( em(I,  J  )**2 + em(I-1,J-1)**2
+     &                   + em(I-1,J  )**2 + em(I,  J-1)**2 )
+     &            + 4. _d 0*e12(I,J,bi,bj)**2
              etaDenZ  = SQRT(MAX(SEAICE_EPS_SQ,etaDenZ))
-             zetaMaxZ = ecc2*zetaZ(I,J)
-     &            *( deltaZ(I,J)-( e11Z(I,J)+e22Z(I,J) ) )/etaDenZ
+             zetaMaxZ = ecc2*zetaZ(I,J) * ( deltaZ(I,J) 
+     &            - facZ * ( ep(I,J  ) + ep(I-1,J  )
+     &                     + ep(I,J-1) + ep(I-1,J-1) )
+     &            )/etaDenZ
 #ifdef ALLOW_DIAGNOSTICS
 C     save new eta for diagnostics
              eta(I,J,bi,bj) = MIN(zetaC(I,J),zetaMaxC)*recip_ecc2
 #endif /* ALLOW_DIAGNOSTICS */
-             seaice_div    (I,J) = (
-     &            2. _d 0 *zetaC(I,J)*(e11C(I,J)+e22C(I,J))-pressC(I,J)
+             seaice_div    (I,J) = 
+     &            ( 2. _d 0 *zetaC(I,J)*ep(I,J) - pressC(I,J)
      &            ) * hEffM(I,J,bi,bj)
              seaice_tension(I,J) = 2. _d 0*MIN(zetaC(I,J),zetaMaxC)
-     &            *(e11C(I,J)-e22C(I,J)) * hEffM(I,J,bi,bj)
-             seaice_shear  (I,J) =
-     &            2. _d 0*MIN(zetaZ(I,J),zetaMaxZ)*2. _d 0*e12Z(I,J)
+     &            * em(I,J) * hEffM(I,J,bi,bj)
+             seaice_shear  (I,J) = 2. _d 0*MIN(zetaZ(I,J),zetaMaxZ)
+     &            * 2. _d 0*e12(I,J,bi,bj)
             ENDDO
            ENDDO
           ELSE
@@ -326,12 +332,13 @@ C     save new eta for diagnostics
 #endif /* SEAICE_ALLOW_TEM */
            DO j=0,sNy+1
             DO i=0,sNx+1
-             seaice_div    (I,J) = (
-     &            2. _d 0 *zetaC(I,J)*(e11C(I,J)+e22C(I,J))-pressC(I,J)
+             seaice_div    (I,J) = 
+     &            ( 2. _d 0 *zetaC(I,J)*ep(I,J) - pressC(I,J)
      &            ) * hEffM(I,J,bi,bj)
              seaice_tension(I,J) = 2. _d 0*zetaC(I,J)
-     &            *(e11C(I,J)-e22C(I,J)) * hEffM(I,J,bi,bj)
-             seaice_shear  (I,J) = 2. _d 0*zetaZ(I,J)*2. _d 0*e12Z(I,J)
+     &            * em(I,J) * hEffM(I,J,bi,bj)
+             seaice_shear  (I,J) = 
+     &            2. _d 0*zetaZ(I,J)*2. _d 0*e12(I,J,bi,bj)
             ENDDO
            ENDDO
           ENDIF
