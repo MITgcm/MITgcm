@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1192 2009/11/10 17:17:58 dfer Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1193 2009/11/13 08:09:30 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add CPP-flag (in mom_calc_visc.F) and TAF directive (in gmredi_slope_limit) 
+  to improve vectorization of adjoint code on TARGET_NEC_SX
 o verification/vermix:
   - change vermix to a more "classical" 1d column with high vertical reoslution,
     seasonal heat flux forcing and constant wind forcing --> update outputs
