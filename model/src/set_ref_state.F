@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.3 2008/10/02 00:34:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.4 2009/11/13 19:36:59 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -315,6 +315,8 @@ C--   Write to check :
         CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
        ENDDO
       ENDIF
+C--   Write reference density to binary file :
+        CALL WRITE_GLVEC_RL( 'RhoRef',' ',rhoRef, Nr, -1, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
