@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.40 2009/09/17 16:57:13 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_visc.F,v 1.41 2009/11/13 08:07:50 mlosch Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -345,6 +345,7 @@ C These are (powers of) length scales
          L4rdt = L4rdt_D(i,j,bi,bj)
          L5 = (L2*L3)
 
+#ifndef AUTODIFF_DISABLE_REYNOLDS_SCALE
 C Velocity Reynolds Scale
          IF ( viscAhRe_max.GT.0. .AND. KE(i,j).GT.0. ) THEN
            Uscl=SQRT(KE(i,j)*L2)*viscAhRe_max
@@ -356,6 +357,7 @@ C Velocity Reynolds Scale
          ELSE
            U4scl=0.
          ENDIF
+#endif /* ndef AUTODIFF_DISABLE_REYNOLDS_SCALE */
 
 cph-leith#ifndef ALLOW_AUTODIFF_TAMC
 #ifndef AUTODIFF_DISABLE_LEITH
@@ -471,6 +473,7 @@ C These are (powers of) length scales
          L4rdt = L4rdt_Z(i,j,bi,bj)
          L5 = (L2*L3)
 
+#ifndef AUTODIFF_DISABLE_REYNOLDS_SCALE
 C Velocity Reynolds Scale (Pb here at CS-grid corners !)
          IF ( viscAhRe_max.GT.0. .OR. viscA4Re_max.GT.0. ) THEN
            keZpt=0.25 _d 0*( (KE(i,j)+KE(i-1,j-1))
@@ -486,6 +489,7 @@ C Velocity Reynolds Scale (Pb here at CS-grid corners !)
            Uscl =0.
            U4scl=0.
          ENDIF
+#endif /* ndef AUTODIFF_DISABLE_REYNOLDS_SCALE */
 
 #ifndef AUTODIFF_DISABLE_LEITH
 C This is the vector magnitude of the vorticity gradient squared
