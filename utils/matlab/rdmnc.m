@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.17 2008/07/16 09:12:21 mlosch Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.18 2009/11/13 07:57:16 mlosch Exp $
 % $Name:  $
 
 % Initializations
@@ -245,6 +245,16 @@ function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
         if dBug > 1, fprintf(' %i',size(S.(cvar))); fprintf('\n'); end
  
         S.attributes.(cvar)=read_att(nc{cvar});
+	% replace missing or FillValues with NaN
+	attnames=fieldnames(S.attributes.(cvar));
+	if ~isempty(attnames)
+	  for k=1:length(attnames)
+	    if strcmp(attnames{k},'missing_value') ...
+		  | strcmp(attnames{k},'FillValue_')
+	      S.(cvar)(S.(cvar) == S.attributes.(cvar).(attnames{k})) = NaN;
+	    end
+	  end
+	end
 	end
 
 if isempty(S)
