@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_check.F,v 1.3 2009/10/27 15:23:22 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_check.F,v 1.4 2009/11/14 14:27:56 dfer Exp $
 C $Name:  $
 #include "GGL90_OPTIONS.h"
 
@@ -14,6 +14,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GGL90.h"
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of GGL90_CHECK
@@ -37,13 +38,32 @@ C     So far, GGL90 works only with oceanic z-coordinates
          STOP 'ABNORMAL END: S/R GGL90_CHECK'
       ENDIF
 
-C     GGL90 needs convection turned on, but keep warning message
+C     convective adjustment might be needed even with ggl90
       IF (cAdjFreq.NE.0.  .OR. ivdc_kappa.NE.0. ) THEN
          WRITE(msgBuf,'(A)')
-     &  'GGL90_CHECK: WARNING: Some form of convection has been enabled'
+     &  'GGL90_CHECK: Some form of convection has been enabled'
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
       ENDIF
+
+#ifdef ALLOW_GGL90_HORIZDIFF
+#ifdef ALLOW_GGL90_SMOOTH
+      IF ( GGL90diffTKEh .NE. 0. _d 0 ) THEN
+         WRITE(msgBuf,'(A)')
+     &      'Horizontal diffusion of TKE and smoothing are both on'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R GGL90_CHECK'
+      ENDIF
+#endif
+#else
+      IF ( GGL90diffTKEh .NE. 0. _d 0 ) THEN
+         WRITE(msgBuf,'(A)')
+     &      'Define ALLOW_GGL90_HORIZDIFF in GGL90_OPTIONS.h to get
+     &   diffusion of TKE'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R GGL90_CHECK'
+      ENDIF
+#endif
 
       IF ( useKPP ) THEN
          WRITE(msgBuf,'(A)')

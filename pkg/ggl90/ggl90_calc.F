@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.14 2009/10/31 03:18:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.15 2009/11/14 14:27:56 dfer Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -98,7 +98,7 @@ C-    tri-diagonal matrix
       _RL     a(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     c(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-c     INTEGER errCode
+      INTEGER errCode
 #ifdef ALLOW_GGL90_HORIZDIFF
 C-    xA, yA   - area of lateral faces
 C-    dfx, dfy - diffusive flux across lateral faces
@@ -414,14 +414,13 @@ C     ... across y-faces
          ENDDO
         ENDDO
 C     Compute divergence of fluxes
-C- jmc: concerned about missing a deltaT since gTKE is already the future TKE.
         DO j=1-Oly,sNy+Oly-1
          DO i=1-Olx,sNx+Olx-1
           gTKE(i,j,k)=gTKE(i,j,k)
      &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)*recip_rA(i,j,bi,bj)
      &         *( (dfx(i+1,j)-dfx(i,j))
      &           +(dfy(i,j+1)-dfy(i,j))
-     &           )
+     &           )*deltaTggl90
          ENDDO
         ENDDO
 C       end of k-loop
@@ -442,16 +441,16 @@ C--   Lower diagonal
        ENDDO
       ENDDO
       DO k=2,Nr
-C- jmc: concerned that a(k=2) should always be zero 
-C       and would be better without recip_hFacC
-       km1=max(2,k-1)
+       km1=MAX(2,k-1)
        DO j=jMin,jMax
         DO i=iMin,iMax
+C-    We keep recip_hFacC in the diffusive flux calculation,
+C-    but no hFacC in TKE volume control
+C-    No need for maskC(k-1) with recip_hFacC(k-1)
          a(i,j,k) = -deltaTggl90
-c     &        *recip_drF(km1)*recip_hFacI(i,j,k,bi,bj)
      &        *recip_drF(k-1)*recip_hFacC(i,j,k-1,bi,bj)
      &        *.5 _d 0*(KappaE(i,j, k )+KappaE(i,j,km1))
-     &        *recip_drC(k)*maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+     &        *recip_drC(k)*maskC(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDDO
@@ -462,34 +461,35 @@ C--   Upper diagonal
        ENDDO
       ENDDO
       DO k=2,Nr
-C- jmc: concerned that c(k) from k=kLow to k=Nr should always be zero
        DO j=jMin,jMax
         DO i=iMin,iMax
-C- jmc: this is dangerous since klowC could be zero if land column
-C       and would be better without recip_hFacC
-          kp1=min(klowC(i,j,bi,bj),k+1)
+          kp1=MAX(1,MIN(klowC(i,j,bi,bj),k+1))
+C-    We keep recip_hFacC in the diffusive flux calculation,
+C-    but no hFacC in TKE volume control
+C-    No need for maskC(k) with recip_hFacC(k)
           c(i,j,k) = -deltaTggl90
-c     &        *recip_drF( k )*recip_hFacI(i,j,k,bi,bj)
      &        *recip_drF( k ) * recip_hFacC(i,j,k,bi,bj)
      &        *.5 _d 0*(KappaE(i,j,k)+KappaE(i,j,kp1))
-     &        *recip_drC(k)*maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+     &        *recip_drC(k)*maskC(i,j,k-1,bi,bj)
         ENDDO
        ENDDO
       ENDDO
 C--   Center diagonal
       DO k=1,Nr
+       km1 = MAX(k-1,1)
        DO j=jMin,jMax
         DO i=iMin,iMax
           b(i,j,k) = 1. _d 0 - c(i,j,k) - a(i,j,k)
      &        + ab15*deltaTggl90*GGL90ceps*SQRTTKE(I,J,K)
-     &        *rMixingLength(I,J,K)*maskC(i,j,k,bi,bj)
+     &        * rMixingLength(I,J,K)
+     &        * maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
          ENDDO
        ENDDO
       ENDDO
 C     end set up matrix
 
 C     Apply boundary condition
-C- jmc: concerned about conservation when a or c are changed after computing b
+      kp1 = MIN(Nr,kSurf+1)
       DO J=jMin,jMax
        DO I=iMin,iMax
 C     estimate friction velocity uStar from surface forcing
@@ -500,9 +500,11 @@ C     estimate friction velocity uStar from surface forcing
      &              + surfaceForcingV(I,  J+1,bi,bj) ) )**2
      &                     )
 C     Dirichlet surface boundary condition for TKE
-C- jmc: would be much better to update the provisional TKE (i.e. gTKE) at k=2
         gTKE(I,J,kSurf) = MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare)
      &                     *maskC(I,J,kSurf,bi,bj)
+        gTKE(i,j,kp1) = gTKE(i,j,kp1) 
+     &                - a(i,j,kp1)*gTKE(i,j,kSurf) 
+        a(i,j,kp1) = 0. _d 0
 C     Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
         kBottom   = MAX(kLowC(I,J,bi,bj),1)
         gTKE(I,J,kBottom) = gTKE(I,J,kBottom)
@@ -512,15 +514,15 @@ C     Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
       ENDDO
 
 C     solve tri-diagonal system, and store solution on gTKE (previously rhs)
-c     CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
-c    I                        a, b, c,
-c    U                        gTKE,
-c    O                        errCode,
-c    I                        bi, bj, myThid )
-      CALL GGL90_SOLVE( bi, bj, iMin, iMax, jMin, jMax,
-     I     a, b, c,
-     U     gTKE,
-     I     myThid )
+      CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
+     I                        a, b, c,
+     U                        gTKE,
+     O                        errCode,
+     I                        bi, bj, myThid )
+c     CALL GGL90_SOLVE( bi, bj, iMin, iMax, jMin, jMax,
+c    I     a, b, c,
+c    U     gTKE,
+c    I     myThid )
 
 C     now update TKE
       DO K=1,Nr
