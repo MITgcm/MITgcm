@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_check.F,v 1.4 2009/11/14 14:27:56 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_check.F,v 1.5 2009/11/14 16:22:23 jmc Exp $
 C $Name:  $
 #include "GGL90_OPTIONS.h"
 
       SUBROUTINE GGL90_CHECK( myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE GGL90_CHECK                                   |
 C     | o Validate basic package setup and inter-package         |
 C     | dependencies.                                            |
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -28,22 +28,22 @@ C     msgBuf      - Informational/error meesage buffer
 
       WRITE(msgBuf,'(A)') 'GGL90_CHECK: #define ALLOW_GGL90'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
 C     So far, GGL90 works only with oceanic z-coordinates
       IF ( buoyancyRelation .NE. 'OCEANIC' ) THEN
          WRITE(msgBuf,'(A)')
      &      'GGL90 works only with buoyancyRelation = ''OCEANIC'''
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R GGL90_CHECK'
       ENDIF
 
 C     convective adjustment might be needed even with ggl90
-      IF (cAdjFreq.NE.0.  .OR. ivdc_kappa.NE.0. ) THEN
+      IF ( cAdjFreq.NE.0. .OR. ivdc_kappa.NE.0. ) THEN
          WRITE(msgBuf,'(A)')
      &  'GGL90_CHECK: Some form of convection has been enabled'
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                        SQUEEZE_RIGHT , myThid)
+     &                       SQUEEZE_RIGHT, myThid )
       ENDIF
 
 #ifdef ALLOW_GGL90_HORIZDIFF
@@ -51,16 +51,16 @@ C     convective adjustment might be needed even with ggl90
       IF ( GGL90diffTKEh .NE. 0. _d 0 ) THEN
          WRITE(msgBuf,'(A)')
      &      'Horizontal diffusion of TKE and smoothing are both on'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R GGL90_CHECK'
       ENDIF
 #endif
 #else
       IF ( GGL90diffTKEh .NE. 0. _d 0 ) THEN
-         WRITE(msgBuf,'(A)')
-     &      'Define ALLOW_GGL90_HORIZDIFF in GGL90_OPTIONS.h to get
-     &   diffusion of TKE'
-         CALL PRINT_ERROR( msgBuf , 1)
+         WRITE(msgBuf,'(2A)')
+     &      'Define ALLOW_GGL90_HORIZDIFF in GGL90_OPTIONS.h',
+     &      ' to get diffusion of TKE'
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R GGL90_CHECK'
       ENDIF
 #endif
@@ -68,39 +68,39 @@ C     convective adjustment might be needed even with ggl90
       IF ( useKPP ) THEN
          WRITE(msgBuf,'(A)')
      &      'GGL90 and KPP cannot be turned on at the same time'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R GGL90_CHECK'
       ENDIF
 
       IF ( usePP81 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &      'GGL90 and PP81 cannot be turned on at the same time'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R GGL90_CHECK'
       ENDIF
 
       IF ( useMY82 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &      'GGL90 and MY82 cannot be turned on at the same time'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R GGL90_CHECK'
       ENDIF
 
 C     GGL90 needs implicit vertical diffusion and viscosity
       IF (.NOT.implicitDiffusion ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &      'GGL90 needs implicitDiffusion to be enabled'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R GGL90_CHECK'
       ENDIF
       IF (.NOT.implicitViscosity) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &      'GGL90 needs implicitViscosity to be enabled'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R GGL90_CHECK'
       ENDIF
 
 #endif /* ALLOW_GGL90 */
 
-      return
-      end
+      RETURN
+      END
