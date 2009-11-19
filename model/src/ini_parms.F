@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.224 2009/10/15 01:06:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.225 2009/11/19 19:53:18 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -41,7 +41,7 @@ C     deltaTtracer  :: Timestep for tracer equations ( s )
 C     forcing_In_AB :: flag to put all forcings (Temp,Salt,Tracers,Momentum)
 C                   :: contribution in (or out of) Adams-Bashforth time stepping.
 C     goptCount  :: Used to count the nuber of grid options (only one is allowed!)
-C     msgBuf     :: Informational/error meesage buffer
+C     msgBuf     :: Informational/error message buffer
 C     errIO      :: IO error flag
 C     iUnit      :: Work variable for IO unit number
 C     record     :: Work variable for IO buffer
@@ -234,7 +234,7 @@ C--   Time stepping parammeters
      & forcing_In_AB, momForcingOutAB, tracForcingOutAB,
      & momDissip_In_AB, doAB_onGtGs,
      & abEps, alph_AB, beta_AB, startFromPickupAB2,
-     & tauCD, rCD, cAdjFreq,
+     & tauCD, rCD, epsAB_CD, cAdjFreq,
      & chkPtFreq, pChkPtFreq, pickupSuff, pickupStrictlyMatch,
      & writePickupAtEnd,
      & dumpFreq, dumpInitAndLast, adjDumpFreq, taveFreq, tave_lastIter,
@@ -475,19 +475,19 @@ C-     No barotropic solver selected => use implicitFreeSurface as default
      &                     SQUEEZE_RIGHT, myThid )
         implicitFreeSurface = .TRUE.
       ENDIF
-      IF ( implicitFreeSurface ) freeSurfFac = 1.D0
-      IF ( rigidLid            ) freeSurfFac = 0.D0
+      IF ( implicitFreeSurface ) freeSurfFac = 1. _d 0
+      IF ( rigidLid            ) freeSurfFac = 0. _d 0
       IF ( gBaro .EQ. UNSET_RL ) gBaro=gravity
       IF ( rhoConst .EQ. UNSET_RL ) rhoConst=rhoNil
       IF ( rhoConstFresh .EQ. UNSET_RL ) rhoConstFresh=rhoConst
       IF ( omega .EQ. UNSET_RL ) THEN
         omega = 0. _d 0
         IF ( rotationPeriod .NE. 0. _d 0 )
-     &  omega = 2.D0 * PI / rotationPeriod
+     &  omega = 2. _d 0 * PI / rotationPeriod
       ELSEIF ( omega .EQ. 0. _d 0 ) THEN
         rotationPeriod = 0. _d 0
       ELSE
-        rotationPeriod = 2.D0 * PI / omega
+        rotationPeriod = 2. _d 0 * PI / omega
       ENDIF
       IF (atm_Rd .EQ. UNSET_RL) THEN
         atm_Rd = atm_Cp * atm_kappa
@@ -645,7 +645,7 @@ C--   for backward compatibility :
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
-       recip_rhoConst = 1.D0 / rhoConst
+       recip_rhoConst = 1. _d 0 / rhoConst
       ENDIF
       IF ( rhoNil .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')
@@ -653,7 +653,7 @@ C--   for backward compatibility :
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
-       recip_rhoNil = 1.D0 / rhoNil
+       recip_rhoNil = 1. _d 0 / rhoNil
       ENDIF
       IF ( HeatCapacity_Cp .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')
@@ -661,7 +661,7 @@ C--   for backward compatibility :
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
-       recip_Cp = 1.D0 / HeatCapacity_Cp
+       recip_Cp = 1. _d 0 / HeatCapacity_Cp
       ENDIF
       IF ( gravity .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')
@@ -669,7 +669,7 @@ C--   for backward compatibility :
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
-       recip_gravity = 1.D0 / gravity
+       recip_gravity = 1. _d 0 / gravity
       ENDIF
 C     This flags are now passed to RW and MDSIO packages in ini_model_io.F
 C     Set globalFiles flag for READ_WRITE_FLD package
@@ -791,7 +791,8 @@ C--   Elliptic solver parameters
       ENDIF
 
 C--   Time stepping parameters
-      rCD               = -1.D0
+      rCD               = -1. _d 0
+      epsAB_CD          = UNSET_RL
       latBandClimRelax  = UNSET_RL
       deltaTtracer      = 0. _d 0
       forcing_In_AB     = .TRUE.
@@ -924,17 +925,18 @@ C     o Convection frequency
       ENDIF
       IF (useCDscheme) THEN
 C     o CD coupling (CD scheme):
-        IF ( tauCD .EQ. 0.D0 ) tauCD = deltaTmom
+        IF ( tauCD .EQ. 0. _d 0 ) tauCD = deltaTmom
         IF ( rCD .LT. 0. ) rCD = 1. _d 0 - deltaTMom/tauCD
+        IF ( epsAB_CD .EQ. UNSET_RL ) epsAB_CD = abEps
       ENDIF
 C     o Temperature climatology relaxation time scale
-      IF ( tauThetaClimRelax .EQ. 0.D0 ) THEN
+      IF ( tauThetaClimRelax .EQ. 0. _d 0 ) THEN
        doThetaClimRelax     = .FALSE.
       ELSE
        doThetaClimRelax     = .TRUE.
       ENDIF
 C     o Salinity climatology relaxation time scale
-      IF ( tauSaltClimRelax .EQ. 0.D0 ) THEN
+      IF ( tauSaltClimRelax .EQ. 0. _d 0 ) THEN
        doSaltClimRelax     = .FALSE.
       ELSE
        doSaltClimRelax     = .TRUE.
