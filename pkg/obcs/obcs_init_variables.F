@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.31 2009/10/04 22:36:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.32 2009/11/19 02:24:12 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -325,7 +325,7 @@ C      (but initial conditions only)
        ENDDO
        IF (useOBCSprescribe) THEN
 C     After applying the boundary conditions exchange the 3D-fields.
-C     This is only necessary of the boudnary values have been read
+C     This is only necessary of the boundary values have been read
 C     from a file.
 #ifdef ALLOW_DEBUG
         IF (debugMode)
@@ -337,10 +337,12 @@ C     from a file.
        ENDIF
 C     endif start from rest
 #ifdef ALLOW_OBCS_PRESCRIBE
-      ELSEIF ( useOBCSprescribe .AND. useEXF ) THEN
-C    No real need to set OB values here. Add this call to fix a problem
-C    of initialisation with EXF (exf_getffieldrec.F) which only recognizes
-C    the 1rst call (setting "first") when time=starTime
+      ELSEIF ( useOBCSprescribe ) THEN
+C    No real need to set OB values here.
+C    However, with present implementation, only do initialisation when called
+C    with myTime=startTime (S/R EXF_GETFFIELDREC, setting "first")
+C    or with myIter=nIter0 (S/R OBCS_EXTERNAL_FIELDS_LOAD). And this
+C    cannot be changed because of OBCS_CALC(startTime,nIter0) call above.
         CALL OBCS_PRESCRIBE_READ( startTime, nIter0, myThid )
 #endif
       ENDIF
@@ -369,7 +371,7 @@ C     but initialise ptracers differently
         ENDDO
         IF (useOBCSprescribe) THEN
 C     After applying the boundary conditions exchange the 3D-fields.
-C     This is only necessary of the boudnary values have been read
+C     This is only necessary of the boundary values have been read
 C     from a file.
 #ifdef ALLOW_DEBUG
          IF (debugMode) CALL DEBUG_CALL(
