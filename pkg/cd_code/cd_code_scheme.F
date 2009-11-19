@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_scheme.F,v 1.3 2007/08/22 14:30:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_scheme.F,v 1.4 2009/11/19 22:29:36 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -69,8 +69,8 @@ C     Define ranges
 CEOP
 
 C     Adams-Bashforth weighting factors
-      ab15   =  1.5 _d 0 + abEps
-      ab05   = -0.5 _d 0 - abEps
+      ab15   =  1.5 _d 0 + epsAB_CD
+      ab05   = -0.5 _d 0 - epsAB_CD
 
 C-- stagger time stepping: grad Phi_Hyp is not in gU,gV and needs to be added:
       IF (staggerTimeStep) THEN
@@ -92,9 +92,15 @@ c     ENDDO
 C     Pressure extrapolated forward in time
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
+#ifdef CD_CODE_NO_AB_CORIOLIS
+C     Keep this just to reproduce old results (to get same truncation)
         pf(i,j) =
      &   ab15*(  etaN(i,j,bi,bj)*Bo_surf(i,j,bi,bj) )
      &  +ab05*(etaNm1(i,j,bi,bj)*Bo_surf(i,j,bi,bj) )
+#else /* CD_CODE_NO_AB_CORIOLIS */
+        pf(i,j) = Bo_surf(i,j,bi,bj)
+     &          *( ab15*etaN(i,j,bi,bj) + ab05*etaNm1(i,j,bi,bj) )
+#endif /* CD_CODE_NO_AB_CORIOLIS */
        ENDDO
       ENDDO
 
@@ -120,7 +126,11 @@ C     Average to Vd point and add coriolis
      &           *_maskW(i,j,k,bi,bj)
      &          -( _fCori( i, j,bi,bj)
      &            +_fCori(i-1,j,bi,bj) )*0.5 _d 0
+#ifdef CD_CODE_NO_AB_CORIOLIS
      &           *uVel(i,j,k,bi,bj)
+#else /* CD_CODE_NO_AB_CORIOLIS */
+     &           *( ab15*uVel(i,j,k,bi,bj) + ab05*uNM1(i,j,k,bi,bj) )
+#endif /* CD_CODE_NO_AB_CORIOLIS */
        ENDDO
       ENDDO
 C     Step forward Vd
@@ -175,7 +185,11 @@ C     Average to Ud point and add coriolis
      &           *_maskS(i,j,k,bi,bj)
      &          +( _fCori(i, j, bi,bj)
      &            +_fCori(i,j-1,bi,bj) )*0.5 _d 0
+#ifdef CD_CODE_NO_AB_CORIOLIS
      &           *vVel(i,j,k,bi,bj)
+#else /* CD_CODE_NO_AB_CORIOLIS */
+     &           *( ab15*vVel(i,j,k,bi,bj) + ab05*vNM1(i,j,k,bi,bj) )
+#endif /* CD_CODE_NO_AB_CORIOLIS */
        ENDDO
       ENDDO
 C     Step forward Ud
