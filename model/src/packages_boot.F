@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.47 2009/09/16 21:36:11 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.48 2009/11/19 19:49:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -33,13 +33,13 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid -  Number of this instances
+C     myThid   :: my Thread Id number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     iUnit       - Work variable for IO unit number
+C     msgBuf   :: Informational/error message buffer
+C     iUnit    :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 
@@ -61,6 +61,7 @@ c    &          useCAL,
      &          useEBM,
      &          useCheapAML,
      &          useGrdchk,
+c    &          useSMOOTH,
      &          useECCO,
      &          useSBO,
      &          useFLT,
@@ -117,6 +118,7 @@ c     useGAD          =.FALSE.
       useEBM          =.FALSE.
       useCheapAML     =.FALSE.
       useGrdchk       =.FALSE.
+      useSMOOTH       =.FALSE.
       useECCO         =.FALSE.
       useSBO          =.FALSE.
       useFLT          =.FALSE.
@@ -159,6 +161,10 @@ C--   packages with hard-coded switch
 
 #ifdef ALLOW_PROFILES
       useCAL = .TRUE.
+#endif
+
+#ifdef ALLOW_SMOOTH
+      useSMOOTH = .TRUE.
 #endif
 
 C--   packages with an implied switch
