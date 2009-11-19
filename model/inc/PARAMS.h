@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.230 2009/10/15 01:05:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.231 2009/11/19 19:48:29 jmc Exp $
 C $Name:  $
 C
 
@@ -607,13 +607,14 @@ C                     Implicit part of Surface Pressure Gradient ( 0-1 )
 C     implicDiv2Dflow :: parameter of the Crank-Nickelson time stepping :
 C                     Implicit part of barotropic flow Divergence ( 0-1 )
 C     hFacMin      :: Minimum fraction size of a cell (affects hFacC etc...)
-C     hFacMinDz    :: Minimum dimesional size of a cell (affects hFacC etc..., m)
-C     hFacMinDp    :: Minimum dimesional size of a cell (affects hFacC etc..., Pa)
-C     hFacMinDr    :: Minimum dimesional size of a cell (affects hFacC etc..., units of r)
+C     hFacMinDz    :: Minimum dimensional size of a cell (affects hFacC etc..., m)
+C     hFacMinDp    :: Minimum dimensional size of a cell (affects hFacC etc..., Pa)
+C     hFacMinDr    :: Minimum dimensional size of a cell (-> hFacC etc..., r units)
 C     hFacInf      :: Threshold (inf and sup) for fraction size of surface cell
-C     hFacSup        that control vanishing and creating levels
-C     tauCD        :: CD scheme coupling timescale ( 1/s )
-C     rCD          :: CD scheme normalised coupling parameter ( 0-1 )
+C     hFacSup          that control vanishing and creating levels
+C     tauCD         :: CD scheme coupling timescale ( s )
+C     rCD           :: CD scheme normalised coupling parameter (= 1 - deltaT/tauCD)
+C     epsAB_CD      :: Adams-Bashforth-2 stabilizing weight used in CD scheme
 C     baseTime      :: model base time (time origin) = time @ iteration zero
 C     startTime     :: Starting time for this integration ( s ).
 C     endTime       :: Ending time for this integration ( s ).
@@ -691,7 +692,8 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & BL79LatVary,
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
-     & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
+     & tauCD, rCD, epsAB_CD,
+     & freeSurfFac, implicSurfPress, implicDiv2Dflow,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_gravity, gBaro,
      & rhonil, recip_rhonil, rhoConst, recip_rhoConst,
@@ -778,9 +780,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL diffKrBLEQdeep
       _RL diffKrBLEQscl
       _RL diffKrBLEQHo
-      _RL delt
-      _RL tauCD
-      _RL rCD
+      _RL tauCD, rCD, epsAB_CD
       _RL gravity
       _RL recip_gravity
       _RL gBaro
@@ -883,6 +883,7 @@ C Logical flags for selecting packages
       LOGICAL useEBM
       LOGICAL useCheapAML
       LOGICAL useGrdchk
+      LOGICAL useSMOOTH
       LOGICAL useECCO
       LOGICAL useSBO
       LOGICAL useFLT
@@ -912,7 +913,7 @@ C Logical flags for selecting packages
      &        useOPPS, usePP81, useMY82, useGGL90, useKPP,
      &        useGMRedi, useDOWN_SLOPE,
      &        useCAL, useEXF, useBulkForce, useEBM, useCheapAML,
-     &        useGrdchk, useECCO, useSBO, useFLT,
+     &        useGrdchk, useSMOOTH, useECCO, useSBO, useFLT,
      &        usePTRACERS, useGCHEM, useRBCS, useOffLine, useMATRIX,
      &        useSEAICE, useSALT_PLUME, useShelfIce, useThSIce,
      &        useATM2D, useAIM, useLand, useFizhi, useGridAlt,
