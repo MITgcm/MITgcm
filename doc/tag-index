@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1195 2009/11/15 00:03:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1196 2009/11/19 02:25:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/obcs:
+ - fix bug in initialisation (broken since Oct 1rst modification) 
+   for useOBCSprescribe without useEXF.
 
 checkpoint61y
 o pkg/seaice
