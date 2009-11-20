@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.9 2009/05/13 13:39:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.10 2009/11/20 22:29:08 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -222,9 +222,13 @@ c--       Initialise salinity average (2d).
           do j = jmin,jmax
             do i =  imin,imax
               smrareabar(i,j,bi,bj) = 0. _d 0
+              smrsstbar(i,j,bi,bj) = 0. _d 0
+              smrsssbar(i,j,bi,bj) = 0. _d 0
             enddo
           enddo
           xx_smrareabar_mean_dummy = 0. _d 0
+          xx_smrsstbar_mean_dummy = 0. _d 0
+          xx_smrsssbar_mean_dummy = 0. _d 0
 # endif
 
 #endif

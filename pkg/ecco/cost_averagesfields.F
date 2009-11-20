@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.26 2009/10/20 20:13:46 zhc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.27 2009/11/20 22:29:08 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -431,6 +431,7 @@ cph: these are annual means
 #ifdef ALLOW_SEAICE
       if (useSEAICE) then
 # ifdef ALLOW_SEAICE_COST_SMR_AREA
+c
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB )
      &    CALL DEBUG_CALL('cost_averagesgeneric smrareabar',myThid)
@@ -440,6 +441,29 @@ cph: these are annual means
      &     smrareabar, area, xx_smrareabar_mean_dummy,
      &     first, last, startofday, endofday, inday,
      &     sum1day, dayrec, 1, mythid )
+c
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesgeneric smrsstbar',myThid)
+#endif
+      call cost_averagesgeneric(
+     &     smrsstbarfile, 
+     &     smrsstbar, theta(1-Olx,1-Oly,1,1,1), 
+     &     xx_smrsstbar_mean_dummy,
+     &     first, last, startofday, endofday, inday,
+     &     sum1day, dayrec, 1, mythid )
+c
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('cost_averagesgeneric smrsssbar',myThid)
+#endif
+      call cost_averagesgeneric(
+     &     smrsssbarfile, 
+     &     smrsssbar, salt(1-Olx,1-Oly,1,1,1), 
+     &     xx_smrsssbar_mean_dummy,
+     &     first, last, startofday, endofday, inday,
+     &     sum1day, dayrec, 1, mythid )
+c
 # endif
       endif
 #endif /* ALLOW_SEAICE */

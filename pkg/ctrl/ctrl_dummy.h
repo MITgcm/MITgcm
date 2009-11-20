@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.23 2009/10/14 20:09:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_dummy.h,v 1.24 2009/11/20 22:29:08 heimbach Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -55,7 +55,9 @@ c     ==================================================================
      &                  , xx_relaxsst_dummy
      &                  , xx_relaxsss_dummy
      &                  , xx_tbar_mean_dummy
+     &                  , xx_tbar_daily_mean_dummy
      &                  , xx_sbar_mean_dummy
+     &                  , xx_sbar_daily_mean_dummy
      &                  , xx_ubar_mean_dummy
      &                  , xx_vbar_mean_dummy
      &                  , xx_wbar_mean_dummy
@@ -83,6 +85,8 @@ c     ==================================================================
      &                  , xx_theta_ini_fin_dummy
      &                  , xx_salt_ini_fin_dummy
      &                  , xx_smrareabar_mean_dummy
+     &                  , xx_smrsstbar_mean_dummy
+     &                  , xx_smrsssbar_mean_dummy
      &                  , xx_gen2d_dummy
      &                  , xx_gen3d_dummy
 cHFLUXM_CONTROL
@@ -136,7 +140,9 @@ cHFLUXM_CONTROL
       _RL xx_gen3d_dummy
 c
       _RL xx_tbar_mean_dummy
+      _RL xx_tbar_daily_mean_dummy
       _RL xx_sbar_mean_dummy
+      _RL xx_sbar_daily_mean_dummy
       _RL xx_ubar_mean_dummy
       _RL xx_vbar_mean_dummy
       _RL xx_wbar_mean_dummy
@@ -164,6 +170,8 @@ c
       _RL xx_theta_ini_fin_dummy
       _RL xx_salt_ini_fin_dummy
       _RL xx_smrareabar_mean_dummy
+      _RL xx_smrsstbar_mean_dummy
+      _RL xx_smrsssbar_mean_dummy
 cHFLUXM_CONTROL
       _RL xx_hfluxm_dummy
 cHFLUXM_CONTROL

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.17 2009/10/26 00:41:23 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.18 2009/11/20 22:29:08 heimbach Exp $
 C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
@@ -220,6 +220,9 @@ cph      call cost_sss   ( myiter, mytime, mythid )
 
 #ifdef ALLOW_SEAICE_COST_SMR_AREA
 # ifdef ALLOW_SEAICE_COST_AREASST
+cph this block out of date;
+cph similar call moved to seaice_cost_driver and 
+cph and extended using I. Fenty SST, SSS extensions
 
       write(msgbuf,'(a)') 'ph-cost call seaice_cost_areasst'
       call print_message( msgbuf, standardmessageunit,
