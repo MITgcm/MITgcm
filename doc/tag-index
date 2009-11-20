@@ -1,11 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1196 2009/11/19 02:25:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1197 2009/11/20 01:02:16 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cd_code:
+  Change defaut D-grid time-stepping to get the same for D-grid momentum as for
+   C-grid momentum. D-grid velocity used to be stepped forward in time with
+   Adams-Bashforth only on surface pressure term. Tests show that using AB on
+   D-grid coriolis term improves stability (as expected from CD-scheme paper).
+  To reproduce old results, add 2 options (in CD_CODE_OPTIONS.h).
+  Update results of exp: global_with_exf (x2), ideal_2D_oce, isomip (x2),
+   lab_sea (3 Fwd +3 AD), natl_box (x2), tutorial_global_oce_biogeo (Fwd+AD),
+   tutorial_global_oce_latlon, tutorial_global_oce_optim & tutorial_tracer_adjsens.
+  Keep old results by adding CD_CODE_OPTIONS.h in exp: cfc_example, exp2,
+       lobal_ocean.90x40x15(+AD), global_ocean_ebm(+AD) and OpenAD.
 o pkg/obcs:
- - fix bug in initialisation (broken since Oct 1rst modification) 
+ - fix bug in initialisation (broken since Oct 1rst modification)
    for useOBCSprescribe without useEXF.
 
 checkpoint61y
