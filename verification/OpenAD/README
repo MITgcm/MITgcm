@@ -73,6 +73,6 @@ o short version:
 
 ../code_ad/genmake2  -of ../../../tools/build_options/linux_ia32_ifort -adof ../../../tools/adjoint_options/adjoint_f95 -mods ../code_ad
 
-make adall
+make adAll
 
 
