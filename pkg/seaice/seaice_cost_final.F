@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.13 2009/04/28 18:20:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.14 2009/11/20 22:33:21 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -46,9 +46,13 @@ c     == local variables ==
 
       _RL f_ice
       _RL f_smrarea
+      _RL f_smrsst
+      _RL f_smrsss
 
       _RL no_ice
       _RL no_smrarea
+      _RL no_smrsst
+      _RL no_smrsss
 
       character*23 cfname
 #ifdef ECCO_VERBOSE
@@ -66,9 +70,13 @@ c     == end of interface ==
 
       f_ice      = 0. _d 0
       f_smrarea  = 0. _d 0
+      f_smrsst   = 0. _d 0
+      f_smrsss   = 0. _d 0
 c
       no_ice     = 0. _d 0
       no_smrarea = 0. _d 0
+      no_smrsst  = 0. _d 0
+      no_smrsss  = 0. _d 0
 
 #ifdef ALLOW_SEAICE_COST_EXPORT
       call seaice_cost_export( myThid )
@@ -82,12 +90,18 @@ c--   Sum up all contributions.
      &          + mult_ice_export * objf_ice_export(bi,bj)
      &          + mult_ice        * objf_ice(bi,bj)
      &          + mult_smrarea    * objf_smrarea(bi,bj)
+     &          + mult_smrsst     * objf_smrsst(bi,bj)
+     &          + mult_smrsss     * objf_smrsss(bi,bj)
 
           f_ice = f_ice + objf_ice(bi,bj)
           f_smrarea = f_smrarea + objf_smrarea(bi,bj)
+          f_smrsst = f_smrsst + objf_smrsst(bi,bj)
+          f_smrsss = f_smrsss + objf_smrsss(bi,bj)
 
           no_ice = no_ice + num_ice(bi,bj)
           no_smrarea = no_smrarea + num_smrarea(bi,bj)
+          no_smrsst = no_smrsst + num_smrsst(bi,bj)
+          no_smrsss = no_smrsss + num_smrsss(bi,bj)
 
         enddo
       enddo
@@ -100,14 +114,22 @@ c--   Do global summation for each part of the cost function
 
       _GLOBAL_SUM_RL( f_ice , myThid )
       _GLOBAL_SUM_RL( f_smrarea , myThid )
+      _GLOBAL_SUM_RL( f_smrsst , myThid )
+      _GLOBAL_SUM_RL( f_smrsss , myThid )
 
       _GLOBAL_SUM_RL( no_ice , myThid )
       _GLOBAL_SUM_RL( no_smrarea , myThid )
+      _GLOBAL_SUM_RL( no_smrsst , myThid )
+      _GLOBAL_SUM_RL( no_smrsss , myThid )
 
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_ice     =',f_ice
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_smrarea =',f_smrarea
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_smrarea =',f_smrsst
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_smrarea =',f_smrsss
 
 c--   Each process has calculated the global part for itself.
       IF ( MASTER_CPU_THREAD(myThid) ) THEN
@@ -118,6 +140,8 @@ c--   Each process has calculated the global part for itself.
         write(ifc,*) 'fc =', fc
         write(ifc,*) 'f_ice   =', f_ice, no_ice
         write(ifc,*) 'f_smrarea   =', f_smrarea, no_smrarea
+        write(ifc,*) 'f_smrsst    =', f_smrsst, no_smrsst
+        write(ifc,*) 'f_smrsss    =', f_smrsss, no_smrsss
 
         close(ifc)
 

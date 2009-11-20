@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.4 2007/10/09 00:10:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.5 2009/11/20 22:33:21 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -62,10 +62,14 @@ c--   Initialize the tiled cost function contributions.
         do bi = itlo,ithi
           objf_ice(bi,bj)     = 0. _d 0
           objf_smrarea(bi,bj) = 0. _d 0
+          objf_smrsst(bi,bj)  = 0. _d 0
+          objf_smrsss(bi,bj)  = 0. _d 0
           objf_ice_export(bi,bj) = 0. _d 0
 c
           num_ice(bi,bj)      = 0. _d 0
           num_smrarea(bi,bj)  = 0. _d 0
+          num_smrsst(bi,bj)   = 0. _d 0
+          num_smrsss(bi,bj)   = 0. _d 0
         enddo
       enddo
 
