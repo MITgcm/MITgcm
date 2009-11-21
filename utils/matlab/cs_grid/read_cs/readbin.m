@@ -15,7 +15,7 @@ function fld=readbin(fnam,siz,typ,prec,skip,mform)
 % fld    output array of dimension siz
 %
 % SEE ALSO
-% writebin
+% read_ijk read_ijkt writebin
 
 if nargin < 6, mform='ieee-be'; end
 if nargin < 5, skip=0; end

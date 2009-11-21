@@ -7,7 +7,7 @@ function fld=read_cs_ifjk(fnam,ix,face,jx,kx,prec,cx)
 % fnam  input path and file name
 % ix    i-indices, 1 to cx, to read (default 1)
 % face  face number, 1 to 6, to read (default 1)
-% jx    i-indices, 1 to cx, to read (default 1)
+% jx    j-indices, 1 to cx, to read (default 1)
 % kx    vertical indices to read, e.g., 1:50 (default 1)
 % prec  numeric precision (see fread; default 'real*4')
 % cx    cube face size (default 510)
@@ -53,3 +53,4 @@ for k=1:length(kx)
 end
 
 fid=fclose(fid);
+fld=squeeze(fld);
