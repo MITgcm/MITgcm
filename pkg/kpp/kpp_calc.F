@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.52 2009/10/08 20:06:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.53 2009/11/21 01:27:07 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -518,7 +518,7 @@ C     and salt are not passed to kppmix and are thus not available there.
      O     , vddiff
      U     , ghat
      O     , hbl
-     I     , mytime, myIter, mythid )
+     I     , bi, bj, mytime, myIter, mythid )
 
 c-----------------------------------------------------------------------
 c     zero out land values and transfer to global variables

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.4 2009/09/02 19:19:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_forcing_surf.F,v 1.5 2009/11/21 01:27:07 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -231,10 +231,10 @@ cph)
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL(bo     ,'KPPbo   ',0,1,1,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(bosol  ,'KPPbosol',0,1,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(bo     ,'KPPbo   ',0,1,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(bosol  ,'KPPbosol',0,1,2,bi,bj,myThid)
 #ifdef ALLOW_SALT_PLUME
-         CALL DIAGNOSTICS_FILL(boplume,'KPPboplm',0,1,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(boplume,'KPPboplm',0,1,2,bi,bj,myThid)
 #endif /* ALLOW_SALT_PLUME */
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

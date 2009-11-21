@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.46 2009/10/08 20:06:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.47 2009/11/21 01:27:07 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -32,7 +32,7 @@ c***********************************************************************
      O     , diffus
      U     , ghat
      O     , hbl
-     I     , myTime, myIter, myThid )
+     I     , bi, bj, myTime, myIter, myThid )
 
 c-----------------------------------------------------------------------
 c
@@ -59,6 +59,7 @@ c-----------------------------------------------------------------------
 #endif
 
 c input
+c   bi, bj :: Array indices on which to apply calculations
 c   myTime :: Current time in simulation
 c   myIter :: Current iteration number in simulation
 c   myThid :: My Thread Id. number
@@ -81,7 +82,7 @@ c     diffusKzT(imt,Nr)- background vertical diffusivity for theta      (m^2/s)
 c     note: there is a conversion from 2-D to 1-D for input output variables,
 c           e.g., hbl(sNx,sNy) -> hbl(imt),
 c           where hbl(i,j) -> hbl((j-1)*sNx+i)
-
+      INTEGER bi, bj
       _RL     myTime
       integer myIter
       integer myThid
@@ -193,7 +194,7 @@ c-----------------------------------------------------------------------
      I     , coriol
      I     , ikppkey
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
-     I     , myTime, myIter, myThid )
+     I     , bi, bj, myTime, myIter, myThid )
 
 CADJ STORE hbl,bfsfc,stable,casea,kbl = comlev1_kpp,
 CADJ &     key=ikppkey, kind=isbyte
@@ -272,7 +273,7 @@ c*************************************************************************
      I     , coriol
      I     , ikppkey
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
-     I     , myTime, myIter, myThid )
+     I     , bi, bj, myTime, myIter, myThid )
 
 c     the oceanic planetary boundary layer depth, hbl, is determined as
 c     the shallowest depth where the bulk Richardson number is
@@ -307,6 +308,7 @@ c
 
 c input
 c------
+c   bi, bj :: Array indices on which to apply calculations
 c   myTime :: Current time in simulation
 c   myIter :: Current iteration number in simulation
 c   myThid :: My Thread Id. number
@@ -321,6 +323,7 @@ c bo        : surface turbulent buoyancy forcing    (m^2/s^3)
 c bosol     : radiative buoyancy forcing            (m^2/s^3)
 c boplume   : haline buoyancy forcing               (m^2/s^3)
 c coriol    : Coriolis parameter                        (1/s)
+      INTEGER bi, bj
       _RL     myTime
       integer myIter
       integer myThid
@@ -506,8 +509,8 @@ c
       end do
 
 #ifdef ALLOW_DIAGNOSTICS
-         CALL DIAGNOSTICS_FILL(KPPBFSFC,'KPPbfsfc',0,Nr,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(KPPRi   ,'KPPRi   ',0,Nr,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(KPPBFSFC,'KPPbfsfc',0,Nr,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(KPPRi   ,'KPPRi   ',0,Nr,2,bi,bj,myThid)
 #endif /* ALLOW_DIAGNOSTICS */
 
 cph(
@@ -1653,8 +1656,8 @@ c     compute arrays for K = Nrp1
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL(DBSFC ,'KPPdbsfc',0,Nr,0,1,1,myThid)
-         CALL DIAGNOSTICS_FILL(DBLOC ,'KPPdbloc',0,Nr,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(DBSFC ,'KPPdbsfc',0,Nr,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(DBLOC ,'KPPdbloc',0,Nr,2,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
