@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.80 2009/11/21 01:21:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.81 2009/11/21 01:26:06 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -244,7 +244,6 @@ c
       wmean_smrarea     =  0.5 _d 0
       smrsstbarfile     =  'smrsstbar'
       smrsssbarfile     =  'smrsssbar'
-      smrareabarfile    =  'smrareabar'
       smrareabarfile    =  'smrareabar'
       smrareadatfile    =  ' '
       smrarea_errfile   =  ' '
