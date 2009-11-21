@@ -1,14 +1,20 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.8 2009/11/21 06:04:05 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.9 2009/11/21 06:57:18 dimitri Exp $
 #
-# tested on MacBook Pro
-# on 28-Nov-2006
+# tested on MacBook Pro with Snow Leopard
+# on 20-Nov-2009
+# gcc and gfortran obtained from
+# http://hpc.sourceforge.net/
+# http://prdownloads.sourceforge.net/hpc/gcc-snwleo-intel-bin.tar.gz?download
+# http://prdownloads.sourceforge.net/hpc/gfortran-snwleo-intel-bin.tar.gz?download
 
 CPP='/usr/bin/cpp -traditional -P'
 FC=gfortran
 ###CC=gcc
-CFLAGS='-arch i386'
+#Following flag is needed when using 32-bit gfortran with 64-bit gcc,
+#as can be the case right after switching to Snow Leopard.
+#CFLAGS='-arch i386'
 LINK=gfortran
 NOOPTFLAGS='-O0'
 EXTENDED_SRC_FLAG='-ffixed-line-length-132'
