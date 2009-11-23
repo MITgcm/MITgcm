@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.47 2009/07/11 22:00:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.48 2009/11/23 16:15:54 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -74,6 +74,10 @@ C     but safer when EXCH do not fill all the overlap regions.
 #ifdef ALLOW_CG2D_NSA
           cg2d_z(I,J,bi,bj) = 0. _d 0
 #endif /* ALLOW_CG2D_NSA */
+#ifdef ALLOW_SRCG
+          cg2d_y(I,J,bi,bj) = 0. _d 0
+          cg2d_v(I,J,bi,bj) = 0. _d 0
+#endif /*  ALLOW_SRCG */
          ENDDO
         ENDDO
        ENDDO

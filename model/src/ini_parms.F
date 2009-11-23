@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.225 2009/11/19 19:53:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.226 2009/11/23 16:15:54 mlosch Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -223,7 +223,8 @@ C--   Elliptic solver parameters
       NAMELIST /PARM02/
      & cg2dMaxIters, cg2dChkResFreq, cg2dTargetResidual,
      & cg2dTargetResWunit, cg2dpcOffDFac, cg2dPreCondFreq,
-     & cg3dMaxIters, cg3dChkResFreq, cg3dTargetResidual
+     & cg3dMaxIters, cg3dChkResFreq, cg3dTargetResidual,
+     & useSRCGSolver
 
 C--   Time stepping parammeters
       NAMELIST /PARM03/

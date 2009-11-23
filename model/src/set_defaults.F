@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.145 2009/10/15 01:06:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.146 2009/11/23 16:15:54 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -242,6 +242,7 @@ C--   Elliptic solver parameters
       cg3dMaxIters       = 150
       cg3dTargetResidual = 1. _d -7
       cg3dChkResFreq     = 1
+      useSRCGSolver      = .FALSE.
 
 C--   Time stepping parameters
       deltaT            = 0. _d 0

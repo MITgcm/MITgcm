@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.43 2008/08/21 15:51:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.44 2009/11/23 16:13:57 mlosch Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -27,6 +27,9 @@ C o Include/exclude Implicit vertical advection code
 
 C o Include/exclude AdamsBashforth-3rd-Order code
 #undef ALLOW_ADAMSBASHFORTH_3
+
+C o Include/exclude code for single reduction cg-solver
+#undef ALLOW_SRCG
 
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.68 2009/11/08 16:51:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.69 2009/11/23 16:15:54 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -282,13 +282,29 @@ C--   Call the not-self-adjoint version of cg2d
      U           numIters,
      I           myThid )
 #else /* not ALLOW_CG2D_NSA = default */
-      CALL CG2D(
+#ifdef ALLOW_SRCG
+      IF ( useSRCGSolver ) THEN
+C--   Call the single reduce CG solver
+       CALL CG2D_SR(
      U           cg2d_b,
      U           cg2d_x,
      O           firstResidual,
      O           lastResidual,
      U           numIters,
      I           myThid )
+      ELSE
+#else
+      IF (.TRUE.) THEN
+C--   Call the default CG solver
+#endif /* ALLOW_SRCG */
+       CALL CG2D(
+     U           cg2d_b,
+     U           cg2d_x,
+     O           firstResidual,
+     O           lastResidual,
+     U           numIters,
+     I           myThid )
+      ENDIF
 #endif /* ALLOW_CG2D_NSA */
       _EXCH_XY_RL( cg2d_x, myThid )
 c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
