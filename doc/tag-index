@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1197 2009/11/20 01:02:16 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1198 2009/11/23 16:41:30 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model: add Christopher Wolfe's implemetation of the single reduction cg2d
+ (d'Azevedo, Eijkhout, and Romine, 1999) with CPP-flag ALLOW_SRCG and
+ runtime flag useSRCGSolver. Modify verification experiment global_with_exf 
+ to test this code
 o pkg/cd_code:
   Change defaut D-grid time-stepping to get the same for D-grid momentum as for
    C-grid momentum. D-grid velocity used to be stepped forward in time with
