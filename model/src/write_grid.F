@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.28 2009/06/08 03:40:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.29 2009/11/24 14:54:15 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -174,6 +174,27 @@ c       CALL MNC_CW_RS_W('D',bfname,0,0,'YV',yG,myThid)
         _END_MASTER(myThid)
 
       ENDIF
+
+      IF ( useMNC .AND. (usingCurvilinearGrid .OR. rotateGrid) ) THEN
+C     If the grid is not simply cartesian, cylindrical or spherical,
+C     include additional coordinate information to the following files 
+       IF ( snapshot_mnc ) 
+     &      CALL MNC_CW_WRITE_GRID_COORD('state', myThid)
+#if (defined ALLOW_AUTODIFF) && \
+    (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM)) && \
+    (defined ALLOW_AUTODIFF_MONITOR)
+       IF ( autodiff_mnc ) THEN
+        CALL MNC_CW_WRITE_GRID_COORD('adstate', myThid)
+#ifdef ALLOW_EXF
+        IF (useEXF) CALL MNC_CW_WRITE_GRID_COORD('adexf',myThid)
+#endif /* ALLOW_EXF */
+#ifdef ALLOW_SEAICE 
+        IF (useSEAICE) CALL MNC_CW_WRITE_GRID_COORD('adseaice',myThid)
+#endif /* ALLOW_SEAICE */
+       ENDIF
+#endif /* ALLOW_AUTODIFF */
+      ENDIF
+
 #endif /* ALLOW_MNC */
 
       RETURN
