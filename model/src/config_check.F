@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.51 2009/10/10 22:36:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.52 2009/11/24 09:06:29 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -220,6 +220,19 @@ C       code is being compiled
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 #endif
+
+#ifndef ALLOW_SRCG
+      IF (useSRCGSolver) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: useSRCGSolver = .TRUE., but single reduction ',
+     &  'code is not compiled.'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'CONFIG_CHECK: Re-compile with ALLOW_SRCG defined'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif /* ALLOW_SRCG */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
