@@ -30,7 +30,7 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.18 2009/11/13 07:57:16 mlosch Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.19 2009/11/24 13:09:16 mlosch Exp $
 % $Name:  $
 
 % Initializations
@@ -148,115 +148,117 @@ function [i0,j0,fn] = findTileOffset(S);
 
 function [S] = rdmnc_local(nc,varlist,iters,S,dBug)
 
-    fiter = nc{'iter'}(:);                               % File iterations present
-    if isempty(fiter), fiter = nc{'T'}(:); end
-    if isinf(iters); iters = fiter(end); end
-    if isnan(iters); iters = fiter; end
-    [fii,dii] = ismember(fiter,iters);  fii = find(fii); % File iteration index
-    dii = dii(find(dii ~= 0));                           % Data interation index
-    if dBug > 0,
-      fprintf(' ; fii='); fprintf(' %i',fii); 
-      fprintf(' ; dii='); fprintf(' %i',dii); fprintf(' \n'); 
+  fiter = nc{'iter'}(:);                               % File iterations present
+  if isempty(fiter), fiter = nc{'T'}(:); end
+  if isinf(iters); iters = fiter(end); end
+  if isnan(iters); iters = fiter; end
+  [fii,dii] = ismember(fiter,iters);  fii = find(fii); % File iteration index
+  dii = dii(find(dii ~= 0));                           % Data interation index
+  if dBug > 0,
+    fprintf(' ; fii='); fprintf(' %i',fii); 
+    fprintf(' ; dii='); fprintf(' %i',dii); fprintf(' \n'); 
+  end
+    
+  % No variables specified? Default to all
+  if isempty(varlist), varlist=ncnames(var(nc)); end
+  
+  % Attributes for structure
+  if iters>0; S.iters_from_file=iters; end
+  S.attributes.global=read_att(nc);
+  [pstr,netcdf_fname,ext] = fileparts(name(nc));
+  if strcmp(netcdf_fname(end-3:end),'glob')
+    % assume it is a global file produced by gluemnc and change some
+    % attributes 
+    S.attributes.global.sNx = S.attributes.global.Nx;
+    S.attributes.global.sNy = S.attributes.global.Ny;
+    S.attributes.global.nPx = 1;
+    S.attributes.global.nSx = 1;
+    S.attributes.global.nPy = 1;
+    S.attributes.global.nSy = 1;
+    S.attributes.global.tile_number = 1;
+    S.attributes.global.nco_openmp_thread_number = 1;
+  end
+    
+  % Read variable data
+  for ivar=1:size(varlist,2)
+    
+    cvar=char(varlist{ivar});
+    if isempty(nc{cvar})
+      disp(['No such variable ''',cvar,''' in MNC file ',name(nc)]);
+      continue
     end
     
-    % No variables specified? Default to all
-    if isempty(varlist), varlist=ncnames(var(nc)); end
-    
-    % Attributes for structure
-    if iters>0; S.iters_from_file=iters; end
-    S.attributes.global=read_att(nc);
-    [pstr,netcdf_fname,ext] = fileparts(name(nc));
-    if strcmp(netcdf_fname(end-3:end),'glob')
-      % assume it is a global file produced by gluemnc and change some
-      % attributes 
-      S.attributes.global.sNx = S.attributes.global.Nx;
-      S.attributes.global.sNy = S.attributes.global.Ny;
-      S.attributes.global.nPx = 1;
-      S.attributes.global.nSx = 1;
-      S.attributes.global.nPy = 1;
-      S.attributes.global.nSy = 1;
-      S.attributes.global.tile_number = 1;
-      S.attributes.global.nco_openmp_thread_number = 1;
+    dims = ncnames(dim(nc{cvar}));        % Dimensions
+    sizVar = size(nc{cvar}); nDims=length(sizVar);
+    if dims{1} == 'T'
+      if isempty(find(fii)), error('Iters not found'); end
+      it = length(dims);
+      tmpdata = nc{cvar}(fii,:);
+      % leading unity dimensions get lost; add them back:
+      tmpdata=reshape(tmpdata,[length(fii) sizVar(2:end)]);
+    else
+      it = 0;
+      tmpdata = nc{cvar}(:);
+      % leading unity dimensions get lost; add them back:
+      tmpdata=reshape(tmpdata,sizVar);
     end
     
-	% Read variable data
-	for ivar=1:size(varlist,2)
-        
-        cvar=char(varlist{ivar});
-        if isempty(nc{cvar})
-            disp(['No such variable ''',cvar,''' in MNC file ',name(nc)]);
-            continue
-        end
-	
-        dims = ncnames(dim(nc{cvar}));        % Dimensions
-        sizVar = size(nc{cvar}); nDims=length(sizVar);
-        if dims{1} == 'T'
-            if isempty(find(fii)), error('Iters not found'); end
-            it = length(dims);
-            tmpdata = nc{cvar}(fii,:);
-%-      leading unity dimensions get lost; add them back:
-            tmpdata=reshape(tmpdata,[length(fii) sizVar(2:end)]);
-        else
-            it = 0;
-            tmpdata = nc{cvar}(:);
-%-      leading unity dimensions get lost; add them back:
-            tmpdata=reshape(tmpdata,sizVar);
-        end
-        
-        if dBug > 1,
-          fprintf(['  var:',cvar,': nDims=%i ('],nDims);fprintf(' %i',size(nc{cvar}));
-          fprintf('):%i,nD=%i,it=%i ;',length(size(tmpdata)),length(dims),it); 
-        end
-        if length(dims) > 1,
-          tmpdata=permute(tmpdata,[nDims:-1:1]);
-        end
-        if dBug > 1,
+    if dBug > 1,
+      fprintf(['  var:',cvar,': nDims=%i ('],nDims);fprintf(' %i',size(nc{cvar}));
+      fprintf('):%i,nD=%i,it=%i ;',length(size(tmpdata)),length(dims),it); 
+    end
+    if length(dims) > 1,
+      tmpdata=permute(tmpdata,[nDims:-1:1]);
+    end
+    if dBug > 1,
 %         fprintf('(tmpdata:');fprintf(' %i',size(tmpdata)); fprintf(')');
-        end
-        [ni nj nk nm nn no np]=size(tmpdata);
-        
-        [i0,j0,fn]=findTileOffset(S);
-        cdim=dims{end}; if cdim(1)~='X'; i0=0; end
-        cdim=dims{end}; if cdim(1)=='Y'; i0=j0; j0=0; end
-        if length(dims)>1;
-            cdim=dims{end-1}; if cdim(1)~='Y'; j0=0; end
-        else
-            j0=0;
-        end
-        if dBug > 1,
-          fprintf(' i0,ni= %i %i; j,nj= %i %i; nk=%i :',i0,ni,j0,nj,nk);
-        end
-        
-        Sstr = '';
-        for istr = 1:max(nDims,length(dims)),
-            if     istr == it,  Sstr = [Sstr,'dii,'];
-            elseif istr == 1,   Sstr = [Sstr,'i0+(1:ni),'];
-            elseif istr == 2,   Sstr = [Sstr,'j0+(1:nj),'];
-            elseif istr == 3,   Sstr = [Sstr,'(1:nk),'];
-            elseif istr == 4,   Sstr = [Sstr,'(1:nm),'];
-            elseif istr == 5,   Sstr = [Sstr,'(1:nn),'];
-            elseif istr == 6,   Sstr = [Sstr,'(1:no),'];
-            elseif istr == 7,   Sstr = [Sstr,'(1:np),'];
-            else, error('Can''t handle this many dimensions!');
-            end
-        end
-        eval(['S.(cvar)(',Sstr(1:end-1),')=tmpdata;'])
-        %S.(cvar)(i0+(1:ni),j0+(1:nj),(1:nk),(1:nm),(1:nn),(1:no),(1:np))=tmpdata;
-        if dBug > 1, fprintf(' %i',size(S.(cvar))); fprintf('\n'); end
- 
-        S.attributes.(cvar)=read_att(nc{cvar});
-	% replace missing or FillValues with NaN
-	attnames=fieldnames(S.attributes.(cvar));
-	if ~isempty(attnames)
-	  for k=1:length(attnames)
-	    if strcmp(attnames{k},'missing_value') ...
-		  | strcmp(attnames{k},'FillValue_')
-	      S.(cvar)(S.(cvar) == S.attributes.(cvar).(attnames{k})) = NaN;
-	    end
-	  end
-	end
-	end
-
-if isempty(S)
+    end
+    [ni nj nk nm nn no np]=size(tmpdata);
+      
+    [i0,j0,fn]=findTileOffset(S);
+    cdim=dims{end}; if cdim(1)~='X'; i0=0; end
+    cdim=dims{end}; if cdim(1)=='Y'; i0=j0; j0=0; end
+    if length(dims)>1;
+      cdim=dims{end-1}; if cdim(1)~='Y'; j0=0; end
+    else
+      j0=0;
+    end
+    if dBug > 1,
+      fprintf(' i0,ni= %i %i; j,nj= %i %i; nk=%i :',i0,ni,j0,nj,nk);
+    end
+    
+    Sstr = '';
+    for istr = 1:max(nDims,length(dims)),
+      if     istr == it,  Sstr = [Sstr,'dii,'];
+      elseif istr == 1,   Sstr = [Sstr,'i0+(1:ni),'];
+      elseif istr == 2,   Sstr = [Sstr,'j0+(1:nj),'];
+      elseif istr == 3,   Sstr = [Sstr,'(1:nk),'];
+      elseif istr == 4,   Sstr = [Sstr,'(1:nm),'];
+      elseif istr == 5,   Sstr = [Sstr,'(1:nn),'];
+      elseif istr == 6,   Sstr = [Sstr,'(1:no),'];
+      elseif istr == 7,   Sstr = [Sstr,'(1:np),'];
+      else, error('Can''t handle this many dimensions!');
+      end
+    end
+    eval(['S.(cvar)(',Sstr(1:end-1),')=tmpdata;'])
+    %S.(cvar)(i0+(1:ni),j0+(1:nj),(1:nk),(1:nm),(1:nn),(1:no),(1:np))=tmpdata;
+    if dBug > 1, fprintf(' %i',size(S.(cvar))); fprintf('\n'); end
+    
+    S.attributes.(cvar)=read_att(nc{cvar});
+    % replace missing or FillValues with NaN
+    if isfield(S.attributes.(cvar),'missing_value');
+      misval = S.attributes.(cvar).missing_value;
+      S.(cvar)(S.(cvar) == misval) = NaN;
+    end
+    if isfield(S.attributes.(cvar),'FillValue_');
+      misval = S.attributes.(cvar).FillValue_;
+      S.(cvar)(S.(cvar) == misval) = NaN;
+    end
+    
+  end % for ivar
+    
+  if isempty(S)
     error('Something didn''t work!!!');
-end
+  end
+  
+  return
