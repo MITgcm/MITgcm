@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.25 2009/04/21 16:00:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.26 2009/11/24 00:16:33 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -156,19 +156,24 @@ C     fatalError  - Flag used to indicate that the model is ended with an error
 C     printMapIncludesZeros :: Flag that controls whether character constant
 C                              map code ignores exact zero values.
 C     useCoupler  - use Coupler for a multi-components set-up
+C     useNEST_PARENT :: use Parent Nesting interface (pkg/nest_parent)
+C     useNEST_CHILD  :: use Child  Nesting interface (pkg/nest_child)
       COMMON /EEPARAMS_L/
      &  eeBootError, fatalError, eeEndError,
      &  printMapIncludesZeros,
-     &  useCubedSphereExchange, useCoupler, useSETRLSTK, useSIGREG
+     &  useCubedSphereExchange, useCoupler, 
+     &  useNEST_PARENT, useNEST_CHILD,
+     &  useSETRLSTK, useSIGREG
       LOGICAL eeBootError
       LOGICAL eeEndError
       LOGICAL fatalError
       LOGICAL printMapIncludesZeros
       LOGICAL useCubedSphereExchange
       LOGICAL useCoupler
+      LOGICAL useNEST_PARENT
+      LOGICAL useNEST_CHILD
       LOGICAL useSETRLSTK
       LOGICAL useSIGREG
-
 
 C--   COMMON /EPARAMS_I/ Execution environment public integer variables.
 C     errorMessageUnit    - Fortran IO unit for error messages

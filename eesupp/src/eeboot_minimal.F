@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.17 2006/07/29 22:57:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.18 2009/11/24 00:16:33 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 
 CBOP
@@ -12,21 +13,21 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE EEBOOT\_MINIMAL                                 
-C     | o Set an initial environment that is predictable i.e.     
-C     | behaves in a similar way on all machines and stable.      
+C     | SUBROUTINE EEBOOT\_MINIMAL
+C     | o Set an initial environment that is predictable i.e.
+C     | behaves in a similar way on all machines and stable.
 C     *==========================================================*
-C     | Under MPI this routine calls MPI\_INIT to setup the        
-C     | mpi environment ( on some systems the code is running as  
-C     | a single process prior to MPI\_INIT, on others the mpirun  
-C     | script has already created multiple processes). Until     
-C     | MPI\_Init is called it is unclear what state the           
-C     | application is in. Once this routine has been run it is   
-C     | "safe" to do things like I/O to report erros and to get   
-C     | run parameters.                                           
-C     | Note: This routine can also be compiled with CPP          
-C     | directives set so that no multi-processing is initialise. 
-C     | This is OK and will work fine.                          
+C     | Under MPI this routine calls MPI\_INIT to setup the
+C     | mpi environment ( on some systems the code is running as
+C     | a single process prior to MPI\_INIT, on others the mpirun
+C     | script has already created multiple processes). Until
+C     | MPI\_Init is called it is unclear what state the
+C     | application is in. Once this routine has been run it is
+C     | "safe" to do things like I/O to report erros and to get
+C     | run parameters.
+C     | Note: This routine can also be compiled with CPP
+C     | directives set so that no multi-processing is initialise.
+C     | This is OK and will work fine.
 C     *==========================================================*
 
 C     !USES:
@@ -35,15 +36,24 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 
+#ifdef ALLOW_NEST_PARENT
+# include "NEST_PARENT_PARAMS.h"
+# include "NEST_PARENT.h"
+#endif
+#ifdef ALLOW_NEST_CHILD
+# include "NEST_CHILD_PARAMS.h"
+# include "NEST_CHILD.h"
+#endif
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     myThid           :: Temp. dummy thread number.
 C     fNam             :: Used to build name of file for standard
 C                         output and error output.
-      INTEGER myThid     
+      INTEGER myThid
       CHARACTER*13 fNam
 #ifdef ALLOW_USE_MPI
-C     mpiRC            :: Error code reporting variable used 
+C     mpiRC            :: Error code reporting variable used
 C                         with MPI.
 C     msgBuffer        :: Used to build messages for printing.
       CHARACTER*(MAX_LEN_MBUF) msgBuffer
@@ -53,12 +63,18 @@ C     msgBuffer        :: Used to build messages for printing.
       INTEGER mpiMyWid
 #endif
 #endif /* ALLOW_USE_MPI */
+#if defined(ALLOW_NEST_PARENT) || defined(ALLOW_NEST_CHILD)
+        INTEGER      color
+        INTEGER      mpiMyWid,size,npd
+        INTEGER      Count_Lev
+        INTEGER      istatus
+#endif
 CEOP
 
 C--   Default values set to single processor case
       numberOfProcs = 1
       myProcId      = 0
-      pidIO         = myProcId 
+      pidIO         = myProcId
       myProcessStr  = '------'
 C     Set a dummy value for myThid because we are not multi-threading
 C     yet.
@@ -78,7 +94,7 @@ C      forked within mpirun - now thats an open standard!
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I5)')
      &        'S/R EEBOOT_MINIMAL: MPI_INIT return code',
-     &        mpiRC 
+     &        mpiRC
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
        ENDIF
@@ -86,7 +102,15 @@ C      forked within mpirun - now thats an open standard!
 C--    MPI has now been initialized but now we need to either
 C      ask for a communicator or pretend that we have:
 C      Pretend that we have asked for a communicator
+cgms(
+C      One caveat is that this model does not work in conjunction
+C      with new nest(ing) approach, so we exclude it in certain cases.
+cgms)
+#ifndef ALLOW_NEST_PARENT
+#ifndef ALLOW_NEST_CHILD
        MPI_COMM_MODEL = MPI_COMM_WORLD
+#endif
+#endif
 
 #ifdef COMPONENT_MODULE
 C--    Set the running directory
@@ -106,17 +130,105 @@ C--    Ask coupler interface for a communicator
 #endif
 
 C--    Get my process number
+C--    Case without Nest(ing)
+#ifndef ALLOW_NEST_PARENT
+#ifndef ALLOW_NEST_CHILD
+        CALL MPI_COMM_RANK( MPI_COMM_MODEL, mpiMyId, mpiRC )
+#endif
+#endif
+
+C--    Get my process number
+C--    Case with Nest(ing)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef ALLOW_NEST_PARENT
+       CALL MPI_COMM_RANK( MPI_COMM_WORLD, mpiMyWId, mpiRC )
+       CALL MPI_COMM_SIZE( MPI_COMM_WORLD, size, mpiRC )
+        npd=size-(NCPUs_PAR_P+NCPUs_CLD_P(1))
+
+        MSTR_DRV_P(1) = 0
+        MSTR_PAR_P(1) = npd
+        MSTR_CLD_P(1) = NCPUs_PAR_P + npd
+
+
+        DO Count_Lev = 2, NST_LEV_TOT_P
+         MSTR_DRV_P(Count_Lev) =
+     $MSTR_PAR_P(Count_Lev-1) + NCPUs_CLD_P(Count_Lev - 1)
+         MSTR_CLD_P(Count_Lev) = MSTR_DRV_P(Count_Lev) + 1
+         MSTR_PAR_P(Count_Lev) = MSTR_CLD_P(Count_Lev-1)
+        ENDDO
+
+        color=9999999
+        IF (NST_LEV_P.EQ.1) THEN
+         IF (mpiMyWId.GE.MSTR_PAR_P(1).AND.
+     &     mpiMyWId.LT.MSTR_CLD_P(1))   color = 1
+         IF (mpiMyWId.GE.MSTR_CLD_P(1)) color = 2
+        ENDIF
+
+        IF (NST_LEV_P.GT.1) THEN
+         IF (mpiMyWId.GE.MSTR_CLD_P(NST_LEV_P).AND.
+     &       mpiMyWId.LT.MSTR_CLD_P(NST_LEV_P)+NCPUs_CLD_P(NST_LEV_P))
+     &          color = (NST_LEV_P + 1)
+        ENDIF
+        write(*,*) 'mpiMyWId=',mpiMyWId,'color=',color
+#endif /* ALLOW_NEST_PARENT */
+
+#ifdef ALLOW_NEST_CHILD
+        CALL MPI_COMM_RANK( MPI_COMM_WORLD, mpiMyWId, mpiRC )
+        CALL MPI_COMM_RANK( MPI_COMM_WORLD, size, mpiRC )
+        npd=size-(NCPUs_PAR_C+NCPUs_CLD_C(1))
+
+        MSTR_DRV_C(1) = 0
+        MSTR_PAR_C(1) = npd
+        MSTR_CLD_C(1) = NCPUs_PAR_C + npd
+
+
+        DO Count_Lev = 2, NST_LEV_TOT_C
+         MSTR_DRV_C(Count_Lev) = MSTR_CLD_C(Count_Lev-1) +
+     &          NCPUs_CLD_C(Count_Lev - 1)
+         MSTR_CLD_C(Count_Lev) = MSTR_DRV_C(Count_Lev) + 1
+         MSTR_PAR_C(Count_Lev) = MSTR_CLD_C(Count_Lev-1)
+        ENDDO
+
+
+        IF (NST_LEV_C.EQ.1) THEN
+         IF (mpiMyWId.GE.MSTR_PAR_C(1).AND.mpiMyWId.LT.MSTR_CLD_C(1))
+     &          color = 1
+         IF (mpiMyWId.GE.MSTR_CLD_C(1))
+     &        color = 2
+        ENDIF
+
+        IF (NST_LEV_C.GT.1) THEN
+         IF (mpiMyWId.GE.MSTR_CLD_C(NST_LEV_C).AND.
+     &       mpiMyWId.LT.MSTR_CLD_C(NST_LEV_C)+NCPUs_CLD_C(NST_LEV_C))
+     &          color = (NST_LEV_C + 1)
+        ENDIF
+        write(*,*) 'mpiMyWId=',mpiMyWId,'color=',color
+#endif /* ALLOW_NEST_CHILD */
+
+
+#if defined(ALLOW_NEST_PARENT) || defined(ALLOW_NEST_CHILD)
+        call MPI_COMM_SPLIT (MPI_COMM_WORLD, color, 0,
+     &                       MPI_COMM_MODEL,mpiRC)
+       IF ( mpiRC .NE. MPI_SUCCESS ) THEN
+        write(*,*) 'error SPLIT'
+        ENDIF
+C--    Get my process number
        CALL MPI_COMM_RANK( MPI_COMM_MODEL, mpiMyId, mpiRC )
+
+#endif /* ALLOW_NEST_PARENT */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I5)')
      &        'S/R EEBOOT_MINIMAL: MPI_COMM_RANK return code',
-     &        mpiRC 
+     &        mpiRC
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
        ENDIF
        myProcId = mpiMyId
-       WRITE(myProcessStr,'(I4.4)') myProcId 
+       WRITE(myProcessStr,'(I4.4)') myProcId
        mpiPidIo = myProcId
        pidIO    = mpiPidIo
        IF ( mpiPidIo .EQ. myProcId ) THEN
@@ -127,14 +239,14 @@ C--    Get my process number
        ENDIF
 
 C--    Synchronise all processes
-C      Strictly this is superfluous, but by using it we can guarantee to 
+C      Strictly this is superfluous, but by using it we can guarantee to
 C      find out about processes that did not start up.
        CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I6)')
      &        'S/R EEBOOT_MINIMAL: MPI_BARRIER return code',
-     &        mpiRC 
+     &        mpiRC
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
        ENDIF
@@ -145,7 +257,7 @@ C--    Get number of MPI processes
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I6)')
      &        'S/R EEBOOT_MINIMAL: MPI_COMM_SIZE return code',
-     &        mpiRC 
+     &        mpiRC
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
        ENDIF
@@ -184,7 +296,7 @@ C      is an exact match makes things easier.
 
 #else /* ALLOW_USE_MPI */
 
-        WRITE(myProcessStr,'(I4.4)') myProcId 
+        WRITE(myProcessStr,'(I4.4)') myProcId
         WRITE(fNam,'(A,A)') 'STDERR.', myProcessStr(1:4)
         OPEN(errorMessageUnit,FILE=fNam,STATUS='unknown')
 c       WRITE(fNam,'(A,A)') 'STDOUT.', myProcessStr(1:4)
@@ -199,4 +311,3 @@ c       OPEN(standardMessageUnit,FILE=fNam,STATUS='unknown')
 
       RETURN
       END
-

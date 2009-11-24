@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.9 2005/08/22 19:12:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.10 2009/11/24 00:16:33 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 
 CBOP
@@ -12,12 +13,12 @@ C     !INTERFACE:
       IMPLICIT NONE
 C     !DESCRIPTION:
 C     *==========================================================*
-C     | SUBROUTINE INI\_COMMUNICATION\_PATTERNS                     
-C     | o Initialise between tile communication data structures.  
+C     | SUBROUTINE INI\_COMMUNICATION\_PATTERNS
+C     | o Initialise between tile communication data structures.
 C     *==========================================================*
-C     | This routine assigns identifiers to each tile and then    
-C     | defines a map of neighbors for each tile.                 
-C     | For each neighbor a communication method is defined.      
+C     | This routine assigns identifiers to each tile and then
+C     | defines a map of neighbors for each tile.
+C     | For each neighbor a communication method is defined.
 C     *==========================================================*
 
 C     !USES:
@@ -43,7 +44,7 @@ C     procE :: Process Id of process to east.
 C     procN :: Process Id of process to north.
 C     procS :: Process Id of process to south.
 C     totalTileCount :: Total number of tiles
-C     tagW0, tagE0, tagS0, tagN0, theTag :: Working variables for 
+C     tagW0, tagE0, tagS0, tagN0, theTag :: Working variables for
 C                                           calculating message tags.
 C     biW, biE, bjN, bjS :: Tile x and y indices to west, east,
 C                           south and north.
@@ -76,7 +77,7 @@ C--   Define a globally unique tile numbers for each tile.
 C--   We aslo define the tile numbers for our east, west, south
 C--   and north neighbor tiles here. As coded below this is done from
 C--   a simple cartesian formula. To handle irregular tile distributions
-C--   the code below would be changed. For instance we could read 
+C--   the code below would be changed. For instance we could read
 C--   the neighbor tile information from a file rather than deriving
 C--   it in-line. This allows general tile distributions and connectivity
 C--   both within a thread, between threads and between processors.
@@ -86,7 +87,7 @@ C       i. Each tile has one west neighbor, one east neighbor
 C          one north neignbor and one south neighbor.
 C      ii. For each of my neighbors store the following
 C          - neighbor tile id
-C          - neighbor process id 
+C          - neighbor process id
 C     2. The information that is stored is then used to determine
 C        the between tile communication method. The method used
 C        depends on whether the tile is part of the same process,
@@ -97,7 +98,7 @@ C        the value NULL_TILE. This must also be done for tileNoW,
 C        tileNoE, tileNoS, tileNoN.
 C     4. The default formula below assigns tile numbers sequentially
 C        in X on the **global** grid. Within a process the tile numbers
-C        will not necessairily be sequential. This means that the tile 
+C        will not necessairily be sequential. This means that the tile
 C        numbering label does not change when nTx, nTy, nPx or nPy change.
 C        It will only change if the tile size changes or the global
 C        grid changes.
@@ -118,7 +119,7 @@ Crg     tileNo(bi,bj) = (bj0(myPy)-1+bj-1)*nSx*nPx+bi0(myPx)+bi-1
         theBj = bj
         theBi = bi
         tileNo(bi,bj) =
-     &    ((thePy-1)*nSy+theBj-1)*nSx*nPx 
+     &    ((thePy-1)*nSy+theBj-1)*nSx*nPx
      &   + (thePx-1)*nSx
      &   + theBi
 C       o My west neighbor tile and process identifier
@@ -136,13 +137,18 @@ Crg     tileNoW (bi,bj) = (bj0(myPy)-1+bj-1)*nSx*nPx+bi0(pxW)+biW-1
         thePy = myPy
         theBj = bj
         theBi = biW
-        tileNoW (bi,bj) = 
+        tileNoW (bi,bj) =
      &    ((thePy-1)*nSy+theBj-1)*nSx*nPx
      &   + (thePx-1)*nSx
      &   + theBi
+#ifdef ALLOW_NEST_CHILD
+#ifndef ALLOW_USE_MPI
+        tileNoW (bi,bj) = NULL_TILE
+#endif
+#endif
         tilePidW(bi,bj) = procW
         tileBiW (bi,bj) = biW
-        tileBjW (bi,bj) = bj 
+        tileBjW (bi,bj) = bj
 C       o My east neighbor tile and process identifier
         biE   = bi+1
         pxE   = myPx
@@ -158,13 +164,18 @@ Crg     tileNoE(bi,bj)  = (bj0(myPy)-1+bj-1)*nSx*nPx+bi0(pxE)+biE-1
         thePy = myPy
         theBi = biE
         theBj = bj
-        tileNoE(bi,bj) = 
+        tileNoE(bi,bj) =
      &    ((thePy-1)*nSy+theBj-1)*nSx*nPx
      &   + (thePx-1)*nSx
      &   + theBi
+#ifdef ALLOW_NEST_CHILD
+#ifndef ALLOW_USE_MPI
+        tileNoE (bi,bj) = NULL_TILE
+#endif
+#endif
         tilePidE(bi,bj) = procE
         tileBiE (bi,bj) = biE
-        tileBjE (bi,bj) = bj 
+        tileBjE (bi,bj) = bj
 C       o My north neighbor tile and process identifier
         bjN   = bj+1
         pyN   = myPy
@@ -177,7 +188,7 @@ C       o My north neighbor tile and process identifier
         ENDIF
 Crg     tileNoN(bi,bj) = (bj0(pyN)-1+bjN-1)*nSx*nPx+bi0(myPx)+bi-1
         thePx = myPx
-        thePy = pyN 
+        thePy = pyN
         theBi = bi
         theBj = bjN
         tileNoN(bi,bj) =
@@ -202,7 +213,7 @@ Crg     tileNoS(bi,bj) = (bj0(pyS+1)-1+bjS-1)*nSx*nPx+bi0(myPx+1)+bi-1
         thePy = pyS
         theBi = bi
         theBj = bjS
-        tileNoS(bi,bj) = 
+        tileNoS(bi,bj) =
      &    ((thePy-1)*nSy+theBj-1)*nSx*nPx
      &   + (thePx-1)*nSx
      &   + theBi
@@ -216,7 +227,7 @@ C--   Define the total count of tiles.
       totalTileCount = nSx*nSy*nPx*nPy
 
 C--   Set tags for each tile face.
-C     Tags are used to distinguish exchanges from particular 
+C     Tags are used to distinguish exchanges from particular
 C     faces of particular tiles.
 C     Tag numbers are based on
 C      i - The tile number
@@ -260,12 +271,12 @@ C       o Tag on messages I receive from my north
 
 C--   Set the form of excahnge to use between neighboring
 C --  tiles.
-C     For now use either shared memory, messages or nothing. Further 
-C     rules can be added later to allow shm regions and ump regions  
+C     For now use either shared memory, messages or nothing. Further
+C     rules can be added later to allow shm regions and ump regions
 C     etc...
-C     Notes - 
-C     1. We require symmetry here. If one face of a tile uses 
-C        communication method A then the matching face on its neighbor 
+C     Notes -
+C     1. We require symmetry here. If one face of a tile uses
+C        communication method A then the matching face on its neighbor
 C        tile must also use communication method A.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -309,7 +320,7 @@ C      o North face communication
          tileCommModeN(bi,bj) = COMM_MSG
         ENDIF
        ENDIF
-        
+
        ENDDO
       ENDDO
 
