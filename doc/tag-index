@@ -1,15 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1199 2009/11/24 14:54:25 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1200 2009/11/24 19:21:55 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o update output of exp. global_ocean.cs32x15.icedyn after removing
+  #define SEAICE_OLD_AND_BAD_DISCRETIZATION from SEAICE_OPTIONS.h
+o add entry points for Gianmaria's Nesting pkgs (from Contrib/nesting_sannino)
 o mnc: add horizontal grid coordinates (XC,YC) and (XG,YG) to netcdf output 
   for complex grids, for now only to "state", "adstate", "adexf", "adseaice"
 o model: add Christopher Wolfe's implemetation of the single reduction cg2d
- (d'Azevedo, Eijkhout, and Romine, 1999) with CPP-flag ALLOW_SRCG and
- runtime flag useSRCGSolver. Modify verification experiment global_with_exf 
- to test this code
+  (d'Azevedo, Eijkhout, and Romine, 1999) with CPP-flag ALLOW_SRCG and
+  runtime flag useSRCGSolver. Modify verification experiment global_with_exf 
+  to test this code
 o pkg/cd_code:
   Change defaut D-grid time-stepping to get the same for D-grid momentum as for
    C-grid momentum. D-grid velocity used to be stepped forward in time with
