@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.62 2009/09/16 21:36:11 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.63 2009/11/24 00:17:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -95,6 +95,9 @@ C       |
 C       |-- PROFILES_READPARMS
 C       |
 C       |-- FLT_READPARMS
+C       |
+C       |-- NEST_CHILD_READPARMS
+C       |-- NEST_PARENT_READPARMS
 C       |
 C       |-- CPL_READPARMS
 C       |
@@ -267,7 +270,7 @@ C--   Custom routine to set forcing fields.
 
 #ifdef ALLOW_SMOOTH
 c--   Initialize SMOOTH package parameters
-      CALL SMOOTH_READPARMS ( myThid )
+      IF ( useSMOOTH ) CALL SMOOTH_READPARMS ( myThid )
 #endif
 
 #ifdef ALLOW_ECCO
@@ -283,6 +286,16 @@ c--   Initialize PROFILES package parameters
 #ifdef ALLOW_FLT
       IF ( useFLT ) CALL FLT_READPARMS( myThid )
 #endif /* ALLOW_FLT */
+
+#ifdef ALLOW_NEST_CHILD
+C--    Initialize nest(ing) package parameters x CHILD
+       IF (useNEST_CHILD) CALL NEST_CHILD_READPARMS ( myThid )
+#endif /* ALLOW_NEST_CHILD */
+C
+#ifdef ALLOW_NEST_PARENT
+C--    Initialize nest(ing) package parameters x PARENT
+       IF (useNEST_PARENT) CALL NEST_PARENT_READPARMS ( myThid )
+#endif /* ALLOW_NEST_PARENT */
 
 #ifdef COMPONENT_MODULE
 C--   set Coupling parameters

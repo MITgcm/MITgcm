@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.46 2009/09/16 21:36:11 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.47 2009/11/24 00:17:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,7 +35,7 @@ C     myThid ::  Number of this instances
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     msgBuf :: Informational/error meesage buffer
+C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
@@ -285,6 +285,20 @@ C---  Continue with standard packages (with standard usePKG flag)
 #else
       IF ( useLayers ) CALL PACKAGES_ERROR_MSG('LAYERS',' ',myThid)
 #endif /* ALLOW_LAYERS */
+
+#ifdef ALLOW_NEST_CHILD
+      IF (useNEST_CHILD) CALL NEST_CHILD_CHECK( myThid )
+#else
+      IF (useNEST_CHILD) CALL PACKAGES_ERROR_MSG(
+     & 'NEST_CHILD',' ',myThid)
+#endif
+
+#ifdef ALLOW_NEST_PARENT
+      IF (useNEST_PARENT) CALL NEST_PARENT_CHECK( myThid )
+#else
+      IF (useNEST_PARENT) CALL PACKAGES_ERROR_MSG(
+     & 'NEST_PARENT',' ',myThid)
+#endif
 
 #ifdef ALLOW_MYPACKAGE
       IF (useMYPACKAGE) CALL MYPACKAGE_CHECK( myThid )

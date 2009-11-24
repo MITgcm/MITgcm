@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.172 2009/10/14 05:15:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.173 2009/11/24 00:17:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -211,6 +211,18 @@ C--   State-variables diagnostics
         CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
       ENDIF
 #endif
+
+#ifdef ALLOW_NEST_CHILD
+      IF ( useNEST_CHILD) THEN
+       CALL NEST_CHILD_SETMEMO( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_NEST_CHILD */
+
+#ifdef ALLOW_NEST_PARENT
+      IF ( useNEST_PARENT) THEN
+        CALL NEST_PARENT_IO_1( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_NEST_PARENT */
 
 #ifdef ALLOW_PROFILES
 #ifdef ALLOW_DEBUG
@@ -569,13 +581,13 @@ CADJ &     kind = isbyte
 CADJ STORE rstarFacW    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 c
-CADJ STORE h0facc,h0facs,h0facw  
+CADJ STORE h0facc,h0facs,h0facw
 CADJ &     = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt 
+CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE rstarexpc,rstarexps,rstarexpw 
+CADJ STORE rstarexpc,rstarexps,rstarexpw
 CADJ &     = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #  endif
@@ -681,7 +693,7 @@ CADJ &     kind = isbyte
 # endif /* DISABLE_RSTAR_CODE */
        ELSE
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hFac_surfC, hFac_surfS, hFac_surfW 
+CADJ STORE hFac_surfC, hFac_surfS, hFac_surfW
 CADJ &     = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #endif
@@ -981,6 +993,12 @@ C--   Calculate float trajectories
       ENDIF
 #endif
 
+#ifdef ALLOW_NEST_PARENT
+      IF ( useNEST_PARENT) THEN
+        CALL NEST_PARENT_IO_2( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_NEST_PARENT */
+
 #ifdef ALLOW_TIMEAVE
 C--   State-variables time-averaging
       CALL TIMER_START('DO_STATEVARS_TAVE   [FORWARD_STEP]',myThid)
@@ -1022,6 +1040,14 @@ C--   Save state for restarts
       CALL DO_WRITE_PICKUP(
      I                      modelEnd, myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_WRITE_PICKUP     [FORWARD_STEP]',myThid)
+
+
+
+#ifdef ALLOW_NEST_CHILD
+      IF ( useNEST_CHILD) THEN
+            CALL NEST_CHILD_TRANSP( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_NEST_CHILD */
 
 #ifdef HAVE_SIGREG
       IF ( useSIGREG ) THEN
