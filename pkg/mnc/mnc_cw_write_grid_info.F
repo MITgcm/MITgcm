@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.12 2009/08/28 19:48:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.13 2009/11/24 14:53:50 mlosch Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -154,6 +154,58 @@ C     Write the GRID.h variables
       CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'HFacC',HFacC,myThid)
       CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'HFacW',HFacW,myThid)
       CALL MNC_CW_RS_W('D',bfname(nf:nl),0,0,'HFacS',HFacS,myThid)
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP 
+C !ROUTINE: MNC_CW_WRITE_GRID_COORD
+
+C !INTERFACE:
+      SUBROUTINE MNC_CW_WRITE_GRID_COORD(
+     I     fname,
+     I     myThid )
+
+C     !DESCRIPTION:
+C     This subroutine writes coordinates to one netcdf file
+C     (\texttt{fname.xxxxx.nc}) per tile.
+
+C     !USES:
+      implicit none
+#include "SIZE.h"
+#include "GRID.h"
+
+C     !INPUT PARAMETERS:
+      integer myThid
+      character*(*) fname
+CEOP
+C     Write coordinates to file "fname"
+      _BEGIN_MASTER( myThid )
+
+      CALL MNC_CW_SET_UDIM(fname, 0, myThid)
+      CALL MNC_CW_RS_W('R',fname,0,0,'XC',xC, myThid)
+      CALL MNC_CW_RS_W('R',fname,0,0,'YC',yC, myThid)
+      CALL MNC_CW_RS_W('R',fname,0,0,'XG',xG, myThid)
+      CALL MNC_CW_RS_W('R',fname,0,0,'YG',yG, myThid)
+C--   Here we can add as much grid information as we like, but this
+C--   will increase the size of each of the affected files. It is 
+C--   a matter of taste, but here are some candidates:
+C--   Probably it is enough to write the coordinates of the
+C--   center points and the corners.
+C     CALL MNC_CW_RS_W('R',fname,0,0,'XU',xG, myThid)
+C     CALL MNC_CW_RS_W('R',fname,0,0,'YU',yC, myThid)
+C     CALL MNC_CW_RS_W('R',fname,0,0,'XV',xC, myThid)
+C     CALL MNC_CW_RS_W('R',fname,0,0,'YV',yG, myThid)
+C--   Only required for diagnostics files, but unclear what the vertical
+C--   coordinate means in this case, so do not write anything for now 
+C     CALL MNC_CW_RS_W('R',fname,0,0,'RC',rC, myThid)
+C     CALL MNC_CW_RS_W('R',fname,0,0,'RF',rF, myThid)
+C--   If required write mask information.
+C     CALL MNC_CW_RS_W('R',fname,0,0,'HFacC',HFacC,myThid)
+
+      _END_MASTER(myThid)
 
       RETURN
       END
