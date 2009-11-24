@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/SEAICE_OPTIONS.h,v 1.2 2009/10/23 08:11:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/SEAICE_OPTIONS.h,v 1.3 2009/11/24 19:07:00 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -13,11 +13,6 @@ C     \==========================================================/
 #define SEAICE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-
-
-C--   for backward compatibility we return to old code with this flag.
-C     Will be removed as soon as we have confidence in the code.
-#define SEAICE_OLD_AND_BAD_DISCRETIZATION
 
 C--   Write "text-plots" of certain fields in STDOUT for debugging.
 #undef SEAICE_DEBUG
@@ -45,16 +40,6 @@ C     Therefore it is not possible to switch between the two
 C     in the middle of an integration.
 #undef SEAICE_MULTICATEGORY
 
-C--   By default for B-grid dynamics solver wind stress under sea-ice is
-C     set to the same value as it would be if there was no sea-ice.
-C     Define following CPP flag for B-grid ice-ocean stress coupling.
-#undef SEAICE_TEST_ICE_STRESS_1
-
-C--   By default for B-grid dynamics solver surface tilt is obtained
-C     indirectly via geostrophic velocities.  Define following CPP
-C     in order to ues ETAN instead.
-#undef EXPLICIT_SSH_SLOPE
-
 C--   By default the freezing point of water is set to the value of 
 C     the parameter SEAICE_freeze (=-1.96 by default). To use a
 C     simple linear dependence of the freezing point on salinity, 
@@ -64,7 +49,7 @@ C     option defined the parameter SEAICE_freeze has no effect.
 #undef SEAICE_VARIABLE_FREEZING_POINT
 
 C--   Allow SEAICEuseFlooding, which converts snow to ice if submerged.
-#undef ALLOW_SEAICE_FLOODING
+#define ALLOW_SEAICE_FLOODING
 
 C--   By default sea ice is fresh.  Set following flag for salty ice.
 #undef SEAICE_SALINITY
@@ -81,14 +66,30 @@ C--   Only for the C-grid version it is possible to
 #ifdef SEAICE_CGRID
 C     enable EVP code by defining the following flag
 #define SEAICE_ALLOW_EVP
+#ifdef SEAICE_ALLOW_EVP
+C--   When set use SEAICE_zetaMin and SEAICE_evpDampC to limit
+C--   viscosities from below and above in seaice_evp
+C--   not necessary, and not recommended
+#undef SEAICE_ALLOW_CLIPZETA
+#endif /* SEAICE_ALLOW_EVP */
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 #undef SEAICE_ALLOW_TEM
+#else /* not SEAICE_CGRID, but old B-grid */
+C--   By default for B-grid dynamics solver wind stress under sea-ice is
+C     set to the same value as it would be if there was no sea-ice.
+C     Define following CPP flag for B-grid ice-ocean stress coupling.
+#define SEAICE_BICE_STRESS
+
+C--   By default for B-grid dynamics solver surface tilt is obtained
+C     indirectly via geostrophic velocities. Define following CPP
+C     in order to use ETAN instead.
+#define EXPLICIT_SSH_SLOPE
+
 #endif /* SEAICE_CGRID */
 
 C--   When set use MAX_HEFF to cap sea ice thickness in seaice_growth
 #undef SEAICE_CAP_HEFF
 C--   When set use SEAICE_clipVelocties = .true., to clip U/VICE at 40cm/s,
-C--   not recommended, here enabled for backward compatibility
 #define SEAICE_ALLOW_CLIPVELS
 
 #endif /* SEAICE_OPTIONS_H */
