@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.69 2009/11/23 16:15:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.70 2009/11/25 20:56:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -163,6 +163,22 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifdef ALLOW_NONHYDROSTATIC
+C--   Add EmPmR contribution to top level cg3d_b:
+C      (has been done for cg2d_b ; and addMass was added by CALC_DIV_GHAT)
+        IF ( use3Dsolver .AND.
+     &       useRealFreshWaterFlux.AND.fluidIsWater ) THEN
+          tmpFac = freeSurfFac*mass2rUnit
+          IF (exactConserv)
+     &     tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow
+          ks = 1
+          IF ( usingPCoords ) ks = Nr
+          DO j=1,sNy
+           DO i=1,sNx
+            cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
+     &        + tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)/deltaTMom
+           ENDDO
+          ENDDO
+        ENDIF
         IF ( use3Dsolver .AND. zeroPsNH ) THEN
          DO j=1,sNy
           DO i=1,sNx
