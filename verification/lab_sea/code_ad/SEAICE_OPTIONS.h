@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.6 2009/10/02 14:07:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SEAICE_OPTIONS.h,v 1.7 2009/11/27 15:03:15 heimbach Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -68,7 +68,7 @@ C     (not thoroughly) test version on a C-grid
 C--   Only for the C-grid version it is possible to enable EVP code by
 C     defining the following flag
 #ifdef SEAICE_CGRID
-#undef SEAICE_ALLOW_EVP
+#define SEAICE_ALLOW_EVP
 #endif /* SEAICE_CGRID */
 
 C--   Seaice flooding
