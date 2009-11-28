@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.13 2009/08/02 19:54:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.14 2009/11/28 20:59:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -117,7 +117,6 @@ C-  o Rigid-Lid case: zero at lower and upper boundaries
 # ifndef DISABLE_RSTAR_CODE
 C-  o rStar case: zero under-ground and at r_lower boundary
 C     can be non-zero at surface (useRealFreshWaterFlux).
-C note: not implemented neither for anelastic nor deep-model.
         IF (k.EQ.Nr) THEN
           DO j=1,sNy
            DO i=1,sNx
@@ -125,16 +124,18 @@ C note: not implemented neither for anelastic nor deep-model.
      &        ( conv2d(i,j)*recip_rA(i,j,bi,bj)
      &         -rStarDhCDt(i,j,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
      &        )*maskC(i,j,k,bi,bj)
+     &         *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO
           ENDDO
         ELSE
           DO j=1,sNy
            DO i=1,sNx
              wFld(i,j,k,bi,bj) =
-     &        ( wFld(i,j,k+1,bi,bj)
+     &        ( wFld(i,j,k+1,bi,bj)*deepFac2F(k+1)*rhoFacF(k+1)
      &         +conv2d(i,j)*recip_rA(i,j,bi,bj)
      &         -rStarDhCDt(i,j,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
      &        )*maskC(i,j,k,bi,bj)
+     &         *recip_deepFac2F(k)*recip_rhoFacF(k)
            ENDDO
           ENDDO
         ENDIF

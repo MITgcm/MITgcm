@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.21 2008/08/24 21:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.22 2009/11/28 20:59:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -161,7 +161,7 @@ C       (e.g., if using KPP) => set over full index range
          ENDDO
          DO j=1,sNy
           DO i=1,sNx
-            ks = ksurfC(I,J,bi,bj)
+            ks = ksurfC(i,j,bi,bj)
             dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
      &                                         *recip_deepFac2F(ks)
      &                           -facEmP*EmPmR(i,j,bi,bj)
@@ -205,10 +205,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 # ifdef NONLIN_FRSURF
       IF (select_rStar .NE. 0) THEN
 #  ifndef DISABLE_RSTAR_CODE
+C-- note: final value of rStarDhCDt from S/R CALC_R_STAR
+C         will be different (no deep-factor, no rho factor)
         DO j=1,sNy
          DO i=1,sNx
-           rStarDhCDt(i,j,bi,bj) =
-     &            dEtaHdt(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
+           ks = ksurfC(i,j,bi,bj)
+           rStarDhCDt(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)
+     &                            *deepFac2F(ks)*rhoFacF(ks)
+     &                            *recip_Rcol(i,j,bi,bj)
          ENDDO
         ENDDO
 #  endif /* DISABLE_RSTAR_CODE */
