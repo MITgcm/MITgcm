@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.17 2009/04/28 18:16:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.18 2009/11/28 20:52:54 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -29,13 +29,16 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      INTEGER bi,bj,i,j,k
-      _RL numPnts,theVol,tmpVal
+      INTEGER bi,bj,i,j,k,kp1
+      _RL numPnts,theVol,tmpVal,mskp1
       _RL theMax,theMean,theVolMean,potEnMean
       _RL tileMean(nSx,nSy)
       _RL tileVlAv(nSx,nSy)
       _RL tilePEav(nSx,nSy)
       _RL tileVol (nSx,nSy)
+#ifdef ALLOW_NONHYDROSTATIC
+      _RL tmpWke
+#endif
 
       numPnts=0.
       theVol=0.
@@ -51,6 +54,9 @@ C     !LOCAL VARIABLES:
         tileVlAv(bi,bj) = 0. _d 0
         tilePEav(bi,bj) = 0. _d 0
         DO k=1,Nr
+         kp1 = MIN(k+1,Nr)
+         mskp1 = 1.
+         IF ( k.GE.Nr) mskp1 = 0.
          DO j=1,sNy
           DO i=1,sNx
            tileVol(bi,bj) = tileVol(bi,bj)
@@ -81,6 +87,21 @@ C    with no assumption on how grid spacing & area are defined.
            tileVlAv(bi,bj) = tileVlAv(bi,bj)
      &                     + tmpVal*deepFac2C(k)*rhoFacC(k)*drF(k)
            tmpVal= tmpVal*_recip_hFacC(i,j,k,bi,bj)*recip_rA(i,j,bi,bj)
+
+#ifdef ALLOW_NONHYDROSTATIC
+           IF ( nonHydrostatic ) THEN
+            tmpWke = 0.25*
+     &        ( wVel(i,j, k, bi,bj)*wVel(i,j, k, bi,bj)
+     &                             *deepFac2F( k )*rhoFacF( k )
+     &         +wVel(i,j,kp1,bi,bj)*wVel(i,j,kp1,bi,bj)*mskp1
+     &                             *deepFac2F(kp1)*rhoFacF(kp1)
+     &        )*maskC(i,j,k,bi,bj)
+            tileVlAv(bi,bj) = tileVlAv(bi,bj)
+     &             + tmpWke*rA(i,j,bi,bj)*drF(k)*_hFacC(i,j,k,bi,bj)
+            tmpVal = tmpVal
+     &             + tmpWke*recip_deepFac2C(k)*recip_rhoFacC(k)
+           ENDIF
+#endif
 
            theMax=MAX(theMax,tmpVal)
            IF (tmpVal.NE.0.) THEN
