@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.232 2009/11/23 16:13:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.233 2009/11/29 03:06:25 jmc Exp $
 C $Name:  $
 C
 
@@ -612,6 +612,8 @@ C     implicSurfPress :: parameter of the Crank-Nickelson time stepping :
 C                     Implicit part of Surface Pressure Gradient ( 0-1 )
 C     implicDiv2Dflow :: parameter of the Crank-Nickelson time stepping :
 C                     Implicit part of barotropic flow Divergence ( 0-1 )
+C     implicitNHPress :: parameter of the Crank-Nickelson time stepping :
+C                     Implicit part of Non-Hydrostatic Pressure Gradient ( 0-1 )
 C     hFacMin      :: Minimum fraction size of a cell (affects hFacC etc...)
 C     hFacMinDz    :: Minimum dimensional size of a cell (affects hFacC etc..., m)
 C     hFacMinDp    :: Minimum dimensional size of a cell (affects hFacC etc..., Pa)
@@ -699,7 +701,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & BL79LatVary,
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
      & tauCD, rCD, epsAB_CD,
-     & freeSurfFac, implicSurfPress, implicDiv2Dflow,
+     & freeSurfFac, implicSurfPress, implicDiv2Dflow, implicitNHPress,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_gravity, gBaro,
      & rhonil, recip_rhonil, rhoConst, recip_rhoConst,
@@ -743,6 +745,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL freeSurfFac
       _RL implicSurfPress
       _RL implicDiv2Dflow
+      _RL implicitNHPress
       _RL hFacMin
       _RL hFacMinDz
       _RL hFacMinDp
