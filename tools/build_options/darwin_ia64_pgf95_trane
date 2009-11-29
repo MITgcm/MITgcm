@@ -1,0 +1,30 @@
+#!/bin/bash
+# build options files for trane without MPI
+# uname -a
+# Darwin trane.evsc.virginia.edu 9.8.0 Darwin Kernel Version 9.8.0: Wed Jul 15 16:55:01 PDT 2009; root:xnu-1228.15.4~1/RELEASE_I386 i386
+#
+
+FC='pgf95'
+CC='pgcc'
+LINK='pgf90'
+
+DEFINES='-DWORDLENGTH=4 -DNML_TERMINATOR'
+
+NETCDF_INCDIR="/common/usr/local/include"
+INCLUDES="$INCLUDES -I$NETCDF_INCDIR"
+LIBS="-L/common/usr/local/lib"
+
+CPP='/usr/bin/cpp -traditional -P'
+CFLAGS='-fast -Mipa=fast,inline,safe'
+
+if test "x$IEEE" = x ; then
+   #  No need for IEEE-754
+   FFLAGS='-byteswapio -Mextend'
+   FOPTIM='-fast -Mipa=fast,inline,safe'
+else
+   #  Try to follow IEEE-754
+   FFLAGS='-byteswapio -Mnodclchk -Mextend -Ktrap=fp -Kieee'
+   FOPTIM=
+fi
+# make clean removes also these files
+RMFILES='*.oo'
